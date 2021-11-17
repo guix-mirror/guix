@@ -150,6 +150,7 @@
     "third_party/devtools-frontend/src/front_end/third_party/wasmparser" ;ASL2.0
     "third_party/devtools-frontend/src/third_party/pyjson5" ;ASL2.0
     "third_party/devtools-frontend/src/third_party/typescript" ;ASL2.0
+    "third_party/distributed_point_functions" ;ASL2.0
     "third_party/dom_distiller_js" ;BSD-3
     "third_party/eigen3" ;MPL2.0
     "third_party/emoji-segmenter" ;ASL2.0
@@ -268,7 +269,6 @@
     "third_party/tflite" ;ASL2.0
     "third_party/tflite/src/third_party/eigen3" ;MPL2.0
     "third_party/tflite/src/third_party/fft2d" ;ASL2.0
-    "third_party/tflite-support" ;ASL2.0
     "third_party/ukey2" ;ASL2.0
     "third_party/usb_ids" ;BSD-3
     "third_party/usrsctp" ;BSD-2
@@ -336,7 +336,7 @@
                   (string-append "ungoogled-chromium-" category "-" name))))
     (sha256 (base32 hash))))
 
-(define %chromium-version "95.0.4638.69")
+(define %chromium-version "96.0.4664.45")
 (define %ungoogled-revision (string-append %chromium-version "-1"))
 (define %arch-revision "db2157b84924ce84201a8245e68a02f7d55f6491")
 (define %debian-revision "debian/90.0.4430.85-1")
@@ -367,7 +367,7 @@
     (file-name (git-file-name "ungoogled-chromium" %ungoogled-revision))
     (sha256
      (base32
-      "19azr4m4rd6za9vgcggijyq9x54jrjp0n07y4falgjrdz9q4f7aj"))))
+      "1k0kf5ika1sz489bcbn485kmdq1xp7ssa80gbqrpd60xihkhnrm3"))))
 
 (define %guix-patches
   (list (local-file
@@ -502,7 +502,7 @@
                                   %chromium-version ".tar.xz"))
               (sha256
                (base32
-                "1rzg48mbd5n75nq2rfwknyxpmfrddds199ic82c736kcgirpv8rq"))
+                "01q4fsf2cbx6g9nnaihvc5jj3ap8jq2gf16pnhf7ixzbhgcnm328"))
               (modules '((guix build utils)))
               (snippet (force ungoogled-chromium-snippet))))
     (build-system gnu-build-system)
