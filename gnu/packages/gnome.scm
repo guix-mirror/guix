@@ -4940,7 +4940,7 @@ libxml to ease remote use of the RESTful API.")
        ("zlib" ,zlib)))
     (inputs
      `(("mit-krb5" ,mit-krb5)
-       ("ntlm_auth" ,samba)))           ; For ntlm_auth support
+       ("ntlm_auth" ,samba/fixed)))               ; For ntlm_auth support
     (home-page "https://wiki.gnome.org/Projects/libsoup")
     (synopsis "GLib-based HTTP Library")
     (description

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2015, 2017, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2017, 2019, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
@@ -288,6 +288,18 @@ DOS and Windows, OS/2, GNU/Linux and many others.
 Samba is an important component to seamlessly integrate Linux/Unix Servers and
 Desktops into Active Directory environments using the winbind daemon.")
     (license gpl3+)))
+
+(define-public samba/fixed
+  ;; Version that rarely changes, depended on by libsoup.
+  (package/inherit samba
+    (version "4.13.10")
+    (source
+     (origin
+       (inherit (package-source samba))
+       (uri (string-append "https://download.samba.org/pub/samba/stable/"
+                           "samba-" version ".tar.gz"))
+       (sha256
+        (base32 "00q5hf2r71dyma785dckcyksv3082mqfgyy9q6k6rc6kqjwkirzh"))))))
 
 (define-public talloc
   (package
