@@ -203,8 +203,8 @@
                                files)
                           equal?)))
 
-(define (tlpdb->package name)
-  (and-let* ((data (assoc-ref (tlpdb) name))
+(define (tlpdb->package name package-database)
+  (and-let* ((data (assoc-ref package-database name))
              (dirs (files->directories
                     (map (lambda (dir)
                            (string-drop dir (string-length "texmf-dist/")))
@@ -254,10 +254,10 @@
 
 (define texlive->guix-package
   (memoize
-   (lambda* (name #:key repo version)
+   (lambda* (name #:key repo version (package-database tlpdb))
      "Find the metadata for NAME in the tlpdb and return the `package'
 s-expression corresponding to that package, or #f on failure."
-     (tlpdb->package name))))
+     (tlpdb->package name (package-database)))))
 
 (define (texlive-recursive-import name)
   (recursive-import name
