@@ -54,7 +54,9 @@
             condition-fix-hint
 
             guix-warning-port
-            program-name))
+            program-name
+
+            define-with-syntax-properties))
 
 ;;; Commentary:
 ;;;
@@ -331,3 +333,37 @@ number of arguments in ARGS matches the escapes in FORMAT."
 (define program-name
   ;; Name of the command-line program currently executing, or #f.
   (make-parameter #f))
+
+
+(define-syntax define-with-syntax-properties
+  (lambda (x)
+    "Define BINDING to be a syntax form replacing each VALUE-IDENTIFIER and
+SYNTAX-PROPERTIES-IDENTIFIER in body by the syntax and syntax-properties,
+respectively, of each ensuing syntax object."
+    (syntax-case x ()
+      ((_ (binding (value-identifier syntax-properties-identifier)
+                   ...)
+          body ...)
+       (and (and-map identifier? #'(value-identifier ...))
+            (and-map identifier? #'(syntax-properties-identifier ...)))
+       #'(define-syntax binding
+           (lambda (y)
+             (with-ellipsis :::
+               (syntax-case y ()
+                 ((_ value-identifier ...)
+                  (with-syntax ((syntax-properties-identifier
+                                 #`'#,(datum->syntax y
+                                                     (syntax-source
+                                                      #'value-identifier)))
+                                ...)
+                    #'(begin body ...)))
+                 (_
+                  (syntax-violation #f (format #f
+                                               "Expected (~a~{ ~a~})"
+                                               'binding
+                                               '(value-identifier ...))
+                                    y)))))))
+      (_
+       (syntax-violation #f "Expected a definition of the form \
+(define-with-syntax-properties (binding (value syntax-properties) \
+...) body ...)" x)))))
