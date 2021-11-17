@@ -18921,6 +18921,38 @@ terminals.")
 (define-public ecl-clinenoise
   (sbcl-package->ecl-package sbcl-clinenoise))
 
+(define-public sbcl-trivial-raw-io
+  (let ((commit "b1a3c876305baa0dead419841de7b3e433a75867")
+        (revision "1"))
+    (package
+      (name "sbcl-trivial-raw-io")
+      (version (git-version "0.0.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/kingcons/trivial-raw-io")
+               (commit commit)))
+         (file-name (git-file-name "trivial-raw-io" version))
+         (sha256
+          (base32 "19290zw2b64k78wr62gv30pp7cmqg07q85vfwjknaffjdd73xwi1"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("sbcl-alexandria" ,sbcl-alexandria)))
+      (home-page "https://github.com/kingcons/trivial-raw-io")
+      (synopsis "Trivial portability for raw *nix IO in Common Lisp")
+      (description
+       "This library exports three symbols: @code{with-raw-io},
+@code{read-char}, and @code{read-line}, to provide raw POSIX I/O in Common
+Lisp.")
+      (license license:bsd-2))))
+
+(define-public cl-trivial-raw-io
+  (sbcl-package->cl-source-package sbcl-trivial-raw-io))
+
+(define-public ecl-trivial-raw-io
+  (sbcl-package->ecl-package sbcl-trivial-raw-io))
+
 (define-public sbcl-periodic-table
   (package
     (name "sbcl-periodic-table")
