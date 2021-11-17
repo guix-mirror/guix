@@ -29,6 +29,7 @@
 ;;; Copyright © 2020, 2021 Robert Karszniewicz <avoidr@posteo.de>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2021 Denis 'GNUtoo' Carikli <GNUtoo@cyberdimension.org>
+;;; Copyright © 2021 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -390,6 +391,47 @@ conferencing.")
      (list
       license:gpl2+
       license:bsd-2))))
+
+(define-public qxmpp
+  (package
+    (name "qxmpp")
+    (version "1.4.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/qxmpp-project/qxmpp")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1knpq1jkwk0lxdwczbmzf7qrjvlxba9yr40nbq9s5nqkcx6q1c3i"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags (list "-DBUILD_EXAMPLES=false"
+                               "-DWITH_GSTREAMER=true")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "ctest" "-E"
+                       (string-join ;; These tests use the network.
+                        (list "tst_qxmppiceconnection"
+                              "tst_qxmppcallmanager"
+                              "tst_qxmpptransfermanager")
+                        "|"))))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gstreamer" ,gstreamer)
+       ("qtbase" ,qtbase-5)))
+    (home-page "https://github.com/qxmpp-project/qxmpp")
+    (synopsis "XMPP client and server library")
+    (description
+     "QXmpp is a XMPP client and server library written in C++ and uses the Qt
+framework.  It builds XMPP clients complying with the XMPP Compliance Suites
+2021 for IM and Advanced Mobile.")
+    (license license:lgpl2.1+)))
 
 (define-public meanwhile
   (package
