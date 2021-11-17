@@ -275,7 +275,7 @@ libraries.  It is also a bit like @code{ldd} and @code{otool -L}.")
 (define-public julia
   (package
     (name "julia")
-    (version "1.6.2")
+    (version "1.6.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -283,7 +283,7 @@ libraries.  It is also a bit like @code{ldd} and @code{otool -L}.")
                     version "/julia-" version ".tar.gz"))
               (sha256
                (base32
-                "0plbj4laifzz8ppk889iv3gaxj1mdddzv7yad6ghml6bfnn24r6m"))
+                "1515x8fs25l3f9csbmd1v4nm041zvjnvigy6s5iidy4yrkwdx4r5"))
               (patches
                (search-patches "julia-SOURCE_DATE_EPOCH-mtime.patch"))))
     (build-system gnu-build-system)
