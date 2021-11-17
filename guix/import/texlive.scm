@@ -38,7 +38,6 @@
   #:use-module (guix upstream)
   #:use-module (guix packages)
   #:use-module (guix build-system texlive)
-  #:use-module (gnu packages tex)
   #:export (texlive->guix-package
             texlive-recursive-import))
 
@@ -111,6 +110,12 @@
                              name)))
 
 (define (tlpdb-file)
+  (define texlive-bin
+    ;; Resolve this variable lazily so that (gnu packages ...) does not end up
+    ;; in the closure of this module.
+    (module-ref (resolve-interface '(gnu packages tex))
+                'texlive-bin))
+
   (with-store store
     (run-with-store store
       (mlet* %store-monad
