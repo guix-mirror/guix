@@ -291,7 +291,7 @@ will be put in @file{~/.guix-home/files}.")))
              (begin #$@gexps (touch flag-file-path)))
            (display "XDG_RUNTIME_DIR doesn't exists, on-first-login script
 won't execute anything.  You can check if xdg runtime directory exists,
-XDG_RUNTIME_DIR variable is set to apropriate value and manually execute the
+XDG_RUNTIME_DIR variable is set to appropriate value and manually execute the
 script by running '$HOME/.guix-home/on-first-login'")))))
 
 (define (on-first-login-script-entry on-first-login)
