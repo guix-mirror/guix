@@ -183,8 +183,13 @@ record."
 ;; The <bootloader-configuration> record contains bootloader independant
 ;; configuration used to fill bootloader configuration file.
 
-(define-syntax-rule (warn-target-field-deprecation value)
-  (%warn-target-field-deprecation value (current-source-location)))
+(define-with-syntax-properties (warn-target-field-deprecation
+                                (value properties))
+  (when value
+    (warning (source-properties->location properties)
+             (G_ "the 'target' field is deprecated, please use 'targets' \
+instead~%")))
+  value)
 
 (define-record-type* <bootloader-configuration>
   bootloader-configuration make-bootloader-configuration
@@ -212,13 +217,6 @@ record."
                       (default #f))
   (serial-speed       bootloader-configuration-serial-speed ;integer | #f
                       (default #f)))
-
-(define (%warn-target-field-deprecation value location)
-  (when value
-    (warning (source-properties->location location)
-             (G_ "the 'target' field is deprecated, please use 'targets' \
-instead~%")))
-  value)
 
 (define-deprecated (bootloader-configuration-target config)
   bootloader-configuration-targets

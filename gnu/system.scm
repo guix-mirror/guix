@@ -1073,16 +1073,17 @@ use 'plain-file' instead~%")
     ;; TODO: Remove when glibc@2.23 is long gone.
     ("GUIX_LOCPATH" . "/run/current-system/locale")))
 
-(define-syntax-rule (ensure-setuid-program-list lst)
-  "Ensure LST is a list of <setuid-program> records and warn otherwise."
-  (%ensure-setuid-program-list lst (current-source-location)))
+;; Ensure LST is a list of <setuid-program> records and warn otherwise.
+(define-with-syntax-properties (ensure-setuid-program-list (lst properties))
+  (%ensure-setuid-program-list lst properties))
 
-(define (%ensure-setuid-program-list lst location)
+;; We want to be able to use defines, so define a procedure.
+(define (%ensure-setuid-program-list lst properties)
   (define warned? #f)
 
   (define (warn-once)
     (unless warned?
-      (warning (source-properties->location location)
+      (warning (source-properties->location properties)
                (G_ "representing setuid programs with file-like objects is \
 deprecated; use 'setuid-program' instead~%"))
       (set! warned? #t)))
