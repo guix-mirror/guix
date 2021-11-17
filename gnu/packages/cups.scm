@@ -852,7 +852,9 @@ printer/driver specific, but spooler-independent PPD file.")
     (native-inputs
      `(("bc" ,bc)
        ("groff" ,groff)))
-    (home-page "http://foo2zjs.rkkda.com/")
+    ;; The domain has expired and no one has meaningfully taken up the torch.
+    (home-page (string-append "https://web.archive.org/web/20210129024712/"
+                              "http://foo2zjs.rkkda.com/"))
     (synopsis "Printer driver for ZjStream-based printers")
     (description
      "foo2zjs is a printer driver for printers that use the Zenographics
