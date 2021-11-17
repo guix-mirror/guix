@@ -657,6 +657,18 @@ everything from small to very large projects with speed and efficiency.")
        ("perl" ,perl)
        ("zlib" ,zlib)))))
 
+(define-public git-minimal/fixed
+  ;; Version that rarely changes, depended on by Graphene/GTK+.
+  (package/inherit git-minimal
+    (version "2.33.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://kernel.org/software/scm/git/git-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "0bqz401dyp8wnjj3k5ahrniwk4dalndysqazzwdvv25hqbkacm70"))))))
+
 (define-public git2cl
   (let ((commit "1d74d4c0d933fc69ed5cec838c73502584dead05"))
     (package
