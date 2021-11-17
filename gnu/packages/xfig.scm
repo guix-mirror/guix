@@ -2,6 +2,7 @@
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,6 +26,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages image)
   #:use-module (gnu packages compression))
@@ -32,7 +34,7 @@
 (define-public xfig
   (package
     (name "xfig")
-    (version "3.2.7a")
+    (version "3.2.8b")
     (source
      (origin
        (method url-fetch)
@@ -40,11 +42,12 @@
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "096zgp0bqnxhgxbrv2jjylrjz3pr4da0xxznlk2z7ffxr5pri2fa"))))
+         "0fndgbm1mkqb1sn2v2kj3nx9mxj70jbp31y2bjvzcmmkry0q3k5j"))))
     (build-system gnu-build-system)
     (native-inputs
      ;; For tests.
-     `(("desktop-file-utils" ,desktop-file-utils)))
+     `(("desktop-file-utils" ,desktop-file-utils)
+       ("ghostscript" ,ghostscript)))
     (inputs
      `(("libxaw3d" ,libxaw3d)
        ("libjpeg" ,libjpeg-turbo)
