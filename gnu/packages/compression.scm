@@ -2621,6 +2621,18 @@ chunks.")
                (base32
                 "1ywq8j70149859vvs19wgjq89d6xsvvmvm2n1dmkzpchxgrvnw70"))))
     (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       '("-DDEACTIVATE_AVX2=ON"
+         "-DPREFER_EXTERNAL_LZ4=ON"
+         "-DPREFER_EXTERNAL_SNAPPY=ON"
+         "-DPREFER_EXTERNAL_ZLIB=ON"
+         "-DPREFER_EXTERNAL_ZSTD=ON")))
+    (inputs
+     `(("lz4" ,lz4)
+       ("snappy" ,snappy)
+       ("zlib" ,zlib)
+       ("zstd:lib" ,zstd "lib")))
     (home-page "https://blosc.org")
     (synopsis "Blocking, shuffling and lossless compression library")
     (description
