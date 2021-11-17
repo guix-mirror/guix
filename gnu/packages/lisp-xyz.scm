@@ -19073,6 +19073,40 @@ This package provides the text-based interface for Chemboy.")
 (define-public ecl-cl-pass
   (sbcl-package->ecl-package sbcl-cl-pass))
 
+(define-public sbcl-which
+  (let ((commit "b2333e4fcacab6e5d85eecd28b5ef4944bda1448")
+        (revision "1"))
+    (package
+      (name "sbcl-which")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/eudoxia0/which")
+               (commit commit)))
+         (file-name (git-file-name "cl-which" version))
+         (sha256
+          (base32 "127pm9h4rm4w9aadw5yvamnfzhk2rr69kchx10rf9k7sk7izqqfk"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("cl-fad" ,sbcl-cl-fad)
+         ("path-parse" ,sbcl-path-parse)))
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (home-page "https://github.com/eudoxia0/which")
+      (synopsis "The which command in Common Lisp")
+      (description
+       "This package provides an implementation of the @code{which} UNIX
+command in Common Lisp.")
+      (license license:expat))))
+
+(define-public cl-which
+  (sbcl-package->cl-source-package sbcl-which))
+
+(define-public ecl-which
+  (sbcl-package->ecl-package sbcl-which))
+
 (define-public sbcl-cl-tld
   ;; No release.
   (let ((commit "f5014da8d831fa9481d4181d4450f10a52850c75"))
