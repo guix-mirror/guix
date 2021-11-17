@@ -653,7 +653,7 @@ Portuguese, Spanish and Italian.")
 (define-public fet
   (package
     (name "fet")
-    (version "6.1.8")
+    (version "6.2.2")
     (source
      (origin
        (method url-fetch)
@@ -662,7 +662,7 @@ Portuguese, Spanish and Italian.")
               (list (string-append directory base)
                     (string-append directory "old/" base))))
        (sha256
-        (base32 "16m20vbhv8i7saxqb731bhds1f86d6x1f935j3ivg357805fqzll"))))
+        (base32 "1x8m543n88iqprh4zccx1zcfm20balmh0h6syrbv03cszmkvfw07"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
