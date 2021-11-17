@@ -27243,8 +27243,9 @@ supports x86_64 instructions up to AVX-512 and SHA.")
       (build-system python-build-system)
       (home-page "https://github.com/hsoft/sgmllib")
       (synopsis "Python 3 port of sgmllib")
-      (description "This package is a port of sgmllib that is no longer part
-of Python 3.")
+      (description "This packages provides an unmaintained port of sgmllib to
+Python 3.  It is used to parse text files formatted in @acronym{SGML,Standard
+Generalized Mark-up Language}.")
       (license license:bsd-3))))
 
 (define-public python-cwcwidth
@@ -27899,26 +27900,3 @@ simple mock/record and a complete capture/replay framework.")
 interfaces.")
     (license license:bsd-3)))
 
-(define-public python-sgmllib3k
-  (package
-    (name "python-sgmllib3k")
-    (version "1.0.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "sgmllib3k" version))
-       (sha256
-        (base32 "1s8jm3dgqabgf8x96931scji679qkhvczlv3qld4qxpsicfgns3q"))))
-    (build-system python-build-system)
-    ;; Requires a test.html input that is not supplied
-    (arguments
-     `(#:tests? #f))
-    (home-page "https://pypi.org/project/sgmllib3k/")
-    ;; Actual homepage seems to be down
-    ;; (home-page "https://hg.hardcoded.net/sgmllib")
-    (synopsis "Python 3 port of sgmllib")
-    (description
-     "This packages provides an unmaintained port of sgmllib to Python 3.
-It is used to parse text files formatted in @acronym{SGML,Standard Generalized
-Mark-up Language}.")
-    (license license:bsd-3)))
