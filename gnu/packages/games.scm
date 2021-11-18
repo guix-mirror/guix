@@ -3596,7 +3596,7 @@ are primarily in English, however some in other languages are provided.")
 C++.  Features include an OpenGL renderer, extensible materials, scene graph
 management, character animation, particle and other special effects, support
 for common mesh file formats, and collision detection.")
-    (home-page "http://irrlicht.sourceforge.net/")
+    (home-page "https://irrlicht.sourceforge.io/")
     (license license:zlib)))
 
 (define-public mars
