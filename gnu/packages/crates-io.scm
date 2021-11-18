@@ -18089,7 +18089,7 @@ Atom, RSS 2.0, RSS 1.0, RSS 0.x and JSON Feed")
     (home-page "https://gitlab.com/news-flash/fever_api")
     (synopsis "Rust implementation of the Fever API")
     (description
-     "This packages provides a Rust implementation of the Fever API.")
+     "This package provides a Rust implementation of the Fever API.")
     ;; No copyright headers in the source code.  LICENSE indicates gpl3.
     (license license:gpl3)))
 
