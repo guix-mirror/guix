@@ -48,25 +48,29 @@ chmod +x "$tmpdir/exe"
 ( cd "$tmpdir" ; ln -s exe symlink )
 mkdir "$tmpdir/subdir"
 
-test `guix hash -r "$tmpdir"` = 10k1lw41wyrjf9mxydi0is5nkpynlsvgslinics4ppir13g7d74p
-test `guix hash -r "$tmpdir" -H sha512` = 301ra58c2vahczzxiyfin41mpyb0ljh4dh9zn3ijvwviaw1j40sfzw5skh9x945da88n3785ggifzig7acd6k72h0mpsc20m1f66m9n
+test `guix hash -S nar "$tmpdir"` = 10k1lw41wyrjf9mxydi0is5nkpynlsvgslinics4ppir13g7d74p
+test `guix hash -S nar "$tmpdir" -H sha512` = 301ra58c2vahczzxiyfin41mpyb0ljh4dh9zn3ijvwviaw1j40sfzw5skh9x945da88n3785ggifzig7acd6k72h0mpsc20m1f66m9n
+
+# Deprecated --recursive option
+test `guix hash -r "$tmpdir" 2>/dev/null` = 10k1lw41wyrjf9mxydi0is5nkpynlsvgslinics4ppir13g7d74p
+test `guix hash -r "$tmpdir" -H sha512 2>/dev/null` = 301ra58c2vahczzxiyfin41mpyb0ljh4dh9zn3ijvwviaw1j40sfzw5skh9x945da88n3785ggifzig7acd6k72h0mpsc20m1f66m9n
 
 # Without '-r', this should fail.
 ! guix hash "$tmpdir"
 
 # This should fail because /dev/null is a character device, which
 # the archive format doesn't support.
-! guix hash -r /dev/null
+! guix hash -S nar /dev/null
 
 # Adding a .git directory
 mkdir "$tmpdir/.git"
 touch "$tmpdir/.git/foo"
 
 # ...changes the hash
-test `guix hash -r $tmpdir` = 0a50z04zyzf7pidwxv0nwbj82pgzbrhdy9562kncnvkcfvb48m59
+test `guix hash -S nar $tmpdir` = 0a50z04zyzf7pidwxv0nwbj82pgzbrhdy9562kncnvkcfvb48m59
 
 # ...but remains the same when using `-x'
-test `guix hash -r $tmpdir -x` = 10k1lw41wyrjf9mxydi0is5nkpynlsvgslinics4ppir13g7d74p
+test `guix hash -S nar $tmpdir -x` = 10k1lw41wyrjf9mxydi0is5nkpynlsvgslinics4ppir13g7d74p
 
 # Without '-r', this should fail.
 ! guix hash "$tmpdir"

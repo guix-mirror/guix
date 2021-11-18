@@ -39,13 +39,37 @@
 
 
 ;;;
+;;; Serializers
+;;;
+
+(define* (nar-hash file #:optional
+                   (algorithm (assoc-ref %default-options 'hash-algorithm))
+                   select?)
+  (let-values (((port get-hash)
+                (open-hash-port algorithm)))
+    (write-file file port #:select? select?)
+    (force-output port)
+    (get-hash)))
+
+(define* (default-hash file #:optional
+                       (algorithm (assoc-ref %default-options 'hash-algorithm))
+                       select?)
+  (match file
+    ("-" (port-hash algorithm (current-input-port)))
+    (_
+     (call-with-input-file file
+       (cute port-hash algorithm <>)))))
+
+
+;;;
 ;;; Command-line options.
 ;;;
 
 (define %default-options
   ;; Alist of default option values.
   `((format . ,bytevector->nix-base32-string)
-    (hash-algorithm . ,(hash-algorithm sha256))))
+    (hash-algorithm . ,(hash-algorithm sha256))
+    (serializer . ,default-hash)))
 
 (define (show-help)
   (display (G_ "Usage: guix hash [OPTION] FILE
@@ -61,7 +85,7 @@ and 'base16' ('hex' and 'hexadecimal' can be used as well).\n"))
   (format #t (G_ "
   -f, --format=FMT       write the hash in the given format"))
   (format #t (G_ "
-  -r, --recursive        compute the hash on FILE recursively"))
+  -S, --serializer=TYPE  compute the hash on FILE according to TYPE serialization"))
   (newline)
   (display (G_ "
   -h, --help             display this help and exit"))
@@ -102,7 +126,24 @@ and 'base16' ('hex' and 'hexadecimal' can be used as well).\n"))
                               (alist-delete 'format result))))
         (option '(#\r "recursive") #f #f
                 (lambda (opt name arg result)
-                  (alist-cons 'recursive? #t result)))
+                  (warning (G_ "'--recursive' is deprecated, \
+use '--serializer' instead~%"))
+                  (alist-cons 'serializer nar-hash
+                              (alist-delete 'serializer result))))
+        (option '(#\S "serializer") #t #f
+                (lambda (opt name arg result)
+                  (define serializer-proc
+                    (match arg
+                      ("none"
+                       default-hash)
+                      ("nar"
+                       nar-hash)
+                      (x
+                       (leave (G_ "unsupported serializer type: ~a~%")
+                              arg))))
+
+                  (alist-cons 'serializer serializer-proc
+                              (alist-delete 'serializer result))))
         (option '(#\h "help") #f #f
                 (lambda args
                   (show-help)
@@ -145,35 +186,24 @@ and 'base16' ('hex' and 'hexadecimal' can be used as well).\n"))
          (fmt  (assq-ref opts 'format))
          (select? (if (assq-ref opts 'exclude-vcs?)
                       (negate vcs-file?)
-                      (const #t))))
+                      (const #t)))
+         (algorithm (assoc-ref opts 'hash-algorithm))
+         (serializer (assoc-ref opts 'serializer)))
 
     (define (file-hash file)
       ;; Compute the hash of FILE.
-      ;; Catch and gracefully report possible '&nar-error' conditions.
-      (if (assoc-ref opts 'recursive?)
+     ;; Catch and gracefully report possible error
+      (catch 'system-error
+        (lambda _
           (with-error-handling
-            (let-values (((port get-hash)
-                          (open-hash-port (assoc-ref opts 'hash-algorithm))))
-              (write-file file port #:select? select?)
-              (force-output port)
-              (get-hash)))
-          (catch 'system-error
-            (lambda _
-              (call-with-input-file file
-                (cute port-hash (assoc-ref opts 'hash-algorithm)
-                      <>)))
-            (lambda args
-              (leave (G_ "~a ~a~%")
-                     file
-                     (strerror (system-error-errno args)))))))
+            (serializer file algorithm select?)))
+        (lambda args
+          (leave (G_ "~a ~a~%")
+                 file
+                 (strerror (system-error-errno args))))))
 
     (define (formatted-hash thing)
-      (match thing
-        ("-" (with-error-handling
-               (fmt (port-hash (assoc-ref opts 'hash-algorithm)
-                               (current-input-port)))))
-        (_
-         (fmt (file-hash thing)))))
+      (fmt (file-hash thing)))
 
     (match args
       (()

@@ -71,7 +71,7 @@ Copyright @copyright{} 2019 Kyle Andrews@*
 Copyright @copyright{} 2019 Alex Griffin@*
 Copyright @copyright{} 2019, 2020, 2021 Guillaume Le Vaillant@*
 Copyright @copyright{} 2020 Liliana Marie Prikler@*
-Copyright @copyright{} 2019, 2020 Simon Tournier@*
+Copyright @copyright{} 2019, 2020, 2021 Simon Tournier@*
 Copyright @copyright{} 2020 Wiktor Żelazny@*
 Copyright @copyright{} 2020 Damien Cassou@*
 Copyright @copyright{} 2020 Jakub Kądziołka@*
@@ -11751,14 +11751,21 @@ in the definitions of packages.
 
 @item --recursive
 @itemx -r
-Compute the hash on @var{file} recursively.
+This option is deprecated in favor of @option{--serializer}.  It is a
+legacy alias for @var{type} sets to @code{nar}.
 
-In this case, the hash is computed on an archive containing @var{file},
-including its children if it is a directory.  Some of the metadata of
-@var{file} is part of the archive; for instance, when @var{file} is a
-regular file, the hash is different depending on whether @var{file} is
-executable or not.  Metadata such as time stamps has no impact on the
-hash (@pxref{Invoking guix archive}).
+@item --serializer=@var{type}
+@itemx -S
+Compute the hash on @var{file} using @var{type} serialization.
+
+Supported types: @code{none} and @code{nar}.
+
+When using @code{nar}, the hash is computed on an archive containing
+@var{file}, including its children if it is a directory.  Some of the
+metadata of @var{file} is part of the archive; for instance, when
+@var{file} is a regular file, the hash is different depending on whether
+@var{file} is executable or not.  Metadata such as time stamps has no
+impact on the hash (@pxref{Invoking guix archive}).
 @c FIXME: Replace xref above with xref to an ``Archive'' section when
 @c it exists.
 
