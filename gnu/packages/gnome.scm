@@ -12257,7 +12257,7 @@ GObject introspection bindings.")
 (define-public sysprof
   (package
     (name "sysprof")
-    (version "3.36.0")
+    (version "3.42.1")
     (source
      (origin
        (method url-fetch)
@@ -12265,7 +12265,7 @@ GObject introspection bindings.")
                            (version-major+minor version) "/"
                            "sysprof-" version ".tar.xz"))
        (sha256
-        (base32 "024i0gzqnm79rpr4gqxdvcj6gvf82xdlcp2p1k9ikcppmi6xnw46"))))
+        (base32 "0090986ar3lz9m9fy7l5y9ibzzmgsx54cm6gp8ggsxgf0habi5hp"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
@@ -12281,9 +12281,12 @@ GObject introspection bindings.")
                (("gtk-update-icon-cache") "true")
                (("update-desktop-database") "true"))
              #t)))))
+    (propagated-inputs
+     `(("polkit" ,polkit)))
     (inputs
      `(("glib" ,glib)
        ("gtk+" ,gtk+)
+       ("json-glib" ,json-glib)
        ("libdazzle" ,libdazzle)
        ("polkit" ,polkit)))
     (native-inputs
