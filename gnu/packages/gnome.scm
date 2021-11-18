@@ -9501,7 +9501,7 @@ world.")
        ;; XXX: Find out exactly which ones are needed and why.
        ("font-abattis-cantarell"            ,font-abattis-cantarell)
        ("font-dejavu"               ,font-dejavu)
-       ("at-spi2-core"              ,at-spi2-core)
+       ("at-spi2-core"              ,at-spi2-core-minimal)
        ("dbus"                      ,dbus)
        ("dconf"                     ,dconf)
        ("desktop-file-utils"        ,desktop-file-utils)
