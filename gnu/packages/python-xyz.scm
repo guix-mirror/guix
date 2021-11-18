@@ -940,13 +940,11 @@ to CommonMark.")
                 (search-input-file %build-inputs
                                    "/lib/libmediainfo.so.0")))))
          (replace 'check
-           (lambda* (#:key tests? #:allow-other-keys)
+           (lambda* (#:key tests? inputs outputs #:allow-other-keys)
              (when tests?
-               ;; Extend PYTHONPATH so the built package will be found.
-               (setenv "PYTHONPATH"
-                       (string-append (getcwd) "/build/lib:"
-                                      (getenv "PYTHONPATH")))
-               ;; Skip the only failing test "test_parse_url"
+               (add-installed-pythonpath inputs outputs)
+               ;; Skip the only failing test "test_parse_url" because it tries
+               ;; to access the internet.
                (invoke "pytest" "-vv" "-k" "not test_parse_url")))))))
     (home-page
      "https://github.com/sbraz/pymediainfo")
