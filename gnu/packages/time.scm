@@ -450,17 +450,15 @@ datetime type.")
 (define-public python-aniso8601
   (package
     (name "python-aniso8601")
-    (version "1.3.0")
+    (version "9.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "aniso8601" version))
        (sha256
         (base32
-         "1waj54iv3n3lw1fapbz8a93yjgrybgpc86wif5baxdh1arpj9df3"))))
+         "0wxry6riyqajl02mkad8g2q98sx5jr13zndj3fandpzfcxv13qvj"))))
     (build-system python-build-system)
-    (propagated-inputs
-     `(("python-dateutil" ,python-dateutil)))
     (home-page "https://bitbucket.org/nielsenb/aniso8601")
     (synopsis "Python library for parsing ISO 8601 strings")
     (description
