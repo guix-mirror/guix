@@ -1592,7 +1592,8 @@ tour of all gnome components and allows the user to set them up.")
               "04r9ck9v4i0d31grbli1d4slw2d6dcsfkpaybkwbzi7wnj72l30x"))))
    (build-system meson-build-system)
    (arguments
-    `(#:glib-or-gtk? #t
+    `(#:meson ,meson-0.59         ;positional arguments error with meson 0.60
+      #:glib-or-gtk? #t
       #:configure-flags
        `("-Dsystemduserunitdir=/tmp/empty"
          ;; Enable nautilus extension for file sharing.
