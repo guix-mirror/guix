@@ -14845,14 +14845,14 @@ estimates, etc.")
 (define-public r-tximeta
   (package
     (name "r-tximeta")
-    (version "1.12.0")
+    (version "1.12.3")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "tximeta" version))
        (sha256
         (base32
-         "03fbz6pka7bcbhd0bblgckyxsqhzp4n8qp2dcpdb3sr01lyw4bc5"))))
+         "15l1jvfis7xzxwwnlqs8xpaf212v1lx513np2dc4l4h7rqhclm2v"))))
     (properties `((upstream-name . "tximeta")))
     (build-system r-build-system)
     (propagated-inputs
