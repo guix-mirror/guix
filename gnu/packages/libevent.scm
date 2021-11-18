@@ -28,6 +28,7 @@
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
   #:use-module (gnu packages autotools)
@@ -149,6 +150,27 @@ resolution, asynchronous file system operations, and threading primitives.")
                (base32
                 "0wpb9pz3r8nksnrf4zbixj2kk9whr7abi45ydrwyv2js2ljrc4j3"))))
     (properties '((hidden? . #t)))))
+
+(define-public libuv-julia
+  (let ((commit "fb3e3364c33ae48c827f6b103e05c3f0e78b79a9")
+        (revision "3"))
+    ;; When upgrading Julia, also upgrade this.  Get the commit from
+    ;; https://github.com/JuliaLang/julia/blob/v1.6.1/deps/libuv.version
+    (package
+      (inherit libuv)
+      (name "libuv-julia")
+      (version (git-version "2.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/JuliaLang/libuv")
+                       (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1kqpn19d20aka30h6q5h8lnzyp0vw0xzgx0wm4w2r5j6yf76m2hr"))))
+      (home-page "https://github.com/JuliaLang/libuv")
+      (properties '((hidden? . #t))))))
 
 (define-public perl-anyevent
   (package
