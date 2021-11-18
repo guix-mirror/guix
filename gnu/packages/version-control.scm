@@ -669,6 +669,32 @@ everything from small to very large projects with speed and efficiency.")
                (base32
                 "0bqz401dyp8wnjj3k5ahrniwk4dalndysqazzwdvv25hqbkacm70"))))))
 
+(define-public git/fixed
+  ;; Version that rarely changes, depended on by GHC.
+  ;; TODO: Remove and use 'git-minimal/fixed' instead.
+  (package/inherit git
+    (version "2.33.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://kernel.org/software/scm/git/git-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "0bqz401dyp8wnjj3k5ahrniwk4dalndysqazzwdvv25hqbkacm70"))))
+    (properties `((hidden? . #t)
+                  ,@(package-properties git)))
+    (native-inputs
+     (modify-inputs (package-native-inputs git)
+       (replace "git-manpages"
+         (origin
+           (method url-fetch)
+           (uri (string-append
+                 "mirror://kernel.org/software/scm/git/git-manpages-"
+                 version ".tar.xz"))
+           (sha256
+            (base32
+             "11xb0n1ckkm2g7r3sxsknkhsak739xg925zbz3aalv7mr7qijln7"))))))))
+
 (define-public git2cl
   (let ((commit "1d74d4c0d933fc69ed5cec838c73502584dead05"))
     (package
