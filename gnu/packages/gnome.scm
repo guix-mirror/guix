@@ -9375,7 +9375,8 @@ associations for GNOME.")
       ("libgweather" ,libgweather)
       ("libhandy" ,libhandy)))
    (arguments
-    `(#:glib-or-gtk? #t
+    `(#:meson ,meson-0.59         ;positional arguments error with meson 0.60
+      #:glib-or-gtk? #t
       #:phases
       ,#~(modify-phases %standard-phases
            (add-after 'unpack 'fix-service-file
