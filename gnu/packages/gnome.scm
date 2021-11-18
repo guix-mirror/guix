@@ -1526,7 +1526,8 @@ extraction, and lookup for applications on the desktop.")
               "06q3p4f8g9zr7a4mw3qr556mi0dg9qzrj8n46ybdz93fxs26aaj1"))))
    (build-system meson-build-system)
    (arguments
-    '(#:configure-flags '(;; Enable camera support for user selfie.
+    `(#:meson ,meson-0.59         ;positional arguments error with meson 0.60
+      #:configure-flags '(;; Enable camera support for user selfie.
                           "-Dcheese=auto"
                           "-Dsystemd=false")
       #:phases (modify-phases %standard-phases
@@ -1568,7 +1569,7 @@ extraction, and lookup for applications on the desktop.")
       ("pwquality" ,libpwquality)
       ("rest" ,rest)
       ("upower" ,upower)
-      ("webkitgtk" ,webkitgtk)
+      ("webkitgtk" ,webkitgtk-with-libsoup2)
       ("libgnomekbd" ,libgnomekbd)))
    (synopsis "Initial setup wizard for GNOME desktop")
    (description "This package provides a set-up wizard when a
