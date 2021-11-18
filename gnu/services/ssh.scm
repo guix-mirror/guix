@@ -283,7 +283,7 @@ The other options should be self-descriptive."
 (define-record-type* <openssh-configuration>
   openssh-configuration make-openssh-configuration
   openssh-configuration?
-  ;; <package>
+  ;; file-like object
   (openssh               openssh-configuration-openssh
                          (default openssh))
   ;; string
@@ -763,7 +763,7 @@ object."
 (define-record-type* <webssh-configuration>
   webssh-configuration make-webssh-configuration
   webssh-configuration?
-  (package     webssh-configuration-package     ;package
+  (package     webssh-configuration-package     ;file-like
                (default webssh))
   (user-name   webssh-configuration-user-name   ;string
                (default "webssh"))

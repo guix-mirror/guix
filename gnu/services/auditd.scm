@@ -46,7 +46,7 @@ ignore\ndisk_error_action = syslog\n"))
 (define-record-type* <auditd-configuration>
   auditd-configuration make-auditd-configuration
   auditd-configuration?
-  (audit                   auditd-configuration-audit                          ; package
+  (audit                   auditd-configuration-audit                          ; file-like
                            (default audit))
   (configuration-directory auditd-configuration-configuration-directory))      ; file-like
 

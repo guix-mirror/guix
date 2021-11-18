@@ -560,7 +560,7 @@ down.")))
 (define-record-type* <rngd-configuration>
   rngd-configuration make-rngd-configuration
   rngd-configuration?
-  (rng-tools rngd-configuration-rng-tools)        ;package
+  (rng-tools rngd-configuration-rng-tools)        ;file-like
   (device    rngd-configuration-device))          ;string
 
 (define rngd-service-type
@@ -775,7 +775,7 @@ the message of the day, among other things."
 (define-record-type* <agetty-configuration>
   agetty-configuration make-agetty-configuration
   agetty-configuration?
-  (agetty           agetty-configuration-agetty   ;<package>
+  (agetty           agetty-configuration-agetty   ;file-like
                     (default util-linux))
   (tty              agetty-configuration-tty)     ;string | #f
   (term             agetty-term                   ;string | #f
@@ -1043,7 +1043,7 @@ the tty to run, among other things."
 (define-record-type* <mingetty-configuration>
   mingetty-configuration make-mingetty-configuration
   mingetty-configuration?
-  (mingetty         mingetty-configuration-mingetty ;<package>
+  (mingetty         mingetty-configuration-mingetty ;file-like
                     (default mingetty))
   (tty              mingetty-configuration-tty)     ;string
   (auto-login       mingetty-auto-login             ;string | #f
@@ -1115,9 +1115,9 @@ the tty to run, among other things."
   ;; TODO: See nscd.conf in glibc for other options to add.
   (caches     nscd-configuration-caches           ;list of <nscd-cache>
               (default %nscd-default-caches))
-  (name-services nscd-configuration-name-services ;list of <packages>
+  (name-services nscd-configuration-name-services ;list of file-like
                  (default '()))
-  (glibc      nscd-configuration-glibc            ;<package>
+  (glibc      nscd-configuration-glibc            ;file-like
               (default glibc)))
 
 (define-record-type* <nscd-cache> nscd-cache make-nscd-cache
@@ -1516,7 +1516,7 @@ archive' public keys, with GUIX."
 (define-record-type* <guix-configuration>
   guix-configuration make-guix-configuration
   guix-configuration?
-  (guix             guix-configuration-guix       ;<package>
+  (guix             guix-configuration-guix       ;file-like
                     (default guix))
   (build-group      guix-configuration-build-group ;string
                     (default "guixbuild"))
@@ -1769,7 +1769,7 @@ proxy of 'guix-daemon'...~%")
 (define-record-type* <guix-publish-configuration>
   guix-publish-configuration make-guix-publish-configuration
   guix-publish-configuration?
-  (guix    guix-publish-configuration-guix        ;package
+  (guix    guix-publish-configuration-guix        ;file-like
            (default guix))
   (port    guix-publish-configuration-port        ;number
            (default 80))
@@ -1924,9 +1924,9 @@ command that allows you to share pre-built binaries with others over HTTP.")))
 (define-record-type* <udev-configuration>
   udev-configuration make-udev-configuration
   udev-configuration?
-  (udev   udev-configuration-udev                 ;<package>
+  (udev   udev-configuration-udev                 ;file-like
           (default eudev))
-  (rules  udev-configuration-rules                ;list of <package>
+  (rules  udev-configuration-rules                ;list of file-like
           (default '())))
 
 (define (udev-rules-union packages)
@@ -2248,7 +2248,7 @@ instance."
 
 (define-record-type* <gpm-configuration>
   gpm-configuration make-gpm-configuration gpm-configuration?
-  (gpm      gpm-configuration-gpm                 ;package
+  (gpm      gpm-configuration-gpm                 ;file-like
             (default gpm))
   (options  gpm-configuration-options             ;list of strings
             (default %default-gpm-options)))

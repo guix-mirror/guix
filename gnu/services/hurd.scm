@@ -42,7 +42,7 @@
 (define-record-type* <hurd-console-configuration>
   hurd-console-configuration make-hurd-console-configuration
   hurd-console-configuration?
-  (hurd   hurd-console-configuration-hurd ;package
+  (hurd   hurd-console-configuration-hurd ;file-like
           (default hurd)))
 
 (define (hurd-console-shepherd-service config)
@@ -80,7 +80,7 @@
 (define-record-type* <hurd-getty-configuration>
   hurd-getty-configuration make-hurd-getty-configuration
   hurd-getty-configuration?
-  (hurd       hurd-getty-configuration-hurd  ;<package>
+  (hurd       hurd-getty-configuration-hurd  ;file-like
               (default hurd))
   (tty        hurd-getty-configuration-tty)  ;string
   (baud-rate  hurd-getty-configuration-baud-rate

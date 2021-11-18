@@ -164,7 +164,7 @@ host	all	all	::1/128 	md5"))
 (define-record-type* <postgresql-configuration>
   postgresql-configuration make-postgresql-configuration
   postgresql-configuration?
-  (postgresql         postgresql-configuration-postgresql) ;<package>
+  (postgresql         postgresql-configuration-postgresql) ;file-like
   (port               postgresql-configuration-port
                       (default 5432))
   (locale             postgresql-configuration-locale
@@ -448,7 +448,7 @@ created after the PostgreSQL database is started.")))
 (define-record-type* <memcached-configuration>
   memcached-configuration make-memcached-configuration
   memcached-configuration?
-  (memcached          memcached-configuration-memcached ;<package>
+  (memcached          memcached-configuration-memcached ;file-like
                       (default memcached))
   (interfaces         memcached-configuration-interfaces
                       (default '("0.0.0.0")))
@@ -693,7 +693,7 @@ FLUSH PRIVILEGES;
 (define-record-type* <redis-configuration>
   redis-configuration make-redis-configuration
   redis-configuration?
-  (redis             redis-configuration-redis ;<package>
+  (redis             redis-configuration-redis ;file-like
                      (default redis))
   (bind              redis-configuration-bind
                      (default "127.0.0.1"))

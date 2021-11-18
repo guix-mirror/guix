@@ -134,10 +134,10 @@
 
 (define-configuration libvirt-configuration
   (libvirt
-   (package libvirt)
+   (file-like libvirt)
    "Libvirt package.")
   (qemu
-   (package qemu)
+   (file-like qemu)
    "Qemu package.")
 
   (listen-tls?
@@ -859,7 +859,7 @@ functionality of the kernel Linux.")))
 
 (define-configuration qemu-guest-agent-configuration
   (qemu
-   (package qemu-minimal)
+   (file-like qemu-minimal)
    "QEMU package.")
   (device
    (string "")
@@ -974,7 +974,7 @@ that will be listening to receive secret keys on port 1004, TCP."
   hurd-vm-configuration?
   (os          hurd-vm-configuration-os                 ;<operating-system>
                (default %hurd-vm-operating-system))
-  (qemu        hurd-vm-configuration-qemu               ;<package>
+  (qemu        hurd-vm-configuration-qemu               ;file-like
                (default qemu-minimal))
   (image       hurd-vm-configuration-image              ;string
                (thunked)

@@ -43,7 +43,7 @@
   rsync-configuration
   make-rsync-configuration
   rsync-configuration?
-  (package       rsync-configuration-package              ; package
+  (package       rsync-configuration-package              ; file-like
                  (default rsync))
   (address       rsync-configuration-address              ; string | #f
                  (default #f))

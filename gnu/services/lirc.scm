@@ -38,7 +38,7 @@
 (define-record-type* <lirc-configuration>
   lirc-configuration make-lirc-configuration
   lirc-configuation?
-  (lirc          lirc-configuration-lirc          ;<package>
+  (lirc          lirc-configuration-lirc          ;file-like
                  (default lirc))
   (device        lirc-configuration-device)       ;string
   (driver        lirc-configuration-driver)       ;string

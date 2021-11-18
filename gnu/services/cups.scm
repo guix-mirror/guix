@@ -482,13 +482,13 @@ programs.")
     (serialize-space-separated-string-list field-name vars)))
 
 (define (package-list? val)
-  (and (list? val) (and-map package? val)))
+  (and (list? val) (and-map file-like? val)))
 (define (serialize-package-list field-name val)
   #f)
 
 (define-configuration cups-configuration
   (cups
-   (package cups)
+   (file-like cups)
    "The CUPS package.")
   (extensions
    (package-list (list brlaser cups-filters epson-inkjet-printer-escpr

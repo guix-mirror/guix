@@ -333,7 +333,7 @@ can create such a file with:
 
   (define-all-configurations prosody-configuration
     (prosody
-     (package prosody)
+     (file-like prosody)
      "The Prosody package."
      global)
 
@@ -623,7 +623,7 @@ See also @url{https://prosody.im/doc/modules/mod_muc}."
 
 (define-configuration opaque-prosody-configuration
   (prosody
-   (package prosody)
+   (file-like prosody)
    "The prosody package.")
 
   (prosody.cfg.lua

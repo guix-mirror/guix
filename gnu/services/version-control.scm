@@ -91,7 +91,7 @@
   git-daemon-configuration
   make-git-daemon-configuration
   git-daemon-configuration?
-  (package          git-daemon-configuration-package        ;package
+  (package          git-daemon-configuration-package        ;file-like
                     (default git))
   (export-all?      git-daemon-configuration-export-all     ;boolean
                     (default #f))
@@ -197,7 +197,7 @@ access to exported repositories under @file{/srv/git}."
   git-http-configuration
   make-git-http-configuration
   git-http-configuration?
-  (package          git-http-configuration-package        ;package
+  (package          git-http-configuration-package        ;file-like
                     (default git))
   (git-root         git-http-configuration-git-root       ;string
                     (default "/srv/git"))

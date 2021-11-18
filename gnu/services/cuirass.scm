@@ -85,7 +85,7 @@
 (define-record-type* <cuirass-configuration>
   cuirass-configuration make-cuirass-configuration
   cuirass-configuration?
-  (cuirass          cuirass-configuration-cuirass ;package
+  (cuirass          cuirass-configuration-cuirass ;file-like
                     (default cuirass))
   (log-file         cuirass-configuration-log-file ;string
                     (default "/var/log/cuirass.log"))
@@ -327,7 +327,7 @@
 (define-record-type* <cuirass-remote-worker-configuration>
   cuirass-remote-worker-configuration make-cuirass-remote-worker-configuration
   cuirass-remote-worker-configuration?
-  (cuirass          cuirass-remote-worker-configuration-cuirass ;package
+  (cuirass          cuirass-remote-worker-configuration-cuirass ;file-like
                     (default cuirass))
   (workers          cuirass-remote-worker-workers ;int
                     (default 1))

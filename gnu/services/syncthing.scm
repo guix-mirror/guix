@@ -37,7 +37,7 @@
 (define-record-type* <syncthing-configuration>
   syncthing-configuration make-syncthing-configuration
   syncthing-configuration?
-  (syncthing syncthing-configuration-syncthing ;<package>
+  (syncthing syncthing-configuration-syncthing ;file-like
              (default syncthing))
   (arguments syncthing-configuration-arguments ;list of strings
              (default '()))

@@ -302,7 +302,7 @@ client.  Each file is named after the name of the client."
 (define-split-configuration openvpn-client-configuration
   openvpn-server-configuration
   ((openvpn
-    (package openvpn)
+    (file-like openvpn)
     "The OpenVPN package.")
 
    (pid-file
@@ -561,7 +561,7 @@ is truncated and rewritten every minute.")
 (define-record-type* <strongswan-configuration>
   strongswan-configuration make-strongswan-configuration
   strongswan-configuration?
-  (strongswan      strongswan-configuration-strongswan ;<package>
+  (strongswan      strongswan-configuration-strongswan ;file-like
                    (default strongswan))
   (ipsec-conf      strongswan-configuration-ipsec-conf ;string|#f
                    (default #f))
@@ -704,7 +704,7 @@ strongSwan.")))
 (define-record-type* <wireguard-configuration>
   wireguard-configuration make-wireguard-configuration
   wireguard-configuration?
-  (wireguard          wireguard-configuration-wireguard ;<package>
+  (wireguard          wireguard-configuration-wireguard ;file-like
                       (default wireguard-tools))
   (interface          wireguard-configuration-interface ;string
                       (default "wg0"))

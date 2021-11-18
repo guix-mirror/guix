@@ -149,7 +149,7 @@ for ROTATION."
 (define-record-type* <rottlog-configuration>
   rottlog-configuration make-rottlog-configuration
   rottlog-configuration?
-  (rottlog            rottlog-rottlog             ;package
+  (rottlog            rottlog-rottlog             ;file-like
                       (default rottlog))
   (rc-file            rottlog-rc-file             ;file-like
                       (default (file-append rottlog "/etc/rc")))

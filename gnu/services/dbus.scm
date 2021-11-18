@@ -50,7 +50,7 @@
 (define-record-type* <dbus-configuration>
   dbus-configuration make-dbus-configuration
   dbus-configuration?
-  (dbus      dbus-configuration-dbus              ;<package>
+  (dbus      dbus-configuration-dbus              ;file-like
              (default dbus))
   (services  dbus-configuration-services          ;list of <package>
              (default '())))
@@ -300,9 +300,9 @@ tuples, are all set as environment variables when the bus daemon launches it."
 (define-record-type* <polkit-configuration>
   polkit-configuration make-polkit-configuration
   polkit-configuration?
-  (polkit   polkit-configuration-polkit           ;<package>
+  (polkit   polkit-configuration-polkit           ;file-like
             (default polkit))
-  (actions  polkit-configuration-actions          ;list of <package>
+  (actions  polkit-configuration-actions          ;list of file-like
             (default '())))
 
 (define %polkit-accounts

@@ -84,7 +84,7 @@
 
 (define-configuration tlp-configuration
   (tlp
-   (package tlp)
+   (file-like tlp)
    "The TLP package.")
 
   (tlp-enable?
@@ -421,7 +421,7 @@ shutdown on system startup."))
   thermald-configuration?
   (ignore-cpuid-check? thermald-ignore-cpuid-check?    ;boolean
                        (default #f))
-  (thermald            thermald-thermald               ;package
+  (thermald            thermald-thermald               ;file-like
                        (default thermald)))
 
 (define (thermald-shepherd-service config)

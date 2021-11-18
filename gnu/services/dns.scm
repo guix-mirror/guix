@@ -308,8 +308,8 @@
       (error-out "remote id must be a non empty string."))))
 
 (define (verify-knot-configuration config)
-  (unless (package? (knot-configuration-knot config))
-    (error-out "knot configuration field must be a package."))
+  (unless (file-like? (knot-configuration-knot config))
+    (error-out "knot configuration field must be a file-like object."))
   (unless (string? (knot-configuration-run-directory config))
     (error-out "run-directory must be a string."))
   (unless (list? (knot-configuration-includes config))
@@ -732,7 +732,7 @@ cache.size = 100 * MB
   dnsmasq-configuration make-dnsmasq-configuration
   dnsmasq-configuration?
   (package          dnsmasq-configuration-package
-                    (default dnsmasq))  ;package
+                    (default dnsmasq))  ;file-like
   (no-hosts?        dnsmasq-configuration-no-hosts?
                     (default #f))       ;boolean
   (port             dnsmasq-configuration-port
@@ -905,7 +905,7 @@ cache.size = 100 * MB
 
 (define-configuration ddclient-configuration
   (ddclient
-   (package ddclient)
+   (file-like ddclient)
    "The ddclient package.")
   (daemon
    (integer 300)

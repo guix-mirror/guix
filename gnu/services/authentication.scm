@@ -45,7 +45,7 @@
             nslcd-service-type))
 
 (define-configuration fprintd-configuration
-  (fprintd      (package fprintd)
+  (fprintd      (file-like fprintd)
                 "The fprintd package"))
 
 (define (fprintd-dbus-service config)
@@ -213,7 +213,7 @@
 
 (define-configuration nslcd-configuration
   (nss-pam-ldapd
-   (package nss-pam-ldapd)
+   (file-like nss-pam-ldapd)
    "The NSS-PAM-LDAPD package to use.")
 
   ;; Runtime options

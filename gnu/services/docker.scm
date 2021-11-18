@@ -41,16 +41,16 @@
 
 (define-configuration docker-configuration
   (docker
-   (package docker)
+   (file-like docker)
    "Docker daemon package.")
   (docker-cli
-   (package docker-cli)
+   (file-like docker-cli)
    "Docker client package.")
   (containerd
-   (package containerd)
+   (file-like containerd)
    "containerd package.")
   (proxy
-   (package docker-libnetwork-cmd-proxy)
+   (file-like docker-libnetwork-cmd-proxy)
    "The proxy package to support inter-container and outside-container
 loop-back communications.")
   (enable-proxy?
