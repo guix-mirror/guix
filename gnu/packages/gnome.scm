@@ -147,9 +147,11 @@
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lirc)
+  #:use-module (gnu packages llvm)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages mail)
   #:use-module (gnu packages man)
+  #:use-module (gnu packages markup)
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages music)
@@ -12311,25 +12313,22 @@ libraries.  Applications do not need to be recompiled--or even restarted.")
 (define-public gnome-builder
   (package
     (name "gnome-builder")
-    (version "3.36.1")
+    (version "41.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
-                                  (version-major+minor version) "/"
+                                  (version-major version) "/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "17pvmd5jypar8dkr6w56hvf7jnq4l1wih2wwgkrv7sblr7rkkar2"))))
+                "04p031i999dccbnlbysmr6f93x7dji7b559j6yhdsqbqgxb7ncan"))))
     (build-system meson-build-system)
     (arguments
-     `(#:configure-flags (list "-Dnetwork_tests=false"
+     `(#:glib-or-gtk? #t     ; To wrap binaries and compile schemas
+       #:configure-flags (list "-Dnetwork_tests=false"
                                ;; TODO: Enable all plugins...
-                               "-Dplugin_clang=false"
+                               ;; Flatpak plugin wants libsoup 2
                                "-Dplugin_flatpak=false"
-                               "-Dplugin_glade=false"
-                               ;; XXX: This one has been shown not to work in
-                               ;;      <https://issues.guix.gnu.org/45272>
-                               "-Dplugin_jedi=false"
                                ;; ... except this one.
                                "-Dplugin_update_manager=false")
        #:phases
@@ -12343,6 +12342,8 @@ libraries.  Applications do not need to be recompiled--or even restarted.")
                (("/usr/lib")
                 (string-append (assoc-ref inputs "python-pygobject")
                                "/lib")))
+             (substitute* "meson.build"
+               (("webkit2gtk-4.0") "webkit2gtk-4.1"))
              #t))
          (add-after 'configure 'fix-ninja
            (lambda _
@@ -12357,7 +12358,10 @@ libraries.  Applications do not need to be recompiled--or even restarted.")
              (setenv "DISPLAY" ":1")
              #t)))))
     (inputs
-     `(("devhelp" ,devhelp)
+     `(("cmark" ,cmark)
+       ("clang" ,clang)
+       ("devhelp" ,devhelp)
+       ("glade" ,glade3)
        ("gspell" ,gspell)
        ("gtk+" ,gtk+)
        ("json-glib" ,json-glib)
@@ -12365,6 +12369,9 @@ libraries.  Applications do not need to be recompiled--or even restarted.")
        ("libdazzle" ,libdazzle)
        ("libgit2-glib" ,libgit2-glib)
        ("libpeas" ,libpeas)
+       ("libportal" ,libportal)
+       ("libsoup" ,libsoup-minimal-2)
+       ("llvm" ,llvm)
        ("python-pygobject" ,python-pygobject)
        ("sysprof" ,sysprof)
        ("template-glib" ,template-glib)
