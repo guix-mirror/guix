@@ -894,7 +894,8 @@ tomorrow, the rest of the week and for special occasions.")
          "1bzi79plw6ji6qlckhxnwfnswy6jpnhzmmyanml2i2xg73hp6bg0"))))
     (build-system meson-build-system)
     (arguments
-     `(#:glib-or-gtk? #t
+     `(#:meson ,meson-0.59         ;positional arguments error with meson 0.60
+       #:glib-or-gtk? #t
        #:configure-flags
        (list "-Ddogtail=false"     ; Not available
              ;; Required for RUNPATH validation.
