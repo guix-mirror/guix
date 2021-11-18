@@ -966,7 +966,8 @@ cloud integration is offered through GNOME Online Accounts.")
          "0lcdal4qdhclr8961p57xf010y92l6wwmkw86lyi9wy224z6gjr0"))))
     (build-system meson-build-system)
     (arguments
-     `(#:glib-or-gtk? #t
+     `(#:meson ,meson-0.59         ;positional arguments error with meson 0.60
+       #:glib-or-gtk? #t
        #:phases
        (modify-phases %standard-phases
          (add-after 'install 'wrap-gnome-music
@@ -1005,7 +1006,7 @@ cloud integration is offered through GNOME Online Accounts.")
        ("json-glib" ,json-glib)
        ("libdazzle" ,libdazzle)
        ("libmediaart" ,libmediaart)
-       ("libsoup" ,libsoup)
+       ("libsoup" ,libsoup-minimal-2)
        ("pycairo" ,python-pycairo)
        ("pygobject" ,python-pygobject)
        ("tracker" ,tracker)
