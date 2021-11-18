@@ -5370,7 +5370,8 @@ output devices.")
            (use-modules (srfi srfi-1))
            (append '("-Dbash_completion=true"
                      "-Ddocs=true"
-                     "-Dman=true")
+                     "-Dman=true"
+                     "-Dvapi=true")
                (fold delete ,flags '("-Dbash_completion=false"
                                      "-Ddocs=false"
                                      "-Dman=false")))))
@@ -5389,7 +5390,8 @@ output devices.")
            ("docbook-xsl-ns" ,docbook-xsl-ns)
            ("gtk-doc" ,gtk-doc/stable)
            ("libxml2" ,libxml2)         ;for XML_CATALOG_FILES
-           ("libxslt" ,libxslt))
+           ("libxslt" ,libxslt)
+           ("vala" ,vala))              ;for VAPI, needed by simple-scan
          (package-native-inputs colord-minimal)))))
 
 (define-public geoclue
