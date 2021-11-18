@@ -2118,7 +2118,7 @@ lan interface (signal state, signal quality, network name (SSID)).")
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("gtk+" ,gtk+)
-       ("libsoup" ,libsoup)
+       ("libsoup" ,libsoup-minimal-2)
        ("libxfce4ui" ,libxfce4ui)
        ("libxml2" ,libxml2)
        ("xfce4-panel" ,xfce4-panel)))
