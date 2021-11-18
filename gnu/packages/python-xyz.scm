@@ -28032,7 +28032,7 @@ interfaces.")
     ;; (home-page "https://hg.hardcoded.net/sgmllib")
     (synopsis "Python 3 port of sgmllib")
     (description
-     "This packages provides an unmaintained port of sgmllib to Python 3.
+     "This package provides an unmaintained port of sgmllib to Python 3.
 It is used to parse text files formatted in @acronym{SGML,Standard Generalized
 Mark-up Language}.")
     (license license:bsd-3)))
