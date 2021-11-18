@@ -348,6 +348,18 @@ libskba (working with X.509 certificates and CMS data).")
     (properties '((ftp-server . "ftp.gnupg.org")
                   (ftp-directory . "/gcrypt/gnupg")))))
 
+(define-public gnupg-2.2.32
+  (package
+    (inherit gnupg)
+    (version "2.2.32")
+    (source (origin
+              (inherit (package-source gnupg))
+              (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
+                                  ".tar.bz2"))
+              (sha256
+               (base32
+                "0506gv54z10c96z5821z9p0ksibk1pfilsmag39ffqrcz0sinmxj"))))))
+
 (define-public gnupg-1
   (package (inherit gnupg)
     (version "1.4.23")
@@ -426,8 +438,12 @@ and every application benefits from this.")
              (chdir "lang/qt")
              #t)))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ,@(package-native-inputs gpgme)))
+     ;; Use GnuPG 2.2.32.  With 2.2.30, 'testSymmetricEncryptDecrypt' in
+     ;; t-encrypt.cpp fails because 'gpg' wrongfully ask for a passphrase do
+     ;; decrypt the cypher text.
+     (modify-inputs (package-native-inputs gpgme)
+       (replace "gnupg" gnupg-2.2.32)
+       (prepend pkg-config)))
     (inputs
      `(("gpgme" ,gpgme)
        ("qtbase" ,qtbase-5)
