@@ -2326,7 +2326,8 @@ and keep up to date translations of documentation.")
                 "1rr1ypb89p51b6428yqvczmpmylwjfnhnkgx78hzm3vxm3m15lff"))))
     (build-system meson-build-system)
     (arguments
-     '(#:configure-flags '("-Dlogind=libelogind")
+     `(#:meson ,meson-0.59         ;positional arguments error with meson 0.60
+       #:configure-flags '("-Dlogind=libelogind")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'skip-gtk-update-icon-cache
