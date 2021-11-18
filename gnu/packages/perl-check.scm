@@ -407,7 +407,7 @@ functions.")
     (home-page "https://metacpan.org/release/Test-Dir")
     (synopsis "Utilities for testing directory attributes")
     (description
-     "This modules provides a collection of test utilities for directory
+     "This module provides a collection of test utilities for directory
 attributes.")
     (license perl-license)))
 
