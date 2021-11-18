@@ -8682,7 +8682,8 @@ properties, screen resolution, and other GNOME parameters.")
               (modules '((guix build utils)))))
     (build-system meson-build-system)
     (arguments
-     `(#:glib-or-gtk? #t
+     `(#:meson ,meson-0.59         ;positional arguments error with meson 0.60
+       #:glib-or-gtk? #t
        #:disallowed-references ,(list (gexp-input glib "bin")
                                       (gexp-input libxslt)
                                       (gexp-input ruby-sass))
