@@ -6199,7 +6199,7 @@ as possible!")
        ("gtk+" ,gtk+)
        ("libxml2" ,libxml2)
        ("liboauth" ,liboauth)
-       ("libsoup" ,libsoup)
+       ("libsoup" ,libsoup-minimal-2)
        ("totem-pl-parser" ,totem-pl-parser)))
     (native-search-paths
      (list (search-path-specification
