@@ -899,7 +899,7 @@ Standard Serial Numbers.")
      `(("perl-tie-cycle" ,perl-tie-cycle)))
     (home-page "https://metacpan.org/release/Business-ISMN")
     (synopsis "Work with International Standard Music Numbers")
-    (description "This modules provides tools to deal with International
+    (description "This module provides tools to deal with International
 Standard Music Numbers.")
     (license (package-license perl))))
 
