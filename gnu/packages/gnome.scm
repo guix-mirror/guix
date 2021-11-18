@@ -11231,8 +11231,7 @@ advanced image management tool")
              ;; python-dbus cannot be found but it's really there.  See
              ;; https://github.com/SpotlightKid/jack-select/issues/2
              (substitute* "setup.py"
-               (("'dbus-python',") ""))
-             #t))
+               (("'dbus-python',") ""))))
          (add-after 'install 'wrap-program
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((prog (string-append (assoc-ref outputs "out")
@@ -11244,8 +11243,7 @@ advanced image management tool")
                                          "/site-packages")))
                (wrap-program prog
                  `("PYTHONPATH" = (,(getenv "PYTHONPATH") ,pylib))
-                 `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH"))))
-               #t)))
+                 `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH")))))))
          (add-after 'wrap-program 'glib-or-gtk-wrap
            (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-wrap)))))
     (home-page "https://gnome-terminator.org/")
