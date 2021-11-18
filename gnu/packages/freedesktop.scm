@@ -2,7 +2,7 @@
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015, 2017 Andy Wingo <wingo@pobox.com>
-;;; Copyright © 2015, 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015-2017, 2019, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2017, 2018, 2019, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;; Copyright © 2016, 2017, 2019, 2021 Efraim Flashner <efraim@flashner.co.il>
@@ -191,7 +191,7 @@
        ("python" ,python-wrapper)
        ("xsltproc" ,libxslt)))
     (inputs
-     `(("libsoup" ,libsoup)
+     `(("libsoup-minimal" ,libsoup-minimal-2)
        ("libstemmer" ,libstemmer)
        ("libxml2" ,libxml2)
        ("libyaml" ,libyaml)
