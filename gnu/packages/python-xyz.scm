@@ -20481,9 +20481,8 @@ user's @file{~/Trash} directory.")
           `(modify-phases ,phases
              (add-before 'check 'setenv
                (lambda _
-                 (setenv "PYTHONPATH"
-                         (string-append (getcwd) ":" (getenv "PYTHONPATH")))
-                 #t)))))))))
+                 (setenv "GUIX_PYTHONPATH"
+                         (string-append (getcwd) ":" (getenv "GUIX_PYTHONPATH"))))))))))))
 
 (define-public python-pyfavicon
   (package
