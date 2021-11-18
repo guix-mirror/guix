@@ -951,8 +951,8 @@ to CommonMark.")
     (synopsis
      "Python wrapper for the mediainfo library")
     (description
-     "Python wrapper for the mediainfo library to access the technical and tag
-data for video and audio files.")
+     "This package provides a Python wrapper for the mediainfo library to
+access the technical and tag data for video and audio files.")
     (license license:expat)))
 
 (define-public python-psutil
