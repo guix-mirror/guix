@@ -860,7 +860,7 @@ Agency.")
        ("perl-mojolicious" ,perl-mojolicious)))
     (home-page "https://metacpan.org/release/Business-ISBN")
     (synopsis "Work with International Standard Book Numbers")
-    (description "This modules provides tools to deal with International
+    (description "This module provides tools to deal with International
 Standard Book Numbers, including ISBN-10 and ISBN-13.")
     (license license:artistic2.0)))
 
