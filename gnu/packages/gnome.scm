@@ -9212,7 +9212,9 @@ can add your own files to the collection.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1qm544ymwibk31s30k47vnn79xg30m18r7l4di0c57g375dak31n"))))
+         "1qm544ymwibk31s30k47vnn79xg30m18r7l4di0c57g375dak31n"))
+       (patches
+        (search-patches "gnome-screenshot-meson-0.60.patch"))))
     (build-system meson-build-system)
     (arguments
      '(#:phases
