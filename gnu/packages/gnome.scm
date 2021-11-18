@@ -1666,7 +1666,7 @@ sharing to the masses.")
        ("libmusicbrainz" ,libmusicbrainz)
        ("libxml2" ,libxml2)
        ("neon" ,neon)
-       ("webkitgtk" ,webkitgtk)))
+       ("webkitgtk" ,webkitgtk-with-libsoup2)))
     (synopsis "File previewer for the GNOME desktop")
     (description "Sushi is a DBus-activated service that allows applications
 to preview files on the GNOME desktop.")
