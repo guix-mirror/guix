@@ -2084,7 +2084,8 @@ to other formats.")
          "0z2xa4w921bzpzj6gv88pvbrijcnnwni6jxynwz0ybaravyzaqha"))))
     (build-system meson-build-system)
     (arguments
-     `(#:glib-or-gtk? #t
+     `(#:meson ,meson-0.59         ;positional arguments error with meson 0.60
+       #:glib-or-gtk? #t
        #:phases (modify-phases %standard-phases
                   (add-after 'install 'wrap
                     (lambda* (#:key outputs #:allow-other-keys)
