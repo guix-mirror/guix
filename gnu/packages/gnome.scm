@@ -5801,6 +5801,8 @@ both a traditional UI or a modern UI with a GtkHeaderBar.")
            (lambda _
              (substitute* "devhelp/meson.build"
                (("'WebKit2-4.0'") "'WebKit2-4.1'")))))))
+    (propagated-inputs
+     `(("gsettings-desktop-schemas" ,gsettings-desktop-schemas)))
     (native-inputs
      `(("intltool" ,intltool)
        ("itstool" ,itstool)
