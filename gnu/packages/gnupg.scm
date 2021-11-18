@@ -445,9 +445,8 @@ and every application benefits from this.")
        (replace "gnupg" gnupg-2.2.32)
        (prepend pkg-config)))
     (inputs
-     `(("gpgme" ,gpgme)
-       ("qtbase" ,qtbase-5)
-       ,@(package-inputs gpgme)))
+     (modify-inputs (package-inputs gpgme)
+       (prepend gpgme qtbase-5)))
     (synopsis "Qt API bindings for gpgme")
     (description "QGpgme provides a very high level Qt API around GpgMEpp.
 
