@@ -331,7 +331,7 @@ applications in mind and the idea to make logging fun.")
        ("python-xlib" ,python-xlib)))
     (home-page "https://github.com/seebye/ueberzug")
     (synopsis "Command line util to display images in combination with X11")
-    (description "Überzug is a command line util which allows to draw images on
+    (description "Überzug is a command line util which draws images on
 terminals by using child windows.  The advantages of using Überzug are:
 @itemize
 @item No race conditions as a new window is created to display images.
