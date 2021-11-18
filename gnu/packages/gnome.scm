@@ -10710,7 +10710,8 @@ photo-booth-like software, such as Cheese.")
                 "0vyim2avlgq3a48rgdfz5g21kqk11mfb53b2l883340v88mp7ll8"))
               (patches (search-patches "cheese-vala-update.patch"))))
     (arguments
-     `(#:glib-or-gtk? #t
+     `(#:meson ,meson-0.59         ;positional arguments error with meson 0.60
+       #:glib-or-gtk? #t
        ;; Tests require GDK.
        #:tests? #f
        #:phases
