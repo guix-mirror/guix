@@ -20869,9 +20869,9 @@ based on the CPython 2.7 and 3.7 parsers.")
              ;; This is for completion tests
              (with-output-to-file "/tmp/.bashrc" (lambda _ (display "# dummy")))
 
-             (setenv "PYTHONPATH"
+             (setenv "GUIX_PYTHONPATH"
                      (string-append (getcwd) ":"
-                                    (getenv "PYTHONPATH")))
+                                    (getenv "GUIX_PYTHONPATH")))
              (let ((disabled-tests (list "test_show_completion"
                                          "test_install_completion")))
                (invoke "python" "-m" "pytest" "tests/"
