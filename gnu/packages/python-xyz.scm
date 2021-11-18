@@ -20863,22 +20863,23 @@ based on the CPython 2.7 and 3.7 parsers.")
                (("\"bash\"") (string-append "\"" (which "bash") "\""))
                (("\"/bin/bash\"") (string-append "\"" (which "bash") "\"")))))
          (replace 'check
-           (lambda _
-             (setenv "HOME" "/tmp") ; some tests need it
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (setenv "HOME" "/tmp") ; some tests need it
 
-             ;; This is for completion tests
-             (with-output-to-file "/tmp/.bashrc" (lambda _ (display "# dummy")))
+               ;; This is for completion tests
+               (with-output-to-file "/tmp/.bashrc" (lambda _ (display "# dummy")))
 
-             (setenv "GUIX_PYTHONPATH"
-                     (string-append (getcwd) ":"
-                                    (getenv "GUIX_PYTHONPATH")))
-             (let ((disabled-tests (list "test_show_completion"
-                                         "test_install_completion")))
-               (invoke "python" "-m" "pytest" "tests/"
-                       "-k"
-                       (string-append "not "
-                                      (string-join disabled-tests
-                                                   " and not ")))))))))
+               (setenv "GUIX_PYTHONPATH"
+                       (string-append (getcwd) ":"
+                                      (getenv "GUIX_PYTHONPATH")))
+               (let ((disabled-tests (list "test_show_completion"
+                                           "test_install_completion")))
+                 (invoke "python" "-m" "pytest" "tests/"
+                         "-k"
+                         (string-append "not "
+                                        (string-join disabled-tests
+                                                     " and not "))))))))))
     (propagated-inputs
      `(("python-click" ,python-click)))
     (native-inputs
