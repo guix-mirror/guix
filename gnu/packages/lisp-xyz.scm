@@ -17471,6 +17471,40 @@ from the Let Over Lambda book, including community updates.")
 (define-public ecl-let-over-lambda
   (sbcl-package->ecl-package sbcl-let-over-lambda))
 
+(define-public sbcl-flute
+  (let ((commit "90ebcd6e82f637f49b6de7d625ccc51ec4c92900")
+        (revision "1"))
+    (package
+      (name "sbcl-flute")
+      (version (git-version "0.2-dev" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/ailisp/flute")
+               (commit commit)))
+         (file-name (git-file-name "cl-flute" version))
+         (sha256
+          (base32 "0q8jhp040cvpppyn820mm6a550yfxyr1lar298x13c42mm807f4f"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("assoc-utils" ,sbcl-assoc-utils)
+         ("let-over-lambda" ,sbcl-let-over-lambda)))
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (home-page "https://github.com/ailisp/flute")
+      (synopsis "HTML5 generation library in Common Lisp")
+      (description
+       "Flute is an easily composable HTML5 generation library in Common
+Lisp.")
+      (license license:expat))))
+
+(define-public cl-flute
+  (sbcl-package->cl-source-package sbcl-flute))
+
+(define-public ecl-flute
+  (sbcl-package->ecl-package sbcl-flute))
+
 (define-public sbcl-cl-posix-mqueue
   (let ((commit "8977370c7206d1f62bd1be80f4254af40654b83f")
         (revision "1"))
