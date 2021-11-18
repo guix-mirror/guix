@@ -17426,6 +17426,51 @@ lists in Common Lisp.")
 (define-public ecl-assoc-utils
   (sbcl-package->ecl-package sbcl-assoc-utils))
 
+(define-public sbcl-let-over-lambda
+  (let ((commit "481b2e3ab4646186451dfdd2062113203287d520")
+        (revision "1"))
+    (package
+      (name "sbcl-let-over-lambda")
+      (version (git-version "1.0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/thephoeron/let-over-lambda")
+               (commit commit)))
+         (file-name (git-file-name "cl-let-over-lambda" version))
+         (sha256
+          (base32 "114p781lwi9lrbzg27dnkymz9m4cvm1k430j7qsykwd0b58d8qbk"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       ;; All test cases pass, but tests successfully fail at the end:
+       ;;
+       ;; Summary:
+       ;; All 1 file passed.
+       ;; Unhandled ASDF/FIND-COMPONENT:MISSING-DEPENDENCY in thread
+       ;; #<SB-THREAD:THREAD "main thread" RUNNING {1001860103}>:
+       ;;   Component LET-OVER-LAMBDA-ASD::LET-OVER-LAMBDA-TEST not found,
+       ;;   required by #<SYSTEM "let-over-lambda">
+       `(#:tests? #f))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("cl-ppcre" ,sbcl-cl-ppcre)
+         ("named-readtables" ,sbcl-named-readtables)))
+      (native-inputs
+       `(("prove" ,sbcl-prove)))
+      (home-page "https://github.com/thephoeron/let-over-lambda")
+      (synopsis "Macros from Let Over Lambda")
+      (description
+       "This package provides Doug Hoyte's \"Production\" version of macros
+from the Let Over Lambda book, including community updates.")
+      (license license:bsd-3))))
+
+(define-public cl-let-over-lambda
+  (sbcl-package->cl-source-package sbcl-let-over-lambda))
+
+(define-public ecl-let-over-lambda
+  (sbcl-package->ecl-package sbcl-let-over-lambda))
+
 (define-public sbcl-cl-posix-mqueue
   (let ((commit "8977370c7206d1f62bd1be80f4254af40654b83f")
         (revision "1"))
