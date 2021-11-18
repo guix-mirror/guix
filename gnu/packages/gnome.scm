@@ -1364,8 +1364,10 @@ It has miners for Facebook, Flickr, Google, ownCloud and SkyDrive.")
       ("pkg-config" ,pkg-config)
       ("vala" ,vala)))
    (inputs
-    `(("gtk+" ,gtk+)
-      ("libsoup" ,libsoup)))
+    `(("gtk+" ,gtk+)))
+   (propagated-inputs
+    ;; The .pc file "Requires" libsoup-2.4.
+    `(("libsoup" ,libsoup-minimal-2)))
    (synopsis "GObject-based API over @acronym{SSDP, Simple Service Discovery
 Protocol} for GNOME")
    (description "This package provides a library to handle resource discovery
