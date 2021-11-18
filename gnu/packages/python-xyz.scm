@@ -273,6 +273,34 @@ asynchronous one follows
 design}.")
     (license license:asl2.0)))
 
+(define-public python-logzero
+  (package
+    (name "python-logzero")
+    (version "1.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "logzero" version))
+       (sha256
+        (base32 "10nh186vk6hpnpfycym44gja4fja0jyzw7q8dwimfd1rmv9xswvz"))))
+    (build-system python-build-system)
+    (native-inputs
+     (list python-pytest python-pytest-runner))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest")))))))
+    (home-page "https://github.com/metachris/logzero")
+    (synopsis "Robust and effective logging for Python")
+    (description
+     "@code{logzero} provides a fully configured Python logger object for
+easy logging and rotating to a console or a file.")
+    (license license:expat)))
+
 (define-public python-logbook
   (package
     (name "python-logbook")
