@@ -23620,15 +23620,21 @@ for YAML and JSON.")
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-shell-path
-           (lambda _
+         (add-after 'unpack 'patch-paths
+           (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "tests/test_code.py"
-               (("/bin/bash") (which "bash"))))))))
+               (("/bin/bash") (which "bash")))
+             (substitute* "dbusmock/testcase.py"
+               (("'dbus-daemon'")
+                (string-append "'" (assoc-ref inputs "dbus")
+                               "/bin/dbus-daemon'"))))))))
     (native-inputs
      `(;; For tests.
        ("dbus" ,dbus) ; for dbus-daemon
        ("python-nose" ,python-nose)
        ("which" ,which)))
+    (inputs
+     `(("dbus" ,dbus)))
     (propagated-inputs
      `(("python-dbus" ,python-dbus)
        ("python-pygobject" ,python-pygobject)))
