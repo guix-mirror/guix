@@ -879,7 +879,7 @@ Standard Book Numbers, including ISBN-10 and ISBN-13.")
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Business-ISSN")
     (synopsis "Work with International Standard Serial Numbers")
-    (description "This modules provides tools to deal with International
+    (description "This module provides tools to deal with International
 Standard Serial Numbers.")
     (license (package-license perl))))
 
