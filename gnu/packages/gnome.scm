@@ -11144,6 +11144,11 @@ functionality.")
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
+
+       ;; See
+       ;; <https://github.com/mesonbuild/meson/issues/9492#issuecomment-973117289>.
+       #:meson ,meson-0.59
+
        #:configure-flags
        ;; Ensure the RUNPATH contains all installed library locations.
        (list (string-append "-Dc_link_args=-Wl,-rpath="
