@@ -26806,10 +26806,9 @@ and frame grabber interface.")
             (lambda* (#:key outputs #:allow-other-keys)
               (wrap-program
                   (string-append (assoc-ref outputs "out") "/bin/screenkey")
-                `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH")))
+                `("GUIX_PYTHONPATH" ":" prefix (,(getenv "GUIX_PYTHONPATH")))
                 `("GI_TYPELIB_PATH"
-                  ":" prefix (,(getenv "GI_TYPELIB_PATH"))))
-              #t)))))
+                  ":" prefix (,(getenv "GI_TYPELIB_PATH")))))))))
     (inputs
      `(("python-distutils-extra" ,python-distutils-extra)
        ("python-tokenize-rt" ,python-tokenize-rt)
