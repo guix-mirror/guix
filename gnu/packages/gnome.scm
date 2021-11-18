@@ -6742,7 +6742,8 @@ USB transfers with your high-level application or system daemon.")
     (build-system meson-build-system)
     ;; TODO: Fix icons in home screen, About dialogue, and scan menu.
     (arguments
-     '(#:glib-or-gtk? #t))
+     `(#:meson ,meson-0.59         ;positional arguments error with meson 0.60
+       #:glib-or-gtk? #t))
     (inputs
      `(("gtk" ,gtk+)
        ("zlib" ,zlib)
