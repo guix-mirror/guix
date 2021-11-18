@@ -102,13 +102,9 @@ url {
                                ('base32
                                 (? string? hash)))))
                    ('build-system 'ocaml-build-system)
-                   ('propagated-inputs
-                    ('quasiquote
-                     (("ocaml-zarith" ('unquote 'ocaml-zarith)))))
+                   ('propagated-inputs ('list 'ocaml-zarith))
                    ('native-inputs
-                    ('quasiquote
-                     (("ocaml-alcotest" ('unquote 'ocaml-alcotest))
-                      ("ocamlbuild" ('unquote 'ocamlbuild)))))
+                    ('list 'ocaml-alcotest 'ocamlbuild))
                    ('home-page "https://example.org/")
                    ('synopsis "Some example package")
                    ('description "This package is just an example.")
