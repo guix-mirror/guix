@@ -17385,6 +17385,47 @@ computing and event based message handling.")
 (define-public cl-gserver
   (sbcl-package->cl-source-package sbcl-cl-gserver))
 
+(define-public sbcl-assoc-utils
+  (let ((commit "74af16a3c0f10ad35e406167de02984744fc7854")
+        (revision "1"))
+    (package
+      (name "sbcl-assoc-utils")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/fukamachi/assoc-utils")
+               (commit commit)))
+         (file-name (git-file-name "cl-assoc-utils" version))
+         (sha256
+          (base32 "1yac1v7zmdxj0p6rvwrrhyqvy7yjfhmqbchkwqhhr89gpjvvaick"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       ;; All test cases pass, but tests successfully fail at the end:
+       ;;
+       ;; Summary:
+       ;;   All 1 file passed.
+       ;; Unhandled ASDF/FIND-COMPONENT:MISSING-DEPENDENCY in thread
+       ;; #<SB-THREAD:THREAD "main thread" RUNNING {1001858103}>:
+       ;;   Component ASSOC-UTILS-ASD::ASSOC-UTILS-TEST not found, required by
+       ;;   #<SYSTEM "assoc-utils">
+       `(#:tests? #f))
+      (native-inputs
+       `(("prove" ,sbcl-prove)))
+      (home-page "https://github.com/fukamachi/assoc-utils")
+      (synopsis "Utilities for manipulating association lists in Common Lisp")
+      (description
+       "@code{assoc-utils} provides utilities for manipulating association
+lists in Common Lisp.")
+      (license license:public-domain))))
+
+(define-public cl-assoc-utils
+  (sbcl-package->cl-source-package sbcl-assoc-utils))
+
+(define-public ecl-assoc-utils
+  (sbcl-package->ecl-package sbcl-assoc-utils))
+
 (define-public sbcl-cl-posix-mqueue
   (let ((commit "8977370c7206d1f62bd1be80f4254af40654b83f")
         (revision "1"))
