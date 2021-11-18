@@ -10644,7 +10644,7 @@ operations can also be performed on the IxHash.")
     (home-page "https://metacpan.org/release/Tie-Handle-Offset")
     (synopsis "Special file handle that hides the beginning of a file")
     (description
-     "This modules provides a file handle that hides the beginning of a file,
+     "This module provides a file handle that hides the beginning of a file,
 by modifying the @code{seek()} and @code{tell()} calls.")
     (license license:asl2.0)))
 
