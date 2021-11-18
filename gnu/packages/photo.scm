@@ -41,6 +41,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages build-tools)
   #:use-module (gnu packages check)
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
@@ -645,6 +646,7 @@ such as Batch image processing.")
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
+       #:meson ,meson-0.59                     ;fails to build with Meson 0.60
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'skip-gtk-update-icon-cache
