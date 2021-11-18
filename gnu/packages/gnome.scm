@@ -8567,7 +8567,8 @@ devices using the GNOME desktop.")
                 "0rr4d5m2a72vrb31jgyx49dp0s2pwgyxsrk4hyw5ym66wq63c3v1"))))
     (build-system meson-build-system)
     (arguments
-     '(#:glib-or-gtk? #t
+     `(#:meson ,meson-0.59         ;positional arguments error with meson 0.60
+       #:glib-or-gtk? #t
        #:configure-flags
        (list "-Dcheese=false"
              (string-append "-Dgnome_session_libexecdir="
@@ -8643,7 +8644,7 @@ devices using the GNOME desktop.")
        ("libnma" ,libnma)
        ("libpwquality" ,libpwquality)
        ("libsecret" ,libsecret)
-       ("libsoup" ,libsoup)
+       ("libsoup" ,libsoup-minimal-2)
        ("libxml2" ,libxml2)
        ("libwacom" ,libwacom)
        ("mesa" ,mesa)
