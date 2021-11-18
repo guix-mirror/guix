@@ -605,11 +605,17 @@ This package provides the core library and elements.")
      `(#:phases
        (modify-phases %standard-phases
          ,@%common-gstreamer-phases
+         (add-after 'unpack 'disable-problematic-tests
+           (lambda _
+             (substitute* "tests/check/meson.build"
+               ;; This test causes nondeterministic failures (see:
+               ;; https://gitlab.freedesktop.org/gstreamer/gst-plugins-base/-/issues/950).
+               ((".*'elements/appsrc.c'.*")
+                ""))))
          (add-before 'configure 'patch
            (lambda _
              (substitute* "tests/check/libs/pbutils.c"
-               (("/bin/sh") (which "sh")))
-             #t))
+               (("/bin/sh") (which "sh")))))
          (add-before 'check 'pre-check
            (lambda _
              ;; Tests require a running X server.
@@ -620,8 +626,7 @@ This package provides the core library and elements.")
              ;; Tests look for $XDG_RUNTIME_DIR.
              (setenv "XDG_RUNTIME_DIR" (getcwd))
              ;; For missing '/etc/machine-id'.
-             (setenv "DBUS_FATAL_WARNINGS" "0")
-             #t)))))
+             (setenv "DBUS_FATAL_WARNINGS" "0"))))))
     (home-page "https://gstreamer.freedesktop.org/")
     (synopsis
      "Plugins for the GStreamer multimedia library")
