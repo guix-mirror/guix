@@ -3568,6 +3568,10 @@ are primarily in English, however some in other languages are provided.")
              ;; The actual source is buried a few directories deep.
              (chdir "source/Irrlicht/")
              #t))
+         (add-after 'chdir-to-source 'remove-<sys/sysctl.h>
+           (lambda _
+             (substitute* "COSOperator.cpp"
+               (("#include <sys/sysctl.h>") ""))))
          (add-after 'chdir-to-source 'fix-build-env
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
