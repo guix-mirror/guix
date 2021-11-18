@@ -26824,7 +26824,8 @@ and frame grabber interface.")
     (synopsis
       "Screencast tool to display pressed keys")
     (description
-      "A screencast tool to display your keys inspired by Screenflick.")
+      "Screenkey is a screencast tool to display your keys inspired by
+Screenflick.")
     (license license:gpl3+)))
 
 (define-public python-jinja2-cli
