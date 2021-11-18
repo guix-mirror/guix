@@ -7374,7 +7374,8 @@ javascript engine and the GObject introspection framework.")
                 "149ngl9qw6h59546lir1pa7hvw23ppsnqlj9mfqphmmn5jl99qsm"))))
     (build-system meson-build-system)
     (arguments
-     `(#:glib-or-gtk? #t
+     `(#:meson ,meson-0.59         ;positional arguments error with meson 0.60
+       #:glib-or-gtk? #t
        #:configure-flags
        ;; Otherwise, the RUNPATH will lack the final path component.
        (list (string-append "-Dc_link_args=-Wl,-rpath="
