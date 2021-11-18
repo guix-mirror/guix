@@ -287,6 +287,7 @@ files and generates build instructions for the Ninja build system.")
     (inputs `(("ninja" ,ninja)))
     (propagated-inputs `(("python" ,python)))
     (home-page "https://mesonbuild.com/")
+    (properties '((hidden? . #t)))
     (synopsis "Build system designed to be fast and user-friendly")
     (description
      "The Meson build system is focused on user-friendliness and speed.
@@ -296,6 +297,29 @@ Autoconf/Automake/make combo.  Build specifications, also known as @dfn{Meson
 files}, are written in a custom domain-specific language (@dfn{DSL}) that
 resembles Python.")
     (license license:asl2.0)))
+
+(define-public meson-wrapped
+  (package/inherit meson
+    (arguments
+     `(;; FIXME: Tests require many additional inputs and patching many
+       ;; hard-coded file system locations in "run_unittests.py".
+       #:tests? #f
+       #:phases (modify-phases %standard-phases
+                  ;; Meson calls the various executables in out/bin through the
+                  ;; Python interpreter, so we cannot use the shell wrapper.
+                  (replace 'wrap
+                    (lambda* (#:key outputs inputs #:allow-other-keys)
+                      (let ((python-version
+                             (python-version (assoc-ref inputs "python")))
+                            (output (assoc-ref outputs "out")))
+                        (substitute* (string-append output "/bin/meson")
+                          (("# EASY-INSTALL-ENTRY-SCRIPT")
+                           (format #f "\
+import sys
+sys.path.insert(0, '~a/lib/python~a/site-packages')
+# EASY-INSTALL-ENTRY-SCRIPT"
+                                   output python-version)))))))))
+    (properties '())))
 
 ;;; This older Meson variant is kept for now for gtkmm and others that may
 ;;; have problems with 0.60.
