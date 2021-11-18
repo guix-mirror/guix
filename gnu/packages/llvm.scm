@@ -55,6 +55,7 @@
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages bootstrap)           ;glibc-dynamic-linker
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages julia)               ;julia-patch
   #:use-module (gnu packages libedit)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages lua)
@@ -67,6 +68,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages xml)
+  #:use-module (ice-9 match)
   #:export (make-lld-wrapper
             system->llvm-target))
 
@@ -1472,6 +1474,11 @@ C/C++/Obj-C code according to a set of style options, see
     (description "This package renames every occurrence of a symbol at point
 using @code{clang-rename}.")))
 
+
+;;;
+;;; LLVM variants.
+;;;
+
 (define make-ocaml-llvm
   ;; Make it a memoizing procedure so its callers below don't end up defining
   ;; two equal-but-not-eq "ocaml-llvm" packages for the default LLVM.
@@ -1515,3 +1522,126 @@ LLVM."))))
 (define-public ocaml-llvm-9 (make-ocaml-llvm llvm-9))
 (define-public ocaml-llvm-10 (make-ocaml-llvm llvm-10))
 (define-public ocaml-llvm-11 (make-ocaml-llvm llvm-11))
+
+(define-public llvm-julia
+  (package
+    (inherit llvm-11)
+    (name "llvm-julia")
+    (properties `((hidden? . #t)
+                  ,@(package-properties llvm-11)))
+    (source (origin
+              (inherit (package-source llvm-11))
+              ;; Those patches are inside the Julia source repo.
+              ;; They are _not_ Julia specific (https://github.com/julialang/julia#llvm)
+              ;; but they are required to build Julia.
+              ;; Discussion: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=919628
+              (patches
+               (map (match-lambda
+                      ((name hash)
+                       (julia-patch name hash)))
+                    (list
+                     '("llvm-D27629-AArch64-large_model_6.0.1"
+                       "1qrshmlqvnasdyc158vfn3hnbigqph3lsq7acb9w8lwkpnnm2j4z")
+                     '("llvm8-D34078-vectorize-fdiv"
+                       "19spqc3xsazn1xs9gpcgv9ldadfkv49rmc5khl7sf1dlmhgi4602")
+                     '("llvm-7.0-D44650"
+                       "1h55kkmkiisfj6sk956if2bcj9s0v6n5czn8dxb870vp5nccj3ir")
+                     '("llvm7-symver-jlprefix"
+                       "00ng32x6xhm9czczirn5r1q1mc1myad44fqhi061hwh1vb46dwgm")
+                     '("llvm-6.0-DISABLE_ABI_CHECKS"
+                       "014fawd1ba7yckalypfld22zgic87x9nx3cim42zrwygywd36pyg")
+                     '("llvm9-D50010-VNCoercion-ni"
+                       "1s1d3sjsiq4vxg7ncy5cz56zgy5vcq6ls3iqaiqkvr23wyryqmdx")
+                     '("llvm7-revert-D44485"
+                       "0f59kq3p3mpwsbmskypbi4zn01l6ig0x7v2rjp08k2r8z8m6fa8n")
+                     '("llvm-11-D75072-SCEV-add-type"
+                       "176xi1lnbnv2rcs05ywhyb7pd0xgmibayvwzksksg44wg2dh8mbx")
+                     '("llvm-julia-tsan-custom-as"
+                       "0awh40kf6lm4wn1nsjd1bmhfwq7rqj811szanp2xkpspykw9hg9s")
+                     '("llvm-D80101"
+                       "1gsdwmgmpbignvqyxcnlprj899259p3dvdznlncd84ss445qgq3j")
+                     '("llvm-D84031"
+                       "0nks9sbk7p0r5gyr0idrmm93a5fmdai8kihz9532dx4zhcvvqbjc")
+                     '("llvm-10-D85553"
+                       "1zjq7j9q2qp56hwkc8yc8f0z7kvam3j7hj8sb7qyd77r255ff78l")
+                     '("llvm-10-unique_function_clang-sa"
+                       "1jys9w2zqk3dasnxqh0qz5ij7rxi6mkgq9pqjsclmamr5169zyan")
+                     ;'("llvm-D88630-clang-cmake"
+                     ;  "0rs6s71nqnjkny7i69gqazhqj5jqfdr0bkxs2v5a55sfx8fa1k54")
+                     '("llvm-11-D85313-debuginfo-empty-arange"
+                       "1f672d5385xpgb8yrim8d3b7wg2z1l81agnshm1q61kdvjixqx32")
+                     '("llvm-11-D90722-rtdyld-absolute-relocs"
+                       "0kmnai229yyxkmpk9lxd180mcnhk2i8d87k2sg89gc8as18w10r6")
+                     '("llvm-invalid-addrspacecast-sink"
+                       "1n1b7j4s80vj7x5377aj9vyphmxx1q6bm0chhkxp6zsy3mx3g2ry")
+                     '("llvm-11-D92906-ppc-setjmp"
+                       "0cmd4dsblp7a8m03j16dqxws0ijh55zf4jzzxmj341qxa1gamdp9")
+                     '("llvm-11-PR48458-X86ISelDAGToDAG"
+                       "0vwzvlhsdazhxg4gj8g2f00a4f8qc5cgac23w575xk3pgba1jh6y")
+                     '("llvm-11-D93092-ppc-knownbits"
+                       "1748bypsc7c9lbs3fnkv0kwvch6bn85kj98j4jdaz254ig0wa6xj")
+                     '("llvm-11-D93154-globalisel-as"
+                       "1k5wd4z3pa7zj0gyjkif7viqj906dhqlbb7dc95gig40nbxv6zpj")
+                     '("llvm-11-ppc-half-ctr"
+                       "0piywisfz6cmw3133kz7vzhiqflq2y7igakqxlym0gi8pqylv7w9")
+                     '("llvm-11-ppc-sp-from-bp"
+                       "1wmg3485cx5f9pbykyl3jibk1wwv4w1x30hl4jyfndzr2yh8azf9")
+                     '("llvm-rGb498303066a6-gcc11-header-fix"
+                       "0hkd4rwhvh8g2yh13g29wiwnjpv2yd1hdyiv1ryw8izl25bz9c67")
+                     '("llvm-11-D94813-mergeicmps"
+                       "0cmy0ywkgyrdcvr9bd6pd912lyd4gcsrib4z0v05dwgcdxhk7y29")
+                     '("llvm-11-D94980-CTR-half"
+                       "1yf8cxib3z8hz7zi9n6v2g2c6vpfr4slq9hpx8m8yq8f1jbyw3fw")
+                     '("llvm-11-D94058-sext-atomic-ops"
+                       "1x6p6k6q651z5jcqxx8vj17cxnv196mka7mwn7dpp6c23lwgfdpb")
+                     '("llvm-11-D96283-dagcombine-half"
+                       "0lv4iq2f8qrcz1xyxfic3bcr5p0aqam3a7c6pp6fnw3riixm096k"))))
+              (patch-flags '("-p1"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments llvm-11)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'patch-round-two
+             ;; We have to do the patching in two rounds because we can't
+             ;; pass '-p1' and '-p2' in the source field.
+             (lambda* (#:key inputs #:allow-other-keys)
+               (map (lambda (patchname)
+                      (invoke "patch" patchname "-p2"))
+                    (list "llvm-11-AArch64-FastIsel-bug"
+                          "llvm-11-D97435-AArch64-movaddrreg"
+                          "llvm-11-D97571-AArch64-loh"
+                          "llvm-11-aarch64-addrspace"))))))
+       ((#:build-type _) "Release")
+       ((#:configure-flags flags)
+        `(list
+           ;; Build a native compiler and the NVPTX backend (NVIDIA) since
+           ;; Julia insists on it, nothing more.  This reduces build times and
+           ;; disk usage.
+           ,(string-append "-DLLVM_TARGETS_TO_BUILD=" (system->llvm-target))
+           "-DLLVM_EXPERIMENTAL_TARGETS_TO_BUILD=NVPTX"
+
+           "-DLLVM_INSTALL_UTILS=ON"
+           "-DLLVM_BUILD_TESTS=ON"
+           "-DLLVM_ENABLE_FFI=ON"
+           "-DLLVM_ENABLE_RTTI=ON"
+           ;; "-DLLVM_HOST_TRIPLE=${stdenv.hostPlatform.config}"
+           ;; "-DLLVM_DEFAULT_TARGET_TRIPLE=${stdenv.hostPlatform.config}"
+           ;; "-DLLVM_EXPERIMENTAL_TARGETS_TO_BUILD=WebAssembly"
+           "-DLLVM_ENABLE_DUMP=ON"
+           "-DLLVM_LINK_LLVM_DYLIB=ON"
+           "-DLLVM_VERSION_SUFFIX:STRING=jl"))))
+    (inputs
+     (append
+       (package-inputs llvm-11)
+       `(("llvm-11-AArch64-FastIsel-bug"
+          ,(julia-patch "llvm-11-AArch64-FastIsel-bug"
+                        "1m2vddj1mw4kbij8hbrx82piyy6bvr2x7wwdnlxfaqcm72ipzyh9"))
+         ("llvm-11-D97435-AArch64-movaddrreg"
+          ,(julia-patch "llvm-11-D97435-AArch64-movaddrreg"
+                        "10jnavq9ljkj7j2gqj2zd1pwqpqb5zs3zp9h96pmz0djbmxwa86y"))
+         ("llvm-11-D97571-AArch64-loh"
+          ,(julia-patch "llvm-11-D97571-AArch64-loh"
+                        "128zcbg1w1j7hngsf7z1a7alc6lig6l2rqgjp6i8nk3k3f842v6n"))
+         ("llvm-11-aarch64-addrspace"
+          ,(julia-patch "llvm-11-aarch64-addrspace"
+                        "0ckbzgfirxrf2d5bpinpngp7gnilbjrk0cbdfyl3h6f5v6i6xj6m")))))))
