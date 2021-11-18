@@ -16930,19 +16930,19 @@ from Facebook.")
 (define-public python-graphene
   (package
     (name "python-graphene")
-    (version "0.10.2")
+    (version "3.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "graphene" version))
         (sha256
          (base32
-          "09zhac7igh9ixdz0ay6csy35b40l1jwbf2wrbxmgxwfhy51iy06q"))))
+          "08m1n2ydk48c18cvl8474v3pwwacjl1vgq61m9qs00122mp0cj5g"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-graphql-core" ,python-graphql-core)
        ("python-graphql-relay" ,python-graphql-relay)
-       ("python-iso8601" ,python-iso8601)
+       ("python-aniso8601" ,python-aniso8601)
        ("python-promise" ,python-promise)
        ("python-six" ,python-six)))
     (arguments
