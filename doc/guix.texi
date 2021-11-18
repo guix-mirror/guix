@@ -11758,7 +11758,7 @@ legacy alias for @var{type} sets to @code{nar}.
 @itemx -S
 Compute the hash on @var{file} using @var{type} serialization.
 
-Supported types: @code{none} and @code{nar}.
+Supported types: @code{none}, @code{nar} and @code{git}.
 
 When using @code{nar}, the hash is computed on an archive containing
 @var{file}, including its children if it is a directory.  Some of the
@@ -11768,6 +11768,8 @@ metadata of @var{file} is part of the archive; for instance, when
 impact on the hash (@pxref{Invoking guix archive}).
 @c FIXME: Replace xref above with xref to an ``Archive'' section when
 @c it exists.
+
+Using @code{git} serializes the file or directory as a Git tree.
 
 @item --exclude-vcs
 @itemx -x

@@ -40,6 +40,9 @@ test "`guix hash /dev/null "$abs_top_srcdir/README"`" = "`guix hash /dev/null ; 
 # Zero files.
 ! guix hash
 
+# idem as `cat /dev/null | git hash-object --stdin`
+test `guix hash -S git -H sha1 -f hex  /dev/null` = e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
+
 ! guix hash -H abcd1234 /dev/null
 
 mkdir "$tmpdir"
@@ -50,6 +53,7 @@ mkdir "$tmpdir/subdir"
 
 test `guix hash -S nar "$tmpdir"` = 10k1lw41wyrjf9mxydi0is5nkpynlsvgslinics4ppir13g7d74p
 test `guix hash -S nar "$tmpdir" -H sha512` = 301ra58c2vahczzxiyfin41mpyb0ljh4dh9zn3ijvwviaw1j40sfzw5skh9x945da88n3785ggifzig7acd6k72h0mpsc20m1f66m9n
+test `guix hash -S git "$tmpdir" -H sha512` = 158b10d1bsdk4pm8ym9cg9ckfak1b0cgpw7365cl6s341ir380mh2f4ylicyh8khyrfnwq5cn9766d7m8fbfwwl94ndkv456v6a8knr
 
 # Deprecated --recursive option
 test `guix hash -r "$tmpdir" 2>/dev/null` = 10k1lw41wyrjf9mxydi0is5nkpynlsvgslinics4ppir13g7d74p
@@ -68,9 +72,11 @@ touch "$tmpdir/.git/foo"
 
 # ...changes the hash
 test `guix hash -S nar $tmpdir` = 0a50z04zyzf7pidwxv0nwbj82pgzbrhdy9562kncnvkcfvb48m59
+test `guix hash -S git $tmpdir` = 0ghlpca9xaswa1ay1g55dknwd9q899mi3ahfr43pq083v8wisjc7
 
 # ...but remains the same when using `-x'
 test `guix hash -S nar $tmpdir -x` = 10k1lw41wyrjf9mxydi0is5nkpynlsvgslinics4ppir13g7d74p
+test `guix hash -S git $tmpdir -x` = 0ghlpca9xaswa1ay1g55dknwd9q899mi3ahfr43pq083v8wisjc7
 
 # Without '-r', this should fail.
 ! guix hash "$tmpdir"

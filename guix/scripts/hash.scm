@@ -35,6 +35,7 @@
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-37)
+  #:autoload   (disarchive git-hash) (git-hash-file git-hash-directory)
   #:export (guix-hash))
 
 
@@ -59,6 +60,17 @@
     (_
      (call-with-input-file file
        (cute port-hash algorithm <>)))))
+
+(define* (git-hash file #:optional
+                       (algorithm (assoc-ref %default-options 'hash-algorithm))
+                       select?)
+  (define directory?
+    (case (stat:type (stat file))
+      ((directory) #t)
+      (else #f)))
+  (if directory?
+      (git-hash-directory file algorithm)
+      (git-hash-file file algorithm)))
 
 
 ;;;
@@ -138,6 +150,8 @@ use '--serializer' instead~%"))
                        default-hash)
                       ("nar"
                        nar-hash)
+                      ("git"
+                       git-hash)
                       (x
                        (leave (G_ "unsupported serializer type: ~a~%")
                               arg))))
