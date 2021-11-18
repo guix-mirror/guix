@@ -2375,7 +2375,8 @@ and keep up to date translations of documentation.")
                 "0hpyi0sz3gcqqs9lkwyk8b6hr39m3n27432x98kxr436jj37dk6j"))))
     (build-system meson-build-system)
     (arguments
-     '(#:phases
+     `(#:meson ,meson-0.59         ;positional arguments error with meson 0.60
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-post-install-script
            (lambda _
