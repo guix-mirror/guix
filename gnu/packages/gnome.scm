@@ -7720,7 +7720,7 @@ Microsoft Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
      `(("gtk+" ,gtk+)
        ("libical" ,libical)
        ("libsecret" ,libsecret)
-       ("libsoup" ,libsoup)
+       ("libsoup" ,libsoup-minimal-2)
        ("nss" ,nss)
        ("sqlite" ,sqlite)))
     (inputs
