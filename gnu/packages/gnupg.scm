@@ -352,6 +352,13 @@ libskba (working with X.509 certificates and CMS data).")
   (package
     (inherit gnupg)
     (version "2.2.32")
+
+    ;; Hide this version because packages like 'emacs-pinentry' propagate the
+    ;; default GnuPG and "guix install gnupg emacs-pinentry" would fail with a
+    ;; collision error.
+    (properties `((hidden? . #t)
+                  ,@(package-properties gnupg)))
+
     (source (origin
               (inherit (package-source gnupg))
               (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
