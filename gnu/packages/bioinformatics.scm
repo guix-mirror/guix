@@ -1581,7 +1581,7 @@ $(BOOST_LIB)/libboost_program_options.so"))))
     (home-page "https://qtltools.github.io/qtltools/")
     (synopsis "Tool set for molecular QTL discovery and analysis")
     (description "QTLtools is a tool set for molecular QTL discovery
-and analysis.  It allows to go from the raw genetic sequence data to
+and analysis.  It allows going from the raw genetic sequence data to
 collection of molecular @dfn{Quantitative Trait Loci} (QTLs) in few
 easy-to-perform steps.")
     (license license:gpl3+)))
