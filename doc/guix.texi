@@ -35109,7 +35109,7 @@ VM@.  To enable that you'll also have to pass the following flags to @command{qe
 @example
 -device virtio-serial-pci,id=virtio-serial0,max_ports=16,bus=pci.0,addr=0x5
 -chardev spicevmc,name=vdagent,id=vdagent
--device virtserialport,nr=1,bus=virtio-serial0.0,chardev=vdagent,
+-device virtserialport,nr=1,bus=virtio-serial0.0,chardev=vdagent,\
 name=com.redhat.spice.0
 @end example
 
