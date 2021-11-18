@@ -14009,7 +14009,7 @@ real numbers.")
     (home-page "https://github.com/BgeeDB/BgeeCall")
     (synopsis "RNA-Seq present/absent gene expression calls generation")
     (description
-     "BgeeCall allows to generate present/absent gene expression calls without
+     "BgeeCall allows generating present/absent gene expression calls without
 using an arbitrary cutoff like TPM<1.  Calls are generated based on reference
 intergenic sequences.  These sequences are generated based on expression of
 all RNA-Seq libraries of each species integrated in Bgee.")
