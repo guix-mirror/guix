@@ -20855,30 +20855,30 @@ based on the CPython 2.7 and 3.7 parsers.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'check 'disable-failing-tests
+         ;; Unfortunately, this doesn't seem to be enough to fix these two
+         ;; tests, but we'll patch this anyway.
+         (add-after 'unpack 'patch-shell-reference
            (lambda _
              (substitute* "tests/test_completion/test_completion.py"
-               (("def test_show_completion")
-                "def _test_show_completion")
-               (("def test_install_completion")
-                "def _test_install_completion"))
-             (substitute* "tests/test_completion/test_completion_install.py"
-               (("def test_completion_install_bash")
-                "def _test_completion_install_bash")
-               (("def test_completion_install_zsh")
-                "def _test_completion_install_zsh")
-               (("def test_completion_install_fish")
-                "def _test_completion_install_fish")
-               (("def test_completion_install_powershell")
-                "def _test_completion_install_powershell"))
-             #t))
+               (("\"bash\"") (string-append "\"" (which "bash") "\""))
+               (("\"/bin/bash\"") (string-append "\"" (which "bash") "\"")))))
          (replace 'check
            (lambda _
+             (setenv "HOME" "/tmp") ; some tests need it
+
+             ;; This is for completion tests
+             (with-output-to-file "/tmp/.bashrc" (lambda _ (display "# dummy")))
+
              (setenv "PYTHONPATH"
                      (string-append (getcwd) ":"
                                     (getenv "PYTHONPATH")))
-             (invoke "python" "-m" "pytest" "tests/")
-             #t)))))
+             (let ((disabled-tests (list "test_show_completion"
+                                         "test_install_completion")))
+               (invoke "python" "-m" "pytest" "tests/"
+                       "-k"
+                       (string-append "not "
+                                      (string-join disabled-tests
+                                                   " and not ")))))))))
     (propagated-inputs
      `(("python-click" ,python-click)))
     (native-inputs
