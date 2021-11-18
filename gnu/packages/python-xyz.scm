@@ -27518,9 +27518,9 @@ pythonic way.")
          (replace 'check
            (lambda* (#:key tests? #:allow-other-keys)
              (when tests?
-               (setenv "PYTHONPATH"
+               (setenv "GUIX_PYTHONPATH"
                        (string-append (getcwd) "/build/lib:"
-                                      (getenv "PYTHONPATH")))
+                                      (getenv "GUIX_PYTHONPATH")))
                (invoke "pytest")))))))
     (native-inputs
      `(("python-pandas" ,python-pandas)  ;; required for test-suite
