@@ -6332,7 +6332,8 @@ discovery protocols.")
        ("grilo-plugins" ,grilo-plugins)
        ("vala" ,vala)))
     (arguments
-     `(#:glib-or-gtk? #t
+     `(#:meson ,meson-0.59         ;positional arguments error with meson 0.60
+       #:glib-or-gtk? #t
 
        ;; Disable automatic GStreamer plugin installation via PackageKit and
        ;; all that.
