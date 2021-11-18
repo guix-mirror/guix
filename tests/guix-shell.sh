@@ -83,9 +83,9 @@ then
     profile=`grep "^export PATH" "$tmpdir/a" | sed -r 's|^.*="(.*)/bin"|\1|'`
 
     # Make sure the bootstrap binaries are all listed where they belong.
-    grep -E "^export PATH=\"$profile/bin\""         "$tmpdir/a"
-    grep -E "^export CPATH=\"$profile/include\""    "$tmpdir/a"
-    grep -E "^export LIBRARY_PATH=\"$profile/lib\"" "$tmpdir/a"
+    grep -E "^export PATH=\"$profile/bin\""               "$tmpdir/a"
+    grep -E "^export C_INCLUDE_PATH=\"$profile/include\"" "$tmpdir/a"
+    grep -E "^export LIBRARY_PATH=\"$profile/lib\""       "$tmpdir/a"
     for dep in bootstrap-binaries-0 gcc-bootstrap-0 glibc-bootstrap-0
     do
 	guix gc --references "$profile" | grep "$dep"
