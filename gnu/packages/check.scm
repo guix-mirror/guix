@@ -1198,7 +1198,7 @@ supports coverage of subprocesses.")
        (modify-phases %standard-phases
          (add-before 'check 'fix-library-loading
            (lambda _
-             (setenv "PYTHONPATH" (string-append (getenv "PYTHONPATH") ":."))))
+             (setenv "GUIX_PYTHONPATH" (string-append (getenv "GUIX_PYTHONPATH") ":."))))
          (replace 'check
            (lambda _
              (invoke "pytest" "tests" "-vv")
