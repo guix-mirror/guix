@@ -612,7 +612,7 @@ in JavaScript.")
      `(("glib" ,glib)
        ("glib-networking" ,glib-networking)
        ("gstreamer" ,gstreamer)
-       ("libsoup" ,libsoup)))
+       ("libsoup-minimal" ,libsoup-minimal-2)))
     (synopsis "Media management library")
     (description "Libdmapsharing is a library which allows programs to access,
 share and control the playback of media content using DMAP (DAAP, DPAP & DACP).
