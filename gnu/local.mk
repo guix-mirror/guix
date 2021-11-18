@@ -1885,6 +1885,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/wpa-supplicant-CVE-2021-30004.patch	\
   %D%/packages/patches/x265-arm-flags.patch			\
   %D%/packages/patches/xf86-video-ark-remove-mibstore.patch	\
+  %D%/packages/patches/xf86-video-mach64-bool-to-boolean.patch	\
   %D%/packages/patches/xf86-video-mach64-glibc-2.20.patch	\
   %D%/packages/patches/xf86-video-savage-xorg-compat.patch 	\
   %D%/packages/patches/xf86-video-siliconmotion-fix-ftbfs.patch \

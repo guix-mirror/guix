@@ -3104,7 +3104,8 @@ It supports a variety of Intel graphics chipsets.")
         (sha256
           (base32
            "171wg8r6py1l138s58rlapin3rlpwsg9spmvhc7l68mm3g3hf1vs"))
-        (patches (search-patches "xf86-video-mach64-glibc-2.20.patch"))))
+        (patches (search-patches "xf86-video-mach64-glibc-2.20.patch"
+                                 "xf86-video-mach64-bool-to-boolean.patch"))))
     (build-system gnu-build-system)
     (inputs `(("mesa" ,mesa)
               ("xorgproto" ,xorgproto)
