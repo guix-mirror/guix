@@ -727,13 +727,14 @@ It adds a large amount of new and improved features to mutt.")
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("gnupg" ,gnupg)                 ; for tests only
-       ("gobject-introspection" ,gobject-introspection)))
+       ("gobject-introspection" ,gobject-introspection)
+       ("vala" ,vala)))
     (inputs `(("glib" ,glib)
               ("gpgme" ,gpgme)
               ("zlib" ,zlib)))
     (arguments
      `(#:configure-flags
-         (list "--enable-introspection=yes")
+         (list "--enable-introspection=yes" "--enable-vapigen=yes")
        #:phases
        (modify-phases %standard-phases
          (add-after
