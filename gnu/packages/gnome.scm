@@ -6474,7 +6474,8 @@ supports playlists, song ratings, and any codecs installed through gstreamer.")
               "0ddjwcd77nw0rxb5x5bz5hd671m8gya9827p8rsnb58x103kpai8"))))
    (build-system meson-build-system)
    (arguments
-    `(#:configure-flags
+    `(#:meson ,meson-0.59         ;positional arguments error with meson 0.60
+      #:configure-flags
       ;; Otherwise, the RUNPATH will lack the final 'eog' path component.
       (list (string-append "-Dc_link_args=-Wl,-rpath="
                            (assoc-ref %outputs "out") "/lib/eog"))
