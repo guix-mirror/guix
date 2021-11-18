@@ -3,6 +3,7 @@
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2018 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
+;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -149,27 +150,35 @@ and 'base16' ('hex' and 'hexadecimal' can be used as well).\n"))
     (define (file-hash file)
       ;; Compute the hash of FILE.
       ;; Catch and gracefully report possible '&nar-error' conditions.
-      (with-error-handling
-        (if (assoc-ref opts 'recursive?)
+      (if (assoc-ref opts 'recursive?)
+          (with-error-handling
             (let-values (((port get-hash)
                           (open-hash-port (assoc-ref opts 'hash-algorithm))))
               (write-file file port #:select? select?)
               (force-output port)
-              (get-hash))
-            (match file
-              ("-" (port-hash (assoc-ref opts 'hash-algorithm)
-                              (current-input-port)))
-              (_   (call-with-input-file file
-                     (cute port-hash (assoc-ref opts 'hash-algorithm)
-                           <>)))))))
+              (get-hash)))
+          (catch 'system-error
+            (lambda _
+              (call-with-input-file file
+                (cute port-hash (assoc-ref opts 'hash-algorithm)
+                      <>)))
+            (lambda args
+              (leave (G_ "~a ~a~%")
+                     file
+                     (strerror (system-error-errno args)))))))
+
+    (define (formatted-hash thing)
+      (match thing
+        ("-" (with-error-handling
+               (fmt (port-hash (assoc-ref opts 'hash-algorithm)
+                               (current-input-port)))))
+        (_
+         (fmt (file-hash thing)))))
 
     (match args
-      ((file)
-       (catch 'system-error
-         (lambda ()
-           (format #t "~a~%" (fmt (file-hash file))))
-         (lambda args
-           (leave (G_ "~a~%")
-                  (strerror (system-error-errno args))))))
-      (x
-       (leave (G_ "wrong number of arguments~%"))))))
+      (()
+       (leave (G_ "no arguments specified~%")))
+      (_
+       (for-each
+        (compose (cute format #t "~a~%" <>) formatted-hash)
+        args)))))

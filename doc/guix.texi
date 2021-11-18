@@ -11713,13 +11713,13 @@ store.
 @cindex @command{guix hash}
 The @command{guix hash} command computes the hash of a file.
 It is primarily a convenience tool for anyone contributing to the
-distribution: it computes the cryptographic hash of a file, which can be
+distribution: it computes the cryptographic hash of one or more files, which can be
 used in the definition of a package (@pxref{Defining Packages}).
 
 The general syntax is:
 
 @example
-guix hash @var{option} @var{file}
+guix hash @var{option} @var{file} ...
 @end example
 
 When @var{file} is @code{-} (a hyphen), @command{guix hash} computes the

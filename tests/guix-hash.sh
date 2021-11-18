@@ -34,6 +34,12 @@ test `guix hash -f base32 /dev/null` = 4oymiquy7qobjgx36tejs35zeqt24qpemsnzgtfes
 test `guix hash -H sha512 -f hex /dev/null` = cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e
 test `guix hash -H sha1 -f base64 /dev/null` = "2jmj7l5rSw0yVb/vlWAYkK/YBwk="
 
+# Several files.
+test "`guix hash /dev/null "$abs_top_srcdir/README"`" = "`guix hash /dev/null ; guix hash "$abs_top_srcdir/README"`"
+
+# Zero files.
+! guix hash
+
 ! guix hash -H abcd1234 /dev/null
 
 mkdir "$tmpdir"
