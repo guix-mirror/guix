@@ -3237,7 +3237,8 @@ supported, and the RENDER extension is not accelerated by this driver.")
        (uri (string-append "mirror://xorg/individual/driver/xf86-video-nouveau-"
                            version ".tar.bz2"))
        (sha256
-        (base32 "0sqm1jwjg15sp8v7039y2hsbhph8gpjd2bdzcqqiij2mgbi254s9"))))
+        (base32 "0sqm1jwjg15sp8v7039y2hsbhph8gpjd2bdzcqqiij2mgbi254s9"))
+       (patches (search-patches "xf86-video-nouveau-fixup-ABI.patch"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
