@@ -10814,9 +10814,9 @@ Unicode-aware.  It is not intended as an end-user tool.")
          (replace 'check
            (lambda* (#:key tests? #:allow-other-keys)
              (when tests?
-               (setenv "PYTHONPATH"
+               (setenv "GUIX_PYTHONPATH"
                        (string-append (getcwd) "/build/lib:"
-                                      (getenv "PYTHONPATH")))
+                                      (getenv "GUIX_PYTHONPATH")))
                (invoke "nosetests" "-v")))))))
     (native-inputs
      `(("nose" ,python-nose)))
