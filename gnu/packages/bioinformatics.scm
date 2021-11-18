@@ -8275,7 +8275,7 @@ data.  It also generates basic statistics for your sequences.")
                     (pythonpath (getenv "GUIX_PYTHONPATH"))
                     (script (string-append out "/bin/shorah")))
                (chmod script #o555)
-               (wrap-program script `("PYTHONPATH" ":" prefix (,site ,pythonpath))))))
+               (wrap-program script `("GUIX_PYTHONPATH" ":" prefix (,site ,pythonpath))))))
          (add-after 'wrap-programs 'check
            (lambda* (#:key tests? #:allow-other-keys)
              (when tests?
