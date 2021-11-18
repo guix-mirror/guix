@@ -1,0 +1,25 @@
+Resolves the following error that was most likely introduced in new version of
+rust as this package is from 2019:
+
+error: unnecessary parentheses around type
+   --> src/converter.rs:108:61
+    |
+108 | fn add_arguments(arguments: &str, additional_arguments: Vec<(String)>, pre: bool) -> String {
+    |                                                             ^^^^^^^^ help: remove these parentheses
+
+Reported upstream at https://github.com/sagiegurari/shell2batch/issues/17.
+
+diff --git a/src/converter.rs b/src/converter.rs
+index fc87d68..af309d2 100644
+--- a/src/converter.rs
++++ b/src/converter.rs
+@@ -105,7 +105,7 @@ fn replace_vars(arguments: &str) -> String {
+     updated_arguments
+ }
+ 
+-fn add_arguments(arguments: &str, additional_arguments: Vec<(String)>, pre: bool) -> String {
++fn add_arguments(arguments: &str, additional_arguments: Vec<String>, pre: bool) -> String {
+     let mut windows_arguments = if pre {
+         "".to_string()
+     } else {
+
