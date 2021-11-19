@@ -4033,7 +4033,7 @@ also adds tags and marks support for Skeleton, and Abbrev support for Tempo.")
 (define-public emacs-toc-org
   (package
     (name "emacs-toc-org")
-    (version "1.1.0")
+    (version "1.2.0")
     (source
      (origin
        (method git-fetch)
@@ -4042,7 +4042,7 @@ also adds tags and marks support for Skeleton, and Abbrev support for Tempo.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0lk0rji85a1c0c5r9an0fdvsm4n4jyixsknmr8ywha3lfmc2p0l8"))))
+        (base32 "00a2al7ghrlabf65kfj1mk30p2pl37h6ppwlgghbgiy7rwlzkdbm"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/snosov1/toc-org")
     (synopsis "Table of Contents generator for Emacs Org mode")
