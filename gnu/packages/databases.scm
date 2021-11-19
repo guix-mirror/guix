@@ -53,6 +53,7 @@
 ;;; Copyright © 2021 Simon Streit <simon@netpanic.org>
 ;;; Copyright © 2021 Alexandre Hannud Abdo <abdo@member.fsf.org>
 ;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
+;;; Copyright © 2021 jgart <jgart@dismail.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -145,6 +146,7 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages valgrind)
   #:use-module (gnu packages web)
+  #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xml)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
@@ -618,13 +620,13 @@ replacement for the code@{python-memcached} library.")
 (define-public mycli
   (package
     (name "mycli")
-    (version "1.22.2")
+    (version "1.24.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "mycli" version))
         (sha256
-          (base32 "1lq2x95553vdmhw13cxcgsd2g2i32izhsb7hxd4m1iwf9b3msbpv"))))
+          (base32 "0rij9nw20zhqr7cqnkm8daw8b1wdc9zb6ny1ji9qz5557nz9i3bl"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))                    ; tests expect a running MySQL
@@ -634,8 +636,10 @@ replacement for the code@{python-memcached} library.")
         ("python-configobj" ,python-configobj)
         ("python-cryptography" ,python-cryptography)
         ("python-prompt-toolkit" ,python-prompt-toolkit)
+        ("python-pyaes" ,python-pyaes)
         ("python-pygments" ,python-pygments)
         ("python-pymysql" ,python-pymysql)
+        ("python-pyperclip" ,python-pyperclip)
         ("python-sqlparse" ,python-sqlparse)))
     (home-page "http://mycli.net")
     (synopsis
