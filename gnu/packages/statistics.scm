@@ -6754,3 +6754,32 @@ of methods for only the FKML type.  These include maximum likelihood,
 maximum product of spacings, Titterington's method, Moments, Trimmed
 L-Moments and Distributional Least Absolutes.")
     (license license:gpl2+)))
+
+(define-public r-exact
+  (package
+    (name "r-exact")
+    (version "3.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "Exact" version))
+        (sha256
+          (base32 "0acm01njg3arlzwknv5v1sdsz5ab0bdh04sn1bmf91hcg3li8qd7"))))
+    (properties `((upstream-name . "Exact")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-rootsolve" ,r-rootsolve)))
+    (home-page "https://cran.r-project.org/package=Exact")
+    (synopsis "Unconditional Exact Test")
+    (description
+      "Performs unconditional exact tests and power calculations for 2x2
+contingency tables.  For comparing two independent proportions, performs
+@url{doi:10.1038/156177a0, Barnard's test (1945)} using the original CSM
+test (@url{doi:10.1093/biomet/34.1-2.123, Barnard (1947)}), using Fisher's
+p-value referred to as @url{doi:10.1111/j.1467-9574.1970.tb00104.x,
+Boschloo's test (1970)}, or using a Z-statistic (@url{doi:10.2307/2981892,
+Suissa and Shuster (1985)}).  For comparing two binary proportions,
+performs unconditional exact test using McNemar's Z-statistic
+(@url{doi:10.1191/0962280203sm312ra, Berger and Sidik (2003)}), using
+McNemar's Z-statistic with continuity correction, or using CSM test.
+Calculates confidence intervals for the difference in proportion.")
+    (license license:gpl2)))
