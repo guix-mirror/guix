@@ -1297,14 +1297,14 @@ with that of libgomp, the GNU Offloading and Multi Processing Library.")
 (define-public python-llvmlite
   (package
     (name "python-llvmlite")
-    (version "0.34.0")
+    (version "0.37.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "llvmlite" version))
        (sha256
         (base32
-         "0qqzs6h34002ig2jn31vk08q9hh5kn84lhmv4bljz3yakg8y0gph"))))
+         "05avhsvdcqh8wfpblx16qslfq3masqcbkfyn8p3c13h1rmqbi4k3"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -1338,7 +1338,7 @@ with that of libgomp, the GNU Offloading and Multi Processing Library.")
                                                 llvm "/lib"))))))))
     (inputs
      `(("llvm"
-        ,(let* ((patches-commit "061ab39e1d4591f3aa842458252a19ad01858167")
+        ,(let* ((patches-commit "a4a19e8af2c5ef9b9901f20193e4be070726da97")
                 (patch-uri (lambda (name)
                              (string-append
                               "https://raw.githubusercontent.com/numba/"
@@ -1353,36 +1353,47 @@ with that of libgomp, the GNU Offloading and Multi Processing Library.")
                  (list
                   (patch-origin
                    "partial-testing.patch"
-                   "1cwy4jsmijd838q0bylxl77vrwrb7ksijfly5062ay32303jmj86")
+                   "0g3nkci87knvmn7piqhmh4bcc65ff8r921cvfcibyiv65klv3syg")
                   (patch-origin
                    "0001-Revert-Limit-size-of-non-GlobalValue-name.patch"
                    "0n4k7za0smx6qwdipsh6x5lm7bfvzzb3p9r8q1zq1dqi4na21295"))))
-           (if (string=? "aarch64-linux" (%current-system))
-               (package
-                 (inherit llvm-9)
-                 (source
-                  (origin
-                    (inherit (package-source llvm-9))
-                    (patches
+           (package
+             (inherit llvm-11)
+             (source
+              (origin
+                (inherit (package-source llvm-11))
+                (patches
+                 (if (string=? "aarch64-linux" (%current-system))
                      `(,(patch-origin
                          "intel-D47188-svml-VF_LLVM9.patch"
-                         "1f9ld7wc8bn4gbvdsmk07w1rq371h42vy05rxsq9a22f57rljqbd")
+                         "0gnnlfxr8p1a7ls93hzcpfqpa8r0icypfwj8l9cmkslq5sz8p64r")
                        ,@arch-independent-patches
-                       ,@(origin-patches (package-source llvm-9)))))))
-               (package
-                 (inherit llvm-10)
-                 (source
-                  (origin
-                    (inherit (package-source llvm-10))
-                    (patches
+                       ,@(origin-patches (package-source llvm-11)))
                      `(,(patch-origin
                          "intel-D47188-svml-VF.patch"
-                         "0n46qjwfl7i12bl7wp0cyxl277axfvaaz5lxx5kdlgwjcpa582dg")
+                         "0gnnlfxr8p1a7ls93hzcpfqpa8r0icypfwj8l9cmkslq5sz8p64r")
                        ,(patch-origin
                          "expect-fastmath-entrypoints-in-add-TLI-mappings.ll.patch"
                          "0jxhjkkwwi1cy898l2n57l73ckpw0v73lqnrifp7r1mwpsh624nv")
                        ,@arch-independent-patches
-                       ,@(origin-patches (package-source llvm-10))))))))))))
+                       ,@(origin-patches (package-source llvm-11)))))))
+             (arguments
+              (substitute-keyword-arguments (package-arguments llvm-11)
+                ((#:phases phases)
+                 `(modify-phases ,phases
+                    (add-after 'unpack 'patch-round-two
+                      ;; We have to do the patching in two rounds because we can't
+                      ;; pass '-p1' and '-p2' in the source field.
+                      (lambda* (#:key inputs #:allow-other-keys)
+                        (invoke "patch"
+                                (assoc-ref inputs "llvm_11_consecutive_registers")
+                                "-p2")))))))
+             (native-inputs
+              `(("llvm_11_consecutive_registers"
+                 ,(patch-origin
+                   "llvm_11_consecutive_registers.patch"
+                   "04msd34dnpr3lpss0pam3mckwnvzrab266z6sml1hya0akv0m3f3"))
+                ,@(package-native-inputs llvm-11))))))))
     (home-page "https://llvmlite.pydata.org")
     (synopsis "Wrapper around basic LLVM functionality")
     (description
