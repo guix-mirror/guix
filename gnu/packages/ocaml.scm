@@ -4257,11 +4257,17 @@ syntax checking on dedukti files.")
 (define-public ocaml-jst-config
   (package
     (name "ocaml-jst-config")
-    (version "0.14.0")
+    (version "0.14.1")
     (source
-     (janestreet-origin
-      "jst-config" version
-      "1fppr29vn91zpqda8jlnp8bcssd4bf3rn36ig8fnd1yhjrsvz8f6"))
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/janestreet/jst-config")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "0sak7rrix8vd2bscbjxbxi1d9jyd27ik59dpybfxhzhsn9s1wllv"))))
     (build-system dune-build-system)
     (arguments '(#:tests? #f))           ; no tests
     (propagated-inputs
