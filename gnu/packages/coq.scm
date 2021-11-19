@@ -476,7 +476,7 @@ provides BigN, BigZ, BigQ that used to be part of Coq standard library.")
            (lambda _ (invoke "./remake" "check")))
          (replace 'install
            (lambda _ (invoke "./remake" "install"))))))
-    (home-page "http://coq-interval.gforge.inria.fr/")
+    (home-page "https://coqinterval.gitlabpages.inria.fr/")
     (synopsis "Coq tactics to simplify inequality proofs")
     (description "Interval provides vernacular files containing tactics for
 simplifying the proofs of inequalities on expressions of real numbers for the
