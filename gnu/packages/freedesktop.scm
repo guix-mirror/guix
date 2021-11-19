@@ -591,7 +591,9 @@ the freedesktop.org XDG Base Directory specification.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "16045bhpwjq2nqgswln67ipg1zrz2djxlgkfngqng3jqpwagmnzq"))))
+                "16045bhpwjq2nqgswln67ipg1zrz2djxlgkfngqng3jqpwagmnzq"))
+              (patches (search-patches
+                        "elogind-revert-polkit-detection.patch"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
