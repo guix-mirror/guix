@@ -9042,3 +9042,32 @@ pcredential store, Pass, Secret Service, KDE Wallet, Encrypted File.")
     (home-page "https://gopkg.in/ini.v1")
     (license license:asl2.0)))
 
+(define-public go-github-com-skratchdot-open-golang
+  (let ((commit "79abb63cd66e41cb1473e26d11ebdcd68b04c8e5")
+        (revision "0"))
+    (package
+      (name "go-github-com-skratchdot-open-golang")
+      (version "1.42.0")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/skratchdot/open-golang")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0jc13jn8cj7p14n79zhav2nwga6kf9rqs01ic5k7j7agwzzly3ww"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/skratchdot/open-golang"
+         #:phases (modify-phases %standard-phases
+                    (delete 'build)
+                    (delete 'check))))
+      (synopsis "Open a file, directory, or URI using the default application")
+      (description
+       "Open a file, directory, or URI using the OS's default application for
+that object type.  Optionally, you can specify an application to use.  On
+GNU/Linux, this is a proxy for the @command{xdg-open} command.")
+      (home-page "https://github.com/skratchdot/open-golang")
+      (license license:expat))))
+
