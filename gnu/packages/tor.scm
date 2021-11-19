@@ -339,15 +339,11 @@ OnionShare.")
                              (display line out)
                              (loop))))))))))
          (replace 'check
-           (lambda _
+           (lambda* (#:key inputs outputs #:allow-other-keys)
              ;; Some tests need a writable homedir:
              (setenv "HOME" "/tmp")
              ;; Ensure installed modules can be found:
-             (setenv "PYTHONPATH"
-                     (string-append %output "/lib/python"
-                                    ,(version-major+minor (package-version python))
-                                    "/site-packages:"
-                                    (getenv "PYTHONPATH")))
+             (add-installed-pythonpath inputs outputs)
              ;; Avoid `getprotobyname` issues:
              (setenv "EVENTLET_NO_GREENDNS" "yes")
              ;; Make Qt render "offscreen":
