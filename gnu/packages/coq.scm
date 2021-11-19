@@ -237,7 +237,7 @@ provers.")
          (replace 'install
            (lambda _
              (invoke "./remake" "install"))))))
-    (home-page "https://flocq.gitlabpages.inria.fr/")
+    (home-page "https://flocq.gitlabpages.inria.fr")
     (synopsis "Floating-point formalization for the Coq system")
     (description "Flocq (Floats for Coq) is a floating-point formalization for
 the Coq system.  It provides a comprehensive library of theorems on a multi-radix
@@ -295,7 +295,7 @@ inside Coq.")
          ;;   (lambda _ (invoke "./remake" "check")))
          (replace 'install
            (lambda _ (invoke "./remake" "install"))))))
-    (home-page "https://gappa.gforge.inria.fr/")
+    (home-page "https://gappa.gitlabpages.inria.fr/")
     (synopsis "Verify and formally prove properties on numerical programs")
     (description "Gappa is a tool intended to help verifying and formally proving
 properties on numerical programs dealing with floating-point or fixed-point
