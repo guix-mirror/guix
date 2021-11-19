@@ -339,18 +339,19 @@ OnionShare.")
                              (display line out)
                              (loop))))))))))
          (replace 'check
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             ;; Some tests need a writable homedir:
-             (setenv "HOME" "/tmp")
-             ;; Ensure installed modules can be found:
-             (add-installed-pythonpath inputs outputs)
-             ;; Avoid `getprotobyname` issues:
-             (setenv "EVENTLET_NO_GREENDNS" "yes")
-             ;; Make Qt render "offscreen":
-             (setenv "QT_QPA_PLATFORM" "offscreen")
-             ;; Must be run from "desktop" dir:
-             (chdir "..")
-             (invoke "./tests/run.sh")))
+           (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+             (when tests?
+               ;; Some tests need a writable homedir:
+               (setenv "HOME" "/tmp")
+               ;; Ensure installed modules can be found:
+               (add-installed-pythonpath inputs outputs)
+               ;; Avoid `getprotobyname` issues:
+               (setenv "EVENTLET_NO_GREENDNS" "yes")
+               ;; Make Qt render "offscreen":
+               (setenv "QT_QPA_PLATFORM" "offscreen")
+               ;; Must be run from "desktop" dir:
+               (with-directory-excursion ".."
+                 (invoke "./tests/run.sh")))))
          (add-after 'install 'install-data
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
