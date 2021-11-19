@@ -8869,3 +8869,29 @@ be useful for other network applications.")
      "Package percent escapes strings using percent-encoding.")
     (home-page "https://github.com/mtibben/percent")
     (license license:expat)))
+
+(define-public go-github-com-dvsekhvalnov-jose2go
+  (package
+    (name "go-github-com-dvsekhvalnov-jose2go")
+    (version "1.5.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/dvsekhvalnov/jose2go")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1pzfmv2dxb3m455bi1ks4q3i0dcw1sazxk8k96wrgpkwgglyxj3n"))))
+    (build-system go-build-system)
+    (native-inputs
+     (list go-gopkg-in-check-v1))
+    (arguments
+     '(#:import-path "github.com/dvsekhvalnov/jose2go"
+       #:phases %standard-phases))
+    (synopsis "Go implementation of Javascript Object Signing and Encryption spec")
+    (description
+     "This package provides a Go library for generating, decoding, and
+encrypting JSON Web Tokens (JWT).  It relies only on the standard library.")
+    (home-page "https://github.com/dvsekhvalnov/jose2go")
+    (license license:expat)))
