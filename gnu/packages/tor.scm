@@ -299,7 +299,7 @@ OnionShare.")
       ((#:phases phases)
        `(modify-phases ,phases
          (replace 'change-directory
-           (lambda _ (chdir "desktop/src") #t))
+           (lambda _ (chdir "desktop/src")))
          (add-after 'unpack 'patch-tests
            (lambda _
              ;; Disable tests that require starting servers, which will hang
@@ -359,8 +359,7 @@ OnionShare.")
                (install-file "org.onionshare.OnionShare.svg"
                              (string-append share "/icons/hicolor/scalable/apps"))
                (install-file "org.onionshare.OnionShare.desktop"
-                             (string-append share "/applications"))
-               #t)))))))
+                             (string-append share "/applications")))))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
     (inputs
