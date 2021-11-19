@@ -12051,6 +12051,18 @@ convert an @code{.ipynb} notebook file into various static formats including:
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'use-our-home-for-tests
+           (lambda _
+             ;; The 'get_patch_env' function in this file reads:
+             ;;   'HOME': cls.home_dir
+             ;; but for some reason, that definition of HOME is not what the
+             ;; GLib/GIO trash mechanism honors, which would cause test
+             ;; failures.  Instead, set 'HOME' here to an existing directory
+             ;; and let the tests honor it.
+             (substitute* "notebook/tests/launchnotebook.py"
+               (("'HOME': .*," all)
+                (string-append "# " all "\n")))
+             (setenv "HOME" (getcwd))))
          (replace 'check
            (lambda* (#:key tests? inputs outputs #:allow-other-keys)
              ;; These tests require a browser
@@ -12060,13 +12072,10 @@ convert an @code{.ipynb} notebook file into various static formats including:
                ;; Some tests do not expect all files to be installed in the
                ;; same directory, but JUPYTER_PATH contains multiple entries.
                (unsetenv "JUPYTER_PATH")
-               ;; Some tests need HOME
-               (setenv "HOME" "/tmp")
-               (with-directory-excursion "/tmp"
-                 (invoke "pytest" "-vv"
-                         ;; TODO: This tests fails because nbconvert does not
-                         ;; list "python" as a format.
-                         "-k" "not test_list_formats"))))))))
+               (invoke "pytest" "-vv"
+                       ;; TODO: This tests fails because nbconvert does not
+                       ;; list "python" as a format.
+                       "-k" "not test_list_formats")))))))
     (propagated-inputs
      `(("python-argon2-cffi" ,python-argon2-cffi)
        ("python-ipykernel" ,python-ipykernel)
