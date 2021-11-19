@@ -420,9 +420,9 @@ nix-shell-wrapper|repo2docker-entrypoint)")
                       (let* ((out (assoc-ref outputs "doc"))
                              (doc (string-append out "/share/doc/"
                                                  ,name)))
-                        (setenv "PYTHONPATH"
+                        (setenv "GUIX_PYTHONPATH"
                                 (string-append (getcwd) ":"
-                                               (getenv "PYTHONPATH")))
+                                               (getenv "GUIX_PYTHONPATH")))
                         (with-directory-excursion "docs"
                           (invoke  "make" "html")
                           (copy-recursively "build/html"
