@@ -60,6 +60,7 @@
              (sha256
               (base32
                "00zfg9b9ivkcj2jcf5b92cpvvyljz8cmfwj86lkvy5rihnd5jypf"))
+             (patches (search-patches "polkit-configure-elogind.patch"))
              (modules '((guix build utils)))
              (snippet
               '(begin

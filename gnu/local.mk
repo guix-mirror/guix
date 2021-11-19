@@ -1599,6 +1599,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/plib-CVE-2011-4620.patch		\
   %D%/packages/patches/plib-CVE-2012-4552.patch		\
   %D%/packages/patches/plotutils-spline-test.patch		\
+  %D%/packages/patches/polkit-configure-elogind.patch		\
   %D%/packages/patches/polkit-use-duktape.patch			\
   %D%/packages/patches/portaudio-audacity-compat.patch		\
   %D%/packages/patches/portmidi-modular-build.patch		\
