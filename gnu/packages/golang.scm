@@ -9071,3 +9071,30 @@ GNU/Linux, this is a proxy for the @command{xdg-open} command.")
       (home-page "https://github.com/skratchdot/open-golang")
       (license license:expat))))
 
+(define-public go-github-com-alecthomas-template
+  (let ((commit "a0175ee3bccc567396460bf5acd36800cb10c49c")
+        (revision "0"))
+    (package
+      (name "go-github-com-alecthomas-template")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/alecthomas/template")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0qjgvvh26vk1cyfq9fadyhfgdj36f1iapbmr5xp6zqipldz8ffxj"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/alecthomas/template"
+         #:phases %standard-phases))
+      (synopsis "Fork of Go's text/template adding newline elision")
+      (description
+       "This is a fork of Go 1.4's text/template package with one addition: a
+backslash immediately after a closing delimiter will delete all subsequent
+newlines until a non-newline.")
+      (home-page "https://github.com/alecthomas/template")
+      (license license:bsd-3))))
+
