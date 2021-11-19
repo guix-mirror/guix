@@ -1480,8 +1480,7 @@ functionality to display information about the most commonly used services.")
         (base32 "1sshp3lvlkl1i670kxhwsb4xzxl8raz6769kqvgmxzcb63ns9ay1"))))
     (build-system meson-build-system)
     (arguments
-     `(#:configure-flags '("-Dlogind-provider=elogind")
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-before 'configure 'hardcode-paths
            (lambda* (#:key inputs #:allow-other-keys)
@@ -1492,7 +1491,6 @@ functionality to display information about the most commonly used services.")
              #t)))))
     (propagated-inputs
      `(;; As required by wlroots.pc.
-       ("elogind" ,elogind)
        ("eudev" ,eudev)
        ("libinput" ,libinput)
        ("libxkbcommon" ,libxkbcommon)
