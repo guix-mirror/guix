@@ -22,7 +22,7 @@
 ;;; Copyright © 2017, 2020 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
-;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2017, 2021 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017, 2018 Ben Woodcroft <donttrustben@gmail.com>
@@ -641,7 +641,7 @@ replacement for the code@{python-memcached} library.")
         ("python-pymysql" ,python-pymysql)
         ("python-pyperclip" ,python-pyperclip)
         ("python-sqlparse" ,python-sqlparse)))
-    (home-page "http://mycli.net")
+    (home-page "https://www.mycli.net")
     (synopsis
       "Terminal Client for MySQL with AutoCompletion and Syntax Highlighting")
     (description
