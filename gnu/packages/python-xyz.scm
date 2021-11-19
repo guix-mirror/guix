@@ -8483,6 +8483,41 @@ profile, launches a cluster and returns a view.  On program exit it shuts the
 cluster down and deletes the throwaway profile.")
     (license license:expat)))
 
+(define-public python-ipython-sql
+  (package
+    (name "python-ipython-sql")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "ipython-sql" version))
+       (sha256
+        (base32 "0v74ayc6vw98f4jljmwy45qpqbcbhlrb4g1qdyypq9sppxcqx21y"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-build
+           (lambda _
+             ;; The "NEWS.rst" file is missing from the PyPI distribution.
+             ;; (see: https://github.com/catherinedevlin/ipython-sql/issues/164)
+             (substitute* "setup.py"
+               (("NEWS = [^\n]*") "")
+               (("long_description=README \\+ '\\\\n\\\\n' \\+ NEWS,")
+                "long_description=README,")))))))
+    (propagated-inputs
+     (list python-ipython
+           python-ipython-genutils
+           python-prettytable
+           python-six
+           python-sqlalchemy
+           python-sqlparse))
+    (home-page "https://github.com/catherinedevlin/ipython-sql")
+    (synopsis "RDBMS access via IPython")
+    (description "This library connects to a database, using SQLAlchemy URL
+connect strings, then issue SQL commands within IPython or IPython Notebook.")
+    (license license:expat)))
+
 (define-public python-traitlets
   (package
     (name "python-traitlets")
