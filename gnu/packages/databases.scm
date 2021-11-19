@@ -676,6 +676,37 @@ auto-completion and syntax highlighting.")
 \"special\", or \"backslash commands\") on PostgreSQL.")
     (license license:bsd-3)))
 
+(define-public pgcli
+  (package
+    (name "pgcli")
+    (version "3.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pgcli" version))
+       (sha256
+        (base32 "1dy6yzak696107pqv83296h0xhc3ahlfaydm80593gwn37krgpkc"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     (list python-cli-helpers
+           python-click
+           python-configobj
+           python-pendulum
+           python-pgspecial
+           python-prompt-toolkit
+           python-psycopg2
+           python-pygments
+           python-setproctitle
+           python-sqlparse))
+    (native-inputs
+     (list python-ipython-sql))
+    (home-page "https://www.pgcli.com")
+    (synopsis "PostgreSQL CLI with autocompletion and syntax highlighting")
+    (description
+     "@code{pgcli} is a command line interface for PostgreSQL with
+autocompletion and syntax highlighting.")
+    (license license:bsd-3)))
+
 (define-public mycli
   (package
     (name "mycli")
