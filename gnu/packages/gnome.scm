@@ -8753,7 +8753,7 @@ properties, screen resolution, and other GNOME parameters.")
 (define-public gnome-shell
   (package
     (name "gnome-shell")
-    (version "40.5")
+    (version "41.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -8761,9 +8761,7 @@ properties, screen resolution, and other GNOME parameters.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0kph3g4ix23sm3ip2b13rs7hx8sa7fvlvcyy4zdk2iaj56rmadvd"))
-              (patches (search-patches "gnome-shell-disable-test.patch"))
-              (modules '((guix build utils)))))
+                "0ragmcln210zvzhc2br33yprbkj9drjzd7inp5sdxra0a7l73yaj"))))
     (build-system meson-build-system)
     (arguments
      `(#:meson ,meson-0.59         ;positional arguments error with meson 0.60
@@ -8811,7 +8809,8 @@ properties, screen resolution, and other GNOME parameters.")
            (lambda* (#:key inputs #:allow-other-keys)
              ;; Tests require a running X server.
              (system "Xvfb :1 &")
-             (setenv "DISPLAY" ":1")))
+             (setenv "DISPLAY" ":1")
+             (setenv "HOME" "/tmp")))   ;to avoid "fatal" warnings
          (add-after 'install 'wrap-programs
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out              (assoc-ref outputs "out"))
