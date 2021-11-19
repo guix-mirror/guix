@@ -2424,22 +2424,40 @@ standard.")
 (define-public python-eventlet
   (package
     (name "python-eventlet")
-    (version "0.25.1")
+    (version "0.33.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "eventlet" version))
        (sha256
         (base32
-         "1hgz8jq19wlz8vwqj900ry8cjv578nz4scc91mlc8944yid6573c"))))
+         "07qlyhcm0f28sxdizawvdf3d50m3hnbzz5kg3fjp7chvki44y540"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-dnspython" ,python-dnspython)
        ("python-greenlet" ,python-greenlet)
-       ("python-monotonic" ,python-monotonic)))
+       ("python-monotonic" ,python-monotonic)
+       ("python-six" ,python-six)))
+    (native-inputs
+     `(("python-nose" ,python-nose)))
     (arguments
-     ;; TODO: Requires unpackaged 'enum-compat'.
-     '(#:tests? #f))
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'avoid-OSError
+           (lambda _
+             ;; If eventlet tries to load greendns, an OSError is thrown when
+             ;; getprotobyname is called.  Thankfully there is an environment
+             ;; variable to disable the greendns import, so use it:
+             (setenv "EVENTLET_NO_GREENDNS" "yes")))
+         (add-after 'unpack 'delete-broken-tests
+           (lambda _
+             (delete-file "tests/greendns_test.py")
+             (delete-file "tests/socket_test.py")))
+         ;; See https://github.com/eventlet/eventlet/issues/562#issuecomment-714183009
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "nosetests" "-v" "tests/")))))))
     (home-page "https://eventlet.net")
     (synopsis "Concurrent networking library for Python")
     (description
@@ -2450,7 +2468,7 @@ Coroutines ensure that the developer uses a blocking style of programming
 that is similar to threading, but provide the benefits of non-blocking I/O.
 The event dispatch is implicit, which means you can easily use @code{Eventlet}
 from the Python interpreter, or as a small part of a larger application.")
-  (license license:expat)))
+    (license license:expat)))
 
 (define-public python-sinfo
   (package
