@@ -1323,22 +1323,19 @@ with that of libgomp, the GNU Offloading and Multi Processing Library.")
                                                    "binding/libllvmlite.so")))
                (substitute* "llvmlite/binding/ffi.py"
                  (("_lib_name = get_library_name\\(\\)")
-                  (format #f "_lib_name = ~s" libllvmlite.so)))
-               #t)))
+                  (format #f "_lib_name = ~s" libllvmlite.so))))))
          (add-after 'unpack 'skip-failing-tests
            (lambda _
              (substitute* "llvmlite/tests/test_binding.py"
                (("    def test_libm\\(self\\).*" all)
-                (string-append "    @unittest.skip('Fails on Guix')\n" all)))
-             #t))
+                (string-append "    @unittest.skip('Fails on Guix')\n" all)))))
          (add-before 'build 'set-compiler/linker-flags
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((llvm (assoc-ref inputs "llvm")))
                ;; Refer to ffi/Makefile.linux.
                (setenv "CPPFLAGS" "-fPIC")
                (setenv "LDFLAGS" (string-append "-Wl,-rpath="
-                                                llvm "/lib"))
-               #t))))))
+                                                llvm "/lib"))))))))
     (inputs
      `(("llvm"
         ,(let* ((patches-commit "061ab39e1d4591f3aa842458252a19ad01858167")
