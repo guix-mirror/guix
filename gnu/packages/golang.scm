@@ -9071,6 +9071,32 @@ GNU/Linux, this is a proxy for the @command{xdg-open} command.")
       (home-page "https://github.com/skratchdot/open-golang")
       (license license:expat))))
 
+(define-public go-github-com-kingpin
+  (package
+    (name "go-github-com-kingpin")
+    (version "2.2.6")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/alecthomas/kingpin")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0mndnv3hdngr3bxp7yxfd47cas4prv98sqw534mx7vp38gd88n5r"))))
+    (build-system go-build-system)
+    (native-inputs
+     (list go-github-com-alecthomas-template go-github-com-alecthomas-units
+           go-github-com-stretchr-testify))
+    (arguments
+     '(#:import-path "github.com/alecthomas/kingpin"
+       #:phases %standard-phases))
+    (synopsis "Go library provides utilities for building command line interfaces")
+    (description
+     "Go library provides utilities for building command line interfaces.")
+    (home-page "https://github.com/alecthomas/kingpin")
+    (license license:expat)))
+
 (define-public go-github-com-alecthomas-template
   (let ((commit "a0175ee3bccc567396460bf5acd36800cb10c49c")
         (revision "0"))
