@@ -3522,7 +3522,7 @@ and targeted primarily for asynchronous processing of HTTP-requests.")
                  (rename-file (string-append out "/bin")
                               (string-append tools "/bin"))
                  (wrap-program (string-append tools "/bin/dhtcluster")
-                   `("PYTHONPATH" prefix (,site-packages)))))))))
+                   `("GUIX_PYTHONPATH" prefix (,site-packages)))))))))
       (home-page "https://github.com/savoirfairelinux/opendht/")
       (synopsis "Lightweight Distributed Hash Table (DHT) library")
       (description "OpenDHT provides an easy to use distributed in-memory data
