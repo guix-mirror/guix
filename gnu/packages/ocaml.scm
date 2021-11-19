@@ -7096,7 +7096,7 @@ representations can be extracted.")
 (define-public ocaml-uucp
   (package
     (name "ocaml-uucp")
-    (version "13.0.0")
+    (version "14.0.0")
     (source
      (origin
        (method url-fetch)
@@ -7104,7 +7104,7 @@ representations can be extracted.")
                            "uucp-" version ".tbz"))
        (sha256
         (base32
-         "19kf8ypxaakacgg1dwwfzkc2zicaj88cmw11fw2z7zl24dn4gyiq"))))
+         "1yx9nih3d9prb9zizq8fzmmqylf24a6yifhf81h33znrj5xn1mpj"))))
     (build-system ocaml-build-system)
     (arguments
      '(#:build-flags '("build" "--tests" "true")
