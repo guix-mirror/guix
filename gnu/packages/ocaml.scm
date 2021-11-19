@@ -7128,7 +7128,7 @@ selection of character properties of the Unicode character database.")
 (define-public ocaml-uuseg
   (package
     (name "ocaml-uuseg")
-    (version "13.0.0")
+    (version "14.0.0")
     (source
      (origin
        (method url-fetch)
@@ -7136,7 +7136,7 @@ selection of character properties of the Unicode character database.")
                            "uuseg-" version ".tbz"))
        (sha256
         (base32
-         "1a635j8ra6p27g1ivfln3387lhwqmf6vq4r6bn7b6n1qsqyi1rls"))))
+         "1g9zyzjkhqxgbb9mh3cgaawscwdazv6y8kdqvmy6yhnimmfqv25p"))))
     (build-system ocaml-build-system)
     (arguments
      '(#:build-flags '("build" "--tests" "true")
