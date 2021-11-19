@@ -2405,7 +2405,7 @@ for mapping files in memory.  This function is the same as the
 (define-public ocaml-lwt
   (package
     (name "ocaml-lwt")
-    (version "5.4.0")
+    (version "5.4.2")
     (source
       (origin
         (method git-fetch)
@@ -2414,7 +2414,7 @@ for mapping files in memory.  This function is the same as the
                (commit version)))
         (file-name (git-file-name name version))
         (sha256 (base32
-                 "1ay1zgadnw19r9hl2awfjr22n37l7rzxd9v73pjbahavwm2ay65d"))))
+                 "1gkld5ms63lxkaa41jfg8y34qm5lb3ls6mkw03s760zln8i1k3gy"))))
     (build-system dune-build-system)
     (arguments
      `(#:package "lwt"))
