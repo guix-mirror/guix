@@ -1360,22 +1360,17 @@ to JUnit and other XUnit testing frameworks.")
 ;; note that some tests may hang for no obvious reason.
 (define-public ocaml-ounit
   (package
+    (inherit ocaml-ounit2)
     (name "ocaml-ounit")
-    (version "2.0.8")
-    (source (origin
-              (method url-fetch)
-              (uri (ocaml-forge-uri "ounit" version 1749))
-              (sha256
-               (base32
-                "03ifp9hjcxg4m5j190iy373jcn4039d3vy10kmd8p4lfciwzwc1f"))))
-    (build-system ocaml-build-system)
-    (native-inputs
-     `(("libxml2" ,libxml2)           ; for xmllint
-       ("ocamlbuild" ,ocamlbuild)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (delete 'check))))             ; tests are run during build
+         (replace 'install
+           (lambda _
+             (invoke "make" "install-ounit" ,(string-append "version="
+                                                            (package-version ocaml-ounit2))))))))
+    (propagated-inputs
+     `(("ocaml-ounit2" ,ocaml-ounit2)))
     (home-page "http://ounit.forge.ocamlcore.org")
     (synopsis "Unit testing framework for OCaml")
     (description "Unit testing framework for OCaml.  It is similar to JUnit and
