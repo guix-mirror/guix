@@ -2441,17 +2441,17 @@ locks or other synchronization primitives.")
   (package
     (inherit ocaml-lwt)
     (name "ocaml-lwt-react")
-    (version "1.1.3")
+    (version "1.1.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                      (url "https://github.com/ocsigen/lwt")
                      ;; Version from opam
-                     (commit "4.3.0")))
+                     (commit "5.4.0")))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0f7036srqz7zmnz0n164734smgkrqz78r1i35cg30x31kkr3pnn4"))))
+                "1ay1zgadnw19r9hl2awfjr22n37l7rzxd9v73pjbahavwm2ay65d"))))
     (arguments
      `(#:package "lwt_react"))
     (properties `((upstream-name . "lwt_react")))
