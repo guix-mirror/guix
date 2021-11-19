@@ -2811,13 +2811,10 @@ TensorFlow.js, PyTorch, and MediaPipe.")
                     (lambda* (#:key inputs outputs tests? #:allow-other-keys)
                       ;; Run the test suite following the instructions in
                       ;; 'CONTRIBUTING.md'.  XXX: Unfortunately this doesn't
-                      ;; work, unless you set PYTHONPATH presumably.
+                      ;; work, unless you set GUIX_PYTHONPATH presumably.
                       (when tests?
-                        (let ((python-site (site-packages inputs outputs)))
-                          (setenv "PYTHONPATH"
-                                  (string-append python-site ":"
-                                                 (getenv "PYTHONPATH")))
-                          (invoke "python" "test/run_test.py")))))
+                        (add-installed-pythonpath inputs outputs)
+                        (invoke "python" "test/run_test.py"))))
                   (add-after 'install 'remove-test-executables
                     (lambda* (#:key inputs outputs #:allow-other-keys)
                       ;; Remove test executables, but keep other executables
