@@ -63,7 +63,7 @@
 ;;; Copyright © 2019, 2020 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2019, 2020, 2021 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019 Jacob MacDonald <jaccarmac@gmail.com>
-;;; Copyright © 2019, 2020 Giacomo Leidi <goodoldpaul@autistici.org>
+;;; Copyright © 2019, 2020, 2021 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2019 Wiktor Żelazny <wzelazny@vurv.cz>
 ;;; Copyright © 2019, 2020, 2021 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2019, 2021 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
@@ -142,6 +142,7 @@
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages dbm)
+  #:use-module (gnu packages django)
   #:use-module (gnu packages djvu)
   #:use-module (gnu packages docker)
   #:use-module (gnu packages enchant)
@@ -28177,6 +28178,77 @@ interfaces.")
 It is used to parse text files formatted in @acronym{SGML,Standard Generalized
 Mark-up Language}.")
     (license license:bsd-3)))
+
+(define-public dynaconf
+  (package
+    (name "dynaconf")
+    (version "3.1.7")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/rochacbruno/dynaconf")
+         (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0pjyjsdzairpn5vq8nzddhxwxmr18grn272nj31wcy2ipwdl3c3h"))
+       (patches (search-patches "dynaconf-unvendor-deps.patch"))
+       (modules '((guix build utils)))
+       (snippet '(begin
+                   ;; Remove vendored dependencies
+                   (let ((unvendor '("click" "dotenv" "ruamel" "toml")))
+                     (with-directory-excursion "dynaconf/vendor"
+                       (for-each delete-file-recursively unvendor))
+                     (with-directory-excursion "dynaconf/vendor_src"
+                       (for-each delete-file-recursively unvendor)))))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? outputs #:allow-other-keys)
+             (when tests?
+               (setenv "PATH"
+                       (string-append (assoc-ref outputs "out") "/bin:"
+                                      (getenv "PATH")))
+               ;; These tests depend on hvac and a live Vault process.
+               (delete-file "tests/test_vault.py")
+               (invoke "make" "test_only")))))))
+    (propagated-inputs
+     `(("python-click" ,python-click)
+       ("python-configobj" ,python-configobj)
+       ("python-dotenv" ,python-dotenv-0.13.0)
+       ("python-ruamel.yaml" ,python-ruamel.yaml)
+       ("python-toml" ,python-toml)))
+    (native-inputs
+     `(("python-django" ,python-django)
+       ("python-flask" ,python-flask)
+       ("python-pytest" ,python-pytest-6)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-mock" ,python-pytest-mock)))
+    (home-page "https://www.dynaconf.com/")
+    (synopsis "The dynamic configurator for your Python project")
+    (description
+     "This package provides @code{dynaconf} the dynamic configurator manager for
+your Python project.  It provides features such as:
+
+@itemize
+@item Inspired by the @url{https://12factor.net/config, 12-factor application guide};
+@item Settings management (default values, validation, parsing, templating);
+@item Protection of sensitive information (passwords/tokens);
+@item Multiple file formats @code{toml|yaml|json|ini|py} and also customizable
+loaders;
+@item Full support for environment variables to override existing settings
+(dotenv support included);
+@item Optional layered system for multiple environments @code{[default,
+development, testing, production]};
+@item Built-in support for Hashicorp Vault and Redis as settings and secrets storage;
+@item Built-in extensions for Django and Flask web frameworks;
+@item CLI for common operations such as @code{init, list, write, validate, export}.
+@end itemize")
+    (license license:expat)))
 
 (define-public python-iwlib
   (package

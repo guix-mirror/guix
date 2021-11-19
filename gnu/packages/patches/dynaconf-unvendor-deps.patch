@@ -1,0 +1,179 @@
+From 3f7b48195500cbbbbecd3cac2f5308c64004479b Mon Sep 17 00:00:00 2001
+From: Giacomo Leidi <goodoldpaul@autistici.org>
+Date: Sun, 29 Aug 2021 23:39:27 +0200
+Subject: [PATCH] Use system site dependencies.
+
+Box was not unvendored because it appears to be heavily patched.
+---
+ dynaconf/cli.py                       | 4 ++--
+ dynaconf/default_settings.py          | 2 +-
+ dynaconf/loaders/env_loader.py        | 2 +-
+ dynaconf/loaders/toml_loader.py       | 2 +-
+ dynaconf/loaders/yaml_loader.py       | 2 +-
+ dynaconf/utils/parse_conf.py          | 2 +-
+ dynaconf/vendor/box/converters.py     | 4 ++--
+ dynaconf/vendor/box/from_file.py      | 4 ++--
+ dynaconf/vendor_src/box/converters.py | 4 ++--
+ dynaconf/vendor_src/box/from_file.py  | 4 ++--
+ tests/test_cli.py                     | 2 +-
+ 11 files changed, 16 insertions(+), 16 deletions(-)
+
+diff --git a/dynaconf/cli.py b/dynaconf/cli.py
+index 5bb8316..1341a95 100644
+--- a/dynaconf/cli.py
++++ b/dynaconf/cli.py
+@@ -20,8 +20,8 @@ from dynaconf.utils.functional import empty
+ from dynaconf.utils.parse_conf import parse_conf_data
+ from dynaconf.validator import ValidationError
+ from dynaconf.validator import Validator
+-from dynaconf.vendor import click
+-from dynaconf.vendor import toml
++import click
++import toml
+ 
+ 
+ CWD = Path.cwd()
+diff --git a/dynaconf/default_settings.py b/dynaconf/default_settings.py
+index 66601b0..9605fc5 100644
+--- a/dynaconf/default_settings.py
++++ b/dynaconf/default_settings.py
+@@ -8,7 +8,7 @@ from dynaconf.utils import upperfy
+ from dynaconf.utils import warn_deprecations
+ from dynaconf.utils.files import find_file
+ from dynaconf.utils.parse_conf import parse_conf_data
+-from dynaconf.vendor.dotenv import load_dotenv
++from dotenv import load_dotenv
+ 
+ 
+ def try_renamed(key, value, older_key, current_key):
+diff --git a/dynaconf/loaders/env_loader.py b/dynaconf/loaders/env_loader.py
+index e7b13bd..b034c8a 100644
+--- a/dynaconf/loaders/env_loader.py
++++ b/dynaconf/loaders/env_loader.py
+@@ -2,7 +2,7 @@ from os import environ
+ 
+ from dynaconf.utils import upperfy
+ from dynaconf.utils.parse_conf import parse_conf_data
+-from dynaconf.vendor.dotenv import cli as dotenv_cli
++from dotenv import cli as dotenv_cli
+ 
+ 
+ IDENTIFIER = "env"
+diff --git a/dynaconf/loaders/toml_loader.py b/dynaconf/loaders/toml_loader.py
+index 07b973f..d81d675 100644
+--- a/dynaconf/loaders/toml_loader.py
++++ b/dynaconf/loaders/toml_loader.py
+@@ -5,7 +5,7 @@ from dynaconf import default_settings
+ from dynaconf.constants import TOML_EXTENSIONS
+ from dynaconf.loaders.base import BaseLoader
+ from dynaconf.utils import object_merge
+-from dynaconf.vendor import toml
++import toml
+ 
+ 
+ def load(obj, env=None, silent=True, key=None, filename=None):
+diff --git a/dynaconf/loaders/yaml_loader.py b/dynaconf/loaders/yaml_loader.py
+index 33c6532..3ef419a 100644
+--- a/dynaconf/loaders/yaml_loader.py
++++ b/dynaconf/loaders/yaml_loader.py
+@@ -7,7 +7,7 @@ from dynaconf.constants import YAML_EXTENSIONS
+ from dynaconf.loaders.base import BaseLoader
+ from dynaconf.utils import object_merge
+ from dynaconf.utils.parse_conf import try_to_encode
+-from dynaconf.vendor.ruamel import yaml
++from ruamel import yaml
+ 
+ # Add support for Dynaconf Lazy values to YAML dumper
+ yaml.SafeDumper.yaml_representers[
+diff --git a/dynaconf/utils/parse_conf.py b/dynaconf/utils/parse_conf.py
+index c42b07a..01ccdae 100644
+--- a/dynaconf/utils/parse_conf.py
++++ b/dynaconf/utils/parse_conf.py
+@@ -9,7 +9,7 @@ from dynaconf.utils import isnamedtupleinstance
+ from dynaconf.utils import multi_replace
+ from dynaconf.utils import recursively_evaluate_lazy_format
+ from dynaconf.utils.boxing import DynaBox
+-from dynaconf.vendor import toml
++import toml
+ 
+ try:
+     from jinja2 import Environment
+diff --git a/dynaconf/vendor/box/converters.py b/dynaconf/vendor/box/converters.py
+index 93cdcfb..e34c7dc 100644
+--- a/dynaconf/vendor/box/converters.py
++++ b/dynaconf/vendor/box/converters.py
+@@ -7,9 +7,9 @@ _B='utf-8'
+ _A=None
+ import csv,json,sys,warnings
+ from pathlib import Path
+-import dynaconf.vendor.ruamel.yaml as yaml
++import ruamel.yaml as yaml
+ from dynaconf.vendor.box.exceptions import BoxError,BoxWarning
+-from dynaconf.vendor import toml
++import toml
+ BOX_PARAMETERS='default_box','default_box_attr','conversion_box','frozen_box','camel_killer_box','box_safe_prefix','box_duplicates','ordered_box','default_box_none_transform','box_dots','modify_tuples_box','box_intact_types','box_recast'
+ def _exists(filename,create=_E):
+ 	A=filename;B=Path(A)
+diff --git a/dynaconf/vendor/box/from_file.py b/dynaconf/vendor/box/from_file.py
+index daa1137..d75940b 100644
+--- a/dynaconf/vendor/box/from_file.py
++++ b/dynaconf/vendor/box/from_file.py
+@@ -1,8 +1,8 @@
+ from json import JSONDecodeError
+ from pathlib import Path
+ from typing import Union
+-from dynaconf.vendor.toml import TomlDecodeError
+-from dynaconf.vendor.ruamel.yaml import YAMLError
++from toml import TomlDecodeError
++from ruamel.yaml import YAMLError
+ from .exceptions import BoxError
+ from .box import Box
+ from .box_list import BoxList
+diff --git a/dynaconf/vendor_src/box/converters.py b/dynaconf/vendor_src/box/converters.py
+index c9a2293..ae42bf6 100644
+--- a/dynaconf/vendor_src/box/converters.py
++++ b/dynaconf/vendor_src/box/converters.py
+@@ -9,9 +9,9 @@ import sys
+ import warnings
+ from pathlib import Path
+ 
+-import dynaconf.vendor.ruamel.yaml as yaml
++import ruamel.yaml as yaml
+ from dynaconf.vendor.box.exceptions import BoxError, BoxWarning
+-from dynaconf.vendor import toml
++import toml
+ 
+ 
+ BOX_PARAMETERS = ('default_box', 'default_box_attr', 'conversion_box',
+diff --git a/dynaconf/vendor_src/box/from_file.py b/dynaconf/vendor_src/box/from_file.py
+index 2e2a6ad..3f76819 100644
+--- a/dynaconf/vendor_src/box/from_file.py
++++ b/dynaconf/vendor_src/box/from_file.py
+@@ -3,8 +3,8 @@
+ from json import JSONDecodeError
+ from pathlib import Path
+ from typing import Union
+-from dynaconf.vendor.toml import TomlDecodeError
+-from dynaconf.vendor.ruamel.yaml import YAMLError
++from toml import TomlDecodeError
++from ruamel.yaml import YAMLError
+ 
+ 
+ from .exceptions import BoxError
+diff --git a/tests/test_cli.py b/tests/test_cli.py
+index 6693701..df44409 100644
+--- a/tests/test_cli.py
++++ b/tests/test_cli.py
+@@ -11,7 +11,7 @@ from dynaconf.cli import main
+ from dynaconf.cli import read_file_in_root_directory
+ from dynaconf.cli import WRITERS
+ from dynaconf.utils.files import read_file
+-from dynaconf.vendor.click.testing import CliRunner
++from click.testing import CliRunner
+ 
+ 
+ runner = CliRunner()
+
+base-commit: ebf7b17cffd5e08b212948bd8036d580718d5bf8
+-- 
+2.32.0
