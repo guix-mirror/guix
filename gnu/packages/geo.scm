@@ -2014,7 +2014,7 @@ exchanged form one Spatial DBMS and the other.")
 (define-public opencpn
   (package
     (name "opencpn")
-    (version "5.0.0")
+    (version "5.2.4")
     (source
      (origin
        (method git-fetch)
@@ -2023,7 +2023,7 @@ exchanged form one Spatial DBMS and the other.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1xv3h6svw9aay5ixpql231md3pf00qxvhg62z88daraf18hlkfja"))))
+        (base32 "0ffx0lmz1mp5433zqyxigy4qqav32xprpagd66krvihkyvqp2y6y"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)
@@ -2049,20 +2049,23 @@ exchanged form one Spatial DBMS and the other.")
        ("xz" ,xz)
        ("zlib" ,zlib)))
     (arguments
-     `(#:configure-flags '("-DENABLE_PORTAUDIO=ON"
-                           "-DENABLE_SNDFILE=ON"
-                           "-DBUNDLE_TCDATA=ON"
-                           "-DBUNDLE_GSHHS=CRUDE"
-                           "-DCMAKE_C_FLAGS=-fcommon")
+     `(#:configure-flags '("-DOCPN_USE_BUNDLED_LIBS=OFF"
+                           "-DOCPN_ENABLE_PORTAUDIO=ON"
+                           "-DOCPN_ENABLE_SNDFILE=ON"
+                           "-DOCPN_BUNDLE_TCDATA=ON"
+                           "-DOCPN_BUNDLE_GSHHS=ON")
        #:tests? #f ; No tests defined
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-build
-           (lambda _
+           (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "CMakeLists.txt"
-               (("set\\(wxWidgets_CONFIG_OPTIONS.*--toolkit=gtk3" all)
-                (string-append all " --libs all")))
-             #t)))))
+               (("wx-32.c; cc")
+                 "wx-32.c; gcc")
+               (("\"/bin/sh\" \"-c\"")
+                (string-append "\"" (which "bash") "\" \"-c\""))
+               (("include\\(TargetSetup\\)")
+                "set(PKG_TARGET \"guix\")\nset(PKG_TARGET_VERSION 1)")))))))
     (synopsis "Chart plotter and marine GPS navigation software")
     (description
      "OpenCPN is a chart plotter and marine navigation software designed to be
