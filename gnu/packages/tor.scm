@@ -227,7 +227,7 @@ networks.")
 (define-public onionshare-cli
   (package
     (name "onionshare-cli")
-    (version "2.3.2")
+    (version "2.4")
     (source
       (origin
         (method git-fetch)
@@ -236,7 +236,7 @@ networks.")
               (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "1qk0zvbaws9md1lmi0al1jc8v86l65nf7n3w1s36iwsfzazc6clv"))))
+         (base32 "157ryxm4p1q7b3nj32v9fziw1li6s6s203b7ll80js14cbp6dj9d"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pytest" ,python-pytest)))
@@ -248,6 +248,7 @@ networks.")
        ("python-flask" ,python-flask)
        ("python-flask-httpauth" ,python-flask-httpauth)
        ("python-flask-socketio" ,python-flask-socketio)
+       ("python-pynacl" ,python-pynacl)
        ("python-psutil" ,python-psutil)
        ("python-pycryptodome" ,python-pycryptodome)
        ("python-pysocks" ,python-pysocks)
@@ -265,18 +266,21 @@ networks.")
                                 "desktop/src/onionshare/gui_common.py")
                (("shutil\\.which\\(\\\"tor\\\"\\)")
                 (string-append "\"" (which "tor") "\"")))
-             #t))
+             (substitute* "cli/tests/test_cli_common.py"
+               (("/usr/share/tor")
+                (string-append (assoc-ref inputs "tor") "/share/tor")))))
          (add-before 'build 'change-directory
-           (lambda _ (chdir "cli") #t))
+           (lambda _ (chdir "cli")))
          (replace 'check
-           (lambda _
-             (setenv "HOME" "/tmp")
-             ;; Greendns is not needed for testing, and if eventlet tries to
-             ;; load it, an OSError is thrown when getprotobyname is called.
-             ;; Thankfully there is an environment variable to disable the
-             ;; greendns import, so use it:
-             (setenv "EVENTLET_NO_GREENDNS" "yes")
-             (invoke "pytest" "-v" "./tests"))))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (setenv "HOME" "/tmp")
+               ;; Greendns is not needed for testing, and if eventlet tries to
+               ;; load it, an OSError is thrown when getprotobyname is called.
+               ;; Thankfully there is an environment variable to disable the
+               ;; greendns import, so use it:
+               (setenv "EVENTLET_NO_GREENDNS" "yes")
+               (invoke "pytest" "-v" "./tests")))))))
     (home-page "https://onionshare.org/")
     (synopsis "Securely and anonymously share files")
     (description "OnionShare lets you securely and anonymously share files,
