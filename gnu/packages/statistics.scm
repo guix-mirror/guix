@@ -6699,3 +6699,25 @@ original Datasaurus is detailed in \"Same Stats, Different Graphs: Generating
 Datasets with Varied Appearance and Identical Statistics through Simulated
 Annealing\" @url{doi:10.1145/3025453.3025912}.")
     (license license:expat)))
+
+(define-public r-lmom
+  (package
+    (name "r-lmom")
+    (version "2.8")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "lmom" version))
+        (sha256
+          (base32 "1lnj41gynaar5isyijg5nbll64qdxa12dnqvz7lxhaclqcjskqna"))))
+    (properties `((upstream-name . "lmom")))
+    (build-system r-build-system)
+    (native-inputs `(("gfortran" ,gfortran)))
+    (home-page "https://cran.r-project.org/package=lmom")
+    (synopsis "L-Moments for R")
+    (description
+      "This package provides functions related to L-moments: computation
+of L-moments and trimmed L-moments of distributions and data samples;
+parameter estimation; L-moment ratio diagram; plot vs.  quantiles of an
+extreme-value distribution.")
+    (license license:cpl1.0)))
