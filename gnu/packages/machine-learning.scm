@@ -2827,6 +2827,7 @@ TensorFlow.js, PyTorch, and MediaPipe.")
 
        ;; XXX: Tests attempt to download data such as
        ;; <https://raw.githubusercontent.com/pytorch/test-infra/master/stats/slow-tests.json>.
+       ;; We're also missing some Python modules, such as expecttest.
        #:tests? #f))
     (native-inputs
      `(("cmake" ,cmake)
