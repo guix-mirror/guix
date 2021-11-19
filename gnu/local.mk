@@ -519,6 +519,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/sawfish.scm			\
   %D%/packages/scanner.scm			\
   %D%/packages/scheme.scm			\
+  %D%/packages/spreadsheet.scm			\
   %D%/packages/screen.scm			\
   %D%/packages/scribus.scm			\
   %D%/packages/scsi.scm				\
