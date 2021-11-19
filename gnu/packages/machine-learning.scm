@@ -2850,6 +2850,7 @@ TensorFlow.js, PyTorch, and MediaPipe.")
        ("zstd" ,zstd)))
     (propagated-inputs
      `(("python-astunparse" ,python-astunparse)
+       ("python-click" ,python-click)
        ("python-numpy" ,python-numpy)
        ("python-pyyaml" ,python-pyyaml)
        ("python-cffi" ,python-cffi)
