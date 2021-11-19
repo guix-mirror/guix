@@ -2794,14 +2794,15 @@ string values and to directly encode characters in OCaml Buffer.t values.")
 (define-public ocaml-uunf
   (package
     (name "ocaml-uunf")
-    (version "13.0.0")
+    (version "14.0.0")
     (source
      (origin
        (method url-fetch)
-       (uri "https://erratique.ch/software/uunf/releases/uunf-13.0.0.tbz")
+       (uri (string-append "https://erratique.ch/software/uunf/releases/uunf-"
+                           version".tbz"))
        (sha256
         (base32
-         "1qci04nkp24kdls1z4s8kz5dzgky4nwd5r8345nwdrgwmxhw7ksm"))))
+         "17wv0nm3vvwcbzb1b09akw8jblmigyhbfmh1sy9lkb5756ni94a2"))))
     (build-system ocaml-build-system)
     (arguments
      `(#:build-flags (list "build" "--tests" "true")
@@ -2817,15 +2818,16 @@ string values and to directly encode characters in OCaml Buffer.t values.")
      `(("ocamlbuild" ,ocamlbuild)
        ("opam" ,opam)
        ("topkg" ,ocaml-topkg)
-       ;; Test data is otherwise downloaded wit curl
+       ;; Test data is otherwise downloaded with curl
        ("NormalizationTest.txt"
         ,(origin
            (method url-fetch)
            (uri (string-append "https://www.unicode.org/Public/"
                                version
                                "/ucd/NormalizationTest.txt"))
+           (file-name (string-append "NormalizationTest-" version ".txt"))
            (sha256
-              (base32 "07g0ya4f6zfzvpp24ccxkb2yq568kh83gls85rjl950nv5fya3nn"))))))
+              (base32 "0c93pqdkksf7b7zw8y2w0h9i5kkrsdjmh2cr5clrrhp6mg10rcvw"))))))
     (propagated-inputs `(("ocaml-uutf" ,ocaml-uutf)))
     (home-page "https://erratique.ch/software/uunf")
     (synopsis "Unicode text normalization for OCaml")
