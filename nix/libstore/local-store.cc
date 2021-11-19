@@ -839,7 +839,8 @@ template<class T> T LocalStore::getIntLineFromSubstituter(Agent & run)
 {
     string s = getLineFromSubstituter(run);
     T res;
-    if (!string2Int(s, res)) throw Error("integer expected from stream");
+    if (!string2Int(s, res))
+        throw Error(format("integer expected from stream: %1%") % s);
     return res;
 }
 
