@@ -20770,7 +20770,7 @@ describing the key binding changes.")
 (define-public emacs-evil-multiedit
   (package
     (name "emacs-evil-multiedit")
-    (version "1.3.9")
+    (version "1.4.1")
     (source
      (origin
        (method git-fetch)
@@ -20779,8 +20779,7 @@ describing the key binding changes.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "19h3kqylqzbjv4297wkzzxdmn9yxbg6z4ga4ssrqri90xs7m3rw3"))))
+        (base32 "0iwrfkgs0964kxj3kwi8dqn42flhg2pnp4iswc07xi8ri2lflnkv"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-evil" ,emacs-evil)
@@ -20790,15 +20789,15 @@ describing the key binding changes.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'check 'fix-makefile
+         (add-before 'check 'fix-checks
            (lambda _
              (substitute* "Makefile"
                (("@cask exec ") ""))
-             #t)))
+             (substitute* "test/test-helper.el"
+               (("'\\(evil iedit\\)") "nil")))))
        #:tests? #t
        #:test-command '("make" "test")))
-    (home-page
-     "https://github.com/hlissner/evil-multiedit")
+    (home-page "https://github.com/hlissner/evil-multiedit")
     (synopsis "Multiple cursors for Evil mode")
     (description
      "This plugin was an answer to the lack of proper multiple cursor support
