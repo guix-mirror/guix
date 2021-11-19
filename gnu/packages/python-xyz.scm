@@ -12159,14 +12159,14 @@ in the data.")
 (define-public python-jupyter-console
   (package
     (name "python-jupyter-console")
-    (version "6.1.0")
+    (version "6.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "jupyter_console" version))
        (sha256
         (base32
-         "06s3kr5vx0l1y1b7fxb04dmrppscl7q69sl9yyfr0d057d1ssvkg"))))
+         "1iqrxhd8hvlyf8cqbc731ssnwm61wrycnbiczy5wsfahd3hlh8i4"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-ipykernel" ,python-ipykernel)
@@ -12174,7 +12174,8 @@ in the data.")
        ("python-prompt-toolkit" ,python-prompt-toolkit-2)
        ("python-pygments" ,python-pygments)))
     (native-inputs
-     `(("python-nose" ,python-nose)))
+     `(("python-nose" ,python-nose)
+       ("python-pytest" ,python-pytest)))
     (home-page "https://jupyter.org")
     (synopsis "Jupyter terminal console")
     (description "This package provides a terminal-based console frontend for
