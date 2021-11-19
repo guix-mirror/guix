@@ -9098,3 +9098,29 @@ newlines until a non-newline.")
       (home-page "https://github.com/alecthomas/template")
       (license license:bsd-3))))
 
+(define-public go-github-com-alecthomas-units
+  (let ((commit "2efee857e7cfd4f3d0138cc3cbb1b4966962b93a")
+        (revision "0"))
+    (package
+      (name "go-github-com-alecthomas-units")
+      (version "0.0.0")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/alecthomas/units")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1j65b91qb9sbrml9cpabfrcf07wmgzzghrl7809hjjhrmbzri5bl"))))
+      (build-system go-build-system)
+      (native-inputs
+       (list go-github-com-stretchr-testify))
+      (arguments
+       '(#:import-path "github.com/alecthomas/units"
+         #:phases %standard-phases))
+      (synopsis "Helpful unit multipliers and functions for Go")
+      (description
+       "This library provides unit multipliers and functions for Go.")
+      (home-page "https://github.com/alecthomas/units")
+      (license license:expat))))
