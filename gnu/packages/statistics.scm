@@ -6783,3 +6783,50 @@ performs unconditional exact test using McNemar's Z-statistic
 McNemar's Z-statistic with continuity correction, or using CSM test.
 Calculates confidence intervals for the difference in proportion.")
     (license license:gpl2)))
+
+(define-public r-desctools
+  (package
+    (name "r-desctools")
+    (version "0.99.43")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "DescTools" version))
+        (sha256
+          (base32 "1zx4wwry7pph21q37r0r1vgx616pki232ych2wl9z2s2fmclwg4c"))))
+    (properties `((upstream-name . "DescTools")))
+    (build-system r-build-system)
+    (propagated-inputs
+      `(("r-bh" ,r-bh)
+        ("r-boot" ,r-boot)
+        ("r-data-table" ,r-data-table)
+        ("r-exact" ,r-exact)
+        ("r-expm" ,r-expm)
+        ("r-gld" ,r-gld)
+        ("r-mass" ,r-mass)
+        ("r-mvtnorm" ,r-mvtnorm)
+        ("r-rcpp" ,r-rcpp)
+        ("r-rstudioapi" ,r-rstudioapi)))
+    (native-inputs `(("gfortran" ,gfortran)))
+    (home-page "https://andrisignorell.github.io/DescTools/")
+    (synopsis "Tools for Descriptive Statistics")
+    (description
+      "This package provides a collection of miscellaneous basic statistic
+functions and convenience wrappers for efficiently describing data.
+The author's intention was to create a toolbox, which facilitates the
+(notoriously time consuming) first descriptive tasks in data analysis,
+consisting of calculating descriptive statistics, drawing graphical
+summaries and reporting the results.  The package contains furthermore
+functions to produce documents using MS Word (or PowerPoint) and functions
+to import data from Excel.  Many of the included functions can be found
+scattered in other packages and other sources written partly by Titans
+of R.  The reason for collecting them here, was primarily to have them
+consolidated in ONE instead of dozens of packages (which themselves might
+depend on other packages which are not needed at all), and to provide a
+common and consistent interface as far as function and arguments naming,
+NA handling, recycling rules etc.  are concerned.  Google style guides
+were used as naming rules (in absence of convincing alternatives).
+The BigCamelCase style was consequently applied to functions borrowed
+from contributed R packages as well.")
+    (license license:gpl2+)))
+
