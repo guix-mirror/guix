@@ -7063,7 +7063,7 @@ client chooses the concrete timeline.")
 (define-public ocaml-uucd
   (package
     (name "ocaml-uucd")
-    (version "13.0.0")
+    (version "14.0.0")
     (source
      (origin
        (method url-fetch)
@@ -7071,7 +7071,7 @@ client chooses the concrete timeline.")
                            "uucd-" version ".tbz"))
        (sha256
         (base32
-         "1fg77hg4ibidkv1x8hhzl8z3rzmyymn8m4i35jrdibb8adigi8v2"))))
+         "0fc737v5gj3339jx4x9xr096lxrpwvp6vaiylhavcvsglcwbgm30"))))
     (build-system ocaml-build-system)
     (arguments
      '(#:build-flags '("build" "--tests" "true")
