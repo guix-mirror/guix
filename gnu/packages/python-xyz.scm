@@ -27661,6 +27661,18 @@ systems in Python.")
 key-value pairs from a @code{.env} file and set them as environment variables.")
     (license license:bsd-3)))
 
+(define-public python-dotenv-0.13.0
+  (package (inherit python-dotenv)
+    (name "python-dotenv")
+    (version "0.13.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "python-dotenv" version))
+       (sha256
+        (base32
+         "0x5dagmfn31phrbxlwacw3s4w5vibv8fxqc62nqcdvdhjsy0k69v"))))))
+
 (define-public date2name
   (let ((commit "6c8f37277e8ec82aa50f90b8921422be30c4e798")
         (revision "1"))
