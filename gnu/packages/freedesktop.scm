@@ -876,7 +876,7 @@ with localed.  This package is extracted from the broader systemd package.")
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("scdoc" ,scdoc)))
-    (inputs
+    (propagated-inputs
      `(("elogind" ,elogind)))
     (home-page "https://sr.ht/~kennylevinsen/seatd")
     (synopsis "Seat management daemon and library")
