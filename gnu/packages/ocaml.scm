@@ -2986,12 +2986,32 @@ multitude of other network protocols (FTP/SMTP/RTSP/etc).")
      `(("ocaml-alcotest" ,ocaml-alcotest)
        ("ocaml-bos" ,ocaml-bos)
        ("ocaml-rresult" ,ocaml-rresult)))
+    (properties `((ocaml4.07-variant . ,(delay ocaml4.07-base64))))
     (home-page "https://github.com/mirage/ocaml-base64")
     (synopsis "Base64 encoding for OCaml")
     (description "Base64 is a group of similar binary-to-text encoding schemes
 that represent binary data in an ASCII string format by translating it into a
 radix-64 representation.  It is specified in RFC 4648.")
     (license license:isc)))
+
+(define-public ocaml4.07-base64
+  (package-with-ocaml4.07
+    (package
+      (inherit ocaml-base64)
+      (version "3.2.0")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/mirage/ocaml-base64")
+                       (commit (string-append "v" version))))
+                (file-name (git-file-name "ocaml-base64" version))
+                (sha256
+                 (base32
+                  "1ilw3zj0w6cq7i4pvr8m2kv5l5f2y9aldmv72drlwwns013b1gwy"))))
+      (arguments
+       ;; Tests are likely incompatible with our recent alcotest
+       `(#:tests? #f))
+      (properties '()))))
 
 (define-public ocamlify
   (package
