@@ -577,7 +577,7 @@ driven and does not detract you from your daily work.")
 (define-public nyxt
   (package
     (name "nyxt")
-    (version "2.2.0")
+    (version "2.2.3")
     (source
      (origin
        (method git-fetch)
@@ -586,11 +586,11 @@ driven and does not detract you from your daily work.")
              (commit version)))
        (sha256
         (base32
-         "0l8x32fsvk2gbymcda1yc0ggnsymjazqd58vmi05ifiiv7jwxyjw"))
+         "1v1szbj44pwxh3k70fvg78xjfkab29dqnlafa722sppdyqd06cqp"))
        (file-name (git-file-name "nyxt" version))))
     (build-system gnu-build-system)
     (arguments
-     `(#:make-flags (list "nyxt" "NYXT_INTERNAL_QUICKLISP=false"
+     `(#:make-flags (list "nyxt" "NYXT_SUBMODULES=false"
                           (string-append "DESTDIR=" (assoc-ref %outputs "out"))
                           "PREFIX=")
        #:strip-binaries? #f             ; Stripping breaks SBCL binaries.
@@ -685,9 +685,9 @@ driven and does not detract you from your daily work.")
        ("gobject-introspection" ,gobject-introspection)))
     (synopsis "Extensible web-browser in Common Lisp")
     (home-page "https://nyxt.atlas.engineer")
-    (description "Nyxt is a keyboard-oriented, extensible web browser designed
-for power users.  Conceptually inspired by Emacs and Vim, it has familiar
-key-bindings (Emacs, vi, CUA), and is fully configurable in Common Lisp.")
+    (description "Nyxt is a keyboard-oriented, extensible web-browser designed
+for power users.  The application has familiar Emacs and VI key-bindings and
+is fully configurable and extensible in Common Lisp.")
     (license license:bsd-3)))
 
 (define-public lagrange
