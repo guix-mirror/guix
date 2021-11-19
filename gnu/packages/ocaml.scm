@@ -1060,7 +1060,7 @@ Emacs.")
 (define-public ocaml-menhir
   (package
     (name "ocaml-menhir")
-    (version "20210419")
+    (version "20211012")
     (source
      (origin
        (method git-fetch)
@@ -1069,7 +1069,7 @@ Emacs.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0jcbr7s3iwfr7xxfybs3h407g76yfp5yq5r9i0wg2ahvvbqh03ky"))))
+        (base32 "08kf5apbv15n2kcr3qhyr3rvsf2lg25ackr3x9kfgiiqc0p3sz40"))))
     (build-system dune-build-system)
     (inputs
      `(("ocaml" ,ocaml)))
