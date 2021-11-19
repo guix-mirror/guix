@@ -27625,6 +27625,29 @@ cons cells in Python.")
 systems in Python.")
     (license license:bsd-3)))
 
+(define-public python-dotenv
+  (package
+    (name "python-dotenv")
+    (version "0.19.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "python-dotenv" version))
+       (sha256
+        (base32 "0pv5ygpr6syc6zkw21in4ysqs3k7qaxk9m1g5pzlafwm3silkpm5"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-click" ,python-click)))
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)
+       ("python-sh" ,python-sh)))
+    (home-page "https://github.com/theskumar/python-dotenv")
+    (synopsis "Setup environment variables according to .env files")
+    (description
+     "This package provides the @code{python-dotenv} Python module to read
+key-value pairs from a @code{.env} file and set them as environment variables.")
+    (license license:bsd-3)))
 
 (define-public date2name
   (let ((commit "6c8f37277e8ec82aa50f90b8921422be30c4e798")
