@@ -5715,34 +5715,31 @@ Wayland.")
     (name "libxcursor")
     (version "1.2.0")
     (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/lib/libXcursor-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "10l7c9fm0jmpkm9ab9dz8r6m1pr87vvgqjnbx1psz50h4pwfklrs"))))
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://xorg/individual/lib/libXcursor-"
+             version
+             ".tar.bz2"))
+       (sha256
+        (base32
+         "10l7c9fm0jmpkm9ab9dz8r6m1pr87vvgqjnbx1psz50h4pwfklrs"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))
     (propagated-inputs
-      `(("libx11" ,libx11)
-        ("libxrender" ,libxrender)
-        ("libxfixes" ,libxfixes)
-        ("xorgproto" ,xorgproto)))
+     `(("libx11" ,libx11)
+       ("libxrender" ,libxrender)
+       ("libxfixes" ,libxfixes)
+       ("xorgproto" ,xorgproto)))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
-;; TODO: add XCURSOR_PATH=.../share/icons to profile search paths, so
-;; libXcursor finds cursors installed into a profile.  If we solve bugs
-;; <http://bugs.gnu.org/20255> and <http://bugs.gnu.org/22138>, we can fix
-;; this with a search-path as follows:
-;;
-;;    (native-search-paths
-;;     (list (search-path-specification
-;;            (variable "XCURSOR_PATH")
-;;            (files '("share/icons")))))
+     `(("pkg-config" ,pkg-config)))
+    ;; FIXME: The search path below won't be very effective until the bugs
+    ;; <http://bugs.gnu.org/20255> and <http://bugs.gnu.org/22138> are solved.
+    (native-search-paths
+     (list (search-path-specification
+            (variable "XCURSOR_PATH")
+            (files '("share/icons")))))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg Cursor management library")
     (description "Xorg Cursor management library.")
