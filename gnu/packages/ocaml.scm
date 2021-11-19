@@ -3459,12 +3459,29 @@ big- and little-endian, with their unsafe counter-parts.")
      `(("ocaml-bigarray-compat" ,ocaml-bigarray-compat)))
     (native-inputs
      `(("ocaml-alcotest" ,ocaml-alcotest)))
+    (properties `((ocaml4.07-variant . ,(delay ocaml4.07-cstruct))))
     (home-page "https://github.com/mirage/ocaml-cstruct")
     (synopsis "Access C structures via a camlp4 extension")
     (description "Cstruct is a library and syntax extension to make it easier
 to access C-like structures directly from OCaml.  It supports both reading and
 writing to these structures, and they are accessed via the Bigarray module.")
     (license license:isc)))
+
+(define-public ocaml4.07-cstruct
+  (package-with-ocaml4.07
+    (package
+      (inherit ocaml-cstruct)
+      (version "5.1.1")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/mirage/ocaml-cstruct")
+                       (commit (string-append "v" version))))
+                (file-name (git-file-name "ocaml-cstruct" version))
+                (sha256
+                 (base32
+                  "0jj3whs8r3jc524i9bb67rffh7y7r157hjgvws0bkxijxpjzwkbk"))))
+      (properties '()))))
 
 (define-public ocaml-hex
   (package
