@@ -5803,7 +5803,7 @@ offered, one SAX-like, the other similar to StAX.")
 Common Lisp, including support for compact syntax, DTD Compatibility, and the
 XSD type library.")
     (home-page "http://www.lichteblau.com/cxml-rng/")
-    (license license:x11-style))))
+    (license license:bsd-2))))
 
 (define-public cl-cxml-rng
   (sbcl-package->cl-source-package sbcl-cxml-rng))
