@@ -5271,7 +5271,7 @@ writing C extensions for Python as easy as Python itself.")
 
 ;; NOTE: when upgrading numpy please make sure that python-pandas and
 ;; python-scipy still build, as these three packages are often used together.
-(define-public python-numpy
+(define-public python-numpy-next
   (package
     (name "python-numpy")
     (version "1.21.3")
@@ -5343,7 +5343,7 @@ capabilities.")
 ;; Numpy 1.16.x are the last versions that support Python 2.
 (define-public python2-numpy
   (let ((numpy (package-with-python2
-                (strip-python2-variant python-numpy))))
+                (strip-python2-variant python-numpy-next))))
     (package
       (inherit numpy)
       (version "1.16.5")
@@ -5359,7 +5359,7 @@ capabilities.")
 ;; Needed by python-numba, see https://github.com/numba/numba/issues/7176
 (define-public python-numpy-1.20
   (package
-    (inherit python-numpy)
+    (inherit python-numpy-next)
     (version "1.20.3")
     (source (origin
               (method url-fetch)
@@ -5372,8 +5372,10 @@ capabilities.")
     ;; 92 tests fail, many of them because parts of the temp file name
     ;; accidentally ends up in a comparison.
     (arguments
-     (substitute-keyword-arguments (package-arguments python-numpy)
+     (substitute-keyword-arguments (package-arguments python-numpy-next)
        ((#:tests? _ #t) #f)))))
+
+(define-public python-numpy python-numpy-1.20)
 
 ;; NOTE: NumPy 1.8 is packaged only for Python 2 because it is of
 ;; interest only for legacy code going back to NumPy's predecessor
@@ -22037,7 +22039,7 @@ validation testing and application logic.")
                  (invoke "python3" "-m" "numba.runtests" "-v" "-m"))))))))
     (propagated-inputs
      `(("python-llvmlite" ,python-llvmlite)
-       ("python-numpy" ,python-numpy-1.20)
+       ("python-numpy" ,python-numpy)
        ("python-singledispatch" ,python-singledispatch)))
     (native-inputs                      ;for tests
      `(("python-jinja2" ,python-jinja2)
