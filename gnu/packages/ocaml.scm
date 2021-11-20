@@ -3478,7 +3478,7 @@ standard iterator type starting from 4.07.")
 (define-public ocaml-ocplib-endian
   (package
     (name "ocaml-ocplib-endian")
-    (version "1.0")
+    (version "1.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3486,12 +3486,13 @@ standard iterator type starting from 4.07.")
                      (commit version)))
               (sha256
                (base32
-                "0s1ld3kavz892b8awyxyg1mr98h2g61gy9ci5v6yb49bsii6wicw"))
+                "1klj4g451s7m5r8bxmwc1rpvngpqdm40csnx9smgc06pwy2fax2c"))
               (file-name (git-file-name name version))))
-    (build-system ocaml-build-system)
+    (build-system dune-build-system)
+    (arguments
+     `(#:test-target "tests"))
     (native-inputs
-     `(("cppo" ,ocaml-cppo)
-       ("ocamlbuild" ,ocamlbuild)))
+     `(("cppo" ,ocaml-cppo)))
     (home-page "https://github.com/OCamlPro/ocplib-endian")
     (synopsis "Optimised functions to read and write int16/32/64 from strings
 and bigarrays")
