@@ -25,6 +25,7 @@
 ;;; Copyright © 2021 ZmnSCPxj jxPCSnmZ <ZmnSCPxj@protonmail.com>
 ;;; Copyright © 2021 François J <francois-oss@avalenn.eu>
 ;;; Copyright © 2021 Foo Chuan Wei <chuanwei.foo@hotmail.com>
+;;; Copyright © 2021 John Kehayias <john.kehayias@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -305,7 +306,14 @@ and dynamically with report tools based on filtering and graphical charts.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0x6jxwss3wwzbzlwmnwb8yzjk8f9wfawif4f1b74z2qg6hc4r7f6"))))
+        (base32 "0x6jxwss3wwzbzlwmnwb8yzjk8f9wfawif4f1b74z2qg6hc4r7f6"))
+       (snippet '(begin
+                   ;; Remove test that fails due to difference in
+                   ;; reported error message (missing leading "./" in the
+                   ;; file name); started some time after Guix commit
+                   ;; 727f05e1e285aa52f5a19ec923fdc2259859b4b1
+                   (delete-file "test/regress/BF3C1F82-2.test")
+                   #true))))
     (build-system cmake-build-system)
     (arguments
      `(#:modules (,@%cmake-build-system-modules
