@@ -23531,7 +23531,7 @@ time-or-computationally-expensive properties quick and easy and works in Python
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0yi5y9pfpbc4bc4ibr8cblif8ls1wf3k0zawyx86r2qwxxkkyd6k"))))
+        (base32 "1q05pzca3wfwgnbg03l3bagnhh348yx68w4aa91rg3g8zlviwjz1"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-branca" ,python-branca)
