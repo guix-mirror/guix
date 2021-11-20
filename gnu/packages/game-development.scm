@@ -1625,7 +1625,8 @@ also comes with a built-in image and sound editor.")
        ;; SDL header files are referenced without the preceeding "SDL/".
        (list (string-append "CFLAGS=-I"
                             (assoc-ref %build-inputs "sdl-union")
-                            "/include/SDL")
+                            "/include/SDL"
+                            " -fcommon")
              (string-append "prefix="
                             (assoc-ref %outputs "out")))
        #:tests? #f)) ; no check target
