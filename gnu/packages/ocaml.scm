@@ -1552,16 +1552,17 @@ archive(native) = \"frontc.cmxa\""))))
 (define-public ocaml-qcheck
   (package
     (name "ocaml-qcheck")
-    (version "0.12")
+    (version "0.18")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/c-cube/qcheck")
-             (commit version)))
+             (commit (string-append "v" version))))
        (file-name (git-file-name name version))
+       (patches (search-patches "ocaml-qcheck-fix-test-whitespace.patch"))
        (sha256
-        (base32 "1llnfynhlndwyjig7wrayjnds2b3mggp5lw20dwxhn2i2lkkb22m"))))
+        (base32 "1s652hrj2sxqj30dfl300zjvvqk3r62a1bnzqw1hqyf6pi88qn8x"))))
     (build-system dune-build-system)
     (arguments
      `(#:test-target "."
@@ -1577,6 +1578,7 @@ archive(native) = \"frontc.cmxa\""))))
        ("ocaml-ounit" ,ocaml-ounit)))
     (native-inputs
      `(("ocamlbuild" ,ocamlbuild)))
+    (properties `((ocaml4.07-variant . ,(delay ocaml4.07-qcheck))))
     (home-page "https://github.com/c-cube/qcheck")
     (synopsis "QuickCheck inspired property-based testing for OCaml")
     (description "QuickCheck inspired property-based testing for OCaml. This
@@ -1584,6 +1586,22 @@ module checks invariants (properties of some types) over randomly
 generated instances of the type. It provides combinators for generating
 instances and printing them.")
     (license license:lgpl3+)))
+
+(define-public ocaml4.07-qcheck
+  (package-with-ocaml4.07
+    (package
+      (inherit ocaml-qcheck)
+      (version "0.12")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/c-cube/qcheck")
+                      (commit version)))
+                (file-name (git-file-name "ocaml-qcheck" version))
+                (sha256
+                 (base32
+                  "1llnfynhlndwyjig7wrayjnds2b3mggp5lw20dwxhn2i2lkkb22m"))))
+      (properties '()))))
 
 (define-public ocaml-qtest
   (package
