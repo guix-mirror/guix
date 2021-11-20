@@ -4012,13 +4012,13 @@ logic-free templating system Mustache.")
 (define-public python-joblib
   (package
     (name "python-joblib")
-    (version "0.14.1")
+    (version "1.1.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "joblib" version))
               (sha256
                (base32
-                "1j464w137w6s367gl697j1l63g52akydrxgv4czlck36ynjfwc06"))))
+                "0d8ypyhsw1bjr96zan9ms8wbvnzbjqxniq4vcszghcrps7ngqn21"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -4027,7 +4027,9 @@ logic-free templating system Mustache.")
            (lambda* (#:key tests? #:allow-other-keys)
              (when tests?
                (setenv "JOBLIB_MULTIPROCESSING" "0")
-               (invoke "pytest" "-v" "joblib")))))))
+               (invoke "pytest" "-v" "joblib"
+                       ;; We disable this test to avoid having to depend on ipython/jupyter
+                       "-k" "not test_parallel_call_cached_function_defined_in_jupyter")))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
     (home-page "https://joblib.readthedocs.io/")
