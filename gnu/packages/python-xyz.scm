@@ -4039,8 +4039,17 @@ and lazy re-evaluation (memoize pattern), easy simple parallel computing
 logging and tracing of the execution.")
     (license license:bsd-3)))
 
+;; Newer versions of joblib don't support Python 2.
 (define-public python2-joblib
-  (package-with-python2 python-joblib))
+  (package
+    (inherit (package-with-python2 python-joblib))
+    (version "0.14.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "joblib" version))
+              (sha256
+               (base32
+                "1j464w137w6s367gl697j1l63g52akydrxgv4czlck36ynjfwc06"))))))
 
 (define-public python-daemon
   (package
