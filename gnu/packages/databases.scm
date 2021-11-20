@@ -617,6 +617,34 @@ replacement for the code@{python-memcached} library.")
 (define-public python2-pylibmc
   (package-with-python2 python-pylibmc))
 
+(define-public litecli
+ (package
+  (name "litecli")
+  (version "1.6.0")
+  (source
+   (origin
+     (method url-fetch)
+     (uri (pypi-uri "litecli" version))
+     (sha256
+      (base32 "1yb706mgzizzijm1k0fbny98jf58qh5q6f2870rbplxlfla4w9sd"))))
+  (build-system python-build-system)
+  (propagated-inputs
+   `(("python-cli-helpers" ,python-cli-helpers)
+     ("python-click" ,python-click)
+     ("python-configobj" ,python-configobj)
+     ("python-prompt-toolkit" ,python-prompt-toolkit)
+     ("python-pygments" ,python-pygments)
+     ("python-sqlparse" ,python-sqlparse)))
+  (native-inputs
+   `(("python-mock" ,python-mock)
+     ("python-pytest" ,python-pytest)))
+  (home-page "https://litecli.com")
+  (synopsis "CLI for SQLite databases")
+  (description
+   "@code{litecli} is a command-line client for SQLite databases that has
+auto-completion and syntax highlighting.")
+  (license license:bsd-3)))
+
 (define-public mycli
   (package
     (name "mycli")
