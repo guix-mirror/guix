@@ -8893,8 +8893,9 @@ replacement for strverscmp.")
                  ;; ModuleNotFoundError: No module named 'multiqc.modules.ccs'
                  (delete-file "/tmp/tests/unit_tests/test_ccs.py")
                  (with-directory-excursion "/tmp/tests"
-                   (setenv "PYTHONPATH" (string-append here ":" (getenv "PYTHONPATH")))
-                   (invoke "python" "-munittest" "discover")))))))))
+                   (setenv "GUIX_PYTHONPATH"
+                           (string-append here ":" (getenv "GUIX_PYTHONPATH")))
+                   (invoke "python" "-munittest" "discover"))))))
     (propagated-inputs
      `(("python-click" ,python-click)
        ("python-coloredlogs" ,python-coloredlogs)
