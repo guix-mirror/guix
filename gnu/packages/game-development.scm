@@ -1608,6 +1608,7 @@ also comes with a built-in image and sound editor.")
               (method url-fetch)
               ;; XXX: There is no URL that contains the version. :(
               (uri "http://pulkomandy.tk/projects/GrafX2/downloads/21")
+              (file-name (string-append "grafx2-" version ".tgz"))
               (sha256
                (base32
                 "0svsy6rqmdj11b400c242i2ixihyz0hds0dgicqz6g6dcgmcl62q"))))
