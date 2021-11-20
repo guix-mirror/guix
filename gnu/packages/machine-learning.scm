@@ -926,7 +926,7 @@ computing environments.")
 (define-public python-scikit-learn
   (package
     (name "python-scikit-learn")
-    (version "0.24.2")
+    (version "1.0.1")
     (source
      (origin
        (method git-fetch)
@@ -936,7 +936,7 @@ computing environments.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0hm92biqwwc87bqnr56lwa5bz77lr7k9q21rdwksnfzq3vsdp2nm"))))
+         "07k92y78sk4074vh5hp8y63pwl592wgl8azrfp0q84chxk8igfx9"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -952,7 +952,9 @@ computing environments.")
                ;; Some tests require write access to $HOME.
                (setenv "HOME" "/tmp")
 
-               (invoke "pytest" "sklearn" "-m" "not network"))))
+               (invoke "pytest" "sklearn" "-m" "not network"
+                       ;; This test tries to access the internet.
+                       "-k" "not test_load_boston_alternative"))))
          (add-before 'reset-gzip-timestamps 'make-files-writable
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Make sure .gz files are writable so that the
