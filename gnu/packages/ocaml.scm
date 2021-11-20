@@ -1718,7 +1718,7 @@ config.h files for instance.  Among other things, dune-configurator allows one t
 (define-public ocaml-csexp
   (package
     (name "ocaml-csexp")
-    (version "1.3.2")
+    (version "1.5.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1727,7 +1727,7 @@ config.h files for instance.  Among other things, dune-configurator allows one t
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "190zppgvdjgghmrnx67ayzzk86qdjy3yn5fcrcw08wsh93384pl0"))))
+                "1v5y4x1a21193h8q536c0s0d8hv3hyyky4pgzm2dw9807v36s2x4"))))
     (build-system dune-build-system)
     (arguments
      `(#:tests? #f; FIXME: needs ppx_expect, but which version?
