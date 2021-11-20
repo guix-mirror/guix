@@ -14974,7 +14974,7 @@ large-scale data-analysis.")
                                 (string-append ":" out
                                                "/lib/perl5/site_perl"))
                            pl)
-                 (for-each (cut wrap <> "PYTHONPATH") py))))))))
+                 (for-each (cut wrap <> "GUIX_PYTHONPATH") py))))))))
     (inputs
      `(("libgd" ,gd)
        ("perl-gd" ,perl-gd)
