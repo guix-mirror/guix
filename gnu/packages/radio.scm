@@ -2040,7 +2040,7 @@ voice formats.")
 (define-public sdrangel
   (package
     (name "sdrangel")
-    (version "6.17.1")
+    (version "6.17.3")
     (source
      (origin
        (method git-fetch)
@@ -2049,7 +2049,7 @@ voice formats.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1yraif6dzs5sdskxnj937x613xz3zxnqim5mnk18vj2m0apcaqam"))))
+        (base32 "16la2g1xqahgnni1qhpnfbqlcqsiihxnm2d6nv2241khb3lhi0i9"))))
     (build-system qt-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
@@ -2102,7 +2102,16 @@ voice formats.")
                 (string-append "-DSGP4_DIR="
                                #$(this-package-input "sgp4"))
                 (string-append "-DSOAPYSDR_DIR="
-                               #$(this-package-input "soapysdr")))))
+                               #$(this-package-input "soapysdr")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-boost-compatibility
+           (lambda _
+             (substitute*
+                 '("plugins/channelrx/noisefigure/noisefigure.cpp"
+                   "plugins/channelrx/noisefigure/noisefigureenrdialog.cpp")
+               (("boost::math::barycentric_rational<double>")
+                "boost::math::interpolators::barycentric_rational<double>")))))))
     (home-page "https://github.com/f4exb/sdrangel/wiki")
     (synopsis "Software defined radio")
     (description
