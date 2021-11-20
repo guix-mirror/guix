@@ -12265,7 +12265,8 @@ Jupyter kernels such as IJulia and IRKernel.")
              #t)))))
     (propagated-inputs
      `(("python-ipykernel" ,python-ipykernel)
-       ("python-ipython" ,python-ipython)))
+       ("python-ipython" ,python-ipython)
+       ("python-pyqt" ,python-pyqt)))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
     (home-page "https://jupyter.org")
