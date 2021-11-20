@@ -6999,7 +6999,7 @@ and SVG file output.")
 (define-public ocaml-version
   (package
     (name "ocaml-version")
-    (version "3.0.0")
+    (version "3.4.0")
     (source
      (origin
        (method git-fetch)
@@ -7009,7 +7009,7 @@ and SVG file output.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "13770mp6adjjbx63zsbh6506dqxz241chw8c3y403sxpw45hnaw6"))))
+         "1c13zk1qna59m5z9jx7da3p7cxd48scpyk7zg7gi6gc6hx5hhjx8"))))
     (build-system dune-build-system)
     (arguments `(#:tests? #f))          ; no tests
     (properties '((upstream-name . "ocaml-version")))
