@@ -5465,21 +5465,17 @@ definitions.")
 (define-public ocaml-ppx-variants-conv
   (package
     (name "ocaml-ppx-variants-conv")
-    (version "0.14.1")
+    (version "0.14.2")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/janestreet/ppx_variants_conv")
              (commit (string-append "v" version))))
-       (patches
-        (search-patches
-         ;; Fix build when building with ocaml-ppxlib@0.23.0.
-         "ocaml-ppx-variants-ppxlib-api-change.patch"))
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0q6a43zrwqzdz7aja0k44a2llyjjj5xzi2kigwhsnww3g0r5ig84"))))
+         "1p11fiz4m160hs0xzg4g9rxchp053sz3s3d1lyciqixad1xi47a4"))))
     (build-system dune-build-system)
     (propagated-inputs
      `(("ocaml-base" ,ocaml-base)
