@@ -6,7 +6,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Erik Edrosa <erik.edrosa@gmail.com>
 ;;; Copyright © 2016, 2019, 2020, 2021 Eraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016, 2017 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2016, 2017, 2021 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016, 2017 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
 ;;; Copyright © 2016, 2021 Amirouche <amirouche@hypermove.net>
 ;;; Copyright © 2016, 2019, 2021 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
@@ -1462,7 +1462,7 @@ written in pure Scheme by using Guile's foreign function interface.")
 (define-public guile-xosd
   (package
     (name "guile-xosd")
-    (version "0.2.1")
+    (version "0.2.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/alezost/" name
@@ -1470,12 +1470,22 @@ written in pure Scheme by using Guile's foreign function interface.")
                                   "/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1ri5065c16kmgrf2pysn2ymxjqi5302lhpb07wkl1jr75ym8fn8p"))))
+                "10r29bpyrsvjalnzkam2falj9k34lvxmch05zs606zp1nk93whp3"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'set-cpath
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "CPATH"
+                     (string-append
+                      (assoc-ref inputs "guile") "/include/guile/3.0:"
+                      (or (getenv "CPATH") "")))
+             #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("guile" ,guile-2.2)
+     `(("guile" ,guile-3.0)
        ("libx11" ,libx11)
        ("libxext" ,libxext)
        ("libxinerama" ,libxinerama)
