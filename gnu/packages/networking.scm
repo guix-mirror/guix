@@ -995,7 +995,17 @@ or server shell scripts with network connections.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0p9ilj4v96q32klavx0phw9va21fjp8vpk11nbh6v2ppxnnxfhwm"))))
+                "0p9ilj4v96q32klavx0phw9va21fjp8vpk11nbh6v2ppxnnxfhwm"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; 'sys_errlist' & co. are gone in glibc 2.33; work around it.
+               '(substitute* "percent_m.c"
+                  (("sys_errlist\\[errno\\]")
+                   "strerror (errno)")
+                  (("errno < sys_nerr")
+                   "(1)")
+                  (("errno >= sys_nerr")
+                   "(0)")))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
