@@ -364,6 +364,9 @@ HTML/CSS applications to full-fledged web browsers.")
 
 ;;; Required by gnome-online-accounts; as webkitgtk 2.34 propagates libsoup 3,
 ;;; which causes the build to fail.
+;;; Also required by e.g. emacs-next-pgtk,  emacs-xwidgets, and some other
+;;; Gnome packages for webkit2gtk-4.0. See also the upstream tracker for
+;;; libsoup 3: https://gitlab.gnome.org/GNOME/libsoup/-/issues/218
 (define-public webkitgtk-with-libsoup2
   (package/inherit webkitgtk
     (name "webkitgtk-with-libsoup2")

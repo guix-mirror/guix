@@ -354,7 +354,7 @@ languages.")
        `(("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
          ("glib-networking" ,glib-networking)))
       (inputs
-       `(("webkitgtk" ,webkitgtk)
+       `(("webkitgtk" ,webkitgtk-with-libsoup2)
          ,@(package-inputs emacs-next)))
       (home-page "https://github.com/masm11/emacs")
       (synopsis "Emacs text editor with @code{pgtk} and @code{xwidgets} support")
@@ -400,7 +400,7 @@ editor (with xwidgets support)")
            (delete 'restore-emacs-pdmp)
            (delete 'strip-double-wrap)))))
     (inputs
-     `(("webkitgtk" ,webkitgtk)
+     `(("webkitgtk" ,webkitgtk-with-libsoup2)
        ("libxcomposite" ,libxcomposite)
        ,@(package-inputs emacs)))))
 
