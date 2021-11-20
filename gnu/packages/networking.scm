@@ -295,12 +295,17 @@ Android, and ChromeOS.")
           "-Dgtk_doc=enabled")
          #:phases
          (modify-phases %standard-phases
-           (add-after 'unpack 'disable-failing-test
+           (add-after 'unpack 'disable-failing-tests
              (lambda _
                (substitute* "tests/meson.build"
                  ;; ‘test-set-port-range.c:66:main: assertion failed:
                  ;; (nice_agent_gather_candidates (agent, stream1))’
                  (("'test-set-port-range'" all)
+                  (string-append "# " all))
+                 ;; The following test is disabled as it fails in a
+                 ;; nondeterministic fashion (see:
+                 ;; https://gitlab.freedesktop.org/libnice/libnice/-/issues/151).
+                 (("'test-bsd'" all)
                   (string-append "# " all)))
                (substitute* "stun/tests/meson.build"
                  ;; test-bind.c:234: bad_responses: Assertion `len >= 20'
