@@ -1760,6 +1760,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/screen-hurd-path-max.patch		\
   %D%/packages/patches/sdl-libx11-1.6.patch			\
   %D%/packages/patches/seed-webkit.patch			\
+  %D%/packages/patches/sendgmail-accept-ignored-gsuite-flag.patch	\
+  %D%/packages/patches/sendgmail-remove-domain-restriction.patch	\
   %D%/packages/patches/seq24-rename-mutex.patch			\
   %D%/packages/patches/serf-python3.patch			\
   %D%/packages/patches/shakespeare-spl-fix-grammar.patch		\

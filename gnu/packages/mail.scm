@@ -4661,7 +4661,7 @@ feeds, converts them into emails, and sends them.")
 
 (define-public sendgmail
   (let ((commit "e3229155a4037267ce40f1a3a681f53221aa4d8d")
-        (revision "0"))
+        (revision "1"))
     (package
       (name "sendgmail")
       (version (git-version "0.0.0" revision commit))
@@ -4672,6 +4672,9 @@ feeds, converts them into emails, and sends them.")
                (url "https://github.com/google/gmail-oauth2-tools")
                (commit commit)))
          (file-name (git-file-name name version))
+         (patches (search-patches
+                   "sendgmail-remove-domain-restriction.patch"
+                   "sendgmail-accept-ignored-gsuite-flag.patch"))
          (sha256
           (base32
            "1cxpkiaajhq1gjsg47r2b5xgck0r63pvkyrkm7af8c8dw7fyn64f"))))
@@ -4691,5 +4694,9 @@ feeds, converts them into emails, and sends them.")
        "The @command{sendgmail} command provides a minimal sendmail-compatible
 front-end that connects to Gmail using OAuth2.  It is specifically designed
 for use with @code{git send-email}.  The command needs a Gmail API key to
-function.")
+function.
+
+Guix's version of @command{sendgmail} has been patched for compatibility with
+all known forks, including support for non-@code{@@gmail.com} email
+addresses.")
       (license license:asl2.0))))
