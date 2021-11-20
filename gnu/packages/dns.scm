@@ -1417,7 +1417,21 @@ and TCP-capable recursive DNS server for finding domains on the internet.")
        #:configure-flags
        (list (string-append "--sysconfdir=/etc"))
        #:make-flags
-       (list (string-append "SYSCONFDIR=/" (assoc-ref %outputs "out") "/etc"))))
+       (list (string-append "SYSCONFDIR=/" (assoc-ref %outputs "out") "/etc"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (coreutils (assoc-ref inputs "coreutils-minimal")))
+               (substitute* (string-append out "/sbin/resolvconf")
+                 (("RESOLVCONF=\"\\$0\"")
+                  (format #f "\
+RESOLVCONF=\"$0\"
+PATH=~a/bin:$PATH"
+                          coreutils)))))))))
+    (inputs
+     `(("coreutils-minimal" ,coreutils-minimal)))
     (home-page "https://roy.marples.name/projects/openresolv/")
     (synopsis "Resolvconf POSIX compliant implementation, a middleman for resolv.conf")
     (description "openresolv is an implementation of @command{resolvconf}, the
