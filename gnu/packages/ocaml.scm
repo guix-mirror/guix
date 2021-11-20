@@ -1478,41 +1478,29 @@ for speed and space economy.")
 (define-public ocaml-frontc
   (package
     (name "ocaml-frontc")
-    (version "3.4.2")
+    (version "4.1.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                      (url "https://github.com/BinaryAnalysisPlatform/FrontC")
-                     (commit (string-append
-                               "V_" (string-join (string-split version #\.) "_")))))
+                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0k7jk9hkglnkk27s62xl493jyqc017gyvwqb1lyc0ywbb001s102"))))
-    (build-system ocaml-build-system)
+                "1mi1vh4qgscnb470qwidccaqd068j1bqlz6pf6wddk21paliwnqb"))))
+    (build-system dune-build-system)
     (arguments
-     `(#:phases
+     `(#:test-target "test.t"
+       #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
-         (add-after 'install 'install-meta
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (with-output-to-file
-                   (string-append out "/lib/ocaml/frontc/META")
-                 (lambda _
-                   (display
-                    (string-append
-                     "description = \"Parser for the C language\"
-version = \"" ,version "\"
-requires = \"unix\"
-archive(byte) = \"frontc.cma\"
-archive(native) = \"frontc.cmxa\""))))
-               (symlink (string-append out "/lib/ocaml/frontc")
-                        (string-append out "/lib/ocaml/FrontC"))))))
-       #:make-flags (list (string-append "PREFIX="
-                                         (assoc-ref %outputs "out"))
-                          "OCAML_SITE=$(LIB_DIR)/ocaml/")))
-    (properties `((upstream-name . "FrontC")))
+         (add-after 'unpack 'make-writable
+           (lambda _
+             (for-each make-file-writable (find-files "." ".")))))))
+    (native-inputs
+     `(("ocaml-menhir" ,ocaml-menhir)
+       ("ocaml-odoc" ,ocaml-odoc)))
+    (properties `((upstream-name . "FrontC")
+                  (ocaml4.07-variant . ,(delay ocaml4.07-frontc))))
     (home-page "https://www.irit.fr/FrontC")
     (synopsis "C parser and lexer library")
     (description "FrontC is an OCAML library providing a C parser and lexer.
@@ -1520,6 +1508,46 @@ The result is a syntactic tree easy to process with usual OCAML tree management.
 It provides support for ANSI C syntax, old-C K&R style syntax and the standard
 GNU CC attributes.  It provides also a C pretty printer as an example of use.")
     (license license:lgpl2.1)))
+
+(define-public ocaml4.07-frontc
+  (package-with-ocaml4.07
+    (package
+      (inherit ocaml-frontc)
+      (version "3.4.2")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/mirage/ocaml-base64")
+                       (commit (string-append
+                                 "V_" (string-join (string-split version #\.) "_")))))
+                (file-name (git-file-name "ocaml-frontc" version))
+                (sha256
+                 (base32
+                  "0k7jk9hkglnkk27s62xl493jyqc017gyvwqb1lyc0ywbb001s102"))))
+      (build-system ocaml-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (add-after 'install 'install-meta
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 (with-output-to-file
+                     (string-append out "/lib/ocaml/frontc/META")
+                   (lambda _
+                     (display
+                      (string-append
+                       "description = \"Parser for the C language\"
+version = \"" ,version "\"
+requires = \"unix\"
+archive(byte) = \"frontc.cma\"
+archive(native) = \"frontc.cmxa\""))))
+                 (symlink (string-append out "/lib/ocaml/frontc")
+                          (string-append out "/lib/ocaml/FrontC"))))))
+         #:make-flags (list (string-append "PREFIX="
+                                           (assoc-ref %outputs "out"))
+                            "OCAML_SITE=$(LIB_DIR)/ocaml/")))
+      (properties '()))))
 
 (define-public ocaml-qcheck
   (package
