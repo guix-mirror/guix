@@ -2048,7 +2048,7 @@ coexistence with the old (version 2) SQLite and its OCaml wrapper
 (define-public ocaml-csv
   (package
     (name "ocaml-csv")
-    (version "2.3")
+    (version "2.4")
     (source
      (origin
        (method git-fetch)
@@ -2058,7 +2058,7 @@ coexistence with the old (version 2) SQLite and its OCaml wrapper
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "19k48517s8y1zb91a1312a0n94cbh5i5dixndcrqjmf87kkz61zx"))))
+         "0y2hlqlmqs7r4y5mfzc5qdv7gdp3wxbwpz458vf7fj4593vg94cf"))))
     (build-system dune-build-system)
     (arguments
      `(#:package "csv"
