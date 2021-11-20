@@ -3258,7 +3258,7 @@ compatibility with older compiler to use these new features in their code.")
 (define-public ocaml-fileutils
   (package
     (name "ocaml-fileutils")
-    (version "0.6.2")
+    (version "0.6.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3267,7 +3267,7 @@ compatibility with older compiler to use these new features in their code.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "01qf51b8pb7vyfba7y0kb7ajwj1950im25d7f59821zwsibns3d9"))))
+                "0aa7p5qymi8p7iqym42yk2akjd1ff81fvaks82nhjc533zl01pnf"))))
     (build-system dune-build-system)
     (propagated-inputs
      `(("ocaml-stdlib-shims" ,ocaml-stdlib-shims)))
