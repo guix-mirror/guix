@@ -2222,14 +2222,14 @@ most of the POSIX and GNU conventions.")
 (define-public ocaml-fmt
   (package
     (name "ocaml-fmt")
-    (version "0.8.9")
+    (version "0.9.0")
     (source
       (origin
         (method url-fetch)
         (uri (string-append "http://erratique.ch/software/fmt/releases/fmt-"
                             version ".tbz"))
         (sha256 (base32
-                  "0gkkkj4x678vxdda4xaw2dd44qjacavsvn5nx8gydfwah6pjbkxk"))))
+                  "0q8j2in2473xh7k4hfgnppv9qy77f2ih89yp6yhpbp92ba021yzi"))))
     (build-system ocaml-build-system)
     (native-inputs
      `(("ocamlbuild" ,ocamlbuild)
@@ -2245,11 +2245,26 @@ most of the POSIX and GNU conventions.")
                  #:phases
                  (modify-phases %standard-phases
                    (delete 'configure))))
+    (properties `((ocaml4.07-variant . ,(delay ocaml4.07-fmt))))
     (home-page "https://erratique.ch/software/fmt")
     (synopsis "OCaml Format pretty-printer combinators")
     (description "Fmt exposes combinators to devise Format pretty-printing
 functions.")
     (license license:isc)))
+
+(define-public ocaml4.07-fmt
+  (package-with-ocaml4.07
+    (package
+      (inherit ocaml-fmt)
+      (version "0.8.9")
+      (source (origin
+                (method url-fetch)
+                (uri (string-append "http://erratique.ch/software/fmt/releases/fmt-"
+                                    version ".tbz"))
+                (sha256
+                 (base32
+                  "0gkkkj4x678vxdda4xaw2dd44qjacavsvn5nx8gydfwah6pjbkxk"))))
+      (properties '()))))
 
 (define-public ocaml-astring
   (package
