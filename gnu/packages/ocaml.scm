@@ -6743,7 +6743,7 @@ then run the Bisect_ppx report tool on the generated visitation files.")
 (define-public ocaml-odoc
   (package
     (name "ocaml-odoc")
-    (version "1.5.2")
+    (version "2.0.0")
     (source
      (origin
        (method git-fetch)
@@ -6752,23 +6752,39 @@ then run the Bisect_ppx report tool on the generated visitation files.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0fqfyz48q7ss5bc4c5phmp4s3ka3vc08b8gfk8fvyryvb4bq27jm"))))
+        (base32 "0lkmanfn8pc0rgcn9cc4mv48i29q2w1nl01n21qqxpyyfavgc98s"))))
     (build-system dune-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-test
+           (lambda _
+             ;; test results expects #!/bin/sh but gets a store path instead
+             (substitute* "test/xref2/with.t/run.t"
+               (("#!/bin/sh") (string-append "#!" (which "sh")))))))))
     (inputs
-     `(("ocaml-alcotest" ,ocaml-alcotest)
-       ("ocaml-markup" ,ocaml-markup)
-       ("ocaml-sexplib" ,ocaml-sexplib)
-       ("ocaml-re" ,ocaml-re)
-       ("ocaml-uutf" ,ocaml-uutf)))
-    (native-inputs
-     `(("ocaml-astring" ,ocaml-astring)
-       ("ocaml-cmdliner" ,ocaml-cmdliner)
-       ("ocaml-cppo" ,ocaml-cppo)
-       ("ocaml-fpath" ,ocaml-fpath)
-       ("ocaml-result" ,ocaml-result)
-       ("ocaml-tyxml" ,ocaml-tyxml)
-       ("ocaml-bisect-ppx" ,ocaml-bisect-ppx)
-       ("tidy-html" ,tidy-html)))
+    `(("ocaml-astring" ,ocaml-astring)
+      ("ocaml-bisect-ppx" ,ocaml-bisect-ppx)
+      ("ocaml-cmdliner" ,ocaml-cmdliner)
+      ("ocaml-fmt" ,ocaml-fmt)
+      ("ocaml-fpath" ,ocaml-fpath)
+      ("ocaml-logs" ,ocaml-logs)
+      ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
+      ("ocaml-odoc-parser" ,ocaml-odoc-parser)
+      ("ocaml-re" ,ocaml-re)
+      ("ocaml-result" ,ocaml-result)
+      ("ocaml-tyxml" ,ocaml-tyxml)))
+  (native-inputs
+    `(("ocaml-alcotest" ,ocaml-alcotest)
+      ("ocaml-bos" ,ocaml-bos)
+      ("ocaml-cppo" ,ocaml-cppo)
+      ("ocaml-findlib" ,ocaml-findlib)
+      ("ocaml-lwt" ,ocaml-lwt)
+      ("ocaml-markup" ,ocaml-markup)
+      ("ocaml-ppx-expect" ,ocaml-ppx-expect)
+      ("ocaml-version" ,ocaml-version)
+      ("ocaml-yojson" ,ocaml-yojson)
+      ("jq" ,jq)))
     (properties `((ocaml4.07-variant . ,(delay ocaml4.07-odoc))))
     (home-page "https://github.com/ocaml/odoc")
     (synopsis "OCaml documentation generator")
@@ -6826,12 +6842,22 @@ language understood by ocamldoc.")
         (file-name (git-file-name name version))
         (sha256
          (base32 "0z2nisg1vb5xlk41hqw8drvj90v52wli7zvnih6a844cg6xsvvj2"))))
-    (inputs
-     `(("ocaml-alcotest" ,ocaml-alcotest)
-       ("ocaml-markup" ,ocaml-markup)
-       ("ocaml-sexplib" ,ocaml-sexplib)
-       ("ocaml-re" ,ocaml-re)
-       ("ocaml-uutf" ,ocaml-uutf)))
+     (arguments '())
+     (inputs
+      `(("ocaml-alcotest" ,ocaml-alcotest)
+        ("ocaml-markup" ,ocaml-markup)
+        ("ocaml-sexplib" ,ocaml-sexplib)
+        ("ocaml-re" ,ocaml-re)
+        ("ocaml-uutf" ,ocaml-uutf)))
+     (native-inputs
+      `(("ocaml-astring" ,ocaml-astring)
+        ("ocaml-cmdliner" ,ocaml-cmdliner)
+        ("ocaml-cppo" ,ocaml-cppo)
+        ("ocaml-fpath" ,ocaml-fpath)
+        ("ocaml-result" ,ocaml-result)
+        ("ocaml-tyxml" ,ocaml-tyxml)
+        ("ocaml-bisect-ppx" ,ocaml-bisect-ppx)
+        ("tidy-html" ,tidy-html)))
      (properties '()))))
 
 (define-public ocaml4.07-fftw3
