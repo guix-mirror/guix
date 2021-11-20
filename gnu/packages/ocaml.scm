@@ -6143,10 +6143,17 @@ to denote the expected output.")
 (define-public ocaml-ppx-js-style
   (package
     (name "ocaml-ppx-js-style")
-    (version "0.14.0")
+    (version "0.14.1")
     (source
-     (janestreet-origin "ppx_js_style" version
-      "141fgxfipfn5jdaxc946dmp5y4fcnbhxms9maji9ddywgx82ya7l"))
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/janestreet/ppx_js_style")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "16ax6ww9h36xyn9acbm8zxv0ajs344sm37lgj2zd2bvgsqv24kxj"))))
     (build-system dune-build-system)
     (arguments `(#:tests? #f)) ; No tests
     (propagated-inputs
