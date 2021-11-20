@@ -3297,7 +3297,7 @@ or a timeout.")
 (define-public ocaml-stdlib-shims
   (package
     (name "ocaml-stdlib-shims")
-    (version "0.1.0")
+    (version "0.3.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3306,7 +3306,7 @@ or a timeout.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "007dwywsr5285z0np6a9nr0h8iqmyzfrlx6s5xaqcwj69zabsrjm"))))
+                "0gmg8w67j3ww17llk7hl4dx0vq7p50rn5s4ib9sy984k543rz59h"))))
     (build-system dune-build-system)
     (home-page "https://github.com/ocaml/stdlib-shims")
     (synopsis "OCaml stdlib features backport to older OCaml compilers")
