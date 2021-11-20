@@ -542,7 +542,7 @@ Note that 8sync is only available for Guile 2.2.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("guile" ,guile-2.2)))
+     `(("guile" ,guile-3.0)))
     (home-page "https://github.com/alezost/guile-daemon")
     (synopsis "Evaluate code in a running Guile process")
     (description
