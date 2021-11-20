@@ -996,24 +996,17 @@ Python.")
         #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-docbook-xml
-           ;; TODO(core-updates): Use 'native-inputs' unconditionally
-           (lambda* (#:key ,@(if (%current-target-system)
-                                 '(native-inputs)
-                                 '())
-                     inputs #:allow-other-keys)
+           (lambda* (#:key native-inputs inputs #:allow-other-keys)
              (with-directory-excursion "doc"
                (substitute* (find-files "." "\\.xml$")
                  (("http://www.oasis-open.org/docbook/xml/4\\.5/")
-                  (string-append (assoc-ref ,(if (%current-target-system)
-                                                 '(or native-inputs inputs)
-                                                 'inputs) "docbook-xml")
+                  (string-append (assoc-ref (or native-inputs inputs)
+                                            "docbook-xml")
                                  "/xml/dtd/docbook/"))
                  (("http://www.oasis-open.org/docbook/xml/4\\.2/")
-                  (string-append (assoc-ref ,(if (%current-target-system)
-                                                 '(or native-inputs inputs)
-                                                 'inputs) "docbook-xml-4.2")
-                                 "/xml/dtd/docbook/"))))
-             #t))
+                  (string-append (assoc-ref (or native-inputs inputs)
+                                            "docbook-xml-4.2")
+                                 "/xml/dtd/docbook/"))))))
          (add-after 'install 'move-doc
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -1021,8 +1014,7 @@ Python.")
                (mkdir-p (string-append doc "/share"))
                (rename-file
                 (string-append out "/share/doc")
-                (string-append doc "/share/doc"))
-               #t))))))
+                (string-append doc "/share/doc"))))))))
     (native-inputs
      `(("docbook-xml-4.2" ,docbook-xml-4.2)
        ("docbook-xml" ,docbook-xml)
