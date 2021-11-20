@@ -11956,10 +11956,10 @@ implementation differs in these ways:
                ;; packaged yet.
                (delete-file "scanpy/tests/external/test_scanorama_integrate.py")
 
-               (setenv "PYTHONPATH"
+               (setenv "GUIX_PYTHONPATH"
                        (string-append (getcwd) ":"
                                       (assoc-ref inputs "python-anndata:source") ":"
-                                      (getenv "PYTHONPATH")))
+                                      (getenv "GUIX_PYTHONPATH")))
                (invoke "pytest" "-vv"
                        "-k"
                        ;; Plot tests that fail.
