@@ -1075,6 +1075,7 @@ Emacs.")
      `(("ocaml" ,ocaml)))
     (arguments
      `(#:tests? #f)) ; No check target
+    (properties `((ocaml4.07-variant . ,(delay (strip-ocaml4.07-variant ocaml-menhir)))))
     (home-page "http://gallium.inria.fr/~fpottier/menhir/")
     (synopsis "Parser generator")
     (description "Menhir is a parser generator.  It turns high-level grammar
