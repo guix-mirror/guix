@@ -2732,16 +2732,16 @@ on the GNOME Desktop with a single simple application.")
 (define-public gsettings-desktop-schemas
   (package
     (name "gsettings-desktop-schemas")
-    (version "40.0")
+    (version "41.0")
     (source
      (origin
-      (method url-fetch)
-      (uri (string-append "mirror://gnome/sources/" name "/"
-                          (version-major version)  "/"
-                          name "-" version ".tar.xz"))
-      (sha256
-       (base32
-        "11an29br55dp0b26kfqlrfxj19glfrmhcdpds2n1w9n04gq3pf7i"))))
+       (method url-fetch)
+       (uri (string-append "mirror://gnome/sources/" name "/"
+                           (version-major version)  "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1v9jagk679m01nji0acirynxinziv036618c7xc49l4nwmr9ja3p"))))
     (build-system meson-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
@@ -2761,15 +2761,13 @@ on the GNOME Desktop with a single simple application.")
        ("gnome-backgrounds" ,gnome-backgrounds)))
     (native-inputs
      `(("gettext" ,gettext-minimal)
-       ("glib" ,glib "bin")                       ; glib-compile-schemas, etc.
+       ("glib" ,glib "bin")             ; glib-compile-schemas, etc.
        ("gobject-introspection" ,gobject-introspection)
        ("pkg-config" ,pkg-config)))
     (home-page "https://launchpad.net/gsettings-desktop-schemas")
-    (synopsis
-     "GNOME settings for various desktop components")
-    (description
-     "Gsettings-desktop-schemas contains a collection of GSettings schemas
-for settings shared by various components of the GNOME desktop.")
+    (synopsis "GNOME settings for various desktop components")
+    (description "Gsettings-desktop-schemas contains a collection of GSettings
+schemas for settings shared by various components of the GNOME desktop.")
     (license license:lgpl2.1+)))
 
 (define-public python-liblarch
