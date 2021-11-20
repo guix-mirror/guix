@@ -22006,8 +22006,7 @@ validation testing and application logic.")
          (add-after 'unpack 'disable-proprietary-features
            (lambda _
              (setenv "NUMBA_DISABLE_HSA" "1")
-             (setenv "NUMBA_DISABLE_CUDA" "1")
-             #t))
+             (setenv "NUMBA_DISABLE_CUDA" "1")))
          (replace 'check
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (add-installed-pythonpath inputs outputs)
