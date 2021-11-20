@@ -944,14 +944,15 @@ computing environments.")
          (add-after 'build 'build-ext
            (lambda _ (invoke "python" "setup.py" "build_ext" "--inplace")))
          (replace 'check
-           (lambda _
-             ;; Restrict OpenBLAS threads to prevent segfaults while testing!
-             (setenv "OPENBLAS_NUM_THREADS" "1")
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               ;; Restrict OpenBLAS threads to prevent segfaults while testing!
+               (setenv "OPENBLAS_NUM_THREADS" "1")
 
-             ;; Some tests require write access to $HOME.
-             (setenv "HOME" "/tmp")
+               ;; Some tests require write access to $HOME.
+               (setenv "HOME" "/tmp")
 
-             (invoke "pytest" "sklearn" "-m" "not network")))
+               (invoke "pytest" "sklearn" "-m" "not network"))))
          (add-before 'reset-gzip-timestamps 'make-files-writable
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Make sure .gz files are writable so that the
