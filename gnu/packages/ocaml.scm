@@ -1606,7 +1606,7 @@ instances and printing them.")
 (define-public ocaml-qtest
   (package
     (name "ocaml-qtest")
-    (version "2.10.1")
+    (version "2.11.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1615,7 +1615,7 @@ instances and printing them.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0gddzan4vzs0vklsxhirdjrvx3rp7hhh2yr20vi13nq8rwkn9w29"))))
+                "04ghjshh6104xyglm0db9kv90m62qla5f4bfrlndv6dsvgw3rdjl"))))
     (build-system dune-build-system)
     (arguments
      `(#:test-target "tests"))
