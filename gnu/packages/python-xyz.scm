@@ -22008,14 +22008,15 @@ validation testing and application logic.")
              (setenv "NUMBA_DISABLE_HSA" "1")
              (setenv "NUMBA_DISABLE_CUDA" "1")))
          (replace 'check
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (add-installed-pythonpath inputs outputs)
-             ;; Something is wrong with the PYTHONPATH when running the
-             ;; tests from the build directory, as it complains about not being
-             ;; able to import certain modules.
-             (with-directory-excursion "/tmp"
-               (setenv "HOME" (getcwd))
-               (invoke "python3" "-m" "numba.runtests" "-v" "-m")))))))
+           (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               ;; Something is wrong with the PYTHONPATH when running the
+               ;; tests from the build directory, as it complains about not being
+               ;; able to import certain modules.
+               (with-directory-excursion "/tmp"
+                 (setenv "HOME" (getcwd))
+                 (invoke "python3" "-m" "numba.runtests" "-v" "-m"))))))))
     (propagated-inputs
      `(("python-llvmlite" ,python-llvmlite)
        ("python-numpy" ,python-numpy)
