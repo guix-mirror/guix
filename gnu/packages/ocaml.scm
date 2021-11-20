@@ -2722,7 +2722,7 @@ and consumable.")
 (define-public ocaml-sedlex
   (package
     (name "ocaml-sedlex")
-    (version "2.3")
+    (version "2.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2731,7 +2731,7 @@ and consumable.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0iw3phlaqr27jdf857hmj5v5hdl0vngbb2h37p2ll18sw991fxar"))))
+                "13g8az4zqg6hrnxmy3qrasslppzlag13dd1dsr8vlpg2vpfmfv6i"))))
     (build-system dune-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
@@ -2755,12 +2755,9 @@ and consumable.")
            (lambda _
              (for-each (lambda (file) (chmod file #o644)) (find-files "." ".*"))
              #t)))))
-    (native-inputs
-     `(("ocamlbuild" ,ocamlbuild)))
     (propagated-inputs
      `(("ocaml-gen" ,ocaml-gen)
        ("ocaml-ppxlib" ,ocaml-ppxlib)
-       ("ocaml-ppx-tools-versioned" ,ocaml-ppx-tools-versioned)
        ("ocaml-uchar" ,ocaml-uchar)))
     ;; These three files are needed by src/generator/data/dune, but would be
     ;; downloaded using curl at build time.
@@ -2807,6 +2804,9 @@ and consumable.")
                (sha256
                 (base32
                  "05f6qa8x3vhpdz1fcnpqk37fpnyyq13icqsk2gww5idjnh6kng26"))))
+     (propagated-inputs
+      `(("ocaml-ppx-tools-versioned" ,ocaml-ppx-tools-versioned)
+        ,@(package-propagated-inputs ocaml-sedlex)))
      (properties '()))))
 
 (define-public ocaml-uchar
