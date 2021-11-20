@@ -2105,14 +2105,14 @@ manipulate such data.")
 (define-public ocaml-mtime
   (package
     (name "ocaml-mtime")
-    (version "1.1.0")
+    (version "1.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://erratique.ch/software/mtime/releases/"
                                   "mtime-" version ".tbz"))
               (sha256
                (base32
-                "1qb4ljwirrc3g8brh97s76rjky2cpmy7zm87y7iqd6pxix52ydk3"))))
+                "0syilgk4nzscacsswnvgwqlf0n0lhs221jss8gc8z9igw2x4sgsq"))))
     (build-system ocaml-build-system)
     (native-inputs
      `(("ocamlbuild" ,ocamlbuild)
