@@ -7252,6 +7252,7 @@ such as gzip tarballs.")
               (uri (string-append "mirror://gnome/sources/" name "/"
                                   (version-major version) "/"
                                   name "-" version ".tar.xz"))
+              (patches (search-patches "gnome-session-support-elogind.patch"))
               (sha256
                (base32
                 "02z0xr6sv9ibl7awbw9j4y05hf4jk1zgvsbbmh7n27hhjvsvc8pl"))))
@@ -7260,18 +7261,6 @@ such as gzip tarballs.")
        #:glib-or-gtk? #t
        #:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'pre-configure
-           (lambda* (#:key outputs #:allow-other-keys)
-             ;; Use elogind instead of systemd.
-             (substitute* "meson.build"
-               (("libsystemd-login") "libelogind")
-               (("and libsystemd_daemon_dep.found.*") ","))
-             (substitute* "gnome-session/gsm-systemd.c"
-               (("#include <systemd/sd-login.h>")
-                "#include <elogind/sd-login.h>"))
-             ;; Remove uses of the systemd daemon.
-             (substitute* "gnome-session/gsm-autostart-app.c"
-               (("#ifdef HAVE_SYSTEMD") "#if 0"))))
          (add-after 'install 'wrap-gnome-session
            (lambda* (#:key inputs outputs #:allow-other-keys)
              ;; Make sure 'gnome-session' finds the 'gsettings' program.
@@ -7283,6 +7272,7 @@ such as gzip tarballs.")
        #:configure-flags
        '("-Ddocbook=false" ; FIXME: disabled because of docbook validation error
          "-Dman=false" ; FIXME: disabled because of docbook validation error
+         "-Delogind=true"
          "-Dsystemd=false"
          "-Dsystemd_session=disable"
          "-Dsystemd_journal=false")))
