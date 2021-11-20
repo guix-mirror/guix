@@ -3977,7 +3977,10 @@ post-processing of video formats like MPEG2, H.264/AVC, and VC-1.")
     (outputs '("out"
                "static")) ; 3.7MiB .a file
     (arguments
-     `(#:phases
+     `(;; Build as C++2003 to avoid C++11 "narrowing conversion" errors.
+       #:configure-flags '("CXXFLAGS=-O2 -g -std=c++03")
+
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'remove-dates
            (lambda _
