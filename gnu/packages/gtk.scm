@@ -1116,6 +1116,12 @@ application suites.")
               '("-Dgtk_doc=false")
               '("-Dgtk_doc=true"))
         "-Dman-pages=true")
+       #:parallel-tests? #f             ;parallel tests are not supported
+       #:test-options '("--setup=x11"   ;defaults to wayland
+                        ;; Use the same test options as upstream uses for
+                        ;; their CI.
+                        "--suite=gtk"
+                        "--no-suite=gsk-compare-broadway")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'generate-gdk-pixbuf-loaders-cache-file
@@ -1154,13 +1160,6 @@ application suites.")
              (setenv "XDG_RUNTIME_DIR" (getcwd))
              ;; For missing '/etc/machine-id'.
              (setenv "DBUS_FATAL_WARNINGS" "0")))
-         (replace 'check
-           (lambda* (#:key tests? #:allow-other-keys)
-             (when tests?
-               (setenv "MESON_TESTTHREADS" "1")
-               ;; Run tests using the x11 setup,
-               ;; instead of the default wayland.
-               (invoke "meson" "test" "--setup=x11"))))
          (add-after 'install 'move-files
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
