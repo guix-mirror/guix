@@ -5003,7 +5003,7 @@ provided by companion libraries such as
 (define-public ocaml-compiler-libs
   (package
     (name "ocaml-compiler-libs")
-    (version "0.12.3")
+    (version "0.12.4")
     (home-page "https://github.com/janestreet/ocaml-compiler-libs")
     (source
      (origin
@@ -5014,7 +5014,7 @@ provided by companion libraries such as
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "00nrar7h2pyflbdiq6wwwrb4k5jh9iff0jllihzm6ms8d5pspsg5"))))
+         "00if2f7j9d8igdkj4rck3p74y17j6b233l91mq02drzrxj199qjv"))))
     (build-system dune-build-system)
     (arguments `(#:tests? #f)) ;no tests
     (properties `((upstream-name . "ocaml-compiler-libs")
