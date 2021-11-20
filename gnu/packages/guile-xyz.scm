@@ -38,6 +38,7 @@
 ;;; Copyright © 2021 Leo Le Bouter <lle-bout@zaclys.net>
 ;;; Copyright © 2021 Zelphir Kaltstahl <zelphirkaltstahl@posteo.de>
 ;;; Copyright © 2021 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2021 Artyom V. Poptsov <poptsov.artyom@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4792,3 +4793,69 @@ It provides a generic library for writing implementations of a netlink
 protocol, a low-level rtnetlink implementation that uses that library and a
 high-level API for network management that uses rtnetlink.")
     (license license:gpl3+)))
+
+(define-public guile-gitlab
+  (package
+    (name "guile-gitlab")
+    (version "0.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/artyom-poptsov/guile-gitlab")
+             (commit (string-append "v" version))))
+       (file-name (string-append name "-" version))
+       (sha256
+        (base32
+         "1yq8w507vw9n7f626sbnsk8prsdk337d6acr7f9k3j500lhlvxj5"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags '("GUILE_AUTO_COMPILE=0")     ;to prevent guild warnings
+       #:modules (((guix build guile-build-system)
+                   #:select (target-guile-effective-version))
+                  ,@%gnu-build-system-modules)
+       #:imported-modules ((guix build guile-build-system)
+                           ,@%gnu-build-system-modules)
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out       (assoc-ref outputs "out"))
+                    (bin       (string-append out "/bin"))
+                    (guile-lib (assoc-ref inputs "guile-lib"))
+                    (json      (assoc-ref inputs "guile-json"))
+                    (tls       (assoc-ref inputs "guile-gnutls"))
+                    (version   (target-guile-effective-version))
+                    (scm       (string-append "/share/guile/site/"
+                                              version))
+                    (go        (string-append  "/lib/guile/"
+                                               version "/site-ccache")))
+               (wrap-program (string-append bin "/gitlab-cli")
+                 `("GUILE_LOAD_PATH" prefix
+                   (,(string-append out scm)
+                    ,(string-append guile-lib scm)
+                    ,(string-append json scm)
+                    ,(string-append tls scm)))
+                 `("GUILE_LOAD_COMPILED_PATH" prefix
+                   (,(string-append out go)
+                    ,(string-append guile-lib go)
+                    ,(string-append json go)
+                    ,(string-append tls go))))))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)
+       ("texinfo" ,texinfo)))
+    (inputs
+     `(("bash" ,bash-minimal)
+       ("guile" ,guile-2.2)
+       ("guile-json" ,guile-json-1)
+       ("guile-lib" ,guile2.2-lib)
+       ("guile-gnutls" ,guile2.2-gnutls)))
+    (home-page "https://github.com/artyom-poptsov/guile-gitlab")
+    (synopsis "Guile interface to GitLab")
+    (description
+     "This package provides bindings to the GitLab Community Edition REST API
+as well as the @samp{gitlab-cli} command line tool for interacting with a
+GitLab instance.")
+    (license license:gpl3)))
