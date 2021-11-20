@@ -786,7 +786,7 @@ it is mostly useful when FULL-BOOT?  is true."
   virtual-machine?
   (operating-system virtual-machine-operating-system) ;<operating-system>
   (qemu             virtual-machine-qemu              ;<package>
-                    (default qemu))
+                    (default qemu-minimal))
   (graphic?         virtual-machine-graphic?      ;Boolean
                     (default #f))
   (memory-size      virtual-machine-memory-size   ;integer (MiB)
