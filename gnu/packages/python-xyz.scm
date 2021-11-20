@@ -5345,6 +5345,25 @@ capabilities.")
                  (base32
                   "0lg1cycxzi4rvvrd5zxinpdz0ni792fpx6xjd75z1923zcac8qrb")))))))
 
+;; Needed by python-numba, see https://github.com/numba/numba/issues/7176
+(define-public python-numpy-1.20
+  (package
+    (inherit python-numpy)
+    (version "1.20.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/numpy/numpy/releases/download/v"
+                    version "/numpy-" version ".tar.gz"))
+              (sha256
+               (base32
+                "140zq9snx0di4id4g97vaw9zz8x2rfla5lp3a70j666f5030yd5p"))))
+    ;; 92 tests fail, many of them because parts of the temp file name
+    ;; accidentally ends up in a comparison.
+    (arguments
+     (substitute-keyword-arguments (package-arguments python-numpy)
+       ((#:tests? _ #t) #f)))))
+
 ;; NOTE: NumPy 1.8 is packaged only for Python 2 because it is of
 ;; interest only for legacy code going back to NumPy's predecessor
 ;; Numeric.
