@@ -204,7 +204,7 @@ commands, additional database fields and admin extensions.")
                (add-installed-pythonpath inputs outputs)
                (setenv "PYTHONPATH"
                        (string-append ".:"
-                                      (getenv "PYTHONPATH")))
+                                      (getenv "GUIX_PYTHONPATH")))
                (invoke "invoke" "test")))))))
     (native-inputs
      `(("python-coverage" ,python-coverage)
