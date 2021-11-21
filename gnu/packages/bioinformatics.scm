@@ -11903,7 +11903,7 @@ implementation differs in these ways:
 (define-public python-scanpy
   (package
     (name "python-scanpy")
-    (version "1.8.1")
+    (version "1.8.2")
     (source
      (origin
        (method git-fetch)
@@ -11913,7 +11913,7 @@ implementation differs in these ways:
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0w1qmv3djqi8q0sn5hv34ivzs157fwjjb9nflfnagnhpxmw8vx5g"))))
+         "14zax23lqinv7xyv3491vpl3ydi38naiwaxg5mkfs5zk2406cqdr"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -11970,6 +11970,7 @@ implementation differs in these ways:
                                       " and not test_scatter_embedding_add_outline_vmin_vmax_norm"
                                       " and not test_paga"
                                       " and not test_paga_compare"
+                                      " and not test_clustermap"
 
                                       ;; These try to connect to the network
                                       " and not test_plot_rank_genes_groups_gene_symbols"
