@@ -634,8 +634,7 @@ interactive environment for the functional language Haskell.")
            (sha256
             (base32
              "0c55pj2820q26rikhpf636sn4mjgqsxjrl94vsywrh79dxp3k14z"))))
-       ;; TODO: Change to GIT-MINIMAL/FIXED.
-       ("git" ,git/fixed)                         ; invoked during tests
+       ("git" ,git-minimal/fixed)                 ; invoked during tests
        ,@(filter (match-lambda
                    (("ghc-bootstrap" . _) #f)
                    (("ghc-testsuite" . _) #f)
