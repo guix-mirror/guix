@@ -11956,7 +11956,7 @@ implementation differs in these ways:
                ;; packaged yet.
                (delete-file "scanpy/tests/external/test_scanorama_integrate.py")
 
-               (setenv "GUIX_PYTHONPATH"
+               (setenv "PYTHONPATH"
                        (string-append (getcwd) ":"
                                       (assoc-ref inputs "python-anndata:source") ":"
                                       (getenv "GUIX_PYTHONPATH")))
