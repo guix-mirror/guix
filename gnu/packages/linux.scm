@@ -818,15 +818,18 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
          (add-after 'unpack 'patch-/bin/pwd
            (lambda _
              (substitute* (find-files "." "^Makefile(\\.include)?$")
-               (("/bin/pwd") "pwd"))
-             #t))
+               (("/bin/pwd") "pwd"))))
          (replace 'configure
            (lambda* (#:key inputs native-inputs target #:allow-other-keys)
-             ;; Avoid introducing timestamps
+             ;; Avoid introducing timestamps.
              (setenv "KCONFIG_NOTIMESTAMP" "1")
              (setenv "KBUILD_BUILD_TIMESTAMP" (getenv "SOURCE_DATE_EPOCH"))
 
-             ;; Set ARCH and CROSS_COMPILE
+             ;; Other variables useful for reproducibility.
+             (setenv "KBUILD_BUILD_USER" "guix")
+             (setenv "KBUILD_BUILD_HOST" "guix")
+
+             ;; Set ARCH and CROSS_COMPILE.
              (let ((arch ,(system->linux-architecture
                            (or (%current-target-system)
                                (%current-system)))))
@@ -897,8 +900,7 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
                  (false-if-file-not-found
                   (delete-file (string-append moddir "/" version "/build")))
                  (false-if-file-not-found
-                  (delete-file (string-append moddir "/" version "/source"))))
-               #t))))
+                  (delete-file (string-append moddir "/" version "/source"))))))))
        #:tests? #f))
     (home-page "https://www.gnu.org/software/linux-libre/")
     (synopsis "100% free redistribution of a cleaned Linux kernel")
