@@ -8139,14 +8139,14 @@ to ring buffers shared with a consumer daemon.")
 (define-public lttng-tools
   (package
     (name "lttng-tools")
-    (version "2.12.5")
+    (version "2.13.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://lttng.org/files/lttng-tools/"
                                   "lttng-tools-" version ".tar.bz2"))
               (sha256
                (base32
-                "0bgk35423v6z17j1w80m7dcza7gigs1pwyq24sdmgqwg6j2d1zmc"))))
+                "1df8ag2a1yyjn6hz6wxgcz0p847cq91b8inf0zyhgz1im1yxzrng"))))
     (build-system gnu-build-system)
     (arguments
      `(;; FIXME - Currently there's a segmentation fault by swig when enabling
