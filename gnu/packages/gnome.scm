@@ -7899,7 +7899,8 @@ users.")
               (uri (string-append "mirror://gnome/sources/NetworkManager/"
                                   (version-major+minor version) "/"
                                   "NetworkManager-" version ".tar.xz"))
-              (patches (search-patches "network-manager-plugin-path.patch"))
+              (patches (search-patches "network-manager-plugin-path.patch"
+                                       "network-manager-meson.patch"))
               (sha256
                (base32
                 "0jzmz0zw64dgvdn2g7pppr7bkywpbxcbdb1viv6p7zh2lnh3dax8"))))
@@ -7907,10 +7908,7 @@ users.")
     (outputs '("out"
                "doc"))                  ; 8 MiB of gtk-doc HTML
     (arguments
-     ;; Use meson-0.59, otherwise the custom rpaths are not registered
-     ;; correctly (see: https://github.com/mesonbuild/meson/issues/9492).
-     `(#:meson ,meson-0.59
-       #:configure-flags
+     `(#:configure-flags
        (let ((out      (assoc-ref %outputs "out"))
              (dhclient (search-input-file %build-inputs "/sbin/dhclient")))
          (list

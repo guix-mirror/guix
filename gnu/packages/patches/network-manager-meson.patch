@@ -1,0 +1,21 @@
+Since libnm-wwan.so is not just a loadable module but also a shared library
+that some plugin links against, build it as a shared library while avoiding
+'-Wl,--no-undefined':
+
+  https://github.com/mesonbuild/meson/issues/9492#issuecomment-973117289
+
+diff --git a/src/core/devices/wwan/meson.build b/src/core/devices/wwan/meson.build
+index 37ef738..18ac54f 100644
+--- a/src/core/devices/wwan/meson.build
++++ b/src/core/devices/wwan/meson.build
+@@ -4,8 +4,9 @@ wwan_inc = include_directories('.')
+ 
+ linker_script = join_paths(meson.current_source_dir(), 'libnm-wwan.ver')
+ 
+-libnm_wwan = shared_module(
++libnm_wwan = shared_library(
+   'nm-wwan',
++  override_options: ['b_lundef=false'],
+   sources: files(
+   'nm-service-providers.c',
+   'nm-modem-broadband.c',
