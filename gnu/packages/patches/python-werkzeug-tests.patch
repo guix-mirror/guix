@@ -1,0 +1,58 @@
+Do not leave open files behind as this triggers 'ResourceWarning' and leads
+these tests to fail.
+
+--- Werkzeug-1.0.1/tests/test_datastructures.py	2020-03-31 19:48:06.000000000 +0200
++++ Werkzeug-1.0.1/tests/test_datastructures.py	2021-11-21 18:19:11.304369878 +0100
+@@ -1238,9 +1238,10 @@
+     def test_save_to_pathlib_dst(self, tmp_path):
+         src = tmp_path / "src.txt"
+         src.write_text(u"test")
+-        storage = self.storage_class(src.open("rb"))
+-        dst = tmp_path / "dst.txt"
+-        storage.save(dst)
++        with src.open("rb") as input:
++            storage = self.storage_class(input)
++            dst = tmp_path / "dst.txt"
++            storage.save(dst)
+         assert dst.read_text() == "test"
+ 
+     def test_save_to_bytes_io(self):
+@@ -1251,11 +1252,12 @@
+ 
+     def test_save_to_file(self, tmp_path):
+         path = tmp_path / "file.data"
+-        storage = self.storage_class(io.BytesIO(b"one\ntwo"))
+-        with path.open("wb") as dst:
+-            storage.save(dst)
+-        with path.open("rb") as src:
+-            assert src.read() == b"one\ntwo"
++        with io.BytesIO(b"one\ntwo") as input:
++            storage = self.storage_class(input)
++            with path.open("wb") as dst:
++                storage.save(dst)
++            with path.open("rb") as src:
++                assert src.read() == b"one\ntwo"
+ 
+ 
+ @pytest.mark.parametrize("ranges", ([(0, 1), (-5, None)], [(5, None)]))
+--- Werkzeug-1.0.1/tests/test_formparser.py	2020-03-31 19:48:06.000000000 +0200
++++ Werkzeug-1.0.1/tests/test_formparser.py	2021-11-21 22:11:43.654622751 +0100
+@@ -27,7 +27,7 @@
+ from werkzeug.test import create_environ
+ from werkzeug.wrappers import Request
+ from werkzeug.wrappers import Response
+-
++import warnings
+ 
+ @Request.application
+ def form_data_consumer(request):
+@@ -242,6 +244,9 @@
+ 
+ class TestMultiPart(object):
+     def test_basic(self):
++        # Ignore leaked file descriptor of unknown origin.
++        warnings.filterwarnings(action="ignore", message="unclosed", category=ResourceWarning)
++
+         resources = join(dirname(__file__), "multipart")
+         client = Client(form_data_consumer, Response)
+ 
