@@ -14,6 +14,7 @@
 ;;; Copyright © 2020 Tim Howes <timhowes@lavabit.com>
 ;;; Copyright © 2021 Bonface Munyoki Kilyungi <me@bonfacemunyoki.com>
 ;;; Copyright © 2021 Lars-Dominik Braun <lars@6xq.net>
+;;; Copyright © 2021 Frank Pursel <frank.pursel@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -67,6 +68,7 @@
   #:use-module (gnu packages machine-learning)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages multiprecision)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -74,6 +76,7 @@
   #:use-module (gnu packages python-science)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages shells)
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages tcl)
@@ -6830,3 +6833,55 @@ The BigCamelCase style was consequently applied to functions borrowed
 from contributed R packages as well.")
     (license license:gpl2+)))
 
+(define-public xlispstat
+  (let ((commit "f1bea6053df658ee48612bf1f63c35de99e2c649")
+        (revision "0"))
+    (package
+      (name "xlispstat")
+      (version (git-version "3.52.23" revision commit))
+      (source (origin
+	        (method git-fetch)
+	        (uri (git-reference
+		      (url "https://github.com/jhbadger/xlispstat.git")
+		      (commit commit)))
+                (file-name (git-file-name name version))
+	        (sha256
+	         (base32
+	          "1p0cmgy19kbkxia139cb5w9dnkp2cdqp5n3baag6cq3prn3n71mf"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:parallel-build? #f   ; Parallel builds are not supported
+         #:configure-flags (list "--with-gcc")
+         #:phases
+         (modify-phases %standard-phases
+           (replace 'check
+             (lambda* (#:key tests? #:allow-other-keys)
+               (when tests?
+                 (with-output-to-file "exit.lsp"
+                   (lambda () (display "(exit)")))
+                 (invoke "./xlisp" "tests/test" "exit")))))))
+      (inputs `(("tcsh" ,tcsh)
+	        ("libx11" ,libx11)
+	        ("libxmu" ,libxmu)
+	        ("libxext" ,libxext)
+	        ("libxpm" ,libxpm)
+	        ("libxaw" ,libxaw)
+	        ("ncurses" ,ncurses)
+	        ("gnuplot" ,gnuplot)))
+      (native-inputs `(("pkg-config" ,pkg-config)))
+      (synopsis "Statistical analysis environment with interactive graphics")
+      (description "XLISP-STAT is a statistical environment based on a Lisp
+dialect called XLISP.  To facilitate statistical computations, standard
+functions for addition, logarithms, etc., have been modified to operate on
+lists and arrays of numbers, and a number of basic statistical functions have
+been added.  Many of these functions have been written in Lisp, and additional
+functions can be added easily by a user.  Several basic forms of plots,
+including histograms, scatterplots, rotatable plots and scatterplot matrices
+are provided.  These plots support various forms of interactive highlighting
+operations and can be linked so points highlighted in one plot will be
+highlighted in all linked plots.  Interactions with the plots are controlled
+by the mouse, menus and dialog boxes.  An object-oriented programming system
+is used to allow menus, dialogs, and the response to mouse actions to be
+ customized.")
+      (home-page "http://homepage.divms.uiowa.edu/~luke/xls/xlsinfo/")
+      (license license:expat))))
