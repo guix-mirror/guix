@@ -16991,39 +16991,6 @@ A GraphQL schema describes your data model, and provides a GraphQL server
 with an associated set of resolve methods that know how to fetch data.")
     (license license:expat)))
 
-(define-public python-nautilus
-  (package
-    (name "python-nautilus")
-    (version "0.4.9")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "nautilus" version))
-        (sha256
-         (base32
-          "01hwzjc1zshk4vvxrcghm398fpy4jls66dyz06g07mrwqif8878p"))))
-    (build-system python-build-system)
-    (arguments `(#:tests? #f)) ; fails to import test modules
-    (propagated-inputs
-     `(("python-bcrypt" ,python-bcrypt)
-       ("python-click" ,python-click)
-       ("python-consul" ,python-consul)
-       ("python-graphene" ,python-graphene)
-       ("python-jinja2" ,python-jinja2)
-       ("python-peewee" ,python-peewee)
-       ("python-pika" ,python-pika)
-       ("python-tornado" ,python-tornado)
-       ("python-wtforms" ,python-wtforms)))
-    (native-inputs
-     `(("python-nose2" ,python-nose2)))
-    (home-page "https://github.com/AlecAivazis/nautilus")
-    (synopsis "Library for creating microservice applications")
-    (description
-     "Nautilus is a framework for flux based microservices that looks to
-provide extendible implementations of common aspects of a cloud so that you can
-focus on building massively scalable web applications.")
-    (license license:expat)))
-
 (define-public python-random2
   (package
     (name "python-random2")

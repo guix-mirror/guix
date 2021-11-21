@@ -437,7 +437,6 @@ faster window switching.")
        ("nautilus" ,nautilus)
        ("openssh" ,openssh)
        ("openssl" ,openssl)
-       ("python-nautilus" ,python-nautilus)
        ("python-pygobject" ,python-pygobject)
        ("upower" ,upower)))
     (native-inputs

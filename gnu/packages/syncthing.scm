@@ -191,7 +191,6 @@ Protocol.")
          ("python-dateutil" ,python-dateutil)
          ("python-pycairo" ,python-pycairo)
          ("python-pygobject" ,python-pygobject)
-         ("python-nautilus" ,python-nautilus)
          ("psmisc" ,psmisc)
          ("syncthing" ,syncthing)))
       ;; (native-inputs

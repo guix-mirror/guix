@@ -190,7 +190,6 @@
        ("libcloudproviders" ,libcloudproviders)
        ("libzip" ,libzip)
        ("openssl" ,openssl)
-       ("python-nautilus" ,python-nautilus)
        ("qtbase" ,qtbase-5)
        ("qtdeclarative" ,qtdeclarative)
        ("qtgraphicaleffects" ,qtgraphicaleffects)
