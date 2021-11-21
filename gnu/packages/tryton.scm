@@ -60,7 +60,7 @@
        ("python-psycopg2" ,python-psycopg2)
        ("python-relatorio" ,python-relatorio)
        ("python-sql" ,python-sql)
-       ("python-werkzeug" ,python-werkzeug)
+       ("python-werkzeug" ,python-werkzeug-1.0)  ;setup.py requires werkzeug<2
        ("python-wrapt" ,python-wrapt)))
     (native-inputs
      `(("python-mock" ,python-mock)
@@ -183,7 +183,7 @@ the build system."
     ("python-proteus" ,python-proteus)
     ("python-relatorio" ,python-relatorio)
     ("python-sql" ,python-sql)
-    ("python-werkzeug" ,python-werkzeug)
+    ("python-werkzeug" ,python-werkzeug-1.0)
     ("python-wrapt" ,python-wrapt)))
 
 (define-public trytond-account
