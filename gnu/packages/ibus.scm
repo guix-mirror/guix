@@ -791,9 +791,7 @@ hanja dictionary and small hangul character classification.")
          "0i8vwnikwd1bfpv4xlgzc51gn6s18q58nqhvcdiyjzcmy3z344c2"))))
     (build-system python-build-system)
     (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (delete 'check))))
+     `(#:tests? #f)) ; No tests
     (propagated-inputs
      `(("python-tinycss2" ,python-tinycss2)
        ("python-pygobject" ,python-pygobject)))
