@@ -131,6 +131,7 @@
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages slang)
+  #:use-module (gnu packages sphinx)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
@@ -8198,6 +8199,61 @@ daemon @code{lttng-sessiond} that acts as a tracing registry, the @command{lttng
 line for tracing control, a @code{lttng-ctl} library for tracing control and a
 @code{lttng-relayd} for network streaming.")
     (license (list  license:gpl2 license:lgpl2.1))))
+
+(define-public babeltrace
+  (package
+    (name "babeltrace")
+    (version "2.0.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.efficios.com/files/babeltrace/babeltrace2-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32 "1jlv925pr7hykc48mdvbmqm4ipy1r11xwzapa6fdpdfshmk12kvp"))))
+
+    (build-system gnu-build-system)
+
+    (arguments
+     `(;; FIXME - When Python's bindings are enabled, tests do not pass.
+       #:configure-flags '("--enable-debug-info"
+                           "--enable-man-pages"
+                           "--disable-python-bindings"
+                           "--disable-python-plugins")
+       #:phases
+       (modify-phases %standard-phases
+         ;; These are recommended in the project's README for a development
+         ;; build configuration.
+         (add-before 'configure 'set-environment-variables
+           (lambda _
+             (setenv "BABELTRACE_DEV_MODE" "1")
+             (setenv "BABELTRACE_MINIMAL_LOG_LEVEL" "TRACE"))))))
+    (inputs
+     `(("glib" ,glib)))
+    ;; NOTE - elfutils is used for the LTTng debug information filter
+    ;; component class.  This can be moved to `native-inputs` if
+    ;; `--enable-debug-info` is replaced by `--disable-debug-info` in
+    ;; `#:configure-flags`.
+    (propagated-inputs
+     `(("elfutils" ,elfutils)))
+    ;; NOTE - python-3 is set here for generating the bindings.  Users need to
+    ;; install python-3 in their profile in order to use these bindings.
+    (native-inputs
+     `(("asciidoc" ,asciidoc)
+       ("bison" ,bison)
+       ("flex" ,flex)
+       ("pkg-config" ,pkg-config)
+       ("python-3" ,python-3)
+       ("python-sphinx" ,python-sphinx)
+       ("swig", swig)
+       ("xmltoman" ,xmltoman)))
+    (home-page "https://babeltrace.org/")
+    (synopsis "Trace manipulation toolkit")
+    (description "Babeltrace 2 is a framework for viewing, converting,
+transforming, and analyzing traces.  It is also the reference parser
+implementation of the Common Trace Format (CTF), produced by tools such as
+LTTng and barectf.  This package provides a library with a C API, Python 3
+bindings, and the command-line tool @command{babeltrace2}.")
+    (license license:expat)))
 
 (define-public kexec-tools
   (package
