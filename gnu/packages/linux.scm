@@ -8113,20 +8113,21 @@ platforms, it is not limited to resource-constrained systems.")
 (define-public lttng-ust
   (package
     (name "lttng-ust")
-    (version "2.12.2")
+    (version "2.13.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://lttng.org/files/lttng-ust/"
                                   "lttng-ust-" version ".tar.bz2"))
               (sha256
                (base32
-                "1iwz6p79zvibj8sl8qqw84lcir9a8z1ylq77hhnwg26anrjg1l5w"))))
+                "0l0p6y2zrd9hgd015dhafjmpcj7waz762n6wf5ws1xlwcwrwkr2l"))))
     (build-system gnu-build-system)
     (inputs
      `(("liburcu" ,liburcu)
        ("numactl" ,numactl)))
     (native-inputs
-     `(("python" ,python-3)))
+     `(("python" ,python-3)
+       ("pkg-config", pkg-config)))
     (home-page "https://lttng.org/")
     (synopsis "LTTng userspace tracer libraries")
     (description "The user space tracing library, liblttng-ust, is the LTTng
