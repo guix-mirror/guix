@@ -342,7 +342,7 @@ part of the distribution.")
 (define-public coq-coquelicot
   (package
     (name "coq-coquelicot")
-    (version "3.1.0")
+    (version "3.2.0")
     (source
      (origin
        (method git-fetch)
@@ -352,7 +352,7 @@ part of the distribution.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0mz3pxan1237fr5fi79c66y7b9z7bmi0sc45kwrmkczsjm5462jm"))))
+         "146s5y2xsc7wb43m1pq1n4p14hw99gqbzx0ic3a4naxq16v7cv4w"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -364,8 +364,8 @@ part of the distribution.")
      `(("mathcomp" ,coq-mathcomp)))
     (arguments
      `(#:configure-flags
-       (list (string-append "--libdir=" (assoc-ref %outputs "out")
-                            "/lib/coq/user-contrib/Coquelicot"))
+       (list (string-append "COQUSERCONTRIB=" (assoc-ref %outputs "out")
+                            "/lib/coq/user-contrib"))
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'fix-remake
