@@ -17849,13 +17849,13 @@ projects.")
   (package
     (name "python-invoke")
     (home-page "https://www.pyinvoke.org/")
-    (version "1.5.0")
+    (version "1.6.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "invoke" version))
               (sha256
                (base32
-                "0l16v7zcbgi36z6pvmdrs5q4ks8lalcafi5d9nhrpcjzbc3n1igh"))))
+                "1lsql9daabfr31c7syva5myc5bka45k57ygs9fliv63qrwp1wk9p"))))
     (build-system python-build-system)
     (arguments
      ;; XXX: Requires many dependencies that are not yet in Guix.
