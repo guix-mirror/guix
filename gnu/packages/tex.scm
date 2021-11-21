@@ -38,6 +38,7 @@
 
 (define-module (gnu packages tex)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix gexp)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system copy)
@@ -7299,33 +7300,31 @@ and Karl Berry.")
                   #t))))
     (build-system qt-build-system)
     (arguments
-     `(#:configure-flags `("-DLYX_USE_QT=QT5"
-                           "-DLYX_EXTERNAL_BOOST=1"
-                           "-DLYX_INSTALL=1"
-                           "-DLYX_RELEASE=1"
-                           "-DLYX_PROGRAM_SUFFIX=OFF"
-                           ,(string-append "-DLYX_INSTALL_PREFIX="
-                                           (assoc-ref %outputs "out")))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'patch-python
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* '("lib/configure.py"
-                            "src/support/ForkedCalls.cpp"
-                            "src/support/Systemcall.cpp"
-                            "src/support/os.cpp"
-                            "src/support/filetools.cpp")
-               (("\"python ")
-                (string-append "\""
-                               (assoc-ref inputs "python")
-                               "/bin/python3 ")))
-             #t))
-         (add-after 'unpack 'add-missing-test-file
-           (lambda _
-             ;; Create missing file that would cause tests to fail.
-             (with-output-to-file "src/tests/check_layout.cmake"
-               (const #t))
-             #t)))))
+     (list #:configure-flags
+           #~(list "-DLYX_USE_QT=QT5"
+                   "-DLYX_EXTERNAL_BOOST=1"
+                   "-DLYX_INSTALL=1"
+                   "-DLYX_RELEASE=1"
+                   "-DLYX_PROGRAM_SUFFIX=OFF"
+                   (string-append "-DLYX_INSTALL_PREFIX=" #$output))
+           #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'unpack 'patch-python
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   (substitute* '("lib/configure.py"
+                                  "src/support/ForkedCalls.cpp"
+                                  "src/support/Systemcall.cpp"
+                                  "src/support/os.cpp"
+                                  "src/support/filetools.cpp")
+                     (("\"python ")
+                      (string-append "\""
+                                     (assoc-ref inputs "python")
+                                     "/bin/python3 ")))))
+               (add-after 'unpack 'add-missing-test-file
+                 (lambda _
+                   ;; Create missing file that would cause tests to fail.
+                   (with-output-to-file "src/tests/check_layout.cmake"
+                     (const #t)))))))
     (inputs
      `(("boost" ,boost)
        ("hunspell" ,hunspell)           ; Note: Could also use aspell instead.
