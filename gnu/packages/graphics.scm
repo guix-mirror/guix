@@ -424,14 +424,14 @@ typically encountered in feature film production.")
 (define-public blender
   (package
     (name "blender")
-    (version "2.92.0")
+    (version "2.93.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.blender.org/source/"
                                   "blender-" version ".tar.xz"))
               (sha256
                (base32
-                "15a5vffn18a920286x0avbc2rap56k6y531wgibq68r90g2cz4g7"))))
+                "19i84bh8jiamf38fj9p24q8w8fhg3hhl49940dh74h4flyfyqfg7"))))
     (build-system cmake-build-system)
     (arguments
       (let ((python-version (version-major+minor (package-version python))))
