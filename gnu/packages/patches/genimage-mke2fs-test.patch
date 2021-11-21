@@ -1,8 +1,8 @@
 diff --git a/test/mke2fs.dump b/test/mke2fs.dump
 index 8e63662..0c25798 100644
---- a/test/mke2fs.dump
-+++ b/test/mke2fs.dump
-@@ -11,7 +11,7 @@ Filesystem OS type:       Linux
+--- a/test/mke2fs.0.dump
++++ b/test/mke2fs.0.dump
+@@ -11,7 +11,7 @@
  Inode count:              8192
  Block count:              32768
  Reserved block count:     1638
@@ -11,7 +11,7 @@ index 8e63662..0c25798 100644
  Free inodes:              8141
  First block:              1
  Block size:               1024
-@@ -29,7 +29,7 @@ Mount count:              0
+@@ -29,7 +29,7 @@
  Maximum mount count:      -1
  Last checked:             Sat Jan  1 00:00:00 2000
  Check interval:           0 (<none>)
@@ -20,7 +20,7 @@ index 8e63662..0c25798 100644
  Reserved blocks uid:      0 (user root)
  Reserved blocks gid:      0 (group root)
  First inode:              11
-@@ -49,13 +49,13 @@ Journal sequence:         0x00000001
+@@ -51,13 +51,13 @@
  Journal start:            0
  
  
