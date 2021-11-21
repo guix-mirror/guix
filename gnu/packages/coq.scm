@@ -191,7 +191,7 @@ provers.")
 (define-public coq-flocq
   (package
     (name "coq-flocq")
-    (version "3.3.1")
+    (version "3.4.2")
     (source
      (origin
        (method git-fetch)
@@ -201,7 +201,7 @@ provers.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "01gdykva0lcw6y3dm8j0djxayb87szfg9vn0mxd6z3pks644misl"))))
+         "0j7vq7ifqcdaj2x881aha2rl51l2p72y1cn7r2xya0fjgsssfigy"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -211,16 +211,10 @@ provers.")
        ("coq" ,coq)))
     (arguments
      `(#:configure-flags
-       (list (string-append "--libdir=" (assoc-ref %outputs "out")
-                            "/lib/coq/user-contrib/Flocq"))
+       (list (string-append "COQUSERCONTRIB=" (assoc-ref %outputs "out")
+                            "/lib/coq/user-contrib"))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'remove-failing-examples
-           (lambda _
-             (substitute* "Remakefile.in"
-               ;; Fails on a union error.
-               (("Double_rounding_odd_radix.v") ""))
-             #t))
          (add-before 'configure 'fix-remake
            (lambda _
              (substitute* "remake.cpp"
