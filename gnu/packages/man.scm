@@ -9,6 +9,7 @@
 ;;; Copyright © 2018, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2021 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -336,7 +337,9 @@ Linux kernel and C library interfaces employed by user-space programs.")
                        #t)))))
     (inputs
      `(("perl" ,perl)
-       ("perl-gettext" ,perl-gettext)))
+       ,@(if (%current-target-system)
+             '()
+             `(("perl-gettext" ,perl-gettext)))))
     (native-inputs
      `(("perl" ,perl)
        ("gettext" ,gettext-minimal)))
