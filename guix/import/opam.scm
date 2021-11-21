@@ -230,7 +230,8 @@ path to the repository."
                  (('list-pat . stuff) stuff)
                  (('string-pat stuff) stuff)
                  (('multiline-string stuff) stuff)
-                 (('dict records ...) records))
+                 (('dict records ...) records)
+                 (_ #f))
                acc))))
         #f file))
 
