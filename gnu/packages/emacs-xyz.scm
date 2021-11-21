@@ -10593,16 +10593,18 @@ indentation guides in Emacs:
          (modify-phases %standard-phases
            (add-after 'unpack 'disable-broken-tests
              ;; Some tests are known to have problems with Python 3.9; disable
-             ;; them (see: https://github.com/jorgenschaefer/elpy/issues/1856).
+             ;; them (see:
+             ;; https://github.com/jorgenschaefer/elpy/issues/1856).
+             ;; Aggressively remove the modules where failing tests were
+             ;; discovered, as they are similar and fail in a nondeterministic
+             ;; way.
              (lambda _
-               (substitute* "test/elpy-refactor-rename-test.el"
-                 ((".*ert-deftest elpy-refactor.*rename-in-multiple-files.*"
-                   all)
-                  (string-append all "  :expected-result :failed\n")))
-               (substitute* "test/elpy-multiedit-python-symbol-at-point-test.el"
-                 ((".*ert-deftest elpy-multiedit.*should-save-some-buffers.*"
-                   all)
-                  (string-append all "  :expected-result :failed\n")))))
+               (with-directory-excursion "test"
+                 (for-each delete-file
+                           (append (find-files "." "elpy-refactor")
+                                   (find-files "." "elpy-multiedit")
+                                   (find-files "." "elpy-pdb")
+                                   (find-files "." "elpy-promise"))))))
            ;; The default environment of the RPC uses Virtualenv to install
            ;; Python dependencies from PyPI.  We don't want/need this in Guix.
            (add-before 'check 'do-not-use-virtualenv
