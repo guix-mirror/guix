@@ -9290,13 +9290,13 @@ SVG, EPS, PNG and terminal output.")
 (define-public python-seaborn
   (package
     (name "python-seaborn")
-    (version "0.11.1")
+    (version "0.11.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "seaborn" version))
        (sha256
-        (base32 "1b81p9s6li3b606ivgbynrh102fclwlw74m8qxzsii9pv6p8xrs4"))
+        (base32 "1xpl3zb945sihsiwm9q1yyx84sakk1phcg0fprj6i0j0dllfjifg"))
        (patches (search-patches "python-seaborn-kde-test.patch"))))
     (build-system python-build-system)
     (arguments
