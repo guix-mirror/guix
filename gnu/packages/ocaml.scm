@@ -111,8 +111,8 @@
           (sha256 (base32 hash))))
 
 (define-public camlboot
-  (let ((commit "506280c6e0813e0e794988151a8e46be55373ebc")
-        (revision "0"))
+  (let ((commit "45045d0afa82f7e9b7ea07314aab08be2d3cd64b")
+        (revision "1"))
     (package
       (name "camlboot")
       (version (git-version "0.0.0" revision commit))
@@ -125,7 +125,7 @@
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0vimxl4karw9ih3npyc5rhxg85cjh6fqjbq3dzj7j2iymlhwfbkv"))
+                  "1f5gl3hzvixbgk0v3kmxiyn432znyy3jh5fa65cfzcaxzgfv1i1c"))
                 (modules '((guix build utils)))
                 (snippet
                  `(begin
