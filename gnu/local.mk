@@ -11,7 +11,7 @@
 # Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 # Copyright © 2016, 2017, 2018, 2019 Alex Vong <alexvong1995@gmail.com>
 # Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
-# Copyright © 2016, 2017, 2018, 2019, 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+# Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 # Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 # Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
 # Copyright © 2017, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -1108,6 +1108,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gd-fix-tests-on-i686.patch		\
   %D%/packages/patches/gd-brect-bounds.patch			\
   %D%/packages/patches/gd-Revert-fix-303-gdlib.pc.patch		\
+  %D%/packages/patches/gdb-fix-gnu-nat-build.patch		\
   %D%/packages/patches/gdm-default-session.patch		\
   %D%/packages/patches/gdm-elogind-support.patch		\
   %D%/packages/patches/gdm-remove-hardcoded-xwayland-path.patch	\

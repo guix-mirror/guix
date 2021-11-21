@@ -1,0 +1,61 @@
+Fix build on the Hurd.
+
+Patch taken from upstream
+
+    https://sourceware.org/git/?p=binutils-gdb.git;a=commit;h=a1700a3199d31910b87cd7db3c394ddd091cfcde
+
+From a1700a3199d31910b87cd7db3c394ddd091cfcde Mon Sep 17 00:00:00 2001
+From: Simon Marchi <simon.marchi@polymtl.ca>
+Date: Wed, 3 Nov 2021 15:09:19 -0400
+Subject: [PATCH] gdb: fix gnu-nat build
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+
+When building gnu-nat.c, we get:
+
+      CXX    gnu-nat.o
+    gnu-nat.c: In member function 'virtual void gnu_nat_target::create_inferior(const char*, const string&, char**, int)':
+    gnu-nat.c:2117:13: error: 'struct inf' has no member named 'target_is_pushed'
+     2117 |   if (!inf->target_is_pushed (this))
+          |             ^~~~~~~~~~~~~~~~
+    gnu-nat.c:2118:10: error: 'struct inf' has no member named 'push_target'
+     2118 |     inf->push_target (this);
+          |          ^~~~~~~~~~~
+
+This is because of a confusion between the generic `struct inferior`
+variable and the gnu-nat-specific `struct inf` variable.  Fix by
+referring to `inferior`, not `inf`.
+
+Adjust the comment on top of `struct inf` to clarify the purpose of that
+type.
+
+Co-Authored-By: Andrea Monaco <andrea.monaco@autistici.org>
+Change-Id: I2fe2f7f6ef61a38d79860fd262b08835c963fc77
+---
+ gdb/gnu-nat.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/gdb/gnu-nat.c b/gdb/gnu-nat.c
+index 54838347f94..c6cecff0686 100644
+--- a/gdb/gnu-nat.c
++++ b/gdb/gnu-nat.c
+@@ -149,7 +149,7 @@ struct inf_wait
+     int suppress;		/* Something trivial happened.  */
+   };
+ 
+-/* The state of an inferior.  */
++/* Further Hurd-specific state of an inferior.  */
+ struct inf
+   {
+     /* Fields describing the current inferior.  */
+@@ -2108,8 +2108,8 @@ gnu_nat_target::create_inferior (const char *exec_file,
+ 
+   inf_debug (inf, "creating inferior");
+ 
+-  if (!inf->target_is_pushed (this))
+-    inf->push_target (this);
++  if (!inferior->target_is_pushed (this))
++    inferior->push_target (this);
+ 
+   pid = fork_inferior (exec_file, allargs, env, gnu_ptrace_me,
+ 		       NULL, NULL, NULL, NULL);

@@ -4,7 +4,7 @@
 ;;; Copyright © 2015, 2016, 2019, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
-;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2020, 2021 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -71,6 +71,12 @@
                                        "gdbsupport/pathstuff.cc")
                           (("\"/bin/sh\"")
                            (format #f "~s" sh))))))
+                  ,@(if (hurd-target?)
+                        '((add-after 'unpack 'patch-gdb/hurd
+                            (lambda* (#:key inputs #:allow-other-keys)
+                              (let ((patch (assoc-ref inputs "hurd-build.patch")))
+                                (invoke "patch" "-p1" "--force" "-i" patch)))))
+                        '())
                   (add-after 'configure 'post-configure
                     (lambda _
                       (for-each patch-makefile-SHELL
@@ -111,7 +117,11 @@
        ("libxml2" ,libxml2)
 
        ;; The Hurd needs -lshouldbeinlibc.
-       ,@(if (hurd-target?) `(("hurd" ,hurd)) '())))
+       ,@(if (hurd-target?)
+             `(("hurd" ,hurd)
+               ("hurd-build.patch"
+                ,(search-patch "gdb-fix-gnu-nat-build.patch")))
+             '())))
     (native-inputs
      `(("texinfo" ,texinfo)
        ("dejagnu" ,dejagnu)
