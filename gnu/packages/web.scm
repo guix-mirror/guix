@@ -40,7 +40,7 @@
 ;;; Copyright © 2019, 2020 Florian Pelz <pelzflorian@pelzflorian.de>
 ;;; Copyright © 2020 Timotej Lazar <timotej.lazar@araneo.si>
 ;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
-;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2020, 2021 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2018, 2019, 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2020, 2021 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
@@ -7630,7 +7630,10 @@ derivation by David Revoy from the original MonsterID by Andreas Gohr.")
              "--enable-app"             ; build all the tools
              "--enable-hpack-tools"     ; ...all the tools
              "--disable-examples"
-             "--disable-static")        ; don't bother building .a files
+             "--disable-static"         ; don't bother building .a files
+             ,@(if (%current-target-system)
+                   '("--disable-python-bindings")
+                   '()))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'break-circular-reference
