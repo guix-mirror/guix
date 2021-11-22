@@ -2463,8 +2463,8 @@ comments.")))
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
                (wrap-program (string-append out "/bin/FreeCAD")
-                 (list "PYTHONPATH"
-                       'prefix (list (getenv "PYTHONPATH"))))))))))
+                 (list "GUIX_PYTHONPATH"
+                       'prefix (list (getenv "GUIX_PYTHONPATH"))))))))))
     (home-page "https://www.freecadweb.org/")
     (synopsis "Your Own 3D Parametric Modeler")
     (description
