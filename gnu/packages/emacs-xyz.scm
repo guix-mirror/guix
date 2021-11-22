@@ -28631,6 +28631,38 @@ a @samp{date} keywords, and optionally, a @samp{filetags} keyword.")
 conversion program}, a Japanese input method on Emacs.")
       (license license:gpl2+))))
 
+(define-public emacs-ddskk-nicola
+  (package
+    (inherit emacs-ddskk)
+    (name "emacs-ddskk-nicola")
+    (propagated-inputs
+     `(("emacs-ddskk" ,emacs-ddskk)))
+    (arguments
+     `(#:make-flags
+       (let ((out (assoc-ref %outputs "out")))
+         (append
+          (list (string-append "PREFIX=" out)
+                (string-append "LISPDIR=" out "/share/emacs/site-lisp"))))
+       #:tests? #f                      ; no tests in this subtree
+       ,@(substitute-keyword-arguments (package-arguments emacs-ddskk)
+           ((#:phases phases)
+            `(modify-phases ,phases
+               (add-after 'unpack 'chdir
+                 (lambda _
+                   (chdir "nicola")
+                   #t))
+               (replace 'configure
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (make-file-writable "NICOLA-DDSKK-CFG")
+                   (emacs-substitute-sexps "NICOLA-DDSKK-CFG"
+                     ("setq NICOLA-DDSKK_PREFIX" ""))
+                   #t)))))))
+    (synopsis "Nicola layout for Daredevil SKK")
+    (description
+     "Daredevil SKK is a version of @acronym{SKK, Simple Kana to Kanji
+conversion program}, a Japanese input method on Emacs.  This package adds
+support for the Nicola keyboard layout to it.")))
+
 (define-public emacs-objed
   (package
     (name "emacs-objed")
