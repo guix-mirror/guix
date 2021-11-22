@@ -20767,7 +20767,7 @@ describing the key binding changes.")
 (define-public emacs-evil-multiedit
   (package
     (name "emacs-evil-multiedit")
-    (version "1.4.1")
+    (version "1.4.3")
     (source
      (origin
        (method git-fetch)
@@ -20776,7 +20776,7 @@ describing the key binding changes.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0iwrfkgs0964kxj3kwi8dqn42flhg2pnp4iswc07xi8ri2lflnkv"))))
+        (base32 "08ycwss58zh2zikk79jfj074q78yjcd7vbjgv5ssqvws09x5rgfq"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-evil" ,emacs-evil)
