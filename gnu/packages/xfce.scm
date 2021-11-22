@@ -1304,7 +1304,7 @@ of data to either CD/DVD/BD.")
       ("glib:bin" ,glib "bin")))        ; glib-genmarshal
    (inputs
     `(("exo" ,exo)
-      ("libsoup" ,libsoup)
+      ("libsoup" ,libsoup-minimal-2)
       ("libxfce4ui" ,libxfce4ui)
       ("xfce4-panel" ,xfce4-panel)))
    (home-page "https://goodies.xfce.org/projects/applications/xfce4-screenshooter")
