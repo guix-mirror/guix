@@ -3009,9 +3009,7 @@ designed for experienced users.")
      `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'cd-to-zulip-dir
-           (lambda _
-             (chdir "zulip")
-             #t))
+           (lambda _ (chdir "zulip")))
          (replace 'check
            (lambda* (#:key inputs outputs tests? #:allow-other-keys)
              (let ((test-zulip "../tools/test-zulip"))
@@ -3019,8 +3017,7 @@ designed for experienced users.")
                  (add-installed-pythonpath inputs outputs)
                  (setenv "PYTHONPATH" (string-append ".:" (getenv "PYTHONPATH")))
                  (patch-shebang test-zulip)
-                 (invoke test-zulip))
-               #t))))))
+                 (invoke test-zulip))))))))
     (propagated-inputs
      `(("python-matrix-client" ,python-matrix-client)
        ("python-pyopenssl" ,python-pyopenssl)
