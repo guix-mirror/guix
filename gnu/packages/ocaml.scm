@@ -3992,30 +3992,33 @@ library is currently designed for Unicode Standard 3.2.")
     (license license:lgpl2.0+)))
 
 (define-public ocaml-charinfo-width
-  (package
-    (name "ocaml-charinfo-width")
-    (version "1.1.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://bitbucket.org/zandoye/charinfo_width"
-                                  "/get/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "00bv4p1yqs8y0z4z07wd9w9yyv669dikp9b04dcjbwpiy2wy0086"))))
-    (build-system dune-build-system)
-    (propagated-inputs
-     `(("ocaml-result" ,ocaml-result)
-       ("ocaml-camomile" ,ocaml-camomile)))
-    (native-inputs
-     `(("ocaml-ppx-expect" ,ocaml-ppx-expect)))
-    (properties
-     `((upstream-name . "charInfo_width")))
-    (home-page "https://bitbucket.org/zandoye/charinfo_width/")
-    (synopsis "Determine column width for a character")
-    (description "This module is implements purely in OCaml a character width
+  ;; Add LICENSE file and Dune tests
+  (let ((commit "20aaaa6dca8f1e0b1ace55b6f2a8ba5e5910b620"))
+    (package
+      (name "ocaml-charinfo-width")
+      (version (git-version "1.1.0" "1" commit))
+      (home-page "https://github.com/kandu/charinfo_width/")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url home-page)
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "04gil5hxm2jax9paw3i24d8zyzhyl5cphzfyryvy2lcrm3c485q0"))))
+      (build-system dune-build-system)
+      (propagated-inputs
+       `(("ocaml-result" ,ocaml-result)
+         ("ocaml-camomile" ,ocaml-camomile)))
+      (native-inputs
+       `(("ocaml-ppx-expect" ,ocaml-ppx-expect)))
+      (properties
+       `((upstream-name . "charInfo_width")))
+      (synopsis "Determine column width for a character")
+      (description "This module implements purely in OCaml a character width
 function that follows the prototype of POSIX's wcwidth.")
-    (license license:expat)))
+      (license license:expat))))
 
 (define-public ocaml4.07-zed
   (package
