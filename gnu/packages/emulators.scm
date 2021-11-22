@@ -842,13 +842,14 @@ from an emulator---from save states to scaling filters.")
      '(#:phases
        (modify-phases %standard-phases
          ;; The mupen64plus build system has no configure phase.
-         (delete 'configure)
+         (replace 'configure
+           (lambda _
+             (substitute* "projects/unix/Makefile"
+               (("\\$\\(CFLAGS\\)")
+                "$(CFLAGS) -fcommon"))))
          ;; Makefile is in a subdirectory.
-         (add-before
-          'build 'chdir-to-project-directory
-          (lambda _
-            (chdir "projects/unix")
-            #t)))
+         (add-before 'build 'chdir-to-project-directory
+           (lambda _ (chdir "projects/unix"))))
        #:make-flags (let ((out (assoc-ref %outputs "out")))
                       (list "all" (string-append "PREFIX=" out)))
        ;; There are no tests.
