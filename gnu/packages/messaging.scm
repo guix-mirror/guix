@@ -3155,7 +3155,7 @@ API.  Mattermost is not required.")
                          "import sys\n"
                          (map (lambda (path)
                                 (string-append "sys.path.append('" path "')\n"))
-                              (string-split (getenv "PYTHONPATH") #\:)))))
+                              (string-split (getenv "GUIX_PYTHONPATH") #\:)))))
                ;; Install script.
                (mkdir-p weechat-python)
                (copy-file "main.py"
