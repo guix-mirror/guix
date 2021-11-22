@@ -311,9 +311,10 @@ user interfaces in a fast and easy way.  It is based on GLib and ncurses.")
         (base32 "1s16cripy5w9k12534qb012iwc5m9qcjyrywgsziyn3kl3i0aa8h"))))
     (build-system gnu-build-system)
     (arguments
+     ;; 'test/manual/userconfig.h' contains definitions in lieu of
+     ;; declarations, hence '-fcommon'.
      `(#:configure-flags
-       (list
-        "--disable-static")
+       (list "--disable-static" "CFLAGS=-O2 -g -fcommon")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-shebangs
