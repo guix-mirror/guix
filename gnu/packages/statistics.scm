@@ -3230,7 +3230,7 @@ using the multicore functionality of the parallel package.")
            ("https://cdn.datatables.net/1.10.20/js/dataTables.semanticui.js"
             "1477f49xyxs4phias789mbspv23w8alxchhl5b5iy0aw6vd35c43"
             "datatables")
-           
+
            ("https://cdn.datatables.net/autofill/2.3.4/js/dataTables.autoFill.js"
             "04i6n7r3512gzfihl5wnhrvm0klnjp41g1z6cny3j803hvmnp8zk"
             "datatables-extensions/AutoFill")
@@ -3309,7 +3309,7 @@ using the multicore functionality of the parallel package.")
            ("https://cdn.datatables.net/colreorder/1.5.2/js/colReorder.jqueryui.js"
             "1rd8hijz3prg2y36fvqczrpdzixibjy2dxgs2fmgr8wrm8k01rrm"
             "datatables-extensions/ColReorder")
-           
+
            ("https://cdn.datatables.net/fixedcolumns/3.3.0/js/dataTables.fixedColumns.js"
             "0vsqk2fv59n351bdfcbvhmvpq38qwf41j1cn810xz1l1i07cg4hg"
             "datatables-extensions/FixedColumns")
@@ -3328,7 +3328,7 @@ using the multicore functionality of the parallel package.")
            ("https://cdn.datatables.net/fixedcolumns/3.3.0/js/fixedColumns.semanticui.js"
             "1kqsap9y0d25a7m5zjakipifl5qi2qr72kfj4ap3zxavd8md2wyn"
             "datatables-extensions/FixedColumns")
-           
+
            ("https://cdn.datatables.net/fixedheader/3.1.6/js/dataTables.fixedHeader.js"
             "1ml5ilnm8nirr6rsgmzn75l1k0hcjz3sqk6h1y1gy8cpwpklvqri"
             "datatables-extensions/FixedHeader")
@@ -3347,7 +3347,7 @@ using the multicore functionality of the parallel package.")
            ("https://cdn.datatables.net/fixedheader/3.1.6/js/fixedHeader.semanticui.js"
             "1v0i6dc68h8l8673fb5970igzkl7as36riv504iyg82glfi7n877"
             "datatables-extensions/FixedHeader")
-           
+
            ("https://cdn.datatables.net/keytable/2.5.1/js/dataTables.keyTable.js"
             "16iib2icxsjh93x5hd42gpsl7bzpcsqb7zjgj0m1s02ls45bdlv5"
             "datatables-extensions/KeyTable")
@@ -3385,7 +3385,7 @@ using the multicore functionality of the parallel package.")
            ("https://cdn.datatables.net/responsive/2.2.3/js/responsive.bootstrap4.js"
             "1zjh15p7n1038sggaxv1xvcwbkhw2nk1ndx745s6cxiqb69y3i0h"
             "datatables-extensions/Responsive")
-           
+
            ("https://cdn.datatables.net/rowgroup/1.1.1/js/dataTables.rowGroup.js"
             "0s4q7ir2d6q36g29nn9mqk7vrqrdig2mm5zbcv0sn2lixqi29pkj"
             "datatables-extensions/RowGroup")
@@ -3423,7 +3423,7 @@ using the multicore functionality of the parallel package.")
            ("https://cdn.datatables.net/rowreorder/1.2.6/js/rowReorder.semanticui.js"
             "1zjrx2rlgw3qannsqa88pcp3i4pc87pwv7rmgfw1dar8namkr9kk"
             "datatables-extensions/RowReorder")
-           
+
            ("https://cdn.datatables.net/scroller/2.0.1/js/dataTables.scroller.js"
             "0zfjjdvwwlsnps24i9l4c97hmway2qs6addks1is5bxl4k1r6d16"
             "datatables-extensions/Scroller")
@@ -3442,7 +3442,7 @@ using the multicore functionality of the parallel package.")
            ("https://cdn.datatables.net/scroller/2.0.1/js/scroller.semanticui.js"
             "1dfbblbzbryjgiv31qfdjnijz19lmyijg12win3y8gsgfd4fp9zz"
             "datatables-extensions/Scroller")
-           
+
            ("https://cdn.datatables.net/searchbuilder/1.0.0/js/dataTables.searchBuilder.js"
             "0n5g0j0yfzqvdpsmwb27bj1rd8zx864fsx2k7b2kpv6mqqavzpqc"
             "datatables-extensions/SearchBuilder")
@@ -3477,7 +3477,7 @@ using the multicore functionality of the parallel package.")
            ("https://cdn.datatables.net/searchpanes/1.1.1/js/searchPanes.semanticui.js"
             "1781d0xmx7xz0jly0wsw2zbrdmfc1crahmcdbsfbj5s66kdsnd7c"
             "datatables-extensions/SearchPanes")
-           
+
            ("https://cdn.datatables.net/select/1.3.1/js/dataTables.select.js"
             "0a7bkbz1cizhiq4h417b4rcdr7998pn8q4dlyzx8449xdp0h0n0v"
             "datatables-extensions/Select")
