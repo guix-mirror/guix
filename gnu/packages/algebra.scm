@@ -237,7 +237,7 @@ the real span of the lattice.")
 (define-public pari-gp
   (package
     (name "pari-gp")
-    (version "2.13.2")
+    (version "2.13.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -245,7 +245,7 @@ the real span of the lattice.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "095s7vdlsxmxa0n0l1a082m6gjaypqfqkaj99z8j7dx0ji89hy8n"))))
+                "1jm1cz1687cz8pl8lgvmyk3l33cms1xbayv38ca4z1f60qb7zfnc"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("texlive" ,(texlive-union
