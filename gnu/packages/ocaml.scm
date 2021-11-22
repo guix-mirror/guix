@@ -7457,6 +7457,32 @@ these missing pieces.")
 OCaml.")
     (license license:expat)))
 
+(define-public ocaml-mew
+  (package
+    (name "ocaml-mew")
+    (version "0.1.0")
+    (home-page "https://github.com/kandu/mew")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0417xsghj92v3xa5q4dk4nzf2r4mylrx2fd18i7cg3nzja65nia2"))))
+    (build-system dune-build-system)
+    (propagated-inputs
+     `(("ocaml-result" ,ocaml-result)
+       ("ocaml-trie" ,ocaml-trie)))
+    (native-inputs
+     `(("ocaml-ppx-expect" ,ocaml-ppx-expect)))
+    (synopsis "General modal editing engine generator")
+    (description
+     "This package provides the core modules of Modal Editing Witch, a general
+modal editing engine generator.")
+    (license license:expat)))
+
 (define-public ocaml-syntax-shims
   (package
     (name "ocaml-syntax-shims")
