@@ -1157,6 +1157,8 @@ worksheet templates.")))
                (base32
                 "13qj7n9826qc9shkkgd1p6vcpj78v4h9d67wbg45prg7rbnzkzds"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("CFLAGS=-fcommon")))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("gtk" ,gtk+-2)
