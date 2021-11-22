@@ -6051,7 +6051,9 @@ starting a decryption sequence to reveal the original plaintext characters.")
        ("pkg-config" ,pkg-config)))
     (arguments
      `(#:configure-flags
-       (list (string-append "-DCUSTOM_DATA_INSTALL_PATH="
+       (list "-DCMAKE_CXX_FLAGS=-fcommon"
+             "-DCMAKE_C_FLAGS=-fcommon"
+             (string-append "-DCUSTOM_DATA_INSTALL_PATH="
                             (assoc-ref %build-inputs "megaglest-data")
                             "/share/megaglest")
              "-DBUILD_MEGAGLEST_TESTS=ON")
