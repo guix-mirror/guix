@@ -4020,35 +4020,54 @@ library is currently designed for Unicode Standard 3.2.")
 function that follows the prototype of POSIX's wcwidth.")
       (license license:expat))))
 
-(define-public ocaml4.07-zed
+(define-public ocaml-zed
   (package
-    (name "ocaml4.07-zed")
-    (version "2.0.3")
+    (name "ocaml-zed")
+    (version "3.1.0")
+    (home-page "https://github.com/ocaml-community/zed")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/diml/zed")
+             (url home-page)
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0pa9awinqr0plp4b2az78dwpvh01pwaljnn5ydg8mc6hi7rmir55"))))
+        (base32 "04vr1a94imsghm98iigc35rhifsz0rh3qz2qm0wam2wvp6vmrx0p"))))
     (build-system dune-build-system)
     (arguments
-     `(#:test-target "."
-       #:ocaml ,ocaml-4.07
-       #:findlib ,ocaml4.07-findlib
-       #:dune ,ocaml4.07-dune))
+     `(#:test-target "."))
     (propagated-inputs
-     `(("ocaml-camomile" ,(package-with-ocaml4.07 ocaml-camomile))
-       ("ocaml-charinfo-width" ,(package-with-ocaml4.07 ocaml-charinfo-width))
-       ("ocaml-react" ,(package-with-ocaml4.07 ocaml-react))))
-    (home-page "https://github.com/diml/zed")
-    (synopsis "Abstract engine for text editing in OCaml")
-    (description "Zed is an abstract engine for text edition.  It can be used
-to write text editors, edition widgets, readlines, etc.  You just have to
-connect an engine to your inputs and rendering functions to get an editor.")
+     `(("ocaml-charInfo-width" ,ocaml-charinfo-width)
+       ("ocaml-camomile" ,ocaml-camomile)
+       ("ocaml-react" ,ocaml-react)))
+    (properties `((ocaml4.07-variant . ,(delay ocaml4.07-zed))))
+    (synopsis "Abstract engine for text edition in OCaml")
+    (description
+     "This module provides an abstract engine for text edition.  It can be
+used to write text editors, edition widgets, readlines, and more.  The module
+Zed uses Camomile to fully support the Unicode specification, and implements
+an UTF-8 encoded string type with validation, and a rope datastructure to
+achieve efficient operations on large Unicode buffers.  Zed also features a
+regular expression search on ropes.  To support efficient text edition
+capabilities, Zed provides macro recording and cursor management facilities.")
     (license license:bsd-3)))
+
+(define-public ocaml4.07-zed
+  (package-with-ocaml4.07
+   (package
+     (inherit ocaml-zed)
+     (version "2.0.3")
+     (source (origin
+               (method git-fetch)
+               (uri (git-reference
+                     (url "https://github.com/ocaml-community/zed")
+                     (commit version)))
+               (file-name (git-file-name "ocaml4.07-zed" version))
+               (sha256
+                (base32
+                 "0pa9awinqr0plp4b2az78dwpvh01pwaljnn5ydg8mc6hi7rmir55"))))
+     (properties '()))))
 
 (define-public ocaml4.07-lambda-term
   (package
