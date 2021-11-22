@@ -409,7 +409,8 @@ integrates with various databases on GUI toolkits such as Qt and Tk.")
                            "-DVTK_USE_SYSTEM_SQLITE:BOOL=TRUE"
                            "-DVTK_USE_SYSTEM_THEORA:BOOL=TRUE"
                            "-DVTK_USE_SYSTEM_TIFF:BOOL=TRUE"
-                           "-DVTK_USE_SYSTEM_ZLIB:BOOL=TRUE")
+                           "-DVTK_USE_SYSTEM_ZLIB:BOOL=TRUE"
+                           "-DCMAKE_C_FLAGS=-fcommon")
        #:tests? #f))        ;XXX: test data not included
     (inputs
      `(("double-conversion" ,double-conversion)
