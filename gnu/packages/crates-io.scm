@@ -26625,7 +26625,7 @@ algorithm and related formats (ZLIB, GZIP).")
 (define-public rust-libgit2-sys-0.12
   (package
     (name "rust-libgit2-sys")
-    (version "0.12.21+1.1.0")
+    (version "0.12.25+1.3.0")
     (source
      (origin
        (method url-fetch)
@@ -26634,7 +26634,7 @@ algorithm and related formats (ZLIB, GZIP).")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "09b85x3gpvq0d7v1mhg4f3w1b3skzlpbikrx9j2rwarbsyn1n9w6"))))
+         "1axsdyb2i67pn85vh8sb2z037n88fiiwqghkzsr1jrcdy2g1cs4g"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
