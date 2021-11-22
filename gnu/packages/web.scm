@@ -6390,13 +6390,13 @@ message stream (in a web server that is per connection).")
 (define-public python-httpretty
   (package
     (name "python-httpretty")
-    (version "1.0.5")
+    (version "1.1.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "httpretty" version))
        (sha256
-        (base32 "1dg0nfl7i9kjnq98ww98x2afzav4mpgiwzvjc43ily1x9my94g75"))))
+        (base32 "0s1vjdaf3pk2xd0hvi5f7p3jm2rgwpbc734jdp9r50m1smfhxpi0"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f  ; Tests require network access.
@@ -6405,8 +6405,7 @@ message stream (in a web server that is per connection).")
          (replace 'check
            (lambda* (#:key tests? #:allow-other-keys)
              (when tests?
-               (invoke "nosetests"))
-             #t)))))
+               (invoke "nosetests")))))))
     (native-inputs
      `(("python-coverage" ,python-coverage)
        ("python-eventlet" ,python-eventlet)
