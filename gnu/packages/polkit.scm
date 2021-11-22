@@ -29,6 +29,7 @@
   #:use-module ((guix licenses) #:select (lgpl2.0+))
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix memoization)
   #:use-module (guix utils)
   #:use-module (guix build utils)
   #:use-module (guix build-system cmake)
@@ -46,9 +47,10 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages qt)
-  #:use-module (gnu packages xml))
+  #:use-module (gnu packages xml)
+  #:export (polkit))
 
-(define-public polkit
+(define-public polkit*
   (package
     (name "polkit")
     (version "0.120")
@@ -151,32 +153,49 @@ for unprivileged applications.")
 ;;; Variant of polkit built with Duktape, a lighter JavaScript engine compared
 ;;; to mozjs.
 (define-public polkit-duktape
-  (package/inherit polkit
-    (name "polkit-duktape")
-    (source
-     (origin
-       (inherit (package-source polkit))
-       (patches
-        (append
-            (search-patches "polkit-use-duktape.patch")
-            (origin-patches (package-source polkit))))))
-    (arguments
-     (substitute-keyword-arguments (package-arguments polkit)
-       ((#:configure-flags flags)
-        `(cons "--with-duktape" ,flags))
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (add-after 'unpack 'force-gnu-build-system-bootstrap
-             (lambda _
-               (delete-file "configure")))))))
-    (native-inputs
-     (append `(("autoconf" ,autoconf)
-               ("automake" ,automake)
-               ("libtool" ,libtool)
-               ("pkg-config" ,pkg-config))
-         (package-native-inputs polkit)))
-    (inputs (alist-replace "mozjs" `(,duktape)
-                           (package-inputs polkit)))))
+  (let ((base polkit*))
+    (package/inherit base
+      (name "polkit-duktape")
+      (source
+       (origin
+         (inherit (package-source base))
+         (patches
+          (append
+              (search-patches "polkit-use-duktape.patch")
+              (origin-patches (package-source base))))))
+      (arguments
+       (substitute-keyword-arguments (package-arguments base)
+         ((#:configure-flags flags)
+          `(cons "--with-duktape" ,flags))
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'force-gnu-build-system-bootstrap
+               (lambda _
+                 (delete-file "configure")))))))
+      (native-inputs
+       (append `(("autoconf" ,autoconf)
+                 ("automake" ,automake)
+                 ("libtool" ,libtool)
+                 ("pkg-config" ,pkg-config))
+           (package-native-inputs base)))
+      (inputs (alist-replace "mozjs" `(,duktape)
+                             (package-inputs base))))))
+
+(define polkit-for-system
+  (mlambda (system)
+    "Return a polkit package that can be built for SYSTEM; that is, either the
+regular polkit that requires mozjs or its duktape variant."
+    (if (string-prefix? "x86_64" system)
+        polkit*
+        polkit-duktape)))
+
+;;; Define a top level polkit variable that can be built on any of the
+;;; supported platforms.  This is to work around the fact that our
+;;; mrustc-bootstrapped rust toolchain currently only supports the x86_64
+;;; architecture.
+(define-syntax polkit
+  (identifier-syntax (polkit-for-system
+                      (or (%current-target-system) (%current-system)))))
 
 (define-public polkit-qt
   (package
