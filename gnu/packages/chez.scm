@@ -114,8 +114,10 @@
        ;; for docs
        ("stex" ,stex)
        ("xorg-rgb" ,xorg-rgb)
-       ("texlive" ,(texlive-updmap.cfg (list texlive-oberdiek
-                                             texlive-epsf)))
+       ("texlive" ,(texlive-updmap.cfg (list texlive-dvips-l3backend
+                                             texlive-epsf
+                                             texlive-fonts-ec
+                                             texlive-oberdiek)))
        ("ghostscript" ,ghostscript)
        ("netpbm" ,netpbm)))
     (native-search-paths
@@ -167,6 +169,7 @@
                ;; Some makefiles (for tests) don't seem to propagate CC
                ;; properly, so we take it out of their hands:
                (setenv "CC" ,(cc-for-target))
+               (setenv "HOME" "/tmp")
                (apply invoke
                       "./configure"
                       flags)
