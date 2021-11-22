@@ -485,7 +485,7 @@ fast arithmetic.")
 (define-public arb
   (package
     (name "arb")
-    (version "2.21.0")
+    (version "2.21.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -494,7 +494,7 @@ fast arithmetic.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0c7q8bbm2izh0j0342v0dkgg1lgd6f0fn3i9x9x80brjjhg65q7b"))))
+                "1lmcl122qy6mr1g1y65bm7dk9fj0sym7gzmvar5vdgk7ln03c5iq"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("flint" ,flint)))               ; flint.h is included by arf.h
