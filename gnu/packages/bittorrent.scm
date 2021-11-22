@@ -148,17 +148,16 @@ DHT, µTP, PEX and Magnet Links.")
 (define-public transmission-remote-gtk
   (package
     (name "transmission-remote-gtk")
-    (version "1.4.1")
+    (version "1.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/transmission-remote-gtk/"
                            "transmission-remote-gtk/releases/download/"
                            version "/transmission-remote-gtk-" version
-                           ".tar.xz"))
-       (patches (search-patches "transmission-remote-gtk-fix-appstream.patch"))
+                           ".tar.gz"))
        (sha256
-        (base32 "1aqjl5rgamgcgqvcldd1gzyfh2xci0m7070924d6vz2qln0q75sr"))))
+        (base32 "0qz9wi70qc6vgnaymivc3xz6y86c9hglk6wjv3snnqxpxmp9saay"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gettext" ,gnu-gettext)
