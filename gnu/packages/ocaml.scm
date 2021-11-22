@@ -4069,31 +4069,32 @@ capabilities, Zed provides macro recording and cursor management facilities.")
                  "0pa9awinqr0plp4b2az78dwpvh01pwaljnn5ydg8mc6hi7rmir55"))))
      (properties '()))))
 
-(define-public ocaml4.07-lambda-term
+(define-public ocaml-lambda-term
   (package
-    (name "ocaml4.07-lambda-term")
-    (version "2.0.2")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/diml/lambda-term")
-             (commit version)))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "0zcjy6fvf0d3i2ssz96asl889n3r6bplyzk7xvb2s3dkxbgcisyy"))))
+    (name "ocaml-lambda-term")
+    (version "3.1.0")
+    (home-page "https://github.com/ocaml-community/lambda-term")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1k0ykiz0vhpyyj9fkss29ajas4fh1xh449j702xkvayqipzj1mkg"))))
     (build-system dune-build-system)
     (arguments
-     `(#:tests? #f
-       #:ocaml ,ocaml-4.07
-       #:findlib ,ocaml4.07-findlib
-       #:dune ,ocaml4.07-dune))
+     `(#:test-target "."))
     (propagated-inputs
-     `(("ocaml-lwt" ,(package-with-ocaml4.07 ocaml-lwt))
-       ("ocaml-lwt-log" ,(package-with-ocaml4.07 ocaml-lwt-log))
-       ("ocaml-lwt-react" ,(package-with-ocaml4.07 ocaml-lwt-react))
-       ("ocaml-zed" ,ocaml4.07-zed)))
-    (home-page "https://github.com/diml/lambda-term")
+     `(("ocaml-lwt" ,ocaml-lwt)
+       ("ocaml-lwt-log" ,ocaml-lwt-log)
+       ("ocaml-react" ,ocaml-react)
+       ("ocaml-zed" ,ocaml-zed)
+       ("ocaml-camomile" ,ocaml-camomile)
+       ("ocaml-lwt-react" ,ocaml-lwt-react)
+       ("ocaml-mew-vi" ,ocaml-mew-vi)))
+    (properties `((ocaml4.07-variant . ,(delay ocaml4.07-lambda-term))))
     (synopsis "Terminal manipulation library for OCaml")
     (description "Lambda-Term is a cross-platform library for manipulating the
 terminal.  It provides an abstraction for keys, mouse events, colors, as well as
@@ -4102,6 +4103,27 @@ Lambda-Term is to provide a higher level functional interface to terminal
 manipulation than, for example, ncurses, by providing a native OCaml interface
 instead of bindings to a C library.")
     (license license:bsd-3)))
+
+(define-public ocaml4.07-lambda-term
+  (package-with-ocaml4.07
+   (package
+     (inherit ocaml-lambda-term)
+     (version "2.0.2")
+     (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/ocaml-community/lambda-term")
+              (commit version)))
+        (file-name (git-file-name "ocaml4.07-lambda-term" version))
+        (sha256
+         (base32 "0zcjy6fvf0d3i2ssz96asl889n3r6bplyzk7xvb2s3dkxbgcisyy"))))
+     (propagated-inputs
+      `(("ocaml-lwt" ,ocaml-lwt)
+        ("ocaml-lwt-log" ,ocaml-lwt-log)
+        ("ocaml-lwt-react" ,ocaml-lwt-react)
+        ("ocaml-zed" ,ocaml-zed)))
+     (properties '()))))
 
 (define-public ocaml4.07-utop
   (package
