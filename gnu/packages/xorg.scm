@@ -6679,6 +6679,10 @@ and embedded platforms.")
      `(("gtk" ,gtk+)
        ("gtk" ,gtk+-2)
        ,@(package-inputs uim)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments uim)
+       ((#:configure-flags configure-flags)
+        (append configure-flags (list "CFLAGS=-fcommon")))))
     (synopsis "Multilingual input method framework (GTK+ support)")))
 
 (define-public uim-qt
