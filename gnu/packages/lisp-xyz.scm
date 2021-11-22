@@ -18107,11 +18107,11 @@ and DOM cleaning, to ensure that all remote DOMs are the same.")
   (sbcl-package->cl-source-package sbcl-issr-core))
 
 (define-public sbcl-portal
-  (let ((commit "cc7ba6a54cea6ef63b17dcc6e653d91d9907f59e")
-        (revision "1"))
+  (let ((commit "416589fa04cb239971422a1272acba236c8333be")
+        (revision "2"))
     (package
       (name "sbcl-portal")
-      (version (git-version "1" revision commit))
+      (version (git-version "1.2" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -18120,7 +18120,7 @@ and DOM cleaning, to ensure that all remote DOMs are the same.")
                (commit commit)))
          (file-name (git-file-name "portal" version))
          (sha256
-          (base32 "0fc81iwb4lpp8d2scdwafkixxwkfmq4gqns522zyb4bh6c1rfmwy"))))
+          (base32 "1012jc068qdd8df6mmbn8vmmqlniqm5j2jbyrraw3yz8c13c8280"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("alexandria" ,sbcl-alexandria)
