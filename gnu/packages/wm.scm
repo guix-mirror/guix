@@ -1011,7 +1011,8 @@ for wlroots-based Wayland compositors.")
                "\"~c\"")))
            #t))
        (patches
-        (search-patches "awesome-reproducible-png.patch"))))
+        (search-patches "awesome-reproducible-png.patch"
+                        "awesome-4.3-fno-common.patch"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("asciidoc" ,asciidoc)
@@ -1093,7 +1094,8 @@ for wlroots-based Wayland compositors.")
                (setenv "LD_LIBRARY_PATH" cairo)
                (setenv "LUA_PATH" (string-append "?.lua;" lua-path))
                (setenv "LUA_CPATH" lua-cpath)
-               #t)))
+               (setenv "HOME" (getcwd))
+               (setenv "XDG_CACHE_HOME" (getcwd)))))
          (replace 'check
            (lambda _
              ;; There aren't any tests, so just make sure the binary
