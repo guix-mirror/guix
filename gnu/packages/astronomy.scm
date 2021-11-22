@@ -1061,14 +1061,12 @@ more.")
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (setenv "PYTHONPATH"
-                       (string-append "./build/lib:"
-                                      (getenv "PYTHONPATH")))
-               (setenv "PATH" (string-append out "/bin:"
-                                             (getenv "PATH")))
-               (invoke "python" "-m" "unittest" "discover" "-s" "test")))))))
+           (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+             (when tests?
+               (let ((out (assoc-ref outputs "out")))
+                 (add-installed-pythonpath inputs outputs)
+                 (setenv "PATH" (string-append out "/bin:" (getenv "PATH")))
+                 (invoke "python" "-m" "unittest" "discover" "-s" "test"))))))))
     (inputs
      `(("python-numpy" ,python-numpy)))
     (home-page "https://github.com/brandon-rhodes/python-jplephem")
