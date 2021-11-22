@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016, 2021 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017, 2018, 2019, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Lars-Dominik Braun <ldb@leibniz-psychology.org>
@@ -150,14 +150,14 @@
 (define-public nss-pam-ldapd
   (package
     (name "nss-pam-ldapd")
-    (version "0.9.11")
+    (version "0.9.12")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://arthurdejong.org/nss-pam-ldapd/"
                                   "nss-pam-ldapd-" version ".tar.gz"))
               (sha256
                (base32
-                "1dna3r0q6sjhhlkhcp8x2zkslrd4y7701kk6fl5r940sdph1pmyh"))))
+                "050fzcmxmf6y15dlcffc4gxr3wkk7fliqqwhlwqzbjwk8vkn3mn6"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -178,8 +178,7 @@
              (substitute* "Makefile.in"
                (("\\$\\(DESTDIR\\)\\$\\(NSLCD_CONF_PATH\\)")
                 (string-append (assoc-ref outputs "out")
-                               "/etc/nslcd.conf.example")))
-             #t)))))
+                               "/etc/nslcd.conf.example"))))))))
     (inputs
      `(("linux-pam" ,linux-pam)
        ("openldap" ,openldap)
