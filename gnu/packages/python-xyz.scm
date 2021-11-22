@@ -21530,6 +21530,25 @@ interface to FUSE on various operating systems.  It's just one file and is
 implemented using @code{ctypes}.")
     (license license:isc)))
 
+(define-public python-update-checker
+  (package
+    (name "python-update-checker")
+    (version "0.18.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "update-checker" version))
+       (sha256
+        (base32 "04yb5a9mi45ax50m2m0ih6gdvkk1j7gfmy83dd58i1f59axlabba"))))
+    (build-system python-build-system)
+    (propagated-inputs (list python-requests))
+    (native-inputs (list python-black python-flake8 python-pytest))
+    (home-page "https://github.com/bboe/update_checker")
+    (synopsis "Python module that will check for package updates")
+    (description "This package provides a Python module that will check for
+package updates.")
+    (license license:bsd-2)))
+
 (define-public python-userspacefs
   (package
     (name "python-userspacefs")
