@@ -786,19 +786,20 @@ to GitHub contributions calendar.")
 (define-public libgit2
   (package
     (name "libgit2")
-    (version "1.1.0")
+    (version "1.3.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/libgit2/libgit2/"
-                                  "releases/download/v" version
-                                  "/libgit2-" version ".tar.gz"))
+              ;; Since v1.1.1, release artifacts are no longer offered (see:
+              ;; https://github.com/libgit2/libgit2/discussions/5932#discussioncomment-1682729).
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/libgit2/libgit2")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1fjdglkh04qv3b4alg621pxa689i0wlf8m7nf2755zawjr2zhwxd"))
-              (patches (search-patches "libgit2-mtime-0.patch"))
-              (snippet '(begin
-                          (delete-file-recursively "deps") #t))
-              (modules '((guix build utils)))))
+                "0vgpb2175a5dhqiy1iwywwppahgqhi340i8bsvafjpvkw284vazd"))
+              (modules '((guix build utils)))
+              (snippet '(delete-file-recursively "deps"))))
     (build-system cmake-build-system)
     (outputs '("out" "debug"))
     (arguments
@@ -820,8 +821,7 @@ to GitHub contributions calendar.")
                (("#!/bin/sh") (string-append "#!" (which "sh"))))
              (substitute* "tests/clar/fs.h"
                (("/bin/cp") (which "cp"))
-               (("/bin/rm") (which "rm")))
-             #t))
+               (("/bin/rm") (which "rm")))))
          ;; Run checks more verbosely, unless we are cross-compiling.
          (replace 'check
            (lambda* (#:key (tests? #t) #:allow-other-keys)
