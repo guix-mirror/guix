@@ -5701,13 +5701,13 @@ readable format.")
 (define-public python-pygit2
   (package
     (name "python-pygit2")
-    (version "1.6.0")
+    (version "1.7.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pygit2" version))
        (sha256
-        (base32 "0qjd5aqpmla64da4pb47vdnrmnqdbn7248a4fzs7f5q1ax7fmb3s"))))
+        (base32 "0p8n25bijirxh31cv99vd1mkdsvpcs6z6441wz1fqva3b2as5ynp"))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f))            ; tests don't run correctly in our environment
