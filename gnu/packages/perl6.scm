@@ -62,6 +62,7 @@
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out        (assoc-ref outputs "out"))
                    (pkg-config (assoc-ref inputs "pkg-config")))
+               (setenv "CFLAGS" "-fcommon")
                (setenv "LDFLAGS" (string-append "-Wl,-rpath=" out "/lib"))
                (invoke "perl" "Configure.pl"
                        "--prefix" out
