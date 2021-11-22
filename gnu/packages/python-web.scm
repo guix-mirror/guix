@@ -100,13 +100,13 @@
 (define-public python-prawcore
   (package
     (name "python-prawcore")
-    (version "2.0.0")
+    (version "2.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "prawcore" version))
        (sha256
-        (base32 "1l9nrn4s03xl8fvkyybdk86bm9cyyk43alkxf9g014a9ynvdk65l"))))
+        (base32 "0vgmhjddqxnz5vy70dyqvakak51fg1nk6j3xavkc83d8nzacrwfs"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-betamax" ,python-betamax)
