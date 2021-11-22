@@ -9416,7 +9416,14 @@ simulator.")
        #:tests? #f                      ;no test
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)            ;no configure script
+         ;; There is no configure script
+         (replace 'configure
+           (lambda _
+             (substitute* "Makefile"
+               (("-funroll-loops")
+                "-funroll-loops -fcommon")
+               (("SDL_CFLAGS =")
+                "SDL_CFLAGS = -fcommon"))))
          (add-after 'unpack 'fix-sdl-path
            ;; XXX: For some reason, `sdl2-config' reports stand-alone SDL
            ;; directory, not SDL-union provided as an input to the package.
