@@ -257,6 +257,11 @@
                   (string-append (assoc-ref inputs "docbook-xml-4.1.2")
                                  "/xml/dtd/docbook/"))))
              #t))
+         (add-before 'check 'set-home
+           (lambda _
+             ;; A test using GIO expects ~/.config/glib-2.0/settings to be
+             ;; writable.
+             (setenv "HOME" (getcwd))))
          (add-after 'install 'move-doc
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
