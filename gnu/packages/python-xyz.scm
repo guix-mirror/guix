@@ -28039,6 +28039,33 @@ simple mock/record and a complete capture/replay framework.")
 interfaces.")
     (license license:bsd-3)))
 
+(define-public python-orgparse
+  (package
+    (name "python-orgparse")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "orgparse" version))
+       (sha256
+        (base32 "14iv4pg3rma9560plg0w943x04mr2cmrssda43y2d1x9acrd2n71"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest" "-vv" "orgparse/tests")))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-setuptools-scm" ,python-setuptools-scm)))
+    (home-page "https://github.com/karlicoss/orgparse")
+    (synopsis "Emacs Org mode parser in Python")
+    (description
+     "This package is a Python module for reading Emacs Org mode files.")
+    (license license:bsd-3)))
+
 (define-public python-sgmllib3k
   (package
     (name "python-sgmllib3k")
