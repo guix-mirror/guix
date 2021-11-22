@@ -157,6 +157,7 @@
        ("python-pytest" ,python-pytest)))
     (propagated-inputs
      `(("python-prawcore" ,python-prawcore)
+       ("python-update-checker" ,python-update-checker)
        ("python-websocket-client" ,python-websocket-client)))
     (synopsis "Python Reddit API Wrapper")
     (description "PRAW is a Python package that allows for simple access to
