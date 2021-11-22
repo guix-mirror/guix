@@ -28,6 +28,7 @@
 ;;; Copyright © 2021 Cameron Chaparro <cameron@cameronchaparro.com>
 ;;; Copyright © 2021 Charles Jackson <charles.b.jackson@protonmail.com>
 ;;; Copyright © 2021 Foo Chuan Wei <chuanwei.foo@hotmail.com>
+;;; Copyright © 2021 jgart <jgart@dismail.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19694,6 +19695,31 @@ Vernacular builds on Overlord and is inspired by Racket.")
 
 (define-public cl-vernacular
   (sbcl-package->cl-source-package sbcl-vernacular))
+
+(define-public sbcl-cmn
+  (package
+    (name "sbcl-cmn")
+    (version "2021.11.22")
+    (source
+     (origin
+       (method url-fetch)
+       (uri "https://ccrma.stanford.edu/software/cmn/cmn.tar.gz")
+       (file-name (string-append "cmn-" version ".tar.gz"))
+       (sha256
+        (base32 "04j1l57cdyfi2zzxqwmvmf1hl899ffgs3bl4r42ba47zsw45kq14"))))
+    (build-system asdf-build-system/sbcl)
+    (home-page "https://ccrma.stanford.edu/software/cmn/")
+    (synopsis "Western music notation package written in Common Lisp")
+    (description
+     "CMN provides a package of functions to hierarchically describe a musical
+score.  When evaluated, the musical score is rendered to an image.")
+    (license license:expat)))
+
+(define-public cl-cmn
+  (sbcl-package->cl-source-package sbcl-cmn))
+
+(define-public ecl-cmn
+  (sbcl-package->ecl-package sbcl-cmn))
 
 (define-public sbcl-cl-https-everywhere
   ;; No release.
