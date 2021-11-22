@@ -289,7 +289,7 @@ desktop and the mate-about program.")
        ("tzdata" ,tzdata)))
     (propagated-inputs
       ;; both of these are requires.private in mateweather.pc
-     `(("libsoup" ,libsoup)
+     `(("libsoup-minimal" ,libsoup-minimal-2)
        ("libxml2" ,libxml2)))
     (home-page "https://mate-desktop.org/")
     (synopsis "MATE library for weather information from the Internet")
