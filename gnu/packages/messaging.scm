@@ -3205,7 +3205,7 @@ Weechat communicate over the Matrix protocol.")
                        all
                        (map (lambda (path)
                               (string-append "sys.path.append('" path "')\n"))
-                            (string-split (getenv "PYTHONPATH") #\:)))))
+                            (string-split (getenv "GUIX_PYTHONPATH") #\:)))))
              ;; Install script.
              (install-file "wee_slack.py"
                            (string-append (assoc-ref outputs "out")
