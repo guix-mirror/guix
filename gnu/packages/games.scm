@@ -9431,8 +9431,7 @@ simulator.")
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "Makefile"
                (("sdl2-config" command)
-                (string-append command " --prefix=" (assoc-ref inputs "sdl"))))
-             #t)))))
+                (string-append command " --prefix=" (assoc-ref inputs "sdl")))))))))
     (inputs
      `(("bzip2" ,bzip2)
        ("sdl" ,(sdl-union (list sdl2 sdl2-mixer sdl2-net)))
