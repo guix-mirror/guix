@@ -144,13 +144,11 @@
                          '("integration/models" "unit/models"))
                ;; https://github.com/praw-dev/praw/issues/1699
                ;; #issuecomment-795336704
-               (delete-file "unit/test_config.py"))
-             #t))
+               (delete-file "unit/test_config.py"))))
          (replace 'check
            (lambda* (#:key tests? #:allow-other-keys)
              (when tests?
-               (invoke "pytest"))
-             #t)))))
+               (invoke "pytest")))))))
     (native-inputs
      `(("python-betamax" ,python-betamax)
        ("python-betamax-matchers" ,python-betamax-matchers)
