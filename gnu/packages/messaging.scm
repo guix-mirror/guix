@@ -3015,7 +3015,6 @@ designed for experienced users.")
              (let ((test-zulip "../tools/test-zulip"))
                (when tests?
                  (add-installed-pythonpath inputs outputs)
-                 (setenv "PYTHONPATH" (string-append ".:" (getenv "PYTHONPATH")))
                  (patch-shebang test-zulip)
                  (invoke test-zulip))))))))
     (propagated-inputs
