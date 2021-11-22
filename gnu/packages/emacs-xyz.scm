@@ -3025,18 +3025,18 @@ that the binary uses instead of the actual binary contents.")
 (define-public emacs-form-feed
   (package
     (name "emacs-form-feed")
-    (version "0.2.2")
+    (version "0.2.3")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/wasamasa/form-feed")
+             (url "https://depp.brause.cc/form-feed.git")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "171jna631b2iqcimfsik9c66gii8nc0zdb58m077w00rn7rcxbh2"))))
+        (base32 "10mcj4x2fjq0ikq9adkd72k9zp6caqib628bmj8d67wwabvzj6mk"))))
     (build-system emacs-build-system)
-    (home-page "https://github.com/wasamasa/form-feed")
+    (home-page "https://depp.brause.cc/form-feed")
     (synopsis "Display ^L glyphs as horizontal lines")
     (description
      "This package provides a minor mode @code{form-feed-mode} to display page
