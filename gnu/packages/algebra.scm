@@ -431,13 +431,13 @@ or text interfaces) or as a C++ library.")
 (define-public flint
   (package
    (name "flint")
-   (version "2.8.1")
+   (version "2.8.4")
    (source
     (origin
       (method url-fetch)
       (uri (string-append "http://flintlib.org/flint-" version ".tar.gz"))
       (sha256
-       (base32 "0zj2zgn3cbb08pxhfq38i62pgjfbb6938l70am7dnixqgixdmzgd"))))
+       (base32 "1gp4wm2s8c27g2hh53d09cys62da1bsxfwbcsj9cd7cfikm95pv1"))))
    (build-system gnu-build-system)
    (inputs
     `(("ntl" ,ntl)))
