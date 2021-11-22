@@ -7483,6 +7483,32 @@ OCaml.")
 modal editing engine generator.")
     (license license:expat)))
 
+(define-public ocaml-mew-vi
+  (package
+    (name "ocaml-mew-vi")
+    (version "0.5.0")
+    (home-page "https://github.com/kandu/mew_vi")
+    (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit version)))
+       (file-name (git-file-name name version))
+        (sha256
+          (base32 "0lihbf822k5zasl60w5mhwmdkljlq49c9saayrws7g4qc1j353r8"))))
+    (build-system dune-build-system)
+    (propagated-inputs
+      `(("ocaml-mew" ,ocaml-mew)
+        ("ocaml-react" ,ocaml-react)))
+    (native-inputs
+     `(("ocaml-ppx-expect" ,ocaml-ppx-expect)))
+    (properties `((upstream-name . "mew_vi")))
+    (synopsis "Modal editing VI-like editing engine generator")
+    (description "This module provides a vi-like modal editing engine
+generator.")
+    (license license:expat)))
+
 (define-public ocaml-syntax-shims
   (package
     (name "ocaml-syntax-shims")
