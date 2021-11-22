@@ -125,13 +125,13 @@
 (define-public python-praw
   (package
     (name "python-praw")
-    (version "7.2.0")
+    (version "7.5.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "praw" version))
        (sha256
-        (base32 "0ll1a0n8xs8gykizdsfrw63jp6bc39ab0pk3yzwcak96fyxh0ij3"))))
+        (base32 "1nqcwz8r8xp4rfpy2i11x2fjga8fmmf6zw94xjk1h1yxgn1gq6zr"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -139,16 +139,18 @@
          (add-after 'unpack 'disable-failing-tests
            (lambda _
              (with-directory-excursion "tests"
-               ;; Require networking.
+               ;; Integration tests depend on files that are not included.
                (for-each delete-file-recursively
                          '("integration/models" "unit/models"))
-               ;; https://github.com/praw-dev/praw/issues/1699
-               ;; #issuecomment-795336704
+               ;; The configuration file does not seem to exist.
                (delete-file "unit/test_config.py"))))
          (replace 'check
            (lambda* (#:key tests? #:allow-other-keys)
              (when tests?
-               (invoke "pytest")))))))
+               (invoke "pytest" "-k"
+                       ;; These tests depend on test files that don't exist.
+                       (string-append "not test_bad_request_without_json_text_plain_response"
+                                      " and not test_bad_request_without_json_text_html_response"))))))))
     (native-inputs
      `(("python-betamax" ,python-betamax)
        ("python-betamax-matchers" ,python-betamax-matchers)
