@@ -15911,8 +15911,21 @@ until the object is actually required, and caches the result of said call.")
                (base32
                 "1m0xvyby8baaxp6pfm0fgq8d2pq5dd8qm8bzfbrs009jaw5pza74"))))
     (build-system python-build-system)
+    (arguments
+     `(#:tests? #f                      ; XXX: requires internet access
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-getprotobyname-calls
+           ;; These calls are problematic in the build environment as there is
+           ;; no /etc/protocols.  This breaks the sanity-check phase of any
+           ;; package depnding on this one.
+           (lambda _
+             (substitute* "dns/rdtypes/IN/WKS.py"
+               (("socket.getprotobyname\\('tcp'\\)")
+                "6")
+               (("socket.getprotobyname\\('udp'\\)")
+                "17")))))))
     (native-inputs `(("unzip" ,unzip)))
-    (arguments '(#:tests? #f))          ; XXX: requires internet access
     (home-page "https://www.dnspython.org")
     (synopsis "DNS toolkit for Python")
     (description
