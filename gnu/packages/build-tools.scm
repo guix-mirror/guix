@@ -285,7 +285,12 @@ files and generates build instructions for the Ninja build system.")
                   ;; Python interpreter, so we cannot use the shell wrapper.
                   (delete 'wrap))))
     (inputs `(("ninja" ,ninja)))
+
+    ;; XXX: Python is propagated just to 'GUIX_PYTHONPATH' is set (!).
+    ;; MESON-WRAPPED below fixes that by wrapping the 'meson' executable.
+    ;; TODO: Make MESON-WRAPPED the new MESON on the next core update cycle.
     (propagated-inputs `(("python" ,python)))
+
     (home-page "https://mesonbuild.com/")
     (properties '((hidden? . #t)))
     (synopsis "Build system designed to be fast and user-friendly")
@@ -300,6 +305,9 @@ resembles Python.")
 
 (define-public meson-wrapped
   (package/inherit meson
+    (propagated-inputs '())                       ;don't propagate Python
+    (inputs (modify-inputs (package-inputs meson)
+              (prepend python-wrapper)))
     (arguments
      `(;; FIXME: Tests require many additional inputs and patching many
        ;; hard-coded file system locations in "run_unittests.py".
