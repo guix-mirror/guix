@@ -17896,11 +17896,11 @@ functions allow Lisp programs to explore the web.")
   (sbcl-package->cl-source-package sbcl-aserve))
 
 (define-public sbcl-yxorp
-  (let ((commit "d2e8f9304549e47ae5c7fa35a6b114804603eac9")
-        (revision "1"))
+  (let ((commit "041d0a535d6406df703f5f037d3d2cad4159c74d")
+        (revision "2"))
     (package
       (name "sbcl-yxorp")
-      (version (git-version "0" revision commit))
+      (version (git-version "0.2" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -17909,7 +17909,7 @@ functions allow Lisp programs to explore the web.")
                (commit commit)))
          (file-name (git-file-name "cl-yxorp" version))
          (sha256
-          (base32 "1zz1j678vzwkf817h2z0pf0fcyf4mldv4hiv1wyam58hd4bcrjsw"))))
+          (base32 "14fvncisig6h2qamczbx9cifp3rbjfw0cmc2ffifvr82x2bwab1f"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("cl+ssl" ,sbcl-cl+ssl)
