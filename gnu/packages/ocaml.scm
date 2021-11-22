@@ -15,7 +15,7 @@
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
-;;; Copyright © 2020 Simon Tournier <zimon.toutoune@gmail.com>
+;;; Copyright © 2020, 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;; Copyright © 2020 divoplade <d@divoplade.fr>
 ;;; Copyright © 2020, 2021 pukkamustard <pukkamustard@posteo.net>
 ;;; Copyright © 2021 aecepoglu <aecepoglu@fastmail.fm>
@@ -7433,6 +7433,29 @@ exposed the intrinsics properly, the compiler doesn't have any fast blits
 between Bigstrings and other string-like types.  @code{bigstringaf} provides
 these missing pieces.")
     (license license:bsd-3)))
+
+(define-public ocaml-trie
+  (package
+    (name "ocaml-trie")
+    (version "1.0.0")
+    (home-page "https://github.com/kandu/trie/")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0s7p9swjqjsqddylmgid6cv263ggq7pmb734z4k84yfcrgb6kg4g"))))
+    (build-system dune-build-system)
+    (arguments
+     '(#:tests? #f))                    ;no tests
+    (synopsis "Strict impure trie tree")
+    (description
+     "This module implements strict impure trie tree data structure for
+OCaml.")
+    (license license:expat)))
 
 (define-public ocaml-syntax-shims
   (package
