@@ -4125,10 +4125,10 @@ instead of bindings to a C library.")
         ("ocaml-zed" ,ocaml-zed)))
      (properties '()))))
 
-(define-public ocaml4.07-utop
+(define-public ocaml-utop
   (package
-    (name "ocaml4.07-utop")
-    (version "2.4.3")
+    (name "ocaml-utop")
+    (version "2.8.0")
     (source
      (origin
        (method git-fetch)
@@ -4137,27 +4137,47 @@ instead of bindings to a C library.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1bl4943qpi3qy152dbdm5glhx19zsiylmn4rcxi8l66g58hikyjp"))))
+        (base32 "1zf4hg33sblzh2f65vk0292jg4jlwa8702kfwpsg1kcg4w6nsfdp"))))
     (build-system dune-build-system)
     (arguments
-     `(#:test-target "."
-       #:ocaml ,ocaml-4.07
-       #:findlib ,ocaml4.07-findlib
-       #:dune ,ocaml4.07-dune))
+     `(#:test-target "."))
     (native-inputs
-     `(("cppo" ,(package-with-ocaml4.07 ocaml-cppo))))
+     `(("ocaml-cppo" ,ocaml-cppo)))
     (propagated-inputs
-     `(("lambda-term" ,ocaml4.07-lambda-term)
-       ("lwt" ,(package-with-ocaml4.07 ocaml-lwt))
-       ("react" ,(package-with-ocaml4.07 ocaml-react))
-       ("camomile" ,(package-with-ocaml4.07 ocaml-camomile))
-       ("zed" ,ocaml4.07-zed)))
+     `(("ocaml-lambda-term" ,ocaml-lambda-term)
+       ("ocaml-lwt" ,ocaml-lwt)
+       ("ocaml-lwt-react" ,ocaml-lwt-react)
+       ("ocaml-camomile" ,ocaml-camomile)
+       ("ocaml-react" ,ocaml-react)))
+    (properties `((ocaml4.07-variant . ,(delay ocaml4.07-utop))))
     (home-page "https://github.com/ocaml-community/utop")
     (synopsis "Improved interface to the OCaml toplevel")
     (description "UTop is an improved toplevel for OCaml.  It can run in a
 terminal or in Emacs.  It supports line editing, history, real-time and context
 sensitive completion, colors, and more.")
     (license license:bsd-3)))
+
+(define-public ocaml4.07-utop
+  (package-with-ocaml4.07
+   (package
+     (inherit ocaml-utop)
+     (version "2.4.3")
+     (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/ocaml-community/utop")
+              (commit version)))
+        (file-name (git-file-name "ocaml4.07-utop" version))
+        (sha256
+         (base32 "1bl4943qpi3qy152dbdm5glhx19zsiylmn4rcxi8l66g58hikyjp"))))
+     (propagated-inputs
+      `(("ocaml-lambda-term" ,ocaml-lambda-term)
+        ("ocaml-lwt" ,ocaml-lwt)
+        ("ocaml-react" ,ocaml-react)
+        ("ocaml-camomile" ,ocaml-camomile)
+        ("ocaml-zed" ,ocaml-zed)))
+     (properties '()))))
 
 (define-public ocaml-integers
   (package
