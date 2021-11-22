@@ -21048,7 +21048,7 @@ dirty state into your program.")
 (define-public rust-git2-0.13
   (package
     (name "rust-git2")
-    (version "0.13.20")
+    (version "0.13.24")
     (source
      (origin
        (method url-fetch)
@@ -21057,7 +21057,7 @@ dirty state into your program.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1fkc2gzcnl4ci3rja9mc5jl2ygl3fkc1fgym3rcwby216ac1x0yr"))))
+         "07rlxwvl5iyyqwh0mci5v27lbicf9qiqm60maw1srz7i51x00pl4"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
