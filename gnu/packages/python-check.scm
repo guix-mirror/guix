@@ -1401,7 +1401,8 @@ interaction, like key presses and mouse clicks.")
     (arguments
      `(#:tests? #f)); no tests
     (propagated-inputs
-     `(("python-check-manifest" ,python-check-manifest)))
+     `(("python-check-manifest" ,python-check-manifest)
+       ("python-requests" ,python-requests)))
     (home-page "https://github.com/codacy/python-codacy-coverage")
     (synopsis "Codacy coverage reporter for Python")
     (description "This package analyses Python test suites and reports how much
