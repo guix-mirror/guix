@@ -206,7 +206,7 @@ cards.")
        ("python-pycairo" ,python-pycairo)
        ("python-pygobject" ,python-pygobject)
        ("python-requests" ,python-requests)
-       ("webkitgtk" ,webkitgtk)))
+       ("webkitgtk" ,webkitgtk-with-libsoup2)))
     (propagated-inputs
      `(("dconf" ,dconf)))
     (synopsis "Client for Reddit")
