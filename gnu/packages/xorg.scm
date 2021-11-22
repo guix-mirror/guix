@@ -6696,7 +6696,8 @@ and embedded platforms.")
      (substitute-keyword-arguments (package-arguments uim)
        ((#:configure-flags configure-flags)
         (append configure-flags (list "--with-qt5-immodule"
-                                      "--with-qt5")))))
+                                      "--with-qt5"
+                                      "CPPFLAGS=-fcommon")))))
     (synopsis "Multilingual input method framework (Qt support)")))
 
 (define-public keynav
