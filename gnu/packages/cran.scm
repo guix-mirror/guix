@@ -31105,14 +31105,14 @@ files, images, movie formats, etc., etc.) through an R session.")
 (define-public r-ztree
   (package
     (name "r-ztree")
-    (version "1.0.6")
+    (version "1.0.7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "zTree" version))
        (sha256
         (base32
-         "1mywxrx6bw7dzhrdwyxbjzc8ikgvw423zycyji0jjr69cfhpmywv"))))
+         "005zk6wpchpss6865ki35yawgf668pn70163ah97rnfkhfaswm6y"))))
     (properties `((upstream-name . "zTree")))
     (build-system r-build-system)
     (propagated-inputs
