@@ -104,6 +104,7 @@
 ;;; Copyright © 2021 Noisytoot <noisytoot@disroot.org>
 ;;; Copyright © 2021 Simon South <simon@simonsouth.net>
 ;;; Copyright © 2021 la snesne <lasnesne@lagunposprasihopre.org>
+;;; Copyright © 2021 Brian Kubisiak <brian@kubisiak.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -12843,6 +12844,30 @@ you to deal with multiple log levels.")
 files in Emacs.  Files of this type (e.g., @file{BUILD.gn} or @file{*.gni})
 are common in Chromium-derived projects.")
     (license license:bsd-3)))
+
+(define-public emacs-bazel
+  ;; From 2021-11-21.
+  ;; No releases available.
+  (let ((commit "cdb2643dba39fe2bd64ba3b190b94d1ef1d83b18")
+        (revision "0"))
+    (package
+      (name "emacs-bazel")
+      (version (git-version "0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/bazelbuild/emacs-bazel-mode")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32 "0ln06dprnivx9zxm6n23ppyx7x4kbn0f85pxwvkq32aq7wnqz82m"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/bazelbuild/emacs-bazel-mode")
+      (synopsis "Bazel support for Emacs")
+      (description
+       "This package provides support for the Bazel build system.  See
+@uref{https://bazel.build/} for background on Bazel.")
+      (license license:asl2.0))))
 
 (define-public emacs-gntp
   (package
