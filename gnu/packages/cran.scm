@@ -2079,7 +2079,7 @@ previewing themes in real time.")
 (define-public r-shiny
   (package
     (name "r-shiny")
-    (version "1.6.0")
+    (version "1.7.1")
     (source
      (origin
        (method git-fetch)
@@ -2089,7 +2089,7 @@ previewing themes in real time.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0f6cwx5xyqzs40msq271sqhwl8736rwbm7kd1ldkcvxngzr4vlx9"))
+         "0wvc6jlgs41p05wbk8gahnl7sfnc4hpliyh9dbi5w52ngsg6wcr7"))
        (snippet
         '(for-each delete-file
                    '("inst/www/shared/bootstrap/js/bootstrap.min.js"
@@ -2165,9 +2165,9 @@ previewing themes in real time.")
        ("r-cachem" ,r-cachem)
        ("r-commonmark" ,r-commonmark)
        ("r-crayon" ,r-crayon)
-       ("r-digest" ,r-digest)
        ("r-ellipsis" ,r-ellipsis)
        ("r-fastmap" ,r-fastmap)
+       ("r-fontawesome" ,r-fontawesome)
        ("r-glue" ,r-glue)
        ("r-htmltools" ,r-htmltools)
        ("r-httpuv" ,r-httpuv)
