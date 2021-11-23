@@ -25375,14 +25375,14 @@ service.  Functions are provided to work with the OAI-PMH verbs:
 (define-public r-argon2
   (package
     (name "r-argon2")
-    (version "0.2-0")
+    (version "0.4-0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "argon2" version))
        (sha256
         (base32
-         "0kqn06rpb39jlzizjlnc5c44mfic8llrshxn7ljgmyj35lbqwxqh"))))
+         "09hzl0wz0lw2v7g64rdv0lij2hq36zl37a6rmxwvinmjdzijcsyw"))))
     (properties `((upstream-name . "argon2")))
     (build-system r-build-system)
     (home-page "https://github.com/wrathematics/argon2")
