@@ -1631,26 +1631,23 @@ boilerplate code from defining new Flymake backend functions.")
       (license license:gpl3+))))
 
 (define-public emacs-flymake-kondor
-  ;; No tag, version grabbed from source .el file.
-  (let ((commit "389b513c7287ede7a996a3d0db2e84b00772fef5")
-        (revision "0"))
-    (package
-      (name "emacs-flymake-kondor")
-      (version (git-version "0.1.1" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/turbo-cafe/flymake-kondor")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "1by6p1j091xk5bfdpbqp7fifjn4rknrbm8r3xjfvpb4xcb19nmig"))))
-      (build-system emacs-build-system)
-      (home-page "https://github.com/turbo-cafe/flymake-kondor")
-      (synopsis "Linter with clj-kondo")
-      (description "This package adds Clojure syntax checker clj-kondo.")
-      (license license:gpl3+))))
+  (package
+    (name "emacs-flymake-kondor")
+    (version "0.1.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/turbo-cafe/flymake-kondor")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1vcl1q07faqqmrryyia36hbgf78g3cs51pbi0bx41yzz779ribvk"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/turbo-cafe/flymake-kondor")
+    (synopsis "Linter with clj-kondo")
+    (description "This package adds Clojure syntax checker clj-kondo.")
+    (license license:gpl3+)))
 
 (define-public emacs-flymake-shellcheck
   ;; No tag, version grabbed from source .el file.
@@ -2940,7 +2937,7 @@ of bibliographic references.")
 (define-public emacs-corfu
   (package
     (name "emacs-corfu")
-    (version "0.14")
+    (version "0.15")
     (source
      (origin
        (method git-fetch)
@@ -2949,7 +2946,7 @@ of bibliographic references.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0y40vnd227xjzds6zh85gplkiqa387b9y0925g5l01gz7hk2z17r"))))
+        (base32 "0crk5dryaqqj36fjcsxi0gd924125p0yghvg5anwj38zjqg1rqm9"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/minad/corfu")
     (synopsis "Completion overlay region function")
@@ -3025,18 +3022,18 @@ that the binary uses instead of the actual binary contents.")
 (define-public emacs-form-feed
   (package
     (name "emacs-form-feed")
-    (version "0.2.2")
+    (version "0.2.3")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/wasamasa/form-feed")
+             (url "https://depp.brause.cc/form-feed.git")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "171jna631b2iqcimfsik9c66gii8nc0zdb58m077w00rn7rcxbh2"))))
+        (base32 "10mcj4x2fjq0ikq9adkd72k9zp6caqib628bmj8d67wwabvzj6mk"))))
     (build-system emacs-build-system)
-    (home-page "https://github.com/wasamasa/form-feed")
+    (home-page "https://depp.brause.cc/form-feed")
     (synopsis "Display ^L glyphs as horizontal lines")
     (description
      "This package provides a minor mode @code{form-feed-mode} to display page
@@ -4029,7 +4026,7 @@ also adds tags and marks support for Skeleton, and Abbrev support for Tempo.")
 (define-public emacs-toc-org
   (package
     (name "emacs-toc-org")
-    (version "1.1.0")
+    (version "1.2.0")
     (source
      (origin
        (method git-fetch)
@@ -4038,7 +4035,7 @@ also adds tags and marks support for Skeleton, and Abbrev support for Tempo.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0lk0rji85a1c0c5r9an0fdvsm4n4jyixsknmr8ywha3lfmc2p0l8"))))
+        (base32 "00a2al7ghrlabf65kfj1mk30p2pl37h6ppwlgghbgiy7rwlzkdbm"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/snosov1/toc-org")
     (synopsis "Table of Contents generator for Emacs Org mode")
@@ -10311,7 +10308,7 @@ with Elfeed.")
 (define-public emacs-elfeed-score
   (package
     (name "emacs-elfeed-score")
-    (version "1.1.0")
+    (version "1.2.0")
     (source
      (origin
        (method git-fetch)
@@ -10320,7 +10317,7 @@ with Elfeed.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1drgv16555cyn7w6g44z23yhi1i0cy1b9h1ri3lz6h814px0wj0z"))))
+        (base32 "0b49sd0h1idx3p5p9zqb3p5ni4i43fyikfkg70fs5iqjcl0vmz7c"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-elfeed" ,emacs-elfeed)))
@@ -10732,11 +10729,11 @@ names, e.g., @samp{#0000ff} is displayed in white with a blue background.")
 (define-public emacs-ryo-modal
   ;; Package has no release.  Version is extracted from "Version:" keyword in
   ;; main file.
-  (let ((commit "3a54312eea7023a86ca3f8eb3c03c872554bff2f")
+  (let ((commit "a10f564474cc8fa28a74b04e3b15375315223c44")
         (revision "0"))
     (package
       (name "emacs-ryo-modal")
-      (version (git-version "0.4" revision commit))
+      (version (git-version "0.45" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -10745,7 +10742,7 @@ names, e.g., @samp{#0000ff} is displayed in white with a blue background.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "1cyvp3bi6yhckbdnq98xvghmhdzghya5y9wd7hxjawibs75rza95"))))
+          (base32 "0ypm1rnyry6hb4znb8sgwfi0la6q46ihm8k99kisk0mkgz7im93d"))))
       (build-system emacs-build-system)
       (home-page "https://github.com/Kungsgeten/ryo-modal")
       (synopsis "Emacs minor mode for defining modal editing environments")
@@ -13820,7 +13817,7 @@ reached with the right hand.")
 (define-public emacs-csharp-mode
   (package
     (name "emacs-csharp-mode")
-    (version "1.0.2")
+    (version "1.1.0")
     (source
      (origin
        (method git-fetch)
@@ -13829,7 +13826,7 @@ reached with the right hand.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1gdr1y8q93xr5vlx6jj95js6rmmsspq2bn870igbaijwwsn0sf7g"))))
+        (base32 "0xadchhbfikw2vac6kqkmdjjixhybxqqf99cpl089cga9sjc7i5p"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/josteink/csharp-mode")
     (synopsis "Major mode for C# code")
@@ -13839,6 +13836,52 @@ syntax coloring, indentation, insertion of matched pairs of curly braces and
 documentation generation.  In addition, it provides menu-based navigation
 using Imenu, and Compilation mode support for MSBuild, devenv and xbuild.")
     (license license:gpl3+)))
+
+(define-public emacs-vala-mode
+  ;; Upstream has no tagged release.
+  (let ((commit "d696a8177e94c81ea557ad364a3b3dcc3abbc50f")
+        (revision "0"))
+    (package
+      (name "emacs-vala-mode")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/rrthomas/vala-mode")
+               (commit commit)))
+         (sha256
+          (base32 "0g5pdq757z9d8rk489n5ilhqipdc4i4sfkjwwrxyvgjlapjc04c0"))))
+      (build-system emacs-build-system)
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'disable-multiline-support
+             (lambda* (#:key inputs #:allow-other-keys)
+               (make-file-writable "vala-mode.el")
+               (emacs-batch-edit-file "vala-mode.el"
+                 '(progn
+                   (require 'thingatpt) ;; beginning-of-thing, end-of-thing
+                   (goto-char (point-min))
+                   (save-excursion
+                    (re-search-forward ";; Support multiline strings")
+                    (goto-char (match-beginning 0))
+                    (kill-sexp)
+                    (insert ";; FIXME: Support multiline strings
+(c-lang-defconst c-multiline-string-start-char vala nil)"))
+                   (save-excursion
+                    (re-search-forward "(defcustom vala-multiline-strings")
+                    (goto-char (match-beginning 0))
+                    (insert ";; FIXME: Support multiline strings\n")
+                    (comment-region (beginning-of-thing 'sexp)
+                                    (end-of-thing 'sexp)))
+                   (basic-save-buffer))))))))
+      (home-page "https://github.com/rrthomas/vala-mode")
+      (synopsis "Vala mode for Emacs")
+      (description
+       "This package provides a major mode for editing .vala and .vapi files
+in Emacs.")
+      (license license:gpl2+))))
 
 (define-public emacs-php-mode
   (package
@@ -17586,16 +17629,16 @@ according to a parsing expression grammar.")
 (define-public emacs-eldev
   (package
     (name "emacs-eldev")
-    (version "0.9.1")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/doublep/eldev")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1jfj4f5w20qd12k6ygv0jazn2x9pxjrmqmlmibppc4ybrhhgmg0s"))))
+    (version "0.10.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/doublep/eldev")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0ff74scwmixyawsdypvix0cchsbp1d9ac95ym96b4f8hj5gijjms"))))
     (build-system emacs-build-system)
     (arguments
      `(#:tests? #t
@@ -17605,14 +17648,13 @@ according to a parsing expression grammar.")
          (add-after 'unpack 'prepare-for-tests
            (lambda _
              (setenv "ELDEV_LOCAL" (getcwd))
-             (make-file-writable
-              "test/project-i/project-i-autoloads.el")
-             #t))
+             (make-file-writable "test/project-i/project-i-autoloads.el")))
          (add-after 'unpack 'skip-failing-tests
            ;; FIXME: 10 tests are failing.  Skip them for now.
            (lambda _
-             (substitute* '("test/init.el" "test/targets.el")
-               (("(targets-project-e-[34]|init-[1-8]).*" line)
+             (delete-file "test/upgrade-self.el")
+             (substitute* "test/init.el"
+               (("init-[1-8].*" line)
                 (string-append line "(skip-unless nil)\n")))))
          (add-after 'install 'install-eldev-executable
            ;; This constructs the eldev executable from templates and
@@ -17629,8 +17671,7 @@ according to a parsing expression grammar.")
                  ;; eldev doesn't try to bootstrap itself from MELPA when
                  ;; invoked.
                  (("export ELDEV_EMACS.*" all)
-                  (string-append "export ELDEV_LOCAL=" site-lisp "\n" all)))
-               #t))))))
+                  (string-append "export ELDEV_LOCAL=" site-lisp "\n" all)))))))))
     (native-inputs
      `(("texinfo" ,texinfo)))           ;for tests
     (home-page "https://github.com/doublep/eldev/")
@@ -17854,7 +17895,7 @@ automatically fetched from well-curated sources, and formatted as BibTeX.")
 (define-public emacs-citar
   (package
     (name "emacs-citar")
-    (version "0.8")
+    (version "0.9")
     (source
      (origin
        (method git-fetch)
@@ -17863,7 +17904,7 @@ automatically fetched from well-curated sources, and formatted as BibTeX.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1jrfcfr976c9nb2vpfrh6yhck5gm34wcjzbk0m6gq2xg3qfv2g6p"))))
+        (base32 "15jhpl2j4rm97cvvqzlfzxarvxvcsg64raz068psrsd2y7y2zh4c"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-auctex" ,emacs-auctex)
@@ -20727,7 +20768,7 @@ describing the key binding changes.")
 (define-public emacs-evil-multiedit
   (package
     (name "emacs-evil-multiedit")
-    (version "1.3.9")
+    (version "1.4.3")
     (source
      (origin
        (method git-fetch)
@@ -20736,8 +20777,7 @@ describing the key binding changes.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "19h3kqylqzbjv4297wkzzxdmn9yxbg6z4ga4ssrqri90xs7m3rw3"))))
+        (base32 "08ycwss58zh2zikk79jfj074q78yjcd7vbjgv5ssqvws09x5rgfq"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-evil" ,emacs-evil)
@@ -20747,15 +20787,15 @@ describing the key binding changes.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'check 'fix-makefile
+         (add-before 'check 'fix-checks
            (lambda _
              (substitute* "Makefile"
                (("@cask exec ") ""))
-             #t)))
+             (substitute* "test/test-helper.el"
+               (("'\\(evil iedit\\)") "nil")))))
        #:tests? #t
        #:test-command '("make" "test")))
-    (home-page
-     "https://github.com/hlissner/evil-multiedit")
+    (home-page "https://github.com/hlissner/evil-multiedit")
     (synopsis "Multiple cursors for Evil mode")
     (description
      "This plugin was an answer to the lack of proper multiple cursor support
@@ -26726,7 +26766,7 @@ Emacs that integrate with major modes like Org-mode.")
 (define-public emacs-modus-themes
   (package
     (name "emacs-modus-themes")
-    (version "1.6.0")
+    (version "1.7.0")
     (source
      (origin
        (method git-fetch)
@@ -26735,7 +26775,7 @@ Emacs that integrate with major modes like Org-mode.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0fkj5as1lx6q7n6iny9x5hhhswfgg9f5ky3d82832hrq5a1jc0mg"))))
+        (base32 "06i2jsy7vigydci4261nfnh668rl5zrcss5icwxlqii928dkmy8y"))))
     (build-system emacs-build-system)
     (home-page "https://protesilaos.com/modus-themes/")
     (synopsis "Accessible themes (WCAG AAA)")
@@ -27347,22 +27387,22 @@ each slide with left/right keys.")
 (define-public emacs-fullframe
   (package
     (name "emacs-fullframe")
-    (version "0.5.0")
+    (version "0.5.1")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/tomterl/fullframe")
+             (url "https://git.sr.ht/~tomterl/fullframe")
              (commit version)))
        (sha256
-        (base32
-         "0m43qnhp6ibsskpjkxc86p3lrjsjc0ndqml3lbd65s79x4x7i3fi"))
+        (base32 "1q276p3bagx9fhzyzjmz449f95k1z287x4p34980d06klj11lrab"))
        (file-name (git-file-name name version))))
     (build-system emacs-build-system)
-    (home-page "https://github.com/tomterl/fullframe")
+    (home-page "https://git.sr.ht/~tomterl/fullframe")
     (synopsis "Generalized automatic execution in a single frame")
-    (description "This library provides helpers for single-window-per-frame
-execution of buffer-exposing commands.")
+    (description
+     "This library provides helpers for single-window-per-frame execution of
+buffer-exposing commands.")
     (license license:gpl3+)))
 
 (define-public emacs-eshell-toggle
@@ -28588,6 +28628,38 @@ a @samp{date} keywords, and optionally, a @samp{filetags} keyword.")
 conversion program}, a Japanese input method on Emacs.")
       (license license:gpl2+))))
 
+(define-public emacs-ddskk-nicola
+  (package
+    (inherit emacs-ddskk)
+    (name "emacs-ddskk-nicola")
+    (propagated-inputs
+     `(("emacs-ddskk" ,emacs-ddskk)))
+    (arguments
+     `(#:make-flags
+       (let ((out (assoc-ref %outputs "out")))
+         (append
+          (list (string-append "PREFIX=" out)
+                (string-append "LISPDIR=" out "/share/emacs/site-lisp"))))
+       #:tests? #f                      ; no tests in this subtree
+       ,@(substitute-keyword-arguments (package-arguments emacs-ddskk)
+           ((#:phases phases)
+            `(modify-phases ,phases
+               (add-after 'unpack 'chdir
+                 (lambda _
+                   (chdir "nicola")
+                   #t))
+               (replace 'configure
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (make-file-writable "NICOLA-DDSKK-CFG")
+                   (emacs-substitute-sexps "NICOLA-DDSKK-CFG"
+                     ("setq NICOLA-DDSKK_PREFIX" ""))
+                   #t)))))))
+    (synopsis "Nicola layout for Daredevil SKK")
+    (description
+     "Daredevil SKK is a version of @acronym{SKK, Simple Kana to Kanji
+conversion program}, a Japanese input method on Emacs.  This package adds
+support for the Nicola keyboard layout to it.")))
+
 (define-public emacs-objed
   (package
     (name "emacs-objed")
@@ -29309,7 +29381,7 @@ web development.")
 (define-public emacs-iter2
   (package
     (name "emacs-iter2")
-    (version "1.0")
+    (version "1.1")
     (source
      (origin
        (method git-fetch)
@@ -29318,7 +29390,7 @@ web development.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0gaq3z2v1q4r9mkyq71dzmqakhi0p8g7ph4z0n3a11rvyc3z9ykx"))))
+        (base32 "12flc98nv353cqr9qbkasgdmiyf9c3iw4apzh899xw857j1h5qdr"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/doublep/iter2")
     (synopsis "Reimplementation of Elisp generators")
@@ -29724,7 +29796,7 @@ and preferred services can easily be configured.")
 (define-public emacs-vertico
   (package
     (name "emacs-vertico")
-    (version "0.15")
+    (version "0.16")
     (source
      (origin
        (method git-fetch)
@@ -29733,7 +29805,7 @@ and preferred services can easily be configured.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "059mj7x9iisjl2cdc1ggqd3racfs42yf0qqk0va9c857qgscrn26"))))
+        (base32 "1w5i8qmh3sivqqaq3zygx1fw16s56p4nwm22d33j6inn7l9n5zsm"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
@@ -29745,8 +29817,7 @@ and preferred services can easily be configured.")
              (let ((el-files (find-files "./extensions" ".*\\.el$")))
                (for-each (lambda (f)
                            (rename-file f (basename f)))
-                         el-files))
-             #t)))))
+                         el-files)))))))
     (native-inputs
      `(("texinfo" ,texinfo)))
     (home-page "https://github.com/minad/vertico")

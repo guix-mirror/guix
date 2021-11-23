@@ -3599,7 +3599,7 @@ are primarily in English, however some in other languages are provided.")
 C++.  Features include an OpenGL renderer, extensible materials, scene graph
 management, character animation, particle and other special effects, support
 for common mesh file formats, and collision detection.")
-    (home-page "http://irrlicht.sourceforge.net/")
+    (home-page "https://irrlicht.sourceforge.io/")
     (license license:zlib)))
 
 (define-public mars
@@ -5635,7 +5635,7 @@ Linux / Mac OS X servers, and an auto mapper with a VT100 map display.")
              (patches (search-patches "laby-make-install.patch"))))
     (build-system gnu-build-system)
     (inputs
-     `(("lablgtk" ,lablgtk)
+     `(("lablgtk3" ,lablgtk3)
        ("ocaml" ,ocaml)
        ("ocaml-findlib" ,ocaml-findlib)
        ("ocamlbuild" ,ocamlbuild)))
@@ -5643,15 +5643,9 @@ Linux / Mac OS X servers, and an auto mapper with a VT100 map display.")
      '(#:phases
        (modify-phases %standard-phases
          (delete 'configure)
-         (add-before 'build 'allow-unsafe-strings
-           ;; Fix a build failure with ocaml >=4.06.0.
-           ;; See <https://github.com/sgimenez/laby/issues/53>.
-           (lambda _
-             (setenv "OCAMLPARAM" "safe-string=0,_")
-             #t))
          (add-before 'build 'set-library-path
            (lambda* (#:key inputs #:allow-other-keys)
-             (let ((lablgtk (assoc-ref inputs "lablgtk")))
+             (let ((lablgtk (assoc-ref inputs "lablgtk3")))
                (setenv "LD_LIBRARY_PATH"
                        (string-append lablgtk "/lib/ocaml/stublibs"))))))
        #:tests? #f ; no 'check' target

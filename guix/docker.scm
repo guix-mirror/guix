@@ -214,10 +214,11 @@ SRFI-19 time-utc object, as the creation time in metadata."
                                             (else
                                              (error "unsupported system"
                                                     system)))))))
-                 (cond* ("x86_64" "amd64")
-                        ("i686"   "386")
-                        ("arm"    "arm")
-                        ("mips64" "mips64le")))))
+                 (cond* ("x86_64"  "amd64")
+                        ("i686"    "386")
+                        ("arm"     "arm")
+                        ("aarch64" "arm64")
+                        ("mips64"  "mips64le")))))
     ;; Make sure we start with a fresh, empty working directory.
     (mkdir directory)
     (with-directory-excursion directory

@@ -333,7 +333,7 @@ applications in mind and the idea to make logging fun.")
        ("python-xlib" ,python-xlib)))
     (home-page "https://github.com/seebye/ueberzug")
     (synopsis "Command line util to display images in combination with X11")
-    (description "Überzug is a command line util which allows to draw images on
+    (description "Überzug is a command line util which draws images on
 terminals by using child windows.  The advantages of using Überzug are:
 @itemize
 @item No race conditions as a new window is created to display images.
@@ -1367,6 +1367,13 @@ concepts.")
        (sha256
         (base32 "0wf1cwmxmdzfqmfhrkqdxb5spf21ylgl2bidswhzjrqhwf35c9qf"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-native-optimization
+           (lambda _
+             (substitute* "setup.py"
+               ((", '-march=native'") "")))))))
     (propagated-inputs
      `(("python-numpy" ,python-numpy)))
     (native-inputs
@@ -7334,14 +7341,14 @@ any machine that can run Python.")
 (define-public python-xcffib
   (package
     (name "python-xcffib")
-    (version "0.6.0")
+    (version "0.11.1")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "xcffib" version))
       (sha256
        (base32
-        "04k91yxyb3pgc5lvxmivh8w71yjrap2g57yk3s73x4rm4nvjq51n"))))
+        "0nkglsm9nbhv238iagmmsjcz6lf1yfdvp5kmspphdj385vz9r50j"))))
     (build-system python-build-system)
     (inputs
      `(("libxcb" ,libxcb)))
@@ -7357,7 +7364,8 @@ any machine that can run Python.")
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((libxcb (assoc-ref inputs "libxcb")))
                (substitute* '("xcffib/__init__.py")
-                 (("^soname = \"") (string-append "soname = \"" libxcb "/lib/")))
+                 (("soname = ctypes.util.find_library.*xcb.*")
+                  (string-append "soname = \"" libxcb "/lib/libxcb.so\"\n")))
                #t)))
          (add-after 'install 'install-doc
            (lambda* (#:key outputs #:allow-other-keys)
@@ -8897,6 +8905,31 @@ implementation of D-Bus.")
                               equal?)))
     (arguments
      `(#:configure-flags '("PYTHON_VERSION=2")))))
+
+(define-public python-dbus-next
+  (package
+    (name "python-dbus-next")
+    (version "0.2.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/altdesktop/python-dbus-next")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1ahaz52kny1p9xxv6phvk4iq56rg8li390wywlxf2yslaij1188h"))))
+    (build-system python-build-system)
+    (native-inputs
+      `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/altdesktop/python-dbus-next")
+    (synopsis "Zero-dependency DBus library for Python with asyncio support")
+    (description
+     "This DBus library for Python aims to be a fully-featured high-level
+library primarily geared towards integration of applications into desktop and
+mobile environments.")
+    (license license:expat)))
 
 (define-public python-notify2
   (package
@@ -22077,13 +22110,53 @@ tool).")
        (uri (pypi-uri "numcodecs" version))
        (sha256
         (base32
-         "0kbfr8pl3x9glsypbq8hzim003f16ml1b1cvgrh4w1sdvgal6j7g"))))
+         "0kbfr8pl3x9glsypbq8hzim003f16ml1b1cvgrh4w1sdvgal6j7g"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (delete-file-recursively "c-blosc")
+           (for-each delete-file '("numcodecs/blosc.c"
+                                   "numcodecs/compat_ext.c"
+                                   "numcodecs/lz4.c"
+                                   "numcodecs/vlen.c"
+                                   "numcodecs/zstd.c"))))))
     (build-system python-build-system)
+    (arguments
+     `(#:tests? #false ; TODO: unclear why numcodecs.* are not found
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-avx2
+           (lambda _
+             (setenv "DISABLE_NUMCODECS_AVX2" "1")))
+         (add-after 'unpack 'unbundle
+           (lambda _
+             (substitute* "setup.py"
+               (("sources=sources \\+ blosc_sources,")
+                "sources=sources,")
+               (("extra_compile_args=extra_compile_args")
+                "extra_compile_args=list(base_compile_args)")
+               (("'numcodecs.zstd',")
+                "'numcodecs.zstd', libraries=['zstd'], ")
+               (("'numcodecs.lz4',")
+                "'numcodecs.lz4', libraries=['lz4'], ")
+               (("'numcodecs.blosc',")
+                "'numcodecs.blosc', libraries=['blosc'], "))))
+         (replace 'check
+           (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest" "-vv")))))))
+    (inputs
+     `(("c-blosc" ,c-blosc)
+       ("lz4" ,lz4)
+       ("zlib" ,zlib)
+       ("zstd" ,zstd "lib")))
     (propagated-inputs
      `(("python-numpy" ,python-numpy)
        ("python-msgpack" ,python-msgpack)))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
+     `(("python-cython" ,python-cython)
+       ("python-pytest" ,python-pytest)
        ("python-setuptools-scm" ,python-setuptools-scm)))
     (home-page "https://github.com/zarr-developers/numcodecs")
     (synopsis "Buffer compression and transformation codecs")
@@ -23467,7 +23540,7 @@ time-or-computationally-expensive properties quick and easy and works in Python
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0yi5y9pfpbc4bc4ibr8cblif8ls1wf3k0zawyx86r2qwxxkkyd6k"))))
+        (base32 "1q05pzca3wfwgnbg03l3bagnhh348yx68w4aa91rg3g8zlviwjz1"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-branca" ,python-branca)
@@ -27958,3 +28031,22 @@ simple mock/record and a complete capture/replay framework.")
 interfaces.")
     (license license:bsd-3)))
 
+(define-public python-iwlib
+  (package
+    (name "python-iwlib")
+    (version "1.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "iwlib" version))
+       (sha256
+        (base32 "18bd35wn7zclalpqbry42pf7bjrdggxkkw58mc0k1vkhg9czc1d8"))))
+    (build-system python-build-system)
+    (inputs
+     `(("wireless-tools" ,wireless-tools)))
+    (propagated-inputs `(("python-cffi" ,python-cffi)))
+    (home-page "https://github.com/nhoad/python-iwlib")
+    (synopsis "Python module to interface with iwlib")
+    (description
+     "This package provides a Python interface to iw wireless tools.")
+    (license license:gpl2)))

@@ -337,12 +337,15 @@ static void _deletePath(const Path & path, unsigned long long & bytesFreed, size
         for (auto & i : readDirectory(path))
             _deletePath(path + "/" + i.name, bytesFreed, linkThreshold);
     }
+
+    int ret;
+    ret = S_ISDIR(st.st_mode) ? rmdir(path.c_str()) : unlink(path.c_str());
+    if (ret == -1)
+        throw SysError(format("cannot unlink `%1%'") % path);
+
 #undef st_mode
 #undef st_size
 #undef st_nlink
-
-    if (remove(path.c_str()) == -1)
-        throw SysError(format("cannot unlink `%1%'") % path);
 }
 
 

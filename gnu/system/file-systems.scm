@@ -97,7 +97,14 @@
 
             %store-mapping
             %network-configuration-files
-            %network-file-mappings))
+            %network-file-mappings
+
+            swap-space
+            swap-space?
+            swap-space-target
+            swap-space-dependencies
+            swap-space-priority
+            swap-space-discard?))
 
 ;;; Commentary:
 ;;;
@@ -711,5 +718,20 @@ subvolume name is unknown."))
                  (hint
                   (G_ "Use the @code{subvol} Btrfs file system option."))))))))
 
+
+;;;
+;;; Swap space
+;;;
+
+(define-record-type* <swap-space> swap-space make-swap-space
+  swap-space?
+  this-swap-space
+  (target swap-space-target)
+  (dependencies swap-space-dependencies
+                (default '()))
+  (priority swap-space-priority
+            (default #f))
+  (discard? swap-space-discard?
+           (default #f)))
 
 ;;; file-systems.scm ends here

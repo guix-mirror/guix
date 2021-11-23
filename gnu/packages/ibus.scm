@@ -8,6 +8,7 @@
 ;;; Copyright © 2020 kanichos <kanichos@yandex.ru>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
+;;; Copyright © 2021 Songlin Jiang <hollowman@hollowman.ml>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,6 +33,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
+  #:use-module (guix build-system python)
   #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages anthy)
@@ -55,6 +57,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages python-web)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages textutils)
@@ -823,3 +826,31 @@ hanja dictionary and small hangul character classification.")
     (description
      "ibus-hangul is a Korean input method engine for IBus.")
     (license gpl2+)))
+
+(define-public ibus-theme-tools
+  (package
+    (name "ibus-theme-tools")
+    (version "4.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/openSUSE/IBus-Theme-Tools")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0i8vwnikwd1bfpv4xlgzc51gn6s18q58nqhvcdiyjzcmy3z344c2"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f)) ; No tests
+    (propagated-inputs
+     `(("python-tinycss2" ,python-tinycss2)
+       ("python-pygobject" ,python-pygobject)))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)))
+    (home-page "https://github.com/openSUSE/IBus-Theme-Tools")
+    (synopsis "Tool for IBus Themes")
+    (description "IBus Theme Tools can extract IBus-specific settings from
+GTK themes to apply both within and without GNOME Shell.")
+    (license gpl3+)))

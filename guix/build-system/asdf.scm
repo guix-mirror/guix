@@ -151,7 +151,8 @@ set up using CL source package conventions."
         name))
 
   (define (has-from-build-system? pkg)
-    (eq? from-build-system (package-build-system pkg)))
+    (and (package? pkg)
+         (eq? from-build-system (package-build-system pkg))))
 
   (define (find-input-package pkg)
     (let* ((name (package-name pkg))

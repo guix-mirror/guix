@@ -237,7 +237,7 @@ the real span of the lattice.")
 (define-public pari-gp
   (package
     (name "pari-gp")
-    (version "2.13.2")
+    (version "2.13.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -245,7 +245,7 @@ the real span of the lattice.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "095s7vdlsxmxa0n0l1a082m6gjaypqfqkaj99z8j7dx0ji89hy8n"))))
+                "1jm1cz1687cz8pl8lgvmyk3l33cms1xbayv38ca4z1f60qb7zfnc"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("texlive" ,(texlive-updmap.cfg
@@ -431,13 +431,13 @@ or text interfaces) or as a C++ library.")
 (define-public flint
   (package
    (name "flint")
-   (version "2.8.1")
+   (version "2.8.4")
    (source
     (origin
       (method url-fetch)
       (uri (string-append "http://flintlib.org/flint-" version ".tar.gz"))
       (sha256
-       (base32 "0zj2zgn3cbb08pxhfq38i62pgjfbb6938l70am7dnixqgixdmzgd"))))
+       (base32 "1gp4wm2s8c27g2hh53d09cys62da1bsxfwbcsj9cd7cfikm95pv1"))))
    (build-system gnu-build-system)
    (inputs
     `(("ntl" ,ntl)))
@@ -485,7 +485,7 @@ fast arithmetic.")
 (define-public arb
   (package
     (name "arb")
-    (version "2.21.0")
+    (version "2.21.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -494,7 +494,7 @@ fast arithmetic.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0c7q8bbm2izh0j0342v0dkgg1lgd6f0fn3i9x9x80brjjhg65q7b"))))
+                "1lmcl122qy6mr1g1y65bm7dk9fj0sym7gzmvar5vdgk7ln03c5iq"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("flint" ,flint)))               ; flint.h is included by arf.h

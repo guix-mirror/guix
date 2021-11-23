@@ -234,8 +234,10 @@
   (mapped-devices operating-system-mapped-devices ; list of <mapped-device>
                   (default '()))
   (file-systems operating-system-file-systems)    ; list of fs
-  (swap-devices operating-system-swap-devices     ; list of strings
-                (default '()))
+  (swap-devices operating-system-swap-devices     ; list of string | <swap-space>
+                (default '())
+                (delayed)
+                (sanitize warn-swap-devices-change))
 
   (users operating-system-users                   ; list of user accounts
          (default %base-user-accounts))
@@ -584,9 +586,41 @@ mapped-device '~a' may not be mounted by the bootloader.~%")
   (map device-mapping-service
        (operating-system-user-mapped-devices os)))
 
+(define-syntax-rule (warn-swap-devices-change value)
+  (%warn-swap-devices-change value (current-source-location)))
+
+(define (%warn-swap-devices-change value location)
+  (map (lambda (x)
+         (unless (swap-space? x)
+           (warning
+            (source-properties->location
+             location)
+            (G_ "List elements of the field 'swap-devices' should \
+now use the <swap-space> record, as the old method is deprecated. \
+See \"(guix) operating-system Reference\" for more details.~%")))
+         x) value))
+
 (define (swap-services os)
   "Return the list of swap services for OS."
-  (map swap-service (operating-system-swap-devices os)))
+  (define early-userspace-file-systems
+    (filter file-system-needed-for-boot?
+            (operating-system-file-systems os)))
+
+  (define early-userspace-mapped-devices
+    (operating-system-boot-mapped-devices os))
+
+  (define (filter-deps swap)
+    (if (swap-space? swap)
+        (swap-space
+         (inherit swap)
+         (dependencies (remove (lambda (dep)
+                                 (or (member dep early-userspace-mapped-devices)
+                                     (member dep early-userspace-file-systems)))
+                               (swap-space-dependencies swap))))
+        swap))
+
+  (map (compose swap-service filter-deps)
+       (operating-system-swap-devices os)))
 
 (define* (system-linux-image-file-name #:optional
                                        (target (or (%current-target-system)
@@ -1093,16 +1127,17 @@ use 'plain-file' instead~%")
     ;; TODO: Remove when glibc@2.23 is long gone.
     ("GUIX_LOCPATH" . "/run/current-system/locale")))
 
-(define-syntax-rule (ensure-setuid-program-list lst)
-  "Ensure LST is a list of <setuid-program> records and warn otherwise."
-  (%ensure-setuid-program-list lst (current-source-location)))
+;; Ensure LST is a list of <setuid-program> records and warn otherwise.
+(define-with-syntax-properties (ensure-setuid-program-list (lst properties))
+  (%ensure-setuid-program-list lst properties))
 
-(define (%ensure-setuid-program-list lst location)
+;; We want to be able to use defines, so define a procedure.
+(define (%ensure-setuid-program-list lst properties)
   (define warned? #f)
 
   (define (warn-once)
     (unless warned?
-      (warning (source-properties->location location)
+      (warning (source-properties->location properties)
                (G_ "representing setuid programs with file-like objects is \
 deprecated; use 'setuid-program' instead~%"))
       (set! warned? #t)))

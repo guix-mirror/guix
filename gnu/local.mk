@@ -520,6 +520,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/sawfish.scm			\
   %D%/packages/scanner.scm			\
   %D%/packages/scheme.scm			\
+  %D%/packages/spreadsheet.scm			\
   %D%/packages/screen.scm			\
   %D%/packages/scribus.scm			\
   %D%/packages/scsi.scm				\
@@ -587,7 +588,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/video.scm			\
   %D%/packages/vim.scm				\
   %D%/packages/virtualization.scm		\
-  %D%/packages/visidata.scm			\
   %D%/packages/vlang.scm			\
   %D%/packages/vnc.scm				\
   %D%/packages/vpn.scm				\
@@ -1516,7 +1516,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/ocaml-dose3-Install-mli-cmx-etc.patch	\
   %D%/packages/patches/ocaml-multiple-definitions.patch		\
   %D%/packages/patches/ocaml-4.09-multiple-definitions.patch	\
-  %D%/packages/patches/ocaml-ppx-variants-ppxlib-api-change.patch	\
+  %D%/packages/patches/ocaml-qcheck-fix-test-whitespace.patch	\
   %D%/packages/patches/omake-fix-non-determinism.patch	\
   %D%/packages/patches/oneko-remove-nonfree-characters.patch	\
   %D%/packages/patches/onnx-optimizer-system-library.patch	\
@@ -1735,6 +1735,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/rust-nettle-disable-vendor.patch		 \
   %D%/packages/patches/rust-nettle-sys-disable-vendor.patch	 \
   %D%/packages/patches/rust-openssl-sys-no-vendor.patch	\
+  %D%/packages/patches/rust-shell2batch-lint-fix.patch		\
   %D%/packages/patches/sbc-fix-build-non-x86.patch		\
   %D%/packages/patches/sbcl-burgled-batteries3-fix-signals.patch	\
   %D%/packages/patches/sbcl-clml-fix-types.patch		\

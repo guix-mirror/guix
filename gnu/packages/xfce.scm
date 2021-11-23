@@ -574,7 +574,7 @@ keys for controlling the audio volume.")
 (define-public xfce4-whiskermenu-plugin
   (package
     (name "xfce4-whiskermenu-plugin")
-    (version "2.6.0")
+    (version "2.6.1")
     (source
      (origin
        (method url-fetch)
@@ -582,7 +582,7 @@ keys for controlling the audio volume.")
                            "xfce4-whiskermenu-plugin/" (version-major+minor version) "/"
                            "xfce4-whiskermenu-plugin-" version ".tar.bz2"))
        (sha256
-        (base32 "0rnlhcfsbjj0n8m84jgqihp783hrkjdjfapqr7ia53mr0fjgcw9j"))))
+        (base32 "0wpcc9i505mh6vphg27ph43dw4n3z59mwy39416yzmw325q04kl5"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -1076,7 +1076,7 @@ inhibit interface which allows applications to prevent automatic sleep.")
 (define-public ristretto
   (package
     (name "ristretto")
-    (version "0.11.0")
+    (version "0.12.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/apps/ristretto/"
@@ -1084,7 +1084,7 @@ inhibit interface which allows applications to prevent automatic sleep.")
                                   "ristretto-" version ".tar.bz2"))
               (sha256
                (base32
-                "08w8nw6cl8kpvjnp7dxgpqlmi3s73amhrb7l0sbzmjy82ba30zl7"))))
+                "008h8mlq82nwxb7kc8m8d6a51rwl2i9fgv4v6k5w30va46l2s0s7"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
@@ -1395,7 +1395,7 @@ A plugin for the Xfce panel is also available.")
 (define-public xfce4-cpugraph-plugin
   (package
    (name "xfce4-cpugraph-plugin")
-   (version "1.2.3")
+   (version "1.2.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/panel-plugins/"
@@ -1404,7 +1404,7 @@ A plugin for the Xfce panel is also available.")
                                   "/xfce4-cpugraph-plugin-" version ".tar.bz2"))
               (sha256
                (base32
-                "13302psv0fzg2dsgadr8j6mb06k1bsa4zw6hxmb644vqlvcwq37v"))))
+                "1c51qf93lr6kr2g4nil21rj1h3h5kp3k50n9hcxvcy9wz3bxpxn2"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)

@@ -10,6 +10,7 @@
 ;;; Copyright © 2020 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2020 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2020 Peng Mei Yu <pengmeiyu@riseup.net>
+;;; Copyright © 2021 Wamm K. D. <jaft.r@outlook.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,6 +37,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system python)
   #:use-module (gnu packages admin)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages check)
   #:use-module (gnu packages dav)
@@ -405,3 +407,31 @@ traditional Chinese characters.")
     ;; COPYING.LESSER specifies LGPL 3.0, but all source files say
     ;; 'Lesser GPL version 2 or later'.
     (license (list license:gpl2+ license:lgpl2.1+))))
+
+(define-public gsimplecal
+  (let ((version "2.2"))
+    (package
+      (name "gsimplecal")
+      (version version)
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/dmedvinsky/gsimplecal/")
+                      (commit (string-append "v" version))))
+                (file-name (git-file-name name version))
+                (sha256 (base32
+                         "1qyf65l088dqsz25hm6s1cv18j52yaias0llqvpqwjfnvssa5cxg"))
+                (modules '((guix build utils)))))
+      (build-system gnu-build-system)
+      (inputs `(("gtk+" ,gtk+)))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("pkg-config" ,pkg-config)))
+      (home-page "https://dmedvinsky.github.io/gsimplecal/")
+      (synopsis "Lightweight calendar applet")
+      (description "@command{gsimplecal} is a lightweight calendar application
+written in C++ using GTK.  Launched once, it pops up a small calendar applet,
+launched again it closes the running instance.  It can additionally be
+configured to show the current time in different timezones.")
+      (license license:bsd-3))))

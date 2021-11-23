@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -19,18 +19,16 @@
 
 (define-module (guix import texlive)
   #:use-module (ice-9 match)
-  #:use-module (sxml simple)
-  #:use-module (sxml xpath)
-  #:use-module (srfi srfi-11)
+  #:use-module (ice-9 rdelim)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-2)
+  #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
-  #:use-module (srfi srfi-34)
-  #:use-module (web uri)
-  #:use-module (guix diagnostics)
-  #:use-module (guix i18n)
-  #:use-module (guix http-client)
   #:use-module (gcrypt hash)
+  #:use-module (guix derivations)
   #:use-module (guix memoization)
+  #:use-module (guix monads)
+  #:use-module (guix gexp)
   #:use-module (guix store)
   #:use-module (guix base32)
   #:use-module (guix serialization)
@@ -39,24 +37,15 @@
   #:use-module (guix utils)
   #:use-module (guix upstream)
   #:use-module (guix packages)
-  #:use-module (gnu packages)
   #:use-module (guix build-system texlive)
   #:export (texlive->guix-package
-
-            fetch-sxml
-            sxml->package))
+            texlive-recursive-import))
 
 ;;; Commentary:
 ;;;
-;;; Generate a package declaration template for the latest version of a
-;;; package on CTAN, using the XML output produced by the XML API to the CTAN
-;;; database at http://www.ctan.org/xml/1.2/
-;;;
-;;; Instead of taking the packages from CTAN, however, we fetch the sources
-;;; from the SVN repository of the Texlive project.  We do this because CTAN
-;;; only keeps a single version of each package whereas we can access any
-;;; version via SVN.  Unfortunately, this means that the importer is really
-;;; just a Texlive importer, not a generic CTAN importer.
+;;; Generate a package declaration template for corresponding package in the
+;;; Tex Live Package Database (tlpdb).  We fetch all sources from different
+;;; locations in the SVN repository of the Texlive project.
 ;;;
 ;;; Code:
 
@@ -79,6 +68,8 @@
     ("bsd4" 'bsd-4)
     ("opl" 'opl1.0+)
     ("ofl" 'silofl1.1)
+
+    ("lpplgpl" `(list lppl gpl1+))
     ("lppl" 'lppl)
     ("lppl1" 'lppl1.0+) ; usually means "or later"
     ("lppl1.2" 'lppl1.2+) ; usually means "or later"
@@ -107,91 +98,170 @@
     ("cc-by-nc-nd-4" 'non-free)
     ((x) (string->license x))
     ((lst ...) `(list ,@(map string->license lst)))
-    (_ #f)))
+    (x `(error unknown-license ,x))))
 
-(define (fetch-sxml name)
-  "Return an sxml representation of the package information contained in the
-XML description of the CTAN package or #f in case of failure."
-  ;; This API always returns the latest release of the module.
-  (let ((url (string-append "http://www.ctan.org/xml/1.2/pkg/" name)))
-    (guard (c ((http-get-error? c)
-               (format (current-error-port)
-                       "error: failed to retrieve package information \
-from ~s: ~a (~s)~%"
-                       (uri->string (http-get-error-uri c))
-                       (http-get-error-code c)
-                       (http-get-error-reason c))
-               #f))
-      (xml->sxml (http-fetch url)
-                 #:trim-whitespace? #t))))
-
-(define (guix-name component name)
+(define (guix-name name)
   "Return a Guix package name for a given Texlive package NAME."
-  (string-append "texlive-" component "-"
+  (string-append "texlive-"
                  (string-map (match-lambda
                                (#\_ #\-)
                                (#\. #\-)
                                (chr (char-downcase chr)))
                              name)))
 
-(define* (sxml->package sxml #:optional (component "latex"))
-  "Return the `package' s-expression for a Texlive package from the SXML
-expression describing it."
-  (define (sxml-value path)
-    (match ((sxpath path) sxml)
-      (() #f)
-      ((val) val)))
+(define (tlpdb-file)
+  (define texlive-bin
+    ;; Resolve this variable lazily so that (gnu packages ...) does not end up
+    ;; in the closure of this module.
+    (module-ref (resolve-interface '(gnu packages tex))
+                'texlive-bin))
+
   (with-store store
-    (let* ((id         (sxml-value '(entry @ id *text*)))
-           (synopsis   (sxml-value '(entry caption *text*)))
-           (version    (or (sxml-value '(entry version @ number *text*))
-                           (sxml-value '(entry version @ date *text*))))
-           (license    (match ((sxpath '(entry license @ type *text*)) sxml)
-                         ((license) (string->license license))
-                         ((lst ...) (map string->license lst))))
-           (home-page  (string-append "http://www.ctan.org/pkg/" id))
-           (ref        (texlive-ref component id))
-           (checkout   (download-svn-to-store store ref)))
-      (unless checkout
-        (warning (G_ "Could not determine source location.  \
-Please manually specify the source field.~%")))
-      `(package
-         (name ,(guix-name component id))
-         (version ,version)
-         (source ,(if checkout
-                      `(origin
-                         (method svn-fetch)
-                         (uri (texlive-ref ,component ,id))
-                         (sha256
-                          (base32
-                           ,(bytevector->nix-base32-string
-                             (let-values (((port get-hash) (open-sha256-port)))
-                               (write-file checkout port)
-                               (force-output port)
-                               (get-hash))))))
-                      #f))
-         (build-system texlive-build-system)
-         (arguments ,`(,'quote (#:tex-directory ,(string-join (list component id) "/"))))
-         (home-page ,home-page)
-         (synopsis ,synopsis)
-         (description ,(string-trim-both
-                        (string-join
-                         (map string-trim-both
-                              (string-split
-                               (beautify-description
-                                (sxml->string (or (sxml-value '(entry description))
-                                                  '())))
-                               #\newline)))))
-         (license ,(match license
-                     ((lst ...) `(list ,@lst))
-                     (license license)))))))
+    (run-with-store store
+      (mlet* %store-monad
+          ((drv (lower-object texlive-bin))
+           (built (built-derivations (list drv))))
+        (match (derivation->output-paths drv)
+          (((names . items) ...)
+           (return (string-append (first items)
+                                  "/share/tlpkg/texlive.tlpdb"))))))))
+
+(define tlpdb
+  (memoize
+   (lambda ()
+     (let ((file (tlpdb-file))
+           (fields
+            '((name     . string)
+              (shortdesc . string)
+              (longdesc . string)
+              (catalogue-license . string)
+              (catalogue-ctan . string)
+              (srcfiles . list)
+              (runfiles . list)
+              (docfiles . list)
+              (depend   . simple-list)))
+           (record
+            (lambda* (key value alist #:optional (type 'string))
+              (let ((new
+                     (or (and=> (assoc-ref alist key)
+                                (lambda (existing)
+                                  (cond
+                                   ((eq? type 'string)
+                                    (string-append existing " " value))
+                                   ((or (eq? type 'list) (eq? type 'simple-list))
+                                    (cons value existing)))))
+                         (cond
+                          ((eq? type 'string)
+                           value)
+                          ((or (eq? type 'list) (eq? type 'simple-list))
+                           (list value))))))
+                (acons key new (alist-delete key alist))))))
+       (call-with-input-file file
+         (lambda (port)
+           (let loop ((all (list))
+                      (current (list))
+                      (last-property #false))
+             (let ((line (read-line port)))
+               (cond
+                ((eof-object? line) all)
+
+                ;; End of record.
+                ((string-null? line)
+                 (loop (cons (cons (assoc-ref current 'name) current)
+                             all)
+                       (list) #false))
+
+                ;; Continuation of a list
+                ((and (zero? (string-index line #\space)) last-property)
+                 ;; Erase optional second part of list values like
+                 ;; "details=Readme" for files
+                 (let ((plain-value (first
+                                     (string-split
+                                      (string-trim-both line) #\space))))
+                   (loop all (record last-property
+                                     plain-value
+                                     current
+                                     'list)
+                         last-property)))
+                (else
+                 (or (and-let* ((space (string-index line #\space))
+                                (key   (string->symbol (string-take line space)))
+                                (value (string-drop line (1+ space)))
+                                (field-type (assoc-ref fields key)))
+                       ;; Erase second part of list keys like "size=29"
+                       (cond
+                        ((eq? field-type 'list)
+                         (loop all current key))
+                        (else
+                         (loop all (record key value current field-type) key))))
+                     (loop all current #false))))))))))))
+
+(define (files->directories files)
+  (map (cut string-join <> "/" 'suffix)
+       (delete-duplicates (map (lambda (file)
+                                 (drop-right (string-split file #\/) 1))
+                               files)
+                          equal?)))
+
+(define (tlpdb->package name package-database)
+  (and-let* ((data (assoc-ref package-database name))
+             (dirs (files->directories
+                    (map (lambda (dir)
+                           (string-drop dir (string-length "texmf-dist/")))
+                         (append (or (assoc-ref data 'docfiles) (list))
+                                 (or (assoc-ref data 'runfiles) (list))
+                                 (or (assoc-ref data 'srcfiles) (list))))))
+             (name (guix-name name))
+             (version (number->string %texlive-revision))
+             (ref (svn-multi-reference
+                   (url (string-append "svn://www.tug.org/texlive/tags/"
+                                       %texlive-tag "/Master/texmf-dist"))
+                   (locations dirs)
+                   (revision %texlive-revision)))
+             (source (with-store store
+                       (download-multi-svn-to-store
+                        store ref (string-append name "-svn-multi-checkout")))))
+    (values
+     `(package
+        (inherit (simple-texlive-package
+                  ,name
+                  (list ,@dirs)
+                  (base32
+                   ,(bytevector->nix-base32-string
+                     (let-values (((port get-hash) (open-sha256-port)))
+                       (write-file source port)
+                       (force-output port)
+                       (get-hash))))
+                  ,@(if (assoc-ref data 'srcfiles) '() '(#:trivial? #true))))
+        ,@(or (and=> (assoc-ref data 'depend)
+                     (lambda (inputs)
+                       `((propagated-inputs
+                          ,(map (lambda (tex-name)
+                                  (let ((name (guix-name tex-name)))
+                                    (list name (list 'unquote (string->symbol name)))))
+                                inputs)))))
+              '())
+        ,@(or (and=> (assoc-ref data 'catalogue-ctan)
+                     (lambda (url)
+                       `((home-page ,(string-append "https://ctan.org" url)))))
+              '((home-page "https://www.tug.org/texlive/")))
+        (synopsis ,(assoc-ref data 'shortdesc))
+        (description ,(beautify-description
+                       (assoc-ref data 'longdesc)))
+        (license ,(string->license
+                   (assoc-ref data 'catalogue-license))))
+     (or (assoc-ref data 'depend) (list)))))
 
 (define texlive->guix-package
   (memoize
-   (lambda* (package-name #:optional (component "latex"))
-     "Fetch the metadata for PACKAGE-NAME from REPO and return the `package'
+   (lambda* (name #:key repo version (package-database tlpdb))
+     "Find the metadata for NAME in the tlpdb and return the `package'
 s-expression corresponding to that package, or #f on failure."
-     (and=> (fetch-sxml package-name)
-            (cut sxml->package <> component)))))
+     (tlpdb->package name (package-database)))))
 
-;;; ctan.scm ends here
+(define (texlive-recursive-import name)
+  (recursive-import name
+                    #:repo->guix-package texlive->guix-package
+                    #:guix-name guix-name))
+
+;;; texlive.scm ends here

@@ -407,7 +407,7 @@ functions.")
     (home-page "https://metacpan.org/release/Test-Dir")
     (synopsis "Utilities for testing directory attributes")
     (description
-     "This modules provides a collection of test utilities for directory
+     "This module provides a collection of test utilities for directory
 attributes.")
     (license perl-license)))
 
@@ -1034,7 +1034,7 @@ code.")
     (build-system perl-build-system)
     (synopsis "Ensure no warnings are produced while testing")
     (description
-     "This modules causes any warnings during testing to be captured and
+     "This module causes any warnings during testing to be captured and
 stored.  It automatically adds an extra test that will run when your script
 ends to check that there were no warnings.  If there were any warnings, the
 test will fail and output diagnostics of where, when and what the warning was,

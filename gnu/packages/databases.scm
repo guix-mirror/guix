@@ -22,7 +22,7 @@
 ;;; Copyright © 2017, 2020 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
-;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2017, 2021 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017, 2018 Ben Woodcroft <donttrustben@gmail.com>
@@ -53,6 +53,7 @@
 ;;; Copyright © 2021 Simon Streit <simon@netpanic.org>
 ;;; Copyright © 2021 Alexandre Hannud Abdo <abdo@member.fsf.org>
 ;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
+;;; Copyright © 2021 jgart <jgart@dismail.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -145,6 +146,7 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages valgrind)
   #:use-module (gnu packages web)
+  #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xml)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
@@ -615,16 +617,44 @@ replacement for the code@{python-memcached} library.")
 (define-public python2-pylibmc
   (package-with-python2 python-pylibmc))
 
+(define-public litecli
+ (package
+  (name "litecli")
+  (version "1.6.0")
+  (source
+   (origin
+     (method url-fetch)
+     (uri (pypi-uri "litecli" version))
+     (sha256
+      (base32 "1yb706mgzizzijm1k0fbny98jf58qh5q6f2870rbplxlfla4w9sd"))))
+  (build-system python-build-system)
+  (propagated-inputs
+   `(("python-cli-helpers" ,python-cli-helpers)
+     ("python-click" ,python-click)
+     ("python-configobj" ,python-configobj)
+     ("python-prompt-toolkit" ,python-prompt-toolkit)
+     ("python-pygments" ,python-pygments)
+     ("python-sqlparse" ,python-sqlparse)))
+  (native-inputs
+   `(("python-mock" ,python-mock)
+     ("python-pytest" ,python-pytest)))
+  (home-page "https://litecli.com")
+  (synopsis "CLI for SQLite databases")
+  (description
+   "@code{litecli} is a command-line client for SQLite databases that has
+auto-completion and syntax highlighting.")
+  (license license:bsd-3)))
+
 (define-public mycli
   (package
     (name "mycli")
-    (version "1.22.2")
+    (version "1.24.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "mycli" version))
         (sha256
-          (base32 "1lq2x95553vdmhw13cxcgsd2g2i32izhsb7hxd4m1iwf9b3msbpv"))))
+          (base32 "0rij9nw20zhqr7cqnkm8daw8b1wdc9zb6ny1ji9qz5557nz9i3bl"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))                    ; tests expect a running MySQL
@@ -634,10 +664,12 @@ replacement for the code@{python-memcached} library.")
         ("python-configobj" ,python-configobj)
         ("python-cryptography" ,python-cryptography)
         ("python-prompt-toolkit" ,python-prompt-toolkit)
+        ("python-pyaes" ,python-pyaes)
         ("python-pygments" ,python-pygments)
         ("python-pymysql" ,python-pymysql)
+        ("python-pyperclip" ,python-pyperclip)
         ("python-sqlparse" ,python-sqlparse)))
-    (home-page "http://mycli.net")
+    (home-page "https://www.mycli.net")
     (synopsis
       "Terminal Client for MySQL with AutoCompletion and Syntax Highlighting")
     (description
@@ -4137,6 +4169,29 @@ PostreSQL, SQLite, ODBC and MySQL.")
      "FreeTDS is an implementation of the Tabular DataStream protocol, used for
 connecting to MS SQL and Sybase servers over TCP/IP.")
     (license license:lgpl2.0+)))
+
+(define-public python-tinydb
+  (package
+    (name "python-tinydb")
+    (version "4.5.2")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "tinydb" version))
+              (sha256
+               (base32 "1x9c4s42930wwal3ds0plwb57kg5c3gj7kbpy64c29vq478b463x"))))
+    (build-system python-build-system)
+    ;; PyPi tarball does not contain tests and github repository does not
+    ;; have a setup.py file (only pyproject).
+    (arguments `(#:tests? #f))
+    (propagated-inputs
+     `(("python-typing-extensions" ,python-typing-extensions)))
+    (home-page "https://github.com/msiemens/tinydb")
+    (synopsis "TinyDB is a lightweight document oriented database")
+    (description
+     "TinyDB is a small document oriented database written in pure Python
+with no external dependencies.  The targets are small apps that would
+be blown away by a SQL-DB or an external database server.")
+    (license license:expat)))
 
 (define-public sequeler
   (package

@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2016, 2019, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Sree Harsha Totakura <sreeharsha@totakura.in>
-;;; Copyright © 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017, 2019, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,7 +26,9 @@
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module ((guix build svn) #:prefix build:)
+  #:use-module ((guix build utils) #:select (mkdir-p))
   #:use-module (ice-9 match)
+  #:use-module (srfi srfi-1)
   #:export (svn-reference
             svn-reference?
             svn-reference-url
@@ -41,7 +43,8 @@
             svn-multi-reference-revision
             svn-multi-reference-locations
             svn-multi-reference-recursive?
-            svn-multi-fetch))
+            svn-multi-fetch
+            download-multi-svn-to-store))
 
 ;;; Commentary:
 ;;;
@@ -165,5 +168,29 @@ reports to LOG."
        (and result
             (add-to-store store name #t "sha256"
                           (string-append temp "/svn")))))))
+
+(define* (download-multi-svn-to-store store ref
+                                      #:optional (name (basename (svn-multi-reference-url ref)))
+                                      #:key (log (current-error-port)))
+  "Download from REF, a <svn-multi-reference> object to STORE.  Write progress
+reports to LOG."
+  (call-with-temporary-directory
+   (lambda (temp)
+     (and (every (lambda (location)
+                   (let ((dir (string-append temp "/" (dirname location))))
+                     (mkdir-p dir))
+                   (parameterize ((current-output-port log))
+                     (build:svn-fetch (string-append (svn-multi-reference-url ref)
+                                                     "/" location)
+                                      (svn-multi-reference-revision ref)
+                                      (if (string-suffix? "/" location)
+                                          (string-append temp "/" location)
+                                          (string-append temp "/" (dirname location)))
+                                      #:recursive?
+                                      (svn-multi-reference-recursive? ref)
+                                      #:user-name (svn-multi-reference-user-name ref)
+                                      #:password (svn-multi-reference-password ref))))
+                 (svn-multi-reference-locations ref))
+          (add-to-store store name #t "sha256" temp)))))
 
 ;;; svn-download.scm ends here

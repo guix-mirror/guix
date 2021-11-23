@@ -27,15 +27,18 @@
 (define-public sg3-utils
   (package
     (name "sg3-utils")
-    (version "1.46")
+    (version "1.47")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://sg.danny.cz/sg/p/sg3_utils-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "185rlxppnsmi6q7garfhglmw31gji2ff24xg2yjk3klk1fqnihjr"))))
+                "1ckj2kjcs23lbjfyl5mz2rb0aylnyq13yghg0bdv1n7dbywcmc6x"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--disable-static")))
     (home-page "http://sg.danny.cz/sg/sg3_utils.html")
     (synopsis "SCSI device utilities")
     (description

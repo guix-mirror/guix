@@ -1076,7 +1076,7 @@ H.264 (MPEG-4 AVC) video streams.")
 (define-public pipe-viewer
   (package
     (name "pipe-viewer")
-    (version "0.1.5")
+    (version "0.1.7")
     (source
      (origin
        (method git-fetch)
@@ -1086,7 +1086,7 @@ H.264 (MPEG-4 AVC) video streams.")
          (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "075xc5kvnmyqqj7zijvdrvbkna931h7xf8f8z0ick7yx5fy3pn5j"))))
+        (base32 "1fh8b77vchpsar88dszsz5h1gzd4jz0v902igp2880vnpvacmfi9"))))
     (build-system perl-build-system)
     (arguments
      `(#:imported-modules
@@ -1424,6 +1424,44 @@ advantages in terms of future format extensibility, without breaking file
 support in old parsers.
 libebml is a C++ library to read and write EBML files.")
     (license license:lgpl2.1)))
+
+(define-public libplacebo
+  (package
+    (name "libplacebo")
+    (version "4.157.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://code.videolan.org/videolan/libplacebo")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "08kqsd29h8wm0vz7698wh2mdgpwv6anqc5n7d1spnnamwyfwc64h"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:configure-flags
+       `("-Dopengl=enabled"
+         ,(string-append "-Dvulkan-registry="
+                         (assoc-ref %build-inputs "vulkan-headers")
+                         "/share/vulkan/registry/vk.xml"))))
+    (native-inputs
+     `(("python-mako" ,python-mako)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("lcms" ,lcms)
+       ("libepoxy" ,libepoxy)
+       ("mesa" ,mesa)
+       ("shaderc" ,shaderc)
+       ("vulkan-headers" ,vulkan-headers)
+       ("vulkan-loader" ,vulkan-loader)))
+    (home-page "https://code.videolan.org/videolan/libplacebo")
+    (synopsis "GPU-accelerated image/video processing library")
+    (description "libplacebo is, in a nutshell, the core rendering algorithms
+and ideas of mpv rewritten as an independent library.  As of today, libplacebo
+contains a large assortment of video processing shaders, focusing on both
+quality and performance.")
+    (license license:lgpl2.1+)))
 
 (define-public libva
   (package

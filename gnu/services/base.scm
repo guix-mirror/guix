@@ -58,11 +58,14 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages terminals)
   #:use-module ((gnu build file-systems)
-                #:select (mount-flags->bit-mask))
+                #:select (mount-flags->bit-mask
+                          swap-space->flags-bit-mask))
   #:use-module (guix gexp)
   #:use-module (guix records)
   #:use-module (guix modules)
   #:use-module ((guix self) #:select (make-config.scm))
+  #:use-module (guix diagnostics)
+  #:use-module (guix i18n)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
@@ -2146,62 +2149,96 @@ instance."
                               udev-service-type udev-extension))))))
     (service type #f)))
 
+(define (swap-space->shepherd-service-name space)
+  (let ((target (swap-space-target space)))
+    (symbol-append 'swap-
+                   (string->symbol
+                    (cond ((uuid? target)
+                           (uuid->string target))
+                          ((file-system-label? target)
+                           (file-system-label->string target))
+                          (else
+                           target))))))
+
+; TODO Remove after deprecation
+(define (swap-deprecated->shepherd-service-name sdep)
+  (symbol-append 'swap-
+                 (string->symbol
+                  (cond ((uuid? sdep)
+                         (string-take (uuid->string sdep) 6))
+                        ((file-system-label? sdep)
+                         (file-system-label->string sdep))
+                        (else
+                         sdep)))))
+
+(define swap->shepherd-service-name
+  (match-lambda ((? swap-space? space)
+                 (swap-space->shepherd-service-name space))
+                (sdep
+                 (swap-deprecated->shepherd-service-name sdep))))
+
 (define swap-service-type
   (shepherd-service-type
    'swap
-   (lambda (device)
-     (define requirement
-       (if (and (string? device)
-                (string-prefix? "/dev/mapper/" device))
-           (list (symbol-append 'device-mapping-
-                                (string->symbol (basename device))))
-           '()))
+   (lambda (swap)
+     (define requirements
+       (cond ((swap-space? swap)
+              (map dependency->shepherd-service-name
+                   (swap-space-dependencies swap)))
+             ; TODO Remove after deprecation
+             ((and (string? swap) (string-prefix? "/dev/mapper/" swap))
+              (list (symbol-append 'device-mapping-
+                                   (string->symbol (basename swap)))))
+             (else
+              '())))
 
-     (define (device-lookup device)
+     (define device-lookup
        ;; The generic 'find-partition' procedures could return a partition
        ;; that's not swap space, but that's unlikely.
-       (cond ((uuid? device)
-              #~(find-partition-by-uuid #$(uuid-bytevector device)))
-             ((file-system-label? device)
+       (cond ((swap-space? swap)
+              (let ((target (swap-space-target swap)))
+                (cond ((uuid? target)
+                       #~(find-partition-by-uuid #$(uuid-bytevector target)))
+                      ((file-system-label? target)
+                       #~(find-partition-by-label
+                          #$(file-system-label->string target)))
+                      (else
+                       target))))
+             ; TODO Remove after deprecation
+             ((uuid? swap)
+              #~(find-partition-by-uuid #$(uuid-bytevector swap)))
+             ((file-system-label? swap)
               #~(find-partition-by-label
-                 #$(file-system-label->string device)))
+                 #$(file-system-label->string swap)))
              (else
-              device)))
-
-     (define service-name
-       (symbol-append 'swap-
-                      (string->symbol
-                       (cond ((uuid? device)
-                              (string-take (uuid->string device) 6))
-                             ((file-system-label? device)
-                              (file-system-label->string device))
-                             (else
-                              device)))))
+              swap)))
 
      (with-imported-modules (source-module-closure '((gnu build file-systems)))
        (shepherd-service
-        (provision (list service-name))
-        (requirement `(udev ,@requirement))
-        (documentation "Enable the given swap device.")
+        (provision (list (swap->shepherd-service-name swap)))
+        (requirement `(udev ,@requirements))
+        (documentation "Enable the given swap space.")
         (modules `((gnu build file-systems)
                    ,@%default-modules))
         (start #~(lambda ()
-                   (let ((device #$(device-lookup device)))
+                   (let ((device #$device-lookup))
                      (and device
                           (begin
-                            (restart-on-EINTR (swapon device))
+                            (restart-on-EINTR (swapon device
+                                                      #$(swap-space->flags-bit-mask
+                                                         swap)))
                             #t)))))
         (stop #~(lambda _
-                  (let ((device #$(device-lookup device)))
+                  (let ((device #$device-lookup))
                     (when device
                       (restart-on-EINTR (swapoff device)))
                     #f)))
         (respawn? #f))))
    (description "Turn on the virtual memory swap area.")))
 
-(define (swap-service device)
-  "Return a service that uses @var{device} as a swap device."
-  (service swap-service-type device))
+(define (swap-service swap)
+  "Return a service that uses @var{swap} as a swap space."
+  (service swap-service-type swap))
 
 (define %default-gpm-options
   ;; Default options for GPM.

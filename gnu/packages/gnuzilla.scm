@@ -18,6 +18,7 @@
 ;;; Copyright © 2021 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021 Baptiste Strazzul <bstrazzull@hotmail.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2003,3 +2004,41 @@ Thunderbird.  It supports email, news feeds, chat, calendar and contacts.")
     (description "Firefox Decrypt is a tool to extract passwords from
 Mozilla (Firefox, Waterfox, Thunderbird, SeaMonkey) profiles.")
     (license license:gpl3+)))
+
+(define-public lz4json
+  (package
+    (name "lz4json")
+    (version "2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/andikleen/lz4json")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1xxn8yzr6j8j6prmbj6mxspdczigarfiv3vlm9k70yxmky65ijh3"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs `(("lz4" ,lz4)))
+    (arguments
+     `(#:tests? #f                              ; no check target
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)                    ; no configure script
+         (replace 'install                      ; no install target
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (man (string-append out "/share/man/man1")))
+               (install-file "lz4jsoncat" bin)
+               (install-file "lz4jsoncat.1" man)))))
+       #:make-flags `(,(string-append "CC=" ,(cc-for-target)))))
+    (home-page "https://github.com/andikleen/lz4json")
+    (synopsis "C decompress tool for mozilla lz4json format")
+    (description
+     "@code{lz4json} is a little utility to unpack lz4json files as generated
+by Firefox's bookmark backups and session restore.  This is a different format
+from what the normal lz4 utility expects.  The data is dumped to stdout.")
+    (license license:bsd-2)))

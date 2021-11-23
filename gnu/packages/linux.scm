@@ -137,6 +137,7 @@
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages slang)
+  #:use-module (gnu packages sphinx)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
@@ -353,17 +354,17 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 
 ;; The current "stable" kernels. That is, the most recently released major
 ;; versions that are still supported upstream.
-(define-public linux-libre-5.14-version "5.14.18")
+(define-public linux-libre-5.14-version "5.14.21")
 (define-public linux-libre-5.14-gnu-revision "gnu")
 (define deblob-scripts-5.14
   (linux-libre-deblob-scripts
    linux-libre-5.14-version
    linux-libre-5.14-gnu-revision
    (base32 "11zax57brk8bl75q68c71xsdlvslj48wpmrv8rh34sb8wym9n4mc")
-   (base32 "024rz0bp3n3r5nkwbib7byx10d72c2fh5cw9iv00diyzgnp819g7")))
+   (base32 "1xmmr26lpffc4dfmrkvh3gdkkr8666fcyvgam560vbyd2b2qkd78")))
 (define-public linux-libre-5.14-pristine-source
   (let ((version linux-libre-5.14-version)
-        (hash (base32 "1pr7qh2wjw7h6r3fixg9ia5r3na7vdb6b4sp9wnbifnqckahzwis")))
+        (hash (base32 "1cr381c179nfdrq95l4j56c4ygw09sxv493553ix4b80naf2a6pl")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.14)))
@@ -371,7 +372,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 ;; The "longterm" kernels — the older releases with long-term upstream support.
 ;; Here are the support timelines:
 ;; <https://www.kernel.org/category/releases.html>
-(define-public linux-libre-5.10-version "5.10.79")
+(define-public linux-libre-5.10-version "5.10.81")
 (define-public linux-libre-5.10-gnu-revision "gnu1")
 (define deblob-scripts-5.10
   (linux-libre-deblob-scripts
@@ -381,12 +382,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "024rz0bp3n3r5nkwbib7byx10d72c2fh5cw9iv00diyzgnp819g7")))
 (define-public linux-libre-5.10-pristine-source
   (let ((version linux-libre-5.10-version)
-        (hash (base32 "1bd86ywff2mv73sybjdjlvvvhnmsv891jlm17h5nvqifdbhmb6g4")))
+        (hash (base32 "1nssv94zivx08vrxxflq4dxk5fxl3azsqlnzvw58qnf469hniqd2")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.10)))
 
-(define-public linux-libre-5.4-version "5.4.159")
+(define-public linux-libre-5.4-version "5.4.161")
 (define-public linux-libre-5.4-gnu-revision "gnu1")
 (define deblob-scripts-5.4
   (linux-libre-deblob-scripts
@@ -396,7 +397,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "1a0k9i8gnzkyvfr80f8xw2fnxfwddhz1pzicz9fh0y3jzzkzk45p")))
 (define-public linux-libre-5.4-pristine-source
   (let ((version linux-libre-5.4-version)
-        (hash (base32 "0hw68yjf0c8kahwra8hq863318cbyqc89f429z75scmb9rgk466p")))
+        (hash (base32 "19rrz7fzka506bpgy229v1sbaxc2s609ldmxc2522y9h5aswcj9i")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.4)))
@@ -8259,20 +8260,21 @@ platforms, it is not limited to resource-constrained systems.")
 (define-public lttng-ust
   (package
     (name "lttng-ust")
-    (version "2.12.2")
+    (version "2.13.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://lttng.org/files/lttng-ust/"
                                   "lttng-ust-" version ".tar.bz2"))
               (sha256
                (base32
-                "1iwz6p79zvibj8sl8qqw84lcir9a8z1ylq77hhnwg26anrjg1l5w"))))
+                "0l0p6y2zrd9hgd015dhafjmpcj7waz762n6wf5ws1xlwcwrwkr2l"))))
     (build-system gnu-build-system)
     (inputs
      `(("liburcu" ,liburcu)
        ("numactl" ,numactl)))
     (native-inputs
-     `(("python" ,python-3)))
+     `(("python" ,python-3)
+       ("pkg-config", pkg-config)))
     (home-page "https://lttng.org/")
     (synopsis "LTTng userspace tracer libraries")
     (description "The user space tracing library, liblttng-ust, is the LTTng
@@ -8284,14 +8286,14 @@ to ring buffers shared with a consumer daemon.")
 (define-public lttng-tools
   (package
     (name "lttng-tools")
-    (version "2.12.5")
+    (version "2.13.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://lttng.org/files/lttng-tools/"
                                   "lttng-tools-" version ".tar.bz2"))
               (sha256
                (base32
-                "0bgk35423v6z17j1w80m7dcza7gigs1pwyq24sdmgqwg6j2d1zmc"))))
+                "1df8ag2a1yyjn6hz6wxgcz0p847cq91b8inf0zyhgz1im1yxzrng"))))
     (build-system gnu-build-system)
     (arguments
      `(;; FIXME - Currently there's a segmentation fault by swig when enabling
@@ -8345,6 +8347,61 @@ daemon @code{lttng-sessiond} that acts as a tracing registry, the @command{lttng
 line for tracing control, a @code{lttng-ctl} library for tracing control and a
 @code{lttng-relayd} for network streaming.")
     (license (list  license:gpl2 license:lgpl2.1))))
+
+(define-public babeltrace
+  (package
+    (name "babeltrace")
+    (version "2.0.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.efficios.com/files/babeltrace/babeltrace2-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32 "1jlv925pr7hykc48mdvbmqm4ipy1r11xwzapa6fdpdfshmk12kvp"))))
+
+    (build-system gnu-build-system)
+
+    (arguments
+     `(;; FIXME - When Python's bindings are enabled, tests do not pass.
+       #:configure-flags '("--enable-debug-info"
+                           "--enable-man-pages"
+                           "--disable-python-bindings"
+                           "--disable-python-plugins")
+       #:phases
+       (modify-phases %standard-phases
+         ;; These are recommended in the project's README for a development
+         ;; build configuration.
+         (add-before 'configure 'set-environment-variables
+           (lambda _
+             (setenv "BABELTRACE_DEV_MODE" "1")
+             (setenv "BABELTRACE_MINIMAL_LOG_LEVEL" "TRACE"))))))
+    (inputs
+     `(("glib" ,glib)))
+    ;; NOTE - elfutils is used for the LTTng debug information filter
+    ;; component class.  This can be moved to `native-inputs` if
+    ;; `--enable-debug-info` is replaced by `--disable-debug-info` in
+    ;; `#:configure-flags`.
+    (propagated-inputs
+     `(("elfutils" ,elfutils)))
+    ;; NOTE - python-3 is set here for generating the bindings.  Users need to
+    ;; install python-3 in their profile in order to use these bindings.
+    (native-inputs
+     `(("asciidoc" ,asciidoc)
+       ("bison" ,bison)
+       ("flex" ,flex)
+       ("pkg-config" ,pkg-config)
+       ("python-3" ,python-3)
+       ("python-sphinx" ,python-sphinx)
+       ("swig", swig)
+       ("xmltoman" ,xmltoman)))
+    (home-page "https://babeltrace.org/")
+    (synopsis "Trace manipulation toolkit")
+    (description "Babeltrace 2 is a framework for viewing, converting,
+transforming, and analyzing traces.  It is also the reference parser
+implementation of the Common Trace Format (CTF), produced by tools such as
+LTTng and barectf.  This package provides a library with a C API, Python 3
+bindings, and the command-line tool @command{babeltrace2}.")
+    (license license:expat)))
 
 (define-public kexec-tools
   (package
