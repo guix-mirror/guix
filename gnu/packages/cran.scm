@@ -14628,14 +14628,14 @@ discovery rates.")
 (define-public r-longitudinal
   (package
     (name "r-longitudinal")
-    (version "1.1.12")
+    (version "1.1.13")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "longitudinal" version))
        (sha256
         (base32
-         "1d83ws28nxi3kw5lgd5n5y7865djq7ky72fw3ddi1fkkhg1r9y6l"))))
+         "046w3xbr535c5jyd68adv42a7limxp1mv57b5w6w673w707lmw2p"))))
     (build-system r-build-system)
     (propagated-inputs `(("r-corpcor" ,r-corpcor)))
     (home-page "http://strimmerlab.org/software/longitudinal/")
