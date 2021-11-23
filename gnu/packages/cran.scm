@@ -12466,14 +12466,14 @@ Bioconductor packages.")
 (define-public r-rgl
   (package
     (name "r-rgl")
-    (version "0.107.14")
+    (version "0.108.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rgl" version))
        (sha256
         (base32
-         "1z5h4wbjj18prcykc96rqcn699pnqw6vybwj2mpbbbdw2lr3q8b7"))))
+         "0fqkx079z9y5b1gdg6qfz2wpw2j8q3ddflfkd9wwrkyacas6xyc9"))))
     (build-system r-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -12486,12 +12486,12 @@ Bioconductor packages.")
        ("pandoc" ,pandoc)
        ("zlib" ,zlib)))
     (propagated-inputs
-     `(("r-crosstalk" ,r-crosstalk)
-       ("r-htmltools" ,r-htmltools)
+     `(("r-htmltools" ,r-htmltools)
        ("r-htmlwidgets" ,r-htmlwidgets)
        ("r-jsonlite" ,r-jsonlite)
        ("r-knitr" ,r-knitr)
-       ("r-magrittr" ,r-magrittr)))
+       ("r-magrittr" ,r-magrittr)
+       ("r-r6" ,r-r6)))
     (home-page "https://r-forge.r-project.org/projects/rgl/")
     (synopsis "3D visualization using OpenGL")
     (description
