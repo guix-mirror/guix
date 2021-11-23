@@ -382,13 +382,25 @@ bailing out~%")
               package)
      str)))
 
+(define (edit-expression/dry-run properties rewrite-string)
+  "Like 'edit-expression' but display what would be edited without actually
+doing it."
+  (edit-expression properties
+                   (lambda (str)
+                     (unless (string=? (rewrite-string str) str)
+                       (info (source-properties->location properties)
+                             (G_ "would be edited~%")))
+                     str)))
+
 (define* (simplify-package-inputs package
-                                  #:key (policy 'silent))
+                                  #:key (policy 'silent)
+                                  (edit-expression edit-expression))
   "Edit the source code of PACKAGE to simplify its inputs field if needed.
 POLICY is a symbol that defines whether to simplify inputs; it can one of
 'silent (change only if the resulting derivation is the same), 'safe (change
 only if semantics are known to be unaffected), and 'always (fearlessly
-simplify inputs!)."
+simplify inputs!).  Call EDIT-EXPRESSION to actually edit the source of
+PACKAGE."
   (for-each (lambda (field-name field)
               (match (field package)
                 (()
@@ -449,6 +461,9 @@ simplify inputs!)."
                 (member "load-path" (option-names option)))
               %standard-build-options)
 
+        (option '(#\n "dry-run") #f #f
+                (lambda (opt name arg result)
+                  (alist-cons 'dry-run? #t result)))
         (option '(#\e "expression") #t #f
                 (lambda (opt name arg result)
                   (alist-cons 'expression arg result)))
@@ -472,6 +487,8 @@ simplify inputs!)."
 (define (show-help)
   (display (G_ "Usage: guix style [OPTION]... [PACKAGE]...
 Update package definitions to the latest style.\n"))
+  (display (G_ "
+  -n, --dry-run          display files that would be edited but do nothing"))
   (display (G_ "
   -L, --load-path=DIR    prepend DIR to the package module search path"))
   (display (G_ "
@@ -514,9 +531,13 @@ Update package definitions to the latest style.\n"))
                                   (read/eval str))
                                  (_ #f))
                                opts))
+         (edit     (if (assoc-ref opts 'dry-run?)
+                       edit-expression/dry-run
+                       edit-expression))
          (policy   (assoc-ref opts 'input-simplification-policy)))
     (for-each (lambda (package)
-                (simplify-package-inputs package #:policy policy))
+                (simplify-package-inputs package #:policy policy
+                                         #:edit-expression edit))
               ;; Sort package by source code location so that we start editing
               ;; files from the bottom and going upward.  That way, the
               ;; 'location' field of <package> records is not invalidated as

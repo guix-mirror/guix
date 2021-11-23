@@ -12725,6 +12725,10 @@ comments and bailing out if it cannot make sense of the code that
 appears in an inputs field.  The available options are listed below.
 
 @table @code
+@item --dry-run
+@itemx -n
+Show source file locations that would be edited but do not modify them.
+
 @item --load-path=@var{directory}
 @itemx -L @var{directory}
 Add @var{directory} to the front of the package module search path
