@@ -14,15 +14,22 @@ Please send Guix bug reports to bug-guix@gnu.org.
 
 * Changes in 1.4.0 (since 1.3.0)
 ** Package management
+*** New ‘guix home’ command, for home environment management
+*** New ‘guix shell’ command, the successor to ‘guix environment’
 *** New ‘deb’ format for the ‘guix pack’ command
 *** New ‘guix import minetest’ command, to import Minetest extensions
+*** ‘guix import texlive’ rewritten to use the TLPDB as its source
 *** ‘guix import elpa’ now supports the non-GNU ELPA repository
+*** ‘guix import pypi’ can now import a specific version
+*** ‘guix import cran’ can now import a specific version
 *** New updater (see ‘guix refresh’): ‘generic-git’
+*** ‘guix graph’ has a new ‘--max-depth’ option
 *** ‘--with-commit’ option now accepts strings returned by ‘git describe’
 ** Distribution
 *** The installation script can now enable local substitute servers discovery
 *** More control over boot-time file system checks and repairs
 *** XFS file systems can be created by the installer and mounted by label/UUID
+*** New interface for declaring swap space
 ** Programming interfaces
 *** (guix records) now supports “field sanitizers”
 ** Noteworthy bug fixes
@@ -32,6 +39,10 @@ Please send Guix bug reports to bug-guix@gnu.org.
     (<https://issues.guix.gnu.org/49697>)
 *** Fix pathological profile building performance in the presence of grafts
     (<https://issues.guix.gnu.org/49439>)
+*** Deduplication phase of the garbage collector is now faster
+    (<https://issues.guix.gnu.org/24937>)
+*** File system flags are validated before system instantiation
+    (<https://issues.guix.gnu.org/51425>)
 
 * Changes in 1.3.0 (since 1.2.0)
 ** Package management
