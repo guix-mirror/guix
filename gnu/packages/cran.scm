@@ -29474,21 +29474,23 @@ AGG to use as alternative to the raster devices provided through the
 (define-public r-downlit
   (package
     (name "r-downlit")
-    (version "0.2.1")
+    (version "0.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "downlit" version))
        (sha256
         (base32
-         "0z4fz7c9kyd9v72wl3iqs2wxspi975d6b0rgjr9lvg8a18maa9z6"))))
+         "10zvrqdpwavdy97h3q26bqh3k63z61fmc04w9vwsnvmnv8hnh3vl"))))
     (properties `((upstream-name . "downlit")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-brio" ,r-brio)
+       ("r-desc" ,r-desc)
        ("r-digest" ,r-digest)
        ("r-evaluate" ,r-evaluate)
        ("r-fansi" ,r-fansi)
+       ("r-memoise" ,r-memoise)
        ("r-rlang" ,r-rlang)
        ("r-vctrs" ,r-vctrs)
        ("r-yaml" ,r-yaml)))
