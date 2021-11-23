@@ -18632,7 +18632,7 @@ tasks in Common Lisp.  It is fork of SWANK-BACKEND.")
       (home-page "https://github.com/eudoxia0/terminal-size")
       (synopsis "Get the size of the terminal from Common Lisp")
       (description
-       "This package provides the @{(terminal-size:size)} function to get the
+       "This package provides the @code{terminal-size:size} function to get the
 size of the terminal from Common Lisp.")
       (license license:expat))))
 
