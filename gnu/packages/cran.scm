@@ -7018,14 +7018,14 @@ systems.")
 (define-public r-radiant-data
   (package
     (name "r-radiant-data")
-    (version "1.3.12")
+    (version "1.4.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "radiant.data" version))
        (sha256
         (base32
-         "08bqqrfvpgyf613ikihwfnzb23l23f5nfs7zynnxbjxc1zfhbpny"))
+         "12x4nz5n6yz1a67ji79pwvznp9flmn50hpp9y9sfhixir7dvwy27"))
        (modules '((guix build utils)))
        (snippet
         '(begin
