@@ -3855,16 +3855,18 @@ most popular ones.")
 (define-public r-sp
   (package
     (name "r-sp")
-    (version "1.4-5")
+    (version "1.4-6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sp" version))
        (sha256
-        (base32 "1nh9izsnszzm5kbq461w8bi0yh7fqzb74b2zmpg5qis0slbb5vkb"))))
+        (base32 "09m2ddbrbs2aqnq5si42ipa0g1vbd0pxg4zbcx59is2047pv7sws"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-lattice" ,r-lattice)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://cran.r-project.org/web/packages/sp")
     (synopsis "Classes and methods for spatial data")
     (description
