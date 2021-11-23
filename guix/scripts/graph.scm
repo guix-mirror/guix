@@ -542,7 +542,7 @@ Emit a representation of the dependency graph of PACKAGE...\n"))
   (display (G_ "
       --list-types       list the available graph types"))
   (display (G_ "
-      --max-depth=DEPTH  limit to nodes within distance DEPTH"))
+  -M, --max-depth=DEPTH  limit to nodes within distance DEPTH"))
   (display (G_ "
       --path             display the shortest path between the given nodes"))
   (display (G_ "
