@@ -3649,13 +3649,13 @@ analysis of large sparse or dense matrices.")
 (define-public r-glmnet
   (package
    (name "r-glmnet")
-   (version "4.1-2")
+   (version "4.1-3")
    (source
     (origin
      (method url-fetch)
      (uri (cran-uri "glmnet" version))
      (sha256
-      (base32 "1kfd8kfhapx2cxw6qnkbs502c3kya4pd9qmf0mk76cdlq1c2paq6"))))
+      (base32 "0nij8v44b5dvp1vc843sfkl9ds83n6g687m2p37q1rdn82m3bg34"))))
    (build-system r-build-system)
    (native-inputs
     `(("gfortran" ,gfortran)
@@ -3663,6 +3663,8 @@ analysis of large sparse or dense matrices.")
    (propagated-inputs
     `(("r-foreach" ,r-foreach)
       ("r-matrix" ,r-matrix)
+      ("r-rcpp" ,r-rcpp)
+      ("r-rcppeigen" ,r-rcppeigen)
       ("r-shape" ,r-shape)
       ("r-survival" ,r-survival)))
    (home-page "https://www.jstatsoft.org/article/view/v033i01")
