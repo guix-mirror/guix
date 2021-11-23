@@ -27597,27 +27597,25 @@ posframe to show its candidate menu.")
     (license license:gpl3+)))
 
 (define-public emacs-shackle
-  (let ((commit "7ccbe513852a1d1700b698547efca14b8940319d")
-        (revision "1"))
-    (package
-      (name "emacs-shackle")
-      (version (git-version "1.0.3" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/wasamasa/shackle")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "0agsp8ia4irr540r898ifhjqp28n1zsq1pilv1kc272spn3qhvp9"))))
-      (build-system emacs-build-system)
-      (synopsis "Enforce rules for popups")
-      (description "This package provides a global minor mode in which users
+  (package
+    (name "emacs-shackle")
+    (version "1.0.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://depp.brause.cc/shackle.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0s4br59zpd5qq7z9074ddq9lmwnddq2ixijwi666wp5gxw45fpgg"))))
+    (build-system emacs-build-system)
+    (synopsis "Enforce rules for popups")
+    (description
+     "This package provides a global minor mode in which users
 can specify how popup-displaying functions occupy the screen.")
-      (home-page "https://github.com/wasamasa/shackle")
-      (license license:gpl3+))))
+    (home-page "https://depp.brause.cc/shackle")
+    (license license:gpl3+)))
 
 (define-public emacs-showtip
   (let ((commit "930da302809a4257e8d69425455b29e1cc91949b")
