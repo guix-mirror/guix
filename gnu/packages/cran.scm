@@ -5349,13 +5349,13 @@ and density estimation")
 (define-public r-venndiagram
   (package
     (name "r-venndiagram")
-    (version "1.6.20")
+    (version "1.7.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "VennDiagram" version))
               (sha256
                (base32
-                "1ic1jaxzw98si2p4n1fl4n3myhd7fpw0njb634cwhviwybzv6775"))))
+                "1l9mmc8wwn885l2b13kshhrkz53pqigcw6d8gklvv92fx5m5cdvm"))))
     (properties `((upstream-name . "VennDiagram")))
     (build-system r-build-system)
     (propagated-inputs
