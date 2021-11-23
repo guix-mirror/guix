@@ -19,6 +19,7 @@
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2021 Ivan Gankevich <i.gankevich@spbu.ru>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021 John Kehayias <john.kehayias@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1567,7 +1568,7 @@ for packaging and deployment of cross-compiled Windows applications.")
        ("glib" ,glib)
        ("gpgme" ,gpgme)
        ("libarchive" ,libarchive)
-       ("libsoup" ,libsoup)
+       ("libsoup" ,libsoup-minimal-2) ; needs libsoup-2.4
        ("util-linux" ,util-linux)))
     (home-page "https://ostree.readthedocs.io/en/latest/")
     (synopsis "Operating system and container binary deployment and upgrades")
