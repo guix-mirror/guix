@@ -925,7 +925,7 @@ reboot\n")
 
   (operating-system
     (host-name "bootroot")
-    (timezone "Europe/Madrid")
+    (timezone "Europe/Paris")
     (locale "en_US.UTF-8")
 
     (bootloader (bootloader-configuration
@@ -1168,7 +1168,7 @@ RAID-0 (stripe) root partition.")
 
   (operating-system
     (host-name "hurd")
-    (timezone "America/Montreal")
+    (timezone "Europe/Paris")
     (locale "en_US.UTF-8")
     (bootloader (bootloader-configuration
                  (bootloader grub-bootloader)
