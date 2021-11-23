@@ -16624,14 +16624,14 @@ information about geometries.")
 (define-public r-sf
   (package
     (name "r-sf")
-    (version "1.0-3")
+    (version "1.0-4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sf" version))
        (sha256
         (base32
-         "1y1im0wxqx0vqas6ggmi6p1dyp98l895jy3asxky4vq5wpjfrqrf"))))
+         "0dxln3ikqmwczz0ri63xwj05v09hkpljw2qvma6n03nzczyg2713"))))
     (build-system r-build-system)
     (inputs
      `(("gdal" ,gdal)
