@@ -17207,14 +17207,14 @@ and a QP solver.")
 (define-public r-hierfstat
   (package
     (name "r-hierfstat")
-    (version "0.5-7")
+    (version "0.5-10")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "hierfstat" version))
        (sha256
         (base32
-         "0dp8k1z5a8gqnax99y1hwfvxilzf4n2i751zr0z6ihrzirsvb3m3"))))
+         "1p4vlna185sa3b5xjbysiqxcj9aa5s7dmxy41hg79vlqdivf874r"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ade4" ,r-ade4)
