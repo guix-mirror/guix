@@ -286,6 +286,28 @@ RepeatMasker (RM mask), and (4) the mask of repeats from Tandem Repeats
 Finder (TRF mask).  Only the AGAPS and AMB masks are \"active\" by default.")
     (license license:artistic2.0)))
 
+(define-public r-bsgenome-drerio-ucsc-danrer11
+  (package
+    (name "r-bsgenome-drerio-ucsc-danrer11")
+    (version "1.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "BSgenome.Drerio.UCSC.danRer11"
+                              version 'annotation))
+       (sha256
+        (base32 "08a928mqzv2jxngjcs4yr6ni1b9z9al6jdngwi438j8hm41cwk4v"))))
+    (properties `((upstream-name . "BSgenome.Drerio.UCSC.danRer11")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bsgenome" ,r-bsgenome)))
+    (home-page "https://bioconductor.org/packages/BSgenome.Drerio.UCSC.danRer11")
+    (synopsis "Full genome sequences for Danio rerio (UCSC version danRer11)")
+    (description
+     "This package provides full genome sequences for Danio rerio (Zebrafish)
+as provided by UCSC (danRer11, May 2017) and stored in Biostrings objects.")
+    (license license:artistic2.0)))
+
 (define-public r-bsgenome-hsapiens-1000genomes-hs37d5
   (package
     (name "r-bsgenome-hsapiens-1000genomes-hs37d5")
