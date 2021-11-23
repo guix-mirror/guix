@@ -27387,22 +27387,22 @@ each slide with left/right keys.")
 (define-public emacs-fullframe
   (package
     (name "emacs-fullframe")
-    (version "0.5.0")
+    (version "0.5.1")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/tomterl/fullframe")
+             (url "https://git.sr.ht/~tomterl/fullframe")
              (commit version)))
        (sha256
-        (base32
-         "0m43qnhp6ibsskpjkxc86p3lrjsjc0ndqml3lbd65s79x4x7i3fi"))
+        (base32 "1q276p3bagx9fhzyzjmz449f95k1z287x4p34980d06klj11lrab"))
        (file-name (git-file-name name version))))
     (build-system emacs-build-system)
-    (home-page "https://github.com/tomterl/fullframe")
+    (home-page "https://git.sr.ht/~tomterl/fullframe")
     (synopsis "Generalized automatic execution in a single frame")
-    (description "This library provides helpers for single-window-per-frame
-execution of buffer-exposing commands.")
+    (description
+     "This library provides helpers for single-window-per-frame execution of
+buffer-exposing commands.")
     (license license:gpl3+)))
 
 (define-public emacs-eshell-toggle
