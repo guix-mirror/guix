@@ -6054,14 +6054,14 @@ packages that work with genomic data.")
 (define-public r-uuid
   (package
     (name "r-uuid")
-    (version "0.1-4")
+    (version "1.0-3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "uuid" version))
        (sha256
         (base32
-         "0gm9ii7ncvllxbvyk6srsiinjmqyj7lmh84w43x4nhqpvafj9q4q"))))
+         "0il35jnci537r8zkinyiy5jp5q530p85ln6dswpj884zclrlcvj5"))))
     (build-system r-build-system)
     (home-page "https://www.rforge.net/uuid")
     (synopsis "Tools for generating and handling of UUIDs")
