@@ -31323,14 +31323,14 @@ fully reproducible.")
 (define-public r-paws-common
   (package
     (name "r-paws-common")
-    (version "0.3.13")
+    (version "0.3.14")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "paws.common" version))
        (sha256
         (base32
-         "15sj7yw4hj76minr00xhgzkg1rwb7gsr2ib9q4d053i5f3jcy54a"))))
+         "013yiki3bjx0np577wy17ikfxdr2hiv6sd10anv281r108kldm1x"))))
     (properties `((upstream-name . "paws.common")))
     (build-system r-build-system)
     (propagated-inputs
