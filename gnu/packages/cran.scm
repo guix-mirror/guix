@@ -28489,14 +28489,14 @@ designs.  Broman et al. (2018) <doi:10.1534/genetics.118.301595>.")
 (define-public r-seqminer
   (package
     (name "r-seqminer")
-    (version "8.0")
+    (version "8.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "seqminer" version))
        (sha256
         (base32
-         "00jzj8mwb0zaiwlifd41b26mrq9mzigj18nc29dydi0r42hxg16i"))))
+         "097313x72jr2q6dp8ma33w8kyp3gfw71snf1qx2maxbwwnysk085"))))
     (build-system r-build-system)
     (inputs
      `(("zlib" ,zlib)))
