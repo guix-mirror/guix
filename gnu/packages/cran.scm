@@ -16662,13 +16662,13 @@ datum transformations.")
 (define-public r-spdep
   (package
     (name "r-spdep")
-    (version "1.1-11")
+    (version "1.1-12")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "spdep" version))
               (sha256
                (base32
-                "1ym523dzpiji6c8ypa3gvw8va36gl1gnzcsvdg9drly3mlq42rpr"))
+                "1dykhsk5djh62b3zcvpmvm3s87rn8ywzbwblhzivhln0y6pzk9hv"))
               (snippet
                '(for-each delete-file '("inst/doc/nb_igraph.html"
                                         "inst/doc/nb_igraph.R"
