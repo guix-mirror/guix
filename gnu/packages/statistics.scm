@@ -5915,14 +5915,14 @@ easy and fun.")
 (define-public r-fdrtool
   (package
     (name "r-fdrtool")
-    (version "1.2.16")
+    (version "1.2.17")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "fdrtool" version))
        (sha256
         (base32
-         "1aap4k1l3a9m43374xq688mqnzkgqx8l021li262r3h1xr4adpp7"))))
+         "1pf554vb902vavgqc4c0kgghywbgcvr3lkkr414bxngavcd60lil"))))
     (build-system r-build-system)
     (home-page "http://strimmerlab.org/software/fdrtool/")
     (synopsis "Estimation of false discovery rates and higher criticism")
