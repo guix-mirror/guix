@@ -19388,19 +19388,18 @@ the current document.")
 (define-public r-xgboost
   (package
     (name "r-xgboost")
-    (version "1.4.1.1")
+    (version "1.5.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "xgboost" version))
        (sha256
         (base32
-         "1i706h6yhayzbqlqa1z6fgjc56kxm3isz0jw6d26fpyfjlw6z64z"))))
+         "04xbgrrb3aq067hrivslq5f2rd1v95yfv7lkj596ijyqi6ibjl27"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-data-table" ,r-data-table)
        ("r-jsonlite" ,r-jsonlite)
-       ("r-magrittr" ,r-magrittr)
        ("r-matrix" ,r-matrix)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
