@@ -5011,14 +5011,14 @@ from the data points.")
 (define-public r-corrplot
   (package
     (name "r-corrplot")
-    (version "0.90")
+    (version "0.92")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "corrplot" version))
        (sha256
         (base32
-         "1pfmjqgakf7706l9257lqqnb6kin79gc94xfg7w47x2ijchiz1yr"))))
+         "1g98jk6xsl08z4n6sy5vriif99m31zhbz7j3dh1kfj4w7yb9zh78"))))
     (build-system r-build-system)
     (native-inputs
      `(("r-knitr" ,r-knitr)))
