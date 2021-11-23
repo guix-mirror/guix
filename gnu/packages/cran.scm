@@ -29441,14 +29441,14 @@ the font tool-set provided by the @code{systemfonts} package.")
 (define-public r-ragg
   (package
     (name "r-ragg")
-    (version "1.1.3")
+    (version "1.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ragg" version))
        (sha256
         (base32
-         "0ppypfq1vipwjngmiwdx1sj6x7m41v3dlnbsixdlnrf2nx82kxb2"))))
+         "1wbk7vny8435ii3aak586imd0dgh4ri55kqypx5b10x6ygp32avb"))))
     (properties `((upstream-name . "ragg")))
     (build-system r-build-system)
     (inputs
