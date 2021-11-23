@@ -17452,28 +17452,33 @@ a heuristic based on frequency and recency.")
       (license license:gpl3+))))
 
 (define-public emacs-org-recent-headings
-  (package
-    (name "emacs-org-recent-headings")
-    (version "0.1")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/alphapapa/org-recent-headings")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "0gsrzmg3mssh9s28yjm9m866fnhm1pcligssz1q6brga6dm6f2yy"))))
-    (build-system emacs-build-system)
-    (propagated-inputs
-     `(("emacs-org" ,emacs-org)
-       ("emacs-dash" ,emacs-dash)
-       ("emacs-frecency" ,emacs-frecency)))
-    (home-page "https://github.com/alphapapa/org-recent-headings")
-    (synopsis "Navigate to recently used Org headings and lists")
-    (description "This package maintains a list of recently used Org headings,
+  (let ((commit "97418d581ea030f0718794e50b005e9bae44582e")
+        (revision "0"))
+    (package
+      (name "emacs-org-recent-headings")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/alphapapa/org-recent-headings")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1y11rlnhi36lzhc1cagninv6hlcwbvj88xfr0g0xzpbzy7hys021"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-dash" ,emacs-dash)
+         ("emacs-frecency" ,emacs-frecency)
+         ("emacs-helm" ,emacs-helm)
+         ("emacs-org" ,emacs-org)
+         ("emacs-s" ,emacs-s)))
+      (home-page "https://github.com/alphapapa/org-recent-headings")
+      (synopsis "Navigate to recently used Org headings and lists")
+      (description
+       "This package maintains a list of recently used Org headings,
 as well as functions for navigating between these headings.")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public emacs-org-super-agenda
   (package
