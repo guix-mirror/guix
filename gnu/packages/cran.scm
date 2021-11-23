@@ -11781,14 +11781,14 @@ User credentials are shared with command line git through the
 (define-public r-usethis
   (package
     (name "r-usethis")
-    (version "2.1.0")
+    (version "2.1.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "usethis" version))
        (sha256
         (base32
-         "1s40rbr2z9bilsldp8pv5abrr7n0ixyxi2qqbf4hfhs14rhigncy"))))
+         "1gwvirp53pa0zychd7d47d56a2vfdzz7l3p61l8m9n270ac7bc1d"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-cli" ,r-cli)
@@ -11796,7 +11796,6 @@ User credentials are shared with command line git through the
        ("r-crayon" ,r-crayon)
        ("r-curl" ,r-curl)
        ("r-desc" ,r-desc)
-       ("r-ellipsis" ,r-ellipsis)
        ("r-fs" ,r-fs)
        ("r-gert" ,r-gert)
        ("r-gh" ,r-gh)
