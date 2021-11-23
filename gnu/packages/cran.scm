@@ -26503,18 +26503,19 @@ you can automate browsers locally or remotely.")
 (define-public r-conquer
   (package
     (name "r-conquer")
-    (version "1.0.2")
+    (version "1.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "conquer" version))
        (sha256
         (base32
-         "1zvlsrbmrij011mcdi3qngs1al2lhrdiyknxnk0w1zhzrra62bsl"))))
+         "0i9g27f52zl2kb2392g0y614drf6s87dqz12aphj889ajq7zjm0k"))))
     (properties `((upstream-name . "conquer")))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-matrix" ,r-matrix)
+     `(("r-caret" ,r-caret)
+       ("r-matrix" ,r-matrix)
        ("r-matrixstats" ,r-matrixstats)
        ("r-rcpp" ,r-rcpp)
        ("r-rcpparmadillo" ,r-rcpparmadillo)))
