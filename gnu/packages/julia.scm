@@ -6,6 +6,7 @@
 ;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2021 Jean-Baptiste Volatier <jbv@pm.me>
 ;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -190,8 +191,7 @@ libraries.  It is also a bit like @code{ldd} and @code{otool -L}.")
                (("(install: .*) \\$\\(BUILDROOT\\)/doc/_build/html/en/index.html" _ line)
                 (string-append line "\n"))
                (("src ui doc deps")
-                "src ui deps"))
-             #t))
+                "src ui deps"))))
          (add-after 'unpack 'use-system-libwhich
            (lambda* (#:key inputs #:allow-other-keys)
              ;; don't build it
@@ -200,15 +200,13 @@ libraries.  It is also a bit like @code{ldd} and @code{otool -L}.")
              ;; call our version
              (substitute* "base/Makefile"
                (("\\$\\$\\(build_depsbindir\\)/libwhich")
-                (search-input-file inputs "/bin/libwhich")))
-             #t))
+                (search-input-file inputs "/bin/libwhich")))))
          (add-after 'unpack 'change-number-of-precompile-statements
            (lambda _
              ;; Remove nss-certs drops the number of statements below 1200,
              ;; causing the build to fail prematurely.
              (substitute* "contrib/generate_precompile.jl"
-               (("1200") "1100"))
-             #t))
+               (("1200") "1100"))))
          ;; For some reason libquadmath is unavailable on this architecture.
          ;; https://github.com/JuliaLang/julia/issues/41613
          ,@(if (target-aarch64?)
@@ -250,8 +248,7 @@ libraries.  It is also a bit like @code{ldd} and @code{otool -L}.")
          (add-before 'build 'replace-default-shell
            (lambda _
              (substitute* "base/client.jl"
-               (("/bin/sh") (which "sh")))
-             #t))
+               (("/bin/sh") (which "sh")))))
          (add-before 'build 'shared-objects-paths
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((jlpath
@@ -315,8 +312,17 @@ libraries.  It is also a bit like @code{ldd} and @code{otool -L}.")
                   (to "suitesparse" "libsuitesparseconfig"))
                  (((from "libumfpack")) (to "suitesparse" "libumfpack")))
                (substitute* (jlpath "Zlib")
-                 (((from "libz")) (to "zlib" "libz"))))
-              #t))
+                 (((from "libz")) (to "zlib" "libz"))))))
+         (add-after 'unpack 'enable-parallel-tests
+           ;; FIXME: julia fails at networking in the container and falls back
+           ;; to a single worker, which causes the tests to not run in
+           ;; parallel (see: https://github.com/JuliaLang/julia/issues/43205).
+           (lambda* (#:key parallel-build? #:allow-other-keys)
+             (setenv "JULIA_CPU_THREADS" (if parallel-build?
+                                             (number->string (parallel-job-count))
+                                             "1"))
+             (format #t "JULIA_CPU_THREADS environment variable set to ~a~%"
+                     (getenv "JULIA_CPU_THREADS"))))
          (add-after 'unpack 'adjust-test-suite
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((pcre2 (assoc-ref inputs "pcre2"))
@@ -339,8 +345,7 @@ libraries.  It is also a bit like @code{ldd} and @code{otool -L}.")
                (substitute* "stdlib/SuiteSparse_jll/test/runtests.jl"
                  (("5004") ,(string-replace-substring
                               (version-major+minor
-                                (package-version suitesparse)) "." "0")))
-               #t)))
+                                (package-version suitesparse)) "." "0"))))))
          (add-before 'check 'disable-broken-tests
            (lambda _
              ;; disabling REPL tests because they require a stdin
@@ -377,8 +382,7 @@ libraries.  It is also a bit like @code{ldd} and @code{otool -L}.")
              ;(setenv "LC_ALL" "en_US.utf8")
              (substitute* "test/cmdlineargs.jl"
                (("test v\\[3") "test_broken v[3")
-               (("test isempty\\(v\\[3") "test_broken isempty(v[3"))
-             #t))
+               (("test isempty\\(v\\[3") "test_broken isempty(v[3"))))
          (add-before 'install 'symlink-libraries
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((link
@@ -399,8 +403,7 @@ libraries.  It is also a bit like @code{ldd} and @code{otool -L}.")
                (link "zlib" "usr/lib/julia/" "libz\\.so")
                (link "libunwind" "usr/lib/julia/" "libunwind\\.so")
                (symlink (string-append (assoc-ref inputs "p7zip") "/bin/7z")
-                        "usr/libexec/7z")
-               #t)))
+                        "usr/libexec/7z"))))
          (add-after 'install 'symlink-llvm-utf8proc
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -415,8 +418,7 @@ libraries.  It is also a bit like @code{ldd} and @code{otool -L}.")
                         (find-files (string-append (assoc-ref inputs pkgname)
                                                    "/lib") pred)))))
                (link "llvm" "libLLVM-11jl\\.so")
-               (link "utf8proc" "libutf8proc\\.so")
-               #t)))
+               (link "utf8proc" "libutf8proc\\.so"))))
          (add-after 'install 'make-wrapper
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -427,8 +429,7 @@ libraries.  It is also a bit like @code{ldd} and @code{otool -L}.")
                    `("JULIA_LOAD_PATH" ":" prefix
                      ("" "$JULIA_LOAD_PATH"))
                    `("JULIA_DEPOT_PATH" ":" prefix
-                     ("" "$JULIA_DEPOT_PATH"))))
-               #t))))
+                     ("" "$JULIA_DEPOT_PATH"))))))))
        #:make-flags
        (list
         (string-append "prefix=" (assoc-ref %outputs "out"))
@@ -504,7 +505,7 @@ libraries.  It is also a bit like @code{ldd} and @code{otool -L}.")
        ("gfortran:lib" ,gfortran "lib")
        ("gmp" ,gmp)
        ("lapack" ,lapack)
-       ("libgit2" ,libgit2)
+       ("libgit2" ,libgit2-1.1)
        ("libnghttp2" ,nghttp2 "lib")
        ("libssh2" ,libssh2)
        ("libunwind" ,libunwind-julia)
