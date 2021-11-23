@@ -1562,13 +1562,13 @@ you call it again with the same arguments it returns the pre-computed value.")
 (define-public r-crayon
   (package
     (name "r-crayon")
-    (version "1.4.1")
+    (version "1.4.2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "crayon" version))
               (sha256
                (base32
-                "1ir963s6zk9l32fw257y54p7898cd7z7yazkn9h6j2cdfhpf9dh8"))))
+                "0mxq87qsvz5znfncrb6yjchzv6iwpn9lr386i02y6xiycizkjd7f"))))
     (build-system r-build-system)
     (home-page "https://github.com/gaborcsardi/crayon")
     (synopsis "Colored terminal output for R")
