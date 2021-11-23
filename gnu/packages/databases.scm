@@ -3746,7 +3746,7 @@ the SQL language using a syntax that reflects the resulting query.")
 (define-public apache-arrow
   (package
     (name "apache-arrow")
-    (version "5.0.0")
+    (version "6.0.1")
     (source
      (origin
        (method git-fetch)
@@ -3756,7 +3756,7 @@ the SQL language using a syntax that reflects the resulting query.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0275aayzy78nbxzbj93w5152sv5q2c7020ijxnf8b58v9qwfxzz0"))))
+         "0mcw361akqw4sxnnpnr9c9v1zk4hphk6gcq763pcb19yzljh88ig"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f
@@ -3794,6 +3794,10 @@ the SQL language using a syntax that reflects the resulting query.")
              ;; have this feature
              "-DARROW_DEPENDENCY_SOURCE=SYSTEM"
              "-Dxsimd_SOURCE=SYSTEM"
+
+             "-DARROW_RUNTIME_SIMD_LEVEL=NONE"
+             "-DARROW_SIMD_LEVEL=NONE"
+             "-DARROW_PACKAGE_KIND=Guix"
 
              ;; Split output into its component packages.
              (string-append "-DCMAKE_INSTALL_PREFIX="
@@ -3836,23 +3840,25 @@ the SQL language using a syntax that reflects the resulting query.")
              ;;"-DBENCHMARK_ENABLE_TESTING=OFF"
              "-DARROW_BUILD_STATIC=OFF")))
     (inputs
-     `(("apache-thrift" ,apache-thrift "lib")
-       ("boost" ,boost)
+     `(("boost" ,boost)
        ("brotli" ,brotli)
        ("bzip2" ,bzip2)
        ("double-conversion" ,double-conversion)
        ("gflags" ,gflags)
        ("glog" ,glog)
        ("grpc" ,grpc)
-       ("lz4" ,lz4)
        ("protobuf" ,protobuf)
        ("python-3" ,python)
        ("python-numpy" ,python-numpy)
        ("rapidjson" ,rapidjson)
        ("re2" ,re2)
        ("snappy" ,snappy)
+       ("xsimd" ,xsimd)))
+    ;; These are all listed under Requires.private in arrow.pc
+    (propagated-inputs
+     `(("apache-thrift" ,apache-thrift "lib")
+       ("lz4" ,lz4)
        ("utf8proc" ,utf8proc)
-       ("xsimd" ,xsimd)
        ("zlib" ,zlib)
        ("zstd" ,zstd "lib")))
     (native-inputs
