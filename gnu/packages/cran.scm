@@ -2659,14 +2659,14 @@ punctuation.")
 (define-public r-crosstalk
   (package
     (name "r-crosstalk")
-    (version "1.1.1")
+    (version "1.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "crosstalk" version))
        (sha256
         (base32
-         "1n6c6s7a6yxiwvva71x6bzcrim8xprl5s01fqiy61yq0y3vk8cpd"))))
+         "180y7mhpj17axpadwhh7s0qvrpdnag7g977vk256l96d6nmvlds2"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-htmltools" ,r-htmltools)
