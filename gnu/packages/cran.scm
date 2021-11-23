@@ -7391,17 +7391,18 @@ evaluated by the @dfn{Akaike Information Criterion} (AIC).")
 (define-public r-arules
   (package
     (name "r-arules")
-    (version "1.6-8")
+    (version "1.7-1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "arules" version))
        (sha256
         (base32
-         "1gy6wrys1qqik65dyr325hdbfmd3fx9a2lzdnrr29g751hprjx2l"))))
+         "0zzwr1mg92ha5l6razdb04da8ik3z3k74rm0rah44l1j2a6d30sk"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-matrix" ,r-matrix)))
+     `(("r-generics" ,r-generics)
+       ("r-matrix" ,r-matrix)))
     (home-page "https://github.com/mhahsler/arules")
     (synopsis "Mining association rules and frequent itemsets")
     (description
