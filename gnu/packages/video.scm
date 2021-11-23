@@ -54,6 +54,7 @@
 ;;; Copyright © 2021 Raghav Gururajan <rg@raghavgururajan.name>
 ;;; Copyright © 2021 Petr Hodina <phodina@protonmail.com>
 ;;; Copyright © 2021 Robin Templeton <robin@terpri.org>
+;;; Copyright © 2021 Aleksandr Vityazev <avityazev@posteo.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3584,14 +3585,15 @@ scaling and VA-API (if available) to accelerate video decoding.")
 (define-public recordmydesktop
   (package
     (name "recordmydesktop")
-    (version "0.3.8.1")
+    (version "0.4.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/" name "/" name "/"
-                                  version "/recordmydesktop-" version ".tar.gz"))
+              (uri (string-append "https://github.com/Enselic/"
+                                  name "/releases/download/v" version
+                                  "/recordmydesktop-" version ".tar.gz"))
               (sha256
                (base32
-                "133kkl5j0r877d41bzj7kj0vf3xm8x80yyx2n8nqxrva304f58ik"))))
+                "17kjgmkl45zma64a5dg1hyvnjkzk4vl8milgi6ic7hlsbmywpig7"))))
     (build-system gnu-build-system)
     (inputs `(("popt" ,popt)
               ("zlib" ,zlib)
@@ -3604,7 +3606,7 @@ scaling and VA-API (if available) to accelerate video decoding.")
               ("alsa-lib" ,alsa-lib)
               ("libvorbis" ,libvorbis)
               ("libtheora" ,libtheora)))
-    (home-page "http://recordmydesktop.sourceforge.net/")
+    (home-page "https://enselic.github.io/recordmydesktop/")
     (synopsis "Desktop session video recorder")
     (description
      "recordMyDesktop is a command-line tool that captures the activity in
