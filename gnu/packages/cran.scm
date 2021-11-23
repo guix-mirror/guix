@@ -8485,14 +8485,14 @@ results to the user.")
 (define-public r-hdf5r
   (package
     (name "r-hdf5r")
-    (version "1.3.4")
+    (version "1.3.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "hdf5r" version))
        (sha256
         (base32
-         "0lxbdw1xf5yp82fkdj4wzp5mslay3qxd65459vh09dj131h5gl34"))))
+         "0bv2q4ir73sbk5ra2q4mc8wbcmiwkws8k0mjlnx9ysi2mdrm3dw7"))))
     (build-system r-build-system)
     (inputs
      `(("hdf5" ,hdf5)
