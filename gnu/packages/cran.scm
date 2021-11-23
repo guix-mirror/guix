@@ -21336,14 +21336,14 @@ discussed in Reisen et al. (2017) @url{doi:10.1016/j.jspi.2017.02.008}.")
 (define-public r-gamlss-data
   (package
     (name "r-gamlss-data")
-    (version "6.0-1")
+    (version "6.0-2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "gamlss.data" version))
        (sha256
         (base32
-         "1cjb2n5i5mnhmb5qbqycdbfg65j7nxb9s74yihqs9kpa39byrzcq"))))
+         "07mpdl4h9rwmnpl9jmsn6ig8ji11an6pyjfsvg62h2alapwbdcyv"))))
     (properties `((upstream-name . "gamlss.data")))
     (build-system r-build-system)
     (home-page "http://www.gamlss.org/")
