@@ -2225,8 +2225,10 @@ instance."
                      (and device
                           (begin
                             (restart-on-EINTR (swapon device
-                                                      #$(swap-space->flags-bit-mask
-                                                         swap)))
+                                                      #$(if (swap-space? swap)
+                                                            (swap-space->flags-bit-mask
+                                                             swap)
+                                                            0)))
                             #t)))))
         (stop #~(lambda _
                   (let ((device #$device-lookup))
