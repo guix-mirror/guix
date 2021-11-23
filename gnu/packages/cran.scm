@@ -28700,20 +28700,19 @@ goal of enhancing interoperability between Seurat and Scanpy.")
 (define-public r-phangorn
   (package
     (name "r-phangorn")
-    (version "2.7.1")
+    (version "2.8.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "phangorn" version))
        (sha256
         (base32
-         "160kks4bg4iwy8g234g6aiiqbvz7ki5k9csyax3kjv7ia5wddafq"))))
+         "1pg5lfc5m4ccphswbfbihj91ppmqhf4084kbjlmfsrqxylsyy8ch"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ape" ,r-ape)
        ("r-fastmatch" ,r-fastmatch)
        ("r-igraph" ,r-igraph)
-       ("r-magrittr" ,r-magrittr)
        ("r-matrix" ,r-matrix)
        ("r-quadprog" ,r-quadprog)
        ("r-rcpp" ,r-rcpp)))
