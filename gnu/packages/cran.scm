@@ -4877,20 +4877,21 @@ by base R methods related to model fitting.")
 (define-public r-broom
   (package
     (name "r-broom")
-    (version "0.7.9")
+    (version "0.7.10")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "broom" version))
        (sha256
         (base32
-         "1z65qyhkhkyalxhrvpsa7n8pickj9fjs8r4gzdvjp2rpggwramhx"))))
+         "0ks64xwkaqh5cinq8j56d89rn9kipm7cdipsgqmz9xxy7ajxb7qj"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-backports" ,r-backports)
        ("r-dplyr" ,r-dplyr)
        ("r-ellipsis" ,r-ellipsis)
        ("r-generics" ,r-generics)
+       ("r-ggplot2" ,r-ggplot2)
        ("r-glue" ,r-glue)
        ("r-purrr" ,r-purrr)
        ("r-rlang" ,r-rlang)
