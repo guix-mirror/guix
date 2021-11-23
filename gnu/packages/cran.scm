@@ -581,6 +581,31 @@ ordered indexed observations.  It is particularly aimed at irregular time
 series of numeric vectors/matrices and factors.")
     (license license:gpl2+)))
 
+(define-public r-fontawesome
+  (package
+    (name "r-fontawesome")
+    (version "0.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "fontawesome" version))
+       (sha256
+        (base32 "0r6zb5175cr4ybqj6bl0mbhadwv9xjxaf32yjc0y76rw3d6vcbap"))))
+    (properties `((upstream-name . "fontawesome")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-htmltools" ,r-htmltools)
+       ("r-rlang" ,r-rlang)))
+    (home-page "https://github.com/rstudio/fontawesome")
+    (synopsis "Easily work with Font Awesome icons")
+    (description
+     "Easily and flexibly insert Font Awesome icons into R Markdown documents
+and Shiny apps.  These icons can be inserted into HTML content through inline
+SVG tags or @code{i} tags.  There is also a utility function for exporting
+Font Awesome icons as PNG images for those situations where raster graphics
+are needed.")
+    (license license:expat)))
+
 (define-public r-fingerprint
   (package
     (name "r-fingerprint")
