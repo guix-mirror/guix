@@ -23797,14 +23797,14 @@ character codes as well as the UN M.49 area codes.")
 (define-public r-stopwords
   (package
     (name "r-stopwords")
-    (version "2.2")
+    (version "2.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "stopwords" version))
        (sha256
         (base32
-         "1f862y30c4r0phamlp7shzkpxg0vh3i410xy0336w310hv3wqsxn"))))
+         "1ci1cgxrcvlhhplximsfv0plvjdbcd5kv0nphxnpildsn5m1rv65"))))
     (properties `((upstream-name . "stopwords")))
     (build-system r-build-system)
     (propagated-inputs
