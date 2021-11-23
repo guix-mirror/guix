@@ -8367,7 +8367,8 @@ library.")
                 "gdm-default-session.patch"
                 "gdm-elogind-support.patch"
                 "gdm-remove-hardcoded-xwayland-path.patch"
-                "gdm-wayland-session-wrapper-from-env.patch"))))
+                "gdm-wayland-session-wrapper-from-env.patch"
+                "gdm-pass-gdk-pixbuf-loader-env.patch"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t

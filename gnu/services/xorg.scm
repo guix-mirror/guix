@@ -49,6 +49,7 @@
   #:use-module (gnu packages admin)
   #:use-module (gnu packages bash)
   #:use-module (gnu system shadow)
+  #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system trivial)
   #:use-module (guix gexp)
   #:use-module (guix store)
@@ -1004,6 +1005,9 @@ the GNOME desktop environment.")
                            ;; cursors.  gdm doesn't login so doesn't source
                            ;; the corresponding line in /etc/profile.
                            "XCURSOR_PATH=/run/current-system/profile/share/icons"
+                           (string-append
+                            "GDK_PIXBUF_MODULE_FILE="
+                            #$gnome-shell "/" #$%gdk-pixbuf-loaders-cache-file)
                            (string-append
                             "GDM_WAYLAND_SESSION="
                             #$(gdm-configuration-wayland-session config))))))
