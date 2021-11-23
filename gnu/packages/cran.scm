@@ -11822,18 +11822,17 @@ Rcpp, RStudio projects, and more.")
 (define-public r-sessioninfo
   (package
     (name "r-sessioninfo")
-    (version "1.1.1")
+    (version "1.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sessioninfo" version))
        (sha256
         (base32
-         "0j5f3l58fynxx3v0w62vqpii7miabszgljpja36xx9s8hikh8sqn"))))
+         "0w3vhp652524348a4cfyvvs8z9xpxkcznw8x406nvkwfh0gdyka2"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-cli" ,r-cli)
-       ("r-withr" ,r-withr)))
+     `(("r-cli" ,r-cli)))
     (home-page "https://github.com/r-lib/sessioninfo#readme")
     (synopsis "R session information")
     (description
