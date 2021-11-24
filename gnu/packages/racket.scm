@@ -529,7 +529,7 @@ Chez Scheme.")
          (delete 'install))
        ;; we still don't have these:
        #:tests? #f))
-    (synopsis "A programmable programming language in the Scheme family")
+    (synopsis "Programmable programming language in the Scheme family")
     (description
      "Racket is a general-purpose programming language in the Scheme family,
 with a large set of libraries and a compiler based on Chez Scheme.  Racket is
