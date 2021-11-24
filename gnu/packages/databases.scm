@@ -614,9 +614,6 @@ around TangentOrg’s libmemcached library, and can be used as a drop-in
 replacement for the code@{python-memcached} library.")
     (license license:bsd-3)))
 
-(define-public python2-pylibmc
-  (package-with-python2 python-pylibmc))
-
 (define-public litecli
  (package
   (name "litecli")
