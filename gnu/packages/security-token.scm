@@ -161,9 +161,11 @@ readers and is needed to communicate with such devices through the
                (("/bin/sh") (which "sh"))
                (("^(GITDESC=).*" _ match) (string-append match ,version "\n")))
              (invoke "sh" "./bootstrap.sh"))))))
-    (synopsis "Belgian eID Middleware")
-    (description "The Belgian eID Middleware is required to authenticate with
-online services using the Belgian electronic identity card.")
+    (synopsis "Belgian electronic identity card (eID) middleware")
+    (description "The Belgian eID middleware is required to authenticate with
+online services and sign digital documents with Belgian identity cards.
+
+It requires a running pcscd service and a compatible card reader.")
     (home-page "https://github.com/Fedict/eid-mw")
     (license license:lgpl3)))
 
