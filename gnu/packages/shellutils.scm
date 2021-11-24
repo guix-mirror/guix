@@ -543,6 +543,35 @@ site/BBS/person you are giving the information to tries to cross-check the
 city, state, zip, or area code, it will check out.")
     (license license:gpl2+)))
 
+(define-public conflict
+  (package
+    (name "conflict")
+    (version "20210108")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://invisible-mirror.net/archives/conflict/conflict-"
+                    version ".tgz"))
+              (sha256
+               (base32
+                "0mls4climvp7v9hnc3zh01mh270kqcj797ng0xslwb027lipis4h"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-paths
+           (lambda _
+             (substitute* "run_test.sh"
+               (("PATH=\".:\\$BIN:/bin\"")
+                "PATH=\".:$BIN:$PATH\"")))))))
+    (home-page "https://invisible-island.net/conflict/conflict.html")
+    (synopsis "Displays conflicting filenames in your execution path")
+    (description
+     "@code{conflict} examines the user-specifiable list of programs, looking
+for instances in the user's path which conflict (i.e., the name appears in
+more than one point in the path).")
+    (license (license:x11-style "file://COPYING"))))
+
 (define-public renameutils
   (package
     (name "renameutils")
