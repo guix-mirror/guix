@@ -56,6 +56,7 @@
   #:use-module (gnu packages backup)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
+  #:use-module (gnu packages build-tools)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cups)
@@ -650,7 +651,8 @@ by using the poppler rendering engine.")
             (files '("lib/zathura")))))
     (build-system meson-build-system)
     (arguments
-     `(#:phases (modify-phases %standard-phases
+     `(#:meson ,meson-0.59
+       #:phases (modify-phases %standard-phases
                   (add-before 'check 'start-xserver
                     ;; Tests require a running X server.
                     (lambda* (#:key inputs #:allow-other-keys)
