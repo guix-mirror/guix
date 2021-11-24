@@ -2937,6 +2937,9 @@ the command line.")
     (inputs
       `(("libpcap" ,libpcap)
         ("ncurses" ,ncurses)))
+    (arguments
+      ;; Fix build failure with GCC 10
+     '(#:configure-flags '("CFLAGS=-fcommon")))
     (synopsis "Monitor network usage")
     (description "Iftop does for network usage what @command{top} does
 for CPU usage.  It listens to network traffic on a named interface and
