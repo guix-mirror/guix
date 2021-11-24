@@ -107,6 +107,7 @@
   #:use-module (gnu packages language)
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages libevent)
+  #:use-module (gnu packages libffi)
   #:use-module (gnu packages libidn)
   #:use-module (gnu packages libunistring)
   #:use-module (gnu packages libunwind)
@@ -1510,6 +1511,21 @@ and search library.")
 
 (define-public python2-notmuch
   (package-with-python2 python-notmuch))
+
+(define-public python-notmuch2
+  (package
+    (inherit python-notmuch)
+    (name "python-notmuch2")
+    (propagated-inputs `(("python-cffi" ,python-cffi)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; This python package lives in a subdirectory of the notmuch source
+         ;; tree, so chdir into it before building.
+         (add-after 'unpack 'enter-python-dir
+           (lambda _ (chdir "bindings/python-cffi"))))))
+    (synopsis "Pythonic bindings for the notmuch mail database using CFFI")
+    (license license:gpl3+)))
 
 (define-public muchsync
   (package
