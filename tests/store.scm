@@ -942,6 +942,40 @@
                (build-derivations s (list d))
                #f))))))
 
+(test-equal "substitute query and large size"
+  (+ 100 (expt 2 63))                     ;<https://issues.guix.gnu.org/51983>
+  (with-store s
+    (let* ((size (+ 100 (expt 2 63)))      ;does not fit in signed 'long long'
+           (item (string-append (%store-prefix)
+                                "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-bad-size")))
+      ;; Create fake substituter data, to be read by 'guix substitute'.
+      (call-with-output-file (string-append (%substitute-directory)
+                                            "/" (store-path-hash-part item)
+                                            ".narinfo")
+        (lambda (port)
+          (format port "StorePath: ~a
+URL: http://example.org
+Compression: none
+NarSize: ~a
+NarHash: sha256:0fj9vhblff2997pi7qjj7lhmy7wzhnjwmkm2hmq6gr4fzmg10s0w
+References: 
+System: x86_64-linux~%"
+                  item size)))
+
+      ;; Remove entry from the local cache.
+      (false-if-exception
+       (delete-file-recursively (string-append (getenv "XDG_CACHE_HOME")
+                                               "/guix/substitute")))
+
+      ;; Make sure 'guix substitute' correctly communicates the above
+      ;; data.
+      (set-build-options s #:use-substitutes? #t
+                         #:substitute-urls (%test-substitute-urls))
+      (match (pk 'spi (substitutable-path-info s (list item)))
+        (((? substitutable? s))
+         (and (equal? (substitutable-path s) item)
+              (substitutable-nar-size s)))))))
+
 (test-assert "export/import several paths"
   (let* ((texts (unfold (cut >= <> 10)
                         (lambda _ (random-text))

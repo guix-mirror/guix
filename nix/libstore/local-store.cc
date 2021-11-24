@@ -907,8 +907,8 @@ void LocalStore::querySubstitutablePathInfos(PathSet & paths, SubstitutablePathI
             assertStorePath(p);
             info.references.insert(p);
         }
-        info.downloadSize = getIntLineFromSubstituter<long long>(run);
-        info.narSize = getIntLineFromSubstituter<long long>(run);
+        info.downloadSize = getIntLineFromSubstituter<unsigned long long>(run);
+        info.narSize = getIntLineFromSubstituter<unsigned long long>(run);
     }
 }
 
