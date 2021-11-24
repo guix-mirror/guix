@@ -4845,6 +4845,17 @@ library.")
               (patches
                (search-patches "glib-networking-gnutls-binding.patch"))))
     (build-system meson-build-system)
+    (arguments
+     (if (target-64bit?)
+         '()
+         (list #:phases
+               #~(modify-phases %standard-phases
+                   (add-after 'unpack 'work-around-32-bit-time-t
+                     (lambda _
+                       (invoke "patch" "--force" "-p1" "-i"
+                               #$(local-file
+                                  (search-patch
+                                   "glib-networking-32-bit-time.patch")))))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("gettext" ,gettext-minimal)))

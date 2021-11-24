@@ -1129,6 +1129,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/glade-test-widget-null-icon.patch	\
   %D%/packages/patches/glib-appinfo-watch.patch			\
   %D%/packages/patches/glib-networking-gnutls-binding.patch	\
+  %D%/packages/patches/glib-networking-32-bit-time.patch	\
   %D%/packages/patches/glib-skip-failing-test.patch		\
   %D%/packages/patches/glibc-CVE-2018-11236.patch		\
   %D%/packages/patches/glibc-CVE-2018-11237.patch		\
