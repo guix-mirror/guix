@@ -18360,7 +18360,8 @@ variable portably in Common Lisp.")
       (native-inputs
        `(("lift" ,sbcl-lift)))
       (arguments
-       `(#:phases
+       `(#:tests? #f ; FIXME: Tests get stuck indefinitly
+         #:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'fix-paths
              (lambda* (#:key inputs outputs #:allow-other-keys)
