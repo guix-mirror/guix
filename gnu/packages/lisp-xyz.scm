@@ -1775,8 +1775,7 @@ satisfying the test.")
              version ".tgz"))
        (sha256
         (base32
-         "06mf8wn95yf5swhmzk4vp0xr4ylfl33dgfknkabbkd8n6jns8gcf"))
-       (file-name (string-append "colorize" version "-checkout"))))
+         "06mf8wn95yf5swhmzk4vp0xr4ylfl33dgfknkabbkd8n6jns8gcf"))))
     (build-system asdf-build-system/sbcl)
     (synopsis "Common Lisp library for encoding text in various web-savvy encodings")
     (description
