@@ -1240,7 +1240,7 @@ attachments, create new maildirs, and so on.")
 (define-public alot
   (package
     (name "alot")
-    (version "0.9.1")
+    (version "0.10")
     (source (origin
               (method git-fetch)
               ;; package author intends on distributing via github rather
@@ -1252,7 +1252,7 @@ attachments, create new maildirs, and so on.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0s94m17yph1gq9f2svipb3bbwbw1s4j3zf2xkg5h91006v8286r6"))))
+                "0awf1phdy1wqm01cy9zmvqlw6c8pvkxm2f9ncjd0cmzxqnmq1dyn"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -1288,7 +1288,7 @@ attachments, create new maildirs, and so on.")
        ("python-urwid" ,python-urwid)
        ("python-urwidtrees" ,python-urwidtrees)
        ("python-gpg" ,python-gpg)
-       ("python-notmuch" ,python-notmuch)))
+       ("python-notmuch2" ,python-notmuch2)))
     (home-page "https://github.com/pazz/alot")
     (synopsis "Command-line MUA using Notmuch")
     (description
