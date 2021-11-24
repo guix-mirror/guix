@@ -3182,6 +3182,29 @@ many additional enhancements, including:
                    license:gpl2)))) ; OMake itself, with ocaml linking exception
                                     ; see LICENSE.OMake
 
+(define-public ocaml-benchmark
+  (package
+    (name "ocaml-benchmark")
+    (version "1.6")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/Chris00/ocaml-benchmark")
+               (commit version)))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0d0vdfjgjzf1y6wkd714d8b0piv1z9qav5ahsapynqzk4b4ahhnp"))))
+    (build-system dune-build-system)
+    (arguments `(#:test-target "tests"))
+    (home-page "https://github.com/Chris00/ocaml-benchmark")
+    (synopsis "Benchmark running times of code")
+    (description
+      "This module provides a set of tools to measure the running times of
+your functions and to easily compare the results.  A statistical test
+is used to determine whether the results truly differ.")
+    (license license:lgpl3+)))
+
 (define-public ocaml-batteries
   (package
     (name "ocaml-batteries")
