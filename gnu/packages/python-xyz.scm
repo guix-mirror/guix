@@ -18185,26 +18185,27 @@ builds partial trees by inspecting living objects.")
         (base32
          "0fir4b67sm7shcacah9n61pvq313m523jb4q80sycrh3p8nmi6zw"))))
     (arguments
-      (substitute-keyword-arguments (package-arguments base)
-        ((#:phases phases)
-         `(modify-phases ,phases
-            (add-after 'unpack 'remove-spurious-test
-              (lambda _
-                ;; https://github.com/PyCQA/astroid/issues/276
-                (delete-file "astroid/tests/unittest_brain.py")
-                #t))
-            (replace 'check
-              (lambda _
-                (invoke"python" "-m" "unittest" "discover"
-                                "-p" "unittest*.py")))))))
+     `(#:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-spurious-test
+           (lambda _
+             ;; https://github.com/PyCQA/astroid/issues/276
+             (delete-file "astroid/tests/unittest_brain.py")))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "python" "-m" "unittest" "discover"
+                       "-p" "unittest*.py")))))))
     (native-inputs `())
     (propagated-inputs
-      `(("python2-backports-functools-lru-cache"
-         ,python2-backports-functools-lru-cache)
-        ("python2-enum34" ,python2-enum34)
-        ("python2-singledispatch" ,python2-singledispatch)
-        ,@(alist-delete "python-typed-ast"
-                        (package-propagated-inputs base)))))))
+     `(("python2-backports-functools-lru-cache"
+        ,python2-backports-functools-lru-cache)
+       ("python2-enum34" ,python2-enum34)
+       ("python2-lazy-object-proxy" ,python2-lazy-object-proxy)
+       ("python2-singledispatch" ,python2-singledispatch)
+       ("python2-six" ,python2-six)
+       ("python2-wrapt" ,python2-wrapt))))))
 
 (define-public python-isbnlib
   (package
