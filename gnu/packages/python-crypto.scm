@@ -542,6 +542,13 @@ message digests and key derivation functions.")
   (let ((crypto (package-with-python2
                  (strip-python2-variant python-cryptography))))
     (package/inherit crypto
+      (arguments
+       `(#:python ,python-2
+         #:phases
+         (modify-phases %standard-phases
+           ;; The sanity-check attempts attempts to import the non-existent
+           ;; modules "_openssl" and "_padding".
+           (delete 'sanity-check))))
       (propagated-inputs
        `(("python2-ipaddress" ,python2-ipaddress)
          ("python2-backport-ssl-match-hostname"
