@@ -1040,9 +1040,9 @@ antialiased TrueType font rendering using CLX and XRender extension.")
            (add-after 'create-asdf-configuration 'build-image
              (lambda* (#:key outputs #:allow-other-keys)
                (build-image (string-append
-                             (assoc-ref %outputs "image")
+                             (assoc-ref outputs "image")
                              "/bin/slynk")
-                            %outputs
+                            outputs
                             #:dependencies '("slynk"
                                              "slynk/arglists"
                                              "slynk/fancy-inspector"
