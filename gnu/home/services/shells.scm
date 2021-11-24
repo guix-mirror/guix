@@ -390,7 +390,9 @@ then
 fi
 
 # Source the system-wide file.
-source /etc/bashrc
+if [[ -e /etc/bashrc ]]; then
+    source /etc/bashrc
+fi
 
 # Adjust the prompt depending on whether we're in 'guix environment'.
 if [ -n \"$GUIX_ENVIRONMENT\" ]
