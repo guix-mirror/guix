@@ -221,15 +221,23 @@ colors, styles, options and details.")
        ("perl" ,perl)
        ("texinfo" ,texinfo)             ;For generating documentation
        ;; For the manual and the tests.
-       ("texlive" ,(texlive-updmap.cfg (list texlive-amsfonts
-                                        texlive-epsf
-                                        texlive-etoolbox
-                                        texlive-latex-base
-                                        texlive-latex-geometry
-                                        texlive-latex-graphics
-                                        texlive-oberdiek ;for ifluatex
-                                        texlive-latex-parskip
-                                        texlive-tex-texinfo)))))
+       ("texlive" ,(texlive-updmap.cfg
+                    (list texlive-amsfonts
+                          texlive-dvips-l3backend
+                          texlive-epsf
+                          texlive-etoolbox
+                          texlive-fonts-ec
+                          texlive-generic-infwarerr
+                          texlive-generic-kvdefinekeys
+                          texlive-grfext
+                          texlive-latex-base
+                          texlive-latex-geometry
+                          texlive-latex-graphics
+                          texlive-latex-kvoptions
+                          texlive-latex-pdftexcmds
+                          texlive-oberdiek ;for ifluatex
+                          texlive-latex-parskip
+                          texlive-tex-texinfo)))))
     (inputs
      `(("fftw" ,fftw)
        ("freeglut" ,freeglut)
