@@ -976,6 +976,50 @@ System: x86_64-linux~%"
          (and (equal? (substitutable-path s) item)
               (substitutable-nar-size s)))))))
 
+(test-equal "substitute and large size"
+  (+ 100 (expt 2 31))                     ;<https://issues.guix.gnu.org/46212>
+  (with-store s
+    (let* ((size (+ 100 (expt 2 31)))            ;does not fit in signed 'int'
+           (item (string-append (%store-prefix)
+                                "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-bad-size-"
+                                (random-text)))
+           (nar  (string-append (%substitute-directory) "/nar")))
+      ;; Create a dummy nar to allow for substitution.
+      (call-with-output-file nar
+        (lambda (port)
+          (write-file-tree (store-path-package-name item) port
+                           #:file-type+size (lambda _
+                                              (values 'regular 12))
+                           #:file-port (lambda _
+                                         (open-input-string "Hello world.")))))
+
+      ;; Create fake substituter data, to be read by 'guix substitute'.
+      (call-with-output-file (string-append (%substitute-directory)
+                                            "/" (store-path-hash-part item)
+                                            ".narinfo")
+        (lambda (port)
+          (format port "StorePath: ~a
+URL: file://~a
+Compression: none
+NarSize: ~a
+NarHash: sha256:~a
+References: 
+System: x86_64-linux~%"
+                  item nar size
+                  (bytevector->nix-base32-string (gcrypt:file-sha256 nar)))))
+
+      ;; Remove entry from the local cache.
+      (false-if-exception
+       (delete-file-recursively (string-append (getenv "XDG_CACHE_HOME")
+                                               "/guix/substitute")))
+
+      ;; Make sure 'guix substitute' correctly communicates the above
+      ;; data.
+      (set-build-options s #:use-substitutes? #t
+                         #:substitute-urls (%test-substitute-urls))
+      (ensure-path s item)
+      (path-info-nar-size (query-path-info s item)))))
+
 (test-assert "export/import several paths"
   (let* ((texts (unfold (cut >= <> 10)
                         (lambda _ (random-text))
