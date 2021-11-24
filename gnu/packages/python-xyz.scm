@@ -9612,7 +9612,14 @@ Python 2 and Python 3.")
     (license license:psfl)))
 
 (define-public python2-backports-csv
-  (package-with-python2 python-backports-csv))
+  (package
+    (inherit (package-with-python2 python-backports-csv))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; The sanity-check attempts attempts to import the non-existent
+         ;; module "backports".
+         (delete 'sanity-check))))))
 
 (define-public python2-backports-shutil-get-terminal-size
   (package
