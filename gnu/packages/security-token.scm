@@ -145,7 +145,12 @@ readers and is needed to communicate with such devices through the
        ("cyrus-sasl" ,cyrus-sasl)))
     (arguments
      `(#:configure-flags
-       (list "--disable-static")
+       (list "--disable-static"
+
+             ;; With the (prettier) pinentry enabled, eid-viewer will skip
+             ;; crucial dialogue when used with card readers with built-in
+             ;; keypads such as the Digipass 870, and possibly others too.
+             "--disable-pinentry")
        #:phases
        (modify-phases %standard-phases
          (replace 'bootstrap
