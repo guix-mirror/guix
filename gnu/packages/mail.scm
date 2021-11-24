@@ -28,7 +28,7 @@
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2018, 2019, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2019, 2020 Tanguy Le Carrour <tanguy@bioneland.org>
+;;; Copyright © 2019, 2020, 2021 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Justus Winter <justus@sequoia-pgp.org>
 ;;; Copyright © 2020 Eric Brown <ecbrown@ericcbrown.com>
@@ -1349,14 +1349,14 @@ invoking @command{notifymuch} from the post-new hook.")
 (define-public notmuch
   (package
     (name "notmuch")
-    (version "0.33.2")
+    (version "0.34.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://notmuchmail.org/releases/notmuch-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1bic1f2va136aygfy53bsgziwiidcpb7qf1v05mlza2jmgv94j14"))))
+                "05nq64gp8vnrwrl22d60v7ixgdhm9339ajhcdfkq0ll1qiycyyj5"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
