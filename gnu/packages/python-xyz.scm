@@ -3807,9 +3807,6 @@ visualisation and class tracker statistics.")
 environments and back.")
     (license license:bsd-3)))
 
-(define-public python2-itsdangerous
-  (package-with-python2 python-itsdangerous))
-
 (define-public python-pyyaml
   (package
     (name "python-pyyaml")
