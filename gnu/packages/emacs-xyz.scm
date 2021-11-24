@@ -13989,13 +13989,13 @@ containing words from the Rime project.")
 (define-public emacs-pyim
   (package
     (name "emacs-pyim")
-    (version "3.9.4")
+    (version "3.9.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/pyim-" version ".tar"))
        (sha256
-        (base32 "0ggnl2jidcklyhqd5av5kk1f855gsq29wq2nhvp1yjzn35hz6xij"))))
+        (base32 "1dj46yprbl3l6n83aj0hsnd0rwjcp4ypyg2nhwig39wxirwlf9an"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-async" ,emacs-async)
