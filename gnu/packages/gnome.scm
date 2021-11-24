@@ -11450,8 +11450,7 @@ join_paths\\('build-aux', 'post_install.py'\\)\\)")
                   (add-before 'check 'setup-xvfb
                     (lambda _
                       (system "Xvfb :1 &")
-                      (setenv "DISPLAY" ":1")
-                      #t)))))
+                      (setenv "DISPLAY" ":1"))))))
     (inputs
      `(("enchant" ,enchant)
        ("folks" ,folks)
