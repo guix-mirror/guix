@@ -1171,6 +1171,29 @@ for credentials or a passphrase, for example to authenticate with a server or
 read a protected key.")
     (license license:expat)))
 
+(define-public r-astsa
+  (package
+    (name "r-astsa")
+    (version "1.14")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "astsa" version))
+       (sha256
+        (base32 "09zx2q419p0b1c336ybh4i62v5dvn3sp39dxn5kwlrqchjj7f5z6"))))
+    (properties `((upstream-name . "astsa")))
+    (build-system r-build-system)
+    (home-page "https://github.com/nickpoison/astsa/")
+    (synopsis "Applied statistical time series analysis")
+    (description
+     "This package provides data sets and scripts to accompany Time Series
+Analysis and Its Applications: With R Examples (4th ed), by R.H. Shumway and
+D.S. Stoffer.  Springer Texts in Statistics, 2017,
+@url{https://doi.org/10.1007/978-3-319-52452-8}, and Time Series: A Data
+Analysis Approach Using R.  Chapman-Hall, 2019,
+@url{https://doi.org/10.1201/9780429273285}.")
+    (license license:gpl3)))
+
 (define-public r-vegan
   (package
     (name "r-vegan")
