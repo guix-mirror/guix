@@ -935,7 +935,7 @@ Mercator, Mollweide, Peters, polyconic, orthographic and rectangular.")
        ("goocanvas" ,goocanvas)
        ("gtk+" ,gtk+)))
     (arguments
-     `(#:configure-flags '("CFLAGS=-fcommon")
+     `(#:configure-flags '("CFLAGS=-O2 -g -fcommon")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-tests
