@@ -4854,6 +4854,8 @@ working with @acronym{URIs,Uniform Resource Identifiers}, as defined in RFC
        (sha256
         (base32 "10qwscd15dnmvx116dwvg99m7kmwgmj5ahdkq7psiq48lcc554gq"))))
     (build-system julia-build-system)
+    (arguments
+     `(#:parallel-tests? #f))
     (propagated-inputs
      `(("julia-constructionbase" ,julia-constructionbase)))
     (home-page "https://painterqubits.github.io/Unitful.jl/stable/")
