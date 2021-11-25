@@ -2195,7 +2195,7 @@ Every puzzle has a complete solution, although there may be more than one.")
           (lambda* (#:key inputs #:allow-other-keys)
             (setenv "CPATH"
                     (string-append
-                     (search-input-file inputs "/include/SDL")
+                     (search-input-directory inputs "/include/SDL")
                      ":" (or (getenv "CPATH") ""))))))))
    (inputs
     `(("fluidsynth" ,fluidsynth)
@@ -3037,7 +3037,7 @@ properly.")
                     (lambda* (#:key inputs #:allow-other-keys)
                       (setenv "CPATH"
                               (string-append
-                               (search-input-file inputs "include/SDL")
+                               (search-input-directory inputs "include/SDL2")
                                ":" (or (getenv "CPATH") "")))))
                   (add-after 'patch-source-shebangs 'patch-makefile
                     (lambda* (#:key outputs #:allow-other-keys)
@@ -4857,7 +4857,7 @@ http://lavachat.symlynx.com/unix/")
              (lambda* (#:key inputs #:allow-other-keys)
                (setenv "CPATH"
                        (string-append
-                        (search-input-file inputs "/include/SDL2")
+                        (search-input-directory inputs "/include/SDL2")
                         ":" (or (getenv "CPATH") "")))))
            (add-after 'install 'copy-data
              (lambda* (#:key outputs #:allow-other-keys)
@@ -8642,7 +8642,7 @@ download and unpack them separately.")
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "CPATH"
                      (string-append
-                      (search-input-file inputs "/include/SDL")
+                      (search-input-directory inputs "/include/SDL")
                       ":" (or (getenv "CPATH") "")))))
          (add-after 'unpack 'fix-compilation-errors
            (lambda _
@@ -8910,7 +8910,7 @@ where the player draws runes in real time to effect the desired spell.")
                      (lambda* (#:key inputs #:allow-other-keys)
                        (setenv "CPATH"
                                (string-append
-                                (search-input-file inputs "/include/SDL2")
+                                (search-input-directory inputs "/include/SDL2")
                                 ":" (or (getenv "CPATH") ""))))))))
     (inputs
      `(("sdl2-union" ,(sdl-union (list sdl2 sdl2-image sdl2-mixer sdl2-ttf)))
