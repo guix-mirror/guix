@@ -209,7 +209,7 @@
     (arguments
      `(#:configure-flags
        (list
-        "CFLAGS=-fcommon"
+        "CFLAGS=-O2 -g -fcommon"
         ;; XXX: Broken API.
         ;; Undeclared variables 'sys_nerr' and 'sys_errlist'.
         ;; "--enable-libv4l2"
