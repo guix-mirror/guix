@@ -6682,7 +6682,7 @@ and embedded platforms.")
     (arguments
      (substitute-keyword-arguments (package-arguments uim)
        ((#:configure-flags configure-flags)
-        (append configure-flags (list "CFLAGS=-fcommon")))))
+        (append configure-flags (list "CFLAGS=-O2 -g -fcommon")))))
     (synopsis "Multilingual input method framework (GTK+ support)")))
 
 (define-public uim-qt
