@@ -1053,7 +1053,11 @@ application suites.")
                      '()))
              (substitute* "testsuite/a11y/Makefile.in"
                (("accessibility-dump tree-performance text children derive")
-                "tree-performance text children derive"))
+                "tree-performance text children derive")
+               ,@(if (not (target-x86-64?))
+                     '((("value misc tree-relationships util")
+                        "value misc util"))
+                     '()))
              (substitute* "testsuite/reftests/Makefile.in"
                (("TEST_PROGS = gtk-reftest")
                 "TEST_PROGS = "))
