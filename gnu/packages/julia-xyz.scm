@@ -3966,6 +3966,8 @@ package can help create and update if need be.")
        (sha256
         (base32 "03hyfy7c0ma45b0y756j76awi3az2ii4bz4s8cxm3xw9yy1z7b01"))))
     (build-system julia-build-system)
+    (arguments
+     `(#:parallel-tests? #f))
     (inputs                             ;required for test
      `(("julia-example" ,julia-example)))
     (propagated-inputs
