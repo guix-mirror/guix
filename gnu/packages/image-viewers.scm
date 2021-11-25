@@ -315,7 +315,7 @@ actions.")
     (build-system gnu-build-system)
     (arguments
      ;; Enable support for a "map" pane using GPS data.
-     `(#:configure-flags '("CFLAGS=-fcommon"
+     `(#:configure-flags '("CFLAGS=-O2 -g -fcommon"
                            "--enable-map"
                            "--enable-gtk3")
        #:phases (modify-phases %standard-phases
