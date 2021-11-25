@@ -19761,6 +19761,52 @@ library inspired by @code{cl-data-format-validation} and WTForms validators.")
 (define-public ecl-data-sift
   (sbcl-package->ecl-package sbcl-data-sift))
 
+(define-public sbcl-restas
+  (let ((commit "81bbbab6b36f81f846f78e71232e9d3d15f6d952")
+        (revision "1"))
+    (package
+      (name "sbcl-restas")
+      (version (git-version "0.1.4" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/archimag/restas")
+               (commit commit)))
+         (file-name (git-file-name "cl-restas" version))
+         (sha256
+          (base32 "00ng6jik1lwjw3bbxhijy8s0ml24lgm73liwrr01gcsb0r6wrjjn"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "contrib/restas-daemon.lisp"
+                 (("/lib64/") "")
+                 (("/lib/") "")
+                 (("libcap.so")
+                  (string-append (assoc-ref inputs "libcap")
+                                 "/lib/libcap.so"))))))))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("bordeaux-threads" ,sbcl-bordeaux-threads)
+         ("cffi" ,sbcl-cffi)
+         ("data-sift" ,sbcl-data-sift)
+         ("hunchentoot" ,sbcl-hunchentoot)
+         ("libcap" ,libcap)
+         ("routes" ,sbcl-routes)))
+      (home-page "https://github.com/archimag/restas")
+      (synopsis "Common Lisp web framework")
+      (description "@code{RESTAS} is a Common Lisp web application framework.")
+      (license license:llgpl))))
+
+(define-public cl-restas
+  (sbcl-package->cl-source-package sbcl-restas))
+
+(define-public ecl-restas
+  (sbcl-package->ecl-package sbcl-restas))
+
 (define-public sbcl-cl-https-everywhere
   ;; No release.
   ;; Don't forget to update the https-everywhere input.
