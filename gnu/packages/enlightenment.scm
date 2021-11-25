@@ -92,7 +92,11 @@
        ("ibus" ,ibus)
        ("mesa" ,mesa)
        ("libraw" ,libraw)
-       ("librsvg" ,librsvg)
+       ;; Only enable the optional SVG support on x86_64, as this is the only
+       ;; architecture where librsvg can be built.
+       ,@(if (target-x86-64?)
+             `(("librsvg" ,librsvg))
+             '())
        ("libspectre" ,libspectre)
        ("libtiff" ,libtiff)
        ("libxau" ,libxau)
@@ -138,20 +142,23 @@
        ("wayland" ,wayland)
        ("zlib" ,zlib)))
     (arguments
-     `(#:configure-flags '("-Dembedded-lz4=false"
-                           "-Dbuild-examples=false"
-                           "-Decore-imf-loaders-disabler=scim"
-                           "-Dglib=true"
-                           "-Dmount-path=/run/setuid-programs/mount"
-                           "-Dunmount-path=/run/setuid-programs/umount"
-                           ;(string-append "-Ddictionaries-hyphen-dir="
-                           ;               (assoc-ref %build-inputs "hyphen")
-                           ;               "/share/hyphen")
-                           "-Dnetwork-backend=connman"
-                           ;; for wayland
-                           "-Dwl=true"
-                           "-Ddrm=true")
-       #:tests? #f ; Many tests fail due to timeouts and network requests.
+     `(#:configure-flags
+       `("-Dembedded-lz4=false"
+         "-Dbuild-examples=false"
+         "-Decore-imf-loaders-disabler=scim"
+         "-Dglib=true"
+         "-Dmount-path=/run/setuid-programs/mount"
+         "-Dunmount-path=/run/setuid-programs/umount"
+         "-Dnetwork-backend=connman"
+         ;; Add 'rsvg' to the default list (json and avif) of disabled loaders
+         ;; unless librsvg is available.
+         ,,@(if (target-x86-64?)
+                '()
+                (list "-Devas-loaders-disabler=json,avif,rsvg"))
+         ;; For Wayland.
+         "-Dwl=true"
+         "-Ddrm=true")
+       #:tests? #f     ; Many tests fail due to timeouts and network requests.
        #:phases
        (modify-phases %standard-phases
          ;; If we don't hardcode the location of libcurl.so and others then we
