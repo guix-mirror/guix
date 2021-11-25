@@ -46,6 +46,7 @@
 # Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.com>
 # Copyright © 2021 Dmitry Polyakov <polyakov@liltechdude.xyz>
 # Copyright © 2021 Andrew Tropin <andrew@trop.in>
+# Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
 #
 # This file is part of GNU Guix.
 #
@@ -1296,6 +1297,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/jfsutils-include-systypes.patch		\
   %D%/packages/patches/julia-SOURCE_DATE_EPOCH-mtime.patch	\
   %D%/packages/patches/julia-tracker-16-compat.patch		\
+  %D%/packages/patches/julia-allow-parallel-build.patch		\
   %D%/packages/patches/kdbusaddons-kinit-file-name.patch	\
   %D%/packages/patches/libffi-3.3-powerpc-fixes.patch		\
   %D%/packages/patches/libffi-float128-powerpc64le.patch	\

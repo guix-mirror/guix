@@ -145,7 +145,8 @@ libraries.  It is also a bit like @code{ldd} and @code{otool -L}.")
                (base32
                 "1515x8fs25l3f9csbmd1v4nm041zvjnvigy6s5iidy4yrkwdx4r5"))
               (patches
-               (search-patches "julia-SOURCE_DATE_EPOCH-mtime.patch"))))
+               (search-patches "julia-SOURCE_DATE_EPOCH-mtime.patch"
+                               "julia-allow-parallel-build.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
