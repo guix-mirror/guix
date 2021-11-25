@@ -315,11 +315,8 @@ libraries.  It is also a bit like @code{ldd} and @code{otool -L}.")
                (substitute* (jlpath "Zlib")
                  (((from "libz")) (to "zlib" "libz"))))))
          (add-after 'unpack 'enable-parallel-tests
-           ;; FIXME: julia fails at networking in the container and falls back
-           ;; to a single worker, which causes the tests to not run in
-           ;; parallel (see: https://github.com/JuliaLang/julia/issues/43205).
-           (lambda* (#:key parallel-build? #:allow-other-keys)
-             (setenv "JULIA_CPU_THREADS" (if parallel-build?
+           (lambda* (#:key parallel-tests? #:allow-other-keys)
+             (setenv "JULIA_CPU_THREADS" (if parallel-tests?
                                              (number->string (parallel-job-count))
                                              "1"))
              (format #t "JULIA_CPU_THREADS environment variable set to ~a~%"
