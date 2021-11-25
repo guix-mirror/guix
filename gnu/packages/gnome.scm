@@ -4581,7 +4581,7 @@ selection and URL hints.")))
      ;; Disable -Werror and such, to avoid build failures on compilation
      ;; warnings.
      '(#:configure-flags '("--enable-compile-warnings=minimum"
-                           "CFLAGS=-fcommon")
+                           "CFLAGS=-O2 -g -fcommon")
        #:phases
        (modify-phases %standard-phases
          (add-before 'install 'skip-gtk-update-icon-cache
