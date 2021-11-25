@@ -19721,6 +19721,46 @@ score.  When evaluated, the musical score is rendered to an image.")
 (define-public ecl-cmn
   (sbcl-package->ecl-package sbcl-cmn))
 
+(define-public sbcl-data-sift
+  (let ((commit "fd617d8200cdcc1b87ecf45ab59bb38e8b16ef7e")
+        (revision "1"))
+    (package
+      (name "sbcl-data-sift")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/archimag/data-sift")
+               (commit commit)))
+         (file-name (git-file-name "cl-data-sift" version))
+         (sha256
+          (base32 "1v7gf0x4ibjzp0c56n9m77hxdgwcm9356zlk5n4l3fx4i0hj6146"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       ;; All test cases test a function that has been removed.
+       `(#:tests? #f))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("cl-ppcre" ,sbcl-cl-ppcre)
+         ("parse-number" ,sbcl-parse-number)
+         ("puri" ,sbcl-puri)))
+      (native-inputs
+       `(("lift" ,sbcl-lift)))
+      (home-page "https://github.com/archimag/data-sift")
+      (synopsis
+       "Common Lisp library for validation and transformation of string data")
+      (description
+       "@code{DATA-SIFT} is a Common Lisp data validation and transformation
+library inspired by @code{cl-data-format-validation} and WTForms validators.")
+      (license license:llgpl))))
+
+(define-public cl-data-sift
+  (sbcl-package->cl-source-package sbcl-data-sift))
+
+(define-public ecl-data-sift
+  (sbcl-package->ecl-package sbcl-data-sift))
+
 (define-public sbcl-cl-https-everywhere
   ;; No release.
   ;; Don't forget to update the https-everywhere input.
