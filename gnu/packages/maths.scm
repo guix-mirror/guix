@@ -172,7 +172,7 @@
               ("libxml2" ,libxml2)))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (arguments
-     `(#:configure-flags '("CFLAGS=-fcommon")))
+     `(#:configure-flags '("CFLAGS=-O2 -g -fcommon")))
     (synopsis "Natural deduction first-order logic interface")
     (description "Aris is a program for performing logical proofs.  It supports
 propositional and predicate logic, as well as Boolean algebra and
