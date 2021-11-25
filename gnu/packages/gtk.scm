@@ -1061,6 +1061,12 @@ application suites.")
              (substitute* "testsuite/reftests/Makefile.in"
                (("TEST_PROGS = gtk-reftest")
                 "TEST_PROGS = "))
+             ,@(if (target-x86-64?)
+                   '()
+                   ;; The 'tree-relationships' test needs SVG support.
+                   '((substitute* "testsuite/a11y/Makefile.in"
+                       (("misc tree-relationships util")
+                        "misc util"))))
              #t))
          (add-before 'check 'pre-check
            (lambda _
