@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019, 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;; Copyright © 2021 Jean-Baptiste Volatier <jbv@pm.me>
+;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -103,11 +104,15 @@ Project.toml)."
   #t)
 
 (define* (check #:key tests? source inputs outputs julia-package-name
+                parallel-tests?
                 #:allow-other-keys)
   (when tests?
     (let* ((out (assoc-ref outputs "out"))
            (package (or julia-package-name (project.toml->name "Project.toml")))
-           (builddir (string-append out "/share/julia/")))
+           (builddir (string-append out "/share/julia/"))
+           (jobs (if parallel-tests?
+                     (number->string (parallel-job-count))
+                     "1")))
       ;; With a patch, SOURCE_DATE_EPOCH is honored
       (setenv "SOURCE_DATE_EPOCH" "1")
       (setenv "JULIA_DEPOT_PATH" builddir)
@@ -115,8 +120,10 @@ Project.toml)."
               (string-append builddir "loadpath/" ":"
                              (or (getenv "JULIA_LOAD_PATH")
                                  "")))
+      (setenv "JULIA_CPU_THREADS" jobs)
       (setenv "HOME" "/tmp")
       (invoke "julia" "--depwarn=yes"
+              (string-append "--procs=" jobs)
               (string-append builddir "loadpath/"
                              package "/test/runtests.jl"))))
   #t)
