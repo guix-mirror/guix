@@ -136,6 +136,8 @@ ANSI escape codes to another format.")
         (sha256
          (base32 "1g0kyzcdykgs247j72jpc2qqall696jwgb3hnn4cxmbi8bkf7wpk"))))
     (build-system julia-build-system)
+    (arguments
+     `(#:parallel-tests? #f))
     (home-page "https://github.com/JuliaTesting/Aqua.jl")
     (synopsis "Automated quality assurance for Julia packages")
     (description "@acronym{Aqua.jl, Auto QUality Assurance for Julia packages},
