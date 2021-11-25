@@ -2518,6 +2518,8 @@ interfaces with @file{.ini} files.")
         (sha256
          (base32 "1236c20k388qlh7k74mhf7hkbn0vf7ss8b1rgh1a6aj0234ayfnc"))))
     (build-system julia-build-system)
+    (arguments
+     `(#:parallel-tests? #f))
     (propagated-inputs
      `(("julia-axisalgorithms" ,julia-axisalgorithms)
        ("julia-offsetarrays" ,julia-offsetarrays)
