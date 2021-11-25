@@ -2939,7 +2939,7 @@ the command line.")
         ("ncurses" ,ncurses)))
     (arguments
       ;; Fix build failure with GCC 10
-     '(#:configure-flags '("CFLAGS=-fcommon")))
+     '(#:configure-flags '("CFLAGS=-O2 -g -fcommon")))
     (synopsis "Monitor network usage")
     (description "Iftop does for network usage what @command{top} does
 for CPU usage.  It listens to network traffic on a named interface and
