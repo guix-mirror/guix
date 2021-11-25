@@ -12774,13 +12774,13 @@ the construction of PyQt/PySide stylesheets.")
 (define-public python-click-threading
   (package
     (name "python-click-threading")
-    (version "0.4.4")
+    (version "0.5.0")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "click-threading" version))
              (sha256
               (base32
-               "1rsxc2fbkxlhwhlmxsdjzq3spn284l6rvjfcz9mbb17ibgdgmc5j"))))
+               "0f9lmxwcq0y9lb8w0whbni7gwy12gbv74h1igh85qn9aq0iydkxd"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-click" ,python-click)))
