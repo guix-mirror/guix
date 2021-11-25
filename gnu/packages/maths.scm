@@ -2373,10 +2373,9 @@ satisfiability checking (SAT).")
                   (add-before 'configure 'set-library-directory
                     (lambda _
                       ;; Install libraries to lib/, not lib64/.
-                      (substitute* "internal/ceres/CMakeLists.txt"
+                      (substitute* "CMakeLists.txt"
                         (("set\\(LIB_SUFFIX \"64\"\\)")
-                         "set(LIB_SUFFIX \"\")"))
-                      #t)))))
+                         "set(LIB_SUFFIX \"\")")))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (propagated-inputs
