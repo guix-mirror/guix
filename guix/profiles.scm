@@ -1189,7 +1189,9 @@ loaders discovered in MANIFEST."
   (mlet* %store-monad
       ((gdk-pixbuf (manifest-lookup-package manifest "gdk-pixbuf"))
        (librsvg (manifest-lookup-package manifest "librsvg"))
-       (gdk-pixbuf-bin -> (string-append gdk-pixbuf "/bin")))
+       (gdk-pixbuf-bin -> (if (string? gdk-pixbuf)
+                              (string-append gdk-pixbuf "/bin")
+                              (file-append gdk-pixbuf "/bin"))))
 
     (define build
       (with-imported-modules (source-module-closure
