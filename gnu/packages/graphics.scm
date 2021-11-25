@@ -812,7 +812,17 @@ exception-handling library.")
                (substitute* '("src/cython/CMakeLists.txt"
                               "src/py2geom/CMakeLists.txt")
                  (("PYTHON_LIB_INSTALL \"[^\"]*\"")
-                  (format #f "PYTHON_LIB_INSTALL ~s" site-package)))))))))
+                  (format #f "PYTHON_LIB_INSTALL ~s" site-package))))))
+         ,@(if (target-x86-32?)
+               `((add-after 'unpack 'skip-faulty-test
+                   (lambda _
+                     ;; This test fails on i686 when comparing floating point
+                     ;; values, probably due to excess precision.  However,
+                     ;; '-fexcess-precision' is not implemented for C++ in
+                     ;; GCC 10 so just skip it.
+                     (substitute* "tests/CMakeLists.txt"
+                       (("bezier-test") "")))))
+               '()))))
     (native-inputs `(("python" ,python-wrapper)
                      ("googletest" ,googletest)
                      ("pkg-config" ,pkg-config)))
