@@ -290,13 +290,13 @@ acceleration in mind, leveraging common 3D graphics APIs for best performance.")
                (substitute* "Source/WebKit/UIProcess/glib/WebProcessPoolGLib.cpp"
                  (("libWPEBackend-fdo-([\\.0-9]+)\\.so" all version)
                   (string-append wpebackend-fdo "/lib/" all))))))
-         ,@(if (string-prefix? "x86_64" (or (%current-target-system)
-                                            (%current-system)))
+         ,@(if (target-x86-64?)
                '()
                '((add-after 'unpack 'disable-sse2
                    (lambda _
-                     (substitute* "Source/cmake/DetectSSE2.cmake"
-                       (("CHECK_FOR_SSE2\\(\\)") ""))))))
+                     (substitute* "Source/cmake/WebKitCompilerFlags.cmake"
+                       (("WTF_CPU_X86 AND NOT CMAKE_CROSSCOMPILING")
+                        "FALSE"))))))
          (add-after 'install 'move-doc-files
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
