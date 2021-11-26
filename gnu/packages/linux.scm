@@ -6946,7 +6946,7 @@ used by nftables.")
 (define-public nftables
   (package
     (name "nftables")
-    (version "1.0.0")
+    (version "1.0.1")
     (source
      (origin
        (method url-fetch)
@@ -6955,11 +6955,12 @@ used by nftables.")
                   (string-append "https://www.nftables.org/projects/nftables"
                                  "/files/nftables-" version ".tar.bz2")))
        (sha256
-        (base32 "1x25zs2czmn14mmq1nqi4zibsvh04vqjbx5lxj42nylnmxym9gsq"))))
+        (base32 "08x4xw0s5sap3q7jfr91v7mrkxrydi4dvsckw85ims0qb1ibmviw"))))
     (build-system gnu-build-system)
     (arguments `(#:configure-flags
                  '("--disable-man-doc"  ; FIXME: needs docbook2x
-                   "--disable-static")))
+                   "--disable-static"
+                   "--with-cli=readline")))
     (inputs `(("gmp" ,gmp)
               ("libmnl" ,libmnl)
               ("libnftnl" ,libnftnl)
