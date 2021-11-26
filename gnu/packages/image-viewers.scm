@@ -477,7 +477,7 @@ needs.")
 (define-public viewnior
   (package
     (name "viewnior")
-    (version "1.7")
+    (version "1.8")
     (source
       (origin
         (method git-fetch)
@@ -486,8 +486,7 @@ needs.")
                (commit (string-append name "-" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32
-          "0y4hk3vq8psba5k615w18qj0kbdfp5w0lm98nv5apy6hmcpwfyig"))))
+         (base32 "14qvx1wajncd5ab0207274cwk32f4ipfnlaci6phmah0cwra2did"))))
     (build-system meson-build-system)
     (arguments
      '(#:phases
@@ -508,7 +507,7 @@ needs.")
      `(("exiv2" ,exiv2)
        ("gdk-pixbuf" ,gdk-pixbuf)
        ("gtk+-2" ,gtk+-2)))
-    (home-page "http://siyanpanayotov.com/project/viewnior")
+    (home-page "https://siyanpanayotov.com/project/viewnior")
     (synopsis "Simple, fast and elegant image viewer")
     (description "Viewnior is an image viewer program.  Created to be simple,
 fast and elegant.  Its minimalistic interface provides more screenspace for
