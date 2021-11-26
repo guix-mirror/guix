@@ -1399,7 +1399,7 @@ RTL8812AU, RTL8821AU, and RTL8814AU chips.")
 (define-public vhba-module
   (package
     (name "vhba-module")
-    (version "20210418")
+    (version "20211023")
     (source
      (origin
        (method url-fetch)
@@ -1407,7 +1407,7 @@ RTL8812AU, RTL8821AU, and RTL8814AU chips.")
              "http://downloads.sourceforge.net/cdemu/vhba-module/vhba-module-"
              version ".tar.xz"))
        (sha256
-        (base32 "119zgav6caialmf3hr096wkf72l9h76sqc9w5dhx26kj4yp85g8q"))))
+        (base32 "045zvsdb2yjhzhmb6b7rzsn151ylygz0civ8sl3gmki8m6m7n230"))))
     (build-system linux-module-build-system)
     (arguments
      `(#:tests? #f))                    ; no test suite
