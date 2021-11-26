@@ -2514,13 +2514,13 @@ QMatrixClient project.")
 (define-public hangups
   (package
     (name "hangups")
-    (version "0.4.14")
+    (version "0.4.15")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "hangups" version))
        (sha256
-        (base32 "15qbbafcrdkx73xz9y30qa3d8nj6mgrp2m41749i5nn1qywmikk8"))))
+        (base32 "1fa58m6zgvsawp2h1maj82wn6lpdllhbficmcjm78n5bg1hv7f4m"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -2530,13 +2530,11 @@ QMatrixClient project.")
            (lambda _
              (substitute* "setup.py"
                (("==") ">=")
-               ((",<.*'") "'"))
-             #t))
+               ((",<.*'") "'"))))
          (replace 'check
            (lambda* (#:key tests? #:allow-other-keys)
              (when tests?
-               (invoke "pytest" "hangups"))
-             #t)))))
+               (invoke "pytest" "hangups")))))))
     (propagated-inputs
      `(("python-aiohttp" ,python-aiohttp)
        ("python-appdirs" ,python-appdirs)
