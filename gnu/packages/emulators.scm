@@ -1899,7 +1899,7 @@ This is a part of the TiLP project.")
        ("texinfo" ,texinfo)))
     (inputs
      `(("alsa-lib" ,alsa-lib)
-       ("asio" ,asio-1.12)              ;the bundled copy is at 1.11
+       ("asio" ,asio)
        ("expat" ,expat)
        ("flac" ,flac)
        ("fontconfig" ,fontconfig)
