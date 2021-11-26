@@ -8579,7 +8579,7 @@ kernel side implementation.")
 (define-public erofs-utils
   (package
     (name "erofs-utils")
-    (version "1.3")
+    (version "1.4")
     (source
      (origin
        (method git-fetch)
@@ -8588,7 +8588,7 @@ kernel side implementation.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0sqiw05zbxr6l0g9gn3whkc4qc5km2qvfg4lnm08nppwskm8yaw8"))))
+        (base32 "1ygaw69pfz2hfzw9cqzg9rfnjzrdbfkwsiinz6qs2h56dssjz0y9"))))
     (build-system gnu-build-system)
     (inputs
      `(("lz4" ,lz4)
