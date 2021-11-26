@@ -251,14 +251,14 @@ unmaintained---to use the @code{inotify} API instead of the deprecated
 (define-public davfs2
   (package
     (name "davfs2")
-    (version "1.6.0")
+    (version "1.6.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.savannah.nongnu.org/releases/"
                            "davfs2/davfs2-" version ".tar.gz"))
        (sha256
-        (base32 "0l1vnv5lfigciwg17p10zxwhzj4qw2d9kw30prr7g4dxhmb6fsrf"))))
+        (base32 "1h65j2py59b97wbzzjhp4wbkk6351v3hrjscjcfab0p5xi4bjgnf"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -277,16 +277,14 @@ unmaintained---to use the @code{inotify} API instead of the deprecated
              (substitute* "etc/Makefile.in"
                (("(dist_pkgdata_DATA =.*) davfs2.conf secrets(.*)"
                  _ prefix suffix)
-                (string-append prefix suffix)))
-             #t))
+                (string-append prefix suffix)))))
          (add-after 'unpack 'patch-file-names
            (lambda _
              ;; Don't auto-load the FUSE kernel module.  That's up to root.
              ;; XXX If/when we restore the previous behaviour, make sure not
              ;; to introduce a security hole when mount.davfs is setuid.
              (substitute* "src/kernel_interface.c"
-               (("/sbin/modprobe") "/modprobe/disabled"))
-             #t))
+               (("/sbin/modprobe") "/modprobe/disabled"))))
          (replace 'install
            (lambda* (#:key make-flags outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
