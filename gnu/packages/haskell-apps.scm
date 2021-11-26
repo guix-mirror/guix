@@ -372,15 +372,15 @@ to @code{cabal repl}).")
                  (format out "main = buildMansOrWarn~%")))
              (invoke "runhaskell" "Build/MakeMans.hs")))
          (replace 'check
-           (lambda _
+           (lambda* (#:key tests? #:allow-other-keys)
              ;; We need to set the path so that Git recognizes
              ;; `git annex' as a custom command.
              (setenv "PATH" (string-append (getenv "PATH") ":"
                                            (getcwd) "/dist/build/git-annex"))
-             (with-directory-excursion "dist/build/git-annex"
-               (symlink "git-annex" "git-annex-shell"))
-             (invoke "git-annex" "test")
-             #t))
+             (when tests?
+               (with-directory-excursion "dist/build/git-annex"
+                 (symlink "git-annex" "git-annex-shell"))
+               (invoke "git-annex" "test"))))
          (add-after 'check 'unpatch-shell-and-rebuild
            (lambda args
              ;; Undo `patch-shell-for-tests'.
