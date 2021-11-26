@@ -2177,13 +2177,13 @@ development, not the kernel implementation of ACPI.")
 (define-public s-tui
   (package
     (name "s-tui")
-    (version "1.1.1")
+    (version "1.1.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "s-tui" version))
        (sha256
-        (base32 "1clk59wf6v1lq33h4x5qwxvz5ng9mfkp1s6ynxa58w2raq8dbmy5"))))
+        (base32 "1l2ik5iwmb8vxa2aqdy62zfy3zfzbpq5a0pgpka2vvlw9ivpqy5p"))))
     (build-system python-build-system)
     (inputs
      `(("python-psutil" ,python-psutil)
