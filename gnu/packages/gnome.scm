@@ -4939,12 +4939,12 @@ libxml to ease remote use of the RESTful API.")
                ((".*/sockets/unconnected.*") ""))
 
              ;; These fail because "subdomain.localhost" does not resolve in
-             ;; the build environment.
-             (substitute* "tests/hsts-test.c"
-               ((".*/hsts/basic.*") "")
-               ((".*/hsts/subdomains.*") "")
-               ((".*/hsts/superdomain.*") "")
-               ((".*/hsts/utf8-address.*") ""))
+             ;; the build environment.  Moreover, the hsts-test suite fails on
+             ;; i686-linux because of errors from `session_get_uri' like
+             ;; "Unexpected status 200 OK (expected 301 Moved Permanently)"
+             ;; (see: https://gitlab.gnome.org/GNOME/libsoup/-/issues/239).
+             (substitute* "tests/meson.build"
+               ((".*'name': 'hsts'.*") ""))
              (substitute* "tests/hsts-db-test.c"
                ((".*/hsts-db/subdomains.*") "")))))))
     (native-inputs
@@ -4971,7 +4971,7 @@ libxml to ease remote use of the RESTful API.")
        ("zlib" ,zlib)))
     (inputs
      `(("mit-krb5" ,mit-krb5)
-       ("ntlm_auth" ,samba/fixed)))               ; For ntlm_auth support
+       ("ntlm_auth" ,samba/fixed)))     ; For ntlm_auth support
     (home-page "https://wiki.gnome.org/Projects/libsoup")
     (synopsis "GLib-based HTTP Library")
     (description
