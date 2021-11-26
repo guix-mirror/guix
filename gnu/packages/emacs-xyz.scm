@@ -13862,6 +13862,39 @@ commands are bound to keys reachable with the left hand and movement keys are
 reached with the right hand.")
     (license license:gpl3+)))
 
+(define-public emacs-cc-mode
+  (package
+   (name "emacs-cc-mode")
+   (version "5.35")
+   (source
+    (origin
+     (method hg-fetch)
+     (uri (hg-reference
+           (url "http://hg.code.sf.net/p/cc-mode/cc-mode")
+           (changeset
+            (string-append "Release_"
+                           (string-replace-substring version "." "_")))))
+     (file-name (hg-file-name name version))
+     (sha256
+      (base32 "03cvl61baccx57zd62nz2wy4hvij5hl2syg7byaxgrs4c7grr414"))))
+   (build-system emacs-build-system)
+   (arguments
+    '(#:tests? #t
+      #:test-command '("make" "test")
+      #:phases
+      (modify-phases %standard-phases
+        (add-before 'install 'make-info
+          (lambda _
+            (invoke "make" "info"))))))
+   (native-inputs
+    `(("texinfo" ,texinfo)))
+   (home-page "http://cc-mode.sourceforge.net/")
+   (synopsis "Framework for creating major modes for C-style languages")
+   (description
+    "CC Mode is an Emacs and XEmacs mode for editing C and other languages with
+similar syntax; currently C++, Objective-C, Java, CORBA's IDL, Pike, and AWK.")
+   (license license:gpl3+)))
+
 (define-public emacs-csharp-mode
   (package
     (name "emacs-csharp-mode")
