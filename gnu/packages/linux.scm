@@ -6488,7 +6488,7 @@ developers.")
 (define-public radeontop
   (package
     (name "radeontop")
-    (version "1.3")
+    (version "1.4")
     (source
      (origin
        (method git-fetch)
@@ -6497,7 +6497,7 @@ developers.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0ay6vl9zsz9b2scy0fnsy482pzizj52i27syxwny4z4i9wrk2wmn"))))
+        (base32 "0kwqddidr45s1blp0h8r8h1dd1p50l516yb6mb4s6zsc827xzgg3"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -6507,8 +6507,7 @@ developers.")
                     (lambda _
                       (substitute* "getver.sh"
                         (("ver=unknown")
-                         (string-append "ver=" ,version)))
-                      #t))
+                         (string-append "ver=" ,version)))))
                   (delete 'configure))  ; no configure script
        #:make-flags (list "CC=gcc"
                           (string-append "PREFIX=" %output))
