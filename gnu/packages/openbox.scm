@@ -22,6 +22,7 @@
   #:use-module ((guix licenses) #:select (gpl2+))
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
@@ -51,7 +52,14 @@
     (propagated-inputs `(("python2-pyxdg" ,python2-pyxdg)))
     (inputs `(("imlib2" ,imlib2)
               ("libxml2" ,libxml2)
-              ("librsvg" ,librsvg)
+
+              ;; Librsvg, an optional dependency, depends on Rust, which is
+              ;; well supported only on x86_64.  Thus, remove it on other
+              ;; architectures.
+              ,@(if (target-x86-64?)
+                    `(("librsvg" ,librsvg))
+                    '())
+
               ("libsm" ,libsm)
               ("libxcursor" ,libxcursor)
               ("libxinerama" ,libxinerama)
