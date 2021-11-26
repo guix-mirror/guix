@@ -1610,6 +1610,33 @@ array-like objects like @code{DataFrame} objects (typically with Rle columns),
 @code{Matrix} objects, and ordinary arrays and data frames.")
     (license license:artistic2.0)))
 
+(define-public r-derfinderhelper
+  (package
+    (name "r-derfinderhelper")
+    (version "1.28.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "derfinderHelper" version))
+       (sha256
+        (base32 "06x0wy2wzpngak1pnrj2p0xzlx1nbcz0hs3p9q5ic6ib2rgwrh35"))))
+    (properties `((upstream-name . "derfinderHelper")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-iranges" ,r-iranges)
+       ("r-matrix" ,r-matrix)
+       ("r-s4vectors" ,r-s4vectors)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/leekgroup/derfinderHelper")
+    (synopsis "Helper for derfinder")
+    (description
+     "This package speeds up the derfinder package when using multiple cores.
+It is particularly useful when using BiocParallel and it helps reduce the time
+spent loading the full derfinder package when running the F-statistics
+calculation in parallel.")
+    (license license:artistic2.0)))
+
 (define-public r-bluster
   (package
    (name "r-bluster")
