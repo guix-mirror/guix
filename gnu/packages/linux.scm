@@ -363,21 +363,6 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.15)))
 
-(define-public linux-libre-5.14-version "5.14.21")
-(define-public linux-libre-5.14-gnu-revision "gnu")
-(define deblob-scripts-5.14
-  (linux-libre-deblob-scripts
-   linux-libre-5.14-version
-   linux-libre-5.14-gnu-revision
-   (base32 "11zax57brk8bl75q68c71xsdlvslj48wpmrv8rh34sb8wym9n4mc")
-   (base32 "1xmmr26lpffc4dfmrkvh3gdkkr8666fcyvgam560vbyd2b2qkd78")))
-(define-public linux-libre-5.14-pristine-source
-  (let ((version linux-libre-5.14-version)
-        (hash (base32 "1cr381c179nfdrq95l4j56c4ygw09sxv493553ix4b80naf2a6pl")))
-   (make-linux-libre-source version
-                            (%upstream-linux-source version hash)
-                            deblob-scripts-5.14)))
-
 ;; The "longterm" kernels — the older releases with long-term upstream support.
 ;; Here are the support timelines:
 ;; <https://www.kernel.org/category/releases.html>
@@ -504,14 +489,6 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                        (list %boot-logo-patch
                              %linux-libre-arm-export-__sync_icache_dcache-patch)))
 
-(define-public linux-libre-5.14-source
-  (source-with-patches linux-libre-5.14-pristine-source
-                       (list %boot-logo-patch
-                             %linux-libre-arm-export-__sync_icache_dcache-patch
-                             ;; Pinebook Pro patch to fix LCD display
-                             (search-patch
-                              "linux-libre-arm64-generic-pinebook-lcd.patch"))))
-
 (define-public linux-libre-5.10-source
   (source-with-patches linux-libre-5.10-pristine-source
                        (list %boot-logo-patch
@@ -620,11 +597,6 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
   (make-linux-libre-headers* linux-libre-5.15-version
                              linux-libre-5.15-gnu-revision
                              linux-libre-5.15-source))
-
-(define-public linux-libre-headers-5.14
-  (make-linux-libre-headers* linux-libre-5.14-version
-                             linux-libre-5.14-gnu-revision
-                             linux-libre-5.14-source))
 
 (define-public linux-libre-headers-5.10
   (make-linux-libre-headers* linux-libre-5.10-version
@@ -931,13 +903,6 @@ It has been modified to remove all non-free binary blobs.")
   (make-linux-libre* linux-libre-5.15-version
                      linux-libre-5.15-gnu-revision
                      linux-libre-5.15-source
-                     '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux" "riscv64-linux")
-                     #:configuration-file kernel-config))
-
-(define-public linux-libre-5.14
-  (make-linux-libre* linux-libre-5.14-version
-                     linux-libre-5.14-gnu-revision
-                     linux-libre-5.14-source
                      '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux" "riscv64-linux")
                      #:configuration-file kernel-config))
 

@@ -380,10 +380,6 @@ AUX_FILES =						\
   gnu/packages/aux-files/linux-libre/5.15-arm64.conf	\
   gnu/packages/aux-files/linux-libre/5.15-i686.conf	\
   gnu/packages/aux-files/linux-libre/5.15-x86_64.conf	\
-  gnu/packages/aux-files/linux-libre/5.14-arm.conf	\
-  gnu/packages/aux-files/linux-libre/5.14-arm64.conf	\
-  gnu/packages/aux-files/linux-libre/5.14-i686.conf	\
-  gnu/packages/aux-files/linux-libre/5.14-x86_64.conf	\
   gnu/packages/aux-files/linux-libre/5.10-arm.conf	\
   gnu/packages/aux-files/linux-libre/5.10-arm64.conf	\
   gnu/packages/aux-files/linux-libre/5.10-i686.conf	\
