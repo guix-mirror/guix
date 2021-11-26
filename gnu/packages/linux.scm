@@ -6509,7 +6509,7 @@ developers.")
                         (("ver=unknown")
                          (string-append "ver=" ,version)))))
                   (delete 'configure))  ; no configure script
-       #:make-flags (list "CC=gcc"
+       #:make-flags (list (string-append "CC=" ,(cc-for-target))
                           (string-append "PREFIX=" %output))
        #:tests? #f))                    ; no tests
     (native-inputs
