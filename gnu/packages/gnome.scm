@@ -7784,11 +7784,6 @@ Microsoft Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
                "-DENABLE_INTROSPECTION=ON"))  ;required for Vala bindings
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'adjust-webkitgtk-version
-           (lambda _
-             (substitute* "CMakeLists.txt"
-               (("webkit2gtk-4.0")
-                "webkit2gtk-4.1"))))
          (add-after 'unpack 'disable-failing-tests
            (lambda _
              ;; tests/book-migration/test-migration.c:160:test_fetch_contacts:
@@ -7835,7 +7830,7 @@ Microsoft Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
        ("libgweather" ,libgweather)
        ("mit-krb5" ,mit-krb5)
        ("openldap" ,openldap)
-       ("webkitgtk" ,webkitgtk)))
+       ("webkitgtk" ,webkitgtk-with-libsoup2)))
     (synopsis "Store address books and calendars")
     (home-page "https://wiki.gnome.org/Apps/Evolution")
     (description
