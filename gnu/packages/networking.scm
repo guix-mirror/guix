@@ -3023,18 +3023,17 @@ eight bytes) tools
     ;; Either BSD-3 or GPL-2 can be used.
     (license (list license:bsd-3 license:gpl2))))
 
-;;; This is an old version required by rested.
-(define-public asio-1.12
+(define-public asio
   (package
     (name "asio")
-    (version "1.12.2")
+    (version "1.20.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/asio/asio/"
                            version " (Stable)/asio-" version ".tar.bz2"))
        (sha256
-        (base32 "1akray4l3hgahmb92sbvsqg128c7g7s92jrkf1sp1fjnfjrxq9sf"))))
+        (base32 "0335kyxdnwnp96sh9p3jq1s87qnfmp5l7hzlcdxbbwfzrb9p8hr0"))))
     (build-system gnu-build-system)
     (inputs
      `(("boost" ,boost)
@@ -3050,18 +3049,6 @@ eight bytes) tools
 low-level I/O programming that provides developers with a consistent
 asynchronous model using a modern C++ approach.")
     (license license:boost1.0)))
-
-(define-public asio
-  (package
-    (inherit asio-1.12)
-    (version "1.20.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "mirror://sourceforge/asio/asio/"
-                           version " (Stable)/asio-" version ".tar.bz2"))
-       (sha256
-        (base32 "0335kyxdnwnp96sh9p3jq1s87qnfmp5l7hzlcdxbbwfzrb9p8hr0"))))))
 
 (define-public shadowsocks
   ;; There are some security fixes after the last release.
