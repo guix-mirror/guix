@@ -520,17 +520,17 @@
                                  (file-name "x.patch")))))))))
     (check-patch-file-names pkg)))
 
-(test-equal "patches: file name too long"
+(test-equal "patches: file name too long, which may break 'make dist'"
   (string-append "x-"
-                 (make-string 100 #\a)
-                 ".patch: file name is too long")
+                 (make-string 152 #\a)
+                 ".patch: file name is too long, which may break 'make dist'")
   (single-lint-warning-message
    (let ((pkg (dummy-package
                "x"
                (source
                 (dummy-origin
                  (patches (list (string-append "x-"
-                                               (make-string 100 #\a)
+                                               (make-string 152 #\a)
                                                ".patch"))))))))
      (check-patch-file-names pkg))))
 

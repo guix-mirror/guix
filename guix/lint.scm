@@ -990,8 +990,12 @@ patch could not be found."
 
      ;; Check whether we're reaching tar's maximum file name length.
      (let ((prefix (string-length (%distro-directory)))
-           (margin (string-length "guix-2.0.0rc3-10000-1234567890/"))
-           (max    99))
+           ;; Margin approximating the largest path that "make dist" might
+           ;; create, with a release candidate version, 123456 commits, and
+           ;; git commit hash abcde0.
+           (margin (string-length "guix-92.0.0rc3-123456-abcde0/"))
+           ;; Tested maximum patch file length for ustar format.
+           (max    151))
        (filter-map (match-lambda
                      ((? string? patch)
                       (if (> (+ margin (if (string-prefix? (%distro-directory)
@@ -1001,7 +1005,7 @@ patch could not be found."
                              max)
                           (make-warning
                            package
-                           (G_ "~a: file name is too long")
+                           (G_ "~a: file name is too long, which may break 'make dist'")
                            (list (basename patch))
                            #:field 'patch-file-names)
                           #f))
