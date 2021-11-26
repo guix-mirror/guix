@@ -2598,7 +2598,7 @@ Both commands are targeted at system administrators.")
 (define-public jitterentropy-rngd
   (package
     (name "jitterentropy-rngd")
-    (version "1.2.5")
+    (version "1.2.6")
     (source
      (origin
        (method git-fetch)
@@ -2607,7 +2607,7 @@ Both commands are targeted at system administrators.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "05h9a60s9x3jav33lh50ac1jw8wvbljw2ndrk3k7gs2nlz0kkl14"))))
+        (base32 "03cbcxkscjcmn6ybkmssq7i39sn5cfsap9fv058pi0k2mr90djwq"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no test suite
