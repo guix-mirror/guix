@@ -3673,14 +3673,14 @@ written (and providing API) in C.  Current implementation covers YANG 1.0 (RFC
 (define-public batctl
   (package
    (name "batctl")
-   (version "2021.3")
+   (version "2021.4")
    (source
     (origin
      (method url-fetch)
      (uri (string-append "https://downloads.open-mesh.org/batman/releases/batman-adv-"
                          version "/batctl-" version ".tar.gz"))
      (sha256
-      (base32 "087w8xxxpqxs5cz4aj4l9wzbh0ga8163nh7qy44ld2lgqbplnbzj"))))
+      (base32 "1ryqz90av2p5pgmmpi1afmycd18zhpwz1i4f7r0s359jis86xndn"))))
    (inputs
     `(("libnl" ,libnl)))
    (native-inputs
