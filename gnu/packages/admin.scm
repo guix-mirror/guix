@@ -1000,7 +1000,7 @@ would need and has several interesting built-in capabilities.")
 (define-public netcat-openbsd
   (package
     (name "netcat-openbsd")
-    (version "1.217-2")
+    (version "1.218-2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1009,7 +1009,7 @@ would need and has several interesting built-in capabilities.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "19sr52ix14w344pv13ppb0c1wyg5dxhic1fw2q0s3qfmx57b9hhp"))))
+                "1rj4nx0jdism1idc4fghahqbafhv72cpk7zlyq9czgvbps10d1kh"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no test suite
@@ -1021,8 +1021,7 @@ would need and has several interesting built-in capabilities.")
          (add-before 'build 'patch
            (lambda _
              (setenv "QUILT_PATCHES" "debian/patches")
-             (invoke "quilt" "push" "-a")
-             #t))
+             (invoke "quilt" "push" "-a")))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -1033,8 +1032,7 @@ would need and has several interesting built-in capabilities.")
                (install-file "nc" bin)
                (install-file "nc.1" man)
                (install-file "debian/copyright" doc)
-               (copy-recursively "debian/examples" examples)
-               #t))))))
+               (copy-recursively "debian/examples" examples)))))))
     (inputs `(("libbsd" ,libbsd)))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("quilt" ,quilt)))
