@@ -599,7 +599,7 @@ technology, such as head mounted displays with built in head tracking.")
 (define-public wavemon
   (package
     (name "wavemon")
-    (version "0.9.3")
+    (version "0.9.4")
     (source
      (origin
        (method git-fetch)
@@ -608,7 +608,7 @@ technology, such as head mounted displays with built in head tracking.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0m9n5asjxs1ir5rqprigqcrm976mgjvh4yql1jhfnbszwbf95193"))))
+        (base32 "0s3yz15vzx90fxyb8bgryksn0cr2gpz9inbcx4qjrgs7zfbm4pgh"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
