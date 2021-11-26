@@ -68,6 +68,7 @@
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml))
 
@@ -571,31 +572,31 @@ results and determine build stability.")
 (define-public kcov
   (package
     (name "kcov")
-    (version "38")
+    (version "39")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/SimonKagstrom/kcov")
-                    (commit version)))
+                    (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0zqg21xwivi16csl6a5wby6679ny01bjaw4am3y4qcgjdyihifp8"))))
+                "09wf1k4dlpdhqjjgq2bibmgy8i3z32wf0zxhd2px2dvg92m4zwqr"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f ;no test target
+     `(#:tests? #f                      ; no test target
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-/bin/bash-references
            (lambda _
              (substitute* (find-files "src" ".*\\.cc?$")
                (("/bin/bash") (which "bash"))
-               (("/bin/sh") (which "sh")))
-             #t)))))
+               (("/bin/sh") (which "sh"))))))))
     (inputs
      `(("curl" ,curl)
        ("elfutils" ,elfutils)
        ("libelf" ,libelf)
+       ("openssl" ,openssl)
        ("zlib" ,zlib)))
     (native-inputs
      `(("python" ,python)))
