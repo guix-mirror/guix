@@ -4172,7 +4172,7 @@ cache of unix and unix-like systems.")
 (define-public solaar
   (package
     (name "solaar")
-    (version "1.0.6")
+    (version "1.0.7")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4181,15 +4181,14 @@ cache of unix and unix-like systems.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "04zclzfc31l2fj5shcsngnmcvcmmhnc567l3wb9yfhs8k39k9kb2"))))
+                "0k7mjdfvf28fay50b2hs2z4qk6s23h71wvl8777idlrz5i5f43j5"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (add-before 'build 'setenv-PATH
            (lambda _
-             (setenv "PYTHONPATH" (string-append "lib:" (getenv "PYTHONPATH")))
-             #t)))))
+             (setenv "PYTHONPATH" (string-append "lib:" (getenv "PYTHONPATH"))))))))
     (propagated-inputs
      `(("python-pygobject" ,python-pygobject)
        ("python-pyudev" ,python-pyudev)
