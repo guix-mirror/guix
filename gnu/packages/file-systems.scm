@@ -561,7 +561,7 @@ from the bcachefs-tools package.  It is meant to be used in initrds.")
 (define-public exfatprogs
   (package
     (name "exfatprogs")
-    (version "1.1.2")
+    (version "1.1.3")
     (source
      (origin
        (method git-fetch)
@@ -570,7 +570,7 @@ from the bcachefs-tools package.  It is meant to be used in initrds.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "19pbybgbfnvjb3n944ihrn1r8ch4dm8dr0d44d6w7p63dcp372xy"))))
+        (base32 "14lgwvbg6jibsdpzpcj484p9q4ixawyjxi9hw23w89c6870gglw9"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
