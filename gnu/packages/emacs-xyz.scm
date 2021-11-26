@@ -12296,24 +12296,47 @@ passive voice.")
     (version "9.5")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://elpa.gnu.org/packages/org-" version ".tar"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://git.savannah.gnu.org/git/emacs/org-mode.git")
+             (commit (string-append "release_" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "16cflg5nms5nb8w86nvwkg49zkl0rvdhigkf4xpvbs0v7zb5y3ky"))))
+        (base32 "1gnzx53gkg2c6ljam31bvbibkra66lfx0w04jqmsv2gk8613527r"))))
     (build-system emacs-build-system)
     (arguments
-     `(#:phases
+     `(#:tests? #t
+       #:test-command '("make" "test-dirty")
+       #:phases
        (modify-phases %standard-phases
-         (add-after 'install 'install-documentation
+         (delete 'build)
+         (add-before 'check 'make
+           (lambda _
+             (invoke "make" (string-append "ORGVERSION=" ,version))))
+         (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((share (string-append (assoc-ref outputs "out") "/share"))
-                    (info-dir (string-append share "/info"))
-                    (doc-dir (string-append share "/doc/" ,name "-" ,version)))
-               (install-file "org.info" info-dir)
-               (install-file "orgguide.info" info-dir)
-               ;; XXX: "orgcard.pdf" is not built in Org 9.5.
-               ;; (install-file "orgcard.pdf" doc-dir)
-               ))))))
+             (substitute* "local.mk"
+               (("^prefix.*")
+                (string-append "prefix = " (assoc-ref outputs "out")))
+               (("^lispdir.*")
+                (string-append "lispdir = "
+                               (elpa-directory (assoc-ref outputs "out")))))
+             (invoke "make" "install")))
+         (add-after 'unpack 'fix-tests
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; These files are modified during testing
+             (with-directory-excursion "testing/examples"
+               (for-each make-file-writable
+                         '("babel.org"
+                           "ob-awk-test.org"
+                           "ob-sed-test.org"
+                           "ob-shell-test.org"))
+               ;; Specify where sh is
+               (substitute* "babel.org"
+                 (("/bin/sh" sh)
+                  (string-append (assoc-ref inputs "bash") sh)))))))))
+    (native-inputs
+     `(("texinfo" ,texinfo)))
     (home-page "https://orgmode.org/")
     (synopsis "Outline-based notes management and organizer")
     (description "Org is an Emacs mode for keeping notes, maintaining TODO
