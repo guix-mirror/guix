@@ -295,13 +295,6 @@ acceleration in mind, leveraging common 3D graphics APIs for best performance.")
                  (("libWPEBackend-fdo-([\\.0-9]+)\\.so" all version)
                   (string-append wpebackend-fdo "/lib/" all)))
                #t)))
-         ,@(if (string-prefix? "x86_64" (or (%current-target-system)
-                                            (%current-system)))
-               '()
-               '((add-after 'unpack 'disable-sse2
-                   (lambda _
-                     (substitute* "Source/cmake/DetectSSE2.cmake"
-                       (("CHECK_FOR_SSE2\\(\\)") ""))))))
          (add-before 'configure 'prepare-build-environment
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "CC" "clang")
@@ -314,6 +307,13 @@ acceleration in mind, leveraging common 3D graphics APIs for best performance.")
                         "#define USE_MUL_OVERFLOW 0")))
                    '())
              #t))
+         ,@(if (target-x86-64?)
+               '()
+               '((add-after 'unpack 'disable-sse2
+                   (lambda _
+                     (substitute* "Source/cmake/WebKitCompilerFlags.cmake"
+                       (("WTF_CPU_X86 AND NOT CMAKE_CROSSCOMPILING")
+                        "FALSE"))))))
          (add-after 'install 'move-doc-files
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
