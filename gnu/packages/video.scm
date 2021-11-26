@@ -4375,6 +4375,7 @@ tools for styling them, including a built-in real-time video preview.")
               (url "https://gitlab.gnome.org/GNOME/pitivi.git")
               (commit %version)))
         (file-name (git-file-name name version))
+        (patches (search-patches "pitivi-fix-build-with-meson-0.60.patch"))
         (sha256
          (base32 "08x2fs2bak1fbmkvjijgx1dsawispv91bpv5j5gkqbv5dfgf7wah"))))
      (build-system meson-build-system)
