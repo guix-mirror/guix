@@ -64,7 +64,7 @@
            (lambda _
              (substitute* "src/test/array.sl"
                (("10000,10000,10000,10000,10000,10000")
-                "100,100,100,100,100,100"))))
+                "10,10,10,10,10,10"))))
          (add-before 'configure 'substitute-before-config
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((ncurses (assoc-ref inputs "ncurses")))
