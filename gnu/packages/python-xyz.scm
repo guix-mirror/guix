@@ -25564,8 +25564,7 @@ dictionaries.")
          (add-before 'check 'fix-home-directory
            (lambda _
              ;; Tests fail with "Permission denied: '/homeless-shelter'".
-             (setenv "HOME" "/tmp")
-             #t)))
+             (setenv "HOME" "/tmp"))))
        ;; Tests fail with "Uncaught Python exception: python: undefined
        ;; symbol: objc_getClass".
        #:tests? #f))
