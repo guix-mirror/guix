@@ -1,0 +1,36 @@
+This patch fixes sandboxing on i686 by allowing 'statx'.  Without this,
+'src/test/test_include.sh' would fail.
+
+Patch adapted from:
+
+  https://gitlab.torproject.org/tpo/core/tor/-/merge_requests/480
+
+From 001d880d1082f5d124e10554e2718e407c7e88c6 Mon Sep 17 00:00:00 2001
+From: Simon South <simon@simonsouth.net>
+Date: Fri, 5 Nov 2021 10:10:10 -0400
+Subject: [PATCH] sandbox: Allow "statx" syscall on i386 for glibc 2.33
+
+glibc versions 2.33 and newer use the modern "statx" system call in their
+implementations of stat() and opendir() for Linux on i386.  Prevent failures in
+the sandbox unit tests by modifying the sandbox to allow this system call
+without restriction on i386 when it is available, and update the test suite to
+skip the "sandbox/stat_filename" test in this case as it is certain to fail.
+---
+ src/lib/sandbox/sandbox.c | 3 +++
+ src/test/test_sandbox.c   | 7 ++++---
+ 2 files changed, 7 insertions(+), 3 deletions(-)
+
+diff --git a/src/lib/sandbox/sandbox.c b/src/lib/sandbox/sandbox.c
+index fb02a345ab..a15f99ad76 100644
+--- a/src/lib/sandbox/sandbox.c
++++ b/src/lib/sandbox/sandbox.c
+@@ -252,6 +252,9 @@ static int filter_nopar_gen[] = {
+     SCMP_SYS(sigreturn),
+ #endif
+     SCMP_SYS(stat),
++#if defined(__i386__) && defined(__NR_statx)
++    SCMP_SYS(statx),
++#endif
+     SCMP_SYS(uname),
+     SCMP_SYS(wait4),
+     SCMP_SYS(write),

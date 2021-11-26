@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2017, 2018, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
@@ -64,7 +64,8 @@
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0sj7qn6d6js6gk4vjfkc7p9g021czbfaq00yfq3mn5ycnhvimkhm"))))
+               "0sj7qn6d6js6gk4vjfkc7p9g021czbfaq00yfq3mn5ycnhvimkhm"))
+             (patches (search-patches "tor-sandbox-i686.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
