@@ -2944,7 +2944,7 @@ GNOME and KDE desktops to the icon names proposed in the specification.")
 
 ;; gnome-icon-theme was renamed to adwaita-icon-theme after version 3.12.0.
 (define-public adwaita-icon-theme
-  (package (inherit gnome-icon-theme)
+  (package/inherit gnome-icon-theme
     (name "adwaita-icon-theme")
     (version "40.1.1")
     (source (origin
@@ -2956,7 +2956,11 @@ GNOME and KDE desktops to the icon names proposed in the specification.")
                (base32
                 "1xpqa1rgmixlp953938d08xvf7kv36h747ysial8g65dsrp46v0b"))))
     (native-inputs
-     `(("gtk-encode-symbolic-svg" ,gtk+ "bin")))))
+     ;; The following requires the SVG pixbuf loader, provided by librsvg,
+     ;; available on x86_64 only.
+     `(,@(if (target-64bit?)
+             (list "gtk-encode-symbolic-svg" gtk+ "bin")
+             '())))))
 
 (define-public tango-icon-theme
   (package
