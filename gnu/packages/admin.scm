@@ -3965,7 +3965,7 @@ Python loading in HPC environments.")
   (let ((real-name "inxi"))
     (package
       (name "inxi-minimal")
-      (version "3.3.08-1")
+      (version "3.3.09-1")
       (source
        (origin
          (method git-fetch)
@@ -3974,7 +3974,7 @@ Python loading in HPC environments.")
                (commit version)))
          (file-name (git-file-name real-name version))
          (sha256
-          (base32 "0kgxyxfw4hkmp9s3nazdqqvbfb4jqwv59mnpaa7g4n63nrqjv06v"))))
+          (base32 "0m8acg7avnmwqnz59kvrj8rrzg68m228x366bdr3qphw4jqp9l62"))))
       (build-system trivial-build-system)
       (inputs
        `(("bash" ,bash-minimal)
@@ -4026,8 +4026,7 @@ Python loading in HPC environments.")
                           %build-inputs)))))
              (invoke "gzip" "inxi.1")
              (install-file "inxi.1.gz"
-                           (string-append %output "/share/man/man1")))
-           #t)))
+                           (string-append %output "/share/man/man1"))))))
       (home-page "https://smxi.org/docs/inxi.htm")
       (synopsis "Full-featured system information script")
       (description "Inxi is a system information script that can display
