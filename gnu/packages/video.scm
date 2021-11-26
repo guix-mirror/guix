@@ -2220,7 +2220,7 @@ projects while introducing many more.")
 (define-public mpv-mpris
   (package
     (name "mpv-mpris")
-    (version "0.5")
+    (version "0.6")
     (source
       (origin
         (method git-fetch)
@@ -2229,8 +2229,7 @@ projects while introducing many more.")
                (commit version)))
         (file-name (git-file-name name version))
         (sha256
-         (base32
-          "07p6li5z38pkfd40029ag2jqx917vyl3ng5p2i4v5a0af14slcnk"))))
+         (base32 "03gldk149i2108w3ylyfmci77kdq4whdzfavh7hjviwyj534101r"))))
     (build-system copy-build-system)
     (arguments
      '(#:install-plan
