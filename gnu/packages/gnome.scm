@@ -2959,7 +2959,7 @@ GNOME and KDE desktops to the icon names proposed in the specification.")
      ;; The following requires the SVG pixbuf loader, provided by librsvg,
      ;; available on x86_64 only.
      `(,@(if (target-64bit?)
-             (list "gtk-encode-symbolic-svg" gtk+ "bin")
+             `(("gtk-encode-symbolic-svg" ,gtk+ "bin"))
              '())))))
 
 (define-public tango-icon-theme
