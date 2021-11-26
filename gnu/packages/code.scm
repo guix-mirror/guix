@@ -588,10 +588,11 @@ results and determine build stability.")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-/bin/bash-references
-           (lambda _
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((bash (assoc-ref inputs "bash")))
              (substitute* (find-files "src" ".*\\.cc?$")
-               (("/bin/bash") (which "bash"))
-               (("/bin/sh") (which "sh"))))))))
+               (("/bin/(bash|sh)" shell)
+                (string-append (assoc-ref inputs "bash") shell)))))))))
     (inputs
      `(("curl" ,curl)
        ("elfutils" ,elfutils)
