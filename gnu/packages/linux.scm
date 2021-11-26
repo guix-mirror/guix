@@ -348,6 +348,21 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 
 ;; The current "stable" kernels. That is, the most recently released major
 ;; versions that are still supported upstream.
+(define-public linux-libre-5.15-version "5.15.5")
+(define-public linux-libre-5.15-gnu-revision "gnu")
+(define deblob-scripts-5.15
+  (linux-libre-deblob-scripts
+   linux-libre-5.15-version
+   linux-libre-5.15-gnu-revision
+   (base32 "1rfhwfzifmbpnrhmrn3srm736nkm1v6affw915d0fgqzqgi8qfai")
+   (base32 "04fj1x3zmi310cr3m9hxpi26gdcmwfsqciv5yb6q6rrnqjqs1pc0")))
+(define-public linux-libre-5.15-pristine-source
+  (let ((version linux-libre-5.15-version)
+        (hash (base32 "07w5k2y5hk6ys19zgg3x21g6im9x0pwk5f6f8b0q3b152lq5lmp9")))
+   (make-linux-libre-source version
+                            (%upstream-linux-source version hash)
+                            deblob-scripts-5.15)))
+
 (define-public linux-libre-5.14-version "5.14.21")
 (define-public linux-libre-5.14-gnu-revision "gnu")
 (define deblob-scripts-5.14
@@ -484,6 +499,11 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
     (patches (append (origin-patches source)
                      patches))))
 
+(define-public linux-libre-5.15-source
+  (source-with-patches linux-libre-5.15-pristine-source
+                       (list %boot-logo-patch
+                             %linux-libre-arm-export-__sync_icache_dcache-patch)))
+
 (define-public linux-libre-5.14-source
   (source-with-patches linux-libre-5.14-pristine-source
                        (list %boot-logo-patch
@@ -595,6 +615,11 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
     (synopsis "GNU Linux-Libre kernel headers")
     (description "Headers of the Linux-Libre kernel.")
     (license license:gpl2)))
+
+(define-public linux-libre-headers-5.15
+  (make-linux-libre-headers* linux-libre-5.15-version
+                             linux-libre-5.15-gnu-revision
+                             linux-libre-5.15-source))
 
 (define-public linux-libre-headers-5.14
   (make-linux-libre-headers* linux-libre-5.14-version
@@ -901,6 +926,13 @@ It has been modified to remove all non-free binary blobs.")
 ;;;
 ;;; Generic kernel packages.
 ;;;
+
+(define-public linux-libre-5.15
+  (make-linux-libre* linux-libre-5.15-version
+                     linux-libre-5.15-gnu-revision
+                     linux-libre-5.15-source
+                     '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux" "riscv64-linux")
+                     #:configuration-file kernel-config))
 
 (define-public linux-libre-5.14
   (make-linux-libre* linux-libre-5.14-version
