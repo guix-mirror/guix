@@ -9089,7 +9089,7 @@ ones.")
 (define-public sbcl-salza2
   (package
     (name "sbcl-salza2")
-    (version "2.0.9")
+    (version "2.1")
     (source
      (origin
        (method git-fetch)
@@ -9098,8 +9098,14 @@ ones.")
              (commit (string-append "release-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0p38rj4gq7j5k807php7hrz7l2zyyfshv8i9yms7i8lkgg3433ki"))))
+        (base32 "1p48lxdibnps5rpyh5cmnk0vc77bmmxb32qdzfz93zadr8wwas10"))))
     (build-system asdf-build-system/sbcl)
+    (native-inputs
+     `(("chipz" ,sbcl-chipz)
+       ("flexi-streams" ,sbcl-flexi-streams)
+       ("parachute" ,sbcl-parachute)))
+    (inputs
+     `(("trivial-gray-streams" ,sbcl-trivial-gray-streams)))
     (synopsis "Common Lisp library for zlib, deflate and gzip compression")
     (description
      "Salza2 is a Common Lisp library for creating compressed data in the zlib,
