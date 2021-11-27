@@ -685,7 +685,8 @@ SUFFIX."
   expander => (lambda (obj lowered output)
                 (match obj
                   (($ <file-append> base suffix)
-                   (let* ((expand (lookup-expander base))
+                   (let* ((expand (or (lookup-expander base)
+                                      (lookup-expander lowered)))
                           (base   (expand base lowered output)))
                      (string-append base (string-concatenate suffix)))))))
 

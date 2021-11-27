@@ -441,6 +441,17 @@
                   '(system-binding)))
             (x x)))))
 
+(test-assert "let-system in file-append"
+  (let ((mixed (file-append (let-system (system target)
+                              (if (not target) grep sed))
+                            "/bin"))
+        (grep  (file-append grep "/bin"))
+        (sed   (file-append sed "/bin")))
+    (and (equal? (gexp->sexp* #~(list #$mixed))
+                 (gexp->sexp* #~(list #$grep)))
+         (equal? (gexp->sexp* #~(list #$mixed) "powerpc64le-linux-gnu")
+                 (gexp->sexp* #~(list #$sed) "powerpc64le-linux-gnu")))))
+
 (test-assert "ungexp + ungexp-native"
   (let* ((exp    (gexp (list (ungexp-native %bootstrap-guile)
                              (ungexp coreutils)
