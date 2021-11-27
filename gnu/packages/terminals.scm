@@ -870,7 +870,7 @@ a server/client mode.")
 (define-public sakura
   (package
     (name "sakura")
-    (version "3.8.3")
+    (version "3.8.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://launchpad.net/sakura/trunk/"
@@ -878,7 +878,7 @@ a server/client mode.")
                                   ".tar.bz2"))
               (sha256
                (base32
-                "1r2kpvxx21r407s07m5p5x0dam6x863991nmcv6k5ap873fxqh2h"))))
+                "1d8n32xnj21q2xx13xs2r9cfjaq31mxiyhx6d57x9cwnhwb11xn3"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f))                    ; no check phase
