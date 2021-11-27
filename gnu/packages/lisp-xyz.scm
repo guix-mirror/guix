@@ -17903,11 +17903,11 @@ functions allow Lisp programs to explore the web.")
   (sbcl-package->cl-source-package sbcl-aserve))
 
 (define-public sbcl-yxorp
-  (let ((commit "041d0a535d6406df703f5f037d3d2cad4159c74d")
-        (revision "2"))
+  (let ((commit "b30c8710864d36f17d3a832ec21d1628f9d82054")
+        (revision "3"))
     (package
       (name "sbcl-yxorp")
-      (version (git-version "0.2" revision commit))
+      (version (git-version "0.3" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -17916,14 +17916,17 @@ functions allow Lisp programs to explore the web.")
                (commit commit)))
          (file-name (git-file-name "cl-yxorp" version))
          (sha256
-          (base32 "14fvncisig6h2qamczbx9cifp3rbjfw0cmc2ffifvr82x2bwab1f"))))
+          (base32 "1ldx7p6j5l9k45w0dkf75mcav4n0qk2p2h4zgz4bdhm9i5nlwakz"))))
       (build-system asdf-build-system/sbcl)
       (inputs
-       `(("cl+ssl" ,sbcl-cl+ssl)
+       `(("chipz" ,sbcl-chipz)
+         ("chunga" ,sbcl-chunga)
+         ("cl+ssl" ,sbcl-cl+ssl)
          ("cl-binding-arrows" ,sbcl-binding-arrows)
          ("cl-str" ,sbcl-cl-str)
          ("cl-usocket" ,sbcl-usocket)
          ("flexi-streams" ,sbcl-flexi-streams)
+         ("salza2" ,sbcl-salza2)
          ("trivial-garbage" ,sbcl-trivial-garbage)))
       (home-page "https://github.com/charje/cl-yxorp")
       (synopsis
