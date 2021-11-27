@@ -25,6 +25,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix gexp)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system qt)
   #:use-module (gnu packages compression)
@@ -269,21 +270,22 @@ basic needs and easy to configure for those who want special setups.")
        ("zlib" ,zlib)))
     (build-system qt-build-system)
     (arguments
-     `(#:configure-flags
-       `(,(string-append "-DKDE_INSTALL_DATADIR="
-                         (assoc-ref %outputs "out") "/share"))
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'patch-cmakelists
-           (lambda _
-             ;; TODO: Verify: This should no longer be necessary, since
-             ;; KF5AuthConfig.cmake.in contains this already.
-             (substitute* "processcore/CMakeLists.txt"
-               (("KAUTH_HELPER_INSTALL_DIR") "KDE_INSTALL_LIBEXECDIR"))))
-         (replace 'check
-           (lambda _
-             ;; TODO: Fix this failing test-case
-             (invoke "ctest" "-E" "processtest"))))))
+     (list #:configure-flags
+           #~`(,(string-append "-DKDE_INSTALL_DATADIR="
+                               #$output "/share"))
+           #:phases
+           #~(modify-phases %standard-phases
+               (add-before 'configure 'patch-cmakelists
+                 (lambda _
+                   ;; TODO: Verify: This should no longer be necessary, since
+                   ;; KF5AuthConfig.cmake.in contains this already.
+                   (substitute* "processcore/CMakeLists.txt"
+                     (("KAUTH_HELPER_INSTALL_DIR")
+                      "KDE_INSTALL_LIBEXECDIR"))))
+               (replace 'check
+                 (lambda _
+                   ;; TODO: Fix this failing test-case
+                   (invoke "ctest" "-E" "processtest"))))))
     (home-page "https://userbase.kde.org/KSysGuard")
     (synopsis "Network enabled task and system monitoring")
     (description "KSysGuard can obtain information on system load and
