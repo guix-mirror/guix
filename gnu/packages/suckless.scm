@@ -435,7 +435,7 @@ drawing.")
        ("gcr" ,gcr)
        ("glib-networking" ,glib-networking)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("webkitgtk" ,webkitgtk)
+       ("webkitgtk" ,webkitgtk-with-libsoup2)
        ("xprop" ,xprop)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
