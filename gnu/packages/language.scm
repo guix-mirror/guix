@@ -477,7 +477,7 @@ languages.")
     (propagated-inputs
      `(("perl-lingua-en-words2nums" ,perl-lingua-en-words2nums)))
     (home-page "https://metacpan.org/release/Lingua-EN-FindNumber")
-    (synopsis "Locate (written) numbers in English text ")
+    (synopsis "Locate (written) numbers in English text")
     (description "This module provides a regular expression for finding
 numbers in English text.  It also provides functions for extracting and
 manipulating such numbers.")
