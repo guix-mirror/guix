@@ -533,7 +533,7 @@ Virtual Machines.  OVMF contains a sample UEFI firmware for QEMU and KVM.")
 (define* (make-arm-trusted-firmware platform #:optional (arch "aarch64"))
   (package
     (name (string-append "arm-trusted-firmware-" platform))
-    (version "2.5")
+    (version "2.6")
     (source
       (origin
         (method git-fetch)
@@ -544,7 +544,7 @@ Virtual Machines.  OVMF contains a sample UEFI firmware for QEMU and KVM.")
         (file-name (git-file-name "arm-trusted-firmware" version))
        (sha256
         (base32
-         "0w3blkqgmyb5bahlp04hmh8abrflbzy0qg83kmj1x9nv4mw66f3b"))))
+         "1j0rn33pwgmksqliwf2npm2px84qmbyma9iq8zpllwfc7dsl6gx9"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
