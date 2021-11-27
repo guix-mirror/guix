@@ -2941,7 +2941,7 @@ of bibliographic references.")
 (define-public emacs-corfu
   (package
     (name "emacs-corfu")
-    (version "0.15")
+    (version "0.16")
     (source
      (origin
        (method git-fetch)
@@ -2950,7 +2950,7 @@ of bibliographic references.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0crk5dryaqqj36fjcsxi0gd924125p0yghvg5anwj38zjqg1rqm9"))))
+        (base32 "0al8jsdih6b6y26lwg8lwld35flh7q3539f4k1nz6is3xfqxbahz"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/minad/corfu")
     (synopsis "Completion overlay region function")
