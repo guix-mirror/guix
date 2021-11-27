@@ -3067,12 +3067,12 @@ to easily extend the contacts collection.")
          (add-after 'unpack 'fix-paths-for-test
            ;; This test tries to access paths like /home, /usr/bin and /bin/ls
            ;; which don't exist in the build-container. Change to existing paths.
-           (lambda _
+           (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "autotests/runnercontexttest.cpp"
                (("/home\"") "/tmp\"") ;; single path-part
                (("//usr/bin\"") (string-append (getcwd) "\"")) ;; multiple path-parts
                (("/bin/ls")
-                (search-input-file %build-inputs "/bin/ls")))))
+                (search-input-file inputs "/bin/ls")))))
          (add-before 'check 'check-setup
            (lambda _
              (setenv "HOME" (getcwd))
