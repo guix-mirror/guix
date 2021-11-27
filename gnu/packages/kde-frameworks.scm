@@ -33,6 +33,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
+  #:use-module (guix gexp)
   #:use-module (gnu packages)
   #:use-module (gnu packages acl)
   #:use-module (gnu packages admin)
@@ -294,12 +295,12 @@ http://freedesktop.org/wiki/Specifications/open-collaboration-services/")
      ;; TODO: qtdeclarative (yields one failing test)
      `(("qtbase" ,qtbase-5)))
     (arguments
-     `(#:configure-flags
-       (list (string-append
-              "-DUDEV_RULES_INSTALL_DIR=" %output "/lib/udev/rules.d"))
-       ;; TODO: Make tests pass: DBUS_FATAL_WARNINGS=0 still yields 7/8 tests
-       ;; failing.  When running after install, tests hang.
-       #:tests? #f))
+     (list #:configure-flags
+           #~(list (string-append
+                    "-DUDEV_RULES_INSTALL_DIR=" #$output "/lib/udev/rules.d"))
+           ;; TODO: Make tests pass: DBUS_FATAL_WARNINGS=0 still yields 7/8 tests
+           ;; failing.  When running after install, tests hang.
+           #:tests? #f))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "QML wrapper for BlueZ")
     (description "bluez-qt is a Qt-style library for accessing the bluez
