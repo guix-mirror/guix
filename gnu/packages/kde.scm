@@ -57,10 +57,12 @@
   #:use-module (gnu packages ebook)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages geo)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gps)
   #:use-module (gnu packages graphics)
   #:use-module (gnu packages image)
   #:use-module (gnu packages kde-frameworks)
@@ -74,6 +76,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages photo)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages protobuf)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages tls)
@@ -1006,17 +1009,36 @@ Python, PHP, and Perl.")
      ;; corresponding configure flag to build tests.
      `(#:tests? #f
        #:configure-flags
-       '("-DCMAKE_BUILD_TYPE=Release"
-         "-DWITH_KF5=FALSE"
-         "-DBUILD_MARBLE_TESTS=FALSE")))
+       (list "-DBUILD_MARBLE_TOOLS=YES" ; file conversion tools
+             "-DBUILD_TOUCH=YES"
+             "-DBUILD_MARBLE_TESTS=FALSE")))
     (native-inputs
-     `(("qttools" ,qttools)))
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("qttools" ,qttools)))
+    ;; One optional dependency missing: libwlocate.
     (inputs
-     `(("qtbase" ,qtbase-5)
-       ("qtsvg" ,qtsvg)
+     `(("gpsd" ,gpsd)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kcrash" ,kcrash)
+       ("kdoctools" ,kdoctools)
+       ("ki18n" ,ki18n)
+       ("kio" ,kio)
+       ("knewstuff" ,knewstuff)
+       ("kparts" ,kparts)
+       ("krunner" ,krunner)
+       ("kwallet" ,kwallet)
+       ("perl" ,perl)
+       ("phonon" ,phonon)
+       ("protobuf" ,protobuf)
+       ("qtbase" ,qtbase-5)
        ("qtdeclarative" ,qtdeclarative)
-       ("qtwebkit" ,qtwebkit)
-       ("qtlocation" ,qtlocation)))
+       ("qtlocation" ,qtlocation)
+       ("qtserialport" ,qtserialport)
+       ("qtsvg" ,qtsvg)
+       ;; ("qtwebengine" ,qtwebengine) ; FIXME: not found by CMake
+       ("shapelib" ,shapelib)
+       ("shared-mime-info" ,shared-mime-info)
+       ("zlib" ,zlib)))
     (home-page "https://marble.kde.org/")
     (synopsis "Virtual globe and world atlas")
     (description "Marble is similar to a desktop globe.  At closer scale it
