@@ -2563,7 +2563,7 @@ other site that youtube-dl supports.")
 (define-public you-get
   (package
     (name "you-get")
-    (version "0.4.1500")
+    (version "0.4.1555")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2572,7 +2572,7 @@ other site that youtube-dl supports.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "02wkmq6bjg9iz0kccsgs192aiky99l2jnw1xs6zjhvjvq7jyvf7s"))))
+                "0gn86i6nfsw395r9a3i88nv2g08s5bgjps7w4qawb9gvk4h7zqap"))))
     (build-system python-build-system)
     (inputs
      `(("ffmpeg" ,ffmpeg)))             ; for multi-part and >=1080p videos
@@ -2589,8 +2589,7 @@ other site that youtube-dl supports.")
                  ;; Don't blindly replace all occurrences of ‘'ffmpeg'’: the
                  ;; same string is also used when sniffing ffmpeg's output.
                  (("(FFMPEG == |\\()'ffmpeg'" _ prefix)
-                  (string-append prefix "'" ffmpeg "'")))
-               #t))))
+                  (string-append prefix "'" ffmpeg "'")))))))
        #:tests? #f))                    ; XXX some tests need Internet access
     (synopsis "Download videos, audio, or images from Web sites")
     (description
