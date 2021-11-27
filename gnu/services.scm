@@ -319,7 +319,13 @@ the resulting list of services.  Each clause must have the form:
 
 where TYPE is a service type, such as 'guix-service-type', and VARIABLE is an
 identifier that is bound within BODY to the value of the service of that
-TYPE.  Consider this example:
+TYPE.
+
+Clauses can also remove services of a given type:
+
+  (delete TYPE)
+
+Consider this example:
 
   (modify-services %base-services
     (guix-service-type config =>
