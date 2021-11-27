@@ -3330,7 +3330,7 @@ never see any machines other than the one Dante is running on.")
 (define-public restbed
   (package
     (name "restbed")
-    (version "4.7")
+    (version "4.8")
     (source
      (origin
        (method git-fetch)
@@ -3339,19 +3339,15 @@ never see any machines other than the one Dante is running on.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "055qicb773a599dsqbcz5xf0xj1wpk33mdrkyi0fsmyjmn8d2p9d"))))
+        (base32 "15j09x36i6zj6innl0w1mfzlc56qmjwrs82my8dsagqa2ikd08ya"))))
     (build-system cmake-build-system)
     (inputs
-     `(("asio" ,asio-1.12)
+     `(("asio" ,asio)
        ("catch" ,catch-framework)
        ("openssl" ,openssl)))
     (arguments
-     `(#:tests? #f
-       #:configure-flags
-       '("-DBUILD_TESTS=NO"
-         "-DBUILD_EXAMPLES=NO"
-         "-DBUILD_SSL=NO"
-         "-DBUILD_SHARED=NO")
+     `(#:configure-flags
+       '("-DBUILD_SSL=NO")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'apply-patches-and-fix-paths
