@@ -103,6 +103,40 @@
   #:use-module (gnu packages xorg)
   #:use-module (srfi srfi-26))
 
+(define-public libptytty
+  (package
+    (name "libptytty")
+    (version "2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/yusiwen/libptytty")
+             (commit "b9694ea18e0dbd78213f55233a430325c13ad63e")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1g8by1m6ya4r47p137mw4ddml40js0zh6mdb9n6ib49ayngv8ak3"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f))                    ; no test suite
+    (home-page "https://github.com/yusiwen/libptytty")
+    (synopsis
+     "Portable, secure PTY/TTY and @file{utmp}/@file{wtmp}/@file{lastlog} handling")
+    (description
+     "Libptytty is a small C/C++ library to manage pseudo-ttys in a uniform way,
+created out of frustration over the many differences of PTY/TTY handling in
+different operating systems.
+
+In addition to mere PTY/TTY management, it supports updating the session
+database at @file{utmp}, and @file{wtmp}/@file{lastlog} for login shells.
+
+It also supports @code{fork}ing after start-up and dropping privileges in the
+calling process.  This reduces the potential attack surface: if the calling
+process were to be compromised by the user starting the program, there would be
+less to gain, as only the helper process is running with privileges (e.g.,
+@code{setuid}/@code{setgid}).")
+    (license license:gpl2+)))
+
 (define-public tilda
   (package
     (name "tilda")
