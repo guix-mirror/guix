@@ -51,6 +51,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages backup)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
@@ -125,10 +126,12 @@
            (assoc-ref glib-or-gtk:%standard-phases
                       'glib-or-gtk-wrap)))))
     (native-inputs
-     `(("glib:bin" ,glib "bin")
+     `(("desktop-file-utils" ,desktop-file-utils) ;for tests
+       ("glib:bin" ,glib "bin")
        ("gtk+:bin" ,gtk+ "bin")
        ("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("which" ,which))) ;for tests
     (inputs
      `(("adwaita-icon-theme" ,adwaita-icon-theme)
        ("gcr" ,gcr)
@@ -139,10 +142,9 @@
        ("json-glib" ,json-glib)
        ("libarchive" ,libarchive)
        ("libpeas" ,libpeas)
-       ("libsoup" ,libsoup)
        ("sqlite" ,sqlite)
        ("vala" ,vala)
-       ("webkitgtk" ,webkitgtk)))
+       ("webkitgtk" ,webkitgtk-with-libsoup2)))
     (synopsis "Lightweight graphical web browser")
     (description "@code{Midori} is a lightweight, Webkit-based web browser.
 It features integration with GTK+3, configurable web search engine, bookmark
