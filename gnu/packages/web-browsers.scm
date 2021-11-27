@@ -224,7 +224,7 @@ features including, tables, builtin image display, bookmarks, SSL and more.")
        ("glib-networking" ,glib-networking)
        ("lua5.1-filesystem" ,lua5.1-filesystem)
        ("luajit" ,luajit)
-       ("webkitgtk" ,webkitgtk)
+       ("webkitgtk" ,webkitgtk-with-libsoup2)
        ("sqlite" ,sqlite)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
