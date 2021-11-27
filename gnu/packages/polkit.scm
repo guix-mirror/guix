@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
-;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Huang Ying <huang.ying.caritas@gmail.com>
@@ -50,7 +50,7 @@
   #:use-module (gnu packages xml)
   #:export (polkit))
 
-(define-public polkit*
+(define-public polkit-mozjs
   (package
     (name "polkit")
     (version "0.120")
@@ -153,7 +153,7 @@ for unprivileged applications.")
 ;;; Variant of polkit built with Duktape, a lighter JavaScript engine compared
 ;;; to mozjs.
 (define-public polkit-duktape
-  (let ((base polkit*))
+  (let ((base polkit-mozjs))
     (package/inherit base
       (name "polkit-duktape")
       (source
@@ -186,7 +186,7 @@ for unprivileged applications.")
     "Return a polkit package that can be built for SYSTEM; that is, either the
 regular polkit that requires mozjs or its duktape variant."
     (if (string-prefix? "x86_64" system)
-        polkit*
+        polkit-mozjs
         polkit-duktape)))
 
 ;;; Define a top level polkit variable that can be built on any of the
