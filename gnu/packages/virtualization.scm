@@ -1007,7 +1007,7 @@ Debian or a derivative using @command{debootstrap}.")
      `(("libsoup" ,libsoup-minimal-2)
        ("libxml2" ,libxml2)
        ("libxslt" ,libxslt)
-       ("osinfo-db" ,osinfo-db)))
+       ("osinfo-db" ,osinfo-db-next)))
     (native-inputs
      `(("glib" ,glib "bin")  ; glib-mkenums, etc.
        ("gobject-introspection" ,gobject-introspection)
