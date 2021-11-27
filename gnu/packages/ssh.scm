@@ -824,7 +824,7 @@ framework.")
 (define-public clustershell
   (package
     (name "clustershell")
-    (version "1.8.3")
+    (version "1.8.4")
     (source
      (origin
        (method git-fetch)
@@ -833,7 +833,7 @@ framework.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "128v3gc6gj9622sp41az1jkcqnkbsdzvb2jpk12fpm1mmjcfgfvc"))))
+        (base32 "11b87vyamcw4rvgxz74jxwkr9ly0h9ldp2wqsi5wc19p0r06la5j"))))
     (build-system python-build-system)
     (inputs `(("openssh" ,openssh)))
     (propagated-inputs `(("python-pyyaml" ,python-pyyaml)))
@@ -845,8 +845,7 @@ framework.")
                         (substitute* "lib/ClusterShell/Worker/Ssh.py"
                           (("info\\(\"ssh_path\"\\) or \"ssh\"")
                            (string-append "info(\"ssh_path\") or \""
-                                          ssh "/bin/ssh\"")))
-                        #t))))))
+                                          ssh "/bin/ssh\"")))))))))
     (home-page "https://cea-hpc.github.io/clustershell/")
     (synopsis "Scalable event-driven Python framework for cluster administration")
     (description
