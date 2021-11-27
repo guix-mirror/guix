@@ -827,12 +827,13 @@ framework.")
     (version "1.8.3")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/cea-hpc/clustershell/releases"
-                           "/download/v" version
-                           "/ClusterShell-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/cea-hpc/clustershell")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "1qdcgh733szwj9r1gambrgfkizvbjci0bnnkds9a8mnyb3sasnan"))))
+        (base32 "128v3gc6gj9622sp41az1jkcqnkbsdzvb2jpk12fpm1mmjcfgfvc"))))
     (build-system python-build-system)
     (inputs `(("openssh" ,openssh)))
     (propagated-inputs `(("python-pyyaml" ,python-pyyaml)))
