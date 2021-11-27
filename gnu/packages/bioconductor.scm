@@ -4731,6 +4731,33 @@ protein-protein interaction databases and integrative resources such as
 molecular functions, respectively, and produces intuitive graphical outputs.")
     (license license:gpl3)))
 
+(define-public r-xmapbridge
+  (package
+    (name "r-xmapbridge")
+    (version "1.52.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "xmapbridge" version))
+       (sha256
+        (base32 "1zsqhisbq6f9qgw9f0a6ixxh635h3qm17117yfns5nnfw73ndlgi"))))
+    (properties `((upstream-name . "xmapbridge")))
+    (build-system r-build-system)
+    (home-page "https://git.bioconductor.org/packages/xmapbridge")
+    (synopsis "Display numeric data in the web based genome browser X:MAP")
+    (description
+     "The package @code{xmapbridge} can plot graphs in the X:Map genome
+browser.  X:Map uses the Google Maps API to provide a scrollable view of the
+genome.  It supports a number of species, and can be accessed at
+@url{http://xmap.picr.man.ac.uk}.  This package exports plotting files in a
+suitable format.  Graph plotting in R is done using calls to the functions
+@code{xmap.plot} and @code{xmap.points}, which have parameters that aim to be
+similar to those used by the standard plot methods in R.  These result in data
+being written to a set of files (in a specific directory structure) that
+contain the data to be displayed, as well as some additional meta-data
+describing each of the graphs.")
+    (license license:lgpl3)))
+
 (define-public r-xvector
   (package
     (name "r-xvector")
