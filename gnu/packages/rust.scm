@@ -318,6 +318,11 @@
     (description "Rust is a systems programming language that provides memory
 safety and thread safety guarantees.")
     (home-page "https://github.com/thepowersgang/mrustc")
+
+    ;; So far mrustc is x86_64-only.  It may support i686 soon:
+    ;; <https://github.com/thepowersgang/mrustc/issues/78>.
+    (supported-systems '("x86_64-linux"))
+
     ;; Dual licensed.
     (license (list license:asl2.0 license:expat))))
 
@@ -502,9 +507,6 @@ ar = \"" binutils "/bin/ar" "\"
            (search-path-specification
             (variable "LIBRARY_PATH")
             (files '("lib" "lib64")))))
-    (supported-systems
-     (delete "i686-linux"               ; fails to build, see bug #35519
-             %supported-systems))
     (synopsis "Compiler for the Rust progamming language")
     (description "Rust is a systems programming language that provides memory
 safety and thread safety guarantees.")
