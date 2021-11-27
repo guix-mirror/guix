@@ -3051,40 +3051,36 @@ asynchronous model using a modern C++ approach.")
     (license license:boost1.0)))
 
 (define-public shadowsocks
-  ;; There are some security fixes after the last release.
-  (let* ((commit "e332ec93e9c90f1cbee676b022bf2c5d5b7b1239")
-         (revision "0")
-         (version (git-version "2.8.2" revision commit)))
-    (package
-      (name "shadowsocks")
-      (version version)
-      (home-page "https://github.com/shadowsocks/shadowsocks")
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url home-page)
-                      (commit commit)))
-                (sha256
-                 (base32
-                  "1idd9b4f2pnhcpk1bh030hqg5zq25gkwxd53xi3c0cj242w7sp2j"))
-                (file-name (git-file-name name version))))
-      (inputs
-       `(("openssl" ,openssl)))
-      (arguments
-       '(#:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'patch-crypto-paths
-             (lambda* (#:key inputs #:allow-other-keys)
-               (substitute* "shadowsocks/shell.py"
-                 (("config\\.get\\('libopenssl', None\\)")
-                  (format #f "config.get('libopenssl', ~s)"
-                          (string-append
-                           (assoc-ref inputs "openssl")
-                           "/lib/libssl.so")))))))))
-      (build-system python-build-system)
-      (synopsis "Fast tunnel proxy that helps you bypass firewalls")
-      (description
-       "This package is a fast tunnel proxy that helps you bypass firewalls.
+  (package
+    (name "shadowsocks")
+    (version "2.9.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/shadowsocks/shadowsocks")
+             (commit version)))
+       (sha256
+        (base32 "02mp5905nz02d7amb4zc77rcrkxmvy8mf5rci7mvy58g24lvbw25"))
+       (file-name (git-file-name name version))))
+    (inputs
+     `(("openssl" ,openssl)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-crypto-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "shadowsocks/shell.py"
+               (("config\\.get\\('libopenssl', None\\)")
+                (format #f "config.get('libopenssl', ~s)"
+                        (string-append
+                         (assoc-ref inputs "openssl")
+                         "/lib/libssl.so")))))))))
+    (build-system python-build-system)
+    (home-page "https://github.com/shadowsocks/shadowsocks")
+    (synopsis "Fast tunnel proxy that helps you bypass firewalls")
+    (description
+     "This package is a fast tunnel proxy that helps you bypass firewalls.
 
 Features:
 @itemize
@@ -3094,7 +3090,7 @@ Features:
 @item Workers and graceful restart
 @item Destination IP blacklist
 @end itemize")
-      (license license:asl2.0))))
+    (license license:asl2.0)))
 
 (define-public net-snmp
   (package
