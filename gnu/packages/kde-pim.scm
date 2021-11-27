@@ -90,10 +90,10 @@
        #:phases
        (modify-phases (@ (guix build qt-build-system) %standard-phases)
          (add-before 'configure 'add-definitions
-           (lambda _
-             (let ((out (assoc-ref %outputs "out"))
-                   (mysql (assoc-ref %build-inputs "mysql"))
-                   (pgsql (assoc-ref %build-inputs "postgresql")))
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (let ((out   (assoc-ref outputs "out"))
+                   (mysql (assoc-ref inputs "mysql"))
+                   (pgsql (assoc-ref inputs "postgresql")))
                (with-output-to-file "CMakeLists.txt.new"
                  (lambda _
                    (display
