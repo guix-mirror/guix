@@ -24,6 +24,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
+  #:use-module (guix gexp)
   #:use-module (gnu packages)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages base)
@@ -474,11 +475,11 @@ autoloading of subtitle files for use while playing video.")
        ("qtquickcontrols2" ,qtquickcontrols2) ; not listed as dependency
        ("qtx11extras" ,qtx11extras)))
     (arguments
-     `(#:tests? #f ; test program gets built, but is not found
-       #:configure-flags
-       (list (string-append "-DCMAKE_CXX_FLAGS=-I"
-                            (assoc-ref %build-inputs "gst-plugins-base")
-                            "/include/gstreamer-1.0"))))
+     (list #:tests? #f ; test program gets built, but is not found
+           #:configure-flags
+           #~(list (string-append "-DCMAKE_CXX_FLAGS=-I"
+                                  #$(this-package-input "gst-plugins-base")
+                                  "/include/gstreamer-1.0"))))
     (home-page "https://kde.org/applications/multimedia/org.kde.kamoso")
     (synopsis "Take pictures and videos out of your webcam")
     (description "Kamoso is a simple and friendly program to use your
