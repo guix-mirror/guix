@@ -1106,7 +1106,10 @@ H.264 (MPEG-4 AVC) video streams.")
              (substitute* (find-files "lib" "\\.pm$")
                (("\"youtube-dl\"")
                 (format #f "\"~a/bin/youtube-dl\""
-                        (assoc-ref inputs "youtube-dl"))))
+                        (assoc-ref inputs "youtube-dl")))
+               (("\"yt-dlp\"")
+                (format #f "\"~a/bin/yt-dlp\""
+                        (assoc-ref inputs "yt-dlp"))))
              (substitute* (find-files "bin" ".*-viewer$")
                (("'ffmpeg'")
                 (format #f "'~a/bin/ffmpeg'"
@@ -1119,7 +1122,10 @@ H.264 (MPEG-4 AVC) video streams.")
                         (assoc-ref inputs "xdg-utils")))
                (("'youtube-dl'")
                 (format #f "'~a/bin/youtube-dl'"
-                        (assoc-ref inputs "youtube-dl"))))))
+                        (assoc-ref inputs "youtube-dl")))
+               (("'yt-dlp'")
+                (format #f "'~a/bin/yt-dlp'"
+                        (assoc-ref inputs "yt-dlp"))))))
          (add-after 'install 'install-xdg
            (lambda args
              (apply (assoc-ref copy:%standard-phases 'install)
@@ -1172,7 +1178,8 @@ H.264 (MPEG-4 AVC) video streams.")
        ("perl-uri-escape" ,perl-uri-escape)
        ("wget" ,wget)
        ("xdg-utils" ,xdg-utils)
-       ("youtube-dl" ,youtube-dl)))
+       ("youtube-dl" ,youtube-dl)
+       ("yt-dlp" ,yt-dlp)))
     (propagated-inputs
      `(("dconf" ,dconf)))
     (home-page "https://github.com/trizen/pipe-viewer")
