@@ -308,11 +308,11 @@ This package is part of the KDE multimedia module.")
      `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'set-absolute-library-paths
-           (lambda _
+           (lambda* (#:key inputs #:allow-other-keys)
              ;; Set absolute paths for dlopened libraries. We can’t use k3b’s
              ;; runpath as they are loaded by the Qt library.
-             (let ((libcdio-paranoia (assoc-ref %build-inputs "libcdio-paranoia"))
-                   (libdvdcss (assoc-ref %build-inputs "libdvdcss")))
+             (let ((libcdio-paranoia (assoc-ref inputs "libcdio-paranoia"))
+                   (libdvdcss (assoc-ref inputs "libdvdcss")))
                (substitute* "libk3b/tools/k3bcdparanoialib.cpp"
                  (("\"(cdio_cdda|cdio_paranoia)\"" _ library)
                   (string-append "\"" libcdio-paranoia "/lib/" library "\"")))
@@ -321,12 +321,12 @@ This package is part of the KDE multimedia module.")
                   (string-append "\"" libdvdcss "/lib/" library "\""))))
              #t))
          (add-after 'qt-wrap 'wrap-path
-           (lambda _
+           (lambda* (#:key inputs outputs #:allow-other-keys)
              ;; Set paths to backend programs.
-             (wrap-program (string-append (assoc-ref %outputs "out") "/bin/k3b")
+             (wrap-program (string-append (assoc-ref outputs "out") "/bin/k3b")
                `("PATH" ":" prefix
                  ,(map (lambda (input)
-                         (string-append (assoc-ref %build-inputs input) "/bin"))
+                         (string-append (assoc-ref inputs input) "/bin"))
                        '("cdrdao" "dvd+rw-tools" "libburn" "sox"))))
              #t)))))
     (native-inputs
