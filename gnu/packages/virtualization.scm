@@ -441,7 +441,7 @@ server and embedded PowerPC, and S390 guests.")
 (define-public libx86emu
   (package
     (name "libx86emu")
-    (version "3.4")
+    (version "3.5")
     (home-page "https://github.com/wfeldt/libx86emu")
     (source
      (origin
@@ -451,6 +451,8 @@ server and embedded PowerPC, and S390 guests.")
          (url home-page)
          (commit version)))
        (file-name (git-file-name name version))
+       (sha256
+        (base32 "11nj3y7maz9ch15b1c2b69gd8d7mpaha377zpdbvfsmg5w9zz93l"))
        (modules
         '((guix build utils)))
        (snippet
@@ -461,9 +463,7 @@ server and embedded PowerPC, and S390 guests.")
            (substitute* "Makefile"
              (("GIT2LOG.*=.*$") "")
              (("GITDEPS.*=.*$") "")
-             (("BRANCH.*=.*$") ""))))
-       (sha256
-        (base32 "0f8mwpgfyid26i9q77n2rlcr4zzc75jnjzmy2hc38gk3q71ijmwh"))))
+             (("BRANCH.*=.*$") ""))))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
