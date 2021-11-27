@@ -6,6 +6,7 @@
 ;;; Copyright © 2018, 2019, 2021 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2021 Pierre Langlois <pierre.langlois@gmx.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -85,6 +86,12 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
           `(cons* "--disable-nscd" "--disable-build-nscd"
                   "--enable-static-nss"
                   ,flags))))
+
+      ;; Make sure to build glibc with the same compiler version as the rest
+      ;; of the bootstrap.  Otherwise it fails to statically link on aarch64.
+      (native-inputs
+       `(("gcc" ,gcc-7)
+         ,@(package-native-inputs base)))
 
       ;; Remove the 'debug' output to allow bit-reproducible builds (when the
       ;; 'debug' output is used, ELF files end up with a .gnu_debuglink, which
