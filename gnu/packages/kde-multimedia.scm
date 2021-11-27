@@ -577,10 +577,11 @@ This package is part of the KDE multimedia module.")
        ("xcb-util-keysyms" ,xcb-util-keysyms)
        ("xcb-util-wm" ,xcb-util-wm)))
     (arguments
-     `(#:configure-flags
-       (list (string-append
-              "-DCMAKE_CXX_FLAGS=-I"
-              (assoc-ref %build-inputs "qtx11extras") "/include/qt5"))))
+     (list #:configure-flags
+           #~(list (string-append
+                    "-DCMAKE_CXX_FLAGS=-I"
+                    #$(this-package-input "qtx11extras")
+                    "/include/qt5"))))
     (home-page "https://kde.org/applications/multimedia/org.kde.kmplayer")
     (synopsis "Media player using mplayer/phonon as backend")
     (description "Kmplayer can play all the audio/video supported by
