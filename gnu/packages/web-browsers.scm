@@ -565,7 +565,7 @@ GUI.  It is based on PyQt5 and QtWebEngine.")
     (inputs
      `(("glib-networking" ,glib-networking)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("webkitgtk" ,webkitgtk)))
+       ("webkitgtk" ,webkitgtk-with-libsoup2)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "https://fanglingsu.github.io/vimb/")
