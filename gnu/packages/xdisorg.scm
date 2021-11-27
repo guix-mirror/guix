@@ -117,6 +117,7 @@
   #:use-module (gnu packages qt)
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages tcl)
+  #:use-module (gnu packages terminals)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages)
@@ -1206,14 +1207,14 @@ compact configuration syntax.")
 (define-public rxvt-unicode
   (package
     (name "rxvt-unicode")
-    (version "9.26")
+    (version "9.29")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://dist.schmorp.de/rxvt-unicode/Attic/"
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "12y9p32q0v7n7rhjla0j2g9d5rj2dmwk20c9yhlssaaxlawiccb4"))))
+                "0z0mqiiw1vxb1vz1b7my1yzb57pzaprc5v28azwb379i1kgck2y1"))))
     (build-system gnu-build-system)
     (arguments
      ;; This sets the destination when installing the necessary terminal
@@ -1241,8 +1242,7 @@ compact configuration syntax.")
                            TryExec=~@*~a/bin/urxvt~@
                            Icon=~@
                            Type=Application~%"
-                           output)))
-               #t)))
+                           output))))))
          (add-after 'install 'install-desktop-urxvtc
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((output (assoc-ref outputs "out"))
@@ -1259,10 +1259,10 @@ compact configuration syntax.")
                            TryExec=~@*~a/bin/urxvtc~@
                            Icon=~@
                            Type=Application~%"
-                           output)))
-               #t))))))
+                           output)))))))))
     (inputs
-     `(("libXft" ,libxft)
+     `(("libptytty" ,libptytty)
+       ("libXft" ,libxft)
        ("libX11" ,libx11)
        ("libXt" ,libxt)))
     (native-inputs
