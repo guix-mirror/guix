@@ -303,14 +303,14 @@ endpoints.")
 (define-public strongswan
   (package
     (name "strongswan")
-    (version "5.9.3")
+    (version "5.9.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.strongswan.org/strongswan-"
                            version ".tar.bz2"))
        (sha256
-        (base32 "1xy6c9c7bq5a5jmm04r9f9iqn39yrr1dkq81jhvpxsd4l1ban9ck"))))
+        (base32 "063mi0kdlpd7r7s3py35yf80hvrv3nrdfvxpyn7ns25gqajg3za5"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -328,13 +328,11 @@ endpoints.")
              (substitute* "src/libstrongswan/tests/suites/test_process.c"
                (("/bin/sh") (which "sh"))
                (("/bin/echo") (which "echo"))
-               (("cat") (which "cat")))
-             #t))
+               (("cat") (which "cat")))))
          (add-before 'check 'set-up-test-environment
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "TZDIR" (string-append (assoc-ref inputs "tzdata")
-                                            "/share/zoneinfo"))
-             #t)))
+                                            "/share/zoneinfo")))))
        #:configure-flags
        (list
         "--disable-ldap"
@@ -418,7 +416,7 @@ NAT-T and more.")
            ;; src/libstrongswan/plugins/pkcs11/pkcs11.h
            (license:non-copyleft
             "file://src/libstrongswan/plugins/pkcs11/pkcs11.h"
-            "pkcs11 contains a unknown permissive license. View the specific
+            "pkcs11 contains an unknown permissive license. View the specific
 file for more details.")
            ;; These files are not included in the
            ;; build, they are disabled through
