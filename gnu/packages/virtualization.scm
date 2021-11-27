@@ -2258,6 +2258,19 @@ libosinfo library.  It provides information about guest operating systems for
 use with virtualization provisioning tools")
     (license license:lgpl2.0+)))
 
+;; XXX: Support for guix-1.3 has been added upstream but no release were
+;; created. Remove it when a new osinfo-db release is out.
+(define-public osinfo-db-next
+  (package
+    (inherit osinfo-db)
+    (version "20211127")
+    (source (origin
+              (method url-fetch)
+              (uri "https://othacehe.org/work/osinfo-db-20211127.tar.xz")
+              (sha256
+               (base32
+                "0kvgdsvpm51a6vqs4k6zmdbc5vvj8mnsgm4pa7h79d9gg244gb3s"))))))
+
 (define-public python-transient
   (package
     (name "python-transient")
