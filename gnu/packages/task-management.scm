@@ -189,7 +189,7 @@ a task.")
 (define-public blanket
   (package
     (name "blanket")
-    (version "0.4.1")
+    (version "0.5.0")
     (source
      (origin
        (method git-fetch)
@@ -198,7 +198,7 @@ a task.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1rk9xxiflj8rf75q56s907xp3jzxc7r88njlmxg07gl6i35mmcmi"))))
+        (base32 "00i821zqfbigxmc709322r16z75qsw4rg23yhv35gza9sl65bzkg"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
