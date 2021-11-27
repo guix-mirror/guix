@@ -1168,6 +1168,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gmp-arm-asm-nothumb.patch		\
   %D%/packages/patches/gmp-faulty-test.patch			\
   %D%/packages/patches/gnash-fix-giflib-version.patch	        \
+  %D%/packages/patches/gnome-boxes-add-guix-logo.patch		\
   %D%/packages/patches/gnome-online-miners-tracker-3.patch	\
   %D%/packages/patches/gnome-screenshot-meson-0.60.patch	\
   %D%/packages/patches/gnome-settings-daemon-gc.patch		\

@@ -1,0 +1,32 @@
+Taken from upstream commit: 9091c6849652fa083297bc12645d8c57a962874a.
+
+diff --git a/data/osinfo/guix-1.3.xml b/data/osinfo/guix-1.3.xml
+new file mode 100644
+index 00000000..d4e1c167
+--- /dev/null
++++ b/data/osinfo/guix-1.3.xml
+@@ -0,0 +1,9 @@
++<libosinfo version="0.0.1">
++
++  <!-- Please read README.logos for any questions about usage of product logos in Boxes. !-->
++
++  <os id="http://guix.gnu.org/guix/1.3">
++    <logo>https://gitlab.gnome.org/GNOME/gnome-boxes-logos/-/raw/master/logos/guix.svg</logo>
++  </os>
++
++</libosinfo>
+diff --git a/data/osinfo/meson.build b/data/osinfo/meson.build
+index 46ff1570..d5531e60 100644
+--- a/data/osinfo/meson.build
++++ b/data/osinfo/meson.build
+@@ -7,6 +7,7 @@ osinfo_db = [
+   ['freedos-1.2.xml', 'gnome-boxes/osinfo/os/freedos.org'],
+   ['gnome-nightly.xml', 'gnome-boxes/osinfo/os/gnome.org'],
+   ['gnome-3.38.xml', 'gnome-boxes/osinfo/os/gnome.org'],
++  ['guix-1.3.xml', 'gnome-boxes/osinfo/os/guix.gnu.org'],
+   ['manjaro-19.0.xml', 'gnome-boxes/osinfo/os/manjaro.org'],
+   ['nixos-20.03.xml', 'gnome-boxes/osinfo/os/nixos.org'],
+   ['opensuse-10.2.xml', 'gnome-boxes/osinfo/os/opensuse.org'],
+-- 
+2.34.0
+

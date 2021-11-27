@@ -11774,7 +11774,9 @@ integrate seamlessly with the GNOME desktop.")
                            (version-major version) "/"
                            "gnome-boxes-" version ".tar.xz"))
        (sha256
-        (base32 "1wzhm8n485cqhbai4qshgrwl05ix881g8gjshilrj6vg8p1li79h"))))
+        (base32 "1wzhm8n485cqhbai4qshgrwl05ix881g8gjshilrj6vg8p1li79h"))
+       (patches
+        (search-patches "gnome-boxes-add-guix-logo.patch"))))
     (build-system meson-build-system)
     (arguments
      `(#:meson ,meson-0.59         ;positional arguments error with meson 0.60
