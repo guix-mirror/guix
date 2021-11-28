@@ -261,7 +261,7 @@ This package is part of the KDE base applications module.")
        ("libxcb" ,libxcb)
        ("libxtst" ,libxtst)
        ("oxygen-icons" ,oxygen-icons) ;; default icon set
-       ("pipewire" ,pipewire)
+       ("pipewire" ,pipewire-0.3)
        ("qtbase" ,qtbase-5)
        ("qtx11extras" ,qtx11extras)
        ("xcb-util-image" ,xcb-util-image)
