@@ -9482,7 +9482,7 @@ a functional interface.")
 (define-public perl-sub-exporter
   (package
     (name "perl-sub-exporter")
-    (version "0.987")
+    (version "0.988")
     (source
      (origin
        (method url-fetch)
@@ -9491,7 +9491,7 @@ a functional interface.")
              version ".tar.gz"))
        (sha256
         (base32
-         "1ml3n1ck4ln9qjm2mcgkczj1jb5n1fkscz9c4x23v4db0glb4g2l"))))
+         "03040vk227icdkb0hvxplck2y6rglj67s1rgf12z3465ss3lhci3"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-data-optlist" ,perl-data-optlist)
