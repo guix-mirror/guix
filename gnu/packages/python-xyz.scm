@@ -5073,6 +5073,9 @@ This tool is used in text editing environments to provide a complete
 and integrated feature-set for programming Python effectively.")
     (license license:expat)))
 
+(define-public python-language-server
+  (deprecated-package "python-language-server" python-lsp-server))
+
 (define-public python-pathspec
   (package
     (name "python-pathspec")
