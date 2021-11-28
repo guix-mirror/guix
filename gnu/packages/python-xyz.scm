@@ -5017,29 +5017,23 @@ errors when data is invalid.")
 Server (PLS).")
     (license license:expat)))
 
-(define-public python-language-server
+(define-public python-lsp-server
   (package
-    (name "python-language-server")
-    (version "0.36.2")
+    (name "python-lsp-server")
+    (version "1.3.1")
     (source
      (origin
        (method url-fetch)
-       (uri (pypi-uri "python-language-server" version))
+       (uri (pypi-uri "python-lsp-server" version))
        (sha256
         (base32
-         "1c0pnk2aibfhfaanrs0a5gkabkvz81gj20z7r0152b7fcx5ci14r"))))
+         "15075a5irjxh55wcdf25hllz9c42byxc4770cmwgb480k1dm8scq"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'relax-deps
-           (lambda _
-             (substitute* "setup.py" (("pycodestyle>=2.6.0,<2.7.0")
-                                      "pycodestyle"))
-             (substitute* "setup.py" (("pyflakes>=2.2.0,<2.3.0") "pyflakes"))
-             #t))
          (add-before 'check 'set-HOME
-           (lambda _ (setenv "HOME" "/tmp") #t))
+           (lambda _ (setenv "HOME" "/tmp")))
          (replace 'check
            (lambda _
              ;; Disable failing test.
@@ -5052,7 +5046,7 @@ Server (PLS).")
        ("python-flake8" ,python-flake8)
        ("python-future" ,python-future)
        ("python-jedi" ,python-jedi)
-       ("python-jsonrpc-server" ,python-jsonrpc-server)
+       ("python-lsp-jsonrpc" ,python-lsp-jsonrpc)
        ("python-pluggy" ,python-pluggy)
        ("python-pycodestyle" ,python-pycodestyle)
        ("python-pyflakes" ,python-pyflakes)
@@ -5073,10 +5067,10 @@ Server (PLS).")
     (home-page "https://github.com/palantir/python-language-server")
     (synopsis "Python implementation of the Language Server Protocol")
     (description
-     "The Python Language Server (pyls) is an implementation of the Python 3
-language specification for the Language Server Protocol (LSP).  This tool is
-used in text editing environments to provide a complete and integrated
-feature-set for programming Python effectively.")
+"The Python Language Server @command{pylsp} is an implementation of the
+Python 3 language specification for the Language Server Protocol (LSP).
+This tool is used in text editing environments to provide a complete
+and integrated feature-set for programming Python effectively.")
     (license license:expat)))
 
 (define-public python-pathspec
