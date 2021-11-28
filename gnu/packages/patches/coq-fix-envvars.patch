@@ -1,0 +1,139 @@
+From ebe09fcac72b21d17c4e8fe6edc1b6076a4ae97c Mon Sep 17 00:00:00 2001
+From: Julien Lepiller <julien@lepiller.eu>
+Date: Sun, 21 Nov 2021 00:38:03 +0100
+Subject: [PATCH] Fix environment variable usage.
+
+---
+ checker/checker.ml      |  2 ++
+ lib/envars.ml           | 26 ++++++++++++++++----------
+ sysinit/coqargs.ml      |  3 ++-
+ sysinit/coqloadpath.ml  |  3 ++-
+ sysinit/coqloadpath.mli |  2 +-
+ tools/coqdep.ml         |  2 +-
+ 6 files changed, 24 insertions(+), 14 deletions(-)
+
+diff --git a/checker/checker.ml b/checker/checker.ml
+index f55ed9e8d6..3b797729ed 100644
+--- a/checker/checker.ml
++++ b/checker/checker.ml
+@@ -104,6 +104,7 @@ let set_include d p =
+ (* Initializes the LoadPath *)
+ let init_load_path () =
+   let coqlib = Envars.coqlib () in
++  let coqcorelib = Envars.coqcorelib () in
+   let user_contrib = coqlib/"user-contrib" in
+   let xdg_dirs = Envars.xdg_dirs in
+   let coqpath = Envars.coqpath in
+@@ -111,6 +112,7 @@ let init_load_path () =
+     CPath.choose_existing
+       [ CPath.make [ coqlib ; "plugins" ]
+       ; CPath.make [ coqlib ; ".."; "coq-core"; "plugins" ]
++      ; CPath.make [ coqcorelib ; "plugins" ]
+       ] |> function
+     | None ->
+       CErrors.user_err (Pp.str "Cannot find plugins directory")
+diff --git a/lib/envars.ml b/lib/envars.ml
+index 750bd60e71..c7affbd437 100644
+--- a/lib/envars.ml
++++ b/lib/envars.ml
+@@ -127,15 +127,21 @@ let check_file_else ~dir ~file oth =
+ let guess_coqlib fail =
+   getenv_else "COQLIB" (fun () ->
+   let prelude = "theories/Init/Prelude.vo" in
+-  check_file_else ~dir:Coq_config.coqlibsuffix ~file:prelude
+-    (fun () ->
+-      if Sys.file_exists (Coq_config.coqlib / prelude)
+-      then Coq_config.coqlib
+-      else
+-        fail "cannot guess a path for Coq libraries; please use -coqlib option \
+-              or ensure you have installed the package containing Coq's stdlib (coq-stdlib in OPAM) \
+-              If you intend to use Coq without a standard library, the -boot -noinit options must be used.")
+-  )
++  let coqlibpath = getenv_else "COQLIBPATH" (fun () -> Coq_config.coqlibsuffix) in
++  let paths = path_to_list coqlibpath in
++  let valid_paths =
++    List.filter
++      (fun dir -> (check_file_else ~dir:dir ~file:prelude (fun () -> "")) <> "")
++      paths in
++  match valid_paths with
++  | [] ->
++    if Sys.file_exists (Coq_config.coqlib / prelude)
++    then Coq_config.coqlib
++    else
++      fail "cannot guess a path for Coq libraries; please use -coqlib option \
++            or ensure you have installed the package containing Coq's stdlib (coq-stdlib in OPAM) \
++            If you intend to use Coq without a standard library, the -boot -noinit options must be used."
++  | p::_ -> p)
+ 
+ let coqlib_ref : string option ref = ref None
+ let set_user_coqlib path = coqlib_ref := Some path
+@@ -208,7 +214,7 @@ let xdg_dirs ~warn =
+ let print_config ?(prefix_var_name="") f coq_src_subdirs =
+   let open Printf in
+   fprintf f "%sCOQLIB=%s/\n" prefix_var_name (coqlib ());
+-  fprintf f "%sCOQCORELIB=%s/\n" prefix_var_name (coqlib () / "../coq-core/");
++  fprintf f "%sCOQCORELIB=%s/\n" prefix_var_name (coqcorelib ());
+   fprintf f "%sDOCDIR=%s/\n" prefix_var_name (docdir ());
+   fprintf f "%sOCAMLFIND=%s\n" prefix_var_name (ocamlfind ());
+   fprintf f "%sCAMLFLAGS=%s\n" prefix_var_name Coq_config.caml_flags;
+diff --git a/sysinit/coqargs.ml b/sysinit/coqargs.ml
+index 00f70a5fea..8325623a63 100644
+--- a/sysinit/coqargs.ml
++++ b/sysinit/coqargs.ml
+@@ -453,7 +453,8 @@ let build_load_path opts =
+     if opts.pre.boot then [],[]
+     else
+       let coqlib = Envars.coqlib () in
+-      Coqloadpath.init_load_path ~coqlib in
++      let coqcorelib = Envars.coqcorelib () in
++      Coqloadpath.init_load_path ~coqlib ~coqcorelib in
+   ml_path @ opts.pre.ml_includes ,
+   vo_path @ opts.pre.vo_includes
+ 
+diff --git a/sysinit/coqloadpath.ml b/sysinit/coqloadpath.ml
+index 95ae5da3de..a58cfe6928 100644
+--- a/sysinit/coqloadpath.ml
++++ b/sysinit/coqloadpath.ml
+@@ -35,7 +35,7 @@ let build_userlib_path ~unix_path =
+   else [], []
+ 
+ (* LoadPath for Coq user libraries *)
+-let init_load_path ~coqlib =
++let init_load_path ~coqlib ~coqcorelib =
+ 
+   let open Loadpath in
+   let user_contrib = coqlib/"user-contrib" in
+@@ -50,6 +50,7 @@ let init_load_path ~coqlib =
+     CPath.choose_existing
+       [ CPath.make [ coqlib ; "plugins" ]
+       ; CPath.make [ coqlib ; ".."; "coq-core"; "plugins" ]
++      ; CPath.make [ coqcorelib ; "plugins" ]
+       ] |> function
+     | None ->
+       CErrors.user_err (Pp.str "Cannot find plugins directory")
+diff --git a/sysinit/coqloadpath.mli b/sysinit/coqloadpath.mli
+index d853e9ea54..43c6dfa134 100644
+--- a/sysinit/coqloadpath.mli
++++ b/sysinit/coqloadpath.mli
+@@ -12,5 +12,5 @@
+    includes (in-order) Coq's standard library, Coq's [user-contrib]
+    folder, and directories specified in [COQPATH] and [XDG_DIRS] *)
+ val init_load_path
+-  : coqlib:CUnix.physical_path
++  : coqlib:CUnix.physical_path -> coqcorelib:CUnix.physical_path
+   -> CUnix.physical_path list * Loadpath.vo_path list
+diff --git a/tools/coqdep.ml b/tools/coqdep.ml
+index c1c87993e1..6c78e10866 100644
+--- a/tools/coqdep.ml
++++ b/tools/coqdep.ml
+@@ -33,7 +33,7 @@ let coqdep () =
+     let coqlib = Envars.coqlib () in
+     let coq_plugins_dir = Filename.concat (Envars.coqcorelib ()) "plugins" in
+     if not (Sys.file_exists coq_plugins_dir) then
+-      CErrors.user_err Pp.(str "coqdep: cannot find plugins directory for coqlib: " ++ str coqlib ++ fnl ());
++      CErrors.user_err Pp.(str "coqdep: cannot find plugins directory " ++ str coq_plugins_dir ++ str " for coqlib: " ++ str coqlib ++ fnl ());
+     CD.add_rec_dir_import CD.add_coqlib_known (coqlib//"theories") ["Coq"];
+     CD.add_rec_dir_import CD.add_coqlib_known (coq_plugins_dir) ["Coq"];
+     let user = coqlib//"user-contrib" in
+-- 
+2.33.1
