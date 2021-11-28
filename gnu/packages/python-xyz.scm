@@ -8927,7 +8927,7 @@ mobile environments.")
          "0z8rrv9rsg1r2qgh2dxj3dfj5xnki98kgi3w839kqby4a26i1yik"))))
     (build-system python-build-system)
     (arguments `(#:tests? #f))                    ; tests depend on system state
-    (native-inputs
+    (propagated-inputs
      `(("python-dbus" ,python-dbus)))
     (home-page "https://bitbucket.org/takluyver/pynotify2")
     (synopsis "Python interface to D-Bus notifications")
