@@ -6560,7 +6560,7 @@ unacceptable HTML and/or CSS from a string.")
 (define-public ruby-oj
   (package
     (name "ruby-oj")
-    (version "3.10.1")
+    (version "3.13.9")
     (source
      (origin
        (method git-fetch)
@@ -6572,7 +6572,7 @@ unacceptable HTML and/or CSS from a string.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0i5xjx4sh816zx2c1a4d1q67k7vllg5jnnc4jy6zhbmwi1dvp5vw"))))
+         "0a24zd28y58nyhjxgrpn2k9p72vzj3zbmdrcsbhwbdycj7nn9fpd"))))
     (build-system ruby-build-system)
     (arguments
      '(#:test-target "test_all"
