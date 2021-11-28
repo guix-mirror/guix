@@ -16349,9 +16349,6 @@ Jedi understands docstrings and you can use Jedi autocompletion in your REPL as
 well.")
     (license license:expat)))
 
-(define-public python2-jedi
-  (package-with-python2 python-jedi))
-
 (define-public ptpython
   (package
     (name "ptpython")
