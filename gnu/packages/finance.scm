@@ -833,9 +833,11 @@ the Monero GUI client.")
     (license license:bsd-3)))
 
 (define-public python-trezor-agent
+  ;; It is called 'libagent' in pypi; i.e. this is the library as opposed to
+  ;; the toplevel app called trezor-agent.
   (package
     (name "python-trezor-agent")
-    (version "0.13.1")
+    (version "0.14.2")
     (source
      (origin
        (method git-fetch)
@@ -844,7 +846,7 @@ the Monero GUI client.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0q99vbfd3h85s8rnjipnmldixabqmmlk5w9karv6f0rhyi54f4zv"))
+        (base32 "0nl44ldfw9s2v3p7g5bldfw3ds2hz9r28j42bpnp8bj0v5na3ivk"))
        (patches (search-patches "python-trezor-agent-fix-argv0.patch"))))
     (build-system python-build-system)
     (arguments
@@ -868,9 +870,10 @@ the Monero GUI client.")
        ("python-daemon" ,python-daemon)
        ("python-docutils" ,python-docutils)
        ("python-ecdsa" ,python-ecdsa)
-       ("python-ed25519" ,python-ed25519)
+       ("python-hidapi" ,python-hidapi)
        ("python-mnemonic" ,python-mnemonic)
        ("python-pymsgbox" ,python-pymsgbox)
+       ("python-pynacl" ,python-pynacl)
        ("python-semver" ,python-semver)
        ("python-unidecode" ,python-unidecode)
        ("python-wheel" ,python-wheel)))
