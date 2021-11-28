@@ -10836,7 +10836,7 @@ interface.  It allows Jekyll to rebuild your site when a file changes.")
 (define-public ruby-parallel
   (package
     (name "ruby-parallel")
-    (version "1.13.0")
+    (version "1.21.0")
     (source
      (origin
        (method git-fetch)
@@ -10846,7 +10846,7 @@ interface.  It allows Jekyll to rebuild your site when a file changes.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1isqzbqxz2ndad4i5z3lb9ldrhaijfncj8bmffv04sq44sv87ikv"))))
+         "1xqjcvl3gq3shvrqp8wc3fbqibzh4mf1yczq6np9gd79558dwj3w"))))
     (build-system ruby-build-system)
     (arguments
      `(;; TODO 3 test failures
