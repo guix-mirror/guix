@@ -119,9 +119,9 @@ It is developed using Objective Caml and Camlp5.")
 (define-public proof-general
   ;; The latest release is from 2016 and there has been more than 450 commits
   ;; since then.
-  ;; Commit from 2021-06-07.
-  (let ((commit "bc86736abb728ec0d28abc90ef0adae21d29a66a")
-        (revision "0"))
+  ;; Commit from 2021-11-25.
+  (let ((commit "1b1083e86e0cddc20ff2f1a6b25c7a7eee2edf02")
+        (revision "1"))
     (package
       (name "proof-general")
       (version (git-version "4.4" revision commit))
@@ -133,7 +133,7 @@ It is developed using Objective Caml and Camlp5.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "00cga3n9nj2xa3ivb0fdkkdx3k11fp4879y188738631yd1x2lsa"))))
+                  "1pnysczhscapgwmvf6ix7f31lf3hnh8h977bfll1m7jlxl9b9c0j"))))
       (build-system gnu-build-system)
       (native-inputs
        `(("emacs" ,emacs-minimal)
@@ -201,7 +201,7 @@ It is developed using Objective Caml and Camlp5.")
        "Proof General is a major mode to turn Emacs into an interactive proof
 assistant to write formal mathematical proofs using a variety of theorem
 provers.")
-      (license license:gpl2+))))
+      (license license:gpl3+))))
 
 (define-public coq-flocq
   (package
