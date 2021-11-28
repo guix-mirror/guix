@@ -3112,7 +3112,7 @@ savings are consistently > 5x.")
 (define-public slepc
   (package
     (name "slepc")
-    (version "3.11.1")
+    (version "3.16.1")
     (source
      (origin
        (method url-fetch)
@@ -3120,10 +3120,11 @@ savings are consistently > 5x.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "1yq84q9wannc8xwapxpay4ypdd675picwi395hhsdvng9q6hf5j8"))))
+         "1ysfm77s5fcissv3q0k5d65mlp93zi4anqg62q3cd25dn66sva5i"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("python" ,python-2)
+     `(("python" ,python)
+       ("which" ,which)
        ("petsc:examples" ,petsc "examples"))) ;for gmakegen.py script
     (inputs
      `(("arpack" ,arpack-ng)
@@ -3184,7 +3185,9 @@ as well as other related problems such as the singular value decomposition.
 The emphasis of the software is on methods and techniques appropriate for
 problems in which the associated matrices are sparse, for example, those
 arising after the discretization of partial differential equations.")
-    (license license:bsd-2)))
+    (license license:bsd-2)
+    (properties
+     `((release-monitoring-url . "http://slepc.upv.es/download/")))))
 
 (define-public slepc-complex
   (package (inherit slepc)
