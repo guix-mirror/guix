@@ -4797,7 +4797,7 @@ high-level API for network management that uses rtnetlink.")
 (define-public guile-gitlab
   (package
     (name "guile-gitlab")
-    (version "0.2.0")
+    (version "0.2.1")
     (source
      (origin
        (method git-fetch)
@@ -4807,7 +4807,7 @@ high-level API for network management that uses rtnetlink.")
        (file-name (string-append name "-" version))
        (sha256
         (base32
-         "1yq8w507vw9n7f626sbnsk8prsdk337d6acr7f9k3j500lhlvxj5"))))
+         "0srkmchd4kmfa7q65r6fdzwklhgdlck1ll0s7smzs8ddjdgz2lwm"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags '("GUILE_AUTO_COMPILE=0")     ;to prevent guild warnings
@@ -4849,7 +4849,7 @@ high-level API for network management that uses rtnetlink.")
     (inputs
      `(("bash" ,bash-minimal)
        ("guile" ,guile-2.2)
-       ("guile-json" ,guile-json-1)
+       ("guile-json" ,guile2.2-json)
        ("guile-lib" ,guile2.2-lib)
        ("guile-gnutls" ,guile2.2-gnutls)))
     (home-page "https://github.com/artyom-poptsov/guile-gitlab")
