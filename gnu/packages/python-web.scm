@@ -2547,10 +2547,17 @@ APIs.")
     (description
      "Requests is a Python HTTP client library.  It aims to be easier to use
 than Python’s urllib2 library.")
-    (license license:asl2.0)))
+    (license license:asl2.0)
+    (properties `((python2-variant . ,(delay python2-requests))))))
 
 (define-public python2-requests
-  (package-with-python2 python-requests))
+  (let ((base (package-with-python2 (strip-python2-variant python-requests))))
+    (package
+      (inherit base)
+      ;; The python-charset-normalizer dependency is necessary on Python 3
+      ;; only.
+      (propagated-inputs (modify-inputs (package-propagated-inputs base)
+                           (delete "python-charset-normalizer"))))))
 
 (define-public python-requests-unixsocket
   (package
