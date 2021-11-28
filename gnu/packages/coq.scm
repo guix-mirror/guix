@@ -576,7 +576,7 @@ kernel.")
 (define-public coq-semantics
   (package
     (name "coq-semantics")
-    (version "8.13.0")
+    (version "8.14.0")
     (source
       (origin
         (method git-fetch)
@@ -591,7 +591,7 @@ kernel.")
         (file-name (git-file-name name version))
         (sha256
          (base32
-          "0m5si9dsv96z92gy4xaqz8mzyz8zp7j1sp542l0wzsp5xgyfpc7i"))))
+          "0ldrp86bfcjpzsb08p45sgs3aczjzr1gksy5dsf7pxapg05pc7ac"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("coq" ,coq)
