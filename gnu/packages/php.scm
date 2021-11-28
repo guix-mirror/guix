@@ -94,7 +94,7 @@
          (list (with "--with-bz2" "bzip2")
                (with "--with-curl" "curl")
                (with "--with-gdbm" "gdbm")
-               (with "--with-gettext" "glibc") ; libintl.h
+               (with "--with-gettext" "libc")  ; libintl.h
                (with "--with-gmp" "gmp")
                (with "--with-ldap" "openldap")
                (with "--with-ldap-sasl" "cyrus-sasl")
@@ -352,7 +352,6 @@
        ("cyrus-sasl" ,cyrus-sasl)
        ("gd" ,gd)
        ("gdbm" ,gdbm)
-       ("glibc" ,glibc)
        ("gmp" ,gmp)
        ("gnutls" ,gnutls)
        ("icu4c" ,icu4c)
