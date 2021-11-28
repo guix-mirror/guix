@@ -8877,6 +8877,7 @@ parsing (browser/HTTP) user agent strings.")
     (description "python-dbus provides bindings for libdbus, the reference
 implementation of D-Bus.")
     (home-page "https://www.freedesktop.org/wiki/Software/DBusBindings/")
+    (properties `((python2-variant . ,(delay python2-dbus))))
     (license license:expat)))
 
 (define-public python2-dbus
@@ -8884,8 +8885,7 @@ implementation of D-Bus.")
     (name "python2-dbus")
     (inputs `(("python" ,python-2)
               ,@(alist-delete "python"
-                              (package-inputs python-dbus)
-                              equal?)))
+                              (package-inputs python-dbus))))
     (arguments
      `(#:configure-flags '("PYTHON_VERSION=2")))))
 
