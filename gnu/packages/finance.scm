@@ -1361,7 +1361,7 @@ trezord as a regular user instead of needing to it run as root.")
 (define-public trezord
   (package
     (name "trezord")
-    (version "2.0.30")
+    (version "2.0.31")
     (source
      (origin
        (method git-fetch)
@@ -1369,8 +1369,7 @@ trezord as a regular user instead of needing to it run as root.")
              (url "https://github.com/trezor/trezord-go")
              (commit (string-append "v" version))))
        (sha256
-        (base32
-         "1hzvk0wfgg7b4wpqjk3738yqxlv3pj5i7zxwm0jady2h97hmrqrr"))
+        (base32 "130nhk1pnr3xx9qkcij81mm3jxrl5zvvdqhvrgvrikqg3zlb6v5b"))
        (file-name (git-file-name name version))))
     (build-system go-build-system)
     (arguments
