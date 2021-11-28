@@ -2870,7 +2870,7 @@ September 2004}")
 (define-public petsc
   (package
     (name "petsc")
-    (version "3.11.2")
+    (version "3.16.1")
     (source
      (origin
       (method url-fetch)
@@ -2878,12 +2878,13 @@ September 2004}")
       (uri (string-append "http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/"
                           "petsc-lite-" version ".tar.gz"))
       (sha256
-       (base32 "1645nwwcp9bcnfnxikk480mhbbacdvhsay2c401818hk97dqj5nx"))))
+       (base32 "0sm03vpg010q9icidiq587n325m0598cj6hab2rdv85nwyygg74h"))))
     (outputs '("out"                    ; libraries and headers
                "examples"))             ; ~30MiB of examples
     (build-system gnu-build-system)
     (native-inputs
-     `(("python" ,python-2)))
+     `(("python" ,python)
+       ("which" ,which)))
     (inputs
      `(("gfortran" ,gfortran)
        ("openblas" ,openblas)
@@ -2892,75 +2893,80 @@ September 2004}")
        ;; leaving out opengl, as configuration seems to only be for mac
        ))
     (arguments
-     `(#:test-target "test"
-       #:parallel-build? #f             ; build is parallel by default
-       #:configure-flags
-       `("--with-mpi=0"
-         "--with-openmp=1"
-         "--with-openblas=1"
-         "--with-superlu=1")
-       #:make-flags
-       ;; Honor (parallel-job-count) for build.  Do not use --with-make-np,
-       ;; whose value is dumped to $out/lib/petsc/conf/petscvariables.
-       (list (format #f "MAKE_NP=~a" (parallel-job-count)))
-       #:phases
-       (modify-phases %standard-phases
-        (replace 'configure
-          ;; PETSc's configure script is actually a python script, so we can't
-          ;; run it with bash.
-          (lambda* (#:key outputs (configure-flags '())
-                          #:allow-other-keys)
-            (let* ((prefix (assoc-ref outputs "out"))
-                   (flags `(,(string-append "--prefix=" prefix)
-                            ,@configure-flags)))
-              (format #t "build directory: ~s~%" (getcwd))
-              (format #t "configure flags: ~s~%" flags)
-              (apply invoke "./configure" flags))))
-        (add-after 'configure 'clean-local-references
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let ((out (assoc-ref outputs "out")))
-              (substitute* (find-files "." "^petsc(conf|machineinfo).h$")
-                ;; Prevent build directory from leaking into compiled code
-                (((getcwd)) out)
-                ;; Scrub timestamp for reproducibility
-                ((".*Libraries compiled on.*") ""))
-              (substitute* (find-files "." "petscvariables")
-                ;; Do not expose build machine characteristics, set to defaults.
-                (("MAKE_NP = [:digit:]+") "MAKE_NP = 2")
-                (("NPMAX = [:digit:]+") "NPMAX = 2"))
-              #t)))
-        (add-after 'install 'clean-install
-          ;; Try to keep installed files from leaking build directory names.
-          (lambda* (#:key inputs outputs #:allow-other-keys)
-            (let ((out (assoc-ref outputs "out")))
-              (substitute* (map (lambda (file)
-                                  (string-append out "/lib/petsc/conf/" file))
-                                '("petscvariables"))
-                (((getcwd)) out))
-              ;; Make compiler references point to the store
-              (substitute* (string-append out "/lib/petsc/conf/petscvariables")
-                (("= (gcc|g\\+\\+|gfortran)" _ compiler)
-                 (string-append "= " (which compiler))))
-              ;; PETSc installs some build logs, which aren't necessary.
-              (for-each (lambda (file)
-                          (let ((f (string-append out "/lib/petsc/conf/" file)))
-                            (when (file-exists? f)
-                              (delete-file f))))
-                        '("configure.log" "make.log" "gmake.log"
-                          "test.log" "error.log" "RDict.db"
-                          "PETScBuildInternal.cmake"
-                          ;; Once installed, should uninstall with Guix
-                          "uninstall.py"))
-              #t)))
-        (add-after 'install 'move-examples
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let* ((out (assoc-ref outputs "out"))
-                   (examples (assoc-ref outputs "examples"))
-                   (exdir (string-append out "/share/petsc/examples"))
-                   (exdir' (string-append examples "/share/petsc/examples")))
-              (copy-recursively exdir exdir')
-              (delete-file-recursively exdir)
-              #t))))))
+     (list
+      #:test-target "test"
+      #:parallel-build? #f             ; build is parallel by default
+      #:configure-flags
+      #~(list "--with-mpi=0"
+              "--with-openmp=1"
+              "--with-openblas=1"
+              (string-append "--with-openblas-dir="
+                             #$(this-package-input "openblas"))
+              "--with-superlu=1")
+      #:make-flags
+      ;; Honor (parallel-job-count) for build.  Do not use --with-make-np,
+      ;; whose value is dumped to $out/lib/petsc/conf/petscvariables.
+      #~(list (format #f "MAKE_NP=~a" (parallel-job-count)))
+      #:phases
+      #~(modify-phases %standard-phases
+          (replace 'configure
+            ;; PETSc's configure script is actually a python script, so we can't
+            ;; run it with bash.
+            (lambda* (#:key outputs (configure-flags '())
+                      #:allow-other-keys)
+              (let* ((prefix (assoc-ref outputs "out"))
+                     (flags `(,(string-append "--prefix=" prefix)
+                              ,@configure-flags)))
+                (format #t "build directory: ~s~%" (getcwd))
+                (format #t "configure flags: ~s~%" flags)
+                (apply invoke "./configure" flags)
+
+                ;; Generate test scripts with the right shebang.
+                (substitute* "config/example_template.py"
+                  (("#!/usr/bin/env bash")
+                   (string-append "#!" (which "bash")))))))
+          (add-after 'configure 'clean-local-references
+            (lambda* (#:key outputs #:allow-other-keys)
+              (let ((out (assoc-ref outputs "out")))
+                (substitute* (find-files "." "^petsc(conf|machineinfo).h$")
+                  ;; Prevent build directory from leaking into compiled code
+                  (((getcwd)) out)
+                  ;; Scrub timestamp for reproducibility
+                  ((".*Libraries compiled on.*") ""))
+                (substitute* (find-files "." "petscvariables")
+                  ;; Do not expose build machine characteristics, set to defaults.
+                  (("MAKE_NP = [:digit:]+") "MAKE_NP = 2")
+                  (("NPMAX = [:digit:]+") "NPMAX = 2")))))
+          (add-after 'install 'clean-install
+            ;; Try to keep installed files from leaking build directory names.
+            (lambda* (#:key inputs outputs #:allow-other-keys)
+              (let ((out (assoc-ref outputs "out")))
+                (substitute* (map (lambda (file)
+                                    (string-append out "/lib/petsc/conf/" file))
+                                  '("petscvariables"))
+                  (((getcwd)) out))
+                ;; Make compiler references point to the store
+                (substitute* (string-append out "/lib/petsc/conf/petscvariables")
+                  (("= (gcc|g\\+\\+|gfortran)" _ compiler)
+                   (string-append "= " (which compiler))))
+                ;; PETSc installs some build logs, which aren't necessary.
+                (for-each (lambda (file)
+                            (let ((f (string-append out "/lib/petsc/conf/" file)))
+                              (when (file-exists? f)
+                                (delete-file f))))
+                          '("configure.log" "make.log" "gmake.log"
+                            "test.log" "error.log" "RDict.db"
+                            "PETScBuildInternal.cmake"
+                            ;; Once installed, should uninstall with Guix
+                            "uninstall.py")))))
+          (add-after 'install 'move-examples
+            (lambda* (#:key outputs #:allow-other-keys)
+              (let* ((out (assoc-ref outputs "out"))
+                     (examples (assoc-ref outputs "examples"))
+                     (exdir (string-append out "/share/petsc/examples"))
+                     (exdir' (string-append examples "/share/petsc/examples")))
+                (copy-recursively exdir exdir')
+                (delete-file-recursively exdir)))))))
     (home-page "https://www.mcs.anl.gov/petsc")
     (synopsis "Library to solve PDEs")
     (description "PETSc, pronounced PET-see (the S is silent), is a suite of
