@@ -4916,24 +4916,24 @@ which can produce feeds in RSS 2.0, RSS 0.91, and Atom formats.")
 (define-public python2-feedgenerator
   (package-with-python2 python-feedgenerator))
 
-(define-public python-jsonrpc-server
+(define-public python-lsp-jsonrpc
   (package
-    (name "python-jsonrpc-server")
-    (version "0.4.0")
+    (name "python-lsp-jsonrpc")
+    (version "1.0.0")
     (source
      (origin
        (method url-fetch)
-       (uri (pypi-uri "python-jsonrpc-server" version))
+       (uri (pypi-uri "python-lsp-jsonrpc" version))
        (sha256
         (base32
-         "1585ybn3djvx5r5zbxkzlhz2wb1d47y4wrfwaxdyq0gi87jl7ib2"))))
+         "1gb0fsamxndhplx25v8m0b3k7aknzy454fpa0qsqsqnv6c3igv3v"))))
     (build-system python-build-system)
-    (propagated-inputs
+    (native-inputs
      `(("python-mock" ,python-mock)
-       ("python-pytest" ,python-pytest)
-       ("python-ujson" ,python-ujson)))
-    (home-page
-     "https://github.com/palantir/python-jsonrpc-server")
+       ("python-pytest" ,python-pytest)))
+    (propagated-inputs
+     `(("python-ujson" ,python-ujson)))
+    (home-page "https://github.com/python-lsp/python-lsp-jsonrpc")
     (synopsis "JSON RPC 2.0 server library")
     (description
      "This package provides a JSON RPC 2.0 server library for Python.")
