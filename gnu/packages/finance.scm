@@ -1102,16 +1102,40 @@ the KeepKey Hardware Wallet.")
 (define-public trezor-agent
   (package
     (name "trezor-agent")
-    (version "0.10.0")
+    (version "0.11.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (pypi-uri "trezor_agent" version))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/romanz/trezor-agent")
+             ;; The version mismatch is not a mistake. Multiple python
+             ;; apps/packages are in the same git repo, and they have
+             ;; different versions. The git tag seems to track libagent,
+             ;; i.e. python-trezor-agent in the Guix namespace.
+             ;; See e.g. ./agents/trezor/setup.py
+             (commit "v0.14.2")))
        (sha256
-        (base32
-         "144657c7bn0a667dq5fv5r6j7iilxf3h9agj29v1m2qpq40g0az8"))))
+        (base32 "0nl44ldfw9s2v3p7g5bldfw3ds2hz9r28j42bpnp8bj0v5na3ivk"))
+       (modules
+        '((guix build utils)
+          (ice-9 ftw)
+          (srfi srfi-1)
+          (srfi srfi-26)))
+       (snippet
+        '(begin
+           ;; Delete everything except ./agents/trezor/
+           (for-each delete-file-recursively
+                     (filter (lambda (full-name)
+                               (not (string-prefix? "./agents/trezor/" full-name)))
+                             (find-files ".")))
+           ;; Move ./agents/trezor/* to the toplevel
+           (for-each (lambda (file-name)
+                       (rename-file (string-append "./agents/trezor/" file-name)
+                                    (string-append "./" file-name)))
+                     (scandir "./agents/trezor/"
+                              (negate (cut member <> '("." "..") string=))))
+           (delete-file-recursively "./agents")))))
     (arguments
-     ;; Tests fail with "AttributeError: module 'attr' has no attribute 's'".
      `(#:phases
        (modify-phases %standard-phases
          (add-after 'wrap 'fixup-agent-py
@@ -1128,13 +1152,13 @@ the KeepKey Hardware Wallet.")
                ;; Overwrite the wrapped one with the real thing.
                (install-file "./trezor_agent.py"
                              (string-append out "/bin"))
-             #t))))))
+               #t))))))
     (build-system python-build-system)
     (inputs
      `(("python-trezor" ,python-trezor)
        ("python-trezor-agent" ,python-trezor-agent)))
     (native-inputs
-     `(("python-hidapi" ,python-hidapi)))
+     `(("python-attrs" ,python-attrs)))
     (home-page "https://github.com/romanz/trezor-agent")
     (synopsis "Using Trezor as hardware SSH/GPG agent")
     (description "This package allows using Trezor as a hardware SSH/GPG
