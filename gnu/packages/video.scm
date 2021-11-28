@@ -101,6 +101,7 @@
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages cdrom)
@@ -2219,6 +2220,65 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
     (description "mpv is a general-purpose audio and video player.  It is a
 fork of mplayer2 and MPlayer.  It shares some features with the former
 projects while introducing many more.")
+    (license license:gpl2+)))
+
+(define-public smplayer
+  (package
+    (name "smplayer")
+    (version "21.10.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/smplayer/SMPlayer/" version
+                    "/smplayer-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "12nvcl0cfix1xay9hfi7856vg4lpv8y5b0a22212bsjbvl5g22rc"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("qttools" ,qttools)))
+    (inputs
+     `(("bash-minimal" ,bash-minimal)
+       ("qtbase" ,qtbase-5)
+       ("zlib" ,zlib)
+       ("mpv" ,mpv)))
+    (arguments
+     `(#:tests? #false             ; no tests
+       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+                          (string-append "CC=" ,(cc-for-target))
+                          ;; A KLUDGE to turn off invoking lrelease on the
+                          ;; project for now, because it fails consistently
+                          ;; with "WARNING: Could not find qmake spec
+                          ;; 'default'". See below.
+                          "LRELEASE=true")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         ;; Due to the above, we must run lrelease separately on each .ts file
+         ;; (as opposed to running `lrelease-pro smplayer.pro` for the entire
+         ;; project, as the Makefile does normally without the above kludge).
+         (add-after 'build 'compile-ts-files
+           (lambda _
+             (for-each (lambda (file)
+                         (invoke "lrelease" file))
+                       (find-files "./" "\\.ts$"))
+             #true))
+         (add-after 'install 'wrap-executable
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (mpv (assoc-ref inputs "mpv")))
+               (wrap-program (string-append out "/bin/smplayer")
+                 `("PATH" ":" prefix
+                   ,(list (string-append mpv "/bin")))))
+             #true)))))
+    (home-page "https://www.smplayer.info")
+    (synopsis "Complete front-end for MPlayer, a media player")
+    (description "SMPlayer is a graphical user interface (GUI) for
+MPlayer, which is capable of playing almost all known video and audio
+formats.  Apart from providing access for the most common and useful
+options of MPlayer, SMPlayer adds other interesting features like the
+possibility to play Youtube videos, download subtitles, remember
+the last played position, etc.")
     (license license:gpl2+)))
 
 (define-public gnome-mpv
