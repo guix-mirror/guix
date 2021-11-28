@@ -8190,7 +8190,7 @@ of Linux application development.")
   (package
     (inherit pipewire)
     (name "pipewire")
-    (version "0.3.29")
+    (version "0.3.40")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -8199,12 +8199,13 @@ of Linux application development.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "16jjxcnahxqfcawz77ywx837ybhwzcivn7hgqb9cmlp1y2syy8gk"))))
+                "1c6gni23l5w3ghwqnfs712kjj6l1825f0ib8a6r2xc1ymr0sx3kr"))))
     (arguments
      '(#:configure-flags
        (list (string-append "-Dudevrulesdir=" (assoc-ref %outputs "out")
                             "/lib/udev/rules.d")
-             "-Dsystemd=disabled")
+             "-Dsystemd=disabled"
+             "-Dsession-managers=[]")
        #:phases
        (modify-phases %standard-phases
          ;; Skip shrink-runpath, otherwise validate-runpath fails.
