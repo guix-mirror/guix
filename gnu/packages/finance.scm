@@ -992,16 +992,38 @@ Nano dongle.")
 (define-public python-trezor
   (package
     (name "python-trezor")
-    (version "0.12.1")
+    (version "0.12.3")
     (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "trezor" version))
-        (sha256
-          (base32 "1w19m9lws55k9sjhras47hpfpqwq1jm5vy135nj65yhkblygqg19"))))
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/trezor/trezor-firmware/")
+             (commit (string-append "python/v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0wdm1y5zli6w09zbpjqc6rbcs1b4hjq007mbh7xdr17prbnqprac"))
+       (modules
+        '((guix build utils)
+          (srfi srfi-26)
+          (srfi srfi-1)
+          (ice-9 ftw)))
+       (snippet
+        '(begin
+           ;; Delete everything except ./python/
+           (for-each delete-file-recursively
+                     (scandir "./" (negate (cut member <> '("python" "." "..")
+                                                string=))))
+           ;; Move ./python/* to the toplevel.
+           (for-each (lambda (file-name)
+                       (rename-file (string-append "./python/" file-name)
+                                    (string-append "./" file-name)))
+                     (scandir "./python/"
+                              (negate (cut member <> '("." "..") string=))))
+           (delete-file-recursively "./python")))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-click" ,python-click)
+     `(("python-attrs" ,python-attrs)
+       ("python-click" ,python-click)
        ("python-construct" ,python-construct)
        ("python-ecdsa" ,python-ecdsa)
        ("python-libusb1" ,python-libusb1)
