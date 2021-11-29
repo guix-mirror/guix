@@ -32073,6 +32073,77 @@ code for a gist, list gist commits, and get rate limit information when
 authenticated.")
     (license license:expat)))
 
+(define-public r-rbokeh
+  (package
+    (name "r-rbokeh")
+    (version "0.5.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rbokeh" version))
+       (sha256
+        (base32
+         "1h2fpzqf17pw9d09r1g1iyxsj5qma4fsk8vnar7f1z4fjyypvi6q"))
+       (snippet
+        '(for-each delete-file '("inst/htmlwidgets/lib/bokehjs/bokeh-widgets.min.js"
+                                 "inst/htmlwidgets/lib/bokehjs/bokeh.min.js")))))
+    (properties `((upstream-name . "rbokeh")))
+    (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'process-javascript
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "inst/htmlwidgets/lib/bokehjs"
+               (let ((mapping
+                      `((,(assoc-ref inputs "js-bokeh-widgets")
+                         . "bokeh-widgets.min.js")
+                        (,(assoc-ref inputs "js-bokeh")
+                         . "bokeh.min.js"))))
+                 (for-each (lambda (source target)
+                             (format #true "Processing ~a --> ~a~%"
+                                     source target)
+                             (invoke "esbuild" source "--minify"
+                                     (string-append "--outfile=" target)))
+                           (map car mapping)
+                           (map cdr mapping)))))))))
+    (propagated-inputs
+     `(("r-digest" ,r-digest)
+       ("r-gistr" ,r-gistr)
+       ("r-hexbin" ,r-hexbin)
+       ("r-htmlwidgets" ,r-htmlwidgets)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-lazyeval" ,r-lazyeval)
+       ("r-magrittr" ,r-magrittr)
+       ("r-maps" ,r-maps)
+       ("r-pryr" ,r-pryr)
+       ("r-scales" ,r-scales)))
+    ;; Version 0.12.15 is mentioned in lib/htmlwidgets/rbokeh.yaml.
+    (native-inputs
+     `(("esbuild" ,esbuild)
+       ("js-bokeh-widgets"
+        ,(origin
+           (method url-fetch)
+           (uri "https://unpkg.com/bokehjs@0.12.15/build/js/bokeh-widgets.js")
+           (sha256
+            (base32
+             "07v9lrkfcbdznpb10qqwi4m660zp65g85vlnfw7kn83zmkxkhhxy"))))
+       ("js-bokeh"
+        ,(origin
+           (method url-fetch)
+           (uri "https://unpkg.com/bokehjs@0.12.15/build/js/bokeh.js")
+           (sha256
+            (base32
+             "1pq0059aad7d2jv50nv9449p3w0gbkxkl0mhblc76m5d9qjqav2q"))))
+       ("r-knitr" ,r-knitr)))
+    (home-page "https://cran.r-project.org/web/packages/rbokeh/")
+    (synopsis "R interface for the Bokeh visualization library")
+    (description
+     "This package provides a native R plotting library that provides a
+flexible declarative interface for creating interactive web-based graphics,
+backed by the @url{https://bokeh.pydata.org/, Bokeh visualization library}.")
+    (license license:expat)))
+
 (define-public r-fauxpas
   (package
     (name "r-fauxpas")
