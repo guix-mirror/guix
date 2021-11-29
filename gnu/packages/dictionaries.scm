@@ -320,7 +320,9 @@ translation engines from your terminal.")
         (base32 "0kn9xg9sc64amd6ah5gi4qij0bhfbmc2jjvxbjjrsdd8iq054cgm"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
+     `(#:configure-flags
+       (list "--disable-static")
+       #:phases
        (modify-phases %standard-phases
          (replace 'bootstrap
            ;; The included ./autogen.sh unconditionally runs ./configure before
