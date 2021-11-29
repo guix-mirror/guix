@@ -7693,6 +7693,8 @@ compatible with Python's ConfigParser style of .INI files, including RFC
     (outputs (list "out" "python"))
     (arguments
      `(#:tests? #f   ; kernel/user integration tests are in package "xfstests"
+       #:configure-flags
+       (list "--disable-static")
        #:make-flags
        (list "V=1")
        #:phases
@@ -7732,6 +7734,9 @@ file systems.")
     (outputs (list "out"))
     (arguments
      (substitute-keyword-arguments (package-arguments xfsprogs)
+       ((#:configure-flags configure-flags '())
+        `(append ,configure-flags
+                 (list "--enable-static")))
        ((#:make-flags make-flags ''())
         `(cons* "LLDFLAGS=-all-static" ,make-flags))
        ((#:phases _ ''())
