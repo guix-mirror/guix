@@ -2352,7 +2352,7 @@ reading from and writing to ZIP archives. ")
   (package
     (inherit quazip-0)
     (name "quazip")
-    (version "1.1")
+    (version "1.2")
     (source
      (origin
        (method git-fetch)
@@ -2361,7 +2361,7 @@ reading from and writing to ZIP archives. ")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "06srglrj6jvy5ngmidlgx03i0d5w91yhi7sf846wql00v8rvhc5h"))))))
+        (base32 "1dwld7jxhjz9l33lrqwvklazdy7ygi6n1m4ry1n1sk5dnschrhby"))))))
 
 (define-public zchunk
   (package
