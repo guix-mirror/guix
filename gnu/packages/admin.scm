@@ -3158,7 +3158,7 @@ throughput (in the same interval).")
 (define-public thefuck
   (package
     (name "thefuck")
-    (version "3.30")
+    (version "3.31")
     (source
      (origin
        (method git-fetch)
@@ -3167,7 +3167,7 @@ throughput (in the same interval).")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0fnf78956pwhb9cgv1jmgypnkma5xzflkivfrkfiadbgin848yfg"))
+        (base32 "05h60gxky57nalc2hdkpg8wqyg16432x9gcb9wnwblplk98998kq"))
        (patches (search-patches "thefuck-test-environ.patch"))))
     (build-system python-build-system)
     (arguments
@@ -3180,8 +3180,10 @@ throughput (in the same interval).")
              (add-installed-pythonpath inputs outputs)
              ;; Some tests need write access to $HOME.
              (setenv "HOME" "/tmp")
-             (invoke "py.test" "-v")
-             #t)))))
+             ;; Even with that, this function tries to mkdir /.config.
+             (substitute* "tests/test_utils.py"
+               (("settings\\.init\\(\\)") ""))
+             (invoke "py.test" "-v"))))))
     (propagated-inputs
      `(("python-colorama" ,python-colorama)
        ("python-decorator" ,python-decorator)
