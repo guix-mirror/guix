@@ -12486,10 +12486,7 @@ libraries.  Applications do not need to be recompiled--or even restarted.")
              (substitute* "src/libide/meson.build"
                (("/usr/lib")
                 (string-append (assoc-ref inputs "python-pygobject")
-                               "/lib")))
-             (substitute* "meson.build"
-               (("webkit2gtk-4.0") "webkit2gtk-4.1"))
-             #t))
+                               "/lib")))))
          (add-after 'configure 'fix-ninja
            (lambda _
              ;; #43296: meson(?) incorrectly assumes we want to link
@@ -12505,7 +12502,7 @@ libraries.  Applications do not need to be recompiled--or even restarted.")
     (inputs
      `(("cmark" ,cmark)
        ("clang" ,clang)
-       ("devhelp" ,devhelp)
+       ("devhelp" ,devhelp-with-libsoup2)
        ("glade" ,glade3)
        ("gspell" ,gspell)
        ("gtk+" ,gtk+)
@@ -12521,7 +12518,7 @@ libraries.  Applications do not need to be recompiled--or even restarted.")
        ("sysprof" ,sysprof)
        ("template-glib" ,template-glib)
        ("vte" ,vte)
-       ("webkitgtk" ,webkitgtk)))
+       ("webkitgtk" ,webkitgtk-with-libsoup2)))
     (propagated-inputs
      `(("gtksourceview" ,gtksourceview)))         ;needed for settings
     (native-inputs
