@@ -7812,12 +7812,27 @@ single cell ATAC-seq sequencing data.")
           (base32 "0bjzamdw2lcfhlbzc0vdva87c3wwnij8jsvnrpx4wyyxvpcz13m5"))))
       (properties `((upstream-name . "umi4cPackage")))
       (build-system r-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-references
+             (lambda _
+               (substitute* "inst/conf/paths.conf"
+                 (("TG3C\\.bowtie2_bin=.*")
+                  (string-append "TG3C.bowtie2_bin="
+                                 (which "bowtie2") "\n")))
+               (substitute* "inst/perl/map3c/TG3C/import3C.pl"
+                 (("\"perl")
+                  (string-append "\"" (which "perl")))))))))
+      (inputs
+       `(("perl" ,perl)
+         ("bowtie" ,bowtie)))
       (propagated-inputs
        `(("r-misha" ,r-misha)
          ("r-zoo" ,r-zoo)))
       (native-inputs `(("r-knitr" ,r-knitr)))
       (home-page "https://github.com/tanaylab/umi4cpackage")
-      (synopsis "Processing and analysis of UMI-4C contact profiles.")
+      (synopsis "Processing and analysis of UMI-4C contact profiles")
       (description "This is a package that lets you process UMI-4C data from
 scratch to produce nice plots.")
       (license license:expat))))
