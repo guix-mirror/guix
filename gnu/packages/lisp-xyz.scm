@@ -69,6 +69,7 @@
   #:use-module (gnu packages file)
   #:use-module (gnu packages fonts)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages game-development)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
@@ -17741,6 +17742,51 @@ fit together as required by any particular game.")
 
 (define-public cl-trial
   (sbcl-package->cl-source-package sbcl-trial))
+
+(define-public sbcl-cl-liballegro
+  (let ((commit "49f632ce97fc4f835bf5d450588793234b980a64")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-liballegro")
+      (version (git-version "0.2.15" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/resttime/cl-liballegro")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0brbr7i342s0gadlnzd3a61w2b9ihhx60l19ararnc2asvyhmz7x"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'patch-allegro-lib-path
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((allegro-lib-path (string-append
+                                        (assoc-ref inputs "allegro") "/lib/")))
+                 (substitute* "src/library.lisp"
+                   (("lib \".so\"" all)
+                    (string-append "\"" allegro-lib-path "\"" " lib \".so\"")))))))))
+      (inputs
+       `(("allegro" ,allegro)
+         ("cffi" ,sbcl-cffi)
+         ("float-features" ,sbcl-float-features)
+         ("trivial-garbage" ,sbcl-trivial-garbage)
+         ("trivial-main-thread" ,sbcl-trivial-main-thread)))
+      (home-page "https://github.com/resttime/cl-liballegro")
+      (synopsis "Allegro 5 game programming library bindings for Common Lisp")
+      (description
+       "This package provides CFFI bindings and interface to Allegro 5 game
+developing library for Common Lisp.")
+      (license license:zlib))))
+
+(define-public ecl-cl-liballegro
+  (sbcl-package->ecl-package sbcl-cl-liballegro))
+
+(define-public cl-liballegro
+  (sbcl-package->cl-source-package sbcl-cl-liballegro))
 
 (define-public sbcl-alloy
   (let ((commit "e86e22c2887836ec31cd97e039f0bca5248d8f1c")
