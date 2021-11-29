@@ -1944,7 +1944,7 @@ users and in some situations.")
 (define-public guile-udev
   (package
     (name "guile-udev")
-    (version "0.1.0")
+    (version "0.2.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1953,7 +1953,7 @@ users and in some situations.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1l6csncjqnx58c6c3wdl7rshnhk4pzhjq2q8lnkg483564s9w5py"))))
+                "037md1sg7bgsa4478hz1dbsivsxzdnl5acadlrsh4ds2yxbsb5jp"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
