@@ -2082,14 +2082,14 @@ slabtop, tload, top, vmstat, w, watch and sysctl.")
 (define-public usbutils
   (package
     (name "usbutils")
-    (version "013")
+    (version "014")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://kernel.org/linux/utils/usb/usbutils/"
                           "usbutils-" version ".tar.xz"))
       (sha256
-       (base32 "0f0klk6d3hmbpf6p4dcwa1qjzblmkhbxs1wsw87aidvqri7lj8wy"))))
+       (base32 "0sgwfvr1b5w3ai1c0rmvzhk67y9vh7bq490rcxxj4q05svx9q1rs"))))
     (build-system gnu-build-system)
     (outputs (list "out" "python"))
     (arguments
@@ -2098,12 +2098,7 @@ slabtop, tload, top, vmstat, w, watch and sysctl.")
          (add-before 'bootstrap 'patch-bootstrap-scripts
            (lambda _
              (substitute* "usbhid-dump/bootstrap"
-               (("/bin/sh") (which "sh")))
-
-             ;; Don't let autogen.sh run configure with bogus options & CFLAGS.
-             (substitute* "autogen.sh"
-               (("^\\./configure.*") ""))
-             #t))
+               (("/bin/sh") (which "sh")))))
          (add-after 'install 'separate-python-output
            ;; Separating one Python script shaves more than 106 MiB from :out.
            (lambda* (#:key outputs #:allow-other-keys)
@@ -2114,8 +2109,7 @@ slabtop, tload, top, vmstat, w, watch and sysctl.")
                                  (new (string-append out:python "/" file)))
                              (mkdir-p (dirname new))
                              (rename-file old new)))
-                         (list "bin/lsusb.py"))
-               #t))))))
+                         (list "bin/lsusb.py"))))))))
     (inputs
      `(("eudev" ,eudev)
        ("libusb" ,libusb)
