@@ -32040,6 +32040,39 @@ requests, and mocking HTTP requests.  The package is built on R6, and takes
 inspiration from Ruby's @code{faraday} gem.")
     (license license:expat)))
 
+(define-public r-gistr
+  (package
+    (name "r-gistr")
+    (version "0.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "gistr" version))
+       (sha256
+        (base32
+         "0ac9ikrdg6i8xvlma0gizvsdva46408lk7hvsgkqirhy2ljy02hp"))))
+    (properties `((upstream-name . "gistr")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-assertthat" ,r-assertthat)
+       ("r-crul" ,r-crul)
+       ("r-dplyr" ,r-dplyr)
+       ("r-httr" ,r-httr)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-knitr" ,r-knitr)
+       ("r-magrittr" ,r-magrittr)
+       ("r-rmarkdown" ,r-rmarkdown)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/ropensci/gistr")
+    (synopsis "Work with Gists in browser")
+    (description
+     "This package allows the user to create new Github gists, update gists
+with new files, rename files, delete files, get and delete gists, star and
+un-star them, fork them, open a gist in your default browser, get an embed
+code for a gist, list gist commits, and get rate limit information when
+authenticated.")
+    (license license:expat)))
+
 (define-public r-fauxpas
   (package
     (name "r-fauxpas")
