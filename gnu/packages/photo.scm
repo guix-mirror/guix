@@ -504,18 +504,12 @@ photographic equipment.")
              (substitute* "CMakeLists.txt"
                (("\\$\\{LLVM_INSTALL_PREFIX\\}")
                 (assoc-ref %build-inputs "clang")))))
-         (add-before 'configure 'set-LDFLAGS-and-CPATH
-           (lambda* (#:key inputs outputs #:allow-other-keys)
+         (add-before 'configure 'set-LDFLAGS
+           (lambda* (#:key outputs #:allow-other-keys)
              (setenv "LDFLAGS"
                      (string-append
                       "-Wl,-rpath="
-                      (assoc-ref outputs "out") "/lib/darktable"))
-
-             ;; Ensure the OpenEXR headers are found.
-             (setenv "CPATH"
-                     (string-append
-                      (search-input-directory inputs "include/OpenEXR")
-                      ":" (or (getenv "CPATH") "")))))
+                      (assoc-ref outputs "out") "/lib/darktable"))))
          (add-after 'install 'wrap-program
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (wrap-program (string-append (assoc-ref outputs "out")
@@ -550,7 +544,7 @@ photographic equipment.")
        ("graphicsmagick" ,graphicsmagick)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("gtk+" ,gtk+)
-       ("ilmbase" ,ilmbase)
+       ("imath" ,imath)
        ("iso-codes" ,iso-codes) ;optional, for language names in the preferences
        ("json-glib" ,json-glib)
        ("lcms" ,lcms)
@@ -569,7 +563,7 @@ photographic equipment.")
        ("libxslt" ,libxslt)
        ("lua" ,lua) ;optional, for plugins
        ("opencl-icd-loader" ,opencl-icd-loader) ;optional, for OpenCL support
-       ("openexr" ,openexr-2) ;optional, for EXR import/export
+       ("openexr" ,openexr) ;optional, for EXR import/export
        ("openjpeg" ,openjpeg) ;optional, for JPEG2000 export
        ("osm-gps-map" ,osm-gps-map) ;optional, for geotagging view
        ("pugixml" ,pugixml)
