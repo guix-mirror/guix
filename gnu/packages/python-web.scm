@@ -86,6 +86,7 @@
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-science)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages texinfo)
@@ -6309,6 +6310,48 @@ formats is supported.
 Only the RGB colorspace is supported.  Conversion to/from the HSL colorspace
 can be handled by the @code{colorsys} module in the Python standard library.")
     (license license:bsd-3)))
+
+(define-public python-woob
+  (package
+    (name "python-woob")
+    (version "3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "woob" version))
+       (sha256
+        (base32 "09hpxy5zhn2b8li0xjf3zd7s46lawb0315p5mdcsci3bj3s4v1j7"))))
+    (build-system python-build-system)
+    ;; A small number of tests for optional applications fails due to missing
+    ;; inputs.
+    (arguments `(#:tests? #f))
+    (propagated-inputs
+     `(("python-babel" ,python-babel)
+       ("python-colorama" ,python-colorama)
+       ("python-cssselect" ,python-cssselect)
+       ("python-dateutil" ,python-dateutil)
+       ("python-feedparser" ,python-feedparser)
+       ("python-html2text" ,python-html2text)
+       ("python-lxml" ,python-lxml)
+       ("python-pillow" ,python-pillow)
+       ("python-prettytable" ,python-prettytable)
+       ("python-pyqt" ,python-pyqt)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-requests" ,python-requests)
+       ("python-six" ,python-six)
+       ("python-unidecode" ,python-unidecode)))
+    (native-inputs
+     `(("python-coverage" ,python-coverage)
+       ("python-flake8" ,python-flake8)
+       ("python-nose" ,python-nose)
+       ("python-selenium" ,python-selenium)
+       ("python-xunitparser" ,python-xunitparser)))
+    (home-page "https://woob.tech/")
+    (synopsis "Woob, Web Outside Of Browsers")
+    (description "Woob is a collection of applications able to interact with
+websites, without requiring the user to open them in a browser.  It also
+provides well-defined APIs to talk to websites lacking one.")
+    (license license:lgpl3+)))
 
 (define-public python-flask-combo-jsonapi
   (package
