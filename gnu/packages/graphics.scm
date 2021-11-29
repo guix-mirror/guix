@@ -1539,7 +1539,8 @@ and understanding different BRDFs (and other component functions).")
                                         version ".tar.gz")))
               (sha256
                (base32 "07wii4i824vy9qsvjsgqxppgqmfdxq0xa87i5yk53fijriadq7mb"))
-              (patches (search-patches "agg-am_c_prototype.patch"))))
+              (patches (search-patches "agg-am_c_prototype.patch"
+                                       "agg-2.5-gcc8.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
