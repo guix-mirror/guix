@@ -990,7 +990,7 @@ It can be used to calculate the trajectory of satellites.")
 (define-public indi
   (package
     (name "indi")
-    (version "1.9.2")
+    (version "1.9.3")
     (source
      (origin
        (method git-fetch)
@@ -999,7 +999,7 @@ It can be used to calculate the trajectory of satellites.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "00dlvp682xg2sdxm7ix55zp6311mgnd543q45drrc7kjlgaqvip4"))))
+        (base32 "0c7md288d3g2vf0m1ai6x2l4j4rmlasc4rya92phvd4ynf8vcki2"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
