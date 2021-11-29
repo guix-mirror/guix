@@ -383,14 +383,14 @@ Supported architectures are:
 (define-public xa
   (package
     (name "xa")
-    (version "2.3.11")
+    (version "2.3.12")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.floodgap.com/retrotech/xa"
                                   "/dists/xa-" version ".tar.gz"))
               (sha256
                (base32
-                "0b81r7mvzqxgnbbmhixcnrf9nc72v1nqaw19k67221g3k561dwij"))))
+                "0107zdwc2rzlp26pyx7gns4lqmiyg68nmpgwrg36yrrd04v1bzgq"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f   ; TODO: custom test harness, not sure how it works
