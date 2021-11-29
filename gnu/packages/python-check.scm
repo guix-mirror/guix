@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2019, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019, 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
@@ -1798,4 +1798,31 @@ testing (eg. httpretty, responses, requests-mock).  When it comes to testing
 asynchronous HTTP requests it is a bit harder (at least at the beginning).
 The purpose of this package is to provide an easy way to test asynchronous
 HTTP requests.")
+    (license license:expat)))
+
+(define-public python-xunitparser
+  (package
+    (name "python-xunitparser")
+    (version "1.3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "xunitparser" version))
+       (sha256
+        (base32 "05amn9yik0mxg89iiprkb6lrmc7rlccgvwajrpyfi6zbp8mjdsgn"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; See https://github.com/laurentb/xunitparser/pull/11
+         (add-after 'unpack 'fix-test-suite
+           (lambda _
+             (substitute* "xunitparser.py"
+               (("(^ +)self.stderr = None" m indent)
+                (string-append m "\n" indent "self._cleanup = False\n"))))))))
+    (home-page "http://git.p.engu.in/laurentb/xunitparser/")
+    (synopsis "Read JUnit/XUnit XML files and map them to Python objects")
+    (description "xunitparser reads a JUnit/XUnit XML file and maps it to
+Python objects.  It tries to use the objects available in the standard
+@code{unittest} module.")
     (license license:expat)))
