@@ -1737,7 +1737,7 @@ It provides the commands @code{powercap-info} and @code{powercap-set}.")
 (define-public powerstat
   (package
     (name "powerstat")
-    (version "0.02.26")
+    (version "0.02.27")
     (source
      (origin
        (method git-fetch)
@@ -1746,7 +1746,7 @@ It provides the commands @code{powercap-info} and @code{powercap-set}.")
              (commit (string-append "V" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0jp9dvwlz4svg28vgrgvvbi72ca9mkfczy0f05vvsgpxjz7hlfnj"))))
+        (base32 "1ik5yv2bhz2hvyga4h1m28rf0xpi20zpqm4swhvskyf1g6qf381z"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
