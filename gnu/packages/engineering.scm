@@ -2381,7 +2381,8 @@ comments.")))
        (file-name (git-file-name name version))
        (sha256
         (base32 "0fhjv0x3dix1c7jml91yx63z9xifjlbhjbcdb73lw80smpxrq7mm"))
-       (patches (search-patches "freecad-vtk9.patch"))))
+       (patches (search-patches "freecad-vtk9.patch"
+                                "freecad-boost-serialization.patch"))))
     (build-system qt-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
@@ -2434,28 +2435,31 @@ comments.")))
     (arguments
      `(#:tests? #f          ; Project has no tests
        #:configure-flags
-       (list
-        "-DBUILD_QT5=ON"
-        "-DBUILD_FLAT_MESH:BOOL=ON"
-        (string-append "-DCMAKE_INSTALL_LIBDIR=" (assoc-ref %outputs "out") "/lib")
-        (string-append "-DPYSIDE2UICBINARY="
-                       (assoc-ref %build-inputs "python-pyside-2-tools")
-                       "/bin/uic")
-        (string-append "-DPYSIDE2RCCBINARY="
-                       (assoc-ref %build-inputs "python-pyside-2-tools")
-                       "/bin/rcc")
-        "-DPYSIDE_LIBRARY=PySide2::pyside2"
-        (string-append
-         "-DPYSIDE_INCLUDE_DIR="
-         (assoc-ref %build-inputs "python-pyside-2") "/include;"
-         (assoc-ref %build-inputs "python-pyside-2") "/include/PySide2;"
-         (assoc-ref %build-inputs "python-pyside-2") "/include/PySide2/QtCore;"
-         (assoc-ref %build-inputs "python-pyside-2") "/include/PySide2/QtWidgets;"
-         (assoc-ref %build-inputs "python-pyside-2") "/include/PySide2/QtGui;")
-        "-DSHIBOKEN_LIBRARY=Shiboken2::libshiboken"
-        (string-append "-DSHIBOKEN_INCLUDE_DIR="
-                       (assoc-ref %build-inputs "python-shiboken-2")
-                       "/include/shiboken2"))
+       ,#~(list
+           "-DBUILD_QT5=ON"
+           "-DBUILD_FLAT_MESH:BOOL=ON"
+           "-DBUILD_ENABLE_CXX_STD:STRING=C++17"
+           (string-append "-DCMAKE_INSTALL_LIBDIR=" #$output "/lib")
+           (string-append "-DPYSIDE2UICBINARY="
+                          #$(this-package-native-input
+                             "python-pyside-2-tools")
+                          "/bin/uic")
+           (string-append "-DPYSIDE2RCCBINARY="
+                          #$(this-package-native-input
+                             "python-pyside-2-tools")
+                          "/bin/rcc")
+           "-DPYSIDE_LIBRARY=PySide2::pyside2"
+           (string-append
+            "-DPYSIDE_INCLUDE_DIR="
+            #$(this-package-input "python-pyside-2") "/include;"
+            #$(this-package-input "python-pyside-2") "/include/PySide2;"
+            #$(this-package-input "python-pyside-2") "/include/PySide2/QtCore;"
+            #$(this-package-input "python-pyside-2") "/include/PySide2/QtWidgets;"
+            #$(this-package-input "python-pyside-2") "/include/PySide2/QtGui;")
+           "-DSHIBOKEN_LIBRARY=Shiboken2::libshiboken"
+           (string-append "-DSHIBOKEN_INCLUDE_DIR="
+                          #$(this-package-input "python-shiboken-2")
+                          "/include/shiboken2"))
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'restore-pythonpath
