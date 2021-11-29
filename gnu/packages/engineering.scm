@@ -2373,14 +2373,15 @@ comments.")))
     (name "freecad")
     (version "0.19.2")
     (source
-      (origin
-        (method git-fetch)
-        (uri (git-reference
-               (url "https://github.com/FreeCAD/FreeCAD")
-               (commit version)))
-        (file-name (git-file-name name version))
-        (sha256
-          (base32 "0fhjv0x3dix1c7jml91yx63z9xifjlbhjbcdb73lw80smpxrq7mm"))))
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/FreeCAD/FreeCAD")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0fhjv0x3dix1c7jml91yx63z9xifjlbhjbcdb73lw80smpxrq7mm"))
+       (patches (search-patches "freecad-vtk9.patch"))))
     (build-system qt-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
@@ -2427,7 +2428,7 @@ comments.")))
        ("qtxmlpatterns" ,qtxmlpatterns)
        ("sqlite" ,sqlite)
        ("tbb" ,tbb)
-       ("vtk" ,vtk-8)
+       ("vtk" ,vtk)
        ("xerces-c" ,xerces-c)
        ("zlib" ,zlib)))
     (arguments
