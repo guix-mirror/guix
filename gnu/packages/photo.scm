@@ -562,7 +562,7 @@ photographic equipment.")
        ("libpng" ,libpng)
        ("librsvg" ,librsvg)
        ("libsecret" ,libsecret) ;optional, for storing passwords
-       ("libsoup" ,libsoup)
+       ("libsoup" ,libsoup-minimal-2)
        ("libtiff" ,libtiff)
        ("libwebp" ,libwebp) ;optional, for WebP support
        ("libxml2" ,libxml2)
