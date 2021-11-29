@@ -5854,6 +5854,22 @@ natively with GTK-Doc (the API reference system developed for GTK+ and used
 throughout GNOME for API documentation).")
     (license license:gpl2+)))
 
+(define-public devhelp-with-libsoup2
+  (package/inherit devhelp
+    (arguments
+     (substitute-keyword-arguments (package-arguments devhelp)
+       ((#:phases phases '%standard-phases)
+        `(modify-phases %standard-phases
+           (add-after 'unpack 'skip-gtk-update-icon-cache
+             ;; Don't create 'icon-theme.cache'.
+             (lambda _
+               (substitute* "build-aux/meson/meson_post_install.py"
+                 (("gtk-update-icon-cache") "true"))))))))
+    (inputs
+     `(("amtk" ,amtk)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("webkitgtk" ,webkitgtk-with-libsoup2)))))
+
 (define-public cogl
   (package
     (name "cogl")
