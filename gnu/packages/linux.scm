@@ -1740,11 +1740,13 @@ It provides the commands @code{powercap-info} and @code{powercap-set}.")
     (version "0.02.26")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://kernel.ubuntu.com/~cking/tarballs/"
-                           "powerstat/powerstat-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ColinIanKing/powerstat")
+             (commit (string-append "V" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "18m85k83hryj05vix63fay1hh0sb9h87hy5r7g1dqg2y9i8lzgxk"))))
+        (base32 "0jp9dvwlz4svg28vgrgvvbi72ca9mkfczy0f05vvsgpxjz7hlfnj"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
