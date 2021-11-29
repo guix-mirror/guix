@@ -32456,12 +32456,6 @@ running an @dfn{agent}.  The build daemon is still used to build the
 derivations, but the Guix Build Coordinator manages allocating builds
 and working with the results.
 
-@quotation Note
-This service is considered experimental.  Configuration options may be
-changed in a backwards-incompatible manner, and not all features have
-been thorougly tested.
-@end quotation
-
 The Guix Build Coordinator consists of one @dfn{coordinator}, and one or
 more connected @dfn{agent} processes.  The coordinator process handles
 clients submitting builds, and allocating builds to agents.  The agent
