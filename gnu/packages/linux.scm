@@ -7680,7 +7680,7 @@ compatible with Python's ConfigParser style of .INI files, including RFC
 (define-public xfsprogs
   (package
     (name "xfsprogs")
-    (version "5.13.0")
+    (version "5.14.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -7688,7 +7688,7 @@ compatible with Python's ConfigParser style of .INI files, including RFC
                     "xfsprogs-" version ".tar.gz"))
               (sha256
                (base32
-                "09s3alwrhs1gaaywkpx2knc5bxb44b77009jw8zgsy9c2wxximns"))))
+                "1kfglkilc8msgbb1168zj7mxs71pypz9rvl4jhiam5qy786difh8"))))
     (build-system gnu-build-system)
     (outputs (list "out" "python"))
     (arguments
@@ -7714,6 +7714,7 @@ compatible with Python's ConfigParser style of .INI files, including RFC
      `(("gettext" ,gettext-minimal)))
     (inputs
      `(("libinih" ,libinih)
+       ("liburcu" ,liburcu)
        ("libuuid" ,util-linux "lib")
        ("python" ,python-wrapper)))
     (home-page "https://xfs.wiki.kernel.org/")
