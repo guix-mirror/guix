@@ -405,14 +405,14 @@ useful tools for testing Django applications and projects.")
          (add-after 'unpack 'loosen-verion-restrictions
            (lambda _
              (substitute* "setup.py"
-               (("geopy.*") "geopy',\n"))
-             #t))
+               (("geopy.*") "geopy',\n"))))
          (add-before 'check 'set-gdal-lib-path
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "GDAL_LIBRARY_PATH"
                      (string-append (assoc-ref inputs "gdal")
-                                    "/lib"))
-             #t)))
+                                    "/lib"))))
+         ;; Importing this module requires setting up a Django project.
+         (delete 'sanity-check))
        #:tests? #f)) ; OSError: libgdal.so.27: cannot open shared object file
     (propagated-inputs
      `(("python-django" ,python-django)))
