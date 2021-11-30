@@ -1249,7 +1249,11 @@ FileFields during tests.")
                (base32
                 "06041a8icazzp73kg93c7k1ska12wvkq7fpcad0l0sm1qnxx5yx7"))))
     (build-system python-build-system)
-    (arguments '(#:tests? #f))          ;no tests
+    (arguments
+     '(#:tests? #f                      ;no tests
+       #:phases (modify-phases %standard-phases
+                  ;; Importing this module requires a Django project.
+                  (delete 'sanity-check))))
     (propagated-inputs
      `(("python-certifi" ,python-certifi)
        ("python-django" ,python-django)
