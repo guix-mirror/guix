@@ -79,6 +79,7 @@
   #:use-module (gnu packages groff)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages libffi)
+  #:use-module (gnu packages node)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-build)
@@ -6020,26 +6021,26 @@ Encoding for HTTP.")
 (define-public python-cloudscraper
   (package
     (name "python-cloudscraper")
-    (version "1.2.48")
+    (version "1.2.58")
     (source
      (origin
-       (method url-fetch)
-       (uri (pypi-uri "cloudscraper" version))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/VeNoMouS/cloudscraper")
+             ;; Corresponds to 1.2.58
+             (commit "f3a3d067ea8b5238e9a0948aed0c3fa0d9c29b96")))
        (sha256
-        (base32 "0qjxzb0z5bprvmdhx42ayqhlhi2h49d9dwc0vvycj817s71f2sxv"))
+        (base32 "18fbp086imabjxly04rrchbf6n6m05bpd150zxbw7z2w3mjnpsqd"))
        (modules '((guix build utils)))
        (snippet
         '(with-directory-excursion "cloudscraper"
            (for-each delete-file
-                     '("captcha/2captcha.py"
-                       "captcha/9kw.py"
-                       "captcha/anticaptcha.py"
-                       "captcha/deathbycaptcha.py"))
+                     '("captcha/9kw.py"
+                       "captcha/anticaptcha.py"))
            (substitute* "__init__.py"
              ;; Perhaps it's a joke, but don't promote proprietary software.
              (("([Th]is feature is not available) in the .*'" _ prefix)
-              (string-append prefix ".'")))
-           #t))))
+              (string-append prefix ".'")))))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -6050,12 +6051,25 @@ Encoding for HTTP.")
            (lambda _
              (with-directory-excursion "cloudscraper"
                (for-each delete-file
-                         '("interpreters/js2py.py"
-                           "interpreters/v8.py")))
-             #t)))))
+                         '("interpreters/v8.py")))))
+         (add-after 'unpack 'fix-references
+           (lambda _
+             (substitute* "cloudscraper/interpreters/nodejs.py"
+               (("'node'")
+                (string-append "'" (which "node") "'")))))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest" "-vv"
+                       "-k" "not test_getCookieString_challenge_js_challenge1_16_05_2020")))))))
+    (inputs
+     `(("node" ,node)))
     (propagated-inputs
-     `(("python-requests" ,python-requests)
+     `(("python-js2py" ,python-js2py)
+       ("python-polling2" ,python-polling2)
+       ("python-requests" ,python-requests)
        ("python-requests-toolbelt" ,python-requests-toolbelt-0.9.1)
+       ("python-responses" ,python-responses)
        ("python-pyparsing" ,python-pyparsing-2.4.7)))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
