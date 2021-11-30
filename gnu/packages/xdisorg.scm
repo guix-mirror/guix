@@ -1207,14 +1207,14 @@ compact configuration syntax.")
 (define-public rxvt-unicode
   (package
     (name "rxvt-unicode")
-    (version "9.29")
+    (version "9.30")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://dist.schmorp.de/rxvt-unicode/Attic/"
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "0z0mqiiw1vxb1vz1b7my1yzb57pzaprc5v28azwb379i1kgck2y1"))))
+                "0badnkjsn3zps24r5iggj8k5v4f00npc77wqg92pcn1q5z8r677y"))))
     (build-system gnu-build-system)
     (arguments
      ;; This sets the destination when installing the necessary terminal
