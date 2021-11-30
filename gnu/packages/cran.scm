@@ -32014,14 +32014,14 @@ convert dates to MMWR day, week, and year and the reverse.")
 (define-public r-crul
   (package
     (name "r-crul")
-    (version "1.1.0")
+    (version "1.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "crul" version))
        (sha256
         (base32
-         "1kjsc5gkx5k5cfwlfjp2cjm9cdzq2l1m68bnrjmahw3lkz8wzdph"))))
+         "133g0skz4lifl8hm8pqdryd2m2drbrm6mdfzbbsrw8fg46di86my"))))
     (properties `((upstream-name . "crul")))
     (build-system r-build-system)
     (propagated-inputs
