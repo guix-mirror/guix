@@ -5943,6 +5943,23 @@ Agent is a web crawler.  It uses the list of registered robots from
 using a pure Python implementation.")
     (license license:bsd-3)))
 
+(define-public python-pyjsparser
+  (package
+    (name "python-pyjsparser")
+    (version "2.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pyjsparser" version))
+       (sha256
+        (base32 "0ycmf9fsvwliqmm1n6sfz7x71y7i2kbfgn39d8lsbiccfxmxlq5y"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/PiotrDabkowski/pyjsparser")
+    (synopsis "Fast JavaScript parser")
+    (description "This package provides a fast JavaScript parser (based on
+esprima.js)")
+    (license license:expat)))
+
 (define-public python-http-ece
   (package
     (name "python-http-ece")
