@@ -1307,7 +1307,7 @@ to ElasticSearch.")
     (arguments
      '(#:tests? #f            ;FIXME: Django raises "Apps aren't loaded yet"!?
        #:phases (modify-phases %standard-phases
-                  (add-before 'check 'loosen-requirements
+                  (add-after 'unpack 'loosen-requirements
                     (lambda _
                       ;; Do not depend on compatibility package for old
                       ;; Python versions.
