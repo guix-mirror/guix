@@ -103,6 +103,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)  ;libsndfile, libsamplerate
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-science)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages rdf)
@@ -5442,6 +5443,43 @@ manipulations.  @code{python-pysox} also provides methods for querying audio
 information such as sample rate, determining whether an audio file is silent,
 and much more.")
       (license license:bsd-3))))
+
+(define-public python-resampy
+  (package
+    (name "python-resampy")
+    (version "0.2.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         ;; PyPi does not include tests.
+         (url "https://github.com/bmcfee/resampy")
+         (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0qmkxl5sbgh0j73n667vyi7ywzh09iaync91yp1j5rrcmwsn0qfs"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest" "tests")))))))
+    (propagated-inputs
+     (list python-numba python-numpy python-scipy python-six))
+    (native-inputs
+     (list python-pytest python-pytest-cov))
+    (home-page "https://github.com/bmcfee/resampy")
+    (synopsis "Efficient signal resampling")
+    (description
+     "@code{python-resampy} implements the band-limited sinc interpolation
+method for sampling rate conversion as described by Julius O. Smith at the
+@url{https://ccrma.stanford.edu/~jos/resample/, Digital Audio Resampling
+Home Page}.")
+    (license license:isc)))
 
 (define-public mda-lv2
   (package
