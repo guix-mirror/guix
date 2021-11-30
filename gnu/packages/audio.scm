@@ -91,6 +91,7 @@
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages llvm)
+  #:use-module (gnu packages machine-learning)
   #:use-module (gnu packages man)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages mp3) ;taglib
@@ -5479,6 +5480,41 @@ and much more.")
 method for sampling rate conversion as described by Julius O. Smith at the
 @url{https://ccrma.stanford.edu/~jos/resample/, Digital Audio Resampling
 Home Page}.")
+    (license license:isc)))
+
+(define-public python-librosa
+  (package
+    (name "python-librosa")
+    (version "0.8.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "librosa" version))
+       (sha256
+        (base32 "1cx6rhcvak0hy6bx84jwzpxmwgi92m82w77279akwjmfd3khagf5"))))
+    (build-system python-build-system)
+    (arguments
+     ;; Tests require internet connection to download MATLAB scripts for
+     ;; generating the testing data.
+     `(#:tests? #f))
+    (propagated-inputs
+     (list python-audioread
+           python-decorator
+           python-joblib
+           python-numba
+           python-numpy
+           python-packaging
+           python-pooch
+           python-resampy
+           python-scikit-learn
+           python-scipy
+           python-soundfile))
+    (home-page "https://librosa.org")
+    (synopsis "Python module for audio and music processing")
+    (description
+     "@code{librosa} is a python package for music and audio analysis.  It
+provides the building blocks necessary to create music information retrieval
+systems.")
     (license license:isc)))
 
 (define-public mda-lv2
