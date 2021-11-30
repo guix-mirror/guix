@@ -804,7 +804,8 @@ entries, photos, book chapters, or anything else.")
            (lambda*(#:key tests? #:allow-other-keys)
              (when tests?
                (setenv "DJANGO_SETTINGS_MODULE" "tests.settings")
-               (invoke "django-admin" "test" "tests")))))))
+               (invoke "django-admin" "test" "tests"
+                       "--pythonpath=.")))))))
     (propagated-inputs
      `(("python-css-html-js-minify" ,python-css-html-js-minify)
        ("python-django" ,python-django)
