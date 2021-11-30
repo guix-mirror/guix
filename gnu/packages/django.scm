@@ -731,13 +731,13 @@ project aims to bulk update given objects using one query over Django ORM.")
 (define-public python-django-contact-form
   (package
     (name "python-django-contact-form")
-    (version "1.8.1")
+    (version "1.9")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "django-contact-form" version))
               (sha256
                (base32
-                "1zv7bcjfrg32gcsq3bclkld79l6mcy2wcvlj81h7q2ppv1wm8vqs"))))
+                "1my9hkrylckp5vfqg9b0kncrdlxjnwxll56sdciqn4v19i4wbq1y"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
