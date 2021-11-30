@@ -28740,6 +28740,44 @@ rapid and on-disk conversion between h5Seurat and AnnData objects, with the
 goal of enhancing interoperability between Seurat and Scanpy.")
       (license license:gpl3))))
 
+(define-public r-seuratdata
+  (let ((commit "b59556b24d7d6728a5744c9c715dd5f7f32ed7a5")
+        (revision "1"))
+    (package
+      (name "r-seuratdata")
+      (version (git-version "0.2.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/satijalab/seurat-data")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1xfdmdmgn4r0z6w4cxa98ic6xk8i6qz054r215dvqbjs1vydsbf9"))))
+      (properties `((upstream-name . "SeuratData")))
+      (build-system r-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           ;; When there is no HOME directory, this package will fail to load
+           ;; the included list of packages.
+           (add-after 'unpack 'set-HOME
+             (lambda _ (setenv "HOME" "/tmp"))))))
+      (propagated-inputs
+       `(("r-cli" ,r-cli)
+         ("r-crayon" ,r-crayon)
+         ("r-rappdirs" ,r-rappdirs)))
+      (home-page "https://github.com/satijalab/seurat-data")
+      (synopsis "Install and manage Seurat datasets")
+      (description
+       "Single cell RNA sequencing datasets can be large, consisting of
+matrices that contain expression data for several thousand features across
+several thousand cells.  This package is designed to easily install, manage,
+and learn about various single-cell datasets, provided Seurat objects and
+distributed as independent packages.")
+      (license license:gpl3))))
+
 (define-public r-phangorn
   (package
     (name "r-phangorn")
