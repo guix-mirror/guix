@@ -3566,20 +3566,22 @@ parsing code in hiredis.  It primarily speeds up parsing of multi bulk replies."
 (define-public python-fakeredis
   (package
     (name "python-fakeredis")
-    (version "1.2.1")
+    (version "1.7.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "fakeredis" version))
        (sha256
         (base32
-         "1s12mn4q4hz7402139khn9fx56kibj7nn0d6w81hn0zs07b90wpc"))))
+         "0wacd3f558vzsrpdvgvdwy9pp6crxf8hxblz30zbsv1k63j15gf9"))))
     (build-system python-build-system)
     (arguments
      ;; no tests
      `(#:tests? #f))
     (propagated-inputs
-      `(("python-sortedcontainers" ,python-sortedcontainers)))
+     `(("python-packaging" ,python-packaging)
+       ("python-redis" ,python-redis)
+       ("python-sortedcontainers" ,python-sortedcontainers)))
     (home-page "https://github.com/jamesls/fakeredis")
     (synopsis "Fake implementation of redis API for testing purposes")
     (description
@@ -3591,9 +3593,6 @@ Setting up redis is not hard, but one often wants to write unit tests that don't
 talk to an external server such as redis.  This module can be used as a
 reasonable substitute.")
     (license license:bsd-3)))
-
-(define-public python2-fakeredis
-  (package-with-python2 python-fakeredis))
 
 (define-public python-redis
   (package
