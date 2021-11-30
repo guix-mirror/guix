@@ -5960,6 +5960,29 @@ using a pure Python implementation.")
 esprima.js)")
     (license license:expat)))
 
+(define-public python-js2py
+  (package
+    (name "python-js2py")
+    (version "0.71")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "Js2Py" version))
+       (sha256
+        (base32 "1kkzkys6dfcbdv51vqxr9cmak350ab4mmykb8dysx60lvl4i06x4"))))
+    (build-system python-build-system)
+    (arguments '(#:tests? #false)) ; none included
+    (propagated-inputs
+     `(("python-pyjsparser" ,python-pyjsparser)
+       ("python-six" ,python-six)
+       ("python-tzlocal" ,python-tzlocal)))
+    (home-page "https://github.com/PiotrDabkowski/Js2Py")
+    (synopsis "JavaScript to Python translator")
+    (description
+     "This package provides a JavaScript to Python translator and a JavaScript
+interpreter written in pure Python.")
+    (license license:expat)))
+
 (define-public python-http-ece
   (package
     (name "python-http-ece")
