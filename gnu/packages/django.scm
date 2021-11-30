@@ -929,8 +929,9 @@ using Python multiprocessing.")
      `(#:phases (modify-phases %standard-phases
                   (replace 'check
                     (lambda _
-                      (invoke "python" "django-admin.py"
-                              "test" "--settings=settings"))))))
+                      (invoke "django-admin"
+                              "test" "--settings=test_project.settings"
+                              "--pythonpath=."))))))
     (propagated-inputs
      `(("python-django" ,python-django)))
     (home-page "https://github.com/jazzband/django-sortedm2m")
