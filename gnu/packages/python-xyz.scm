@@ -2961,6 +2961,28 @@ existing ones.")
                    ;; Tests don't work with python2.
                    #:tests? #f)))))
 
+(define-public python-polling2
+  (package
+    (name "python-polling2")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "polling2" version))
+       (sha256
+        (base32 "0hp3238fv6k1qk43gv4jwnv1mwlkmx33akbj560b9nvsry1dmdwh"))))
+    (build-system python-build-system)
+    (arguments '(#:tests? #false)) ; no tests included
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)))
+    (home-page "https://github.com/ddmee/polling2")
+    (synopsis "Polling utility with many configurable options")
+    (description "Polling2 is a utility used to wait for a function to return
+a certain expected condition.")
+    (license license:expat)))
+
 (define-public python-poyo
   (package
     (name "python-poyo")
