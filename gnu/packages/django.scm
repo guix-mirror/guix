@@ -959,7 +959,7 @@ the order of added relations.")
                   (replace 'check
                     (lambda _
                       (setenv "DJANGO_SETTINGS_MODULE" "tests.test_settings")
-                      (invoke "python" "django-admin.py" "test" "-v2"))))))
+                      (invoke "django-admin" "test" "--pythonpath=."))))))
     (propagated-inputs
      `(("python-django" ,python-django)))
     (home-page "https://github.com/django-compressor/django-appconf")
