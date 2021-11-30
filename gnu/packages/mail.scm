@@ -3342,14 +3342,14 @@ filtering, digest delivery, and more.")
 (define-public python-mailmanclient
   (package
     (name "python-mailmanclient")
-    (version "3.3.1")
+    (version "3.3.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "mailmanclient" version))
        (sha256
         (base32
-         "0pjgzpvhdb6ql8asb20xr8d01m646zpghmcp9fmscks0n1k4di4g"))))
+         "0ppqnv84v7npgjykhqdy5c38vanz4l0qw871kpsl27z4fm365zlj"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f)) ; Requires mailman running
