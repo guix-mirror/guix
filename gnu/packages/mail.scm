@@ -3448,14 +3448,14 @@ installation on systems where resources are limited.  Its features include:
 (define-public python-django-mailman3
   (package
     (name "python-django-mailman3")
-    (version "1.3.4")
+    (version "1.3.7")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "django-mailman3" version))
         (sha256
          (base32
-          "1yrm7wpjy34xai72vn2vkhc9131cdrbqy08rrabf36kynj5vcdvy"))))
+          "1dzycnwdr1gavs1dgmcv1lz24x0fkp8y864fy52fgbz72d6c5a3f"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
