@@ -11668,6 +11668,37 @@ visualization functions for compound clustering results and chemical
 structures.")
     (license license:artistic2.0)))
 
+(define-public r-fmcsr
+  (package
+    (name "r-fmcsr")
+    (version "1.36.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (bioconductor-uri "fmcsR" version))
+        (sha256
+          (base32 "0mshslfj7jsix1yc03s54spbbi56zspic49kfsjfv8npikj1i5w0"))))
+    (properties `((upstream-name . "fmcsR")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-chemminer" ,r-chemminer)
+       ("r-runit" ,r-runit)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/girke-lab/fmcsR")
+    (synopsis "Mismatch tolerant maximum common substructure searching")
+    (description
+     "The fmcsR package introduces an efficient @dfn{maximum common
+substructure} (MCS) algorithms combined with a novel matching strategy that
+allows for atom and/or bond mismatches in the substructures shared among two
+small molecules.  The resulting flexible MCSs (FMCSs) are often larger than
+strict MCSs, resulting in the identification of more common features in their
+source structures, as well as a higher sensitivity in finding compounds with
+weak structural similarities.  The fmcsR package provides several utilities to
+use the FMCS algorithm for pairwise compound comparisons, structure similarity
+searching and clustering.")
+    (license license:artistic2.0)))
+
 (define-public r-bioassayr
   (package
     (name "r-bioassayr")
