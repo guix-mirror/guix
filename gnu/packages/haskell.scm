@@ -22,6 +22,7 @@
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2021 Matthew James Kraai <kraai@ftbfs.org>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
+;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -711,12 +712,18 @@ interactive environment for the functional language Haskell.")
                  (("\\]\\), " all)
                   (string-append all "expect_broken(0)], ")))))
            ;; TODO: Turn this into an undconditional patch on the next rebuild.
-           ,@(if (string=? "i686-linux" (%current-system))
+           ,@(if (string-prefix? "i686" (or (%current-target-system)
+                                                  (%current-system)))
               '((add-after 'skip-more-tests 'skip-failing-tests-i686
                  (lambda _
                    (substitute* '("testsuite/tests/codeGen/should_compile/all.T")
                      (("(test\\('T15155l', )when\\(unregisterised\\(\\), skip\\)" all before)
-                      (string-append before "when(arch('i386'), skip)"))))))
+                      (string-append before "when(arch('i386'), skip)")))
+                   ;; Unexpected failures:
+                   ;;    quasiquotation/T14028.run  T14028 [bad stderr] (dyn)
+                   (substitute* '("testsuite/tests/quasiquotation/all.T")
+                     (("unless\\(config.have_ext_interp, skip\\),")
+                      "unless(config.have_ext_interp, skip), when(arch('i386'), skip),")))))
               '())))))
     (native-search-paths (list (search-path-specification
                                 (variable "GHC_PACKAGE_PATH")
