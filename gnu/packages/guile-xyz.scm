@@ -1884,13 +1884,11 @@ user which package sets would they like to install from it.")
        (modify-phases %standard-phases
          (replace 'bootstrap
            (lambda _
-             (invoke "autoreconf" "-vif")
-             #t))
+             (invoke "autoreconf" "-vif")))
          (add-before 'configure 'patch-/usr/bin/env
            (lambda _
              (substitute* "Makefile.in"
-               (("/usr/bin/env bash") (which "bash")))
-             #t))
+               (("/usr/bin/env bash") (which "bash")))))
          ;; auto compilation breaks, but if we set HOME to /tmp,
          ;; that works ok
          (add-before 'check 'auto-compile-hacky-workaround
@@ -1914,8 +1912,7 @@ user which package sets would they like to install from it.")
                                   (go   (string-append object-dir base ".go")))
                              (invoke "guild" "compile" "-L" module-dir
                                      file "-o" go)))
-                         (find-files module-dir "\\.scm$"))
-               #t)))
+                         (find-files module-dir "\\.scm$")))))
          (add-after 'install 'install-emacs-files
            (assoc-ref emacs:%standard-phases 'install))
          (add-after 'install-emacs-files 'compile-emacs-files
