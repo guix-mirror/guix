@@ -3762,8 +3762,12 @@ for Flask.")
     (build-system python-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
-                  (add-before 'check 'disable-some-tests
+                  (add-before 'check 'adjust-tests
                     (lambda _
+                      ;; Fix for Python 3.9 compatibility.
+                      (substitute* "tests/test_script.py"
+                        (("self\\.t\\.isAlive")
+                         "self.t.is_alive"))
                       ;; This test requires 'postcss' and 'babel' which are
                       ;; not yet available in Guix.
                       (delete-file "tests/test_filters.py")))
