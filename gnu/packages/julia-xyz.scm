@@ -4601,6 +4601,16 @@ applied to any distance.")
         (sha256
          (base32 "0rjcpyjwzg70n87q5r9c5i1qzigavncslxssm3rk5a3y549py56v"))))
     (build-system julia-build-system)
+    (arguments
+     `(#:phases
+       ,@(if (target-64bit?)
+           '(%standard-phases)
+           '((modify-phases %standard-phases
+               (add-after 'unpack 'fix-tests-int32-i686
+                 (lambda _
+                   (substitute* '("src/utils.jl"
+                                  "test/runtests.jl")
+                     (("Int64") "Int32")))))))))
     (propagated-inputs
      `(("julia-dataapi" ,julia-dataapi)
        ("julia-staticarrays" ,julia-staticarrays)
