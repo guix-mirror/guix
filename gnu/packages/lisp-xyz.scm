@@ -14843,8 +14843,8 @@ HTML documents.")
   (sbcl-package->cl-source-package sbcl-cl-html-diff))
 
 (define-public sbcl-tooter
-  (let ((commit "b1639d8a58dfe8020c82ed36697b7a668ef41a09")
-        (revision "2"))
+  (let ((commit "ec97bee3431c55913078e532daae81eb0fd90372")
+        (revision "3"))
     (package
       (name "sbcl-tooter")
       (version (git-version "1.0.0" revision commit))
@@ -14856,7 +14856,7 @@ HTML documents.")
                (commit commit)))
          (file-name (git-file-name "tooter" version))
          (sha256
-          (base32 "0842lbj9ml6qxdm5xvhdbm87wyrvrq7bxawa6i8wk80n8lnvmhdw"))))
+          (base32 "02vpjaq38d6laaqmsana9f13c38xzr0xwy05fcfkmzdhh0kllpkv"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("sbcl-cl-ppcre" ,sbcl-cl-ppcre)
