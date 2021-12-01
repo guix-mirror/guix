@@ -17957,7 +17957,6 @@ automatically fetched from well-curated sources, and formatted as BibTeX.")
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-auctex" ,emacs-auctex)
-       ("emacs-helm-bibtex" ,emacs-helm-bibtex)
        ("emacs-org" ,emacs-org)
        ("emacs-parsebib" ,emacs-parsebib)
        ("emacs-s" ,emacs-s)))
