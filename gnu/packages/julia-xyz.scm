@@ -1683,6 +1683,17 @@ types and sparsity.")
        (sha256
         (base32 "09nsf9cgk49yrvprflnhd9h5rrgs280rgj8sad3csghxdx6jqk5c"))))
     (build-system julia-build-system)
+    (arguments
+     `(#:phases
+       ,@(if (target-x86-32?)
+           '((modify-phases %standard-phases
+               (add-after 'unpack 'remove-failing-test-i686
+                 (lambda _
+                   ;; Machine Precision incorrectly handled
+                   (substitute* "test/methods.jl"
+                     (("@test central_fdm\\(15, 5, adapt=2\\)\\(exp, 1.0\\)")
+                      "@test_broken central_fdm(15, 5, adapt=2)(exp, 1.0)"))))))
+           '(%standard-phases))))
     (inputs
      `(("julia-benchmarktools" ,julia-benchmarktools)))
     (propagated-inputs
