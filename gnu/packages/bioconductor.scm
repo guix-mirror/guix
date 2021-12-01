@@ -11,6 +11,7 @@
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2021 Hong Li <hli@mdc-berlin.de>
 ;;; Copyright © 2021 Tim Howes <timhowes@lavabit.com>
+;;; Copyright © 2021 Nicolas Vallet <nls.vallet@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -15058,3 +15059,41 @@ and other associated metadata.  De novo transcriptomes can be linked to the
 appropriate sources with linkedTxomes and shared for computational
 reproducibility.")
     (license license:gpl2)))
+
+(define-public r-phyloseq
+  (package
+    (name "r-phyloseq")
+    (version "1.38.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "phyloseq" version))
+       (sha256
+        (base32 "0k0aj8f7g1vr7l0qcc507b3w67zc1k9x7sdblm7mjb20zqr3916s"))))
+    (properties `((upstream-name . "phyloseq")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ade4" ,r-ade4)
+       ("r-ape" ,r-ape)
+       ("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-biomformat" ,r-biomformat)
+       ("r-biostrings" ,r-biostrings)
+       ("r-cluster" ,r-cluster)
+       ("r-data-table" ,r-data-table)
+       ("r-foreach" ,r-foreach)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-igraph" ,r-igraph)
+       ("r-multtest" ,r-multtest)
+       ("r-plyr" ,r-plyr)
+       ("r-reshape2" ,r-reshape2)
+       ("r-scales" ,r-scales)
+       ("r-vegan" ,r-vegan)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/joey711/phyloseq")
+    (synopsis "Handling and analysis of high-throughput microbiome census data")
+    (description
+     "Phyloseq provides a set of classes and tools to facilitate the import,
+storage, analysis, and graphical display of microbiome census data.")
+    (license license:agpl3)))
