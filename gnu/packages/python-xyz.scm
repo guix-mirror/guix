@@ -4149,14 +4149,14 @@ logging and tracing of the execution.")
 (define-public python-daemon
   (package
     (name "python-daemon")
-    (version "2.2.3")
+    (version "2.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-daemon" version))
        (sha256
         (base32
-         "09fcjdjzk9ywmpnrj62iyxqgcygzdafsz41qlrk2dknzbagcmzmg"))))
+         "1bxfn2bq56sd4w0nm9mqy8y0905m7fc8vmhnjxlrf49vcbqr7adx"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -4171,9 +4171,11 @@ logging and tracing of the execution.")
     (propagated-inputs
      `(("python-lockfile" ,python-lockfile)))
     (native-inputs
-     `(("python-unittest2" ,python-unittest2)
+     `(("python-coverage" ,python-coverage)
+       ("python-unittest2" ,python-unittest2)
        ("python-testtools" ,python-testtools)
        ("python-testscenarios" ,python-testscenarios)
+       ("python-twine" ,python-twine)
        ("python-mock" ,python-mock)
        ("python-docutils" ,python-docutils)))
     (home-page "https://pagure.io/python-daemon/")
