@@ -6087,6 +6087,15 @@ that client code uses to construct the grammar directly in Python code.")
   (let ((base (package-with-python2
                (strip-python2-variant python-numpydoc))))
     (package/inherit base
+      ;; This is the last version to support Python 2
+      (version "0.9.1")
+      (source
+       (origin
+         (method url-fetch)
+         (uri (pypi-uri "numpydoc" version))
+         (sha256
+          (base32
+           "09x6l1a4dcvj7001bvcmcayg1nwqwhaxlwbp6kzj9qrk57lqx3z0"))))
       (propagated-inputs
        `(("python2-jinja2" ,python2-jinja2)
          ,@(package-propagated-inputs base))))))
