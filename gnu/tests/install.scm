@@ -1679,9 +1679,12 @@ build (current-guix) and then store a couple of full system images.")
     ;; encryption support.  The installer produces a UUID for the partition;
     ;; this "UUID" is explicitly set in 'gui-test-program' to the value shown
     ;; below.
-    (swap-devices (if encrypted?
-                      '()
-                      (list (uuid "11111111-2222-3333-4444-123456789abc"))))
+    (swap-devices
+     (if encrypted?
+         '()
+         (list
+          (swap-space
+           (target (uuid "11111111-2222-3333-4444-123456789abc"))))))
     (services (cons (service dhcp-client-service-type)
                     (operating-system-user-services %minimal-os-on-vda)))))
 
