@@ -27636,6 +27636,18 @@ systems in Python.")
        (sha256
         (base32 "0pv5ygpr6syc6zkw21in4ysqs3k7qaxk9m1g5pzlafwm3silkpm5"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (setenv "PATH" (string-append (getenv "PATH") ":"
+                                             (assoc-ref outputs "out") "/bin"))
+               ;; Skip the ipython tests.
+               (delete-file "tests/test_ipython.py")
+               (invoke "python" "-m" "pytest")))))))
     (propagated-inputs
      `(("python-click" ,python-click)))
     (native-inputs
