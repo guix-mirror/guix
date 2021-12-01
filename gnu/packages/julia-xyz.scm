@@ -2901,6 +2901,15 @@ that let you do deep transformations of code.")
         (sha256
          (base32 "0l5adird8m1cmnsxwhzi5hcr7q9bm1rf7a6018zc7kcn2yxdshy3"))))
     (build-system julia-build-system)
+    (arguments
+     `(#:phases
+       ,@(if (target-64bit?)
+           '(%standard-phases)
+           '((modify-phases %standard-phases
+               (add-after 'unpack 'fix-tests-int32-i686
+                 (lambda _
+                   (substitute* "test/runtests.jl"
+                     (("Int64") "Int32")))))))))
     (propagated-inputs
      `(("julia-fixedpointnumbers" ,julia-fixedpointnumbers)))
     (native-inputs
