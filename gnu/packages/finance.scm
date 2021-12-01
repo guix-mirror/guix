@@ -837,7 +837,7 @@ the Monero GUI client.")
   ;; the toplevel app called trezor-agent.
   (package
     (name "python-trezor-agent")
-    (version "0.14.2")
+    (version "0.14.4")
     (source
      (origin
        (method git-fetch)
@@ -846,8 +846,7 @@ the Monero GUI client.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0nl44ldfw9s2v3p7g5bldfw3ds2hz9r28j42bpnp8bj0v5na3ivk"))
-       (patches (search-patches "python-trezor-agent-fix-argv0.patch"))))
+        (base32 "1ksv494xpga27ifrjyn1bkqaya5h769lqb9rx1ng0n4kvmnrqr3l"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -918,13 +917,13 @@ settings.")
 (define-public python-mnemonic
   (package
     (name "python-mnemonic")
-    (version "0.19")
+    (version "0.20")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "mnemonic" version))
         (sha256
-          (base32 "0cd9prmdj8wzdmc7lxbf9lz0xrlkvak5ignag406mmfbn81fndsf"))))
+          (base32 "1xi5qvj2rvi5almf9c89rl7hz1z4ms04d53pg818i4vpkmivavvw"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-pbkdf2" ,python-pbkdf2)))
@@ -992,7 +991,7 @@ Nano dongle.")
 (define-public python-trezor
   (package
     (name "python-trezor")
-    (version "0.12.3")
+    (version "0.12.4")
     (source
      (origin
        (method git-fetch)
@@ -1001,7 +1000,7 @@ Nano dongle.")
              (commit (string-append "python/v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0wdm1y5zli6w09zbpjqc6rbcs1b4hjq007mbh7xdr17prbnqprac"))
+        (base32 "1k0zk94jnkhr4iyngjfhfvff5mibx265q81v8jhvhd3m4clzgc45"))
        (modules
         '((guix build utils)
           (srfi srfi-26)
@@ -1102,18 +1101,19 @@ the KeepKey Hardware Wallet.")
 (define-public trezor-agent
   (package
     (name "trezor-agent")
-    (version "0.11.0")
+    (version "0.11.0-1")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/romanz/trezor-agent")
-             ;; The version mismatch is not a mistake. Multiple python
+             ;; The version mismatch is not a mistake.  Multiple Python
              ;; apps/packages are in the same git repo, and they have
-             ;; different versions. The git tag seems to track libagent,
-             ;; i.e. python-trezor-agent in the Guix namespace.
-             ;; See e.g. ./agents/trezor/setup.py
-             (commit "v0.14.2")))
+             ;; different versions.  The git tag seems to track libagent,
+             ;; i.e. python-trezor-agent in the Guix namespace.  See
+             ;; e.g. ./agents/trezor/setup.py.
+             (commit "v0.14.4")))
+       (file-name (git-file-name name version))
        (sha256
         (base32 "0nl44ldfw9s2v3p7g5bldfw3ds2hz9r28j42bpnp8bj0v5na3ivk"))
        (modules
@@ -1151,8 +1151,7 @@ the KeepKey Hardware Wallet.")
                (delete-file (string-append out "/bin/.trezor_agent.py-real"))
                ;; Overwrite the wrapped one with the real thing.
                (install-file "./trezor_agent.py"
-                             (string-append out "/bin"))
-               #t))))))
+                             (string-append out "/bin"))))))))
     (build-system python-build-system)
     (inputs
      `(("python-trezor" ,python-trezor)
