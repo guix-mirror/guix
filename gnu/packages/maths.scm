@@ -2984,16 +2984,18 @@ scientific applications modeled by partial differential equations.")
               "https://www.mcs.anl.gov/petsc/documentation/copyright.html"))))
 
 (define-public petsc-complex
-  (package (inherit petsc)
+  (package
+    (inherit petsc)
     (name "petsc-complex")
     (arguments
      (substitute-keyword-arguments (package-arguments petsc)
        ((#:configure-flags cf)
-        `(cons "--with-scalar-type=complex" ,cf))))
+        #~(cons "--with-scalar-type=complex" #$cf))))
     (synopsis "Library to solve PDEs (with complex scalars)")))
 
 (define-public petsc-openmpi
-  (package (inherit petsc)
+  (package
+    (inherit petsc)
     (name "petsc-openmpi")
     (inputs
      `(("hdf5" ,hdf5-parallel-openmpi)
@@ -3007,27 +3009,28 @@ scientific applications modeled by partial differential equations.")
     (arguments
      (substitute-keyword-arguments (package-arguments petsc)
        ((#:configure-flags cf)
-        ``("--with-hypre=1"
-           "--with-mpiexec=mpirun"
-           "--with-metis=1"
-           "--with-mumps=1"
-           "--with-scalapack=1"
-           "--with-ptscotch=1"
-           ,(string-append "--with-mpi-dir="
-                           (assoc-ref %build-inputs "openmpi"))
-           ,(string-append "--with-hdf5-include="
-                           (assoc-ref %build-inputs "hdf5") "/include")
-           ,(string-append "--with-hdf5-lib="
-                           (assoc-ref %build-inputs "hdf5") "/lib/libhdf5.a")
-           ,@(delete "--with-mpi=0" ,cf)))
+        #~`("--with-hypre=1"
+            "--with-mpiexec=mpirun"
+            "--with-metis=1"
+            "--with-mumps=1"
+            "--with-scalapack=1"
+            "--with-ptscotch=1"
+            ,(string-append "--with-mpi-dir="
+                            #$(this-package-input "openmpi"))
+            ,(string-append "--with-hdf5-include="
+                            #$(this-package-input "hdf5") "/include")
+            ,(string-append "--with-hdf5-lib="
+                            #$(this-package-input "hdf5") "/lib/libhdf5.a")
+            ,@(delete "--with-mpi=0" #$cf)))
        ((#:phases phases)
-        `(modify-phases ,phases
-           (add-before 'configure 'mpi-setup
-             ,%openmpi-setup)))))
+        #~(modify-phases #$phases
+            (add-before 'configure 'mpi-setup
+              #$%openmpi-setup)))))
     (synopsis "Library to solve PDEs (with MUMPS and MPI support)")))
 
 (define-public petsc-complex-openmpi
-  (package (inherit petsc-complex)
+  (package
+    (inherit petsc-complex)
     (name "petsc-complex-openmpi")
     (inputs
      `(("openmpi" ,openmpi)
@@ -3035,14 +3038,14 @@ scientific applications modeled by partial differential equations.")
     (arguments
      (substitute-keyword-arguments (package-arguments petsc-complex)
        ((#:configure-flags cf)
-        ``("--with-mpiexec=mpirun"
-           ,(string-append "--with-mpi-dir="
-                           (assoc-ref %build-inputs "openmpi"))
-           ,@(delete "--with-mpi=0" ,cf)))
+        #~`("--with-mpiexec=mpirun"
+            ,(string-append "--with-mpi-dir="
+                            #$(this-package-input "openmpi"))
+            ,@(delete "--with-mpi=0" #$cf)))
        ((#:phases phases)
-        `(modify-phases ,phases
-           (add-before 'configure 'mpi-setup
-             ,%openmpi-setup)))))
+        #~(modify-phases #$phases
+            (add-before 'configure 'mpi-setup
+              #$%openmpi-setup)))))
     (synopsis "Library to solve PDEs (with complex scalars and MPI support)")))
 
 (define-public python-petsc4py
