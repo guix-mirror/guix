@@ -2807,6 +2807,15 @@ equations in string literals in the Julia language.")
         (sha256
          (base32 "17rhlrmgfvdw8w62pg32ikr9j4xy2ylr7mx7ar0hnpzryv929rp5"))))
     (build-system julia-build-system)
+    (arguments
+     `(#:phases
+       ,@(if (target-64bit?)
+           '(%standard-phases)
+           '((modify-phases %standard-phases
+               (add-after 'unpack 'fix-tests-int32-i686
+                 (lambda _
+                   (substitute* "test/multests.jl"
+                     (("Int64") "Int32")))))))))
     (propagated-inputs
      `(("julia-arraylayouts" ,julia-arraylayouts)
        ("julia-fillarrays" ,julia-fillarrays)
