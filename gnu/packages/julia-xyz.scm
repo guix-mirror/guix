@@ -3229,6 +3229,22 @@ Julia, with type-driven, overloadable packing/unpacking functionality.")
         (sha256
          (base32 "1isyj8h4nx96cr6892d154v8pw1nhr7mjyz5bd6ffr2mkzb2bq4f"))))
     (build-system julia-build-system)
+    (arguments
+     `(#:phases
+       ,@(if (target-x86-32?)
+           '((modify-phases %standard-phases
+               (add-after 'unpack 'remove-failing-test-i686
+                 (lambda _
+                   (substitute* "test/utilities.jl"
+                     ;; Non-deterministic returned value, e.g.,
+                     ;;    Expression: n == @allocated(f())
+                     ;;    Evaluated: 240 == 120
+                     ;; and for some other values:
+                     ;;    Got correct result, please change to @test
+                     ;; so @test_broken is not enough.
+                     (("@test n == @allocated f\\(\\)")
+                      " "))))))
+           '(%standard-phases))))
     (propagated-inputs
      `(("julia-offsetarrays" ,julia-offsetarrays)))
     (home-page "https://github.com/jump-dev/MutableArithmetics.jl")
