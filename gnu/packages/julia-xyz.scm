@@ -5031,6 +5031,16 @@ allows for efficient string representation and transfer")
         (sha256
          (base32 "04yykivi8zrbryxlmb0p5xa6lma8iq22r5s863117dnnqj5gaffd"))))
     (build-system julia-build-system)
+    (arguments
+     `(#:phases
+       ,@(if (target-x86-32?)
+           '((modify-phases %standard-phases
+               (add-after 'unpack 'remove-failing-test-i686
+                 (lambda _
+                   (substitute* "test/woodbury.jl"
+                     (("@test logdet\\(W\\)")
+                      "@test_broken logdet(W)"))))))
+           '(%standard-phases))))
     (home-page "https://github.com/timholy/WoodburyMatrices.jl")
     (synopsis "Support for the Woodbury matrix identity for Julia")
     (description "This package provides support for the Woodbury matrix identity
