@@ -803,8 +803,7 @@ way.")
          (add-after 'link-depot 'fix-tests
            (lambda _
              (substitute* "test/runtests.jl"
-               (("option.toml") "test/option.toml"))
-             #t))
+               (("option.toml") "test/option.toml"))))
          (add-after 'link-depot 'dont-use-exproniconlite
            (lambda _
              (substitute* '("Project.toml"
@@ -813,8 +812,13 @@ way.")
                (("ExproniconLite") "Expronicon"))
              (substitute* "Project.toml"
                (("55351af7-c7e9-48d6-89ff-24e801d99491")
-                "6b7a57c9-7cc1-4fdf-b7f5-e857abae3636"))
-             #t)))))
+                "6b7a57c9-7cc1-4fdf-b7f5-e857abae3636"))))
+         ,@(if (target-64bit?)
+             '()
+             '((add-after 'unpack 'fix-tests-int32-i686
+                 (lambda _
+                   (substitute* "test/runtests.jl"
+                     (("Int64") "Int32")))))))))
     (propagated-inputs
      `(("julia-crayons" ,julia-crayons)
        ("julia-expronicon" ,julia-expronicon)
