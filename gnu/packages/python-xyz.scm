@@ -16316,13 +16316,13 @@ characters, mouse support, and auto suggestions.")
 (define-public python-jedi
   (package
     (name "python-jedi")
-    (version "0.17.2")
+    (version "0.18.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "jedi" version))
        (sha256
-        (base32 "080xyf97ifabdz7jp8clg00b8zv5g33fva1fb2xf80q6fndpvvc6"))))
+        (base32 "1as9v6kv49j11al2mzjh72dd5mxxnfcjv0z5dbmwi6aalqk7c4vl"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -16334,8 +16334,10 @@ characters, mouse support, and auto suggestions.")
                (invoke "python" "-m" "pytest" "-vv"))
              #t)))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-docopt" ,python-docopt)))
+     `(("python-docopt" ,python-docopt)
+       ("python-colorama" ,python-colorama)
+       ("python-django" ,python-django-2.2)
+       ("python-pytest" ,python-pytest)))
     (propagated-inputs
      `(("python-parso" ,python-parso)))
     (home-page "https://github.com/davidhalter/jedi")
