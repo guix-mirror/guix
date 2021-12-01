@@ -1981,14 +1981,18 @@ matrices the Schur form is often more useful.")
            (lambda _
              (substitute* '("Project.toml"
                             "src/GeometryBasics.jl")
-               ((".*EarCut.*") ""))
-             #t))
+               ((".*EarCut.*") ""))))
          (add-after 'link-depot 'skip-incompatible-test
            (lambda _
              (substitute* "test/runtests.jl"
                (("@testset.*MetaT and heterogeneous data.*" all)
-                (string-append all "return\n")))
-             #t)))))
+                (string-append all "return\n")))))
+         ,@(if (target-64bit?)
+             '()
+             '((add-after 'unpack 'fix-tests-int32-i686
+                 (lambda _
+                   (substitute* "test/runtests.jl"
+                     (("Int64") "Int32")))))))))
     (propagated-inputs
      `(("julia-itertools" ,julia-itertools)
        ("julia-staticarrays" ,julia-staticarrays)
