@@ -76,8 +76,16 @@
          (add-before 'check 'skip-practracker
            ;; This is a style linter.  It doesn't get to throw fatal errors.
            (lambda _
-             (setenv "TOR_DISABLE_PRACTRACKER" "set")
-             #t)))))
+             (setenv "TOR_DISABLE_PRACTRACKER" "set")))
+         (add-before 'check 'adjust-test-suite
+           (lambda _
+             ;; Work around upstream issue relating to sandboxing and glibc-2.33.
+             ;; This is similar to the issue the tor-sandbox-i686 patch fixes
+             ;; but for other architectures.
+             ;; https://gitlab.torproject.org/tpo/core/tor/-/issues/40381
+             ;; https://gitlab.torproject.org/tpo/core/tor/-/merge_requests/446
+             (substitute* "src/test/test_include.sh"
+               ((".*Sandbox 1.*") "")))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("python" ,python)))             ; for tests
