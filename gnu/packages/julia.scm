@@ -71,13 +71,17 @@
         (base32
          "1y0l08k6ak1mqbfj6accf9s5686kljwgsl4vcqpxzk5n74wpm6a3"))
        (patches
-        (list
-         (julia-patch "libunwind-prefer-extbl"
-                      "0lr4dafw8qyfh8sw8hhbwkql1dlhqv8px7k81y2l20hhxfgnh2m1")
-         (julia-patch "libunwind-static-arm"
-                      "1jk3bmiw61ypcchqkk1fyg5wh8wpggk574wxyfyaic870zh3lhgq")
-         (julia-patch "libunwind-cfa-rsp"
-                      "1aswjhvysahhldbzh1afbf0hsjxrvs6xidsz2i7s1cjkjbdiia1z")))))
+        (append
+            ;; Fix linker issue for i686-linux because GCC10 changed default
+            ;; (see '-fno-common' option).
+            (search-patches "libunwind-julia-fix-GCC10-fno-common.patch")
+            (list
+             (julia-patch "libunwind-prefer-extbl"
+                          "0lr4dafw8qyfh8sw8hhbwkql1dlhqv8px7k81y2l20hhxfgnh2m1")
+             (julia-patch "libunwind-static-arm"
+                          "1jk3bmiw61ypcchqkk1fyg5wh8wpggk574wxyfyaic870zh3lhgq")
+             (julia-patch "libunwind-cfa-rsp"
+                          "1aswjhvysahhldbzh1afbf0hsjxrvs6xidsz2i7s1cjkjbdiia1z"))))))
     (home-page "https://github.com/JuliaLang/tree/master/deps/")))
 
 (define (julia-patch-url version name)

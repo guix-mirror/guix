@@ -1,0 +1,40 @@
+Fix compilation with -fno-common.
+
+Borrowed from upstream 29e17d8d2ccbca07c423e3089a6d5ae8a1c9cb6e.
+Author:     Yichao Yu <yyc1992@gmail.com>
+AuthorDate: Tue Mar 31 00:43:32 2020 -0400
+Commit:     Dave Watson <dade.watson@gmail.com>
+CommitDate: Tue Mar 31 08:06:29 2020 -0700
+
+diff --git a/src/x86/Ginit.c b/src/x86/Ginit.c
+index f6b8dc2..9550efa 100644
+--- a/src/x86/Ginit.c
++++ b/src/x86/Ginit.c
+@@ -54,13 +54,6 @@ tdep_uc_addr (ucontext_t *uc, int reg)
+ 
+ # endif /* UNW_LOCAL_ONLY */
+ 
+-HIDDEN unw_dyn_info_list_t _U_dyn_info_list;
+-
+-/* XXX fix me: there is currently no way to locate the dyn-info list
+-       by a remote unwinder.  On ia64, this is done via a special
+-       unwind-table entry.  Perhaps something similar can be done with
+-       DWARF2 unwind info.  */
+-
+ static void
+ put_unwind_info (unw_addr_space_t as, unw_proc_info_t *proc_info, void *arg)
+ {
+@@ -71,7 +64,12 @@ static int
+ get_dyn_info_list_addr (unw_addr_space_t as, unw_word_t *dyn_info_list_addr,
+                         void *arg)
+ {
+-  *dyn_info_list_addr = (unw_word_t) &_U_dyn_info_list;
++#ifndef UNW_LOCAL_ONLY
++# pragma weak _U_dyn_info_list_addr
++  if (!_U_dyn_info_list_addr)
++    return -UNW_ENOINFO;
++#endif
++  *dyn_info_list_addr = _U_dyn_info_list_addr ();
+   return 0;
+ }
+ 
