@@ -1059,7 +1059,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/freecad-boost-serialization.patch	\
   %D%/packages/patches/freecad-vtk9.patch			\
   %D%/packages/patches/freedink-engine-fix-sdl-hints.patch	\
-  %D%/packages/patches/freedink-engine-fix-sdl-hints.patch	\
   %D%/packages/patches/freeglut-gcc-compat.patch		\
   %D%/packages/patches/freeimage-unbundle.patch		\
   %D%/packages/patches/fuse-overlapping-headers.patch				\
