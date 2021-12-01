@@ -1846,7 +1846,7 @@ games.")
 (define-public godot
   (package
     (name "godot")
-    (version "3.2.3")
+    (version "3.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1855,7 +1855,7 @@ games.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "19vrp5lhyvxbm6wjxzn28sn3i0s8j08ca7nani8l1nrhvlc8wi0v"))
+                "0y542zla6msgxf31rd0349d9j3ya7f3njnwmmrh8lmzfgxx86qbx"))
               (modules '((guix build utils)
                          (ice-9 ftw)
                          (srfi srfi-1)))
@@ -1870,19 +1870,23 @@ games.")
                               "assimp"
                               "certs"
                               "cvtt"
+                              "embree"
                               "enet"
                               "etc2comp"
                               "fonts"
                               "glad"
                               "jpeg-compressor"
                               "libsimplewebm"
+                              "minimp3"
                               "miniupnpc"
                               "minizip"
                               "misc"
                               "nanosvg"
+                              "oidn"
                               "pvrtccompressor"
                               "recastnavigation"
                               "squish"
+                              "stb_rect_pack"
                               "tinyexr"
                               "vhacd"
                               "xatlas")))
@@ -1969,6 +1973,7 @@ games.")
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("alsa-lib" ,alsa-lib)
               ("bullet" ,bullet)
+              ("eudev" ,eudev)
               ("freetype" ,freetype)
               ("glew" ,glew)
               ("glu" ,glu)
