@@ -3013,6 +3013,29 @@ user handle multiple input/output devices and decide what media types get
 displayed where.")
     (license license:expat)))
 
+(define-public julia-millboard
+  (package
+    (name "julia-millboard")
+    (version "0.2.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/wookay/Millboard.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0k9jqgp285qhckldvvsmfk6s69dcr8s74m2fijgm2vxjj2gqjs1n"))))
+    (build-system julia-build-system)
+    (native-inputs
+     `(("julia-jive" ,julia-jive)))
+    (home-page "https://github.com/wookay/Millboard.jl")
+    (synopsis "Displaying data in tables for Julia")
+    (description
+     "@code{Millboard.jl} provides a library for getting data in a tablized
+format to arrange into rows and columns of cells.")
+    (license license:expat)))
+
 (define-public julia-missings
   (package
     (name "julia-missings")
