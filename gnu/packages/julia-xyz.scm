@@ -339,6 +339,15 @@ benchmarks as well as comparing benchmark results.")
         (sha256
          (base32 "1by26036fk9mawmcgqxpwizgbs398v9p6vrbsgg7h6llqn3q9iw1"))))
     (build-system julia-build-system)
+    (arguments
+     `(#:phases
+       ,@(if (target-64bit?)
+           '(%standard-phases)
+           '((modify-phases %standard-phases
+               (add-after 'unpack 'fix-tests-int32-i686
+                 (lambda _
+                   (substitute* "test/test_blockarrays.jl"
+                     (("Int64") "Int32")))))))))
     (propagated-inputs
      `(("julia-arraylayouts" ,julia-arraylayouts)
        ("julia-fillarrays" ,julia-fillarrays)))
