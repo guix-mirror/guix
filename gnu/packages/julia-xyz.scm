@@ -2673,6 +2673,25 @@ extensions to the iterator interface.")
      "Common functional iterator patterns (formerly @code{Iterators.jl}).")
     (license license:expat)))
 
+(define-public julia-jive
+  (package
+    (name "julia-jive")
+    (version "0.2.20")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/wookay/Jive.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0khwsdh8472jxcfi9lqw14l49sqlbsixql1jb4irnyajxkdjrcsf"))))
+    (build-system julia-build-system)
+    (home-page "https://github.com/wookay/Jive.jl")
+    (synopsis "Julia package to help with writing tests")
+    (description "@code{Jive.jl} is a Julia package to help with writing tests.")
+    (license license:expat)))
+
 (define-public julia-json
   (package
     (name "julia-json")
