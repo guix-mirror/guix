@@ -111,6 +111,7 @@
 ;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
 ;;; Copyright © 2021 Sébastien Lerique <sl@eauchat.org>
 ;;; Copyright © 2021 Raphaël Mélotte <raphael.melotte@mind.be>
+;;; Copyright © 2021 ZmnSCPxj <ZmnSCPxj@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -534,6 +535,28 @@ during long operations.")
 It indexes documents and provides a search interface for retrieving documents
 that best match text queries.")
     (license license:expat)))
+
+(define-public python-mrkd
+  (package
+    (name "python-mrkd")
+    (version "0.2.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "mrkd" version))
+        (sha256
+          (base32 "1bvaqbna1ihb4y2mv9pmvqcq3r9j6lwbbii99dani8lxx4dqqvs5"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-jinja2" ,python-jinja2)
+       ("python-mistune" ,python-mistune)
+       ("python-pygments" ,python-pygments)))
+    (home-page "https://pypi.org/project/mrkd/")
+    (synopsis "Python Markdown implementation")
+    (description
+     "@code{mrkd} writes man pages using Markdown, and convert them to Roff or
+HTML")
+    (license license:bsd-3)))
 
 (define-public python-mkdocs
   (package
