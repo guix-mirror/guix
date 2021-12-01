@@ -660,7 +660,7 @@ gitignore rules.")
       (origin
         (method url-fetch)
         (uri (crate-uri "cbindgen" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.xz"))
         (sha256
          (base32
           "0673pq96hs7waavkv58v2pakpxpsfyjvbraa5kyl2b44phgdzcid"))))

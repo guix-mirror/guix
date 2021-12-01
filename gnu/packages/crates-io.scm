@@ -22,6 +22,7 @@
 ;;; Copyright © 2021 Petr Hodina <phodina@protonmail.com>
 ;;; Copyright © 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2021 Jacob Hrbek <kreyren@rixotstudio.cz>
+;;; Copyright © 2021 Zheng Junjie <873216071@qq.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1196,7 +1197,7 @@ checksum, used in the zlib compression format.")
         (method url-fetch)
         (uri (crate-uri "adler32" version))
         (file-name
-          (string-append name "-" version ".crate"))
+          (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0bgks405vz823bphgwhj4l9h6vpfh900s0phfk4qqijyh9xhfysn"))))
@@ -2027,7 +2028,7 @@ escape codes.")
       (origin
         (method url-fetch)
         (uri (crate-uri "antidote" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "19g2sw2qa2ibnh4x7j1snk46593jgx6y7rnvva496ynq61af5z9l"))))
@@ -4135,7 +4136,7 @@ methods.")
      (origin
        (method url-fetch)
        (uri (crate-uri "atty" version))
-       (file-name (string-append name "-" version ".crate"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
          "1s7yslcs6a28c5vz7jwj63lkfgyx8mx99fdirlhi9lbhhzhrpcyr"))))
@@ -4202,7 +4203,7 @@ methods.")
       (origin
         (method url-fetch)
         (uri (crate-uri "autocfg" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1chwgimpx5z7xbag7krr9d8asxfqbh683qhgl9kn3hxk2l0djj8x"))))
@@ -4533,7 +4534,7 @@ trace (backtrace) at runtime in a Rust program.")
       (origin
         (method url-fetch)
         (uri (crate-uri "backtrace-sys" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "16a3igz22q9lnnjjr77f4k8ci48v8zdwrs67khx3h7wx3jzfpyqq"))))
@@ -4754,7 +4755,7 @@ c6e7d37.  However, this package works only up to 128 bytes.")
       (origin
         (method url-fetch)
         (uri (crate-uri "base-x" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1hfy0wv7j5ynd73yk1vyr32pqa77rp15lkrc54f8ky9c6hcbc80v"))))
@@ -4836,7 +4837,7 @@ Cow.")
       (origin
         (method url-fetch)
         (uri (crate-uri "bencher" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1x8p2xblgqssay8cdykp5pkfc0np0jk5bs5cx4f5av097aav9zbx"))))
@@ -5789,7 +5790,7 @@ types.")
       (origin
         (method url-fetch)
         (uri (crate-uri "bitflags" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "14qnd5nq8p2almk79m4m8ydqhd413yaxsyjp5xd19g3mikzf47fg"))))
@@ -6136,7 +6137,7 @@ BLAKE2bp hash functions.")
       (origin
         (method url-fetch)
         (uri (crate-uri "blas-sys" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0h14zjycwc76v15h8qll9z1xiryvmpvsb5gam97pqpdjrrwv5c8k"))))
@@ -8425,7 +8426,7 @@ supported by Cargo.")
       (origin
         (method url-fetch)
         (uri (crate-uri "cargon" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1cszlab7jk736p0lb50ag4l9nv72m7j41bwrmygl0lr4iz0350w2"))))
@@ -8500,7 +8501,7 @@ box''.")
       (origin
         (method url-fetch)
         (uri (crate-uri "cblas-sys" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0rgsn3klhhh09d8qf3b87zl4rwk93l2g0qzh9hhb0lff5kcfrzmn"))))
@@ -8522,7 +8523,7 @@ box''.")
       (origin
         (method url-fetch)
         (uri (crate-uri "cc" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0j7d7h4n81z5f22l3v8ggjvvw8m64636nlaqax4x1y44da1rc12c"))))
@@ -8684,7 +8685,7 @@ chain, the first matching branch is the item that gets emitted.")
       (origin
         (method url-fetch)
         (uri (crate-uri "cfg-if" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "08h80ihs74jcyp24cd75wwabygbbdgl05k6p5dmq8akbr78vv1a7"))))
@@ -9143,7 +9144,7 @@ traits.")
       (origin
         (method url-fetch)
         (uri (crate-uri "clang-sys" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1r50dwy5hj5gq07dn0qf8222d07qv0970ymx0j8n9779yayc3w3f"))))
@@ -9294,7 +9295,7 @@ Command Line Argument Parser.")
      (origin
        (method url-fetch)
        (uri (crate-uri "clap" version))
-       (file-name (string-append name "-" version ".crate"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
          "00i065a58987k1sbzqmlz721rw521zcg08jmsh40gi3khp3qmr9p"))))
@@ -9350,7 +9351,7 @@ Command Line Argument Parser.")
       (origin
         (method url-fetch)
         (uri (crate-uri "clicolors-control" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "07klix8nbpwk0cg1k4h0kkiijm1jxvrzndqdkr7dqr6xvkjjw24h"))))
@@ -9490,7 +9491,7 @@ or to a file as well.")
       (origin
         (method url-fetch)
         (uri (crate-uri "cloudabi" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0rv4yf5jlldfkynzrw687s00f4x12ypw7axv71vawhy6h4i52i23"))))
@@ -9514,7 +9515,7 @@ contains all syscalls and related types.")
       (origin
         (method url-fetch)
         (uri (crate-uri "cloudabi" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0kxcg83jlihy0phnd2g8c2c303px3l2p3pkjz357ll6llnd5pz6x"))))
@@ -9584,7 +9585,7 @@ Cipher-based Message Authentication Code (CMAC).")
       (origin
         (method url-fetch)
         (uri (crate-uri "cmake" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1fv346ipxmvff6qrnh78rild0s8k72ilfjkdsrk869562y62cmhf"))))
@@ -10140,7 +10141,7 @@ idiomatic wrappers for Mac OS X's CommonCrypto library.")
       (origin
         (method url-fetch)
         (uri (crate-uri "compiler_builtins" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1rhj6ccmfkh9gcxnxgjq4fg257yi4f9325nfzsphbmxwkrg06sq3"))))
@@ -10572,7 +10573,7 @@ generation.")
      (origin
        (method url-fetch)
        (uri (crate-uri "constant_time_eq" version))
-       (file-name (string-append name "-" version ".crate"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
          "1g3vp04qzmk6cpzrd19yci6a95m7ap6wy7wkwgiy2pjklklrfl14"))))
@@ -11059,7 +11060,7 @@ intrinsics.")
      (origin
        (method url-fetch)
        (uri (crate-uri "core-foundation-sys" version))
-       (file-name (string-append name "-" version ".crate"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
          "0fzsw1j9g1x598yhwklg59l15hwzc0pyvs01w9fg2kin4598mjp7"))))))
@@ -13663,7 +13664,7 @@ for Rust.")
       (origin
         (method url-fetch)
         (uri (crate-uri "data-encoding" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "027rcrwdschrkdr2n9d24gnh03vl41qmvhjqn9vn6z1njy2n0flr"))))
@@ -14016,7 +14017,7 @@ written in rust.")
       (origin
         (method url-fetch)
         (uri (crate-uri "defmac" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "14cqfvc0f1pkd6gdhjxa2wv3iibqprc0n203ims8lvg96752ynfm"))))
@@ -14036,7 +14037,7 @@ written in rust.")
       (origin
         (method url-fetch)
         (uri (crate-uri "defmac" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "17giv0n0n1r64z0dahfvkjy3ys517jxyhs8sd9lmgvcljpjyryxa"))))))
@@ -15217,7 +15218,7 @@ standard locations of directories for config, cache and other data.")
       (origin
         (method url-fetch)
         (uri (crate-uri "dirs" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "009rrhzj9pxyncmm2vhlj70npg0cgggv2hjbbkiwdl9vccq8kmrz"))))
@@ -15337,7 +15338,7 @@ and @code{directories} crates.")
       (origin
         (method url-fetch)
         (uri (crate-uri "discard" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1h67ni5bxvg95s91wgicily4ix7lcw7cq0a5gy9njrybaibhyb91"))))
@@ -15490,7 +15491,7 @@ not support network, only raw protocol parser.")
       (origin
         (method url-fetch)
         (uri (crate-uri "doc-comment" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "15rsqxgarfpb1yim9sbp9yfgj7p2dq6v51c6bq1a62paii9ylgcj"))))
@@ -15819,7 +15820,7 @@ Rust.")
       (origin
         (method url-fetch)
         (uri (crate-uri "dtoa" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0phbm7i0dpn44gzi07683zxaicjap5064w62pidci4fhhciv8mza"))))
@@ -15841,7 +15842,7 @@ floating-point primitives to an @code{io::Write}.")
       (origin
         (method url-fetch)
         (uri (crate-uri "dtoa" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0g96cap6si1g6wi62hsdk2fnj3sf5vd4i97zj6163j8hhnsl3n0d"))))))
@@ -17719,7 +17720,7 @@ fallible format macro.")
       (origin
         (method url-fetch)
         (uri (crate-uri "fallible-iterator" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1xq759lsr8gqss7hva42azn3whgrbrs2sd9xpn92c5ickxm1fhs4"))))
@@ -18294,7 +18295,7 @@ sparse files.")
       (origin
         (method url-fetch)
         (uri (crate-uri "filetime" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1s71cb7hzkk4ahc5j53w8933gnxv2giyj7v0za5hbbk37ahwyd0x"))))
@@ -18327,7 +18328,7 @@ representation.")
       (origin
         (method url-fetch)
         (uri (crate-uri "findshlibs" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1n2vagn0q5yim32hxkwi1cjgp3yn1dm45p7z8nw6lapywihhs9mi"))))
@@ -18385,7 +18386,7 @@ cross platform API.")
       (origin
         (method url-fetch)
         (uri (crate-uri "fixedbitset" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0kg03p777wc0dajd9pvlcnsyrwa8dhqwf0sd9r4dw0p82rs39arp"))))
@@ -18405,7 +18406,7 @@ cross platform API.")
       (origin
         (method url-fetch)
         (uri (crate-uri "fixedbitset" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0czam11mi80dbyhf4rd4lz0ihcf7vkfchrdcrn45wbs0h40dxm46"))))))
@@ -18785,7 +18786,7 @@ crate.")
       (origin
         (method url-fetch)
         (uri (crate-uri "fnv" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1ww56bi1r5b8id3ns9j3qxbi7w5h005rzhiryy0zi9h97raqbb9g"))))
@@ -18951,7 +18952,7 @@ implementation that is more efficient for smaller hash keys.")
       (origin
         (method url-fetch)
         (uri (crate-uri "foreign-types-shared" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0kanxlif1vp0ffh2r9l610jqbkmb3183yqykxq1z5w1vay2rn7y6"))))))
@@ -19181,7 +19182,7 @@ duplication.")
      (origin
        (method url-fetch)
        (uri (crate-uri "fs_extra" version))
-       (file-name (string-append name "-" version ".crate"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "151k6dr35mhq5d8pc8krhw55ajhkyiv0pm14s7zzlc5bc9fp28i0"))))
     (build-system cargo-build-system)
@@ -19349,7 +19350,7 @@ strings (> 1 billion is possible).")
       (origin
         (method url-fetch)
         (uri (crate-uri "fuchsia-cprng" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1fnkqrbz7ixxzsb04bsz9p0zzazanma8znfdqjvh39n14vapfvx0"))))
@@ -19370,7 +19371,7 @@ pseudorandom number generator")
       (origin
         (method url-fetch)
         (uri (crate-uri "fuchsia-zircon" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "10jxc5ks1x06gpd0xg51kcjrxr35nj6qhx2zlc5n7bmskv3675rf"))))
@@ -19393,7 +19394,7 @@ pseudorandom number generator")
       (origin
         (method url-fetch)
         (uri (crate-uri "fuchsia-zircon-sys" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "19zp2085qsyq2bh1gvcxq1lb8w6v6jj9kbdkhpdjrl95fypakjix"))))
@@ -19492,7 +19493,7 @@ zero allocations, composability, and iterator-like interfaces.")
       (origin
         (method url-fetch)
         (uri (crate-uri "futures" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1vq3cw37knnd0afw3rcjzh71i2l01v5m4ysinrrqdvnn2ql0z60v"))))
@@ -19615,7 +19616,7 @@ featuring zero allocations, composability, and iterator-like interfaces.")
       (origin
         (method url-fetch)
         (uri (crate-uri "futures-core-preview" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "02n66jkjhpy210dv24pz0j30lvyin5kzlrb50p1j7x8yzdin4nxk"))))
@@ -19636,7 +19637,7 @@ featuring zero allocations, composability, and iterator-like interfaces.")
       (origin
         (method url-fetch)
         (uri (crate-uri "futures-cpupool" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1r32456gpblzfvnkf60545v8acqk7gh5zhyhi1jn669k9gicv45b"))))
@@ -19770,7 +19771,7 @@ for the @code{futures-rs} library.")
       (origin
         (method url-fetch)
         (uri (crate-uri "futures-io-preview" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1npb04xbn2gw5rjllz88cb88fql44xxfkgcidjjj26fva3j4m4gl"))))
@@ -19976,7 +19977,7 @@ the @code{futures-rs} library.")
       (origin
         (method url-fetch)
         (uri (crate-uri "futures-sink-preview" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1v7y5qvgvl0d6hd9s4k7bd5qrj2gdlrs5yfl22v5pxv9dgpliwc6"))))
@@ -20715,7 +20716,7 @@ platforms.")
       (origin
         (method url-fetch)
         (uri (crate-uri "getopts" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1mgb3qvivi26gs6ihqqhh8iyhp3vgxri6vwyrwg28w0xqzavznql"))))
@@ -21559,7 +21560,7 @@ OpenGL's old and error-prone API.")
       (origin
         (method url-fetch)
         (uri (crate-uri "glob" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0x25wfr7vg3mzxc9x05dcphvd3nwlcmbnxrvwcvrrdwplcrrk4cv"))))
@@ -21585,7 +21586,7 @@ shell style patterns.")
       (origin
         (method url-fetch)
         (uri (crate-uri "glob" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1ysvi72slkw784fcsymgj4308c3y03gwjjzqxp80xdjnkbh8vqcb"))))))
@@ -22691,7 +22692,7 @@ that don't require dynamic memory allocation.")
      (origin
        (method url-fetch)
        (uri (crate-uri "heapsize" version))
-       (file-name (string-append name "-" version ".crate"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
          "0q94q9ppqjgrw71swiyia4hgby2cz6dldp7ij57nkvhd6zmfcy8n"))))
@@ -22716,7 +22717,7 @@ heap.")
       (origin
         (method url-fetch)
         (uri (crate-uri "heapsize" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0dmwc37vgsdjzk10443dj4f23439i9gch28jcwzmry3chrwx8v2m"))))
@@ -22733,7 +22734,7 @@ heap.")
       (origin
         (method url-fetch)
         (uri (crate-uri "heapsize_plugin" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1i72isf699q9jl167g2kg4xd6h3cd05rc79zaph58aqjy0g0m9y9"))))
@@ -22756,7 +22757,7 @@ total runtime size of an object on the heap")
       (origin
         (method url-fetch)
         (uri (crate-uri "heck" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1b56s2c1ymdd0qmy31bw0ndhm31hcdamnhg3npp7ssrmc1ag9jw7"))))
@@ -22830,7 +22831,7 @@ hexadecimal representation.")
       (origin
         (method url-fetch)
         (uri (crate-uri "hex" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0xsdcjiik5j750j67zk42qdnmm4ahirk3gmkmcqgq7qls2jjcl40"))))))
@@ -22844,7 +22845,7 @@ hexadecimal representation.")
      (origin
        (method url-fetch)
        (uri (crate-uri "hex" version))
-       (file-name (string-append name "-" version ".crate"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "1ajkw40qzn2ygnqjj9w584f6l31wi318258n84pn2hax8la2i8nn"))))))
 
@@ -23192,7 +23193,7 @@ Hash-based Message Authentication Code algorithm} for SHA1.")
       (origin
         (method url-fetch)
         (uri (crate-uri "hostname" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0kprf862qaa7lwdms6aw7f3275h0j2rwhs9nz5784pm8hdmb9ki1"))))
@@ -24937,7 +24938,7 @@ immutable interval tree.")
       (origin
         (method url-fetch)
         (uri (crate-uri "iovec" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0ph73qygwx8i0mblrf110cj59l00gkmsgrpzz1rm85syz5pymcxj"))))
@@ -25388,7 +25389,7 @@ and functions.")
       (origin
         (method url-fetch)
         (uri (crate-uri "itoa" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "13nxqrfnh83a7x5rw4wq2ilp8nxvwy74dxzysdg59dbxqk0agdxq"))))
@@ -25424,7 +25425,7 @@ primitives to an @code{io::Write}.")
      (origin
        (method url-fetch)
        (uri (crate-uri "itoa" version))
-       (file-name (string-append name "-" version ".crate"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
          "18g7p2hrb3dk84z3frfgmszfc9hjb4ps9vp99qlb1kmf9gm8hc5f"))))))
@@ -25842,7 +25843,7 @@ wasm-bindgen crate.")
       (origin
         (method url-fetch)
         (uri (crate-uri "json" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1rg9jxf6bpbwis3ixd5ak8rp37him7n4z8awz4ssrxl6hyplbhlj"))))
@@ -25978,7 +25979,7 @@ debugging.")
       (origin
         (method url-fetch)
         (uri (crate-uri "kernel32-sys" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1389av0601a9yz8dvx5zha9vmkd6ik7ax0idpb032d28555n41vm"))))
@@ -26045,7 +26046,7 @@ kernel32.")
       (origin
         (method url-fetch)
         (uri (crate-uri "language-tags" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "16hrjdpa827carq5x4b8zhas24d8kg4s16m6nmmn1kb7cr5qh7d9"))))
@@ -26271,7 +26272,7 @@ generated by LALRPOP.")
       (origin
         (method url-fetch)
         (uri (crate-uri "lazy_static" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0in6ikhw8mgl33wjv6q6xfrb5b9jr16q8ygjy803fay4zcisvaz2"))))
@@ -26935,7 +26936,7 @@ loading utilities.")
       (origin
         (method url-fetch)
         (uri (crate-uri "libloading" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0lyply8rcqc8agajzxs7bq6ivba9dnn1i68kgb9z2flnfjh13cgj"))))
@@ -27841,7 +27842,7 @@ by inspecting the system for user preference.")
       (origin
         (method url-fetch)
         (uri (crate-uri "lock_api" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0b24q9mh258xa52ap636q1sxz0j5vrnp0hwbbh7ddjka3wwz3sv2"))))
@@ -27858,7 +27859,7 @@ by inspecting the system for user preference.")
      (origin
        (method url-fetch)
        (uri (crate-uri "log" version))
-       (file-name (string-append name "-" version ".crate"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "04175hv0v62shd82qydq58a48k3bjijmk54v38zgqlbxqkkbpfai"))))
     (build-system cargo-build-system)
@@ -28646,7 +28647,7 @@ platform-independently.")
       (origin
         (method url-fetch)
         (uri (crate-uri "maplit" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "07b5kjnhrrmfhgqm9wprjw8adx6i225lqp49gasgqg74lahnabiy"))))
@@ -28794,7 +28795,7 @@ statement, the first matching branch is the item that gets emitted.")
       (origin
         (method url-fetch)
         (uri (crate-uri "matches" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "020axl4q7rk9vz90phs7f8jas4imxal9y9kxl4z4v7a6719mrz3z"))))
@@ -28960,7 +28961,7 @@ parallelize and optimize.")
       (origin
         (method url-fetch)
         (uri (crate-uri "matrixmultiply" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "13s7nfd3dfcsrixld2lk8c563ih5xzczl2w36hprfc016rkfrxyl"))))
@@ -28980,7 +28981,7 @@ parallelize and optimize.")
       (origin
         (method url-fetch)
         (uri (crate-uri "matrixmultiply" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "00p0fpjhm45qdzi37mgv7ggsy8b9gqvq4999yrbgyn1dxkf6gbfw"))))
@@ -29068,7 +29069,7 @@ parallelize and optimize.")
      (origin
        (method url-fetch)
        (uri (crate-uri "md5" version))
-       (file-name (string-append name "-" version ".crate"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "0wcps37hrhz59fkhf8di1ppdnqld6l1w5sdy7jp7p51z0i4c8329"))))
     (build-system cargo-build-system)
@@ -29088,7 +29089,7 @@ parallelize and optimize.")
       (origin
         (method url-fetch)
         (uri (crate-uri "md5" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "17b2xm4h4cvxsdjsf3kdrzqv2za60kak961xzi5kmw6g6djcssvy"))))))
@@ -29254,7 +29255,7 @@ for searching bytes.")
       (origin
         (method url-fetch)
         (uri (crate-uri "memmap" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0ns7kkd1h4pijdkwfvw4qlbbmqmlmzwlq3g2676dcl5vwyazv1b5"))))
@@ -29283,7 +29284,7 @@ file IO.")
       (origin
         (method url-fetch)
         (uri (crate-uri "memmap" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1zy6s0ni0lx9rjzq3gq2zz9r8zgjmbp02332g3gsj4fyhv4s5zz2"))))))
@@ -29852,7 +29853,7 @@ drop-in allocator.")
       (origin
         (method url-fetch)
         (uri (crate-uri "mime" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "13dcm9lh01hdwfjcg74ppljyjfj1c6w3a3cwkhxf0w8wa37cfq1a"))))
@@ -30022,7 +30023,7 @@ streaming API for miniz_oxide.")
       (origin
         (method url-fetch)
         (uri (crate-uri "miniz_oxide" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "198n4hfpq0qcxf275l6fpzh7b9cl7ck2xs6pjgpds74bazv9yrxa"))))
@@ -30082,7 +30083,7 @@ drop-in replacement for miniz.")
       (origin
         (method url-fetch)
         (uri (crate-uri "miniz-sys" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "00l2r4anm8g35x0js2zfdnwfbrih9m43vphdpb77c5ga3kjkm7hy"))))
@@ -30348,7 +30349,7 @@ possible over the OS abstractions.")
      (origin
        (method url-fetch)
        (uri (crate-uri "miow" version))
-       (file-name (string-append name "-" version ".crate"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "15sqdhh29dqgw5xh59clwv6scbsbvdkbmdc16hbfvyq7b2sw2css"))))
     (build-system cargo-build-system)
@@ -30375,7 +30376,7 @@ IOCP and Async I/O abstractions.")
       (origin
         (method url-fetch)
         (uri (crate-uri "miow" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "06g9b8sqlh5gxakwqq4rrib07afwanfnxgxajrldwcgk3hxjy7wc"))))
@@ -30542,7 +30543,7 @@ checking.")
       (origin
         (method url-fetch)
         (uri (crate-uri "modifier" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0n3fmgli1nsskl0whrfzm1gk0rmwwl6pw1q4nb9sqqmn5h8wkxa1"))))
@@ -31657,7 +31658,7 @@ in Rust that can compile to WebAssembly.")
       (origin
         (method url-fetch)
         (uri (crate-uri "net2" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "126g3fgfxp06zimc1l9iyxnn9cif1hjsg7sd81nlls5nnyghsma2"))))
@@ -32385,7 +32386,7 @@ without the @code{std}.")
       (origin
         (method url-fetch)
         (uri (crate-uri "nodrop" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1fz1v9r8ijacf0hlq0pdv5l9mz8vgqg1snmhvpjmi9aci1b4mvvj"))))
@@ -32408,7 +32409,7 @@ without the @code{std}.")
       (origin
         (method url-fetch)
         (uri (crate-uri "nodrop-union" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1h59pph19rxanyqcaid8pg73s7wmzdx3zhjv5snlim5qx606zxkc"))))
@@ -33640,7 +33641,7 @@ mathematics.")
       (origin
         (method url-fetch)
         (uri (crate-uri "num-traits" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0c9whknf2dm74a3cqirafy6gj83a76gl56g4v3g19k6lkwz13rcj"))))
@@ -33677,7 +33678,7 @@ giga, kibi.")
       (origin
         (method url-fetch)
         (uri (crate-uri "numtoa" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1vs9rhggqbql1p26x8nkha1j06wawwgb2jp5fs88b5gi7prvvy5q"))))
@@ -34391,7 +34392,7 @@ the default program configured on the system.")
       (origin
         (method url-fetch)
         (uri (crate-uri "openssl-probe" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1pijrdifgsdwd45b08c2g0dsmnhz7c3kmagb70839ngrd7d29bvp"))))
@@ -34796,7 +34797,7 @@ platform-native strings.")
       (origin
         (method url-fetch)
         (uri (crate-uri "owning_ref" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1kjj9m28wjv452jw49p1mp3d8ql058x78v4bz00avr7rvsnmpxbg"))))
@@ -35140,7 +35141,7 @@ sequence alignment tools.")
       (origin
         (method url-fetch)
         (uri (crate-uri "parity-wasm" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "03qycy21avz4970zc7aj8rj5h4wvi4qsrc90a6hpws1a56mglf8y"))))
@@ -36086,7 +36087,7 @@ pdqsort.")
       (origin
         (method url-fetch)
         (uri (crate-uri "peeking_take_while" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "16bhqr6rdyrp12zv381cxaaqqd0pwysvm1q8h2ygihvypvfprc8r"))))
@@ -36202,7 +36203,7 @@ runtime support for rust-peg grammars.  To use rust-peg, see the peg crate.")
       (origin
         (method url-fetch)
         (uri (crate-uri "percent-encoding" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0bp3zrsk3kr47fbpipyczidbbx4g54lzxdm77ni1i3qws10mdzfl"))))
@@ -36222,7 +36223,7 @@ runtime support for rust-peg grammars.  To use rust-peg, see the peg crate.")
       (origin
         (method url-fetch)
         (uri (crate-uri "percent-encoding" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0cgq08v1fvr6bs5fvy390cz830lq4fak8havdasdacxcw790s09i"))))))
@@ -36308,7 +36309,7 @@ perf_event_open system call, with associated types and constants.")
       (origin
         (method url-fetch)
         (uri (crate-uri "permutohedron" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0b1pzh48j86v46wxngch6k1kx9cdw3jr3lwa86gd6jd4bmxzz1xn"))))
@@ -36757,7 +36758,7 @@ function data structures.")
       (origin
         (method url-fetch)
         (uri (crate-uri "pico-sys" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1q5pg0ms6szz6b5h26h4k40zb76zbwwjgyigac4wly9qngdj4yl5"))))
@@ -36945,7 +36946,7 @@ written with declarative macros.")
       (origin
         (method url-fetch)
         (uri (crate-uri "pkg-config" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0k4860955riciibxr8bhnklp79jydp4xfylwdn5v9kj96hxlac9q"))))
@@ -37004,7 +37005,7 @@ network packet formats.")
       (origin
         (method url-fetch)
         (uri (crate-uri "plain" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "19n1xbxb4wa7w891268bzf6cbwq4qvdb86bik1z129qb0xnnnndl"))))
@@ -37110,7 +37111,7 @@ both WASM and native applications")
       (origin
         (method url-fetch)
         (uri (crate-uri "plugin" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1q7nghkpvxxr168y2jnzh3w7qc9vfrby9n7ygy3xpj0bj71hsshs"))))
@@ -37182,7 +37183,7 @@ both WASM and native applications")
       (origin
         (method url-fetch)
         (uri (crate-uri "pocket-resources" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1n2i5vmi8fdbw89wm5nz1ws1z9f1qax911p6ksg4scmdg23z6df1"))))
@@ -38106,7 +38107,7 @@ and Postgres values.")
       (origin
         (method url-fetch)
         (uri (crate-uri "ppv-lite86" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1shj4q7jwj0azssr8cg51dk3kh7d4lg9rmbbz1kbqk971vc5wyi3"))))
@@ -38778,7 +38779,7 @@ in your code.")
       (origin
         (method url-fetch)
         (uri (crate-uri "proc-macro2" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0f3h0zl5w5090ajmmvpmhkpr4iwqnn5rip3afacabhc657vwmn7h"))))
@@ -39663,7 +39664,7 @@ implementation.")
       (origin
         (method url-fetch)
         (uri (crate-uri "quick-error" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "18z6r2rcjvvf8cn92xjhm2qc3jpd1ljvcbf12zv0k9p565gmb4x9"))))
@@ -39684,7 +39685,7 @@ to write.")
       (origin
         (method url-fetch)
         (uri (crate-uri "quick-error" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1q6za3v78hsspisc197bg3g7rpc989qycy8ypr8ap8igv10ikl51"))))))
@@ -40026,7 +40027,7 @@ integers, floats, tuples, booleans, lists, strings, options and results.")
       (origin
         (method url-fetch)
         (uri (crate-uri "quote" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "19rjmfqzk26rxbgxy5j2ckqc2v12sw2xw8l4gi8bzpn2bmsbkl63"))))
@@ -40294,7 +40295,7 @@ useful types and distributions, and some randomness-related algorithms.")
      (origin
        (method url-fetch)
        (uri (crate-uri "rand" version))
-       (file-name (string-append name "-" version ".crate"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
          "00sdaimkbz491qgi6qxkv582yivl32m2jd401kzbn94vsiwicsva"))))
@@ -40321,7 +40322,7 @@ useful types and distributions, and some randomness-related algorithms.")
       (origin
         (method url-fetch)
         (uri (crate-uri "rand" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1jl4449jcl4wgmzld6ffwqj5gwxrp8zvx8w573g1z368qg6xlwbd"))))
@@ -40403,7 +40404,7 @@ useful types and distributions, and some randomness-related algorithms.")
       (origin
         (method url-fetch)
         (uri (crate-uri "rand" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0v679h38pjjqj5h4md7v2slsvj6686qgcn7p9fbw3h43iwnk1b34"))))
@@ -40463,7 +40464,7 @@ useful types and distributions, and some randomness-related algorithms.")
       (origin
         (method url-fetch)
         (uri (crate-uri "rand_chacha" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1vxwyzs4fy1ffjc8l00fsyygpiss135irjf7nyxgq2v0lqf3lvam"))))
@@ -40525,7 +40526,7 @@ tools for implementation.")
       (origin
         (method url-fetch)
         (uri (crate-uri "rand_core" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1p09ynysrq1vcdlmcqnapq4qakl2yd1ng3kxh3qscpx09k2a6cww"))))
@@ -40543,7 +40544,7 @@ tools for implementation.")
       (origin
         (method url-fetch)
         (uri (crate-uri "rand_core" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0jzdgszfa4bliigiy4hi66k7fs3gfwi2qxn8vik84ph77fwdwvvs"))))
@@ -40685,7 +40686,7 @@ generator that uses the HC-128 algorithm.")
       (origin
         (method url-fetch)
         (uri (crate-uri "rand_hc" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0g31sqwpmsirdlwr0svnacr4dbqyz339im4ssl9738cjgfpjjcfa"))))
@@ -40702,7 +40703,7 @@ generator that uses the HC-128 algorithm.")
       (origin
         (method url-fetch)
         (uri (crate-uri "rand_hc" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1i0vl8q5ddvvy0x8hf1zxny393miyzxkwqnw31ifg6p0gdy6fh3v"))))
@@ -40771,7 +40772,7 @@ Add, and Count\" which are the principal bitwise operations employed.")
       (origin
         (method url-fetch)
         (uri (crate-uri "rand_isaac" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "027flpjr4znx2csxk7gxb7vrf9c7y5mydmvg5az2afgisp4rgnfy"))))
@@ -40791,7 +40792,7 @@ Add, and Count\" which are the principal bitwise operations employed.")
       (origin
         (method url-fetch)
         (uri (crate-uri "rand_jitter" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "16z387y46bfz3csc42zxbjq89vcr1axqacncvv8qhyy93p4xarhi"))))
@@ -40842,7 +40843,7 @@ generator based on timing jitter.")
       (origin
         (method url-fetch)
         (uri (crate-uri "rand_os" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0wahppm0s64gkr2vmhcgwc0lij37in1lgfxg5rbgqlz0l5vgcxbv"))))
@@ -40866,7 +40867,7 @@ generator based on timing jitter.")
       (origin
         (method url-fetch)
         (uri (crate-uri "rand_pcg" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1w47awndfhgcc31zbji66pwndqmc6lsyairqi9b17f82f19riqbx"))))
@@ -40893,7 +40894,7 @@ generator based on timing jitter.")
       (origin
         (method url-fetch)
         (uri (crate-uri "rand_pcg" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0ab4h6s6x3py833jk61lwadq83qd1c8bih2hgi6yps9rnv0x1aqn"))))
@@ -40921,7 +40922,7 @@ generator based on timing jitter.")
       (origin
         (method url-fetch)
         (uri (crate-uri "rand_pcg" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0i0bdla18a8x4jn1w0fxsbs3jg7ajllz6azmch1zw33r06dv1ydb"))))
@@ -40989,7 +40990,7 @@ generator based on timing jitter.")
       (origin
         (method url-fetch)
         (uri (crate-uri "rand_xorshift" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0p2x8nr00hricpi2m6ca5vysiha7ybnghz79yqhhx6sl4gkfkxyb"))))
@@ -41251,7 +41252,7 @@ libcore.")
       (origin
         (method url-fetch)
         (uri (crate-uri "rawpointer" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1qy1qvj17yh957vhffnq6agq0brvylw27xgks171qrah75wmg8v0"))))
@@ -41273,7 +41274,7 @@ and @code{ptrdistance}.")
       (origin
         (method url-fetch)
         (uri (crate-uri "rawpointer" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "06ghpm9y7gacks78s3maakha07kbnwrxif5q37r2l7z1sali3b7b"))))))
@@ -41444,7 +41445,7 @@ reference counting.")
       (origin
         (method url-fetch)
         (uri (crate-uri "rdrand" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1cjq0kwx1bk7jx3kzyciiish5gqsj7620dm43dc52sr8fzmm9037"))))
@@ -41558,7 +41559,7 @@ owned memory.")
       (origin
         (method url-fetch)
         (uri (crate-uri "redox_syscall" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1kh59fpwy33w9nwd5iyc283yglq8pf2s41hnhvl48iax9mz0zk21"))))
@@ -41572,7 +41573,7 @@ owned memory.")
       (origin
         (method url-fetch)
         (uri (crate-uri "redox-termios" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0xhgvdh62mymgdl3jqrngl8hr4i8xwpnbsxnldq0l47993z1r2by"))))
@@ -42317,7 +42318,7 @@ uses finite automata and guarantees linear time matching on all inputs.")
       (origin
         (method url-fetch)
         (uri (crate-uri "resolv-conf" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0jlzifww1h7j23jnjj49xz8q0fpd9rqpd0ks8c4y651vgw9lx0qi"))))
@@ -44127,7 +44128,7 @@ It is automatically published using the compiler repository at
       (origin
         (method url-fetch)
         (uri (crate-uri "rustc-demangle" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "10qp42sl1wrdbgbbh8rnay2grm976z7hqgz32c4y09l1c071qsac"))))
@@ -44248,7 +44249,7 @@ forth, as well as the ability to create custom thread-pools with ThreadPool.")
       (origin
         (method url-fetch)
         (uri (crate-uri "rustc-serialize" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1nkg3vasg7nk80ffkazizgiyv3hb1l9g3d8h17cajbkx538jiwfw"))))
@@ -44295,7 +44296,7 @@ decoding.")
       (origin
         (method url-fetch)
         (uri (crate-uri "rustc-std-workspace-core" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1309xhwyai9xpz128xrfjqkmnkvgjwddznmj7brbd8i8f58zamhr"))))
@@ -45203,7 +45204,7 @@ deserialization framework.")
       (origin
         (method url-fetch)
         (uri (crate-uri "ryu" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0xlx9ybzncrb7d6r9533g8ydlg6mr252pfzl4g9cqaqkpvk24mjk"))))
@@ -45451,7 +45452,7 @@ computation (experimental)")
       (origin
         (method url-fetch)
         (uri (crate-uri "safemem" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0wp0d2b2284lw11xhybhaszsczpbq1jbdklkxgifldcknmy3nw7g"))))
@@ -45486,7 +45487,7 @@ computation (experimental)")
       (origin
         (method url-fetch)
         (uri (crate-uri "same-file" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "00h5j1w87dmhnvbv9l8bic3y7xxsnjmssvifw2ayvgx9mb1ivz4k"))))
@@ -45598,7 +45599,7 @@ motivation for writing this library.
       (origin
         (method url-fetch)
         (uri (crate-uri "schannel" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "08d0p5iy574vdrax4l3laazic0crj7rp7vp3if5rrfkcdfq51xc7"))))
@@ -45644,7 +45645,7 @@ server functionality.")
       (origin
         (method url-fetch)
         (uri (crate-uri "scoped_threadpool" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1a26d3lk40s9mrf4imhbik7caahmw2jryhhb6vqv6fplbbgzal8x"))))
@@ -45673,7 +45674,7 @@ non-'static references in parallel.")
       (origin
         (method url-fetch)
         (uri (crate-uri "scoped-tls" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1hj8lifzvivdb1z02lfnzkshpvk85nkgzxsy2hc0zky9wf894spa"))))
@@ -45696,7 +45697,7 @@ library's old @code{scoped_thread_local!} macro for providing scoped access to
       (origin
         (method url-fetch)
         (uri (crate-uri "scoped-tls" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0a2bn9d2mb07c6l16sadijy4p540g498zddfxyiq4rsqpwrglbrk"))))))
@@ -45709,7 +45710,7 @@ library's old @code{scoped_thread_local!} macro for providing scoped access to
       (origin
         (method url-fetch)
         (uri (crate-uri "scopeguard" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1kbqm85v43rq92vx7hfiay6pmcga03vrjbbfwqpyj3pwsg3b16nj"))))
@@ -45734,7 +45735,7 @@ with one of the implemented strategies.")
         (method url-fetch)
         (uri (crate-uri "scopeguard" version))
         (file-name
-          (string-append name "-" version ".crate"))
+          (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "09sy9wbqp409pkwmqni40qmwa99ldqpl48pp95m1xw8sc19qy9cl"))))))
@@ -46301,7 +46302,7 @@ macOS and iOS.")
       (origin
         (method url-fetch)
         (uri (crate-uri "security-framework-sys" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "15gqhhi206lzynd0pcbswxhvqc4p9bmpl2h9qnwfnpb16zy96573"))))
@@ -46571,7 +46572,7 @@ Semantic Versioning.")
       (origin
         (method url-fetch)
         (uri (crate-uri "semver-parser" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1ahqhvgpzhcsd28id7xnrjv4419i9yyalhm7d7zi430qx0hi2vml"))))))
@@ -46585,7 +46586,7 @@ Semantic Versioning.")
       (origin
         (method url-fetch)
         (uri (crate-uri "semver-parser" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "18vhypw6zgccnrlm5ps1pwa0khz7ry927iznpr88b87cagr1v2iq"))))))
@@ -47181,7 +47182,7 @@ TOML/JSON/MessagePack strings and serializable values.")
       (origin
         (method url-fetch)
         (uri (crate-uri "serde-derive" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0ccg4m7ww6mfs5vjdbdifri2kf1wyd4difjnqnraph2gssaw54ck"))))
@@ -48570,7 +48571,7 @@ some context).")
      (origin
        (method url-fetch)
        (uri (crate-uri "shlex" version))
-       (file-name (string-append name "-" version ".crate"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "0gf773p2snqpw69rzh8s1wdlq8dc8c1ypmiv516il1fdyb46i9a2"))))
     (build-system cargo-build-system)
@@ -48589,7 +48590,7 @@ words, like Python's shlex.")
       (origin
         (method url-fetch)
         (uri (crate-uri "shlex" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1lmv6san7g8dv6jdfp14m7bdczq9ss7j7bgsfqyqjc3jnjfippvz"))))
@@ -49192,7 +49193,7 @@ designed for @code{immutable.rs}.")
       (origin
         (method url-fetch)
         (uri (crate-uri "slab" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1y59xsa27jk84sxzswjk60xcjf8b4fm5960jwpznrrcmasyva4f1"))))
@@ -49886,7 +49887,7 @@ maximal amount of configuration possible intended.")
      (origin
        (method url-fetch)
        (uri (crate-uri "socket2" version))
-       (file-name (string-append name "-" version ".crate"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "0vldz14mxqxnjqb6an2pj7mgclv7nrk45cpscwq7g3fj2c0mfbhj"))))
     (arguments
@@ -49933,7 +49934,7 @@ maximal amount of configuration possible intended.")
       (origin
         (method url-fetch)
         (uri (crate-uri "sourcefile" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1lwa6973zs4bgj29my7agfjgk4nw9hp6j7dfnr13nid85fw7rxsb"))))
@@ -50051,7 +50052,7 @@ track of where each new file and line starts.")
       (origin
         (method url-fetch)
         (uri (crate-uri "spin" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0b84m6dbzrwf2kxylnw82d3dr8w06av7rfkr8s85fb5f43rwyqvf"))))
@@ -50333,7 +50334,7 @@ to the same address.")
       (origin
         (method url-fetch)
         (uri (crate-uri "stacker" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "12igajfgqz96c7vcwi91xdfsphawik6g36ndlglqih0a7bqw8vyr"))))
@@ -50456,7 +50457,7 @@ management.")
       (origin
         (method url-fetch)
         (uri (crate-uri "static-assertions" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0gsl6xmw10gvn3zs1rv99laj5ig7ylffnh71f9l34js4nr4r7sx2"))))
@@ -50477,7 +50478,7 @@ are met.")
       (origin
         (method url-fetch)
         (uri (crate-uri "static-assertions" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1lw33i89888yb3x29c6dv4mrkg3534n0rlg3r7qzh4p58xmv6gkz"))))))
@@ -50796,7 +50797,7 @@ you to define custom reference types outside of the @code{stdweb} library.")
       (origin
         (method url-fetch)
         (uri (crate-uri "stdweb-internal-runtime" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1h0nkppb4r8dbrbms2hw9n5xdcs392m0r5hj3b6lsx3h6fx02dr1"))))
@@ -50816,7 +50817,7 @@ crate.")
       (origin
         (method url-fetch)
         (uri (crate-uri "stdweb-internal-test-macro" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0wx3jlm98qrg1pdw149fprzs9x3x3igqkm5ll23jv2v62yddfrjf"))))
@@ -50958,7 +50959,7 @@ iterated over only by reference rather than by value.")
       (origin
         (method url-fetch)
         (uri (crate-uri "streaming-stats" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0iz5dlq51w5hxjrv6a4hpf8rrj91kgvy0s9mhj0j12il9v771mmh"))))
@@ -51303,7 +51304,7 @@ and Jaro-Winkler.")
      (origin
        (method url-fetch)
        (uri (crate-uri "strsim" version))
-       (file-name (string-append name "-" version ".crate"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
          "0k497pv882qn3q977ckznm13vxx927g8s1swvcv68j3c1pccwik4"))))))
@@ -51317,7 +51318,7 @@ and Jaro-Winkler.")
       (origin
         (method url-fetch)
         (uri (crate-uri "strsim" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0sjsm7hrvjdifz661pjxq5w4hf190hx53fra8dfvamacvff139cf"))))))
@@ -52325,7 +52326,7 @@ a syntax tree of Rust source code.")
       (origin
         (method url-fetch)
         (uri (crate-uri "synstructure_test_traits" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1b3fs2b9kc1gy9dilaxqjbdl4z0mlrbbxjzkprdx953rif1c3q66"))))
@@ -52909,7 +52910,7 @@ without a mutable reference.")
       (origin
         (method url-fetch)
         (uri (crate-uri "tar" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1lr6v3cpkfxd2lk5ll2jd8wr1xdskwj35smnh5sfb8xvzzxnn6dk"))))
@@ -53613,7 +53614,7 @@ a C API.")
       (origin
         (method url-fetch)
         (uri (crate-uri "tempdir" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1n5n86zxpgd85y0mswrp5cfdisizq2rv3la906g6ipyc03xvbwhm"))))
@@ -53638,7 +53639,7 @@ deleting all contents when it's dropped.")
      (origin
        (method url-fetch)
        (uri (crate-uri "tempfile" version))
-       (file-name (string-append name "-" version ".crate"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "08pbf3c1i42382dc44dil5bgiawcsi0qk6zdibw10f69rxiwdhfs"))))
     (build-system cargo-build-system)
@@ -53819,7 +53820,7 @@ template language.")
       (origin
         (method url-fetch)
         (uri (crate-uri "term" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1wbh8ngqkqr3f6wz902yplf60bd5yapnckvrkgmzp5nffi7n8qzs"))))
@@ -53837,7 +53838,7 @@ template language.")
       (origin
         (method url-fetch)
         (uri (crate-uri "term" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32 "109jmzddq1kz6wm2ndgddy7yrlqcw2i36ygxl0fcymc0sda7w1zj"))))
     (arguments
@@ -53942,7 +53943,7 @@ library.")
      (origin
        (method url-fetch)
        (uri (crate-uri "termcolor" version))
-       (file-name (string-append name "-" version ".crate"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "1x65i1ny4m6z1by62ra6wdcrd557p2ysm866x0pg60zby2cxizid"))))
     (build-system cargo-build-system)
@@ -54051,7 +54052,7 @@ writing colored text to a terminal.")
       (origin
         (method url-fetch)
         (uri (crate-uri "termion" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "01f9787d5nx445bqbj644v38bn0hl2swwjy9baz0dnbqi6fyqb62"))))
@@ -54077,7 +54078,7 @@ writing colored text to a terminal.")
       (origin
         (method url-fetch)
         (uri (crate-uri "termios" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "09any1p4jp4bphvb5ikagnvwjc3xn2djchy96nkpa782xb2j1dkj"))))
@@ -54380,7 +54381,7 @@ handle Unicode characters correctly.")
       (origin
         (method url-fetch)
         (uri (crate-uri "thread-id" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1h90v19fjz3x9b25ywh68z5yf2zsmm6h5zb4rl302ckbsp4z9yy7"))))
@@ -54425,7 +54426,7 @@ different for every thread.")
      (origin
        (method url-fetch)
        (uri (crate-uri "thread_local" version))
-       (file-name (string-append name "-" version ".crate"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "1gccp3grndpi6dyhzylz4hkqnkzc1xyri98n0xwwhnn90i7d4640"))))
     (build-system cargo-build-system)
@@ -54449,7 +54450,7 @@ different for every thread.")
       (origin
         (method url-fetch)
         (uri (crate-uri "thread_local" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "06rzik99p8c5js8238yhc8rk6np543ylb1dy9nrw5v80j0r3xdf6"))))
@@ -54527,7 +54528,7 @@ contention between workers when delivering jobs.")
       (origin
         (method url-fetch)
         (uri (crate-uri "threadpool" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0rd89n1q7vy47w4c32cnynibffv9kj3jy3dwr0536n9lbw5ckw72"))))
@@ -54753,7 +54754,7 @@ interoperable with the standard library, and is mostly compatible with
       (origin
         (method url-fetch)
         (uri (crate-uri "time" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0f14wrgxj7ya2v4msg5mni7046bsm2angm7cn3pd3yv04gpm12na"))))
@@ -55645,7 +55646,7 @@ futures efficiently")
       (origin
         (method url-fetch)
         (uri (crate-uri "tokio-mock-task" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1y7q83qfk9ljjfvs82b453pmz9x1v3d6kr4x55j8mal01s6790dw"))))
@@ -56873,7 +56874,7 @@ stream-based WebSocket implementation.")
       (origin
         (method url-fetch)
         (uri (crate-uri "toml" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1apcmjrrjw429pjw7mqlmdwwd67g8305vwqy4kw3swr612bl44d3"))))
@@ -57116,7 +57117,7 @@ automatically instrumenting functions.")
      (origin
        (method url-fetch)
        (uri (crate-uri "tracing-core" version))
-       (file-name (string-append name "-" version ".crate"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "0pvbgv301vw6dq4krc14yqbyyixb42lcs4s57xw05llkgy9f63gm"))))
     (build-system cargo-build-system)
@@ -57437,7 +57438,7 @@ be used directly.  See @code{rust-trackable} for more information.")
       (origin
         (method url-fetch)
         (uri (crate-uri "traitobject" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0yb0n8822mr59j200fyr2fxgzzgqljyxflx9y8bdy3rlaqngilgg"))))
@@ -58350,7 +58351,7 @@ the Trust-DNS client to use rustls for TLS.")
      (origin
        (method url-fetch)
        (uri (crate-uri "try_from" version))
-       (file-name (string-append name "-" version ".crate"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
          "12wdd4ja7047sd3rx70hv2056hyc8gcdllcx3a41g1rnw64kng98"))))
@@ -58372,7 +58373,7 @@ the Trust-DNS client to use rustls for TLS.")
       (origin
         (method url-fetch)
         (uri (crate-uri "try-lock" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "10p36rx6pqi9d0zr876xa8vksx2m66ha45myakl50rn08dxyn176"))))
@@ -58674,7 +58675,7 @@ strings.")
       (origin
         (method url-fetch)
         (uri (crate-uri "typeable" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "11w8dywgnm32hb291izjvh4zjd037ccnkk77ahk63l913zwzc40l"))))
@@ -58759,7 +58760,7 @@ deserialization.")
       (origin
         (method url-fetch)
         (uri (crate-uri "typemap" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1xm1gbvz9qisj1l6d36hrl9pw8imr8ngs6qyanjnsad3h0yfcfv5"))))
@@ -58781,7 +58782,7 @@ deserialization.")
       (origin
         (method url-fetch)
         (uri (crate-uri "typenum" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0cvbksljz61ian21fnn0h51kphl0pwpzb932bv4s0rwy1wh8lg1p"))))
@@ -58829,7 +58830,7 @@ Unicode character database.")
       (origin
         (method url-fetch)
         (uri (crate-uri "ucd-trie" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1hh6kyzh5xygwy96wfmsf8v8czlzhps2lgbcyhj1xzy1w1xys04g"))))
@@ -58852,7 +58853,7 @@ Unicode character database.")
       (origin
         (method url-fetch)
         (uri (crate-uri "ucd-util" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "13ng291mkc9b132jjf4laj76f5nqm5qd2447rm8bry3wxbdc5kaw"))))
@@ -59335,7 +59336,7 @@ boundaries according to Unicode Standard Annex #29 rules.")
         (method url-fetch)
         (uri (crate-uri "unicode-xid" version))
         (file-name
-          (string-append name "-" version ".crate"))
+          (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0r6mknipyy9vpz8mwmxvkx65ff2ha1n2pxqjj6f46lcn8yrhpzpp"))))
@@ -59355,7 +59356,7 @@ or XID_Continue properties according to Unicode Standard Annex #31.")
       (origin
         (method url-fetch)
         (uri (crate-uri "unicode-xid" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1z57lqh4s18rr4x0j4fw4fmp9hf9346h0kmdgqsqx0fhjr3k0wpw"))))))
@@ -59466,7 +59467,7 @@ whitespace from a string.")
       (origin
         (method url-fetch)
         (uri (crate-uri "unreachable" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0mps2il4xy2mjqc3appas27hhn2xmvixc3bzzhfrjj74gy3i0a1q"))))
@@ -59489,7 +59490,7 @@ whitespace from a string.")
       (origin
         (method url-fetch)
         (uri (crate-uri "unsafe-any" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0zwwphsqkw5qaiqmjwngnfpv9ym85qcsyj7adip9qplzjzbn00zk"))))
@@ -59531,7 +59532,7 @@ whitespace from a string.")
       (origin
         (method url-fetch)
         (uri (crate-uri "untrusted" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0jkbqaj9d3v5a91pp3wp9mffvng1nhycx6sh4qkdd9qyr62ccmm1"))))
@@ -60086,7 +60087,7 @@ a part of rav1e.")
       (origin
         (method url-fetch)
         (uri (crate-uri "vcpkg" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1yvrd2b97j4hv5bfhcj3al0dpkbzkdsr6dclxqz3zqm50rhwl2xh"))))
@@ -60130,7 +60131,7 @@ a part of rav1e.")
       (origin
         (method url-fetch)
         (uri (crate-uri "vec_map" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1481w9g1dw9rxp3l6snkdqihzyrd2f8vispzqmwjwsdyhw8xzggi"))))
@@ -60203,7 +60204,7 @@ designed for reexporting.")
       (origin
         (method url-fetch)
         (uri (crate-uri "version_check" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32 "1vbaqdf802qinsq8q20w8w0qn2pv0rkq5p73ijcblrwxcvjp5adm"))))
     (build-system cargo-build-system)
@@ -60227,7 +60228,7 @@ If that fails, no determination is made, and calls return None.")
       (origin
         (method url-fetch)
         (uri (crate-uri "version_check" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1pf91pvj8n6akh7w6j5ypka6aqz08b3qpzgs0ak2kjf4frkiljwi"))))))
@@ -60348,7 +60349,7 @@ version numbers.")
       (origin
         (method url-fetch)
         (uri (crate-uri "void" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0zc8f0ksxvmhvgx4fdg0zyn6vdnbxd2xv9hfx4nhzg6kbs4f80ka"))))
@@ -60728,7 +60729,7 @@ result.")
        (method url-fetch)
        (uri (crate-uri "wasi" version))
        (file-name
-        (string-append name "-" version ".crate"))
+        (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
          "1ir3pd4phdfml0cbziw9bqp7mnk0vfp9biy8bh25lln6raml4m7x"))))
@@ -60952,7 +60953,7 @@ attribute that is not in the shared backend crate.")
       (origin
         (method url-fetch)
         (uri (crate-uri "wasm-bindgen-shared" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0n3ir6gq27np22l6m96y342a6fphk1pkbzbfqx6g364kgzfi2y3y"))))
@@ -61098,7 +61099,7 @@ attribute that is not in the shared backend crate.")
       (origin
         (method url-fetch)
         (uri (crate-uri "wasm-bindgen-test-macro" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "19bvmw8mqlwh6wkbzgs3cnlkywrv8q2kkqggz6y0p158930xm287"))))
@@ -61735,7 +61736,7 @@ terms of allowing LLVM's auto-vectorizer to do its job.")
       (origin
         (method url-fetch)
         (uri (crate-uri "widestring" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "13565qy4jhpg4x0xw8mwxzzsh0p8c93p5208lh6kpwp0q01y6qx7"))))
@@ -61782,7 +61783,7 @@ command-line, uniformly on all platforms")
       (origin
         (method url-fetch)
         (uri (crate-uri "winapi" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "06gl025x418lchw1wxj64ycr7gha83m44cjr5sarhynd9xkrm0sw"))))
@@ -61811,7 +61812,7 @@ command-line, uniformly on all platforms")
       (origin
         (method url-fetch)
         (uri (crate-uri "winapi" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0yh816lh6lf56dpsgxy189c2ai1z3j8mw9si6izqb6wsjkbcjz8n"))))
@@ -61825,7 +61826,7 @@ command-line, uniformly on all platforms")
       (origin
         (method url-fetch)
         (uri (crate-uri "winapi-build" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "1g4rqsgjky0a7530qajn2bbfcrl2v0zb39idgdws9b1l7gp5wc9d"))))
@@ -61869,7 +61870,7 @@ i686-pc-windows-gnu target.  Please don't use this crate directly, depend on
       (origin
         (method url-fetch)
         (uri (crate-uri "winapi-util" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0y71bp7f6d536czj40dhqk0d55wfbbwqfp2ymqf1an5ibgl6rv3h"))))
@@ -61938,7 +61939,7 @@ x86_64-pc-windows-gnu target.  Please don't use this crate directly, depend on
       (origin
         (method url-fetch)
         (uri (crate-uri "wincolor" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "017x33ljndwc76cp5z9llgndn0nh7v8jcjaykbizkawmwy9n3pyp"))))
@@ -62136,7 +62137,7 @@ trust these primitives.")
       (origin
         (method url-fetch)
         (uri (crate-uri "winutil" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0vkyl3fbbf05n5ph5yz8sfaccrk9x3qsr25560w6w68ldf5i7bvx"))))
@@ -62207,7 +62208,7 @@ serialization.")
       (origin
         (method url-fetch)
         (uri (crate-uri "ws2_32-sys" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0ppscg5qfqaw0gzwv2a4nhn5bn01ff9iwn6ysqnzm4n8s3myz76m"))))
@@ -62310,7 +62311,7 @@ languages.")
       (origin
         (method url-fetch)
         (uri (crate-uri "xattr" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0k556fb6f5jc907975j9c8iynl2fqz3rf0w6fiig83i4yi0kfk14"))))
@@ -62393,7 +62394,7 @@ extended attributes.")
      (origin
        (method url-fetch)
        (uri (crate-uri "xdg" version))
-       (file-name (string-append name "-" version ".crate"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "0mws8a0fr3cqk5nh7aq9lmkmhzghvasqy4mhw6nnza06l4d6i2fh"))))
     (build-system cargo-build-system)
