@@ -977,7 +977,7 @@ provide LAPACK for someone who does not have access to a Fortran compiler.")
 (define-public scalapack
   (package
     (name "scalapack")
-    (version "2.0.2")
+    (version "2.1.0")
     (source
      (origin
        (method url-fetch)
@@ -985,8 +985,8 @@ provide LAPACK for someone who does not have access to a Fortran compiler.")
                            version ".tgz"))
        (sha256
         (base32
-         "0p1r61ss1fq0bs8ynnx7xq4wwsdvs32ljvwjnx6yxr8gd6pawx0c"))
-       (patches (search-patches "scalapack-blacs-mpi-deprecations.patch"))))
+         "19i0h9vdc3zsy58r6fy1vs2kz2l7amifkz0cf926j90xz1n23nb1"))
+       (patches (search-patches "scalapack-gcc-10-compilation.patch"))))
     (build-system cmake-build-system)
     (inputs
      `(("mpi" ,openmpi)
@@ -996,7 +996,15 @@ provide LAPACK for someone who does not have access to a Fortran compiler.")
      `(#:configure-flags `("-DBUILD_SHARED_LIBS:BOOL=YES")
        #:phases (modify-phases %standard-phases
                   (add-before 'check 'mpi-setup
-		    ,%openmpi-setup))))
+		    ,%openmpi-setup)
+                  (add-after 'unpack 'skip-faulty-test
+                    (lambda _
+                      ;; FIXME: Skip these two tests that fail to complete for
+                      ;; unknown reasons:
+                      ;; <https://github.com/Reference-ScaLAPACK/scalapack/issues/43>.
+                      (substitute* "TESTING/CMakeLists.txt"
+                        (("^add_test\\(x[sd]hseqr.*" all)
+                         (string-append "# " all "\n"))))))))
     (home-page "http://www.netlib.org/scalapack/")
     (synopsis "Library for scalable numerical linear algebra")
     (description

@@ -1750,7 +1750,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/sbcl-burgled-batteries3-fix-signals.patch	\
   %D%/packages/patches/sbcl-clml-fix-types.patch		\
   %D%/packages/patches/sbcl-png-fix-sbcl-compatibility.patch	\
-  %D%/packages/patches/scalapack-blacs-mpi-deprecations.patch	\
+  %D%/packages/patches/scalapack-gcc-10-compilation.patch	\
   %D%/packages/patches/scheme48-tests.patch			\
   %D%/packages/patches/scotch-build-parallelism.patch		\
   %D%/packages/patches/scotch-integer-declarations.patch	\
