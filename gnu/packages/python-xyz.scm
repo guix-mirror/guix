@@ -6285,6 +6285,7 @@ toolkits.")
                            (assoc-ref inputs "jquery-ui")
                            "-d" dir))))
              (delete 'fix-and-disable-failing-tests)
+             (delete 'sanity-check) ; This fails because mpl_toolkits is not an actual module
              (delete 'check))))) ; These tests weren't run the the past.
       ;; Make sure to use special packages for Python 2 instead
       ;; of those automatically rewritten by package-with-python2.
