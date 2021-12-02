@@ -3524,14 +3524,14 @@ which sends emails to HyperKitty, the official Mailman3 web archiver.")
 (define-public python-hyperkitty
   (package
     (name "python-hyperkitty")
-    (version "1.3.3")
+    (version "1.3.5")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "HyperKitty" version))
         (sha256
          (base32
-          "0p85r9q6mn5as5b39xp9hkkipnk0156acx540n2ygk3qb3jd4a5n"))))
+          "11lz1s2p8n43h1cdr9l5dppsigg8qdppckdwdndzn7a8r8mj4sc2"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -3539,10 +3539,11 @@ which sends emails to HyperKitty, the official Mailman3 web archiver.")
          (replace 'check
            (lambda _
              (invoke "example_project/manage.py" "test"
-                     "--settings=hyperkitty.tests.settings_test"))))))
+                     "--settings=hyperkitty.tests.settings_test"
+                     "--pythonpath=."))))))
     (propagated-inputs
      `(("python-dateutil" ,python-dateutil)
-       ("python-django" ,python-django-2.2)
+       ("python-django" ,python-django)
        ("python-django-compressor" ,python-django-compressor)
        ("python-django-extensions" ,python-django-extensions)
        ("python-django-gravatar2" ,python-django-gravatar2)
@@ -3552,6 +3553,7 @@ which sends emails to HyperKitty, the official Mailman3 web archiver.")
        ("python-djangorestframework" ,python-djangorestframework)
        ("python-flufl-lock" ,python-flufl-lock)
        ("python-mailmanclient" ,python-mailmanclient)
+       ("python-mistune-next" ,python-mistune-next)
        ("python-networkx" ,python-networkx)
        ("python-pytz" ,python-pytz)
        ("python-robot-detection" ,python-robot-detection)))
@@ -3559,6 +3561,7 @@ which sends emails to HyperKitty, the official Mailman3 web archiver.")
      `(("python-beautifulsoup4" ,python-beautifulsoup4)
        ("python-elasticsearch" ,python-elasticsearch)
        ("python-isort" ,python-isort)
+       ("python-lxml" ,python-lxml)
        ("python-mock" ,python-mock)
        ("python-whoosh" ,python-whoosh)))
     (home-page "https://gitlab.com/mailman/hyperkitty")
