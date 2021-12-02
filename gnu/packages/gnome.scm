@@ -8836,15 +8836,7 @@ properties, screen resolution, and other GNOME parameters.")
                    (gi-typelib-path  (getenv "GI_TYPELIB_PATH"))
                    (python-path      (getenv "GUIX_PYTHONPATH")))
                (wrap-program (string-append out "/bin/gnome-shell")
-                 `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))
-                 ;; FIXME: gnome-shell loads these libraries with unqualified
-                 ;; names only, so they need to be on LD_LIBRARY_PATH.  The
-                 ;; alternative might be to patch gnome-shell.
-                 `("LD_LIBRARY_PATH" ":" prefix
-                   ,(map (lambda (pkg)
-                           (string-append (assoc-ref inputs pkg) "/lib"))
-                         '("gdk-pixbuf"
-                           "gnome-bluetooth" "librsvg" "libgweather"))))
+                 `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path)))
                (for-each
                 (lambda (prog)
                   (wrap-program (string-append out "/bin/" prog)
