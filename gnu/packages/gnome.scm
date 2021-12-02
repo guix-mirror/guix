@@ -3679,6 +3679,17 @@ diagrams.")
     (synopsis "Render SVG files using Cairo (ancient C version)")
     (properties '((hidden? . #t)))))
 
+(define* (librsvg-for-system #:optional
+                             (system (or (%current-target-system)
+                                         (%current-system))))
+  ;; Since librsvg 2.50 depends on Rust, and Rust is only correctly supported
+  ;; on x86_64 so far, use the ancient C version on other platforms (FIXME).
+  (if (string-prefix? "x86_64-" system)
+      librsvg
+      librsvg-2.40))
+
+(export librsvg-for-system)
+
 (define-public libidl
   (package
     (name "libidl")
