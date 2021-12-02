@@ -829,6 +829,11 @@ provides the Ribotaper pipeline.")
      `(#:python ,python-2
        #:phases
        (modify-phases %standard-phases
+         ;; This test fails because of the matplotlib plotting backend.
+         (add-after 'unpack 'disable-plot-test
+           (lambda _
+             (substitute* "src/ribodiff/functional_test_te.py"
+               (("pl\\.make_plots\\(data, opts\\)") "#"))))
          ;; Generate an installable executable script wrapper.
          (add-after 'unpack 'patch-setup.py
            (lambda _
