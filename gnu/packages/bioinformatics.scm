@@ -840,8 +840,7 @@ provides the Ribotaper pipeline.")
              (substitute* "setup.py"
                (("^(.*)packages=.*" line prefix)
                 (string-append line "\n"
-                               prefix "scripts=['scripts/TE.py'],\n")))
-             #t)))))
+                               prefix "scripts=['scripts/TE.py'],\n"))))))))
     (inputs
      `(("python-numpy" ,python2-numpy)
        ("python-matplotlib" ,python2-matplotlib)
