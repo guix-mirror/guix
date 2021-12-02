@@ -2573,12 +2573,9 @@ new Date();"))
                ;; The build system copies a few .template files from the
                ;; source directory into the build directory and then modifies
                ;; them in-place.  So these files have to be writable.
-               (for-each
-                (lambda (file)
-                  (invoke "chmod" "u+w" file))
+               (for-each make-file-writable
                 (find-files "src/java.base/share/classes/jdk/internal/misc/"
-                            "\\.template$"))
-               #t))))))
+                            "\\.template$"))))))))
     (home-page "https://openjdk.java.net/projects/jdk/16")))
 
 (define-public openjdk17
