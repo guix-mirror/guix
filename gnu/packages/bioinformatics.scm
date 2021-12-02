@@ -8210,7 +8210,7 @@ experience substantial biological insertions and deletions.")
              (let* ((out (assoc-ref outputs "out"))
                     (bin (string-append out "/bin"))
                     (scripts (find-files "." "prinseq.*.pl"))
-                    (guile (search-input-file "bin/guile")))
+                    (guile (search-input-file inputs "bin/guile")))
                (substitute* scripts
                  (("\"perl -pe")
                   (string-append "\"" (which "perl") " -pe")))
