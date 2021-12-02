@@ -34506,8 +34506,8 @@ passed.
 @cindex virtual machine
 @cindex VM
 @anchor{guix system vm}
-Build a virtual machine that contains the operating system declared in
-@var{file}, and return a script to run that virtual machine (VM).
+Build a virtual machine (VM) that contains the operating system declared
+in @var{file}, and return a script to run that VM.
 
 @quotation Note
 The @code{vm} action and others below
@@ -34524,6 +34524,12 @@ emulated machine:
 
 @example
 $ /gnu/store/@dots{}-run-vm.sh -m 1024 -smp 2 -nic user,model=virtio-net-pci
+@end example
+
+It's possible to combine the two steps into one:
+
+@example
+$ $(guix system vm my-config.scm) -m 1024 -smp 2 -nic user,model=virtio-net-pci
 @end example
 
 The VM shares its store with the host system.
@@ -34549,8 +34555,17 @@ store of the host can then be mounted.
 The @option{--full-boot} option forces a complete boot sequence, starting
 with the bootloader.  This requires more disk space since a root image
 containing at least the kernel, initrd, and bootloader data files must
-be created.  The @option{--image-size} option can be used to specify the
-size of the image.
+be created.
+
+The @option{--image-size} option can be used to specify the size of the
+image.
+
+The @option{--no-graphic} option will instruct @command{guix system} to
+spawn a headless VM that will use the invoking tty for IO.  Among other
+things, this enables copy-pasting, and scrollback.  Use the @kbd{ctrl-a}
+prefix to issue QEMU commands; e.g. @kbd{ctrl-a h} prints a help,
+@kbd{ctrl-a x} quits the VM, and @kbd{ctrl-a c} switches between the
+QEMU monitor and the VM.
 
 @cindex System images, creation in various formats
 @cindex Creating system images in various formats
