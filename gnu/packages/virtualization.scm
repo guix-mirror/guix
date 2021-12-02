@@ -529,6 +529,7 @@ firmware blobs.  You can
                            (guix build python-build-system))
        #:modules (,@%gnu-build-system-modules
                   ((guix build haskell-build-system) #:prefix haskell:)
+                  ((guix build python-build-system) #:select (site-packages))
                   (srfi srfi-1)
                   (srfi srfi-26)
                   (ice-9 match)
@@ -742,10 +743,12 @@ firmware blobs.  You can
          ;; the phase from python-build-system because we also need to wrap
          ;; the scripts in $out/lib/ganeti such as "node-daemon-setup".
          (add-after 'install 'wrap
-           (lambda* (#:key outputs #:allow-other-keys)
+           (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (sbin (string-append out "/sbin"))
-                    (lib (string-append out "/lib")))
+                    (lib (string-append out "/lib"))
+                    (PYTHONPATH (string-append (site-packages inputs outputs)
+                                               ":" (getenv "GUIX_PYTHONPATH"))))
                (define (shell-script? file)
                  (call-with-ascii-input-file file
                    (lambda (port)
@@ -767,7 +770,7 @@ firmware blobs.  You can
                (for-each (lambda (file)
                            (wrap-program file
                              `("GUIX_PYTHONPATH" ":" prefix
-                               (,(getenv "GUIX_PYTHONPATH")))))
+                               (,PYTHONPATH))))
                          (append-map (cut find-files <> wrap?)
                                      (list (string-append lib "/ganeti")
                                            sbin)))))))))
