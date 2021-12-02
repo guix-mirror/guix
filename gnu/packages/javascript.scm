@@ -27,6 +27,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages node)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages uglifyjs)
   #:use-module (gnu packages web)
@@ -187,6 +188,125 @@ and AsciiMath notation that works in all modern browsers.  It requires no
 plugins or software to be installed on the browser.  So the page author can
 write web documents that include mathematics and be confident that readers will
 be able to view it naturally and easily.")))
+
+(define-public js-mathjax-3
+  (package
+    (name "js-mathjax")
+    (version "3.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/mathjax/MathJax-src")
+              (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "05lm6nw7rzpcc5yz7xsjxi4id9369vvnrksx82nglxrqrpws97wx"))
+       (patches (search-patches "mathjax-disable-webpack.patch"
+                                "mathjax-no-a11y.patch"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'prepare-sources
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; All a11y components depend on speech-rule-engine, which cannot be
+             ;; built from source. Since this only affects accessibility, remove them.
+             (delete-file-recursively "ts/a11y")
+             (delete-file-recursively "components/src/a11y")
+             (delete-file-recursively "components/src/sre")
+             (delete-file-recursively "components/src/node-main")
+
+             ;; Copy sources of dependencies, so we can create symlinks.
+             (mkdir-p "node_modules")
+             (with-directory-excursion "node_modules"
+               (for-each
+                (lambda (p)
+                 (copy-recursively (assoc-ref inputs (string-append "node-" p)) p))
+                '("mj-context-menu" "mhchemparser")))
+
+             ;; Make sure esbuild can find imports. This way we don’t have to rewrite files.
+             (symlink "ts" "js")
+             (symlink "ts" "node_modules/mj-context-menu/js")))
+         (delete 'configure)
+         (replace 'build
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((esbuild (string-append (assoc-ref inputs "esbuild")
+                                           "/bin/esbuild"))
+                   (node (string-append (assoc-ref inputs "node")
+                                        "/bin/node"))
+                   (target (string-append (assoc-ref outputs "out")
+                                          "/share/javascript/mathjax/es5")))
+               ;; Preprocess files and generate lib/ subdirs.
+               (invoke node "components/bin/makeAll")
+               ;; Build components.
+               (apply
+                invoke
+                esbuild
+                "--bundle"
+                "--minify"
+                ;; esbuild cannot transpile some features to ES5, so use ES6 instead.
+                "--target=es6"
+                (string-append "--outdir=" target)
+                "--sourcemap"
+                "--outbase=components/src"
+                "--define:__dirname=\"/\""
+                ;; In the browser the global object is window, see
+                ;; https://developer.mozilla.org/en-US/docs/Glossary/Global_object
+                "--define:global=window"
+                ;; Find all component entry points, which have the same name as their
+                ;; parent directory.
+                (filter
+                 (lambda (f)
+                     (string=?
+                       (basename (dirname f))
+                       (string-drop-right (basename f) 3)))
+                 (find-files "components/src" "\\.js$")))
+               ;; Move all .js files into their parent directory, where MathJax
+               ;; expects them.
+               (for-each
+                 (lambda (f)
+                     (rename-file f (string-append (dirname (dirname f)) "/" (basename f))))
+                 (find-files target "\\.js(\\.map)?$"))
+               ;; Copy font files.
+               (copy-recursively
+                 "ts/output/chtml/fonts/tex-woff-v2"
+                 (string-append target "/output/chtml/fonts/woff-v2")))))
+         (delete 'check)
+         (delete 'install))))
+    (native-inputs
+     `(("esbuild" ,esbuild)
+       ("node" ,node-lts)
+       ("node-mj-context-menu"
+        ,(let ((name "context-menu")
+               (version "0.6.1"))
+           (origin
+             (method git-fetch)
+             (uri (git-reference
+                    (url "https://github.com/zorkow/context-menu.git")
+                    (commit (string-append "v" version))))
+             (file-name (git-file-name name version))
+             (sha256
+              (base32
+               "1q063l6477z285j6h5wvccp6iswvlp0jmb96sgk32sh0lf7nhknh")))))
+       ("node-mhchemparser"
+        ,(let ((name "mhchemparser")
+               ;; Version 4.1.1. There are no tags.
+               (version "b1bd0670df7e9bbd5a724ac642aa2664d6e500b3"))
+           (origin
+             (method git-fetch)
+             (uri (git-reference
+                    (url "https://github.com/mhchem/mhchemParser.git")
+                    (commit version)))
+             (file-name (git-file-name name version))
+             (sha256
+              (base32
+               "1g72kbxzf9f2igidpma3jwk28ln4bp3qhwspmhnm79baf3701dgv")))))))
+    (home-page "https://www.mathjax.org/")
+    (synopsis (package-synopsis js-mathjax))
+    (description (package-description js-mathjax))
+    (license license:asl2.0)))
 
 (define-public js-commander
   (package

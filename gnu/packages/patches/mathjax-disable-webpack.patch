@@ -1,0 +1,23 @@
+commit 0cfd5b23aed8767f2bcf9583c1feaf4c9a64703a
+Author: Lars-Dominik Braun <lars@6xq.net>
+Date:   Wed Dec 1 14:27:33 2021 +0100
+
+    guix: Disable webpack
+    
+    Guix uses esbuild to “link” the files. We only need the build step.
+
+diff --git a/components/bin/makeAll b/components/bin/makeAll
+index 3e7a8914..5dae9b9b 100755
+--- a/components/bin/makeAll
++++ b/components/bin/makeAll
+@@ -61,8 +61,8 @@ function processList(dirs) {
+   for (const dir of dirs) {
+     const fulldir = path.resolve(dir);
+     processDir(fulldir, buildLib);
+-    processDir(fulldir, webpackLib);
+-    processDir(fulldir, copyLib);
++    //processDir(fulldir, webpackLib);
++    //processDir(fulldir, copyLib);
+   }
+ }
+ 

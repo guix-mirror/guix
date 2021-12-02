@@ -1446,6 +1446,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/marble-qt-add-qt-headers.patch		\
   %D%/packages/patches/mars-install.patch			\
   %D%/packages/patches/mars-sfml-2.3.patch			\
+  %D%/packages/patches/mathjax-disable-webpack.patch			\
+  %D%/packages/patches/mathjax-no-a11y.patch			\
   %D%/packages/patches/maxima-defsystem-mkdir.patch		\
   %D%/packages/patches/maven-enforcer-api-fix-old-dependencies.patch	\
   %D%/packages/patches/maven-generate-component-xml.patch		\

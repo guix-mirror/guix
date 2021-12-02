@@ -1,0 +1,286 @@
+commit 9bb6f1e11264fb075bfa70fa3684f10a32414594
+Author: Lars-Dominik Braun <lars@6xq.net>
+Date:   Wed Dec 1 14:28:06 2021 +0100
+
+    guix: Remove accessibility.
+    
+    We cannot build speech-rule-engine from source and thus all dependents
+    must be removed. This affects all a11y modules and menu items, which
+    may try to load components.
+
+diff --git a/components/src/dependencies.js b/components/src/dependencies.js
+index f9be6f93..822f8fb6 100644
+--- a/components/src/dependencies.js
++++ b/components/src/dependencies.js
+@@ -16,9 +16,6 @@
+  */
+ 
+ export const dependencies = {
+-  'a11y/semantic-enrich': ['input/mml', '[sre]'],
+-  'a11y/complexity': ['a11y/semantic-enrich'],
+-  'a11y/explorer': ['a11y/semantic-enrich', 'ui/menu'],
+   '[mml]/mml3': ['input/mml'],
+   '[tex]/all-packages': ['input/tex-base'],
+   '[tex]/action': ['input/tex-base', '[tex]/newcommand'],
+@@ -58,7 +55,6 @@ export const dependencies = {
+ export const paths = {
+   tex: '[mathjax]/input/tex/extensions',
+   mml: '[mathjax]/input/mml/extensions',
+-  sre: '[mathjax]/sre/' + (typeof window === 'undefined' ? 'sre-node' : 'sre_browser')
+ };
+ 
+ const allPackages = [
+diff --git a/components/src/mml-chtml/mml-chtml.js b/components/src/mml-chtml/mml-chtml.js
+index c0bd18ee..a283a1ab 100644
+--- a/components/src/mml-chtml/mml-chtml.js
++++ b/components/src/mml-chtml/mml-chtml.js
+@@ -5,5 +5,4 @@ import '../input/mml/mml.js';
+ import '../output/chtml/chtml.js';
+ import '../output/chtml/fonts/tex/tex.js';
+ import '../ui/menu/menu.js';
+-import '../a11y/assistive-mml/assistive-mml.js';
+ import '../startup/startup.js';
+diff --git a/components/src/mml-chtml/preload.js b/components/src/mml-chtml/preload.js
+index e3f202f7..3699570e 100644
+--- a/components/src/mml-chtml/preload.js
++++ b/components/src/mml-chtml/preload.js
+@@ -5,5 +5,5 @@ Loader.preLoad(
+   'core',
+   'input/mml',
+   'output/chtml', 'output/chtml/fonts/tex.js',
+-  'ui/menu', 'a11y/assistive-mml'
++  'ui/menu'
+ );
+diff --git a/components/src/mml-svg/mml-svg.js b/components/src/mml-svg/mml-svg.js
+index 172b2433..23b66e69 100644
+--- a/components/src/mml-svg/mml-svg.js
++++ b/components/src/mml-svg/mml-svg.js
+@@ -5,5 +5,4 @@ import '../input/mml/mml.js';
+ import '../output/svg/svg.js';
+ import '../output/svg/fonts/tex/tex.js';
+ import '../ui/menu/menu.js';
+-import '../a11y/assistive-mml/assistive-mml.js';
+ import '../startup/startup.js';
+diff --git a/components/src/mml-svg/preload.js b/components/src/mml-svg/preload.js
+index 3cb47d42..89f6b9f9 100644
+--- a/components/src/mml-svg/preload.js
++++ b/components/src/mml-svg/preload.js
+@@ -5,5 +5,5 @@ Loader.preLoad(
+   'core',
+   'input/mml',
+   'output/svg', 'output/svg/fonts/tex.js',
+-  'ui/menu', 'a11y/assistive-mml'
++  'ui/menu'
+ );
+diff --git a/components/src/source.js b/components/src/source.js
+index ba6d6835..02ecf18d 100644
+--- a/components/src/source.js
++++ b/components/src/source.js
+@@ -62,12 +62,6 @@ export const source = {
+   'output/chtml/fonts/tex': `${src}/output/chtml/fonts/tex/tex.js`,
+   'output/svg': `${src}/output/svg/svg.js`,
+   'output/svg/fonts/tex': `${src}/output/svg/fonts/tex/tex.js`,
+-  'a11y/assistive-mml': `${src}/a11y/assistive-mml/assistive-mml.js`,
+-  'a11y/semantic-enrich': `${src}/a11y/semantic-enrich/semantic-enrich.js`,
+-  'a11y/complexity': `${src}/a11y/complexity/complexity.js`,
+-  'a11y/explorer': `${src}/a11y/explorer/explorer.js`,
+-  '[sre]': (typeof window === 'undefined' ? `${src}/../../js/a11y/sre-node.js` :
+-            `${src}/../../node_modules/speech-rule-engine/lib/sre_browser.js`),
+   'ui/lazy': `${src}/ui/lazy/lazy.js`,
+   'ui/menu': `${src}/ui/menu/menu.js`,
+   'ui/safe': `${src}/ui/safe/safe.js`,
+diff --git a/components/src/tex-chtml-full/preload.js b/components/src/tex-chtml-full/preload.js
+index 76c81c92..0eb3a8e2 100644
+--- a/components/src/tex-chtml-full/preload.js
++++ b/components/src/tex-chtml-full/preload.js
+@@ -5,5 +5,5 @@ Loader.preLoad(
+   'core',
+   'input/tex-full',
+   'output/chtml', 'output/chtml/fonts/tex.js',
+-  'ui/menu', 'a11y/assistive-mml'
++  'ui/menu'
+ );
+diff --git a/components/src/tex-chtml-full/tex-chtml-full.js b/components/src/tex-chtml-full/tex-chtml-full.js
+index 12291be9..c3f59e6b 100644
+--- a/components/src/tex-chtml-full/tex-chtml-full.js
++++ b/components/src/tex-chtml-full/tex-chtml-full.js
+@@ -5,5 +5,4 @@ import '../input/tex-full/tex-full.js';
+ import '../output/chtml/chtml.js';
+ import '../output/chtml/fonts/tex/tex.js';
+ import '../ui/menu/menu.js';
+-import '../a11y/assistive-mml/assistive-mml.js';
+ import '../startup/startup.js';
+diff --git a/components/src/tex-chtml/preload.js b/components/src/tex-chtml/preload.js
+index 89f110c5..5dae092f 100644
+--- a/components/src/tex-chtml/preload.js
++++ b/components/src/tex-chtml/preload.js
+@@ -5,5 +5,5 @@ Loader.preLoad(
+   'core',
+   'input/tex',
+   'output/chtml', 'output/chtml/fonts/tex.js',
+-  'ui/menu', 'a11y/assistive-mml'
++  'ui/menu'
+ );
+diff --git a/components/src/tex-chtml/tex-chtml.js b/components/src/tex-chtml/tex-chtml.js
+index 8d98865e..4d100a48 100644
+--- a/components/src/tex-chtml/tex-chtml.js
++++ b/components/src/tex-chtml/tex-chtml.js
+@@ -5,5 +5,4 @@ import '../input/tex/tex.js';
+ import '../output/chtml/chtml.js';
+ import '../output/chtml/fonts/tex/tex.js';
+ import '../ui/menu/menu.js';
+-import '../a11y/assistive-mml/assistive-mml.js';
+ import '../startup/startup.js';
+diff --git a/components/src/tex-mml-chtml/preload.js b/components/src/tex-mml-chtml/preload.js
+index 7adb6a3b..3945370f 100644
+--- a/components/src/tex-mml-chtml/preload.js
++++ b/components/src/tex-mml-chtml/preload.js
+@@ -5,5 +5,5 @@ Loader.preLoad(
+   'core',
+   'input/tex', 'input/mml',
+   'output/chtml', 'output/chtml/fonts/tex.js',
+-  'ui/menu', 'a11y/assistive-mml'
++  'ui/menu'
+ );
+diff --git a/components/src/tex-mml-chtml/tex-mml-chtml.js b/components/src/tex-mml-chtml/tex-mml-chtml.js
+index 4167bd59..0b068dc6 100644
+--- a/components/src/tex-mml-chtml/tex-mml-chtml.js
++++ b/components/src/tex-mml-chtml/tex-mml-chtml.js
+@@ -6,5 +6,4 @@ import '../input/mml/mml.js';
+ import '../output/chtml/chtml.js';
+ import '../output/chtml/fonts/tex/tex.js';
+ import '../ui/menu/menu.js';
+-import '../a11y/assistive-mml/assistive-mml.js';
+ import '../startup/startup.js';
+diff --git a/components/src/tex-mml-svg/preload.js b/components/src/tex-mml-svg/preload.js
+index 69d6a2c5..bad39af1 100644
+--- a/components/src/tex-mml-svg/preload.js
++++ b/components/src/tex-mml-svg/preload.js
+@@ -5,5 +5,5 @@ Loader.preLoad(
+   'core',
+   'input/tex', 'input/mml',
+   'output/svg', 'output/svg/fonts/tex.js',
+-  'ui/menu', 'a11y/assistive-mml'
++  'ui/menu'
+ );
+diff --git a/components/src/tex-mml-svg/tex-mml-svg.js b/components/src/tex-mml-svg/tex-mml-svg.js
+index acff78dd..3ca4e6cf 100644
+--- a/components/src/tex-mml-svg/tex-mml-svg.js
++++ b/components/src/tex-mml-svg/tex-mml-svg.js
+@@ -6,5 +6,4 @@ import '../input/mml/mml.js';
+ import '../output/svg/svg.js';
+ import '../output/svg/fonts/tex/tex.js';
+ import '../ui/menu/menu.js';
+-import '../a11y/assistive-mml/assistive-mml.js';
+ import '../startup/startup.js';
+diff --git a/components/src/tex-svg-full/preload.js b/components/src/tex-svg-full/preload.js
+index d4165cf8..8871781a 100644
+--- a/components/src/tex-svg-full/preload.js
++++ b/components/src/tex-svg-full/preload.js
+@@ -5,5 +5,5 @@ Loader.preLoad(
+   'core',
+   'input/tex-full',
+   'output/svg', 'output/svg/fonts/tex.js',
+-  'ui/menu', 'a11y/assistive-mml'
++  'ui/menu'
+ );
+diff --git a/components/src/tex-svg-full/tex-svg-full.js b/components/src/tex-svg-full/tex-svg-full.js
+index 55ce32f2..09c7e65c 100644
+--- a/components/src/tex-svg-full/tex-svg-full.js
++++ b/components/src/tex-svg-full/tex-svg-full.js
+@@ -5,5 +5,4 @@ import '../input/tex-full/tex-full.js';
+ import '../output/svg/svg.js';
+ import '../output/svg/fonts/tex/tex.js';
+ import '../ui/menu/menu.js';
+-import '../a11y/assistive-mml/assistive-mml.js';
+ import '../startup/startup.js';
+diff --git a/components/src/tex-svg/preload.js b/components/src/tex-svg/preload.js
+index 284ce317..3eb02665 100644
+--- a/components/src/tex-svg/preload.js
++++ b/components/src/tex-svg/preload.js
+@@ -5,5 +5,5 @@ Loader.preLoad(
+   'core',
+   'input/tex',
+   'output/svg', 'output/svg/fonts/tex.js',
+-  'ui/menu', 'a11y/assistive-mml'
++  'ui/menu'
+ );
+diff --git a/components/src/tex-svg/tex-svg.js b/components/src/tex-svg/tex-svg.js
+index f4ce644e..5d8caa5c 100644
+--- a/components/src/tex-svg/tex-svg.js
++++ b/components/src/tex-svg/tex-svg.js
+@@ -5,5 +5,4 @@ import '../input/tex/tex.js';
+ import '../output/svg/svg.js';
+ import '../output/svg/fonts/tex/tex.js';
+ import '../ui/menu/menu.js';
+-import '../a11y/assistive-mml/assistive-mml.js';
+ import '../startup/startup.js';
+diff --git a/ts/ui/menu/Menu.ts b/ts/ui/menu/Menu.ts
+index 7553aafc..ca0b9780 100644
+--- a/ts/ui/menu/Menu.ts
++++ b/ts/ui/menu/Menu.ts
+@@ -135,7 +135,7 @@ export class Menu {
+       autocollapse: false,
+       collapsible: false,
+       inTabOrder: true,
+-      assistiveMml: true,
++      assistiveMml: false,
+       explorer: false
+     },
+     jax: {
+@@ -475,7 +475,7 @@ export class Menu {
+           this.command('Reset', 'Reset to defaults', () => this.resetDefaults())
+         ]),
+         this.submenu('Accessibility', 'Accessibility', [
+-          this.checkbox('Activate', 'Activate', 'explorer'),
++          this.checkbox('Activate', 'Activate', 'explorer', {disabled: true}),
+           this.submenu('Speech', 'Speech', [
+             this.checkbox('Speech', 'Speech Output', 'speech'),
+             this.checkbox('Subtitles', 'Speech Subtitles', 'subtitles'),
+@@ -534,11 +534,11 @@ export class Menu {
+             this.checkbox('Prefix', 'Prefix', 'infoPrefix')
+           ], true),
+           this.rule(),
+-          this.checkbox('Collapsible', 'Collapsible Math', 'collapsible'),
++          this.checkbox('Collapsible', 'Collapsible Math', 'collapsible', {disabled: true}),
+           this.checkbox('AutoCollapse', 'Auto Collapse', 'autocollapse', {disabled: true}),
+           this.rule(),
+           this.checkbox('InTabOrder', 'Include in Tab Order', 'inTabOrder'),
+-          this.checkbox('AssistiveMml', 'Include Hidden MathML', 'assistiveMml')
++          this.checkbox('AssistiveMml', 'Include Hidden MathML', 'assistiveMml', {disabled: true})
+         ]),
+         this.submenu('Language', 'Language'),
+         this.rule(),
+@@ -722,6 +722,7 @@ export class Menu {
+    * @param {boolean} mml   True to output hidden Mathml, false to not
+    */
+   protected setAssistiveMml(mml: boolean) {
++    mml = false;
+     this.document.options.enableAssistiveMml = mml;
+     if (!mml || (MathJax._.a11y && MathJax._.a11y['assistive-mml'])) {
+       this.rerender();
+@@ -734,6 +735,7 @@ export class Menu {
+    * @param {boolean} explore   True to enable the explorer, false to not
+    */
+   protected setExplorer(explore: boolean) {
++    explore = false;
+     this.enableExplorerItems(explore);
+     this.document.options.enableExplorer = explore;
+     if (!explore || (MathJax._.a11y && MathJax._.a11y.explorer)) {
+@@ -747,6 +749,7 @@ export class Menu {
+    * @param {boolean} collapse   True to enable collapsible math, false to not
+    */
+   protected setCollapsible(collapse: boolean) {
++    collapse = false;
+     this.document.options.enableComplexity = collapse;
+     if (!collapse || (MathJax._.a11y && MathJax._.a11y.complexity)) {
+       this.rerender(STATE.COMPILED);
+@@ -845,6 +848,8 @@ export class Menu {
+    * @param {string} component   The name of the a11y component to load
+    */
+   public loadA11y(component: string) {
++    console.log ('ignoring load for', component);
++    return;
+     const noEnrich = !STATE.ENRICHED;
+     this.loadComponent('a11y/' + component, () => {
+       const startup = MathJax.startup;
