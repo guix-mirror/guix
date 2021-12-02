@@ -42,6 +42,7 @@
 (define-module (gnu packages bioinformatics)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
+  #:use-module (guix gexp)
   #:use-module (guix utils)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -233,9 +234,9 @@ structure of the predicted RNA.")
        ;; Do not use bundled libhts.  Do use the bundled libcfu because it has
        ;; been modified from its original form.
        #:configure-flags
-       (let ((htslib (assoc-ref %build-inputs "htslib")))
-         (list "--with-libhts-lib" (string-append htslib "/lib")
-               "--with-libhts-inc" (string-append htslib "/include/htslib")))
+       ,#~(let ((htslib #$(this-package-input "htslib")))
+            (list "--with-libhts-lib" (string-append htslib "/lib")
+                  "--with-libhts-inc" (string-append htslib "/include/htslib")))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'autogen
