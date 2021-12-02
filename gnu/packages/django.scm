@@ -7,6 +7,7 @@
 ;;; Copyright © 2018 Vijayalakshmi Vedantham <vijimay12@gmail.com>
 ;;; Copyright © 2019 Sam <smbaines8@gmail.com>
 ;;; Copyright © 2020, 2021 Marius Bakke <marius@gnu.org>
+;;; Copyright © 2021 Luis Felipe López Acevedo <luis.felipe.la@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1356,4 +1357,29 @@ to ElasticSearch.")
 for filtering data.  It allows the user to safely filter by model attributes
 and also specify the lookup type for each filter (very much like
 Django's filtering system in ORM).")
+    (license license:expat)))
+
+(define-public python-django-svg-image-form-field
+  (package
+    (name "python-django-svg-image-form-field")
+    (version "1.0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/artrey/django-svg-image-form-field")
+             (commit (string-append version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "131m545khn8l20j4x2bvlvz36dlbnhj9pc98i2dw72s3bw8pgws0"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-defusedxml" ,python-defusedxml)
+       ("python-django" ,python-django)
+       ("python-pillow" ,python-pillow)))
+    (home-page "https://github.com/artrey/django-svg-image-form-field")
+    (synopsis "Form field to validate SVG and other images")
+    (description "This form field allows users to provide SVG images for
+models that use Django's standard @code{ImageField}, in addition to the
+image files already supported by it.")
     (license license:expat)))
