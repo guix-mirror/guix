@@ -5040,23 +5040,26 @@ command, or queried for specific k-mers with @code{jellyfish query}.")
              (("# libraries = z,bz2")
               "libraries = z,bz2")
              (("include:third-party/zlib:third-party/bzip2")
-              "include:"))
-           #t))))
+              "include:"))))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'set-cc
-           (lambda _ (setenv "CC" "gcc") #t))
-
+           (lambda _ (setenv "CC" "gcc")))
+         (add-after 'unpack 'python-3.8-compatibility
+           (lambda _
+             ;; Python 3.8 removed time.clock().
+             (substitute* "sandbox/sweep-reads.py"
+               (("time\\.clock")
+                "time.process_time"))))
          (add-before 'reset-gzip-timestamps 'make-files-writable
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Make sure .gz files are writable so that the
              ;; 'reset-gzip-timestamps' phase can do its work.
              (let ((out (assoc-ref outputs "out")))
                (for-each make-file-writable
-                         (find-files out "\\.gz$"))
-               #t))))))
+                         (find-files out "\\.gz$"))))))))
     (native-inputs
      `(("python-cython" ,python-cython)
        ("python-pytest" ,python-pytest)
