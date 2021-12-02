@@ -7633,10 +7633,21 @@ PNG, PostScript, PDF, and SVG file output.")
 for the average programmer, and to popularize decorators usage giving examples
 of useful decorators, such as memoize, tracing, redirecting_stdout, locked,
 etc.  The core of this module is a decorator factory.")
-    (license license:expat)))
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-decorator))))))
 
+;; Version 5 does not support Python 2
 (define-public python2-decorator
-  (package-with-python2 python-decorator))
+  (package
+    (inherit (package-with-python2
+              (strip-python2-variant python-decorator)))
+    (version "4.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "decorator" version))
+       (sha256
+        (base32 "0308djallnh00v112y5b7nadl657ysmkp6vc8xn51d6yzc9zm7n3"))))))
 
 (define-public python-drmaa
   (package
