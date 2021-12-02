@@ -390,14 +390,14 @@ useful tools for testing Django applications and projects.")
 (define-public python-django-haystack
   (package
     (name "python-django-haystack")
-    (version "2.8.1")
+    (version "3.1.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "django-haystack" version))
         (sha256
          (base32
-          "1302fqsrx8w474xk5cmnmg3hjqfprlxnjg9qlg86arsr4v4vqm4b"))))
+          "10kaa5641cakpra2x3jqgys085gdkjcyns26plfyrmfpjmmpa1bd"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -405,7 +405,7 @@ useful tools for testing Django applications and projects.")
          (add-after 'unpack 'loosen-verion-restrictions
            (lambda _
              (substitute* "setup.py"
-               (("geopy.*") "geopy',\n"))))
+               (("geopy.*") "geopy\",\n"))))
          (add-before 'check 'set-gdal-lib-path
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "GDAL_LIBRARY_PATH"
