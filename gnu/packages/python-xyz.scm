@@ -10259,6 +10259,20 @@ Python.")
 (define-public python2-mistune
   (package-with-python2 python-mistune))
 
+;; 2.0 is not released yet, but some packages have started using it.
+(define-public python-mistune-next
+  (package
+    (inherit python-mistune)
+    (name "python-mistune-next")
+    (version "2.0.0rc1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "mistune" version))
+              (sha256
+               (base32
+                "1nd7iav1ixh9hlj4hxn6lmpava88d86ys8rqm30wgvr7gjlxnas5"))))
+    (native-inputs (list python-nose))))
+
 (define-public python-markdown
   (package
     (name "python-markdown")
