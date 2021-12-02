@@ -359,15 +359,16 @@ HTTP.  Features:
 (define-public python-whisper
   (package
     (name "python-whisper")
-    (version "1.0.2")
+    (version "1.1.8")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "whisper" version))
        (sha256
         (base32
-         "1v1bi3fl1i6p4z4ki692bykrkw6907dn3mfq0151f70lvi3zpns3"))))
+         "1bk29w09zcpsv8hp0g0al7nwrxa07z0ycls3mbh83wfavk83aprl"))))
     (build-system python-build-system)
+    (native-inputs (list python-six))
     (home-page "http://graphiteapp.org/")
     (synopsis "Fixed size round-robin style database for Graphite")
     (description "Whisper is one of three components within the Graphite
