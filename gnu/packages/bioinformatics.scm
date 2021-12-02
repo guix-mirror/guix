@@ -337,9 +337,9 @@ BAM files.")
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; There are no tests.
-       #:make-flags `("USER_WARNINGS=-std=gnu++98"
-                      ,(string-append "INSTALLDIR="
-                                      (assoc-ref %outputs "out") "/bin"))
+       #:make-flags
+       ,#~(list "USER_WARNINGS=-std=gnu++98" ;
+                (string-append "INSTALLDIR=" #$output "/bin"))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))
