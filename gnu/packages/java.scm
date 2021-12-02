@@ -2581,6 +2581,39 @@ new Date();"))
                #t))))))
     (home-page "https://openjdk.java.net/projects/jdk/16")))
 
+(define-public openjdk17
+  (package
+    (inherit openjdk16)
+    (name "openjdk")
+    (version "17.0.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/openjdk/jdk17u")
+                    (commit (string-append "jdk-" version "-ga"))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1l1jgbz8q7zq66npfg88r0l5xga427vrz35iys09j44b6qllrldd"))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("openjdk16:jdk" ,openjdk16 "jdk")
+       ("pkg-config" ,pkg-config)
+       ("unzip" ,unzip)
+       ("which" ,which)
+       ("zip" ,zip)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments openjdk16)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (replace 'fix-java-shebangs
+             (lambda _
+               ;; This file was "fixed" by patch-source-shebangs, but it requires
+               ;; this exact first line.
+               (substitute* "make/data/blockedcertsconverter/blocked.certs.pem"
+                 (("^#!.*") "#! java BlockedCertsConverter SHA-256\n"))))))))
+    (home-page "https://openjdk.java.net/projects/jdk/17")))
+
 (define-public icedtea icedtea-8)
 
 
