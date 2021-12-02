@@ -8152,7 +8152,7 @@ JSON data to the machine.")
        ;; source: golang.zx2c4.com/wireguard
        (uri (git-reference
              (url "https://git.zx2c4.com/wireguard-go/")
-             (commit (string-append "v" version))))
+             (commit version)))
        (file-name (git-file-name name version))
        (sha256
         (base32
