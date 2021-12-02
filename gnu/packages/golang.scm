@@ -8860,7 +8860,7 @@ JSON for post-processing
        (sha256
         (base32 "0whx516l9nm4n41spagb605ry7kfnz1qha96mcshnfjlahhnnylq"))))
     (build-system go-build-system)
-    (arguments '(#:import-path "github.com/VividCortex/ewma"))
+    (arguments '(#:import-path "github.com/vividcortex/ewma"))
     (home-page "https://github.com/VividCortex/ewma")
     (synopsis "Exponentially Weighted Moving Average algorithms for Go")
     (description
