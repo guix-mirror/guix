@@ -5366,7 +5366,9 @@ capabilities.")
              (add-after 'unpack 'delete-failing-test
                (lambda _
                  ;; There's just one failing test here.
-                 (delete-file "numpy/linalg/tests/test_linalg.py")))))))
+                 (delete-file "numpy/linalg/tests/test_linalg.py")
+                 ;; ...and this one depends on the previous one.
+                 (delete-file "numpy/matrixlib/tests/test_matrix_linalg.py")))))))
       (native-inputs
        `(("python-cython" ,python2-cython)
          ("python-pytest" ,python2-pytest)
