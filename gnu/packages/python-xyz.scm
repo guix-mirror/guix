@@ -8654,13 +8654,13 @@ callback signature using a prototype function.")
 (define-public python-ipython
   (package
     (name "python-ipython")
-    (version "7.9.0")
+    (version "7.20.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ipython" version ".tar.gz"))
        (sha256
-        (base32 "103jkw18z7fnwdal1mdbijjxi1fndzn31g887lmj7ddpf2r07lyz"))))
+        (base32 "17pzzyfh6z7il1j49fb32glad04pqppqjsymj67gb30ah80ay8qr"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-backcall" ,python-backcall)
