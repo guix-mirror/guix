@@ -11265,11 +11265,6 @@ generic enough to work for everyone.")
                                           ; in four years and cannot be built.
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'adjust-webkitgtk-version
-           (lambda _
-             (substitute* '("CMakeLists.txt" "evolution-shell.pc.in")
-               (("webkit2gtk-4.0")
-                "webkit2gtk-4.1"))))
          ;; The build system attempts to install user interface modules to the
          ;; output directory of the "evolution-data-server" package.  This
          ;; change redirects that change.
@@ -11303,7 +11298,7 @@ generic enough to work for everyone.")
        ("libsoup" ,libsoup)
        ("nss" ,nss)
        ("openldap" ,openldap)
-       ("webkitgtk" ,webkitgtk)
+       ("webkitgtk" ,webkitgtk-with-libsoup2) ; because of evolution-data-server
        ("ytnef" ,ytnef)))
     (home-page "https://gitlab.gnome.org/GNOME/evolution")
     (synopsis "Manage your email, contacts and schedule")
