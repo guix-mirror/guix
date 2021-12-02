@@ -14,7 +14,7 @@
 ;;; Copyright © 2016, 2017 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017, 2020, 2021 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017, 2019 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
@@ -4086,34 +4086,19 @@ network.")
        ;; TODO: figure out how tests are run
        #:tests? #f
        #:install-source? #f
-       #:phases (modify-phases %standard-phases
-                  (replace 'build
-                    (lambda _
-                      (for-each
-                       (lambda (c)
-                         (invoke
-                          "go" "build" "-v" "-ldflags=-s -w"
-                          (string-append
-                           "github.com/yggdrasil-network/yggdrasil-go/cmd/" c)))
-                       (list "yggdrasil" "yggdrasilctl" "genkeys"))
-                      #t))
-                  (replace 'install
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (let* ((out (assoc-ref outputs "out"))
-                             (bin (string-append out "/bin/"))
-                             (doc (string-append out "/share/doc/yggdrasil/")))
-                        (mkdir-p bin)
-                        (for-each
-                         (lambda (f)
-                           (install-file f bin))
-                         (list "yggdrasil" "yggdrasilctl" "genkeys"))
-                        (mkdir-p doc)
-                        (copy-recursively
-                         (string-append
-                          "src/github.com/yggdrasil-network/yggdrasil-go/"
-                          "doc/yggdrasil-network.github.io")
-                         doc))
-                      #t)))))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'build
+           (lambda* (#:key import-path build-flags #:allow-other-keys)
+             (for-each
+               (lambda (directory)
+                 ((assoc-ref %standard-phases 'build)
+                  #:build-flags build-flags
+                  #:import-path directory))
+               (list "github.com/yggdrasil-network/yggdrasil-go/cmd/yggdrasil"
+                     "github.com/yggdrasil-network/yggdrasil-go/cmd/yggdrasilctl"
+                     "github.com/yggdrasil-network/yggdrasil-go/cmd/genkeys"))
+             #t)))))
     ;; https://github.com/kardianos/minwinsvc is windows only
     (propagated-inputs
      `(;;("go-golang-zx2c4-com-wireguard-windows"
