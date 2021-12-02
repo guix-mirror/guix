@@ -7,7 +7,7 @@
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Paul Garlick <pgarlick@tourbillion-technology.com>
-;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2019, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -309,6 +309,16 @@ best MPI library available.  Open MPI offers advantages for system and
 software vendors, application developers and computer science researchers.")
     ;; See file://LICENSE
     (license license:bsd-2)))
+
+(define-public openmpi-c++
+  (package/inherit openmpi
+    (name "openmpi-c++")
+    (outputs '("out"))
+    (arguments
+     (substitute-keyword-arguments (package-arguments openmpi)
+       ((#:configure-flags flags)
+        `(cons "--enable-mpi-cxx" ,flags))))
+    (synopsis "C++ bindings for MPI")))
 
 ;; TODO: javadoc files contain timestamps.
 (define-public java-openmpi
