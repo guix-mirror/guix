@@ -8126,27 +8126,25 @@ Needleman-Wunsch).")
 (define-public pardre
   (package
     (name "pardre")
-    ;; The source of 1.1.5 changed in place, so we append "-1" to the version.
-    (version "1.1.5-1")
+    (version "2.2.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/pardre/ParDRe-rel"
-                           "1.1.5" ".tar.gz"))
+                           version ".tar.gz"))
        (sha256
         (base32
-         "17j73nc0viq4f6qj50nrndsrif5d6b71q8fl87m54psiv0ilns2b"))))
+         "105s4f8zs8hh0sc32r9p725n7idza9cj5jvp5z1m5pljjhgk3if5"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; no tests included
+     `(#:tests? #f ; tests require "prove"
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
-               (install-file "ParDRe" bin)
-               #t))))))
+               (install-file "ParDRe" bin)))))))
     (inputs
      `(("openmpi-c++" ,openmpi-c++)
        ("zlib" ,zlib)))
