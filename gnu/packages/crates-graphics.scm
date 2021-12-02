@@ -11,7 +11,6 @@
 ;;; Copyright © 2020, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Antoine Côté <antoine.cote@posteo.net>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
-;;; Copyright © 2021 Zheng Junjie <873216071@qq.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -138,7 +137,7 @@ approximated by values supported by the terminal.")
       (origin
         (method url-fetch)
         (uri (crate-uri "ansi_term" version))
-        (file-name (string-append name "-" version ".tar.gz"))
+        (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
           "1ljmkbilxgmhavxvxqa7qvm6f3fjggi7q2l3a72q9x0cxjvrnanm"))))
@@ -167,7 +166,7 @@ text or blue underlined text, on ANSI terminals.")
       (origin
         (method url-fetch)
         (uri (crate-uri "ansi_term" version))
-        (file-name (string-append name "-" version ".tar.gz"))
+        (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
           "16wpvrghvd0353584i1idnsgm0r3vchg8fyrm0x8ayv1rgvbljgf"))))
@@ -2056,7 +2055,7 @@ images in AVIF format.")
      (origin
        (method url-fetch)
        (uri (crate-uri "rgb" version))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (file-name (string-append name "-" version ".crate"))
        (sha256
         (base32
          "1lrv3x5h1lvdzg1qqr8aiysz978m35zpjdkyicnvkarnh8zkqzr8"))))
