@@ -3484,24 +3484,14 @@ interacting with Mailman.")
 (define-public python-mailman-hyperkitty
   (package
     (name "python-mailman-hyperkitty")
-    (version "1.1.0")
+    (version "1.2.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "mailman-hyperkitty" version))
         (sha256
          (base32
-          "1lfqa9admhvdv71f528jmz2wl0i5cv77v6l64px2pm4zqr9ckkjx"))
-        (patches
-          (list
-            (origin
-              ;; see: https://gitlab.com/mailman/mailman-hyperkitty/issues/17
-              ;; fixes test_archive_message_unserializable
-              (method url-fetch)
-              (uri "https://salsa.debian.org/mailman-team/mailman-hyperkitty/raw/debian/1.1.0-9/debian/patches/0002-Skip-the-test_archive_message_unserializable.patch")
-              (sha256
-               (base32
-                "0p1fwm46c4bl81lvsg3kjhn2r1lwgkpgxamb3xyqn7h9qdrw10hw")))))))
+          "1ni6vf1yi14c0l895fk278x4na7ymhpkl1q0vnpzbkzplpa7200i"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-requests" ,python-requests)
