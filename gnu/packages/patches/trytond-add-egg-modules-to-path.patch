@@ -1,0 +1,22 @@
+Work around trytond.module not being a real namespace module.
+
+Solution is to add all trytond module's locations to
+trytond.modules._path__. This will make trytond.module behave much
+like a namespace module.
+Adding to __path__ is done in update_egg_modules() to ensure __path__
+is updated whenever the list of egg modules is updated.
+
+*** a/trytond/modules/__init__.py	1970-01-01 01:00:01.000000000 +0100
+--- b/trytond/modules/__init__.py	2021-12-02 18:12:15.385101986 +0100
+***************
+*** 38,43 ****
+--- 38,46 ----
+          import pkg_resources
+          for ep in pkg_resources.iter_entry_points('trytond.modules'):
+              EGG_MODULES[ep.name] = ep
++             path = os.path.join(ep.dist.location, 'trytond', 'modules')
++             if not path in __path__ and os.path.isdir(path):
++                 __path__.append(path)
+      except ImportError:
+          pass
+  

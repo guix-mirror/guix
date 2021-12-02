@@ -48,7 +48,8 @@
        (method url-fetch)
        (uri (pypi-uri "trytond" version))
        (sha256
-        (base32 "1jp5cadqpwkcnml8r1hj6aak5kc8an2d5ai62p96x77nn0dp3ny4"))))
+        (base32 "1jp5cadqpwkcnml8r1hj6aak5kc8an2d5ai62p96x77nn0dp3ny4"))
+       (patches (search-patches "trytond-add-egg-modules-to-path.patch"))))
     (build-system python-build-system)
     (propagated-inputs
      (list python-dateutil
