@@ -1998,6 +1998,16 @@ inference for statistical models.")
 (define-public python2-statsmodels
   (let ((stats (package-with-python2 python-statsmodels)))
     (package/inherit stats
+      ;; Version 0.11.1 and later does not work with Python 2.  It may build
+      ;; fine but loading modules fails.
+      (version "0.9.0")
+      (source
+       (origin
+         (method url-fetch)
+         (uri (pypi-uri "statsmodels" version))
+         (sha256
+          (base32
+           "0fxs8a7sp4d7jvqlm36yi45i2d28kjfvraf9q8i9jr1chhxgjqb4"))))
       (propagated-inputs
        `(("python2-pytz" ,python2-pytz)
          ("python2-numpy" ,python2-numpy)
