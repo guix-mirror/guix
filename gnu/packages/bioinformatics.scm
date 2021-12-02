@@ -1024,7 +1024,7 @@ Python.")
 (define-public python-biom-format
   (package
     (name "python-biom-format")
-    (version "2.1.7")
+    (version "2.1.10")
     (source
      (origin
        (method git-fetch)
@@ -1036,18 +1036,21 @@ Python.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1rna16lyk5aqhnv0dp77wwaplias93f1vw28ad3jmyw6hwkai05v"))
+         "0i62j6ksmp78ap2dnl969gq6vprc3q87zc8ksj9if8g2603iq6i8"))
        (modules '((guix build utils)))
-       (snippet '(begin
-                   ;; Delete generated C files.
-                   (for-each delete-file (find-files "." "\\.c"))
-                   #t))))
+       ;; Delete generated C files.
+       (snippet
+        '(for-each delete-file (find-files "." "\\.c")))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'use-cython
-           (lambda _ (setenv "USE_CYTHON" "1") #t))
+           (lambda _ (setenv "USE_CYTHON" "1")))
+         (add-after 'unpack 'relax
+           (lambda _
+             (substitute* "setup.py"
+               (("pytest < 5.3.4") "pytest"))))
          (add-after 'unpack 'disable-broken-tests
            (lambda _
              (substitute* "biom/tests/test_cli/test_validate_table.py"
@@ -1059,24 +1062,22 @@ Python.")
                (("^(.+)def test_from_hdf5_issue_731" m indent)
                 (string-append indent
                                "@npt.dec.skipif(True, msg='Guix')\n"
-                               m)))
-             #t))
+                               m)))))
+
          (add-before 'reset-gzip-timestamps 'make-files-writable
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
                (for-each (lambda (file) (chmod file #o644))
-                         (find-files out "\\.gz"))
-               #t))))))
+                         (find-files out "\\.gz"))))))))
     (propagated-inputs
-     `(("python-numpy" ,python-numpy)
+     `(("python-anndata" ,python-anndata)
+       ("python-numpy" ,python-numpy)
        ("python-scipy" ,python-scipy)
        ("python-flake8" ,python-flake8)
        ("python-future" ,python-future)
        ("python-click" ,python-click)
        ("python-h5py" ,python-h5py)
-       ;; FIXME: Upgrade to pandas 1.0 when
-       ;; https://github.com/biocore/biom-format/issues/837 is resolved.
-       ("python-pandas" ,python-pandas-0.25)))
+       ("python-pandas" ,python-pandas)))
     (native-inputs
      `(("python-cython" ,python-cython)
        ("python-pytest" ,python-pytest)
