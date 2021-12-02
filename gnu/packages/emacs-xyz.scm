@@ -12321,6 +12321,10 @@ passive voice.")
                (("^lispdir.*")
                 (string-append "lispdir = "
                                (elpa-directory (assoc-ref outputs "out")))))
+             ;; The dependent targets for install perform cleanup that
+             ;; partially undoes our make phase
+             (substitute* "lisp/Makefile"
+               (("^install:.*") "install:\n"))
              (invoke "make" "install")))
          (add-after 'unpack 'fix-tests
            (lambda* (#:key inputs #:allow-other-keys)
