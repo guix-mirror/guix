@@ -6283,8 +6283,7 @@ toolkits.")
                    (mkdir-p dir)
                    (invoke "unzip"
                            (assoc-ref inputs "jquery-ui")
-                           "-d" dir))
-                 #t))
+                           "-d" dir))))
              (delete 'fix-and-disable-failing-tests)
              (delete 'check))))) ; These tests weren't run the the past.
       ;; Make sure to use special packages for Python 2 instead
