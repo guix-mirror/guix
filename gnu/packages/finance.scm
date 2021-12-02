@@ -1204,13 +1204,13 @@ agent.")
 (define-public python-stdnum
   (package
     (name "python-stdnum")
-    (version "1.14")
+    (version "1.17")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-stdnum" version))
        (sha256
-        (base32 "070vd9zgvq0jchs4xc4j1h4r1l1lg4wwb8xs3p25k8c2xjw94fpx"))))
+        (base32 "0h4369b7gws5w5s2vhq590bk219y5k53zcmha2zwsb4i2dg2nkip"))))
     (build-system python-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
