@@ -633,7 +633,7 @@ applications, and includes a search bar to search for applications.")
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("garcon" ,garcon)
-       ("librsvg" ,librsvg)
+       ("librsvg" ,(librsvg-for-system))
        ("libwnck" ,libwnck)
        ("libx11" ,libx11)
        ("libxfce4ui" ,libxfce4ui)
