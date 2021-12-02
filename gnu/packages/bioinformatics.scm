@@ -10321,6 +10321,25 @@ graphs.  This library makes it easy to work with @file{.loom} files for
 single-cell RNA-seq data.")
     (license license:bsd-3)))
 
+(define-public python-biothings-client
+  (package
+    (name "python-biothings-client")
+    (version "0.2.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "biothings_client" version))
+       (sha256
+        (base32 "0bccs37d5saxn5xsd2rfpkrnc5a120xs3ibizai66fgvp1vxbnc4"))))
+    (build-system python-build-system)
+    (arguments `(#:tests? #false)) ; require internet access
+    (propagated-inputs `(("python-requests" ,python-requests)))
+    (home-page "https://github.com/biothings/biothings_client.py")
+    (synopsis "Python client for BioThings API services")
+    (description "This package provides a Python client for BioThings
+API services.")
+    (license license:bsd-3)))
+
 ;; We cannot use the latest commit because it requires Java 9.
 (define-public java-forester
   (let ((commit "86b07efe302d5094b42deed9260f719a4c4ac2e6")
