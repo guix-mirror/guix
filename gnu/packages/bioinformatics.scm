@@ -8148,7 +8148,7 @@ Needleman-Wunsch).")
                (install-file "ParDRe" bin)
                #t))))))
     (inputs
-     `(("openmpi" ,openmpi)
+     `(("openmpi-c++" ,openmpi-c++)
        ("zlib" ,zlib)))
     (synopsis "Parallel tool to remove duplicate DNA reads")
     (description
