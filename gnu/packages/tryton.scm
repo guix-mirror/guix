@@ -3,6 +3,7 @@
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;; Copyright © 2021 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -39,6 +40,19 @@
   #:use-module (guix utils)
   #:use-module (guix build-system python))
 
+(define (guix-trytonpath-search-path version)
+  "Generate a GUIX_TRYTOND_MODULES_PATH search path specification, using
+VERSION.
+
+Do not use PYTHHONPATH not avoid interfering with any different Python package
+installed in the same environments.  Collecting only paths actually containing
+/tryton/modules reduces the number of paths."
+  (search-path-specification (variable "GUIX_TRYTOND_MODULES_PATH")
+                             (files (list (string-append
+                                           "lib/python"
+                                           (version-major+minor version)
+                                           "/site-packages/trytond/modules")))))
+
 (define-public trytond
   (package
     (name "trytond")
@@ -49,7 +63,8 @@
        (uri (pypi-uri "trytond" version))
        (sha256
         (base32 "1jp5cadqpwkcnml8r1hj6aak5kc8an2d5ai62p96x77nn0dp3ny4"))
-       (patches (search-patches "trytond-add-egg-modules-to-path.patch"))))
+       (patches (search-patches "trytond-add-egg-modules-to-path.patch"
+                                "trytond-add-guix_trytond_path.patch"))))
     (build-system python-build-system)
     (propagated-inputs
      (list python-dateutil
@@ -65,6 +80,8 @@
            python-wrapt))
     (native-inputs
      (list python-mock python-pillow))
+    (native-search-paths
+     (list (guix-trytonpath-search-path (package-version python))))
     (arguments
      `(#:phases
        (modify-phases %standard-phases

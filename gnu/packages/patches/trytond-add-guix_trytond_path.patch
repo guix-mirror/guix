@@ -1,0 +1,26 @@
+Make trytond add all paths listed in GUIX_TRYTOND_MODULES_PATH to sys.path.
+
+*** a/trytond/modules/__init__.py	1970-01-01 01:00:01.000000000 +0100
+--- b/trytond/modules/__init__.py	2021-12-02 22:17:28.014612267 +0100
+***************
+*** 31,36 ****
+--- 31,48 ----
+  
+  EGG_MODULES = {}
+  
++ def __extend_python_path__():
++     tryton_python_path = os.environ.get("GUIX_TRYTOND_MODULES_PATH")
++     if tryton_python_path:
++         paths = [path[:-16]  # remove "/trytond/modules"
++                  for path in tryton_python_path.split(os.pathsep)]
++         sys.path.extend(paths)
++         # ensure new paths are in the pkg_resources WorkingSet
++         import pkg_resources
++         list(map(pkg_resources.working_set.add_entry, paths))
++ 
++ __extend_python_path__()
++ 
+  
+  def update_egg_modules():
+      global EGG_MODULES
+l
