@@ -2426,7 +2426,9 @@ standard.")
           (sha256
            (base32
             "1qzjj8nwj4dn0mhq1j64f136afiqqb81lvqiikipz3g1g0b80lqx"))))
-      (arguments '(#:tests? #f)))))     ; No test suite.
+      (arguments
+       `(#:python ,python-2
+         #:tests? #f)))))     ; No test suite.
 
 (define-public python-eventlet
   (package
