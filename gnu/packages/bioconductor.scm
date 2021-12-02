@@ -4193,6 +4193,46 @@ differential expression analysis, RNAseq data and related problems.")
     ;; Any version of the LGPL
     (license license:lgpl3+)))
 
+(define-public r-scdblfinder
+  (package
+    (name "r-scdblfinder")
+    (version "1.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "scDblFinder" version))
+       (sha256
+        (base32 "0wzmmcsnjybgzbc5rn4i72n26j9n59dfy1zg8ij0q8p4276jplsd"))))
+    (properties `((upstream-name . "scDblFinder")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-biocneighbors" ,r-biocneighbors)
+       ("r-biocparallel" ,r-biocparallel)
+       ("r-biocsingular" ,r-biocsingular)
+       ("r-bluster" ,r-bluster)
+       ("r-delayedarray" ,r-delayedarray)
+       ("r-igraph" ,r-igraph)
+       ("r-mass" ,r-mass)
+       ("r-matrix" ,r-matrix)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-scater" ,r-scater)
+       ("r-scran" ,r-scran)
+       ("r-scuttle" ,r-scuttle)
+       ("r-singlecellexperiment" ,r-singlecellexperiment)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)
+       ("r-xgboost" ,r-xgboost)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/plger/scDblFinder")
+    (synopsis "Detect multiplets in single-cell RNA sequencing data")
+    (description
+     "The scDblFinder package gathers various methods for the detection and
+handling of doublets/multiplets in single-cell RNA sequencing data (i.e.
+multiple cells captured within the same droplet or reaction volume).  It
+includes methods formerly found in the scran package, and the new fast and
+comprehensive scDblFinder method.")
+    (license license:gpl3)))
+
 (define-public r-seqlogo
   (package
     (name "r-seqlogo")
