@@ -8697,8 +8697,7 @@ callback signature using a prototype function.")
              (substitute* "IPython/sphinxext/ipython_directive.py"
                ((".*import datetime") "")
                ((".*datetime.datetime.now\\(\\)") "")
-               (("%timeit") "# %timeit"))
-             #t))
+               (("%timeit") "# %timeit"))))
          ;; Tests can only be run after the library has been installed and not
          ;; within the source directory.
          (delete 'check)
@@ -8712,8 +8711,7 @@ callback signature using a prototype function.")
                    ;; We only test the core because one of the other tests
                    ;; tries to import ipykernel.
                    (invoke "python" "IPython/testing/iptest.py"
-                           "-v" "IPython/core/tests"))
-                 #t)))
+                           "-v" "IPython/core/tests")))))
          (add-before 'check 'fix-tests
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "./IPython/utils/_process_posix.py"
@@ -8725,8 +8723,7 @@ callback signature using a prototype function.")
              ;; (which depends on ipython).
              (delete-file "IPython/core/tests/test_display.py")
              ;; AttributeError: module 'IPython.core' has no attribute 'formatters'
-             (delete-file "IPython/core/tests/test_interactiveshell.py")
-             #t)))))
+             (delete-file "IPython/core/tests/test_interactiveshell.py"))))))
     (home-page "https://ipython.org")
     (synopsis "IPython is a tool for interactive computing in Python")
     (description
