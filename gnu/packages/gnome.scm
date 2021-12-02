@@ -3292,6 +3292,18 @@ API add-ons to make GTK+ widgets OpenGL-capable.")
            (lambda _
              (substitute* "meson_post_install.py"
                (("gtk-update-icon-cache") "true"))))
+
+         ,@(if (this-package-native-input "gjs")
+               '()
+               '((add-after 'unpack 'skip-gjs-test
+                   (lambda _
+                     ;; When the optional dependency on GJS is missing, skip
+                     ;; the GJS plugin tests.
+                     (substitute* "tests/modules.c"
+                       (("g_test_add.*JavaScript.*" all)
+                        (string-append "// " all "\n")))
+                     (delete-file "tests/catalogs/gjsplugin.xml")))))
+
          (add-before 'configure 'fix-docbook
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "man/meson.build"
@@ -3320,7 +3332,13 @@ current/manpages/docbook.xsl")
        ("glib:bin" ,glib "bin")
        ("python-pygobject" ,python-pygobject)
        ("gobject-introspection" ,gobject-introspection)
-       ("gjs" ,gjs)
+
+       ;; GJS depends on Rust, which is x86_64-only so far, so remove the GJS
+       ;; dependency on other platforms (FIXME).
+       ,@(if (target-x86-64?)
+             `(("gjs" ,gjs))
+             '())
+
        ("pkg-config" ,pkg-config)
        ("xorg-server" ,xorg-server-for-tests)))
     (home-page "https://glade.gnome.org")
