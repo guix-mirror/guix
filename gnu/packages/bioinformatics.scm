@@ -10340,6 +10340,27 @@ single-cell RNA-seq data.")
 API services.")
     (license license:bsd-3)))
 
+(define-public python-mygene
+  (package
+    (name "python-mygene")
+    (version "3.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "mygene" version))
+       (sha256
+        (base32 "1snszwdgfygchxshcbry3b5pbcw3g1isp8dw46razxccqaxwlag7"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-biothings-client" ,python-biothings-client)))
+    (home-page "https://github.com/biothings/mygene.py")
+    (synopsis "Python Client for MyGene.Info services.")
+    (description "MyGene.Info provides simple-to-use REST web services
+to query/retrieve gene annotation data.  It's designed with simplicity
+and performance emphasized.  Mygene is a Python wrapper to access
+MyGene.Info services.")
+    (license license:bsd-3)))
+
 ;; We cannot use the latest commit because it requires Java 9.
 (define-public java-forester
   (let ((commit "86b07efe302d5094b42deed9260f719a4c4ac2e6")
