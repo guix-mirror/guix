@@ -2475,7 +2475,10 @@ can solve two kinds of problems:
 @item non-linear least squares problems with bounds constraints;
 @item general unconstrained optimization problems.
 @end enumerate\n")
-    (license license:bsd-3)))
+    (license license:bsd-3)
+
+    ;; Mark as tunable to take advantage of SIMD code in Eigen.
+    (properties `((tunable? . #t)))))
 
 ;; For a fully featured Octave, users are strongly recommended also to install
 ;; the following packages: less, ghostscript, gnuplot.
