@@ -4028,9 +4028,9 @@ genes in incomplete assemblies or complete genomes.")
            "0hab3gpwf4w9s87qlbswq6ws1qqybh4dcqk79q1ahyldzai5fgp5"))))
       (build-system gnu-build-system)
       (arguments
-       `(#:make-flags (list
-                       (string-append "PREFIX=" (assoc-ref %outputs "out"))
-                       "CC=gcc")
+       `(#:make-flags ,#~(list
+                          (string-append "PREFIX=" #$output)
+                          "CC=gcc")
          #:test-target "fxtract_test"
          #:phases
          (modify-phases %standard-phases
