@@ -4866,7 +4866,7 @@ The main functions of FastQC are:
     (arguments
      `(#:tests? #f ; there are none
        #:make-flags
-       (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       ,#~(list (string-append "PREFIX=" #$output))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
