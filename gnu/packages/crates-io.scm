@@ -53027,8 +53027,42 @@ processors, disks, components and networks.")
     (description "Send log messages to syslog.")
     (license license:expat)))
 
+(define-public rust-system-deps-3
+  (package
+    (name "rust-system-deps")
+    (version "3.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "system-deps" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "19ig3hxgyq9d7qy8cwpl74l75ay2w0y0a4rginqb68h7hygjc328"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-anyhow" ,rust-anyhow-1)
+        ("rust-cfg-expr" ,rust-cfg-expr-0.8)
+        ("rust-heck" ,rust-heck-0.3)
+        ("rust-itertools" ,rust-itertools-0.10)
+        ("rust-pkg-config" ,rust-pkg-config-0.3)
+        ("rust-strum" ,rust-strum-0.21)
+        ("rust-strum-macros" ,rust-strum-macros-0.21)
+        ("rust-thiserror" ,rust-thiserror-1)
+        ("rust-toml" ,rust-toml-0.5)
+        ("rust-version-compare" ,rust-version-compare-0.0))))
+    (home-page "https://github.com/gdesmott/system-deps")
+    (synopsis "Define system dependencies in @file{Cargo.toml}")
+    (description
+     "This crate lets you write system dependencies in @file{Cargo.toml}
+metadata, rather than programmatically in @file{build.rs}.  This makes those
+dependencies declarative, so other tools can read them as well.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-system-deps-1
   (package
+    (inherit rust-system-deps-3)
     (name "rust-system-deps")
     (version "1.3.2")
     (source
@@ -53043,7 +53077,6 @@ processors, disks, components and networks.")
         '(begin (substitute* "Cargo.toml"
                   (("0.0.10") "0.0"))
                 #t))))
-    (build-system cargo-build-system)
     (arguments
      `(#:tests? #f                      ;source is missing some test files
        #:cargo-inputs
@@ -53055,14 +53088,7 @@ processors, disks, components and networks.")
         ("rust-toml" ,rust-toml-0.5)
         ("rust-version-compare" ,rust-version-compare-0.0))
        #:cargo-development-inputs
-       (("rust-itertools" ,rust-itertools-0.9))))
-    (home-page "https://github.com/gdesmott/system-deps")
-    (synopsis "Define system dependencies in @file{Cargo.toml}")
-    (description
-     "This crate lets you write system dependencies in @file{Cargo.toml}
-metadata, rather than programmatically in @file{build.rs}.  This makes those
-dependencies declarative, so other tools can read them as well.")
-    (license (list license:expat license:asl2.0))))
+       (("rust-itertools" ,rust-itertools-0.9))))))
 
 (define-public rust-tabwriter-1
   (package
