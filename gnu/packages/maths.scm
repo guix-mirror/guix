@@ -2480,6 +2480,49 @@ can solve two kinds of problems:
     ;; Mark as tunable to take advantage of SIMD code in Eigen.
     (properties `((tunable? . #t)))))
 
+(define-public ceres-solver-benchmarks
+  (package
+    (inherit ceres)
+    (name "ceres-solver-benchmarks")
+    (arguments
+     '(#:modules ((ice-9 popen)
+                  (ice-9 rdelim)
+                  (guix build utils)
+                  (guix build cmake-build-system))
+
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure)
+                  (replace 'build
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out"))
+                             (bin (string-append out "/bin")))
+                        (define flags
+                          (string-tokenize
+                           (read-line (open-pipe* OPEN_READ
+                                                  "pkg-config" "eigen3"
+                                                  "--cflags"))))
+
+                        (define (compile-file file)
+                          (let ((source (string-append file ".cc")))
+                            (format #t "building '~a'...~%" file)
+                            (apply invoke "c++" "-fopenmp" "-O2" "-g" "-DNDEBUG"
+                                   source "-lceres" "-lbenchmark" "-lglog"
+                                   "-pthread"
+                                   "-o" (string-append bin "/" file)
+                                   "-I" ".." flags)))
+
+                        (mkdir-p bin)
+                        (with-directory-excursion "internal/ceres"
+                          (for-each compile-file
+                                    '("small_blas_gemm_benchmark"
+                                      "small_blas_gemv_benchmark"
+                                      "autodiff_cost_function_benchmark"))))))
+                  (delete 'check)
+                  (delete 'install))))
+    (inputs (modify-inputs (package-inputs ceres)
+              (prepend googlebenchmark ceres)))
+    (synopsis "Benchmarks of the Ceres optimization problem solver")))
+
 ;; For a fully featured Octave, users are strongly recommended also to install
 ;; the following packages: less, ghostscript, gnuplot.
 (define-public octave-cli
