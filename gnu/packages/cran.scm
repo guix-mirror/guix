@@ -632,6 +632,28 @@ Currently handlers are provided for CDK, MOE and BCI fingerprint data.")
     ;; Any version of the GPL
     (license (list license:gpl2+ license:gpl3+))))
 
+(define-public r-fpeek
+  (package
+    (name "r-fpeek")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "fpeek" version))
+       (sha256
+        (base32 "0kv46g21ndxchg3q8ynq7hjjkh6i2zlc21axn5y1jjzigrw047ii"))))
+    (properties `((upstream-name . "fpeek")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-rcpp" ,r-rcpp)))
+    (home-page "https://github.com/davidgohel/fpeek")
+    (synopsis "Check text files content at a glance")
+    (description
+     "This package provides tools to help working with text files.  It can
+return the number of lines; print the first and last lines; convert encoding.
+Operations are made without reading the entire file before starting, resulting
+in good performances with large files.")
+    (license license:expat)))
+
 (define-public r-ggalluvial
   (package
    (name "r-ggalluvial")
