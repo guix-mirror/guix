@@ -2054,10 +2054,10 @@ gapped, local, and paired-end alignment modes.")
                   (("-DBUILD_TIME=.*") "-DBUILD_TIME=\"\\\"0\\\"\"")))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f                      ; no "check" target
+     `(#:tests? #f                      ; no "check" target
        #:make-flags
-       (list "CC=gcc" "all"
-             (string-append "prefix=" (assoc-ref %outputs "out")))
+       ,#~(list "CC=gcc" "all"
+                (string-append "prefix=" #$output))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))
