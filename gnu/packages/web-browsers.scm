@@ -816,7 +816,7 @@ http, and https via third-party applications.")
 (define-public tinmop
   (package
     (name "tinmop")
-    (version "0.8.3")
+    (version "0.9.2")
     (source
      (origin
        (method git-fetch)
@@ -825,13 +825,17 @@ http, and https via third-party applications.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "117p1wxi5swmqw429qrswxz2zvp1dcaw2145gk6zxlgwln48qxl8"))))
+        (base32 "1cgx2g2kryfmcwqzzjzcpbdc6zzj10xc52gz0cj2dx5ylc0yg7k3"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("curl" ,curl)
+     `(("automake" ,automake)
+       ("autoreconf" ,autoconf)
        ("gettext" ,gnu-gettext)
-       ("gnupg" ,gnupg)
-       ("sbcl" ,sbcl)))
+       ("mandoc" , mandoc)
+       ("nano" ,nano)
+       ("openssl" ,openssl)
+       ("sbcl" ,sbcl)
+       ("xdg-utils" ,xdg-utils)))
     (inputs
      `(("access" ,sbcl-access)
        ("alexandria" ,sbcl-alexandria)
@@ -854,8 +858,6 @@ http, and https via third-party applications.")
        ("local-time" ,sbcl-local-time)
        ("log4cl" ,sbcl-log4cl)
        ("marshal" ,sbcl-marshal)
-       ("nano" ,nano)
-       ("openssl" ,openssl)
        ("osicat" ,sbcl-osicat)
        ("parse-number" ,sbcl-parse-number)
        ("percent-encoding" ,sbcl-percent-encoding)
@@ -863,8 +865,7 @@ http, and https via third-party applications.")
        ("sxql-composer" ,sbcl-sxql-composer)
        ("tooter" ,sbcl-tooter)
        ("unix-opts" ,sbcl-unix-opts)
-       ("usocket" ,sbcl-usocket)
-       ("xdg-utils" ,xdg-utils)))
+       ("usocket" ,sbcl-usocket)))
     (arguments
      `(#:tests? #f
        #:strip-binaries? #f
@@ -874,11 +875,24 @@ http, and https via third-party applications.")
            (lambda _
              (setenv "HOME" "/tmp")
              #t))
+         (add-after 'unpack 'fix-configure.ac
+           (lambda _
+              (delete-file "configure")
+              (substitute* "configure.ac"
+                (("AC_PATH_PROG.+CURL")
+                 "dnl")
+                (("AC_PATH_PROGS.+GIT")
+                 "dnl")
+                (("AC_PATH_PROG.+GPG")
+                 "dnl"))
+               #t))
          (add-after 'configure 'fix-asdf
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "Makefile.in"
                (("LISP_COMPILER) ")
-                "LISP_COMPILER) --eval \"(require 'asdf)\" --eval \"(push \\\"$$(pwd)/\\\" asdf:*central-registry*)\"  "))
+                (string-concatenate
+                 '("LISP_COMPILER) --eval \"(require 'asdf)\" "
+                   "--eval \"(push \\\"$$(pwd)/\\\" asdf:*central-registry*)\"  "))))
              #t)))))
     (synopsis "Gemini and pleroma client with a terminal interface")
     (description
