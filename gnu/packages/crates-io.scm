@@ -53204,28 +53204,41 @@ memory all at once.")
 @code{build.rs} scripts.")
     (license (list license:isc license:asl2.0))))
 
+(define-public rust-target-lexicon-0.12
+  (package
+    (name "rust-target-lexicon")
+    (version "0.12.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "target-lexicon" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1zsvillq0zsggg3fb0mfmcia0f68wfclahaqc0zgln14pkfzrgyr"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/CraneStation/target-lexicon")
+    (synopsis "Targeting utilities for compilers and related tools")
+    (description
+     "This package provides targeting utilities for compilers and related
+tools.")
+    (license license:asl2.0)))
+
 (define-public rust-target-lexicon-0.10
   (package
+    (inherit rust-target-lexicon-0.12)
     (name "rust-target-lexicon")
     (version "0.10.0")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "target-lexicon" version))
-        (file-name
-          (string-append name "-" version ".tar.gz"))
-        (sha256
-          (base32
-            "17diw9c3d1vb5rmwwk2ghsyhfs0gj5jm78hrwxxhmd67vhw743mb"))))
-    (build-system cargo-build-system)
-    (arguments `(#:skip-build? #t))
-    (home-page
-      "https://github.com/CraneStation/target-lexicon")
-    (synopsis
-      "Targeting utilities for compilers and related tools")
-    (description
-      "Targeting utilities for compilers and related tools")
-    (license license:asl2.0)))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "target-lexicon" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "17diw9c3d1vb5rmwwk2ghsyhfs0gj5jm78hrwxxhmd67vhw743mb"))))
+    (arguments `(#:skip-build? #t))))
 
 (define-public rust-tectonic-bridge-core-0.3
   (package
