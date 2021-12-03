@@ -324,27 +324,43 @@ BAM files.")
 (define-public bamutils
   (package
     (name "bamutils")
-    (version "1.0.13")
+    (version "1.0.14")
     (source (origin
-              (method url-fetch)
-              (uri
-               (string-append
-                "https://genome.sph.umich.edu/w/images/7/70/"
-                "BamUtilLibStatGen." version ".tgz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/statgen/bamUtil")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0asr1kmjbr3cyf4hkg865y8c2s30v87xvws4q6c8pyfi6wfd1h8n"))))
+                "0i2r332k1kz0jysyg89d858wqq59n16lw6dv5qmilcwshb77r9v7"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; There are no tests.
+     `(#:tests? #f ; Unclear how to run tests
        #:make-flags
        ,#~(list "USER_WARNINGS=-std=gnu++98" ;
                 (string-append "INSTALLDIR=" #$output "/bin"))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure))))
+         (replace 'configure
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "src/Makefile" ;
+               (("^DATE=.*") "DATE=\"1970-01-01\"\n"))
+             (copy-recursively (assoc-ref inputs "libstatgen")
+                               "../libStatGen"))))))
     (inputs
      `(("zlib" ,zlib)))
+    (native-inputs
+     `(("libstatgen"
+        ,(origin
+           (method git-fetch)
+           (uri (git-reference
+                 (url "https://github.com/statgen/libStatGen/")
+                 (commit (string-append "v" version))))
+           (file-name (git-file-name "libstatgen" version))
+           (sha256
+            (base32
+             "0q9iyk046r4m7qnav8c3f28zsar25lj9nydiklwaswmzdijhi4p1"))))))
     (home-page "https://genome.sph.umich.edu/wiki/BamUtil")
     (synopsis "Programs for working on SAM/BAM files")
     (description "This package provides several programs that perform
