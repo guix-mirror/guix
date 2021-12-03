@@ -18855,20 +18855,57 @@ implementation that is more efficient for smaller hash keys.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-font-kit-0.10
+  (package
+    (name "rust-font-kit")
+    (version "0.10.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "font-kit" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0a7fm757af2s9sk2i02plpa280mmygjmchcwpjclk1iqxiba3ja6"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-byteorder" ,rust-byteorder-1)
+        ("rust-core-foundation" ,rust-core-foundation-0.9)
+        ("rust-core-graphics" ,rust-core-graphics-0.22)
+        ("rust-core-text" ,rust-core-text-19)
+        ("rust-dirs-next" ,rust-dirs-next-2)
+        ("rust-dwrote" ,rust-dwrote-0.11)
+        ("rust-float-ord" ,rust-float-ord-0.2)
+        ("rust-freetype" ,rust-freetype-0.7)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-pathfinder-geometry" ,rust-pathfinder-geometry-0.5)
+        ("rust-pathfinder-simd" ,rust-pathfinder-simd-0.5)
+        ("rust-servo-fontconfig" ,rust-servo-fontconfig-0.5)
+        ("rust-walkdir" ,rust-walkdir-2)
+        ("rust-winapi" ,rust-winapi-0.3))))
+    (home-page "https://github.com/servo/font-kit")
+    (synopsis "Font loading library")
+    (description "This package provides a font loading library.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-font-kit-0.4
   (package
+    (inherit rust-font-kit-0.10)
     (name "rust-font-kit")
     (version "0.4.0")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "font-kit" version))
-        (file-name
-         (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "1fmg1jmqdvsjxjbyz8chpx1mhp544mwq128ns1shhrha5a6zzdqp"))))
-    (build-system cargo-build-system)
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "font-kit" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1fmg1jmqdvsjxjbyz8chpx1mhp544mwq128ns1shhrha5a6zzdqp"))))
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -18890,12 +18927,7 @@ implementation that is more efficient for smaller hash keys.")
         ("rust-byteorder" ,rust-byteorder-1)
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-core-text" ,rust-core-text-13)
-        ("rust-walkdir" ,rust-walkdir-2))))
-    (home-page "https://github.com/servo/font-kit")
-    (synopsis "Cross-platform font loading library")
-    (description
-     "This package provides a cross-platform font loading library.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-walkdir" ,rust-walkdir-2))))))
 
 (define-public rust-foreign-types-0.5
   (package
