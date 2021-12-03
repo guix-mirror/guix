@@ -11015,6 +11015,67 @@ available options and a synopsis (these options are not shown in the
 
 @table @code
 
+@cindex performance, tuning code
+@cindex optimization, of package code
+@cindex tuning, of package code
+@cindex SIMD support
+@cindex tunable packages
+@cindex package multi-versioning
+@item --tune[=@var{cpu}]
+Use versions of the packages marked as ``tunable'' optimized for
+@var{cpu}.  When @var{cpu} is @code{native}, or when it is omitted, tune
+for the CPU on which the @command{guix} command is running.
+
+Valid @var{cpu} names are those recognized by the underlying compiler,
+by default the GNU Compiler Collection.  On x86_64 processors, this
+includes CPU names such as @code{nehalem}, @code{haswell}, and
+@code{skylake} (@pxref{x86 Options, @code{-march},, gcc, Using the GNU
+Compiler Collection (GCC)}).
+
+As new generations of CPUs come out, they augment the standard
+instruction set architecture (ISA) with additional instructions, in
+particular instructions for single-instruction/multiple-data (SIMD)
+parallel processing.  For example, while Core2 and Skylake CPUs both
+implement the x86_64 ISA, only the latter supports AVX2 SIMD
+instructions.
+
+The primary gain one can expect from @option{--tune} is for programs
+that can make use of those SIMD capabilities @emph{and} that do not
+already have a mechanism to select the right optimized code at run time.
+Packages that have the @code{tunable?} property set are considered
+@dfn{tunable packages} by the @option{--tune} option; a package
+definition with the property set looks like this:
+
+@lisp
+(package
+  (name "hello-simd")
+  ;; ...
+
+  ;; This package may benefit from SIMD extensions so
+  ;; mark it as "tunable".
+  (properties '((tunable? . #t))))
+@end lisp
+
+Other packages are not considered tunable.  This allows Guix to use
+generic binaries in the cases where tuning for a specific CPU is
+unlikely to provide any gain.
+
+Tuned packages are built with @code{-march=@var{CPU}}; under the hood,
+the @option{-march} option is passed to the actual wrapper by a compiler
+wrapper.  Since the build machine may not be able to run code for the
+target CPU micro-architecture, the test suite is not run when building a
+tuned package.
+
+To reduce rebuilds to the minimum, tuned packages are @emph{grafted}
+onto packages that depend on them (@pxref{Security Updates, grafts}).
+Thus, using @option{--no-grafts} cancels the effect of @option{--tune}.
+
+We call this technique @dfn{package multi-versioning}: several variants
+of tunable packages may be built, one for each CPU variant.  It is the
+coarse-grain counterpart of @dfn{function multi-versioning} as
+implemented by the GNU tool chain (@pxref{Function Multiversioning,,,
+gcc, Using the GNU Compiler Collection (GCC)}).
+
 @item --with-source=@var{source}
 @itemx --with-source=@var{package}=@var{source}
 @itemx --with-source=@var{package}@@@var{version}=@var{source}

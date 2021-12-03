@@ -38,12 +38,14 @@
   #:use-module (guix utils)
   #:use-module (guix git)
   #:use-module (guix upstream)
+  #:use-module (guix diagnostics)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages busybox)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-64))
 
 
@@ -464,6 +466,39 @@
                (t (options->transformation
                    `((with-latest . "foo")))))
           (package-version (t p)))))
+
+(test-equal "options->transformation, tune"
+  '(cpu-tuning . "superfast")
+  (let* ((p0 (dummy-package "p0"))
+         (p1 (dummy-package "p1"
+               (inputs `(("p0" ,p0)))
+               (properties '((tunable? . #t)))))
+         (p2 (dummy-package "p2"
+               (inputs `(("p1" ,p1)))))
+         (t  (options->transformation '((tune . "superfast"))))
+         (p3 (t p2)))
+    (and (not (package-replacement p3))
+         (match (package-inputs p3)
+           ((("p1" tuned))
+            (match (package-inputs tuned)
+              ((("p0" p0))
+               (and (not (package-replacement p0))
+                    (assq 'cpu-tuning
+                          (package-properties
+                           (package-replacement tuned)))))))))))
+
+(test-assert "options->transformations, tune, wrong micro-architecture"
+  (let ((p (dummy-package "tunable"
+             (properties '((tunable? . #t)))))
+        (t (options->transformation '((tune . "nonexistent-superfast")))))
+    ;; Because GCC used by P's build system does not support
+    ;; '-march=nonexistent-superfast', we should see an error when lowering
+    ;; the tuned package.
+    (guard (c ((formatted-message? c)
+               (member "nonexistent-superfast"
+                       (formatted-message-arguments c))))
+      (package->bag (t p))
+      #f)))
 
 (test-equal "options->transformation + package->manifest-entry"
   '((transformations . ((without-tests . "foo"))))
