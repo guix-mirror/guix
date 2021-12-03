@@ -1917,17 +1917,17 @@ confidence to have in an alignment.")
                   (delete-file-recursively ".git")))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f ;no "check" target
+     `(#:tests? #f ;no "check" target
        #:make-flags
-       (list (string-append "ZLIB="
-                            (assoc-ref %build-inputs "zlib:static")
-                            "/lib/libz.a")
-             (string-append "LDFLAGS="
-                            (string-join '("-lboost_filesystem"
-                                           "-lboost_system"
-                                           "-lboost_iostreams"
-                                           "-lz"
-                                           "-fopenmp"))))
+       ,#~(list (string-append "ZLIB="
+                               #$(this-package-input "zlib")
+                               "/lib/libz.so")
+                (string-append "LDFLAGS="
+                               (string-join '("-lboost_filesystem"
+                                              "-lboost_system"
+                                              "-lboost_iostreams"
+                                              "-lz"
+                                              "-fopenmp"))))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'do-not-build-bundled-pigz
@@ -1959,7 +1959,6 @@ confidence to have in an alignment.")
        ("boost" ,boost)
        ("sparsehash" ,sparsehash)
        ("pigz" ,pigz)
-       ("zlib:static" ,zlib "static")
        ("zlib" ,zlib)))
     (supported-systems '("x86_64-linux"))
     (home-page "https://sourceforge.net/p/bless-ec/wiki/Home/")
