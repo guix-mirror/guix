@@ -36517,8 +36517,33 @@ algorithms.")
                (("fn dot\\(\\) \\{" all)
                 (string-append "#[ignore] " all))))))))))
 
+(define-public rust-phf-0.10
+  (package
+    (name "rust-phf")
+    (version "0.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "phf" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "17s0k0z1rjczk37cpbmn718h7dkqci1kk9w2spbmjjwc06qkvz5r"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-phf-macros" ,rust-phf-macros-0.10)
+        ("rust-phf-shared" ,rust-phf-shared-0.10)
+        ("rust-proc-macro-hack" ,rust-proc-macro-hack-0.5))))
+    (home-page "https://github.com/sfackler/rust-phf")
+    (synopsis "Runtime support for perfect hash function data structures")
+    (description "This package provides runtime support for perfect hash
+function data structures.")
+    (license license:expat)))
+
 (define-public rust-phf-0.8
   (package
+    (inherit rust-phf-0.10)
     (name "rust-phf")
     (version "0.8.0")
     (source
@@ -36530,18 +36555,12 @@ algorithms.")
         (sha256
          (base32
           "04pyv8bzqvw69rd5dynd5nb85py1hf7wa4ixyhrvdz1l5qin3yrx"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-proc-macro-hack" ,rust-proc-macro-hack-0.5)
         ("rust-phf-shared" ,rust-phf-shared-0.8)
-        ("rust-phf-macros" ,rust-phf-macros-0.8))))
-    (home-page "https://github.com/sfackler/rust-phf")
-    (synopsis "Runtime support for perfect hash function data structures")
-    (description "This package provides runtime support for perfect hash
-function data structures.")
-    (license license:expat)))
+        ("rust-phf-macros" ,rust-phf-macros-0.8))))))
 
 (define-public rust-phf-0.7
   (package
