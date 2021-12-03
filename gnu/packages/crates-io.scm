@@ -26757,18 +26757,19 @@ algorithm and related formats (ZLIB, GZIP).")
 (define-public rust-libflate-lz77-1
   (package
     (name "rust-libflate-lz77")
-    (version "1.0.0")
+    (version "1.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "libflate_lz77" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "06xir79gmp97mdnlnjclk5zlzgkf5s6qvwilcd4gq9j9gngz11ij"))))
+        (base32 "0nig3z2wjwk27ia066knp633akm00v017vny976sy29l970399rr"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-development-inputs
+     `(#:cargo-inputs
+       (("rust-rle-decode-fast" ,rust-rle-decode-fast-1))
+       #:cargo-development-inputs
        (("rust-libflate" ,rust-libflate-0.1))))
     (home-page "https://github.com/sile/libflate")
     (synopsis "LZ77 encoder for libflate crate")
