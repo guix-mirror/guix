@@ -3238,8 +3238,8 @@ with Python.")
     (arguments
      `(#:tests? #f ; There are no tests to run.
        #:make-flags
-       (list "PARALLEL=1"  ; Allow parallel execution at run-time.
-             (string-append "prefix=" (assoc-ref %outputs "out")))
+       ,#~(list "PARALLEL=1"           ; Allow parallel execution at run-time.
+                (string-append "prefix=" #$output))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure) ; There is no configure phase.
