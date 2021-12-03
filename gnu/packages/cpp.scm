@@ -324,6 +324,29 @@ operating on batches.")
 library for SIMD (Single Instruction, Multiple Data) with runtime dispatch.")
     (license license:asl2.0)))
 
+(define-public xsmimd-benchmark
+  (package
+    (inherit xsimd)
+    (name "xsimd-benchmark")
+    (arguments
+     `(#:configure-flags (list "-DBUILD_BENCHMARK=ON")
+       #:tests? #f
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'remove-march=native
+                    (lambda _
+                      (substitute* "benchmark/CMakeLists.txt"
+                        (("-march=native") ""))))
+                  (replace 'install
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      ;; Install nothing but the executable.
+                      (let ((out (assoc-ref outputs "out")))
+                        (install-file "benchmark/benchmark_xsimd"
+                                      (string-append out "/bin"))))))))
+    (synopsis "Benchmark of the xsimd library")
+
+    ;; Mark as tunable to take advantage of SIMD code in xsimd/xtensor.
+    (properties '((tunable? . #t)))))
+
 (define-public chaiscript
   (package
     (name "chaiscript")
