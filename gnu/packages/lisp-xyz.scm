@@ -9378,30 +9378,31 @@ generation functions from the GSL library.")
   (sbcl-package->ecl-package sbcl-cl-randist))
 
 (define-public sbcl-float-features
-  (package
-    (name "sbcl-float-features")
-    (version "1.0.0")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/Shinmera/float-features")
-             (commit "d3ef60181635b0849aa28cfc238053b7ca4644b0")))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32
-         "0yj419k7n59x6rh3grwr6frgwwyria2il6f7wxpfazm8cskv4lzr"))))
-    (build-system asdf-build-system/sbcl)
-    (synopsis "Common Lisp IEEE float portability library")
-    (description
-     "Portability library for IEEE float features that are not
+  (let ((commit "c1f86aea91cfaa3aa59799162be23ef8a12b199d")
+        (revision "2"))
+    (package
+      (name "sbcl-float-features")
+      (version (git-version "1.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Shinmera/float-features")
+               (commit commit)))
+         (file-name (git-file-name "float-features" version))
+         (sha256
+          (base32 "0vqm9xhn2i4vbjrxnp4hr1l3lydjflhjykdz6cmqg2j48c5kh3g3"))))
+      (build-system asdf-build-system/sbcl)
+      (synopsis "Common Lisp IEEE float portability library")
+      (description
+       "Portability library for IEEE float features that are not
 covered by the Common Lisp standard.")
-    (home-page "https://github.com/Shinmera/float-features")
-    (license license:zlib)
-    (inputs
-     `(("documentation-utils" ,sbcl-documentation-utils)))
-    (arguments
-     `(#:tests? #f))))
+      (home-page "https://github.com/Shinmera/float-features")
+      (license license:zlib)
+      (inputs
+       `(("documentation-utils" ,sbcl-documentation-utils)))
+      (arguments
+       `(#:tests? #f)))))
 
 (define-public cl-float-features
   (sbcl-package->cl-source-package sbcl-float-features))
