@@ -81,6 +81,7 @@ MODULES =					\
   guix/base64.scm				\
   guix/ci.scm					\
   guix/cpio.scm					\
+  guix/cpu.scm					\
   guix/deprecation.scm				\
   guix/docker.scm	   			\
   guix/records.scm				\
