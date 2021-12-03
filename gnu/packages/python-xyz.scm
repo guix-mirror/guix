@@ -4474,6 +4474,48 @@ acceptance testing, acceptance test driven development (ATDD), and robotic
 process automation (RPA).")
     (license license:asl2.0)))
 
+(define-public python-robotframework-datadriver
+  (package
+    (name "python-robotframework-datadriver")
+    (version "1.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "robotframework-datadriver" version))
+       (sha256
+        (base32 "1kv6h47850gdqr8azknkh81z7hw6yz5pjn53mkn71ly4szw4pqb7"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-readme-file-name
+           (lambda _
+             (rename-file "Readme.rst" "README.rst")))
+         (add-before 'check 'skip-problematic-tests
+           (lambda _
+             ;; The test file 'tab-csv-file-name.tsv' contains special
+             ;; characters for which there is no locale in the build
+             ;; environment, causing one test to fail.
+             (delete-file-recursively "atest/TestCases/csv_reader_config")))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (with-directory-excursion "atest"
+                 (invoke "sh" "run_atest.sh"))))))))
+    (native-inputs (list python-docutils
+                         python-robotframework-stacktrace))
+    (propagated-inputs (list python-openpyxl
+                             python-pandas
+                             python-pygments
+                             python-robotframework))
+    (home-page "https://github.com/Snooz82/robotframework-datadriver")
+    (synopsis "Data-driven test extension for Robot Framework")
+    (description "DataDriver is a data-driven extension for Robot Framework.
+DataDriver uses the Listener Interface of Robot Framework to create new test
+cases based on a data file that contains the test data.  DataDriver supports
+data files in the CSV, XLS or XLSX formats.")
+    (license license:asl2.0)))
+
 (define-public python-robotframework-lint
   ;; There is no properly tagged release; the commit below seems to correspond
   ;; to the 0.9 stable release available from PyPI.  The tests are not
