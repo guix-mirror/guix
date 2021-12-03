@@ -1169,6 +1169,45 @@ xtensor provides:
 @end itemize")
     (license license:bsd-3)))
 
+(define-public xtensor-benchmark
+  (package
+    (inherit xtensor)
+    (name "xtensor-benchmark")
+    (arguments
+     `(#:configure-flags (list "-DBUILD_BENCHMARK=ON"
+                               "-DDOWNLOAD_GBENCHMARK=OFF")
+       #:tests? #f
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'remove-march=native
+                    (lambda _
+                      (substitute* "benchmark/CMakeLists.txt"
+                        (("-march=native") ""))))
+                  (add-after 'unpack 'link-with-googlebenchmark
+                    (lambda _
+                      (substitute* "benchmark/CMakeLists.txt"
+                        (("find_package\\(benchmark.*" all)
+                         (string-append
+                          all "\n"
+                          "set(GBENCHMARK_LIBRARIES benchmark)\n")))))
+                  (replace 'build
+                    (lambda _
+                      (invoke "make" "benchmark_xtensor" "-j"
+                              (number->string (parallel-job-count)))))
+                  (replace 'install
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      ;; Install nothing but the executable.
+                      (let ((out (assoc-ref outputs "out")))
+                        (install-file "benchmark/benchmark_xtensor"
+                                      (string-append out "/bin"))))))))
+    (synopsis "Benchmarks of the xtensor library")
+    (native-inputs '())
+    (inputs
+     (modify-inputs (package-native-inputs xtensor)
+       (prepend googlebenchmark xsimd)))
+
+    ;; Mark as tunable to take advantage of SIMD code in xsimd/xtensor.
+    (properties '((tunable? . #t)))))
+
 (define-public gap
   (package
     (name "gap")
