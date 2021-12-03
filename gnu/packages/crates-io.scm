@@ -60984,7 +60984,7 @@ in Rust.")
 (define-public rust-wasm-bindgen-0.2
   (package
     (name "rust-wasm-bindgen")
-    (version "0.2.69")
+    (version "0.2.78")
     (source
      (origin
        (method url-fetch)
@@ -60992,8 +60992,7 @@ in Rust.")
        (file-name
         (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "0vkkpz290k6pphmrgkayzdvk1dinxrp6c5zvr9l0zjlm2dsn9lrw"))))
+        (base32 "1kkzwj24z9ad7lq8c5ynlnpxpx8hwra6w6brl871a6dj6vi76bv3"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
@@ -61019,7 +61018,7 @@ in Rust.")
 (define-public rust-wasm-bindgen-backend-0.2
   (package
     (name "rust-wasm-bindgen-backend")
-    (version "0.2.69")
+    (version "0.2.78")
     (source
      (origin
        (method url-fetch)
@@ -61027,8 +61026,7 @@ in Rust.")
        (file-name
         (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "0qidxjmcn50v2i5hjz7al69sa3mbq0lbi276amdnw47ln6dgh50i"))))
+        (base32 "0yw3ma0ahd1cz3afxpqcgwy9rwwgmz2g8pn8nas7c95sky7vy5x3"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
@@ -61130,7 +61128,7 @@ wasm-bindgen.")
 (define-public rust-wasm-bindgen-macro-0.2
   (package
     (name "rust-wasm-bindgen-macro")
-    (version "0.2.69")
+    (version "0.2.78")
     (source
      (origin
        (method url-fetch)
@@ -61138,8 +61136,7 @@ wasm-bindgen.")
        (file-name
         (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "113hyzn0dpqasznzcwgmqw03i5yhjkqna7paim50h7xdbscwhsks"))))
+        (base32 "1ydcppds5qbj77c7kdinkg9qidcf7ahvwqvnb3v8nllmqkklcqfm"))))
     (build-system cargo-build-system)
     (arguments
      `(#:tests? #f      ; 'Async blocks are unstable'
@@ -61161,7 +61158,7 @@ dependency.")
 (define-public rust-wasm-bindgen-macro-support-0.2
   (package
     (name "rust-wasm-bindgen-macro-support")
-    (version "0.2.69")
+    (version "0.2.78")
     (source
      (origin
        (method url-fetch)
@@ -61169,8 +61166,7 @@ dependency.")
        (file-name
         (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "0jbmgj8zxflza1cl15k3r70fqsak4bkkfbn6qxbhbn4ry9r8r95m"))))
+        (base32 "1ay5qmbqh8hbsgf2dqkg7ia13srx3c1d6p2qvjmzhdaqlbpf00vq"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
@@ -61189,15 +61185,14 @@ attribute that is not in the shared backend crate.")
 (define-public rust-wasm-bindgen-shared-0.2
   (package
     (name "rust-wasm-bindgen-shared")
-    (version "0.2.69")
+    (version "0.2.78")
     (source
       (origin
         (method url-fetch)
         (uri (crate-uri "wasm-bindgen-shared" version))
         (file-name (string-append name "-" version ".tar.gz"))
         (sha256
-         (base32
-          "0n3ir6gq27np22l6m96y342a6fphk1pkbzbfqx6g364kgzfi2y3y"))))
+         (base32 "1k27dc57h0brx5ish4dwmzibyif7m9lfagvph1a7s0ygi4kj6dq2"))))
     (build-system cargo-build-system)
     (home-page "https://rustwasm.github.io/wasm-bindgen/")
     (synopsis "Shared support between wasm-bindgen and wasm-bindgen cli")
