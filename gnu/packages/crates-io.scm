@@ -25834,7 +25834,7 @@ JSON-RPC 2.0 specification.")
 (define-public rust-js-sys-0.3
   (package
     (name "rust-js-sys")
-    (version "0.3.46")
+    (version "0.3.55")
     (source
      (origin
        (method url-fetch)
@@ -25842,8 +25842,7 @@ JSON-RPC 2.0 specification.")
        (file-name
         (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "0xc1llkp23q8ac2wdwh46y6gjbc34prrd98g5my9qz4zja1p6gfg"))))
+        (base32 "116cg9vn62cl3vifbs6cjdsg7hz98kr7sr8kpy31liccsg6gzjbw"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
