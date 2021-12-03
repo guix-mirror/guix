@@ -7518,14 +7518,14 @@ little-endian.")
 (define-public rust-bytes-1
   (package
     (name "rust-bytes")
-    (version "1.0.1")
+    (version "1.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "bytes" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0h6h1c8g3yj2b4k8g25gr3246mq985y0kl3z685cs784fr1ww05p"))))
+        (base32 "1y70b249m02lfp0j6565b29kviapj4xsl9whamcqwddnp9kjv1y4"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
