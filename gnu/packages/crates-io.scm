@@ -49796,8 +49796,39 @@ stack.")
 control on the fields.")
     (license license:expat)))
 
+(define-public rust-smol-1
+  (package
+    (name "rust-smol")
+    (version "1.2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "smol" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1r45zng0hymqx1kb2dmxkapbin7f9rhgrdcssz0q7rzka59kpkw5"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-async-channel" ,rust-async-channel-1)
+        ("rust-async-executor" ,rust-async-executor-1)
+        ("rust-async-fs" ,rust-async-fs-1)
+        ("rust-async-io" ,rust-async-io-1)
+        ("rust-async-lock" ,rust-async-lock-2)
+        ("rust-async-net" ,rust-async-net-1)
+        ("rust-async-process" ,rust-async-process-1)
+        ("rust-blocking" ,rust-blocking-1)
+        ("rust-futures-lite" ,rust-futures-lite-1)
+        ("rust-once-cell" ,rust-once-cell-1))))
+    (home-page "https://github.com/stjepang/smol")
+    (synopsis "Small and fast async runtime")
+    (description "This package provides a small and fast async runtime.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-smol-0.1
   (package
+    (inherit rust-smol-1)
     (name "rust-smol")
     (version "0.1.18")
     (source
@@ -49807,7 +49838,6 @@ control on the fields.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "1mdflwzgw1jxwrjffqn09lb4hn6d076s1ka8lb9mgnildqybn332"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-test-flags
        '("--release" "--" "--skip=task::Task<Result<T, E>>")
@@ -49830,11 +49860,7 @@ control on the fields.")
        (("rust-criterion" ,rust-criterion-0.3)
         ("rust-futures" ,rust-futures-0.3)
         ("rust-piper" ,rust-piper-0.1)
-        ("rust-tempfile" ,rust-tempfile-3))))
-    (home-page "https://github.com/stjepang/smol")
-    (synopsis "Small and fast async runtime")
-    (description "This package provides a small and fast async runtime.")
-    (license (list license:asl2.0 license:expat))))
+        ("rust-tempfile" ,rust-tempfile-3))))))
 
 (define-public rust-smol-str-0.1
   (package
