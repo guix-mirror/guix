@@ -30613,6 +30613,33 @@ checking.")
     (description "mp4 is a Rust library to read and write ISO-MP4 files.")
     (license license:expat)))
 
+(define-public rust-mp4parse-0.11
+  (package
+    (name "rust-mp4parse")
+    (version "0.11.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "mp4parse" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0rd35ml4mm4xmz3n95wn5b4sgrj80q9i300759hzx1wiy2rrgsk0"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bitreader" ,rust-bitreader-0.3)
+        ("rust-byteorder" ,rust-byteorder-1)
+        ("rust-env-logger" ,rust-env-logger-0.8)
+        ("rust-fallible-collections" ,rust-fallible-collections-0.4)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-static-assertions" ,rust-static-assertions-1))))
+    (home-page "https://github.com/mozilla/mp4parse-rust")
+    (synopsis "Parser for ISO base media file format (mp4)")
+    (description "Parser for ISO base media file format (mp4)")
+    (license license:mpl2.0)))
+
 (define-public rust-mpris-player-0.6
   (package
     (name "rust-mpris-player")
