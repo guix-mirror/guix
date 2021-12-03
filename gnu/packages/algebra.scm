@@ -1044,6 +1044,44 @@ features, and more.")
     ;; See 'COPYING.README' for details.
     (license license:mpl2.0)))
 
+(define-public eigen-benchmarks
+  (package
+    (inherit eigen)
+    (name "eigen-benchmarks")
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (delete 'configure)
+                  (replace 'build
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out"))
+                             (bin (string-append out "/bin")))
+                        (define (compile file)
+                          (format #t "compiling '~a'...~%" file)
+                          (let ((target
+                                 (string-append bin "/"
+                                                (basename file ".cpp"))))
+                            (invoke "c++" "-o" target file
+                                    "-I" ".." "-O2" "-g"
+                                    "-lopenblas" "-Wl,--as-needed")))
+
+                        (mkdir-p bin)
+                        (with-directory-excursion "bench"
+                          ;; There are more benchmarks, of varying quality.
+                          ;; Here we pick some that appear to be useful.
+                          (for-each compile
+                                    '("benchBlasGemm.cpp"
+                                      "benchCholesky.cpp"
+                                      ;;"benchEigenSolver.cpp"
+                                      "benchFFT.cpp"
+                                      "benchmark-blocking-sizes.cpp"))))))
+                  (delete 'install))))
+    (inputs (list boost openblas))
+
+    ;; Mark as tunable to take advantage of SIMD code in Eigen.
+    (properties '((tunable? . #t)))
+
+    (synopsis "Micro-benchmarks of the Eigen linear algebra library")))
+
 (define-public eigen-for-tensorflow
   (let ((changeset "fd6845384b86")
         (revision "1"))
