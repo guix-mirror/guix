@@ -2958,8 +2958,8 @@ other types of unwanted sequence from high-throughput sequencing reads.")
      `(#:test-target "test"
        #:tests? #f ; tests require access to the web
        #:make-flags
-       (list "CC=gcc"
-             (string-append "prefix=" (assoc-ref %outputs "out")))
+       ,#~(list "CC=gcc"
+                (string-append "prefix=" #$output))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))
