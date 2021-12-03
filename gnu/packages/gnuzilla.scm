@@ -750,6 +750,7 @@ in C/C++.")
     (origin
       (method computed-origin-method)
       (file-name (string-append "icecat-" %icecat-version ".tar.xz"))
+      (patches (search-patches "icecat-CVE-2021-43527.patch"))
       (sha256 #f)
       (uri
        (delay
