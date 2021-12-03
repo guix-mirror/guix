@@ -29304,8 +29304,32 @@ file IO.")
        #:cargo-development-inputs
        (("rust-tempdir" ,rust-tempdir-0.3))))))
 
+(define-public rust-memmap2-0.5
+  (package
+    (name "rust-memmap2")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "memmap2" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0vp9pxd20gyq8196v73chxdw6gfxz3g4lkdkvffd5slgawds2is6"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-stable-deref-trait" ,rust-stable-deref-trait-1))))
+    (home-page "https://github.com/RazrFalcon/memmap2-rs")
+    (synopsis "Cross-platform Rust API for memory-mapped file IO")
+    (description
+     "This package provides a Rust API for memory-mapped file IO.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-memmap2-0.3
   (package
+    (inherit rust-memmap2-0.5)
     (name "rust-memmap2")
     (version "0.3.0")
     (source
@@ -29315,15 +29339,10 @@ file IO.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "1xcg3vv6rg8vhl0wdfy085gx4xsp2dah7anvn5816h6wgczj1zr0"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-libc" ,rust-libc-0.2))))
-    (home-page "https://github.com/RazrFalcon/memmap2-rs")
-    (synopsis "Cross-platform Rust API for memory-mapped file IO")
-    (description "This package provides a Rust API for memory-mapped file IO.")
-    (license (list license:expat license:asl2.0))))
+       (("rust-libc" ,rust-libc-0.2))))))
 
 (define-public rust-memmap2-0.2
   (package
