@@ -14847,6 +14847,7 @@ usually ignored by other methods or only used for filtering.")
                (base32
                 "044xa0hm3b8fga64csrdx05ih8w7kwmvcdrdrhkg8j11ml4bi4xv"))))
     (build-system gnu-build-system)
+    (arguments `(#:parallel-tests? #false)) ; not supported
     (inputs
      `(("htslib" ,htslib)
        ("zlib" ,zlib)))
