@@ -597,6 +597,28 @@ and iOS.")
     (description "This package provides FFI bindings to dav1d.")
     (license license:expat)))
 
+(define-public rust-dcv-color-primitives-0.1
+  (package
+    (name "rust-dcv-color-primitives")
+    (version "0.1.16")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "dcv-color-primitives" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0yrm1qipdmadynhjgz1bvdh42ph9azvwg8v43c8ywr8vlx9qvaq2"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-wasm-bindgen" ,rust-wasm-bindgen-0.2))))
+    (home-page "https://github.com/aws/dcv-color-primitives")
+    (synopsis "Rust library to perform image color model conversion")
+    (description "This package is a Rust library to perform image color model
+conversion.")
+    (license license:expat)))
+
 (define-public rust-euclid-0.20
   (package
     (name "rust-euclid")
