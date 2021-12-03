@@ -12703,10 +12703,15 @@ developed with the aim of being used with the Librem 5 phone.")
                                                version "." "_")))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "18rg773gq9v3cdywpmrp12c5xyp97ir9yqjinccpi22sksb1kl8a"))))
+        (base32 "18rg773gq9v3cdywpmrp12c5xyp97ir9yqjinccpi22sksb1kl8a"))
+       (modules '((guix build utils)))
+       (snippet
+        ;; Remove the bundled sqlite, but keep its header because code relies
+        ;; on this header variant.
+        '(delete-file "libgda/sqlite/sqlite-src/sqlite3.c"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags '("--enable-vala")
+     `(#:configure-flags '("--enable-system-sqlite" "--enable-vala")
        ;; There's a race between check_cnc_lock and check_threaded_cnc
        ;; in tests/multi-threading.
        #:parallel-tests? #f
@@ -12745,6 +12750,7 @@ developed with the aim of being used with the Librem 5 phone.")
        ("libsecret" ,libsecret)
        ("libxslt" ,libxslt)
        ("openssl" ,openssl)
+       ("sqlite" ,sqlite)
        ("vala" ,vala)))
     (native-inputs
      `(("autoconf" ,autoconf)
