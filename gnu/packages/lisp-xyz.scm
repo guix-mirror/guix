@@ -15683,30 +15683,32 @@ abstract, final and singleton classes.")
   (sbcl-package->cl-source-package sbcl-abstract-classes))
 
 (define-public sbcl-coalton
-  (let ((commit "4a42ffb4222fde3abfd1b50d96e455ff2eef9fe8")
-        (revision "1"))
+  (let ((commit "012f6c8db6d73df16f7729090a12a929fb82db17")
+        (revision "2"))
     (package
       (name "sbcl-coalton")
-      (version (git-version "0.0.0" revision commit))
+      (version (git-version "0.0.1" revision commit))
       (source
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/stylewarning/coalton")
+               (url "https://github.com/coalton-lang/coalton")
                (commit commit)))
          (file-name (git-file-name "coalton" version))
          (sha256
-          (base32 "0aidwwam7cnhb3p9212zbv5w2dl6kr5iklzanypzr1a9lqaxwdlk"))))
+          (base32 "1j3d12vyyn7y9nz2an4xmaa5si0jbxbwq7y61hq2b7vk376zvw18"))))
       (build-system asdf-build-system/sbcl)
       (native-inputs
        `(("fiasco" ,sbcl-fiasco)))
       (inputs
-       `(("abstract-classes" ,sbcl-abstract-classes)
-         ("alexandria" ,sbcl-alexandria)
+       `(("alexandria" ,sbcl-alexandria)
+         ("float-features" ,sbcl-float-features)
+         ("fset" ,sbcl-fset)
          ("global-vars" ,sbcl-global-vars)
-         ("optima" ,sbcl-optima)
-         ("trivial-garbage" ,sbcl-trivial-garbage)))
-      (home-page "https://github.com/stylewarning/coalton")
+         ("json-streams" ,sbcl-json-streams)
+         ("serapeum" ,sbcl-serapeum)
+         ("trivia" ,sbcl-trivia)))
+      (home-page "https://coalton-lang.github.io")
       (synopsis "Dialect of ML in Common Lisp")
       (description
        "Coalton is a dialect of ML embedded in Common Lisp.  It emphasizes
