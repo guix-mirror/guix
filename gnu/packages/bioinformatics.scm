@@ -1914,8 +1914,7 @@ confidence to have in an alignment.")
                   (delete-file-recursively "pigz")
                   (delete-file-recursively "google-sparsehash")
                   (delete-file-recursively "zlib")
-                  (delete-file-recursively ".git")
-                  #t))))
+                  (delete-file-recursively ".git")))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ;no "check" target
@@ -1934,8 +1933,7 @@ confidence to have in an alignment.")
          (add-after 'unpack 'do-not-build-bundled-pigz
           (lambda* (#:key inputs outputs #:allow-other-keys)
             (substitute* "Makefile"
-              (("cd pigz/pigz-2.3.3; make") ""))
-            #t))
+              (("cd pigz/pigz-2.3.3; make") ""))))
          (add-after 'unpack 'patch-paths-to-executables
           (lambda* (#:key inputs outputs #:allow-other-keys)
             (substitute* "parse_args.cpp"
@@ -1946,15 +1944,13 @@ confidence to have in an alignment.")
               (("pigz_binary = .*")
                (string-append "pigz_binary = \""
                               (assoc-ref inputs "pigz")
-                              "/bin/pigz\";")))
-            #t))
+                              "/bin/pigz\";")))))
          (replace 'install
           (lambda* (#:key outputs #:allow-other-keys)
             (let ((bin (string-append (assoc-ref outputs "out") "/bin/")))
               (for-each (lambda (file)
                           (install-file file bin))
-                        '("bless" "kmc/bin/kmc"))
-              #t)))
+                        '("bless" "kmc/bin/kmc")))))
          (delete 'configure))))
     (native-inputs
      `(("perl" ,perl)))
