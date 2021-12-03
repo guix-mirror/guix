@@ -1363,7 +1363,7 @@ pixel buffers with width, height and stride.")
 (define-public rust-jpeg-decoder-0.1
   (package
     (name "rust-jpeg-decoder")
-    (version "0.1.18")
+    (version "0.1.22")
     (source
      (origin
        (method url-fetch)
@@ -1371,8 +1371,7 @@ pixel buffers with width, height and stride.")
        (file-name
         (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "0lc428qgffh2a1agkq0p26mvf9rjaiswpywy5883j99mqypg0mh2"))))
+        (base32 "1wnh0bmmswpgwhgmlizz545x8334nlbmkq8imy9k224ri3am7792"))))
     (build-system cargo-build-system)
     (arguments
      `(#:tests? #f      ; Some test files missing.
