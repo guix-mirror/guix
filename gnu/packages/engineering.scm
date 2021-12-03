@@ -25,6 +25,7 @@
 ;;; Copyright © 2021 Gerd Heber <gerd.heber@gmail.com>
 ;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2021 Ivan Gankevich <i.gankevich@spbu.ru>
+;;; Copyright © 2021 Petr Hodina <phodina@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -129,6 +130,7 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages openkinect)
+  #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg))
 
 (define-public librecad
@@ -1155,6 +1157,44 @@ worksheet templates.")))
 educational use.  As such, there is an emphasis on capabilities that improve
 the 'showing the effect of'-style of operation.")
     (license license:gpl2+)))
+
+(define-public valeronoi
+(package
+  (name "valeronoi")
+  (version "0.1.4")
+  (source
+   (origin
+     (method git-fetch)
+     (uri
+      (git-reference
+       (url "https://github.com/ccoors/Valeronoi")
+       (commit (string-append "v" version))))
+     (file-name (git-file-name name version))
+     (sha256
+      (base32 "1zp653bjqsyixa5j1pp9k12iqsl8dz72yyi38asxmcym1wngsjcd"))))
+  (build-system cmake-build-system)
+  (arguments
+   `(#:phases
+     (modify-phases %standard-phases
+       (replace 'check
+         (lambda* (#:key tests? #:allow-other-keys)
+           (when tests?
+             (invoke "./valeronoi-tests")))))))
+  (inputs
+   `(("boost" ,boost)
+     ("cgal" ,cgal)
+     ("gmp" ,gmp)
+     ("libxkbcommon" ,libxkbcommon)
+     ("mpfr" ,mpfr)
+     ("openssl" ,openssl)
+     ("qtbase" ,qtbase-5)
+     ("qtsvg" ,qtsvg)))
+  (home-page "https://github.com/ccoors/Valeronoi")
+  (synopsis "WiFi mapping companion application for Valetudo")
+  (description
+   "Valeronoi (Valetudo + Voronoi) is a companion for Valetudo for generating
+WiFi signal strength maps.  It visualizes them using a Voronoi diagram.")
+  (license license:gpl3+)))
 
 (define-public volk
   (package
