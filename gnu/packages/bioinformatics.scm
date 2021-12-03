@@ -5014,9 +5014,8 @@ experiments and provide highly stable thresholds based on reproducibility.")
                "python")) ;for Python bindings
     (arguments
      `(#:configure-flags
-       (list "--without-sse" ; configure script probes for CPU features when SSE is enabled.
-             (string-append "--enable-python-binding="
-                            (assoc-ref %outputs "python")))
+       ,#~(list "--without-sse" ; configure script probes for CPU features when SSE is enabled.
+                (string-append "--enable-python-binding=" #$output:python))
        #:phases
        (modify-phases %standard-phases
          (add-before 'check 'set-SHELL-variable
