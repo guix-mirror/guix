@@ -54473,7 +54473,7 @@ dependencies declarative, so other tools can read them as well.")
        (modules '((guix build utils)))
        (snippet
         '(begin (substitute* "Cargo.toml"
-                  (("0.0.10") "0.0"))
+                  (("0.0.10") "0.0.11"))
                 #t))))
     (arguments
      `(#:tests? #f                      ;source is missing some test files
@@ -54484,7 +54484,7 @@ dependencies declarative, so other tools can read them as well.")
         ("rust-strum-macros" ,rust-strum-macros-0.18)
         ("rust-thiserror" ,rust-thiserror-1)
         ("rust-toml" ,rust-toml-0.5)
-        ("rust-version-compare" ,rust-version-compare-0.0))
+        ("rust-version-compare" ,rust-version-compare-0.0.11))
        #:cargo-development-inputs
        (("rust-itertools" ,rust-itertools-0.9))))))
 
@@ -62186,7 +62186,7 @@ If that fails, no determination is made, and calls return None.")
          (base32
           "1pf91pvj8n6akh7w6j5ypka6aqz08b3qpzgs0ak2kjf4frkiljwi"))))))
 
-(define-public rust-version-compare-0.0
+(define-public rust-version-compare-0.0.11
   (package
     (name "rust-version-compare")
     (version "0.0.11")
@@ -62205,6 +62205,8 @@ If that fails, no determination is made, and calls return None.")
      "This package provides a Rust library to easily compare version
 numbers, and test them against various comparison operators.")
     (license license:expat)))
+
+(define-public rust-version-compare-0.0 rust-version-compare-0.0.11)
 
 (define-public rust-version-sync-0.8
   (package
