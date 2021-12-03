@@ -712,7 +712,6 @@ with '-virtfs' options for the host file systems listed in SHARED-FS."
      "-device" "virtio-rng-pci,rng=guixsd-vm-rng"
 
      #$@(map virtfs-option shared-fs)
-     "-vga std"
      (format #f "-drive file=~a,if=virtio,cache=writeback,werror=report,readonly=on"
              #$image)))
 
