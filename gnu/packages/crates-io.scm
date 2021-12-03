@@ -36568,8 +36568,31 @@ function data structures.")
      "Runtime support for perfect hash function data structures.")
     (license license:expat)))
 
+(define-public rust-phf-codegen-0.10
+  (package
+    (name "rust-phf-codegen")
+    (version "0.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "phf_codegen" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1k8kdad9wk2d5972k6jmjki2xpdy2ky4zd19rv7ybm2dpjlc7cag"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-phf-generator" ,rust-phf-generator-0.10)
+        ("rust-phf-shared" ,rust-phf-shared-0.10))))
+    (home-page "https://github.com/sfackler/rust-phf")
+    (synopsis "Codegen library for PHF types")
+    (description "Codegen library for PHF types.")
+    (license license:expat)))
+
 (define-public rust-phf-codegen-0.8
   (package
+    (inherit rust-phf-codegen-0.10)
     (name "rust-phf-codegen")
     (version "0.8.0")
     (source
@@ -36581,16 +36604,11 @@ function data structures.")
         (sha256
          (base32
           "05d8w7aqqjb6039pfm6404gk5dlwrrf97kiy1n21212vb1hyxzyb"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-phf-generator" ,rust-phf-generator-0.8)
-        ("rust-phf-shared" ,rust-phf-shared-0.8))))
-    (home-page "https://github.com/sfackler/rust-phf")
-    (synopsis "Codegen library for PHF types")
-    (description "Codegen library for PHF types.")
-    (license license:expat)))
+        ("rust-phf-shared" ,rust-phf-shared-0.8))))))
 
 (define-public rust-phf-codegen-0.7
   (package
