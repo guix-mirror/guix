@@ -4391,8 +4391,7 @@ from high-throughput sequencing assays.")
      `(#:tests? #f ; test require Internet access
        #:jdk ,icedtea-8
        #:make-flags
-       (list (string-append "-Ddist=" (assoc-ref %outputs "out")
-                            "/share/java/htsjdk/"))
+       ,#~(list (string-append "-Ddist=" #$output "/share/java/htsjdk/"))
        #:build-target "all"
        #:phases
        (modify-phases %standard-phases
