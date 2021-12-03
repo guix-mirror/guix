@@ -19086,30 +19086,46 @@ values to other threads.")
          (base32
           "1yf2hmkw52x2dva3c9km1x8c2z5kwby7qqn8kz5ms3gs480i9y05"))))))
 
-(define-public rust-freetype-0.4
+(define-public rust-freetype-0.7
   (package
     (name "rust-freetype")
-    (version "0.4.1")
+    (version "0.7.0")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "freetype" version))
-        (file-name
-         (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "0a70x03n68997f08bi3n47q9wyi3pv5s9v4rjc79sihb84mnp4hi"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "freetype" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1ijxyd8isq0w7qkbhp7p1y536xg3d8b8vy5ljg31rnz3m5w87qxy"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-libc" ,rust-libc-0.2)
-        ("rust-servo-freetype-sys" ,rust-servo-freetype-sys-4))))
+       (("rust-freetype-sys" ,rust-freetype-sys-0.13)
+        ("rust-libc" ,rust-libc-0.2))))
     (home-page "https://github.com/servo/rust-freetype")
     (synopsis "Bindings for Freetype used by Servo")
-    (description
-     "Bindings for Freetype used by Servo.")
+    (description "This package provides bindings for Freetype used by Servo.")
     (license (list license:asl2.0 license:expat))))
+
+(define-public rust-freetype-0.4
+  (package
+    (inherit rust-freetype-0.7)
+    (name "rust-freetype")
+    (version "0.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "freetype" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0a70x03n68997f08bi3n47q9wyi3pv5s9v4rjc79sihb84mnp4hi"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-servo-freetype-sys" ,rust-servo-freetype-sys-4))))))
 
 (define-public rust-freetype-rs-0.26
   (package
