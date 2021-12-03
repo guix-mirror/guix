@@ -1995,10 +1995,10 @@ errors at the end of reads.")
                     (("-DBUILD_TIME=.*") "-DBUILD_TIME=\"\\\"0\\\"\""))))))
     (build-system gnu-build-system)
     (arguments
-     '(#:make-flags
-       (list "allall"
-             "WITH_TBB=1"
-             (string-append "prefix=" (assoc-ref %outputs "out")))
+     `(#:make-flags
+       ,#~(list "allall"
+                "WITH_TBB=1"
+                (string-append "prefix=" #$output))
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
