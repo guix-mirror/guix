@@ -3427,6 +3427,29 @@ AsyncSeek if the inner type does.")
     (description "This library provides async executors.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-async-fs-1
+  (package
+    (name "rust-async-fs")
+    (version "1.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "async-fs" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1qnsqg0jjpda590w8nvbhh5mcmdyx5f43xx2g313fz0izzwa8g4b"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-async-lock" ,rust-async-lock-2)
+        ("rust-blocking" ,rust-blocking-1)
+        ("rust-futures-lite" ,rust-futures-lite-1))))
+    (home-page "https://github.com/stjepang/async-fs")
+    (synopsis "Async filesystem primitives in Rust")
+    (description "This package provides async filesystem primitives.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-async-global-executor-2
   (package
     (name "rust-async-global-executor")
