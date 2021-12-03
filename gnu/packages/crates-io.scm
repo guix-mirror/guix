@@ -59141,6 +59141,30 @@ panic-free alternative to @code{core::fmt}.")
      "This package provides an utility to deal with Unix access mode.")
     (license license:expat)))
 
+(define-public rust-uncased-0.9
+  (package
+    (name "rust-uncased")
+    (version "0.9.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "uncased" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1l3flz044hfdnsddahj08dflqprfydszkm4vkf458l724xryvbjv"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-serde" ,rust-serde-1)
+        ("rust-version-check" ,rust-version-check-0.9))))
+    (home-page "https://github.com/SergioBenitez/uncased")
+    (synopsis "Case-preserving, ASCII case-insensitive, string types in Rust")
+    (description
+     "This package provides case-preserving, ASCII case-insensitive,
+@code{no_std} string types in Rust.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-unchecked-index-0.2
   (package
     (name "rust-unchecked-index")
