@@ -775,14 +775,14 @@ EUI-64, also known as MAC-48 media access control addresses.")
 (define-public rust-gif-0.11
   (package
     (name "rust-gif")
-    (version "0.11.1")
+    (version "0.11.3")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "gif" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1i4n9fwg3zrp07pi5zsgyza2gl8lqnap6fj6875lfy121xbbmvq2"))))
+        (base32 "0nsfd5qvp69z8kn17ziiq8zv4mclfycyxppf5k9fm2h8g1z1i9y3"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
