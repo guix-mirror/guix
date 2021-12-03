@@ -50926,6 +50926,30 @@ UTF-8.")
        (("rust-blobby" ,rust-blobby-0.1)
         ("rust-generic-array" ,rust-generic-array-0.13))))))
 
+(define-public rust-streaming-decompression-0.1
+  (package
+    (name "rust-streaming-decompression")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "streaming-decompression" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "14ncaqb723wz5xx2ws7g8d3qx9hlhrx95wllf152qx6wsnn8gilv"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-fallible-streaming-iterator"
+         ,rust-fallible-streaming-iterator-0.1))))
+    (home-page "https://crates.io/crates/streaming-decompression")
+    (synopsis "Fallible streaming iterator for compression and decompression")
+    (description
+     "This package provides a fallible streaming iterator specialized for
+compression and decompression.")
+    (license license:asl2.0)))
+
 (define-public rust-streaming-iterator-0.1
   (package
     (name "rust-streaming-iterator")
