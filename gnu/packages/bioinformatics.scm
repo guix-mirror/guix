@@ -13896,7 +13896,7 @@ effective when applied to the signal dataset.")
 (define-public python-ont-fast5-api
   (package
     (name "python-ont-fast5-api")
-    (version "1.4.4")
+    (version "4.0.0")
     (source
      (origin
        (method git-fetch)
@@ -13906,12 +13906,27 @@ effective when applied to the signal dataset.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "03cbq4zbbwhll8ml2m9k8sa31mirsvcbjkrq1yna0kkzz9fad5fm"))))
+         "01hj4751j424lzic2sc4bz1f8w7i7fpkjpy3rgghdyl5lyfyb4s4"))
+       (modules '((guix build utils)))
+       (snippet
+        '(delete-file-recursively "ont_fast5_api/vbz_plugin"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'copy-plugin
+           (lambda* (#:key inputs #:allow-other-keys)
+             (mkdir-p "ont_fast5_api/vbz_plugin/")
+             (install-file (string-append
+                            (assoc-ref inputs "vbz-compression")
+                            "/hdf5/lib/plugin/libvbz_hdf_plugin.so")
+                           "ont_fast5_api/vbz_plugin/"))))))
+    (inputs
+     `(("vbz-compression" ,vbz-compression)))
     (propagated-inputs
      `(("python-numpy" ,python-numpy)
-       ("python-six" ,python-six)
        ("python-h5py" ,python-h5py)
+       ("python-packaging" ,python-packaging)
        ("python-progressbar33" ,python-progressbar33)))
     (home-page "https://github.com/nanoporetech/ont_fast5_api")
     (synopsis "Interface to HDF5 files of the Oxford Nanopore fast5 file format")
