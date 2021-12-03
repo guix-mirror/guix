@@ -37261,8 +37261,43 @@ serialization.")
         ("rust-humantime" ,rust-humantime-1)
         ("rust-byteorder" ,rust-byteorder-1))))))
 
+(define-public rust-plotters-0.3
+  (package
+    (name "rust-plotters")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "plotters" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0akgmm5kqghl2b1q1qkzjggiqnb9smaz54fd5374k5qbqfggv8rj"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-chrono" ,rust-chrono-0.4)
+        ("rust-font-kit" ,rust-font-kit-0.10)
+        ("rust-image" ,rust-image-0.23)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-pathfinder-geometry" ,rust-pathfinder-geometry-0.5)
+        ("rust-plotters-backend" ,rust-plotters-backend-0.3)
+        ("rust-plotters-bitmap" ,rust-plotters-bitmap-0.3)
+        ("rust-plotters-svg" ,rust-plotters-svg-0.3)
+        ("rust-ttf-parser" ,rust-ttf-parser-0.12)
+        ("rust-wasm-bindgen" ,rust-wasm-bindgen-0.2)
+        ("rust-web-sys" ,rust-web-sys-0.3))))
+    (home-page "https://github.com/38/plotters")
+    (synopsis "Rust drawing library focus on data plotting")
+    (description
+     "This package provides a Rust drawing library focus on data plotting for
+both WASM and native applications")
+    (license license:expat)))
+
 (define-public rust-plotters-0.2
   (package
+    (inherit rust-plotters-0.3)
     (name "rust-plotters")
     (version "0.2.12")
     (source
@@ -37274,7 +37309,6 @@ serialization.")
         (sha256
          (base32
           "1ssycy9an23vs9hq098c7kl1dvp5ych20d994lhsw9vx4kdbhfsf"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -37290,12 +37324,68 @@ serialization.")
         ("rust-palette" ,rust-palette-0.5)
         ("rust-cairo-rs" ,rust-cairo-rs-0.7)
         ("rust-rusttype" ,rust-rusttype-0.8)
-        ("rust-lazy-static" ,rust-lazy-static-1))))
-    (home-page "https://github.com/38/plotters")
-    (synopsis "Rust drawing library focus on data plotting")
-    (description
-     "This package provides a Rust drawing library focus on data plotting for
-both WASM and native applications")
+        ("rust-lazy-static" ,rust-lazy-static-1))))))
+
+(define-public rust-plotters-backend-0.3
+  (package
+    (name "rust-plotters-backend")
+    (version "0.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "plotters-backend" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "075ccyz814q46dkr93zz7crj9mmyqgk0w6mmrpyz1sm0ilqig16q"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://plotters-rs.github.io")
+    (synopsis "Plotters Backend API")
+    (description "This package provides Plotters backend API.")
+    (license license:expat)))
+
+(define-public rust-plotters-bitmap-0.3
+  (package
+    (name "rust-plotters-bitmap")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "plotters-bitmap" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0m0bq3fqrnhgg37k6lz0m328n3ifymc965pxmqc5cpk90nljydi1"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-gif" ,rust-gif-0.11)
+        ("rust-image" ,rust-image-0.23)
+        ("rust-plotters-backend" ,rust-plotters-backend-0.3))))
+    (home-page "https://plotters-rs.github.io")
+    (synopsis "Plotters Bitmap Backend")
+    (description "This package provides Plotters bitmap backend.")
+    (license license:expat)))
+
+(define-public rust-plotters-svg-0.3
+  (package
+    (name "rust-plotters-svg")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "plotters-svg" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1aavi3i4jrwydw3i6x0zxs3i3c7gki7jlhg9agff35x5ixisj7sj"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-plotters-backend" ,rust-plotters-backend-0.3))))
+    (home-page "https://plotters-rs.github.io")
+    (synopsis "Plotters SVG backend")
+    (description "This package provides Plotters SVG backend.")
     (license license:expat)))
 
 (define-public rust-plugin-0.2
