@@ -13856,6 +13856,43 @@ vast-tools, an RNA-Seq pipeline for alternative splicing analysis.  The plots
 are generated using @code{ggplot2}.")
     (license license:expat)))
 
+(define-public vbz-compression
+  (package
+    (name "vbz-compression")
+    (version "1.0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/nanoporetech/vbz_compression/")
+             (commit (string-append "v" version))
+             ;; We include the streamvbyte sources
+             (recursive? #true)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1c6wsrnw03vsc5cfp2rdakly5xy55m9chjmy6v685yapdwirdky0"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       '("-DENABLE_CONAN=OFF"
+         ;; Python things aren't even installed, so we might as well
+         ;; disable building them.
+         "-DENABLE_PYTHON=OFF")))
+    (inputs
+     `(;("hdf5" ,hdf5-1.10)
+       ("zstd" ,zstd "lib")))
+    (native-inputs
+     `(("googlebenchmark" ,googlebenchmark)))
+    (home-page "https://github.com/nanoporetech/vbz_compression/")
+    (synopsis "VBZ compression plugin for nanopore signal data")
+    (description
+     "VBZ Compression uses variable byte integer encoding to compress
+nanopore signal data.  The performance of VBZ is achieved by taking
+advantage of the properties of the raw signal and therefore is most
+effective when applied to the signal dataset.")
+    (license license:mpl2.0)))
+
 (define-public python-ont-fast5-api
   (package
     (name "python-ont-fast5-api")
