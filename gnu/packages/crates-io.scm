@@ -36616,8 +36616,32 @@ function data structures.")
     (description "Codegen library for PHF types.")
     (license license:expat)))
 
+(define-public rust-phf-generator-0.10
+  (package
+    (name "rust-phf-generator")
+    (version "0.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "phf_generator" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1mlq6hlajsvlsx6rhw49g9ricsm017lrxmgmmbk85sxm7f4qaljx"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-criterion" ,rust-criterion-0.3)
+        ("rust-phf-shared" ,rust-phf-shared-0.10)
+        ("rust-rand" ,rust-rand-0.8))))
+    (home-page "https://github.com/sfackler/rust-phf")
+    (synopsis "PHF generation logic")
+    (description "PHF generation logic.")
+    (license license:expat)))
+
 (define-public rust-phf-generator-0.8
   (package
+    (inherit rust-phf-generator-0.10)
     (name "rust-phf-generator")
     (version "0.8.0")
     (source
@@ -36629,17 +36653,12 @@ function data structures.")
         (sha256
          (base32
           "09i5338d1kixq6a60fcayz6awgxjlxcfw9ic5f02abbgr067ydhp"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-criterion" ,rust-criterion-0.3)
         ("rust-rand" ,rust-rand-0.7)
-        ("rust-phf-shared" ,rust-phf-shared-0.8))))
-    (home-page "https://github.com/sfackler/rust-phf")
-    (synopsis "PHF generation logic")
-    (description "PHF generation logic.")
-    (license license:expat)))
+        ("rust-phf-shared" ,rust-phf-shared-0.8))))))
 
 (define-public rust-phf-generator-0.7
   (package
