@@ -1514,20 +1514,20 @@ long-read sequencing data.")
     (arguments
      `(#:tests? #f                      ; no tests included
        #:make-flags
-       (list (string-append "BOOST_INC="
-                            (assoc-ref %build-inputs "boost") "/include")
-             (string-append "BOOST_LIB="
-                            (assoc-ref %build-inputs "boost") "/lib")
-             (string-append "HTSLD_INC="
-                            (assoc-ref %build-inputs "htslib") "/include")
-             (string-append "HTSLD_LIB="
-                            (assoc-ref %build-inputs "htslib") "/lib")
-             (string-append "RMATH_INC="
-                            (assoc-ref %build-inputs "rmath-standalone")
-                            "/include")
-             (string-append "RMATH_LIB="
-                            (assoc-ref %build-inputs "rmath-standalone")
-                            "/lib"))
+       ,#~(list (string-append "BOOST_INC="
+                               #$(this-package-input "boost") "/include")
+                (string-append "BOOST_LIB="
+                               #$(this-package-input "boost") "/lib")
+                (string-append "HTSLD_INC="
+                               #$(this-package-input "htslib") "/include")
+                (string-append "HTSLD_LIB="
+                               #$(this-package-input "htslib") "/lib")
+                (string-append "RMATH_INC="
+                               #$(this-package-input "rmath-standalone")
+                               "/include")
+                (string-append "RMATH_LIB="
+                               #$(this-package-input "rmath-standalone")
+                               "/lib"))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-linkage
