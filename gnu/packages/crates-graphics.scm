@@ -1214,14 +1214,14 @@ PATH.")
 (define-public rust-image-0.23
   (package
     (name "rust-image")
-    (version "0.23.12")
+    (version "0.23.14")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "image" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1dg9z5sbc389spp7pm23n2b1k0gdd8hjdb8hhsp3k3npx9vl1q3w"))))
+        (base32 "18gn2f7xp30pf9aqka877knlq308khxqiwjvsccvzaa4f9zcpzr4"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
