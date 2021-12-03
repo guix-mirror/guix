@@ -1094,23 +1094,7 @@ Python.")
 representing counts of observations e.g. operational taxonomic units, KEGG
 orthology groups or lipid types, in one or more biological samples
 e.g. microbiome samples, genomes, metagenomes.")
-    (license license:bsd-3)
-    (properties `((python2-variant . ,(delay python2-biom-format))))))
-
-(define-public python2-biom-format
-  (let ((base (package-with-python2 (strip-python2-variant python-biom-format))))
-    (package
-      (inherit base)
-      (arguments
-       (substitute-keyword-arguments (package-arguments base)
-         ((#:phases phases)
-          `(modify-phases ,phases
-             ;; Do not require the unmaintained pyqi library.
-             (add-after 'unpack 'remove-pyqi
-               (lambda _
-                 (substitute* "setup.py"
-                   (("install_requires.append\\(\"pyqi\"\\)") "pass"))
-                 #t)))))))))
+    (license license:bsd-3)))
 
 (define-public python-pairtools
   (package
