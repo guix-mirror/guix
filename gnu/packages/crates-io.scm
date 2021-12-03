@@ -61468,7 +61468,7 @@ for terminal and other window-less applications.")
 (define-public rust-web-sys-0.3
   (package
     (name "rust-web-sys")
-    (version "0.3.37")
+    (version "0.3.55")
     (source
      (origin
        (method url-fetch)
@@ -61476,8 +61476,7 @@ for terminal and other window-less applications.")
        (file-name
         (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "1jy4q5jawzg3dxzhfwa0g3fsz7h4j0ra6y232ikc6mlcimj52vrd"))))
+        (base32 "1yz9dym9y9f9s1f99q5j5kl2dfc5kn2jpjfdnnkfmnar3igi1srq"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
