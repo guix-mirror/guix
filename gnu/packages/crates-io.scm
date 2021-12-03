@@ -58644,8 +58644,29 @@ the Trust-DNS client to use rustls for TLS.")
      "Test harness for ui tests of compiler diagnostics.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-ttf-parser-0.12
+  (package
+    (name "rust-ttf-parser")
+    (version "0.12.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "ttf-parser" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1rkj90w4k21y88i69rlwb8pyfvv5lnb7x2b8yvdan21gha5gbqks"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/RazrFalcon/ttf-parser")
+    (synopsis "A high-level, safe, zero-allocation TrueType font parser.")
+    (description
+     "This package provides a high-level, safe, zero-allocation TrueType font
+parser.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-ttf-parser-0.6
   (package
+    (inherit rust-ttf-parser-0.12)
     (name "rust-ttf-parser")
     (version "0.6.2")
     (source
@@ -58655,14 +58676,7 @@ the Trust-DNS client to use rustls for TLS.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "1p4z969pwd5adayy3ijq94iiak42yfxz8hk5wnkdsirymgbpqp9y"))))
-    (build-system cargo-build-system)
-    (arguments `(#:skip-build? #t))
-    (home-page "https://github.com/RazrFalcon/ttf-parser")
-    (synopsis "High-level, safe, zero-allocation TrueType font parser")
-    (description
-     "This package provides a high-level, safe, zero-allocation TrueType font
-parser.")
-    (license (list license:expat license:asl2.0))))
+    (arguments `(#:skip-build? #t))))
 
 (define-public rust-tui-0.16
   (package
