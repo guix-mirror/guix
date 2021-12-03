@@ -5221,10 +5221,9 @@ sequencing tag position and orientation.")
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no automated tests, though there are tests in the read me
-       #:make-flags (let ((out (assoc-ref %outputs "out")))
-                      (list (string-append "PREFIX=" out)
-                            (string-append "BINDIR="
-                                           (string-append out "/bin"))))
+       #:make-flags ,#~(list (string-append "PREFIX=" #$output)
+                             (string-append "BINDIR="
+                                            (string-append #$output "/bin")))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'enter-dir
@@ -5264,11 +5263,11 @@ sequencing tag position and orientation.")
              #t))
          (delete 'configure)
          (add-after 'install 'wrap-programs
-           (lambda* (#:key outputs #:allow-other-keys)
+           (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (bin (string-append out "/bin"))
                     (path (string-append
-                           (assoc-ref %build-inputs "coreutils") "/bin:")))
+                           (assoc-ref inputs "coreutils") "/bin:")))
                (for-each (lambda (file)
                            (wrap-program file
                              `("PATH" ":" prefix (,path))))
