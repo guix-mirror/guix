@@ -10023,7 +10023,6 @@ statistics to the plot.")
        ("r-flowviz" ,r-flowviz)
        ("r-graph" ,r-graph)
        ("r-mnormt" ,r-mnormt)))
-    #;
     (inputs
      `(("gsl" ,gsl)))
     (native-inputs
