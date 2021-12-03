@@ -508,9 +508,9 @@ computational cluster.")
                 "1f2hh79l7dn147c2xyfgf5wfjvlqfw32kjfnnh2n1qy6rpzx2fik"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:test-target "test"
+     `(#:test-target "test"
        #:make-flags
-       (list (string-append "prefix=" (assoc-ref %outputs "out")))
+       ,#~(list (string-append "prefix=" #$output))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))
