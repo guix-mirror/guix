@@ -4526,12 +4526,12 @@ manipulating HTS data.")
        ;; Tests require jacoco:coverage.
        #:tests? #f
        #:make-flags
-       (list (string-append "-Dhtsjdk_lib_dir="
-                            (assoc-ref %build-inputs "java-htsjdk")
-                            "/share/java/htsjdk/")
-             "-Dhtsjdk-classes=dist/tmp"
-             (string-append "-Dhtsjdk-version="
-                            ,(package-version java-htsjdk)))
+       ,#~(list (string-append "-Dhtsjdk_lib_dir="
+                               #$(this-package-input "java-htsjdk")
+                               "/share/java/htsjdk/")
+                "-Dhtsjdk-classes=dist/tmp"
+                (string-append "-Dhtsjdk-version="
+                               #$(package-version java-htsjdk)))
        #:jdk ,icedtea-8
        #:phases
        (modify-phases %standard-phases
