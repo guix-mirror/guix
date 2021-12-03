@@ -5271,8 +5271,7 @@ sequencing tag position and orientation.")
                (for-each (lambda (file)
                            (wrap-program file
                              `("PATH" ":" prefix (,path))))
-                         (find-files bin)))
-             #t)))))
+                         (find-files bin))))))))
     (inputs
      `(("perl" ,perl)
        ("ruby" ,ruby)
