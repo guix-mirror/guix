@@ -7190,23 +7190,22 @@ UTF-8.")
 @code{std::io}, with extra features.")
     (license (list license:expat license:asl2.0))))
 
-(define-public rust-buffered-reader-0.9
+(define-public rust-buffered-reader-1
   (package
     (name "rust-buffered-reader")
-    (version "0.9.0")
+    (version "1.1.2")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "buffered-reader" version))
-       (file-name
-        (string-append name "-" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "05rklfiia1k4c4ifpim08l22i0q0l3j9xdg2yh3njrp6w58z6z13"))))
+        (base32 "1jf6iqxm3yllm9h3q5f90yj8y9qzr5h0a7aiw38cgk4hagh2s8d4"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs
-       (("rust-bzip2" ,rust-bzip2-0.3)
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bzip2" ,rust-bzip2-0.4)
         ("rust-flate2" ,rust-flate2-1)
         ("rust-libc" ,rust-libc-0.2))))
     (home-page "https://sequoia-pgp.org/")
@@ -7218,6 +7217,24 @@ performance optimizations.  First, the use of an internal buffer amortizes
 system calls.  Second, exposing the internal buffer allows the user to work
 with data in place, which avoids another copy.")
     (license license:gpl3)))
+
+(define-public rust-buffered-reader-0.9
+  (package
+    (inherit rust-buffered-reader-1)
+    (name "rust-buffered-reader")
+    (version "0.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "buffered-reader" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "05rklfiia1k4c4ifpim08l22i0q0l3j9xdg2yh3njrp6w58z6z13"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bzip2" ,rust-bzip2-0.3)
+        ("rust-flate2" ,rust-flate2-1)
+        ("rust-libc" ,rust-libc-0.2))))))
 
 (define-public rust-buffering-0.4
   (package
