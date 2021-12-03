@@ -5311,9 +5311,9 @@ sequences).")
     (arguments
      `(#:tests? #f ; No tests.
        #:configure-flags
-       (list
-        (string-append "--with-capnp=" (assoc-ref %build-inputs "capnproto"))
-        (string-append "--with-gsl=" (assoc-ref %build-inputs "gsl")))
+       ,#~(list
+           (string-append "--with-capnp=" #$(this-package-input "capnproto"))
+           (string-append "--with-gsl=" #$(this-package-input "gsl")))
        #:make-flags (list "CC=gcc")
        #:phases
        (modify-phases %standard-phases
