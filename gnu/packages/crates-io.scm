@@ -36683,8 +36683,37 @@ function data structures.")
     (description "PHF generation logic")
     (license license:expat)))
 
+(define-public rust-phf-macros-0.10
+  (package
+    (name "rust-phf-macros")
+    (version "0.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "phf_macros" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1q5ljwvb10dx188i6jxzckqfimjw5pm2p4kkvmhg2q6m9lcg7zaq"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-phf-generator" ,rust-phf-generator-0.10)
+        ("rust-phf-shared" ,rust-phf-shared-0.10)
+        ("rust-proc-macro-hack" ,rust-proc-macro-hack-0.5)
+        ("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1)
+        ("rust-unicase" ,rust-unicase-2))))
+    (home-page "https://github.com/sfackler/rust-phf")
+    (synopsis "Macros to generate types in the phf crate")
+    (description
+     "This package contains macros to generate types in the phf crate.")
+    (license license:expat)))
+
 (define-public rust-phf-macros-0.8
   (package
+    (inherit rust-phf-macros-0.10)
     (name "rust-phf-macros")
     (version "0.8.0")
     (source
@@ -36696,7 +36725,6 @@ function data structures.")
         (sha256
          (base32
           "170qm6yqn6b9mjlwb2xmm3iad9d5nzwgfawfwy7zr7s2zwcdwvvz"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -36705,12 +36733,7 @@ function data structures.")
         ("rust-phf-shared" ,rust-phf-shared-0.8)
         ("rust-proc-macro2" ,rust-proc-macro2-1)
         ("rust-syn" ,rust-syn-1)
-        ("rust-quote" ,rust-quote-1))))
-    (home-page "https://github.com/sfackler/rust-phf")
-    (synopsis "Macros to generate types in the phf crate")
-    (description
-     "This package contains macros to generate types in the phf crate.")
-    (license license:expat)))
+        ("rust-quote" ,rust-quote-1))))))
 
 (define-public rust-phf-macros-0.7
   (package
