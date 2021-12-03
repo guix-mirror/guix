@@ -5304,11 +5304,9 @@ sequences).")
                 "049hwcc059p2fd9vwndn63laifvvsi0wmv84i6y1fr79k15dxwy6"))
               (modules '((guix build utils)))
               (snippet
-               '(begin
-                  ;; Delete bundled kseq.
-                  ;; TODO: Also delete bundled murmurhash and open bloom filter.
-                  (delete-file "src/mash/kseq.h")
-                  #t))))
+               ;; Delete bundled kseq.
+               ;; TODO: Also delete bundled murmurhash and open bloom filter.
+               '(delete-file "src/mash/kseq.h"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; No tests.
