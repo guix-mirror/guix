@@ -5334,13 +5334,13 @@ sequences).")
                (("c\\+\\+11") "c++14"))
              #t)))))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ;; Capnproto and htslib are statically embedded in the final
+     `(("autoconf" ,autoconf)))
+    (inputs
+     `(;; Capnproto and htslib are statically embedded in the final
        ;; application. Therefore we also list their licenses, below.
        ("capnproto" ,capnproto)
-       ("htslib" ,htslib)))
-    (inputs
-     `(("gsl" ,gsl)
+       ("htslib" ,htslib)
+       ("gsl" ,gsl)
        ("zlib" ,zlib)))
     (supported-systems '("x86_64-linux"))
     (home-page "https://mash.readthedocs.io")
