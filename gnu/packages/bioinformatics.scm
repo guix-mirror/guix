@@ -6117,7 +6117,7 @@ phylogenies.")
 (define-public rsem
   (package
     (name "rsem")
-    (version "1.3.1")
+    (version "1.3.3")
     (source
      (origin
        (method git-fetch)
@@ -6125,7 +6125,7 @@ phylogenies.")
              (url "https://github.com/deweylab/RSEM")
              (commit (string-append "v" version))))
        (sha256
-        (base32 "1jlq11d1p8qp64w75yj8cnbbd1a93viq10pzsbwal7vdn8fg13j1"))
+        (base32 "1yl4i7z20n2p84j1lmk15aiak3yqc6fiw0q5a4pndw7pxfiq3rzp"))
        (file-name (git-file-name name version))
        (modules '((guix build utils)))
        (snippet
@@ -6149,12 +6149,22 @@ phylogenies.")
        #:phases
        (modify-phases %standard-phases
          ;; No "configure" script.
-         ;; Do not build bundled samtools library.
          (replace 'configure
            (lambda _
              (substitute* "Makefile"
                (("^all : \\$\\(PROGRAMS\\).*") "all: $(PROGRAMS)\n")
-               (("^\\$\\(SAMLIBS\\).*") ""))))
+               ;; Do not build bundled samtools library.
+               (("^\\$\\(SAMLIBS\\).*") "")
+               ;; Needed for Boost
+               (("gnu\\+\\+98") "gnu++11"))
+             ;; C++11 compatibility
+             (substitute* "buildReadIndex.cpp"
+               (("success = \\(getline")
+                "success = (bool)(getline"))
+             (substitute* '("PairedEndHit.h"
+                            "SingleHit.h")
+               (("return \\(in>>sid>>pos")
+                "return (bool)(in>>sid>>pos"))))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (string-append (assoc-ref outputs "out")))
