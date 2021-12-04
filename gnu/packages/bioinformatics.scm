@@ -5788,14 +5788,14 @@ generated using the PacBio Iso-Seq protocol.")
                (("-m64") ""))))
          (delete 'configure)
          (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
+           (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (bin (string-append out "/bin"))
                     (man (string-append out "/share/man/man1"))
                     (path (string-append
-                           (assoc-ref %build-inputs "mafft") "/bin:"
-                           (assoc-ref %build-inputs "exonerate") "/bin:"
-                           (assoc-ref %build-inputs "bppsuite") "/bin")))
+                           (assoc-ref inputs "mafft") "/bin:"
+                           (assoc-ref inputs "exonerate") "/bin:"
+                           (assoc-ref inputs "bppsuite") "/bin")))
                (install-file "prank" bin)
                (wrap-program (string-append bin "/prank")
                  `("PATH" ":" prefix (,path)))
