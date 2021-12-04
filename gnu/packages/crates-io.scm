@@ -59260,6 +59260,30 @@ strings.")
      "The arena, a fast but limited type of allocator.")
     (license license:expat)))
 
+(define-public rust-typed-builder-0.5
+  (package
+    (name "rust-typed-builder")
+    (version "0.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "typed-builder" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1zi9mmkz2vwg5cn8x9738vli42h21jyspvfi83y2sa6lvlja5kkq"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))))
+    (home-page "https://github.com/idanarye/rust-typed-builder")
+    (synopsis "Compile-time type-checked builder derive")
+    (description
+     "This package provides compile-time type-checked builder derive.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-typed-headers-0.2
   (package
     (name "rust-typed-headers")
