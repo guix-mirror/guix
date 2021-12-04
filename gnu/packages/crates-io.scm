@@ -22224,14 +22224,14 @@ of gzip files based on the gzip header implementation in the @code{flate2} crate
 (define-public rust-h2-0.3
   (package
     (name "rust-h2")
-    (version "0.3.1")
+    (version "0.3.7")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "h2" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0y5fxy3sy0s3j1h6p0c2xk5n2gs4jk1dvmk88lvgwm22ywfv0cnq"))))
+        (base32 "0mdf0x3cxj4rhx2zrm0gnx02i43gqcz3q4awzidargff5xb1kn3z"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
