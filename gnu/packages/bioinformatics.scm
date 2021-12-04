@@ -6773,13 +6773,14 @@ subsequent visualization, annotation and storage of results.")
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ;no "check" target
-       #:make-flags (list "BLASFLAGS=-llapack -lopenblas"
-                          "CFLAGS=-Wall -O2 -DDYNAMIC_ZLIB=1"
-                          "ZLIB=-lz"
-                          "BIN=plink prettify"
-                          (string-append "CC=" ,(cc-for-target))
-                          (string-append "PREFIX=" (assoc-ref %outputs "out"))
-                          "DESTDIR=")
+       #:make-flags
+       ,#~(list "BLASFLAGS=-llapack -lopenblas"
+                "CFLAGS=-Wall -O2 -DDYNAMIC_ZLIB=1"
+                "ZLIB=-lz"
+                "BIN=plink prettify"
+                (string-append "CC=" #$(cc-for-target))
+                (string-append "PREFIX=" #$output)
+                "DESTDIR=")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'chdir
