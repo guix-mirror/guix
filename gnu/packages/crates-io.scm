@@ -50306,6 +50306,25 @@ non-empty snake_case.")
 algorithm.  Includes streaming compression and decompression.")
     (license license:bsd-3)))
 
+(define-public rust-snap-0.2
+  (package
+    (inherit rust-snap-1)
+    (name "rust-snap")
+    (version "0.2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "snap" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0hvzvvywzw654y2r3j4jya5af8j0nf2vydfjp1w8pba47pb9gmlm"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-byteorder" ,rust-byteorder-1)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-snappy-cpp" ,rust-snappy-cpp-0.1))))))
+
 (define-public rust-snappy-cpp-0.1
   (package
     (name "rust-snappy-cpp")
