@@ -6874,10 +6874,8 @@ structures, classes for genomic regions, mapped sequencing reads, etc.")
               (sha256
                (base32 "149x9xmk1wy1gff85325yfzqc0qk4sgp1w6gbyj9cnji4x1dszbl"))
               (modules '((guix build utils)))
-              (snippet '(begin
-                          ;; Remove bundled samtools.
-                          (delete-file-recursively "samtools")
-                          #t))))
+              ;; Remove bundled samtools.
+              (snippet '(delete-file-recursively "samtools"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ;no "check" target
