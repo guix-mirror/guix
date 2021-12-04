@@ -57555,18 +57555,53 @@ serializing Rust structures.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-tower-0.4
+  (package
+    (name "rust-tower")
+    (version "0.4.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tower" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "001wx4iiyhmiih9f93szjsfdm5mzlr0n093bhqf178azzw7m03n0"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-futures-core" ,rust-futures-core-0.3)
+        ("rust-futures-util" ,rust-futures-util-0.3)
+        ("rust-hdrhistogram" ,rust-hdrhistogram-6)
+        ("rust-indexmap" ,rust-indexmap-1)
+        ("rust-pin-project" ,rust-pin-project-1)
+        ("rust-pin-project-lite" ,rust-pin-project-lite-0.2)
+        ("rust-rand" ,rust-rand-0.8)
+        ("rust-slab" ,rust-slab-0.4)
+        ("rust-tokio" ,rust-tokio-1)
+        ("rust-tokio-stream" ,rust-tokio-stream-0.1)
+        ("rust-tokio-util" ,rust-tokio-util-0.6)
+        ("rust-tower-layer" ,rust-tower-layer-0.3)
+        ("rust-tower-service" ,rust-tower-service-0.3)
+        ("rust-tracing" ,rust-tracing-0.1))))
+    (home-page "https://github.com/tower-rs/tower")
+    (synopsis "Library for building clients and servers")
+    (description
+     "Tower is a library of modular and reusable components for building
+robust clients and servers.")
+    (license license:expat)))
+
 (define-public rust-tower-layer-0.3
   (package
     (name "rust-tower-layer")
-    (version "0.3.0")
+    (version "0.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "tower-layer" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "1p6i9rn5d98wsx6hi4hbxh2xqh2clwz0blcm6jrqiciq4rpnapd3"))))
+        (base32 "0qiskpgz6zzy3a894vyr9yzq0i7q142rciggc3wv1rizdm3cjfrl"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-development-inputs
