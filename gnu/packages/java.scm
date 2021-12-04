@@ -5991,15 +5991,15 @@ targeting the JVM.")
     (arguments
      `(#:test-target "test"
        #:make-flags
-       (let ((hamcrest (assoc-ref %build-inputs "java-hamcrest-core"))
-             (junit    (assoc-ref %build-inputs "java-junit"))
-             (easymock (assoc-ref %build-inputs "java-easymock")))
-         (list (string-append "-Djunit.jar="
-                              (car (find-files junit "jar$")))
-               (string-append "-Dhamcrest.jar="
-                              (car (find-files hamcrest "jar$")))
-               (string-append "-Deasymock.jar=" easymock
-                              "/share/java/easymock.jar")))
+       ,#~(let ((hamcrest #$(this-package-native-input "java-hamcrest-core"))
+                (junit    #$(this-package-native-input "java-junit"))
+                (easymock #$(this-package-native-input "java-easymock")))
+            (list (string-append "-Djunit.jar="
+                                 (car (find-files junit "jar$")))
+                  (string-append "-Dhamcrest.jar="
+                                 (car (find-files hamcrest "jar$")))
+                  (string-append "-Deasymock.jar=" easymock
+                                 "/share/java/easymock.jar")))
        #:phases
        (modify-phases %standard-phases
          (replace 'install
