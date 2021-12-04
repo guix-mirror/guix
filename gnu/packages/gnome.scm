@@ -12799,7 +12799,7 @@ your data.")
        ("gspell" ,gspell)
        ("libdazzle" ,libdazzle)
        ("libgda" ,libgda)
-       ("libsoup" ,libsoup)))
+       ("libsoup" ,libsoup-minimal-2)))
     (native-inputs
      `(("glib:bin" ,glib "bin")
        ("itstool" ,itstool)
@@ -12807,7 +12807,8 @@ your data.")
     (propagated-inputs
      `(("gtksourceview" ,gtksourceview))) ; required for source view
     (arguments
-     `(#:build-type "release"
+     `(#:meson ,meson-0.59
+       #:build-type "release"
        #:glib-or-gtk? #t
        #:phases
        (modify-phases %standard-phases
