@@ -6154,8 +6154,7 @@ phylogenies.")
            (lambda _
              (substitute* "Makefile"
                (("^all : \\$\\(PROGRAMS\\).*") "all: $(PROGRAMS)\n")
-               (("^\\$\\(SAMLIBS\\).*") ""))
-             #t))
+               (("^\\$\\(SAMLIBS\\).*") ""))))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (string-append (assoc-ref outputs "out")))
@@ -6166,8 +6165,7 @@ phylogenies.")
                (for-each (lambda (file)
                            (install-file file bin))
                          (find-files "." "rsem-.*"))
-               (install-file "rsem_perl_utils.pm" perl))
-             #t))
+               (install-file "rsem_perl_utils.pm" perl))))
          (add-after 'install 'wrap-program
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
@@ -6182,8 +6180,7 @@ phylogenies.")
                            "rsem-plot-transcript-wiggles"
                            "rsem-prepare-reference"
                            "rsem-run-ebseq"
-                           "rsem-run-prsem-testing-procedure")))
-             #t)))))
+                           "rsem-run-prsem-testing-procedure"))))))))
     (inputs
      `(("boost" ,boost)
        ("r-minimal" ,r-minimal)
