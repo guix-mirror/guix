@@ -63291,6 +63291,55 @@ library.")
     (description "This package provides an implementation of zbase32.")
     (license license:lgpl3+)))
 
+(define-public rust-zerocopy-0.3
+  (package
+    (name "rust-zerocopy")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "zerocopy" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "00nbb6yal8f74bkpn7msjcnhisimw8s5777a63206rfnn3br45zh"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-byteorder" ,rust-byteorder-1)
+        ("rust-zerocopy-derive" ,rust-zerocopy-derive-0.2))))
+    (home-page "https://fuchsia.googlesource.com/fuchsia/+/HEAD/src/lib/zerocopy")
+    (synopsis "Utilities for zero-copy parsing and serialization")
+    (description
+     "This package provides utilities for zero-copy parsing and
+serialization.")
+    (license license:bsd-3)))
+
+(define-public rust-zerocopy-derive-0.2
+  (package
+    (name "rust-zerocopy-derive")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "zerocopy-derive" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1594sf9wwgpbavl1hb1avyz6n7km9apm8afc03x9y8h3spk3k76w"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-syn" ,rust-syn-1)
+        ("rust-synstructure" ,rust-synstructure-0.12))))
+    (home-page "https://fuchsia.googlesource.com/fuchsia/+/HEAD/src/lib/zerocopy/zerocopy-derive")
+    (synopsis "Custom derive for traits from the zerocopy Rust crate")
+    (description
+     "This package provides custom derive for traits from the zerocopy Rust
+crate.")
+    (license license:bsd-3)))
+
 (define-public rust-zeroize-1
   (package
     (name "rust-zeroize")
