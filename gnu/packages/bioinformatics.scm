@@ -6956,19 +6956,19 @@ sequence itself can be retrieved from these databases.")
      `(#:parallel-build? #f             ; not supported
        #:tests? #f                      ; no "check" target
        #:make-flags
-       (list (string-append "DEFAULT_CRT="
-                            (assoc-ref %build-inputs "ncbi-vdb")
-                            "/kfg/certs.kfg")
-             (string-append "DEFAULT_KFG="
-                            (assoc-ref %build-inputs "ncbi-vdb")
-                            "/kfg/default.kfg")
-             (string-append "VDB_LIBDIR="
-                            (assoc-ref %build-inputs "ncbi-vdb")
-                            ,(if (string-prefix? "x86_64"
-                                                 (or (%current-target-system)
-                                                     (%current-system)))
-                                 "/lib64"
-                                 "/lib32")))
+       ,#~(list (string-append "DEFAULT_CRT="
+                               #$(this-package-input "ncbi-vdb")
+                               "/kfg/certs.kfg")
+                (string-append "DEFAULT_KFG="
+                               #$(this-package-input "ncbi-vdb")
+                               "/kfg/default.kfg")
+                (string-append "VDB_LIBDIR="
+                               #$(this-package-input "ncbi-vdb")
+                               #$(if (string-prefix? "x86_64"
+                                                     (or (%current-target-system)
+                                                         (%current-system)))
+                                     "/lib64"
+                                     "/lib32")))
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'set-perl-search-path
