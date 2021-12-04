@@ -4399,6 +4399,43 @@ audio/video metrics.")
         ("rust-serde-json" ,rust-serde-json-1)
         ("rust-streaming-stats" ,rust-streaming-stats-0.2))))))
 
+(define-public rust-avro-rs-0.13
+  (package
+    (name "rust-avro-rs")
+    (version "0.13.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "avro-rs" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0dsy8r4c6l4xx9wp80byrb24zvlf9m19f5nwpklis8hhczfm1rgc"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-byteorder" ,rust-byteorder-1)
+        ("rust-crc" ,rust-crc-1)
+        ("rust-digest" ,rust-digest-0.9)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-libflate" ,rust-libflate-1)
+        ("rust-num-bigint" ,rust-num-bigint-0.2)
+        ("rust-rand" ,rust-rand-0.7)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-snap" ,rust-snap-0.2)
+        ("rust-strum" ,rust-strum-0.18)
+        ("rust-strum-macros" ,rust-strum-macros-0.18)
+        ("rust-thiserror" ,rust-thiserror-1)
+        ("rust-typed-builder" ,rust-typed-builder-0.5)
+        ("rust-uuid" ,rust-uuid-0.8)
+        ("rust-zerocopy" ,rust-zerocopy-0.3))))
+    (home-page "https://github.com/flavray/avro-rs")
+    (synopsis "Library for working with Apache Avro in Rust")
+    (description
+     "This package is a library for working with Apache Avro in Rust.")
+    (license license:expat)))
+
 (define-public rust-awc-2
   (package
     (name "rust-awc")
