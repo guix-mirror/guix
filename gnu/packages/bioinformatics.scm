@@ -6883,16 +6883,15 @@ structures, classes for genomic regions, mapped sequencing reads, etc.")
        (modify-phases %standard-phases
          (delete 'configure))
        #:make-flags
-       (list (string-append "PREFIX="
-                            (assoc-ref %outputs "out"))
-             (string-append "LIBBAM="
-                            (assoc-ref %build-inputs "samtools")
-                            "/lib/libbam.a")
-             (string-append "SMITHLAB_CPP="
-                            (assoc-ref %build-inputs "smithlab-cpp")
-                            "/lib")
-             "PROGS=preseq"
-             "INCLUDEDIRS=$(SMITHLAB_CPP)/../include/smithlab-cpp $(SAMTOOLS_DIR)")))
+       ,#~(list (string-append "PREFIX=" #$output)
+                (string-append "LIBBAM="
+                               #$(this-package-input "samtools")
+                               "/lib/libbam.a")
+                (string-append "SMITHLAB_CPP="
+                               #$(this-package-input "smithlab-cpp")
+                               "/lib")
+                "PROGS=preseq"
+                "INCLUDEDIRS=$(SMITHLAB_CPP)/../include/smithlab-cpp $(SAMTOOLS_DIR)")))
     (inputs
      `(("gsl" ,gsl)
        ("samtools" ,samtools-0.1)
