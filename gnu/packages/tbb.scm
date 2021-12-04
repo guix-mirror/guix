@@ -31,7 +31,7 @@
 (define-public tbb
   (package
     (name "tbb")
-    (version "2021.3.0")
+    (version "2021.4.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -40,7 +40,7 @@
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1bz039my3ma87f24ngcsqs16f8jlpdgaqg01ab4g60nfqbrz1lkq"))))
+                "0ih727g802j9lvwkqhw021bk1wb7xlvfgd0vl1i6jng4am1wv7vq"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DTBB_STRICT=OFF"))) ;; Don't fail on warnings
