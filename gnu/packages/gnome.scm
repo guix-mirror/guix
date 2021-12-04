@@ -11476,6 +11476,14 @@ tabs, and it supports drag and drop re-ordering of terminals.")
                    (search-input-file inputs
                                       "/xml/dtd/docbook/docbookx.dtd"))))
               (find-files "doc" "\\.xml"))))
+         ,@(if (target-x86-64?)
+               '()
+               '((add-after 'unpack 'skip-test-that-requires-svg
+                   (lambda _
+                     ;; On non-x86-64, gdk-pixbuf lacks librsvg support, so
+                     ;; skip the test that requires it.
+                     (substitute* "tests/meson.build"
+                       (("'test-avatar',") ""))))))
          (add-before 'check 'pre-check
            (lambda _
              ;; Tests require a running X server.
