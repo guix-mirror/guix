@@ -6202,11 +6202,11 @@ file filters and endian classes.")
     (arguments
      `(#:test-target "test"
        #:make-flags
-       (list (string-append "-Dmaven.junit.jar="
-                            (car (find-files (assoc-ref %build-inputs "java-junit")
-                                             "jar$")))
-             "-Dmaven.compiler.source=1.7"
-             "-Dmaven.compiler.target=1.7")
+       ,#~(list (string-append "-Dmaven.junit.jar="
+                               (car (find-files #$(this-package-native-input "java-junit")
+                                                "jar$")))
+                "-Dmaven.compiler.source=1.7"
+                "-Dmaven.compiler.target=1.7")
        #:phases
        (modify-phases %standard-phases
          (add-before 'build 'delete-network-tests
