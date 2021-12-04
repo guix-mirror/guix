@@ -518,14 +518,15 @@ tool.  This package contains the Maven parent POM.")
                   "11skhrjgrrs6z5rw1w39ap1pzhrc99g0czip10kz7wsavg746ibm"))))
       (build-system ant-build-system)
       (arguments
-       `(#:tests? #f
+       (list
+         #:tests? #f
          #:phases
-         (modify-phases %standard-phases
-           (delete 'unpack)
-           (delete 'build)
-           (delete 'configure)
-           (replace 'install
-             (install-pom-file (assoc-ref %build-inputs "source"))))))
+         #~(modify-phases %standard-phases
+             (delete 'unpack)
+             (delete 'build)
+             (delete 'configure)
+             (replace 'install
+               (install-pom-file #$(package-source this-package))))))
       (propagated-inputs
        `(("maven-parent-pom-27" ,maven-parent-pom-27)))
       (home-page "https://apache.org/maven")
