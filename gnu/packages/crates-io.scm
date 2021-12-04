@@ -57733,6 +57733,55 @@ serializing Rust structures.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-tonic-0.6
+  (package
+    (name "rust-tonic")
+    (version "0.6.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "tonic" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "1yjsnfkkq3c7xcyxkid0zgpm8w774qqdny0im6fr0s1drxwkn814"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:skip-build? #t
+        #:cargo-inputs
+        (("rust-async-stream" ,rust-async-stream-0.3)
+         ("rust-async-trait" ,rust-async-trait-0.1)
+         ("rust-base64" ,rust-base64-0.13)
+         ("rust-bytes" ,rust-bytes-1)
+         ("rust-flate2" ,rust-flate2-1)
+         ("rust-futures-core" ,rust-futures-core-0.3)
+         ("rust-futures-util" ,rust-futures-util-0.3)
+         ("rust-h2" ,rust-h2-0.3)
+         ("rust-http" ,rust-http-0.2)
+         ("rust-http-body" ,rust-http-body-0.4)
+         ("rust-hyper" ,rust-hyper-0.14)
+         ("rust-hyper-timeout" ,rust-hyper-timeout-0.4)
+         ("rust-percent-encoding" ,rust-percent-encoding-2)
+         ("rust-pin-project" ,rust-pin-project-1)
+         ("rust-prost" ,rust-prost-0.9)
+         ("rust-prost-derive" ,rust-prost-derive-0.9)
+         ("rust-rustls-native-certs" ,rust-rustls-native-certs-0.5)
+         ("rust-tokio" ,rust-tokio-1)
+         ("rust-tokio-rustls" ,rust-tokio-rustls-0.22)
+         ("rust-tokio-stream" ,rust-tokio-stream-0.1)
+         ("rust-tokio-util" ,rust-tokio-util-0.6)
+         ("rust-tower" ,rust-tower-0.4)
+         ("rust-tower-layer" ,rust-tower-layer-0.3)
+         ("rust-tower-service" ,rust-tower-service-0.3)
+         ("rust-tracing" ,rust-tracing-0.1)
+         ("rust-tracing-futures" ,rust-tracing-futures-0.2)
+         ("rust-webpki-roots" ,rust-webpki-roots-0.21))))
+    (home-page "https://github.com/hyperium/tonic")
+    (synopsis "gRPC over HTTP/2 implementation for Rust")
+    (description
+      "This package provides a gRPC over HTTP/2 implementation focused on high
+performance, interoperability, and flexibility.")
+    (license license:expat)))
+
 (define-public rust-tower-0.4
   (package
     (name "rust-tower")
