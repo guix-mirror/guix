@@ -2718,8 +2718,61 @@ format.")
 code of Apache Arrow spec.")
     (license license:asl2.0)))
 
+(define-public rust-arrow2-0.7
+  (package
+    (name "rust-arrow2")
+    (version "0.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "arrow2" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "15dkirkx07bagjgcar2ikmvs0d1zsk5l99bsszla91rxbivy4wyq"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-ahash" ,rust-ahash-0.7)
+        ("rust-arrow-format" ,rust-arrow-format-0.3)
+        ("rust-avro-rs" ,rust-avro-rs-0.13)
+        ("rust-base64" ,rust-base64-0.13)
+        ("rust-chrono" ,rust-chrono-0.4)
+        ("rust-chrono-tz" ,rust-chrono-tz-0.6)
+        ("rust-comfy-table" ,rust-comfy-table-4)
+        ("rust-csv" ,rust-csv-1)
+        ("rust-futures" ,rust-futures-0.3)
+        ("rust-hash-hasher" ,rust-hash-hasher-2)
+        ("rust-hex" ,rust-hex-0.4)
+        ("rust-indexmap" ,rust-indexmap-1)
+        ("rust-itertools" ,rust-itertools-0.10)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-lexical-core" ,rust-lexical-core-0.8)
+        ("rust-libflate" ,rust-libflate-1)
+        ("rust-lz4" ,rust-lz4-1)
+        ("rust-multiversion" ,rust-multiversion-0.6)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-packed-simd-2" ,rust-packed-simd-2-0.3)
+        ("rust-parquet2" ,rust-parquet2-0.6)
+        ("rust-rand" ,rust-rand-0.8)
+        ("rust-regex" ,rust-regex-1)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-derive" ,rust-serde-derive-1)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-simdutf8" ,rust-simdutf8-0.1)
+        ("rust-streaming-iterator" ,rust-streaming-iterator-0.1)
+        ("rust-strength-reduce" ,rust-strength-reduce-0.2)
+        ("rust-zstd" ,rust-zstd-0.9))))
+    (home-page "https://github.com/jorgecarleitao/arrow2")
+    (synopsis "Unofficial implementation of Apache Arrow spec in safe Rust")
+    (description
+     "Arrow2 is a Rust library to work with the Arrow format.  It is
+a re-write of the official Arrow crate using transmute-free operations.")
+    (license license:asl2.0)))
+
 (define-public rust-arrow2-0.5
   (package
+    (inherit rust-arrow2-0.7)
     (name "rust-arrow2")
     (version "0.5.3")
     (source
@@ -2729,7 +2782,6 @@ code of Apache Arrow spec.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "042m859jfffnhi84qc919pkyanlr98wqqf67pcrylk4hhh0v84xx"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -2759,13 +2811,7 @@ code of Apache Arrow spec.")
         ("rust-serde-json" ,rust-serde-json-1)
         ("rust-streaming-iterator" ,rust-streaming-iterator-0.1)
         ("rust-strength-reduce" ,rust-strength-reduce-0.2)
-        ("rust-zstd" ,rust-zstd-0.9))))
-    (home-page "https://github.com/jorgecarleitao/arrow2")
-    (synopsis "Unofficial implementation of Apache Arrow spec in safe Rust")
-    (description
-     "Arrow2 is a Rust library to work with the Arrow format.  It is
-a re-write of the official Arrow crate using transmute-free operations.")
-    (license license:asl2.0)))
+        ("rust-zstd" ,rust-zstd-0.9))))))
 
 (define-public rust-article-scraper-1
   (package
