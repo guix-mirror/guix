@@ -2009,7 +2009,7 @@ interfaces.")
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (delete-file (string-append
                            (site-packages inputs outputs)
-                           "PyNomad-0.0.0-py"
+                           "/PyNomad-0.0.0-py"
                            (python-version (assoc-ref inputs "python"))
                            ".egg-info"))
              #t)))))

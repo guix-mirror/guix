@@ -15281,8 +15281,7 @@ for the analysis and visualization of raw nanopore signal.")
             (lambda* (#:key inputs outputs #:allow-other-keys)
               (delete-file-recursively (string-append
                                          (site-packages inputs outputs)
-                                         "vcf/test"))
-              #t)))))
+                                         "/vcf/test")))))))
     (native-inputs `(("python-cython" ,python-cython)))
     (propagated-inputs
      `(("python-pysam" ,python-pysam)
