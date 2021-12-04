@@ -12779,7 +12779,7 @@ your data.")
 (define-public gtranslator
   (package
     (name "gtranslator")
-    (version "3.36.0")
+    (version "40.0")
         (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -12787,7 +12787,7 @@ your data.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1lxd2nkji4jk8g2xmyc1a1r3ww710ddk91zh9psmx8xlb4xivaid"))))
+                "0d48nc11z0m91scy21ah56ysxns82zvswx8lglvlkig1vqvblgpc"))))
     (build-system meson-build-system)
     (inputs
      `(("json-glib" ,json-glib)
@@ -12799,6 +12799,7 @@ your data.")
        ("gspell" ,gspell)
        ("libdazzle" ,libdazzle)
        ("libgda" ,libgda)
+       ("libhandy" ,libhandy)
        ("libsoup" ,libsoup-minimal-2)))
     (native-inputs
      `(("glib:bin" ,glib "bin")
