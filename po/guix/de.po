@@ -4,13 +4,13 @@
 # Mario Blättermann <mario.blaettermann@gmail.com>, 2014, 2015, 2016, 2018.
 # Florian Pelz <pelzflorian@pelzflorian.de>, 2018, 2019, 2020, 2021.
 # Adina Wagner <adina.wagner@t-online.de>, 2021.
-#: guix/diagnostics.scm:155
+#: guix/diagnostics.scm:157
 msgid ""
 msgstr ""
 "Project-Id-Version: guix 1.2.0-pre3\n"
 "Report-Msgid-Bugs-To: bug-guix@gnu.org\n"
-"POT-Creation-Date: 2021-11-03 15:18+0000\n"
-"PO-Revision-Date: 2021-11-04 15:14+0000\n"
+"POT-Creation-Date: 2021-12-04 15:18+0000\n"
+"PO-Revision-Date: 2021-11-30 17:33+0000\n"
 "Last-Translator: Florian Pelz <pelzflorian@pelzflorian.de>\n"
 "Language-Team: German <https://translate.fedoraproject.org/projects/guix/guix/de/>\n"
 "Language: de\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.8\n"
+"X-Generator: Weblate 4.9.1\n"
 "X-Bugs: Report translation errors to the Language-Team address.\n"
 
 #: gnu.scm:81
@@ -236,55 +236,60 @@ msgstr "Mehr als ein Ziel-Dienst von Typ „~a“"
 msgid "service of type '~a' not found"
 msgstr "Dienst des Typs „~a“ wurde nicht gefunden"
 
-#: gnu/system.scm:355
+#: gnu/system.scm:357
 #, scheme-format
 msgid "unrecognized uuid ~a at '~a'~%"
 msgstr "Nicht erkannte UUID ~a für „~a“~%"
 
-#: gnu/system.scm:437
+#: gnu/system.scm:439
 #, scheme-format
 msgid "unrecognized crypto-devices ~S at '~a'~%"
 msgstr "Nicht erkannte crypto-devices ~S für „~a“~%"
 
-#: gnu/system.scm:454
+#: gnu/system.scm:456
 #, scheme-format
 msgid "unrecognized boot parameters at '~a'~%"
 msgstr "Nicht erkannte Boot-Parameter für „~a“~%"
 
-#: gnu/system.scm:567
+#: gnu/system.scm:569
 #, scheme-format
 msgid "mapped-device '~a' may not be mounted by the bootloader.~%"
 msgstr "mapped-device „~a“ wird nicht verstanden zum Einhängen durch den Bootloader.~%"
 
-#: gnu/system.scm:1017
+#: gnu/system.scm:597
+#, scheme-format
+msgid "List elements of the field 'swap-devices' should now use the <swap-space> record, as the old method is deprecated. See \"(guix) operating-system Reference\" for more details.~%"
+msgstr "Elemente der Liste im Feld „swap-devices“ sollten nun über das Verbundsobjekt <swap-space> definiert werden, denn die alte Methode ist veraltet. Siehe \"(guix.de)„operating-system“-Referenz\" für mehr Informationen.~%"
+
+#: gnu/system.scm:1051
 #, scheme-format
 msgid "using a string for file '~a' is deprecated; use 'plain-file' instead~%"
 msgstr ""
 "Für „~a“ eine Zeichenkette zu benutzen ist\n"
 "veraltet, benutzen Sie „plain-file“~%"
 
-#: gnu/system.scm:1033
+#: gnu/system.scm:1067
 #, scheme-format
 msgid "using a monadic value for '~a' is deprecated; use 'plain-file' instead~%"
 msgstr ""
 "Für „~a“ einen monadischen Wert zu benutzen ist\n"
 "veraltet, benutzen Sie „plain-file“~%"
 
-#: gnu/system.scm:1086
+#: gnu/system.scm:1121
 #, scheme-format
 msgid "representing setuid programs with file-like objects is deprecated; use 'setuid-program' instead~%"
 msgstr ""
 "setuid-Programme als dateiartige Objekte darzustellen ist\n"
 "veraltet, benutzen Sie „setuid-program“-Objekte~%"
 
-#: gnu/system.scm:1186
+#: gnu/system.scm:1221
 msgid "missing root file system"
 msgstr "Fehlendes Wurzeldateisystem"
 
-#: gnu/system.scm:1262
+#: gnu/system.scm:1297
 #, scheme-format
 msgid "~a: invalid locale name"
-msgstr "~a: Ungültiger Locale-Name~%"
+msgstr "~a: Ungültiger Locale-Name"
 
 #: gnu/services/shepherd.scm:143
 msgid ""
@@ -322,11 +327,18 @@ msgstr ""
 "wird. Prozesse, die ein paar Sekunden nach @code{SIGTERM} immer noch laufen,\n"
 "werden mit @code{SIGKILL} abgewürgt."
 
-#: gnu/system/file-systems.scm:667
+#: gnu/system/file-systems.scm:135
+#, scheme-format
+msgid "invalid file system mount flag:~{ ~s~}~%"
+msgid_plural "invalid file system mount flags:~{ ~s~}~%"
+msgstr[0] "Ungültige Einbinde-Flag:~{ ~s~}~%"
+msgstr[1] "Ungültige Einbinde-Flags:~{ ~s~}~%"
+
+#: gnu/system/file-systems.scm:715
 msgid "The store is on a Btrfs subvolume, but the subvolume name is unknown."
 msgstr "Der Store befindet sich auf einem Btrfs-Unterlaufwerk, aber der Name des Unterlaufwerks ist unbekannt."
 
-#: gnu/system/file-systems.scm:671
+#: gnu/system/file-systems.scm:719
 msgid "Use the @code{subvol} Btrfs file system option."
 msgstr "Verwenden Sie die Einbinde-Option @code{subvol} für das Btrfs-Dateisystem."
 
@@ -335,7 +347,7 @@ msgstr "Verwenden Sie die Einbinde-Option @code{subvol} für das Btrfs-Dateisyst
 msgid "Unsupported image type ~a~%."
 msgstr "Nicht unterstützter Abbildtyp ~a~%"
 
-#: gnu/system/image.scm:694
+#: gnu/system/image.scm:721
 #, scheme-format
 msgid "~a: no such image type"
 msgstr "~a: Abbildtyp gibt es nicht"
@@ -346,9 +358,10 @@ msgid ""
 "anything.  This service is used by guest systems running in containers, where\n"
 "networking support is provided by the host."
 msgstr ""
-"Meldet Loopback- und Netzwerkunterstützung, ohne dass wirklich etwas\n"
-"läuft. Dieser Dienst wird auf Gastsystemen in isolierten Umgebungen\n"
-"benutzt, wo das Wirtssystem die Netzwerkunterstützung bereitstellt."
+"Meldet Loopback- und Netzwerkunterstützung, ohne dass wirklich\n"
+"etwas läuft. Dieser Dienst wird auf Gastsystemen in isolierten\n"
+"Container-Umgebungen benutzt, wo das Wirtssystem\n"
+"die Netzwerkunterstützung bereitstellt."
 
 #: gnu/system/linux-container.scm:223
 #, scheme-format
@@ -404,7 +417,7 @@ msgstr ""
 "Wenn Sie glauben, dass diese Warnung unberechtigt ist, können Sie auch\n"
 "Guix mit der Befehlszeilenoption @option{--skip-checks} aufrufen.\n"
 
-#: gnu/system/mapped-devices.scm:251
+#: gnu/system/mapped-devices.scm:257
 #, scheme-format
 msgid "no LUKS partition with UUID '~a'"
 msgstr "Keine LUKS-Partition mit UUID „~a“"
@@ -437,7 +450,7 @@ msgstr ""
 "Sicherstellen, dass die angegebenen Benutzerkonten und Gruppen existieren.\n"
 "Außerdem wird das Persönliche Verzeichnis jedes Kontos angelegt."
 
-#: guix/import/egg.scm:353
+#: guix/import/egg.scm:356
 msgid "Updater for CHICKEN egg packages"
 msgstr "Aktualisierungsprogramm für CHICKEN-Egg-Pakete"
 
@@ -451,31 +464,29 @@ msgid "Updater for CPAN packages"
 msgstr "Aktualisierungsprogramm für CPAN-Pakete"
 
 #: guix/import/cran.scm:176
-#, fuzzy, scheme-format
-#| msgid "failed to retrieve store items from '~a'"
+#, scheme-format
 msgid "failed to retrieve list of packages from ~a: ~a (~a)~%"
-msgstr "Store-Objekte konnten nicht von „~a“ heruntergeladen werden"
+msgstr "Paketliste konnte nicht von ~a heruntergeladen werden: ~a (~a)~%"
 
 #: guix/import/cran.scm:222
 #, scheme-format
 msgid "~A: hg download failed~%"
 msgstr "~A: Laden über hg fehlgeschlagen~%"
 
-#: guix/import/cran.scm:242
-#, fuzzy, scheme-format
-#| msgid "failed to create configuration directory `~a': ~a~%"
+#: guix/import/cran.scm:266
+#, scheme-format
 msgid "failed to retrieve package information from ~a: ~a (~a)~%"
-msgstr "Konfigurationsverzeichnis „~a“ konnte nicht angelegt werden: ~a~%"
+msgstr "Paketinformationen konnten nicht von ~a heruntergeladen werden: ~a (~a)~%"
 
-#: guix/import/cran.scm:611
+#: guix/import/cran.scm:637
 msgid "couldn't find meta-data for R package"
 msgstr "Konnte keine Metadaten zu diesem R-Paket finden"
 
-#: guix/import/cran.scm:724
+#: guix/import/cran.scm:751
 msgid "Updater for CRAN packages"
 msgstr "Aktualisierungsprogramm für CRAN-Pakete"
 
-#: guix/import/cran.scm:731
+#: guix/import/cran.scm:758
 msgid "Updater for Bioconductor packages"
 msgstr "Aktualisierungsprogramm für Bioconductor-Pakete"
 
@@ -494,7 +505,7 @@ msgstr "~A: Herunterladen fehlgeschlagen~%"
 msgid "Unsupported MELPA fetcher: ~a, falling back to unstable MELPA source.~%"
 msgstr "MELPA-Fetcher ~a wird nicht unterstützt. Stattdessen wird das unstabile MELPA als Quelle verwendet.~%"
 
-#: guix/import/elpa.scm:454
+#: guix/import/elpa.scm:455
 msgid "Updater for ELPA packages"
 msgstr "Aktualisierungsprogramm für ELPA-Pakete"
 
@@ -523,7 +534,7 @@ msgstr "~a für ~a gefunden~%"
 #: guix/import/git.scm:187
 #, scheme-format
 msgid "failed to fetch Git repository for ~a~%"
-msgstr "Git-Repository von „~a“ konnte nicht heruntergeladen werden"
+msgstr "Git-Repository von „~a“ konnte nicht heruntergeladen werden~%"
 
 #: guix/import/git.scm:223
 msgid "Updater for packages hosted on Git repositories"
@@ -648,52 +659,47 @@ msgstr "Aktualisierungsprogramm für Minetest-Pakete auf ContentDB"
 msgid "'~a' is not a valid URI~%"
 msgstr "„~a“ ist keine gültige URI~%"
 
-#: guix/import/opam.scm:321
+#: guix/import/opam.scm:322
 #, scheme-format
-msgid "package '~a' not found~%"
-msgstr "Paket „~a“ nicht gefunden~%"
+msgid "opam: package '~a' not found~%"
+msgstr "opam: Paket „~a“ nicht gefunden~%"
 
-#: guix/import/opam.scm:426
+#: guix/import/opam.scm:427
 msgid "Updater for OPAM packages"
 msgstr "Aktualisierungsprogramm für OPAM-Pakete"
 
-#: guix/import/pypi.scm:226
+#: guix/import/pypi.scm:229
 msgid "Could not extract requirement name in spec:"
 msgstr "Der Requirement-Name konnte nicht aus der Spezifikation extrahiert werden:"
 
-#: guix/import/pypi.scm:286
+#: guix/import/pypi.scm:289
 #, scheme-format
 msgid "parse-requires.txt reached an unexpected condition on line ~a~%"
 msgstr "parse-requires.txt ist in einen unerwarteten Zustand gelaufen in Zeile ~a~%"
 
-#: guix/import/pypi.scm:352
+#: guix/import/pypi.scm:355
 #, scheme-format
 msgid "Failed to extract file: ~a from wheel.~%"
 msgstr "Datei konnte nicht extrahiert werden: ~a aus dem Wheel.~%"
 
-#: guix/import/pypi.scm:381
+#: guix/import/pypi.scm:384
 #, scheme-format
 msgid "Cannot guess requirements from source archive: no requires.txt file found.~%"
 msgstr "Requirements können nicht aus dem Quellarchiv erraten werden: Keine Datei requires.txt gefunden.~%"
 
-#: guix/import/pypi.scm:386
+#: guix/import/pypi.scm:389
 #, scheme-format
 msgid "Unsupported archive format; cannot determine package dependencies from source archive: ~a~%"
 msgstr "Nicht unterstütztes Archivformat. Paketabhängigkeiten können nicht anhand des Quellarchivs bestimmt werden: ~a~%"
 
-#: guix/import/pypi.scm:491
+#: guix/import/pypi.scm:495
 #, scheme-format
 msgid "no source release for pypi package ~a ~a~%"
 msgstr "Es gibt keine Quellcode-Veröffentlichung für das PyPI-Paket ~a ~a~%"
 
-#: guix/import/pypi.scm:553
+#: guix/import/pypi.scm:556
 msgid "Updater for PyPI packages"
 msgstr "Aktualisierungsprogramm für PyPI-Pakete"
-
-#: guix/import/texlive.scm:156
-#, scheme-format
-msgid "Could not determine source location.  Please manually specify the source field.~%"
-msgstr "Das „source“-Feld konnte nicht bestimmt werden. Bitte geben Sie selbst an, wo der Quellcode zu finden ist.~%"
 
 #: gnu/installer.scm:214
 msgid "Locale"
@@ -1453,60 +1459,60 @@ msgstr "Kein WLAN gefunden"
 msgid "Wifi"
 msgstr "WLAN"
 
-#: gnu/installer/parted.scm:429 gnu/installer/parted.scm:466
+#: gnu/installer/parted.scm:433 gnu/installer/parted.scm:470
 msgid "Free space"
 msgstr "Freier Speicher"
 
-#: gnu/installer/parted.scm:555
+#: gnu/installer/parted.scm:559
 #, scheme-format
 msgid "Name: ~a"
 msgstr "Name: ~a"
 
-#: gnu/installer/parted.scm:556 gnu/installer/parted.scm:602
+#: gnu/installer/parted.scm:560 gnu/installer/parted.scm:606
 msgid "None"
 msgstr "Keiner"
 
-#: gnu/installer/parted.scm:561
+#: gnu/installer/parted.scm:565
 #, scheme-format
 msgid "Type: ~a"
 msgstr "Typ: ~a"
 
-#: gnu/installer/parted.scm:565
+#: gnu/installer/parted.scm:569
 #, scheme-format
 msgid "File system type: ~a"
 msgstr "Dateisystemtyp: ~a"
 
-#: gnu/installer/parted.scm:571
+#: gnu/installer/parted.scm:575
 #, scheme-format
 msgid "Bootable flag: ~:[off~;on~]"
 msgstr "Bootfähig-Flag: ~:[aus~;an~]"
 
-#: gnu/installer/parted.scm:575
+#: gnu/installer/parted.scm:579
 #, scheme-format
 msgid "ESP flag: ~:[off~;on~]"
 msgstr "ESP-Flag: ~:[aus~;an~]"
 
-#: gnu/installer/parted.scm:581
+#: gnu/installer/parted.scm:585
 #, scheme-format
 msgid "Size: ~a"
 msgstr "Größe: ~a"
 
-#: gnu/installer/parted.scm:587
+#: gnu/installer/parted.scm:591
 #, scheme-format
 msgid "Encryption: ~:[No~a~;Yes (label '~a')~]"
 msgstr "Verschlüsselt: ~:[Nein~a~;Ja (Bezeichnung '~a')~]"
 
-#: gnu/installer/parted.scm:593
+#: gnu/installer/parted.scm:597
 #, scheme-format
 msgid "Format the partition? ~:[No~;Yes~]"
 msgstr "Partition formatieren? ~:[Nein~;Ja~]"
 
-#: gnu/installer/parted.scm:599
+#: gnu/installer/parted.scm:603
 #, scheme-format
 msgid "Mount point: ~a"
 msgstr "Einhängepunkt: ~a"
 
-#: gnu/installer/parted.scm:1460
+#: gnu/installer/parted.scm:1465
 #, scheme-format
 msgid "Device ~a is still in use."
 msgstr "Gerät ~a wird noch verwendet."
@@ -1691,7 +1697,7 @@ msgid "~A: unrecognized option~%"
 msgstr "~A: Nicht erkannte Option~%"
 
 #: guix/scripts.scm:169 guix/scripts/import.scm:140
-#: guix/scripts/system.scm:1355
+#: guix/scripts/system.scm:1365
 #, scheme-format
 msgid "Did you mean @code{~a}?~%"
 msgstr "Meinten Sie @code{~a}?~%"
@@ -1952,7 +1958,7 @@ msgstr ""
 
 #: guix/scripts/build.scm:355 guix/scripts/pull.scm:119
 #: guix/scripts/pack.scm:1318 guix/scripts/archive.scm:95
-#: guix/scripts/environment.scm:96
+#: guix/scripts/environment.scm:97
 msgid ""
 "\n"
 "  -s, --system=SYSTEM    attempt to build for SYSTEM--e.g., \"i686-linux\""
@@ -1961,7 +1967,7 @@ msgstr ""
 "  -s, --system=SYSTEM    versuchen, für die angegebene Art von SYSTEM zu\n"
 "                           erstellen — z.B. „i686-linux“"
 
-#: guix/scripts/build.scm:357 guix/scripts/system.scm:1017
+#: guix/scripts/build.scm:357 guix/scripts/system.scm:1023
 #: guix/scripts/pack.scm:1320 guix/scripts/archive.scm:97
 msgid ""
 "\n"
@@ -1996,7 +2002,7 @@ msgstr ""
 "      --repair           die angegebenen Objekte reparieren"
 
 #: guix/scripts/build.scm:365 guix/scripts/pack.scm:1338
-#: guix/scripts/environment.scm:98
+#: guix/scripts/environment.scm:99
 msgid ""
 "\n"
 "  -r, --root=FILE        make FILE a symlink to the result, and register it\n"
@@ -2010,9 +2016,9 @@ msgstr ""
 #: guix/scripts/build.scm:368 guix/scripts/package.scm:486
 #: guix/scripts/install.scm:37 guix/scripts/remove.scm:36
 #: guix/scripts/upgrade.scm:39 guix/scripts/pull.scm:117
-#: guix/scripts/system.scm:1019 guix/scripts/copy.scm:122
+#: guix/scripts/system.scm:1025 guix/scripts/copy.scm:122
 #: guix/scripts/pack.scm:1343 guix/scripts/deploy.scm:60
-#: guix/scripts/archive.scm:99 guix/scripts/environment.scm:122
+#: guix/scripts/archive.scm:99 guix/scripts/environment.scm:123
 #: guix/scripts/home.scm:94
 msgid ""
 "\n"
@@ -2046,7 +2052,7 @@ msgstr ""
 #: guix/scripts/hash.scm:65 guix/scripts/import.scm:98
 #: guix/scripts/import/minetest.scm:46 guix/scripts/import/cran.scm:49
 #: guix/scripts/pull.scm:125 guix/scripts/substitute.scm:250
-#: guix/scripts/system.scm:1026 guix/scripts/lint.scm:115
+#: guix/scripts/system.scm:1032 guix/scripts/lint.scm:115
 #: guix/scripts/publish.scm:119 guix/scripts/edit.scm:51
 #: guix/scripts/size.scm:249 guix/scripts/graph.scm:558
 #: guix/scripts/challenge.scm:427 guix/scripts/copy.scm:127
@@ -2054,13 +2060,13 @@ msgstr ""
 #: guix/scripts/describe.scm:96 guix/scripts/processes.scm:301
 #: guix/scripts/deploy.scm:55 guix/scripts/container.scm:35
 #: guix/scripts/container/exec.scm:43 guix/scripts/archive.scm:106
-#: guix/scripts/environment.scm:148 guix/scripts/home.scm:97
+#: guix/scripts/environment.scm:149 guix/scripts/home.scm:97
 #: guix/scripts/time-machine.scm:67 guix/scripts/import/cpan.scm:44
-#: guix/scripts/import/crate.scm:50 guix/scripts/import/egg.scm:44
+#: guix/scripts/import/crate.scm:50 guix/scripts/import/egg.scm:45
 #: guix/scripts/import/gem.scm:46 guix/scripts/import/gnu.scm:50
 #: guix/scripts/import/go.scm:50 guix/scripts/import/json.scm:52
-#: guix/scripts/import/opam.scm:45 guix/scripts/import/pypi.scm:45
-#: guix/scripts/import/texlive.scm:47 guix/scripts/refresh.scm:186
+#: guix/scripts/import/opam.scm:45 guix/scripts/import/pypi.scm:46
+#: guix/scripts/import/texlive.scm:45 guix/scripts/refresh.scm:186
 #: guix/scripts/repl.scm:83 guix/scripts/shell.scm:68
 msgid ""
 "\n"
@@ -2077,7 +2083,7 @@ msgstr ""
 #: guix/scripts/hash.scm:67 guix/scripts/import.scm:100
 #: guix/scripts/import/minetest.scm:50 guix/scripts/import/cran.scm:55
 #: guix/scripts/pull.scm:127 guix/scripts/substitute.scm:252
-#: guix/scripts/system.scm:1028 guix/scripts/lint.scm:119
+#: guix/scripts/system.scm:1034 guix/scripts/lint.scm:119
 #: guix/scripts/publish.scm:121 guix/scripts/edit.scm:53
 #: guix/scripts/size.scm:251 guix/scripts/graph.scm:560
 #: guix/scripts/challenge.scm:429 guix/scripts/copy.scm:129
@@ -2085,12 +2091,12 @@ msgstr ""
 #: guix/scripts/describe.scm:98 guix/scripts/processes.scm:303
 #: guix/scripts/deploy.scm:57 guix/scripts/container.scm:37
 #: guix/scripts/container/exec.scm:45 guix/scripts/archive.scm:108
-#: guix/scripts/environment.scm:150 guix/scripts/home.scm:99
+#: guix/scripts/environment.scm:151 guix/scripts/home.scm:99
 #: guix/scripts/time-machine.scm:69 guix/scripts/import/cpan.scm:46
-#: guix/scripts/import/crate.scm:52 guix/scripts/import/egg.scm:48
+#: guix/scripts/import/crate.scm:52 guix/scripts/import/egg.scm:49
 #: guix/scripts/import/gem.scm:48 guix/scripts/import/gnu.scm:52
 #: guix/scripts/import/json.scm:54 guix/scripts/import/opam.scm:52
-#: guix/scripts/import/pypi.scm:49 guix/scripts/import/texlive.scm:49
+#: guix/scripts/import/pypi.scm:50 guix/scripts/import/texlive.scm:47
 #: guix/scripts/refresh.scm:188 guix/scripts/repl.scm:85
 #: guix/scripts/shell.scm:70
 msgid ""
@@ -2173,19 +2179,19 @@ msgstr "Keine Argumente angegeben; nichts zu tun~%"
 
 #. TRANSLATORS: The goal is to emit "warning:" followed by a short phrase;
 #. "~a" is a placeholder for that phrase.
-#: guix/diagnostics.scm:154
+#: guix/diagnostics.scm:156
 msgid "warning: "
 msgstr "Warnung: "
 
-#: guix/diagnostics.scm:156
+#: guix/diagnostics.scm:158
 msgid "error: "
 msgstr "Fehler: "
 
-#: guix/diagnostics.scm:256
+#: guix/diagnostics.scm:258
 msgid "<unknown location>"
 msgstr "<unbekannte Stelle>"
 
-#: guix/diagnostics.scm:308
+#: guix/diagnostics.scm:310
 #, scheme-format
 msgid "format string got ~a arguments, expected ~a~%"
 msgstr "Formatzeichenkette mit ~a Argumenten, erwartet wurden ~a~%"
@@ -2249,7 +2255,7 @@ msgstr "Commit ~a wurde mit keinem autorisierten Schlüssel signiert: ~a"
 msgid "initial commit ~a is signed by '~a' instead of '~a'"
 msgstr "Der erste Commit ~a wurde mit „~a“ statt „~a“ signiert"
 
-#: guix/gnupg.scm:231
+#: guix/gnupg.scm:236
 #, scheme-format
 msgid "Would you like to add this key to keyring '~a'?~%"
 msgstr "Möchten Sie diesen Schlüssel zum Schlüsselbund „~a“ hinzufügen?~%"
@@ -2398,7 +2404,7 @@ msgstr "~a: TLS-Zertifikatsfehler: ~a"
 msgid "~a: TLS error in '~a': ~a~%"
 msgstr "~a: TLS-Fehler in Prozedur „~a“: ~a~%"
 
-#: guix/lint.scm:803 guix/ui.scm:819 guix/scripts/offload.scm:191
+#: guix/lint.scm:803 guix/ui.scm:820 guix/scripts/offload.scm:191
 #, scheme-format
 msgid "~a: ~a~%"
 msgstr "~a: ~a~%"
@@ -3115,9 +3121,7 @@ msgstr ""
 #: guix/scripts/package.scm:552
 #, scheme-format
 msgid "upgrade regexp '~a' looks like a command-line option~%"
-msgstr ""
-"--upgrade: Der reguläre Ausdruck „~a“\n"
-"sieht wie eine Befehlszeilenoption aus"
+msgstr "--upgrade: Der reguläre Ausdruck „~a“ sieht wie eine Befehlszeilenoption aus~%"
 
 #: guix/scripts/package.scm:555
 #, scheme-format
@@ -3415,7 +3419,7 @@ msgstr ""
 "Aufruf: guix git BEFEHL ARGUMENTE …\n"
 "Operationen auf Git-Repositorys durchführen.\n"
 
-#: guix/scripts/git.scm:29 guix/scripts/system.scm:941
+#: guix/scripts/git.scm:29 guix/scripts/system.scm:945
 #: guix/scripts/container.scm:30 guix/scripts/home.scm:69
 msgid "The valid values for ACTION are:\n"
 msgstr "Die gültigen Werte für AKTION sind:\n"
@@ -3529,17 +3533,17 @@ msgstr ""
 "\n"
 "  -r, --recursive         die Prüfsumme der DATEI rekursiv errechnen"
 
-#: guix/scripts/hash.scm:172 guix/ui.scm:391 guix/ui.scm:422 guix/ui.scm:776
-#: guix/ui.scm:826 guix/ui.scm:877
+#: guix/scripts/hash.scm:172 guix/ui.scm:392 guix/ui.scm:423 guix/ui.scm:777
+#: guix/ui.scm:827 guix/ui.scm:878
 #, scheme-format
 msgid "~a~%"
 msgstr "~a~%"
 
-#: guix/scripts/hash.scm:175 guix/scripts/system.scm:1304
-#: guix/scripts/system.scm:1320 guix/scripts/system.scm:1327
-#: guix/scripts/system.scm:1333 guix/scripts/home.scm:274
-#: guix/scripts/home.scm:288 guix/scripts/home.scm:293
-#: guix/scripts/home.scm:299 guix/scripts/home.scm:306
+#: guix/scripts/hash.scm:175 guix/scripts/system.scm:1314
+#: guix/scripts/system.scm:1330 guix/scripts/system.scm:1337
+#: guix/scripts/system.scm:1343 guix/scripts/home.scm:274
+#: guix/scripts/home.scm:296 guix/scripts/home.scm:301
+#: guix/scripts/home.scm:307 guix/scripts/home.scm:314
 #: guix/scripts/import/gnu.scm:100 guix/scripts/offload.scm:826
 #: guix/scripts/offload.scm:838
 #, scheme-format
@@ -3582,8 +3586,8 @@ msgstr ""
 "Die Minetest-Mod NAME von AUTOR aus ContentDB importieren und umwandeln.\n"
 
 #: guix/scripts/import/minetest.scm:48 guix/scripts/import/cran.scm:51
-#: guix/scripts/import/crate.scm:47 guix/scripts/import/egg.scm:46
-#: guix/scripts/import/opam.scm:47 guix/scripts/import/pypi.scm:47
+#: guix/scripts/import/crate.scm:47 guix/scripts/import/egg.scm:47
+#: guix/scripts/import/opam.scm:47 guix/scripts/import/pypi.scm:48
 msgid ""
 "\n"
 "  -r, --recursive        import packages recursively"
@@ -3609,25 +3613,25 @@ msgstr ""
 msgid "~a: not a valid key to sort by~%"
 msgstr "~a: Nach diesem Schlüssel kann nicht sortiert werden~%"
 
-#: guix/scripts/import/minetest.scm:115 guix/scripts/import/cran.scm:117
+#: guix/scripts/import/minetest.scm:115 guix/scripts/import/cran.scm:120
 #: guix/scripts/import/elpa.scm:110 guix/scripts/import/cpan.scm:87
-#: guix/scripts/import/crate.scm:103 guix/scripts/import/egg.scm:102
+#: guix/scripts/import/crate.scm:103 guix/scripts/import/egg.scm:106
 #: guix/scripts/import/gem.scm:102 guix/scripts/import/go.scm:121
 #: guix/scripts/import/hackage.scm:158 guix/scripts/import/json.scm:97
-#: guix/scripts/import/opam.scm:111 guix/scripts/import/pypi.scm:102
-#: guix/scripts/import/stackage.scm:130 guix/scripts/import/texlive.scm:96
+#: guix/scripts/import/opam.scm:111 guix/scripts/import/pypi.scm:104
+#: guix/scripts/import/stackage.scm:130 guix/scripts/import/texlive.scm:88
 #, scheme-format
 msgid "too few arguments~%"
 msgstr "Zu wenige Argumente~%"
 
-#: guix/scripts/import/minetest.scm:117 guix/scripts/import/cran.scm:119
+#: guix/scripts/import/minetest.scm:117 guix/scripts/import/cran.scm:122
 #: guix/scripts/import/elpa.scm:112 guix/scripts/import/cpan.scm:89
-#: guix/scripts/import/crate.scm:105 guix/scripts/import/egg.scm:104
+#: guix/scripts/import/crate.scm:105 guix/scripts/import/egg.scm:108
 #: guix/scripts/import/gem.scm:104 guix/scripts/import/go.scm:123
 #: guix/scripts/import/hackage.scm:149 guix/scripts/import/hackage.scm:160
 #: guix/scripts/import/json.scm:99 guix/scripts/import/opam.scm:113
-#: guix/scripts/import/pypi.scm:104 guix/scripts/import/stackage.scm:132
-#: guix/scripts/import/texlive.scm:98
+#: guix/scripts/import/pypi.scm:106 guix/scripts/import/stackage.scm:132
+#: guix/scripts/import/texlive.scm:90
 #, scheme-format
 msgid "too many arguments~%"
 msgstr "Zu viele Argumente~%"
@@ -3640,7 +3644,7 @@ msgstr ""
 "Aufruf: guix import cran PAKETNAME\n"
 "Das CRAN-Paket für PAKETNAME importieren und umwandeln.\n"
 
-#: guix/scripts/import/cran.scm:47 guix/scripts/import/texlive.scm:45
+#: guix/scripts/import/cran.scm:47
 msgid ""
 "\n"
 "  -a, --archive=ARCHIVE  specify the archive repository"
@@ -3656,7 +3660,7 @@ msgstr ""
 "\n"
 "  -s, --style=STIL       Ausgabestil auswählen, als Spezifikation oder Variable"
 
-#: guix/scripts/import/cran.scm:113 guix/scripts/import/texlive.scm:92
+#: guix/scripts/import/cran.scm:116 guix/scripts/import/texlive.scm:84
 #, scheme-format
 msgid "failed to download description for package '~a'~%"
 msgstr "Beschreibung für Paket „~a“ konnte nicht geladen werden~%"
@@ -4110,27 +4114,27 @@ msgstr "gerichteter azyklischer Graph der Dienste"
 msgid "the dependency graph of shepherd services"
 msgstr "Abhängigkeitsgraph der Shepherd-Dienste"
 
-#: guix/scripts/system.scm:481 guix/scripts/home.scm:445
+#: guix/scripts/system.scm:481 guix/scripts/home.scm:453
 #, scheme-format
 msgid "      repository URL: ~a~%"
 msgstr "      Repository-URL: ~a~%"
 
-#: guix/scripts/system.scm:483 guix/scripts/home.scm:447
+#: guix/scripts/system.scm:483 guix/scripts/home.scm:455
 #, scheme-format
 msgid "      branch: ~a~%"
 msgstr "      Branch: ~a~%"
 
-#: guix/scripts/system.scm:484 guix/scripts/home.scm:448
+#: guix/scripts/system.scm:484 guix/scripts/home.scm:456
 #, scheme-format
 msgid "      commit: ~a~%"
 msgstr "      Commit: ~a~%"
 
-#: guix/scripts/system.scm:504 guix/scripts/home.scm:461
+#: guix/scripts/system.scm:504 guix/scripts/home.scm:469
 #, scheme-format
 msgid "  file name: ~a~%"
 msgstr "  Dateiname: ~a~%"
 
-#: guix/scripts/system.scm:505 guix/scripts/home.scm:462
+#: guix/scripts/system.scm:505 guix/scripts/home.scm:470
 #, scheme-format
 msgid "  canonical file name: ~a~%"
 msgstr "  kanonischer Dateiname: ~a~%"
@@ -4171,12 +4175,12 @@ msgstr "  Multiboot: ~a~%"
 
 #. TRANSLATORS: Here "channel" is the same terminology as used in
 #. "guix describe" and "guix pull --channels".
-#: guix/scripts/system.scm:535 guix/scripts/home.scm:468
+#: guix/scripts/system.scm:535 guix/scripts/home.scm:476
 #, scheme-format
 msgid "  channels:~%"
 msgstr "  Kanäle:~%"
 
-#: guix/scripts/system.scm:538 guix/scripts/home.scm:471
+#: guix/scripts/system.scm:538 guix/scripts/home.scm:479
 #, scheme-format
 msgid "  configuration file: ~a~%"
 msgstr "  Konfigurationsdatei: ~a~%"
@@ -4205,37 +4209,37 @@ msgstr "Kein Dateisystem mit Bezeichnung „~a“ gefunden~%"
 msgid "file system with UUID '~a' not found~%"
 msgstr "Kein Dateisystem mit UUID „~a“ gefunden~%"
 
-#: guix/scripts/system.scm:716
+#: guix/scripts/system.scm:718
 #, scheme-format
 msgid "'disk-image' is deprecated: use 'image' instead~%"
 msgstr "„disk-image“ ist veraltet, benutzen Sie stattdessen „image“~%"
 
-#: guix/scripts/system.scm:718
+#: guix/scripts/system.scm:720
 #, scheme-format
 msgid "'vm-image' is deprecated: use 'image' instead~%"
 msgstr "„vm-image“ ist veraltet, benutzen Sie stattdessen „image“~%"
 
-#: guix/scripts/system.scm:732
+#: guix/scripts/system.scm:734
 #, scheme-format
 msgid "Consider running 'guix pull' before 'reconfigure'.~%"
 msgstr "Vielleicht möchten Sie „guix pull“ ausführen vor „reconfigure“.~%"
 
-#: guix/scripts/system.scm:733
+#: guix/scripts/system.scm:735
 #, scheme-format
 msgid "Failing to do that may downgrade your system!~%"
 msgstr "Andernfalls könnte Ihr System auf einen älteren Stand zurückgesetzt werden!~%"
 
-#: guix/scripts/system.scm:754 guix/scripts/system.scm:859
+#: guix/scripts/system.scm:756 guix/scripts/system.scm:863
 #, scheme-format
 msgid "bootloader successfully installed on '~a'~%"
 msgstr "Bootloader erfolgreich auf „~a“ installiert~%"
 
-#: guix/scripts/system.scm:852
+#: guix/scripts/system.scm:856
 #, scheme-format
 msgid "activating system...~%"
 msgstr "System wird aktiviert …~%"
 
-#: guix/scripts/system.scm:863
+#: guix/scripts/system.scm:867
 msgid ""
 "To complete the upgrade, run 'herd restart SERVICE' to stop,\n"
 "upgrade, and restart each service that was not automatically restarted.\n"
@@ -4244,99 +4248,99 @@ msgstr ""
 "nicht automatisch neu gestartet werden konnte, „herd restart DIENST“\n"
 "ausführen, um ihn anzuhalten, zu aktualisieren und neu zu starten.\n"
 
-#: guix/scripts/system.scm:866
+#: guix/scripts/system.scm:870
 msgid "Run 'herd status' to view the list of services on your system.\n"
 msgstr "Führen Sie „herd status“ aus, um die Dienste auf Ihrem System zu sehen.\n"
 
-#: guix/scripts/system.scm:870
+#: guix/scripts/system.scm:874
 #, scheme-format
 msgid "initializing operating system under '~a'...~%"
 msgstr "Betriebssystem unter „~a“ wird initialisiert …~%"
 
-#: guix/scripts/system.scm:890 guix/scripts/graph.scm:437
+#: guix/scripts/system.scm:894 guix/scripts/graph.scm:437
 #, scheme-format
 msgid "~a: unknown backend~%"
 msgstr "~a: Unbekanntes Backend~%"
 
-#: guix/scripts/system.scm:927
+#: guix/scripts/system.scm:931
 msgid "The available image types are:\n"
 msgstr "Die verfügbaren Abbildtypen sind:\n"
 
-#: guix/scripts/system.scm:937
+#: guix/scripts/system.scm:941
 msgid ""
 "Usage: guix system [OPTION ...] ACTION [ARG ...] [FILE]\n"
 "Build the operating system declared in FILE according to ACTION.\n"
 "Some ACTIONS support additional ARGS.\n"
 msgstr ""
-"Aufruf: guix system [OPTION …] AKTION [ARGUMENT …] [DATEI]\n"
+"Aufruf: guix system [OPTION …] AKTION [ARGUMENTE …] [DATEI]\n"
 "Das in DATEI deklarierte Betriebssystem entsprechend der AKTION erstellen.\n"
-"Manche AKTIONen unterstützen weitere ARGUMENTe.\n"
+"Manche AKTION unterstützt weitere ARGUMENTE.\n"
 
-#: guix/scripts/system.scm:943
+#: guix/scripts/system.scm:947
 msgid "   search           search for existing service types\n"
 msgstr "   search              suche nach bestehenden Diensttypen\n"
 
-#: guix/scripts/system.scm:945
+#: guix/scripts/system.scm:949
 msgid "   reconfigure      switch to a new operating system configuration\n"
 msgstr "   reconfigure         zur neuen Betriebssystemkonfiguration wechseln\n"
 
-#: guix/scripts/system.scm:947
+#: guix/scripts/system.scm:951
 msgid "   roll-back        switch to the previous operating system configuration\n"
 msgstr "   roll-back           zur vorherigen Betriebssystemkonfiguration wechseln\n"
 
-#: guix/scripts/system.scm:949
+#: guix/scripts/system.scm:953
 msgid "   describe         describe the current system\n"
 msgstr "   describe            das aktuelle System beschreiben\n"
 
-#: guix/scripts/system.scm:951
+#: guix/scripts/system.scm:955
 msgid "   list-generations list the system generations\n"
 msgstr "   list-generations    die Systemgenerationen auflisten\n"
 
-#: guix/scripts/system.scm:953
+#: guix/scripts/system.scm:957
 msgid "   switch-generation switch to an existing operating system configuration\n"
 msgstr "   switch-generation   zu einer bestehenden Betriebssystemkonfiguration wechseln\n"
 
-#: guix/scripts/system.scm:955
+#: guix/scripts/system.scm:959
 msgid "   delete-generations delete old system generations\n"
 msgstr "   delete-generations  alte Systemgenerationen löschen\n"
 
-#: guix/scripts/system.scm:957
+#: guix/scripts/system.scm:961
 msgid "   build            build the operating system without installing anything\n"
 msgstr "   build               das Betriebssystem erstellen, ohne etwas zu installieren\n"
 
-#: guix/scripts/system.scm:959
+#: guix/scripts/system.scm:963
 msgid "   container        build a container that shares the host's store\n"
 msgstr ""
 "   container           einen Container erstellen, der den Store mit dem\n"
 "                         Wirtssystem teilt\n"
 
-#: guix/scripts/system.scm:961
+#: guix/scripts/system.scm:965
 msgid "   vm               build a virtual machine image that shares the host's store\n"
 msgstr ""
 "   vm                  ein Image für eine virtuelle Maschine erstellen, das den\n"
 "                         Store mit dem Wirtssystem teilt\n"
 
-#: guix/scripts/system.scm:963
+#: guix/scripts/system.scm:967
 msgid "   image            build a Guix System image\n"
 msgstr "   image            ein Abbild mit Guix System erstellen\n"
 
-#: guix/scripts/system.scm:965
+#: guix/scripts/system.scm:969
 msgid "   docker-image     build a Docker image\n"
 msgstr "   docker-image        ein Docker-Image z.B. für einen USB-Stick erstellen\n"
 
-#: guix/scripts/system.scm:967
+#: guix/scripts/system.scm:971
 msgid "   init             initialize a root file system to run GNU\n"
 msgstr "   init                ein Wurzeldateisystem initialisieren, um GNU auszuführen\n"
 
-#: guix/scripts/system.scm:969
+#: guix/scripts/system.scm:973
 msgid "   extension-graph  emit the service extension graph in Dot format\n"
 msgstr "   extension-graph     den Erweiterungsgraphen im Dot-Format ausgeben\n"
 
-#: guix/scripts/system.scm:971
+#: guix/scripts/system.scm:975
 msgid "   shepherd-graph   emit the graph of shepherd services in Dot format\n"
 msgstr "   shepherd-graph      den Graphen der Shepherd-Dienste im Dot-Format ausgeben\n"
 
-#: guix/scripts/system.scm:975
+#: guix/scripts/system.scm:979
 msgid ""
 "\n"
 "  -d, --derivation       return the derivation of the given system"
@@ -4344,7 +4348,7 @@ msgstr ""
 "\n"
 "  -d, --derivation       die Ableitung des gegebenen Systems liefern"
 
-#: guix/scripts/system.scm:977
+#: guix/scripts/system.scm:981
 msgid ""
 "\n"
 "  -e, --expression=EXPR  consider the operating-system EXPR evaluates to\n"
@@ -4355,7 +4359,7 @@ msgstr ""
 "                         das operating-system betrachten, zu dem AUSDRUCK\n"
 "                           ausgewertet wird, statt etwa eine DATEI auszulesen"
 
-#: guix/scripts/system.scm:980
+#: guix/scripts/system.scm:984
 msgid ""
 "\n"
 "      --allow-downgrades for 'reconfigure', allow downgrades to earlier\n"
@@ -4365,7 +4369,7 @@ msgstr ""
 "      --allow-downgrades bei „reconfigure“ Rückstufungen auf frühere\n"
 "                          Kanalversionen zulassen"
 
-#: guix/scripts/system.scm:983
+#: guix/scripts/system.scm:987
 msgid ""
 "\n"
 "      --on-error=STRATEGY\n"
@@ -4378,7 +4382,7 @@ msgstr ""
 "                          debug) anwenden, wenn beim Lesen der DATEI ein\n"
 "                          Fehler auftritt"
 
-#: guix/scripts/system.scm:987
+#: guix/scripts/system.scm:991
 msgid ""
 "\n"
 "      --list-image-types list available image types"
@@ -4386,7 +4390,7 @@ msgstr ""
 "\n"
 "      --list-image-types verfügbare Abbildtypen auflisten"
 
-#: guix/scripts/system.scm:989
+#: guix/scripts/system.scm:993
 msgid ""
 "\n"
 "  -t, --image-type=TYPE  for 'image', produce an image of TYPE"
@@ -4394,7 +4398,7 @@ msgstr ""
 "\n"
 "  -t, --image-type=TYP   bei „image“ ein Abbild des TYPs erstellen"
 
-#: guix/scripts/system.scm:991
+#: guix/scripts/system.scm:995
 msgid ""
 "\n"
 "      --image-size=SIZE  for 'image', produce an image of SIZE"
@@ -4403,7 +4407,7 @@ msgstr ""
 "      --image-size=GRÖSSE\n"
 "                         bei „image“ ein Image der GRÖSSE erstellen"
 
-#: guix/scripts/system.scm:993
+#: guix/scripts/system.scm:997
 msgid ""
 "\n"
 "      --no-bootloader    for 'init', do not install a bootloader"
@@ -4411,7 +4415,7 @@ msgstr ""
 "\n"
 "      --no-bootloader    bei „init“ keinen Bootloader installieren"
 
-#: guix/scripts/system.scm:995
+#: guix/scripts/system.scm:999
 msgid ""
 "\n"
 "      --volatile         for 'image', make the root file system volatile"
@@ -4420,7 +4424,7 @@ msgstr ""
 "      --volatile         bei „image“ Änderungen am Wurzeldateisystem\n"
 "                           nicht dauerhaft speichern (sie bleiben „flüchtig“)"
 
-#: guix/scripts/system.scm:997
+#: guix/scripts/system.scm:1001
 msgid ""
 "\n"
 "      --label=LABEL      for 'image', label disk image with LABEL"
@@ -4430,7 +4434,7 @@ msgstr ""
 "                         bei „image“ wird das Abbild mit\n"
 "                           der BEZEICHNUNG versehen"
 
-#: guix/scripts/system.scm:999 guix/scripts/pack.scm:1331
+#: guix/scripts/system.scm:1003 guix/scripts/pack.scm:1331
 msgid ""
 "\n"
 "      --save-provenance  save provenance information"
@@ -4438,7 +4442,7 @@ msgstr ""
 "\n"
 "      --save-provenance  Provenienzinformationen speichern"
 
-#: guix/scripts/system.scm:1001
+#: guix/scripts/system.scm:1005
 msgid ""
 "\n"
 "      --share=SPEC       for 'vm' and 'container', share host file system with\n"
@@ -4450,7 +4454,7 @@ msgstr ""
 "                           entsprechend der SPEZIFIKATION mit\n"
 "                           Lese-/Schreibzugriff teilen"
 
-#: guix/scripts/system.scm:1004
+#: guix/scripts/system.scm:1008
 msgid ""
 "\n"
 "      --expose=SPEC      for 'vm' and 'container', expose host file system\n"
@@ -4462,7 +4466,7 @@ msgstr ""
 "                           entsprechend der SPEZIFIKATION nur mit\n"
 "                           Lesezugriff zugänglich machen"
 
-#: guix/scripts/system.scm:1007
+#: guix/scripts/system.scm:1011
 msgid ""
 "\n"
 "  -N, --network          for 'container', allow containers to access the network"
@@ -4471,7 +4475,7 @@ msgstr ""
 "  -N, --network          bei Nutzung von „container“, Containern\n"
 "                           Netzwerkzugriff erlauben"
 
-#: guix/scripts/system.scm:1009
+#: guix/scripts/system.scm:1013
 msgid ""
 "\n"
 "  -r, --root=FILE        for 'vm', 'image', 'container' and 'build',\n"
@@ -4483,7 +4487,7 @@ msgstr ""
 "                           einer symbolischen Verknüpfung auf das Ergebnis\n"
 "                           machen und als Müllsammler-Wurzel registrieren"
 
-#: guix/scripts/system.scm:1013
+#: guix/scripts/system.scm:1017
 msgid ""
 "\n"
 "      --full-boot        for 'vm', make a full boot sequence"
@@ -4491,7 +4495,13 @@ msgstr ""
 "\n"
 "      --full-boot        bei „vm“ einen vollständigen Bootvorgang simulieren"
 
-#: guix/scripts/system.scm:1015
+#: guix/scripts/system.scm:1019
+msgid ""
+"\n"
+"      --no-graphic       for 'vm', use the tty that we are started in for IO"
+msgstr ""
+
+#: guix/scripts/system.scm:1021
 msgid ""
 "\n"
 "      --skip-checks      skip file system and initrd module safety checks"
@@ -4500,7 +4510,7 @@ msgstr ""
 "      --skip-checks      Dateisystem- und Initrd-Modul-Fehlerprüfung\n"
 "                           überspringen"
 
-#: guix/scripts/system.scm:1022
+#: guix/scripts/system.scm:1028
 msgid ""
 "\n"
 "      --graph-backend=BACKEND\n"
@@ -4511,47 +4521,47 @@ msgstr ""
 "                         BACKEND für 'extension-graphs' und 'shepherd-graph'\n"
 "                           benutzen"
 
-#: guix/scripts/system.scm:1171
+#: guix/scripts/system.scm:1180
 #, scheme-format
 msgid "'~a' does not return an operating system or an image~%"
 msgstr "„~a“ liefert kein Betriebssystem oder image-Objekt~%"
 
-#: guix/scripts/system.scm:1195 guix/scripts/home.scm:216
+#: guix/scripts/system.scm:1204 guix/scripts/home.scm:216
 #, scheme-format
 msgid "both file and expression cannot be specified~%"
 msgstr "Es können nicht sowohl Datei als auch Ausdruck angegeben werden~%"
 
-#: guix/scripts/system.scm:1202 guix/scripts/home.scm:223
+#: guix/scripts/system.scm:1211 guix/scripts/home.scm:223
 #, scheme-format
 msgid "no configuration specified~%"
 msgstr "Keine Konfiguration angegeben~%"
 
-#: guix/scripts/system.scm:1309
+#: guix/scripts/system.scm:1319
 #, scheme-format
 msgid "no system generation, nothing to describe~%"
 msgstr "Keine Systemgeneration angegeben; kann nicht beschrieben werden~%"
 
-#: guix/scripts/system.scm:1352 guix/scripts/home.scm:329
+#: guix/scripts/system.scm:1362 guix/scripts/home.scm:337
 #, scheme-format
 msgid "~a: unknown action~%"
 msgstr "~a: Unbekannte Aktion~%"
 
-#: guix/scripts/system.scm:1372 guix/scripts/home.scm:345
+#: guix/scripts/system.scm:1382 guix/scripts/home.scm:353
 #, scheme-format
 msgid "wrong number of arguments for action '~a'~%"
 msgstr "Falsche Anzahl an Argumenten für Aktion „~a“~%"
 
-#: guix/scripts/system.scm:1377
+#: guix/scripts/system.scm:1387
 #, scheme-format
 msgid "guix system: missing command name~%"
 msgstr "guix system: Befehlsname fehlt~%"
 
-#: guix/scripts/system.scm:1379
+#: guix/scripts/system.scm:1389
 #, scheme-format
 msgid "Try 'guix system --help' for more information.~%"
 msgstr "Rufen Sie „guix system --help“ auf, um weitere Informationen zu erhalten.~%"
 
-#: guix/scripts/system/search.scm:93 guix/ui.scm:1540 guix/ui.scm:1558
+#: guix/scripts/system/search.scm:93 guix/ui.scm:1541 guix/ui.scm:1559
 msgid "unknown"
 msgstr "unbekannt"
 
@@ -5017,10 +5027,10 @@ msgstr ""
 #: guix/scripts/graph.scm:544
 msgid ""
 "\n"
-"      --max-depth=DEPTH  limit to nodes within distance DEPTH"
+"  -M, --max-depth=DEPTH  limit to nodes within distance DEPTH"
 msgstr ""
 "\n"
-"      --max-depth=TIEFE  nur Knoten bis zu einer Distanz TIEFE zeigen"
+"  -M, --max-depth=TIEFE  nur Knoten bis zu einer Distanz TIEFE zeigen"
 
 #: guix/scripts/graph.scm:546
 msgid ""
@@ -6114,7 +6124,7 @@ msgstr "Modulname „~a“ passt nicht zum Dateinamen „~a“~%"
 msgid "~a: file is empty~%"
 msgstr "~a: Datei ist leer~%"
 
-#: guix/ui.scm:369 guix/ui.scm:419 guix/ui.scm:427 guix/ui.scm:431
+#: guix/ui.scm:369 guix/ui.scm:420 guix/ui.scm:428 guix/ui.scm:432
 #, scheme-format
 msgid "failed to load '~a': ~a~%"
 msgstr "„~a“ konnte nicht geladen werden: ~a~%"
@@ -6124,27 +6134,32 @@ msgstr "„~a“ konnte nicht geladen werden: ~a~%"
 msgid "~amissing closing parenthesis~%"
 msgstr "~aschließende Klammer fehlt~%"
 
-#: guix/ui.scm:383
+#: guix/ui.scm:380
+#, scheme-format
+msgid "read error while loading '~a': ~a~%"
+msgstr "Lesefehler beim Laden von „~a“: ~a~%"
+
+#: guix/ui.scm:384
 #, scheme-format
 msgid "~s: ~a~%"
 msgstr "~s: ~a~%"
 
-#: guix/ui.scm:399 guix/ui.scm:886
+#: guix/ui.scm:400 guix/ui.scm:887
 #, scheme-format
 msgid "exception thrown: ~s~%"
 msgstr "Ausnahme ausgelöst: ~s~%"
 
-#: guix/ui.scm:403 guix/ui.scm:441
+#: guix/ui.scm:404 guix/ui.scm:442
 #, scheme-format
 msgid "failed to load '~a':~%"
 msgstr "„~a“ konnte nicht geladen werden:~%"
 
-#: guix/ui.scm:438
+#: guix/ui.scm:439
 #, scheme-format
 msgid "failed to load '~a': exception thrown: ~s~%"
 msgstr "„~a“ konnte nicht geladen werden: Ausnahme ausgelöst: ~s~%"
 
-#: guix/ui.scm:486
+#: guix/ui.scm:487
 msgid ""
 "Consider installing the @code{glibc-locales} package\n"
 "and defining @code{GUIX_LOCPATH}, along these lines:\n"
@@ -6170,15 +6185,15 @@ msgstr ""
 #. TRANSLATORS: Translate "(C)" to the copyright symbol
 #. (C-in-a-circle), if this symbol is available in the user's
 #. locale.  Otherwise, do not translate "(C)"; leave it as-is.  */
-#: guix/ui.scm:527
+#: guix/ui.scm:528
 msgid "(C)"
 msgstr "©"
 
-#: guix/ui.scm:528
+#: guix/ui.scm:529
 msgid "the Guix authors\n"
 msgstr "die Guix-Autoren\n"
 
-#: guix/ui.scm:529
+#: guix/ui.scm:530
 msgid ""
 "License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\n"
 "This is free software: you are free to change and redistribute it.\n"
@@ -6192,7 +6207,7 @@ msgstr ""
 #. package.  Please add another line saying "Report translation bugs to
 #. ...\n" with the address for translation bugs (typically your translation
 #. team's web or email address).
-#: guix/ui.scm:541
+#: guix/ui.scm:542
 #, scheme-format
 msgid ""
 "\n"
@@ -6202,7 +6217,7 @@ msgstr ""
 "Melden Sie Fehler an: ~a.\n"
 "Melden Sie Übersetzungsfehler an: translation-team-de@lists.sourceforge.net."
 
-#: guix/ui.scm:543
+#: guix/ui.scm:544
 #, scheme-format
 msgid ""
 "\n"
@@ -6211,7 +6226,7 @@ msgstr ""
 "\n"
 "Homepage von ~a: <~a>"
 
-#: guix/ui.scm:545
+#: guix/ui.scm:546
 #, scheme-format
 msgid ""
 "\n"
@@ -6222,31 +6237,31 @@ msgstr ""
 
 #. TRANSLATORS: Change the "/en" bit of this URL appropriately if
 #. the web site is translated in your language.
-#: guix/ui.scm:549
+#: guix/ui.scm:550
 msgid "https://guix.gnu.org/en/help/"
 msgstr "https://guix.gnu.org/de/help/"
 
-#: guix/ui.scm:603
+#: guix/ui.scm:604
 #, scheme-format
 msgid "'~a' is not a valid regular expression: ~a~%"
 msgstr "„~a“ ist kein gültiger regulärer Ausdruck: ~a~%"
 
-#: guix/ui.scm:609
+#: guix/ui.scm:610
 #, scheme-format
 msgid "~a: invalid number~%"
 msgstr "~a: Ungültige Zahl~%"
 
-#: guix/ui.scm:627
+#: guix/ui.scm:628
 #, scheme-format
 msgid "invalid number: ~a~%"
 msgstr "Ungültige Zahl: ~a~%"
 
-#: guix/ui.scm:650
+#: guix/ui.scm:651
 #, scheme-format
 msgid "unknown unit: ~a~%"
 msgstr "Unbekannte Einheit: ~a~%"
 
-#: guix/ui.scm:665
+#: guix/ui.scm:666
 #, scheme-format
 msgid ""
 "You cannot have two different versions\n"
@@ -6255,7 +6270,7 @@ msgstr ""
 "Sie können keine zwei verschiedenen Versionen\n"
 "oder Varianten von @code{~a} im selben Profil haben."
 
-#: guix/ui.scm:668
+#: guix/ui.scm:669
 #, scheme-format
 msgid ""
 "Try upgrading both @code{~a} and @code{~a},\n"
@@ -6264,111 +6279,111 @@ msgstr ""
 "Versuchen Sie, sowohl @code{~a} als auch @code{~a} zu aktualisieren,\n"
 "oder entfernen Sie eines von beidem aus dem Profil."
 
-#: guix/ui.scm:699
+#: guix/ui.scm:700
 #, scheme-format
 msgid "~a:~a:~a: package `~a' has an invalid input: ~s~%"
 msgstr "~a:~a:~a: Paket „~a“ hat eine ungültige Eingabe: ~s~%"
 
-#: guix/ui.scm:706
+#: guix/ui.scm:707
 #, scheme-format
 msgid "~a: ~a: build system `~a' does not support cross builds~%"
 msgstr "~a: ~a: Erstellungssystem „~a“ unterstützt kein Cross-Erstellen~%"
 
-#: guix/ui.scm:712
+#: guix/ui.scm:713
 #, scheme-format
 msgid "~s: invalid G-expression input~%"
 msgstr "~s: Ungültige Eingabe eines G-Ausdrucks~%"
 
-#: guix/ui.scm:715
+#: guix/ui.scm:716
 #, scheme-format
 msgid "profile '~a' does not exist~%"
 msgstr "Profil „~a“ existiert nicht~%"
 
-#: guix/ui.scm:718
+#: guix/ui.scm:719
 #, scheme-format
 msgid "generation ~a of profile '~a' does not exist~%"
 msgstr "Generation ~a des Profils „~a“ existiert nicht~%"
 
-#: guix/ui.scm:723
+#: guix/ui.scm:724
 #, scheme-format
 msgid "package '~a~@[@~a~]~@[:~a~]' not found in profile~%"
 msgstr "Paket „~a~@[@~a~]~@[:~a~]“ wurde im Profil nicht gefunden~%"
 
-#: guix/ui.scm:735
+#: guix/ui.scm:736
 #, scheme-format
 msgid "   ... propagated from ~a@~a~%"
 msgstr "   … propagiert von ~a@~a~%"
 
-#: guix/ui.scm:745
+#: guix/ui.scm:746
 #, scheme-format
 msgid "profile contains conflicting entries for ~a~a~%"
 msgstr "Profil enthält im Konflikt stehende Einträge für ~a~a~%"
 
-#: guix/ui.scm:748
+#: guix/ui.scm:749
 #, scheme-format
 msgid "  first entry: ~a@~a~a ~a~%"
 msgstr "  erster Eintrag: ~a@~a~a ~a~%"
 
-#: guix/ui.scm:754
+#: guix/ui.scm:755
 #, scheme-format
 msgid "  second entry: ~a@~a~a ~a~%"
 msgstr "  zweiter Eintrag: ~a@~a~a ~a~%"
 
-#: guix/ui.scm:766
+#: guix/ui.scm:767
 #, scheme-format
 msgid "corrupt input while restoring '~a' from ~s~%"
 msgstr "Beschädigte Eingabe, während „~a“ aus „~s“ wiederhergestellt wurde~%"
 
-#: guix/ui.scm:768
+#: guix/ui.scm:769
 #, scheme-format
 msgid "corrupt input while restoring archive from ~s~%"
 msgstr "Beschädigte Eingabe, während das Archiv aus „~s“ wiederhergestellt wurde~%"
 
-#: guix/ui.scm:771
+#: guix/ui.scm:772
 #, scheme-format
 msgid "failed to connect to `~a': ~a~%"
 msgstr "Verbindung zu „~a“ fehlgeschlagen: ~a~%"
 
-#: guix/ui.scm:779
+#: guix/ui.scm:780
 #, scheme-format
 msgid "reference to invalid output '~a' of derivation '~a'~%"
 msgstr "Referenz auf ungültige Ausgabe „~a“ der Ableitung „~a“~%"
 
-#: guix/ui.scm:783
+#: guix/ui.scm:784
 #, scheme-format
 msgid "file '~a' could not be found in these directories:~{ ~a~}~%"
 msgstr "Datei „~a“ konnte in diesen Verzeichnissen nicht gefunden werden:~{ ~a~}~%"
 
-#: guix/ui.scm:788
+#: guix/ui.scm:789
 #, scheme-format
 msgid "program exited~@[ with non-zero exit status ~a~]~@[ terminated by signal ~a~]~@[ stopped by signal ~a~]: ~s~%"
 msgstr "Programm wurde~@[ mit Exit-Status ~a ungleich null~] beendet~@[ durch Signal ~a~]~@[, angehalten durch Signal ~a~]: ~s~%"
 
-#: guix/ui.scm:865
+#: guix/ui.scm:866
 #, scheme-format
 msgid "failed to read expression ~s: ~s~%"
 msgstr "Ausdruck ~s konnte nicht gelesen werden: ~s~%"
 
-#: guix/ui.scm:871
+#: guix/ui.scm:872
 #, scheme-format
 msgid "failed to evaluate expression '~a':~%"
 msgstr "Ausdruck „~a“ kann nicht ausgewertet werden:~%"
 
-#: guix/ui.scm:874
+#: guix/ui.scm:875
 #, scheme-format
 msgid "syntax error: ~a~%"
 msgstr "Syntaxfehler: ~a~%"
 
-#: guix/ui.scm:898
+#: guix/ui.scm:899
 #, scheme-format
 msgid "expression ~s does not evaluate to a package~%"
 msgstr "Ausdruck ~s ergibt kein Paket~%"
 
-#: guix/ui.scm:925
+#: guix/ui.scm:926
 msgid "at least ~,1h MB needed but only ~,1h MB available in ~a~%"
 msgstr "Mindestens ~,1h MB werden gebraucht, aber nur ~,1h MB sind verfügbar in ~a~%"
 
-#: guix/ui.scm:1034
+#: guix/ui.scm:1035
 #, scheme-format
 msgid "~:[The following derivation would be built:~%~{   ~a~%~}~;~]"
 msgid_plural "~:[The following derivations would be built:~%~{   ~a~%~}~;~]"
@@ -6377,25 +6392,25 @@ msgstr[1] "~:[Folgende Ableitungen würden erstellt:~%~{   ~a~%~}~;~]"
 
 #. TRANSLATORS: "MB" is for "megabyte"; it should be
 #. translated to the corresponding abbreviation.
-#: guix/ui.scm:1043
+#: guix/ui.scm:1044
 msgid "~:[~,1h MB would be downloaded:~%~{   ~a~%~}~;~]"
 msgstr "~:[~,1h MB würden heruntergeladen:~%~{   ~a~%~}~;~]"
 
-#: guix/ui.scm:1049
+#: guix/ui.scm:1050
 #, scheme-format
 msgid "~:[The following file would be downloaded:~%~{   ~a~%~}~;~]"
 msgid_plural "~:[The following files would be downloaded:~%~{   ~a~%~}~;~]"
 msgstr[0] "~:[Folgende Datei würde heruntergeladen:~%~{   ~a~%~}~;~]"
 msgstr[1] "~:[Folgende Dateien würden heruntergeladen:~%~{   ~a~%~}~;~]"
 
-#: guix/ui.scm:1056
+#: guix/ui.scm:1057
 #, scheme-format
 msgid "~:[The following graft would be made:~%~{   ~a~%~}~;~]"
 msgid_plural "~:[The following grafts would be made:~%~{   ~a~%~}~;~]"
 msgstr[0] "~:[Folgende Veredelung würde durchgeführt:~%~{   ~a~%~}~;~]"
 msgstr[1] "~:[Folgende Veredelungen würden durchgeführt:~%~{   ~a~%~}~;~]"
 
-#: guix/ui.scm:1061
+#: guix/ui.scm:1062
 #, scheme-format
 msgid "~:[The following profile hook would be built:~%~{   ~a~%~}~;~]"
 msgid_plural "~:[The following profile hooks would be built:~%~{   ~a~%~}~;~]"
@@ -6404,17 +6419,17 @@ msgstr[1] "~:[Folgende Profil-Hooks würden erstellt:~%~{   ~a~%~}~;~]"
 
 #. TRANSLATORS: "MB" is for "megabyte"; it should be
 #. translated to the corresponding abbreviation.
-#: guix/ui.scm:1073
+#: guix/ui.scm:1074
 msgid "~:[~,1h MB would be downloaded~%~;~]"
 msgstr "~:[~,1h MB würden heruntergeladen~%~;~]"
 
-#: guix/ui.scm:1077
+#: guix/ui.scm:1078
 msgid "~:[~h item would be downloaded~%~;~]"
 msgid_plural "~:[~h items would be downloaded~%~;~]"
 msgstr[0] "~:[~h Objekt würde heruntergeladen~%~;~]"
 msgstr[1] "~:[~h Objekte würden heruntergeladen~%~;~]"
 
-#: guix/ui.scm:1085
+#: guix/ui.scm:1086
 #, scheme-format
 msgid "~:[The following derivation will be built:~%~{   ~a~%~}~;~]"
 msgid_plural "~:[The following derivations will be built:~%~{   ~a~%~}~;~]"
@@ -6423,25 +6438,25 @@ msgstr[1] "~:[Folgende Ableitungen werden erstellt:~%~{   ~a~%~}~;~]"
 
 #. TRANSLATORS: "MB" is for "megabyte"; it should be
 #. translated to the corresponding abbreviation.
-#: guix/ui.scm:1094
+#: guix/ui.scm:1095
 msgid "~:[~,1h MB will be downloaded:~%~{   ~a~%~}~;~]"
 msgstr "~:[~,1h MB werden heruntergeladen:~%~{   ~a~%~}~;~]"
 
-#: guix/ui.scm:1100
+#: guix/ui.scm:1101
 #, scheme-format
 msgid "~:[The following file will be downloaded:~%~{   ~a~%~}~;~]"
 msgid_plural "~:[The following files will be downloaded:~%~{   ~a~%~}~;~]"
 msgstr[0] "~:[Die folgende Datei wird heruntergeladen:~%~{   ~a~%~}~;~]"
 msgstr[1] "~:[Die folgenden Dateien werden heruntergeladen:~%~{   ~a~%~}~;~]"
 
-#: guix/ui.scm:1107
+#: guix/ui.scm:1108
 #, scheme-format
 msgid "~:[The following graft will be made:~%~{   ~a~%~}~;~]"
 msgid_plural "~:[The following grafts will be made:~%~{   ~a~%~}~;~]"
 msgstr[0] "~:[Folgende Veredelung wird durchgeführt:~%~{   ~a~%~}~;~]"
 msgstr[1] "~:[Folgende Veredelungen werden durchgeführt:~%~{   ~a~%~}~;~]"
 
-#: guix/ui.scm:1112
+#: guix/ui.scm:1113
 #, scheme-format
 msgid "~:[The following profile hook will be built:~%~{   ~a~%~}~;~]"
 msgid_plural "~:[The following profile hooks will be built:~%~{   ~a~%~}~;~]"
@@ -6450,88 +6465,87 @@ msgstr[1] "~:[Folgende Profil-Hooks werden erstellt:~%~{   ~a~%~}~;~]"
 
 #. TRANSLATORS: "MB" is for "megabyte"; it should be
 #. translated to the corresponding abbreviation.
-#: guix/ui.scm:1124
+#: guix/ui.scm:1125
 msgid "~:[~,1h MB will be downloaded~%~;~]"
 msgstr "~:[~,1h MB werden heruntergeladen~%~;~]"
 
-#: guix/ui.scm:1128
+#: guix/ui.scm:1129
 msgid "~:[~h item will be downloaded~%~;~]"
 msgid_plural "~:[~h items will be downloaded~%~;~]"
 msgstr[0] "~:[~h Objekt wird heruntergeladen~%~;~]"
 msgstr[1] "~:[~h Objekte werden heruntergeladen~%~;~]"
 
-#: guix/ui.scm:1247
+#: guix/ui.scm:1248
 msgid "(dependencies or package changed)"
 msgstr "(Änderungen an Abhängigkeiten oder am Paket)"
 
-#: guix/ui.scm:1266
+#: guix/ui.scm:1267
 #, scheme-format
 msgid "The following package would be removed:~%~{~a~%~}~%"
 msgid_plural "The following packages would be removed:~%~{~a~%~}~%"
 msgstr[0] "Das folgende Paket würde entfernt:~%~{~a~%~}~%"
 msgstr[1] "Die folgenden Pakete würden entfernt:~%~{~a~%~}~%"
 
-#: guix/ui.scm:1271
+#: guix/ui.scm:1272
 #, scheme-format
 msgid "The following package will be removed:~%~{~a~%~}~%"
 msgid_plural "The following packages will be removed:~%~{~a~%~}~%"
 msgstr[0] "Das folgende Paket wird entfernt:~%~{~a~%~}~%"
 msgstr[1] "Die folgenden Pakete werden entfernt:~%~{~a~%~}~%"
 
-#: guix/ui.scm:1284
+#: guix/ui.scm:1285
 #, scheme-format
 msgid "The following package would be downgraded:~%~{~a~%~}~%"
 msgid_plural "The following packages would be downgraded:~%~{~a~%~}~%"
 msgstr[0] "Die Version des folgenden Pakets würde heruntergestuft:~%~{~a~%~}~%"
 msgstr[1] "Die Version der folgenden Pakete würde heruntergestuft:~%~{~a~%~}~%"
 
-#: guix/ui.scm:1289
+#: guix/ui.scm:1290
 #, scheme-format
 msgid "The following package will be downgraded:~%~{~a~%~}~%"
 msgid_plural "The following packages will be downgraded:~%~{~a~%~}~%"
 msgstr[0] "Die Version des folgenden Pakets wird heruntergestuft:~%~{~a~%~}~%"
 msgstr[1] "Die Version der folgenden Pakete wird heruntergestuft:~%~{~a~%~}~%"
 
-#: guix/ui.scm:1302
+#: guix/ui.scm:1303
 #, scheme-format
 msgid "The following package would be upgraded:~%~{~a~%~}~%"
 msgid_plural "The following packages would be upgraded:~%~{~a~%~}~%"
 msgstr[0] "Das folgende Paket würde aktualisiert:~%~{~a~%~}~%"
 msgstr[1] "Die folgenden Pakete würden aktualisiert:~%~{~a~%~}~%"
 
-#: guix/ui.scm:1307
+#: guix/ui.scm:1308
 #, scheme-format
 msgid "The following package will be upgraded:~%~{~a~%~}~%"
 msgid_plural "The following packages will be upgraded:~%~{~a~%~}~%"
 msgstr[0] "Das folgende Paket wird aktualisiert:~%~{~a~%~}~%"
 msgstr[1] "Die folgenden Pakete werden aktualisiert:~%~{~a~%~}~%"
 
-#: guix/ui.scm:1318
+#: guix/ui.scm:1319
 #, scheme-format
 msgid "The following package would be installed:~%~{~a~%~}~%"
 msgid_plural "The following packages would be installed:~%~{~a~%~}~%"
 msgstr[0] "Das folgende Paket würde installiert:~%~{~a~%~}~%"
 msgstr[1] "Die folgenden Pakete würden installiert:~%~{~a~%~}~%"
 
-#: guix/ui.scm:1323
+#: guix/ui.scm:1324
 #, scheme-format
 msgid "The following package will be installed:~%~{~a~%~}~%"
 msgid_plural "The following packages will be installed:~%~{~a~%~}~%"
 msgstr[0] "Das folgende Paket wird installiert:~%~{~a~%~}~%"
 msgstr[1] "Die folgenden Pakete werden installiert:~%~{~a~%~}~%"
 
-#: guix/ui.scm:1441
-#, fuzzy, scheme-format
-#| msgid "~a: invalid number~%"
+#: guix/ui.scm:1442
+#, scheme-format
 msgid "~a: invalid Texinfo markup~%"
-msgstr "~a: Ungültige Zahl~%"
+msgstr "~a: Ungültige Texinfo-Auszeichnung~%"
 
-#: guix/ui.scm:1872
+#: guix/ui.scm:1873
 #, scheme-format
 msgid "invalid syntax: ~a~%"
 msgstr "Unzulässige Syntax: ~a~%"
 
-#: guix/ui.scm:1881
+#: guix/ui.scm:1882
 #, scheme-format
 msgid "Generation ~a\t~a"
 msgstr "Generation ~a\t~a"
@@ -6541,7 +6555,7 @@ msgstr "Generation ~a\t~a"
 #. usual way of presenting dates in your locale.
 #. See https://www.gnu.org/software/guile/manual/html_node/SRFI_002d19-Date-to-string.html
 #. for details.
-#: guix/ui.scm:1891
+#: guix/ui.scm:1892
 #, scheme-format
 msgid "~b ~d ~Y ~T"
 msgstr "~d. ~B ~Y ~T"
@@ -6549,92 +6563,81 @@ msgstr "~d. ~B ~Y ~T"
 #. TRANSLATORS: The word "current" here is an adjective for
 #. "Generation", as in "current generation".  Use the appropriate
 #. gender where applicable.
-#: guix/ui.scm:1897
+#: guix/ui.scm:1898
 #, scheme-format
 msgid "~a\t(current)~%"
 msgstr "~a\t(aktuell)~%"
 
-#: guix/ui.scm:1931
+#: guix/ui.scm:1932
 #, scheme-format
 msgid "cannot lock profile ~a: ~a~%"
 msgstr "Kann Profil ~a nicht sperren: ~a~%"
 
-#: guix/ui.scm:1933
+#: guix/ui.scm:1934
 #, scheme-format
 msgid "profile ~a is locked by another process~%"
 msgstr "Profil ~a wird durch einen anderen Prozess gesperrt~%"
 
-#: guix/ui.scm:1962
+#: guix/ui.scm:1963
 #, scheme-format
 msgid "switched from generation ~a to ~a~%"
 msgstr "Von Generation „~a“ zu „~a“ gewechselt~%"
 
-#: guix/ui.scm:1978
+#: guix/ui.scm:1979
 #, scheme-format
 msgid "deleting ~a~%"
 msgstr "~a wird gelöscht~%"
 
-#: guix/ui.scm:2009
+#: guix/ui.scm:2010
 #, scheme-format
 msgid "Try `guix --help' for more information.~%"
 msgstr "Rufen Sie „guix --help“ auf, um weitere Informationen zu erhalten.~%"
 
-#: guix/ui.scm:2101
-#, fuzzy
-#| msgid ""
-#| "Usage: guix COMMAND ARGS...\n"
-#| "Run COMMAND with ARGS.\n"
+#: guix/ui.scm:2102
 msgid ""
 "Usage: guix OPTION | COMMAND ARGS...\n"
 "Run COMMAND with ARGS, if given.\n"
 msgstr ""
-"Aufruf: guix BEFEHL ARGUMENTE …\n"
-"BEFEHL mit ARGUMENTEN ausführen.\n"
+"Aufruf: guix OPTION | BEFEHL ARGUMENTE …\n"
+"BEFEHL mit ARGUMENTE ausführen.\n"
 
-#: guix/ui.scm:2104
-#, fuzzy
-#| msgid ""
-#| "\n"
-#| "  -h, --help             display this help and exit"
+#: guix/ui.scm:2105
 msgid ""
 "\n"
 "  -h, --help             display this helpful text again and exit"
 msgstr ""
 "\n"
-"  -h, --help             diese Hilfe anzeigen und beenden"
+"  -h, --help             diesen hilfreichen Text nochmal anzeigen und beenden"
 
-#: guix/ui.scm:2106
-#, fuzzy
-#| msgid ""
-#| "\n"
-#| "  -V, --version          display version information and exit"
+#: guix/ui.scm:2107
 msgid ""
 "\n"
 "  -V, --version          display version and copyright information and exit"
 msgstr ""
 "\n"
-"  -V, --version          Versionsinformationen anzeigen und beenden"
+"  -V, --version          Versions- und Urheberrechtsinformationen\n"
+"                           anzeigen und beenden"
 
-#: guix/ui.scm:2111
+#: guix/ui.scm:2112
 msgid "COMMAND must be one of the sub-commands listed below:\n"
 msgstr "BEFEHL muss einer der unten aufgelisteten Unterbefehle sein:\n"
 
-#: guix/ui.scm:2153
+#: guix/ui.scm:2154
 #, scheme-format
 msgid "guix: ~a: command not found~%"
 msgstr "guix: ~a: Befehl nicht gefunden~%"
 
-#: guix/ui.scm:2155
+#: guix/ui.scm:2156
 #, scheme-format
 msgid "Did you mean @code{~a}?"
 msgstr "Meinten Sie @code{~a}?"
 
-#: guix/ui.scm:2189
+#: guix/ui.scm:2190
 #, scheme-format
 msgid "guix: missing command name~%"
 msgstr "guix: Befehlsname fehlt~%"
 
-#: guix/ui.scm:2197
+#: guix/ui.scm:2198
 #, scheme-format
 msgid "guix: unrecognized option '~a'~%"
 msgstr "guix: Nicht erkannte Option „~a“~%"
@@ -6967,25 +6970,25 @@ msgstr "Paketursprung hat keinen SHA256-Hash"
 msgid "unsupported manifest format"
 msgstr "Nicht unterstütztes Manifest-Format"
 
-#: guix/profiles.scm:2186
+#: guix/profiles.scm:2196
 #, scheme-format
 msgid "while creating directory `~a': ~a"
 msgstr "Beim Anlegen des Verzeichnisses „~a“: ~a"
 
-#: guix/profiles.scm:2191
+#: guix/profiles.scm:2201
 #, scheme-format
 msgid "Please create the @file{~a} directory, with you as the owner."
-msgstr "Bitte legen Sie das Verzeichnis @file{~a} mit Ihnen als Eigentümer an.~%"
+msgstr "Bitte legen Sie das Verzeichnis @file{~a} mit Ihnen als Eigentümer an."
 
-#: guix/profiles.scm:2200
+#: guix/profiles.scm:2210
 #, scheme-format
 msgid "directory `~a' is not owned by you"
 msgstr "Das Verzeichnis „~a“ gehört Ihnen nicht."
 
-#: guix/profiles.scm:2204
+#: guix/profiles.scm:2214
 #, scheme-format
 msgid "Please change the owner of @file{~a} to user ~s."
-msgstr "Bitte ändern Sie den Eigentümer von @file{~a} in Benutzer ~s.~%"
+msgstr "Bitte ändern Sie den Eigentümer von @file{~a} in Benutzer ~s."
 
 #: guix/remote.scm:76 guix/ssh.scm:188
 #, scheme-format
@@ -7020,7 +7023,7 @@ msgstr "„guix repl“ konnte nicht auf „~a“ gestartet werden"
 #: guix/ssh.scm:321
 #, scheme-format
 msgid "failed to connect over SSH to daemon at '~a', socket ~a"
-msgstr "SSH-Verbindung zu Daemon auf „~a“ fehlgeschlagen, Socket ~a~%"
+msgstr "SSH-Verbindung zu Daemon auf „~a“ fehlgeschlagen, Socket ~a"
 
 #: guix/ssh.scm:460
 msgid "sending ~a store item (~h MiB) to '~a'...~%"
@@ -7355,7 +7358,7 @@ msgstr "Avahi-Daemon läuft nicht; Substitutserver können nicht automatisch erk
 msgid "an Avahi error was raised by `~a': ~a~%"
 msgstr "Ein Avahi-Fehler wurde durch „~a“ gemeldet: ~a~%"
 
-#: guix/scripts/environment.scm:81
+#: guix/scripts/environment.scm:82
 msgid ""
 "\n"
 "  -e, --expression=EXPR  create environment for the package that EXPR\n"
@@ -7366,7 +7369,7 @@ msgstr ""
 "                         Umgebung für das Paket erzeugen, zu dem AUSDRUCK\n"
 "                         ausgewertet wird"
 
-#: guix/scripts/environment.scm:84
+#: guix/scripts/environment.scm:85
 msgid ""
 "\n"
 "  -m, --manifest=FILE    create environment with the manifest from FILE"
@@ -7374,7 +7377,7 @@ msgstr ""
 "\n"
 "  -m, --manifest=DATEI   eine Umgebung mit dem Manifest aus DATEI erzeugen"
 
-#: guix/scripts/environment.scm:86
+#: guix/scripts/environment.scm:87
 msgid ""
 "\n"
 "  -p, --profile=PATH     create environment from profile at PATH"
@@ -7382,7 +7385,7 @@ msgstr ""
 "\n"
 "  -p, --profile=PFAD     die Umgebung aus dem Profil unter PFAD erzeugen"
 
-#: guix/scripts/environment.scm:88
+#: guix/scripts/environment.scm:89
 msgid ""
 "\n"
 "      --check            check if the shell clobbers environment variables"
@@ -7390,7 +7393,7 @@ msgstr ""
 "\n"
 "      --check            prüfen, ob die Shell Umgebungsvariable überschreibt"
 
-#: guix/scripts/environment.scm:90
+#: guix/scripts/environment.scm:91
 msgid ""
 "\n"
 "      --pure             unset existing environment variables"
@@ -7398,7 +7401,7 @@ msgstr ""
 "\n"
 "      --pure             bestehende Umgebungsvariable nicht übernehmen"
 
-#: guix/scripts/environment.scm:92
+#: guix/scripts/environment.scm:93
 msgid ""
 "\n"
 "  -E, --preserve=REGEXP  preserve environment variables that match REGEXP"
@@ -7407,7 +7410,7 @@ msgstr ""
 "  -E, --preserve=REGEXP  zum regulären Ausdruck REGEXP passende\n"
 "                           Umgebungsvariable erhalten"
 
-#: guix/scripts/environment.scm:94
+#: guix/scripts/environment.scm:95
 msgid ""
 "\n"
 "      --search-paths     display needed environment variable definitions"
@@ -7415,16 +7418,16 @@ msgstr ""
 "\n"
 "      --search-paths     benötigte Definitionen von Umgebungsvariablen anzeigen"
 
-#: guix/scripts/environment.scm:101
+#: guix/scripts/environment.scm:102
 msgid ""
 "\n"
 "  -C, --container        run command within an isolated container"
 msgstr ""
 "\n"
-"  -C, --container        Befehl in einer isolierten Umgebung (Container)\n"
+"  -C, --container        Befehl in einer isolierten Container-Umgebung\n"
 "                           ausfühen"
 
-#: guix/scripts/environment.scm:103
+#: guix/scripts/environment.scm:104
 msgid ""
 "\n"
 "  -N, --network          allow containers to access the network"
@@ -7432,7 +7435,7 @@ msgstr ""
 "\n"
 "  -N, --network          Containern Netzwerkzugriff erlauben"
 
-#: guix/scripts/environment.scm:105
+#: guix/scripts/environment.scm:106
 #, scheme-format
 msgid ""
 "\n"
@@ -7443,7 +7446,7 @@ msgstr ""
 "  -P, --link-profile     in einem isoliertem Container das Umgebungsprofil als\n"
 "                           ~/.guix-profile verknüpfen"
 
-#: guix/scripts/environment.scm:108
+#: guix/scripts/environment.scm:109
 msgid ""
 "\n"
 "  -u, --user=USER        instead of copying the name and home of the current\n"
@@ -7456,7 +7459,7 @@ msgstr ""
 "                           ein Benutzer mit Namen BENUTZER mit Persönlichem\n"
 "                           Verzeichnis /home/BENUTZER verwendet"
 
-#: guix/scripts/environment.scm:112
+#: guix/scripts/environment.scm:113
 msgid ""
 "\n"
 "      --no-cwd           do not share current working directory with an\n"
@@ -7466,7 +7469,7 @@ msgstr ""
 "      --no-cwd           das aktuelle Arbeitsverzeichnis nicht mit dem\n"
 "                           isolierten Container teilen"
 
-#: guix/scripts/environment.scm:116
+#: guix/scripts/environment.scm:117
 msgid ""
 "\n"
 "      --share=SPEC       for containers, share writable host file system\n"
@@ -7477,7 +7480,7 @@ msgstr ""
 "                         bei Containern: Wirtsdateisystem entsprechend der\n"
 "                           SPEZIFIKATION mit Lese-/Schreibzugriff teilen"
 
-#: guix/scripts/environment.scm:119
+#: guix/scripts/environment.scm:120
 msgid ""
 "\n"
 "      --expose=SPEC      for containers, expose read-only host file system\n"
@@ -7489,7 +7492,7 @@ msgstr ""
 "                           SPEZIFIKATION nur mit Lesezugriff zugänglich\n"
 "                           machen"
 
-#: guix/scripts/environment.scm:124
+#: guix/scripts/environment.scm:125
 msgid ""
 "\n"
 "      --bootstrap        use bootstrap binaries to build the environment"
@@ -7497,7 +7500,7 @@ msgstr ""
 "\n"
 "      --bootstrap        mit den Bootstrap-Binärdateien die Umgebung erstellen"
 
-#: guix/scripts/environment.scm:128
+#: guix/scripts/environment.scm:129
 msgid ""
 "Usage: guix environment [OPTION]... PACKAGE... [-- COMMAND...]\n"
 "Build an environment that includes the dependencies of PACKAGE and execute\n"
@@ -7507,11 +7510,11 @@ msgstr ""
 "Eine Umgebung erstellen, die die Abhängigkeiten von Paket enthält, und den\n"
 "BEFEHL oder eine interaktive Shell darin ausführen.\n"
 
-#: guix/scripts/environment.scm:131
+#: guix/scripts/environment.scm:132
 msgid "This command is deprecated in favor of 'guix shell'.\n"
 msgstr "Dieser Befehl ist veraltet. Benutzen Sie „guix shell“.\n"
 
-#: guix/scripts/environment.scm:135
+#: guix/scripts/environment.scm:136
 msgid ""
 "\n"
 "  -l, --load=FILE        create environment for the package that the code within\n"
@@ -7521,7 +7524,7 @@ msgstr ""
 "  -l, --load=DATEI       Umgebung für das Paket erstellen, zu dem der\n"
 "                           Code in DATEI ausgewertet wird"
 
-#: guix/scripts/environment.scm:138
+#: guix/scripts/environment.scm:139
 msgid ""
 "\n"
 "      --ad-hoc           include all specified packages in the environment instead\n"
@@ -7531,52 +7534,52 @@ msgstr ""
 "      --ad-hoc           alle angegebenen Pakete in die Umgebung aufnehmen statt\n"
 "                           nur deren Eingaben"
 
-#: guix/scripts/environment.scm:198
+#: guix/scripts/environment.scm:199
 #, scheme-format
 msgid "'--inherit' is deprecated, use '--preserve' instead~%"
 msgstr "„--inherit“ ist veraltet, benutzen Sie stattdessen „--preserve“~%"
 
-#: guix/scripts/environment.scm:472
+#: guix/scripts/environment.scm:478
 #, scheme-format
 msgid "checking the environment variables visible from shell '~a'...~%"
 msgstr "In der Shell „~a“ sichtbare Umgebungsvariable werden geprüft …~%"
 
-#: guix/scripts/environment.scm:476
+#: guix/scripts/environment.scm:482
 #, scheme-format
 msgid "failed to determine environment of shell '~a'~%"
 msgstr "Die Umgebung der Shell „~a“ konnte nicht bestimmt werden~%"
 
-#: guix/scripts/environment.scm:483
+#: guix/scripts/environment.scm:489
 #, scheme-format
 msgid "variable '~a' is missing from shell environment~%"
 msgstr "Variable „~a“ fehlt in der Umgebung der Shell~%"
 
-#: guix/scripts/environment.scm:490
+#: guix/scripts/environment.scm:496
 #, scheme-format
 msgid "variable '~a' has unexpected suffix '~a'~%"
 msgstr "Variable „~a“ hat ein unerwartetes Suffix „~a“~%"
 
-#: guix/scripts/environment.scm:496
+#: guix/scripts/environment.scm:502
 #, scheme-format
 msgid "variable '~a' is clobbered: '~a'~%"
 msgstr "Variable „~a“ wurde überschrieben: „~a“~%"
 
-#: guix/scripts/environment.scm:503
+#: guix/scripts/environment.scm:509
 #, scheme-format
 msgid "'GUIX_ENVIRONMENT' is missing from the shell environment~%"
 msgstr "„GUIX_ENVIRONMENT“ fehlt in der Umgebung der Shell~%"
 
-#: guix/scripts/environment.scm:507
+#: guix/scripts/environment.scm:513
 #, scheme-format
 msgid "'GUIX_ENVIRONMENT' is set to '~a' instead of '~a'~%"
 msgstr "„GUIX_ENVIRONMENT“ ist auf „~a“ statt „~a“ gesetzt~%"
 
-#: guix/scripts/environment.scm:516
+#: guix/scripts/environment.scm:522
 #, scheme-format
 msgid "'PS1' is the same in sub-shell~%"
 msgstr "„PS1“ ist in der Sub-Shell unverändert~%"
 
-#: guix/scripts/environment.scm:517
+#: guix/scripts/environment.scm:523
 #, scheme-format
 msgid ""
 "Consider setting a different prompt for\n"
@@ -7605,7 +7608,7 @@ msgstr ""
 "fi\n"
 "@end example\n"
 
-#: guix/scripts/environment.scm:533
+#: guix/scripts/environment.scm:539
 #, scheme-format
 msgid ""
 "One or more environment variables have a\n"
@@ -7627,67 +7630,98 @@ msgid ""
 "or @option{-C} option.  That will give you a fully isolated environment\n"
 "running in a \"container\", immune to the issue described above."
 msgstr ""
+"Mindestens eine Umgebungvariable hat in der Shell nicht den mit Guix\n"
+"festgelegten Wert. Das bedeutet, in der Umgebung führen Sie vielleicht\n"
+"Code in einer anderen Umgebung aus, als Sie sich von Guix haben\n"
+"vorbereiten lassen.\n"
+"\n"
+"Meistens deutet das darauf hin, dass Dateien, die beim Start der Shell\n"
+"geladen werden, die Umgebungsvariablen unerwartet verändern. Wenn Sie\n"
+"zum Beispiel Bash benutzen, vergewissern Sie sich, dass\n"
+"Umgebungsvariable in @file{~/.bash_profile} festgelegt oder geändert werden,\n"
+"@emph{nicht} in @file{~/.bashrc}. Für weitere Informationen zu beim Start von\n"
+"Bash geladenen Dateien führen Sie das hier aus:\n"
+"\n"
+"@example\n"
+"info \"(bash) Bash Startup Files\"\n"
+"@end example\n"
+"\n"
+"Alternativ können Sie das Problem vermeiden, indem Sie die\n"
+"Befehlszeilenoption @option{--container} oder @option{-C} verwenden. So finden\n"
+"Sie sich in einer völlig isolierten Umgebung wieder, die\n"
+"in einem Container ausgeführt wird. Sie ist gegenüber dem\n"
+"beschriebenen Problem immun."
 
-#: guix/scripts/environment.scm:552
+#: guix/scripts/environment.scm:558
 #, scheme-format
 msgid "All is good!  The shell gets correct environment variables.~%"
 msgstr "Alles in Ordnung! Die Shell verwendet die richtigen Umgebungsvariablen.~%"
 
-#: guix/scripts/environment.scm:752
+#: guix/scripts/environment.scm:579
+#, scheme-format
+msgid "Did you mean '~a'?~%"
+msgstr "Meinten Sie „~a“?~%"
+
+#: guix/scripts/environment.scm:587
+#, scheme-format
+msgid "~a: command not found~%"
+msgstr "~a: Befehl nicht gefunden~%"
+
+#: guix/scripts/environment.scm:794
 #, scheme-format
 msgid "cannot link profile: '~a' already exists within container~%"
 msgstr "Kann Profil nicht verknüpfen: „~a“ existiert bereits im Container~%"
 
-#: guix/scripts/environment.scm:790
+#: guix/scripts/environment.scm:832
 msgid "cannot create container: user namespaces unavailable\n"
 msgstr "Kann keinen Container erzeugen: Keine Benutzernamensräume (User Namespaces) verfügbar\n"
 
-#: guix/scripts/environment.scm:791
+#: guix/scripts/environment.scm:833
 msgid "is your kernel version < 3.10?\n"
 msgstr "Ist Ihre Kernel-Version < 3.10?\n"
 
-#: guix/scripts/environment.scm:794
+#: guix/scripts/environment.scm:836
 msgid "cannot create container: unprivileged user cannot create user namespaces\n"
 msgstr "Kann keinen Container erzeugen: Benutzer ohne Berechtigung können keinen Benutzernamensraum (User Namespace) erzeugen\n"
 
-#: guix/scripts/environment.scm:795
+#: guix/scripts/environment.scm:837
 msgid "please set /proc/sys/kernel/unprivileged_userns_clone to \"1\"\n"
 msgstr "Bitte schalten Sie /proc/sys/kernel/unprivileged_userns_clone auf \"1\"\n"
 
-#: guix/scripts/environment.scm:798
+#: guix/scripts/environment.scm:840
 msgid "cannot create container: /proc/self/setgroups does not exist\n"
 msgstr "Kann keinen Container erzeugen: /proc/self/setgroups existiert nicht\n"
 
-#: guix/scripts/environment.scm:799
+#: guix/scripts/environment.scm:841
 msgid "is your kernel version < 3.19?\n"
 msgstr "Ist Ihre Kernel-Version < 3.19?\n"
 
-#: guix/scripts/environment.scm:876
+#: guix/scripts/environment.scm:918
 #, scheme-format
 msgid "'--link-profile' cannot be used without '--container'~%"
 msgstr "„--link-profile“ kann nur mit „--container“ benutzt werden~%"
 
-#: guix/scripts/environment.scm:878
+#: guix/scripts/environment.scm:920
 #, scheme-format
 msgid "'--user' cannot be used without '--container'~%"
 msgstr "„--user“ kann nur mit „--container“ benutzt werden~%"
 
-#: guix/scripts/environment.scm:880
+#: guix/scripts/environment.scm:922
 #, scheme-format
 msgid "--no-cwd cannot be used without --container~%"
 msgstr "„--no-cwd“ kann nur mit „--container“ benutzt werden~%"
 
-#: guix/scripts/environment.scm:895
+#: guix/scripts/environment.scm:937
 #, scheme-format
 msgid "'--profile' cannot be used with package options~%"
 msgstr "„--profile“ kann nicht zusammen mit Paketoptionen angegeben werden~%"
 
-#: guix/scripts/environment.scm:898 guix/scripts/shell.scm:276
+#: guix/scripts/environment.scm:940 guix/scripts/shell.scm:276
 #, scheme-format
 msgid "no packages specified; creating an empty environment~%"
 msgstr "Keine Pakete angegeben; leere Umgebung wird erstellt~%"
 
-#: guix/scripts/home/import.scm:153
+#: guix/scripts/home/import.scm:177
 msgid ""
 ";; This \"home-environment\" file can be passed to 'guix home reconfigure'\n"
 ";; to reproduce the content of your profile.  This is \"symbolic\": it only\n"
@@ -7708,9 +7742,9 @@ msgid ""
 "Build the home environment declared in FILE according to ACTION.\n"
 "Some ACTIONS support additional ARGS.\n"
 msgstr ""
-"Aufruf: guix home [OPTION …] AKTION [ARGUMENT …] [DATEI]\n"
+"Aufruf: guix home [OPTION …] AKTION [ARGUMENTE …] [DATEI]\n"
 "Die in DATEI deklarierte Persönliche Umgebung entsprechend der AKTION erstellen.\n"
-"Manche AKTIONen unterstützen weitere ARGUMENTe.\n"
+"Manche AKTION unterstützt weitere ARGUMENTE.\n"
 
 #: guix/scripts/home.scm:71
 msgid "   search             search for existing service types\n"
@@ -7759,11 +7793,6 @@ msgstr ""
 "                         bestehender Konfigurationsdateien (Dotfiles) erzeugen\n"
 
 #: guix/scripts/home.scm:91
-#, fuzzy
-#| msgid ""
-#| "\n"
-#| "  -e, --expression=EXPR  consider the operating-system EXPR evaluates to\n"
-#| "                         instead of reading FILE, when applicable"
 msgid ""
 "\n"
 "  -e, --expression=EXPR  consider the home-environment EXPR evaluates to\n"
@@ -7771,7 +7800,7 @@ msgid ""
 msgstr ""
 "\n"
 "  -e, --expression=AUSDRUCK\n"
-"                         das operating-system betrachten, zu dem AUSDRUCK\n"
+"                         das home-environment-Objekt betrachten, zu dem AUSDRUCK\n"
 "                           ausgewertet wird, statt etwa eine DATEI auszulesen"
 
 #: guix/scripts/home.scm:196
@@ -7779,28 +7808,39 @@ msgstr ""
 msgid "'~a' does not return a home environment ~%"
 msgstr "„~a“ liefert keine Persönliche Umgebung~%"
 
-#: guix/scripts/home.scm:281
+#: guix/scripts/home.scm:280
+#, scheme-format
+msgid "'~a' populated with all the Home configuration files~%"
+msgstr "Alle Konfigurationsdateien für die Persönliche Umgebung wurden in „~a“ geschrieben~%"
+
+#: guix/scripts/home.scm:282
+#, scheme-format
+msgid ""
+"Run @command{guix home reconfigure ~a/home-configuration.scm} to effectively\n"
+"deploy the home environment described by these files.\n"
+msgstr ""
+"Führen Sie @command{guix home reconfigure ~a/home-configuration.scm} aus,\n"
+"um die Persönliche Umgebung einzurichten, die diese Dateien beschreiben.\n"
+
+#: guix/scripts/home.scm:289
 #, scheme-format
 msgid "no home environment generation, nothing to describe~%"
 msgstr "Keine Generation einer Persönlichen Umgebung angegeben; kann nicht beschrieben werden~%"
 
-#: guix/scripts/home.scm:350
-#, fuzzy, scheme-format
-#| msgid "guix: missing command name~%"
+#: guix/scripts/home.scm:358
+#, scheme-format
 msgid "guix home: missing command name~%"
-msgstr "guix: Befehlsname fehlt~%"
+msgstr "guix home: Befehlsname fehlt~%"
 
-#: guix/scripts/home.scm:352
-#, fuzzy, scheme-format
-#| msgid "Try `guix --help' for more information.~%"
+#: guix/scripts/home.scm:360
+#, scheme-format
 msgid "Try 'guix home --help' for more information.~%"
-msgstr "Rufen Sie „guix --help“ auf, um weitere Informationen zu erhalten.~%"
+msgstr "Rufen Sie „guix home --help“ auf, um weitere Informationen zu erhalten.~%"
 
-#: guix/scripts/home.scm:520
-#, fuzzy, scheme-format
-#| msgid "cannot switch to system generation '~a'~%"
+#: guix/scripts/home.scm:528
+#, scheme-format
 msgid "cannot switch to home environment generation '~a'~%"
-msgstr "Zu Generation „~a“ kann nicht gewechselt werden~%"
+msgstr "Zur Generation „~a“ der Persönlichen Umgebung kann nicht gewechselt werden~%"
 
 #: guix/scripts/time-machine.scm:51
 msgid ""
@@ -7843,8 +7883,8 @@ msgstr ""
 "Das CPAN-Paket für PAKETNAME importieren und umwandeln.\n"
 
 #: guix/scripts/import/cpan.scm:83 guix/scripts/import/crate.scm:97
-#: guix/scripts/import/egg.scm:98 guix/scripts/import/gem.scm:98
-#: guix/scripts/import/opam.scm:107 guix/scripts/import/pypi.scm:98
+#: guix/scripts/import/egg.scm:100 guix/scripts/import/gem.scm:98
+#: guix/scripts/import/opam.scm:107 guix/scripts/import/pypi.scm:100
 #, scheme-format
 msgid "failed to download meta-data for package '~a'~%"
 msgstr "Metadaten für Paket „~a“ konnten nicht geladen werden~%"
@@ -7857,7 +7897,7 @@ msgstr ""
 "Aufruf: guix import crate PAKETNAME\n"
 "Das crates.io-Paket für PAKETNAME importieren und umwandeln.\n"
 
-#: guix/scripts/import/egg.scm:42
+#: guix/scripts/import/egg.scm:43
 msgid ""
 "Usage: guix import egg PACKAGE-NAME\n"
 "Import and convert the egg package for PACKAGE-NAME.\n"
@@ -8067,7 +8107,7 @@ msgstr ""
 "                           (Name, URL oder lokaler Pfad),\n"
 "                           kann mehrmals angegeben werden"
 
-#: guix/scripts/import/pypi.scm:43
+#: guix/scripts/import/pypi.scm:44
 msgid ""
 "Usage: guix import pypi PACKAGE-NAME\n"
 "Import and convert the PyPI package for PACKAGE-NAME.\n"
@@ -8593,81 +8633,63 @@ msgid "~a: unknown type of REPL~%"
 msgstr "~a: Unbekannter REPL-Typ~%"
 
 #: guix/scripts/shell.scm:46
-#, fuzzy
-#| msgid ""
-#| "Usage: guix environment [OPTION]... PACKAGE... [-- COMMAND...]\n"
-#| "Build an environment that includes the dependencies of PACKAGE and execute\n"
-#| "COMMAND or an interactive shell in that environment.\n"
 msgid ""
 "Usage: guix shell [OPTION] PACKAGES... [-- COMMAND...]\n"
 "Build an environment that includes PACKAGES and execute COMMAND or an\n"
 "interactive shell in that environment.\n"
 msgstr ""
-"Aufruf: guix environment [OPTION] … PAKET … [-- BEFEHL …]\n"
-"Eine Umgebung erstellen, die die Abhängigkeiten von Paket enthält, und den\n"
+"Aufruf: guix shell [OPTION] … PAKETE … [-- BEFEHL …]\n"
+"Eine Umgebung erstellen, die PAKETE enthält, und den\n"
 "BEFEHL oder eine interaktive Shell darin ausführen.\n"
 
 #: guix/scripts/shell.scm:52
-#, fuzzy
-#| msgid ""
-#| "\n"
-#| "  -d, --derivations      return the derivation paths of the given packages"
 msgid ""
 "\n"
 "  -D, --development      include the development inputs of the next package"
 msgstr ""
 "\n"
-"  -d, --derivations      die Ableitungspfade der angegebenen Pakete liefern"
+"  -D, --development      die Entwicklungseingaben des folgenden Pakets aufnehmen"
 
 #: guix/scripts/shell.scm:54
-#, fuzzy
-#| msgid ""
-#| "\n"
-#| "  -l, --load=FILE        create environment for the package that the code within\n"
-#| "                         FILE evaluates to"
 msgid ""
 "\n"
 "  -f, --file=FILE        create environment for the package that the code within\n"
 "                         FILE evaluates to"
 msgstr ""
 "\n"
-"  -l, --load=DATEI       Umgebung für das Paket erstellen, zu dem der\n"
+"  -f, --file=DATEI       Umgebung für das Paket erstellen, zu dem der\n"
 "                           Code in DATEI ausgewertet wird"
 
 #: guix/scripts/shell.scm:57
-#, fuzzy
-#| msgid ""
-#| "\n"
-#| "  -q                     inhibit loading of ~/.guile"
 msgid ""
 "\n"
 "  -q                     inhibit loading of 'guix.scm' and 'manifest.scm'"
 msgstr ""
 "\n"
-"  -q                     Laden von ~/.guile unterdrücken"
+"  -q                     Laden von „guix.scm“ und „manifest.scm“ unterdrücken"
 
 #: guix/scripts/shell.scm:59
 msgid ""
 "\n"
 "      --rebuild-cache    rebuild cached environment, if any"
 msgstr ""
+"\n"
+"      --rebuild-cache    zwischengespeicherte Umgebung neu erstellen"
 
 #: guix/scripts/shell.scm:200
-#, fuzzy, scheme-format
-#| msgid "  canonical file name: ~a~%"
+#, scheme-format
 msgid "ignoring invalid file name: '~a'~%"
-msgstr "  kanonischer Dateiname: ~a~%"
+msgstr "Ungültiger Dateiname wird ignoriert: „~a“~%"
 
 #: guix/scripts/shell.scm:281
-#, fuzzy, scheme-format
-#| msgid "unloading service '~a'...~%"
+#, scheme-format
 msgid "loading environment from '~a'...~%"
-msgstr "Dienst „~a“ entladen …~%"
+msgstr "Umgebung aus „~a“ wird geladen …~%"
 
 #: guix/scripts/shell.scm:287
 #, scheme-format
 msgid "not loading '~a' because not authorized to do so~%"
-msgstr ""
+msgstr "„~a“ wird nicht geladen, denn es wurde nicht autorisiert~%"
 
 #: guix/scripts/shell.scm:289
 #, scheme-format
@@ -8680,12 +8702,22 @@ msgid ""
 "echo ~a >> ~a\n"
 "@end example\n"
 msgstr ""
+"Damit @file{~a} automatisch geladen werden darf, wenn Sie @command{guix shell}\n"
+"ausführen, müssen Sie dessen Verzeichnis ausdrücklich autorisieren,\n"
+"etwa so:\n"
+"\n"
+"@example\n"
+"echo ~a >> ~a\n"
+"@end example\n"
 
 #: guix/scripts/shell.scm:387
 msgid ""
 "Consider passing the @option{--check} option once\n"
 "to make sure your shell does not clobber environment variables."
 msgstr ""
+"Vielleicht möchten Sie die Befehlszeilenoption @option{--check} einmal\n"
+"übergeben, wodurch gemeldet wird, falls Ihre Shell Umgebungsvariable\n"
+"überschreibt."
 
 #: guix/scripts/system/reconfigure.scm:317
 #, scheme-format
@@ -8829,6 +8861,9 @@ msgstr "auf Verbindungen an SOCKET lauschen"
 #: nix/nix-daemon/guix-daemon.cc:162
 msgid "produce debugging output"
 msgstr "Debug-Ausgabe zur Fehlersuche erzeugen"
+
+#~ msgid "Could not determine source location.  Please manually specify the source field.~%"
+#~ msgstr "Das „source“-Feld konnte nicht bestimmt werden. Bitte geben Sie selbst an, wo der Quellcode zu finden ist.~%"
 
 #~ msgid "Package not found in opam repository: ~a~%"
 #~ msgstr "Paket nicht in der OPAM-Paketsammlung gefunden: ~a~%"
