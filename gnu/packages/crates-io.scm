@@ -23865,14 +23865,14 @@ SystemTime}}.")
 (define-public rust-hyper-0.14
   (package
     (name "rust-hyper")
-    (version "0.14.4")
+    (version "0.14.15")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "hyper" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1ivaqbcvsws6svwykiq7fgma7wds72r83qianzh5b41ln714dsg8"))))
+        (base32 "0g4mnsacfvj4127587ihm802kzkh6zgs0c3a2mayc82g3q4w0vj3"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -23885,11 +23885,11 @@ SystemTime}}.")
         ("rust-http" ,rust-http-0.2)
         ("rust-http-body" ,rust-http-body-0.4)
         ("rust-httparse" ,rust-httparse-1)
-        ("rust-httpdate" ,rust-httpdate-0.3)
+        ("rust-httpdate" ,rust-httpdate-1)
         ("rust-itoa" ,rust-itoa-0.4)
         ("rust-libc" ,rust-libc-0.2)
-        ("rust-pin-project" ,rust-pin-project-1)
-        ("rust-socket2" ,rust-socket2-0.3)
+        ("rust-pin-project" ,rust-pin-project-lite-0.2)
+        ("rust-socket2" ,rust-socket2-0.4)
         ("rust-tokio" ,rust-tokio-1)
         ("rust-tower-service" ,rust-tower-service-0.3)
         ("rust-tracing" ,rust-tracing-0.1)
