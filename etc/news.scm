@@ -16,6 +16,7 @@
 ;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;; Copyright © 2021 Andrew Tropin <andrew@trop.in>
+;; Copyright © 2021 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;
 ;; Copying and distribution of this file, with or without modification, are
 ;; permitted in any medium without royalty provided the copyright notice and
