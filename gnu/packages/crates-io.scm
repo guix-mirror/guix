@@ -2693,6 +2693,31 @@ format.")
         ("rust-serde-derive" ,rust-serde-derive-1)
         ("rust-serde-json" ,rust-serde-json-1))))))
 
+(define-public rust-arrow-format-0.3
+  (package
+    (name "rust-arrow-format")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "arrow-format" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0apg3x3yllbazh6jr85g5yammjqxpnrk6jm4n2yypyhbcvcs4zcz"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-flatbuffers" ,rust-flatbuffers-2)
+        ("rust-prost" ,rust-prost-0.9)
+        ("rust-prost-derive" ,rust-prost-derive-0.9)
+        ("rust-tonic" ,rust-tonic-0.6))))
+    (home-page "https://crates.io/crates/arrow-format")
+    (synopsis "Unofficial flatbuffers and tonic code of Apache Arrow spec")
+    (description "This package provides an nofficial flatbuffers and tonic
+code of Apache Arrow spec.")
+    (license license:asl2.0)))
+
 (define-public rust-arrow2-0.5
   (package
     (name "rust-arrow2")
