@@ -6132,8 +6132,7 @@ phylogenies.")
         '(begin
            ;; remove bundled copy of boost and samtools
            (delete-file-recursively "boost")
-           (delete-file-recursively "samtools-1.3")
-           #t))))
+           (delete-file-recursively "samtools-1.3")))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ;no "check" target
