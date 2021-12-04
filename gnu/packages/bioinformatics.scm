@@ -9990,11 +9990,9 @@ dependency like SeqAn.")
                (base32
                 "1amcc5hqvsl42hg4x19bi9vy47cl874s0lw1fmi0hwsdk9i8c03v"))
               (modules '((guix build utils)))
+              ;; Delete bundled headers for eigen3.
               (snippet
-               '(begin
-                  ;; Delete bundled headers for eigen3.
-                  (delete-file-recursively "include/eigen3/")
-                  #t))))
+               '(delete-file-recursively "include/eigen3/"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
