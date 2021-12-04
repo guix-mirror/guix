@@ -23740,7 +23740,7 @@ HTTP request or response body.")
 (define-public rust-httparse-1
   (package
     (name "rust-httparse")
-    (version "1.3.4")
+    (version "1.5.1")
     (source
      (origin
        (method url-fetch)
@@ -23748,8 +23748,7 @@ HTTP request or response body.")
        (file-name
         (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "1yf23ldnjwfkkhkca7f4w15mky9961gjz28dlwyybhphc7l9l5yd"))))
+        (base32 "00smbrgb9vyzbbj3j5d66iarjl5x2wpfwkmhcy5nizylw7dlzndc"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-development-inputs
