@@ -15270,6 +15270,12 @@ for the analysis and visualization of raw nanopore signal.")
     (arguments
      `(#:phases
         (modify-phases %standard-phases
+          (add-after 'unpack 'patch-sample-script
+            (lambda _
+              ;; Add Python 3 compatibility to this sample script.
+              (substitute* "scripts/vcf_sample_filter.py"
+                (("print (.*)\n" _ arg)
+                 (string-append "print(" arg ")\n")))))
           (add-after 'install 'remove-installed-tests
             ;; Do not install test files.
             (lambda* (#:key inputs outputs #:allow-other-keys)
