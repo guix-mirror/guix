@@ -6114,7 +6114,7 @@ match expressions, and if expressions.")
       (janestreet-origin "ppx_let" version
                          "1wdfw6w4xbg97a35yg6bif9gggxniy9ddnrjfw1a0inkl2yamxkj"))
 
-     (properties `(upstream-name . "ppx_let")))))
+     (properties `((upstream-name . "ppx_let"))))))
 
 (define-public ocaml4.07-ppx-fail
   (package
