@@ -22694,6 +22694,32 @@ their key-value pairs in a user controllable order.")
        #:cargo-development-inputs
        (("rust-serde-test" ,rust-serde-test-1))))))
 
+(define-public rust-hdrhistogram-6
+  (package
+    (name "rust-hdrhistogram")
+    (version "6.3.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "hdrhistogram" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "17dqk0rp8kimcd8wr542i8cny91fkclw7a2xzszar95wrpmk3lq8"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-base64" ,rust-base64-0.10)
+        ("rust-byteorder" ,rust-byteorder-1)
+        ("rust-crossbeam-channel" ,rust-crossbeam-channel-0.3)
+        ("rust-flate2" ,rust-flate2-1)
+        ("rust-nom" ,rust-nom-4)
+        ("rust-num-traits" ,rust-num-traits-0.2))))
+    (home-page "https://github.com/HdrHistogram/HdrHistogram_rust")
+    (synopsis "Port of HdrHistogram to Rust")
+    (description "This package provides a port of HdrHistogram to Rust.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-headers-0.3
   (package
     (name "rust-headers")
