@@ -37229,18 +37229,19 @@ crate.")
 (define-public rust-pin-project-lite-0.2
   (package
     (name "rust-pin-project-lite")
-    (version "0.2.4")
+    (version "0.2.7")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "pin-project-lite" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "09x8chns8apal89pndqdrr0c2nv8jw6nmi8hl38acjbc6sprg5j3"))))
+        (base32 "0hwl8iyx3h9i3i3jr2vqj07nf4ay1v1w1ga29cbjmdd6d4fd2ccd"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-development-inputs
-       (("rust-rustversion" ,rust-rustversion-1)
+       (("rust-macrotest" ,rust-macrotest-1)
+        ("rust-rustversion" ,rust-rustversion-1)
         ("rust-static-assertions" ,rust-static-assertions-1)
         ("rust-trybuild" ,rust-trybuild-1))))
     (home-page "https://github.com/taiki-e/pin-project-lite")
