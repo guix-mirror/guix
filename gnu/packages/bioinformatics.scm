@@ -8786,16 +8786,14 @@ intervals (e.g. genes, sequence alignments).")
              (lambda* (#:key inputs #:allow-other-keys)
                (for-each (lambda (file)
                            (install-file file "./src/smithlab_cpp/"))
-                         (find-files (assoc-ref inputs "smithlab-cpp")))
-               #t))
+                         (find-files (assoc-ref inputs "smithlab-cpp")))))
            (add-after 'install 'install-to-store
              (lambda* (#:key outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
                       (bin (string-append out "/bin")))
                  (for-each (lambda (file)
                              (install-file file bin))
-                           (find-files "bin" ".*")))
-               #t)))
+                           (find-files "bin" ".*"))))))
          #:configure-flags
          (list (string-append "--with-bam_tools_headers="
                               (assoc-ref %build-inputs "bamtools") "/include/bamtools")
