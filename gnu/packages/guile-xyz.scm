@@ -58,6 +58,7 @@
 (define-module (gnu packages guile-xyz)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
+  #:use-module (gnu packages admin)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages aspell)
   #:use-module (gnu packages autotools)
@@ -4855,4 +4856,91 @@ high-level API for network management that uses rtnetlink.")
      "This package provides bindings to the GitLab Community Edition REST API
 as well as the @samp{gitlab-cli} command line tool for interacting with a
 GitLab instance.")
+    (license license:gpl3)))
+
+(define-public guile-smc
+  (package
+    (name "guile-smc")
+    (version "0.3.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/artyom-poptsov/guile-smc")
+             (commit (string-append "v" version))))
+       (file-name (string-append name "-" version))
+       (sha256
+        (base32
+         "0szkjmasi70m1vppck7nhdxg4lnxzjq6mihi6r1552s8sxm5z008"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags '("GUILE_AUTO_COMPILE=0")     ;to prevent guild warnings
+       #:modules (((guix build guile-build-system)
+                   #:select (target-guile-effective-version))
+                  ,@%gnu-build-system-modules)
+       #:imported-modules ((guix build guile-build-system)
+                           ,@%gnu-build-system-modules)
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'strip)
+         (add-after 'configure 'patch
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (substitute* "modules/smc/core/log.scm"
+               (("  #:use-module \\(logging logger\\)")
+                (string-append
+                 "  #:use-module (logging logger)\n"
+                 "  #:use-module (logging rotating-log)"))
+               (("#:init-value \"logger\"")
+                (format #f
+                        "#:init-value \"~a/bin/logger\""
+                        (assoc-ref inputs "inetutils")))
+             (("\\(add-handler! %logger %syslog\\)")
+              (string-append
+               "(add-handler! %logger\n"
+               "              (make <rotating-log>\n"
+               "                    #:file-name \"smc.log\"))\n")))
+             #t))
+         (add-after 'install 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out       (assoc-ref outputs "out"))
+                    (bin       (string-append out "/bin"))
+                    (guile-lib (assoc-ref inputs "guile-lib"))
+                    (version   (target-guile-effective-version))
+                    (scm       (string-append "/share/guile/site/"
+                                              version))
+                    (go        (string-append  "/lib/guile/"
+                                               version "/site-ccache")))
+               (wrap-program (string-append bin "/smc")
+                 `("GUILE_LOAD_PATH" prefix
+                   (,(string-append out scm)
+                    ,(string-append guile-lib scm)))
+                 `("GUILE_LOAD_COMPILED_PATH" prefix
+                   (,(string-append out go)
+                    ,(string-append guile-lib go)))))
+             #t)))))
+    (native-inputs
+     `(("autoconf"   ,autoconf)
+       ("automake"   ,automake)
+       ("pkg-config" ,pkg-config)
+       ("texinfo"    ,texinfo)))
+    (inputs
+     `(("bash"      ,bash-minimal)
+       ("guile"     ,guile-3.0)
+       ("guile-lib" ,guile-lib)
+       ("inetutils" ,inetutils)))
+    (home-page "https://github.com/artyom-poptsov/guile-smc")
+    (synopsis "GNU Guile state machine compiler")
+    (description
+     "Guile-SMC is a state machine compiler that allows users to describe
+finite state machines (FSMs) in Scheme in terms of transition tables.  It is
+capable to generate such transition tables from a @url{https://plantuml.com/,
+PlantUML} state diagrams.
+
+A transition table can be verified and checked for dead-ends and infinite
+loops.  Also Guile-SMC FSMs gather statistics when they run.
+
+Guile-SMC comes with a Scheme program called @command{smc} -- a state machine
+compiler itself.  It produces a Scheme code for an FSM from the PlantUML
+format.  This tool is meant to be called on a PlantUML file when a program
+with a FSM is being built (for example, from a Makefile.)")
     (license license:gpl3)))
