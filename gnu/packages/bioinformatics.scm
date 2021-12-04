@@ -6721,14 +6721,14 @@ accessed/downloaded on demand across HTTP.")
                                 "plink-endian-detection.patch"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f ;no "check" target
-       #:make-flags (list (string-append "LIB_LAPACK="
-                                         (assoc-ref %build-inputs "lapack")
-                                         "/lib/liblapack.so")
-                          "WITH_LAPACK=1"
-                          "FORCE_DYNAMIC=1"
-                          ;; disable phoning home
-                          "WITH_WEBCHECK=")
+     `(#:tests? #f ;no "check" target
+       #:make-flags ,#~(list (string-append "LIB_LAPACK="
+                                            #$(this-package-input "lapack")
+                                            "/lib/liblapack.so")
+                             "WITH_LAPACK=1"
+                             "FORCE_DYNAMIC=1"
+                             ;; disable phoning home
+                             "WITH_WEBCHECK=")
        #:phases
        (modify-phases %standard-phases
          ;; no "configure" script
