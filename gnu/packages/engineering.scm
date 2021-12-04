@@ -3262,4 +3262,7 @@ visualization, matrix manipulation.")
     (synopsis "G-code generator for 3D printers (RepRap, Makerbot, Ultimaker etc.)")
     (description "PrusaSlicer takes 3D models (STL, OBJ, AMF) and converts them into
 G-code instructions for FFF printers or PNG layers for mSLA 3D printers.")
-    (license license:agpl3)))
+    (license license:agpl3)
+
+    ;; Mark as tunable to take advantage of SIMD code in Eigen and in libigl.
+    (properties '((tunable? . #t)))))
