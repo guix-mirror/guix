@@ -5915,8 +5915,7 @@ overly clever.")
            (lambda _
              (substitute* "build.xml"
                (("name=\"jar\" depends=\"test\"")
-                "name=\"jar\" depends=\"compile\""))
-             #t))
+                "name=\"jar\" depends=\"compile\""))))
          ;; There is no install target.
          (replace 'install
            (install-from-pom "pom.xml")))))
