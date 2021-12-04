@@ -24212,6 +24212,32 @@ SystemTime}}.")
      "This package provides glue code for Rustls and synchronous Hyper.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-hyper-timeout-0.4
+  (package
+    (name "rust-hyper-timeout")
+    (version "0.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "hyper-timeout" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1c8k3g8k2yh1gxvsx9p7amkimgxhl9kafwpj7jyf8ywc5r45ifdv"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-hyper" ,rust-hyper-0.14)
+        ("rust-pin-project-lite" ,rust-pin-project-lite-0.2)
+        ("rust-tokio" ,rust-tokio-1)
+        ("rust-tokio-io-timeout" ,rust-tokio-io-timeout-1))))
+    (home-page "https://github.com/hjr3/hyper-timeout")
+    (synopsis "Connect, read and write timeout aware connector for Hyper")
+    (description
+     "This package provides a connect, read and write timeout aware connector
+to be used with Hyper client.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-hyper-tls-0.5
   (package
     (name "rust-hyper-tls")
