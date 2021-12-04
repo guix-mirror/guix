@@ -11217,7 +11217,7 @@ based methods.")
 (define-public pigx-sars-cov2-ww
   (package
     (name "pigx-sars-cov2-ww")
-    (version "0.0.3")
+    (version "0.0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BIMSBbioinfo/pigx_sarscov2_ww/"
@@ -11225,7 +11225,7 @@ based methods.")
                                   "/pigx_sars-cov2-ww-" version ".tar.gz"))
               (sha256
                (base32
-                "1hhdbwsnl0d37lrmisw5hr630xr8s41qvxflm05anh11rj8n22yw"))
+                "0axnmz4d8zgir888mc0cilcq4m3v41xmjmpp3w3444lciwnxydvs"))
               (patches (search-patches "pigx-sars-cov2-ww-no-citeproc.patch"))))
     (build-system gnu-build-system)
     (arguments
@@ -11239,9 +11239,13 @@ based methods.")
        ("autoconf" ,autoconf)))
     (inputs
      `(("bash-minimal" ,bash-minimal)
+       ("bbmap" ,bbmap)
+       ("bedtools" ,bedtools)
        ("bwa" ,bwa)
        ("ensembl-vep" ,ensembl-vep)
+       ("fastp" ,fastp)
        ("fastqc" ,fastqc)
+       ("ivar" ,ivar)
        ("kraken2" ,kraken2)
        ("krona-tools" ,krona-tools)
        ("lofreq" ,lofreq)
@@ -11257,6 +11261,7 @@ based methods.")
        ("r-minimal" ,r-minimal)
        ("r-plotly" ,r-plotly)
        ("r-qpcr" ,r-qpcr)
+       ("r-r-utils" ,r-r-utils)
        ("r-reshape2" ,r-reshape2)
        ("r-rmarkdown" ,r-rmarkdown)
        ("r-stringr" ,r-stringr)
