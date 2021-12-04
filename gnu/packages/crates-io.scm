@@ -61993,14 +61993,14 @@ Verification.")
 (define-public rust-webpki-roots-0.21
   (package
     (name "rust-webpki-roots")
-    (version "0.21.0")
+    (version "0.21.1")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "webpki-roots" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0xi3xjjx6brqh6hwa5jsrxvflsrhjcxa2x26k62q3bcb1dz5n0c2"))))
+        (base32 "0h49lkr7hrxpyr0xg1nph4m3v1l6rhg8ax9n8msvfwz48hsibgma"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
