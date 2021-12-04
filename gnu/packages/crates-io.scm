@@ -23577,14 +23577,14 @@ requests and responses.")
 (define-public rust-http-body-0.4
   (package
     (name "rust-http-body")
-    (version "0.4.0")
+    (version "0.4.4")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "http-body" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "150rkibhyrcmsyi0qzwx4hp02c4lga1kkdg8j7l5wkh7xqkvsq98"))))
+        (base32 "1imjszmk34603m7chfnhd3rq263bxbdlaxhlbzd06wv7354zix0z"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
