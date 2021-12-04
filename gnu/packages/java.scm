@@ -5901,12 +5901,12 @@ overly clever.")
      `(#:build-target "jar"
        #:test-target "test"
        #:make-flags
-       (let ((hamcrest (assoc-ref %build-inputs "java-hamcrest-core"))
-             (junit    (assoc-ref %build-inputs "java-junit")))
-         (list (string-append "-Djunit.jar="
-                              (car (find-files junit "jar$")))
-               (string-append "-Dhamcrest.jar="
-                              (car (find-files hamcrest ".*.jar$")))))
+       ,#~(let ((hamcrest #$(this-package-native-input "java-hamcrest-core"))
+                (junit    #$(this-package-native-input "java-junit")))
+            (list (string-append "-Djunit.jar="
+                                 (car (find-files junit "jar$")))
+                  (string-append "-Dhamcrest.jar="
+                                 (car (find-files hamcrest ".*.jar$")))))
        #:phases
        (modify-phases %standard-phases
          ;; We want to build the jar in the build phase and run the tests
