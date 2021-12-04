@@ -8795,10 +8795,10 @@ intervals (e.g. genes, sequence alignments).")
                              (install-file file bin))
                            (find-files "bin" ".*"))))))
          #:configure-flags
-         (list (string-append "--with-bam_tools_headers="
-                              (assoc-ref %build-inputs "bamtools") "/include/bamtools")
-               (string-append "--with-bam_tools_library="
-                              (assoc-ref %build-inputs "bamtools") "/lib/bamtools"))))
+         ,#~(list (string-append "--with-bam_tools_headers="
+                                 #$(this-package-input "bamtools") "/include/bamtools")
+                  (string-append "--with-bam_tools_library="
+                                 #$(this-package-input "bamtools") "/lib/bamtools"))))
       (inputs
        `(("bamtools" ,bamtools)
          ("samtools" ,samtools-0.1)
