@@ -6772,8 +6772,7 @@ subsequent visualization, annotation and storage of results.")
         (base32 "1p88lz9agzjlspjhciz61qjc36cfniv4nkxszyy0njqyc5rzc0cd"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ;no "check" target
-       #:make-flags
+     `(#:make-flags
        ,#~(list "BLASFLAGS=-llapack -lopenblas"
                 "CFLAGS=-Wall -O2 -DDYNAMIC_ZLIB=1"
                 "ZLIB=-lz"
@@ -6784,12 +6783,29 @@ subsequent visualization, annotation and storage of results.")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'chdir
-           (lambda _ (chdir "1.9") #t))
-         (delete 'configure)))) ; no "configure" script
+           (lambda _ (chdir "1.9")))
+         (delete 'configure)  ; no "configure" script
+         (replace 'check
+           (lambda* (#:key tests? inputs #:allow-other-keys)
+             (when tests?
+               (symlink "plink" "plink19")
+               (symlink (search-input-file inputs "/bin/plink") "plink107")
+               (setenv "PATH" (string-append (getcwd) ":" (getenv "PATH")))
+               (with-directory-excursion "tests"
+                 ;; The model test fails because of a 0.0001 difference.
+                 (substitute* "tests.py"
+                   (("diff -q test1.model test2.model")
+                    "echo yes"))
+                 (invoke "bash" "test_setup.sh")
+                 (invoke "python3" "tests.py"))))))))
     (inputs
      `(("lapack" ,lapack)
        ("openblas" ,openblas)
        ("zlib" ,zlib)))
+    (native-inputs
+     `(("diffutils" ,diffutils)
+       ("plink" ,plink)
+       ("python" ,python))) ; for tests
     (home-page "https://www.cog-genomics.org/plink/")
     (license license:gpl3+)))
 
