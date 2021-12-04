@@ -5779,15 +5779,13 @@ generated using the PacBio Iso-Seq protocol.")
      `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'enter-src-dir
-            (lambda _
-              (chdir "src")
-              #t))
+           (lambda _ (chdir "src")))
          (add-after 'unpack 'remove-m64-flag
            ;; Prank will build with the correct 'bit-ness' without this flag
            ;; and this allows building on 32-bit machines.
-           (lambda _ (substitute* "src/Makefile"
-                                  (("-m64") ""))
-             #t))
+           (lambda _
+             (substitute* "src/Makefile"
+               (("-m64") ""))))
          (delete 'configure)
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
@@ -5801,8 +5799,7 @@ generated using the PacBio Iso-Seq protocol.")
                (install-file "prank" bin)
                (wrap-program (string-append bin "/prank")
                  `("PATH" ":" prefix (,path)))
-               (install-file "prank.1" man))
-             #t)))))
+               (install-file "prank.1" man)))))))
     (inputs
      `(("mafft" ,mafft)
        ("exonerate" ,exonerate)
