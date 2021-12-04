@@ -8666,8 +8666,8 @@ factors bound at the specific regions.")
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
-       (list (string-append "--with-hpdf="
-                            (assoc-ref %build-inputs "libharu")))
+       ,#~(list (string-append "--with-hpdf="
+                               #$(this-package-input "libharu")))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-checks
