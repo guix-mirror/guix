@@ -868,7 +868,10 @@ function calls into the geometry kernel: everything is visible to the user.
 Even fundamental, primitive shapes are represented as code in the user-level
 language.")
       (license (list license:mpl2.0               ;library
-                     license:gpl2+)))))           ;Guile bindings and GUI
+                     license:gpl2+))              ;Guile bindings and GUI
+
+      ;; Mark as tunable to take advantage of SIMD code in Eigen.
+      (properties '((tunable? . #t))))))
 
 (define-public inspekt3d
   (let ((commit "703f52ccbfedad2bf5240bf8183d1b573c9d54ef")
