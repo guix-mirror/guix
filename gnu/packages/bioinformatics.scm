@@ -9996,23 +9996,23 @@ dependency like SeqAn.")
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
-       (list (string-append "-DBOOST_INCLUDEDIR="
-                            (assoc-ref %build-inputs "boost")
-                            "/include/")
-             (string-append "-DBOOST_LIBRARYDIR="
-                            (assoc-ref %build-inputs "boost")
-                            "/lib/")
-             (string-append "-DBoost_LIBRARIES="
-                            "-lboost_iostreams "
-                            "-lboost_filesystem "
-                            "-lboost_system "
-                            "-lboost_thread "
-                            "-lboost_timer "
-                            "-lboost_chrono "
-                            "-lboost_program_options")
-             "-DBoost_FOUND=TRUE"
-             ;; Don't download RapMap---we already have it!
-             "-DFETCHED_RAPMAP=1")
+       ,#~(list (string-append "-DBOOST_INCLUDEDIR="
+                               #$(this-package-input "boost")
+                               "/include/")
+                (string-append "-DBOOST_LIBRARYDIR="
+                               #$(this-package-input "boost")
+                               "/lib/")
+                (string-append "-DBoost_LIBRARIES="
+                               "-lboost_iostreams "
+                               "-lboost_filesystem "
+                               "-lboost_system "
+                               "-lboost_thread "
+                               "-lboost_timer "
+                               "-lboost_chrono "
+                               "-lboost_program_options")
+                "-DBoost_FOUND=TRUE"
+                ;; Don't download RapMap---we already have it!
+                "-DFETCHED_RAPMAP=1")
        ;; Tests must be run after installation and the location of the test
        ;; data file must be overridden.  But the tests fail.  It looks like
        ;; they are not really meant to be run.
