@@ -50306,6 +50306,30 @@ non-empty snake_case.")
 algorithm.  Includes streaming compression and decompression.")
     (license license:bsd-3)))
 
+(define-public rust-snappy-cpp-0.1
+  (package
+    (name "rust-snappy-cpp")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "snappy-cpp" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0sxga9z8sg4gp6ghyz1p8r3c6flzjw57dlqdxavhvcjr1iwcfki3"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-pkg-config" ,rust-pkg-config-0.3))))
+    (home-page "https://github.com/BurntSushi/snap")
+    (synopsis "Simple Snappy C++ bindings for testing and benchmarking")
+    (description
+     "This package provides simple Snappy C++ bindings for testing and
+benchmarking.")
+    (license license:bsd-3)))
+
 (define-public rust-socket2-0.4
   (package
     (name "rust-socket2")
