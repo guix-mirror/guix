@@ -28,6 +28,7 @@
   #:use-module (guix grafts)
   #:use-module (guix profiles)
   #:use-module (guix packages)
+  #:autoload   (guix transformations) (tunable-package? tuned-package)
   #:use-module (guix channels)
   #:use-module (guix config)
   #:use-module (guix derivations)
@@ -107,9 +108,9 @@ building the derivation."
     (#:timeout . ,timeout)))
 
 (define* (package-job store job-name package system
-                      #:key cross? target)
+                      #:key cross? target (suffix ""))
   "Return a job called JOB-NAME that builds PACKAGE on SYSTEM."
-  (let ((job-name (string-append job-name "." system)))
+  (let ((job-name (string-append job-name "." system suffix)))
     (parameterize ((%graft? #f))
       (let* ((drv (if cross?
                       (package-cross-derivation store package target system
@@ -395,20 +396,38 @@ otherwise use the IMAGE name."
                            (((_ inputs _ ...) ...)
                             inputs))))
                       (%final-inputs)))))
-    (lambda (store package system)
+    (lambda* (store package system #:key (suffix ""))
       "Return a job for PACKAGE on SYSTEM, or #f if this combination is not
-valid."
+valid.  Append SUFFIX to the job name."
       (cond ((member package base-packages)
              (package-job store (string-append "base." (job-name package))
-                          package system))
+                          package system #:suffix suffix))
             ((supported-package? package system)
              (let ((drv (package-derivation store package system
                                             #:graft? #f)))
                (and (substitutable-derivation? drv)
                     (package-job store (job-name package)
-                                 package system))))
+                                 package system #:suffix suffix))))
             (else
              #f)))))
+
+(define %x86-64-micro-architectures
+  ;; Micro-architectures for which we build tuned variants.
+  '("westmere" "ivybridge" "haswell" "skylake" "skylake-avx512"))
+
+(define (tuned-package-jobs store package system)
+  "Return a list of jobs for PACKAGE tuned for SYSTEM's micro-architectures."
+  (filter-map (lambda (micro-architecture)
+                (define suffix
+                  (string-append "." micro-architecture))
+
+                (package->job store
+                              (tuned-package package micro-architecture)
+                              system
+                              #:suffix suffix))
+              (match system
+                ("x86_64-linux" %x86-64-micro-architectures)
+                (_ '()))))
 
 (define (all-packages)
   "Return the list of packages to build."
@@ -527,10 +546,16 @@ names."
          ('all
           ;; Build everything, including replacements.
           (let ((all (all-packages))
-                (job (lambda (package)
-                       (package->job store package system))))
+                (jobs (lambda (package)
+                        (match (package->job store package system)
+                          (#f '())
+                          (main-job
+                           (cons main-job
+                                 (if (tunable-package? package)
+                                     (tuned-package-jobs store package system)
+                                     '())))))))
             (append
-             (filter-map job all)
+             (append-map jobs all)
              (cross-jobs store system))))
          ('core
           ;; Build core packages only.
