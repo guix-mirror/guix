@@ -7623,11 +7623,11 @@ profiles, and associated taxonomic information.")
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no "check" target
-       #:make-flags (list
-                     "CFLAGS=-O2" ; override "-m64" flag
-                     (string-append "PREFIX=" (assoc-ref %outputs "out"))
-                     (string-append "MANDIR=" (assoc-ref %outputs "out")
-                                    "/share/man/man1"))))
+       #:make-flags
+       ,#~(list
+           "CFLAGS=-O2"                 ; override "-m64" flag
+           (string-append "PREFIX=" #$output)
+           (string-append "MANDIR=" #$output "/share/man/man1"))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
