@@ -72,8 +72,8 @@
   #:use-module (guix build-system qt))
 
 (define-public webrtc-for-telegram-desktop
-  (let ((commit "a19877363082da634a3c851a4698376504d2eaee")
-        (revision "83"))
+  (let ((commit "91d836dc84a16584c6ac52b36c04c0de504d9c34")
+        (revision "166"))
     (hidden-package
      (package
        (name "webrtc-for-telegram-desktop")
@@ -89,7 +89,7 @@
           (file-name
            (git-file-name name version))
           (sha256
-           (base32 "0961zm1m1mc2kh54dx5ax95q8sw13impvpjvg9jv12bmfkgm17wr"))
+           (base32 "0plwdp6xgxi27hif5j7kpq425cidxyxbbga3z2f64dsninwy5p1x"))
           (modules '((guix build utils)
                      (ice-9 ftw)
                      (srfi srfi-1)))
@@ -137,6 +137,7 @@
         `(("alsa" ,alsa-lib)
           ("ffmpeg" ,ffmpeg)
           ("libjpeg" ,libjpeg-turbo)
+          ("glib" ,glib)
           ("libvpx"
            ,(origin
               (method git-fetch)
@@ -159,8 +160,13 @@
                (git-file-name "libyuv-for-webrtc-for-telegram-desktop" version))
               (sha256
                (base32 "01knnk4h247rq536097n9n3s3brxlbby3nv3ppdgsqfda3k159ll"))))
+          ("libxcomposite" ,libxcomposite)
+          ("libxdamage" ,libxdamage)
+          ("libxrender" ,libxrender)
+          ("libxrandr" ,libxrandr)
           ("openssl" ,openssl)
           ("opus" ,opus)
+          ("pipewire" ,pipewire)
           ("protobuf" ,protobuf)
           ("pulseaudio" ,pulseaudio)
           ("x11" ,libx11)
