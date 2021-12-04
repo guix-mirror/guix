@@ -6137,15 +6137,15 @@ phylogenies.")
     (arguments
      `(#:tests? #f ;no "check" target
        #:make-flags
-       (list (string-append "BOOST="
-                            (assoc-ref %build-inputs "boost")
-                            "/include/")
-             (string-append "SAMHEADERS="
-                            (assoc-ref %build-inputs "htslib")
-                            "/include/htslib/sam.h")
-             (string-append "SAMLIBS="
-                            (assoc-ref %build-inputs "htslib")
-                            "/lib/libhts.so"))
+       ,#~(list (string-append "BOOST="
+                               #$(this-package-input "boost")
+                               "/include/")
+                (string-append "SAMHEADERS="
+                               #$(this-package-input "htslib")
+                               "/include/htslib/sam.h")
+                (string-append "SAMLIBS="
+                               #$(this-package-input "htslib")
+                               "/lib/libhts.so"))
        #:phases
        (modify-phases %standard-phases
          ;; No "configure" script.
