@@ -5942,9 +5942,8 @@ different command-line tools:
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no check target
-       #:make-flags (list (string-append "INSTALLDIR="
-                                         (assoc-ref %outputs "out")
-                                         "/bin"))
+       #:make-flags
+       ,#~(list (string-append "INSTALLDIR=" #$output "/bin"))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))
