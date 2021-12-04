@@ -10177,15 +10177,15 @@ The following file formats are supported:
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
-       (list (string-append "-Dlibgff_DIR="
-                            (assoc-ref %build-inputs "libgff") "/lib")
-             "-DCMAKE_CXX_FLAGS=\"-DHAVE_NUMERIC_LIMITS128=1\""
-             "-Dlibgff_FOUND=TRUE"
-             "-DTBB_FOUND=TRUE"
-             ,(string-append "-DTBB_VERSION=" (package-version tbb-2020))
-             "-DTBB_LIBRARIES=tbb -ltbbmalloc"
-             "-DFETCHED_PUFFERFISH=TRUE"
-             "-DUSE_SHARED_LIBS=TRUE")
+       ,#~(list (string-append "-Dlibgff_DIR="
+                               #$(this-package-input "libgff") "/lib")
+                "-DCMAKE_CXX_FLAGS=\"-DHAVE_NUMERIC_LIMITS128=1\""
+                "-Dlibgff_FOUND=TRUE"
+                "-DTBB_FOUND=TRUE"
+                #$(string-append "-DTBB_VERSION=" (package-version tbb-2020))
+                "-DTBB_LIBRARIES=tbb -ltbbmalloc"
+                "-DFETCHED_PUFFERFISH=TRUE"
+                "-DUSE_SHARED_LIBS=TRUE")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'prepare-pufferfish
