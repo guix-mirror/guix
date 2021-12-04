@@ -6734,11 +6734,10 @@ accessed/downloaded on demand across HTTP.")
          ;; no "configure" script
          (delete 'configure)
          (replace 'install
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    (let ((bin (string-append (assoc-ref outputs "out")
-                                              "/bin/")))
-                      (install-file "plink" bin)
-                      #t))))))
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((bin (string-append (assoc-ref outputs "out")
+                                       "/bin/")))
+               (install-file "plink" bin)))))))
     (inputs
      `(("zlib" ,zlib)
        ("lapack" ,lapack)))
