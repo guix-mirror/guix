@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2020 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2020, 2021 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,6 +20,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix gexp)
   #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system ant)
@@ -321,14 +322,15 @@ other projects as their parent pom.")
                  (base32
                   "0yl2hbwz2kn1hll1i00ddzn8f89bfdcjwdifz0pj2j15k1gjch7v"))))
       (arguments
-       `(#:tests? #f
+       (list
+         #:tests? #f
          #:phases
-         (modify-phases %standard-phases
-           (delete 'unpack)
-           (delete 'configure)
-           (delete 'build)
-           (replace 'install
-             (install-pom-file (assoc-ref %build-inputs "source")))))))))
+         #~(modify-phases %standard-phases
+             (delete 'unpack)
+             (delete 'configure)
+             (delete 'build)
+             (replace 'install
+               (install-pom-file #$(package-source this-package)))))))))
 
 (define* (make-plexus-parent-pom version hash #:optional parent)
   (hidden-package
