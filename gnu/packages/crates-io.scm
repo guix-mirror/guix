@@ -56247,6 +56247,30 @@ the current thread.")
 futures efficiently")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-tokio-io-timeout-1
+  (package
+    (name "rust-tokio-io-timeout")
+    (version "1.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tokio-io-timeout" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1s9dlkzsn0yng98zdmkddjx11jwawkxk3pbi8laxwh72dc89zi4h"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-pin-project-lite" ,rust-pin-project-lite-0.2)
+        ("rust-tokio" ,rust-tokio-1))))
+    (home-page "https://github.com/sfackler/tokio-io-timeout")
+    (synopsis "Tokio wrappers which apply timeouts to IO operations")
+    (description
+     "This package provides Tokio wrappers which apply timeouts to IO
+operations.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-tokio-macros-1
   (package
     (name "rust-tokio-macros")
