@@ -8974,8 +8974,36 @@ Encoding Standard.")
 Python arrow.humanize.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-chrono-tz-0.6
+  (package
+    (name "rust-chrono-tz")
+    (version "0.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "chrono-tz" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "12qcpjqva4fpj5kdcksbfhsc8dkbdhyi2z56p8dwf9bxc0f1rh34"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-chrono" ,rust-chrono-0.4)
+        ("rust-chrono-tz-build" ,rust-chrono-tz-build-0.0.2)
+        ("rust-phf" ,rust-phf-0.10)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-uncased" ,rust-uncased-0.9))))
+    (home-page "https://github.com/chronotope/chrono-tz")
+    (synopsis "TimeZone implementations for rust-chrono from the IANA database")
+    (description
+     "Chrono-TZ is a library that provides implementors of the TimeZone trait
+for @code{rust-chrono}.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-chrono-tz-0.5
   (package
+    (inherit rust-chrono-tz-0.6)
     (name "rust-chrono-tz")
     (version "0.5.3")
     (source
@@ -8985,18 +9013,38 @@ Python arrow.humanize.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "085i4940kn0fn4gkl3xi1kv3vp2frhfig1vla1i461pcbwas6m15"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-chrono" ,rust-chrono-0.4)
         ("rust-parse-zoneinfo" ,rust-parse-zoneinfo-0.3)
-        ("rust-serde" ,rust-serde-1))))
+        ("rust-serde" ,rust-serde-1))))))
+
+(define-public rust-chrono-tz-build-0.0.2
+  (package
+    (name "rust-chrono-tz-build")
+    (version "0.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "chrono-tz-build" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0schy3z03psvmc6734hgkx52cdb3zvixgzhvhr0mzxmj7x4qs1fv"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-parse-zoneinfo" ,rust-parse-zoneinfo-0.3)
+        ("rust-phf" ,rust-phf-0.10)
+        ("rust-phf-codegen" ,rust-phf-codegen-0.10)
+        ("rust-regex" ,rust-regex-1)
+        ("rust-uncased" ,rust-uncased-0.9))))
     (home-page "https://github.com/chronotope/chrono-tz")
-    (synopsis "TimeZone implementations for rust-chrono from the IANA database")
+    (synopsis "Internal build script for chrono-tz Rust package")
     (description
-     "Chrono-TZ is a library that provides implementors of the
-TimeZone trait for @code{rust-chrono}.")
+     "This package contains the internal build script for
+chrono-tz Rust crate.")
     (license (list license:expat license:asl2.0))))
 
 (define-public rust-chunked-transfer-1
