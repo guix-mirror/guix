@@ -2656,7 +2656,7 @@ external rate conversion.")
        ("bison" ,bison)))
     (inputs
      `(("libmnl" ,libmnl)
-       ("libnftnl" ,libnftnl)))
+       ("libnftnl" ,libnftnl/fixed)))
     (arguments
      '(#:tests? #f       ; no test suite
        #:configure-flags ; add $libdir to the RUNPATH of executables
@@ -7073,6 +7073,24 @@ programming interface to the in-kernel nf_tables subsystem.  The library
 libnftnl has been previously known as libnftables.  This library is currently
 used by nftables.")
     (license license:gpl2+)))
+
+;; This is used in iptables, which contributes to rust.  We're pinning this
+;; variant to avoid accidental rebuilds of rust.
+(define-public libnftnl/fixed
+  (package (inherit libnftnl)
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://netfilter.org/libnftnl/"
+                           "libnftnl-" version ".tar.bz2"))
+       (sha256
+        (base32 "1xblq1cbcxhr6qmjpy98i1qdza148idgz99vbhjc7s4vzvfizc4h"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libmnl" ,libmnl)))))
 
 (define-public nftables
   (package
