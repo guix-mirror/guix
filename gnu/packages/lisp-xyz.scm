@@ -29,6 +29,7 @@
 ;;; Copyright © 2021 Charles Jackson <charles.b.jackson@protonmail.com>
 ;;; Copyright © 2021 Foo Chuan Wei <chuanwei.foo@hotmail.com>
 ;;; Copyright © 2021 jgart <jgart@dismail.de>
+;;; Copyright © 2021 Aleksandr Vityazev <avityazev@posteo.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1019,10 +1020,10 @@ antialiased TrueType font rendering using CLX and XRender extension.")
   (sbcl-package->ecl-package sbcl-clx-truetype))
 
 (define-public sbcl-slynk
-  (let ((commit "fb84318c08f59bc786e047006fc81e2ace568309"))
+  (let ((commit "0470c0281498b9de072fcbf3718fc66720eeb3d0"))
     (package
       (name "sbcl-slynk")
-      (version (git-version "1.0.43" "4" commit))
+      (version (git-version "1.0.43" "5" commit))
       (source
        (origin
          (method git-fetch)
@@ -1031,7 +1032,7 @@ antialiased TrueType font rendering using CLX and XRender extension.")
            (url "https://github.com/joaotavora/sly")
            (commit commit)))
          (sha256
-          (base32 "0z123k9ak7yjb9bxb5qx48f33ma8066rhkqh8xc14z7shk75jybj"))
+          (base32 "1ws2a9azmdkkg47xnd4jggna45nf0bh54gyp0799b44c4bgjp029"))
          (file-name (git-file-name "slynk" version))))
       (build-system asdf-build-system/sbcl)
       (outputs '("out" "image"))
