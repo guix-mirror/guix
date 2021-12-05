@@ -14658,13 +14658,13 @@ The output is in SAM format.")
     (arguments
      `(#:test-target "test"
        #:configure-flags
-       (list "-DWITH_CHECK=ON"
-             (string-append "-DLIBXML_LIBRARY="
-                            (assoc-ref %build-inputs "libxml2")
-                            "/lib/libxml2.so")
-             (string-append "-DLIBXML_INCLUDE_DIR="
-                            (assoc-ref %build-inputs "libxml2")
-                            "/include/libxml2"))))
+       ,#~(list "-DWITH_CHECK=ON"
+                (string-append "-DLIBXML_LIBRARY="
+                               #$(this-package-input "libxml2")
+                               "/lib/libxml2.so")
+                (string-append "-DLIBXML_INCLUDE_DIR="
+                               #$(this-package-input "libxml2")
+                               "/include/libxml2"))))
     (propagated-inputs
      `(("libxml2" ,libxml2)))
     (native-inputs
