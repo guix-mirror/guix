@@ -939,8 +939,7 @@ problems in numerical linear algebra.")
          (add-after 'unpack 'disable-broken-tests
            (lambda _
              (substitute* "TESTING/CMakeLists.txt"
-               (("add_lapack_test.* xeigtstz\\)") ""))
-             #t))
+               (("add_lapack_test.* xeigtstz\\)") ""))))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -962,8 +961,7 @@ problems in numerical linear algebra.")
                                            "\\.h$")))
                (copy-recursively (string-append "../clapack-"
                                                 ,version "-CMAKE/INCLUDE")
-                                 (string-append out "/include"))
-               #t))))))
+                                 (string-append out "/include"))))))))
     (home-page "https://www.netlib.org/clapack/")
     (synopsis "Numerical linear algebra library for C")
     (description
