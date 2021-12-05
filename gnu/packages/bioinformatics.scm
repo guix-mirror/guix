@@ -11659,8 +11659,8 @@ and many lower level support classes.
      ;; The test suite attempts to execute ../test-driver, which does not exist.
      `(#:tests? #false
        #:configure-flags
-       (list (string-append "--with-libmaus2="
-                            (assoc-ref %build-inputs "libmaus2")))))
+       ,#~(list (string-append "--with-libmaus2="
+                               #$(this-package-input "libmaus2")))))
     (inputs
      `(("libmaus2" ,libmaus2)
        ("xerces-c" ,xerces-c)))
