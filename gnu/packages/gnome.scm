@@ -3675,16 +3675,19 @@ diagrams.")
                            ;; This test fails on armhf:
                            "svg1.1/masking-mask-01-b.svg"
                            ;; This test fails on aarch64:
-                           "bugs/777834-empty-text-children.svg")))
-             #t)))))
+                           "bugs/777834-empty-text-children.svg"
+
+                           ;; These two tests fail due to slightly different
+                           ;; text rendering (different kerning or similar),
+                           ;; nothing alarming.
+                           "bugs/340047.svg"
+                           "bugs/749415.svg"))))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("glib" ,glib "bin")                               ; glib-mkenums, etc.
        ("gobject-introspection" ,gobject-introspection))) ; g-ir-compiler, etc.
     (inputs
-     `(;; XXX: 1.44 causes some test failures, so we stick with 1.42 for
-       ;; this ancient version of librsvg.
-       ("pango" ,pango-1.42)
+     `(("pango" ,pango)
        ("libcroco" ,libcroco)
        ("bzip2" ,bzip2)
        ("libgsf" ,libgsf)
