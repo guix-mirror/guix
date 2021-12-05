@@ -14455,10 +14455,9 @@ patterns.")
     (arguments
      `(#:test-target "test"
        #:make-flags
-       (list "CC=gcc"
-             "CFLAGS=-fcommon"
-             (string-append "prefix="
-                            (assoc-ref %outputs "out") "/bin/"))
+       ,#~(list "CC=gcc"
+                "CFLAGS=-fcommon"
+                (string-append "prefix=" #$output "/bin/"))
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
