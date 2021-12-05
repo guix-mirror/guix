@@ -14503,8 +14503,8 @@ containing the reference genome as well.")
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
-       (list "CC=gcc"
-             (string-append "DESTDIR=" (assoc-ref %outputs "out")))
+       ,#~(list "CC=gcc"
+                (string-append "DESTDIR=" #$output))
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
