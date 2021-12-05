@@ -686,6 +686,51 @@ your current directory for a regex pattern while respecting your
 gitignore rules.")
     (license (list license:unlicense license:expat))))
 
+(define-public git-interactive-rebase-tool
+  (package
+    (name "git-interactive-rebase-tool")
+    (version "2.1.0")
+    (source
+     (origin
+       ;; crates.io does not provide the test data.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mitmaro/git-interactive-rebase-tool")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "173spqqpyc00kvfmldjmjfqizh9b4spq4xw4bskd4dny8qcpz28d"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-test-flags
+       ;; https://github.com/MitMaro/git-interactive-rebase-tool/issues/586
+       '("--release" "--" "--skip=tests::success")
+       #:cargo-inputs
+       (("rust-anyhow" ,rust-anyhow-1)
+        ("rust-chrono" ,rust-chrono-0.4)
+        ("rust-clap" ,rust-clap-2)
+        ("rust-crossterm" ,rust-crossterm-0.19)
+        ("rust-git2" ,rust-git2-0.13)
+        ("rust-num-format" ,rust-num-format-0.4)
+        ("rust-unicode-segmentation" ,rust-unicode-segmentation-1)
+        ("rust-unicode-width" ,rust-unicode-width-0.1)
+        ("rust-xi-unicode" ,rust-xi-unicode-0.3))
+       #:cargo-development-inputs
+       (("rust-concat-idents" ,rust-concat-idents-1)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-rstest" ,rust-rstest-0.6)
+        ("rust-serial-test" ,rust-serial-test-0.5)
+        ("rust-tempfile" ,rust-tempfile-3))))
+    (inputs
+     (list zlib))
+    (home-page "https://gitrebasetool.mitmaro.ca/")
+    (synopsis "Terminal based sequence editor for git interactive rebase")
+    (description
+     "This application is a terminal-based sequence editor for git interactive
+rebase.")
+    (license license:gpl3+)))
+
 (define-public rust-cbindgen
   (package
     (name "rust-cbindgen")
