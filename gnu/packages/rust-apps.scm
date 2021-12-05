@@ -856,6 +856,36 @@ classic Web2C implementation of TeX and uses the TeXLive distribution
 of support files.")
     (license license:expat)))
 
+(define-public hex
+  (package
+    (name "hex")
+    (version "0.4.2")
+    (source
+     (origin
+       ;; crates.io does not provide the test data.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/sitkevij/hex")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "03x27nixdlnkkrh85gy4152arp02kpjwq0i9dn9p73lyr24s64lv"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-ansi-term" ,rust-ansi-term-0.12)
+        ("rust-atty" ,rust-atty-0.2)
+        ("rust-clap" ,rust-clap-2)
+        ("rust-no-color" ,rust-no-color-0.1))
+       #:cargo-development-inputs
+       (("rust-assert-cmd" ,rust-assert-cmd-1))))
+    (home-page "https://github.com/sitkevij/hex")
+    (synopsis "Hexadecimal colorized view of a file")
+    (description
+     "@command{hx} accepts a file path as input and outputs a hexadecimal
+colorized view to stdout.")
+    (license license:expat)))
+
 (define-public tokei
   (package
     (name "tokei")
