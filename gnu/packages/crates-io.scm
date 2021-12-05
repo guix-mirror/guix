@@ -44690,6 +44690,33 @@ rust.")
          (base32
           "1b6vjfwvpcgy0q8ywywz548vhxrmhbz2sm6xyhnmj5p5xd1xfqff"))))))
 
+(define-public rust-rstest-0.6
+  (package
+    (name "rust-rstest")
+    (version "0.6.5")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "rstest" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "1wdd0ci0bn6fd5v5c19lhlqrpadk18fl4jzvh75b26616anlxdil"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:skip-build? #t
+        #:cargo-inputs
+        (("rust-cfg-if" ,rust-cfg-if-1)
+         ("rust-proc-macro2" ,rust-proc-macro2-1)
+         ("rust-quote" ,rust-quote-1)
+         ("rust-rustc-version" ,rust-rustc-version-0.3)
+         ("rust-syn" ,rust-syn-1))))
+    (home-page "https://github.com/la10736/rstest")
+    (synopsis "Rust fixture based test framework")
+    (description
+      "rstest uses procedural macros to help you on writing fixtures and
+table-based tests.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-rstest-0.10
   (package
     (name "rust-rstest")
