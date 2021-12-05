@@ -861,33 +861,30 @@ is part of the GNOME accessibility project.")
     (build-system gnu-build-system)
     (outputs '("out" "bin" "doc" "debug"))
     (propagated-inputs
-     `(("atk" ,atk)
-       ("cairo" ,cairo)
-       ("gdk-pixbuf" ,(librsvg-for-system))
-       ("glib" ,glib)
-       ("pango" ,pango)))
+     (list atk cairo
+           (librsvg-for-system) glib pango))
     (inputs
-     `(("cups" ,cups)
-       ("libx11" ,libx11)
-       ("libxcomposite" ,libxcomposite)
-       ("libxcursor" ,libxcursor)
-       ("libxext" ,libxext)
-       ("libxdamage" ,libxdamage)
-       ("libxi" ,libxi)
-       ("libxinerama" ,libxinerama)
-       ("libxkbcommon" ,libxkbcommon)
-       ("libxrandr" ,libxrandr)
-       ("libxrender" ,libxrender)
-       ("libxshmfence" ,libxshmfence)))
+     (list cups
+           libx11
+           libxcomposite
+           libxcursor
+           libxext
+           libxdamage
+           libxi
+           libxinerama
+           libxkbcommon
+           libxrandr
+           libxrender
+           libxshmfence))
     (native-inputs
-     `(("gettext" ,gettext-minimal)
-       ("glib" ,glib "bin")
-       ("gobject-introspection" ,gobject-introspection)
-       ("intltool" ,intltool)
-       ("perl" ,perl)
-       ("pkg-config" ,pkg-config)
-       ("python-wrapper" ,python-wrapper)
-       ("xorg-server" ,xorg-server-for-tests)))
+     (list gettext-minimal
+           `(,glib "bin")
+           gobject-introspection
+           intltool
+           perl
+           pkg-config
+           python-wrapper
+           xorg-server-for-tests))
     (arguments
      `(#:parallel-tests? #f
        #:configure-flags
@@ -955,54 +952,54 @@ application suites.")
        (patches (search-patches "gtk3-respect-GUIX_GTK3_PATH.patch"
                                 "gtk3-respect-GUIX_GTK3_IM_MODULE_FILE.patch"))))
     (propagated-inputs
-     `(("atk" ,atk)
-       ("at-spi2-atk" ,at-spi2-atk)
-       ("cairo" ,cairo)
-       ("fribidi" ,fribidi)
-       ("fontconfig" ,fontconfig)
-       ("freetype" ,freetype)
-       ("gdk-pixbuf" ,(librsvg-for-system))
-       ("glib" ,glib)
-       ("libcloudproviders" ,libcloudproviders-minimal)
-       ("libepoxy" ,libepoxy)
-       ("libx11" ,libx11)
-       ("libxcomposite" ,libxcomposite)
-       ("libxcursor" ,libxcursor)
-       ("libxdamage" ,libxdamage)
-       ("libxext" ,libxext)
-       ("libxfixes" ,libxfixes)
-       ("libxi" ,libxi)
-       ("libxinerama" ,libxinerama)
-       ("libxkbcommon" ,libxkbcommon)
-       ("libxrandr" ,libxrandr)
-       ("libxrender" ,libxrender)
-       ("mesa" ,mesa)
-       ("pango" ,pango)
-       ("wayland" ,wayland)
-       ("wayland-protocols" ,wayland-protocols)))
+     (list atk
+           at-spi2-atk
+           cairo
+           fribidi
+           fontconfig
+           freetype
+           (librsvg-for-system)
+           glib
+           libcloudproviders-minimal
+           libepoxy
+           libx11
+           libxcomposite
+           libxcursor
+           libxdamage
+           libxext
+           libxfixes
+           libxi
+           libxinerama
+           libxkbcommon
+           libxrandr
+           libxrender
+           mesa
+           pango
+           wayland
+           wayland-protocols))
     (inputs
-     `(("colord" ,colord-minimal)       ;to prevent a cycle with inkscape
-       ("cups" ,cups)
-       ("graphene" ,graphene)
-       ("harfbuzz" ,harfbuzz)
-       ("iso-codes" ,iso-codes)
-       ("json-glib" ,json-glib-minimal)
-       ("libxml2" ,libxml2)
-       ("rest" ,rest)))
+     (list colord-minimal ;to prevent a cycle with inkscape
+           cups
+           graphene
+           harfbuzz
+           iso-codes
+           json-glib-minimal
+           libxml2
+           rest))
     (native-inputs
-     `(("docbook-xml" ,docbook-xml-4.1.2)
-       ("gettext" ,gettext-minimal)
-       ("glib" ,glib "bin")
-       ("gobject-introspection" ,gobject-introspection)
-       ("hicolor-icon-theme" ,hicolor-icon-theme)
-       ("perl" ,perl)
-       ("pkg-config" ,pkg-config)
-       ("python-wrapper" ,python-wrapper)
-       ("sassc" ,sassc)
-       ;; By using a special xorg-server for GTK+'s tests, we reduce the impact
-       ;; of updating xorg-server directly on the master branch.
-       ("xorg-server" ,xorg-server-for-tests)
-       ("xsltproc" ,libxslt)))
+     (list docbook-xml-4.1.2
+           gettext-minimal
+           `(,glib "bin")
+           gobject-introspection
+           hicolor-icon-theme
+           perl
+           pkg-config
+           python-wrapper
+           sassc
+           ;; By using a special xorg-server for GTK+'s tests, we reduce the impact
+           ;; of updating xorg-server directly on the master branch.
+           xorg-server-for-tests
+           libxslt))
     (arguments
      `(#:imported-modules ((guix build glib-or-gtk-build-system)
                            ,@%gnu-build-system-modules)
