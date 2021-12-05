@@ -932,7 +932,8 @@ problems in numerical linear algebra.")
         "0nnap9q1mv14g57dl3vkvxrdr10k5w7zzyxs6rgxhia8q8mphgqb"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:phases
+     `(#:configure-flags '("-DCMAKE_C_FLAGS=-fcommon -O2")
+       #:phases
        (modify-phases %standard-phases
          ;; These tests use a lot of stack variables and segfault without
          ;; lifting resource limits.
