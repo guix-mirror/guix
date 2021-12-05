@@ -52,14 +52,7 @@
     (propagated-inputs `(("python2-pyxdg" ,python2-pyxdg)))
     (inputs `(("imlib2" ,imlib2)
               ("libxml2" ,libxml2)
-
-              ;; Librsvg, an optional dependency, depends on Rust, which is
-              ;; well supported only on x86_64.  Thus, remove it on other
-              ;; architectures.
-              ,@(if (target-x86-64?)
-                    `(("librsvg" ,librsvg))
-                    '())
-
+              ("librsvg" ,(librsvg-for-system))
               ("libsm" ,libsm)
               ("libxcursor" ,libxcursor)
               ("libxinerama" ,libxinerama)
