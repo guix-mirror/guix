@@ -12221,9 +12221,9 @@ reference transcripts provided in a annotation file (also in GTF/GFF3 format).
            (base32 "0rgv6q5fl4x5d74n6p5wvdna6zmbdbqpb4jqqh6vq3670gn08xad"))))
       (build-system gnu-build-system)
       (arguments
-       '(#:tests? #f ; No tests.
-         #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
-                            "DESTDIR=\"\"")
+       `(#:tests? #f                    ; No tests.
+         #:make-flags
+         ,#~(list (string-append "PREFIX=" #$output) "DESTDIR=\"\"")
          #:phases
          (modify-phases %standard-phases
            (delete 'configure)))) ; There is no configure phase.
