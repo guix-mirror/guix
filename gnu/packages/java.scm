@@ -14230,7 +14230,7 @@ can be interpreted by IDEs and static analysis tools to improve code analysis.")
                         (jar (string-append ,tlatools
                                             "/dist/" jar-name))
                         (java-cp (string-append share "/" jar-name))
-                        (bin (string-append %output "/bin"))
+                        (bin (string-append (assoc-ref outputs "out") "/bin"))
                         (java (search-input-file inputs "/bin/java")))
                    (install-file jar share)
                    (mkdir-p bin)
