@@ -2447,9 +2447,6 @@ also includes an interface for tabix.")
 UCSC genome browser.")
     (license license:artistic2.0)))
 
-(define-public python2-twobitreader
-  (package-with-python2 python-twobitreader))
-
 (define-public python-plastid
   (package
     (name "python-plastid")
