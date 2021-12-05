@@ -13771,11 +13771,11 @@ on the needs of the user.")
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
-       (list (string-append "prefix=" (assoc-ref %outputs "out"))
-             (string-append "BOOST_ROOT="
-                            (assoc-ref %build-inputs "boost"))
-             (string-append "HTSLIB_ROOT="
-                            (assoc-ref %build-inputs "htslib")))
+       ,#~(list (string-append "prefix=" #$output)
+                (string-append "BOOST_ROOT="
+                               #$(this-package-input "boost"))
+                (string-append "HTSLIB_ROOT="
+                               #$(this-package-input "htslib")))
        #:test-target "test"
        #:phases
        (modify-phases %standard-phases
