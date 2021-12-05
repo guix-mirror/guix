@@ -15504,7 +15504,10 @@ sequences")
        (method url-fetch)
        (uri (pypi-uri "bwapy" version))
        (sha256
-        (base32 "090qwx3vl729zn3a7sksbviyg04kc71gpbm3nd8dalqp673x1npw"))))
+        (base32 "090qwx3vl729zn3a7sksbviyg04kc71gpbm3nd8dalqp673x1npw"))
+       (modules '((guix build utils)))
+       (snippet
+        '(for-each delete-file (find-files "." "\\.o$")))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-cffi" ,python-cffi)
