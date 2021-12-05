@@ -13342,8 +13342,7 @@ to an artifact/contaminant file.")
               (snippet
                '(begin
                   (delete-file "Manual.pdf")
-                  (delete-file-recursively "third-party")
-                  #t))))
+                  (delete-file-recursively "third-party")))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags '("OPENMP=t")
@@ -13354,8 +13353,7 @@ to an artifact/contaminant file.")
          (add-after 'unpack 'fix-zlib-include
            (lambda _
              (substitute* "src/binarySequences.c"
-               (("../third-party/zlib-1.2.3/zlib.h") "zlib.h"))
-             #t))
+               (("../third-party/zlib-1.2.3/zlib.h") "zlib.h"))))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -13366,8 +13364,7 @@ to an artifact/contaminant file.")
                (install-file "velveth" bin)
                (install-file "velvetg" bin)
                (install-file "Manual.pdf" doc)
-               (install-file "Columbus_manual.pdf" doc)
-               #t))))))
+               (install-file "Columbus_manual.pdf" doc)))))))
     (inputs
      `(("openmpi" ,openmpi)
        ("zlib" ,zlib)))
