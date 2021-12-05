@@ -10748,8 +10748,7 @@ contains
        (snippet
         '(begin
            (for-each delete-file (find-files "jar/lib" "\\.jar$"))
-           (delete-file-recursively "3rdParty")
-           #t))))
+           (delete-file-recursively "3rdParty")))))
     (build-system ant-build-system)
     (arguments
      `(#:tests? #f                      ; test data are not included
@@ -10786,8 +10785,7 @@ contains
                (for-each (lambda (jar)
                            (symlink jar (string-append "jar/lib/" (basename jar))))
                          (append-map (lambda (dir) (find-files dir "\\.jar$"))
-                                     dirs)))
-	     #t))
+                                     dirs)))))
          ;; There is no installation target
          (replace 'install
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -10830,8 +10828,7 @@ contains
                                  scripts)
                  (("^java") (which "java"))
                  (("jar_deploy_dir=.*")
-                  (string-append "jar_deploy_dir=" share "\n"))))
-             #t))
+                  (string-append "jar_deploy_dir=" share "\n"))))))
          ;; FIXME: We do this after stripping jars because we don't want it to
          ;; copy all these jars and strip them.  We only want to install
          ;; links.  Arguably, this is a problem with the ant-build-system.
@@ -10843,8 +10840,7 @@ contains
                (for-each (lambda (jar)
                            (symlink (readlink jar)
                                     (string-append lib (basename jar))))
-                         (find-files "jar/lib" "\\.jar$")))
-             #t)))))
+                         (find-files "jar/lib" "\\.jar$"))))))))
     (inputs
      `(("jdk" ,icedtea-8)
        ("java-picard" ,java-picard-2.10.3)
