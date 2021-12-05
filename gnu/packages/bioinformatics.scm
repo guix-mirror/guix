@@ -13501,9 +13501,9 @@ tools which build on STAR, Arriba does not require to reduce the
          "1nf3ki5pfzalhrx2fr1y6pfqfi133yj2m7q4fj9irf5fb94bapwr"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:make-flags (list "COLOR_BUILD=no"
-                          (string-append "PREFIX="
-                                         (assoc-ref %outputs "out")))
+     `(#:make-flags
+       ,#~(list "COLOR_BUILD=no"
+                (string-append "PREFIX=" #$output))
        #:test-target "test"
        #:phases
        (modify-phases %standard-phases
