@@ -14695,9 +14695,9 @@ international community.")
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #false                  ; there are none
-       #:make-flags (list "-C" "src"
-                          (string-append "KRAKEN2_DIR="
-                                         (assoc-ref %outputs "out") "/bin"))
+       #:make-flags
+       ,#~(list "-C" "src"
+                (string-append "KRAKEN2_DIR=" #$output "/bin"))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
