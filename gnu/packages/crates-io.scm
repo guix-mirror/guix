@@ -32140,6 +32140,26 @@ while still providing platform specific APIs.")
 to nl80211 and receive messages.")
     (license license:expat)))
 
+(define-public rust-no-color-0.1
+  (package
+    (name "rust-no-color")
+    (version "0.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "no_color" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "1m0x6i5q1jav2jgajkg4irrkfgv4lakpdvmj310b90wswdyy9xdx"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/sitkevij/no_color")
+    (synopsis "Library to detect NO_COLOR environment variable")
+    (description
+"@code{no_color} is a rust library for detecting if the @code{NO_COLOR}
+environment variable is set.")
+    (license license:expat)))
+
 (define-public rust-no-panic-0.1
   (package
     (name "rust-no-panic")
