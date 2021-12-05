@@ -11369,9 +11369,9 @@ analyses in addition to large-scale sequence-level searches.")
       (arguments
        `(#:tests? #f                    ; requires a 1.4G test file
          #:make-flags
-         (list (string-append "SAMTOOLS_DIR="
-                              (assoc-ref %build-inputs "samtools")
-                              "/lib/"))
+         ,#~(list (string-append "SAMTOOLS_DIR="
+                                 #$(this-package-input "samtools")
+                                 "/lib/"))
          #:phases
          (modify-phases %standard-phases
            (replace 'configure
