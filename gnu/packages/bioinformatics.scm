@@ -2480,9 +2480,6 @@ UCSC genome browser.")
 high-throughput sequencing data – with an emphasis on simplicity.")
     (license license:bsd-3)))
 
-(define-public python2-plastid
-  (package-with-python2 python-plastid))
-
 (define-public tetoolkit
   (package
     (name "tetoolkit")
