@@ -3606,26 +3606,24 @@ for dealing with different structured file formats.")
          (replace 'install
            (assoc-ref gnu:%standard-phases 'install)))))
     (native-inputs
-     `(("docbook-xml" ,docbook-xml-4.3)
-       ("glib" ,glib "bin")
-       ("gobject-introspection" ,gobject-introspection)
-       ("pkg-config" ,pkg-config)
-       ("python" ,python-wrapper)
-       ("ruby" ,ruby)
-       ("vala" ,vala)))
+     (list docbook-xml-4.3
+           `(,glib "bin")
+           gobject-introspection
+           pkg-config
+           python-wrapper
+           ruby
+           vala))
     (inputs
-     `(("bzip2" ,bzip2)
-       ("fontconfig" ,fontconfig)
-       ("freetype" ,freetype)
-       ("harfbuzz" ,harfbuzz)
-       ("libcroco" ,libcroco)
-       ("libgsf" ,libgsf)
-       ("libxml2" ,libxml2)
-       ("pango" ,pango)))
+     (list bzip2
+           fontconfig
+           freetype
+           harfbuzz
+           libcroco
+           libgsf
+           libxml2
+           pango))
     (propagated-inputs
-     `(("cairo" ,cairo)
-       ("gdk-pixbuf" ,gdk-pixbuf)
-       ("glib" ,glib)))
+     (list cairo gdk-pixbuf glib))
     (synopsis "SVG rendering library")
     (description "Librsvg is a library to render SVG images to Cairo surfaces.
 GNOME uses this to render SVG icons.  Outside of GNOME, other desktop
@@ -3682,20 +3680,14 @@ diagrams.")
                            "bugs/340047.svg"
                            "bugs/749415.svg"))))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("glib" ,glib "bin")                               ; glib-mkenums, etc.
-       ("gobject-introspection" ,gobject-introspection))) ; g-ir-compiler, etc.
+     (list pkg-config
+           `(,glib "bin") ; glib-mkenums, etc.
+           gobject-introspection)) ; g-ir-compiler, etc.
     (inputs
-     `(("pango" ,pango)
-       ("libcroco" ,libcroco)
-       ("bzip2" ,bzip2)
-       ("libgsf" ,libgsf)
-       ("libxml2" ,libxml2)))
+     (list pango libcroco bzip2 libgsf libxml2))
     (propagated-inputs
      ;; librsvg-2.0.pc refers to all of that.
-     `(("cairo" ,cairo)
-       ("gdk-pixbuf" ,gdk-pixbuf)
-       ("glib" ,glib)))
+     (list cairo gdk-pixbuf glib))
     (synopsis "Render SVG files using Cairo (ancient C version)")
     (properties '((hidden? . #t)))))
 
