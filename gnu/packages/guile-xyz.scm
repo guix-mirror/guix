@@ -4944,3 +4944,39 @@ compiler itself.  It produces a Scheme code for an FSM from the PlantUML
 format.  This tool is meant to be called on a PlantUML file when a program
 with a FSM is being built (for example, from a Makefile.)")
     (license license:gpl3)))
+
+(define-public guile-ini
+  (package
+    (name "guile-ini")
+    (version "0.3.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/artyom-poptsov/guile-ini")
+             (commit (string-append "v" version))))
+       (file-name (string-append name "-" version))
+       (sha256
+        (base32
+         "0injn60530valhx3gsmdp72g6z886yf0n08hscky21h3dafm14kc"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags '("GUILE_AUTO_COMPILE=0")))     ;to prevent guild warnings
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)
+       ("texinfo" ,texinfo)))
+    (inputs
+     `(("bash" ,bash-minimal)
+       ("guile" ,guile-3.0)
+       ("guile-lib" ,guile-lib)))
+    (propagated-inputs
+     `(("guile-smc" ,guile-smc)))
+    (home-page "https://github.com/artyom-poptsov/guile-ini")
+    (synopsis "Guile library for INI format support")
+    (description
+     "@code{guile-ini} is a GNU Guile library for working with the
+@url{https://en.wikipedia.org/wiki/INI_file, INI format}.  This library
+provides API for reading and writing INI data.")
+    (license license:gpl3)))
