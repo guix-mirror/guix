@@ -930,10 +930,11 @@ interface.")
 (define-public leo
   ;; PyPi only provides a wheel.
   (let ((commit "88cc10a87afe2ec86be06e6ea2bcd099f5360b74")
+        (version "1.0.4")
         (revision "1"))
     (package
       (name "leo")
-      (version (string-append "1.0.4-" revision "." (string-take commit 9)))
+      (version (git-version version revision commit))
       (source
        (origin
          (method git-fetch)
@@ -942,15 +943,14 @@ interface.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32
-           "0jp4v4jw82qqynqqs7x35g5yvm1sd48cvbqh7j2r1ixw1z6ldhc4"))))
+          (base32 "0jp4v4jw82qqynqqs7x35g5yvm1sd48cvbqh7j2r1ixw1z6ldhc4"))))
       (build-system python-build-system)
       (home-page "https://github.com/xyzshantaram/leo")
       (synopsis "Gemini client written in Python")
       (description
-"@command{leo} is a gemini client written in Python with no external
-dependencies that fully implements the Gemini spec.  A list of URLs can
-be saved to a file for further viewing in another window.")
+       "@command{leo} is a gemini client written in Python with no external
+dependencies that fully implements the Gemini spec.  A list of URLs can be
+saved to a file for further viewing in another window.")
       (license license:expat))))
 
 (define-public av-98
