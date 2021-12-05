@@ -5386,8 +5386,7 @@ form of assemblies or reads.")
                 "#include \"samtools/sam.h\""))
              (substitute* "src/KseqReader.h"
                (("^#include \"bam/kseq\\.h\"")
-                "#include \"htslib/kseq.h\""))
-             #t))
+                "#include \"htslib/kseq.h\""))))
          (add-after 'unpack 'fix-scons
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "SConstruct"
@@ -5404,8 +5403,7 @@ form of assemblies or reads.")
                                (assoc-ref inputs "samtools")
                                "/lib'"))
                ;; Do not distribute README.
-               (("^env\\.Install\\(idir_prefix, 'README\\.md'\\)") ""))
-             #t)))))
+               (("^env\\.Install\\(idir_prefix, 'README\\.md'\\)") "")))))))
     (inputs
      `(("zlib" ,zlib)
        ("perl" ,perl)
