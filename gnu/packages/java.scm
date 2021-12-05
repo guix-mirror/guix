@@ -60,6 +60,7 @@
   #:use-module (gnu packages elf)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gawk)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages ghostscript) ;lcms
@@ -13005,7 +13006,8 @@ from ORO, Inc.")
        ("libx11" ,libx11)
        ("libxt" ,libxt)))
     (native-inputs
-     `(("java-junit" ,java-junit)
+     `(("gcc" ,gcc-7)
+       ("java-junit" ,java-junit)
        ("java-hamcrest-core" ,java-hamcrest-core)))
     (home-page "https://github.com/java-native-access/jna")
     (synopsis "Access to native shared libraries from Java")
