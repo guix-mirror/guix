@@ -1115,7 +1115,7 @@ the KeepKey Hardware Wallet.")
              (commit "v0.14.4")))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0nl44ldfw9s2v3p7g5bldfw3ds2hz9r28j42bpnp8bj0v5na3ivk"))
+        (base32 "1ksv494xpga27ifrjyn1bkqaya5h769lqb9rx1ng0n4kvmnrqr3l"))
        (modules
         '((guix build utils)
           (ice-9 ftw)
