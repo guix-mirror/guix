@@ -5033,29 +5033,28 @@ libxml to ease remote use of the RESTful API.")
              (substitute* "tests/hsts-db-test.c"
                ((".*/hsts-db/subdomains.*") "")))))))
     (native-inputs
-     `(("glib:bin" ,glib "bin")         ;for glib-mkenums
-       ("gobject-introspection" ,gobject-introspection)
-       ("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)
-       ("python" ,python-wrapper)
-       ("vala" ,vala)
-       ("curl" ,curl)
-       ("gnutls" ,gnutls)               ;for 'certtool'
-       ("httpd" ,httpd)))
+     (list `(,glib "bin") ;for glib-mkenums
+           gobject-introspection
+           intltool
+           pkg-config
+           python-wrapper
+           vala
+           curl
+           gnutls ;for 'certtool'
+           httpd))
     (propagated-inputs
      ;; libsoup-3.0.pc refers to all of these (except where otherwise noted)
-     `(("brotli" ,brotli)
-       ("glib" ,glib)
-       ("glib-networking" ,glib-networking) ; for GIO runtime modules
-       ("libpsl" ,libpsl)
-       ("nghttp2" ,nghttp2)             ;for pkg-config
-       ("nghttp2:lib" ,nghttp2 "lib")
-       ("libxml2" ,libxml2)
-       ("sqlite" ,sqlite)
-       ("zlib" ,zlib)))
+     (list brotli
+           glib
+           glib-networking ; for GIO runtime modules
+           libpsl
+           nghttp2 ;for pkg-config
+           `(,nghttp2 "lib")
+           libxml2
+           sqlite
+           zlib))
     (inputs
-     `(("mit-krb5" ,mit-krb5)
-       ("ntlm_auth" ,samba/fixed)))     ; For ntlm_auth support
+     (list mit-krb5 samba/fixed))     ; For ntlm_auth support
     (home-page "https://wiki.gnome.org/Projects/libsoup")
     (synopsis "GLib-based HTTP Library")
     (description
@@ -5086,8 +5085,8 @@ and the GLib main loop, to integrate well with GNOME applications.")
                (substitute* "tests/meson.build"
                  (("[ \t]*\\['ssl', true, \\[\\]\\],") ""))))))))
     (native-inputs
-     (cons `("vala" ,vala-0.52)
-           (delete "vala" (package-native-inputs libsoup-minimal))))))
+     (modify-inputs (package-native-inputs libsoup-minimal)
+       (replace "vala" vala-0.52)))))
 
 (define-public libsoup
   (package/inherit libsoup-minimal
@@ -5116,9 +5115,8 @@ and the GLib main loop, to integrate well with GNOME applications.")
                                    (string-append doc "/share/gtk-doc"))
                  (delete-file-recursively
                   (string-append out "/share/gtk-doc")))))))))
-    (native-inputs (append `(("docbook-xml" ,docbook-xml-4.1.2)
-                             ("gtk-doc" ,gtk-doc))
-                       (package-native-inputs libsoup-minimal)))))
+    (native-inputs (modify-inputs (package-native-inputs libsoup-minimal)
+                     (prepend docbook-xml-4.1.2 gtk-doc)))))
 
 (define-public libsecret
   (package
