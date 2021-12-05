@@ -65970,6 +65970,27 @@ variant of this library is available separately as @code{im}.")
       "Generate Rust register maps (`struct`s) from SVD files")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-xi-unicode-0.3
+  (package
+    (name "rust-xi-unicode")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "xi-unicode" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "12mvjgrhr7557cib69wm4q5s4srba27pg2df9l1zihrxgnbh0wx6"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/google/xi-editor")
+    (synopsis
+     "Unicode utilities for text editing, including a line breaking iterator")
+    (description
+     "This package provides Unicode utilities useful for text editing,
+including a line breaking iterator.")
+    (license license:asl2.0)))
+
 (define-public rust-shell2batch-0.4
   (package
     (name "rust-shell2batch")
