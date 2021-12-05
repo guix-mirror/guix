@@ -288,13 +288,7 @@
        ;; must also provide zlib as an input.
        ("libpng" ,libpng)
        ("zlib" ,zlib)
-
-       ;; librsvg is an optional dependency that pulls in rust.  Rust is not
-       ;; supported well on every architecture yet.
-       ,@(if (string-prefix? "x86_64" (or (%current-target-system)
-                                          (%current-system)))
-             `(("librsvg" ,librsvg))
-             '())
+       ("librsvg" ,(librsvg-for-system))
        ("libxpm" ,libxpm)
        ("libxml2" ,libxml2)
        ("libice" ,libice)
