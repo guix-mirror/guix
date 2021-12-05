@@ -13370,7 +13370,8 @@ to an artifact/contaminant file.")
        ("zlib" ,zlib)))
     (native-inputs
      `(("texlive" ,(texlive-updmap.cfg (list texlive-latex-graphics
-                                        texlive-hyperref)))))
+                                             texlive-fonts-ec
+                                             texlive-hyperref)))))
     (home-page "https://www.ebi.ac.uk/~zerbino/velvet/")
     (synopsis "Nucleic acid sequence assembler for very short reads")
     (description
