@@ -13268,9 +13268,9 @@ is a Cython wrapper for FIt-SNE.")
      `(#:build-target "dist"
        #:tests? #f ; there are none
        #:make-flags
-       (list (string-append "-Dmpijar="
-                            (assoc-ref %build-inputs "java-openmpi")
-                            "/lib/mpi.jar"))
+       ,#~(list (string-append "-Dmpijar="
+                               #$(this-package-input "java-openmpi")
+                               "/lib/mpi.jar"))
        #:modules ((guix build ant-build-system)
                   (guix build utils)
                   (guix build java-utils))
