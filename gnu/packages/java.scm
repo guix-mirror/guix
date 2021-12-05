@@ -14224,8 +14224,8 @@ can be interpreted by IDEs and static analysis tools to improve code analysis.")
                                                       "/test-model/pcal")
                                        "\\.cfg$"))))
              (replace 'install
-               (lambda* (#:key inputs #:allow-other-keys)
-                 (let* ((share (string-append %output "/share/java"))
+               (lambda* (#:key inputs outputs #:allow-other-keys)
+                 (let* ((share (string-append (assoc-ref outputs "out") "/share/java"))
                         (jar-name "tla2tools.jar"); set in project.properties
                         (jar (string-append ,tlatools
                                             "/dist/" jar-name))
