@@ -28329,6 +28329,45 @@ development, testing, production]};
 @end itemize")
     (license license:expat)))
 
+(define-public pudb
+  (package
+    (name "pudb")
+    (version "2021.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pudb" version))
+       (sha256
+        (base32 "0p16pvzfa3w02ybg3n0iy5rs23z4rz4a42lb8wh3mcq62y9ik2w7"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'fix-read-only-home
+           (lambda _
+             (setenv "HOME" "/tmp")))
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest")))))))
+    (native-inputs
+     `(("python-numpy" ,python-numpy)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-mock" ,python-pytest-mock)))
+    (propagated-inputs
+     `(("python-jedi" ,python-jedi)
+       ("python-pygments" ,python-pygments)
+       ("python-urwid" ,python-urwid)
+       ("python-urwid-readline" ,python-urwid-readline)))
+    (home-page "https://documen.tician.de/pudb/")
+    (synopsis "Console-based Python debugger")
+    (description
+     "@command{pudb} is a full-screen, console-based Python debugger providing
+all the niceties of modern GUI-based debuggers in a more lightweight and
+keyboard-friendly package.")
+    (license license:expat)))
+
 (define-public python-iwlib
   (package
     (name "python-iwlib")
