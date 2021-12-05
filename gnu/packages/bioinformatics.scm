@@ -10757,9 +10757,9 @@ contains
        #:source-dir "public/src/"
        #:jdk ,icedtea-8
        #:make-flags
-       (list (string-append "-Dpicard.executable.dir="
-                            (assoc-ref %build-inputs "java-picard")
-                            "/share/java/"))
+       (list ,#~(string-append "-Dpicard.executable.dir="
+                               #$(this-package-input "java-picard")
+                               "/share/java/"))
        #:modules ((ice-9 match)
                   (srfi srfi-1)
                   (guix build utils)
