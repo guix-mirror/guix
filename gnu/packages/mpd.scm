@@ -76,7 +76,7 @@
 (define-public libmpdclient
   (package
     (name "libmpdclient")
-    (version "2.19")
+    (version "2.20")
     (source (origin
               (method url-fetch)
               (uri
@@ -85,7 +85,7 @@
                               "/libmpdclient-" version ".tar.xz"))
               (sha256
                (base32
-                "12d1fzlkcnjw4ayk2wp11vhglfcvr5k02arzdbkhiavq496av2hm"))))
+                "0z979qcjc0dqmpn3q9j174a29akx3zmavz6q6hg31hrrx5l3yy8q"))))
     (build-system meson-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)

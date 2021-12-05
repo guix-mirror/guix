@@ -9512,7 +9512,7 @@ a functional interface.")
 (define-public perl-sub-exporter
   (package
     (name "perl-sub-exporter")
-    (version "0.987")
+    (version "0.988")
     (source
      (origin
        (method url-fetch)
@@ -9521,7 +9521,7 @@ a functional interface.")
              version ".tar.gz"))
        (sha256
         (base32
-         "1ml3n1ck4ln9qjm2mcgkczj1jb5n1fkscz9c4x23v4db0glb4g2l"))))
+         "03040vk227icdkb0hvxplck2y6rglj67s1rgf12z3465ss3lhci3"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-data-optlist" ,perl-data-optlist)
@@ -11570,14 +11570,14 @@ files, using JSON::PP and/or CPAN::Meta::YAML.")
 (define-public perl-scalar-list-utils
   (package
     (name "perl-scalar-list-utils")
-    (version "1.56")
+    (version "1.60")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/P/PE/PEVANS/"
                            "Scalar-List-Utils-" version ".tar.gz"))
        (sha256
-        (base32 "0nxb29x7i2w6kjxq188n131b56bsqj1ykrxjcjp6sgpv81ym7f0m"))))
+        (base32 "01szp3agmww6gj3hwqbpi8csn9675qcc7dw828r8y00z0bcbm1f6"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Scalar-List-Utils")
     (synopsis "Common Scalar and List utility subroutines")

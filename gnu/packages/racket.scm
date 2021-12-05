@@ -3,6 +3,7 @@
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2021 Philip McGrath <philip@philipmcgrath.com>
+;;; Copyright © 2021 jgart <jgart@dismail.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -128,7 +129,7 @@
 (define-public racket-minimal
   (package
     (name "racket-minimal")
-    (version "8.2")            ; note: remember to also update racket!
+    (version "8.3")            ; note: remember to also update racket!
     (source
      (origin
        (method git-fetch)
@@ -136,11 +137,9 @@
              (url "https://github.com/racket/racket")
              (commit (string-append "v" version))))
        (sha256
-        "061bhiyjlvazph0dj9i3i3x2q5z53rp8h5cjwg3frjimkr45lncn")
+        "1i1jnv1wb0kanfg47hniafx2vhwjc33qqx66lq7wkf5hbmgsyws3")
        (file-name (git-file-name name version))
-       (patches (search-patches "racket-minimal-sh-via-rktio.patch"
-                                ;; Remove the following in version 8.3:
-                                "racket-minimal-backport-1629887.patch"))
+       (patches (search-patches "racket-minimal-sh-via-rktio.patch"))
        (modules '((guix build utils)))
        (snippet
         (with-imported-modules '((guix build utils))
@@ -427,7 +426,7 @@ Chez Scheme.")
                  %installer-mirrors))
        (sha256
         (base32
-         "10sgzsraxzxp1k2y2wvz8rcjwvhbcd6k72l9lyqr34yazlwfdz26"))
+         "0jdr0y7scvv2a3sq456ifrgq0yfsbiwavdf2m86zmrapp481mby4"))
        (snippet
         #~(begin
             (use-modules (guix build utils)
@@ -530,7 +529,7 @@ Chez Scheme.")
          (delete 'install))
        ;; we still don't have these:
        #:tests? #f))
-    (synopsis "A programmable programming language in the Scheme family")
+    (synopsis "Programmable programming language in the Scheme family")
     (description
      "Racket is a general-purpose programming language in the Scheme family,
 with a large set of libraries and a compiler based on Chez Scheme.  Racket is

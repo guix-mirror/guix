@@ -875,16 +875,16 @@ served by AS112.  Stub and forward zones are supported.")
 (define-public yadifa
   (package
     (name "yadifa")
-    (version "2.5.1")
+    (version "2.5.3")
     (source
-     (let ((build "10306"))
+     (let ((build "10333"))
        (origin
          (method url-fetch)
          (uri
           (string-append "https://www.yadifa.eu/sites/default/files/releases/"
                          "yadifa-" version "-" build ".tar.gz"))
          (sha256
-          (base32 "051h4pmh9llwj0w6h0v8fl2f146fb26cv3w5an9dmfh845sv6hzr")))))
+          (base32 "1mwy6sfnlaslx26f3kpj9alh8i8y8bf1nbnsdd5j04hjsbavd07p")))))
     (build-system gnu-build-system)
     (native-inputs
      `(("which" ,which)))
@@ -896,15 +896,13 @@ served by AS112.  Stub and forward zones are supported.")
          (add-before 'configure 'omit-example-configurations
            (lambda _
              (substitute* "Makefile.in"
-               ((" (etc|var)") ""))
-             #t))
+               ((" (etc|var)") ""))))
          (add-after 'configure 'omit-spurious-references
            (lambda _
              ;; The many Makefile.in grep this(!) to #define BUILD_OPTIONS.
              (substitute* "config.log"
                (("(=/gnu/store/)[^-]*" _ match)
-                (string-append match "...")))
-             #t)))
+                (string-append match "..."))))))
        #:configure-flags
        (list "--sysconfdir=/etc"
              "--localstatedir=/var"

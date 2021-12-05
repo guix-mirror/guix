@@ -33,6 +33,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
@@ -57,6 +58,7 @@
   #:use-module (gnu packages qt)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages video)
+  #:use-module (gnu packages wxwidgets)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
@@ -988,10 +990,61 @@ provide you with detailed information about each pass.")
 It can be used to calculate the trajectory of satellites.")
       (license license:asl2.0))))
 
+(define-public imppg
+  (package
+    (name "imppg")
+    (version "0.6.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/GreatAttractor/imppg")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "04synbmyz0hkipl1cdc26nr42r57v494yjw8pi4jx0jrxrawgj9h"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f                      ;no test provided
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (mkdir-p "build")
+             (chdir "build")
+             (invoke
+              "cmake"
+              "-G" "Unix Makefiles"
+              "-DCMAKE_BUILD_TYPE=Release"
+              (string-append "-DCMAKE_INSTALL_PREFIX=" (assoc-ref outputs "out"))
+              ".."))))))
+    (native-inputs
+     `(("boost" ,boost)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("cfitsio" ,cfitsio)
+       ("freeimage" ,freeimage)
+       ("glew" ,glew)
+       ("wxwidgets" ,wxwidgets)))
+    (home-page "https://github.com/GreatAttractor/imppg")
+    (synopsis "Astronomical Image Post-Proccessor (ImPPG)")
+    (description
+     "ImPPG performs Lucy-Richardson deconvolution, unsharp masking,
+brightness normalization and tone curve adjustment.  It can also apply
+previously specified processing settings to multiple images.  All operations
+are performed using 32-bit floating-point arithmetic.
+
+Supported input formats: FITS, BMP, JPEG, PNG, TIFF (most of bit depths and
+compression methods), TGA and more.  Images are processed in grayscale and can
+be saved as: BMP 8-bit; PNG 8-bit; TIFF 8-bit, 16-bit, 32-bit
+floating-point (no compression, LZW- or ZIP-compressed), FITS 8-bit, 16-bit,
+32-bit floating-point.")
+    (license license:gpl3+)))
+
 (define-public indi
   (package
     (name "indi")
-    (version "1.9.2")
+    (version "1.9.3")
     (source
      (origin
        (method git-fetch)
@@ -1000,7 +1053,7 @@ It can be used to calculate the trajectory of satellites.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "00dlvp682xg2sdxm7ix55zp6311mgnd543q45drrc7kjlgaqvip4"))))
+        (base32 "0c7md288d3g2vf0m1ai6x2l4j4rmlasc4rya92phvd4ynf8vcki2"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags

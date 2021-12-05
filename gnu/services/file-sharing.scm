@@ -259,7 +259,7 @@ type generated and used by Transmission clients, suitable for passing to the
 (define-configuration transmission-daemon-configuration
   ;; Settings internal to this service definition.
   (transmission
-   (package transmission)
+   (file-like transmission)
    "The Transmission package to use.")
   (stop-wait-period
    (non-negative-integer 10)

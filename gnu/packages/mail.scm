@@ -28,7 +28,7 @@
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2018, 2019, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2019, 2020 Tanguy Le Carrour <tanguy@bioneland.org>
+;;; Copyright © 2019, 2020, 2021 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Justus Winter <justus@sequoia-pgp.org>
 ;;; Copyright © 2020 Eric Brown <ecbrown@ericcbrown.com>
@@ -108,6 +108,7 @@
   #:use-module (gnu packages language)
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages libevent)
+  #:use-module (gnu packages libffi)
   #:use-module (gnu packages libidn)
   #:use-module (gnu packages libunistring)
   #:use-module (gnu packages libunwind)
@@ -1240,7 +1241,7 @@ attachments, create new maildirs, and so on.")
 (define-public alot
   (package
     (name "alot")
-    (version "0.9.1")
+    (version "0.10")
     (source (origin
               (method git-fetch)
               ;; package author intends on distributing via github rather
@@ -1252,7 +1253,7 @@ attachments, create new maildirs, and so on.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0s94m17yph1gq9f2svipb3bbwbw1s4j3zf2xkg5h91006v8286r6"))))
+                "0awf1phdy1wqm01cy9zmvqlw6c8pvkxm2f9ncjd0cmzxqnmq1dyn"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -1288,7 +1289,7 @@ attachments, create new maildirs, and so on.")
        ("python-urwid" ,python-urwid)
        ("python-urwidtrees" ,python-urwidtrees)
        ("python-gpg" ,python-gpg)
-       ("python-notmuch" ,python-notmuch)))
+       ("python-notmuch2" ,python-notmuch2)))
     (home-page "https://github.com/pazz/alot")
     (synopsis "Command-line MUA using Notmuch")
     (description
@@ -1350,14 +1351,14 @@ invoking @command{notifymuch} from the post-new hook.")
 (define-public notmuch
   (package
     (name "notmuch")
-    (version "0.33.2")
+    (version "0.34.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://notmuchmail.org/releases/notmuch-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1bic1f2va136aygfy53bsgziwiidcpb7qf1v05mlza2jmgv94j14"))))
+                "05nq64gp8vnrwrl22d60v7ixgdhm9339ajhcdfkq0ll1qiycyyj5"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -1511,6 +1512,21 @@ and search library.")
 
 (define-public python2-notmuch
   (package-with-python2 python-notmuch))
+
+(define-public python-notmuch2
+  (package
+    (inherit python-notmuch)
+    (name "python-notmuch2")
+    (propagated-inputs `(("python-cffi" ,python-cffi)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; This python package lives in a subdirectory of the notmuch source
+         ;; tree, so chdir into it before building.
+         (add-after 'unpack 'enter-python-dir
+           (lambda _ (chdir "bindings/python-cffi"))))))
+    (synopsis "Pythonic bindings for the notmuch mail database using CFFI")
+    (license license:gpl3+)))
 
 (define-public muchsync
   (package
@@ -3940,13 +3956,13 @@ servers.  The 4rev1 and 4 versions of IMAP are supported.")
 (define-public urlscan
   (package
     (name "urlscan")
-    (version "0.9.6")
+    (version "0.9.7")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "urlscan" version))
         (sha256
-         (base32 "09lxi7dhn49fpb3ij4cgrhj3qqqqs9rcxbjb7p9smw5wblrqpzga"))))
+         (base32 "0sqaplcrz0lj40x20s2mv3gkzsmawpi9h2kx0rmk342k5240il81"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-urwid" ,python-urwid)))

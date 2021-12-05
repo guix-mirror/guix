@@ -1501,13 +1501,13 @@ from knitr Rmarkdown.")
 (define-public r-microbenchmark
   (package
     (name "r-microbenchmark")
-    (version "1.4-7")
+    (version "1.4.9")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "microbenchmark" version))
               (sha256
                (base32
-                "1xl4m4yl4h2zcjiz8wsa7f3sh55qg2xr3sgpvz18rlix6b3173r6"))))
+                "1lpzpffnjiwnxxl0jhrvyj88fvxqksnpccbpq953xwqf6ypjqga4"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/microbenchmark/")
     (synopsis "Accurate timing functions for R")
@@ -1563,13 +1563,13 @@ you call it again with the same arguments it returns the pre-computed value.")
 (define-public r-crayon
   (package
     (name "r-crayon")
-    (version "1.4.1")
+    (version "1.4.2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "crayon" version))
               (sha256
                (base32
-                "1ir963s6zk9l32fw257y54p7898cd7z7yazkn9h6j2cdfhpf9dh8"))))
+                "0mxq87qsvz5znfncrb6yjchzv6iwpn9lr386i02y6xiycizkjd7f"))))
     (build-system r-build-system)
     (home-page "https://github.com/gaborcsardi/crayon")
     (synopsis "Colored terminal output for R")
@@ -1683,14 +1683,14 @@ like tidy evaluation.")
 (define-public r-tibble
   (package
     (name "r-tibble")
-    (version "3.1.5")
+    (version "3.1.6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tibble" version))
        (sha256
         (base32
-         "1ryv1r3cah1s8dyqdhcb0yl81r384jvgc4d1q9zwsrrsd2x8fqys"))))
+         "14l2i6ri3v5y0h8g0ahc4kz0pdqsp5yabxk2w8wavss6y44xjcsv"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ellipsis" ,r-ellipsis)
@@ -1999,6 +1999,16 @@ inference for statistical models.")
 (define-public python2-statsmodels
   (let ((stats (package-with-python2 python-statsmodels)))
     (package/inherit stats
+      ;; Version 0.11.1 and later does not work with Python 2.  It may build
+      ;; fine but loading modules fails.
+      (version "0.9.0")
+      (source
+       (origin
+         (method url-fetch)
+         (uri (pypi-uri "statsmodels" version))
+         (sha256
+          (base32
+           "0fxs8a7sp4d7jvqlm36yi45i2d28kjfvraf9q8i9jr1chhxgjqb4"))))
       (propagated-inputs
        `(("python2-pytz" ,python2-pytz)
          ("python2-numpy" ,python2-numpy)
@@ -2145,14 +2155,14 @@ limited to R.")
 (define-public r-backports
   (package
     (name "r-backports")
-    (version "1.2.1")
+    (version "1.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "backports" version))
        (sha256
         (base32
-         "1mf2nz78l97lbxyagv55bcxrny51ds8g28h307cfa1g3ayylp0x2"))))
+         "0bc14x4gyw4gnvm4hrvg5cmmrq449kfza3l14wdgp642ra8iw8sg"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/backports")
     (synopsis "Reimplementations of functions introduced since R 3.0.0")
@@ -2428,13 +2438,13 @@ functions make it easy to control additional request components.")
 (define-public r-git2r
   (package
     (name "r-git2r")
-    (version "0.28.0")
+    (version "0.29.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "git2r" version))
               (sha256
                (base32
-                "1wjmbs9cmm16pm3g0rmqp7cxxyh95m5lgx4fx5bpgj6j466i8vff"))))
+                "13nlrhma6kavvhranb43w3003vadfkyrn2f4l3r63iqavj0s3xzq"))))
     (build-system r-build-system)
     (inputs
      `(("libgit2" ,libgit2)
@@ -2558,13 +2568,13 @@ time-of-day values, based on the @code{difftime} class.")
 (define-public r-readr
   (package
     (name "r-readr")
-    (version "2.0.2")
+    (version "2.1.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "readr" version))
               (sha256
                (base32
-                "05bnvcc55i0xjilfrqx3700mwiz8sgihq1wxlbvvr8nxa7bmxc4q"))))
+                "03d7y4k9w5vcm7fwlcaw715ff7d953i92jwbp7ynrqcr09kw6zm0"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-cli" ,r-cli)
@@ -2651,13 +2661,13 @@ well as additional utilities such as panel and axis annotation functions.")
 (define-public r-rcpparmadillo
   (package
     (name "r-rcpparmadillo")
-    (version "0.10.7.0.0")
+    (version "0.10.7.3.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "RcppArmadillo" version))
               (sha256
                (base32
-                "1x35xb5yfslsdpaz9msl5p9f7gilnbkhwvq7pbycwasvkp2fma01"))))
+                "0qk25x8naci76fqcd8jkv8gnba6sj61vkv9yf8498fwff1kvf41p"))))
     (properties `((upstream-name . "RcppArmadillo")))
     (build-system r-build-system)
     (propagated-inputs
@@ -3074,13 +3084,13 @@ multiple breakpoints are allowed.")
 (define-public r-snow
   (package
     (name "r-snow")
-    (version "0.4-3")
+    (version "0.4-4")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "snow" version))
               (sha256
                (base32
-                "1n3n8pva9s34fvlw32yng0x416lmbv7q1fsd0ywa4kikmxym64l5"))))
+                "1j8kvf3imxijsqkdjz4i9s7qggfxqrpas46y5wz6za92y937yn44"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/snow")
     (synopsis "Support for simple parallel computing in R")
@@ -3499,13 +3509,13 @@ using the multicore functionality of the parallel package.")
             "datatables-extensions/Select"))))
     (package
       (name "r-dt")
-      (version "0.19")
+      (version "0.20")
       (source (origin
                 (method url-fetch)
                 (uri (cran-uri "DT" version))
                 (sha256
                  (base32
-                  "04rv1rprqlc56hycxpqkbmwmq4wjvmanq2lwxrflmf2s46pbv9ms"))
+                  "17xs18i439p15agyk7z2xyyrwgrpn5pw09kd3jwxn7qhxi4pyvf6"))
                 (modules '((guix build utils)))
                 (snippet
                  '(for-each delete-file
@@ -3650,13 +3660,13 @@ analysis of large sparse or dense matrices.")
 (define-public r-glmnet
   (package
    (name "r-glmnet")
-   (version "4.1-2")
+   (version "4.1-3")
    (source
     (origin
      (method url-fetch)
      (uri (cran-uri "glmnet" version))
      (sha256
-      (base32 "1kfd8kfhapx2cxw6qnkbs502c3kya4pd9qmf0mk76cdlq1c2paq6"))))
+      (base32 "0nij8v44b5dvp1vc843sfkl9ds83n6g687m2p37q1rdn82m3bg34"))))
    (build-system r-build-system)
    (native-inputs
     `(("gfortran" ,gfortran)
@@ -3664,6 +3674,8 @@ analysis of large sparse or dense matrices.")
    (propagated-inputs
     `(("r-foreach" ,r-foreach)
       ("r-matrix" ,r-matrix)
+      ("r-rcpp" ,r-rcpp)
+      ("r-rcppeigen" ,r-rcppeigen)
       ("r-shape" ,r-shape)
       ("r-survival" ,r-survival)))
    (home-page "https://www.jstatsoft.org/article/view/v033i01")
@@ -5103,14 +5115,14 @@ models, generalized linear models and model-based clustering.")
 (define-public r-mclust
   (package
     (name "r-mclust")
-    (version "5.4.7")
+    (version "5.4.8")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "mclust" version))
        (sha256
         (base32
-         "08scl72llpinfijiyx14yqvmx8lma9jvh8h92v9ynnzfr9kadxa5"))))
+         "0j79a1nidwxl62x8j97k09qjxladp9irw5z1x1q5gyy6zxskvh8i"))))
     (build-system r-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)
@@ -5273,14 +5285,14 @@ generally.")
 (define-public r-robust
   (package
     (name "r-robust")
-    (version "0.5-0.0")
+    (version "0.6-1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "robust" version))
        (sha256
         (base32
-         "1ks5scp8bnicl9j1r8yrmz668fjs6ifdmi540zw6d2ck500bbw42"))))
+         "0z8i0qqlsa6vpl457qir3dlsynhjfn2g22436d776vxwyqjx4vs9"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-fit-models" ,r-fit-models)
@@ -5519,14 +5531,14 @@ expected shortfall risk are also included.")
 (define-public r-nloptr
   (package
     (name "r-nloptr")
-    (version "1.2.2.2")
+    (version "1.2.2.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "nloptr" version))
        (sha256
         (base32
-         "0whkilb85k4wixvr3k7rygfw1rcs1fs9h8c18kz4p3y1k9hsj3p8"))))
+         "1zznk9f2w2g02zqzay21k8xqzfvc6icxfzp6bx2wpd77sm7vf25g"))))
     (build-system r-build-system)
     (native-inputs
      `(("r-knitr" ,r-knitr) ; for building vignettes
@@ -5629,13 +5641,13 @@ Companion to Applied Regression, Third Edition, Sage.")
 (define-public r-car
   (package
     (name "r-car")
-    (version "3.0-11")
+    (version "3.0-12")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "car" version))
        (sha256
-        (base32 "0b2l35656bi75hfvnjhzhlnrnbpjn0vv7nvny8gn65gm0rr94b5k"))))
+        (base32 "00kk8l71508f73kyn21is1mx6kjbrzdq3ls94c5ajhiqmvpsd6dq"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-abind" ,r-abind)
@@ -5647,8 +5659,7 @@ Companion to Applied Regression, Third Edition, Sage.")
        ("r-nlme" ,r-nlme)
        ("r-nnet" ,r-nnet)
        ("r-pbkrtest" ,r-pbkrtest)
-       ("r-quantreg" ,r-quantreg)
-       ("r-rio" ,r-rio)))
+       ("r-quantreg" ,r-quantreg)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
     (home-page "https://r-forge.r-project.org/projects/car/")
@@ -5915,14 +5926,14 @@ easy and fun.")
 (define-public r-fdrtool
   (package
     (name "r-fdrtool")
-    (version "1.2.16")
+    (version "1.2.17")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "fdrtool" version))
        (sha256
         (base32
-         "1aap4k1l3a9m43374xq688mqnzkgqx8l021li262r3h1xr4adpp7"))))
+         "1pf554vb902vavgqc4c0kgghywbgcvr3lkkr414bxngavcd60lil"))))
     (build-system r-build-system)
     (home-page "http://strimmerlab.org/software/fdrtool/")
     (synopsis "Estimation of false discovery rates and higher criticism")

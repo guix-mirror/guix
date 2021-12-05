@@ -49,13 +49,13 @@
 (define-public python-django
   (package
     (name "python-django")
-    (version "3.2.6")
+    (version "3.2.9")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "Django" version))
               (sha256
                (base32
-                "08p0gf1n548fjba76wspcj1jb3li6lr7xi87w2xq7hylr528azzj"))))
+                "023ag89799z53034ya71b636gih7ldvgdgfc0zdzqbsjy4046a2i"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -1270,13 +1270,13 @@ to ElasticSearch.")
 (define-public python-django-netfields
   (package
     (name "python-django-netfields")
-    (version "1.2.2")
+    (version "1.2.4")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "django-netfields" version))
               (sha256
                (base32
-                "1c47azr5am0q8g45x0fbn0cay7vyrack6n7k6siliw1j2p0gzi7s"))))
+                "0jwlbyaxk91fq69g2y0zpfjgmjgh6l0lqm5mhys7m5968lkihvgp"))))
     (build-system python-build-system)
     (arguments '(#:tests? #f))      ;XXX: Requires a running PostgreSQL server
     (propagated-inputs

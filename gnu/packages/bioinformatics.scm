@@ -830,14 +830,18 @@ provides the Ribotaper pipeline.")
      `(#:python ,python-2
        #:phases
        (modify-phases %standard-phases
+         ;; This test fails because of the matplotlib plotting backend.
+         (add-after 'unpack 'disable-plot-test
+           (lambda _
+             (substitute* "src/ribodiff/functional_test_te.py"
+               (("pl\\.make_plots\\(data, opts\\)") "#"))))
          ;; Generate an installable executable script wrapper.
          (add-after 'unpack 'patch-setup.py
            (lambda _
              (substitute* "setup.py"
                (("^(.*)packages=.*" line prefix)
                 (string-append line "\n"
-                               prefix "scripts=['scripts/TE.py'],\n")))
-             #t)))))
+                               prefix "scripts=['scripts/TE.py'],\n"))))))))
     (inputs
      `(("python-numpy" ,python2-numpy)
        ("python-matplotlib" ,python2-matplotlib)
@@ -1013,7 +1017,7 @@ Python.")
 (define-public python-biom-format
   (package
     (name "python-biom-format")
-    (version "2.1.7")
+    (version "2.1.10")
     (source
      (origin
        (method git-fetch)
@@ -1025,18 +1029,21 @@ Python.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1rna16lyk5aqhnv0dp77wwaplias93f1vw28ad3jmyw6hwkai05v"))
+         "0i62j6ksmp78ap2dnl969gq6vprc3q87zc8ksj9if8g2603iq6i8"))
        (modules '((guix build utils)))
-       (snippet '(begin
-                   ;; Delete generated C files.
-                   (for-each delete-file (find-files "." "\\.c"))
-                   #t))))
+       ;; Delete generated C files.
+       (snippet
+        '(for-each delete-file (find-files "." "\\.c")))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'use-cython
-           (lambda _ (setenv "USE_CYTHON" "1") #t))
+           (lambda _ (setenv "USE_CYTHON" "1")))
+         (add-after 'unpack 'relax
+           (lambda _
+             (substitute* "setup.py"
+               (("pytest < 5.3.4") "pytest"))))
          (add-after 'unpack 'disable-broken-tests
            (lambda _
              (substitute* "biom/tests/test_cli/test_validate_table.py"
@@ -1048,24 +1055,22 @@ Python.")
                (("^(.+)def test_from_hdf5_issue_731" m indent)
                 (string-append indent
                                "@npt.dec.skipif(True, msg='Guix')\n"
-                               m)))
-             #t))
+                               m)))))
+
          (add-before 'reset-gzip-timestamps 'make-files-writable
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
                (for-each (lambda (file) (chmod file #o644))
-                         (find-files out "\\.gz"))
-               #t))))))
+                         (find-files out "\\.gz"))))))))
     (propagated-inputs
-     `(("python-numpy" ,python-numpy)
+     `(("python-anndata" ,python-anndata)
+       ("python-numpy" ,python-numpy)
        ("python-scipy" ,python-scipy)
        ("python-flake8" ,python-flake8)
        ("python-future" ,python-future)
        ("python-click" ,python-click)
        ("python-h5py" ,python-h5py)
-       ;; FIXME: Upgrade to pandas 1.0 when
-       ;; https://github.com/biocore/biom-format/issues/837 is resolved.
-       ("python-pandas" ,python-pandas-0.25)))
+       ("python-pandas" ,python-pandas)))
     (native-inputs
      `(("python-cython" ,python-cython)
        ("python-pytest" ,python-pytest)
@@ -1078,23 +1083,7 @@ Python.")
 representing counts of observations e.g. operational taxonomic units, KEGG
 orthology groups or lipid types, in one or more biological samples
 e.g. microbiome samples, genomes, metagenomes.")
-    (license license:bsd-3)
-    (properties `((python2-variant . ,(delay python2-biom-format))))))
-
-(define-public python2-biom-format
-  (let ((base (package-with-python2 (strip-python2-variant python-biom-format))))
-    (package
-      (inherit base)
-      (arguments
-       (substitute-keyword-arguments (package-arguments base)
-         ((#:phases phases)
-          `(modify-phases ,phases
-             ;; Do not require the unmaintained pyqi library.
-             (add-after 'unpack 'remove-pyqi
-               (lambda _
-                 (substitute* "setup.py"
-                   (("install_requires.append\\(\"pyqi\"\\)") "pass"))
-                 #t)))))))))
+    (license license:bsd-3)))
 
 (define-public python-pairtools
   (package
@@ -2688,77 +2677,6 @@ databases.")
     (description "CodingQuarry is a highly accurate, self-training GHMM fungal
 gene predictor designed to work with assembled, aligned RNA-seq transcripts.")
     (home-page "https://sourceforge.net/projects/codingquarry/")
-    (license license:gpl3+)))
-
-(define-public couger
-  (package
-    (name "couger")
-    (version "1.8.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "http://couger.oit.duke.edu/static/assets/COUGER"
-                    version ".zip"))
-              (sha256
-               (base32
-                "04p2b14nmhzxw5h72mpzdhalv21bx4w9b87z0wpw0xzxpysyncmq"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:tests? #f
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (delete 'build)
-         (replace
-          'install
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let* ((out (assoc-ref outputs "out"))
-                   (bin (string-append out "/bin")))
-              (copy-recursively "src" (string-append out "/src"))
-              (mkdir bin)
-              ;; Add "src" directory to module lookup path.
-              (substitute* "couger"
-                (("from argparse")
-                 (string-append "import sys\nsys.path.append(\""
-                                out "\")\nfrom argparse")))
-              (install-file "couger" bin))
-            #t))
-         (add-after
-          'install 'wrap-program
-          (lambda* (#:key inputs outputs #:allow-other-keys)
-            ;; Make sure 'couger' runs with the correct PYTHONPATH.
-            (let* ((out (assoc-ref outputs "out"))
-                   (path (getenv "GUIX_PYTHONPATH")))
-              (wrap-program (string-append out "/bin/couger")
-                `("GUIX_PYTHONPATH" ":" prefix (,path))))
-            #t)))))
-    (inputs
-     `(("python" ,python-2)
-       ("python2-pillow" ,python2-pillow)
-       ("python2-numpy" ,python2-numpy)
-       ("python2-scipy" ,python2-scipy)
-       ("python2-matplotlib" ,python2-matplotlib)))
-    (propagated-inputs
-     `(("r-minimal" ,r-minimal)
-       ("libsvm" ,libsvm)
-       ("randomjungle" ,randomjungle)))
-    (native-inputs
-     `(("unzip" ,unzip)))
-    (home-page "http://couger.oit.duke.edu")
-    (synopsis "Identify co-factors in sets of genomic regions")
-    (description
-     "COUGER can be applied to any two sets of genomic regions bound by
-paralogous TFs (e.g., regions derived from ChIP-seq experiments) to identify
-putative co-factors that provide specificity to each TF.  The framework
-determines the genomic targets uniquely-bound by each TF, and identifies a
-small set of co-factors that best explain the in vivo binding differences
-between the two TFs.
-
-COUGER uses classification algorithms (support vector machines and random
-forests) with features that reflect the DNA binding specificities of putative
-co-factors.  The features are generated either from high-throughput TF-DNA
-binding data (from protein binding microarray experiments), or from large
-collections of DNA motifs.")
     (license license:gpl3+)))
 
 (define-public clustal-omega
@@ -5070,23 +4988,26 @@ command, or queried for specific k-mers with @code{jellyfish query}.")
              (("# libraries = z,bz2")
               "libraries = z,bz2")
              (("include:third-party/zlib:third-party/bzip2")
-              "include:"))
-           #t))))
+              "include:"))))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'set-cc
-           (lambda _ (setenv "CC" "gcc") #t))
-
+           (lambda _ (setenv "CC" "gcc")))
+         (add-after 'unpack 'python-3.8-compatibility
+           (lambda _
+             ;; Python 3.8 removed time.clock().
+             (substitute* "sandbox/sweep-reads.py"
+               (("time\\.clock")
+                "time.process_time"))))
          (add-before 'reset-gzip-timestamps 'make-files-writable
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Make sure .gz files are writable so that the
              ;; 'reset-gzip-timestamps' phase can do its work.
              (let ((out (assoc-ref outputs "out")))
                (for-each make-file-writable
-                         (find-files out "\\.gz$"))
-               #t))))))
+                         (find-files out "\\.gz$"))))))))
     (native-inputs
      `(("python-cython" ,python-cython)
        ("python-pytest" ,python-pytest)
@@ -7764,12 +7685,27 @@ single cell ATAC-seq sequencing data.")
           (base32 "0bjzamdw2lcfhlbzc0vdva87c3wwnij8jsvnrpx4wyyxvpcz13m5"))))
       (properties `((upstream-name . "umi4cPackage")))
       (build-system r-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-references
+             (lambda _
+               (substitute* "inst/conf/paths.conf"
+                 (("TG3C\\.bowtie2_bin=.*")
+                  (string-append "TG3C.bowtie2_bin="
+                                 (which "bowtie2") "\n")))
+               (substitute* "inst/perl/map3c/TG3C/import3C.pl"
+                 (("\"perl")
+                  (string-append "\"" (which "perl")))))))))
+      (inputs
+       `(("perl" ,perl)
+         ("bowtie" ,bowtie)))
       (propagated-inputs
        `(("r-misha" ,r-misha)
          ("r-zoo" ,r-zoo)))
       (native-inputs `(("r-knitr" ,r-knitr)))
       (home-page "https://github.com/tanaylab/umi4cpackage")
-      (synopsis "Processing and analysis of UMI-4C contact profiles.")
+      (synopsis "Processing and analysis of UMI-4C contact profiles")
       (description "This is a package that lets you process UMI-4C data from
 scratch to produce nice plots.")
       (license license:expat))))
@@ -8134,29 +8070,27 @@ Needleman-Wunsch).")
 (define-public pardre
   (package
     (name "pardre")
-    ;; The source of 1.1.5 changed in place, so we append "-1" to the version.
-    (version "1.1.5-1")
+    (version "2.2.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/pardre/ParDRe-rel"
-                           "1.1.5" ".tar.gz"))
+                           version ".tar.gz"))
        (sha256
         (base32
-         "17j73nc0viq4f6qj50nrndsrif5d6b71q8fl87m54psiv0ilns2b"))))
+         "105s4f8zs8hh0sc32r9p725n7idza9cj5jvp5z1m5pljjhgk3if5"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; no tests included
+     `(#:tests? #f ; tests require "prove"
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
-               (install-file "ParDRe" bin)
-               #t))))))
+               (install-file "ParDRe" bin)))))))
     (inputs
-     `(("openmpi" ,openmpi)
+     `(("openmpi-c++" ,openmpi-c++)
        ("zlib" ,zlib)))
     (synopsis "Parallel tool to remove duplicate DNA reads")
     (description
@@ -9388,7 +9322,7 @@ programs for inferring phylogenies (evolutionary trees).")
 (define-public imp
   (package
     (name "imp")
-    (version "2.13.0")
+    (version "2.15.0")
     (source
      (origin
        (method url-fetch)
@@ -9396,7 +9330,7 @@ programs for inferring phylogenies (evolutionary trees).")
                            version "/download/imp-" version ".tar.gz"))
        (sha256
         (base32
-         "1z1vcpwbylixk0zywngg5iw0jv083jj1bqphi817jpg3fb9fx2jj"))))
+         "05hsrnkpkajppa3f45x4qsarnkj616hlby749zxg4is3bv4i6b5y"))))
     (build-system cmake-build-system)
     (arguments
      `( ;; CMake 3.17 or newer is required for the CMAKE_TEST_ARGUMENTS used
@@ -9409,7 +9343,9 @@ programs for inferring phylogenies (evolutionary trees).")
                 "IMP.parallel-test_sge.py"  ;fail in build container
                 ;; The following test fails non-reproducibly on
                 ;; an inexact numbers assertion.
-                "IMP.em-medium_test_local_fitting.py")))
+                "IMP.em-medium_test_local_fitting.py"
+                ;; The following test fails for unknown reasons
+                "IMP.foxs-add-missing-residues.py")))
          (list
           (string-append
            "-DCMAKE_CTEST_ARGUMENTS="
@@ -10321,6 +10257,46 @@ graphs.  This library makes it easy to work with @file{.loom} files for
 single-cell RNA-seq data.")
     (license license:bsd-3)))
 
+(define-public python-biothings-client
+  (package
+    (name "python-biothings-client")
+    (version "0.2.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "biothings_client" version))
+       (sha256
+        (base32 "0bccs37d5saxn5xsd2rfpkrnc5a120xs3ibizai66fgvp1vxbnc4"))))
+    (build-system python-build-system)
+    (arguments `(#:tests? #false)) ; require internet access
+    (propagated-inputs `(("python-requests" ,python-requests)))
+    (home-page "https://github.com/biothings/biothings_client.py")
+    (synopsis "Python client for BioThings API services")
+    (description "This package provides a Python client for BioThings
+API services.")
+    (license license:bsd-3)))
+
+(define-public python-mygene
+  (package
+    (name "python-mygene")
+    (version "3.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "mygene" version))
+       (sha256
+        (base32 "1snszwdgfygchxshcbry3b5pbcw3g1isp8dw46razxccqaxwlag7"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-biothings-client" ,python-biothings-client)))
+    (home-page "https://github.com/biothings/mygene.py")
+    (synopsis "Python Client for MyGene.Info services.")
+    (description "MyGene.Info provides simple-to-use REST web services
+to query/retrieve gene annotation data.  It's designed with simplicity
+and performance emphasized.  Mygene is a Python wrapper to access
+MyGene.Info services.")
+    (license license:bsd-3)))
+
 ;; We cannot use the latest commit because it requires Java 9.
 (define-public java-forester
   (let ((commit "86b07efe302d5094b42deed9260f719a4c4ac2e6")
@@ -11181,7 +11157,7 @@ based methods.")
 (define-public pigx-sars-cov2-ww
   (package
     (name "pigx-sars-cov2-ww")
-    (version "0.0.3")
+    (version "0.0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BIMSBbioinfo/pigx_sarscov2_ww/"
@@ -11189,7 +11165,7 @@ based methods.")
                                   "/pigx_sars-cov2-ww-" version ".tar.gz"))
               (sha256
                (base32
-                "1hhdbwsnl0d37lrmisw5hr630xr8s41qvxflm05anh11rj8n22yw"))
+                "0axnmz4d8zgir888mc0cilcq4m3v41xmjmpp3w3444lciwnxydvs"))
               (patches (search-patches "pigx-sars-cov2-ww-no-citeproc.patch"))))
     (build-system gnu-build-system)
     (arguments
@@ -11203,9 +11179,13 @@ based methods.")
        ("autoconf" ,autoconf)))
     (inputs
      `(("bash-minimal" ,bash-minimal)
+       ("bbmap" ,bbmap)
+       ("bedtools" ,bedtools)
        ("bwa" ,bwa)
        ("ensembl-vep" ,ensembl-vep)
+       ("fastp" ,fastp)
        ("fastqc" ,fastqc)
+       ("ivar" ,ivar)
        ("kraken2" ,kraken2)
        ("krona-tools" ,krona-tools)
        ("lofreq" ,lofreq)
@@ -11221,6 +11201,7 @@ based methods.")
        ("r-minimal" ,r-minimal)
        ("r-plotly" ,r-plotly)
        ("r-qpcr" ,r-qpcr)
+       ("r-r-utils" ,r-r-utils)
        ("r-reshape2" ,r-reshape2)
        ("r-rmarkdown" ,r-rmarkdown)
        ("r-stringr" ,r-stringr)
@@ -11393,7 +11374,7 @@ version does count multisplits.")
 (define-public minimap2
   (package
     (name "minimap2")
-    (version "2.18")
+    (version "2.23")
     (source
      (origin
        (method url-fetch)
@@ -11402,7 +11383,7 @@ version does count multisplits.")
                            "minimap2-" version ".tar.bz2"))
        (sha256
         (base32
-         "1d7fvdqcqd6wns875rkyd7f34ii15gc9l1sivd2wbbpcb0fi0mbs"))))
+         "00ngbz1swcgxk5apx9dz5xkh1z8abdpysx5lc7w8fbrfxp41w0j0"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; there are none
@@ -13824,10 +13805,47 @@ vast-tools, an RNA-Seq pipeline for alternative splicing analysis.  The plots
 are generated using @code{ggplot2}.")
     (license license:expat)))
 
+(define-public vbz-compression
+  (package
+    (name "vbz-compression")
+    (version "1.0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/nanoporetech/vbz_compression/")
+             (commit (string-append "v" version))
+             ;; We include the streamvbyte sources
+             (recursive? #true)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1c6wsrnw03vsc5cfp2rdakly5xy55m9chjmy6v685yapdwirdky0"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       '("-DENABLE_CONAN=OFF"
+         ;; Python things aren't even installed, so we might as well
+         ;; disable building them.
+         "-DENABLE_PYTHON=OFF")))
+    (inputs
+     `(;("hdf5" ,hdf5-1.10)
+       ("zstd" ,zstd "lib")))
+    (native-inputs
+     `(("googlebenchmark" ,googlebenchmark)))
+    (home-page "https://github.com/nanoporetech/vbz_compression/")
+    (synopsis "VBZ compression plugin for nanopore signal data")
+    (description
+     "VBZ Compression uses variable byte integer encoding to compress
+nanopore signal data.  The performance of VBZ is achieved by taking
+advantage of the properties of the raw signal and therefore is most
+effective when applied to the signal dataset.")
+    (license license:mpl2.0)))
+
 (define-public python-ont-fast5-api
   (package
     (name "python-ont-fast5-api")
-    (version "1.4.4")
+    (version "4.0.0")
     (source
      (origin
        (method git-fetch)
@@ -13837,12 +13855,27 @@ are generated using @code{ggplot2}.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "03cbq4zbbwhll8ml2m9k8sa31mirsvcbjkrq1yna0kkzz9fad5fm"))))
+         "01hj4751j424lzic2sc4bz1f8w7i7fpkjpy3rgghdyl5lyfyb4s4"))
+       (modules '((guix build utils)))
+       (snippet
+        '(delete-file-recursively "ont_fast5_api/vbz_plugin"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'copy-plugin
+           (lambda* (#:key inputs #:allow-other-keys)
+             (mkdir-p "ont_fast5_api/vbz_plugin/")
+             (install-file (string-append
+                            (assoc-ref inputs "vbz-compression")
+                            "/hdf5/lib/plugin/libvbz_hdf_plugin.so")
+                           "ont_fast5_api/vbz_plugin/"))))))
+    (inputs
+     `(("vbz-compression" ,vbz-compression)))
     (propagated-inputs
      `(("python-numpy" ,python-numpy)
-       ("python-six" ,python-six)
        ("python-h5py" ,python-h5py)
+       ("python-packaging" ,python-packaging)
        ("python-progressbar33" ,python-progressbar33)))
     (home-page "https://github.com/nanoporetech/ont_fast5_api")
     (synopsis "Interface to HDF5 files of the Oxford Nanopore fast5 file format")
@@ -14814,6 +14847,7 @@ usually ignored by other methods or only used for filtering.")
                (base32
                 "044xa0hm3b8fga64csrdx05ih8w7kwmvcdrdrhkg8j11ml4bi4xv"))))
     (build-system gnu-build-system)
+    (arguments `(#:parallel-tests? #false)) ; not supported
     (inputs
      `(("htslib" ,htslib)
        ("zlib" ,zlib)))

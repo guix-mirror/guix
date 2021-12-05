@@ -1017,8 +1017,11 @@ please run through this check list:
 @cindex @code{git format-patch}
 @cindex @code{git-format-patch}
 @item
-We recommend to use the command @code{git format-patch --base} to
-include the commit where your patch applies.
+When generating your patches with @code{git format-patch} or @code{git
+send-email}, we recommend using the option @code{--base=}, perhaps with
+the value @code{auto}.  This option adds a note to the patch stating
+which commit the patch is based on.  This helps reviewers understand how
+to apply and review your patches.
 
 @item
 If the authors of the packaged software provide a cryptographic

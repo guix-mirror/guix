@@ -6,7 +6,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Erik Edrosa <erik.edrosa@gmail.com>
 ;;; Copyright © 2016, 2019, 2020, 2021 Eraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016, 2017 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2016, 2017, 2021 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016, 2017 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
 ;;; Copyright © 2016, 2021 Amirouche <amirouche@hypermove.net>
 ;;; Copyright © 2016, 2019, 2021 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
@@ -38,6 +38,7 @@
 ;;; Copyright © 2021 Leo Le Bouter <lle-bout@zaclys.net>
 ;;; Copyright © 2021 Zelphir Kaltstahl <zelphirkaltstahl@posteo.de>
 ;;; Copyright © 2021 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2021 Artyom V. Poptsov <poptsov.artyom@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -57,6 +58,7 @@
 (define-module (gnu packages guile-xyz)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
+  #:use-module (gnu packages admin)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages aspell)
   #:use-module (gnu packages autotools)
@@ -542,7 +544,7 @@ Note that 8sync is only available for Guile 2.2.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("guile" ,guile-2.2)))
+     `(("guile" ,guile-3.0)))
     (home-page "https://github.com/alezost/guile-daemon")
     (synopsis "Evaluate code in a running Guile process")
     (description
@@ -1462,7 +1464,7 @@ written in pure Scheme by using Guile's foreign function interface.")
 (define-public guile-xosd
   (package
     (name "guile-xosd")
-    (version "0.2.1")
+    (version "0.2.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/alezost/" name
@@ -1470,12 +1472,22 @@ written in pure Scheme by using Guile's foreign function interface.")
                                   "/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1ri5065c16kmgrf2pysn2ymxjqi5302lhpb07wkl1jr75ym8fn8p"))))
+                "10r29bpyrsvjalnzkam2falj9k34lvxmch05zs606zp1nk93whp3"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'set-cpath
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "CPATH"
+                     (string-append
+                      (assoc-ref inputs "guile") "/include/guile/3.0:"
+                      (or (getenv "CPATH") "")))
+             #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("guile" ,guile-2.2)
+     `(("guile" ,guile-3.0)
        ("libx11" ,libx11)
        ("libxext" ,libxext)
        ("libxinerama" ,libxinerama)
@@ -1851,7 +1863,7 @@ user which package sets would they like to install from it.")
 (define-public guile-wisp
   (package
     (name "guile-wisp")
-    (version "1.0.5")
+    (version "1.0.6")
     (source (origin
               (method hg-fetch)
               (uri (hg-reference
@@ -1860,7 +1872,7 @@ user which package sets would they like to install from it.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "00iknn03gf421gg3061g35fbraqrkcqypkrfn10rhlgg6j0lgk67"))))
+                "0df0vch2p6qymz3f96clrkl2gphjk6x7fbya236yzxc07hkz2j3g"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)
@@ -1876,13 +1888,11 @@ user which package sets would they like to install from it.")
        (modify-phases %standard-phases
          (replace 'bootstrap
            (lambda _
-             (invoke "autoreconf" "-vif")
-             #t))
+             (invoke "autoreconf" "-vif")))
          (add-before 'configure 'patch-/usr/bin/env
            (lambda _
              (substitute* "Makefile.in"
-               (("/usr/bin/env bash") (which "bash")))
-             #t))
+               (("/usr/bin/env bash") (which "bash")))))
          ;; auto compilation breaks, but if we set HOME to /tmp,
          ;; that works ok
          (add-before 'check 'auto-compile-hacky-workaround
@@ -1906,8 +1916,7 @@ user which package sets would they like to install from it.")
                                   (go   (string-append object-dir base ".go")))
                              (invoke "guild" "compile" "-L" module-dir
                                      file "-o" go)))
-                         (find-files module-dir "\\.scm$"))
-               #t)))
+                         (find-files module-dir "\\.scm$")))))
          (add-after 'install 'install-emacs-files
            (assoc-ref emacs:%standard-phases 'install))
          (add-after 'install-emacs-files 'compile-emacs-files
@@ -1939,7 +1948,7 @@ users and in some situations.")
 (define-public guile-udev
   (package
     (name "guile-udev")
-    (version "0.1.0")
+    (version "0.2.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1948,7 +1957,7 @@ users and in some situations.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1l6csncjqnx58c6c3wdl7rshnhk4pzhjq2q8lnkg483564s9w5py"))))
+                "037md1sg7bgsa4478hz1dbsivsxzdnl5acadlrsh4ds2yxbsb5jp"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -4599,8 +4608,8 @@ schedulers.")
     (license license:gpl3+)))
 
 (define-public guile-libyaml
-  (let ((commit "f5d33a6880e96571d3cb079ed7755ffc156cac46")
-        (revision "1"))
+  (let ((commit "2bdacb72a65ab63264b2edc9dac9692df7ec9b3e")
+        (revision "2"))
     (package
       (name "guile-libyaml")
       (version (git-version "0" revision commit))
@@ -4613,7 +4622,7 @@ schedulers.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "12x91983fh1j39zy7kbk19acc1rqdh8515ddx1mh7l26j04k9wgq"))))
+           "1bssby1ri1vjll2rvi8b33xr2ghwjyxsd4yc15najj3h8n2ss87i"))))
       (build-system gnu-build-system)
       (arguments
        `(#:modules (((guix build guile-build-system)
@@ -4627,28 +4636,16 @@ schedulers.")
            (delete 'configure)
            (add-after 'unpack 'remove-unused-files
              (lambda* (#:key inputs #:allow-other-keys)
-               (for-each delete-file
-                         '("guix.scm" "demo1.yml" "demo1.scm"
-                           "yaml/libyaml.scm"
-                           ;; This file is mismatched with the generated FFI code.
-                           "yaml/ffi-help-rt.scm"))
-               (copy-file (search-input-file
-                           inputs "/share/guile/site/3.0/system/ffi-help-rt.scm")
-                          "yaml/ffi-help-rt.scm")
-               (substitute* "yaml/ffi-help-rt.scm"
-                 (("system ffi-help-rt") "yaml ffi-help-rt"))
-               #true))
+               (for-each delete-file '("guix.scm" "demo1.yml" "demo1.scm"))))
            (add-before 'build 'build-ffi
              (lambda* (#:key inputs #:allow-other-keys)
                (invoke "guild" "compile-ffi"
                        "--no-exec" ; allow us to patch the generated file
                        "yaml/libyaml.ffi")
                (substitute* "yaml/libyaml.scm"
-                 (("system ffi-help-rt") "yaml ffi-help-rt")
                  (("dynamic-link \"libyaml\"")
                   (format #false "dynamic-link \"~a/lib/libyaml\""
-                          (assoc-ref inputs "libyaml"))))
-               #true))
+                          (assoc-ref inputs "libyaml"))))))
            (replace 'build
              (assoc-ref guile:%standard-phases 'build))
            (delete 'install))))
@@ -4656,9 +4653,8 @@ schedulers.")
        `(("guile" ,guile-3.0)
          ("libyaml" ,libyaml)))
       (propagated-inputs
-       `(("guile-bytestructures" ,guile-bytestructures)))
-      (native-inputs
-       `(("nyacc" ,nyacc)))
+       `(("guile-bytestructures" ,guile-bytestructures)
+         ("nyacc" ,nyacc)))
       (home-page "https://github.com/mwette/guile-libyaml")
       (synopsis "Guile wrapper for libyaml")
       (description
@@ -4805,3 +4801,192 @@ It provides a generic library for writing implementations of a netlink
 protocol, a low-level rtnetlink implementation that uses that library and a
 high-level API for network management that uses rtnetlink.")
     (license license:gpl3+)))
+
+(define-public guile-gitlab
+  (package
+    (name "guile-gitlab")
+    (version "0.2.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/artyom-poptsov/guile-gitlab")
+             (commit (string-append "v" version))))
+       (file-name (string-append name "-" version))
+       (sha256
+        (base32
+         "0srkmchd4kmfa7q65r6fdzwklhgdlck1ll0s7smzs8ddjdgz2lwm"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags '("GUILE_AUTO_COMPILE=0")     ;to prevent guild warnings
+       #:modules (((guix build guile-build-system)
+                   #:select (target-guile-effective-version))
+                  ,@%gnu-build-system-modules)
+       #:imported-modules ((guix build guile-build-system)
+                           ,@%gnu-build-system-modules)
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out       (assoc-ref outputs "out"))
+                    (bin       (string-append out "/bin"))
+                    (guile-lib (assoc-ref inputs "guile-lib"))
+                    (json      (assoc-ref inputs "guile-json"))
+                    (tls       (assoc-ref inputs "guile-gnutls"))
+                    (version   (target-guile-effective-version))
+                    (scm       (string-append "/share/guile/site/"
+                                              version))
+                    (go        (string-append  "/lib/guile/"
+                                               version "/site-ccache")))
+               (wrap-program (string-append bin "/gitlab-cli")
+                 `("GUILE_LOAD_PATH" prefix
+                   (,(string-append out scm)
+                    ,(string-append guile-lib scm)
+                    ,(string-append json scm)
+                    ,(string-append tls scm)))
+                 `("GUILE_LOAD_COMPILED_PATH" prefix
+                   (,(string-append out go)
+                    ,(string-append guile-lib go)
+                    ,(string-append json go)
+                    ,(string-append tls go))))))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)
+       ("texinfo" ,texinfo)))
+    (inputs
+     `(("bash" ,bash-minimal)
+       ("guile" ,guile-2.2)
+       ("guile-json" ,guile2.2-json)
+       ("guile-lib" ,guile2.2-lib)
+       ("guile-gnutls" ,guile2.2-gnutls)))
+    (home-page "https://github.com/artyom-poptsov/guile-gitlab")
+    (synopsis "Guile interface to GitLab")
+    (description
+     "This package provides bindings to the GitLab Community Edition REST API
+as well as the @samp{gitlab-cli} command line tool for interacting with a
+GitLab instance.")
+    (license license:gpl3)))
+
+(define-public guile-smc
+  (package
+    (name "guile-smc")
+    (version "0.3.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/artyom-poptsov/guile-smc")
+             (commit (string-append "v" version))))
+       (file-name (string-append name "-" version))
+       (sha256
+        (base32
+         "0szkjmasi70m1vppck7nhdxg4lnxzjq6mihi6r1552s8sxm5z008"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags '("GUILE_AUTO_COMPILE=0")     ;to prevent guild warnings
+       #:modules (((guix build guile-build-system)
+                   #:select (target-guile-effective-version))
+                  ,@%gnu-build-system-modules)
+       #:imported-modules ((guix build guile-build-system)
+                           ,@%gnu-build-system-modules)
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'strip)
+         (add-after 'configure 'patch
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (substitute* "modules/smc/core/log.scm"
+               (("  #:use-module \\(logging logger\\)")
+                (string-append
+                 "  #:use-module (logging logger)\n"
+                 "  #:use-module (logging rotating-log)"))
+               (("#:init-value \"logger\"")
+                (format #f
+                        "#:init-value \"~a/bin/logger\""
+                        (assoc-ref inputs "inetutils")))
+             (("\\(add-handler! %logger %syslog\\)")
+              (string-append
+               "(add-handler! %logger\n"
+               "              (make <rotating-log>\n"
+               "                    #:file-name \"smc.log\"))\n")))
+             #t))
+         (add-after 'install 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out       (assoc-ref outputs "out"))
+                    (bin       (string-append out "/bin"))
+                    (guile-lib (assoc-ref inputs "guile-lib"))
+                    (version   (target-guile-effective-version))
+                    (scm       (string-append "/share/guile/site/"
+                                              version))
+                    (go        (string-append  "/lib/guile/"
+                                               version "/site-ccache")))
+               (wrap-program (string-append bin "/smc")
+                 `("GUILE_LOAD_PATH" prefix
+                   (,(string-append out scm)
+                    ,(string-append guile-lib scm)))
+                 `("GUILE_LOAD_COMPILED_PATH" prefix
+                   (,(string-append out go)
+                    ,(string-append guile-lib go)))))
+             #t)))))
+    (native-inputs
+     `(("autoconf"   ,autoconf)
+       ("automake"   ,automake)
+       ("pkg-config" ,pkg-config)
+       ("texinfo"    ,texinfo)))
+    (inputs
+     `(("bash"      ,bash-minimal)
+       ("guile"     ,guile-3.0)
+       ("guile-lib" ,guile-lib)
+       ("inetutils" ,inetutils)))
+    (home-page "https://github.com/artyom-poptsov/guile-smc")
+    (synopsis "GNU Guile state machine compiler")
+    (description
+     "Guile-SMC is a state machine compiler that allows users to describe
+finite state machines (FSMs) in Scheme in terms of transition tables.  It is
+capable to generate such transition tables from a @url{https://plantuml.com/,
+PlantUML} state diagrams.
+
+A transition table can be verified and checked for dead-ends and infinite
+loops.  Also Guile-SMC FSMs gather statistics when they run.
+
+Guile-SMC comes with a Scheme program called @command{smc} -- a state machine
+compiler itself.  It produces a Scheme code for an FSM from the PlantUML
+format.  This tool is meant to be called on a PlantUML file when a program
+with a FSM is being built (for example, from a Makefile.)")
+    (license license:gpl3)))
+
+(define-public guile-ini
+  (package
+    (name "guile-ini")
+    (version "0.3.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/artyom-poptsov/guile-ini")
+             (commit (string-append "v" version))))
+       (file-name (string-append name "-" version))
+       (sha256
+        (base32
+         "0injn60530valhx3gsmdp72g6z886yf0n08hscky21h3dafm14kc"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags '("GUILE_AUTO_COMPILE=0")))     ;to prevent guild warnings
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)
+       ("texinfo" ,texinfo)))
+    (inputs
+     `(("bash" ,bash-minimal)
+       ("guile" ,guile-3.0)
+       ("guile-lib" ,guile-lib)))
+    (propagated-inputs
+     `(("guile-smc" ,guile-smc)))
+    (home-page "https://github.com/artyom-poptsov/guile-ini")
+    (synopsis "Guile library for INI format support")
+    (description
+     "@code{guile-ini} is a GNU Guile library for working with the
+@url{https://en.wikipedia.org/wiki/INI_file, INI format}.  This library
+provides API for reading and writing INI data.")
+    (license license:gpl3)))

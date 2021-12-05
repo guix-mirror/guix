@@ -961,6 +961,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/combinatorial-blas-awpm.patch		\
   %D%/packages/patches/combinatorial-blas-io-fix.patch		\
   %D%/packages/patches/coreutils-gnulib-tests.patch		\
+  %D%/packages/patches/coq-fix-envvars.patch			\
   %D%/packages/patches/coreutils-ls.patch			\
   %D%/packages/patches/cpuinfo-system-libraries.patch		\
   %D%/packages/patches/crawl-upgrade-saves.patch		\
@@ -1000,6 +1001,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/dstat-skip-devices-without-io.patch	\
   %D%/packages/patches/dune-istl-2.7-fix-non-mpi-tests.patch	\
   %D%/packages/patches/dvd+rw-tools-add-include.patch 		\
+  %D%/packages/patches/dynaconf-unvendor-deps.patch		\
   %D%/packages/patches/ecl-16-format-directive-limit.patch	\
   %D%/packages/patches/ecl-16-ignore-stderr-write-error.patch	\
   %D%/packages/patches/ecl-16-libffi.patch			\
@@ -1248,9 +1250,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/hurd-cross.patch				\
   %D%/packages/patches/hurd-xattr.patch				\
   %D%/packages/patches/hydra-disable-darcs-test.patch		\
-  %D%/packages/patches/icecat-78-makeicecat.patch		\
   %D%/packages/patches/icecat-makeicecat.patch			\
   %D%/packages/patches/icecat-avoid-bundled-libraries.patch	\
+  %D%/packages/patches/icecat-CVE-2021-43527.patch		\
   %D%/packages/patches/icecat-use-older-reveal-hidden-html.patch	\
   %D%/packages/patches/icecat-use-system-graphite2+harfbuzz.patch	\
   %D%/packages/patches/icecat-use-system-media-libs.patch	\
@@ -1509,6 +1511,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/nsis-env-passthru.patch			\
   %D%/packages/patches/nsis-source-date-epoch.patch		\
   %D%/packages/patches/nss-getcwd-nonnull.patch			\
+  %D%/packages/patches/nss-CVE-2021-43527.patch			\
   %D%/packages/patches/nss-increase-test-timeout.patch		\
   %D%/packages/patches/nss-3.56-pkgconfig.patch			\
   %D%/packages/patches/nvi-assume-preserve-path.patch		\
@@ -1724,7 +1727,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/ripperx-missing-file.patch		\
   %D%/packages/patches/rpcbind-CVE-2017-8779.patch		\
   %D%/packages/patches/rtags-separate-rct.patch			\
-  %D%/packages/patches/racket-minimal-backport-1629887.patch    \
   %D%/packages/patches/racket-minimal-sh-via-rktio.patch	\
   %D%/packages/patches/remake-impure-dirs.patch			\
   %D%/packages/patches/restic-0.9.6-fix-tests-for-go1.15.patch	\
@@ -1828,6 +1830,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/u-boot-rockchip-inno-usb.patch		\
   %D%/packages/patches/u-boot-sifive-prevent-reloc-initrd-fdt.patch	\
   %D%/packages/patches/u-boot-riscv64-fix-extlinux.patch	\
+  %D%/packages/patches/u-boot-rk3399-enable-emmc-phy.patch	\
   %D%/packages/patches/ucx-tcp-iface-ioctl.patch		\
   %D%/packages/patches/ungoogled-chromium-extension-search-path.patch	\
   %D%/packages/patches/ungoogled-chromium-ffmpeg-compat.patch	\

@@ -818,7 +818,7 @@ http, and https via third-party applications.")
 (define-public tinmop
   (package
     (name "tinmop")
-    (version "0.8.3")
+    (version "0.9.2")
     (source
      (origin
        (method git-fetch)
@@ -827,13 +827,17 @@ http, and https via third-party applications.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "117p1wxi5swmqw429qrswxz2zvp1dcaw2145gk6zxlgwln48qxl8"))))
+        (base32 "1cgx2g2kryfmcwqzzjzcpbdc6zzj10xc52gz0cj2dx5ylc0yg7k3"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("curl" ,curl)
+     `(("automake" ,automake)
+       ("autoreconf" ,autoconf)
        ("gettext" ,gnu-gettext)
-       ("gnupg" ,gnupg)
-       ("sbcl" ,sbcl)))
+       ("mandoc" , mandoc)
+       ("nano" ,nano)
+       ("openssl" ,openssl)
+       ("sbcl" ,sbcl)
+       ("xdg-utils" ,xdg-utils)))
     (inputs
      `(("access" ,sbcl-access)
        ("alexandria" ,sbcl-alexandria)
@@ -856,8 +860,6 @@ http, and https via third-party applications.")
        ("local-time" ,sbcl-local-time)
        ("log4cl" ,sbcl-log4cl)
        ("marshal" ,sbcl-marshal)
-       ("nano" ,nano)
-       ("openssl" ,openssl)
        ("osicat" ,sbcl-osicat)
        ("parse-number" ,sbcl-parse-number)
        ("percent-encoding" ,sbcl-percent-encoding)
@@ -865,8 +867,7 @@ http, and https via third-party applications.")
        ("sxql-composer" ,sbcl-sxql-composer)
        ("tooter" ,sbcl-tooter)
        ("unix-opts" ,sbcl-unix-opts)
-       ("usocket" ,sbcl-usocket)
-       ("xdg-utils" ,xdg-utils)))
+       ("usocket" ,sbcl-usocket)))
     (arguments
      `(#:tests? #f
        #:strip-binaries? #f
@@ -876,11 +877,24 @@ http, and https via third-party applications.")
            (lambda _
              (setenv "HOME" "/tmp")
              #t))
+         (add-after 'unpack 'fix-configure.ac
+           (lambda _
+              (delete-file "configure")
+              (substitute* "configure.ac"
+                (("AC_PATH_PROG.+CURL")
+                 "dnl")
+                (("AC_PATH_PROGS.+GIT")
+                 "dnl")
+                (("AC_PATH_PROG.+GPG")
+                 "dnl"))
+               #t))
          (add-after 'configure 'fix-asdf
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "Makefile.in"
                (("LISP_COMPILER) ")
-                "LISP_COMPILER) --eval \"(require 'asdf)\" --eval \"(push \\\"$$(pwd)/\\\" asdf:*central-registry*)\"  "))
+                (string-concatenate
+                 '("LISP_COMPILER) --eval \"(require 'asdf)\" "
+                   "--eval \"(push \\\"$$(pwd)/\\\" asdf:*central-registry*)\"  "))))
              #t)))))
     (synopsis "Gemini and pleroma client with a terminal interface")
     (description
@@ -892,14 +906,14 @@ interface.")
 (define-public telescope
   (package
     (name "telescope")
-    (version "0.5.2")
+    (version "0.6.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/omar-polo/telescope/releases/download/"
                            version "/telescope-" version ".tar.gz"))
        (sha256
-        (base32 "0phvwhxvm63y68cyvzw5dk60yjzfv6bpxf5c4bl08daj3ia48fbk"))))
+        (base32 "1hm9gi6yz62h8yh2br85bgycr2xaf5lr7z4gl0p25g7d7qb53ixd"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ;no tests
@@ -914,6 +928,32 @@ interface.")
     (synopsis "Gemini client with a terminal interface")
     (description "Telescope is a w3m-like browser for Gemini.")
     (license license:x11)))
+
+(define-public leo
+  ;; PyPi only provides a wheel.
+  (let ((commit "88cc10a87afe2ec86be06e6ea2bcd099f5360b74")
+        (version "1.0.4")
+        (revision "1"))
+    (package
+      (name "leo")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/xyzshantaram/leo")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0jp4v4jw82qqynqqs7x35g5yvm1sd48cvbqh7j2r1ixw1z6ldhc4"))))
+      (build-system python-build-system)
+      (home-page "https://github.com/xyzshantaram/leo")
+      (synopsis "Gemini client written in Python")
+      (description
+       "@command{leo} is a gemini client written in Python with no external
+dependencies that fully implements the Gemini spec.  A list of URLs can be
+saved to a file for further viewing in another window.")
+      (license license:expat))))
 
 (define-public av-98
   (package

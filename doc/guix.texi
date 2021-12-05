@@ -99,6 +99,7 @@ Copyright @copyright{} 2021 Alice Brenon@*
 Copyright @copyright{} 2021 Josselin Poiret@*
 Copyright @copyright{} 2021 Andrew Tropin@*
 Copyright @copyright{} 2021 Sarah Morgensen@*
+Copyright @copyright{} 2021 Josselin Poiret@*
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -2495,13 +2496,24 @@ mkfs.ext4 -L my-root /dev/sda2
 If you are instead planning to encrypt the root partition, you can use
 the Cryptsetup/LUKS utilities to do that (see @inlinefmtifelse{html,
 @uref{https://linux.die.net/man/8/cryptsetup, @code{man cryptsetup}},
-@code{man cryptsetup}} for more information).  Assuming you want to
-store the root partition on @file{/dev/sda2}, the command sequence would
-be along these lines:
+@code{man cryptsetup}} for more information).
+
+@quotation Warning
+Note that GRUB can unlock LUKS2 devices since version 2.06, but only
+supports the PBKDF2 key derivation function, which is not the default
+for @command{cryptsetup luksFormat}.  You can check which key derivation
+function is being used by a device by running @command{cryptsetup
+luksDump @var{device}}, and looking for the PBKDF field of your
+keyslots.
+@end quotation
+
+Assuming you want to store the root partition on @file{/dev/sda2}, the
+command sequence to format it as a LUKS2 partition would be along these
+lines:
 
 @example
-cryptsetup luksFormat /dev/sda2
-cryptsetup open --type luks /dev/sda2 my-partition
+cryptsetup luksFormat --type luks2 --pbkdf pbkdf2 /dev/sda2
+cryptsetup open /dev/sda2 my-partition
 mkfs.ext4 -L my-root /dev/mapper/my-partition
 @end example
 
@@ -32687,12 +32699,6 @@ running an @dfn{agent}.  The build daemon is still used to build the
 derivations, but the Guix Build Coordinator manages allocating builds
 and working with the results.
 
-@quotation Note
-This service is considered experimental.  Configuration options may be
-changed in a backwards-incompatible manner, and not all features have
-been thorougly tested.
-@end quotation
-
 The Guix Build Coordinator consists of one @dfn{coordinator}, and one or
 more connected @dfn{agent} processes.  The coordinator process handles
 clients submitting builds, and allocating builds to agents.  The agent
@@ -34730,8 +34736,8 @@ passed.
 @cindex virtual machine
 @cindex VM
 @anchor{guix system vm}
-Build a virtual machine that contains the operating system declared in
-@var{file}, and return a script to run that virtual machine (VM).
+Build a virtual machine (VM) that contains the operating system declared
+in @var{file}, and return a script to run that VM.
 
 @quotation Note
 The @code{vm} action and others below
@@ -34748,6 +34754,12 @@ emulated machine:
 
 @example
 $ /gnu/store/@dots{}-run-vm.sh -m 1024 -smp 2 -nic user,model=virtio-net-pci
+@end example
+
+It's possible to combine the two steps into one:
+
+@example
+$ $(guix system vm my-config.scm) -m 1024 -smp 2 -nic user,model=virtio-net-pci
 @end example
 
 The VM shares its store with the host system.
@@ -34773,8 +34785,17 @@ store of the host can then be mounted.
 The @option{--full-boot} option forces a complete boot sequence, starting
 with the bootloader.  This requires more disk space since a root image
 containing at least the kernel, initrd, and bootloader data files must
-be created.  The @option{--image-size} option can be used to specify the
-size of the image.
+be created.
+
+The @option{--image-size} option can be used to specify the size of the
+image.
+
+The @option{--no-graphic} option will instruct @command{guix system} to
+spawn a headless VM that will use the invoking tty for IO.  Among other
+things, this enables copy-pasting, and scrollback.  Use the @kbd{ctrl-a}
+prefix to issue QEMU commands; e.g. @kbd{ctrl-a h} prints a help,
+@kbd{ctrl-a x} quits the VM, and @kbd{ctrl-a c} switches between the
+QEMU monitor and the VM.
 
 @cindex System images, creation in various formats
 @cindex Creating system images in various formats

@@ -46,6 +46,8 @@
 ;;; Copyright © 2021 qblade <qblade@protonmail.com>
 ;;; Copyright © 2021 lasnesne <lasnesne@lagunposprasihopre.org>
 ;;; Copyright © 2021 Petr Hodina <phodina@protonmail.com>
+;;; Copyright © 2021 jgart <jgart@dismail.de>
+;;; Copyright © 2021 Disseminate Dissent <disseminatedissent@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2649,6 +2651,47 @@ capabilities.  It is heavily inspired by the Calm Window manager(cwm).")
      "@command{devour} hides your current window before launching an external
 program and unhides it after quitting.")
     (license license:gpl2)))
+
+(define-public trayer-srg
+  (package
+    (name "trayer-srg")
+    (version "1.1.8")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/sargon/trayer-srg")
+             (commit (string-append "trayer-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1mvhwaqa9bng9wh3jg3b7y8gl7nprbydmhg963xg0r076jyzv0cg"))))
+    (native-inputs
+     `(("libxmu" ,libxmu)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libx11" ,libx11)
+       ("gdk-pixbuf" ,gdk-pixbuf)
+       ("gtk+" ,gtk+-2)))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; There are no tests.
+       #:make-flags
+       (let ((out (assoc-ref %outputs "out")))
+         (list (string-append "CC=" ,(cc-for-target))
+               (string-append "PREFIX=" %output)))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key configure-flags #:allow-other-keys)
+             (apply invoke "./configure" configure-flags))))))
+    (home-page "https://github.com/sargon/trayer-srg")
+    (synopsis "Minimal GTK based system tray")
+    (description
+     "@command{trayer} is small program designed to provide systray
+functionality present in GNOME/KDE desktop enviroments for window managers
+which do not support it.")
+    (license license:expat)))
 
 (define-public wlogout
   (package

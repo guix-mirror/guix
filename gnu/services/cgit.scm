@@ -319,7 +319,7 @@ after this option will inherit the current section name.")
 ;; <repository-cgit-configuration>, <nginx-server-configuration>, <package>.
 (define-configuration cgit-configuration
   (package
-   (package cgit)
+   (file-like cgit)
    "The CGIT package.")
   (nginx
    (nginx-server-configuration-list (list %cgit-configuration-nginx))
@@ -673,7 +673,7 @@ for cgit to allow access to that repository.")
 
 (define-configuration opaque-cgit-configuration
   (cgit
-   (package cgit)
+   (file-like cgit)
    "The cgit package.")
   (cgitrc
    (string (configuration-missing-field 'opaque-cgit-configuration 'cgitrc))

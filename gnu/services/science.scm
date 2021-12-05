@@ -35,7 +35,7 @@
   rshiny-configuration
   make-rshiny-configuration
   rshiny-configuration?
-  (package          rshiny-configuration-package    ; package
+  (package          rshiny-configuration-package    ; file-like
                     (default r-shiny))
   (binary           rshiny-configuration-binary     ; string
                     (default "rshiny")))

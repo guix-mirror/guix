@@ -712,7 +712,6 @@ with '-virtfs' options for the host file systems listed in SHARED-FS."
      "-device" "virtio-rng-pci,rng=guix-vm-rng"
 
      #$@(map virtfs-option shared-fs)
-     "-vga std"
      (format #f "-drive file=~a,if=virtio,cache=writeback,werror=report,readonly=on"
              #$image)))
 
@@ -754,6 +753,8 @@ it is mostly useful when FULL-BOOT?  is true."
     (define qemu-exec
       #~(list #+(file-append qemu "/bin/"
                              (qemu-command (or target system)))
+              ;; Tells qemu to use the terminal it was started in for IO.
+              #$@(if graphic? '() #~("-nographic"))
               #$@(if full-boot?
                      #~()
                      #~("-kernel" #$(operating-system-kernel-file os)

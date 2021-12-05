@@ -40,21 +40,22 @@
 (define-public toot
   (package
     (name "toot")
-    (version "0.27.0")
+    (version "0.28.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "toot" version))
         (sha256
-         (base32 "1mfbqmgna7046d134pc5qx1vyfd60vwcn0xr9lxzlmc5rjdbmz8x"))))
+         (base32 "1wsj4160z3m1nvswgkl08n9ymihxhxdvxvrsycn9d3y5fplm00k9"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (add-installed-pythonpath inputs outputs)
-             (invoke "py.test"))))))
+           (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "py.test")))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
     (inputs

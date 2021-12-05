@@ -55,7 +55,7 @@
 
 (define-record-type* <alsa-configuration>
   alsa-configuration make-alsa-configuration alsa-configuration?
-  (alsa-plugins alsa-configuration-alsa-plugins ;<package>
+  (alsa-plugins alsa-configuration-alsa-plugins ;file-like
                 (default alsa-plugins))
   (pulseaudio?   alsa-configuration-pulseaudio? ;boolean
                  (default #t))

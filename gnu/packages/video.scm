@@ -55,6 +55,7 @@
 ;;; Copyright © 2021 Thiago Jung Bauermann <bauermann@kolabnow.com>
 ;;; Copyright © 2021 Petr Hodina <phodina@protonmail.com>
 ;;; Copyright © 2021 Robin Templeton <robin@terpri.org>
+;;; Copyright © 2021 Aleksandr Vityazev <avityazev@posteo.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -101,6 +102,7 @@
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages build-tools)
@@ -1109,7 +1111,10 @@ H.264 (MPEG-4 AVC) video streams.")
              (substitute* (find-files "lib" "\\.pm$")
                (("\"youtube-dl\"")
                 (format #f "\"~a/bin/youtube-dl\""
-                        (assoc-ref inputs "youtube-dl"))))
+                        (assoc-ref inputs "youtube-dl")))
+               (("\"yt-dlp\"")
+                (format #f "\"~a/bin/yt-dlp\""
+                        (assoc-ref inputs "yt-dlp"))))
              (substitute* (find-files "bin" ".*-viewer$")
                (("'ffmpeg'")
                 (format #f "'~a/bin/ffmpeg'"
@@ -1122,7 +1127,10 @@ H.264 (MPEG-4 AVC) video streams.")
                         (assoc-ref inputs "xdg-utils")))
                (("'youtube-dl'")
                 (format #f "'~a/bin/youtube-dl'"
-                        (assoc-ref inputs "youtube-dl"))))))
+                        (assoc-ref inputs "youtube-dl")))
+               (("'yt-dlp'")
+                (format #f "'~a/bin/yt-dlp'"
+                        (assoc-ref inputs "yt-dlp"))))))
          (add-after 'install 'install-xdg
            (lambda args
              (apply (assoc-ref copy:%standard-phases 'install)
@@ -1175,7 +1183,8 @@ H.264 (MPEG-4 AVC) video streams.")
        ("perl-uri-escape" ,perl-uri-escape)
        ("wget" ,wget)
        ("xdg-utils" ,xdg-utils)
-       ("youtube-dl" ,youtube-dl)))
+       ("youtube-dl" ,youtube-dl)
+       ("yt-dlp" ,yt-dlp)))
     (propagated-inputs
      `(("dconf" ,dconf)))
     (home-page "https://github.com/trizen/pipe-viewer")
@@ -2217,13 +2226,72 @@ fork of mplayer2 and MPlayer.  It shares some features with the former
 projects while introducing many more.")
     (license license:gpl2+)))
 
+(define-public smplayer
+  (package
+    (name "smplayer")
+    (version "21.10.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/smplayer/SMPlayer/" version
+                    "/smplayer-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "12nvcl0cfix1xay9hfi7856vg4lpv8y5b0a22212bsjbvl5g22rc"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("qttools" ,qttools)))
+    (inputs
+     `(("bash-minimal" ,bash-minimal)
+       ("qtbase" ,qtbase-5)
+       ("zlib" ,zlib)
+       ("mpv" ,mpv)))
+    (arguments
+     `(#:tests? #false             ; no tests
+       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+                          (string-append "CC=" ,(cc-for-target))
+                          ;; A KLUDGE to turn off invoking lrelease on the
+                          ;; project for now, because it fails consistently
+                          ;; with "WARNING: Could not find qmake spec
+                          ;; 'default'". See below.
+                          "LRELEASE=true")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         ;; Due to the above, we must run lrelease separately on each .ts file
+         ;; (as opposed to running `lrelease-pro smplayer.pro` for the entire
+         ;; project, as the Makefile does normally without the above kludge).
+         (add-after 'build 'compile-ts-files
+           (lambda _
+             (for-each (lambda (file)
+                         (invoke "lrelease" file))
+                       (find-files "./" "\\.ts$"))
+             #true))
+         (add-after 'install 'wrap-executable
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (mpv (assoc-ref inputs "mpv")))
+               (wrap-program (string-append out "/bin/smplayer")
+                 `("PATH" ":" prefix
+                   ,(list (string-append mpv "/bin")))))
+             #true)))))
+    (home-page "https://www.smplayer.info")
+    (synopsis "Complete front-end for MPlayer, a media player")
+    (description "SMPlayer is a graphical user interface (GUI) for
+MPlayer, which is capable of playing almost all known video and audio
+formats.  Apart from providing access for the most common and useful
+options of MPlayer, SMPlayer adds other interesting features like the
+possibility to play Youtube videos, download subtitles, remember
+the last played position, etc.")
+    (license license:gpl2+)))
+
 (define-public gnome-mpv
   (deprecated-package "gnome-mpv" celluloid))
 
 (define-public mpv-mpris
   (package
     (name "mpv-mpris")
-    (version "0.5")
+    (version "0.6")
     (source
       (origin
         (method git-fetch)
@@ -2232,8 +2300,7 @@ projects while introducing many more.")
                (commit version)))
         (file-name (git-file-name name version))
         (sha256
-         (base32
-          "07p6li5z38pkfd40029ag2jqx917vyl3ng5p2i4v5a0af14slcnk"))))
+         (base32 "03gldk149i2108w3ylyfmci77kdq4whdzfavh7hjviwyj534101r"))))
     (build-system copy-build-system)
     (arguments
      '(#:install-plan
@@ -2560,7 +2627,7 @@ other site that youtube-dl supports.")
 (define-public you-get
   (package
     (name "you-get")
-    (version "0.4.1500")
+    (version "0.4.1555")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2569,7 +2636,7 @@ other site that youtube-dl supports.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "02wkmq6bjg9iz0kccsgs192aiky99l2jnw1xs6zjhvjvq7jyvf7s"))))
+                "0gn86i6nfsw395r9a3i88nv2g08s5bgjps7w4qawb9gvk4h7zqap"))))
     (build-system python-build-system)
     (inputs
      `(("ffmpeg" ,ffmpeg)))             ; for multi-part and >=1080p videos
@@ -2585,8 +2652,7 @@ other site that youtube-dl supports.")
                  ;; Don't blindly replace all occurrences of ‘'ffmpeg'’: the
                  ;; same string is also used when sniffing ffmpeg's output.
                  (("(FFMPEG == |\\()'ffmpeg'" _ prefix)
-                  (string-append prefix "'" ffmpeg "'")))
-               #t))))
+                  (string-append prefix "'" ffmpeg "'")))))))
        #:tests? #f))                    ; XXX some tests need Internet access
     (synopsis "Download videos, audio, or images from Web sites")
     (description
@@ -3164,7 +3230,7 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
 (define-public mlt
   (package
     (name "mlt")
-    (version "7.0.1")
+    (version "7.2.0")
     (source
      (origin
        (method git-fetch)
@@ -3173,7 +3239,7 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "13c5miph9jjbz69dhy0zvbkk5zbb05dr3vraaci0d5fdbrlhyscf"))))
+        (base32 "17d4gs46ca3n0qg6z69hl6mmllnqj2id8ccrv8fyz8c5zm55ghqm"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ;requires "Kwalify"
@@ -3587,14 +3653,15 @@ scaling and VA-API (if available) to accelerate video decoding.")
 (define-public recordmydesktop
   (package
     (name "recordmydesktop")
-    (version "0.3.8.1")
+    (version "0.4.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/" name "/" name "/"
-                                  version "/recordmydesktop-" version ".tar.gz"))
+              (uri (string-append "https://github.com/Enselic/"
+                                  name "/releases/download/v" version
+                                  "/recordmydesktop-" version ".tar.gz"))
               (sha256
                (base32
-                "133kkl5j0r877d41bzj7kj0vf3xm8x80yyx2n8nqxrva304f58ik"))))
+                "17kjgmkl45zma64a5dg1hyvnjkzk4vl8milgi6ic7hlsbmywpig7"))))
     (build-system gnu-build-system)
     (inputs `(("popt" ,popt)
               ("zlib" ,zlib)
@@ -3607,7 +3674,7 @@ scaling and VA-API (if available) to accelerate video decoding.")
               ("alsa-lib" ,alsa-lib)
               ("libvorbis" ,libvorbis)
               ("libtheora" ,libtheora)))
-    (home-page "http://recordmydesktop.sourceforge.net/")
+    (home-page "https://enselic.github.io/recordmydesktop/")
     (synopsis "Desktop session video recorder")
     (description
      "recordMyDesktop is a command-line tool that captures the activity in
@@ -4831,7 +4898,7 @@ transitions, and effects and then export your film to many common formats.")
 (define-public shotcut
   (package
     (name "shotcut")
-    (version "21.09.20")
+    (version "21.10.31")
     (source
      (origin
        (method git-fetch)
@@ -4840,7 +4907,7 @@ transitions, and effects and then export your film to many common formats.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1y46n5gmlayfl46l0vhg5g5dbbc0sg909mxb68sia0clkaas8xrh"))))
+        (base32 "0jgv6wl65gf6c4nmfica8k9vbgn3w3594d1phx1mb7zjvyy9y97k"))))
     (build-system qt-build-system)
     (arguments
      `(#:tests? #f ;there are no tests

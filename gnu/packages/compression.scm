@@ -34,6 +34,7 @@
 ;;; Copyright © 2021 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021 Ahmad Jarara <git@ajarara.io>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -859,7 +860,7 @@ time for compression ratio.")
 (define-public squashfs-tools
   (package
     (name "squashfs-tools")
-    (version "4.4-git.1")               ; ‘A point release of […] 4.4’
+    (version "4.5")
     (source
      (origin
        (method git-fetch)
@@ -868,7 +869,7 @@ time for compression ratio.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1hb95iy445hs2p3f7hg51jkrpkfi3bphddk60p2la0qmcdjkgbbm"))))
+        (base32 "18d4nwa22vgb8j2badngjngw63f0lj501cvlh3920wqy2mqxwav6"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no check target
@@ -2283,7 +2284,7 @@ reading from and writing to ZIP archives. ")
   (package
     (inherit quazip-0)
     (name "quazip")
-    (version "1.1")
+    (version "1.2")
     (source
      (origin
        (method git-fetch)
@@ -2292,7 +2293,7 @@ reading from and writing to ZIP archives. ")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "06srglrj6jvy5ngmidlgx03i0d5w91yhi7sf846wql00v8rvhc5h"))))))
+        (base32 "1dwld7jxhjz9l33lrqwvklazdy7ygi6n1m4ry1n1sk5dnschrhby"))))))
 
 (define-public zchunk
   (package
@@ -2673,3 +2674,36 @@ resulting multimember tar.lz archive is fully backward compatible with standard
 tar tools like GNU tar, which treat it like any other tar.lz archive.  Tarlz
 can append files to the end of such compressed archives.")
     (license license:gpl2+)))
+
+(define-public libcbor
+  (package
+    (name "libcbor")
+    (version "0.8.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/PJK/libcbor")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256 (base32 "01dv4vxcmbvpphqy16vqiwh25wx11x630js5wfnx7cryarsh9ld7"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags
+       (let* ((out (assoc-ref %outputs "out"))
+              (lib (string-append out "/lib")))
+         (list
+          "-DCMAKE_BUILD_TYPE=Release"
+          "-DBUILD_SHARED_LIBS=ON"
+          "-DCBOR_CUSTOM_ALLOC=ON"
+          (string-append "-DCMAKE_INSTALL_LIBDIR=" lib)
+          (string-append "-DCMAKE_INSTALL_RPATH=" lib)))))
+    (synopsis "The C library for parsing and generating CBOR")
+    (description
+     "The Concise Binary Object Representation (CBOR) is a data format whose
+design goals include the possibility of extremely small code size, fairly
+small message size, and extensibility without the need for version
+negotiation.  These design goals make it different from earlier binary
+serializations such as ASN.1 and MessagePack.")
+    (license license:expat)
+    (home-page "https://github.com/PJK/libcbor")))

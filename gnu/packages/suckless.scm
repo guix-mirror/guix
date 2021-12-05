@@ -378,22 +378,21 @@ numbers of user-defined menu items efficiently.")
      `(#:tests? #f                      ; no tests
        #:make-flags
        (list (string-append "CC=" ,(cc-for-target))
+             (string-append "TERMINFO="
+                            (assoc-ref %outputs "out")
+                            "/share/terminfo")
              (string-append "PREFIX=" %output))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
-         (add-after 'unpack 'inhibit-terminfo-install
-           (lambda _
-             (substitute* "Makefile"
-               (("\ttic .*") ""))
-             #t)))))
+         (delete 'configure))))
     (inputs
      `(("libx11" ,libx11)
        ("libxft" ,libxft)
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("ncurses" ,ncurses) ;provides tic program
+       ("pkg-config" ,pkg-config)))
     (home-page "https://st.suckless.org/")
     (synopsis "Simple terminal emulator")
     (description

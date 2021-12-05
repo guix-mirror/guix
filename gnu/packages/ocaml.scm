@@ -15,7 +15,7 @@
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
-;;; Copyright © 2020 Simon Tournier <zimon.toutoune@gmail.com>
+;;; Copyright © 2020, 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;; Copyright © 2020 divoplade <d@divoplade.fr>
 ;;; Copyright © 2020, 2021 pukkamustard <pukkamustard@posteo.net>
 ;;; Copyright © 2021 aecepoglu <aecepoglu@fastmail.fm>
@@ -3176,59 +3176,116 @@ many additional enhancements, including:
                    license:gpl2)))) ; OMake itself, with ocaml linking exception
                                     ; see LICENSE.OMake
 
+(define-public ocaml-benchmark
+  (package
+    (name "ocaml-benchmark")
+    (version "1.6")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/Chris00/ocaml-benchmark")
+               (commit version)))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0d0vdfjgjzf1y6wkd714d8b0piv1z9qav5ahsapynqzk4b4ahhnp"))))
+    (build-system dune-build-system)
+    (arguments `(#:test-target "tests"))
+    (home-page "https://github.com/Chris00/ocaml-benchmark")
+    (synopsis "Benchmark running times of code")
+    (description
+      "This module provides a set of tools to measure the running times of
+your functions and to easily compare the results.  A statistical test
+is used to determine whether the results truly differ.")
+    (license license:lgpl3+)))
+
 (define-public ocaml-batteries
   (package
     (name "ocaml-batteries")
-    (version "2.10.0")
+    (version "3.3.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/ocaml-batteries-team/"
-                                  "batteries-included/releases/download/v"
-                                  version "/batteries-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/ocaml-batteries-team/batteries-included")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "08ghw87d56h1a6y1nnh3x2wy9xj25jqfk5sp6ma9nsyd37babb0h"))))
+                "1h03nkc3vajaijqhj1dy5hw85j2hwwxdkg8rvs2fc00qaf44ad1d"))))
     (build-system ocaml-build-system)
+    (propagated-inputs `(("ocaml-num" ,ocaml-num)))
     (native-inputs
      `(("ocamlbuild" ,ocamlbuild)
-       ("qtest" ,ocaml-qtest)))
-    (propagated-inputs
-     `(("ocaml-num" ,ocaml-num)))
+       ("ocaml-benchmark" ,ocaml-benchmark)
+       ("ocaml-qcheck" ,ocaml-qcheck)
+       ("ocaml-qtest" ,ocaml-qtest)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (delete 'check) ; tests are run by the build phase
+         (add-after 'unpack 'make-writable
+           (lambda _
+             (for-each make-file-writable (find-files "." "."))))
          (add-before 'build 'fix-nondeterminism
            (lambda _
              (substitute* "setup.ml"
                (("Sys.readdir dirname")
                 "let a = Sys.readdir dirname in Array.sort String.compare a; a"))
-             #t))
-         (replace 'build
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((files
-                     (map (lambda (str)
-                            (substring str 0 (- (string-length str) 1)))
-                          (append
-                            (find-files "src" ".*.mliv")
-                            (find-files "src" ".*.mlv")
-                            (find-files "src" ".*.mlp")))))
-               (apply invoke "ocamlbuild" "-no-links" "-use-ocamlfind" "-I" "num"
-                      "-lflag" "-dllpath-all" files)
-               (for-each (lambda (file)
-                           (copy-file (string-append "_build/" file) file))
-                         files))
-             (invoke "ocamlbuild" "-no-links" "-use-ocamlfind" "-I" "num"
-                     "-lflag" "-dllpath-all" "build/mkconf.byte")
-             (copy-file "_build/build/mkconf.byte" "build/mkconf.byte")
-             (invoke "make" "all")
              #t)))))
+    (properties `((ocaml4.07-variant . ,(delay ocaml4.07-batteries))))
     (home-page "http://batteries.forge.ocamlcore.org/")
     (synopsis "Development platform for the OCaml programming language")
     (description "Define a standard set of libraries which may be expected on
 every compliant installation of OCaml and organize these libraries into a
 hierarchy of modules.")
     (license license:lgpl2.1+)))
+
+(define-public ocaml4.07-batteries
+  (package-with-ocaml4.07
+    (package
+      (inherit ocaml-batteries)
+      (version "2.10.0")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/ocaml-batteries-team/batteries-included")
+                       (commit (string-append "v" version))))
+                (file-name (git-file-name "ocaml-batteries" version))
+                (sha256
+                 (base32
+                  "02fxa1nkp7rpiwfp04n0sagdp9lad4dh9bvljp95xfshm1cx7y4q"))))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (delete 'check) ; tests are run by the build phase
+           (add-before 'build 'fix-nondeterminism
+             (lambda _
+               (substitute* "setup.ml"
+                 (("Sys.readdir dirname")
+                  "let a = Sys.readdir dirname in Array.sort String.compare a; a"))
+               #t))
+           (replace 'build
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let ((files
+                       (map (lambda (str)
+                              (substring str 0 (- (string-length str) 1)))
+                            (append
+                              (find-files "src" ".*.mliv")
+                              (find-files "src" ".*.mlv")
+                              (find-files "src" ".*.mlp")))))
+                 (apply invoke "ocamlbuild" "-no-links" "-use-ocamlfind" "-I" "num"
+                        "-lflag" "-dllpath-all" files)
+                 (for-each (lambda (file)
+                             (copy-file (string-append "_build/" file) file))
+                           files))
+               (invoke "ocamlbuild" "-no-links" "-use-ocamlfind" "-I" "num"
+                       "-lflag" "-dllpath-all" "build/mkconf.byte")
+               (copy-file "_build/build/mkconf.byte" "build/mkconf.byte")
+               (invoke "make" "all")
+               #t)))))
+      (native-inputs
+       `(("ocamlbuild" ,ocamlbuild)
+         ("qtest" ,ocaml-qtest)))
+      (properties '()))))
 
 (define-public ocaml-pcre
   (package
@@ -3987,86 +4044,109 @@ library is currently designed for Unicode Standard 3.2.")
     (license license:lgpl2.0+)))
 
 (define-public ocaml-charinfo-width
-  (package
-    (name "ocaml-charinfo-width")
-    (version "1.1.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://bitbucket.org/zandoye/charinfo_width"
-                                  "/get/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "00bv4p1yqs8y0z4z07wd9w9yyv669dikp9b04dcjbwpiy2wy0086"))))
-    (build-system dune-build-system)
-    (propagated-inputs
-     `(("ocaml-result" ,ocaml-result)
-       ("ocaml-camomile" ,ocaml-camomile)))
-    (native-inputs
-     `(("ocaml-ppx-expect" ,ocaml-ppx-expect)))
-    (properties
-     `((upstream-name . "charInfo_width")))
-    (home-page "https://bitbucket.org/zandoye/charinfo_width/")
-    (synopsis "Determine column width for a character")
-    (description "This module is implements purely in OCaml a character width
+  ;; Add LICENSE file and Dune tests
+  (let ((commit "20aaaa6dca8f1e0b1ace55b6f2a8ba5e5910b620"))
+    (package
+      (name "ocaml-charinfo-width")
+      (version (git-version "1.1.0" "1" commit))
+      (home-page "https://github.com/kandu/charinfo_width/")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url home-page)
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "04gil5hxm2jax9paw3i24d8zyzhyl5cphzfyryvy2lcrm3c485q0"))))
+      (build-system dune-build-system)
+      (propagated-inputs
+       `(("ocaml-result" ,ocaml-result)
+         ("ocaml-camomile" ,ocaml-camomile)))
+      (native-inputs
+       `(("ocaml-ppx-expect" ,ocaml-ppx-expect)))
+      (properties
+       `((upstream-name . "charInfo_width")))
+      (synopsis "Determine column width for a character")
+      (description "This module implements purely in OCaml a character width
 function that follows the prototype of POSIX's wcwidth.")
-    (license license:expat)))
+      (license license:expat))))
 
-(define-public ocaml4.07-zed
+(define-public ocaml-zed
   (package
-    (name "ocaml4.07-zed")
-    (version "2.0.3")
+    (name "ocaml-zed")
+    (version "3.1.0")
+    (home-page "https://github.com/ocaml-community/zed")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/diml/zed")
+             (url home-page)
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0pa9awinqr0plp4b2az78dwpvh01pwaljnn5ydg8mc6hi7rmir55"))))
+        (base32 "04vr1a94imsghm98iigc35rhifsz0rh3qz2qm0wam2wvp6vmrx0p"))))
     (build-system dune-build-system)
     (arguments
-     `(#:test-target "."
-       #:ocaml ,ocaml-4.07
-       #:findlib ,ocaml4.07-findlib
-       #:dune ,ocaml4.07-dune))
+     `(#:test-target "."))
     (propagated-inputs
-     `(("ocaml-camomile" ,(package-with-ocaml4.07 ocaml-camomile))
-       ("ocaml-charinfo-width" ,(package-with-ocaml4.07 ocaml-charinfo-width))
-       ("ocaml-react" ,(package-with-ocaml4.07 ocaml-react))))
-    (home-page "https://github.com/diml/zed")
-    (synopsis "Abstract engine for text editing in OCaml")
-    (description "Zed is an abstract engine for text edition.  It can be used
-to write text editors, edition widgets, readlines, etc.  You just have to
-connect an engine to your inputs and rendering functions to get an editor.")
+     `(("ocaml-charInfo-width" ,ocaml-charinfo-width)
+       ("ocaml-camomile" ,ocaml-camomile)
+       ("ocaml-react" ,ocaml-react)))
+    (properties `((ocaml4.07-variant . ,(delay ocaml4.07-zed))))
+    (synopsis "Abstract engine for text edition in OCaml")
+    (description
+     "This module provides an abstract engine for text edition.  It can be
+used to write text editors, edition widgets, readlines, and more.  The module
+Zed uses Camomile to fully support the Unicode specification, and implements
+an UTF-8 encoded string type with validation, and a rope datastructure to
+achieve efficient operations on large Unicode buffers.  Zed also features a
+regular expression search on ropes.  To support efficient text edition
+capabilities, Zed provides macro recording and cursor management facilities.")
     (license license:bsd-3)))
 
-(define-public ocaml4.07-lambda-term
+(define-public ocaml4.07-zed
+  (package-with-ocaml4.07
+   (package
+     (inherit ocaml-zed)
+     (version "2.0.3")
+     (source (origin
+               (method git-fetch)
+               (uri (git-reference
+                     (url "https://github.com/ocaml-community/zed")
+                     (commit version)))
+               (file-name (git-file-name "ocaml4.07-zed" version))
+               (sha256
+                (base32
+                 "0pa9awinqr0plp4b2az78dwpvh01pwaljnn5ydg8mc6hi7rmir55"))))
+     (properties '()))))
+
+(define-public ocaml-lambda-term
   (package
-    (name "ocaml4.07-lambda-term")
-    (version "2.0.2")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/diml/lambda-term")
-             (commit version)))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "0zcjy6fvf0d3i2ssz96asl889n3r6bplyzk7xvb2s3dkxbgcisyy"))))
+    (name "ocaml-lambda-term")
+    (version "3.1.0")
+    (home-page "https://github.com/ocaml-community/lambda-term")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1k0ykiz0vhpyyj9fkss29ajas4fh1xh449j702xkvayqipzj1mkg"))))
     (build-system dune-build-system)
     (arguments
-     `(#:tests? #f
-       #:ocaml ,ocaml-4.07
-       #:findlib ,ocaml4.07-findlib
-       #:dune ,ocaml4.07-dune))
+     `(#:test-target "."))
     (propagated-inputs
-     `(("ocaml-lwt" ,(package-with-ocaml4.07 ocaml-lwt))
-       ("ocaml-lwt-log" ,(package-with-ocaml4.07 ocaml-lwt-log))
-       ("ocaml-lwt-react" ,(package-with-ocaml4.07 ocaml-lwt-react))
-       ("ocaml-zed" ,ocaml4.07-zed)))
-    (home-page "https://github.com/diml/lambda-term")
+     `(("ocaml-lwt" ,ocaml-lwt)
+       ("ocaml-lwt-log" ,ocaml-lwt-log)
+       ("ocaml-react" ,ocaml-react)
+       ("ocaml-zed" ,ocaml-zed)
+       ("ocaml-camomile" ,ocaml-camomile)
+       ("ocaml-lwt-react" ,ocaml-lwt-react)
+       ("ocaml-mew-vi" ,ocaml-mew-vi)))
+    (properties `((ocaml4.07-variant . ,(delay ocaml4.07-lambda-term))))
     (synopsis "Terminal manipulation library for OCaml")
     (description "Lambda-Term is a cross-platform library for manipulating the
 terminal.  It provides an abstraction for keys, mouse events, colors, as well as
@@ -4076,10 +4156,31 @@ manipulation than, for example, ncurses, by providing a native OCaml interface
 instead of bindings to a C library.")
     (license license:bsd-3)))
 
-(define-public ocaml4.07-utop
+(define-public ocaml4.07-lambda-term
+  (package-with-ocaml4.07
+   (package
+     (inherit ocaml-lambda-term)
+     (version "2.0.2")
+     (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/ocaml-community/lambda-term")
+              (commit version)))
+        (file-name (git-file-name "ocaml4.07-lambda-term" version))
+        (sha256
+         (base32 "0zcjy6fvf0d3i2ssz96asl889n3r6bplyzk7xvb2s3dkxbgcisyy"))))
+     (propagated-inputs
+      `(("ocaml-lwt" ,ocaml-lwt)
+        ("ocaml-lwt-log" ,ocaml-lwt-log)
+        ("ocaml-lwt-react" ,ocaml-lwt-react)
+        ("ocaml-zed" ,ocaml-zed)))
+     (properties '()))))
+
+(define-public ocaml-utop
   (package
-    (name "ocaml4.07-utop")
-    (version "2.4.3")
+    (name "ocaml-utop")
+    (version "2.8.0")
     (source
      (origin
        (method git-fetch)
@@ -4088,27 +4189,47 @@ instead of bindings to a C library.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1bl4943qpi3qy152dbdm5glhx19zsiylmn4rcxi8l66g58hikyjp"))))
+        (base32 "1zf4hg33sblzh2f65vk0292jg4jlwa8702kfwpsg1kcg4w6nsfdp"))))
     (build-system dune-build-system)
     (arguments
-     `(#:test-target "."
-       #:ocaml ,ocaml-4.07
-       #:findlib ,ocaml4.07-findlib
-       #:dune ,ocaml4.07-dune))
+     `(#:test-target "."))
     (native-inputs
-     `(("cppo" ,(package-with-ocaml4.07 ocaml-cppo))))
+     `(("ocaml-cppo" ,ocaml-cppo)))
     (propagated-inputs
-     `(("lambda-term" ,ocaml4.07-lambda-term)
-       ("lwt" ,(package-with-ocaml4.07 ocaml-lwt))
-       ("react" ,(package-with-ocaml4.07 ocaml-react))
-       ("camomile" ,(package-with-ocaml4.07 ocaml-camomile))
-       ("zed" ,ocaml4.07-zed)))
+     `(("ocaml-lambda-term" ,ocaml-lambda-term)
+       ("ocaml-lwt" ,ocaml-lwt)
+       ("ocaml-lwt-react" ,ocaml-lwt-react)
+       ("ocaml-camomile" ,ocaml-camomile)
+       ("ocaml-react" ,ocaml-react)))
+    (properties `((ocaml4.07-variant . ,(delay ocaml4.07-utop))))
     (home-page "https://github.com/ocaml-community/utop")
     (synopsis "Improved interface to the OCaml toplevel")
     (description "UTop is an improved toplevel for OCaml.  It can run in a
 terminal or in Emacs.  It supports line editing, history, real-time and context
 sensitive completion, colors, and more.")
     (license license:bsd-3)))
+
+(define-public ocaml4.07-utop
+  (package-with-ocaml4.07
+   (package
+     (inherit ocaml-utop)
+     (version "2.4.3")
+     (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/ocaml-community/utop")
+              (commit version)))
+        (file-name (git-file-name "ocaml4.07-utop" version))
+        (sha256
+         (base32 "1bl4943qpi3qy152dbdm5glhx19zsiylmn4rcxi8l66g58hikyjp"))))
+     (propagated-inputs
+      `(("ocaml-lambda-term" ,ocaml-lambda-term)
+        ("ocaml-lwt" ,ocaml-lwt)
+        ("ocaml-react" ,ocaml-react)
+        ("ocaml-camomile" ,ocaml-camomile)
+        ("ocaml-zed" ,ocaml-zed)))
+     (properties '()))))
 
 (define-public ocaml-integers
   (package
@@ -5983,7 +6104,7 @@ match expressions, and if expressions.")
       (janestreet-origin "ppx_let" version
                          "1wdfw6w4xbg97a35yg6bif9gggxniy9ddnrjfw1a0inkl2yamxkj"))
 
-     (properties `(upstream-name . "ppx_let")))))
+     (properties `((upstream-name . "ppx_let"))))))
 
 (define-public ocaml4.07-ppx-fail
   (package
@@ -7423,6 +7544,81 @@ exposed the intrinsics properly, the compiler doesn't have any fast blits
 between Bigstrings and other string-like types.  @code{bigstringaf} provides
 these missing pieces.")
     (license license:bsd-3)))
+
+(define-public ocaml-trie
+  (package
+    (name "ocaml-trie")
+    (version "1.0.0")
+    (home-page "https://github.com/kandu/trie/")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0s7p9swjqjsqddylmgid6cv263ggq7pmb734z4k84yfcrgb6kg4g"))))
+    (build-system dune-build-system)
+    (arguments
+     '(#:tests? #f))                    ;no tests
+    (synopsis "Strict impure trie tree")
+    (description
+     "This module implements strict impure trie tree data structure for
+OCaml.")
+    (license license:expat)))
+
+(define-public ocaml-mew
+  (package
+    (name "ocaml-mew")
+    (version "0.1.0")
+    (home-page "https://github.com/kandu/mew")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0417xsghj92v3xa5q4dk4nzf2r4mylrx2fd18i7cg3nzja65nia2"))))
+    (build-system dune-build-system)
+    (propagated-inputs
+     `(("ocaml-result" ,ocaml-result)
+       ("ocaml-trie" ,ocaml-trie)))
+    (native-inputs
+     `(("ocaml-ppx-expect" ,ocaml-ppx-expect)))
+    (synopsis "General modal editing engine generator")
+    (description
+     "This package provides the core modules of Modal Editing Witch, a general
+modal editing engine generator.")
+    (license license:expat)))
+
+(define-public ocaml-mew-vi
+  (package
+    (name "ocaml-mew-vi")
+    (version "0.5.0")
+    (home-page "https://github.com/kandu/mew_vi")
+    (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit version)))
+       (file-name (git-file-name name version))
+        (sha256
+          (base32 "0lihbf822k5zasl60w5mhwmdkljlq49c9saayrws7g4qc1j353r8"))))
+    (build-system dune-build-system)
+    (propagated-inputs
+      `(("ocaml-mew" ,ocaml-mew)
+        ("ocaml-react" ,ocaml-react)))
+    (native-inputs
+     `(("ocaml-ppx-expect" ,ocaml-ppx-expect)))
+    (properties `((upstream-name . "mew_vi")))
+    (synopsis "Modal editing VI-like editing engine generator")
+    (description "This module provides a vi-like modal editing engine
+generator.")
+    (license license:expat)))
 
 (define-public ocaml-syntax-shims
   (package

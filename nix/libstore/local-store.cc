@@ -839,7 +839,8 @@ template<class T> T LocalStore::getIntLineFromSubstituter(Agent & run)
 {
     string s = getLineFromSubstituter(run);
     T res;
-    if (!string2Int(s, res)) throw Error("integer expected from stream");
+    if (!string2Int(s, res))
+        throw Error(format("integer expected from stream: %1%") % s);
     return res;
 }
 
@@ -907,8 +908,8 @@ void LocalStore::querySubstitutablePathInfos(PathSet & paths, SubstitutablePathI
             assertStorePath(p);
             info.references.insert(p);
         }
-        info.downloadSize = getIntLineFromSubstituter<long long>(run);
-        info.narSize = getIntLineFromSubstituter<long long>(run);
+        info.downloadSize = getIntLineFromSubstituter<unsigned long long>(run);
+        info.narSize = getIntLineFromSubstituter<unsigned long long>(run);
     }
 }
 

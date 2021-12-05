@@ -3102,7 +3102,8 @@ void SubstitutionGoal::finished()
 		throw Error(format("unknown hash algorithm in `%1%'") % hashStr);
 	    case htSHA256:
 		hash.first = parseHash16or32(hashType, string(hashStr, n + 1));
-		hash.second = std::atoi(statusList[2].c_str());
+		if (!string2Int(statusList[2], hash.second))
+		    throw Error(format("invalid nar size for '%1%' substitute") % storePath);
 		break;
 	    default:
 		/* The database only stores SHA256 hashes, so compute it.  */

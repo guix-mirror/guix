@@ -11976,8 +11976,7 @@ these services on the Guix System.")
                   (add-before 'check 'setup-xvfb
                     (lambda _
                       (system "Xvfb :1 &")
-                      (setenv "DISPLAY" ":1")
-                      #t)))))
+                      (setenv "DISPLAY" ":1"))))))
     (inputs
      `(("enchant" ,enchant)
        ("folks" ,folks)
@@ -12011,6 +12010,7 @@ these services on the Guix System.")
        ("glib:bin" ,glib "bin")
        ("gmime" ,gmime)
        ("gobject-introspection" ,gobject-introspection)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("itstool" ,itstool)
        ("libarchive" ,libarchive)
        ("libxml2" ,libxml2)

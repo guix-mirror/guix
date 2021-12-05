@@ -3,6 +3,7 @@
 ;;; Copyright © 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2021 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -117,13 +118,13 @@ efficient syncing
   (package
     (name "vdirsyncer")
     ;; When updating, check whether python-click-5 can be removed entirely.
-    (version "0.16.8")
+    (version "0.18.0")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri name version))
              (sha256
               (base32
-               "1i8kp9j99rs8xdhrc1vx749zd9wznlzj0pb3s05xdm71a8pl5nxz"))))
+               "00f2bw1a2jbbd1sbci0swnd67kylr341aa9rpbxkajbp3zakxg17"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ; The test suite is very flakey.

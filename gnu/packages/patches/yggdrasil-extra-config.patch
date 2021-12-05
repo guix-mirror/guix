@@ -1,27 +1,39 @@
+From 779f980451d20079b34812f7006f2d7230738ad0 Mon Sep 17 00:00:00 2001
+From: csepp <raingloom@riseup.net>
+Date: Wed, 3 Nov 2021 21:14:54 +0100
+Subject: [PATCH] add extra config file option to yggdrasil command
+
+This is useful in Guix and Nix, because one config file can come
+from the world-readable store and another can be placed directly
+into /etc with much stricter permissions.
+---
+ cmd/yggdrasil/main.go | 29 ++++++++++++++++++++++-------
+ 1 file changed, 22 insertions(+), 7 deletions(-)
+
 diff --git a/cmd/yggdrasil/main.go b/cmd/yggdrasil/main.go
-index 813e950..08d35cc 100644
+index 58b8230..b9df98a 100644
 --- a/cmd/yggdrasil/main.go
 +++ b/cmd/yggdrasil/main.go
-@@ -40,11 +40,12 @@ type node struct {
- 	admin     module.Module // admin.AdminSocket
+@@ -43,11 +43,12 @@ type node struct {
+ 	admin     *admin.AdminSocket
  }
  
--func readConfig(useconf *bool, useconffile *string, normaliseconf *bool) *config.NodeConfig {
-+func readConfig(useconf *bool, useconffile *string, extraconffile *string, normaliseconf *bool) *config.NodeConfig {
+-func readConfig(log *log.Logger, useconf bool, useconffile string, normaliseconf bool) *config.NodeConfig {
++func readConfig(log *log.Logger, useconf bool, useconffile string, extraconffile string, normaliseconf bool) *config.NodeConfig {
  	// Use a configuration file. If -useconf, the configuration will be read
  	// from stdin. If -useconffile, the configuration will be read from the
  	// filesystem.
  	var conf []byte
 +	var extraconf []byte
  	var err error
- 	if *useconffile != "" {
+ 	if useconffile != "" {
  		// Read the file from the filesystem
-@@ -56,6 +57,21 @@ func readConfig(useconf *bool, useconffile *string, normaliseconf *bool) *config
+@@ -59,6 +60,21 @@ func readConfig(log *log.Logger, useconf bool, useconffile string, normaliseconf
  	if err != nil {
  		panic(err)
  	}
-+	if *extraconffile != "" {
-+		extraconf, err = ioutil.ReadFile(*extraconffile);
++	if extraconffile != "" {
++		extraconf, err = ioutil.ReadFile(extraconffile);
 +	}
 +	if err != nil {
 +		panic(err)
@@ -30,7 +42,7 @@ index 813e950..08d35cc 100644
 +	// then parse the configuration we loaded above on top of it. The effect
 +	// of this is that any configuration item that is missing from the provided
 +	// configuration will use a sane default.
-+	cfg := config.GenerateConfig()
++	cfg := defaults.GenerateConfig()
 +	var confs [2][]byte
 +	confs[0]=conf
 +	confs[1]=extraconf
@@ -38,7 +50,7 @@ index 813e950..08d35cc 100644
  	// If there's a byte order mark - which Windows 10 is now incredibly fond of
  	// throwing everywhere when it's converting things into UTF-16 for the hell
  	// of it - remove it and decode back down into UTF-8. This is necessary
-@@ -69,11 +85,6 @@ func readConfig(useconf *bool, useconffile *string, normaliseconf *bool) *config
+@@ -72,11 +88,6 @@ func readConfig(log *log.Logger, useconf bool, useconffile string, normaliseconf
  			panic(err)
  		}
  	}
@@ -46,11 +58,11 @@ index 813e950..08d35cc 100644
 -	// then parse the configuration we loaded above on top of it. The effect
 -	// of this is that any configuration item that is missing from the provided
 -	// configuration will use a sane default.
--	cfg := config.GenerateConfig()
+-	cfg := defaults.GenerateConfig()
  	var dat map[string]interface{}
  	if err := hjson.Unmarshal(conf, &dat); err != nil {
  		panic(err)
-@@ -112,6 +123,7 @@ func readConfig(useconf *bool, useconffile *string, normaliseconf *bool) *config
+@@ -136,6 +147,7 @@ func readConfig(log *log.Logger, useconf bool, useconffile string, normaliseconf
  	if err = mapstructure.Decode(dat, &cfg); err != nil {
  		panic(err)
  	}
@@ -58,7 +70,15 @@ index 813e950..08d35cc 100644
  	return cfg
  }
  
-@@ -164,6 +176,7 @@ func main() {
+@@ -192,6 +204,7 @@ type yggArgs struct {
+ 	getaddr       bool
+ 	getsnet       bool
+ 	useconffile   string
++        extraconffile string
+ 	logto         string
+ 	loglevel      string
+ }
+@@ -200,6 +213,7 @@ func getArgs() yggArgs {
  	genconf := flag.Bool("genconf", false, "print a new config to stdout")
  	useconf := flag.Bool("useconf", false, "read HJSON/JSON config from stdin")
  	useconffile := flag.String("useconffile", "", "read HJSON/JSON config from specified file path")
@@ -66,21 +86,23 @@ index 813e950..08d35cc 100644
  	normaliseconf := flag.Bool("normaliseconf", false, "use in combination with either -useconf or -useconffile, outputs your configuration normalised")
  	confjson := flag.Bool("json", false, "print configuration from -genconf or -normaliseconf as JSON instead of HJSON")
  	autoconf := flag.Bool("autoconf", false, "automatic mode (dynamic IP, peer with IPv6 neighbors)")
-@@ -187,7 +200,7 @@ func main() {
- 		cfg = config.GenerateConfig()
- 	case *useconffile != "" || *useconf:
+@@ -213,6 +227,7 @@ func getArgs() yggArgs {
+ 		genconf:       *genconf,
+ 		useconf:       *useconf,
+ 		useconffile:   *useconffile,
++                extraconffile: *extraconffile,
+ 		normaliseconf: *normaliseconf,
+ 		confjson:      *confjson,
+ 		autoconf:      *autoconf,
+@@ -265,7 +280,7 @@ func run(args yggArgs, ctx context.Context, done chan struct{}) {
+ 		cfg = defaults.GenerateConfig()
+ 	case args.useconffile != "" || args.useconf:
  		// Read the configuration from either stdin or from the filesystem
--		cfg = readConfig(useconf, useconffile, normaliseconf)
-+		cfg = readConfig(useconf, useconffile, extraconffile, normaliseconf)
+-		cfg = readConfig(logger, args.useconf, args.useconffile, args.normaliseconf)
++		cfg = readConfig(logger, args.useconf, args.useconffile, args.extraconffile, args.normaliseconf)
  		// If the -normaliseconf option was specified then remarshal the above
  		// configuration and print it back to stdout. This lets the user update
  		// their configuration file with newly mapped names (like above) or to
-@@ -332,7 +345,7 @@ func main() {
- 			goto exit
- 		case _ = <-r:
- 			if *useconffile != "" {
--				cfg = readConfig(useconf, useconffile, normaliseconf)
-+				cfg = readConfig(useconf, useconffile, extraconffile, normaliseconf)
- 				logger.Infoln("Reloading configuration from", *useconffile)
- 				n.core.UpdateConfig(cfg)
- 				n.tuntap.UpdateConfig(cfg)
+-- 
+2.33.1
+

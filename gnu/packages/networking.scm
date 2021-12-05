@@ -14,7 +14,7 @@
 ;;; Copyright © 2016, 2017 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017, 2020, 2021 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017, 2019 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
@@ -1248,14 +1248,14 @@ receiving NDP messages.")
 (define-public ethtool
   (package
     (name "ethtool")
-    (version "5.14")
+    (version "5.15")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/software/network/"
                                   "ethtool/ethtool-" version ".tar.xz"))
               (sha256
                (base32
-                "11kns8imm55i0miggsnv9nblnzm60zgnanxnjajdgb2wj68xn4xv"))))
+                "0v8i592vwjypf111w0lfvaxdwhzybp6w600g28m9rm490c8xcvv8"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1775,14 +1775,14 @@ TCP connection, TLS handshake and so on) in the terminal.")
 (define-public squid
   (package
     (name "squid")
-    (version "4.16")
+    (version "4.17")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://www.squid-cache.org/Versions/v4/squid-"
                            version ".tar.xz"))
        (sha256
-        (base32 "0qxswdv90lmbxpb47hnqhjv32q0c8j7qkja6wpd0473wfn8yh03y"))))
+        (base32 "060lwghn6q982bay11ia38c86kd8w6mjgy68n58v31kwik08m4nb"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -3059,18 +3059,17 @@ eight bytes) tools
     ;; Either BSD-3 or GPL-2 can be used.
     (license (list license:bsd-3 license:gpl2))))
 
-;;; This is an old version required by rested.
-(define-public asio-1.12
+(define-public asio
   (package
     (name "asio")
-    (version "1.12.2")
+    (version "1.20.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/asio/asio/"
                            version " (Stable)/asio-" version ".tar.bz2"))
        (sha256
-        (base32 "1akray4l3hgahmb92sbvsqg128c7g7s92jrkf1sp1fjnfjrxq9sf"))))
+        (base32 "0335kyxdnwnp96sh9p3jq1s87qnfmp5l7hzlcdxbbwfzrb9p8hr0"))))
     (build-system gnu-build-system)
     (inputs
      `(("boost" ,boost)
@@ -3087,53 +3086,37 @@ low-level I/O programming that provides developers with a consistent
 asynchronous model using a modern C++ approach.")
     (license license:boost1.0)))
 
-(define-public asio
+(define-public shadowsocks
   (package
-    (inherit asio-1.12)
-    (version "1.18.2")
+    (name "shadowsocks")
+    (version "2.9.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "mirror://sourceforge/asio/asio/"
-                           version " (Stable)/asio-" version ".tar.bz2"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/shadowsocks/shadowsocks")
+             (commit version)))
        (sha256
-        (base32 "1wpr4ymv63a192fmymwyxd7v0bv575v022gz53y0mcflhr2mvh1s"))))))
-
-(define-public shadowsocks
-  ;; There are some security fixes after the last release.
-  (let* ((commit "e332ec93e9c90f1cbee676b022bf2c5d5b7b1239")
-         (revision "0")
-         (version (git-version "2.8.2" revision commit)))
-    (package
-      (name "shadowsocks")
-      (version version)
-      (home-page "https://github.com/shadowsocks/shadowsocks")
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url home-page)
-                      (commit commit)))
-                (sha256
-                 (base32
-                  "1idd9b4f2pnhcpk1bh030hqg5zq25gkwxd53xi3c0cj242w7sp2j"))
-                (file-name (git-file-name name version))))
-      (inputs
-       `(("openssl" ,openssl)))
-      (arguments
-       '(#:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'patch-crypto-paths
-             (lambda* (#:key inputs #:allow-other-keys)
-               (substitute* "shadowsocks/shell.py"
-                 (("config\\.get\\('libopenssl', None\\)")
-                  (format #f "config.get('libopenssl', ~s)"
-                          (string-append
-                           (assoc-ref inputs "openssl")
-                           "/lib/libssl.so")))))))))
-      (build-system python-build-system)
-      (synopsis "Fast tunnel proxy that helps you bypass firewalls")
-      (description
-       "This package is a fast tunnel proxy that helps you bypass firewalls.
+        (base32 "02mp5905nz02d7amb4zc77rcrkxmvy8mf5rci7mvy58g24lvbw25"))
+       (file-name (git-file-name name version))))
+    (inputs
+     `(("openssl" ,openssl)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-crypto-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "shadowsocks/shell.py"
+               (("config\\.get\\('libopenssl', None\\)")
+                (format #f "config.get('libopenssl', ~s)"
+                        (string-append
+                         (assoc-ref inputs "openssl")
+                         "/lib/libssl.so")))))))))
+    (build-system python-build-system)
+    (home-page "https://github.com/shadowsocks/shadowsocks")
+    (synopsis "Fast tunnel proxy that helps you bypass firewalls")
+    (description
+     "This package is a fast tunnel proxy that helps you bypass firewalls.
 
 Features:
 @itemize
@@ -3143,7 +3126,7 @@ Features:
 @item Workers and graceful restart
 @item Destination IP blacklist
 @end itemize")
-      (license license:asl2.0))))
+    (license license:asl2.0)))
 
 (define-public net-snmp
   (package
@@ -3366,7 +3349,7 @@ never see any machines other than the one Dante is running on.")
 (define-public restbed
   (package
     (name "restbed")
-    (version "4.7")
+    (version "4.8")
     (source
      (origin
        (method git-fetch)
@@ -3375,19 +3358,15 @@ never see any machines other than the one Dante is running on.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "055qicb773a599dsqbcz5xf0xj1wpk33mdrkyi0fsmyjmn8d2p9d"))))
+        (base32 "15j09x36i6zj6innl0w1mfzlc56qmjwrs82my8dsagqa2ikd08ya"))))
     (build-system cmake-build-system)
     (inputs
-     `(("asio" ,asio-1.12)
+     `(("asio" ,asio)
        ("catch" ,catch-framework)
        ("openssl" ,openssl)))
     (arguments
-     `(#:tests? #f
-       #:configure-flags
-       '("-DBUILD_TESTS=NO"
-         "-DBUILD_EXAMPLES=NO"
-         "-DBUILD_SSL=NO"
-         "-DBUILD_SHARED=NO")
+     `(#:configure-flags
+       '("-DBUILD_SSL=NO")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'apply-patches-and-fix-paths
@@ -3709,14 +3688,14 @@ written (and providing API) in C.  Current implementation covers YANG 1.0 (RFC
 (define-public batctl
   (package
    (name "batctl")
-   (version "2021.3")
+   (version "2021.4")
    (source
     (origin
      (method url-fetch)
      (uri (string-append "https://downloads.open-mesh.org/batman/releases/batman-adv-"
                          version "/batctl-" version ".tar.gz"))
      (sha256
-      (base32 "087w8xxxpqxs5cz4aj4l9wzbh0ga8163nh7qy44ld2lgqbplnbzj"))))
+      (base32 "1ryqz90av2p5pgmmpi1afmycd18zhpwz1i4f7r0s359jis86xndn"))))
    (inputs
     `(("libnl" ,libnl)))
    (native-inputs
@@ -4004,14 +3983,14 @@ thousands of connections is clearly realistic with today's hardware.")
 (define-public lldpd
   (package
     (name "lldpd")
-    (version "1.0.12")
+    (version "1.0.13")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://media.luffy.cx/files/lldpd/lldpd-"
                            version ".tar.gz"))
        (sha256
-        (base32 "1wfs50b0694dm60ryjfmxgkxxsqpp9sxqbc4laad364wbddwd56i"))
+        (base32 "00a7v24qhxw80yk2v79wrkfn7br4r8pcajyrpz8j0xx2v1zq4ffn"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -4122,7 +4101,7 @@ network.")
 (define-public yggdrasil
   (package
     (name "yggdrasil")
-    (version "0.3.16")
+    (version "0.4.1")
     (source
      (origin
        (method git-fetch)
@@ -4133,7 +4112,7 @@ network.")
          (recursive? #t)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0vyd7a333hwn6j1lv1g9sicw74a4qk982bsi3cfdhjlv6hsjwmil"))
+        (base32 "1ajhn0z58ap9jldip7mqj78drmgg4645zfsxsy004cfkm60fasnx"))
        (patches (search-patches "yggdrasil-extra-config.patch"))))
     (build-system go-build-system)
     (arguments
@@ -4141,50 +4120,58 @@ network.")
        ;; TODO: figure out how tests are run
        #:tests? #f
        #:install-source? #f
-       #:phases (modify-phases %standard-phases
-                  (replace 'build
-                    (lambda _
-                      (for-each
-                       (lambda (c)
-                         (invoke
-                          "go" "build" "-v" "-ldflags=-s -w"
-                          (string-append
-                           "github.com/yggdrasil-network/yggdrasil-go/cmd/" c)))
-                       (list "yggdrasil" "yggdrasilctl"))
-                      #t))
-                  (replace 'install
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (let* ((out (assoc-ref outputs "out"))
-                             (bin (string-append out "/bin/"))
-                             (doc (string-append out "/share/doc/yggdrasil/")))
-                        (mkdir-p bin)
-                        (for-each
-                         (lambda (f)
-                           (install-file f bin))
-                         (list "yggdrasil" "yggdrasilctl"))
-                        (mkdir-p doc)
-                        (copy-recursively
-                         (string-append
-                          "src/github.com/yggdrasil-network/yggdrasil-go/"
-                          "doc/yggdrasil-network.github.io")
-                         doc))
-                      #t)))))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'build
+           (lambda* (#:key import-path build-flags #:allow-other-keys)
+             (for-each
+               (lambda (directory)
+                 ((assoc-ref %standard-phases 'build)
+                  #:build-flags build-flags
+                  #:import-path directory))
+               (list "github.com/yggdrasil-network/yggdrasil-go/cmd/yggdrasil"
+                     "github.com/yggdrasil-network/yggdrasil-go/cmd/yggdrasilctl"
+                     "github.com/yggdrasil-network/yggdrasil-go/cmd/genkeys"))
+             #t)))))
     ;; https://github.com/kardianos/minwinsvc is windows only
     (propagated-inputs
-     `(("go-github-com-arceliar-phony" ,go-github-com-arceliar-phony)
-       ("go-github-com-cheggaaa-pb" ,go-github-com-cheggaaa-pb)
-       ("go-github-com-gologme-log" ,go-github-com-gologme-log)
-       ("go-github-com-hashicorp-go-syslog" ,go-github-com-hashicorp-go-syslog)
-       ("go-github-com-hjson-hjson-go" ,go-github-com-hjson-hjson-go)
-       ("go-github-com-kardianos-minwinsvc" ,go-github-com-kardianos-minwinsvc)
+     `(;;("go-golang-zx2c4-com-wireguard-windows"
+       ;; ,go-golang-zx2c4-com-wireguard-windows)
+       ("go-golang-zx2c4-com-wireguard"
+        ,go-golang-zx2c4-com-wireguard)
+       ("go-golang-org-x-text" ,go-golang-org-x-text)
+       ("go-golang-org-x-sys" ,go-golang-org-x-sys)
+       ("go-golang-org-x-net" ,go-golang-org-x-net)
+       ("go-golang-org-x-crypto"
+        ,go-golang-org-x-crypto)
+       ("go-netns"
+        ,go-netns)
+       ("go-netlink"
+        ,go-netlink)
        ("go-github-com-mitchellh-mapstructure"
         ,go-github-com-mitchellh-mapstructure)
-       ("go-golang-org-x-crypto" ,go-golang-org-x-crypto)
-       ("go-golang-org-x-net" ,go-golang-org-x-net)
-       ("go-golang-org-x-text" ,go-golang-org-x-text)
-       ("go-golang-zx2c4-com-wireguard" ,go-golang-zx2c4-com-wireguard)
-       ("go-netlink" ,go-netlink)
-       ("go-netns" ,go-netns)))
+       ("go-github-com-mattn-go-runewidth"
+        ,go-github-com-mattn-go-runewidth)
+       ("go-github-com-mattn-go-isatty"
+        ,go-github-com-mattn-go-isatty)
+       ("go-github-com-kardianos-minwinsvc"
+        ,go-github-com-kardianos-minwinsvc)
+       ("go-github-com-hjson-hjson-go"
+        ,go-github-com-hjson-hjson-go)
+       ("go-github-com-hashicorp-go-syslog"
+        ,go-github-com-hashicorp-go-syslog)
+       ("go-github-com-gologme-log"
+        ,go-github-com-gologme-log)
+       ("go-github-com-fatih-color"
+        ,go-github-com-fatih-color)
+       ("go-github-com-cheggaaa-pb-v3"
+        ,go-github-com-cheggaaa-pb-v3)
+       ("go-github-com-vividcortex-ewma"
+        ,go-github-com-vividcortex-ewma)
+       ("go-github-com-arceliar-phony"
+        ,go-github-com-arceliar-phony)
+       ("go-github-com-arceliar-ironwood"
+        ,go-github-com-arceliar-ironwood)))
     (home-page "https://yggdrasil-network.github.io/blog.html")
     (synopsis
      "Experiment in scalable routing as an encrypted IPv6 overlay network")

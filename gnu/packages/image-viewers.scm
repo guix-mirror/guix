@@ -22,6 +22,7 @@
 ;;; Copyright © 2021 jgart <jgart@dismail.de>
 ;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2021 Zheng Junjie <873216071@qq.com>
+;;; Copyright © 2021 dissent <disseminatedissent@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -50,6 +51,7 @@
   #:use-module (guix build-system python)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages algebra)
+  #:use-module (gnu packages backup)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages boost)
@@ -73,6 +75,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages pdf)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages photo)
@@ -494,7 +497,7 @@ needs.")
 (define-public viewnior
   (package
     (name "viewnior")
-    (version "1.7")
+    (version "1.8")
     (source
       (origin
         (method git-fetch)
@@ -503,8 +506,7 @@ needs.")
                (commit (string-append name "-" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32
-          "0y4hk3vq8psba5k615w18qj0kbdfp5w0lm98nv5apy6hmcpwfyig"))))
+         (base32 "14qvx1wajncd5ab0207274cwk32f4ipfnlaci6phmah0cwra2did"))))
     (build-system meson-build-system)
     (arguments
      '(#:phases
@@ -525,7 +527,7 @@ needs.")
      `(("exiv2" ,exiv2)
        ("gdk-pixbuf" ,gdk-pixbuf)
        ("gtk+-2" ,gtk+-2)))
-    (home-page "http://siyanpanayotov.com/project/viewnior")
+    (home-page "https://siyanpanayotov.com/project/viewnior")
     (synopsis "Simple, fast and elegant image viewer")
     (description "Viewnior is an image viewer program.  Created to be simple,
 fast and elegant.  Its minimalistic interface provides more screenspace for
@@ -940,6 +942,49 @@ brightness/contrast/gamma correction, pan with keyboard and mouse, flip,
 rotate left/right, jump/forward/backward images, filename filter and use it
 to set X desktop background.")
     (license license:gpl2)))
+
+(define-public pqiv
+  (package
+    (name "pqiv")
+    (version "2.12")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/phillipberndt/pqiv")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "18nvrqmlifh4m8nfs0d19sb9d1l3a95xc89qxqdr881jcxdsgflw"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("ffmpeg" ,ffmpeg)
+       ("gtk+" ,gtk+)
+       ("imagemagick" ,imagemagick)
+       ("libarchive" ,libarchive)
+       ("libspectre" ,libspectre)
+       ("libwebp" ,libwebp)
+       ("poppler" ,poppler)))
+    (arguments
+     `(#:tests? #f                      ;no tests
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))           ;no configure script
+       #:make-flags
+       (list
+        (string-append "PREFIX=" (assoc-ref %outputs "out"))
+        (string-append "CC=" ,(cc-for-target))
+        (string-append "PKG_CONFIG=" ,(pkg-config-for-target)))))
+    (home-page "https://www.pberndt.com/Programme/Linux/pqiv")
+    (synopsis "Powerful image viewer with minimal UI")
+    (description
+     "pqiv is a GTK-3 based command-line image viewer with a minimal UI.
+It is highly customizable, can be fully controlled from scripts, and has
+support for various file formats including PDF, Postscript, video files and
+archives.")
+    (license license:gpl3+)))
 
 (define-public nomacs
   (package

@@ -10,6 +10,7 @@
 ;;; Copyright © 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
+;;; Copyright © 2021 Marius Bakke <marius@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -113,7 +114,7 @@
   (url          distribution-url)                  ;string
   (digests      distribution-digests)              ;list of string pairs
   (file-name    distribution-file-name "filename") ;string
-  (has-signature? distribution-has-signature? "hash_sig") ;Boolean
+  (has-signature? distribution-has-signature? "has_sig") ;Boolean
   (package-type distribution-package-type "packagetype") ;"bdist_wheel" | ...
   (python-version distribution-package-python-version
                   "python_version"))
@@ -533,10 +534,14 @@ VERSION, SOURCE-URL, HOME-PAGE, SYNOPSIS, DESCRIPTION, and LICENSE."
          (guard (c ((missing-source-error? c) #f))
            (let* ((info    (pypi-project-info pypi-package))
                   (version (project-info-version info))
-                  (url     (distribution-url
-                            (source-release pypi-package))))
+                  (dist    (source-release pypi-package))
+                  (url     (distribution-url dist)))
              (upstream-source
               (urls (list url))
+              (signature-urls
+               (if (distribution-has-signature? dist)
+                   (list (string-append url ".asc"))
+                   #f))
               (input-changes
                (changed-inputs package
                                (pypi->guix-package pypi-name)))

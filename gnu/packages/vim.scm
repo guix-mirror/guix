@@ -476,7 +476,7 @@ trouble using them, because you do not have to remember each snippet name.")
 (define-public vim-fugitive
   (package
     (name "vim-fugitive")
-    (version "3.4")
+    (version "3.6")
     (source
       (origin
         (method git-fetch)
@@ -485,8 +485,7 @@ trouble using them, because you do not have to remember each snippet name.")
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32
-          "0vgyp0rabrxjy9mpdnf221vjk3q38pls7az884gvnjjzdly18xmp"))))
+         (base32 "17c3wzqkbzbf0nmlxpgk90yyv3d09209fqxqysand8bzb1cbfwzn"))))
     (build-system copy-build-system)
     (arguments
      '(#:install-plan
@@ -1294,6 +1293,36 @@ a sidebar that displays the ctags-generated tags of the current file, ordered
 by their scope.  This means that for example methods in C++ are displayed under
 the class they are defined in.")
     (license license:vim)))
+
+(define-public vim-nerdtree
+  (package
+    (name "vim-nerdtree")
+    (version "6.10.16")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/preservim/nerdtree")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1si8qla86ng8cffbmfrk9gss0i3912yw0f1ph4bsiq0kk837lccp"))))
+    (build-system copy-build-system)
+    (arguments
+     '(#:install-plan
+       '(("autoload" "share/vim/vimfiles/")
+         ("doc" "share/vim/vimfiles/")
+         ("lib" "share/vim/vimfiles/")
+         ("nerdtree_plugin" "share/vim/vimfiles/")
+         ("plugin" "share/vim/vimfiles/")
+         ("syntax" "share/vim/vimfiles/"))))
+    (home-page "https://github.com/preservim/nerdtree")
+    (synopsis "Tree explorer plugin for Vim")
+    (description
+     "The NERDTree is a file system explorer for the Vim editor.  Using this
+plugin, users can visually browse complex directory hierarchies, quickly open
+files for reading or editing, and perform basic file system operations.")
+    (license license:wtfpl2)))
 
 (define-public vim-nerdcommenter
   (let ((commit "a65465d321f2f8a74b2ffa540b9b87563f7e12e8")

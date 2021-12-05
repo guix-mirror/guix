@@ -16,6 +16,7 @@
 ;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;; Copyright © 2021 Andrew Tropin <andrew@trop.in>
+;; Copyright © 2021 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;
 ;; Copying and distribution of this file, with or without modification, are
 ;; permitted in any medium without royalty provided the copyright notice and
@@ -23,6 +24,20 @@
 
 (channel-news
  (version 0)
+
+ (entry (commit "52cb5cf5b852117b5151a67af187d80764849ad3")
+        (title
+          (en "Icedove 91: profile folder moved to @file{~/.thunderbird}")
+          (de "Icedove 91: Profilordner jetzt unter @file{~/.thunderbird}"))
+        (body
+          (en "Icedove 91 expects your profile folder under @file{~/.thunderbird}.
+You need to manually copy your Icedove profiles from @file{~/.icedove} to
+@file{~./thunderbird}.  It may be required to start Icedove with
+@option{--ProfileManager} for the first time after the migration.")
+          (de "Icedove 91 erwartet Ihren Profilordner unter @file{~/.thunderbird}.
+Dafür müssen sie Ihre Icedove-Profile von @file{~/.icedove} nach
+@file{~/.thunderbird} kopieren.  Eventuell muss Icedove das erste Mal nach der
+Migration mit @option{--ProfileManager} gestartet werden.")))
 
  (entry (commit "746584e0ca200e7bf51b139ceb36c19ea81d6ef1")
         (title

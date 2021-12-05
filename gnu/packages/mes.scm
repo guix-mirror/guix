@@ -4,6 +4,7 @@
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
+;;; Copyright © 2021 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -97,14 +98,14 @@ extensive examples, including parsers for the Javascript and C99 languages.")
 (define-public nyacc
   (package
     (inherit nyacc-0.99)
-    (version "1.04.0")
+    (version "1.05.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/nyacc/nyacc-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0m3mcdaslvvr2iav8ga146hzsja2hdj4656pszljb4q2q7h25ip5"))
+                "1ck3gyzln5dhamp317nv3waych12mczj05dm4wdblij6ab0l4863"))
               (modules '((guix build utils)))
               (snippet
                '(begin

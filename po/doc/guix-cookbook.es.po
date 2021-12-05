@@ -72,7 +72,7 @@ msgstr "Los desarrolladores de GNU Guix"
 #: guix-git/doc/guix-cookbook.texi:49
 #, no-wrap
 msgid "Top"
-msgstr "Top"
+msgstr "Arriba"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:56

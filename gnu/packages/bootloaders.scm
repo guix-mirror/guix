@@ -509,6 +509,12 @@ tree binary files.  These are board description files used by Linux and BSD.")
   ;; https://lists.denx.de/pipermail/u-boot/2021-October/462728.html
   (search-patch "u-boot-allow-disabling-openssl.patch"))
 
+(define %u-boot-rk3399-enable-emmc-phy-patch
+  ;; Fix emmc boot on rockpro64 and pinebook-pro, this was a regression
+  ;; therefore should hopefully be fixed when updating u-boot.
+  ;; https://lists.denx.de/pipermail/u-boot/2021-November/466329.html
+  (search-patch "u-boot-rk3399-enable-emmc-phy.patch"))
+
 (define u-boot
   (package
     (name "u-boot")
@@ -517,7 +523,8 @@ tree binary files.  These are board description files used by Linux and BSD.")
 	      (patches
                (list %u-boot-rockchip-inno-usb-patch
                      %u-boot-allow-disabling-openssl-patch
-                     %u-boot-sifive-prevent-relocating-initrd-fdt))
+                     %u-boot-sifive-prevent-relocating-initrd-fdt
+                     %u-boot-rk3399-enable-emmc-phy-patch))
               (method url-fetch)
               (uri (string-append
                     "https://ftp.denx.de/pub/u-boot/"

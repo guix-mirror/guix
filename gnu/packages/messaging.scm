@@ -2515,13 +2515,13 @@ QMatrixClient project.")
 (define-public hangups
   (package
     (name "hangups")
-    (version "0.4.14")
+    (version "0.4.15")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "hangups" version))
        (sha256
-        (base32 "15qbbafcrdkx73xz9y30qa3d8nj6mgrp2m41749i5nn1qywmikk8"))))
+        (base32 "1fa58m6zgvsawp2h1maj82wn6lpdllhbficmcjm78n5bg1hv7f4m"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -2531,13 +2531,11 @@ QMatrixClient project.")
            (lambda _
              (substitute* "setup.py"
                (("==") ">=")
-               ((",<.*'") "'"))
-             #t))
+               ((",<.*'") "'"))))
          (replace 'check
            (lambda* (#:key tests? #:allow-other-keys)
              (when tests?
-               (invoke "pytest" "hangups"))
-             #t)))))
+               (invoke "pytest" "hangups")))))))
     (propagated-inputs
      `(("python-aiohttp" ,python-aiohttp)
        ("python-appdirs" ,python-appdirs)
@@ -2779,6 +2777,41 @@ secrecy, break-in recovery, authentication, integrity, deniability, and
 asynchronicity.")
     (home-page "https://github.com/gkdr/lurch")
     (license license:gpl3+)))
+
+(define-public libphonenumber
+  (package
+   (name "libphonenumber")
+   (version "8.11.3")
+   (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/google/libphonenumber")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "06y3mh1d1mks6d0ynxp3980g712nkf8l5nyljpybsk326b246hg9"))))
+   (arguments
+    `(#:test-target "tests"
+      #:phases
+      (modify-phases %standard-phases
+        (add-after 'unpack 'change-directory
+          (lambda _ (chdir "cpp"))))))
+   (build-system cmake-build-system)
+   (native-inputs
+    `(("googletest" ,googletest)
+      ("pkg-config" ,pkg-config)))
+   (inputs
+    `(("boost" ,boost)
+      ("protobuf" ,protobuf)
+      ("icu4c" ,icu4c)))
+   (synopsis "Library for parsing and using phone numbers")
+   (description
+    "This package provides a C++ library for parsing, formatting, and
+validating international phone numbers.")
+   (home-page "https://github.com/google/libphonenumber")
+   (license license:asl2.0)))
+
 
 (define-public chatty
  (package

@@ -13,7 +13,7 @@
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2019, 2020 Adrian Malacoda <malacoda@monarch-pass.net>
-;;; Copyright © 2020 Jonathan Brielmaier <jonathan.brielmaier@web.de>
+;;; Copyright © 2020, 2021 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2021 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
@@ -765,6 +765,7 @@ in C/C++.")
     (origin
       (method computed-origin-method)
       (file-name (string-append "icecat-" %icecat-version ".tar.xz"))
+      (patches (search-patches "icecat-CVE-2021-43527.patch"))
       (sha256 #f)
       (uri
        (delay
@@ -1334,290 +1335,13 @@ standards of the IceCat project.")
        (cpe-name . "firefox_esr")
        (cpe-version . ,(first (string-split version #\-)))))))
 
-(define mozilla-78-compare-locales
-  (origin
-    (method hg-fetch)
-    (uri (hg-reference
-          (url "https://hg.mozilla.org/l10n/compare-locales/")
-          (changeset "RELEASE_8_0_0")))
-    (file-name "mozilla-compare-locales")
-    (sha256 (base32 "0052wq92sg4i776x407b5838jx9h3phl9xy69m2q34f31n3gdyk2"))))
-
-(define all-mozilla-78-locales
-  (mozilla-locales
-   ;;                      sha256                            changeset    locale
-   ;;---------------------------------------------------------------------------
-   ("1q1p7nl97478hkf1msbbcdh98k6fn87xwqihbw8np00ll5gk9k4v" "97cf3c155484" "ach")
-   ("0sajpblp639l448xywx7xlybjr5dm0rfrzx511a8pa9wn7dma4mf" "46929b4dda4e" "af")
-   ("04s756aaf1yyli1dn1vfdjymgyjs1pz2n7jvz76j27x4nzdgss7l" "96ffd2b04ba3" "an")
-   ("16nw7slm7irsnjf81r6zl273kbzri8sdbimzgzxwm0vh6xr61rgs" "1c4231166ddf" "ar")
-   ("0i0qrj4j8zjv55cisbmr21dp8mz933hc9wkpn3abz5k5pn84gpry" "bc4384b8be78" "ast")
-   ("1r77mmwg9x1jfa7g5lqa31rgyfrnix1zj80ibn5rq9gyhhsdrwbd" "dd56aead51fa" "az")
-   ("1kzjpy5bnvps8di72ksynhbhc9bpw1ml6hvphm74z8dz55ai4c18" "9d2bff64ddfb" "be")
-   ("1fygvjgph3siknfm7l0fh9y4ava72z1rxkip1zgmcdgq7jz8wzpf" "3808f4fe4db6" "bg")
-   ("1x9nlqia441xh04rhkmkw6qrgpwnyqw0grrf5n2qw96939wnmgl7" "5ca8752ed8df" "bn")
-   ("18yyxqzab44bgqx7h052d5nxyhv0l5bidgr16z1b3ak2crsfyx9q" "4c5d30ca9bf2" "br")
-   ("11bschjz7pgsm4r1qan5l4s3nkzm5jb0kivpp186wd1xsjci5bjb" "cf2478a7eae1" "bs")
-   ("12bak64nl6qi092l55xv330vh38mfsicrrf4wi693nn7zqb3mbpw" "4aa2cc349211" "ca")
-   ("0p97d7pnxqs971rr5c57i6cw3mx1mp3iasa0xdmdk0zpz9pjd3s4" "806914072144" "ca-valencia")
-   ("1rligf98h9r16mw3r3n5jalzi74xn2dnh6hkiixp7s2bvhjicwa4" "db2163383129" "cak")
-   ("18y5j8ljh72mj2nbx0m64mi3fyjbwyx992i004sv3zvs4d4z18w4" "d1d09eedddde" "cs")
-   ("12i4m9q6f8sl8arm8ja4gs4sl9m59p3kddlqi68srpz9mk66rqxz" "1caf58c64227" "cy")
-   ("16wacsd23zd4j0yi6vbj033wylia8hlpswx949x5hy1h9817j4vn" "9ef3b56aa243" "da")
-   ("1ddxnqpfi1wnciwmzkvvjinb51h22bg70r0dn7db17q64p4271rk" "a050b0eaec0a" "de")
-   ("0gw5h52rw3bc2lwffnv845sjwwj22gmabchmpa1rw2y6087dc7zk" "613135cb0759" "dsb")
-   ("0v17da37w1kbs73i6xql4c9xng6rfachyylpy3w8hpibpvi7i30n" "903db7c76b31" "el")
-   ("0ky1nj4kp070nriw0igsa64l39plcv2365zl8lqpbydyp6clwc3m" "6bb74673e9aa" "en-CA")
-   ("15jck6si2l4h5lrs8zjx56y97p70njpi26nnq6xfmvj1dk5qb4g2" "c06bd83a9295" "en-GB")
-   ("1gc400n8j8qk70vdw7fkf4m9yviia35cmj6361pxnyvsjrgm4qvm" "ae0fda5114c4" "eo")
-   ("0y01lahdrd3krsh6nrr3iw36r2x4advh5qw54vf92w11l3aiyvfz" "0c294dc9ce40" "es-AR")
-   ("16jjbsfa62dxk36ccziv7nmh26c1s0b05960in6zs5nnfrv4yh35" "7c30b2981fb4" "es-CL")
-   ("0qh8c8f8dsv1v56n1mcpn84l39bpnqfl8v8iacq12zh322srr549" "ad1444f4f833" "es-ES")
-   ("1vh3hm5r4ch6mk3ymbk12b9rppwc75fmbi0i7cml82kxsi77bzw5" "0a26cdb23536" "es-MX")
-   ("159l92jxx48lgba1g8ig3mdzhwsf3jpg3nx1g9blq4majk5hqr6q" "65a38a830795" "et")
-   ("1ha8y1wbgb66dqm26x1q2xwygy7bblkjz40y9vh5d2qlpr3fn0av" "21e0930b221d" "eu")
-   ("0rq4pcw6klm0bbljm1wdfvna8bpa35cm47hh2s63i2xdax4scahf" "5a4bb020cf09" "fa")
-   ("1py2594gsvpgrxnplz278ffb7grsf384kzjskrl1zyps0jw8fb1x" "4a4f712cd4aa" "ff")
-   ("1dyd55ngsglp1w2gh0yaacwb0vsq23gdvnj76f2x6g39h1li9s0z" "9c51cd915e2b" "fi")
-   ("0kimwivpq6pr63jh1k9fszsv8bi8vns3scg76mmnvbhh2ca8q7wj" "4f9e24a696ee" "fr")
-   ("1sbbnnp12lgy5qan2kix02942830b1969bd7jxrv7piwqfch9i06" "9e21a0eeb5b1" "fy-NL")
-   ("0dsvvyfrzkx5h44gqgdci7arb8h4lq48w20cnr8fc7j17grvnkzz" "999a995bc09d" "ga-IE")
-   ("1487msbsgrfzmyijhf6a4wbqdjpd7b7ki9nwrjjjjlnbw0h0ljpb" "6a9ddcab3240" "gd")
-   ("1kzc4fwr18kgisdzba2acj1ag8mxbifqpk5p30jv68nmvqfsvl8d" "51eb5e352db9" "gl")
-   ("13gy3wn44kcxr7j3sbl69fp415875f4vb0gm91hx0fysqlvryhcs" "b9de1ffe3224" "gn")
-   ("0w5nvzpjn5vr35c1852rlff581vpy71nc096cz125852kyqkzkc3" "5b3307475ada" "gu-IN")
-   ("1ycakc4qpy9vcy50j3ricryjfnjr9v3a5ijj6bbfl4y6aks157fy" "c742df968ffd" "he")
-   ("1b2jf83c500wm5wcdnijq0b7y4m8n6271smq8pygahn5nq17f0gq" "1a3039a52b8a" "hi-IN")
-   ("19bbw8ix5m83cf4yarcmjl7jqa8xfabwqnh3nj6vi52rwvn7whk5" "8dc50e269ef3" "hr")
-   ("12rrsvgg6bb2h8fhni7jbx8pv983q8ym5fhfjim957n9q2yp5db6" "67e40f48dec7" "hsb")
-   ("0apyh713p3hrlj8041xwblcssahbmsqp9v9hbmb50ayf4z850kr1" "40073a597b1b" "hu")
-   ("0q0r076lq250d3vmnz9d92wj137c2v8i362c2avmkgp5zr3mcl0z" "2ea33335afdb" "hy-AM")
-   ("0qza33gdc1i9259dwd2f7vd78s0a6rg34aqdkhcn7f2l6ybw6xd6" "930041db15eb" "ia")
-   ("1211h0gp7gianh3qf76w04gfzk4n2bnyc9i8dviyz0vh4cjbx11m" "08811a49b41c" "id")
-   ("12lcr841g1j7453s7gb51vrvxmshx4ha3h1jx4vh8wr891xv8l6a" "2f7a8d31e0ba" "is")
-   ("1x585g0r2kcv0d3phnxx85bk5g0pi1yl0hwp4idv19yc9hslr04s" "188357cc04b4" "it")
-   ("09v35g9v7j6x0p1hggydm3a1rmq2fh4z7g1l88z3w5k6wq2nhj1b" "45cee0ba4771" "ja")
-   ("0prs3vycfvvaffjigdgyxiq41ak2rc34lnan5a6cwdqjgy7z450s" "d60a19d9bf17" "ja-JP-mac")
-   ("1nskzm8rgczrbgcxlzzq5zqdfd456ad0cylq27nf0wjiyq6kjzcm" "00cb00e78672" "ka")
-   ("0g6zznmhiam172nm7g2qzfpk415mna8kiihm73z2sdns64xb3ymg" "77a293a4bced" "kab")
-   ("17dld9lrym7rpvpvnkssivp4wx1f11zpk86wczbq1h52qgd70p55" "2c9b33a56d5d" "kk")
-   ("1nlzl8930c8ql3yq425wyqlxvq8arrjv20xpm5g7yfxd54av89ac" "9cddd42af05c" "km")
-   ("07hkrcdksvrqk816yimd036dlw15nc4sjk4gmw16ywbp093v0mqq" "e0c2969a8398" "kn")
-   ("08aqggvk3qbv5bzks9i1iba9akhkpm01d2c9k0zf41mpr2r5yfg2" "827567d0dafc" "ko")
-   ("0vagaiwy80bs1k3gkacshlzb5zchkcshx0ypwirvayc63sw4yl8l" "694b2a24e868" "lij")
-   ("1r43kp1kzahrbza0hiyavqplk9h08pzsb6rpjy79jr6l1iqb89sy" "d6728db7e060" "lt")
-   ("0sq2wbsj79xl7fi454k6q5xdhxyck1whjz315rv37vphqpx86b9b" "61e9b33f4d94" "lv")
-   ("0q8jxg1af22hs9wjdf0jd3bqk4rafxyzvsjl35k75am7l2y1fl3c" "9e482f6dd72c" "mk")
-   ("1zsfzjrzbc58d30a9yz12h5vphywgpw8xg6y6zn3677a785dvr20" "1fd2763336a4" "mr")
-   ("1rzygkkpn1a59daygd3hdaqph2np6sqvpgh68j0xr4il958ymnsm" "67ddab62dab4" "ms")
-   ("16jp6w5gizfxs7jvncg3ly13m59vqvh4rlmjd0q23m5g5ff9sklc" "3ed015b51bf3" "my")
-   ("1wfv023j67lb4iyf49fsknwm4z3xy0xqcf25b2nzanggxj26n01x" "d01801233a8f" "nb-NO")
-   ("1946vfia58vbjfippb5pfsskbjj95w7hb340smn6ry2vmza99mxp" "582defb08fb2" "ne-NP")
-   ("12w5ywh4c3s55y3zqc48cp1gcpwwjg444yfh1bghhhb9ni1xkh5i" "05f6359a29a6" "nl")
-   ("17jb076320cgkw1ypwmws2vjxsqlv2ww8aaisa3j334vbrw1m4zx" "50b41a1ddded" "nn-NO")
-   ("1y840j0v5zdgj94cbacy6j1snf44rynmzxq3yk8i26arcar62akl" "a6a138531a44" "oc")
-   ("0jq1hq4xhqxpa26r8pb1bgbaljgfkhn9l6p5pbnslkllpbh70q6l" "e70a3afaef25" "pa-IN")
-   ("1hih138skwy2gb8q10ngg6zalrk3aa3d549mg79gqzxbi5zy19fw" "e035f33389eb" "pl")
-   ("1hhif4hx4k351wm1bzykzycfzb5q8msxmiwh5r1cy32rh8wkxwhh" "54098495f37f" "pt-BR")
-   ("0gkjs12rxjml1m3mljskpz1gr6aph0c31nwpwdqybfg54w9qslib" "3fdf021f624e" "pt-PT")
-   ("0anyvwd9v6mr8y3ww33s6qnxkawqn5lz65vrxx3m3kzky63ai1xk" "794f9374eb87" "rm")
-   ("1p4drj25gsfv7lwgm5saazh38iqrh53952n8i4bmxpn0nadbm2n5" "71ce18bcf6cc" "ro")
-   ("17yssf4axd3zvncl4ka4wkfnwcn0z0arp3390vb9cps67na29p36" "3a9587227699" "ru")
-   ("0xk6rksspcw1222v4rgk5a6gzrpx64k29hm7p9qkqwd70s34yj46" "c020582a72ce" "si")
-   ("1ax5ibydyn7sj208r66zcxlcr8dxdqrw28vqyjif4jx583rp4lfp" "745a699b7f51" "sk")
-   ("13rin7hm1dv8g0hbcv8mp2hiwpk1k5bhzvkqpqajkkik4lx523mc" "8e437e2351ef" "sl")
-   ("0yh5jkl5zw3f7x1w2w6zfj3dyvcl4wj1zv4di7qsq2nl2yyizf7x" "2d99e2eff94f" "son")
-   ("0vzq7s27jsdbw5k59wfykysg1kd8w229ab5d4zjdf30l59igkahh" "69bbdf07bd80" "sq")
-   ("1mwivvs8vrk6vjq6i33kwlrlisra7dy35521ayps9p2rz2dll4rr" "215df5c5125c" "sr")
-   ("0g97yz1rg5cfflj8vvq3sqliyvm06x818z9yldfh5rjg1y6n9fjd" "8be00a1a50d4" "sv-SE")
-   ("0ii02jn3lh2i6d0s95whx9aj6w3x8axc7w1rlzj0lc2s9n52krz3" "170a84339dbe" "ta")
-   ("1ss7symad2crapxjqc0xhc0n17l79r5vf7flvkgk7npjky4vb7nv" "72a79a304f7f" "te")
-   ("11iqmg8zamgscnvs4n2xpw3g9azn6w38qs313wiwm86pyx6694ss" "8e91ce3064c5" "th")
-   ("1zgkvn9flb8by62ip9r3gmpgxwgkww1zhml5mwa0djq3ppfdgi1c" "0f914d0cda56" "tl")
-   ("1filkhdak6dbrd83q602x1qw1703nlm53nm9gcyab8s16gsx6ylz" "62ca6a8eaeba" "tr")
-   ("0cgagdy0ixprk3knczdmkqxkmx4ybmshhh0956kxbd0iab0dfcf6" "f110ccac4cde" "trs")
-   ("1f1ghk67zwnwc5x3nk82vcv94nf8glngkfya1hg074q3088sj9pa" "56c0102d5f1c" "uk")
-   ("0iyw1b2jjylkdwxv9sxvj4ikxl64sx612b2dvvmf1di8bw86w74r" "7d53bce5ae98" "ur")
-   ("1q83cp5pfgs8l03zirwi8r5qp8qyh4zvxdx1ilgaqqlyg42yql7c" "9b500e1a054d" "uz")
-   ("1d4nkybz2hk64ay04k965b9lc5nhhpmzcs5ww3b6q4n93rf9c2z7" "2a000025928a" "vi")
-   ("1cnrsfnyl3sw3sxsggmjwydvphb2diy0vzknvxdhpnvq3ln18hga" "74724087c25b" "xh")
-   ("1j6l66v1xw27z8w78mpsnmqgv8m277mf4r0hgqcrb4zx7xc2vqyy" "527e5e090608" "zh-CN")
-   ("1frwx35klpyz3sdwrkz7945ivb2dwaawhhyfnz4092h9hn7rc4ky" "6cd366ad2947" "zh-TW")))
-
-(define %icecat-78-version "78.15.0-guix0-preview1")
-
-(define icecat-78-source
-  (let* ((base-version (first (string-split %icecat-78-version #\-)))
-
-         (major-version (first  (string-split base-version #\.)))
-         (minor-version (second (string-split base-version #\.)))
-         (sub-version   (third  (string-split base-version #\.)))
-
-         (upstream-firefox-version (string-append base-version "esr"))
-         (upstream-firefox-source
-          (origin
-            (method url-fetch)
-            (uri (string-append
-                  "https://ftp.mozilla.org/pub/firefox/releases/"
-                  upstream-firefox-version "/source/"
-                  "firefox-" upstream-firefox-version ".source.tar.xz"))
-            (sha256
-             (base32
-              "0l91cxdc5v9fps79ckb1kid4gw6v5qng1jd9zvaacwaiv628shx4"))))
-
-         (upstream-icecat-base-version "78.7.0") ; maybe older than base-version
-         ;;(gnuzilla-commit (string-append "v" upstream-icecat-base-version))
-         (gnuzilla-commit "abfe5eebaca3c2787f1a9505669393674493c177")
-         (gnuzilla-source
-          (origin
-            (method git-fetch)
-            (uri (git-reference
-                  (url "git://git.savannah.gnu.org/gnuzilla.git")
-                  (commit gnuzilla-commit)))
-            (file-name (git-file-name "gnuzilla"
-                                      ;;upstream-icecat-base-version
-                                      (string-take gnuzilla-commit 8)))
-            (sha256
-             (base32
-              "00ws3540x5whpicc5fx4k949ff73cqvajz6jp13ahn49wqdads47"))))
-
-         ;; 'search-patch' returns either a valid file name or #f, so wrap it
-         ;; in 'assume-valid-file-name' to avoid 'local-file' warnings.
-         (gnuzilla-fixes-patch
-          (local-file (assume-valid-file-name
-                       (search-patch "icecat-use-older-reveal-hidden-html.patch"))))
-         (makeicecat-patch
-          (local-file (assume-valid-file-name
-                       (search-patch "icecat-78-makeicecat.patch")))))
-
-    (origin
-      (method computed-origin-method)
-      (file-name (string-append "icecat-" %icecat-78-version ".tar.xz"))
-      (sha256 #f)
-      (uri
-       (delay
-        (with-imported-modules '((guix build utils))
-          #~(begin
-              (use-modules (guix build utils))
-              (let ((firefox-dir
-                     (string-append "firefox-" #$base-version))
-                    (icecat-dir
-                     (string-append "icecat-" #$%icecat-78-version)))
-
-                (mkdir "/tmp/bin")
-                (set-path-environment-variable
-                 "PATH" '("bin")
-                 (list "/tmp"
-                       #+(canonical-package bash)
-                       #+(canonical-package coreutils)
-                       #+(canonical-package findutils)
-                       #+(canonical-package patch)
-                       #+(canonical-package xz)
-                       #+(canonical-package sed)
-                       #+(canonical-package grep)
-                       #+(canonical-package bzip2)
-                       #+(canonical-package gzip)
-                       #+(canonical-package tar)
-                       #+rename))
-
-                (symlink #+(file-append rename "/bin/rename")
-                         "/tmp/bin/prename")
-
-                ;; We copy the gnuzilla source directory because it is
-                ;; read-only in 'gnuzilla-source', and the makeicecat script
-                ;; uses "cp -a" to copy parts of it and assumes that the
-                ;; copies will be writable.
-                (copy-recursively #+gnuzilla-source "/tmp/gnuzilla"
-                                  #:log (%make-void-port "w"))
-
-                (with-directory-excursion "/tmp/gnuzilla"
-                  (make-file-writable "makeicecat")
-                  (invoke "patch" "--force" "--no-backup-if-mismatch"
-                          "-p1" "--input" #+gnuzilla-fixes-patch)
-                  (invoke "patch" "--force" "--no-backup-if-mismatch"
-                          "-p1" "--input" #+makeicecat-patch)
-                  (patch-shebang "makeicecat")
-                  (substitute* "makeicecat"
-                    (("^FFMAJOR=(.*)" all ffmajor)
-                     (unless (string=? #$major-version
-                                       (string-trim-both ffmajor))
-                       ;; The makeicecat script cannot be expected to work
-                       ;; properly on a different version of Firefox, even if
-                       ;; no errors occur during execution.
-                       (error "makeicecat major version mismatch"))
-                     (string-append "FFMAJOR=" #$major-version "\n"))
-                    (("^FFMINOR=.*")
-                     (string-append "FFMINOR=" #$minor-version "\n"))
-                    (("^FFSUB=.*")
-                     (string-append "FFSUB=" #$sub-version "\n"))
-                    (("^DATA=.*")
-                     "DATA=/tmp/gnuzilla/data\n")
-                    (("/bin/sed")
-                     #+(file-append (canonical-package sed) "/bin/sed"))))
-
-                (format #t "Unpacking upstream firefox tarball...~%")
-                (force-output)
-                (invoke "tar" "xf" #+upstream-firefox-source)
-                (rename-file firefox-dir icecat-dir)
-
-                (with-directory-excursion icecat-dir
-                  (format #t "Populating l10n directory...~%")
-                  (force-output)
-                  (mkdir "l10n")
-                  (with-directory-excursion "l10n"
-                    (for-each
-                     (lambda (locale-dir)
-                       (let ((locale
-                              (string-drop (basename locale-dir)
-                                           (+ 32  ; length of hash
-                                              (string-length "-mozilla-locale-")))))
-                         (format #t "  ~a~%" locale)
-                         (force-output)
-                         (copy-recursively locale-dir locale
-                                           #:log (%make-void-port "w"))
-                         (for-each make-file-writable (find-files locale))
-                         (with-directory-excursion locale
-                           (when (file-exists? ".hgtags")
-                             (delete-file ".hgtags"))
-                           (mkdir-p "browser/chrome/browser/preferences")
-                           (call-with-output-file
-                               "browser/chrome/browser/preferences/advanced-scripts.dtd"
-                             (lambda (port) #f)))))
-                     '#+all-mozilla-78-locales)
-                    (copy-recursively #+mozilla-78-compare-locales
-                                      "compare-locales"
-                                      #:log (%make-void-port "w"))
-                    (delete-file "compare-locales/.gitignore")
-                    (delete-file "compare-locales/.hgignore")
-                    (delete-file "compare-locales/.hgtags"))
-
-                  (format #t "Running makeicecat script...~%")
-                  (force-output)
-                  (invoke "bash" "/tmp/gnuzilla/makeicecat"))
-
-                (format #t "Packing IceCat source tarball...~%")
-                (force-output)
-                (invoke "tar" "cfa" #$output
-                        ;; Avoid non-determinism in the archive.  We set the
-                        ;; mtime of files in the archive to early 1980 because
-                        ;; the build process fails if the mtime of source
-                        ;; files is pre-1980, due to the creation of zip
-                        ;; archives.
-                        "--mtime=@315619200" ; 1980-01-02 UTC
-                        "--owner=root:0"
-                        "--group=root:0"
-                        "--sort=name"
-                        icecat-dir)
-
-                #t))))))))
-
 ;; Update this together with icecat!
-(define %icedove-build-id "20211008000000") ;must be of the form YYYYMMDDhhmmss
+(define %icedove-build-id "20211119000000") ;must be of the form YYYYMMDDhhmmss
 (define-public icedove
   (package
     (name "icedove")
-    (version "78.15.0")
-    (source icecat-78-source)
+    (version "91.3.2")
+    (source icecat-source)
     (properties
      `((cpe-name . "thunderbird_esr")))
     (build-system gnu-build-system)
@@ -1635,7 +1359,6 @@ standards of the IceCat project.")
              (mkdir "comm")
              (copy-recursively (assoc-ref inputs "thunderbird-sources")
                                "comm")
-             (delete-file-recursively "obj-x86_64-pc-linux-gnu")
              (delete-file "sourcestamp.txt")
              #t))
          (add-after 'patch-source-shebangs 'patch-cargo-checksums
@@ -1657,14 +1380,12 @@ standards of the IceCat project.")
          (add-after 'patch-source-shebangs 'fix-profile-setting
            (lambda _
              (substitute* "comm/mail/moz.configure"
-               (("'MOZ_DEDICATED_PROFILES', True")
-                "'MOZ_DEDICATED_PROFILES', False"))
+               (("MOZ_DEDICATED_PROFILES, True")
+                "MOZ_DEDICATED_PROFILES, False"))
              #t))
          (add-after 'prepare-thunderbird-sources 'rename-to-icedove
            (lambda _
              (substitute* "comm/mail/confvars.sh"
-               (("MOZ_APP_BASENAME=Thunderbird")
-                "MOZ_APP_BASENAME=Icedove\nMOZ_APP_DISPLAYNAME=Icedove")
                (("MOZ_APP_NAME=thunderbird")
                 "MOZ_APP_NAME=icedove")
                (("MOZ_UPDATER=1")
@@ -1708,7 +1429,8 @@ standards of the IceCat project.")
                               "enterprisepolicies/schemas/moz.build")
                  (("Thunderbird") "Icedove")))
              (substitute* '("comm/mailnews/base/prefs/content/accountUtils.js"
-                            "comm/common/src/customizeToolbar.js")
+                            "comm/mail/base/content/customizeToolbar.js"
+                            "comm/suite/components/customizeToolbar.js")
                (("AppConstants.MOZ_APP_NAME (.)= \"thunderbird" _ e)
                 (format #f "AppConstants.MOZ_APP_NAME ~a= \"icedove" e)))
 
@@ -1742,6 +1464,7 @@ standards of the IceCat project.")
                                "<!-- Guix: not a runtime dependency -->"
                                (string-drop hash 8))))
              #t))
+         (delete 'bootstrap)
          (replace 'configure
            (lambda* (#:key inputs outputs configure-flags #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -1752,8 +1475,6 @@ standards of the IceCat project.")
                              ,@configure-flags))
                     (mozconfig (string-append (getcwd) "/.mozconfig")))
                (setenv "SHELL" bash)
-               (setenv "AUTOCONF"
-                       (search-input-file %build-inputs "/bin/autoconf"))
                (setenv "CONFIG_SHELL" bash)
                (setenv "QA_CONFIGURE_OPTIONS" ".*")
                (setenv "MOZBUILD_STATE_PATH"
@@ -1762,9 +1483,11 @@ standards of the IceCat project.")
                        (string-append (getcwd) "/.mozconfig"))
                (setenv "CC" "gcc")
                (setenv "MOZ_NOSPAM" "1")
+               (setenv "MACH_USE_SYSTEM_PYTHON" "1")
                (setenv "PYTHON"
                        (search-input-file inputs "/bin/python"))
                (setenv "MOZ_BUILD_DATE" ,%icedove-build-id) ; avoid timestamp
+               (setenv "MOZ_APP_NAME" "icedove")
                (setenv "LDFLAGS" (string-append "-Wl,-rpath="
                                                 (assoc-ref outputs "out")
                                                 "/lib/icedove"))
@@ -1784,7 +1507,6 @@ standards of the IceCat project.")
                      "ac_add_options --disable-updater\n"
                      "ac_add_options --disable-webrtc\n"
                      "ac_add_options --enable-application=comm/mail\n"
-                     "ac_add_options --enable-calendar\n"
                      "ac_add_options --enable-default-toolkit=\"cairo-gtk3\"\n"
                      "ac_add_options --enable-optimize\n"
                      "ac_add_options --enable-pulseaudio\n"
@@ -1801,7 +1523,7 @@ standards of the IceCat project.")
                      "ac_add_options --with-system-jpeg\n"
                      "ac_add_options --with-system-libevent\n"
                      "ac_add_options --with-system-nspr\n"
-                     "ac_add_options --with-system-nss\n"
+                     ;"ac_add_options --with-system-nss\n"
                      "ac_add_options --with-system-zlib\n"
                      "ac_add_options --with-user-appdir=\\.icedove\n"
                      "mk_add_options MOZ_MAKE_FLAGS=-j"
@@ -1866,7 +1588,7 @@ standards of the IceCat project.")
        ("gtk+" ,gtk+)
        ("gtk+-2" ,gtk+-2)
        ("hunspell" ,hunspell)
-       ("icu4c" ,icu4c-67)
+       ("icu4c" ,icu4c)
        ("libcanberra" ,libcanberra)
        ("libevent" ,libevent)
        ("libffi" ,libffi)
@@ -1881,8 +1603,9 @@ standards of the IceCat project.")
        ("libxt" ,libxt)
        ("mesa" ,mesa)
        ("mit-krb5" ,mit-krb5)
-       ("nspr" ,nspr)
-       ("nss" ,nss)
+       ("nspr" ,nspr-4.32)
+       ; FIXME: create nss >= 3.68 after core-updates merge
+       ;("nss" ,nss)
        ("pango" ,pango)
        ("pixman" ,pixman)
        ("pulseaudio" ,pulseaudio)
@@ -1898,20 +1621,20 @@ standards of the IceCat project.")
         ;; in the Thunderbird release tarball.  We don't use the release
         ;; tarball because it duplicates the Icecat sources and only adds the
         ;; "comm" directory, which is provided by this repository.
-        ,(let ((changeset "2aa18076f0c3bc49d0e216798b3640891e68fada"))
+        ,(let ((changeset "c35def313c0c2bd0341e3e058f862f02390269c4"))
            (origin
              (method hg-fetch)
              (uri (hg-reference
-                   (url "https://hg.mozilla.org/releases/comm-esr78")
+                   (url "https://hg.mozilla.org/releases/comm-esr91")
                    (changeset changeset)))
              (file-name (string-append "thunderbird-" version "-checkout"))
              (sha256
               (base32
-               "0ww1rgm8hpmji9fjhinqrwf07j2jikdq8j2x87h5s3naw5898fr3")))))
-       ("autoconf" ,autoconf-2.13)
+               "0rp4i353dskx065a6hskvfpf0l2qywqnivks9qc6a85h4yah4rvq")))))
        ("cargo" ,rust "cargo")
        ("clang" ,clang)
        ("llvm" ,llvm)
+       ("m4" ,m4)
        ("nasm" ,nasm)
        ("node" ,node)
        ("perl" ,perl)
@@ -1919,7 +1642,7 @@ standards of the IceCat project.")
        ("python" ,python)
        ("python2" ,python-2.7)
        ("rust" ,rust)
-       ("rust-cbindgen" ,rust-cbindgen-0.14)
+       ("rust-cbindgen" ,rust-cbindgen-0.19)
        ("which" ,which)
        ("yasm" ,yasm)))
     (home-page "https://www.thunderbird.net")

@@ -1021,7 +1021,7 @@ would need and has several interesting built-in capabilities.")
 (define-public netcat-openbsd
   (package
     (name "netcat-openbsd")
-    (version "1.217-2")
+    (version "1.218-2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1030,7 +1030,7 @@ would need and has several interesting built-in capabilities.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "19sr52ix14w344pv13ppb0c1wyg5dxhic1fw2q0s3qfmx57b9hhp"))))
+                "1rj4nx0jdism1idc4fghahqbafhv72cpk7zlyq9czgvbps10d1kh"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no test suite
@@ -1042,8 +1042,7 @@ would need and has several interesting built-in capabilities.")
          (add-before 'build 'patch
            (lambda _
              (setenv "QUILT_PATCHES" "debian/patches")
-             (invoke "quilt" "push" "-a")
-             #t))
+             (invoke "quilt" "push" "-a")))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -1054,8 +1053,7 @@ would need and has several interesting built-in capabilities.")
                (install-file "nc" bin)
                (install-file "nc.1" man)
                (install-file "debian/copyright" doc)
-               (copy-recursively "debian/examples" examples)
-               #t))))))
+               (copy-recursively "debian/examples" examples)))))))
     (inputs `(("libbsd" ,libbsd)))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("quilt" ,quilt)))
@@ -2193,13 +2191,13 @@ development, not the kernel implementation of ACPI.")
 (define-public s-tui
   (package
     (name "s-tui")
-    (version "1.1.1")
+    (version "1.1.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "s-tui" version))
        (sha256
-        (base32 "1clk59wf6v1lq33h4x5qwxvz5ng9mfkp1s6ynxa58w2raq8dbmy5"))))
+        (base32 "1l2ik5iwmb8vxa2aqdy62zfy3zfzbpq5a0pgpka2vvlw9ivpqy5p"))))
     (build-system python-build-system)
     (inputs
      `(("python-psutil" ,python-psutil)
@@ -3179,7 +3177,7 @@ throughput (in the same interval).")
 (define-public thefuck
   (package
     (name "thefuck")
-    (version "3.30")
+    (version "3.31")
     (source
      (origin
        (method git-fetch)
@@ -3188,7 +3186,7 @@ throughput (in the same interval).")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0fnf78956pwhb9cgv1jmgypnkma5xzflkivfrkfiadbgin848yfg"))
+        (base32 "05h60gxky57nalc2hdkpg8wqyg16432x9gcb9wnwblplk98998kq"))
        (patches (search-patches "thefuck-test-environ.patch"))))
     (build-system python-build-system)
     (arguments
@@ -3201,8 +3199,10 @@ throughput (in the same interval).")
              (add-installed-pythonpath inputs outputs)
              ;; Some tests need write access to $HOME.
              (setenv "HOME" "/tmp")
-             (invoke "py.test" "-v")
-             #t)))))
+             ;; Even with that, this function tries to mkdir /.config.
+             (substitute* "tests/test_utils.py"
+               (("settings\\.init\\(\\)") ""))
+             (invoke "py.test" "-v"))))))
     (propagated-inputs
      `(("python-colorama" ,python-colorama)
        ("python-decorator" ,python-decorator)
@@ -3984,7 +3984,7 @@ Python loading in HPC environments.")
   (let ((real-name "inxi"))
     (package
       (name "inxi-minimal")
-      (version "3.3.08-1")
+      (version "3.3.09-1")
       (source
        (origin
          (method git-fetch)
@@ -3993,7 +3993,7 @@ Python loading in HPC environments.")
                (commit version)))
          (file-name (git-file-name real-name version))
          (sha256
-          (base32 "0kgxyxfw4hkmp9s3nazdqqvbfb4jqwv59mnpaa7g4n63nrqjv06v"))))
+          (base32 "0m8acg7avnmwqnz59kvrj8rrzg68m228x366bdr3qphw4jqp9l62"))))
       (build-system trivial-build-system)
       (inputs
        `(("bash" ,bash-minimal)
@@ -4045,8 +4045,7 @@ Python loading in HPC environments.")
                           %build-inputs)))))
              (invoke "gzip" "inxi.1")
              (install-file "inxi.1.gz"
-                           (string-append %output "/share/man/man1")))
-           #t)))
+                           (string-append %output "/share/man/man1"))))))
       (home-page "https://smxi.org/docs/inxi.htm")
       (synopsis "Full-featured system information script")
       (description "Inxi is a system information script that can display
@@ -4194,7 +4193,7 @@ cache of unix and unix-like systems.")
 (define-public solaar
   (package
     (name "solaar")
-    (version "1.0.6")
+    (version "1.0.7")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4203,7 +4202,7 @@ cache of unix and unix-like systems.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "04zclzfc31l2fj5shcsngnmcvcmmhnc567l3wb9yfhs8k39k9kb2"))))
+                "0k7mjdfvf28fay50b2hs2z4qk6s23h71wvl8777idlrz5i5f43j5"))))
     (build-system python-build-system)
     (arguments
      `(#:phases

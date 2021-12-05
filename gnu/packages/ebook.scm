@@ -9,6 +9,7 @@
 ;;; Copyright © 2020, 2021 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Zheng Junjie <873216071@qq.com>
 ;;; Copyright © 2021 la snesne <lasnesne@lagunposprasihopre.org>
+;;; Copyright © 2021 Petr Hodina <phodina@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,6 +36,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system qt)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages compression)
@@ -375,6 +377,42 @@ e-books for convenient reading.")
     (description "This package provides command-line tools and a library for
 accessing and converting various ebook file formats.")
     (license license:expat)))
+
+(define-public inkbox
+  (package
+    (name "inkbox")
+    (version "1.7")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://alpinekobox.ddns.net/InkBox/inkbox/")
+         (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "126cqn0ixcn608lv2hd9f7zmzj4g448bnpxc7wv9cvg83qqajh5n"))))
+    (build-system qt-build-system)
+    (arguments
+     '(#:tests? #f                      ; no test suite
+       #:make-flags
+       (list (string-append "PREFIX="
+                            (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'prefix-opt
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "inkbox.pro"
+               (("/opt/\\$\\$\\{TARGET\\}") (string-append (assoc-ref outputs "out"))))))
+         (replace 'configure
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (apply invoke (cons "qmake" make-flags)))))))
+    (native-inputs
+     `(("qtbase" ,qtbase-5)))
+    (home-page "https://alpinekobox.ddns.net/InkBox/inkbox/")
+    (synopsis "EBook reader")
+    (description "This package provides InkBox eBook reader.")
+    (license license:gpl3)))
 
 (define-public liblinebreak
   (package

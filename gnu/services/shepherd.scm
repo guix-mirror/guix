@@ -88,7 +88,7 @@
   shepherd-configuration make-shepherd-configuration
   shepherd-configuration?
   (shepherd shepherd-configuration-shepherd
-            (default shepherd)) ; package
+            (default shepherd)) ; file-like
   (services shepherd-configuration-services
             (default '()))) ; list of <shepherd-service>
 

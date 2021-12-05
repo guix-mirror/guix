@@ -490,7 +490,7 @@ tools (containers, algorithms) used by other QuantStack packages.")
 (define-public ccls
   (package
     (name "ccls")
-    (version "0.20201219")
+    (version "0.20210330")
     (source
      (origin
        (method git-fetch)
@@ -498,7 +498,7 @@ tools (containers, algorithms) used by other QuantStack packages.")
              (url "https://github.com/MaskRay/ccls")
              (commit version)))
        (sha256
-        (base32 "0nkg92rgb1x6scpiwdamfrd1ag87j7ajxyn5qi861r916m5mh9m8"))
+        (base32 "0zzdn7c7a244djqwcsd7rvgclcdacyf9d0vkxpfspl83k2554alf"))
        (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (arguments
@@ -1166,6 +1166,36 @@ output randomness while retaining speed, simplicity, and conciseness.")
       (home-page "https://www.pcg-random.org")
       (license (list license:expat license:asl2.0))))) ; dual licensed
 
+(define-public libconfini
+  (package
+    (name "libconfini")
+    (version "1.16.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/madmurphy/libconfini")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "01g8ai2z4fwshk06k824j6ib8nfb3cwxs5kqpqjvv4k5ayzm892h"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'bootstrap
+           (lambda _ (invoke "sh" "bootstrap" "--noconfigure"))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (home-page "https://madmurphy.github.io/libconfini/html/index.html")
+    (synopsis "INI file parser")
+    (description "@code{libconfini} is an INI file parser library written in
+C.  It focuses on standardization and parsing exactness and is at ease with
+almost every type of file containing key/value pairs.")
+    (license license:gpl3+)))
+
 (define-public libcutl
   (package
     (name "libcutl")
@@ -1398,7 +1428,7 @@ syntax with variables, conditions, functions and more.")
 (define-public simdjson
   (package
     (name "simdjson")
-    (version "1.0.0")
+    (version "1.0.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1407,7 +1437,7 @@ syntax with variables, conditions, functions and more.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "08qpsw0i8481xlyyghzyszb1vh4c8i7krzzghvr9m4yg394vf6zn"))))
+                "05i5jnqd7ngps79cws16ls48gnx08ykkkib3n2hbrdhr1wwrnv7a"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f                      ; tests require downloading dependencies

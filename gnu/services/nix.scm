@@ -50,7 +50,7 @@
 (define-record-type* <nix-configuration>
   nix-configuration make-nix-configuration
   nix-configuration?
-  (package             nix-configuration-package ;package
+  (package             nix-configuration-package ;file-like
                        (default nix))
   (sandbox             nix-configuration-sandbox ;boolean
                        (default #t))

@@ -26,6 +26,7 @@
   #:use-module ((gnu build file-systems)
                 #:select (canonicalize-device-spec
                           find-partition-by-label
+                          find-partition-by-uuid
                           read-partition-uuid
                           read-luks-partition-uuid))
   #:use-module ((gnu build linux-boot)
@@ -345,35 +346,38 @@ fail. See rereadpt function in wipefs.c of util-linux for an explanation."
   (with-null-output-ports
    (invoke "dmsetup" "remove_all")))
 
-(define (installation-device)
-  "Return the installation device path."
+(define (installer-root-partition-path)
+  "Return the root partition path, or #f if it could not be detected."
   (let* ((cmdline (linux-command-line))
          (root (find-long-option "--root" cmdline)))
     (and root
-         (canonicalize-device-spec (uuid root)))))
+         (or (and (access? root F_OK) root)
+             (find-partition-by-label root)
+             (and=> (uuid root)
+                    find-partition-by-uuid)))))
 
 (define (non-install-devices)
   "Return all the available devices, except the install device."
-  (define (read-only? device)
-    (dynamic-wind
-    (lambda ()
-      (device-open device))
-    (lambda ()
-      (device-read-only? device))
-    (lambda ()
-      (device-close device))))
 
-  ;; If parted reports that a device is read-only it is probably the
-  ;; installation device. However, as this detection does not always work,
-  ;; compare the device path to the installation device path read from the
-  ;; command line.
-  (let ((install-device (installation-device)))
-    (remove (lambda (device)
-              (let ((file-name (device-path device)))
-                (or (read-only? device)
-                    (and install-device
-                         (string=? file-name install-device)))))
-            (devices))))
+  (define the-installer-root-partition-path
+    (installer-root-partition-path))
+
+  ;; Read partition table of device and compare each path to the one
+  ;; we're booting from to determine if it is the installation
+  ;; device.
+  (define (installation-device? device)
+    ;; When using CDROM based installation, the root partition path may be the
+    ;; device path.
+    (or (string=? the-installer-root-partition-path
+                  (device-path device))
+        (let ((disk (disk-new device)))
+          (and disk
+               (any (lambda (partition)
+                      (string=? the-installer-root-partition-path
+                                (partition-get-path partition)))
+                    (disk-partitions disk))))))
+
+  (remove installation-device? (devices)))
 
 
 ;;
@@ -1165,8 +1169,9 @@ USER-PARTITION if it is encrypted, or the plain file-name otherwise."
      (lambda (key-file)
        (syslog "formatting and opening LUKS entry ~s at ~s~%"
                label file-name)
-       (system* "cryptsetup" "-q" "luksFormat" file-name key-file)
-       (system* "cryptsetup" "open" "--type" "luks"
+       (system* "cryptsetup" "-q" "luksFormat" "--type" "luks2"
+                "--pbkdf" "pbkdf2" file-name key-file)
+       (system* "cryptsetup" "open"
                 "--key-file" key-file file-name label)))))
 
 (define (luks-close user-partition)

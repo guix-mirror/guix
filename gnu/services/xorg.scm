@@ -163,7 +163,7 @@
 (define-record-type* <xorg-configuration>
   xorg-configuration make-xorg-configuration
   xorg-configuration?
-  (modules          xorg-configuration-modules    ;list of packages
+  (modules          xorg-configuration-modules    ;list of file-like
                     (thunked)
                     ; filter out modules not supported on current system
                     (default (filter
@@ -181,7 +181,7 @@
                     (default #f))
   (extra-config     xorg-configuration-extra-config ;list of strings
                     (default '()))
-  (server           xorg-configuration-server     ;package
+  (server           xorg-configuration-server     ;file-like
                     (default xorg-server))
   (server-arguments xorg-configuration-server-arguments ;list of strings
                     (default %default-xorg-server-arguments)))

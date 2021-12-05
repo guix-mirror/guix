@@ -192,7 +192,8 @@ option of @command{guix system}.\n")
   "Return a gexp that maps SOURCE to TARGET as a LUKS device, using
 'cryptsetup'."
   (with-imported-modules (source-module-closure
-                          '((gnu build file-systems)))
+                          '((gnu build file-systems)
+                            (guix build utils))) ;; For mkdir-p
     (match targets
       ((target)
        #~(let ((source #$(if (uuid? source)
@@ -201,7 +202,12 @@ option of @command{guix system}.\n")
            ;; XXX: 'use-modules' should be at the top level.
            (use-modules (rnrs bytevectors) ;bytevector?
                         ((gnu build file-systems)
-                         #:select (find-partition-by-luks-uuid)))
+                         #:select (find-partition-by-luks-uuid))
+                        ((guix build utils) #:select (mkdir-p)))
+
+           ;; Create '/run/cryptsetup/' if it does not exist, as device locking
+           ;; is mandatory for LUKS2.
+           (mkdir-p "/run/cryptsetup/")
 
            ;; Use 'cryptsetup-static', not 'cryptsetup', to avoid pulling the
            ;; whole world inside the initrd (for when we're in an initrd).

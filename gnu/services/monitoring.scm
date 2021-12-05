@@ -247,7 +247,7 @@ Prometheus.")
 
 (define-configuration zabbix-server-configuration
   (zabbix-server
-   (package zabbix-server)
+   (file-like zabbix-server)
    "The zabbix-server package.")
   (user
    (string "zabbix")
@@ -385,7 +385,7 @@ configuration file."))
 
 (define-configuration zabbix-agent-configuration
   (zabbix-agent
-   (package zabbix-agentd)
+   (file-like zabbix-agentd)
    "The zabbix-agent package.")
   (user
    (string "zabbix")
@@ -529,7 +529,7 @@ fastcgi_param PHP_VALUE \"post_max_size = 16M
 (define-configuration zabbix-front-end-configuration
   ;; TODO: Specify zabbix front-end package.
   ;; (zabbix-
-  ;;  (package zabbix-front-end)
+  ;;  (file-like zabbix-front-end)
   ;;  "The zabbix-front-end package.")
   (nginx
    (nginx-server-configuration-list

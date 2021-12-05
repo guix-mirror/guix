@@ -49,10 +49,10 @@
   #:use-module (guix utils)
   #:use-module ((srfi srfi-1) #:hide (zip)))
 
-(define-public coq
+(define-public coq-core
   (package
-    (name "coq")
-    (version "8.13.2")
+    (name "coq-core")
+    (version "8.14.0")
     (source
      (origin
        (method git-fetch)
@@ -62,25 +62,31 @@
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "15r0cm3p9dlsxbg0lf05njjp1xi1y74vxvq6drxjykax67x95l8a"))))
+         "0iachapmdwvwwlvkrb2yxhqqrgzs70zyr1c9v1jdb1awx3bp68hf"))
+       (patches (search-patches "coq-fix-envvars.patch"))))
     (native-search-paths
      (list (search-path-specification
             (variable "COQPATH")
-            (files (list "lib/coq/user-contrib")))
+            (files (list "lib/ocaml/site-lib/coq/user-contrib"
+                         "lib/coq/user-contrib")))
            (search-path-specification
-            (variable "COQLIB")
-            (files (list "lib/ocaml/site-lib/coq"))
+            (variable "COQLIBPATH")
+            (files (list "lib/ocaml/site-lib/coq")))
+           (search-path-specification
+            (variable "COQCORELIB")
+            (files (list "lib/ocaml/site-lib/coq-core"))
             (separator #f))))
     (build-system dune-build-system)
     (inputs
      `(("gmp" ,gmp)
        ("ocaml-zarith" ,ocaml-zarith)))
     (native-inputs
-     `(("which" ,which)))
+     `(("ocaml-ounit2" ,ocaml-ounit2)
+       ("which" ,which)))
     (arguments
-     `(#:package "coq"
-       #:test-target "test-suite"))
-    (properties '((upstream-name . "coq"))) ; for inherited packages
+     `(#:package "coq-core"
+       #:test-target "."))
+    (properties '((upstream-name . "coq"))) ; also for inherited packages
     (home-page "https://coq.inria.fr")
     (synopsis "Proof assistant for higher-order logic")
     (description
@@ -90,6 +96,31 @@ It is developed using Objective Caml and Camlp5.")
     ;; The source code is distributed under lgpl2.1.
     ;; Some of the documentation is distributed under opl1.0+.
     (license (list license:lgpl2.1 license:opl1.0+))))
+
+(define-public coq-stdlib
+  (package
+    (inherit coq-core)
+    (name "coq-stdlib")
+    (arguments
+     `(#:package "coq-stdlib"
+       #:test-target "."))
+    (inputs
+     `(("coq-core" ,coq-core)
+       ("gmp" ,gmp)
+       ("ocaml-zarith" ,ocaml-zarith)))
+    (native-inputs '())))
+
+(define-public coq
+  (package
+    (inherit coq-core)
+    (name "coq")
+    (arguments
+     `(#:package "coq"
+       #:test-target "."))
+    (propagated-inputs
+     `(("coq-core" ,coq-core)
+       ("coq-stdlib" ,coq-stdlib)))
+    (native-inputs '())))
 
 (define-public coq-ide-server
   (package
@@ -119,9 +150,9 @@ It is developed using Objective Caml and Camlp5.")
 (define-public proof-general
   ;; The latest release is from 2016 and there has been more than 450 commits
   ;; since then.
-  ;; Commit from 2021-06-07.
-  (let ((commit "bc86736abb728ec0d28abc90ef0adae21d29a66a")
-        (revision "0"))
+  ;; Commit from 2021-11-25.
+  (let ((commit "1b1083e86e0cddc20ff2f1a6b25c7a7eee2edf02")
+        (revision "1"))
     (package
       (name "proof-general")
       (version (git-version "4.4" revision commit))
@@ -133,7 +164,7 @@ It is developed using Objective Caml and Camlp5.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "00cga3n9nj2xa3ivb0fdkkdx3k11fp4879y188738631yd1x2lsa"))))
+                  "1pnysczhscapgwmvf6ix7f31lf3hnh8h977bfll1m7jlxl9b9c0j"))))
       (build-system gnu-build-system)
       (native-inputs
        `(("emacs" ,emacs-minimal)
@@ -201,7 +232,7 @@ It is developed using Objective Caml and Camlp5.")
        "Proof General is a major mode to turn Emacs into an interactive proof
 assistant to write formal mathematical proofs using a variety of theorem
 provers.")
-      (license license:gpl2+))))
+      (license license:gpl3+))))
 
 (define-public coq-flocq
   (package
@@ -410,7 +441,7 @@ theorems between the two libraries.")
 (define-public coq-bignums
   (package
     (name "coq-bignums")
-    (version "8.13.0")
+    (version "8.14.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -419,7 +450,7 @@ theorems between the two libraries.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1n66i7hd9222b2ks606mak7m4f0dgy02xgygjskmmav6h7g2sx7y"))))
+                "0jsgdvj0ddhkls32krprp34r64y1rb5mwxl34fgaxk2k4664yq06"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("ocaml" ,ocaml)
@@ -537,16 +568,16 @@ uses Ltac to synthesize the substitution operation.")
 (define-public coq-equations
   (package
     (name "coq-equations")
-    (version "1.2.4")
+    (version "1.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/mattam82/Coq-Equations")
-                    (commit (string-append "v" version "-8.13"))))
+                    (commit (string-append "v" version "-8.14"))))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0i014lshsdflzw6h0qxra9d2f0q82vffxv2f29awbb9ad0p4rq4q"))))
+                "19bj9nncd1r9g4273h5qx35gs3i4bw5z9bhjni24b413hyj55hkv"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("ocaml"  ,ocaml)
@@ -576,7 +607,7 @@ kernel.")
 (define-public coq-semantics
   (package
     (name "coq-semantics")
-    (version "8.13.0")
+    (version "8.14.0")
     (source
       (origin
         (method git-fetch)
@@ -591,7 +622,7 @@ kernel.")
         (file-name (git-file-name name version))
         (sha256
          (base32
-          "0m5si9dsv96z92gy4xaqz8mzyz8zp7j1sp542l0wzsp5xgyfpc7i"))))
+          "0ldrp86bfcjpzsb08p45sgs3aczjzr1gksy5dsf7pxapg05pc7ac"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("coq" ,coq)

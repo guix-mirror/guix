@@ -3,6 +3,7 @@
 ;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;; Copyright © 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2021 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2021 jgart <jgart@dismail.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2767,6 +2768,25 @@ extensions to the iterator interface.")
      "Common functional iterator patterns (formerly @code{Iterators.jl}).")
     (license license:expat)))
 
+(define-public julia-jive
+  (package
+    (name "julia-jive")
+    (version "0.2.20")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/wookay/Jive.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0khwsdh8472jxcfi9lqw14l49sqlbsixql1jb4irnyajxkdjrcsf"))))
+    (build-system julia-build-system)
+    (home-page "https://github.com/wookay/Jive.jl")
+    (synopsis "Julia package to help with writing tests")
+    (description "@code{Jive.jl} is a Julia package to help with writing tests.")
+    (license license:expat)))
+
 (define-public julia-json
   (package
     (name "julia-json")
@@ -3104,6 +3124,29 @@ resolving them into absolute units.")
     (description "This package provides a display system which enables the
 user handle multiple input/output devices and decide what media types get
 displayed where.")
+    (license license:expat)))
+
+(define-public julia-millboard
+  (package
+    (name "julia-millboard")
+    (version "0.2.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/wookay/Millboard.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0k9jqgp285qhckldvvsmfk6s69dcr8s74m2fijgm2vxjj2gqjs1n"))))
+    (build-system julia-build-system)
+    (native-inputs
+     `(("julia-jive" ,julia-jive)))
+    (home-page "https://github.com/wookay/Millboard.jl")
+    (synopsis "Displaying data in tables for Julia")
+    (description
+     "@code{Millboard.jl} provides a library for getting data in a tablized
+format to arrange into rows and columns of cells.")
     (license license:expat)))
 
 (define-public julia-missings
@@ -4326,6 +4369,29 @@ The main idea behind traits is to group types outside the type-hierarchy and to
 make dispatch work with that grouping.  The difference to Union-types is that
 types can be added to a trait after the creation of the trait, whereas Union
 types are fixed after creation.")
+    (license license:expat)))
+
+(define-public julia-softglobalscope
+  (package
+    (name "julia-softglobalscope")
+    (version "1.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/stevengj/SoftGlobalScope.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1n3l0al1vw5jpb4k9a29a71666cdb617nmiqg34wcmyfzrxpvv39"))))
+    (build-system julia-build-system)
+    (home-page "https://github.com/stevengj/SoftGlobalScope.jl")
+    (synopsis "Utilities for soft global scope in interactive Julia environments")
+    (description
+     "SoftGlobalScope is a package for the Julia language that simplifies the
+variable scoping rules for code in global scope.  It is intended for interactive
+shells to make it easier to work interactively with Julia, especially for
+beginners.")
     (license license:expat)))
 
 (define-public julia-sortingalgorithms

@@ -308,18 +308,20 @@ translation engines from your terminal.")
 (define-public lttoolbox
   (package
     (name "lttoolbox")
-    (version "3.5.3")
+    (version "3.5.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "https://github.com/apertium/lttoolbox/releases/download/v"
-             version "/lttoolbox-" version ".tar.bz2"))
+             version "/lttoolbox-" version ".tar.xz"))
        (sha256
-        (base32 "109l91ailish1a3vya5zmfg3kb67cwyzl36ndnh8f59chsbm6n2f"))))
+        (base32 "0kn9xg9sc64amd6ah5gi4qij0bhfbmc2jjvxbjjrsdd8iq054cgm"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
+     `(#:configure-flags
+       (list "--disable-static")
+       #:phases
        (modify-phases %standard-phases
          (replace 'bootstrap
            ;; The included ./autogen.sh unconditionally runs ./configure before

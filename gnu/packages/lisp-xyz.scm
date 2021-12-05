@@ -69,6 +69,7 @@
   #:use-module (gnu packages file)
   #:use-module (gnu packages fonts)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages game-development)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
@@ -3054,31 +3055,32 @@ settings ensure a very simple mode of operation, similar to that provided by
   (sbcl-package->ecl-package sbcl-cl-json))
 
 (define-public sbcl-unix-opts
-  (package
-    (name "sbcl-unix-opts")
-    (version "0.1.7")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/libre-man/unix-opts")
-             (commit version)))
-       (file-name (git-file-name "unix-opts" version))
-       (sha256
-        (base32
-         "08djdi1ard09fijb7w9bdmhmwd98b1hzmcnjw9fqjiqa0g3b44rr"))))
-    (build-system asdf-build-system/sbcl)
-    (home-page "https://github.com/hankhero/cl-json")
-    (synopsis "Unix-style command line options parser")
-    (description
-     "This is a minimalistic parser of command line options.  The main
+  (let ((commit "0e61f34b2ecf62288437810d4abb31e572048b04")
+        (revision "1"))
+    (package
+      (name "sbcl-unix-opts")
+      (version (git-version "0.1.7" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/libre-man/unix-opts")
+               (commit commit)))
+         (file-name (git-file-name "unix-opts" version))
+         (sha256
+          (base32 "16mcqpzwrz808p9n3wwl99ckg3hg7yihw08y1i4l7c92aldbkasq"))))
+      (build-system asdf-build-system/sbcl)
+      (home-page "https://github.com/hankhero/cl-json")
+      (synopsis "Unix-style command line options parser")
+      (description
+       "This is a minimalistic parser of command line options.  The main
 advantage of the library is the ability to concisely define command line
 options once and then use this definition for parsing and extraction of
 command line arguments, as well as printing description of command line
 options (you get --help for free).  This way you don't need to repeat
 yourself.  Also, @command{unix-opts} doesn't depend on anything and
 precisely controls the behavior of the parser via Common Lisp restarts.")
-    (license license:expat)))
+      (license license:expat))))
 
 (define-public cl-unix-opts
   (sbcl-package->cl-source-package sbcl-unix-opts))
@@ -9081,7 +9083,7 @@ ones.")
 (define-public sbcl-salza2
   (package
     (name "sbcl-salza2")
-    (version "2.0.9")
+    (version "2.1")
     (source
      (origin
        (method git-fetch)
@@ -9090,8 +9092,14 @@ ones.")
              (commit (string-append "release-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0p38rj4gq7j5k807php7hrz7l2zyyfshv8i9yms7i8lkgg3433ki"))))
+        (base32 "1p48lxdibnps5rpyh5cmnk0vc77bmmxb32qdzfz93zadr8wwas10"))))
     (build-system asdf-build-system/sbcl)
+    (native-inputs
+     `(("chipz" ,sbcl-chipz)
+       ("flexi-streams" ,sbcl-flexi-streams)
+       ("parachute" ,sbcl-parachute)))
+    (inputs
+     `(("trivial-gray-streams" ,sbcl-trivial-gray-streams)))
     (synopsis "Common Lisp library for zlib, deflate and gzip compression")
     (description
      "Salza2 is a Common Lisp library for creating compressed data in the zlib,
@@ -9362,30 +9370,31 @@ generation functions from the GSL library.")
   (sbcl-package->ecl-package sbcl-cl-randist))
 
 (define-public sbcl-float-features
-  (package
-    (name "sbcl-float-features")
-    (version "1.0.0")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/Shinmera/float-features")
-             (commit "d3ef60181635b0849aa28cfc238053b7ca4644b0")))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32
-         "0yj419k7n59x6rh3grwr6frgwwyria2il6f7wxpfazm8cskv4lzr"))))
-    (build-system asdf-build-system/sbcl)
-    (synopsis "Common Lisp IEEE float portability library")
-    (description
-     "Portability library for IEEE float features that are not
+  (let ((commit "c1f86aea91cfaa3aa59799162be23ef8a12b199d")
+        (revision "2"))
+    (package
+      (name "sbcl-float-features")
+      (version (git-version "1.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Shinmera/float-features")
+               (commit commit)))
+         (file-name (git-file-name "float-features" version))
+         (sha256
+          (base32 "0vqm9xhn2i4vbjrxnp4hr1l3lydjflhjykdz6cmqg2j48c5kh3g3"))))
+      (build-system asdf-build-system/sbcl)
+      (synopsis "Common Lisp IEEE float portability library")
+      (description
+       "Portability library for IEEE float features that are not
 covered by the Common Lisp standard.")
-    (home-page "https://github.com/Shinmera/float-features")
-    (license license:zlib)
-    (inputs
-     `(("documentation-utils" ,sbcl-documentation-utils)))
-    (arguments
-     `(#:tests? #f))))
+      (home-page "https://github.com/Shinmera/float-features")
+      (license license:zlib)
+      (inputs
+       `(("documentation-utils" ,sbcl-documentation-utils)))
+      (arguments
+       `(#:tests? #f)))))
 
 (define-public cl-float-features
   (sbcl-package->cl-source-package sbcl-float-features))
@@ -10612,10 +10621,10 @@ MOP easier to use.")
   (sbcl-package->cl-source-package sbcl-moptilities))
 
 (define-public sbcl-osicat
-  (let ((commit "de0c18a367eedc857e1902a7319828af072a0d97"))
+  (let ((commit "eab6b8cabd71b59e894b51dc555e171683ec3387"))
     (package
       (name "sbcl-osicat")
-      (version (git-version "0.7.0" "1" commit))
+      (version (git-version "0.7.0" "2" commit))
       (home-page "http://www.common-lisp.net/project/osicat/")
       (source
        (origin
@@ -10625,7 +10634,7 @@ MOP easier to use.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "15viw5pi5sa7qq9b4n2rr3dj2jkqr180rh9z1lh8w3rgl42i2adc"))))
+          (base32 "18g137iqf86i247c9cg7d86b8k9cfq3yv272l73fsv734qpnv0g9"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("alexandria" ,sbcl-alexandria)
@@ -14822,8 +14831,8 @@ HTML documents.")
   (sbcl-package->cl-source-package sbcl-cl-html-diff))
 
 (define-public sbcl-tooter
-  (let ((commit "b1639d8a58dfe8020c82ed36697b7a668ef41a09")
-        (revision "2"))
+  (let ((commit "ec97bee3431c55913078e532daae81eb0fd90372")
+        (revision "3"))
     (package
       (name "sbcl-tooter")
       (version (git-version "1.0.0" revision commit))
@@ -14835,7 +14844,7 @@ HTML documents.")
                (commit commit)))
          (file-name (git-file-name "tooter" version))
          (sha256
-          (base32 "0842lbj9ml6qxdm5xvhdbm87wyrvrq7bxawa6i8wk80n8lnvmhdw"))))
+          (base32 "02vpjaq38d6laaqmsana9f13c38xzr0xwy05fcfkmzdhh0kllpkv"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("sbcl-cl-ppcre" ,sbcl-cl-ppcre)
@@ -14856,8 +14865,8 @@ protocol for Mastodon.")
   (sbcl-package->cl-source-package sbcl-tooter))
 
 (define-public sbcl-croatoan
-  (let ((commit "a577951d8dd607f828d6efb3290b4e8ac9f1e654")
-        (revision "3"))
+  (let ((commit "cf875137a23ed4efbfde63e52691f1b544d55d17")
+        (revision "4"))
     (package
       (name "sbcl-croatoan")
       (version (git-version "0.0.1" revision commit))
@@ -14869,7 +14878,7 @@ protocol for Mastodon.")
                (commit commit)))
          (file-name (git-file-name "croatoan" version))
          (sha256
-          (base32 "1y7a13mzy0cz19pw0xvqwca1s7frfaqryaqwl1mrq7iz84sw0fcw"))))
+          (base32 "0dvp8irimlnnvz2m4lnmxp19xbam1yfri3d1i9qqml968i08xcwb"))))
       (build-system asdf-build-system/sbcl)
       (arguments
        '(#:phases
@@ -14998,11 +15007,11 @@ dynamically.")
   (sbcl-package->cl-source-package sbcl-sxql-composer))
 
 (define-public sbcl-cl-i18n
-  (let ((commit "fa0aa5bef8dfbdf2d72f7cc9f49e848ccbb567aa")
+  (let ((commit "4216fe9fc7b54033c0d881dbb835b7af786365ed")
         (revision "1"))
     (package
       (name "sbcl-cl-i18n")
-      (version (git-version "0.5.0" revision commit))
+      (version (git-version "0.5.1" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -15011,7 +15020,7 @@ dynamically.")
                (commit commit)))
          (file-name (git-file-name "cl-i18n" version))
          (sha256
-          (base32 "1hpsdbb3hd79bzbrnbqgk2j3f0ispxvk91snp08fm2z3f1sds5as"))))
+          (base32 "1mdhfkk61djj39vgnns5y1cssd12h0m1cfwd21m8xpa2l3rqvmgf"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("alexandria" ,sbcl-alexandria)
@@ -15660,30 +15669,32 @@ abstract, final and singleton classes.")
   (sbcl-package->cl-source-package sbcl-abstract-classes))
 
 (define-public sbcl-coalton
-  (let ((commit "4a42ffb4222fde3abfd1b50d96e455ff2eef9fe8")
-        (revision "1"))
+  (let ((commit "012f6c8db6d73df16f7729090a12a929fb82db17")
+        (revision "2"))
     (package
       (name "sbcl-coalton")
-      (version (git-version "0.0.0" revision commit))
+      (version (git-version "0.0.1" revision commit))
       (source
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/stylewarning/coalton")
+               (url "https://github.com/coalton-lang/coalton")
                (commit commit)))
          (file-name (git-file-name "coalton" version))
          (sha256
-          (base32 "0aidwwam7cnhb3p9212zbv5w2dl6kr5iklzanypzr1a9lqaxwdlk"))))
+          (base32 "1j3d12vyyn7y9nz2an4xmaa5si0jbxbwq7y61hq2b7vk376zvw18"))))
       (build-system asdf-build-system/sbcl)
       (native-inputs
        `(("fiasco" ,sbcl-fiasco)))
       (inputs
-       `(("abstract-classes" ,sbcl-abstract-classes)
-         ("alexandria" ,sbcl-alexandria)
+       `(("alexandria" ,sbcl-alexandria)
+         ("float-features" ,sbcl-float-features)
+         ("fset" ,sbcl-fset)
          ("global-vars" ,sbcl-global-vars)
-         ("optima" ,sbcl-optima)
-         ("trivial-garbage" ,sbcl-trivial-garbage)))
-      (home-page "https://github.com/stylewarning/coalton")
+         ("json-streams" ,sbcl-json-streams)
+         ("serapeum" ,sbcl-serapeum)
+         ("trivia" ,sbcl-trivia)))
+      (home-page "https://coalton-lang.github.io")
       (synopsis "Dialect of ML in Common Lisp")
       (description
        "Coalton is a dialect of ML embedded in Common Lisp.  It emphasizes
@@ -17721,6 +17732,51 @@ fit together as required by any particular game.")
 (define-public cl-trial
   (sbcl-package->cl-source-package sbcl-trial))
 
+(define-public sbcl-cl-liballegro
+  (let ((commit "49f632ce97fc4f835bf5d450588793234b980a64")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-liballegro")
+      (version (git-version "0.2.15" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/resttime/cl-liballegro")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0brbr7i342s0gadlnzd3a61w2b9ihhx60l19ararnc2asvyhmz7x"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'patch-allegro-lib-path
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((allegro-lib-path (string-append
+                                        (assoc-ref inputs "allegro") "/lib/")))
+                 (substitute* "src/library.lisp"
+                   (("lib \".so\"" all)
+                    (string-append "\"" allegro-lib-path "\"" " lib \".so\"")))))))))
+      (inputs
+       `(("allegro" ,allegro)
+         ("cffi" ,sbcl-cffi)
+         ("float-features" ,sbcl-float-features)
+         ("trivial-garbage" ,sbcl-trivial-garbage)
+         ("trivial-main-thread" ,sbcl-trivial-main-thread)))
+      (home-page "https://github.com/resttime/cl-liballegro")
+      (synopsis "Allegro 5 game programming library bindings for Common Lisp")
+      (description
+       "This package provides CFFI bindings and interface to Allegro 5 game
+developing library for Common Lisp.")
+      (license license:zlib))))
+
+(define-public ecl-cl-liballegro
+  (sbcl-package->ecl-package sbcl-cl-liballegro))
+
+(define-public cl-liballegro
+  (sbcl-package->cl-source-package sbcl-cl-liballegro))
+
 (define-public sbcl-alloy
   (let ((commit "e86e22c2887836ec31cd97e039f0bca5248d8f1c")
         (revision "1"))
@@ -17882,11 +17938,11 @@ functions allow Lisp programs to explore the web.")
   (sbcl-package->cl-source-package sbcl-aserve))
 
 (define-public sbcl-yxorp
-  (let ((commit "041d0a535d6406df703f5f037d3d2cad4159c74d")
-        (revision "2"))
+  (let ((commit "c306898a467995e123a22316c9b79fcac442415b")
+        (revision "4"))
     (package
       (name "sbcl-yxorp")
-      (version (git-version "0.2" revision commit))
+      (version (git-version "0.4" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -17895,14 +17951,18 @@ functions allow Lisp programs to explore the web.")
                (commit commit)))
          (file-name (git-file-name "cl-yxorp" version))
          (sha256
-          (base32 "14fvncisig6h2qamczbx9cifp3rbjfw0cmc2ffifvr82x2bwab1f"))))
+          (base32 "0ll1s9w29yhhgqssgiw58fcapw4n040gkvpz4sxwv3q2v60rbidj"))))
       (build-system asdf-build-system/sbcl)
       (inputs
-       `(("cl+ssl" ,sbcl-cl+ssl)
+       `(("chipz" ,sbcl-chipz)
+         ("chunga" ,sbcl-chunga)
+         ("cl+ssl" ,sbcl-cl+ssl)
          ("cl-binding-arrows" ,sbcl-binding-arrows)
          ("cl-str" ,sbcl-cl-str)
          ("cl-usocket" ,sbcl-usocket)
          ("flexi-streams" ,sbcl-flexi-streams)
+         ("rutils" ,sbcl-rutils)
+         ("salza2" ,sbcl-salza2)
          ("trivial-garbage" ,sbcl-trivial-garbage)))
       (home-page "https://github.com/charje/cl-yxorp")
       (synopsis
@@ -18618,7 +18678,7 @@ tasks in Common Lisp.  It is fork of SWANK-BACKEND.")
       (home-page "https://github.com/eudoxia0/terminal-size")
       (synopsis "Get the size of the terminal from Common Lisp")
       (description
-       "This package provides the @{(terminal-size:size)} function to get the
+       "This package provides the @code{terminal-size:size} function to get the
 size of the terminal from Common Lisp.")
       (license license:expat))))
 
@@ -19706,6 +19766,92 @@ score.  When evaluated, the musical score is rendered to an image.")
 
 (define-public ecl-cmn
   (sbcl-package->ecl-package sbcl-cmn))
+
+(define-public sbcl-data-sift
+  (let ((commit "fd617d8200cdcc1b87ecf45ab59bb38e8b16ef7e")
+        (revision "1"))
+    (package
+      (name "sbcl-data-sift")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/archimag/data-sift")
+               (commit commit)))
+         (file-name (git-file-name "cl-data-sift" version))
+         (sha256
+          (base32 "1v7gf0x4ibjzp0c56n9m77hxdgwcm9356zlk5n4l3fx4i0hj6146"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       ;; All test cases test a function that has been removed.
+       `(#:tests? #f))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("cl-ppcre" ,sbcl-cl-ppcre)
+         ("parse-number" ,sbcl-parse-number)
+         ("puri" ,sbcl-puri)))
+      (native-inputs
+       `(("lift" ,sbcl-lift)))
+      (home-page "https://github.com/archimag/data-sift")
+      (synopsis
+       "Common Lisp library for validation and transformation of string data")
+      (description
+       "@code{DATA-SIFT} is a Common Lisp data validation and transformation
+library inspired by @code{cl-data-format-validation} and WTForms validators.")
+      (license license:llgpl))))
+
+(define-public cl-data-sift
+  (sbcl-package->cl-source-package sbcl-data-sift))
+
+(define-public ecl-data-sift
+  (sbcl-package->ecl-package sbcl-data-sift))
+
+(define-public sbcl-restas
+  (let ((commit "81bbbab6b36f81f846f78e71232e9d3d15f6d952")
+        (revision "1"))
+    (package
+      (name "sbcl-restas")
+      (version (git-version "0.1.4" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/archimag/restas")
+               (commit commit)))
+         (file-name (git-file-name "cl-restas" version))
+         (sha256
+          (base32 "00ng6jik1lwjw3bbxhijy8s0ml24lgm73liwrr01gcsb0r6wrjjn"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "contrib/restas-daemon.lisp"
+                 (("/lib64/") "")
+                 (("/lib/") "")
+                 (("libcap.so")
+                  (string-append (assoc-ref inputs "libcap")
+                                 "/lib/libcap.so"))))))))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("bordeaux-threads" ,sbcl-bordeaux-threads)
+         ("cffi" ,sbcl-cffi)
+         ("data-sift" ,sbcl-data-sift)
+         ("hunchentoot" ,sbcl-hunchentoot)
+         ("libcap" ,libcap)
+         ("routes" ,sbcl-routes)))
+      (home-page "https://github.com/archimag/restas")
+      (synopsis "Common Lisp web framework")
+      (description "@code{RESTAS} is a Common Lisp web application framework.")
+      (license license:llgpl))))
+
+(define-public cl-restas
+  (sbcl-package->cl-source-package sbcl-restas))
+
+(define-public ecl-restas
+  (sbcl-package->ecl-package sbcl-restas))
 
 (define-public sbcl-cl-https-everywhere
   ;; No release.

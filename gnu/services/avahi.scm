@@ -52,7 +52,7 @@
 (define-record-type* <avahi-configuration>
   avahi-configuration make-avahi-configuration
   avahi-configuration?
-  (avahi             avahi-configuration-avahi    ;<package>
+  (avahi             avahi-configuration-avahi    ;file-like
                      (default avahi))
   (debug?            avahi-configuration-debug?   ;Boolean
                      (default #f))

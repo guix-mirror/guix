@@ -51,7 +51,7 @@
 (define-record-type* <mcron-configuration> mcron-configuration
   make-mcron-configuration
   mcron-configuration?
-  (mcron             mcron-configuration-mcron    ;package
+  (mcron             mcron-configuration-mcron    ;file-like
                      (default mcron))
   (jobs              mcron-configuration-jobs     ;list of <mcron-job>
                      (default '())))

@@ -494,7 +494,7 @@ files."
                       (message (format #f "You found a bug: the program '~a'
 failed to compute the derivation for Guix (version: ~s; system: ~s;
 host version: ~s; pull-version: ~s).
-Please report it by email to <~a>.~%"
+Please report the COMPLETE output above by email to <~a>.~%"
                                        (derivation->output-path build)
                                        version system %guix-version pull-version
                                        %guix-bug-report-address))))))))))))

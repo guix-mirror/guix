@@ -63,6 +63,7 @@
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages security-token)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages xorg)
@@ -199,6 +200,7 @@ a server that supports the SSH-2 protocol.")
    (native-inputs `(("groff" ,groff)
                     ("pkg-config" ,pkg-config)))
    (inputs `(("libedit" ,libedit)
+             ("libfido2" ,libfido2)
              ("openssl" ,openssl)
              ,@(if (hurd-target?)
                  '()
@@ -228,6 +230,9 @@ a server that supports the SSH-2 protocol.")
                           ,,@(if (hurd-target?)
                                '()
                                '("--with-pam"))
+
+                          ;; supports creation and use of ecdsa-sk, ed25519-sk keys
+                          "--with-security-key-builtin"
 
                           ;; "make install" runs "install -s" by default,
                           ;; which doesn't work for cross-compiled binaries
@@ -831,15 +836,16 @@ framework.")
 (define-public clustershell
   (package
     (name "clustershell")
-    (version "1.8.3")
+    (version "1.8.4")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/cea-hpc/clustershell/releases"
-                           "/download/v" version
-                           "/ClusterShell-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/cea-hpc/clustershell")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "1qdcgh733szwj9r1gambrgfkizvbjci0bnnkds9a8mnyb3sasnan"))))
+        (base32 "11b87vyamcw4rvgxz74jxwkr9ly0h9ldp2wqsi5wc19p0r06la5j"))))
     (build-system python-build-system)
     (inputs `(("openssh" ,openssh)))
     (propagated-inputs `(("python-pyyaml" ,python-pyyaml)))
@@ -851,8 +857,7 @@ framework.")
                         (substitute* "lib/ClusterShell/Worker/Ssh.py"
                           (("info\\(\"ssh_path\"\\) or \"ssh\"")
                            (string-append "info(\"ssh_path\") or \""
-                                          ssh "/bin/ssh\"")))
-                        #t))))))
+                                          ssh "/bin/ssh\"")))))))))
     (home-page "https://cea-hpc.github.io/clustershell/")
     (synopsis "Scalable event-driven Python framework for cluster administration")
     (description

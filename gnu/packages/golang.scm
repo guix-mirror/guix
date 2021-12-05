@@ -7956,35 +7956,41 @@ error messages.")
 inspired by the causal messaging system in the Pony programming language.")
       (license license:expat))))
 
-(define-public go-github-com-cheggaaa-pb
+(define-public go-github-com-cheggaaa-pb-v3
   (package
-    (name "go-github-com-cheggaaa-pb")
-    (version "3.0.4")
+    (name "go-github-com-cheggaaa-pb-v3")
+    (version "3.0.8")
     (source
-      (origin
+     (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/cheggaaa/pb/")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0xhsv9yf3fz918ay6w0d87jnb3hk9vxvi16jk172kqq26x7jixd0"))))
+        (base32 "0d701s2niy39r650d1phjw19h4l27b1yfc2ih6s31f56b3zzqspx"))))
     (build-system go-build-system)
     (arguments
-     '(#:import-path "github.com/cheggaaa/pb/"))
+     '(#:import-path "github.com/cheggaaa/pb/v3"
+       ;; XXX: it does have tests but I'm not sure how to run them.
+       ;; go-build-system is looking in the wrong directory.
+       #:tests? #f))
     (propagated-inputs
-     `(("go-github-com-fatih-color" ,go-github-com-fatih-color)
+     `(("go-golang-org-x-sys" ,go-golang-org-x-sys)
+       ("go-github-com-rivo-uniseg" ,go-github-com-rivo-uniseg)
+       ("go-github-com-mattn-go-runewidth" ,go-github-com-mattn-go-runewidth)
+       ("go-github-com-mattn-go-isatty" ,go-github-com-mattn-go-isatty)
        ("go-github-com-mattn-go-colorable" ,go-github-com-mattn-go-colorable)
-       ("go-github.com-mattn-go-runewidth" ,go-github.com-mattn-go-runewidth)
-       ("go-golang-org-x-sys" ,go-golang-org-x-sys)))
-    (native-inputs
-     `(("go-github-com-mattn-go-isatty" ,go-github-com-mattn-go-isatty)))
+       ("go-github-com-fatih-color" ,go-github-com-fatih-color)
+       ("go-github-com-vividcortex-ewma" ,go-github-com-vividcortex-ewma)))
     (home-page "https://github.com/cheggaaa/pb/")
     (synopsis "Console progress bar for Go")
     (description "This package is a Go library that draws progress bars on
 the terminal.")
     (license license:bsd-3)))
+
+(define-public go-github-com-cheggaaa-pb
+  (deprecated-package "go-github-com-cheggaaa-pb" go-github-com-cheggaaa-pb-v3))
 
 (define-public go-github-com-gologme-log
   ;; this is the same as v1.2.0, only the LICENSE file changed
@@ -8157,7 +8163,7 @@ JSON data to the machine.")
        ;; source: golang.zx2c4.com/wireguard
        (uri (git-reference
              (url "https://git.zx2c4.com/wireguard-go/")
-             (commit (string-append "v" version))))
+             (commit version)))
        (file-name (git-file-name name version))
        (sha256
         (base32
@@ -8850,3 +8856,108 @@ JSON for post-processing
     (description
      "Provides a platform-independent way to get atime, mtime, ctime and btime for files.")
     (license license:expat)))
+
+(define-public go-github-com-vividcortex-ewma
+  (package
+    (name "go-github-com-vividcortex-ewma")
+    (version "1.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/VividCortex/ewma")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0whx516l9nm4n41spagb605ry7kfnz1qha96mcshnfjlahhnnylq"))))
+    (build-system go-build-system)
+    (arguments '(#:import-path "github.com/vividcortex/ewma"))
+    (home-page "https://github.com/VividCortex/ewma")
+    (synopsis "Exponentially Weighted Moving Average algorithms for Go")
+    (description
+     "This package implements algorithms for exponentially weighted moving
+averages.")
+    (license license:expat)))
+
+(define-public go-github-com-rivo-uniseg
+  (package
+    (name "go-github-com-rivo-uniseg")
+    (version "0.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rivo/uniseg")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0j7h22vfmjj562vr8gpsyrkrwp1pq9ayh5fylv24skxb467g9f0q"))))
+    (build-system go-build-system)
+    (arguments '(#:import-path "github.com/rivo/uniseg"))
+    (home-page "https://github.com/rivo/uniseg")
+    (synopsis "Unicode Text Segmentation for Go")
+    (description
+     "This package implements Unicode Text Segmentation according to
+@url{https://unicode.org/reports/tr29/, Unicode Standard Annex #29}.")
+    (license license:expat)))
+
+(define-public go-github-com-mattn-go-runewidth
+  (package
+    (name "go-github-com-mattn-go-runewidth")
+    (version "0.0.13")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mattn/go-runewidth")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1yir0f3wc5z5hnkwhvx5qb6nmpfb05zp2gvfjvna63s8kmla1rrn"))))
+    (build-system go-build-system)
+    (arguments '(#:import-path "github.com/mattn/go-runewidth"))
+    (propagated-inputs
+     `(("go-github-com-rivo-uniseg" ,go-github-com-rivo-uniseg)))
+    (home-page "https://github.com/mattn/go-runewidth")
+    (synopsis "Rune width implementation for Go")
+    (description
+     "This package provides functions to get the fixed width of a character or
+string.")
+    (license license:expat)))
+
+(define-public go-github-com-arceliar-ironwood
+  (package
+    (name "go-github-com-arceliar-ironwood")
+    (version "0.0.0-20210912013146-c2bc55bb349c")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Arceliar/ironwood")
+             (commit (go-version->git-ref version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1dfkqnkfxwlwcsk8g9r1pv84lfzgn8r1vam13zlmk81cgan2r6fx"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/Arceliar/ironwood"
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         ;; Source-only package
+         (delete 'build))))
+    (propagated-inputs
+     `(("go-golang-org-x-crypto" ,go-golang-org-x-crypto)
+       ("go-github-com-arceliar-phony" ,go-github-com-arceliar-phony)))
+    (home-page "https://github.com/Arceliar/ironwood")
+    (synopsis "Experimental network routing library")
+    (description
+     "Ironwood is a routing library with a @code{net.PacketConn}-compatible
+interface using @code{ed25519.PublicKey}s as addresses.  Basically, you use it
+when you want to communicate with some other nodes in a network, but you can't
+guarantee that you can directly connect to every node in that network.  It was
+written to test improvements to / replace the routing logic in
+@url{https://github.com/yggdrasil-network/yggdrasil-go,Yggdrasil}, but it may
+be useful for other network applications.")
+    (license license:mpl2.0)))

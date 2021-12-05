@@ -376,11 +376,16 @@ algorithm.")
                             (assoc-ref %build-inputs "boost")))
        #:phases
        (modify-phases %standard-phases
-         (add-before
-          'configure 'set-CXXFLAGS
-          (lambda _
-            (setenv "CXXFLAGS" "-fpermissive ")
-            #t)))))
+         (add-after 'unpack 'fix-compatibility-errors
+           (lambda _
+             (substitute* "src/library/IAM2WayImportance.h"
+               (("= std::make_pair.*")
+                "= std::minmax(varID1, varID2);"))
+             (substitute* "src/library/DataFrame.h"
+               (("isFirst\\?.*")
+                "if (isFirst) { isFirst = false; } else { os << par.delimiter; }\n"))))
+         (add-before 'configure 'set-CXXFLAGS
+           (lambda _ (setenv "CXXFLAGS" "-fpermissive "))))))
     (inputs
      `(("boost" ,boost)
        ("gsl" ,gsl)

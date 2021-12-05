@@ -227,13 +227,13 @@ SET-ACCOUNT-DETAILS."
 
 (define-configuration/no-serialization jami-configuration
   (jamid
-   (package libring)
+   (file-like libring)
    "The Jami daemon package to use.")
   (dbus
-   (package dbus)
+   (file-like dbus)
    "The D-Bus package to use to start the required D-Bus session.")
   (nss-certs
-   (package nss-certs)
+   (file-like nss-certs)
    "The nss-certs package to use to provide TLS certificates.")
   (enable-logging?
    (boolean #t)
@@ -755,7 +755,7 @@ normal user D-Bus session bus.")))
 (define-record-type* <murmur-configuration> murmur-configuration
   make-murmur-configuration
   murmur-configuration?
-  (package               murmur-configuration-package ;<package>
+  (package               murmur-configuration-package ;file-like
                          (default mumble))
   (user                  murmur-configuration-user
                          (default "murmur"))

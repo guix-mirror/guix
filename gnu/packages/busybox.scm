@@ -122,7 +122,7 @@ any small or embedded system.")
 (define-public toybox
   (package
     (name "toybox")
-    (version "0.8.3")
+    (version "0.8.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -130,7 +130,7 @@ any small or embedded system.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "00aw9d809wj1bqlb2fsssdgz7rj0363ya14py0gfdm0rkp98zcpa"))))
+                "0j896rblxd8jyll6dg1w9zz1v1q52y2ca7qswgvlfqvjhz0k1lmz"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -138,10 +138,19 @@ any small or embedded system.")
          (add-before 'configure 'set-environment-variables
            (lambda _
              (setenv "CC" ,(cc-for-target))
-             (setenv "HOSTCC" (which "gcc"))
-             #t))
+             (setenv "HOSTCC" (which "gcc"))))
          (replace 'configure
            (lambda _ (invoke "make" "defconfig")))
+         (add-before 'check 'fix-or-skip-broken-tests
+           (lambda _
+             ;; Some tests expects $USER to magically be the current user name.
+             (setenv "USER" (passwd:name (getpwnam (geteuid))))
+             ;; All these expect directories to be exactly 4K.  They aren't!
+             (delete-file "tests/du.test")
+             ;; Delete tests that expect a root or 0 user to exist.
+             (substitute* "tests/id.test"
+               (("^testing .*[ \\(]root.*") ""))
+             ))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
@@ -151,8 +160,7 @@ any small or embedded system.")
          (add-after 'install 'remove-usr-directory
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
-               (delete-file-recursively (string-append out "/usr"))
-               #t))))
+               (delete-file-recursively (string-append out "/usr"))))))
        #:test-target "tests"))
     (native-inputs `(("bc" ,bc)))
     (synopsis "Many common UNIX utilities in a single executable")

@@ -190,7 +190,7 @@
 (define-record-type* <ganeti-noded-configuration>
   ganeti-noded-configuration make-ganeti-noded-configuration
   ganeti-noded-configuration?
-  (ganeti      ganeti-noded-configuration-ganeti        ;<package>
+  (ganeti      ganeti-noded-configuration-ganeti        ;file-like
                (default ganeti))
   (port        ganeti-noded-configuration-port          ;integer
                (default 1811))
@@ -256,7 +256,7 @@ for the node functions in the Ganeti system.")))
 (define-record-type* <ganeti-confd-configuration>
   ganeti-confd-configuration make-ganeti-confd-configuration
   ganeti-confd-configuration?
-  (ganeti      ganeti-confd-configuration-ganeti        ;<package>
+  (ganeti      ganeti-confd-configuration-ganeti        ;file-like
                (default ganeti))
   (port        ganeti-confd-configuration-port          ;integer
                (default 1814))
@@ -298,7 +298,7 @@ related to the configuration of a Ganeti cluster.")))
 (define-record-type* <ganeti-wconfd-configuration>
   ganeti-wconfd-configuration make-ganeti-wconfd-configuration
   ganeti-wconfd-configuration?
-  (ganeti      ganeti-wconfd-configuration-ganeti       ;<package>
+  (ganeti      ganeti-wconfd-configuration-ganeti       ;file-like
                (default ganeti))
   (no-voting?  ganeti-wconfd-configuration-no-voting?   ;Boolean
                (default #f))
@@ -389,7 +389,7 @@ appropriate requests to this daemon.")))
 (define-record-type* <ganeti-luxid-configuration>
   ganeti-luxid-configuration make-ganeti-luxid-configuration
   ganeti-luxid-configuration?
-  (ganeti      ganeti-luxid-configuration-ganeti        ;<package>
+  (ganeti      ganeti-luxid-configuration-ganeti        ;file-like
                (default ganeti))
   (no-voting?  ganeti-luxid-configuration-no-voting?    ;Boolean
                (default #f))
@@ -436,7 +436,7 @@ be submitted via this daemon and it schedules and starts them.")))
 (define-record-type* <ganeti-rapi-configuration>
   ganeti-rapi-configuration make-ganeti-rapi-configuration
   ganeti-rapi-configuration?
-  (ganeti      ganeti-rapi-configuration-ganeti         ;<package>
+  (ganeti      ganeti-rapi-configuration-ganeti         ;file-like
                (default ganeti))
   (require-authentication?
    ganeti-rapi-configuration-require-authentication?    ;Boolean
@@ -509,7 +509,7 @@ for Ganeti clusters.")))
 (define-record-type* <ganeti-kvmd-configuration>
   ganeti-kvmd-configuration make-ganeti-kvmd-configuration
   ganeti-kvmd-configuration?
-  (ganeti      ganeti-kvmd-configuration-ganeti         ;<package>
+  (ganeti      ganeti-kvmd-configuration-ganeti         ;file-like
                (default ganeti))
   (debug?      ganeti-kvmd-configuration-debug?         ;Boolean
                (default #f)))
@@ -555,7 +555,7 @@ communicated to Ganeti via a special file in the file system.")))
 (define-record-type* <ganeti-mond-configuration>
   ganeti-mond-configuration make-ganeti-mond-configuration
   ganeti-mond-configuration?
-  (ganeti      ganeti-mond-configuration-ganeti         ;<package>
+  (ganeti      ganeti-mond-configuration-ganeti         ;file-like
                (default ganeti))
   (port        ganeti-mond-configuration-port           ;integer
                (default 1815))
@@ -596,7 +596,7 @@ provide the collected information through a HTTP interface.")))
 (define-record-type* <ganeti-metad-configuration>
   ganeti-metad-configuration make-ganeti-metad-configuration
   ganeti-metad-configuration?
-  (ganeti      ganeti-metad-configuration-ganeti        ;<package>
+  (ganeti      ganeti-metad-configuration-ganeti        ;file-like
                (default ganeti))
   (port        ganeti-metad-configuration-port          ;integer
                (default 80))
@@ -642,7 +642,7 @@ information to OS install scripts or instances.")))
 (define-record-type* <ganeti-watcher-configuration>
   ganeti-watcher-configuration make-ganeti-watcher-configuration
   ganeti-watcher-configuration?
-  (ganeti        ganeti-watcher-configuration-ganeti        ;<package>
+  (ganeti        ganeti-watcher-configuration-ganeti        ;file-like
                  (default ganeti))
   (schedule      ganeti-watcher-configuration-schedule      ;list | string
                  (default '(next-second-from
@@ -705,7 +705,7 @@ is declared offline by known master candidates.")))
 (define-record-type* <ganeti-cleaner-configuration>
   ganeti-cleaner-configuration make-ganeti-cleaner-configuration
   ganeti-cleaner-configuration?
-  (ganeti          ganeti-cleaner-configuration-ganeti          ;<package>
+  (ganeti          ganeti-cleaner-configuration-ganeti          ;file-like
                    (default ganeti))
   (master-schedule ganeti-cleaner-configuration-master-schedule ;list | string
                    ;; Run the master cleaner at 01:45 every day.

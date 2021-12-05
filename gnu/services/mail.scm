@@ -498,7 +498,7 @@ as @code{#t}.)")
 
 (define-configuration dovecot-configuration
   (dovecot
-   (package dovecot)
+   (file-like dovecot)
    "The dovecot package.")
 
   (listen
@@ -1472,7 +1472,7 @@ greyed out, instead of only later giving \"not selectable\" popup error.
 
 (define-configuration opaque-dovecot-configuration
   (dovecot
-   (package dovecot)
+   (file-like dovecot)
    "The dovecot package.")
 
   (string
@@ -1764,7 +1764,7 @@ match from local for any action outbound
 (define-record-type* <exim-configuration> exim-configuration
   make-exim-configuration
   exim-configuration?
-  (package       exim-configuration-package ;<package>
+  (package       exim-configuration-package ;file-like
                  (default exim))
   (config-file   exim-configuration-config-file ;file-like
                  (default #f)))

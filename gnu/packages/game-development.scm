@@ -24,6 +24,7 @@
 ;;; Copyright © 2021 Dmitry Polyakov <polyakov@liltechdude.xyz>
 ;;; Copyright © 2020-2021 James Smith <jsubuntuxp@disroot.org>
 ;;; Copyright © 2021 Ekaitz Zarraga <ekaitz@elenq.tech>
+;;; Copyright © 2021 Andy Tai <atai@atai.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -112,7 +113,7 @@
 (define-public bullet
   (package
     (name "bullet")
-    (version "2.89")
+    (version "3.17")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -121,7 +122,7 @@
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "10ncf2z474jnv7p5lv01ak2mk2hib3rj5rz1zr8v2v5pnciqbijl"))
+                "0x1ghxbkvqr910sp01sjf4hlfy4sdgn2jx2qf0dsi697bzq1f3mr"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -131,9 +132,7 @@
                               '("Gwen" "clsocket" "enet" "glad" "imgui"
                                 "lua-5.2.3" "midi" "minizip" "openvr"
                                 "optionalX11" "serial" "zlib")))
-                  ;; These need files from ThirdPartyLibs.
-                  (substitute* "Extras/CMakeLists.txt"
-                    (("BulletRobotics") ""))
+
                   ;; Tests fail on linking, cannot find -lBussIK.
                   (substitute* "test/CMakeLists.txt"
                     ((" InverseDynamics")
@@ -146,6 +145,12 @@
                                "-DBUILD_CPU_DEMOS=OFF"
                                "-DBUILD_OPENGL3_DEMOS=OFF"
                                "-DBUILD_BULLET2_DEMOS=OFF"
+                               ;; Extras/BulletRoboticsGUI needs files from
+                               ;; ThirdPartyLibs
+                               "-DBUILD_BULLET_ROBOTICS_GUI_EXTRA=OFF"
+                               ;; Extras/BulletRobotics needs files from
+                               ;; ThirdPartyLibs
+                               "-DBUILD_BULLET_ROBOTICS_EXTRA=OFF"
                                (string-append  "-DCMAKE_CXX_FLAGS=-fPIC "
                                                (or (getenv "CXXFLAGS") "")))
        #:phases

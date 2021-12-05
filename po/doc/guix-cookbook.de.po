@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: guix 1.0.1.4876-09145-dirty\n"
 "Report-Msgid-Bugs-To: bug-guix@gnu.org\n"
 "POT-Creation-Date: 2021-10-08 14:00+0000\n"
-"PO-Revision-Date: 2021-08-13 22:04+0000\n"
+"PO-Revision-Date: 2021-11-18 18:16+0000\n"
 "Last-Translator: Florian Pelz <pelzflorian@pelzflorian.de>\n"
 "Language-Team: German <https://translate.fedoraproject.org/projects/guix/documentation-cookbook/de/>\n"
 "Language: de\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.7.2\n"
+"X-Generator: Weblate 4.9\n"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:7
@@ -34,10 +34,8 @@ msgstr "GNU-Guix-Kochbuch"
 
 #. type: copying
 #: guix-git/doc/guix-cookbook.texi:21
-#, fuzzy
-#| msgid "Copyright @copyright{} 2019 Ricardo Wurmus@* Copyright @copyright{} 2019 Efraim Flashner@* Copyright @copyright{} 2019 Pierre Neidhardt@* Copyright @copyright{} 2020 Oleg Pykhalov@* Copyright @copyright{} 2020 Matthew Brooks@* Copyright @copyright{} 2020 Marcin Karpezo@* Copyright @copyright{} 2020 Brice Waegeneire@* Copyright @copyright{} 2020 André Batista@* Copyright @copyright{} 2020 Christopher Lemmer Webber Copyright @copyright{} 2021 Joshua Branson@*"
 msgid "Copyright @copyright{} 2019 Ricardo Wurmus@* Copyright @copyright{} 2019 Efraim Flashner@* Copyright @copyright{} 2019 Pierre Neidhardt@* Copyright @copyright{} 2020 Oleg Pykhalov@* Copyright @copyright{} 2020 Matthew Brooks@* Copyright @copyright{} 2020 Marcin Karpezo@* Copyright @copyright{} 2020 Brice Waegeneire@* Copyright @copyright{} 2020 André Batista@* Copyright @copyright{} 2020 Christine Lemmer-Webber@* Copyright @copyright{} 2021 Joshua Branson@*"
-msgstr "Copyright @copyright{} 2019 Ricardo Wurmus@* Copyright @copyright{} 2019 Efraim Flashner@* Copyright @copyright{} 2019 Pierre Neidhardt@* Copyright @copyright{} 2020 Oleg Pykhalov@* Copyright @copyright{} 2020 Matthew Brooks@* Copyright @copyright{} 2020 Marcin Karpezo@* Copyright @copyright{} 2020 Brice Waegeneire@* Copyright @copyright{} 2020 André Batista@* Copyright @copyright{} 2020 Christopher Lemmer Webber Copyright @copyright{} 2021 Joshua Branson@*"
+msgstr "Copyright @copyright{} 2019 Ricardo Wurmus@* Copyright @copyright{} 2019 Efraim Flashner@* Copyright @copyright{} 2019 Pierre Neidhardt@* Copyright @copyright{} 2020 Oleg Pykhalov@* Copyright @copyright{} 2020 Matthew Brooks@* Copyright @copyright{} 2020 Marcin Karpezo@* Copyright @copyright{} 2020 Brice Waegeneire@* Copyright @copyright{} 2020 André Batista@* Copyright @copyright{} 2020 Christine Lemmer-Webber@* Copyright @copyright{} 2021 Joshua Branson@*"
 
 #. type: copying
 #: guix-git/doc/guix-cookbook.texi:28
@@ -85,10 +83,8 @@ msgstr "Dieses Dokument stellt Anleitungen und detaillierte Beispiele vor, wie m
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:66
-#, fuzzy
-#| msgid "If you would like to translate this document in your native language, consider joining @uref{https://translate.fedoraproject.org/projects/guix/documentation-cookbook, Weblate}."
 msgid "This manual is also available in French (@pxref{Top,,, guix-cookbook.fr, Livre de recettes de GNU Guix}) and German (@pxref{Top,,, guix-cookbook.de, GNU-Guix-Kochbuch}).  If you would like to translate this document in your native language, consider joining @uref{https://translate.fedoraproject.org/projects/guix/documentation-cookbook, Weblate} (@pxref{Translating Guix,,, guix, GNU Guix reference manual})."
-msgstr "Wenn Sie dieses Dokument in Ihre eigene Sprache übersetzen möchten, dann sind Sie bei @uref{https://translate.fedoraproject.org/projects/guix/documentation-cookbook, Weblate} herzlich willkommen."
+msgstr "Dieses Handbuch ist auch auf Englisch (siehe @ref{Top,,, guix-cookbook, GNU Guix Cookbook}) und auf Französisch verfügbar (siehe @ref{Top,,, guix-cookbook.fr, Livre de recettes de GNU Guix}). Wenn Sie dieses Dokument in Ihre eigene Sprache übersetzen möchten, dann sind Sie bei @uref{https://translate.fedoraproject.org/projects/guix/documentation-cookbook, Weblate} herzlich willkommen."
 
 #. type: chapter
 #: guix-git/doc/guix-cookbook.texi:73 guix-git/doc/guix-cookbook.texi:82
@@ -248,7 +244,7 @@ msgstr "GNU@tie{}Guix ist in Scheme geschrieben, einer für alle Anwendungszweck
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:109
 msgid "Knowing the basics of how to program in Scheme will unlock many of the advanced features Guix provides --- and you don't even need to be an experienced programmer to use them!"
-msgstr "Wenn man die Grundzüge kennt, wie man in Scheme programmiert, bekommt man Zugang zu vielen der fortgeschrittenen Funktionen von Guix — und Sie müssen dazu nicht einmal ein erfahrener Programmierer sein!"
+msgstr "Wenn man die Grundzüge kennt, wie man in Scheme programmiert, bekommt man Zugang zu vielen der fortgeschrittenen Funktionen von Guix@tie{}— und Sie müssen dazu nicht einmal ein erfahrener Programmierer sein!"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:111
@@ -1073,10 +1069,8 @@ msgstr "Guix ermöglicht es, den Prozess zu optimieren, indem man so viele „Pa
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:598
-#, fuzzy
-#| msgid "Create a directory, say @file{~./guix-packages} and add it to the @samp{GUIX_PACKAGE_PATH} environment variable:"
 msgid "Create a directory, say @file{~/guix-packages} and add it to the @samp{GUIX_PACKAGE_PATH} environment variable:"
-msgstr "Erzeugen Sie ein Verzeichnis, beispielsweise @file{~./guix-packages}, und fügen Sie es zur Umgebungsvariablen @env{GUIX_PACKAGE_PATH} hinzu:"
+msgstr "Erzeugen Sie ein Verzeichnis, beispielsweise @file{~/guix-packages}, und fügen Sie es zur Umgebungsvariablen @env{GUIX_PACKAGE_PATH} hinzu:"
 
 #. type: example
 #: guix-git/doc/guix-cookbook.texi:602
@@ -1657,7 +1651,7 @@ msgstr "native-inputs"
 #. type: table
 #: guix-git/doc/guix-cookbook.texi:917
 msgid "Required for building but not runtime -- installing a package through a substitute won't install these inputs."
-msgstr "Sie werden zum Erstellen gebraucht, aber @emph{nicht} zur Laufzeit — wenn Sie ein Paket als Substitut installieren, werden diese Eingaben nirgendwo installiert."
+msgstr "Sie werden zum Erstellen gebraucht, aber @emph{nicht} zur Laufzeit@tie{}— wenn Sie ein Paket als Substitut installieren, werden diese Eingaben nirgendwo installiert."
 
 #. type: item
 #: guix-git/doc/guix-cookbook.texi:917
@@ -2987,7 +2981,7 @@ msgstr "In der Vergangenheit drehte sich in Guix System alles um eine @code{oper
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:1667
 msgid "Depending on the target machine, that can go from a standard @code{x86_64} machine to a small ARM single board computer such as the Pine64, the image constraints can vary a lot.  The hardware manufacturers will impose different image formats with various partition sizes and offsets."
-msgstr "Aber je nach Zielmaschine — diese kann alles von einer normalen @code{x86_64}-Maschine sein bis zu einem kleinen ARM-Einplatinenrechner wie dem Pine64 —, können die für ein Abbild geltenden Einschränkungen sehr unterschiedlich sein. Die Hardwarehersteller ordnen verschiedene Abbildformate an mit unterschiedlich versetzten unterschiedlich großen Partitionen."
+msgstr "Aber je nach Zielmaschine@tie{}— diese kann alles von einer normalen @code{x86_64}-Maschine sein bis zu einem kleinen ARM-Einplatinenrechner wie dem Pine64@tie{}—, können die für ein Abbild geltenden Einschränkungen sehr unterschiedlich sein. Die Hardwarehersteller ordnen verschiedene Abbildformate an mit unterschiedlich versetzten unterschiedlich großen Partitionen."
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:1672
@@ -3081,30 +3075,7 @@ msgstr "Schauen wir uns @file{pine64.scm} an. Es enthält die Variable @code{pin
 
 #. type: lisp
 #: guix-git/doc/guix-cookbook.texi:1738
-#, fuzzy, no-wrap
-#| msgid ""
-#| "(define pine64-barebones-os\n"
-#| "  (operating-system\n"
-#| "   (host-name \"vignemale\")\n"
-#| "   (timezone \"Europe/Paris\")\n"
-#| "   (locale \"en_US.utf8\")\n"
-#| "   (bootloader (bootloader-configuration\n"
-#| "                (bootloader u-boot-pine64-lts-bootloader)\n"
-#| "                (target \"/dev/vda\")))\n"
-#| "   (initrd-modules '())\n"
-#| "   (kernel linux-libre-arm64-generic)\n"
-#| "   (file-systems (cons (file-system\n"
-#| "                        (device (file-system-label \"my-root\"))\n"
-#| "                        (mount-point \"/\")\n"
-#| "                        (type \"ext4\"))\n"
-#| "                       %base-file-systems))\n"
-#| "   (services (cons (service agetty-service-type\n"
-#| "                            (agetty-configuration\n"
-#| "                             (extra-options '(\"-L\")) ; no carrier detect\n"
-#| "                             (baud-rate \"115200\")\n"
-#| "                             (term \"vt100\")\n"
-#| "                             (tty \"ttyS0\")))\n"
-#| "                   %base-services))))\n"
+#, no-wrap
 msgid ""
 "(define pine64-barebones-os\n"
 "  (operating-system\n"
@@ -3136,7 +3107,7 @@ msgstr ""
 "   (locale \"en_US.utf8\")\n"
 "   (bootloader (bootloader-configuration\n"
 "                (bootloader u-boot-pine64-lts-bootloader)\n"
-"                (target \"/dev/vda\")))\n"
+"                (targets '(\"/dev/vda\"))))\n"
 "   (initrd-modules '())\n"
 "   (kernel linux-libre-arm64-generic)\n"
 "   (file-systems (cons (file-system\n"
@@ -3400,7 +3371,7 @@ msgstr "Damit Sie sich mit einem Wireguard-VPN-Server verbinden können, müssen
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:1876
 msgid "Here is a configuration example for Linux-Libre < 5.6, where the module is out of tree and need to be loaded manually---following revisions of the kernel have it built-in and so don't need such configuration:"
-msgstr "Hier ist ein Beispiel für eine Konfiguration für Linux-Libre < 5.6, wo sich das Modul noch nicht im Kernel-Quellbaum befindet („out of tree“) und daher von Hand geladen werden muss — in nachfolgenden Kernelversionen ist das Modul bereits eingebaut und @emph{keine} derartige Konfiguration ist nötig."
+msgstr "Hier ist ein Beispiel für eine Konfiguration für Linux-Libre < 5.6, wo sich das Modul noch nicht im Kernel-Quellbaum befindet („out of tree“) und daher von Hand geladen werden muss@tie{}— in nachfolgenden Kernelversionen ist das Modul bereits eingebaut und @emph{keine} derartige Konfiguration ist nötig."
 
 #. type: lisp
 #: guix-git/doc/guix-cookbook.texi:1881
@@ -3729,12 +3700,12 @@ msgstr "cat ~/.ssh/<benutzername>_rsa.pub\n"
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2056
 msgid "Power the Linode down."
-msgstr ""
+msgstr "Fahren Sie den Linode-Knoten herunter."
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2060
 msgid "In the Linode's Storage tab, resize the Debian disk to be smaller.  30 GB free space is recommended.  Then click \"Add a disk\", and fill out the form with the following:"
-msgstr ""
+msgstr "Im Karteireiter für „Storage“ bei Linode verkleinern Sie das Laufwerk für Debian. Empfohlen werden 30@tie{}GB freier Speicher. Klicken Sie anschließend auf „Add a disk“ und tragen Sie Folgendes in das Formular ein:"
 
 #. type: itemize
 #: guix-git/doc/guix-cookbook.texi:2064
@@ -3754,7 +3725,7 @@ msgstr "Wählen Sie als Größe den übrigen Speicherplatz."
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2075
 msgid "In the Configurations tab, press \"Edit\" on the default Debian profile.  Under \"Block Device Assignment\" click \"Add a Device\". It should be @file{/dev/sdc} and you can select the \"Guix\" disk. Save Changes."
-msgstr ""
+msgstr "Drücken Sie im Karteireiter „Configurations“ auf „Edit“. Unter „Block Device Assignment“ klicken Sie auf „Add a Device“. Dort müsste @file{/dev/sdc} stehen; wählen Sie das Laufwerk „Guix“. Speichern Sie die Änderungen."
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2077
@@ -3798,8 +3769,6 @@ msgstr "Schalten Sie alle Dateisystem-/Boot-Helfer ab."
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2105
-#, fuzzy
-#| msgid "Now power it back up, picking the Debian configuration.  Once it's booted up, ssh in your server via @code{ssh root@@@var{<your-server-IP-here>}}. (You can find your server IP address in your Linode Summary section.) Now you can run the \"install guix from @pxref{Binary Installation,,, guix, GNU Guix}\" steps:"
 msgid "Now power it back up, booting with the Debian configuration.  Once it's running, ssh to your server via @code{ssh root@@@var{<your-server-IP-here>}}. (You can find your server IP address in your Linode Summary section.) Now you can run the \"install guix from @pxref{Binary Installation,,, guix, GNU Guix}\" steps:"
 msgstr "Starten Sie den Knoten jetzt wieder mit der Debian-Konfiguration. Sobald er wieder läuft, verbinden Sie sich mittels SSH zu Ihrem Server über @code{ssh root@@@var{<IP-Adresse-Ihres-Servers>}}. (Die IP-Adresse Ihres Servers finden Sie in Linodes Übersichtsseite bei „Summary“.) Nun können Sie mit den Schritten aus dem @ref{Aus Binärdatei installieren,,, guix.de, Referenzhandbuch zu GNU Guix} weitermachen:"
 
@@ -4006,33 +3975,25 @@ msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2194
-#, fuzzy
-#| msgid "The last line in the above example lets you log into the server as root and set the initial root password.  After you have done this, you may delete that line from your configuration and reconfigure to prevent root login."
 msgid "The last line in the above example lets you log into the server as root and set the initial root password (see the note at the end of this recipe about root login).  After you have done this, you may delete that line from your configuration and reconfigure to prevent root login."
-msgstr "Durch die letzte Zeile im obigen Beispiel können Sie sich als Administratornutzer root auf dem Server anmelden und das anfängliche Passwort für root festlegen. Nachdem das erledigt ist, können Sie die Zeile aus Ihrer Konfiguration löschen und Ihr System rekonfigurieren, damit eine Anmeldung als root nicht mehr möglich ist."
+msgstr "Durch die letzte Zeile im obigen Beispiel können Sie sich als Administratornutzer root auf dem Server anmelden und das anfängliche Passwort für root festlegen (lesen Sie den Hinweis zur Anmeldung als root am Ende dieses Rezepts). Nachdem das erledigt ist, können Sie die Zeile aus Ihrer Konfiguration löschen und Ihr System rekonfigurieren, damit eine Anmeldung als root nicht mehr möglich ist."
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2199
-#, fuzzy
-#| msgid "Save your ssh public key (eg: @file{~/.ssh/id_rsa.pub}) as @file{@var{<your-username-here>}_rsa.pub} and your @file{guix-config.scm} in the same directory.  In a new terminal run these commands."
 msgid "Copy your ssh public key (eg: @file{~/.ssh/id_rsa.pub}) as @file{@var{<your-username-here>}_rsa.pub} and put @file{guix-config.scm} in the same directory.  In a new terminal run these commands."
-msgstr "Speichern Sie Ihren öffentlichen SSH-Schlüssel (z.B.@: @file{~/.ssh/id_rsa.pub}) als @file{@var{<Ihr-Benutzername>}_rsa.pub} und Ihre @file{guix-config.scm} im selben Verzeichnis. Führen Sie dann diese Befehle in einem neuen Terminal aus:"
+msgstr "Kopieren Sie Ihren öffentlichen SSH-Schlüssel (z.B.@: @file{~/.ssh/id_rsa.pub}) in die Datei @file{@var{<Ihr-Benutzername>}_rsa.pub} und Ihre @file{guix-config.scm} ins selbe Verzeichnis. Führen Sie dann diese Befehle in einem neuen Terminal aus:"
 
 #. type: example
 #: guix-git/doc/guix-cookbook.texi:2204
-#, fuzzy, no-wrap
-#| msgid ""
-#| "sftp root@@<remote server ip address>\n"
-#| "put /home/<username>/ssh/id_rsa.pub .\n"
-#| "put /path/to/linode/guix-config.scm .\n"
+#, no-wrap
 msgid ""
 "sftp root@@<remote server ip address>\n"
 "put /path/to/files/<username>_rsa.pub .\n"
 "put /path/to/files/guix-config.scm .\n"
 msgstr ""
 "sftp root@@<IP-Adresse-des-entfernten-Servers>\n"
-"put /home/<Benutzername>/ssh/id_rsa.pub .\n"
-"put /pfad/zu/linode/guix-config.scm .\n"
+"put /pfad/mit/dateien/<Benutzername>_rsa.pub .\n"
+"put /pfad/mit/dateien/guix-config.scm .\n"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2207
@@ -4051,10 +4012,8 @@ msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2216
-#, fuzzy
-#| msgid "Due to the way we set things up above, we do not install GRUB completely.  Instead we install only our grub configuration file.  So we need to copy over some of the other GRUB stuff that is already there:"
 msgid "Due to the way we set up the bootloader section of the guix-config.scm, only the grub configuration file will be installed.  So, we need to copy over some of the other GRUB stuff already installed on the Debian system:"
-msgstr "Aufgrund der Art und Weise, wie alles oben eingerichtet haben, installieren wir GRUB nicht vollständig. Stattdessen installieren wir nur unsere GRUB-Konfigurationsdatei. Daher müssen wir ein bisschen von den anderen GRUB-Einstellungen von dort kopieren:"
+msgstr "Aufgrund der Art und Weise, wie wir den Bootloader-Abschnitt von @file{guix-config.scm} oben festgelegt haben, installieren wir GRUB nicht vollständig. Stattdessen installieren wir nur unsere GRUB-Konfigurationsdatei. Daher müssen wir ein bisschen von den anderen GRUB-Einstellungen vom Debian-System kopieren:"
 
 #. type: example
 #: guix-git/doc/guix-cookbook.texi:2220
@@ -4150,8 +4109,6 @@ msgstr "Es kann sein, dass die obigen Befehle noch nicht funktionieren. Wenn Sie
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2271
-#, fuzzy
-#| msgid "Horray! At this point you can shut down the server, delete the Debian disk, and resize the Guix to the rest of the size.  Congratulations!"
 msgid "Hooray! At this point you can shut down the server, delete the Debian disk, and resize the Guix to the rest of the size.  Congratulations!"
 msgstr "Hurra! Nun können Sie den Server herunterfahren, die Debian-Platte löschen und Guix auf den gesamten verfügbaren Speicher erweitern. Herzlichen Glückwunsch!"
 
@@ -5384,7 +5341,7 @@ msgstr "Die Nix-basierten Software-Distributionen Nixpkgs und NixOS waren auch e
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2987
 msgid "GNU@tie{}Guix itself is a collective work with contributions from a number of people.  See the @file{AUTHORS} file in Guix for more information on these fine people.  The @file{THANKS} file lists people who have helped by reporting bugs, taking care of the infrastructure, providing artwork and themes, making suggestions, and more---thank you!"
-msgstr "GNU@tie{}Guix ist selbst das Produkt kollektiver Arbeit mit Beiträgen durch eine Vielzahl von Leuten. Siehe die Datei @file{AUTHORS} in Guix für mehr Informationen, wer diese wunderbaren Menschen sind. In der Datei @file{THANKS} finden Sie eine Liste der Leute, die uns geholfen haben, indem Sie Fehler gemeldet, sich um unsere Infrastruktur gekümmert, künstlerische Arbeit und schön gestaltete Themen beigesteuert, Vorschläge gemacht und noch vieles mehr getan haben — vielen Dank!"
+msgstr "GNU@tie{}Guix ist selbst das Produkt kollektiver Arbeit mit Beiträgen durch eine Vielzahl von Leuten. Siehe die Datei @file{AUTHORS} in Guix für mehr Informationen, wer diese wunderbaren Menschen sind. In der Datei @file{THANKS} finden Sie eine Liste der Leute, die uns geholfen haben, indem Sie Fehler gemeldet, sich um unsere Infrastruktur gekümmert, künstlerische Arbeit und schön gestaltete Themen beigesteuert, Vorschläge gemacht und noch vieles mehr getan haben@tie{}— vielen Dank!"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2990

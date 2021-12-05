@@ -885,7 +885,7 @@ high a score as possible.")
 (define-public cataclysm-dda
   (package
     (name "cataclysm-dda")
-    (version "0.F-2")
+    (version "0.F-3")
     (source
      (origin
        (method git-fetch)
@@ -893,7 +893,7 @@ high a score as possible.")
              (url "https://github.com/CleverRaven/Cataclysm-DDA")
              (commit version)))
        (sha256
-        (base32 "1wzsri6rh2fm7078hw0y4x7lqjs6ak4a66d05szfiinnxyn4w1ph"))
+        (base32 "1qnsz6az9qp4sbr3y4rcqhlmadrrdzafvd2xwf3db5wn0swvbjys"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
@@ -4145,7 +4145,7 @@ falling, themeable graphics and sounds, and replays.")
 (define-public wesnoth
   (package
     (name "wesnoth")
-    (version "1.16.0")
+    (version "1.16.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/wesnoth/wesnoth-"
@@ -4154,7 +4154,7 @@ falling, themeable graphics and sounds, and replays.")
                                   "wesnoth-" version ".tar.bz2"))
               (sha256
                (base32
-                "0qs102ws46z0cqyk3maxd1c4bywswlacbqkpmb51x9jd8c746vhz"))))
+                "0cyrwmdg93pqpdm7030540jznaky9rda355i9ym8am4k9civlcwf"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))                    ;no check target
@@ -6405,14 +6405,14 @@ with the mouse isn’t always trivial.")
 (define-public chroma
   (package
     (name "chroma")
-    (version "1.19")
+    (version "1.20")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://level7.org.uk/chroma/download/chroma-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "19ybvv0dkql913xpgjgxyyy50s72vajc7hm83zsvy2lsq8lhg76q"))))
+                "02hn448ckfxbx2fqr9wgf66rwl0vr4gl87yvsr5fc99zz9zw2f5v"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; no tests included

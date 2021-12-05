@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2021 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020, 2021 Marius Bakke <marius@gnu.org>
@@ -93,6 +93,19 @@
 platform-neutral API for system level and libc-like functions.  It is used
 in the Mozilla clients.")
     (license license:mpl2.0)))
+
+(define-public nspr-4.32
+  (package
+    (inherit nspr)
+    (version "4.32")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "https://ftp.mozilla.org/pub/mozilla.org/nspr/releases/v"
+                   version "/src/nspr-" version ".tar.gz"))
+             (sha256
+              (base32
+               "0v3zds1id71j5a5si42a658fjz8nv2f6zp6w4gqrqmdr6ksz8sxv"))))))
 
 ;;; Note: When updating, verify that the nss-certs package still builds fine
 ;;; as it inherits its source from the nss package.
@@ -208,3 +221,6 @@ applications.  Applications built with NSS can support SSL v2 and v3, TLS,
 PKCS #5, PKCS #7, PKCS #11, PKCS #12, S/MIME, X.509 v3 certificates, and other
 security standards.")
     (license license:mpl2.0)))
+
+(define nss/fixed
+  (package-with-extra-patches nss (search-patches "nss-CVE-2021-43527.patch")))
