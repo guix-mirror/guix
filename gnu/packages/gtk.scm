@@ -863,12 +863,7 @@ is part of the GNOME accessibility project.")
     (propagated-inputs
      `(("atk" ,atk)
        ("cairo" ,cairo)
-       ;; SVG support is optional and requires librsvg, which pulls in rust.
-       ;; Rust is not supported well on every architecture yet.
-       ("gdk-pixbuf" ,(if (string-prefix? "x86_64" (or (%current-target-system)
-                                                       (%current-system)))
-                          librsvg
-                          gdk-pixbuf))
+       ("gdk-pixbuf" ,(librsvg-for-system))
        ("glib" ,glib)
        ("pango" ,pango)))
     (inputs
