@@ -7940,8 +7940,7 @@ Java.")
        #:jar-name "log4j-core.jar"
        #:jdk ,icedtea-8
        #:make-flags
-       (list (string-append "-Ddist.dir=" (assoc-ref %outputs "out")
-                            "/share/java"))
+       ,#~(list (string-append "-Ddist.dir=" #$output "/share/java"))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'enter-dir
