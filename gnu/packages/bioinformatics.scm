@@ -11380,16 +11380,14 @@ analyses in addition to large-scale sequence-level searches.")
                  (("-I \\$\\{SAMTOOLS_DIR\\}")
                   (string-append "-I" (assoc-ref inputs "samtools")
                                  "/include/samtools"))
-                 (("-lz ") "-lz -lpthread "))
-               #t))
+                 (("-lz ") "-lz -lpthread "))))
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
                (for-each (lambda (tool)
                            (install-file tool
                                          (string-append (assoc-ref outputs "out")
                                                         "/bin")))
-                         '("j_count" "b_count" "sjcount"))
-               #t)))))
+                         '("j_count" "b_count" "sjcount")))))))
       (inputs
        `(("samtools" ,samtools-0.1)
          ("zlib" ,zlib)))
