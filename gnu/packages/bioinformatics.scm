@@ -12036,7 +12036,14 @@ million cells.")
          "1jbsh01f57zj4bhvjr3jh4532zznqd6nccmgrl3qi9gnhkf7c4y0"))))
     (build-system python-build-system)
     (arguments
-     `(#:tests? #f)) ; TODO: Enable after migration to scikit-learn.
+     `(#:tests? #f ; no tests are included
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'do-not-fail-to-find-sklearn
+           (lambda _
+             ;; XXX: I have no idea why it cannot seem to find sklearn.
+             (substitute* "setup.py"
+               (("'sklearn'") "")))))))
     (propagated-inputs
      `(("python-annoy" ,python-annoy)
        ("python-cython" ,python-cython)
