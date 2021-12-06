@@ -9602,7 +9602,11 @@ browser.")
                    (("java") (which "java"))
                    (("\\$REALDIR/../lib/commons-cli-1.1.jar")
                     (search-input-file inputs
-                                       "/share/java/commons-cli.jar"))
+                                       (string-append "/lib/m2/commons-cli/commons-cli/"
+                                                      ,(package-version java-commons-cli)
+                                                      "/commons-cli-"
+                                                      ,(package-version java-commons-cli)
+                                                      ".jar")))
                    (("REALDIR=.*")
                     (string-append "REALDIR=" bin "\n")))
                  (install-file "README.txt" doc)
