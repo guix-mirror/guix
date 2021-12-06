@@ -1083,6 +1083,41 @@ show number of files, total lines within those files and code, comments, and
 blanks grouped by language.")
     (license (list license:expat license:asl2.0))))
 
+(define-public vivid
+  (package
+    (name "vivid")
+    (version "0.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "vivid" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "01fds6dm19bqgqydaa6n051v9l4wh9rb5d6sr9akwp2cc0fs43b7"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-ansi-colours" ,rust-ansi-colours-1)
+        ("rust-clap" ,rust-clap-2)
+        ("rust-dirs" ,rust-dirs-3)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-rust-embed" ,rust-rust-embed-5)
+        ("rust-yaml-rust" ,rust-yaml-rust-0.4))))
+    (home-page "https://github.com/sharkdp/vivid")
+    (synopsis "LS_COLORS environment variable manager")
+    (description
+     "vivid is a generator for the @code{LS_COLORS} environment variable that
+controls the colorized output of ls, tree, fd, bfs, dust and many other tools.
+
+It uses a YAML configuration format for the filetype-database and the color
+themes.  In contrast to @command{dircolors}, the database and the themes are
+organized in different files.  This allows users to choose and customize color
+themes independent from the collection of file extensions.  Instead of using
+cryptic ANSI escape codes, colors can be specified in the RRGGBB format and
+will be translated to either truecolor (24-bit) ANSI codes or 8-bit codes for
+older terminal emulators.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public watchexec
   (package
     (name "watchexec")
