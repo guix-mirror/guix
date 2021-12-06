@@ -6396,7 +6396,9 @@ MIDI drums and comes as two separate drumkits: Black Pearl and Red Zeppelin.")
         (file-name (git-file-name name version))
         (sha256
           (base32
-            "17ys2vvhncx9i3ydg3xwgz1d3gqv4yr5mqi7vr0i0ca6nad6x3d4"))))
+            "17ys2vvhncx9i3ydg3xwgz1d3gqv4yr5mqi7vr0i0ca6nad6x3d4"))
+        ;; Apply GCC 9 fixes from https://github.com/mtytel/helm/pull/233
+        (patches (search-patches "helm-fix-gcc-9-build.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f  ; no "check" target
