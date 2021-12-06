@@ -2777,27 +2777,22 @@ GUI.")
 (define-public poke
   (package
     (name "poke")
-    (version "1.3")
+    (version "1.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/poke/poke-" version
                                   ".tar.gz"))
               (sha256
-               (base32
-                "06qgry1pal2vampmbmc1lzlhf1qnjkd8py781r5h020v981n6y5s"))))
+               (base32 "095a0qal1fwnqxnal0xb4mp0n4zy97j3ww1j04ij3jb0jpr4s1ff"))))
     (build-system gnu-build-system)
     ;; The GUI, which we elide, requires tcl and tk.
     (native-inputs `(;; Requires bison 3.6+ but we currently only have 3.5.
                      ;; Bison 3.6 will be available in the next core update.
                      ("bison-3.6" ,bison-3.6)
-                     ("clisp" ,clisp)
                      ("dejagnu" ,dejagnu)
                      ("flex" ,flex)
                      ("libtool" ,libtool)
-                     ("perl" ,perl)
-                     ("pkg-config" ,pkg-config)
-                     ("python-2" ,python-2)
-                     ("python-3" ,python-3)))
+                     ("pkg-config" ,pkg-config)))
     ;; FIXME: Enable NBD support by adding `libnbd' (currently unpackaged).
     (inputs `(("json-c" ,json-c)
               ("libgc" ,libgc)
