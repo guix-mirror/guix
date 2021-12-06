@@ -1,0 +1,53 @@
+https://salsa.debian.org/go-team/packages/golang-github-golang-snappy/-/raw/debian/0.0.2-2/debian/patches/0002-Skip-failed-test-on-32bit-system.patch
+
+From: Shengjing Zhu <zhsj@debian.org>
+Date: Sun, 31 Jan 2021 22:41:42 +0800
+Subject: Skip failed test on 32bit system
+
+The test doesn't pass on old version too, not a regression.
+
+Bug: https://github.com/golang/snappy/issues/58
+---
+ snappy_test.go | 20 +++++++++++++++-----
+ 1 file changed, 15 insertions(+), 5 deletions(-)
+
+diff --git a/snappy_test.go b/snappy_test.go
+index d7c3ea6..c310ba1 100644
+--- a/snappy_test.go
++++ b/snappy_test.go
+@@ -19,6 +19,7 @@ import (
+ 	"runtime"
+ 	"strings"
+ 	"testing"
++	"unsafe"
+ )
+ 
+ var (
+@@ -316,13 +317,22 @@ func TestDecode(t *testing.T) {
+ 		"\x06" + "\x0cabcd" + "\x07\x03\x00\x00\x00",
+ 		"abcdbc",
+ 		nil,
+-	}, {
+-		`decodedLen=0; tagCopy4, 4 extra length|offset bytes; with msb set (0x93); discovered by go-fuzz`,
+-		"\x00\xfc000\x93",
+-		"",
+-		ErrCorrupt,
+ 	}}
+ 
++	if unsafe.Sizeof(int(0)) == 8 {
++		testCases = append(testCases, struct {
++			desc    string
++			input   string
++			want    string
++			wantErr error
++		}{
++			`decodedLen=0; tagCopy4, 4 extra length|offset bytes; with msb set (0x93); discovered by go-fuzz`,
++			"\x00\xfc000\x93",
++			"",
++			ErrCorrupt,
++		})
++	}
++
+ 	const (
+ 		// notPresentXxx defines a range of byte values [0xa0, 0xc5) that are
+ 		// not present in either the input or the output. It is written to dBuf

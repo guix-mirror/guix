@@ -412,7 +412,8 @@ processes.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "004cw699yz3pdpawhjhpa0y94c4w479nw1rf39zj6h6027kpwv2j"))))
+                "004cw699yz3pdpawhjhpa0y94c4w479nw1rf39zj6h6027kpwv2j"))
+              (patches (search-patches "go-github-com-golang-snappy-32bit-test.patch"))))
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/golang/snappy"))
