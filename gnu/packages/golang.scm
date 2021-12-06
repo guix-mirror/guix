@@ -3885,7 +3885,18 @@ which satisfies the cron expression.")
         (file-name (git-file-name name version))
         (sha256
          (base32
-          "01wj12jzsdqlnidpyjssmj0r4yavlqy7dwrg7adqd8dicjc4ncsa"))))
+          "01wj12jzsdqlnidpyjssmj0r4yavlqy7dwrg7adqd8dicjc4ncsa"))
+        (modules '((guix build utils)))
+        (snippet
+         '(begin
+            ;; https://github.com/go-yaml/yaml/issues/441 and
+            ;; https://github.com/go-yaml/yaml/pull/442
+            ;; Don't assume 64-bit wide integers
+            (substitute* "decode_test.go"
+              (("bin: (-0b1000000000000000000000000000000000000000000000000000000000000000)" all number)
+               (string-append "int64_min_base2: " number))
+              (("map\\[string\\]interface\\{\\}\\{\"bin\": -9223372036854775808\\}")
+               "map[string]int64{\"int64_min_base2\": math.MinInt64}"))))))
     (build-system go-build-system)
     (arguments
      '(#:import-path "gopkg.in/yaml.v2"))
