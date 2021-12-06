@@ -16702,7 +16702,11 @@ for Kivy, the multitouch application platform.")
          (add-after 'patch-generated-file-shebangs 'set-sdl-paths
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "KIVY_SDL2_PATH"
-                     (search-input-directory inputs "/include/SDL2")))))))
+                     (search-input-directory inputs "/include/SDL2"))))
+         (add-before 'sanity-check 'set-home
+           (lambda _
+             ;; 'kivy/__init__.py' wants to create $HOME/.kivy.
+             (setenv "HOME" (getcwd)))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("python-cython" ,python-cython)))
@@ -16710,13 +16714,15 @@ for Kivy, the multitouch application platform.")
      `(("gstreamer" ,gstreamer)
        ("mesa" ,mesa)
        ("sdl-union"
-        ,(sdl-union (list sdl2 sdl2-image sdl2-mixer sdl2-ttf)))))
+        ,(sdl-union (list sdl2 sdl2-image sdl2-mixer sdl2-ttf)))
+       ("python-docutils" ,python-docutils)
+       ("python-kivy-garden" ,python-kivy-garden)
+       ("python-pygments" ,python-pygments)))
     (home-page "https://kivy.org")
-    (synopsis
-     "Multitouch application framework")
+    (synopsis "Multitouch application framework")
     (description
-     "A software library for rapid development of
-     hardware-accelerated multitouch applications.")
+     "Kivy is a software library for rapid development of hardware-accelerated
+multitouch applications.")
     (license license:expat)))
 
 (define-public python2-kivy
