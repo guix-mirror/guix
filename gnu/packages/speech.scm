@@ -342,7 +342,8 @@ be used by the sighted.")
                             "/bin/rm")
              (string-append "ECHO_N="
                             (assoc-ref %build-inputs "coreutils")
-                            "/bin/printf \"%s\""))
+                            "/bin/printf \"%s\"")
+             "LINUXAUDIO=alsa")
        #:parallel-build? #f ; not supported
        #:modules ((guix build gnu-build-system)
                   (guix build utils)
@@ -505,7 +506,8 @@ be used by the sighted.")
          (add-before 'configure 'bootstrap
            (lambda _ (invoke "autoreconf" "-vif"))))))
     (inputs
-     (list ncurses))
+     (list alsa-lib
+           ncurses))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
