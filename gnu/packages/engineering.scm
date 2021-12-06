@@ -2807,12 +2807,12 @@ GUI.")
      ;; To build the GUI, add the `--enable-gui' configure flag.
      ;; To enable the "hyperlink server", add the `--enable-hserver' flag.
      `(#:configure-flags '("--enable-mi")))
-    (home-page "http://jemarch.net/poke.html")
-    (synopsis "Interactive, extensible editor for binary data")
-    (description "GNU poke is an interactive, extensible editor for binary
-  data.  Not limited to editing basic entities such as bits and bytes, it
-  provides a full-fledged procedural, interactive programming language designed
-  to describe data structures and to operate on them.")
+    (home-page "https://www.gnu.org/software/poke/#documentation")
+    (synopsis "Editing of arbitrary binary data")
+    (description "GNU poke is an interactive, extensible editor for binary data.
+Not limited to editing basic entities such as bits and bytes, it provides a
+full-fledged procedural, interactive programming language designed to describe
+data structures and to operate on them.")
     (license license:gpl3+)))
 
 (define-public pcb2gcode
