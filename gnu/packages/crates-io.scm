@@ -14768,6 +14768,23 @@ Diesel.")
      "This crate provides all necessary tools for comparing word sequences.")
     (license license:expat)))
 
+(define-public rust-diffr-lib-0.1
+  (package
+    (name "rust-diffr-lib")
+    (version "0.1.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "diffr-lib" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32 "0id3hpblvvcw4ydcd1cc7wgcwqjbh3grlihrmd8zp7k0d2h47i3g"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/mookid/diffr")
+    (synopsis "Implementation of Myers diff algorithm")
+    (description "An implementation of Myers diff algorithm.")
+    (license license:expat)))
+
 (define-public rust-diffs-0.3
   (package
     (name "rust-diffs")
