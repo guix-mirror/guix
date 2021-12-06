@@ -1054,7 +1054,8 @@ by GnuPG's symmetrical encryption.")
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("intltool" ,intltool)))
     (arguments
-     `(#:phases
+     `(#:configure-flags '("CFLAGS=-O2 -g -fcommon")
+       #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'pre-configure
            ;; The file po/POTFILES.in ends up missing for some reason in
