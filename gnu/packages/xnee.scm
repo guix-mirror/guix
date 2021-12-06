@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -38,6 +38,8 @@
               (base32
                "04n2lac0vgpv8zsn7nmb50hf3qb56pmj90dmwnivg09gyrf1x92j"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("CFLAGS=-O2 -g -fcommon")))
     (inputs
      `(("gtk+" ,gtk+-2)
        ("libx11" ,libx11)
