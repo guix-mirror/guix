@@ -150,6 +150,46 @@ highlighting for a large number of languages, git integration, and automatic
 paging.")
     (license (list license:expat license:asl2.0))))
 
+(define-public diffr
+  (package
+    (name "diffr")
+    (version "0.1.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "diffr" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "1b0mz1ki2ksxni6g49x5l5j9ijpyhc11mywvxr9i9h3nr098nc5l"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:install-source? #f
+       ;; https://github.com/mookid/diffr/issues/79
+       #:cargo-test-flags
+       '("--release" "--"
+         "--skip=tests::success"
+         "--skip=test_cli::color_invalid_attribute_name"
+         "--skip=test_cli::color_invalid_color_not_done"
+         "--skip=test_cli::color_invalid_color_value_ansi"
+         "--skip=test_cli::color_invalid_color_value_name"
+         "--skip=test_cli::color_invalid_color_value_rgb"
+         "--skip=test_cli::color_invalid_face_name"
+         "--skip=test_cli::color_ok"
+         "--skip=test_cli::color_ok_multiple"
+         "--skip=test_cli::color_only_face_name"
+         "--skip=test_cli::debug_flag")
+       #:cargo-inputs
+       (("rust-atty" ,rust-atty-0.2)
+        ("rust-clap" ,rust-clap-2)
+        ("rust-diffr-lib" ,rust-diffr-lib-0.1)
+        ("rust-termcolor" ,rust-termcolor-1))))
+    (home-page "https://github.com/mookid/diffr")
+    (synopsis "Longest Common Sequence based diff highlighting tool")
+    (description
+     "This package provides an @acronym{LCS, longest common sequence} based diff
+highlighting tool to ease code review from your terminal.")
+    (license license:expat)))
+
 (define-public drill
   (package
     (name "drill")
