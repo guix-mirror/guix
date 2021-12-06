@@ -35,7 +35,12 @@
                     version ".tar.gz"))
               (sha256
                (base32
-                "18c3xg53d1vv7hlj43601jj7ks119fm6ndpwpv94irr2905806jn"))))
+                "18c3xg53d1vv7hlj43601jj7ks119fm6ndpwpv94irr2905806jn"))
+              ;; For reproducibility
+              (modules '((guix build utils)))
+              (snippet
+               '(substitute* "libmd/Makefile.PL"
+                  (("readdir DIR") "sort readdir DIR")))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Math-Cephes")
     (synopsis "Perl interface to the Cephes math library")
