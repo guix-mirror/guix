@@ -16010,14 +16010,14 @@ let users kill or mark things easily.")
 (define-public emacs-csv-mode
   (package
     (name "emacs-csv-mode")
-    (version "1.16")
+    (version "1.17")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/"
                            "csv-mode-" version ".tar"))
        (sha256
-        (base32 "1i43b2p31xhrf97xbdi35y550ysp69fasa5gcrhg6iyxw176807p"))))
+        (base32 "16kv3n70pl4h3jfmmqy9bzflsm4nv7cwvrj7g4mgy8yb76nbyka2"))))
     (build-system emacs-build-system)
     (home-page "https://elpa.gnu.org/packages/csv-mode.html")
     (synopsis "Major mode for editing comma/char separated values")
