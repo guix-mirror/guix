@@ -16655,6 +16655,33 @@ as well.")
      @end itemize")
     (license license:bsd-3)))
 
+(define-public python-kivy-garden
+  (package
+    (name "python-kivy-garden")
+    (version "0.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "kivy-garden" version))
+       (sha256
+        (base32 "0wkcpr2zc1q5jb0bi7v2dgc0vs5h1y7j42mviyh764j2i0kz8mn2"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-after 'install 'remove-bat-file
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out")))
+                        (delete-file
+                         (string-append out "/bin/garden.bat"))))))))
+    (propagated-inputs
+     `(("python-requests" ,python-requests)))
+    (home-page "https://github.com/kivy-garden/garden")
+    (synopsis "Garden tool for Kivy flowers")
+    (description
+     "This package provides the @command{garden} command to install packages
+for Kivy, the multitouch application platform.")
+    (license license:expat)))
+
 (define-public python-kivy
   (package
     (name "python-kivy")
