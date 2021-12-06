@@ -2269,7 +2269,7 @@ use with virtualization provisioning tools")
     (version "20211127")
     (source (origin
               (method url-fetch)
-              (uri "https://othacehe.org/work/osinfo-db-20211127.tar.xz")
+              (uri "https://othacehe.org/files/osinfo-db-20211127.tar.xz")
               (sha256
                (base32
                 "0kvgdsvpm51a6vqs4k6zmdbc5vvj8mnsgm4pa7h79d9gg244gb3s"))))))
