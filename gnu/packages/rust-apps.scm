@@ -191,6 +191,42 @@ paging.")
 Ansible syntax.  Benchmark files can be written in YAML.")
     (license license:gpl3)))
 
+(define-public dutree
+  (package
+    (name "dutree")
+    (version "0.2.18")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "dutree" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32 "1611h27i8fm3jndscd6w65z8z7w09nnrm61vdgs9kb8ln57gqm8x"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:install-source? #f
+       #:cargo-inputs
+       (("rust-getopts" ,rust-getopts-0.2)
+        ("rust-regex" ,rust-regex-1)
+        ("rust-signal-hook" ,rust-signal-hook-0.1)
+        ("rust-terminal-size" ,rust-terminal-size-0.1)
+        ("rust-unicode-segmentation" ,rust-unicode-segmentation-1)
+        ("rust-unicode-width" ,rust-unicode-width-0.1))))
+    (home-page "https://ownyourbits.com/2018/03/25/analyze-disk-usage-with-dutree/")
+    (synopsis "Command line tool to analyze disk usage")
+    (description
+     "@command{dutree} is command line tool to analyze disk usage.
+Features include:
+@enumerate
+@item coloured output, according to the @code{LS_COLORS} environment variable.
+@item display the file system tree.
+@item ability to aggregate small files.
+@item ability to exclude files or directories.
+@item ability to compare different directories.
+@item fast, written in Rust.
+@end enumerate\n")
+    (license license:gpl3)))
+
 (define-public exa
   (package
     (name "exa")
