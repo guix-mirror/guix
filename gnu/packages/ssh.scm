@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012-2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
@@ -200,11 +200,11 @@ a server that supports the SSH-2 protocol.")
    (native-inputs `(("groff" ,groff)
                     ("pkg-config" ,pkg-config)))
    (inputs `(("libedit" ,libedit)
-             ("libfido2" ,libfido2)
              ("openssl" ,openssl)
              ,@(if (hurd-target?)
-                 '()
-                 `(("pam" ,linux-pam)))
+                   '()
+                   `(("pam" ,linux-pam)
+                     ("libfido2" ,libfido2)))     ;fails to build on GNU/Hurd
              ("mit-krb5" ,mit-krb5)
              ("zlib" ,zlib)
              ("xauth" ,xauth)))        ; for 'ssh -X' and 'ssh -Y'
@@ -229,10 +229,13 @@ a server that supports the SSH-2 protocol.")
                           ;; Enable PAM support in sshd.
                           ,,@(if (hurd-target?)
                                '()
-                               '("--with-pam"))
+                               '("--with-pam"
 
-                          ;; supports creation and use of ecdsa-sk, ed25519-sk keys
-                          "--with-security-key-builtin"
+                                 ;; Support creation and use of ecdsa-sk,
+                                 ;; ed25519-sk keys.
+                                 "--with-security-key-builtin"))
+
+
 
                           ;; "make install" runs "install -s" by default,
                           ;; which doesn't work for cross-compiled binaries
