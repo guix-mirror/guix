@@ -3875,7 +3875,7 @@ which satisfies the cron expression.")
 (define-public go-gopkg-in-yaml-v2
   (package
     (name "go-gopkg-in-yaml-v2")
-    (version "2.2.2")
+    (version "2.4.0")
     (source
       (origin
         (method git-fetch)
@@ -3885,7 +3885,7 @@ which satisfies the cron expression.")
         (file-name (git-file-name name version))
         (sha256
          (base32
-          "01wj12jzsdqlnidpyjssmj0r4yavlqy7dwrg7adqd8dicjc4ncsa"))
+          "1pbmrpj7gcws34g8vwna4i2nhm9p6235piww36436xhyaa10cldr"))
         (modules '((guix build utils)))
         (snippet
          '(begin
