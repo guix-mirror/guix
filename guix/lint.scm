@@ -478,6 +478,7 @@ of a package, and INPUT-NAMES, a list of package specifications such as
             "help2man"
             "intltool"
             "itstool"
+            "kdoctools"
             "libtool"
             "m4"
             "qttools"
