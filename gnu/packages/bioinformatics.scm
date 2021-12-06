@@ -9584,9 +9584,7 @@ browser.")
                 (modules '((guix build utils)))
                 ;; Remove bundled Java library archives.
                 (snippet
-                 '(begin
-                    (for-each delete-file (find-files "lib" ".*"))
-                    #t))))
+                 '(for-each delete-file (find-files "lib" ".*")))))
       (build-system ant-build-system)
       (arguments
        `(#:tests? #f ; no tests included
