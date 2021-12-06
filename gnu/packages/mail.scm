@@ -2143,14 +2143,14 @@ hashing scheme (such as scrypt) plug-in for @code{Dovecot}.")
 (define-public isync
   (package
     (name "isync")
-    (version "1.4.3")
+    (version "1.4.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/isync/isync/"
                            version "/isync-" version ".tar.gz"))
        (sha256 (base32
-                "024p3glj4p7fhrssw5sr55arls9zna1igxxrspxlfd6sbds21ixl"))))
+                "1zq0wwvmqsl9y71546dr0aygzn9gjjfiw19hlcq87s929y4p6ckw"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)))
