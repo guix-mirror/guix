@@ -396,7 +396,7 @@ application = get_wsgi_application()\n") port)))))
                            ;; Contains the templates for the generated HTML
                            "templates"))
                (delete-file-recursively
-                (string-append out-site-packages "patchwork/tests"))
+                (string-append out-site-packages "/patchwork/tests"))
 
                ;; Install patchwork related tools
                (for-each (lambda (file)
