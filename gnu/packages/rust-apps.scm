@@ -13,6 +13,7 @@
 ;;; Copyright © 2021 Alexandru-Sergiu Marton <brown121407@posteo.ro>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Petr Hodina <phodina@protonmail.com>
+;;; Copyright © 2021 jgart <jgart@dismail.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1233,6 +1234,56 @@ C-compatible) software.")
      "This package fetches and shows tldr help pages for many CLI commands.
 Full featured offline client with caching support.")
     (license (list license:expat license:asl2.0))))
+
+(define-public git-absorb
+  (package
+    (name "git-absorb")
+    (version "0.6.6")
+    (source
+     (origin
+       ;; crates.io does not include the manual page.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/tummychow/git-absorb")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "04v10bn24acify34vh5ayymsr1flcyb05f3az9k1s2m6nlxy5gb9"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-anyhow" ,rust-anyhow-1)
+        ("rust-clap" ,rust-clap-2)
+        ("rust-git2" ,rust-git2-0.13)
+        ("rust-memchr" ,rust-memchr-2)
+        ("rust-slog" ,rust-slog-2)
+        ("rust-slog-async" ,rust-slog-async-2)
+        ("rust-slog-term" ,rust-slog-term-2))
+       #:cargo-development-inputs
+       (("rust-tempfile" ,rust-tempfile-3))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'relax-version-requirements
+           (lambda _
+             (substitute* "Cargo.toml"
+               (("2.5") "2")
+               (("~2.3\"") "2\"")
+               (("3.1") "3"))))
+         (add-after 'install 'install-manual-page
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out   (assoc-ref outputs "out"))
+                    (man   (string-append out "/share/man/man1")))
+               (install-file "Documentation/git-absorb.1" man)))))))
+    (inputs
+     `(("zlib" ,zlib)))
+    (home-page "https://github.com/tummychow/git-absorb")
+    (synopsis "Git tool for making automatic fixup commits")
+    (description
+     "@code{git absorb} automatically absorbs staged changes into their
+current branch.  @code{git absorb} will automatically identify which commits
+are safe to modify, and which staged changes belong to each of those commits.
+It will then write @code{fixup!} commits for each of those changes.")
+    (license license:bsd-3)))
 
 (define-public zoxide
   (package
