@@ -39,6 +39,93 @@
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tls))
 
+(define-public rust-sequoia-openpgp-1
+  (package
+    (name "rust-sequoia-openpgp")
+    (version "1.6.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "sequoia-openpgp" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32 "1mdprsijszkg2j6jk1iq7q1z9yikq598y12m5zbv94fs37xlx3qm"))
+        (modules '((guix build utils)))
+        (snippet
+         ;; Remove dependencies on rust-crypto and win32-cng
+         '(let* ((other-crypto-pkgs
+                  (list ;; rust-crypto
+                   "aes" "block-modes" "block-padding" "blowfish" "cast5"
+                   "cipher" "des" "digest" "eax" "ed25519-dalek"
+                   "generic-array" "idea" "md-5" "num-bigint-dig" "rand"
+                   "ripemd160" "rsa" "sha-1" "sha2" "twofish" "typenum"
+                   "x25519-dalek" "p256" "rand_core" "rand_core" "ecdsa"
+                   ;; win32-cng
+                   "eax" "winapi" "win-crypto-ng" "ed25519-dalek"
+                   "num-bigint-dig"))
+                 (pkgs-pattern (pk (string-join
+                                    (list "^\\[dependencies\\.("
+                                          (string-join other-crypto-pkgs "|")
+                                          ")\\]")
+                                    ""))))
+            (substitute* "Cargo.toml"
+              ((pkgs-pattern line name) (string-append "[off." name "]"))
+              (("^crypto-cng =" line) (string-append "# " line))
+              (("^crypto-rust =" line) (string-append "# " line))
+              (("^\\[(target\\.\"cfg\\(windows\\))" line name)
+               (string-append "[off." name)))))))
+    (build-system cargo-build-system)
+    (native-inputs
+     (list clang pkg-config))
+    (inputs
+     (list gmp nettle))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-anyhow" ,rust-anyhow-1)
+        ("rust-backtrace" ,rust-backtrace-0.3)
+        ("rust-base64" ,rust-base64-0.13)
+        ("rust-buffered-reader" ,rust-buffered-reader-1)
+        ("rust-bzip2" ,rust-bzip2-0.4)
+        ("rust-chrono" ,rust-chrono-0.4)
+        ("rust-dyn-clone" ,rust-dyn-clone-1)
+        ("rust-flate2" ,rust-flate2-1)
+        ("rust-idna" ,rust-idna-0.2)
+        ("rust-itertools" ,rust-itertools-0.10)
+        ("rust-lalrpop" ,rust-lalrpop-0.19)
+        ("rust-lalrpop-util" ,rust-lalrpop-util-0.19)
+        ("rust-lazy-static" ,rust-lazy-static-1)  ;; 1.4.0
+        ("rust-libc" ,rust-libc-0.2)  ;; 0.2.66
+        ("rust-memsec" ,rust-memsec-0.6)
+        ("rust-nettle" ,rust-nettle-7)
+        ("rust-plotters" ,rust-plotters-0.3)
+        ("rust-regex" ,rust-regex-1)
+        ("rust-regex-syntax" ,rust-regex-syntax-0.6)
+        ("rust-sha1collisiondetection" ,rust-sha1collisiondetection-0.2)
+        ("rust-thiserror" ,rust-thiserror-1)
+        ("rust-unicode-normalization" ,rust-unicode-normalization-0.1)
+        ("rust-xxhash-rust" ,rust-xxhash-rust-0.8))
+       #:cargo-development-inputs
+       ;; keep the development-inputs to allow running tests easily
+       (("rust-criterion" ,rust-criterion-0.3)
+        ("rust-quickcheck" ,rust-quickcheck-0.9)
+        ("rust-rand" ,rust-rand-0.7)
+        ("rust-rpassword" ,rust-rpassword-5))))
+    (home-page "https://sequoia-pgp.org/")
+    (synopsis "OpenPGP data types and associated machinery")
+    (description "This crate aims to provide a complete implementation of
+OpenPGP as defined by RFC 4880 as well as some extensions (e.g., RFC 6637,
+which describes ECC cryptography) for OpenPGP.  This includes support for
+unbuffered message processing.
+
+A few features that the OpenPGP community considers to be deprecated (e.g.,
+version 3 compatibility) have been left out.  The developers have also updated
+some OpenPGP defaults to avoid foot guns (e.g., they selected modern algorithm
+defaults).
+
+This Guix package is built to use the nettle cryptographic library.")
+    (license license:lgpl2.0+)))
+
 (define-public sequoia
   (package
     (name "sequoia")
