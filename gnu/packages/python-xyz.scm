@@ -22764,7 +22764,8 @@ decisions with any given backend.")
                 (string-append "@pytest.mark.skip(reason=\"Disabled by Guix\")\n"
                                m)))))
          (replace 'check
-           (lambda _ (invoke "pytest" "-vv"))))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests? (invoke "pytest" "-vv")))))))
     (propagated-inputs
      `(("python-cloudpickle" ,python-cloudpickle)
        ("python-fsspec" ,python-fsspec)
