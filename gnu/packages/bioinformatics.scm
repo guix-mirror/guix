@@ -13337,7 +13337,11 @@ repeated areas between contigs.")
        (uri (pypi-uri "velocyto" version))
        (sha256
         (base32
-         "0fgygyzqgrq32dv6a00biq1p1cwi6kbl5iqblxq1kklj6b2mzmhs"))))
+         "0fgygyzqgrq32dv6a00biq1p1cwi6kbl5iqblxq1kklj6b2mzmhs"))
+       (modules '((guix build utils)))
+       ;; Delete generated C files.
+       (snippet
+        '(for-each delete-file (find-files "." "\\.c")))))
     (build-system python-build-system)
     (native-inputs
      `(("python-joblib" ,python-joblib)))
