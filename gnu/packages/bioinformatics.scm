@@ -7336,7 +7336,7 @@ sequences.")
          ;; no "configure" script
          (delete 'configure))))
     (inputs `(("zlib" ,zlib)))
-    (home-page "http://bioinf.wehi.edu.au/subread-package/")
+    (home-page "http://subread.sourceforge.net/")
     (synopsis "Tool kit for processing next-gen sequencing data")
     (description
      "The subread package contains the following tools: subread aligner, a
