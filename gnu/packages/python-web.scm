@@ -2399,7 +2399,8 @@ deprecation warnings to be issued when a variable is used.")
      '(;; The tests appear to require networking.
        #:tests? #f))
     (propagated-inputs
-     `(("python-pyopenssl" ,python-pyopenssl)))
+     `(("python-pyasn1" ,python-pyasn1)
+       ("python-pyopenssl" ,python-pyopenssl)))
     (synopsis "HTTPS support for Python's httplib and urllib2")
     (description "This is a HTTPS client implementation for httplib and urllib2
 based on PyOpenSSL.  PyOpenSSL provides a more fully-featured SSL implementation
