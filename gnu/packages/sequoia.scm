@@ -298,6 +298,49 @@ OpenPGP.
 This Guix package is built to use the nettle cryptographic library.")
     (license license:lgpl2.0+)))
 
+(define-public sequoia-sqv
+  (package
+    (name "sequoia-sqv")
+    (version "1.0.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "sequoia-sqv" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "0nrfjn64fm038x5dssipf7jxi27z741m5n5a7zsa9768zab1hr9d"))))
+    (build-system cargo-build-system)
+    (inputs
+     (list nettle openssl))
+    (native-inputs
+     (list clang pkg-config))
+    (arguments
+     `(#:tests? #f  ;; tests require data-files not provided in the package
+       #:install-source? #f
+       #:cargo-inputs
+       (("rust-anyhow" ,rust-anyhow-1)
+        ("rust-chrono" ,rust-chrono-0.4)
+        ("rust-clap" ,rust-clap-2)
+        ("rust-clap" ,rust-clap-2)
+        ("rust-sequoia-openpgp" ,rust-sequoia-openpgp-1))
+       #:cargo-development-inputs
+       (("rust-assert-cli" ,rust-assert-cli-0.6))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-other-crypto-features
+           (lambda _
+             (substitute* "Cargo.toml"
+               (("^crypto-cng =" line) (string-append "# " line))
+               (("^crypto-rust =" line) (string-append "# " line))))))))
+    (home-page "https://sequoia-pgp.org/")
+    (synopsis "Simple OpenPGP signature verification program")
+    (description "@code{sqv} verifies detached OpenPGP signatures.  It is a
+replacement for @code{gpgv}.  Unlike @code{gpgv}, it can take additional
+constraints on the signature into account.
+
+This Guix package is built to use the nettle cryptographic library.")
+    (license license:lgpl2.0+)))
+
 (define-public sequoia
   (package
     (name "sequoia")
