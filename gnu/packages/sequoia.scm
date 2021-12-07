@@ -248,6 +248,56 @@ defaults).
 This Guix package is built to use the nettle cryptographic library.")
     (license license:lgpl2.0+)))
 
+(define-public sequoia-sq
+  (package
+    (name "sequoia-sq")
+    (version "0.25.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "sequoia-sq" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "0j26vpp98i7zwwhqsvwj0zknj4s0s0ilfqpynj1vgd5laanhyr0d"))))
+    (build-system cargo-build-system)
+    (inputs
+     (list nettle openssl))
+    (native-inputs
+     (list clang pkg-config))
+    (arguments
+     `(#:tests? #f  ;; tests require data-files not provided in the package
+       #:install-source? #f
+       #:cargo-inputs
+       (("rust-anyhow" ,rust-anyhow-1)
+        ("rust-buffered-reader" ,rust-buffered-reader-1)
+        ("rust-chrono" ,rust-chrono-0.4)
+        ("rust-clap" ,rust-clap-2)
+        ("rust-clap" ,rust-clap-2)
+        ("rust-itertools" ,rust-itertools-0.9)
+        ("rust-rpassword" ,rust-rpassword-5)
+        ("rust-sequoia-autocrypt" ,rust-sequoia-autocrypt-0.23)
+        ("rust-sequoia-net" ,rust-sequoia-net-0.23)
+        ("rust-sequoia-openpgp" ,rust-sequoia-openpgp-1)
+        ("rust-tempfile" ,rust-tempfile-3)
+        ("rust-term-size" ,rust-term-size-0.3)
+        ("rust-tokio" ,rust-tokio-0.2))
+       #:cargo-development-inputs
+       (("rust-assert-cli" ,rust-assert-cli-0.6))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-other-crypto-features
+           (lambda _
+             (substitute* "Cargo.toml"
+               (("^crypto-cng =" line) (string-append "# " line))
+               (("^crypto-rust =" line) (string-append "# " line))))))))
+    (home-page "https://sequoia-pgp.org/")
+    (synopsis "Command-line frontend for Sequoia OpenPGP")
+    (description "This package provides the command-line frontend for Sequoia
+OpenPGP.
+
+This Guix package is built to use the nettle cryptographic library.")
+    (license license:lgpl2.0+)))
+
 (define-public sequoia
   (package
     (name "sequoia")
