@@ -1248,14 +1248,14 @@ also ensuring that the notebooks are running without errors.")
 (define-public python-pytest-console-scripts
   (package
     (name "python-pytest-console-scripts")
-    (version "1.2.0")
+    (version "1.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pytest-console-scripts" version))
        (sha256
         (base32
-         "073l2cz11013dl30zjr575ms78j9b2bsbdl1w0gmig37spbkh8aa"))))
+         "1qsw3i2h3psyi5avwf14panx8wxqfik2z7294dy37w8ha415iwn7"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
