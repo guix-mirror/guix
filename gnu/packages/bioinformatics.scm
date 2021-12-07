@@ -14083,8 +14083,9 @@ combinatorial configurations.\", G. Ehrlich - Journal of the ACM (JACM),
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
                (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
-                 (install-file "fsom" bin))
-               #t)))))
+                 (install-file "fsom" bin)))))))
+      (native-inputs
+       `(("gcc" ,gcc-6)))
       (home-page "https://github.com/ekg/fsom")
       (synopsis "Manage SOM (Self-Organizing Maps) neural networks")
       (description "A tiny C library for managing SOM (Self-Organizing Maps)
