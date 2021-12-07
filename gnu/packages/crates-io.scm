@@ -15293,25 +15293,22 @@ any data structure.  Supports derive on structs and enums.")
 functions.")
     (license (list license:expat license:asl2.0))))
 
-(define-public rust-directories-3
+(define-public rust-directories-4
   (package
     (name "rust-directories")
-    (version "3.0.1")
+    (version "4.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "directories" version))
-       (file-name
-        (string-append name "-" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "03ysv4m6mhsc3w1xnvncd5sxf7v2dz917awq6ksx0n0bsqwxdzpq"))))
+        (base32 "045jbj5y2f1fmjs9rfcw95y0vjydb2rqqhz1sdnqhdmxv96ms77m"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs
-       (("rust-dirs-sys" ,rust-dirs-sys-0.3))
-       #:cargo-development-inputs
-       (("rust-bencher" ,rust-bencher-0.1))))
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-dirs-sys" ,rust-dirs-sys-0.3))))
     (home-page "https://github.com/dirs-dev/directories-rs")
     (synopsis "Library for standard locations of data directories")
     (description
@@ -15322,6 +15319,25 @@ mechanisms defined by the XDG base/user directory specifications
 on Linux, the Known Folder API on Windows, and the Standard
 Directory guidelines on macOS.")
     (license (list license:expat license:asl2.0))))
+
+(define-public rust-directories-3
+  (package
+    (inherit rust-directories-4)
+    (name "rust-directories")
+    (version "3.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "directories" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "03ysv4m6mhsc3w1xnvncd5sxf7v2dz917awq6ksx0n0bsqwxdzpq"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-dirs-sys" ,rust-dirs-sys-0.3))
+       #:cargo-development-inputs
+       (("rust-bencher" ,rust-bencher-0.1))))))
 
 (define-public rust-directories-2
   (package
