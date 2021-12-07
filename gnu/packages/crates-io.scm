@@ -18595,8 +18595,29 @@ cross platform API.")
     (description "This package provides fixed-point numbers in Rust.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-fixedbitset-0.4
+  (package
+    (name "rust-fixedbitset")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "fixedbitset" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "17mnwa48dy11dnbasxa0c92sdj243acjl2ilhpcb1fa0pvxa93ir"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs (("rust-serde" ,rust-serde-1))))
+    (home-page "https://github.com/bluss/fixedbitset")
+    (synopsis "Simple bitset collection")
+    (description "FixedBitSet is a simple bitset collection.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-fixedbitset-0.2
   (package
+    (inherit rust-fixedbitset-0.4)
     (name "rust-fixedbitset")
     (version "0.2.0")
     (source
@@ -18606,13 +18627,7 @@ cross platform API.")
         (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "0kg03p777wc0dajd9pvlcnsyrwa8dhqwf0sd9r4dw0p82rs39arp"))))
-    (build-system cargo-build-system)
-    (home-page "https://github.com/petgraph/fixedbitset")
-    (synopsis "FixedBitSet is a simple bitset collection")
-    (description "FixedBitSet is a simple bitset collection.")
-    (license (list license:asl2.0
-                   license:expat))))
+          "0kg03p777wc0dajd9pvlcnsyrwa8dhqwf0sd9r4dw0p82rs39arp"))))))
 
 (define-public rust-fixedbitset-0.1
   (package
