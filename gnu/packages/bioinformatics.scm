@@ -2628,7 +2628,7 @@ databases.")
 (define-public clipper
   (package
     (name "clipper")
-    (version "2.0")
+    (version "2.0.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2637,10 +2637,16 @@ databases.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1bcag4lb5bkzsj2vg7lrq24aw6yfgq275ifrbhd82l7kqgbbjbkv"))))
+                "0508rgnfjk5ar5d1mjbjyrnarv4kw9ksq0m3jw2bmgabmb5v6ikk"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Delete pre-compiled files.
+                  (delete-file "clipper/src/peaks.so")))))
     (build-system python-build-system)
     (arguments
-     `(#:phases
+     `(#:tests? #false
+       #:phases
        (modify-phases %standard-phases
          (add-before 'reset-gzip-timestamps 'make-files-writable
            (lambda* (#:key outputs #:allow-other-keys)
@@ -2648,14 +2654,30 @@ databases.")
              ;; 'reset-gzip-timestamps' phase can do its work.
              (let ((out (assoc-ref outputs "out")))
                (for-each make-file-writable
-                         (find-files out "\\.gz$"))
-               #t)))
+                         (find-files out "\\.gz$")))))
+         (add-after 'unpack 'use-python3-for-cython
+           (lambda _
+             (substitute* "setup.py"
+               (("^setup")
+                "\
+peaks.cython_directives = {'language_level': '3'}
+readsToWiggle.cython_directives = {'language_level': '3'}
+setup"))))
          (add-after 'unpack 'disable-nondeterministic-test
            (lambda _
              ;; This test fails/succeeds non-deterministically.
              (substitute* "clipper/test/test_call_peak.py"
-               (("test_get_FDR_cutoff_mean") "_test_get_FDR_cutoff_mean"))
-             #t)))))
+               (("test_get_FDR_cutoff_mean") "_test_get_FDR_cutoff_mean"))))
+         ;; This doesn't work because "usage" is executed, and that calls
+         ;; exit(8).
+         (replace 'check
+           (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (with-directory-excursion "clipper/test"
+                 (invoke "python" "-m" "unittest")))))
+         ;; This is not a library
+         (delete 'sanity-check))))
     (inputs
      `(("htseq" ,htseq)
        ("python-pybedtools" ,python-pybedtools)
