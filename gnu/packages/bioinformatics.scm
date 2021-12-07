@@ -13207,7 +13207,7 @@ Torrent.")
 (define-public python-pyfit-sne
   (package
     (name "python-pyfit-sne")
-    (version "1.0.1")
+    (version "1.2.1")
     (source
      (origin
        (method git-fetch)
@@ -13216,8 +13216,9 @@ Torrent.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "13wh3qkzs56azmmgnxib6xfr29g7xh09sxylzjpni5j0pp0rc5qw"))))
+        (base32 "0f3n7wcmxbnqiisgimhpa6p5chqpb1hj69i6rpg2hv2671i8nn68"))))
     (build-system python-build-system)
+    (arguments '(#:tests? #false)) ; there are none
     (propagated-inputs
      `(("python-numpy" ,python-numpy)))
     (inputs
