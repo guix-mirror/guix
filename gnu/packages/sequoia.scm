@@ -23,6 +23,7 @@
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
+  #:use-module (guix gexp)
   #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages check) ;; python-pytest
@@ -339,6 +340,117 @@ replacement for @code{gpgv}.  Unlike @code{gpgv}, it can take additional
 constraints on the signature into account.
 
 This Guix package is built to use the nettle cryptographic library.")
+    (license license:lgpl2.0+)))
+
+(define (sequoia-package-origin version)
+  (origin
+    (method git-fetch)
+    (uri (git-reference
+          (url "https://gitlab.com/sequoia-pgp/sequoia.git")
+          (commit (string-append "openpgp/v" version))))
+    (sha256
+     (base32 "1cq1xgvllbpii5hfl3wlia2ayznpvhv8lq8g8ygwxga86ijg98lq"))
+    (file-name (git-file-name "sequoia" version))
+    (patches (search-patches "libsequoia-remove-store.patch"
+                             "libsequoia-fix-ffi-Makefile.patch"))))
+
+(define-public libsequoia
+  (package
+    (name "libsequoia")
+    (version "0.22.0")
+    (source (sequoia-package-origin "1.6.0"))
+    (build-system cargo-build-system)
+    (outputs '("out" "python"))
+    (native-inputs
+     (list clang pkg-config python-pytest python-pytest-runner
+           python-wrapper))
+    (inputs
+     (list gmp nettle openssl python python-cffi))
+    (arguments
+     (list
+      #:tests? #f ;; TODO make python tests find the shared object file
+      #:cargo-inputs
+      `(("rust-anyhow" ,rust-anyhow-1)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-memsec" ,rust-memsec-0.6)
+        ("rust-native-tls" ,rust-native-tls-0.2)
+        ("rust-proc-macro2" ,rust-proc-macro2-1)  ;; for ffi-macros
+        ("rust-quote" ,rust-quote-1)  ;; for ffi-macros
+        ("rust-sequoia-ipc" ,rust-sequoia-ipc-0.26)
+        ("rust-sequoia-net" ,rust-sequoia-net-0.23)
+        ("rust-sequoia-openpgp" ,rust-sequoia-openpgp-1)
+        ("rust-sha2" ,rust-sha2-0.8)  ;; for ffi-macros
+        ("rust-tokio" ,rust-tokio-1.8))
+      #:cargo-development-inputs
+      `(("rust-filetime" ,rust-filetime-0.2))
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'configure 'set-PREFIX
+            (lambda _
+              (setenv "PREFIX" #$output)))
+          (replace 'build
+            (lambda _
+              (invoke "make" "-C" "openpgp-ffi" "build-release")
+              (invoke "make" "-C" "ffi" "build-release")))
+          (delete 'package)  ;; cargo can't package a multi-crate workspace
+          (replace 'check
+            (lambda* (#:key tests?  #:allow-other-keys)
+              (when tests?
+                (begin
+                  (invoke "make" "-C" "openpgp-ffi" "check")
+                  (invoke "make" "-C" "ffi" "check")))))
+          (replace 'install
+            (lambda _
+              (invoke "make" "-C" "openpgp-ffi" "install")
+              (invoke "make" "-C" "ffi" "install")))
+          (add-after 'configure 'fix-build-environment
+            (lambda _
+              (delete-file "Cargo.toml")
+              (symlink "../.cargo" "openpgp-ffi/.cargo")
+              (symlink "../.cargo" "ffi/.cargo")
+              (for-each delete-file-recursively
+                       (find-files "guix-vendor" "^sequoia-[0-9]+\\.*"
+                                   #:directories? #t))))
+          (add-after 'unpack 'fix-for-python-output
+            (lambda _
+              (substitute* "ffi/lang/python/Makefile"
+                ;; adjust prefix for python package
+                (("PREFIX\\s*\\??=.*")
+                (string-append "PREFIX = " (pk #$output:python) "\n"))
+                ;; fix rpath to include the main package
+                (("\\WLDFLAGS=" text)
+                 (string-append text "'-Wl,-rpath=" #$output "/lib '"))
+                ;; make setuptools install into the prefix, see
+                ;; guix/build/python-build-system.scm for explanation
+               (("\\ssetup.py\\s+install\\s")
+                " setup.py install --root=/ --single-version-externally-managed "))))
+          (add-after 'unpack 'fix-Makefiles
+            (lambda _
+              (substitute* '("openpgp-ffi/Makefile")
+                (("^check-headers: force-build") "check-headers:"))))
+          (add-after 'unpack 'remove-other-crypto-features
+           (lambda _
+             (substitute* '("openpgp-ffi/Cargo.toml" "ffi/Cargo.toml")
+               (("^crypto-cng =" line) (string-append "# " line))
+               (("^crypto-rust =" line) (string-append "# " line)))))
+          (add-after 'unpack 'fix-missing-feature
+            (lambda _
+              (substitute* '("ffi/Cargo.toml")
+               (("^(tokio = .* features = \\[)" line)
+                (string-append line "\"net\", ")))))
+          (add-after 'unpack 'unbundle-crates
+            (lambda _
+              (substitute* '("openpgp-ffi/Cargo.toml" "ffi/Cargo.toml")
+                (("path = \"\\.\\./(openpgp|store|net|ipc)\",") "")))))))
+    (home-page "https://sequoia-pgp.org")
+    (synopsis "C/FFI interfaces for Sequoia-PGP")
+    (description "This package provides a C and FFI interface to both the
+low-level and a high-level API of Sequoia-PGP.
+
+Use with caution: This is an \"unofficial\" package, which are not officially
+released, but part of the Sequoia-PGP v1.6.0 archive.  So this package might
+even go away.")
     (license license:lgpl2.0+)))
 
 (define-public sequoia

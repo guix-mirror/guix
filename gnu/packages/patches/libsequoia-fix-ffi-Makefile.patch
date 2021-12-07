@@ -1,0 +1,32 @@
+From ed641d2048d131e077f54043764741b7e7b7fe03 Mon Sep 17 00:00:00 2001
+From: Hartmut Goebel <hartmut.goebel@pep.security>
+Date: Tue, 7 Dec 2021 16:42:43 +0100
+Subject: [PATCH] ffi: Update Makefile, remove rule remaining from store
+ removal.
+
+---
+ ffi/Makefile | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/ffi/Makefile b/ffi/Makefile
+index a5540db3..07328589 100644
+--- a/ffi/Makefile
++++ b/ffi/Makefile
+@@ -62,7 +62,6 @@ build-release:
+ 	    $(CARGO) build $(CARGO_FLAGS) --release --package sequoia-ffi
+ 	$(MAKE) -Clang/python build-release
+ 	$(call sequoia_pc,$(CARGO_TARGET_DIR)/release,true)
+-	$(MAKE) -C../store build-release
+ 
+ .PHONY: install
+ install: build-release
+@@ -82,7 +82,6 @@ install: build-release
+ 		$(DESTDIR)$(PREFIX)/lib/libsequoia_ffi.$(_SEQ_LIB_EXT)
+ 	$(INSTALL) $(CARGO_TARGET_DIR)/release/libsequoia_ffi.a \
+ 		$(DESTDIR)$(PREFIX)/lib/libsequoia_ffi.a
+-	$(MAKE) -C../store install
+ 	# Now the bindings.
+ 	$(MAKE) -Clang/python install
+ 
+-- 
+

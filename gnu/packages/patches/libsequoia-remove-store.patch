@@ -1,0 +1,432 @@
+Shortend version of
+From 351ad5e5e2dd67f427b7eb2e4d5d0b35d90ffaf7 Mon Sep 17 00:00:00 2001
+From: Justus Winter <justus@sequoia-pgp.org>
+Date: Wed, 24 Nov 2021 15:09:34 +0100
+Subject: [PATCH] store: Drop crate.
+
+  - The store has never been really used, and never reached a maturity
+    where it was useful.  And, we're on the verge of replacing it with
+    the Shared PGP Certificate Directory.
+---
+ Cargo.toml                               |    1 -
+ ffi/Cargo.toml                           |    4 +-
+ ffi/include/sequoia.h                    |    1 -
+ ffi/include/sequoia/store.h              |  409 ------
+ ffi/lang/python/sequoia/__init__.py      |    1 -
+ ffi/lang/python/sequoia/prelude.py       |    1 -
+ ffi/lang/python/sequoia/sequoia_build.py |    3 +-
+ ffi/lang/python/sequoia/store.py         |  246 ----
+ ffi/lang/python/tests/test_store.py      |   47 -
+ ffi/src/lib.rs                           |    2 -
+ ffi/src/store.rs                         |  659 ----------
+ 25 files changed, 3 insertions(+), 5064 deletions(-)
+ delete mode 100644 ffi/include/sequoia/store.h
+ delete mode 100644 ffi/lang/python/sequoia/store.py
+ delete mode 100644 ffi/lang/python/tests/test_store.py
+ delete mode 100644 ffi/src/store.rs
+
+diff --git a/Cargo.toml b/Cargo.toml
+index a4f48520..a573ddbf 100644
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -10,7 +10,6 @@ members = [
+     "openpgp",
+     "openpgp-ffi",
+     "sq",
+-    "store",
+ ]
+ 
+ [profile.release]
+diff --git a/ffi/Cargo.toml b/ffi/Cargo.toml
+index 53ddaf68..2ec84e6e 100644
+--- a/ffi/Cargo.toml
++++ b/ffi/Cargo.toml
+@@ -24,7 +24,6 @@ maintenance = { status = "actively-developed" }
+ [dependencies]
+ sequoia-ffi-macros = { path = "../ffi-macros", version = "0.22" }
+ sequoia-openpgp = { path = "../openpgp", version = "1.0.0", default-features = false }
+-sequoia-store = { path = "../store", version = "0.22", default-features = false }
+ sequoia-net = { path = "../net", version = "0.23", default-features = false }
+ sequoia-ipc = { path = "../ipc", version = "0.26", default-features = false }
+ anyhow = "1.0.18"
+@@ -42,10 +41,9 @@ crate-type = ["cdylib", "staticlib"]
+ bench = false
+ 
+ [features]
+-default = ["sequoia-openpgp/default", "sequoia-store/default"]
++default = ["sequoia-openpgp/default"]
+ crypto-nettle = ["sequoia-openpgp/crypto-nettle"]
+ crypto-cng = ["sequoia-openpgp/crypto-cng"]
+ compression = ["sequoia-openpgp/compression"]
+ compression-deflate = ["sequoia-openpgp/compression-deflate"]
+ compression-bzip2 = ["sequoia-openpgp/compression-bzip2"]
+-background-services = ["sequoia-store/background-services"]
+diff --git a/ffi/include/sequoia.h b/ffi/include/sequoia.h
+index 8c62ba8f..c32a2f3e 100644
+--- a/ffi/include/sequoia.h
++++ b/ffi/include/sequoia.h
+@@ -5,6 +5,5 @@
+ #include <sequoia/core.h>
+ #include <sequoia/openpgp.h>
+ #include <sequoia/net.h>
+-#include <sequoia/store.h>
+ 
+ #endif
+diff --git a/ffi/lang/python/sequoia/__init__.py b/ffi/lang/python/sequoia/__init__.py
+index 4f84346e..fc170e20 100644
+--- a/ffi/lang/python/sequoia/__init__.py
++++ b/ffi/lang/python/sequoia/__init__.py
+@@ -4,5 +4,4 @@ from . import (
+     openpgp,
+     core,
+     net,
+-    store,
+ )
+diff --git a/ffi/lang/python/sequoia/prelude.py b/ffi/lang/python/sequoia/prelude.py
+index 42b0156a..61efbab0 100644
+--- a/ffi/lang/python/sequoia/prelude.py
++++ b/ffi/lang/python/sequoia/prelude.py
+@@ -3,4 +3,3 @@ from .error import *
+ from .openpgp import *
+ from .core import *
+ from .net import *
+-from .store import *
+diff --git a/ffi/lang/python/sequoia/sequoia_build.py b/ffi/lang/python/sequoia/sequoia_build.py
+index a3ce2786..058f1380 100644
+--- a/ffi/lang/python/sequoia/sequoia_build.py
++++ b/ffi/lang/python/sequoia/sequoia_build.py
+@@ -14,8 +14,7 @@ defs = "".join(l
+                               open(join(pgp_inc, "openpgp/serialize.h")).readlines(),
+                               open(join(pgp_inc, "openpgp.h")).readlines(),
+                               open(join(sq_inc, "core.h")).readlines(),
+-                              open(join(sq_inc, "net.h")).readlines(),
+-                              open(join(sq_inc, "store.h")).readlines())
++                              open(join(sq_inc, "net.h")).readlines())
+                if not l.startswith('#'))
+ 
+ defs = defs.replace("INT_MAX", "{}".format(1<<31))
+diff --git a/ffi/lang/python/sequoia/store.py b/ffi/lang/python/sequoia/store.py
+deleted file mode 100644
+index 57d1b18f..00000000
+--- a/ffi/lang/python/sequoia/store.py
++++ /dev/null
+@@ -1,246 +0,0 @@
+-from _sequoia import ffi, lib
+-
+-from .error import Error
+-from .glue import _str, _static_str, SQObject, sq_iterator, sq_time
+-from .net import NetworkPolicy
+-from .openpgp import Fingerprint, Cert
+-
+-class Store(object):
+-    @classmethod
+-    def log(cls, ctx):
+-        yield from sq_iterator(
+-            ffi.gc(
+-                lib.sq_store_server_log(ctx.ref()),
+-                lib.sq_log_iter_free),
+-            lib.sq_log_iter_next,
+-            lambda x: Log(x, context=ctx))
+-
+-    @classmethod
+-    def list_keys(cls, ctx):
+-        def next_fn(i):
+-            fpp = ffi.new("pgp_fingerprint_t[1]")
+-            key = lib.sq_key_iter_next(i, fpp)
+-            if key == ffi.NULL:
+-                return ffi.NULL
+-            else:
+-                return (Fingerprint(fpp[0], ctx),
+-                        Key(key, ctx))
+-
+-        yield from sq_iterator(
+-            ffi.gc(
+-                lib.sq_store_list_keys(ctx.ref()),
+-                lib.sq_key_iter_free),
+-            next_fn)
+-
+-class Mapping(SQObject):
+-    _del = lib.sq_mapping_free
+-
+-    # Keys used for communications.
+-    REALM_CONTACTS = _static_str(lib.SQ_REALM_CONTACTS)
+-
+-    # Keys used for signing software updates.
+-    REALM_SOFTWARE_UPDATES = _static_str(lib.SQ_REALM_SOFTWARE_UPDATES)
+-
+-    @classmethod
+-    def open(cls, ctx, network_policy=NetworkPolicy.Encrypted, realm=REALM_CONTACTS, name="default"):
+-        return Mapping(lib.sq_mapping_open(ctx.ref(), network_policy.value,
+-                                        realm.encode(), name.encode()),
+-                        context=ctx)
+-
+-
+-    def add(self, label, fingerprint):
+-        return Binding(lib.sq_mapping_add(self.context().ref(), self.ref(),
+-                                        label.encode(), fingerprint.ref()),
+-                       context=self.context())
+-
+-    def import_(self, label, cert):
+-        return Cert(lib.sq_mapping_import(self.context().ref(), self.ref(),
+-                                       label.encode(), cert.ref()),
+-                   context=self.context())
+-
+-    def lookup(self, label):
+-        return Binding(lib.sq_mapping_lookup(self.context().ref(), self.ref(),
+-                                           label.encode()),
+-                       self.context())
+-
+-    def delete(self):
+-        if lib.sq_mapping_delete(self.ref()):
+-            raise Error._last(self.context())
+-        super(Mapping, self)._delete(skip_free=True)
+-
+-    def iter(self):
+-        def next_fn(i):
+-            labelp = ffi.new("char *[1]")
+-            fpp = ffi.new("pgp_fingerprint_t[1]")
+-            binding = lib.sq_binding_iter_next(i, labelp, fpp)
+-            if binding == ffi.NULL:
+-                return ffi.NULL
+-            else:
+-                return (_str(labelp[0]),
+-                        Fingerprint(fpp[0], self.context()),
+-                        Binding(binding, self.context()))
+-
+-        yield from sq_iterator(
+-            ffi.gc(
+-                lib.sq_mapping_iter(self.context().ref(), self.ref()),
+-                lib.sq_binding_iter_free),
+-            next_fn)
+-
+-    def log(self):
+-        yield from sq_iterator(
+-            ffi.gc(
+-                lib.sq_mapping_log(self.context().ref(), self.ref()),
+-                lib.sq_log_iter_free),
+-            lib.sq_log_iter_next,
+-            lambda x: Log(x, context=self.context()))
+-
+-class Binding(SQObject):
+-    _del = lib.sq_binding_free
+-
+-    def stats(self):
+-        return Stats(lib.sq_binding_stats(self.context().ref(), self.ref()),
+-                     self.context())
+-
+-    def key(self):
+-        return Key(lib.sq_binding_key(self.context().ref(), self.ref()),
+-                   self.context())
+-
+-    def cert(self):
+-        return Cert(lib.sq_binding_cert(self.context().ref(), self.ref()),
+-                   self.context())
+-
+-    def import_(self, cert):
+-        return Cert(lib.sq_binding_import(self.context().ref(), self.ref(), cert),
+-                   self.context())
+-
+-    def rotate(self, cert):
+-        return Cert(lib.sq_binding_rotate(self.context().ref(), self.ref(), cert),
+-                   self.context())
+-
+-    def delete(self):
+-        if lib.sq_binding_delete(self.ref()):
+-            raise Error._last(self.context())
+-        super(Binding, self)._delete(skip_free=True)
+-
+-    def log(self):
+-        yield from sq_iterator(
+-            ffi.gc(
+-                lib.sq_binding_log(self.context().ref(), self.ref()),
+-                lib.sq_log_iter_free),
+-            lib.sq_log_iter_next,
+-            lambda x: Log(x, context=self.context()))
+-
+-class Key(SQObject):
+-    _del = lib.sq_key_free
+-
+-    def stats(self):
+-        return Stats(lib.sq_key_stats(self.context().ref(), self.ref()),
+-                     self.context())
+-
+-    def cert(self):
+-        return Cert(lib.sq_key_cert(self.context().ref(), self.ref()),
+-                   self.context())
+-
+-    def import_(self, cert):
+-        return Cert(lib.sq_key_import(self.context().ref(), self.ref(), cert),
+-                   self.context())
+-
+-    def log(self):
+-        yield from sq_iterator(
+-            ffi.gc(
+-                lib.sq_key_log(self.context().ref(), self.ref()),
+-                lib.sq_log_iter_free),
+-            lib.sq_log_iter_next)
+-
+-
+-class Stats(SQObject):
+-    _del = lib.sq_stats_free
+-    def __init__(self, o, context=None):
+-        super(Stats, self).__init__(o, context=context)
+-        self.encryption = Stamps(ffi.addressof(o, "encryption"))
+-        self.verification = Stamps(ffi.addressof(o, "verification"))
+-
+-    @property
+-    def created(self):
+-        return sq_time(self.ref().created)
+-
+-    @property
+-    def updated(self):
+-        return sq_time(self.ref().updated)
+-
+-    def __str__(self):
+-        return \
+-            "Stats{{created={}, updated={}, encryption={}, verification={}}}" \
+-            .format(self.created, self.updated, self.encryption,
+-                    self.verification)
+-
+-class Stamps(SQObject):
+-    @property
+-    def count(self):
+-        return self.ref().count
+-
+-    @property
+-    def first(self):
+-        return sq_time(self.ref().first)
+-
+-    @property
+-    def last(self):
+-        return sq_time(self.ref().last)
+-
+-    def __str__(self):
+-        return "Stamps{{count={}, first={}, last={}}}".format(
+-            self.count, self.first, self.last)
+-
+-class Log(SQObject):
+-    _del = lib.sq_log_free
+-
+-    @property
+-    def timestamp(self):
+-        return sq_time(self.ref().timestamp)
+-
+-    @property
+-    def store(self):
+-        if self.ref().store == ffi.NULL:
+-            return None
+-        else:
+-            return Store(self.ref().store, context=self.context(),
+-                         owner=self)
+-
+-    @property
+-    def binding(self):
+-        if self.ref().binding == ffi.NULL:
+-            return None
+-        else:
+-            return Binding(self.ref().binding, context=self.context(),
+-                           owner=self)
+-
+-    @property
+-    def key(self):
+-        if self.ref().key == ffi.NULL:
+-            return None
+-        else:
+-            return Key(self.ref().key, context=self.context(),
+-                       owner=self)
+-
+-    @property
+-    def slug(self):
+-        return ffi.string(self.ref().slug).decode()
+-
+-    @property
+-    def status(self):
+-        return ffi.string(self.ref().status).decode()
+-
+-    @property
+-    def error(self):
+-        if self.ref().error == ffi.NULL:
+-            return None
+-        else:
+-            return ffi.string(self.ref().error).decode()
+-
+-    def __str__(self):
+-        if self.error:
+-            return "{}: {}: {}: {}".format(
+-                self.timestamp, self.slug, self.status, self.error)
+-        else:
+-            return "{}: {}: {}".format(
+-                self.timestamp, self.slug, self.status)
+diff --git a/ffi/lang/python/tests/test_store.py b/ffi/lang/python/tests/test_store.py
+deleted file mode 100644
+index 7b06cc1a..00000000
+--- a/ffi/lang/python/tests/test_store.py
++++ /dev/null
+@@ -1,47 +0,0 @@
+-from sequoia.prelude import Context, Store, Mapping, Fingerprint
+-
+-def test_open():
+-    c = Context(ephemeral=True)
+-    Mapping.open(c)
+-
+-def test_add():
+-    c = Context(ephemeral=True)
+-    s = Mapping.open(c)
+-    fp = Fingerprint.from_hex("7DCA58B54EB143169DDEE15F247F6DABC84914FE")
+-    s.add("Ἀριστοτέλης", fp)
+-
+-def test_iterate():
+-    c = Context(ephemeral=True)
+-    s = Mapping.open(c)
+-    fp = Fingerprint.from_hex("7DCA58B54EB143169DDEE15F247F6DABC84914FE")
+-    s.add("Ἀριστοτέλης", fp)
+-    l = list(s.iter())
+-    assert len(l) == 1
+-    l = list(Store.list_keys(c))
+-    assert len(l) == 1
+-    fpi, key = l[0]
+-    assert fpi == fp
+-
+-def test_logs():
+-    c = Context(ephemeral=True)
+-    s = Mapping.open(c)
+-    fp = Fingerprint.from_hex("7DCA58B54EB143169DDEE15F247F6DABC84914FE")
+-    b = s.add("Ἀριστοτέλης", fp)
+-    l = list(s.iter())
+-    assert len(l) == 1
+-
+-    # global logs
+-    logs = list(Store.log(c))
+-    assert len(logs) > 0
+-
+-    # per store logs
+-    logs = list(s.log())
+-    assert len(logs) > 0
+-
+-    # per binding logs
+-    logs = list(b.log())
+-    assert len(logs) > 0
+-
+-    # per key logs
+-    logs = list(b.key().log())
+-    assert len(logs) > 0
+diff --git a/ffi/src/lib.rs b/ffi/src/lib.rs
+index 40e3672e..9b4577eb 100644
+--- a/ffi/src/lib.rs
++++ b/ffi/src/lib.rs
+@@ -130,7 +130,6 @@ pub(crate) use crate::openpgp::{
+     MoveResultIntoRaw,
+     Maybe,
+     maybe_time,
+-    to_time_t,
+ };
+ 
+ /* Error handling with implicit context.  */
+@@ -146,5 +145,4 @@ macro_rules! ffi_make_fry_from_ctx {
+ pub mod core;
+ pub mod error;
+ pub mod net;
+-pub mod store;
+ 
+GitLab
+
