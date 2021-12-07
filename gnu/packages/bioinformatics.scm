@@ -759,7 +759,7 @@ hdf and alignment.")
 (define-public blasr
   (package
     (name "blasr")
-    (version "5.3.3")
+    (version "5.3.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -768,7 +768,7 @@ hdf and alignment.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1skgy2mvz8gsgfh1gc2nfgwvpyzb1hpmp2cf2773h5wsj8nw22kl"))))
+                "0axyd06gn2xa0p0k76fihsbxpfxvhlb18jn6bf97c0ii58r1wc0k"))))
     (build-system meson-build-system)
     (arguments
      `(#:phases
