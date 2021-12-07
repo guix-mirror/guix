@@ -36837,8 +36837,36 @@ algorithm.")
      "Pest meta language parser and validator.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-petgraph-0.6
+  (package
+    (name "rust-petgraph")
+    (version "0.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "petgraph" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0kw27zzhsa82d4qpkrz91vznyxi3wm0qg0i84grfaqqbkpxa44sa"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-fixedbitset" ,rust-fixedbitset-0.4)
+        ("rust-indexmap" ,rust-indexmap-1)
+        ("rust-quickcheck" ,rust-quickcheck-0.8)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-derive" ,rust-serde-derive-1))))
+    (home-page "https://github.com/petgraph/petgraph")
+    (synopsis "Graph data structure library")
+    (description
+     "This crate is a graph data structure library.  It provides graph types
+and graph algorithms.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-petgraph-0.5
   (package
+    (inherit rust-petgraph-0.6)
     (name "rust-petgraph")
     (version "0.5.1")
     (source
@@ -36848,9 +36876,7 @@ algorithm.")
        (file-name
         (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "1dzxda6z17sfxly11m8ja3iargh73pw0s1sdgjyp0qp5dm51cza6"))))
-    (build-system cargo-build-system)
+        (base32 "1dzxda6z17sfxly11m8ja3iargh73pw0s1sdgjyp0qp5dm51cza6"))))
     (arguments
      `(#:cargo-inputs
        (("rust-fixedbitset" ,rust-fixedbitset-0.2)
@@ -36862,13 +36888,7 @@ algorithm.")
        (("rust-defmac" ,rust-defmac-0.1)
         ("rust-itertools" ,rust-itertools-0.8)
         ("rust-odds" ,rust-odds-0.2)
-        ("rust-rand" ,rust-rand-0.5))))
-    (home-page "https://github.com/petgraph/petgraph")
-    (synopsis "Graph data structure library")
-    (description
-     "Graph data structure library.  Provides graph types and graph
-algorithms.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-rand" ,rust-rand-0.5))))))
 
 (define-public rust-petgraph-0.4
   (package
