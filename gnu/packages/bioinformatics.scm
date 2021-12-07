@@ -569,6 +569,42 @@ BED, GFF/GTF, VCF.")
      `(("samtools" ,samtools)
        ("zlib" ,zlib)))))
 
+(define-public pbcopper
+  ;; This is the latest commit at the time of this writing.
+  (let ((commit "ad4143afd25a0bd6adc977c544865c992a515841")
+        (revision "1"))
+    (package
+      (name "pbcopper")
+      (version (git-version "1.9.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/PacificBiosciences/pbcopper")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1qxkbpdkamfisnk36lpi1vdvf3p1lg2hdqna3xgd94pz52bwbmp7"))))
+      (build-system meson-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'patch-meson-files
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "meson.build"
+                 (("-msse4.1") "")))))))
+      (inputs
+       `(("boost" ,boost)))
+      (native-inputs
+       `(("googletest" ,googletest)
+         ("pkg-config" ,pkg-config)))
+      (home-page "https://github.com/PacificBiosciences/pbcopper")
+      (synopsis "Data structures, algorithms, and utilities for PacBio C++ applications")
+      (description
+       "The pbcopper library provides a suite of data structures, algorithms,
+and utilities for PacBio C++ applications.")
+      (license license:bsd-3))))
+
 (define-public pbbam
   (package
     (name "pbbam")
