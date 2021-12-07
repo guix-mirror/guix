@@ -696,7 +696,7 @@ speedup comes during compression.")
 (define-public blasr-libcpp
   (package
     (name "blasr-libcpp")
-    (version "5.3.3")
+    (version "5.3.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -705,7 +705,7 @@ speedup comes during compression.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0cn5l42zyq67sj0g2imqkhayz2iqvv0a1pgpbmlq0qynjmsrbfd2"))))
+                "07cdfnfl29zf2j7fpaaqaxghq3p0wnc109razs0icwm2q6l3gycb"))))
     (build-system meson-build-system)
     (arguments
      `(#:phases
@@ -742,6 +742,7 @@ libblasr_gtest_dep = cpp.find_library('gtest_main', dirs : '~a')\n"
     (inputs
      `(("boost" ,boost)
        ("hdf5" ,hdf5)
+       ("htslib" ,htslib)
        ("pbbam" ,pbbam)
        ("zlib" ,zlib)))
     (native-inputs
