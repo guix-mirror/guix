@@ -2936,14 +2936,14 @@ accessing bigWig files.")
 (define-public python-schema-salad
   (package
     (name "python-schema-salad")
-    (version "7.1.20210316164414")
+    (version "8.2.20211116214159")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "schema-salad" version))
         (sha256
          (base32
-          "04jaykdpgfnkrghvli5swxzqp7yba842am4bz42hcfljsmkrxvrk"))))
+          "005dh2y45x92zl8sf2sqjmfvcqr4hrz8dfckgkckv87003v7lwqc"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -2955,10 +2955,9 @@ accessing bigWig files.")
                (("^def test_(secondaryFiles|outputBinding)" all)
                 (string-append "@pytest.mark.skip(reason="
                                "\"test requires network access\")\n"
-                               all)))
-             #t)))))
+                               all))))))))
     (propagated-inputs
-     `(("python-cachecontrol" ,python-cachecontrol-0.11)
+     `(("python-cachecontrol" ,python-cachecontrol)
        ("python-lockfile" ,python-lockfile)
        ("python-mistune" ,python-mistune)
        ("python-rdflib" ,python-rdflib)
@@ -2967,7 +2966,8 @@ accessing bigWig files.")
        ("python-ruamel.yaml" ,python-ruamel.yaml)
        ("python-typing-extensions" ,python-typing-extensions)))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
+     `(("python-black" ,python-black)
+       ("python-pytest" ,python-pytest)
        ("python-pytest-runner" ,python-pytest-runner)))
     (home-page "https://github.com/common-workflow-language/schema_salad")
     (synopsis "Schema Annotations for Linked Avro Data (SALAD)")
