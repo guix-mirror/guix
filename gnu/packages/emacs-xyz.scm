@@ -20781,42 +20781,6 @@ and the Zotero research assistant: Insertion of links to Zotero items into an
 Org-mode file, and citations of Zotero items in Pandoc Markdown files.")
     (license license:gpl3+)))
 
-(define-public emacs-evil-magit
-  (let ((commit "98c076fbeb6d2d7d71e02dc204ba3ad5d577abda")
-        (revision "5"))
-    (package
-      (name "emacs-evil-magit")
-      (version (git-version "0.4.2" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/emacs-evil/evil-magit")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "0b4iplxh3rmy8jadhf05pgksv1798d68d1jrhfry93jca8x9crxs"))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-evil" ,emacs-evil)
-         ("magit" ,emacs-magit)))
-      (arguments
-       `(#:tests? #t
-         #:test-command '("emacs" "-Q" "-batch"
-                          "-L" "."
-                          "-l" "evil-magit-tests"
-                          "-f" "ert-run-tests-batch-and-exit")))
-      (home-page
-       "https://github.com/emacs-evil/evil-magit")
-      (synopsis "Evil-based key bindings for Magit")
-      (description
-       "This Emacs library configures Magit and Evil to play well with each other.
-For some background see @url{https://github.com/magit/evil-magit/issues/1}.
-See the README at @url{https://github.com/justbur/evil-magit} for a table
-describing the key binding changes.")
-      (license license:gpl3+))))
-
 (define-public emacs-evil-multiedit
   (package
     (name "emacs-evil-multiedit")
