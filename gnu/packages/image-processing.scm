@@ -1271,6 +1271,12 @@ segmentation.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'loosen-requirements
+           (lambda _
+             ;; Don't require an outdated version of matplotlib.
+             (substitute* "setup.py"
+               (("matplotlib<3\\.3")
+                "matplotlib"))))
          (add-before 'check 'start-xserver
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((xorg-server (assoc-ref inputs "xorg-server")))
