@@ -9232,7 +9232,7 @@ exon-skipping scanner detection scheme.")
 (define-public phylip
   (package
     (name "phylip")
-    (version "3.696")
+    (version "3.697")
     (source
      (origin
        (method url-fetch)
@@ -9240,7 +9240,7 @@ exon-skipping scanner detection scheme.")
                            "download/phylip-" version ".tar.gz"))
        (sha256
         (base32
-         "01jar1rayhr2gba2pgbw49m56rc5z4p5wn3ds0m188hrlln4a2nd"))))
+         "1h8h0nafnlbqryswxgplx80k2044yhfz97jh13vsgzlaifqdh9ls"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no check target
