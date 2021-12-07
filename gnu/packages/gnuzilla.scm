@@ -697,8 +697,8 @@ in C/C++.")
 ;; XXXX: Workaround 'snippet' limitations.
 (define computed-origin-method (@@ (guix packages) computed-origin-method))
 
-(define %icecat-version "91.3.0-guix0-preview1")
-(define %icecat-build-id "20211102000000") ;must be of the form YYYYMMDDhhmmss
+(define %icecat-version "91.4.0-guix0-preview1")
+(define %icecat-build-id "20211207000000") ;must be of the form YYYYMMDDhhmmss
 
 ;; 'icecat-source' is a "computed" origin that generates an IceCat tarball
 ;; from the corresponding upstream Firefox ESR tarball, using the 'makeicecat'
@@ -720,11 +720,11 @@ in C/C++.")
                   "firefox-" upstream-firefox-version ".source.tar.xz"))
             (sha256
              (base32
-              "0v79c435vfbhsx7pqyq4jm5rv8iysig69wwqhvys1n0jy54m72qj"))))
+              "09xkzk27krzyj1qx8cjjn2zpnws1cncka75828kk7ychnjfq48p7"))))
 
-         (upstream-icecat-base-version "91.3.0") ; maybe older than base-version
+         (upstream-icecat-base-version "91.4.0") ; maybe older than base-version
          ;;(gnuzilla-commit (string-append "v" upstream-icecat-base-version))
-         (gnuzilla-commit "32631cac00953abbac61dc7ab1a0eafbdd59b53a")
+         (gnuzilla-commit "dd79d69e5dc6e6e751195001f322b30746be6903")
          (gnuzilla-source
           (origin
             (method git-fetch)
@@ -736,7 +736,7 @@ in C/C++.")
                                       (string-take gnuzilla-commit 8)))
             (sha256
              (base32
-              "13ckga49h5azf0c6q3c6b6wcmahzyywryxgwmwr1dahsjgy0wwrw"))))
+              "1vv97wmgdmkwddh8n30dak5l8akzbw49ca0w6krhq9dnj7n74cxh"))))
 
          ;; 'search-patch' returns either a valid file name or #f, so wrap it
          ;; in 'assume-valid-file-name' to avoid 'local-file' warnings.
@@ -750,7 +750,6 @@ in C/C++.")
     (origin
       (method computed-origin-method)
       (file-name (string-append "icecat-" %icecat-version ".tar.xz"))
-      (patches (search-patches "icecat-CVE-2021-43527.patch"))
       (sha256 #f)
       (uri
        (delay
