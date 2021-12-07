@@ -5581,24 +5581,26 @@ program for nucleotide and protein sequences.")
                 (sha256
                  (base32
                   "1hkw21rq1mwf7xp0rmbb2gqc0i6p11108m69i7mr7xcjl268pxnb"))))
-    (build-system gnu-build-system)
-    (inputs
-     ;; XXX: TODO: Enable Lua and Guile bindings.
-     ;; https://github.com/tjunier/newick_utils/issues/13
-     `(("libxml2" ,libxml2)
-       ("flex" ,flex)
-       ("bison" ,bison)))
-    (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
-    (synopsis "Programs for working with newick format phylogenetic trees")
-    (description
-     "Newick-utils is a suite of utilities for processing phylogenetic trees
+      (build-system gnu-build-system)
+      (arguments
+       '(#:make-flags (list "CFLAGS=-O2 -g -fcommon")))
+      (inputs
+       ;; XXX: TODO: Enable Lua and Guile bindings.
+       ;; https://github.com/tjunier/newick_utils/issues/13
+       `(("libxml2" ,libxml2)
+         ("flex" ,flex)
+         ("bison" ,bison)))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("libtool" ,libtool)))
+      (synopsis "Programs for working with newick format phylogenetic trees")
+      (description
+       "Newick-utils is a suite of utilities for processing phylogenetic trees
 in Newick format.  Functions include re-rooting, extracting subtrees,
 trimming, pruning, condensing, drawing (ASCII graphics or SVG).")
-    (home-page "https://github.com/tjunier/newick_utils")
-    (license license:bsd-3))))
+      (home-page "https://github.com/tjunier/newick_utils")
+      (license license:bsd-3))))
 
 (define-public orfm
   (package
