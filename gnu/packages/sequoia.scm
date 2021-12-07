@@ -39,6 +39,56 @@
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tls))
 
+(define-public rust-sequoia-ipc-0.26
+  (package
+    (name "rust-sequoia-ipc")
+    (version "0.26.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "sequoia-ipc" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "0xyhz55g1igzjw46f667kqmbbk7pgqy2zf5p13zspr6bwv39s1yk"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:skip-build? #t
+        #:cargo-inputs
+        (("rust-anyhow" ,rust-anyhow-1)
+         ("rust-buffered-reader" ,rust-buffered-reader-1)
+         ("rust-capnp-rpc" ,rust-capnp-rpc-0.13)
+         ("rust-ctor" ,rust-ctor-0.1)
+         ("rust-dirs" ,rust-dirs-2)
+         ("rust-fs2" ,rust-fs2-0.4)
+         ("rust-futures" ,rust-futures-0.3)
+         ("rust-lalrpop" ,rust-lalrpop-0.19)
+         ("rust-lalrpop-util" ,rust-lalrpop-util-0.19)
+         ("rust-lazy-static" ,rust-lazy-static-1)
+         ("rust-libc" ,rust-libc-0.2)
+         ("rust-memsec" ,rust-memsec-0.6)
+         ("rust-rand" ,rust-rand-0.7)
+         ("rust-sequoia-openpgp" ,rust-sequoia-openpgp-1)
+         ("rust-socket2" ,rust-socket2-0.3)
+         ("rust-tempfile" ,rust-tempfile-3)
+         ("rust-thiserror" ,rust-thiserror-1)
+         ("rust-tokio" ,rust-tokio-0.2)
+         ("rust-tokio-util" ,rust-tokio-util-0.3)
+         ("rust-winapi" ,rust-winapi-0.3))
+        #:cargo-development-inputs
+        (("rust-clap" ,rust-clap-2)
+         ("rust-quickcheck" ,rust-quickcheck-0.9))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-other-crypto-features
+           (lambda _
+             (substitute* "Cargo.toml"
+               (("^crypto-cng =" line) (string-append "# " line))
+               (("^crypto-rust =" line) (string-append "# " line))))))))
+    (home-page "https://sequoia-pgp.org/")
+    (synopsis "Interprocess communication infrastructure for Sequoia")
+    (description "Interprocess communication infrastructure for Sequoia")
+    (license license:lgpl2.0+)))
+
 (define-public rust-sequoia-net-0.23
   (package
     (name "rust-sequoia-net")
