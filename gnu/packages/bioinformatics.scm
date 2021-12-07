@@ -7428,7 +7428,7 @@ Cuffdiff or Ballgown programs.")
 (define-public taxtastic
   (package
     (name "taxtastic")
-    (version "0.8.11")
+    (version "0.9.2")
     (source (origin
               ;; The Pypi version does not include tests.
               (method git-fetch)
@@ -7438,15 +7438,13 @@ Cuffdiff or Ballgown programs.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1sv8mkg64jn7zdwf1jj71c16686yrwxk0apb1l8sjszy9p166g0p"))))
+                "1k6wg9ych1j3srnhdny1y4470qlhfg730rb3rm3pq7l7gw62vmgb"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'prepare-directory
            (lambda _
-             ;; The git checkout must be writable for tests.
-             (for-each make-file-writable (find-files "."))
              ;; This test fails, but the error is not caught by the test
              ;; framework, so the tests fail...
              (substitute* "tests/test_taxit.py"
@@ -7455,20 +7453,16 @@ Cuffdiff or Ballgown programs.")
              ;; This version file is expected to be created with git describe.
              (mkdir-p "taxtastic/data")
              (with-output-to-file "taxtastic/data/ver"
-               (lambda () (display ,version)))
-             #t))
-         (add-after 'unpack 'python37-compatibility
-           (lambda _
-             (substitute* "taxtastic/utils.py"
-               (("import csv") "import csv, errno")
-               (("os.errno") "errno"))
-             #t))
+               (lambda () (display ,version)))))
          (replace 'check
            ;; Note, this fails to run with "-v" as it tries to write to a
            ;; closed output stream.
            (lambda* (#:key tests? #:allow-other-keys)
              (when tests?
-               (invoke "python" "-m" "unittest")))))))
+               (invoke "python" "-m" "unittest"))))
+         ;; This fails because it cannot find psycopg2 even though it is
+         ;; available.
+         (delete 'sanity-check))))
     (propagated-inputs
      `(("python-sqlalchemy" ,python-sqlalchemy)
        ("python-decorator" ,python-decorator)
