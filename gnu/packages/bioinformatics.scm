@@ -782,8 +782,7 @@ hdf and alignment.")
                    m
                    (format #f "cpp.find_library('hdf5', dirs : '~a'), \
 cpp.find_library('hdf5_cpp', dirs : '~a'), "
-                           hdf5 hdf5)))))
-             #t)))
+                           hdf5 hdf5))))))))
        ;; Tests require "cram" executable, which is not packaged.
        #:tests? #f
        #:configure-flags '("-Dtests=false")))
