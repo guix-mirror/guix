@@ -2267,19 +2267,19 @@ off-target reads for a capture method that targets CpG-rich region.")
 (define-public python-bx-python
   (package
     (name "python-bx-python")
-    (version "0.8.2")
+    (version "0.8.12")
     (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "bx-python" version))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/bxlab/bx-python")
+                    (commit "f4e6a5c93e719db69b5798b6fdd9b167da358316")))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "11kksg2rbzihpmcid823xvg42xi88m7sz58rzk29abybkxy0rszs"))))
+                "0mclahslz34vq9x424jmzsxk0nmpm1j716fa8h3zwr9ssvch7skc"))))
     (build-system python-build-system)
-    ;; Tests fail because test data are not included
-    (arguments '(#:tests? #f))
     (propagated-inputs
-     `(("python-numpy" ,python-numpy)
-       ("python-six" ,python-six)))
+     `(("python-numpy" ,python-numpy)))
     (inputs
      `(("zlib" ,zlib)))
     (native-inputs
