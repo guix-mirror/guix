@@ -9249,7 +9249,7 @@ exon-skipping scanner detection scheme.")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'enter-dir
-           (lambda _ (chdir "src") #t))
+           (lambda _ (chdir "src")))
          (delete 'configure)
          (replace 'install
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -9258,8 +9258,7 @@ exon-skipping scanner detection scheme.")
                (mkdir-p target)
                (for-each (lambda (file)
                            (install-file file target))
-                         (find-files "../exe" ".*")))
-             #t)))))
+                         (find-files "../exe" ".*"))))))))
     (home-page "http://evolution.genetics.washington.edu/phylip/")
     (synopsis "Tools for inferring phylogenies")
     (description "PHYLIP (the PHYLogeny Inference Package) is a package of
