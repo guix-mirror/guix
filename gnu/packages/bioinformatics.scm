@@ -2293,9 +2293,6 @@ off-target reads for a capture method that targets CpG-rich region.")
 multiple sequence alignments.")
     (license license:expat)))
 
-(define-public python2-bx-python
-  (package-with-python2 python-bx-python))
-
 (define-public python-pyega3
   (package
     (name "python-pyega3")
