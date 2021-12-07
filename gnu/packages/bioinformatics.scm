@@ -5618,63 +5618,6 @@ which automatically learns an optimal warping function (or transformation) for
 the phenotype as it models the data.")
     (license license:asl2.0)))
 
-(define-public pbtranscript-tofu
-  (let ((commit "8f5467fe6a4472bcfb4226c8720993c8507adfe4"))
-    (package
-      (name "pbtranscript-tofu")
-      (version (string-append "2.2.3." (string-take commit 7)))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/PacificBiosciences/cDNA_primer")
-                      (commit commit)))
-                (file-name (string-append name "-" version "-checkout"))
-                (sha256
-                 (base32
-                  "1lgnpi35ihay42qx0b6yl3kkgra723i413j33kvs0kvs61h82w0f"))
-                (modules '((guix build utils)))
-                (snippet
-                 '(begin
-                    ;; remove bundled Cython sources
-                    (delete-file "pbtranscript-tofu/pbtranscript/Cython-0.20.1.tar.gz")
-                    #t))))
-      (build-system python-build-system)
-      (arguments
-       `(#:python ,python-2
-         ;; FIXME: Tests fail with "No such file or directory:
-         ;; pbtools/pbtranscript/modified_bx_intervals/intersection_unique.so"
-         #:tests? #f
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'enter-directory
-            (lambda _
-              (chdir "pbtranscript-tofu/pbtranscript/")
-              #t))
-           ;; With setuptools version 18.0 and later this setup.py hack causes
-           ;; a build error, so we disable it.
-           (add-after 'enter-directory 'patch-setuppy
-            (lambda _
-              (substitute* "setup.py"
-                (("if 'setuptools.extension' in sys.modules:")
-                 "if False:"))
-              #t)))))
-      (inputs
-       `(("python-numpy" ,python2-numpy)
-         ("python-bx-python" ,python2-bx-python)
-         ("python-networkx" ,python2-networkx)
-         ("python-scipy" ,python2-scipy)
-         ("python-pbcore" ,python2-pbcore)
-         ("python-h5py" ,python2-h5py)))
-      (native-inputs
-       `(("python-cython" ,python2-cython)
-         ("python-nose" ,python2-nose)))
-      (home-page "https://github.com/PacificBiosciences/cDNA_primer")
-      (synopsis "Analyze transcriptome data generated with the Iso-Seq protocol")
-      (description
-       "pbtranscript-tofu contains scripts to analyze transcriptome data
-generated using the PacBio Iso-Seq protocol.")
-      (license license:bsd-3))))
-
 (define-public prank
   (package
     (name "prank")
