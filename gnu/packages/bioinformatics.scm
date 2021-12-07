@@ -2243,6 +2243,14 @@ and more accurate.  BWA-MEM also has better performance than BWA-backtrack for
                (base32
                 "076c4q0cdqz8jgylb067y9zmvxglppnzi3qiscn0xiypgc6lgb5r"))))
     (build-system gnu-build-system)
+    (arguments
+     (substitute-keyword-arguments (package-arguments bwa)
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'patch-C-error
+             (lambda _
+               (substitute* "pssm.c"
+                 (("inline int map") "int map"))))))))
     (inputs
      `(("gdsl" ,gdsl)
        ("zlib" ,zlib)
