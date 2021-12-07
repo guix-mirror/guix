@@ -22479,14 +22479,17 @@ functions, and dictionaries.")
 (define-public python-cytoolz
   (package
     (name "python-cytoolz")
-    (version "0.9.0.1")
+    (version "0.11.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cytoolz" version))
        (sha256
         (base32
-         "1r80p88hm3f3r4zpixzr047y5hw4bzy41m4xywnhycda83x0dk44"))))
+         "1d12mgaippxxhn24w2hj0my3aqkx80fks5g4wzfdsvl0acqnc8za"))
+       (modules '((guix build utils)))
+       (snippet
+        '(for-each delete-file (find-files "cytoolz" "\\.c$")))))
     (build-system python-build-system)
     ;; FIXME: tests fail with "module 'cytoolz.curried' has no attribute
     ;; 'exceptions'"
