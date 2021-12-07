@@ -7466,7 +7466,9 @@ Cuffdiff or Ballgown programs.")
          (replace 'check
            ;; Note, this fails to run with "-v" as it tries to write to a
            ;; closed output stream.
-           (lambda _ (invoke "python" "-m" "unittest") #t)))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "python" "-m" "unittest")))))))
     (propagated-inputs
      `(("python-sqlalchemy" ,python-sqlalchemy)
        ("python-decorator" ,python-decorator)
