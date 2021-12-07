@@ -1982,7 +1982,7 @@ It supports mbox/Maildir and its own dbox/mdbox formats.")
   (let ((dovecot-version (version-major+minor (package-version dovecot))))
     (package
       (name "dovecot-pigeonhole")
-      (version "0.5.17")
+      (version "0.5.17.1")
       (source
        (origin
          (method url-fetch)
@@ -1990,7 +1990,7 @@ It supports mbox/Maildir and its own dbox/mdbox formats.")
                "https://pigeonhole.dovecot.org/releases/" dovecot-version "/"
                "dovecot-" dovecot-version "-pigeonhole-" version ".tar.gz"))
          (sha256
-          (base32 "0j6ng173hh5iiqxdkxfb5v9djpn39gxdrv5ki7i22cf5cqwq47h3"))
+          (base32 "04j5z3y8yyci4ni9j9i7cy0zg1qj2sm9zfarmjcvs9vydpga7i1w"))
          (modules '((guix build utils)))
          (snippet
           '(begin
