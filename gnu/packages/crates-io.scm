@@ -64671,6 +64671,26 @@ parser.")
      "This package provide a utilities for quick shell scripting in Rust.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-xxhash-rust-0.8
+  (package
+    (name "rust-xxhash-rust")
+    (version "0.8.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "xxhash-rust" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "1v9dk6shls1rsmidf2dxdi3460bn7ingqgvn5mf7prgnxmdy2xg5"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:skip-build? #t))
+    (home-page "https://github.com/DoumanAsh/xxhash-rust")
+    (synopsis "Implementation of xxHash in Rust")
+    (description "This package provides an implementation of the xxHash
+algorithm in Rust.")
+    (license license:boost1.0)))
+
 (define-public rust-xz2-0.1
   (package
     (name "rust-xz2")
