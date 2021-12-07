@@ -44159,34 +44159,53 @@ please consider using @code{async-std} or @code{tokio}.")
     (inputs
      (list sqlite))))
 
+(define-public rust-rust-argon2-0.8
+  (package
+    (name "rust-rust-argon2")
+    (version "0.8.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rust-argon2" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1yvqkv04fqk3cbvyasibr4bqbxa6mij8jdvibakwlcsbjh6q462b"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-base64" ,rust-base64-0.13)
+        ("rust-blake2b-simd" ,rust-blake2b-simd-0.5)
+        ("rust-constant-time-eq" ,rust-constant-time-eq-0.1)
+        ("rust-crossbeam-utils" ,rust-crossbeam-utils-0.8)
+        ("rust-serde" ,rust-serde-1))))
+    (home-page "https://github.com/sru-systems/rust-argon2")
+    (synopsis "Argon2 password hashing function in Rust")
+    (description
+     "This package provides a Rust implementation of the Argon2 password
+hashing function.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-rust-argon2-0.7
   (package
+    (inherit rust-rust-argon2-0.8)
     (name "rust-rust-argon2")
     (version "0.7.0")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "rust-argon2" version))
-        (file-name
-         (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "05xh5wfxgzq3b6jys8r34f3hmqqfs8ylvf934n9z87wfv95szj1b"))))
-    (build-system cargo-build-system)
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rust-argon2" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "05xh5wfxgzq3b6jys8r34f3hmqqfs8ylvf934n9z87wfv95szj1b"))))
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-constant-time-eq" ,rust-constant-time-eq-0.1)
         ("rust-base64" ,rust-base64-0.11)
         ("rust-blake2b-simd" ,rust-blake2b-simd-0.5)
-        ("rust-crossbeam-utils" ,rust-crossbeam-utils-0.7))))
-    (home-page "https://github.com/sru-systems/rust-argon2")
-    (synopsis
-     "Rust implementation of the Argon2 password hashing function")
-    (description
-     "This package provides a Rust implementation of the Argon2 password
-hashing function.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-crossbeam-utils" ,rust-crossbeam-utils-0.7))))))
 
 (define-public rust-rust-argon2-0.5
   (package
