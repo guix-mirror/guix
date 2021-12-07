@@ -42392,8 +42392,34 @@ owned memory.")
      "This package provides a Rust library to access Redox termios functions.")
     (license license:expat)))
 
+(define-public rust-redox-users-0.4
+  (package
+    (name "rust-redox-users")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "redox_users" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0r5y1a26flkn6gkayi558jg5dzh2m2fdsapgkpn7mj01v3rk51aj"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-getrandom" ,rust-getrandom-0.2)
+        ("rust-redox-syscall" ,rust-redox-syscall-0.2)
+        ("rust-rust-argon2" ,rust-rust-argon2-0.8))))
+    (home-page "https://gitlab.redox-os.org/redox-os/users")
+    (synopsis "Rust library to access Redox users and groups functionality")
+    (description
+     "This package provides a Rust library to access Redox users and groups
+functionality")
+    (license license:expat)))
+
 (define-public rust-redox-users-0.3
   (package
+    (inherit rust-redox-users-0.4)
     (name "rust-redox-users")
     (version "0.3.4")
     (source
@@ -42403,21 +42429,13 @@ owned memory.")
        (file-name
         (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "0cbl5w16l3bqm22i4vszclf6hzpljxicghmllw7j13az4s9k1ch9"))))
-    (build-system cargo-build-system)
+        (base32 "0cbl5w16l3bqm22i4vszclf6hzpljxicghmllw7j13az4s9k1ch9"))))
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-getrandom" ,rust-getrandom-0.1)
         ("rust-redox-syscall" ,rust-redox-syscall-0.1)
-        ("rust-rust-argon2" ,rust-rust-argon2-0.7))))
-    (home-page "https://gitlab.redox-os.org/redox-os/users")
-    (synopsis "Access Redox users and groups")
-    (description
-     "This package provides a Rust library to access Redox users and groups
-functionality.")
-    (license license:expat)))
+        ("rust-rust-argon2" ,rust-rust-argon2-0.7))))))
 
 (define-public rust-reduce-0.1
   (package
