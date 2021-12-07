@@ -7326,13 +7326,12 @@ sequences.")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'enter-dir
-           (lambda _ (chdir "src") #t))
+           (lambda _ (chdir "src")))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((bin (string-append (assoc-ref outputs "out") "/bin/")))
                (mkdir-p bin)
-               (copy-recursively "../bin" bin))
-             #t))
+               (copy-recursively "../bin" bin))))
          ;; no "configure" script
          (delete 'configure))))
     (inputs `(("zlib" ,zlib)))
