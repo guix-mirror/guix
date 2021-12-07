@@ -2702,13 +2702,19 @@ time.")
 (define-public crossmap
   (package
     (name "crossmap")
-    (version "0.3.8")
+    (version "0.6.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "CrossMap" version))
               (sha256
                (base32
-                "1sb2f2qbxya4fzw3yjl09vbrs8vfmw22zrygrvz004sf9gb1vkan"))))
+                "0hqminh5wn1p3x481jbyc7gmncp5xc196hpvki7k25vzbryhwcix"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Delete compiled Python files.
+                  (for-each delete-file (find-files "." "\\.pyc$"))
+                  (delete-file-recursively ".eggs")))))
     (build-system python-build-system)
     (inputs
      `(("python-bx-python" ,python-bx-python)
