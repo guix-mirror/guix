@@ -1859,6 +1859,24 @@ The purpose of this package is to provide an easy way to test asynchronous
 HTTP requests.")
     (license license:expat)))
 
+(define-public python-pytest-rerunfailures
+  (package
+    (name "python-pytest-rerunfailures")
+    (version "10.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-rerunfailures" version))
+       (sha256
+        (base32 "15v68kggjvkflbqr0vz8gp5yp3pcsk0rz05bpg2l4xp0a6nin7ly"))))
+    (build-system python-build-system)
+    (propagated-inputs (list python-pytest python-setuptools))
+    (home-page "https://github.com/pytest-dev/pytest-rerunfailures")
+    (synopsis "Pytest plugin to re-run flaky tests")
+    (description "This package provides a pytest plugin to re-run tests to
+eliminate flaky failures.")
+    (license license:mpl2.0)))
+
 (define-public python-xunitparser
   (package
     (name "python-xunitparser")
