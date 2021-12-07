@@ -22503,14 +22503,14 @@ library's @code{threading} module.")
 (define-public python-toolz
   (package
     (name "python-toolz")
-    (version "0.11.1")
+    (version "0.11.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "toolz" version))
        (sha256
         (base32
-         "1grz3zvw5ixwqqlbv0n7j11mlcxb66cirh5i9x9zw8kqy0hpk967"))))
+         "0cxwlh8dz8gq0l0bzchjnqqwhdp261nfd958ppqm518k2mg2scbb"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
