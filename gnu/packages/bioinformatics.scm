@@ -7313,7 +7313,7 @@ sequences.")
                                 (%current-system)))
                    (flags '("-ggdb" "-fomit-frame-pointer"
                             "-ffast-math" "-funroll-loops"
-                            "-fmessage-length=0"
+                            "-fmessage-length=0" "-fcommon"
                             "-O9" "-Wall" "-DMAKE_FOR_EXON"
                             "-DMAKE_STANDALONE"
                             "-DSUBREAD_VERSION=\\\"${SUBREAD_VERSION}\\\""))
