@@ -4131,7 +4131,10 @@ estimates transcript expression.")
                (("-DBUILD_TIME=.*") "-DBUILD_TIME=\"\\\"0\\\"\""))
              (substitute* '("hisat-build" "hisat-inspect")
                (("/usr/bin/env") (which "env")))
-             #t))
+             ;; This "extended character" is not considered valid.
+             (substitute* "processor_support.h"
+               (("“") "\"")
+               (("”") "\""))))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((bin (string-append (assoc-ref outputs "out") "/bin/")))
