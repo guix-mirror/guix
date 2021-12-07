@@ -4142,8 +4142,7 @@ estimates transcript expression.")
                            (install-file file bin))
                          (find-files
                           "."
-                          "hisat(-(build|align|inspect)(-(s|l)(-debug)*)*)*$")))
-             #t))
+                          "hisat(-(build|align|inspect)(-(s|l)(-debug)*)*)*$")))))
          (delete 'configure))))
     (native-inputs
      `(("unzip" ,unzip)))
