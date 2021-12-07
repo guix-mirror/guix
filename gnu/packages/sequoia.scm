@@ -39,6 +39,47 @@
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tls))
 
+(define-public rust-sequoia-net-0.23
+  (package
+    (name "rust-sequoia-net")
+    (version "0.23.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "sequoia-net" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "05gv053zqnb00mrai5hva3i4909hn77bnh4z1g4b29cw5qb52cbl"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-anyhow" ,rust-anyhow-1)
+        ("rust-futures-util" ,rust-futures-util-0.3)
+        ("rust-http" ,rust-http-0.2)
+        ("rust-hyper" ,rust-hyper-0.13)
+        ("rust-hyper-tls" ,rust-hyper-tls-0.4)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-native-tls" ,rust-native-tls-0.2)
+        ("rust-percent-encoding" ,rust-percent-encoding-2)
+        ("rust-sequoia-openpgp" ,rust-sequoia-openpgp-1)
+        ("rust-tempfile" ,rust-tempfile-3)
+        ("rust-thiserror" ,rust-thiserror-1)
+        ("rust-url" ,rust-url-2)
+        ("rust-zbase32" ,rust-zbase32-0.1))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-other-crypto-features
+           (lambda _
+             (substitute* "Cargo.toml"
+               (("^crypto-cng =" line) (string-append "# " line))
+               (("^crypto-rust =" line) (string-append "# " line))))))))
+    (home-page "https://sequoia-pgp.org/")
+    (synopsis "Discover and publish OpenPGP certificates over the network")
+    (description "This package provides a crate to access keyservers using the
+HKP protocol, and searching and publishing Web Key Directories.")
+    (license license:lgpl2.0+)))
+
 (define-public rust-sequoia-openpgp-1
   (package
     (name "rust-sequoia-openpgp")
