@@ -22506,6 +22506,22 @@ main differences are that @code{cytoolz} is faster and cytoolz offers a C API
 that is accessible to other projects developed in Cython.")
     (license license:bsd-3)))
 
+;; python-cooler doesn't work with 0.11 yet
+(define-public python-cytoolz-for-cooler
+  (package
+    (inherit python-cytoolz)
+    (version "0.10.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "cytoolz" version))
+       (sha256
+        (base32
+         "0p4a9nadsy1337gy2cnb5yanbn03j3zm6d9adyqad9bk3nlbpxc2"))
+       (modules '((guix build utils)))
+       (snippet
+        '(for-each delete-file (find-files "cytoolz" "\\.c$")))))))
+
 (define-public python-sortedcollections
   (package
     (name "python-sortedcollections")
