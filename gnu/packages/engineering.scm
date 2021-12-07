@@ -1161,7 +1161,7 @@ the 'showing the effect of'-style of operation.")
 (define-public valeronoi
 (package
   (name "valeronoi")
-  (version "0.1.4")
+  (version "0.1.6")
   (source
    (origin
      (method git-fetch)
@@ -1171,7 +1171,7 @@ the 'showing the effect of'-style of operation.")
        (commit (string-append "v" version))))
      (file-name (git-file-name name version))
      (sha256
-      (base32 "1zp653bjqsyixa5j1pp9k12iqsl8dz72yyi38asxmcym1wngsjcd"))))
+      (base32 "1hpyh4mmjnxgkij7a6rynk2ril5413nkdvf8syn0lqvrmibdg7wv"))))
   (build-system cmake-build-system)
   (arguments
    `(#:phases
