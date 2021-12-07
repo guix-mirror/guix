@@ -22745,24 +22745,20 @@ decisions with any given backend.")
 (define-public python-dask
   (package
     (name "python-dask")
-    (version "2021.9.1")
+    (version "2021.11.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (pypi-uri "dask" version))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/dask/dask/")
+             (commit "5a8275dd53193b47457cdfadc0e2356ea3eb6ccd")))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "0p6nd8wi30l29g5hdwk0453w6fxg4zvxq1y1ix0fa2f8rbr2n7z1"))))
+        (base32 "0h8w7c03mn6s2mmwbqd2sqay3k4vaqiwlsbvliziggw28042zfw2"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'disable-broken-tests
-           (lambda _
-             ;; This test is marked as xfail when pytest-xdist is used.
-             (substitute* "dask/tests/test_threaded.py"
-               (("def test_interrupt\\(\\)" m)
-                (string-append "@pytest.mark.skip(reason=\"Disabled by Guix\")\n"
-                               m)))))
          (replace 'check
            (lambda* (#:key tests? #:allow-other-keys)
              (when tests? (invoke "pytest" "-vv")))))))
