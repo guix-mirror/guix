@@ -22776,7 +22776,8 @@ decisions with any given backend.")
        ("python-pyyaml" ,python-pyyaml)))
     (native-inputs
      `(("python-pytest" ,python-pytest)
-       ("python-pytest-runner" ,python-pytest-runner)))
+       ("python-pytest-runner" ,python-pytest-runner)
+       ("python-pytest-rerunfailures" ,python-pytest-rerunfailures)))
     (home-page "https://github.com/dask/dask/")
     (synopsis "Parallel computing with task scheduling")
     (description
