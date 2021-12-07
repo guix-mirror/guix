@@ -16613,9 +16613,6 @@ multitouch applications.")
     (description "Python driver for MongoDB.")
     (license license:asl2.0)))
 
-(define-public python2-pymongo
-  (package-with-python2 python-pymongo))
-
 (define-public python-consul
   (package
     (name "python-consul")
