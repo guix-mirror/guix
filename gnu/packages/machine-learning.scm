@@ -288,7 +288,8 @@ training, HMM clustering, HMM mixtures.")
                 "15xlax3z31lsn62vlg94hkm75nm40q4679amnfg13jm8m2bnhy5m"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags (list "--enable-blast")))
+     `(#:configure-flags (list "--enable-blast"
+                               "CFLAGS=-fcommon")))
     (inputs
      `(("perl" ,perl)))
     (home-page "http://micans.org/mcl/")
