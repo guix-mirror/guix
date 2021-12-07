@@ -9244,7 +9244,7 @@ exon-skipping scanner detection scheme.")
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no check target
-       #:make-flags (list "-f" "Makefile.unx" "install")
+       #:make-flags (list "-f" "Makefile.unx" "CFLAGS=-fcommon" "install")
        #:parallel-build? #f             ; not supported
        #:phases
        (modify-phases %standard-phases
