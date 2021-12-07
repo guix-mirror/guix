@@ -4339,13 +4339,13 @@ HMMs).")
 (define-public htseq
   (package
     (name "htseq")
-    (version "0.9.1")
+    (version "0.12.3")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "HTSeq" version))
               (sha256
                (base32
-                "11flgb1381xdhk43bzbfm3vhnszkpqg6jk76rpa5xd1zbrvvlnxg"))))
+                "0pk41vkzxsbb5nv644325mh8akmz4zdply9r2s80dgg5b21pgp0b"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-cython" ,python-cython)))
