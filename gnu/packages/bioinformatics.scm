@@ -4098,7 +4098,7 @@ estimates transcript expression.")
 (define-public hisat
   (package
     (name "hisat")
-    (version "0.1.4")
+    (version "0.1.6")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -4106,7 +4106,7 @@ estimates transcript expression.")
                     version "-beta-source.zip"))
               (sha256
                (base32
-                "1k381ydranqxp09yf2y7w1d0chz5d59vb6jchi89hbb0prq19lk5"))))
+                "177z85vqp9b30vgxl5py5hz4mm37ila37nzhfam23ci9iyfxgyv9"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ;no check target
