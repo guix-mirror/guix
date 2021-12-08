@@ -9430,66 +9430,72 @@ applications for tackling some common problems in a user-friendly way.")
     (license (list license:lgpl2.1+
                    license:gpl3+))))
 
+;; We use this seemingly arbitrary commit because of
+;; https://github.com/3DGenomes/TADbit/issues/371
 (define-public tadbit
-  (package
-    (name "tadbit")
-    (version "1.0.1")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/3DGenomes/TADbit")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "0hqrlymh2a2bimcfdvlssy1x5h1lp3h1c5a7jj11hmcqczzqn3ni"))))
-    (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-problems-with-setup.py
-           (lambda* (#:key outputs #:allow-other-keys)
-             ;; Don't attempt to install the bash completions to
-             ;; the home directory.
-             (rename-file "extras/.bash_completion"
-                          "extras/tadbit")
-             (substitute* "setup.py"
-               (("\\(path.expanduser\\('~'\\)")
-                (string-append "(\""
-                               (assoc-ref outputs "out")
-                               "/etc/bash_completion.d\""))
-               (("extras/\\.bash_completion")
-                "extras/tadbit"))
-             #t))
-         (replace 'check
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (add-installed-pythonpath inputs outputs)
-             (invoke "python3" "test/test_all.py")
-             #t)))))
-    (native-inputs
-     `(("glib" ,glib "bin")             ;for gtester
-       ("pkg-config" ,pkg-config)))
-    (inputs
-     ;; TODO: add Chimera for visualization
-     `(("imp" ,imp)
-       ("mcl" ,mcl)
-       ("python-future" ,python-future)
-       ("python-h5py" ,python-h5py)
-       ("python-scipy" ,python-scipy)
-       ("python-numpy" ,python-numpy)
-       ("python-matplotlib" ,python-matplotlib)
-       ("python-pysam" ,python-pysam)))
-    (home-page "https://3dgenomes.github.io/TADbit/")
-    (synopsis "Analyze, model, and explore 3C-based data")
-    (description
-     "TADbit is a complete Python library to deal with all steps to analyze,
+  (let ((commit "5c4c1ddaadfbaf7e6edc58173e46d801093bdc9b")
+        (revision "1"))
+    (package
+      (name "tadbit")
+      (version (git-version "1.0.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/3DGenomes/TADbit")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "17nwlvjgqpa7x6jgh56m3di61ynaz34kl1jamyv7r2a5rhfcbkla"))))
+      (build-system python-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-problems-with-setup.py
+             (lambda* (#:key outputs #:allow-other-keys)
+               (substitute* "src/test/Makefile"
+                 (("^CFLAGS=") "CFLAGS= -fcommon"))
+               
+               ;; Don't attempt to install the bash completions to
+               ;; the home directory.
+               (rename-file "extras/.bash_completion"
+                            "extras/tadbit")
+               (substitute* "setup.py"
+                 (("\\(path.expanduser\\('~'\\)")
+                  (string-append "(\""
+                                 (assoc-ref outputs "out")
+                                 "/etc/bash_completion.d\""))
+                 (("extras/\\.bash_completion")
+                  "extras/tadbit"))))
+           (replace 'check
+             (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+               (when tests?
+                 (add-installed-pythonpath inputs outputs)
+                 (invoke "python3" "test/test_all.py")))))))
+      (native-inputs
+       `(("glib" ,glib "bin")             ;for gtester
+         ("pkg-config" ,pkg-config)))
+      (inputs
+       ;; TODO: add Chimera for visualization
+       `(("imp" ,imp)
+         ("mcl" ,mcl)
+         ("python-future" ,python-future)
+         ("python-h5py" ,python-h5py)
+         ("python-scipy" ,python-scipy)
+         ("python-numpy" ,python-numpy)
+         ("python-matplotlib" ,python-matplotlib)
+         ("python-pysam" ,python-pysam)))
+      (home-page "https://3dgenomes.github.io/TADbit/")
+      (synopsis "Analyze, model, and explore 3C-based data")
+      (description
+       "TADbit is a complete Python library to deal with all steps to analyze,
 model, and explore 3C-based data.  With TADbit the user can map FASTQ files to
 obtain raw interaction binned matrices (Hi-C like matrices), normalize and
 correct interaction matrices, identify and compare the so-called
 @dfn{Topologically Associating Domains} (TADs), build 3D models from the
 interaction matrices, and finally, extract structural properties from the
 models.  TADbit is complemented by TADkit for visualizing 3D models.")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public kentutils
   (package
