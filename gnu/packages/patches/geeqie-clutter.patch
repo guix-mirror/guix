@@ -1,0 +1,35 @@
+From c99084ac5fc2fb854ff8e8abd4bd3298fb08fb43 Mon Sep 17 00:00:00 2001
+From: Colin Clark <colin.clark@cclark.uk>
+Date: Sat, 9 Jan 2021 11:35:41 +0000
+Subject: [PATCH] Fix #829: segfault with clutter-gtk
+
+https://github.com/BestImageViewer/geeqie/issues/829
+
+This fix might cause other problems which might be cured by calling:
+LIBGL_ALWAYS_INDIRECT=1 geeqie
+
+or, worst case:
+geeqie --disable-clutter
+---
+ src/main.c | 5 -----
+ 1 file changed, 5 deletions(-)
+
+diff --git a/src/main.c b/src/main.c
+index f497240d..4af654fe 100644
+--- a/src/main.c
++++ b/src/main.c
+@@ -904,11 +904,6 @@ gint main(gint argc, gchar *argv[])
+ #ifdef HAVE_GTHREAD
+ #if !GLIB_CHECK_VERSION(2,32,0)
+ 	g_thread_init(NULL);
+-#endif
+-#ifdef HAVE_CLUTTER
+-/* FIXME: see below */
+-	putenv("LIBGL_ALWAYS_INDIRECT=1");
+-	XInitThreads();
+ #endif
+ 	gdk_threads_init();
+ 	gdk_threads_enter();
+-- 
+2.34.0
+

@@ -314,7 +314,8 @@ actions.")
               (sha256
                (base32
                 "1i9yd8lddp6b9s9vjjjzbpqj4bvwidxc6kiba6vdrk7dda5akyky"))
-              (file-name (git-file-name name version))))
+              (file-name (git-file-name name version))
+              (patches (search-patches "geeqie-clutter.patch"))))
     (build-system gnu-build-system)
     (arguments
      ;; Enable support for a "map" pane using GPS data.
