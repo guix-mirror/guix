@@ -14782,7 +14782,6 @@ is made as zipfile like as possible.")
      `(("python-attrs" ,python-attrs)
        ("python-colorama" ,python-colorama)
        ("python-commonmark" ,python-commonmark)
-       ("python-ipywidgets" ,python-ipywidgets)
        ("python-pygments" ,python-pygments)
        ("python-typing-extensions" ,python-typing-extensions)))
     (native-inputs
