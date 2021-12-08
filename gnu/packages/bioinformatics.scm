@@ -11337,11 +11337,12 @@ enrichment.")
     (license license:expat)))
 
 (define-public mantis
-  (let ((commit "4ffd171632c2cb0056a86d709dfd2bf21bc69b84")
-        (revision "1"))
+  ;; This is an arbitrary commit as a year has passed since 0.1 was tagged.
+  (let ((commit "b6979a269172a45201c8366680d8b889f889432b")
+        (revision "2"))
     (package
       (name "mantis")
-      (version (git-version "0" revision commit))
+      (version (git-version "0.1" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -11350,13 +11351,17 @@ enrichment.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0iqbr0dhmlc8mzpirmm2s4pkzkwdgrcx50yx6cv3wlr2qi064p55"))))
+                  "0dq8a785hnaxx5kq757m5czs8xpcjpcph1inq2nm8h6zfvqyj8xs"))))
       (build-system cmake-build-system)
-      (arguments '(#:tests? #f)) ; there are none
+      (arguments
+       '(#:tests? #f ; there are none
+         #:configure-flags (list "-DNH=ON"))) ; do not use SSE4.2 instructions
       (inputs
        `(("sdsl-lite" ,sdsl-lite)
          ("openssl" ,openssl)
          ("zlib" ,zlib)))
+      (native-inputs
+       `(("gcc" ,gcc-7)))
       (home-page "https://github.com/splatlab/mantis")
       (synopsis "Large-scale sequence-search index data structure")
       (description "Mantis is a space-efficient data structure that can be
