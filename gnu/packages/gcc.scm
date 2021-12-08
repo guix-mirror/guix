@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2014, 2015, 2016, 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2014, 2015, 2016, 2017, 2019, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Carlos Sánchez de La Lama <csanchezdll@gmail.com>
@@ -791,6 +791,12 @@ as the 'native-search-paths' field."
 (define-public gfortran
   (hidden-package
    (custom-gcc gcc
+               "gfortran" '("fortran")
+               %generic-search-paths)))
+
+(define-public gfortran-7
+  (hidden-package
+   (custom-gcc gcc-7
                "gfortran" '("fortran")
                %generic-search-paths)))
 
