@@ -21738,14 +21738,14 @@ implemented using @code{ctypes}.")
 (define-public python-userspacefs
   (package
     (name "python-userspacefs")
-    (version "2.0.3")
+    (version "2.0.4")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "userspacefs" version))
         (sha256
          (base32
-          "1v6saf62ml3j63adalvlkj4iavxjbsbapl20b21mn73p7kvn4ayf"))))
+          "06f2gsiypas270nqfjir4wwjlpkjp097pm6zchc7k20ggg32gv1k"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-fusepyng" ,python-fusepyng)))
