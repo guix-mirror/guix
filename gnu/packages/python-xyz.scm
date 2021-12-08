@@ -3966,10 +3966,22 @@ e.g. filters, callbacks and errbacks can all be promises.")
     (description
      "Markupsafe provides an XML/HTML/XHTML markup safe string implementation
 for Python.")
-    (license license:bsd-3)))
+    (license license:bsd-3)
+    (properties `((python2-variant . ,(delay python2-markupsafe))))))
 
+;; Version 1.1.1 is the last to support Python 2.
 (define-public python2-markupsafe
-  (package-with-python2 python-markupsafe))
+  (package
+    (inherit (package-with-python2
+              (strip-python2-variant python-markupsafe)))
+    (version "1.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "MarkupSafe" version))
+       (sha256
+        (base32
+         "0sqipg4fk7xbixqd8kq6rlkxj664d157bdwbh93farcphf92x1r9"))))))
 
 (define-public python-jinja2
   (package
