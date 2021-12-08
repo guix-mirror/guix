@@ -3416,8 +3416,7 @@ data and settings.")
                (("≤") "<="))
              ;; This seems to be a syntax error.
              (substitute* "doc/discrover-manual.tex"
-               (("theverbbox\\[t\\]") "theverbbox"))
-             #t))
+               (("theverbbox\\[t\\]") "theverbbox"))))
          (add-after 'unpack 'add-missing-includes
            (lambda _
              (substitute* "src/executioninformation.hpp"
@@ -3425,8 +3424,7 @@ data and settings.")
                 (string-append line "\n#include <random>")))
              (substitute* "src/plasma/fasta.hpp"
                (("#define FASTA_HPP" line)
-                (string-append line "\n#include <random>")))
-             #t)))))
+                (string-append line "\n#include <random>"))))))))
     (inputs
      `(("boost" ,boost)
        ("cairo" ,cairo)
