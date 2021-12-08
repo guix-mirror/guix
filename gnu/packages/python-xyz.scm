@@ -6379,8 +6379,15 @@ toolkits.")
                    (invoke "unzip"
                            (assoc-ref inputs "jquery-ui")
                            "-d" dir))))
+             ;; Without this file mpl_toolkits cannot be imported.
+             (add-after 'install 'create-init-file
+               (lambda* (#:key outputs #:allow-other-keys)
+                 (with-output-to-file
+                     (string-append
+                      (assoc-ref outputs "out")
+                      "/lib/python2.7/site-packages/mpl_toolkits/__init__.py")
+                   (lambda _ (display "")))))
              (delete 'fix-and-disable-failing-tests)
-             (delete 'sanity-check) ; This fails because mpl_toolkits is not an actual module
              (delete 'check))))) ; These tests weren't run the the past.
       ;; Make sure to use special packages for Python 2 instead
       ;; of those automatically rewritten by package-with-python2.
