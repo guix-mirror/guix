@@ -1741,6 +1741,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/rust-adblock-ignore-live-tests.patch		\
   %D%/packages/patches/rust-bootstrap-stage0-test.patch		\
   %D%/packages/patches/rust-coresimd-doctest.patch		\
+  %D%/packages/patches/i3status-rust-enable-unstable-features.patch	\
   %D%/packages/patches/rust-ndarray-remove-blas-src-dep.patch	\
   %D%/packages/patches/rust-ndarray-0.13-remove-blas-src.patch	\
   %D%/packages/patches/rust-nettle-disable-vendor.patch		 \

@@ -39,16 +39,22 @@
   #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crates-io)
   #:use-module (gnu packages crates-graphics)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages ibus)
   #:use-module (gnu packages jemalloc)
+  #:use-module (gnu packages kde)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages networking)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
@@ -56,7 +62,8 @@
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages rust)
   #:use-module (gnu packages tls)
-  #:use-module (gnu packages version-control))
+  #:use-module (gnu packages version-control)
+  #:use-module (gnu packages xorg))
 
 (define-public agate
   (package
@@ -527,24 +534,16 @@ characters, ASCII whitespace characters, other ASCII characters and non-ASCII.")
     (name "i3status-rust")
     (version "0.20.1")
     (source
-      (origin
-        (method git-fetch)
-        (uri (git-reference
-              (url "https://github.com/greshake/i3status-rust")
-              (commit (string-append "v" version))))
-        (file-name (git-file-name name version))
-        (patches (search-patches "i3status-rust-enable-unstable-features.patch"))
-        (sha256
-         (base32 "00gzm3g297s9bfp13vnb623p7dfac3g6cdhz2b3lc6l0kmnnqs1s"))))
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/greshake/i3status-rust")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (patches (search-patches "i3status-rust-enable-unstable-features.patch"))
+       (sha256
+        (base32 "00gzm3g297s9bfp13vnb623p7dfac3g6cdhz2b3lc6l0kmnnqs1s"))))
     (build-system cargo-build-system)
-    (native-inputs
-     `(("pkg-config" ,pkg-config)))
-    (inputs
-     `(("curl" ,curl)
-       ("dbus" ,dbus)
-       ("pulseaudio" ,pulseaudio)
-       ("openssl" ,openssl)
-       ("zlib" ,zlib)))
     (arguments
      `(#:features '("pulseaudio" "libpulse-binding")
        #:install-source? #f
@@ -574,6 +573,9 @@ characters, ASCII whitespace characters, other ASCII characters and non-ASCII.")
        (("rust-assert-fs" ,rust-assert-fs-1))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'enable-unstable-features
+           (lambda _
+             (setenv "RUSTC_BOOTSTRAP" "1")))
          (add-after 'unpack 'fix-resources-path
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((resources (string-append %output "/share")))
@@ -582,10 +584,38 @@ characters, ASCII whitespace characters, other ASCII characters and non-ASCII.")
          (add-after 'install 'install-resources
            (lambda* (#:key outputs #:allow-other-keys)
              (copy-recursively "files" (string-append %output "/share"))))
-         (add-after 'unpack 'enable-unstable-features
-           (lambda _
-             (setenv "RUSTC_BOOTSTRAP" "1")
-             #t)))))
+         (add-after 'install 'wrap-i3status
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (paths (map
+                           (lambda (input)
+                             (string-append (assoc-ref inputs input) "/bin"))
+                           '("alsa-utils" "coreutils" "curl" "dbus" "ibus" "iproute"
+                             "kdeconnect" "lm-sensors" "pulseaudio"
+                             "openssl"
+                             "setxkbmap" "speedtest-cli" "xdg-utils" "xrandr"
+                             "zlib"))))
+               (wrap-program (string-append out "/bin/i3status-rs")
+                 `("PATH" prefix ,paths))))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("alsa-utils" ,alsa-utils)
+       ("bash-minimal" ,bash-minimal)
+       ("coreutils" ,coreutils)
+       ("curl" ,curl)
+       ("dbus" ,dbus)
+       ("ibus" ,ibus)
+       ("iproute" ,iproute)
+       ("kdeconnect" ,kdeconnect)
+       ("lm-sensors" ,lm-sensors)
+       ("pulseaudio" ,pulseaudio)
+       ("openssl" ,openssl)
+       ("setxkbmap" ,setxkbmap)
+       ("speedtest-cli" ,speedtest-cli)
+       ("xdg-utils" ,xdg-utils)
+       ("xrandr" ,xrandr)
+       ("zlib" ,zlib)))
     (home-page "https://github.com/greshake/i3status-rust")
     (synopsis "i3status, written in pure Rust")
     (description "@code{i3status-rs} is a feature-rich and resource-friendly
