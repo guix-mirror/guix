@@ -439,8 +439,7 @@ and will take advantage of multiple processor cores where possible.")
         (base32 "0gwm4w7337ykh5lfnspapnnz6a35g7yay3wnj126s8s5kcsvy9wy"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:cmake ,cmake                   ;3.17 or later
-       #:configure-flags '("-Dpython-bindings=ON"
+     `(#:configure-flags '("-Dpython-bindings=ON"
                            "-Dbuild_tests=ON")
        #:phases
        (modify-phases %standard-phases
