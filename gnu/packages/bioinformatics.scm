@@ -3048,7 +3048,7 @@ and record oriented data modeling and the Semantic Web.")
 (define-public cwltool
   (package
     (name "cwltool")
-    (version "3.0.20210319143721")
+    (version "3.1.20211107152837")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3057,7 +3057,7 @@ and record oriented data modeling and the Semantic Web.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1sgs9ckyxb9f9169mc3wm9lnjg4080ai42xqsrwpw9l8apy4c9m5"))))
+                "0i3x9wdgpzgyc1askxymlhn0ps2x9xhqaax496iwpx66ab6132c4"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -3065,17 +3065,13 @@ and record oriented data modeling and the Semantic Web.")
          (add-after 'unpack 'loosen-version-restrictions
            (lambda _
              (substitute* "setup.py"
-               (("== 1.5.1") ">=1.5.1")   ; prov
-               ((", < 3.5") "")           ; shellescape
-               ((" >= 6.0.2, < 6.2") "")) ; pytest
-             #t))
+               (("== 1.5.1") ">=1.5.1")))) ; prov
          (add-after 'unpack 'dont-use-git
            (lambda _
              (substitute* "gittaggers.py"
                (("self.git_timestamp_tag\\(\\)")
                 (string-append "time.strftime('.%Y%m%d%H%M%S', time.gmtime(int("
-                               (string-drop ,version 4) ")))")))
-             #t))
+                               (string-drop ,version 4) ")))")))))
          (add-after 'unpack 'modify-tests
            (lambda _
              ;; Tries to connect to the internet.
@@ -3095,7 +3091,18 @@ and record oriented data modeling and the Semantic Web.")
                (("def test_v1_0_arg_empty_prefix_separate_false")
                 (string-append "@pytest.mark.skip(reason=\"Disabled by Guix\")\n"
                                "def test_v1_0_arg_empty_prefix_separate_false")))
-             #t)))))
+
+             (substitute* '("cwltool/schemas/v1.1/tests/env-tool1.cwl"
+                            "cwltool/schemas/v1.1/tests/env-tool2.cwl"
+                            "cwltool/schemas/v1.1/tests/imported-hint.cwl"
+                            "tests/subgraph/env-tool2.cwl"
+                            "tests/subgraph/env-tool2_req.cwl"
+                            "tests/subgraph/env-wf2_subwf-packed.cwl"
+                            "tests/subgraph/env-tool2_no_env.cwl")
+               (("\"/bin/sh\"") (string-append "\"" (which "sh") "\"")))
+             ;; Pytest doesn't know what to do with "-n auto"
+             (substitute* "tox.ini"
+               (("-n auto") "")))))))
     (propagated-inputs
      `(("python-argcomplete" ,python-argcomplete)
        ("python-bagit" ,python-bagit)
