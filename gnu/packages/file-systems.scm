@@ -1507,26 +1507,22 @@ compatible directories.")
 (define-public python-dropbox
   (package
     (name "python-dropbox")
-    (version "11.5.0")
+    (version "11.25.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "dropbox" version))
         (sha256
-         (base32
-          "16bxx9xqx2s4d9khrw57a0bj4q7nc6kq355wl4pfddn9cqvh9rg2"))))
+         (base32 "0vq9c2hp2amsxr2ys2mlgqp6a8hxmvrcwav70ri7wjzalfs32gj6"))))
     (build-system python-build-system)
     (arguments '(#:tests? #f))  ; Tests require a network connection.
     (native-inputs
      `(("python-pytest" ,python-pytest)
        ("python-pytest-runner" ,python-pytest-runner)))
     (propagated-inputs
-     `(("python-certifi" ,python-certifi)
-       ("python-chardet" ,python-chardet)
-       ("python-requests" ,python-requests)
+     `(("python-requests" ,python-requests)
        ("python-six" ,python-six)
-       ("python-stone" ,python-stone)
-       ("python-urllib3" ,python-urllib3)))
+       ("python-stone" ,python-stone)))
     (home-page "https://www.dropbox.com/developers")
     (synopsis "Official Dropbox API Client")
     (description "This package provides a Python SDK for integrating with the
