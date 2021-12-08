@@ -7174,7 +7174,7 @@ optionally compressed by gzip.")
 (define-public snap-aligner
   (package
     (name "snap-aligner")
-    (version "1.0beta.18")
+    (version "2.0.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -7183,7 +7183,7 @@ optionally compressed by gzip.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "01w3qq4wm07z73vky0cfwlmrbf50n3w722cxrlzxfi99mnb808d8"))))
+                "0yag3jcazdqfxgmw0vbi91i98kj9sr0aqx83qqj6m5b45wxs7jms"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
