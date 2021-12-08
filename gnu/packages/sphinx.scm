@@ -135,6 +135,8 @@ sources.")
                            ;; <https://github.com/sphinx-doc/sphinx/issues/4710>.
                            '("tests/test_api_translator.py"
                              "tests/test_setup_command.py"
+                             ;; Websupport is provided by a separate package
+                             "tests/test_websupport.py"
                              ;; This one fails for unknown reasons.
                              "tests/test_correct_year.py"))))))))
       (native-inputs `(("python2-mock" ,python2-mock)
