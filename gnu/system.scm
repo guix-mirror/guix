@@ -267,6 +267,7 @@
                       (default (operating-system-default-essential-services
                                 this-operating-system)))
   (services operating-system-user-services        ; list of services
+            (thunked)                     ;allow for system-dependent services
             (default %base-services))
 
   (pam-services operating-system-pam-services     ; list of PAM services
