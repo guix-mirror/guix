@@ -3217,10 +3217,10 @@ arising after the discretization of partial differential equations.")
 	     ,%openmpi-setup)))))
     (inputs
      `(("mpi" ,openmpi)
-       ("arpack" ,arpack-ng-openmpi)
        ,@(alist-delete "arpack" (package-inputs slepc))))
     (propagated-inputs
      `(("petsc" ,petsc-openmpi)
+       ("arpack" ,arpack-ng-openmpi)
        ,@(alist-delete "petsc" (package-propagated-inputs slepc))))
     (synopsis "Scalable library for eigenproblems (with MPI support)")))
 
@@ -3235,14 +3235,14 @@ arising after the discretization of partial differential equations.")
 (define-public python-slepc4py
   (package
     (name "python-slepc4py")
-    (version "3.11.0")
+    (version "3.16.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "slepc4py" version))
         (sha256
           (base32
-            "1ksp08kxf4wg408b9nn39z3qfhy643j22d4rfbl30vzxk2rxh4lq"))))
+            "0fq997y73ymvcvdrxycp450pxwdgnqaw62gv9rwncfgsfplkvs9w"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
