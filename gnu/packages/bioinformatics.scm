@@ -5082,7 +5082,9 @@ command, or queried for specific k-mers with @code{jellyfish query}.")
              (("# libraries = z,bz2")
               "libraries = z,bz2")
              (("include:third-party/zlib:third-party/bzip2")
-              "include:"))))))
+              "include:"))
+           ;; Delete generated Cython CPP files.
+           (for-each delete-file (find-files "khmer/_oxli/" "\\.cpp$"))))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -5095,13 +5097,24 @@ command, or queried for specific k-mers with @code{jellyfish query}.")
              (substitute* "sandbox/sweep-reads.py"
                (("time\\.clock")
                 "time.process_time"))))
-         (add-before 'reset-gzip-timestamps 'make-files-writable
-           (lambda* (#:key outputs #:allow-other-keys)
-             ;; Make sure .gz files are writable so that the
-             ;; 'reset-gzip-timestamps' phase can do its work.
-             (let ((out (assoc-ref outputs "out")))
-               (for-each make-file-writable
-                         (find-files out "\\.gz$"))))))))
+         (add-after 'unpack 'do-use-cython
+           (lambda _
+             (substitute* "setup.py"
+               (("from setuptools import Extension as CyExtension")
+                "from Cython.Distutils import Extension as CyExtension")
+               (("from setuptools.command.build_ext import build_ext as _build_ext")
+                "from Cython.Distutils import build_ext as _build_ext")
+               (("HAS_CYTHON = False") "HAS_CYTHON = True")
+               (("cy_ext = 'cpp'") "cy_ext = 'pyx'"))))
+         (add-before 'build 'build-extensions
+           (lambda _
+             ;; Cython extensions have to be built before running the tests.
+             (invoke "python" "setup.py" "build_ext" "--inplace")))
+         (replace 'check
+           (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest" "-v")))))))
     (native-inputs
      `(("python-cython" ,python-cython)
        ("python-pytest" ,python-pytest)
