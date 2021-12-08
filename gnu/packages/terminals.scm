@@ -61,6 +61,7 @@
   #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages build-tools)   ;for meson-0.55
   #:use-module (gnu packages check)
   #:use-module (gnu packages cmake)
@@ -974,9 +975,13 @@ usable with any list--including files, command history, processes and more.")
                                 (string-append out "/bin"))))))
           (add-after 'copy-binaries 'wrap-programs
             (lambda* (#:key outputs inputs #:allow-other-keys)
-              (let ((out (assoc-ref outputs "out"))
-                    (ncurses (assoc-ref inputs "ncurses")))
-                (wrap-program (string-append out "/bin/fzf-tmux")
+              (let* ((out (assoc-ref outputs "out"))
+                     (bin (string-append out "/bin"))
+                     (findutils (assoc-ref inputs "findutils"))
+                     (ncurses (assoc-ref inputs "ncurses")))
+                (wrap-program (string-append bin "/fzf")
+                  `("PATH" ":" prefix (,(string-append findutils "/bin"))))
+                (wrap-program (string-append bin "/fzf-tmux")
                   `("PATH" ":" prefix (,(string-append ncurses "/bin")))))))
           (add-after 'install 'install-completions
             (lambda* (#:key outputs #:allow-other-keys)
@@ -997,6 +1002,7 @@ usable with any list--including files, command history, processes and more.")
                              (string-append zsh-completion "/_fzf"))))))))))
     (inputs
      `(,@(package-inputs go-github-com-junegunn-fzf)
+       ("findutils" ,findutils)
        ("ncurses" ,ncurses)))))
 
 (define-public go-github.com-howeyc-gopass
