@@ -3488,7 +3488,7 @@ SCALAP       = -Wl,-rpath=$(SCALAPDIR) -Wl,-rpath='$$ORIGIN' -L$(SCALAPDIR) -lsc
 LIBOTHERS    = -pthread
 CDEFS        = -DAdd_
 PIC          = -fPIC
-OPTF         = -O2 -DALLOW_NON_INIT $(PIC)
+OPTF         = -O2 -DALLOW_NON_INIT -fallow-argument-mismatch $(PIC)
 OPTL         = -O2 $(PIC)
 OPTC         = -O2 $(PIC)
 INCS         = $(INCSEQ)
