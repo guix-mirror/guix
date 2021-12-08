@@ -327,7 +327,7 @@ networks) based on simulation of (stochastic) flow in graphs.")
              (substitute* "setup.ml"
                (("LDFLAGS=-fPIC")
                 (string-append "LDFLAGS=-fPIC\"; \"SHELL=" (which "sh")))
-               (("-std=c89") "-std=gnu99")
+               (("-std=c89") "-std=gnu99 -fcommon")
 
                ;; This is a mutable string, which is no longer supported.  Use
                ;; a byte buffer instead.
@@ -340,7 +340,7 @@ networks) based on simulation of (stochastic) flow in graphs.")
                ((" s;")
                 " s);"))
              (substitute* "myocamlbuild.ml"
-               (("std=c89") "std=gnu99"))
+               (("std=c89") "std=gnu99 -fcommon"))
              ;; Since we build with a more recent OCaml, we have to use C99 or
              ;; later.  This causes problems with the old C code.
              (substitute* "src/impala/matrix.c"
