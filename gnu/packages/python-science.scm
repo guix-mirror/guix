@@ -186,7 +186,16 @@ routines such as routines for numerical integration and optimization.")
        (uri (pypi-uri "scipy" version))
        (sha256
         (base32
-         "1cgvgin8fvckv96hjh3ikmwkra5rif51bdb75ifzf7xbil5iwcx4"))))))
+         "1cgvgin8fvckv96hjh3ikmwkra5rif51bdb75ifzf7xbil5iwcx4"))))
+    (native-inputs
+     `(("python-cython" ,python2-cython)
+       ("python-pytest" ,python2-pytest)
+       ("python-sphinx" ,python2-sphinx)
+       ("python-numpydoc" ,python2-numpydoc)
+       ("gfortran" ,gfortran-7)
+       ("gcc" ,gcc-7)
+       ("perl" ,perl)
+       ("which" ,which)))))
 
 (define-public python2-weave
   (package
