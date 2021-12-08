@@ -4011,10 +4011,22 @@ for Python.")
     (description
      "Jinja2 is a small but fast and easy to use stand-alone template engine
 written in pure Python.")
-    (license license:bsd-3)))
+    (license license:bsd-3)
+    (properties `((python2-variant . ,(delay python2-jinja2))))))
 
+;; Version 2.11.3 is the last to support Python 2.
 (define-public python2-jinja2
-  (package-with-python2 python-jinja2))
+  (package
+    (inherit (package-with-python2
+              (strip-python2-variant python-jinja2)))
+    (version "2.11.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "Jinja2" version))
+       (sha256
+        (base32
+         "1iiklf3wns67y5lfcacxma5vxfpb7h2a67xbghs01s0avqrq9md6"))))))
 
 (define-public python-jinja2-time
   (package
