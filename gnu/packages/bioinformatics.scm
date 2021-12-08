@@ -9804,8 +9804,7 @@ straight away.  Its main features are:
            (lambda _
              (substitute* "src/BFdriver.c"
                (("/bin/bash") (which "bash")))
-             (chdir "src")
-             #t))
+             (chdir "src")))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((tools '("baseml" "basemlg" "codeml"
@@ -9815,8 +9814,7 @@ straight away.  Its main features are:
                                            "/share/doc/paml")))
                (mkdir-p bin)
                (for-each (lambda (file) (install-file file bin)) tools)
-               (copy-recursively "../doc" docdir)
-               #t))))))
+               (copy-recursively "../doc" docdir)))))))
     (home-page "http://abacus.gene.ucl.ac.uk/software/paml.html")
     (synopsis "Phylogentic analysis by maximum likelihood")
     (description "PAML (for Phylogentic Analysis by Maximum Likelihood)
