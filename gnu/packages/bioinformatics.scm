@@ -13946,8 +13946,8 @@ and reflect the fast5 file schema, and tools to convert between
     (license license:mpl2.0)))
 
 (define-public tbsp
-  (let ((commit "ec8fff4410cfb13a677dbbb95cbbc60217e64907")
-        (revision "1"))
+  (let ((commit "dc30c03868233c5504299c9cb0d7b2064ba9cb41")
+        (revision "2"))
     (package
       (name "tbsp")
       (version (git-version "1.0.0" revision commit))
@@ -13960,15 +13960,22 @@ and reflect the fast5 file schema, and tools to convert between
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "025ym14x8gbd6hb55lsinqj6f5qzw36i10klgs7ldzxxd7s39ki1"))))
+           "1im0bik2hxkcb7jzkcxp5nqb30hd8lfraxml6i5ik52j6z3qqln1"))))
       (build-system python-build-system)
-      (arguments '(#:tests? #f))        ; no tests included
+      (arguments
+       '(#:tests? #f         ; no tests included
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'relax-requirements
+             (lambda _
+               (substitute* "setup.py"
+                 ((", <3.0") ""))))))) ; matplotlib
       (inputs
        `(("python-matplotlib" ,python-matplotlib)
          ("python-networkx" ,python-networkx)
          ("python-numpy" ,python-numpy)
          ("python-pybigwig" ,python-pybigwig)
-         ("python-biopython" ,python-biopython)
+         ("python-biopython" ,python-biopython-1.73)
          ("python-scikit-learn" ,python-scikit-learn)
          ("python-scipy" ,python-scipy)))
       (home-page "https://github.com/phoenixding/tbsp/")
