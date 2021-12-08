@@ -1152,7 +1152,7 @@ connection alive.")
 (define-public isc-dhcp
   (let* ((bind-major-version "9")
          (bind-minor-version "11")
-         (bind-patch-version "32")
+         (bind-patch-version "36")
          (bind-release-type "")         ; for patch release, use "-P"
          (bind-release-version "")      ; for patch release, e.g. "6"
          (bind-version (string-append bind-major-version
@@ -1312,7 +1312,7 @@ connection alive.")
                                         "/bind-" bind-version ".tar.gz"))
                     (sha256
                      (base32
-                      "0hhkb4d14hvly2751cxl2s2xyim3bri8qaisgkcm456xfi5wpy6b"))))
+                      "108nh7hha4r0lb5hf1fn7lqaascvhsrghpz6afm5lf9vf2vgqly9"))))
 
                 ("coreutils*" ,coreutils)
                 ("sed*" ,sed)))
