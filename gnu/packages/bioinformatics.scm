@@ -9797,7 +9797,7 @@ straight away.  Its main features are:
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; there are no tests
-       #:make-flags '("CC=gcc")
+       #:make-flags '("CC=gcc" "CFLAGS=-fcommon -O3")
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
