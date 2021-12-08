@@ -7189,7 +7189,9 @@ optionally compressed by gzip.")
      '(#:phases
        (modify-phases %standard-phases
          (delete 'configure)
-         (replace 'check (lambda _ (invoke "./unit_tests") #t))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests? (invoke "./unit_tests"))))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
