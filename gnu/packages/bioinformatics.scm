@@ -9117,21 +9117,18 @@ communication networks from scRNA-seq data.")
            (lambda _
              (substitute* "Makefile"
                ;; We use ldc2 instead of ldmd2 to compile sambamba.
-               (("\\$\\(shell which ldmd2\\)") (which "ldc2")))
-             #t))
+               (("\\$\\(shell which ldmd2\\)") (which "ldc2")))))
          (add-after 'unpack 'unbundle-prerequisites
            (lambda _
              (substitute* "Makefile"
                (("= lz4/lib/liblz4.a") "= -L-llz4")
-               (("ldc_version_info lz4-static") "ldc_version_info"))
-             #t))
+               (("ldc_version_info lz4-static") "ldc_version_info"))))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
                (mkdir-p bin)
                (copy-file (string-append "bin/sambamba-" ,version)
-                          (string-append bin "/sambamba"))
-               #t))))))
+                          (string-append bin "/sambamba"))))))))
     (native-inputs
      `(("python" ,python)))
     (inputs
