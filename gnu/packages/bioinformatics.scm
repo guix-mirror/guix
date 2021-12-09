@@ -3174,6 +3174,7 @@ CWL descriptions.")
                            "test_basic_split_count_with_incorrect_rootings_raises_error")) m)
                 (string-append "_skip_" m)))
              (delete-file "tests/test_paup.py")
+             (delete-file "tests/test_dataio_nexml_reader_tree_list.py")
              ;; Assert error for unknown reasons
              (substitute* "tests/test_protractedspeciation.py"
                (("test_by_num_lineages" m)
