@@ -3295,14 +3295,14 @@ bases are detected.")
 (define-public repeat-masker
   (package
     (name "repeat-masker")
-    (version "4.1.1")
+    (version "4.1.2-p1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.repeatmasker.org/"
                                   "RepeatMasker/RepeatMasker-"
                                   version ".tar.gz"))
               (sha256
-               (base32 "03144sl9kh5ni2i33phi7x2pjndzbm5bjw3r4kqvmm6hxyb4k4x2"))))
+               (base32 "15hfdfpzmdjcx7ng7rjfid69bmvgn3z9g9r43qhjnhjhq3v4prab"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #false ; there are none
