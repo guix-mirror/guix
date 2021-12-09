@@ -21434,6 +21434,32 @@ and might also fail at times but makes it unnecessary to maintain
 package recipes.")
     (license license:gpl3+)))
 
+(define-public emacs-dpd
+  ;; XXX: Upstream does not use tag yet.  Version is extracted from "dpd.el".
+  (let ((commit "f53f251a58859f375617ce4f257fecc83c8ca5da")
+        (revision "0"))
+    (package
+      (name "emacs-dpd")
+      (version (git-version "0.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://gitlab.com/lilyp/emacs-dpd")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1nislvaxjb53x2ah330szcca4d595npx6zxrrwa5xximj6365wk0"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-packed" ,emacs-packed)))
+      (home-page "https://gitlab.com/lilyp/emacs-dpd")
+      (synopsis "Deliver packages to package.el")
+      (description
+       "This package provides tools for generating package-desc structures and
+feeding them to package.el library.")
+      (license license:gpl3+))))
+
 (define-public emacs-picpocket
   (let ((version "41")
         (commit "fa3a49f011b5ae139728548fec7375743f61c7c7"))
