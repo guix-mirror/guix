@@ -60,7 +60,6 @@
   #:use-module (guix build-system qt)
   #:use-module (guix build-system r)
   #:use-module (guix build-system ruby)
-  #:use-module (guix build-system scons)
   #:use-module (guix build-system trivial)
   #:use-module (guix deprecation)
   #:use-module (gnu packages)
@@ -5401,7 +5400,7 @@ form of assemblies or reads.")
 (define-public metabat
   (package
     (name "metabat")
-    (version "2.12.1")
+    (version "2.15")
     (source
      (origin
        (method git-fetch)
@@ -5411,44 +5410,32 @@ form of assemblies or reads.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0hyg2smw1nz69mfvjpk45xyyychmda92c80a0cv7baji84ri4iyn"))
-       (patches (search-patches "metabat-fix-compilation.patch"))))
-    (build-system scons-build-system)
+         "0v3gsps0ypani14102z2y1a2wignhpf7s1h45mxmj5f783rkhqd9"))))
+    (build-system cmake-build-system)
     (arguments
-     `(#:scons ,scons-python2
-       #:scons-flags
-       (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
-             (string-append "BOOST_ROOT=" (assoc-ref %build-inputs "boost")))
-       #:tests? #f ;; Tests are run during the build phase.
+     `(#:configure-flags
+       ,#~(list (string-append "-Dzlib_LIB=" #$(this-package-input "zlib")
+                               "/lib/libz.so")
+                (string-append "-Dhtslib_LIB=" #$(this-package-input "htslib")
+                               "/lib/libhts.so")
+                (string-append "-DBOOST_ROOT=" #$(this-package-input "boost")))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'fix-includes
+         (add-after 'unpack 'configure-version-file
            (lambda _
-             (substitute* "src/BamUtils.h"
-               (("^#include \"bam/bam\\.h\"")
-                "#include \"samtools/bam.h\"")
-               (("^#include \"bam/sam\\.h\"")
-                "#include \"samtools/sam.h\""))
-             (substitute* "src/KseqReader.h"
-               (("^#include \"bam/kseq\\.h\"")
-                "#include \"htslib/kseq.h\""))))
-         (add-after 'unpack 'fix-scons
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "SConstruct"
-               (("^htslib_dir += 'samtools'")
-                (string-append "htslib_dir = '"
-                               (assoc-ref inputs "htslib")
-                               "'"))
-               (("^samtools_dir = 'samtools'")
-                (string-append "samtools_dir = '"
-                               (assoc-ref inputs "samtools")
-                               "'"))
-               (("^findStaticOrShared\\('bam', hts_lib")
-                (string-append "findStaticOrShared('bam', '"
-                               (assoc-ref inputs "samtools")
-                               "/lib'"))
-               ;; Do not distribute README.
-               (("^env\\.Install\\(idir_prefix, 'README\\.md'\\)") "")))))))
+             (copy-file "metabat_version.h.in" "metabat_version.h")
+             (substitute* "metabat_version.h"
+               (("@_time_stamp@") "19700101")
+               (("@GIT_IS_DIRTY@") "0")
+               (("@GIT_RETRIEVED_STATE@") "0")
+               (("@GIT_HEAD_SHA1@") (string-append "v" ,version)))))
+         (add-after 'unpack 'do-not-use-bundled-libraries
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("include\\(cmake.*") ""))
+             (substitute* "src/CMakeLists.txt"
+               (("set\\(Boost.*") "")
+               (("add_dependencies.*") "")))))))
     (inputs
      `(("zlib" ,zlib)
        ("perl" ,perl)
