@@ -30,6 +30,7 @@
 ;;; Copyright © 2021 Foo Chuan Wei <chuanwei.foo@hotmail.com>
 ;;; Copyright © 2021 jgart <jgart@dismail.de>
 ;;; Copyright © 2021 Aleksandr Vityazev <avityazev@posteo.org>
+;;; Copyright © 2021 Jacob MacDonald <jaccarmac@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19990,3 +19991,42 @@ available for use in Lisp programs.")
 
 (define-public cl-https-everywhere
   (sbcl-package->cl-source-package sbcl-cl-https-everywhere))
+
+(define-public sbcl-maxpc
+  (let ((commit "e5e58d053039517d30fd59ab2d128256b87790d5")
+        (revision "1"))
+    (package
+      (name "sbcl-maxpc")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/eugeneia/maxpc")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "15wrjbr2js6j67c1dd4p2qxj49q9iqv1lhb7cwdcwpn79crr39gf"))))
+      (build-system asdf-build-system/sbcl)
+      (home-page "https://mr.gy/software/maxpc/api.html")
+      (synopsis
+       "Library for writing parsers and lexers based on combinatory parsing")
+      (description
+       "@emph{Max’s Parser Combinators} is a simple and pragmatic library for
+writing parsers and lexers based on combinatory parsing.  MaxPC is capable of
+parsing deterministic, context-free languages, provides powerful tools for
+parse tree transformation and error handling, and can operate on
+@dfn{sequences} and @dfn{streams}.  It supports unlimited backtracking, but
+does not implement @url{http://pdos.csail.mit.edu/~baford/packrat/thesis/,
+Packrat Parsing}.  Instead, MaxPC achieves good performance through its
+optimized primitives, and explicit separation of matching and capturing input.
+In practice, MaxPC parsers perform better on typical computer languages—when
+compared to Packrat parsers—at the expense of not producing linear-time
+parsers.")
+      (license license:agpl3))))
+
+(define-public cl-maxpc
+  (sbcl-package->cl-source-package sbcl-maxpc))
+
+(define-public ecl-maxpc
+  (sbcl-package->ecl-package sbcl-maxpc))
