@@ -20069,3 +20069,32 @@ produce desired ranges.")
 
 (define-public ecl-random-state
   (sbcl-package->ecl-package sbcl-random-state))
+
+(define-public sbcl-decimals
+  (package
+    (name "sbcl-decimals")
+    (version "2021")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/tlikonen/cl-decimals")
+             (commit version)))
+       (file-name (git-file-name "cl-decimals" version))
+       (sha256
+        (base32 "0wn5hq1pwd3wpjqqhpjzarcdk1q6416g8y447iaf55j5nbhlmbn6"))))
+    (build-system asdf-build-system/sbcl)
+    (home-page "https://github.com/tlikonen/cl-decimals")
+    (synopsis "Decimal number parser and formatting package for Common Lisp")
+    (description "This Common Lisp package offers functions for parsing and
+formatting decimal numbers.  The package's main interface are the functions
+@code{parse-decimal-number} and @code{format-decimal-number}.  The former is
+for parsing strings for decimal numbers and the latter for pretty-printing
+them as strings.")
+    (license license:cc0)))
+
+(define-public cl-decimals
+  (sbcl-package->cl-source-package sbcl-decimals))
+
+(define-public ecl-decimals
+  (sbcl-package->ecl-package sbcl-decimals))
