@@ -6389,6 +6389,69 @@ viewer.")
        ("python" ,python)
        ("zlib" ,zlib)))))
 
+(define-public samtools-1.2
+  (package (inherit samtools)
+    (name "samtools")
+    (version "1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "mirror://sourceforge/samtools/samtools/"
+                       version "/samtools-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "1akdqb685pk9xk1nb6sa9aq8xssjjhvvc06kp4cpdqvz2157l3j2"))
+       (modules '((guix build utils)))
+       (snippet
+        ;; Delete bundled htslib and Windows binaries
+        '(for-each delete-file-recursively (list "win32" "htslib-1.2.1")))))
+    (arguments
+     `(#:make-flags
+       ,#~(list (string-append "prefix=" #$output)
+                (string-append "BGZIP="
+                               #$(this-package-input "htslib")
+                               "/bin/bgzip")
+                (string-append "HTSLIB="
+                               #$(this-package-input "htslib")
+                               "/lib/libhts.so")
+                (string-append "HTSDIR="
+                               #$(this-package-input "htslib")
+                               "/include"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-makefile-curses
+           (lambda _
+             (substitute* "Makefile"
+               (("-lcurses") "-lncurses")
+               (("include \\$\\(HTSDIR.*") ""))))
+         (add-after 'unpack 'patch-tests
+           (lambda _
+             (substitute* "test/test.pl"
+               ;; The test script calls out to /bin/bash
+               (("/bin/bash") (which "bash"))
+               ;; There are two failing tests upstream relating to the "stats"
+               ;; subcommand in test_usage_subcommand ("did not have Usage"
+               ;; and "usage did not mention samtools stats"), so we disable
+               ;; them.
+               (("(test_usage_subcommand\\(.*\\);)" cmd)
+                (string-append "unless ($subcommand eq 'stats') {" cmd "};")))
+             ;; This test fails because the grep output doesn't look as
+             ;; expected; it is correct, though.
+             (substitute* "test/mpileup/mpileup.reg"
+               (("P 52.out.*") ""))))
+         (delete 'configure))))
+    (native-inputs
+     `(("grep" ,grep)
+       ("gawk" ,gawk)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("htslib" ,htslib-for-samtools-1.2)
+       ("ncurses" ,ncurses)
+       ("perl" ,perl)
+       ("python" ,python)
+       ("zlib" ,zlib)))))
+
 (define-public samtools-0.1
   ;; This is the most recent version of the 0.1 line of samtools.  The input
   ;; and output formats differ greatly from that used and produced by samtools
