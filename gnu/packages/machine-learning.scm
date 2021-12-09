@@ -141,20 +141,28 @@ sparsely connected networks.")
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no "check" target
-       #:phases (modify-phases %standard-phases
-                  (delete 'configure)
-                  (replace
-                   'install             ; no ‘install’ target
-                   (lambda* (#:key outputs #:allow-other-keys)
-                     (let* ((out (assoc-ref outputs "out"))
-                            (bin (string-append out "/bin/")))
-                       (mkdir-p bin)
-                       (for-each (lambda (file)
-                                   (copy-file file (string-append bin file)))
-                                 '("svm-train"
-                                   "svm-predict"
-                                   "svm-scale")))
-                     #t)))))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'build 'build-lib
+           (lambda _
+             (invoke "make" "lib")))
+         (replace 'install              ; no ‘install’ target
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin/"))
+                    (lib (string-append out "/lib/"))
+                    (inc (string-append out "/include/libsvm")))
+               (mkdir-p bin)
+               (for-each (lambda (file)
+                           (copy-file file (string-append bin file)))
+                         '("svm-train"
+                           "svm-predict"
+                           "svm-scale"))
+               (mkdir-p lib)
+               (install-file "libsvm.so.2" lib)
+               (mkdir-p inc)
+               (install-file "svm.h" inc)))))))
     (home-page "https://www.csie.ntu.edu.tw/~cjlin/libsvm/")
     (synopsis "Library for Support Vector Machines")
     (description
