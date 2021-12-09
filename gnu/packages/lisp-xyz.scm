@@ -20098,3 +20098,32 @@ them as strings.")
 
 (define-public ecl-decimals
   (sbcl-package->ecl-package sbcl-decimals))
+
+(define-public sbcl-simple-date-time
+  (let ((commit "d6992afddedf67a8172a0120a1deac32afcaa2e8")
+        (revision "1"))
+    (package
+      (name "sbcl-simple-date-time")
+      (version (git-version "0.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/quek/simple-date-time")
+               (commit commit)))
+         (file-name (git-file-name "cl-simple-date-time" version))
+         (sha256
+          (base32 "06iwf13gcdyqhkzfkcsfdl8iqbdl44cx01c3fjsmhl0v1pp8h2m4"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       (list sbcl-cl-ppcre))
+      (home-page "https://github.com/quek/simple-date-time")
+      (synopsis "Date and time library for Common Lisp")
+      (description "This package is a simple date and time library.")
+      (license license:bsd-4))))
+
+(define-public cl-simple-date-time
+  (sbcl-package->cl-source-package sbcl-simple-date-time))
+
+(define-public ecl-simple-date-time
+  (sbcl-package->ecl-package sbcl-simple-date-time))
