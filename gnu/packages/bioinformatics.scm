@@ -4965,6 +4965,30 @@ data.  It also provides the @command{bgzip}, @command{htsfile}, and
                (base32
                 "1rja282fwdc25ql6izkhdyh8ppw8x2fs0w0js78zgkmqjlikmma9"))))))
 
+(define htslib-for-samtools-1.2
+  (package
+    (inherit htslib)
+    (version "1.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/samtools/htslib/releases/download/"
+                    version "/htslib-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1c32ssscbnjwfw3dra140fq7riarp2x990qxybh34nr1p5r17nxx"))))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-tests
+           (lambda _
+             (substitute* "test/test.pl"
+               (("/bin/bash") (which "bash"))))))))
+    (inputs
+     `(("zlib" ,zlib)))
+    (native-inputs
+     `(("perl" ,perl)))))
+
 (define-public idr
   (package
     (name "idr")
