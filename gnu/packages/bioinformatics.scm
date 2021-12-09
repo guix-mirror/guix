@@ -139,6 +139,7 @@
   #:use-module (gnu packages qt)
   #:use-module (gnu packages rdf)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages rpc)
   #:use-module (gnu packages rsync)
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages serialization)
@@ -6233,67 +6234,55 @@ distribution, coverage uniformity, strand specificity, etc.")
     (license license:gpl3+)))
 
 (define-public seek
-  ;; There are no release tarballs.  According to the installation
-  ;; instructions at http://seek.princeton.edu/installation.jsp, the latest
-  ;; stable release is identified by this changeset ID.
-  (let ((changeset "2329130")
+  ;; There are no release tarballs.  And the installation instructions at
+  ;; http://seek.princeton.edu/installation.jsp only mention a mercurial
+  ;; changeset ID.  This is a git repository, though.  So we just take the
+  ;; most recent commit.
+  (let ((commit "196ed4c7633246e9c628e4330d77577ccfd7f1e5")
         (revision "1"))
     (package
       (name "seek")
-      (version (string-append "0-" revision "." changeset))
+      (version (git-version "1" revision commit))
       (source (origin
-                (method hg-fetch)
-                (uri (hg-reference
-                      (url "https://bitbucket.org/libsleipnir/sleipnir")
-                      (changeset changeset)))
-                (file-name (string-append name "-" version "-checkout"))
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/FunctionLab/sleipnir.git")
+                      (commit commit)
+                      (recursive? #true)))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0qrvilwh18dpbhkf92qvxbmay0j75ra3jg2wrhz67gf538zzphsx"))))
-      (build-system gnu-build-system)
+                  "0c658n8nz563a96dsi4gl2685vxph0yfmmqq5yjc6i4xin1jy1ab"))))
+      (build-system cmake-build-system)
       (arguments
-       `(#:modules ((srfi srfi-1)
-                    (guix build gnu-build-system)
-                    (guix build utils))
+       `(#:configure-flags
+         ,#~(list (string-append "-DSVM_LIBRARY="
+                                 #$(this-package-input "libsvm")
+                                 "/lib/libsvm.so.2")
+                  (string-append "-DSVM_INCLUDE="
+                                 #$(this-package-input "libsvm")
+                                 "/include"))
+         #:tests? #false ; tests only fail in the build container
          #:phases
-         (let ((dirs '("SeekMiner"
-                       "SeekEvaluator"
-                       "SeekPrep"
-                       "Distancer"
-                       "Data2DB"
-                       "PCL2Bin")))
-           (modify-phases %standard-phases
-             (replace 'bootstrap
-               (lambda _
-                 (substitute* "gen_tools_am"
-                   (("/usr/bin/env.*") (which "perl")))
-                 (invoke "bash" "gen_auto")
-                 #t))
-             (add-after 'build 'build-additional-tools
-               (lambda* (#:key make-flags #:allow-other-keys)
-                 (for-each (lambda (dir)
-                             (with-directory-excursion (string-append "tools/" dir)
-                               (apply invoke "make" make-flags)))
-                           dirs)
-                 #t))
-             (add-after 'install 'install-additional-tools
-               (lambda* (#:key make-flags #:allow-other-keys)
-                 (for-each (lambda (dir)
-                             (with-directory-excursion (string-append "tools/" dir)
-                               (apply invoke `("make" ,@make-flags "install"))))
-                           dirs)
-                 #t))))))
+         (modify-phases %standard-phases
+           ;; The check phase expects to find the unit_tests executable in the
+           ;; "build/bin" directory, but it is actually in "build/tests".
+           (replace 'check
+             (lambda* (#:key tests? #:allow-other-keys)
+               (when tests?
+                 (invoke "tests/unit_tests")))))))
       (inputs
-       `(("gsl" ,gsl)
+       `(("apache-thrift:include" ,apache-thrift "include")
+         ("apache-thrift:lib" ,apache-thrift "lib")
+         ("gsl" ,gsl)
          ("boost" ,boost)
-         ("libsvm" ,libsvm)
-         ("readline" ,readline)
          ("gengetopt" ,gengetopt)
-         ("log4cpp" ,log4cpp)))
+         ("libsvm" ,libsvm)
+         ("log4cpp" ,log4cpp)
+         ("python" ,python)
+         ("readline" ,readline)))
       (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("perl" ,perl)))
+       `(("pkg-config" ,pkg-config)))
       (home-page "http://seek.princeton.edu")
       (synopsis "Gene co-expression search engine")
       (description
