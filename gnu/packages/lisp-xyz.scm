@@ -20127,3 +20127,55 @@ them as strings.")
 
 (define-public ecl-simple-date-time
   (sbcl-package->ecl-package sbcl-simple-date-time))
+
+(define-public sbcl-april
+  (let ((commit "963e2d8e5575a7d430c1fba7adedd15cb23c4ce8")
+        (revision "1"))
+    (package
+      (name "sbcl-april")
+      (version (git-version "0.9.3" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/phantomics/april")
+               (commit commit)))
+         (file-name (git-file-name "cl-april" version))
+         (sha256
+          (base32 "0v27fpss1ayca2r47k0zpqa9a423a86pv8s2mlgc3g5s48lgcmj3"))
+         (modules '((guix build utils)))
+         (snippet '(begin
+                     ;; Remove bundled Apache-relicensed MaxPC.
+                     (delete-file-recursively "maxpc-apache")
+                     ;; Ensure references are to upstream MaxPC.
+                     (substitute* "vex/vex.asd"
+                       (("maxpc-apache") "maxpc"))))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       (list sbcl-alexandria
+             sbcl-array-operations
+             sbcl-maxpc
+             sbcl-cl-ppcre
+             sbcl-symbol-munger
+             sbcl-prove
+             sbcl-parse-number
+             sbcl-lparallel
+             sbcl-random-state
+             sbcl-decimals
+             sbcl-simple-date-time
+             sbcl-trivia))
+      (home-page "https://github.com/phantomics/april")
+      (synopsis "Array Programming Re-Imagined in Lisp")
+      (description
+       "April compiles a subset of the APL programming language into
+Common Lisp.  Leveraging Lisp's powerful macros and numeric processing
+faculties, it brings APL's expressive potential to bear for Lisp developers.
+Replace hundreds of lines of number-crunching code with a single line of
+APL.")
+      (license license:asl2.0))))
+
+(define-public cl-april
+  (sbcl-package->cl-source-package sbcl-april))
+
+(define-public ecl-april
+  (sbcl-package->ecl-package sbcl-april))
