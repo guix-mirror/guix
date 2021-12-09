@@ -9442,9 +9442,6 @@ programs for inferring phylogenies (evolutionary trees).")
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #false ; The test suite is notoriously fickle
-       ;; CMake 3.17 or newer is required for the CMAKE_TEST_ARGUMENTS used
-       ;; below to have an effect.
-       #:cmake ,cmake
        #:configure-flags
        (let ((disabled-tests
               '("expensive"                 ;exclude expensive tests
