@@ -4014,8 +4014,8 @@ It is a replacement for the @command{urlview} program.")
     (license license:gpl2+)))
 
 (define-public mumi
-  (let ((commit "9f070bd90adc67064cd8aff4e40f303d5957ef4a")
-        (revision "5"))
+  (let ((commit "8a45281801ade7524dbdee423c28b326051719de")
+        (revision "6"))
     (package
       (name "mumi")
       (version (git-version "0.0.1" revision commit))
@@ -4027,7 +4027,7 @@ It is a replacement for the @command{urlview} program.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1ym1j3nzy8qhd1ydadccbgm0nckkmnq3vnz9qh9x8rasx7zg1ldp"))))
+                  "0p1i66j721y5hwbdy97kv4gw892nx7xrdfjrs12fn90cwkl611mp"))))
       (build-system gnu-build-system)
       (arguments
        `(#:modules ((guix build gnu-build-system)
@@ -4053,8 +4053,7 @@ It is a replacement for the @command{urlview} program.")
                    `("GUILE_LOAD_PATH" ":" prefix
                      (,scm ,(getenv "GUILE_LOAD_PATH")))
                    `("GUILE_LOAD_COMPILED_PATH" ":" prefix
-                     (,go ,(getenv "GUILE_LOAD_COMPILED_PATH"))))
-                 #t))))))
+                     (,go ,(getenv "GUILE_LOAD_COMPILED_PATH"))))))))))
       (inputs
        `(("guile-email" ,guile-email-latest)
          ("guile-fibers" ,guile-fibers)
