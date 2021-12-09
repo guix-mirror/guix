@@ -5526,52 +5526,55 @@ assembled metagenomic sequence.")
     (license license:gpl3+)))
 
 (define-public miso
-  (package
-    (name "miso")
-    (version "0.5.4")
-    (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "misopy" version))
-              (sha256
-               (base32
-                "1z3x0vd8ma7pdrnywj7i3kgwl89sdkwrrn62zl7r5calqaq2hyip"))
-              (modules '((guix build utils)))
-              (snippet '(begin
-                          (substitute* "setup.py"
-                            ;; Use setuptools, or else the executables are not
-                            ;; installed.
-                            (("distutils.core") "setuptools")
-                            ;; Use "gcc" instead of "cc" for compilation.
-                            (("^defines")
-                             "cc.set_executables(
+  (let ((commit "b71402188000465e3430736a11ea118fd5639a4a")
+        (revision "1"))
+    (package
+      (name "miso")
+      (version (git-version "0.5.4" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/yarden/MISO/")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0x37ipwwvpxbkrg17gmq3hp92c9cphch8acd6cj7fqgnrjwd47g5"))
+                (modules '((guix build utils)))
+                (snippet
+                 '(substitute* "setup.py"
+                    ;; Use "gcc" instead of "cc" for compilation.
+                    (("^defines")
+                     "cc.set_executables(
 compiler='gcc',
 compiler_so='gcc',
 linker_exe='gcc',
-linker_so='gcc -shared'); defines"))
-                          #t))))
-    (build-system python-build-system)
-    (arguments
-     `(#:python ,python-2               ; only Python 2 is supported
-       #:tests? #f))                    ; no "test" target
-    (inputs
-     `(("samtools" ,samtools)
-       ("python-numpy" ,python2-numpy)
-       ("python-pysam" ,python2-pysam)
-       ("python-scipy" ,python2-scipy)
-       ("python-matplotlib" ,python2-matplotlib)))
-    (native-inputs
-     `(("python-mock" ,python2-mock)    ; for tests
-       ("python-pytz" ,python2-pytz)))  ; for tests
-    (home-page "https://www.genes.mit.edu/burgelab/miso/index.html")
-    (synopsis "Mixture of Isoforms model for RNA-Seq isoform quantitation")
-    (description
-     "MISO (Mixture-of-Isoforms) is a probabilistic framework that quantitates
+linker_so='gcc -shared'); defines")))))
+      (build-system python-build-system)
+      (arguments
+       `(#:python ,python-2               ; only Python 2 is supported
+         #:tests? #f))                    ; no "test" target
+      (inputs
+       ;; Samtools must not be newer than 1.2.  See
+       ;; https://github.com/yarden/MISO/issues/135
+       `(("samtools" ,samtools-1.2)
+         ("python-numpy" ,python2-numpy)
+         ("python-pysam" ,python2-pysam)
+         ("python-scipy" ,python2-scipy)
+         ("python-matplotlib" ,python2-matplotlib)))
+      (native-inputs
+       `(("python-mock" ,python2-mock)    ; for tests
+         ("python-pytz" ,python2-pytz)))  ; for tests
+      (home-page "https://miso.readthedocs.io/en/fastmiso/")
+      (synopsis "Mixture of Isoforms model for RNA-Seq isoform quantitation")
+      (description
+       "MISO (Mixture-of-Isoforms) is a probabilistic framework that quantitates
 the expression level of alternatively spliced genes from RNA-Seq data, and
 identifies differentially regulated isoforms or exons across samples.  By
 modeling the generative process by which reads are produced from isoforms in
 RNA-Seq, the MISO model uses Bayesian inference to compute the probability
 that a read originated from a particular isoform.")
-    (license license:gpl2)))
+      (license license:gpl2))))
 
 (define-public muscle
   (package
