@@ -1,0 +1,57 @@
+From 6361de07a35f2e9dc1d7201d6b26ca31da93ee69 Mon Sep 17 00:00:00 2001
+From: Tobias Geerinckx-Rice <me@tobias.gr>
+Date: Thu, 9 Dec 2021 01:07:32 +0100
+Subject: [PATCH] Revert "Remove priority from attribute
+ constructor/destructor"
+
+This reverts commit 0340df46ec5897636dd071bc8b5c4272cfa7d7be.  It works
+around an irrelevant operating system and breaks compilation on Guix:
+
+mem.c:873: fatal error: RUNTIME_CHECK(((pthread_mutex_lock(((&contextslock))) == 0) ? 0 : 34) == 0) failed
+/gnu/store/pwcp239kjf7lnj5i4lkdzcfcxwcfyk72-bash-minimal-5.0.16/bin/bash: line 1: 13768 Aborted                 ./${fuzzer}
+
+Let's simply revert it for now---there are securities at stake!
+---
+ lib/isc/include/isc/util.h | 8 ++++----
+ lib/isc/lib.c              | 4 ++--
+ 2 files changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/lib/isc/include/isc/util.h b/lib/isc/include/isc/util.h
+index f0f7f85fa4..64c26587ac 100644
+--- a/lib/isc/include/isc/util.h
++++ b/lib/isc/include/isc/util.h
+@@ -49,11 +49,11 @@
+ #endif /* __GNUC__ */
+ 
+ #if HAVE_FUNC_ATTRIBUTE_CONSTRUCTOR && HAVE_FUNC_ATTRIBUTE_DESTRUCTOR
+-#define ISC_CONSTRUCTOR __attribute__((constructor))
+-#define ISC_DESTRUCTOR	__attribute__((destructor))
++#define ISC_CONSTRUCTOR(priority) __attribute__((constructor(priority)))
++#define ISC_DESTRUCTOR(priority)  __attribute__((destructor(priority)))
+ #elif WIN32
+-#define ISC_CONSTRUCTOR
+-#define ISC_DESTRUCTOR
++#define ISC_CONSTRUCTOR(priority)
++#define ISC_DESTRUCTOR(priority)
+ #endif
+ 
+ /*%
+diff --git a/lib/isc/lib.c b/lib/isc/lib.c
+index f3576b2659..2a167fec21 100644
+--- a/lib/isc/lib.c
++++ b/lib/isc/lib.c
+@@ -35,9 +35,9 @@ isc_lib_register(void) {
+ }
+ 
+ void
+-isc__initialize(void) ISC_CONSTRUCTOR;
++isc__initialize(void) ISC_CONSTRUCTOR(101);
+ void
+-isc__shutdown(void) ISC_DESTRUCTOR;
++isc__shutdown(void) ISC_DESTRUCTOR(101);
+ 
+ void
+ isc__initialize(void) {
+-- 
+2.34.0
+

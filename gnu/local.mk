@@ -879,6 +879,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/bazaar-CVE-2017-14176.patch		\
   %D%/packages/patches/bc-fix-cross-compilation.patch		\
   %D%/packages/patches/bear-disable-preinstall-tests.patch	\
+  %D%/packages/patches/bind-re-add-attr-constructor-priority.patch	\
   %D%/packages/patches/brightnessctl-elogind-support.patch	\
   %D%/packages/patches/bsd-games-2.17-64bit.patch		\
   %D%/packages/patches/bsd-games-add-configure-config.patch	\
