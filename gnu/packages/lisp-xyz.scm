@@ -19363,6 +19363,53 @@ command in Common Lisp.")
 (define-public ecl-which
   (sbcl-package->ecl-package sbcl-which))
 
+(define-public sbcl-cl-num-utils
+  (let ((commit "97a88cd34540acf52e872a82ebfef3da0a34fa12")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-num-utils")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/tpapp/cl-num-utils")
+               (commit commit)))
+         (file-name (git-file-name "cl-num-utils" version))
+         (sha256
+          (base32 "15ihsxxs76xnldmqfsbxybckqjwrxwcpphgghiwzr2mnbqjpdqkh"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("anaphora" ,sbcl-anaphora)
+         ("alexandria" ,sbcl-alexandria)
+         ("array-operations" ,sbcl-array-operations)
+         ("cl-slice" ,sbcl-cl-slice)
+         ("let-plus" ,sbcl-let-plus)))
+      (native-inputs
+       `(("clunit" ,sbcl-clunit)))
+      (home-page "https://github.com/tpapp/cl-num-utils")
+      (synopsis "Numerical utilities for Common Lisp")
+      (description
+       "@code{cl-num-utils} implements simple numerical functions for Common
+Lisp, including:
+@itemize
+@item @code{num=}, a comparison operator for floats
+@item simple arithmeric functions, like @code{sum} and @code{l2norm}
+@item elementwise operations for arrays
+@item intervals
+@item special matrices and shorthand for their input
+@item sample statistics
+@item Chebyshev polynomials
+@item univariate rootfinding
+@end itemize")
+      (license license:boost1.0))))
+
+(define-public cl-num-utils
+  (sbcl-package->cl-source-package sbcl-cl-num-utils))
+
+(define-public ecl-cl-num-utils
+  (sbcl-package->ecl-package sbcl-cl-num-utils))
+
 (define-public sbcl-cl-tld
   ;; No release.
   (let ((commit "f5014da8d831fa9481d4181d4450f10a52850c75"))
