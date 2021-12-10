@@ -165,7 +165,7 @@ rejects UDP traffic from the application you're using.")
 (define-public privoxy
   (package
     (name "privoxy")
-    (version "3.0.32")
+    (version "3.0.33")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/ijbswa/Sources/"
@@ -173,7 +173,7 @@ rejects UDP traffic from the application you're using.")
                                  version "-stable-src.tar.gz"))
              (sha256
               (base32
-               "1mzfxwnvnf1jkvfcrsivm6mjwdzjrc3h89qziz0mwi32ih0f87f6"))))
+               "1bhzi2ddv3g1z9h7lhxy7p0wibqg4m5nh46ikldmcqdc1pkh9c84"))))
     (build-system gnu-build-system)
     (arguments
      '(;; The default 'sysconfdir' is $out/etc; change that to
@@ -202,8 +202,7 @@ rejects UDP traffic from the application you're using.")
                ;; non-root users using it as is.
                (substitute* "config"
                  (("^logdir") "#logdir")
-                 (("^logfile") "#logfile")))
-             #t)))))
+                 (("^logfile") "#logfile"))))))))
     (inputs
      `(("brotli" ,brotli)
        ("openssl" ,openssl)
