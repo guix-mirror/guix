@@ -7502,7 +7502,7 @@ defined in OCaml 4.12.0.")
 (define-public ocamlformat
   (package
     (name "ocamlformat")
-    (version "0.19.0")
+    (version "0.20.0")
     (source
       (origin
         (method git-fetch)
@@ -7512,7 +7512,7 @@ defined in OCaml 4.12.0.")
         (file-name (git-file-name name version))
         (sha256
           (base32
-            "0dp4pkznz9yvqx9gxwbid1z2b8ajkr8i27zay9ghx69624hz3i4z"))))
+            "0zhvhb8ky0danmfvp4vvbh0pg89d7r7ka6m3q81vlyvb7gk08r6r"))))
     (build-system dune-build-system)
     (arguments
      '(#:package "ocamlformat"
@@ -7524,6 +7524,7 @@ defined in OCaml 4.12.0.")
         ("ocaml-base" ,ocaml-base)
         ("ocaml-cmdliner" ,ocaml-cmdliner)
         ("ocaml-dune-build-info" ,ocaml-dune-build-info)
+        ("ocaml-either" ,ocaml-either)
         ("ocaml-fix" ,ocaml-fix)
         ("ocaml-fpath" ,ocaml-fpath)
         ("ocaml-menhir" ,ocaml-menhir)
