@@ -19550,6 +19550,39 @@ density, distribution and quantiles for these distributions.")
 (define-public ecl-cl-random
   (sbcl-package->ecl-package sbcl-cl-random))
 
+(define-public sbcl-mgl-gpr
+  (let ((commit "cb6ce51e2f87bf1d589f3703c13eea6e25780afe")
+        (revision "1"))
+    (package
+      (name "sbcl-mgl-gpr")
+      (version (git-version "0.0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/melisgl/mgl-gpr")
+               (commit commit)))
+         (file-name (git-file-name "cl-mgl-gpr" version))
+         (sha256
+          (base32 "0w51dqixh277k6sl8bqvvp1400y6kd1l5h3d9q2f40l9bpxy8gjx"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("cl-random" ,sbcl-cl-random)
+         ("mgl-pax" ,sbcl-mgl-pax)))
+      (home-page "https://melisgl.github.io/mgl-gpr/")
+      (synopsis "Common Lisp library of evolutionary algorithms")
+      (description
+       "@code{MGL-GPR} is a library of evolutionary algorithms such as
+Genetic Programming (evolving typed expressions from a set of operators and
+constants) and Differential Evolution.")
+      (license license:expat))))
+
+(define-public cl-mgl-gpr
+  (sbcl-package->cl-source-package sbcl-mgl-gpr))
+
+(define-public ecl-mgl-gpr
+  (sbcl-package->ecl-package sbcl-mgl-gpr))
+
 (define-public sbcl-cl-tld
   ;; No release.
   (let ((commit "f5014da8d831fa9481d4181d4450f10a52850c75"))
