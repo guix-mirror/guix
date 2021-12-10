@@ -6212,7 +6212,7 @@ useful errors on failure.")
 (define-public ocaml-ppx-expect
   (package
     (name "ocaml-ppx-expect")
-    (version "0.14.1")
+    (version "0.14.2")
     (source
      (origin
        (method git-fetch)
@@ -6222,7 +6222,7 @@ useful errors on failure.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0vbbnjrzpyk5p0js21lafr6fcp2wqka89p1876rdf472cmg0l7fv"))))
+         "1v886rsl93wdmaw61z10q8nqshf8hvlznj9gym2ljrjz4cqyjsa4"))))
     (build-system dune-build-system)
     (propagated-inputs
      `(("ocaml-base" ,ocaml-base)
