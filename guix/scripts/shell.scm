@@ -115,7 +115,7 @@ interactive shell in that environment.\n"))
               (option '(#\f "file") #t #f
                       (lambda (opt name arg result)
                         (alist-cons 'load (tag-package-arg result arg)
-                                    result)))
+                                    (ensure-ad-hoc result))))
               (option '(#\q) #f #f
                       (lambda (opt name arg result)
                         (alist-cons 'explicit-loading? #t result)))
