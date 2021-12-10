@@ -19508,6 +19508,48 @@ to serve as a building block for such an interface.")
 (define-public ecl-cl-rmath
   (sbcl-package->ecl-package sbcl-cl-rmath))
 
+(define-public sbcl-cl-random
+  (let ((commit "5bb65911037f95a4260bd29a594a09df3849f4ea")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-random")
+      (version (git-version "0.0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/tpapp/cl-random")
+               (commit commit)))
+         (file-name (git-file-name "cl-random" version))
+         (sha256
+          (base32 "0jn80xphyvyp2v72acr6b8a2f6dw06myr5vrjfl14brsvks7wr89"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("anaphora" ,sbcl-anaphora)
+         ("array-operations" ,sbcl-array-operations)
+         ("cl-num-utils" ,sbcl-cl-num-utils)
+         ("cl-rmath" ,sbcl-cl-rmath)
+         ("cl-slice" ,sbcl-cl-slice)
+         ("gsll" ,sbcl-gsll)
+         ("let-plus" ,sbcl-let-plus)
+         ("lla" ,sbcl-lla)))
+      (native-inputs
+       `(("clunit" ,sbcl-clunit)))
+      (home-page "https://github.com/tpapp/cl-random")
+      (synopsis "Random variates for Common Lisp")
+      (description
+       "@code{cl-random} is a library for generating random draws from various
+commonly used distributions, and for calculating statistical functions, such as
+density, distribution and quantiles for these distributions.")
+      (license license:expat))))
+
+(define-public cl-random
+  (sbcl-package->cl-source-package sbcl-cl-random))
+
+(define-public ecl-cl-random
+  (sbcl-package->ecl-package sbcl-cl-random))
+
 (define-public sbcl-cl-tld
   ;; No release.
   (let ((commit "f5014da8d831fa9481d4181d4450f10a52850c75"))
