@@ -19410,6 +19410,58 @@ Lisp, including:
 (define-public ecl-cl-num-utils
   (sbcl-package->ecl-package sbcl-cl-num-utils))
 
+(define-public sbcl-lla
+  (let ((commit "ded805d1e9b1493e17b601116ba9bd8a3de3024f")
+        (revision "1"))
+    (package
+      (name "sbcl-lla")
+      (version (git-version "0.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/tpapp/lla")
+               (commit commit)))
+         (file-name (git-file-name "cl-lla" version))
+         (sha256
+          (base32 "0n9vc7dnyjbbsv1n7rd8sylwda5fsdf8f890g4nachanyx0xps9k"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "src/configuration.lisp"
+                 (("\"libblas.so.3gf\"")
+                  (string-append "\"" (assoc-ref inputs "lapack")
+                                 "/lib/libblas.so\""))
+                 (("\"liblapack.so.3gf\"")
+                  (string-append "\"" (assoc-ref inputs "lapack")
+                                 "/lib/liblapack.so\""))))))))
+      (inputs
+       `(("anaphora" ,sbcl-anaphora)
+         ("alexandria" ,sbcl-alexandria)
+         ("cffi" ,sbcl-cffi)
+         ("cl-num-utils" ,sbcl-cl-num-utils)
+         ("cl-slice" ,sbcl-cl-slice)
+         ("lapack" ,lapack)
+         ("let-plus" ,sbcl-let-plus)))
+      (native-inputs
+       `(("clunit" ,sbcl-clunit)))
+      (home-page "https://github.com/tpapp/lla")
+      (synopsis "Linear algebra library for Common Lisp")
+      (description
+       "LLA is a high-level Common Lisp library built on BLAS and LAPACK, but
+providing a much more abstract interface with the purpose of freeing the user
+from low-level concerns and reducing the number of bugs in numerical code.")
+      (license license:boost1.0))))
+
+(define-public cl-lla
+  (sbcl-package->cl-source-package sbcl-lla))
+
+(define-public ecl-lla
+  (sbcl-package->ecl-package sbcl-lla))
+
 (define-public sbcl-cl-tld
   ;; No release.
   (let ((commit "f5014da8d831fa9481d4181d4450f10a52850c75"))
