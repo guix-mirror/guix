@@ -89,6 +89,7 @@
   #:use-module (gnu packages kerberos)
   #:use-module (gnu packages less)
   #:use-module (gnu packages libcanberra)
+  #:use-module (gnu packages libevent)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages libidn)
   #:use-module (gnu packages libreoffice)
@@ -550,31 +551,31 @@ your private keys, no previous conversation is compromised.")
 
 (define-public libsignal-protocol-c
   (package
-  (name "libsignal-protocol-c")
-  (version "2.3.3")
-  (source (origin
-           (method git-fetch)
-           (uri (git-reference
-                  (url "https://github.com/WhisperSystems/libsignal-protocol-c")
-                  (commit (string-append "v" version))))
-           (file-name (git-file-name name version))
-           (sha256
-            (base32
-             "0z5p03vk15i6h870azfjgyfgxhv31q2vq6rfhnybrnkxq2wqzwhk"))))
-  (arguments
-   `(;; Required for proper linking and for tests to run.
-     #:configure-flags '("-DBUILD_SHARED_LIBS=on" "-DBUILD_TESTING=1")))
-  (build-system cmake-build-system)
-  (inputs (list ;; Required for tests:
-                check openssl))
-  (native-inputs (list pkg-config))
-  (home-page "https://github.com/WhisperSystems/libsignal-protocol-c")
-  (synopsis "Implementation of a ratcheting forward secrecy protocol")
-  (description "libsignal-protocol-c is an implementation of a ratcheting
+   (name "libsignal-protocol-c")
+   (version "2.3.3")
+   (source (origin
+            (method git-fetch)
+            (uri (git-reference
+                   (url "https://github.com/WhisperSystems/libsignal-protocol-c")
+                   (commit (string-append "v" version))))
+            (file-name (git-file-name name version))
+            (sha256
+             (base32
+              "0z5p03vk15i6h870azfjgyfgxhv31q2vq6rfhnybrnkxq2wqzwhk"))))
+   (arguments
+    `(;; Required for proper linking and for tests to run.
+      #:configure-flags '("-DBUILD_SHARED_LIBS=on" "-DBUILD_TESTING=1")))
+   (build-system cmake-build-system)
+   (inputs (list ;; Required for tests:
+                 check openssl))
+   (native-inputs (list pkg-config))
+   (home-page "https://github.com/WhisperSystems/libsignal-protocol-c")
+   (synopsis "Implementation of a ratcheting forward secrecy protocol")
+   (description "libsignal-protocol-c is an implementation of a ratcheting
 forward secrecy protocol that works in synchronous and asynchronous
 messaging environments.  It can be used with messaging software to provide
 end-to-end encryption.")
-  (license license:gpl3+)))
+   (license license:gpl3+)))
 
 (define-public axc
   (package
@@ -1665,9 +1666,9 @@ messenger protocol.")
             (wrap-program (string-append (assoc-ref outputs "out")
                                          "/bin/utox")
             ;; For GtkFileChooserDialog.
-            `("GSETTINGS_SCHEMA_DIR" =
-              (,(string-append (assoc-ref inputs "gtk+")
-                               "/share/glib-2.0/schemas")))))))))
+             `("GSETTINGS_SCHEMA_DIR" =
+               (,(string-append (assoc-ref inputs "gtk+")
+                                "/share/glib-2.0/schemas")))))))))
    (inputs
     `(("dbus" ,dbus)
       ("filteraudio" ,filteraudio)
@@ -2288,7 +2289,7 @@ QMatrixClient project.")
 (define-public mtxclient
   (package
     (name "mtxclient")
-    (version "0.5.1")
+    (version "0.6.1")
     (source
      (origin
        (method git-fetch)
@@ -2297,7 +2298,7 @@ QMatrixClient project.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1xznfx2bhw0ahwmkxm0rs05vz05ijk5k4190rj6qp3bvb9byiajh"))))
+        (base32 "1a3ki45rf1fm7y4b74li76aqd4qc4y5ga5r163s0cwcpj9mp8c45"))))
     (arguments
      `(#:configure-flags
        (list
@@ -2308,13 +2309,16 @@ QMatrixClient project.")
          (add-before 'configure 'disable-network-tests
            (lambda _
              (substitute* "CMakeLists.txt"
-               (("add_test\\((BasicConnectivity|ClientAPI|MediaAPI|Encryption|Pushrules)")
+               (("add_test\\((BasicConnectivity|ClientAPI|Devices|MediaAPI|Encryption|Pushrules)")
                 "# add_test"))
              #t)))))
     (build-system cmake-build-system)
     (inputs
      (list boost
+           coeurl
+           curl
            json-modern-cxx
+           libevent
            libolm
            libsodium
            openssl
