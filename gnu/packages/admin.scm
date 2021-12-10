@@ -45,6 +45,7 @@
 ;;; Copyright © 2021 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
+;;; Copyright © 2021 Petr Hodina <phodina@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -129,6 +130,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages polkit)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-crypto)
@@ -1171,7 +1173,7 @@ connection alive.")
 (define-public isc-dhcp
   (let* ((bind-major-version "9")
          (bind-minor-version "11")
-         (bind-patch-version "32")
+         (bind-patch-version "36")
          (bind-release-type "")         ; for patch release, use "-P"
          (bind-release-version "")      ; for patch release, e.g. "6"
          (bind-version (string-append bind-major-version
@@ -1330,7 +1332,7 @@ connection alive.")
                                         "/bind-" bind-version ".tar.gz"))
                     (sha256
                      (base32
-                      "0hhkb4d14hvly2751cxl2s2xyim3bri8qaisgkcm456xfi5wpy6b"))))
+                      "108nh7hha4r0lb5hf1fn7lqaascvhsrghpz6afm5lf9vf2vgqly9"))))
 
                 ("coreutils*" ,coreutils)
                 ("sed*" ,sed)))
@@ -1550,6 +1552,56 @@ by bandwidth they use.")
 console window to allow commands to be interactively run on multiple servers
 over ssh connections.")
     (license license:gpl2+)))
+
+(define-public realmd
+  (package
+    (name "realmd")
+    (version "0.17.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/freedesktop/realmd")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1c6q2a86kk2f1akzc36nh52hfwsmmc0mbp6ayyjxj4zsyk9zx5bf"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--with-systemd-unit-dir=no"
+                           "--with-systemd-journal=no"
+                           "--with-distro=GNU guix"
+                           "--disable-doc")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'fix-service
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; GNU Guix does not have service config file, therefore we remove
+             ;; the line that copies the file.
+             (substitute* "Makefile"
+               ((".*/service/realmd-.*") "")))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("glib-bin" ,glib "bin")
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python)))
+    (inputs
+     `(("glib" ,glib)
+       ("mit-krb5" ,mit-krb5)
+       ("openldap" ,openldap)
+       ("polkit" ,polkit)))
+    (synopsis "DBus service for network authentication")
+    (description "This package provides an on demand system DBus service.
+It allows callers to configure network authentication and domain membership
+in a standard way.  Realmd discovers information about the domain or realm
+automatically and does not require complicated configuration in order to join
+a domain or realm.  Dbus system service that manages discovery and enrollment in
+realms/domains like Active Directory or IPA.")
+    (home-page "https://www.freedesktop.org/software/realmd/")
+    (license license:lgpl2.1+)))
 
 (define-public rename
   (package
@@ -3755,14 +3807,14 @@ information tool.")
 (define-public nnn
   (package
     (name "nnn")
-    (version "4.1.1")
+    (version "4.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/jarun/nnn/releases/download/v"
                            version "/nnn-v" version ".tar.gz"))
        (sha256
-        (base32 "1fnf35s3b2nfp18s712n5vhg6idx4rfgwdfv74nc2933v9l2dq7h"))))
+        (base32 "0lqn7pyy8c1vy29vn8ad4x23cw67cy1d21ghns6f3w9a1h7kyjp0"))))
     (build-system gnu-build-system)
     (inputs
      `(("ncurses" ,ncurses)

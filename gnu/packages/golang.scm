@@ -31,6 +31,7 @@
 ;;; Copyright © 2021 jgart <jgart@dismail.de>
 ;;; Copyright © 2021 Bonface Munyoki Kilyungi <me@bonfacemunyoki.com>
 ;;; Copyright © 2021 Chadwain Holness <chadwainholness@gmail.com>
+;;; Copyright © 2021 Philip McGrath <philip@philipmcgrath.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -459,7 +460,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
   (package
     (inherit go-1.14)
     (name "go")
-    (version "1.16.8")
+    (version "1.16.11")
     (source
      (origin
        (method git-fetch)
@@ -469,7 +470,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "00zv65v09kr2cljxxqypk980r4b4aqjijhbw4ikppn8km68h831n"))))
+         "1jn45bci9cvkvybvy9ql2rsgj06kg3sl027vhv0h0bavgqa7qk20"))))
     (arguments
      (substitute-keyword-arguments (package-arguments go-1.14)
        ((#:tests? _) #t)
@@ -618,7 +619,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
   (package
     (inherit go-1.16)
     (name "go")
-    (version "1.17.1")
+    (version "1.17.4")
     (source
      (origin
        (method git-fetch)
@@ -628,7 +629,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0wk99lwpzp4qwrksl932lm9vb70nyf4vgb5lxwh7gzjcbhlqj992"))))
+         "14c08fmj2c5arcd73ryha2qhl2bawpm22rcbiq47a6x7kvr31hi4"))))
     (outputs '("out" "tests")) ; 'tests' contains distribution tests.
     (arguments
      `(#:modules ((ice-9 match)
@@ -3047,41 +3048,6 @@ with the HTTP protocol definition.")
 API service accounts for Go.")
     (license license:asl2.0)))
 
-(define-public go-github-com-google-gmail-oauth2-tools-go-sendgmail
-  (let ((commit "e3229155a4037267ce40f1a3a681f53221aa4d8d")
-        (revision "0"))
-    (package
-      (name "go-github-com-google-gmail-oauth2-tools-go-sendgmail")
-      (version (git-version "0.0.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/google/gmail-oauth2-tools")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "1cxpkiaajhq1gjsg47r2b5xgck0r63pvkyrkm7af8c8dw7fyn64f"))))
-      (propagated-inputs
-       `(("go-golang-org-x-oauth2" ,go-golang-org-x-oauth2)
-         ("go-cloud-google-com-go-compute-metadata"
-          ,go-cloud-google-com-go-compute-metadata)))
-      (build-system go-build-system)
-      (arguments
-       '(#:unpack-path "github.com/google/gmail-oauth2-tools"
-         #:import-path "github.com/google/gmail-oauth2-tools/go/sendgmail"))
-      (home-page
-       "https://github.com/google/gmail-oauth2-tools/tree/master/go/sendgmail")
-      (synopsis
-       "Sendmail-compatible tool for using Gmail with @code{git send-email}")
-      (description
-       "The @command{sendgmail} command provides a minimal sendmail-compatible
-front-end that connects to Gmail using OAuth2.  It is specifically designed
-for use with @code{git send-email}.  The command needs a Gmail API key to
-function.")
-      (license license:asl2.0))))
-
 (define-public go-github-com-google-cadvisor
   (let ((commit "2ed7198f77395ee9a172878a0a7ab92ab59a2cfd")
         (revision "0"))
@@ -3886,7 +3852,7 @@ which satisfies the cron expression.")
 (define-public go-gopkg-in-yaml-v2
   (package
     (name "go-gopkg-in-yaml-v2")
-    (version "2.2.2")
+    (version "2.4.0")
     (source
       (origin
         (method git-fetch)
@@ -3896,7 +3862,18 @@ which satisfies the cron expression.")
         (file-name (git-file-name name version))
         (sha256
          (base32
-          "01wj12jzsdqlnidpyjssmj0r4yavlqy7dwrg7adqd8dicjc4ncsa"))))
+          "1pbmrpj7gcws34g8vwna4i2nhm9p6235piww36436xhyaa10cldr"))
+        (modules '((guix build utils)))
+        (snippet
+         '(begin
+            ;; https://github.com/go-yaml/yaml/issues/441 and
+            ;; https://github.com/go-yaml/yaml/pull/442
+            ;; Don't assume 64-bit wide integers
+            (substitute* "decode_test.go"
+              (("bin: (-0b1000000000000000000000000000000000000000000000000000000000000000)" all number)
+               (string-append "int64_min_base2: " number))
+              (("map\\[string\\]interface\\{\\}\\{\"bin\": -9223372036854775808\\}")
+               "map[string]int64{\"int64_min_base2\": math.MinInt64}"))))))
     (build-system go-build-system)
     (arguments
      '(#:import-path "gopkg.in/yaml.v2"))
@@ -7622,11 +7599,8 @@ ssh-agent process using the sample server. ")
        `(#:import-path "github.com/alcortesm/tgz"
          #:phases
          (modify-phases %standard-phases
-           (add-after 'unpack 'make-git-checkout-writable
-             (lambda* (#:key outputs #:allow-other-keys)
-               (for-each make-file-writable (find-files "."))
-               (for-each make-file-writable (find-files (assoc-ref outputs "out")))
-               #t)))))
+           ;; Files are test fixtures, not generated.
+           (delete 'reset-gzip-timestamps))))
       (home-page "https://github.com/alcortesm/tgz/")
       (synopsis "Go library to extract tgz files to temporal directories")
       (description "This package provides a Go library to extract tgz files to

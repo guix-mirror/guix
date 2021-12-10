@@ -140,7 +140,7 @@ SYSTEM."
   ;; chain.)
   (list gcc-8 gcc-9 gcc-10 gcc-11 glibc binutils
         gmp mpfr mpc coreutils findutils diffutils patch sed grep
-        gawk gnu-gettext hello guile-2.2 guile-3.0 zlib gzip xz
+        gawk gnu-gettext hello guile-2.2 guile-3.0 zlib gzip xz guix
         %bootstrap-binaries-tarball
         %binutils-bootstrap-tarball
         (%glibc-bootstrap-tarball)

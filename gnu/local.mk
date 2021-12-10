@@ -885,6 +885,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/bc-fix-cross-compilation.patch		\
   %D%/packages/patches/bdb-5.3-atomics-on-gcc-9.patch		\
   %D%/packages/patches/bear-disable-preinstall-tests.patch	\
+  %D%/packages/patches/bind-re-add-attr-constructor-priority.patch	\
   %D%/packages/patches/brightnessctl-elogind-support.patch	\
   %D%/packages/patches/bsd-games-2.17-64bit.patch		\
   %D%/packages/patches/bsd-games-add-configure-config.patch	\
@@ -1189,6 +1190,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gobject-introspection-cc.patch		\
   %D%/packages/patches/gobject-introspection-girepository.patch	\
   %D%/packages/patches/go-fix-script-tests.patch			\
+  %D%/packages/patches/go-github-com-golang-snappy-32bit-test.patch \
   %D%/packages/patches/go-github-com-urfave-cli-fix-tests.patch \
   %D%/packages/patches/go-github-com-urfave-cli-v2-fix-tests.patch \
   %D%/packages/patches/go-skip-gc-test.patch			\
@@ -1255,7 +1257,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/hydra-disable-darcs-test.patch		\
   %D%/packages/patches/icecat-makeicecat.patch			\
   %D%/packages/patches/icecat-avoid-bundled-libraries.patch	\
-  %D%/packages/patches/icecat-CVE-2021-43527.patch		\
   %D%/packages/patches/icecat-use-older-reveal-hidden-html.patch	\
   %D%/packages/patches/icecat-use-system-graphite2+harfbuzz.patch	\
   %D%/packages/patches/icecat-use-system-media-libs.patch	\
@@ -1763,6 +1764,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/screen-hurd-path-max.patch		\
   %D%/packages/patches/sdl-libx11-1.6.patch			\
   %D%/packages/patches/seed-webkit.patch			\
+  %D%/packages/patches/sendgmail-accept-ignored-gsuite-flag.patch	\
+  %D%/packages/patches/sendgmail-remove-domain-restriction.patch	\
   %D%/packages/patches/seq24-rename-mutex.patch			\
   %D%/packages/patches/serf-python3.patch			\
   %D%/packages/patches/shakespeare-spl-fix-grammar.patch		\

@@ -2581,16 +2581,18 @@ modify quests for the Solarus engine.")))
 (define-public superstarfighter
   (package
     (name "superstarfighter")
-    (version "0.6.4")
+    (version "0.6.5")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/notapixelstudio/superstarfighter")
-             (commit (string-append "v" version))))
+             ;; The commit is not tagged upstream:
+             ;; https://github.com/notapixelstudio/superstarfighter/commit/350605bf5454c26ebe2c57d8217edd03689c0573
+             (commit "32521f467616bb390e3929d07e1936ff43fe64da")))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1fly63yf5ls1xwm15if4lxwy67wi84k4gvjllljpykrl18vw2y0y"))))
+        (base32 "1ckghzrfgvk9z1n5f4ivnamm6s8h9sbv0a3aq9pp4a3yrhkgld0k"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ;there are no tests

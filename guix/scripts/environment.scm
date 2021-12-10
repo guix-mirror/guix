@@ -567,7 +567,7 @@ command name."
       (_ #t)))
 
   (match (scandir (string-append profile "/bin") not-dot?)
-    (() #f)
+    ((or #f ()) #f)
     (available
      (match command
        ((executable _ ...)

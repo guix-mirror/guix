@@ -73,6 +73,20 @@ echo "Broken manifest." > "$tmpdir/manifest.scm"
 (cd "$tmpdir"; SHELL="$(realpath fake-shell.sh)" guix shell --bootstrap -q)
 rm "$tmpdir/manifest.scm"
 
+# Make sure '-D' affects only the immediately following '-f', and not packages
+# that appear later: <https://issues.guix.gnu.org/52093>.
+cat > "$tmpdir/empty-package.scm" <<EOF
+(use-modules (guix) (guix tests)
+             (guix build-system trivial))
+
+(dummy-package "empty-package"
+  (build-system trivial-build-system))   ;zero inputs
+EOF
+
+guix shell --bootstrap --pure -D -f "$tmpdir/empty-package.scm" \
+     guile-bootstrap -- guile --version
+rm "$tmpdir/empty-package.scm"
+
 if guile -c '(getaddrinfo "www.gnu.org" "80" AI_NUMERICSERV)' 2> /dev/null
 then
     # Compute the build environment for the initial GNU Make.

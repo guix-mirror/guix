@@ -1169,9 +1169,8 @@ USER-PARTITION if it is encrypted, or the plain file-name otherwise."
      (lambda (key-file)
        (syslog "formatting and opening LUKS entry ~s at ~s~%"
                label file-name)
-       (system* "cryptsetup" "-q" "luksFormat" "--type" "luks2"
-                "--pbkdf" "pbkdf2" file-name key-file)
-       (system* "cryptsetup" "open"
+       (system* "cryptsetup" "-q" "luksFormat" file-name key-file)
+       (system* "cryptsetup" "open" "--type" "luks"
                 "--key-file" key-file file-name label)))))
 
 (define (luks-close user-partition)

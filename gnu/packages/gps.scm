@@ -182,7 +182,7 @@ coordinates as well as partial support for adjustments in global coordinate syst
 (define-public gpxsee
   (package
     (name "gpxsee")
-    (version "7.37")
+    (version "10.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -191,7 +191,7 @@ coordinates as well as partial support for adjustments in global coordinate syst
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0fpb43smh0kwic5pdxs46c0hkqj8g084h72pa024x1my6w12y9b8"))))
+                "0kj7130imhppb0bam34a1xr2lxk76fyida31idzvfk3m7z39w02w"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -206,7 +206,8 @@ coordinates as well as partial support for adjustments in global coordinate syst
                      (string-append "PREFIX="
                                     (assoc-ref outputs "out"))))))))
     (inputs
-     `(("qtbase" ,qtbase-5)))
+     `(("qtbase" ,qtbase-5)
+      ("qtlocation" ,qtlocation)))
     (native-inputs
      `(("qttools" ,qttools)))
     (home-page "https://www.gpxsee.org")

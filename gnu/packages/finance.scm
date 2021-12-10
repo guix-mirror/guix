@@ -665,7 +665,7 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
   ;; the system's dynamically linked library.
   (package
     (name "monero")
-    (version "0.17.2.3")
+    (version "0.17.3.0")
     (source
      (origin
        (method git-fetch)
@@ -690,7 +690,7 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
               (string-append all "\n#include <boost/mpl/contains.hpp>")))
            #t))
        (sha256
-        (base32 "0nax991fshfh51grhh2ryfrwwws35k16gzl1l3niva28zff2xmq6"))))
+        (base32 "1spsf7m3x4psp9s7mivr6x4886jnbq4i8ll2dl8bv5bsdhcd3pjm"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
@@ -744,12 +744,13 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
              #t))
          ;; Only try tests that don't need access to network or system
          (replace 'check
-           (lambda _
+           (lambda* (#:key tests? #:allow-other-keys)
              ;; Core tests sometimes fail, at least on i686-linux.
              ;; Let's disable them for now and just try hash tests
              ;; and unit tests.
              ;; (invoke "make" "ARGS=-R 'hash|core_tests' --verbose" "test")))
-             (invoke "make" "ARGS=-R 'hash' --verbose" "test")))
+             (when tests?
+               (invoke "make" "ARGS=-R 'hash' --verbose" "test"))))
          (add-after 'check 'unit-tests
            (lambda _
              (let ((excluded-unit-tests
@@ -780,7 +781,7 @@ the Monero command line client and daemon.")
 (define-public monero-gui
   (package
     (name "monero-gui")
-    (version "0.17.2.3")
+    (version "0.17.3.0")
     (source
      (origin
        (method git-fetch)
@@ -797,7 +798,7 @@ the Monero command line client and daemon.")
            (delete-file-recursively "monero")
            #t))
        (sha256
-        (base32 "0qb746z1sxqrja7q9lqhhbm64v83sn67az4k7gs5q90iaw584qfc"))))
+        (base32 "0sc3g8g4mlcgz1ys1mqx9klyfl02z17zv2z22clx33jni0l3bqkr"))))
     (build-system qt-build-system)
     (native-inputs
      `(,@(package-native-inputs monero)
@@ -1141,7 +1142,7 @@ the KeepKey Hardware Wallet.")
              (commit "v0.14.4")))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0nl44ldfw9s2v3p7g5bldfw3ds2hz9r28j42bpnp8bj0v5na3ivk"))
+        (base32 "1ksv494xpga27ifrjyn1bkqaya5h769lqb9rx1ng0n4kvmnrqr3l"))
        (modules
         '((guix build utils)
           (ice-9 ftw)

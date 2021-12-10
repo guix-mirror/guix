@@ -275,9 +275,13 @@ _guix_complete ()
                 fi
 	    elif [[ "$command" = "environment" || "$command" = "shell" ]]
 	    then
-                if _guix_is_dash_L || _guix_is_dash_m || _guix_is_dash_p || _guix_is_dash_l
-                then
-                    _guix_complete_file
+		if _guix_is_dash_f && [[ "$command" = "shell" ]]
+		then
+		    # The otherwise identical ‘guix environment’ lacks the ‘-f’ option.
+		    _guix_complete_file
+		elif _guix_is_dash_L || _guix_is_dash_m || _guix_is_dash_p || _guix_is_dash_l
+		then
+		    _guix_complete_file
 		elif _guix_is_option "$word_at_point"
 		then
 		    _guix_complete_option "$command_index" "$word_at_point"

@@ -52,8 +52,7 @@ interactive shell in that environment.\n"))
   (display (G_ "
   -D, --development      include the development inputs of the next package"))
   (display (G_ "
-  -f, --file=FILE        create environment for the package that the code within
-                         FILE evaluates to"))
+  -f, --file=FILE        add to the environment the package FILE evaluates to"))
   (display (G_ "
   -q                     inhibit loading of 'guix.scm' and 'manifest.scm'"))
   (display (G_ "
@@ -116,7 +115,7 @@ interactive shell in that environment.\n"))
               (option '(#\f "file") #t #f
                       (lambda (opt name arg result)
                         (alist-cons 'load (tag-package-arg result arg)
-                                    result)))
+                                    (ensure-ad-hoc result))))
               (option '(#\q) #f #f
                       (lambda (opt name arg result)
                         (alist-cons 'explicit-loading? #t result)))

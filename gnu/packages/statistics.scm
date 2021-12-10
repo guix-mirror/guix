@@ -404,12 +404,49 @@ available, greatly increasing its breadth and scope.")
     (arguments
      `(#:tests? #f
        ,@(substitute-keyword-arguments (package-arguments r-with-tests)
+           ((#:disallowed-references refs '())
+            (cons perl refs))
            ((#:configure-flags flags)
             ;; Do not build the recommended packages.  The build system creates
             ;; random temporary directories and embeds their names in some
             ;; package files.  We build these packages with the r-build-system
             ;; instead.
-            `(cons "--without-recommended-packages" ,flags)))))))
+            `(cons "--without-recommended-packages" ,flags))
+           ((#:phases phases '%standard-phases)
+            `(modify-phases ,phases
+               (add-after 'install 'remove-extraneous-references
+                 (lambda* (#:key inputs outputs #:allow-other-keys)
+                   (let ((out (assoc-ref outputs "out")))
+                     (substitute* (string-append out "/lib/R/etc/Makeconf")
+                       (("^# configure.*")
+                        "# Removed to avoid extraneous references\n"))
+                     (substitute* (string-append out "/lib/R/bin/libtool")
+                       (((string-append
+                          "(-L)?("
+                          (assoc-ref inputs "bzip2")
+                          "|"
+                          (assoc-ref inputs "perl")
+                          "|"
+                          (assoc-ref inputs "texlive")
+                          "|"
+                          (assoc-ref inputs "texlive-bin")
+                          "|"
+                          (assoc-ref inputs "texinfo")
+                          "|"
+                          (assoc-ref inputs "xz")
+                          "|"
+                          (format #false
+                                  "/gnu/store/[^-]+-(~{~a~^|~})-[^/]+"
+                                  '("glibc-utf8-locales"
+                                    "libselinux"
+                                    "libsepol"
+                                    "file"
+                                    "texlive-bin"
+                                    "util-macros"
+                                    "graphite2"))
+                          "|"
+                          "/gnu/store/[^-]+-glibc-[^-]+-static"
+                          ")/lib")) ""))))))))))))
 
 (define-public rmath-standalone
   (package (inherit r-minimal)

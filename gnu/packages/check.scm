@@ -587,32 +587,6 @@ and it supports a very flexible form of test discovery.")
 has been designed to be fast, light and unintrusive.")
     (license license:expat)))
 
-(define-public go-gopkg.in-check.v1
-  (let ((commit "788fd78401277ebd861206a03c884797c6ec5541")
-        (revision "1"))
-    (package
-      (name "go-gopkg.in-check.v1")
-      (version (git-version "0.0.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/go-check/check")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "0v3bim0j375z81zrpr5qv42knqs0y2qv2vkjiqi5axvb78slki1a"))))
-      (build-system go-build-system)
-      (arguments
-       '(#:import-path "gopkg.in/check.v1"))
-      (propagated-inputs
-       `(("go-github-com-kr-pretty" ,go-github-com-kr-pretty)))
-      (synopsis "Rich testing extension for Go's testing package")
-      (description
-       "@code{check} is a rich testing extension for Go's testing package.")
-      (home-page "https://github.com/go-check/check")
-      (license license:bsd-2))))
-
 (define-public go-github.com-smartystreets-gunit
   (package
     (name "go-github.com-smartystreets-gunit")

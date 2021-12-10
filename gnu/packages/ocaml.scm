@@ -772,7 +772,7 @@ the opam file format.")
 (define-public opam
   (package
     (name "opam")
-    (version "2.1.1")
+    (version "2.1.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -781,7 +781,7 @@ the opam file format.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "12cxpnkv8n90g66b31c7hsxl2yy537fgf19xhr6zn4n024bh6dh3"))))
+                "0mdr32mg63yaw89p44zx8b9dxp1167ckmlxkp8svd6fwgb3z49yx"))))
     (build-system dune-build-system)
     (arguments
      `(#:test-target "."
@@ -1813,7 +1813,7 @@ module of this library is parameterised by the type of S-expressions.")
 (define-public ocaml-migrate-parsetree
   (package
     (name "ocaml-migrate-parsetree")
-    (version "2.2.0")
+    (version "2.3.0")
     (home-page "https://github.com/ocaml-ppx/ocaml-migrate-parsetree")
     (source
      (origin
@@ -1824,7 +1824,7 @@ module of this library is parameterised by the type of S-expressions.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0midpqjw53b5gx2zbkxs2hqrvh12y8n5681indficp9h3zr822l6"))))
+         "1nqmhsc72xmgm865nn8q0hngklhvqav281hgnx1gf5ns49a0n3ig"))))
     (build-system dune-build-system)
     (arguments `(#:tests? #f))
     (propagated-inputs
@@ -6202,7 +6202,7 @@ useful errors on failure.")
 (define-public ocaml-ppx-expect
   (package
     (name "ocaml-ppx-expect")
-    (version "0.14.1")
+    (version "0.14.2")
     (source
      (origin
        (method git-fetch)
@@ -6212,7 +6212,7 @@ useful errors on failure.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0vbbnjrzpyk5p0js21lafr6fcp2wqka89p1876rdf472cmg0l7fv"))))
+         "1v886rsl93wdmaw61z10q8nqshf8hvlznj9gym2ljrjz4cqyjsa4"))))
     (build-system dune-build-system)
     (propagated-inputs
      `(("ocaml-base" ,ocaml-base)
@@ -7427,7 +7427,7 @@ representation.")
 (define-public ocaml-fix
   (package
     (name "ocaml-fix")
-    (version "20201120")
+    (version "20211125")
     (source
       (origin
         (method git-fetch)
@@ -7437,7 +7437,7 @@ representation.")
         (file-name (git-file-name name version))
         (sha256
           (base32
-            "1j40mg1gy03c0djzx3nzmpvnl984s14n04zwcmp2xnlidq48kvs4"))))
+            "00vq2das1l8xca013z7z7jy5622fsy3jha2cj72psp22wx9199l1"))))
     (build-system dune-build-system)
     (arguments
      ;; No tests.
@@ -7466,10 +7466,33 @@ or the list of statically linked libraries with their versions.  It supports
 reporting the version from the version control system during development to
 get an precise reference of when the executable was built.")))
 
+(define-public ocaml-either
+  (package
+    (name "ocaml-either")
+    (version "1.0.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/mirage/either")
+               (commit version)))
+        (file-name (git-file-name name version))
+        (sha256
+          (base32 "099p1m24vz5i0043zcfp88krzjsa2qbrphrm4bnx84gif5vgkxwm"))))
+    (build-system dune-build-system)
+    (arguments
+     ;; no tests
+     `(#:tests? #f))
+    (home-page "https://github.com/mirage/either")
+    (synopsis "Compatibility Either module")
+    (description "This library is a compatibility module for the Either module
+defined in OCaml 4.12.0.")
+    (license license:expat)))
+
 (define-public ocamlformat
   (package
     (name "ocamlformat")
-    (version "0.19.0")
+    (version "0.20.0")
     (source
       (origin
         (method git-fetch)
@@ -7479,7 +7502,7 @@ get an precise reference of when the executable was built.")))
         (file-name (git-file-name name version))
         (sha256
           (base32
-            "0dp4pkznz9yvqx9gxwbid1z2b8ajkr8i27zay9ghx69624hz3i4z"))))
+            "0zhvhb8ky0danmfvp4vvbh0pg89d7r7ka6m3q81vlyvb7gk08r6r"))))
     (build-system dune-build-system)
     (arguments
      '(#:package "ocamlformat"
@@ -7491,6 +7514,7 @@ get an precise reference of when the executable was built.")))
         ("ocaml-base" ,ocaml-base)
         ("ocaml-cmdliner" ,ocaml-cmdliner)
         ("ocaml-dune-build-info" ,ocaml-dune-build-info)
+        ("ocaml-either" ,ocaml-either)
         ("ocaml-fix" ,ocaml-fix)
         ("ocaml-fpath" ,ocaml-fpath)
         ("ocaml-menhir" ,ocaml-menhir)

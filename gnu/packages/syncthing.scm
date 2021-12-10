@@ -45,7 +45,7 @@
 (define-public syncthing
   (package
     (name "syncthing")
-    (version "1.16.1")
+    (version "1.18.4")
     ; XXX After the go-build-system can use "Go modules", stop using bundled
     ; dependencies for Syncthing.
     (source (origin
@@ -55,7 +55,7 @@
                                   "/syncthing-source-v" version ".tar.gz"))
               (sha256
                (base32
-                "0m5k37sp3px8acs3y9an5wzy1wbcbdvqq74jy0pwzfk4bjbr999j"))))
+                "00kw1j2qi5ylbycv43n5177r3a3651qxhds927x6cz0a2b7qac8n"))))
     (build-system go-build-system)
     ;; The primary Syncthing executable goes to "out", while the auxiliary
     ;; server programs and utility tools go to "utils".  This reduces the size
@@ -65,6 +65,7 @@
      `(#:modules ((srfi srfi-26) ; for cut
                   (guix build utils)
                   (guix build go-build-system))
+       #:go ,go-1.17
        #:import-path "github.com/syncthing/syncthing"
        ;; We don't need to install the source code for end-user applications.
        #:install-source? #f
@@ -411,7 +412,8 @@ processes.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "004cw699yz3pdpawhjhpa0y94c4w479nw1rf39zj6h6027kpwv2j"))))
+                "004cw699yz3pdpawhjhpa0y94c4w479nw1rf39zj6h6027kpwv2j"))
+              (patches (search-patches "go-github-com-golang-snappy-32bit-test.patch"))))
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/golang/snappy"))

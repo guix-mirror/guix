@@ -13,6 +13,7 @@
 ;;; Copyright © 2021 Alexandru-Sergiu Marton <brown121407@posteo.ro>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Petr Hodina <phodina@protonmail.com>
+;;; Copyright © 2021 jgart <jgart@dismail.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -149,6 +150,46 @@ highlighting for a large number of languages, git integration, and automatic
 paging.")
     (license (list license:expat license:asl2.0))))
 
+(define-public diffr
+  (package
+    (name "diffr")
+    (version "0.1.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "diffr" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "1b0mz1ki2ksxni6g49x5l5j9ijpyhc11mywvxr9i9h3nr098nc5l"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:install-source? #f
+       ;; https://github.com/mookid/diffr/issues/79
+       #:cargo-test-flags
+       '("--release" "--"
+         "--skip=tests::success"
+         "--skip=test_cli::color_invalid_attribute_name"
+         "--skip=test_cli::color_invalid_color_not_done"
+         "--skip=test_cli::color_invalid_color_value_ansi"
+         "--skip=test_cli::color_invalid_color_value_name"
+         "--skip=test_cli::color_invalid_color_value_rgb"
+         "--skip=test_cli::color_invalid_face_name"
+         "--skip=test_cli::color_ok"
+         "--skip=test_cli::color_ok_multiple"
+         "--skip=test_cli::color_only_face_name"
+         "--skip=test_cli::debug_flag")
+       #:cargo-inputs
+       (("rust-atty" ,rust-atty-0.2)
+        ("rust-clap" ,rust-clap-2)
+        ("rust-diffr-lib" ,rust-diffr-lib-0.1)
+        ("rust-termcolor" ,rust-termcolor-1))))
+    (home-page "https://github.com/mookid/diffr")
+    (synopsis "Longest Common Sequence based diff highlighting tool")
+    (description
+     "This package provides an @acronym{LCS, longest common sequence} based diff
+highlighting tool to ease code review from your terminal.")
+    (license license:expat)))
+
 (define-public drill
   (package
     (name "drill")
@@ -188,6 +229,42 @@ paging.")
     (description
       "Drill is a HTTP load testing application written in Rust inspired by
 Ansible syntax.  Benchmark files can be written in YAML.")
+    (license license:gpl3)))
+
+(define-public dutree
+  (package
+    (name "dutree")
+    (version "0.2.18")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "dutree" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32 "1611h27i8fm3jndscd6w65z8z7w09nnrm61vdgs9kb8ln57gqm8x"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:install-source? #f
+       #:cargo-inputs
+       (("rust-getopts" ,rust-getopts-0.2)
+        ("rust-regex" ,rust-regex-1)
+        ("rust-signal-hook" ,rust-signal-hook-0.1)
+        ("rust-terminal-size" ,rust-terminal-size-0.1)
+        ("rust-unicode-segmentation" ,rust-unicode-segmentation-1)
+        ("rust-unicode-width" ,rust-unicode-width-0.1))))
+    (home-page "https://ownyourbits.com/2018/03/25/analyze-disk-usage-with-dutree/")
+    (synopsis "Command line tool to analyze disk usage")
+    (description
+     "@command{dutree} is command line tool to analyze disk usage.
+Features include:
+@enumerate
+@item coloured output, according to the @code{LS_COLORS} environment variable.
+@item display the file system tree.
+@item ability to aggregate small files.
+@item ability to exclude files or directories.
+@item ability to compare different directories.
+@item fast, written in Rust.
+@end enumerate\n")
     (license license:gpl3)))
 
 (define-public exa
@@ -777,6 +854,41 @@ are parsed concurrently using a thread pool to utilize all cpu cores.  A goal
 of the project is to be runnable on untrusted networks without crashing.")
     (license license:gpl3)))
 
+(define-public spotify-tui-0.25
+  (package
+    (name "spotify-tui")
+    (version "0.25.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "spotify-tui" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "08bpihkdv3rmcksnxp4cz04kawjs6spmwa3wr2k27b30x3q9cd4r"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:cargo-inputs
+        (("rust-anyhow" ,rust-anyhow-1)
+         ("rust-arboard" ,rust-arboard-1)
+         ("rust-backtrace" ,rust-backtrace-0.3)
+         ("rust-clap" ,rust-clap-2)
+         ("rust-crossterm" ,rust-crossterm-0.20)
+         ("rust-dirs" ,rust-dirs-3)
+         ("rust-rand" ,rust-rand-0.8)
+         ("rust-rspotify" ,rust-rspotify-0.10)
+         ("rust-serde" ,rust-serde-1)
+         ("rust-serde-json" ,rust-serde-json-1)
+         ("rust-serde-yaml" ,rust-serde-yaml-0.8)
+         ("rust-tokio" ,rust-tokio-0.2)
+         ("rust-tui" ,rust-tui-0.16)
+         ("rust-unicode-width" ,rust-unicode-width-0.1))))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs `(("openssl" ,openssl)))
+    (home-page "https://github.com/Rigellute/spotify-tui")
+    (synopsis "Terminal user interface for Spotify")
+    (description "This package provides a terminal user interface for Spotify")
+    (license (list license:expat license:asl2.0))))
+
 (define-public tectonic
   (package
     (name "tectonic")
@@ -852,6 +964,36 @@ of the project is to be runnable on untrusted networks without crashing.")
 TeX/LaTeX engine.  Tectonic is forked from the XeTeX extension to the
 classic Web2C implementation of TeX and uses the TeXLive distribution
 of support files.")
+    (license license:expat)))
+
+(define-public hex
+  (package
+    (name "hex")
+    (version "0.4.2")
+    (source
+     (origin
+       ;; crates.io does not provide the test data.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/sitkevij/hex")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "03x27nixdlnkkrh85gy4152arp02kpjwq0i9dn9p73lyr24s64lv"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-ansi-term" ,rust-ansi-term-0.12)
+        ("rust-atty" ,rust-atty-0.2)
+        ("rust-clap" ,rust-clap-2)
+        ("rust-no-color" ,rust-no-color-0.1))
+       #:cargo-development-inputs
+       (("rust-assert-cmd" ,rust-assert-cmd-1))))
+    (home-page "https://github.com/sitkevij/hex")
+    (synopsis "Hexadecimal colorized view of a file")
+    (description
+     "@command{hx} accepts a file path as input and outputs a hexadecimal
+colorized view to stdout.")
     (license license:expat)))
 
 (define-public tokei
@@ -1199,6 +1341,56 @@ C-compatible) software.")
      "This package fetches and shows tldr help pages for many CLI commands.
 Full featured offline client with caching support.")
     (license (list license:expat license:asl2.0))))
+
+(define-public git-absorb
+  (package
+    (name "git-absorb")
+    (version "0.6.6")
+    (source
+     (origin
+       ;; crates.io does not include the manual page.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/tummychow/git-absorb")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "04v10bn24acify34vh5ayymsr1flcyb05f3az9k1s2m6nlxy5gb9"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-anyhow" ,rust-anyhow-1)
+        ("rust-clap" ,rust-clap-2)
+        ("rust-git2" ,rust-git2-0.13)
+        ("rust-memchr" ,rust-memchr-2)
+        ("rust-slog" ,rust-slog-2)
+        ("rust-slog-async" ,rust-slog-async-2)
+        ("rust-slog-term" ,rust-slog-term-2))
+       #:cargo-development-inputs
+       (("rust-tempfile" ,rust-tempfile-3))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'relax-version-requirements
+           (lambda _
+             (substitute* "Cargo.toml"
+               (("2.5") "2")
+               (("~2.3\"") "2\"")
+               (("3.1") "3"))))
+         (add-after 'install 'install-manual-page
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out   (assoc-ref outputs "out"))
+                    (man   (string-append out "/share/man/man1")))
+               (install-file "Documentation/git-absorb.1" man)))))))
+    (inputs
+     `(("zlib" ,zlib)))
+    (home-page "https://github.com/tummychow/git-absorb")
+    (synopsis "Git tool for making automatic fixup commits")
+    (description
+     "@code{git absorb} automatically absorbs staged changes into their
+current branch.  @code{git absorb} will automatically identify which commits
+are safe to modify, and which staged changes belong to each of those commits.
+It will then write @code{fixup!} commits for each of those changes.")
+    (license license:bsd-3)))
 
 (define-public zoxide
   (package

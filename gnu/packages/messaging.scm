@@ -30,6 +30,7 @@
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2021 Denis 'GNUtoo' Carikli <GNUtoo@cyberdimension.org>
 ;;; Copyright © 2021 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2021 jgart <jgart@dismail.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -59,6 +60,7 @@
   #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages code)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cpp)
   #:use-module (gnu packages crypto)
@@ -1207,6 +1209,13 @@ of xmpppy.")
         (guix build utils))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'disable-failing-tests
+           (lambda _
+             ;; XXX Gajim builds fine on some (my) machines but fails elsewhere:
+             ;; ModuleNotFoundError: No module named 'gajim.gui.emoji_data'
+             ;; https://dev.gajim.org/gajim/gajim/-/issues/10478
+             (delete-file "test/lib/gajim_mocks.py")
+             (delete-file "test/unit/test_gui_interface.py")))
          (replace 'check
            (lambda _
              ;; Tests require a running X server.
@@ -3185,6 +3194,37 @@ keybase, matrix, microsoft teams, nextcloud, mumble, vk and more with REST
 API.  Mattermost is not required.")
     (home-page "https://github.com/42wim/matterbridge")
     (license license:asl2.0)))
+
+(define-public pounce
+  (package
+    (name "pounce")
+    (version "3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://git.causal.agency/pounce/snapshot/pounce-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "1w4x34bspkqvk9p7bfj0zmvmbzvxb7lxrrr3g6lrfdj9f3qzfxpp"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ;there are no tests
+       #:make-flags
+       (list
+        (string-append "CC=" ,(cc-for-target))
+        (string-append "PREFIX=" %output))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("universal-ctags" ,universal-ctags)))
+    (inputs
+     `(("libressl" ,libressl)))
+    (home-page "https://code.causal.agency/june/pounce")
+    (synopsis "Simple multi-client TLS-only IRC bouncer")
+    (description
+     "@command{pounce} is a multi-client, TLS-only IRC bouncer.  It maintains
+a persistent connection to an IRC server, acting as a proxy and buffer for
+a number of clients.")
+    (license license:gpl3+)))
 
 (define-public weechat-matrix
   (package

@@ -143,6 +143,7 @@
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages shells)
+  #:use-module (gnu packages skribilo)
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages statistics)
@@ -16009,3 +16010,56 @@ identifying multiple clusters/cell types, learning the batch effects from the
 control samples and applying quantile normalization on all markers of
 interest.")
       (license license:gpl2+))))
+
+(define-public ccwl
+  (package
+    (name "ccwl")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://ccwl.systemreboot.net/releases/ccwl-"
+                           version ".tar.lz"))
+       (sha256
+        (base32
+         "1ar8rfz3zrksgygrv67zv77y8gfvvz54zcs546jn6j28y20basla"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags '("GUILE_AUTO_COMPILE=0") ; to prevent guild warnings
+       #:modules (((guix build guile-build-system)
+                   #:select (target-guile-effective-version))
+                  ,@%gnu-build-system-modules)
+       #:imported-modules ((guix build guile-build-system)
+                           ,@%gnu-build-system-modules)
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (effective-version (target-guile-effective-version)))
+               (wrap-program (string-append out "/bin/ccwl")
+                 `("GUILE_LOAD_PATH" prefix
+                   (,(string-append out "/share/guile/site/" effective-version)
+                    ,(getenv "GUILE_LOAD_PATH")))
+                 `("GUILE_LOAD_COMPILED_PATH" prefix
+                   (,(string-append out "/lib/guile/" effective-version "/site-ccache")
+                    ,(getenv "GUILE_LOAD_COMPILED_PATH"))))))))))
+    (inputs
+     `(("bash" ,bash-minimal)
+       ("guile" ,guile-3.0)
+       ("guile-libyaml" ,guile-libyaml)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("lzip" ,lzip)
+       ;; To build documentation
+       ("cwltool" ,cwltool)
+       ("graphviz" ,graphviz)
+       ("skribilo" ,skribilo)))
+    (home-page "https://ccwl.systemreboot.net")
+    (synopsis "Concise common workflow language")
+    (description "The @acronym{ccwl, Concise Common Workflow Language} is a
+concise syntax to express CWL workflows.  ccwl is a compiler to generate CWL
+workflows from concise descriptions in ccwl.  It is implemented as an
+@acronym{EDSL, Embedded Domain Specific Language} in the Scheme programming
+language.")
+    (license license:gpl3+)))

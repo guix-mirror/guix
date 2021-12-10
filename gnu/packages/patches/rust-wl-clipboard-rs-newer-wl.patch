@@ -1,0 +1,26 @@
+diff --git a/Cargo.toml b/Cargo.toml
+index 7b975e0..313cb63 100644
+--- a/Cargo.toml
++++ b/Cargo.toml.new
+@@ -75,17 +75,17 @@ version = "3"
+ version = "0.2"
+ 
+ [dependencies.wayland-client]
+-version = "0.27"
++version = "0.28"
+ 
+ [dependencies.wayland-protocols]
+-version = "0.27"
++version = "0.28"
+ features = ["client", "unstable_protocols"]
+ [dev-dependencies.wayland-protocols]
+-version = "0.27"
++version = "0.28"
+ features = ["server", "unstable_protocols"]
+ 
+ [dev-dependencies.wayland-server]
+-version = "0.27"
++version = "0.28"
+ 
+ [features]
+ dlopen = ["native_lib", "wayland-client/dlopen", "wayland-server/dlopen"]

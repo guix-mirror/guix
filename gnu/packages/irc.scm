@@ -571,6 +571,39 @@ interface for those who are accustomed to the ircII way of doing things.")
                    ;; distribute binaries.
                    (license:non-copyleft "http://epicsol.org/copyright")))))
 
+(define-public litterbox
+  (package
+    (name "litterbox")
+    (version "1.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://git.causal.agency/litterbox/snapshot/litterbox-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "0ll5d18slngdg2qhaxkvrcq2p1admh0h7sr06wx8347ka0vvrgjl"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; There are no tests.
+       #:make-flags
+       (list
+        (string-append "CC=" ,(cc-for-target))
+        (string-append "PREFIX=" %output))))
+    (native-inputs
+      `(("pkg-config" ,pkg-config)
+        ("universal-ctags" ,universal-ctags)))
+    (inputs
+      `(("libressl" ,libressl)
+        ("sqlite" ,sqlite)))
+    (home-page "https://code.causal.agency/june/litterbox")
+    (synopsis "TLS-only IRC logger")
+    (description
+"@command{litterbox} is a TLS-only IRC logger.  It logs
+events from IRC in a SQLite database, indexing messages for full-text
+search.  It is intended for use with the IRC bouncer @command{pounce},
+but can also be used independently as a logging bot.")
+    (license license:gpl3+)))
+
 (define-public inspircd
   (package
     (name "inspircd")

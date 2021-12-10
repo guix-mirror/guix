@@ -865,9 +865,9 @@ provides the GNU compiler for the Go programming language.")
                         (tooldir (dirname (car (find-files exedir "^cgo$")))))
                    (wrap-program (string-append out "/bin/go")
                      `("GCCGOTOOLDIR" =
-                       (,(string-append "${GCCGOTOOLDIR-" tooldir "}")))
+                       (,(string-append "${GCCGOTOOLDIR:-" tooldir "}")))
                      `("GOROOT" =
-                       (,(string-append "${GOROOT-" out "}")))))))
+                       (,(string-append "${GOROOT:-" out "}")))))))
              (add-before 'configure 'fix-gotools-runpath
                (lambda _
                  (substitute* "gotools/Makefile.in"

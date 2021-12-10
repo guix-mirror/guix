@@ -671,7 +671,8 @@ file system.")
          (add-after 'enter-source 'patch-source
            (lambda _
              (substitute* "Android.mk"
-              (("libext4_utils_host") "libext4_utils_host libselinux libpcre"))
+               (("libext4_utils_host") "libext4_utils_host libselinux libpcre")
+               (("\\$\\(shell git .*\\)") ,version))
              #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)

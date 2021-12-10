@@ -44,6 +44,7 @@
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;; Copyright © 2021 Benoit Joly <benoit@benoitj.ca>
 ;;; Copyright © 2021 Morgan Smith <Morgan.J.Smith@outlook.com>
+;;; Copyright © 2021 Philip McGrath <philip@philipmcgrath.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1351,14 +1352,14 @@ invoking @command{notifymuch} from the post-new hook.")
 (define-public notmuch
   (package
     (name "notmuch")
-    (version "0.34.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://notmuchmail.org/releases/notmuch-"
-                                  version ".tar.xz"))
-              (sha256
-               (base32
-                "05nq64gp8vnrwrl22d60v7ixgdhm9339ajhcdfkq0ll1qiycyyj5"))))
+    (version "0.34.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://notmuchmail.org/releases/notmuch-"
+                           version ".tar.xz"))
+       (sha256
+        (base32 "1ls7dbgqhvyn9arf1r1jijfllypylgr5l86p489732gn8zpcxwn1"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -1915,7 +1916,7 @@ facilities for checking incoming mail.")
   (package
     (name "dovecot")
     ;; Also update dovecot-pigeonhole when updating to a new minor version.
-    (version "2.3.17")
+    (version "2.3.17.1")
     (source
      (origin
        (method url-fetch)
@@ -1923,7 +1924,7 @@ facilities for checking incoming mail.")
                            (version-major+minor version) "/"
                            "dovecot-" version ".tar.gz"))
        (sha256
-        (base32 "1y9dpn4jgzrfjibp5zrc11bdk0q843d998kxhpxkyfm2fz6i4i12"))))
+        (base32 "1f525bvpjvi4rnwqjsqaqrbdii08sqmc1v8xq03m19w1vk6cqrqw"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1979,7 +1980,7 @@ It supports mbox/Maildir and its own dbox/mdbox formats.")
   (let ((dovecot-version (version-major+minor (package-version dovecot))))
     (package
       (name "dovecot-pigeonhole")
-      (version "0.5.17")
+      (version "0.5.17.1")
       (source
        (origin
          (method url-fetch)
@@ -1987,7 +1988,7 @@ It supports mbox/Maildir and its own dbox/mdbox formats.")
                "https://pigeonhole.dovecot.org/releases/" dovecot-version "/"
                "dovecot-" dovecot-version "-pigeonhole-" version ".tar.gz"))
          (sha256
-          (base32 "0j6ng173hh5iiqxdkxfb5v9djpn39gxdrv5ki7i22cf5cqwq47h3"))
+          (base32 "04j5z3y8yyci4ni9j9i7cy0zg1qj2sm9zfarmjcvs9vydpga7i1w"))
          (modules '((guix build utils)))
          (snippet
           '(begin
@@ -2140,14 +2141,14 @@ hashing scheme (such as scrypt) plug-in for @code{Dovecot}.")
 (define-public isync
   (package
     (name "isync")
-    (version "1.4.3")
+    (version "1.4.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/isync/isync/"
                            version "/isync-" version ".tar.gz"))
        (sha256 (base32
-                "024p3glj4p7fhrssw5sr55arls9zna1igxxrspxlfd6sbds21ixl"))))
+                "1zq0wwvmqsl9y71546dr0aygzn9gjjfiw19hlcq87s929y4p6ckw"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)))
@@ -4004,8 +4005,8 @@ It is a replacement for the @command{urlview} program.")
     (license license:gpl2+)))
 
 (define-public mumi
-  (let ((commit "9f070bd90adc67064cd8aff4e40f303d5957ef4a")
-        (revision "5"))
+  (let ((commit "8a45281801ade7524dbdee423c28b326051719de")
+        (revision "6"))
     (package
       (name "mumi")
       (version (git-version "0.0.1" revision commit))
@@ -4017,7 +4018,7 @@ It is a replacement for the @command{urlview} program.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1ym1j3nzy8qhd1ydadccbgm0nckkmnq3vnz9qh9x8rasx7zg1ldp"))))
+                  "0p1i66j721y5hwbdy97kv4gw892nx7xrdfjrs12fn90cwkl611mp"))))
       (build-system gnu-build-system)
       (arguments
        `(#:modules ((guix build gnu-build-system)
@@ -4043,8 +4044,7 @@ It is a replacement for the @command{urlview} program.")
                    `("GUILE_LOAD_PATH" ":" prefix
                      (,scm ,(getenv "GUILE_LOAD_PATH")))
                    `("GUILE_LOAD_COMPILED_PATH" ":" prefix
-                     (,go ,(getenv "GUILE_LOAD_COMPILED_PATH"))))
-                 #t))))))
+                     (,go ,(getenv "GUILE_LOAD_COMPILED_PATH"))))))))))
       (inputs
        `(("guile-email" ,guile-email-latest)
          ("guile-fibers" ,guile-fibers)
@@ -4648,3 +4648,45 @@ feeds, converts them into emails, and sends them.")
     ;; GPL version 2 or 3.  NOT 2+.
     (license (list license:gpl2
                    license:gpl3))))
+
+(define-public sendgmail
+  (let ((commit "e3229155a4037267ce40f1a3a681f53221aa4d8d")
+        (revision "1"))
+    (package
+      (name "sendgmail")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/google/gmail-oauth2-tools")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (patches (search-patches
+                   "sendgmail-remove-domain-restriction.patch"
+                   "sendgmail-accept-ignored-gsuite-flag.patch"))
+         (sha256
+          (base32
+           "1cxpkiaajhq1gjsg47r2b5xgck0r63pvkyrkm7af8c8dw7fyn64f"))))
+      (inputs
+       `(("go-golang-org-x-oauth2" ,go-golang-org-x-oauth2)
+         ("go-cloud-google-com-go-compute-metadata"
+          ,go-cloud-google-com-go-compute-metadata)))
+      (build-system go-build-system)
+      (arguments
+       '(#:unpack-path "github.com/google/gmail-oauth2-tools"
+         #:import-path "github.com/google/gmail-oauth2-tools/go/sendgmail"))
+      (home-page
+       "https://github.com/google/gmail-oauth2-tools/tree/master/go/sendgmail")
+      (synopsis
+       "Sendmail-compatible tool for using Gmail with @code{git send-email}")
+      (description
+       "The @command{sendgmail} command provides a minimal sendmail-compatible
+front-end that connects to Gmail using OAuth2.  It is specifically designed
+for use with @code{git send-email}.  The command needs a Gmail API key to
+function.
+
+Guix's version of @command{sendgmail} has been patched for compatibility with
+all known forks, including support for non-@code{@@gmail.com} email
+addresses.")
+      (license license:asl2.0))))

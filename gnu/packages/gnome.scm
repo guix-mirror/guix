@@ -10783,14 +10783,14 @@ views can be printed as PDF or PostScript files, or exported to HTML.")
 (define-public lollypop
   (package
     (name "lollypop")
-    (version "1.4.6")
+    (version "1.4.24")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://adishatz.org/lollypop/"
                            "lollypop-" version ".tar.xz"))
        (sha256
-        (base32 "1hlahr50gsagx1ifcdk4yn43xps6w0vqn0gnd6xckfc7qmg1pgq7"))))
+        (base32 "10cw3x75siibmnbh4zhfmf2vd08fqjs3lj3l4wpk6zj9h22ncfxw"))))
     (build-system meson-build-system)
     (arguments
      `(#:imported-modules
@@ -10814,8 +10814,7 @@ views can be printed as PDF or PostScript files, or exported to HTML.")
          (add-after 'install 'wrap-python
            (assoc-ref python:%standard-phases 'wrap)))))
     (native-inputs
-     `(("intltool" ,intltool)
-       ("itstool" ,itstool)
+     `(("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin")         ; For glib-compile-resources
        ("gtk+:bin" ,gtk+ "bin")         ; For gtk-update-icon-cache
        ("pkg-config" ,pkg-config)))

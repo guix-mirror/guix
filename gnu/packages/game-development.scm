@@ -1844,7 +1844,7 @@ games.")
 (define-public godot
   (package
     (name "godot")
-    (version "3.2.3")
+    (version "3.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1853,7 +1853,7 @@ games.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "19vrp5lhyvxbm6wjxzn28sn3i0s8j08ca7nani8l1nrhvlc8wi0v"))
+                "0y542zla6msgxf31rd0349d9j3ya7f3njnwmmrh8lmzfgxx86qbx"))
               (modules '((guix build utils)
                          (ice-9 ftw)
                          (srfi srfi-1)))
@@ -1868,19 +1868,23 @@ games.")
                               "assimp"
                               "certs"
                               "cvtt"
+                              "embree"
                               "enet"
                               "etc2comp"
                               "fonts"
                               "glad"
                               "jpeg-compressor"
                               "libsimplewebm"
+                              "minimp3"
                               "miniupnpc"
                               "minizip"
                               "misc"
                               "nanosvg"
+                              "oidn"
                               "pvrtccompressor"
                               "recastnavigation"
                               "squish"
+                              "stb_rect_pack"
                               "tinyexr"
                               "vhacd"
                               "xatlas")))
@@ -1948,6 +1952,19 @@ games.")
                (wrap-program (string-append out "/bin/godot")
                  `("PATH" ":" prefix (,(string-append zenity "/bin")))))
              #t))
+         (add-after 'install 'wrap
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; FIXME: Mesa tries to dlopen libudev.so.0 and fails.  Pending a
+             ;; fix of the mesa package we wrap the pcb executable such that
+             ;; Mesa can find libudev.so.0 through LD_LIBRARY_PATH.
+             ;; also append ld path for pulseaudio and alsa-lib
+             (let* ((out (assoc-ref outputs "out"))
+                    (udev_path (string-append (assoc-ref inputs "udev") "/lib"))
+                    (pulseaudio_path (string-append (assoc-ref inputs "pulseaudio") "/lib"))
+                    (alas_lib_path (string-append (assoc-ref inputs "alsa-lib") "/lib")))
+               (wrap-program (string-append out "/bin/godot")
+                 `("LD_LIBRARY_PATH" ":" prefix (,udev_path ,pulseaudio_path ,alas_lib_path))))
+             #t))
          (add-after 'install 'install-godot-desktop
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -1984,6 +2001,7 @@ games.")
               ("opusfile" ,opusfile)
               ("pcre2" ,pcre2)
               ("pulseaudio" ,pulseaudio)
+              ("udev" ,eudev) ;FIXME: required by mesa
               ("wslay" ,wslay)
               ("zenity" ,zenity)
               ("zstd" ,zstd "lib")))

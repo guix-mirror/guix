@@ -1,0 +1,39 @@
+From 854490dc4a8a6a661b4750730c3ff749519f6e36 Mon Sep 17 00:00:00 2001
+From: Philip McGrath <philip@philipmcgrath.com>
+Date: Sun, 14 Nov 2021 10:14:24 -0500
+Subject: [PATCH] sendgmail: accept and ignore a "-gsuite" flag
+
+Accepting a "-gsuite" flag provides compatability with
+https://github.com/Flameeyes/gmail-oauth2-tools/commit/eabb456
+so users do not have to change their scripts or config files.
+
+Full hash of original: eabb45608ff4ce04045ff4ea92d05450e789ac81
+
+Related to https://github.com/google/gmail-oauth2-tools/pull/17
+---
+ go/sendgmail/main.go | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/go/sendgmail/main.go b/go/sendgmail/main.go
+index 405aa1b..5cfd0c1 100644
+--- a/go/sendgmail/main.go
++++ b/go/sendgmail/main.go
+@@ -40,6 +40,7 @@ var (
+ 	setUp  bool
+ 	dummyF string
+ 	dummyI bool
++	gsuite bool
+ )
+ 
+ func init() {
+@@ -47,6 +48,7 @@ func init() {
+ 	flag.BoolVar(&setUp, "setup", false, "If true, sendgmail sets up the sender's OAuth2 token and then exits.")
+ 	flag.StringVar(&dummyF, "f", "", "Dummy flag for compatibility with sendmail.")
+ 	flag.BoolVar(&dummyI, "i", true, "Dummy flag for compatibility with sendmail.")
++	flag.BoolVar(&gsuite, "gsuite", true, "Dummy flag for compatibility with other forks of sendgmail.")
+ }
+ 
+ func main() {
+-- 
+2.32.0
+

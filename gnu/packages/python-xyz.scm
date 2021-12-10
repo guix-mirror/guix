@@ -14812,7 +14812,6 @@ is made as zipfile like as possible.")
      `(("python-attrs" ,python-attrs)
        ("python-colorama" ,python-colorama)
        ("python-commonmark" ,python-commonmark)
-       ("python-ipywidgets" ,python-ipywidgets)
        ("python-pygments" ,python-pygments)
        ("python-typing-extensions" ,python-typing-extensions)))
     (native-inputs
@@ -21711,14 +21710,14 @@ package updates.")
 (define-public python-userspacefs
   (package
     (name "python-userspacefs")
-    (version "2.0.3")
+    (version "2.0.4")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "userspacefs" version))
         (sha256
          (base32
-          "1v6saf62ml3j63adalvlkj4iavxjbsbapl20b21mn73p7kvn4ayf"))))
+          "06f2gsiypas270nqfjir4wwjlpkjp097pm6zchc7k20ggg32gv1k"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-fusepyng" ,python-fusepyng)))
@@ -22480,14 +22479,14 @@ library's @code{threading} module.")
 (define-public python-toolz
   (package
     (name "python-toolz")
-    (version "0.11.1")
+    (version "0.11.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "toolz" version))
        (sha256
         (base32
-         "1grz3zvw5ixwqqlbv0n7j11mlcxb66cirh5i9x9zw8kqy0hpk967"))))
+         "0cxwlh8dz8gq0l0bzchjnqqwhdp261nfd958ppqm518k2mg2scbb"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -25620,13 +25619,13 @@ dictionaries.")
 (define-public pyzo
   (package
     (name "pyzo")
-    (version "4.11.4")
+    (version "4.11.7")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pyzo" version))
        (sha256
-        (base32 "18djnzx9wwlhxk0v2gcpmwnn3iw572n7gkdyh7ghh92yxck6qqkl"))))
+        (base32 "1qa007nw464r7jw8y8fqf17jx473q55p5ay5bh8kq55v0zyi27yn"))))
     (build-system python-build-system)
     (arguments
      `(#:phases

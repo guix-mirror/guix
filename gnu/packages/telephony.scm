@@ -21,6 +21,7 @@
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2021 LibreMiami <packaging-guix@libremiami.org>
 ;;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
+;;; Copyright © 2021 Demis Balbach <db@minikn.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -88,12 +89,45 @@
   #:use-module (gnu packages bison)
   #:use-module (gnu packages flex)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system qt))
+
+(define-public phonesim
+  (package
+    (name "phonesim")
+    (version "1.21")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://git.kernel.org/pub/scm/network/ofono/phonesim")
+             (commit "a7c844d45b047b2dae5b0877816c346fce4c47b9")))
+       (sha256
+        (base32 "0rc1c2vr03dmi1dr3skj57v77ga9c22g29xs1qiphqms4isby9cq"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--enable-maintainer-mode"
+             "CC=" ,(cc-for-target))))
+    (native-inputs
+     `(("automake" ,automake)
+       ("autoconf" ,autoconf)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("qtbase" ,qtbase-5)
+       ("qtdeclarative" ,qtdeclarative)))
+    (synopsis "Phone Simulator for modem testing")
+    (description
+     "Phonesim is a modem emulator that oFono uses for development and
+testing.  This allows oFono to be used by any host without requiring special
+GSM (or other) hardware.")
+    (home-page "https://git.kernel.org/pub/scm/network/ofono/phonesim")
+    (license license:gpl2+)))
 
 (define-public libilbc
   (package

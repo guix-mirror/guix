@@ -235,7 +235,7 @@
 (define-public emacs-geiser
   (package
     (name "emacs-geiser")
-    (version "0.18")
+    (version "0.19")
     (source
      (origin
        (method git-fetch)
@@ -244,7 +244,7 @@
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1dd1jqfnwghqhsm2r5akqq1s4d621rd5rh93rxdqix2xg0nr9yp6"))))
+        (base32 "1pfdax2wsfyjz4ddfqh54n3lbxhqpg97grj7kgi641lbhppnq02g"))))
     (build-system emacs-build-system)
     (arguments
      '(#:phases
@@ -11333,12 +11333,12 @@ CIDER).")
 
 (define-public emacs-sly
   ;; Update together with sbcl-slynk.
-  (let ((commit "fb84318c08f59bc786e047006fc81e2ace568309"))
+  (let ((commit "0470c0281498b9de072fcbf3718fc66720eeb3d0"))
     ;; Versions are not always tagged.  Besides, latest master contains
     ;; important fixes.
     (package
       (name "emacs-sly")
-      (version (git-version "1.0.43" "4" commit))
+      (version (git-version "1.0.43" "5" commit))
       (source
        (origin
          (method git-fetch)
@@ -11348,7 +11348,7 @@ CIDER).")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "0z123k9ak7yjb9bxb5qx48f33ma8066rhkqh8xc14z7shk75jybj"))))
+           "1ws2a9azmdkkg47xnd4jggna45nf0bh54gyp0799b44c4bgjp029"))))
       (build-system emacs-build-system)
       (native-inputs
        `(("texinfo" ,texinfo)))
@@ -15061,7 +15061,7 @@ or @code{treemacs}, but leveraging @code{Dired} to do the job of display.")
 (define-public emacs-which-key
   (package
     (name "emacs-which-key")
-    (version "3.5.3")
+    (version "3.5.4")
     (source
      (origin
        (method git-fetch)
@@ -15070,7 +15070,7 @@ or @code{treemacs}, but leveraging @code{Dired} to do the job of display.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "144i3hkgm36wnfmqk5vq390snziy3zhwifbh6q6dzs99ic77d5g6"))))
+        (base32 "0wz3bb7vzxqi3wqpn46z6ps00m9wjcpv9cfvqi7lyvm920sxzlv7"))))
     (build-system emacs-build-system)
     (arguments
      `(#:tests? #t
@@ -16011,14 +16011,14 @@ let users kill or mark things easily.")
 (define-public emacs-csv-mode
   (package
     (name "emacs-csv-mode")
-    (version "1.16")
+    (version "1.17")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/"
                            "csv-mode-" version ".tar"))
        (sha256
-        (base32 "1i43b2p31xhrf97xbdi35y550ysp69fasa5gcrhg6iyxw176807p"))))
+        (base32 "16kv3n70pl4h3jfmmqy9bzflsm4nv7cwvrj7g4mgy8yb76nbyka2"))))
     (build-system emacs-build-system)
     (home-page "https://elpa.gnu.org/packages/csv-mode.html")
     (synopsis "Major mode for editing comma/char separated values")
@@ -17870,7 +17870,7 @@ files to be expanded upon opening them.")
 (define-public emacs-parsebib
   (package
     (name "emacs-parsebib")
-    (version "3.0.1")
+    (version "3.1")
     (source
      (origin
        (method git-fetch)
@@ -17879,7 +17879,7 @@ files to be expanded upon opening them.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1hd6izpb4irinjmfy7zxy8fqnr1fm4iw2sipvl9261nm68dzha6z"))))
+        (base32 "08vrkadjxaw1w1bx8dg12kxxkvgl65p0d7gkpfhwpvv35k0d9z3y"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/joostkremers/parsebib")
     (synopsis "Library for parsing @file{.bib} files")
@@ -17890,7 +17890,7 @@ files to be expanded upon opening them.")
 (define-public emacs-ebib
   (package
     (name "emacs-ebib")
-    (version "2.33")
+    (version "2.34")
     (source
      (origin
        (method git-fetch)
@@ -17899,7 +17899,7 @@ files to be expanded upon opening them.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "18gvmymkpzws8s4zjcm1kijyr55dgfcq201z3w1jzhkhcs01bfsc"))))
+        (base32 "0al846i1dn5wrx3r0ak63m80g9j9xk2q5cpcpk63lq0l0gfdff2m"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-biblio" ,emacs-biblio)
@@ -20782,42 +20782,6 @@ and the Zotero research assistant: Insertion of links to Zotero items into an
 Org-mode file, and citations of Zotero items in Pandoc Markdown files.")
     (license license:gpl3+)))
 
-(define-public emacs-evil-magit
-  (let ((commit "98c076fbeb6d2d7d71e02dc204ba3ad5d577abda")
-        (revision "5"))
-    (package
-      (name "emacs-evil-magit")
-      (version (git-version "0.4.2" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/emacs-evil/evil-magit")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "0b4iplxh3rmy8jadhf05pgksv1798d68d1jrhfry93jca8x9crxs"))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-evil" ,emacs-evil)
-         ("magit" ,emacs-magit)))
-      (arguments
-       `(#:tests? #t
-         #:test-command '("emacs" "-Q" "-batch"
-                          "-L" "."
-                          "-l" "evil-magit-tests"
-                          "-f" "ert-run-tests-batch-and-exit")))
-      (home-page
-       "https://github.com/emacs-evil/evil-magit")
-      (synopsis "Evil-based key bindings for Magit")
-      (description
-       "This Emacs library configures Magit and Evil to play well with each other.
-For some background see @url{https://github.com/magit/evil-magit/issues/1}.
-See the README at @url{https://github.com/justbur/evil-magit} for a table
-describing the key binding changes.")
-      (license license:gpl3+))))
-
 (define-public emacs-evil-multiedit
   (package
     (name "emacs-evil-multiedit")
@@ -21434,6 +21398,32 @@ uses some heuristics to get the same information---that is slower
 and might also fail at times but makes it unnecessary to maintain
 package recipes.")
     (license license:gpl3+)))
+
+(define-public emacs-dpd
+  ;; XXX: Upstream does not use tag yet.  Version is extracted from "dpd.el".
+  (let ((commit "f53f251a58859f375617ce4f257fecc83c8ca5da")
+        (revision "0"))
+    (package
+      (name "emacs-dpd")
+      (version (git-version "0.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://gitlab.com/lilyp/emacs-dpd")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1nislvaxjb53x2ah330szcca4d595npx6zxrrwa5xximj6365wk0"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-packed" ,emacs-packed)))
+      (home-page "https://gitlab.com/lilyp/emacs-dpd")
+      (synopsis "Deliver packages to package.el")
+      (description
+       "This package provides tools for generating package-desc structures and
+feeding them to package.el library.")
+      (license license:gpl3+))))
 
 (define-public emacs-picpocket
   (let ((version "41")
@@ -27147,7 +27137,7 @@ other @code{helm-type-file} sources such as @code{helm-locate}.")
 (define-public emacs-telega-server
   (package
     (name "emacs-telega-server")
-    (version "0.7.030")
+    (version "0.7.031")
     (source
      (origin
        (method git-fetch)
@@ -27155,7 +27145,7 @@ other @code{helm-type-file} sources such as @code{helm-locate}.")
              (url "https://github.com/zevlg/telega.el")
              (commit (string-append "v" version))))
        (sha256
-        (base32 "1g29v5fgkqx43wsvh1npx0g3hj00n37lxgvxjvy85fs4h9226gl9"))
+        (base32 "05j82796s4k3yr0igl6hir3p8qj0cw66vvhbpbcy28d6q9v9vjjz"))
        (file-name (git-file-name "emacs-telega" version))
        (patches
         (search-patches "emacs-telega-path-placeholder.patch"

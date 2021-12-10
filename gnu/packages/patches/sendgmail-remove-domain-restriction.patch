@@ -1,0 +1,34 @@
+From a5ecd1b2302d0def2f6f8349747022a615a9f017 Mon Sep 17 00:00:00 2001
+From: Tamas K Lengyel <tamas@tklengyel.com>
+Date: Tue, 26 May 2020 13:27:50 -0600
+Subject: [PATCH] Don't limit to email with @gmail.com
+
+---
+ go/sendgmail/main.go | 4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/go/sendgmail/main.go b/go/sendgmail/main.go
+index b35ef23..405aa1b 100644
+--- a/go/sendgmail/main.go
++++ b/go/sendgmail/main.go
+@@ -30,7 +30,6 @@ import (
+ 	"log"
+ 	"net/smtp"
+ 	"os"
+-	"strings"
+ 
+ 	"golang.org/x/oauth2"
+ 	googleOAuth2 "golang.org/x/oauth2/google"
+@@ -52,9 +51,6 @@ func init() {
+ 
+ func main() {
+ 	flag.Parse()
+-	if atDomain := "@gmail.com"; !strings.HasSuffix(sender, atDomain) {
+-		log.Fatalf("-sender must specify an %v email address.", atDomain)
+-	}
+ 	config := getConfig()
+ 	tokenPath := fmt.Sprintf("%v/.sendgmail.%v.json", os.Getenv("HOME"), sender)
+ 	if setUp {
+-- 
+2.32.0
+

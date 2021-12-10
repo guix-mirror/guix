@@ -8,6 +8,7 @@
 ;;; Copyright © 2019 Sam <smbaines8@gmail.com>
 ;;; Copyright © 2020, 2021 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021 Luis Felipe López Acevedo <luis.felipe.la@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -49,13 +50,13 @@
 (define-public python-django
   (package
     (name "python-django")
-    (version "3.2.9")
+    (version "3.2.10")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "Django" version))
               (sha256
                (base32
-                "023ag89799z53034ya71b636gih7ldvgdgfc0zdzqbsjy4046a2i"))))
+                "1i6my7qrivj0ag9dq22lg0lq6maxapbdqrwy6v1cs2mlnhc8hkh7"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -132,15 +133,15 @@ to the @dfn{don't repeat yourself} (DRY) principle.")
 (define-public python-django-2.2
   (package
     (inherit python-django)
-    (version "2.2.24")
+    (version "2.2.25")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "Django" version))
               (sha256
                (base32
-                "1dvx3x85lggm91x7mpvaf9nmpxyz7r97pbpnmr2k1qfy0c7gyf9k"))))
+                "171ll8m1wp684z1r0lz93l377jc6jyq63q5p7sqx8iqk6ypmxrmi"))))
     (native-inputs
-     `(;; XXX: In 2.2 and 3.0, selenium is required for the test suite.
+     `(;; 2.2 requires Selenium for the test suite.
        ("python-selenium" ,python-selenium)
        ,@(package-native-inputs python-django)))))
 
@@ -1332,4 +1333,29 @@ to ElasticSearch.")
 for filtering data.  It allows the user to safely filter by model attributes
 and also specify the lookup type for each filter (very much like
 Django's filtering system in ORM).")
+    (license license:expat)))
+
+(define-public python-django-svg-image-form-field
+  (package
+    (name "python-django-svg-image-form-field")
+    (version "1.0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/artrey/django-svg-image-form-field")
+             (commit (string-append version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "131m545khn8l20j4x2bvlvz36dlbnhj9pc98i2dw72s3bw8pgws0"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-defusedxml" ,python-defusedxml)
+       ("python-django" ,python-django)
+       ("python-pillow" ,python-pillow)))
+    (home-page "https://github.com/artrey/django-svg-image-form-field")
+    (synopsis "Form field to validate SVG and other images")
+    (description "This form field allows users to provide SVG images for
+models that use Django's standard @code{ImageField}, in addition to the
+image files already supported by it.")
     (license license:expat)))
