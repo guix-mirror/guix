@@ -2334,7 +2334,7 @@ for the Matrix protocol.  It is built on to of @code{Boost.Asio}.")
 (define-public nheko
   (package
     (name "nheko")
-    (version "0.8.2")
+    (version "0.9.0")
     (source
      (origin
        (method git-fetch)
@@ -2343,7 +2343,7 @@ for the Matrix protocol.  It is built on to of @code{Boost.Asio}.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0362hkbprc6jqlgmvzwxyvify4b1ldjakyqdz55m25xsypbpv2f3"))
+        (base32 "1akhnngxkxbjwjkg5ispl6j5s2ylbcj92r3zxqqry4gbfxbjpx8k"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -2392,10 +2392,13 @@ for the Matrix protocol.  It is built on to of @code{Boost.Asio}.")
        ("blurhash" ,blurhash)
        ("cpp-httplib" ,cpp-httplib)
        ("cmark" ,cmark)
+       ("coeurl" ,coeurl)
+       ("curl" ,curl)
        ("gst-plugins-base" ,gst-plugins-base)
        ("gst-plugins-bad" ,gst-plugins-bad)   ; sdp & webrtc for voip
        ("gst-plugins-good" ,gst-plugins-good) ; rtpmanager for voip
        ("json-modern-cxx" ,json-modern-cxx)
+       ("libevent" ,libevent)
        ("libnice" ,libnice)                   ; for voip
        ("libolm" ,libolm)
        ("lmdb" ,lmdb)
@@ -2411,6 +2414,7 @@ for the Matrix protocol.  It is built on to of @code{Boost.Asio}.")
        ("qtsvg" ,qtsvg)
        ("spdlog" ,spdlog)
        ("single-application" ,single-application-qt5)
+       ("xcb-util-wm" ,xcb-util-wm)
        ("zlib" ,zlib)))
     (native-inputs
      `(("doxygen" ,doxygen)
