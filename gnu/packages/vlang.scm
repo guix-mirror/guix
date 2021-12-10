@@ -2,6 +2,7 @@
 ;;; Copyright © 2020 Ryan Prior <rprior@protonmail.com>
 ;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2021 (unmatched parenthesis <paren@disroot.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,6 +24,7 @@
   #:use-module (gnu packages node)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages version-control)
   #:use-module (gnu packages xorg)
   #:use-module (guix build-system gnu)
   #:use-module (guix git-download)
@@ -33,7 +35,7 @@
 (define-public vlang
   (package
    (name "vlang")
-   (version "0.1.29")
+   (version "0.2.4")
    (source
     (origin
      (method git-fetch)
@@ -42,7 +44,7 @@
            (commit version)))
      (file-name (git-file-name name version))
      (sha256
-      (base32 "1rqi7cah5nq8aggrib9xvdpfjxq20li91svv0w9yny6nn1ag7snx"))))
+      (base32 "17wmjxssmg6kd4j8i6pgib452zzwvkyi3n1znd1jj3xkf2l92fw8"))))
    (build-system gnu-build-system)
    (arguments
     `(#:make-flags
@@ -53,26 +55,30 @@
             "GITFASTCLONE=mkdir -p"
             "TCCREPO="
             "VCREPO="
+            (string-append "VFLAGS=-cc " ,(cc-for-target))
             "VERBOSE=1")
       #:phases
       (modify-phases %standard-phases
         (delete 'configure)
+        (add-before 'build 'change-home
+          (lambda _
+            (setenv "HOME" "/tmp")
+            #t))
         (add-before 'build 'patch-makefile
           (lambda _
             (substitute* "Makefile"
-              (("rm -rf") "true")
-              (("v self") (string-append "v -cc " ,(cc-for-target) " cmd/v")))
+              (("--branch thirdparty-unknown-unknown") "")
+              (("rm -rf") "true"))
             #t))
         (add-before 'check 'delete-failing-tests
           ;; XXX As always, these should eventually be fixed and run.
           (lambda _
             (for-each delete-file
-                      '("vlib/v/gen/x64/tests/x64_test.v"
+                      '("vlib/os/notify/notify_test.v"
+                        "vlib/v/doc/doc_private_fn_test.v"
+                        "vlib/v/live/live_test.v"
                         "vlib/v/tests/repl/repl_test.v"
-                        "vlib/v/tests/valgrind/valgrind_test.v"
-                        "vlib/v/tests/valgrind/strings_and_arrays.vv"
-                        "vlib/v/tests/live_test.v"
-                        "vlib/net/websocket/ws_test.v"))
+                        "vlib/v/tests/valgrind/valgrind_test.v"))
             #t))
         (replace 'check
           (lambda* (#:key tests? #:allow-other-keys)
@@ -82,21 +88,23 @@
                 (mkdir-p bin)
                 (symlink gcc (string-append bin "/cc"))
                 (setenv "PATH" (string-append bin ":" (getenv "PATH")))
-                (invoke "./v" "test-fixed")))
+                (invoke "./v" "test-self")))
             #t))
         (replace 'install
           (lambda* (#:key outputs #:allow-other-keys)
             (let* ((bin (string-append (assoc-ref outputs "out") "/bin"))
+                   (docs (string-append bin "/cmd/v/help"))
                    (tools (string-append bin "/cmd/tools"))
                    (thirdparty (string-append bin "/thirdparty"))
                    (vlib (string-append bin "/vlib"))
                    (vmod (string-append bin "/v.mod")))
               (mkdir-p bin)
               (copy-file "./v" (string-append bin "/v"))
-              ;; v requires as of 0.1.27 that these other components are in the
+              ;; v requires as of 0.2.4 that these other components are in the
               ;; same directory. In a future release we may be able to move
               ;; these into other output folders.
               (copy-recursively "cmd/tools" tools)
+              (copy-recursively "cmd/v/help" docs)
               (copy-recursively "thirdparty" thirdparty)
               (copy-recursively "vlib" vlib)
               (copy-file "v.mod" vmod))
@@ -107,7 +115,7 @@
     `(("vc"
        ;; Versions are not consistently tagged, but the matching commit will
        ;; probably have ‘v0.x.y’ in the commit message.
-       ,(let ((vc-version "b01d0fcda4b55861baa4be82e307cca4834b1641"))
+       ,(let ((vc-version "5e876c1491db50b136499d3397b57b7c062040e5"))
           ;; v bootstraps from generated c source code from a dedicated
           ;; repository. It's readable, as generated source goes, and not at all
           ;; obfuscated, and it's about 15kb. The original source written in
@@ -121,8 +129,8 @@
                   (commit vc-version)))
             (file-name (git-file-name "vc" vc-version))
             (sha256
-             (base32 "052gp5q2k31r3lci3rx4k0vy0vjdjva64xvrbbihn8lgmw63lc9f")))))
-
+             (base32 "1gxdkgc7aqw5f0fhch1n6nhzgzvgb49p77idx1zj7wcp53lpx5ng")))))
+      ("git" ,git-minimal)
       ;; For the tests.
       ("libx11" ,libx11)
       ("node" ,node)
