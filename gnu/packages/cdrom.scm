@@ -929,6 +929,7 @@ Supported extensions to ISO 9660 are Rock Ridge, Joliet, AAIP, zisofs.")
               (sha256
                (base32
                 "0g2zyzb56czh429qy87lvaddzjnlcq8c616ddxsmsshz3clhyzrh"))
+              (patches (search-patches "cdrkit-libre-cross-compile.patch"))
               (modules '((guix build utils)))
               (snippet
                 #~(begin
