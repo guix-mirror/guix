@@ -448,8 +448,8 @@ to recover data more efficiently by only reading the necessary blocks.")
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list "--enable-compat-symlinks")
-       #:make-flags (list (string-append "PREFIX=" %output)
-                          "CC=gcc")))
+       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+                          (string-append "CC=" ,(cc-for-target)))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
