@@ -7476,6 +7476,29 @@ or the list of statically linked libraries with their versions.  It supports
 reporting the version from the version control system during development to
 get an precise reference of when the executable was built.")))
 
+(define-public ocaml-either
+  (package
+    (name "ocaml-either")
+    (version "1.0.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/mirage/either")
+               (commit version)))
+        (file-name (git-file-name name version))
+        (sha256
+          (base32 "099p1m24vz5i0043zcfp88krzjsa2qbrphrm4bnx84gif5vgkxwm"))))
+    (build-system dune-build-system)
+    (arguments
+     ;; no tests
+     `(#:tests? #f))
+    (home-page "https://github.com/mirage/either")
+    (synopsis "Compatibility Either module")
+    (description "This library is a compatibility module for the Either module
+defined in OCaml 4.12.0.")
+    (license license:expat)))
+
 (define-public ocamlformat
   (package
     (name "ocamlformat")
