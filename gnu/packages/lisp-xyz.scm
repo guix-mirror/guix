@@ -19868,6 +19868,40 @@ library inspired by @code{cl-data-format-validation} and WTForms validators.")
 (define-public ecl-restas
   (sbcl-package->ecl-package sbcl-restas))
 
+(define-public sbcl-zsort
+  (let ((commit "f6724a6fff7662a942195cedb0d7f00da59c74ed")
+        (revision "1"))
+    (package
+      (name "sbcl-zsort")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/jorgetavares/zsort")
+               (commit commit)))
+         (file-name (git-file-name "cl-zsort" version))
+         (sha256
+          (base32 "1vyklyh99712zsll4qi0m4mm8yb1nz04403vl8i57bjv5p5max49"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)))
+      (home-page "https://github.com/jorgetavares/zsort")
+      (synopsis "Collection of portable sorting algorithms in Common Lisp")
+      (description
+       "@code{zsort} is a collection of portable sorting algorithms.  Common
+Lisp provides the @code{sort} and @code{stable-sort} functions but these can
+have different algorithms implemented according to each implementation.  Also,
+the standard sorting functions might not be the best for a certain situations.
+This library aims to provide developers with more options.")
+      (license license:expat))))
+
+(define-public cl-zsort
+  (sbcl-package->cl-source-package sbcl-zsort))
+
+(define-public ecl-zsort
+  (sbcl-package->ecl-package sbcl-zsort))
+
 (define-public sbcl-cl-https-everywhere
   ;; No release.
   ;; Don't forget to update the https-everywhere input.
