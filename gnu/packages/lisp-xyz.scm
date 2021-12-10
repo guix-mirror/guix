@@ -19782,6 +19782,36 @@ score.  When evaluated, the musical score is rendered to an image.")
 (define-public ecl-cmn
   (sbcl-package->ecl-package sbcl-cmn))
 
+(define-public sbcl-core-gp
+  (let ((commit "90ec1c4599a19c5a911be1f703f78d5108aee160")
+        (revision "1"))
+    (package
+      (name "sbcl-core-gp")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/jorgetavares/core-gp")
+               (commit commit)))
+         (file-name (git-file-name "cl-core-gp" version))
+         (sha256
+          (base32 "0nzlb2gwqisa1amlpl4zc5xxph2g3qwhfyaxchci67d31rzws6l3"))))
+      (build-system asdf-build-system/sbcl)
+      (home-page "https://github.com/jorgetavares/core-gp")
+      (synopsis "Common Lisp library for genetic programming")
+      (description
+       "@code{core-gp} is a Common Lisp library for genetic programming (GP)
+algorithms.  It allows standard GP, strongly-typed GP, grammatical evolution as
+well as standard genetic algorithms.")
+      (license license:expat))))
+
+(define-public cl-core-gp
+  (sbcl-package->cl-source-package sbcl-core-gp))
+
+(define-public ecl-core-gp
+  (sbcl-package->ecl-package sbcl-core-gp))
+
 (define-public sbcl-data-sift
   (let ((commit "fd617d8200cdcc1b87ecf45ab59bb38e8b16ef7e")
         (revision "1"))
