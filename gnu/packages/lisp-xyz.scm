@@ -12650,25 +12650,28 @@ XML to Lisp structures or s-expressions and back.")
          ((#:tests? _ #f) #f))))))
 
 (define-public sbcl-geco
-  (package
-    (name "sbcl-geco")
-    (version "2.1.1")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/gpwwjr/GECO")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name "geco" version))
-       (sha256
-        (base32 "1rc8a4mk40hjx5qy980hjylv6xxqdbq38hg8c4w30y93abfd519s"))))
-    (build-system asdf-build-system/sbcl)
-    (home-page "http://hiwaay.net/~gpw/geco/geco.html")
-    (synopsis "Genetic algorithm toolkit for Common Lisp")
-    (description
-     "GECO (Genetic Evolution through Combination of Objects) is an extensible,
-object-oriented framework for prototyping genetic algorithms in Common Lisp.")
-    (license license:lgpl2.1+)))
+  (let ((commit "db13c9384491092975f46f6a837ccdc04681a93a")
+        (revision "1"))
+    (package
+      (name "sbcl-geco")
+      (version (git-version "2.1.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/gpwwjr/GECO")
+               (commit commit)))
+         (file-name (git-file-name "cl-geco" version))
+         (sha256
+          (base32 "1ncaf9ab7jz59zmga0p97blsjjb1m6db0qih57wipfhqdb5ylz17"))))
+      (build-system asdf-build-system/sbcl)
+      (home-page "https://github.com/gpwwjr/GECO")
+      (synopsis "Genetic algorithm toolkit for Common Lisp")
+      (description
+       "GECO (Genetic Evolution through Combination of Objects) is an
+extensible, object-oriented framework for prototyping genetic algorithms in
+Common Lisp.")
+      (license license:lgpl2.0+))))
 
 (define-public cl-geco
   (sbcl-package->cl-source-package sbcl-geco))
