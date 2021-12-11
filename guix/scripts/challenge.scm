@@ -35,10 +35,10 @@
   #:use-module (gcrypt hash)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
-  #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-37)
+  #:use-module (srfi srfi-71)
   #:use-module (ice-9 match)
   #:use-module (ice-9 vlist)
   #:use-module (ice-9 format)
@@ -196,7 +196,7 @@ taken since we do not import the archives."
 
 (define (port-sha256* port size)
   ;; Like 'port-sha256', but limited to SIZE bytes.
-  (let-values (((out get) (open-sha256-port)))
+  (let ((out get (open-sha256-port)))
     (dump-port* port out size)
     (close-port out)
     (get)))
@@ -251,10 +251,8 @@ taken since we do not import the archives."
 (define (call-with-nar narinfo proc)
   "Call PROC with an input port from which it can read the nar pointed to by
 NARINFO."
-  (let*-values (((uri compression size)
-                 (narinfo-best-uri narinfo))
-                ((port actual-size)
-                 (http-fetch uri)))
+  (let* ((uri compression size (narinfo-best-uri narinfo))
+         (port actual-size     (http-fetch uri)))
     (define reporter
       (progress-reporter/file (narinfo-path narinfo)
                               (and size
