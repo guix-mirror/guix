@@ -2187,7 +2187,7 @@ With the simplistic tools provided, one may accomplish similar effects as with
 Literate Programming, but documentation is generated from code, not vice versa
 and there is no support for chunking yet.  Code is first, code must look
 pretty, documentation is code.")
-      (home-page "http://quotenil.com/")
+      (home-page "https://melisgl.github.io/mgl-pax/")
       (license license:expat))))
 
 (define-public cl-mgl-pax
