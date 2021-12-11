@@ -556,7 +556,7 @@ you send to a FIFO file.")
 (define-public guile-dsv
   (package
     (name "guile-dsv")
-    (version "0.4.0")
+    (version "0.4.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -565,7 +565,7 @@ you send to a FIFO file.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "1mvyc8i38j56frjh3p6vwziv8lrzlyqndz30663h5nwcp0044sdn"))))
+                "05l5dc7rg3ikz2r01bm5wjkfxjk933049ig5gc7d7g4x5523lcfl"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
