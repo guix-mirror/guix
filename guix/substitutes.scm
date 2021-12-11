@@ -156,7 +156,11 @@ indicates that PATH is unavailable at CACHE-URL."
 
 (define (narinfo-request cache-url path)
   "Return an HTTP request for the narinfo of PATH at CACHE-URL."
-  (let* ((base (string->uri cache-url))
+  ;; Ensure BASE has a trailing slash so that REF is correct regardless of
+  ;; whether the user-provided CACHE-URL has a trailing slash.
+  (let* ((base (string->uri (if (string-suffix? "/" cache-url)
+                                cache-url
+                                (string-append cache-url "/"))))
          (ref (build-relative-ref
                #:path (string-append (store-path-hash-part path) ".narinfo")))
          (url (resolve-uri-reference ref base))
