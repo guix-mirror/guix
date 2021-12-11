@@ -29770,7 +29770,7 @@ released, and track their progress in watching a series.")
 (define-public emacs-webpaste
   (package
     (name "emacs-webpaste")
-    (version "3.2.1")
+    (version "3.2.2")
     (source
      (origin
        (method git-fetch)
@@ -29779,8 +29779,7 @@ released, and track their progress in watching a series.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1d481pdnh7cnbyka7wn59czlci63zwfqms8n515svg92qm573ckd"))))
+        (base32 "07hj9nr7x6c9w2dnvc58cfbprgp9cqzdxflp5qlpglzdw0bi9s3c"))))
     (build-system emacs-build-system)
     (arguments
      `(#:tests? #t
