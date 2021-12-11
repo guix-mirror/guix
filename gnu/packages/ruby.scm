@@ -6,7 +6,7 @@
 ;;; Copyright © 2015, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 Nikita <nikita@n0.is>
-;;; Copyright © 2017, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2019, 2020, 2021 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018, 2020, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
@@ -5121,7 +5121,10 @@ to reproduce user environments.")
                (base32
                 "15zplpfw3knqifj9bpf604rb3wc1vhq6363pd6lvhayng8wql5vy"))))))
 
-(define-public ruby-nokogiri
+;; TODO: In the next rebuild cycle, provide texlive a version of ruby-hydra
+;; that does not depend on byebug and rspec, so that their dependencies can
+;; be updated more freely.  For now pin this version to avoid rebuilds.
+(define-public ruby-nokogiri-1.10
   (package
     (name "ruby-nokogiri")
     (version "1.10.9")
@@ -5169,6 +5172,38 @@ to reproduce user environments.")
 both CSS3 selector and XPath 1.0 support.")
     (home-page "http://www.nokogiri.org/")
     (license license:expat)))
+
+;; nokogiri requires this version exactly.
+(define-public ruby-mini-portile-2.6.1
+  (package
+    (inherit ruby-mini-portile)
+    (version "2.6.1")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "mini_portile2" version))
+              (sha256
+               (base32
+                "1lvxm91hi0pabnkkg47wh1siv56s6slm2mdq1idfm86dyfidfprq"))))))
+
+(define-public ruby-nokogiri
+  (package
+    (inherit ruby-nokogiri-1.10)
+    (version "1.12.5")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "nokogiri" version))
+              (sha256
+               (base32
+                "1v02g7k7cxiwdcahvlxrmizn3avj2q6nsjccgilq1idc89cr081b"))))
+    (arguments
+     '(#:tests? #f                      ;XXX: no tests in rubygem
+       #:gem-flags (list "--" "--use-system-libraries"
+                         (string-append "--with-xml2-include="
+                                        (assoc-ref %build-inputs "libxml2")
+                                        "/include/libxml2"))))
+    (propagated-inputs
+     (modify-inputs (package-propagated-inputs ruby-nokogiri-1.10)
+       (replace "ruby-mini-portile" ruby-mini-portile-2.6.1)))))
 
 (define-public ruby-method-source
   (package
@@ -6819,7 +6854,8 @@ tree-like structures.  It is similar to Ruby's built-in @code{TSort} module.")
       (build-system ruby-build-system)
       (propagated-inputs
        `(("ruby-tdiff" ,ruby-tdiff)
-         ("ruby-nokogiri" ,ruby-nokogiri)))
+         ;; Use a fixed version to prevent rebuilds; see ruby-nokogiri TODO.
+         ("ruby-nokogiri" ,ruby-nokogiri-1.10)))
       (native-inputs
        `(("ruby-rspec" ,ruby-rspec)
          ("ruby-yard" ,ruby-yard)
