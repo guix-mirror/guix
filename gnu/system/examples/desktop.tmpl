@@ -52,10 +52,15 @@
                 (name "bob")
                 (comment "Alice's brother")
                 (password (crypt "alice" "$6$abc"))
-                (group "users")
+                (group "students")
                 (supplementary-groups '("wheel" "netdev"
                                         "audio" "video")))
                %base-user-accounts))
+
+  ;; Add the `students' group
+  (groups (cons* (user-group
+                  (name "students"))
+                 %base-groups))
 
   ;; This is where we specify system-wide packages.
   (packages (append (list
