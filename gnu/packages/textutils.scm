@@ -44,6 +44,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix gexp)
   #:use-module (guix git-download)
   #:use-module (guix build-system ant)
   #:use-module (guix build-system gnu)
@@ -1135,6 +1136,40 @@ Text, such as OpenOffice.org XML (*.sxw), which was used by OpenOffice.org
 version 1.x and older StarOffice versions.  To a lesser extent, odt2txt may be
 useful to extract content from OpenDocument spreadsheets (*.ods) and
 OpenDocument presentations (*.odp).")
+    (license license:gpl2)))
+
+(define-public bibutils
+  (package
+    (name "bibutils")
+    (version "7.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/bibutils/"
+                                  "bibutils_" version "_src.tgz"))
+
+              (sha256
+               (base32
+                "1hxmwjjzw48w6hdh2x7ybkrhi1xngd55i67hrrd3wswa3vpql0kf"))))
+    (build-system gnu-build-system)
+    (arguments
+     (list #:configure-flags
+           #~(list "--install-dir" (string-append #$output "/bin")
+                   "--install-lib" (string-append #$output "/lib")
+                   "--dynamic")
+           #:make-flags
+           #~(list (string-append "CC=" #+(cc-for-target))
+                   (string-append "LDFLAGSIN=-Wl,-rpath=" #$output "/lib"))
+           #:test-target "test"
+           #:phases
+           '(modify-phases %standard-phases
+              (replace 'configure
+                (lambda* (#:key configure-flags #:allow-other-keys)
+                  ;; configure script is ill-formed, invoke it manually
+                  (apply invoke "sh" "./configure" configure-flags))))))
+    (home-page "https://bibutils.sourceforge.io/")
+    (synopsis "Convert between various bibliography formats")
+    (description "This package provides converters for various bibliography
+formats (e.g. Bibtex, RIS, ...) using a common XML intermediate.")
     (license license:gpl2)))
 
 (define-public opencc
