@@ -11350,6 +11350,33 @@ for high performance inter-thread communication that avoids the need for
 message queues or resource locking.")
     (license license:asl2.0)))
 
+(define-public java-jctools-core-1
+  (package
+    (name "java-jctools-core")
+    (version "1.2.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/JCTools/JCTools")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "105my29nwd4djvdllmq8s3jdzbyplbkxzwmddxiiilb4yqr1pghb"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-jctools-core.jar"
+       #:source-dir "jctools-core/src/main/java"
+       #:test-dir "jctools-core/src/test"))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-all" ,java-hamcrest-all)))
+    (home-page "https://github.com/JCTools/JCTools")
+    (synopsis "Concurrency tools for Java")
+    (description "This library implements concurrent data structures that are
+not natively available in Java.")
+    (license license:asl2.0)))
+
 (define-public java-commons-bcel
   (package
     (name "java-commons-bcel")
