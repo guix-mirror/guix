@@ -1237,44 +1237,44 @@ and should be used with caution, especially on untested models.")
     (build-system linux-module-build-system)
     (outputs (list "out" "linux-module"))
     (arguments
-     `(#:imported-modules ((guix build gnu-build-system)
-                           ,@%linux-module-build-system-modules)
-       #:modules ((guix build linux-module-build-system)
-                  ((guix build gnu-build-system) #:prefix gnu:)
-                  (guix build utils))
-       #:make-flags
-       (list (string-append "CC=" ,(cc-for-target))
-             "OPTIM_LVL=3"
-             (string-append "PREFIX=" (assoc-ref %outputs "out")))
-       #:tests? #f                      ; no test suite
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'untangle-module-targets
-           ;; Having to build everything in one pass would complicate the
-           ;; definition.  Let each build system handle what it's good at.
-           (lambda _
-             (substitute* "Makefile"
-               ((".*MAKE.*KERNELDIR.*") ""))))
-         (add-after 'build 'gnu:build
-           (assoc-ref gnu:%standard-phases 'build))
-         (add-after 'install 'gnu:install
-           (assoc-ref gnu:%standard-phases 'install))
-         (add-after 'install 'separate-module
-           (lambda* (#:key outputs #:allow-other-keys)
-             ;; Adding INSTALL_MOD_PATH= to #:make-flags would still create an
-             ;; empty <out>/lib/modules directory, so just do it all by hand.
-             (let* ((out    (assoc-ref outputs "out"))
-                    (module (assoc-ref outputs "linux-module")))
-               (mkdir-p (string-append module "/lib"))
-               (rename-file (string-append out    "/lib/modules")
-                            (string-append module "/lib/modules")))))
-         (add-after 'install 'install-README
-           ;; There is no proper documentation.  Provide something.
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (doc (string-append out "/share/doc/"
-                                        ,name "-" ,version)))
-               (install-file "README.md" doc)))))))
+     (list #:imported-modules `((guix build gnu-build-system)
+                                ,@%linux-module-build-system-modules)
+           #:modules `((guix build linux-module-build-system)
+                       ((guix build gnu-build-system) #:prefix gnu:)
+                       (guix build utils))
+           #:make-flags
+           #~(list (string-append "CC=" #$(cc-for-target))
+               "OPTIM_LVL=3"
+               (string-append "PREFIX=" #$output))
+           #:tests? #f                      ; no test suite
+           #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'unpack 'untangle-module-targets
+                 ;; Having to build everything in one pass would complicate the
+                 ;; definition.  Let each build system handle what it's good at.
+                 (lambda _
+                   (substitute* "Makefile"
+                     ((".*MAKE.*KERNELDIR.*") ""))))
+               (add-after 'build 'gnu:build
+                 (assoc-ref gnu:%standard-phases 'build))
+               (add-after 'install 'gnu:install
+                 (assoc-ref gnu:%standard-phases 'install))
+               (add-after 'install 'separate-module
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   ;; Adding INSTALL_MOD_PATH= to #:make-flags would still create an
+                   ;; empty <out>/lib/modules directory, so just do it all by hand.
+                   (let* ((out    (assoc-ref outputs "out"))
+                          (module (assoc-ref outputs "linux-module")))
+                     (mkdir-p (string-append module "/lib"))
+                     (rename-file (string-append out    "/lib/modules")
+                                  (string-append module "/lib/modules")))))
+               (add-after 'install 'install-README
+                 ;; There is no proper documentation.  Provide something.
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (let* ((out (assoc-ref outputs "out"))
+                          (doc (string-append out "/share/doc/"
+                                              #$name "-" #$version)))
+                     (install-file "README.md" doc)))))))
     (home-page "https://github.com/cyring/CoreFreq")
     (synopsis
      "Measure performance data & tweak low-level settings on x86-64 CPUs")
