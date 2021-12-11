@@ -39,9 +39,12 @@
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (gnu packages acl)
+  #:use-module (gnu packages attr)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
+  #:use-module (gnu packages build-tools)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
@@ -866,6 +869,37 @@ variants.")
     (license (list license:gpl3            ; According to COPYING.
                    license:lgpl2.1         ; Some style sheets.
                    license:cc-by-sa4.0)))) ; Some icons
+
+(define-public eiciel
+  (package
+    (name "eiciel")
+    (version "0.9.13.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/rofirrim/eiciel")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0rhhw0h1hyg5kvxhjxkdz03vylgax6912mg8j4lvcz6wlsa4wkvj"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:glib-or-gtk? #t
+       #:tests? #f ; no tests
+       #:configure-flags
+       (list (string-append "-Dnautilus-extension-dir="
+                            (assoc-ref %outputs "out")
+                            "/lib/nautilus/site-extensions"))))
+    (native-inputs
+     (list gettext-minimal pkg-config))
+    (inputs
+     (list acl attr glibmm-2.64 gtkmm-3 nautilus))
+    (home-page "https://rofi.roger-ferrer.org/eiciel")
+    (synopsis "Manage extended file attributes")
+    (description "Eiciel is a plugin for nautilus to graphically edit ACL and
+extended file attributes.  It also functions as a standalone command.")
+    (license license:gpl2+)))
 
 (define-public markets
   (package
