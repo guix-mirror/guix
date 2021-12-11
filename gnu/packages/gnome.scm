@@ -9076,6 +9076,27 @@ shared object databases, search tools and indexing.")
        #:meson ,meson-0.59
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'make-extensible
+           (lambda _
+             (substitute* "src/nautilus-module.c"
+               (("static gboolean initialized = FALSE;" all)
+                (string-append all "
+const char *extension_path;
+char **extension_dirs, **d;
+")
+                )
+               (("load_module_dir \\(NAUTILUS_EXTENSIONDIR\\);" all)
+                (string-append all
+                               "
+extension_path = g_getenv (\"NAUTILUS_EXTENSION_PATH\");
+if (extension_path)
+{
+    extension_dirs = g_strsplit (extension_path, \":\", -1);
+    for (d = extension_dirs; d != NULL && *d != NULL; d++)
+        load_module_dir(*d);
+    g_strfreev(extension_dirs);
+}
+")))))
          (add-after 'unpack 'skip-gtk-update-icon-cache
            ;; Don't create 'icon-theme.cache'.
            (lambda _
@@ -9114,6 +9135,10 @@ shared object databases, search tools and indexing.")
        ("gtk+" ,gtk+)
        ("libexif" ,libexif)
        ("libxml2" ,libxml2)))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "NAUTILUS_EXTENSION_PATH")
+            (files '("lib/nautilus/site-extensions")))))
     (synopsis "File manager for GNOME")
     (home-page "https://wiki.gnome.org/Apps/Nautilus")
     (description
