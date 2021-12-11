@@ -17906,10 +17906,11 @@ functions allow Lisp programs to explore the web.")
 
 (define-public sbcl-aserve
   ;; There does not seem to be proper releases.
-  (let ((commit "cac1d6920998ddcbee8310a873414732e707d8e5"))
+  (let ((commit "cac1d6920998ddcbee8310a873414732e707d8e5")
+        (revision "2"))
     (package
       (name "sbcl-aserve")
-      (version (git-version "1.2.50" "1" commit))
+      (version (git-version "1.2.50" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -17920,7 +17921,14 @@ functions allow Lisp programs to explore the web.")
                (commit commit)))
          (file-name (git-file-name "aserve" version))
          (sha256
-          (base32 "0ak6mqp84sjr0a7h5svr16vra4bf4fcx6wpir0n88dc1vjwy5xqa"))))
+          (base32 "0ak6mqp84sjr0a7h5svr16vra4bf4fcx6wpir0n88dc1vjwy5xqa"))
+         (patches (search-patches
+                   ;; Add HTML5 elements to htmlgen.
+                   ;; Adapted from https://github.com/franzinc/aserve/ commits:
+                   ;; * e47bd763: "rfe12668: add HTML 5 elements to htmlgen"
+                   ;; * 7371ce59: "fix bugs in rfe12668 implementation"
+                   "sbcl-aserve-add-HTML-5-elements.patch"
+                   "sbcl-aserve-fix-rfe12668.patch"))))
       (build-system asdf-build-system/sbcl)
       (arguments
        `(#:phases
@@ -17941,7 +17949,8 @@ functions allow Lisp programs to explore the web.")
                #t)))))
       (inputs
        `(("acl-compat" ,sbcl-acl-compat)))
-      (home-page "https://franz.com/support/documentation/current/doc/aserve/aserve.html")
+      (home-page
+       "https://franz.com/support/documentation/current/doc/aserve/aserve.html")
       (synopsis "AllegroServe, a web server written in Common Lisp")
       (description
        "The server part of AllegroServe can be used either as a standalone web
