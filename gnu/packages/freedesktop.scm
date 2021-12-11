@@ -1683,16 +1683,16 @@ software.")
 (define-public fprintd
   (package
     (name "fprintd")
-    (version "1.90.1")
+    (version "1.94.1")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://gitlab.freedesktop.org/libfprint/fprintd")
-             (commit version)))
+             (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0mbzk263x7f58i9cxhs44mrngs7zw5wkm62j5r6xlcidhmfn03cg"))))
+        (base32 "015j8ikyv48qz8vn6kfvkwwg5ydzppl1lzf7vkali9ymywywfxsw"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
@@ -1716,25 +1716,19 @@ software.")
                  (("(dbus_data_dir = ).*" _ set)
                   (string-append set "get_option('prefix')"
                                  " / get_option('datadir')\n"))))))
-         (add-before 'configure 'patch-mistake
-           (lambda _
-             (substitute* "meson.build"
-               (("(storage_path = )(get_option\\('prefix'\\))(.*)"
-                 _ set mistake value)
-                (string-append set "''" value "\n")))))
          (add-before 'configure 'patch-systemd-dependencies
            (lambda _
              (substitute* "meson.build"
-               (("'(libsystemd|systemd)'") "'libelogind'"))))
+               (("(dependency\\(')(libsystemd|systemd)" _ prefix)
+                (string-append prefix "libelogind")))))
          (add-before 'configure 'ignore-test-dependencies
            (lambda _
              (substitute* "meson.build"
+               ((".*gi\\.repository\\..*") "")
                (("pam_wrapper_dep .*") "")
-               ((".*'(cairo|dbus|dbusmock|gi|pypamtest)': .*,.*") ""))))
-         (add-before 'install 'no-polkit-magic
-           ;; Meson ‘magically’ invokes pkexec, which fails (not setuid).
-           (lambda _
-             (setenv "PKEXEC_UID" "something"))))
+               ((".*'(cairo|dbus|dbusmock|gi|pypamtest)': .*,.*") ""))
+             (substitute* "tests/pam/meson.build"
+               ((".*pam_wrapper.*") "")))))
        #:tests? #f))                    ; XXX depend on unpackaged packages
     (native-inputs
      `(("gettext" ,gettext-minimal)
@@ -1754,12 +1748,7 @@ software.")
            elogind
            libfprint
            linux-pam
-           polkit
-           ;; XXX These are in libfprint's Requires.private.  Meson refuses to grant
-           ;; the ‘libfprint-2’ dependency if they are not provided here.
-           gusb
-           nss
-           pixman))
+           polkit))
     (home-page "https://fprint.freedesktop.org/")
     (synopsis "D-Bus daemon that exposes fingerprint reader functionality")
     (description
