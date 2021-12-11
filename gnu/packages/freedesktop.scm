@@ -1655,11 +1655,11 @@ wish to perform colour calibration.")
         (base32 "0y3wz5hlxpnvqj67bihvzfi4dwx2m2nx9byppf4jjd80x0j2630m"))))
     (build-system meson-build-system)
     (arguments
-     '(#:configure-flags
-       (list (string-append "-Dudev_hwdb_dir=" (assoc-ref %outputs "out")
-                            "/lib/udev/hwdb.d")
-             (string-append "-Dudev_rules_dir=" (assoc-ref %outputs "out")
-                            "/lib/udev/rules.d"))))
+     (list #:configure-flags
+           #~(list (string-append "-Dudev_hwdb_dir=" #$output
+                                  "/lib/udev/hwdb.d")
+                   (string-append "-Dudev_rules_dir=" #$output
+                                  "/lib/udev/rules.d"))))
     (native-inputs
      (list `(,glib "bin")               ; for {glib-,}mkenums
            gobject-introspection
