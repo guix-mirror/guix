@@ -1831,76 +1831,69 @@ web pages.")
     (license license:expat)))
 
 (define-public ruby-asciidoctor-pdf
-  ;; Use the latest commit, as the last tag doesn't build with the
-  ;; latest Ruby dependencies in Guix.
-  (let ((revision "1")
-        (commit "d257440df895d1595a3825ef58b32e4b290ba1c3"))
-    (package
-      (name "ruby-asciidoctor-pdf")
-      (version (git-version "1.5.3" revision commit))
-      (source
-       (origin
-         (method git-fetch)      ;no test suite in the distributed gem
-         (uri (git-reference
-               (url "https://github.com/asciidoctor/asciidoctor-pdf")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "1563d11ghzsrsg4inwfwj6b9hb5sk5b429f49fwq5qg3sq76kgjj"))))
-      (build-system ruby-build-system)
-      (arguments
-       `(#:test-target "spec"
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'remove-failing-tests
-             ;; Two tests module fail for unknown reasons, *only* when
-             ;; ran in the build container (see:
-             ;; https://github.com/asciidoctor/asciidoctor-pdf/issues/1725#issuecomment-658777965).
-             (lambda _
-               (delete-file "spec/audio_spec.rb")
-               (delete-file "spec/video_spec.rb")
-               #t))
-           (add-after 'extract-gemspec 'strip-version-requirements
-             (lambda _
-               (substitute* "asciidoctor-pdf.gemspec"
-                 (("(.*add_.*dependency '[_A-Za-z0-9-]+').*" _ stripped)
-                  (string-append stripped "\n")))
-               #t))
-           ;; The tests rely on the Gem being installed, so move the check phase
-           ;; after the install phase.
-           (delete 'check)
-           (add-after 'install 'check
-             (lambda* (#:key outputs tests? #:allow-other-keys)
-               (let ((new-gem (string-append (assoc-ref outputs "out")
-                                             "/lib/ruby/vendor_ruby")))
-                 (setenv "GEM_PATH"
-                         (string-append (getenv "GEM_PATH") ":" new-gem))
-                 (when tests?
-                   (invoke "rspec" "-t" "~visual" "-t" "~cli" "-t" "~network"))
-                 #t))))))
-      (native-inputs
-       `(("ruby-chunky-png" ,ruby-chunky-png)
-         ("ruby-coderay" ,ruby-coderay)
-         ("ruby-pdf-inspector" ,ruby-pdf-inspector)
-         ("ruby-rouge" ,ruby-rouge)
-         ("ruby-rspec" ,ruby-rspec)))
-      (propagated-inputs
-       `(("ruby-asciidoctor" ,ruby-asciidoctor)
-         ("ruby-concurrent-ruby" ,ruby-concurrent)
-         ("ruby-open-uri-cached" ,ruby-open-uri-cached)
-         ("ruby-prawn" ,ruby-prawn)
-         ("ruby-prawn-icon" ,ruby-prawn-icon)
-         ("ruby-prawn-svg" ,ruby-prawn-svg)
-         ("ruby-prawn-table" ,ruby-prawn-table)
-         ("ruby-prawn-templates" ,ruby-prawn-templates)
-         ("ruby-safe-yaml" ,ruby-safe-yaml)
-         ("ruby-text-hyphen" ,ruby-text-hyphen)
-         ("ruby-thread-safe" ,ruby-thread-safe)
-         ("ruby-treetop" ,ruby-treetop)
-         ("ruby-ttfunk" ,ruby-ttfunk)))
-      (synopsis"AsciiDoc to Portable Document Format (PDF)} converter")
-      (description "Asciidoctor PDF is an extension for Asciidoctor that
+  (package
+    (name "ruby-asciidoctor-pdf")
+    (version "1.6.1")
+    (source
+     (origin
+       (method git-fetch)               ;no test suite in the distributed gem
+       (uri (git-reference
+             (url "https://github.com/asciidoctor/asciidoctor-pdf")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1iyfy6n9d3rkyrfjmnnfb44c76mq1larmkv1x8n6p5nbm33wb9sf"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:test-target "spec"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-failing-tests
+           ;; Two tests module fail for unknown reasons, *only* when
+           ;; ran in the build container (see:
+           ;; https://github.com/asciidoctor/asciidoctor-pdf/issues/1725#issuecomment-658777965).
+           (lambda _
+             (delete-file "spec/audio_spec.rb")
+             (delete-file "spec/video_spec.rb")))
+         (add-after 'extract-gemspec 'strip-version-requirements
+           (lambda _
+             (substitute* "asciidoctor-pdf.gemspec"
+               (("(.*add_.*dependency '[_A-Za-z0-9-]+').*" _ stripped)
+                (string-append stripped "\n")))))
+         ;; The tests rely on the Gem being installed, so move the check phase
+         ;; after the install phase.
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda* (#:key outputs tests? #:allow-other-keys)
+             (let ((new-gem (string-append (assoc-ref outputs "out")
+                                           "/lib/ruby/vendor_ruby")))
+               (setenv "GEM_PATH"
+                       (string-append (getenv "GEM_PATH") ":" new-gem))
+               (when tests?
+                 (invoke "rspec" "-t" "~visual" "-t" "~cli" "-t" "~network"))))))))
+    (native-inputs
+     `(("ruby-chunky-png" ,ruby-chunky-png)
+       ("ruby-coderay" ,ruby-coderay)
+       ("ruby-pdf-inspector" ,ruby-pdf-inspector)
+       ("ruby-rouge" ,ruby-rouge)
+       ("ruby-rspec" ,ruby-rspec)))
+    (propagated-inputs
+     `(("ruby-asciidoctor" ,ruby-asciidoctor)
+       ("ruby-concurrent-ruby" ,ruby-concurrent)
+       ("ruby-open-uri-cached" ,ruby-open-uri-cached)
+       ("ruby-prawn" ,ruby-prawn)
+       ("ruby-prawn-icon" ,ruby-prawn-icon)
+       ("ruby-prawn-svg" ,ruby-prawn-svg)
+       ("ruby-prawn-table" ,ruby-prawn-table)
+       ("ruby-prawn-templates" ,ruby-prawn-templates)
+       ("ruby-safe-yaml" ,ruby-safe-yaml)
+       ("ruby-text-hyphen" ,ruby-text-hyphen)
+       ("ruby-thread-safe" ,ruby-thread-safe)
+       ("ruby-treetop" ,ruby-treetop)
+       ("ruby-ttfunk" ,ruby-ttfunk)))
+    (synopsis"AsciiDoc to Portable Document Format (PDF)} converter")
+    (description "Asciidoctor PDF is an extension for Asciidoctor that
 converts AsciiDoc documents to Portable Document Format (PDF) using the Prawn
 PDF library.  It has features such as:
 @itemize
@@ -1923,8 +1916,8 @@ PDF library.  It has features such as:
 @item Custom TrueType (TTF) fonts
 @item Double-sided printing mode (margins alternate on recto and verso pages)
 @end itemize")
-      (home-page "https://asciidoctor.org/docs/asciidoctor-pdf")
-      (license license:expat))))
+    (home-page "https://asciidoctor.org/docs/asciidoctor-pdf")
+    (license license:expat)))
 
 (define-public ruby-ast
   (package
