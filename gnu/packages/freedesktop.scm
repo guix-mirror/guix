@@ -1715,31 +1715,26 @@ software.")
                   (string-append set "'" out "/share/polkit-1/actions/'\n"))
                  (("(dbus_data_dir = ).*" _ set)
                   (string-append set "get_option('prefix')"
-                                 " / get_option('datadir')\n")))
-               #t)))
+                                 " / get_option('datadir')\n"))))))
          (add-before 'configure 'patch-mistake
            (lambda _
              (substitute* "meson.build"
                (("(storage_path = )(get_option\\('prefix'\\))(.*)"
                  _ set mistake value)
-                (string-append set "''" value "\n")))
-             #t))
+                (string-append set "''" value "\n")))))
          (add-before 'configure 'patch-systemd-dependencies
            (lambda _
              (substitute* "meson.build"
-               (("'(libsystemd|systemd)'") "'libelogind'"))
-             #t))
+               (("'(libsystemd|systemd)'") "'libelogind'"))))
          (add-before 'configure 'ignore-test-dependencies
            (lambda _
              (substitute* "meson.build"
                (("pam_wrapper_dep .*") "")
-               ((".*'(cairo|dbus|dbusmock|gi|pypamtest)': .*,.*") ""))
-             #t))
+               ((".*'(cairo|dbus|dbusmock|gi|pypamtest)': .*,.*") ""))))
          (add-before 'install 'no-polkit-magic
            ;; Meson ‘magically’ invokes pkexec, which fails (not setuid).
            (lambda _
-             (setenv "PKEXEC_UID" "something")
-             #t)))
+             (setenv "PKEXEC_UID" "something"))))
        #:tests? #f))                    ; XXX depend on unpackaged packages
     (native-inputs
      `(("gettext" ,gettext-minimal)
