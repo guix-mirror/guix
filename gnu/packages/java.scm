@@ -7869,6 +7869,7 @@ JavaMail API.")
      `(("java-osgi-core" ,java-osgi-core)
        ("java-hamcrest-core" ,java-hamcrest-core)
        ("java-junit" ,java-junit)))
+    (properties '((cpe-name . "log4j")))
     (home-page "https://logging.apache.org/log4j/2.x/")
     (synopsis "API module of the Log4j logging framework for Java")
     (description
