@@ -7840,14 +7840,14 @@ JavaMail API.")
 (define-public java-log4j-api
   (package
     (name "java-log4j-api")
-    (version "2.4.1")
+    (version "2.15.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://apache/logging/log4j/" version
                                   "/apache-log4j-" version "-src.tar.gz"))
               (sha256
                (base32
-                "0j5p9gik0jysh37nlrckqbky12isy95cpwg2gv5fas1rcdqbraxd"))))
+                "0h4ndw096h9cql0kyi1zd0ymp8hqxc1jdgdxkn0kxf8vd9b4dx14"))))
     (build-system ant-build-system)
     (arguments
      `(#:tests? #f ; tests require unpackaged software
@@ -7886,7 +7886,11 @@ Java.")
        ("java-log4j-api" ,java-log4j-api)
        ("java-mail" ,java-mail)
        ("java-jboss-jms-api-spec" ,java-jboss-jms-api-spec)
+       ("java-conversant-disruptor" ,java-conversant-disruptor)
        ("java-lmax-disruptor" ,java-lmax-disruptor)
+       ("java-jctools-core" ,java-jctools-core-1)
+       ("java-stax2-api" ,java-stax2-api)
+       ("java-jansi" ,java-jansi)
        ("java-kafka" ,java-kafka-clients)
        ("java-datanucleus-javax-persistence" ,java-datanucleus-javax-persistence)
        ("java-fasterxml-jackson-annotations" ,java-fasterxml-jackson-annotations)
@@ -7934,6 +7938,7 @@ logging framework for Java.")))
     (inputs
      `(("log4j-api" ,java-log4j-api)
        ("log4j-core" ,java-log4j-core)
+       ("java-jboss-jms-api-spec" ,java-jboss-jms-api-spec)
        ("osgi-core" ,java-osgi-core)
        ("eclipse-osgi" ,java-eclipse-osgi)
        ("java-lmax-disruptor" ,java-lmax-disruptor)))))
