@@ -9976,6 +9976,39 @@ generation.")
     (home-page "https://github.com/jbarnette/hoe-git")
     (license license:expat)))
 
+(define-public ruby-hoe-markdown
+  (package
+    (name "ruby-hoe-markdown")
+    (version "1.4.0")
+    (home-page "https://github.com/flavorjones/hoe-markdown")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0wb0yjdx9gx9r0cahpx42pblvglgh1i9pdfxjavq7f40nan2g076"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:test-target "spec"
+       #:phases (modify-phases %standard-phases
+                  (add-before 'check 'disable-bundler-dependency
+                    (lambda _
+                      (substitute* "spec/spec_helper.rb"
+                        (("require.*bundler/setup.*")
+                         "")))))))
+    (native-inputs
+     `(("ruby-rspec" ,ruby-rspec)))
+    (propagated-inputs
+     `(("ruby-rake" ,ruby-rake)))
+    (synopsis "Hoe plugin with Markdown helpers")
+    (description
+     "This package provides a Hoe plugin with various Markdown helpers, which
+can be used to e.g. hyperlink Markdown documentation between project files.")
+    (license license:expat)))
+
 (define-public ruby-sequel
   (package
     (name "ruby-sequel")
