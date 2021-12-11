@@ -12134,15 +12134,79 @@ console output.")
 (define-public java-jansi
   (package
     (name "java-jansi")
-    (version "1.16")
+    (version "2.4.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/fusesource/jansi/archive/"
-                                  "jansi-project-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/fusesource/jansi")
+                     (commit (string-append "jansi-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "11kh3144i3fzp21dpy8zg52mjmsr214k7km9p8ly0rqk2px0qq2z"))))
+                "1s6fva06990798b5fyxqzr30zwyj1byq5wrm54j2larcydaryggf"))
+              (modules '((guix build utils)))
+              (snippet
+                ;; contains pre-compiled libraries
+                '(delete-file-recursively
+                   "src/main/resources/org/fusesource/jansi/internal"))))
     (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "jansi.jar"
+       #:source-dir "src/main/java"
+       #:test-dir "src/test"
+       #:tests? #f; require junit 3
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'build-native
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "src/main/native"
+               (for-each
+                 (lambda (cfile)
+                   (let ((cfile (basename cfile))
+                         (ofile (string-append (basename cfile ".c") ".o")))
+                     (invoke ,(cc-for-target) "-c" cfile "-o" ofile
+                             (string-append "-I" (assoc-ref inputs "jdk")
+                                            "/include/linux")
+                             "-fPIC" "-O2")))
+                 (find-files "." "\\.c$"))
+               (apply invoke ,(cc-for-target) "-o" "libjansi.so" "-shared"
+                      (find-files "." "\\.o$")))))
+         (add-before 'build 'install-native
+           (lambda _
+             (let ((dir (string-append "build/classes/org/fusesource/"
+                                       "jansi/internal/native/"
+                                       ,(match (or (%current-target-system) (%current-system))
+                                          ("i686-linux" "Linux/x86")
+                                          ("x86_64-linux" "Linux/x86_64")
+                                          ("armhf-linux" "Linux/armv7")
+                                          ("aarch64-linux" "Linux/arm64")
+                                          ("mips64el-linux" "Linux/mips64")
+                                          (_ "unknown-kernel")))))
+               (install-file "src/main/native/libjansi.so" dir))))
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively "src/main/resources" "build/classes")))
+         (replace 'install
+           (install-from-pom "pom.xml")))))
+    (home-page "https://fusesource.github.io/jansi/")
+    (synopsis "Portable ANSI escape sequences")
+    (description "Jansi is a Java library that allows you to use ANSI escape
+sequences to format your console output which works on every platform.")
+    (license license:asl2.0)))
+
+(define-public java-jansi-1
+  (package
+    (inherit java-jansi)
+    (version "1.16")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/fusesource/jansi")
+                     (commit (string-append "jansi-project-" version))))
+              (file-name (git-file-name "jansi" version))
+              (sha256
+               (base32
+                "0ikk0x352gh30b42qn1jd89xwsjj0mavrc5kms7fss15bd8vsayx"))))
     (arguments
      `(#:jar-name "jansi.jar"
        #:source-dir "jansi/src/main/java"
@@ -12173,12 +12237,7 @@ console output.")
      `(("java-jansi-native" ,java-jansi-native)))
     (native-inputs
      `(("java-junit" ,java-junit)
-       ("java-hamcrest-core" ,java-hamcrest-core)))
-    (home-page "https://fusesource.github.io/jansi/")
-    (synopsis "Portable ANSI escape sequences")
-    (description "Jansi is a Java library that allows you to use ANSI escape
-sequences to format your console output which works on every platform.")
-    (license license:asl2.0)))
+       ("java-hamcrest-core" ,java-hamcrest-core)))))
 
 (define-public java-jboss-el-api-spec
   (package
@@ -12541,7 +12600,7 @@ features that bring it on par with the Z shell line editor.")
      `(#:jdk ,icedtea-8
        ,@(package-arguments java-jline)))
     (inputs
-     `(("java-jansi" ,java-jansi)
+     `(("java-jansi" ,java-jansi-1)
        ("java-jansi-native" ,java-jansi-native)))
     (native-inputs
      `(("java-powermock-modules-junit4" ,java-powermock-modules-junit4)
