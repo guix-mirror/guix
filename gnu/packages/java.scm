@@ -11350,6 +11350,41 @@ for high performance inter-thread communication that avoids the need for
 message queues or resource locking.")
     (license license:asl2.0)))
 
+(define-public java-conversant-disruptor
+  (package
+    (name "java-conversant-disruptor")
+    (version "1.2.19")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/conversant/disruptor")
+                     (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0gx1dm7sfg7pa05cs4qby10gfcplai5b5lf1f7ik1a76dh3vhl0g"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-conversant-disruptor.jar"
+       #:source-dir "src/main/java"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-resources
+           (lambda _
+            (copy-recursively "src/main/resources" "build/classes")))
+         (add-before 'build 'remove-module
+           (lambda _
+             (delete-file "src/main/java/module-info.java"))))))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (home-page "https://github.com/conversant/disruptor")
+    (synopsis "High performance intra-thread communication")
+    (description "Conversant Disruptor is the highest performing intra-thread
+transfer mechanism available in Java.  Conversant Disruptor is an implementation
+of this type of ring buffer that has almost no overhead and that exploits a
+particularly simple design.")
+    (license license:asl2.0)))
+
 (define-public java-jctools-core-1
   (package
     (name "java-jctools-core")
