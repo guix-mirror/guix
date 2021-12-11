@@ -6393,28 +6393,22 @@ you about the changes.")
 (define-public ruby-loofah
   (package
     (name "ruby-loofah")
-    (version "2.3.1")
+    (version "2.13.0")
+    (home-page "https://github.com/flavorjones/loofah")
     (source
      (origin
-       (method url-fetch)
-       (uri (rubygems-uri "loofah" version))
+       ;; Build from git because the gem lacks tests.
+       (method git-fetch)
+       (uri (git-reference (url home-page)
+                           (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0npqav026zd7r4qdidq9x5nxcp2dzg71bnp421xxx7sngbxf2xbd"))))
+         "0rmsm7mckiq0gslfqdl02yvn500n42v84gq28qjqn4yq9jwfs9ga"))))
     (build-system ruby-build-system)
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'remove-unnecessary-dependencies
-           (lambda _
-             ;; concourse is a development tool which is unused, so remove it
-             ;; so it's not required.
-             (substitute* "Rakefile"
-               (("require \"concourse\"") "")
-               (("Concourse\\.new.*") "task :concourse do\n"))
-             #t)))))
     (native-inputs
      `(("ruby-hoe" ,ruby-hoe)
+       ("ruby-hoe-markdown" ,ruby-hoe-markdown)
        ("ruby-rr" ,ruby-rr)))
     (propagated-inputs
      `(("ruby-nokogiri" ,ruby-nokogiri)
@@ -6423,7 +6417,6 @@ you about the changes.")
     (description
      "Loofah is a general library for manipulating and transforming HTML/XML
 documents and fragments.  It's built on top of Nokogiri and libxml2.")
-    (home-page "https://github.com/flavorjones/loofah")
     (license license:expat)))
 
 (define-public ruby-activesupport
