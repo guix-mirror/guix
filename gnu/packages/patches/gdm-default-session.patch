@@ -6,7 +6,7 @@ and not in the directories listed in $XDG_DATA_DIRS.  The latter includes
 Fixes <https://bugs.gnu.org/37831>.
 --- a/daemon/gdm-session.c	2021-07-23 15:16:15.164201000 +0000
 +++ b/daemon/gdm-session.c	2021-09-26 08:18:58.730134555 +0000
-@@ -354,13 +354,12 @@
+@@ -354,25 +354,19 @@
          GArray *search_array = NULL;
          char **search_dirs;
          int i;
@@ -20,8 +20,9 @@ Fixes <https://bugs.gnu.org/37831>.
 +                "/run/current-system/profile/share/xsessions/",
          };
  
-         static const char *wayland_search_dir = DATADIR "/wayland-sessions/";
-@@ -368,11 +367,6 @@
+-        static const char *wayland_search_dir = DATADIR "/wayland-sessions/";
++        static const char *wayland_search_dir = "/run/current-system/profile/share/wayland-sessions/";
+ 
          search_array = g_array_new (TRUE, TRUE, sizeof (char *));
  
          if (type == NULL || g_str_equal (type, "x11")) {
@@ -53,7 +54,7 @@ Fixes <https://bugs.gnu.org/37831>.
 diff -ur a/libgdm/gdm-sessions.c b/libgdm/gdm-sessions.c
 --- a/libgdm/gdm-sessions.c	2019-10-07 04:53:35.000000000 -0400
 +++ b/libgdm/gdm-sessions.c	2020-04-18 18:31:42.491348691 -0400
-@@ -245,19 +245,12 @@
+@@ -245,35 +245,23 @@
                  "/etc/X11/sessions/",
                  DMCONFDIR "/Sessions/",
                  DATADIR "/gdm/BuiltInSessions/",
@@ -74,7 +75,12 @@ diff -ur a/libgdm/gdm-sessions.c b/libgdm/gdm-sessions.c
          for (i = 0; i < G_N_ELEMENTS (xorg_search_dirs); i++) {
                  g_ptr_array_add (xorg_search_array, g_strdup (xorg_search_dirs[i]));
          }
-@@ -269,11 +262,6 @@
+ 
+ #ifdef ENABLE_WAYLAND_SUPPORT
+         const char *wayland_search_dirs[] = {
+-                DATADIR "/wayland-sessions/",
++                "/run/current-system/profile/share/wayland-sessions/",
+         };
  
          wayland_search_array = g_ptr_array_new_with_free_func (g_free);
  
