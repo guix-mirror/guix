@@ -34,7 +34,7 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (gnu packages)
-  #:use-module ((guix licenses) #:hide (freetype))
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -111,7 +111,7 @@
 library designed to provide low level access to audio, keyboard, mouse,
 joystick, and graphics hardware.")
     (home-page "https://libsdl.org/")
-    (license lgpl2.1)))
+    (license license:lgpl2.1)))
 
 (define-public sdl2
   (package (inherit sdl)
@@ -154,7 +154,7 @@ joystick, and graphics hardware.")
                ("wayland" ,wayland)
                ("wayland-protocols" ,wayland-protocols))
              (package-inputs sdl)))
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public libmikmod
   (package
@@ -183,7 +183,7 @@ joystick, and graphics hardware.")
      "MikMod is able to play a wide range of module formats, as well as
 digital sound files.  It can take advantage of particular features of your
 system, such as sound redirection over the network.")
-    (license lgpl2.1)
+    (license license:lgpl2.1)
     (home-page "http://mikmod.sourceforge.net/")))
 
 (define-public sdl-gfx
@@ -212,7 +212,7 @@ system, such as sound redirection over the network.")
     (description "SDL_gfx provides graphics drawing primitives, rotozoom and
 other supporting functions for SDL.")
     (home-page "http://www.ferzkopp.net/joomla/software-mainmenu-14/4-ferzkopps-linux-software/19-sdlgfx")
-    (license zlib)))
+    (license license:zlib)))
 
 (define-public sdl-image
   (package
@@ -249,7 +249,7 @@ other supporting functions for SDL.")
 supports the following formats: BMP, GIF, JPEG, LBM, PCX, PNG, PNM, TGA, TIFF,
 WEBP, XCF, XPM, and XV.")
     (home-page "https://www.libsdl.org/projects/SDL_image/")
-    (license zlib)))
+    (license license:zlib)))
 
 (define-public sdl-mixer
   (package
@@ -304,7 +304,7 @@ and specify it using the @code{SDL_SOUNDFONTS} environment variable.  For the
 legacy @code{timidity} backend, install a patch set such as @code{freepats}
 and set the path to the configuration file with @code{TIMIDITY_CFG}.")
     (home-page "https://www.libsdl.org/projects/SDL_mixer/")
-    (license zlib)))
+    (license license:zlib)))
 
 (define-public sdl-net
   (package
@@ -326,7 +326,7 @@ and set the path to the configuration file with @code{TIMIDITY_CFG}.")
     (description "SDL_net is a small, cross-platform networking library for
 SDL.")
     (home-page "https://www.libsdl.org/projects/SDL_net/")
-    (license zlib)))
+    (license license:zlib)))
 
 (define-public sdl-pango
   (package
@@ -372,7 +372,7 @@ SDL.")
     (description "This library is a wrapper around the Pango library.
 It allows you to use TrueType fonts to render internationalized and
 tagged text in SDL applications.")
-    (license lgpl2.1)))
+    (license license:lgpl2.1)))
 
 (define-public sdl-ttf
   (package
@@ -401,7 +401,7 @@ tagged text in SDL applications.")
     (synopsis "SDL TrueType font library")
     (description "SDL_ttf is a TrueType font rendering library for SDL.")
     (home-page "https://www.libsdl.org/projects/SDL_ttf/")
-    (license zlib)))
+    (license license:zlib)))
 
 (define* (sdl-union #:optional (packages (list sdl sdl-gfx sdl-net sdl-ttf
                                                sdl-image sdl-mixer)))
@@ -623,7 +623,7 @@ directory.")
 Layer (SDL).  With them, Guile programmers can have easy access to graphics,
 sound and device input (keyboards, joysticks, mice, etc.).")
     (home-page "https://www.gnu.org/software/guile-sdl/")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public guile-sdl2
   (package
@@ -653,7 +653,7 @@ sound and device input (keyboards, joysticks, mice, etc.).")
      "Guile-SDL2 provides Guile Scheme bindings for the SDL2 C shared library.
 The bindings are written in pure Scheme using Guile's foreign function
 interface.")
-    (license lgpl3+)))
+    (license license:lgpl3+)))
 
 (define-public guile2.2-sdl2
   (package/inherit guile-sdl2
@@ -706,4 +706,4 @@ interface.")
        "SDL2-CS provides C# bindings for the SDL2 C shared library.
 The C# wrapper was written to be used for FNA's platform support.  However, this
 is written in a way that can be used for any general C# application.")
-      (license zlib))))
+      (license license:zlib))))
