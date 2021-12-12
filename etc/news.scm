@@ -25,6 +25,59 @@
 (channel-news
  (version 0)
 
+ (entry (commit "223f1b1eb3707f1d3ef91200dd616ee6c8b77db0")
+        (title
+         (en "Improved static networking support on Guix System")
+         (fr "Meilleure prise en charge de réseaux statiques sur Guix System"))
+        (body
+         (en "Support for declarative static networking setup on Guix System
+has been improved.  It now allows you to list IPv4 and IPv6 addresses in
+routes in a flexible way, similar to what you would do with the @command{ip}
+command, but in a declarative fashion, as in this example:
+
+@lisp
+;; Static networking for one NIC, IPv4-only.
+(service static-networking-service-type
+         (list (static-networking
+                (addresses
+                 (list (network-address
+                        (device \"eno1\")
+                        (value \"10.0.2.15/24\"))))
+                (routes
+                 (list (network-route
+                        (destination \"default\")
+                        (gateway \"10.0.2.2\"))))
+                (name-servers '(\"10.0.2.3\")))))
+@end lisp
+
+The @code{static-networking-service} procedure remains available but is
+deprecated.  Run @command{info \"(guix) Networking Setup\"} for more
+information.")
+         (fr "La configuration déclarative et statique du réseau est mieux
+prise en charge sur Guix System.  Il est maintenant possible d'énumérer des
+adresses IPv6 et IPv4 et les chemins avec plus de flexibilité, un peu comme ce
+qu'on peut faire avec la commande @command{ip} mais de manière déclarative,
+comme dans cet exemple :
+
+@lisp
+;; Réseau statique à une seule interface, IPv4 seulement.
+(service static-networking-service-type
+         (list (static-networking
+                (addresses
+                 (list (network-address
+                        (device \"eno1\")
+                        (value \"10.0.2.15/24\"))))
+                (routes
+                 (list (network-route
+                        (destination \"default\")
+                        (gateway \"10.0.2.2\"))))
+                (name-servers '(\"10.0.2.3\")))))
+@end lisp
+
+La procédure @code{static-networking-service} reste disponible mais elle est
+obsolète.  Lancer @command{info \"(guix) Networking Setup\"} pour plus
+d'informations.")))
+
  (entry (commit "52cb5cf5b852117b5151a67af187d80764849ad3")
         (title
           (en "Icedove 91: profile folder moved to @file{~/.thunderbird}")
