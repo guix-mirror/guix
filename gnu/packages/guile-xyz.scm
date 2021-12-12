@@ -556,7 +556,7 @@ you send to a FIFO file.")
 (define-public guile-dsv
   (package
     (name "guile-dsv")
-    (version "0.4.1")
+    (version "0.5.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -565,7 +565,7 @@ you send to a FIFO file.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "05l5dc7rg3ikz2r01bm5wjkfxjk933049ig5gc7d7g4x5523lcfl"))))
+                "0s9zan08ala7432pn44z3vmb3sc19rf18zfr9mskydnam5xn6qlw"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -581,21 +581,6 @@ you send to a FIFO file.")
        #:imported-modules ((guix build guile-build-system)
                            ,@%gnu-build-system-modules)
        #:phases (modify-phases %standard-phases
-                  (add-before 'configure 'set-guilesitedir
-                    (lambda _
-                      (substitute* "Makefile.in"
-                        (("^guilesitedir =.*$")
-                         "guilesitedir = \
-$(datadir)/guile/site/$(GUILE_EFFECTIVE_VERSION)\n"))
-                      (substitute* "modules/Makefile.in"
-                        (("^guilesitedir =.*$")
-                         "guilesitedir = \
-$(datadir)/guile/site/$(GUILE_EFFECTIVE_VERSION)\n"))
-                      (substitute* "modules/dsv/Makefile.in"
-                        (("^guilesitedir =.*$")
-                         "guilesitedir = \
-$(datadir)/guile/site/$(GUILE_EFFECTIVE_VERSION)\n"))
-                      #t))
                   (add-after 'install 'wrap-program
                     (lambda* (#:key inputs outputs #:allow-other-keys)
                       (let* ((out (assoc-ref outputs "out"))
