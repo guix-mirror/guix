@@ -47,6 +47,7 @@
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix download)
+  #:use-module (guix gexp)
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix utils)
@@ -976,4 +977,43 @@ support.")
     (home-page "https://github.com/afify/sfm")
     (synopsis "Simple file manager")
     (description "sfm is a simple file manager.")
+    (license license:isc)))
+
+(define-public sfeed
+  (package
+    (name "sfeed")
+    (version "1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "git://git.codemadness.org/sfeed")
+         (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1b0l6f9aymk54ncc2kxavhg4flcqv7d4mpkpw8ljx7mzg0g4ygyk"))))
+    (build-system gnu-build-system)
+    (arguments
+     (list
+      #:tests? #f                       ;no check target
+      #:make-flags
+      #~(list (string-append "CC=" #$(cc-for-target))
+              (string-append "PREFIX=" #$output))
+      #:phases
+      '(modify-phases %standard-phases
+         (add-after 'unpack 'fix-ncurses
+           (lambda _
+             (substitute* "Makefile"
+               (("-lcurses") "-lncurses"))))
+         (delete 'configure))))         ;no configure script
+    (inputs
+     (list ncurses))
+    (home-page "https://git.codemadness.org/sfeed")
+    (synopsis "RSS and Atom parser")
+    (description
+     "@code{sfeed} converts RSS or Atom feeds from XML to a TAB-separated file.
+There are formatting programs included to convert this TAB-separated format to
+various other formats.  There are also some programs and scripts included to
+import and export OPML and to fetch, filter, merge and order feed items.")
     (license license:isc)))
