@@ -17,6 +17,7 @@
 ;;; Copyright © 2019 Taylan Kammer <taylan.kammer@gmail.com>
 ;;; Copyright © 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
+;;; Copyright © 2021 Timothy Sample <samplet@ngyro.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -902,6 +903,29 @@ pure Scheme by using Guile's foreign function interface.")
     (description
      "This package provides a GNU Guile interface to the zstd (``zstandard'')
 compression library.")
+    (license license:gpl3+)))
+
+(define-public guile-lzma
+  (package
+    (name "guile-lzma")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://files.ngyro.com/guile-lzma/guile-lzma-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "1f7pd3frckpwsi5p0bln4wf8xy41x0szlpy273phjdmjacw69hzb"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     (list autoconf automake guile-3.0 guile-bytestructures pkg-config))
+    (inputs (list guile-3.0 xz))
+    (propagated-inputs (list guile-bytestructures))
+    (home-page "https://ngyro.com/software/guile-lzma.html")
+    (synopsis "Guile bindings for liblzma (XZ)")
+    (description "Guile-LZMA is a Guile wrapper for the liblzma (XZ)
+library.  It exposes an interface similar to other Guile compression
+libraries, like Guile-zlib.")
     (license license:gpl3+)))
 
 ;;; guile.scm ends here
