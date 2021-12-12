@@ -9992,7 +9992,9 @@ plugin for flake8 to check PEP-8 naming conventions.")
               (uri (pypi-uri "pyflakes" version))
               (sha256
                (base32
-                "1j3zqbiwkyicvww499bblq33x0bjpzdrxajhaysr7sk7x5gdgcim"))))))
+                "1j3zqbiwkyicvww499bblq33x0bjpzdrxajhaysr7sk7x5gdgcim"))
+              (patches
+               (search-patches "python-pyflakes-test-location.patch"))))))
 
 (define-public python-mccabe
   (package

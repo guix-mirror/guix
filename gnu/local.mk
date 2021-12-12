@@ -1666,6 +1666,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-peachpy-determinism.patch	\
   %D%/packages/patches/python-pep8-stdlib-tokenize-compat.patch \
   %D%/packages/patches/python-pyfakefs-remove-bad-test.patch	\
+  %D%/packages/patches/python-pyflakes-test-location.patch	\
   %D%/packages/patches/python-flint-includes.patch		\
   %D%/packages/patches/python-libxml2-utf8.patch		\
   %D%/packages/patches/python-matplotlib-run-under-wayland-gtk3.patch	\

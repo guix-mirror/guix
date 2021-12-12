@@ -1,0 +1,42 @@
+This patch fixes test failure related to reported source code locations.
+It is a backport of this patch:
+
+  commit 6a5f38b5ab12260fde8a0463acd433bc2d34dbcf
+  Author: Louis Sautier <sautier.louis@gmail.com>
+  Date:   Sat Oct 3 02:37:53 2020 +0200
+
+      Fix tests with Python 3.9, closes #549 (#586)
+
+      Stop allowing failures on Python nightly.
+
+diff --git a/pyflakes/test/test_api.py b/pyflakes/test/test_api.py
+index 128aa69..b728e65 100644
+--- a/pyflakes/test/test_api.py
++++ b/pyflakes/test/test_api.py
+@@ -515,6 +515,8 @@ def foo(bar=baz, bax):
+             if ERROR_HAS_LAST_LINE:
+                 if PYPY and sys.version_info >= (3,):
+                     column = 7
++                elif sys.version_info >= (3, 9):
++                    column = 21
+                 elif sys.version_info >= (3, 8):
+                     column = 9
+                 else:
+@@ -543,6 +545,8 @@ foo(bar=baz, bax)
+             if ERROR_HAS_LAST_LINE:
+                 if PYPY and sys.version_info >= (3,):
+                     column = 12
++                elif sys.version_info >= (3, 9):
++                    column = 17
+                 elif sys.version_info >= (3, 8):
+                     column = 14
+                 else:
+@@ -577,6 +581,8 @@ foo(bar=baz, bax)
+                 position_end = 1
+                 if PYPY:
+                     column = 6
++                elif ver >= (3, 9):
++                    column = 13
+                 else:
+                     column = 7
+                     # Column has been "fixed" since 3.2.4 and 3.3.1
