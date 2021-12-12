@@ -127,7 +127,7 @@
        ("harfbuzz" ,harfbuzz)
        ("json-glib" ,json-glib)
        ("libsecret" ,libsecret)         ; for secret plugin
-       ("libsoup" ,libsoup)
+       ("libsoup" ,libsoup-minimal-2)
        ("libssh" ,libssh)               ; for ssh plugin
        ("libvnc" ,libvnc)               ; for vnc plugin
        ("openssl" ,openssl)
