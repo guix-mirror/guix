@@ -3,7 +3,7 @@
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2017 Sou Bunnbu <iyzsong@member.fsf.org>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
@@ -43,6 +43,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages fcitx)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
@@ -546,21 +547,22 @@ directory.")
 (define-public guile-sdl
   (package
     (name "guile-sdl")
-    (version "0.5.2")
+    (version "0.5.3")
     (source (origin
               (method url-fetch)
               (uri
                (string-append "mirror://gnu/guile-sdl/guile-sdl-"
-                              version ".tar.xz"))
+                              version ".tar.lz"))
               (sha256
                (base32
-                "0cjgs012a9922hn6xqwj66w6qmfs3nycnm56hyykx5n3g5p7ag01"))))
+                "040gyk3n3yp8i30ngdg97n3083g8b6laky2nlh10jqcyjdd550d6"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
+     `(("lzip" ,lzip)
+       ("pkg-config" ,pkg-config)
        ;; Required by test suite.
-       ("xorg-server" ,xorg-server)
-       ("libjpeg" ,libjpeg-turbo)))
+       ("libjpeg" ,libjpeg-turbo)
+       ("xorg-server" ,xorg-server)))
     (inputs
      `(("guile" ,guile-2.2)
        ("sdl-union" ,(sdl-union))))
