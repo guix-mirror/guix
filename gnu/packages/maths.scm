@@ -6204,6 +6204,9 @@ and comparisons are supported.")
     (description "SUNDIALS is a family of software packages implemented with
 the goal of providing robust time integrators and nonlinear solvers that can
 easily be incorporated into existing simulation codes.")
+    (properties
+     '((release-monitoring-url
+        . "https://computing.llnl.gov/projects/sundials/sundials-software")))
     (license license:bsd-3)))
 
 (define-public sundials-openmpi
