@@ -2369,31 +2369,31 @@ command-line parsers.")
     (license license:expat)))
 
 (define-public go-github-com-hashicorp-hcl
-  (let ((commit "23c074d0eceb2b8a5bfdbb271ab780cde70f05a8")
-        (revision "0"))
-    (package
-      (name "go-github-com-hashicorp-hcl")
-      (version (git-version "0.0.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                       (url "https://github.com/hashicorp/hcl")
-                       (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                  (base32
-                    "0db4lpqb5m130rmfy3s3gjjf4dxllypmyrzxv6ggqhkmwmc7w4mc"))))
-      (build-system go-build-system)
-      (arguments
-       '(#:tests? #f
-         #:import-path "github.com/hashicorp/hcl"))
-      (synopsis "Go implementation of HashiCorp Configuration Language")
-      (description
-       "This package contains the main implementation of the @acronym{HCL,
+  (package
+    (name "go-github-com-hashicorp-hcl")
+    (version "1.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/hashicorp/hcl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0q6ml0qqs0yil76mpn4mdx4lp94id8vbv575qm60jzl1ijcl5i66"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/hashicorp/hcl"))
+    (native-inputs
+     (list go-github-com-davecgh-go-spew))
+    (synopsis "Go implementation of HashiCorp Configuration Language V1")
+    (description
+     "This package contains the main implementation of the @acronym{HCL,
 HashiCorp Configuration Language}.  HCL is designed to be a language for
 expressing configuration which is easy for both humans and machines to read.")
-      (home-page "https://github.com/hashicorp/hcl")
-      (license license:mpl2.0))))
+    (home-page "https://github.com/hashicorp/hcl")
+    (license license:mpl2.0)))
 
 (define-public go-golang-org-x-tools
   (let ((commit "8b927904ee0dec805c89aaf9172f4459296ed6e8")
