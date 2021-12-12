@@ -3842,7 +3842,11 @@ Content System specification.")
      ;; test suite results differ depending on the country and also introduce
      ;; non-determinism in the tests.
      ;; https://github.com/mps-youtube/mps-youtube/issues/556
-     `(#:tests? #f))
+     '(#:tests? #f
+       #:phases (modify-phases %standard-phases
+                  ;; Loading this as a library will create cache directories,
+                  ;; etc; which fails in the build container.
+                  (delete 'sanity-check))))
     (propagated-inputs
      `(("python-pafy" ,python-pafy)
        ("python-pygobject" ,python-pygobject))) ; For mpris2 support
