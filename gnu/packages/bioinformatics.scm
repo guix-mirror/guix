@@ -10201,7 +10201,7 @@ The following file formats are supported:
 (define-public salmon
   (package
     (name "salmon")
-    (version "1.4.0")
+    (version "1.6.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -10210,7 +10210,7 @@ The following file formats are supported:
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1di7y2s8cjr9480lngcmaz3wcabc1lpkyanzbhir1nkhcjmj70h4"))
+                "1wb5wl0rc77svbwq6zvak5h7pf9acw3di0vz5i3gqyhg5l6qd736"))
               (modules '((guix build utils)))
               (snippet
                ;; Delete bundled headers for eigen3.
@@ -10316,7 +10316,7 @@ The following file formats are supported:
                         (file-name (git-file-name "pufferfish" version))
                         (sha256
                          (base32
-                          "0qb4a2nl1d59qasr17sslgxnkjd5kbk5mns4cjshrmsvkrqp995n"))))
+                          "0jakgpbanl6cs23x3g26iab54p7zylcf9v8vc32ps57smp8wql52"))))
        ("tbb" ,tbb-2020)
        ("libstadenio-for-salmon" ,libstadenio-for-salmon)
        ("xz" ,xz)
