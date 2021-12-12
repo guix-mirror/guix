@@ -5057,6 +5057,13 @@ video from a Wayland session.")
      `(#:tests? #f                      ; Tests seem to require networking.
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'disable-builtin-byte-compilation
+           (lambda _
+             ;; The setup.py script attempts to compile bytecode and fails.
+             ;; We compile bytecode in a separate phase, so just disable it.
+             (substitute* "setup.py"
+               (("distutils\\.util\\.byte_compile\\(.*")
+                ""))))
          ;; gaupol's setup.py script does not support one of the Python build
          ;; system's default flags, "--single-version-externally-managed".
          (replace 'install
@@ -5071,8 +5078,7 @@ video from a Wayland session.")
                    (gi-typelib-path (getenv "GI_TYPELIB_PATH")))
                (wrap-program (string-append out "/bin/gaupol")
                  `("GST_PLUGIN_SYSTEM_PATH" ":" prefix (,gst-plugin-path))
-                 `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))))
-             #t))
+                 `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))))))
          (add-after 'unpack 'patch-data-dir
            ;; Fix some path variables that setup.py seems to garble.
            (lambda* (#:key outputs #:allow-other-keys)
@@ -5081,8 +5087,7 @@ video from a Wayland session.")
                  (("DATA_DIR = \\{!r\\}\"\\.format\\(data_dir\\)")
                   (string-append "DATA_DIR = '" out "/share/gaupol'\""))
                  (("LOCALE_DIR = \\{!r\\}\"\\.format\\(locale_dir\\)")
-                  (string-append "LOCALE_DIR = '" out "/share/locale'\"")))
-               #t))))))
+                  (string-append "LOCALE_DIR = '" out "/share/locale'\"")))))))))
     (synopsis "Editor for text-based subtitles")
     (description
      "Gaupol supports multiple subtitle file formats and provides means of
