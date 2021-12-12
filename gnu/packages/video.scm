@@ -22,7 +22,7 @@
 ;;; Copyright © 2017 Gregor Giesen <giesen@zaehlwerk.net>
 ;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018, 2019, 2020, 2021 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2018, 2019, 2020 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018, 2019, 2020 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Brendan Tildesley <mail@brendan.scot>
@@ -80,6 +80,7 @@
   #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix gexp)
   #:use-module (guix git-download)
   #:use-module (guix svn-download)
   #:use-module (guix hg-download)
@@ -2247,34 +2248,32 @@ projects while introducing many more.")
        ("zlib" ,zlib)
        ("mpv" ,mpv)))
     (arguments
-     `(#:tests? #false             ; no tests
-       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
-                          (string-append "CC=" ,(cc-for-target))
-                          ;; A KLUDGE to turn off invoking lrelease on the
-                          ;; project for now, because it fails consistently
-                          ;; with "WARNING: Could not find qmake spec
-                          ;; 'default'". See below.
-                          "LRELEASE=true")
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure)
-         ;; Due to the above, we must run lrelease separately on each .ts file
-         ;; (as opposed to running `lrelease-pro smplayer.pro` for the entire
-         ;; project, as the Makefile does normally without the above kludge).
-         (add-after 'build 'compile-ts-files
-           (lambda _
-             (for-each (lambda (file)
-                         (invoke "lrelease" file))
-                       (find-files "./" "\\.ts$"))
-             #true))
-         (add-after 'install 'wrap-executable
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (mpv (assoc-ref inputs "mpv")))
-               (wrap-program (string-append out "/bin/smplayer")
-                 `("PATH" ":" prefix
-                   ,(list (string-append mpv "/bin")))))
-             #true)))))
+     (list #:tests? #false              ; no tests
+           #:make-flags #~(list (string-append "PREFIX=" #$output)
+                                (string-append "CC=" #+(cc-for-target))
+                                ;; A KLUDGE to turn off invoking lrelease on the
+                                ;; project for now, because it fails consistently
+                                ;; with "WARNING: Could not find qmake spec
+                                ;; 'default'". See below.
+                                "LRELEASE=true")
+           #:phases
+           #~(modify-phases %standard-phases
+               (delete 'configure)
+               ;; Due to the above, we must run lrelease separately on each .ts file
+               ;; (as opposed to running `lrelease-pro smplayer.pro` for the entire
+               ;; project, as the Makefile does normally without the above kludge).
+               (add-after 'build 'compile-ts-files
+                 (lambda _
+                   (for-each (lambda (file)
+                               (invoke "lrelease" file))
+                             (find-files "./" "\\.ts$"))))
+               (add-after 'install 'wrap-executable
+                 (lambda* (#:key inputs outputs #:allow-other-keys)
+                   (let* ((out (assoc-ref outputs "out"))
+                          (mpv (assoc-ref inputs "mpv")))
+                     (wrap-program (string-append out "/bin/smplayer")
+                       `("PATH" ":" prefix
+                         ,(list (string-append mpv "/bin"))))))))))
     (home-page "https://www.smplayer.info")
     (synopsis "Complete front-end for MPlayer, a media player")
     (description "SMPlayer is a graphical user interface (GUI) for
