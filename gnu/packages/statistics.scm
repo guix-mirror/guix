@@ -1953,25 +1953,26 @@ and fast file reading.")
 (define-public python-patsy
   (package
     (name "python-patsy")
-    (version "0.5.1")
+    (version "0.5.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "patsy" version))
               (sha256
                (base32
-                "149rbrdzwns0ay88caf1zsm1r53v1q5np1mrb36na50y432cw5gi"))))
+                "17dn72519gvwifw3i8mzwlslxmxkl8ihzfrxg1iblsk70iwdwlsh"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _ (invoke "nosetests" "-v"))))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests? (invoke "pytest" "-vv")))))))
     (propagated-inputs
      `(("python-numpy" ,python-numpy)
        ("python-scipy" ,python-scipy)
        ("python-six" ,python-six)))
     (native-inputs
-     `(("python-nose" ,python-nose)))
+     `(("python-pytest" ,python-pytest)))
     (home-page "https://github.com/pydata/patsy")
     (synopsis "Describe statistical models and build design matrices")
     (description
