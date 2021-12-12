@@ -6183,7 +6183,8 @@ and comparisons are supported.")
        ("blas" ,openblas)
        ("suitesparse" ,suitesparse)))   ;TODO: Add hypre
     (arguments
-     `(#:configure-flags `("-DEXAMPLES_ENABLE_C:BOOL=ON"
+     `(#:configure-flags `("-DCMAKE_C_FLAGS=-O2 -g -fcommon"
+                           "-DEXAMPLES_ENABLE_C:BOOL=ON"
                            "-DEXAMPLES_ENABLE_CXX:BOOL=ON"
                            "-DEXAMPLES_ENABLE_F77:BOOL=ON"
                            "-DEXAMPLES_ENABLE_F90:BOOL=ON"
