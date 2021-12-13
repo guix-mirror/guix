@@ -4,7 +4,7 @@
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
 ;;; Copyright © 2016, 2017, 2019, 2021 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016, 2018 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016, 2018, 2021 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017, 2019 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016 John J. Foerch <jjfoerch@earthlink.net>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
@@ -143,6 +143,7 @@
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages perl-check)
   #:use-module (gnu packages perl-web)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages protobuf)
@@ -6776,3 +6777,50 @@ It is provided as an LV2 plugin and as a standalone Jack application.")
 midi devices to JACK midi devices.")
     (home-page "https://github.com/jackaudio/a2jmidid")
     (license license:gpl2)))
+
+(define-public opustags
+  (package
+    (name "opustags")
+    (version "1.6.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/fmang/opustags")
+                    (commit version)))
+              (sha256
+               (base32 "1wsfw713rhi2gg5xc04cx5i31hlw0l3wdflj3r1y8w45bdk6ag1z"))
+              (file-name (git-file-name name version))))
+    (arguments
+     `(#:test-target "check"
+       #:phases
+       (modify-phases %standard-phases
+         ;; This package does not use the perl-build-system, so we have to
+         ;; manually set up the Perl environment used by the test suite.
+         (add-before 'check 'setup-perl-environment
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((perl-list-moreutils-lib
+                      (string-append (assoc-ref inputs "perl-list-moreutils")
+                                     "/lib/perl5/site_perl/"
+                                     ,(package-version perl)))
+                    (perl-exporter-tiny-lib
+                      (string-append (assoc-ref inputs "perl-exporter-tiny")
+                                     "/lib/perl5/site_perl/"
+                                     ,(package-version perl))))
+               (setenv "PERL5LIB" (string-append perl-list-moreutils-lib ":"
+                                                 perl-exporter-tiny-lib))))))))
+    (build-system cmake-build-system)
+    (inputs
+      (list libogg))
+    (native-inputs
+      (list pkg-config
+            ffmpeg
+            perl-exporter-tiny
+            perl-list-moreutils
+            perl-test-harness))
+    (synopsis "Ogg Opus tags editor")
+    (description "@code{opustags} is an Ogg Opus tag editor.  It reads and edits
+the comment header of an Ogg Opus audio file, offering both read-only and
+editing modes.  Tags can be edited interactively with an editor of your
+choice.")
+    (home-page "https://github.com/fmang/opustags")
+    (license license:bsd-3)))
