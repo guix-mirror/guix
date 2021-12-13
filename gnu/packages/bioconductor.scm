@@ -1518,6 +1518,36 @@ data.  In addition, provides numerous plotting functions for commonly
 used visualizations.")
    (license license:artistic2.0)))
 
+(define-public r-dearseq
+  (package
+    (name "r-dearseq")
+    (version "1.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "dearseq" version))
+       (sha256
+        (base32
+         "07vr27rv3z86ajd62c0ilvfgz9z35qsiwwi5pv4sygbhnnjwh3rc"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-kernsmooth" ,r-kernsmooth)
+       ("r-matrixstats" ,r-matrixstats)
+       ("r-patchwork" ,r-patchwork)
+       ("r-pbapply" ,r-pbapply)
+       ("r-statmod" ,r-statmod)
+       ("r-survey" ,r-survey)
+       ("r-viridislite" ,r-kernsmooth)))
+    (home-page "https://github.com/borishejblum/dearseq")
+    (synopsis "DEA for RNA-seq data through a robust variance component test")
+    (description
+     "This is a package for Differential Expression Analysis of RNA-seq data.
+It features a variance component score test accounting for data
+heteroscedasticity through precision weights.  Perform both gene-wise and gene
+set analyses, and can deal with repeated or longitudinal data.")
+    (license license:gpl2)))
+
 (define-public r-decipher
   (package
     (name "r-decipher")
