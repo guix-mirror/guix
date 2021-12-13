@@ -69,7 +69,7 @@
            (lambda* (#:key inputs #:allow-other-keys)
              ;; 'lirc-make-devinput' script assumes that linux headers
              ;; are placed in "/usr/...".
-             (let ((headers (assoc-ref inputs "linux-headers")))
+             (let ((headers (assoc-ref inputs "kernel-headers")))
                (substitute* "tools/lirc-make-devinput"
                  (("/usr/include") (string-append headers "/include"))))
              #t))
@@ -89,7 +89,6 @@
     (inputs
      `(("libx11" ,libx11)
        ("libusb-compat" ,libusb-compat)
-       ("linux-headers" ,linux-libre-headers)
        ("alsa-lib" ,alsa-lib)
        ("python" ,python)))
     (home-page "https://www.lirc.org/")

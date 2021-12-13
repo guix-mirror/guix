@@ -645,8 +645,7 @@ other software.")
     (native-inputs
      (list autoconf automake libtool pkg-config))
     (inputs
-     `(("linux-headers" ,linux-libre-headers)
-       ("sdl2" ,sdl2)))
+     `(("sdl2" ,sdl2)))
     (synopsis "Touchscreen access library")
     (description "TSLib is a cross-platform library that provides access to
 touchscreen devices and the ability to apply filters to their input events.")

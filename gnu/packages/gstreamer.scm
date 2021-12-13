@@ -155,7 +155,6 @@ and for middleware components.")
            libraw1394
            libusb
            libxv
-           linux-libre-headers
            mesa
            sdl
            v4l-utils))

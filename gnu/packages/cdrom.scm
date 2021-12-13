@@ -318,8 +318,6 @@ format, commonly used for VCDs or disks with subchannel data.")
               (patches (search-patches "cdrtools-3.01-mkisofs-isoinfo.patch"))))
     (build-system gnu-build-system)
     ;; XXX cdrtools bundles a modified, relicensed early version of cdparanoia.
-    (inputs
-     `(("linux-headers" ,linux-libre-headers)))
     (arguments
      `(#:make-flags
        (list "RM=rm" "LN=ln" "SYMLINK=ln -s"
@@ -336,7 +334,7 @@ format, commonly used for VCDs or disks with subchannel data.")
            (lambda _
              (substitute* "autoconf/configure"
                (("/usr/src/linux")
-                (assoc-ref %build-inputs "linux-headers")))
+                (assoc-ref %build-inputs "kernel-headers")))
              #t))
          (add-before 'build 'substitute-dirs
            (lambda _

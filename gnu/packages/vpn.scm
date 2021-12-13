@@ -1083,10 +1083,10 @@ public keys and can roam across IP addresses.")
                         (("/usr/sbin/pppd")
                          (search-input-file inputs "/sbin/pppd")))
                       (setenv "KERNELSRC"
-                              (assoc-ref inputs "linux-libre-headers"))
+                              (assoc-ref inputs "kernel-headers"))
                       #t)))
        #:tests? #f))                    ; no tests provided
-    (inputs (list libpcap linux-libre-headers ppp))
+    (inputs (list libpcap ppp))
     (home-page "https://www.xelerance.com/software/xl2tpd/")
     (synopsis "Layer 2 Tunnelling Protocol Daemon (RFC 2661)")
     (description

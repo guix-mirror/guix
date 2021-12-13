@@ -874,9 +874,6 @@
        ("libxscrnsaver" ,libxscrnsaver)
        ("libxslt" ,libxslt)
        ("libxtst" ,libxtst)
-       ;; Newer kernel headers are required for userfaultfd support; remove
-       ;; after 'core-updates' merge.
-       ("linux-libre-headers" ,linux-libre-headers-5.10)
        ("mesa" ,mesa)
        ("minizip" ,minizip)
        ("mit-krb5" ,mit-krb5)

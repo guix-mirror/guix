@@ -181,7 +181,7 @@ management, extensions such as advertisement blocker and colorful tabs.")
                (invoke "./configure"
                        (string-append "--prefix=" out)
                        "--enable-graphics")))))))
-    (native-inputs (list linux-libre-headers pkg-config))
+    (native-inputs (list pkg-config))
     (inputs `(("gpm" ,gpm)
               ("libevent" ,libevent)
               ("libjpeg" ,libjpeg-turbo)

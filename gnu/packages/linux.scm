@@ -3879,8 +3879,6 @@ time.")
        (sha256
         (base32 "0kb3636yaw9l8xi8s184w0r0n9ic5dw3b8hx048jf9fpzss4kimi"))))
     (build-system python-build-system)
-    (native-inputs
-     `(("kernel-headers" ,linux-libre-headers)))
     (arguments
      `(#:tests? #f                      ;no rule for tests
        #:phases
@@ -5456,9 +5454,6 @@ and copy/paste text in the console and in xterm.")
                      ("asciidoc" ,asciidoc)
                      ("python" ,python)
                      ("xmlto" ,xmlto)
-                     ;; Remove this input entirely when the default headers
-                     ;; version provides blk_zone.capacity (>= 5.9).
-                     ("linux-libre-headers" ,linux-libre-headers-5.10)
                      ;; For building documentation.
                      ("libxml2" ,libxml2)
                      ("docbook-xsl" ,docbook-xsl)
@@ -8458,7 +8453,6 @@ headers.")
        ;; archives, only object files.
        ;; https://github.com/iovisor/bcc/issues/504
        ("elfutils" ,elfutils)
-       ("linux-libre-headers" ,linux-libre-headers)
        ("luajit" ,luajit)
        ("python-wrapper" ,python-wrapper)))
     (arguments
@@ -8533,7 +8527,7 @@ and above.")
     (native-inputs
      (list bison flex))
     (inputs
-     (list bcc clang-toolchain elfutils libbpf linux-libre-headers))
+     (list bcc clang-toolchain elfutils libbpf))
     (arguments
      `(#:tests? #f ;Tests require googletest sources.
        #:configure-flags

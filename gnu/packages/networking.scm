@@ -494,8 +494,6 @@ performance across unpredictable networks, such as the Internet.")
     (build-system gnu-build-system)
     (native-inputs
      (list autoconf automake libtool pkg-config))
-    (inputs
-     (list linux-libre-headers))
     (synopsis
      "@acronym{SCTP, Stream Control Transmission Protocol} helpers for Linux")
     (description
