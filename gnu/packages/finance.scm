@@ -1841,8 +1841,8 @@ editing on the Web.")
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("texinfo" ,texinfo)
-       ("texlive" ,(texlive-union (list texlive-epsf
-                                        texlive-tex-texinfo)))))
+       ("texlive" ,(texlive-updmap.cfg (list texlive-epsf
+                                             texlive-tex-texinfo)))))
     (home-page "https://anthonybradford.github.io/optionmatrix/")
     (synopsis "Financial derivative calculator")
     (description
