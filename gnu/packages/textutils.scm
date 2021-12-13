@@ -23,6 +23,7 @@
 ;;; Copyright © 2021 Jean-Baptiste Volatier <jbv@pm.me>
 ;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
+;;; Copyright © 2021 Bonface Munyoki Kilyungi <me@bonfacemunyoki.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -68,6 +69,7 @@
   #:use-module (gnu packages readline)
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages slang)
+  #:use-module (gnu packages syncthing)
   #:use-module (gnu packages web))
 
 (define-public dos2unix
@@ -1335,4 +1337,48 @@ by making use of rules in individual YAML files.  It is syntax-aware on markup
 languages such as HTML, Markdown, Asciidoc, and reStructuredText.  The community
 around it also has a list of style guides implemented with Vale in
 @url{https://github.com/errata-ai/styles, their styles repo}.")
+    (license license:expat)))
+
+(define-public csvdiff
+  (package
+    (name "csvdiff")
+    (version "1.4.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/aswinkarthik/csvdiff")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0cd1ikxsypjqisfnmr7zix3g7x8p892w77086465chyd39gpk97b"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/aswinkarthik/csvdiff"))
+    (propagated-inputs
+     (list go-golang-org-x-sys
+           go-github-com-stretchr-testify
+           go-github-com-spf13-cobra
+           go-github-com-spf13-afero
+           go-github-com-spaolacci-murmur3
+           go-github-com-mattn-go-colorable
+           go-github-com-fatih-color
+           go-github-com-cespare-xxhash
+           go-github-com-oneofone-xxhash))
+    (home-page "https://github.com/aswinkarthik/csvdiff")
+    (synopsis "Fast diff tool for comparing CSV files")
+    (description "@code{csvdiff} is a diff tool to compute changes between two
+CSV files.  It can compare CSV files with a million records in under 2
+seconds.  It is specifically suited for comparing CSV files dumped from
+database tables.  GNU Diff is orders of magnitude faster for comparing line by
+line.  @code{csvdiff} supports
+
+@itemize
+@item Selective comparison of fields in a row
+@item Specifying group of columns as primary-key to uniquely identify a row
+@item Ignoring columns
+@item Several output formats including colored git style output or
+JSON for post-processing
+@end itemize")
     (license license:expat)))
