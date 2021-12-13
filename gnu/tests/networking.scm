@@ -64,9 +64,7 @@
             (make-marionette
              '(#$vm "-nic" "user,model=virtio-net-pci")))
 
-          (mkdir #$output)
-          (chdir #$output)
-
+          (test-runner-current (system-test-runner #$output))
           (test-begin "static-networking")
 
           (test-assert "service is up"
@@ -109,9 +107,7 @@
                 (logand flags IFF_UP))
              marionette))
 
-          (test-end)
-
-          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          (test-end))))
 
   (gexp->derivation "static-networking" test))
 
