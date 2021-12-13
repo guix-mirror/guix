@@ -108,3 +108,15 @@ zero-configuration, transactional SQL database engine.  SQLite is the most
 widely deployed SQL database engine in the world.  The source code for SQLite
 is in the public domain.")
    (license license:public-domain)))
+
+;; Newer version required for e.g. fossil.
+(define-public sqlite-next
+  (package
+    (inherit sqlite)
+    (version "3.37.0")
+    (source (origin
+              (method url-fetch)
+              (uri (sqlite-uri version 2021))
+              (sha256
+               (base32
+                "1xvrfh2r5x5pljlvakym3zrhml2dvsr8dd8xsb3nzcylsi8lc6kk"))))))
