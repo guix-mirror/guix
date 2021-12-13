@@ -780,6 +780,7 @@ Swartz.")
        ("python-pytest-runner" ,python-pytest-runner)))
     (propagated-inputs
      `(("python-cryptography" ,python-cryptography)
+       ("python-ecdsa" ,python-ecdsa)
        ("python-rsa" ,python-rsa)
        ("python-six" ,python-six)))
     (synopsis "JOSE implementation in Python")
