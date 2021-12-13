@@ -26007,14 +26007,14 @@ applications with variable CPU loads).")
 (define-public python-versioneer
   (package
     (name "python-versioneer")
-    (version "0.19")
+    (version "0.21")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "versioneer" version))
        (sha256
         (base32
-         "1bmg8y78am371rd9b4clf11b8g1h7xvq8q58z03jvgdwpsdx7zm4"))))
+         "084fglxafbzvf1vbkzfajvs9qwnvjwwn8pxql9nrlpyipv5xpwk4"))))
     (build-system python-build-system)
     (home-page
      "https://github.com/python-versioneer/python-versioneer")
