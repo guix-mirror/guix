@@ -42,6 +42,7 @@
   #:use-module (gnu packages ed)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fltk)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages image)
@@ -1066,8 +1067,9 @@ features, and more.")
                  '(begin
                     (substitute* "unsupported/CMakeLists.txt"
                       (("add_subdirectory\\(test.*")
-                       "# Do not build the tests for unsupported features.\n"))
-                    #t)))))))
+                       "# Do not build the tests for unsupported features.\n"))))))
+      (native-inputs
+       (list gcc-7)))))
 
 (define-public eigen-for-tensorflow-lite
   ;; This commit was taken from
