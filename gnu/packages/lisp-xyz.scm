@@ -20030,3 +20030,42 @@ parsers.")
 
 (define-public ecl-maxpc
   (sbcl-package->ecl-package sbcl-maxpc))
+
+(define-public sbcl-random-state
+  (let ((commit "c270d4f15e0b66ba9680ca8734a5de56959cb118")
+        (revision "1"))
+    (package
+      (name "sbcl-random-state")
+      (version (git-version "0.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Shinmera/random-state")
+               (commit commit)))
+         (file-name (git-file-name "cl-random-state" version))
+         (sha256
+          (base32 "0r3bk6hqpr0qmpza93pknl8wpsd6y0yy9qg7vz751a7gzzww9vj6"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       (list sbcl-documentation-utils))
+      (home-page "https://shinmera.github.io/random-state/")
+      (synopsis "Portable random number generation")
+      (description
+       "This library is a collection of @dfn{pseudo random number generators}.
+
+While Common Lisp does provide a @code{RANDOM} function, it does not allow the
+user to pass an explicit @code{SEED}, nor to portably exchange the random
+state between implementations.  This can be a headache in cases like games,
+where a controlled seeding process can be very useful.
+
+For both curiosity and convenience, this library offers multiple algorithms to
+generate random numbers, as well as a bunch of generally useful methods to
+produce desired ranges.")
+      (license license:zlib))))
+
+(define-public cl-random-state
+  (sbcl-package->cl-source-package sbcl-random-state))
+
+(define-public ecl-random-state
+  (sbcl-package->ecl-package sbcl-random-state))
