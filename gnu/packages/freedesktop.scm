@@ -1643,7 +1643,7 @@ wish to perform colour calibration.")
 (define-public libfprint
   (package
     (name "libfprint")
-    (version "1.90.7")
+    (version "1.94.2")
     (source
      (origin
        (method git-fetch)
@@ -1652,22 +1652,23 @@ wish to perform colour calibration.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "00pmdpxxjj4sh8qjq9ch3pylgg9w019rg1bbaw53a4wr637rrz43"))))
+        (base32 "0y3wz5hlxpnvqj67bihvzfi4dwx2m2nx9byppf4jjd80x0j2630m"))))
     (build-system meson-build-system)
     (arguments
      '(#:configure-flags
-       (list (string-append "-Dudev_rules_dir=" (assoc-ref %outputs "out")
+       (list (string-append "-Dudev_hwdb_dir=" (assoc-ref %outputs "out")
+                            "/lib/udev/hwdb.d")
+             (string-append "-Dudev_rules_dir=" (assoc-ref %outputs "out")
                             "/lib/udev/rules.d"))))
     (native-inputs
-     `(("eudev" ,eudev)
-       ("glib:bin" ,glib "bin")         ; for {glib-,}mkenums
-       ("gobject-introspection" ,gobject-introspection)
-       ("gtk-doc" ,gtk-doc/stable)             ; for 88 KiB of API documentation
-       ("pkg-config" ,pkg-config)))
+     (list `(,glib "bin")               ; for {glib-,}mkenums
+           gobject-introspection
+           gtk-doc/stable               ; for 88 KiB of API documentation
+           pkg-config))
     (inputs
-     (list glib
-           gusb
-           nss ; for the URU4x00 driver
+     (list gusb
+           libgudev
+           nss                          ; for the URU4x00 driver
            ;; Replacing this with cairo works but just results in a reference
            ;; (only) to pixman in the end.
            pixman))
