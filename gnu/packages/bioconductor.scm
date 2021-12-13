@@ -6852,6 +6852,37 @@ required source code files from the official Leidenalg distribution and
 several functions from the R igraph package.")
       (license license:gpl3+))))
 
+(define-public r-sanssouci
+  ;; sansscouci doesn't have a (versioned) release yet.
+  ;; This is the latest commit as of packaging for Guix.
+  (let ((commit "5fe20a9aaf4ac637fa83d9cc73ff1c22de97ca6f")
+        (revision "1"))
+    (package
+      (name "r-sanssouci")
+      (version (git-version "0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/pneuvial/sanssouci.git")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "13ycdd790qw64qy2zdvcrpj3fc8as628rsly32438d3rifnlc5sk"))))
+      (build-system r-build-system)
+      (propagated-inputs
+       `(("r-generics" ,r-generics)
+         ("r-matrix" ,r-matrix)
+         ("r-matrixstats" ,r-matrixstats)
+         ("r-rcpp" ,r-rcpp)
+         ("r-rcpparmadillo" ,r-rcpparmadillo)))
+      (home-page "https://pneuvial.github.io/sanssouci")
+      (synopsis "Post Hoc multiple testing inference")
+      (description
+       "The goal of sansSouci is to perform post hoc inference: in a multiple
+testing context, sansSouci provides statistical guarantees on possibly
+user-defined and/or data-driven sets of hypotheses.")
+      (license license:gpl3))))
+
 (define-public r-monocle3
   (package
     (name "r-monocle3")
