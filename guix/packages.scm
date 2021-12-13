@@ -1083,13 +1083,6 @@ otherwise."
 otherwise."
   (lookup-input (package-direct-inputs package) name))
 
-(define (inputs-sans-labels inputs)
-  "Return INPUTS stripped of any input labels."
-  (map (match-lambda
-         ((label obj) obj)
-         ((label obj output) `(,obj ,output)))
-       inputs))
-
 (define (replace-input name replacement inputs)
   "Replace input NAME by REPLACEMENT within INPUTS."
   (map (lambda (input)
@@ -1124,7 +1117,10 @@ inputs of Coreutils and adds libcap:
     (delete \"gmp\" \"acl\")
     (append libcap))
 
-Other types of clauses include 'prepend' and 'replace'."
+Other types of clauses include 'prepend' and 'replace'.
+
+The first argument must be a labeled input list; the result is also a labeled
+input list."
     ;; Note: This macro hides the fact that INPUTS, as returned by
     ;; 'package-inputs' & co., is actually an alist with labels.  Eventually,
     ;; it will operate on list of inputs without labels.
@@ -1135,10 +1131,10 @@ Other types of clauses include 'prepend' and 'replace'."
      (modify-inputs (fold alist-delete inputs (list names ...))
                     clauses ...))
     ((_ inputs (prepend lst ...) clauses ...)
-     (modify-inputs (append (list lst ...) (inputs-sans-labels inputs))
+     (modify-inputs (append (map add-input-label (list lst ...)) inputs)
                     clauses ...))
     ((_ inputs (append lst ...) clauses ...)
-     (modify-inputs (append (inputs-sans-labels inputs) (list lst ...))
+     (modify-inputs (append inputs (map add-input-label (list lst ...)))
                     clauses ...))
     ((_ inputs (replace name replacement) clauses ...)
      (modify-inputs (replace-input name replacement inputs)
