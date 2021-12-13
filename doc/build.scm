@@ -449,6 +449,7 @@ its <pre class=\"lisp\"> blocks (as produced by 'makeinfo --html')."
                 ("rarr"   "→")
                 ("hellip" "…")
                 ("rsquo"  "’")
+                ("nbsp"   " ")
                 (e (pk 'unknown-entity e) (primitive-exit 2))))
 
             (define (concatenate-snippets pieces)
