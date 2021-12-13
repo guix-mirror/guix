@@ -890,7 +890,7 @@ and more
 (define-public python-distributed
   (package
     (name "python-distributed")
-    (version "2021.09.1")
+    (version "2021.11.2")
     (source
      (origin
        ;; The test files are not included in the archive on pypi
@@ -901,11 +901,16 @@ and more
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "05djzza3f72nw1i1c9qyamgaf93pbf6jxx0migpp1wvvfl0v2j9z"))))
+         "1p20cbyabzl7rs8y3ydzszsskh4kw088m252ghgairhs0p2f95hl"))
+       ;; Delete bundled copy of python-versioneer.
+       (snippet '(delete-file "versioneer.py"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'versioneer
+           (lambda _
+             (invoke "versioneer" "install")))
          (add-after 'unpack 'fix-references
            (lambda* (#:key outputs #:allow-other-keys)
              (substitute* '("distributed/comm/tests/test_ucx_config.py"
@@ -954,7 +959,7 @@ and more
            python-tornado-6
            python-zict))
     (native-inputs
-     (list python-pytest))
+     (list python-pytest python-versioneer))
     (home-page "https://distributed.dask.org")
     (synopsis "Distributed scheduler for Dask")
     (description "Dask.distributed is a lightweight library for distributed

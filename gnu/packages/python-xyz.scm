@@ -22338,6 +22338,7 @@ behavior and not have to worry about the specific internal implementation
 decisions with any given backend.")
     (license license:bsd-3)))
 
+;; Note: Remember to update python-distributed when updating dask.
 (define-public python-dask
   (package
     (name "python-dask")
