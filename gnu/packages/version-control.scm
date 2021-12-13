@@ -2614,26 +2614,27 @@ by rclone usable with git-annex.")
 (define-public fossil
   (package
     (name "fossil")
-    (version "2.14")
+    (version "2.17")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
-              "https://www.fossil-scm.org/index.html/uv/"
-              "fossil-src-" version ".tar.gz"))
+             "https://www.fossil-scm.org/home/tarball/"
+             "f48180f2ff3169651a725396d4f7d667c99a92873b9c3df7eee2f144be7a0721"
+             "/fossil-src-" version ".tar.gz"))
        (sha256
-        (base32 "1fazl117ph5z7xg7h6w7i32sf7rsa67499rg2llsxn3d34hckl5q"))
+        (base32 "1gvx6xzrw1a8snlq9qmr6099r44ifghg0h0fw4jazqmmyxriqzsw"))
        (modules '((guix build utils)))
        (snippet
         '(begin
            (delete-file-recursively "compat") #t))))
     (build-system gnu-build-system)
     (native-inputs
-     (list tcl ;for configuration only
-           which ;for tests only
-           ed))                     ;ditto
+     (list tcl                          ;for configuration only
+           which                        ;for tests only
+           ed))                         ;ditto
     (inputs
-     (list openssl zlib sqlite))
+     (list openssl zlib sqlite-next))   ;SQLite 3.37 or later
     (arguments
      `(#:configure-flags (list "--with-openssl=auto"
                                "--disable-internal-sqlite")
@@ -2642,8 +2643,7 @@ by rclone usable with git-annex.")
                   (add-after 'patch-source-shebangs 'patch-sh
                     (lambda _
                       (substitute* '("auto.def")
-                        (("/bin/sh") (which "sh")))
-                      #t))
+                        (("/bin/sh") (which "sh")))))
                   (replace 'configure
                     (lambda* (#:key outputs (configure-flags '())
                               #:allow-other-keys)
@@ -2653,13 +2653,11 @@ by rclone usable with git-annex.")
                              "./configure"
                              (string-append "--prefix="
                                             (assoc-ref outputs "out"))
-                             configure-flags)
-                      #t))
+                             configure-flags)))
                   (add-before 'check 'test-setup
                     (lambda _
                       (setenv "USER" "guix")
-                      (setenv "TZ" "UTC")
-                      #t)))))
+                      (setenv "TZ" "UTC"))))))
     (home-page "https://fossil-scm.org")
     (synopsis "Software configuration management system")
     (description
