@@ -1695,45 +1695,44 @@ software.")
         (base32 "015j8ikyv48qz8vn6kfvkwwg5ydzppl1lzf7vkali9ymywywfxsw"))))
     (build-system meson-build-system)
     (arguments
-     `(#:configure-flags
-       (list "-Dsystemd_system_unit_dir=/tmp"
-             (string-append "-Ddbus_service_dir=" (assoc-ref %outputs "out")
-                            "/share/dbus-1/system-services")
-             (string-append "-Dpam_modules_dir=" (assoc-ref %outputs "out")
-                            "/lib/security"))
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'patch-output-directories
-           ;; Install files to our output, not that of the ‘owner’ package.
-           ;; These are not exposed as Meson options and must be patched.
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (substitute* "meson.build"
-                 (("(dbus_interfaces_dir = ).*" _ set)
-                  (string-append set "'" out "/share/dbus-1/interfaces'\n"))
-                 (("(polkit_policy_directory = ).*" _ set)
-                  (string-append set "'" out "/share/polkit-1/actions/'\n"))
-                 (("(dbus_data_dir = ).*" _ set)
-                  (string-append set "get_option('prefix')"
-                                 " / get_option('datadir')\n"))))))
-         (add-before 'configure 'patch-systemd-dependencies
-           (lambda _
-             (substitute* "meson.build"
-               (("(dependency\\(')(libsystemd|systemd)" _ prefix)
-                (string-append prefix "libelogind")))))
-         (add-before 'configure 'ignore-test-dependencies
-           (lambda _
-             (substitute* "meson.build"
-               ((".*gi\\.repository\\..*") "")
-               (("pam_wrapper_dep .*") "")
-               ((".*'(cairo|dbus|dbusmock|gi|pypamtest)': .*,.*") ""))
-             (substitute* "tests/pam/meson.build"
-               ((".*pam_wrapper.*") "")))))
-       #:tests? #f))                    ; XXX depend on unpackaged packages
+     (list #:configure-flags
+           #~(list "-Dsystemd_system_unit_dir=/tmp"
+                   (string-append "-Ddbus_service_dir=" #$output
+                                  "/share/dbus-1/system-services")
+                   (string-append "-Dpam_modules_dir=" #$output
+                                  "/lib/security"))
+           #:phases
+           #~(modify-phases %standard-phases
+               (add-before 'configure 'patch-output-directories
+                 ;; Install files to our output, not that of the ‘owner’ package.
+                 ;; These are not exposed as Meson options and must be patched.
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (let ((out (assoc-ref outputs "out")))
+                     (substitute* "meson.build"
+                       (("(dbus_interfaces_dir = ).*" _ set)
+                        (string-append set "'" out "/share/dbus-1/interfaces'\n"))
+                       (("(polkit_policy_directory = ).*" _ set)
+                        (string-append set "'" out "/share/polkit-1/actions/'\n"))
+                       (("(dbus_data_dir = ).*" _ set)
+                        (string-append set "get_option('prefix')"
+                                       " / get_option('datadir')\n"))))))
+               (add-before 'configure 'patch-systemd-dependencies
+                 (lambda _
+                   (substitute* "meson.build"
+                     (("(dependency\\(')(libsystemd|systemd)" _ prefix)
+                      (string-append prefix "libelogind")))))
+               (add-before 'configure 'ignore-test-dependencies
+                 (lambda _
+                   (substitute* "meson.build"
+                     ((".*gi\\.repository\\.FPrint.*") "")
+                     (("pam_wrapper_dep .*") "")
+                     ((".*'(cairo|dbus|dbusmock|gi|pypamtest)': .*,.*") ""))
+                   (substitute* "tests/pam/meson.build"
+                     ((".*pam_wrapper.*") "")))))
+           #:tests? #f))                    ; XXX depend on unpackaged packages
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin")         ; for glib-genmarshal
-       ("libxslt" ,libxslt)             ; for xsltproc
        ("perl" ,perl)                   ; for pod2man
        ("pkg-config" ,pkg-config)))
        ;; For tests.
