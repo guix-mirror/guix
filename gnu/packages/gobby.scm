@@ -49,7 +49,7 @@
                 "088yqq60wjx3jqjlhl12893p15gl9asjpavrbhh590qzpqndhp8m"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (arguments
      `(#:configure-flags
        (list "--disable-static")
@@ -65,8 +65,7 @@
                 (string-append "gnutls_priority_set_direct"
                                "(session, \"NORMAL:+ANON-DH\", NULL)"))))))))
     (inputs
-     `(("libsigc++" ,libsigc++-2)
-       ("gnutls" ,gnutls)))
+     (list libsigc++-2 gnutls))
     (home-page "https://gobby.github.io/")
     (synopsis "Network access framework for IPv4/IPv6")
     (description
@@ -90,11 +89,9 @@
      `(#:configure-flags
        (list "--disable-static")))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("libsigc++" ,libsigc++-2)
-       ("gnutls" ,gnutls)
-       ("libnet6" ,libnet6)))
+     (list libsigc++-2 gnutls libnet6))
     (home-page "https://gobby.github.io/")
     (synopsis "Library for building collaborative editors")
     (description
@@ -119,8 +116,7 @@ documents in one session.  Obby is used by the Gobby collaborative editor.")
                 "0w8q01lf6bcdz537b29m7rwlbc7k87b12vnpm1h6219ypvzqkgcc"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)))
+     (list pkg-config intltool))
     (inputs
      `(("libxml++-2" ,libxml++-2)
        ("gnutls" ,gnutls)
@@ -156,9 +152,7 @@ connect to a server running the old 0.4 protocol.")
                 "1p2wbnchxy2wdzk19p7bxfpbq5zawa0l500na57jp8jgk3qz7czx"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)
-       ("itstool" ,itstool)))
+     (list pkg-config intltool itstool))
     (inputs
      `(("gnutls" ,gnutls)
        ("gsasl" ,gsasl)
@@ -198,12 +192,9 @@ together over the internet in real-time.")
          "17i3g61hxz9pzl3ryd1yr15142r25m06jfzjrpdy7ic1b8vjjw3f"))))
     (build-system gnu-build-system)
     (inputs
-     `(("glib" ,glib)
-       ("gsasl" ,gsasl)
-       ("gtk+" ,gtk+)
-       ("libxml2" ,libxml2)))
+     (list glib gsasl gtk+ libxml2))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (arguments
      `(#:configure-flags (list "--disable-static"
                                "--with-inftextgtk"

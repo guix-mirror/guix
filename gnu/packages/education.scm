@@ -241,8 +241,7 @@ Currently available boards include:
                  (with-directory-excursion bin
                    (rename-file "v1" "gotypist"))))))))
       (native-inputs
-       `(("go-github-com-gizak-termui" ,go-github-com-gizak-termui)
-         ("go-github-com-stretchr-testify" ,go-github-com-stretchr-testify)))
+       (list go-github-com-gizak-termui go-github-com-stretchr-testify))
       (home-page "https://github.com/KappaDistributive/gotypist")
       (synopsis "Simple typing trainer for text terminals")
       (description
@@ -297,8 +296,7 @@ frequently used words in American English.")
                ;; Recreate Makefile
                (invoke "qmake")))))))
     (inputs
-     `(("qtbase" ,qtbase-5)
-       ("qtmultimedia" ,qtmultimedia)))
+     (list qtbase-5 qtmultimedia))
     (home-page "https://www.tipp10.com/")
     (synopsis "Touch typing tutor")
     (description "Tipp10 is a touch typing tutor.  The ingenious thing about
@@ -428,9 +426,9 @@ to open the application in a web browser, for offline usage.")
                            out)))
                #t))))))
     (native-inputs
-     `(("unzip" ,unzip)))
+     (list unzip))
     (inputs
-     `(("python-pyqt" ,python-pyqt)))
+     (list python-pyqt))
     (synopsis "School tools for physically disabled children")
     (description "ToutEnClic is intended to facilitate the schooling
 of physically disabled children in ordinary schools.  It is both
@@ -563,8 +561,7 @@ letters of the alphabet, spelling, eye-hand coordination, etc.")
            #t))))
     (build-system python-build-system)
     (inputs
-     `(("python2-pygame" ,python2-pygame)
-       ("python2-pygtk" ,python2-pygtk)))
+     (list python2-pygame python2-pygtk))
     (arguments
      `(#:tests? #f                      ;no test
        #:python ,python-2
@@ -672,7 +669,7 @@ Portuguese, Spanish and Italian.")
          (replace 'configure
            (lambda _ (invoke "qmake" "fet.pro"))))))
     (inputs
-     `(("qtbase" ,qtbase)))
+     (list qtbase))
     (home-page "https://www.lalescu.ro/liviu/fet/")
     (synopsis "Timetabling software")
     (description
@@ -698,14 +695,9 @@ hours.")
          (base32 "0z6c3lqikk50mkz3ipm93l48qj7b98lxyip8y6ndg9y9k0z0n878"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+     (list intltool pkg-config))
     (inputs
-     `(("cairo" ,cairo)
-       ("curl" ,curl)
-       ("gtk+" ,gtk+)
-       ("gtkdatabox" ,gtkdatabox)
-       ("pango" ,pango)))
+     (list cairo curl gtk+ gtkdatabox pango))
     (home-page "https://klavaro.sourceforge.io/en/index.html")
     (synopsis "Touch typing tutor")
     (description
@@ -726,32 +718,30 @@ language and very flexible regarding to new or unknown keyboard layouts.")
          (base32 "10lm2p8w26c9n6lhvw3301myfss0dq7hl7rawzb3hsy1lqvmvdib"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)
-       ("pkg-config" ,pkg-config)))
+     (list extra-cmake-modules kdoctools pkg-config))
     (inputs
-     `(("kcmutils" ,kcmutils)
-       ("kcompletion" ,kcompletion)
-       ("kconfig" ,kconfig)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kdeclarative" ,kdeclarative)
-       ("ki18n" ,ki18n)
-       ("kiconthemes" ,kiconthemes)
-       ("kitemviews" ,kitemviews)
-       ("kqtquickcharts" ,kqtquickcharts)
-       ("ktextwidgets" ,ktextwidgets)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kwindowsystem" ,kwindowsystem)
-       ("kxmlgui" ,kxmlgui)
-       ("libxcb" ,libxcb)
-       ("libxkbfile" ,libxkbfile)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)
-       ("qtgraphicaleffects" ,qtgraphicaleffects)
-       ("qtquickcontrols2" ,qtquickcontrols2)
-       ("qtx11extras" ,qtx11extras)
-       ("qtxmlpatterns" ,qtxmlpatterns)))
+     (list kcmutils
+           kcompletion
+           kconfig
+           kconfigwidgets
+           kcoreaddons
+           kdeclarative
+           ki18n
+           kiconthemes
+           kitemviews
+           kqtquickcharts
+           ktextwidgets
+           kwidgetsaddons
+           kwindowsystem
+           kxmlgui
+           libxcb
+           libxkbfile
+           qtbase-5
+           qtdeclarative
+           qtgraphicaleffects
+           qtquickcontrols2
+           qtx11extras
+           qtxmlpatterns))
     (home-page "https://edu.kde.org/ktouch/")
     (synopsis "Touch typing tutor")
     (description
@@ -784,8 +774,7 @@ adjust the level of difficulty.")
        `(("gettext" ,gettext-minimal)   ; for msgfmt
          ("pkg-config" ,pkg-config)))
       (inputs
-       `(("libxml2" ,libxml2)
-         ("gtk+" ,gtk+)))
+       (list libxml2 gtk+))
       (home-page "https://kanatest.sourceforge.io/")
       (synopsis "Hiragana and Katakana simple flashcard tool")
       (description "Kanatest is a Japanese kana (Hiragana and Katakana) simple
@@ -866,7 +855,7 @@ stored and user can review his performance in any time.")
                          (find-files bin ".")))
              #t)))))
     (native-inputs
-     `(("xdg-utils" ,xdg-utils)))
+     (list xdg-utils))
     (inputs
      `(("lame" ,lame)
        ("mpv" ,mpv)
@@ -946,7 +935,7 @@ endless.  For example:
                                "/share/fonts/truetype")))
              #t)))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
      `(("font-andika" ,font-sil-andika)
        ("libpng" ,libpng)
@@ -1004,7 +993,7 @@ TuxMath and TuxType.")
                                      "tuxmath\\.(png|ico|svg)$"))
                #t))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
      `(("librsvg" ,librsvg)
        ("libxml2" ,libxml2)
@@ -1038,9 +1027,9 @@ floating through space.")
          "0psbdzirazfnn02hp3gsx7xxss9f1brv4ywp6a15ihvggjki1rxb"))))
     (build-system gnu-build-system)
     (native-inputs ; Required for building docs
-     `(("perl" ,perl)))
+     (list perl))
     (inputs
-     `(("zlib" ,zlib)))
+     (list zlib))
     (synopsis "C library for accessing Japanese CD-ROM books")
     (description "The EB library is a library for accessing CD-ROM
 books, which are a common way to distribute electronic dictionaries in
@@ -1067,16 +1056,16 @@ formats.")
     (arguments
      '(#:tests? #f)) ; no test target
     (native-inputs
-     `(("qttools", qttools)))
+     (list qttools))
     (inputs
-     `(("libeb" ,libeb)
-       ("qtbase" ,qtbase-5)
-       ("qtmultimedia" ,qtmultimedia)
-       ("qtquickcontrols2" ,qtquickcontrols2)
-       ("qtdeclarative" ,qtdeclarative)
-       ("qtwebchannel" ,qtwebchannel)
-       ("qtwebengine" ,qtwebengine)
-       ("zlib" ,zlib)))
+     (list libeb
+           qtbase-5
+           qtmultimedia
+           qtquickcontrols2
+           qtdeclarative
+           qtwebchannel
+           qtwebengine
+           zlib))
     (synopsis "EPWING dictionary reader")
     (description "qolibri is a dictionary viewer for the EPWING dictionary
 format.  Most monolingual Japanese dictionaries can only be found in the
@@ -1100,16 +1089,14 @@ EPWING format.")
     (arguments
      `(#:configure-flags (list "--enable-gui=yes" "-with-readline=yes")))
     (native-inputs
-     `(("flex" ,flex)
-       ("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+     (list flex intltool pkg-config))
     (inputs
-     `(("glib" ,glib)
-       ("gtk+" ,gtk+)
-       ("libglade" ,libglade)
-       ("ncurses" ,ncurses)
-       ("pango" ,pango)
-       ("readline" ,readline)))
+     (list glib
+           gtk+
+           libglade
+           ncurses
+           pango
+           readline))
     (home-page "https://www.gnu.org/software/mdk/manual/")
     (synopsis "Virtual development environment for Knuth's MIX")
     (description

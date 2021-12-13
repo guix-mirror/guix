@@ -48,14 +48,11 @@
                                      "cyrus-sasl-CVE-2019-19906.patch"))))
    (build-system gnu-build-system)
    (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
-   (inputs `(("gdbm" ,gdbm)
-             ("openssl" ,openssl)))
+     (list autoconf automake libtool))
+   (inputs (list gdbm openssl))
    (propagated-inputs
-    `(;; cyrus-sasl.pc refers to -lkrb5, so propagate it.
-      ("mit-krb5" ,mit-krb5)))
+    (list ;; cyrus-sasl.pc refers to -lkrb5, so propagate it.
+          mit-krb5))
    (arguments
     '(#:configure-flags (list (string-append "--with-plugindir="
                                              (assoc-ref %outputs "out")

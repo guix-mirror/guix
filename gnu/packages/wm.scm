@@ -150,12 +150,12 @@
         (base32 "0qlv7b4c2mmjfd65y100d11x8iqyg5f6lfiws3cgmpjidhdygnxc"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libxcb" ,libxcb)
-       ("libxinerama" ,libxinerama)
-       ("sxhkd" ,sxhkd)
-       ("xcb-util" ,xcb-util)
-       ("xcb-util-keysyms" ,xcb-util-keysyms)
-       ("xcb-util-wm" ,xcb-util-wm)))
+     (list libxcb
+           libxinerama
+           sxhkd
+           xcb-util
+           xcb-util-keysyms
+           xcb-util-wm))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
@@ -184,21 +184,19 @@ the leaves of a full binary tree.")
        (file-name (string-append "herbstluftwm-" version ".tar.gz"))))
     (build-system cmake-build-system)
     (inputs
-     `(("dzen"        ,dzen)
-       ("dmenu"       ,dmenu)
-       ("glib"        ,glib)
-       ("glibmm"      ,glibmm)
-       ("xterm"       ,xterm)
-       ("xsetroot"    ,xsetroot)
-       ("libx11"      ,libx11)
-       ("libxext"     ,libxext)
-       ("libxinerama" ,libxinerama)
-       ("libxrandr"   ,libxrandr)
-       ("libxft"      ,libxft)))
+     (list dzen
+           dmenu
+           glib
+           glibmm
+           xterm
+           xsetroot
+           libx11
+           libxext
+           libxinerama
+           libxrandr
+           libxft))
     (native-inputs
-     `(("asciidoc"   ,asciidoc)
-       ("pkg-config" ,pkg-config)
-       ("python"     ,python)))
+     (list asciidoc pkg-config python))
     (arguments
      '(#:tests? #f
        #:configure-flags
@@ -267,19 +265,17 @@ or musca).
        #:out-of-source? #t
        #:tests? #f)) ; no test suite
     (inputs
-     `(("openlibm" ,openlibm)
-       ("libconfuse" ,libconfuse)
-       ("libyajl" ,libyajl)
-       ("alsa-lib" ,alsa-lib)
-       ("pulseaudio" ,pulseaudio)
-       ("libnl" ,libnl)
-       ("libcap" ,libcap)
-       ("asciidoc" ,asciidoc)))
+     (list openlibm
+           libconfuse
+           libyajl
+           alsa-lib
+           pulseaudio
+           libnl
+           libcap
+           asciidoc))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("docbook-xsl" ,docbook-xsl)
-       ("libxml2" ,libxml2)             ;for XML_CATALOG_FILES
-       ("xmlto" ,xmlto)))
+     (list pkg-config docbook-xsl libxml2 ;for XML_CATALOG_FILES
+           xmlto))
     (home-page "https://i3wm.org/i3status/")
     (synopsis "Status bar for i3bar, dzen2, xmobar or similar programs")
     (description "i3status is a small program for generating a status bar for
@@ -324,30 +320,30 @@ commands would.")
                  (("Exec=i3-with-shmlog") (string-append "Exec=" i3-with-shmlog)))
                #t))))))
     (inputs
-     `(("libxcb" ,libxcb)
-       ("xcb-util" ,xcb-util)
-       ("xcb-util-cursor" ,xcb-util-cursor)
-       ("xcb-util-keysyms" ,xcb-util-keysyms)
-       ("xcb-util-wm" ,xcb-util-wm)
-       ("xcb-util-xrm" ,xcb-util-xrm)
-       ("libxkbcommon" ,libxkbcommon)
-       ("libev" ,libev)
-       ("libyajl" ,libyajl)
-       ("xmlto" ,xmlto)
-       ("perl-pod-simple" ,perl-pod-simple)
-       ("libx11" ,libx11)
-       ("pcre" ,pcre)
-       ("startup-notification" ,startup-notification)
-       ("pango" ,pango)
-       ("cairo" ,cairo)))
+     (list libxcb
+           xcb-util
+           xcb-util-cursor
+           xcb-util-keysyms
+           xcb-util-wm
+           xcb-util-xrm
+           libxkbcommon
+           libev
+           libyajl
+           xmlto
+           perl-pod-simple
+           libx11
+           pcre
+           startup-notification
+           pango
+           cairo))
     (native-inputs
-     `(("which" ,which)
-       ("perl" ,perl)
-       ("pkg-config" ,pkg-config)
-       ("asciidoc" ,asciidoc)
-       ;; For building the documentation.
-       ("libxml2" ,libxml2)
-       ("docbook-xsl" ,docbook-xsl)))
+     (list which
+           perl
+           pkg-config
+           asciidoc
+           ;; For building the documentation.
+           libxml2
+           docbook-xsl))
     (home-page "https://i3wm.org/")
     (synopsis "Tiling window manager")
     (description "i3 is a tiling X11 window manager that dynamically manages
@@ -403,16 +399,16 @@ from many programming languages.")
                 "02szjsaz7rqrdkd0r2nwgwa85c4hwfrcskxw7ryk695kmjcfhzv3"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("cairo" ,cairo)
-       ("libev" ,libev)
-       ("linux-pam" ,linux-pam)
-       ("libxcb" ,libxcb)
-       ("libxkbcommon" ,libxkbcommon)
-       ("xcb-util" ,xcb-util)
-       ("xcb-util-image" ,xcb-util-image)
-       ("xcb-util-xrm" ,xcb-util-xrm)))
+     (list cairo
+           libev
+           linux-pam
+           libxcb
+           libxkbcommon
+           xcb-util
+           xcb-util-image
+           xcb-util-xrm))
     (home-page "https://i3wm.org/i3lock/")
     (synopsis "Lightweight screen locker")
     (description
@@ -436,19 +432,17 @@ Despite the name it should work with any X11 window manager.")
                 "1bd5nrlga5g1sz1f64gnc3dqy8yfrr4q1ss59krymbpxa1hhf55c"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("automake" ,automake)
-       ("autoconf" ,autoconf)))
+     (list pkg-config automake autoconf))
     (inputs
-     `(("cairo" ,cairo)
-       ("mesa" ,mesa)
-       ("libev" ,libev)
-       ("linux-pam" ,linux-pam)
-       ("libxcb" ,libxcb)
-       ("libxkbcommon" ,libxkbcommon)
-       ("xcb-util" ,xcb-util)
-       ("xcb-util-image" ,xcb-util-image)
-       ("xcb-util-xrm" ,xcb-util-xrm)))
+     (list cairo
+           mesa
+           libev
+           linux-pam
+           libxcb
+           libxkbcommon
+           xcb-util
+           xcb-util-image
+           xcb-util-xrm))
     (home-page "https://github.com/karulont/i3lock-blur")
     (synopsis "Lightweight screen locker with transparent blurring background")
     (description
@@ -472,9 +466,7 @@ manager.")
               (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf automake pkg-config))
     (home-page "https://github.com/vivien/i3blocks")
     (synopsis "Minimalist scheduler for status bar scripts")
     (description "i3blocks executes your command lines and generates a
@@ -496,8 +488,7 @@ i3status.")
                 "0qvd9bq16jyy7v3ma82qcnvz9j503bw0mh7h55gkjf7ir62ck0jk"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-anyevent" ,perl-anyevent)
-       ("perl-json-xs" ,perl-json-xs)))
+     (list perl-anyevent perl-json-xs))
     (home-page "https://metacpan.org/release/AnyEvent-I3")
     (synopsis
      "Communicate with the i3 window manager through perl")
@@ -538,7 +529,7 @@ You can then subscribe to events or send messages and receive their replies.")
                         ;; Avoid unspecified return value.
                         #t))))))
     (propagated-inputs
-     `(("i3-wm" ,i3-wm)))
+     (list i3-wm))
     (home-page "https://github.com/ziberna/i3-py")
     (synopsis "Python interface to the i3 window manager")
     (description "This package allows you to interact from a Python program
@@ -578,26 +569,24 @@ subscribe to events.")
                  (string-append "pangocairo = ffi.dlopen(\""
                   (assoc-ref inputs "pango") "/lib/libpangocairo-1.0.so.0\")\n"))))))))
     (inputs
-      `(("glib" ,glib)
-        ("pango" ,pango)
-        ("pulseaudio" ,pulseaudio)))
+      (list glib pango pulseaudio))
     (propagated-inputs
-      `(("python-cairocffi" ,python-cairocffi)
-        ("python-cffi" ,python-cffi)
-        ("python-dateutil" ,python-dateutil)
-        ("python-dbus-next" ,python-dbus-next)
-        ("python-iwlib" ,python-iwlib)
-        ("python-keyring" ,python-keyring)
-        ("python-mpd2" ,python-mpd2)
-        ("python-pyxdg" ,python-pyxdg)
-        ("python-xcffib" ,python-xcffib)))
+      (list python-cairocffi
+            python-cffi
+            python-dateutil
+            python-dbus-next
+            python-iwlib
+            python-keyring
+            python-mpd2
+            python-pyxdg
+            python-xcffib))
     (native-inputs
-      `(("pkg-config" ,pkg-config)
-        ("python-flake8" ,python-flake8)
-        ("python-pep8-naming" ,python-pep8-naming)
-        ("python-psutil" ,python-psutil)
-        ("python-pytest-cov" ,python-pytest-cov)
-        ("python-setuptools-scm" ,python-setuptools-scm)))
+      (list pkg-config
+            python-flake8
+            python-pep8-naming
+            python-psutil
+            python-pytest-cov
+            python-setuptools-scm))
     (home-page "http://qtile.org")
     (synopsis "Hackable tiling window manager written and configured in Python")
     (description "Qtile is simple, small, and extensible.  It's easy to write
@@ -638,8 +627,7 @@ your own layouts, widgets, and built-in commands.")
                           ;; Avoid unspecified return value.
                           #t))))))
       (inputs
-       `(("python-i3-py" ,python-i3-py)
-         ("dmenu" ,dmenu)))
+       (list python-i3-py dmenu))
       (home-page "https://github.com/proxypoke/quickswitch-for-i3")
       (synopsis "Quickly change to and locate windows in the i3 window manager")
       (description
@@ -675,9 +663,7 @@ prompt.")
        ("xcb-util-image" ,xcb-util-image)
        ("xcb-util-xrm" ,xcb-util-xrm)))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf automake pkg-config))
     (home-page "https://github.com/PandorasFox/i3lock-color")
     (synopsis "Screen locker with color configuration support")
     (description
@@ -739,10 +725,7 @@ Features include:
                (copy-recursively "icons" icons)
                #t))))))
     (inputs
-     `(("imagemagick" ,imagemagick)
-       ("wmctrl" ,wmctrl)
-       ("i3lock" ,i3lock)
-       ("gawk" ,gawk)))
+     (list imagemagick wmctrl i3lock gawk))
     (home-page "https://github.com/meskarune/i3lock-fancy")
     (synopsis "Screen locker with screenshot function")
     (description
@@ -769,13 +752,13 @@ desktop environment.")
               (patches (search-patches "xmonad-dynamic-linking.patch"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-extensible-exceptions" ,ghc-extensible-exceptions)
-       ("ghc-data-default"          ,ghc-data-default)
-       ("ghc-quickcheck"            ,ghc-quickcheck)
-       ("ghc-semigroups"            ,ghc-semigroups)
-       ("ghc-setlocale"             ,ghc-setlocale)
-       ("ghc-utf8-string"           ,ghc-utf8-string)
-       ("ghc-x11"                   ,ghc-x11)))
+     (list ghc-extensible-exceptions
+           ghc-data-default
+           ghc-quickcheck
+           ghc-semigroups
+           ghc-setlocale
+           ghc-utf8-string
+           ghc-x11))
     (arguments
      `(#:cabal-revision
        ("1" "0yqh96qqphllr0zyz5j93cij5w2qvf39xxnrb52pz0qz3pywz9wd")
@@ -820,27 +803,26 @@ tiled on several screens.")
                 "1k1n3ff0ikdmfq0mi8r2vpqg1iq6hsw1drvxps6k98rvvn87pws6"))))
     (build-system haskell-build-system)
     (native-inputs
-     `(("ghc-hspec" ,ghc-hspec)
-       ("hspec-discover" ,hspec-discover)))
+     (list ghc-hspec hspec-discover))
     (inputs
-     `(("ghc-alsa-core" ,ghc-alsa-core)
-       ("ghc-alsa-mixer" ,ghc-alsa-mixer)
-       ("ghc-dbus" ,ghc-dbus)
-       ("ghc-hinotify" ,ghc-hinotify)
-       ("ghc-http" ,ghc-http)
-       ("ghc-http-conduit" ,ghc-http-conduit)
-       ("ghc-http-types" ,ghc-http-types)
-       ("ghc-iwlib" ,ghc-iwlib)
-       ("ghc-libmpd" ,ghc-libmpd)
-       ("ghc-netlink" ,ghc-netlink)
-       ("ghc-old-locale" ,ghc-old-locale)
-       ("ghc-parsec-numbers" ,ghc-parsec-numbers)
-       ("ghc-regex-compat" ,ghc-regex-compat)
-       ("ghc-temporary" ,ghc-temporary)
-       ("ghc-timezone-olson" ,ghc-timezone-olson)
-       ("ghc-x11" ,ghc-x11)
-       ("ghc-x11-xft" ,ghc-x11-xft)
-       ("libxpm" ,libxpm)))
+     (list ghc-alsa-core
+           ghc-alsa-mixer
+           ghc-dbus
+           ghc-hinotify
+           ghc-http
+           ghc-http-conduit
+           ghc-http-types
+           ghc-iwlib
+           ghc-libmpd
+           ghc-netlink
+           ghc-old-locale
+           ghc-parsec-numbers
+           ghc-regex-compat
+           ghc-temporary
+           ghc-timezone-olson
+           ghc-x11
+           ghc-x11-xft
+           libxpm))
     (arguments
      `(#:configure-flags (list "--flags=all_extensions")
        #:phases
@@ -872,8 +854,7 @@ Haskell, no knowledge of the language is required to install and use it.")
         (base32 "04djfyjab3c5y9z9x8zd0xcx0jyy35zq7cl9ddr4ppf6k5ky6iky"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-strict" ,ghc-strict)
-       ("ghc-xdg-basedir" ,ghc-xdg-basedir)))
+     (list ghc-strict ghc-xdg-basedir))
     (home-page "http://dmwit.com/yeganesh/")
     (synopsis "Small wrapper around dmenu")
     (description "@code{yeganesh} is a small wrapper around demnu.  Like
@@ -898,14 +879,14 @@ particular, it displays commonly-chosen options before uncommon ones.")
      `(#:cabal-revision
        ("1" "0vimkby2gq6sgzxzbvz67caba609xqlv2ii2gi8a1cjrnn6ib011")))
     (propagated-inputs
-     `(("ghc-old-time" ,ghc-old-time)
-       ("ghc-random" ,ghc-random)
-       ("ghc-utf8-string" ,ghc-utf8-string)
-       ("ghc-extensible-exceptions" ,ghc-extensible-exceptions)
-       ("ghc-semigroups" ,ghc-semigroups)
-       ("ghc-x11" ,ghc-x11)
-       ("ghc-x11-xft" ,ghc-x11-xft)
-       ("xmonad" ,xmonad)))
+     (list ghc-old-time
+           ghc-random
+           ghc-utf8-string
+           ghc-extensible-exceptions
+           ghc-semigroups
+           ghc-x11
+           ghc-x11-xft
+           xmonad))
     (home-page "https://xmonad.org")
     (synopsis "Third party extensions for xmonad")
     (description
@@ -928,9 +909,7 @@ tiling window manager for X.")
        (patches (search-patches "evilwm-lost-focus-bug.patch"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libx11" ,libx11)
-       ("libxext" ,libxext)
-       ("libxrandr" ,libxrandr)))
+     (list libx11 libxext libxrandr))
     (arguments
      `(#:modules ((srfi srfi-26)
                   (guix build utils)
@@ -995,18 +974,18 @@ drags, snap-to-border support, and virtual desktops.")
                      Type=Application~%" ,name ,synopsis out)))
                #t))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("freetype" ,freetype)
-       ("fribidi" ,fribidi)
-       ("imlib2" ,imlib2)
-       ("libx11" ,libx11)
-       ("libxext" ,libxext)
-       ("libxft" ,libxft)
-       ("libxinerama" ,libxinerama)
-       ("libxpm"  ,libxpm)
-       ("libxrandr" ,libxrandr)
-       ("libxrender" ,libxrender)))
+     (list freetype
+           fribidi
+           imlib2
+           libx11
+           libxext
+           libxft
+           libxinerama
+           libxpm
+           libxrandr
+           libxrender))
     (description "Fluxbox is a window manager.  It is light on resources
 and easy to handle yet full of features to make an easy and fast desktop
 experience.")
@@ -1029,17 +1008,13 @@ experience.")
     (build-system meson-build-system)
     (arguments `(#:build-type "release"))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("wayland-protocols" ,wayland-protocols)
-       ("tllist" ,tllist)
-       ("gcc" ,gcc-10)     ;TODO: Remove when the default compiler is > GCC 7.
-       ("scdoc" ,scdoc)))
+     (list pkg-config
+           wayland-protocols
+           tllist
+           gcc-10 ;TODO: Remove when the default compiler is > GCC 7.
+           scdoc))
     (inputs
-     `(("wlroots" ,wlroots)
-       ("wayland" ,wayland)
-       ("fcft" ,fcft)
-       ("dbus" ,dbus)
-       ("libpng" ,libpng)))
+     (list wlroots wayland fcft dbus libpng))
     (home-page "https://codeberg.org/dnkl/fnott")
     (synopsis "Keyboard driven and lightweight Wayland notification daemon")
     (description "Fnott is a keyboard driven and lightweight notification daemon
@@ -1076,38 +1051,38 @@ for wlroots-based Wayland compositors.")
                         "awesome-4.3-fno-common.patch"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("asciidoc" ,asciidoc)
-       ("docbook-xsl" ,docbook-xsl)
-       ("doxygen" ,doxygen)
-       ("gperf" ,gperf)
-       ("imagemagick" ,imagemagick)
-       ("libxml2" ,libxml2)             ;for XML_CATALOG_FILES
-       ("lua-ldoc" ,lua-ldoc)
-       ("pkg-config" ,pkg-config)
-       ("xmlto" ,xmlto)))
+     (list asciidoc
+           docbook-xsl
+           doxygen
+           gperf
+           imagemagick
+           libxml2 ;for XML_CATALOG_FILES
+           lua-ldoc
+           pkg-config
+           xmlto))
     (inputs
-     `(("cairo" ,cairo)
-       ("dbus" ,dbus)
-       ("gdk-pixbuf" ,gdk-pixbuf)
-       ("glib" ,glib)
-       ("gobject-introspection" ,gobject-introspection)
-       ("imlib2" ,imlib2)
-       ("libev" ,libev)
-       ("libxcb" ,libxcb)
-       ("libxcursor" ,libxcursor)
-       ("libxdg-basedir" ,libxdg-basedir)
-       ("libxkbcommon" ,libxkbcommon)
-       ("lua" ,lua)
-       ("lua-lgi" ,lua-lgi)
-       ("pango" ,pango)
-       ("startup-notification" ,startup-notification)
-       ("xcb-util" ,xcb-util)
-       ("xcb-util-cursor" ,xcb-util-cursor)
-       ("xcb-util-image" ,xcb-util-image)
-       ("xcb-util-keysyms" ,xcb-util-keysyms)
-       ("xcb-util-renderutil" ,xcb-util-renderutil)
-       ("xcb-util-xrm" ,xcb-util-xrm)
-       ("xcb-util-wm" ,xcb-util-wm)))
+     (list cairo
+           dbus
+           gdk-pixbuf
+           glib
+           gobject-introspection
+           imlib2
+           libev
+           libxcb
+           libxcursor
+           libxdg-basedir
+           libxkbcommon
+           lua
+           lua-lgi
+           pango
+           startup-notification
+           xcb-util
+           xcb-util-cursor
+           xcb-util-image
+           xcb-util-keysyms
+           xcb-util-renderutil
+           xcb-util-xrm
+           xcb-util-wm))
     (arguments
      `(#:modules ((guix build cmake-build-system)
                   (guix build utils)
@@ -1203,7 +1178,7 @@ dynamic and extensible using the Lua programming language.")
         (base32 "0hbn8bid43725njqcfklvan3n4hwpfx8nq8xkkdwkmpd37kfq594"))))
     (build-system gnu-build-system)
     (inputs
-     `(("python" ,python)))
+     (list python))
     (synopsis "Heuristics-driven menu generator")
     (description
      "MenuMaker is a menu generation utility for a number of X window
@@ -1244,9 +1219,7 @@ all of them.  Currently supported window managers include:
      `(("python-2" ,python-2)
        ("gtk+-2" ,gtk+-2)))
     (native-inputs
-     `(("python2-pygtk" ,python2-pygtk)
-       ("gtk-doc" ,gtk-doc)
-       ("pkg-config" ,pkg-config)))
+     (list python2-pygtk gtk-doc pkg-config))
     (synopsis "Library for registering global keyboard shortcuts")
     (description
      "Keybinder is a library for registering global keyboard shortcuts.
@@ -1270,11 +1243,9 @@ Keybinder works with GTK-based applications using the X Window System.")
          "0830ihwnalw59pp1xzrp37dn58n8vwb8zasnm4a1h81v3x7dxqz6"))))
     (build-system gnu-build-system)
     (inputs
-     `(("gtk+" ,gtk+)
-       ("gobject-introspection" ,gobject-introspection)))
+     (list gtk+ gobject-introspection))
     (native-inputs
-     `(("gtk-doc" ,gtk-doc)
-       ("pkg-config" ,pkg-config)))
+     (list gtk-doc pkg-config))
     (synopsis "Library for registering global keyboard shortcuts, Gtk3 version")
     (description
      "Keybinder is a library for registering global keyboard shortcuts.
@@ -1331,8 +1302,7 @@ Keybinder works with GTK-based applications using the X Window System.")
        ("xcb-util-wm" ,xcb-util-wm)
        ("xcb-util-keysyms" ,xcb-util-keysyms)))
     (native-inputs
-     `(("libxt" ,libxt)
-       ("pkg-config" ,pkg-config)))
+     (list libxt pkg-config))
     (synopsis "Minimalistic automatic tiling window manager")
     (description
      "Spectrwm is a small dynamic tiling and reparenting window manager for X11.
@@ -1392,12 +1362,9 @@ It is inspired by Xmonad and dwm.  Its major features include:
                            output)))
                #t))))))
     (inputs
-     `(("libxft" ,libxft)
-       ("libxrandr" ,libxrandr)
-       ("libxinerama" ,libxinerama)))
+     (list libxft libxrandr libxinerama))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("bison" ,bison)))
+     (list pkg-config bison))
     (home-page "https://github.com/leahneukirchen/cwm")
     (synopsis "OpenBSD fork of the calmwm window manager")
     (description "Cwm is a stacking window manager for X11.  It is an OpenBSD
@@ -1428,9 +1395,9 @@ project derived from the original Calm Window Manager.")
        (modify-phases %standard-phases
          (delete 'configure))))         ; no configure
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("wlroots" ,wlroots)))
+     (list wlroots))
     (home-page "https://github.com/djpohly/dwl")
     (synopsis "Dynamic window manager for Wayland")
     (description
@@ -1457,12 +1424,9 @@ limited size and a few external dependencies.  It is configurable via
                 "0zc3fl1mbhq0iyndy4ysmy8vv5c7xwf54rbgamzfhfvsgdq160pl"))))
     (build-system gnu-build-system)
     (inputs
-     `(("gtk+" ,gtk+-2)
-       ("gtkmm" ,gtkmm-2)
-       ("glib" ,glib)
-       ("glibmm" ,glibmm)))
+     (list gtk+-2 gtkmm-2 glib glibmm))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "http://projects.l3ib.org/nitrogen/")
     (synopsis "Background browser and setter for X windows")
     (description
@@ -1500,20 +1464,20 @@ its size
      ;; Internet.
      '(#:tests? #f))
     (inputs
-     `(("alsa-lib" ,alsa-lib)
-       ("cairo" ,cairo)
-       ("i3-wm" ,i3-wm)
-       ("jsoncpp" ,jsoncpp)
-       ("libmpdclient" ,libmpdclient)
-       ("libnl" ,libnl)
-       ("libxcb" ,libxcb)
-       ("pulseaudio" ,pulseaudio)
-       ("xcb-proto" ,xcb-proto)
-       ("xcb-util" ,xcb-util)
-       ("xcb-util-cursor" ,xcb-util-cursor)
-       ("xcb-util-image" ,xcb-util-image)
-       ("xcb-util-wm" ,xcb-util-wm)
-       ("xcb-util-xrm" ,xcb-util-xrm)))
+     (list alsa-lib
+           cairo
+           i3-wm
+           jsoncpp
+           libmpdclient
+           libnl
+           libxcb
+           pulseaudio
+           xcb-proto
+           xcb-util
+           xcb-util-cursor
+           xcb-util-image
+           xcb-util-wm
+           xcb-util-xrm))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("python-sphinx" ,python-sphinx) ; for the manual
@@ -1553,20 +1517,20 @@ functionality to display information about the most commonly used services.")
                                             "/bin/Xwayland")))
              #t)))))
     (propagated-inputs
-     `(;; As required by wlroots.pc.
-       ("eudev" ,eudev)
-       ("libinput" ,libinput)
-       ("libxkbcommon" ,libxkbcommon)
-       ("mesa" ,mesa)
-       ("pixman" ,pixman)
-       ("seatd" ,seatd)
-       ("wayland" ,wayland)
-       ("wayland-protocols" ,wayland-protocols)
-       ("xcb-util-errors" ,xcb-util-errors)
-       ("xcb-util-wm" ,xcb-util-wm)
-       ("xorg-server-xwayland" ,xorg-server-xwayland)))
+     (list ;; As required by wlroots.pc.
+           eudev
+           libinput
+           libxkbcommon
+           mesa
+           pixman
+           seatd
+           wayland
+           wayland-protocols
+           xcb-util-errors
+           xcb-util-wm
+           xorg-server-xwayland))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://github.com/swaywm/wlroots")
     (synopsis "Pluggable, composable, unopinionated modules for building a
 Wayland compositor")
@@ -1604,23 +1568,19 @@ modules for building a Wayland compositor.")
                 (string-append "'" (assoc-ref inputs "scdoc")
                                "/bin/scdoc'")))
              #t)))))
-    (inputs `(("cairo" ,cairo)
-              ("elogind" ,elogind)
-              ("gdk-pixbuf" ,gdk-pixbuf)
-              ("json-c" ,json-c)
-              ("libevdev" ,libevdev)
-              ("libinput" ,libinput)
-              ("libxkbcommon" ,libxkbcommon)
-              ("pango" ,pango)
-              ("swaybg" ,swaybg)
-              ("wayland" ,wayland)
-              ("wlroots" ,wlroots)))
+    (inputs (list cairo
+                  elogind
+                  gdk-pixbuf
+                  json-c
+                  libevdev
+                  libinput
+                  libxkbcommon
+                  pango
+                  swaybg
+                  wayland
+                  wlroots))
     (native-inputs
-     `(("linux-pam" ,linux-pam)
-       ("mesa" ,mesa)
-       ("pkg-config" ,pkg-config)
-       ("scdoc" ,scdoc)
-       ("wayland-protocols" ,wayland-protocols)))
+     (list linux-pam mesa pkg-config scdoc wayland-protocols))
     (home-page "https://github.com/swaywm/sway")
     (synopsis "Wayland compositor compatible with i3")
     (description "Sway is a i3-compatible Wayland compositor.")
@@ -1642,11 +1602,8 @@ modules for building a Wayland compositor.")
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags '("-Dlogind-provider=elogind")))
-    (inputs `(("elogind" ,elogind)
-              ("wayland" ,wayland)))
-    (native-inputs `(("pkg-config" ,pkg-config)
-                     ("scdoc" ,scdoc)
-                     ("wayland-protocols" ,wayland-protocols)))
+    (inputs (list elogind wayland))
+    (native-inputs (list pkg-config scdoc wayland-protocols))
     (home-page "https://github.com/swaywm/swayidle")
     (synopsis "Idle management daemon for Wayland compositors")
     (description "Swayidle is a idle management daemon for Wayland compositors.")
@@ -1666,15 +1623,10 @@ modules for building a Wayland compositor.")
        (sha256
         (base32 "0r95p4w11dwm5ra614vddz83r8j7z6gd120z2vcchy7m9b0f15kf"))))
     (build-system meson-build-system)
-    (inputs `(("cairo" ,cairo)
-              ("gdk-pixbuf" ,gdk-pixbuf)
-              ("libxkbcommon" ,libxkbcommon)
-              ;("linux-pam" ,linux-pam) ; FIXME: Doesn't work.
-              ("wayland" ,wayland)))
-    (native-inputs `(("pango" ,pango)
-                     ("pkg-config" ,pkg-config)
-                     ("scdoc" ,scdoc)
-                     ("wayland-protocols" ,wayland-protocols)))
+    (inputs (list cairo gdk-pixbuf libxkbcommon
+                  ;("linux-pam" ,linux-pam) ; FIXME: Doesn't work.
+                  wayland))
+    (native-inputs (list pango pkg-config scdoc wayland-protocols))
     (home-page "https://github.com/swaywm/sway")
     (synopsis "Screen locking utility for Wayland compositors")
     (description "Swaylock is a screen locking utility for Wayland compositors.")
@@ -1726,12 +1678,8 @@ display a clock or apply image manipulation techniques to the background image."
        (sha256
         (base32 "1lmqz5bmig90gq2m7lwf02d2g7z4hzf8fhqz78c8vk92c6p4xwbc"))))
     (build-system meson-build-system)
-    (inputs `(("cairo" ,cairo)
-              ("gdk-pixbuf" ,gdk-pixbuf)
-              ("wayland" ,wayland)))
-    (native-inputs `(("pkg-config" ,pkg-config)
-                     ("scdoc" ,scdoc)
-                     ("wayland-protocols" ,wayland-protocols)))
+    (inputs (list cairo gdk-pixbuf wayland))
+    (native-inputs (list pkg-config scdoc wayland-protocols))
     (home-page "https://github.com/swaywm/sway")
     (synopsis "Screen wallpaper utility for Wayland compositors")
     (description "Swaybg is a wallpaper utility for Wayland compositors.")
@@ -1789,8 +1737,8 @@ Wlroots based compositors.")
        (sha256
         (base32 "10c8zzp78s5bw34vvjhilipa28bsdx3jbyhnxgp8f8kawh3cvgsc"))))
     (build-system meson-build-system)
-    (inputs `(("wayland" ,wayland)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs (list wayland))
+    (native-inputs (list pkg-config))
     (home-page "https://github.com/emersion/wlr-randr")
     (synopsis "Utility to manage Wayland compositor outputs")
     (description "wlr-randr is a utility to manage outputs of a Wayland compositor.")
@@ -1810,14 +1758,8 @@ Wlroots based compositors.")
        (sha256
         (base32 "0hwvibpnrximb628w9dsfjpi30b5jy7nfkm4d94z5vhp78p43vxh"))))
     (build-system meson-build-system)
-    (inputs `(("cairo" ,cairo)
-              ("elogind" ,elogind)
-              ("gdk-pixbuf" ,gdk-pixbuf)
-              ("pango" ,pango)
-              ("wayland" ,wayland)))
-    (native-inputs `(("pkg-config" ,pkg-config)
-                     ("scdoc" ,scdoc)
-                     ("wayland-protocols" ,wayland-protocols)))
+    (inputs (list cairo elogind gdk-pixbuf pango wayland))
+    (native-inputs (list pkg-config scdoc wayland-protocols))
     (home-page "https://wayland.emersion.fr/mako")
     (synopsis "Lightweight Wayland notification daemon")
     (description "Mako is a lightweight notification daemon for Wayland
@@ -1838,9 +1780,8 @@ compositors that support the layer-shell protocol.")
        (sha256
         (base32 "0nbpgm8qnn7ljsg9vgs35kl8l4rrk542vdcbx8wrn9r909ld3x92"))))
     (build-system meson-build-system)
-    (inputs `(("wayland" ,wayland)))
-    (native-inputs `(("pkg-config" ,pkg-config)
-                     ("scdoc" ,scdoc)))
+    (inputs (list wayland))
+    (native-inputs (list pkg-config scdoc))
     (home-page "https://wayland.emersion.fr/kanshi")
     (synopsis "Hotswappable output profiles for Wayland")
     (description "Kanshi allows you to define output profiles that are
@@ -1983,9 +1924,7 @@ productive, customizable lisp based systems.")
     (inherit stumpwm-contrib)
     (name "stumpish")
     (inputs
-     `(("bash" ,bash)
-       ("rlwrap" ,rlwrap)
-       ("xprop" ,xprop)))
+     (list bash rlwrap xprop))
     (build-system trivial-build-system)
     (arguments
      '(#:modules ((guix build utils))
@@ -2298,9 +2237,9 @@ PNG files.")
          (modify-phases %standard-phases
            (delete 'configure))))
       (inputs
-       `(("libxcb" ,libxcb)))
+       (list libxcb))
       (native-inputs
-       `(("perl" ,perl)))
+       (list perl))
       (home-page "https://github.com/LemonBoy/bar")
       (synopsis "Featherweight status bar")
       (description
@@ -2327,10 +2266,8 @@ wasting your precious memory.")
                  (base32
                   "0588g37h18lv50h7w8vfbwhvc3iajh7sdr53848spaif99nh3mh4"))))
       (inputs
-       `(("freetype" ,freetype)
-         ("libxft" ,libxft)
-         ("libx11" ,libx11)
-         ,@(package-inputs lemonbar)))
+       (modify-inputs (package-inputs lemonbar)
+         (prepend freetype libxft libx11)))
       (arguments
        (substitute-keyword-arguments (package-arguments lemonbar)
          ((#:make-flags make-flags)
@@ -2371,7 +2308,7 @@ support, for easier unicode usage.")))))
                 "0wnsfxvh4v02r2jjyh2n6jfkbj2dna2hlm6anl4b36lwji749k2k"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libx11" ,libx11)))
+     (list libx11))
     (arguments
      `(#:tests? #f ;no test suite
        #:make-flags
@@ -2401,11 +2338,7 @@ button is pressed on the root window.")
                 "0qgxkrv9jnnnf3px7zh0paf8xsr4bcpf0f2nq9zy012m214223hs"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libx11" ,libx11)
-       ("libxinerama" ,libxinerama)
-       ("libxft" ,libxft)
-       ("freetype" ,freetype)
-       ("imlib2" ,imlib2)))
+     (list libx11 libxinerama libxft freetype imlib2))
     (arguments
      `(#:tests? #f ;no test suite
        #:make-flags
@@ -2457,15 +2390,15 @@ selected to stdout.  It can be controlled both via mouse and via keyboard.")
                #t))))))
     (build-system gnu-build-system)
     (inputs
-     `(("libx11" ,libx11)
-       ("libxft" ,libxft)
-       ("libxpm" ,libxpm)
-       ("libpng" ,libpng)
-       ("freetype" ,freetype)
-       ("imlib2" ,imlib2)
-       ("sed" ,sed)))
+     (list libx11
+           libxft
+           libxpm
+           libpng
+           freetype
+           imlib2
+           sed))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (arguments
      `(#:tests? #f)) ;no test suite
     (home-page "https://sourceforge.net/projects/idesk/")
@@ -2491,10 +2424,7 @@ start-up.")
                 "1jxms4md2mwfjgm2pgg3vakpp33800jbn9hnl0j4jyfc9f1ckbsv"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libx11" ,libx11)
-       ("libxft" ,libxft)
-       ("libxinerama" ,libxinerama)
-       ("imlib2" ,imlib2)))
+     (list libx11 libxft libxinerama imlib2))
     (arguments
      `(#:make-flags
        (list (string-append "CC=" ,(cc-for-target))
@@ -2528,12 +2458,9 @@ shows a notification for the user on the screen.")
     (build-system meson-build-system)
     (arguments '(#:configure-flags '("-Dxwayland=true")))
     (native-inputs
-     `(("pandoc" ,pandoc)
-       ("pkg-config" ,pkg-config)))
+     (list pandoc pkg-config))
     (inputs
-     `(("libevdev" ,libevdev)
-       ("pango" ,pango)
-       ("wlroots" ,wlroots)))
+     (list libevdev pango wlroots))
     (home-page "https://github.com/project-repo/cagebreak")
     (synopsis "Tiling wayland compositor inspired by ratpoison")
     (description
@@ -2557,10 +2484,7 @@ for wayland conceptually based on the X11 window manager
         (base32
          "1h52ldxankyhbbm1qbqz1f2q0j03c1b4mig7343bs3mc6fpm18gf"))))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("pkg-config" ,pkg-config)
-       ("libtool" ,libtool)))
+     (list autoconf automake pkg-config libtool))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f)) ;; no tests
@@ -2583,9 +2507,7 @@ read and write, and compatible with JSON.")
         (base32 "1jvy21irh6s7czff2hk63spswqibjcjhrpsgmrki5bii9ddi73wy"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("bmake" ,bmake)
-       ("pkg-config" ,pkg-config)
-       ("wayland-protocols" ,wayland-protocols)))
+     (list bmake pkg-config wayland-protocols))
     (inputs
      `(("cairo" ,cairo)
        ("libinput" ,libinput)
@@ -2636,7 +2558,7 @@ capabilities.  It is heavily inspired by the Calm Window manager(cwm).")
         (base32 "1qq5l6d0fn8azg7sj7a4m2jsmhlpswl5793clcxs1p34vy4wb2lp"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libx11" ,libx11)))
+     (list libx11))
     (arguments
      `(#:tests? #f                      ;no tests
        #:phases
@@ -2667,12 +2589,9 @@ program and unhides it after quitting.")
         (base32
          "1mvhwaqa9bng9wh3jg3b7y8gl7nprbydmhg963xg0r076jyzv0cg"))))
     (native-inputs
-     `(("libxmu" ,libxmu)
-       ("pkg-config" ,pkg-config)))
+     (list libxmu pkg-config))
     (inputs
-     `(("libx11" ,libx11)
-       ("gdk-pixbuf" ,gdk-pixbuf)
-       ("gtk+" ,gtk+-2)))
+     (list libx11 gdk-pixbuf gtk+-2))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; There are no tests.
@@ -2708,11 +2627,9 @@ which do not support it.")
                 "1swhzkqkzli59c89pvrakfvicd00x7ga860c3x2pbb4y3xziqfvi"))))
     (build-system meson-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("scdoc" ,scdoc)))
+     (list pkg-config scdoc))
     (inputs
-     `(("gtk-layer-shell" ,gtk-layer-shell)
-       ("gtk+" ,gtk+)))
+     (list gtk-layer-shell gtk+))
     (arguments
      '(#:tests? #f
        #:phases

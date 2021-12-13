@@ -134,7 +134,7 @@
                                    (find-files "share" ".")))
                  #t)))))))
     (native-inputs
-     `(("sed" ,sed)))
+     (list sed))
     (home-page (string-append "https://web.archive.org/web/20140902150609/"
                               "http://www2.informatik.uni-stuttgart.de/iste/ps/"
                               "ada-software/html/dos_ada.html"))
@@ -167,10 +167,7 @@ level.")
                 (file-name (string-append name "-" version "-checkout"))))
       (build-system python-build-system)
       (propagated-inputs
-       `(("python2-docutils" ,python2-docutils)
-         ("python2-enum34" ,python2-enum34)
-         ("python2-funcy" ,python2-funcy)
-         ("python2-mako" ,python2-mako)))
+       (list python2-docutils python2-enum34 python2-funcy python2-mako))
       (arguments
        `(#:python ,python-2
          #:tests? #f))           ; Tests would requite gprbuild (Ada).

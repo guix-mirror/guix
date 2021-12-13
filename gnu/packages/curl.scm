@@ -69,11 +69,8 @@
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"))                             ;1.2 MiB of man3 pages
-   (inputs `(("gnutls" ,gnutls)
-             ("libidn" ,libidn)
-             ("mit-krb5" ,mit-krb5)
-             ("nghttp2" ,nghttp2 "lib")
-             ("zlib" ,zlib)))
+   (inputs (list gnutls libidn mit-krb5
+                 `(,nghttp2 "lib") zlib))
    (native-inputs
      `(("nghttp2" ,nghttp2)
        ("perl" ,perl)
@@ -190,9 +187,8 @@ tunneling, and so on.")
                             (string-append man "/kurly.1")))
                #t))))))
     (inputs
-     `(("go-github-com-alsm-ioprogress" ,go-github-com-alsm-ioprogress)
-       ("go-github-com-aki237-nscjar" ,go-github-com-aki237-nscjar)
-       ("go-github-com-urfave-cli" ,go-github-com-urfave-cli)))
+     (list go-github-com-alsm-ioprogress go-github-com-aki237-nscjar
+           go-github-com-urfave-cli))
     (synopsis "Command-line HTTP client")
     (description "kurly is an alternative to the @code{curl} program written in
 Go.  kurly is designed to operate in a similar manner to curl, with select
@@ -263,10 +259,9 @@ not offer a replacement for libcurl.")
               ;; The build system does not actually compile the Scheme module.
               ;; So we can compile it and put it in the right place in one go.
               (invoke "guild" "compile" curl.scm "-o" curl.go)))))))
-   (native-inputs `(("pkg-config" ,pkg-config)))
+   (native-inputs (list pkg-config))
    (inputs
-    `(("curl" ,curl)
-      ("guile" ,guile-3.0)))
+    (list curl guile-3.0))
    (home-page "http://www.lonelycactus.com/guile-curl.html")
    (synopsis "Curl bindings for Guile")
    (description "@code{guile-curl} is a project that has procedures that allow
@@ -279,8 +274,7 @@ FTP servers.  It is based on the curl library.")
     (inherit guile-curl)
     (name "guile2.2-curl")
     (inputs
-     `(("curl" ,curl)
-       ("guile" ,guile-2.2)))))
+     (list curl guile-2.2))))
 
 (define-public curlpp
   (package
@@ -301,7 +295,7 @@ FTP servers.  It is based on the curl library.")
      '(#:tests? #f))
     ;; The installed version needs the header files from the C library.
     (propagated-inputs
-     `(("curl" ,curl)))
+     (list curl))
     (synopsis "C++ wrapper around libcURL")
     (description
      "This package provides a free and easy-to-use client-side C++ URL
@@ -332,7 +326,7 @@ more!")
      '(#:install-plan
        '(("./h2c" "bin/"))))
     (inputs
-     `(("perl" ,perl)))
+     (list perl))
     (home-page "https://curl.se/h2c/")
     (synopsis "Convert HTTP headers to a curl command line")
     (description

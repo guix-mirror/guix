@@ -54,15 +54,14 @@
          (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (native-inputs
-       `(("bison" ,bison)
-         ("cppunit" ,cppunit)
-         ("flex" ,flex)
-         ("pkg-config" ,pkg-config)
-
-         ;; For git repository bootstrapping.
-         ("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("libtool" ,libtool)))
+       (list bison
+             cppunit
+             flex
+             pkg-config
+             ;; For git repository bootstrapping.
+             autoconf
+             automake
+             libtool))
       (inputs
        `(("libftdi" ,libftdi)
          ("libmicrohttpd" ,libmicrohttpd)
@@ -70,7 +69,7 @@
          ("libuuid" ,util-linux "lib")
          ("zlib" ,zlib)))
       (propagated-inputs
-       `(("protobuf" ,protobuf)))       ; for pkg-config --libs libola
+       (list protobuf))       ; for pkg-config --libs libola
       (arguments
        `( ;; G++ >= 4.8 macro expansion tracking requires lots of memory, causing
          ;; build to fail on low memory systems.  We disable that with the

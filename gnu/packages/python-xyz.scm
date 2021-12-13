@@ -256,9 +256,7 @@
                (add-installed-pythonpath inputs outputs)
                (invoke "pytest" "--cov=janus" "--cov=tests")))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)
-       ("python-pytest-asyncio" ,python-pytest-asyncio)))
+     (list python-pytest python-pytest-cov python-pytest-asyncio))
     (home-page "https://github.com/aio-libs/janus/")
     (synopsis
      "Sync-async queue to interoperate between asyncio tasks and classic threads")
@@ -300,11 +298,8 @@ design}.")
                (setenv "CYBUILD" "True")
                (invoke "pytest" "--cov=logbook" "-r" "s" "tests")))))))
     (native-inputs
-     `(("python-cython" ,python-cython)
-       ("python-mock" ,python-mock)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)
-       ("python-google-brotli" ,python-google-brotli)))
+     (list python-cython python-mock python-pytest python-pytest-cov
+           python-google-brotli))
     (home-page "https://github.com/getlogbook/logbook")
     (synopsis "Logbook is a logging replacement for Python")
     (description
@@ -326,13 +321,9 @@ applications in mind and the idea to make logging fun.")
          "1hxd45dnwa9yv908acarr98n2drmar66wzq9z2qd3irj24srzr3w"))))
     (build-system python-build-system)
     (inputs
-     `(("libx11" ,libx11)
-       ("libxext" ,libxext)))
+     (list libx11 libxext))
     (propagated-inputs
-     `(("python-attrs" ,python-attrs)
-       ("python-docopt" ,python-docopt)
-       ("python-pillow" ,python-pillow)
-       ("python-xlib" ,python-xlib)))
+     (list python-attrs python-docopt python-pillow python-xlib))
     (home-page "https://github.com/seebye/ueberzug")
     (synopsis "Command line util to display images in combination with X11")
     (description "Überzug is a command line util which draws images on
@@ -361,7 +352,7 @@ workspaces.
          "0qka44n88y3qcj7xz0k0f3qb4phcg4z0wvd4jcii9lcr6rvbiqn5"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest", python-pytest)))
+     (list python-pytest))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
@@ -370,8 +361,7 @@ workspaces.
              (when tests?
                (invoke "pytest")))))))
     (inputs
-     `(("python-six", python-six)
-       ("python-termcolor", python-termcolor)))
+     (list python-six python-termcolor))
     (synopsis "Library for automatically generating command line interfaces")
     (description
      "Fire is a library for automatically generating command line interfaces
@@ -434,13 +424,10 @@ features of the Python's built-in dict.")
               "0ybs7kkp0cpl8zn1lvf7481xhssg1bbhh5la2cjzdm5yibashyxa"))))
    (build-system python-build-system)
    (native-inputs
-    `(("python-coverage" ,python-coverage)
-      ("python-nose" ,python-nose)
-      ("python-setuptools" ,python-setuptools) ; Won't build without this.
-      ("python-setuptools-scm" ,python-setuptools-scm)))
+    (list python-coverage python-nose python-setuptools ; Won't build without this.
+          python-setuptools-scm))
    (propagated-inputs
-    `(("python-toml" ,python-toml)
-      ("python-flake8" ,python-flake8)))
+    (list python-toml python-flake8))
    (home-page "https://github.com/casperdcl/argopt")
    (synopsis "Generate a command-line interface from a docstring")
    (description "This package provides tools to define a command line interface
@@ -482,11 +469,9 @@ decorators, including variants of the Python standard library's
     (arguments
      `(#:tests? #f))
     (native-inputs
-     `(("python-coverage" ,python-coverage)
-       ("python-flake8" ,python-flake8)
-       ("python-pytest" ,python-pytest)))
+     (list python-coverage python-flake8 python-pytest))
     (propagated-inputs
-     `(("python-colorama" ,python-colorama)))
+     (list python-colorama))
     (home-page "http://github.com/timofurrer/colorful")
     (synopsis "Terminal string styling")
     (description "Colorful provides an array of text styles, that can be used
@@ -506,7 +491,7 @@ as functions or string constants to form colored terminal output.")
         (base32 "1iirah0kydrdp505qnjj6gi54avcr7z0hbkfx9vmh8myr30rpz6q"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://github.com/pavdmyt/yaspin")
     (synopsis "Yet Another Terminal Spinner")
     (description "Yaspin provides a terminal spinner to indicate the progress
@@ -526,10 +511,9 @@ during long operations.")
         (base32 "106akalywfmnypzkdrhgz4n4740a8xayspybsw59kq06vz8i2qrc"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-mock" ,python-mock)
-       ("python-pytest" ,python-pytest)))
+     (list python-mock python-pytest))
     (propagated-inputs
-     `(("python-nltk" ,python-nltk-3.4)))
+     (list python-nltk-3.4))
     (home-page
      "https://github.com/yeraydiazdiaz/lunr.py")
     (synopsis "Full-text search library")
@@ -550,9 +534,7 @@ that best match text queries.")
           (base32 "1bvaqbna1ihb4y2mv9pmvqcq3r9j6lwbbii99dani8lxx4dqqvs5"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-jinja2" ,python-jinja2)
-       ("python-mistune" ,python-mistune)
-       ("python-pygments" ,python-pygments)))
+     (list python-jinja2 python-mistune python-pygments))
     (home-page "https://pypi.org/project/mrkd/")
     (synopsis "Python Markdown implementation")
     (description
@@ -582,13 +564,13 @@ HTML")
              (substitute* "setup.py"
                (("==") ">=")))))))
     (propagated-inputs
-     `(("python-click" ,python-click)
-       ("python-jinja2" ,python-jinja2)
-       ("python-livereload" ,python-livereload)
-       ("python-lunr" ,python-lunr)
-       ("python-markdown" ,python-markdown)
-       ("python-pyyaml" ,python-pyyaml)
-       ("python-tornado" ,python-tornado)))
+     (list python-click
+           python-jinja2
+           python-livereload
+           python-lunr
+           python-markdown
+           python-pyyaml
+           python-tornado))
     (home-page "https://www.mkdocs.org")
     (synopsis "Project documentation with Markdown")
     (description "MkDocs is a static site generator geared towards building
@@ -612,7 +594,7 @@ configured with a single YAML configuration file.")
     (arguments
      `(#:tests? #f))
     (propagated-inputs
-     `(("python-markdown" ,python-markdown)))
+     (list python-markdown))
     (home-page "https://github.com/facelessuser/pymdown-extensions")
     (synopsis "Extension pack for Python Markdown")
     (description "PyMdown Extensions is a collection of extensions for Python
@@ -642,11 +624,8 @@ Markdown.  All extensions are found under the module namespace of pymdownx.")
              (substitute* "requirements.txt"
                (("mkdocs-material-extensions.*$") "")))))))
     (propagated-inputs
-     `(("python-markdown" ,python-markdown)
-       ("python-mkdocs" ,python-mkdocs)
-       ("python-pygments" ,python-pygments)
-       ("python-pymdown-extensions"
-        ,python-pymdown-extensions)))
+     (list python-markdown python-mkdocs python-pygments
+           python-pymdown-extensions))
     (home-page "https://squidfunk.github.io/mkdocs-material/")
     (synopsis "Material Design theme for MkDocs")
     (description "This package provides a theme plugin for the static site
@@ -684,13 +663,10 @@ generator MkDocs.")
        ("gnupg" ,gnupg)
        ("pkg-config" ,pkg-config)))
     (propagated-inputs
-     `(("python-aiodns" ,python-aiodns)
-       ("python-aiohttp" ,python-aiohttp)
-       ("python-pyasn1" ,python-pyasn1)
-       ("python-pyasn1-modules" ,python-pyasn1-modules)))
+     (list python-aiodns python-aiohttp python-pyasn1
+           python-pyasn1-modules))
     (inputs
-     `(("libidn" ,libidn)
-       ("python" ,python))) ; We are building a Python extension.
+     (list libidn python)) ; We are building a Python extension.
     (synopsis "XMPP library without threads")
     (description "Slixmpp is a XMPP library for Python 3.7+.  It is a fork of
 SleekXMPP.  Its goal is to only rewrite the core of the library (the low level
@@ -711,12 +687,10 @@ threads.")
                 "1j36v9fcpmmd4985ix0cwnvcq71rkrn5cjiiv0id9vkl4kpxh0gv"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-setuptools-scm" ,python-setuptools-scm)
-       ("python-sphinx" ,python-sphinx)
-       ("python-tornado" ,python-tornado)
-       ("python-pytest" ,python-pytest)))
+     (list python-setuptools-scm python-sphinx python-tornado
+           python-pytest))
     (propagated-inputs
-     `(("python-six" ,python-six)))
+     (list python-six))
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (replace 'check
@@ -753,9 +727,9 @@ task of adding retry behavior to just about anything.")
                  (invoke "py.test")))
              #t)))))
     (propagated-inputs
-     `(("python-requests" ,python-requests)))
+     (list python-requests))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://github.com/eternnoir/pyTelegramBotAPI")
     (synopsis "Python Telegram bot api")
     (description "This package provides a simple, but extensible Python
@@ -774,7 +748,7 @@ implementation for the Telegram Bot API.")
                 "1lpk8zmfv8vz090h5d0hzb4n39wgasxdd3x3bpn3v1x1n9dfzaih"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (replace 'check
@@ -798,7 +772,7 @@ with Python's logging module that outputs records using terminal colors.")
                 "1gscnlvj37m421ch3akm3kddxqkrgbg5zrpwy2ky1j59w6vclzg3"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-psutil" ,python-psutil)))
+     (list python-psutil))
     (home-page "https://github.com/rasbt/pyprind")
     (synopsis "Python Progress Bar and Percent Indicator Utility")
     (description "The PyPrind (Python Progress Indicator) module provides a
@@ -818,9 +792,9 @@ of a loop structure or other iterative computation.")
                 "118zm25c8mlajfl0pzssnwz4b8lamj9dgymla9rn4nla7l244a0r"))))
     (build-system python-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("libgphoto2" ,libgphoto2)))
+     (list libgphoto2))
     (home-page "https://github.com/jim-easterbrook/python-gphoto2")
     (synopsis "Python interface to libgphoto2")
     (description "@code{python-gphoto2} is a comprehensive Python interface
@@ -840,7 +814,7 @@ automatically generate the interface code.")
                 "1visbisfini5j14bdzgs95yssw6sm4pfzyq1n3lfvbyjxw7i485g"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-d2to1" ,python-d2to1)))
+     (list python-d2to1))
     (home-page "https://github.com/vaab/colour")
     (synopsis "Convert and manipulate various color representations")
     (description "Pythonic way to manipulate color representations (HSL, RVB,
@@ -859,7 +833,7 @@ web, X11, ...).")
                 "09fq7pq1z8d006xh5z75rm2lk61v6yn2xhy53z4gsgibhqb2vvs9"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-nose" ,python-nose)))
+     (list python-nose))
     (home-page "https://github.com/embray/d2to1")
     (synopsis "Allows for distutils2-like setup.cfg files as package metadata
 in python")
@@ -880,10 +854,9 @@ distribute/setuptools setup.py script.")
                 "0vrhrpr70i61y5q5ysk341x1539ff1q1k82g59zq69lv16s0f76s"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-mock" ,python-mock)))
+     (list python-pytest python-mock))
     (inputs
-     `(("libraw" ,libraw)))
+     (list libraw))
     (home-page "https://rawkit.readthedocs.io")
     (synopsis "Ctypes-based LibRaw binding for Python")
     (description "The rawkit package provides two modules:  rawkit and libraw.
@@ -925,11 +898,9 @@ simple function calls.")
         (base32 "07s3arn85ri92im6x3ipljdmrxmpik7irs06i6lm17j1x6j9841d"))))
     (build-system python-build-system)
     (inputs
-     `(("md4c" ,md4c)))
+     (list md4c))
     (native-inputs
-     `(("python-flake8" ,python-flake8)
-       ("python-pkgconfig" ,python-pkgconfig)
-       ("pkg-config" ,pkg-config)))
+     (list python-flake8 python-pkgconfig pkg-config))
     (home-page "https://github.com/dominickpastore/pymd4c")
     (synopsis "Python bindings for MD4C")
     (description
@@ -950,10 +921,9 @@ to CommonMark.")
          "0mhpxs7vlqx8w75z93dy7nnvx89kwfdjkla03l19an15rlyqyspd"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-setuptools-scm" ,python-setuptools-scm)
-       ("python-pytest" ,python-pytest)))
+     (list python-setuptools-scm python-pytest))
     (inputs
-     `(("libmediainfo" ,libmediainfo)))
+     (list libmediainfo))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -1033,14 +1003,12 @@ iotop, uptime, pidof, tty, taskset, pmap.")
            #t))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-cython" ,python-cython)
-       ("python-matplotlib" ,python-matplotlib)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)))
+     (list python-cython python-matplotlib python-pytest
+           python-pytest-cov))
     (inputs
-     `(("geos" ,geos)))
+     (list geos))
     (propagated-inputs
-     `(("python-numpy" ,python-numpy)))
+     (list python-numpy))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -1079,7 +1047,7 @@ planar geometric objects.  It is based on the @code{GEOS} library.")
          "1f8i4zwj5vmpzbz6b17bljy4399gx5aq7vsyw63sz2qgyjcd73yh"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pep8" ,python-pep8)))
+     (list python-pep8))
     (home-page "https://github.com/skorokithakis/shortuuid")
     (synopsis "Generator library for concise, unambiguous and URL-safe UUIDs")
     (description
@@ -1110,11 +1078,8 @@ module and then similar looking characters are removed.")
                (invoke "pytest"))
              #t)))))
     (native-inputs
-     `(("python-cython" ,python-cython)
-       ("python-pytest" ,python-pytest)
-       ("python-setuptools-scm" ,python-setuptools-scm)
-       ("python-toml" ,python-toml)
-       ("python-wheel" ,python-wheel)))
+     (list python-cython python-pytest python-setuptools-scm python-toml
+           python-wheel))
     (home-page "https://github.com/python-useful-helpers/logwrap")
     (synopsis "Decorator for logging function arguments")
     (description "This package provides a decorator to log function arguments
@@ -1134,7 +1099,7 @@ and function call return values in a human-readable way.")
          "1r9987qmy1pz3hq54160bapqsywpq14waw4w9x3ly8hmq7kpgfbj"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-mock" ,python-mock)))
+     (list python-mock))
     (home-page "https://github.com/Anaconda-Platform/clyent")
     (synopsis "Command line client library")
     (description "Clyent is a Python command line utility library.  It is used
@@ -1157,11 +1122,9 @@ by @code{binstar}, @code{binstar-build}, and @code{chalmers}.")
          "018yg7g2pa6vjixx1nx41cfispgfi0azzp0a1chlycbj8jsil0ys"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-freezegun" ,python-freezegun)
-       ("python-pytest" ,python-pytest)
-       ("tzdata" ,tzdata-for-tests)))
+     (list python-freezegun python-pytest tzdata-for-tests))
     (propagated-inputs
-     `(("python-pytz" ,python-pytz)))
+     (list python-pytz))
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (replace 'check
@@ -1218,19 +1181,19 @@ and verifies that it matches the intended target hostname.")
          "02dy0b1k7qlhn7ajyzkrvxhyhjj0hzcq6ws3zjml9hkdz5znz92g"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-coverage" ,python-coverage)
-       ("python-hypothesis" ,python-hypothesis)
-       ("python-pre-commit" ,python-pre-commit)
-       ("python-py" ,python-py)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-benchmark" ,python-pytest-benchmark)
-       ("python-pytest-cov" ,python-pytest-cov)
-       ("python-setuptools-scm" ,python-setuptools-scm)
-       ("python-sortedcollections" ,python-sortedcollections)
-       ("python-sortedcontainers" ,python-sortedcontainers)
-       ("python-sphinx" ,python-sphinx)
-       ("python-sphinx-autodoc-typehints" ,python-sphinx-autodoc-typehints)
-       ("python-tox" ,python-tox)))
+     (list python-coverage
+           python-hypothesis
+           python-pre-commit
+           python-py
+           python-pytest
+           python-pytest-benchmark
+           python-pytest-cov
+           python-setuptools-scm
+           python-sortedcollections
+           python-sortedcontainers
+           python-sphinx
+           python-sphinx-autodoc-typehints
+           python-tox))
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (add-after 'unpack 'relax-reqs
@@ -1359,14 +1322,11 @@ NetCDF files can also be read and modified.  Python-HDF4 is a fork of
                  (string-append "['" prefix "/lib" "']")))
               #t))))))
     (propagated-inputs
-     `(("python-six" ,python-six)
-       ("python-numpy" ,python-numpy)))
+     (list python-six python-numpy))
     (inputs
-     `(("hdf5" ,hdf5-1.10)))
+     (list hdf5-1.10))
     (native-inputs
-     `(("python-cython" ,python-cython)
-       ("python-pkgconfig" ,python-pkgconfig)
-       ("pkg-config" ,pkg-config)))
+     (list python-cython python-pkgconfig pkg-config))
     (home-page "https://www.h5py.org/")
     (synopsis "Read and write HDF5 files from Python")
     (description
@@ -1399,9 +1359,9 @@ concepts.")
              (substitute* "setup.py"
                ((", '-march=native'") "")))))))
     (propagated-inputs
-     `(("python-numpy" ,python-numpy)))
+     (list python-numpy))
     (native-inputs
-     `(("pybind11" ,pybind11)))
+     (list pybind11))
     (home-page "https://github.com/nmslib/hnswlib")
     (synopsis "Fast approximate nearest neighbor search")
     (description "Hnswlib is a header-only C++ implementation of fast
@@ -1426,16 +1386,10 @@ approximate nearest neighbor search with Python bindings.")
     (arguments
      `(#:test-target "pytest"))
     (propagated-inputs
-     `(("python-black" ,python-black)
-       ("python-language-server"
-        ,python-language-server)
-       ("python-toml" ,python-toml)))
+     (list python-black python-language-server python-toml))
     (native-inputs
-     `(("python-flake8" ,python-flake8)
-       ("python-isort" ,python-isort)
-       ("python-mypy" ,python-mypy)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-runner" ,python-pytest-runner)))
+     (list python-flake8 python-isort python-mypy python-pytest
+           python-pytest-runner))
     (home-page "https://github.com/rupert/pyls-black")
     (synopsis "Black plugin for the Python Language Server")
     (description "Black plugin for the Python Language Server.")
@@ -1462,7 +1416,7 @@ approximate nearest neighbor search with Python bindings.")
              (setenv "HOME" "/tmp")
              (invoke "python" "sh.py" "test"))))))
     (native-inputs
-     `(("python-coverage" ,python-coverage)))
+     (list python-coverage))
     (home-page "https://github.com/amoffat/sh")
     (synopsis "Python subprocess replacement")
     (description "This package provides a replacement for Python's
@@ -1481,11 +1435,9 @@ approximate nearest neighbor search with Python bindings.")
         (base32 "0w0gi6jnch38hiygl62j4xkcirv4y3dcwrvxl9p7bsk6j27lzihs"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-numpy" ,python-numpy)))
+     (list python-numpy))
     (native-inputs
-     `(("python-coveralls" ,python-coveralls)
-       ("python-cython" ,python-cython)
-       ("python-pytest-cov" ,python-pytest-cov)))
+     (list python-coveralls python-cython python-pytest-cov))
     (home-page "https://github.com/Unidata/cftime")
     (synopsis "Library for time handling")
     (description
@@ -1515,14 +1467,11 @@ of the netcdf4 package before.")
              (setenv "HDF5_DIR" (assoc-ref inputs "hdf5"))
              #t)))))
     (native-inputs
-     `(("python-cython" ,python-cython)))
+     (list python-cython))
     (propagated-inputs
-     `(("python-numpy" ,python-numpy)
-       ("python-cftime" ,python-cftime)))
+     (list python-numpy python-cftime))
     (inputs
-     `(("netcdf" ,netcdf)
-       ("hdf4" ,hdf4)
-       ("hdf5" ,hdf5)))
+     (list netcdf hdf4 hdf5))
     (home-page "https://github.com/Unidata/netcdf4-python")
     (synopsis "Python/numpy interface to the netCDF library")
     (description "Netcdf4-python is a Python interface to the netCDF C
@@ -1558,10 +1507,9 @@ to users of that module.")
                       (when tests?
                         (invoke "pytest")))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (propagated-inputs
-     `(("python-lxml" ,python-lxml)
-       ("python-paramiko" ,python-paramiko)))
+     (list python-lxml python-paramiko))
     (home-page "https://github.com/ncclient/ncclient")
     (synopsis "Python library for NETCONF clients")
     (description "@code{ncclient} is a Python library that facilitates
@@ -1581,7 +1529,7 @@ protocol.")
         (base32 "1g0sgphss8hbi1rpl4avy1nmbixmy9v194xdbvkjgl90vzgy2q3r"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-boolean.py" ,python-boolean.py)))
+     (list python-boolean.py))
     (home-page "https://github.com/nexB/license-expression")
     (synopsis "Apply boolean logic to license expressions")
     (description
@@ -1611,9 +1559,9 @@ conventions and aliases in the same expression.")
              (setenv "MAGICK_HOME" (assoc-ref inputs "imagemagick"))
              (setenv "WAND_MAGICK_LIBRARY_SUFFIX" ".Q16"))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (inputs
-     `(("imagemagick" ,imagemagick)))
+     (list imagemagick))
     (home-page "https://docs.wand-py.org/")
     (synopsis "MagickWand API binding for Python")
     (description
@@ -1635,7 +1583,7 @@ library.")
     (build-system python-build-system)
     (arguments '(#:test-target "check"))
     (native-inputs
-     `(("python-pbr" ,python-pbr)))
+     (list python-pbr))
     (home-page "https://launchpad.net/pylockfile")
     (synopsis "Platform-independent file locking module")
     (description
@@ -1659,7 +1607,7 @@ API for locking files.")
          "0snprxdnh3m45r3b0az4v0l28h90ycmfbybzla6xg1qviwv9w1ak"))))
     (build-system python-build-system)
     (inputs
-     `(("re2" ,re2)))
+     (list re2))
     (home-page "https://github.com/facebook/pyre2")
     (synopsis "Python wrapper for RE2")
     (description "This package provides a Python extension that wraps Google's
@@ -1725,8 +1673,7 @@ version identifier.")
         (base32 "1arnckykpkvv2qrp49l1k7q5mr5pisswl0rvdx98x8wsl1n361pk"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-attrs" ,python-attrs)
-       ("python-pytz" ,python-pytz)))
+     (list python-attrs python-pytz))
     (home-page "https://github.com/irmen/Serpent")
     (synopsis "Serializer for literal Python expressions")
     (description
@@ -1817,7 +1764,7 @@ Python 3 support.")
     (arguments
      `(#:tests? #f))
     (native-inputs
-     `(("unzip" ,unzip)))
+     (list unzip))
     (home-page "https://pypi.org/project/setuptools/")
     (synopsis
      "Library designed to facilitate packaging Python projects")
@@ -1852,11 +1799,9 @@ Python 3 support.")
          "1l8zmcnp9h8sp8hsw7b81djaa1a9yig0y7i4phh5pihqz1gdn7yi"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-setuptools-scm" ,python-setuptools-scm)))
+     (list python-pytest python-setuptools-scm))
     (propagated-inputs
-     `(("python-toml" ,python-toml)
-       ("python-wheel" ,python-wheel)))
+     (list python-toml python-wheel))
     (home-page
      "https://github.com/s0undt3ch/setuptools-declarative-requirements")
     (synopsis "File support for setuptools declarative setup.cfg")
@@ -1893,7 +1838,7 @@ Python 3 support.")
     (arguments
      '(#:tests? #f)) ; The test suite requires network access.
     (native-inputs
-     `(("unzip" ,unzip)))
+     (list unzip))
     (home-page
      "https://bitbucket.org/emptypage/uniseg-python")
     (synopsis
@@ -2032,19 +1977,18 @@ class.")
                         (("\"can_player\\.py --help\"") ""))
                       #t)))))
     (propagated-inputs
-     `(("python-aenum" ,python-aenum)
-       ("python-wrapt" ,python-wrapt)))
+     (list python-aenum python-wrapt))
     (native-inputs
-     `(("python-codecov" ,python-codecov)
-       ("python-coverage" ,python-coverage)
-       ("python-future" ,python-future)
-       ("python-hypothesis" ,python-hypothesis)
-       ("python-mock" ,python-mock)
-       ("python-pyserial" ,python-pyserial)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)
-       ("python-pytest-runner" ,python-pytest-runner)
-       ("python-pytest-timeout" ,python-pytest-timeout)))
+     (list python-codecov
+           python-coverage
+           python-future
+           python-hypothesis
+           python-mock
+           python-pyserial
+           python-pytest
+           python-pytest-cov
+           python-pytest-runner
+           python-pytest-timeout))
     (home-page "https://github.com/hardbyte/python-can")
     (synopsis "Controller Area Network (CAN) interface module for Python")
     (description "This package defines the @code{can} module, which provides
@@ -2080,12 +2024,9 @@ sending and receiving messages on a CAN bus.")
                     (lambda _
                       (invoke "py.test" "-k" "not NetworkTests"))))))
     (propagated-inputs
-      `(("python-distlib" ,python-distlib)
-        ("python-packaging" ,python-packaging)
-        ("python-requests" ,python-requests)))
+      (list python-distlib python-packaging python-requests))
     (native-inputs
-     `(("python-mock" ,python-mock)
-       ("python-pytest" ,python-pytest)))
+     (list python-mock python-pytest))
     (home-page "https://github.com/brettcannon/caniusepython3")
     (synopsis "Check for Python 3-incompatible Python libraries")
     (description "The @command{caniusepython3} command scans your project and
@@ -2174,10 +2115,7 @@ bits instead of primitive data types like @code{char}, @code{int}, etc.")
      `(("sphinx" ,python-sphinx)
        ("texinfo" ,texinfo)))
     (propagated-inputs
-     `(("python-bitstruct" ,python-bitstruct)
-       ("python-can" ,python-can)
-       ("python-diskcache" ,python-diskcache)
-       ("python-textparser" ,python-textparser)))
+     (list python-bitstruct python-can python-diskcache python-textparser))
     (home-page "https://github.com/eerimoq/cantools")
     (synopsis "Tools for the Controller Area Network (CAN) bus protocol")
     (description "This package includes Controller Area Network (CAN) related
@@ -2209,7 +2147,7 @@ tools that can be used to:
     (arguments
      `(#:tests? #f))
     (propagated-inputs
-     `(("python-humanfriendly" ,python-humanfriendly)))
+     (list python-humanfriendly))
     (home-page "https://capturer.readthedocs.io")
     (synopsis "Capture stdout and stderr streams of the current process")
     (description
@@ -2235,12 +2173,9 @@ for additional processing.")
          "1cagg06vfph864s6l5jb0zqliwxh647bki8j6lf4a4qrv40jnhs8"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-mock" ,python-mock)
-       ("python-nose" ,python-nose)
-       ("python-six" ,python-six)
-       ("python-unittest2" ,python-unittest2)))
+     (list python-mock python-nose python-six python-unittest2))
     (native-inputs
-     `(("python-coverage" ,python-coverage)))
+     (list python-coverage))
     (home-page "https://github.com/celery/case")
     (synopsis "Unittest utilities and convenience methods")
     (description
@@ -2270,8 +2205,7 @@ some helpful Python 2 compatibility convenience methods.")
              (invoke "pytest" "-v" "-k" "not test_pylint_plugin"
                      "verboselogs/tests.py"))))))
     (native-inputs
-     `(("python-mock" ,python-mock)
-       ("python-pytest" ,python-pytest)))
+     (list python-mock python-pytest))
     (home-page "https://verboselogs.readthedocs.io")
     (synopsis "Verbose logging level for Python's logging module")
     (description
@@ -2298,7 +2232,7 @@ add the log levels NOTICE, SPAM, SUCCESS and VERBOSE.")
      `(;Tests require some updated modules
        #:tests? #f))
     (propagated-inputs
-     `(("python-capturer" ,python-capturer)))
+     (list python-capturer))
     (home-page "https://coloredlogs.readthedocs.io")
     (synopsis "Colored stream handler for Python's logging module")
     (description
@@ -2345,22 +2279,18 @@ files are easily readable and they work nicely with version control systems.")
          "0vmxgn9wd3j80hp4gr5iq06jrl4gryz5zgfdd2ah30d12sfcfig0"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python2-backports-functools-lru-cache"
-        ,python2-backports-functools-lru-cache)
-       ("python2-backports-shutil-get-terminal-size"
-        ,python2-backports-shutil-get-terminal-size)
-       ("python-cached-property" ,python-cached-property)
-       ("python-colorama" ,python-colorama)
-       ("python-imagesize" ,python-imagesize)
-       ("python-importlib-metadata" ,python-importlib-metadata)
-       ("python-lxml" ,python-lxml)
-       ("python-requests" ,python-requests)
-       ("python-six" ,python-six)))
+     (list python2-backports-functools-lru-cache
+           python2-backports-shutil-get-terminal-size
+           python-cached-property
+           python-colorama
+           python-imagesize
+           python-importlib-metadata
+           python-lxml
+           python-requests
+           python-six))
     (native-inputs
-     `(("python-pytest-cov" ,python-pytest-cov)
-       ("python-pytest-xdist" ,python-pytest-xdist)
-       ("python-responses" ,python-responses)
-       ("python-setuptools-scm" ,python-setuptools-scm)))
+     (list python-pytest-cov python-pytest-xdist python-responses
+           python-setuptools-scm))
     (home-page "https://github.com/webcomics/dosage")
     (synopsis "Comic strip downloader and archiver")
     (description "Dosage is designed to keep a local copy of specific webcomics and other
@@ -2387,8 +2317,7 @@ downloaded, or download a strip for a particular date or index, if possible.")
                     (lambda _
                       (invoke "pytest"))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-lxml" ,python-lxml)))   ;used for the tests
+     (list python-pytest python-lxml))   ;used for the tests
     (home-page "https://bitbucket.org/openpyxl/et_xmlfile")
     (synopsis "Low memory implementation of @code{lxml.xmlfile}")
     (description "This Python library is based upon the @code{xmlfile} module
@@ -2422,12 +2351,9 @@ of @code{xmlfile}.")
                       (invoke "pytest"))))))
     (native-inputs
      ;; For the test suite.
-     `(("python-lxml" ,python-lxml)
-       ("python-pillow" ,python-pillow)
-       ("python-pytest" ,python-pytest)))
+     (list python-lxml python-pillow python-pytest))
     (propagated-inputs
-     `(("python-et-xmlfile" ,python-et-xmlfile)
-       ("python-jdcal" ,python-jdcal)))
+     (list python-et-xmlfile python-jdcal))
     (home-page "https://openpyxl.readthedocs.io")
     (synopsis "Python library to read/write Excel 2010 XLSX/XLSM files")
     (description "This Python library allows reading and writing to the Excel XLSX, XLSM,
@@ -2467,12 +2393,9 @@ standard.")
          "07qlyhcm0f28sxdizawvdf3d50m3hnbzz5kg3fjp7chvki44y540"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-dnspython" ,python-dnspython)
-       ("python-greenlet" ,python-greenlet)
-       ("python-monotonic" ,python-monotonic)
-       ("python-six" ,python-six)))
+     (list python-dnspython python-greenlet python-monotonic python-six))
     (native-inputs
-     `(("python-nose" ,python-nose)))
+     (list python-nose))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
@@ -2515,7 +2438,7 @@ from the Python interpreter, or as a small part of a larger application.")
                 "0kdsp883mx0lfyykv0p12bvs203kdm3skb8bw5wf2pc7kb393sl1"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-stdlib-list" ,python-stdlib-list)))
+     (list python-stdlib-list))
     (home-page "https://gitlab.com/joelostblom/session_info")
     (synopsis "Output module version information loaded in a Python session")
     (description "This package outputs version information for modules loaded
@@ -2550,8 +2473,7 @@ in the current session, Python, and the OS.")
         "0vplyjcbfrq50sphlwya749z8p2pcyi2nycw3518i0qpd9a6189i"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-mock" ,python-mock)))
+     (list python-pytest python-mock))
     (home-page "https://github.com/dbader/schedule")
     (synopsis "Schedule periodic function calls in Python")
     (description
@@ -2580,7 +2502,7 @@ human-friendly syntax.")
        (sha256
         (base32 "0mmfvx4wqp8gkpv0kbih89zfs9njvmd3v4dxfqii62xddpxq0f1k"))))
     (propagated-inputs
-     `(("python-six" ,python-six)))
+     (list python-six))
     (build-system python-build-system)
     (home-page "https://github.com/scour-project/scour")
     (synopsis "Scour is an SVG optimizer/cleaner written in Python")
@@ -2603,7 +2525,7 @@ lossless but can be tweaked for more aggressive cleaning.")
         "1z9kqcwb8gfq2l6i42z624kxpd8692a0c8gw2x5bbm7n848w2mb3"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-html5lib" ,python-html5lib)))
+     (list python-html5lib))
     (home-page "https://github.com/python-mechanize/mechanize")
     (synopsis
      "Stateful programmatic web browsing in Python")
@@ -2630,7 +2552,7 @@ after Andy Lester’s Perl module WWW::Mechanize.")
     (arguments
      `(#:tests? #f))
     (inputs
-      `(("alsa-lib" ,alsa-lib)))
+      (list alsa-lib))
     (home-page
      "https://github.com/hamiltron/py-simple-audio")
     (synopsis "Simple, asynchronous audio playback for Python 3")
@@ -2652,7 +2574,7 @@ audio playback capability for Python 3 on OSX, Windows, and Linux.")
         "0hc8nqwdlll4a9cr1k9msn5kmb6kmbjirpgvhjh254nr4sgwgv3m"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-toml" ,python-toml)))
+     (list python-toml))
     (home-page "https://simplejson.readthedocs.io/en/latest")
     (synopsis
      "Json library for Python")
@@ -2686,10 +2608,9 @@ Python 3.3+.")
         "0mkz1673qxldxs4mrqg9882xgmz5fhpia17yrsd6z8dfw8156rf0"))))
     (build-system python-build-system)
     (inputs
-     `(("icu4c" ,icu4c)))
+     (list icu4c))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-six" ,python-six)))
+     (list python-pytest python-six))
     (home-page "https://github.com/ovalhub/pyicu")
     (synopsis "Python extension wrapping the ICU C++ API")
     (description
@@ -2726,9 +2647,7 @@ Python 3.3+.")
                (invoke "dbus-run-session" "--" "nosetests" "-v" "tests/"))
              #t)))))
     (propagated-inputs
-     `(("python-pygobject" ,python-pygobject)
-       ("python-pycairo" ,python-pycairo)
-       ("python-pyatspi" ,python-pyatspi)))
+     (list python-pygobject python-pycairo python-pyatspi))
     (native-inputs
      `(("python-nose" ,python-nose)
        ("gtk+" ,gtk+)
@@ -2893,11 +2812,9 @@ backported for previous versions of Python from 2.4 to 3.3.")
         "0g3b6gsdwnm8dpkh2vn34q6dzxm9gl908ggyzcv31n9xbp3vv5pm"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-six" ,python-six)
-       ("python-parse" ,python-parse)))
+     (list python-six python-parse))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-pytest-runner" ,python-pytest-runner)))
+     (list python-pytest python-pytest-runner))
     (home-page "https://github.com/jenisys/parse_type")
     (synopsis "Extended parse module")
     (description
@@ -2976,9 +2893,7 @@ existing ones.")
     (build-system python-build-system)
     (arguments '(#:tests? #false)) ; no tests included
     (native-inputs
-     `(("python-mock" ,python-mock)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-runner" ,python-pytest-runner)))
+     (list python-mock python-pytest python-pytest-runner))
     (home-page "https://github.com/ddmee/polling2")
     (synopsis "Polling utility with many configurable options")
     (description "Polling2 is a utility used to wait for a function to return
@@ -3167,7 +3082,7 @@ server.")
     (propagated-inputs
      ;; Youtube-dl is a python package which is imported in the file
      ;; "backend_youtube_dl.py", therefore it needs to be propagated.
-     `(("youtube-dl" ,youtube-dl)))
+     (list youtube-dl))
     (home-page "https://np1.github.io/pafy/")
     (synopsis "Retrieve YouTube content and metadata")
     (description
@@ -3188,7 +3103,7 @@ server.")
     (arguments
      `(#:python ,python-2))
     (native-inputs
-     `(("python2-unittest2" ,python2-unittest2)))
+     (list python2-unittest2))
     (home-page "http://funcsigs.readthedocs.org")
     (synopsis "Python function signatures from PEP362")
     (description
@@ -3223,7 +3138,7 @@ server.")
      ;; Is this module globally installed?"
      '(#:tests? #f))
     (native-inputs
-     `(("python-setuptools-scm" ,python-setuptools-scm)))
+     (list python-setuptools-scm))
     (home-page "https://github.com/pytest-dev/py")
     (synopsis "Python library for parsing, I/O, instrospection, and logging")
     (description
@@ -3271,7 +3186,7 @@ code introspection, and logging.")
     (arguments
      `(#:tests? #f)) ;; Most tests seem to use the Internet.
     (propagated-inputs
-      `(("git" ,git))) ;; pbr actually uses the "git" binary.
+      (list git)) ;; pbr actually uses the "git" binary.
     (native-inputs
       `(("python-fixtures" ,python-fixtures-bootstrap)
         ;; discover, coverage, hacking, subunit
@@ -3314,11 +3229,9 @@ from git information.
                         (("hypothesis<5") "hypothesis"))
                       #t)))))
     (native-inputs
-     `(("python-hypothesis" ,python-hypothesis)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-runner" ,python-pytest-runner)))
+     (list python-hypothesis python-pytest python-pytest-runner))
     (propagated-inputs
-     `(("python-six" ,python-six)))
+     (list python-six))
     (synopsis "Persistent data structures for Python")
     (description
      "Pyrsistent is a number of persistent collections (by some referred to as
@@ -3390,12 +3303,10 @@ files.")
         (base32 "1bg2iw9l5dip0kbs00hajdk2v18wvhssbnq8hdf71278qf0wks5l"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (propagated-inputs
-     `(("python-wcwidth" ,python-wcwidth)
-       ("python-configobj" ,python-configobj)
-       ("python-tabulate" ,python-tabulate)
-       ("python-terminaltables" ,python-terminaltables)))
+     (list python-wcwidth python-configobj python-tabulate
+           python-terminaltables))
     (home-page "https://github.com/dbcli/cli_helpers")
     (synopsis "Helpers for building command-line apps")
     (description
@@ -3430,7 +3341,7 @@ interfaces.")
            (lambda _
              (invoke "python" "-m" "pytest"))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://palletsprojects.com/p/click/")
     (synopsis "Command line library for Python")
     (description
@@ -3468,9 +3379,9 @@ with sensible defaults out of the box.")
             "09vbkik6kyn6yrqzl2r74vaybjk8kjykvi975hy3fsrm4gb17g54"))))
     (build-system python-build-system)
     (propagated-inputs
-      `(("python-click" ,python-click)))
+      (list python-click))
     (native-inputs
-      `(("python-pytest-cov" ,python-pytest-cov)))
+      (list python-pytest-cov))
     (home-page "https://github.com/mapbox/cligj")
     (synopsis "Click params for command line interfaces to GeoJSON")
     (description
@@ -3519,7 +3430,7 @@ version numbers.")
                     (lambda _
                       (invoke "pytest"))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://github.com/phn/jdcal")
     (synopsis "Functions to convert between Julian dates Gregorian dates")
     (description "This Python library provides functions for converting
@@ -3542,8 +3453,7 @@ between Julian dates and Gregorian dates.")
        "00v3689175aqzdscrxpffm712ylp8jvcpqdg51ca22ni6721p51l"))))
    (build-system python-build-system)
    (native-inputs
-    `(("python-nose" ,python-nose)
-      ("python-nose-random" ,python-nose-random)))
+    (list python-nose python-nose-random))
    (home-page
     "https://github.com/fzumstein/jsondiff")
    (synopsis "Compare JSON and JSON-like structures in Python")
@@ -3574,9 +3484,7 @@ compare, diff, and patch JSON and JSON-like structures in Python.")
      `(("python-setuptools_scm" ,python-setuptools-scm)
        ("python-twisted" ,python-twisted)))
     (propagated-inputs
-     `(("python-attrs" ,python-attrs)
-       ("python-pyrsistent" ,python-pyrsistent)
-       ("python-six" ,python-six)))
+     (list python-attrs python-pyrsistent python-six))
     (home-page "https://github.com/Julian/jsonschema")
     (synopsis "Implementation of JSON Schema for Python")
     (description
@@ -3596,7 +3504,7 @@ compare, diff, and patch JSON and JSON-like structures in Python.")
          "1lw28j9w9vxyigg7vkfkvi6ic9lgjkdnfvnxdr7pklslqvzmk2vm"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://github.com/keleshev/schema")
     (synopsis "Simple data validation library")
     (description
@@ -3636,7 +3544,7 @@ something else) to Python data-types.")
          "1zakh6l0yjvwic9p0nkvmbidpnkygkxbigh2skmb5gccyrhbp7xg"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-chardet" ,python-chardet)))
+     (list python-chardet))
     (home-page "https://github.com/fedora-infra/kitchen")
     (synopsis "Python API for snippets")
     (description "@code{kitchen} module provides a python API for all sorts of
@@ -3711,7 +3619,7 @@ somewhat intelligible.")
                     (lambda _
                       (invoke "pytest" "-vv"))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://github.com/kmike/text-unidecode/")
     (synopsis "Decode Unicode data")
     (description
@@ -3755,8 +3663,7 @@ memory usage and transliteration quality.")
                          ""))
                       (invoke "pytest" "-vv"))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)))
+     (list python-pytest python-pytest-cov))
     (home-page "https://github.com/progrium/pyjwt")
     (synopsis "JSON Web Token implementation in Python")
     (description
@@ -3868,8 +3775,7 @@ environments and back.")
          "0pm440pmpvgv5rbbnm8hk4qga5a292kvlm1bh3x2nwr8pb5p8xv0"))))
     (build-system python-build-system)
     (inputs
-     `(("libyaml" ,libyaml)
-       ("python-cython" ,python-cython)))
+     (list libyaml python-cython))
     (home-page "https://pyyaml.org")
     (synopsis "YAML parser and emitter for Python")
     (description
@@ -3895,8 +3801,7 @@ provides Python-specific tags that represent an arbitrary Python object.")
          "0wkskb2hb494v9gixqnf4bl972p4ibcmxdykzpwjlfa5picns4aj"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-case" ,python-case)))
+     (list python-pytest python-case))
     (home-page "https://github.com/celery/vine")
     (synopsis "Promises for Python")
     (description
@@ -3919,14 +3824,9 @@ e.g. filters, callbacks and errbacks can all be promises.")
          "1nbhnpzswcf3lmzn5xabmfdd7ki8r2w2i37y6wml54di6qi1l48c"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-mock" ,python-mock)
-       ("python-pytest" ,python-pytest)
-       ("python-setuptools-scm" ,python-setuptools-scm)))
+     (list python-mock python-pytest python-setuptools-scm))
     (propagated-inputs
-     `(("python-appdirs" ,python-appdirs)
-       ("python-distlib" ,python-distlib)
-       ("python-filelock" ,python-filelock)
-       ("python-six" ,python-six)))
+     (list python-appdirs python-distlib python-filelock python-six))
     (home-page "https://virtualenv.pypa.io/")
     (synopsis "Virtual Python environment builder")
     (description
@@ -3938,8 +3838,8 @@ e.g. filters, callbacks and errbacks can all be promises.")
     (package
       (inherit base)
       (propagated-inputs
-       `(("python-contextlib2" ,python2-contextlib2)
-         ,@(package-propagated-inputs base))))))
+       (modify-inputs (package-propagated-inputs base)
+         (prepend python2-contextlib2))))))
 
 (define-public python-markupsafe
   (package
@@ -3960,7 +3860,7 @@ e.g. filters, callbacks and errbacks can all be promises.")
                       (when tests?
                         (invoke "pytest" "-vv")))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://github.com/mitsuhiko/markupsafe")
     (synopsis "XML/HTML/XHTML markup safe string implementation for Python")
     (description
@@ -4003,9 +3903,9 @@ for Python.")
                           (invoke "pytest" "-vv")
                           (format #t "test suite not run~%")))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (propagated-inputs
-     `(("python-markupsafe" ,python-markupsafe)))
+     (list python-markupsafe))
     (home-page "http://jinja.pocoo.org/")
     (synopsis "Python template engine")
     (description
@@ -4041,8 +3941,7 @@ written in pure Python.")
          "0h0dr7cfpjnjj8bgl2vk9063a53649pn37wnlkd8hxjy656slkni"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-arrow" ,python-arrow)
-       ("python-jinja2" ,python-jinja2)))
+     (list python-arrow python-jinja2))
     (home-page
      "https://github.com/hackebrot/jinja2-time")
     (synopsis "Jinja2 Extension for Dates and Times")
@@ -4107,7 +4006,7 @@ logic-free templating system Mustache.")
                        ;; We disable this test to avoid having to depend on ipython/jupyter
                        "-k" "not test_parallel_call_cached_function_defined_in_jupyter")))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://joblib.readthedocs.io/")
     (synopsis "Using Python functions as pipeline jobs")
     (description
@@ -4152,15 +4051,15 @@ logging and tracing of the execution.")
                 "skip_test_detaches_process_context"))
              #t)))))
     (propagated-inputs
-     `(("python-lockfile" ,python-lockfile)))
+     (list python-lockfile))
     (native-inputs
-     `(("python-coverage" ,python-coverage)
-       ("python-unittest2" ,python-unittest2)
-       ("python-testtools" ,python-testtools)
-       ("python-testscenarios" ,python-testscenarios)
-       ("python-twine" ,python-twine)
-       ("python-mock" ,python-mock)
-       ("python-docutils" ,python-docutils)))
+     (list python-coverage
+           python-unittest2
+           python-testtools
+           python-testscenarios
+           python-twine
+           python-mock
+           python-docutils))
     (home-page "https://pagure.io/python-daemon/")
     (synopsis "Python library for making a Unix daemon process")
     (description "Python-daemon is a library that assists a Python program to
@@ -4194,11 +4093,11 @@ important tasks for becoming a daemon process:
                 "1aycpc387wqz7h9w2p53qxn43qsh3m6by6ak4kkc66x9aprr63rz"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-six" ,python-six)))
+     (list python-six))
     (native-inputs
-     `(;; For tests.
-       ("graphviz" ,graphviz)           ;for 'dot'
-       ("python-nose" ,python-nose)))
+     (list ;; For tests.
+           graphviz ;for 'dot'
+           python-nose))
     (home-page "https://github.com/c0fec0de/anytree")
     (synopsis "Lightweight tree data library")
     (description
@@ -4291,9 +4190,9 @@ via commands such as @command{rst2man}, as well as supporting Python code.")
                (invoke "nosetests" "-v"))
              #t)))))
     (propagated-inputs
-     `(("python-docutils" ,python-docutils)))
+     (list python-docutils))
     (native-inputs
-     `(("python-nose" ,python-nose)))
+     (list python-nose))
     (home-page "https://github.com/twolfson/restructuredtext-lint")
     (synopsis "reStructuredText linter")
     (description "This package provides a linter for the reStructuredText
@@ -4323,14 +4222,10 @@ format.")
                (invoke "pytest" "-v"))
              #t)))))
     (propagated-inputs
-     `(("python-chardet" ,python-chardet)
-       ("python-docutils" ,python-docutils)
-       ("python-restructuredtext-lint" ,python-restructuredtext-lint)
-       ("python-six" ,python-six)
-       ("python-stevedore" ,python-stevedore)))
+     (list python-chardet python-docutils python-restructuredtext-lint
+           python-six python-stevedore))
     (native-inputs
-     `(("python-testtools" ,python-testtools)
-       ("python-pytest" ,python-pytest)))
+     (list python-testtools python-pytest))
     (home-page "https://launchpad.net/doc8")
     (synopsis
      "Style checker for Sphinx (or other) RST documentation")
@@ -4387,7 +4282,7 @@ text styles of documentation.")
          "0cz14clcc9z4pn79ll8hp3xzgsrfjscak5zfsvlgrz6ngkkmgjma"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-pygments" ,python-pygments)))
+     (list python-pygments))
     (home-page "https://github.com/liluo/pygments-github-lexers")
     (synopsis "Pygments Github custom lexers")
     (description "This package installs Github custom lexers to Pygments.")
@@ -4456,13 +4351,10 @@ software version simply.")
                       (when tests?
                         (invoke "pytest")))))))
     (propagated-inputs
-     `(("python-wrapt" ,python-wrapt)))
+     (list python-wrapt))
     (native-inputs
-     `(("python-bumpversion" ,python-bumpversion)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)
-       ("python-sphinx" ,python-sphinx)
-       ("python-tox" ,python-tox)))
+     (list python-bumpversion python-pytest python-pytest-cov
+           python-sphinx python-tox))
     (home-page "https://github.com/tantale/deprecated")
     (synopsis "Python decorator to deprecate classes, functions or methods")
     (description "The @code{deprecated} decorator provides a convenient way to deprecate
@@ -4494,13 +4386,10 @@ to deprecate classes, functions or methods.")
                (invoke "pytest"))
              #t)))))
     (propagated-inputs
-     `(("python-cryptography" ,python-cryptography)
-       ("python-deprecated" ,python-deprecated)
-       ("python-pyjwt" ,python-pyjwt)
-       ("python-requests" ,python-requests)))
+     (list python-cryptography python-deprecated python-pyjwt
+           python-requests))
     (native-inputs
-     `(("python-httpretty" ,python-httpretty)
-       ("python-pytest" ,python-pytest)))
+     (list python-httpretty python-pytest))
     (home-page "https://pygithub.readthedocs.io/en/latest/")
     (synopsis "Python library for the GitHub API")
     (description "This library allows managing GitHub resources such as
@@ -4521,8 +4410,7 @@ using version 3 of the GitHub application programming interface (API).")
          "1w0arpj1sm7vh29nrbnca4pnp8sx42l07r17inwqcjjf9bhng66x"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-invoke" ,python-invoke)
-       ("python-pygithub" ,python-pygithub)))
+     (list python-invoke python-pygithub))
     (home-page "https://github.com/robotframework/rellu")
     (synopsis "Utilities to create PyPI releases")
     (description "This collection of utilities contains tooling and templates
@@ -4616,7 +4504,7 @@ process automation (RPA).")
                (invoke "python" "-m" "robot" "-A"
                        "tests/conf/default.args" "tests"))))))
       (propagated-inputs
-       `(("python-robotframework" ,python-robotframework)))
+       (list python-robotframework))
       (home-page "https://github.com/boakley/robotframework-lint/")
       (synopsis "Static analysis tool (linter) for Robot Framework")
       (description "This package provides the @code{rflint} command-line
@@ -4660,17 +4548,15 @@ utility, a static analysis tool (linter) for Robot Framework source files.")
                (delete-file "utest/test_scp.py")
                (invoke "python" "utest/run.py")))))))
     (propagated-inputs
-     `(("python-robotframework" ,python-robotframework)
-       ("python-paramiko" ,python-paramiko)
-       ("python-scp" ,python-scp)))
+     (list python-robotframework python-paramiko python-scp))
     (native-inputs
-     `(("openssh" ,openssh)
-       ("which" ,which)
-       ;; To generate the documentation
-       ("python-docutils" ,python-docutils)
-       ("python-invoke" ,python-invoke)
-       ("python-pygments" ,python-pygments)
-       ("python-rellu" ,python-rellu)))
+     (list openssh
+           which
+           ;; To generate the documentation
+           python-docutils
+           python-invoke
+           python-pygments
+           python-rellu))
     (outputs '("out" "doc"))
     (home-page "https://github.com/robotframework/SSHLibrary")
     (synopsis "Robot Framework library for SSH and SFTP")
@@ -4706,10 +4592,8 @@ for SSH and SFTP.  It has the following main usages:
                       (when tests?
                         (invoke "utest/run.py")))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)
-       ("python-pytest-mockito" ,python-pytest-mockito)
-       ("python-robotframework" ,python-robotframework)))
+     (list python-pytest python-pytest-cov python-pytest-mockito
+           python-robotframework))
     (home-page "https://github.com/robotframework/PythonLibCore")
     (synopsis "Robot Framework Python library tools")
     (description "PythonLibCore provides tools for creating larger test
@@ -4735,10 +4619,8 @@ library APIs.")
     ;; XXX: Tests require ungoogled-chromium, but the chromium module would
     ;; introduce a cycle if imported here.
     (propagated-inputs
-     `(("python-robotframework" ,python-robotframework)
-       ("python-robotframework-pythonlibcore"
-        ,python-robotframework-pythonlibcore)
-       ("python-selenium" ,python-selenium)))
+     (list python-robotframework python-robotframework-pythonlibcore
+           python-selenium))
     (home-page "https://github.com/robotframework/SeleniumLibrary")
     (synopsis "Web testing library for Robot Framework")
     (description "SeleniumLibrary is a web testing library for Robot Framework
@@ -4761,9 +4643,7 @@ that utilizes the Selenium tool internally.")
     ;; their CI with Nix (!).
      `(#:tests? #f))
     (propagated-inputs
-     `(("python-robotframework" ,python-robotframework)
-       ("python-robotframework-seleniumlibrary"
-        ,python-robotframework-seleniumlibrary)))
+     (list python-robotframework python-robotframework-seleniumlibrary))
     (home-page "https://github.com/MarketSquare/robotframework-seleniumscreenshots")
     (synopsis "Robot Framework library for annotating and cropping screenshots")
     (description "The SeleniumScreenshots library for Robot Framework provides
@@ -4806,7 +4686,7 @@ outside the standard library.")
     (arguments
      '(#:tests? #f))                     ;tests require an SSH server
     (propagated-inputs
-     `(("python-paramiko" ,python-paramiko)))
+     (list python-paramiko))
     (home-page "https://github.com/jbardin/scp.py")
     (synopsis "SCP protocol module for Python and Paramiko")
     (description "The scp module extends the Paramiko library to send and
@@ -4826,10 +4706,9 @@ receive files via the SCP1 protocol, as implemented by the OpenSSH
         (base32 "0pqsfqqx8h0pq21k8l3k62kznrgaj2ala93c64s4d9rpbr4mgkd2"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-dateutil" ,python-dateutil)
-       ("python-six" ,python-six)))
+     (list python-dateutil python-six))
     (native-inputs
-     `(("python-setuptools-scm" ,python-setuptools-scm)))
+     (list python-setuptools-scm))
     ;; Test would require path.py, which would introduce a cyclic dependence.
     (arguments `(#:tests? #f))
     ;; Note: As of version 1.7 the documentation is not worth building.
@@ -4859,8 +4738,7 @@ augment the changelog, but it can be used for other documents, too.")
                 "1h4gwmcfn84kkqh83km1vfz8sc5kr2g4gzgzmr8gz704jmqiv7nq"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-cryptography" ,python-cryptography)
-       ("python-ecdsa" ,python-ecdsa)))
+     (list python-cryptography python-ecdsa))
     (synopsis "OpenSSH public key parser")
     (description
      "This package provides a library for parsing and validating OpenSSH
@@ -4888,8 +4766,7 @@ public key files.")
            #t))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-pytz" ,python-pytz)
-       ("python-six" ,python-six)))
+     (list python-pytz python-six))
     (home-page "https://github.com/getpelican/feedgenerator")
     (synopsis
      "Standalone version of Django's Atom/RSS feed generator")
@@ -4914,10 +4791,9 @@ which can produce feeds in RSS 2.0, RSS 0.91, and Atom formats.")
          "1gb0fsamxndhplx25v8m0b3k7aknzy454fpa0qsqsqnv6c3igv3v"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-mock" ,python-mock)
-       ("python-pytest" ,python-pytest)))
+     (list python-mock python-pytest))
     (propagated-inputs
-     `(("python-ujson" ,python-ujson)))
+     (list python-ujson))
     (home-page "https://github.com/python-lsp/python-lsp-jsonrpc")
     (synopsis "JSON RPC 2.0 server library")
     (description
@@ -4968,10 +4844,9 @@ which can produce feeds in RSS 2.0, RSS 0.91, and Atom formats.")
          (replace 'check
            (lambda _ (invoke "pytest" "-vv"))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-pytest-mock" ,python-pytest-mock)))
+     (list python-pytest python-pytest-mock))
     (propagated-inputs
-     `(("python-typing-extensions" ,python-typing-extensions)))
+     (list python-typing-extensions))
     (home-page "https://github.com/samuelcolvin/pydantic")
     (synopsis "Python data validation and settings management")
     (description
@@ -4992,8 +4867,7 @@ errors when data is invalid.")
          "1m1xv9clkg9lgzyza6dnj359z04vh5g0h49nhzghv7lg81gchhap"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-six" ,python-six)
-       ("python-snowballstemmer" ,python-snowballstemmer)))
+     (list python-six python-snowballstemmer))
     (home-page
      "https://github.com/PyCQA/pydocstyle/")
     (synopsis "Python docstring style checker")
@@ -5025,30 +4899,30 @@ Server (PLS).")
              (invoke "python" "-m" "pytest" "-k"
                      "not test_pyqt_completion"))))))
     (propagated-inputs
-     `(("python-autopep8" ,python-autopep8)
-       ("python-configparser" ,python-configparser)
-       ("python-pydocstyle" ,python-pydocstyle)
-       ("python-flake8" ,python-flake8)
-       ("python-future" ,python-future)
-       ("python-jedi" ,python-jedi)
-       ("python-lsp-jsonrpc" ,python-lsp-jsonrpc)
-       ("python-pluggy" ,python-pluggy)
-       ("python-pycodestyle" ,python-pycodestyle)
-       ("python-pyflakes" ,python-pyflakes)
-       ("python-rope" ,python-rope)
-       ("python-ujson" ,python-ujson)
-       ("python-yapf" ,python-yapf)))
+     (list python-autopep8
+           python-configparser
+           python-pydocstyle
+           python-flake8
+           python-future
+           python-jedi
+           python-lsp-jsonrpc
+           python-pluggy
+           python-pycodestyle
+           python-pyflakes
+           python-rope
+           python-ujson
+           python-yapf))
     (native-inputs
-     `(("python-coverage" ,python-coverage)
-       ("python-flaky" ,python-flaky)
-       ("python-matplotlib" ,python-matplotlib)
-       ("python-mock" ,python-mock)
-       ("python-numpy" ,python-numpy)
-       ("python-pandas" ,python-pandas)
-       ("python-pylint" ,python-pylint)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)
-       ("python-versioneer" ,python-versioneer)))
+     (list python-coverage
+           python-flaky
+           python-matplotlib
+           python-mock
+           python-numpy
+           python-pandas
+           python-pylint
+           python-pytest
+           python-pytest-cov
+           python-versioneer))
     (home-page "https://github.com/palantir/python-language-server")
     (synopsis "Python implementation of the Language Server Protocol")
     (description
@@ -5139,17 +5013,17 @@ matching of file paths.")
                (("\\s*\"blackd=blackd:patched_main \\[d\\]\",\n") "")
                 (("\"blackd\", ") "")))))))
     (propagated-inputs
-     `(("python-click" ,python-click)
-       ("python-attrs" ,python-attrs)
-       ("python-appdirs" ,python-appdirs)
-       ("python-pathspec" ,python-pathspec)
-       ("python-mypy-extensions" ,python-mypy-extensions)
-       ("python-regex" ,python-regex)
-       ("python-toml" ,python-toml)
-       ("python-typed-ast" ,python-typed-ast)
-       ("python-typing-extensions" ,python-typing-extensions)))
+     (list python-click
+           python-attrs
+           python-appdirs
+           python-pathspec
+           python-mypy-extensions
+           python-regex
+           python-toml
+           python-typed-ast
+           python-typing-extensions))
     (native-inputs
-     `(("python-setuptools-scm" ,python-setuptools-scm)))
+     (list python-setuptools-scm))
     (home-page "https://github.com/ambv/black")
     (synopsis "The uncompromising code formatter")
     (description "Black is the uncompromising Python code formatter.")
@@ -5168,7 +5042,7 @@ matching of file paths.")
          "1drp5p697ni1xn5y2lbjpalgpkzy2i4cyxjj5pk4dxr0vk97dd7i"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-black" ,python-black)))
+     (list python-black))
     (home-page "https://github.com/wbolster/black-macchiato")
     (synopsis "Partial @code{python-black} formatting")
     (description
@@ -5211,18 +5085,18 @@ interested parties to subscribe to events, or \"signals\".")
          "0g1sbzlz5mfc70gwgnj3lz4kf4psdjl96n6ywklv8z817m1khxdd"))))
     (build-system python-build-system)
     (inputs
-     `(("python-blinker" ,python-blinker)
-       ("python-dateutil" ,python-dateutil)
-       ;; Ignoring `guix lint` warning as python-docutils is used to support
-       ;; reStructuredText processing at runtime.
-       ("python-docutils" ,python-docutils)
-       ("python-feedgenerator" ,python-feedgenerator)
-       ("python-jinja2" ,python-jinja2)
-       ("python-markdown" ,python-markdown)
-       ("python-pygments" ,python-pygments)
-       ("python-pytz" ,python-pytz)
-       ("python-rich" ,python-rich)
-       ("python-unidecode" ,python-unidecode)))
+     (list python-blinker
+           python-dateutil
+           ;; Ignoring `guix lint` warning as python-docutils is used to support
+           ;; reStructuredText processing at runtime.
+           python-docutils
+           python-feedgenerator
+           python-jinja2
+           python-markdown
+           python-pygments
+           python-pytz
+           python-rich
+           python-unidecode))
     (home-page "https://blog.getpelican.com/")
     (arguments
      `(;; XXX Requires a lot more packages to do unit tests :P
@@ -5281,7 +5155,7 @@ provides additional functionality on the produced Mallard documents.")
     ;; we need the full python package and not just the python-wrapper
     ;; because we need libpython3.3m.so
     (inputs
-     `(("python" ,python)))
+     (list python))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -5364,13 +5238,10 @@ writing C extensions for Python as easy as Python itself.")
          "0s6hy8828yr7fcjiwnym4l8lrknr21gqfkaiawsf86n0hd0a5fyh"))))
     (build-system python-build-system)
     (inputs
-     `(("openblas" ,openblas)))
+     (list openblas))
     (native-inputs
-     `(("python-cython" ,python-cython)
-       ("python-hypothesis" ,python-hypothesis)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-xdist" ,python-pytest-xdist)
-       ("gfortran" ,gfortran)))
+     (list python-cython python-hypothesis python-pytest
+           python-pytest-xdist gfortran))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -5444,9 +5315,7 @@ capabilities.")
                  ;; ...and this one depends on the previous one.
                  (delete-file "numpy/matrixlib/tests/test_matrix_linalg.py")))))))
       (native-inputs
-       `(("python-cython" ,python2-cython)
-         ("python-pytest" ,python2-pytest)
-         ("gfortran" ,gfortran))))))
+       (list python2-cython python2-pytest gfortran)))))
 
 ;; Needed by python-numba, see https://github.com/numba/numba/issues/7176
 (define-public python-numpy-1.20
@@ -5502,7 +5371,7 @@ include_dirs = ~a/include
                            (assoc-ref inputs "openblas")
                            (assoc-ref inputs "openblas"))))))))))
     (native-inputs
-     `(("python2-nose" ,python2-nose)))
+     (list python2-nose))
     (description "NumPy is the fundamental package for scientific computing
 with Python.  It contains among other things: a powerful N-dimensional array
 object, sophisticated (broadcasting) functions, tools for integrating C/C++
@@ -5546,8 +5415,7 @@ objects.")
          "05qjycgxp3p2f9n6lmic68sxmsyvgnnlyl4z9w7dl9s56jphaiix"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-networkx" ,python-networkx)
-       ("python-numpy" ,python-numpy)))
+     (list python-networkx python-numpy))
     (home-page "https://github.com/gtaylor/python-colormath")
     (synopsis "Color math and conversion library")
     (description
@@ -5574,14 +5442,10 @@ objects.")
              (when tests?
                (invoke "python" "-m" "pytest" "-v")))))))
     (propagated-inputs
-     `(("python-numba" ,python-numba)
-       ("python-numpy" ,python-numpy)
-       ("python-scipy" ,python-scipy)))
+     (list python-numba python-numpy python-scipy))
     (native-inputs
-     `(("python-dask" ,python-dask)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-black" ,python-pytest-black)
-       ("python-pytest-cov" ,python-pytest-cov)))
+     (list python-dask python-pytest python-pytest-black
+           python-pytest-cov))
     (home-page "https://github.com/pydata/sparse/")
     (synopsis "Library for multi-dimensional sparse arrays")
     (description
@@ -5617,9 +5481,9 @@ depends on @code{scipy.sparse} for some computations.")
          (replace 'check
            (lambda _ (invoke "nosetests" "-v"))))))
     (propagated-inputs
-     `(("python-colormath" ,python-colormath)))
+     (list python-colormath))
     (native-inputs
-     `(("python-nose" ,python-nose)))
+     (list python-nose))
     (home-page "https://github.com/jsvine/spectra")
     (synopsis "Color scales and color conversion")
     (description
@@ -5658,12 +5522,9 @@ color scales, and color space conversion easy.  It has support for:
                       (when tests?
                         (invoke "pytest")))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-pytest-mock" ,python-pytest-mock)))
+     (list python-pytest python-pytest-mock))
     (propagated-inputs
-     `(("python-cryptography" ,python-cryptography)
-       ("python-gssapi" ,python-gssapi)
-       ("python-ruamel.yaml" ,python-ruamel.yaml)))
+     (list python-cryptography python-gssapi python-ruamel.yaml))
     (home-page "https://github.com/jborean93/pyspnego")
     (synopsis "Python SPNEGO library")
     (description "The @code{pyspnego} Python library handles Negotiate, NTLM,
@@ -5798,11 +5659,9 @@ readable format.")
     (arguments
      '(#:tests? #f))            ; tests don't run correctly in our environment
     (propagated-inputs
-     `(("python-cached-property" ,python-cached-property)
-       ("python-cffi" ,python-cffi)
-       ("libgit2" ,libgit2)))
+     (list python-cached-property python-cffi libgit2))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://github.com/libgit2/pygit2")
     (synopsis "Python bindings for libgit2")
     (description "Pygit2 is a set of Python bindings to the libgit2 shared
@@ -5850,7 +5709,7 @@ humans, and implementation simplicity.")
                         (substitute* "wmctrl.py"
                           (("'wmctrl")
                            (string-append "'" wmctrl "/bin/wmctrl")))))))))
-    (inputs `(("wmctrl" ,wmctrl)))
+    (inputs (list wmctrl))
     (propagated-inputs (list python-attrs))
     (home-page "https://github.com/antocuni/wmctrl")
     (synopsis "Tool to programmatically control Xorg windows")
@@ -5913,12 +5772,9 @@ module from the standard Python library.")
                         "not interaction_restores_previous_sigint_handler "
                         "and not python_m_pdb_uses_pdbpp"))))))))
     (propagated-inputs
-     `(("python-fancycompleter" ,python-fancycompleter)
-       ("python-pygments" ,python-pygments)
-       ("python-wmctrl" ,python-wmctrl)))
+     (list python-fancycompleter python-pygments python-wmctrl))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-setuptools-scm" ,python-setuptools-scm)))
+     (list python-pytest python-setuptools-scm))
     (home-page "https://github.com/pdbpp/pdbpp")
     (synopsis "Drop-in replacement for pdb")
     (description "Pdb++ is a drop-in replacement for @code{pdb}.  It
@@ -5945,7 +5801,7 @@ includes the following improvements compared to @code{pdb}:
         (base32 "1555wbgr5spj8xflrs4mwsrdmba2f9s72nk50xzqk9ghxaxdvy6a"))))
     (build-system python-build-system)
     (inputs
-     `(("poppler" ,poppler)))
+     (list poppler))
     (home-page "https://github.com/jalan/pdftotext")
     (synopsis "Simple PDF text extraction")
     (description "Pdftotext is a Python library of PDF text extraction.")
@@ -5969,7 +5825,7 @@ includes the following improvements compared to @code{pdb}:
                     (lambda* (#:key tests? #:allow-other-keys)
                       (when tests?
                         (invoke "make" "test")))))))
-    (native-inputs `(("python-pytest" ,python-pytest)))
+    (native-inputs (list python-pytest))
     (home-page "https://github.com/mitsuhiko/pluginbase")
     (synopsis "Simple but flexible plugin system for Python")
     (description "PluginBase is a library useful in the development of
@@ -5989,7 +5845,7 @@ flexible plugin systems in Python.")
          "000ypfns5x72b41w5f9pk6k3jnr35scliqfbvmilyvv0178005i8"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://github.com/podhmo/python-node-semver")
     (synopsis "Python port of node-semver")
     (description "This module provides a Python version of node-semver, a
@@ -6051,11 +5907,9 @@ parse and apply unified diffs.  It has features such as:
                        ;; TODO: unclear why these fail.
                        "-k" "not test_MyClass and not test_my_function")))))))
     (propagated-inputs
-     `(("python-sphinx" ,python-sphinx)))
+     (list python-sphinx))
     (native-inputs
-     `(("python-matplotlib" ,python-matplotlib)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)))
+     (list python-matplotlib python-pytest python-pytest-cov))
     (home-page "https://pypi.org/project/numpydoc/")
     (synopsis
      "Numpy's Sphinx extensions")
@@ -6095,7 +5949,7 @@ parse and apply unified diffs.  It has features such as:
     (build-system python-build-system)
     (arguments `(#:tests? #f))          ; no tests included
     (propagated-inputs
-     `(("python-numpy" ,python-numpy)))
+     (list python-numpy))
     (home-page "https://github.com/pydata/numexpr")
     (synopsis "Fast numerical expression evaluator for NumPy")
     (description
@@ -6126,7 +5980,7 @@ transcendental functions).")
      ;; Enable this for the next release which uses 'python-pytest'.
      '(#:tests? #f))
     (propagated-inputs
-     `(("python-six" ,python-six)))
+     (list python-six))
     (home-page "https://matplotlib.org/cycler/")
     (synopsis "Composable keyword argument iterator")
     (description
@@ -6155,9 +6009,9 @@ To address this and enable easy cycling over arbitrary @code{kwargs}, the
         (base32 "0x7nkphr6g5ql5fvgss8l56rgiyjgh6fm8zzs73i94ci9wzlm63w"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-numpy" ,python-numpy)))
+     (list python-numpy))
     (native-inputs
-     `(("python-nose" ,python-nose)))
+     (list python-nose))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -6187,8 +6041,7 @@ convert between colorspaces like sRGB, XYZ, CIEL*a*b*, CIECAM02, CAM02-UCS, etc.
     (arguments
      `(#:tests? #f))                    ;no test suite
     (propagated-inputs
-     `(("python-protobuf" ,python-protobuf)
-       ("python-pyhamcrest" ,python-pyhamcrest)))
+     (list python-protobuf python-pyhamcrest))
     (home-page "https://github.com/dayfine/proto-matcher")
     (synopsis "PyHamcrest test matchers for protocol buffers")
     (description "This package provides the following PyHamcrest test
@@ -6243,15 +6096,15 @@ comparison.
        ("python-pycairo" ,python-pycairo)
        ("python-cairocffi" ,python-cairocffi)))
     (inputs
-     `(("libpng" ,libpng)
-       ("freetype" ,freetype)
-       ("qhull" ,qhull)
-       ("cairo" ,cairo)
-       ("glib" ,glib)
-       ;; FIXME: Add backends when available.
-       ;("python-wxpython" ,python-wxpython)
-       ("tcl" ,tcl)
-       ("tk" ,tk)))
+     (list libpng
+           freetype
+           qhull
+           cairo
+           glib
+           ;; FIXME: Add backends when available.
+           ;("python-wxpython" ,python-wxpython)
+           tcl
+           tk))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("python-pytest" ,python-pytest)
@@ -6501,8 +6354,7 @@ toolkits.")
         (base32 "1vilzwj3xp00mxprmmn1hlafm3p23vn56s46kx3ra4qd5signjx0"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-matplotlib" ,python-matplotlib)
-       ("python-traitlets" ,python-traitlets)))
+     (list python-matplotlib python-traitlets))
     (arguments
      ;; Tests disabled because of a circular dependency with ipython.
      `(#:tests? #f))
@@ -6527,11 +6379,9 @@ Jupyter.")
     (build-system python-build-system)
     (arguments '(#:tests? #f)) ; tests are not included
     (propagated-inputs
-     `(("python-matplotlib" ,python-matplotlib)
-       ("python-numpy" ,python-numpy)
-       ("python-scipy" ,python-scipy)))
+     (list python-matplotlib python-numpy python-scipy))
     (native-inputs
-     `(("unzip" ,unzip)))
+     (list unzip))
     (home-page "https://github.com/konstantint/matplotlib-venn")
     (synopsis "Plot area-proportional Venn diagrams")
     (description
@@ -6563,14 +6413,14 @@ three-way Venn diagrams in @code{matplotlib}.")
                    (invoke "python3" "pysnptools/test.py"))
                  #t))))))
     (propagated-inputs
-     `(("python-dill" ,python-dill)
-       ("python-h5py" ,python-h5py)
-       ("python-numpy" ,python-numpy)
-       ("python-pandas" ,python-pandas)
-       ("python-psutil" ,python-psutil)
-       ("python-scipy" ,python-scipy)))
+     (list python-dill
+           python-h5py
+           python-numpy
+           python-pandas
+           python-psutil
+           python-scipy))
     (native-inputs
-     `(("python-cython" ,python-cython)))
+     (list python-cython))
     (home-page "http://microsoftgenomics.github.io/PySnpTools/")
     (synopsis "Library for reading and manipulating genetic data")
     (description
@@ -6595,9 +6445,9 @@ operators such as union, intersection, and difference.")
         (base32 "0p8n2ljdacfixkiw092974dmhy4s1c0h032ii1z9kwi9h5h5rgmy"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-nose" ,python-nose)))
+     (list python-nose))
     (propagated-inputs
-     `(("python-numpy" ,python-numpy)))
+     (list python-numpy))
     (home-page "https://github.com/storpipfugl/pykdtree")
     (synopsis "Fast kd-tree implementation with OpenMP-enabled queries")
     (description
@@ -6623,8 +6473,7 @@ search in Python.")
            (lambda _
              (invoke "pytest" "-vv" "test.py"))))))
     (native-inputs
-     `(("python-mock" ,python-mock)
-       ("python-pytest" ,python-pytest)))
+     (list python-mock python-pytest))
     (home-page "https://github.com/minrk/wurlitzer")
     (synopsis "Capture C-level output in context managers")
     (description
@@ -6706,7 +6555,7 @@ a simple netcat replacement with chaining support.")
            (lambda _
              (invoke "pytest" "-vv"))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://pycodestyle.readthedocs.io/")
     (synopsis "Python style guide checker")
     (description "@code{pycodestyle} (formerly pep8) is a tool to check
@@ -6748,8 +6597,7 @@ Python code against some of the style conventions in
                           (invoke "pytest" "-vv")
                           (format #t "test suite not run~%")))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)))
+     (list python-pytest python-pytest-cov))
     (home-page "https://github.com/aio-libs/multidict/")
     (synopsis "Multidict implementation")
     (description "Multidict is dict-like collection of key-value pairs
@@ -6769,10 +6617,9 @@ where key might be occurred more than once in the container.")
             "1bc2v0yflsxjyyjx4q9wqx0j3bvzcw9z87d5pz4iqac7bsxhn1q4"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-six" ,python-six)))
+     (list python-six))
     (native-inputs
-     `(("python-flake8" ,python-flake8)
-       ("python-pycodestyle" ,python-pycodestyle)))
+     (list python-flake8 python-pycodestyle))
     (home-page "https://github.com/gruns/orderedmultidict")
     (synopsis "Python Ordered Multivalue Dictionary - omdict")
     (description "This package contains a library for ordered multivalue
@@ -6794,8 +6641,7 @@ multivalue dictionary that retains the order of insertions and deletions.")
          "1w6vh627vrmgfbvrdcxrc3k4gxcldrb2lpgxv9irkdds851qrzb0"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-pycodestyle" ,python-pycodestyle)
-       ("python-toml" ,python-toml)))
+     (list python-pycodestyle python-toml))
     (home-page "https://github.com/hhatto/autopep8")
     (synopsis "Format Python code according to the PEP 8 style guide")
     (description
@@ -6836,7 +6682,7 @@ by pycodestyle.")
              ;; NOTE: Any value works, the variable just has to be present.
              (setenv "SKIP_ONLINE" "1")
              #t)))))
-    (native-inputs `(("unzip" ,unzip)))
+    (native-inputs (list unzip))
     (home-page "https://bitbucket.org/pypa/distlib")
     (synopsis "Distribution utilities")
     (description "Distlib is a library which implements low-level functions that
@@ -6936,17 +6782,16 @@ the OleFileIO module from PIL, the Python Image Library.")
     (arguments
      `(#:tests? #false))                ;require python-xmp-toolkit
     (native-inputs
-     `(("pybind11" ,pybind11)
-       ("python-setuptools" ,python-setuptools)
-       ("python-setuptools-scm" ,python-setuptools-scm)
-       ("python-setuptools-scm-git-archive" ,python-setuptools-scm-git-archive)
-       ("python-toml" ,python-toml)
-       ("python-wheel" ,python-wheel)))
+     (list pybind11
+           python-setuptools
+           python-setuptools-scm
+           python-setuptools-scm-git-archive
+           python-toml
+           python-wheel))
     (inputs
-     `(("qpdf" ,qpdf)))
+     (list qpdf))
     (propagated-inputs
-     `(("python-lxml" ,python-lxml)
-       ("python-pillow" ,python-pillow)))
+     (list python-lxml python-pillow))
     (home-page "https://github.com/pikepdf/pikepdf")
     (synopsis "Read and write PDFs with Python")
     (description
@@ -6966,7 +6811,7 @@ the OleFileIO module from PIL, the Python Image Library.")
          "086g7nhv52wclrwnzbzs2x3nvyzs2hfq1bvgivsrp5f7r7wiiz7n"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (inputs
      `(("freetype" ,freetype)
        ("lcms"     ,lcms)
@@ -6976,7 +6821,7 @@ the OleFileIO module from PIL, the Python Image Library.")
        ("openjpeg" ,openjpeg)
        ("zlib"     ,zlib)))
     (propagated-inputs
-     `(("python-olefile" ,python-olefile)))
+     (list python-olefile))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -7067,9 +6912,8 @@ a general image processing tool.")
                (for-each make-file-writable (find-files "Tests"))
                #t))))))
     (inputs
-     `(("libraqm" ,libraqm)
-       ("libimagequant" ,libimagequant)
-       ,@(package-inputs python-pillow)))
+     (modify-inputs (package-inputs python-pillow)
+       (prepend libraqm libimagequant)))
     (home-page "https://github.com/uploadcare/pillow-simd")
     (synopsis "Fork of the Python Imaging Library (Pillow)")
     (description "This package is a fork of Pillow which adds support for SIMD
@@ -7126,28 +6970,28 @@ def customize_build(EXTENSIONS, OPTIONS):
 ")))
              #t)))))
     (inputs
-      `(("c-blosc" ,c-blosc)
-        ("giflib" ,giflib)
-        ("brotli" ,brotli)
-        ("libjpeg-turbo" ,libjpeg-turbo)
-        ("libpng" ,libpng)
-        ("libtiff" ,libtiff)
-        ("libwebp" ,libwebp)
-        ("lz4" ,lz4)
-        ("snappy" ,snappy)
-        ("xz" ,xz)
-        ("zlib" ,zlib)
-        ("zstd" ,zstd "lib")))
+      (list c-blosc
+            giflib
+            brotli
+            libjpeg-turbo
+            libpng
+            libtiff
+            libwebp
+            lz4
+            snappy
+            xz
+            zlib
+            `(,zstd "lib")))
     (propagated-inputs
-      `(("python-numpy" ,python-numpy)))
+      (list python-numpy))
     (native-inputs
       ;; For building.
-      `(("python-cython" ,python-cython)
-        ;; For testing. Incomplete.
-        ;("python-numcodecs" ,python-numcodecs)
-        ;("python-zarr" ,python-zarr)
-        ;("python-pytest" ,python-pytest)
-        ))
+      (list python-cython
+            ;; For testing. Incomplete.
+            ;("python-numcodecs" ,python-numcodecs)
+            ;("python-zarr" ,python-zarr)
+            ;("python-pytest" ,python-pytest)
+            ))
     (home-page "https://www.lfd.uci.edu/~gohlke/")
     (synopsis
       "Image transformation, compression, and decompression codecs")
@@ -7171,7 +7015,7 @@ tifffile, czifile, and other scientific image input/output modules.")
     (build-system python-build-system)
     (arguments `(#:tests? #f)) ; there are none
     (propagated-inputs
-      `(("python-numpy" ,python-numpy)))
+      (list python-numpy))
     (home-page "https://www.lfd.uci.edu/~gohlke/")
     (synopsis "Read and write ImageJ ROI format")
     (description "Roifile is a Python library to read, write, create, and plot
@@ -7194,8 +7038,7 @@ regions of interest, geometric shapes, paths, text, etc for image overlays.")
     ;; Tests require lfdfiles, which depends on tifffile
     (arguments `(#:tests? #f))
     (propagated-inputs
-     `(("python-numpy" ,python-numpy)
-       ("python-imagecodecs" ,python-imagecodecs)))
+     (list python-numpy python-imagecodecs))
     (home-page "https://www.lfd.uci.edu/~gohlke/")
     (synopsis "Read and write TIFF(r) files")
     (description "This package lets you read image and metadata from many
@@ -7225,10 +7068,8 @@ numpy arrays to TIFF, BigTIFF, and ImageJ hyperstack compatible files.")
     (arguments
      `(#:tests? #f)) ; No tests exist, despite a test dependency on pytest.
     (propagated-inputs
-     `(("python-click" ,python-click)
-       ("python-numpy" ,python-numpy)
-       ("python-tifffile" ,python-tifffile)))
-    (native-inputs `(("python-cython" ,python-cython)))
+     (list python-click python-numpy python-tifffile))
+    (native-inputs (list python-cython))
     (home-page "https://www.lfd.uci.edu/~gohlke/")
     (synopsis "Work with LFD data files")
     (description
@@ -7262,11 +7103,9 @@ experimental data and metadata at the Laboratory for Fluorescence Dynamics.")
                    (invoke "pytest" "-vv"))
                  #t))))))
     (propagated-inputs
-     `(("python-numpy" ,python-numpy)
-       ("python-pillow" ,python-pillow)
-       ("python-psutil" ,python-psutil)))
+     (list python-numpy python-pillow python-psutil))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://imageio.github.io/")
     (synopsis "Library for reading and writing a wide range of image data")
     (description
@@ -7289,7 +7128,7 @@ data, and scientific formats.")
     (outputs '("out" "doc"))
     (build-system python-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -7371,10 +7210,10 @@ formulas and hyperlinks to multiple worksheets in an Excel 2007+ XLSX file.")
                (with-directory-excursion (string-append cwd "/build/" libdir)
                  (invoke "pytest" "-vv"))))))))
     (native-inputs
-     `(("python-matplotlib" ,python-matplotlib)          ;for tests
-       ("python-pytest" ,python-pytest)))
+     (list python-matplotlib ;for tests
+           python-pytest))
     (propagated-inputs
-     `(("python-numpy" ,python-numpy)))
+     (list python-numpy))
     (synopsis "Wavelet transforms in Python")
     (description
      "PyWavelets is a library for wavelet transforms in Python.  Wavelets are
@@ -7407,7 +7246,7 @@ localized only in frequency instead of in time and frequency.")
              (setenv "HOME" "/tmp")
              #t)))))
     (inputs
-     `(("imagemagick" ,imagemagick)))
+     (list imagemagick))
     (home-page "https://github.com/dylanaraps/pywal")
     (synopsis "Color palette generator and applicator")
     (description
@@ -7429,13 +7268,10 @@ your favourite programs.")
          "10gabhhg3rgacd5ahmi2r128z99fzbrbx6mz1nnq0dxmhmn5rpjf"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-six" ,python-six)
-       ("python-requests_ntlm" ,python-requests_ntlm)
-       ("python-xmltodict" ,python-xmltodict)
-       ("python-kerberos" ,python-kerberos)))
+     (list python-six python-requests_ntlm python-xmltodict
+           python-kerberos))
     (native-inputs
-     `(("python-mock" ,python-mock)
-       ("python-pytest" ,python-pytest)))
+     (list python-mock python-pytest))
     (home-page "https://github.com/diyan/pywinrm/")
     (synopsis
      "Python library for Windows Remote Management (WinRM)")
@@ -7458,10 +7294,10 @@ any machine that can run Python.")
         "0nkglsm9nbhv238iagmmsjcz6lf1yfdvp5kmspphdj385vz9r50j"))))
     (build-system python-build-system)
     (inputs
-     `(("libxcb" ,libxcb)))
+     (list libxcb))
     (propagated-inputs
-     `(("python-cffi" ,python-cffi) ; used at run time
-       ("python-six" ,python-six)))
+     (list python-cffi ; used at run time
+           python-six))
     (arguments
      `(;; FIXME: Tests need more work. See ".travis.yml" in the repository.
        #:tests? #f
@@ -7510,19 +7346,16 @@ support for Python 3 and PyPy.  It is based on cffi.")
     (build-system python-build-system)
     (outputs '("out" "doc"))
     (inputs
-     `(("glib" ,glib)
-       ("gtk+" ,gtk+)
-       ("gdk-pixbuf" ,gdk-pixbuf)
-       ("cairo" ,cairo)))
+     (list glib gtk+ gdk-pixbuf cairo))
     (native-inputs
-     `(("python-numpy" ,python-numpy)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)
-       ("python-pytest-runner" ,python-pytest-runner)
-       ("python-sphinx" ,python-sphinx)
-       ("python-sphinx-rtd-theme" ,python-sphinx-rtd-theme)))
+     (list python-numpy
+           python-pytest
+           python-pytest-cov
+           python-pytest-runner
+           python-sphinx
+           python-sphinx-rtd-theme))
     (propagated-inputs
-     `(("python-xcffib" ,python-xcffib))) ; used at run time
+     (list python-xcffib)) ; used at run time
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -7630,7 +7463,7 @@ etc.  The core of this module is a decorator factory.")
     ;; should be set to the path of the libdrmaa library.
     (arguments '(#:tests? #f))
     (native-inputs
-     `(("python-nose" ,python-nose)))
+     (list python-nose))
     (home-page "https://pypi.org/project/drmaa/")
     (synopsis "Python bindings for the DRMAA library")
     (description
@@ -7657,9 +7490,7 @@ Python language binding specification.")
     (build-system python-build-system)
     (arguments '(#:tests? #f)) ; Test file 'grako.ebnf' is missing from archive.
     (native-inputs
-     `(("unzip" ,unzip)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-runner" ,python-pytest-runner)))
+     (list unzip python-pytest python-pytest-runner))
     (home-page "https://bitbucket.org/neogeny/grako")
     (synopsis "EBNF parser generator")
     (description
@@ -7693,11 +7524,9 @@ memoizing PEG/Packrat parser in Python.")
            (lambda _
              (invoke "python" "setup.py" "pytest"))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-pytest-runner" ,python-pytest-runner)))
+     (list python-pytest python-pytest-runner))
     (propagated-inputs
-     `(("python-numpy" ,python-numpy)
-       ("python-ply" ,python-ply)))
+     (list python-numpy python-ply))
     (home-page "https://github.com/bdcht/grandalf")
     (synopsis "Graph and drawing algorithms framework")
     (description
@@ -7742,9 +7571,7 @@ you to actually draw things with your favorite toolkit.")
     (arguments
      '(#:tests? #f)) ; FIXME: Requires python-cherrypy.
     (propagated-inputs
-     `(("python-psutil" ,python-psutil)
-       ("python-drmaa" ,python-drmaa)
-       ("python-pyzmq" ,python-pyzmq)))
+     (list python-psutil python-drmaa python-pyzmq))
     (home-page "https://github.com/pygridtools/gridmap")
     (synopsis "Create jobs on a cluster directly from Python")
     (description
@@ -7768,12 +7595,9 @@ cluster without needing to write any wrapper code yourself.")
         (base32 "11bd87474qpif20xdcn0ra1idj5k16ka51i658wfpxwc6nzsn92b"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-mock" ,python-mock)
-       ("python-tox" ,python-tox)
-       ("which" ,which))) ;for tests
+     (list python-pytest python-mock python-tox which)) ;for tests
     (propagated-inputs
-     `(("python-jinja2" ,python-jinja2)))
+     (list python-jinja2))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -7809,7 +7633,7 @@ displayed.")
         (base32 "16siqc3brbk7dp4d9sg48bjl6a8wyy24aib3il1hf4y2624draxh"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -7861,7 +7685,7 @@ wraps Python's standard library threading and multiprocessing objects.")
        ("which" ,which)
        ("bash-full" ,bash)))                 ;full Bash for 'test_replwrap.py'
     (propagated-inputs
-     `(("python-ptyprocess" ,python-ptyprocess)))
+     (list python-ptyprocess))
     (home-page "http://pexpect.readthedocs.org/")
     (synopsis "Controlling interactive console applications")
     (description
@@ -7941,8 +7765,7 @@ functions like pickle, json or PyYAML module.")
          "0psyg60vk8wca473djrh0v9gb853z8wcawi8im5dyg00amawp2vx"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-scandir" ,python-scandir)
-       ("python-six" ,python-six)))
+     (list python-scandir python-six))
     (home-page "https://pypi.org/project/pathlib2/")
     (synopsis "Object-oriented file system paths")
     (description "The goal of pathlib2 is to provide a backport of the
@@ -7964,8 +7787,7 @@ older Python versions.")
           "1hq626mx5jl9zfl0wdrjkxsnh8qd98fqv322n68b9251xjk4bxqr"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-setuptools-scm" ,python-setuptools-scm)
-       ("python-toml" ,python-toml)))
+     (list python-setuptools-scm python-toml))
     (home-page "http://importlib-resources.readthedocs.io/")
     (synopsis "Read resources from Python packages")
     (description
@@ -7998,8 +7820,7 @@ older Python versions.")
                          ""))
                       #t)))))
     (propagated-inputs
-     `(("python-pathlib2" ,python2-pathlib2)
-       ("python-typing" ,python2-typing)))
+     (list python2-pathlib2 python2-typing))
     (home-page "https://gitlab.com/python-devs/importlib_resources")
     (synopsis "Backport of @code{importlib.resources} from Python 3.7")
     (description
@@ -8030,11 +7851,9 @@ for older versions of Python.")
          "00ikdj4gjhankdljnz7g5ggak4k9lql2926x0x117ir9j2lv7x86"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-zipp" ,python-zipp)))
+     (list python-zipp))
     (native-inputs
-     `(("python-setuptools-scm" ,python-setuptools-scm)
-       ("python-pyfakefs" ,python-pyfakefs)
-       ("python-packaging" ,python-packaging)))
+     (list python-setuptools-scm python-pyfakefs python-packaging))
     (home-page "https://importlib-metadata.readthedocs.io/")
     (synopsis "Read metadata from Python packages")
     (description
@@ -8133,14 +7952,14 @@ finding unresolved symbols in Python code and their corresponding imports.")
             "0zimrnkh33b9g8ffw11mjh6kvs54cy5gcjw1h5cl1r7dc833dmkm"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-pytest-checkdocs" ,python-pytest-checkdocs)
-       ("python-pytest-flake8" ,python-pytest-flake8)
-       ("python-rst.linker" ,python-rst.linker)
-       ("python-setuptools" ,python-setuptools)
-       ("python-setuptools-scm" ,python-setuptools-scm)
-       ("python-six" ,python-six)
-       ("python-sphinx" ,python-sphinx)))
+     (list python-pytest
+           python-pytest-checkdocs
+           python-pytest-flake8
+           python-rst.linker
+           python-setuptools
+           python-setuptools-scm
+           python-six
+           python-sphinx))
     (home-page "https://github.com/jaraco/jaraco.packaging")
     (synopsis "Tools to supplement packaging Python releases")
     (description
@@ -8161,15 +7980,14 @@ releases.")
     (outputs '("out" "doc"))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-appdirs" ,python-appdirs)
-       ("python-importlib-metadata" ,python-importlib-metadata)))
+     (list python-appdirs python-importlib-metadata))
     (native-inputs
-     `(("python-setuptools-scm" ,python-setuptools-scm)
-       ("python-sphinx" ,python-sphinx)
-       ("python-rst.linker" ,python-rst.linker)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-runner" ,python-pytest-runner)
-       ("python-jaraco-packaging" ,python-jaraco-packaging)))
+     (list python-setuptools-scm
+           python-sphinx
+           python-rst.linker
+           python-pytest
+           python-pytest-runner
+           python-jaraco-packaging))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -8212,7 +8030,7 @@ common operations on files to be invoked on those path objects directly.")
         (base32 "0wwi1c6md4vkbcsfsf8dklf3vr4mcdj4mpxkanwgb6jb1432x5yw"))))
     (build-system python-build-system)
     (native-inputs
-     `(("unzip" ,unzip)))
+     (list unzip))
     (home-page "http://cheeseshop.python.org/pypi/simplegeneric")
     (synopsis "Python module for simple generic functions")
     (description
@@ -8276,22 +8094,22 @@ away.")
              (setenv "HOME" (getcwd))
              #t)))))
     (propagated-inputs
-     `(("python-dateutil" ,python-dateutil)
-       ("python-decorator" ,python-decorator)
-       ("python-ipykernel" ,python-ipykernel)
-       ("python-ipython" ,python-ipython)
-       ("python-ipython-genutils" ,python-ipython-genutils)
-       ("python-jupyter-client" ,python-jupyter-client)
-       ("python-pyzmq" ,python-pyzmq)
-       ("python-tornado" ,python-tornado)
-       ("python-traitlets" ,python-traitlets)))
+     (list python-dateutil
+           python-decorator
+           python-ipykernel
+           python-ipython
+           python-ipython-genutils
+           python-jupyter-client
+           python-pyzmq
+           python-tornado
+           python-traitlets))
     (native-inputs
-     `(("python-ipython" ,python-ipython)
-       ("python-mock" ,python-mock)
-       ("python-nose" ,python-nose)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)
-       ("python-testpath" ,python-testpath)))
+     (list python-ipython
+           python-mock
+           python-nose
+           python-pytest
+           python-pytest-cov
+           python-testpath))
     (home-page "https://ipython.org/")
     (synopsis "Interactive Parallel Computing with IPython")
     (description
@@ -8335,12 +8153,12 @@ CLI scripts:
                  (invoke "python" "example/example.py" "--local"))
                #t))))))
     (propagated-inputs
-     `(("python-ipyparallel" ,python-ipyparallel)
-       ("python-ipython" ,python-ipython)
-       ("python-netifaces" ,python-netifaces)
-       ("python-pyzmq" ,python-pyzmq)
-       ("python-setuptools" ,python-setuptools)
-       ("python-six" ,python-six)))
+     (list python-ipyparallel
+           python-ipython
+           python-netifaces
+           python-pyzmq
+           python-setuptools
+           python-six))
     (home-page "https://github.com/roryk/ipython-cluster-helper")
     (synopsis
      "Simplify IPython cluster start up and use for multiple schedulers")
@@ -8367,11 +8185,9 @@ cluster down and deletes the throwaway profile.")
        (modify-phases %standard-phases
          (replace 'check (lambda _ (invoke "pytest" "-vv" "traitlets"))))))
     (propagated-inputs
-     `(("python-ipython-genutils" ,python-ipython-genutils)
-       ("python-decorator" ,python-decorator)
-       ("python-six" ,python-six)))
+     (list python-ipython-genutils python-decorator python-six))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://ipython.org")
     (synopsis "Configuration system for Python applications")
     (description
@@ -8428,10 +8244,9 @@ without using the configuration machinery.")
                  (assoc-ref outputs "out")
                  "/etc/jupyter/migrated")))))))
     (propagated-inputs
-     `(("python-traitlets" ,python-traitlets)))
+     (list python-traitlets))
     (native-inputs
-     `(("python-six" ,python-six)
-       ("python-pytest" ,python-pytest)))
+     (list python-six python-pytest))
     ;; This package provides the `jupyter` binary and thus also exports the
     ;; search paths.
     (native-search-paths
@@ -8478,11 +8293,8 @@ without using the configuration machinery.")
     (inputs
      `(("iproute" ,iproute)))
     (propagated-inputs
-     `(("python-dateutil" ,python-dateutil)
-       ("python-jupyter-core" ,python-jupyter-core)
-       ("python-pyzmq" ,python-pyzmq)
-       ("python-tornado" ,python-tornado-6)
-       ("python-traitlets" ,python-traitlets)))
+     (list python-dateutil python-jupyter-core python-pyzmq
+           python-tornado-6 python-traitlets))
     (native-inputs
      `(("python-pytest" ,python-pytest)
        ("python-pytest-timeout" ,python-pytest-timeout)
@@ -8544,15 +8356,11 @@ installing @code{kernelspec}s for use with Jupyter frontends.")
                   (string-append "\"" (which "python") "\"")))
                #t))))))
     (propagated-inputs
-     `(("python-ipython" ,python-ipython)
-       ("python-tornado" ,python-tornado-6)
-       ("python-traitlets" ,python-traitlets)
-       ;; imported at runtime during connect
-       ("python-jupyter-client" ,python-jupyter-client)))
+     (list python-ipython python-tornado-6 python-traitlets
+           ;; imported at runtime during connect
+           python-jupyter-client))
     (native-inputs
-     `(("python-flaky" ,python-flaky)
-       ("python-nose" ,python-nose)
-       ("python-pytest" ,python-pytest)))
+     (list python-flaky python-nose python-pytest))
     (home-page "https://ipython.org")
     (synopsis "IPython Kernel for Jupyter")
     (description
@@ -8585,10 +8393,9 @@ installing @code{kernelspec}s for use with Jupyter frontends.")
          "1yash0p422nnin7z58b99d0p23nx79f5m0mainc9hsjg72jhdhr6"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-ipykernel" ,python-ipykernel)))
+     (list python-ipykernel))
     (inputs
-     `(("pari-gp" ,pari-gp)
-       ("readline" ,readline)))
+     (list pari-gp readline))
     (arguments
      `(#:tests? #f)) ; no test suite
     (home-page
@@ -8631,33 +8438,32 @@ callback signature using a prototype function.")
         (base32 "04xgymypnbfgf2q0d5b0hanjbjsp53f055sh1p8xlq52vyzmxdaq"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-backcall" ,python-backcall)
-       ("python-pyzmq" ,python-pyzmq)
-       ("python-prompt-toolkit" ,python-prompt-toolkit-2)
-       ("python-terminado" ,python-terminado)
-       ("python-matplotlib" ,python-matplotlib)
-       ("python-matplotlib-inline" ,python-matplotlib-inline)
-       ("python-numpy" ,python-numpy)
-       ("python-numpydoc" ,python-numpydoc)
-       ("python-jedi" ,python-jedi)
-       ("python-jinja2" ,python-jinja2)
-       ("python-mistune" ,python-mistune)
-       ("python-pexpect" ,python-pexpect)
-       ("python-pickleshare" ,python-pickleshare)
-       ("python-simplegeneric" ,python-simplegeneric)
-       ("python-jsonschema" ,python-jsonschema)
-       ("python-traitlets" ,python-traitlets)
-       ("python-nbformat" ,python-nbformat)
-       ("python-pygments" ,python-pygments)))
+     (list python-backcall
+           python-pyzmq
+           python-prompt-toolkit-2
+           python-terminado
+           python-matplotlib
+           python-matplotlib-inline
+           python-numpy
+           python-numpydoc
+           python-jedi
+           python-jinja2
+           python-mistune
+           python-pexpect
+           python-pickleshare
+           python-simplegeneric
+           python-jsonschema
+           python-traitlets
+           python-nbformat
+           python-pygments))
     (inputs
-     `(("readline" ,readline)
-       ("which" ,which)))
+     (list readline which))
     (native-inputs
-     `(("graphviz" ,graphviz)
-       ("pkg-config" ,pkg-config)
-       ("python-requests" ,python-requests) ;; for tests
-       ("python-testpath" ,python-testpath)
-       ("python-nose" ,python-nose)))
+     (list graphviz
+           pkg-config
+           python-requests ;; for tests
+           python-testpath
+           python-nose))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -8744,8 +8550,7 @@ computing.")
                (copy-file "COPYING.rst" (string-append doc "/COPYING.rst")))
              #t)))))
     (inputs
-     `(("python-ipython" ,python-ipython)
-       ("python-ipykernel" ,python-ipykernel)))
+     (list python-ipython python-ipykernel))
     (native-inputs
      `(("python-sphinx" ,python-sphinx)
        ("python-sphinx-rtd-theme" ,python-sphinx-rtd-theme)
@@ -8852,9 +8657,9 @@ features useful for text console applications.")
                (invoke "python" "-m" "pytest"))
              #t)))))
     (propagated-inputs
-     `(("python-urwid" ,python-urwid)))
+     (list python-urwid))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://github.com/rr-/urwid_readline")
     (synopsis "Text input widget for urwid that supports readline shortcuts")
     (description
@@ -8887,12 +8692,12 @@ supports @code{readline} shortcuts.")
              (delete-file "tests/test_external.py")
              #t)))))
     (native-inputs
-     `(("python-hypothesis" ,python-hypothesis)
-       ("python-isort" ,python-isort)
-       ("python-numpy" ,python-numpy)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-runner" ,python-pytest-runner)
-       ("python-tabulate" ,python-tabulate)))
+     (list python-hypothesis
+           python-isort
+           python-numpy
+           python-pytest
+           python-pytest-runner
+           python-tabulate))
     (home-page "https://github.com/life4/textdistance")
     (synopsis "Compute distance between the two texts")
     (description "@code{textdistance} is a pure Python library for comparing
@@ -8918,7 +8723,7 @@ distance between two or more sequences by many algorithms.")
     (build-system python-build-system)
     (arguments
      '(#:tests? #f)) ; no tests
-    (propagated-inputs `(("python-urwid" ,python-urwid)))
+    (propagated-inputs (list python-urwid))
     (home-page "https://github.com/pazz/urwidtrees")
     (synopsis "Tree widgets for urwid")
     (description "Urwidtrees is a Widget Container API for the @code{urwid}
@@ -8943,7 +8748,7 @@ toolkit.  Use it to build trees of widgets.")
     (arguments
      `(#:tests? #f))                    ;no test suite in release
     (native-inputs
-     `(("python-pyyaml" ,python-pyyaml)))
+     (list python-pyyaml))
     (home-page "https://github.com/ua-parser/uap-python")
     (synopsis "User agent parser")
     (description
@@ -8968,7 +8773,7 @@ toolkit.  Use it to build trees of widgets.")
     (arguments
      `(#:tests? #f))                  ;missing devices.json test file in release
     (propagated-inputs
-     `(("python-ua-parser" ,python-ua-parser)))
+     (list python-ua-parser))
     (home-page "https://github.com/selwin/python-user-agents")
     (synopsis "User Agent strings parsing library")
   (description
@@ -8992,7 +8797,7 @@ parsing (browser/HTTP) user agent strings.")
         (base32 "0q3jrw515z98mqdk9x822nd95rky455zz9876f1nqna5igkd3gcj"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
      `(("python" ,python-wrapper)
        ("dbus-glib" ,dbus-glib)))
@@ -9028,7 +8833,7 @@ implementation of D-Bus.")
          "1ahaz52kny1p9xxv6phvk4iq56rg8li390wywlxf2yslaij1188h"))))
     (build-system python-build-system)
     (native-inputs
-      `(("python-pytest" ,python-pytest)))
+      (list python-pytest))
     (home-page "https://github.com/altdesktop/python-dbus-next")
     (synopsis "Zero-dependency DBus library for Python with asyncio support")
     (description
@@ -9051,7 +8856,7 @@ mobile environments.")
     (build-system python-build-system)
     (arguments `(#:tests? #f))                    ; tests depend on system state
     (propagated-inputs
-     `(("python-dbus" ,python-dbus)))
+     (list python-dbus))
     (home-page "https://bitbucket.org/takluyver/pynotify2")
     (synopsis "Python interface to D-Bus notifications")
     (description
@@ -9089,7 +8894,7 @@ the GObject Introspection bindings to libnotify for non-GTK applications.")
          (replace 'check
            (lambda _ (invoke "./convert-py3k"))))))
     (propagated-inputs
-     `(("python-soupsieve" ,python-soupsieve)))
+     (list python-soupsieve))
     (home-page
      "https://www.crummy.com/software/BeautifulSoup/bs4/")
     (synopsis
@@ -9155,9 +8960,8 @@ some are not yet implemented).")
           (base32
            "1apgqxngi1216h1cyvrvj9gy3wf45mh1lz4n76j26jf3k36bm1br"))))
       (propagated-inputs
-       `(("python2-backports-functools-lru-cache"
-          ,python2-backports-functools-lru-cache)
-         ,@(package-propagated-inputs base))))))
+       (modify-inputs (package-propagated-inputs base)
+         (prepend python2-backports-functools-lru-cache))))))
 
 (define-public python-netifaces
   (package
@@ -9203,9 +9007,9 @@ interfaces in an easy and portable manner.")
                       #t)))))
     ;; python-decorator is needed at runtime.
     (propagated-inputs
-     `(("python-decorator" ,python-decorator)))
+     (list python-decorator))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://networkx.github.io/")
     (synopsis "Python module for creating and manipulating graphs and networks")
     (description
@@ -9229,8 +9033,7 @@ of the structure, dynamics, and functions of complex networks.")
       (arguments
        `(#:python ,python-2))
       (native-inputs
-       `(("python-nose" ,python2-nose)
-         ("unzip" ,unzip))))))
+       (list python2-nose unzip)))))
 
 (define-public python-datrie
   (package
@@ -9245,10 +9048,8 @@ of the structure, dynamics, and functions of complex networks.")
          "0pbn32flkrpjiwfcknmj6398qa81ba783kbcvwan3kym73v0hnsj"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-cython" ,python-cython)
-       ("python-hypothesis" ,python-hypothesis)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-runner" ,python-pytest-runner)))
+     (list python-cython python-hypothesis python-pytest
+           python-pytest-runner))
     (home-page "https://github.com/kmike/datrie")
     (synopsis "Fast, efficiently stored trie for Python")
     (description
@@ -9269,10 +9070,9 @@ Python.")
          "0f1db9zp0rsfzxvaz55xwh8h5rfdgr9a2a715g06ic8nknsdq4nb"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-docutils" ,python-docutils)
-       ("python-pyparsing" ,python-pyparsing)))
+     (list python-docutils python-pyparsing))
     (native-inputs
-     `(("python-setuptools-scm" ,python-setuptools-scm)))
+     (list python-setuptools-scm))
     (home-page "https://github.com/willu47/amply")
     (synopsis "Load and manipulate AMPL/GLPK data as Python data structures")
     (description
@@ -9293,7 +9093,7 @@ structures.")
          "1dammrg0f1v0r028i3rpxbf2bsyxmjq0q6ihb4x2wsdki44z3bxj"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-amply" ,python-amply)))
+     (list python-amply))
     (home-page "https://github.com/coin-or/pulp")
     (synopsis "Linear Programming modeler")
     (description
@@ -9339,13 +9139,10 @@ algorithm.")
     (arguments
      `(#:test-target "pytest"))
     (propagated-inputs
-     `(("python-diff-match-patch" ,python-diff-match-patch)))
+     (list python-diff-match-patch))
     (native-inputs
-     `(("python-flaky" ,python-flaky)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)
-       ("python-pytest-runner" ,python-pytest-runner)
-       ("python-pytest-timeout" ,python-pytest-timeout)))
+     (list python-flaky python-pytest python-pytest-cov
+           python-pytest-runner python-pytest-timeout))
     (home-page "https://github.com/spyder-ide/three-merge")
     (synopsis "Library for merging two strings with respect to a base one")
     (description
@@ -9382,22 +9179,22 @@ approach.")
                                "/bin/snakemake")))
              #t)))))
     (propagated-inputs
-     `(("python-appdirs" ,python-appdirs)
-       ("python-configargparse" ,python-configargparse)
-       ("python-datrie" ,python-datrie)
-       ("python-docutils" ,python-docutils)
-       ("python-gitpython" ,python-gitpython)
-       ("python-jinja2" ,python-jinja2)
-       ("python-jsonschema" ,python-jsonschema)
-       ("python-nbformat" ,python-nbformat)
-       ("python-networkx" ,python-networkx)
-       ("python-psutil" ,python-psutil)
-       ("python-pulp" ,python-pulp)
-       ("python-pyyaml" ,python-pyyaml)
-       ("python-ratelimiter" ,python-ratelimiter)
-       ("python-requests" ,python-requests)
-       ("python-toposort" ,python-toposort)
-       ("python-wrapt" ,python-wrapt)))
+     (list python-appdirs
+           python-configargparse
+           python-datrie
+           python-docutils
+           python-gitpython
+           python-jinja2
+           python-jsonschema
+           python-nbformat
+           python-networkx
+           python-psutil
+           python-pulp
+           python-pyyaml
+           python-ratelimiter
+           python-requests
+           python-toposort
+           python-wrapt))
     (home-page "https://snakemake.readthedocs.io")
     (synopsis "Python-based execution environment for make-like workflows")
     (description
@@ -9452,13 +9249,9 @@ SVG, EPS, PNG and terminal output.")
              (when tests?
                (invoke "pytest" "seaborn")))))))
     (propagated-inputs
-     `(("python-pandas" ,python-pandas)
-       ("python-matplotlib" ,python-matplotlib)
-       ("python-numpy" ,python-numpy)
-       ("python-scipy" ,python-scipy)))
+     (list python-pandas python-matplotlib python-numpy python-scipy))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("xorg-server" ,xorg-server-for-tests)))
+     (list python-pytest xorg-server-for-tests))
     (home-page "https://seaborn.pydata.org/")
     (synopsis "Statistical data visualization")
     (description
@@ -9510,8 +9303,7 @@ and statistical routines from scipy and statsmodels.")
                (add-installed-pythonpath inputs outputs)
                (invoke "pytest" "-vv")))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-setuptools-scm" ,python-setuptools-scm)))
+     (list python-pytest python-setuptools-scm))
     (home-page "https://mpmath.org")
     (synopsis "Arbitrary-precision floating-point arithmetic in python")
     (description
@@ -9535,7 +9327,7 @@ more advanced mathematics.")
         (base32 "0xd7q4l7v0f463diznjv4k9wlaks80pn9drdqmfifi7zx8qvybi6"))))
     (build-system python-build-system)
     (inputs
-     `(("mpfr" ,mpfr)))
+     (list mpfr))
     (home-page "https://github.com/mdickinson/bigfloat")
     (synopsis "Arbitrary precision floating-point arithmetic for Python")
     (description
@@ -9563,7 +9355,7 @@ multiprecision arithmetic.")
                (or (which "python3") (which "python"))
                "-c" "import sympy; sympy.test(\"/core\")"))))))
     (propagated-inputs
-     `(("python-mpmath" ,python-mpmath)))
+     (list python-mpmath))
     (home-page "https://www.sympy.org/")
     (synopsis "Python library for symbolic mathematics")
     (description
@@ -9632,11 +9424,9 @@ falling into the Python interpreter.")
                (setenv "DISPLAY" ":1")
                #t))))))
     (native-inputs
-     `(("python-mock" ,python-mock)
-       ("python-setuptools-scm" ,python-setuptools-scm)
-       ("xorg-server" ,xorg-server)))
+     (list python-mock python-setuptools-scm xorg-server))
     (propagated-inputs
-     `(("python-six" ,python-six)))
+     (list python-six))
     (home-page "https://github.com/python-xlib/python-xlib")
     (synopsis "Python X11 client library")
     (description
@@ -9661,7 +9451,7 @@ low-level X clients.  It is written entirely in Python.")
          "171b7ip0hsq5qm83np40h3phlr36ym18w0lay0a8v08kvy3sy1jv"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-six" ,python-six))) ; required for conversion, not at run-time
+     (list python-six)) ; required for conversion, not at run-time
     (home-page
      "https://docs.python.org/3/library/functools.html#functools.singledispatch")
     (synopsis "Backport of singledispatch feature from Python 3.4")
@@ -9747,7 +9537,7 @@ Python 2 and Python 3.")
            (lambda _
              (invoke "py.test" "-v"))))))
     (native-inputs
-     `(("python2-pytest" ,python2-pytest)))
+     (list python2-pytest))
     (home-page "https://github.com/chrippa/backports.shutil_get_terminal_size")
     (synopsis "Backport of Python 3.3's @code{shutil.get_terminal_size}")
     (description
@@ -9821,11 +9611,9 @@ applications.")
              ;; Cython extensions have to be built before running the tests.
              (invoke "python" "setup.py" "build_ext" "--inplace"))))))
     (inputs
-     `(("zeromq" ,zeromq)))
+     (list zeromq))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("python-cython" ,python-cython)
-       ("python-pytest" ,python-pytest)))
+     (list pkg-config python-cython python-pytest))
     (home-page "https://github.com/zeromq/pyzmq")
     (synopsis "Python bindings for 0MQ")
     (description
@@ -9846,7 +9634,7 @@ applications.")
     (arguments
      `(#:tests? #f)) ; no tests in PyPI release and no setup.py in GitHub
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://github.com/corenting/immutabledict")
     (synopsis "Immutable wrapper around dictionaries")
     (description
@@ -9874,7 +9662,7 @@ replacement for dictionaries where immutability is desired.")
              (when tests?
                (invoke "python" "-m" "pytest")))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://github.com/carpedm20/emoji/")
     (synopsis "Emoji terminal output for Python")
     (description "This package provides Emoji terminal output for Python.  The
@@ -9921,8 +9709,7 @@ PEP 8.")
          "04kyh9hkpyc8jzj16d1kkk29b5n8miqdvbs0zm035n1z5z5kx6hz"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-flake8" ,python-flake8)
-       ("python-flake8-polyfill" ,python-flake8-polyfill)))
+     (list python-flake8 python-flake8-polyfill))
     (home-page "https://github.com/PyCQA/pep8-naming")
     (synopsis "Check PEP-8 naming conventions")
     (description
@@ -9946,9 +9733,7 @@ plugin for flake8 to check PEP-8 naming conventions.")
                (invoke "pytest")
                #t))))))
     (native-inputs
-     `(("python-mock" ,python-mock)
-       ("python-pytest" ,python-pytest)
-       ("python-testpath" ,python-testpath)))
+     (list python-mock python-pytest python-testpath))
     (properties `((python2-variant . ,(delay python2-pep517))))))
 
 ;; Skip the tests so we don't create a cyclical dependency with pytest.
@@ -10040,13 +9825,10 @@ cyclomatic complexity of Python source code.")
              (add-installed-pythonpath inputs outputs)
              (invoke "pytest" "-v"))))))
     (propagated-inputs
-     `(("python-pycodestyle" ,python-pycodestyle)
-       ("python-entrypoints" ,python-entrypoints)
-       ("python-pyflakes" ,python-pyflakes)
-       ("python-mccabe" ,python-mccabe)))
+     (list python-pycodestyle python-entrypoints python-pyflakes
+           python-mccabe))
     (native-inputs
-     `(("python-mock" ,python-mock)
-       ("python-pytest" ,python-pytest)))
+     (list python-mock python-pytest))
     (home-page "https://gitlab.com/pycqa/flake8")
     (synopsis
       "The modular source code checker: pep8, pyflakes and co")
@@ -10076,10 +9858,8 @@ cyclomatic complexity of Python source code.")
                (base32
                 "0fvcrsbyzjpcli8ldbpsdbpmf238nkvwc1dy4hy82lf63rvfinma"))))
     (propagated-inputs
-     `(("python-pycodestyle" ,python-pycodestyle-2.6)
-       ("python-entrypoints" ,python-entrypoints)
-       ("python-pyflakes" ,python-pyflakes-2.2)
-       ("python-mccabe" ,python-mccabe)))))
+     (list python-pycodestyle-2.6 python-entrypoints python-pyflakes-2.2
+           python-mccabe))))
 
 (define-public python-flake8-bugbear
   (package
@@ -10103,11 +9883,9 @@ cyclomatic complexity of Python source code.")
                (("def test_does_not_crash_on_any_valid_code")
                 "def _test_does_not_crash_on_any_valid_code")))))))
     (native-inputs
-     `(("python-hypothesis" ,python-hypothesis)
-       ("python-hypothesmith" ,python-hypothesmith)))
+     (list python-hypothesis python-hypothesmith))
     (propagated-inputs
-     `(("python-attrs" ,python-attrs)
-       ("python-flake8" ,python-flake8)))
+     (list python-attrs python-flake8))
     (home-page "https://github.com/PyCQA/flake8-bugbear")
     (synopsis
       "Flake8 plugin for finding likely bugs and design problems in your program")
@@ -10130,9 +9908,7 @@ in pyflakes and pycodestyle.")
          "0dzaw8jr7yhlabxhrblnrizxx17xa9ngjnbr1kidg5lapq6b9q1y"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-flake8" ,python-flake8)
-       ("python-pycodestyle" ,python-pycodestyle)
-       ("python-six" ,python-six)))
+     (list python-flake8 python-pycodestyle python-six))
     (home-page "https://github.com/planetlabs/flake8-continuation")
     (synopsis "Flake8 Line Continuation Plugin")
     (description "A Flake8 plugin that checks for the line continuation
@@ -10157,8 +9933,7 @@ These should be used in preference to using a backslash for line continuation.
         (base32 "1v0y29xlmbr2q12a4nnpm1dm9aw1mjiys1x8jif4z8c90d63cqm6"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-attrs" ,python-attrs)
-       ("python-more-itertools" ,python-more-itertools)))
+     (list python-attrs python-more-itertools))
     (home-page "https://github.com/keisheiled/flake8-implicit-str-concat")
     (synopsis "Flake8 plugin to encourage correct string literal concatenation")
     (description
@@ -10194,12 +9969,9 @@ unnecessary plus operators for explicit string literal concatenation.")
                 "[tool:pytest]"))
              (invoke "py.test" "-v"))))))
     (propagated-inputs
-     `(("python-flake8" ,python-flake8)))
+     (list python-flake8))
     (native-inputs
-     `(("python-mock" ,python-mock)
-       ("python-pep8" ,python-pep8)
-       ("python-pycodestyle" ,python-pycodestyle)
-       ("python-pytest" ,python-pytest)))
+     (list python-mock python-pep8 python-pycodestyle python-pytest))
     (home-page "https://gitlab.com/pycqa/flake8-polyfill")
     (synopsis "Polyfill package for Flake8 plugins")
     (description
@@ -10222,9 +9994,7 @@ plugins that intend to support Flake8 2.x and 3.x simultaneously.")
         (base32 "05k5kkvyk6fdmvnacxfzypk74vbl3pmva13dqg1aljfwnxsc7yjs"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-flake8" ,python-flake8)
-       ("python-pycodestyle" ,python-pycodestyle)
-       ("python-six" ,python-six)))
+     (list python-flake8 python-pycodestyle python-six))
     (home-page "https://github.com/jbkahn/flake8-print")
     (synopsis "Print statement checker plugin for Flake8")
     (description
@@ -10245,9 +10015,7 @@ files.")
          "0b27n2pmrxcc7nva4wp2i7mrag0fnq0firvhg1ljq593a45b5qyf"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-attrs" ,python-attrs)
-       ("python-flake8" ,python-flake8)
-       ("python-pyflakes" ,python-pyflakes)))
+     (list python-attrs python-flake8 python-pyflakes))
     (home-page "https://github.com/ambv/flake8-pyi")
     (synopsis
       "Flake8 plugin that provides specializations for type hinting stub files")
@@ -10293,7 +10061,7 @@ lints.")
          "0ph5s6lxgpzz4an0ax6s5xjqypqmngwr5b1i0h9pqhzghplic49z"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-flake8" ,python-flake8)))
+     (list python-flake8))
     (home-page "https://github.com/zheller/flake8-quotes/")
     (synopsis "Flake8 lint for quotes")
     (description "This package provides a Flake8 lint for quotes.")
@@ -10312,7 +10080,7 @@ lints.")
          "05arm0sch3r8248035kilmf01z0mxsahw6vpbbz0d343zy8m8k3f"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-pycodestyle" ,python-pycodestyle)))
+     (list python-pycodestyle))
     (home-page "https://github.com/schlamar/flake8-todo")
     (synopsis "TODO notes checker, plugin for flake8")
     (description
@@ -10332,7 +10100,7 @@ TODO notes checker plugin for flake8.")
         (base32 "0nzr057dbmgprp4a52ymafdkdd5zp2wcqf42913xc7hhvvdbj338"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-pyflakes" ,python-pyflakes)))
+     (list python-pyflakes))
     (home-page "https://github.com/myint/autoflake")
     (synopsis "Removes unused imports and unused variables")
     (description
@@ -10357,8 +10125,7 @@ It also removes useless @code{pass} statements.")
          "0vkmsh0x480rni51lhyvigfdf06b9247z868pk3bal1wnnfl58sr"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-nose" ,python-nose)
-       ("python-cython" ,python-cython)))
+     (list python-nose python-cython))
     (home-page "https://github.com/lepture/mistune")
     (synopsis "Markdown parser in pure Python")
     (description "This package provides a fast markdown parser in pure
@@ -10395,8 +10162,7 @@ Python.")
          "0jbs73nincha8fkfxx267sfxac6pl0ckszjbqbb8gk4dhs8v9d9i"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-nose" ,python-nose)
-       ("python-pyyaml" ,python-pyyaml)))
+     (list python-nose python-pyyaml))
     (home-page "https://python-markdown.github.io/")
     (synopsis "Python implementation of Markdown")
     (description
@@ -10433,7 +10199,7 @@ markdown_py is also provided to convert Markdown files to HTML.")
          "0ra31k10v3629xq0kdn8lwmfbi97anmk48r03yvh7mks0kq96hg6"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-nose" ,python-nose)))
+     (list python-nose))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -10499,8 +10265,7 @@ pseudo terminal (pty), and interact with both the process and its pty.")
              (invoke "make" "test"))))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-coverage" ,python-coverage)
-       ("which" ,which)))
+     (list python-coverage which))
     (synopsis "Simple testing framework for command line applications")
     (description
      "Cram is a functional testing framework for command line applications.
@@ -10543,7 +10308,7 @@ output.")
     (arguments
      `(#:tests? #f)) ; Tests require more dependencies.
     (native-inputs
-     `(("python-sphinx" ,python-sphinx)))
+     (list python-sphinx))
     (home-page "https://github.com/jackmaney/python-stdlib-list")
     (synopsis "Python Standard Libraries")
     (description "This package contains a list of Python Standard Libraries.")
@@ -10583,9 +10348,7 @@ add functionality and customization to your projects with their own plugins.")
                 "1mq9kdzhcsp96bhv7smnrpdg1s4z5wh70bsl99c0jmcrahqdisqq"))))
     (build-system python-build-system)
     (native-inputs
-     `(("unzip" ,unzip)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-runner" ,python-pytest-runner)))
+     (list unzip python-pytest python-pytest-runner))
     (home-page "https://github.com/fonttools/fonttools")
     (synopsis "Tools to manipulate font files")
     (description
@@ -10686,10 +10449,9 @@ third-party code.")
                 "1g2cdhdqrb6m7655qp61pn61pwj1ql61cdzhr2jvl3w4i8877ddr"))))
     (build-system python-build-system)
     (inputs
-     `(("fuse" ,fuse)
-       ("attr" ,attr)))
+     (list fuse attr))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (synopsis "Python bindings for FUSE")
     (description
      "Python-LLFUSE is a set of Python bindings for the low level FUSE API.")
@@ -10726,7 +10488,7 @@ third-party code.")
            (lambda _
              (invoke "pytest" "-v" "test"))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (synopsis "MessagePack (de)serializer")
     (description "MessagePack is a fast, compact binary serialization format,
 suitable for similar data to JSON.  This package provides CPython bindings for
@@ -10892,9 +10654,9 @@ Supported netlink families and protocols include:
                            (filter (lambda (f) (grep "from test." f))
                                    test-files)))))))))
     (propagated-inputs
-     `(("python-lark-parser" ,python-lark-parser)))
+     (list python-lark-parser))
     (native-inputs
-     `(("python-six" ,python-six)))
+     (list python-six))
     (home-page "https://github.com/vaidik/commentjson")
     (synopsis "Python library for adding comments to JSON files")
     (description "Comment JSON is a Python package that helps you create JSON
@@ -10927,9 +10689,7 @@ similar to the Python standard library's @code{json} module.")
                (add-installed-pythonpath inputs outputs)
                (invoke "pytest")))))))
     (native-inputs
-     `(("python-commentjson" ,python-commentjson)
-       ("python-packaging" ,python-packaging)
-       ("python-pytest" ,python-pytest)))
+     (list python-commentjson python-packaging python-pytest))
     (home-page "https://github.com/sarugaku/resolvelib")
     (synopsis "Abstract dependencies resolver")
     (description "The ResolveLib library provides a @code{Resolver} class that
@@ -11104,7 +10864,7 @@ printing of sub-tables by specifying a row range.")
                      ;; Tries to open an outgoing connection.
                      "not test_ssl_outgoing"))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://github.com/dabeaz/curio")
     (synopsis "Coroutine-based library for concurrent Python")
     (description
@@ -11167,15 +10927,11 @@ tasks, sockets, files, locks, and queues.")
                      (string-append "--hdf5="
                                     (assoc-ref inputs "hdf5"))))))))
     (propagated-inputs
-     `(("python-numexpr" ,python-numexpr)
-       ("python-numpy" ,python-numpy)))
+     (list python-numexpr python-numpy))
     (native-inputs
-     `(("python-cython" ,python-cython)
-       ("pkg-config" ,pkg-config)))
+     (list python-cython pkg-config))
     (inputs
-     `(("hdf5" ,hdf5-1.10)
-       ("bzip2" ,bzip2)
-       ("zlib" ,zlib)))
+     (list hdf5-1.10 bzip2 zlib))
     (home-page "https://www.pytables.org/")
     (synopsis "Hierarchical datasets for Python")
     (description "PyTables is a package for managing hierarchical datasets and
@@ -11200,9 +10956,7 @@ designed to efficiently cope with extremely large amounts of data.")
            (lambda _
              (invoke "pytest" "-vv"))))))
     (native-inputs
-     `(("python-curio" ,python-curio)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)))
+     (list python-curio python-pytest python-pytest-cov))
     (home-page "https://github.com/python-trio/sniffio")
     (synopsis "Detect which async library a program is running under")
     (description "This package detects which async library a program is
@@ -11224,11 +10978,9 @@ asyncio.")
          "04lppqydxm0f3f3x0l8hj7v0j6d8syj34jc37yzqwqcyqsnaga81"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-black" ,python-black)
-       ("python-toml" ,python-toml)))
+     (list python-pytest python-black python-toml))
     (native-inputs
-     `(("python-setuptools-scm" ,python-setuptools-scm)))
+     (list python-setuptools-scm))
     (home-page "https://github.com/shopkeep/pytest-black")
     (synopsis "Pytest plugin to enable format checking with black")
     (description
@@ -11249,12 +11001,12 @@ Python code formatter \"black\".")
          "1g15jyx33vkxavv9hwv275cs4g9bp2i1y942raw3fxamq8kbaml1"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-pygments" ,python-pygments)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-black" ,python-pytest-black)
-       ("python-pytest-cov" ,python-pytest-cov)
-       ("python-setuptools" ,python-setuptools)
-       ("python-testpath" ,python-testpath)))
+     (list python-pygments
+           python-pytest
+           python-pytest-black
+           python-pytest-cov
+           python-setuptools
+           python-testpath))
     (home-page "https://github.com/flying-sheep/get_version")
     (synopsis "Version helper in the spirit of versioneer")
     (description
@@ -11289,8 +11041,7 @@ your package is installed, via @code{pkg_resources} (part of
                         "not test_infer_zip_from_disk"
                         " and not test_infer_tar_from_disk"))))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-pytest-benchmark" ,python-pytest-benchmark)))
+     (list python-pytest python-pytest-benchmark))
     (home-page "https://github.com/h2non/filetype.py")
     (synopsis "Infer file type and MIME type of any file/buffer")
     (description "@code{filetype} is a small and dependency free Python
@@ -11318,8 +11069,7 @@ signature of a file or buffer.")
                (add-installed-pythonpath inputs outputs)
                (invoke "pytest")))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-pytest-xprocess" ,python-pytest-xprocess)))
+     (list python-pytest python-pytest-xprocess))
     (home-page "https://github.com/pallets/cachelib")
     (synopsis "Collection of cache libraries")
     (description "Cachelib is a library extracted from @code{werkzeug} which
@@ -11339,11 +11089,8 @@ provides a collection of cache libraries in the same API interface.")
          "06qhp0g543dy98vpa41hwdalvdbsjfc3ldk474yr9sd75mhl8jh3"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-get-version" ,python-get-version)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-black" ,python-pytest-black)
-       ("python-pytest-cov" ,python-pytest-cov)
-       ("python-setuptools" ,python-setuptools)))
+     (list python-get-version python-pytest python-pytest-black
+           python-pytest-cov python-setuptools))
     (home-page "https://github.com/flying-sheep/legacy-api-wrap")
     (synopsis "Legacy API wrapper")
     (description "This module defines a decorator to wrap legacy APIs.  The
@@ -11362,7 +11109,7 @@ primary use case is APIs defined before keyword-only parameters existed.")
         (base32 "1805svvb7xjm4sf1j7b6nc3409x37pd1xmabfwwjf1ldkzwgxhfb"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-six" ,python-six)))
+     (list python-six))
     (home-page "https://github.com/Mimino666/langdetect")
     (synopsis "Language detection library")
     (description
@@ -11405,7 +11152,7 @@ suitable for a wide range of protocols based on the ASN.1 specification.")
           "0pp6dcagd8c2c9qx3lahc1rdwlnmm0y0siqr5icjq2r32b3q8pwh"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-pyasn1" ,python-pyasn1)))
+     (list python-pyasn1))
     (home-page "https://sourceforge.net/projects/pyasn1/")
     (synopsis "ASN.1 codec implementations")
     (description
@@ -11450,10 +11197,8 @@ implementations of ASN.1-based codecs and protocols.")
         (base32 "1k88a1azmyvp2ab6qcf2i40dig5abhyn7cmlyhmwwh8kr3syvma0"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-bitstruct" ,python-bitstruct)
-       ("python-diskcache" ,python-diskcache)
-       ("python-prompt-toolkit" ,python-prompt-toolkit)
-       ("python-pyparsing" ,python-pyparsing)))
+     (list python-bitstruct python-diskcache python-prompt-toolkit
+           python-pyparsing))
     (home-page "https://github.com/eerimoq/asn1tools")
     (synopsis  "ASN.1 parsing, encoding and decoding")
     (description "This package provides ASN.1 parsing, encoding and decoding
@@ -11556,12 +11301,11 @@ specification.")
              (add-installed-pythonpath inputs outputs)
              (invoke "pytest" "sasstests.py"))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-werkzeug" ,python-werkzeug)))
+     (list python-pytest python-werkzeug))
     (inputs
-     `(("libsass" ,libsass)))
+     (list libsass))
     (propagated-inputs
-     `(("python-six" ,python-six)))
+     (list python-six))
     (home-page "https://sass.github.io/libsass-python/")
     (synopsis "Straightforward binding of libsass for Python")
     (description
@@ -11583,7 +11327,7 @@ is binding LibSass.")
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))          ;circular dependency with python-aiohttp
-    (propagated-inputs `(("python-idna" ,python-idna)))
+    (propagated-inputs (list python-idna))
     (home-page "https://github.com/aio-libs/idna-ssl")
     (synopsis "Patch @code{ssl.match_hostname} for Unicode(idna) domains support")
     (description "Patch @code{ssl.match_hostname} for Unicode(idna)
@@ -11752,10 +11496,9 @@ applications from a list of lists of strings.  It supports multi-line rows.")
                   (replace 'check
                     (lambda _ (invoke "pytest" "-vv"))))))
     (native-inputs
-     `(("python-mock" ,python-mock)
-       ("python-pytest" ,python-pytest)))
+     (list python-mock python-pytest))
     (inputs
-     `(("libarchive" ,libarchive)))
+     (list libarchive))
     (home-page "https://github.com/Changaco/python-libarchive-c")
     (synopsis "Python interface to libarchive")
     (description
@@ -11829,8 +11572,7 @@ libmagic.")))
                       (delete-file "lib/debian/tests/test_debfile.py")
                       #t)))))
     (propagated-inputs
-     `(("python-six" ,python-six)
-       ("python-chardet" ,python-chardet)))
+     (list python-six python-chardet))
     (synopsis "Debian package related modules")
     (description
      ;; XXX: Use @enumerate instead of @itemize to work around
@@ -11864,10 +11606,9 @@ Debian-related files, such as:
             "06dpbsq61ja9r89wpa2pzdii47qh3xri9ajdrgn1awfl102znchb"))))
     (build-system python-build-system)
     (propagated-inputs
-      `(("python-pathlib" ,python-pathlib)
-        ("python-six" ,python-six)))
+      (list python-pathlib python-six))
     (native-inputs
-      `(("python-pytest" ,python-pytest)))
+      (list python-pytest))
     (home-page "http://py.errorist.io/json-spec")
     (synopsis
       "JSON Schema, JSON Pointer and JSON Reference for Python")
@@ -11896,15 +11637,14 @@ JSON Reference and JSON Pointer.")
             (when tests?
               (invoke "pytest" "-vv" "-m" "not benchmark")))))))
     (native-inputs
-      `(("python-colorama" ,python-colorama)
-        ("python-json-spec" ,python-json-spec)
-        ("python-jsonschema" ,python-jsonschema)
-        ("python-pylint" ,python-pylint)
-        ("python-pytest" ,python-pytest)
-        ("python-pytest-benchmark"
-         ,python-pytest-benchmark)
-        ("python-pytest-cache" ,python-pytest-cache)
-        ("python-validictory" ,python-validictory)))
+      (list python-colorama
+            python-json-spec
+            python-jsonschema
+            python-pylint
+            python-pytest
+            python-pytest-benchmark
+            python-pytest-cache
+            python-validictory))
     (home-page
       "https://github.com/horejsek/python-fastjsonschema")
     (synopsis
@@ -11937,16 +11677,14 @@ drafts 04, 06 and 07.")
              (when tests?
                (invoke "pytest" "-vv")))))))
     (propagated-inputs
-     `(("python-ipython-genutils" ,python-ipython-genutils)
-       ("python-jsonschema" ,python-jsonschema)
-       ("python-jupyter-core" ,python-jupyter-core)
-       ("python-traitlets" ,python-traitlets)))
+     (list python-ipython-genutils python-jsonschema python-jupyter-core
+           python-traitlets))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-fastjsonschema" ,python-fastjsonschema) ; This is only active
-       ; when setting NBFORMAT_VALIDATOR="fastjsonschema", so include it for
-       ; testing only.
-       ("python-testpath" ,python-testpath)))
+     (list python-pytest
+           python-fastjsonschema ; This is only active
+           ; when setting NBFORMAT_VALIDATOR="fastjsonschema", so include it for
+           ; testing only.
+           python-testpath))
     (home-page "https://jupyter.org")
     (synopsis "Jupyter Notebook format")
     (description "This package provides the reference implementation of the
@@ -11965,13 +11703,9 @@ Jupyter Notebook format and Python APIs for working with notebooks.")
         (base32 "0jqa8f1ni10cyf4h7sjpf8mbqlcbkyvmsnli77qrxdcxvc7m4k1w"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-webencodings" ,python-webencodings)
-       ("python-six" ,python-six)))
+     (list python-webencodings python-six))
     (native-inputs
-     `(("python-datrie" ,python-datrie)
-       ("python-genshi" ,python-genshi)
-       ("python-lxml" ,python-lxml)
-       ("python-pytest" ,python-pytest)))
+     (list python-datrie python-genshi python-lxml python-pytest))
     (home-page "https://github.com/mozilla/bleach")
     (synopsis "Whitelist-based HTML-sanitizing tool")
     (description "Bleach is an easy whitelist-based HTML-sanitizing tool.")
@@ -12031,9 +11765,9 @@ functions to find and load entry points.")
          "09bx1ln1bwa00917dndlgs4k589h8qx2x080xch5m58p92kjwkd1"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-sexpdata" ,python-sexpdata)))
+     (list python-sexpdata))
     (native-inputs
-     `(("python-nose" ,python-nose)))
+     (list python-nose))
     (home-page "https://github.com/tkf/python-epc")
     (synopsis "Remote procedure call (RPC) stack for Emacs Lisp and Python")
     (description
@@ -12057,8 +11791,7 @@ from elisp.")
      ;; repository require online data.
      `(#:tests? #f))
     (propagated-inputs
-     `(("python-requests" ,python-requests)
-       ("python-simplejson" ,python-simplejson)))
+     (list python-requests python-simplejson))
     (home-page "https://github.com/MicroPyramid/forex-python")
     (synopsis "Foreign exchange rates and currency conversion")
     (description
@@ -12155,10 +11888,10 @@ time.")
                (setenv "HOME" "/tmp")
                (invoke "pytest" "-vv")))))))
     (inputs
-     `(("pandoc" ,pandoc)
-       ;; XXX: Disabled, needs substitute*.
-       ;;("inkscape" ,inkscape)
-       ))
+     (list pandoc
+           ;; XXX: Disabled, needs substitute*.
+           ;;("inkscape" ,inkscape)
+           ))
     (native-inputs
      `(("python-ipykernel" ,python-ipykernel)
        ;; XXX: Disabled, not in guix.
@@ -12199,21 +11932,21 @@ time.")
                                         texlive-xcolor
                                         texlive-zapfding)))))
     (propagated-inputs
-     `(("python-bleach" ,python-bleach)
-       ("python-defusedxml" ,python-defusedxml)
-       ("python-entrypoints" ,python-entrypoints)
-       ("python-jinja2" ,python-jinja2)
-       ("python-jupyter-core" ,python-jupyter-core)
-       ("python-mistune" ,python-mistune)
-       ("python-nbclient" ,python-nbclient)
-       ("python-nbformat" ,python-nbformat)
-       ("python-pandocfilters" ,python-pandocfilters)
-       ("python-pygments" ,python-pygments)
-       ("python-jupyterlab-pygments" ,python-jupyterlab-pygments)
-       ("python-testpath" ,python-testpath)
-       ("python-traitlets" ,python-traitlets)
-       ;; Required, even if [serve] is not used.
-       ("python-tornado" ,python-tornado-6)))
+     (list python-bleach
+           python-defusedxml
+           python-entrypoints
+           python-jinja2
+           python-jupyter-core
+           python-mistune
+           python-nbclient
+           python-nbformat
+           python-pandocfilters
+           python-pygments
+           python-jupyterlab-pygments
+           python-testpath
+           python-traitlets
+           ;; Required, even if [serve] is not used.
+           python-tornado-6))
     (home-page "https://jupyter.org")
     (synopsis "Converting Jupyter Notebooks")
     (description "The @code{nbconvert} tool, @{jupyter nbconvert}, converts
@@ -12271,27 +12004,27 @@ convert an @code{.ipynb} notebook file into various static formats including:
                        ;; list "python" as a format.
                        "-k" "not test_list_formats")))))))
     (propagated-inputs
-     `(("python-argon2-cffi" ,python-argon2-cffi)
-       ("python-ipykernel" ,python-ipykernel)
-       ("python-ipython-genutils" ,python-ipython-genutils)
-       ("python-jinja2" ,python-jinja2)
-       ("python-jupyter-client" ,python-jupyter-client)
-       ("python-jupyter-core" ,python-jupyter-core)
-       ("python-nbconvert" ,python-nbconvert)
-       ("python-nbformat" ,python-nbformat)
-       ("python-prometheus-client" ,python-prometheus-client)
-       ("python-pyzmq" ,python-pyzmq)
-       ("python-send2trash" ,python-send2trash)
-       ("python-terminado" ,python-terminado)
-       ("python-tornado" ,python-tornado-6)
-       ("python-traitlets" ,python-traitlets)))
+     (list python-argon2-cffi
+           python-ipykernel
+           python-ipython-genutils
+           python-jinja2
+           python-jupyter-client
+           python-jupyter-core
+           python-nbconvert
+           python-nbformat
+           python-prometheus-client
+           python-pyzmq
+           python-send2trash
+           python-terminado
+           python-tornado-6
+           python-traitlets))
     (native-inputs
-     `(("python-coverage" ,python-coverage)
-       ("python-nbval" ,python-nbval)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)
-       ("python-requests" ,python-requests)
-       ("python-requests-unixsocket" ,python-requests-unixsocket)))
+     (list python-coverage
+           python-nbval
+           python-pytest
+           python-pytest-cov
+           python-requests
+           python-requests-unixsocket))
     (home-page "https://jupyter.org/")
     (synopsis "Web-based notebook environment for interactive computing")
     (description
@@ -12312,7 +12045,7 @@ interactive computing.")
          "1ismyaxbv9d56yqqqb8xl58hg0iq0bbyy014a53y1g3hfbc8g7q7"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-notebook" ,python-notebook)))
+     (list python-notebook))
     (home-page "https://ipython.org")
     (synopsis "IPython HTML widgets for Jupyter")
     (description "This package provides interactive HTML widgets for Jupyter
@@ -12332,16 +12065,14 @@ notebooks.")
          "1w217j8i53x14l7b05fk300k222zs9vkcjaa1rbrw3sk43k466lz"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-ipykernel" ,python-ipykernel)
-       ("python-ipython" ,python-ipython)
-       ("python-jupyterlab-widgets" ,python-jupyterlab-widgets)
-       ("python-nbformat" ,python-nbformat)
-       ("python-traitlets" ,python-traitlets)
-       ("python-widgetsnbextension" ,python-widgetsnbextension)))
+     (list python-ipykernel
+           python-ipython
+           python-jupyterlab-widgets
+           python-nbformat
+           python-traitlets
+           python-widgetsnbextension))
     (native-inputs
-     `(("python-mock" ,python-mock)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)))
+     (list python-mock python-pytest python-pytest-cov))
     (home-page "https://ipython.org")
     (synopsis "IPython HTML widgets for Jupyter")
     (description "Ipywidgets are interactive HTML widgets for Jupyter
@@ -12363,13 +12094,10 @@ in the data.")
          "1iqrxhd8hvlyf8cqbc731ssnwm61wrycnbiczy5wsfahd3hlh8i4"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-ipykernel" ,python-ipykernel)
-       ("python-jupyter-client" ,python-jupyter-client)
-       ("python-prompt-toolkit" ,python-prompt-toolkit-2)
-       ("python-pygments" ,python-pygments)))
+     (list python-ipykernel python-jupyter-client python-prompt-toolkit-2
+           python-pygments))
     (native-inputs
-     `(("python-nose" ,python-nose)
-       ("python-pytest" ,python-pytest)))
+     (list python-nose python-pytest))
     (home-page "https://jupyter.org")
     (synopsis "Jupyter terminal console")
     (description "This package provides a terminal-based console frontend for
@@ -12428,11 +12156,9 @@ Jupyter kernels such as IJulia and IRKernel.")
              (setenv "QT_QPA_PLATFORM" "offscreen")
              #t)))))
     (propagated-inputs
-     `(("python-ipykernel" ,python-ipykernel)
-       ("python-ipython" ,python-ipython)
-       ("python-pyqt" ,python-pyqt)))
+     (list python-ipykernel python-ipython python-pyqt))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://jupyter.org")
     (synopsis "Jupyter Qt console")
     (description "This package provides a Qt-based console for Jupyter with
@@ -12469,10 +12195,9 @@ support for rich media output.")
                          "six>=1.11.0"))
                       #t)))))
     (propagated-inputs
-     `(("python-editorconfig" ,python-editorconfig)
-       ("python-six" ,python-six)))
+     (list python-editorconfig python-six))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (synopsis "JavaScript unobfuscator and beautifier")
     (description "Beautify, unpack or deobfuscate JavaScript, leveraging
 popular online obfuscators.")
@@ -12492,12 +12217,12 @@ popular online obfuscators.")
     (build-system python-build-system)
     (arguments '(#:tests? #f)) ; there are none.
     (propagated-inputs
-     `(("python-ipykernel" ,python-ipykernel)
-       ("python-ipywidgets" ,python-ipywidgets)
-       ("python-jupyter-console" ,python-jupyter-console)
-       ("python-nbconvert" ,python-nbconvert)
-       ("python-notebook" ,python-notebook)
-       ("python-qtconsole" ,python-qtconsole)))
+     (list python-ipykernel
+           python-ipywidgets
+           python-jupyter-console
+           python-nbconvert
+           python-notebook
+           python-qtconsole))
     (home-page "https://jupyter.org")
     (synopsis "Web application for interactive documents")
     (description
@@ -12519,9 +12244,7 @@ simulation, statistical modeling, machine learning and much more.")
         (base32
          "1bpalpia6r5x1kknbk11p1fzph56fmmnp405ds8icksd3knr5aw4"))))
     (native-inputs
-     `(("python-hypothesis" ,python-hypothesis)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-runner" ,python-pytest-runner)))
+     (list python-hypothesis python-pytest python-pytest-runner))
     (build-system python-build-system)
     ;; XXX: Incompatible with Pytest 4: <https://github.com/chardet/chardet/issues/173>.
     (arguments `(#:tests? #f))
@@ -12547,7 +12270,7 @@ automatically detect a wide range of file encodings.")
         (base32 "0rr3iv2xw4rz5ijnfqk229fw85cq6p6rhqqsilm0ldzncblfg63h"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://github.com/ousret/charset_normalizer")
     (synopsis "Universal Charset Detector, alternative to Chardet")
     (description "This library helps you read text from an unknown charset
@@ -12574,7 +12297,7 @@ library provides codecs are supported.")
        (patches (search-patches "python-docopt-pytest6-compat.patch"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -12619,7 +12342,7 @@ programmatically with command-line parsers like @code{getopt} and
                #t))))
        #:tests? #f)) ; no test suite
     (propagated-inputs
-     `(("dialog" ,dialog)))
+     (list dialog))
     (home-page "http://pythondialog.sourceforge.net/")
     (synopsis "Python interface to the UNIX dialog utility")
     (description "A Python wrapper for the dialog utility.  Its purpose is to
@@ -12655,7 +12378,7 @@ This allows one to make simple text-mode user interfaces on Unix-like systems")
               (patches (search-patches "python-configobj-setuptools.patch"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-six" ,python-six)))
+     (list python-six))
     (synopsis "Config file reading, writing and validation")
     (description "ConfigObj is a simple but powerful config file reader and
 writer: an ini file round tripper.  Its main feature is that it is very easy to
@@ -12679,7 +12402,7 @@ config files.")
                 "1p1pzpf5qpf80bfxsx1mbw9blyhhypjvhl3i60pbmhfmhvlpplgd"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pyyaml" ,python-pyyaml)))
+     (list python-pyyaml))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -12782,7 +12505,7 @@ the standard library.")
          (replace 'check
            (lambda _ (invoke "pytest" "tests.py"))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://github.com/foutaise/texttable/")
     (synopsis "Python module for creating simple ASCII tables")
     (description "Texttable is a Python module for creating simple ASCII
@@ -12846,16 +12569,15 @@ for atomic file system operations.")
            (lambda _
              (setenv "PBR_VERSION" "3.0.1"))))))
     (native-inputs
-     `(("python-pbr" ,python-pbr)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-catchlog" ,python-pytest-catchlog)
-       ("python-pytest-cov" ,python-pytest-cov)
-       ("python-pytest-mock" ,python-pytest-mock)
-       ("python-pytest-runner" ,python-pytest-runner)
-       ("python-pytest-xdist" ,python-pytest-xdist)))
+     (list python-pbr
+           python-pytest
+           python-pytest-catchlog
+           python-pytest-cov
+           python-pytest-mock
+           python-pytest-runner
+           python-pytest-xdist))
     (propagated-inputs
-     `(("python-inflection" ,python-inflection)
-       ("python-tinycss" ,python-tinycss)))
+     (list python-inflection python-tinycss))
     (home-page "https://github.com/blambright/qstylizer")
     (synopsis "Qt stylesheet generation utility for PyQt/PySide")
     (description "@code{qstylizer} is a Python package designed to help with
@@ -12874,7 +12596,7 @@ the construction of PyQt/PySide stylesheets.")
                "0f9lmxwcq0y9lb8w0whbni7gwy12gbv74h1igh85qn9aq0iydkxd"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-click" ,python-click)))
+     (list python-click))
     (synopsis "Utilities for multithreading in Click")
     (description "This package provides utilities for multithreading in Click
 applications.")
@@ -12893,7 +12615,7 @@ applications.")
                "091i03bhxyzsdbc6kilxhivfda2f8ymz3b33xa6cj5kbzjiirz8n"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-click" ,python-click)))
+     (list python-click))
     (synopsis "Logging for click applications")
     (description "This package provides a Python library for logging Click
 applications.")
@@ -12914,7 +12636,7 @@ applications.")
     (arguments
       `(#:tests? #f)) ; no target
     (propagated-inputs
-     `(("python-click" ,python-click)))
+     (list python-click))
     (synopsis "Extends click.Group")
     (description "This package extends click.Group to invoke a command without
 explicit subcommand name.")
@@ -12943,13 +12665,13 @@ explicit subcommand name.")
                (invoke "pytest"))
              #t)))))
     (native-inputs
-     `(("python-coverage" ,python-coverage)
-       ("python-freezegun" ,python-freezegun)
-       ("python-pretend" ,python-pretend)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-asyncio" ,python-pytest-asyncio)
-       ("python-simplejson" ,python-simplejson)
-       ("python-twisted" ,python-twisted)))
+     (list python-coverage
+           python-freezegun
+           python-pretend
+           python-pytest
+           python-pytest-asyncio
+           python-simplejson
+           python-twisted))
     (home-page "https://www.structlog.org/")
     (synopsis "Structured Logging for Python")
     (description "@code{structlog} changes logging in Python by adding structure
@@ -12968,8 +12690,7 @@ to your log entries.")
                "1xhak74yj3lqflvpijg15rnkklrigvsp5q7s4as4h6a157d8q8ip"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-setuptools-scm" ,python-setuptools-scm)))
+     (list python-pytest python-setuptools-scm))
     (synopsis "Namespace control and lazy-import mechanism")
     (description "With apipkg you can control the exported namespace of a Python
 package and greatly reduce the number of imports for your users.  It is a small
@@ -13003,8 +12724,7 @@ pure Python module that works on virtually all Python versions.")
                         (add-installed-pythonpath inputs outputs)
                         (invoke "pytest" "-vv")))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-setuptools-scm" ,python-setuptools-scm)))
+     (list python-pytest python-setuptools-scm))
     (synopsis "Rapid multi-Python deployment")
     (description "Execnet provides a share-nothing model with
 channel-send/receive communication for distributing execution across many
@@ -13033,8 +12753,7 @@ minimal and fast API targeting the following uses:
                "19574j3jwssm2dkqykih4568xqfgjsa3hcd79yl5s2vfys3qvh8g"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-dateutil" ,python-dateutil)
-       ("python-pytz" ,python-pytz)))
+     (list python-dateutil python-pytz))
     (synopsis "Python library for parsing iCalendar files")
     (description "The icalendar package is a parser/generator of iCalendar
 files for use with Python.")
@@ -13078,9 +12797,9 @@ files for use with Python.")
          (replace 'check
            (lambda _ (invoke "py.test" "-v"))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (propagated-inputs
-     `(("python-args" ,python-args)))
+     (list python-args))
     (home-page "https://github.com/kennethreitz/clint")
     (synopsis "Command-line interface tools")
     (description
@@ -13104,7 +12823,7 @@ output, progress bar display, and pipes.")
                 "1j81nddvnb145x4p81bnfpyai6g26i2dc1633ycsk025bb18m01a"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-appdirs" ,python-appdirs)))
+     (list python-appdirs))
     (home-page "https://github.com/alex/rply")
     (synopsis "Parser generator for Python")
     (description
@@ -13139,14 +12858,9 @@ with a new public API, and RPython support.")
              (setenv "HOME" "/tmp")
              (invoke "nosetests"))))))
     (native-inputs
-     `(("python-coverage" ,python-coverage)
-       ("python-nose" ,python-nose)))
+     (list python-coverage python-nose))
     (propagated-inputs
-     `(("python-astor" ,python-astor)
-       ("python-colorama" ,python-colorama)
-       ("python-rply" ,python-rply)
-       ("python-funcparserlib"
-        ,python-funcparserlib)))
+     (list python-astor python-colorama python-rply python-funcparserlib))
     (home-page "http://hylang.org/")
     (synopsis "Lisp frontend to Python")
     (description
@@ -13309,18 +13023,17 @@ concurrent.futures package from Python 3.2")
          "0b2v3mim90rmfvixkaniz2qrs650sk230rzgd5zhcjfldmlqgxpc"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-six" ,python-six)
-       ("python-utils" ,python-utils)))
+     (list python-six python-utils))
     (native-inputs
-     `(("python-flake8" ,python-flake8)
-       ("python-freezegun" ,python-freezegun)
-       ("python-pycodestyle" ,python-pycodestyle)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-cache" ,python-pytest-cache)
-       ("python-pytest-cov" ,python-pytest-cov)
-       ("python-pytest-flakes" ,python-pytest-flakes)
-       ("python-pytest-pep8" ,python-pytest-pep8)
-       ("python-sphinx" ,python-sphinx)))
+     (list python-flake8
+           python-freezegun
+           python-pycodestyle
+           python-pytest
+           python-pytest-cache
+           python-pytest-cov
+           python-pytest-flakes
+           python-pytest-pep8
+           python-sphinx))
     (home-page "https://github.com/WoLpH/python-progressbar")
     (synopsis "Text progress bar library for Python")
     (description
@@ -13420,36 +13133,36 @@ text.")
                         " and not test_cancel_running_job"
                         " and not test_container_overrides"))))))))
     (native-inputs
-     `(("python-flask" ,python-flask)
-       ("python-flask-cors" ,python-flask-cors)
-       ("python-freezegun" ,python-freezegun)
-       ("python-parameterized" ,python-parameterized)
-       ("python-pytest" ,python-pytest)
-       ("python-sure" ,python-sure)))
+     (list python-flask
+           python-flask-cors
+           python-freezegun
+           python-parameterized
+           python-pytest
+           python-sure))
     (inputs
      `(("bash" ,bash-minimal)))
     (propagated-inputs
-     `(("python-aws-xray-sdk" ,python-aws-xray-sdk)
-       ("python-boto" ,python-boto)
-       ("python-boto3" ,python-boto3)
-       ("python-botocore" ,python-botocore)
-       ("python-cfn-lint" ,python-cfn-lint)
-       ("python-cryptography" ,python-cryptography)
-       ("python-dateutil" ,python-dateutil)
-       ("python-docker" ,python-docker)
-       ("python-idna" ,python-idna)
-       ("python-jinja2" ,python-jinja2)
-       ("python-jose" ,python-jose)
-       ("python-jsondiff" ,python-jsondiff)
-       ("python-mock" ,python-mock)
-       ("python-pytz" ,python-pytz)
-       ("python-pyyaml" ,python-pyyaml)
-       ("python-requests" ,python-requests)
-       ("python-responses" ,python-responses)
-       ("python-six" ,python-six)
-       ("python-sshpubkeys" ,python-sshpubkeys)
-       ("python-werkzeug" ,python-werkzeug)
-       ("python-xmltodict" ,python-xmltodict)))
+     (list python-aws-xray-sdk
+           python-boto
+           python-boto3
+           python-botocore
+           python-cfn-lint
+           python-cryptography
+           python-dateutil
+           python-docker
+           python-idna
+           python-jinja2
+           python-jose
+           python-jsondiff
+           python-mock
+           python-pytz
+           python-pyyaml
+           python-requests
+           python-responses
+           python-six
+           python-sshpubkeys
+           python-werkzeug
+           python-xmltodict))
     (home-page "https://github.com/spulec/moto")
     (synopsis "Mock out the boto library")
     (description
@@ -13470,7 +13183,7 @@ text.")
        "1dcxvszbikgzh99ybdc7jq0zb9wspy2ds8z9mjsqiyv3q884xpr5"))))
    (build-system python-build-system)
    (propagated-inputs
-    `(("python-pyasn1" ,python-pyasn1)))
+    (list python-pyasn1))
    (synopsis "Pure-Python RSA implementation")
    (description "Python-RSA is a pure-Python RSA implementation.  It supports
 encryption and decryption, signing and verifying signatures, and key
@@ -13495,7 +13208,7 @@ library as well as on the command line.")
        "1c35qyhvy27q9ih9n899f3h4sdnpgq027dbiilly2qb5cvgarchm"))))
    (build-system python-build-system)
    (native-inputs
-    `(("python-setuptools-scm" ,python-setuptools-scm)))
+    (list python-setuptools-scm))
    (synopsis "Plugin and hook calling mechanism for Python")
    (description "Pluggy is an extraction of the plugin manager as used by
 Pytest but stripped of Pytest specific details.")
@@ -13541,7 +13254,7 @@ Pytest but stripped of Pytest specific details.")
     (native-inputs
      ;; XXX: Not actually used since there are no tests but required for
      ;; build.
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://plumbum.readthedocs.io")
     (synopsis "Python shell combinators library")
     (description
@@ -13562,9 +13275,9 @@ code.")
          "1zqqjlgmhgkpzg9ss5ki8wamxl83xn51fs6gn2a8cxsx9vkbvcvj"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-packaging" ,python-packaging)))
+     (list python-packaging))
     (native-inputs
-     `(("python-unittest2" ,python-unittest2)))
+     (list python-unittest2))
     (home-page "https://deprecation.readthedocs.io/")
     (synopsis "Python library to handle automated deprecations")
     (description
@@ -13592,17 +13305,17 @@ that deprecated code is eventually removed.")
      ;; pytest>=2.8.0 for installation.
      '(#:tests? #f))
     (propagated-inputs
-     `(("python-filelock" ,python-filelock)
-       ("python-packaging" ,python-packaging)
-       ("python-pluggy" ,python-pluggy)
-       ("python-py" ,python-py)
-       ("python-six" ,python-six)
-       ("python-toml" ,python-toml)
-       ("python-virtualenv" ,python-virtualenv)))
+     (list python-filelock
+           python-packaging
+           python-pluggy
+           python-py
+           python-six
+           python-toml
+           python-virtualenv))
     (native-inputs
-     `(; FIXME: Missing: ("python-pytest-timeout" ,python-pytest-timeout)
-       ("python-pytest" ,python-pytest)  ; >= 2.3.5
-       ("python-setuptools-scm" ,python-setuptools-scm)))
+     (list ; FIXME: Missing: ("python-pytest-timeout" ,python-pytest-timeout)
+           python-pytest ; >= 2.3.5
+           python-setuptools-scm))
     (home-page "https://tox.readthedocs.io")
     (synopsis "Virtualenv-based automation of test activities")
     (description "Tox is a generic virtualenv management and test command line
@@ -13625,7 +13338,7 @@ servers.")
        "0k0765x1mybcrzajh3hiqkl8sy9hs0bmn4900frxy0j3ykvaxqmx"))))
    (build-system python-build-system)
    (native-inputs
-    `(("python-nose" ,python-nose)))
+    (list python-nose))
    (synopsis "JSON Matching Expressions")
    (description "JMESPath (pronounced “james path”) is a Python library that
 allows one to declaratively specify how to extract elements from a JSON
@@ -13648,10 +13361,9 @@ document.")
         (base32 "1kn1w4dp9mrsq6kzmhf4pjmx3wicxc3dw1mwa924q8g48g77lr4c"))))
     (build-system python-build-system)
     (native-inputs
-     `(("cmake" ,cmake)
-       ("python-cython" ,python-cython)))
+     (list cmake python-cython))
     (inputs
-     `(("symengine" ,symengine)))
+     (list symengine))
     (home-page "https://github.com/symengine/symengine.py")
     (synopsis "Python library providing wrappers to SymEngine")
     (description
@@ -13675,10 +13387,9 @@ manipulation library.")
     ;; fail.
     (arguments '(#:tests? #false))
     (propagated-inputs
-     `(("python-future" ,python-future)))
+     (list python-future))
     (native-inputs
-     `(("python-nose" ,python-nose)
-       ("python-numpy" ,python-numpy)))
+     (list python-nose python-numpy))
     (home-page "https://uncertainties-python-package.readthedocs.io/")
     (synopsis "Calculations with uncertainties")
     (description
@@ -13700,7 +13411,7 @@ expression.")
          "0f54sd4w1a72ij1bcxs2x7dk9xf8bzclawijf1z18bqx9f96l2gm"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://github.com/newville/asteval")
     (synopsis "Minimalistic evaluator of Python expressions")
     (description
@@ -13721,12 +13432,9 @@ using the @code{ast} module")
          "0iab33jjb60f8kn0k0cqb0vjp1mdskks2n3kpn97zkw5cvjhq2b7"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-asteval" ,python-asteval)
-       ("python-numpy" ,python-numpy)
-       ("python-scipy" ,python-scipy)
-       ("python-uncertainties" ,python-uncertainties)))
+     (list python-asteval python-numpy python-scipy python-uncertainties))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://lmfit.github.io/lmfit-py/")
     (synopsis "Least-Squares minimization with bounds and constraints")
     (description
@@ -13755,8 +13463,7 @@ enhancements to optimization and data fitting problems.")
      ;; subset of this library, so keep it around for now, but disable tests.
      '(#:tests? #f))
     (propagated-inputs
-     `(("python-paramiko" ,python-paramiko)
-       ("python-requests" ,python-requests)))
+     (list python-paramiko python-requests))
     (home-page "https://github.com/boto/boto")
     (synopsis "Python interfaces for Amazon Web Services")
     (description
@@ -13784,9 +13491,7 @@ This software is unmaintained, and new projects should use @code{boto3} instead.
      ;; FIXME: Many tests are failing.
      '(#:tests? #f))
     (propagated-inputs
-     `(("python-dateutil" ,python-dateutil)
-       ("python-jmespath" ,python-jmespath)
-       ("python-urllib3" ,python-urllib3)))
+     (list python-dateutil python-jmespath python-urllib3))
     (home-page "https://github.com/boto/botocore")
     (synopsis "Low-level interface to AWS")
     (description "Botocore is a Python library that provides a low-level
@@ -13817,13 +13522,9 @@ interface to the Amazon Web Services (AWS) API.")
              (delete-file-recursively "tests/integration"))))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-nose" ,python-nose)
-       ("python-mock" ,python-mock)
-       ("python-pytest" ,python-pytest)))
+     (list python-nose python-mock python-pytest))
     (propagated-inputs
-     `(("python-botocore" ,python-botocore)
-       ("python-jmespath" ,python-jmespath)
-       ("python-s3transfer" ,python-s3transfer)))
+     (list python-botocore python-jmespath python-s3transfer))
     (synopsis "AWS SDK for Python")
     (description
      "Boto3 is a Python library for writing programs that interact with
@@ -13876,7 +13577,7 @@ in pure Python.")
                #t))))
        #:tests? #f))  ; no tests provided
     (propagated-inputs
-     `(("python-six" ,python-six)))
+     (list python-six))
     (inputs
      `(("xdotool" ,xdotool)
        ("libX11" ,libx11)))
@@ -13911,10 +13612,9 @@ python-xdo for newer bindings.)")
                           (format #t "test suite not run~%"))
                       #t)))))
     (propagated-inputs
-     `(("python-markupsafe" ,python-markupsafe)))
+     (list python-markupsafe))
     (native-inputs
-     `(("python-mock" ,python-mock)
-       ("python-nose" ,python-nose)))
+     (list python-mock python-nose))
     (home-page "https://www.makotemplates.org/")
     (synopsis "Templating language for Python")
     (description "Mako is a templating language for Python that compiles
@@ -13959,7 +13659,7 @@ server with very acceptable performance.")
          "11yfkzyplizdgndy34vyd5qlmr1n5mxis3a3svxmx8fnccdvknxc"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://github.com/pydanny/whichcraft")
     (synopsis "Cross-platform cross-python shutil.which functionality")
     (description
@@ -13979,22 +13679,19 @@ designed to work across multiple versions of Python.")
         (base32 "0mx49whhwcxmvcak27zr7p7ndzkn3w7psfd7fzh3n91fi1r4v6kb"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-freezegun" ,python-freezegun)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-catchlog" ,python-pytest-catchlog)
-       ("python-pytest-cov" ,python-pytest-cov)
-       ("python-pytest-mock" ,python-pytest-mock)))
+     (list python-freezegun python-pytest python-pytest-catchlog
+           python-pytest-cov python-pytest-mock))
     (propagated-inputs
-     `(("python-binaryornot" ,python-binaryornot)
-       ("python-click" ,python-click)
-       ("python-future" ,python-future)
-       ("python-jinja2" ,python-jinja2)
-       ("python-jinja2-time" ,python-jinja2-time)
-       ("python-poyo" ,python-poyo)
-       ("python-requests" ,python-requests)
-       ("python-slugify" ,python-slugify)
-       ("python-text-unidecode" ,python-text-unidecode)
-       ("python-whichcraft" ,python-whichcraft)))
+     (list python-binaryornot
+           python-click
+           python-future
+           python-jinja2
+           python-jinja2-time
+           python-poyo
+           python-requests
+           python-slugify
+           python-text-unidecode
+           python-whichcraft))
     (home-page "https://github.com/cookiecutter/cookiecutter")
     (synopsis
      "Command-line utility that creates projects from project templates")
@@ -14017,11 +13714,9 @@ project template.")
          "1xia20wm0vx5dk85kcwgh13bylz8qh47ffjxssd2586r60xi783a"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-webob" ,python-webob)
-       ("python-webtest" ,python-webtest)))
+     (list python-webob python-webtest))
     (propagated-inputs
-     `(("python-lxml" ,python-lxml)
-       ("python-cssselect" ,python-cssselect)))
+     (list python-lxml python-cssselect))
     (home-page "https://github.com/gawel/pyquery")
     (synopsis "Make jQuery-like queries on xml documents")
     (description "pyquery allows you to make jQuery queries on xml documents.
@@ -14080,11 +13775,9 @@ and provides a uniform API regardless of which JSON implementation is used.")
          "1sv600dgqwpimr6i1g59y9hpn50mc236gdqkr7zin13kvlpx0g87"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-case" ,python-case)
-       ("python-pytest-sugar" ,python-pytest-sugar)
-       ("python-mock" ,python-mock)))
+     (list python-case python-pytest-sugar python-mock))
     (propagated-inputs
-     `(("python-vine" ,python-vine)))
+     (list python-vine))
     (home-page "https://github.com/celery/py-amqp")
     (synopsis
      "Low-level AMQP client for Python (fork of amqplib)")
@@ -14118,8 +13811,7 @@ alternative when librabbitmq is not available.")
          "0jd9864k3csc06kipiwzjlk9mq4054s8kzk5q1cfnxj8572s4iv4"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-six" ,python-six)
-       ("python-twisted" ,python-twisted)))
+     (list python-six python-twisted))
     (home-page "https://github.com/txamqp/txamqp")
     (synopsis "Communicate with AMQP peers and brokers using Twisted")
     (description
@@ -14144,15 +13836,10 @@ applications.")
          "15k8f7mzqr049sg9vi48m19vjykviafk3f0p5xzgw9by0x0kyxjj"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-mock" ,python-mock)
-       ("python-case" ,python-case)
-       ("python-pyro4" ,python-pyro4)
-       ("python-pytest-sugar" ,python-pytest-sugar)
-       ("python-pytz" ,python-pytz)))
+     (list python-mock python-case python-pyro4 python-pytest-sugar
+           python-pytz))
     (propagated-inputs
-     `(("python-anyjson" ,python-anyjson)
-       ("python-amqp" ,python-amqp)
-       ("python-redis" ,python-redis)))
+     (list python-anyjson python-amqp python-redis))
     (home-page "https://kombu.readthedocs.io")
     (synopsis "Message passing library for Python")
     (description "The aim of Kombu is to make messaging in Python as easy as
@@ -14188,8 +13875,7 @@ RabbitMQ messaging server is the most popular implementation.")
          "03msmapj3s5zgqk87d646mafz7a01h5bm2wijalgpi0s80ks5na2"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-case" ,python-case)
-       ("python-pytest" ,python-pytest)))
+     (list python-case python-pytest))
     (home-page "https://github.com/celery/billiard")
     (synopsis
      "Python multiprocessing fork with improvements and bugfixes")
@@ -14234,12 +13920,9 @@ Python 2.4 and 2.5, and will draw its fixes/improvements from python-trunk.")
                 "pytest>=3.0"))
              #t)))))
     (native-inputs
-     `(("python-case" ,python-case)
-       ("python-pytest" ,python-pytest)))
+     (list python-case python-pytest))
     (propagated-inputs
-     `(("python-pytz" ,python-pytz)
-       ("python-billiard" ,python-billiard)
-       ("python-kombu" ,python-kombu)))
+     (list python-pytz python-billiard python-kombu))
     (home-page "https://celeryproject.org")
     (synopsis "Distributed Task Queue")
     (description "Celery is an asynchronous task queue/job queue based on
@@ -14350,17 +14033,12 @@ ISO 8859, etc.).")
                       ;; doesn't solve the failure.
                       " and not test_reload")))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)
-       ("python-pytest-xdist" ,python-pytest-xdist)))
+     (list python-pytest python-pytest-cov python-pytest-xdist))
     (inputs
-     `(("qtbase" ,qtbase-5)))
+     (list qtbase-5))
     (propagated-inputs
-     `(("python-h5py" ,python-h5py)
-       ("python-numpy" ,python-numpy)
-       ("python-pyopengl" ,python-pyopengl)
-       ("python-scipy" ,python-scipy)
-       ("python-pyqt" ,python-pyqt)))
+     (list python-h5py python-numpy python-pyopengl python-scipy
+           python-pyqt))
     (home-page "http://www.pyqtgraph.org")
     (synopsis "Scientific graphics and GUI library for Python")
     (description
@@ -14393,10 +14071,9 @@ applications.")
              (setenv "QT_QPA_PLATFORM" "offscreen")
              #t)))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-pytest-runner" ,python-pytest-runner)))
+     (list python-pytest python-pytest-runner))
     (propagated-inputs
-     `(("python-pyqt" ,python-pyqt)))
+     (list python-pyqt))
     (home-page "https://github.com/CabbageDevelopment/qasync")
     (synopsis "Implementation of the PEP 3156 Event-Loop with Qt")
     (description
@@ -14465,8 +14142,7 @@ main process so that they are handled correctly.")
      '(;; The test suite relies on some non-portable Windows interfaces.
        #:tests? #f))
     (propagated-inputs
-     `(("python-dateutil" ,python-dateutil)
-       ("python-pyicu" ,python-pyicu)))
+     (list python-dateutil python-pyicu))
     (synopsis "Parse and generate vCard and vCalendar files")
     (description "Vobject is intended to be a full featured Python package for
 parsing and generating vCard and vCalendar files.  Currently, iCalendar files
@@ -14490,7 +14166,7 @@ way.")
                (base32
                 "00yvj8bxmhhhhd74v7j0x673is7vizmxwgb3dd5xmnkr74ybyi7w"))))
     (build-system python-build-system)
-    (native-inputs `(("python-pytest" ,python-pytest-6)))
+    (native-inputs (list python-pytest-6))
     (home-page "https://software.clapper.org/munkres/")
     (synopsis "Implementation of the Munkres algorithm")
     (description "The Munkres module provides an implementation of the Munkres
@@ -14512,7 +14188,7 @@ useful for solving the Assignment Problem.")
     (build-system python-build-system)
     (arguments '(#:tests? #f)) ; Test invocation is no longer supported by Python.
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://bitbucket.org/mchaput/whoosh")
     (synopsis "Full text indexing, search, and spell checking library")
     (description
@@ -14540,13 +14216,10 @@ checking library.")
           (base32 "1r9y714cz8m894rxp7pyvicr1lw2iid24vz6fxbl5wzy8ibgxlqr"))))
     (build-system python-build-system)
     (inputs
-      `(("python-chardet" ,python-chardet)))
+      (list python-chardet))
     (native-inputs
-      `(("python-check-manifest" ,python-check-manifest)
-        ("python-flake8" ,python-flake8)
-        ("python-pytest" ,python-pytest)
-        ("python-pytest-cov" ,python-pytest-cov)
-        ("python-pytest-dependency" ,python-pytest-dependency)))
+      (list python-check-manifest python-flake8 python-pytest
+            python-pytest-cov python-pytest-dependency))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -14629,8 +14302,7 @@ anymore.")
     (arguments
      `(#:python ,python-2))
     (propagated-inputs
-     `(("python2-scandir" ,python2-scandir)
-       ("python2-six" ,python2-six)))
+     (list python2-scandir python2-six))
     (home-page "https://pypi.org/project/pathlib2/")
     (synopsis "Object-oriented file system paths - backport of standard
 pathlib module")
@@ -14681,7 +14353,7 @@ ambiguities (forward vs. backward slashes, etc.).
                (add-installed-pythonpath inputs outputs)
                (invoke "pytest" "-vv" "jellyfish/test.py")))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://github.com/jamesturk/jellyfish")
     (synopsis "Approximate and phonetic matching of strings")
     (description "Jellyfish uses a variety of string comparison and phonetic
@@ -14708,7 +14380,7 @@ encoding algorithms to do fuzzy string matching.")
      `(;; It supports Python 3, but Python 3 can already do Unicode CSV.
        #:python ,python-2))
     (native-inputs
-     `(("python2-unittest2" ,python2-unittest2)))
+     (list python2-unittest2))
     (home-page "https://github.com/jdunck/python-unicodecsv")
     (synopsis "Unicode CSV module for Python 2")
     (description "Unicodecsv is a drop-in replacement for Python 2.7's CSV
@@ -14748,12 +14420,9 @@ module, adding support for Unicode strings.")
                          (find-files out "\\.gz$"))
                #t))))))
     (propagated-inputs
-     `(("python-chardet" ,python-chardet)
-       ("python-cryptography" ,python-cryptography)
-       ("python-sortedcontainers" ,python-sortedcontainers)))
+     (list python-chardet python-cryptography python-sortedcontainers))
     (native-inputs
-     `(("python-nose" ,python-nose)
-       ("python-tox" ,python-tox)))
+     (list python-nose python-tox))
     (home-page "https://github.com/pdfminer/pdfminer.six")
     (synopsis "PDF parser and analyzer")
     (description "@code{pdfminer.six} is a community maintained fork of
@@ -14791,8 +14460,8 @@ can also be used to get the exact location, font or color of the text.")
            (lambda* (#:key inputs tests? #:allow-other-keys)
              (when tests?
                (invoke "pytest" "-vv")))))))
-    (native-inputs `(("python-pytest" ,python-pytest)))
-    (inputs `(("libarchive" ,libarchive)))
+    (native-inputs (list python-pytest))
+    (inputs (list libarchive))
     (home-page "https://github.com/markokr/rarfile")
     (synopsis "RAR archive reader for Python")
     (description "This is Python module for RAR archive reading.  The interface
@@ -14821,11 +14490,8 @@ is made as zipfile like as possible.")
                                  "tests")
                (invoke "python" "-m" "pytest" "-vv")))))))
     (propagated-inputs
-     `(("python-attrs" ,python-attrs)
-       ("python-colorama" ,python-colorama)
-       ("python-commonmark" ,python-commonmark)
-       ("python-pygments" ,python-pygments)
-       ("python-typing-extensions" ,python-typing-extensions)))
+     (list python-attrs python-colorama python-commonmark python-pygments
+           python-typing-extensions))
     (native-inputs
      `(("python-pytest" ,python-pytest)
        ("tests"
@@ -14884,10 +14550,10 @@ syntax highlighting, markdown and more to the terminal.")
                           (invoke "python" "./test/test.py")
                           (format #t "test suite not run~%")))))))
     (native-inputs
-     `(("which" ,which)))
+     (list which))
     (inputs
      ;; python-magic needs to be able to find libmagic.so.
-     `(("file" ,file)))
+     (list file))
     (synopsis "File type identification using libmagic")
     (description
      "This module uses ctypes to access the libmagic file type
@@ -14919,15 +14585,15 @@ the same purpose: to provide Python bindings for libmagic.")
      `(#:python ,python-2
        #:tests? #f))
     (propagated-inputs
-     `(("python2-dateutil" ,python2-dateutil)
-       ;; The python-file package also provides a magic.py module.
-       ;; This is an unfortunate state of affairs; however, s3cmd
-       ;; fails to install if it cannot find specifically the
-       ;; python-magic package.  Thus we include it, instead of using
-       ;; python-file.  Ironically, s3cmd sometimes works better
-       ;; without libmagic bindings at all:
-       ;; https://github.com/s3tools/s3cmd/issues/198
-       ("python2-magic" ,python2-magic)))
+     (list python2-dateutil
+           ;; The python-file package also provides a magic.py module.
+           ;; This is an unfortunate state of affairs; however, s3cmd
+           ;; fails to install if it cannot find specifically the
+           ;; python-magic package.  Thus we include it, instead of using
+           ;; python-file.  Ironically, s3cmd sometimes works better
+           ;; without libmagic bindings at all:
+           ;; https://github.com/s3tools/s3cmd/issues/198
+           python2-magic))
     (home-page "https://s3tools.org/s3cmd")
     (synopsis "Command line tool for S3-compatible storage services")
     (description
@@ -14951,9 +14617,9 @@ CloudFront content delivery network.")
             "107x2wmchlch8saixb488cgjz9n6inl38wi7nxkb942rbaapxiqb"))))
     (build-system python-build-system)
     (native-inputs
-      `(("python-nose" ,python-nose)))
+      (list python-nose))
     (inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (arguments
       `(#:phases
         (modify-phases %standard-phases
@@ -15044,10 +14710,9 @@ to support both Python 2 and Python 3 with minimal overhead.")
             "15ix8crpad26cfl1skyg7qajqqfdrm8q5ahhmlfmqi1aw0jqj2g2"))))
     (build-system python-build-system)
     (native-inputs
-      `(("python-cython" ,python-cython)
-        ("python-sphinx" ,python-sphinx)))
+      (list python-cython python-sphinx))
     (inputs
-      `(("pari-gp" ,pari-gp)))
+      (list pari-gp))
     (arguments
      `(#:modules ((guix build python-build-system)
                   ((guix build gnu-build-system) #:prefix gnu:)
@@ -15106,8 +14771,7 @@ respectively.")
                                    "            line += ' -L" pcre "/lib"
                                    " -L " libgc "/lib'")))
                   #t))))))
-  (inputs `(("pcre" ,pcre)
-            ("libgc" ,libgc)))
+  (inputs (list pcre libgc))
   (home-page "https://shedskin.github.io/")
   (synopsis "Experimental Python-2 to C++ Compiler")
   (description (string-append "This is an experimental compiler for a subset of
@@ -15146,7 +14810,7 @@ to occurrences in strings and comments.")
         (base32 "16z8zq83hxy48g6hh4xczbdz50qvxv9k1aahr4fqq7jis60cc262"))))
     (build-system python-build-system)
     (inputs
-     `(("file" ,file)))
+     (list file))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
@@ -15185,8 +14849,7 @@ own code, responding to click events and updating clock every second.")
            (lambda _
              (invoke "py.test" "-vv" "tests" "README.rst"))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-six" ,python-six)))
+     (list python-pytest python-six))
     (home-page "https://github.com/ionelmc/python-tblib")
     (synopsis "Traceback serialization library")
     (description
@@ -15268,10 +14931,9 @@ are synchronized with data exchanges on \"channels\".")
          "19qmqsh984zq1rzzjy4vqnmviaqnymcyl8h7z99pnicbgwnm2adz"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-graphviz" ,python-graphviz)))
+     (list python-graphviz))
     (native-inputs
-     `(("python-mock" ,python-mock)
-       ("graphviz" ,graphviz)))
+     (list python-mock graphviz))
     (home-page "https://mg.pov.lt/objgraph/")
     (synopsis "Draw Python object reference graphs with graphviz")
     (description
@@ -15387,14 +15049,11 @@ graphviz.")
        ("python-zope.event" ,python-zope-event)
        ("python-zope.interface" ,python-zope-interface)))
     (native-inputs
-     `(("python-six" ,python-six)
-
-       ;; For tests.
-       ("python-dnspython" ,python-dnspython)
-       ("python-psutil" ,python-psutil)))
+     (list python-six
+           ;; For tests.
+           python-dnspython python-psutil))
     (inputs
-     `(("c-ares" ,c-ares)
-       ("libev" ,libev)))
+     (list c-ares libev))
     (home-page "https://www.gevent.org/")
     (synopsis "Coroutine-based network library")
     (description
@@ -15442,12 +15101,12 @@ format.")
              (substitute* "src/twisted/python/_setup.py"
                (("\".+ = twisted\\.conch\\.scripts\\..+\",") "")))))))
     (propagated-inputs
-     `(("python-zope-interface" ,python-zope-interface)
-       ("python-pyhamcrest" ,python-pyhamcrest)
-       ("python-incremental" ,python-incremental)
-       ("python-hyperlink" ,python-hyperlink)
-       ("python-constantly" ,python-constantly)
-       ("python-automat" ,python-automat)))
+     (list python-zope-interface
+           python-pyhamcrest
+           python-incremental
+           python-hyperlink
+           python-constantly
+           python-automat))
     (home-page "https://twistedmatrix.com/")
     (synopsis "Asynchronous networking framework written in Python")
     (description
@@ -15487,13 +15146,12 @@ focus on event-based network programming and multiprotocol integration.")
                     (lambda _
                       (invoke "nosetests"))))))
     (native-inputs
-     `(("python-mock" ,python-mock)
-       ("python-nose" ,python-nose)
-
-       ;; These are optional at runtime, and provided here for tests.
-       ("python-gevent" ,python-gevent)
-       ("python-tornado" ,python-tornado)
-       ("python-twisted" ,python-twisted)))
+     (list python-mock
+           python-nose
+           ;; These are optional at runtime, and provided here for tests.
+           python-gevent
+           python-tornado
+           python-twisted))
     (home-page "https://pika.readthedocs.org")
     (synopsis "Pure Python AMQP Client Library")
     (description
@@ -15559,7 +15217,7 @@ data in Python.")
     (build-system python-build-system)
     (arguments '(#:tests? #f)) ; XXX: needs zookeeper
     (propagated-inputs
-     `(("python-six" ,python-six)))
+     (list python-six))
     (home-page "https://kazoo.readthedocs.org")
     (synopsis "High-level Zookeeper client library")
     (description
@@ -15584,11 +15242,9 @@ programming errors.")
     (build-system python-build-system)
     (arguments '(#:tests? #f)) ; XXX: needs zookeeper, kafka, etc.
     (propagated-inputs
-     `(("python-gevent" ,python-gevent)
-       ("python-kazoo" ,python-kazoo)
-       ("python-tabulate" ,python-tabulate)))
+     (list python-gevent python-kazoo python-tabulate))
     (inputs
-     `(("librdkafka" ,librdkafka)))
+     (list librdkafka))
     (home-page "https://pykafka.readthedocs.io/")
     (synopsis "Apache Kafka client for Python")
     (description
@@ -15674,7 +15330,7 @@ objects, patterned after the Mocha library for Ruby.")
                "1jhnxgnw8y3mbzjssixh6qkc7a3afc4fygajhqrqalnilyvpzshq"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://github.com/jpvanhal/inflection")
     (synopsis "Python string transformation library")
     (description
@@ -15719,15 +15375,10 @@ Wikipedia code samples at
                 "17q6wi3q280kxmxzb2iwnnqih2xbljn18v0bjx2ip18p079j43ix"))))
     (build-system python-build-system)
     (native-inputs
-     `( ;; For testing
-       ("python-mock" ,python-mock)
-       ("python-pytest-mock" ,python-pytest-mock)
-       ("python-pytest" ,python-pytest)))
+     (list ;; For testing
+           python-mock python-pytest-mock python-pytest))
     (propagated-inputs
-     `(("python-backpack" ,python-backpack)
-       ("python-clikit" ,python-clikit)
-       ("python-pastel" ,python-pastel)
-       ("python-pylev" ,python-pylev)))
+     (list python-backpack python-clikit python-pastel python-pylev))
     (home-page "https://github.com/sdispater/cleo")
     (synopsis "Command-line arguments library for Python")
     (description
@@ -15750,8 +15401,7 @@ docstring and colored output.")
         (base32 "062n694sfv24ylda6nh8228y2q9hrvy554kqx84y7czsjfbg4mxc"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-pyyaml" ,python-pyyaml)))
+     (list python-pytest python-pyyaml))
     (home-page "https://github.com/sdispater/tomlkit")
     (synopsis "Style-preserving TOML library")
     (description
@@ -15804,7 +15454,7 @@ running in.")
          "0kvyapavbirk2x3n1jx4yb9nyigrj1s3x15nm3qhpvhkpqvqdqm2"))
        (patches (search-patches "python-memcached-syntax-warnings.patch"))))
     (build-system python-build-system)
-    (propagated-inputs `(("python-six" ,python-six)))
+    (propagated-inputs (list python-six))
     (home-page
      "https://github.com/linsomniac/python-memcached")
     (synopsis "Pure python memcached client")
@@ -15828,9 +15478,7 @@ more, possibly remote, memcached servers.")
     (build-system python-build-system)
     (arguments '(#:tests? #f))  ; no test in the PyPI tarball
     (propagated-inputs
-     `(("python-crashtest" ,python-crashtest)
-       ("python-pastel" ,python-pastel)
-       ("python-pylev" ,python-pylev)))
+     (list python-crashtest python-pastel python-pylev))
     (home-page "https://github.com/sdispater/clikit")
     (synopsis "Group of utilities to build command line interfaces")
     (description
@@ -15888,15 +15536,10 @@ strings require only one extra byte in addition to the strings themselves.")
            (lambda _ (invoke "pifpaf" "run" "memcached" "--port" "11211" "--"
                              "pytest"))))))
     (native-inputs
-     `(("memcached" ,memcached)
-       ("python-fakeredis" ,python-fakeredis)
-       ("python-flexmock" ,python-flexmock)
-       ("python-pifpaf" ,python-pifpaf)
-       ("python-pytest" ,python-pytest)))
+     (list memcached python-fakeredis python-flexmock python-pifpaf
+           python-pytest))
     (propagated-inputs
-     `(("python-memcached" ,python-memcached)
-       ("python-msgpack-python" ,python-msgpack-python)
-       ("python-redis" ,python-redis)))
+     (list python-memcached python-msgpack-python python-redis))
     (home-page "https://github.com/sdispater/cachy")
     (synopsis "Simple yet effective caching library")
     (description
@@ -15932,23 +15575,23 @@ database, file, dict stores.  Cachy supports python versions 2.7+ and 3.2+.")
                (("packaging>=20.4,<21.0") "packaging>=20.0,<21.0"))
              #t)))))
     (propagated-inputs
-     `(("python-cachecontrol" ,python-cachecontrol)
-       ("python-cachy" ,python-cachy)
-       ("python-cleo" ,python-cleo)
-       ("python-clikit" ,python-clikit)
-       ("python-html5lib" ,python-html5lib)
-       ("python-keyring" ,python-keyring)
-       ("python-msgpack-transitional" ,python-msgpack-transitional)
-       ("python-packaging" ,python-packaging)
-       ("python-pexpect" ,python-pexpect)
-       ("python-pip" ,python-pip)
-       ("python-pkginfo" ,python-pkginfo)
-       ("python-poetry-core" ,python-poetry-core)
-       ("python-requests" ,python-requests)
-       ("python-requests-toolbelt" ,python-requests-toolbelt-0.9.1)
-       ("python-shellingham" ,python-shellingham)
-       ("python-tomlkit" ,python-tomlkit)
-       ("python-virtualenv" ,python-virtualenv)))
+     (list python-cachecontrol
+           python-cachy
+           python-cleo
+           python-clikit
+           python-html5lib
+           python-keyring
+           python-msgpack-transitional
+           python-packaging
+           python-pexpect
+           python-pip
+           python-pkginfo
+           python-poetry-core
+           python-requests
+           python-requests-toolbelt-0.9.1
+           python-shellingham
+           python-tomlkit
+           python-virtualenv))
     (home-page "https://python-poetry.org")
     (synopsis "Python dependency management and packaging made easy")
     (description "Poetry is a tool for dependency management and packaging
@@ -16008,12 +15651,9 @@ some degree most natural languages too.")
              (when tests?
                (invoke "python" "-m" "unittest")))))))
     (native-inputs
-     `(("python-black" ,python-black)
-       ("python-isort" ,python-isort)))
+     (list python-black python-isort))
     (propagated-inputs
-     `(("python-typing-extensions" ,python-typing-extensions)
-       ("python-typing-inspect" ,python-typing-inspect)
-       ("python-pyyaml" ,python-pyyaml)))
+     (list python-typing-extensions python-typing-inspect python-pyyaml))
     (home-page "https://github.com/Instagram/LibCST")
     (synopsis "Concrete Syntax Tree (CST) parser and serializer library for Python")
     (description
@@ -16052,8 +15692,7 @@ feels like an AST.")
               (patches (search-patches "python-typing-inspect-fix.patch"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-mypy-extensions" ,python-mypy-extensions)
-       ("python-typing-extensions" ,python-typing-extensions)))
+     (list python-mypy-extensions python-typing-extensions))
     (home-page "https://github.com/ilevkivskyi/typing_inspect")
     (synopsis "API for inspection of types in the Python @code{typing} module")
     (description
@@ -16072,7 +15711,7 @@ inspection of types defined in the Python standard typing module.")
                (base32
                 "0hwh29m9wa582ramj30p4pysckdrmki1z1b8iaaxk6mpfx2kc8wp"))))
     (native-inputs
-     `(("python-setuptools-scm" ,python-setuptools-scm)))
+     (list python-setuptools-scm))
     (build-system python-build-system)
     (home-page "https://github.com/ionelmc/python-lazy-object-proxy")
     (synopsis "Lazy object proxy for python")
@@ -16109,7 +15748,7 @@ until the object is actually required, and caches the result of said call.")
                 "6")
                (("socket.getprotobyname\\('udp'\\)")
                 "17")))))))
-    (native-inputs `(("unzip" ,unzip)))
+    (native-inputs (list unzip))
     (home-page "https://www.dnspython.org")
     (synopsis "DNS toolkit for Python")
     (description
@@ -16185,8 +15824,7 @@ simple, lightweight implementation.")
                (("dnspython3") "dnspython"))
              #t)))))
     (propagated-inputs
-     `(("python-dnspython" ,python-dnspython)
-       ("python-idna" ,python-idna)))
+     (list python-dnspython python-idna))
     (home-page "https://github.com/JoshData/python-email-validator")
     (synopsis "Email address validation library for Python")
     (description
@@ -16221,7 +15859,7 @@ simple, lightweight implementation.")
                                       "and not test_125 "
                                       "and not test_131"))))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://github.com/hamstah/ukpostcodeparser")
     (synopsis "UK Postcode parser for Python")
     (description
@@ -16249,15 +15887,14 @@ parsing UK postcodes.")
          (replace 'check
            (lambda _ (invoke "python" "-m" "pytest" "-v"))))))
     (native-inputs
-     `( ;; For testing
-       ("python-freezegun" ,python-freezegun)
-       ("python-pytest" ,python-pytest-6)
-       ("python-random2" ,python-random2)
-       ("python-ukpostcodeparser" ,python-ukpostcodeparser)
-       ("python-validators" ,python-validators)))
+     (list ;; For testing
+           python-freezegun
+           python-pytest-6
+           python-random2
+           python-ukpostcodeparser
+           python-validators))
     (propagated-inputs
-     `(("python-dateutil" ,python-dateutil)
-       ("python-text-unidecode" ,python-text-unidecode)))
+     (list python-dateutil python-text-unidecode))
     (home-page "https://github.com/joke2k/faker")
     (synopsis "Python package that generates fake data")
     (description
@@ -16277,9 +15914,9 @@ addresses, and phone numbers.")
                 "0fi604ix8lbpj1266q7js6szm771saprdzzcdwmj43wy83694qmr"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-unidecode" ,python-unidecode)))
+     (list python-unidecode))
     (propagated-inputs
-     `(("python-pyyaml" ,python-pyyaml)))
+     (list python-pyyaml))
     (home-page "https://github.com/mk-fg/pretty-yaml")
     (synopsis "YAML pretty-print library for Python")
     (description
@@ -16303,11 +15940,9 @@ YAML-serialized data.")
          "14rq1mvm0jda90lcx9gyyby9dvq4x3js2cmxvd6vl4686ixwyqh1"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-nose" ,python-nose)
-       ("python-toml" ,python-toml)))
+     (list python-pytest python-nose python-toml))
     (propagated-inputs
-     `(("python-simplejson" ,python-simplejson)))
+     (list python-simplejson))
     (home-page "https://github.com/sdispater/backpack")
     (synopsis "Utilities for working with Python collections")
     (description "Backpack provides some useful utilities for working with
@@ -16340,9 +15975,9 @@ collections of data.")
              (add-installed-pythonpath inputs outputs)
              (invoke "py.test"))))))
     (propagated-inputs
-     `(("python-wcwidth" ,python-wcwidth)))
+     (list python-wcwidth))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://github.com/prompt-toolkit/python-prompt-toolkit")
     (synopsis "Library for building command line interfaces in Python")
     (description
@@ -16366,9 +16001,7 @@ characters, mouse support, and auto suggestions.")
         (base32
          "0fgacqk73w7s932vy46pan2yp8rvjmlkag20xvaydh9mhf6h85zx"))))
     (propagated-inputs
-     `(("python-wcwidth" ,python-wcwidth)
-       ("python-six" ,python-six)
-       ("python-pygments" ,python-pygments)))
+     (list python-wcwidth python-six python-pygments))
     (properties '())))
 
 (define-public python2-prompt-toolkit
@@ -16414,12 +16047,9 @@ characters, mouse support, and auto suggestions.")
                (invoke "python" "-m" "pytest" "-vv"))
              #t)))))
     (native-inputs
-     `(("python-colorama" ,python-colorama)
-       ("python-docopt" ,python-docopt)
-       ("python-django" ,python-django-2.2)
-       ("python-pytest" ,python-pytest)))
+     (list python-colorama python-docopt python-django-2.2 python-pytest))
     (propagated-inputs
-     `(("python-parso" ,python-parso)))
+     (list python-parso))
     (home-page "https://github.com/davidhalter/jedi")
     (synopsis "Autocompletion and static analysis library for Python")
     (description
@@ -16445,11 +16075,8 @@ as well.")
     (arguments
      `(#:tests? #f)) ;there are no tests
     (propagated-inputs
-     `(("python-appdirs" ,python-appdirs)
-       ("python-black" ,python-black)
-       ("python-jedi" ,python-jedi)
-       ("python-prompt-toolkit" ,python-prompt-toolkit)
-       ("python-pygments" ,python-pygments)))
+     (list python-appdirs python-black python-jedi python-prompt-toolkit
+           python-pygments))
     (home-page "https://github.com/jonathanslenders/ptpython")
     (synopsis "Python Read-Eval-Print-Loop with nice IDE-like features")
     (description
@@ -16499,9 +16126,7 @@ as well.")
     (arguments
      `(#:test-target "pytest"))
     (native-inputs
-     `(("python-easyprocess" ,python-easyprocess)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-runner" ,python-pytest-runner)))
+     (list python-easyprocess python-pytest python-pytest-runner))
     (home-page "https://github.com/ponty/entrypoint2")
     (synopsis "Command-line interface for Python modules")
     (description
@@ -16526,13 +16151,10 @@ as well.")
      ;; FileNotFoundError: [Errno 2] No such file or directory: 'Xvnc'.
      `(#:tests? #f))
     (native-inputs
-     `(("python-entrypoint2" ,python-entrypoint2)
-       ("python-psutil" ,python-psutil)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-runner" ,python-pytest-runner)))
+     (list python-entrypoint2 python-psutil python-pytest
+           python-pytest-runner))
     (propagated-inputs
-     `(("python-easyprocess" ,python-easyprocess)
-       ("python-pillow" ,python-pillow)))
+     (list python-easyprocess python-pillow))
     (home-page "https://github.com/ponty/pyvirtualdisplay")
     (synopsis "Python wrapper for Xvfb, Xephyr and Xvnc")
     (description
@@ -16565,9 +16187,7 @@ as well.")
              (invoke "./run_tests.py" "--unit")
              #t)))))
     (native-inputs
-     `(("python-mock" ,python-mock)
-       ("python-pycodestyle" ,python-pycodestyle)
-       ("python-pyflakes" ,python-pyflakes)))
+     (list python-mock python-pycodestyle python-pyflakes))
     (home-page "https://stem.torproject.org/")
     (synopsis
      "Python controller library that allows applications to interact with Tor")
@@ -16618,7 +16238,7 @@ as well.")
        (sha256
         (base32 "0cwd2cjz859v6jrm3y6hikfqjyhyfj5vhfjb8vvflvl6791yah8n"))))
     (build-system python-build-system)
-    (propagated-inputs `(("python-pyserial" ,python-pyserial)))
+    (propagated-inputs (list python-pyserial))
     (home-page "https://github.com/pyserial/pyserial-asyncio")
     (synopsis "Pyserial asynchronous I/O extension")
     (description "This package extends Pyserial with asynchronous I/O
@@ -16659,21 +16279,21 @@ as well.")
                       (when tests?
                         (invoke "python" "-m" "pytest")))))))
     (native-inputs
-     `(("python-mock" ,python-mock)
-       ("python-pytest" ,python-pytest)
-       ("python-redis" ,python-redis)
-       ("python-sqlalchemy" ,python-sqlalchemy)
-       ("python-tornado" ,python-tornado)
-       ("python-twisted" ,python-twisted)))
+     (list python-mock
+           python-pytest
+           python-redis
+           python-sqlalchemy
+           python-tornado
+           python-twisted))
     (propagated-inputs
-     `(("python-pyserial" ,python-pyserial)
-       ("python-six" ,python-six)
-       ;; For the REPL.
-       ("python-aiohttp" ,python-aiohttp)
-       ("python-click" ,python-click)
-       ("python-prompt-toolkit" ,python-prompt-toolkit)
-       ("python-pygments" ,python-pygments)
-       ("python-pyserial-asyncio" ,python-pyserial-asyncio)))
+     (list python-pyserial
+           python-six
+           ;; For the REPL.
+           python-aiohttp
+           python-click
+           python-prompt-toolkit
+           python-pygments
+           python-pyserial-asyncio))
     (home-page "https://github.com/riptideio/pymodbus/")
     (synopsis "Modbus protocol stack in Python")
     (description "Pymodbus is a full Modbus protocol implementation using
@@ -16716,7 +16336,7 @@ as well.")
                         (delete-file
                          (string-append out "/bin/garden.bat"))))))))
     (propagated-inputs
-     `(("python-requests" ,python-requests)))
+     (list python-requests))
     (home-page "https://github.com/kivy-garden/garden")
     (synopsis "Garden tool for Kivy flowers")
     (description
@@ -16750,16 +16370,14 @@ for Kivy, the multitouch application platform.")
              ;; 'kivy/__init__.py' wants to create $HOME/.kivy.
              (setenv "HOME" (getcwd)))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("python-cython" ,python-cython)))
+     (list pkg-config python-cython))
     (inputs
-     `(("gstreamer" ,gstreamer)
-       ("mesa" ,mesa)
-       ("sdl-union"
-        ,(sdl-union (list sdl2 sdl2-image sdl2-mixer sdl2-ttf)))
-       ("python-docutils" ,python-docutils)
-       ("python-kivy-garden" ,python-kivy-garden)
-       ("python-pygments" ,python-pygments)))
+     (list gstreamer
+           mesa
+           (sdl-union (list sdl2 sdl2-image sdl2-mixer sdl2-ttf))
+           python-docutils
+           python-kivy-garden
+           python-pygments))
     (home-page "https://kivy.org")
     (synopsis "Multitouch application framework")
     (description
@@ -16792,8 +16410,7 @@ multitouch applications.")
               (("average_size=512") ""))
              #t)))))
     (propagated-inputs
-     `(("python-chardet" ,python-chardet)
-       ("python-hypothesis" ,python-hypothesis)))
+     (list python-chardet python-hypothesis))
     (home-page "https://github.com/audreyr/binaryornot")
     (synopsis "Package to check if a file is binary or text")
     (description "Ultra-lightweight pure Python package to check if a file is
@@ -16829,8 +16446,7 @@ multitouch applications.")
            (lambda _
              (setenv "HOME" ""))))))
     (native-inputs
-     `(("python-coverage" ,python-coverage)
-       ("python-nose" ,python-nose)))
+     (list python-coverage python-nose))
     (home-page "https://github.com/ReFirmLabs/binwalk")
     (synopsis "Firmware analysis tool")
     (description "Binwalk is a tool for analyzing, reverse engineering, and
@@ -16856,12 +16472,9 @@ multitouch applications.")
        ;; TODO Try packaging these resources.
        #:tests? #f))
     (propagated-inputs
-     `(("python-click" ,python-click)
-       ("python-joblib" ,python-joblib)
-       ("python-regex" ,python-regex)
-       ("python-tqdm" ,python-tqdm)))
+     (list python-click python-joblib python-regex python-tqdm))
     (native-inputs
-     `(("unzip" ,unzip)))
+     (list unzip))
     (home-page "http://nltk.org/")
     (synopsis "Natural Language Toolkit")
     (description "It provides interfaces to over 50 corpora and lexical
@@ -16882,7 +16495,7 @@ multitouch applications.")
        (uri (pypi-uri "nltk" version ".zip"))
        (sha256
         (base32 "153x2clrnigs74jdgnn3qmljdjj4gprmvpdvh49i18ls4m8mbm5y"))))
-    (propagated-inputs `(("python-six" ,python-six)))))
+    (propagated-inputs (list python-six))))
 
 (define-public python2-nltk
   (package-with-python2 python-nltk))
@@ -16899,7 +16512,7 @@ multitouch applications.")
                 "0zis4707r9hdg5qgkhp3wss9camr9h56ixyfc8n9dxwlnnly4x4c"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-certifi" ,python-certifi)))
+     (list python-certifi))
     (home-page "https://github.com/mongodb/mongo-python-driver")
     (synopsis "Python driver for MongoDB")
     (description "Python driver for MongoDB.")
@@ -16923,8 +16536,7 @@ multitouch applications.")
     (arguments
      '(#:tests? #f)) ; The tests are not distributed
     (propagated-inputs
-     `(("python-requests" ,python-requests)
-       ("python-six" ,python-six)))
+     (list python-requests python-six))
     (home-page "https://github.com/cablehead/python-consul")
     (synopsis "Python client for Consul")
     (description
@@ -16950,7 +16562,7 @@ multitouch applications.")
         (base32 "0xdqskycznqc7mfp60bhw1zq8wx7yx1dvmbq3brnm1dx3xnqa0zd"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-six" ,python-six)))
+     (list python-six))
     (arguments
      ;; The tests require a bunch of not very nice packages with fixed
      ;; version requirements (e.g. python-coveralls).
@@ -16981,9 +16593,9 @@ multitouch applications.")
              (invoke "pytest" "-vv"))))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (propagated-inputs
-     `(("python-defusedxml" ,python-defusedxml)))
+     (list python-defusedxml))
     (home-page "https://github.com/eea/odfpy")
     (synopsis "Python API and tools to manipulate OpenDocument files")
     (description "Collection of libraries and utility programs written in
@@ -17014,12 +16626,10 @@ multitouch applications.")
            (lambda _
              (invoke "pytest" "-v"))))))
     (native-inputs
-     `(("python-hypothesis" ,python-hypothesis)
-       ("python-pytest-cov" ,python-pytest-cov)
-       ("python-pytest-mock" ,python-pytest-mock)
-       ("python-pytest" ,python-pytest)))
+     (list python-hypothesis python-pytest-cov python-pytest-mock
+           python-pytest))
     (propagated-inputs ; TODO: Add python-fastnumbers.
-     `(("python-pyicu" ,python-pyicu)))
+     (list python-pyicu))
     (home-page "https://github.com/SethMMorton/natsort")
     (synopsis "Natural sorting for python and shell")
     (description
@@ -17056,8 +16666,7 @@ multitouch applications.")
           #t))))
   (build-system python-build-system)
   (propagated-inputs
-   `(("python-future" ,python-future)
-     ("python-psutil" ,python-psutil)))
+   (list python-future python-psutil))
   (home-page "https://github.com/nicolargo/glances")
   (synopsis "Cross-platform curses-based monitoring tool")
   (description
@@ -17088,12 +16697,9 @@ multitouch applications.")
                        (("'gevent==1.1rc1'") "'gevent'"))
              #t)))))
     (native-inputs
-     `(("python-gevent" ,python-gevent)
-       ("python-mock" ,python-mock)
-       ("python-pytest-mock" ,python-pytest-mock)))
+     (list python-gevent python-mock python-pytest-mock))
     (propagated-inputs
-     `(("python-promise" ,python-promise)
-       ("python-six" ,python-six)))
+     (list python-promise python-six))
     (home-page "https://github.com/graphql-python/graphql-core")
     (synopsis "GraphQL implementation for Python")
     (description
@@ -17127,7 +16733,7 @@ multitouch applications.")
        python-pytest
        python-pytest-asyncio))
     (propagated-inputs
-     `(("python-graphql-core" ,python-graphql-core)))
+     (list python-graphql-core))
     (home-page "https://github.com/graphql-python/graphql-relay-py")
     (synopsis "Relay implementation for Python")
     (description
@@ -17151,11 +16757,8 @@ multitouch applications.")
           "08m1n2ydk48c18cvl8474v3pwwacjl1vgq61m9qs00122mp0cj5g"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-graphql-core" ,python-graphql-core)
-       ("python-graphql-relay" ,python-graphql-relay)
-       ("python-aniso8601" ,python-aniso8601)
-       ("python-promise" ,python-promise)
-       ("python-six" ,python-six)))
+     (list python-graphql-core python-graphql-relay python-aniso8601
+           python-promise python-six))
     (arguments
      `(#:tests? #f))                    ; no tests/ in the PyPI tarball
     (home-page "https://graphene-python.org/")
@@ -17179,7 +16782,7 @@ multitouch applications.")
               (patches
                (search-patches "python-random2-getrandbits-test.patch"))))
     (build-system python-build-system)
-    (native-inputs `(("unzip" ,unzip)))
+    (native-inputs (list unzip))
     (home-page "http://pypi.python.org/pypi/random2")
     (synopsis "Python 3 version of the Python 2 @code{random} module")
     (description
@@ -17257,7 +16860,7 @@ multitouch applications.")
              ;; the Makefile will build anyway
              (invoke "make" "check"))))))
     (native-inputs
-     `(("procps" ,procps)))             ; required for tests
+     (list procps))             ; required for tests
     (home-page "https://github.com/dvarrazzo/py-setproctitle")
     (synopsis
      "Setproctitle implementation for Python to customize the process title")
@@ -17303,7 +16906,7 @@ multitouch applications.")
            (lambda _
              (invoke "py.test" "-vv" ))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page
      "https://github.com/jamesturk/validictory")
     (synopsis "General purpose Python data validator")
@@ -17362,7 +16965,7 @@ multitouch applications.")
                  (("libev_dll_name = find_library\\(\\\"ev\\\"\\)")
                   (string-append "libev_dll_name = \"" libev "\"")))))))))
     (inputs
-     `(("libev" ,libev)))
+     (list libev))
     (home-page "https://github.com/gabrielfalcao/pyev")
     (synopsis "Python libev interface")
     (description "Pyev provides a Python interface to libev.")
@@ -17480,7 +17083,7 @@ multitouch applications.")
            (lambda _
              (invoke "py.test"))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://github.com/sprymix/csscompressor")
     (synopsis "Python port of YUI CSS Compressor")
     (description
@@ -17539,7 +17142,7 @@ multitouch applications.")
                (invoke "py.test" "-vv" "tests")
                #t))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "http://opensource.perlig.de/rjsmin/")
     (synopsis "Javascript Minifier")
     (description "@code{rJSmin} is a javascript minifier written in Python.  The
@@ -17561,7 +17164,7 @@ multitouch applications.")
          "1xrlcnd6fri3w97zzzp6vyk4l21yq1lc8r4wksi06hgpkbh4jdq0"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-setuptools-scm" ,python-setuptools-scm)))
+     (list python-setuptools-scm))
     (home-page "https://github.com/marcelm/xopen/")
     (synopsis "Open compressed files transparently")
     (description "This module provides an @code{xopen} function that works like
@@ -17611,7 +17214,7 @@ multitouch applications.")
 
                       (invoke "python" "Cheetah/Tests/Test.py"))))))
     (propagated-inputs
-     `(("python-markdown" ,python-markdown)))    ;optional
+     (list python-markdown))    ;optional
     (home-page "https://cheetahtemplate.org/")
     (synopsis "Template engine")
     (description "Cheetah is a text-based template engine and Python code
@@ -17675,12 +17278,9 @@ multitouch applications.")
              (setenv "PYTHONHASHSEED" "random")
              #t)))))
     (propagated-inputs
-     `(("python-fastimport" ,python-fastimport)
-       ("python-urllib3" ,python-urllib3)))
+     (list python-fastimport python-urllib3))
     (native-inputs
-     `(("python-mock" ,python-mock)
-       ("python-geventhttpclient" ,python-geventhttpclient)
-       ("git" ,git)))
+     (list python-mock python-geventhttpclient git))
     (home-page "https://www.dulwich.io/")
     (synopsis "Git implementation in Python")
     (description "Dulwich is an implementation of the Git file formats and
@@ -17707,7 +17307,7 @@ multitouch applications.")
            (lambda _
              (invoke "python" "test/test_pbkdf2.py"))))))
     (propagated-inputs
-     `(("python-pycrypto" ,python-pycrypto)))  ; optional
+     (list python-pycrypto))  ; optional
     (home-page "https://www.dlitz.net/software/python-pbkdf2/")
     (synopsis "Password-based key derivation")
     (description "This module implements the password-based key derivation
@@ -17738,9 +17338,9 @@ multitouch applications.")
      ;; FIXME: Tests require packaging 'pymaging'.
      '(#:tests? #f))
     (propagated-inputs
-     `(("python-lxml" ,python-lxml)     ; for SVG output
-       ("python-pillow" ,python-pillow) ; for PNG output
-       ("python-six" ,python-six)))
+     (list python-lxml ; for SVG output
+           python-pillow ; for PNG output
+           python-six))
     (home-page "https://github.com/lincolnloop/python-qrcode")
     (synopsis "QR Code image generator")
     (description "This package provides a pure Python QR Code generator
@@ -17768,7 +17368,7 @@ multitouch applications.")
          "0vzy6gd60l79ff750scl0sz48r1laalkl6md6dwzah4dcadgn5qv"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-docutils" ,python-docutils)))
+     (list python-docutils))
     (home-page "https://github.com/Snaipe/python-rst-to-ansi")
     (synopsis "Convert RST to ANSI-decorated console output")
     (description
@@ -17789,10 +17389,9 @@ multitouch applications.")
          "1wa00zffprb78w1mqq90dk47czz1knanys2a40zbw2vyapd5lp9y"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-mock" ,python-mock)
-       ("python-nose" ,python-nose)))
+     (list python-mock python-nose))
     (propagated-inputs
-     `(("python-six" ,python-six)))
+     (list python-six))
     (home-page "https://github.com/ralphbean/ansi2html")
     (synopsis "Convert ANSI-decorated console output to HTML")
     (description
@@ -17840,9 +17439,9 @@ multitouch applications.")
          "0y2k756qjz1rhpivi60hy29b4bf0bh3wck39i1mn6pkil9k779k4"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (propagated-inputs
-     `(("python-pyyaml" ,python-pyyaml)))
+     (list python-pyyaml))
     (home-page "https://github.com/datadriventests/ddt")
     (synopsis "Data-Driven Tests")
     (description
@@ -17896,7 +17495,7 @@ multitouch applications.")
     ;; TODO: Unundle picosat. http://fmv.jku.at/picosat/
     (build-system python-build-system)
     (native-inputs
-     `(("unzip" ,unzip)))
+     (list unzip))
     (home-page "https://github.com/ContinuumIO/pycosat")
     (synopsis "Bindings to picosat (a SAT solver)")
     (description
@@ -17955,7 +17554,7 @@ multitouch applications.")
         (base32
          "0v8ziaam2r637v94ra4dbjw6jzxz99gs5x4i585kgag1v204yb9b"))))
     (build-system python-build-system)
-    (propagated-inputs `(("python-lxml" ,python-lxml)))
+    (propagated-inputs (list python-lxml))
     (arguments
      ;;https://bitbucket.org/fdik/pypeg/issues/36/test-failures-on-py35
      '(#:tests? #f))
@@ -18061,12 +17660,9 @@ multitouch applications.")
              (substitute* "setup.py"
                (("\"automat-visualize = automat._visualize:tool\"") "")))))))
     (native-inputs
-     `(("python-m2r" ,python-m2r)
-       ("python-setuptools-scm" ,python-setuptools-scm)
-       ("python-graphviz" ,python-graphviz)))
+     (list python-m2r python-setuptools-scm python-graphviz))
     (propagated-inputs
-     `(("python-six" ,python-six)
-       ("python-attrs" ,python-attrs)))
+     (list python-six python-attrs))
     (home-page "https://github.com/glyph/Automat")
     (synopsis "Self-service finite-state machines")
     (description "Automat is a library for concise, idiomatic Python
@@ -18089,11 +17685,9 @@ multitouch applications.")
                 "16gdm8i06jjmlpvckpfmlkr4693dh0vs192vgsqn84fsdkbbm45z"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-docutils" ,python-docutils)
-       ("python-mistune" ,python-mistune)))
+     (list python-docutils python-mistune))
     (native-inputs
-     `(("python-pygments" ,python-pygments)
-       ("python-mock" ,python-mock)))
+     (list python-pygments python-mock))
     (home-page "https://github.com/miyakogi/m2r")
     (synopsis "Markdown to reStructuredText converter")
     (description "M2R converts a markdown file including reST markups to valid
@@ -18142,11 +17736,8 @@ multitouch applications.")
                       (when tests?
                         (invoke "pytest")))))))
     (native-inputs
-     `(("python-coverage" ,python-coverage)
-       ("python-hypothesis" ,python-hypothesis)
-       ("python-pympler" ,python-pympler)
-       ("python-pytest" ,python-pytest)
-       ("python-six" ,python-six)))
+     (list python-coverage python-hypothesis python-pympler python-pytest
+           python-six))
     (home-page "https://github.com/python-attrs/attrs/")
     (synopsis "Attributes without boilerplate")
     (description "@code{attrs} is a Python package with class decorators that
@@ -18186,10 +17777,9 @@ multitouch applications.")
        ;; fails due to deprecation warnings, etc.
        #:tests? #f))
     (native-inputs
-     `(("python-coverage-test-runner" ,python-coverage-test-runner)
-       ("python-pep8" ,python-pep8)))
+     (list python-coverage-test-runner python-pep8))
     (propagated-inputs
-     `(("python-pyaml" ,python-pyaml)))
+     (list python-pyaml))
     (home-page "https://liw.fi/cliapp/")
     (synopsis "Python framework for command line programs")
     (description "@code{cliapp} is a Python framework for command line
@@ -18216,8 +17806,7 @@ multitouch applications.")
        (file-name (git-file-name name version))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-coverage-test-runner" ,python-coverage-test-runner)
-       ("python-pep8" ,python-pep8)))
+     (list python-coverage-test-runner python-pep8))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -18280,11 +17869,9 @@ multitouch applications.")
         (base32 "1amzf996inwmh4r3mlpzmch60xs6lrg86vppfnwl1y0l8r0y7zxh"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-lazy-object-proxy" ,python-lazy-object-proxy)
-       ("python-wrapt" ,python-wrapt)))
+     (list python-lazy-object-proxy python-wrapt))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-pytest-runner" ,python-pytest-runner)))
+     (list python-pytest python-pytest-runner))
     (home-page "https://github.com/PyCQA/astroid")
     (synopsis "Common base representation of python source code for pylint and
      other projects")
@@ -18328,13 +17915,12 @@ multitouch applications.")
                        "-p" "unittest*.py")))))))
     (native-inputs `())
     (propagated-inputs
-     `(("python2-backports-functools-lru-cache"
-        ,python2-backports-functools-lru-cache)
-       ("python2-enum34" ,python2-enum34)
-       ("python2-lazy-object-proxy" ,python2-lazy-object-proxy)
-       ("python2-singledispatch" ,python2-singledispatch)
-       ("python2-six" ,python2-six)
-       ("python2-wrapt" ,python2-wrapt))))))
+     (list python2-backports-functools-lru-cache
+           python2-enum34
+           python2-lazy-object-proxy
+           python2-singledispatch
+           python2-six
+           python2-wrapt)))))
 
 (define-public python-isbnlib
   (package
@@ -18461,7 +18047,7 @@ multitouch applications.")
          "0jidrkk2w6bhjm197plxiaxrav64mgcrign0bfyr7md2ilc5zplg"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python2-setuptools-scm" ,python2-setuptools-scm)))
+     (list python2-setuptools-scm))
     (arguments
      `(#:python ,python-2))
     (home-page "https://github.com/jaraco/backports.functools_lru_cache")
@@ -18532,8 +18118,7 @@ multitouch applications.")
     (build-system python-build-system)
     (arguments `(#:tests? #f))  ; No test
     (propagated-inputs
-     `(("python-clint" ,python-clint)
-       ("python-coverage" ,python-coverage)))
+     (list python-clint python-coverage))
     (home-page "https://nestorsalceda.com/mamba/")
     (synopsis "Test runner for Python")
     (description
@@ -18553,10 +18138,9 @@ multitouch applications.")
                 "0q6rl085q1hw1wic52pqfndr0x3nirbxnhqj9akdm5zhq2fv3zkr"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-rst2ansi" ,python-rst2ansi)
-       ("python-six" ,python-six)))
+     (list python-rst2ansi python-six))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://mando.readthedocs.org/")
     (synopsis
      "Wrapper around argparse, allowing creation of complete CLI applications")
@@ -18605,14 +18189,10 @@ multitouch applications.")
         (base32 "120snnsh9n5svfwkyj1w9jrxf99jnqm0jk282yypd3lpyca1l9hj"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-requests-oauthlib" ,python-requests-oauthlib)
-       ("python-six" ,python-six)))
+     (list python-requests-oauthlib python-six))
     (native-inputs
-     `(("python-mock" ,python-mock)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)
-       ("python-pytest-runner" ,python-pytest-runner)
-       ("python-responses" ,python-responses)))
+     (list python-mock python-pytest python-pytest-cov
+           python-pytest-runner python-responses))
     (home-page "https://github.com/btongminh/mwclient")
     (synopsis "MediaWiki API client")
     (description "This package provides a MediaWiki API client.")
@@ -18814,18 +18394,17 @@ multitouch applications.")
         (base32 "020pp7pbpnavxd41z90vyzzx06ci57mx9drkgbsb89wxxx4gal9v"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-sphinx" ,python-sphinx)))
+     (list python-pytest python-sphinx))
     (propagated-inputs
-     `(("python-babel" ,python-babel)
-       ("python-beautifulsoup4" ,python-beautifulsoup4)
-       ("python-chardet" ,python-chardet)
-       ("python-diff-match-patch" ,python-diff-match-patch)
-       ("python-levenshtein" ,python-levenshtein)
-       ("python-lxml" ,python-lxml)
-       ("python-six" ,python-six)
-       ("python-vobject" ,python-vobject)
-       ("python-pyyaml" ,python-pyyaml)))
+     (list python-babel
+           python-beautifulsoup4
+           python-chardet
+           python-diff-match-patch
+           python-levenshtein
+           python-lxml
+           python-six
+           python-vobject
+           python-pyyaml))
     (arguments
      ;; TODO: tests are not run, because they end with
      ;; TypeError: parse() missing 2 required positional arguments: 'tree' and
@@ -18895,10 +18474,9 @@ multitouch applications.")
          "09nhrz80dfm60nssbvjgz4czzy4yzfa8gxczcdlzbgcnnvm914vb"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-lxml" ,python-lxml)
-       ("python-genshi" ,python-genshi)))
+     (list python-lxml python-genshi))
     (native-inputs
-     `(("python-magic" ,python-magic)))
+     (list python-magic))
     (home-page "https://relatorio.tryton.org/")
     (synopsis "Templating library able to output ODT and PDF files")
     (description "Relatorio is a templating library which provides a way to
@@ -18931,12 +18509,9 @@ multitouch applications.")
                     (lambda _
                       (invoke "python" "radon/tests/run.py"))))))
     (propagated-inputs
-     `(("python-colorama" ,python-colorama)
-       ("python-flake8-polyfill" ,python-flake8-polyfill)
-       ("python-mando" ,python-mando)))
+     (list python-colorama python-flake8-polyfill python-mando))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-pytest-mock" ,python-pytest-mock)))
+     (list python-pytest python-pytest-mock))
     (home-page "https://radon.readthedocs.org/")
     (synopsis "Code Metrics in Python")
     (description "Radon is a Python tool which computes various code metrics.
@@ -18971,10 +18546,9 @@ multitouch applications.")
          "1and0drq8w9iplsic22n2h7hkpyq03a1mbqk4sgcdqhqzdqm539w"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-mock" ,python-mock)
-       ("python-six" ,python-six)))
+     (list python-mock python-six))
     (native-inputs
-     `(("python-nose" ,python-nose)))
+     (list python-nose))
     (home-page "https://github.com/gabrielfalcao/sure")
     (synopsis "Automated testing library in python for python")
     (description
@@ -19031,7 +18605,7 @@ multitouch applications.")
        ;; for which it does not have the permission to write.
        #:tests? #f))
     (propagated-inputs
-     `(("python-cffi" ,python-cffi)))
+     (list python-cffi))
     (home-page "https://github.com/FSX/misaka")
     (synopsis "Python binding for Hoedown")
     (description
@@ -19059,9 +18633,7 @@ multitouch applications.")
          "1640i9g8dycql3cc8j0bky0jkzj0q39blfbp4lsgpkprkfgcdk8v"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-couleur" ,python2-couleur)
-       ("python-sure" ,python2-sure)
-       ("python-misaka" ,python2-misaka)))
+     (list python2-couleur python2-sure python2-misaka))
     (arguments
      `(#:python ,python-2
        #:phases
@@ -19120,7 +18692,7 @@ multitouch applications.")
          "0k9pff06lxama3nhsc7cdxbp83422bdy8ifs52i6xkas8hpyzfzr"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-jsonpointer" ,python-jsonpointer)))
+     (list python-jsonpointer))
     (home-page "https://github.com/stefankoegl/python-json-patch")
     (synopsis "Applying JSON Patches in Python 2.6+ and 3.x")
     (description "@code{jsonpatch} is a library and program that allows
@@ -19166,7 +18738,7 @@ multitouch applications.")
            (lambda _
              (invoke "pytest" "-v"))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://rfc3986.readthedocs.io/")
     (synopsis "Parse and validate URI references")
     (description
@@ -19226,7 +18798,7 @@ multitouch applications.")
                  (invoke "pytest" "tests/test_ipv6.py")
                  #t))))))
       (native-inputs
-       `(("python-pytest" ,python-pytest)))
+       (list python-pytest))
       (home-page "https://pypi.org/project/rfc6555/")
       (synopsis "Python implementation of RFC 6555")
       (description
@@ -19248,9 +18820,7 @@ multitouch applications.")
           "1m6y04qmig0b5hzb35lnaw3d2yfydb7alyr1579yblvgs3da6j7j"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-setuptools-scm" ,python-setuptools-scm)
-       ("python-coverage" ,python-coverage)
-       ("python-mock" ,python-mock)))
+     (list python-setuptools-scm python-coverage python-mock))
     (home-page "https://libraryofcongress.github.io/bagit-python/")
     (synopsis "Create and validate BagIt packages")
     (description "Bagit is a Python library and command line utility for working
@@ -19271,13 +18841,9 @@ multitouch applications.")
           "1vi2fj31vygfcqrkimdmk52q2ldw08g9fn4v4zlgdfgcjlhqyhxn"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-dateutil" ,python-dateutil)
-       ("python-lxml" ,python-lxml)
-       ("python-networkx" ,python-networkx)
-       ("python-rdflib" ,python-rdflib)))
+     (list python-dateutil python-lxml python-networkx python-rdflib))
     (native-inputs
-     `(("graphviz" ,graphviz)
-       ("python-pydot" ,python-pydot)))
+     (list graphviz python-pydot))
     (home-page "https://github.com/trungdong/prov")
     (synopsis
      "W3C Provenance Data Model supporting PROV-JSON, PROV-XML and PROV-O (RDF)")
@@ -19299,7 +18865,7 @@ multitouch applications.")
           "1p8mfyjssa6pbn5dp6pyzv9yy6kwm2rz5jn2kjbq5vy9f9wsq5sw"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "http://arcp.readthedocs.io/")
     (synopsis
      "Archive and Package URI parser and generator")
@@ -19343,7 +18909,7 @@ multitouch applications.")
                (invoke "python" "tests/test_shellescape.py"))
              #t)))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://github.com/chrissimpkins/shellescape")
     (synopsis
      "Shell escape a string to safely use it as a token in a shell command")
@@ -19371,12 +18937,9 @@ multitouch applications.")
                     (lambda _
                       (invoke "pytest" "-vv"))))))
     (propagated-inputs
-     `(("python-decorator" ,python-decorator)
-       ("python-six" ,python-six)))
+     (list python-decorator python-six))
     (native-inputs
-     `(("python-flake8" ,python-flake8)
-       ("python-isort" ,python-isort)
-       ("python-pytest" ,python-pytest)))
+     (list python-flake8 python-isort python-pytest))
     (home-page "https://github.com/kvesteri/validators")
     (synopsis "Data validation library")
     (description
@@ -19420,14 +18983,14 @@ multitouch applications.")
         "00pamnwla3khk8nyla7y28dq9jnh69swd7f4jfsl7sn1izs8n8zk"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-click" ,python-click)
-       ("python-iso8601" ,python-iso8601)
-       ("python-jsonpointer" ,python-jsonpointer)
-       ("python-pyyaml" ,python-pyyaml)
-       ("python-requests" ,python-requests)
-       ("python-rfc3987" ,python-rfc3987)
-       ("python-six" ,python-six)
-       ("python-validate-email" ,python-validate-email)))
+     (list python-click
+           python-iso8601
+           python-jsonpointer
+           python-pyyaml
+           python-requests
+           python-rfc3987
+           python-six
+           python-validate-email))
     (home-page "https://github.com/pipermerriam/flex")
     (synopsis "Validates Swagger schemata")
     (description "@code{flex} can be used to validate Swagger schemata.")
@@ -19449,11 +19012,9 @@ multitouch applications.")
         "0kizhh3mnhpa08wfnsv1gagy22bpxzxszgbiylkhpz1d8qvwrykk"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-dateutil" ,python-dateutil)
-       ("python-simplejson" ,python-simplejson)))
+     (list python-dateutil python-simplejson))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-pytz" ,python-pytz)))
+     (list python-pytest python-pytz))
     (home-page "https://github.com/marshmallow-code/marshmallow")
     (synopsis "Convert complex datatypes to and from native
      Python datatypes")
@@ -19484,16 +19045,16 @@ multitouch applications.")
         (base32 "1d9pxcgmln4gls99vwj1h24qv0lz7fb2jqmqrsiv1pid1snc125x"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-marshmallow" ,python-marshmallow-3.2)))
+     (list python-marshmallow-3.2))
     (native-inputs
-     `(("python-faker" ,python-faker)
-       ("python-flake8" ,python-flake8)
-       ("python-flake8-bugbear" ,python-flake8-bugbear)
-       ("python-flask" ,python-flask)
-       ("python-mock" ,python-mock)
-       ("python-pre-commit" ,python-pre-commit)
-       ("python-pytest" ,python-pytest)
-       ("python-tox" ,python-tox)))
+     (list python-faker
+           python-flake8
+           python-flake8-bugbear
+           python-flask
+           python-mock
+           python-pre-commit
+           python-pytest
+           python-tox))
     (home-page "https://github.com/marshmallow-code/marshmallow-jsonapi")
     (synopsis "JSON:API 1.0 formatting with Marshmallow")
     (description
@@ -19524,10 +19085,9 @@ multitouch applications.")
                               ;; yet in Guix.
                               "-k" "not openapi_tools_validate"))))))
     (propagated-inputs
-     `(("python-pyyaml" ,python-pyyaml)))
+     (list python-pyyaml))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-marshmallow" ,python-marshmallow)))
+     (list python-pytest python-marshmallow))
     (home-page "https://github.com/marshmallow-code/apispec")
     (synopsis "Swagger/OpenAPI specification generator")
     (description "@code{python-apispec} is a pluggable API specification
@@ -19559,20 +19119,17 @@ multitouch applications.")
                 "flake8 flasgger --ignore=E731,F403"))
              (invoke "py.test"))))))
     (propagated-inputs
-     `(("python-flask" ,python-flask)
-       ("python-pyyaml" ,python-pyyaml)
-       ("python-jsonschema" ,python-jsonschema)
-       ("python-mistune" ,python-mistune)
-       ("python-six" ,python-six)))
+     (list python-flask python-pyyaml python-jsonschema python-mistune
+           python-six))
     (native-inputs
-     `(("python-decorator" ,python-decorator)
-       ("python-flake8" ,python-flake8)
-       ("python-flask-restful" ,python-flask-restful)
-       ("python-flex" ,python-flex)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)
-       ("python-marshmallow" ,python-marshmallow)
-       ("python-apispec" ,python-apispec)))
+     (list python-decorator
+           python-flake8
+           python-flask-restful
+           python-flex
+           python-pytest
+           python-pytest-cov
+           python-marshmallow
+           python-apispec))
     (home-page "https://github.com/rochacbruno/flasgger/")
     (synopsis "Extract Swagger specs from your Flask project")
     (description "@code{python-flasgger} allows extracting Swagger specs
@@ -19592,9 +19149,7 @@ multitouch applications.")
          "11g627icrsqwazsncwi0sdvprcj6hwaayw5xk3xsj8d97bmrzqjp"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-jsonschema" ,python-jsonschema)
-       ("python-pyyaml" ,python-pyyaml)
-       ("python-six" ,python-six)))
+     (list python-jsonschema python-pyyaml python-six))
     (home-page
      "https://github.com/Yelp/swagger_spec_validator")
     (synopsis "Validation of Swagger specifications")
@@ -19636,16 +19191,12 @@ multitouch applications.")
                         "libcloud/test/secrets.py")
              #t)))))
     (inputs
-     `(("openssh" ,openssh)))
+     (list openssh))
     (propagated-inputs
-     `(("python-paramiko" ,python-paramiko)
-       ("python-requests" ,python-requests)))
+     (list python-paramiko python-requests))
     (native-inputs
-     `(("python-lockfile" ,python-lockfile)
-       ("python-mock" ,python-mock)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-runner" ,python-pytest-runner)
-       ("python-requests-mock" ,python-requests-mock)))
+     (list python-lockfile python-mock python-pytest python-pytest-runner
+           python-requests-mock))
     (home-page "https://libcloud.apache.org/")
     (synopsis "Unified Cloud API")
     (description "@code{libcloud} is a Python library for interacting with
@@ -19664,7 +19215,7 @@ multitouch applications.")
         (base32 "0ijlnv60y8f41py1wnn5n1a1i81cxd9dfpdhr0k3cgkrcbz8850p"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-nosexcover" ,python-nosexcover)))
+     (list python-nosexcover))
     (home-page "https://github.com/Byron/smmap")
     (synopsis "Python sliding window memory map manager")
     (description "@code{smmap} is a pure Python implementation of a sliding
@@ -19716,9 +19267,7 @@ functionality like full case-folding for case-insensitive matches in Unicode.")
          "091lp9bpqi8yf1nmyg19xmvw611lrzq2q94cl1k5gnlh0c6vl1s1"))))
     (build-system python-build-system)
     (inputs
-     `(("mesa" ,mesa)
-       ("freeglut" ,freeglut)
-       ("glu" ,glu)))
+     (list mesa freeglut glu))
     (arguments
      `(#:tests? #f ; Tests fail: AttributeError: 'GLXPlatform' object has no
                                         ;attribute 'OSMesa'
@@ -19762,8 +19311,7 @@ library.")
         (base32
          "01iggy5jwxv7lxnj51zbmlbhag9wcb7dvrbwgi97i90n0a5m3r8j"))))
     (inputs
-     `(("mesa" ,mesa)
-       ("python-numpy" ,python-numpy))) ; for cython module
+     (list mesa python-numpy)) ; for cython module
                                         ; numpy_formathandler, thus not propagated
     (arguments
      `(#:tests? #f
@@ -19795,8 +19343,7 @@ library.")
           (lambda _
             (delete-file "rencode/t.py")
             #t)))))
-   (native-inputs `(("pkg-config" ,pkg-config)
-                    ("python-cython" ,python-cython)))
+   (native-inputs (list pkg-config python-cython))
    (home-page "https://github.com/aresch/rencode")
    (synopsis "Serialization of heterogeneous data structures")
    (description
@@ -19824,11 +19371,8 @@ pure Python module.")
          "0nv207ql2wmh9q62503np056c4vf1c1hlsi5cvv5p5kx574k6r2y"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pyyaml" ,python-pyyaml)
-       ("python-radon" ,python-radon)
-       ("python-requests" ,python-requests)
-       ("python-flake8" ,python-flake8)
-       ("python-tox" ,python-tox)))
+     (list python-pyyaml python-radon python-requests python-flake8
+           python-tox))
     (arguments
      `(#:tests? #f                      ;test suite not shipped with the PyPI archive
        #:phases
@@ -19922,9 +19466,9 @@ ignoring formatting changes.")
                #t))))))
     (home-page "https://pydub.com")
     (inputs
-     `(("ffmpeg" ,ffmpeg)))
+     (list ffmpeg))
     (propagated-inputs
-     `(("python-scipy" ,python-scipy)))
+     (list python-scipy))
     (synopsis "Manipulate audio with a high level interface in Python")
     (description
      "@code{pydub} makes it easy to manipulate audio in Python.  It relies on
@@ -19949,11 +19493,8 @@ ignoring formatting changes.")
                     (lambda _
                       (invoke "pytest" "-vv" "-k" "not perf"))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-pytest-asyncio" ,python-pytest-asyncio)
-       ("python-pytest-timeout" ,python-pytest-timeout)
-       ("python-setuptools-scm" ,python-setuptools-scm)
-       ("python-toml" ,python-toml)))
+     (list python-pytest python-pytest-asyncio python-pytest-timeout
+           python-setuptools-scm python-toml))
     (home-page "https://github.com/tqdm/tqdm")
     (synopsis "Fast, extensible progress meter")
     (description
@@ -20013,12 +19554,12 @@ created by running @code{python setup.py develop}).")
          (base32 "11rpd653zcgzkq3sgwkzs3mpxl3r5rij59745ni84ikv8smjmlm3"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-tqdm" ,python-tqdm)
-       ("python-packaging" ,python-packaging)
-       ("python-pkginfo" ,python-pkginfo)
-       ("python-readme-renderer" ,python-readme-renderer)
-       ("python-requests" ,python-requests)
-       ("python-requests-toolbelt" ,python-requests-toolbelt)))
+     (list python-tqdm
+           python-packaging
+           python-pkginfo
+           python-readme-renderer
+           python-requests
+           python-requests-toolbelt))
     (home-page "https://github.com/pypa/twine")
     (synopsis "Collection of utilities for interacting with PyPI")
     (description
@@ -20077,8 +19618,7 @@ lines are read from a single file.")
     (native-inputs
      `(("python-pbr" ,python-pbr-minimal)))
     (propagated-inputs
-      `(("python-linecache2" ,python-linecache2)
-        ("python-six" ,python-six)))
+      (list python-linecache2 python-six))
     (home-page
       "https://github.com/testing-cabal/traceback2")
     (synopsis "Backports of the traceback module")
@@ -20180,9 +19720,9 @@ services.")
          "1nii1sz5jq75ilf18bjnr11l9rz1lvdmyk66bxl7q90qan85yhjj"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (propagated-inputs
-     `(("python-setuptools-scm" ,python-setuptools-scm)))
+     (list python-setuptools-scm))
     (home-page "https://github.com/Changaco/setuptools_scm_git_archive/")
     (synopsis "Setuptools_scm plugin for git archives")
     (description
@@ -20249,13 +19789,10 @@ Git.")
              (with-directory-excursion "pyclipper"
                (invoke "cython" "--cplus" "pyclipper.pyx")))))))
     (propagated-inputs
-     `(("python-setuptools-scm-git-archive" ,python-setuptools-scm-git-archive)))
+     (list python-setuptools-scm-git-archive))
     (native-inputs
-     `(("python-cython" ,python-cython)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-runner" ,python-pytest-runner)
-       ("python-unittest2" ,python-unittest2)
-       ("unzip" ,unzip)))
+     (list python-cython python-pytest python-pytest-runner
+           python-unittest2 unzip))
     (home-page "https://github.com/greginvm/pyclipper")
     (synopsis "Wrapper for Angus Johnson's Clipper library")
     (description
@@ -20281,13 +19818,9 @@ Angus Johnson's polygon clipping Clipper library (ver. 6.4.2).")
     (arguments
      `(#:python ,python-2))
     (native-inputs
-     `(("unzip" ,unzip)
-       ("python2-pytest" ,python2-pytest)
-       ("python2-pytest-runner" ,python2-pytest-runner)))
+     (list unzip python2-pytest python2-pytest-runner))
     (propagated-inputs
-     `(("python-fonttools" ,python2-fonttools)
-       ("python-pyclipper" ,python2-pyclipper)
-       ("python-ufolib" ,python2-ufolib)))
+     (list python2-fonttools python2-pyclipper python2-ufolib))
     (home-page "https://github.com/typemytype/booleanOperations")
     (synopsis "Boolean operations on paths")
     (description
@@ -20361,10 +19894,9 @@ particularly convenient for use in tests.")
                                 (lambda (filename)
                                   (string-suffix? ".py" filename)))))))))
     (native-inputs
-     `(("python-tempdir" ,python-tempdir)
-       ("python-nose" ,python-nose)))
+     (list python-tempdir python-nose))
     (propagated-inputs
-     `(("python-h5py" ,python-h5py)))
+     (list python-h5py))
     (home-page "https://www.activepapers.org/")
     (synopsis "Executable papers for scientific computing")
     (description
@@ -20410,7 +19942,7 @@ such as figshare or Zenodo.")
                       (delete-file "setup.cfg")
                       (invoke "py.test"))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://github.com/k-bx/python-semver")
     (synopsis "Python helper for Semantic Versioning")
     (description "This package provides a Python library for
@@ -20434,11 +19966,9 @@ such as figshare or Zenodo.")
     (arguments
      '(#:tests? #f)) ;FIXME: Some tests require network access.
     (native-inputs
-     `(("python-cloudpickle" ,python-cloudpickle)
-       ("python-dill" ,python-dill)
-       ("python-msgpack" ,python-msgpack)))
+     (list python-cloudpickle python-dill python-msgpack))
     (propagated-inputs
-     `(("python-serpent" ,python-serpent)))
+     (list python-serpent))
     (home-page "https://pyro4.readthedocs.io")
     (synopsis "Distributed object middleware for Python")
     (description
@@ -20492,10 +20022,9 @@ is the new Pyro version that is actively developed.")
          "16l48aj9fps9r7jyk8gpxppwrv0fqvlc13sayxskz28r5s6sjwbl"))))
     (build-system python-build-system)
     (inputs
-     `(("netcdf" ,netcdf)))
+     (list netcdf))
     (propagated-inputs
-     `(("python-numpy" ,python2-numpy-1.8)
-       ("python-pyro" ,python2-pyro)))
+     (list python2-numpy-1.8 python2-pyro))
     (arguments
      ;; ScientificPython is not compatible with Python 3
      `(#:python ,python-2
@@ -20532,7 +20061,7 @@ not actively maintained and works only with Python 2 and NumPy < 1.9.")
          "1fqwh3ba9jd42nigvn5shndgwb1zy7kh9520ncvqci7n8ffjr6p1"))))
     (build-system python-build-system)
     (native-inputs
-     `(("netcdf" ,netcdf)))
+     (list netcdf))
     (propagated-inputs
      `(("python-scientific" ,python2-scientific)
        ("python-tkinter" ,python-2 "tk")))
@@ -20614,9 +20143,9 @@ queue.")
          "05pd1hyhqvpw87rnbvl3vdyf619snpyccbswaxisdj17frwnjacf"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-heapdict" ,python-heapdict)))
+     (list python-heapdict))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://zict.readthedocs.io/en/latest/")
     (synopsis "Composable mutable mapping tools")
     (description "This package provides abstract @code{MutableMapping} classes
@@ -20684,9 +20213,7 @@ user's @file{~/Trash} directory.")
      ;; repository require online data.
      '(#:tests? #f))
     (propagated-inputs
-     `(("python-aiohttp" ,python-aiohttp)
-       ("python-beautifulsoup4" ,python-beautifulsoup4)
-       ("python-pillow" ,python-pillow)))
+     (list python-aiohttp python-beautifulsoup4 python-pillow))
     (home-page "https://github.com/bilelmoussaoui/pyfavicon")
     (synopsis "Async favicon fetcher")
     (description
@@ -20705,9 +20232,7 @@ user's @file{~/Trash} directory.")
         (base32 "090krlxj7az0d9yl8i20vjrqi66dfxx7y5xakjhxzsfp7qmldnc7"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-pathspec" ,python-pathspec)
-       ("python-pyyaml" ,python-pyyaml)
-       ("python-setuptools" ,python-setuptools)))
+     (list python-pathspec python-pyyaml python-setuptools))
     (home-page "https://github.com/adrienverge/yamllint")
     (synopsis "Linter for YAML files")
     (description
@@ -20764,14 +20289,9 @@ style guide, even if the original code didn't violate the style guide.")
                  "/bin/jq")))
              #t)))))
     (inputs
-     `(("python-argcomplete" ,python-argcomplete)
-       ("python-pyyaml" ,python-pyyaml)
-       ("python-xmltodict" ,python-xmltodict)
-       ("jq" ,jq)))
+     (list python-argcomplete python-pyyaml python-xmltodict jq))
     (native-inputs
-     `(("python-coverage" ,python-coverage)
-       ("python-flake8" ,python-flake8)
-       ("python-wheel" ,python-wheel)))
+     (list python-coverage python-flake8 python-wheel))
     (home-page "https://github.com/kislyuk/yq")
     (synopsis "Command-line YAML/XML processor")
     (description
@@ -20833,7 +20353,7 @@ files, and Makefiles.")
           (lambda _
             (invoke "py.test"))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://github.com/Suor/whatever")
     (synopsis "Make anonymous functions by partial application of operators")
     (description "@code{whatever} provides an easy way to make anonymous
@@ -20864,8 +20384,7 @@ functions by partial application of operators.")
            (lambda _
              (invoke "py.test"))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-whatever" ,python-whatever)))
+     (list python-pytest python-whatever))
     (home-page "https://github.com/Suor/funcy")
     (synopsis "Functional tools")
     (description "@code{funcy} is a library that provides functional tools.
@@ -20950,11 +20469,9 @@ Week instances stringify to this form.")
                   (string-append "'" libzbar "/lib/libzbar.so.0'")))
                #t))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("python-numpy" ,python-numpy)
-       ("python-pillow" ,python-pillow)))
+     (list pkg-config python-numpy python-pillow))
     (inputs
-     `(("zbar" ,zbar)))
+     (list zbar))
     (home-page "https://github.com/NaturalHistoryMuseum/pyzbar/")
     (synopsis "Read one-dimensional barcodes and QR codes")
     (description
@@ -21004,7 +20521,7 @@ and @code{tokens_to_src} to roundtrip.")
          "0ydxqz2dvns44g55p8ix2x18qkfk3aaz0m0dc70f3g6n8js35h47"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-tokenize-rt" ,python-tokenize-rt)))
+     (list python-tokenize-rt))
     (home-page "https://github.com/asottile/future-fstrings")
     (synopsis "Backport of fstrings to Python < 3.6")
     (description
@@ -21034,7 +20551,7 @@ source bytes using the UTF-8 encoding and then rewrites Python 3.6 style
          (replace 'check
            (lambda _
              (invoke "pytest"))))))
-    (native-inputs `(("python-pytest" ,python-pytest)))
+    (native-inputs (list python-pytest))
     (home-page "https://github.com/python/typed_ast")
     (synopsis "Fork of Python @code{ast} modules with type comment support")
     (description "This package provides a parser similar to the standard
@@ -21090,11 +20607,9 @@ based on the CPython 2.7 and 3.7 parsers.")
                                         (string-join disabled-tests
                                                      " and not "))))))))))
     (propagated-inputs
-     `(("python-click" ,python-click)))
+     (list python-click))
     (native-inputs
-     `(("python-coverage" ,python-coverage)
-       ("python-pytest" ,python-pytest)
-       ("python-shellingham" ,python-shellingham)))
+     (list python-coverage python-pytest python-shellingham))
     (home-page "https://github.com/tiangolo/typer")
     (synopsis
       "Typer builds CLI based on Python type hints")
@@ -21195,22 +20710,19 @@ Included are implementations of:
                 '("bpython3" "bpython3-curses" "bpython3-urwid" "bpdb3")))
              #t)))))
     (propagated-inputs
-     `(("python-pygments" ,python-pygments)
-       ("python-requests" ,python-requests)
-       ("python-curtsies" ,python-curtsies)
-       ("python-greenlet" ,python-greenlet)
-       ("python-six" ,python-six)
-       ("python-cwcwidth" ,python-cwcwidth)
-       ("python-pyxdg" ,python-pyxdg)
-       ;; optional dependencies
-       ("python-urwid" ,python-urwid)   ; for bpython-urwid only
-       ("python-watchdog" ,python-watchdog)
-       ("python-jedi" ,python-jedi)))
+     (list python-pygments
+           python-requests
+           python-curtsies
+           python-greenlet
+           python-six
+           python-cwcwidth
+           python-pyxdg
+           ;; optional dependencies
+           python-urwid ; for bpython-urwid only
+           python-watchdog
+           python-jedi))
     (native-inputs
-     `(("python-sphinx" ,python-sphinx)
-       ("python-mock" ,python-mock)
-       ("python-tox" ,python-tox)
-       ("python-wheel" ,python-wheel)))
+     (list python-sphinx python-mock python-tox python-wheel))
     (home-page "https://bpython-interpreter.org/")
     (synopsis "Fancy interface to the Python interpreter")
     (description "Bpython is a fancy interface to the Python
@@ -21266,7 +20778,7 @@ file system events on Linux.")
          "14gv8ll3ipqv4kyc2xiy891nrmjl4ic823zfyx8hassagyclyppw"))))
     (build-system python-build-system)
     (native-inputs
-     `(("unzip" ,unzip)))
+     (list unzip))
     (arguments
      `(#:python ,python-2
        #:tests? #f
@@ -21356,7 +20868,7 @@ working with iterables.")
         (base32 "0wnp3yqcgx0rpy8dz51vh75lbp2qif67da19zi7m3ca98n887hgb"))))
     (build-system python-build-system)
     (inputs
-     `(("python-six" ,python-six)))
+     (list python-six))
     (home-page "https://readthedocs.org/projects/latexcodec/")
     (synopsis "Work with LaTeX code in Python")
     (description "Lexer and codec to work with LaTeX code in Python.")
@@ -21374,11 +20886,9 @@ working with iterables.")
         (base32 "070wfcmxrd7xg1si421mi9150gmx2qwx431nwf69sq3hhmgnx080"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-nose" ,python-nose)))
+     (list python-nose))
     (inputs
-     `(("python-latexcodec" ,python-latexcodec)
-       ("python-pyyaml" ,python-pyyaml)
-       ("python-six" ,python-six)))
+     (list python-latexcodec python-pyyaml python-six))
     (arguments
      `(#:test-target "nosetests"))
     (home-page "https://pybtex.org/")
@@ -21398,7 +20908,7 @@ in Python.  You can simply type pybtex instead of bibtex.")
        (sha256
         (base32 "09vagxgbq78wvq4xbikmn2hpqqsa2i96kqsmphf7dqynfv0dlsd5"))))
     (build-system python-build-system)
-    (propagated-inputs `(("python-six" ,python-six)))
+    (propagated-inputs (list python-six))
     (home-page "https://github.com/tadeck/onetimepass/")
     (synopsis "One-time password library")
     (description "Python one-time password library for HMAC-based (HOTP) and
@@ -21416,7 +20926,7 @@ time-based (TOTP) passwords.")
        (sha256
         (base32 "161k8771m7w60qakyvrwf9q62lvakmix7mpfylpy7713qs939f0j"))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -21445,7 +20955,7 @@ Parso is also able to list multiple syntax errors in your Python file.")
          "0i11f6z6lix8ixi3vsk6s76zvvpmgrw6zjrcwjm0m4hjdh83vfvf"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://github.com/python-trio/async_generator")
     (synopsis "Async generators and context managers for Python 3.5+")
     (description "@code{async_generator} back-ports Python 3.6's native async
@@ -21520,9 +21030,9 @@ Glob2 currently based on the glob code from Python 3.3.1.")
          "0pd9by719qh882hqs6xpby61sn1x5h98hms5p2p8yqnycrf1s0h2"))))
     (build-system python-build-system)
     (native-inputs
-     `(("unzip" ,unzip)))
+     (list unzip))
     (propagated-inputs
-     `(("python-gevent" ,python-gevent)))
+     (list python-gevent))
     (home-page "https://gehrcke.de/gipc/")
     (synopsis "Child process management in the context of gevent")
     (description "Usage of Python's multiprocessing package in a
@@ -21544,7 +21054,7 @@ gevent-powered application.")
          "0wwlbifcbpzy3wfv6yzsxncarsngzizmmxbn6cy5gazlcq7h4k5x"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-wcwidth" ,python-wcwidth)))
+     (list python-wcwidth))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -21618,14 +21128,13 @@ path components.")
                (("setup\\(")
                 "setup(\n    test_suite=\"test\",")))))))
     (propagated-inputs
-     `(("python-beautifultable" ,python-beautifultable)
-       ("python-dateutil" ,python-dateutil)
-       ("python-gitpython" ,python-gitpython)
-       ("python-globber" ,python-globber)
-       ("python-matplotlib" ,python-matplotlib)
-       ("python-sqlalchemy" ,python-sqlalchemy)
-       ("python-sqlalchemy-utils"
-        ,python-sqlalchemy-utils)))
+     (list python-beautifultable
+           python-dateutil
+           python-gitpython
+           python-globber
+           python-matplotlib
+           python-sqlalchemy
+           python-sqlalchemy-utils))
     (home-page "https://github.com/asharov/git-hammer")
     (synopsis "Provide statistics for git repositories")
     (description
@@ -21657,7 +21166,7 @@ commit, but it also includes some other useful statistics.")
                   (string-append "'" fuse "/lib/libfuse.so'")))
                #t))))))
     (propagated-inputs
-     `(("fuse" ,fuse)))
+     (list fuse))
     (home-page "https://github.com/fusepy/fusepy")
     (synopsis "Simple ctypes bindings for FUSE")
     (description "Python module that provides a simple interface to FUSE and
@@ -21690,9 +21199,9 @@ MacFUSE.  The binding is created using the standard @code{ctypes} library.")
                   (string-append "\"" fuse "/lib/libfuse.so\""))))
              #t)))))
     (inputs
-     `(("fuse" ,fuse)))
+     (list fuse))
     (propagated-inputs
-     `(("python-paramiko" ,python-paramiko)))
+     (list python-paramiko))
     (home-page "https://github.com/rianhunter/fusepyng")
     (synopsis "Simple ctypes bindings for FUSE")
     (description "@code{fusepyng} is a Python module that provides a simple
@@ -21732,7 +21241,7 @@ package updates.")
           "06f2gsiypas270nqfjir4wwjlpkjp097pm6zchc7k20ggg32gv1k"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-fusepyng" ,python-fusepyng)))
+     (list python-fusepyng))
     (home-page "https://github.com/rianhunter/userspacefs")
     (synopsis "User-space file systems for Python")
     (description
@@ -21772,13 +21281,9 @@ user-space file systems in Python.")
                (delete-file "test/test_python_gen.py")
                (invoke "pytest")))))))
     (propagated-inputs
-     `(("python-ply" ,python-ply)
-       ("python-six" ,python-six)))
+     (list python-ply python-six))
     (native-inputs
-     `(("python-coverage" ,python-coverage)
-       ("python-mock" ,python-mock)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-runner" ,python-pytest-runner)))
+     (list python-coverage python-mock python-pytest python-pytest-runner))
     (home-page "https://github.com/dropbox/stone")
     (synopsis "Official Api Spec Language for Dropbox")
     (description
@@ -21848,9 +21353,7 @@ inferring type information using compile-time introspection.")
     (arguments
      `(#:tests? #f)) ;requires online data
     (propagated-inputs
-     `(("python-appdirs" ,python-appdirs)
-       ("python-packaging" ,python-packaging)
-       ("python-requests" ,python-requests)))
+     (list python-appdirs python-packaging python-requests))
     (home-page "https://github.com/fatiando/pooch")
     (synopsis "Manage your Python library's sample data files")
     (description
@@ -21872,10 +21375,9 @@ and corruption checks.")
          "1vzmz1xh38b84dv0f4hlp7arwmx8wjlih6lf964bpy8dnyk6s5rs"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-monotonic" ,python-monotonic)
-       ("python-six" ,python-six)))
+     (list python-monotonic python-six))
     (native-inputs
-     `(("python-testtools" ,python-testtools)))
+     (list python-testtools))
     (home-page "https://github.com/harlowja/fasteners")
     (synopsis "Python package that provides useful locks")
     (description
@@ -21902,8 +21404,7 @@ and corruption checks.")
          "1yp2jaxg3v86pia0q512dg3hz6s9y5vzdivsgrba1kds05ial14g"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-requests" ,python-requests)
-       ("python-six" ,python-six)))
+     (list python-requests python-six))
     (home-page
      "https://github.com/dashea/requests-file")
     (synopsis "File transport adapter for Requests")
@@ -21940,10 +21441,9 @@ library to allow local file system access via @code{file://} URLs.")
              (when tests?
                (invoke "pytest" "-vv")))))))
     (native-inputs
-     `(("python-coverage" ,python-coverage)
-       ("python-pytest" ,python-pytest)))
+     (list python-coverage python-pytest))
     (propagated-inputs
-     `(("python-editdistance" ,python-editdistance)))
+     (list python-editdistance))
     (home-page "https://github.com/chriskuehl/identify")
     (synopsis "File identification library for Python")
     (description
@@ -21965,12 +21465,9 @@ identifying what the file is.")
          "1d5s8v6kpsgazyahflhji1cfdcf89rv7l7z55v774bhzvcjp2y99"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-responses" ,python-responses)))
+     (list python-pytest python-responses))
     (propagated-inputs
-     `(("python-idna" ,python-idna)
-       ("python-requests" ,python-requests)
-       ("python-requests-file" ,python-requests-file)))
+     (list python-idna python-requests python-requests-file))
     (home-page
      "https://github.com/john-kurkowski/tldextract")
     (synopsis
@@ -22009,12 +21506,9 @@ Public Suffix List's private domains as well.")
                ;; This test fails. It tries to open a network socket.
                (invoke "pytest" "-vv" "-k" "not test_error_message")))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-pytest-runner" ,python-pytest-runner)))
+     (list python-pytest python-pytest-runner))
     (inputs
-     `(("python-argcomplete" ,python-argcomplete)
-       ("python-colorama" ,python-colorama)
-       ("python-termcolor" ,python-termcolor)))
+     (list python-argcomplete python-colorama python-termcolor))
     (home-page "https://github.com/tldr-pages/tldr-python-client")
     (synopsis "Python command-line client for tldr pages")
     (description "This package provides the @code{tldr} command allowing users
@@ -22045,9 +21539,7 @@ effort to simplify the man pages with practical examples.")
              ;; This test fails. It tries to open a network socket.
              (invoke "pytest" "-vv" "-k" "not test_smoke"))))))
     (native-inputs
-     `(("python-coverage" ,python-coverage)
-       ("python-mock" ,python-mock)
-       ("python-pytest" ,python-pytest)))
+     (list python-coverage python-mock python-pytest))
     (home-page "https://ekalinin.github.io/nodeenv/")
     (synopsis "Create isolated node.js environments")
     (description
@@ -22070,7 +21562,7 @@ environments.")
          "0wkbwz208j8nfrsmzmclvxg22ymknn0mlz76wbdza9k2bx2zja6l"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-requests" ,python-requests)))
+     (list python-requests))
     (home-page
      "https://github.com/Bemmu/PyNamecheap")
     (synopsis
@@ -22097,11 +21589,8 @@ environments.")
     (arguments
      `(#:tests? #f))                    ;requires internet access
     (propagated-inputs
-     `(("python-future" ,python-future)
-       ("python-pynamecheap" ,python-pynamecheap)
-       ("python-requests" ,python-requests)
-       ("python-tldextract" ,python-tldextract)
-       ("python-urllib3" ,python-urllib3)))
+     (list python-future python-pynamecheap python-requests
+           python-tldextract python-urllib3))
     (home-page "https://github.com/AnalogJ/lexicon")
     (synopsis
      "Manipulate DNS records on various DNS providers")
@@ -22137,9 +21626,7 @@ Let's Encrypt.")
            (lambda _
              (invoke "pytest" "-vv"))))))
     (native-inputs
-     `(("python-covdefaults" ,python-covdefaults)
-       ("python-coverage" ,python-coverage)
-       ("python-pytest" ,python-pytest)))
+     (list python-covdefaults python-coverage python-pytest))
     (home-page "https://github.com/asottile/cfgv")
     (synopsis "Configuration validation library")
     (description
@@ -22205,12 +21692,9 @@ validation testing and application logic.")
                  (setenv "HOME" (getcwd))
                  (invoke "python3" "-m" "numba.runtests" "-v" "-m"))))))))
     (propagated-inputs
-     `(("python-llvmlite" ,python-llvmlite)
-       ("python-numpy" ,python-numpy)
-       ("python-singledispatch" ,python-singledispatch)))
+     (list python-llvmlite python-numpy python-singledispatch))
     (native-inputs                      ;for tests
-     `(("python-jinja2" ,python-jinja2)
-       ("python-pygments" ,python-pygments)))
+     (list python-jinja2 python-pygments))
     (home-page "https://numba.pydata.org")
     (synopsis "Compile Python code using LLVM")
     (description "Numba gives you the power to speed up your applications with
@@ -22271,17 +21755,12 @@ tool).")
                (add-installed-pythonpath inputs outputs)
                (invoke "pytest" "-vv")))))))
     (inputs
-     `(("c-blosc" ,c-blosc)
-       ("lz4" ,lz4)
-       ("zlib" ,zlib)
-       ("zstd" ,zstd "lib")))
+     (list c-blosc lz4 zlib
+           `(,zstd "lib")))
     (propagated-inputs
-     `(("python-numpy" ,python-numpy)
-       ("python-msgpack" ,python-msgpack)))
+     (list python-numpy python-msgpack))
     (native-inputs
-     `(("python-cython" ,python-cython)
-       ("python-pytest" ,python-pytest)
-       ("python-setuptools-scm" ,python-setuptools-scm)))
+     (list python-cython python-pytest python-setuptools-scm))
     (home-page "https://github.com/zarr-developers/numcodecs")
     (synopsis "Buffer compression and transformation codecs")
     (description
@@ -22332,13 +21811,10 @@ codecs for use in data storage and communication applications.")
              (invoke "pytest" "-vv" "-k" "not lmdb")
              #t)))))
     (propagated-inputs
-     `(("python-asciitree" ,python-asciitree)
-       ("python-fasteners" ,python-fasteners)
-       ("python-numcodecs" ,python-numcodecs)
-       ("python-numpy" ,python-numpy)))
+     (list python-asciitree python-fasteners python-numcodecs
+           python-numpy))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-setuptools-scm" ,python-setuptools-scm)))
+     (list python-pytest python-setuptools-scm))
     (home-page "https://github.com/zarr-developers/zarr-python")
     (synopsis "Chunked, compressed, N-dimensional arrays for Python")
     (description
@@ -22389,20 +21865,17 @@ N-dimensional arrays for Python.")
                          (find-files "dist" "\\.whl$")))
              #t)))))
     (propagated-inputs
-     `(("python-h5py" ,python-h5py)
-       ("python-importlib-metadata" ,python-importlib-metadata)
-       ("python-natsort" ,python-natsort)
-       ("python-numcodecs" ,python-numcodecs)
-       ("python-packaging" ,python-packaging)
-       ("python-pandas" ,python-pandas)
-       ("python-scipy" ,python-scipy)
-       ("python-zarr" ,python-zarr)))
+     (list python-h5py
+           python-importlib-metadata
+           python-natsort
+           python-numcodecs
+           python-packaging
+           python-pandas
+           python-scipy
+           python-zarr))
     (native-inputs
-     `(("python-joblib" ,python-joblib)
-       ("python-pytest" ,python-pytest)
-       ("python-toml" ,python-toml)
-       ("python-flit" ,python-flit)
-       ("python-setuptools-scm" ,python-setuptools-scm)))
+     (list python-joblib python-pytest python-toml python-flit
+           python-setuptools-scm))
     (home-page "https://github.com/theislab/anndata")
     (synopsis "Annotated data for data analysis pipelines")
     (description "Anndata is a package for simple (functional) high-level APIs
@@ -22432,7 +21905,7 @@ object-oriented library such as @code{scikit-learn}.")
                (invoke "nosetests" "-v"))
              #t)))))
     (native-inputs
-     `(("python-nose" ,python-nose)))
+     (list python-nose))
     (home-page "https://pypi.org/project/dill/")
     (synopsis "Serialize all of Python")
     (description "Dill extends Python's @code{pickle} module for serializing
@@ -22479,7 +21952,7 @@ the saved state of the original interpreter session.")
              (invoke "python" "-m" "multiprocess.tests")
              #t)))))
     (propagated-inputs
-     `(("python-dill" ,python-dill)))
+     (list python-dill))
     (home-page "https://pypi.org/project/multiprocess/")
     (synopsis "Multiprocessing and multithreading in Python")
     (description
@@ -22510,7 +21983,7 @@ library's @code{threading} module.")
                (invoke "python" "-m" "pytest" "--doctest-modules"
                        "--pyargs" "toolz")))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://github.com/pytoolz/toolz/")
     (synopsis "List processing tools and functional utilities")
     (description
@@ -22537,9 +22010,9 @@ functions, and dictionaries.")
     ;; 'exceptions'"
     (arguments '(#:tests? #f))
     (propagated-inputs
-     `(("python-toolz" ,python-toolz)))
+     (list python-toolz))
     (native-inputs
-     `(("python-cython" ,python-cython)))
+     (list python-cython))
     (home-page "https://github.com/pytoolz/cytoolz")
     (synopsis "High performance functional utilities")
     (description
@@ -22577,7 +22050,7 @@ that is accessible to other projects developed in Cython.")
          "1kfabpnjyjm5ml2zspry9jy3xq49aybchgaa4ahic2jqdjfn1sfq"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-sortedcontainers" ,python-sortedcontainers)))
+     (list python-sortedcontainers))
     (arguments '(#:tests? #f))  ; Tests not included in release tarball.
     (home-page "http://www.grantjenks.com/docs/sortedcollections/")
     (synopsis "Python Sorted Collections")
@@ -22660,11 +22133,9 @@ data.")
                  (invoke "pytest" "-s" "-vv")
                  (format #t "test suite not run~%")))))))
     (native-inputs
-     `(;; For tests.
-       ("python-cloudpickle-testpkg" ,python-cloudpickle-testpkg)
-       ("python-psutil" ,python-psutil)
-       ("python-pytest" ,python-pytest)
-       ("python-tornado" ,python-tornado-6)))
+     (list ;; For tests.
+           python-cloudpickle-testpkg python-psutil python-pytest
+           python-tornado-6))
     (home-page "https://github.com/cloudpipe/cloudpickle")
     (synopsis "Extended pickling support for Python objects")
     (description
@@ -22735,7 +22206,7 @@ they use the same path.")
     ;; TypeError: calling <function run at 0x7ffff2568d90> returned None, not a test
     (arguments '(#:tests? #f))
     (propagated-inputs
-     `(("python-numpy" ,python-numpy)))
+     (list python-numpy))
     (home-page "https://github.com/blosc/python-blosc")
     (synopsis "Python wrapper for the Blosc data compressor library")
     (description "Blosc is a high performance compressor optimized for binary
@@ -22766,12 +22237,12 @@ This Python package wraps the Blosc library.")
          "1sy3vdfyyx3bc5590zb7gwpsmimqz8m992x9hsydq8nmhixqjrxa"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-blosc" ,python-blosc)
-       ("python-locket" ,python-locket)
-       ("python-numpy" ,python-numpy)
-       ("python-pandas" ,python-pandas)
-       ("python-pyzmq" ,python-pyzmq)
-       ("python-toolz" ,python-toolz)))
+     (list python-blosc
+           python-locket
+           python-numpy
+           python-pandas
+           python-pyzmq
+           python-toolz))
     (home-page "https://github.com/dask/partd/")
     (synopsis "Appendable key-value storage")
     (description "Partd stores key-value pairs.  Values are raw bytes.  We
@@ -22821,18 +22292,16 @@ decisions with any given backend.")
            (lambda* (#:key tests? #:allow-other-keys)
              (when tests? (invoke "pytest" "-vv")))))))
     (propagated-inputs
-     `(("python-cloudpickle" ,python-cloudpickle)
-       ("python-fsspec" ,python-fsspec)
-       ("python-numpy" ,python-numpy)
-       ("python-packaging" ,python-packaging)
-       ("python-pandas" ,python-pandas)
-       ("python-partd" ,python-partd)
-       ("python-toolz" ,python-toolz)
-       ("python-pyyaml" ,python-pyyaml)))
+     (list python-cloudpickle
+           python-fsspec
+           python-numpy
+           python-packaging
+           python-pandas
+           python-partd
+           python-toolz
+           python-pyyaml))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-pytest-runner" ,python-pytest-runner)
-       ("python-pytest-rerunfailures" ,python-pytest-rerunfailures)))
+     (list python-pytest python-pytest-runner python-pytest-rerunfailures))
     (home-page "https://github.com/dask/dask/")
     (synopsis "Parallel computing with task scheduling")
     (description
@@ -22856,8 +22325,8 @@ run on top of the dynamic task schedulers. ")
         (base32
          "0nrw4sr3afldrp7073hvc0rgdz282s0l819jdmj1i6nn05v33h0l"))))
     (build-system python-build-system)
-    (native-inputs `(("python-pytest" ,python-pytest)))
-    (inputs `(("python" ,python)))
+    (native-inputs (list python-pytest))
+    (inputs (list python))
     (home-page "https://github.com/luther9/ilinkedlist-py")
     (synopsis "Immutable linked list library")
     (description
@@ -22938,7 +22407,7 @@ on regular expressions.")
          "1kqipkbdaw5s1xg0gi29awm03vp1x8dz24pjidgxagvkvrjpzhi7"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-six" ,python-six)))
+     (list python-six))
     (home-page "https://github.com/rholder/retrying")
     (synopsis "Library for adding retry behavior")
     (description "Retrying is a general-purpose retrying library to simplify
@@ -22971,14 +22440,14 @@ Features:
      ;; attribute 'empty_template_setup'".
      `(#:tests? #false))
     (propagated-inputs
-     `(("python-cfgv" ,python-cfgv)
-       ("python-identify" ,python-identify)
-       ("python-importlib-metadata" ,python-importlib-metadata)
-       ("python-importlib-resources" ,python-importlib-resources)
-       ("python-nodeenv" ,python-nodeenv)
-       ("python-pyyaml" ,python-pyyaml)
-       ("python-toml" ,python-toml)
-       ("python-virtualenv" ,python-virtualenv)))
+     (list python-cfgv
+           python-identify
+           python-importlib-metadata
+           python-importlib-resources
+           python-nodeenv
+           python-pyyaml
+           python-toml
+           python-virtualenv))
     (home-page "https://github.com/pre-commit/pre-commit")
     (synopsis "Framework for managing multi-language pre-commit hooks")
     (description
@@ -23018,7 +22487,7 @@ RFC 8265 and RFC 8266.")
          "1mp9lk0b2qa37b7y6ak4lvf6ifw2ylyy6bkf9ik77md3j4xrwlc7"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-six" ,python-six)))
+     (list python-six))
     (home-page "https://github.com/abseil/abseil-py")
     (synopsis "Abseil Python common libraries")
     (description
@@ -23062,8 +22531,7 @@ source via the Abstract Syntax Tree.")
     (build-system python-build-system)
     (arguments '(#:tests? #f))          ; there are none
     (propagated-inputs
-     `(("python-six" ,python-six)
-       ("python-wheel" ,python-wheel)))
+     (list python-six python-wheel))
     (home-page "https://github.com/simonpercivall/astunparse")
     (synopsis "AST unparser for Python")
     (description "This package provides an AST unparser for Python.  It is a
@@ -23083,7 +22551,7 @@ distribution.")
         (base32 "1xv77kzghiqfm4fnvlv0p878ma152dvcfkly3jij89lqigxcw7zq"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-astunparse" ,python-astunparse)))
+     (list python-astunparse))
     (home-page "https://pypi.org/project/gast/")
     (synopsis "Generic Python AST that abstracts the underlying Python version")
     (description
@@ -23105,7 +22573,7 @@ module.")
          "08nlnydddfp1jj0cdmshvld1irzngbp3dij928wqsg9ziklm6mw9"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-babel" ,python-babel)))
+     (list python-babel))
     (home-page "https://github.com/dahlia/wikidata")
     (synopsis "Wikidata client library")
     (description
@@ -23127,7 +22595,7 @@ module.")
          "1m9aa4qnyj21lbq4sbvmv1vcz7zksss4rz37ddf2hxv4hk8b547w"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-nose" ,python-nose)))
+     (list python-nose))
     (home-page "https://github.com/gnublade/doctest-ignore-unicode")
     (synopsis "Ignore Unicode literal prefixes in doctests")
     (description
@@ -23168,10 +22636,7 @@ class in a @acronym{DRY, Don't Repeat Yourself} way.")
     (arguments
      `(#:tests? #f)) ; No tests exist.
     (propagated-inputs
-     `(("python-extras" ,python-extras)
-       ("python-arrow" ,python-arrow)
-       ("python-numpy" ,python-numpy)
-       ("python-ruamel.yaml" ,python-ruamel.yaml)))
+     (list python-extras python-arrow python-numpy python-ruamel.yaml))
     (home-page "https://construct.readthedocs.io")
     (synopsis "Declarative and symmetrical parser and builder for binary data")
     (description
@@ -23202,12 +22667,9 @@ make your work easier.")
              (add-installed-pythonpath inputs outputs)
              (invoke "pytest" "-vv"))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)
-       ("python-pytest-asyncio" ,python-pytest-asyncio)))
+     (list python-pytest python-pytest-cov python-pytest-asyncio))
     (propagated-inputs
-     `(("python-async-generator" ,python-async-generator)
-       ("python-attrs" ,python-attrs)))
+     (list python-async-generator python-attrs))
     (home-page "https://github.com/python-trio/outcome")
     (synopsis "Capture the outcome of Python function calls")
     (description
@@ -23258,22 +22720,21 @@ project.")
                          ;; OSError: protocol not found.
                          " and not test_getprotobyname"))))))))
     (native-inputs
-     `(("python-astor" ,python-astor)
-       ("python-ipython" ,python-ipython)
-       ("python-jedi" ,python-jedi)
-       ("python-pylint" ,python-pylint)
-       ("python-pyopenssl" ,python-pyopenssl)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)
-       ("python-trustme" ,python-trustme)))
+     (list python-astor
+           python-ipython
+           python-jedi
+           python-pylint
+           python-pyopenssl
+           python-pytest
+           python-pytest-cov
+           python-trustme))
     (propagated-inputs
-     `(("python-async-generator" ,python-async-generator)
-       ("python-attrs" ,python-attrs)
-       ("python-idna" ,python-idna)
-       ("python-outcome" ,python-outcome)
-       ("python-sniffio" ,python-sniffio)
-       ("python-sortedcontainers"
-        ,python-sortedcontainers)))
+     (list python-async-generator
+           python-attrs
+           python-idna
+           python-outcome
+           python-sniffio
+           python-sortedcontainers))
     (home-page "https://github.com/python-trio/trio")
     (synopsis "Friendly Python library for async concurrency and I/O")
     (description
@@ -23301,15 +22762,10 @@ programs that do multiple things at the same time with parallelized I/O.")
            (lambda _
              (invoke "pytest" "-vv"))))))
     (native-inputs
-     `(("python-attrs" ,python-attrs)
-       ("python-pytest" ,python-pytest)))
+     (list python-attrs python-pytest))
     (propagated-inputs
-     `(("python-mypy" ,python-mypy)
-       ("python-mypy-extensions"
-        ,python-mypy-extensions)
-       ("python-trio" ,python-trio)
-       ("python-typing-extensions"
-        ,python-typing-extensions)))
+     (list python-mypy python-mypy-extensions python-trio
+           python-typing-extensions))
     (home-page "https://github.com/python-trio/trio-typing")
     (synopsis "Static type checking support for Trio and related projects")
     (description
@@ -23365,8 +22821,7 @@ and dates in \"human readable\" forms.  For example, it would display
           "1zmpdph6zddgrnkkcykh6qk5s46l7s5mzfqrh82m4b5iffn61qv7"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-twisted" ,python-twisted)
-       ("python-six" ,python-six)))
+     (list python-twisted python-six))
     (home-page "https://github.com/crossbario/txaio")
     (synopsis "Compatibility layer between Python asyncio and Twisted")
     (description "Txaio provides a compatibility layer between the Python
@@ -23386,7 +22841,7 @@ and dates in \"human readable\" forms.  For example, it would display
          "14zvz51gzf9i1i3d1sj363ba4rksl6lcf4lz1arl8hpqgcbir8r3"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-nose" ,python-nose)))
+     (list python-nose))
     (home-page "https://github.com/brentp/toolshed/")
     (synopsis "Collection of modules and functions for working with data")
     (description "This is a collection of well-tested, simple modules and
@@ -23406,7 +22861,7 @@ functions that aim to reduce boilerplate when working with data.")
          "1rxn6snn0r32r07g45hdjhh8aa1xzx6fjrm8g62d8vzp46z7rzrp"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-nose" ,python-nose)))
+     (list python-nose))
     (home-page "https://github.com/spotify/annoy/")
     (synopsis "Approximate nearest neighbors library")
     (description
@@ -23428,8 +22883,7 @@ processes may share the same data.")
                 "0r79cx4v2dw4hzr0annkkxxis46c8hivq61sr39z6p7lcjsbk1ki"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-dateutil" ,python-dateutil)
-       ("python-natsort" ,python-natsort)))
+     (list python-dateutil python-natsort))
     (home-page "https://github.com/kiorky/croniter")
     (synopsis "Iterate datetime objects with cron-like syntax")
     (description
@@ -23452,7 +22906,7 @@ format.")
      ;; Comptability tests fail so they are disabled.
      `(#:tests? #f))
     (inputs
-     `(("python-dateutil" ,python-dateutil)))
+     (list python-dateutil))
     (home-page "https://gitlab.com/doctormo/python-crontab/")
     (synopsis "Module for reading and writing crontab files")
     (description "This Python module can read, write crontab files, and
@@ -23498,7 +22952,7 @@ by Igor Pavlov.")
          (replace 'check
            (lambda _ (invoke "nosetests"))))))
     (native-inputs
-     `(("python-nose" ,python-nose)))
+     (list python-nose))
     (home-page "https://github.com/pydron/ifaddr")
     (synopsis "Network interface and IP address enumeration library")
     (description "This package provides a network interface and IP address
@@ -23518,9 +22972,9 @@ enumeration library in Python.")
          "0narq8haa3b375vfblbyil77n8bw0wxqnanl91pl0wwwm884mqjb"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-nose" ,python-nose)))
+     (list python-nose))
     (propagated-inputs
-     `(("python-ifaddr" ,python-ifaddr)))
+     (list python-ifaddr))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -23586,7 +23040,7 @@ compatible).")
         (base32 "00bqdsfx8jgmfz5bgkx10nlw5bfsw11a86f91zkl53snvk45xl3h"))))
     (build-system python-build-system)
     (inputs
-     `(("bdb" ,bdb)))
+     (list bdb))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
@@ -23622,7 +23076,7 @@ Complete support for Berkeley DB Base Replication.  Support for RPC.")
                 "0gdpwdzf1fngsi6jrdyj4qdf6cr7gnnr3zp80dpkzbgz0spskj07"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://dbfread.readthedocs.io")
     (synopsis "Read DBF Files with Python")
     (description
@@ -23656,7 +23110,7 @@ one-off scripts.")
                                "    " m)))
              #t)))))
     (native-inputs
-     `(("python-freezegun" ,python-freezegun)))
+     (list python-freezegun))
     (home-page
      "https://github.com/pydanny/cached-property")
     (synopsis
@@ -23684,12 +23138,9 @@ time-or-computationally-expensive properties quick and easy and works in Python
         (base32 "1q05pzca3wfwgnbg03l3bagnhh348yx68w4aa91rg3g8zlviwjz1"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-branca" ,python-branca)
-       ("python-jinja2" ,python-jinja2)
-       ("python-numpy" ,python-numpy)
-       ("python-requests" ,python-requests)))
+     (list python-branca python-jinja2 python-numpy python-requests))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://github.com/python-visualization/folium")
     (synopsis "Make beautiful maps with Leaflet.js & Python")
     (description "@code{folium} makes it easy to visualize data that’s been
@@ -23740,7 +23191,7 @@ for manual interpretation.")
          "1hpbydpn2alyswiajfbvhzq4c7f36vdmvxy91hgv8l1lb2g2vfrj"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-dateutil" ,python-dateutil)))
+     (list python-dateutil))
     (home-page "https://github.com/MKuranowski/pyroutelib3")
     (synopsis "Library for simple routing on OSM data")
     (description "Library for simple routing on OSM data")
@@ -23759,9 +23210,9 @@ for manual interpretation.")
          "0zwhfkrzf3n5847dbnfng92k7ak199l9v6x6ax3dgdidfpm6d2fz"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-pyparsing" ,python-pyparsing)))
+     (list python-pyparsing))
     (native-inputs
-     `(("python-future" ,python-future)))
+     (list python-future))
     (home-page "https://github.com/sciunto-org/python-bibtexparser")
     (synopsis "Python library to parse BibTeX files")
     (description "BibtexParser is a Python library to parse BibTeX files.")
@@ -23780,7 +23231,7 @@ for manual interpretation.")
          "09441261dd3c8b2gv15vhw1cryzg60lmgpkk07v6hpwwkyhfbxc3"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://github.com/nir0s/distro")
     (synopsis
      "OS platform information API")
@@ -23811,15 +23262,10 @@ information in various formats.")
          (replace 'check
            (lambda _ (invoke "pytest"))))))
     (propagated-inputs
-     `(("python-cairocffi" ,python-cairocffi)
-       ("python-cssselect2" ,python-cssselect2)
-       ("python-defusedxml" ,python-defusedxml)
-       ("python-pillow" ,python-pillow)
-       ("python-tinycss2" ,python-tinycss2)))
+     (list python-cairocffi python-cssselect2 python-defusedxml
+           python-pillow python-tinycss2))
     (native-inputs
-     `(("python-pytest-flake8" ,python-pytest-flake8)
-       ("python-pytest-isort" ,python-pytest-isort)
-       ("python-pytest-runner" ,python-pytest-runner)))
+     (list python-pytest-flake8 python-pytest-isort python-pytest-runner))
     (home-page "https://cairosvg.org/")
     (synopsis "SVG to PDF/PS/PNG converter based on Cairo")
     (description "CairoSVG is a SVG converter based on Cairo.  It can export
@@ -23886,9 +23332,7 @@ converters and more, those based on the library itself.")
     (build-system python-build-system)
     (arguments '(#:tests? #f))          ;missing dependencies
     (propagated-inputs
-     `(("python-dateutil" ,python-dateutil)
-       ("python-docopt" ,python-docopt)
-       ("python-pyyaml" ,python-pyyaml)))
+     (list python-dateutil python-docopt python-pyyaml))
     (home-page "https://github.com/grokzen/pykwalify")
     (synopsis
      "Python lib/cli for JSON/YAML schema validation")
@@ -23921,15 +23365,13 @@ for YAML and JSON.")
                 (string-append "'" (assoc-ref inputs "dbus")
                                "/bin/dbus-daemon'"))))))))
     (native-inputs
-     `(;; For tests.
-       ("dbus" ,dbus) ; for dbus-daemon
-       ("python-nose" ,python-nose)
-       ("which" ,which)))
+     (list ;; For tests.
+           dbus ; for dbus-daemon
+           python-nose which))
     (inputs
-     `(("dbus" ,dbus)))
+     (list dbus))
     (propagated-inputs
-     `(("python-dbus" ,python-dbus)
-       ("python-pygobject" ,python-pygobject)))
+     (list python-dbus python-pygobject))
     (home-page "https://github.com/martinpitt/python-dbusmock")
     (synopsis "Python library for mock D-Bus objects")
     (description "python-dbusmock allows for the easy creation of mock objects on
@@ -23954,9 +23396,7 @@ services to what you expect in your tests.")
     ;; XXX: No tests on PyPI, and the repository has no tags.
     (arguments '(#:tests? #f))
     (propagated-inputs
-     `(("python-dateutil" ,python-dateutil)
-       ("python-simplejson" ,python-simplejson)
-       ("python-sortedcontainers" ,python-sortedcontainers)))
+     (list python-dateutil python-simplejson python-sortedcontainers))
     (synopsis "Serialize Python types to/from JSON")
     (description
      "This package provides functionality to serialize arbitrary data types
@@ -23998,9 +23438,7 @@ register custom encoders and decoders.")
              (add-installed-pythonpath inputs outputs)
              (invoke "pytest"))))))
     (native-inputs
-     `(("double-conversion" ,double-conversion)
-       ("python-setuptools-scm" ,python-setuptools-scm)
-       ("python-pytest" ,python-pytest)))
+     (list double-conversion python-setuptools-scm python-pytest))
     (home-page "https://github.com/ultrajson/ultrajson")
     (synopsis "Ultra fast JSON encoder and decoder for Python")
     (description
@@ -24036,10 +23474,7 @@ bindings for Python 3.")
                (invoke "py.test" "-v" "tests")
                #t)))))
       (propagated-inputs
-       `(("python-flexmock" ,python-flexmock)
-         ("python-pytest" ,python-pytest)
-         ("python-pytest-cov" ,python-pytest-cov)
-         ("python-six" ,python-six)))
+       (list python-flexmock python-pytest python-pytest-cov python-six))
       (home-page "https://github.com/oinume/iocapture")
       (synopsis "Python capturing tool for stdout and stderr")
       (description
@@ -24107,20 +23542,18 @@ standard error channel (stderr) in your program.")
                         " and not test_send_receive"
                         " and not test_socket_options"))))))))
     (propagated-inputs
-     `(("python-idna" ,python-idna)
-       ("python-sniffio" ,python-sniffio)
-       ("python-typing-extensions" ,python-typing-extensions)))
+     (list python-idna python-sniffio python-typing-extensions))
     (native-inputs
-     `(("python-coverage" ,python-coverage)
-       ("python-hypothesis" ,python-hypothesis)
-       ("python-iniconfig" ,python-iniconfig)
-       ("python-mock" ,python-mock)
-       ("python-pytest" ,python-pytest-6)
-       ("python-pytest-mock" ,python-pytest-mock)
-       ("python-pytest-trio" ,python-pytest-trio)
-       ("python-setuptools-scm" ,python-setuptools-scm)
-       ("python-trustme" ,python-trustme)
-       ("python-uvloop" ,python-uvloop)))
+     (list python-coverage
+           python-hypothesis
+           python-iniconfig
+           python-mock
+           python-pytest-6
+           python-pytest-mock
+           python-pytest-trio
+           python-setuptools-scm
+           python-trustme
+           python-uvloop))
     (home-page "https://github.com/agronholm/anyio")
     (synopsis "Compatibility layer for multiple asynchronous event loops")
     (description
@@ -24150,11 +23583,8 @@ itself.")
            "1p5h3dnpbsjmqrvil96s71asc6i3gpinmbrabqmwnrsxprz7r3ns"))))
       (build-system python-build-system)
       (propagated-inputs
-       `(("python-iocapture" ,python-iocapture)
-         ("python-mock" ,python-mock)
-         ("python-pytest" ,python-pytest)
-         ("python-pytest-cov" ,python-pytest-cov)
-         ("python-pytest-xdist" ,python-pytest-xdist)))
+       (list python-iocapture python-mock python-pytest python-pytest-cov
+             python-pytest-xdist))
       (home-page "https://github.com/neithere/argh/")
       (synopsis "Argparse wrapper with natural syntax")
       (description
@@ -24179,7 +23609,7 @@ including the native API of @code{python-argparse}.")
     (build-system python-build-system)
     (arguments '(#:tests? #f))          ; there are none
     (propagated-inputs
-     `(("python-six" ,python-six)))
+     (list python-six))
     (home-page "https://pypi.org/project/ppft/")
     (synopsis "Fork of Parallel Python")
     (description
@@ -24214,8 +23644,7 @@ load balancing.")
              (invoke "py.test" "-vv")
              #t)))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("which" ,which)))
+     (list python-pytest which))
     (home-page "https://pypi.org/project/pox/")
     (synopsis "Python utilities for file system exploration and automated builds")
     (description
@@ -24247,12 +23676,9 @@ essential tools are located.")
            (lambda _
              (invoke "python" "./tests/__main__.py"))))))
     (propagated-inputs
-     `(("python-dill" ,python-dill)
-       ("python-multiprocess" ,python-multiprocess)
-       ("python-pox" ,python-pox)
-       ("python-ppft" ,python-ppft)))
+     (list python-dill python-multiprocess python-pox python-ppft))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://pypi.org/project/pathos/")
     (synopsis
      "Parallel graph management and execution in heterogeneous computing")
@@ -24323,8 +23749,7 @@ the syntactic logic to configure and launch jobs in an execution environment.")
                           (find-files "dist" "\\.whl$")))))))
        #:tests? #f)) ; XXX: Check requires network access.
     (propagated-inputs
-     `(("python-pytoml" ,python-pytoml)
-       ("python-toml" ,python-toml)))
+     (list python-pytoml python-toml))
     (native-inputs
      `(("python-docutils" ,python-docutils)
        ("python-responses" ,python-responses)
@@ -24409,7 +23834,7 @@ scripts to load entry points more quickly.")
         (base32
          "07f9cgjr3h4j2m67fhwapn8fja87vazl58zsj4yppf9y3an2x6dp"))))
     (native-inputs
-     `(("python-tox" ,python-tox)))
+     (list python-tox))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -24440,7 +23865,7 @@ that take parsers as their arguments and return them as result values.")
     (arguments
      `(#:tests? #f))                    ;FIXME: tests fail, not sure why
     (native-inputs
-     `(("unzip" ,unzip)))
+     (list unzip))
     (build-system python-build-system)
     (home-page "https://github.com/avakar/speg")
     (synopsis "PEG-based parser interpreter with memoization")
@@ -24460,7 +23885,7 @@ memoization.")
         (base32 "00cyvigg4npbph39ghkg77xbxisa6plf75vii24igxfizik0337f"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-speg" ,python-speg)))
+     (list python-speg))
     (home-page "https://github.com/avakar/pycson")
     (synopsis "Parser for Coffeescript Object Notation (CSON)")
     (description "This package is a parser for Coffeescript Object
@@ -24511,8 +23936,7 @@ Notation (CSON).")
            (lambda _
              (invoke "make" "SKIP_DEPS=1"))))))
     (native-inputs
-     `(("python-nose" ,python-nose)
-       ("python-coverage" ,python-coverage)))
+     (list python-nose python-coverage))
     (home-page "https://github.com/clarete/forbiddenfruit")
     (synopsis "Patch python built-in objects")
     (description "This project allows Python code to extend built-in types.")
@@ -24531,11 +23955,10 @@ Notation (CSON).")
          "1lqp3jgfngyhaxjgj3n230hn90wsylwilh120yjf62h7b1s02mh8"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-six" ,python-six)
-       ;; `which`, `kadmin.local` binaries called inside library
-       ("which" ,which)
-       ("mit-krb5" ,mit-krb5)))
-    (native-inputs `(("mit-krb5" ,mit-krb5)))
+     (list python-six
+           ;; `which`, `kadmin.local` binaries called inside library
+           which mit-krb5))
+    (native-inputs (list mit-krb5))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
@@ -24568,15 +23991,12 @@ tests.")
          "1j2idrbrbczykzlb56q1bn0ivc9c0rjjljpk4yz86xn3gxfkpv8n"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-decorator" ,python-decorator)
-       ("python-six" ,python-six)))
+     (list python-decorator python-six))
     (inputs
-     `(("mit-krb5" ,mit-krb5)))
+     (list mit-krb5))
     ;; for tests
     (native-inputs
-     `(("python-parameterized" ,python-parameterized)
-       ("python-k5test" ,python-k5test)
-       ("python-nose" ,python-nose)))
+     (list python-parameterized python-k5test python-nose))
     (home-page "https://github.com/pythongssapi/python-gssapi")
     (synopsis "Python GSSAPI Wrapper")
     (description
@@ -24598,8 +24018,7 @@ also be usable with other GSSAPI mechanisms.")
           "0lk45ifdv2cpkl6ayfyix7jwmnxa1rha7xvb0ih5999k115wzqs4"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-mock" ,python-mock)
-       ("git" ,git)))
+     (list python-mock git))
     (home-page "https://github.com/mgedmin/check-manifest")
     (synopsis "Check MANIFEST.in in a Python source package for completeness")
     (description "Python package can include a MANIFEST.in file to help with
@@ -24651,12 +24070,9 @@ files.  These files are used to translate strings in android apps.")
              (delete-file "tests/test_snapshot_diff.py")
              #t)))))
     (propagated-inputs
-     `(("python-argh" ,python-argh)
-       ("python-pathtools" ,python-pathtools)
-       ("python-pyyaml" ,python-pyyaml)))
+     (list python-argh python-pathtools python-pyyaml))
     (native-inputs
-     `(("python-pytest-cov" ,python-pytest-cov)
-       ("python-pytest-timeout" ,python-pytest-timeout)))
+     (list python-pytest-cov python-pytest-timeout))
     (home-page "https://github.com/gorakhargosh/watchdog")
     (synopsis "File system events monitoring")
     (description "This package provides a way to monitor file system events
@@ -24687,14 +24103,14 @@ but portable.")
              (when tests?
                (invoke "pytest" "-vv")))))))
     (native-inputs
-     `(("python-coverage" ,python-coverage)
-       ("python-pygments" ,python-pygments)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-asyncio" ,python-pytest-asyncio)
-       ("python-pytest-cov" ,python-pytest-cov)
-       ("python-pytest-mock" ,python-pytest-mock)
-       ("python-pytest-sugar" ,python-pytest-sugar)
-       ("python-pytest-toolbox" ,python-pytest-toolbox)))
+     (list python-coverage
+           python-pygments
+           python-pytest
+           python-pytest-asyncio
+           python-pytest-cov
+           python-pytest-mock
+           python-pytest-sugar
+           python-pytest-toolbox))
     (home-page "https://github.com/samuelcolvin/watchgod")
     (synopsis "Simple, modern file watching and code reload in Python")
     (description
@@ -24715,7 +24131,7 @@ operating systems and an elegant approach to concurrency using threading.")
         (base32
          "0qb0y7ipby42m4m7h0ipazpdyc3bn9xi46lvifcwwl5albn31rim"))))
     (build-system python-build-system)
-    (native-inputs `(("unzip" ,unzip)))
+    (native-inputs (list unzip))
     (home-page "https://bitbucket.org/techtonik/python-wget/")
     (synopsis "Pure Python download utility")
     (description "The python-wget library provides an API to download files
@@ -24741,21 +24157,21 @@ with features similar to the @command{wget} utility.")
      ;; No tests
      `(#:tests? #f))
     (propagated-inputs
-      `(("python-android-stringslib" ,python-android-stringslib)
-        ("python-dateutil" ,python-dateutil)
-        ("python-gitlab" ,python-gitlab)
-        ("python-lxml" ,python-lxml)
-        ("python-polib" ,python-polib)
-        ("python-pyenchant" ,python-pyenchant)
-        ("python-pygit2" ,python-pygit2)
-        ("python-pygithub" ,python-pygithub)
-        ("python-pyqt" ,python-pyqt)
-        ("python-requests" ,python-requests)
-        ("python-ruamel.yaml" ,python-ruamel.yaml)
-        ("python-translation-finder" ,python-translation-finder)
-        ("python-watchdog" ,python-watchdog)))
+      (list python-android-stringslib
+            python-dateutil
+            python-gitlab
+            python-lxml
+            python-polib
+            python-pyenchant
+            python-pygit2
+            python-pygithub
+            python-pyqt
+            python-requests
+            python-ruamel.yaml
+            python-translation-finder
+            python-watchdog))
     (native-inputs
-     `(("qttools" ,qttools)))
+     (list qttools))
     (home-page "https://framagit.org/tyreunom/offlate")
     (synopsis "Offline translation interface for online translation tools")
     (description "Offlate offers a unified interface for different translation
@@ -24779,7 +24195,7 @@ an upload option to send your work back to the platform.")
          "0486i99wf8ssa7sgn81fn6fv6i4rhhq6n751bc740b3hzfbpmpl4"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-nose" ,python-nose)))
+     (list python-nose))
     (home-page "https://github.com/ppannuto/python-titlecase")
     (synopsis "Capitalize strings similar to book titles")
     (description
@@ -24831,11 +24247,9 @@ custom PNG processing.")
          "1s00zn75y2dkxgnbw8kl8dw4p1mc77cv78fwfa4yb0274s96w0a5"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-hypothesis" ,python-hypothesis)
-       ("python-pycodestyle" ,python-pycodestyle)
-       ("python-pytest" ,python-pytest)))
+     (list python-hypothesis python-pycodestyle python-pytest))
     (propagated-inputs
-     `(("python-levenshtein" ,python-levenshtein)))
+     (list python-levenshtein))
     (home-page "https://github.com/seatgeek/fuzzywuzzy")
     (synopsis "Fuzzy string matching in Python")
     (description "Approximate string matching using
@@ -24880,8 +24294,7 @@ your process.")
           "0gyady7x3v3l9fm1zan0idaggqqcm31y7g5vxk7h05p5h7f39bjs"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-lxml" ,python-lxml)
-       ("python-jinja2" ,python-jinja2)))
+     (list python-lxml python-jinja2))
     (home-page "https://gcovr.com/")
     (synopsis "Utility for generating code coverage results")
     (description
@@ -24929,13 +24342,13 @@ content models.")
     ;; Testing requires undocumented setup changes, and so testing is disabled here.
     (arguments `(#:tests? #f))
     (propagated-inputs
-      `(("python-certifi" ,python-certifi)
-        ("python-six" ,python-six)
-        ("python-dateutil" ,python-dateutil)
-        ("python-urllib3" ,python-urllib3)
-        ("python-pyjwt" ,python-pyjwt)
-        ("python-cryptography" ,python-cryptography)
-        ("python-nose" ,python-nose)))
+      (list python-certifi
+            python-six
+            python-dateutil
+            python-urllib3
+            python-pyjwt
+            python-cryptography
+            python-nose))
     (synopsis "DocuSign Python Client")
     (description "The Official DocuSign Python Client Library used to interact
  with the eSign REST API.  Send, sign, and approve documents using this client.")
@@ -24955,7 +24368,7 @@ content models.")
          "0i4xyiqbhjz2g16zbim17zjdbjkw79xsw8k59942vvq4is1cmfxh"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-cffi" ,python-cffi)))
+     (list python-cffi))
     (home-page "https://github.com/xattr/xattr")
     (synopsis
      "Python wrapper for extended file system attributes")
@@ -24998,12 +24411,9 @@ we can stop writing custom parsers for syslog-type records.")
          "1qmank3c217ddiig3xr8ps0mqaydcp0q5a62in9a9g4zf72zjnqd"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-json-logger" ,python-json-logger)))
+     (list python-json-logger))
     (native-inputs
-     `(("python-mock" ,python-mock)
-       ("python-pytest" ,python-pytest)
-       ("python-setuptools-scm" ,python-setuptools-scm)
-       ("python-six" ,python-six)))
+     (list python-mock python-pytest python-setuptools-scm python-six))
     (home-page "https://github.com/jd/daiquiri")
     (synopsis
      "Library to configure Python logging easily")
@@ -25031,20 +24441,17 @@ logging in Python.  It also provides some custom formatters and handlers.")
              (invoke "python" "setup.py" "testr" "--slowest"
                      "--testr-args=until-failure"))))))
     (propagated-inputs
-     `(("python-click" ,python-click)
-       ("python-daiquiri" ,python-daiquiri)
-       ("python-fixtures" ,python-fixtures)
-       ("python-jinja2" ,python-jinja2)
-       ("python-pbr" ,python-pbr)
-       ("python-psutil" ,python-psutil)
-       ("python-six" ,python-six)
-       ("python-xattr" ,python-xattr)))
+     (list python-click
+           python-daiquiri
+           python-fixtures
+           python-jinja2
+           python-pbr
+           python-psutil
+           python-six
+           python-xattr))
     (native-inputs
-     `(("python-mock" ,python-mock)
-       ("python-os-testr" ,python-os-testr)
-       ("python-requests" ,python-requests)
-       ("python-testrepository" ,python-testrepository)
-       ("python-testtools" ,python-testtools)))
+     (list python-mock python-os-testr python-requests
+           python-testrepository python-testtools))
     (home-page "https://github.com/jd/pifpaf")
     (synopsis "Tools and fixtures to manage daemons for testing in Python")
     (description "Pifpaf is a suite of fixtures and a command-line tool that
@@ -25067,14 +24474,14 @@ evolved from its precursor @code{overtest}.")
          "12x3wmrdzm6wgk0vz02hb769h68nr49q47w5q1pj95pc89hsa34v"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-docutils" ,python-docutils)
-       ("python-html5lib" ,python-html5lib)
-       ("python-nbconvert" ,python-nbconvert)
-       ("python-nbformat" ,python-nbformat)
-       ("python-pytest" ,python-pytest)
-       ("python-six" ,python-six)))
+     (list python-docutils
+           python-html5lib
+           python-nbconvert
+           python-nbformat
+           python-pytest
+           python-six))
     (native-inputs
-     `(("python-pbr-minimal" ,python-pbr-minimal)))
+     (list python-pbr-minimal))
     (home-page "https://github.com/minrk/pytest-check-links")
     (synopsis "Check links in files")
     (description "This package provides a pytest plugin that checks URLs for
@@ -25199,9 +24606,7 @@ information for your operating system.")
         (base32 "0c86g0vvzdcg3nrcsqnbzlfhpprc2i894p8i14hska56yl27d6w9"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-six" ,python-six)
-       ("python-frozendict" ,python-frozendict)
-       ("python-simplejson" ,python-simplejson)))
+     (list python-six python-frozendict python-simplejson))
     (home-page "https://github.com/matrix-org/python-canonicaljson")
     (synopsis "Canonical JSON")
     (description
@@ -25231,13 +24636,10 @@ information for your operating system.")
         (base32 "0280f8zyycsmd7iy65bs438flm7m8ffs1kcxfbvhi8hbazkqc19m"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-canonicaljson" ,python-canonicaljson)
-       ("python-importlib-metadata" ,python-importlib-metadata)
-       ("python-pynacl" ,python-pynacl)
-       ("python-typing-extensions" ,python-typing-extensions)
-       ("python-unpaddedbase64" ,python-unpaddedbase64)))
+     (list python-canonicaljson python-importlib-metadata python-pynacl
+           python-typing-extensions python-unpaddedbase64))
     (native-inputs
-     `(("python-setuptools-scm" ,python-setuptools-scm)))
+     (list python-setuptools-scm))
     (home-page "https://github.com/matrix-org/python-signedjson")
     (synopsis "Sign JSON objects with ED25519 signatures")
     (description
@@ -25281,8 +24683,7 @@ key.
         (base32 "1f0357a6g1h96sk6wy030xmc1p4rd80a999qvxd28v7nlm1blsqy"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-six" ,python-six)
-       ("python-pynacl" ,python-pynacl)))
+     (list python-six python-pynacl))
     (home-page "https://github.com/ecordell/pymacaroons")
     (synopsis "Python Macaroon Library")
     (description
@@ -25319,10 +24720,9 @@ enforcement of that policy.")
                         (invoke "nosetests" "-s" "test"))
                       #t)))))
     (native-inputs
-     `(("python-nose" ,python-nose)))
+     (list python-nose))
     (propagated-inputs
-     `(("python-gssapi" ,python-gssapi)
-       ("python-pyasn1" ,python-pyasn1)))
+     (list python-gssapi python-pyasn1))
     (synopsis "Python LDAP client")
     (description
      "LDAP3 is a strictly RFC 4510 conforming LDAP V3 pure Python client
@@ -25397,23 +24797,21 @@ tbutils
                 "_test_logCallsDefaultLoggerWrite"))
              #t)))))
     (propagated-inputs
-     `(("python-boltons" ,python-boltons)
-       ("python-pyrsistent" ,python-pyrsistent)
-       ("python-six" ,python-six)
-       ("python-zope-interface" ,python-zope-interface)))
+     (list python-boltons python-pyrsistent python-six
+           python-zope-interface))
     (native-inputs
-     `(("python-black" ,python-black)
-       ("python-coverage" ,python-coverage)
-       ("python-dask" ,python-dask)
-       ("python-flake8" ,python-flake8)
-       ("python-hypothesis" ,python-hypothesis)
-       ("python-pytest" ,python-pytest)
-       ("python-setuptools" ,python-setuptools)
-       ("python-sphinx" ,python-sphinx)
-       ("python-sphinx-rtd-theme" ,python-sphinx-rtd-theme)
-       ("python-testtools" ,python-testtools)
-       ("python-twine" ,python-twine)
-       ("python-twisted" ,python-twisted)))
+     (list python-black
+           python-coverage
+           python-dask
+           python-flake8
+           python-hypothesis
+           python-pytest
+           python-setuptools
+           python-sphinx
+           python-sphinx-rtd-theme
+           python-testtools
+           python-twine
+           python-twisted))
     (home-page "https://github.com/itamarst/eliot/")
     (synopsis "Eliot: the logging system that tells you why it happened")
     (description
@@ -25436,13 +24834,13 @@ happened, and what caused it.")
          "1xh88ss279fprxnzd10dczmqwjhppbyvljm33zrg2mgybwd66qr7"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-certifi" ,python-certifi)
-       ("python-coverage" ,python-coverage)
-       ("python-pretend" ,python-pretend)
-       ("python-pyopenssl" ,python-pyopenssl)
-       ("python-pytest" ,python-pytest)
-       ("python-sphinx" ,python-sphinx)
-       ("python-twisted" ,python-twisted)))
+     (list python-certifi
+           python-coverage
+           python-pretend
+           python-pyopenssl
+           python-pytest
+           python-sphinx
+           python-twisted))
     (home-page "https://pem.readthedocs.io/")
     (synopsis "Easy PEM file parsing in Python")
     (description
@@ -25468,9 +24866,7 @@ happened, and what caused it.")
            "0imfxx4yjj1lbq0n5ad45al3wvv4qv96sivnc1r51i66mxi658z8"))))
       (build-system python-build-system)
       (propagated-inputs
-       `(("python-pyopenssl" ,python-pyopenssl)
-         ("python-service-identity" ,python-service-identity)
-         ("python-twisted" ,python-twisted)))
+       (list python-pyopenssl python-service-identity python-twisted))
       (synopsis "Run TLS servers with Twisted")
       (description
        "This package provides an easy-to-use SNI endpoint for use
@@ -25489,23 +24885,22 @@ with the Twisted web framework.")
         (base32 "1cplx4llq7i508w6fgwjdv9di7rsz9k9irfmzdfbiz6q6a0ykf1d"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-acme" ,python-acme)
-       ("python-attrs" ,python-attrs)
-       ("python-eliot" ,python-eliot)
-       ("python-josepy" ,python-josepy)
-       ("python-pem" ,python-pem)
-       ("python-treq" ,python-treq)
-       ("python-twisted" ,python-twisted)
-       ("python-txsni" ,python-txsni)))
+     (list python-acme
+           python-attrs
+           python-eliot
+           python-josepy
+           python-pem
+           python-treq
+           python-twisted
+           python-txsni))
     (native-inputs
-     `(("python-fixtures" ,python-fixtures)
-       ("python-hypothesis" ,python-hypothesis)
-       ("python-mock" ,python-mock)
-       ("python-service-identity"
-        ,python-service-identity)
-       ("python-testrepository" ,python-testrepository)
-       ("python-testscenarios" ,python-testscenarios)
-       ("python-testtools" ,python-testtools)))
+     (list python-fixtures
+           python-hypothesis
+           python-mock
+           python-service-identity
+           python-testrepository
+           python-testscenarios
+           python-testtools))
     (home-page "https://github.com/twisted/txacme")
     (synopsis "Twisted implexmentation of the ACME protocol")
     (description
@@ -25531,16 +24926,15 @@ networking engine for Python.")
          "1xk2x0slz1f8cqv7vn77qx99xfd1mshhswiwrljk9m72w2m9iivd"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-cryptography" ,python-cryptography)
-       ("python-dateutil" ,python-dateutil)
-       ("python-defusedxml" ,python-defusedxml)
-       ("python-importlib-resources"
-        ,python-importlib-resources)
-       ("python-pyopenssl" ,python-pyopenssl)
-       ("python-pytz" ,python-pytz)
-       ("python-requests" ,python-requests)
-       ("python-six" ,python-six)
-       ("python-xmlschema" ,python-xmlschema)))
+     (list python-cryptography
+           python-dateutil
+           python-defusedxml
+           python-importlib-resources
+           python-pyopenssl
+           python-pytz
+           python-requests
+           python-six
+           python-xmlschema))
     (home-page "https://idpy.org")
     (synopsis "Python implementation of SAML Version 2 Standard")
     (description
@@ -25564,9 +24958,9 @@ there are extensions that allow you to use it with other frameworks.")
         (base32 "0jr6bxj67vg988vkm6nz8jj98v9lg46bn49lkhak3n598jbrkas6"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (propagated-inputs
-     `(("python-click" ,python-click)))
+     (list python-click))
     (synopsis "Extension for Click to register external CLI commands")
     (description "This package provides n extension module for Click to
 register external CLI commands via setuptools entry-points.")
@@ -25586,9 +24980,7 @@ register external CLI commands via setuptools entry-points.")
          "0klb0ysybzlh2wihvir82hgq62v0jjmlcqklwajyms7c0p529yby"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-coverage" ,python-coverage)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-runner" ,python-pytest-runner)))
+     (list python-coverage python-pytest python-pytest-runner))
     (home-page "https://github.com/ulif/diceware/")
     (synopsis "Generates memorable passphrases")
     (description "This package generates passphrases by concatenating words
@@ -25650,7 +25042,7 @@ dictionaries.")
        ;; symbol: objc_getClass".
        #:tests? #f))
     (propagated-inputs
-     `(("python-pyqt" ,python-pyqt)))
+     (list python-pyqt))
     (home-page "https://pyzo.org")
     (synopsis
      "Python IDE for scientific computing")
@@ -25698,7 +25090,7 @@ Open Sound Control 1.0} specification.")
             "0mplkcpb5d8wjf8vk195fys4y6a3wbibiyf708imw33lphfk9g1a"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-nose" ,python-nose)))
+     (list python-nose))
     (home-page "https://github.com/alecthomas/voluptuous")
     (synopsis "Python data validation library")
     (description
@@ -25719,27 +25111,24 @@ intended for validating data coming into Python as JSON, YAML, etc.")
          "1f18plbc9yyvhn0js3d2bii9yld8zfl775gxsaw9jza5pmlg9ss2"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-attrs" ,python-attrs)
-       ("python-colorama" ,python-colorama)
-       ("python-pyperclip" ,python-pyperclip)
-       ("python-wcwidth" ,python-wcwidth)))
+     (list python-attrs python-colorama python-pyperclip python-wcwidth))
     (native-inputs
-     `(("python-codecov" ,python-codecov)
-       ("python-coverage" ,python-coverage)
-       ("python-doc8" ,python-doc8)
-       ("python-flake8" ,python-flake8)
-       ("python-invoke" ,python-invoke)
-       ("python-mock" ,python-mock)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)
-       ("python-pytest-mock" ,python-pytest-mock)
-       ("python-setuptools-scm" ,python-setuptools-scm)
-       ("python-sphinx" ,python-sphinx)
-       ("python-sphinx-autobuild" ,python-sphinx-autobuild)
-       ("python-sphinx-rtd-theme" ,python-sphinx-rtd-theme)
-       ("python-tox" ,python-tox)
-       ("python-twine" ,python-twine)
-       ("which" ,which)))
+     (list python-codecov
+           python-coverage
+           python-doc8
+           python-flake8
+           python-invoke
+           python-mock
+           python-pytest
+           python-pytest-cov
+           python-pytest-mock
+           python-setuptools-scm
+           python-sphinx
+           python-sphinx-autobuild
+           python-sphinx-rtd-theme
+           python-tox
+           python-twine
+           which))
     (home-page "https://github.com/python-cmd2/cmd2")
     (synopsis "Tool for building interactive command line applications")
     (description
@@ -25773,7 +25162,7 @@ be necessary when using @code{cmd}.")
                  (("ctypes\\.util\\.find_library\\('tidy'\\)")
                   (format #f "'~a'" libtidy)))
                #t))))))
-    (inputs `(("tidy" ,tidy)))
+    (inputs (list tidy))
     (home-page "https://github.com/countergram/pytidylib")
     (synopsis "Python wrapper for HTML Tidy library")
     (description
@@ -25861,7 +25250,7 @@ For the most part it's transliterated from C, the major differences are:
                #t))))
        #:tests? #f)) ; _curses.error: setupterm: could not find terminal
     (native-inputs
-     `(("ncurses" ,ncurses)))
+     (list ncurses))
     (home-page "https://github.com/Rockhopper-Technologies/jinxed")
     (synopsis "Jinxed Terminal Library")
     (description
@@ -25881,7 +25270,7 @@ For the most part it's transliterated from C, the major differences are:
          "0lz0w2ajdvwd269a7ppnzawmx8px0116j0nx8xvhlihxrd28zx4y"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-lxml" ,python-lxml)))
+     (list python-lxml))
     (home-page "https://svgutils.readthedocs.io")
     (synopsis "Python SVG editor")
     (description "This is an utility package that helps with editing and
@@ -25908,12 +25297,9 @@ placement and scaling of SVG figures and adding markers, such as labels.")
             (delete-file "blessed/win_terminal.py") #t))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-jinxed" ,python-jinxed)
-       ("python-six" ,python-six)
-       ("python-wcwidth" ,python-wcwidth)))
+     (list python-jinxed python-six python-wcwidth))
     (native-inputs
-     `(("python-mock" ,python-mock)
-       ("python-pytest" ,python-pytest)))
+     (list python-mock python-pytest))
     (home-page "https://github.com/jquast/blessed")
     (synopsis "Wrapper around terminal capabilities")
     (description
@@ -25934,13 +25320,9 @@ positioning, and keyboard input.")
           "13fnrv7z3y0yfafzcjbl55cqxncvbxadr72ql4l29pgyvrqxpsfb"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-bleach" ,python-bleach)
-       ("python-docutils" ,python-docutils)
-       ("python-pygments" ,python-pygments)
-       ("python-six" ,python-six)))
+     (list python-bleach python-docutils python-pygments python-six))
     (native-inputs
-     `(("python-mock" ,python-mock)
-       ("python-pytest" ,python-pytest)))
+     (list python-mock python-pytest))
     (home-page "https://github.com/pypa/readme_renderer")
     (synopsis "Render README files in Warehouse")
     (description
@@ -25969,9 +25351,9 @@ and plain text.")
            (lambda _
              (invoke "python" "setup.py" "nosetests"))))))
     (native-inputs
-     `(("python-nose" ,python-nose)))
+     (list python-nose))
     (propagated-inputs
-     `(("python-zope-interface" ,python-zope-interface)))
+     (list python-zope-interface))
     (home-page "https://launchpad.net/lazr.delegates")
     (synopsis "Easily write objects that delegate behavior")
     (description
@@ -26000,10 +25382,9 @@ and delegating behavior.")
            (lambda _
              (invoke "python" "-s" "-m" "nose" "-P" "lazr"))))))
     (native-inputs
-     `(("python-nose" ,python-nose)))
+     (list python-nose))
     (propagated-inputs
-     `(("python-lazr-delegates" ,python-lazr-delegates)
-       ("python-zope-interface" ,python-zope-interface)))
+     (list python-lazr-delegates python-zope-interface))
     (home-page "https://launchpad.net/lazr.config")
     (synopsis "Create configuration schemas and process and validate configurations")
     (description
@@ -26028,10 +25409,9 @@ validation.")
           "01lg1b0jpf8605mzaz9miq3nray6s7a7gc8n4wzg5nsxl8fglcp4"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-atpublic" ,python-atpublic)
-       ("python-zope-interface" ,python-zope-interface)))
+     (list python-atpublic python-zope-interface))
     (native-inputs
-     `(("python-nose2" ,python-nose2)))
+     (list python-nose2))
     (home-page "https://fluflbounce.readthedocs.io/en/latest/")
     (synopsis "Email bounce detectors")
     (description "The @code{flufl.bounce} library provides a set of heuristics
@@ -26054,7 +25434,7 @@ RFC 3464.")
           "1flwpn1xhgc957zj3zxw92dhdjh0lsy0hdvzq32dzqpsajfsvq1r"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-atpublic" ,python-atpublic)))
+     (list python-atpublic))
     (home-page "https://flufli18n.readthedocs.io")
     (synopsis "API for Python internationalization")
     (description
@@ -26080,8 +25460,7 @@ different tasks.")
           "055941zyma3wfx25jhm8wcsghpv3jc3iwi1gdrdjhzcnfhn62lxq"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-atpublic" ,python-atpublic)
-       ("python-psutil" ,python-psutil)))
+     (list python-atpublic python-psutil))
     (home-page "https://flufllock.readthedocs.io")
     (synopsis "NFS-safe file locking with timeouts for POSIX systems")
     (description
@@ -26105,7 +25484,7 @@ and have a maximum lifetime built-in.")
           "1nkm95mhcfhl4x5jgs6y97ikszaxsfh07nyawsih6cxxm6l62641"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-nose2" ,python-nose2)))
+     (list python-nose2))
     (home-page "https://gitlab.com/warsaw/flufl.testing")
     (synopsis "Collection of test tool plugins")
     (description
@@ -26128,10 +25507,9 @@ and have a maximum lifetime built-in.")
         (base32 "15zczdcm90wl54c68f1qjb05nkd5bjsc9xjl3lk4frs7k7wkmrvp"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-pytest-mock" ,python-pytest-mock)))
+     (list python-pytest python-pytest-mock))
     (propagated-inputs
-     `(("python-pygments" ,python-pygments)))
+     (list python-pygments))
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (replace 'check
@@ -26158,15 +25536,10 @@ It adds a simple and readable way to print stuff during development.")
          "1ypbyqxlk7n6zibk90js3ybz37xmin3kk0i35g8c51bwqpcfyxg8"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-dateutil" ,python-dateutil)
-       ("python-pytz" ,python-pytz)
-       ("python-regex" ,python-regex)
-       ("python-ruamel.yaml" ,python-ruamel.yaml)
-       ("python-tzlocal" ,python-tzlocal)))
+     (list python-dateutil python-pytz python-regex python-ruamel.yaml
+           python-tzlocal))
     (native-inputs
-     `(("python-mock" ,python-mock)
-       ("python-parameterized" ,python-parameterized)
-       ("tzdata" ,tzdata-for-tests)))
+     (list python-mock python-parameterized tzdata-for-tests))
     (arguments
      `(;; TODO: Of 23320 tests, 6 fail and 53 error.
        #:tests? #f
@@ -26199,11 +25572,9 @@ dates in almost any string formats commonly found on web pages.")
             "0rzkg3nymsbwdjc0ms2bsajkda02jipwyp3xk97qj71f21lz3dd1"))))
     (build-system python-build-system)
     (native-inputs
-      `(("python-pytest" ,python-pytest)))
+      (list python-pytest))
     (propagated-inputs
-      `(("python-packaging" ,python-packaging)
-        ("python-pyyaml" ,python-pyyaml)
-        ("python-toml" ,python-toml)))
+      (list python-packaging python-pyyaml python-toml))
     (home-page "https://github.com/pyupio/dparse")
     (synopsis "Parser for Python dependency files")
     (description "This package provides a parser for Python dependency files.")
@@ -26222,9 +25593,7 @@ dates in almost any string formats commonly found on web pages.")
          "1ymi9ssk7i0mx3mviplf4csfvzibdd6wyj4qzj6s487n9xgnp85y"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-hypothesis" ,python-hypothesis)
-       ("python-mock" ,python-mock)
-       ("python-nose" ,python-nose)))
+     (list python-hypothesis python-mock python-nose))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
@@ -26267,10 +25636,7 @@ facility for filtering those results.")
                (("def test_check_live") "def _test_check_live"))
              #t)))))
     (propagated-inputs
-      `(("python-click" ,python-click)
-        ("python-dparse" ,python-dparse)
-        ("python-packaging" ,python-packaging)
-        ("python-requests" ,python-requests)))
+      (list python-click python-dparse python-packaging python-requests))
     (home-page "https://github.com/pyupio/safety")
     (synopsis "Check installed dependencies for known vulnerabilities")
     (description "Safety checks installed dependencies for known vulnerabilities.
@@ -26290,7 +25656,7 @@ By default it uses the open Python vulnerability database Safety DB.")
          "149basv4pvzg9zm74cjz68x8s2n5fykyj7prgysb0qfmja73r83f"))))
     (build-system python-build-system)
     (inputs
-     `(("pandoc" ,pandoc)))
+     (list pandoc))
     (propagated-inputs
      `(("wheel" ,python-wheel)))
     (native-inputs
@@ -26330,7 +25696,7 @@ and pandoc-citeproc.")
          "1kmp3iwxxyzjsd47j2sprd47ihhkwhb3yydih3af5bbfq0ibh1w8"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-rply" ,python-rply)))
+     (list python-rply))
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (replace 'check
@@ -26367,12 +25733,9 @@ equivalent schemata in the XML-based default RELAX NG syntax.")
                (invoke "py.test" "-v"))
              #t)))))
     (propagated-inputs
-     `(("python-rsa" ,python-rsa)
-       ("python-pyaes" ,python-pyaes)))
+     (list python-rsa python-pyaes))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-pytest-asyncio" ,python-pytest-asyncio)
-       ("python-pytest-trio" ,python-pytest-trio)))
+     (list python-pytest python-pytest-asyncio python-pytest-trio))
     (home-page "https://docs.telethon.dev")
     (synopsis "Full-featured Telegram client library for Python 3")
     (description "This library is designed to make it easy to write Python
@@ -26392,8 +25755,7 @@ programs that can interact with Telegram.")
          "00aaff50jy4j0nakdzq9258z1gzrac9baarli2ymgspj88jg5968"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-lxml" ,python-lxml)
-       ("python-rnc2rng" ,python-rnc2rng)))
+     (list python-lxml python-rnc2rng))
     (home-page
      "https://github.com/brechtm/citeproc-py")
     (synopsis "Citations and bibliography formatter")
@@ -26419,12 +25781,9 @@ are plain text, reStructuredText and HTML.")
     (arguments
      `(#:tests? #f))  ; PyPI tarball lacks tests
     (native-inputs
-      `(("python-hypothesis" ,python-hypothesis)
-        ("python-pytest-cov" ,python-pytest-cov)
-        ("python-pytest-runner" ,python-pytest-runner)))
+      (list python-hypothesis python-pytest-cov python-pytest-runner))
     (propagated-inputs
-      `(("python-arrow" ,python-arrow)
-        ("python-six" ,python-six)))
+      (list python-arrow python-six))
     (home-page "https://inform.readthedocs.io")
     (synopsis "Print & logging utilities for communicating with user")
     (description
@@ -26448,7 +25807,7 @@ cleanly print different types of messages.")
     (arguments
      `(#:tests? #f))  ; PyPI tarball lacks tests
     (propagated-inputs
-      `(("python-inform" ,python-inform)))
+      (list python-inform))
     (home-page "https://nestedtext.org")
     (synopsis "Human readable and writable data interchange format")
     (description
@@ -26509,9 +25868,7 @@ module patches @code{asyncio} to allow nested use of @code{asyncio.run} and
                (invoke "pytest" "--maxfail" "3" "--verbose"))
              #t)))))
     (native-inputs
-     `(("python-aiohttp" ,python-aiohttp)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-asyncio" ,python-pytest-asyncio)))
+     (list python-aiohttp python-pytest python-pytest-asyncio))
     (home-page "https://github.com/yuvipanda/simpervisor")
     (synopsis "Simple async process supervisor")
     (description
@@ -26532,7 +25889,7 @@ module patches @code{asyncio} to allow nested use of @code{asyncio.run} and
         (base32
          "1mzk4yabxj6r149fswhis18hd8dnag5sj8i4wb06450zq3pi8dh7"))))
     (native-inputs
-     `(("unzip" ,unzip)))
+     (list unzip))
     (build-system python-build-system)
     (arguments '(#:tests? #f))  ; No test suite.
     (home-page "https://www.parallelpython.com")
@@ -26560,12 +25917,9 @@ applications with variable CPU loads).")
         (base32 "089smpq29ll0z37lnq26r2f72d31i33xm9fw9pc6hlcsm6nbjbiv"))))
     (build-system python-build-system)
     (native-inputs
-     `(("ghostscript" ,ghostscript)
-       ("pkg-config" ,pkg-config)
-       ("python-nose" ,python-nose)))
+     (list ghostscript pkg-config python-nose))
     (inputs
-     `(("djvulibre" ,djvulibre)
-       ("python-cython" ,python-cython)))
+     (list djvulibre python-cython))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -26627,9 +25981,7 @@ process.")
                        "src/zlib-1.2.8"))))))
     (build-system python-build-system)
     (inputs
-     `(("libpng" ,libpng)
-       ("libtiff" ,libtiff)
-       ("zlib" ,zlib)))
+     (list libpng libtiff zlib))
     (arguments
      `(#:python ,python-2
        #:phases
@@ -26658,7 +26010,7 @@ process.")
             "17n3w8c20kgkgc6khaafdhhlcdj4bzman4paxqsl7harma59137k"))))
     (build-system python-build-system)
     (propagated-inputs
-      `(("python-immutables" ,python-immutables)))
+      (list python-immutables))
     (home-page
       "https://github.com/MagicStack/contextvars")
     (synopsis "PEP 567 Backport")
@@ -26697,9 +26049,7 @@ disk files in asyncio applications.")
             "0c5cbbqrfyjwakdh3kbwxis6mbrbwky1z1fqslgszgpcj4g43q30"))))
     (build-system python-build-system)
     (propagated-inputs
-      `(("python-typing-extensions"
-         ,python-typing-extensions)
-        ("python-typing-inspect" ,python-typing-inspect)))
+      (list python-typing-extensions python-typing-inspect))
     (home-page "https://pyre-check.org")
     (synopsis
      "Type system extensions for use with @code{python-pyre}")
@@ -26772,9 +26122,9 @@ query Watchman to discover file changes.")
                (invoke "pytest" "tests"))
              #t)))))
     (propagated-inputs
-     `(("python-importlib-metadata" ,python-importlib-metadata)))
+     (list python-importlib-metadata))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://gitlab.com/dpizetta/helpdev")
     (synopsis
      "Extract information about the Python environment easily")
@@ -26816,10 +26166,9 @@ older versions of Python and so are packaged here.")
                 "1d2j64wgbggzv5rhvil10zndp2w78wa5np5w0psj122ws9qr9wsa"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-mock" ,python-mock)))
+     (list python-mock))
     (propagated-inputs
-     `(("python-logutils" ,python-logutils)
-       ("python-pyyaml" ,python-pyyaml)))
+     (list python-logutils python-pyyaml))
     (home-page "https://github.com/gmr/helper")
     (synopsis "Library for writing configurable applications and daemons")
     (description
@@ -26852,11 +26201,9 @@ applications and daemons.")
              (for-each make-file-writable (find-files "."))
              #t)))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)
-       ("python-pytest-runner" ,python-pytest-runner)))
+     (list python-pytest python-pytest-cov python-pytest-runner))
     (propagated-inputs
-     `(("python-libsass" ,python-libsass)))
+     (list python-libsass))
     (home-page "https://github.com/spyder-ide/qtsass")
     (synopsis "Compile SCSS files to valid Qt stylesheets")
     (description
@@ -26885,8 +26232,7 @@ handling those variations.")
        ;; added as native-inputs.
        #:tests? #f))
     (propagated-inputs
-     `(("python-helpdev" ,python-helpdev)
-       ("python-qtpy" ,python-qtpy)))
+     (list python-helpdev python-qtpy))
     (home-page
      "https://github.com/ColinDuquesnoy/QDarkStyleSheet")
     (synopsis
@@ -26918,7 +26264,7 @@ Qt applications.")
                  (invoke "pytest")))
              #t)))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://github.com/scott-griffiths/bitstring")
     (synopsis
      "Simple construction, analysis and modification of binary data")
@@ -26940,7 +26286,7 @@ Qt applications.")
          "0bh2kyj8wd7h9gg4nsvrbykl5ly0f70f0wi3fbm204b1f0fcmywj"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-pyyaml" ,python-pyyaml)))
+     (list python-pyyaml))
     (home-page "https://github.com/beetbox/confuse")
     (synopsis "Painless YAML configuration")
     (description "Confuse is a configuration library for Python that uses
@@ -26963,10 +26309,9 @@ integration, human-readable errors, and standard OS-specific locations.")
     (arguments
      `(#:tests? #false)) ; almost all tests want to run mkfs.btrfs
     (propagated-inputs
-     `(("python-cffi" ,python-cffi)))
+     (list python-cffi))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-pytest-runner" ,python-pytest-runner)))
+     (list python-pytest python-pytest-runner))
     (home-page "https://gitlab.com/rubdos/pyreflink")
     (synopsis "Python wrapper around reflink system call")
     (description
@@ -27001,16 +26346,15 @@ implementations.")
                            "${Coin_INCLUDE_DIR};${SoQt_INCLUDE_DIRS}"))
              #t)))))
     (native-inputs
-      `(("cmake" ,cmake)
-        ("swig" ,swig)))
+      (list cmake swig))
     (inputs
-      `(("python-wrapper" ,python-wrapper)
-        ("qtbase" ,qtbase-5)
-        ("libxi" ,libxi)
-        ("libice" ,libice)
-        ("soqt" ,soqt)
-        ("glew" ,glew)
-        ("coin3D" ,coin3D-4)))
+      (list python-wrapper
+            qtbase-5
+            libxi
+            libice
+            soqt
+            glew
+            coin3D-4))
     (home-page "https://github.com/coin3d/pivy")
     (synopsis "Python bindings to Coin3D")
     (description
@@ -27031,7 +26375,7 @@ Application Programming Interface based on the Open Inventor 2.1 API.")
           "0gw106k4b6y8mw7pp52awxyplj2bwvwk315k4sywzwh0g1abfcxx"))))
     (build-system python-build-system)
     (propagated-inputs
-      `(("python-colorama" ,python-colorama)))
+      (list python-colorama))
     (home-page "https://github.com/MasterOdin/crayons")
     (synopsis "TextUI colors for Python")
     (description "This package gives you colored strings for the terminal.
@@ -27052,9 +26396,9 @@ restores the original state after the string is printed.")
          "1pi597z94n2mkd821ln52fq0g727n2jxfskf280ip3kf7jw8w294"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (inputs
-     `(("sane-backends" ,sane-backends)))
+     (list sane-backends))
     (home-page "https://github.com/python-pillow/Sane")
     (synopsis "Python interface to the SANE scanner")
     (description "This package provides Python interface to the SANE scanner
@@ -27100,15 +26444,15 @@ and frame grabber interface.")
                 `("GI_TYPELIB_PATH"
                   ":" prefix (,(getenv "GI_TYPELIB_PATH")))))))))
     (inputs
-     `(("python-distutils-extra" ,python-distutils-extra)
-       ("python-tokenize-rt" ,python-tokenize-rt)
-       ("libx11" ,libx11)
-       ("libxtst" ,libxtst)
-       ("gtk+" ,gtk+)
-       ("python-pygobject" ,python-pygobject)
-       ("python-pycairo" ,python-pycairo)
-       ("python-setuptools-git" ,python-setuptools-git)
-       ("python-babel" ,python-babel)))
+     (list python-distutils-extra
+           python-tokenize-rt
+           libx11
+           libxtst
+           gtk+
+           python-pygobject
+           python-pycairo
+           python-setuptools-git
+           python-babel))
     (home-page "https://www.thregr.org/~wavexx/software/screenkey/")
     (synopsis
       "Screencast tool to display pressed keys")
@@ -27130,11 +26474,9 @@ Screenflick.")
             "0vikx7v6fbvww6kfrv0k5a24jyv3ak7nindg60906pdd1m9qvkcw"))))
     (build-system python-build-system)
     (propagated-inputs
-      `(("python-jinja2" ,python-jinja2)))
+      (list python-jinja2))
     (native-inputs
-      `(("python-flake8" ,python-flake8)
-        ("python-jinja2" ,python-jinja2)
-        ("python-pytest" ,python-pytest)))
+      (list python-flake8 python-jinja2 python-pytest))
     (home-page "https://github.com/mattrobenolt/jinja2-cli")
     (synopsis "Command-line interface to Jinja2")
     (description
@@ -27212,9 +26554,7 @@ iGoogle subscription lists.")
              (invoke "nosetests" "-v" "--exclude=^load_tests$"))))))
     (native-inputs
      ;; For tests.
-     `(("python-docutils" ,python-docutils)
-       ("python-nose" ,python-nose)
-       ("python-pygments" ,python-pygments)))
+     (list python-docutils python-nose python-pygments))
     (home-page "https://github.com/leohemsted/smartypants.py")
     (synopsis "Translate punctuation characters into smart quotes")
     (description
@@ -27246,10 +26586,10 @@ entities
            (lambda _
              (invoke "nosetests" "-v"))))))
     (propagated-inputs
-     `(("python-smartypants" ,python-smartypants)))
+     (list python-smartypants))
     (native-inputs
      ;; For tests.
-     `(("python-nose" ,python-nose)))
+     (list python-nose))
     (home-page "https://github.com/mintchaos/typogrify")
     (synopsis "Filters to transform text into typographically-improved HTML")
     (description
@@ -27272,7 +26612,7 @@ Django template systems, the filters can be used in any environment.")
          "1k4ydp5rgkv4985v459kcl06i1igjm1ywvh2vkbi9ck1zyyri1z5"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-six" ,python-six)))
+     (list python-six))
     (home-page "https://github.com/nir0s/ld")
     (synopsis "OS platform information API")
     (description
@@ -27311,8 +26651,7 @@ runs on, such as a reliable machine-readable ID, or version information.")
                (invoke "pytest"))
              #t)))))
     (native-inputs
-     `(("python-cython" ,python-cython)
-       ("python-pytest" ,python-pytest)))
+     (list python-cython python-pytest))
     (home-page "https://github.com/scoder/quicktions")
     (synopsis "Fast fractions data type for rational numbers")
     (description
@@ -27337,10 +26676,7 @@ is the cythonized version of @code{fractions.Fraction}.")
     ;; pathvalidate tests depend on pytest-md-report, which
     ;; depends on pathvalidate.
     (native-inputs
-     `(("python-allpairspy" ,python-allpairspy)
-       ("python-click" ,python-click)
-       ("python-faker" ,python-faker)
-       ("python-pytest" ,python-pytest)))
+     (list python-allpairspy python-click python-faker python-pytest))
     (home-page "https://github.com/thombashi/pathvalidate")
     (synopsis "Sanitize strings representing paths")
     (description
@@ -27381,9 +26717,7 @@ result.")
          "0rvdd2ikdr0yg6cx6594fdzn53cmdc0g0i6qsbcdq8i2kxjdpd5x"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-commonmark" ,python-commonmark)
-       ("python-docutils" ,python-docutils)
-       ("python-sphinx" ,python-sphinx)))
+     (list python-commonmark python-docutils python-sphinx))
     (arguments
      '(#:phases (modify-phases %standard-phases
                   (add-after 'unpack 'delete-test-sphinx
@@ -27410,7 +26744,7 @@ lets you write CommonMark inside of Docutils & Sphinx projects.")
          "091sph52c4yk1jlm5w8xidxpzbia9r7s42bnb23q4m4b56ihmzyj"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-numpy" ,python-numpy)))
+     (list python-numpy))
     (home-page "https://github.com/materialsvirtuallab/pyhull")
     (synopsis "Python wrapper to Qhull")
     (description
@@ -27477,11 +26811,9 @@ and BMI2).")
                         (when tests?
                           (invoke "python" "setup.py" "nosetests")))))))
       (native-inputs
-       `(("python-nose" ,python-nose)
-         ("python-rednose" ,python-rednose)))
+       (list python-nose python-rednose))
       (propagated-inputs
-       `(("python-six" ,python-six)
-         ("python-opcodes" ,python-opcodes)))
+       (list python-six python-opcodes))
       (synopsis "Efficient assembly code generation in Python")
       (description
        "PeachPy is a Python framework for writing high-performance assembly kernels.
@@ -27532,11 +26864,8 @@ Generalized Mark-up Language}.")
          "1azrphpkcyggg38xvkfb9dpc4xmmm90p02kf8dkqd4d6j5w96aj8"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-cython" ,python-cython)
-       ("python-pytest" ,python-pytest)
-       ("python-setuptools-scm" ,python-setuptools-scm)
-       ("python-toml" ,python-toml)
-       ("python-wheel" ,python-wheel)))
+     (list python-cython python-pytest python-setuptools-scm python-toml
+           python-wheel))
     (home-page
      "https://github.com/sebastinas/cwcwidth")
     (synopsis "Python bindings for wc(s)width")
@@ -27573,11 +26902,9 @@ functions defined in POSIX.1-2001 and POSIX.1-2008.")
                        (string-append (getcwd) ":" (getenv "GUIX_PYTHONPATH")))
                (invoke "pytest")))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)
-       ("python-wheel" ,python-wheel)))
+     (list python-pytest python-pytest-cov python-wheel))
     (propagated-inputs
-     `(("python-jinja2" ,python-jinja2)))
+     (list python-jinja2))
     (home-page "https://github.com/Technologicat/pyan")
     (synopsis "Offline call graph generator for Python 3")
     (description "Pyan takes one or more Python source files, performs
@@ -27598,7 +26925,7 @@ graph can be output for rendering by GraphViz or yEd.")
         (base32
          "1slblghfjg9fdi9zpd7gmrkvfbv20nrdgnrymcnbky8bzm8i9ax7"))))
     (build-system python-build-system)
-    (propagated-inputs `(("python-six" ,python-six)))
+    (propagated-inputs (list python-six))
     (home-page "https://github.com/mrocklin/multipledispatch/")
     (synopsis "Multiple dispatch for Python based on pattern matching")
     (description "This library provides an efficient mechanism for overloading
@@ -27618,8 +26945,7 @@ function implementations based on the types of the arguments.")
          "0j57953hi7kg2rl0163vzjzsvzdyjimnklhx6idf5vaqqf1d3p1j"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-multipledispatch" ,python-multipledispatch)
-       ("python-toolz" ,python-toolz)))
+     (list python-multipledispatch python-toolz))
     (home-page "https://github.com/pythological/unification/")
     (synopsis "Logical unification in Python for solving symbolic expressions")
     (description "This library provides algorithms and data types for solving
@@ -27639,10 +26965,9 @@ symbolic expressions in pure Python using the technique of logical unification."
          "0w9giq196wps7mbm47c4shdzs5yvwvqajqzkim2p92i51sm5qgvm"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest" ,python-pytest-6)
-       ("python-toml" ,python-toml)))
+     (list python-pytest-6 python-toml))
     (propagated-inputs
-     `(("python-logical-unification" ,python-logical-unification)))
+     (list python-logical-unification))
     (home-page "https://github.com/pythological/python-cons")
     (synopsis "Cons cell data structures and related algorithms for Python")
     (description
@@ -27663,8 +26988,7 @@ cons cells in Python.")
          "0jhfyp177v37rl0i7wqfx7q6s5qkz027hl283d1x8d0vm3w0zqc8"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-cons" ,python-cons)
-       ("python-multipledispatch" ,python-multipledispatch)))
+     (list python-cons python-multipledispatch))
     (home-page "https://github.com/pythological/etuples")
     (synopsis "S-expressions in Python")
     (description
@@ -27693,22 +27017,19 @@ cons cells in Python.")
                         (invoke "python" "-m" "pytest" "-v" "tests/" "kanren/"))
                       #t)))))
     (native-inputs
-     `(("python-coveralls" ,python-coveralls)
-       ("python-pydocstyle" ,python-pydocstyle)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)
-       ("python-pylint" ,python-pylint)
-       ("python-black" ,python-black)
-       ("python-sympy" ,python-sympy)
-       ("python-versioneer" ,python-versioneer)
-       ("python-coverage" ,python-coverage)
-       ("python-pre-commit" ,python-pre-commit)))
+     (list python-coveralls
+           python-pydocstyle
+           python-pytest
+           python-pytest-cov
+           python-pylint
+           python-black
+           python-sympy
+           python-versioneer
+           python-coverage
+           python-pre-commit))
     (propagated-inputs
-     `(("python-toolz" ,python-toolz)
-       ("python-cons" ,python-cons)
-       ("python-multipledispatch" ,python-multipledispatch)
-       ("python-etuples" ,python-etuples)
-       ("python-logical-unification" ,python-logical-unification)))
+     (list python-toolz python-cons python-multipledispatch
+           python-etuples python-logical-unification))
     (home-page "https://github.com/pythological/kanren")
     (synopsis "Relational logic programming in pure Python")
     (description
@@ -27740,11 +27061,9 @@ systems in Python.")
                (delete-file "tests/test_ipython.py")
                (invoke "python" "-m" "pytest")))))))
     (propagated-inputs
-     `(("python-click" ,python-click)))
+     (list python-click))
     (native-inputs
-     `(("python-mock" ,python-mock)
-       ("python-pytest" ,python-pytest)
-       ("python-sh" ,python-sh)))
+     (list python-mock python-pytest python-sh))
     (home-page "https://github.com/theskumar/python-dotenv")
     (synopsis "Setup environment variables according to .env files")
     (description
@@ -27812,7 +27131,7 @@ YYYY-MM-DD at the beginning of the file or directory name.")
         (base32 "19kli85q18p80nsn8fm4ql6axpr7bllfqg5chv2ywhr8zr8bssll"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-requests" ,python-requests)))
+     (list python-requests))
     (home-page
      "https://developers.braintreepayments.com/python/sdk/server/overview")
     (synopsis "Braintree Python Library")
@@ -27860,18 +27179,16 @@ pythonic way.")
                                       (getenv "GUIX_PYTHONPATH")))
                (invoke "pytest")))))))
     (native-inputs
-     `(("python-pandas" ,python-pandas)  ;; required for test-suite
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)
-       ("python-setuptools-scm" ,python-setuptools-scm)))
+     (list python-pandas ;; required for test-suite
+           python-pytest python-pytest-cov python-setuptools-scm))
     (propagated-inputs
-     `(("python-markuppy" ,python-markuppy)
-       ("python-odfpy" ,python-odfpy)
-       ("python-openpyxl" ,python-openpyxl)
-       ("python-pyyaml" ,python-pyyaml)
-       ("python-tabulate" ,python-tabulate)
-       ("python-xlrd" ,python-xlrd)
-       ("python-xlwt" ,python-xlwt)))
+     (list python-markuppy
+           python-odfpy
+           python-openpyxl
+           python-pyyaml
+           python-tabulate
+           python-xlrd
+           python-xlwt))
     (home-page "https://tablib.readthedocs.io")
     (synopsis "Format agnostic tabular data library")
     (description "@code{tablib} is a format-agnostic tabular dataset library,
@@ -27896,11 +27213,9 @@ install @code{python-pandas}.")
         (base32 "0r0csl9npncnkfafg3rg6xr38d1qr0sxvq7wn7mg9bq41hvvh1si"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-lxml" ,python-lxml)))
+     (list python-lxml))
     (propagated-inputs
-     `(("python-pycountry" ,python-pycountry)
-       ("python-pyyaml" ,python-pyyaml)
-       ("python-tablib" ,python-tablib)))
+     (list python-pycountry python-pyyaml python-tablib))
     (home-page "https://bitbucket.org/wmj/csb43")
     (synopsis "Tools for converting from the Spanish banks' format CSB norm
 43 (CSB43)")
@@ -27948,11 +27263,9 @@ account (CODA) files as defined be the Belgian Febelfin bank standard.")
              (when tests?
                (invoke "nosetests" "-v")))))))
     (native-inputs
-     `(("python-nose" ,python-nose)))
+     (list python-nose))
     (propagated-inputs
-     `(("python-beautifulsoup4" ,python-beautifulsoup4)
-       ("python-lxml" ,python-lxml)
-       ("python-six" ,python-six)))
+     (list python-beautifulsoup4 python-lxml python-six))
     (home-page "http://sites.google.com/site/ofxparse")
     (synopsis "Tools for working with the OFX (Open Financial Exchange) file
 format")
@@ -27977,7 +27290,7 @@ statements in OFX files.")
     (arguments
      '(#:tests? #f))  ;; tests require network
     (propagated-inputs
-     `(("python-requests" ,python-requests)))
+     (list python-requests))
     (home-page "https://github.com/stripe/stripe-python")
     (synopsis "Python bindings for the Stripe financial services' API")
     (description "This package provides access to the Stripe financial
@@ -27998,10 +27311,8 @@ compatible with a wide range of versions of the Stripe API.")
         (base32 "07hq5qrp7pqj63iczg01wbf5ii6f0ncd0dq5mzkdhsslmg9slbb3"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-appdirs" ,python-appdirs)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)
-       ("python-pytest-mock" ,python-pytest-mock)))
+     (list python-appdirs python-pytest python-pytest-cov
+           python-pytest-mock))
     (home-page "https://github.com/platformdirs/platformdirs")
     (synopsis "Determine the appropriate platform-specific directories")
     (description "When writing applications, finding the right location to
@@ -28061,9 +27372,9 @@ into a human readable HTML table representation.")
                (add-installed-pythonpath inputs outputs)
                (invoke "pytest" "-v")))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (propagated-inputs
-     `(("python-boltons" ,python-boltons)))
+     (list python-boltons))
     (home-page "https://github.com/mahmoud/face")
     (synopsis "CLI parsing and dispatching microframework")
     (description "@code{python-face} is a Pythonic microframework for building
@@ -28102,12 +27413,9 @@ command-line applications.
                                       ":" (getenv "PATH")))
                (invoke "pytest" "-v")))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-pyyaml" ,python-pyyaml)))
+     (list python-pytest python-pyyaml))
     (propagated-inputs
-     `(("python-attrs" ,python-attrs)
-       ("python-boltons" ,python-boltons)
-       ("python-face" ,python-face)))
+     (list python-attrs python-boltons python-face))
     (home-page "https://github.com/mahmoud/glom")
     (synopsis "Declaratively restructure data")
     (description "Real applications have real data, and real data
@@ -28135,9 +27443,7 @@ and powerful way to handle real-world data, featuring:
          "0jhrdif57khx2hsw1q6a9x42knwcvq8ijgqyq1jmll6y6ifyzm2f"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-msgpack" ,python-msgpack)
-       ("python-ruamel.yaml" ,python-ruamel.yaml)
-       ("python-toml" ,python-toml)))
+     (list python-msgpack python-ruamel.yaml python-toml))
     (home-page "https://github.com/cdgriffith/Box")
     (synopsis "Advanced Python dictionaries with dot notation access")
     (description
@@ -28172,7 +27478,7 @@ It implements advanced Python dictionaries with dot notation access.")
         (sha256
           (base32 "1am4ycf292zbmgz791z393v63w7qrynf8q5p9db2wwf2qj1fqxfj"))))
     (build-system python-build-system)
-    (propagated-inputs `(("python-fields" ,python-fields)))
+    (propagated-inputs (list python-fields))
     (home-page "https://github.com/ionelmc/python-aspectlib")
     (synopsis
       "Python monkey-patching and decorators")
@@ -28207,9 +27513,9 @@ simple mock/record and a complete capture/replay framework.")
     (inputs
      ;; libyajl is optional, but compiling with it makes faster
      ;; backends available to ijson:
-     `(("libyajl", libyajl)))
+     (list libyajl))
     (native-inputs
-     `(("python-pytest", python-pytest)))
+     (list python-pytest))
     (build-system python-build-system)
     (home-page "https://github.com/ICRAR/ijson")
     (synopsis "Iterative JSON parser with Python iterator interfaces")
@@ -28237,8 +27543,7 @@ interfaces.")
              (when tests?
                (invoke "pytest" "-vv" "orgparse/tests")))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-setuptools-scm" ,python-setuptools-scm)))
+     (list python-pytest python-setuptools-scm))
     (home-page "https://github.com/karlicoss/orgparse")
     (synopsis "Emacs Org mode parser in Python")
     (description
@@ -28283,17 +27588,11 @@ interfaces.")
                (delete-file "tests/test_vault.py")
                (invoke "make" "test_only")))))))
     (propagated-inputs
-     `(("python-click" ,python-click)
-       ("python-configobj" ,python-configobj)
-       ("python-dotenv" ,python-dotenv-0.13.0)
-       ("python-ruamel.yaml" ,python-ruamel.yaml)
-       ("python-toml" ,python-toml)))
+     (list python-click python-configobj python-dotenv-0.13.0
+           python-ruamel.yaml python-toml))
     (native-inputs
-     `(("python-django" ,python-django)
-       ("python-flask" ,python-flask)
-       ("python-pytest" ,python-pytest-6)
-       ("python-pytest-cov" ,python-pytest-cov)
-       ("python-pytest-mock" ,python-pytest-mock)))
+     (list python-django python-flask python-pytest-6 python-pytest-cov
+           python-pytest-mock))
     (home-page "https://www.dynaconf.com/")
     (synopsis "The dynamic configurator for your Python project")
     (description
@@ -28339,14 +27638,9 @@ development, testing, production]};
                (add-installed-pythonpath inputs outputs)
                (invoke "pytest")))))))
     (native-inputs
-     `(("python-numpy" ,python-numpy)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-mock" ,python-pytest-mock)))
+     (list python-numpy python-pytest python-pytest-mock))
     (propagated-inputs
-     `(("python-jedi" ,python-jedi)
-       ("python-pygments" ,python-pygments)
-       ("python-urwid" ,python-urwid)
-       ("python-urwid-readline" ,python-urwid-readline)))
+     (list python-jedi python-pygments python-urwid python-urwid-readline))
     (home-page "https://documen.tician.de/pudb/")
     (synopsis "Console-based Python debugger")
     (description
@@ -28367,8 +27661,8 @@ keyboard-friendly package.")
         (base32 "18bd35wn7zclalpqbry42pf7bjrdggxkkw58mc0k1vkhg9czc1d8"))))
     (build-system python-build-system)
     (inputs
-     `(("wireless-tools" ,wireless-tools)))
-    (propagated-inputs `(("python-cffi" ,python-cffi)))
+     (list wireless-tools))
+    (propagated-inputs (list python-cffi))
     (home-page "https://github.com/nhoad/python-iwlib")
     (synopsis "Python module to interface with iwlib")
     (description

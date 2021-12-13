@@ -109,12 +109,12 @@
              (lambda _
                (invoke "make" "TEST_LOG_COMPILER=" "check"))))))
       (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-       ;;; Note: cramfs is obsolete.
-         ("dtc" ,dtc) ; for the tests
-         ("pkg-config" ,pkg-config)
-         ("util-linux" ,util-linux))) ; for the tests
+       (list autoconf
+             automake
+             ;;; Note: cramfs is obsolete.
+             dtc ; for the tests
+             pkg-config
+             util-linux)) ; for the tests
       (inputs
        `(("bash" ,bash)
          ("cdrkit-libre" ,cdrkit-libre)

@@ -38,7 +38,7 @@
             (sha256
              (base32 "07w54dmr75vq2imngfy66nk1sxlvkzhl2p6g362q0a02f099jy0f"))))
    (build-system gnu-build-system)
-   (inputs `(("libusb" ,libusb)))
+   (inputs (list libusb))
    (outputs '("out" "debug"))
    (home-page "https://www.phidgets.com/")
    (license lgpl3+)

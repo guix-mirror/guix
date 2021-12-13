@@ -72,18 +72,17 @@
        ;; no longer the case in Guile >= 3.0.6.  This is fixed upstream.
        #:tests? #f))
 
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs (list pkg-config))
 
-    (inputs `(("guile" ,guile-3.0)
-              ("imagemagick" ,imagemagick)
-              ("ghostscript" ,ghostscript)        ; for 'convert'
-              ("ploticus" ,ploticus)
-              ("lout" ,lout)))
+    (inputs (list guile-3.0
+                  imagemagick
+                  ghostscript ; for 'convert'
+                  ploticus
+                  lout))
 
     ;; The 'skribilo' command needs them, and for people using Skribilo as a
     ;; library, these inputs are needed as well.
-    (propagated-inputs `(("guile-reader" ,guile-reader)
-                         ("guile-lib" ,guile-lib)))
+    (propagated-inputs (list guile-reader guile-lib))
 
     (home-page "https://www.nongnu.org/skribilo/")
     (synopsis "Document production tool written in Guile Scheme")

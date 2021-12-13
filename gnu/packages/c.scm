@@ -69,8 +69,7 @@
                (base32
                 "177bdhwzrnqgyrdv1dwvpd04fcxj68s5pm1dzwny6359ziway8yy"))))
     (build-system gnu-build-system)
-    (native-inputs `(("perl" ,perl)
-                     ("texinfo" ,texinfo)))
+    (native-inputs (list perl texinfo))
     (arguments
      `(#:configure-flags (list (string-append "--elfinterp="
                                               (assoc-ref %build-inputs "libc")
@@ -130,8 +129,7 @@ standard.")
          (replace 'check
            (lambda _ (invoke "make" "-C" "cc/cpp" "test") #t)))))
     (native-inputs
-     `(("bison" ,bison)
-       ("flex" ,flex)))
+     (list bison flex))
     (synopsis "Portable C compiler")
     (description
      "PCC is a portable C compiler.  The project goal is to write a C99
@@ -162,8 +160,7 @@ compiler while still keeping it small, simple, fast and understandable.")
        ("pkg-config" ,pkg-config)
        ("python" ,python)))
     (inputs
-     `(("mpfr" ,mpfr)
-       ("pcre2" ,pcre2)))
+     (list mpfr pcre2))
     (home-page "https://github.com/storaged-project/libbytesize")
     (synopsis "Tiny C library for working with arbitrary big sizes in bytes")
     (description
@@ -205,7 +202,7 @@ language with thin bindings for other languages.")
      `(#:configure-flags
        (list "--disable-static")))
     (inputs
-     `(("expat" ,expat)))
+     (list expat))
     (home-page "https://www.unidata.ucar.edu/software/udunits/")
     (synopsis "C library for units of physical quantities and value-conversion utils")
     (description
@@ -238,11 +235,7 @@ Its three main components are:
          "1x4q6yspi5g2s98vq4qszw4z3zjgk9l5zs8471w4d4cs6l97w08j"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)
-       ("check" ,check)))
+     (list autoconf automake libtool pkg-config check))
     (synopsis "Thin wrapper over POSIX syscalls")
     (description
      "The purpose of libfixposix is to offer replacements for parts of POSIX
@@ -317,7 +310,7 @@ checking casts and more.")
                                     headers)
                           (install-file "libwuya.a" (string-append out "/lib"))
                           #t))))))
-      (inputs `(("lua" ,lua)))
+      (inputs (list lua))
       (home-page "https://github.com/WuBingzheng/libwuya/")
       (synopsis "C library implementing various data structures")
       (description "The @code{libwuya} library implements data structures such
@@ -368,7 +361,7 @@ as dictionaries, skip lists, and memory pools.")
                                       (string-append out "/share/doc/packcc"))
                         #t))))))
     (native-inputs
-     `(("bats" ,bats)))
+     (list bats))
     (synopsis "Packrat parser generator for C")
     (description
      "PackCC is a packrat parser generator for the C programming language.
@@ -398,7 +391,7 @@ any other grammar rules.")
                (base32
                 "0z1qds52144nvsdnl82r3zs3vax618v920jmffyyssmwj54qpcka"))))
     (build-system gnu-build-system)
-    (inputs `(("perl" ,perl)))
+    (inputs (list perl))
     (arguments
      '(#:make-flags `(,(string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:phases (modify-phases %standard-phases
@@ -441,10 +434,7 @@ releases.")
          (replace 'bootstrap
            (lambda _ (invoke "autoreconf" "-vfi"))))))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("pkg-config" ,pkg-config)
-       ("libtool" ,libtool)))
+     (list autoconf automake pkg-config libtool))
     (home-page "https://github.com/rsyslog/libestr")
     (synopsis "Helper functions for handling strings")
     (description
@@ -467,9 +457,7 @@ more, like escaping special characters.")
         (base32 "12rqcdqxazw8czzxbivdapdgj19pcswpw1jp2915sxbljis83g6q"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
+     (list autoconf automake libtool))
     (home-page "https://github.com/rsyslog/libfastjson")
     (synopsis "Fast JSON library for C")
     (description
@@ -500,12 +488,12 @@ with essential JSON handling functions, sufficiently good JSON support (not
          (replace 'bootstrap
            (lambda _ (invoke "autoreconf" "-vfi"))))))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("pkg-config" ,pkg-config)
-       ("libtool" ,libtool)
-       ;; For rst2man.py
-       ("python-docutils" ,python-docutils)))
+     (list autoconf
+           automake
+           pkg-config
+           libtool
+           ;; For rst2man.py
+           python-docutils))
     (home-page "https://github.com/rsyslog/liblogging")
     (synopsis "Easy to use and lightweight signal-safe logging library")
     (description
@@ -538,7 +526,7 @@ replacement for the syslog() call, but retains its ease of use.")
                           (string-append "prefix=" %output))
        #:tests? #f))                    ;no test suite
     (native-inputs
-     `(("perl" ,perl)))
+     (list perl))
     (home-page "https://dotat.at/prog/unifdef/")
     (synopsis "Utility to selectively processes conditional C preprocessor")
     (description "The @command{unifdef} utility selectively processes
@@ -596,7 +584,7 @@ portability.")
              (string-append "-DCMAKE_PREFIX_PATH="
                             (assoc-ref %build-inputs "aws-c-common")))))
     (inputs
-     `(("aws-c-common" ,aws-c-common)))
+     (list aws-c-common))
     (synopsis "Amazon Web Services checksum library")
     (description
      "This library provides cross-Platform hardware accelerated CRC32c and CRC32
@@ -625,12 +613,9 @@ with fallback to efficient C99 software implementations.")
              (string-append "-DCMAKE_PREFIX_PATH="
                             (assoc-ref %build-inputs "aws-c-common")))))
     (propagated-inputs
-     `(("aws-c-common" ,aws-c-common)
-       ("aws-c-io" ,aws-c-io)
-       ("aws-checksums" ,aws-checksums)))
+     (list aws-c-common aws-c-io aws-checksums))
     (inputs
-     `(("aws-c-cal" ,aws-c-cal)
-       ("s2n" ,s2n)))
+     (list aws-c-cal s2n))
     (synopsis "Amazon Web Services client-server message format library")
     (description
      "This library is a C99 implementation for @acronym{AWS,Amazon Web Services}
@@ -661,9 +646,7 @@ communication.")
                             (assoc-ref %build-inputs "aws-c-common"))
              "-DENABLE_NET_TESTS=OFF")))
     (propagated-inputs
-     `(("aws-c-cal" ,aws-c-cal)
-       ("aws-c-common" ,aws-c-common)
-       ("s2n" ,s2n)))
+     (list aws-c-cal aws-c-common s2n))
     (synopsis "Event driven framework for implementing application protocols")
     (description "This library provides a C99 framework for constructing
 event-driven, asynchronous network application protocols.")
@@ -691,7 +674,7 @@ event-driven, asynchronous network application protocols.")
              (string-append "-DCMAKE_PREFIX_PATH="
                             (assoc-ref %build-inputs "aws-c-common")))))
     (propagated-inputs
-     `(("aws-c-common" ,aws-c-common)))
+     (list aws-c-common))
     (inputs
      `(("openssl" ,openssl)
        ("openssl:static" ,openssl "static")))
@@ -742,8 +725,7 @@ low level functionality for coroutines.")
                             (assoc-ref %build-inputs "aws-c-common"))
              "-DENABLE_NET_TESTS=OFF")))
     (propagated-inputs
-     `(("aws-c-compression" ,aws-c-compression)
-       ("aws-c-io" ,aws-c-io)))
+     (list aws-c-compression aws-c-io))
     (synopsis "Amazon Web Services HTTP library")
     (description
      "This library provides a C99 implementation of the HTTP/1.1 and HTTP/2
@@ -772,7 +754,7 @@ specifications.")
              (string-append "-DCMAKE_PREFIX_PATH="
                             (assoc-ref %build-inputs "aws-c-common")))))
     (propagated-inputs
-     `(("aws-c-common" ,aws-c-common)))
+     (list aws-c-common))
     (synopsis "Amazon Web Services compression library")
     (description
      "This library provides a C99 implementation of compression algorithms,
@@ -805,10 +787,7 @@ currently limited to Huffman encoding and decoding.")
                             (assoc-ref %build-inputs "aws-c-common"))
              "-DENABLE_NET_TESTS=OFF")))
     (propagated-inputs
-     `(("aws-c-cal" ,aws-c-cal)
-       ("aws-c-common" ,aws-c-common)
-       ("aws-c-http" ,aws-c-http)
-       ("aws-c-io" ,aws-c-io)))
+     (list aws-c-cal aws-c-common aws-c-http aws-c-io))
     (synopsis "Amazon Web Services client-side authentication library")
     (description
      "This library provides a C99 implementation for AWS client-side
@@ -838,8 +817,7 @@ authentication.")
                             (assoc-ref %build-inputs "aws-c-common"))
              "-DENABLE_NET_TESTS=OFF")))
     (propagated-inputs
-     `(("aws-c-auth" ,aws-c-auth)
-       ("aws-c-http" ,aws-c-http)))
+     (list aws-c-auth aws-c-http))
     (synopsis "Amazon Web Services client library for Amazon S3")
     (description
      "This library provides a C99 client implementation of the Simple Storage
@@ -868,8 +846,7 @@ Service (S3) protocol for object storage.")
              (string-append "-DCMAKE_PREFIX_PATH="
                             (assoc-ref %build-inputs "aws-c-common")))))
     (propagated-inputs
-     `(("aws-c-http" ,aws-c-http)
-       ("aws-c-io" ,aws-c-io)))
+     (list aws-c-http aws-c-io))
     (synopsis "Amazon Web Services MQTT library")
     (description
      "This library provides a C99 implementation of the Message Queuing

@@ -67,10 +67,9 @@ endeavor to implement this idea using modern technologies.")
          "0n56xxlw7c39pfar0dxckr9mbmp6yrzk53ic0cb24raiykm9v6f4"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)))
+     (list perl-module-build))
     (propagated-inputs
-     `(("perl-uri" ,perl-uri)
-       ("perl-uri-nested" ,perl-uri-nested)))
+     (list perl-uri perl-uri-nested))
     (home-page "https://metacpan.org/release/URI-db")
     (synopsis "Handle database URIs")
     (description
@@ -92,7 +91,7 @@ class to handle these.")
          "0gj1aj18k43kmzc3y1zhj5giinf8rksacf757r475xfna0fqxjdj"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-needs" ,perl-test-needs)))
+     (list perl-test-needs))
     (home-page "https://github.com/libwww-perl/URI")
     (synopsis "Percent-encode and percent-decode unsafe characters")
     (description "This module provides functions to percent-encode and
@@ -117,9 +116,9 @@ which predates the formalization of the terms by the RFC by several years.")
          "1bzg6f11m8wfnmycflvp858rs99xknsx8hkip0xcdfjzlqwi75z1"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)))
+     (list perl-module-build))
     (propagated-inputs
-     `(("perl-uri" ,perl-uri)))
+     (list perl-uri))
     (home-page "https://metacpan.org/release/URI-Nested")
     (synopsis "Nested URIs")
     (description

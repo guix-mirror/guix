@@ -55,17 +55,16 @@
                 "0m269nl8s31yjyz7kknv4jl9mx12xjpx2ly6wf66zs5613m4rj1z"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("cmocka" ,cmocka)
-       ("pkg-config" ,pkg-config)))
+     (list cmocka pkg-config))
     (inputs
-     `(("bzip2" ,bzip2)
-       ("lzlib" ,lzlib)
-       ("openssl" ,openssl)
-       ("popt" ,popt)
-       ("rpm" ,rpm)
-       ("xz" ,xz)
-       ("zlib" ,zlib)
-       ("zstd" ,zstd "lib")))
+     (list bzip2
+           lzlib
+           openssl
+           popt
+           rpm
+           xz
+           zlib
+           `(,zstd "lib")))
     (home-page "https://github.com/rpm-software-management/drpm")
     (synopsis "Delta RPM library")
     (description "This package provides a library for making, reading and
@@ -135,10 +134,9 @@ applying deltarpms, compatible with the original deltarpm packages.")
        ("python-pygobject" ,python-pygobject)))
     (propagated-inputs
      ;; glib and gobject are listed as 'Requires' in modulemd-2.0.pc.
-     `(("glib" ,glib)
-       ;; yaml and rpm are listed as 'Requires.private' in modulemd-2.0.pc.
-       ("libyaml" ,libyaml)
-       ("rpm" ,rpm)))
+     (list glib
+           ;; yaml and rpm are listed as 'Requires.private' in modulemd-2.0.pc.
+           libyaml rpm))
     (home-page "https://github.com/fedora-modularity/libmodulemd")
     (synopsis "C library for manipulating module metadata files")
     (description "The libmodulemd API provides a number of convenience tools
@@ -181,18 +179,16 @@ information on multiple streams, default data and translations).")
                 (format #f "set (BASHCOMP_DIR ~a\
 /share/bash-completion/completions)~%" (assoc-ref outputs "out")))))))))
     (native-inputs
-     `(("bash-completion" ,bash-completion)
-       ("pkg-config" ,pkg-config)
-       ("python" ,python)))
+     (list bash-completion pkg-config python))
     (inputs
-     `(("bzip2" ,bzip2)
-       ("curl" ,curl)
-       ("drpm" ,drpm)
-       ("libmodulemd" ,libmodulemd)
-       ("libxml2" ,libxml2)
-       ("openssl" ,openssl)
-       ("sqlite" ,sqlite)
-       ("zchunk" ,zchunk)))
+     (list bzip2
+           curl
+           drpm
+           libmodulemd
+           libxml2
+           openssl
+           sqlite
+           zchunk))
     (home-page "https://rpm-software-management.github.io/createrepo_c/")
     (synopsis "C implementation of the createrepo tool")
     (description "This package provides the @command{createrepo} command,

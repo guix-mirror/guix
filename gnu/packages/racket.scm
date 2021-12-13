@@ -263,10 +263,10 @@ DrRacket IDE, are not included.")
      (inherit racket-minimal)
      (name "racket-minimal-bc-3m")
      (inputs
-      `(("libffi" ,libffi) ;; <- only for BC variants
-        ,@(fold alist-delete
-                (package-inputs racket-minimal)
-                '("zlib" "zlib:static" "lz4" "lz4:static"))))
+      (modify-inputs (package-inputs racket-minimal)
+        (delete "zlib" "zlib:static" "lz4" "lz4:static")
+        (prepend libffi ;; <- only for BC variants
+                 )))
      (native-inputs
       `(("libtool" ,libtool)
         ("racket" ,(if (%current-target-system)

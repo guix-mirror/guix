@@ -63,22 +63,21 @@
        #:phases (modify-phases %standard-phases
                   (delete 'configure))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("perl" ,perl)                   ; for pod2man
-       ("which" ,which)))
+     (list pkg-config perl ; for pod2man
+           which))
     (inputs
-     `(("dbus" ,dbus)
-       ("librsvg" ,librsvg)   ; for svg support
-       ("glib" ,glib)
-       ("cairo" ,cairo)
-       ("pango" ,pango)
-       ("libnotify" ,libnotify)         ; for dunstify
-       ("libx11" ,libx11)
-       ("libxscrnsaver" ,libxscrnsaver)
-       ("libxinerama" ,libxinerama)
-       ("libxrandr" ,libxrandr)
-       ("libxdg-basedir" ,libxdg-basedir)
-       ("wayland" ,wayland)))           ; for wayland support
+     (list dbus
+           librsvg ; for svg support
+           glib
+           cairo
+           pango
+           libnotify ; for dunstify
+           libx11
+           libxscrnsaver
+           libxinerama
+           libxrandr
+           libxdg-basedir
+           wayland))           ; for wayland support
     (home-page "https://dunst-project.org/")
     (synopsis "Customizable and lightweight notification daemon")
     (description

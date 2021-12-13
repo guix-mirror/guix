@@ -135,12 +135,9 @@
                (("/bin/sh") (which "sh")))
              #t)))))
     (inputs
-     `(("readline" ,readline)
-       ("openssl" ,openssl)
-       ("libffi" ,libffi)
-       ("gdbm" ,gdbm)))
+     (list readline openssl libffi gdbm))
     (propagated-inputs
-     `(("zlib" ,zlib)))
+     (list zlib))
     (native-search-paths
      (list (search-path-specification
             (variable "GEM_PATH")
@@ -187,7 +184,7 @@ a focus on simplicity and productivity.")
                (("/bin/sh") (which "sh")))
              #t)))))
     (native-inputs
-     `(("autoconf" ,autoconf)))))
+     (list autoconf))))
 
 (define-public ruby-3.0
   (package
@@ -289,8 +286,7 @@ a focus on simplicity and productivity.")
                (copy-recursively "build/host/lib" lib))
              #t)))))
     (native-inputs
-     `(("ruby" ,ruby)
-       ("bison" ,bison)))
+     (list ruby bison))
     (home-page "https://github.com/mruby/mruby")
     (synopsis "Lightweight Ruby")
     (description "mruby is the lightweight implementation of the Ruby
@@ -323,13 +319,10 @@ embedded within your application.")
                ((".*RuboCop.*") ""))
              #t)))))
     (propagated-inputs
-     `(("ruby-highline" ,ruby-highline)))
+     (list ruby-highline))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-rspec-core" ,ruby-rspec-core)
-       ("ruby-rspec-expectations" ,ruby-rspec-expectations)
-       ("ruby-rspec-mocks" ,ruby-rspec-mocks)
-       ("ruby-simplecov" ,ruby-simplecov)))
+     (list bundler ruby-rspec-core ruby-rspec-expectations
+           ruby-rspec-mocks ruby-simplecov))
     (home-page "https://github.com/commander-rb/commander")
     (synopsis "Library for building Ruby command-line executables")
     (description
@@ -354,8 +347,7 @@ elegant API.")
     (arguments
      `(#:tests? #f)) ;; TODO: NameError: uninitialized constant SPEC
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-code-statistics" ,ruby-code-statistics)))
+     (list bundler ruby-code-statistics))
     (synopsis
      "HighLine helps you build command-line interfaces")
     (description
@@ -446,11 +438,8 @@ packaging native C and Java extensions in Ruby.")
                (("Coveralls.wear!") ""))
              #t)))))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("rsync" ,rsync)
-       ("ruby-rspec-core" ,ruby-rspec-core)
-       ("ruby-rspec-expectations" ,ruby-rspec-expectations)
-       ("ruby-rspec-mocks" ,ruby-rspec-mocks)))
+     (list bundler rsync ruby-rspec-core ruby-rspec-expectations
+           ruby-rspec-mocks))
     (home-page "https://github.com/jbussdieker/ruby-rsync")
     (synopsis "Ruby wrapper around rsync")
     (description
@@ -522,15 +511,15 @@ an extensible architecture with a swappable backend.")
                  "/bin/")))
              #t)))))
     (inputs
-     `(("python-ipython" ,python-ipython)))
+     (list python-ipython))
     (propagated-inputs
-     `(("ruby-bond" ,ruby-bond)
-       ("ruby-data_uri" ,ruby-data_uri)
-       ("ruby-mimemagic" ,ruby-mimemagic)
-       ("ruby-multi-json" ,ruby-multi-json)
-       ("ruby-cztop" ,ruby-cztop)
-       ;; Optional inputs
-       ("ruby-pry" ,ruby-pry)))
+     (list ruby-bond
+           ruby-data_uri
+           ruby-mimemagic
+           ruby-multi-json
+           ruby-cztop
+           ;; Optional inputs
+           ruby-pry))
     (synopsis "Ruby kernel for Jupyter/IPython")
     (description
      "This package provides a Ruby kernel for Jupyter/IPython frontends (e.g.
@@ -573,7 +562,7 @@ notebook).")
     (arguments
      '(#:tests? #f)) ; avoid dependency cycles
     (propagated-inputs
-     `(("ruby-rspec-support" ,ruby-rspec-support)))
+     (list ruby-rspec-support))
     (synopsis "RSpec core library")
     (description "Rspec-core provides the RSpec test runner and example
 groups.")
@@ -626,8 +615,7 @@ standard diff-like tool.")
     (arguments
      '(#:tests? #f)) ; avoid dependency cycles
     (propagated-inputs
-     `(("ruby-rspec-support" ,ruby-rspec-support)
-       ("ruby-diff-lcs" ,ruby-diff-lcs)))
+     (list ruby-rspec-support ruby-diff-lcs))
     (synopsis "RSpec expectations library")
     (description "Rspec-expectations provides a simple API to express expected
 outcomes of a code example.")
@@ -644,7 +632,7 @@ outcomes of a code example.")
                (base32
                 "1ni8kw8kjv76jvwjzi4jba00k3qzj9f8wd94vm6inz0jz3gwjqf9"))))
     (propagated-inputs
-     `(("ruby-diff-lcs" ,ruby-diff-lcs)))))
+     (list ruby-diff-lcs))))
 
 (define-public ruby-sorcerer
   (package
@@ -680,7 +668,7 @@ re-sourced, but they will be rendered in a single-line format.")
     (build-system ruby-build-system)
     (arguments '(#:tests? #f))          ;no test suite for the core package
     (propagated-inputs
-     `(("ruby-sorcerer" ,ruby-sorcerer)))
+     (list ruby-sorcerer))
     (synopsis "Core abstractions used by rspec-given and minitest-given")
     (description "Given_core is the basic functionality behind rspec-given and
 minitest-given, extensions that allow the use of Given/When/Then terminology
@@ -725,11 +713,9 @@ when defining specifications.")
              (delete-file "examples/integration/failing_messages_spec.rb")
              #t)))))
     (native-inputs
-     `(("ruby-rspec" ,ruby-rspec)
-       ("ruby-minitest" ,ruby-minitest)))
+     (list ruby-rspec ruby-minitest))
     (propagated-inputs
-     `(("ruby-given-core" ,ruby-given-core)
-       ("ruby-rspec" ,ruby-rspec)))
+     (list ruby-given-core ruby-rspec))
     (synopsis "Given/When/Then for RSpec and Minitest")
     (description "Given is an RSpec extension that allows the use of
 Given/When/Then terminology when defining specifications, in a way similar to
@@ -779,13 +765,9 @@ the Cucumber Gherkin language.")
                (("\"aruba.*") "'aruba'\n"))
              #t)))))
     (propagated-inputs
-     `(("ruby-rspec-core" ,ruby-rspec-core)
-       ("ruby-rspec-expectations" ,ruby-rspec-expectations)))
+     (list ruby-rspec-core ruby-rspec-expectations))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-cucumber" ,ruby-cucumber)
-       ("ruby-ffi" ,ruby-ffi)
-       ("ruby-aruba" ,ruby-aruba)))
+     (list bundler ruby-cucumber ruby-ffi ruby-aruba))
     (synopsis "RSpec extension that provides the @code{its} method")
     (description
      "RSpec::Its provides the its method as a short-hand to specify the expected
@@ -818,8 +800,7 @@ eq(1)\\}}.")
     (arguments
      '(#:tests? #f)) ; avoid dependency cycles
     (propagated-inputs
-     `(("ruby-rspec-support" ,ruby-rspec-support)
-       ("ruby-diff-lcs" ,ruby-diff-lcs)))
+     (list ruby-rspec-support ruby-diff-lcs))
     (synopsis "RSpec stubbing and mocking library")
     (description "Rspec-mocks provides RSpec's \"test double\" framework, with
 support for stubbing and mocking.")
@@ -836,7 +817,7 @@ support for stubbing and mocking.")
                (base32
                 "1fwsmijd6w6cmqyh4ky2nq89jrpzh56hzmndx9wgkmdgfhfakv30"))))
     (propagated-inputs
-     `(("ruby-diff-lcs" ,ruby-diff-lcs)))))
+     (list ruby-diff-lcs))))
 
 (define-public ruby-rspec-rerun
   (package
@@ -853,7 +834,7 @@ support for stubbing and mocking.")
     (arguments
      '(;; No included tests
        #:tests? #f))
-    (propagated-inputs `(("ruby-rspec" ,ruby-rspec)))
+    (propagated-inputs (list ruby-rspec))
     (synopsis "Track failed RSpec tests to re-run them")
     (description
      "This package provides an automated way to track, and then re-run failed
@@ -880,9 +861,9 @@ RSpec tests.")
            (lambda _
              (invoke "rake" "spec"))))))
     (native-inputs
-     `(("bundler" ,bundler)))
+     (list bundler))
     (propagated-inputs
-     `(("ruby-rspec" ,ruby-rspec)))
+     (list ruby-rspec))
     (home-page "https://github.com/laserlemon/rspec-wait")
     (synopsis "Wait for conditions in RSpec")
     (description
@@ -904,9 +885,7 @@ interactions.")
     (arguments
      '(#:tests? #f)) ; avoid dependency cycles
     (propagated-inputs
-     `(("ruby-rspec-core" ,ruby-rspec-core)
-       ("ruby-rspec-mocks" ,ruby-rspec-mocks)
-       ("ruby-rspec-expectations" ,ruby-rspec-expectations)))
+     (list ruby-rspec-core ruby-rspec-mocks ruby-rspec-expectations))
     (synopsis "Behavior-driven development framework for Ruby")
     (description "RSpec is a behavior-driven development (BDD) framework for
 Ruby.  This meta-package includes the RSpec test runner, along with the
@@ -924,9 +903,7 @@ expectations and mocks frameworks.")
                (base32
                 "134y4wzk1prninb5a0bhxgm30kqfzl8dg06af4js5ylnhv2wd7sg"))))
     (propagated-inputs
-     `(("ruby-rspec-core" ,ruby-rspec-core-2)
-       ("ruby-rspec-mocks" ,ruby-rspec-mocks-2)
-       ("ruby-rspec-expectations" ,ruby-rspec-expectations-2)))))
+     (list ruby-rspec-core-2 ruby-rspec-mocks-2 ruby-rspec-expectations-2))))
 
 ;; Bundler is yet another source of circular dependencies, so we must disable
 ;; its test suite as well.
@@ -1062,9 +1039,9 @@ configuration, and more.")
     ;; Test data required for most of the tests are not included.
     (arguments `(#:tests? #f))
     (native-inputs
-     `(("ruby-hoe" ,ruby-hoe)))
+     (list ruby-hoe))
     (inputs
-     `(("ruby-rjb" ,ruby-rjb)))
+     (list ruby-rjb))
     (synopsis "Ruby wrapper for the Ant build tool")
     (description "Antwrap is a Ruby module that wraps the Apache Ant build
 tool.  Antwrap can be used to invoke Ant tasks from a Ruby or a JRuby
@@ -1125,9 +1102,7 @@ line of code.")
                          "spec/objects_spec.rb"))
              (invoke "rspec" "-c" "spec"))))))
     (native-inputs
-     `(("ruby-nokogiri" ,ruby-nokogiri)
-       ("ruby-rspec" ,ruby-rspec)
-       ("ruby-simplecov" ,ruby-simplecov)))
+     (list ruby-nokogiri ruby-rspec ruby-simplecov))
     (synopsis "Pretty print Ruby objects to visualize their structure")
     (description
      "Ruby dubugging companion: pretty print Ruby objects to visualize their
@@ -1178,9 +1153,9 @@ structure.  Supports custom object formatting via plugins.")
              (substitute* "pandoc-ruby.gemspec"
                (("Gemfile\\.lock") "")))))))
     (native-inputs
-     `(("ruby-mocha" ,ruby-mocha)))
+     (list ruby-mocha))
     (inputs
-     `(("pandoc" ,pandoc)))
+     (list pandoc))
     (synopsis "Ruby wrapper for Pandoc")
     (description "PandocRuby is a wrapper for Pandoc, a Haskell library with
 command line tools for converting one markup format to another.  Pandoc can
@@ -1206,7 +1181,7 @@ more.")
          "0523gddx88zql2mq6655k60gy2ac8vybpzkcf90lmd9nx7wl3fi9"))))
     (build-system ruby-build-system)
     (inputs
-     `(("curl" ,curl)))
+     (list curl))
     (arguments
      `(#:tests? #f))                    ; no included tests
     (synopsis "Ruby HTTP client library based on @code{libcurl}")
@@ -1253,11 +1228,9 @@ under the hood.")
                (("Bundler::GemHelper\\.install_tasks") "nil"))
              #t)))))
     (native-inputs
-     `(("ruby-rack-test" ,ruby-rack-test)
-       ("ruby-sinatra" ,ruby-sinatra)))
+     (list ruby-rack-test ruby-sinatra))
     (propagated-inputs
-     `(("ruby-temple" ,ruby-temple)
-       ("ruby-tilt" ,ruby-tilt)))
+     (list ruby-temple ruby-tilt))
     (synopsis "Minimalist template language for Ruby")
     (description "Slim is a template language for Ruby that aims to reduce the
 syntax to the minimum while remaining clear.")
@@ -1291,19 +1264,19 @@ syntax to the minimum while remaining clear.")
                 (string-append stripped "\n")))
              #t)))))
     (native-inputs
-     `(("ruby-erubi" ,ruby-erubi)
-       ("ruby-erubis" ,ruby-erubis)
-       ("ruby-minitest" ,ruby-minitest)
-       ("ruby-nokogiri" ,ruby-nokogiri)
-       ("ruby-asciimath" ,ruby-asciimath)
-       ("ruby-coderay" ,ruby-coderay)
-       ("ruby-cucumber" ,ruby-cucumber)
-       ("ruby-haml" ,ruby-haml)
-       ("ruby-rouge" ,ruby-rouge)
-       ("ruby-rspec-expectations" ,ruby-rspec-expectations)
-       ("ruby-simplecov" ,ruby-simplecov)
-       ("ruby-slim" ,ruby-slim)
-       ("ruby-tilt" ,ruby-tilt)))
+     (list ruby-erubi
+           ruby-erubis
+           ruby-minitest
+           ruby-nokogiri
+           ruby-asciimath
+           ruby-coderay
+           ruby-cucumber
+           ruby-haml
+           ruby-rouge
+           ruby-rspec-expectations
+           ruby-simplecov
+           ruby-slim
+           ruby-tilt))
     (synopsis "Converter from AsciiDoc content to other formats")
     (description "Asciidoctor is a text processor and publishing toolchain for
 converting AsciiDoc content to HTML5, DocBook 5 (or 4.5), PDF, and other
@@ -1334,12 +1307,9 @@ formats.")
                         (("^RuboCop.*") ""))
                       #t)))))
     (native-inputs
-     `(("ruby-pdf-inspector" ,ruby-pdf-inspector)
-       ("ruby-pdf-reader" ,ruby-pdf-reader)
-       ("ruby-rspec" ,ruby-rspec)
-       ("ruby-simplecov" ,ruby-simplecov)))
+     (list ruby-pdf-inspector ruby-pdf-reader ruby-rspec ruby-simplecov))
     (propagated-inputs
-     `(("ruby-prawn" ,ruby-prawn)))
+     (list ruby-prawn))
     (synopsis "Icon fonts for use with the Prawn PDF toolkit")
     (description "@code{Prawn::Icon} provides various icon fonts including
 FontAwesome, PaymentFont and Foundation Icons for use with the Prawn PDF
@@ -1361,7 +1331,7 @@ toolkit.")
     (build-system ruby-build-system)
     (arguments `(#:tests? #f))          ;gem doesn't ship with test suite
     (propagated-inputs
-     `(("ruby-addressable" ,ruby-addressable)))
+     (list ruby-addressable))
     (synopsis "Ruby Cascading Style Sheets (CSS) parser")
     (description "This package allows loading, parsing and cascading Cascading
 Style Sheets (CSS) rule sets in Ruby.")
@@ -1393,10 +1363,9 @@ Style Sheets (CSS) rule sets in Ruby.")
                         (invoke "rspec" "-Ilib" "-rprawn-svg"))
                       #t)))))
     (native-inputs
-     `(("ruby-rspec" ,ruby-rspec)))
+     (list ruby-rspec))
     (propagated-inputs
-     `(("ruby-css-parser" ,ruby-css-parser)
-       ("ruby-prawn" ,ruby-prawn)))
+     (list ruby-css-parser ruby-prawn))
     (synopsis "SVG renderer for the Prawn PDF library")
     (description "This library allows rendering Scalable Vector Graphics (SVG)
 graphics directly into a Portable Document Format (PDF) document using the
@@ -1432,11 +1401,9 @@ Prawn module.")
                         (invoke "rspec"))
                       #t)))))
     (native-inputs
-     `(("ruby-pdf-inspector" ,ruby-pdf-inspector)
-       ("ruby-rspec" ,ruby-rspec)))
+     (list ruby-pdf-inspector ruby-rspec))
     (propagated-inputs
-     `(("ruby-pdf-reader" ,ruby-pdf-reader)
-       ("ruby-prawn" ,ruby-prawn)))
+     (list ruby-pdf-reader ruby-prawn))
     (synopsis "Prawn extension to include or combine PDF documents")
     (description "This @strong{unmaintained} package provides a Prawn
 extension that allows including other Portable Document Format (PDF) documents
@@ -1484,11 +1451,9 @@ loader for the file type associated with a filename extension, and it augments
     (arguments
      `(#:test-target "spec"))
     (native-inputs
-     `(("ruby-activesupport" ,ruby-activesupport)
-       ("ruby-rr" ,ruby-rr)
-       ("ruby-rspec" ,ruby-rspec)))
+     (list ruby-activesupport ruby-rr ruby-rspec))
     (propagated-inputs
-     `(("ruby-polyglot" ,ruby-polyglot)))
+     (list ruby-polyglot))
     (synopsis "Ruby-based parsing DSL based on parsing expression grammars")
     (description "This package provides a Ruby-based Parsing Expression
 Grammar (PEG) parser generator Domain Specific Language (DSL).")
@@ -1510,7 +1475,7 @@ Grammar (PEG) parser generator Domain Specific Language (DSL).")
     (arguments
      `(#:tests? #f))                    ; no included tests
     (propagated-inputs
-     `(("ruby-ethon" ,ruby-ethon)))
+     (list ruby-ethon))
     (synopsis "@code{libcurl} wrapper in Ruby")
     (description
      "Like a modern code version of the mythical beast with 100 serpent heads,
@@ -1543,14 +1508,10 @@ logic.")
              (setenv "HOME" "/tmp")
              #t)))))
     (propagated-inputs
-     `(("ruby-rubocop" ,ruby-rubocop)
-       ("ruby-rubocop-ast" ,ruby-rubocop-ast)))
+     (list ruby-rubocop ruby-rubocop-ast))
     (native-inputs
-     `(("ruby-rack" ,ruby-rack)
-       ("ruby-rspec" ,ruby-rspec)
-       ("ruby-rubocop-performance" ,ruby-rubocop-performance)
-       ("ruby-simplecov" ,ruby-simplecov)
-       ("ruby-yard" ,ruby-yard)))
+     (list ruby-rack ruby-rspec ruby-rubocop-performance ruby-simplecov
+           ruby-yard))
     (synopsis "Code style checking for RSpec files")
     (description "This package provides a plugin for the RuboCop code style
 enforcing & linting tool.")
@@ -1597,11 +1558,9 @@ enforcing & linting tool.")
              (setenv "HOME" "/tmp")
              #t)))))
     (propagated-inputs
-     `(("ruby-rubocop" ,ruby-rubocop)
-       ("ruby-rubocop-ast" ,ruby-rubocop-ast)))
+     (list ruby-rubocop ruby-rubocop-ast))
     (native-inputs
-     `(("ruby-bump" ,ruby-bump)
-       ("ruby-yard" ,ruby-yard)))
+     (list ruby-bump ruby-yard))
     (synopsis "Performance optimizations checkers for Ruby code")
     (description "This package provides a collection of RuboCop cops to check
 for performance optimizations in Ruby code.")
@@ -1636,11 +1595,8 @@ for performance optimizations in Ruby code.")
            "0hrd32ygvf3i7h47ak8f623cz8ns9q7g60nnnvvlnywbggjaz3h6"))))
       (build-system ruby-build-system)
       (native-inputs
-       `(("ruby-coveralls" ,ruby-coveralls)
-         ("ruby-cucumber" ,ruby-cucumber)
-         ("ruby-pry" ,ruby-pry)
-         ("ruby-simplecov" ,ruby-simplecov)
-         ("ruby-rspec-given" ,ruby-rspec-given)))
+       (list ruby-coveralls ruby-cucumber ruby-pry ruby-simplecov
+             ruby-rspec-given))
       (arguments
        `(;; The cucumber task fails with error: "index 3 out of matches
          ;; (IndexError)", apparently due to our newer Cucumber version.
@@ -1707,12 +1663,9 @@ only what they care about.")
              (delete-file "Gemfile.lock")
              #t)))))
     (native-inputs
-     `(("ruby-gimme" ,ruby-gimme)
-       ("ruby-pry" ,ruby-pry)
-       ("ruby-simplecov" ,ruby-simplecov)))
+     (list ruby-gimme ruby-pry ruby-simplecov))
     (propagated-inputs
-     `(("ruby-rubocop" ,ruby-rubocop)
-       ("ruby-rubocop-performance" ,ruby-rubocop-performance)))
+     (list ruby-rubocop ruby-rubocop-performance))
     (synopsis "Ruby Style Guide, with linter & automatic code fixer")
     (description "Standard is a port of StandardJS.  Like StandardJS, it aims
 to save time in the following ways:
@@ -1748,10 +1701,7 @@ to save time in the following ways:
                (("require.*bundler/setup.*") ""))
              #t)))))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-rspec" ,ruby-rspec)
-       ("ruby-standard" ,ruby-standard)
-       ("ruby-yard" ,ruby-yard)))
+     (list bundler ruby-rspec ruby-standard ruby-yard))
     (synopsis "Ruby library to handle PNG images")
     (description "ChunkyPNG is a pure Ruby library that can read and write
 Portable Network Graphics (PNG) images without depending on an external image
@@ -1797,7 +1747,7 @@ or a background processing library.")
             "1gj4awvs9ryf960m0iawg43jyjmfwcqgfwrbcfp890a57b9ag7q1"))))
     (build-system ruby-build-system)
     (native-inputs
-     `(("ruby-hoe" ,ruby-hoe)))
+     (list ruby-hoe))
     (synopsis "Ruby library to hyphenate words in various languages")
     (description "Text::Hyphen is a Ruby library to hyphenate words in various
 languages using Ruby-fied versions of TeX hyphenation patterns.  It will
@@ -1873,11 +1823,8 @@ web pages.")
                (when tests?
                  (invoke "rspec" "-t" "~visual" "-t" "~cli" "-t" "~network"))))))))
     (native-inputs
-     `(("ruby-chunky-png" ,ruby-chunky-png)
-       ("ruby-coderay" ,ruby-coderay)
-       ("ruby-pdf-inspector" ,ruby-pdf-inspector)
-       ("ruby-rouge" ,ruby-rouge)
-       ("ruby-rspec" ,ruby-rspec)))
+     (list ruby-chunky-png ruby-coderay ruby-pdf-inspector ruby-rouge
+           ruby-rspec))
     (propagated-inputs
      `(("ruby-asciidoctor" ,ruby-asciidoctor)
        ("ruby-concurrent-ruby" ,ruby-concurrent)
@@ -1953,16 +1900,16 @@ PDF library.  It has features such as:
                (("12\\.3") "13.0"))
              #t)))))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-bacon" ,ruby-bacon)
-       ("ruby-bacon-colored-output" ,ruby-bacon-colored-output)
-       ("ruby-json-pure" ,ruby-json-pure)
-       ("ruby-kramdown" ,ruby-kramdown)
-       ("ruby-mime-types" ,ruby-mime-types)
-       ("ruby-racc" ,ruby-racc)
-       ("ruby-rest-client" ,ruby-rest-client)
-       ("ruby-simplecov" ,ruby-simplecov)
-       ("ruby-yard" ,ruby-yard)))
+     (list bundler
+           ruby-bacon
+           ruby-bacon-colored-output
+           ruby-json-pure
+           ruby-kramdown
+           ruby-mime-types
+           ruby-racc
+           ruby-rest-client
+           ruby-simplecov
+           ruby-yard))
     (synopsis "Library for working with Abstract Syntax Trees")
     (description
      "@code{ast} is a Ruby library for working with Abstract Syntax Trees.
@@ -1992,7 +1939,7 @@ It does this through immutable data structures.")
        ;; Tests currently fail so disable them.
        ;; https://github.com/sporkmonger/rack-mount/pull/1
        `(#:tests? #f))
-      (propagated-inputs `(("ruby-rack" ,ruby-rack)))
+      (propagated-inputs (list ruby-rack))
       (synopsis "Stackable dynamic tree based Rack router")
       (description
        "@code{Rack::Mount} supports Rack's @code{X-Cascade} convention to
@@ -2015,10 +1962,9 @@ routes to be nested or stacked on top of each other.")
     (arguments
      `(#:test-target "rspec"))
     (propagated-inputs
-     `(("ruby-builder" ,ruby-builder)))
+     (list ruby-builder))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-rspec" ,ruby-rspec)))
+     (list bundler ruby-rspec))
     (synopsis "Generate XML reports of runs test")
     (description
      "@code{CI::Reporter} is an add-on to Ruby testing frameworks that allows
@@ -2053,7 +1999,7 @@ format.")
               ((".*RuboCop.*") ""))
             #t)))))
     (native-inputs
-     `(("ruby-rspec" ,ruby-rspec)))
+     (list ruby-rspec))
     (synopsis "Method contracts for Ruby")
     (description
      "This library provides contracts for Ruby.  A contract describes the
@@ -2117,8 +2063,7 @@ code in Merb and Rails.")
                (invoke "rspec"))
              #t)))))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-rspec" ,ruby-rspec-2)))
+     (list bundler ruby-rspec-2))
     (synopsis "Assertions for command-line dependencies in Ruby")
     (description
      "@code{cliver} provides a way to detect missing command-line
@@ -2155,9 +2100,8 @@ dependencies, including versions.")
                                (assoc-ref inputs "zeromq") "/lib"
                                "']"))))))))
     (inputs
-     `(("zeromq" ,zeromq)
-       ("czmq" ,czmq)))
-    (propagated-inputs `(("ruby-ffi" ,ruby-ffi)))
+     (list zeromq czmq))
+    (propagated-inputs (list ruby-ffi))
     (synopsis "Low-level Ruby bindings for CZMQ (generated using zproject)")
     (description
      "These Ruby bindings are not intended to be directly used, but rather
@@ -2190,12 +2134,11 @@ used by higher level bindings like those provided by CZTop.")
                                (assoc-ref inputs "zeromq") "/lib"
                                "']"))))))))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-rspec" ,ruby-rspec)))
+     (list bundler ruby-rspec))
     (inputs
-     `(("zeromq" ,zeromq)))
+     (list zeromq))
     (propagated-inputs
-     `(("ruby-czmq-ffi-gen" ,ruby-czmq-ffi-gen)))
+     (list ruby-czmq-ffi-gen))
     (synopsis "CZMQ Ruby bindings")
     (description
      "CZMQ Ruby bindings, based on the generated low-level FFI bindings of
@@ -2220,8 +2163,7 @@ support for security mechanisms.")
     ;; of the involved libraries.
     (arguments `(#:tests? #f))
     (propagated-inputs
-     `(("ruby-json-pure" ,ruby-json-pure)
-       ("ruby-atoulme-saikuro" ,ruby-atoulme-saikuro)))
+     (list ruby-json-pure ruby-atoulme-saikuro))
     (synopsis "Generate complexity treemap based on saikuro analysis")
     (description
      "This gem generates a treemap showing the complexity of Ruby code on
@@ -2244,11 +2186,8 @@ complexity.")
     (arguments
      '(#:tests? #f))                    ; no included tests
     (propagated-inputs
-     `(("ruby-faraday" ,ruby-faraday)
-       ("ruby-jwt" ,ruby-jwt)
-       ("ruby-multi-json" ,ruby-multi-json)
-       ("ruby-multi-xml" ,ruby-multi-xml)
-       ("ruby-rack" ,ruby-rack)))
+     (list ruby-faraday ruby-jwt ruby-multi-json ruby-multi-xml
+           ruby-rack))
     (synopsis "Ruby wrapper for the OAuth 2.0")
     (description
      "This package provides a Ruby wrapper for the OAuth 2.0 protocol built
@@ -2268,11 +2207,9 @@ with a similar style to the original OAuth spec.")
         (base32 "105mzgvmn2kjaacxw01h4wqv33r7hfn5z8fxlkk3jcjar14j71bh"))))
     (build-system ruby-build-system)
     (propagated-inputs
-     `(("ruby-hashie" ,ruby-hashie)
-       ("ruby-rack" ,ruby-rack)
-       ("ruby-rack-protection" ,ruby-rack-protection)))
+     (list ruby-hashie ruby-rack ruby-rack-protection))
     (native-inputs
-     `(("ruby-rspec" ,ruby-rspec)))
+     (list ruby-rspec))
     (synopsis "Generalized Rack framework for multiple-provider authentication")
     (description
      "This package provides a generalized Rack framework for multiple-provider
@@ -2306,14 +2243,9 @@ authentication.")
                (("Coveralls::SimpleCov::Formatter") ""))
              #t)))))
     (propagated-inputs
-     `(("ruby-oauth2" ,ruby-oauth2)
-       ("ruby-omniauth" ,ruby-omniauth)))
+     (list ruby-oauth2 ruby-omniauth))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-rspec" ,ruby-rspec)
-       ("ruby-simplecov" ,ruby-simplecov)
-       ("ruby-rack-test" ,ruby-rack-test)
-       ("ruby-webmock" ,ruby-webmock)))
+     (list bundler ruby-rspec ruby-simplecov ruby-rack-test ruby-webmock))
     (synopsis "Abstract OAuth2 strategy for OmniAuth")
     (description
      "This library provides a generic OAuth2 strategy for OmniAuth.  It
@@ -2442,9 +2374,9 @@ support.")
     (arguments
      `(#:tests? #f))                    ; no included tests
     (inputs
-     `(("curl" ,curl)))
+     (list curl))
     (propagated-inputs
-     `(("ruby-ffi" ,ruby-ffi)))
+     (list ruby-ffi))
     (synopsis "Very lightweight @code{libcurl} wrapper")
     (description
      "Ethon is a very basic @code{libcurl} wrapper using ffi.")
@@ -2468,14 +2400,14 @@ support.")
          "0c0vd2mmqq3ar4plbwi2wsbr31vn4h45i19r5km66skydnnbp1y6"))))
     (build-system ruby-build-system)
     (native-inputs
-     `(("bundler" ,bundler)
-       ;; The test suite tests all the available backends. Currenly, this just
-       ;; means the node backend.
-       ;;
-       ;; PASSED: test:node
-       ;; SKIPPED: test:duktape, ;; test:javascriptcore, test:jscript,
-       ;; test:miniracer, test:rubyracer, ;; test:rubyrhino, test:v8
-       ("node" ,node)))
+     (list bundler
+           ;; The test suite tests all the available backends. Currenly, this just
+           ;; means the node backend.
+           ;;
+           ;; PASSED: test:node
+           ;; SKIPPED: test:duktape, ;; test:javascriptcore, test:jscript,
+           ;; test:miniracer, test:rubyracer, ;; test:rubyrhino, test:v8
+           node))
     (synopsis "Run JavaScript code from Ruby")
     (description
      "ExecJS lets you run JavaScript code from Ruby.  It automatically picks a
@@ -2516,10 +2448,7 @@ a Ruby object.")
                          (string-append dep "\n")))
                       #t)))))
     (native-inputs
-     `(("ruby-bump" ,ruby-bump)
-       ("ruby-maxitest" ,ruby-maxitest)
-       ("ruby-rubocop" ,ruby-rubocop)
-       ("ruby-rspec" ,ruby-rspec)))
+     (list ruby-bump ruby-maxitest ruby-rubocop ruby-rspec))
     (synopsis "Fake file system for Ruby")
     (description
      "This package provides a fake file system for use in test suites.  It
@@ -2560,8 +2489,7 @@ extensions.")
          "0xy8wmjwjcnv36zi042678ncjzpxvy351ccbv7mzkns2n3kxfp54"))))
     (build-system ruby-build-system)
     (inputs
-     `(("zlib" ,zlib)
-       ("libxml2" ,libxml2)))
+     (list zlib libxml2))
     (arguments
      '(#:tests? #f ; test suite hangs for unknown reason
        #:gem-flags
@@ -2592,8 +2520,7 @@ the GNOME Libxml2 XML toolkit.")
     (arguments
      '(#:tests? #f)) ; No included tests
     (propagated-inputs
-     `(("ruby-hamster" ,ruby-hamster)
-       ("ruby-open4" ,ruby-open4)))
+     (list ruby-hamster ruby-open4))
     (synopsis "Build and execute commands in Ruby")
     (description
      "@code{Lino} provides an interface to run external commands.  It provides
@@ -2686,8 +2613,7 @@ Ruby.")
                     (lambda _
                       (invoke "rspec" "spec"))))))
     (native-inputs
-     `(("ruby-rspec" ,ruby-rspec)
-       ("ruby-simplecov" ,ruby-simplecov)))
+     (list ruby-rspec ruby-simplecov))
     (synopsis "Ruby toolkit for building command-line interfaces")
     (description "Thor is a toolkit for building powerful command-line
 interfaces.")
@@ -2706,8 +2632,7 @@ interfaces.")
                 "06im7gcg42x77yhz2w5da2ly9xz0n0c36y5ks7xs53v0l9g0vf5n"))))
     (build-system ruby-build-system)
     (native-inputs
-     `(("ruby-rspec" ,ruby-rspec)
-       ("ruby-timecop" ,ruby-timecop)))
+     (list ruby-rspec ruby-timecop))
     (synopsis "Logging utility library for Ruby")
     (description "Lumberjack is a simple logging utility that can be a drop in
 replacement for Logger or ActiveSupport::BufferedLogger.  It provides support
@@ -2759,12 +2684,11 @@ same log file.")
                (invoke "rspec"))
              #t)))))
     (propagated-inputs
-     `(("ruby-ffi" ,ruby-ffi)))
+     (list ruby-ffi))
     (inputs
-     `(("libsodium" ,libsodium)))
+     (list libsodium))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-rspec" ,ruby-rspec)))
+     (list bundler ruby-rspec))
     (synopsis "Ruby FFI binding to libsodium")
     (description
      "This package provides Ruby FFI bindings to the Networking and
@@ -2791,7 +2715,7 @@ high-level toolkit for building cryptographic systems and protocols.")
     (arguments
      `(#:test-target "default"))
     (native-inputs
-     `(("ruby-rspec" ,ruby-rspec)))
+     (list ruby-rspec))
     (synopsis "HMAC-based Key Derivation Function")
     (description
      "This package provides a Ruby implementation of RFC5869: @acronym{HKDF,
@@ -2814,8 +2738,7 @@ take some source key material and generate suitable cryptographic keys from it."
     (arguments
      `(#:tests? #f)) ; no tests included
     (native-inputs
-     `(("ruby-rspec" ,ruby-rspec)
-       ("bundler" ,bundler)))
+     (list ruby-rspec bundler))
     (synopsis "Ruby interface for modifying the environment")
     (description "Nenv provides a convenient wrapper for Ruby's ENV to modify
 and inspect the environment.")
@@ -2908,9 +2831,7 @@ operations with permutations of sequences, such as strings and arrays.")
               (("^RSpec") "require \"shellany\"\nRSpec"))
             #t)))))
     (native-inputs
-     `(("ruby-rspec" ,ruby-rspec)
-       ("ruby-nenv" ,ruby-nenv)
-       ("bundler" ,bundler)))
+     (list ruby-rspec ruby-nenv bundler))
     (synopsis "Capture command output")
     (description "Shellany is a Ruby library providing functions to capture
 the output produced by running shell commands.")
@@ -2931,10 +2852,9 @@ the output produced by running shell commands.")
     ;; Tests are not included in the gem.
     (arguments `(#:tests? #f))
     (propagated-inputs
-     `(("ruby-shellany" ,ruby-shellany)
-       ("ruby-nenv" ,ruby-nenv)))
+     (list ruby-shellany ruby-nenv))
     (native-inputs
-     `(("bundler" ,bundler)))
+     (list bundler))
     (synopsis "Wrapper library for notification libraries")
     (description "Notiffany is a Ruby wrapper library for notification
 libraries such as Libnotify.")
@@ -2979,13 +2899,9 @@ libraries such as Libnotify.")
                       (setenv "HOME" "/tmp")
                       #t)))))
     (native-inputs
-     `(("ruby-activerecord" ,ruby-activerecord)
-       ("ruby-bump" ,ruby-bump)
-       ("ruby-rspec" ,ruby-rspec)
-       ("ruby-sqlite3" ,ruby-sqlite3)
-       ("ruby-wwtd" ,ruby-wwtd)))
+     (list ruby-activerecord ruby-bump ruby-rspec ruby-sqlite3 ruby-wwtd))
     (propagated-inputs
-     `(("ruby-parallel-tests" ,ruby-parallel-tests)))
+     (list ruby-parallel-tests))
     (synopsis "Run every test in a fork")
     (description
      "This package is a wrapper around @code{parallel_tests} that runs every
@@ -3048,10 +2964,9 @@ standard output stream.")
                (invoke "rspec"))
              #t)))))
     (native-inputs
-     `(("bundler" ,bundler)))
+     (list bundler))
     (propagated-inputs
-     `(("ruby-rspec-core" ,ruby-rspec-core)
-       ("ruby-progressbar" ,ruby-progressbar)))
+     (list ruby-rspec-core ruby-progressbar))
     (synopsis "Fuubar is an RSpec formatter that uses a progress bar")
     (description
      "Fuubar is an RSpec formatter that uses a progress bar instead of a
@@ -3075,8 +2990,7 @@ failure.")
     (arguments
      '(#:tests? #f)) ; No included tests
     (propagated-inputs
-     `(("ruby-tilt" ,ruby-tilt)
-       ("ruby-temple" ,ruby-temple)))
+     (list ruby-tilt ruby-temple))
     (synopsis "Haml is a Ruby library to generate HTML documents")
     (description
      "@acronym{Haml, HTML Abstraction Markup Language} is a layer on top of
@@ -3122,9 +3036,9 @@ engine.")
              (invoke "rspec"))
            #t)))))
   (propagated-inputs
-   `(("ruby-concurrent" ,ruby-concurrent)))
+   (list ruby-concurrent))
   (native-inputs
-   `(("ruby-rspec" ,ruby-rspec)))
+   (list ruby-rspec))
   (synopsis "Efficient, immutable, thread-safe collection classes for Ruby")
   (description
     "Hamster provides 6 persistent data structures: @code{Hash}, @code{Vector},
@@ -3155,8 +3069,7 @@ immutable queue or stack).")
                (invoke "rspec"))
              #t)))))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-rspec" ,ruby-rspec-2)))
+     (list bundler ruby-rspec-2))
     (synopsis "HashDiff computes the smallest difference between two hashes")
     (description
      "HashDiff is a Ruby library to compute the smallest difference between
@@ -3190,9 +3103,9 @@ two hashes.")
                       (lambda _
                         (invoke "rspec"))))))
       (native-inputs
-       `(("ruby-rspec" ,ruby-rspec)))
+       (list ruby-rspec))
       (propagated-inputs
-       `(("ruby-byebug" ,ruby-byebug)))
+       (list ruby-byebug))
       (synopsis "Ruby hyphenation patterns")
       (description
        "ruby-hydra is a Ruby library for working with hyphenation patterns.")
@@ -3224,7 +3137,7 @@ two hashes.")
                ((" -rubygems") ""))
              #t)))))
     (propagated-inputs
-     `(("ruby-formatador" ,ruby-formatador)))
+     (list ruby-formatador))
     (synopsis "Simple depth first Ruby testing")
     (description "Shindo is a simple depth first testing library for Ruby.")
     (home-page "https://github.com/geemus/shindo")
@@ -3244,8 +3157,7 @@ two hashes.")
     ;; Tests need Internet access.
     (arguments `(#:tests? #f))
     (native-inputs
-     `(("ruby-rspec" ,ruby-rspec)
-       ("ruby-yard" ,ruby-yard)))
+     (list ruby-rspec ruby-yard))
     (synopsis "Rake tasks for managing and releasing Ruby Gems")
     (description "Rubygems-task provides Rake tasks for managing and releasing
 Ruby Gems.")
@@ -3277,10 +3189,7 @@ Ruby Gems.")
              (("/usr/bin/env ruby") (which "ruby")))
            #t)))))
   (native-inputs
-   `(("bundler" ,bundler)
-     ("ruby-simplecov" ,ruby-simplecov)
-     ("zip" ,zip)
-     ("unzip" ,unzip)))
+   (list bundler ruby-simplecov zip unzip))
   (synopsis "Ruby module is for reading and writing zip files")
   (description
     "The rubyzip module provides ways to read from and create zip files.")
@@ -3300,7 +3209,7 @@ Ruby Gems.")
     (build-system ruby-build-system)
     (arguments `(#:tests? #f)) ; there are no tests
     (native-inputs
-     `(("bundler" ,bundler)))
+     (list bundler))
     (synopsis "Default HTML formatter for SimpleCov code coverage tool")
     (description "This package provides the default HTML formatter for
 the SimpleCov code coverage tool for Ruby version 1.9 and above.")
@@ -3322,11 +3231,9 @@ the SimpleCov code coverage tool for Ruby version 1.9 and above.")
     ;; Rubocop needs simplecov at build time.
     (arguments `(#:tests? #f))
     (propagated-inputs
-     `(("ruby-json" ,ruby-json)
-       ("ruby-docile" ,ruby-docile)
-       ("ruby-simplecov-html" ,ruby-simplecov-html)))
+     (list ruby-json ruby-docile ruby-simplecov-html))
     (native-inputs
-     `(("bundler" ,bundler)))
+     (list bundler))
     (synopsis "Code coverage framework for Ruby")
     (description "SimpleCov is a code coverage framework for Ruby with a
 powerful configuration library and automatic merging of coverage across test
@@ -3369,8 +3276,7 @@ User Agents.")
    '(;; TODO: This should be default, but there is one test failure
      #:test-target "all_spec"))
   (native-inputs
-   `(("ruby-mspec" ,ruby-mspec)
-     ("ruby-activesupport" ,ruby-activesupport)))
+   (list ruby-mspec ruby-activesupport))
   (synopsis "Backports of the features in newer Ruby versions")
   (description
     "Backports enables more compatibility across Ruby versions by providing
@@ -3410,7 +3316,7 @@ features.")
     (arguments
      ;; No tests
      '(#:tests? #f))
-    (propagated-inputs `(("ruby-bacon" ,ruby-bacon)))
+    (propagated-inputs (list ruby-bacon))
     (synopsis "Extensions to Bacon, for disabling tests, before and after
 blocks and more")
     (description
@@ -3435,7 +3341,7 @@ disable tests, have before and after blocks that run once and more.")
      '(;; No included tests
        #:tests? #f))
     (propagated-inputs
-     `(("ruby-bacon" ,ruby-bacon)))
+     (list ruby-bacon))
     (synopsis "Colored output for Bacon test framework")
     (description
      "This package adds color through ANSI escape codes to Bacon test
@@ -3455,7 +3361,7 @@ output.")
                 "0lflx29mlznf1hn0nihkgllzbj8xp5qasn8j7h838465pi399k68"))))
     (build-system ruby-build-system)
     (native-inputs
-     `(("bundler" ,bundler)))
+     (list bundler))
     (synopsis "Generic connection pool for Ruby")
     (description "Connection_pool provides a generic connection pooling
 interface for Ruby programs.")
@@ -3503,17 +3409,17 @@ interface for Ruby programs.")
                          "ActiveRecord::VERSION::MAJOR >= 4"))
                       #t)))))
     (native-inputs
-     `(;; For tests.
-       ("ruby-activerecord" ,ruby-activerecord)
-       ("ruby-activesupport" ,ruby-activesupport)
-       ("ruby-bump" ,ruby-bump)
-       ("ruby-forking-test-runner" ,ruby-forking-test-runner)
-       ("ruby-i18n" ,ruby-i18n)
-       ("ruby-rubocop" ,ruby-rubocop)
-       ("ruby-rspec" ,ruby-rspec)
-       ("ruby-single-cov" ,ruby-single-cov)
-       ("ruby-sqlite3" ,ruby-sqlite3)
-       ("ruby-wwtd" ,ruby-wwtd)))
+     (list ;; For tests.
+           ruby-activerecord
+           ruby-activesupport
+           ruby-bump
+           ruby-forking-test-runner
+           ruby-i18n
+           ruby-rubocop
+           ruby-rspec
+           ruby-single-cov
+           ruby-sqlite3
+           ruby-wwtd))
     (synopsis "Fast implementation of @code{GetText}")
     (description
      "This package provides an alternative implementation of the Ruby
@@ -3533,8 +3439,7 @@ interface for Ruby programs.")
                 "156rv95bgxfz6qw5y1r7c7bswr77918hygl8dyl14qzbqc5vyp18"))))
     (build-system ruby-build-system)
     (native-inputs
-     `(("ruby-connection-pool" ,ruby-connection-pool)
-       ("ruby-hoe" ,ruby-hoe)))
+     (list ruby-connection-pool ruby-hoe))
     (synopsis "Persistent HTTP connection manager")
     (description "Net::HTTP::Persistent manages persistent HTTP connections
 using Net::HTTP, supporting reconnection and retry according to RFC 2616.")
@@ -3555,7 +3460,7 @@ using Net::HTTP, supporting reconnection and retry according to RFC 2616.")
     (arguments
      '(#:tests? #f))                    ; No included tests
     (native-inputs
-     `(("bundler" ,bundler)))
+     (list bundler))
     (synopsis "Assert library with descriptive assertion messages")
     (description "Power-assert is an assertion library providing descriptive
 assertion messages for tests.")
@@ -3577,9 +3482,7 @@ assertion messages for tests.")
     (arguments
      '(#:test-target "spec"))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-rspec" ,ruby-rspec)
-       ("ruby-yard" ,ruby-yard)))
+     (list bundler ruby-rspec ruby-yard))
     (synopsis "Useful extensions to core Ruby classes")
     (description
      "This package provides a few useful extensions to core Ruby classes,
@@ -3604,8 +3507,7 @@ including @code{Array}, @code{Enumerable}, @code{Hash}, @code{Numeric}, and
     ;; dependency cycle we disable tests.
     (arguments `(#:tests? #f))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-yard" ,ruby-yard)))
+     (list bundler ruby-yard))
     (synopsis "Ruby library providing basic localization APIs")
     (description
      "Ruby-Locale is the pure ruby library which provides basic APIs for
@@ -3626,9 +3528,7 @@ localization.")
          "060zzj7c2kicdfk6cpnn40n9yjnhfrr13d0rsbdhdij68chp2861"))))
     (build-system ruby-build-system)
     (native-inputs
-     `(("ruby-tilt" ,ruby-tilt)
-       ("ruby-bacon" ,ruby-bacon)
-       ("ruby-erubis" ,ruby-erubis)))
+     (list ruby-tilt ruby-bacon ruby-erubis))
     (synopsis "Template compilation framework in Ruby")
     (description
      "Temple is an abstraction and framework for compiling templates to pure
@@ -3670,11 +3570,9 @@ Soundex, Metaphone, Double Metaphone, Porter Stemming.")
     ;; tests.
     (arguments `(#:tests? #f))
     (propagated-inputs
-     `(("ruby-locale" ,ruby-locale)
-       ("ruby-text" ,ruby-text)))
+     (list ruby-locale ruby-text))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-yard" ,ruby-yard)))
+     (list bundler ruby-yard))
     (synopsis "GNU gettext-like program for Ruby")
     (description
      "Gettext is a GNU gettext-like program for Ruby.  The catalog
@@ -3698,10 +3596,9 @@ use GNU gettext tools for maintenance.")
     ;; To break the dependency cycle we disable tests.
     (arguments `(#:tests? #f))
     (propagated-inputs
-     `(("ruby-gettext" ,ruby-gettext)
-       ("ruby-yard" ,ruby-yard)))
+     (list ruby-gettext ruby-yard))
     (native-inputs
-     `(("bundler" ,bundler)))
+     (list bundler))
     (synopsis "Utility library to package internationalized libraries")
     (description
      "Packnga is a library to translate to many languages using YARD.")
@@ -3721,9 +3618,7 @@ use GNU gettext tools for maintenance.")
          "1a2ym3l068d0pxzzr95kvqx87zpdsarxslz9ygd4qfm9frrz0kgj"))))
     (build-system ruby-build-system)
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-mocha" ,ruby-mocha)
-       ("ruby-rspec" ,ruby-rspec)))
+     (list bundler ruby-mocha ruby-rspec))
     (synopsis "Creates temporary files and directories for testing")
     (description
      "TestConstruct is a @acronym{DSL, Domain Specific Language} for creating
@@ -3743,11 +3638,9 @@ temporary files and directories during tests.")
                 "15isy7vhppbfd0032klirj9gxp65ygkzjdwrmm28xpirlcsk6qpd"))))
     (build-system ruby-build-system)
     (propagated-inputs
-     `(("ruby-power-assert" ,ruby-power-assert)))
+     (list ruby-power-assert))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-packnga" ,ruby-packnga)
-       ("ruby-yard" ,ruby-yard)))
+     (list bundler ruby-packnga ruby-yard))
     (synopsis "Unit testing framework for Ruby")
     (description "@code{Test::Unit} is unit testing framework for Ruby, based
 on xUnit principles.  These were originally designed by Kent Beck, creator of
@@ -3781,10 +3674,9 @@ It allows writing tests, checking results and automated testing in Ruby.")
                (invoke "rspec"))
              #t)))))
     (propagated-inputs
-     `(("ruby-builder" ,ruby-builder)))
+     (list ruby-builder))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-rspec" ,ruby-rspec-2)))
+     (list bundler ruby-rspec-2))
     (synopsis "Write HTML pages in pure Ruby")
     (description
      "Markaby allows writing HTML packages in pure Ruby.  This is similar to
@@ -3816,9 +3708,7 @@ mixture of HTML and additional ERB syntax.")
                (invoke "rspec"))
              #t)))))
     (native-inputs
-     `(("ruby-rspec" ,ruby-rspec)
-       ("ruby-simplecov" ,ruby-simplecov)
-       ("ruby-nokogiri-diff" ,ruby-nokogiri-diff)))
+     (list ruby-rspec ruby-simplecov ruby-nokogiri-diff))
     (synopsis "Markdown interpreter in Ruby")
     (description
      "Maruku is a Markdown interpreter in Ruby.  It can export Markdown to
@@ -3852,8 +3742,7 @@ HTML, and PDF through LaTeX.")
                                  "/lib\""))))
              #t)))))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-test-unit" ,ruby-test-unit)))
+     (list bundler ruby-test-unit))
     (synopsis "Ruby library adding metaclass method to all objects")
     (description
      "Metaclass is a Ruby library adding a @code{metaclass} method to all Ruby
@@ -3873,7 +3762,7 @@ objects.")
                 "0br9k6zijj1zc25n8p7f2j1mwl58nfgdknf3q13h9k156jvrir06"))))
     (build-system ruby-build-system)
     (propagated-inputs
-     `(("ruby-ptools" ,ruby-ptools)))
+     (list ruby-ptools))
     (synopsis "Lightweight alternative to @code{mkmf}")
     (description
      "@code{mkmf-lite} is a light version of Ruby's @code{mkmf.rb} designed
@@ -3915,9 +3804,7 @@ to check for the presence of header files, constants, and so on.")
                (invoke "rspec" "spec"))
              #t)))))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-rake" ,ruby-rake)
-       ("ruby-rspec" ,ruby-rspec)))
+     (list bundler ruby-rake ruby-rspec))
     (synopsis "MSpec is a specialized framework for RubySpec")
     (description
      "MSpec is a specialized framework that is syntax-compatible with RSpec 2
@@ -3975,8 +3862,7 @@ specs for Ruby implementations in ruby/spec.")
      `(("mariadb-dev" ,mariadb "dev")
        ("zlib" ,zlib)))
     (native-inputs
-     `(("ruby-rspec" ,ruby-rspec)
-       ("ruby-rake-compiler" ,ruby-rake-compiler)))
+     (list ruby-rspec ruby-rake-compiler))
     (synopsis "MySQL library for Ruby, binding to libmysql")
     (description
      "This package provides a simple, fast MySQL library for Ruby, binding to
@@ -4001,8 +3887,7 @@ libmysql.")
          (replace 'check
           (lambda _ (invoke "rspec" "spec/"))))))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-rspec" ,ruby-rspec)))
+     (list bundler ruby-rspec))
     (synopsis "Abstract base class with no predefined methods")
     (description
      "BlankSlate provides an abstract base class with no predefined
@@ -4029,9 +3914,7 @@ as a base class when writing classes that depend upon
      ;; https://github.com/cldwalker/bond/issues/46).
      `(#:tests? #f))
     (native-inputs
-     `(("ruby-bacon" ,ruby-bacon)
-       ("ruby-bacon-bits" ,ruby-bacon-bits)
-       ("ruby-mocha-on-bacon" ,ruby-mocha-on-bacon)))
+     (list ruby-bacon ruby-bacon-bits ruby-mocha-on-bacon))
     (synopsis "Bond can provide custom autocompletion for arguments, methods
 and more")
     (description
@@ -4075,7 +3958,7 @@ irb's last-word approach.")
                         (find-files "./test" ".*\\.rb"))))
              #t)))))
     (inputs
-     `(("libidn" ,libidn)))
+     (list libidn))
     (synopsis "Ruby Bindings for the GNU LibIDN library")
     (description
      "Ruby Bindings for the GNU LibIDN library, an implementation of the
@@ -4116,10 +3999,9 @@ encoded form.")
                                  "/lib\""))))
              #t)))))
     (propagated-inputs
-     `(("ruby-blankslate" ,ruby-blankslate)))
+     (list ruby-blankslate))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-test-unit" ,ruby-test-unit)))
+     (list bundler ruby-test-unit))
     (synopsis "Instantiate an arbitrary Ruby class")
     (description
      "Instantiator lets you instantiate an arbitrary Ruby class without
@@ -4153,12 +4035,9 @@ knowing anything about the constructor.")
                                 "/lib\""))))
             #t)))))
     (propagated-inputs
-     `(("ruby-instantiator" ,ruby-instantiator)
-       ("ruby-metaclass" ,ruby-metaclass)))
+     (list ruby-instantiator ruby-metaclass))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-blankslate" ,ruby-blankslate)
-       ("ruby-test-unit" ,ruby-test-unit)))
+     (list bundler ruby-blankslate ruby-test-unit))
     (synopsis "Dynamic inspection of the method hierarchy on a Ruby object")
     (description
      "Introspection provides tools to inspect the hierarchy of method
@@ -4188,9 +4067,7 @@ definitions on a Ruby object.")
                "task :test => %w[test:unit]"))
             #t)))))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-test-unit" ,ruby-test-unit)
-       ("ruby-rake-compiler" ,ruby-rake-compiler)))
+     (list bundler ruby-test-unit ruby-rake-compiler))
     (synopsis "Extensible Markdown to (X)HTML converter")
     (description
      "Redcarpet is an extensible Ruby library for Markdown processing and
@@ -4213,7 +4090,7 @@ conversion to (X)HTML.")
   (arguments
    '(#:tests? #f)) ; No included tests
   (propagated-inputs
-   `(("ruby-listen" ,ruby-listen)))
+   (list ruby-listen))
   (synopsis "Run a process, and restart when some monitored files change")
   (description
     "Rerun is a tool to launch programs, then monitor the file system, and
@@ -4267,7 +4144,7 @@ Ruby, but can be used for all programs.")
        ("ruby-rspec" ,ruby-rspec)
        ("ruby-wwtd" ,ruby-wwtd)))
     (propagated-inputs
-     `(("ruby-minitest" ,ruby-minitest)))
+     (list ruby-minitest))
     (synopsis "Minitest with extra features")
     (description
      "Maxitest is a wrapper around Minitest with extra functionality such
@@ -4298,7 +4175,7 @@ number, support for interrupted tests, better backtraces, and more.")
                 "true\n"))
              #t)))))
     (native-inputs
-     `(("ruby-introspection" ,ruby-introspection)))
+     (list ruby-introspection))
     (synopsis "Mocking and stubbing library for Ruby")
     (description
      "Mocha is a mocking and stubbing library with JMock/SchMock syntax, which
@@ -4322,7 +4199,7 @@ allows mocking and stubbing of methods on real (non-mock) classes.")
     (arguments
      ;; rubygems.org release missing tests
      '(#:tests? #f))
-    (propagated-inputs `(("ruby-mocha" ,ruby-mocha)))
+    (propagated-inputs (list ruby-mocha))
     (synopsis "Mocha adapter for Bacon")
     (description
      "This package provides a Mocha adapter for Bacon, allowing you to use the
@@ -4343,9 +4220,7 @@ Mocha stubbing and mocking library with Bacon, a small RSpec clone.")
                 "07c4v97zl1daabmri9zlbzs6yvkl56z1q14bw74d53jdj0c17nhx"))))
     (build-system ruby-build-system)
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-mocha" ,ruby-mocha)
-       ("ruby-test-unit" ,ruby-test-unit)))
+     (list bundler ruby-mocha ruby-test-unit))
     (synopsis "Ruby implementation of the SSH2 client protocol")
     (description "@code{Net::SSH} is a pure-Ruby implementation of the SSH2
 client protocol.  It allows you to write programs that invoke and interact
@@ -4369,11 +4244,9 @@ with processes on remote servers, via SSH2.")
         (base32 "1nyn17sy71fn7zs3y6wbgcn35318c10flqgc0582409095x4h0sx"))))
     (build-system ruby-build-system)
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-test-unit" ,ruby-test-unit)
-       ("ruby-mocha" ,ruby-mocha)))
+     (list bundler ruby-test-unit ruby-mocha))
     (propagated-inputs
-     `(("ruby-net-ssh" ,ruby-net-ssh)))
+     (list ruby-net-ssh))
     (synopsis "Pure-Ruby SCP client library")
     (description "@code{Net::SCP} is a pure-Ruby implementation of the SCP
 client protocol.")
@@ -4392,7 +4265,7 @@ client protocol.")
                 "19z7wkhg59y8abginfrm2wzplz7py3va8fyngiigngqvsws6cwgl"))))
     (build-system ruby-build-system)
     (native-inputs
-     `(("ruby-hoe" ,ruby-hoe)))
+     (list ruby-hoe))
     (synopsis "Small test suite library for Ruby")
     (description "Minitest provides a complete suite of Ruby testing
 facilities supporting TDD, BDD, mocking, and benchmarking.")
@@ -4445,12 +4318,9 @@ facilities supporting TDD, BDD, mocking, and benchmarking.")
                (("%q<cucumber>.*") "%q<cucumber>, [\">= 0\"])\n"))
              #t)))))
     (propagated-inputs
-     `(("ruby-minitest" ,ruby-minitest)))
+     (list ruby-minitest))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-cucumber" ,ruby-cucumber)
-       ("ruby-bump" ,ruby-bump)
-       ("ruby-test-construct" ,ruby-test-construct)))
+     (list bundler ruby-cucumber ruby-bump ruby-test-construct))
     (synopsis "Run code around tests in Minitest")
     (description
      "This library provides a way to run code around tests in Minitest,
@@ -4470,8 +4340,7 @@ written using either the unit test or spec style.")
                 "179d6pj56l9xzm46fqsqj10mzjkr1f9fv4cxa8wvchs97hqz33w1"))))
     (build-system ruby-build-system)
     (native-inputs
-     `(("ruby-hoe" ,ruby-hoe)
-       ("ruby-minitest" ,ruby-minitest)))
+     (list ruby-hoe ruby-minitest))
     (synopsis "Fast test suite runner for minitest")
     (description "Minitest-sprint is a test runner for minitest that makes it
 easier to re-run individual failing tests.")
@@ -4490,9 +4359,9 @@ easier to re-run individual failing tests.")
                 "0zhdwcl6bgha61qiyfvr7zs7ywaxc33wmj9xhxl8jdmpdvifvfaj"))))
     (build-system ruby-build-system)
     (native-inputs
-     `(("ruby-hoe" ,ruby-hoe)))
+     (list ruby-hoe))
     (inputs
-     `(("ruby-minitest" ,ruby-minitest)))
+     (list ruby-minitest))
     (synopsis "Bacon compatibility library for minitest")
     (description "Minitest-bacon extends minitest with bacon-like
 functionality, making it easier to migrate test suites from bacon to minitest.")
@@ -4512,9 +4381,9 @@ functionality, making it easier to migrate test suites from bacon to minitest.")
          "1zgjslp6d7dzcn8smj595idymgd5j603p9g2jqkfgi28sqbhz6m0"))))
     (build-system ruby-build-system)
     (propagated-inputs
-     `(("ruby-minitest" ,ruby-minitest)))
+     (list ruby-minitest))
     (native-inputs
-     `(("ruby-hoe" ,ruby-hoe)))
+     (list ruby-hoe))
     (synopsis "Allows a few specific tests to be focused on")
     (description
      "@code{minitest-focus} gives the ability focus on a few tests with ease
@@ -4548,8 +4417,7 @@ is to be run.")
              (lambda _
                (invoke "script/test"))))))
       (native-inputs
-       `(("bundler" ,bundler)
-         ("ruby-turn" ,ruby-turn)))
+       (list bundler ruby-turn))
       (synopsis "Pretty-print hashes and arrays in MiniTest")
       (description
        "@code{minitest-pretty_diff} monkey-patches
@@ -4585,8 +4453,7 @@ structures when tests fail.")
                (("require 'byebug'") ""))
              #t)))))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-minitest" ,ruby-minitest)))
+     (list bundler ruby-minitest))
     (synopsis "Extra features and changes to MiniTest")
     (description "@code{MiniTest Moar} add some additional features and
 changes some default behaviours in MiniTest.  For instance, Moar replaces the
@@ -4618,10 +4485,8 @@ MiniTest @code{Object#stub} with a global @code{stub} method.")
                (("require 'minitest/bisect'") ""))
              #t)))))
     (native-inputs
-     `(("ruby-hoe" ,ruby-hoe)
-       ("ruby-minitest-pretty-diff" ,ruby-minitest-pretty-diff)
-       ("ruby-minitest-focus" ,ruby-minitest-focus)
-       ("ruby-minitest-moar" ,ruby-minitest-moar)))
+     (list ruby-hoe ruby-minitest-pretty-diff ruby-minitest-focus
+           ruby-minitest-moar))
     (synopsis "Bonus assertions for @code{Minitest}")
     (description
      "Minitest bonus assertions provides extra MiniTest assertions.  For
@@ -4659,13 +4524,9 @@ instance, it provides @code{assert_true}, @code{assert_false} and
                ((".*%q<rubocop>.*") "\n"))
              #t)))))
     (propagated-inputs
-     `(("ruby-ansi" ,ruby-ansi)
-       ("ruby-builder" ,ruby-builder)
-       ("ruby-minitest" ,ruby-minitest)
-       ("ruby-progressbar" ,ruby-progressbar)))
+     (list ruby-ansi ruby-builder ruby-minitest ruby-progressbar))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-maruku" ,ruby-maruku)))
+     (list bundler ruby-maruku))
     (synopsis "Enhanced reporting for Minitest tests")
     (description
      "@code{minitest/reporters} provides a custom Minitest runner to improve
@@ -4693,7 +4554,7 @@ reporter.")
      ;; https://github.com/blowmage/minitest-rg/pull/13
      `(#:tests? #f))
     (propagated-inputs
-     `(("ruby-minitest" ,ruby-minitest)))
+     (list ruby-minitest))
     (synopsis "Coloured output for Minitest")
     (description
      "@code{minitest-rg} changes the colour of the output from Minitest.")
@@ -4714,7 +4575,7 @@ reporter.")
          "1pp3k2608spj4kvqy2y16hs18an917g6vwgvphrfhjviac83090x"))))
     (build-system ruby-build-system)
     (propagated-inputs
-     `(("ruby-minitest" ,ruby-minitest)))
+     (list ruby-minitest))
     (synopsis "Adjust minitest behaviour for calling expectation methods")
     (description
      "Minitest-global_expectations allows continued use of expectation methods
@@ -4741,8 +4602,7 @@ minitest 5.12, and is planned to be removed from minitest 6.")
        ;; https://github.com/jeremyevans/minitest-hooks/issues/19
        #:tests? #f))
     (native-inputs
-     `(("ruby-sequel" ,ruby-sequel)
-       ("ruby-sqlite3" ,ruby-sqlite3)))
+     (list ruby-sequel ruby-sqlite3))
     (synopsis "Hooks for the minitest framework")
     (description
      "Minitest-hooks adds @code{around}, @code{before_all}, @code{after_all},
@@ -4807,7 +4667,7 @@ URIs using the normal URI.parse method.")
                 "0c9rk23ilhc0n4489y6lda2wzphpzh6ish6fahlbpjhxn82wb931"))))
     (build-system ruby-build-system)
     (native-inputs
-     `(("ruby-minitest" ,ruby-minitest)))
+     (list ruby-minitest))
     (synopsis "Recursively merge hashes")
     (description
      "Deep Merge is a set of utility functions for @code{Hash}.  It permits
@@ -4842,7 +4702,7 @@ you to merge elements inside a hash together recursively.")
                            (string-append "'" git "'")))
                         #t))))))
     (inputs
-     `(("git" ,git)))
+     (list git))
     (synopsis "Ruby wrappers for Git")
     (description "Ruby/Git is a Ruby library that can be used to create, read
 and manipulate Git repositories by wrapping system calls to the git binary.")
@@ -4871,8 +4731,7 @@ and manipulate Git repositories by wrapping system calls to the git binary.")
                           (format #t "test suite not run~%"))
                       #t)))))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-rspec" ,ruby-rspec)))
+     (list bundler ruby-rspec))
     (synopsis "HOCON config library")
     (description
      "This package provides Ruby support for the @acronym{HOCON,
@@ -4893,7 +4752,7 @@ objects back to a @code{String}.")
                 "0bfm8535g0rkn9cbjndkckf0f7a3wj0rg4rqhrpsgxnbfdf2lm0p"))))
     (build-system ruby-build-system)
     (native-inputs
-     `(("ruby-minitest" ,ruby-minitest)))
+     (list ruby-minitest))
     (synopsis "Ruby command line option parser")
     (description "Slop provides a Ruby domain specific language for gathering
 options and parsing command line flags.")
@@ -4943,7 +4802,7 @@ Nokogiri, Ox, or REXML.")
                 "09k0b3cybqilk1gwrwwain95rdypixb2q9w65gd44gfzsd84xi1x"))))
     (build-system ruby-build-system)
     (native-inputs
-     `(("bundler" ,bundler)))
+     (list bundler))
     (synopsis "Multipart POST library for Ruby")
     (description "Multipart-Post Adds multipart POST capability to Ruby's
 net/http library.")
@@ -4975,10 +4834,7 @@ net/http library.")
              ;; As seen in the .travis.yml file.
              (setenv "SKIP_ADAPTERS" "gson,jr_jackson,nsjsonserialization"))))))
     (native-inputs
-     `(("ruby-rspec" ,ruby-rspec)
-       ("ruby-json-pure" ,ruby-json-pure)
-       ("ruby-oj" ,ruby-oj)
-       ("ruby-yajl-ruby" ,ruby-yajl-ruby)))
+     (list ruby-rspec ruby-json-pure ruby-oj ruby-yajl-ruby))
     (synopsis "Common interface to multiple JSON libraries for Ruby")
     (description
      "This package provides a common interface to multiple JSON libraries,
@@ -5048,7 +4904,7 @@ various relational database implementations.")
      '(;; No included tests
        #:tests? #f))
     (propagated-inputs
-     `(("ruby-mimemagic" ,ruby-mimemagic)))
+     (list ruby-mimemagic))
     (synopsis "MIME type detection using magic numbers, filenames and extensions")
     (description
      "@code{marcel} provides @acronym{MIME, Multipurpose Internet Mail
@@ -5152,14 +5008,11 @@ to reproduce user environments.")
                                  "/lib'\n"))))
              #t)))))
     (native-inputs
-     `(("ruby-hoe" ,ruby-hoe)))
+     (list ruby-hoe))
     (inputs
-     `(("zlib" ,zlib)
-       ("libxml2" ,libxml2)
-       ("libxslt" ,libxslt)))
+     (list zlib libxml2 libxslt))
     (propagated-inputs
-     `(("ruby-mini-portile" ,ruby-mini-portile-2)
-       ("ruby-pkg-config" ,ruby-pkg-config)))
+     (list ruby-mini-portile-2 ruby-pkg-config))
     (synopsis "HTML, XML, SAX, and Reader parser for Ruby")
     (description "Nokogiri (鋸) parses and searches XML/HTML, and features
 both CSS3 selector and XPath 1.0 support.")
@@ -5220,7 +5073,7 @@ both CSS3 selector and XPath 1.0 support.")
                (("git ls-files") "find . -type f"))
              #t)))))
     (native-inputs
-     `(("ruby-rspec" ,ruby-rspec)))
+     (list ruby-rspec))
     (synopsis "Retrieve the source code for Ruby methods")
     (description "Method_source retrieves the source code for Ruby methods.
 Additionally, it can extract source code from Proc and Lambda objects or just
@@ -5262,7 +5115,7 @@ for select languages.")
     (build-system ruby-build-system)
     (arguments `(#:tests? #f))          ;no test suite in gem
     (propagated-inputs
-     `(("ruby-gherkin" ,ruby-gherkin)))
+     (list ruby-gherkin))
     (synopsis "Gherkin test suite analysis tool")
     (description "CukeModeler facilitates modeling a test suite that is
 written in Gherkin (e.g.  Cucumber, SpecFlow, Lettuce, etc.).  It does this by
@@ -5323,15 +5176,15 @@ then be analyzed or manipulated more easily than the underlying AST layer.")
                       (setenv "HOME" "/tmp")
                       #t)))))
     (native-inputs
-     `(("ruby-bump" ,ruby-bump)
-       ("ruby-cucumber" ,ruby-cucumber)
-       ("ruby-cuke-modeler" ,ruby-cuke-modeler)
-       ("ruby-minitest" ,ruby-minitest)
-       ("ruby-rake" ,ruby-rake)
-       ("ruby-rspec" ,ruby-rspec)
-       ("ruby-spinach" ,ruby-spinach)))
+     (list ruby-bump
+           ruby-cucumber
+           ruby-cuke-modeler
+           ruby-minitest
+           ruby-rake
+           ruby-rspec
+           ruby-spinach))
     (propagated-inputs
-     `(("ruby-parallel" ,ruby-parallel)))
+     (list ruby-parallel))
     (synopsis "Run tests in parallel")
     (description
      "This package can speed up @code{Test::Unit}, @code{RSpec},
@@ -5354,14 +5207,11 @@ across multiple CPU cores.")
     (arguments
      '(#:tests? #f)) ; tests not included in gem
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-cliver" ,ruby-cliver)
-       ("ruby-simplecov" ,ruby-simplecov)
-       ("ruby-racc" ,ruby-racc)))
+     (list bundler ruby-cliver ruby-simplecov ruby-racc))
     (inputs
-     `(("ragel" ,ragel)))
+     (list ragel))
     (propagated-inputs
-     `(("ruby-ast" ,ruby-ast)))
+     (list ruby-ast))
     (synopsis "Ruby parser written in pure Ruby")
     (description
      "This package provides a Ruby parser written in pure Ruby.")
@@ -5408,7 +5258,7 @@ Amongst the included tools are @code{Sexp}, @code{SexpProcessor} and
        ("racc" ,ruby-racc)
        ("unifdef" ,unifdef)))
     (propagated-inputs
-     `(("ruby-sexp-processor" ,ruby-sexp-processor)))
+     (list ruby-sexp-processor))
     (home-page "https://github.com/seattlerb/ruby_parser/")
     (synopsis "Ruby parser written in pure Ruby")
     (description "The ruby_parser (RP) package provides a Ruby parser written
@@ -5437,7 +5287,7 @@ back to Ruby via the @code{ruby2ruby} library.")
                ;; Loosen the requirement for pdf-inspector
                (("~> 1\\.0\\.7") ">= 0")))))))
     (propagated-inputs
-     `(("ruby-coderay" ,ruby-coderay)))
+     (list ruby-coderay))
     (synopsis "Tool for writing manuals for Prawn and Prawn accessories")
     (description
      "This package provides a tool for writing manuals for Prawn and Prawn
@@ -5460,12 +5310,9 @@ accessories")
     (arguments
      '(#:test-target "spec"))
     (propagated-inputs
-     `(("ruby-highline" ,ruby-highline)
-       ("ruby-options" ,ruby-options)))
+     (list ruby-highline ruby-options))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-rspec" ,ruby-rspec)
-       ("ruby-timecop" ,ruby-timecop)))
+     (list bundler ruby-rspec ruby-timecop))
     (synopsis
      "Ruby library for displaying progress bars")
     (description
@@ -5533,8 +5380,7 @@ The output can be customized with a formatting system.")
     (arguments
      '(#:tests? #f)) ; no tests
     (propagated-inputs
-     `(("ruby-coderay" ,ruby-coderay)
-       ("ruby-method-source" ,ruby-method-source)))
+     (list ruby-coderay ruby-method-source))
     (synopsis "Ruby REPL")
     (description "Pry is an IRB alternative and runtime developer console for
 Ruby.  It features syntax highlighting, a plugin architecture, runtime
@@ -5586,10 +5432,7 @@ invocation, and source and documentation browsing.")
                          "xit \"complains when coverage is bad\""))
                       #t)))))
     (native-inputs
-     `(("ruby-bump" ,ruby-bump)
-       ("ruby-minitest" ,ruby-minitest)
-       ("ruby-rspec" ,ruby-rspec)
-       ("ruby-simplecov" ,ruby-simplecov)))
+     (list ruby-bump ruby-minitest ruby-rspec ruby-simplecov))
     (synopsis "Code coverage reporting tool")
     (description
      "This package provides actionable code coverage reports for Ruby
@@ -5610,7 +5453,7 @@ development tools to catch coverage problems early.")
           "1v1rk78khwq87ar300lwll570zxpkq9rjnpgc9mgsyd6mm9qjz4w"))))
     (build-system ruby-build-system)
     (native-inputs
-     `(("ruby-hoe" ,ruby-hoe)))
+     (list ruby-hoe))
     (synopsis "Ruby lexer")
     (description
      "Oedipus Lex is a lexer generator in the same family as Rexical and Rex.
@@ -5650,17 +5493,16 @@ Oedipus matches on the first match, not the longest.")
           (lambda _
             (invoke "gem" "build" "guard.gemspec"))))))
     (propagated-inputs
-     `(("ruby-formatador" ,ruby-formatador)
-       ("ruby-listen" ,ruby-listen)
-       ("ruby-lumberjack" ,ruby-lumberjack)
-       ("ruby-nenv" ,ruby-nenv)
-       ("ruby-notiffany" ,ruby-notiffany)
-       ("ruby-pry" ,ruby-pry)
-       ("ruby-shellany" ,ruby-shellany)
-       ("ruby-thor" ,ruby-thor)))
+     (list ruby-formatador
+           ruby-listen
+           ruby-lumberjack
+           ruby-nenv
+           ruby-notiffany
+           ruby-pry
+           ruby-shellany
+           ruby-thor))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-rspec" ,ruby-rspec)))
+     (list bundler ruby-rspec))
     (synopsis "Tool to handle events on file system modifications")
     (description
      "Guard is a command line tool to easily handle events on file system
@@ -5687,9 +5529,7 @@ file or directories are modified.")
        ;; capybara is available.
        '(#:tests? #f))
     (propagated-inputs
-     `(("ruby-colorize" ,ruby-colorize)
-       ("ruby-gherkin-ruby" ,ruby-gherkin-ruby)
-       ("ruby-json" ,ruby-json)))
+     (list ruby-colorize ruby-gherkin-ruby ruby-json))
     (synopsis "Gherkin-based BDD framework")
     (description
      "Spinach is a high-level @acronym{BDD, Behavior-driven development}
@@ -5733,14 +5573,9 @@ define executable specifications of your code.")
                (("group :secondary") "[].each"))
              #t)))))
     (propagated-inputs
-     `(("ruby-pandoc-ruby" ,ruby-pandoc-ruby)
-       ("ruby-sassc" ,ruby-sassc)))
+     (list ruby-pandoc-ruby ruby-sassc))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-yard" ,ruby-yard)
-       ("ruby-builder" ,ruby-builder)
-       ("ruby-erubis" ,ruby-erubis)
-       ("ruby-markaby" ,ruby-markaby)))
+     (list bundler ruby-yard ruby-builder ruby-erubis ruby-markaby))
     (synopsis "Generic interface to multiple Ruby template engines")
     (description
      "Tilt is a thin interface over a number of different Ruby template
@@ -5808,7 +5643,7 @@ utilities for Ruby.")
     (propagated-inputs
      `(("ruby-concurrent-ruby" ,ruby-concurrent)))
     (native-inputs
-     `(("ruby-simplecov" ,ruby-simplecov)))
+     (list ruby-simplecov))
     (synopsis "Time zone library for Ruby")
     (description "TZInfo is a Ruby library that provides daylight savings
 aware transformations between times in different time zones.")
@@ -5853,7 +5688,7 @@ aware transformations between times in different time zones.")
                (setenv "cc" ,(cc-for-target))
              #t)))))
     (propagated-inputs
-     `(("ruby-tzinfo" ,ruby-tzinfo)))
+     (list ruby-tzinfo))
     (native-inputs
      `(("tzdata"
         ,(file-union "tzdata-for-ruby-tzdata-info"
@@ -5916,9 +5751,9 @@ IANA Time Zone database packaged as Ruby modules for use with @code{TZInfo}.")
           (lambda _
             (invoke "gem" "build" "rb-inotify.gemspec"))))))
     (propagated-inputs
-     `(("ruby-ffi" ,ruby-ffi)))
+     (list ruby-ffi))
     (native-inputs
-     `(("ruby-yard" ,ruby-yard)))
+     (list ruby-yard))
     (synopsis "Ruby wrapper for Linux's inotify")
     (description "rb-inotify is a simple wrapper over the @code{inotify} Linux
 kernel subsystem for monitoring changes to files and directories.")
@@ -5938,7 +5773,7 @@ kernel subsystem for monitoring changes to files and directories.")
     (build-system ruby-build-system)
     (arguments `(#:tests? #f)) ; no tests included
     (native-inputs
-     `(("bundler" ,bundler)))
+     (list bundler))
     (synopsis "Open the current REPL line in an editor")
     (description
      "This gem provides a plugin for the Ruby REPL to enable opening the
@@ -5971,11 +5806,9 @@ current line in an external editor.")
                "gem 'rake'\ngem 'rdoc'\ngem 'json'\n"))
             #t)))))
     (propagated-inputs
-     `(("ruby-json" ,ruby-json)))
+     (list ruby-json))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-minitest" ,ruby-minitest)
-       ("ruby-hoe" ,ruby-hoe)))
+     (list bundler ruby-minitest ruby-hoe))
     (synopsis "Generate searchable RDoc documentation")
     (description
      "SDoc is an RDoc documentation generator to build searchable HTML
@@ -6009,7 +5842,7 @@ documentation for Ruby code.")
               (("\"lib/spruz\", ") ""))
             (invoke "gem" "build" "tins.gemspec"))))))
     (propagated-inputs
-     `(("ruby-sync" ,ruby-sync)))
+     (list ruby-sync))
     (synopsis "Assorted tools for Ruby")
     (description "Tins is a Ruby library providing assorted tools.")
     (home-page "https://github.com/flori/tins")
@@ -6036,9 +5869,7 @@ documentation for Ruby code.")
           (lambda _
             (invoke "gem" "build" "gem_hadar.gemspec"))))))
     (propagated-inputs
-     `(("git" ,git)
-       ("ruby-tins" ,ruby-tins)
-       ("ruby-yard" ,ruby-yard)))
+     (list git ruby-tins ruby-yard))
     (synopsis "Library for the development of Ruby gems")
     (description
      "This library contains some useful functionality to support the
@@ -6085,7 +5916,7 @@ development of Ruby gems.")
     (propagated-inputs
      `(("ruby-minitest-4" ,ruby-minitest-4)))
     (native-inputs
-     `(("ruby-hoe" ,ruby-hoe)))
+     (list ruby-hoe))
     (synopsis "Adapter library between minitest and test/unit")
     (description
      "This library bridges the gap between the small and fast minitest and
@@ -6118,10 +5949,9 @@ Ruby's large and slower test/unit.")
           (lambda _
             (invoke "gem" "build" "term-ansicolor.gemspec"))))))
     (propagated-inputs
-     `(("ruby-tins" ,ruby-tins)))
+     (list ruby-tins))
     (native-inputs
-     `(("ruby-gem-hadar" ,ruby-gem-hadar)
-       ("ruby-minitest-tu-shim" ,ruby-minitest-tu-shim)))
+     (list ruby-gem-hadar ruby-minitest-tu-shim))
     (synopsis "Ruby library to control the attributes of terminal output")
     (description
      "This Ruby library uses ANSI escape sequences to control the attributes
@@ -6145,7 +5975,7 @@ of terminal output.")
   (arguments
    '(#:tests? #f)) ; No included tests
   (propagated-inputs
-   `(("ruby-lino" ,ruby-lino)))
+   (list ruby-lino))
   (synopsis "Ruby wrapper around the Terraform command line interface")
   (description
    "This package provides a Ruby wrapper around the Terraform command line
@@ -6165,8 +5995,7 @@ interface so that Terraform can be more easily invoked from Ruby code.")
                 "0ld3ng37y92kv9vqnachw1l3n07hsc8hrnjs9d840liw0mysf1vp"))))
     (build-system ruby-build-system)
     (native-inputs
-     `(("ruby-gem-hadar" ,ruby-gem-hadar)
-       ("bundler" ,bundler)))
+     (list ruby-gem-hadar bundler))
     (synopsis "Create a process tree data structure")
     (description
      "This library uses the output of the @code{ps} command to create a
@@ -6187,13 +6016,9 @@ process tree data structure for the current host.")
                 "196zhgcygrnx09bb9mh22qas03rl9avzx8qs0wnxznpin4pffwcl"))))
     (build-system ruby-build-system)
     (propagated-inputs
-     `(("ruby-tins" ,ruby-tins)
-       ("ruby-term-ansicolor" ,ruby-term-ansicolor)
-       ("ruby-pstree" ,ruby-pstree)
-       ("ruby-pry-editline" ,ruby-pry-editline)))
+     (list ruby-tins ruby-term-ansicolor ruby-pstree ruby-pry-editline))
     (native-inputs
-     `(("ruby-gem-hadar" ,ruby-gem-hadar)
-       ("bundler" ,bundler)))
+     (list ruby-gem-hadar bundler))
     (synopsis "Command line tools for working with Ruby")
     (description
      "This package provides assorted command line tools that may be useful
@@ -6262,11 +6087,7 @@ a native C extension.")
                ;; Since this is not a git repository, do not call 'git'.
                (("`git ls-files`") "`find . -type f |sort`")))))))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ragel" ,ragel)
-       ("ruby-simplecov" ,ruby-simplecov)
-       ("ruby-test-unit" ,ruby-test-unit)
-       ("which" ,which)))
+     (list bundler ragel ruby-simplecov ruby-test-unit which))
     (synopsis "JSON implementation in pure Ruby")
     (description
      "This package provides a JSON implementation written in pure Ruby.")
@@ -6301,9 +6122,7 @@ a native C extension.")
                (("Codacy::Reporter\\.start") ""))
              #t)))))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-rspec" ,ruby-rspec)
-       ("ruby-rbnacl" ,ruby-rbnacl)))
+     (list bundler ruby-rspec ruby-rbnacl))
     (synopsis "Ruby implementation of the JSON Web Token standard")
     (description
      "This package provides a pure Ruby implementation of the RFC 7519 OAuth
@@ -6367,16 +6186,13 @@ a native C extension.")
                ((".*rubocop.*") ""))
              #t)))))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-rspec" ,ruby-rspec)))
+     (list bundler ruby-rspec))
     (inputs
-     `(;; ruby-thor is used for the command line interface, and is referenced
-       ;; in the wrapper, and therefore just needs to be an input.
-       ("ruby-thor" ,ruby-thor)))
+     (list ;; ruby-thor is used for the command line interface, and is referenced
+           ;; in the wrapper, and therefore just needs to be an input.
+           ruby-thor))
     (propagated-inputs
-     `(("ruby-rb-fsevent" ,ruby-rb-fsevent)
-       ("ruby-rb-inotify" ,ruby-rb-inotify)
-       ("ruby-dep" ,ruby-dep)))
+     (list ruby-rb-fsevent ruby-rb-inotify ruby-dep))
     (synopsis "Listen to file modifications")
     (description "The Listen gem listens to file modifications and notifies
 you about the changes.")
@@ -6400,12 +6216,9 @@ you about the changes.")
          "0rmsm7mckiq0gslfqdl02yvn500n42v84gq28qjqn4yq9jwfs9ga"))))
     (build-system ruby-build-system)
     (native-inputs
-     `(("ruby-hoe" ,ruby-hoe)
-       ("ruby-hoe-markdown" ,ruby-hoe-markdown)
-       ("ruby-rr" ,ruby-rr)))
+     (list ruby-hoe ruby-hoe-markdown ruby-rr))
     (propagated-inputs
-     `(("ruby-nokogiri" ,ruby-nokogiri)
-       ("ruby-crass" ,ruby-crass)))
+     (list ruby-nokogiri ruby-crass))
     (synopsis "Ruby library for manipulating and transforming HTML/XML")
     (description
      "Loofah is a general library for manipulating and transforming HTML/XML
@@ -6432,12 +6245,12 @@ documents and fragments.  It's built on top of Nokogiri and libxml2.")
              ;; There are no tests, instead attempt to load the library.
              (invoke "ruby" "-Ilib" "-r" "active_support"))))))
     (propagated-inputs
-     `(("ruby-concurrent" ,ruby-concurrent)
-       ("ruby-i18n" ,ruby-i18n)
-       ("ruby-minitest" ,ruby-minitest)
-       ("ruby-tzinfo" ,ruby-tzinfo)
-       ("ruby-tzinfo-data" ,ruby-tzinfo-data)
-       ("ruby-zeitwerk" ,ruby-zeitwerk)))
+     (list ruby-concurrent
+           ruby-i18n
+           ruby-minitest
+           ruby-tzinfo
+           ruby-tzinfo-data
+           ruby-zeitwerk))
     (synopsis "Ruby on Rails utility library")
     (description "ActiveSupport is a toolkit of support libraries and Ruby
 core extensions extracted from the Rails framework.  It includes support for
@@ -6483,11 +6296,11 @@ multibyte strings, internationalization, time zones, and testing.")
                 "1qg0iyw450lw6d0j1ghzg79a6l60nm1m4qmrzwzybi585861jxcx"))))
     (build-system ruby-build-system)
     (native-inputs
-     `(("ruby-rake-compiler" ,ruby-rake-compiler)))
+     (list ruby-rake-compiler))
     (inputs
-     `(("gumbo-parser" ,gumbo-parser)))
+     (list gumbo-parser))
     (propagated-inputs
-     `(("ruby-nokogiri" ,ruby-nokogiri)))
+     (list ruby-nokogiri))
     (synopsis "Ruby bindings to the Gumbo HTML5 parser")
     (description
      "Nokogumbo allows a Ruby program to invoke the Gumbo HTML5 parser and
@@ -6514,11 +6327,9 @@ access the result as a Nokogiri parsed document.")
                 "0lj0q9yhjp0q0in5majkshnki07mw8m2vxgndx4m5na6232aszl0"))))
     (build-system ruby-build-system)
     (propagated-inputs
-     `(("ruby-crass" ,ruby-crass)
-       ("ruby-nokogiri" ,ruby-nokogiri)
-       ("ruby-nokogumbo" ,ruby-nokogumbo)))
+     (list ruby-crass ruby-nokogiri ruby-nokogumbo))
     (native-inputs
-     `(("ruby-minitest" ,ruby-minitest)))
+     (list ruby-minitest))
     (synopsis "Whitelist-based HTML and CSS sanitizer")
     (description
      "Sanitize is a whitelist-based HTML and CSS sanitizer.  Given a list of
@@ -6571,9 +6382,7 @@ lock with a counter.")
                (("Bundler\\.with_clean_env") "1.times")
                (("bundle exec ") "")))))))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-rspec" ,ruby-rspec)
-       ("ruby-rake-compiler" ,ruby-rake-compiler)))
+     (list bundler ruby-rspec ruby-rake-compiler))
     (synopsis "JSON parser for Ruby optimized for speed")
     (description
      "Oj is a JSON parser and generator for Ruby, where the encoding and
@@ -6651,11 +6460,9 @@ alternative to Marshal for Object serialization. ")
     (arguments
      '(#:test-target "spec"))
     (native-inputs
-     `(("ruby-rake-compiler" ,ruby-rake-compiler)
-       ("ruby-hoe" ,ruby-hoe)
-       ("ruby-rspec" ,ruby-rspec)))
+     (list ruby-rake-compiler ruby-hoe ruby-rspec))
     (inputs
-     `(("postgresql" ,postgresql)))
+     (list postgresql))
     (synopsis "Ruby interface to PostgreSQL")
     (description "Pg is the Ruby interface to the PostgreSQL RDBMS.  It works
 with PostgreSQL 9.0 and later.")
@@ -6712,13 +6519,13 @@ with PostgreSQL 9.0 and later.")
              (setenv "HOME" (getcwd))
              #t)))))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-chandler" ,ruby-chandler)
-       ("ruby-minitest" ,ruby-minitest)
-       ("ruby-pry" ,ruby-pry)
-       ("ruby-rake-compiler" ,ruby-rake-compiler)
-       ("ruby-rubocop" ,ruby-rubocop)
-       ("ruby-yard" ,ruby-yard)))
+     (list bundler
+           ruby-chandler
+           ruby-minitest
+           ruby-pry
+           ruby-rake-compiler
+           ruby-rubocop
+           ruby-yard))
     (synopsis "Debugger for Ruby 2")
     (description "Byebug is a Ruby 2 debugger implemented using the Ruby 2
 TracePoint C API for execution control and the Debug Inspector C API for call
@@ -6754,7 +6561,7 @@ other things and it comes with a command line interface.")
              (substitute* "test/test_netrc.rb"
                (("Dir.pwd, '.netrc'") "Netrc.home_path, '.netrc'")))))))
     (native-inputs
-     `(("ruby-minitest" ,ruby-minitest)))
+     (list ruby-minitest))
     (synopsis "Library to read and update netrc files")
     (description
      "This library can read and update netrc files, preserving formatting
@@ -6786,9 +6593,7 @@ including comments and whitespace.")
                ((".*rake-compiler-dock.*") ""))
              #t)))))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-rake-compiler" ,ruby-rake-compiler)
-       ("ruby-test-unit" ,ruby-test-unit)))
+     (list bundler ruby-rake-compiler ruby-test-unit))
     (synopsis "Unicode normalization form support library")
     (description
      "This package provides unicode normalization form support for Ruby.")
@@ -6812,9 +6617,7 @@ including comments and whitespace.")
                   "0n3gq8rx49f7ln6zqlshqfg2mgqyy30rsdjlnki5mv307ykc7ad4"))))
       (build-system ruby-build-system)
       (native-inputs
-       `(("ruby-rspec" ,ruby-rspec)
-         ("ruby-yard" ,ruby-yard)
-         ("ruby-rubygems-tasks" ,ruby-rubygems-tasks)))
+       (list ruby-rspec ruby-yard ruby-rubygems-tasks))
       (synopsis "Calculate the differences between two tree-like structures")
       (description
        "This library provides functions to calculate the differences between two
@@ -6839,13 +6642,11 @@ tree-like structures.  It is similar to Ruby's built-in @code{TSort} module.")
                   "1ah2sfjh9n1p0ln2wkqzfl448ml7j4zfy6dhp1qgzq2m41php6rf"))))
       (build-system ruby-build-system)
       (propagated-inputs
-       `(("ruby-tdiff" ,ruby-tdiff)
-         ;; Use a fixed version to prevent rebuilds; see ruby-nokogiri TODO.
-         ("ruby-nokogiri" ,ruby-nokogiri-1.10)))
+       (list ruby-tdiff
+             ;; Use a fixed version to prevent rebuilds; see ruby-nokogiri TODO.
+             ruby-nokogiri-1.10))
       (native-inputs
-       `(("ruby-rspec" ,ruby-rspec)
-         ("ruby-yard" ,ruby-yard)
-         ("ruby-rubygems-tasks" ,ruby-rubygems-tasks)))
+       (list ruby-rspec ruby-yard ruby-rubygems-tasks))
       (synopsis "Calculate the differences between two XML/HTML documents")
       (description
        "@code{Nokogiri::Diff} adds the ability to calculate the
@@ -6868,8 +6669,7 @@ differences (added or removed nodes) between two XML/HTML documents.")
     (arguments
      `(#:tests? #f))            ; Fails while parsing test instructions.
     (native-inputs
-     `(("ruby-hoe" ,ruby-hoe)
-       ("ruby-rake-compiler" ,ruby-rake-compiler)))
+     (list ruby-hoe ruby-rake-compiler))
     (synopsis "LALR(1) parser generator for Ruby")
     (description
      "Racc is a LALR(1) parser generator.  It is written in Ruby itself, and
@@ -6927,8 +6727,7 @@ generates Ruby program.")
                                  (number->string (+ 33 size-diff))))))
              #t)))))
     (native-inputs
-     `(("ruby-minitest" ,ruby-minitest)
-       ("ruby-minitest-global-expectations" ,ruby-minitest-global-expectations)))
+     (list ruby-minitest ruby-minitest-global-expectations))
     (synopsis "Unified web application interface for Ruby")
     (description "Rack provides a minimal, modular and adaptable interface for
 developing web applications in Ruby.  By wrapping HTTP requests and responses,
@@ -6959,7 +6758,7 @@ into a single method call.")
            (lambda _
              (invoke "ruby" "-Ilib" "-r" "rack/test"))))))
     (propagated-inputs
-     `(("ruby-rack" ,ruby-rack)))
+     (list ruby-rack))
     (synopsis "Testing API for Rack applications")
     (description
      "Rack::Test is a small, simple testing API for Rack applications.  It can
@@ -6984,11 +6783,9 @@ testing libraries to build on.")
      '(;; Tests missing from the gem.
        #:tests? #f))
     (propagated-inputs
-     `(("ruby-rack" ,ruby-rack)))
+     (list ruby-rack))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-rspec" ,ruby-rspec-2)
-       ("ruby-rack-test" ,ruby-rack-test)))
+     (list bundler ruby-rspec-2 ruby-rack-test))
     (synopsis "Rack middleware that protects against typical web attacks")
     (description "Rack middleware that can be used to protect against typical
 web attacks.  It can protect all Rack apps, including Rails.  For instance, it
@@ -7020,8 +6817,7 @@ clickjacking, directory traversal, session hijacking and IP spoofing.")
                (invoke "rspec"))
              #t)))))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-rspec" ,ruby-rspec)))
+     (list bundler ruby-rspec))
     (synopsis "Colorize printed text on ANSI terminals")
     (description
      "@code{rainbow} provides a string presenter object to colorize strings by
@@ -7044,8 +6840,7 @@ wrapping them in ANSI escape codes.")
     (arguments
      '(#:tests? #f)) ; test files not included
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-rspec" ,ruby-rspec)))
+     (list bundler ruby-rspec))
     (synopsis "Ruby test double framework")
     (description
      "RR is a test double framework that features a rich selection of double
@@ -7086,13 +6881,9 @@ techniques and a terse syntax.")
              (delete-file "spec/integration/httpbin_spec.rb")
              #t)))))
     (propagated-inputs
-     `(("ruby-http-cookie" ,ruby-http-cookie)
-       ("ruby-mime-types" ,ruby-mime-types)
-       ("ruby-netrc" ,ruby-netrc)))
+     (list ruby-http-cookie ruby-mime-types ruby-netrc))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-webmock" ,ruby-webmock-2)
-       ("ruby-rspec" ,ruby-rspec)))
+     (list bundler ruby-webmock-2 ruby-rspec))
     (synopsis "Simple HTTP and REST client for Ruby")
     (description
      "@code{rest-client} provides a simple HTTP and REST client for Ruby,
@@ -7130,15 +6921,15 @@ inspired by the Sinatra microframework style of specifying actions:
                          (format #f "`find ~a -type f| sort`" files)))
                       #t)))))
     (native-inputs
-     `(("ruby-bump" ,ruby-bump)
-       ("ruby-oedipus-lex" ,ruby-oedipus-lex)
-       ("ruby-pry" ,ruby-pry)
-       ("ruby-racc" ,ruby-racc)
-       ("ruby-rake" ,ruby-rake)
-       ("ruby-rspec" ,ruby-rspec)
-       ("ruby-simplecov" ,ruby-simplecov)))
+     (list ruby-bump
+           ruby-oedipus-lex
+           ruby-pry
+           ruby-racc
+           ruby-rake
+           ruby-rspec
+           ruby-simplecov))
     (propagated-inputs
-     `(("ruby-parser" ,ruby-parser)))
+     (list ruby-parser))
     (synopsis "RuboCop's AST extensions and NodePattern functionality")
     (description "Rubocop::AST extends @code{ruby-parser} with classes used
 by RuboCop to deal with Ruby's Abstract Syntax Tree (AST), in particular:
@@ -7224,7 +7015,7 @@ better performance than @code{Regexp} and @code{String} methods from the
                          (string-append stripped "\n")))
                       #t)))))
     (native-inputs
-     `(("ruby-rspec" ,ruby-rspec)))
+     (list ruby-rspec))
     (synopsis "Simple arrays of objects to arrays of ranges compressor")
     (description "RangeCompresses is a tiny library that allows compressing
 arrays of objects into arrays of ranges.  For example, it can turn the
@@ -7252,11 +7043,8 @@ following: @code{[1, 2, 3, 4, 6, 8, 9, 10]} into @code{[1..4, 6..6, 8..10]}.")
       (arguments
        '(#:test-target "default"))
       (native-inputs
-       `(("ruby-character-set" ,ruby-character-set)
-         ("ruby-rake" ,ruby-rake)
-         ("ruby-rake-compiler" ,ruby-rake-compiler)
-         ("ruby-range-compressor" ,ruby-range-compressor)
-         ("ruby-rspec" ,ruby-rspec)))
+       (list ruby-character-set ruby-rake ruby-rake-compiler
+             ruby-range-compressor ruby-rspec))
       (synopsis "Inspect Ruby's regex engine property values")
       (description "This small library lets you see which property values are
 supported by the regular expression engine of the Ruby version you are running
@@ -7293,9 +7081,7 @@ they match.")
                       (delete-file-recursively "pkg")
                       #t)))))
     (native-inputs
-     `(("ragel" ,ragel)
-       ("ruby-regexp-property-values" ,ruby-regexp-property-values)
-       ("ruby-rspec" ,ruby-rspec)))
+     (list ragel ruby-regexp-property-values ruby-rspec))
     (synopsis "A regular expression parser library for Ruby ")
     (description "A Ruby gem for tokenizing, parsing, and transforming regular
 expressions.  It comprises the following components:
@@ -7328,7 +7114,7 @@ expressions.  It comprises the following components:
                (invoke "rspec"))
              #t)))))
     (native-inputs
-     `(("ruby-rspec" ,ruby-rspec)))
+     (list ruby-rspec))
     (synopsis "Minitest/RSpec parallel test runner for CI environments")
     (description "The test-queue module is a parallel test runner,
 built using a centralized queue to ensure optimal distribution of
@@ -7391,13 +7177,13 @@ run.")
        ("ruby-webmock" ,ruby-webmock)
        ("ruby-yard" ,ruby-yard)))
     (propagated-inputs
-     `(("ruby-parallel" ,ruby-parallel)
-       ("ruby-parser" ,ruby-parser)
-       ("ruby-rainbow" ,ruby-rainbow)
-       ("ruby-regexp-parser" ,ruby-regexp-parser)
-       ("ruby-rubocop-ast" ,ruby-rubocop-ast)
-       ("ruby-progressbar" ,ruby-progressbar)
-       ("ruby-unicode-display-width" ,ruby-unicode-display-width)))
+     (list ruby-parallel
+           ruby-parser
+           ruby-rainbow
+           ruby-regexp-parser
+           ruby-rubocop-ast
+           ruby-progressbar
+           ruby-unicode-display-width))
     (synopsis "Ruby code style checking tool")
     (description
      "@code{rubocop} is a Ruby code style checking tool.  It aims to enforce
@@ -7447,7 +7233,7 @@ contexts without performance penalties.")
          "00rcscz16idp6dx0dk5yi5i0fz593i3r6anbn5bg2q07v3i025wm"))))
     (build-system ruby-build-system)
     (native-inputs
-     `(("ruby-bacon" ,ruby-bacon)))
+     (list ruby-bacon))
     (synopsis "Creole markup language converter")
     (description
      "Creole is a lightweight markup language and this library for converting
@@ -7508,7 +7294,7 @@ abstraction for Ruby.")
          "1n9397j7kh4vvikfann1467qgksc679imlr50hax3lk1q3af8kdw"))))
     (build-system ruby-build-system)
     (native-inputs
-     `(("ruby-hoe" ,ruby-hoe)))
+     (list ruby-hoe))
     (synopsis "Iterations per second enhancement for the Ruby Benchmark module")
     (description "Benchmark-ips enhances the Ruby Benchmark module with the
 iterations per second count.  For short snippets of code, it can automatically
@@ -7542,10 +7328,10 @@ figure out how many times to run the code to get interesting data.")
                     (lambda _
                       (invoke "rspec"))))))
     (native-inputs
-     `(("ruby-rspec" ,ruby-rspec)))
+     (list ruby-rspec))
     (inputs
-     `(("zeromq" ,zeromq)))
-    (propagated-inputs `(("ruby-ffi" ,ruby-ffi)))
+     (list zeromq))
+    (propagated-inputs (list ruby-ffi))
     (synopsis "Low-level Ruby FFI wrapper for the ZeroMQ networking library")
     (description "This library only provides the FFI wrapper for the ZeroMQ
 networking library.  It can be used to implement a Ruby API for the ZeroMQ
@@ -7571,9 +7357,9 @@ library.")
                               (lambda _
                                 (invoke "rspec"))))))
     (native-inputs
-     `(("ruby-rspec" ,ruby-rspec)))
+     (list ruby-rspec))
     (propagated-inputs
-     `(("ruby-ffi-rzmq-core" ,ruby-ffi-rzmq-core)))
+     (list ruby-ffi-rzmq-core))
     (synopsis "High-level Ruby wrapper for the ZeroMQ networking library")
     (description "This library provides a high-level API that wraps the ZeroMQ
 networking library using the Ruby foreign function interface (FFI).  It is a
@@ -7595,8 +7381,7 @@ for FFI.")
          "0yrdchs3psh583rjapkv33mljdivggqn99wkydkjdckcjn43j3cz"))))
     (build-system ruby-build-system)
     (propagated-inputs
-     `(("ruby-addressable" ,ruby-addressable)
-       ("ruby-faraday" ,ruby-faraday)))
+     (list ruby-addressable ruby-faraday))
     (synopsis "Experimental hypermedia agent for Ruby")
     (description "Sawyer is an experimental hypermedia agent for Ruby built on
 top of Faraday.")
@@ -7617,8 +7402,7 @@ top of Faraday.")
     (build-system ruby-build-system)
     (arguments '(#:tests? #f))          ;no test suite in the gem release
     (propagated-inputs
-     `(("ruby-faraday" ,ruby-faraday)
-       ("ruby-sawyer" ,ruby-sawyer)))
+     (list ruby-faraday ruby-sawyer))
     (synopsis "Ruby toolkit for the GitHub API")
     (description "Octokit wraps the GitHub API in a flat API client that
 follows Ruby conventions and requires little knowledge of REST.")
@@ -7638,10 +7422,9 @@ follows Ruby conventions and requires little knowledge of REST.")
          "1n8a4mr2jkcz5vaaps45g2rxa2pzy1wb7cylgw85xmmyyp14lnrr"))))
     (build-system ruby-build-system)
     (native-inputs
-     `(("ruby-rubocop" ,ruby-rubocop)))
+     (list ruby-rubocop))
     (propagated-inputs
-     `(("ruby-netrc" ,ruby-netrc)
-       ("ruby-octokit" ,ruby-octokit)))
+     (list ruby-netrc ruby-octokit))
     (synopsis "Sync CHANGELOG entries to GitHub's release notes")
     (description "Chandler syncs a project's CHANGELOG file entries to
 GitHub's release notes to remove the need of manually entering release
@@ -7671,12 +7454,9 @@ notes.")
                       (setenv "HOME" (getcwd))
                       #t)))))
     (native-inputs
-     `(("ruby-chandler" ,ruby-chandler)
-       ("ruby-rubocop" ,ruby-rubocop)
-       ("ruby-simplecov" ,ruby-simplecov)))
+     (list ruby-chandler ruby-rubocop ruby-simplecov))
     (propagated-inputs
-     `(("ruby-byebug" ,ruby-byebug)
-       ("ruby-pry" ,ruby-pry)))
+     (list ruby-byebug ruby-pry))
     (synopsis "Step-by-step debugging and stack navigation in Pry")
     (description "This package adds step-by-step debugging and stack
 navigation capabilities to @code{pry}, using @code{byebug}.")
@@ -7707,8 +7487,7 @@ navigation capabilities to @code{pry}, using @code{byebug}.")
            (lambda _
              (invoke "rake" "compile"))))))
     (native-inputs
-     `(("ruby-mocha" ,ruby-mocha)
-       ("ruby-rake-compiler" ,ruby-rake-compiler)))
+     (list ruby-mocha ruby-rake-compiler))
     (synopsis "Sampling profiler for Ruby code")
     (description
      "@code{stackprof} is a fast sampling profiler for Ruby code, with cpu,
@@ -7732,7 +7511,7 @@ wallclock and object allocation samplers.")
     ;; (see: https://github.com/banister/binding_of_caller/issues/76).
     (arguments '(#:tests? #f))
     (propagated-inputs
-     `(("ruby-debug-inspector" ,ruby-debug-inspector)))
+     (list ruby-debug-inspector))
     (synopsis "Retrieve the binding of a method's caller")
     (description "The @code{binding_of_caller} module provides the
 @code{Binding#of_caller} method.  It allows accessing bindings from upper
@@ -7754,8 +7533,7 @@ frames in the call stack and can evaluate code in that context.")
     (build-system ruby-build-system)
     (arguments '(#:tests? #f))          ;no test suite in gem release
     (propagated-inputs
-     `(("ruby-binding-of-caller" ,ruby-binding-of-caller)
-       ("ruby-pry" ,ruby-pry)))
+     (list ruby-binding-of-caller ruby-pry))
     (synopsis "Call-stack navigation plugin for the Pry REPL")
     (description "@code{pry-stack_explorer} is a plugin for the Pry REPL that
 add support to navigate the call-stack.")
@@ -7817,10 +7595,7 @@ variable length integers (varint) in Ruby Protocol Buffers.")
           (lambda _
             (invoke "rake" "compile"))))))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-minitest" ,ruby-minitest)
-       ("ruby-rake-compiler" ,ruby-rake-compiler)
-       ("ruby-rdoc" ,ruby-rdoc)))
+     (list bundler ruby-minitest ruby-rake-compiler ruby-rdoc))
     (synopsis "Fast code profiler for Ruby")
     (description "RubyProf is a fast code profiler for Ruby.  Its features
 include:
@@ -7894,7 +7669,7 @@ Profiling multiple threads simultaneously is supported.
     (propagated-inputs
      `(("ruby-protobuf" ,ruby-protobuf-cucumber)))
     (native-inputs
-     `(("ruby-rspec" ,ruby-rspec)))
+     (list ruby-rspec))
     (home-page "https://github.com/cucumber/messages-ruby")
     (synopsis "Cucumber Messages for Ruby (Protocol Buffers)")
     (description "Cucumber Messages for Ruby is a library which allows
@@ -7917,8 +7692,7 @@ Cucumber.")
                 "1dwa8632nc6kijv8p257jl64rsjmc0fimlaqvxlkdi2h9n1nympb"))))
     (build-system ruby-build-system)
     (native-inputs
-     `(("ruby-cucumber-messages" ,ruby-cucumber-messages)
-       ("ruby-rspec" ,ruby-rspec)))
+     (list ruby-cucumber-messages ruby-rspec))
     (arguments
      `(#:test-target "spec"))
     (synopsis "Gherkin parser for Ruby")
@@ -7997,18 +7771,15 @@ It is intended be used by all Cucumber implementations to parse
          (add-before 'check 'set-home
            (lambda _ (setenv "HOME" "/tmp") #t)))))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-rspec" ,ruby-rspec)
-       ("ruby-fuubar" ,ruby-fuubar)
-       ("ruby-simplecov" ,ruby-simplecov)))
+     (list bundler ruby-rspec ruby-fuubar ruby-simplecov))
     (propagated-inputs
-     `(("ruby-childprocess" ,ruby-childprocess)
-       ("ruby-contracts" ,ruby-contracts)
-       ("ruby-cucumber" ,ruby-cucumber)
-       ("ruby-ffi" ,ruby-ffi)
-       ("ruby-rspec-expectations" ,ruby-rspec-expectations)
-       ("ruby-thor" ,ruby-thor)
-       ("ruby-yard" ,ruby-yard)))
+     (list ruby-childprocess
+           ruby-contracts
+           ruby-cucumber
+           ruby-ffi
+           ruby-rspec-expectations
+           ruby-thor
+           ruby-yard))
     (synopsis "Test command-line applications with Cucumber, RSpec or Minitest")
     (description
      "Aruba is an extension for Cucumber, RSpec and Minitest for testing
@@ -8043,8 +7814,8 @@ language.")
   (build-system ruby-build-system)
   (arguments
    `(#:test-target "spec"))
-  (propagated-inputs `(("ruby-ffi" ,ruby-ffi)))
-  (native-inputs `(("ruby-rspec" ,ruby-rspec)))
+  (propagated-inputs (list ruby-ffi))
+  (native-inputs (list ruby-rspec))
   (synopsis "Ruby interface for gathering system information")
   (description "The sys-uname library provides an interface for gathering
 information about your current platform.  It allows retrieving information
@@ -8076,10 +7847,9 @@ such as the OS name, OS version, system name, etc.")
                     (lambda _
                       (invoke "rspec"))))))
     (native-inputs
-     `(("ruby-rspec" ,ruby-rspec)))
+     (list ruby-rspec))
     (propagated-inputs
-     `(("ruby-cucumber-messages" ,ruby-cucumber-messages)
-       ("ruby-sys-uname" ,ruby-sys-uname)))
+     (list ruby-cucumber-messages ruby-sys-uname))
     (synopsis "Function to create @code{Meta} messages for Cucumber Ruby")
     (description "The @code{createMeta} utility function allows generating
 system-specific @code{Meta} messages for Cucumber Ruby.")
@@ -8104,9 +7874,9 @@ system-specific @code{Meta} messages for Cucumber Ruby.")
                     (lambda _
                       (invoke "rspec"))))))
     (native-inputs
-     `(("ruby-rspec" ,ruby-rspec)))
+     (list ruby-rspec))
     (propagated-inputs
-     `(("ruby-cucumber-messages" ,ruby-cucumber-messages)))
+     (list ruby-cucumber-messages))
     (synopsis "HTML formatter for Cucumber")
     (description "Cucumber HTML Formatter produces a HTML report for Cucumber
 runs.  It is built on top of cucumber-react and works with any Cucumber
@@ -8154,24 +7924,24 @@ master/html-formatter/ruby")
              (setenv "HOME" (getcwd))
              #t)))))
     (propagated-inputs
-     `(("ruby-builder" ,ruby-builder)
-       ("ruby-cucumber-core" ,ruby-cucumber-core)
-       ("ruby-cucumber-create-meta" ,ruby-cucumber-create-meta)
-       ("ruby-cucumber-html-formatter" ,ruby-cucumber-html-formatter)
-       ("ruby-cucumber-messages" ,ruby-cucumber-messages)
-       ("ruby-cucumber-wire" ,ruby-cucumber-wire)
-       ("ruby-diff-lcs" ,ruby-diff-lcs)
-       ("ruby-gherkin" ,ruby-gherkin)
-       ("ruby-multi-json" ,ruby-multi-json)
-       ("ruby-multi-test" ,ruby-multi-test)))
+     (list ruby-builder
+           ruby-cucumber-core
+           ruby-cucumber-create-meta
+           ruby-cucumber-html-formatter
+           ruby-cucumber-messages
+           ruby-cucumber-wire
+           ruby-diff-lcs
+           ruby-gherkin
+           ruby-multi-json
+           ruby-multi-test))
     (native-inputs
-     `(;; Use a untested version of aruba, to avoid a circular dependency, as
-       ;; ruby-aruba depends on ruby-cucumber.
-       ("ruby-aruba" ,ruby-aruba-without-tests)
-       ("ruby-rspec" ,ruby-rspec)
-       ("ruby-pry" ,ruby-pry)
-       ("ruby-nokogiri" ,ruby-nokogiri)
-       ("ruby-rubocop" ,ruby-rubocop)))
+     (list ;; Use a untested version of aruba, to avoid a circular dependency, as
+           ;; ruby-aruba depends on ruby-cucumber.
+           ruby-aruba-without-tests
+           ruby-rspec
+           ruby-pry
+           ruby-nokogiri
+           ruby-rubocop))
     (synopsis "Describe automated tests in plain language")
     (description "Cucumber is a tool for running automated tests written in
 plain language.  It's designed to support a Behaviour Driven Development (BDD)
@@ -8214,10 +7984,7 @@ software development workflow.")
                          (string-append stripped ")\n")))
                       #t)))))
     (propagated-inputs
-     `(("ruby-json" ,ruby-json)
-       ("ruby-term-ansicolor" ,ruby-term-ansicolor)
-       ("ruby-thor" ,ruby-thor)
-       ("ruby-tins" ,ruby-tins)))
+     (list ruby-json ruby-term-ansicolor ruby-thor ruby-tins))
     (synopsis "Ruby implementation of the Coveralls API")
     (description "This package provides a Ruby implementation of the Coveralls
 API.")
@@ -8269,15 +8036,11 @@ in already-indented code.")
                  "'cucumber-tag-expressions', '>=2.0.0'\n"))
              #t)))))
     (native-inputs
-     `(("ruby-rspec" ,ruby-rspec)
-       ("ruby-coveralls" ,ruby-coveralls)
-       ("ruby-rubocop" ,ruby-rubocop)
-       ("ruby-simplecov" ,ruby-simplecov)
-       ("ruby-unindent" ,ruby-unindent)))
+     (list ruby-rspec ruby-coveralls ruby-rubocop ruby-simplecov
+           ruby-unindent))
     (propagated-inputs
-     `(("ruby-cucumber-messages" ,ruby-cucumber-messages)
-       ("ruby-gherkin" ,ruby-gherkin)
-       ("ruby-cucumber-tag-expressions" ,ruby-cucumber-tag-expressions)))
+     (list ruby-cucumber-messages ruby-gherkin
+           ruby-cucumber-tag-expressions))
     (synopsis "Core library for the Cucumber BDD app")
     (description "Cucumber is a tool for running automated tests
 written in plain language.  Because they're written in plain language,
@@ -8305,8 +8068,7 @@ and trust on your team.")
     (arguments
      '(#:test-target "spec"))
     (native-inputs
-     `(("ruby-rspec" ,ruby-rspec)
-       ("ruby-simplecov" ,ruby-simplecov)))
+     (list ruby-rspec ruby-simplecov))
     (synopsis "Simpler alternative to Regular Expressions")
     (description "Cucumber Expressions offer similar functionality to Regular
 Expressions, with a syntax that is easier to read and write.  Cucumber
@@ -8336,9 +8098,8 @@ Expressions are extensible with parameter types.")
                ((" 10\\.1") " 10.2"))
              #t)))))
     (propagated-inputs
-     `(("ruby-cucumber-core" ,ruby-cucumber-core)
-       ("ruby-cucumber-expressions" ,ruby-cucumber-expressions)
-       ("ruby-cucumber-messages" ,ruby-cucumber-messages)))
+     (list ruby-cucumber-core ruby-cucumber-expressions
+           ruby-cucumber-messages))
     (synopsis "Cucumber wire protocol plugin")
     (description "Cucumber's wire protocol allows step definitions to be
 implemented and invoked on any platform.")
@@ -8363,7 +8124,7 @@ implemented and invoked on any platform.")
     (arguments
      `(#:test-target "spec"))
     (native-inputs
-     `(("ruby-rspec" ,ruby-rspec)))
+     (list ruby-rspec))
     (synopsis "Cucumber tag expressions for Ruby")
     (description "Cucumber tag expression parser for Ruby.  A tag expression
 is an infix boolean expression used by Cucumber.")
@@ -8385,8 +8146,7 @@ is an infix boolean expression used by Cucumber.")
     (arguments
      '(#:test-target "default"))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-rake-compiler" ,ruby-rake-compiler)))
+     (list bundler ruby-rake-compiler))
     (synopsis "Provides access for bindings relating to Ruby exceptions")
     (description
      "@code{bindex} provides a way to access the bindings that relate to
@@ -8410,7 +8170,7 @@ exception occurred.")
     (arguments
      `(#:tests? #f)) ; rake errors, missing shoulda
     (propagated-inputs
-     `(("ruby-log4r" ,ruby-log4r)))
+     (list ruby-log4r))
     (synopsis "Log4r wrapper for Ruby")
     (description "Bio-logger is a wrapper around Log4r adding extra logging
 features such as filtering and fine grained logging.")
@@ -8440,8 +8200,7 @@ features such as filtering and fine grained logging.")
                 "$LOAD_PATH << 'lib'; require 'yajl'"))
              #t)))))
      (native-inputs
-      `(("ruby-rake-compiler" ,ruby-rake-compiler)
-        ("ruby-rspec" ,ruby-rspec)))
+      (list ruby-rake-compiler ruby-rspec))
      (synopsis "Streaming JSON parsing and encoding library for Ruby")
      (description
       "Ruby C bindings to the Yajl JSON stream-based parser library.  The API
@@ -8548,10 +8307,9 @@ Test.run :default do |run|
 end")))
              (invoke "ruby" "-Ilib" "-rrubytest" ".test"))))))
     (native-inputs
-     `(("ruby-ae" ,ruby-ae)
-       ("ruby-rspec" ,ruby-rspec)))
+     (list ruby-ae ruby-rspec))
     (propagated-inputs
-     `(("ruby-rubytest" ,ruby-rubytest)))
+     (list ruby-rubytest))
     (synopsis "Behavior-Driven Development (BDD) framework built on RubyTest")
     (description "Spectroscope is a Behavior-Driven Development (BDD)
 framework built on RubyTest, designed to emulate RSpec in most respects.  It
@@ -8601,12 +8359,9 @@ TomDoc format.")
                     (lambda _
                       (invoke "rubytest" "-Ilib" "-Itest" "test/"))))))
     (native-inputs
-     `(("ruby-rubytest-cli" ,ruby-rubytest-cli)
-       ("ruby-spectroscope" ,ruby-spectroscope)
-       ("ruby-ae" ,ruby-ae)))
+     (list ruby-rubytest-cli ruby-spectroscope ruby-ae))
     (propagated-inputs
-     `(("ruby-tomparse" ,ruby-tomparse)
-       ("ruby-yard" ,ruby-yard)))
+     (list ruby-tomparse ruby-yard))
     (synopsis "TomDoc syntax for YARD")
     (description "This module adds support for the TomDoc documentation format
 to YARD, a documentation generation tool for Ruby.")
@@ -8645,7 +8400,7 @@ simple case of executing code based on the flags or parameters passed.")
                 "1mldhjn62g53vx4gq2qdqg2lgjvyrqxa8d0khf8347bbfgi16d32"))))
     (build-system ruby-build-system)
     (propagated-inputs
-     `(("ruby-clap" ,ruby-clap)))
+     (list ruby-clap))
     (synopsis "Run tests in separate processes")
     (description
      "Cutest runs tests in separate processes to avoid shared state.")
@@ -8683,8 +8438,7 @@ simple case of executing code based on the flags or parameters passed.")
     (inputs
      `(("pygments" ,python-pygments)))
     (native-inputs
-     `(("ruby-cutest" ,ruby-cutest)
-       ("ruby-nokogiri" ,ruby-nokogiri)))
+     (list ruby-cutest ruby-nokogiri))
     (synopsis "Thin Ruby wrapper around pygmentize")
     (description
      "Pygmentize provides a simple way to call pygmentize from within a Ruby
@@ -8707,9 +8461,9 @@ application.")
     (arguments
      '(#:tests? #f))               ; test suite tries to connect to google.com
     (inputs
-     `(("openssl" ,openssl)))
+     (list openssl))
     (native-inputs
-     `(("ruby-rake-compiler" ,ruby-rake-compiler)))
+     (list ruby-rake-compiler))
     (synopsis "Single-threaded network event framework for Ruby")
     (description
      "EventMachine implements a single-threaded engine for arbitrary network
@@ -8759,9 +8513,7 @@ used to create both network servers and clients.")
              (delete-file-recursively "pkg")
              #t)))))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-rake" ,ruby-rake)
-       ("ruby-rspec" ,ruby-rspec)))
+     (list bundler ruby-rake ruby-rspec))
     (synopsis "Simplifies checking for Ruby implementation")
     (description
      "@code{ruby_engine} provides an RubyEngine class that can be used to
@@ -8792,8 +8544,7 @@ name and provides query methods such as @{RubyEngine.mri?}.")
            (lambda _
              (invoke "ruby" "-Ilib" "bin/turn" "-h"))))))
     (propagated-inputs
-     `(("ruby-ansi" ,ruby-ansi)
-       ("ruby-minitest" ,ruby-minitest-4)))
+     (list ruby-ansi ruby-minitest-4))
     (synopsis "Alternate set of alternative runners for MiniTest")
     (description
      "TURN provides a set of alternative runners for MiniTest which are both
@@ -8820,7 +8571,7 @@ that TURN is no longer being maintained.")
          ;; This phase breaks the tests, as it patches some of the test data.
          (delete 'patch-source-shebangs))))
     (native-inputs
-     `(("ruby-bacon" ,ruby-bacon)))
+     (list ruby-bacon))
     (synopsis "Ruby library for MIME detection by extension or content")
     (description
      "@acronym{MIME, Multipurpose Internet Mail Extensions} detection by
@@ -8842,7 +8593,7 @@ database.")
          "04my3746hwa4yvbx1ranhfaqkgf6vavi1kyijjnw8w3dy37vqhkm"))))
     (build-system ruby-build-system)
     (native-inputs
-     `(("ruby-hoe" ,ruby-hoe)))
+     (list ruby-hoe))
     (synopsis "Registry for information about MIME media type definitions")
     (description
      "@code{mime-types-data} provides a registry for information about
@@ -8866,14 +8617,14 @@ look up the likely MIME type definitions.")
          "0087z9kbnlqhci7fxh9f6il63hj1k02icq2rs0c6cppmqchr753m"))))
     (build-system ruby-build-system)
     (propagated-inputs
-     `(("ruby-mime-types-data" ,ruby-mime-types-data)))
+     (list ruby-mime-types-data))
     (native-inputs
-     `(("ruby-hoe" ,ruby-hoe)
-       ("ruby-fivemat" ,ruby-fivemat)
-       ("ruby-minitest-focus" ,ruby-minitest-focus)
-       ("ruby-minitest-rg" ,ruby-minitest-rg)
-       ("ruby-minitest-bonus-assertions" ,ruby-minitest-bonus-assertions)
-       ("ruby-minitest-hooks" ,ruby-minitest-hooks)))
+     (list ruby-hoe
+           ruby-fivemat
+           ruby-minitest-focus
+           ruby-minitest-rg
+           ruby-minitest-bonus-assertions
+           ruby-minitest-hooks))
     (synopsis "Library and registry for MIME content type definitions")
     (description "The mime-types library provides a library and registry for
 information about Multipurpose Internet Mail Extensions (MIME) content type
@@ -8941,11 +8692,9 @@ neither too verbose nor too minimal.")
            ;; This file exists in the repository but is not distributed.
            (lambda _ (invoke "touch" ".gemtest"))))))
     (inputs
-     `(("sqlite" ,sqlite)))
+     (list sqlite))
     (native-inputs
-     `(("ruby-hoe" ,ruby-hoe)
-       ("ruby-rake-compiler" ,ruby-rake-compiler)
-       ("ruby-mini-portile" ,ruby-mini-portile)))
+     (list ruby-hoe ruby-rake-compiler ruby-mini-portile))
     (synopsis "Interface with SQLite3 databases")
     (description
      "This module allows Ruby programs to interface with the SQLite3 database
@@ -9004,7 +8753,7 @@ names.")
              ;; just import the library to test.
              (invoke "ruby" "-Ilib" "-r" "shoulda-matchers"))))))
     (propagated-inputs
-     `(("ruby-activesupport" ,ruby-activesupport)))
+     (list ruby-activesupport))
     (synopsis "Collection of testing matchers extracted from Shoulda")
     (description
      "Shoulda Matchers provides RSpec- and Minitest-compatible one-liners that
@@ -9044,8 +8793,7 @@ more complex, and error-prone.")
            ;; just import the library to test.
            (lambda _ (invoke "ruby" "-Ilib" "-r" "shoulda"))))))
     (propagated-inputs
-     `(("ruby-shoulda-context" ,ruby-shoulda-context)
-       ("ruby-shoulda-matchers" ,ruby-shoulda-matchers-2)))
+     (list ruby-shoulda-context ruby-shoulda-matchers-2))
     (synopsis "Context framework and matchers for testing")
     (description
      "@code{shoulda} is a meta-package combining @code{shoulda-context} and
@@ -9077,11 +8825,9 @@ more complex, and error-prone.")
                (("^gemspec") "gem 'test-unit'\ngemspec"))
              #t)))))
     (propagated-inputs
-     `(("ruby-unf-ext" ,ruby-unf-ext)))
+     (list ruby-unf-ext))
     (native-inputs
-     `(("ruby-shoulda" ,ruby-shoulda)
-       ("bundler" ,bundler)
-       ("ruby-test-unit" ,ruby-test-unit)))
+     (list ruby-shoulda bundler ruby-test-unit))
     (synopsis "Unicode Normalization Form support to Ruby and JRuby")
     (description
      "@code{ruby-unf} is a wrapper library to bring Unicode Normalization Form
@@ -9105,7 +8851,7 @@ support to both Ruby and JRuby.  It uses @code{unf_ext} on CRuby and
     (arguments
      '(#:tests? #f)) ; No included tests
     (propagated-inputs
-     `(("ruby-rack" ,ruby-rack)))
+     (list ruby-rack))
     (synopsis "Rack middleware providing authentication")
     (description
      "Warden is a Rack-based middleware that provides a mechanism for
@@ -9149,11 +8895,9 @@ authentication in Ruby web applications.")
                (invoke "bundle" "exec" "rspec"))
              #t)))))
     (propagated-inputs
-     `(("ruby-warden" ,ruby-warden)))
+     (list ruby-warden))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-rspec" ,ruby-rspec-2)
-       ("ruby-rack-test" ,ruby-rack-test)))
+     (list bundler ruby-rspec-2 ruby-rack-test))
     (synopsis "OAuth 2.0 strategies for Warden")
     (description
      "This library extends Warden to support OAuth 2.0 authorized API
@@ -9174,12 +8918,9 @@ requests.")
          "1hdlbvfw316lkz251qnfk79drmaay7l51kidvicz41nhvw12xz8v"))))
     (build-system ruby-build-system)
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-rspec" ,ruby-rspec)))
+     (list bundler ruby-rspec))
     (propagated-inputs
-     `(("ruby-addressable" ,ruby-addressable)
-       ("ruby-crack" ,ruby-crack)
-       ("ruby-hashdiff" ,ruby-hashdiff)))
+     (list ruby-addressable ruby-crack ruby-hashdiff))
     (synopsis "Allows stubbing and setting expectations on HTTP requests")
     (description
      "WebMock allows stubbing HTTP requests and setting expectations on HTTP
@@ -9256,9 +8997,7 @@ display width of strings in Ruby.")
                (("Bundler\\.setup.*") "nil\n"))
              #t)))))
     (native-inputs
-     `(("ruby-rdoc" ,ruby-rdoc)
-       ("ruby-rspec" ,ruby-rspec)
-       ("ruby-rubygems-tasks" ,ruby-rubygems-tasks)))
+     (list ruby-rdoc ruby-rspec ruby-rubygems-tasks))
     (synopsis "Ruby library to help check the Ruby version")
     (description "@code{ruby_version} provides a @code{RubyVersion} module to simplify
 checking for the right Ruby version in software.")
@@ -9279,7 +9018,7 @@ checking for the right Ruby version in software.")
    (arguments
     '(#:tests? #f))                     ; no included tests
    (propagated-inputs
-    `(("ruby-websocket-extensions" ,ruby-websocket-extensions)))
+    (list ruby-websocket-extensions))
    (synopsis "WebSocket protocol handler with pluggable I/O")
    (description
     "@code{websocket-driver} provides a complete implementation of the
@@ -9334,11 +9073,9 @@ extension plugins.")
                (("<test-unit>.freeze, \\[\\\"~> 2.5.5") "<test-unit>, [\">0"))
              #t)))))
     (propagated-inputs
-     `(("ruby-unf" ,ruby-unf)))
+     (list ruby-unf))
     (native-inputs
-     `(("ruby-shoulda" ,ruby-shoulda)
-       ("bundler" ,bundler)
-       ("ruby-test-unit" ,ruby-test-unit)))
+     (list ruby-shoulda bundler ruby-test-unit))
     (synopsis "Domain name manipulation library")
     (description
      "@code{domain_name} is a Domain name manipulation library.  It parses a
@@ -9371,7 +9108,7 @@ Suffix List.")
                 "Bundler::GemHelper.gemspec.version"))
              #t)))))
     (propagated-inputs
-     `(("ruby-domain-name" ,ruby-domain-name)))
+     (list ruby-domain-name))
     (native-inputs
      `(("rubysimplecov" ,ruby-simplecov)
        ("bundler" ,bundler)
@@ -9418,7 +9155,7 @@ It has built-in support for the legacy @code{cookies.txt} and
                          "test/runner.rb")
                  #t))))))
     (native-inputs
-     `(("ruby-rack" ,ruby-rack)))
+     (list ruby-rack))
     (synopsis
      "Make HTTP requests with support for HTTPS, Cookies, authentication and more")
     (description
@@ -9528,11 +9265,9 @@ subprocess.")
            (lambda _
              (invoke "rspec" "spec/bio-commandeer_spec.rb"))))))
     (propagated-inputs
-     `(("ruby-bio-logger" ,ruby-bio-logger)
-       ("ruby-systemu" ,ruby-systemu)))
+     (list ruby-bio-logger ruby-systemu))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-rspec" ,ruby-rspec)))
+     (list bundler ruby-rspec))
     (synopsis "Simplified running of shell commands from within Ruby")
     (description
      "Bio-commandeer provides an opinionated method of running shell commands
@@ -9565,7 +9300,7 @@ detail to ease debugging.")
            (lambda _
              (invoke "ruby" "-Ilib" "-r" "rubytest"))))))
     (propagated-inputs
-     `(("ruby-ansi" ,ruby-ansi)))
+     (list ruby-ansi))
     (synopsis "Universal test harness for Ruby")
     (description
      "Rubytest is a testing meta-framework for Ruby.  It can handle any
@@ -9623,8 +9358,7 @@ make use of.")
            (lambda _
              (invoke "ruby" "-Ilib" "bin/qed" "--copyright"))))))
     (propagated-inputs
-     `(("ruby-ansi" ,ruby-ansi)
-       ("ruby-brass" ,ruby-brass)))
+     (list ruby-ansi ruby-brass))
     (synopsis "Test framework utilizing literate programming techniques")
     (description
      "@dfn{Quality Ensured Demonstrations} (QED) is a test framework for
@@ -9689,9 +9423,9 @@ and locking between worker processes.")
                (symlink "../.index" file)
                #t))))))
     (propagated-inputs
-     `(("ruby-ansi" ,ruby-ansi)))
+     (list ruby-ansi))
     (native-inputs
-     `(("ruby-qed" ,ruby-qed)))
+     (list ruby-qed))
     (synopsis "Assertions library")
     (description
      "Assertive Expressive (AE) is an assertions library specifically designed
@@ -9716,11 +9450,9 @@ for reuse by other test frameworks.")
        (modify-phases %standard-phases
          (replace 'check (lambda _ (invoke "qed"))))))
     (propagated-inputs
-     `(("ruby-ae" ,ruby-ae)
-       ("ruby-ansi" ,ruby-ansi)
-       ("ruby-rubytest" ,ruby-rubytest)))
+     (list ruby-ae ruby-ansi ruby-rubytest))
     (native-inputs
-     `(("ruby-qed" ,ruby-qed)))
+     (list ruby-qed))
     (synopsis "Test framework correlating code structure and test unit")
     (description
      "Lemon is a unit testing framework that enforces highly formal
@@ -9744,8 +9476,7 @@ focus concern on individual units of behavior.")
     (arguments
      `(#:tests? #f)) ; no tests
     (propagated-inputs
-     `(("ruby-ansi" ,ruby-ansi)
-       ("ruby-rubytest" ,ruby-rubytest)))
+     (list ruby-ansi ruby-rubytest))
     (synopsis "Command-line interface for rubytest")
     (description
      "Rubytest CLI is a command-line interface for running tests for
@@ -9773,9 +9504,7 @@ Rubytest-based test frameworks.  It provides the @code{rubytest} executable.")
              (invoke "qed")
              (invoke "rubytest" "-Ilib" "-Itest" "test/"))))))
     (native-inputs
-     `(("ruby-rubytest-cli" ,ruby-rubytest-cli)
-       ("ruby-qed" ,ruby-qed)
-       ("ruby-lemon" ,ruby-lemon)))
+     (list ruby-rubytest-cli ruby-qed ruby-lemon))
     (synopsis "Hash-like classes with extra features")
     (description
      "The Hashery is a tight collection of @code{Hash}-like classes.
@@ -9807,7 +9536,7 @@ specific use case.")
            (lambda _
              (invoke "rspec" "spec/rc4_spec.rb"))))))
     (native-inputs
-     `(("ruby-rspec" ,ruby-rspec-2)))
+     (list ruby-rspec-2))
     (synopsis "Implementation of the RC4 algorithm")
     (description
      "RubyRC4 is a pure Ruby implementation of the RC4 algorithm.")
@@ -9827,7 +9556,7 @@ specific use case.")
          "06kj9hgd0z8pj27bxp2diwqh6fv7qhwwm17z64rhdc4sfn76jgn8"))))
     (build-system ruby-build-system)
     (native-inputs
-     `(("bundler" ,bundler)))
+     (list bundler))
     (synopsis "Read Adobe Font Metrics (afm) files")
     (description
      "This library provides methods to read @dfn{Adobe Font Metrics} (afm)
@@ -9848,7 +9577,7 @@ files and use the data therein.")
          "0658m37jjjn6drzqg1gk4p6c205mgp7g1jh2d00n4ngghgmz5qvs"))))
     (build-system ruby-build-system)
     (native-inputs
-     `(("bundler" ,bundler)))
+     (list bundler))
     (synopsis "Encode and decode Ascii85 binary-to-text encoding")
     (description
      "This library provides methods to encode and decode Ascii85
@@ -9893,9 +9622,7 @@ binary-to-text encoding.  The main modern use of Ascii85 is in PostScript and
                (("RuboCop::RakeTask.new") ""))
              #t)))))
     (native-inputs
-     `(("ruby-rspec" ,ruby-rspec)
-       ("ruby-yard" ,ruby-yard)
-       ("bundler" ,bundler)))
+     (list ruby-rspec ruby-yard bundler))
     (synopsis "Font metrics parser for the Prawn PDF generator")
     (description
      "TTFunk is a TrueType font parser written in pure Ruby.  It is used as
@@ -9953,7 +9680,7 @@ or JRuby.")
          "10jmmbjm0lkglwxbn4rpqghgg1ipjxrswm117n50adhmy8yij650"))))
     (build-system ruby-build-system)
     (propagated-inputs
-     `(("ruby-hoe" ,ruby-hoe)))
+     (list ruby-hoe))
     (synopsis "Hoe plugins for tighter Git integration")
     (description
      "This package provides a set of Hoe plugins for tighter Git integration.
@@ -9986,9 +9713,9 @@ generation.")
                         (("require.*bundler/setup.*")
                          "")))))))
     (native-inputs
-     `(("ruby-rspec" ,ruby-rspec)))
+     (list ruby-rspec))
     (propagated-inputs
-     `(("ruby-rake" ,ruby-rake)))
+     (list ruby-rake))
     (synopsis "Hoe plugin with Markdown helpers")
     (description
      "This package provides a Hoe plugin with various Markdown helpers, which
@@ -10038,10 +9765,7 @@ associated records.")
              (setenv "RUBYLIB" "lib")
              #t)))))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-minitest-rg" ,ruby-minitest-rg)
-       ("ruby-mocha" ,ruby-mocha)
-       ("ruby-activesupport" ,ruby-activesupport)))
+     (list bundler ruby-minitest-rg ruby-mocha ruby-activesupport))
     (synopsis "Test mocks for time-dependent functions")
     (description
      "Timecop provides \"time travel\" and \"time freezing\" capabilities,
@@ -10112,8 +9836,7 @@ call.")
              (delete-file "spec/concurrent/scheduled_task_spec.rb")
              #t)))))
     (native-inputs
-     `(("ruby-rake-compiler" ,ruby-rake-compiler)
-       ("ruby-rspec" ,ruby-rspec)))
+     (list ruby-rake-compiler ruby-rspec))
     (synopsis "Concurrency tools for Ruby")
     (description
      "This library provides modern concurrency tools including agents,
@@ -10158,7 +9881,7 @@ libraries for compiling Ruby native extensions.")
          "1nq859b0gh2vjhvl1qh1zrk09pc7p54r9i6nnn6sb06iv07db2jb"))))
     (build-system ruby-build-system)
     (native-inputs
-     `(("ruby-hoe" ,ruby-hoe)))
+     (list ruby-hoe))
     (synopsis "RFC 2617 HTTP digest authentication library")
     (description
      "This library implements HTTP's digest authentication scheme based on
@@ -10180,7 +9903,7 @@ of the more insecure basic authentication scheme.")
          "00wwz6ys0502dpk8xprwcqfwyf3hmnx6lgxaiq6vj43mkx43sapc"))))
     (build-system ruby-build-system)
     (propagated-inputs
-     `(("ruby-mini-mime" ,ruby-mini-mime)))
+     (list ruby-mini-mime))
     (arguments
      '(#:tests? #f)) ; no rakefile
     (synopsis "Mail library for Ruby")
@@ -10228,8 +9951,7 @@ from plain text email.")
          "1wn812llln9jzgybz2d7536q39z3gi99i6fi0j1dapcpzvhgrr0p"))))
     (build-system ruby-build-system)
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-rake-compiler" ,ruby-rake-compiler)))
+     (list bundler ruby-rake-compiler))
     (synopsis "Extends math operations for increased precision")
     (description
      "This gem makes mathematical operations more precise in Ruby and
@@ -10295,7 +10017,7 @@ smart typographic punctuation HTML entities.")
     (arguments
      '(#:tests? #f)) ; no rakefile
     (propagated-inputs
-     `(("ruby-rubypants" ,ruby-rubypants)))
+     (list ruby-rubypants))
     (synopsis "Org-mode parser written in Ruby")
     (description
      "Org-ruby is an org-mode parser written in Ruby.  The most significant
@@ -10317,7 +10039,7 @@ Markdown.")
          "0w6qza25bq1s825faaglkx1k6d59aiyjjk3yw3ip5sb463mhhai9"))))
     (build-system ruby-build-system)
     (native-inputs
-     `(("bundler" ,bundler)))
+     (list bundler))
     (synopsis "Rake is a Make-like program implemented in Ruby")
     (description
      "Rake is a Make-like program where tasks and dependencies are specified
@@ -10340,10 +10062,9 @@ in standard Ruby syntax.")
     (arguments
      `(#:tests? #f))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-rspec" ,ruby-rspec)))
+     (list bundler ruby-rspec))
     (propagated-inputs
-     `(("ruby-ffi" ,ruby-ffi)))
+     (list ruby-ffi))
     (synopsis "Control external programs running in the background, in Ruby")
     (description "@code{childprocess} provides a gem to control external
 programs running in the background, in Ruby.")
@@ -10373,10 +10094,7 @@ programs running in the background, in Ruby.")
                (("RuboCop::RakeTask\\.new") ""))
              #t)))))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-yard" ,ruby-yard)
-       ("ruby-mocha" ,ruby-mocha)
-       ("ruby-minitest-reporters" ,ruby-minitest-reporters)))
+     (list bundler ruby-yard ruby-mocha ruby-minitest-reporters))
     (home-page "https://simonecarletti.com/code/publicsuffix-ruby/")
     (synopsis "Domain name parser")
     (description "The gem @code{public_suffix} is a domain name parser,
@@ -10415,15 +10133,15 @@ all known public suffixes.")
              (delete-file "spec/addressable/net_http_compat_spec.rb")
              #t)))))
     (native-inputs
-     `(("ruby-rspec" ,ruby-rspec)
-       ("bundler" ,bundler)
-       ("ruby-idn-ruby" ,ruby-idn-ruby)
-       ("ruby-sporkmonger-rack-mount" ,ruby-sporkmonger-rack-mount)
-       ("ruby-rspec-its" ,ruby-rspec-its-minimal)
-       ("ruby-yard" ,ruby-yard)
-       ("ruby-simplecov" ,ruby-simplecov)))
+     (list ruby-rspec
+           bundler
+           ruby-idn-ruby
+           ruby-sporkmonger-rack-mount
+           ruby-rspec-its-minimal
+           ruby-yard
+           ruby-simplecov))
     (propagated-inputs
-     `(("ruby-public-suffix" ,ruby-public-suffix)))
+     (list ruby-public-suffix))
     (home-page "https://github.com/sporkmonger/addressable")
     (synopsis "Alternative URI implementation")
     (description "Addressable is a replacement for the URI implementation that
@@ -10505,7 +10223,7 @@ for the terminal.")
                ;; colorator version
                (("= 1.2") "= 1.1"))
              #t)))))
-    (propagated-inputs `(("ruby-colorator" ,ruby-colorator)))
+    (propagated-inputs (list ruby-colorator))
     (home-page "https://github.com/wbailey/command_line_reporter")
     (synopsis "Report production while executing Ruby scripts")
     (description "This gem provides a DSL that makes it easy to write reports
@@ -10538,7 +10256,7 @@ your application.")
           "0x2kpfrcagj931masm5y1kwbnc6nxl60cqdcd3lyd1d2hz7kzlia"))))
   (build-system ruby-build-system)
   (native-inputs
-   `(("ruby-hoe" ,ruby-hoe)))
+   (list ruby-hoe))
   (synopsis "PEG library for Ruby")
   (description "KPeg is a simple PEG library for Ruby.  It provides an API as
 well as native grammar to build the grammar.  KPeg supports direct left
@@ -10579,10 +10297,7 @@ jquery\\.js\", ") ""))
            (lambda _
              (invoke "rake" "generate"))))))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-kpeg" ,ruby-kpeg)
-       ("ruby-racc" ,ruby-racc)
-       ("ruby-rubocop" ,ruby-rubocop)))
+     (list bundler ruby-kpeg ruby-racc ruby-rubocop))
     (home-page "https://ruby.github.io/rdoc/")
     (synopsis "HTML and command-line documentation utility")
     (description "RDoc produces HTML and command-line documentation for Ruby
@@ -10605,8 +10320,7 @@ documentation from the command-line.")
      ;; No test target
      `(#:tests? #f))
     (propagated-inputs
-     `(("ruby-rb-fsevent" ,ruby-rb-fsevent)
-       ("ruby-rb-inotify" ,ruby-rb-inotify)))
+     (list ruby-rb-fsevent ruby-rb-inotify))
     (home-page "https://github.com/sass/listen")
     (synopsis "File modification notification library")
     (description "The Listen gem listens to file modifications and notifies you
@@ -10631,10 +10345,9 @@ about the changes.")
        ;; work with current software.
        #:tests? #f))
     (inputs
-     `(("ncurses" ,ncurses)))
+     (list ncurses))
     (native-inputs
-     `(("ruby-rubygems-tasks" ,ruby-rubygems-tasks)
-       ("ruby-rdoc" ,ruby-rdoc)))
+     (list ruby-rubygems-tasks ruby-rdoc))
     (home-page "http://www.a-k-r.org/ruby-terminfo/")
     (synopsis "Terminfo binding for Ruby")
     (description "Ruby-terminfo provides terminfo binding for Ruby.")
@@ -10656,7 +10369,7 @@ about the changes.")
      ;; No tests
      `(#:tests? #f))
     (native-inputs
-     `(("ruby-rspec" ,ruby-rspec)))
+     (list ruby-rspec))
     (home-page "https://github.com/samg/diffy")
     (synopsis "Convenient diffing in ruby")
     (description "Diffy provides a convenient way to generate a diff from two
@@ -10710,11 +10423,9 @@ the @file{spec} directory.")
                 "18c6prbw9wl8bqhb2435pd9s0lzarl3g7xf8pmyla28zblvwxmyh"))))
     (build-system ruby-build-system)
     (propagated-inputs
-     `(("ruby-sass-listen" ,ruby-sass-listen)))
+     (list ruby-sass-listen))
     (native-inputs
-     `(("ruby-sass-spec" ,ruby-sass-spec)
-       ("ruby-mathn" ,ruby-mathn)
-       ("ruby-cmath" ,ruby-cmath)))
+     (list ruby-sass-spec ruby-mathn ruby-cmath))
     (home-page "https://sass-lang.com/")
     (synopsis "CSS extension language")
     (description "Sass is a CSS extension language.  It extends CSS with
@@ -10790,15 +10501,12 @@ features that don't exist yet like variables, nesting, mixins and inheritance.")
          ;; one in the gem.
          (delete 'extract-gemspec))))
     (propagated-inputs
-     `(("ruby-ffi" ,ruby-ffi)
-       ("ruby-rake" ,ruby-rake)))
+     (list ruby-ffi ruby-rake))
     (inputs
-     `(("libsass" ,libsass)))
+     (list libsass))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-rake-compiler" ,ruby-rake-compiler)
-       ("ruby-minitest-around" ,ruby-minitest-around)
-       ("ruby-test-construct" ,ruby-test-construct)))
+     (list bundler ruby-rake-compiler ruby-minitest-around
+           ruby-test-construct))
     (synopsis "Use libsss from Ruby")
     (description
      "This library provides Ruby q@acronym{FFI, Foreign Function Interface}
@@ -10819,7 +10527,7 @@ bindings to the libsass library.  This enables rendering
                 "04ncr44wrilz26ayqwlg7379yjnkb29mvx4j04i62b7czmdrc9dv"))))
     (build-system ruby-build-system)
     (propagated-inputs
-     `(("ruby-sass" ,ruby-sass)))
+     (list ruby-sass))
     (arguments
      ;; No rakefile
      `(#:tests? #f))
@@ -10841,7 +10549,7 @@ in Jekyll.")
                 "1s9ly83sp8albvgdff12xy2h4xd8lm6z2fah4lzmk2yvp85jzdzv"))))
     (build-system ruby-build-system)
     (propagated-inputs
-     `(("ruby-listen" ,ruby-listen)))
+     (list ruby-listen))
     (arguments
      ;; No rakefile
      `(#:tests? #f))
@@ -10895,17 +10603,17 @@ interface.  It allows Jekyll to rebuild your site when a file changes.")
                (("git ls-files") "find"))
              #t)))))
     (native-inputs
-     `(("ruby-rspec" ,ruby-rspec)
-       ("ruby-rspec-rerun" ,ruby-rspec-rerun)
-       ("bundler" ,bundler)
-       ("ruby-activerecord" ,ruby-activerecord)
-       ("ruby-progressbar" ,ruby-progressbar)
-       ("ruby-bump" ,ruby-bump)
-       ("procps" ,procps)
-       ("lsof" ,lsof)
-       ("ruby-mysql2" ,ruby-mysql2)
-       ("ruby-sqlite3" ,ruby-sqlite3)
-       ("ruby-i18n" ,ruby-i18n)))
+     (list ruby-rspec
+           ruby-rspec-rerun
+           bundler
+           ruby-activerecord
+           ruby-progressbar
+           ruby-bump
+           procps
+           lsof
+           ruby-mysql2
+           ruby-sqlite3
+           ruby-i18n))
     (home-page "https://github.com/grosser/parallel")
     (synopsis "Parallel processing in Ruby")
     (description "Parallel allows you to run any code in parallel Processes
@@ -10927,7 +10635,7 @@ suited for map-reduce or e.g. parallel downloads/uploads.")
     (arguments `(#:tests? #f)); No rakefile
     (home-page "https://github.com/square/cane")
     (propagated-inputs
-     `(("ruby-parallel" ,ruby-parallel)))
+     (list ruby-parallel))
     (synopsis "Code quality threshold checking")
     (description "Cane fails your build if code quality thresholds are not met.")
     (license license:asl2.0)))
@@ -10946,7 +10654,7 @@ suited for map-reduce or e.g. parallel downloads/uploads.")
     (home-page "https://github.com/yob/morecane")
     (arguments `(#:tests? #f)); No rakefile
     (propagated-inputs
-     `(("ruby-parallel" ,ruby-parallel)))
+     (list ruby-parallel))
     (synopsis "Extra checks for cane")
     (description "The cane gem provides a great framework for running quality
 checks over your ruby project as part of continuous integration build.  It
@@ -10976,15 +10684,9 @@ custom checks.  This gem provides a set of additional checks.")
                                   ((".*[Bb]undler.*") ""))
                                 #t)))))
     (native-inputs
-     `(("ruby-rspec" ,ruby-rspec)
-       ("ruby-cane" ,ruby-cane)
-       ("ruby-morecane" ,ruby-morecane)))
+     (list ruby-rspec ruby-cane ruby-morecane))
     (propagated-inputs
-     `(("ruby-afm" ,ruby-afm)
-       ("ruby-ascii85" ,ruby-ascii85)
-       ("ruby-hashery" ,ruby-hashery)
-       ("ruby-rc4" ,ruby-rc4)
-       ("ruby-ttfunk" ,ruby-ttfunk)))
+     (list ruby-afm ruby-ascii85 ruby-hashery ruby-rc4 ruby-ttfunk))
     (home-page "https://github.com/yob/pdf-reader")
     (synopsis "PDF parser in Ruby")
     (description "The PDF::Reader library implements a PDF parser conforming as
@@ -11024,9 +10726,9 @@ access to the contents of a PDF file with a high degree of flexibility.")
                           ((".*yard.*") ""))
                         (invoke "rspec"))))))
       (native-inputs
-       `(("ruby-rspec" ,ruby-rspec)))
+       (list ruby-rspec))
       (propagated-inputs
-       `(("ruby-pdf-reader" ,ruby-pdf-reader)))
+       (list ruby-pdf-reader))
       (home-page "https://github.com/prawnpdf/pdf-inspector")
       (synopsis "Analysis classes for inspecting PDF output")
       (description "This library provides a number of PDF::Reader based tools for
@@ -11089,14 +10791,10 @@ functionality from Prawn.")
                  (invoke "rspec" "--exclude-pattern" "prawn_manual_spec.rb"))
                #t)))))
       (propagated-inputs
-       `(("ruby-pdf-core" ,ruby-pdf-core)
-         ("ruby-ttfunk" ,ruby-ttfunk)))
+       (list ruby-pdf-core ruby-ttfunk))
       (native-inputs
-       `(("ruby-pdf-inspector" ,ruby-pdf-inspector)
-         ("ruby-prawn-manual-builder" ,ruby-prawn-manual-builder)
-         ("ruby-rspec" ,ruby-rspec)
-         ("ruby-simplecov" ,ruby-simplecov)
-         ("ruby-yard" ,ruby-yard)))
+       (list ruby-pdf-inspector ruby-prawn-manual-builder ruby-rspec
+             ruby-simplecov ruby-yard))
       (home-page "https://prawnpdf.org/api-docs/2.0/")
       (synopsis "PDF generation for Ruby")
       (description "Prawn is a pure Ruby PDF generation library.")
@@ -11114,8 +10812,7 @@ functionality from Prawn.")
                 "1nxd6qmxqwl850icp18wjh5k0s3amxcajdrkjyzpfgq0kvilcv9k"))))
     (build-system ruby-build-system)
     (propagated-inputs
-     `(("ruby-prawn" ,ruby-prawn)
-       ("ruby-pdf-inspector" ,ruby-pdf-inspector)))
+     (list ruby-prawn ruby-pdf-inspector))
     (native-inputs
      `(("bundler" ,bundler)
        ("ruby-yard" ,ruby-yard)
@@ -11165,8 +10862,7 @@ functionality from Prawn.")
     (build-system ruby-build-system)
     (arguments `(#:tests? #f)); FIXME: some test failures
     (native-inputs
-     `(("ruby-prawn" ,ruby-prawn)
-       ("ruby-prawn-table" ,ruby-prawn-table)))
+     (list ruby-prawn ruby-prawn-table))
     (home-page "https://kramdown.gettalong.org/")
     (synopsis "Markdown parsing and converting library")
     (description "Kramdown is a library for parsing and converting a superset
@@ -11189,7 +10885,7 @@ popular by the PHP @code{Markdown Extra} package and @code{Maruku}.")
     (arguments
      `(#:tests? #f))                    ;no rakefile
     (propagated-inputs
-     `(("ruby-kramdown" ,ruby-kramdown)))
+     (list ruby-kramdown))
     (synopsis "Kramdown parser for the GFM dialect of Markdown")
     (description
      "This is a parser for kramdown that converts Markdown documents in the
@@ -11213,8 +10909,7 @@ GFM dialect to HTML.")
      ;; No tests
      `(#:tests? #f))
     (native-inputs
-     `(("ruby-rake-compiler" ,ruby-rake-compiler)
-       ("ruby-rspec" ,ruby-rspec)))
+     (list ruby-rake-compiler ruby-rspec))
     (home-page "https://github.com/tmm1/http_parser.rb")
     (synopsis "HTTP parser un Ruby")
     (description "This gem is a simple callback-based HTTP request/response
@@ -11237,11 +10932,9 @@ parser for writing http servers, clients and proxies.")
      ;; No tests
      `(#:tests? #f))
     (propagated-inputs
-      `(("ruby-eventmachine" ,ruby-eventmachine)
-        ("ruby-http-parser.rb" ,ruby-http-parser.rb)))
+      (list ruby-eventmachine ruby-http-parser.rb))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-rspec" ,ruby-rspec)))
+     (list bundler ruby-rspec))
     (home-page "https://github.com/igrigorik/em-websocket")
     (synopsis "EventMachine based WebSocket server")
     (description "Em-websocket is an EventMachine based WebSocket server
@@ -11283,7 +10976,7 @@ is compatible with stylesheets designed for pygments.")
                 "13bdzfp25c8k51ayzxqkbzag3wj5gc1jd8h7d985nsq6pn57g5xh"))))
     (build-system ruby-build-system)
     (native-inputs
-     `(("bundler" ,bundler)))
+     (list bundler))
     (arguments `(#:tests? #f)); FIXME: Could not locate Gemfile or .bundle/ directory
     (home-page "https://github.com/intridea/hashie")
     (synopsis "Extensions to Ruby Hashes")
@@ -11303,7 +10996,7 @@ hashes more powerful.")
                 "14ijr2fsjwhrkjkcaz81d5xnfa4vvgvcflrff83avqw9klm011yw"))))
     (build-system ruby-build-system)
     (native-inputs
-     `(("ruby-hoe" ,ruby-hoe)))
+     (list ruby-hoe))
     (home-page "https://github.com/adrianomitre/heredoc_unindent")
     (synopsis "Heredoc indentation cleaner")
     (description "This gem removes common margin from indented strings, such
@@ -11333,9 +11026,7 @@ indentation will probably be an issue and hence this gem.")
          "1a0wh7y3va2m7bjza95na2snw0vrdh9syz40mpjvjphbc4ph3pzg"))))
     (build-system ruby-build-system)
     (native-inputs
-     `(("ruby-rspec" ,ruby-rspec)
-       ("ruby-hashie" ,ruby-hashie)
-       ("ruby-heredoc-unindent" ,ruby-heredoc-unindent)))
+     (list ruby-rspec ruby-hashie ruby-heredoc-unindent))
     (arguments
      '(#:test-target "spec"
        #:phases
@@ -11378,9 +11069,7 @@ YAML.load suitable for accepting user input in Ruby applications.")
                (invoke "rspec"))
              #t)))))
     (native-inputs
-     `(("ruby-coveralls" ,ruby-coveralls)
-       ("ruby-rspec" ,ruby-rspec)
-       ("ruby-simplecov" ,ruby-simplecov)))
+     (list ruby-coveralls ruby-rspec ruby-simplecov))
     (synopsis "Simple YAML check tool")
     (description
      "@code{yaml-lint} will simply try to load the YAML file with the built-in
@@ -11401,7 +11090,7 @@ Ruby yaml library.")
     (build-system ruby-build-system)
     (arguments `(#:test-target "spec"))
     (native-inputs
-     `(("bundler" ,bundler)))
+     (list bundler))
     (home-page "https://github.com/jekyll/mercenary")
     (synopsis "Command-line apps library in Ruby")
     (description "Mercenary is a lightweight and flexible library for writing
@@ -11456,10 +11145,9 @@ methods for your source as @code{Forwardable::Extended}.")
                 "12fm93ljw9fbxmv2krki5k5wkvr7560qy8p4spvb9jiiaqv78fz4"))))
     (build-system ruby-build-system)
     (propagated-inputs
-     `(("ruby-forwardable-extended" ,ruby-forwardable-extended)))
+     (list ruby-forwardable-extended))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-rspec" ,ruby-rspec)))
+     (list bundler ruby-rspec))
     ;; Fails with: cannot load such file --
     ;; /tmp/guix-build-ruby-pathutil-0.16.0.drv-0/gem/benchmark/support/task
     (arguments `(#:tests? #f))
@@ -11499,9 +11187,9 @@ Pathname.")
                (invoke "rspec")))))))
     (build-system ruby-build-system)
     (propagated-inputs
-     `(("ruby-unicode-display-width" ,ruby-unicode-display-width)))
+     (list ruby-unicode-display-width))
     (native-inputs
-     `(("ruby-rspec" ,ruby-rspec)))
+     (list ruby-rspec))
     (home-page "https://github.com/tj/terminal-table")
     (synopsis "Simple, feature rich ASCII table generation library")
     (description
@@ -11564,7 +11252,7 @@ Unicode formatted tables.")
                 "1qzlqhpiqz28624fp0ak76hfy7908w6kpx62v7z43aiwjv0yc6q0"))))
     (build-system ruby-build-system)
     (propagated-inputs
-     `(("jekyll" ,jekyll)))
+     (list jekyll))
     (home-page "https://github.com/sverrirs/jekyll-paginate-v2")
     (synopsis "Pagination Generator for Jekyll 3")
     (description "The Pagination Generator forms the core of the pagination
@@ -11586,7 +11274,7 @@ logic in Jekyll.  It calculates and generates the pagination pages.")
     (arguments
      '(#:tests? #f))
     (propagated-inputs
-     `(("ruby-multipart-post" ,ruby-multipart-post)))
+     (list ruby-multipart-post))
     (synopsis "Ruby HTTP/REST API client library")
     (description
      "Faraday is a HTTP/REST API client library which provides a common
@@ -11632,10 +11320,7 @@ interface over different adapters.")
               (invoke "rspec"))
             #t)))))
    (native-inputs
-    `(("bundler" ,bundler)
-      ("ruby-rake-compiler" ,ruby-rake-compiler)
-      ("ruby-rspec" ,ruby-rspec)
-      ("ruby-rubocop" ,ruby-rubocop)))
+    (list bundler ruby-rake-compiler ruby-rspec ruby-rubocop))
    (synopsis "New I/O for Ruby")
    (description
     "@code{nio} provides cross-platform asynchronous I/O primitives in Ruby
@@ -11659,7 +11344,7 @@ for scalable network clients and servers.")
     '(;; No included tests
       #:tests? #f))
    (propagated-inputs
-    `(("ruby-activesupport" ,ruby-activesupport)))
+    (list ruby-activesupport))
    (synopsis "Generate URIs idenfitying model instances in Ruby")
    (description
     "@code{GlobalID} provides a way to generate URIs from a model in Ruby that
@@ -11683,8 +11368,7 @@ uniquely identify it.")
      '(;; No included tests
        #:tests? #f))
     (propagated-inputs
-     `(("ruby-concurrent" ,ruby-concurrent)
-       ("ruby-rack" ,ruby-rack)))
+     (list ruby-concurrent ruby-rack))
     (synopsis "Sprockets is a Rack-based asset packaging system")
     (description
      "Sprockets is a Rack-based asset packaging system that concatenates and
@@ -11704,7 +11388,7 @@ serves JavaScript, CoffeeScript, CSS, LESS, Sass, and SCSS.")
         (base32 "1l0p4wx15mi3wnamfv92ipkia4nsx8qi132c6g51jfdma3fiz2ch"))))
     (build-system ruby-build-system)
     (native-inputs
-     `(("ruby-simplecov" ,ruby-simplecov)))
+     (list ruby-simplecov))
     (synopsis "framework-agnostic way to render logic-free views")
     (description
      "Mustache is a framework-agnostic way to render logic-free views.
@@ -11756,20 +11440,20 @@ characteristics.")
      `(;; FIXME: Tests depend on rubocop-standard.
        #:tests? #f))
     (native-inputs
-     `(("ruby-awesome-print" ,ruby-awesome-print)
-       ("ruby-redcarpet" ,ruby-redcarpet)
-       ("ruby-rspec" ,ruby-rspec)
-       ("ruby-rubocop" ,ruby-rubocop)
-       ("ruby-rubocop-performance" ,ruby-rubocop-performance)
-       ("ruby-pry-byebug" ,ruby-pry-byebug)))
+     (list ruby-awesome-print
+           ruby-redcarpet
+           ruby-rspec
+           ruby-rubocop
+           ruby-rubocop-performance
+           ruby-pry-byebug))
     (propagated-inputs
-     `(("ruby-addressable" ,ruby-addressable)
-       ("ruby-mercenary" ,ruby-mercenary)
-       ("ruby-nokogumbo" ,ruby-nokogumbo)
-       ("ruby-parallel" ,ruby-parallel)
-       ("ruby-rainbow" ,ruby-rainbow)
-       ("ruby-typhoeus" ,ruby-typhoeus)
-       ("ruby-yell" ,ruby-yell)))
+     (list ruby-addressable
+           ruby-mercenary
+           ruby-nokogumbo
+           ruby-parallel
+           ruby-rainbow
+           ruby-typhoeus
+           ruby-yell))
     (synopsis "Test your rendered HTML files to make sure they're accurate")
     (description
      "HTMLProofer is a set of tests to validate your HTML output.  These
@@ -11829,10 +11513,7 @@ entities.")
                 (string-append all " \"--exclude=.*\\.md\".freeze,")))
              #t)))))
     (propagated-inputs
-     `(("ruby-mustermann" ,ruby-mustermann)
-       ("ruby-rack" ,ruby-rack)
-       ("ruby-rack-protection" ,ruby-rack-protection)
-       ("ruby-tilt" ,ruby-tilt)))
+     (list ruby-mustermann ruby-rack ruby-rack-protection ruby-tilt))
     (synopsis "DSL for quick web applications creation in Ruby")
     (description
      "Sinatra is a DSL for quickly creating web applications in Ruby with
@@ -11856,9 +11537,7 @@ minimal effort.")
      ;; No tests.
      '(#:tests? #f))
     (propagated-inputs
-     `(("ruby-daemons" ,ruby-daemons)
-       ("ruby-eventmachine" ,ruby-eventmachine)
-       ("ruby-rack" ,ruby-rack)))
+     (list ruby-daemons ruby-eventmachine ruby-rack))
     (synopsis "Thin and fast web server for Ruby")
     (description "Thin is a Ruby web server that glues together 3 Ruby libraries:
 @itemize
@@ -11894,8 +11573,7 @@ and stability,
                (("<thin>.freeze, \\[\\\"< 1.7\", ") "<thin>, ["))
              #t)))))
     (propagated-inputs
-     `(("ruby-eventmachine" ,ruby-eventmachine)
-       ("ruby-thin" ,ruby-thin)))
+     (list ruby-eventmachine ruby-thin))
     (synopsis "Simple, upgradable WebSockets for Ruby Thin")
     (description "Skinny is a simple, upgradable WebSockets for Ruby, using
 the Thin library.")
@@ -11921,9 +11599,9 @@ the Thin library.")
                       (setenv "HOME" "/tmp")
                       #t)))))
     (propagated-inputs
-     `(("ruby-ffi" ,ruby-ffi)))
+     (list ruby-ffi))
     (native-inputs
-     `(("ruby-mkmf-lite" ,ruby-mkmf-lite)))
+     (list ruby-mkmf-lite))
     (synopsis "Gather file system information")
     (description
      "The @code{sys-filesystem} library provides a cross-platform interface
@@ -11968,13 +11646,13 @@ for gathering file system information, such as disk space and mount points.")
                  (("\"sinatra\", \"~> 1.2\"") "\"sinatra\", \">= 1.2\""))
                #t)))))
     (inputs
-     `(("ruby-eventmachine" ,ruby-eventmachine)
-       ("ruby-mail" ,ruby-mail)
-       ("ruby-rack" ,ruby-rack)
-       ("ruby-sinatra" ,ruby-sinatra)
-       ("ruby-skinny" ,ruby-skinny)
-       ("ruby-sqlite3" ,ruby-sqlite3)
-       ("ruby-thin" ,ruby-thin)))
+     (list ruby-eventmachine
+           ruby-mail
+           ruby-rack
+           ruby-sinatra
+           ruby-skinny
+           ruby-sqlite3
+           ruby-thin))
     (synopsis "SMTP server which catches messages to display them a browser")
     (description
      "MailCatcher runs a super simple SMTP server which catches any message
@@ -12002,10 +11680,9 @@ then check out http://127.0.0.1:1080 to see the mail.")
     (arguments
      `(#:test-target "spec"))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-rspec" ,ruby-rspec)))
+     (list bundler ruby-rspec))
     (inputs
-     `(("ruby-simplecov" ,ruby-simplecov)))
+     (list ruby-simplecov))
     (synopsis "Pure Ruby library for event-driven IO")
     (description
      "This package provides a pure Ruby library for event-driven IO.")
@@ -12032,7 +11709,7 @@ then check out http://127.0.0.1:1080 to see the mail.")
            (lambda _
              (invoke "gem" "build" ".gemspec"))))))
     (propagated-inputs
-     `(("ruby-addressable" ,ruby-addressable)))
+     (list ruby-addressable))
     (synopsis "Ruby JSON Schema Validator")
     (description "This library provides Ruby with an interface for validating
 JSON objects against a JSON schema conforming to JSON Schema Draft 4.  Legacy
@@ -12066,11 +11743,9 @@ is also included.")
                ((".*RuboCop.*") ""))
              #t)))))
     (propagated-inputs
-     `(("ruby-json-schema" ,ruby-json-schema)))
+     (list ruby-json-schema))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-rspec-core" ,ruby-rspec-core)
-       ("ruby-rspec-expectations" ,ruby-rspec-expectations)))
+     (list bundler ruby-rspec-core ruby-rspec-expectations))
     (synopsis
      "Compare Open API Initiative specification files")
     (description
@@ -12094,12 +11769,9 @@ backwards-compatible with an older API specification.")
          "0w7y5n74daajvl9gixr91nh8670d7mkgspkk3ql71m8azq3nffbg"))))
     (build-system ruby-build-system)
     (propagated-inputs
-     `(("ruby-nokogiri" ,ruby-nokogiri)))
+     (list ruby-nokogiri))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-rspec" ,ruby-rspec)
-       ("ruby-kramdown" ,ruby-kramdown)
-       ("ruby-simplecov" ,ruby-simplecov)))
+     (list bundler ruby-rspec ruby-kramdown ruby-simplecov))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -12129,26 +11801,23 @@ application.")
          "1gf049rm0yvw4r8r5yyi890idbfg8qh0dikqx5prvkh11srl73bz"))))
     (build-system ruby-build-system)
     (propagated-inputs
-     `(("ruby-backport" ,ruby-backport)
-       ("bundler" ,bundler)
-       ("ruby-benchmark" ,ruby-benchmark)
-       ("ruby-e2mmap" ,ruby-e2mmap)
-       ("ruby-jaro-winkler" ,ruby-jaro-winkler)
-       ("ruby-kramdown" ,ruby-kramdown)
-       ("ruby-kramdown-parser-gfm" ,ruby-kramdown-parser-gfm)
-       ("ruby-maruku" ,ruby-maruku)
-       ("ruby-nokogiri" ,ruby-nokogiri)
-       ("ruby-parser" ,ruby-parser)
-       ("ruby-reverse-markdown" ,ruby-reverse-markdown)
-       ("ruby-rubocop" ,ruby-rubocop)
-       ("ruby-thor" ,ruby-thor)
-       ("ruby-tilt" ,ruby-tilt)
-       ("ruby-yard" ,ruby-yard)))
+     (list ruby-backport
+           bundler
+           ruby-benchmark
+           ruby-e2mmap
+           ruby-jaro-winkler
+           ruby-kramdown
+           ruby-kramdown-parser-gfm
+           ruby-maruku
+           ruby-nokogiri
+           ruby-parser
+           ruby-reverse-markdown
+           ruby-rubocop
+           ruby-thor
+           ruby-tilt
+           ruby-yard))
     (native-inputs
-     `(("ruby-rspec" ,ruby-rspec)
-       ("ruby-pry" ,ruby-pry)
-       ("ruby-simplecov" ,ruby-simplecov)
-       ("ruby-webmock" ,ruby-webmock)))
+     (list ruby-rspec ruby-pry ruby-simplecov ruby-webmock))
     ;; FIXME: can't figure out how to run the tests properly:
 
     ;; An error occurred while loading spec_helper.
@@ -12216,9 +11885,7 @@ which snapshots to consider and what files to include.")
           "119fgdyb57gmss2yvfwfr47wcy8nny38sai72446krpihyavpizw"))))
     (build-system ruby-build-system)
     (native-inputs
-     `(("ruby-minitest" ,ruby-minitest)
-       ("ruby-minitest-focus" ,ruby-minitest-focus)
-       ("ruby-minitest-reporters" ,ruby-minitest-reporters)))
+     (list ruby-minitest ruby-minitest-focus ruby-minitest-reporters))
     (synopsis "Efficient and thread-safe code loader for Ruby")
     (description
      "Zeitwerk implements constant autoloading with Ruby semantics.  Each gem
@@ -12271,8 +11938,7 @@ eager loading.")
                           (format #t "test suite not run~%"))
                       #t)))))
     (native-inputs
-     `(("ruby-bump" ,ruby-bump)
-       ("ruby-rspec" ,ruby-rspec)))
+     (list ruby-bump ruby-rspec))
     (synopsis "Run @file{.travis.yml} files locally")
     (description
      "WWTD is a @dfn{Travis Simulator} that lets you run test matrices
@@ -12296,11 +11962,9 @@ defined in @file{.travis.yml} on your local machine, using @code{rvm},
      `(#:tests? #f
        #:gem-flags (list  "--" "--use-system-libraries")))
     (inputs
-     `(("libgit2" ,libgit2)))
+     (list libgit2))
     (native-inputs
-     `(("ruby-minitest" ,ruby-minitest)
-       ("ruby-pry" ,ruby-pry)
-       ("ruby-rake-compiler" ,ruby-rake-compiler)))
+     (list ruby-minitest ruby-pry ruby-rake-compiler))
     (synopsis "Ruby bindings to the libgit2 linkable C Git library")
     (description "Rugged is a library for accessing libgit2 in Ruby.  It gives
 you the speed and portability of libgit2 with the beauty of the Ruby
@@ -12389,7 +12053,7 @@ giving detailed reports on the time taken for each task.")
     (arguments
      `(#:tests? #false))     ;there are none
     (propagated-inputs
-      `(("jekyll" ,jekyll)))
+      (list jekyll))
     (synopsis
       "Jekyll plugin to generate an Atom feed of your Jekyll posts")
     (description
@@ -12414,7 +12078,7 @@ of your Jekyll posts.")
     (arguments
      `(#:tests? #false))     ;there are none
     (propagated-inputs
-      `(("jekyll" ,jekyll)))
+      (list jekyll))
     (synopsis
       "Automatically generate a sitemap.xml for your Jekyll site")
     (description
@@ -12439,7 +12103,7 @@ a sitemaps.org compliant sitemap for your Jekyll site.")
    (arguments
     `(#:tests? #false))
    (propagated-inputs
-    `(("jekyll" ,jekyll)))
+    (list jekyll))
    (synopsis
     "Jekyll plugin to add metadata tags for search engines and social networks")
    (description
@@ -12461,10 +12125,9 @@ and social networks to better index and display your site's content.")
         (base32
          "1jrsajzhzpnfa8hj6lbf7adn8hls56dz3yw1gvzgz9y4zkka3k9v"))))
     (build-system ruby-build-system)
-    (native-inputs `(("tzdata" ,tzdata-for-tests)))
+    (native-inputs (list tzdata-for-tests))
     (propagated-inputs
-     `(("ruby-mail" ,ruby-mail)
-       ("ruby-term-ansicolor" ,ruby-term-ansicolor)))
+     (list ruby-mail ruby-term-ansicolor))
     (arguments
      '(#:phases (modify-phases %standard-phases
                   (replace 'replace-git-ls-files
@@ -12516,8 +12179,7 @@ management, status tracking and reporting.")
     (arguments
      `(#:tests? #false))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-rake-compiler" ,ruby-rake-compiler)))
+     (list bundler ruby-rake-compiler))
     (synopsis "Trigonometric functions for complex numbers")
     (description
      "This gem is a library that provides trigonometric and transcendental

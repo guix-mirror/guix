@@ -51,9 +51,7 @@
               "bin"           ;depends on Readline (adds 20MiB to the closure)
               "doc"           ;1.8 MiB of HTML
               "static"))      ;1.8 MiB static libraries
-   (inputs `(("bzip2" ,bzip2)
-             ("readline" ,readline)
-             ("zlib" ,zlib)))
+   (inputs (list bzip2 readline zlib))
    (arguments
     `(#:disallowed-references ("doc")
       #:configure-flags '("--enable-utf"
@@ -99,9 +97,7 @@ POSIX regular expression API.")
                (base32
                 "0w6jaswjmg3bc0wsw6msn5bvk66p90kf2asnnj9rhll0idpak5ad"))))
    (build-system gnu-build-system)
-   (inputs `(("bzip2" ,bzip2)
-             ("readline" ,readline)
-             ("zlib" ,zlib)))
+   (inputs (list bzip2 readline zlib))
    (arguments
     `(#:configure-flags '("--enable-unicode"
                           "--enable-pcre2grep-libz"

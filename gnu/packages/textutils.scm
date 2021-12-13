@@ -112,8 +112,7 @@ to DOS format and vice versa.")
         (base32 "0m59sd1ca0zw1aydpc3m8sw03nc885knmccqryg7byzmqs585ia6"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("python" ,python)
-       ("python-cython" ,python-cython)))
+     (list python python-cython))
     (home-page "https://github.com/rrthomas/recode")
     (synopsis "Text encoding converter")
     (description "The Recode library converts files between character sets and
@@ -476,8 +475,7 @@ useful when it is desired to reformat numbers.
                  (("^iconv ") (string-append iconv "/bin/iconv ")))
              #t))))))
     (inputs
-     `(("ascii2binary" ,ascii2binary)
-       ("libiconv" ,libiconv)))
+     (list ascii2binary libiconv))
     (home-page "https://billposer.org/Software/unidesc.html")
     (synopsis "Find out what is in a Unicode file")
     (description "Useful tools when working with Unicode files when one
@@ -751,15 +749,9 @@ in a portable way.")
              (invoke "autoreconf" "-vif")
              #t)))))
     (inputs
-     `(("ncurses" ,ncurses)
-       ("perl" ,perl)
-       ("readline" ,readline)
-       ("slang" ,slang)))
+     (list ncurses perl readline slang))
     (native-inputs
-     `(("libtool" ,libtool)
-       ("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("pkg-config" ,pkg-config)))
+     (list libtool autoconf automake pkg-config))
     (home-page "https://www.lbreyer.com/dbacl.html")
     (synopsis "Bayesian text and email classifier")
     (description
@@ -795,9 +787,7 @@ categories.")
     (build-system gnu-build-system)
     (arguments `(#:tests? #f))  ; FIXME maketest.sh does not work.
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
+     (list autoconf automake libtool))
     (home-page "https://github.com/williamh/dotconf")
     (synopsis "Configuration file parser library")
     (description
@@ -854,8 +844,8 @@ categories.")
                           (with-directory-excursion
                               (format #f "../drm_tools-~a" ,version)
                             (invoke "sh" "test_all.sh")))))))))
-    (native-inputs `(("which" ,which))) ;for tests
-    (inputs `(("pcre" ,pcre)))
+    (native-inputs (list which)) ;for tests
+    (inputs (list pcre))
     (home-page "http://drmtools.sourceforge.net/")
     (synopsis "Utilities to manipulate text and binary files")
     (description "The drm_tools package contains the following commands:
@@ -930,8 +920,7 @@ Filter, list, or split a tar file.
        #:tests? #f
        #:jar-name "rsyntaxtextarea.jar"))
     (native-inputs
-     `(("java-junit" ,java-junit)
-       ("java-hamcrest-core" ,java-hamcrest-core)))
+     (list java-junit java-hamcrest-core))
     (home-page "https://bobbylight.github.io/RSyntaxTextArea/")
     (synopsis "Syntax highlighting text component for Java Swing")
     (description "RSyntaxTextArea is a syntax highlighting, code folding text
@@ -970,7 +959,7 @@ source code.")
                  (delete-file "bycython.cpp")
                  (invoke "cython" "--cplus" "bycython.pyx")))))))
       (native-inputs
-       `(("python-cython" ,python-cython)))
+       (list python-cython))
       (home-page "https://www.github.com/aflc/editdistance")
       (synopsis "Fast implementation of the edit distance (Levenshtein distance)")
       (description
@@ -1020,8 +1009,7 @@ text.")
                 "06vdikjvpj6qdb41d8wzfnyj44jpnknmlgbhbr1w215420lpb5xj"))))
     (build-system gnu-build-system)
     (inputs
-     `(("unzip" ,unzip)
-       ("perl" ,perl)))
+     (list unzip perl))
     (arguments
      `(#:tests? #f                      ; No tests.
        #:make-flags (list (string-append "BINDIR="
@@ -1133,7 +1121,7 @@ documents into plain text.")
          ;; no configure script
          (delete 'configure))))
     (inputs
-     `(("zlib" ,zlib)))
+     (list zlib))
     (home-page "https://github.com/dstosberg/odt2txt/")
     (synopsis "Converter from OpenDocument Text to plain text")
     (description "odt2txt is a command-line tool which extracts the text out

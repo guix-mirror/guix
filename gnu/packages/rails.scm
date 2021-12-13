@@ -56,8 +56,7 @@
                (("require \\\"bump/tasks\\\"") ""))
              #t)))))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-activesupport" ,ruby-activesupport)))
+     (list bundler ruby-activesupport))
     (synopsis "Ruby on Rails application preloader")
     (description
      "Spring is a Ruby on Rails application preloader.  It speeds up
@@ -82,11 +81,8 @@ migration.")
     (arguments
      '(#:tests? #f)) ; No included tests
     (propagated-inputs
-     `(("ruby-railties" ,ruby-railties)
-       ("ruby-sass" ,ruby-sass)
-       ("ruby-sprockets" ,ruby-sprockets)
-       ("ruby-sprockets-rails" ,ruby-sprockets-rails)
-       ("ruby-tilt" ,ruby-tilt)))
+     (list ruby-railties ruby-sass ruby-sprockets ruby-sprockets-rails
+           ruby-tilt))
     (synopsis "Sass adapter for the Rails asset pipeline")
     (description
      "This library integrates the SASS stylesheet language into Ruby on
@@ -160,15 +156,15 @@ API.")
                (("gemspec") "gemspec\ngem 'tzinfo-data'\ngem 'sass'"))
              #t)))))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-rails" ,ruby-rails)
-       ("ruby-rspec-rails" ,ruby-rspec-rails)
-       ;; This is needed for a test, but I'm unsure why
-       ("ruby-sass" ,ruby-sass)
-       ;; This is used as the ruby-execjs runtime
-       ("node" ,node)))
+     (list bundler
+           ruby-rails
+           ruby-rspec-rails
+           ;; This is needed for a test, but I'm unsure why
+           ruby-sass
+           ;; This is used as the ruby-execjs runtime
+           node))
     (propagated-inputs
-     `(("ruby-execjs" ,ruby-execjs)))
+     (list ruby-execjs))
     (synopsis "Parse CSS and add vendor prefixes to CSS rules")
     (description
      "This gem provides Ruby and Ruby on Rails integration with Autoprefixer,
@@ -193,7 +189,7 @@ Can I Use website.")
     '(;; No included tests
       #:tests? #f))
    (propagated-inputs
-    `(("ruby-activesupport" ,ruby-activesupport)))
+    (list ruby-activesupport))
    (synopsis "Toolkit for building modeling frameworks like Active Record")
    (description
     "This package provides a toolkit for building modeling frameworks like
@@ -218,9 +214,7 @@ serialization, internationalization, and testing.")
     '(;; No included tests
       #:tests? #f))
    (propagated-inputs
-    `(("ruby-activemodel" ,ruby-activemodel)
-      ("ruby-activesupport" ,ruby-activesupport)
-      ("ruby-arel" ,ruby-arel)))
+    (list ruby-activemodel ruby-activesupport ruby-arel))
    (synopsis "Ruby library to connect to relational databases")
    (description
     "Active Record connects classes to relational database table to establish
@@ -243,13 +237,13 @@ an almost zero-configuration persistence layer for applications.")
     (arguments
      '(#:tests? #f)) ; No included tests
     (propagated-inputs
-     `(("ruby-actionpack" ,ruby-actionpack)
-       ("ruby-activesupport" ,ruby-activesupport)
-       ("ruby-railties" ,ruby-railties)
-       ("ruby-rspec-core" ,ruby-rspec-core)
-       ("ruby-rspec-expectations" ,ruby-rspec-expectations)
-       ("ruby-rspec-mocks" ,ruby-rspec-mocks)
-       ("ruby-rspec-support" ,ruby-rspec-support)))
+     (list ruby-actionpack
+           ruby-activesupport
+           ruby-railties
+           ruby-rspec-core
+           ruby-rspec-expectations
+           ruby-rspec-mocks
+           ruby-rspec-support))
     (synopsis "Use RSpec to test Ruby on Rails applications")
     (description
      "This package provides support for using RSpec to test Ruby on Rails
@@ -273,7 +267,7 @@ applications, in pace of the default Minitest testing library.")
      '(;; No included tests
        #:tests? #f))
     (propagated-inputs
-     `(("ruby-loofah" ,ruby-loofah)))
+     (list ruby-loofah))
     (synopsis "HTML sanitization for Rails applications")
     (description
      "This gem is used to handle HTML sanitization in Rails applications.  If
@@ -298,10 +292,9 @@ directly.")
         "17vdh273cmmfpzy5m546dd13zqmimv54jjx0f7sl0zi5lwz0gnck"))))
    (build-system ruby-build-system)
    (native-inputs
-    `(("bundler" ,bundler)))
+    (list bundler))
    (propagated-inputs
-    `(("ruby-activesupport" ,ruby-activesupport)
-      ("ruby-nokogiri" ,ruby-nokogiri)))
+    (list ruby-activesupport ruby-nokogiri))
    (synopsis "Compare HTML DOMs and assert certain elements exists")
    (description
     "This gem can compare HTML and assert certain elements exists.  This is
@@ -325,11 +318,8 @@ useful when writing tests.")
     '(;; No included tests
       #:tests? #f))
     (propagated-inputs
-     `(("ruby-actionpack" ,ruby-actionpack)
-       ("ruby-activerecord" ,ruby-activerecord)
-       ("ruby-activestorage" ,ruby-activestorage)
-       ("ruby-activesupport" ,ruby-activesupport)
-       ("ruby-nokogiri" ,ruby-nokogiri)))
+     (list ruby-actionpack ruby-activerecord ruby-activestorage
+           ruby-activesupport ruby-nokogiri))
     (synopsis "Edit and display rich text in Rails applications")
     (description
      "ActionText edits and displays rich text in Rails applications.")
@@ -352,11 +342,8 @@ useful when writing tests.")
     '(;; No included tests
       #:tests? #f))
    (propagated-inputs
-    `(("ruby-activesupport" ,ruby-activesupport)
-      ("ruby-builder" ,ruby-builder)
-      ("ruby-erubi" ,ruby-erubi)
-      ("ruby-rails-dom-testing" ,ruby-rails-dom-testing)
-      ("ruby-rails-html-sanitizer" ,ruby-rails-html-sanitizer)))
+    (list ruby-activesupport ruby-builder ruby-erubi
+          ruby-rails-dom-testing ruby-rails-html-sanitizer))
    (synopsis "Conventions and helpers for building web pages")
    (description
     "ActionView provides conventions and helpers for building web pages in
@@ -380,12 +367,12 @@ Ruby.")
     '(;; No included tests
       #:tests? #f))
    (propagated-inputs
-    `(("ruby-actionview" ,ruby-actionview)
-      ("ruby-activesupport" ,ruby-activesupport)
-      ("ruby-rack" ,ruby-rack)
-      ("ruby-rack-test" ,ruby-rack-test)
-      ("ruby-rails-dom-testing" ,ruby-rails-dom-testing)
-      ("ruby-rails-html-sanitizer" ,ruby-rails-html-sanitizer)))
+    (list ruby-actionview
+          ruby-activesupport
+          ruby-rack
+          ruby-rack-test
+          ruby-rails-dom-testing
+          ruby-rails-html-sanitizer))
    (synopsis "Conventions for building and testing MVC web applications")
    (description
     "ActionPack provides conventions for building and testing MVC web
@@ -409,10 +396,8 @@ applications.  These work with any Rack-compatible server.")
     '(;; No included tests
       #:tests? #f))
    (propagated-inputs
-    `(("ruby-actionpack" ,ruby-actionpack)
-      ("ruby-activesupport" ,ruby-activesupport)
-      ("ruby-nio4r" ,ruby-nio4r)
-      ("ruby-websocket-driver" ,ruby-websocket-driver)))
+    (list ruby-actionpack ruby-activesupport ruby-nio4r
+          ruby-websocket-driver))
    (synopsis "Integrate integrates WebSockets with Rails applications")
    (description
     "Action Cable integrates WebSockets with Rails applications.  Through
@@ -436,8 +421,7 @@ WebSockets it allows for real-time features in web applications.")
     '(;; No included tests
       #:tests? #f))
    (propagated-inputs
-    `(("ruby-activesupport" ,ruby-activesupport)
-      ("ruby-globalid" ,ruby-globalid)))
+    (list ruby-activesupport ruby-globalid))
    (synopsis "Declare job classes for multiple backends")
    (description
     "ActiveJob allows declaring job classes in a common way across Rails
@@ -461,12 +445,12 @@ applications.")
      '(;; No included tests
        #:tests? #f))
     (propagated-inputs
-     `(("ruby-actionpack" ,ruby-actionpack)
-       ("ruby-activejob" ,ruby-activejob)
-       ("ruby-activerecord" ,ruby-activerecord)
-       ("ruby-activesupport" ,ruby-activesupport)
-       ("ruby-marcel" ,ruby-marcel)
-       ("ruby-mimemagic" ,ruby-mimemagic)))
+     (list ruby-actionpack
+           ruby-activejob
+           ruby-activerecord
+           ruby-activesupport
+           ruby-marcel
+           ruby-mimemagic))
     (synopsis "Integrate file storage services in to Rails applications")
     (description
      "ActiveStorage integrates file storage services with Rails applications,
@@ -490,12 +474,12 @@ allowing files to be attached to ActiveRecord models.")
     '(;; No included tests
       #:tests? #f))
     (propagated-inputs
-     `(("ruby-actionpack" ,ruby-actionpack)
-       ("ruby-activejob" ,ruby-activejob)
-       ("ruby-activerecord" ,ruby-activerecord)
-       ("ruby-activestorage" ,ruby-activestorage)
-       ("ruby-activesupport" ,ruby-activesupport)
-       ("ruby-mail" ,ruby-mail)))
+     (list ruby-actionpack
+           ruby-activejob
+           ruby-activerecord
+           ruby-activestorage
+           ruby-activesupport
+           ruby-mail))
     (synopsis "Receive and process incoming emails in Rails applications")
     (description
      "ActionMailbox receives and processes incoming emails in Rails applications.")
@@ -518,12 +502,12 @@ allowing files to be attached to ActiveRecord models.")
     '(;; No included tests
       #:tests? #f))
    (propagated-inputs
-    `(("ruby-actionpack" ,ruby-actionpack)
-      ("ruby-actionview" ,ruby-actionview)
-      ("ruby-activejob" ,ruby-activejob)
-      ("ruby-activesupport" ,ruby-activesupport)
-      ("ruby-mail" ,ruby-mail)
-      ("ruby-rails-dom-testing" ,ruby-rails-dom-testing)))
+    (list ruby-actionpack
+          ruby-actionview
+          ruby-activejob
+          ruby-activesupport
+          ruby-mail
+          ruby-rails-dom-testing))
    (synopsis "Work with emails using the controller/view pattern")
    (description
     "Compose, deliver, receive, and test emails using the controller/view
@@ -547,11 +531,8 @@ pattern.  Including support for multipart email and attachments.")
     '(;; No included tests
       #:tests? #f))
    (propagated-inputs
-    `(("ruby-actionpack" ,ruby-actionpack)
-      ("ruby-activesupport" ,ruby-activesupport)
-      ("ruby-method-source" ,ruby-method-source)
-      ("ruby-rake" ,ruby-rake)
-      ("ruby-thor" ,ruby-thor)))
+    (list ruby-actionpack ruby-activesupport ruby-method-source ruby-rake
+          ruby-thor))
    (synopsis "Rails internals, including application bootup and generators")
    (description
     "@code{railties} provides the core Rails internals including handling
@@ -575,9 +556,7 @@ application bootup, plugins, generators, and Rake tasks.")
     '(;; No included tests
       #:tests? #f))
    (propagated-inputs
-    `(("ruby-actionpack" ,ruby-actionpack)
-      ("ruby-activesupport" ,ruby-activesupport)
-      ("ruby-sprockets" ,ruby-sprockets)))
+    (list ruby-actionpack ruby-activesupport ruby-sprockets))
    (synopsis "Sprockets Rails integration")
    (description
     "Provides Sprockets implementation for the Rails Asset Pipeline.")
@@ -618,15 +597,9 @@ application bootup, plugins, generators, and Rake tasks.")
                (("group :test do") "group :test do\n  gem 'tzinfo-data'"))
              #t)))))
     (propagated-inputs
-     `(("ruby-actionview" ,ruby-actionview)
-       ("ruby-activemodel" ,ruby-activemodel)
-       ("ruby-bindex" ,ruby-bindex)
-       ("ruby-railties" ,ruby-railties)))
+     (list ruby-actionview ruby-activemodel ruby-bindex ruby-railties))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-rails" ,ruby-rails)
-       ("ruby-mocha" ,ruby-mocha)
-       ("ruby-simplecov" ,ruby-simplecov)))
+     (list bundler ruby-rails ruby-mocha ruby-simplecov))
     (synopsis "Debugging tool for your Ruby on Rails applications")
     (description
      "This package allows you to create an interactive Ruby session in your
@@ -650,11 +623,9 @@ can also be launched manually in any page.")
     (arguments
      '(#:tests? #f)) ; TODO Tests require a running MySQL service
     (propagated-inputs
-     `(("ruby-activerecord" ,ruby-activerecord)))
+     (list ruby-activerecord))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-yard" ,ruby-yard)
-       ("ruby-mysql2" ,ruby-mysql2)))
+     (list bundler ruby-yard ruby-mysql2))
     (synopsis "Advisory locking for ActiveRecord")
     (description
      "The With advisory lock gem adds advisory locking to ActiveRecord for
@@ -696,20 +667,20 @@ for locks.")
               (invoke "ruby" "-e" "gem 'rails'"))
             #t)))))
    (propagated-inputs
-    `(("ruby-actioncable" ,ruby-actioncable)
-      ("ruby-actionmailbox" ,ruby-actionmailbox)
-      ("ruby-actionmailer" ,ruby-actionmailer)
-      ("ruby-actionpack" ,ruby-actionpack)
-      ("ruby-actiontext" ,ruby-actiontext)
-      ("ruby-actionview" ,ruby-actionview)
-      ("ruby-activejob" ,ruby-activejob)
-      ("ruby-activemodel" ,ruby-activemodel)
-      ("ruby-activerecord" ,ruby-activerecord)
-      ("ruby-activestorage" ,ruby-activestorage)
-      ("ruby-activesupport" ,ruby-activesupport)
-      ("bundler" ,bundler)
-      ("ruby-railties" ,ruby-railties)
-      ("ruby-sprockets-rails" ,ruby-sprockets-rails)))
+    (list ruby-actioncable
+          ruby-actionmailbox
+          ruby-actionmailer
+          ruby-actionpack
+          ruby-actiontext
+          ruby-actionview
+          ruby-activejob
+          ruby-activemodel
+          ruby-activerecord
+          ruby-activestorage
+          ruby-activesupport
+          bundler
+          ruby-railties
+          ruby-sprockets-rails))
    (synopsis "Full-stack web framework optimized for programmer happiness")
    (description
     "Ruby on Rails is a full-stack web framework optimized for programmer

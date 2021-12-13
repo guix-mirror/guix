@@ -110,7 +110,7 @@
                          (find-files out "\\.a$"))
                #t))))))
     (native-inputs
-     `(("perl" ,perl)))
+     (list perl))
     (inputs
      `(("alsa" ,alsa-lib)))
     (synopsis "Speech synthesis system")
@@ -165,9 +165,8 @@ building tools.")
                (("/bin/ln") "ln"))
              #t)))))
        (inputs
-        `(("portaudio" ,portaudio)
-          ("pulseaudio" ,pulseaudio)))
-       (native-inputs `(("unzip" ,unzip)))
+        (list portaudio pulseaudio))
+       (native-inputs (list unzip))
        (home-page "http://espeak.sourceforge.net/")
        (synopsis "Software speech synthesizer")
        (description "eSpeak is a software speech synthesizer for English and
@@ -200,13 +199,9 @@ based on human speech recordings.")
        ;; XXX: Some tests require an audio device.
        #:tests? #f))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("which" ,which)))
+     (list autoconf automake libtool which))
     (inputs
-     `(("libcap" ,libcap)
-       ("pcaudiolib" ,pcaudiolib)))
+     (list libcap pcaudiolib))
     (synopsis "Software speech synthesizer")
     (description
      "eSpeak NG is a software speech synthesizer for more than 100 languages.
@@ -228,7 +223,7 @@ synthesis, and the ability to use MBROLA voices.")
                 "09fv4fcpmw9g1j0zml0k5kk1lgjw2spr8gn51llbkaaph6v8d62a"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("gfortran" ,gfortran)))
+     (list gfortran))
     (synopsis "The MIT Language Modeling toolkit")
     (description "The MIT Language Modeling (MITLM) toolkit is a set of
 tools designed for the efficient estimation of statistical n-gram language
@@ -510,7 +505,7 @@ be used by the sighted.")
          (add-before 'configure 'bootstrap
            (lambda _ (invoke "autoreconf" "-vif"))))))
     (inputs
-     `(("ncurses" ,ncurses)))
+     (list ncurses))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -577,12 +572,9 @@ control.")
        (sha256
         (base32 "1v476kpw09ljj8mavasj4hya2w11jwlx7q22rh1lsn9jkkam5i2a"))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("alsa-lib" ,alsa-lib)
-       ("espeak-ng" ,espeak-ng)
-       ("libsndfile" ,libsndfile)
-       ("pulseaudio" ,pulseaudio)))
+     (list alsa-lib espeak-ng libsndfile pulseaudio))
     (build-system gnu-build-system)
     (native-search-paths
      (list (search-path-specification
@@ -615,13 +607,13 @@ It can also speak English through eSpeak or Festival.")
     (arguments
      `(#:parallel-tests? #f))           ;tests fail otherwise
     (native-inputs
-     `(("bison" ,bison)
-       ("doxygen" ,doxygen)
-       ("perl" ,perl)                   ;for tests
-       ("python" ,python)
-       ("swig" ,swig)))
+     (list bison
+           doxygen
+           perl ;for tests
+           python
+           swig))
     (inputs
-     `(("pulseaudio" ,pulseaudio)))
+     (list pulseaudio))
     (home-page "https://cmusphinx.github.io/")
     (synopsis "Support library required by Pocketsphinx and Sphinxtrain")
     (description "This package contains the basic libraries shared by
@@ -644,15 +636,10 @@ manipulating acoustic feature and audio files.")
         (base32 "1n9yazzdgvpqgnfzsbl96ch9cirayh74jmpjf7svs4i7grabanzg"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("perl" ,perl)                   ;for tests
-       ("python" ,python)
-       ("swig" ,swig)))
+     (list pkg-config perl ;for tests
+           python swig))
     (inputs
-     `(("gstreamer" ,gstreamer)
-       ("libcap" ,libcap)
-       ("pulseaudio" ,pulseaudio)
-       ("sphinxbase" ,sphinxbase)))
+     (list gstreamer libcap pulseaudio sphinxbase))
     (home-page "https://cmusphinx.github.io/")
     (synopsis "Recognizer library written in C")
     (description "PocketSphinx is one of Carnegie Mellon University's

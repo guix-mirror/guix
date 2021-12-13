@@ -142,9 +142,7 @@
         (base32 "0f5070k2bwarghl1vq886pl52xck1x5p7x3qhlfchsc2y3dcqms9"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libxcb" ,libxcb)
-       ("xcb-util" ,xcb-util)
-       ("xcb-util-wm" ,xcb-util-wm)))
+     (list libxcb xcb-util xcb-util-wm))
     (arguments
      `(#:tests? #f                      ;no test suite
        #:make-flags (list (string-append "CC=" ,(cc-for-target))
@@ -229,10 +227,9 @@ program.")
         (base32 "0msw9b1hdy3gbq9w5d04mfizhyirz1c648x84mlcbzl8salm7vpg"))))
     (build-system python-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("xrandr" ,xrandr)
-       ("libxcb" ,libxcb)))
+     (list xrandr libxcb))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -299,8 +296,7 @@ used to further tweak the behaviour of the different profiles.")
        ("wayland" ,wayland)
        ("wayland-protocols" ,wayland-protocols)))
     (native-inputs
-     `(("doxygen" ,doxygen)
-       ("pkg-config" ,pkg-config)))
+     (list doxygen pkg-config))
     (home-page "https://github.com/Cloudef/bemenu")
     (synopsis "Dynamic menu library and client program inspired by dmenu")
     (description
@@ -328,10 +324,7 @@ with X11 or Wayland, or in a text terminal with ncurses.")
    `(#:configure-flags '("-DCMAKE_BUILD_TYPE=Release")
      #:tests? #f)) ; Test suite is a rather manual process.
   (inputs
-   `(("qtbase" ,qtbase-5)
-     ("qtscript" ,qtscript)
-     ("qtsvg" ,qtsvg)
-     ("qtx11extras" ,qtx11extras)))
+   (list qtbase-5 qtscript qtsvg qtx11extras))
   (synopsis "Clipboard manager with advanced features")
   (description "CopyQ is clipboard manager with editing and scripting
 features.  CopyQ monitors system clipboard and saves its content in customized
@@ -355,11 +348,8 @@ application.")
     (arguments
      `(#:tests? #f))                    ;tests need /dev/uinput
     (inputs
-     `(("python-appdirs" ,python-appdirs)
-       ("python-evdev" ,python-evdev)
-       ("python-inotify-simple" ,python-inotify-simple)
-       ("python-xlib" ,python-xlib)
-       ("python-six" ,python-six)))
+     (list python-appdirs python-evdev python-inotify-simple python-xlib
+           python-six))
     (home-page "https://github.com/mooz/xkeysnail")
     (synopsis "Keyboard remapping tool for the X11 environment")
     (description
@@ -386,8 +376,7 @@ layers (evdev and uinput), making remapping work in almost all the places.")
     (arguments
      `(#:tests? #f))                    ;no test target
     (inputs
-     `(("libx11" ,libx11)
-       ("libxkbfile" ,libxkbfile)))
+     (list libx11 libxkbfile))
     (home-page "https://github.com/grwlf/xkb-switch")
     (synopsis "Switch your X keyboard layouts from the command line")
     (description
@@ -413,10 +402,8 @@ state.")
     (arguments
      '(#:tests? #f))                              ;there is no test suite
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)))
-    (inputs `(("libxmu" ,libxmu)
-              ("libxt" ,libxt)))
+     (list autoconf automake))
+    (inputs (list libxmu libxt))
     (home-page "https://github.com/astrand/xclip")
     (synopsis "Command line interface to X11 clipboard")
     (description "Xclip is a command line interface to the X11 clipboard.  It
@@ -437,16 +424,14 @@ avoiding password prompts when X11 forwarding has already been setup.")
                "0ysynzzgzd9jdrh1321r4bgw8wd5zljrlyn5y1a31g39xacf02bv"))))
     (build-system meson-build-system)
     (inputs
-     `(("libx11" ,libx11)
-       ("libxcb" ,libxcb)
-       ("libxml2" ,libxml2)
-       ("wayland" ,wayland)
-       ("wayland-protocols" ,wayland-protocols)
-       ("xkeyboard-config" ,xkeyboard-config)))
+     (list libx11
+           libxcb
+           libxml2
+           wayland
+           wayland-protocols
+           xkeyboard-config))
     (native-inputs
-     `(("bison" ,bison)
-       ("doxygen" ,doxygen)
-       ("pkg-config" ,pkg-config)))
+     (list bison doxygen pkg-config))
     (arguments
      `(#:configure-flags
        (list (string-append "-Dxkb-config-root="
@@ -490,15 +475,11 @@ X11 (yet).")
            (lambda _
              (invoke "autoreconf" "-vfi"))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-
-       ;; For bootstrapping from git.
-       ("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
+     (list pkg-config
+           ;; For bootstrapping from git.
+           autoconf automake libtool))
     (inputs
-     `(("libxtst" ,libxtst)
-       ("libx11" ,libx11)))
+     (list libxtst libx11))
     (home-page "https://www.yoctoproject.org/tools-resources/projects/matchbox")
     (synopsis "X virtual keyboard library")
     (description
@@ -531,13 +512,13 @@ X11 (yet).")
                (setenv "LDFLAGS" (string-append "-Wl,-rpath=" out "/lib"))
                (setenv "CC" "gcc")
                #t))))))
-    (native-inputs `(("perl" ,perl))) ; for pod2man
-    (inputs `(("libx11" ,libx11)
-              ("libxext" ,libxext)
-              ("libxi" ,libxi)
-              ("libxinerama" ,libxinerama)
-              ("libxtst" ,libxtst)
-              ("libxkbcommon" ,libxkbcommon)))
+    (native-inputs (list perl)) ; for pod2man
+    (inputs (list libx11
+                  libxext
+                  libxi
+                  libxinerama
+                  libxtst
+                  libxkbcommon))
     (home-page "https://www.semicomplete.com/projects/xdotool/")
     (synopsis "Fake keyboard/mouse input, window management, and more")
     (description "Xdotool lets you simulate keyboard input and mouse activity,
@@ -571,9 +552,7 @@ between desktops, and change the number of desktops.")
        (modify-phases %standard-phases
          (delete 'configure))))
     (inputs
-     `(("libxcb" ,libxcb)
-       ("xcb-util-wm" ,xcb-util-wm)
-       ("xcb-util" ,xcb-util)))
+     (list libxcb xcb-util-wm xcb-util))
     (home-page "https://github.com/baskerville/xdo")
     (synopsis "Small X utility to perform elementary actions on windows")
     (description
@@ -594,12 +573,9 @@ options are given, the action applies to the focused window.")
         (base32 "0lq5j7fryx1wn998jq6h3icz1h6pqrsbs3adskjzjyhn5l6yrg2p"))))
     (build-system gnu-build-system)
     (inputs
-      `(("libxext" ,libxext)
-        ("libxmu" ,libxmu)
-        ("libxrender" ,libxrender)
-        ("libxt" ,libxt)))
+      (list libxext libxmu libxrender libxt))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://www.x.org/")    ; no dedicated Xeyes page exists
     (synopsis "Follow-the-mouse X demo")
     (description "Xeyes is a demo program for x.org.  It shows eyes
@@ -631,10 +607,9 @@ following the mouse.")
         "--enable-timers"
         "--enable-gnuplot")))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("libpng" ,libpng)
-       ("zlib" ,zlib)))
+     (list libpng zlib))
     (synopsis "Low-level pixel manipulation library")
     (description "Pixman is a low-level software library for pixel
 manipulation, providing features such as image compositing and trapezoid
@@ -672,9 +647,9 @@ rasterisation.")
                       (when tests?
                         (invoke "meson" "test" "--timeout-multiplier" "5")))))))
     (propagated-inputs
-     `(("libpciaccess" ,libpciaccess)))
+     (list libpciaccess))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://dri.freedesktop.org/wiki/")
     (synopsis "Direct rendering userspace library")
     (description "The Direct Rendering Infrastructure, also known as the DRI,
@@ -726,10 +701,9 @@ tracking.")
         (base32
          "0jmyryrpqb35y9hd5sgxqy2z0r1snw7d3ljw0jak0n0cjdz1yf9w"))))
     (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs (list pkg-config))
     (inputs
-     `(("libx11" ,libx11)
-       ("xcb-util" ,xcb-util)))
+     (list libx11 xcb-util))
     (home-page "https://www.freedesktop.org/wiki/Software/startup-notification/")
     (synopsis "Application startup notification and feedback library")
     (description
@@ -759,11 +733,9 @@ System style license, and has no special dependencies.")
                             (assoc-ref %outputs "out")
                             "/share/man"))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("libx11" ,libx11)
-       ("libxmu" ,libxmu)
-       ("glib" ,glib)))
+     (list libx11 libxmu glib))
     (home-page "http://tomas.styblo.name/wmctrl/")
     (synopsis "Command-line tool to control X window managers")
     (description
@@ -789,10 +761,7 @@ move windows, switch between desktops, etc.).")
         (base32 "0rls08mpalx4xp5ysmg7m5lgx9q8g8m8q40m47f11mqa84z88nd1"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("autoconf-archive" ,autoconf-archive)
-       ("automake" ,automake)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf autoconf-archive automake pkg-config))
     (inputs
      `(("giblib" ,giblib)
        ("imlib2" ,imlib2)
@@ -828,12 +797,12 @@ of the screen selected by mouse.")
     (arguments
      '(#:tests? #f)) ; no "check" target
     (inputs
-     `(("glew" ,glew)
-       ("glm" ,glm)
-       ("icu4c" ,icu4c)
-       ("libxext" ,libxext)
-       ("libxrender" ,libxrender)
-       ("mesa" ,mesa)))
+     (list glew
+           glm
+           icu4c
+           libxext
+           libxrender
+           mesa))
     (home-page "https://github.com/naelstrof/slop")
     (synopsis "Select a region and print its bounds to stdout")
     (description
@@ -907,7 +876,7 @@ include cursor in the resulting image.")
                (invoke "make" "install" "install.man"
                        (string-append "BINDIR=" bin)
                        (string-append "MANDIR=" man1))))))))
-    (inputs `(("libx11" ,libx11)))
+    (inputs (list libx11))
     (home-page "http://ftp.x.org/contrib/utilities/")
     (synopsis "Hide idle mouse cursor")
     (description
@@ -945,13 +914,9 @@ things less distracting.")
                  (modify-phases %standard-phases
                    (delete 'configure))))
     (inputs
-     `(("libx11" ,libx11)
-       ("libev" ,libev)
-       ("libxfixes" ,libxfixes)
-       ("libxi" ,libxi)))
+     (list libx11 libev libxfixes libxi))
     (native-inputs
-     `(("asciidoc" ,asciidoc)
-       ("pkg-config" ,pkg-config)))
+     (list asciidoc pkg-config))
     (home-page "https://github.com/Airblader/unclutter-xfixes")
     (synopsis "Hide idle mouse cursor")
     (description
@@ -986,12 +951,9 @@ things less distracting.")
          "03azv5wpg65h40ip2kk1kdh58vix4vy1r9bihgsq59jx2rhjr3zf"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libpng" ,libpng)
-       ("libx11" ,libx11)
-       ("libxi" ,libxi)
-       ("libxtst" ,libxtst)))
+     (list libpng libx11 libxi libxtst))
     (native-inputs
-     `(("xorgproto" ,xorgproto)))
+     (list xorgproto))
     (synopsis "Tools to automate tasks in X such as detecting on screen images")
     (description
      "Xautomation can control X from the command line for scripts, and
@@ -1025,10 +987,7 @@ to find buttons, etc, on the screen to click on.")
        #:phases (modify-phases %standard-phases
                   (delete 'configure)))) ; no configure script
     (inputs
-     `(("libx11" ,libx11)
-       ("libxfixes" ,libxfixes)
-       ("libxi" ,libxi)
-       ("libxt" ,libxt)))
+     (list libx11 libxfixes libxi libxt))
     (synopsis "Banish the mouse cursor")
     (description
      "@command{xbanish} hides the mouse cursor when you start typing, and
@@ -1086,10 +1045,7 @@ X Window System.")
      '(#:configure-flags
        (list (string-append "--mandir=" %output "/share/man"))))
     (inputs
-     `(("libx11" ,libx11)
-       ("libxt" ,libxt)
-       ("libxext" ,libxext)
-       ("libxinerama" ,libxinerama)))
+     (list libx11 libxt libxext libxinerama))
     (home-page "https://sourceforge.net/projects/libxosd/")
     (synopsis "X On Screen Display")
     (description
@@ -1110,12 +1066,9 @@ transparent text on your screen.")
         (base32 "080pwz8pvqqq068lavzz48dl350iszpdswjd86bjk6zra5h5d10q"))))
     (build-system meson-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("scdoc" ,scdoc)))
+     (list pkg-config scdoc))
     (inputs
-     `(("libseccomp" ,libseccomp)
-       ("wayland" ,wayland)
-       ("wayland-protocols" ,wayland-protocols)))
+     (list libseccomp wayland wayland-protocols))
     (home-page "https://github.com/francma/wob")
     (synopsis "Lightweight overlay bar for Wayland")
     (description
@@ -1157,11 +1110,9 @@ backlight, progress, or anything bar for Wayland.")
                   (format #f "\"~a/bin/~a\"" out command)))
                #t))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("guile" ,guile-2.2)
-       ("libx11" ,libx11)
-       ("tk" ,tk)))
+     (list guile-2.2 libx11 tk))
     (home-page "https://www.nongnu.org/xbindkeys/")
     (synopsis "Associate a combination of keys with a shell command")
     (description
@@ -1190,11 +1141,7 @@ Guile will work for XBindKeys.")
         (base32 "1winwzdy9yxvxnrv8gqpigl9y0c2px27mnms62bdilp4x6llrs9r"))))
     (build-system gnu-build-system)
     (inputs
-     `(("asciidoc" ,asciidoc)
-       ("libxcb" ,libxcb)
-       ("xcb-util" ,xcb-util)
-       ("xcb-util-keysyms" ,xcb-util-keysyms)
-       ("xcb-util-wm" ,xcb-util-wm)))
+     (list asciidoc libxcb xcb-util xcb-util-keysyms xcb-util-wm))
     (arguments
      `(#:phases (modify-phases %standard-phases (delete 'configure))
        #:tests? #f  ; no check target
@@ -1272,9 +1219,8 @@ compact configuration syntax.")
        ("libX11" ,libx11)
        ("libXt" ,libxt)))
     (native-inputs
-     `(("ncurses" ,ncurses)         ;trigger the installation of terminfo data
-       ("perl" ,perl)
-       ("pkg-config" ,pkg-config)))
+     (list ncurses ;trigger the installation of terminfo data
+           perl pkg-config))
     ;; FIXME: This should only be located in 'ncurses'.  Nonetheless it is
     ;; provided for usability reasons.  See <https://bugs.gnu.org/22138>.
     (native-search-paths
@@ -1313,10 +1259,9 @@ within a single process.")
                           "MANDIR=/share/man/man1"
                           ,(string-append "CC=" (cc-for-target)))))
     (inputs
-     `(("libxtst" ,libxtst)
-       ("libx11" ,libx11)))
+     (list libxtst libx11))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://github.com/alols/xcape")
     (synopsis "Use a modifier key in X.org as another key")
     (description
@@ -1341,18 +1286,15 @@ Escape key when Left Control is pressed and released on its own.")
     (arguments
      `(#:configure-flags '("--disable-static")))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ;; For tests.
-       ("python" ,python)))
+     (list pkg-config
+           ;; For tests.
+           python))
     (inputs
-     `(("gtk+" ,gtk+)
-       ("libgudev" ,libgudev)
-       ("eudev" ,eudev)
-       ("libxml2" ,libxml2)))
+     (list gtk+ libgudev eudev libxml2))
     (propagated-inputs
      ;; libwacom includes header files that include GLib, and libinput uses
      ;; those header files.
-     `(("glib" ,glib)))
+     (list glib))
     (home-page "https://linuxwacom.github.io/")
     (synopsis "Helper library for Wacom tablet settings")
     (description
@@ -1385,13 +1327,9 @@ Wacom tablet applet.")
                             "/share/X11/xorg.conf.d"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("xorg-server" ,xorg-server)
-       ("libxrandr" ,libxrandr)
-       ("libxinerama" ,libxinerama)
-       ("libxi" ,libxi)
-       ("eudev" ,eudev)))
+     (list xorg-server libxrandr libxinerama libxi eudev))
     (home-page "https://linuxwacom.github.io/")
     (synopsis "Wacom input driver for X")
     (description
@@ -1456,20 +1394,18 @@ the X.Org X Server version 1.7 and later (X11R7.5 or later).")
                #t))))))
     (outputs '("out" "gtk"))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)))
+     (list pkg-config intltool))
     (inputs
-     `(("libdrm" ,libdrm)
-       ("libx11" ,libx11)
-       ("libxcb" ,libxcb)
-       ("libxxf86vm" ,libxxf86vm)
-       ("glib" ,glib)                   ;for Geoclue2 support
-
-       ;; To build the GTK3 GUI, we need these.
-       ("gtk+" ,gtk+)
-       ("python" ,python)
-       ("python-pygobject" ,python-pygobject)
-       ("python-pyxdg" ,python-pyxdg)))
+     (list libdrm
+           libx11
+           libxcb
+           libxxf86vm
+           glib ;for Geoclue2 support
+           ;; To build the GTK3 GUI, we need these.
+           gtk+
+           python
+           python-pygobject
+           python-pyxdg))
     (home-page "https://github.com/jonls/redshift")
     (synopsis "Adjust the color temperature of your screen")
     (description
@@ -1516,18 +1452,14 @@ color temperature should be set to match the lamps in your room.")
                             (("^_") ""))
                           #t))))))
       (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("libtool" ,libtool)
-         ("pkg-config" ,pkg-config)
-         ("intltool" ,intltool)))
+       (list autoconf automake libtool pkg-config intltool))
       (inputs
-       `(("libdrm" ,libdrm)
-         ("libx11" ,libx11)
-         ("libxcb" ,libxcb)
-         ("libxxf86vm" ,libxxf86vm)
-         ("glib" ,glib)                 ; for Geoclue2 support
-         ("wayland" ,wayland)))
+       (list libdrm
+             libx11
+             libxcb
+             libxxf86vm
+             glib ; for Geoclue2 support
+             wayland))
       (home-page "https://github.com/minus7/redshift")
       (synopsis "Adjust the color temperature of your screen (with Wayland support)")
       (description
@@ -1623,8 +1555,7 @@ less if you are working in front of the screen at night.")
                                          (assoc-ref %outputs "out")
                                          "/lib/X11/app-defaults"))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)))
+     (list pkg-config intltool))
     (inputs
      `(("libx11" ,libx11)
        ("libxext" ,libxext)
@@ -1682,13 +1613,9 @@ demos.  It also acts as a nice screen locker.")
                             (delete 'configure)
                             (delete 'check))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("glib" ,glib)
-       ("libx11" ,libx11)
-       ("libxext" ,libxext)
-       ("libxscrnsaver" ,libxscrnsaver)
-       ("dbus" ,dbus)))
+     (list glib libx11 libxext libxscrnsaver dbus))
     (synopsis "Forward freedesktop.org Idle Inhibition Service calls to Xss")
     (description "xssproxy implements the @code{org.freedesktop.ScreenSaver}
 D-Bus interface described in the Idle Inhibition Service Draft by the
@@ -1722,11 +1649,9 @@ Saver extension) library.")
            (replace 'bootstrap
              (lambda _
                (invoke "autoreconf" "-vfi"))))))
-      (native-inputs `(("autoconf" ,autoconf)
-                       ("automake" ,automake)
-                       ("libtool" ,libtool)))
+      (native-inputs (list autoconf automake libtool))
       (inputs
-       `(("libxt" ,libxt)))
+       (list libxt))
       (home-page "http://www.vergenet.net/~conrad/software/xsel/")
       (synopsis "Manipulate X selection")
       (description
@@ -1753,7 +1678,7 @@ but can also follow a growing file, display contents, delete entries and more.")
                 "1h09wd2qcg08rj5hcakvdh9q01hkrj8vxly94ax3ch2x06lm0zq8"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libx11" ,libx11)))
+     (list libx11))
     (home-page "https://github.com/alezost/xdpyprobe")
     (synopsis "Probe X server for connectivity")
     (description
@@ -1834,15 +1759,15 @@ by name.")
                (("/etc") "${CMAKE_INSTALL_PREFIX}/etc"))
              #t)))))
     (inputs
-     `(("gtk+" ,gtk+-2)
-       ("imlib2" ,imlib2)
-       ("librsvg" ,librsvg)
-       ("libxcomposite" ,libxcomposite)
-       ("libxdamage" ,libxdamage)
-       ("libxft" ,libxft)
-       ("libxinerama" ,libxinerama)
-       ("libxrandr" ,libxrandr)
-       ("startup-notification" ,startup-notification)))
+     (list gtk+-2
+           imlib2
+           librsvg
+           libxcomposite
+           libxdamage
+           libxft
+           libxinerama
+           libxrandr
+           startup-notification))
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
@@ -1898,11 +1823,8 @@ actions, a built-in clock, a battery monitor and a system tray.")
               (substitute* "Makefile" (("include config.mk") ""))
               #t)))))
      (inputs
-      `(("libx11"      ,libx11)
-        ("libxft"      ,libxft)
-        ("libxpm"      ,libxpm)
-        ("libxinerama" ,libxinerama)))
-     (native-inputs `(("pkg-config" ,pkg-config)))
+      (list libx11 libxft libxpm libxinerama))
+     (native-inputs (list pkg-config))
      (synopsis "General purpose messaging, notification and menuing program for X11")
      (description "Dzen is a general purpose messaging, notification and menuing
 program for X11.  It was designed to be fast, tiny and scriptable in any language.")
@@ -1929,7 +1851,7 @@ program for X11.  It was designed to be fast, tiny and scriptable in any languag
               ("fontconfig" ,fontconfig)
               ("libxft" ,libxft)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
@@ -1969,12 +1891,9 @@ minimalistic tiling window managers such as herbstluftwm and bspwm.")
                   #t))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("m4" ,m4)
-       ("libx11" ,libx11))) ; for tests
+     (list pkg-config m4 libx11)) ; for tests
     (inputs
-     `(("libxcb" ,libxcb)
-       ("xcb-util" ,xcb-util)))
+     (list libxcb xcb-util))
     (home-page "https://github.com/Airblader/xcb-util-xrm")
     (synopsis "XCB utility functions for the X resource manager")
     (description
@@ -2020,10 +1939,7 @@ XCB util-xrm module provides the following libraries:
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f))                    ; no test suite
-    (inputs `(("libx11" ,libx11)
-              ("libxext" ,libxext)
-              ("libxrandr" ,libxrandr)
-              ("libxxf86vm" ,libxxf86vm)))
+    (inputs (list libx11 libxext libxrandr libxxf86vm))
     (synopsis "Tiny monitor calibration loader for XFree86 (or X.org)")
     (description "xcalib is a tiny tool to load the content of vcgt-Tags in ICC
 profiles to the video card's gamma ramp.  It does work with most video card
@@ -2048,12 +1964,8 @@ invert colors on a specific display/screen.")
     (arguments '(#:configure-flags `("--enable-sound"
                                      "--enable-wave"
                                      "--enable-alsa")))
-    (native-inputs `(("autoconf" ,autoconf)
-                     ("automake" ,automake)
-                     ("pkg-config" ,pkg-config)
-                     ("perl" ,perl)))
-    (inputs `(("libx11" ,libx11)
-              ("alsa-lib" ,alsa-lib)))
+    (native-inputs (list autoconf automake pkg-config perl))
+    (inputs (list libx11 alsa-lib))
     (synopsis "Daemon that performs an action every time the X11 bell is rung")
     (description "nxbelld is a tiny utility to aid people who either don't
 like the default PC speaker beep, or use a sound driver that doesn't have
@@ -2077,11 +1989,9 @@ or playing a PCM encoded WAVE file.")
                 "18jd3k3pvlm5x1adyqw63z2b3f4ixh9mfvz9asvnskk3fm8jgw0i"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("imake" ,imake)))
+     (list imake))
     (inputs
-     `(("libx11" ,libx11)
-       ("libxext" ,libxext)
-       ("libxscrnsaver" ,libxscrnsaver)))
+     (list libx11 libxext libxscrnsaver))
     (arguments
      `(#:tests? #f
        #:phases
@@ -2130,7 +2040,7 @@ a user-configurable period of time.")
     (inputs `(("gtk3" ,gtk+)
               ("gdk" ,gdk-pixbuf)
               ("pango" ,pango)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs (list pkg-config))
     (arguments
      ;; The default configure puts the 'sm' binary in games/ instead of bin/ -
      ;; this fixes it:
@@ -2162,11 +2072,9 @@ commandline).")
                  (base32
                   "10hx7k7ga8g08akwz8qrsvj8iqr5nd4siiva6sjx789jvf0sak7r"))))
       (build-system cmake-build-system)
-      (inputs `(("glib" ,glib)
-                ("xcb-util" ,xcb-util)))
+      (inputs (list glib xcb-util))
       (native-inputs
-       `(("python-docutils" ,python-docutils)
-         ("pkg-config" ,pkg-config)))
+       (list python-docutils pkg-config))
       (arguments
        `(#:tests? #f))
       (synopsis "Use external screen locker on events")
@@ -2194,8 +2102,7 @@ before the system goes to sleep.")
     (arguments
      '(#:tests? #f)) ; Not clear how to make tests pass.
     (inputs
-     `(("xclip" ,xclip)
-       ("xsel" ,xsel)))
+     (list xclip xsel))
     (home-page "https://github.com/asweigart/pyperclip")
     (synopsis "Python clipboard module")
     (description
@@ -2219,7 +2126,7 @@ the X11 clipboard")
                 "1w49fayhwzn5rx0z1q2lrvm7z8jrd34lgb89p853a024bixc3cf2"))))
     (build-system gnu-build-system)
     (inputs
-     `(("xorg-server" ,xorg-server)))
+     (list xorg-server))
     (home-page "https://github.com/rg3/numlockx")
     (synopsis "Turns on the numlock key in X11")
     (description "@command{numlockx} is a tiny program that lets you turn on
@@ -2257,7 +2164,7 @@ to automatically turn it on on login.")
                (copy-file "xrandr-invert-colors.bin"
                           (string-append bin "/xrandr-invert-colors"))))))))
     (inputs
-     `(("libxrandr" ,libxrandr)))
+     (list libxrandr))
     (home-page "https://github.com/zoltanp/xrandr-invert-colors")
     (synopsis "Invert display colors")
     (description "This package provides a small utility for inverting the
@@ -2308,10 +2215,10 @@ colors on all monitors attached to an XRandR-capable X11 display server.")
                             (string-append out "/bin/sctd"))
                #t))))))
     (inputs
-     `(("coreutils" ,coreutils) ; sctd uses "date", "printf" and "sleep"
-       ("inetutils" ,inetutils) ; sctd uses "logger"
-       ("libxrandr" ,libxrandr)
-       ("sed" ,sed))) ; sctd uses "sed"
+     (list coreutils ; sctd uses "date", "printf" and "sleep"
+           inetutils ; sctd uses "logger"
+           libxrandr
+           sed)) ; sctd uses "sed"
     (home-page "https://www.umaxx.net")
     (synopsis "Set the color temperature of the screen")
     (description "@code{sct} is a lightweight utility to set the color
@@ -2336,8 +2243,7 @@ temperature of the screen.")
          "--with-xkb"
          "--with-default-authproto-module=/run/setuid-programs/authproto_pam")))
     (native-inputs
-     `(("pandoc" ,pandoc)
-       ("pkg-config" ,pkg-config)))
+     (list pandoc pkg-config))
     (inputs
      `(("fontconfig" ,fontconfig)
        ("libX11" ,libx11)
@@ -2391,12 +2297,9 @@ binary to setuid-binaries:
                 (string-append "\"" (assoc-ref inputs "xdg-utils")
                                "/bin/xdg-mime\""))))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("coreutils" ,coreutils)
-       ("wayland" ,wayland)
-       ("wayland-protocols" ,wayland-protocols)
-       ("xdg-utils" ,xdg-utils)))
+     (list coreutils wayland wayland-protocols xdg-utils))
     (home-page "https://github.com/bugaevc/wl-clipboard")
     (synopsis "Command-line copy/paste utilities for Wayland")
     (description "Wl-clipboard is a set of command-line copy/paste utilities for
@@ -2438,8 +2341,7 @@ Wayland.")
                (symlink "wl-clipboard-x11" (string-append bin "xsel")))
              #t)))))
     (inputs
-     `(("bash-minimal" ,bash-minimal)
-       ("wl-clipboard" ,wl-clipboard)))
+     (list bash-minimal wl-clipboard))
     (home-page "https://github.com/brunelli/wl-clipboard-x11")
     (synopsis "Use wl-clipboard as a drop-in replacement to X11 clipboard tools")
     (description "This package provides a wrapper script around
@@ -2462,8 +2364,7 @@ helper scripts for @code{xclip} and @code{xsel} to assist with the transition.")
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f)) ; no "check" target
-    (native-inputs `(("libx11" ,libx11)
-                     ("libxaw" ,libxaw)))
+    (native-inputs (list libx11 libxaw))
     (home-page "https://www.nongnu.org/autocutsel/")
     (synopsis "Automated X11 clipboard and cutbuffer synchronization")
     (description "@code{autocutsel} tracks changes in the server's cutbuffer
@@ -2487,17 +2388,15 @@ The cutbuffer and clipboard selection are always synchronized.")
         (base32 "08dyygclayyipa0p2qsxqa3fsfyflkrkhpi25dkc3ybkicvynk24"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("cppcheck" ,cppcheck)
-       ("perl" ,perl)
-       ("pkg-config" ,pkg-config)))
+     (list cppcheck perl pkg-config))
     (inputs
-     `(("cairo" ,cairo)
-       ("glib" ,glib)
-       ("librsvg" ,librsvg)
-       ("libx11" ,libx11)
-       ("libxml2" ,libxml2)
-       ("libxrandr" ,libxrandr)
-       ("pango" ,pango)))
+     (list cairo
+           glib
+           librsvg
+           libx11
+           libxml2
+           libxrandr
+           pango))
     (arguments
      `(#:test-target "test"
        #:phases
@@ -2530,16 +2429,14 @@ can optionally use some appearance settings from XSettings, tint2 and GTK.")
         (base32 "1rsv42cl0s149sbpdxz9yqqjip3si95jv3dglwzrcm7pjfg7519v"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf automake pkg-config))
     (inputs
-     `(("libjpeg-turbo" ,libjpeg-turbo)
-       ("libpng" ,libpng)
-       ("libxpm" ,libxpm)
-       ("pixman" ,pixman)
-       ("xcb-util" ,xcb-util)
-       ("xcb-util-image" ,xcb-util-image)))
+     (list libjpeg-turbo
+           libpng
+           libxpm
+           pixman
+           xcb-util
+           xcb-util-image))
     (home-page "https://github.com/stoeckmann/xwallpaper")
     (synopsis "Wallpaper setting utility for X")
     (description
@@ -2573,8 +2470,7 @@ backgrounds.")
                (install-file "README" doc)
                #t))))))
     (inputs
-     `(("libx11" ,libx11)
-       ("libxinerama" ,libxinerama)))
+     (list libx11 libxinerama))
     (home-page "https://www.lcdf.org/~eddietwo/xwrits/")
     (synopsis "Reminds you to take wrist breaks")
     (description "Xwrits reminds you to take wrist breaks for prevention or
@@ -2600,7 +2496,7 @@ Xwrits hides itself until you should take another break.")
         (base32 "14gnkz18dipsa2v24f4nm9syxaa7g21iqjm7y65jn849ka2jr1h8"))))
     (build-system scons-build-system)
     (inputs
-     `(("libx11" ,libx11)))
+     (list libx11))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("googletest" ,googletest)
@@ -2766,13 +2662,13 @@ tools to complement clipnotify.")
                (invoke "tests/test-clipmenu")
                #t)))))
       (inputs
-       `(("clipnotify" ,clipnotify)
-         ("coreutils-minimal" ,coreutils-minimal)
-         ("gawk" ,gawk)
-         ("guile" ,guile-3.0) ; for wrap-script
-         ("util-linux" ,util-linux)
-         ("xdotool" ,xdotool)
-         ("xsel" ,xsel)))
+       (list clipnotify
+             coreutils-minimal
+             gawk
+             guile-3.0 ; for wrap-script
+             util-linux
+             xdotool
+             xsel))
       (home-page "https://github.com/cdown/clipmenu")
       (synopsis "Simple clipboard manager using dmenu or rofi and xsel")
       (description "Start @command{clipmenud}, then run @command{clipmenu} to
@@ -2801,14 +2697,10 @@ After selection, the clip is put onto the PRIMARY and CLIPBOARD X selections.")
          "0qkq75grbd4wkx4nlvswgavpijk9ad0pzqyj89a0ayjsbsn36pqy"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("glib" ,glib "bin")
-       ("pkg-config" ,pkg-config)))
+     (list autoconf automake
+           `(,glib "bin") pkg-config))
     (inputs
-     `(("dbus-glib" ,dbus-glib)
-       ("glib" ,glib)
-       ("libx11" ,libx11)))
+     (list dbus-glib glib libx11))
     (home-page "https://github.com/qnikst/kbdd")
     (synopsis "Per-window keyboard layout switching daemon for X")
     (description "@command{kbdd} is a simple keyboard layout switching
@@ -2837,7 +2729,7 @@ create layout indicator widgets.")
                 "1gxpgifzy0hnpd0ymw3r32amzr32z3bgb90ldjzl438p6h1q0i26"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("catch2" ,catch-framework2)))
+     (list catch-framework2))
     (arguments
      `(#:configure-flags '("-DWITH_GIT_CATCH=off")
        #:phases
@@ -2875,7 +2767,7 @@ using @command{dmenu}.")
     (arguments
      `(#:glib-or-gtk? #t))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
      `(("gtk3" ,gtk+)
        ("wayland" ,wayland)))
@@ -2907,9 +2799,9 @@ such as sway, similar to @command{rofi}.")
          (delete 'configure))
        #:tests? #f))
     (inputs
-     `(("python" ,python)))
+     (list python))
     (native-inputs
-     `(("python-sphinx" ,python-sphinx)))
+     (list python-sphinx))
     (home-page "https://github.com/jceb/dex")
     (synopsis "Execute DesktopEntry files")
     (description
@@ -2945,7 +2837,7 @@ and execute @file{.desktop} files of the Application type.")
                 (string-append (assoc-ref inputs "xauth") "/bin/" command)))))
          (delete 'configure))))         ; no configure script
     (inputs
-     `(("xauth" ,xauth)))
+     (list xauth))
     (home-page "https://github.com/Earnestly/sx")
     (synopsis "Start an xorg server")
     (description
@@ -2982,11 +2874,9 @@ and execute @file{.desktop} files of the Application type.")
              (let ((out (assoc-ref outputs "out")))
                (mkdir-p (string-append out "/bin"))))))))
     (inputs
-     `(("libx11" ,libx11)
-       ("imlib2" ,imlib2)
-       ("libxinerama" ,libxinerama)))
+     (list libx11 imlib2 libxinerama))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (synopsis "Imlib2-based wallpaper changer")
     (description
      "The @command{hsetroot} command composes wallpapers for X.
@@ -3019,12 +2909,9 @@ This package is the fork of hsetroot by Hyriand.")
                             (string-append "PREFIX = " out "\n")))
                          #true))))))
     (propagated-inputs
-     `(("wmctrl" ,wmctrl)
-       ("xdotool" ,xdotool)
-       ("xprop" ,xprop)))
+     (list wmctrl xdotool xprop))
     (native-inputs
-     `(("pandoc" ,pandoc)
-       ("perl" ,perl)))
+     (list pandoc perl))
     (synopsis "Run-or-raise application switcher for any X11 desktop")
     (description
      "Bind a key for any given application that will launch the application,
@@ -3047,9 +2934,7 @@ if there's more than one.")
         (base32 "199mlm127zk1lr8nrq22n68l2l8cjwc4cgwd67rg1i6497n2y0xc"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libx11" ,libx11)
-       ("perl" ,perl)
-       ("perl-tk" ,perl-tk)))
+     (list libx11 perl perl-tk))
     (arguments
      `(#:tests? #f                      ; There are none.
        #:make-flags
@@ -3104,10 +2989,9 @@ MouseKeys-acceleration management.")
          "0hhsddh3rs066rbsjksr8kcwg8lvglbvs67dq0r5wx5c1xcwb51w"))))
     (build-system meson-build-system)
     (inputs
-     `(("wayland" ,wayland)
-       ("wayland-protocols" ,wayland-protocols)))
+     (list wayland wayland-protocols))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (synopsis "Day/night gamma adjustments for Wayland compositors")
     (home-page "https://sr.ht/~kennylevinsen/wlsunset/")
     (description

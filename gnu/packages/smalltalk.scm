@@ -61,12 +61,12 @@
       (patches (search-patches "smalltalk-multiplication-overflow.patch"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ;; XXX: To be removed with the next release of Smalltalk.
-       ("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("zip" ,zip)))
+     (list pkg-config
+           ;; XXX: To be removed with the next release of Smalltalk.
+           autoconf
+           automake
+           libtool
+           zip))
     ;; TODO: These optional dependencies raise the closure size to ~1 GiB
     ;; from the current ~100 MiB, although some of them might be very
     ;; useful for end users:
@@ -79,11 +79,7 @@
     ;;  - sqlite
     ;;  - zlib
     (inputs
-     `(("gmp" ,gmp)
-       ("libffi" ,libffi)
-       ("libltdl" ,libltdl)
-       ("libsigsegv" ,libsigsegv)
-       ("lightning" ,lightning)))
+     (list gmp libffi libltdl libsigsegv lightning))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -146,15 +142,15 @@ such as ones for networking and GUI programming.")
               "(VM_BUILD_STRING \\\"Built with GNU Guix\\\")"))
            #t))))
     (inputs
-     `(("alsa-lib" ,alsa-lib)
-       ("dbus" ,dbus)
-       ("freetype" ,freetype)
-       ("libffi" ,libffi)
-       ("libxrender" ,libxrender)
-       ("mesa" ,mesa)
-       ("pulseaudio" ,pulseaudio)))
+     (list alsa-lib
+           dbus
+           freetype
+           libffi
+           libxrender
+           mesa
+           pulseaudio))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ;no check target

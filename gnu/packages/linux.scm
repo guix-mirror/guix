@@ -1165,7 +1165,8 @@ It has been modified to remove all non-free binary blobs.")
                   %default-extra-linux-options))))
     (package
       (inherit base-linux-libre)
-      (inputs `(("cpio" ,cpio) ,@(package-inputs base-linux-libre))))))
+      (inputs (modify-inputs (package-inputs base-linux-libre)
+                (prepend cpio))))))
 
 
 
@@ -1592,12 +1593,11 @@ rules, which need to be installed separately.")
 
     (build-system gnu-build-system)
     (native-inputs
-     `(("flex" ,flex)
-
-       ;; TODO: optional dependencies
-       ;; ("libxcrypt" ,libxcrypt)
-       ;; ("cracklib" ,cracklib)
-       ))
+     (list flex
+           ;; TODO: optional dependencies
+           ;; ("libxcrypt" ,libxcrypt)
+           ;; ("cracklib" ,cracklib)
+           ))
     (arguments
      `(;; Most users, such as `shadow', expect the headers to be under
        ;; `security'.
@@ -1674,9 +1674,9 @@ at login.  Local and dynamic reconfiguration are its key features.")
                  (invoke "python" "-m" "pamela" "-a" "`whoami`"))
                #t))))))
     (inputs
-     `(("linux-pam" ,linux-pam)))
+     (list linux-pam))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://github.com/minrk/pamela")
     (synopsis "PAM interface using ctypes")
     (description "This package provides a PAM interface using @code{ctypes}.")
@@ -1697,12 +1697,9 @@ at login.  Local and dynamic reconfiguration are its key features.")
                 "1bf91gi6zmfzzmczxm7pajxdlgnikasvg5xsd3j0a368rcr7lf9l"))))
     (build-system gnu-build-system)
     (inputs
-     `(("gnupg" ,gnupg)
-       ("linux-pam" ,linux-pam)))
+     (list gnupg linux-pam))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
+     (list autoconf automake libtool))
     (arguments
      `(#:tests? #f ;no tests suite
        #:configure-flags
@@ -1805,7 +1802,7 @@ deviation, and minimum and maximum values.  It can show a nice histogram too.")
                 "ac_cv_func_malloc_0_nonnull=yes"
                 "ac_cv_func_realloc_0_nonnull=yes"))
              '())))
-    (inputs `(("ncurses" ,ncurses)))
+    (inputs (list ncurses))
     (home-page "https://gitlab.com/psmisc/psmisc")
     (synopsis "Small utilities that use the proc file system")
     (description
@@ -2035,8 +2032,7 @@ by Robert Shea and Robert Anton Wilson.")
        #:parallel-build? #f
        #:tests? #f))                    ; no test suite
     (native-inputs
-     `(("bison" ,bison)
-       ("flex" ,flex)))
+     (list bison flex))
     (home-page "http://users.telenet.be/geertu/Linux/fbdev/")
     (synopsis "Show and modify Linux frame buffer settings")
     (description
@@ -2081,7 +2077,7 @@ parameters.")
                                     '("^kill" "^uptime"))))
               (for-each delete-file dup)
               #t))))))
-    (inputs `(("ncurses" ,ncurses)))
+    (inputs (list ncurses))
     (home-page "https://gitlab.com/procps-ng/procps/")
     (synopsis "Utilities that give information about processes")
     (description
@@ -2123,14 +2119,9 @@ slabtop, tload, top, vmstat, w, watch and sysctl.")
                              (rename-file old new)))
                          (list "bin/lsusb.py"))))))))
     (inputs
-     `(("eudev" ,eudev)
-       ("libusb" ,libusb)
-       ("python" ,python)))
+     (list eudev libusb python))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf automake libtool pkg-config))
     (home-page "http://www.linux-usb.org/")
     (synopsis
      "Tools for working with USB devices, such as lsusb")
@@ -2155,7 +2146,7 @@ slabtop, tload, top, vmstat, w, watch and sysctl.")
      `(("automake" ,automake)
        ("autoreconf" ,autoconf)
        ("libtool" ,libtool)))
-    (inputs `(("eudev" ,eudev)))
+    (inputs (list eudev))
     (home-page (package-home-page linux-libre))
     (synopsis "Utilities for sharing USB devices over IP networks")
     (description
@@ -2184,13 +2175,12 @@ module.")
               (base32
                "04wp77fg842dhribgn0xvbd77idh0n7a839ga4bwy78v7i9l445i"))))
     (build-system gnu-build-system)
-    (inputs `(("util-linux" ,util-linux "lib")))
-    (native-inputs `(("pkg-config" ,pkg-config)
-                     ("texinfo" ,texinfo)       ;for the libext2fs Info manual
-
-                     ;; For tests.
-                     ("perl" ,perl)
-                     ("procps" ,procps)))
+    (inputs (list `(,util-linux "lib")))
+    (native-inputs (list pkg-config
+                         texinfo ;for the libext2fs Info manual
+                         ;; For tests.
+                         perl
+                         procps))
     (arguments
      '(;; util-linux is the preferred source for some of the libraries and
        ;; commands, so disable them (see, e.g.,
@@ -2266,7 +2256,7 @@ module.")
     (build-system trivial-build-system)
     (source #f)
     (inputs
-     `(("e2fsprogs" ,e2fsprogs/static)))
+     (list e2fsprogs/static))
     (arguments
      `(#:modules ((guix build utils))
        #:builder
@@ -2304,7 +2294,7 @@ from the e2fsprogs package.  It is meant to be used in initrds.")
          "1x0r7ylxlp9lbj3d7sqf6j2a222dwy2nfpff05jd6mkh4ihxvyd1"))
        (patches (search-patches "extundelete-e2fsprogs-1.44.patch"))))
     (build-system gnu-build-system)
-    (inputs `(("e2fsprogs" ,e2fsprogs)))
+    (inputs (list e2fsprogs))
     (home-page "http://extundelete.sourceforge.net/")
     (synopsis "Recover deleted files from ext2/3/4 partitions")
     (description
@@ -2383,7 +2373,7 @@ Zerofree requires the file system to be unmounted or mounted read-only.")
        #:configure-flags '("--enable-mpers=check")
        ;; See <https://debbugs.gnu.org/cgi/bugreport.cgi?bug=32459>.
        #:parallel-tests? #f))           ; undeterministic failures
-    (native-inputs `(("perl" ,perl)))
+    (native-inputs (list perl))
     (synopsis "System call tracer for Linux")
     (description
      "strace is a system call tracer, i.e. a debugging tool which prints out a
@@ -2501,8 +2491,7 @@ configuration files that can be used for specific audio hardware.")
                (symlink topology-share (string-append alsa "/topology")))
              #t)))))
     (inputs
-     `(("alsa-ucm-conf" ,alsa-ucm-conf)
-       ("alsa-topology-conf" ,alsa-topology-conf)))
+     (list alsa-ucm-conf alsa-topology-conf))
     (home-page "https://www.alsa-project.org/wiki/Main_Page")
     (synopsis "The Advanced Linux Sound Architecture libraries")
     (description
@@ -2551,10 +2540,7 @@ MIDI functionality to the Linux-based operating system.")
     (native-inputs
      `(("gettext" ,gettext-minimal)))
     (inputs
-     `(("libsamplerate" ,libsamplerate)
-       ("ncurses" ,ncurses)
-       ("alsa-lib" ,alsa-lib)
-       ("xmlto" ,xmlto)))
+     (list libsamplerate ncurses alsa-lib xmlto))
     (home-page "http://www.alsa-project.org/")
     (synopsis "Utilities for the Advanced Linux Sound Architecture (ALSA)")
     (description
@@ -2616,14 +2602,14 @@ MIDI functionality to the Linux-based operating system.")
                          (find-files out ".*pulse\\.(la|so)"))
                #t))))))
     (inputs
-     `(("alsa-lib" ,alsa-lib)
-       ("jack" ,jack-1)
-       ("speex" ,speex) ; libspeexdsp resampling plugin
-       ("libsamplerate" ,libsamplerate) ; libsamplerate resampling plugin
-       ("ffmpeg" ,ffmpeg) ; libavcodec resampling plugin, a52 plugin
-       ("pulseaudio" ,pulseaudio))) ; PulseAudio plugin
+     (list alsa-lib
+           jack-1
+           speex ; libspeexdsp resampling plugin
+           libsamplerate ; libsamplerate resampling plugin
+           ffmpeg ; libavcodec resampling plugin, a52 plugin
+           pulseaudio)) ; PulseAudio plugin
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "http://www.alsa-project.org/")
     (synopsis "Plugins for the Advanced Linux Sound Architecture (ALSA)")
     (description
@@ -2651,12 +2637,9 @@ external rate conversion.")
         (base32 "1w6qx3sxzkv80shk21f63rq41c84irpx68k62m2cv629n1mwj2f1"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("flex" ,flex)
-       ("bison" ,bison)))
+     (list pkg-config flex bison))
     (inputs
-     `(("libmnl" ,libmnl)
-       ("libnftnl" ,libnftnl/fixed)))
+     (list libmnl libnftnl/fixed))
     (arguments
      '(#:tests? #f       ; no test suite
        #:configure-flags ; add $libdir to the RUNPATH of executables
@@ -2756,8 +2739,7 @@ name.")
                "0apxgmkhsk3vxn9q3libxn3dgrdljrxyy4mli2gk49m7hi3na7xp"))))
     (build-system gnu-build-system)
     (inputs
-     `(("perl" ,perl)
-       ("iptables" ,iptables)))
+     (list perl iptables))
     (synopsis "Ethernet bridge frame table administration")
     (home-page "https://ebtables.netfilter.org/")
     (description
@@ -2817,9 +2799,7 @@ that the Ethernet protocol is much simpler than the IP protocol.")
        ("iptables" ,iptables)
        ("libmnl" ,libmnl)))
     (native-inputs
-     `(("bison" ,bison)
-       ("flex" ,flex)
-       ("pkg-config" ,pkg-config)))
+     (list bison flex pkg-config))
     ;; For tests.
     ;; ("libmnl" ,libmnl)
     ;; ("util-linux" ,util-linux)
@@ -2954,7 +2934,7 @@ configuration (iptunnel, ipmaddr).")
                                                (%current-target-system) "-")
                                "BUILD_CC=gcc")
                              '()))))
-    (native-inputs `(("perl" ,perl)))
+    (native-inputs (list perl))
     (supported-systems (delete "i586-gnu" %supported-systems))
     (home-page "https://sites.google.com/site/fullycapable/")
     (synopsis "Library for working with POSIX capabilities")
@@ -2979,8 +2959,7 @@ Linux-based operating systems.")
     (build-system gnu-build-system)
 
     ;; The tarball lacks all the generated files.
-    (native-inputs `(("autoconf" ,autoconf)
-                     ("automake" ,automake)))
+    (native-inputs (list autoconf automake))
     (arguments
      '(#:tests? #f))                    ; no 'check' target
 
@@ -3061,7 +3040,7 @@ configuration and monitoring interfaces.")
                     `(("python-2" ,python-2)))
                    ((string=? python "python3")
                     `(("python-3" ,python-3))))))
-      (propagated-inputs `(("libnl" ,libnl)))
+      (propagated-inputs (list libnl))
       (outputs '("out"))
       (arguments
        `(#:modules ((guix build gnu-build-system)
@@ -3098,8 +3077,8 @@ configuration and monitoring interfaces.")
                (base32
                 "12ddd6vh6vs97135bnlyr0szv7hvpbnmfh48584frzab0z0725ph"))))
     (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)))
-    (inputs `(("libnl" ,libnl)))
+    (native-inputs (list pkg-config))
+    (inputs (list libnl))
     (arguments
      `(#:make-flags
        (let* ((target ,(%current-target-system))
@@ -3156,11 +3135,7 @@ devices.  It replaces @code{iwconfig}, which is deprecated.")
                  (("/usr/sbin/hciconfig") "hciconfig"))
                #t))))))
     (inputs
-     `(("kmod" ,kmod)
-       ("libnl" ,libnl)
-       ("ncurses" ,ncurses)
-       ("pciutils" ,pciutils)
-       ("zlib" ,zlib)))
+     (list kmod libnl ncurses pciutils zlib))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -3193,7 +3168,7 @@ settings.")
     (arguments
      ;; Allow compilation with GCC 10.
      '(#:configure-flags '("CFLAGS=-O2 -g -fcommon")))
-    (inputs `(("ncurses" ,ncurses)))
+    (inputs (list ncurses))
     (home-page "http://www.jpj.net/~trevor/aumix.html")
     (synopsis "Audio mixer for X and the console")
     (description
@@ -3223,7 +3198,7 @@ the command line or a script.")
              #t)))
        ;; There are currently no checks in the package.
        #:tests? #f))
-    (native-inputs `(("python" ,python)))
+    (native-inputs (list python))
     (home-page "http://guichaz.free.fr/iotop/")
     (synopsis
      "Displays the IO activity of running processes")
@@ -3247,8 +3222,7 @@ processes currently causing I/O.")
               (patches (search-patches "fuse-overlapping-headers.patch"))))
     (build-system gnu-build-system)
     (inputs
-     `(("bash-minimal" ,bash-minimal)
-       ("util-linux" ,util-linux)))
+     (list bash-minimal util-linux))
     (arguments
      '(#:configure-flags (list (string-append "MOUNT_FUSE_PATH="
                                               (assoc-ref %outputs "out")
@@ -3371,8 +3345,8 @@ user-space processes.")
                 "1yigh8z1q6iq6yjyq7kl7vpbpjnxjld32apvjaw2bl44pqqg56hh"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("python" ,python)))
-    (inputs `(("fuse" ,fuse)))
+     (list python))
+    (inputs (list fuse))
     (arguments
      ;; The tests were never actually run ("collected 0 items"), but in recent
      ;; versions of pytest that causes an error.
@@ -3453,10 +3427,9 @@ UnionFS-FUSE additionally supports copy-on-write.")
                 "00fir2iykdx11g8nv5gijg0zjrp2g3ldypnv0yi6lq3h5pg5v13h"))))
     (build-system gnu-build-system)
     (inputs
-     `(("fuse" ,fuse)
-       ("glib" ,glib)))
+     (list fuse glib))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://github.com/libfuse/sshfs")
     (synopsis "Mount remote file systems over SSH")
     (description
@@ -3483,9 +3456,8 @@ file system is as easy as logging into the server with an SSH client.")
        (sha256
         (base32 "1cy5b6qril9c3ry6fv7ir87s8iyy5vxxmbyx90dm86fbra0vjaf5"))))
     (build-system gnu-build-system)
-    (inputs `(("fuse" ,fuse)
-              ("libarchive" ,libarchive)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs (list fuse libarchive))
+    (native-inputs (list pkg-config))
     (home-page "https://www.cybernoia.de/software/archivemount.html")
     (synopsis "Tool for mounting archive files with FUSE")
     (description "archivemount is a FUSE-based file system for Unix variants,
@@ -3606,8 +3578,7 @@ NUMA performance on your system.")
                              `("PATH" ":" prefix (,bin))))
                          '("unicode_start" "unicode_stop"))))))))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf pkg-config))
     (inputs
      `(("bzip2" ,bzip2)
        ("gzip" ,gzip)
@@ -3680,9 +3651,7 @@ for systems using the Linux kernel.  This includes commands such as
                 "1m8avqccrhm38krlhp88a7v949f3hrzx060bbrr5dp5qw2nmw9j2"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
+     (list autoconf automake libtool))
     (arguments
      `(#:configure-flags
        (list "--disable-static")))
@@ -3708,9 +3677,9 @@ to use Linux' inotify mechanism, which allows file accesses to be monitored.")
               (patches (search-patches "kmod-module-directory.patch"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ;; For tests.
-       ("zstd" ,zstd)))
+     (list pkg-config
+           ;; For tests.
+           zstd))
     (inputs
      `(("xz" ,xz)
        ("zlib" ,zlib)
@@ -3792,8 +3761,8 @@ from the module-init-tools project.")
                             (string-append "PREFIX=" prefix)
                             (string-append "SYSCONFDIR=" prefix "/etc")))
        #:test-target "test"))
-    (native-inputs `(("go" ,go)           ;for the test suite
-                     ("pandoc" ,pandoc))) ;to generate the manpage
+    (native-inputs (list go ;for the test suite
+                         pandoc)) ;to generate the manpage
     (home-page "https://github.com/rfjakob/earlyoom")
     (synopsis "Simple out of memory (OOM) daemon for the Linux kernel")
     (description "Early OOM is a minimalist out of memory (OOM) daemon that
@@ -3889,8 +3858,8 @@ to the in-kernel OOM killer.")
      ;; When linked against libblkid, eudev can populate /dev/disk/by-label
      ;; and similar; it also installs the '60-persistent-storage.rules' file,
      ;; which contains the rules to do that.
-     `(("util-linux" ,util-linux "lib")           ;for blkid
-       ("kmod" ,kmod)))
+     (list `(,util-linux "lib") ;for blkid
+           kmod))
     (outputs '("out" "static"))
     (home-page "https://wiki.gentoo.org/wiki/Project:Eudev")
     (synopsis "Userspace device management")
@@ -3952,7 +3921,7 @@ devices that can inject events directly into the input subsystem.")
                 "0wcmppa7092b33wb8vc782day5phf90pc25cn1x7rk0rlw565z36"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
      `(("boost" ,boost)
        ("libevdev" ,libevdev)
@@ -3991,8 +3960,7 @@ devices that can inject events directly into the input subsystem.")
                 "0s49vbg3j4rwh78i8rx8qr7myql09p7b3lhrjl0p7dd98xp6ann6"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libevdev" ,libevdev)
-       ("yaml-cpp" ,yaml-cpp)))
+     (list libevdev yaml-cpp))
     (arguments
      `(#:make-flags (list ,(string-append "CC=" (cc-for-target))
                           ,(string-append "CXX=" (cxx-for-target))
@@ -4044,8 +4012,7 @@ one to send arbitrary keycodes when a given key is tapped or held.")
               (patches (search-patches "lvm2-static-link.patch"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("procps" ,procps)))                       ;tests use 'pgrep'
+     (list pkg-config procps))                       ;tests use 'pgrep'
     (inputs
      `(("libaio" ,libaio)
        ("udev" ,eudev)))
@@ -4154,9 +4121,7 @@ mapper.  Kernel components are part of Linux-libre.")
      `(("automake" ,automake)
        ("autoreconf" ,autoconf)))
     (inputs
-     `(("boost" ,boost)
-       ("expat" ,expat)
-       ("libaio" ,libaio)))
+     (list boost expat libaio))
     (synopsis "Tools for manipulating the metadata of device-mapper targets")
     (description "A suite of tools for manipulating the metadata of the
 dm-thin, dm-cache and dm-era device-mapper targets.")
@@ -4289,9 +4254,8 @@ interface.")
                        (string-append "REG_BIN=" regdb
                                       "/lib/crda/regulatory.bin")
                        "all_noverify"))))
-    (native-inputs `(("pkg-config" ,pkg-config)
-                     ("wireless-regdb" ,wireless-regdb)))
-    (inputs `(("libnl" ,libnl)))
+    (native-inputs (list pkg-config wireless-regdb))
+    (inputs (list libnl))
     (home-page
      "https://wireless.wiki.kernel.org/en/developers/Regulatory/CRDA")
     (synopsis "Central regulatory domain agent (CRDA) for WiFi")
@@ -4387,14 +4351,8 @@ country-specific regulations for the wireless spectrum.")
         (base32 "1ipf6wjx037sqyhy0r5jh4983h216anq9l68ckn2x5c3qc4wfmzn"))
        (patches (search-patches "lm-sensors-hwmon-attrs.patch"))))
     (build-system gnu-build-system)
-    (inputs `(("rrdtool" ,rrdtool)
-              ("perl" ,perl)
-              ("kmod" ,kmod)
-              ("gnuplot" ,gnuplot)))
-    (native-inputs `(("pkg-config" ,pkg-config)
-                     ("flex" ,flex)
-                     ("bison" ,bison)
-                     ("which" ,which)))
+    (inputs (list rrdtool perl kmod gnuplot))
+    (native-inputs (list pkg-config flex bison which))
     (outputs '("lib"                    ; avoid perl in closure
                "out"))
     (arguments
@@ -4493,7 +4451,7 @@ create a firmware image suitable for the Linux kernel, and more.")
        ;; No configure script.
        #:phases (modify-phases %standard-phases (delete 'configure))))
     (inputs
-     `(("perl" ,perl)))
+     (list perl))
     (home-page "http://jdelvare.nerim.net/devel.html#i2ctools")
     (synopsis "I2C tools for Linux")
     (description
@@ -4518,7 +4476,7 @@ SMBus access.")
     (build-system gnu-build-system)
     (inputs `(("lm-sensors" ,lm-sensors "lib")
               ("gtk" ,gtk+-2)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs (list pkg-config))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -4949,9 +4907,9 @@ protocol in question.")
                 "0lsv46jdqvdx5hx92v0z2cz3yh6212pz9gk0k3513sbaa04zzcbw"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (propagated-inputs
-     `(("libraw1394" ,libraw1394))) ; required by libavc1394.pc
+     (list libraw1394)) ; required by libavc1394.pc
     (home-page "https://sourceforge.net/projects/libavc1394/")
     (synopsis "AV/C protocol library for IEEE 1394")
     (description
@@ -4973,9 +4931,9 @@ the 1394 Trade Association.  AV/C stands for Audio/Video Control.")
                 "17ph458zya2l8dr2xwqnzy195qd9swrir31g78qkgb3g4xz2rq6i"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (propagated-inputs
-     `(("libraw1394" ,libraw1394))) ; required by libiec61883.pc
+     (list libraw1394)) ; required by libiec61883.pc
     (home-page "https://ieee1394.wiki.kernel.org/index.php/Main_Page")
     (synopsis "Isochronous streaming media library for IEEE 1394")
     (description
@@ -5150,12 +5108,9 @@ arrays when needed.")
              #t))
          (delete 'configure))))         ; no configure script
     (native-inputs
-     `(("perl" ,perl)
-       ("pkg-config" ,pkg-config)
-       ("valgrind" ,valgrind)
-
-       ;; For tests.
-       ("cmocka" ,cmocka)))
+     (list perl pkg-config valgrind
+           ;; For tests.
+           cmocka))
     (inputs
      `(("json-c" ,json-c)
        ("libaio" ,libaio)
@@ -5268,9 +5223,9 @@ event traces from the kernel (via the relaying through the debug file system).")
                 "1liig5856crb331dps18mp0s13zbkv7yh007zqhq97m94fcddfhc"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libsndfile" ,libsndfile)))
+     (list libsndfile))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://www.kernel.org/pub/linux/bluetooth/")
     (synopsis "Bluetooth subband audio codec")
     (description
@@ -5337,11 +5292,7 @@ Bluetooth audio output devices like headphones or loudspeakers.")
        ("rst2man" ,python-docutils)
        ("gettext" ,gettext-minimal)))
     (inputs
-     `(("glib" ,glib)
-       ("dbus" ,dbus)
-       ("eudev" ,eudev)
-       ("libical" ,libical)
-       ("readline" ,readline)))
+     (list glib dbus eudev libical readline))
     (home-page "http://www.bluez.org/")
     (synopsis "Linux Bluetooth protocol stack")
     (description
@@ -5363,9 +5314,9 @@ is flexible, efficient and uses a modular implementation.")
                 "1lz00q8g4590mrdqmf13ba1s9zrqq645ymgm5p9y99ad0qv22r87"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("fuse" ,fuse)))
+     (list fuse))
     (home-page "https://github.com/relan/exfat")
     (synopsis "Mount exFAT file systems")
     (description
@@ -5386,11 +5337,9 @@ write access to exFAT devices.")
                 "127xql52dcdhmh7s5m9xc6q39jdlj3zhbjar1j821kb6gl3jw94b"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("fuse" ,fuse)
-       ("glib" ,glib)
-       ("zlib" ,zlib)))
+     (list fuse glib zlib))
     (home-page "https://sourceforge.net/projects/fuseiso/")
     (synopsis "Mount ISO file system images")
     (description
@@ -5439,12 +5388,12 @@ Ridge, Joliet, and zisofs.")
                                               (assoc-ref %outputs "out")
                                               "/lib"))))
     (native-inputs
-     `(("texinfo" ,texinfo)
-       ("bison" ,bison)
-       ("flex" ,flex)
-       ("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
+     (list texinfo
+           bison
+           flex
+           autoconf
+           automake
+           libtool))
     (home-page "https://www.nico.schottelius.org/software/gpm/")
     (synopsis "Mouse support for the Linux console")
     (description
@@ -5586,7 +5535,7 @@ from the btrfs-progs package.  It is meant to be used in initrds.")
                (install-file "cramfsck" (string-append out "/sbin")))
              #t)))))
     (inputs
-     `(("zlib" ,zlib)))
+     (list zlib))
     (synopsis "Tools to manage Cramfs file systems")
     (description "Cramfs is a Linux file system designed to be simple, small,
 and to compress things well.  It is used on a number of embedded systems and
@@ -5609,7 +5558,7 @@ blocks and random block placement.")
               (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (inputs
-     `(("btrfs-progs" ,btrfs-progs)))
+     (list btrfs-progs))
     (arguments
      `(#:tests? #f                      ; No tests.
        #:make-flags
@@ -5664,10 +5613,7 @@ obviously it can be shared with files outside our set).")
                (install-file "mkfs/f2fs_format_utils.h" out-include)
                #t))))))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf automake libtool pkg-config))
     (inputs
      `(("libuuid" ,util-linux "lib")
        ("libselinux" ,libselinux)))
@@ -5761,7 +5707,7 @@ disks and SD cards.  This package provides the userland utilities.")
              (chmod fsck #o555))
            #t))))
     (inputs
-     `(("f2fs-tools-static" ,f2fs-tools/static)))
+     (list f2fs-tools/static))
     (home-page (package-home-page f2fs-tools/static))
     (synopsis "Statically-linked fsck.f2fs command from f2fs-tools")
     (description "This package provides statically-linked fsck.f2fs command taken
@@ -5847,10 +5793,9 @@ feature, and a laptop with an accelerometer.  It has no effect on SSDs.")
                   (string-append out directory)))
                #t))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("libatasmart" ,libatasmart)
-       ("yaml-cpp" ,yaml-cpp)))
+     (list libatasmart yaml-cpp))
     (home-page "https://github.com/vmatare/thinkfan")
     (synopsis "Simple fan control program")
     (description
@@ -5906,7 +5851,7 @@ from userspace.")
                          (list "battery_asl" "examples" "README.md"))
                #t))))))
     (inputs
-     `(("perl" ,perl)))
+     (list perl))
     (home-page "https://github.com/teleshoes/tpacpi-bat")
     (synopsis "ThinkPad battery charge controller")
     (description
@@ -5950,7 +5895,7 @@ supported.")
                #t)))
          (delete 'configure))))         ; no configure script
     (inputs
-     `(("ncurses" ,ncurses)))
+     (list ncurses))
     (home-page (package-home-page linux-libre))
     (synopsis "Monitor and test the Linux thermal subsystem in real time")
     (description
@@ -5991,7 +5936,7 @@ by hand is no trivial task: @command{tmon} aims to make it understandable.")
              #t))
          (delete 'configure))))         ; no configure script
     (inputs
-     `(("libcap" ,libcap)))
+     (list libcap))
     (supported-systems '("i686-linux" "x86_64-linux"))
     (home-page (package-home-page linux-libre))
     (synopsis "Report x86 processor frequency and idle statistics")
@@ -6028,9 +5973,9 @@ invocations of itself.")
                              "@sbindir@"))
                           #t))))
     (build-system gnu-build-system)
-    (inputs `(("util-linux" ,util-linux) ; libuuid
-              ("fuse" ,fuse)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs (list util-linux ; libuuid
+                  fuse))
+    (native-inputs (list pkg-config))
     (arguments
      '(#:configure-flags (list "--disable-static"
                                "--disable-ldconfig" ;not necessary
@@ -6200,7 +6145,7 @@ The following service daemons are also provided:
                             "src/raw_ethernet_send_lat.c")
                (("/usr/include/netinet/ip.h") "netinet/ip.h"))
              #t)))))
-    (inputs `(("rdma-core" ,rdma-core)))
+    (inputs (list rdma-core))
     (home-page "https://github.com/linux-rdma/perftest/")
     (synopsis "Open Fabrics Enterprise Distribution (OFED) Performance Tests")
     (description "This is a collection of tests written over uverbs intended for
@@ -6239,9 +6184,7 @@ The collection contains a set of bandwidth and latency benchmark such as:
                            "--without-pkcs11"
                            "--without-rtlsdr")))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf automake pkg-config))
     (inputs
      `(("libsysfs" ,sysfsutils)
        ("openssl" ,openssl)))
@@ -6285,7 +6228,7 @@ from that to the system kernel's @file{/dev/random} machinery.")
                             "PACKAGE_BUGREPORT=bug-guix@gnu.org"))
        #:tests? #f)) ;no tests
     (native-inputs `(("gettext" ,gettext-minimal)))
-    (inputs `(("pciutils" ,pciutils)))
+    (inputs (list pciutils))
     (home-page (package-home-page linux-libre))
     (synopsis "CPU frequency and voltage scaling tools for Linux")
     (description
@@ -6421,9 +6364,8 @@ not as a replacement for it.")
                  (("/sbin/dmsetup")
                   (string-append lvm2 "/sbin/dmsetup")))))))))
     (native-inputs
-     `(("intltool" ,intltool)
-       ("perl" ,perl)                   ; for pod2man
-       ("pkg-config" ,pkg-config)))
+     (list intltool perl ; for pod2man
+           pkg-config))
     (inputs
      `(("keyutils" ,keyutils)
        ("linux-pam" ,linux-pam)
@@ -6462,7 +6404,7 @@ native Linux file system, and has been part of the Linux kernel since version
                                          (assoc-ref %outputs "out")
                                          "/lib/libnfsidmap"))))
     (native-inputs
-     `(("autoconf" ,autoconf)))         ; 0.27 still needs autoheader
+     (list autoconf))         ; 0.27 still needs autoheader
     (home-page
      "http://www.citi.umich.edu/projects/nfsv4/crossrealm/libnfsidmap_config.html")
     (synopsis "NFSv4 support library for name/ID mapping")
@@ -6562,8 +6504,7 @@ exceeded.")
     (arguments
      '(#:configure-flags '("--enable-unit-tests")))
     (native-inputs
-     `(("cmocka" ,cmocka)
-       ("pkg-config" ,pkg-config)))
+     (list cmocka pkg-config))
     (inputs
      `(("acl" ,acl)                     ; extended attributes (xattr)
        ("libuuid" ,util-linux "lib")
@@ -6603,8 +6544,7 @@ of flash storage.")
                       ;; run under QEMU user-mode emulation.  Just skip it.
                       (delete-file "tests/52-basic-load.tests"))))))
     (native-inputs
-     `(("gperf" ,gperf)
-       ("which" ,which)))
+     (list gperf which))
     (synopsis "Interface to Linux's seccomp syscall filtering mechanism")
     (description "The libseccomp library provides an easy to use, platform
 independent, interface to the Linux Kernel's syscall filtering mechanism.  The
@@ -6646,10 +6586,7 @@ developers.")
      `(("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("libdrm" ,libdrm)
-       ("libpciaccess" ,libpciaccess)
-       ("libxcb" ,libxcb)
-       ("ncurses" ,ncurses)))
+     (list libdrm libpciaccess libxcb ncurses))
     (home-page "https://github.com/clbr/radeontop/")
     (synopsis "Usage monitor for AMD Radeon graphics")
     (description "RadeonTop monitors resource consumption on supported AMD
@@ -6694,9 +6631,9 @@ under OpenGL graphics workloads.")
        (modify-phases %standard-phases
          (delete 'configure))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("popt" ,popt)))
+     (list popt))
     (home-page "https://github.com/rhboot/efivar")
     (synopsis "Tool and library to manipulate EFI variables")
     (description "This package provides a library and a command line
@@ -6730,10 +6667,9 @@ interface to the variable facility of UEFI boot firmware.")
                           "EFIDIR=gnu")
        #:phases (modify-phases %standard-phases (delete 'configure))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("efivar" ,efivar)
-       ("popt" ,popt)))
+     (list efivar popt))
     (home-page "https://github.com/rhinstaller/efibootmgr")
     (synopsis "Modify the Extensible Firmware Interface (EFI) boot manager")
     (description
@@ -6811,8 +6747,7 @@ monitoring tools for Linux.  These include @code{mpstat}, @code{iostat},
                 "90-backlight.rules" (string-append out "/lib/udev/rules.d"))
                #t))))))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)))
+     (list autoconf automake))
     (home-page "https://haikarainen.github.io/light/")
     (synopsis "GNU/Linux application to control backlights")
     (description
@@ -6859,9 +6794,9 @@ set the screen to be pitch black at a value of 0 (or higher).
                (("/bin/") "/run/current-system/profile/bin/"))
              #t)))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("elogind" ,elogind)))
+     (list elogind))
     (synopsis "Backlight and LED brightness control")
     (description
      "This program allows you read and control device brightness.  Devices
@@ -6886,7 +6821,7 @@ interface in sysfs, which can be accomplished with the included udev rules.")
        (sha256
         (base32 "0bnsz9bw9rj1apl80jwz39zj5mnlps3jbckihvl8bbdbrbhj6p06"))))
     (native-inputs
-     `(("shellcheck" ,shellcheck)))
+     (list shellcheck))
     (inputs
      `(("bash" ,bash)
        ("dbus" ,dbus)
@@ -7063,9 +6998,9 @@ re-use code and to avoid re-inventing the wheel.")
         (base32 "0z4khm2mnys9mcl8ckwf19cw20jgrv8650nfncy3xcgs2k2aa23m"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("libmnl" ,libmnl)))
+     (list libmnl))
     (home-page "https://www.netfilter.org/projects/libnftnl/index.html")
     (synopsis "Netlink programming interface to the Linux nf_tables subsystem")
     (description "Libnftnl is a userspace library providing a low-level netlink
@@ -7088,9 +7023,9 @@ used by nftables.")
         (base32 "1xblq1cbcxhr6qmjpy98i1qdza148idgz99vbhjc7s4vzvfizc4h"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("libmnl" ,libmnl)))))
+     (list libmnl))))
 
 (define-public nftables
   (package
@@ -7110,13 +7045,8 @@ used by nftables.")
                  '("--disable-man-doc"  ; FIXME: needs docbook2x
                    "--disable-static"
                    "--with-cli=readline")))
-    (inputs `(("gmp" ,gmp)
-              ("libmnl" ,libmnl)
-              ("libnftnl" ,libnftnl)
-              ("readline" ,readline)))
-    (native-inputs `(("pkg-config" ,pkg-config)
-                     ("bison" ,bison)
-                     ("flex" ,flex)))
+    (inputs (list gmp libmnl libnftnl readline))
+    (native-inputs (list pkg-config bison flex))
     (home-page "https://www.nftables.org")
     (synopsis "Userspace utility for Linux packet filtering")
     (description "nftables is the project that aims to replace the existing
@@ -7250,15 +7180,14 @@ userspace queueing component and the logging subsystem.")
                           (mkdir-p man1)
                           (copy-file "doc/proot/man.1"
                                      (string-append man1 "/proot.1"))))))))
-      (native-inputs `(("which" ,which)
-                       ;; For 'mcookie', used by some of the tests.
-                       ("util-linux" ,util-linux)
-                       ("coreutils" ,coreutils)
-                       ("pkg-config" ,pkg-config)
-                       ;; For rst2man, used to generate the manual page.
-                       ("python-docutils" ,python-docutils)))
-      (inputs `(("libarchive" ,libarchive)
-                ("talloc" ,talloc)))
+      (native-inputs (list which
+                           ;; For 'mcookie', used by some of the tests.
+                           util-linux
+                           coreutils
+                           pkg-config
+                           ;; For rst2man, used to generate the manual page.
+                           python-docutils))
+      (inputs (list libarchive talloc))
       (home-page "https://github.com/proot-me/PRoot")
       (synopsis "Unprivileged chroot, bind mount, and binfmt_misc")
       (description
@@ -7321,7 +7250,7 @@ available in the kernel Linux.")
                       ;; reset-gzip-timestamps phase does not error out.
                       (substitute* "Makefile"
                         (("-m 444") "-m 644")))))))
-    (inputs `(("perl" ,perl)))
+    (inputs (list perl))
     (supported-systems '("i686-linux" "x86_64-linux"))
     (home-page "http://www.etallen.com/cpuid.html")
     (synopsis "Dump x86 CPUID processor information")
@@ -7347,11 +7276,9 @@ NexGen, Rise, and SiS CPUs.")
           "1pm68agkhrwgrplrfrnbwdcvx5lrivdmqw8pb5gdmm3xppnryji1"))))
     (build-system gnu-build-system)
     (inputs
-     `(("file" ,file)
-       ("fuse" ,fuse)
-       ("libmtp" ,libmtp)))
+     (list file fuse libmtp))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://github.com/JasonFerrara/jmtpfs")
     (synopsis "Use a FUSE file system to access data over MTP")
     (description "jmtpfs uses FUSE (file system in userspace) to provide access
@@ -7374,15 +7301,11 @@ the MTP device as a file system.")
       (base32 "00d7q0h4qjc8lg435lq77lp2fx6ikm5piq90m81mr1dqqna1g6pz"))))
    (build-system gnu-build-system)
    (native-inputs
-    `(("pkg-config" ,pkg-config)
-
-      ;; For tests.
-      ("check" ,check)
-      ("groff" ,groff)))
+    (list pkg-config
+          ;; For tests.
+          check groff))
    (inputs
-    `(("expat" ,expat)
-      ("libcap" ,libcap)
-      ("libselinux" ,libselinux)))
+    (list expat libcap libselinux))
    (synopsis "Utility to show process environment")
    (description
     "Procenv is a command-line tool that displays as much detail about
@@ -7599,10 +7522,9 @@ emulates the behaviour of Gunnar Monell's older fbgrab utility.")
     (arguments
      `(#:tests? #f))
     (native-inputs
-     `(("bison" ,bison)
-       ("flex" ,flex)))
+     (list bison flex))
     (inputs
-     `(("linux-pam" ,linux-pam)))
+     (list linux-pam))
     (home-page "https://sourceforge.net/projects/libcg/")
     (synopsis "Control groups management tools")
     (description "Control groups is Linux kernel method for process resource
@@ -7681,8 +7603,7 @@ privileges.")
                       (invoke "make" "install")
                       #t)))))
     (inputs
-     `(("rdma-core" ,rdma-core)
-       ("numactl" ,numactl)))
+     (list rdma-core numactl))
     (synopsis "Intel Performance Scaled Messaging 2 (PSM2) library")
     (description
      "This package is low-level user-level Intel's communications interface.
@@ -7781,8 +7702,7 @@ management tools in userspace.")
     (arguments
      `(#:import-path "github.com/vishvananda/netlink"))
     (native-inputs
-     `(("go-golang-org-x-sys" ,go-golang-org-x-sys)
-       ("go-netns" ,go-netns)))
+     (list go-golang-org-x-sys go-netns))
     (home-page "https://github.com/vishvananda/netlink")
     (synopsis "Simple netlink library for Go")
     (description "The netlink package provides a simple netlink library for
@@ -7965,8 +7885,7 @@ from the xfsprogs package.  It is meant to be used in initrds.")
                     "byteswap_fix.diff"))
              #t)))))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)))
+     (list autoconf automake))
     (home-page "https://github.com/jeremie-koenig/genext2fs")
     (synopsis "Generate ext2 file system as a normal user")
     (description "This package provides a program to generate an ext2
@@ -8061,11 +7980,7 @@ the superuser to make device nodes.")
        ("sharutils" ,sharutils)
        ("xz" ,xz)))
     (inputs
-     `(("acl" ,acl)
-       ("libcap" ,libcap)
-       ("util-linux" ,util-linux)
-       ("sed" ,sed)
-       ("coreutils" ,coreutils)))
+     (list acl libcap util-linux sed coreutils))
     (synopsis "Run commands in an environment with fake root privileges")
     (description
      "@command{fakeroot} runs a command in an environment where it appears to
@@ -8176,17 +8091,17 @@ types and interfaces and translates so that the X server can use them.")
     (arguments
      '(#:configure-flags '("-Dsystemd=false")))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("alsa-lib" ,alsa-lib)
-       ("dbus" ,dbus)
-       ("eudev" ,eudev)
-       ("ffmpeg" ,ffmpeg)
-       ("gstreamer" ,gstreamer)
-       ("gst-plugins-base" ,gst-plugins-base)
-       ("libva" ,libva)
-       ("sbc" ,sbc)
-       ("sdl2" ,sdl2)))
+     (list alsa-lib
+           dbus
+           eudev
+           ffmpeg
+           gstreamer
+           gst-plugins-base
+           libva
+           sbc
+           sdl2))
     (home-page "https://pipewire.org/")
     (synopsis "Server and user space API to deal with multimedia pipelines")
     (description
@@ -8259,7 +8174,7 @@ of Linux application development.")
                (("/usr/bin/dbus-daemon") (which "dbus-daemon")))
              #t)))))
     (inputs
-     `(("dbus" ,dbus)))
+     (list dbus))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("libtool" ,libtool)
@@ -8287,11 +8202,9 @@ platforms, it is not limited to resource-constrained systems.")
                 "0l0p6y2zrd9hgd015dhafjmpcj7waz762n6wf5ws1xlwcwrwkr2l"))))
     (build-system gnu-build-system)
     (inputs
-     `(("liburcu" ,liburcu)
-       ("numactl" ,numactl)))
+     (list liburcu numactl))
     (native-inputs
-     `(("python" ,python-3)
-       ("pkg-config", pkg-config)))
+     (list python-3 pkg-config))
     (home-page "https://lttng.org/")
     (synopsis "LTTng userspace tracer libraries")
     (description "The user space tracing library, liblttng-ust, is the LTTng
@@ -8338,12 +8251,9 @@ to ring buffers shared with a consumer daemon.")
     ;; bindings.  We don't put it in the inputs, because the rest of the tools
     ;; can work without it.
     (inputs
-     `(("liburcu" ,liburcu)
-       ("popt" ,popt)
-       ("numactl" ,numactl)))
+     (list liburcu popt numactl))
     (propagated-inputs
-     `(("kmod" ,kmod)
-       ("module-init-tools" ,module-init-tools)))
+     (list kmod module-init-tools))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("perl" ,perl)
@@ -8393,13 +8303,13 @@ line for tracing control, a @code{lttng-ctl} library for tracing control and a
              (setenv "BABELTRACE_DEV_MODE" "1")
              (setenv "BABELTRACE_MINIMAL_LOG_LEVEL" "TRACE"))))))
     (inputs
-     `(("glib" ,glib)))
+     (list glib))
     ;; NOTE - elfutils is used for the LTTng debug information filter
     ;; component class.  This can be moved to `native-inputs` if
     ;; `--enable-debug-info` is replaced by `--disable-debug-info` in
     ;; `#:configure-flags`.
     (propagated-inputs
-     `(("elfutils" ,elfutils)))
+     (list elfutils))
     ;; NOTE - python-3 is set here for generating the bindings.  Users need to
     ;; install python-3 in their profile in order to use these bindings.
     (native-inputs
@@ -8497,11 +8407,10 @@ persistent over reboots.")
          "0ilnnm4q22f8fagwp8kb37licy4ks861i2iqh2djsypqhnxvx3fv"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (propagated-inputs
      ;; In Requires.private of libbpf.pc.
-     `(("libelf" ,libelf)
-       ("zlib" ,zlib)))
+     (list libelf zlib))
     (arguments
      `(#:tests? #f                      ; no tests
        #:make-flags
@@ -8541,8 +8450,7 @@ headers.")
          "1367c0bzrpclvjvmk0sxgi49rh7j2f9izqk5a7g3yvawh1fmvvjh"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("bison" ,bison)
-       ("flex" ,flex)))
+     (list bison flex))
     (inputs
      `(("clang-toolchain" ,clang-toolchain)
        ("libbpf" ,(package-source libbpf))
@@ -8623,14 +8531,9 @@ and above.")
        (patches (search-patches "bpftrace-disable-bfd-disasm.patch"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("bison" ,bison)
-       ("flex" ,flex)))
+     (list bison flex))
     (inputs
-     `(("bcc" ,bcc)
-       ("clang-toolchain" ,clang-toolchain)
-       ("elfutils" ,elfutils)
-       ("libbpf" ,libbpf)
-       ("linux-libre-headers" ,linux-libre-headers)))
+     (list bcc clang-toolchain elfutils libbpf linux-libre-headers))
     (arguments
      `(#:tests? #f ;Tests require googletest sources.
        #:configure-flags
@@ -8691,9 +8594,9 @@ receiving.  It is dedicated to the PL011 UART of the Raspberry Pi.")
         (base32 "0l8pcaym6057hq3a4zwnk53p5y6xg1m3d3c83wn18h5nmnm4am8a"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libmnl" ,libmnl)))
+     (list libmnl))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (arguments
      `(#:configure-flags '("--disable-static"
                            "--with-kmod=no")))
@@ -8770,10 +8673,7 @@ kernel side implementation.")
      `(("lz4" ,lz4)
        ("libuuid" ,util-linux "lib")))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf automake libtool pkg-config))
     (home-page "https://git.kernel.org/pub/scm/linux/kernel/git/xiang/erofs-utils.git/")
     (synopsis "User-space tools for the EROFS file system")
     (description
@@ -8795,10 +8695,8 @@ provides user-space tools for creating EROFS file systems.")
        (file-name (git-file-name name version))
        (sha256
         (base32 "12ih96jwmr7imp9zyckf9zjqqm5ra1kv5fj6kbw71y6yl31069dz"))))
-    (native-inputs `(("autoconf" ,autoconf)
-                     ("automake" ,automake)
-                     ("libtool" ,libtool)))
-    (inputs `(("sqlite" ,sqlite)))
+    (native-inputs (list autoconf automake libtool))
+    (inputs (list sqlite))
     (arguments
      `(#:configure-flags
        (list "--enable-all"
@@ -8849,12 +8747,12 @@ through standard log mechanisms like syslog.")
           "--enable-bindings-cxx"
           "--enable-bindings-python")))
     (native-inputs
-      `(("automake" ,automake)
-        ("autoconf" ,autoconf)
-        ("libtool" ,libtool)
-        ("autoconf-archive" ,autoconf-archive)
-        ("pkg-config" ,pkg-config)
-        ("python" ,python-3)))
+      (list automake
+            autoconf
+            libtool
+            autoconf-archive
+            pkg-config
+            python-3))
     (synopsis "Interact with the Linux GPIO character device")
     (description
      "This package provides a C library with C++/Python bindings and

@@ -61,7 +61,7 @@
             `(("icu4c-build-root" ,icu4c-build-root))
             '())))
    (inputs
-    `(("perl" ,perl)))
+    (list perl))
    (arguments
     `(#:configure-flags
       (list
@@ -200,9 +200,7 @@ C/C++ part.")
                (install-file "icu4j.jar" share)
                #t))))))
     (native-inputs
-     `(("java-junit" ,java-junit)
-       ("java-junitparams" ,java-junitparams)
-       ("java-hamcrest-core" ,java-hamcrest-core)))
+     (list java-junit java-junitparams java-hamcrest-core))
     (home-page "http://site.icu-project.org/")
     (synopsis "International Components for Unicode")
     (description

@@ -74,28 +74,24 @@
                 "0hcdysw8ibr66vk8i7v56l0v5ijvhlq67v4460mc2xf2910g2m72"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("pkg-config" ,pkg-config)
-       ("qttools" ,qttools)))
+     (list extra-cmake-modules pkg-config qttools))
     (inputs
-     `(("elogind" ,elogind)
-       ("glib" ,glib)
-       ("libxcb" ,libxcb)
-       ("libxkbcommon" ,libxkbcommon)
-       ("linux-pam" ,linux-pam)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)
-
-       ;; Some user-defined themes use QtQuick components internally.  Adding
-       ;; QtQuick & co. here; they end up in QML2_IMPORT_PATH thanks to
-       ;; 'wrap-qt-program'.
-       ("qtgraphicaleffects" ,qtgraphicaleffects)
-       ("qtquickcontrols" ,qtquickcontrols)
-       ("qtquickcontrols2" ,qtquickcontrols2)
-       ("qtsvg" ,qtsvg)
-
-       ("shadow" ,shadow)
-       ("wayland" ,wayland)))
+     (list elogind
+           glib
+           libxcb
+           libxkbcommon
+           linux-pam
+           qtbase-5
+           qtdeclarative
+           ;; Some user-defined themes use QtQuick components internally.  Adding
+           ;; QtQuick & co. here; they end up in QML2_IMPORT_PATH thanks to
+           ;; 'wrap-qt-program'.
+           qtgraphicaleffects
+           qtquickcontrols
+           qtquickcontrols2
+           qtsvg
+           shadow
+           wayland))
     (arguments
      `(#:configure-flags
        ,#~(list
@@ -234,11 +230,11 @@ easy to use, login interface with a modern yet classy touch.")
              (unsetenv "LC_ALL")
              #t)))))
     (inputs
-     `(("audit" ,audit)
-       ("linux-pam" ,linux-pam)
-       ("shadow" ,shadow)                         ;for sbin/nologin
-       ("libgcrypt" ,libgcrypt)
-       ("libxcb" ,libxcb)))
+     (list audit
+           linux-pam
+           shadow ;for sbin/nologin
+           libgcrypt
+           libxcb))
     (native-inputs
      `(("gobject-introspection" ,gobject-introspection)
        ("pkg-config" ,pkg-config)
@@ -251,9 +247,7 @@ easy to use, login interface with a modern yet classy touch.")
        ("python-pygobject" ,python2-pygobject)))
     ;; Required by liblightdm-gobject-1.pc.
     (propagated-inputs
-     `(("glib" ,glib)
-       ("libx11" ,libx11)
-       ("libxklavier" ,libxklavier)))
+     (list glib libx11 libxklavier))
     (home-page "https://www.freedesktop.org/wiki/Software/LightDM/")
     (synopsis "Lightweight display manager")
     (description "The Light Display Manager (LightDM) is a cross-desktop
@@ -305,10 +299,7 @@ display manager which supports different greeters.")
                  `("GIO_EXTRA_MODULES" ":" prefix (,gtk))))
              #t)))))
     (native-inputs
-     `(("exo" ,exo)
-       ("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)
-       ("xfce4-dev-tools" ,xfce4-dev-tools)))
+     (list exo intltool pkg-config xfce4-dev-tools))
     (inputs
      `(("bash" ,bash-minimal) ; for wrap-program
        ("lightdm" ,lightdm)
@@ -353,7 +344,7 @@ GTK+, lets you select a desktop session and log in to it.")
 	      ("libxmu" ,libxmu)
 	      ("xauth" ,xauth)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (arguments
      '(#:phases
        (modify-phases %standard-phases

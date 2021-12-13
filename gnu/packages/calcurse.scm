@@ -39,8 +39,8 @@
        (sha256
         (base32 "0cgkd285x5pk62lmdx9fjxl46c5lj8wj2cqbxq7d99yb4il5fdjk"))))
     (build-system gnu-build-system)
-    (inputs `(("ncurses" ,ncurses)))
-    (native-inputs `(("tzdata" ,tzdata-for-tests)))
+    (inputs (list ncurses))
+    (native-inputs (list tzdata-for-tests))
     (arguments
      ;; The ical tests all want to create a ".calcurse" directory, and may
      ;; fail with "cannot create directory '.calcurse': File exists" if run

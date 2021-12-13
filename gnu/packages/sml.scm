@@ -47,11 +47,7 @@
                 "1y3i919kzylvhwfsi6adnc0ah0xahl6ncna0g5bcjyhxsq2416rn"))))
     (build-system gnu-build-system)
     (inputs
-     `(("gmp" ,gmp)
-       ("lesstif" ,lesstif)
-       ("libffi" ,libffi)
-       ("libx11" ,libx11)
-       ("libxt" ,libxt)))
+     (list gmp lesstif libffi libx11 libxt))
     (arguments
      '(#:configure-flags
        (list "--with-system-libffi=yes"

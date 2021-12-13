@@ -259,10 +259,7 @@ a custom raw video format with a simple container.")
                     output)))
               #t))))))
     (inputs
-     `(("freetype" ,freetype)
-       ("libx11" ,libx11)
-       ("libxft" ,libxft)
-       ("libxinerama" ,libxinerama)))
+     (list freetype libx11 libxft libxinerama))
     (home-page "https://dwm.suckless.org/")
     (synopsis "Dynamic window manager")
     (description
@@ -294,10 +291,7 @@ optimising the environment for the application in use and the task performed.")
        #:phases
        (modify-phases %standard-phases (delete 'configure))))
     (inputs
-     `(("freetype" ,freetype)
-       ("libxft" ,libxft)
-       ("libx11" ,libx11)
-       ("libxinerama" ,libxinerama)))
+     (list freetype libxft libx11 libxinerama))
     (home-page "https://tools.suckless.org/dmenu/")
     (synopsis "Dynamic menu")
     (description
@@ -324,10 +318,8 @@ numbers of user-defined menu items efficiently.")
        (list (string-append "CC=" ,(cc-for-target))
              (string-append "PREFIX=" %output))))
     (inputs
-     `(("libx11" ,libx11)
-       ("libxkbfile" ,libxkbfile)
-       ("alsa-lib" ,alsa-lib)           ; tinyalsa (unpackaged) would suffice
-       ("libmpdclient" ,libmpdclient)))
+     (list libx11 libxkbfile alsa-lib ; tinyalsa (unpackaged) would suffice
+           libmpdclient))
     (home-page "https://git.2f30.org/spoon/")
     (synopsis "Set dwm status")
     (description
@@ -353,10 +345,7 @@ numbers of user-defined menu items efficiently.")
              (string-append "PREFIX=" %output))
        #:phases (modify-phases %standard-phases (delete 'configure))))
     (inputs
-     `(("libx11" ,libx11)
-       ("libxext" ,libxext)
-       ("libxinerama" ,libxinerama)
-       ("libxrandr" ,libxrandr)))
+     (list libx11 libxext libxinerama libxrandr))
     (home-page "https://tools.suckless.org/slock/")
     (synopsis "Simple X session lock")
     (description
@@ -392,8 +381,8 @@ numbers of user-defined menu items efficiently.")
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)))
     (native-inputs
-     `(("ncurses" ,ncurses) ;provides tic program
-       ("pkg-config" ,pkg-config)))
+     (list ncurses ;provides tic program
+           pkg-config))
     (home-page "https://st.suckless.org/")
     (synopsis "Simple terminal emulator")
     (description
@@ -438,7 +427,7 @@ drawing.")
        ("webkitgtk" ,webkitgtk-with-libsoup2)
        ("xprop" ,xprop)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://surf.suckless.org/")
     (synopsis "Simple web browser")
     (description
@@ -474,7 +463,7 @@ point surf to another URI by setting its XProperties.")
                (string-append "INCS=-I. " (pkg-config "--cflags"))
                (string-append "LIBS=" (pkg-config "--libs") " -lm")))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
      `(("libpng" ,libpng)
        ("libx11" ,libx11)
@@ -510,7 +499,7 @@ few minutes.")
        (modify-phases %standard-phases
          (delete 'configure))))         ; no configure script
     (inputs
-     `(("libx11" ,libx11)))
+     (list libx11))
     (home-page "https://tools.suckless.org/x/wmname/")
     (synopsis "Print or set the window manager name")
     (description "@command{wmname} prints/sets the window manager name
@@ -538,7 +527,7 @@ assuming a reparenting window manager for instance.")
        (list (string-append "CC=" ,(cc-for-target))
              (string-append "PREFIX=" %output))))
     (inputs
-     `(("libx11" ,libx11)))
+     (list libx11))
     (home-page "https://git.2f30.org/xbattmon/")
     (synopsis "Simple battery monitor for X")
     (description
@@ -656,8 +645,7 @@ left.")
        (modify-phases %standard-phases
          (delete 'configure))))         ; no configure script
     (inputs
-     `(("cups-minimal" ,cups-minimal)
-       ("zlib" ,zlib)))
+     (list cups-minimal zlib))
     (home-page "https://git.2f30.org/prout/")
     (synopsis "Smaller lp command")
     (description
@@ -693,7 +681,7 @@ cups server to be installed.")
              (substitute* "Makefile"
                (("lcurses") "lncurses")))))))
     (inputs
-     `(("ncurses" ,ncurses)))
+     (list ncurses))
     (home-page "https://git.2f30.org/noice/")
     (synopsis "Small file browser")
     (description
@@ -796,7 +784,7 @@ initially intended to be used on musl-based Linux distributions.
        (modify-phases %standard-phases
          (delete 'configure))))         ; no configure script
     (inputs
-     `(("libpng" ,libpng)))
+     (list libpng))
     (home-page "https://git.2f30.org/colors/")
     (synopsis "Extract colors from pictures")
     (description
@@ -834,7 +822,7 @@ colormap to stdout.")
          (modify-phases %standard-phases
            (delete 'configure))))       ; no configure script
       (inputs
-       `(("gawk" ,gawk)))
+       (list gawk))
       (home-page "https://github.com/cls/libutf")
       (synopsis "Plan 9 compatible UTF-8 library")
       (description
@@ -892,10 +880,7 @@ as -1, to be used instead of U+FFFD.
                  (install-file "lchat.1" man1)
                  #t))))))
       (inputs
-       `(("grep" ,grep)
-         ("ncurses" ,ncurses)
-         ("libutf" ,libutf)
-         ("libbsd" ,libbsd)))
+       (list grep ncurses libutf libbsd))
       (home-page "https://github.com/younix/lchat")
       (synopsis "Line chat is a frontend for the irc client ii from suckless")
       (description

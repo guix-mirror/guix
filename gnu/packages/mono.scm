@@ -147,7 +147,7 @@ Java.")
          "1vr5l09i5i91n9qzky7ab9wwvgdidvrbw26y8llip0z4qdf4w7mq"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
      `(("glib" ,glib)
        ("cairo" ,cairo)

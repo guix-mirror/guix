@@ -74,7 +74,7 @@
                (install-file (string-append "jblas-" ,version ".jar") target))
              #t)))))
     (inputs
-     `(("openblas" ,openblas)))
+     (list openblas))
     (native-inputs
      `(("ant" ,ant)
        ("ruby" ,ruby)                   ; for configure script

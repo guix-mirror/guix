@@ -72,12 +72,9 @@
                         "a2ps-CVE-2015-8107.patch"))))
     (build-system gnu-build-system)
     (inputs
-     `(("psutils" ,psutils)
-       ("gv" ,gv)))
+     (list psutils gv))
     (native-inputs
-     `(("gperf" ,gperf)
-       ("groff" ,groff)
-       ("perl" ,perl)))
+     (list gperf groff perl))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
@@ -180,7 +177,7 @@ different programming languages.")
     (arguments
      '(#:configure-flags '("-DBUILD_SHARED_LIBS=ON")))
     (native-inputs
-     `(("unzip" ,unzip)))
+     (list unzip))
     (home-page "https://fmt.dev")
     (synopsis "Small and fast C++ formatting library")
     (description
@@ -240,7 +237,7 @@ to @code{IOStreams}.")
                        (getenv "CPLUS_INCLUDE_PATH"))))))))
     (properties `((hidden? . #true)))
     (native-inputs
-     `(("unzip" ,unzip)))
+     (list unzip))
     (inputs
      `(("libcxx" ,libcxx+libcxxabi-6)
        ("libcxxabi" ,libcxxabi-6)
@@ -262,10 +259,9 @@ to @code{IOStreams}.")
     ;; The ctags that comes with emacs does not support the --excmd options,
     ;; so can't be used
     (inputs
-     `(("boost" ,boost)))
+     (list boost))
     (native-inputs
-     `(("bison" ,bison)
-       ("flex" ,flex)))
+     (list bison flex))
     (arguments
      `(#:configure-flags
        (list (string-append "--with-boost="
@@ -358,12 +354,9 @@ seen in a terminal.")
                  (install-file "highlight.so" autodir))
                #t))))))
     (inputs
-     `(("lua" ,lua)
-       ("boost" ,boost)
-       ("perl" ,perl)))
+     (list lua boost perl))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("swig" ,swig)))
+     (list pkg-config swig))
     (home-page "http://www.andre-simon.de/doku/highlight/en/highlight.php")
     (synopsis "Convert code to documents with syntax highlighting")
     (description "Highlight converts source code to HTML, XHTML, RTF, LaTeX,

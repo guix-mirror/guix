@@ -78,26 +78,26 @@ that are shared between @command{go-ipfs/commands} and its rewrite
          ;; TODO: Tests fail, might need network access.
          #:tests? #f))
       (native-inputs
-       `(("go-github-com-ipfs-go-ipfs-cmdkit-files" ,go-github-com-ipfs-go-ipfs-cmdkit-files)
-         ("go-github-com-libp2p-go-libp2p-metrics" ,go-github-com-libp2p-go-libp2p-metrics)
-         ("go-github-com-libp2p-go-flow-metrics" ,go-github-com-libp2p-go-flow-metrics)
-         ("go-github-com-libp2p-go-libp2p-peer" ,go-github-com-libp2p-go-libp2p-peer)
-         ("go-github-com-libp2p-go-libp2p-protocol" ,go-github-com-libp2p-go-libp2p-protocol)
-         ("go-github-com-libp2p-go-libp2p-crypto" ,go-github-com-libp2p-go-libp2p-crypto)
-         ("go-github-com-mitchellh-go-homedir" ,go-github-com-mitchellh-go-homedir)
-         ("go-github-com-multiformats-go-multiaddr" ,go-github-com-multiformats-go-multiaddr)
-         ("go-github-com-multiformats-go-multiaddr-net" ,go-github-com-multiformats-go-multiaddr-net)
-         ("go-github-com-btcsuite-btcd-btcec" ,go-github-com-btcsuite-btcd-btcec)
-         ("go-github-com-gogo-protobuf" ,go-github-com-gogo-protobuf)
-         ("go-github-com-minio-blake2b-simd" ,go-github-com-minio-blake2b-simd)
-         ("go-github-com-minio-sha256-simd" ,go-github-com-minio-sha256-simd)
-         ("go-github-com-mr-tron-base58" ,go-github-com-mr-tron-base58)
-         ("go-github-com-multiformats-go-multihash" ,go-github-com-multiformats-go-multihash)
-         ("go-golang-org-x-crypto" ,go-golang-org-x-crypto)
-         ("go-github-com-spaolacci-murmur3" ,go-github-com-spaolacci-murmur3)
-         ("go-github-com-gxed-hashland-keccakpg" ,go-github-com-gxed-hashland-keccakpg)
-         ("go-github-com-whyrusleeping-tar-utils" ,go-github-com-whyrusleeping-tar-utils)
-         ("go-github-com-cheekybits-is" ,go-github-com-cheekybits-is)))
+       (list go-github-com-ipfs-go-ipfs-cmdkit-files
+             go-github-com-libp2p-go-libp2p-metrics
+             go-github-com-libp2p-go-flow-metrics
+             go-github-com-libp2p-go-libp2p-peer
+             go-github-com-libp2p-go-libp2p-protocol
+             go-github-com-libp2p-go-libp2p-crypto
+             go-github-com-mitchellh-go-homedir
+             go-github-com-multiformats-go-multiaddr
+             go-github-com-multiformats-go-multiaddr-net
+             go-github-com-btcsuite-btcd-btcec
+             go-github-com-gogo-protobuf
+             go-github-com-minio-blake2b-simd
+             go-github-com-minio-sha256-simd
+             go-github-com-mr-tron-base58
+             go-github-com-multiformats-go-multihash
+             go-golang-org-x-crypto
+             go-github-com-spaolacci-murmur3
+             go-github-com-gxed-hashland-keccakpg
+             go-github-com-whyrusleeping-tar-utils
+             go-github-com-cheekybits-is))
       (home-page "https://github.com/ipfs/go-ipfs-api")
       (synopsis "Unofficial Go interface to IPFS's HTTP API")
       (description "An unofficial Go interface to IPFS's HTTP API")
@@ -120,32 +120,32 @@ that are shared between @command{go-ipfs/commands} and its rewrite
     (arguments
      '(#:import-path "github.com/whyrusleeping/gx"))
     (native-inputs
-     `(("go-github-com-blang-semver" ,go-github-com-blang-semver)
-       ("go-github-com-gxed-hashland-keccakpg" ,go-github-com-gxed-hashland-keccakpg)
-       ("go-github-com-ipfs-go-ipfs-api" ,go-github-com-ipfs-go-ipfs-api)
-       ("go-github-com-ipfs-go-ipfs-cmdkit-files" ,go-github-com-ipfs-go-ipfs-cmdkit-files)
-       ("go-github-com-libp2p-go-flow-metrics" ,go-github-com-libp2p-go-flow-metrics)
-       ("go-github-com-libp2p-go-libp2p-crypto" ,go-github-com-libp2p-go-libp2p-crypto)
-       ("go-github-com-libp2p-go-libp2p-metrics" ,go-github-com-libp2p-go-libp2p-metrics)
-       ("go-github-com-libp2p-go-libp2p-peer" ,go-github-com-libp2p-go-libp2p-peer)
-       ("go-github-com-libp2p-go-libp2p-protocol" ,go-github-com-libp2p-go-libp2p-protocol)
-       ("go-github-com-minio-blake2b-simd" ,go-github-com-minio-blake2b-simd)
-       ("go-github-com-minio-sha256-simd" ,go-github-com-minio-sha256-simd)
-       ("go-github-com-mitchellh-go-homedir" ,go-github-com-mitchellh-go-homedir)
-       ("go-github-com-mr-tron-base58" ,go-github-com-mr-tron-base58)
-       ("go-github-com-multiformats-go-multiaddr" ,go-github-com-multiformats-go-multiaddr)
-       ("go-github-com-multiformats-go-multiaddr-net" ,go-github-com-multiformats-go-multiaddr-net)
-       ("go-github-com-multiformats-go-multihash" ,go-github-com-multiformats-go-multihash)
-       ("go-github-com-spaolacci-murmur3" ,go-github-com-spaolacci-murmur3)
-       ("go-github-com-whyrusleeping-tar-utils" ,go-github-com-whyrusleeping-tar-utils)
-       ("go-github-com-btcsuite-btcd-btcec" ,go-github-com-btcsuite-btcd-btcec)
-       ("go-github-com-gogo-protobuf" ,go-github-com-gogo-protobuf)
-       ("go-github-com-sabhiram-go-gitignore" ,go-github-com-sabhiram-go-gitignore)
-       ("go-github-com-urfave-cli" ,go-github-com-urfave-cli)
-       ("go-github-com-whyrusleeping-json-filter" ,go-github-com-whyrusleeping-json-filter)
-       ("go-github-com-whyrusleeping-progmeter" ,go-github-com-whyrusleeping-progmeter)
-       ("go-github-com-whyrusleeping-stump" ,go-github-com-whyrusleeping-stump)
-       ("go-golang-org-x-crypto" ,go-golang-org-x-crypto)))
+     (list go-github-com-blang-semver
+           go-github-com-gxed-hashland-keccakpg
+           go-github-com-ipfs-go-ipfs-api
+           go-github-com-ipfs-go-ipfs-cmdkit-files
+           go-github-com-libp2p-go-flow-metrics
+           go-github-com-libp2p-go-libp2p-crypto
+           go-github-com-libp2p-go-libp2p-metrics
+           go-github-com-libp2p-go-libp2p-peer
+           go-github-com-libp2p-go-libp2p-protocol
+           go-github-com-minio-blake2b-simd
+           go-github-com-minio-sha256-simd
+           go-github-com-mitchellh-go-homedir
+           go-github-com-mr-tron-base58
+           go-github-com-multiformats-go-multiaddr
+           go-github-com-multiformats-go-multiaddr-net
+           go-github-com-multiformats-go-multihash
+           go-github-com-spaolacci-murmur3
+           go-github-com-whyrusleeping-tar-utils
+           go-github-com-btcsuite-btcd-btcec
+           go-github-com-gogo-protobuf
+           go-github-com-sabhiram-go-gitignore
+           go-github-com-urfave-cli
+           go-github-com-whyrusleeping-json-filter
+           go-github-com-whyrusleeping-progmeter
+           go-github-com-whyrusleeping-stump
+           go-golang-org-x-crypto))
     (home-page "https://github.com/whyrusleeping/gx")
     (synopsis "Package management tool using IPFS")
     (description "@command{gx} is a packaging tool built around the
@@ -179,32 +179,32 @@ powerful and simple.")
     (arguments
      '(#:import-path "github.com/whyrusleeping/gx-go"))
     (native-inputs
-     `(("go-github-com-whyrusleeping-gx-util" ,go-github-com-whyrusleeping-gx-util)
-       ("go-github-com-kr-fs" ,go-github-com-kr-fs)
-       ("go-github-com-gxed-hashland-keccakpg" ,go-github-com-gxed-hashland-keccakpg)
-       ("go-github-com-ipfs-go-ipfs-api" ,go-github-com-ipfs-go-ipfs-api)
-       ("go-github-com-ipfs-go-ipfs-cmdkit-files" ,go-github-com-ipfs-go-ipfs-cmdkit-files)
-       ("go-github-com-libp2p-go-flow-metrics" ,go-github-com-libp2p-go-flow-metrics)
-       ("go-github-com-libp2p-go-libp2p-crypto" ,go-github-com-libp2p-go-libp2p-crypto)
-       ("go-github-com-libp2p-go-libp2p-metrics" ,go-github-com-libp2p-go-libp2p-metrics)
-       ("go-github-com-libp2p-go-libp2p-peer" ,go-github-com-libp2p-go-libp2p-peer)
-       ("go-github-com-libp2p-go-libp2p-protocol" ,go-github-com-libp2p-go-libp2p-protocol)
-       ("go-github-com-minio-blake2b-simd" ,go-github-com-minio-blake2b-simd)
-       ("go-github-com-minio-sha256-simd" ,go-github-com-minio-sha256-simd)
-       ("go-github-com-mitchellh-go-homedir" ,go-github-com-mitchellh-go-homedir)
-       ("go-github-com-mr-tron-base58" ,go-github-com-mr-tron-base58)
-       ("go-github-com-multiformats-go-multiaddr" ,go-github-com-multiformats-go-multiaddr)
-       ("go-github-com-multiformats-go-multiaddr-net" ,go-github-com-multiformats-go-multiaddr-net)
-       ("go-github-com-multiformats-go-multihash" ,go-github-com-multiformats-go-multihash)
-       ("go-github-com-spaolacci-murmur3" ,go-github-com-spaolacci-murmur3)
-       ("go-github-com-whyrusleeping-tar-utils" ,go-github-com-whyrusleeping-tar-utils)
-       ("go-github-com-btcsuite-btcd-btcec" ,go-github-com-btcsuite-btcd-btcec)
-       ("go-github-com-gogo-protobuf" ,go-github-com-gogo-protobuf)
-       ("go-github-com-sabhiram-go-gitignore" ,go-github-com-sabhiram-go-gitignore)
-       ("go-github-com-urfave-cli" ,go-github-com-urfave-cli)
-       ("go-github-com-whyrusleeping-progmeter" ,go-github-com-whyrusleeping-progmeter)
-       ("go-github-com-whyrusleeping-stump" ,go-github-com-whyrusleeping-stump)
-       ("go-golang-org-x-crypto" ,go-golang-org-x-crypto)))
+     (list go-github-com-whyrusleeping-gx-util
+           go-github-com-kr-fs
+           go-github-com-gxed-hashland-keccakpg
+           go-github-com-ipfs-go-ipfs-api
+           go-github-com-ipfs-go-ipfs-cmdkit-files
+           go-github-com-libp2p-go-flow-metrics
+           go-github-com-libp2p-go-libp2p-crypto
+           go-github-com-libp2p-go-libp2p-metrics
+           go-github-com-libp2p-go-libp2p-peer
+           go-github-com-libp2p-go-libp2p-protocol
+           go-github-com-minio-blake2b-simd
+           go-github-com-minio-sha256-simd
+           go-github-com-mitchellh-go-homedir
+           go-github-com-mr-tron-base58
+           go-github-com-multiformats-go-multiaddr
+           go-github-com-multiformats-go-multiaddr-net
+           go-github-com-multiformats-go-multihash
+           go-github-com-spaolacci-murmur3
+           go-github-com-whyrusleeping-tar-utils
+           go-github-com-btcsuite-btcd-btcec
+           go-github-com-gogo-protobuf
+           go-github-com-sabhiram-go-gitignore
+           go-github-com-urfave-cli
+           go-github-com-whyrusleeping-progmeter
+           go-github-com-whyrusleeping-stump
+           go-golang-org-x-crypto))
     (home-page "https://github.com/whyrusleeping/gx-go")
     (synopsis "Golang subtool for the @command{gx} package manager")
     (description "A subtool for the @command{gx} package manager for packages

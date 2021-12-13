@@ -48,8 +48,7 @@
      ;; Thus, build sequentially.
      '(#:parallel-build? #f
        #:parallel-tests? #f))
-    (inputs `(("perl" ,perl)
-              ("libltdl" ,libltdl)))
+    (inputs (list perl libltdl))
     (home-page "http://apr.apache.org/")
     (synopsis "The Apache Portable Runtime Library")
     (description
@@ -75,9 +74,9 @@ around or take advantage of platform-specific deficiencies or features.")
                "0nq3s1yn13vplgl6qfm09f7n0wm08malff9s59bqf9nid9xjzqfk"))))
     (build-system gnu-build-system)
     (inputs
-     `(("apr" ,apr)))
+     (list apr))
     (propagated-inputs
-     `(("expat" ,expat)))
+     (list expat))
     (arguments
      '(#:phases
        (modify-phases %standard-phases

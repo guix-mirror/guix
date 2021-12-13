@@ -205,7 +205,7 @@
        ;; for uploading compiled patches and firmware
        ("dfu-util" ,dfu-util-for-axoloti)))
     (native-inputs
-     `(("unzip" ,unzip)))
+     (list unzip))
     (home-page "http://www.axoloti.com/")
     (synopsis "Audio development environment for the Axoloti core board")
     (description
@@ -351,9 +351,8 @@ runtime.")
        ("java-jgit" ,java-jgit-4.2)
        ("axoloti-runtime" ,axoloti-runtime)))
     (native-inputs
-     `(("ant" ,ant)
-       ("zip" ,zip) ; for repacking the jar
-       ("unzip" ,unzip)))
+     (list ant zip ; for repacking the jar
+           unzip))
     (description
      "The Axoloti patcher offers a “patcher” environment similar to Pure Data
 for sketching digital audio algorithms.  The patches run on a standalone

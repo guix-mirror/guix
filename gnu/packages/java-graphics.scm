@@ -48,7 +48,7 @@
          (add-after 'unpack 'chdir
            (lambda _ (chdir "core") #t)))))
     (inputs
-     `(("java-junit" ,java-junit)))
+     (list java-junit))
     (home-page "http://piccolo2d.org")
     (synopsis "Structured 2D graphics framework")
     (description "Piccolo2D is a framework (in the Jazz ZUI tradition) to
@@ -79,10 +79,9 @@ libraries.")
              (setenv "DISPLAY" ":1")
              #t)))))
     (inputs
-     `(("java-piccolo2d-core" ,java-piccolo2d-core)
-       ("java-junit" ,java-junit)))
+     (list java-piccolo2d-core java-junit))
     (native-inputs
-     `(("xorg-server" ,xorg-server))) ; for tests
+     (list xorg-server)) ; for tests
     (description "Piccolo2D is a framework (in the Jazz ZUI tradition) to
 create robust, full-featured graphical applications in Java, with features
 such as zooming and multiple representation.  This package provides additional
@@ -109,8 +108,7 @@ features not found in the core libraries.")))
      `(#:jar-name "marlin.jar"
        #:test-include (list "src/test/java/RunJUnitTest.java")))
     (inputs
-     `(("java-hamcrest-core" ,java-hamcrest-core)
-       ("java-junit" ,java-junit)))
+     (list java-hamcrest-core java-junit))
     (home-page "https://github.com/bourgesl/marlin-renderer/")
     (synopsis "Rendering engine")
     (description "Marlin is a Java2D @code{RenderingEngine} optimized for

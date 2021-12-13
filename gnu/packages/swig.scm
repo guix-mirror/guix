@@ -45,13 +45,13 @@
               (base32
                "1z06m5zv87mha6hvys1iay810ghc1jngilfby1ms2n4d1mryjfym"))))
     (build-system gnu-build-system)
-    (native-inputs `(("boost" ,boost)
-                     ("pcre" ,pcre "bin")       ;for 'pcre-config'
-                     ;; The following are for tests and examples:
-                     ("guile" ,guile-3.0)
-                     ("perl" ,perl)))
+    (native-inputs (list boost
+                         `(,pcre "bin") ;for 'pcre-config'
+                         ;; The following are for tests and examples:
+                         guile-3.0
+                         perl))
                      ;;("python" ,python-wrapper)
-    (inputs `(("pcre" ,pcre)))
+    (inputs (list pcre))
     (home-page "http://swig.org/")
     (synopsis
      "Interface compiler that connects C/C++ code to higher-level languages")

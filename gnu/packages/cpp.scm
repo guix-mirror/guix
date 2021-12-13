@@ -95,11 +95,9 @@
         (base32 "18230bg4rq9pmm5f8f65j444jpq56rld4fhmpham8q3vr1c1bdjh"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("doxygen" ,doxygen)
-       ("gcc" ,gcc-9)
-       ("perl" ,perl)))
+     (list doxygen gcc-9 perl))
     (inputs
-     `(("boost" ,boost)))
+     (list boost))
     (synopsis "Range library for C++14/17/20")
     (description "Range-v3 is an extension of the Standard Template Library that
 makes its iterators and algorithms more powerful by making them composable.
@@ -140,8 +138,7 @@ range-v3 ranges are an abstraction layer on top of iterators.")
         (base32 "0gbvr48f03830g3154bjhw92b8ggmg6wwh5xyb8nppk9v6w752l0"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("googletest" ,googletest)
-       ("pkg-config" ,pkg-config)))
+     (list googletest pkg-config))
     (synopsis "Guidelines Support Library")
     (description "c++-gsl contains functions and types that are suggested for
 use by the C++ Core Guidelines maintained by the Standard C++ Foundation.")
@@ -164,9 +161,7 @@ use by the C++ Core Guidelines maintained by the Standard C++ Foundation.")
                (base32
                 "1rwaxmid9iv65n0y6xlcyxxydsvihjni9ldxpg6pbqz43amp49xx"))))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
+     (list autoconf automake libtool))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -209,7 +204,7 @@ operating system functions.")
              (substitute* "src/unit_tests/unit_tests.cmake"
                (("misc/library_test.cpp") ""))
              #t)))))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs (list pkg-config))
     (home-page "https://github.com/rttrorg/rttr/")
     (synopsis "C++ Reflection Library")
     (description
@@ -240,11 +235,9 @@ the name of the library itself, which is written in C++.")
          '("-DWITH_TESTS=ON"            ; To run the test suite
            "-DRCT_RTTI_ENABLED=ON")))
       (native-inputs
-       `(("cppunit" ,cppunit)
-         ("pkg-config" ,pkg-config)))
+       (list cppunit pkg-config))
       (inputs
-       `(("openssl" ,openssl)
-         ("zlib" ,zlib)))
+       (list openssl zlib))
       (home-page "https://github.com/Andersbakken/rct")
       (synopsis "C++ library providing Qt-like APIs on top of the STL")
       (description "Rct is a set of C++ tools that provide nicer (more Qt-like)
@@ -267,7 +260,7 @@ the name of the library itself, which is written in C++.")
        (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (arguments '(#:tests? #f))          ; no tests
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs (list pkg-config))
     (home-page "https://github.com/aseba-community/dashel")
     (synopsis "Data stream helper encapsulation library")
     (description
@@ -295,7 +288,7 @@ combination of these streams.")
      `(#:configure-flags (list "-DBUILD_TESTS=ON")
        #:test-target "xtest"))
     (native-inputs
-     `(("googletest" ,googletest)))
+     (list googletest))
     (home-page "https://github.com/QuantStack/xsimd")
     (synopsis "C++ wrappers for SIMD intrinsics and math implementations")
     (description
@@ -359,7 +352,7 @@ functions, class methods, and stl containers.
                 (modules '((guix build utils)))
                 (snippet '(delete-file-recursively "./test/thirdparty"))))
       (native-inputs
-       `(("catch2" ,catch-framework2-1)))
+       (list catch-framework2-1))
       (build-system cmake-build-system)
       (arguments
        `(#:phases
@@ -447,7 +440,7 @@ as ordering relation.")
               (base32
                "0nzsjzlvk14dazwh7k2jb1dinb0pv9jbx5jsyn264wvva0y7daiv")))))))
     (inputs
-     `(("fifo-map" ,fifo-map)))
+     (list fifo-map))
     (synopsis "JSON parser and printer library for C++")
     (description "JSON for Modern C++ is a C++ JSON library that provides
 intuitive syntax and trivial integration.")
@@ -468,8 +461,7 @@ intuitive syntax and trivial integration.")
                 "1kd9zl4h6nrsg29hq13vwp4zhfj8sa90vj40726lpw6vxz48k4di"))
               (file-name (git-file-name name version))))
     (native-inputs
-     `(("googletest" ,googletest)
-       ("json-modern-cxx" ,json-modern-cxx)))
+     (list googletest json-modern-cxx))
     (arguments
      `(#:configure-flags
        '("-DBUILD_TESTS=ON")
@@ -504,10 +496,9 @@ tools (containers, algorithms) used by other QuantStack packages.")
     (arguments
      '(#:tests? #f))                    ; no check target
     (inputs
-     `(("rapidjson" ,rapidjson)))
+     (list rapidjson))
     (native-inputs
-     `(("clang" ,clang)
-       ("llvm" ,llvm)))
+     (list clang llvm))
     (home-page "https://github.com/MaskRay/ccls")
     (synopsis "C/C++/Objective-C language server")
     (description
@@ -558,11 +549,9 @@ lock-free fixed size queue written in C++11.")
       ;; https://bugs.gnu.org/46562
      '(#:parallel-tests? #f))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ;; For tests.
-       ("perl" ,perl)))
+     (list autoconf automake libtool
+           ;; For tests.
+           perl))
     (home-page "https://github.com/gperftools/gperftools")
     (synopsis "Multi-threaded malloc() and performance analysis tools for C++")
     (description
@@ -626,11 +615,9 @@ tools:
                  (invoke "make"))))))))
     (native-inputs
      ;; required to build shared lib
-     `(("python" ,python)))
+     (list python))
     (inputs
-     `(("brotli" ,brotli)
-       ("openssl" ,openssl)
-       ("zlib" ,zlib)))
+     (list brotli openssl zlib))
     (home-page "https://github.com/yhirose/cpp-httplib")
     (synopsis "C++ HTTP/HTTPS server and client library")
     (description "cpp-httplib is a C++11 single-file cross platform blocking
@@ -663,9 +650,7 @@ library.")
              #t)))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)
-       ("python-pytest-runner" ,python-pytest-runner)))
+     (list python-pytest python-pytest-cov python-pytest-runner))
     (home-page "https://github.com/cpplint/cpplint")
     (synopsis "Static code checker for C++")
     (description "@code{cpplint} is a command-line tool to check C/C++ files
@@ -695,7 +680,7 @@ and make @code{cpplint} usable in wider contexts.")
       ;; Enable building of shared library.
       #:configure-flags `("-DBUILD_SHARED_LIBS=1")))
    (native-inputs
-    `(("pkg-config" ,pkg-config)))
+    (list pkg-config))
    (synopsis "Process IO library")
    (description "reproc (Redirected Process) is a C/C++ library that
 simplifies starting, stopping and communicating with external programs.  The
@@ -803,7 +788,7 @@ point and then, after each tween step, plugging back the result.")
                (("check_target\\(gtest_main\\)") "")
                (("check_target\\(gmock\\)") "")))))))
     (native-inputs
-     `(("googletest" ,googletest)))
+     (list googletest))
     (home-page "https://abseil.io")
     (synopsis "Augmented C++ standard library")
     (description "Abseil is a collection of C++ library code designed to
@@ -893,26 +878,23 @@ standard GNU style syntax for options.")
        ;; Leave tests disabled; see https://github.com/facebook/folly/issues/1456
        #:tests? #f))
     (propagated-inputs
-     `(("boost" ,boost)
-       ("gflags" ,gflags)
-       ("glog" ,glog)
-       ("liburing" ,liburing)))
+     (list boost gflags glog liburing))
     (inputs
-     `(("bzip2" ,bzip2)
-       ("double-conversion" ,double-conversion)
-       ("fmt" ,fmt)
-       ("libaio" ,libaio)
-       ("libevent" ,libevent)
-       ("libiberty" ,libiberty)
-       ("libsodium" ,libsodium)
-       ("libunwind" ,libunwind)
-       ("lz4" ,lz4)
-       ("openssl" ,openssl)
-       ("snappy" ,snappy)
-       ("zlib" ,zlib)
-       ("zstd" ,zstd "lib")))
+     (list bzip2
+           double-conversion
+           fmt
+           libaio
+           libevent
+           libiberty
+           libsodium
+           libunwind
+           lz4
+           openssl
+           snappy
+           zlib
+           `(,zstd "lib")))
     (native-inputs
-     `(("googletest" ,googletest)))
+     (list googletest))
     (synopsis "Collection of C++ components complementing the standard library")
     (description
      "Folly (acronymed loosely after Facebook Open Source Library) is a library
@@ -949,12 +931,12 @@ of C++14 components that complements @code{std} and Boost.")
                             (assoc-ref %build-inputs "aws-c-common"))
                "-DENABLE_NET_TESTS=OFF")))
       (propagated-inputs
-       `(("aws-c-auth" ,aws-c-auth)
-         ("aws-c-cal" ,aws-c-cal)
-         ("aws-c-event-stream" ,aws-c-event-stream)
-         ("aws-c-http" ,aws-c-http)
-         ("aws-c-mqtt" ,aws-c-mqtt)
-         ("aws-c-s3" ,aws-c-s3)))
+       (list aws-c-auth
+             aws-c-cal
+             aws-c-event-stream
+             aws-c-http
+             aws-c-mqtt
+             aws-c-s3))
       (synopsis "C++ wrapper for Amazon Web Services C libraries")
       (description "The AWS Common Runtime (CRT) library provides a C++ wrapper
 implementation for the following @acronym{AWS,Amazon Web Services} C libraries:
@@ -988,12 +970,9 @@ aws-c-http, aws-c-io, aws-c-mqtt, aws-checksums, and s2n.")
              (string-append "-DCMAKE_PREFIX_PATH="
                             (assoc-ref %build-inputs "aws-c-common")))))
     (propagated-inputs
-     `(("aws-crt-cpp" ,aws-crt-cpp)))
+     (list aws-crt-cpp))
     (inputs
-     `(("curl" ,curl)
-       ("openssl" ,openssl)
-       ("pulseaudio" ,pulseaudio)
-       ("zlib" ,zlib)))
+     (list curl openssl pulseaudio zlib))
     (synopsis "Amazon Web Services SDK for C++")
     (description
      "The AWS SDK for C++ provides a C++11 interface to the @acronym{AWS,Amazon
@@ -1029,7 +1008,7 @@ services including database, analytic, and machine learning technologies.")
            (lambda _
              (invoke "./tests"))))))
     (native-inputs
-     `(("catch2" ,catch-framework2)))
+     (list catch-framework2))
     (synopsis "C++11/14/17 std::expected with functional-style extensions")
     (description "@code{std::expected} is proposed as the preferred way to
 represent objects which will either have an expected value, or an unexpected
@@ -1056,7 +1035,7 @@ provides a number of utilities to make coding with expected cleaner.")
                 "1x47radgsifgz3vn2561mlvf4cq46ii33cpyqf01znm56iirwq89"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("gcc" ,gcc-9)))
+     (list gcc-9))
     (synopsis "C++17 header only library for compile time reflection of enums")
     (description "Magic Enum offers static reflection of enums, with
 conversions to and from strings, iteration and related functionality.")
@@ -1102,8 +1081,7 @@ conversions to and from strings, iteration and related functionality.")
                (("^    PROPERTIES FOLDER \"Extern\"\\)") ""))
              #t)))))
     (native-inputs
-     `(("doxygen" ,doxygen)
-       ("googletest" ,googletest)))
+     (list doxygen googletest))
     (synopsis "Command line parser for C++11")
     (description
      "CLI11 is a command line parser for C++11 and beyond that provides a rich
@@ -1129,7 +1107,7 @@ feature set with a simple and intuitive interface.")
      '(#:configure-flags
        '("-DCAF_ENABLE_EXAMPLES=OFF")))
     (inputs
-     `(("openssl" ,openssl)))
+     (list openssl))
     (synopsis "C++ implementation of the actor model")
     (description "The C++ Actor Framework (CAF) offers a high-level C++17
 programming environment using the actor model for concurrent, distributed
@@ -1186,9 +1164,7 @@ output randomness while retaining speed, simplicity, and conciseness.")
          (replace 'bootstrap
            (lambda _ (invoke "sh" "bootstrap" "--noconfigure"))))))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
+     (list autoconf automake libtool))
     (home-page "https://madmurphy.github.io/libconfini/html/index.html")
     (synopsis "INI file parser")
     (description "@code{libconfini} is an INI file parser library written in
@@ -1225,8 +1201,8 @@ almost every type of file containing key/value pairs.")
                                ;;"--with-external-boost"
                                "--with-external-expat")))
     (inputs
-     `(;;("boost ,boost)
-       ("expat" ,expat)))
+     (list ;;("boost ,boost)
+           expat))
     (home-page "https://www.codesynthesis.com/projects/libcutl/")
     (synopsis "C++ utility library with generic and independent components")
     (description "libcutl is a C++ utility library.  It contains a collection
@@ -1271,7 +1247,7 @@ pointers, containers, compiler building blocks, etc.")
                        #:include-regexp ("\\.so$")))
                     args))))))
     (native-inputs
-     `(("build" ,build)))
+     (list build))
     (inputs
      `(("libcutl" ,libcutl)
        ("libxerces-c" ,xerces-c)))
@@ -1319,9 +1295,9 @@ and a traversal mechanism.")
                 (string-append "edge_dispatcher::" all)))))
          (delete 'configure))))
     (native-inputs
-     `(("build" ,build)))
+     (list build))
     (inputs
-     `(("libcutl" ,libcutl)))
+     (list libcutl))
     (synopsis "C++ Command Line Interface (CLI) definition language")
     (description "@code{cli} is a domain-specific language (DSL) for defining
 command line interfaces of C++ programs.  It allows you to describe the
@@ -1362,16 +1338,13 @@ documentation.")
                                                     ,version)))))
                   (delete 'configure))))
     (native-inputs
-     `(("build" ,build)
-       ("cli" ,cli)))
+     (list build cli))
     (inputs
-     `(("libcutl" ,libcutl)
-       ("libnsl" ,libnsl)
-       ("libxsd-frontend" ,libxsd-frontend)))
+     (list libcutl libnsl libxsd-frontend))
     (propagated-inputs
      ;; The code XSD generates requires the following library at run time;
      ;; propagate it for convenience.
-     `(("xerces-c" ,xerces-c)))
+     (list xerces-c))
     (synopsis "XML Data Binding for C++")
     (description "CodeSynthesis XSD (also known as libxsd or xsdcxx) is an XML
 Schema to C++ data binding compiler.  Provided with an XML instance
@@ -1415,10 +1388,9 @@ of reading and writing XML.")
      `(#:configure-flags '("-DUSE_SYSTEM_GTEST=ON" "-DUSE_SYSTEM_JSON=ON"
                            "-DBUILD_STATIC_LIBS=OFF")))
     (native-inputs
-     `(("googletest" ,googletest)
-       ("pkg-config" ,pkg-config)))
+     (list googletest pkg-config))
     (inputs
-     `(("json-modern-cxx" ,json-modern-cxx)))
+     (list json-modern-cxx))
     (home-page "https://jsonnet.org/")
     (synopsis "Data templating language")
     (description "Jsonnet is a templating language extending JSON

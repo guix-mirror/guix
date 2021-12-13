@@ -64,9 +64,9 @@
                                (string-append rules-out "51-kinect.rules"))
                  #t))))))
       (native-inputs
-       `(("pkg-config" ,pkg-config)))
+       (list pkg-config))
       (inputs
-       `(("libusb" ,libusb)))
+       (list libusb))
       (synopsis "Drivers and libraries for the Xbox Kinect device")
       (description "libfreenect is a userspace driver for the Microsoft Kinect.
 It supports: RGB and Depth Images, Motors, Accelerometer, LED and Audio.")
@@ -106,8 +106,7 @@ It supports: RGB and Depth Images, Motors, Accelerometer, LED and Audio.")
     (inherit libfreenect)
     (name "libfreenect-opencv")
     (inputs
-     `(("libfreenect" ,libfreenect)
-       ("opencv" ,opencv)))
+     (list libfreenect opencv))
     (arguments
      `(#:tests? #f                      ; package has no tests
        #:configure-flags '("-DBUILD_EXAMPLES=OFF"
@@ -124,12 +123,11 @@ library")))
     (inherit libfreenect)
     (name "python-libfreenect")
     (native-inputs
-     `(("python-cython" ,python-cython)))
+     (list python-cython))
     (inputs
-     `(("libfreenect" ,libfreenect)))
+     (list libfreenect))
     (propagated-inputs
-     `(("python" ,python)
-       ("python-numpy" ,python-numpy)))
+     (list python python-numpy))
     (arguments
      `(#:tests? #f                      ; package has no tests
        #:configure-flags '("-DBUILD_EXAMPLES=OFF"

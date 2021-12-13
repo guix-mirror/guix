@@ -88,7 +88,7 @@ Consortium standard (ICC), approved as ISO 15076-1.")
                      "0zhcx67afb6b5r936w5jmaydj3ks8zh83n9rm5sv3m3k8q8jib1q"))))
    (build-system gnu-build-system)
    (native-inputs
-    `(("automake" ,automake))) ; For up to date 'config.guess' and 'config.sub'.
+    (list automake)) ; For up to date 'config.guess' and 'config.sub'.
    (arguments
     `(#:configure-flags '("--disable-static")
       #:phases
@@ -124,7 +124,7 @@ paper size.")
             (sha256 (base32
                      "1r4ab1fvgganm02kmm70b2r1azwzbav2am41gbigpa2bb1wynlrq"))))
    (build-system gnu-build-system)
-   (inputs `(("perl" ,perl)))
+   (inputs (list perl))
    (arguments
     `(#:tests? #f ; none provided
       #:phases
@@ -314,9 +314,7 @@ output file formats and printers.")
    (source (package-source ghostscript))
    (build-system gnu-build-system)
    (native-inputs
-    `(("libtool"    ,libtool)
-      ("automake"   ,automake)
-      ("autoconf"   ,autoconf)))
+    (list libtool automake autoconf))
    (arguments
     `(#:phases
       (modify-phases %standard-phases
@@ -399,8 +397,8 @@ Ghostscript.  It currently includes the 35 standard PostScript fonts.")
              (base32
               "1vgvxp77d5d9chhx4i9cv9hifw4x10jgw6aw8l2v90dgnm99rbj9"))))
    (build-system gnu-build-system)
-   (inputs `(("ghostscript" ,ghostscript)))
-   (native-inputs `(("pkg-config" ,pkg-config)))
+   (inputs (list ghostscript))
+   (native-inputs (list pkg-config))
    (synopsis "Postscript rendering library")
    (description
     "libspectre is a small library for rendering Postscript documents.

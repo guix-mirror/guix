@@ -42,11 +42,7 @@
         (base32
          "1h5s6ayh3s76z184jai3jidcs4cjk8s4nvkkv2am8dg4gfsybq22"))))
     (inputs
-     `(("agda" ,agda)
-       ("agda-ial" ,agda-ial)
-       ("ghc" ,ghc)
-       ("ghc-alex" ,ghc-alex)
-       ("ghc-happy" ,ghc-happy)))
+     (list agda agda-ial ghc ghc-alex ghc-happy))
     (build-system emacs-build-system)
     (arguments
      `(#:phases

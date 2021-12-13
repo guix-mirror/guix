@@ -109,7 +109,7 @@
     (native-inputs
      `(("python" ,python-wrapper)))
     (propagated-inputs
-     `(("opencl-headers" ,opencl-headers)))
+     (list opencl-headers))
     (arguments
      `(#:configure-flags (list "-DBUILD_EXAMPLES=OFF" "-DBUILD_TESTS=OFF")
        ;; The regression tests require a lot more dependencies.
@@ -141,7 +141,7 @@
             (variable "OCL_ICD_VENDORS")
             (files '("etc/OpenCL/vendors")))))
     (home-page "https://github.com/KhronosGroup/OpenCL-ICD-Loader")
-    (inputs `(("opencl-headers" ,opencl-headers)))
+    (inputs (list opencl-headers))
     (synopsis "OpenCL Installable Client Driver")
     (description
      "OpenCL defines an Installable Client Driver (ICD) mechanism to allow
@@ -176,9 +176,9 @@ This package contains the Khronos official OpenCL ICD Loader.")
         (base32 "1sfxp6ai83i0vwdg7b05h0k07q6873q1z1avnyksj5zmzdnxya6j"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("opencl-headers" ,opencl-headers)))
+     (list opencl-headers))
     (inputs
-     `(("opencl-icd-loader" ,opencl-icd-loader)))
+     (list opencl-icd-loader))
     (arguments
      `(#:make-flags
        (list ,(string-append "CC=" (cc-for-target))
@@ -213,8 +213,7 @@ the system.")
         ;; There's a suspicious .isa binary file under kernels/.
         ;; Remove it.
         '(for-each delete-file (find-files "." "\\.isa$")))))
-    (native-inputs `(("pkg-config" ,pkg-config)
-                     ("python" ,python)))
+    (native-inputs (list pkg-config python))
     (inputs `(("clang@3.7" ,clang-3.7)
               ("clang-runtime@3.7" ,clang-runtime-3.7)
               ("glu" ,glu)
@@ -289,13 +288,10 @@ back-end for the LLVM compiler framework.")
        (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("libltdl" ,libltdl)
-       ("pkg-config" ,pkg-config)))
+     (list libltdl pkg-config))
     (inputs
-     `(("clang" ,clang)
-       ("hwloc" ,hwloc-2 "lib")
-       ("llvm" ,llvm)
-       ("opencl-icd-loader" ,opencl-icd-loader)))
+     (list clang
+           `(,hwloc-2 "lib") llvm opencl-icd-loader))
     (arguments
      `(#:configure-flags
        (list "-DENABLE_ICD=ON"
@@ -337,8 +333,7 @@ pocl.")
     (build-system python-build-system)
     (arguments `(#:tests? #f)) ; Tests depend on packages not present in Guix.
     (propagated-inputs
-     `(("python-appdirs" ,python-appdirs)
-       ("python-numpy" ,python-numpy)))
+     (list python-appdirs python-numpy))
     (home-page "https://pypi.org/project/pytools/")
     (synopsis "Assorted tools for Python")
     (description
@@ -380,14 +375,9 @@ A lexer, @code{pytools.lex}.
     (arguments
      `(#:tests? #f)) ; Tests cannot find pygpu_language_opencl.cpp
     (inputs
-     `(("opencl-headers" ,opencl-headers)
-       ("pybind11" ,pybind11)
-       ("opencl-icd-loader" ,opencl-icd-loader)))                     ;libOpenCL
+     (list opencl-headers pybind11 opencl-icd-loader))                     ;libOpenCL
     (propagated-inputs
-     `(("python-appdirs" ,python-appdirs)
-       ("python-numpy" ,python-numpy)
-       ("python-pytools" ,python-pytools)
-       ("python-mako" ,python-mako)))
+     (list python-appdirs python-numpy python-pytools python-mako))
     (home-page "http://mathema.tician.de/software/pyopencl")
     (synopsis "Python wrapper for OpenCL")
     (description

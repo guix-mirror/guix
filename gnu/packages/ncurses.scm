@@ -261,7 +261,7 @@ ncursesw library provides wide character support.")
                 "0riqmp2xl2j2yxx69nyg8jbm2fyi5fp4clcf6zi5jfm3irn3l8y9"))))
     (build-system gnu-build-system)
     (inputs
-     `(("ncurses" ,ncurses)))
+     (list ncurses))
     (synopsis "Curses widgets")
     (description "Dialog is a script-interpreter which provides a set of
 curses widgets, such as dialog boxes.")
@@ -282,7 +282,7 @@ curses widgets, such as dialog boxes.")
          "0r6xd9wr0c25rr28zixhqipak575zqsfb7r7f2693i9il1dpj554"))))
     (build-system perl-build-system)
     (inputs
-     `(("ncurses" ,ncurses)))
+     (list ncurses))
     (arguments
      `(#:make-maker-flags (list "PANELS" "MENUS")
        #:phases
@@ -341,8 +341,8 @@ of your system.")
                     (lib (string-append out "/lib")))
                ;; Some programs look for libstfl.so.0.
                (symlink "libstfl.so" (string-append lib "/libstfl.so.0"))))))))
-    (inputs `(("ncurses" ,ncurses)))
-    (native-inputs `(("swig" ,swig)))
+    (inputs (list ncurses))
+    (native-inputs (list swig))
     (home-page "http://www.clifford.at/stfl/")
     (synopsis "Structured terminal forms library")
     (description "Stfl is a library which implements a curses-based widget

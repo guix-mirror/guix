@@ -284,7 +284,7 @@ and 32-bit PowerPC architectures.")
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("chez-scheme" ,chez-scheme)))
+     (list chez-scheme))
     (arguments
      `(#:make-flags (let ((out (assoc-ref %outputs "out")))
                       (list (string-append "PREFIX=" out)
@@ -481,9 +481,9 @@ Chez Scheme.")
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (inputs
-     `(("chez-srfi" ,chez-srfi))) ; for tests
+     (list chez-srfi)) ; for tests
     (native-inputs
-     `(("chez-scheme" ,chez-scheme)))
+     (list chez-scheme))
     (arguments
      `(#:make-flags ,(chez-make-flags name version)
        #:test-target "test"
@@ -510,11 +510,11 @@ Chez Scheme.")
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (inputs
-     `(("chez-matchable" ,chez-matchable))) ; for tests
+     (list chez-matchable)) ; for tests
     (propagated-inputs
-     `(("chez-srfi" ,chez-srfi))) ; for irregex-utils
+     (list chez-srfi)) ; for irregex-utils
     (native-inputs
-     `(("chez-scheme" ,chez-scheme)))
+     (list chez-scheme))
     (arguments
      `(#:make-flags ,(chez-make-flags name version)
        #:test-target "test"
@@ -542,9 +542,9 @@ syntax, with various aliases for commonly used patterns.")
        (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
     (propagated-inputs
-     `(("chez-srfi" ,chez-srfi))) ; for irregex-utils
+     (list chez-srfi)) ; for irregex-utils
     (native-inputs
-     `(("chez-scheme" ,chez-scheme)))
+     (list chez-scheme))
     (arguments
      `(#:make-flags ,(chez-make-flags name version)
        #:test-target "chez-check"
@@ -582,9 +582,9 @@ strings.")
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (inputs
-     `(("chez-srfi" ,chez-srfi)))       ; for tests
+     (list chez-srfi))       ; for tests
     (native-inputs
-     `(("chez-scheme" ,chez-scheme)))
+     (list chez-scheme))
     (arguments
      `(#:make-flags ,(chez-make-flags name version)
        #:test-target "test"
@@ -612,12 +612,11 @@ required to port the program @code{Scmutils} to Chez Scheme.")
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (inputs
-     `(("chez-srfi" ,chez-srfi)))       ; for tests
+     (list chez-srfi))       ; for tests
     (native-inputs
-     `(("chez-scheme" ,chez-scheme)))
+     (list chez-scheme))
     (propagated-inputs
-     `(("chez-mit" ,chez-mit)
-       ("chez-srfi" ,chez-srfi)))
+     (list chez-mit chez-srfi))
     (arguments
      `(#:make-flags ,(chez-make-flags name version)
        #:tests? #f                      ; no test suite

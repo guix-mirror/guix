@@ -88,13 +88,9 @@
                     "\"/run/setuid-programs/polkit-agent-helper-1\""))))))
     (build-system gnu-build-system)
     (inputs
-     `(("expat" ,expat)
-       ("linux-pam" ,linux-pam)
-       ("elogind" ,elogind)
-       ("mozjs" ,mozjs-78)
-       ("nspr" ,nspr)))
+     (list expat linux-pam elogind mozjs-78 nspr))
     (propagated-inputs
-     `(("glib" ,glib))) ; required by polkit-gobject-1.pc
+     (list glib)) ; required by polkit-gobject-1.pc
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("glib:bin" ,glib "bin") ; for glib-mkenums
@@ -211,11 +207,11 @@ regular polkit that requires mozjs or its duktape variant."
                "1ip78x20hjqvm08kxhp6gb8hf6k5n6sxyx6kk2yvvq53djzh7yv7"))))
     (build-system cmake-build-system)
     (inputs
-     `(("polkit" ,polkit)))
+     (list polkit))
     (propagated-inputs
-     `(("qtbase" ,qtbase-5)))
+     (list qtbase-5))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (arguments
      `(#:configure-flags (list (string-append "-DCMAKE_INSTALL_RPATH="
                                               (assoc-ref %outputs "out")
@@ -244,10 +240,8 @@ easily with PolicyKit.")
                (base32
                 "0sckmcbxyj6sbrnfc5p5lnw27ccghsid6v6wxq09mgxqcd4lk10p"))))
     (build-system gnu-build-system)
-    (inputs `(("gtk+" ,gtk+)
-              ("polkit" ,polkit)))
-    (native-inputs `(("intltool"   ,intltool)
-                     ("pkg-config" ,pkg-config)))
+    (inputs (list gtk+ polkit))
+    (native-inputs (list intltool pkg-config))
     (synopsis "Legacy polkit authentication agent for GNOME")
     (description "PolicyKit-gnome provides a D-Bus session bus service
 that is used to bring up authentication dialogs used for obtaining

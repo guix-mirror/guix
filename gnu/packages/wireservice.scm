@@ -209,15 +209,11 @@ for xls and xlsx files support to all @code{agate.Table} instances.")))
                 "1ffmbzk4rxnl1yhqfl58v7kvl5m9cbvjm8v7xp4mvr00sgs91lvv"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-psycopg2" ,python-psycopg2) ; to test PostgreSQL support
-       ("python-sphinx" ,python-sphinx)
-       ("python-sphinx-rtd-theme" ,python-sphinx-rtd-theme)))
+     (list python-psycopg2 ; to test PostgreSQL support
+           python-sphinx python-sphinx-rtd-theme))
     (inputs
-     `(("python-agate-dbf" ,python-agate-dbf)
-       ("python-agate-excel" ,python-agate-excel)
-       ("python-agate-sql" ,python-agate-sql)
-       ("python-six" ,python-six)
-       ("python-text-unidecode" ,python-text-unidecode)))
+     (list python-agate-dbf python-agate-excel python-agate-sql
+           python-six python-text-unidecode))
     (arguments
      `(#:phases
        (modify-phases %standard-phases

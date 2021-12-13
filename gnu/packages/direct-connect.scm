@@ -50,16 +50,14 @@
        #:scons-flags (list (string-append "PREFIX=" %output))
        #:tests? #f)) ; no tests
     (inputs
-     `(("boost" ,boost)
-       ("bzip2" ,bzip2)
-       ("gtk+" ,gtk+-2)
-       ("libglade" ,libglade)
-       ("libnotify" ,libnotify)
-       ("openssl" ,openssl)))
+     (list boost
+           bzip2
+           gtk+-2
+           libglade
+           libnotify
+           openssl))
     (native-inputs
-     `(("bazaar" ,bazaar)
-       ("gettext-minimal" ,gettext-minimal)
-       ("pkg-config" ,pkg-config)))
+     (list bazaar gettext-minimal pkg-config))
     (home-page "https://launchpad.net/linuxdcpp/")
     (synopsis "Direct Connect client")
     (description "LinuxDC++ is a Direct Connect (DC) client.  Direct Connect

@@ -71,11 +71,7 @@
                  `("LD_LIBRARY_PATH" ":" prefix (,webkitgtk-path)))
                #t))))))
     (inputs
-     `(("gtk+" ,gtk+)
-       ("gtksourceview" ,gtksourceview-3)
-       ("python-pyyaml" ,python-pyyaml)
-       ("python-pygobject" ,python-pygobject)
-       ("webkitgtk" ,webkitgtk)))
+     (list gtk+ gtksourceview-3 python-pyyaml python-pygobject webkitgtk))
     ;; TODO: package the following for python3 (if possible), add them as
     ;; dependencies, and remove them from rednotebook source:
     ;; pygtkspellcheck, elib.intl, msgfmt, txt2tags

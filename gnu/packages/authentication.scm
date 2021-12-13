@@ -59,14 +59,11 @@
                (for-each delete-file (find-files lib "\\.a$"))
                #t))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-
-       ;; XXX: Perhaps this should be propagated from xmlsec.
-       ("libltdl" ,libltdl)))
+     (list pkg-config
+           ;; XXX: Perhaps this should be propagated from xmlsec.
+           libltdl))
     (inputs
-     `(("linux-pam" ,linux-pam)
-       ("openssl" ,openssl)
-       ("xmlsec-openssl" ,xmlsec-openssl)))
+     (list linux-pam openssl xmlsec-openssl))
     (home-page "https://www.nongnu.org/oath-toolkit/")
     (synopsis "One-time password (OTP) components")
     (description
@@ -111,16 +108,9 @@ data.")
        ;; The pam_test fails because ykclient fails to build a Curl handle.
        '(#:make-flags '("TESTS=util_test")))
       (inputs
-       `(("linux-pam" ,linux-pam)
-         ("libyubikey" ,libyubikey)
-         ("ykclient" ,ykclient)
-         ("yubikey-personalization" ,yubikey-personalization)))
+       (list linux-pam libyubikey ykclient yubikey-personalization))
       (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("libtool" ,libtool)
-         ("asciidoc" ,asciidoc)
-         ("pkg-config" ,pkg-config)))
+       (list autoconf automake libtool asciidoc pkg-config))
       (home-page "https://developers.yubico.com/yubico-pam")
       (synopsis "Yubico pluggable authentication module")
       (description "The Yubico PAM module provides an easy way to integrate the
@@ -141,9 +131,9 @@ YubiKey into your existing user authentication infrastructure.")
         (base32 "1mdj1wj0adcnx354fs17928yn2xfr1hj5mfraq282dagi873sqw3"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("linux-pam" ,linux-pam)))
+     (list linux-pam))
     (home-page "http://pamtester.sourceforge.net/")
     (synopsis "Utility for testing pluggable authentication modules (PAM) facility")
     (description

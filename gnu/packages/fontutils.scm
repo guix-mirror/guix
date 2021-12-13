@@ -92,12 +92,11 @@
     ;; depend on it.
     `(#:configure-flags (list "--enable-freetype-config")))
    (native-inputs
-    `(("pkg-config" ,pkg-config)))
+    (list pkg-config))
    (propagated-inputs
     ;; These are all in the Requires.private field of freetype2.pc.
     ;; XXX: add harfbuzz.
-    `(("libpng" ,libpng)
-      ("zlib" ,zlib)))
+    (list libpng zlib))
    (synopsis "Font rendering library")
    (description
     "Freetype is a library that can be used by applications to access the
@@ -122,12 +121,9 @@ anti-aliased glyph bitmap generation with 256 gray levels.")
          "0zpqgihn3yh3v51ynxwr8asqrijvs4gv686clwv7bm8sawr4kfw7"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("flex" ,flex)
-       ("bison" ,bison)
-       ("pkg-config" ,pkg-config)))
+     (list flex bison pkg-config))
     (inputs
-     `(("freetype" ,freetype)
-       ("harfbuzz" ,harfbuzz)))
+     (list freetype harfbuzz))
     (arguments
      `(#:configure-flags '("--disable-static"
                            "--with-qt=no"))) ;no gui
@@ -155,7 +151,7 @@ scripts.")
          "1i97gkqa6jfzlslsngqf556kx60knlgf7yc9pzsq2pizc6f0d4zl"))))
     (build-system gnu-build-system)
     (inputs
-     `(("zlib" ,zlib)))
+     (list zlib))
     (arguments
      `(#:make-flags '(,(string-append "CC=" (cc-for-target)))
        #:tests? #f                      ;no tests
@@ -258,7 +254,7 @@ TTF (TrueType/OpenType Font) files.")
                       (invoke "make" "-j"
                               (number->string (parallel-job-count))
                               "all" "CC=gcc"))))))
-    (inputs `(("perl" ,perl)))
+    (inputs (list perl))
     (synopsis "Convert TrueType fonts to Postscript Type 1")
     (description
      "TTF2PT1 provides tools to convert most TrueType fonts (or other formats
@@ -311,9 +307,9 @@ work with most software requiring Type 1 fonts.")
                 "BUILD_SHARED_LIBS"))
              #t)))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("brotli" ,brotli)))
+     (list brotli))
     (synopsis "Libraries and tools for WOFF2 font format")
     (description "WOFF2 provides libraries and tools to handle the Web Open
 Font Format (WOFF).")
@@ -342,7 +338,7 @@ Font Format (WOFF).")
       ;; We use to use 'font-ghostscript' but they are not recognized by newer
       ;; versions of Pango, causing many applications to fail to find fonts
       ;; otherwise.
-      `(("font-dejavu" ,font-dejavu)))
+      (list font-dejavu))
      (native-inputs
       `(("gperf" ,gperf)
         ("pkg-config" ,pkg-config)
@@ -489,10 +485,9 @@ X11-system or any other graphical user interface.")
     (arguments
      '(#:configure-flags '("--disable-static")))
     (inputs
-     `(("zlib" ,zlib)
-       ("expat" ,expat)))
+     (list zlib expat))
     (native-inputs
-     `(("perl" ,perl)))                 ;for the tests
+     (list perl))                 ;for the tests
     (synopsis "Toolkit for encoding conversions")
     (description
      "TECkit is a low-level toolkit intended to be used by other applications
@@ -529,10 +524,9 @@ applications should be.")
          "01jzhwnj1c3d68dmw15jdxly0hwkmd8ja4kw755rbkykn1ly2qyx"))))
    (build-system cmake-build-system)
    (native-inputs
-    `(("python" ,python)
-      ("python-fonttools" ,python-fonttools)))
+    (list python python-fonttools))
    (inputs
-    `(("freetype" ,freetype)))
+    (list freetype))
    (synopsis "Reimplementation of the SIL Graphite text processing engine")
    (description
     "Graphite2 is a reimplementation of the SIL Graphite text processing
@@ -555,8 +549,8 @@ and returns a sequence of positioned glyphids from the font.")
        (base32
         "1k3sxgjqq0jnpk9xxys05q32sl5hbf1lbk1gmfxcrmpdgnhli0my"))))
     (build-system gnu-build-system)
-    (native-inputs `(("ghostscript" ,ghostscript))) ;for tests
-    (inputs `(("zlib" ,zlib)))
+    (native-inputs (list ghostscript)) ;for tests
+    (inputs (list zlib))
     (arguments
      `(#:configure-flags
       `("--with-libpotrace"))) ; install library and headers
@@ -584,9 +578,9 @@ resolution.")
                (base32 "0sq6g3xaxw388akws6qrllp3kp2sxgk2dv4j79k6mm52rnihrnv8"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (propagated-inputs
-     `(("freetype" ,freetype)))
+     (list freetype))
     (home-page "https://www.nongnu.org/m17n/")
     (synopsis "Library for handling OpenType Font")
     (description "This library can read Open Type Layout Tables from an OTF
@@ -656,7 +650,7 @@ definitions.")
              (base32 "0y3c8x1i6yf6ak9m5dhr1nldgfmg7zhnwdfd57ffs698c27vmg38"))))
    (build-system cmake-build-system)
    (native-inputs
-    `(("pkg-config" ,pkg-config)))
+    (list pkg-config))
    (inputs `(("cairo"           ,cairo)
              ("fontconfig"      ,fontconfig) ;dlopen'd
              ("freetype"        ,freetype)
@@ -757,11 +751,9 @@ generate bitmaps.")
     (arguments
      `(#:python ,python-2))
     (propagated-inputs
-     `(("python2-fonttools" ,python2-fonttools)))
+     (list python2-fonttools))
     (native-inputs
-     `(("unzip" ,unzip)
-       ("python2-pytest" ,python2-pytest)
-       ("python2-pytest-runner" ,python2-pytest-runner)))
+     (list unzip python2-pytest python2-pytest-runner))
     (home-page "https://github.com/unified-font-object/ufoLib")
     (synopsis "Low-level UFO reader and writer")
     (description
@@ -784,12 +776,9 @@ files.  UFO is a file format that stores fonts source files.")
     (arguments
      `(#:python ,python-2))
     (native-inputs
-     `(("unzip" ,unzip)
-       ("python2-pytest" ,python2-pytest)
-       ("python2-pytest-runner" ,python2-pytest-runner)))
+     (list unzip python2-pytest python2-pytest-runner))
     (propagated-inputs
-     `(("python2-fonttools" ,python2-fonttools)
-       ("python2-ufolib" ,python2-ufolib)))
+     (list python2-fonttools python2-ufolib))
     (home-page "https://pypi.org/project/defcon/")
     (synopsis "Flexible objects for representing @acronym{UFO, unified font object} data")
     (description
@@ -820,12 +809,12 @@ implements UFO3 as described by the UFO font format.")
     (arguments
      `(#:python ,python-2))
     (propagated-inputs
-     `(("python2-booleanoperations" ,python2-booleanoperations)
-       ("python2-defcon" ,python2-defcon)
-       ("python2-fonttools" ,python2-fonttools)
-       ("python2-pillow" ,python2-pillow)
-       ("python2-pyclipper" ,python2-pyclipper)
-       ("python2-ufolib" ,python2-ufolib)))
+     (list python2-booleanoperations
+           python2-defcon
+           python2-fonttools
+           python2-pillow
+           python2-pyclipper
+           python2-ufolib))
     (home-page "https://github.com/googlei18n/nototools")
     (synopsis "Noto fonts support tools and scripts")
     (description
@@ -857,10 +846,8 @@ maintain the Noto Fonts project.")
                 "0jh05wzrif7z1xf9jzs8bgf49lpj5zs55agj414bmmwdddk7my7j"))))
     (build-system meson-build-system)
     (native-inputs
-     `(("check" ,check)
-       ("gcc" ,gcc-10)    ;TODO: Remove when the default compiler is > GCC 7.
-       ("pkg-config" ,pkg-config)
-       ("scdoc" ,scdoc)))
+     (list check gcc-10 ;TODO: Remove when the default compiler is > GCC 7.
+           pkg-config scdoc))
     (propagated-inputs
      `(;; Required by fcft.pc.
        ("fontconfig" ,fontconfig)
@@ -1012,9 +999,7 @@ Unicode Charts.  It was developed for use with DejaVu Fonts project.")
        ("pkg-config" ,pkg-config)
        ("python" ,python-wrapper)))
     (inputs
-     `(("freetype" ,freetype)
-       ("fribidi" ,fribidi)
-       ("harfbuzz" ,harfbuzz)))
+     (list freetype fribidi harfbuzz))
     (home-page "https://github.com/HOST-Oman/libraqm")
     (synopsis "Library for complex text layout")
     (description
@@ -1046,8 +1031,7 @@ can support most writing systems covered by Unicode.")
        ;; FIXME: texlive-kpathsea doesn't come with the library and headers
        (list "--without-kpathsea")))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)))
+     (list autoconf automake))
     (home-page "https://lcdf.org/type/")
     (synopsis "Multiple font manipulation tools")
     (description "LCDF Typetools comprises several programs for manipulating

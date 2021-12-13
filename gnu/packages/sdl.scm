@@ -94,17 +94,14 @@
        #:tests? #f)) ; no check target
     (propagated-inputs
      ;; SDL headers include X11 headers.
-     `(("libx11" ,libx11)
-       ("libcap" ,libcap) ; 'libSDL.la' contain `-lcap'.
-       ;; TODO: Since building Mesa with Meson it is now necessary that Mesa is
-       ;; a propogated input. We still need to figure out why, possibly due to a
-       ;; change in pkg-config.
-       ("mesa" ,mesa)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
-    (inputs `(("libxrandr" ,libxrandr)
-              ("glu" ,glu)
-              ("alsa-lib" ,alsa-lib)
-              ("pulseaudio" ,pulseaudio)))
+     (list libx11
+           libcap ; 'libSDL.la' contain `-lcap'.
+           ;; TODO: Since building Mesa with Meson it is now necessary that Mesa is
+           ;; a propogated input. We still need to figure out why, possibly due to a
+           ;; change in pkg-config.
+           mesa))
+    (native-inputs (list pkg-config))
+    (inputs (list libxrandr glu alsa-lib pulseaudio))
     (outputs '("out" "debug"))
     (synopsis "Cross platform game development library")
     (description "Simple DirectMedia Layer is a cross-platform development
@@ -207,7 +204,7 @@ system, such as sound redirection over the network.")
         ;; mmx is supported only on Intel processors.
         '()
         '(#:configure-flags '("--disable-mmx")))))
-    (propagated-inputs `(("sdl" ,sdl)))
+    (propagated-inputs (list sdl))
     (synopsis "SDL graphics primitives library")
     (description "SDL_gfx provides graphics drawing primitives, rotozoom and
 other supporting functions for SDL.")
@@ -234,7 +231,7 @@ other supporting functions for SDL.")
                            "--disable-png-shared"
                            "--disable-tif-shared"
                            "--disable-webp-shared")))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs (list pkg-config))
     ;; libjpeg, libpng, and libtiff are propagated inputs because the
     ;; SDL_image headers include the headers of these libraries.  SDL is a
     ;; propagated input because the pkg-config file refers to SDL's pkg-config
@@ -291,7 +288,7 @@ WEBP, XCF, XPM, and XV.")
        ("libmad" ,libmad)
        ("libmikmod" ,libmikmod)
        ("libvorbis" ,libvorbis)))
-    (propagated-inputs `(("sdl" ,sdl)))
+    (propagated-inputs (list sdl))
     (synopsis "SDL multi-channel audio mixer library")
     (description "SDL_mixer is a multi-channel audio mixer library for SDL.
 It supports any number of simultaneously playing channels of 16 bit stereo
@@ -319,8 +316,8 @@ and set the path to the configuration file with @code{TIMIDITY_CFG}.")
                (base32
                 "1d5c9xqlf4s1c01gzv6cxmg0r621pq9kfgxcg3197xw4p25pljjz"))))
     (build-system gnu-build-system)
-    (propagated-inputs `(("sdl" ,sdl)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (propagated-inputs (list sdl))
+    (native-inputs (list pkg-config))
     (outputs '("out" "debug"))
     (synopsis "SDL networking library")
     (description "SDL_net is a small, cross-platform networking library for
@@ -356,10 +353,7 @@ SDL.")
            ;; generates linking errors.
            (lambda _ (invoke "autoreconf" "-vif"))))))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf automake libtool pkg-config))
     (inputs
      `(("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
@@ -393,10 +387,9 @@ tagged text in SDL applications.")
               (modules '((guix build utils)))
               (snippet '(delete-file-recursively "external"))))
     (build-system gnu-build-system)
-    (propagated-inputs `(("sdl" ,sdl)))
-    (inputs `(("freetype" ,freetype)
-              ("mesa" ,mesa)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (propagated-inputs (list sdl))
+    (inputs (list freetype mesa))
+    (native-inputs (list pkg-config))
     (outputs '("out" "debug"))
     (synopsis "SDL TrueType font library")
     (description "SDL_ttf is a TrueType font rendering library for SDL.")
@@ -499,10 +492,11 @@ directory.")
             "--disable-music-midi-fluidsynth-shared"
             ,flags))))
     (inputs
-     `(("opusfile" ,opusfile)
-       ;; The default MOD library changed in SDL2 mixer.
-       ("libmodplug" ,libmodplug)
-       ,@(alist-delete "libmikmod" (package-inputs sdl-mixer))))
+     (modify-inputs (package-inputs sdl-mixer)
+       (delete "libmikmod")
+       (prepend opusfile
+                ;; The default MOD library changed in SDL2 mixer.
+                libmodplug)))
     (native-inputs
      `(("pkgconfig" ,pkg-config))) ; Needed to find the opus library.
     (propagated-inputs
@@ -564,8 +558,8 @@ directory.")
        ("libjpeg" ,libjpeg-turbo)
        ("xorg-server" ,xorg-server)))
     (inputs
-     `(("guile" ,guile-2.2)
-       ("sdl-union" ,(sdl-union))))
+     (list guile-2.2
+           (sdl-union)))
     (arguments
      '(#:configure-flags
        (list (string-append "--with-sdl-prefix="
@@ -640,13 +634,9 @@ sound and device input (keyboards, joysticks, mice, etc.).")
     (arguments
      '(#:make-flags '("GUILE_AUTO_COMPILE=0")))
     (native-inputs
-     `(("guile" ,guile-3.0)
-       ("pkg-config" ,pkg-config)))
+     (list guile-3.0 pkg-config))
     (inputs
-     `(("sdl2" ,sdl2)
-       ("sdl2-image" ,sdl2-image)
-       ("sdl2-mixer" ,sdl2-mixer)
-       ("sdl2-ttf" ,sdl2-ttf)))
+     (list sdl2 sdl2-image sdl2-mixer sdl2-ttf))
     (synopsis "Guile bindings for SDL2")
     (home-page "https://dthompson.us/projects/guile-sdl2.html")
     (description
@@ -694,12 +684,9 @@ interface.")
                  (install-file "bin/Release/SDL2-CS.dll" (string-append out "/lib"))
                  #t))))))
       (native-inputs
-       `(("mono" ,mono)))
+       (list mono))
       (inputs
-       `(("sdl2" ,sdl2)
-         ("sdl2-image" ,sdl2-image)
-         ("sdl2-mixer" ,sdl2-mixer)
-         ("sdl2-ttf" ,sdl2-ttf)))
+       (list sdl2 sdl2-image sdl2-mixer sdl2-ttf))
       (home-page "https://dthompson.us/projects/guile-sdl2.html")
       (synopsis "C# wrapper for SDL2")
       (description

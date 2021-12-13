@@ -66,11 +66,11 @@
                                "clamav-config-llvm-libs.patch"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("check" ,check)                 ; for tests
-       ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf
+           automake
+           check ; for tests
+           libtool
+           pkg-config))
     (inputs
      `(("bzip2" ,bzip2)
        ("libcurl" ,curl)

@@ -113,17 +113,17 @@ MATE applications.")
        ("glib" ,glib "bin") ; glib-gettextize
        ("polkit" ,polkit))) ; for ITS rules
     (inputs
-     `(("gtk+" ,gtk+)
-       ("glib" ,glib)
-       ("dbus-glib" ,dbus-glib)
-       ("libgnome-keyring" ,libgnome-keyring)
-       ("cairo" ,cairo)
-       ("dbus" ,dbus)
-       ("libnotify" ,libnotify)
-       ("mate-panel" ,mate-panel)
-       ("libxrandr" ,libxrandr)
-       ("libcanberra" ,libcanberra)
-       ("upower" ,upower)))
+     (list gtk+
+           glib
+           dbus-glib
+           libgnome-keyring
+           cairo
+           dbus
+           libnotify
+           mate-panel
+           libxrandr
+           libcanberra
+           upower))
     (home-page "https://mate-desktop.org/")
     (synopsis "Power manager for MATE")
     (description
@@ -146,9 +146,7 @@ actions.")
          "0a2lz61ivwwcdznmwlmgjr6ipr9sdl5g2czbagnpxkwz8f3m77na"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)
-       ("icon-naming-utils" ,icon-naming-utils)))
+     (list pkg-config intltool icon-naming-utils))
     (home-page "https://mate-desktop.org/")
     (synopsis "The MATE desktop environment icon theme")
     (description
@@ -242,12 +240,9 @@ themes for both gtk+-2 and gtk+-3.")
        ("yelp-tools" ,yelp-tools)
        ("gtk-doc" ,gtk-doc)))
     (inputs
-     `(("gtk+" ,gtk+)
-       ("libxrandr" ,libxrandr)
-       ("iso-codes" ,iso-codes)
-       ("startup-notification" ,startup-notification)))
+     (list gtk+ libxrandr iso-codes startup-notification))
     (propagated-inputs
-     `(("dconf" ,dconf))) ; mate-desktop-2.0.pc
+     (list dconf)) ; mate-desktop-2.0.pc
     (home-page "https://mate-desktop.org/")
     (synopsis "Library with common API for various MATE modules")
     (description
@@ -285,12 +280,10 @@ desktop and the mate-about program.")
        ("dconf" ,dconf)
        ("glib:bin" ,glib "bin")))
     (inputs
-     `(("gtk+" ,gtk+)
-       ("tzdata" ,tzdata)))
+     (list gtk+ tzdata))
     (propagated-inputs
       ;; both of these are requires.private in mateweather.pc
-     `(("libsoup-minimal" ,libsoup-minimal-2)
-       ("libxml2" ,libxml2)))
+     (list libsoup-minimal-2 libxml2))
     (home-page "https://mate-desktop.org/")
     (synopsis "MATE library for weather information from the Internet")
     (description
@@ -311,21 +304,21 @@ the MATE desktop environment.")
         (base32 "0qmyhxmarwkxad8k1m9q1iwx70zhfp6zc2mh74nv26nj4gr3h3am"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)
-       ("itstool" ,itstool)
-       ("gobject-introspection" ,gobject-introspection)
-       ("libxml2" ,libxml2)
-       ("yelp-tools" ,yelp-tools)))
+     (list pkg-config
+           intltool
+           itstool
+           gobject-introspection
+           libxml2
+           yelp-tools))
     (inputs
-     `(("dconf" ,dconf)
-       ("gtk+" ,gtk+)
-       ("libice" ,libice)
-       ("libsm" ,libsm)
-       ("libx11" ,libx11)
-       ("mate-desktop" ,mate-desktop)
-       ("pango" ,pango)
-       ("vte" ,vte)))
+     (list dconf
+           gtk+
+           libice
+           libsm
+           libx11
+           mate-desktop
+           pango
+           vte))
     (home-page "https://mate-desktop.org/")
     (synopsis "MATE Terminal Emulator")
     (description
@@ -368,17 +361,10 @@ configurations (profiles).")
                   (string-append "Exec=" out "/bin/mate-session\n")))
                #t))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)
-       ("libxcomposite" ,libxcomposite)
-       ("xtrans" ,xtrans)
-       ("gobject-introspection" ,gobject-introspection)))
+     (list pkg-config intltool libxcomposite xtrans
+           gobject-introspection))
     (inputs
-     `(("gtk+" ,gtk+)
-       ("dbus-glib" ,dbus-glib)
-       ("elogind" ,elogind)
-       ("libsm" ,libsm)
-       ("mate-desktop" ,mate-desktop)))
+     (list gtk+ dbus-glib elogind libsm mate-desktop))
     (home-page "https://mate-desktop.org/")
     (synopsis "Session manager for MATE")
     (description
@@ -399,9 +385,7 @@ configuration program to choose applications starting on login.")
         (base32 "0n1ywr3ir5p536s7azdbw2mh40ylqlpx3a74mjrivbms1rpjxyab"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)
-       ("gobject-introspection" ,gobject-introspection)))
+     (list pkg-config intltool gobject-introspection))
     (inputs
      `(("cairo" ,cairo)
        ("dbus" ,dbus)
@@ -440,13 +424,9 @@ configuration program to choose applications starting on login.")
         (base32 "1n6rq7k66zvfd6sb7h92xihh021w9hysfa4yd1mzjcbb7c62ybqx"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)
-       ("gobject-introspection" ,gobject-introspection)))
+     (list pkg-config intltool gobject-introspection))
     (inputs
-     `(("glib" ,glib)
-       ("pulseaudio" ,pulseaudio)
-       ("alsa-lib" ,alsa-lib)))
+     (list glib pulseaudio alsa-lib))
     (home-page "https://mate-desktop.org/")
     (synopsis "Mixer library for the MATE desktop")
     (description
@@ -468,16 +448,14 @@ sound systems.")
         (base32 "17mcxfkvl14p04id3n5kbhpjwjq00c8wmbyciyy2hm7kwdln6zx8"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)
-       ("gobject-introspection" ,gobject-introspection)))
+     (list pkg-config intltool gobject-introspection))
     (inputs
-     `(("cairo" ,cairo)
-       ("librsvg" ,(librsvg-for-system))
-       ("glib" ,glib)
-       ("gtk+" ,gtk+)
-       ("libx11" ,libx11)
-       ("libxklavier" ,libxklavier)))
+     (list cairo
+           (librsvg-for-system)
+           glib
+           gtk+
+           libx11
+           libxklavier))
     (home-page "https://mate-desktop.org/")
     (synopsis "MATE keyboard configuration library")
     (description
@@ -511,9 +489,7 @@ MATE desktop environment.")
                  (string-append out "/lib/girepository-1.0/")))
               #t))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)
-       ("gobject-introspection" ,gobject-introspection)))
+     (list pkg-config intltool gobject-introspection))
     (inputs
      `(("glib" ,glib)
        ("python" ,python-2)))
@@ -567,7 +543,7 @@ assorted menu related utility programs.")
        ("upower" ,upower)
        ("wireless-tools" ,wireless-tools)))
     (propagated-inputs
-     `(("python-pygobject" ,python-pygobject)))
+     (list python-pygobject))
     (home-page "https://mate-desktop.org/")
     (synopsis "Various applets for the MATE Panel")
     (description
@@ -615,16 +591,16 @@ Interactive Weather Information Network (IWIN).
        ("gettext" ,gettext-minimal)
        ("gobject-introspection" ,gobject-introspection)))
     (inputs
-     `(("cairo" ,cairo)
-       ("gtk+" ,gtk+)
-       ("libcanberra" ,libcanberra)
-       ("libmatemixer" ,libmatemixer)
-       ("libxml2" ,libxml2)
-       ("mate-applets" ,mate-applets)
-       ("mate-desktop" ,mate-desktop)
-       ("mate-panel" ,mate-panel)
-       ("pango" ,pango)
-       ("startup-notification" ,startup-notification)))
+     (list cairo
+           gtk+
+           libcanberra
+           libmatemixer
+           libxml2
+           mate-applets
+           mate-desktop
+           mate-panel
+           pango
+           startup-notification))
     (home-page "https://mate-desktop.org/")
     (synopsis "Multimedia related programs for the MATE desktop")
     (description
@@ -671,32 +647,28 @@ mate-volume-control, a MATE volume control application and applet.")
                   (string-append out "/lib/girepository-1.0/")))
                #t))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)
-       ("itstool" ,itstool)
-       ("xtrans" ,xtrans)
-       ("gobject-introspection" ,gobject-introspection)))
+     (list pkg-config intltool itstool xtrans gobject-introspection))
     (inputs
-     `(("dconf" ,dconf)
-       ("cairo" ,cairo)
-       ("dbus-glib" ,dbus-glib)
-       ("gtk-layer-shell" ,gtk-layer-shell)
-       ("gtk+" ,gtk+)
-       ("libcanberra" ,libcanberra)
-       ("libice" ,libice)
-       ("libmateweather" ,libmateweather)
-       ("librsvg" ,(librsvg-for-system))
-       ("libsm" ,libsm)
-       ("libx11" ,libx11)
-       ("libxau" ,libxau)
-       ("libxml2" ,libxml2)
-       ("libxrandr" ,libxrandr)
-       ("libwnck" ,libwnck)
-       ("mate-desktop" ,mate-desktop)
-       ("mate-menus" ,mate-menus)
-       ("pango" ,pango)
-       ("tzdata" ,tzdata)
-       ("wayland" ,wayland)))
+     (list dconf
+           cairo
+           dbus-glib
+           gtk-layer-shell
+           gtk+
+           libcanberra
+           libice
+           libmateweather
+           (librsvg-for-system)
+           libsm
+           libx11
+           libxau
+           libxml2
+           libxrandr
+           libwnck
+           mate-desktop
+           mate-menus
+           pango
+           tzdata
+           wayland))
     (home-page "https://mate-desktop.org/")
     (synopsis "Panel for MATE")
     (description
@@ -842,15 +814,15 @@ infamous 'Wanda the Fish'.")
        ("xorg-server" ,xorg-server)
        ("gobject-introspection" ,gobject-introspection)))
     (inputs
-     `(("exempi" ,exempi)
-       ("gtk+" ,gtk+)
-       ("gvfs" ,gvfs)
-       ("libexif" ,libexif)
-       ("libnotify" ,libnotify)
-       ("libsm" ,libsm)
-       ("libxml2" ,libxml2)
-       ("mate-desktop" ,mate-desktop)
-       ("startup-notification" ,startup-notification)))
+     (list exempi
+           gtk+
+           gvfs
+           libexif
+           libnotify
+           libsm
+           libxml2
+           mate-desktop
+           startup-notification))
     (native-search-paths
      (list (search-path-specification
             (variable "CAJA_EXTENSIONDIR")
@@ -900,17 +872,17 @@ icons on the MATE desktop.  It works on local and remote file systems.")
        ("libxml2" ,libxml2)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("attr" ,attr)
-       ("brasero" ,brasero)
-       ("caja" ,caja)
-       ("dbus" ,dbus)
-       ("dbus-glib" ,dbus-glib)
-       ("gajim" ,gajim) ;runtime only?
-       ("gtk+" ,gtk+)
-       ("graphicsmagick" ,graphicsmagick)
-       ("mate-desktop" ,mate-desktop)
-       ("pidgin" ,pidgin) ;runtime only?
-       ("startup-notification" ,startup-notification)))
+     (list attr
+           brasero
+           caja
+           dbus
+           dbus-glib
+           gajim ;runtime only?
+           gtk+
+           graphicsmagick
+           mate-desktop
+           pidgin ;runtime only?
+           startup-notification))
     (home-page "https://mate-desktop.org/")
     (synopsis "Extensions for the File manager Caja")
     (description
@@ -946,13 +918,13 @@ icons on the MATE desktop.  It works on local and remote file systems.")
                            (string-append out "/sbin")))
                         #t))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)
-       ("yelp-tools" ,yelp-tools)
-       ("desktop-file-utils" ,desktop-file-utils)
-       ("xorgproto" ,xorgproto)
-       ("xmodmap" ,xmodmap)
-       ("gobject-introspection" ,gobject-introspection)))
+     (list pkg-config
+           intltool
+           yelp-tools
+           desktop-file-utils
+           xorgproto
+           xmodmap
+           gobject-introspection))
     (inputs
      `(("atk" ,atk)
        ("cairo" ,cairo)
@@ -983,7 +955,7 @@ icons on the MATE desktop.  It works on local and remote file systems.")
        ("polkit" ,polkit)
        ("startup-notification" ,startup-notification)))
     (propagated-inputs
-     `(("librsvg" ,(librsvg-for-system))))        ;mate-slab.pc
+     (list (librsvg-for-system)))        ;mate-slab.pc
     (home-page "https://mate-desktop.org/")
     (synopsis "MATE Desktop configuration tool")
     (description
@@ -1004,32 +976,32 @@ of various aspects of your desktop.")
         (base32 "109b41pjrc1b4slw6sx1lakdhrc46x829vczzk4bz3j15kcszg54"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)
-       ("itstool" ,itstool)
-       ("glib" ,glib)
-       ("gobject-introspection" ,gobject-introspection)
-       ("libxft" ,libxft)
-       ("libxml2" ,libxml2)
-       ("zenity" ,zenity)))
+     (list pkg-config
+           intltool
+           itstool
+           glib
+           gobject-introspection
+           libxft
+           libxml2
+           zenity))
     (inputs
-     `(("gtk+" ,gtk+)
-       ("libcanberra" ,libcanberra)
-       ("libgtop" ,libgtop)
-       ("libice" ,libice)
-       ("libsm" ,libsm)
-       ("libx11" ,libx11)
-       ("libxcomposite" ,libxcomposite)
-       ("libxcursor" ,libxcursor)
-       ("libxdamage" ,libxdamage)
-       ("libxext" ,libxext)
-       ("libxfixes" ,libxfixes)
-       ("libxinerama" ,libxinerama)
-       ("libxrandr" ,libxrandr)
-       ("libxrender" ,libxrender)
-       ("mate-desktop" ,mate-desktop)
-       ("pango" ,pango)
-       ("startup-notification" ,startup-notification)))
+     (list gtk+
+           libcanberra
+           libgtop
+           libice
+           libsm
+           libx11
+           libxcomposite
+           libxcursor
+           libxdamage
+           libxext
+           libxfixes
+           libxinerama
+           libxrandr
+           libxrender
+           mate-desktop
+           pango
+           startup-notification))
     (home-page "https://mate-desktop.org/")
     (synopsis "Window manager for the MATE desktop")
     (description
@@ -1070,7 +1042,7 @@ for use with MATE or as a standalone window manager.")
        ("yelp-tools" ,yelp-tools)
        ("yelp-xsl" ,yelp-xsl)))
     (inputs
-     `(("yelp" ,yelp)))
+     (list yelp))
     (home-page "https://mate-desktop.org/")
     (synopsis "User Documentation for Mate software")
     (description
@@ -1097,12 +1069,12 @@ sessions, panels, menus, file management, and preferences.")
        ("pkg-config" ,pkg-config)
        ("yelp-tools" ,yelp-tools)))
     (inputs
-     `(("atk" ,atk)
-       ("glib" ,glib)
-       ("gtk+" ,gtk+)
-       ("libxml2" ,libxml2)
-       ("libcanberra" ,libcanberra)
-       ("pango" ,pango)))
+     (list atk
+           glib
+           gtk+
+           libxml2
+           libcanberra
+           pango))
     (home-page "https://mate-desktop.org/")
     (synopsis "Calculator for MATE")
     (description
@@ -1123,7 +1095,7 @@ sessions, panels, menus, file management, and preferences.")
          "0b9yx68p9l867bqsl9z2g4wrs8p396ls673jgaliys5snmk8n8dn"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
-     `(("intltool" ,intltool)))
+     (list intltool))
     (home-page "https://mate-desktop.org/")
     (synopsis "Calculator for MATE")
     (description
@@ -1149,15 +1121,15 @@ can be used as backgrounds in the MATE Desktop environment.")
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("cairo" ,cairo)
-       ("glib" ,glib)
-       ("gtk+" ,gtk+)
-       ("libfakekey" ,libfakekey)
-       ("libwnck" ,libwnck)
-       ("libxtst" ,libxtst)
-       ("libx11" ,libx11)
-       ("mate-panel" ,mate-panel)
-       ("xorgproto" ,xorgproto)))
+     (list cairo
+           glib
+           gtk+
+           libfakekey
+           libwnck
+           libxtst
+           libx11
+           mate-panel
+           xorgproto))
     (home-page "https://mate-desktop.org/")
     (synopsis "Tool for MATE on Netbooks")
     (description
@@ -1212,29 +1184,29 @@ Re-decorates windows on un-maximise.
        ("which" ,which)
        ("xorgproto" ,xorgproto)))
     (inputs
-     `(("cairo" ,cairo)
-       ("dconf" ,dconf)
-       ("dbus" ,dbus)
-       ("dbus-glib" ,dbus-glib)
-       ("glib" ,glib)
-       ("gtk+" ,gtk+)
-       ("librsvg" ,(librsvg-for-system))
-       ("libcanberra" ,libcanberra)
-       ("libglade" ,libglade)
-       ("libmatekbd" ,libmatekbd)
-       ("libnotify" ,libnotify)
-       ("libx11" ,libx11)
-       ("libxext" ,libxext)
-       ("libxklavier" ,libxklavier)
-       ("libxrandr" ,libxrandr)
-       ("libxrender" ,libxrender)
-       ("libxscrnsaver" ,libxscrnsaver)
-       ("libxxf86vm" ,libxxf86vm)
-       ("linux-pam" ,linux-pam)
-       ("mate-desktop" ,mate-desktop)
-       ("mate-menus" ,mate-menus)
-       ("pango" ,pango)
-       ("startup-notification" ,startup-notification)))
+     (list cairo
+           dconf
+           dbus
+           dbus-glib
+           glib
+           gtk+
+           (librsvg-for-system)
+           libcanberra
+           libglade
+           libmatekbd
+           libnotify
+           libx11
+           libxext
+           libxklavier
+           libxrandr
+           libxrender
+           libxscrnsaver
+           libxxf86vm
+           linux-pam
+           mate-desktop
+           mate-menus
+           pango
+           startup-notification))
     (home-page "https://mate-desktop.org/")
     (synopsis "Screensaver for MATE")
     (description
@@ -1266,19 +1238,19 @@ can be used as backgrounds in the MATE Desktop environment.")
        ("xorgproto" ,xorgproto)
        ("yelp-tools" ,yelp-tools)))
     (inputs
-     `(("atk" ,atk)
-       ("cairo" ,cairo)
-       ("glib" ,glib)
-       ("gtk+" ,gtk+)
-       ("librsvg" ,(librsvg-for-system))
-       ("libcanberra" ,libcanberra)
-       ("libgtop" ,libgtop)
-       ("libx11" ,libx11)
-       ("libxext" ,libxext)
-       ("mate-panel" ,mate-panel)
-       ("pango" ,pango)
-       ("udisks" ,udisks)
-       ("zlib" ,zlib)))
+     (list atk
+           cairo
+           glib
+           gtk+
+           (librsvg-for-system)
+           libcanberra
+           libgtop
+           libx11
+           libxext
+           mate-panel
+           pango
+           udisks
+           zlib))
     (home-page "https://mate-desktop.org/")
     (synopsis "Utilities for the MATE Desktop")
     (description
@@ -1378,17 +1350,17 @@ can be used as backgrounds in the MATE Desktop environment.")
        ("pkg-config" ,pkg-config)
        ("yelp-tools" ,yelp-tools)))
     (inputs
-     `(("caja" ,caja)
-       ("file" ,file)
-       ("glib" ,glib)
-       ("gtk+" ,gtk+)
-       ("librsvg" ,(librsvg-for-system))
-       ("json-glib" ,json-glib)
-       ("libcanberra" ,libcanberra)
-       ("libx11" ,libx11)
-       ("libsm" ,libsm)
-       ("packagekit" ,packagekit)
-       ("pango" ,pango)))
+     (list caja
+           file
+           glib
+           gtk+
+           (librsvg-for-system)
+           json-glib
+           libcanberra
+           libx11
+           libsm
+           packagekit
+           pango))
     (home-page "https://mate-desktop.org/")
     (synopsis "Archive Manager for MATE")
     (description
@@ -1420,24 +1392,24 @@ can be used as backgrounds in the MATE Desktop environment.")
        ("pkg-config" ,pkg-config)
        ("yelp-tools" ,yelp-tools)))
     (inputs
-     `(("atk" ,atk)
-       ("cairo" ,cairo)
-       ("enchant" ,enchant-1.6)
-       ("glib" ,glib)
-       ("gtk+" ,gtk+)
-       ("gtksourceview" ,gtksourceview-3)
-       ("gdk-pixbuf" ,gdk-pixbuf)
-       ("iso-codes" ,iso-codes)
-       ("libcanberra" ,libcanberra)
-       ("libx11" ,libx11)
-       ("libsm" ,libsm)
-       ("libpeas" ,libpeas)
-       ("libxml2" ,libxml2)
-       ("libice" ,libice)
-       ("packagekit" ,packagekit)
-       ("pango" ,pango)
-       ("python" ,python)
-       ("scrollkeeper" ,scrollkeeper)))
+     (list atk
+           cairo
+           enchant-1.6
+           glib
+           gtk+
+           gtksourceview-3
+           gdk-pixbuf
+           iso-codes
+           libcanberra
+           libx11
+           libsm
+           libpeas
+           libxml2
+           libice
+           packagekit
+           pango
+           python
+           scrollkeeper))
     (home-page "https://mate-desktop.org/")
     (synopsis "Text Editor for MATE")
     (description
@@ -1463,19 +1435,19 @@ can be used as backgrounds in the MATE Desktop environment.")
        ("pkg-config" ,pkg-config)
        ("yelp-tools" ,yelp-tools)))
     (inputs
-     `(("cairo" ,cairo)
-       ("glib" ,glib)
-       ("glibmm" ,glibmm)
-       ("gtkmm" ,gtkmm-3)
-       ("gtk+" ,gtk+)
-       ("gdk-pixbuf" ,gdk-pixbuf)
-       ("libsigc++" ,libsigc++)
-       ("libcanberra" ,libcanberra)
-       ("libxml2" ,libxml2)
-       ("libwnck" ,libwnck)
-       ("libgtop" ,libgtop)
-       ("librsvg" ,(librsvg-for-system))
-       ("polkit" ,polkit)))
+     (list cairo
+           glib
+           glibmm
+           gtkmm-3
+           gtk+
+           gdk-pixbuf
+           libsigc++
+           libcanberra
+           libxml2
+           libwnck
+           libgtop
+           (librsvg-for-system)
+           polkit))
     (home-page "https://mate-desktop.org/")
     (synopsis "System Monitor for MATE")
     (description
@@ -1503,12 +1475,12 @@ MATE Desktop to monitor your system resources and usage.")
        ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("accountsservice" ,accountsservice)
-       ("glib" ,glib)
-       ("gobject-introspection" ,gobject-introspection)
-       ("gtk+" ,gtk+)
-       ("gdk-pixbuf" ,gdk-pixbuf)
-       ("polkit" ,polkit)))
+     (list accountsservice
+           glib
+           gobject-introspection
+           gtk+
+           gdk-pixbuf
+           polkit))
     (home-page "https://mate-desktop.org/")
     (synopsis "DBus specific service for MATE")
     (description
@@ -1533,7 +1505,7 @@ used to bring up authentication dialogs.")
             (union-build (assoc-ref %outputs "out")
                          directories)
             #t)))))
-    (native-inputs `(("desktop-file-utils" ,desktop-file-utils)))
+    (native-inputs (list desktop-file-utils))
     (inputs
      ;; TODO: Add more packages
      `(("at-spi2-core"              ,at-spi2-core)
@@ -1580,7 +1552,7 @@ used to bring up authentication dialogs.")
        ("zenity"                    ,zenity)))
     (propagated-inputs
      ;; Default font that applications such as IceCat require.
-     `(("font-dejavu"             ,font-dejavu)))
+     (list font-dejavu))
     (synopsis "The MATE desktop environment")
     (home-page "https://mate-desktop.org/")
     (description

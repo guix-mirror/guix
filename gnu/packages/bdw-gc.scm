@@ -60,7 +60,7 @@
                                (%current-target-system)))
              '("--disable-gcj-support")
              '()))))
-   (native-inputs `(("pkg-config" ,pkg-config)))
+   (native-inputs (list pkg-config))
    (propagated-inputs
     (if (%current-target-system)
         ;; The build system refuses to check for compiler intrinsics when
@@ -109,7 +109,7 @@ C or C++ programs, though that is not its primary goal.")
              (sha256
               (base32
                "10jhhi79d5brwlsyhwgpnrmc8nhlf7aan2lk9xhgihk5jc6srbvc"))))
-   (propagated-inputs `(("libatomic-ops" ,libatomic-ops)))))
+   (propagated-inputs (list libatomic-ops))))
 
 (define-public libgc/back-pointers
   (package/inherit

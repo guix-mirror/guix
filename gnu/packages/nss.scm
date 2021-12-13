@@ -52,10 +52,10 @@
     (build-system gnu-build-system)
     (inputs
      ;; For 'compile-et.pl' and 'nspr-config'.
-     `(("perl" ,perl)                   ;for 'compile-et.pl'
-       ("bash-minimal" ,bash-minimal))) ;for 'nspr-config'
+     (list perl ;for 'compile-et.pl'
+           bash-minimal)) ;for 'nspr-config'
     (native-inputs
-     `(("perl" ,perl)))
+     (list perl))
     (arguments
      `(;; Prevent the 'native' perl from sneaking into the closure.
        ;; XXX it would be nice to do the same for 'bash-minimal',
@@ -200,13 +200,11 @@ in the Mozilla clients.")
                (copy-recursively (string-append obj "/bin") bin)
                (copy-recursively (string-append obj "/lib") lib)))))))
     (inputs
-     `(("sqlite" ,sqlite)
-       ("zlib" ,zlib)))
+     (list sqlite zlib))
     (propagated-inputs
-     `(("nspr" ,nspr)))                 ;required by nss.pc.
+     (list nspr))                 ;required by nss.pc.
     (native-inputs
-     `(("perl" ,perl)
-       ("libfaketime" ,libfaketime)))   ;for tests
+     (list perl libfaketime))   ;for tests
 
     ;; The NSS test suite takes around 48 hours on Loongson 3A (MIPS) when
     ;; another build is happening concurrently on the same machine.

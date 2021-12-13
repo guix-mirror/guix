@@ -91,12 +91,11 @@ conversions for values passed between the two languages.")
        (base32 "0v080s7vlrjz9z823x2yh36yc8drwpvvir6w8wfkkzd7k2z5qihs"))))
     (build-system python-build-system)
     (inputs
-     `(("libffi" ,libffi)))
+     (list libffi))
     (propagated-inputs ; required at run-time
-     `(("python-pycparser" ,python-pycparser)))
+     (list python-pycparser))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("python-pytest" ,python-pytest)))
+     (list pkg-config python-pytest))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -231,11 +230,9 @@ project.")
                  (format #t "test suite not run~%"))
              #t)))))
     (native-inputs
-     `(("ruby-rake-compiler" ,ruby-rake-compiler)
-       ("ruby-rspec" ,ruby-rspec)
-       ("ruby-rubygems-tasks" ,ruby-rubygems-tasks)))
+     (list ruby-rake-compiler ruby-rspec ruby-rubygems-tasks))
     (inputs
-     `(("libffi" ,libffi)))
+     (list libffi))
     (synopsis "Ruby foreign function interface library")
     (description "Ruby-FFI is a Ruby extension for programmatically loading
 dynamic libraries, binding functions within them, and calling those functions

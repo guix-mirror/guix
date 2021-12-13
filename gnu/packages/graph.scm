@@ -80,12 +80,12 @@
              "--with-external-blas"
              "--with-external-lapack")))
     (inputs
-     `(("gmp" ,gmp)
-       ("glpk" ,glpk)
-       ("libxml2" ,libxml2)
-       ("lapack" ,lapack)
-       ("openblas" ,openblas)
-       ("zlib" ,zlib)))
+     (list gmp
+           glpk
+           libxml2
+           lapack
+           openblas
+           zlib))
     (home-page "https://igraph.org")
     (synopsis "Network analysis and visualization")
     (description
@@ -120,12 +120,11 @@ more.")
              (add-installed-pythonpath inputs outputs)
              (invoke "pytest" "-v"))))))
     (inputs
-     `(("igraph" ,igraph)))
+     (list igraph))
     (propagated-inputs
-     `(("python-texttable" ,python-texttable)))
+     (list python-texttable))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("python-pytest" ,python-pytest)))
+     (list pkg-config python-pytest))
     (home-page "https://pypi.org/project/python-igraph/")
     (synopsis "Python bindings for the igraph network analysis library")))
 
@@ -146,7 +145,7 @@ more.")
                   "1yahqrcrqpbcywv73y9rlmyz8apdnp08afialibrr93ch0p06f8z"))))
       (build-system r-build-system)
       (propagated-inputs
-       `(("r-igraph" ,r-igraph)))
+       (list r-igraph))
       (home-page "http://www.biofabric.org/")
       (synopsis "BioFabric network visualization")
       (description "This package provides an implementation of the function
@@ -192,17 +191,15 @@ lines.")
                  (find-files out "\\.gz"))
                #t))))))
     (native-inputs
-     `(("python-ipywidgets" ,python-ipywidgets)
-       ("python-pytest" ,python-pytest)
-       ("python-xarray" ,python-xarray)))
+     (list python-ipywidgets python-pytest python-xarray))
     (propagated-inputs
-     `(("python-ipython" ,python-ipython)
-       ("python-pandas" ,python-pandas)
-       ("python-pillow" ,python-pillow)
-       ("python-requests" ,python-requests)
-       ("python-retrying" ,python-retrying)
-       ("python-six" ,python-six)
-       ("python-statsmodels" ,python-statsmodels)))
+     (list python-ipython
+           python-pandas
+           python-pillow
+           python-requests
+           python-retrying
+           python-six
+           python-statsmodels))
     (home-page "https://plotly.com/python/")
     (synopsis "Interactive plotting library for Python")
     (description "Plotly's Python graphing library makes interactive,
@@ -223,12 +220,12 @@ subplots, multiple-axes, polar charts, and bubble charts. ")
           "0s9gk2fl53x8wwncs3fwii1vzfngr0sskv15v3mpshqmrqfrk27m"))))
    (native-inputs '())
    (propagated-inputs
-    `(("python-decorator" ,python-decorator)
-      ("python-nbformat" ,python-nbformat)
-      ("python-pandas" ,python-pandas)
-      ("python-pytz" ,python-pytz)
-      ("python-requests" ,python-requests)
-      ("python-six" ,python-six)))
+    (list python-decorator
+          python-nbformat
+          python-pandas
+          python-pytz
+          python-requests
+          python-six))
     (arguments
      '(#:tests? #f)))) ; The tests are not distributed in the release
 
@@ -244,8 +241,7 @@ subplots, multiple-axes, polar charts, and bubble charts. ")
         (base32 "1sqp97fwh4asx0jr72x8hil8z8fcg2xq92jklmh2m599pvgnx19a"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-networkx" ,python-networkx)
-       ("python-numpy" ,python-numpy)))
+     (list python-networkx python-numpy))
     (home-page "https://github.com/taynaud/python-louvain")
     (synopsis "Louvain algorithm for community detection")
     (description
@@ -269,13 +265,11 @@ algorithm for community detection in large networks.")
                 "0w31537sifkf65sck1iaip5i6d8g64pa3wdwad83d6p9jwkck57k"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-ddt" ,python-ddt)
-       ("python-igraph" ,python-igraph)))
+     (list python-ddt python-igraph))
     (inputs
-     `(("igraph" ,igraph)))
+     (list igraph))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("python-pytest" ,python-pytest)))
+     (list pkg-config python-pytest))
     (home-page "https://github.com/vtraag/louvain-igraph")
     (synopsis "Algorithm for methods of community detection in large networks")
     (description
@@ -366,9 +360,9 @@ install(TARGETS ${faiss_lib}_static ARCHIVE DESTINATION lib)
                              "/test"))
              #t)))))
     (inputs
-     `(("openblas" ,openblas)))
+     (list openblas))
     (native-inputs
-     `(("googletest" ,googletest)))
+     (list googletest))
     (home-page "https://github.com/facebookresearch/faiss")
     (synopsis "Efficient similarity search and clustering of dense vectors")
     (description "Faiss is a library for efficient similarity search and
@@ -418,8 +412,7 @@ CPUFLAGS = ~{~a ~}~%"
        ("python*" ,python)
        ("swig" ,swig)))
     (propagated-inputs
-     `(("python-matplotlib" ,python-matplotlib)
-       ("python-numpy" ,python-numpy)))
+     (list python-matplotlib python-numpy))
     (description "Faiss is a library for efficient similarity search and
 clustering of dense vectors.  This package provides Python bindings to the
 Faiss library.")))
@@ -438,11 +431,11 @@ Faiss library.")))
     (build-system python-build-system)
     (arguments '(#:tests? #f)) ; tests are not included
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("igraph" ,igraph)))
+     (list igraph))
     (propagated-inputs
-     `(("python-igraph" ,python-igraph)))
+     (list python-igraph))
     (home-page "https://github.com/vtraag/leidenalg")
     (synopsis "Community detection in large networks")
     (description
@@ -472,9 +465,7 @@ of the Louvain algorithm, for a number of different methods.")
          "01cm7ay1njkfsdnmnvh5zwc7wg7x189hq1vbfhh9p3ihrbnmqzh8"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
+     (list autoconf automake libtool))
     (synopsis "Embedding of planar graphs")
     (description "The package provides a reference implementation of the
 linear time edge addition algorithm for embedding planar graphs and
@@ -498,9 +489,9 @@ isolating planarity obstructions.")
          "1rv2v42x2506x7f10349m1wpmmfxrv9l032bkminni2gbip9cjg0"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("igraph" ,igraph)))
+     (list igraph))
     (home-page "https://sourceforge.net/projects/rankwidth/")
     (synopsis "Rank-width and rank-decomposition of graphs")
     (description "rw computes rank-width and rank-decompositions
@@ -521,9 +512,9 @@ of graphs.")
          "08yw3maxhn5fl1lff81gmcrpa4j9aas4mmby1g9w5qcr0np82d1w"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("gd" ,gd)))
+     (list gd))
     (home-page "http://www.mcternan.me.uk/mscgen/")
     (synopsis "Message Sequence Chart Generator")
     (description "Mscgen is a small program that parses Message Sequence Chart
@@ -576,10 +567,7 @@ transformed into common image formats for display or printing.")
        ("python" ,python-wrapper)
        ("sparsehash" ,sparsehash)))
     (propagated-inputs
-     `(("python-matplotlib" ,python-matplotlib)
-       ("python-numpy" ,python-numpy)
-       ("python-pycairo" ,python-pycairo)
-       ("python-scipy" ,python-scipy)))
+     (list python-matplotlib python-numpy python-pycairo python-scipy))
     (synopsis "Manipulate and analyze graphs with Python efficiently")
     (description "Graph-tool is an efficient Python module for manipulation
 and statistical analysis of graphs (a.k.a. networks).  Contrary to most other

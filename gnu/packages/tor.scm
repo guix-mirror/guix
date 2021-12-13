@@ -90,15 +90,14 @@
                      ((".*Sandbox 1.*") "")))))
              '()))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("python" ,python)))             ; for tests
+     (list pkg-config python))             ; for tests
     (inputs
-     `(("libevent" ,libevent)
-       ("libseccomp" ,libseccomp)
-       ("openssl" ,openssl)
-       ("xz" ,xz)
-       ("zlib" ,zlib)
-       ("zstd" ,zstd "lib")))
+     (list libevent
+           libseccomp
+           openssl
+           xz
+           zlib
+           `(,zstd "lib")))
     (home-page "https://www.torproject.org/")
     (synopsis "Anonymous network router to improve privacy on the Internet")
     (description
@@ -155,7 +154,7 @@ This package only provides a client to the Tor Network.")))
                 "08inrkap29gikb6sdmb58z43hw4abwrfw7ny40c4xzdkss0vkwdr"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libcap" ,libcap)))
+     (list libcap))
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (add-after 'build 'absolutize
@@ -216,14 +215,9 @@ rejects UDP traffic from the application you're using.")
                  (("^logdir") "#logdir")
                  (("^logfile") "#logfile"))))))))
     (inputs
-     `(("brotli" ,brotli)
-       ("openssl" ,openssl)
-       ("pcre" ,pcre)
-       ("w3m" ,w3m)
-       ("zlib" ,zlib)))
+     (list brotli openssl pcre w3m zlib))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)))
+     (list autoconf automake))
     (home-page "https://www.privoxy.org")
     (synopsis "Web proxy with advanced filtering capabilities for enhancing privacy")
     (description
@@ -250,24 +244,24 @@ networks.")
          (base32 "157ryxm4p1q7b3nj32v9fziw1li6s6s203b7ll80js14cbp6dj9d"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (inputs
      ;; TODO: obfs4proxy
-     `(("python-click" ,python-click)
-       ("python-colorama" ,python-colorama)
-       ("python-eventlet" ,python-eventlet)
-       ("python-flask" ,python-flask)
-       ("python-flask-httpauth" ,python-flask-httpauth)
-       ("python-flask-socketio" ,python-flask-socketio)
-       ("python-pynacl" ,python-pynacl)
-       ("python-psutil" ,python-psutil)
-       ("python-pycryptodome" ,python-pycryptodome)
-       ("python-pysocks" ,python-pysocks)
-       ("python-requests" ,python-requests)
-       ("python-stem" ,python-stem)
-       ("python-unidecode" ,python-unidecode)
-       ("python-urllib3" ,python-urllib3)
-       ("tor" ,tor)))
+     (list python-click
+           python-colorama
+           python-eventlet
+           python-flask
+           python-flask-httpauth
+           python-flask-socketio
+           python-pynacl
+           python-psutil
+           python-pycryptodome
+           python-pysocks
+           python-requests
+           python-stem
+           python-unidecode
+           python-urllib3
+           tor))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -372,18 +366,19 @@ OnionShare.")
                (install-file "org.onionshare.OnionShare.desktop"
                              (string-append share "/applications")))))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (inputs
      ;; TODO: obfs4proxy
-     `(("onionshare-cli" ,onionshare-cli)
-       ("python-shiboken-2" ,python-shiboken-2)
-       ("python-pyside-2" ,python-pyside-2)
-       ("python-qrcode" ,python-qrcode)
-       ;; The desktop client uses onionshare-cli like a python module.  But
-       ;; propagating onionshare-cli's inputs is not great, since a user would
-       ;; not expect to have those installed when using onionshare-cli as a
-       ;; standalone utility.  So add onionshare-cli's inputs here.
-       ,@(package-inputs onionshare-cli)))
+     (modify-inputs (package-inputs onionshare-cli)
+       (prepend onionshare-cli
+                python-shiboken-2
+                python-pyside-2
+                python-qrcode
+                ;; The desktop client uses onionshare-cli like a python module.  But
+                ;; propagating onionshare-cli's inputs is not great, since a user would
+                ;; not expect to have those installed when using onionshare-cli as a
+                ;; standalone utility.  So add onionshare-cli's inputs here.
+                )))
     (description "OnionShare lets you securely and anonymously share files,
 host websites, and chat with friends using the Tor network.")))
 
@@ -400,7 +395,7 @@ host websites, and chat with friends using the Tor network.")))
          "02rrlllz2ci6i6cs3iddyfns7ang9a54jrlygd2jw1f9s6418ll8"))))
     (build-system python-build-system)
     (inputs
-     `(("python-stem" ,python-stem)))
+     (list python-stem))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -458,12 +453,12 @@ Potential client and exit connections are scrubbed of sensitive information.")
     (native-inputs
      `(("glib:bin" ,glib "bin")))       ; for glib-compile-schemas.
     (inputs
-     `(("python-fire" ,python-fire)
-       ("python-psutil" ,python-psutil)
-       ("python-pygobject" ,python-pygobject)
-       ("python-requests" ,python-requests)
-       ("python-stem" ,python-stem)
-       ("python-termcolor" ,python-termcolor)))
+     (list python-fire
+           python-psutil
+           python-pygobject
+           python-requests
+           python-stem
+           python-termcolor))
     (arguments
      `(#:phases
        (modify-phases %standard-phases

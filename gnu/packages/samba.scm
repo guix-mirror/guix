@@ -75,12 +75,9 @@
                 "1f2n0yzqsy5v5qv83731bi0mi86rrh11z8qjy1gjj8al9c3yh2b6"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("pkg-config" ,pkg-config)
-
-       ;; To generate the manpages.
-       ("python-docutils" ,python-docutils))) ; rst2man
+     (list autoconf automake pkg-config
+           ;; To generate the manpages.
+           python-docutils)) ; rst2man
     (inputs
      `(("keytuils" ,keyutils)
        ("linux-pam" ,linux-pam)
@@ -243,30 +240,28 @@ external dependencies.")
        ;; test environment.
        #:tests? #f))
     (inputs
-     `(("acl" ,acl)
-       ("cmocka" ,cmocka)
-       ("cups" ,cups)
-       ("gamin" ,gamin)
-       ("dbus" ,dbus)
-       ("gpgme" ,gpgme)
-       ("gnutls" ,gnutls)
-       ("heimdal" ,heimdal)
-       ("jansson" ,jansson)
-       ("libarchive" ,libarchive)
-       ("libtirpc" ,libtirpc)
-       ("linux-pam" ,linux-pam)
-       ("lmdb" ,lmdb)
-       ("openldap" ,openldap)
-       ("perl" ,perl)
-       ("python" ,python)
-       ("popt" ,popt)
-       ("readline" ,readline)
-       ("tdb" ,tdb)))
+     (list acl
+           cmocka
+           cups
+           gamin
+           dbus
+           gpgme
+           gnutls
+           heimdal
+           jansson
+           libarchive
+           libtirpc
+           linux-pam
+           lmdb
+           openldap
+           perl
+           python
+           popt
+           readline
+           tdb))
     (propagated-inputs
      ;; In Requires or Requires.private of pkg-config files.
-     `(("ldb" ,ldb)
-       ("talloc" ,talloc)
-       ("tevent" ,tevent)))
+     (list ldb talloc tevent))
     (native-inputs
      `(("perl-parse-yapp" ,perl-parse-yapp)
        ("pkg-config" ,pkg-config)
@@ -325,9 +320,9 @@ Desktops into Active Directory environments using the winbind daemon.")
                (invoke "./configure"
                        (string-append "--prefix=" out))))))))
     (native-inputs
-     `(("which" ,which)))
+     (list which))
     (inputs
-     `(("python" ,python)))
+     (list python))
     (home-page "https://talloc.samba.org")
     (synopsis "Hierarchical, reference counted memory pool system")
     (description
@@ -391,12 +386,9 @@ destructors.  It is the core memory allocator used in Samba.")
                        (string-append "--prefix=" out)
                        "--bundled-libraries=NONE")))))))
     (native-inputs
-     `(("cmocka" ,cmocka)
-       ("pkg-config" ,pkg-config)
-       ("python" ,python)
-       ("which" ,which)))
+     (list cmocka pkg-config python which))
     (propagated-inputs
-     `(("talloc" ,talloc))) ; required by tevent.pc
+     (list talloc)) ; required by tevent.pc
     (synopsis "Event system library")
     (home-page "https://tevent.samba.org/")
     (description
@@ -442,14 +434,10 @@ many event types, including timers, signals, and the classic file descriptor eve
                                       "/lib/ldb/modules")
                        "--bundled-libraries=NONE")))))))
     (native-inputs
-     `(("cmocka" ,cmocka)
-       ("pkg-config" ,pkg-config)
-       ("python" ,python)
-       ("which" ,which)))
+     (list cmocka pkg-config python which))
     (propagated-inputs
      ;; ldb.pc refers to all these.
-     `(("talloc" ,talloc)
-       ("tdb" ,tdb)))
+     (list talloc tdb))
     (inputs
      `(,@(if (target-64bit?)
              `(("lmdb" ,lmdb))
@@ -498,8 +486,8 @@ key-value pair databases and a real LDAP database.")
                   (string-append libpcap "/include/pcap-bpf.h")))
                #t))))))
     (inputs
-     `(("libpcap" ,libpcap)
-       ("openssl" ,(@ (gnu packages tls) openssl))))
+     (list libpcap
+           (@ (gnu packages tls) openssl)))
     (synopsis "Implementation of the Point-to-Point Protocol")
     (home-page "https://ppp.samba.org/")
     (description

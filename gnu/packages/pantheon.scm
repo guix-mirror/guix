@@ -154,8 +154,7 @@ desktop.")
     (propagated-inputs
      ;; Sideload needs these in the environment to fetch data securely from
      ;; Flatpak remotes.
-     `(("gnupg" ,gnupg)
-       ("gpgme" ,gpgme)))
+     (list gnupg gpgme))
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin")

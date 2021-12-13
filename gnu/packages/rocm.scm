@@ -49,7 +49,7 @@
                 "0sic2zxmzl2pb2865vvq55mbpcr8pby8v19pjdlm08pypqw5h6h6"))))
     (build-system cmake-build-system)
     (arguments `(#:tests? #f)) ; Tests try to use git commit
-    (native-inputs `(("git" ,git)))
+    (native-inputs (list git))
     (home-page "https://github.com/RadeonOpenCompute/rocm-cmake")
     (synopsis "ROCm cmake modules")
     (description "ROCm cmake modules provides cmake modules for common build
@@ -128,7 +128,7 @@ AMDGPU code objects.")
                 "0ffqhrrscmcydfqf61dk58d7nnxk6n2k68jhqfj7a4hvhlphb74f"))))
     (build-system cmake-build-system)
     (arguments `(#:tests? #f)) ; Not sure how to run tests.
-    (inputs `(("numactl" ,numactl)))
+    (inputs (list numactl))
     (home-page "https://github.com/RadeonOpenCompute/ROCT-Thunk-Interface")
     (synopsis "Radeon Open Compute Thunk Interface")
     (description "User-mode API interfaces used to interact with the ROCk
@@ -167,7 +167,7 @@ driver.")
        ("llvm" ,llvm-for-rocm)
        ("roct-thunk-interface" ,roct-thunk-interface)
        ("rocm-device-libs" ,rocm-device-libs))) ; For bitcode.
-    (native-inputs `(("xxd" ,xxd)))
+    (native-inputs (list xxd))
     (home-page "https://github.com/RadeonOpenCompute/ROCR-Runtime")
     (synopsis "ROCm Platform Runtime")
     (description "User-mode API interfaces and libraries necessary for host
@@ -258,12 +258,12 @@ allows runtimes to work on Windows as well as on Linux without much effort.")
                (with-output-to-file (string-append vendors "/amdocl64.icd")
                  (lambda _ (display sopath)))))))))
     (inputs
-     `(("mesa" ,mesa)
-       ("rocm-comgr" ,rocm-comgr)
-       ("rocr-runtime" ,rocr-runtime)
-       ("rocclr" ,rocclr)
-       ("opencl-icd-loader" ,opencl-icd-loader)
-       ("glew" ,glew)))
+     (list mesa
+           rocm-comgr
+           rocr-runtime
+           rocclr
+           opencl-icd-loader
+           glew))
     (native-inputs `())
     (synopsis "ROCm OpenCL Runtime")
     (description "OpenCL 2.0 compatible language runtime, supporting offline
@@ -295,8 +295,7 @@ and in-process/in-memory compilation.")
                 (string-append (assoc-ref inputs "kmod") "/bin/lsmod"))
                (("grep") (which "grep"))))))))
     (inputs
-     `(("rocr-runtime" ,rocr-runtime)
-       ("kmod" ,kmod)))
+     (list rocr-runtime kmod))
     (home-page "https://github.com/RadeonOpenCompute/rocminfo")
     (synopsis "ROCm Application for Reporting System Info")
     (description "List @acronym{HSA,Heterogeneous System Architecture} Agents
@@ -318,7 +317,7 @@ available to ROCm and show their properties.")
                 "0a14kwkjpiyljgzxblh031qibn6xgbxp6m12zdy1pmwb2c44jjmm"))))
     (build-system cmake-build-system)
     (arguments `(#:tests? #f)) ; No tests.
-    (inputs `(("rocr-runtime" ,rocr-runtime)))
+    (inputs (list rocr-runtime))
     (home-page "https://github.com/RadeonOpenCompute/rocm_bandwidth_test")
     (synopsis "Bandwidth test for ROCm")
     (description "RocBandwidthTest is designed to capture the performance

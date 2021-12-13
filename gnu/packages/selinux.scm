@@ -85,7 +85,7 @@
                 (string-append line "\n#include <inttypes.h>\n"))
                (("%#lx") "%#\" PRIx64 \"")))))))
     (native-inputs
-     `(("flex" ,flex)))
+     (list flex))
     (home-page "https://selinuxproject.org/")
     (synopsis "Library for manipulating SELinux policies")
     (description
@@ -344,14 +344,11 @@ based on required access.")
                 (string-append "join(\"" (assoc-ref outputs "out") "/\"")))
              #t)))))
     (propagated-inputs
-     `(("python-networkx" ,python-networkx)))
+     (list python-networkx))
     (inputs
-     `(("libsepol" ,libsepol)
-       ("libselinux" ,libselinux)))
+     (list libsepol libselinux))
     (native-inputs
-     `(("bison" ,bison)
-       ("flex" ,flex)
-       ("swig" ,swig)))
+     (list bison flex swig))
     (home-page "https://github.com/TresysTechnology/setools")
     (synopsis "Tools for SELinux policy analysis")
     (description "SETools is a collection of graphical tools, command-line

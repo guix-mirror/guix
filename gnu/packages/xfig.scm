@@ -46,8 +46,7 @@
     (build-system gnu-build-system)
     (native-inputs
      ;; For tests.
-     `(("desktop-file-utils" ,desktop-file-utils)
-       ("ghostscript" ,ghostscript)))
+     (list desktop-file-utils ghostscript))
     (inputs
      `(("libxaw3d" ,libxaw3d)
        ("libjpeg" ,libjpeg-turbo)
@@ -89,8 +88,7 @@ selected in various ways.  For text, 35 fonts are available.")
          "0i3p7qmg2w8qrad3pn42b0miwarql7yy0gpd49b1bpal6bqsiicf"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("imake" ,imake)
-       ("makedepend" ,makedepend)))
+     (list imake makedepend))
     (inputs
      `(("xfig"    ,xfig)
        ("libjpeg" ,libjpeg-turbo)

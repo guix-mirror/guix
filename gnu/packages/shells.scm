@@ -98,7 +98,7 @@
            #t))))
     (build-system gnu-build-system)
     (inputs
-     `(("libedit" ,libedit)))
+     (list libedit))
     (arguments
      '(#:configure-flags '("--with-libedit")))
     (home-page "http://gondor.apana.org.au/~herbert/dash")
@@ -130,14 +130,11 @@ direct descendant of NetBSD's Almquist Shell (@command{ash}).")
            (delete-file-recursively "pcre2")))))
     (build-system cmake-build-system)
     (inputs
-     `(("fish-foreign-env" ,fish-foreign-env)
-       ("ncurses" ,ncurses)
-       ("pcre2" ,pcre2)      ; don't use the bundled PCRE2
-       ("python" ,python)))  ; for fish_config and manpage completions
+     (list fish-foreign-env ncurses pcre2 ; don't use the bundled PCRE2
+           python))  ; for fish_config and manpage completions
     (native-inputs
-     `(("doxygen" ,doxygen)
-       ("groff" ,groff)                 ; for 'fish --help'
-       ("procps" ,procps)))             ; for the test suite
+     (list doxygen groff ; for 'fish --help'
+           procps))             ; for the test suite
     (arguments
      '(#:phases
        (modify-phases %standard-phases
@@ -305,9 +302,7 @@ and syntax highlighting.")
                              (search-input-file %build-inputs "/bin/tr")
                              " ")))))))
     (inputs
-     `(("bash" ,bash)
-       ("coreutils" ,coreutils)
-       ("sed" ,sed)))
+     (list bash coreutils sed))
     (home-page "https://github.com/oh-my-fish/plugin-foreign-env")
     (synopsis "Foreign environment interface for fish shell")
     (description "@code{fish-foreign-env} wraps bash script execution in a way
@@ -342,12 +337,8 @@ into fish.")
               (("/bin/rm")  (which "rm"))
               (("/bin\\)")  (string-append (dirname (which "rm")) ")")))
             #t)))))
-    (inputs `(("readline" ,readline)
-              ("perl" ,perl)))
-    (native-inputs `(("autoconf" ,autoconf)
-                     ("automake" ,automake)
-                     ("libtool" ,libtool)
-                     ("pkg-config" ,pkg-config)))
+    (inputs (list readline perl))
+    (native-inputs (list autoconf automake libtool pkg-config))
     (synopsis "Alternative implementation of the rc shell by Byron Rakitzis")
     (description
      "This is a reimplementation by Byron Rakitzis of the Plan 9 shell.  It
@@ -378,9 +369,9 @@ has a small feature set similar to a traditional Bourne shell.")
            (lambda _
              (chdir ".."))))))
     (inputs
-     `(("readline" ,readline)))
+     (list readline))
     (native-inputs
-     `(("bison" ,bison)))
+     (list bison))
     (synopsis "Extensible shell with higher-order functions")
     (description
      "Es is an extensible shell.  The language was derived from the Plan 9
@@ -409,10 +400,9 @@ written by Paul Haahr and Byron Rakitzis.")
               (patch-flags '("-p0"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("perl" ,perl)))
+     (list autoconf perl))
     (inputs
-     `(("ncurses" ,ncurses)))
+     (list ncurses))
     (arguments
      `(#:phases
         (modify-phases %standard-phases
@@ -526,10 +516,8 @@ history mechanism, job control and a C-like syntax.")
                          (("command -p") "command ")
                          (("'command' -p") "'command' "))
                        #t)))))
-    (native-inputs `(("autoconf" ,autoconf)))
-    (inputs `(("ncurses" ,ncurses)
-              ("pcre" ,pcre)
-              ("perl" ,perl)))
+    (native-inputs (list autoconf))
+    (inputs (list ncurses pcre perl))
     (synopsis "Powerful shell for interactive use and scripting")
     (description "The Z shell (zsh) is a Unix shell that can be used
 as an interactive login shell and as a powerful command interpreter
@@ -577,7 +565,7 @@ ksh, and tcsh.")
        ;; information.
        #:tests? #f))
     (inputs
-     `(("python-ply" ,python-ply)))
+     (list python-ply))
     (home-page "https://xon.sh/")
     (synopsis "Python-ish shell")
     (description
@@ -619,11 +607,9 @@ use of experts and novices alike.")
                  (symlink rxpath "rx"))
                #t)))))
       (inputs
-       `(("scheme48" ,scheme48)
-         ("scheme48-rx" ,scheme48-rx)))
+       (list scheme48 scheme48-rx))
       (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)))
+       (list autoconf automake))
       (home-page "https://github.com/scheme/scsh")
       (synopsis "Unix shell embedded in Scheme")
       (description
@@ -699,7 +685,7 @@ Its features include:
            "0qiny71ww5nhzy4mnc8652hn0mlxyb67h333gbdxp4j4qxsi13q4"))))
       (build-system gnu-build-system)
       (inputs
-       `(("linenoise" ,linenoise)))
+       (list linenoise))
       (arguments
        `(#:tests? #f
          #:make-flags (list "CC=gcc"
@@ -786,9 +772,9 @@ The OpenBSD Korn Shell is a cleaned up and enhanced ksh.")
         (base32 "0x33plxqhh5202hgqidgccz5hpg8d2q71ylgnm437g60mfi9z0px"))))
     (build-system meson-build-system)
     (inputs
-     `(("ncurses" ,ncurses)))
+     (list ncurses))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (arguments
      `(#:tests? #f))                    ; no tests included
     (home-page "https://github.com/dimkr/loksh")
@@ -872,7 +858,7 @@ Shell (pdksh).")
                  (invoke/quiet oil "osh" "-c" "echo hi")
                  (invoke/quiet oil "osh" "-n" "configure"))))))))
     (inputs
-     `(("readline" ,readline)))
+     (list readline))
     (home-page "https://www.oilshell.org")
     (synopsis "Programming language and Bash-compatible Unix shell")
     (description "Oil is a programming language with automatic translation for
@@ -902,9 +888,9 @@ scripts.")
                  #t))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("guile" ,guile-3.0)))
+     (list guile-3.0))
     (arguments
      '(#:make-flags '("XFAIL_TESTS=tests/redirects.org")))
     (home-page "https://savannah.nongnu.org/projects/gash/")
@@ -937,10 +923,9 @@ as part of the Guix bootstrap process.")
                   #t))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("guile" ,guile-3.0)
-       ("gash" ,gash)))
+     (list guile-3.0 gash))
     (home-page "https://savannah.nongnu.org/projects/gash/")
     (synopsis "Core POSIX utilities written in Guile Scheme")
     (description "Gash-Utils provides Scheme implementations of many
@@ -1025,15 +1010,14 @@ files and text.")
         ("rust-rstest" ,rust-rstest-0.10)
         ("rust-serial-test" ,rust-serial-test-0.5))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("python" ,python)))
+     (list pkg-config python))
     (inputs
-     `(("curl" ,curl)
-       ("libgit2" ,libgit2)
-       ("libx11" ,libx11)
-       ("libxcb" ,libxcb)
-       ("openssl" ,openssl)
-       ("zlib" ,zlib)))
+     (list curl
+           libgit2
+           libx11
+           libxcb
+           openssl
+           zlib))
     (home-page "https://www.nushell.sh")
     (synopsis "Shell that understands the structure of the data")
     (description

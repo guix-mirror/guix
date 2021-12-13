@@ -60,7 +60,7 @@
     (inputs
      `(("python" ,python-wrapper)))     ;for 'event_rpcgen.py'
     (native-inputs
-     `(("which" ,which)))
+     (list which))
     (home-page "https://libevent.org/")
     (synopsis "Event notification library")
     (description
@@ -117,12 +117,9 @@ limited support for fork events.")
      '(#:configure-flags '("--disable-static")
        ;; XXX: Some tests want /dev/tty, attempt to make connections, etc.
        #:tests? #f))
-    (native-inputs `(("autoconf" ,autoconf)
-                     ("automake" ,automake)
-                     ("libtool" ,libtool)
-
-                     ;; libuv.pc is installed only when pkg-config is found.
-                     ("pkg-config" ,pkg-config)))
+    (native-inputs (list autoconf automake libtool
+                         ;; libuv.pc is installed only when pkg-config is found.
+                         pkg-config))
     (home-page "https://github.com/libuv/libuv")
     (synopsis "Library for asynchronous I/O")
     (description
@@ -185,15 +182,15 @@ resolution, asynchronous file system operations, and threading primitives.")
                 "11drlj8r02czhjgzkb39axnr8zzyp506r043xfmf93q9kilfmgjh"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-canary-stability" ,perl-canary-stability)))
+     (list perl-canary-stability))
     (propagated-inputs
-     `(("perl-async-interrupt" ,perl-async-interrupt)
-       ("perl-ev" ,perl-ev)
-       ("perl-guard" ,perl-guard)
-       ("perl-json" ,perl-json)
-       ("perl-json-xs" ,perl-json-xs)
-       ("perl-net-ssleay" ,perl-net-ssleay)
-       ("perl-task-weaken" ,perl-task-weaken)))
+     (list perl-async-interrupt
+           perl-ev
+           perl-guard
+           perl-json
+           perl-json-xs
+           perl-net-ssleay
+           perl-task-weaken))
     (home-page "https://metacpan.org/release/AnyEvent")
     (synopsis
      "API for I/O, timer, signal, child process and completion events")
@@ -238,7 +235,7 @@ not rely on XS.")
      `(("libev-source" ,(package-source libev))
        ("perl-canary-stability" ,perl-canary-stability)))
     (propagated-inputs
-     `(("perl-common-sense" ,perl-common-sense)))
+     (list perl-common-sense))
     (home-page "https://metacpan.org/release/EV")
     (synopsis "Perl interface to libev")
     (description
@@ -262,11 +259,9 @@ and still be faster than other event loops currently supported in Perl.")
          "1qwb284z4ig3xzy21m1b3w8bkb8k6l2ij6cjz93znn2j6qs42pwp"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)
-       ("perl-test-simple" ,perl-test-simple)))
+     (list perl-module-build perl-test-simple))
     (propagated-inputs
-     `(("perl-anyevent" ,perl-anyevent)
-       ("perl-data-sexpression" ,perl-data-sexpression)))
+     (list perl-anyevent perl-data-sexpression))
     (arguments
      ;; Tests seem to fail because they try to start a server.
      `(#:tests? #f))

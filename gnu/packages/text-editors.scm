@@ -146,11 +146,7 @@
            (sha256
             (base32 "1jsvg2lg3xqfgi79x08kx94mc34mh62ivca10vsci6fqsk68jbd0"))
            (file-name (git-file-name "vis-test" version))))))
-    (inputs `(("lua" ,lua)
-              ("ncurses" ,ncurses)
-              ("libtermkey" ,libtermkey)
-              ("lua-lpeg" ,lua-lpeg)
-              ("tre" ,tre)))
+    (inputs (list lua ncurses libtermkey lua-lpeg tre))
     (synopsis "Vim-like text editor")
     (description
      "Vis aims to be a modern, legacy free, simple yet efficient vim-like text
@@ -196,10 +192,8 @@ based command language.")
          (add-before 'build 'chdir
            (lambda _ (chdir "src") #t)))))
     (native-inputs
-     `(("gcc", gcc-10) ; See https://github.com/mawww/kakoune/issues/4318
-       ("asciidoc" ,asciidoc)
-       ("pkg-config" ,pkg-config)
-       ("ruby" ,ruby)))
+     (list gcc-10 ; See https://github.com/mawww/kakoune/issues/4318
+           asciidoc pkg-config ruby))
     (synopsis "Vim-inspired code editor")
     (description
      "Kakoune is a code editor heavily inspired by Vim, as such most of its
@@ -279,7 +273,7 @@ Rust.")
         ("rust-unicode-segmentation" ,rust-unicode-segmentation-1)
         ("rust-unicode-width" ,rust-unicode-width-0.1))))
     (inputs
-     `(("clang" ,clang)))
+     (list clang))
     (home-page "https://github.com/justinbarclay/parinfer-rust")
     (synopsis "Infer parentheses for Clojure, Lisp and Scheme")
     (description
@@ -302,7 +296,7 @@ can load dynamic libraries.")
         (base32
          "1pmr598xxxm9j9dl93kq4dv36zyw0q2dh6d7x07hf134y9hhlnj9"))))
     (build-system gnu-build-system)
-    (inputs `(("ncurses" ,ncurses)))
+    (inputs (list ncurses))
     (home-page "http://joe-editor.sourceforge.net/")
     (synopsis "Console screen editor")
     (description
@@ -388,8 +382,7 @@ bindings and many of the powerful features of GNU Emacs.")
                                ":"))))
                         #t))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("xorg-server" ,xorg-server-for-tests)))
+     (list pkg-config xorg-server-for-tests))
     (inputs
      `(("aspell" ,aspell)
        ("boost" ,boost)
@@ -422,10 +415,9 @@ systems.")
                 "0b0az2wvqgvam7w0ns1j8xp2llslm1rx6h7zcsy06a7j0yp257cm"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+     (list intltool pkg-config))
     (inputs
-     `(("gtk+" ,gtk+-2)))
+     (list gtk+-2))
     (home-page "http://tarot.freeshell.org/leafpad/")
     (synopsis "GTK+ based text editor")
     (description "Leafpad is a GTK+ text editor that emphasizes simplicity.  As
@@ -451,12 +443,9 @@ compiled, requires few libraries, and starts up quickly. ")
                   "1alyghm2wpakzdfag0g4g8gb1h9l4wdg7mnhq8bk0iq5ryqia16a"))))
       (build-system glib-or-gtk-build-system)
       (native-inputs
-       `(("intltool" ,intltool)
-         ("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("pkg-config" ,pkg-config)))
+       (list intltool autoconf automake pkg-config))
       (inputs
-       `(("gtk+" ,gtk+)))
+       (list gtk+))
       (home-page "http://tarot.freeshell.org/leafpad/")
       (synopsis "GTK+ 3 based text editor")
       (description "L3afpad is a GTK+ 3 text editor that emphasizes simplicity.  As
@@ -491,7 +480,7 @@ compiled, requires few libraries, and starts up quickly. ")
        #:phases (modify-phases %standard-phases
                   (delete 'configure))))
     (native-inputs
-     `(("nasm" ,nasm)))
+     (list nasm))
     (home-page "https://sites.google.com/site/e3editor/")
     (synopsis "Tiny text editor written in assembly")
     (description
@@ -608,11 +597,9 @@ OpenBSD team.")
                (install-file "config.eg" doc)
                #t))))))
     (native-inputs
-     `(("texinfo" ,texinfo)))
+     (list texinfo))
     (inputs
-     `(("libx11" ,libx11)
-       ("libxext" ,libxext)
-       ("libxv" ,libxv)))
+     (list libx11 libxext libxv))
     (home-page "https://bellard.org/qemacs/")
     (synopsis "Small but powerful text editor")
     (description "QEmacs (for Quick Emacs) is a very small but
@@ -678,18 +665,17 @@ scripts/input/X11/C/Shell/HTML/Dired): 49KB.
                 "19cf55b86yj2b5hdazbyw4iyp6xq155243aiyg4m0vhwh0h79nwh"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("qttools" ,qttools)))           ; for lrelease
+     (list pkg-config qttools))           ; for lrelease
     (inputs
-     `(("hunspell" ,hunspell)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)
-       ("qtmultimedia" ,qtmultimedia)
-       ("qtquickcontrols" ,qtquickcontrols)
-       ("qtsvg" ,qtsvg)
-       ("qtwebchannel" ,qtwebchannel)))
+     (list hunspell
+           qtbase-5
+           qtdeclarative
+           qtmultimedia
+           qtquickcontrols
+           qtsvg
+           qtwebchannel))
     (propagated-inputs                  ; To get native-search-path
-     `(("qtwebengine" ,qtwebengine)))
+     (list qtwebengine))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -786,11 +772,7 @@ environment with Markdown markup.")
                    #:categories "Office;WordProcessor;"))
                #t))))))
     (inputs
-     `(("pandoc" ,pandoc)
-       ("python-lxml" ,python-lxml)
-       ("python-markdown" ,python-markdown)
-       ("python-pyqt" ,python-pyqt)
-       ("qtsvg" ,qtsvg)))
+     (list pandoc python-lxml python-markdown python-pyqt qtsvg))
     (home-page "http://www.theologeek.ch/manuskript/")
     (synopsis "Tool for writers")
     (description "Manuskript provides a rich environment to help
@@ -859,7 +841,7 @@ in plain text file format.")
            (sha256
             (base32 "1s29p4brmcsc3xsww3gk85dg45f1kk3iykh1air3ij0hymf5dyqy"))))))
     (inputs
-     `(("pcre2" ,pcre2)))
+     (list pcre2))
     (home-page "https://editorconfig.org/")
     (synopsis "EditorConfig core library written in C")
     (description "EditorConfig makes it easy to maintain the correct coding
@@ -882,8 +864,7 @@ editors.")
         (base32 "1gl6k1bwrk1y7hjyl4xvlqvmk5crl4jvsk8wrfp7ynbdin6n2i48"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("xdg-utils" ,xdg-utils)))       ;for xdg-icon-resource
+     (list pkg-config xdg-utils))       ;for xdg-icon-resource
     (inputs
      `(("freetype" ,freetype)
        ("guile" ,guile-1.8)
@@ -955,7 +936,7 @@ Octave.  TeXmacs is completely extensible via Guile.")
        ("pkg-config" ,pkg-config)
        ("python" ,python-wrapper)))
     (inputs
-     `(("gtk+" ,gtk+)))
+     (list gtk+))
     (home-page "https://www.scintilla.org/")
     (synopsis "Code editor for GTK+")
     (description "Scintilla is a source code editing component for
@@ -981,20 +962,20 @@ and multiple fonts.")
         (base32 "0inmmb9wra2w99pfv6p64d66s2zrhafc8drhwmga7gj89mp1gzxb"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("doxygen" ,doxygen)
-       ("glib" ,glib "bin")
-       ("intltool" ,intltool)
-       ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)
-       ("python-docutils" ,python-docutils))) ;for rst2html
+     (list autoconf
+           automake
+           doxygen
+           `(,glib "bin")
+           intltool
+           libtool
+           pkg-config
+           python-docutils)) ;for rst2html
     (inputs
-     `(("gtk+" ,gtk+)
-       ;; FIXME: Geany bundles a 3.X release of Scintilla.  It is not
-       ;; currently possible to replace it with our Scintilla package.
-       ;; ("scintilla" ,scintilla)
-       ))
+     (list gtk+
+           ;; FIXME: Geany bundles a 3.X release of Scintilla.  It is not
+           ;; currently possible to replace it with our Scintilla package.
+           ;; ("scintilla" ,scintilla)
+           ))
     (arguments
      `(#:imported-modules ((guix build glib-or-gtk-build-system)
                            ,@%gnu-build-system-modules)
@@ -1057,7 +1038,7 @@ The basic features of Geany are:
     (native-inputs
      `(("gettext" ,gettext-minimal)))
     (inputs
-     `(("ncurses" ,ncurses)))
+     (list ncurses))
     (home-page "http://www.moria.de/~michael/fe/")
     (synopsis "Small folding editor")
     (description "Fe is a small folding editor.  It folds
@@ -1093,10 +1074,9 @@ card.  It offers:
                 "0sg2f6lxq6cjkpd3dvlxxns82hvq826rjnams5in97pssmknr77g"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("perl" ,perl)
-       ("texinfo" ,texinfo)))
+     (list perl texinfo))
     (inputs
-     `(("ncurses" ,ncurses)))
+     (list ncurses))
     (arguments
      `(#:tests? #f
        #:make-flags
@@ -1147,7 +1127,7 @@ files.  It was originally developed on the Amiga 3000T.")
        (modify-phases %standard-phases
          (delete 'configure))))         ;no configure script
     (inputs
-     `(("ncurses" ,ncurses)))
+     (list ncurses))
     (home-page "https://devel.ringlet.net/editors/hexer/")
     (synopsis "Multi buffer editor for binary files with vi-like interface")
     (description "Hexer is a multi-buffer editor for binary files for Unix-like
@@ -1182,11 +1162,8 @@ similar to vi/ex.")
                                (assoc-ref outputs "out")
                                "/share', *path_parts)"))))))))
     (inputs
-     `(("python2-lxml" ,python2-lxml)
-       ("python2-pygtk" ,python2-pygtk)
-       ("python2-simplejson" ,python2-simplejson)
-       ("python2-translate-toolkit" ,python2-translate-toolkit)
-       ("python2-pycurl" ,python2-pycurl)))
+     (list python2-lxml python2-pygtk python2-simplejson
+           python2-translate-toolkit python2-pycurl))
     (synopsis "Graphical translation tool")
     (description "Virtaal is a powerful yet simple translation tool with an
 uncluttered user interface.  It supports a multitude of translation formats

@@ -64,8 +64,7 @@
                   "1yl2cpaqiv1g4nq9v0xfj1vd5faz55k4541vz6hsffvcxgn9nmc5"))))
       (build-system cmake-build-system)
       (native-inputs
-       `(("fmt" ,fmt)
-         ("googletest" ,googletest)))
+       (list fmt googletest))
       (synopsis "C++ port of ZXing")
       (description "ZXing-CPP is a barcode scanning library.")
       (home-page "https://github.com/nu-book/zxing-cpp")
@@ -133,8 +132,8 @@ formats.")
                (with-directory-excursion "tests"
                  (invoke "./test_basic.sh")))
              #t)))))
-    (inputs `(("libpng" ,libpng)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs (list libpng))
+    (native-inputs (list pkg-config))
     (synopsis "Encode data into a QR Code symbol")
     (description "Libqrencode is a C library for encoding data in a QR Code
 symbol, a kind of 2D symbology that can be scanned by handy terminals such as
@@ -161,10 +160,7 @@ characters, and is highly robust.")
      ;; XXX Test suite is broken: https://github.com/dmtx/libdmtx/issues/22
      `(#:tests? #f))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf automake libtool pkg-config))
     (home-page "https://github.com/dmtx")
     (synopsis "Library for reading and writing Data Matrix 2D barcodes")
     (description "libdmtx is software for reading and writing Data Matrix 2D
@@ -213,9 +209,7 @@ C/C++ programs to use its capabilities without restrictions or overhead.")
        ("v4l-utils" ,v4l-utils)))
     (propagated-inputs
      ;; These are in 'requires' field of .pc files.
-     `(("glib" ,glib)
-       ("gtk+" ,gtk+)
-       ("qtbase" ,qtbase-5)))
+     (list glib gtk+ qtbase-5))
     (synopsis "Bar code reader")
     (description
      "ZBar can read barcodes from various sources, such as video streams,

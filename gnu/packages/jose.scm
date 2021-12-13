@@ -41,7 +41,7 @@
                (base32
                 "09c2kn9cjqkgx4g0rf6c2k3ng9970r468c9z7067j8kyf7ksywp2"))))
     (build-system meson-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs (list pkg-config))
     (inputs `(("jansson" ,jansson)
               ("zlib" ,zlib)
               ("libcrypto" ,openssl)))

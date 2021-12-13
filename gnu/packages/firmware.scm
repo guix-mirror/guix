@@ -126,8 +126,7 @@ Linux-libre.")
            "1wgmj4d65izbhprwb5bcwimc2ryv19b9066lqzy4sa5m6wncm9cn"))))
       (build-system gnu-build-system)
       (native-inputs
-       `(("flex" ,flex)
-         ("bison" ,bison)))
+       (list flex bison))
       (arguments
        `(#:modules ((srfi srfi-1)
                     (guix build gnu-build-system)
@@ -181,7 +180,7 @@ driver.")
          "1p60gdi7w88s7qw82d3g9v7mk887mhvidf4l5q5hh09j10h37q4x"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("b43-tools" ,b43-tools)))
+     (list b43-tools))
     (arguments
      `(#:make-flags (list (string-append "PREFIX="
                                          (assoc-ref %outputs "out")
@@ -211,12 +210,9 @@ by the b43-open driver of Linux-libre.")
                (base32
                 "1h4c4ndcnh88jn65h1kycxkjrydwwwh3irkxvpaxb6ry4wpc45r0"))))
     (build-system meson-build-system)
-    (native-inputs `(("curl" ,curl)
-                     ("glib" ,glib "bin")
-                     ("pkg-config" ,pkg-config)))
-    (inputs `(("libgpiod" ,libgpiod)
-              ("libgudev" ,libgudev)
-              ("libusb" ,libusb)))
+    (native-inputs (list curl
+                         `(,glib "bin") pkg-config))
+    (inputs (list libgpiod libgudev libusb))
     (synopsis "Manager daemon for the Quectel EG25 mobile broadband modem")
     (description
      "This package provides a manager daemon for the Quectel EG25 mobile

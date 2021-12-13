@@ -95,7 +95,7 @@
                                            "/share/texmf/tex/latex")))
        #:tests? #f))                              ; no tests
     (inputs
-     `(("perl" ,perl)))
+     (list perl))
     (home-page "https://www.cs.tufts.edu/~nr/noweb/")
     (synopsis "Literate programming tool")
     (description

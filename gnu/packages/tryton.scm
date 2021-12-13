@@ -51,20 +51,19 @@
         (base32 "1jp5cadqpwkcnml8r1hj6aak5kc8an2d5ai62p96x77nn0dp3ny4"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-dateutil" ,python-dateutil)
-       ("python-genshi" ,python-genshi)
-       ("python-lxml" ,python-lxml)
-       ("python-magic" ,python-magic)
-       ("python-passlib" ,python-passlib)
-       ("python-polib" ,python-polib)
-       ("python-psycopg2" ,python-psycopg2)
-       ("python-relatorio" ,python-relatorio)
-       ("python-sql" ,python-sql)
-       ("python-werkzeug" ,python-werkzeug-1.0)  ;setup.py requires werkzeug<2
-       ("python-wrapt" ,python-wrapt)))
+     (list python-dateutil
+           python-genshi
+           python-lxml
+           python-magic
+           python-passlib
+           python-polib
+           python-psycopg2
+           python-relatorio
+           python-sql
+           python-werkzeug-1.0 ;setup.py requires werkzeug<2
+           python-wrapt))
     (native-inputs
-     `(("python-mock" ,python-mock)
-       ("python-pillow" ,python-pillow)))
+     (list python-mock python-pillow))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -113,12 +112,12 @@ and security.")
      `(("glib-compile-schemas" ,glib "bin")
        ("gobject-introspection" ,gobject-introspection)))
     (propagated-inputs
-     `(("librsvg" ,librsvg)
-       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("gtk+" ,gtk+)
-       ("python-dateutil" ,python-dateutil)
-       ("python-pycairo" ,python-pycairo)
-       ("python-pygobject" ,python-pygobject)))
+     (list librsvg
+           gsettings-desktop-schemas
+           gtk+
+           python-dateutil
+           python-pycairo
+           python-pygobject))
     (home-page "https://www.tryton.org/")
     (synopsis "Tryton Client")
     (description
@@ -140,7 +139,7 @@ and security.")
     (arguments
      `(#:tests? #f))
     (propagated-inputs
-     `(("python-dateutil" ,python-dateutil)))
+     (list python-dateutil))
     (home-page "http://www.tryton.org/")
     (synopsis "Library to access a Tryton server as a client")
     (description
@@ -200,11 +199,8 @@ the build system."
     (arguments (tryton-arguments "account"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("python-simpleeval" ,python-simpleeval)
-       ("trytond" ,trytond)
-       ("trytond-company" ,trytond-company)
-       ("trytond-currency" ,trytond-currency)
-       ("trytond-party" ,trytond-party)))
+     (list python-simpleeval trytond trytond-company trytond-currency
+           trytond-party))
     (home-page "https://www.tryton.org/")
     (synopsis "Tryton module for accounting")
     (description
@@ -231,11 +227,8 @@ most of accounting needs.")
      `(,@(%standard-trytond-native-inputs)
        ("trytond-purchase" ,trytond-purchase)))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-account" ,trytond-account)
-       ("trytond-account-invoice" ,trytond-account-invoice)
-       ("trytond-account-product" ,trytond-account-product)
-       ("trytond-product" ,trytond-product)))
+     (list trytond trytond-account trytond-account-invoice
+           trytond-account-product trytond-product))
     (home-page "https://docs.tryton.org/projects/modules-account-asset")
     (synopsis "Tryton module for assets management")
     (description "The @emph{Account Asset} Tryton module adds the depreciation
@@ -256,9 +249,7 @@ of fixed assets.")
     (arguments (tryton-arguments "account_be"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-account" ,trytond-account)
-       ("trytond-account-eu" ,trytond-account-eu)))
+     (list trytond trytond-account trytond-account-eu))
     (home-page "https://docs.tryton.org/projects/modules-account-be")
     (synopsis "Tryton module with Belgian chart of accounts")
     (description "The @emph{Account BE} Tryton module defines the standard
@@ -283,9 +274,7 @@ chart of account for Belgium.")
        ("trytond-purchase" ,trytond-purchase)
        ("trytond-sale" ,trytond-sale)))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-account" ,trytond-account)
-       ("trytond-currency" ,trytond-currency)))
+     (list trytond trytond-account trytond-currency))
     (home-page
      "https://docs.tryton.org/projects/modules-account-cash-rounding")
     (synopsis "Tryton module to round cash amount")
@@ -309,10 +298,7 @@ amounts to be rounded using the cash rounding factor of the currency.")
      `(,@(%standard-trytond-native-inputs)
        ("trytond-account-dunning" ,trytond-account-dunning)))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-account" ,trytond-account)
-       ("trytond-company" ,trytond-company)
-       ("trytond-party" ,trytond-party)))
+     (list trytond trytond-account trytond-company trytond-party))
     (home-page "https://docs.tryton.org/projects/modules-account-credit-limit")
     (synopsis "Tryton module for account credit limit")
     (description "The @emph{Account Credit Limit} Tryton module for manages
@@ -333,8 +319,7 @@ credit limit of parties.")
     (arguments (tryton-arguments "account_de_skr03"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-account" ,trytond-account)))
+     (list trytond trytond-account))
     (home-page "https://docs.tryton.org/projects/modules-account-de-skr03")
     (synopsis "Tryton module with German chart of accounts SKR03")
     (description "This package provides the German SKR03 chart of accounts for
@@ -355,11 +340,8 @@ Tryton.")
     (arguments (tryton-arguments "account_deposit"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-account" ,trytond-account)
-       ("trytond-account-invoice" ,trytond-account-invoice)
-       ("trytond-company" ,trytond-company)
-       ("trytond-party" ,trytond-party)))
+     (list trytond trytond-account trytond-account-invoice
+           trytond-company trytond-party))
     (home-page "https://docs.tryton.org/projects/modules-account-deposit")
     (synopsis "Tryton module for accounting deposit")
     (description "The @emph{Account Deposit} Tryton module adds support for
@@ -384,10 +366,7 @@ the party.")
     (arguments (tryton-arguments "account_dunning"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-account" ,trytond-account)
-       ("trytond-company" ,trytond-company)
-       ("trytond-party" ,trytond-party)))
+     (list trytond trytond-account trytond-company trytond-party))
     (home-page "https://docs.tryton.org/projects/modules-account-dunning")
     (synopsis "Tryton module for account dunning")
     (description "The @emph{Account Dunning} Tryton module adds dunning for
@@ -408,10 +387,8 @@ receivable move lines.")
     (arguments (tryton-arguments "account_dunning_email"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-account-dunning" ,trytond-account-dunning)
-       ("trytond-account-dunning-letter" ,trytond-account-dunning-letter)
-       ("trytond-party" ,trytond-party)))
+     (list trytond trytond-account-dunning trytond-account-dunning-letter
+           trytond-party))
     (home-page
      "https://docs.tryton.org/projects/modules-account-dunning-email")
     (synopsis "Tryton module for account dunning email")
@@ -435,9 +412,7 @@ emails.")
      `(,@(%standard-trytond-native-inputs)
        ("trytond-account-dunning-letter" ,trytond-account-dunning-letter)))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-account-dunning" ,trytond-account-dunning)
-       ("trytond-account-product" ,trytond-account-product)))
+     (list trytond trytond-account-dunning trytond-account-product))
     (home-page "https://docs.tryton.org/projects/modules-account-dunning-fee")
     (synopsis "Tryton module for account dunning fee")
     (description "This package provides a Tryton module for generating
@@ -458,11 +433,8 @@ accounting moves as fees when processing dunning.")
     (arguments (tryton-arguments "account_dunning_letter"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-account" ,trytond-account)
-       ("trytond-account-dunning" ,trytond-account-dunning)
-       ("trytond-company" ,trytond-company)
-       ("trytond-party" ,trytond-party)))
+     (list trytond trytond-account trytond-account-dunning
+           trytond-company trytond-party))
     (home-page
      "https://docs.tryton.org/projects/modules-account-dunning-letter")
     (synopsis "Tryton module for account dunning letter")
@@ -487,11 +459,8 @@ letters.")
        ("trytond-account-asset" ,trytond-account-asset)
        ("trytond-account-payment-sepa" ,trytond-account-payment-sepa)))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-account" ,trytond-account)
-       ("trytond-account-eu" ,trytond-account-eu)
-       ("trytond-account-invoice" ,trytond-account-invoice)
-       ("trytond-party" ,trytond-party)))
+     (list trytond trytond-account trytond-account-eu
+           trytond-account-invoice trytond-party))
     (home-page "https://docs.tryton.org/projects/modules-account-es")
     (synopsis "Tryton with Spanish chart of accounts")
     (description "This package provides the following Spanish charts of
@@ -524,12 +493,12 @@ A wizard allows to generate the following AEAT files:
     (arguments (tryton-arguments "account_eu"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-account" ,trytond-account)
-       ("trytond-account-invoice" ,trytond-account-invoice)
-       ("trytond-company" ,trytond-company)
-       ("trytond-currency" ,trytond-currency)
-       ("trytond-party" ,trytond-party)))
+     (list trytond
+           trytond-account
+           trytond-account-invoice
+           trytond-company
+           trytond-currency
+           trytond-party))
     (home-page "https://docs.tryton.org/projects/modules-account-eu")
     (synopsis "Tryton module for european accounting")
     (description "This package provides a Tryton module implementing common
@@ -554,9 +523,7 @@ accounting requirements in Europe.  It includes:
     (arguments (tryton-arguments "account_fr"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-account" ,trytond-account)
-       ("trytond-party-siret" ,trytond-party-siret)))
+     (list trytond trytond-account trytond-party-siret))
     (home-page "https://docs.tryton.org/projects/modules-account-fr")
     (synopsis "Tryton module with French chart of accounts")
     (description "This package provides the French standard chart of account
@@ -579,13 +546,13 @@ for Tryton.")
      `(,@(%standard-trytond-native-inputs)
        ("trytond-edocument-uncefact" ,trytond-edocument-uncefact)))
     (propagated-inputs
-     `(("python-requests" ,python-requests)
-       ("trytond" ,trytond)
-       ("trytond-account" ,trytond-account)
-       ("trytond-account-invoice" ,trytond-account-invoice)
-       ("trytond-company" ,trytond-company)
-       ("trytond-party" ,trytond-party)
-       ("trytond-party-siret" ,trytond-party-siret)))
+     (list python-requests
+           trytond
+           trytond-account
+           trytond-account-invoice
+           trytond-company
+           trytond-party
+           trytond-party-siret))
     (home-page "https://docs.tryton.org/projects/modules-account-fr-chorus")
     (synopsis "Tryton module to communicate with the French Chorus Pro
 portal")
@@ -611,13 +578,13 @@ using the credential from the accounting configuration.")
     (arguments (tryton-arguments "account_invoice"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-account" ,trytond-account)
-       ("trytond-account-product" ,trytond-account-product)
-       ("trytond-company" ,trytond-company)
-       ("trytond-currency" ,trytond-currency)
-       ("trytond-party" ,trytond-party)
-       ("trytond-product" ,trytond-product)))
+     (list trytond
+           trytond-account
+           trytond-account-product
+           trytond-company
+           trytond-currency
+           trytond-party
+           trytond-product))
     (home-page "https://www.tryton.org/")
     (synopsis "Tryton module for invoicing")
     (description
@@ -642,8 +609,7 @@ term.")
     (arguments (tryton-arguments "account_invoice_correction"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-account-invoice" ,trytond-account-invoice)))
+     (list trytond trytond-account-invoice))
     (home-page
      "https://docs.tryton.org/projects/modules-account-invoice-correction")
     (synopsis "Tryton module to correct invoice")
@@ -667,10 +633,8 @@ original quantity, once with the inverted quantity.")
     (arguments (tryton-arguments "account_invoice_defer"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-account" ,trytond-account)
-       ("trytond-account-invoice" ,trytond-account-invoice)
-       ("trytond-company" ,trytond-company)))
+     (list trytond trytond-account trytond-account-invoice
+           trytond-company))
     (home-page
      "https://docs.tryton.org/projects/modules-account-invoice-defer")
     (synopsis "Tryton module to defer expense and revenue")
@@ -692,9 +656,7 @@ defer the expense or the revenue of an invoice line over many periods.")
     (arguments (tryton-arguments "account_invoice_history"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-account-invoice" ,trytond-account-invoice)
-       ("trytond-party" ,trytond-party)))
+     (list trytond trytond-account-invoice trytond-party))
     (home-page
      "https://docs.tryton.org/projects/modules-account-invoice-history")
     (synopsis "Tryton module to historize invoices")
@@ -716,8 +678,7 @@ the historization of the invoice and its related fields.")
     (arguments (tryton-arguments "account_invoice_line_standalone"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-account-invoice" ,trytond-account-invoice)))
+     (list trytond trytond-account-invoice))
     (home-page
      "https://docs.tryton.org/projects/modules-account-invoice-line-standalone")
     (synopsis "Tryton module to have standalone invoice lines")
@@ -739,9 +700,7 @@ allows to create invoice line not linked to an invoice.")
     (arguments (tryton-arguments "account_invoice_secondary_unit"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-account-invoice" ,trytond-account-invoice)
-       ("trytond-product" ,trytond-product)))
+     (list trytond trytond-account-invoice trytond-product))
     (home-page
      "https://docs.tryton.org/projects/modules-account-invoice-secondary-unit")
     (synopsis "Tryton module to add a secondary unit on invoice line")
@@ -763,10 +722,7 @@ a secondary unit of measure on invoice line.")
     (arguments (tryton-arguments "account_invoice_stock"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-account-invoice" ,trytond-account-invoice)
-       ("trytond-product" ,trytond-product)
-       ("trytond-stock" ,trytond-stock)))
+     (list trytond trytond-account-invoice trytond-product trytond-stock))
     (home-page "https://www.tryton.org/")
     (synopsis "Tryton module to link stock and invoice")
     (description
@@ -795,11 +751,8 @@ average price of the posted invoice lines that are linked to it.")
      `(,@(%standard-trytond-native-inputs)
        ("trytond-account-invoice" ,trytond-account-invoice)))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-account" ,trytond-account)
-       ("trytond-company" ,trytond-company)
-       ("trytond-currency" ,trytond-currency)
-       ("trytond-party" ,trytond-party)))
+     (list trytond trytond-account trytond-company trytond-currency
+           trytond-party))
     (home-page "https://docs.tryton.org/projects/modules-account-payment")
     (synopsis "Tryton module for payment")
     (description "This package provides a Tryton module for generating grouped
@@ -820,11 +773,8 @@ payments for receivable or payable Account Move Lines.")
     (arguments (tryton-arguments "account_payment_braintree"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("python-braintree" ,python-braintree)
-       ("trytond" ,trytond)
-       ("trytond-account" ,trytond-account)
-       ("trytond-account-payment" ,trytond-account-payment)
-       ("trytond-party" ,trytond-party)))
+     (list python-braintree trytond trytond-account
+           trytond-account-payment trytond-party))
     (home-page
      "https://docs.tryton.org/projects/modules-account-payment-braintree")
     (synopsis "Tryton module for Braintree payment")
@@ -851,8 +801,7 @@ methods.")
        ("trytond-account-statement" ,trytond-account-statement)
        ("trytond-account-statement-rule" ,trytond-account-statement-rule)))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-account-payment" ,trytond-account-payment)))
+     (list trytond trytond-account-payment))
     (home-page
      "https://docs.tryton.org/projects/modules-account-payment-clearing")
     (synopsis "Tryton module for payment clearing")
@@ -876,12 +825,12 @@ journal.")
     (arguments (tryton-arguments "account_payment_sepa"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("python-stdnum" ,python-stdnum)
-       ("trytond" ,trytond)
-       ("trytond-account-payment" ,trytond-account-payment)
-       ("trytond-bank" ,trytond-bank)
-       ("trytond-company" ,trytond-company)
-       ("trytond-party" ,trytond-party)))
+     (list python-stdnum
+           trytond
+           trytond-account-payment
+           trytond-bank
+           trytond-company
+           trytond-party))
     (home-page "https://docs.tryton.org/projects/modules-account-payment-sepa")
     (synopsis "Tryton module for SEPA payment")
     (description "The @emph{Account Payment SEPA} Tryton module allows to
@@ -902,12 +851,12 @@ generate SEPA files for a Payment Group.")
     (arguments (tryton-arguments "account_payment_sepa_cfonb"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-account-payment" ,trytond-account-payment)
-       ("trytond-account-payment-sepa" ,trytond-account-payment-sepa)
-       ("trytond-bank" ,trytond-bank)
-       ("trytond-company" ,trytond-company)
-       ("trytond-party" ,trytond-party)))
+     (list trytond
+           trytond-account-payment
+           trytond-account-payment-sepa
+           trytond-bank
+           trytond-company
+           trytond-party))
     (home-page
      "https://docs.tryton.org/projects/modules-account-payment-sepa-cfonb")
     (synopsis "Tryton module for CFONB SEPA payment")
@@ -929,11 +878,8 @@ CFONB flavors to SEPA messages.")
     (arguments (tryton-arguments "account_payment_stripe"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("python-stripe" ,python-stripe)
-       ("trytond" ,trytond)
-       ("trytond-account" ,trytond-account)
-       ("trytond-account-payment" ,trytond-account-payment)
-       ("trytond-party" ,trytond-party)))
+     (list python-stripe trytond trytond-account trytond-account-payment
+           trytond-party))
     (home-page
      "https://docs.tryton.org/projects/modules-account-payment-stripe")
     (synopsis "Tryton module for Stripe payment")
@@ -956,11 +902,8 @@ checkout form to handle Setup Intent and Payment Intent by card.")
     (arguments (tryton-arguments "account_product"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-account" ,trytond-account)
-       ("trytond-analytic-account" ,trytond-analytic-account)
-       ("trytond-company" ,trytond-company)
-       ("trytond-product" ,trytond-product)))
+     (list trytond trytond-account trytond-analytic-account
+           trytond-company trytond-product))
     (home-page "https://www.tryton.org/")
     (synopsis "Tryton module to add accounting on product")
     (description
@@ -985,13 +928,13 @@ and category.")
     (arguments (tryton-arguments "account_statement"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-account" ,trytond-account)
-       ("trytond-account-invoice" ,trytond-account-invoice)
-       ("trytond-bank" ,trytond-bank)
-       ("trytond-company" ,trytond-company)
-       ("trytond-currency" ,trytond-currency)
-       ("trytond-party" ,trytond-party)))
+     (list trytond
+           trytond-account
+           trytond-account-invoice
+           trytond-bank
+           trytond-company
+           trytond-currency
+           trytond-party))
     (home-page "https://docs.tryton.org/projects/modules-account-statement")
     (synopsis "Tryton module with account statements")
     (description "The @emph{Account Statement} Tryton module allows to book
@@ -1012,11 +955,8 @@ statements.  Statement can be used for bank statement, cash daybook etc.")
     (arguments (tryton-arguments "account_statement_aeb43"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("python-csb43" ,python-csb43)
-       ("python-stdnum" ,python-stdnum)
-       ("trytond" ,trytond)
-       ("trytond-account-statement" ,trytond-account-statement)
-       ("trytond-bank" ,trytond-bank)))
+     (list python-csb43 python-stdnum trytond trytond-account-statement
+           trytond-bank))
     (home-page
      "https://docs.tryton.org/projects/trytond-account-statement-aeb43")
     (synopsis "Tryton module to import AEB43 statements")
@@ -1039,10 +979,8 @@ defined by the Spanish banking association.")
     (arguments (tryton-arguments "account_statement_coda"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("python-febelfin-coda" ,python-febelfin-coda)
-       ("trytond" ,trytond)
-       ("trytond-account-statement" ,trytond-account-statement)
-       ("trytond-bank" ,trytond-bank)))
+     (list python-febelfin-coda trytond trytond-account-statement
+           trytond-bank))
     (home-page
      "https://docs.tryton.org/projects/modules-account-statement-coda")
     (synopsis "Tryton module to import CODA statements")
@@ -1065,11 +1003,8 @@ defined by Belgian \"febelfin\".")
     (arguments (tryton-arguments "account_statement_ofx"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("python-ofxparse" ,python-ofxparse)
-       ("trytond" ,trytond)
-       ("trytond-account-statement" ,trytond-account-statement)
-       ("trytond-bank" ,trytond-bank)
-       ("trytond-party" ,trytond-party)))
+     (list python-ofxparse trytond trytond-account-statement trytond-bank
+           trytond-party))
     (home-page
      "https://docs.tryton.org/projects/modules-account-statement-ofx")
     (synopsis "Tryton module to import OFX statements")
@@ -1091,12 +1026,12 @@ the import of the @emph{OFX} files as statement.")
     (arguments (tryton-arguments "account_statement_rule"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-account" ,trytond-account)
-       ("trytond-account-invoice" ,trytond-account-invoice)
-       ("trytond-account-statement" ,trytond-account-statement)
-       ("trytond-company" ,trytond-company)
-       ("trytond-party" ,trytond-party)))
+     (list trytond
+           trytond-account
+           trytond-account-invoice
+           trytond-account-statement
+           trytond-company
+           trytond-party))
     (home-page
      "https://docs.tryton.org/projects/modules-account-statement-rule")
     (synopsis "Tryton module to automate statement import with rules")
@@ -1128,13 +1063,12 @@ linked to the origin.")
        ("trytond-sale-supply-drop-shipment"
         ,trytond-sale-supply-drop-shipment)))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-account" ,trytond-account)
-       ("trytond-account-invoice" ,trytond-account-invoice)
-       ("trytond-account-invoice-stock" ,trytond-account-invoice-stock)
-       ("trytond-account-product" ,trytond-account-product)
-       ("trytond-account-stock-continental"
-        ,trytond-account-stock-continental)))
+     (list trytond
+           trytond-account
+           trytond-account-invoice
+           trytond-account-invoice-stock
+           trytond-account-product
+           trytond-account-stock-continental))
     (home-page
      "https://docs.tryton.org/projects/modules-account-stock-anglo-saxon")
     (synopsis "Tryton module for anglo-saxon real-time stock valuation")
@@ -1162,10 +1096,7 @@ anglo-saxon accounting model for stock valuation.")
        ("trytond-sale-supply-drop-shipment"
         ,trytond-sale-supply-drop-shipment)))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-account" ,trytond-account)
-       ("trytond-account-product" ,trytond-account-product)
-       ("trytond-stock" ,trytond-stock)))
+     (list trytond trytond-account trytond-account-product trytond-stock))
     (home-page
      "https://docs.tryton.org/projects/modules-account-stock-continental")
     (synopsis "Tryton module for continental real-time stock valuation")
@@ -1187,11 +1118,8 @@ continental accounting model for stock valuation.")
     (arguments (tryton-arguments "account_stock_landed_cost"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-account" ,trytond-account)
-       ("trytond-account-invoice" ,trytond-account-invoice)
-       ("trytond-product" ,trytond-product)
-       ("trytond-stock" ,trytond-stock)))
+     (list trytond trytond-account trytond-account-invoice
+           trytond-product trytond-stock))
     (home-page
      "https://docs.tryton.org/projects/modules-account-stock-landed-cost")
     (synopsis "Tryton module for landed cost")
@@ -1213,12 +1141,8 @@ allocate landed cost on Supplier Shipments after their reception.")
     (arguments (tryton-arguments "account_stock_landed_cost_weight"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-account-stock-landed-cost" ,trytond-account-stock-landed-cost)
-       ("trytond-product" ,trytond-product)
-       ("trytond-product-measurements" ,trytond-product-measurements)
-       ("trytond-stock-shipment-measurements"
-        ,trytond-stock-shipment-measurements)))
+     (list trytond trytond-account-stock-landed-cost trytond-product
+           trytond-product-measurements trytond-stock-shipment-measurements))
     (home-page
      "https://docs.tryton.org/projects/modules-account-stock-landed-cost-weight")
     (synopsis "Tryton module for landed cost per weight")
@@ -1241,10 +1165,7 @@ from the Product Measurements")
     (arguments (tryton-arguments "account_tax_cash"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-account" ,trytond-account)
-       ("trytond-account-invoice" ,trytond-account-invoice)
-       ("trytond-party" ,trytond-party)))
+     (list trytond trytond-account trytond-account-invoice trytond-party))
     (home-page "https://docs.tryton.org/projects/modules-account-tax-cash")
     (synopsis "Tryton module to support tax report on cash basis")
     (description "The @emph{Account Tax Cash} Tryton module allows to make tax
@@ -1270,9 +1191,7 @@ report on cash basis.")
        ("trytond-sale" ,trytond-sale)
        ("trytond-stock" ,trytond-stock)))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-account" ,trytond-account)
-       ("trytond-country" ,trytond-country)))
+     (list trytond trytond-account trytond-country))
     (home-page
      "https://docs.tryton.org/projects/modules-account-tax-rule-country")
     (synopsis "Tryton module to add countries on tax rules")
@@ -1295,11 +1214,8 @@ criteria.")
     (arguments (tryton-arguments "analytic_account"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-account" ,trytond-account)
-       ("trytond-company" ,trytond-company)
-       ("trytond-currency" ,trytond-currency)
-       ("trytond-party" ,trytond-party)))
+     (list trytond trytond-account trytond-company trytond-currency
+           trytond-party))
     (home-page "https://www.tryton.org/")
     (synopsis "Tryton module for analytic accounting")
     (description
@@ -1327,9 +1243,7 @@ required to analyse accounting using multiple different axes.")
      `(,@(%standard-trytond-native-inputs)
        ("trytond-account-asset" ,trytond-account-asset)))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-account-invoice" ,trytond-account-invoice)
-       ("trytond-analytic-account" ,trytond-analytic-account)))
+     (list trytond trytond-account-invoice trytond-analytic-account))
     (home-page "https://docs.tryton.org/projects/modules-analytic-invoice")
     (synopsis "Tryton module to add analytic accounting on invoice")
     (description "The @emph{Analytic Invoice} Tryton module allows to set
@@ -1350,10 +1264,8 @@ analytic accounts on invoice line.")
     (arguments (tryton-arguments "analytic_purchase"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-analytic-account" ,trytond-analytic-account)
-       ("trytond-analytic-invoice" ,trytond-analytic-invoice)
-       ("trytond-purchase" ,trytond-purchase)))
+     (list trytond trytond-analytic-account trytond-analytic-invoice
+           trytond-purchase))
     (home-page "https://docs.tryton.org/projects/modules-analytic-purchase")
     (synopsis "Tryton module to add analytic accounting on purchase")
     (description "The @emph{Analytic Purchase} Tryton module allows to set
@@ -1374,10 +1286,8 @@ analytic accounts on purchase line.")
     (arguments (tryton-arguments "analytic_sale"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-analytic-account" ,trytond-analytic-account)
-       ("trytond-analytic-invoice" ,trytond-analytic-invoice)
-       ("trytond-sale" ,trytond-sale)))
+     (list trytond trytond-analytic-account trytond-analytic-invoice
+           trytond-sale))
     (home-page "https://docs.tryton.org/projects/modules-analytic-sale")
     (synopsis "Tryton module to add analytic accounting on sale")
     (description "The @emph{Analytic Sale} Tryton module allows to set
@@ -1400,8 +1310,7 @@ analytic accounts on sale line.")
      `(,@(%standard-trytond-native-inputs)
        ("trytond-timesheet" ,trytond-timesheet)))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-company" ,trytond-company)))
+     (list trytond trytond-company))
     (home-page "https://docs.tryton.org/projects/modules-attendance")
     (synopsis "Tryton module for recording employee attendance")
     (description "The @emph{Attendance} Tryton module allows you to track the
@@ -1424,7 +1333,7 @@ detail of the time of entrance and exit")
     (arguments (tryton-arguments "authentication_sms"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)))
+     (list trytond))
     (home-page "https://docs.tryton.org/projects/modules-authentication-sms")
     (synopsis "Tryton module to authenticate users via SMS")
     (description "The @emph{Authentication SMS} Tryton module allows users to
@@ -1447,10 +1356,7 @@ configuration file.")
     (arguments (tryton-arguments "bank"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("python-stdnum" ,python-stdnum)
-       ("trytond" ,trytond)
-       ("trytond-currency" ,trytond-currency)
-       ("trytond-party" ,trytond-party)))
+     (list python-stdnum trytond trytond-currency trytond-party))
     (home-page "https://docs.tryton.org/projects/modules-bank")
     (synopsis "Tryton module with banks")
     (description "The @emph{Bank} Tryton module defines the concept of bank
@@ -1471,10 +1377,7 @@ and account.")
     (arguments (tryton-arguments "carrier"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-country" ,trytond-country)
-       ("trytond-party" ,trytond-party)
-       ("trytond-product" ,trytond-product)))
+     (list trytond trytond-country trytond-party trytond-product))
     (home-page "https://docs.tryton.org/projects/modules-carrier")
     (synopsis "Tryton module with carriers")
     (description "The @emph{Carrier} Tryton module defines the concept
@@ -1498,9 +1401,7 @@ of carrier.")
        ("trytond-purchase-shipment-cost" ,trytond-purchase-shipment-cost)
        ("trytond-sale-shipment-cost" ,trytond-sale-shipment-cost)))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-carrier" ,trytond-carrier)
-       ("trytond-currency" ,trytond-currency)))
+     (list trytond trytond-carrier trytond-currency))
     (home-page "https://docs.tryton.org/projects/modules-carrier-percentage")
     (synopsis "Tryton module to add cost method based on percentage")
     (description "The @emph{Carrier Percentage} Tryton module adds a cost
@@ -1523,8 +1424,7 @@ method \"on percentage\" on carrier.")
      `(,@(%standard-trytond-native-inputs)
        ("trytond-sale-shipment-cost" ,trytond-sale-shipment-cost)))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-carrier" ,trytond-carrier)))
+     (list trytond trytond-carrier))
     (home-page "https://docs.tryton.org/projects/modules-carrier-subdivision")
     (synopsis "Tryton module that allows carriers selection to be restricted
 by subdivision")
@@ -1559,12 +1459,12 @@ or a specific postal code.")
        ("trytond-purchase-shipment-cost" ,trytond-purchase-shipment-cost)
        ("trytond-sale-shipment-cost" ,trytond-sale-shipment-cost)))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-carrier" ,trytond-carrier)
-       ("trytond-company" ,trytond-company)
-       ("trytond-currency" ,trytond-currency)
-       ("trytond-product" ,trytond-product)
-       ("trytond-product-measurements" ,trytond-product-measurements)))
+     (list trytond
+           trytond-carrier
+           trytond-company
+           trytond-currency
+           trytond-product
+           trytond-product-measurements))
     (home-page "https://docs.tryton.org/projects/modules-carrier-weight")
     (synopsis "Tryton module to add cost method based on weight")
     (description "The @emph{Carrier Weight} Tryton module adds a cost method
@@ -1588,13 +1488,13 @@ the weight is greater or equal but smaller than the next line.")
      `(,@(%standard-trytond-native-inputs)
        ("trytond-sale" ,trytond-sale)))
     (propagated-inputs
-     `(("python-simpleeval" ,python-simpleeval)
-       ("trytond" ,trytond)
-       ("trytond-account" ,trytond-account)
-       ("trytond-account-invoice" ,trytond-account-invoice)
-       ("trytond-account-product" ,trytond-account-product)
-       ("trytond-party" ,trytond-party)
-       ("trytond-product" ,trytond-product)))
+     (list python-simpleeval
+           trytond
+           trytond-account
+           trytond-account-invoice
+           trytond-account-product
+           trytond-party
+           trytond-product))
     (home-page "https://docs.tryton.org/projects/modules-commission")
     (synopsis "Tryton module for commission")
     (description "The @emph{Commission} Tryton module allows to manageq
@@ -1616,10 +1516,8 @@ invoice, following the agent's commission plan.")
     (arguments (tryton-arguments "commission_waiting"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-account" ,trytond-account)
-       ("trytond-account-invoice" ,trytond-account-invoice)
-       ("trytond-commission" ,trytond-commission)))
+     (list trytond trytond-account trytond-account-invoice
+           trytond-commission))
     (home-page "https://docs.tryton.org/projects/modules-commission-waiting")
     (synopsis "Tryton module for commission waiting")
     (description "The @emph{Commission Waiting} Tryton module allows to
@@ -1641,9 +1539,7 @@ to a waiting account defined on the agent.")
     (arguments (tryton-arguments "company"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-currency" ,trytond-currency)
-       ("trytond-party" ,trytond-party)))
+     (list trytond trytond-currency trytond-party))
     (home-page "https://www.tryton.org/")
     (synopsis "Tryton module with companies and employees")
     (description
@@ -1668,8 +1564,7 @@ company and employee and extend the user model.")
     (arguments (tryton-arguments "company_work_time"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-company" ,trytond-company)))
+     (list trytond trytond-company))
     (home-page "https://docs.tryton.org/projects/modules-company-work-time")
     (synopsis "Tryton module to add work time on company")
     (description "The @emph{Company Work Time} Tryton module adds work time
@@ -1696,8 +1591,7 @@ month and a year of work.")
     (arguments (tryton-arguments "country" "--no-doctest"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("python-pycountry" ,python-pycountry)
-       ("trytond" ,trytond)))
+     (list python-pycountry trytond))
     (home-page "http://www.tryton.org/")
     (synopsis "Tryton module with countries")
     (description
@@ -1725,8 +1619,7 @@ month and a year of work.")
        ("python-forex-python" ,python-forex-python)
        ("python-pycountry" ,python-pycountry)))
     (propagated-inputs
-     `(("python-sql" ,python-sql)
-       ("trytond" ,trytond)))
+     (list python-sql trytond))
     (home-page "https://www.tryton.org/")
     (synopsis "Tryton module with currencies")
     (description
@@ -1751,11 +1644,8 @@ currency and rate.")
     (arguments (tryton-arguments "customs"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("python-simpleeval" ,python-simpleeval)
-       ("trytond" ,trytond)
-       ("trytond-country" ,trytond-country)
-       ("trytond-currency" ,trytond-currency)
-       ("trytond-product" ,trytond-product)))
+     (list python-simpleeval trytond trytond-country trytond-currency
+           trytond-product))
     (home-page "https://docs.tryton.org/projects/modules-customs")
     (synopsis "Tryton module for customs")
     (description "The @emph{Customs} Tryton module allows to define customs
@@ -1776,7 +1666,7 @@ duty based on the tariff code.")
     (arguments (tryton-arguments "dashboard"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)))
+     (list trytond))
     (home-page "https://docs.tryton.org/projects/modules-dashboard")
     (synopsis "Tryton module for dashboard")
     (description "The @emph{Dashboard} Tryton module allows users to
@@ -1800,8 +1690,7 @@ configure their dashboard.")
        ("python-lxml" ,python-lxml)
        ("trytond-account-invoice" ,trytond-account-invoice)))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-edocument-unece" ,trytond-edocument-unece)))
+     (list trytond trytond-edocument-unece))
     (home-page "https://docs.tryton.org/projects/modules-edocument-uncefact")
     (synopsis "Tryton module for electronic document UN/CEFACT")
     (description "The @emph{Edocument UN/CEFACT} Tryton module implements
@@ -1826,9 +1715,7 @@ electronic document from UN/CEFACT.  Supported formats are:
     (arguments (tryton-arguments "edocument_unece"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-account" ,trytond-account)
-       ("trytond-product" ,trytond-product)))
+     (list trytond trytond-account trytond-product))
     (home-page "https://docs.tryton.org/projects/modules-edocument-unece")
     (synopsis "Tryton module for electronic document UNECE codes")
     (description "The @emph{Edocument UNECE} Tryton module adds several codes
@@ -1869,9 +1756,7 @@ from the UNECE.  Supported formats are:
        ("trytond-sale-shipment-cost" ,trytond-sale-shipment-cost)
        ("trytond-stock" ,trytond-stock)))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-company" ,trytond-company)
-       ("trytond-party" ,trytond-party)))
+     (list trytond trytond-company trytond-party))
     (home-page "https://docs.tryton.org/projects/modules-incoterm")
     (synopsis "Tryton module for incoterms")
     (description "The @emph{Incoterm} Tryton module is used to manage the
@@ -1893,8 +1778,7 @@ versions of 2010 and 2020.")
     (arguments (tryton-arguments "ldap_authentication"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("python-ldap3" ,python-ldap3)
-       ("trytond" ,trytond)))
+     (list python-ldap3 trytond))
     (home-page "https://docs.tryton.org/projects/modules-ldap-authentication")
     (synopsis "Tryton module to authenticate users through LDAP")
     (description "The @emph{LDAP Authentication} Tryton module allows to
@@ -1915,7 +1799,7 @@ authenticate users via a LDAP server.")
     (arguments (tryton-arguments "marketing"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)))
+     (list trytond))
     (home-page "https://docs.tryton.org/projects/modules-marketing")
     (synopsis "Tryton module to group marketing features")
     (description "The @emph{Marketing} Tryton module defines the
@@ -1938,9 +1822,7 @@ fundamentals for marketing modules.")
      `(,@(%standard-trytond-native-inputs)
        ("trytond-party" ,trytond-party)))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-marketing" ,trytond-marketing)
-       ("trytond-web-shortener" ,trytond-web-shortener)))
+     (list trytond trytond-marketing trytond-web-shortener))
     (home-page "https://docs.tryton.org/projects/modules-marketing-automation")
     (synopsis "Tryton module to plan, coordinate and manage marketing
 campaigns")
@@ -1963,11 +1845,8 @@ that are executed on selected records.")
     (arguments (tryton-arguments "marketing_email"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-marketing" ,trytond-marketing)
-       ("trytond-party" ,trytond-party)
-       ("trytond-web-shortener" ,trytond-web-shortener)
-       ("trytond-web-user" ,trytond-web-user)))
+     (list trytond trytond-marketing trytond-party trytond-web-shortener
+           trytond-web-user))
     (home-page "https://docs.tryton.org/projects/modules-marketing-email")
     (synopsis "Tryton module to manage marketing mailing lists")
     (description "This package provides a Tryton module for managing marketing
@@ -1993,7 +1872,7 @@ mailing lists.")
        ("trytond-party" ,trytond-party)
        ("trytond-web-user" ,trytond-web-user)))
     (propagated-inputs
-     `(("trytond" ,trytond)))
+     (list trytond))
     (home-page "https://docs.tryton.org/projects/modules-notification-email")
     (synopsis "Tryton module for sending email notifications")
     (description "The @emph{Notification Email} Tryton module allows to define
@@ -2017,9 +1896,7 @@ to the email.")
     (arguments (tryton-arguments "party" "--no-doctest"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("python-stdnum" ,python-stdnum)
-       ("trytond" ,trytond)
-       ("trytond-country" ,trytond-country)))
+     (list python-stdnum trytond trytond-country))
     (home-page "https://www.tryton.org/")
     (synopsis "Tryton module for parties and addresses")
     (description
@@ -2046,8 +1923,7 @@ addresses.")
      `(,@(%standard-trytond-native-inputs)
        ("trytond-company" ,trytond-company)))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-party" ,trytond-party)))
+     (list trytond trytond-party))
     (home-page "https://docs.tryton.org/projects/modules-party-avatar")
     (synopsis "Tryton module that adds avatars to parties")
     (description "The @emph{Party Avatar} Tryton module adds an avatar to each
@@ -2068,8 +1944,7 @@ party.")
     (arguments (tryton-arguments "party_relationship"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-party" ,trytond-party)))
+     (list trytond trytond-party))
     (home-page "https://docs.tryton.org/projects/modules-party-relationship")
     (synopsis "Party Relationship module for Tryton")
     (description "The @emph{Party Relationship} Tryton module allows to define
@@ -2090,8 +1965,7 @@ different types of relations between parties.")
     (arguments (tryton-arguments "party_siret"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-party" ,trytond-party)))
+     (list trytond trytond-party))
     (home-page "https://docs.tryton.org/projects/modules-party-siret")
     (synopsis "Tryton module to add SIRET/SIREN on parties")
     (description "The @emph{Party SIRET} Tryton module adds the French company
@@ -2112,9 +1986,7 @@ identification numbers SIREN and SIRET on party and address.")
     (arguments (tryton-arguments "product"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("python-stdnum" ,python-stdnum)
-       ("trytond" ,trytond)
-       ("trytond-company" ,trytond-company)))
+     (list python-stdnum trytond trytond-company))
     (home-page "https://www.tryton.org/")
     (synopsis "Tryton module with products")
     (description
@@ -2139,8 +2011,7 @@ Template and Product.")
     (arguments (tryton-arguments "product_attribute"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-product" ,trytond-product)))
+     (list trytond trytond-product))
     (home-page "https://docs.tryton.org/projects/modules-product-attribute")
     (synopsis "Tryton module with product attributes")
     (description "The @emph{Product Attribute} Tryton module defines the
@@ -2161,8 +2032,7 @@ models `Attribute` and `Attribute Set` for products.")
     (arguments (tryton-arguments "product_classification"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-product" ,trytond-product)))
+     (list trytond trytond-product))
     (home-page
      "https://docs.tryton.org/projects/modules-product-classification")
     (synopsis "Tryton module to implement product classification")
@@ -2185,8 +2055,7 @@ reference field classification to the product template.")
     (arguments (tryton-arguments "product_classification_taxonomic"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-product-classification" ,trytond-product-classification)))
+     (list trytond trytond-product-classification))
     (home-page
      "https://docs.tryton.org/projects/modules-product-classification-taxonomic")
     (synopsis "Tryton module to implement product classification taxonomic")
@@ -2208,9 +2077,7 @@ adds the taxonomic classification to the products.")
     (arguments (tryton-arguments "product_cost_fifo"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-product" ,trytond-product)
-       ("trytond-stock" ,trytond-stock)))
+     (list trytond trytond-product trytond-stock))
     (home-page "https://docs.tryton.org/projects/modules-product-cost-fifo")
     (synopsis "Tryton module to add FIFO cost method")
     (description "The @emph{Product Cost FIFO} Tryton module add a
@@ -2231,9 +2098,7 @@ first-in-first-out option in the `Cost Method` field of the product form.")
     (arguments (tryton-arguments "product_cost_history"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-product" ,trytond-product)
-       ("trytond-stock" ,trytond-stock)))
+     (list trytond trytond-product trytond-stock))
     (home-page "https://docs.tryton.org/projects/modules-product-cost-history")
     (synopsis "Tryton module to historize product cost")
     (description "The @emph{Product Cost History} Tryton module adds a `Cost
@@ -2262,10 +2127,7 @@ and assets.")
        ("trytond-product-cost-fifo" ,trytond-product-cost-fifo)
        ("trytond-product-cost-history" ,trytond-product-cost-history)))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-company" ,trytond-company)
-       ("trytond-product" ,trytond-product)
-       ("trytond-stock" ,trytond-stock)))
+     (list trytond trytond-company trytond-product trytond-stock))
     (home-page
      "https://docs.tryton.org/projects/modules-product-cost-warehouse")
     (synopsis "Tryton module to compute product cost per warehouse")
@@ -2294,8 +2156,7 @@ cost price of products to be calculated separately for each warehouse.")
        ("trytond-sale" ,trytond-sale)
        ("trytond-stock" ,trytond-stock)))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-product" ,trytond-product)))
+     (list trytond trytond-product))
     (home-page "https://docs.tryton.org/projects/modules-product-kit")
     (synopsis "Tryton module to manage product kits and components")
     (description "The @emph{Product Kit} Tryton Module adds kits and
@@ -2317,8 +2178,7 @@ purchased using a single line.")
     (arguments (tryton-arguments "product_measurements"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-product" ,trytond-product)))
+     (list trytond trytond-product))
     (home-page "https://docs.tryton.org/projects/modules-product-measurements")
     (synopsis "Tryton module to add measurements to product")
     (description "The @emph{Product Measurements} Tryton module adds this
@@ -2339,10 +2199,7 @@ following measurements to Product:")
     (arguments (tryton-arguments "product_price_list"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("python-simpleeval" ,python-simpleeval)
-       ("trytond" ,trytond)
-       ("trytond-company" ,trytond-company)
-       ("trytond-product" ,trytond-product)))
+     (list python-simpleeval trytond trytond-company trytond-product))
     (home-page "https://docs.tryton.org/projects/modules-product-price-list")
     (synopsis "Tryton module with price list")
     (description "The @emph{Product Price List} Tryton module provides formula
@@ -2365,8 +2222,7 @@ to compute prices per product or category.")
      `(,@(%standard-trytond-native-inputs)
        ("trytond-sale-price-list" ,trytond-sale-price-list)))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-product-price-list" ,trytond-product-price-list)))
+     (list trytond trytond-product-price-list))
     (home-page
      "https://docs.tryton.org/projects/modules-product-price-list-dates")
     (synopsis "Tryton module to add dates on price list")
@@ -2388,8 +2244,7 @@ date and end date conditions to the price list lines.")
     (arguments (tryton-arguments "product_price_list_parent"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-product-price-list" ,trytond-product-price-list)))
+     (list trytond trytond-product-price-list))
     (home-page
      "https://docs.tryton.org/projects/modules-product-price-list-parent")
     (synopsis "Tryton module to use price from another price list")
@@ -2412,10 +2267,7 @@ which contains the unit price computed by the parent price list.")
     (arguments (tryton-arguments "production"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-company" ,trytond-company)
-       ("trytond-product" ,trytond-product)
-       ("trytond-stock" ,trytond-stock)))
+     (list trytond trytond-company trytond-product trytond-stock))
     (home-page "https://docs.tryton.org/projects/modules-production")
     (synopsis "Tryton module for production")
     (description "The @emph{Production} Tryton module defines basics
@@ -2436,11 +2288,8 @@ for production management: Bill of material and production order.")
     (arguments (tryton-arguments "production_outsourcing"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-product" ,trytond-product)
-       ("trytond-production" ,trytond-production)
-       ("trytond-production-routing" ,trytond-production-routing)
-       ("trytond-purchase" ,trytond-purchase)))
+     (list trytond trytond-product trytond-production
+           trytond-production-routing trytond-purchase))
     (home-page
      "https://docs.tryton.org/projects/modules-production-outsourcing")
     (synopsis "Tryton module to outsource production")
@@ -2466,8 +2315,7 @@ the production.")
      `(,@(%standard-trytond-native-inputs)
        ("trytond-stock-supply-production" ,trytond-stock-supply-production)))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-production" ,trytond-production)))
+     (list trytond trytond-production))
     (home-page "https://docs.tryton.org/projects/modules-production-routing")
     (synopsis "Tryton module for production routing")
     (description "The @emph{Production Routing} Tryton module defines the
@@ -2488,8 +2336,7 @@ routings for production: Routing, Step and Operation.")
     (arguments (tryton-arguments "production_split"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-production" ,trytond-production)))
+     (list trytond trytond-production))
     (home-page "https://docs.tryton.org/projects/modules-production-split")
     (synopsis "Tryton module to split production")
     (description "The @emph{Production Split} Tryton module adds on the
@@ -2513,12 +2360,12 @@ quantity.")
     (arguments (tryton-arguments "production_work"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-company" ,trytond-company)
-       ("trytond-product" ,trytond-product)
-       ("trytond-production" ,trytond-production)
-       ("trytond-production-routing" ,trytond-production-routing)
-       ("trytond-stock" ,trytond-stock)))
+     (list trytond
+           trytond-company
+           trytond-product
+           trytond-production
+           trytond-production-routing
+           trytond-stock))
     (home-page "https://docs.tryton.org/projects/modules-production-work")
     (synopsis "Tryton module for production work")
     (description "The @emph{Production Work} Tryton module allows to manage
@@ -2540,10 +2387,8 @@ work cost.")
     (arguments (tryton-arguments "production_work_timesheet"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-production-routing" ,trytond-production-routing)
-       ("trytond-production-work" ,trytond-production-work)
-       ("trytond-timesheet" ,trytond-timesheet)))
+     (list trytond trytond-production-routing trytond-production-work
+           trytond-timesheet))
     (home-page
      "https://docs.tryton.org/projects/modules-production-work-timesheet")
     (synopsis "Tryton module for timesheet on production work")
@@ -2565,11 +2410,8 @@ enter timesheet for production works.")
     (arguments (tryton-arguments "project"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-company" ,trytond-company)
-       ("trytond-company-work-time" ,trytond-company-work-time)
-       ("trytond-party" ,trytond-party)
-       ("trytond-timesheet" ,trytond-timesheet)))
+     (list trytond trytond-company trytond-company-work-time
+           trytond-party trytond-timesheet))
     (home-page "https://docs.tryton.org/projects/modules-project")
     (synopsis "Tryton module with projects")
     (description "The @emph{Project} Tryton module provides the concepts of
@@ -2590,14 +2432,14 @@ project and task and the basis for simple project management.")
     (arguments (tryton-arguments "project_invoice"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-account" ,trytond-account)
-       ("trytond-account-invoice" ,trytond-account-invoice)
-       ("trytond-account-product" ,trytond-account-product)
-       ("trytond-product" ,trytond-product)
-       ("trytond-project" ,trytond-project)
-       ("trytond-project-revenue" ,trytond-project-revenue)
-       ("trytond-timesheet" ,trytond-timesheet)))
+     (list trytond
+           trytond-account
+           trytond-account-invoice
+           trytond-account-product
+           trytond-product
+           trytond-project
+           trytond-project-revenue
+           trytond-timesheet))
     (home-page "https://docs.tryton.org/projects/modules-project-invoice")
     (synopsis "Tryton module to invoice projects")
     (description "The @emph{Project Invoice} Tryton module adds invoice
@@ -2627,10 +2469,7 @@ methods on projects.  The methods are:
     (arguments (tryton-arguments "project_plan"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-company" ,trytond-company)
-       ("trytond-project" ,trytond-project)
-       ("trytond-timesheet" ,trytond-timesheet)))
+     (list trytond trytond-company trytond-project trytond-timesheet))
     (home-page "https://docs.tryton.org/projects/modules-project-plan")
     (synopsis "Tryton module to add planning capabilities on projects")
     (description "The @emph{Project Plan} Tryton module adds planning features
@@ -2653,12 +2492,12 @@ on top of the Project module.")
      `(,@(%standard-trytond-native-inputs)
        ("trytond-purchase" ,trytond-purchase)))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-company" ,trytond-company)
-       ("trytond-product" ,trytond-product)
-       ("trytond-project" ,trytond-project)
-       ("trytond-timesheet" ,trytond-timesheet)
-       ("trytond-timesheet-cost" ,trytond-timesheet-cost)))
+     (list trytond
+           trytond-company
+           trytond-product
+           trytond-project
+           trytond-timesheet
+           trytond-timesheet-cost))
     (home-page "https://docs.tryton.org/projects/modules-project-revenue")
     (synopsis "Tryton module to add revenue on project")
     (description "The @emph{Project Revenue} Tryton module computes revenue
@@ -2683,16 +2522,16 @@ the linked time sheets and the linked purchase lines.")
     (arguments (tryton-arguments "purchase"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-account" ,trytond-account)
-       ("trytond-account-invoice" ,trytond-account-invoice)
-       ("trytond-account-invoice-stock" ,trytond-account-invoice-stock)
-       ("trytond-account-product" ,trytond-account-product)
-       ("trytond-company" ,trytond-company)
-       ("trytond-currency" ,trytond-currency)
-       ("trytond-party" ,trytond-party)
-       ("trytond-product" ,trytond-product)
-       ("trytond-stock" ,trytond-stock)))
+     (list trytond
+           trytond-account
+           trytond-account-invoice
+           trytond-account-invoice-stock
+           trytond-account-product
+           trytond-company
+           trytond-currency
+           trytond-party
+           trytond-product
+           trytond-stock))
     (home-page "https://www.tryton.org/")
     (synopsis "Tryton module for purchase")
     (description
@@ -2716,11 +2555,8 @@ the linked time sheets and the linked purchase lines.")
     (arguments (tryton-arguments "purchase_amendment"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-account-invoice" ,trytond-account-invoice)
-       ("trytond-purchase" ,trytond-purchase)
-       ("trytond-purchase-history" ,trytond-purchase-history)
-       ("trytond-stock" ,trytond-stock)))
+     (list trytond trytond-account-invoice trytond-purchase
+           trytond-purchase-history trytond-stock))
     (home-page "https://docs.tryton.org/projects/modules-purchase-amendment")
     (synopsis "Tryton module to amend purchases")
     (description "The @emph{Purchase Amendment} Tryton module allows you to
@@ -2752,8 +2588,7 @@ amendment is composed of action lines which can:
     (arguments (tryton-arguments "purchase_history"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-purchase" ,trytond-purchase)))
+     (list trytond trytond-purchase))
     (home-page "https://docs.tryton.org/projects/modules-purchase-history")
     (synopsis "Tryton module to historize purchases")
     (description "The @emph{Purchase History} Tryton module activates the
@@ -2775,10 +2610,8 @@ time the purchase is reset to draft.")
     (arguments (tryton-arguments "purchase_invoice_line_standalone"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-account-invoice-line-standalone"
-        ,trytond-account-invoice-line-standalone)
-       ("trytond-purchase" ,trytond-purchase)))
+     (list trytond trytond-account-invoice-line-standalone
+           trytond-purchase))
     (home-page
      "https://docs.tryton.org/projects/modules-purchase-invoice-line-standalone")
     (synopsis "Tryton module for standalone invoice line from purchase")
@@ -2800,12 +2633,12 @@ makes purchase to generate invoice lines instead of invoices.")
     (arguments (tryton-arguments "purchase_price_list"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-account" ,trytond-account)
-       ("trytond-company" ,trytond-company)
-       ("trytond-party" ,trytond-party)
-       ("trytond-product-price-list" ,trytond-product-price-list)
-       ("trytond-purchase" ,trytond-purchase)))
+     (list trytond
+           trytond-account
+           trytond-company
+           trytond-party
+           trytond-product-price-list
+           trytond-purchase))
     (home-page "https://docs.tryton.org/projects/modules-purchase-price-list")
     (synopsis "Tryton module to add price list on purchase")
     (description "The @emph{Purchase Price List} Tryton Module allows price
@@ -2827,9 +2660,7 @@ lists to be defined for suppliers.")
     (arguments (tryton-arguments "purchase_request" "--no-doctest"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-product" ,trytond-product)
-       ("trytond-purchase" ,trytond-purchase)))
+     (list trytond trytond-product trytond-purchase))
     (home-page "https://www.tryton.org/")
     (synopsis "Tryton module for purchase requests")
     (description
@@ -2858,12 +2689,12 @@ generated by other process from Tryton.")
      `(,@(%standard-trytond-native-inputs)
        ("trytond-purchase-requisition" ,trytond-purchase-requisition)))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-company" ,trytond-company)
-       ("trytond-currency" ,trytond-currency)
-       ("trytond-party" ,trytond-party)
-       ("trytond-product" ,trytond-product)
-       ("trytond-purchase-request" ,trytond-purchase-request)))
+     (list trytond
+           trytond-company
+           trytond-currency
+           trytond-party
+           trytond-product
+           trytond-purchase-request))
     (home-page
      "https://docs.tryton.org/projects/modules-purchase-request-quotation")
     (synopsis "Tryton module for purchase request quotation")
@@ -2887,13 +2718,13 @@ supplier.")
     (arguments (tryton-arguments "purchase_requisition"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-company" ,trytond-company)
-       ("trytond-currency" ,trytond-currency)
-       ("trytond-party" ,trytond-party)
-       ("trytond-product" ,trytond-product)
-       ("trytond-purchase" ,trytond-purchase)
-       ("trytond-purchase-request" ,trytond-purchase-request)))
+     (list trytond
+           trytond-company
+           trytond-currency
+           trytond-party
+           trytond-product
+           trytond-purchase
+           trytond-purchase-request))
     (home-page "https://docs.tryton.org/projects/modules-purchase-requisition")
     (synopsis "Tryton module to enter requests for product
 supply (requisition)")
@@ -2922,11 +2753,8 @@ be created.")
         ,trytond-account-invoice-secondary-unit)
        ("trytond-stock-secondary-unit" ,trytond-stock-secondary-unit)))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-account-invoice" ,trytond-account-invoice)
-       ("trytond-product" ,trytond-product)
-       ("trytond-purchase" ,trytond-purchase)
-       ("trytond-stock" ,trytond-stock)))
+     (list trytond trytond-account-invoice trytond-product
+           trytond-purchase trytond-stock))
     (home-page
      "https://docs.tryton.org/projects/modules-purchase-secondary-unit")
     (synopsis "Tryton module to add a secondary unit on purchase line")
@@ -2957,11 +2785,8 @@ the product with its factor against the purchase unit.")
        ("trytond-account-stock-continental" ,trytond-account-stock-continental)
        ("trytond-purchase" ,trytond-purchase)))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-carrier" ,trytond-carrier)
-       ("trytond-currency" ,trytond-currency)
-       ("trytond-product" ,trytond-product)
-       ("trytond-stock" ,trytond-stock)))
+     (list trytond trytond-carrier trytond-currency trytond-product
+           trytond-stock))
     (home-page
      "https://docs.tryton.org/projects/modules-purchase-shipment-cost")
     (synopsis "Tryton module for purchase shipment costs")
@@ -2983,17 +2808,17 @@ shipment costs to Supplier Shipment.")
     (arguments (tryton-arguments "sale"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-account" ,trytond-account)
-       ("trytond-account-invoice" ,trytond-account-invoice)
-       ("trytond-account-invoice-stock" ,trytond-account-invoice-stock)
-       ("trytond-account-product" ,trytond-account-product)
-       ("trytond-company" ,trytond-company)
-       ("trytond-country" ,trytond-country)
-       ("trytond-currency" ,trytond-currency)
-       ("trytond-party" ,trytond-party)
-       ("trytond-product" ,trytond-product)
-       ("trytond-stock" ,trytond-stock)))
+     (list trytond
+           trytond-account
+           trytond-account-invoice
+           trytond-account-invoice-stock
+           trytond-account-product
+           trytond-company
+           trytond-country
+           trytond-currency
+           trytond-party
+           trytond-product
+           trytond-stock))
     (home-page "https://docs.tryton.org/projects/modules-sale")
     (synopsis "Tryton module for sale")
     (description "The @emph{Sale} Tryton module helps organise and manage
@@ -3019,11 +2844,8 @@ to be generated that contain aggregated sales figures.")
      `(,@(%standard-trytond-native-inputs)
        ("trytond-sale-supply" ,trytond-sale-supply)))
     (propagated-inputs
-     `(("python-simpleeval" ,python-simpleeval)
-       ("trytond" ,trytond)
-       ("trytond-account" ,trytond-account)
-       ("trytond-account-invoice" ,trytond-account-invoice)
-       ("trytond-sale" ,trytond-sale)))
+     (list python-simpleeval trytond trytond-account
+           trytond-account-invoice trytond-sale))
     (home-page
      "https://docs.tryton.org/projects/modules-sale-advance-payment")
     (synopsis "Tryton module for sale advance payment")
@@ -3045,11 +2867,8 @@ for advance payment management on the sale.")
     (arguments (tryton-arguments "sale_amendment"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-account-invoice" ,trytond-account-invoice)
-       ("trytond-sale" ,trytond-sale)
-       ("trytond-sale-history" ,trytond-sale-history)
-       ("trytond-stock" ,trytond-stock)))
+     (list trytond trytond-account-invoice trytond-sale
+           trytond-sale-history trytond-stock))
     (home-page "https://docs.tryton.org/projects/modules-sale-amendment")
     (synopsis "Tryton module to amend sales")
     (description "The @emph{Sale Amendment} Tryton module allows you to change
@@ -3071,11 +2890,8 @@ composed of action lines which can:")
     (arguments (tryton-arguments "sale_complaint"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-account-invoice" ,trytond-account-invoice)
-       ("trytond-company" ,trytond-company)
-       ("trytond-party" ,trytond-party)
-       ("trytond-sale" ,trytond-sale)))
+     (list trytond trytond-account-invoice trytond-company trytond-party
+           trytond-sale))
     (home-page "https://docs.tryton.org/projects/modules-sale-complaint")
     (synopsis "Tryton module for sale complaints")
     (description "The @emph{Sale Complaint} Tryton module defines the
@@ -3096,12 +2912,12 @@ composed of action lines which can:")
     (arguments (tryton-arguments "sale_credit_limit"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-account-credit-limit" ,trytond-account-credit-limit)
-       ("trytond-account-invoice" ,trytond-account-invoice)
-       ("trytond-company" ,trytond-company)
-       ("trytond-currency" ,trytond-currency)
-       ("trytond-sale" ,trytond-sale)))
+     (list trytond
+           trytond-account-credit-limit
+           trytond-account-invoice
+           trytond-company
+           trytond-currency
+           trytond-sale))
     (home-page "https://docs.tryton.org/projects/modules-sale-credit-limit")
     (synopsis "Tryton module for sale credit limit")
     (description "The @emph{Sale Credit Limit} Tryton module adds confirmed
@@ -3123,9 +2939,7 @@ credit limit of the party when confirming a sale.")
     (arguments (tryton-arguments "sale_discount"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-product" ,trytond-product)
-       ("trytond-sale" ,trytond-sale)))
+     (list trytond trytond-product trytond-sale))
     (home-page "https://docs.tryton.org/projects/modules-sale-discount")
     (synopsis "Tryton module that manages discount on sale")
     (description "The @emph{Sale Discount} Tryton module adds discount on sale
@@ -3146,12 +2960,12 @@ line.")
     (arguments (tryton-arguments "sale_extra"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-company" ,trytond-company)
-       ("trytond-product" ,trytond-product)
-       ("trytond-product-price-list" ,trytond-product-price-list)
-       ("trytond-sale" ,trytond-sale)
-       ("trytond-sale-price-list" ,trytond-sale-price-list)))
+     (list trytond
+           trytond-company
+           trytond-product
+           trytond-product-price-list
+           trytond-sale
+           trytond-sale-price-list))
     (home-page "https://docs.tryton.org/projects/modules-sale-extra")
     (synopsis "Tryton module for sale extra")
     (description "The @emph{Sale Extra} Tryton module allows to add extra line
@@ -3172,13 +2986,13 @@ on sale based on criteria.")
     (arguments (tryton-arguments "sale_gift_card"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-account" ,trytond-account)
-       ("trytond-account-invoice" ,trytond-account-invoice)
-       ("trytond-company" ,trytond-company)
-       ("trytond-product" ,trytond-product)
-       ("trytond-sale" ,trytond-sale)
-       ("trytond-stock" ,trytond-stock)))
+     (list trytond
+           trytond-account
+           trytond-account-invoice
+           trytond-company
+           trytond-product
+           trytond-sale
+           trytond-stock))
     (home-page "https://docs.tryton.org/projects/modules-sale-gift-card")
     (synopsis "Tryton module to manage gift cards")
     (description "The @emph{Sale Gift Card} Tryton module manages the selling
@@ -3199,8 +3013,7 @@ and redeeming of gift cards.")
     (arguments (tryton-arguments "sale_history"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-sale" ,trytond-sale)))
+     (list trytond trytond-sale))
     (home-page "https://docs.tryton.org/projects/modules-sale-history")
     (synopsis "Tryton module to historize sales")
     (description "The @emph{Sale History} Tryton module activates the
@@ -3222,10 +3035,7 @@ time the sale is reset to draft.")
     (arguments (tryton-arguments "sale_invoice_grouping"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-account-invoice" ,trytond-account-invoice)
-       ("trytond-party" ,trytond-party)
-       ("trytond-sale" ,trytond-sale)))
+     (list trytond trytond-account-invoice trytond-party trytond-sale))
     (home-page
      "https://docs.tryton.org/projects/modules-sale-invoice-grouping")
     (synopsis "Tryton module to group sale invoices")
@@ -3247,15 +3057,15 @@ option to define how invoice lines generated from sales will be grouped.")
     (arguments (tryton-arguments "sale_opportunity"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-account" ,trytond-account)
-       ("trytond-account-invoice" ,trytond-account-invoice)
-       ("trytond-company" ,trytond-company)
-       ("trytond-currency" ,trytond-currency)
-       ("trytond-party" ,trytond-party)
-       ("trytond-product" ,trytond-product)
-       ("trytond-sale" ,trytond-sale)
-       ("trytond-stock" ,trytond-stock)))
+     (list trytond
+           trytond-account
+           trytond-account-invoice
+           trytond-company
+           trytond-currency
+           trytond-party
+           trytond-product
+           trytond-sale
+           trytond-stock))
     (home-page "https://docs.tryton.org/projects/modules-sale-opportunity")
     (synopsis "Tryton module with leads and opportunities")
     (description "The @emph{Sale Opportunity} Tryton module defines the
@@ -3278,10 +3088,8 @@ lead/opportunity model.")
      `(,@(%standard-trytond-native-inputs)
        ("trytond-account-payment-clearing" ,trytond-account-payment-clearing)))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-account-invoice" ,trytond-account-invoice)
-       ("trytond-account-payment" ,trytond-account-payment)
-       ("trytond-sale" ,trytond-sale)))
+     (list trytond trytond-account-invoice trytond-account-payment
+           trytond-sale))
     (home-page "https://docs.tryton.org/projects/modules-sale-payment")
     (synopsis "Tryton module that manage payments on sale")
     (description "The @emph{Sale Payment} Tryton module extends Sale to allow
@@ -3302,11 +3110,8 @@ payments prior to the creation of any invoice.")
     (arguments (tryton-arguments "sale_price_list"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-company" ,trytond-company)
-       ("trytond-party" ,trytond-party)
-       ("trytond-product-price-list" ,trytond-product-price-list)
-       ("trytond-sale" ,trytond-sale)))
+     (list trytond trytond-company trytond-party
+           trytond-product-price-list trytond-sale))
     (home-page "https://docs.tryton.org/projects/modules-sale-price-list")
     (synopsis "Tryton module to add price list on sale")
     (description "The @emph{Sale Price List} Tryton module adds support for
@@ -3329,9 +3134,7 @@ price list on sale.  A price list can be set per party or as default.")
      `(,@(%standard-trytond-native-inputs)
        ("trytond-sale-amendment" ,trytond-sale-amendment)))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-product" ,trytond-product)
-       ("trytond-sale" ,trytond-sale)))
+     (list trytond trytond-product trytond-sale))
     (home-page
      "https://docs.tryton.org/projects/modules-sale-product-customer")
     (synopsis "Tryton module to manage customer product on sale")
@@ -3353,13 +3156,13 @@ customer's names and codes for products or variants.")
     (arguments (tryton-arguments "sale_promotion"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("python-simpleeval" ,python-simpleeval)
-       ("trytond" ,trytond)
-       ("trytond-company" ,trytond-company)
-       ("trytond-product" ,trytond-product)
-       ("trytond-product-price-list" ,trytond-product-price-list)
-       ("trytond-sale" ,trytond-sale)
-       ("trytond-sale-price-list" ,trytond-sale-price-list)))
+     (list python-simpleeval
+           trytond
+           trytond-company
+           trytond-product
+           trytond-product-price-list
+           trytond-sale
+           trytond-sale-price-list))
     (home-page "https://docs.tryton.org/projects/modules-sale-promotion")
     (synopsis "Tryton module for sale promotion")
     (description "The @emph{Sale Promotion} module allows to apply promotions
@@ -3380,9 +3183,7 @@ on sale based on criteria.")
     (arguments (tryton-arguments "sale_promotion_coupon"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-sale" ,trytond-sale)
-       ("trytond-sale-promotion" ,trytond-sale-promotion)))
+     (list trytond trytond-sale trytond-sale-promotion))
     (home-page
      "https://docs.tryton.org/projects/modules-sale-promotion-coupon")
     (synopsis "Tryton module for sale promotion coupon")
@@ -3409,11 +3210,8 @@ to the promotions.")
        ("trytond-sale-product-customer" ,trytond-sale-product-customer)
        ("trytond-stock-secondary-unit" ,trytond-stock-secondary-unit)))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-account-invoice" ,trytond-account-invoice)
-       ("trytond-product" ,trytond-product)
-       ("trytond-sale" ,trytond-sale)
-       ("trytond-stock" ,trytond-stock)))
+     (list trytond trytond-account-invoice trytond-product trytond-sale
+           trytond-stock))
     (home-page "https://docs.tryton.org/projects/modules-sale-secondary-unit")
     (synopsis "Tryton module to add a secondary unit on sale line")
     (description "The @emph{Sale Secondary Unit} Tryton module adds a
@@ -3439,13 +3237,13 @@ unit is defined on the product with its factor against the sale unit.")
        ("trytond-sale-promotion" ,trytond-sale-promotion)
        ("trytond-stock-shipment-cost" ,trytond-stock-shipment-cost)))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-account-invoice" ,trytond-account-invoice)
-       ("trytond-carrier" ,trytond-carrier)
-       ("trytond-currency" ,trytond-currency)
-       ("trytond-product" ,trytond-product)
-       ("trytond-sale" ,trytond-sale)
-       ("trytond-stock" ,trytond-stock)))
+     (list trytond
+           trytond-account-invoice
+           trytond-carrier
+           trytond-currency
+           trytond-product
+           trytond-sale
+           trytond-stock))
     (home-page "https://docs.tryton.org/projects/modules-sale-shipment-cost")
     (synopsis "Tryton module for sale shipment cost")
     (description "The @emph{Sale Shipment Cost} Tryton module adds shipment
@@ -3466,10 +3264,7 @@ cost for sale.")
     (arguments (tryton-arguments "sale_shipment_grouping"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-party" ,trytond-party)
-       ("trytond-sale" ,trytond-sale)
-       ("trytond-stock" ,trytond-stock)))
+     (list trytond trytond-party trytond-sale trytond-stock))
     (home-page
      "https://docs.tryton.org/projects/modules-sale-shipment-grouping")
     (synopsis "Tryton module to group sale stock moves")
@@ -3491,9 +3286,7 @@ define how stock moves generated from sales will be grouped.")
     (arguments (tryton-arguments "sale_shipment_tolerance"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-sale" ,trytond-sale)
-       ("trytond-stock" ,trytond-stock)))
+     (list trytond trytond-sale trytond-stock))
     (home-page
      "https://docs.tryton.org/projects/modules-sale-shipment-tolerance")
     (synopsis "Tryton module to define tolerance for sale shipment")
@@ -3521,10 +3314,7 @@ raised.")
      `(,@(%standard-trytond-native-inputs)
        ("trytond-stock-supply" ,trytond-stock-supply)))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-product" ,trytond-product)
-       ("trytond-sale" ,trytond-sale)
-       ("trytond-stock" ,trytond-stock)))
+     (list trytond trytond-product trytond-sale trytond-stock))
     (home-page "https://docs.tryton.org/projects/modules-sale-stock-quantity")
     (synopsis "Tryton module to add stock warning on sale")
     (description "The @emph{Sale Stock Quantity} Tryton module checks the
@@ -3548,13 +3338,13 @@ stock forecasts.")
     (arguments (tryton-arguments "sale_subscription"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-account" ,trytond-account)
-       ("trytond-account-invoice" ,trytond-account-invoice)
-       ("trytond-company" ,trytond-company)
-       ("trytond-currency" ,trytond-currency)
-       ("trytond-product" ,trytond-product)
-       ("trytond-sale" ,trytond-sale)))
+     (list trytond
+           trytond-account
+           trytond-account-invoice
+           trytond-company
+           trytond-currency
+           trytond-product
+           trytond-sale))
     (home-page "https://docs.tryton.org/projects/modules-sale-subscription")
     (synopsis "Tryton module for subscription")
     (description "The @emph{Sale Subscription} module defines subscription,
@@ -3575,9 +3365,7 @@ services and recurrence rule models.")
     (arguments (tryton-arguments "sale_subscription_asset"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-sale-subscription" ,trytond-sale-subscription)
-       ("trytond-stock-lot" ,trytond-stock-lot)))
+     (list trytond trytond-sale-subscription trytond-stock-lot))
     (home-page
      "https://docs.tryton.org/projects/modules-sale-subscription-asset")
     (synopsis "Tryton module to handle asset in the sale subscriptions")
@@ -3599,11 +3387,8 @@ notion of asset to the sale subscription module.")
     (arguments (tryton-arguments "sale_supply"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-purchase" ,trytond-purchase)
-       ("trytond-purchase-request" ,trytond-purchase-request)
-       ("trytond-sale" ,trytond-sale)
-       ("trytond-stock" ,trytond-stock)))
+     (list trytond trytond-purchase trytond-purchase-request trytond-sale
+           trytond-stock))
     (home-page "https://docs.tryton.org/projects/modules-sale-supply")
     (synopsis "Tryton module for sale supply")
     (description "The @emph{Sale Supply} Tryton module adds a \"supply on sale
@@ -3628,14 +3413,14 @@ supply method.")
     (arguments (tryton-arguments "sale_supply_drop_shipment"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-company" ,trytond-company)
-       ("trytond-product" ,trytond-product)
-       ("trytond-purchase" ,trytond-purchase)
-       ("trytond-purchase-request" ,trytond-purchase-request)
-       ("trytond-sale" ,trytond-sale)
-       ("trytond-sale-supply" ,trytond-sale-supply)
-       ("trytond-stock" ,trytond-stock)))
+     (list trytond
+           trytond-company
+           trytond-product
+           trytond-purchase
+           trytond-purchase-request
+           trytond-sale
+           trytond-sale-supply
+           trytond-stock))
     (home-page
      "https://docs.tryton.org/projects/modules-sale-supply-drop-shipment")
     (synopsis "Tryton module for sale supply drop shipment")
@@ -3660,9 +3445,7 @@ shipment is created and linked to both the purchase and the sale.")
     (arguments (tryton-arguments "sale_supply_production"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-production" ,trytond-production)
-       ("trytond-sale-supply" ,trytond-sale-supply)))
+     (list trytond trytond-production trytond-sale-supply))
     (home-page
      "https://docs.tryton.org/projects/modules-sale-supply-production")
     (synopsis "Tryton module to supply sales from production")
@@ -3688,12 +3471,12 @@ back to the default supply method.")
     (arguments (tryton-arguments "stock"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("python-simpleeval" ,python-simpleeval)
-       ("trytond" ,trytond)
-       ("trytond-company" ,trytond-company)
-       ("trytond-currency" ,trytond-currency)
-       ("trytond-party" ,trytond-party)
-       ("trytond-product" ,trytond-product)))
+     (list python-simpleeval
+           trytond
+           trytond-company
+           trytond-currency
+           trytond-party
+           trytond-product))
     (home-page "https://www.tryton.org/")
     (synopsis "Tryton module for stock and inventory")
     (description
@@ -3722,8 +3505,7 @@ inventory to control and update stock levels.")
      `(,@(%standard-trytond-native-inputs)
        ("trytond-production" ,trytond-production)))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-stock" ,trytond-stock)))
+     (list trytond trytond-stock))
     (home-page "https://docs.tryton.org/projects/modules-stock-assign-manual")
     (synopsis "Tryton module to assign manually stock move")
     (description "The @emph{Stock Assign Manual} Tryton module adds a wizard
@@ -3747,15 +3529,14 @@ location to pick products.")
      `(,@(%standard-trytond-native-inputs)
        ("trytond-stock-supply" ,trytond-stock-supply)))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-account-invoice" ,trytond-account-invoice)
-       ("trytond-account-invoice-line-standalone"
-        ,trytond-account-invoice-line-standalone)
-       ("trytond-account-invoice-stock" ,trytond-account-invoice-stock)
-       ("trytond-product" ,trytond-product)
-       ("trytond-purchase" ,trytond-purchase)
-       ("trytond-sale" ,trytond-sale)
-       ("trytond-stock" ,trytond-stock)))
+     (list trytond
+           trytond-account-invoice
+           trytond-account-invoice-line-standalone
+           trytond-account-invoice-stock
+           trytond-product
+           trytond-purchase
+           trytond-sale
+           trytond-stock))
     (home-page "https://docs.tryton.org/projects/modules-stock-consignment")
     (synopsis "Tryton module to manage consignment stock")
     (description "The @emph{Stock Consignment} Tryton module allow to manage
@@ -3776,10 +3557,7 @@ consignment stock from supplier or at customer warehouse.")
     (arguments (tryton-arguments "stock_forecast"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-company" ,trytond-company)
-       ("trytond-product" ,trytond-product)
-       ("trytond-stock" ,trytond-stock)))
+     (list trytond trytond-company trytond-product trytond-stock))
     (home-page "https://docs.tryton.org/projects/modules-stock-forecast")
     (synopsis "Tryton module with stock forecasts")
     (description "The @emph{Stock Forecast} Tryton module provide a simple way
@@ -3801,10 +3579,7 @@ other stock mechanisms to anticipate customer demand.")
     (arguments (tryton-arguments "stock_inventory_location"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-company" ,trytond-company)
-       ("trytond-product" ,trytond-product)
-       ("trytond-stock" ,trytond-stock)))
+     (list trytond trytond-company trytond-product trytond-stock))
     (home-page
      "https://docs.tryton.org/projects/modules-stock-inventory-location")
     (synopsis "Tryton module to create inventories by locations")
@@ -3828,8 +3603,7 @@ wizard \"Create Inventories\" under the \"Inventories\" sub-menu.")
      `(,@(%standard-trytond-native-inputs)
        ("trytond-stock-supply" ,trytond-stock-supply)))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-stock" ,trytond-stock)))
+     (list trytond trytond-stock))
     (home-page "https://docs.tryton.org/projects/modules-stock-location-move")
     (synopsis "Tryton module to move storage locations")
     (description "The @emph{Stock Location} move Tryton module allows to
@@ -3851,8 +3625,7 @@ define some Locations as movable
     (arguments (tryton-arguments "stock_location_sequence"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-stock" ,trytond-stock)))
+     (list trytond trytond-stock))
     (home-page
      "https://docs.tryton.org/projects/modules-stock-location-sequence")
     (synopsis "Tryton module to add sequence on location")
@@ -3874,9 +3647,7 @@ ordering to location.")
     (arguments (tryton-arguments "stock_lot"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-product" ,trytond-product)
-       ("trytond-stock" ,trytond-stock)))
+     (list trytond trytond-product trytond-stock))
     (home-page "https://www.tryton.org/")
     (synopsis "Tryton module for lot of products")
     (description
@@ -3900,10 +3671,7 @@ ordering to location.")
     (arguments (tryton-arguments "stock_lot_sled"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-product" ,trytond-product)
-       ("trytond-stock" ,trytond-stock)
-       ("trytond-stock-lot" ,trytond-stock-lot)))
+     (list trytond trytond-product trytond-stock trytond-stock-lot))
     (home-page "https://docs.tryton.org/projects/modules-stock-lot-sled")
     (synopsis "Tryton module for shelf life expiration date of product lots")
     (description "The @emph{Stock Lot Sled} Tryton module adds the \"Shelf
@@ -3928,10 +3696,7 @@ it is no more used to compute the forecast quantity of the stock.")
      `(,@(%standard-trytond-native-inputs)
        ("trytond-production" ,trytond-production)))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-product" ,trytond-product)
-       ("trytond-stock" ,trytond-stock)
-       ("trytond-stock-lot" ,trytond-stock-lot)))
+     (list trytond trytond-product trytond-stock trytond-stock-lot))
     (home-page "https://docs.tryton.org/projects/modules-stock-lot-unit")
     (synopsis "Tryton module to define unit on stock lot")
     (description "The @emph{Stock Lot Unit} Tryton module allows to define a
@@ -3952,10 +3717,7 @@ unit and quantity on stock lot.")
     (arguments (tryton-arguments "stock_package"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-company" ,trytond-company)
-       ("trytond-product" ,trytond-product)
-       ("trytond-stock" ,trytond-stock)))
+     (list trytond trytond-company trytond-product trytond-stock))
     (home-page "https://docs.tryton.org/projects/modules-stock-package")
     (synopsis "Tryton module for stock packaging")
     (description "The @emph{Stock Package} Tryton module allows to store
@@ -3976,15 +3738,14 @@ packaging information about customer and supplier return shipments.")
     (arguments (tryton-arguments "stock_package_shipping"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-carrier" ,trytond-carrier)
-       ("trytond-product" ,trytond-product)
-       ("trytond-product-measurements" ,trytond-product-measurements)
-       ("trytond-sale-shipment-cost" ,trytond-sale-shipment-cost)
-       ("trytond-stock" ,trytond-stock)
-       ("trytond-stock-package" ,trytond-stock-package)
-       ("trytond-stock-shipment-measurements"
-        ,trytond-stock-shipment-measurements)))
+     (list trytond
+           trytond-carrier
+           trytond-product
+           trytond-product-measurements
+           trytond-sale-shipment-cost
+           trytond-stock
+           trytond-stock-package
+           trytond-stock-shipment-measurements))
     (home-page
      "https://docs.tryton.org/projects/modules-stock-package-shipping")
     (synopsis "Tryton base module for interacting with shipping services")
@@ -4006,15 +3767,14 @@ interact with shipping service providers.")
     (arguments (tryton-arguments "stock_package_shipping_ups"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("python-requests" ,python-requests)
-       ("trytond" ,trytond)
-       ("trytond-party" ,trytond-party)
-       ("trytond-product" ,trytond-product)
-       ("trytond-stock" ,trytond-stock)
-       ("trytond-stock-package" ,trytond-stock-package)
-       ("trytond-stock-package-shipping" ,trytond-stock-package-shipping)
-       ("trytond-stock-shipment-measurements"
-        ,trytond-stock-shipment-measurements)))
+     (list python-requests
+           trytond
+           trytond-party
+           trytond-product
+           trytond-stock
+           trytond-stock-package
+           trytond-stock-package-shipping
+           trytond-stock-shipment-measurements))
     (home-page
      "https://docs.tryton.org/projects/modules-stock-package-shipping-ups")
     (synopsis "UPS connector for the Tryton application plateform")
@@ -4038,9 +3798,7 @@ you to generate the UPS labels per package using the UPS webservices.")
      `(,@(%standard-trytond-native-inputs)
        ("trytond-production" ,trytond-production)))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-product" ,trytond-product)
-       ("trytond-stock" ,trytond-stock)))
+     (list trytond trytond-product trytond-stock))
     (home-page
      "https://docs.tryton.org/projects/modules-stock-product-location")
     (synopsis "Tryton module to add default location on product")
@@ -4067,9 +3825,7 @@ warehouse.")
      `(,@(%standard-trytond-native-inputs)
        ("trytond-production" ,trytond-production)))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-company" ,trytond-company)
-       ("trytond-stock" ,trytond-stock)))
+     (list trytond trytond-company trytond-stock))
     (home-page
      "https://docs.tryton.org/projects/modules-stock-quantity-early-planning")
     (synopsis "Tryton module to plan earlier shipments and productions")
@@ -4093,10 +3849,7 @@ reducing stock level by proposing to consume earlier.")
      `(,@(%standard-trytond-native-inputs)
        ("trytond-production" ,trytond-production)))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-company" ,trytond-company)
-       ("trytond-product" ,trytond-product)
-       ("trytond-stock" ,trytond-stock)))
+     (list trytond trytond-company trytond-product trytond-stock))
     (home-page "https://docs.tryton.org/projects/modules-stock-quantity-issue")
     (synopsis "Tryton module to manage quantity issue with stock")
     (description "The @emph{Stock Quantity Issue} Tryton module helps to solve
@@ -4117,9 +3870,7 @@ stock quantity issues.")
     (arguments (tryton-arguments "stock_secondary_unit"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-product" ,trytond-product)
-       ("trytond-stock" ,trytond-stock)))
+     (list trytond trytond-product trytond-stock))
     (home-page "https://docs.tryton.org/projects/modules-stock-secondary-unit")
     (synopsis "Tryton module to add a secondary unit on stock move")
     (description "The @emph{Stock Secondary Unit} Tryton module adds a
@@ -4140,9 +3891,7 @@ secondary unit of measure on the stock move.")
     (arguments (tryton-arguments "stock_shipment_cost"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-product" ,trytond-product)
-       ("trytond-stock" ,trytond-stock)))
+     (list trytond trytond-product trytond-stock))
     (home-page "https://docs.tryton.org/projects/modules-stock-shipment-cost")
     (synopsis "Tryton module for stock shipment cost")
     (description "The @emph{Stock Shipment Cost} Tryton Module adds a shipment
@@ -4166,10 +3915,8 @@ price.  This cost is added to the product margin reports.")
      `(,@(%standard-trytond-native-inputs)
        ("trytond-stock-package" ,trytond-stock-package)))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-product" ,trytond-product)
-       ("trytond-product-measurements" ,trytond-product-measurements)
-       ("trytond-stock" ,trytond-stock)))
+     (list trytond trytond-product trytond-product-measurements
+           trytond-stock))
     (home-page
      "https://docs.tryton.org/projects/modules-stock-shipment-measurements")
     (synopsis "Tryton module to add measurements to shipment")
@@ -4192,8 +3939,7 @@ measurement and the quantity of their moves.")
     (arguments (tryton-arguments "stock_split"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-stock" ,trytond-stock)))
+     (list trytond trytond-stock))
     (home-page "https://docs.tryton.org/projects/modules-stock-split")
     (synopsis "Tryton module to split stock move")
     (description "The @emph{Stock Split} Tryton module adds on the stock move
@@ -4216,13 +3962,13 @@ there can be a move with the remaining quantity.")
     (arguments (tryton-arguments "stock_supply"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-account" ,trytond-account)
-       ("trytond-party" ,trytond-party)
-       ("trytond-product" ,trytond-product)
-       ("trytond-purchase" ,trytond-purchase)
-       ("trytond-purchase-request" ,trytond-purchase-request)
-       ("trytond-stock" ,trytond-stock)))
+     (list trytond
+           trytond-account
+           trytond-party
+           trytond-product
+           trytond-purchase
+           trytond-purchase-request
+           trytond-stock))
     (home-page "https://www.tryton.org/")
     (synopsis "Tryton module for stock supply")
     (description
@@ -4247,8 +3993,7 @@ mechanisms and introduces the concepts of order point.")
     (arguments (tryton-arguments "stock_supply_day"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-purchase" ,trytond-purchase)))
+     (list trytond trytond-purchase))
     (home-page "https://docs.tryton.org/projects/modules-stock-supply-day")
     (synopsis "Tryton module to add supply weekdays")
     (description "The @emph{Stock Supply Day} Tryton module adds a Week Days
@@ -4271,9 +4016,7 @@ a supplying may happens at any day of the week.")
     (arguments (tryton-arguments "stock_supply_forecast"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-stock-forecast" ,trytond-stock-forecast)
-       ("trytond-stock-supply" ,trytond-stock-supply)))
+     (list trytond trytond-stock-forecast trytond-stock-supply))
     (home-page
      "https://docs.tryton.org/projects/modules-stock-supply-forecast")
     (synopsis "Tryton module to add forecast to supply computation")
@@ -4295,11 +4038,8 @@ forecast into account to compute purchase requests.")
     (arguments (tryton-arguments "stock_supply_production"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-product" ,trytond-product)
-       ("trytond-production" ,trytond-production)
-       ("trytond-stock" ,trytond-stock)
-       ("trytond-stock-supply" ,trytond-stock-supply)))
+     (list trytond trytond-product trytond-production trytond-stock
+           trytond-stock-supply))
     (home-page
      "https://docs.tryton.org/projects/modules-stock-supply-production")
     (synopsis "Tryton module for stock supply of production")
@@ -4321,9 +4061,7 @@ supply mechanisms via production request.")
     (arguments (tryton-arguments "timesheet"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-company" ,trytond-company)
-       ("trytond-company-work-time" ,trytond-company-work-time)))
+     (list trytond trytond-company trytond-company-work-time))
     (home-page "https://docs.tryton.org/projects/modules-timesheet")
     (synopsis "Tryton module with timesheets")
     (description "The @emph{Timesheet} Tryton module allows to track the time
@@ -4346,10 +4084,7 @@ periods.")
     (arguments (tryton-arguments "timesheet_cost"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-company" ,trytond-company)
-       ("trytond-party" ,trytond-party)
-       ("trytond-timesheet" ,trytond-timesheet)))
+     (list trytond trytond-company trytond-party trytond-timesheet))
     (home-page "https://docs.tryton.org/projects/modules-timesheet-cost")
     (synopsis "Tryton module to add cost on timesheet")
     (description "The @emph{Timesheet Cost} Tryton module adds cost price per
@@ -4370,7 +4105,7 @@ employee.")
     (arguments (tryton-arguments "user_role"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)))
+     (list trytond))
     (home-page "https://docs.tryton.org/projects/modules-user-role")
     (synopsis "Tryton module to manage roles on users")
     (description "This package provides a Tryton module for assigning roles to
@@ -4395,14 +4130,14 @@ user for a period of time only.")
      `(,@(%standard-trytond-native-inputs)
        ("trytond-product-attribute" ,trytond-product-attribute)))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-account" ,trytond-account)
-       ("trytond-company" ,trytond-company)
-       ("trytond-currency" ,trytond-currency)
-       ("trytond-product" ,trytond-product)
-       ("trytond-sale" ,trytond-sale)
-       ("trytond-stock" ,trytond-stock)
-       ("trytond-web-user" ,trytond-web-user)))
+     (list trytond
+           trytond-account
+           trytond-company
+           trytond-currency
+           trytond-product
+           trytond-sale
+           trytond-stock
+           trytond-web-user))
     (home-page "https://docs.tryton.org/projects/modules-web-shop")
     (synopsis "Tryton module that provides a common base for webshops")
     (description "The @emph{Web Shop} Tryton module facilitates storing
@@ -4428,14 +4163,14 @@ configuration of an online web shop.")
        ("trytond-sale-promotion-coupon" ,trytond-sale-promotion-coupon)
        ("trytond-sale-shipment-cost" ,trytond-sale-shipment-cost)))
     (propagated-inputs
-     `(("python-elasticsearch" ,python-elasticsearch)
-       ("python-stdnum" ,python-stdnum)
-       ("trytond" ,trytond)
-       ("trytond-party" ,trytond-party)
-       ("trytond-product" ,trytond-product)
-       ("trytond-sale" ,trytond-sale)
-       ("trytond-web-shop" ,trytond-web-shop)
-       ("trytond-web-user" ,trytond-web-user)))
+     (list python-elasticsearch
+           python-stdnum
+           trytond
+           trytond-party
+           trytond-product
+           trytond-sale
+           trytond-web-shop
+           trytond-web-user))
     (home-page
      "https://docs.tryton.org/projects/modules-web-shop-vue-storefront")
     (synopsis "Tryton module to integrate with Vue Storefront")
@@ -4457,11 +4192,8 @@ Vue Storefront 1.x.")
     (arguments (tryton-arguments "web_shop_vue_storefront_stripe"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-account-payment-stripe" ,trytond-account-payment-stripe)
-       ("trytond-sale-payment" ,trytond-sale-payment)
-       ("trytond-web-shop" ,trytond-web-shop)
-       ("trytond-web-shop-vue-storefront" ,trytond-web-shop-vue-storefront)))
+     (list trytond trytond-account-payment-stripe trytond-sale-payment
+           trytond-web-shop trytond-web-shop-vue-storefront))
     (home-page
      "https://docs.tryton.org/projects/modules-web-shop-vue-storefront-stripe")
     (synopsis "Tryton module to support Stripe payment with Vue Storefront")
@@ -4483,7 +4215,7 @@ provides support of Stripe payment for Vue Storefront integration.")
     (arguments (tryton-arguments "web_shortener"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)))
+     (list trytond))
     (home-page "https://docs.tryton.org/projects/modules-web-shortener")
     (synopsis "Tryton module to plug a URL to an action")
     (description "The @emph{Web Shortener} Tryton module allows URLs to be
@@ -4505,8 +4237,7 @@ optionally triggers action.")
     (arguments (tryton-arguments "web_user"))
     (native-inputs (%standard-trytond-native-inputs))
     (propagated-inputs
-     `(("trytond" ,trytond)
-       ("trytond-party" ,trytond-party)))
+     (list trytond trytond-party))
     (home-page "https://docs.tryton.org/projects/modules-web-user")
     (synopsis "Tryton module to manage Web users")
     (description "The @emph{Web User} Tryton module provides facilities to

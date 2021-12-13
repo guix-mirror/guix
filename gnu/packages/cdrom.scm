@@ -118,11 +118,9 @@ caching facility provided by the library.")
                "0avi6apv5ydjy6b9c3z9a46rvp5i57qyr09vr7x4nndxkmcfjl45"))))
     (build-system gnu-build-system)
     (inputs
-     `(("ncurses" ,ncurses)
-       ("libcddb" ,libcddb)))
+     (list ncurses libcddb))
     (native-inputs
-     `(("help2man" ,help2man)
-       ("pkg-config" ,pkg-config)))
+     (list help2man pkg-config))
     (home-page "https://www.gnu.org/software/libcdio/")
     (synopsis "CD Input and Control library")
     (description
@@ -147,8 +145,8 @@ extraction from CDs.")
               (base32
                "12hfnrq7amv9qjzc92cr265m7kh0a1hpasck8cxx1gygbhqczc9k"))))
     (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)))
-    (propagated-inputs `(("libcdio" ,libcdio)))
+    (native-inputs (list pkg-config))
+    (propagated-inputs (list libcdio))
     (home-page "https://www.gnu.org/software/libcdio/")
     (synopsis "Jitter- and error-tolerant CD audio extraction")
     (description
@@ -198,10 +196,7 @@ libcdio.")
                  `("PATH" ":" prefix (,(string-append out "/bin"))))
                #t))))))
     (inputs
-     `(("acl" ,acl)
-       ("readline" ,readline)
-       ("tk" ,tk)
-       ("zlib" ,zlib)))
+     (list acl readline tk zlib))
     (home-page "https://www.gnu.org/software/xorriso/")
     (synopsis "Create, manipulate, burn ISO-9660 file systems")
     (description
@@ -283,14 +278,9 @@ reconstruction capability.")
              (substitute* "configure.ac" (("^AM_GCONF_SOURCE_2.*") ""))
              #t)))))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf automake pkg-config))
     (inputs
-     `(("ao" ,ao)
-       ("lame" ,lame)
-       ("libmad" ,libmad)
-       ("libvorbis" ,libvorbis)))
+     (list ao lame libmad libvorbis))
     (home-page "http://cdrdao.sourceforge.net")
     (synopsis "Read and write CDs in disk-at-once mode")
     (description "cdrdao records audio or data CDs in disk-at-once (DAO) mode,
@@ -382,9 +372,9 @@ images.")
               (patches (search-patches "dvd+rw-tools-add-include.patch"))))
     (build-system gnu-build-system)
     (inputs
-     `(("cdrtools" ,cdrtools)))
+     (list cdrtools))
     (native-inputs
-     `(("m4" ,m4)))
+     (list m4))
     (arguments
      `(#:tests? #f ; No tests.
        #:phases
@@ -430,7 +420,7 @@ or @command{xorrisofs} to create ISO 9660 images.")
         (base32 "1hz3fvqfdrwb7dn6ggqkpcgyjag37ivm1layw27ncjz9glklxjbr"))))
     (build-system gnu-build-system)
     (inputs
-     `(("gtk+" ,gtk+-2)))
+     (list gtk+-2))
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)
@@ -572,8 +562,7 @@ graphical interface.")
     (arguments
      `(#:configure-flags '("-DBUILD_SHARED_LIBS=ON")))
     (native-inputs
-     `(("bison" ,bison)
-       ("flex" ,flex)))
+     (list bison flex))
     (home-page "https://github.com/lipnitsk/libcue")
     (synopsis "C library to parse cue sheets")
     (description "Libcue is a C library to parse so-called @dfn{cue sheets}
@@ -684,20 +673,18 @@ from an audio CD.")
              #t)))
        #:tests? #f)) ; no test target
 
-    (inputs `(("wget" ,wget)
-              ("which" ,which)
-              ("cdparanoia" ,cdparanoia)
-              ("cd-discid" ,cd-discid)
-              ("vorbis-tools" ,vorbis-tools)
-              ("flac" ,flac)
-
-              ("perl-musicbrainz-discid" ,perl-musicbrainz-discid)
-              ("perl-webservice-musicbrainz" ,perl-webservice-musicbrainz)
-              ("perl-mojolicious" ,perl-mojolicious) ;indirect dependency
-
-              ;; A couple of Python and Perl scripts are included.
-              ("python" ,python)
-              ("perl" ,perl)))
+    (inputs (list wget
+                  which
+                  cdparanoia
+                  cd-discid
+                  vorbis-tools
+                  flac
+                  perl-musicbrainz-discid
+                  perl-webservice-musicbrainz
+                  perl-mojolicious ;indirect dependency
+                  ;; A couple of Python and Perl scripts are included.
+                  python
+                  perl))
 
     (synopsis "Command-line audio CD ripper")
     (description
@@ -730,7 +717,7 @@ and/or MPP/MP+ (Musepack) format, and tags them, all in one go.")
              (let ((out (assoc-ref outputs "out")))
                (install-file "geteltorito"
                              (string-append out "/bin"))))))))
-    (inputs `(("perl" ,perl)))
+    (inputs (list perl))
     (synopsis "Extract the boot image from a CD-ROM")
     (description
      "@command{geteltorito} can extract the initial/default boot
@@ -771,8 +758,7 @@ information is written to standard error.")
                                                       "flac"
                                                       "opus-tools"
                                                       "wavpack"))))))))))
-    (native-inputs `(("intltool" ,intltool)
-                     ("pkg-config" ,pkg-config)))
+    (native-inputs (list intltool pkg-config))
     ;; TODO: Add the necessary packages for Musepack encoding.
     (inputs `(("gtk+-2" ,gtk+-2)
               ("glib" ,glib)
@@ -823,15 +809,11 @@ session, and it can create M3U playlists.")
                (("\\$\\(DESTDIR\\)/usr/local") (assoc-ref outputs "out"))
                (("../../etc") "etc")))))))
     (native-inputs
-     `(("coreutils" ,coreutils)))
+     (list coreutils))
     (inputs
-     `(("perl" ,perl)))
+     (list perl))
     (propagated-inputs
-     `(("cdparanoia" ,cdparanoia)
-       ("flac" ,flac)
-       ("vorbis-tools" ,vorbis-tools)
-       ("wavpack" ,wavpack)
-       ("perl-cddb-get" ,perl-cddb-get)))
+     (list cdparanoia flac vorbis-tools wavpack perl-cddb-get))
     (home-page (string-append "https://web.archive.org/web/20170119092156/"
                               "http://www.suwald.com/ripit/about.php"))
     (synopsis "Command-line program to extract audio CDs")
@@ -875,7 +857,7 @@ laid out on the image.")
                "0m1vyry6pi115nysfgb0cg313qqhnlxqdg7f920wpiar0z8mjl2j"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://dev.lovelyhq.com/libburnia/libburn")
     (synopsis "Library for reading and writing optical discs")
     (description
@@ -897,10 +879,9 @@ DVD-RW, DVD-R, DVD-R/DL, BD-R, and BD-RE.")
                "13m82l13cb5d7ca53dv3akma1jr9gw0hnnshdwqpj6ahly0fv85a"))))
     (build-system gnu-build-system)
     (inputs
-     `(("zlib" ,zlib)
-       ("acl" ,acl)))
+     (list zlib acl))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://dev.lovelyhq.com/libburnia/libisofs")
     (synopsis "Library to create ISO 9660 images")
     (description
@@ -939,10 +920,7 @@ Supported extensions to ISO 9660 are Rock Ridge, Joliet, AAIP, zisofs.")
                        "extern char\t*outfile"))))))
     (build-system cmake-build-system)
     (inputs
-     `(("bzip2" ,bzip2)
-       ("libcap" ,libcap)
-       ("perl" ,perl)
-       ("zlib" ,zlib)))
+     (list bzip2 libcap perl zlib))
     (arguments
      `(#:tests? #f ;no tests
        #:phases
@@ -975,10 +953,9 @@ CD data, and more.  It's mostly compatible with @code{cdrtools}.")
                 "0f8i2ha44rykkk3ac2q8zsw3y1zckw6qnf6zvkyrj3qqbzhrf3fm"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)))
+     (list pkg-config intltool))
     (inputs
-     `(("glib" ,glib)))
+     (list glib))
     (arguments
      ;; No tests.
      '(#:tests? #f))
@@ -1004,12 +981,9 @@ the data stored in various image formats.")
                 "16g6fv1lxkdmbsy6zh5sj54dvgwvm900fd18aq609yg8jnqm644d"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)))
+     (list pkg-config intltool))
     (inputs
-     `(("libmirage" ,libmirage)
-       ("glib" ,glib)
-       ("ao" ,ao)))
+     (list libmirage glib ao))
     (arguments
      ;; No tests.
      '(#:tests? #f))
@@ -1033,12 +1007,9 @@ drive and disc (including CD-ROMs and DVD-ROMs).")
                 "1prrdhv0ia0axc6b73crszqzh802wlkihz6d100yvg7wbgmqabd7"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)))
+     (list pkg-config intltool))
     (inputs
-     `(("python" ,python)
-       ("python-pygobject" ,python-pygobject)
-       ("cdemu-daemon" ,cdemu-daemon)))
+     (list python python-pygobject cdemu-daemon))
     (arguments
      ;; No tests.
      `(#:tests? #f

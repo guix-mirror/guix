@@ -164,8 +164,7 @@ less to gain, as only the helper process is running with privileges (e.g.,
        ("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("libconfuse" ,libconfuse)
-       ("vte" ,vte)))
+     (list libconfuse vte))
     (synopsis "GTK+-based drop-down terminal")
     (description "Tilda is a terminal emulator similar to normal terminals like
 gnome-terminal (GNOME) or Konsole (KDE), with the difference that it drops down
@@ -215,7 +214,7 @@ configurable through a graphical wizard.")
        ("xdg-utils" ,xdg-utils)
        ("ncurses" ,ncurses)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
 
     ;; FIXME: This should only be located in 'ncurses'.  Nonetheless it is
     ;; provided for usability reasons.  See <https://bugs.gnu.org/22138>.
@@ -253,7 +252,7 @@ insert mode and command mode where keybindings have different functions.")
            (lambda _ (invoke "nosetests" "-v"))))))
     (native-inputs
      ;; For tests.
-     `(("python-nose" ,python-nose)))
+     (list python-nose))
     (home-page "https://asciinema.org")
     (synopsis "Terminal session recorder")
     (description
@@ -288,9 +287,8 @@ text-based approach to terminal recording.")
       (arguments
        `(#:configure-flags '("-DBUILD_TESTING=ON")))
       (native-inputs
-       `(("check" ,check)
-         ("libxkbcommon" ,libxkbcommon) ; for xkbcommon-keysyms.h
-         ("pkg-config" ,pkg-config)))
+       (list check libxkbcommon ; for xkbcommon-keysyms.h
+             pkg-config))
       (synopsis "Xterm state machine library")
       (description "TSM is a state machine for DEC VT100-VT520 compatible
 terminal emulators.  It tries to support all common standards while keeping
@@ -344,13 +342,13 @@ compatibility to existing emulators like xterm, gnome-terminal, konsole, etc.")
                           (("sd_booted\\(\\)")
                            "1")))))))
       (native-inputs
-       `(("pkg-config" ,pkg-config)
-         ("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("libtool" ,libtool)
-         ("libxslt" ,libxslt)                       ;to build the man page
-         ("libxml2" ,libxml2)                       ;for XML_CATALOG_FILES
-         ("docbook-xsl" ,docbook-xsl)))
+       (list pkg-config
+             autoconf
+             automake
+             libtool
+             libxslt ;to build the man page
+             libxml2 ;for XML_CATALOG_FILES
+             docbook-xsl))
       (inputs
        `(("libdrm" ,libdrm)
          ("libtsm" ,libtsm)
@@ -408,10 +406,8 @@ multi-seat support, a replacement for @command{mingetty}, and more.")
              (substitute* "t/40ti-override.c"
                (("vt750") "vt100")))))
        #:test-target "test"))
-    (inputs `(("ncurses" ,ncurses)))
-    (native-inputs `(("libtool" ,libtool)
-                     ("perl-test-harness" ,perl-test-harness)
-                     ("pkg-config" ,pkg-config)))
+    (inputs (list ncurses))
+    (native-inputs (list libtool perl-test-harness pkg-config))
     (synopsis "Keyboard entry processing library for terminal-based programs")
     (description
      "Libtermkey handles all the necessary logic to recognise special keys, UTF-8
@@ -503,7 +499,7 @@ Vietnamese, and bi-directional scripts like Arabic and Hebrew.")
                         out "/share/terminfo")
                        "mtm.ti")))))))
     (inputs
-     `(("ncurses" ,ncurses)))
+     (list ncurses))
     ;; FIXME: This should only be located in 'ncurses'.  Nonetheless it is
     ;; provided for usability reasons.  See <https://bugs.gnu.org/22138>.
     (native-search-paths
@@ -616,8 +612,7 @@ has no notion of what's interesting, but it's very good at that notifying part."
        (modify-phases %standard-phases
          (delete 'configure))))
     (native-inputs
-     `(("libtool" ,libtool)
-       ("perl" ,perl)))
+     (list libtool perl))
     (home-page "https://github.com/mauke/unibilium")
     (synopsis "Terminfo parsing library")
     (description "Unibilium is a basic C terminfo library.  It doesn't depend
@@ -647,8 +642,7 @@ should be thread-safe.")
        (modify-phases %standard-phases
          (delete 'configure))))
     (native-inputs
-     `(("libtool" ,libtool)
-       ("perl" ,perl)))
+     (list libtool perl))
     (home-page "http://www.leonerd.org.uk/code/libvterm/")
     (synopsis "VT220/xterm/ECMA-48 terminal emulator library")
     (description "Libvterm is an abstract C99 library which implements a VT220
@@ -775,10 +769,7 @@ embedded kernel situations.")
                     #t))))
       (build-system gnu-build-system)
       (inputs
-       `(("qtbase" ,qtbase-5)
-         ("qtdeclarative" ,qtdeclarative)
-         ("qtgraphicaleffects" ,qtgraphicaleffects)
-         ("qtquickcontrols" ,qtquickcontrols)))
+       (list qtbase-5 qtdeclarative qtgraphicaleffects qtquickcontrols))
       (arguments
        `(#:phases
          (modify-phases %standard-phases
@@ -850,14 +841,10 @@ eye-candy, customizable, and reasonably lightweight.")
        ;; Enable LTO as recommended by INSTALL.md.
        #:configure-flags '("-Db_lto=true")))
     (native-inputs
-     `(("ncurses" ,ncurses)             ;for 'tic'
-       ("pkg-config" ,pkg-config)
-       ("scdoc" ,scdoc)
-       ("wayland-protocols" ,wayland-protocols)))
+     (list ncurses ;for 'tic'
+           pkg-config scdoc wayland-protocols))
     (inputs
-     `(("fcft" ,fcft)
-       ("libxkbcommon" ,libxkbcommon)
-       ("wayland" ,wayland)))
+     (list fcft libxkbcommon wayland))
     (synopsis "Wayland-native terminal emulator")
     (description
      "@command{foot} is a terminal emulator for systems using the Wayland
@@ -886,8 +873,7 @@ a server/client mode.")
        ("perl" ,perl)                   ; for pod2man
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("libxft" ,libxft)
-       ("vte" ,vte)))
+     (list libxft vte))
     (home-page "https://launchpad.net/sakura")
     (synopsis "A simple but powerful libvte-based terminal emulator")
     (description "@code{Sakura} is a terminal emulator based on GTK+ and VTE.
@@ -914,8 +900,7 @@ desktop installed to have a decent terminal emulator.")
       (arguments
        '(#:import-path "github.com/nsf/termbox-go"))
       (propagated-inputs
-       `(("go-github.com-mattn-go-runewidth"
-          ,go-github.com-mattn-go-runewidth)))
+       (list go-github.com-mattn-go-runewidth))
       (synopsis "@code{termbox} provides a minimal API for text-based user
 interfaces")
       (description
@@ -942,13 +927,13 @@ programmer to write text-based user interfaces.")
     (arguments
      `(#:import-path "github.com/junegunn/fzf"))
     (inputs
-     `(("go-github.com-mattn-go-runewidth" ,go-github.com-mattn-go-runewidth)
-       ("go-github-com-mattn-go-shellwords" ,go-github-com-mattn-go-shellwords)
-       ("go-github-com-mattn-go-isatty" ,go-github-com-mattn-go-isatty)
-       ("go-github-com-gdamore-tcell" ,go-github-com-gdamore-tcell)
-       ("go-github-com-saracen-walker" ,go-github-com-saracen-walker)
-       ("go-golang.org-x-sync-errgroup" ,go-golang.org-x-sync-errgroup)
-       ("go-golang-org-x-crypto" ,go-golang-org-x-crypto)))
+     (list go-github.com-mattn-go-runewidth
+           go-github-com-mattn-go-shellwords
+           go-github-com-mattn-go-isatty
+           go-github-com-gdamore-tcell
+           go-github-com-saracen-walker
+           go-golang.org-x-sync-errgroup
+           go-golang-org-x-crypto))
     (home-page "https://github.com/junegunn/fzf")
     (synopsis "Command-line fuzzy-finder")
     (description "This package provides an interactive command-line filter
@@ -1022,8 +1007,7 @@ usable with any list--including files, command history, processes and more.")
       (arguments
        '(#:import-path "github.com/howeyc/gopass"))
       (propagated-inputs
-       `(("go-golang-org-x-crypto"
-          ,go-golang-org-x-crypto)))
+       (list go-golang-org-x-crypto))
       (synopsis "Retrieve password from a terminal or piped input in Go")
       (description
        "@code{gopass} is a Go package for retrieving a password from user
@@ -1053,10 +1037,9 @@ terminal or piped input.")
              (delete-file "tests/test_input_output.py")
              #t)))))
     (propagated-inputs
-     `(("python-wcwidth" ,python-wcwidth)))
+     (list python-wcwidth))
     (native-inputs
-     `(("python-pytest-runner" ,python-pytest-runner)
-       ("python-pytest" ,python-pytest)))
+     (list python-pytest-runner python-pytest))
     (home-page "https://pyte.readthedocs.io/")
     (synopsis "Simple VTXXX-compatible terminal emulator")
     (description "@code{pyte} is an in-memory VTxxx-compatible terminal
@@ -1088,8 +1071,7 @@ of VT100 terminal.")
      ;; FIXME: Test suite is unable to detect TTY conditions.
      `(#:tests? #f))
     (native-inputs
-     `(("python-nose" ,python-nose)
-       ("python-six" ,python-six)))
+     (list python-nose python-six))
     (home-page "https://github.com/erikrose/blessings")
     (synopsis "Python module to manage terminal color, styling, and
 positioning")
@@ -1123,12 +1105,9 @@ than a terminal.")
            (lambda _
              (invoke "nosetests" "-v"))))))
     (propagated-inputs
-     `(("python-blessings" ,python-blessings)
-       ("python-cwcwidth" ,python-cwcwidth)))
+     (list python-blessings python-cwcwidth))
     (native-inputs
-     `(("python-mock" ,python-mock)
-       ("python-pyte" ,python-pyte)
-       ("python-nose" ,python-nose)))
+     (list python-mock python-pyte python-nose))
     (home-page "https://github.com/bpython/curtsies")
     (synopsis "Library for curses-like terminal interaction with colored
 strings")
@@ -1153,14 +1132,9 @@ per-line fullscreen terminal rendering, and keyboard input event reporting.")
          "0x5c31yq7ansmiy20a0qf59wagba9v3pq97mlkxrqxn4n1gcc6vi"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libevent" ,libevent)
-       ("libssh" ,libssh)
-       ("msgpack" ,msgpack)
-       ("ncurses" ,ncurses)))
+     (list libevent libssh msgpack ncurses))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf automake pkg-config))
     (home-page "https://tmate.io/")
     (synopsis "Terminal sharing application")
     (description "tmate is a terminal sharing application that allows you to
@@ -1307,9 +1281,7 @@ comfortably in a pager or editor.
                (copy-recursively tests "external/googletest"))
              #t)))))
     (inputs
-     `(("gflags" ,gflags)
-       ("libsodium" ,libsodium)
-       ("protobuf" ,protobuf)))
+     (list gflags libsodium protobuf))
     (native-inputs
      `(("googletest" ,(package-source googletest))))
     (home-page "https://mistertea.github.io/EternalTerminal/")
@@ -1339,7 +1311,7 @@ while also supporting native scrolling and @command{tmux} control mode
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
      `(("fontconfig" ,fontconfig)
        ("freetype" ,freetype)

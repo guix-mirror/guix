@@ -497,7 +497,7 @@ tool.  This package contains the Maven parent POM.")
            (replace 'install
              (install-pom-file "pom.xml")))))
       (propagated-inputs
-       `(("maven-parent-pom" ,maven-parent-pom-22)))
+       (list maven-parent-pom-22))
       (home-page "https://github.com/apache/maven-plugins")
       (synopsis "Maven parent pom for maven plugins projects")
       (description "This package contains the parent pom for maven plugins.")

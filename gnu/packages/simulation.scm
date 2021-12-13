@@ -101,11 +101,9 @@
        ("scotch" ,pt-scotch32)
        ("zlib" ,zlib)))
     (native-inputs
-     `(("bison" ,bison)))
+     (list bison))
     (propagated-inputs
-     `(("gzip" ,gzip)
-       ("gnuplot" ,gnuplot)
-       ("openmpi" ,openmpi)))
+     (list gzip gnuplot openmpi))
     (outputs '("debug"                  ;~60MB
                "out"))
     (arguments
@@ -257,12 +255,11 @@ problems for efficient solution on parallel systems.")
             "0lhqsq8ypdak0ahr2jnyvg07yrqp6wicjxi6k56zx24wp3qg60sc"))))
     (build-system python-build-system)
     (inputs
-     `(("openmpi" ,openmpi)
-       ("python-numpy" ,python-numpy)))
+     (list openmpi python-numpy))
     (native-inputs
-     `(("python-pytest-cov" ,python-pytest-cov)))
+     (list python-pytest-cov))
     (propagated-inputs
-     `(("python-mpi4py" ,python-mpi4py)))
+     (list python-mpi4py))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -305,9 +302,9 @@ the complexity of that interface.  Parallel support depends on the
             "10dz8x3lm68x2w3kkqcjask38h0zkhhak26jdbkppr8g9y8wny7p"))))
     (build-system python-build-system)
     (inputs
-     `(("python-numpy" ,python-numpy)))
+     (list python-numpy))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
@@ -338,10 +335,9 @@ UFL is part of the FEniCS Project.")
             "13sc7lma3d2mh43an7i4kkdbbk4cmvxjk45wi43xnjd7qc38zg4b"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (propagated-inputs
-     `(("python-numpy" ,python-numpy)
-       ("python-sympy" ,python-sympy)))
+     (list python-numpy python-sympy))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
@@ -385,11 +381,9 @@ FIAT is part of the FEniCS Project.")
             "1f2a44ha65fg3a1prrbrsz4dgvibsv0j5c3pi2m52zi93bhwwgg9"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (propagated-inputs
-     `(("python-fenics-dijitso" ,python-fenics-dijitso)
-       ("python-fenics-fiat" ,python-fenics-fiat)
-       ("python-fenics-ufl" ,python-fenics-ufl)))
+     (list python-fenics-dijitso python-fenics-fiat python-fenics-ufl))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
@@ -725,7 +719,7 @@ FEniCS core components and external libraries.")
                  "16v08dx7h7n4wyddzbwimazwyj74ynis12mpjfkay4243npy44b8"))))
       (build-system gnu-build-system)
       (native-inputs
-       `(("inetutils" ,inetutils))) ; for 'hostname', used in the check phase
+       (list inetutils)) ; for 'hostname', used in the check phase
       (arguments
        `(#:phases
          (modify-phases %standard-phases
@@ -905,16 +899,14 @@ command-line utility for mesh optimisation.")
             #t))))
     (build-system python-build-system)
     (inputs
-     `(("fenics" ,fenics)
-       ("openmpi" ,openmpi)
-       ("pybind11" ,pybind11)))
+     (list fenics openmpi pybind11))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("python-coverage" ,python-coverage)
-       ("python-decorator" ,python-decorator)
-       ("python-flake8" ,python-flake8)
-       ("python-pkgconfig" ,python-pkgconfig)
-       ("python-pytest" ,python-pytest)))
+     (list pkg-config
+           python-coverage
+           python-decorator
+           python-flake8
+           python-pkgconfig
+           python-pytest))
     (propagated-inputs
      `(("scipy" ,python-scipy)))
     (arguments

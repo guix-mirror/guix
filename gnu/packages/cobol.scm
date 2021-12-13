@@ -68,11 +68,7 @@
                      (base32
                       "1yb1plmv4firfnbb119r2vh1hay221w1ya34nyz0qwsxppfr56hy"))))))
     (inputs
-     `(("bdb" ,bdb)
-       ("gmp" ,gmp)
-       ("json-c" ,json-c)
-       ("libxml2" ,libxml2)
-       ("ncurses" ,ncurses)))
+     (list bdb gmp json-c libxml2 ncurses))
     (build-system gnu-build-system)
     (home-page "https://www.gnu.org/software/gnucobol/")
     (synopsis "A modern COBOL compiler")

@@ -56,16 +56,14 @@
         "1bchzkacjsc5c0x01ngaana9fs5j12wfw1c8qxps1yp68x9vx6yv"))))
     (build-system gnu-build-system)
     (inputs
-     `(("gnutls" ,gnutls)
-       ("libidn2" ,libidn2)
-       ("libpsl" ,libpsl)))
+     (list gnutls libidn2 libpsl))
     (native-inputs
-     `(("lzip" ,lzip)
-       ("pkg-config" ,pkg-config)
-       ("perl" ,perl)
-       ("python" ,python)               ;for testenv suite
-       ("perl-http-daemon" ,perl-http-daemon)
-       ("perl-io-socket-ssl" ,perl-io-socket-ssl)))
+     (list lzip
+           pkg-config
+           perl
+           python ;for testenv suite
+           perl-http-daemon
+           perl-io-socket-ssl))
     (home-page "https://www.gnu.org/software/wget/")
     (synopsis "Non-interactive command-line utility for downloading files")
     (description
@@ -127,8 +125,7 @@ in downloaded documents to relative links.")
                #t))))
        #:tests? #f))                    ; no test target
     (inputs
-     `(("wget" ,wget)
-       ("xclip" ,xclip)))
+     (list wget xclip))
     (home-page "https://wgetpaste.zlin.dk/")
     (synopsis "Script that automates pasting to a number of pastebin services")
     (description
@@ -171,7 +168,7 @@ online pastebin services.")
       ("zlib" ,zlib)))
    ;; TODO: Add libbrotlidec, libnghttp2.
    (native-inputs
-    `(("pkg-config" ,pkg-config)))
+    (list pkg-config))
    (home-page "https://gitlab.com/gnuwget/wget2")
    (synopsis "Successor of GNU Wget")
    (description "GNU Wget2 is the successor of GNU Wget, a file and recursive

@@ -485,15 +485,12 @@ the Nix package manager.")
 
     ;; Use a minimum set of dependencies.
     (native-inputs
-     (fold alist-delete (package-native-inputs guix)
-           '("po4a" "graphviz" "help2man")))
+     (modify-inputs (package-native-inputs guix)
+       (delete "po4a" "graphviz" "help2man")))
     (inputs
-     `(("gnutls" ,gnutls)
-       ("guile-git" ,guile-git)
-       ("guile-json" ,guile-json-3)
-       ("guile-gcrypt" ,guile-gcrypt)
-       ,@(fold alist-delete (package-inputs guix)
-               '("boot-guile" "boot-guile/i686" "util-linux"))))
+     (modify-inputs (package-inputs guix)
+       (delete "boot-guile" "boot-guile/i686" "util-linux")
+       (prepend gnutls guile-git guile-json-3 guile-gcrypt)))
 
     (propagated-inputs '())
 
@@ -542,13 +539,11 @@ the Nix package manager.")
      (inherit guix)
      (name "guix-minimal")
      (native-inputs
-      (fold alist-delete
-            (package-native-inputs guix)
-            '("guile-ssh")))
+      (modify-inputs (package-native-inputs guix)
+        (delete "guile-ssh")))
      (propagated-inputs
-      (fold alist-delete
-            (package-propagated-inputs guix)
-            '("guile-ssh"))))))
+      (modify-inputs (package-propagated-inputs guix)
+        (delete "guile-ssh"))))))
 
 (define (source-file? file stat)
   "Return true if FILE is likely a source file, false if it is a typical
@@ -598,7 +593,7 @@ out) and returning a package that uses that as its 'source'."
     (source %artwork-repository)
     (build-system trivial-build-system)
     (native-inputs
-     `(("imagemagick" ,imagemagick)))
+     (list imagemagick))
     (inputs
      '())
     (arguments
@@ -679,18 +674,18 @@ GTK icon cache for instance.")))
                       (string-append "sysconfdir=" etc)
                       (string-append "profiledir=" etc "/profile.d")
                       make-flags)))))))
-    (native-inputs `(("pkg-config" ,pkg-config)))
-    (inputs `(("boost" ,boost)
-              ("brotli" ,brotli)
-              ("bzip2" ,bzip2)
-              ("curl" ,curl)
-              ("editline" ,editline)
-              ("libgc" ,libgc)
-              ("libseccomp" ,libseccomp)
-              ("libsodium" ,libsodium)
-              ("openssl" ,openssl)
-              ("sqlite" ,sqlite)
-              ("xz" ,xz)))
+    (native-inputs (list pkg-config))
+    (inputs (list boost
+                  brotli
+                  bzip2
+                  curl
+                  editline
+                  libgc
+                  libseccomp
+                  libsodium
+                  openssl
+                  sqlite
+                  xz))
     (home-page "https://nixos.org/nix/")
     (synopsis "The Nix package manager")
     (description
@@ -715,12 +710,10 @@ sub-directory.")
                 "0jrxy12ywn7smdzdnvwzjw77l6knx6jkj2rckgykg1dpf6bdkm89"))))
     (build-system gnu-build-system)
     (inputs
-     `(("perl" ,perl)))
+     (list perl))
     (native-inputs
-     `(("perl-test-simple" ,perl-test-simple)
-       ("perl-test-output" ,perl-test-output)
-       ("perl-capture-tiny" ,perl-capture-tiny)
-       ("perl-io-stringy" ,perl-io-stringy)))
+     (list perl-test-simple perl-test-output perl-capture-tiny
+           perl-io-stringy))
     (home-page "https://www.gnu.org/software/stow/")
     (synopsis "Managing installed software packages")
     (description
@@ -776,20 +769,20 @@ features of Stow with some extensions.")
                                                nss "/lib/nss"))
                         #t))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("python" ,python)
-       ("xz" ,xz)
-       ("bdb" ,bdb)
-       ("popt" ,popt)
-       ("nss" ,nss)
-       ("nspr" ,nspr)
-       ("libarchive" ,libarchive)
-       ("libgcrypt" ,libgcrypt)
-       ("file" ,file)
-       ("bzip2" ,bzip2)
-       ("zlib" ,zlib)
-       ("cpio" ,cpio)))
+     (list python
+           xz
+           bdb
+           popt
+           nss
+           nspr
+           libarchive
+           libgcrypt
+           file
+           bzip2
+           zlib
+           cpio))
     (home-page "https://rpm.org/")
     (synopsis "The RPM Package Manager")
     (description
@@ -819,17 +812,14 @@ transactions from C or Python.")
          "1vyk0g0gci4z9psisb8h50zi3j1nwfdg1jw3j76cxv0brln0v3fw"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-clyent" ,python-clyent)
-       ("python-nbformat" ,python-nbformat)
-       ("python-pyyaml" ,python-pyyaml)
-       ("python-requests" ,python-requests)))
+     (list python-clyent python-nbformat python-pyyaml python-requests))
     (native-inputs
-     `(("python-coverage" ,python-coverage)
-       ("python-dateutil" ,python-dateutil)
-       ("python-freezegun" ,python-freezegun)
-       ("python-mock" ,python-mock)
-       ("python-pillow" ,python-pillow)
-       ("python-pytz" ,python-pytz)))
+     (list python-coverage
+           python-dateutil
+           python-freezegun
+           python-mock
+           python-pillow
+           python-pytz))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -885,16 +875,12 @@ environments.")
              (add-installed-pythonpath inputs outputs)
              (invoke "pytest" "-vv" "tests"))))))
     (propagated-inputs
-     `(("python-six" ,python-six)
-       ("python-tqdm" ,python-tqdm)))
+     (list python-six python-tqdm))
     (inputs
-     `(("libarchive" ,libarchive)))
+     (list libarchive))
     (native-inputs
-     `(("python-cython" ,python-cython)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)
-       ("python-pytest-mock" ,python-pytest-mock)
-       ("python-mock" ,python-mock)))
+     (list python-cython python-pytest python-pytest-cov
+           python-pytest-mock python-mock))
     (home-page "https://conda.io")
     (synopsis "Create and extract conda packages of various formats")
     (description
@@ -1014,22 +1000,22 @@ extracting, creating, and converting between formats.")
                                     "/bin/conda")
                      "init"))))))
     (inputs
-     `(("python-wrapper" ,python-wrapper)))
+     (list python-wrapper))
     (propagated-inputs
-     `(("python-anaconda-client" ,python-anaconda-client)
-       ("python-conda-package-handling" ,python-conda-package-handling)
-       ("python-cytoolz" ,python-cytoolz)
-       ("python-pycosat" ,python-pycosat)
-       ("python-pytest" ,python-pytest)
-       ("python-pyyaml" ,python-pyyaml)
-       ("python-requests" ,python-requests)
-       ("python-responses" ,python-responses)
-       ("python-ruamel.yaml" ,python-ruamel.yaml)
-       ("python-tqdm" ,python-tqdm)
-       ;; XXX: This is dragged in by libarchive and is needed at runtime.
-       ("zstd" ,zstd)))
+     (list python-anaconda-client
+           python-conda-package-handling
+           python-cytoolz
+           python-pycosat
+           python-pytest
+           python-pyyaml
+           python-requests
+           python-responses
+           python-ruamel.yaml
+           python-tqdm
+           ;; XXX: This is dragged in by libarchive and is needed at runtime.
+           zstd))
     (native-inputs
-     `(("python-pytest-timeout" ,python-pytest-timeout)))
+     (list python-pytest-timeout))
     (home-page "https://github.com/conda/conda")
     (synopsis "Cross-platform, OS-agnostic, system-level binary package manager")
     (description
@@ -1147,25 +1133,25 @@ written entirely in Python.")
                              "and not settings_as_a_dict_conanfile ")
                             "")))))))))
     (propagated-inputs
-     `(("python-bottle" ,python-bottle)
-       ("python-colorama" ,python-colorama)
-       ("python-dateutil" ,python-dateutil)
-       ("python-distro" ,python-distro)
-       ("python-fasteners" ,python-fasteners)
-       ("python-future" ,python-future)
-       ("python-jinja2" ,python-jinja2)
-       ("python-node-semver" ,python-node-semver)
-       ("python-patch-ng" ,python-patch-ng)
-       ("python-pluginbase" ,python-pluginbase)
-       ("python-pygments" ,python-pygments)
-       ("python-pyjwt" ,python-pyjwt)
-       ("python-pyyaml" ,python-pyyaml)
-       ("python-requests" ,python-requests)
-       ("python-six" ,python-six)
-       ("python-tqdm" ,python-tqdm)
-       ("python-urllib3" ,python-urllib3)))
+     (list python-bottle
+           python-colorama
+           python-dateutil
+           python-distro
+           python-fasteners
+           python-future
+           python-jinja2
+           python-node-semver
+           python-patch-ng
+           python-pluginbase
+           python-pygments
+           python-pyjwt
+           python-pyyaml
+           python-requests
+           python-six
+           python-tqdm
+           python-urllib3))
     (inputs
-     `(("coreutils" ,coreutils)))       ;for printenv
+     (list coreutils))       ;for printenv
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -1216,11 +1202,7 @@ allow for great power and flexibility.
        #:make-flags
        '("GUILE_AUTO_COMPILE=0")))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("pkg-config" ,pkg-config)
-       ("texinfo" ,texinfo)
-       ("graphviz" ,graphviz)))
+     (list autoconf automake pkg-config texinfo graphviz))
     (inputs
      (let ((p (package-input-rewriting
                `((,guile-3.0 . ,guile-3.0-latest))
@@ -1438,21 +1420,18 @@ outputs of those builds.")
                                  "guix-jupyter-kernel.scm")))
                #t))))))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("pkg-config" ,pkg-config)
-
-       ;; For testing.
-       ("jupyter" ,jupyter)
-       ("python-ipython" ,python-ipython)
-       ("python-ipykernel" ,python-ipykernel)))
+     (list autoconf
+           automake
+           pkg-config
+           ;; For testing.
+           jupyter
+           python-ipython
+           python-ipykernel))
     (inputs
      `(("guix" ,guix)
        ("guile" ,@(assoc-ref (package-native-inputs guix) "guile"))))
     (propagated-inputs
-     `(("guile-json" ,guile-json-4)
-       ("guile-simple-zmq" ,guile-simple-zmq)
-       ("guile-gcrypt" ,guile-gcrypt)))
+     (list guile-json-4 guile-simple-zmq guile-gcrypt))
     (synopsis "Guix kernel for Jupyter")
     (description
      "Guix-Jupyter is a Jupyter kernel.  It allows you to annotate notebooks
@@ -1480,8 +1459,7 @@ in an isolated environment, in separate namespaces.")
        ("pkg-config" ,pkg-config)
        ("vala" ,vala)))
     (inputs
-     `(("glib" ,glib)
-       ("zlib" ,zlib)))
+     (list glib zlib))
     (arguments
      `(#:configure-flags
        ;; XXX This ‘documentation’ is for developers, and fails informatively:
@@ -1509,8 +1487,7 @@ Microsoft cabinet (.@dfn{CAB}) files.")
                 "1skq17qr2ic4qr3779j49byfm8rncwbsq9rj1a33ncn2m7isdwdv"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("bison" ,bison)
-       ("pkg-config" ,pkg-config)))
+     (list bison pkg-config))
     (inputs
      `(("gcab" ,gcab)
        ("glib" ,glib)
@@ -1655,10 +1632,8 @@ cp -r /tmp/locale/*/en_US.*")))
       ("python-pyparsing" ,python-pyparsing)
       ("socat" ,socat)
       ("which" ,which)))
-   (propagated-inputs `(("glib-networking" ,glib-networking)
-                        ("gnupg" ,gnupg)
-                        ("gsettings-desktop-schemas"
-                         ,gsettings-desktop-schemas)))
+   (propagated-inputs (list glib-networking gnupg
+                            gsettings-desktop-schemas))
    (inputs
     `(("appstream-glib" ,appstream-glib)
       ("bubblewrap" ,bubblewrap)
@@ -1717,13 +1692,9 @@ sandboxed desktop applications on GNU/Linux.")
                           `("LD_LIBRARY_PATH" ":" prefix (,(string-append curl "/lib"))))
                         #t))))))
     (native-inputs
-     `(("which" ,which)
-       ("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("pkg-config" ,pkg-config)))
+     (list which autoconf automake pkg-config))
     (inputs
-     `(("guile" ,guile-3.0)
-       ("curl" ,curl)))
+     (list guile-3.0 curl))
     (home-page "https://akkuscm.org/")
     (synopsis "Language package manager for Scheme")
     (description
@@ -1829,15 +1800,9 @@ from R7RS, which allows most R7RS code to run on R6RS implementations.")
                     "testsuite/install.00-init/005-init_ts.exp"
                     "modulecmd-test.tcl"))))))))
     (native-inputs
-      `(("dejagnu" ,dejagnu)
-        ("autoconf" ,autoconf)
-        ("which" ,which)))
+      (list dejagnu autoconf which))
     (inputs
-      `(("tcl" ,tcl)
-        ("less" ,less)
-        ("procps" ,procps)
-        ("coreutils" ,coreutils)
-        ("python" ,python-3)))
+      (list tcl less procps coreutils python-3))
     (home-page "http://modules.sourceforge.net/")
     (synopsis "Shell environment variables and aliases management")
     (description "Modules simplify shell initialization and let users

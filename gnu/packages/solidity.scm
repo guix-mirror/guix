@@ -76,9 +76,7 @@
                (invoke "./scripts/tests.sh")
                #t)))))
       (inputs
-       `(("boost-static" ,boost-static)
-         ("jsoncpp" ,jsoncpp)
-         ("z3" ,z3)))
+       (list boost-static jsoncpp z3))
       (native-inputs
        `(("python" ,python)
          ("tput" ,ncurses)

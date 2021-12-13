@@ -60,11 +60,9 @@
                                "/share/man/man1/hexedit.1.gz\"")))
              #t)))))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)))
+     (list autoconf automake))
     (inputs
-     `(("man-db" ,man-db)
-       ("ncurses" ,ncurses)))
+     (list man-db ncurses))
     (synopsis "View and edit files or devices in hexadecimal or ASCII")
     (description "hexedit shows a file both in ASCII and in hexadecimal.  The
 file can be a device as the file is read a piece at a time.  You can modify
@@ -86,8 +84,7 @@ the file and search through it.")
                 "0w2xnw3z9ws9qrdpb80q55h6ynhh3aziixcfn45x91bzrbifix9i"))))
     (build-system gnu-build-system)
     (inputs
-     `(("lzo" ,lzo)
-       ("ncurses" ,ncurses)))
+     (list lzo ncurses))
     (synopsis "Viewer, editor, and analyzer for executable binaries")
     (description
      "ht is a terminal-based program to view, edit, and analyze any file, but
@@ -112,7 +109,7 @@ Development Environment} (IDE).")
     (build-system gnu-build-system)
     (arguments '(#:tests? #f))          ; no check target
     (inputs
-     `(("ncurses" ,ncurses)))
+     (list ncurses))
     (synopsis "Binary file editor")
     (description "@command{bvi} is a display-oriented editor for binary files,
 based on the @command{vi} text editor.")

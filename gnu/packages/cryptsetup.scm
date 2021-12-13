@@ -55,14 +55,14 @@
        ;; GRUB 2.06 supports LUKS2, but does it reliably support all set-ups…?
        "--with-default-luks-format=LUKS1")))
    (native-inputs
-    `(("pkg-config" ,pkg-config)))
+    (list pkg-config))
    (inputs
-    `(("argon2" ,argon2)
-      ("json-c" ,json-c)
-      ("libgcrypt" ,libgcrypt)
-      ("lvm2" ,lvm2)                    ; device-mapper
-      ("popt" ,popt)
-      ("util-linux" ,util-linux "lib"))) ;libuuid
+    (list argon2
+          json-c
+          libgcrypt
+          lvm2 ; device-mapper
+          popt
+          `(,util-linux "lib"))) ;libuuid
    (synopsis "Set up transparent encryption of block devices using dm-crypt")
    (description
     "Cryptsetup is a utility used to conveniently set up disk encryption based

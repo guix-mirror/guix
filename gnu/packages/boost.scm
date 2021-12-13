@@ -77,8 +77,7 @@
                (base32
                 "0m08hhk3l7zvzajyk39qlw566q3fhixayhc2j11328qf0gy8b7zw"))))
     (build-system gnu-build-system)
-    (inputs `(("icu4c" ,icu4c)
-              ("zlib" ,zlib)))
+    (inputs (list icu4c zlib))
     (native-inputs
      `(("perl" ,perl)
        ,@(if (%current-target-system)
@@ -216,9 +215,7 @@ across a broad spectrum of applications.")
        ("libcxxabi" ,libcxxabi-6)
        ("zlib" ,zlib)))
     (native-inputs
-     `(("clang" ,clang-6)
-       ("perl" ,perl)
-       ("tcsh" ,tcsh)))
+     (list clang-6 perl tcsh))
     (arguments
      `(#:tests? #f
        #:make-flags
@@ -462,7 +459,7 @@ signals and slots system.")
                "03b8i43pw4m767mm0cnbi77x7qhpkzpi9b1f6dpp4cmyszmnsk8l"))))
     (build-system gnu-build-system)
     (propagated-inputs
-      `(("boost" ,boost))) ; inclusion of header files
+      (list boost)) ; inclusion of header files
     (home-page "https://gitlab.com/mdds/mdds")
     (synopsis "Multi-dimensional C++ data structures and indexing algorithms")
     (description "Mdds (multi-dimensional data structure) provides a

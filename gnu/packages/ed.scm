@@ -37,7 +37,7 @@
               (base32
                "0m2yrkfjjraakxr98nsiakqrn351h99n706x9asgmdi57j43kpki"))))
     (build-system gnu-build-system)
-    (native-inputs `(("lzip" ,lzip)))
+    (native-inputs (list lzip))
     (arguments
      '(#:configure-flags '("CC=gcc")
        #:phases

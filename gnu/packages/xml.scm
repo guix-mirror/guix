@@ -103,12 +103,9 @@
     (arguments
      `(#:glib-or-gtk? #t))
     (native-inputs
-     `(("gobject-introspection" ,gobject-introspection)
-       ("gtk-doc" ,gtk-doc/stable)
-       ("pkg-config" ,pkg-config)))
+     (list gobject-introspection gtk-doc/stable pkg-config))
     (inputs
-     `(("appstream-glib" ,appstream-glib)
-       ("glib" ,glib)))
+     (list appstream-glib glib))
     (synopsis "Library to help create and query binary XML blobs")
     (description "Libxmlb library takes XML source, and converts it to a
 structured binary representation with a deduplicated string table; where the
@@ -223,9 +220,9 @@ hierarchical form with variable field lengths.")
                           (("^old_library='libxml2.a'") "old_library=''"))))))))
     (home-page "http://www.xmlsoft.org/")
     (synopsis "C parser for XML")
-    (inputs `(("xz" ,xz)))
-    (propagated-inputs `(("zlib" ,zlib))) ; libxml2.la says '-lz'.
-    (native-inputs `(("perl" ,perl)))
+    (inputs (list xz))
+    (propagated-inputs (list zlib)) ; libxml2.la says '-lz'.
+    (native-inputs (list perl))
     ;; $XML_CATALOG_FILES lists 'catalog.xml' files found in under the 'xml'
     ;; sub-directory of any given package.
     (native-search-paths (list (search-path-specification
@@ -284,9 +281,9 @@ to output XPath results with a null delimiter.")))
        (modify-phases %standard-phases
          (delete 'configure))))         ; no configure script
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (inputs
-     `(("minizip" ,minizip)))
+     (list minizip))
     (home-page "https://github.com/jmcnamara/libxlsxwriter")
     (synopsis "C library for creating Excel XLSX files")
     (description
@@ -361,7 +358,7 @@ formulas and hyperlinks to multiple worksheets in an Excel 2007+ XLSX file.")
               ("zlib" ,zlib)
               ("xz" ,xz)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (description
      "Libxslt is an XSLT C library developed for the GNOME project.  It is
 based on libxml for XML parsing, tree manipulation and XPath support.")
@@ -435,9 +432,9 @@ based on libxml for XML parsing, tree manipulation and XPath support.")
                  (format #t "test suite not run~%"))
              #t)))))
     (inputs
-     `(("opensp" ,opensp)))
+     (list opensp))
     (native-inputs
-     `(("perl" ,perl)))
+     (list perl))
     (home-page "http://openjade.sourceforge.net/")
     (synopsis "ISO/IEC 10179:1996 standard DSSSL language implementation")
     (description "OpenJade is an implementation of Document Style Semantics
@@ -463,10 +460,7 @@ MIF, SGML2SGML, and FOT.")
          "0jlsg64pmy6ka5q5gy851nnyfgjzvhyxc576bhns3vi2x5ng07mh"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-graph" ,perl-graph)
-       ("perl-parse-yapp" ,perl-parse-yapp)
-       ("perl-xml-parser" ,perl-xml-parser)
-       ("perl-xml-writer" ,perl-xml-writer)))
+     (list perl-graph perl-parse-yapp perl-xml-parser perl-xml-writer))
     (home-page "https://metacpan.org/release/Graph-ReadWrite")
     (synopsis "Modules for reading and writing directed graphs")
     (description "This is a collection of perl classes for reading and writing
@@ -502,18 +496,16 @@ the @code{Graph} class and write it out in a specific file format.")
              #t)))))
     (native-inputs
      ;; TODO package: perl-datetime-format-atom
-     `(("perl-html-tagset" ,perl-html-tagset)
-       ("perl-module-build-tiny" ,perl-module-build-tiny)
-       ("perl-module-install" ,perl-module-install)))
+     (list perl-html-tagset perl-module-build-tiny perl-module-install))
     (propagated-inputs
-     `(("perl-class-data-inheritable" ,perl-class-data-inheritable)
-       ("perl-datetime" ,perl-datetime)
-       ("perl-datetime-timezone" ,perl-datetime-timezone)
-       ("perl-digest-sha1" ,perl-digest-sha1)
-       ("perl-libwww" ,perl-libwww)
-       ("perl-uri" ,perl-uri)
-       ("perl-xml-libxml" ,perl-xml-libxml)
-       ("perl-xml-xpath" ,perl-xml-xpath)))
+     (list perl-class-data-inheritable
+           perl-datetime
+           perl-datetime-timezone
+           perl-digest-sha1
+           perl-libwww
+           perl-uri
+           perl-xml-libxml
+           perl-xml-xpath))
     (home-page "https://metacpan.org/release/XML-Atom")
     (synopsis "Atom feed and API implementation")
     (description
@@ -534,10 +526,9 @@ the @code{Graph} class and write it out in a specific file format.")
                 "0l5xmw2hd95ypppz3lyvp4sn02ccsikzjwacli3ydxfdz1bbh4d7"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)))
+     (list perl-module-build))
     (propagated-inputs
-     `(("perl-test-differences" ,perl-test-differences)
-       ("perl-xml-tokeparser" ,perl-xml-tokeparser)))
+     (list perl-test-differences perl-xml-tokeparser))
     (home-page "https://metacpan.org/release/XML-Descent")
     (synopsis "Recursive descent XML parsing")
     (description
@@ -566,7 +557,7 @@ parsers for it.  @code{XML::Descent} allows such parsers to be created.")
                  (let ((expat (assoc-ref %build-inputs "expat")))
                    (list (string-append "EXPATLIBPATH=" expat "/lib")
                          (string-append "EXPATINCPATH=" expat "/include")))))
-    (inputs `(("expat" ,expat)))
+    (inputs (list expat))
     (license license:perl-license)
     (synopsis "Perl bindings to the Expat XML parsing library")
     (description
@@ -592,7 +583,7 @@ given at XML::Parser creation time.")
                (base32
                 "1hnpwb3lh6cbgwvjjgqzcp6jm4mp612qn6ili38adc9nhkwv8fc5"))))
     (build-system perl-build-system)
-    (propagated-inputs `(("perl-xml-parser" ,perl-xml-parser)))
+    (propagated-inputs (list perl-xml-parser))
     (home-page "https://metacpan.org/release/XML-TokeParser")
     (synopsis "Simplified interface to XML::Parser")
     (description
@@ -617,7 +608,7 @@ corresponding to an @code{XML::Parser} event.")
                "1jy9af0ljyzj7wakqli0437zb2vrbplqj4xhab7bfj2xgfdhawa5"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-xml-parser" ,perl-xml-parser)))
+     (list perl-xml-parser))
     (license license:perl-license)
     (synopsis "Perl modules for working with XML")
     (description
@@ -641,10 +632,9 @@ combination with @code{XML::Parser}, PerlSAX, @code{XML::DOM},
          "1ks69xymv6zkj7hvaymjvb78ch81abri7kg4zrwxhdfsqb8a9g7h"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-xml-namespacesupport" ,perl-xml-namespacesupport)
-       ("perl-xml-sax" ,perl-xml-sax)))
+     (list perl-xml-namespacesupport perl-xml-sax))
     (inputs
-     `(("libxml2" ,libxml2)))
+     (list libxml2))
     (home-page "https://metacpan.org/release/XML-LibXML")
     (synopsis "Perl interface to libxml2")
     (description "This module implements a Perl interface to the libxml2
@@ -666,8 +656,7 @@ XML parser and the high performance DOM implementation.")
                 "19k50d80i9dipsl6ln0f4awv9wmdg0xm3d16z8mngmvh9c8ci66d"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-file-slurp-tiny" ,perl-file-slurp-tiny)
-       ("perl-xml-libxml" ,perl-xml-libxml)))
+     (list perl-file-slurp-tiny perl-xml-libxml))
     (home-page "https://metacpan.org/release/XML-LibXML-Simple")
     (synopsis "XML::LibXML based XML::Simple clone")
     (description
@@ -689,9 +678,9 @@ XML parser and the high performance DOM implementation.")
          "0wyl8klgr65j8y8fzgwz9jlvfjwvxazna8j3dg9gksd2v973fpia"))))
     (build-system perl-build-system)
     (inputs
-     `(("libxslt" ,libxslt)))
+     (list libxslt))
     (propagated-inputs
-     `(("perl-xml-libxml" ,perl-xml-libxml)))
+     (list perl-xml-libxml))
     (home-page "https://metacpan.org/release/XML-LibXSLT")
     (synopsis "Perl bindings to GNOME libxslt library")
     (description "This Perl module is an interface to the GNOME project's
@@ -732,19 +721,13 @@ checks.")
                 "0klb8ghd405pdkmn25lp3i4j2lfydz8w581sk51p3zy788s0c9yk"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)
-       ("perl-test-manifest" ,perl-test-manifest)
-       ("perl-test-differences" ,perl-test-differences)
-       ("perl-test-pod" ,perl-test-pod)
-       ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
+     (list perl-module-build perl-test-manifest perl-test-differences
+           perl-test-pod perl-test-pod-coverage))
     ;; XXX: The test which uses this modules does not run, even when it is included
     ;; it is ignored. ("perl-test-trailingspace" ,perl-test-trailingspace)
     (inputs
-     `(("perl-datetime" ,perl-datetime)
-       ("perl-datetime-format-mail" ,perl-datetime-format-mail)
-       ("perl-datetime-format-w3cdtf" ,perl-datetime-format-w3cdtf)
-       ("perl-html-parser" ,perl-html-parser)
-       ("perl-xml-parser" ,perl-xml-parser)))
+     (list perl-datetime perl-datetime-format-mail
+           perl-datetime-format-w3cdtf perl-html-parser perl-xml-parser))
     (home-page "https://metacpan.org/release/XML-RSS")
     (synopsis "Creates and updates RSS files")
     (description
@@ -767,8 +750,7 @@ that allow you to generate HTML from an RSS, convert between 0.9, 0.91, and
         (base32 "0am13vnv8qsjafr5ljakwnkhlwpk15sga02z8mxsg9is0j3w61j5"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-xml-namespacesupport" ,perl-xml-namespacesupport)
-       ("perl-xml-sax-base" ,perl-xml-sax-base)))
+     (list perl-xml-namespacesupport perl-xml-sax-base))
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (add-before
@@ -824,8 +806,7 @@ callback.")
                "1y6vh328zrh085d40852v4ij2l4g0amxykswxd1nfhd2pspds7sk"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-xml-parser" ,perl-xml-parser)
-       ("perl-xml-sax" ,perl-xml-sax)))
+     (list perl-xml-parser perl-xml-sax))
     (license license:perl-license)
     (synopsis "Perl module for easy reading/writing of XML files")
     (description
@@ -848,7 +829,7 @@ parser modules).")
                "0m7wj00a2kik7wj0azhs1zagwazqh3hlz4255n75q21nc04r06fz"))))
     (build-system perl-build-system)
     (inputs
-     `(("perl-xml-parser" ,perl-xml-parser)))
+     (list perl-xml-parser))
     (license license:perl-license)
     (synopsis "Perl regular expressions for XML tokens")
     (description
@@ -871,10 +852,7 @@ EntityRef, CharRef, Reference, Name, NmToken, and AttValue.")
                "0phpkc4li43m2g44hdcvyxzy9pymqwlqhh5hwp2xc0cv8l5lp8lb"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-libwww" ,perl-libwww)
-       ("perl-libxml" ,perl-libxml)
-       ("perl-xml-parser" ,perl-xml-parser)
-       ("perl-xml-regexp" ,perl-xml-regexp)))
+     (list perl-libwww perl-libxml perl-xml-parser perl-xml-regexp))
     (license license:perl-license)
     (synopsis
      "Perl module for building DOM Level 1 compliant document structures")
@@ -899,8 +877,7 @@ that conforms to the API of the Document Object Model.")
                 "1drzwziwi96rfkh48qpw4l225mcbk8ppl2157nj92cslcpwwdk75"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-log-report" ,perl-log-report)
-       ("perl-test-deep" ,perl-test-deep)))
+     (list perl-log-report perl-test-deep))
     (home-page "https://metacpan.org/release/XML-Compile-Tester")
     (synopsis "XML::Compile related regression testing")
     (description
@@ -922,12 +899,12 @@ This module provide functions which simplify writing tests for
                 "0psr5pwsk2biz2bfkigmx04v2rfhs6ybwcfmcrrg7gvh9bpp222b"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-log-report" ,perl-log-report)
-       ("perl-xml-compile-tester" ,perl-xml-compile-tester)
-       ("perl-xml-libxml" ,perl-xml-libxml)
-       ("perl-scalar-list-utils" ,perl-scalar-list-utils)
-       ("perl-test-deep" ,perl-test-deep)
-       ("perl-types-serialiser" ,perl-types-serialiser)))
+     (list perl-log-report
+           perl-xml-compile-tester
+           perl-xml-libxml
+           perl-scalar-list-utils
+           perl-test-deep
+           perl-types-serialiser))
     (home-page "https://metacpan.org/release/XML-Compile")
     (synopsis "Compilation-based XML processing")
     (description
@@ -949,10 +926,8 @@ a schema.")
                 "181qf1s7ymgi7saph3cf9p6dbxkxyh1ja23na4dchhi8v5mi66sr"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-log-report" ,perl-log-report)
-       ("perl-xml-compile" ,perl-xml-compile)
-       ("perl-xml-compile-tester" ,perl-xml-compile-tester)
-       ("perl-xml-libxml-simple" ,perl-xml-libxml-simple)))
+     (list perl-log-report perl-xml-compile perl-xml-compile-tester
+           perl-xml-libxml-simple))
     (home-page "https://metacpan.org/release/XML-Compile-Cache")
     (synopsis "Cache compiled XML translators")
     (description
@@ -972,12 +947,12 @@ a schema.")
                 "0pkcph562l2ij7rlwlvm58v6y062qsbydfpaz2qnph2ixqy0xfd1"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-file-slurp-tiny" ,perl-file-slurp-tiny)
-       ("perl-libwww" ,perl-libwww)
-       ("perl-log-report" ,perl-log-report)
-       ("perl-xml-compile" ,perl-xml-compile)
-       ("perl-xml-compile-cache" ,perl-xml-compile-cache)
-       ("perl-xml-compile-tester" ,perl-xml-compile-tester)))
+     (list perl-file-slurp-tiny
+           perl-libwww
+           perl-log-report
+           perl-xml-compile
+           perl-xml-compile-cache
+           perl-xml-compile-tester))
     (home-page "https://metacpan.org/release/XML-Compile-SOAP")
     (synopsis "Base-class for SOAP implementations")
     (description
@@ -1000,10 +975,8 @@ used.")
                 "09ayl442hzvn97q4ghn5rz4r82dm9w3l69hixhb29h9xq9ysi7ba"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-log-report" ,perl-log-report)
-       ("perl-xml-compile" ,perl-xml-compile)
-       ("perl-xml-compile-cache" ,perl-xml-compile-cache)
-       ("perl-xml-compile-soap" ,perl-xml-compile-soap)))
+     (list perl-log-report perl-xml-compile perl-xml-compile-cache
+           perl-xml-compile-soap))
     (home-page "https://metacpan.org/release/XML-Compile-WSDL11")
     (synopsis "Create SOAP messages defined by WSDL 1.1")
     (description
@@ -1026,9 +999,7 @@ server, collect the answer, and finally decoding the XML to Perl.")
                 "04frqhikmyq0i9ldraisbvppyjhqg6gz83l2rqpmp4f2h9n9k2lw"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)
-       ("perl-uri" ,perl-uri)
-       ("perl-class-data-inheritable" ,perl-class-data-inheritable)))
+     (list perl-module-build perl-uri perl-class-data-inheritable))
     (propagated-inputs
      `(("perl-class-errorhandler" ,perl-class-errorhandler)
        ("perl-datetime" ,perl-datetime)
@@ -1066,9 +1037,9 @@ RSS 0.91, RSS 1.0, RSS 2.0, Atom")
                 "03yxj7w5a43ibbpiqsvb3lswj2b71dydsx4rs2fw0p8n0l3i3j8w"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-path-tiny" ,perl-path-tiny)))
+     (list perl-path-tiny))
     (propagated-inputs
-     `(("perl-xml-parser" ,perl-xml-parser)))
+     (list perl-xml-parser))
     (home-page "https://metacpan.org/release/XML-XPath")
     (synopsis "Parse and evaluate XPath statements")
     (description
@@ -1093,7 +1064,7 @@ the form of functions.")
      `(#:configure-flags '("-DBUILD_SHARED_LIBS=ON")
        #:tests? #f))                    ; no tests
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://pugixml.org")
     (synopsis "Light-weight, simple and fast XML parser for C++ with XPath support")
     (description
@@ -1153,11 +1124,11 @@ code for classes that correspond to data structures defined by XMLSchema.")
                                                          "util-linux")
                                               "/bin/getopt"))))
     (native-inputs
-     `(("util-linux" ,util-linux)))
+     (list util-linux))
     (inputs
-     `(("util-linux" ,util-linux)                 ; for 'getopt'
-       ("libxml2" ,libxml2)                       ; for 'xmllint'
-       ("libxslt" ,libxslt)))                     ; for 'xsltproc'
+     (list util-linux ; for 'getopt'
+           libxml2 ; for 'xmllint'
+           libxslt))                     ; for 'xsltproc'
     (home-page "http://cyberelk.net/tim/software/xmlto/")
     (synopsis "Front-end to an XSL toolchain")
     (description
@@ -1179,14 +1150,11 @@ XSL-T processor.  It also performs any necessary post-processing.")
                 "0hy0nwz57n9r5wwab9xa66gzwlwvzs54nhlfn3jh8q13acl710z3"))))
     (build-system gnu-build-system)
     (propagated-inputs                  ; according to xmlsec1.pc
-     `(("libxml2" ,libxml2)
-       ("libxslt" ,libxslt)))
+     (list libxml2 libxslt))
     (inputs
-     `(("gnutls" ,gnutls)
-       ("libgcrypt" ,libgcrypt)
-       ("libltdl" ,libltdl)))
+     (list gnutls libgcrypt libltdl))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://www.aleksey.com/xmlsec/")
     (synopsis "XML Security Library")
     (description
@@ -1369,8 +1337,7 @@ C++ programming language.")
              (symlink "xml" (string-append bin "/xmlstarlet"))
              #t))))))
    (inputs
-    `(("libxslt" ,libxslt)
-      ("libxml2" ,libxml2)))
+    (list libxslt libxml2))
    (home-page "http://xmlstar.sourceforge.net/")
    (synopsis "Command line XML toolkit")
    (description "XMLStarlet is a set of command line utilities which can be
@@ -1527,7 +1494,7 @@ spreadsheet.")
            '()
            '(#:configure-flags '("--disable-sse2")))))
     (native-inputs
-     `(("perl" ,perl)))
+     (list perl))
     (home-page "https://xerces.apache.org/xerces-c/")
     (synopsis "Validating XML parser library for C++")
     (description "Xerces-C++ is a validating XML parser written in a portable
@@ -1551,10 +1518,7 @@ SAX2 APIs.")
        (sha256
         (base32 "0jr6ggzhd8aakdvppcl8scy9j9jafg82zbzr4ih996sz8lrj90fn"))))
     (native-inputs
-     `(("expat" ,expat)
-       ("make" ,gnu-make)
-       ("minizip" ,minizip)
-       ("which" ,which)))
+     (list expat gnu-make minizip which))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -1593,7 +1557,7 @@ Excel(TM) since version 2007.")
        (modify-phases %standard-phases
          (replace 'install (install-jars "jar")))))
     (native-inputs
-     `(("unzip" ,unzip)))
+     (list unzip))
     (home-page "http://simple.sourceforge.net/")
     (synopsis "XML serialization framework for Java")
     (description "Simple is a high performance XML serialization and
@@ -1664,7 +1628,7 @@ by @code{Tree::XPathEngine}.")
          "0p5785c1dsk6kdp505vapb5h54k8krrz8699hpgm9igf7dni5llg"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-xml-sax-base" ,perl-xml-sax-base)))
+     (list perl-xml-sax-base))
     (home-page "https://metacpan.org/release/XML-Filter-BufferText")
     (synopsis "Filter to put all characters() in one event")
     (description "This is a very simple filter.  One common cause of
@@ -1688,10 +1652,8 @@ characters into a single event.")
                 "1w1cd1ybxdvhmnxdlkywi3x5ka3g4md42kyynksjc09vyizd0q9x"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-libxml" ,perl-libxml)
-       ("perl-xml-filter-buffertext" ,perl-xml-filter-buffertext)
-       ("perl-xml-namespacesupport" ,perl-xml-namespacesupport)
-       ("perl-xml-sax-base" ,perl-xml-sax-base)))
+     (list perl-libxml perl-xml-filter-buffertext
+           perl-xml-namespacesupport perl-xml-sax-base))
     (home-page "https://metacpan.org/release/XML-SAX-Writer")
     (synopsis "SAX2 XML Writer")
     (description
@@ -1713,7 +1675,7 @@ characters into a single event.")
          "11d45a1sz862va9rry3p2m77pwvq3kpsvgwhc5ramh9mbszbnk77"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-libxml" ,perl-libxml)))
+     (list perl-libxml))
     (home-page "https://metacpan.org/release/XML-Handler-YAWriter")
     (synopsis "Yet another Perl SAX XML Writer")
     (description "YAWriter implements Yet Another @code{XML::Handler::Writer}.
@@ -1733,22 +1695,22 @@ It provides a flexible escaping technique and pretty printing.")
                 "1bc0hrz4jp6199hi29sdxmb9gyy45whla9hd19yqfasgq8k5ixzy"))))
     (build-system perl-build-system)
     (inputs
-     `(("expat" ,expat)))
+     (list expat))
     (propagated-inputs
-     `(("perl-html-tidy" ,perl-html-tidy)
-       ("perl-html-tree" ,perl-html-tree)
-       ("perl-io-captureoutput" ,perl-io-captureoutput)
-       ("perl-io-string" ,perl-io-string)
-       ("perl-io-stringy" ,perl-io-stringy)
-       ("perl-libxml" ,perl-libxml)
-       ("perl-xml-filter-buffertext" ,perl-xml-filter-buffertext)
-       ("perl-xml-handler-yawriter" ,perl-xml-handler-yawriter)
-       ("perl-xml-parser" ,perl-xml-parser)
-       ("perl-xml-sax-writer" ,perl-xml-sax-writer)
-       ("perl-xml-simple" ,perl-xml-simple)
-       ("perl-xml-xpathengine" ,perl-xml-xpathengine)
-       ("perl-test-pod" ,perl-test-pod)
-       ("perl-tree-xpathengine" ,perl-tree-xpathengine)))
+     (list perl-html-tidy
+           perl-html-tree
+           perl-io-captureoutput
+           perl-io-string
+           perl-io-stringy
+           perl-libxml
+           perl-xml-filter-buffertext
+           perl-xml-handler-yawriter
+           perl-xml-parser
+           perl-xml-sax-writer
+           perl-xml-simple
+           perl-xml-xpathengine
+           perl-test-pod
+           perl-tree-xpathengine))
     (home-page "https://metacpan.org/release/XML-Twig")
     (synopsis "Perl module for processing huge XML documents in tree mode")
     (description "@code{XML::Twig} is an XML transformation module.  Its
@@ -1818,7 +1780,7 @@ the Xerces-J XML parser and Xalan-J XSLT processor and specifies these APIs:
      `(#:jar-name (string-append "xml-resolver.jar")
        #:tests? #f)); no tests
     (inputs
-     `(("java-junit" ,java-junit)))
+     (list java-junit))
     (home-page "http://xerces.apache.org/xml-commons/")
     (synopsis "Catalog-based entity and URI resolution")
     (description "The resolver class implements the full semantics of OASIS Technical
@@ -1878,9 +1840,7 @@ with XPath too.")
     (inherit java-jaxen-bootstrap)
     (name "java-jaxen")
     (inputs
-     `(("java-jdom" ,java-jdom)
-       ("java-xom" ,java-xom)
-       ("java-dom4j" ,java-dom4j)))))
+     (list java-jdom java-xom java-dom4j))))
 
 (define-public java-xom
   (package
@@ -1918,11 +1878,8 @@ with XPath too.")
              (delete-file "src/nu/xom/tools/XHTMLJavaDoc.java")
              #t)))))
     (inputs
-     `(("java-jdom" ,java-jdom)
-       ("java-junit" ,java-junit)
-       ("java-classpathx-servletapi" ,java-classpathx-servletapi)
-       ("java-jaxen-bootstrap" ,java-jaxen-bootstrap)
-       ("java-xerces" ,java-xerces)))
+     (list java-jdom java-junit java-classpathx-servletapi
+           java-jaxen-bootstrap java-xerces))
     (home-page "https://xom.nu/")
     (synopsis "XML Object Model")
     (description "XOM is a new XML Object Model for processing XML with Java 
@@ -1948,7 +1905,7 @@ that strives for correctness and simplicity.")
        #:jar-name "xsdlib.jar"
        #:jdk ,icedtea-8))
     (inputs
-     `(("java-xerces" ,java-xerces)))
+     (list java-xerces))
     (home-page (string-append "https://web.archive.org/web/20161127144537/"
                               "https://msv.java.net//"))
     (synopsis "Sun Multi-Schema Validator")
@@ -2140,8 +2097,7 @@ public boolean removeAttributeByName(String name, String name2) {\n
        ("java-xpp3" ,java-xpp3)
        ("java-xsdlib" ,java-xsdlib)))
     (native-inputs
-     `(("java-testng" ,java-testng)
-       ("java-xerces" ,java-xerces)))
+     (list java-testng java-xerces))
     (home-page "https://dom4j.github.io/")
     (synopsis "Flexible XML framework for Java")
     (description "Dom4j is a flexible XML framework for Java.  DOM4J works
@@ -2182,9 +2138,9 @@ low memory footprint.")
              (copy-recursively "src/main/resources" "build/classes")
              #t)))))
     (inputs
-     `(("java-xpp3" ,java-xpp3)))
+     (list java-xpp3))
     (native-inputs
-     `(("java-junit" ,java-junit)))
+     (list java-junit))
     (home-page "http://kxml.org")
     (synopsis "XML pull parser")
     (description "kXML is a small XML pull parser, specially designed for
@@ -2247,7 +2203,7 @@ and from a Java application.  It provides a standard pull parser interface.")
                             "**/BadgerFishDOMTest.java"
                             "**/MappedDOMTest.java")))
     (native-inputs
-     `(("java-junit" ,java-junit)))
+     (list java-junit))
     (home-page "https://github.com/codehaus/jettison")
     (synopsis "StAX implementation for JSON")
     (description "Jettison is a Java library for converting XML to JSON and
@@ -2351,9 +2307,9 @@ and back again.")
              (copy-recursively "src/main/resources" "build/classes")
              #t)))))
     (propagated-inputs
-     `(("java-xmlpull-api-v1" ,java-xmlpull-api-v1)))
+     (list java-xmlpull-api-v1))
     (native-inputs
-     `(("java-junit" ,java-junit)))
+     (list java-junit))
     (home-page "https://github.com/x-stream/mxparser")
     (synopsis "Streaming pull XML parser forked from @code{java-xpp3}")
     (description "Xml Pull Parser (in short XPP) is a streaming pull XML
@@ -2381,10 +2337,10 @@ changes of the Plexus fork. It is an implementation of the XMLPULL V1 API
                "18zwbj6i2hpcn5riiyp8i6rml0sfv60dd7phw1x8g4r4lj2bbxf9"))))
     (build-system gnu-build-system)
     (inputs
-     `(("curl" ,curl)))
+     (list curl))
     (native-inputs
-     `(;; For tools, if ever needed.
-       ("perl" ,perl)))
+     (list ;; For tools, if ever needed.
+           perl))
     (arguments
      `(#:make-flags ; Add $libdir to the RUNPATH of all the executables.
        (list (string-append "LDFLAGS_PERSONAL=-Wl,-rpath=" %output "/lib"))
@@ -2545,8 +2501,7 @@ because lxml.etree already has its own implementation of XPath 1.0.")
                     (lambda _
                       (invoke "make" "test"))))))
     (inputs
-     `(("libxml2" ,libxml2)
-       ("libxslt" ,libxslt)))
+     (list libxml2 libxslt))
     (home-page "https://lxml.de/")
     (synopsis "Python XML processing library")
     (description
@@ -2585,9 +2540,9 @@ libxml2 and libxslt.")
                          "-k" "not test_export_remote__issue_187")
                  (format #t "test suite not run~%")))))))
     (native-inputs
-     `(("python-lxml" ,python-lxml)))   ;for tests
+     (list python-lxml))   ;for tests
     (propagated-inputs
-     `(("python-elementpath" ,python-elementpath)))
+     (list python-elementpath))
     (home-page "https://github.com/sissaschool/xmlschema")
     (synopsis "XML Schema validator and data conversion library")
     (description
@@ -2611,8 +2566,7 @@ XML data to JSON and other formats.")
          "08cadlb9vsb4pmzc99lz3a2lx6qcfazyvgk10pcqijvyxlwcdn2h"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-coverage" ,python-coverage)
-       ("python-nose" ,python-nose)))
+     (list python-coverage python-nose))
     (home-page "https://github.com/martinblech/xmltodict")
     (synopsis "Work with XML like you are working with JSON")
     (description "This package provides a Python library to convert XML to

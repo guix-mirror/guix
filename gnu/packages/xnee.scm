@@ -41,14 +41,14 @@
     (arguments
      '(#:configure-flags '("CFLAGS=-O2 -g -fcommon")))
     (inputs
-     `(("gtk+" ,gtk+-2)
-       ("libx11" ,libx11)
-       ("libxext" ,libxext)
-       ("libxi" ,libxi)
-       ("libxtst" ,libxtst)
-       ("xorgproto" ,xorgproto)))
+     (list gtk+-2
+           libx11
+           libxext
+           libxi
+           libxtst
+           xorgproto))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (home-page "https://www.gnu.org/software/xnee/")
     (synopsis "Record, replay and distribute user actions under X11")
     (description

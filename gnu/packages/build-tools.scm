@@ -91,7 +91,7 @@
     (native-inputs
      `(("python" ,python-2)))
     (inputs
-     `(("lua" ,lua)))
+     (list lua))
     (home-page "https://matricks.github.io/bam/")
     (synopsis "Fast and flexible build system")
     (description "Bam is a fast and flexible build system.  Bam uses Lua to
@@ -166,7 +166,7 @@ generate such a compilation database.")
     (inputs
      `(("bash" ,bash-minimal)))
     (native-inputs
-     `(("coreutils" ,coreutils)))
+     (list coreutils))
     (arguments
      `(#:tests? #f                      ; test during build
        #:phases
@@ -284,12 +284,12 @@ files and generates build instructions for the Ninja build system.")
                   ;; Meson calls the various executables in out/bin through the
                   ;; Python interpreter, so we cannot use the shell wrapper.
                   (delete 'wrap))))
-    (inputs `(("ninja" ,ninja)))
+    (inputs (list ninja))
 
     ;; XXX: Python is propagated just to 'GUIX_PYTHONPATH' is set (!).
     ;; MESON-WRAPPED below fixes that by wrapping the 'meson' executable.
     ;; TODO: Make MESON-WRAPPED the new MESON on the next core update cycle.
-    (propagated-inputs `(("python" ,python)))
+    (propagated-inputs (list python))
 
     (home-page "https://mesonbuild.com/")
     (properties '((hidden? . #t)))
@@ -358,7 +358,7 @@ sys.path.insert(0, '~a/lib/python~a/site-packages')
                 "1017rd0wsjfyq2jvpjjhpszaa7kmig6q1nimw76qx3cjz2868lrn"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("unzip" ,unzip))) ; for unpacking the source
+     (list unzip)) ; for unpacking the source
     (arguments
      `(#:make-flags (list (string-append "CC=" ,(cc-for-target)))
        #:tests? #f ; No test suite
@@ -465,12 +465,11 @@ other lower-level build files.")))
                    (display "au BufNewFile,BufRead Tupfile,*.tup setf tup")))
                #t))))))
     (inputs
-     `(("fuse" ,fuse)
-       ("pcre" ,pcre)
-       ("pcre" ,pcre "bin") ; pcre-config
-       ("sqlite" ,sqlite)))
+     (list fuse pcre
+           `(,pcre "bin") ; pcre-config
+           sqlite))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "http://gittup.org/tup/")
     (synopsis "Fast build system that's hard to get wrong")
     (description "Tup is a generic build system based on a directed acyclic
@@ -507,11 +506,9 @@ a build worked by accident.")
                 (string-append bin "osc"))
                #t))))))
     (native-inputs
-     `(("python-chardet" ,python-chardet)))
+     (list python-chardet))
     (inputs
-     `(("python-m2crypto" ,python-m2crypto)
-       ("python-pycurl" ,python-pycurl)
-       ("rpm" ,rpm)))                   ; for python-rpm
+     (list python-m2crypto python-pycurl rpm))                   ; for python-rpm
     (home-page "https://github.com/openSUSE/osc")
     (synopsis "Open Build Service command line tool")
     (description "@command{osc} is a command line interface to the Open Build
@@ -540,10 +537,9 @@ be reached via direct API calls.")
              (substitute* "setup.py" (("^ *'shutilwhich'\n") ""))
              (substitute* "compiledb/compiler.py" (("shutilwhich") "shutil")))))))
     (propagated-inputs
-      `(("python-bashlex" ,python-bashlex)
-        ("python-click" ,python-click)))
+      (list python-bashlex python-click))
     (native-inputs
-      `(("python-pytest" ,python-pytest)))
+      (list python-pytest))
     (home-page
       "https://github.com/nickdiego/compiledb")
     (synopsis

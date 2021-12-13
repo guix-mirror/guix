@@ -89,9 +89,7 @@
               "1545vgizpypqi2rrriad0ybqv0qwbn9zr0ibxpk00gha9ihv7acx"))))
    (build-system gnu-build-system)
    (propagated-inputs
-     `(("gmp" ,gmp)
-       ("mpfr" ,mpfr)
-       ("mpc"  ,mpc))) ; Header files are included by mpfrcx.h.
+     (list gmp mpfr mpc)) ; Header files are included by mpfrcx.h.
    (synopsis "Arithmetic of polynomials over arbitrary precision numbers")
    (description
     "Mpfrcx is a library for the arithmetic of univariate polynomials over
@@ -138,10 +136,9 @@ greatest common divisor operations.")
               "0qq6b1kwb1byj8ws33ya5awq0ilkpm32037pi1l4cf2737fg9m42"))))
    (build-system gnu-build-system)
    (propagated-inputs
-     `(("mpfrcx" ,mpfrcx)
-       ("zlib" ,zlib))) ; Header files included from cm_common.h.
+     (list mpfrcx zlib)) ; Header files included from cm_common.h.
    (inputs
-     `(("pari-gp"  ,pari-gp)))
+     (list pari-gp))
    (synopsis "CM constructions for elliptic curves")
    (description
     "The CM software implements the construction of ring class fields of
@@ -168,13 +165,9 @@ line applications.")
               (patches (search-patches "fplll-std-fenv.patch"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf automake libtool pkg-config))
     (propagated-inputs ; header files pulled in by fplll/defs.h
-     `(("gmp" ,gmp)
-       ("mpfr" ,mpfr)))
+     (list gmp mpfr))
     (home-page "https://github.com/fplll/fplll")
     (synopsis "Library for LLL-reduction of euclidean lattices")
     (description
@@ -219,10 +212,7 @@ the real span of the lattice.")
          "1a25iibihph626jl4wbs4b77xc4a2c4nfc2ypscf9wpani3dnhjf"))))
     (build-system python-build-system)
     (inputs
-     `(("fplll" ,fplll)
-       ("gmp" ,gmp)
-       ("mpfr" ,mpfr)
-       ("pari-gp" ,pari-gp)))
+     (list fplll gmp mpfr pari-gp))
     (propagated-inputs
      `(("cysignals" ,python-cysignals)
        ("cython" ,python-cython)
@@ -250,10 +240,7 @@ the real span of the lattice.")
     (native-inputs
      `(("texlive" ,(texlive-updmap.cfg
                     (list texlive-amsfonts)))))
-    (inputs `(("gmp" ,gmp)
-              ("libx11" ,libx11)
-              ("perl" ,perl)
-              ("readline" ,readline)))
+    (inputs (list gmp libx11 perl readline))
     (arguments
      '(#:make-flags '("all")
        #:test-target "dobench"
@@ -289,8 +276,8 @@ PARI is also available as a C library to allow for faster computations.")
               (base32
                 "039ip7qkwwv46wrcdrz7y12m30kazzkjr44kqbc0h137g4wzd7zf"))))
    (build-system gnu-build-system)
-   (native-inputs `(("perl" ,perl)))
-   (inputs `(("pari-gp" ,pari-gp)))
+   (native-inputs (list perl))
+   (inputs (list pari-gp))
    (arguments
     '(#:configure-flags
       (list (string-append "--with-paricfg="
@@ -324,12 +311,12 @@ GP2C, the GP to C compiler, translates GP scripts to PARI programs.")
               "1ws2yhzxmm2l5xqqqcjcimmg40f9qq5l9i6d4i5434an9v9s8531"))))
    (build-system gnu-build-system)
    (inputs
-     `(("gmp" ,gmp)
-       ("mpfr" ,mpfr)
-       ("mpc" ,mpc)
-       ("mpfrcx" ,mpfrcx)
-       ("fplll" ,fplll)
-       ("pari-gp"  ,pari-gp)))
+     (list gmp
+           mpfr
+           mpc
+           mpfrcx
+           fplll
+           pari-gp))
    (synopsis "Igusa class polynomial computations")
    (description
     "The CMH software computes Igusa (genus 2) class polynomials, which
@@ -440,10 +427,9 @@ or text interfaces) or as a C++ library.")
        (base32 "1gp4wm2s8c27g2hh53d09cys62da1bsxfwbcsj9cd7cfikm95pv1"))))
    (build-system gnu-build-system)
    (inputs
-    `(("ntl" ,ntl)))
+    (list ntl))
    (propagated-inputs
-    `(("gmp" ,gmp)
-      ("mpfr" ,mpfr))) ; header files from both are included by flint/arith.h
+    (list gmp mpfr)) ; header files from both are included by flint/arith.h
    (arguments
     `(#:parallel-tests? #f              ; seems to be necessary on arm
       #:phases
@@ -497,10 +483,9 @@ fast arithmetic.")
                 "1lmcl122qy6mr1g1y65bm7dk9fj0sym7gzmvar5vdgk7ln03c5iq"))))
     (build-system gnu-build-system)
     (propagated-inputs
-     `(("flint" ,flint)))               ; flint.h is included by arf.h
+     (list flint))               ; flint.h is included by arf.h
     (inputs
-     `(("gmp" ,gmp)
-       ("mpfr" ,mpfr)))
+     (list gmp mpfr))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -542,12 +527,11 @@ real and complex numbers, with automatic, rigorous error control.")
               (patches (search-patches "python-flint-includes.patch"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-cython" ,python-cython)))
+     (list python-cython))
     (propagated-inputs
-     `(("python-numpy" ,python-numpy)))
+     (list python-numpy))
     (inputs
-     `(("arb" ,arb)
-       ("flint" ,flint)))
+     (list arb flint))
     (synopsis "Python module wrapping ARB and FLINT")
     (description
      "Python-flint is a Python extension module wrapping FLINT
@@ -576,11 +560,9 @@ these types and other mathematical functions.")
                 #t))))
    (build-system gnu-build-system)
    (native-inputs
-    `(("libtool" ,libtool)
-      ("perl" ,perl))) ; for configuration
+    (list libtool perl)) ; for configuration
    (inputs
-    `(("gmp" ,gmp)
-      ("gf2x" ,gf2x)))
+    (list gmp gf2x))
    (arguments
     `(#:phases
       (modify-phases %standard-phases
@@ -627,9 +609,7 @@ matrices, and polynomials over the integers and over finite fields.")
                       "13gy1gdng8zijwlr1fn5sixw53z0zf9czzlg0vh1dcc59zw6v998"))))
    (build-system gnu-build-system)
    (native-inputs
-    `(("doxygen" ,doxygen)
-      ("graphviz" ,graphviz)
-      ("perl" ,perl)))
+    (list doxygen graphviz perl))
    (inputs
     `(("cddlib" ,cddlib)
       ("gmp" ,gmp)
@@ -668,7 +648,7 @@ geometry and singularity theory.")
                       "0hxs24c2m3mh0nq1zz63z3sb7dhy1rilg2s1igwwcb26x3pb7xqc"))))
    (build-system gnu-build-system)
    (inputs
-    `(("gmp" ,gmp)))
+    (list gmp))
    (arguments
     `(#:configure-flags '("--enable-shared"
                           ;; Disable specific assembly routines, which depend
@@ -698,13 +678,9 @@ binary.")
              (patches (search-patches "bc-fix-cross-compilation.patch"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("automake" ,automake)
-       ("autoconf" ,autoconf)
-       ("ed" ,ed)
-       ("flex" ,flex)
-       ("texinfo" ,texinfo)))
+     (list automake autoconf ed flex texinfo))
     (inputs
-     `(("readline" ,readline)))
+     (list readline))
     (arguments
      '(#:configure-flags
        (list "--with-readline")
@@ -784,7 +760,7 @@ a C program.")
          ;; available on the user's machine when that package is built on a
          ;; different machine.
          "ax_cv_c_flags__mtune_native=no")))
-    (native-inputs `(("perl" ,perl)))
+    (native-inputs (list perl))
     (home-page "http://fftw.org")
     (synopsis "Computing the discrete Fourier transform")
     (description
@@ -855,8 +831,7 @@ cosine/ sine transforms or DCT/DST).")
                             "**/SparseVectorTest.java"
                             "**/DenseVectorTest.java")))
     (native-inputs
-     `(("java-junit" ,java-junit)
-       ("java-hamcrest-core" ,java-hamcrest-core)))
+     (list java-junit java-hamcrest-core))
     (home-page "http://la4j.org/")
     (synopsis "Java library that provides Linear Algebra primitives and algorithms")
     (description "The la4j library is a Java library that provides Linear
@@ -893,7 +868,7 @@ the la4j library are:
        #:tests? #f ; tests are not included in the release archive
        #:jdk ,icedtea-8))
     (propagated-inputs
-     `(("java-commons-math3" ,java-commons-math3)))
+     (list java-commons-math3))
     (home-page "https://gitlab.com/ICM-VisLab/JLargeArrays")
     (synopsis "Library of one-dimensional arrays that can store up to 263 elements")
     (description "JLargeArrays is a Java library of one-dimensional arrays
@@ -918,8 +893,7 @@ that can store up to 263 elements.")
        #:tests? #f ; tests are not included in the release archive
        #:jdk ,icedtea-8))
     (propagated-inputs
-     `(("java-commons-math3" ,java-commons-math3)
-       ("java-jlargearrays" ,java-jlargearrays)))
+     (list java-commons-math3 java-jlargearrays))
     (home-page "https://github.com/wendykierp/JTransforms")
     (synopsis "Multithreaded FFT library written in pure Java")
     (description "JTransforms is a multithreaded FFT library written in pure
@@ -943,7 +917,7 @@ Sine Transform} (DST) and @dfn{Discrete Hartley Transform} (DHT).")
                 "00bch77a6qgnw6vzsjn2a42n8n683ih3xm0wpr454jxa15hw78vf"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("perl" ,perl)))                   ; for pod2man
+     (list perl))                   ; for pod2man
     (home-page "https://jugit.fz-juelich.de/mlz/lmfit")
     (synopsis "Levenberg-Marquardt minimization and least-squares fitting")
     (description "lmfit is a C library for Levenberg-Marquardt least-squares
@@ -976,10 +950,7 @@ algorithms from the FORTRAN library MINPACK.")
          "-DWITH_SYMENGINE_THREAD_SAFE=on"
          "-DBUILD_SHARED_LIBS=on")))    ;also build libsymengine
     (inputs
-     `(("flint" ,flint)
-       ("gmp" ,gmp)
-       ("mpc" ,mpc)
-       ("mpfr" ,mpfr)))
+     (list flint gmp mpc mpfr))
     (home-page "https://github.com/symengine/symengine")
     (synopsis "Fast symbolic manipulation library")
     (description
@@ -1008,8 +979,7 @@ Optional thin wrappers allow usage of the library from other languages.")
        ("pkg-config" ,pkg-config)
        ("python" ,python-wrapper))) ; Python is required
     (inputs
-     `(("cln" ,cln)
-       ("readline" ,readline)))
+     (list cln readline))
     (home-page "https://www.ginac.de/")
     (synopsis "Library for symbolic computation")
     (description "GiNaC is a C++ library for symbolic computation.  Contrary
@@ -1144,8 +1114,7 @@ features, and more.")
               (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("googletest" ,googletest)
-       ("xtl" ,xtl)))
+     (list googletest xtl))
     (arguments
      `(#:configure-flags
        '("-DBUILD_TESTS=ON")
@@ -1226,9 +1195,7 @@ xtensor provides:
            #t))))
     (build-system gnu-build-system)
     (inputs
-     `(("gmp" ,gmp)
-       ("readline" ,readline)
-       ("zlib" ,zlib)))
+     (list gmp readline zlib))
     (arguments
      `(#:modules ((ice-9 ftw)
                   (srfi srfi-26)
@@ -1315,9 +1282,7 @@ objects.")
               "0q1wdiwqj6fsbifaayb1zkp20bz8a1my81sqjsail577jmzwi07w"))))
    (build-system gnu-build-system)
    (inputs
-    `(("boost" ,boost)
-      ("gmp" ,gmp)
-      ("mpfr" ,mpfr)))
+    (list boost gmp mpfr))
    (arguments
     `(#:phases
       (modify-phases %standard-phases
@@ -1358,11 +1323,9 @@ for the Coq proof assistant.")
                 "11wz57q6ijsvfs5r82masxgr319as92syi78lnl9lgdblpc6xigk"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
+     (list autoconf automake libtool))
     (propagated-inputs
-     `(("gmp" ,gmp))) ; gmp++.h includes gmpxx.h
+     (list gmp)) ; gmp++.h includes gmpxx.h
     (synopsis "Algebraic computations with exact rings and fields")
     (description
      "Givaro is a C++ library implementing the basic arithmetic of various
@@ -1389,14 +1352,11 @@ compound objects, such as vectors, matrices and univariate polynomials.")
                 "1ynbjd72qrwp0b4kpn0p5d7gddpvj8dlb5fwdxajr5pvkvi3if74"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf automake libtool pkg-config))
     (inputs
-     `(("openblas" ,openblas)))
+     (list openblas))
     (propagated-inputs
-     `(("givaro" ,givaro))) ; required according to the .pc file
+     (list givaro)) ; required according to the .pc file
     (arguments
      `(#:configure-flags
        (list (string-append "--with-blas-libs="
@@ -1432,12 +1392,9 @@ algebra, such as the row echelon form.")
               (patches (search-patches "linbox-fix-pkgconfig.patch"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf automake libtool pkg-config))
     (propagated-inputs
-     `(("fflas-ffpack" ,fflas-ffpack)))
+     (list fflas-ffpack))
     (synopsis "C++ library for linear algebra over exact rings")
     (description
      "LinBox is a C++ template library for exact linear algebra computation
@@ -1461,12 +1418,9 @@ finite fields.")
                 "0xfg6pffbn8r1s0y7bn9b8i55l00d41dkmhrpf7pwk53qa3achd3"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf automake libtool pkg-config))
     (inputs
-     `(("libpng" ,libpng)))
+     (list libpng))
     (synopsis "Arithmetic of dense matrices over F_2")
     (description "M4RI is a library for fast arithmetic with dense matrices
 over F2.  The name M4RI comes from the first implemented algorithm: The
@@ -1551,11 +1505,9 @@ polynomials, and the representation theory of Hecke algebras of type A_n.")
                 "0r8lv46qx5mkz5kp3ay2jnsp0mbhlqr5z2z220wdk73wdshcznss"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
+     (list autoconf automake libtool))
     (inputs
-     `(("m4ri" ,m4ri)))
+     (list m4ri))
     (synopsis "Arithmetic of dense matrices over F_{2^e}")
     (description "M4RI is a library for fast arithmetic with dense matrices
 over finite fields of characteristic 2.  So it extends the functionality
@@ -1578,12 +1530,9 @@ of M4RI from F_2 to F_{2^e}.")
                 "1gw27lqc3f525n8qdcmr2nyn16y9g10z9f6dnmckyyxcdzvhq35n"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
+     (list autoconf automake libtool))
     (inputs
-     `(("ntl" ,ntl)
-       ("pari-gp" ,pari-gp)))
+     (list ntl pari-gp))
     (synopsis "Ranks of elliptic curves and modular symbols")
     (description "The eclib package includes mwrank (for 2-descent on
 elliptic curves over Q) and modular symbol code; it has been written by
@@ -1608,9 +1557,7 @@ John Cremona to compute his elliptic curve database.")
               (patches (search-patches "lrcalc-includes.patch"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
+     (list autoconf automake libtool))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -1720,12 +1667,12 @@ no more than about 20 bits long).")
               "11290ivi9h665cxi8f1shlavhy10vzb8s28m57hrcgnxyxqmhx0m"))))
    (build-system gnu-build-system)
    (inputs
-    `(("fplll" ,fplll)
-      ("gmp" ,gmp)
-      ("gnuplot" ,gnuplot)
-      ("libxml2" ,libxml2)
-      ("mpfi" ,mpfi)
-      ("mpfr" ,mpfr)))
+    (list fplll
+          gmp
+          gnuplot
+          libxml2
+          mpfi
+          mpfr))
    (arguments
     `(#:configure-flags
       (list (string-append "--docdir=${datadir}/doc/sollya-" ,version))

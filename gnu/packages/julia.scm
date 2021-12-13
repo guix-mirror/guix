@@ -128,7 +128,7 @@
              #t)))))
     (native-inputs
      ;; used for tests
-     `(("zlib" ,zlib)))
+     (list zlib))
     (build-system gnu-build-system)
     (home-page "https://github.com/vtjnash/libwhich")
     (synopsis "Like @code{which}, for dynamic libraries")

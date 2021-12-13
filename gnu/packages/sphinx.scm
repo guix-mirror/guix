@@ -80,30 +80,28 @@
                   "@pytest.mark.skip()"))
                (invoke "make" "test")))))))
     (propagated-inputs
-     `(("python-babel" ,python-babel)
-       ("python-docutils" ,python-docutils)
-       ("python-jinja2" ,python-jinja2)
-       ("python-imagesize" ,python-imagesize)
-       ("python-packaging" ,python-packaging)
-       ("python-pygments" ,python-pygments)
-       ("python-requests" ,python-requests)
-       ("python-snowballstemmer" ,python-snowballstemmer)
-       ("python-sphinx-alabaster-theme"
-        ,python-sphinx-alabaster-theme)
-       ("python-sphinxcontrib-applehelp" ,python-sphinxcontrib-applehelp)
-       ("python-sphinxcontrib-devhelp" ,python-sphinxcontrib-devhelp)
-       ("python-sphinxcontrib-htmlhelp" ,python-sphinxcontrib-htmlhelp)
-       ("python-sphinxcontrib-jsmath" ,python-sphinxcontrib-jsmath)
-       ("python-sphinxcontrib-qthelp" ,python-sphinxcontrib-qthelp)
-       ("python-sphinxcontrib-serializinghtml"
-        ,python-sphinxcontrib-serializinghtml)))
+     (list python-babel
+           python-docutils
+           python-jinja2
+           python-imagesize
+           python-packaging
+           python-pygments
+           python-requests
+           python-snowballstemmer
+           python-sphinx-alabaster-theme
+           python-sphinxcontrib-applehelp
+           python-sphinxcontrib-devhelp
+           python-sphinxcontrib-htmlhelp
+           python-sphinxcontrib-jsmath
+           python-sphinxcontrib-qthelp
+           python-sphinxcontrib-serializinghtml))
     (native-inputs
-     `(("graphviz" ,graphviz)
-       ("imagemagick" ,imagemagick)                    ;for "convert"
-       ("python-html5lib" ,python-html5lib)
-       ("python-mock" ,python-mock)
-       ("python-nose" ,python-nose)
-       ("python-pytest" ,python-pytest)))
+     (list graphviz
+           imagemagick ;for "convert"
+           python-html5lib
+           python-mock
+           python-nose
+           python-pytest))
     (home-page "https://www.sphinx-doc.org")
     (synopsis "Python documentation generator")
     (description "Sphinx is a tool that makes it easy to create documentation
@@ -139,25 +137,24 @@ sources.")
                              "tests/test_websupport.py"
                              ;; This one fails for unknown reasons.
                              "tests/test_correct_year.py"))))))))
-      (native-inputs `(("python2-mock" ,python2-mock)
-                       ("python2-enum34" ,python2-enum34)
-                       ,@(package-native-inputs base)))
+      (native-inputs (modify-inputs (package-native-inputs base)
+                       (prepend python2-mock python2-enum34)))
       ;; Sphinx 2 has some dependencies that do not support Python 2, so
       ;; we keep our own propagated-inputs here instead of inheriting.
       (propagated-inputs
-       `(("python2-pytz" ,python2-pytz)
-         ("python2-typing" ,python2-typing)
-         ("python2-imagesize" ,python2-imagesize)
-         ("python2-sphinx-alabaster-theme" ,python2-sphinx-alabaster-theme)
-         ("python2-babel" ,python2-babel)
-         ("python2-snowballstemmer" ,python2-snowballstemmer)
-         ("python2-docutils" ,python2-docutils-0.14)
-         ("python2-jinja2" ,python2-jinja2)
-         ("python2-packaging" ,python2-packaging)
-         ("python2-pygments" ,python2-pygments)
-         ("python2-requests" ,python2-requests)
-         ("python2-six" ,python2-six)
-         ("python2-sphinxcontrib-websupport" ,python2-sphinxcontrib-websupport))))))
+       (list python2-pytz
+             python2-typing
+             python2-imagesize
+             python2-sphinx-alabaster-theme
+             python2-babel
+             python2-snowballstemmer
+             python2-docutils-0.14
+             python2-jinja2
+             python2-packaging
+             python2-pygments
+             python2-requests
+             python2-six
+             python2-sphinxcontrib-websupport)))))
 
 (define-public python-sphinxcontrib-applehelp
   (package
@@ -194,10 +191,7 @@ Apple help books.")
     (arguments
      `(#:tests? #f)) ; XXX: Check requires network access.
     (propagated-inputs
-     `(("python-flit" ,python-flit)
-       ("python-setuptools" ,python-setuptools)
-       ("python-sphinx" ,python-sphinx)
-       ("python-wheel" ,python-wheel)))
+     (list python-flit python-setuptools python-sphinx python-wheel))
     (home-page "https://github.com/choldgraf/sphinx-copybutton")
     (synopsis "Sphinx extension to add \"copy\" buttons to code blocks")
     (description
@@ -238,8 +232,7 @@ to code blocks.")
          "1x9af78vamjjcdrrhiah3wg613jv7gm8yh9vvqfrmf4vam6mimyg"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-docutils" ,python-docutils)
-       ("python-sphinx" ,python-sphinx)))
+     (list python-docutils python-sphinx))
     (home-page "https://github.com/jupyter/sphinxcontrib_github_alt")
     (synopsis "Link to GitHub pages from Sphinx docs")
     (description
@@ -300,7 +293,7 @@ math in HTML via JavaScript.")
     (arguments '(#:tests? #f)) ; No tests.
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-sphinx" ,python-sphinx)))
+     (list python-sphinx))
     (synopsis "News Feed extension for Sphinx")
     (description "Sphinxcontrib-newsfeed is an extension for adding a simple
 Blog, News or Announcements section to a Sphinx website.")
@@ -322,7 +315,7 @@ Blog, News or Announcements section to a Sphinx website.")
      ;; FIXME: Many tests are failing.
      '(#:tests? #f))
     (propagated-inputs
-     `(("python-sphinx" ,python-sphinx)))
+     (list python-sphinx))
     (synopsis "Sphinx extension to include program output")
     (description "A Sphinx extension to literally insert the output of arbitrary
 commands into documents, helping you to keep your command examples up to date.")
@@ -384,7 +377,7 @@ documents.")
                 "1hhaxmqc7wh8gnyw5jaqckliknvk0p21y12wk3bdmncgkaf9ar8f"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-sphinx" ,python-sphinx)))
+     (list python-sphinx))
     (home-page "https://github.com/missinglinkelectronics/sphinxcontrib-svg2pdfconverter")
     (synopsis "Sphinx SVG to PDF converter extension")
     (description "A Sphinx extension to convert SVG images to PDF in case the
@@ -432,7 +425,7 @@ integrate Sphinx documents in web templates and to handle searches.")
        (modify-phases %standard-phases
          (delete 'sanity-check))))
     (propagated-inputs
-     `(("python2-six" ,python2-six)))))
+     (list python2-six))))
 
 (define-public python-sphinx-gallery
   (package
@@ -463,13 +456,13 @@ integrate Sphinx documents in web templates and to handle searches.")
                         ;; AssertionError.
                         " and not test_embed_links_and_styles"))))))))
     (native-inputs
-     `(("python-joblib" ,python-joblib)
-       ("python-matplotlib" ,python-matplotlib)
-       ("python-numpy" ,python-numpy)
-       ("python-pillow" ,python-pillow)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)
-       ("python-sphinx" ,python-sphinx)))
+     (list python-joblib
+           python-matplotlib
+           python-numpy
+           python-pillow
+           python-pytest
+           python-pytest-cov
+           python-sphinx))
     (home-page "https://sphinx-gallery.github.io/stable/index.html")
     (synopsis "Generate an examples gallery automatically")
     (description
@@ -514,8 +507,7 @@ use in your Sphinx docs.")
     (build-system python-build-system)
     (arguments '(#:tests? #f)) ; No tests.
     (propagated-inputs
-     `(("python-sphinx" ,python-sphinx)
-       ("python-zope-interface" ,python-zope-interface)))
+     (list python-sphinx python-zope-interface))
     (synopsis "Auto-generate Sphinx API docs from Zope interfaces")
     (description "This package defines an extension for the Sphinx documentation
 system.  The extension allows generation of API documentation by
@@ -549,8 +541,7 @@ introspection of @code{zope.interface} instances in code.")
                (add-installed-pythonpath inputs outputs)
                (invoke "python" "-m" "pytest")))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-sphinx" ,python-sphinx)))
+     (list python-pytest python-sphinx))
     (home-page "https://github.com/sbrunner/sphinx-prompt")
     (synopsis "Sphinx directive to add unselectable prompt")
     (description
@@ -569,7 +560,7 @@ introspection of @code{zope.interface} instances in code.")
                 "00nwwjj2d2ym4s2kk217x7jkx1hnczc3fvm8yxbqmsp6b0nxfqd6"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-pygments" ,python-pygments)))
+     (list python-pygments))
     (home-page "https://alabaster.readthedocs.io/")
     (synopsis "Configurable sidebar-enabled Sphinx theme")
     (description "Alabaster is a visually (c)lean, responsive, configurable
@@ -591,11 +582,9 @@ theme for the Sphinx documentation system.  It's the default theme of Sphinx.")
         (base32 "05wc8f5hb3jsg2vh2jf7jsyan8d4i09ifrz2c8fp6f7x1zw9iav0"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-sphinx" ,python-sphinx)))
+     (list python-sphinx))
     (native-inputs
-     `(("python-commonmark" ,python-commonmark)
-       ("python-pytest" ,python-pytest)
-       ("python-sphinx-rtd-theme" ,python-sphinx-rtd-theme)))
+     (list python-commonmark python-pytest python-sphinx-rtd-theme))
     (home-page "https://github.com/ribozz/sphinx-argparse")
     (synopsis "Sphinx extension for documenting argparse commands and options")
     (description
@@ -617,7 +606,7 @@ argparse commands and options")
     ;; FIXME: The 'pypi' release archive does not contain tests.
     (arguments '(#:tests? #f))
     (native-inputs
-     `(("python-sphinx" ,python-sphinx)))
+     (list python-sphinx))
     (home-page "https://bitbucket.org/ecollins/cloud_sptheme")
     (synopsis "'Cloud' theme for Sphinx documenter")
     (description "This package contains the \"Cloud\" theme for Sphinx and some
@@ -640,7 +629,7 @@ related extensions.")
           "1rnkzrrsbnifn3vsb4pfaia3nlvgvw6ndpxp7lzjrh23qcwid34v"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-sphinx" ,python-sphinx)))
+     (list python-sphinx))
     (home-page "https://github.com/guzzle/guzzle_sphinx_theme")
     (synopsis "Sphinx theme used by Guzzle")
     (description "This package provides guzzle_sphinx_theme, a theme for the
@@ -665,7 +654,7 @@ and several other projects.")
     (build-system python-build-system)
     (arguments '(#:tests? #f)) ; No tests.
     (propagated-inputs
-     `(("python-sphinx" ,python-sphinx)))
+     (list python-sphinx))
     (home-page "https://github.com/snide/sphinx_rtd_theme/")
     (synopsis "ReadTheDocs.org theme for Sphinx")
     (description "A theme for Sphinx used by ReadTheDocs.org.")
@@ -687,8 +676,7 @@ and several other projects.")
          "055h95fkdld7s49878fqjx1nri1drj1czc184vrb7i60mf2yqg9n"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-docutils" ,python-docutils)
-       ("python-sphinx" ,python-sphinx)))
+     (list python-docutils python-sphinx))
     (home-page "https://github.com/michaeljones/breathe")
     (synopsis "ReStructuredText and Sphinx bridge to Doxygen")
     (description "This package is an extension to reStructuredText and Sphinx
@@ -707,8 +695,7 @@ to be able to read and render the Doxygen xml output.")
         (base32 "1d1q0sanjp4nkfvhsxi75zf3xjyyi8nzxvl3v7l0jy9ld70nwnmj"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-sphinx" ,python-sphinx)
-       ("python-click" ,python-click)))
+     (list python-sphinx python-click))
     (home-page "https://github.com/sphinx-doc/sphinx-intl")
     (synopsis
      "Sphinx utility that makes it easy to translate and to apply translation")
@@ -740,9 +727,7 @@ translate and to apply translation to Sphinx generated document.")
                (add-installed-pythonpath inputs outputs)
                (invoke "python" "-m" "pytest")))))))
     (native-inputs
-     `(("python-beautifulsoup4" ,python-beautifulsoup4)
-       ("python-pytest" ,python-pytest)
-       ("python-sphinx" ,python-sphinx)))
+     (list python-beautifulsoup4 python-pytest python-sphinx))
     (home-page "https://github.com/wpilibsuite/sphinxext-opengraph")
     (synopsis "Sphinx Extension to enable OpenGraph support")
     (description
@@ -778,15 +763,15 @@ translate and to apply translation to Sphinx generated document.")
                (invoke "pytest" "-v"))
              #t)))))
     (propagated-inputs
-     `(("python-argh" ,python-argh)
-       ("python-livereload" ,python-livereload)
-       ("python-pathtools" ,python-pathtools)
-       ("python-port-for" ,python-port-for)
-       ("python-pyyaml" ,python-pyyaml)
-       ("python-tornado" ,python-tornado)
-       ("python-watchdog" ,python-watchdog)))
+     (list python-argh
+           python-livereload
+           python-pathtools
+           python-port-for
+           python-pyyaml
+           python-tornado
+           python-watchdog))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://github.com/GaretJax/sphinx-autobuild")
     (synopsis "Rebuild Sphinx documentation when a change is detected")
     (description
@@ -808,14 +793,10 @@ enabled web server.")
          "086v9mg21pvfx0lfqjx2xf36hnzrsripfg345xi59f7xwb9scjr4"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-setuptools-scm" ,python-setuptools-scm)
-       ("python-sphinx" ,python-sphinx)))
+     (list python-setuptools-scm python-sphinx))
     (native-inputs
-     `(("python-dataclasses" ,python-dataclasses)
-       ("python-pytest" ,python-pytest)
-       ("python-sphinx" ,python-sphinx)
-       ("python-sphobjinv" ,python-sphobjinv)
-       ("python-typing-extensions" ,python-typing-extensions)))
+     (list python-dataclasses python-pytest python-sphinx
+           python-sphobjinv python-typing-extensions))
     (home-page "https://pypi.org/project/sphinx-autodoc-typehints/")
     (synopsis "Type hints for the Sphinx autodoc extension")
     (description "This extension allows you to use Python 3 annotations for
@@ -835,12 +816,12 @@ documenting acceptable argument types and return value types of functions.")
             "0j56bxdj08vn3q1804qwb1ywhga1mdg1awgm7i64wfpfwi8df2zm"))))
     (build-system python-build-system)
     (propagated-inputs
-      `(("python-docutils" ,python-docutils)
-        ("python-jinja2" ,python-jinja2)
-        ("python-nbconvert" ,python-nbconvert)
-        ("python-nbformat" ,python-nbformat)
-        ("python-sphinx" ,python-sphinx)
-        ("python-traitlets" ,python-traitlets)))
+      (list python-docutils
+            python-jinja2
+            python-nbconvert
+            python-nbformat
+            python-sphinx
+            python-traitlets))
     (home-page "https://nbsphinx.readthedocs.io/")
     (synopsis "Jupyter Notebook Tools for Sphinx")
     (description "@code{python-nbsphinx} is a Sphinx extension that
@@ -864,11 +845,8 @@ executed during the Sphinx build process.")
          "126lgm54c94ay3fci512ap4l607gak90pbz0fk98syxvj5izrrzx"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-attrs" ,python-attrs)
-       ("python-certifi" ,python-certifi)
-       ("python-fuzzywuzzy" ,python-fuzzywuzzy)
-       ("python-jsonschema" ,python-jsonschema)
-       ("python-levenshtein" ,python-levenshtein)))
+     (list python-attrs python-certifi python-fuzzywuzzy
+           python-jsonschema python-levenshtein))
     (home-page "https://github.com/bskinn/sphobjinv")
     (synopsis "Sphinx cross-reference tool")
     (description "Sphinx objects.inv inspection/manipulation tool.")
@@ -887,12 +865,10 @@ executed during the Sphinx build process.")
          "1wma60787m2451nn4bc4jw7bzqksplplb84wqxm34iaw70499z1p"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-ipython" ,python-ipython)
-       ("python-ipywidgets" ,python-ipywidgets)
-       ("python-nbconvert" ,python-nbconvert)
-       ("python-nbformat" ,python-nbformat)))
+     (list python-ipython python-ipywidgets python-nbconvert
+           python-nbformat))
     (native-inputs
-     `(("python-sphinx" ,python-sphinx)))
+     (list python-sphinx))
     (home-page "https://github.com/jupyter/jupyter-sphinx/")
     (synopsis "Jupyter Sphinx Extensions")
     (description
@@ -915,9 +891,9 @@ widgets, and supports thebelab for live code execution with minimal effort.")
          "06hzim0d3fd72kf30fyjbbm5n8ibyybic0kf62gm79qp50zjwr5w"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-six" ,python-six)))
+     (list python-six))
     (native-inputs
-     `(("python-sphinx" ,python-sphinx)))
+     (list python-sphinx))
     (home-page "https://github.com/sphinx-contrib/autoprogram")
     (synopsis "Documenting CLI programs")
     (description
@@ -940,23 +916,22 @@ automated way to document command-line programs.  It scans
          "055bh3hyh72pafiylvgpsjlk18wm15gg4azc5rjlsww5z475iq1j"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-beautifulsoup4" ,python-beautifulsoup4)))
+     (list python-beautifulsoup4))
     (native-inputs
-     `(("python-beautifulsoup4" ,python-beautifulsoup4)
-       ("python-docutils" ,python-docutils)
-       ("python-jupyter-sphinx" ,python-jupyter-sphinx)
-       ("python-numpy" ,python-numpy)
-       ("python-numpydoc" ,python-numpydoc)
-       ("python-pandas" ,python-pandas)
-       ("python-plotly" ,python-plotly)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-regressions"
-        ,python-pytest-regressions)
-       ("python-recommonmark" ,python-recommonmark)
-       ("python-sphinx" ,python-sphinx)
-       ("python-xarray" ,python-xarray)
-       ("python-docutils" ,python-docutils)
-       ("python-sphinx" ,python-sphinx)))
+     (list python-beautifulsoup4
+           python-docutils
+           python-jupyter-sphinx
+           python-numpy
+           python-numpydoc
+           python-pandas
+           python-plotly
+           python-pytest
+           python-pytest-regressions
+           python-recommonmark
+           python-sphinx
+           python-xarray
+           python-docutils
+           python-sphinx))
     (home-page "https://github.com/pydata/pydata-sphinx-theme")
     (synopsis "Bootstrap-based Sphinx theme")
     (description

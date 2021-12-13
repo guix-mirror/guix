@@ -37,7 +37,7 @@
        (sha256
         (base32
          "0k7xnpdb6dvx25d67v0crlr32cdnzykdsi9j889njiididc8lm1n"))))
-    (inputs `(("libx11" ,libx11)))
+    (inputs (list libx11))
     (build-system gnu-build-system)
     (home-page "http://stalonetray.sourceforge.net")
     (synopsis "Standalone freedesktop.org and KDE systray implementation")

@@ -68,8 +68,8 @@
                (base32
                 "0gqand86b0r86k3h46dh560lykxmxqqywz5m55kgjfq7q4lngbrw"))))
     (build-system gnu-build-system)
-    (native-inputs `(("perl" ,perl)  ;for doc and test target
-                     ("texinfo" ,texinfo)))
+    (native-inputs (list perl ;for doc and test target
+                         texinfo))
     (arguments
      `(#:test-target "test"
        #:phases
@@ -140,7 +140,7 @@ debugging information in STABS, DWARF 2, and CodeView 8 formats.")
               (base32
                "1jgxbq2cm51dzi3zhz38mmgwdcgs328mfl8iviw8dxn6dn36p1gd"))))
     (build-system gnu-build-system)
-    (native-inputs `(("zlib" ,zlib)))
+    (native-inputs (list zlib))
     (arguments
      ;; Some tests fail when run in parallel.
      `(#:parallel-tests? #f))
@@ -324,12 +324,9 @@ runtime")
                       ,(string-append "PREFIX="
                                       (assoc-ref %outputs "out")))))
     (native-inputs
-     `(("bison" ,bison)
-       ("flex" ,flex)
-       ("pkg-config" ,pkg-config)
-       ("util-linux" ,util-linux)))
+     (list bison flex pkg-config util-linux))
     (inputs
-     `(("libpng" ,libpng)))
+     (list libpng))
     (home-page "https://github.com/gbdev/rgbds")
     (synopsis "Rednex Game Boy Development System")
     (description
@@ -402,7 +399,7 @@ Supported architectures are:
        (modify-phases %standard-phases
          (delete 'configure))            ; no "configure" script
        #:make-flags (list (string-append "DESTDIR=" (assoc-ref %outputs "out")))))
-    (native-inputs `(("perl" ,perl)))
+    (native-inputs (list perl))
     (home-page "https://www.floodgap.com/retrotech/xa/")
     (synopsis "Two-pass portable cross-assembler")
     (description

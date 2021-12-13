@@ -89,9 +89,9 @@
              '())))
     (propagated-inputs
      ;; hwloc.pc lists it in 'Requires.private'.
-     `(("libpciaccess" ,libpciaccess)))
+     (list libpciaccess))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (arguments
      `(#:configure-flags '("--localstatedir=/var")
        #:phases
@@ -232,8 +232,7 @@ bind processes, and much more.")
        ("valgrind" ,valgrind)
        ("slurm" ,slurm)))              ;for PMI support (launching via "srun")
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("perl" ,perl)))
+     (list pkg-config perl))
     (outputs '("out" "debug"))
     (arguments
      `(#:configure-flags `("--enable-mpi-ext=affinity" ;cr doesn't work
@@ -422,7 +421,7 @@ only provides @code{MPI_THREAD_FUNNELED}.")))
                 "unittest.skipMPI('openmpi')"))
              #t)))))
     (inputs
-     `(("openmpi" ,openmpi)))
+     (list openmpi))
     (home-page "https://bitbucket.org/mpi4py/mpi4py/")
     (synopsis "Python bindings for the Message Passing Interface standard")
     (description "MPI for Python (mpi4py) provides bindings of the Message
@@ -457,9 +456,7 @@ arrays) that expose a buffer interface.")
              `(("ucx" ,ucx))
              '())))
     (native-inputs
-     `(("perl" ,perl)
-       ("which" ,which)
-       ("gfortran" ,gfortran)))
+     (list perl which gfortran))
     (outputs '("out" "debug"))
     (arguments
      `(#:configure-flags

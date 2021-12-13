@@ -231,13 +231,9 @@ Definition Facility.")
            ;; https://www.ma.utexas.edu/pipermail/maxima/2008/009769.html
            (delete 'strip))))
       (inputs
-       `(("bash-minimal" ,bash-minimal)
-         ("gmp" ,gmp)
-         ("libtirpc" ,libtirpc)
-         ("readline" ,readline)))
+       (list bash-minimal gmp libtirpc readline))
       (native-inputs
-       `(("m4" ,m4)
-         ("texinfo" ,texinfo)))
+       (list m4 texinfo))
       (home-page "https://www.gnu.org/software/gcl/")
       (synopsis "A Common Lisp implementation")
       (description "GCL is an implementation of the Common Lisp language.  It
@@ -262,9 +258,7 @@ interface to the Tk widget system.")
     (build-system gnu-build-system)
     ;; src/configure uses 'which' to confirm the existence of 'gzip'.
     (native-inputs
-     `(("cl-asdf" ,cl-asdf)
-       ("which" ,which)
-       ("texinfo" ,texinfo)))
+     (list cl-asdf which texinfo))
     ;; When ECL is embedded in a program that wants to use Common Lisp as an
     ;; extension language, libgmp, libatomic-ops, libgc and libffi must be
     ;; present when compiling the program because they are required by ECL's
@@ -272,10 +266,7 @@ interface to the Tk widget system.")
     ;; Therefore we put these libraries in 'propagated-inputs' instead
     ;; of 'inputs'.
     (propagated-inputs
-     `(("gmp" ,gmp)
-       ("libatomic-ops" ,libatomic-ops)
-       ("libgc" ,libgc)
-       ("libffi" ,libffi)))
+     (list gmp libatomic-ops libgc libffi))
     (arguments
      `(#:configure-flags '("--without-rt")
        ;; FIXME: As of version 20.4.24, we pass 17995 tests and fail 7.
@@ -365,11 +356,8 @@ supporting ASDF, Sockets, Gray streams, MOP, and other useful components.")
         (base32 "0k2dmgl0miz3767iks4p0mvp6xw0ysyxhjpklyh11j010rmh6hqb"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("cl-asdf" ,cl-asdf)))
-    (inputs `(("libffcall" ,libffcall)
-              ("ncurses" ,ncurses)
-              ("readline" ,readline)
-              ("libsigsegv" ,libsigsegv)))
+     (list cl-asdf))
+    (inputs (list libffcall ncurses readline libsigsegv))
     (arguments
      `(#:configure-flags '(,@(if (string-prefix? "armhf-linux"
                                                  (or (%current-system)
@@ -661,8 +649,7 @@ statistical profiler, a code coverage tool, and many other extensions.")
                 "0x4bjx6cxsjvxyagijhlvmc7jkyxifdvz5q5zvz37028va65243c")
                (_ "0ll017ajcfsyx8f7zsy4394y8xxvz40iz0gcsmznp0n3mf0xi67c"))))))))
     (native-inputs
-     `(("cl-asdf" ,cl-asdf)
-       ("m4" ,m4)))
+     (list cl-asdf m4))
     (arguments
      `(#:tests? #f                      ;no 'check' target
        #:modules ((ice-9 match)
@@ -791,7 +778,7 @@ interface.")
                                "X_EXTRA_LIBS=-lfontconfig"
                                "--with-x")
        #:tests? #f)) ; No make check.
-    (native-inputs `(("intltool" ,intltool)))
+    (native-inputs (list intltool))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("sdl" ,sdl)
@@ -857,9 +844,9 @@ libraries for Machine Learning, Neural Nets and statistical estimation.")
                  (install-file "mdli" bin)
                  #t))))))
       (native-inputs
-       `(("perl" ,perl)))
+       (list perl))
       (inputs
-       `(("libgc" ,libgc)))
+       (list libgc))
       (synopsis "Interpreter for the MIT Design Language (MDL)")
       (description "MDL (the MIT Design Language) is a descendant of Lisp.  It
 was originally developed in 1971 on the PDP-10 computer under the Incompatible
@@ -1127,8 +1114,7 @@ including a built-in database engine and a GUI system.")
        (inherit picolisp32)
        (name "picolisp")
        (native-inputs
-        `(("picolisp32" ,picolisp32)
-          ("which" ,which)))
+        (list picolisp32 which))
        (arguments
         (substitute-keyword-arguments (package-arguments picolisp32)
           ((#:system _ "") (%current-system))
@@ -1270,7 +1256,7 @@ and make for REPLs that start blazing fast.
         (base32 "020ipjfqa3l8skd97cj5kq837wgpj28ygfxnkv64cnjrlbnzh161"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("sbcl" ,sbcl)))
+     (list sbcl))
     (arguments
      `(#:tests? #f
        #:make-flags

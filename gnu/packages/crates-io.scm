@@ -1033,8 +1033,7 @@ deadlock, like the standard Barrier).")
         ("rust-serde-json" ,rust-serde-json-1)
         ("rust-sha2" ,rust-sha2-0.9)
         ("rust-tokio" ,rust-tokio-1.8))))
-    (native-inputs `(("pkg-config" ,pkg-config)
-                     ("openssl" ,openssl)))
+    (native-inputs (list pkg-config openssl))
     (home-page "https://github.com/brave/adblock-rust/")
     (synopsis "Adblock Plus syntax filter parsing and matching")
     (description "This package provides native Rust module for Adblock Plus
@@ -2772,10 +2771,9 @@ a re-write of the official Arrow crate using transmute-free operations.")
         ("rust-tokio" ,rust-tokio-1)
         ("rust-url" ,rust-url-2))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("libxml2" ,libxml2)
-       ("openssl" ,openssl)))
+     (list libxml2 openssl))
     (home-page "https://gitlab.com/news-flash/article_scraper")
     (synopsis "Scrap article contents from the web")
     (description "This package provides a crate to scrap article contents from
@@ -5084,7 +5082,7 @@ bindings to C and C++ libraries.")
         (base32
          "0hxlvy9q9984rr3rqaxwmgxjrd9wh11mcc161hv3shz6b7jkrcbm"))))
     (inputs
-     `(("clang" ,clang)))
+     (list clang))
     (arguments
      `(#:cargo-inputs
        (("rust-bitflags" ,rust-bitflags-1)
@@ -5153,7 +5151,7 @@ bindings to C and C++ libraries.")
         ("rust-diff" ,rust-diff-0.1)
         ("rust-shlex" ,rust-shlex-0.1))))
     (inputs
-     `(("clang" ,clang)))))
+     (list clang))))
 
 (define-public rust-bindgen-0.53
   (package
@@ -8104,7 +8102,7 @@ messages.")
         (base32 "17p0y0yk68pzsnpmaklhiqrrlrrv0ld8nhbg4qflmgibshi8b69p"))))
     (build-system cargo-build-system)
     (native-inputs
-     `(("capnproto" ,capnproto)))
+     (list capnproto))
     (arguments
      `(#:cargo-inputs
        (("rust-capnp" ,rust-capnp-0.13)
@@ -8300,12 +8298,9 @@ capabilities.")
         ("rust-walkdir" ,rust-walkdir-2)
         ("rust-winapi" ,rust-winapi-0.3))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("curl" ,curl)
-       ("libssh2" ,libssh2)
-       ("openssl" ,openssl)
-       ("zlib" ,zlib)))
+     (list curl libssh2 openssl zlib))
     (home-page "https://crates.io")
     (synopsis "Package manager for Rust")
     (description "Cargo, a package manager for Rust.  This package provides
@@ -8583,7 +8578,7 @@ that need to represent UTF-16 data as 8-bit characters.")
        #:cargo-development-inputs
        (("rust-clang-sys" ,rust-clang-sys-0.28))))
     (inputs
-     `(("clang" ,clang)))
+     (list clang))
     (home-page "https://github.com/jethrogb/rust-cexpr")
     (synopsis "C expression parser and evaluator")
     (description
@@ -9051,7 +9046,7 @@ transfer coding.")
          "0695kfrqx7n091fzm6msbqg2q2kyhka64q08lm63f3l9d964i8cx"))))
     (build-system cargo-build-system)
     (inputs
-     `(("clang" ,clang)))
+     (list clang))
     (arguments
      `(#:cargo-inputs
        (("rust-glob" ,rust-glob-0.3)
@@ -11287,7 +11282,7 @@ to @code{is_x86_feature_detected}.")
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-pkg-config" ,rust-pkg-config-0.3))))
     (inputs
-     `(("gperftools" ,gperftools)))
+     (list gperftools))
     (home-page "https://github.com/AtheMathmo/cpuprofiler")
     (synopsis "Bindings to Google's cpu profiler")
     (description "This package provides bindings to Google's cpu profiler.")
@@ -11349,10 +11344,7 @@ to @code{is_x86_feature_detected}.")
         ("rust-serde-json" ,rust-serde-json-1)
         ("rust-url" ,rust-url-2))))
     (native-inputs
-     `(("curl" ,curl)
-       ("openssl" ,openssl)
-       ("pkg-config" ,pkg-config)
-       ("zlib" ,zlib)))
+     (list curl openssl pkg-config zlib))
     (home-page "https://github.com/rust-lang/cargo")
     (synopsis "Helpers for interacting with @url{crates.io}")
     (description "This package provides helpers for interacting with
@@ -12501,7 +12493,7 @@ algorithms.")
         ("rust-openssl" ,rust-openssl-0.10)
         ("rust-winapi" ,rust-winapi-0.3))))
     (inputs
-     `(("openssl" ,openssl)))
+     (list openssl))
     (home-page "https://github.com/malept/crypto-hash")
     (synopsis "Wrapper for OS-level cryptographic hash functions")
     (description "This package provides a wrapper for OS-level cryptographic
@@ -12970,12 +12962,9 @@ use with bindgen.")
         ("rust-mio" ,rust-mio-0.6)
         ("rust-mio-extras" ,rust-mio-extras-2))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("curl" ,curl)
-       ("nghttp2" ,nghttp2)
-       ("openssl" ,openssl)
-       ("zlib" ,zlib)))
+     (list curl nghttp2 openssl zlib))
     (home-page "https://github.com/alexcrichton/curl-rust")
     (synopsis "Rust bindings to libcurl for making HTTP requests")
     (description
@@ -13013,12 +13002,9 @@ requests")
        #:cargo-development-inputs
        (("rust-cfg-if" ,rust-cfg-if-1))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("curl" ,curl)
-       ("nghttp2" ,nghttp2)
-       ("openssl" ,openssl)
-       ("zlib" ,zlib)))
+     (list curl nghttp2 openssl zlib))
     (home-page "https://github.com/alexcrichton/curl-rust")
     (synopsis "Native bindings to the libcurl library")
     (description
@@ -13784,9 +13770,9 @@ sizes.  Big-endian order is used.  WARNING: Block must be aligned!")
        #:cargo-development-inputs
        (("rust-tempfile" ,rust-tempfile-3))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("dbus" ,dbus)))
+     (list dbus))
     (home-page "https://github.com/diwic/dbus-rs")
     (synopsis "Rust bindings to D-Bus")
     (description "This package provides Rust bindings to D-Bus.")
@@ -13829,9 +13815,9 @@ sizes.  Big-endian order is used.  WARNING: Block must be aligned!")
     (arguments
      `(#:cargo-inputs (("rust-dbus" ,rust-dbus-0.9))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("dbus" ,dbus)))
+     (list dbus))
     (home-page "https://github.com/diwic/dbus-rs")
     (synopsis "Framework for writing D-Bus method handlers (legacy)")
     (description
@@ -14711,7 +14697,7 @@ example.")
          "0hpmwrc0zx3zvpgwp9zrm6wj8d8i8q8990grlrnfzlivbi6zqyq4"))))
     (build-system cargo-build-system)
     (native-inputs
-     `(("sqlite" ,sqlite)))
+     (list sqlite))
     (arguments
      `(#:cargo-inputs
        (("rust-bigdecimal" ,rust-bigdecimal-0.1)
@@ -15206,8 +15192,7 @@ standard locations of directories for config, cache and other data.")
        (("rust-cfg-if" ,rust-cfg-if-0.1)
         ("rust-dirs-sys" ,rust-dirs-sys-0.3))))
     (inputs
-     `(("rust-cfg-if" ,rust-cfg-if-0.1)
-       ("rust-dirs-sys" ,rust-dirs-sys-0.3)))))
+     (list rust-cfg-if-0.1 rust-dirs-sys-0.3))))
 
 (define-public rust-dirs-1
   (package
@@ -15297,10 +15282,8 @@ other data.")
         ("rust-redox-users" ,rust-redox-users-0.3)
         ("rust-winapi" ,rust-winapi-0.3))))
     (inputs
-     `(("rust-cfg-if" ,rust-cfg-if-0.1)
-       ("rust-libc" ,rust-libc-0.2)
-       ("rust-redox-users" ,rust-redox-users-0.3)
-       ("rust-winapi" ,rust-winapi-0.3)))
+     (list rust-cfg-if-0.1 rust-libc-0.2 rust-redox-users-0.3
+           rust-winapi-0.3))
     (home-page "https://github.com/soc/dirs-sys-rs")
     (synopsis
      "System-level helper functions for the dirs and directories crates")
@@ -15425,7 +15408,7 @@ Google's diff-match-patch.")
      `(#:cargo-inputs
        (("rust-libloading" ,rust-libloading-0.6))))
     (inputs
-     `(("rust-libloading" ,rust-libloading-0.6)))
+     (list rust-libloading-0.6))
     (home-page "https://github.com/vberger/dlib")
     (synopsis "Helper macros for manually loading optional system libraries")
     (description
@@ -16291,7 +16274,7 @@ signing, and verification in pure Rust.")
         ("rust-failure-derive" ,rust-failure-derive-0.1)
         ("rust-lazy-static" ,rust-lazy-static-1))))
     (inputs
-     `(("clang" ,clang)))
+     (list clang))
     (home-page "https://github.com/ubolonton/emacs-module-rs")
     (synopsis "Library for creating Emacs's dynamic modules")
     (description
@@ -16341,7 +16324,7 @@ Emacs' support for dynamic modules.")
      `(#:cargo-inputs
        (("rust-bindgen" ,rust-bindgen-0.48))))
     (inputs
-     `(("clang" ,clang)))
+     (list clang))
     (home-page "https://github.com/ubolonton/emacs-module-rs")
     (synopsis "Raw FFI for emacs-module")
     (description "This module provides a high-level binding to emacs-module:
@@ -17525,9 +17508,9 @@ blocking data structures.")
        (("rust-cmake" ,rust-cmake-0.1)
         ("rust-pkg-config" ,rust-pkg-config-0.3))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("expat" ,expat)))
+     (list expat))
     (home-page "http://www.libexpat.org/")
     (synopsis "XML parser library written in C")
     (description "XML parser library written in C")
@@ -17879,9 +17862,9 @@ floats.")
        (("rust-bio" ,rust-bio-0.33)
         ("rust-parasailors" ,rust-parasailors-0.3))))
     (inputs
-     `(("zlib" ,zlib)))
+     (list zlib))
     (native-inputs
-     `(("libtool" ,libtool)))
+     (list libtool))
     (home-page "https://github.com/aseyboldt/fastq-rs")
     (synopsis "Parser for fastq files")
     (description "This package provides a parser for fastq files.")
@@ -18060,9 +18043,9 @@ Atom, RSS 2.0, RSS 1.0, RSS 0.x and JSON Feed")
         ("rust-rand" ,rust-rand-0.8)
         ("rust-tokio" ,rust-tokio-1))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("openssl" ,openssl)))
+     (list openssl))
     (home-page "https://gitlab.com/news-flash/feedbin_api")
     (synopsis  "Rust implementation of the Feedbin REST API")
     (description
@@ -18099,9 +18082,9 @@ Atom, RSS 2.0, RSS 1.0, RSS 0.x and JSON Feed")
        (("rust-dotenv" ,rust-dotenv-0.15)
         ("rust-tokio" ,rust-tokio-1))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("openssl" ,openssl)))
+     (list openssl))
     (home-page "https://gitlab.com/news-flash/feedly_api")
     (synopsis "Rust implementation of the feedly REST API")
     (description
@@ -18253,9 +18236,9 @@ Atom, RSS 2.0, RSS 1.0, RSS 0.x and JSON Feed")
        (("rust-dotenv" ,rust-dotenv-0.15)
         ("rust-tokio" ,rust-tokio-1))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("openssl" ,openssl)))
+     (list openssl))
     (home-page "https://gitlab.com/news-flash/fever_api")
     (synopsis "Rust implementation of the Fever API")
     (description
@@ -19099,8 +19082,7 @@ values to other threads.")
        #:cargo-development-inputs
        (("rust-unicode-normalization" ,rust-unicode-normalization-0.1))))
     (inputs
-     `(("freetype" ,freetype)
-       ("zlib" ,zlib)))))
+     (list freetype zlib))))
 
 (define-public rust-freetype-sys-0.13
   (package
@@ -19146,8 +19128,7 @@ values to other threads.")
         ("rust-libz-sys" ,rust-libz-sys-1)
         ("rust-pkg-config" ,rust-pkg-config-0.3))))
     (inputs
-     `(("freetype" ,freetype)
-       ("zlib" ,zlib)))))
+     (list freetype zlib))))
 
 (define-public rust-fs2-0.4
   (package
@@ -21251,10 +21232,7 @@ dirty state into your program.")
      `(("pkg-config" ,pkg-config)
        ("git" ,git-minimal)))           ;for a single test
     (inputs
-     `(("libgit2" ,libgit2)
-       ("libssh2" ,libssh2)
-       ("openssl" ,openssl)
-       ("zlib" ,zlib)))
+     (list libgit2 libssh2 openssl zlib))
     (home-page "https://github.com/rust-lang/git2-rs")
     (synopsis "Rust bindings to libgit2")
     (description
@@ -21888,8 +21866,7 @@ the regex engine it uses pluggable.")
        (("rust-grep-matcher" ,rust-grep-matcher-0.1)
         ("rust-pcre2" ,rust-pcre2-0.2))))
     (native-inputs
-     `(("pcre2" ,pcre2)
-       ("pkg-config" ,pkg-config)))
+     (list pcre2 pkg-config))
     (home-page
      "https://github.com/BurntSushi/ripgrep")
     (synopsis "Use PCRE2 with the grep crate")
@@ -24038,9 +24015,9 @@ with hyper.")
         (base32
          "1vcfyz7dxavf4brns15afmj5fxz88lbn05rrpbfqsnybdp2sqyfr"))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("openssl" ,openssl)))
+     (list openssl))
     (arguments
      `(#:cargo-inputs
        (("rust-bytes" ,rust-bytes-0.5)
@@ -25050,11 +25027,9 @@ enum like Option/Result.")
         ("rust-test-case" ,rust-test-case-1)
         ("rust-tracing-subscriber" ,rust-tracing-subscriber-0.2))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("curl" ,curl)
-       ("openssl" ,openssl)
-       ("zlib" ,zlib)))
+     (list curl openssl zlib))
     (home-page "https://github.com/sagebind/isahc")
     (synopsis "Practical HTTP client")
     (description
@@ -25484,7 +25459,7 @@ primitives to an @code{io::Write}.")
                        (string-append jemalloc "/lib/libjemalloc_pic.a")))
              #t)))))
     (native-inputs
-     `(("jemalloc" ,jemalloc)))
+     (list jemalloc))
     (home-page "https://github.com/gnzlbg/jemallocator")
     (synopsis "Rust FFI bindings to jemalloc")
     (description "This package provides Rust FFI bindings to jemalloc.")
@@ -25564,7 +25539,7 @@ primitives to an @code{io::Write}.")
                        (string-append jemalloc "/lib/libjemalloc_pic.a")))
              #t)))))
     (native-inputs
-     `(("jemalloc" ,jemalloc)))))
+     (list jemalloc))))
 
 (define-public rust-jetscii-0.5
   (package
@@ -26282,7 +26257,7 @@ generated by LALRPOP.")
        #:cargo-development-inputs
        (("rust-doc-comment" ,rust-doc-comment-0.3))))
     (inputs
-     `(("rust-spin" ,rust-spin-0.5)))
+     (list rust-spin-0.5))
     (home-page  "https://github.com/rust-lang-nursery/lazy-static.rs")
     (synopsis "Macro for declaring lazily evaluated statics in Rust")
     (description
@@ -26694,9 +26669,9 @@ macros on libc without stdlib.")
      `(#:cargo-inputs
        (("rust-pkg-config" ,rust-pkg-config-0.3))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("dbus" ,dbus)))
+     (list dbus))
     (home-page "https://github.com/diwic/dbus-rs")
     (synopsis "FFI bindings to libdbus")
     (description "This package provides FFI bindings to libdbus.")
@@ -26820,11 +26795,9 @@ algorithm and related formats (ZLIB, GZIP).")
         ("rust-openssl-sys" ,rust-openssl-sys-0.9)
         ("rust-pkg-config" ,rust-pkg-config-0.3))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("libgit2" ,libgit2)
-       ("openssl" ,openssl)
-       ("zlib" ,zlib)))
+     (list libgit2 openssl zlib))
     (home-page "https://github.com/rust-lang/git2-rs")
     (synopsis "Native bindings to the libgit2 library")
     (description
@@ -26925,8 +26898,7 @@ loading utilities.")
        (("rust-libc" ,rust-libc-0.2)
         ("rust-static-assertions" ,rust-static-assertions-1))))
     (inputs
-     `(("rust-cfg-if" ,rust-cfg-if-1)
-       ("rust-winapi" ,rust-winapi-0.3)))))
+     (list rust-cfg-if-1 rust-winapi-0.3))))
 
 (define-public rust-libloading-0.5
   (package
@@ -27075,8 +27047,7 @@ allocator.")
         ("rust-cc" ,rust-cc-1)
         ("rust-pkg-config" ,rust-pkg-config-0.3))))
     (inputs
-     `(("nghttp2" ,nghttp2 "lib")
-       ("pkg-config" ,pkg-config)))
+     (list `(,nghttp2 "lib") pkg-config))
     (home-page "https://github.com/alexcrichton/nghttp2-rs")
     (synopsis "FFI bindings for libnghttp2 (nghttp2)")
     (description
@@ -27123,11 +27094,9 @@ allocator.")
         ("rust-tempdir" ,rust-tempdir-0.3)
         ("rust-toml" ,rust-toml-0.4))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("clang" ,clang)
-       ("nettle" ,nettle)
-       ("openssl" ,openssl)))
+     (list clang nettle openssl))
     (home-page "https://pijul.org/")
     (synopsis "Library component of the pijul version control system")
     (description
@@ -27176,9 +27145,9 @@ file.
          (add-before 'check 'set-HOME
            (lambda _ (setenv "HOME" "/tmp") #t)))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("pulseaudio" ,pulseaudio)))
+     (list pulseaudio))
     (home-page "https://github.com/jnqnfe/pulse-binding-rust")
     (synopsis "Binding for the PulseAudio libpulse library")
     (description
@@ -27208,9 +27177,9 @@ library.")
         ("rust-pkg-config" ,rust-pkg-config-0.3)
         ("rust-winapi" ,rust-winapi-0.3))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("pulseaudio" ,pulseaudio)))
+     (list pulseaudio))
     (home-page "https://github.com/jnqnfe/pulse-binding-rust")
     (synopsis "FFI bindings for the PulseAudio")
     (description
@@ -27231,7 +27200,7 @@ library.")
         (base32 "17gqc2mwih81j3ds479gl5zmsxqzzrcrj3yyv62vh34bgy8n82r9"))))
     (build-system cargo-build-system)
     (inputs
-     `(("sqlite" ,sqlite)))
+     (list sqlite))
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -27258,7 +27227,7 @@ library.")
        (sha256
         (base32 "1g9gbjjpm9phhs991abkzmacszibp94m5nrh331ycd99y9ci1lv4"))))
     (inputs
-     `(("sqlite" ,sqlite)))
+     (list sqlite))
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -27318,7 +27287,7 @@ library.")
         (base32 "104n0s4f46zprppjq6y82y0wjh1r2cgwzw26w914yj30rizy1cbj"))))
     (build-system cargo-build-system)
     (inputs
-     `(("sqlite" ,sqlite)))
+     (list sqlite))
     (arguments
      `(#:cargo-inputs
        ;; build dependencies
@@ -27349,9 +27318,9 @@ library.")
        (("rust-criterion" ,rust-criterion-0.3)
         ("rust-rayon" ,rust-rayon-1))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("libxml2" ,libxml2)))
+     (list libxml2))
     (home-page "https://github.com/KWARC/rust-libxml")
     (synopsis "Rust wrapper for libxml2")
     (description "This package provides a Rust wrapper for libxml2, the XML
@@ -27399,8 +27368,7 @@ C parser and toolkit developed for the GNOME project.")
         ("rust-pkg-config" ,rust-pkg-config-0.3)
         ("rust-vcpkg" ,rust-vcpkg-0.2))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("zlib" ,zlib)))
+     (list pkg-config zlib))
     (home-page "https://github.com/rust-lang/libz-sys")
     (synopsis "Bindings to the system libz library")
     (description
@@ -27628,11 +27596,9 @@ punctuation.")
         ("rust-pkg-config" ,rust-pkg-config-0.3)
         ("rust-vcpkg" ,rust-vcpkg-0.2))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("libssh2" ,libssh2)
-       ("openssl" ,openssl)
-       ("zlib" ,zlib)))
+     (list libssh2 openssl zlib))
     (home-page "https://github.com/alexcrichton/ssh2-rs")
     (synopsis "Native bindings to the libssh2 library")
     (description
@@ -27664,9 +27630,9 @@ punctuation.")
        (("rust-rand" ,rust-rand-0.4)
         ("rust-tempdir" ,rust-tempdir-0.3))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("lmdb" ,lmdb)))
+     (list lmdb))
     (home-page "https://github.com/mozilla/lmdb-rs")
     (synopsis "Safe Rust bindings for LMDB")
     (description "This package provides idiomatic and safe APIs for interacting
@@ -27700,9 +27666,9 @@ with lmdb.")
         ("rust-cc" ,rust-cc-1)
         ("rust-pkg-config" ,rust-pkg-config-0.3))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("lmdb" ,lmdb)))
+     (list lmdb))
     (home-page "https://github.com/mozilla/lmdb-rs")
     (synopsis "Rust bindings for liblmdb")
     (description "This package provides rust bindings for liblmdb.")
@@ -28382,8 +28348,7 @@ server (LSP).")
         ("rust-cc" ,rust-cc-1)
         ("rust-pkg-config" ,rust-pkg-config-0.3))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("xz" ,xz)))
+     (list pkg-config xz))
     (home-page "https://github.com/alexcrichton/xz2-rs")
     (synopsis "Bindings to liblzma for lzma and xz stream encoding/decoding")
     (description
@@ -29814,9 +29779,9 @@ migration mechanism.")
        #:cargo-development-inputs
        (("rust-tempdir" ,rust-tempdir-0.3))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("sqlite" ,sqlite)))
+     (list sqlite))
     (home-page "https://diesel.rs")
     (synopsis "Code generation macros for Diesel's embedded migrations")
     (description "This package provides code generation macros for Diesel's
@@ -29959,9 +29924,9 @@ file's MIME type by its extension.")
        (("rust-dotenv" ,rust-dotenv-0.15)
         ("rust-tokio" ,rust-tokio-1))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("openssl" ,openssl)))
+     (list openssl))
     (home-page "https://gitlab.com/news-flash/miniflux_api")
     (synopsis "Rust implementation of the Miniflux REST API")
     (description
@@ -30599,10 +30564,9 @@ checking.")
        (("rust-dbus" ,rust-dbus-0.6)
         ("rust-glib" ,rust-glib-0.10))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("dbus" ,dbus)
-       ("glib" ,glib)))
+     (list dbus glib))
     (home-page "https://gitlab.gnome.org/World/Rust/mpris-player")
     (synopsis "Library for creating MPRIS2 media players over D-Bus")
     (description "This package provides a library for creating MPRIS2 media
@@ -30822,7 +30786,7 @@ library.")
        (("rust-pkg-config" ,rust-pkg-config-0.3)
         ("rust-vcpkg" ,rust-vcpkg-0.2))))
     (native-inputs
-     `(("mariadb" ,mariadb "lib")))
+     (list `(,mariadb "lib")))
     (home-page "https://github.com/sgrif/mysqlclient-sys")
     (synopsis "Auto-generated rust bindings for libmysqlclient")
     (description "This package provides auto-generated rust bindings for
@@ -31249,9 +31213,9 @@ IO of Windows's named pipes.")
          "0cjirf6n4i2lw65iaww8d4hahv3cbfm5ka9hlansvnbfgzwadzq9"))))
     (build-system cargo-build-system)
     (inputs
-     `(("openssl" ,openssl)))
+     (list openssl))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (arguments
      `(#:cargo-inputs
        (("rust-bindgen" ,rust-bindgen-0.55)
@@ -31296,9 +31260,9 @@ IO of Windows's named pipes.")
        (("rust-hex" ,rust-hex-0.4)
         ("rust-test-cert-gen" ,rust-test-cert-gen-0.1))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("openssl" ,openssl)))
+     (list openssl))
     (home-page "https://github.com/sfackler/rust-native-tls")
     (synopsis "Wrapper over a platform's native TLS implementation")
     (description
@@ -31691,11 +31655,9 @@ types as proposed in RFC 1158.")
        (patches (search-patches "rust-nettle-disable-vendor.patch"))))
     (build-system cargo-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("clang" ,clang)
-       ("gmp" ,gmp)
-       ("nettle" ,nettle)))
+     (list clang gmp nettle))
     (arguments
      `(#:skip-build? #t ;; provides nothing, has no tests
        #:cargo-inputs
@@ -31740,10 +31702,9 @@ cryptographic library.")
        (patches (search-patches "rust-nettle-sys-disable-vendor.patch"))))
     (build-system cargo-build-system)
     (native-inputs
-     `(("clang" ,clang)
-       ("pkg-config" ,pkg-config)))
+     (list clang pkg-config))
     (inputs
-     `(("nettle" ,nettle)))
+     (list nettle))
     (arguments
      `(#:cargo-inputs
        (("rust-bindgen" ,rust-bindgen-0.51)
@@ -31838,11 +31799,9 @@ release (fork of debug_unreachable)")
        (("rust-tempfile" ,rust-tempfile-3)
         ("rust-tokio" ,rust-tokio-1))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("libxml2" ,libxml2)
-       ("openssl" ,openssl)
-       ("sqlite" ,sqlite)))
+     (list libxml2 openssl sqlite))
     (home-page "https://gitlab.com/news-flash/news_flash")
     (synopsis "Base library for NewsFlash")
     (description "This package provides the base library for the NewsFlash
@@ -31875,9 +31834,9 @@ feed reader.")
        (("rust-dotenv" ,rust-dotenv-0.15)
         ("rust-tokio" ,rust-tokio-1))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("openssl" ,openssl)))
+     (list openssl))
     (home-page "https://gitlab.com/news-flash/newsblur_api/")
     (synopsis "Rust implementation of the NewsBlur API")
     (description
@@ -32211,10 +32170,7 @@ while still providing platform specific APIs.")
         ("rust-sysctl" ,rust-sysctl-0.1)
         ("rust-tempfile" ,rust-tempfile-3))))
     (inputs
-     `(("rust-bitflags" ,rust-bitflags-1)
-       ("rust-cc" ,rust-cc-1)
-       ("rust-cfg-if" ,rust-cfg-if-0.1)
-       ("rust-libc" ,rust-libc-0.2)))))
+     (list rust-bitflags-1 rust-cc-1 rust-cfg-if-0.1 rust-libc-0.2))))
 
 (define-public rust-nix-0.17
   (package
@@ -32457,7 +32413,7 @@ implementation (which is unstable / requires nightly).")
                        (string-append jemalloc "/lib/libjemalloc_pic.a")))
              #t)))))
     (native-inputs
-     `(("jemalloc" ,jemalloc)))
+     (list jemalloc))
     (home-page "https://github.com/Geal/nom")
     (synopsis
      "Byte-oriented, zero-copy, parser combinators library")
@@ -32857,10 +32813,9 @@ varying noise for textural use and graphical display.")
              (substitute* "Cargo.toml"
                (("version = \"0.3.2\"") "version = \"0.5.0\"")))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("openssl" ,openssl)
-       ("notmuch" ,notmuch)))
+     (list openssl notmuch))
     (home-page "https://github.com/vhdirk/notmuch-rs")
     (synopsis "Rust interface and bindings for Notmuch")
     (description
@@ -34427,9 +34382,9 @@ system for OpenSSL.")
         ("rust-pkg-config" ,rust-pkg-config-0.3)
         ("rust-vcpkg" ,rust-vcpkg-0.2))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("openssl" ,openssl)))
+     (list openssl))
     (home-page "https://github.com/sfackler/rust-openssl")
     (synopsis "FFI bindings to OpenSSL")
     (description
@@ -35038,9 +34993,9 @@ normally prevent moving a type that has been borrowed from.")
        #:cargo-inputs
        (("rust-libc" ,rust-libc-0.2))))
     (inputs
-     `(("zlib" ,zlib)))
+     (list zlib))
     (native-inputs
-     `(("libtool" ,libtool)))
+     (list libtool))
     (home-page "https://github.com/anp/parasailors")
     (synopsis "Bindings to the parasail pairwise genetic sequence alignment library")
     (description
@@ -35072,9 +35027,9 @@ sequence alignment library.")
        (("rust-libc" ,rust-libc-0.2)
         ("rust-parasail-sys" ,rust-parasail-sys-0.2))))
     (inputs
-     `(("zlib" ,zlib)))
+     (list zlib))
     (native-inputs
-     `(("libtool" ,libtool)))
+     (list libtool))
     (home-page "https://github.com/anp/parasailors")
     (synopsis "SIMD accelerated pairwise genetic sequence alignment")
     (description "This package provides SIMD accelerated pairwise genetic
@@ -35921,7 +35876,7 @@ in pure Rust.")
        (("rust-libc" ,rust-libc-0.2)
         ("rust-pkg-config" ,rust-pkg-config-0.3)
         ("rust-winapi" ,rust-winapi-0.3))))
-    (inputs `(("libpcap" ,libpcap)))
+    (inputs (list libpcap))
     (home-page "https://github.com/jmmk/rustcap")
     (synopsis "Low-level bindings to libpcap")
     (description "This package provides low-level Rust bindings to the libpcap
@@ -35949,8 +35904,7 @@ library.")
         ("rust-pcre2-sys" ,rust-pcre2-sys-0.2)
         ("rust-thread-local" ,rust-thread-local-1))))
     (native-inputs
-     `(("pcre2" ,pcre2)
-       ("pkg-config" ,pkg-config)))
+     (list pcre2 pkg-config))
     (home-page "https://github.com/BurntSushi/rust-pcre2")
     (synopsis "High level wrapper library for PCRE2")
     (description
@@ -35980,8 +35934,7 @@ library.")
         ("rust-pkg-config" ,rust-pkg-config-0.3)
         ("rust-cc" ,rust-cc-1))))
     (native-inputs
-     `(("pcre2" ,pcre2)
-       ("pkg-config" ,pkg-config)))
+     (list pcre2 pkg-config))
     (home-page
      "https://github.com/BurntSushi/rust-pcre2")
     (synopsis "Low level bindings to PCRE2")
@@ -36964,7 +36917,7 @@ written with declarative macros.")
                                "/bin/pkg-config\"")))
              #t)))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://github.com/rust-lang/pkg-config-rs")
     (synopsis "Library to run the pkg-config system tool")
     (description
@@ -38137,7 +38090,7 @@ for x86.")
        (("rust-pkg-config" ,rust-pkg-config-0.3)
         ("rust-vcpkg" ,rust-vcpkg-0.2))))
     (native-inputs
-     `(("postgresql" ,postgresql)))
+     (list postgresql))
     (home-page "https://crates.io/crates/pq-sys")
     (synopsis "Auto-generated rust bindings for libpq")
     (description "This package provides auto-generated rust bindings for
@@ -38791,7 +38744,7 @@ in your code.")
        #:cargo-development-inputs
        (("rust-quote" ,rust-quote-1))))
     (inputs
-     `(("rust-unicode-xid" ,rust-unicode-xid-0.2)))
+     (list rust-unicode-xid-0.2))
     (home-page "https://github.com/alexcrichton/proc-macro2")
     (synopsis "Stable implementation of the upcoming new `proc_macro` API")
     (description "This package provides a stable implementation of the upcoming new
@@ -42230,9 +42183,9 @@ uses finite automata and guarantees linear time matching on all inputs.")
         ("rust-tokio" ,rust-tokio-0.2)
         ("rust-wasm-bindgen-test" ,rust-wasm-bindgen-test-0.3))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("openssl" ,openssl)))))
+     (list openssl))))
 
 (define-public rust-reqwest-0.9
   (package
@@ -42528,9 +42481,9 @@ Rust Language Server.")
        (("rust-byteorder" ,rust-byteorder-1)
         ("rust-tempfile" ,rust-tempfile-3))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("lmdb" ,lmdb)))
+     (list lmdb))
     (home-page "https://github.com/mozilla/rkv")
     (synopsis "Typed key-value storage")
     (description "This package provides a typed key-value storage solution.")
@@ -43315,7 +43268,7 @@ please consider using @code{async-std} or @code{tokio}.")
              (setenv "RUSTC_BOOTSTRAP" "1")
              #t)))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))))
+     (list pkg-config))))
 
 (define-public rust-rusqlite-0.19
   (package
@@ -43353,7 +43306,7 @@ please consider using @code{async-std} or @code{tokio}.")
         ("rust-unicase" ,rust-unicase-2)
         ("rust-uuid" ,rust-uuid-0.7))))
     (inputs
-     `(("sqlite" ,sqlite)))))
+     (list sqlite))))
 
 (define-public rust-rust-argon2-0.7
   (package
@@ -46097,7 +46050,7 @@ statistical guarantees.")
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs (("rust-libc" ,rust-libc-0.2))))
-    (inputs `(("libseccomp" ,libseccomp)))
+    (inputs (list libseccomp))
     (home-page "https://github.com/polachok/seccomp-sys")
     (synopsis "Low-level bindings to libseccomp")
     (description "This package provides low-level bindings to libseccomp.")
@@ -46643,7 +46596,7 @@ thread.  If any of these constraints is violated, a panic occurs.")
         ("rust-rand" ,rust-rand-0.7)
         ("rust-rand-isaac" ,rust-rand-isaac-0.2))))
     (inputs
-     `(("zlib" ,zlib)))
+     (list zlib))
     (home-page "https://github.com/markschl/seq_io")
     (synopsis "Fast FASTA, FASTQ and FASTX parsing")
     (description "This library provides readers for the the following sequence
@@ -46718,10 +46671,9 @@ fragment of code.")
        #:cargo-development-inputs
        (("rust-rpassword" ,rust-rpassword-3))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("clang" ,clang)
-       ("nettle" ,nettle)))
+     (list clang nettle))
     (home-page "https://sequoia-pgp.org/")
     (synopsis "OpenPGP data types and associated machinery")
     (description
@@ -47904,7 +47856,7 @@ functionality and without weak references.")
        (("rust-libc" ,rust-libc-0.2)
         ("rust-servo-fontconfig-sys" ,rust-servo-fontconfig-sys-4))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
      `(("fontconfig" ,fontconfig)))))
 
@@ -47958,7 +47910,7 @@ functionality and without weak references.")
         ("rust-servo-freetype-sys" ,rust-servo-freetype-sys-4)
         ("rust-pkg-config" ,rust-pkg-config-0.3))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
      `(("fontconfig" ,fontconfig)))))
 
@@ -47984,9 +47936,9 @@ functionality and without weak references.")
        (("rust-cmake" ,rust-cmake-0.1)
         ("rust-pkg-config" ,rust-pkg-config-0.3))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("freetype" ,freetype)))
+     (list freetype))
     (home-page "https://www.freetype.org/")
     (synopsis "Rust wrapper around freetype")
     (description
@@ -52597,7 +52549,7 @@ no_std compatible by default, only relying on alloc.")
         ("rust-seccomp-sys" ,rust-seccomp-sys-0.1)
         ("rust-strum" ,rust-strum-0.19)
         ("rust-strum-macros" ,rust-strum-macros-0.19))))
-    (inputs `(("libseccomp" ,libseccomp)))
+    (inputs (list libseccomp))
     (home-page "https://github.com/kpcyrd/syscallz-rs")
     (synopsis "Simple seccomp library for rust")
     (description "Simple seccomp library for rust")
@@ -53501,9 +53453,9 @@ streams.")
         ("rust-tectonic-cfg-support" ,rust-tectonic-cfg-support-0.1)
         ("rust-tectonic-dep-support" ,rust-tectonic-dep-support-0.1))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("libpng" ,libpng)))
+     (list libpng))
     (home-page "https://tectonic-typesetting.github.io/")
     (synopsis "Xdvipdfmx's PDF, XDV, and image I/O APIs in C, as a Rust crate")
     (description
@@ -54589,9 +54541,9 @@ fixed set of worker threads.")
        (("rust-libc" ,rust-libc-0.2)
         ("rust-pkg-config" ,rust-pkg-config-0.3))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("libsodium" ,libsodium)))
+     (list libsodium))
     (home-page "https://nest.pijul.com/pijul_org/thrussh")
     (synopsis "Straightforward bindings to libsodium")
     (description
@@ -55844,9 +55796,9 @@ OpenSSL.")
        (("rust-futures" ,rust-futures-0.3)
         ("rust-tokio" ,rust-tokio-0.2))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("openssl" ,openssl)))))
+     (list openssl))))
 
 (define-public rust-tokio-openssl-0.3
   (package
@@ -56608,9 +56560,9 @@ pool.")
         ("rust-tokio-util" ,rust-tokio-util-0.3)
         ("rust-winapi" ,rust-winapi-0.3))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("openssl" ,openssl)))
+     (list openssl))
     (home-page "https://tokio.rs")
     (synopsis "TLS/SSL streams for Tokio")
     (description "An implementation of TLS/SSL streams for Tokio giving an
@@ -57750,9 +57702,9 @@ extension for the Trust-DNS client to use native-tls for TLS.")
         ("rust-tokio-tls" ,rust-tokio-tls-0.3)
         ("rust-trust-dns-proto" ,rust-trust-dns-proto-0.19))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("openssl" ,openssl)))))
+     (list openssl))))
 
 (define-public rust-trust-dns-native-tls-0.18
   (package
@@ -57850,9 +57802,9 @@ extension for the Trust-DNS client to use tokio-openssl for TLS.")
        (("rust-openssl" ,rust-openssl-0.10)
         ("rust-tokio" ,rust-tokio-0.2))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("openssl" ,openssl)))))
+     (list openssl))))
 
 (define-public rust-trust-dns-openssl-0.18
   (package
@@ -58280,9 +58232,9 @@ the Trust-DNS client to use rustls for TLS.")
        #:cargo-development-inputs
        (("rust-openssl" ,rust-openssl-0.10))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("openssl" ,openssl)))))
+     (list openssl))))
 
 (define-public rust-trust-dns-rustls-0.18
   (package
@@ -58325,9 +58277,9 @@ the Trust-DNS client to use rustls for TLS.")
         (base32
          "0vbh2y7w2s5gcw33fn4hb5f927kgjm6603vw63slg9riikmsiq43"))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("openssl" ,openssl)))
+     (list openssl))
     (arguments
      `(#:cargo-test-flags
        '("--release" "--" "--skip=tests::test_tls_client_stream_ipv4")
@@ -61794,8 +61746,8 @@ command-line, uniformly on all platforms")
        (("winapi-i686-pc-windows-gnu" ,rust-winapi-i686-pc-windows-gnu-0.4)
         ("winapi-x86-64-pc-windows-gnu" ,rust-winapi-x86-64-pc-windows-gnu-0.4))))
     (inputs
-     `(("rust-winapi-i686-pc-windows-gnu" ,rust-winapi-i686-pc-windows-gnu-0.4)
-       ("rust-winapi-x86-64-pc-windows-gnu" ,rust-winapi-x86-64-pc-windows-gnu-0.4)))
+     (list rust-winapi-i686-pc-windows-gnu-0.4
+           rust-winapi-x86-64-pc-windows-gnu-0.4))
     (home-page "https://github.com/retep998/winapi-rs")
     (synopsis "Raw FFI bindings for all of Windows API")
     (description
@@ -62352,12 +62304,9 @@ extended attributes.")
         ("rust-log" ,rust-log-0.4)
         ("rust-x11" ,rust-x11-2))))
     (inputs
-     `(("libx11" ,libx11)
-       ("libxcb" ,libxcb)
-       ("xcb-proto" ,xcb-proto)))
+     (list libx11 libxcb xcb-proto))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("python" ,python)))
+     (list pkg-config python))
     (home-page "https://github.com/rtbo/rust-xcb")
     (synopsis "Rust bindings and wrappers for XCB")
     (description
@@ -62632,8 +62581,7 @@ parser.")
         ("rust-rand" ,rust-rand-0.5)
         ("rust-tokio-core" ,rust-tokio-core-0.1))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("xz" ,xz)))
+     (list pkg-config xz))
     (home-page "https://github.com/alexcrichton/xz2-rs")
     (synopsis "Rust bindings to liblzma")
     (description "This package provides Rust bindings to liblzma providing

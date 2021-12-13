@@ -65,12 +65,9 @@
                                "--disable-smartcard")
        #:tests? #f))                    ; No 'check' target
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("gnutls" ,gnutls)
-       ("libx11" ,libx11)
-       ("libxcursor" ,libxcursor)
-       ("nettle" ,nettle)))
+     (list gnutls libx11 libxcursor nettle))
     (home-page "https://www.rdesktop.org/")
     (synopsis "Client for Windows Terminal Services")
     (description
@@ -94,13 +91,13 @@ to remotely control a user's Windows desktop.")
         (base32 "02zlg5r704zbryx09a5rjjf7q137kj16i9qh25dw9q1y69ri619n"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("docbook-xml" ,docbook-xml)
-       ("docbook-xsl" ,docbook-xsl)
-       ("glib" ,glib)
-       ("libxml2" ,libxml2)
-       ("libxslt" ,libxslt)
-       ("pkg-config" ,pkg-config)
-       ("xmlto" ,xmlto)))
+     (list docbook-xml
+           docbook-xsl
+           glib
+           libxml2
+           libxslt
+           pkg-config
+           xmlto))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("cups" ,cups)
@@ -120,9 +117,7 @@ to remotely control a user's Windows desktop.")
        ("pulseaudio" ,pulseaudio)
        ("zlib" ,zlib)))
     (propagated-inputs
-     `(("libxkbcommon" ,libxkbcommon)
-       ("openssl" ,openssl)
-       ("wayland" ,wayland)))
+     (list libxkbcommon openssl wayland))
     (arguments
      `(#:build-type "RELEASE"
        #:configure-flags

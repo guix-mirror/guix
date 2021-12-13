@@ -104,9 +104,7 @@
                 "15p7sssg6vmqbm5xnc4j5dr89d7gl7y5qyq44a240yl5aqkjnybw"))))
     (build-system python-build-system)
     (native-inputs
-     `(("file" ,file)
-       ("intltool" ,intltool)
-       ("gobject-introspection" ,gobject-introspection)))
+     (list file intltool gobject-introspection))
     (inputs
      `(("gdk-pixbuf" ,gdk-pixbuf)
        ("gexiv2" ,gexiv2)
@@ -188,11 +186,11 @@ cards and generate meaningful file and folder names.")
                 "18wlsvj6c1rv036ph3695kknpgzc3lk2ikgshy8417yfl8ykh2hz"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
      `(("libjpeg" ,libjpeg-turbo)))     ;for lossy DNGs and old Kodak cameras
     (propagated-inputs
-     `(("lcms" ,lcms)))                 ;for color profiles
+     (list lcms))                 ;for color profiles
     (home-page "https://www.libraw.org")
     (synopsis "Raw image decoder")
     (description
@@ -250,15 +248,12 @@ data as produced by digital cameras.")
                (base32
                 "1ms06b3dj1p33aypcb16gg5pn7fylbylsk9cnnqa0j29qiw59f7q"))))
     (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs (list pkg-config))
     (inputs
-     `(("libjpeg-turbo" ,libjpeg-turbo)
-       ("libltdl" ,libltdl)
-       ("libusb" ,libusb)
-       ("libxml2" ,libxml2)))
+     (list libjpeg-turbo libltdl libusb libxml2))
     (propagated-inputs
-     `(;; The .pc refers to libexif.
-       ("libexif" ,libexif)))
+     (list ;; The .pc refers to libexif.
+           libexif))
     (home-page "http://www.gphoto.org/proj/libgphoto2/")
     (synopsis "Accessing digital cameras")
     (description
@@ -282,13 +277,9 @@ from digital cameras.")
                 "0f4d3q381jnnkcqkb2dj1k709skp65qihl5xm80zandvl69lw19h"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("readline" ,readline)
-       ("libjpeg-turbo" ,libjpeg-turbo)
-       ("popt" ,popt)
-       ("libexif" ,libexif)
-       ("libgphoto2" ,libgphoto2)))
+     (list readline libjpeg-turbo popt libexif libgphoto2))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
@@ -449,9 +440,9 @@ scene to produce an image that looks much like a tone-mapped image.")
         '(#:configure-flags '("-DBUILD_FOR_SSE=OFF" "-DBUILD_FOR_SSE2=OFF")))
        #:tests? #f)) ; There are no tests to run.
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("glib" ,glib)))
+     (list glib))
     (home-page "https://sourceforge.net/projects/lensfun/")
     (synopsis "Library to correct optical lens defects with a lens database")
     (description "Digital photographs are not ideal.  Of course, the better is
@@ -608,12 +599,9 @@ and enhance them.")
                        (string-append "PREFIX=" out)
                        "Photoflare.pro")))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("qttools" ,qttools)))
+     (list pkg-config qttools))
     (inputs
-     `(("graphicsmagick" ,graphicsmagick)
-       ("libomp" ,libomp)
-       ("qtbase" ,qtbase-5)))
+     (list graphicsmagick libomp qtbase-5))
     (home-page "https://photoflare.io")
     (synopsis "Quick, simple but powerful image editor")
     (description "Photoflare is a cross-platform image editor with an aim
@@ -669,18 +657,18 @@ such as Batch image processing.")
        ("pkg-config" ,pkg-config)
        ("xmllint" ,libxml2)))
     (inputs
-     `(("gdk-pixbuf" ,gdk-pixbuf)
-       ("gexiv2" ,gexiv2)
-       ("gst-plugins-base" ,gst-plugins-base)
-       ("gstreamer" ,gstreamer)
-       ("gtk+" ,gtk+)
-       ("lcms" ,lcms)
-       ("libgphoto2" ,libgphoto2)
-       ("libgudev" ,libgudev)
-       ("libpeas" ,libpeas)
-       ("libraw" ,libraw)
-       ("python" ,python)
-       ("python-pygobject" ,python-pygobject)))
+     (list gdk-pixbuf
+           gexiv2
+           gst-plugins-base
+           gstreamer
+           gtk+
+           lcms
+           libgphoto2
+           libgudev
+           libpeas
+           libraw
+           python
+           python-pygobject))
     (home-page "https://entangle-photo.org/")
     (synopsis "Camera control and capture")
     (description
@@ -788,7 +776,7 @@ a complete panorama and stitch any series of overlapping pictures.")
              "-O3"
              "-DCACHE_NAME_SUFFIX=\"\"")))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
      `(("expat" ,expat)
        ("fftw" ,fftwf)

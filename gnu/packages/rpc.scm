@@ -105,11 +105,7 @@
                    (find-files "." "\\.a$"))))
              #t)))))
     (inputs
-     `(("abseil-cpp" ,abseil-cpp)
-       ("c-ares" ,c-ares/cmake)
-       ("openssl" ,openssl)
-       ("re2" ,re2)
-       ("zlib" ,zlib)))
+     (list abseil-cpp c-ares/cmake openssl re2 zlib))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("protobuf" ,protobuf)
@@ -154,11 +150,9 @@ browsers to backend services.")
                  (("gettid\\(")
                   "sys_gettid("))))))))
     (native-inputs
-     `(("abseil-cpp" ,abseil-cpp-20200923.3)
-       ("protobuf" ,protobuf-3.6)
-       ,@(fold alist-delete (package-native-inputs grpc)
-               '("abseil-cpp"
-                 "protobuf"))))))
+     (modify-inputs (package-native-inputs grpc)
+       (delete "abseil-cpp" "protobuf")
+       (prepend abseil-cpp-20200923.3 protobuf-3.6)))))
 
 (define-public python-grpcio
   (package
@@ -201,11 +195,9 @@ browsers to backend services.")
                         (("'cc'") "'gcc'"))
                       #t)))))
     (inputs
-     `(("c-ares" ,c-ares)
-       ("openssl" ,openssl)
-       ("zlib" ,zlib)))
+     (list c-ares openssl zlib))
     (propagated-inputs
-     `(("python-six" ,python-six)))
+     (list python-six))
     (home-page "https://grpc.io")
     (synopsis "HTTP/2-based RPC framework")
     (description "This package provides a Python library for communicating
@@ -232,15 +224,14 @@ with the HTTP/2-based RPC framework gRPC.")
        (list (string-append "--with-boost="
                             (assoc-ref %build-inputs "boost")))))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)
-       ("flex" ,flex)
-       ("bison" ,bison)))
+     (list autoconf
+           automake
+           libtool
+           pkg-config
+           flex
+           bison))
     (inputs
-     `(("boost" ,boost)
-       ("libressl" ,libressl)))
+     (list boost libressl))
     (outputs '("out" "lib" "include"))
     (home-page "https://thrift.apache.org/")
     (synopsis

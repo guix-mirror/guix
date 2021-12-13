@@ -72,9 +72,7 @@ and heaps.")
         (base32 "1pk6wmi28pa8srb4szybrwfn71jldb61c5vgxsiayxcyg1ya4qqh"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
+     (list autoconf automake libtool))
     (home-page "https://github.com/s-yata/marisa-trie")
     (synopsis "Trie data structure C++ library")
     (description "@acronym{MARISA, Matching Algorithm with Recursively
@@ -149,7 +147,7 @@ in between these sequences may be different in both content and length.")
                 "085s437nig6bdiv9im4k4qwqbrbnc4qw9flqi16jlb493az0vcnb"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("perl" ,perl)))                 ; for tests
+     (list perl))                 ; for tests
     (home-page "https://liburcu.org/")
     (synopsis "User-space RCU data synchronisation library")
     (description "liburcu is a user-space @dfn{Read-Copy-Update} (RCU) data
@@ -174,7 +172,7 @@ queues, stacks, and doubly-linked lists.")
         (base32 "0k80bjbb6ss5wpmfmfji6xbyjm990hg9kcshwwnhdnh73vxkcd1m"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("perl" ,perl)))
+     (list perl))
     (arguments
      `(#:make-flags
        (list "CC=gcc")
@@ -269,7 +267,7 @@ to the structure and choosing one or more fields to act as the key.")
                           out ,version)))
               #t))))))
     (native-inputs
-     `(("libdivsufsort" ,libdivsufsort)))
+     (list libdivsufsort))
     (home-page "https://github.com/simongog/sdsl-lite")
     (synopsis "Succinct data structure library")
     (description "The Succinct Data Structure Library (SDSL) is a powerful and
@@ -346,7 +344,7 @@ bytes of memory space, where n is the length of the string.")
                 "1li70vwsksva9c4yly90hjafgqfixi1g6d52qq9p6r60vqc4pkjj"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("boost" ,boost)))  ; needed for tests
+     (list boost))  ; needed for tests
     (arguments
      `(#:phases
        (modify-phases %standard-phases

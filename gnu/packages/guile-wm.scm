@@ -58,9 +58,7 @@
                                             "--with-guile-site-ccache-dir="
                                             (assoc-ref %outputs "out")
                                             "/lib/guile/2.2/site-ccache"))))
-      (native-inputs `(("guile" ,guile-2.2)
-                       ("pkg-config" ,pkg-config)
-                       ("texinfo" ,texinfo)))
+      (native-inputs (list guile-2.2 pkg-config texinfo))
       (inputs `(("guile" ,guile-2.2)
                 ("xcb" ,xcb-proto)))
       (home-page "https://github.com/mwitmer/guile-xcb")
@@ -174,12 +172,8 @@ dependencies.")
                                     Type=Application~%"
                              ,name ,synopsis %output))))
                #t)))))
-      (native-inputs `(("guile" ,guile-2.2)
-                       ("guile-xcb" ,guile-xcb)
-                       ("pkg-config" ,pkg-config)
-                       ("texinfo" ,texinfo)))
-      (inputs `(("guile" ,guile-2.2)
-                ("guile-xcb" ,guile-xcb)))
+      (native-inputs (list guile-2.2 guile-xcb pkg-config texinfo))
+      (inputs (list guile-2.2 guile-xcb))
       (home-page "https://github.com/mwitmer/guile-wm/releases")
       (description
        "Guile-WM is a simple window manager that's completely customizable—you

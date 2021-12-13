@@ -86,11 +86,7 @@
     (build-system gnu-build-system)
     (supported-systems '("i686-linux" "x86_64-linux"))
     (inputs
-     `(("expat" ,expat)
-       ("glibc" ,glibc)
-       ("ld-wrapper" ,ld-wrapper)
-       ("ncurses" ,ncurses)
-       ("zlib" ,zlib)))
+     (list expat glibc ld-wrapper ncurses zlib))
     (native-inputs
      ;; FPC is built with FPC, so we need bootstrap binaries.
      `(("fpc-binary" ,(match (or (%current-target-system)
@@ -270,8 +266,7 @@ many useful extensions to the Pascal programming language.")
              (chdir "src")
              #t)))))
     (native-inputs
-     `(("perl" ,perl)
-       ("which" ,which)))
+     (list perl which))
     (synopsis "p2c converts Pascal programs to C programs--which you can then
 compile using gcc")
     (description "This package provides @command{p2c}, a program to convert

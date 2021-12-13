@@ -100,13 +100,9 @@
         (base32 "1x4v79vhvc5ixkbsf3jyjz5ig1lf78rfw3r7g3llpb4j1kcp3wh0"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     (list extra-cmake-modules))
     (inputs
-     `(("baloo" ,baloo)
-       ("kconfig" ,kconfig)
-       ("ki18n" ,ki18n)
-       ("kio" ,kio)
-       ("qtbase" ,qtbase-5)))
+     (list baloo kconfig ki18n kio qtbase-5))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -135,15 +131,14 @@ This package contains GUI widgets for baloo.")
     (build-system qt-build-system)
     (arguments `(#:tests? #f))  ; unexpected error in the test suite.
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("libxml2" ,libxml2))) ;; xmllint required for tests
+     (list extra-cmake-modules libxml2)) ;; xmllint required for tests
     (inputs
-     `(("grantlee" ,grantlee)
-       ("kguiaddons" ,kguiaddons)
-       ("ki18n" ,ki18n)
-       ("kiconthemes" ,kiconthemes)
-       ("knewstuff" ,knewstuff)
-       ("qtbase" ,qtbase-5)))
+     (list grantlee
+           kguiaddons
+           ki18n
+           kiconthemes
+           knewstuff
+           qtbase-5))
     (home-page "https://invent.kde.org/pim/grantleetheme")
     (synopsis "Library providing Grantlee theme support")
     (description "This library provides Grantlee theme support.")
@@ -176,40 +171,39 @@ This package contains GUI widgets for baloo.")
                  `("QTWEBENGINEPROCESS_PATH" = (,qt-process-path)))
                #t))))))
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules kdoctools))
     (inputs
-     `(("akonadi" ,akonadi)
-       ("akonadi-contacts" ,akonadi-contacts)
-       ("akonadi-mime" ,akonadi-mime)
-       ("boost" ,boost)
-       ("breeze-icons" ,breeze-icons)
-       ("gpgme" ,gpgme)
-       ("grantlee" ,grantlee)
-       ("grantleetheme" ,grantleetheme)
-       ("kcmutils" ,kcmutils)
-       ("kcontacts" ,kcontacts)
-       ("kcrash" ,kcrash)
-       ("kimap" ,kimap)
-       ("kitemmodels" ,kitemmodels)
-       ("kmessagelib" ,kmessagelib)
-       ("kmime" ,kmime)
-       ("knotifications" ,knotifications)
-       ("knotifyconfig" ,knotifyconfig)
-       ("kontactinterface" ,kontactinterface)
-       ("kpimcommon" ,kpimcommon)
-       ("kpimtextedit" ,kpimtextedit)
-       ("kqtquickcharts" ,kqtquickcharts)
-       ("ktexteditor" ,ktexteditor)
-       ("kuserfeedback" ,kuserfeedback)
-       ("libkdepim" ,libkdepim)
-       ("libkleo" ,libkleo)
-       ("qgpgme" ,qgpgme)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)
-       ("qtwebchannel" ,qtwebchannel)
-       ("qtwebengine" ,qtwebengine)
-       ("syndication" ,syndication)))
+     (list akonadi
+           akonadi-contacts
+           akonadi-mime
+           boost
+           breeze-icons
+           gpgme
+           grantlee
+           grantleetheme
+           kcmutils
+           kcontacts
+           kcrash
+           kimap
+           kitemmodels
+           kmessagelib
+           kmime
+           knotifications
+           knotifyconfig
+           kontactinterface
+           kpimcommon
+           kpimtextedit
+           kqtquickcharts
+           ktexteditor
+           kuserfeedback
+           libkdepim
+           libkleo
+           qgpgme
+           qtbase-5
+           qtdeclarative
+           qtwebchannel
+           qtwebengine
+           syndication))
     (home-page "https://apps.kde.org/en/akregator")
     (synopsis "KDE Feed Reader")
     (description
@@ -237,40 +231,38 @@ browser for easy news reading.")
           (base32 "0lpspak5djkbn2xbmmbxls258310g45n3a08sghkjl08bx6ilvc9"))))
       (build-system qt-build-system)
       (native-inputs
-       `(("extra-cmake-modules" ,extra-cmake-modules)
-         ("pkg-config" ,pkg-config)
-         ("qttools" ,qttools)))
+       (list extra-cmake-modules pkg-config qttools))
       (inputs
-       `(("breeze" ,breeze) ; make dark them available easily
-         ("breeze-icons" ,breeze-icons) ; recommended icon set
-         ("ffmpeg" ,ffmpeg)
-         ("frei0r-plugins" ,frei0r-plugins)
-         ("karchive" ,karchive)
-         ("kcrash" ,kcrash)
-         ("kdbusaddons" ,kdbusaddons)
-         ("kdeclarative" ,kdeclarative)
-         ("kdoctools" ,kdoctools)
-         ("kfilemetadata" ,kfilemetadata)
-         ("kguiaddons" ,kguiaddons)
-         ("kiconthemes" ,kiconthemes)
-         ("knewstuff" ,knewstuff)
-         ("knotifications" ,knotifications)
-         ("knotifyconfig" ,knotifyconfig)
-         ("kparts" ,kparts)
-         ("kplotting" ,kplotting)
-         ("mlt" ,mlt)
-         ("purpose" ,purpose)
-         ("qtbase" ,qtbase-5)
-         ("qtdeclarative" ,qtdeclarative)
-         ("qtgraphicaleffects" ,qtgraphicaleffects)
-         ("qtmultimedia" ,qtmultimedia)
-         ("qtnetworkauth" ,qtnetworkauth)
-         ("qtquickcontrols" ,qtquickcontrols)
-         ("qtquickcontrols2" ,qtquickcontrols2)
-         ("qtscript" ,qtscript)
-         ("qtsvg" ,qtsvg)
-         ("qtwebkit" ,qtwebkit)
-         ("shared-mime-info" ,shared-mime-info)))
+       (list breeze ; make dark them available easily
+             breeze-icons ; recommended icon set
+             ffmpeg
+             frei0r-plugins
+             karchive
+             kcrash
+             kdbusaddons
+             kdeclarative
+             kdoctools
+             kfilemetadata
+             kguiaddons
+             kiconthemes
+             knewstuff
+             knotifications
+             knotifyconfig
+             kparts
+             kplotting
+             mlt
+             purpose
+             qtbase-5
+             qtdeclarative
+             qtgraphicaleffects
+             qtmultimedia
+             qtnetworkauth
+             qtquickcontrols
+             qtquickcontrols2
+             qtscript
+             qtsvg
+             qtwebkit
+             shared-mime-info))
       (arguments
        ;; XXX: there is a single test that spawns other tests and
        ;; 1/3 tests failed and 1/327 assertions failed.  It seems
@@ -318,10 +310,7 @@ projects.")
          (base32 "02ip5r67hjfpywkm3mz86n6wbqcr7996ifzfd2fyzsvm4998hi4y"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("pkg-config" ,pkg-config)
-       ("shared-mime-info" ,shared-mime-info)
-       ("qttools" ,qttools)))
+     (list extra-cmake-modules pkg-config shared-mime-info qttools))
     (inputs
      `(("boost" ,boost)
        ("clang" ,clang)
@@ -411,9 +400,9 @@ software (Git, Subversion, Mercurial, CVS and Bazaar).")
        (sha256
         (base32 "1kfab4p717acbdkcdi41d98vwch7v431gb2qi6s38hmclsf8bf8g"))))
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     (list extra-cmake-modules))
     (inputs
-     `(("qtbase" ,qtbase-5)))
+     (list qtbase-5))
     (build-system cmake-build-system)
     (home-page "https://kde.org")
     (synopsis "Parser generator library for KDevplatform")
@@ -439,11 +428,9 @@ for some KDevelop language plugins (Ruby, PHP, CSS...).")
                  "kdiagram-Fix-missing-link-libraries.patch"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("qttools" ,qttools)))
+     (list extra-cmake-modules qttools))
     (inputs
-     `(("qtbase" ,qtbase-5)
-       ("qtsvg" ,qtsvg)))
+     (list qtbase-5 qtsvg))
     (home-page "https://invent.kde.org/graphics/kdiagram")
     (synopsis "Libraries for creating business diagrams")
     (description "This package provides libraries for integrating business
@@ -491,51 +478,51 @@ illustrate project schedules.")
                          qt)))
                #t))))))
     (native-inputs
-     `(("curl" ,curl)
-       ("eigen" ,eigen)
-       ("extra-cmake-modules" ,extra-cmake-modules)
-       ("gettext-minimal" ,gettext-minimal)
-       ("kitemmodels" ,kitemmodels)
-       ("pkg-config" ,pkg-config)
-       ("qwt" ,qwt)
-       ("vc" ,vc)))
+     (list curl
+           eigen
+           extra-cmake-modules
+           gettext-minimal
+           kitemmodels
+           pkg-config
+           qwt
+           vc))
     (inputs
-     `(("boost" ,boost)
-       ("exiv2" ,exiv2)
-       ("fftw" ,fftw)
-       ("gsl" ,gsl)
-       ("ilmbase" ,ilmbase)
-       ("karchive" ,karchive)
-       ("kcompletion" ,kcompletion)
-       ("kconfig" ,kconfig)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kcrash" ,kcrash)
-       ("kguiaddons" ,kguiaddons)
-       ("ki18n" ,ki18n)
-       ("kiconthemes" ,kiconthemes)
-       ("kio" ,kio)
-       ("kitemviews" ,kitemviews)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kwindowsystem" ,kwindowsystem)
-       ("kxmlgui" ,kxmlgui)
-       ("lcms" ,lcms)
-       ("libjpeg-turbo" ,libjpeg-turbo)
-       ("libpng" ,libpng)
-       ("libraw" ,libraw-0.18)
-       ("libtiff" ,libtiff)
-       ("libx11" ,libx11)
-       ("libxcb" ,libxcb)
-       ("libxi" ,libxi)
-       ("openexr" ,openexr-2)
-       ("perl" ,perl)
-       ("poppler-qt5" ,poppler-qt5)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)
-       ("qtmultimedia" ,qtmultimedia)
-       ("qtsvg" ,qtsvg)
-       ("qtx11extras" ,qtx11extras)
-       ("quazip" ,quazip-0)
-       ("zlib" ,zlib)))
+     (list boost
+           exiv2
+           fftw
+           gsl
+           ilmbase
+           karchive
+           kcompletion
+           kconfig
+           kcoreaddons
+           kcrash
+           kguiaddons
+           ki18n
+           kiconthemes
+           kio
+           kitemviews
+           kwidgetsaddons
+           kwindowsystem
+           kxmlgui
+           lcms
+           libjpeg-turbo
+           libpng
+           libraw-0.18
+           libtiff
+           libx11
+           libxcb
+           libxi
+           openexr-2
+           perl
+           poppler-qt5
+           qtbase-5
+           qtdeclarative
+           qtmultimedia
+           qtsvg
+           qtx11extras
+           quazip-0
+           zlib))
     (home-page "https://krita.org")
     (synopsis "Digital painting application")
     (description
@@ -558,20 +545,18 @@ features include brush stabilizers, brush engines and wrap-around mode.")
         (base32 "0v8z6r9gngzckvqyxjm9kp7hilwfqibyk2f9vag9l98ar0iwr97q"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("pkg-config" ,pkg-config)
-       ("shared-mime-info" ,shared-mime-info)))
+     (list extra-cmake-modules pkg-config shared-mime-info))
     (inputs
-     `(("karchive" ,karchive)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kparts" ,kparts)
-       ("kdiagram" ,kdiagram)
-       ("kgraphviewer" ,kgraphviewer)
-       ("kio" ,kio)
-       ("ki18n" ,ki18n)
-       ("qtbase" ,qtbase-5)
-       ("qtsvg" ,qtsvg)
-       ("qtxmlpatterns" ,qtxmlpatterns)))
+     (list karchive
+           kcoreaddons
+           kparts
+           kdiagram
+           kgraphviewer
+           kio
+           ki18n
+           qtbase-5
+           qtsvg
+           qtxmlpatterns))
     (home-page "https://apps.kde.org/en/massif-visualizer")
     (synopsis "Visualize massif data generated by Valgrind")
     (description
@@ -593,16 +578,15 @@ compressed massif files can also be opened transparently.")
         (sha256
          (base32 "0m8m7sgpf2f4nxpaaymyvihlk0pcyblyd99mcbibrnyr5kzkzzdc"))))
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("pkg-config" ,pkg-config)))
+     (list extra-cmake-modules pkg-config))
     (inputs
-     `(("kcodecs" ,kcodecs)
-       ("kconfig" ,kconfig)
-       ("kcoreaddons" ,kcoreaddons)
-       ("ki18n" ,ki18n)
-       ("kio" ,kio)
-       ("kxmlgui" ,kxmlgui)
-       ("qtbase" ,qtbase-5)))
+     (list kcodecs
+           kconfig
+           kcoreaddons
+           ki18n
+           kio
+           kxmlgui
+           qtbase-5))
     (build-system cmake-build-system)
     (home-page "https://kde.org")
     (synopsis "Library to compare files and strings, used in Kompare and KDevelop")
@@ -626,10 +610,9 @@ used in KDE development tools Kompare and KDevelop.")
          (base32 "0rvvf97la95lah67jcj0p06n4br0pc2mri0q1hn4x522hndqybjn"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("openssl" ,openssl)
-       ("qtbase" ,qtbase-5)))
+     (list openssl qtbase-5))
     (home-page "https://userbase.kde.org/QCA")
     (synopsis "Libraries for the Qt Cryptographic Architecture")
     (description "The Qt Cryptographic Architecture (QCA) provides a
@@ -653,16 +636,15 @@ cards.")
                 "0jsig7algmab9h0fb09my0axjqzw83zgscamhzl8931lribs6idm"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("pkg-config" ,pkg-config)))
+     (list extra-cmake-modules pkg-config))
     (inputs
-     `(("kauth" ,kauth)
-       ("kcoreaddons" ,kcoreaddons)
-       ("ki18n" ,ki18n)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("qtbase" ,qtbase-5)
-       ("qca" ,qca)
-       ("util-linux" ,util-linux "lib")))
+     (list kauth
+           kcoreaddons
+           ki18n
+           kwidgetsaddons
+           qtbase-5
+           qca
+           `(,util-linux "lib")))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Library for managing partitions")
     (description "Library for managing partitions.")
@@ -684,10 +666,9 @@ cards.")
     (arguments
      `(#:tests? #f)) ; both tests fail, require display
     (inputs
-     `(("qtbase" ,qtbase-5)))
+     (list qtbase-5))
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("qttools" ,qttools)))
+     (list extra-cmake-modules qttools))
     (home-page "https://techbase.kde.org/Projects/Snorenotify")
     (synopsis "Qt notification framework")
     (description "Snorenotify is a multi platform Qt notification framework.
@@ -727,27 +708,27 @@ different notification systems.")
        ("pkg-config" ,pkg-config)
        ("python" ,python-wrapper)))
     (inputs
-     `(("kcmutils" ,kcmutils)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kdbusaddons" ,kdbusaddons)
-       ("ki18n" ,ki18n)
-       ("kiconthemes" ,kiconthemes)
-       ("kio" ,kio)
-       ("kirigami" ,kirigami)
-       ("knotifications" ,knotifications)
-       ("kpeople" ,kpeople)
-       ("kpeoplevcard" ,kpeoplevcard)
-       ("kwayland" ,kwayland)
-       ("libfakekey" ,libfakekey)
-       ("pulseaudio-qt" ,pulseaudio-qt)
-       ("qca" ,qca)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)
-       ("qtgraphicaleffects" ,qtgraphicaleffects)
-       ("qtmultimedia" ,qtmultimedia)
-       ("qtquickcontrols" ,qtquickcontrols)
-       ("qtquickcontrols2" ,qtquickcontrols2)
-       ("qtx11extras" ,qtx11extras)))
+     (list kcmutils
+           kconfigwidgets
+           kdbusaddons
+           ki18n
+           kiconthemes
+           kio
+           kirigami
+           knotifications
+           kpeople
+           kpeoplevcard
+           kwayland
+           libfakekey
+           pulseaudio-qt
+           qca
+           qtbase-5
+           qtdeclarative
+           qtgraphicaleffects
+           qtmultimedia
+           qtquickcontrols
+           qtquickcontrols2
+           qtx11extras))
     (home-page "https://community.kde.org/KDEConnect")
     (synopsis "Enable your devices to communicate with each other")
     (description "KDE Connect is a project that enables all your devices to
@@ -803,39 +784,39 @@ communicate with each other.  Here's a few things KDE Connect can do:
        ("python" ,python-wrapper)
        ("qttools" ,qttools)))
     (inputs
-     `(("breeze" ,breeze) ;for dark themes
-       ("breeze-icons" ,breeze-icons) ;for icons
-       ("gsl" ,gsl)
-       ("karchive" ,karchive)
-       ("kcompletion" ,kcompletion)
-       ("kconfig" ,kconfig)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kcrash" ,kcrash)
-       ("kdoctools" ,kdoctools)
-       ("ki18n" ,ki18n)
-       ("kiconthemes" ,kiconthemes)
-       ("kio" ,kio)
-       ("knewstuff" ,knewstuff)
-       ("kparts" ,kparts)
-       ("kservice" ,kservice)
-       ("ksyntaxhighlighting" ,ksyntaxhighlighting)
-       ("ktextwidgets" ,ktextwidgets)
-       ("kuserfeedback" ,kuserfeedback)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kxmlgui" ,kxmlgui)
-       ("qtbase" ,qtbase-5)
-       ("qtsvg" ,qtsvg)
-       ("shared-mime-info" ,shared-mime-info)
-       ;; Optional.
-       ("cfitsio" ,cfitsio)
-       ("fftw" ,fftw)
-       ("hdf5" ,hdf5)
-       ("libcerf" ,libcerf)
-       ("lz4" ,lz4)
-       ("netcdf" ,netcdf)
-       ("qtserialport" ,qtserialport)
-       ("zlib" ,zlib)))
+     (list breeze ;for dark themes
+           breeze-icons ;for icons
+           gsl
+           karchive
+           kcompletion
+           kconfig
+           kconfigwidgets
+           kcoreaddons
+           kcrash
+           kdoctools
+           ki18n
+           kiconthemes
+           kio
+           knewstuff
+           kparts
+           kservice
+           ksyntaxhighlighting
+           ktextwidgets
+           kuserfeedback
+           kwidgetsaddons
+           kxmlgui
+           qtbase-5
+           qtsvg
+           shared-mime-info
+           ;; Optional.
+           cfitsio
+           fftw
+           hdf5
+           libcerf
+           lz4
+           netcdf
+           qtserialport
+           zlib))
     (home-page "https://labplot.kde.org/")
     (synopsis "Interactive graphing and analysis of scientific data")
     (description "LabPlot is a tool for interactive graphing and analysis of
@@ -858,10 +839,9 @@ to perform data analysis.")
           "1wxp35mf9zlpgzi4msdl86b2krdq2ipqw371gyx23r7j84vdyxi3"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     (list extra-cmake-modules))
     (inputs
-     `(("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)))
+     (list qtbase-5 qtdeclarative))
     (home-page "https://phabricator.kde.org/source/kqtquickcharts/")
     (synopsis "Interactive charts for Qt Quick")
     (description
@@ -882,19 +862,18 @@ charts.")
                 "0ba67hs4vlb3qyvdzhnpmf8p62df12s8aqw4hzf9vnxff3qix5k1"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules kdoctools))
     (inputs
-     `(("kcmutils" ,kcmutils)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcoreaddons" ,kcoreaddons)
-       ("ki18n" ,ki18n)
-       ("kiconthemes" ,kiconthemes)
-       ("kio" ,kio)
-       ("knotifications" ,knotifications)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kxmlgui" ,kxmlgui)
-       ("qtbase" ,qtbase-5)))
+     (list kcmutils
+           kconfigwidgets
+           kcoreaddons
+           ki18n
+           kiconthemes
+           kio
+           knotifications
+           kwidgetsaddons
+           kxmlgui
+           qtbase-5))
     (home-page "https://kde.org/applications/system/kdk")
     (synopsis "View Disk Usage")
     (description "KDiskFree displays the available file devices (hard drive
@@ -916,17 +895,9 @@ unmount drives and view them in a file manager.")
                 "0fx17s6fj1pxl1mgfrqhchk8sihkbji1x8y3nhb1r0971wzd1nsc"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("perl" ,perl)
-       ("python" ,python)
-       ("qttools" ,qttools)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules perl python qttools kdoctools))
     (inputs
-     `(("qtbase" ,qtbase-5)
-       ("karchive" ,karchive)
-       ("ki18n" ,ki18n)
-       ("kio" ,kio)
-       ("kdbusaddons" ,kdbusaddons)))
+     (list qtbase-5 karchive ki18n kio kdbusaddons))
     ;; Note: The 'hotshot2calltree' and 'pprof2calltree' scripts depend on
     ;; Python and PHP, respectively.  These are optional and we ignore them
     ;; for now.
@@ -958,34 +929,34 @@ Python, PHP, and Perl.")
        (base32 "1xsrrvhwjwi5aajcaxydmzc69i4yx6shs8ly8vr85njc188ycg13"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     (list extra-cmake-modules))
     (inputs
-     `(("karchive" ,karchive)
-       ("kbookmarks" ,kbookmarks)
-       ("kcodecs" ,kcodecs)
-       ("kcompletion" ,kcompletion)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcrash" ,kcrash)
-       ("kdbusaddons" ,kdbusaddons)
-       ("kdeclarative" ,kdeclarative)
-       ("kdnssd" ,kdnssd)
-       ("kglobalaccel" ,kglobalaccel)
-       ("kguiaddons" ,kguiaddons)
-       ("ki18n" ,ki18n)
-       ("kiconthemes" ,kiconthemes)
-       ;("kio" ,kio)
-       ("kitemviews" ,kitemviews)
-       ("kjobwidgets" ,kjobwidgets)
-       ("knewstuff" ,knewstuff)
-       ("kservice" ,kservice)
-       ("ktextwidgets" ,ktextwidgets)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kxmlgui" ,kxmlgui)
-       ("libsndfile" ,libsndfile)
-       ("openal" ,openal)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)
-       ("qtsvg" ,qtsvg)))
+     (list karchive
+           kbookmarks
+           kcodecs
+           kcompletion
+           kconfigwidgets
+           kcrash
+           kdbusaddons
+           kdeclarative
+           kdnssd
+           kglobalaccel
+           kguiaddons
+           ki18n
+           kiconthemes
+           ;("kio" ,kio)
+           kitemviews
+           kjobwidgets
+           knewstuff
+           kservice
+           ktextwidgets
+           kwidgetsaddons
+           kxmlgui
+           libsndfile
+           openal
+           qtbase-5
+           qtdeclarative
+           qtsvg))
     (home-page "https://games.kde.org/")
     (synopsis "Runtime library for kdegames")
     (description "Runtime library for kdegames")
@@ -1014,32 +985,31 @@ Python, PHP, and Perl.")
              "-DBUILD_TOUCH=YES"
              "-DBUILD_MARBLE_TESTS=FALSE")))
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("qttools" ,qttools)))
+     (list extra-cmake-modules qttools))
     ;; One optional dependency missing: libwlocate.
     (inputs
-     `(("gpsd" ,gpsd)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kcrash" ,kcrash)
-       ("kdoctools" ,kdoctools)
-       ("ki18n" ,ki18n)
-       ("kio" ,kio)
-       ("knewstuff" ,knewstuff)
-       ("kparts" ,kparts)
-       ("krunner" ,krunner)
-       ("kwallet" ,kwallet)
-       ("perl" ,perl)
-       ("phonon" ,phonon)
-       ("protobuf" ,protobuf)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)
-       ("qtlocation" ,qtlocation)
-       ("qtserialport" ,qtserialport)
-       ("qtsvg" ,qtsvg)
-       ;; ("qtwebengine" ,qtwebengine) ; FIXME: not found by CMake
-       ("shapelib" ,shapelib)
-       ("shared-mime-info" ,shared-mime-info)
-       ("zlib" ,zlib)))
+     (list gpsd
+           kcoreaddons
+           kcrash
+           kdoctools
+           ki18n
+           kio
+           knewstuff
+           kparts
+           krunner
+           kwallet
+           perl
+           phonon
+           protobuf
+           qtbase-5
+           qtdeclarative
+           qtlocation
+           qtserialport
+           qtsvg
+           ;; ("qtwebengine" ,qtwebengine) ; FIXME: not found by CMake
+           shapelib
+           shared-mime-info
+           zlib))
     (home-page "https://marble.kde.org/")
     (synopsis "Virtual globe and world atlas")
     (description "Marble is similar to a desktop globe.  At closer scale it
@@ -1068,46 +1038,44 @@ creating routes by drag and drop and more.")
        #:configure-flags
        (list "-DBUILD_TESTING=OFF")))
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)
-       ("pkg-config" ,pkg-config)))
+     (list extra-cmake-modules kdoctools pkg-config))
     (inputs
-     `(("ebook-tools" ,ebook-tools)
-       ("breeze-icons" ,breeze-icons)
-       ("discount" ,discount)
-       ("djvulibre" ,djvulibre)
-       ("kactivities" ,kactivities)
-       ("khtml" ,khtml)
-       ("chmlib" ,chmlib)
-       ("kdegraphics-mobipocket" ,kdegraphics-mobipocket)
-       ("karchive" ,karchive)
-       ("kbookmarks" ,kbookmarks)
-       ("kcompletion" ,kcompletion)
-       ("kconfig" ,kconfig)
-       ("qtbase" ,qtbase-5)
-       ("libjpeg-turbo" ,libjpeg-turbo)
-       ("libtiff" ,libtiff)
-       ("kirigami" ,kirigami)
-       ("purpose" ,purpose)
-       ("freetype" ,freetype)
-       ("kiconthemes" ,kiconthemes)
-       ("kio" ,kio)
-       ("kparts" ,kparts)
-       ("kpty" ,kpty)
-       ("qtspeech" ,qtspeech)
-       ("kwallet" ,kwallet)
-       ("kwindowsystem" ,kwindowsystem)
-       ("libkexiv2" ,libkexiv2)
-       ("libspectre" ,libspectre)
-       ("libzip" ,libzip)
-       ("phonon" ,phonon)
-       ("poppler-qt5" ,poppler-qt5)
-       ("qca" ,qca)
-       ("qtdeclarative" ,qtdeclarative)
-       ("qtsvg" ,qtsvg)
-       ("threadweaver" ,threadweaver)
-       ("kcrash" ,kcrash)
-       ("kjs" ,kjs)))
+     (list ebook-tools
+           breeze-icons
+           discount
+           djvulibre
+           kactivities
+           khtml
+           chmlib
+           kdegraphics-mobipocket
+           karchive
+           kbookmarks
+           kcompletion
+           kconfig
+           qtbase-5
+           libjpeg-turbo
+           libtiff
+           kirigami
+           purpose
+           freetype
+           kiconthemes
+           kio
+           kparts
+           kpty
+           qtspeech
+           kwallet
+           kwindowsystem
+           libkexiv2
+           libspectre
+           libzip
+           phonon
+           poppler-qt5
+           qca
+           qtdeclarative
+           qtsvg
+           threadweaver
+           kcrash
+           kjs))
     (home-page "https://kde.org/applications/graphics/okular/")
     (synopsis "Document viewer")
     (description
@@ -1129,8 +1097,7 @@ a variety of formats, including PDF, PostScript, DejaVu, and EPub.")
                 "1smjvblx0jcv3afs2sr4qcmvhqd44iw24hvr9fppa3nxhrmjwmlk"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules kdoctools))
     (inputs
      `(("gettext" ,gettext-minimal)
        ("qtbase" ,qtbase-5)))
@@ -1155,10 +1122,9 @@ PO template files.")
         (base32 "0fm880lp9g60zgrkjyh4jxws6x0s77l9ia4f8pza3w8sxcbbswk5"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     (list extra-cmake-modules))
     (inputs
-     `(("kio" ,kio)
-       ("qtbase" ,qtbase-5)))
+     (list kio qtbase-5))
     (home-page "https://apps.kde.org/en/kdegraphics_mobipocket")
     (synopsis "KDE thumbnailer for Mobipocket files")
     (description "This package provides a KDE plugin that shows thumbnails of
@@ -1178,10 +1144,9 @@ Mobipocket e-books in Dolphin and other KDE apps.")
         (base32 "0k0iinf7s8qlk3fwvq7iic1b4zn2gm65rfd58q7d3wb1i1j2hjjk"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     (list extra-cmake-modules))
     (inputs
-     `(("exiv2" ,exiv2)
-       ("qtbase" ,qtbase-5)))
+     (list exiv2 qtbase-5))
     (home-page "https://invent.kde.org/graphics/libkexiv2")
     (synopsis "Manipulate the metadata of images")
     (description "Libkexiv2 wraps the Exiv2 library, allowing to manipulate
@@ -1201,13 +1166,9 @@ picture metadata as EXIF/IPTC and XMP.")
         (base32 "1qck5jyc4psslpibhki8sz8aj0hsnx8z791vzyn10lmdzn71vx8c"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     (list extra-cmake-modules))
     (inputs
-     `(("kdbusaddons" ,kdbusaddons)
-       ("kdnssd" ,kdnssd)
-       ("ki18n" ,ki18n)
-       ("kio" ,kio)
-       ("qtbase" ,qtbase-5)))
+     (list kdbusaddons kdnssd ki18n kio qtbase-5))
     (home-page "https://kde.org/applications/internet/org.kde.zeroconf_ioslave")
     (synopsis "DNS-SD Service Discovery Monitor")
     (description "Adds an entry to Dolphin's Network page to show local
@@ -1232,20 +1193,17 @@ or Bonjour by other projects).")
         (base32 "1dwx9fscnfp3zsxdir774skn8xvad2dvscnaaw3ji6mrnkmm6bss"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("qttools" ,qttools)
-       ;; For optional component "Survey target expression parser"
-       ("bison" ,bison)
-       ("flex" ,flex)
-       ;; For syntax checking and unit tests of PHP server code
-       ;;("php" ,php)
-       ;;("phpunit" ,phpunit)
-       ))
+     (list extra-cmake-modules
+           qttools
+           ;; For optional component "Survey target expression parser"
+           bison
+           flex
+           ;; For syntax checking and unit tests of PHP server code
+           ;;("php" ,php)
+           ;;("phpunit" ,phpunit)
+           ))
     (inputs
-     `(("qtbase" ,qtbase-5)
-       ("qtcharts" ,qtcharts)
-       ("qtdeclarative" ,qtdeclarative)
-       ("qtsvg" ,qtsvg)))
+     (list qtbase-5 qtcharts qtdeclarative qtsvg))
     (arguments
      `(#:tests? #f))  ;; 4/17 fail
     (home-page "https://api.kde.org/frameworks/kuserfeedback/html/")

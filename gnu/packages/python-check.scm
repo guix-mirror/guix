@@ -80,8 +80,7 @@ data in a standard way.")
         (base32 "1rcv4m850rl7djzdgzz2zhjd8g5ih8w6l0sj2f9hsynymlsq82xl"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-click" ,python-click)
-       ("python-pytest" ,python-pytest)))
+     (list python-click python-pytest))
     (home-page "https://github.com/Stranger6667/pytest-click")
     (synopsis "Py.test plugin for Click")
     (description "This package provides a plugin to test Python click
@@ -112,12 +111,9 @@ interfaces with pytest.")
                (add-installed-pythonpath inputs outputs)
                (invoke "pytest")))))))
     (native-inputs
-     `(("python-pytest-flake8" ,python-pytest-flake8)
-       ("python-pytest-xdist" ,python-pytest-xdist-next)
-       ("python-tabulate" ,python-tabulate)))
+     (list python-pytest-flake8 python-pytest-xdist-next python-tabulate))
     (propagated-inputs
-     `(("python-pytest" ,python-pytest-6)
-       ("python-six" ,python-six)))
+     (list python-pytest-6 python-six))
     (home-page "https://github.com/nicoulaj/pytest-csv")
     (synopsis "CSV reporter for Pytest")
     (description "This package provides a plugin for Pytest that enables a
@@ -139,11 +135,9 @@ it adds to the Pytest command line interface (CLI).")
     (arguments
      `(#:tests? #f))          ; PyTest-Django fails to build in master
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)
-       ;;("python-pytest-django" ,python-pytest-django)
-       ("python-twine" ,python-twine)
-       ("python-wheel" ,python-wheel)))
+     (list python-pytest python-pytest-cov
+           ;;("python-pytest-django" ,python-pytest-django)
+           python-twine python-wheel))
     (synopsis "Tests components for Python")
     (description "Testfixtures is a collection of helpers and mock objects that
 are useful when writing automated tests in Python.")
@@ -177,14 +171,9 @@ are useful when writing automated tests in Python.")
                           (invoke "pytest" "-vv")
                           (format #t "test suite not run~%")))))))
     (propagated-inputs
-     `(("python-coverage" ,python-coverage)
-       ("python-docopt" ,python-docopt)
-       ("python-pyyaml" ,python-pyyaml)
-       ("python-requests" ,python-requests)))
+     (list python-coverage python-docopt python-pyyaml python-requests))
     (native-inputs
-     `(("python-mock" ,python-mock)
-       ("python-pytest" ,python-pytest)
-       ("python-responses" ,python-responses)))
+     (list python-mock python-pytest python-responses))
     (synopsis "Show coverage stats online via coveralls.io")
     (description
      "Coveralls.io is a service for publishing code coverage statistics online.
@@ -216,9 +205,9 @@ nosetests, etc...) in Python projects.")
                       (lambda _
                         (invoke "pytest" "-vv"))))))
       (native-inputs
-       `(("python-pytest" ,python-pytest)))
+       (list python-pytest))
       (propagated-inputs
-       `(("python-six" ,python-six)))
+       (list python-six))
       (synopsis "Create JUnit XML test results")
       (description
        "This package provides a Python module for creating JUnit XML test
@@ -249,23 +238,20 @@ result documents that can be read by tools such as Jenkins or Bamboo.")
                (delete-file "tests/unit/test_stubs.py")
                (invoke "pytest" "tests/unit")))))))
     (propagated-inputs
-     `(("python-pyyaml" ,python-pyyaml)
-       ("python-six" ,python-six)
-       ("python-wrapt" ,python-wrapt)
-       ("python-yarl" ,python-yarl)))
+     (list python-pyyaml python-six python-wrapt python-yarl))
     (native-inputs
-     `(("python-black" ,python-black)
-       ("python-coverage" ,python-coverage)
-       ("python-flake8" ,python-flake8)
-       ("python-flask" ,python-flask)
-       ("python-httplib2" ,python-httplib2)
-       ("python-ipaddress" ,python-ipaddress)
-       ("python-mock" ,python-mock)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)
-       ("python-pytest-httpbin" ,python-pytest-httpbin)
-       ("python-tox" ,python-tox)
-       ("python-urllib3" ,python-urllib3)))
+     (list python-black
+           python-coverage
+           python-flake8
+           python-flask
+           python-httplib2
+           python-ipaddress
+           python-mock
+           python-pytest
+           python-pytest-cov
+           python-pytest-httpbin
+           python-tox
+           python-urllib3))
     (home-page "https://github.com/kevin1024/vcrpy")
     (synopsis "Automatically mock your HTTP interactions")
     (description
@@ -316,7 +302,7 @@ interactions, which will update them to correspond to the new API.")
                      ;; argument passed to @code{pytest.main}.
                      "not test_run_marker_registered"))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://github.com/ftobia/pytest-ordering")
     (synopsis "Pytest plugin to run your tests in a specific order")
     (description
@@ -370,18 +356,16 @@ Astropy project, but is optimized for use with astropy-related projects.")
              (substitute* "setup.cfg"
                ((".*pytest-filter-subpackage.*") "")))))))
     (native-inputs
-     `(("python-attrs" ,python-attrs)
-       ("python-pytest-mock" ,python-pytest-mock)
-       ("python-setuptools-scm" ,python-setuptools-scm)))
+     (list python-attrs python-pytest-mock python-setuptools-scm))
     (propagated-inputs
-     `(("python-hypothesis" ,python-hypothesis)
-       ("python-pytest-arraydiff" ,python-pytest-arraydiff)
-       ("python-pytest-astropy-header" ,python-pytest-astropy-header)
-       ("python-pytest-cov" ,python-pytest-cov)
-       ("python-pytest-doctestplus" ,python-pytest-doctestplus)
-       ("python-pytest-filter-subpackage" ,python-pytest-filter-subpackage)
-       ("python-pytest-openfiles" ,python-pytest-openfiles)
-       ("python-pytest-remotedata" ,python-pytest-remotedata)))
+     (list python-hypothesis
+           python-pytest-arraydiff
+           python-pytest-astropy-header
+           python-pytest-cov
+           python-pytest-doctestplus
+           python-pytest-filter-subpackage
+           python-pytest-openfiles
+           python-pytest-remotedata))
     (home-page "https://github.com/astropy/pytest-astropy")
     (synopsis
      "Metapackage for all the testing machinery used by the Astropy Project")
@@ -406,8 +390,7 @@ astropy related packages.")
      ;; Disable tests to avoid the circular dependency problem.
      '(#:tests? #f))
     (propagated-inputs
-     `(("python-numpy" ,python-numpy)
-       ("python-six" ,python-six)))
+     (list python-numpy python-six))
     (home-page "https://github.com/astropy/pytest-arraydiff")
     (synopsis "Pytest plugin to help with comparing array output from tests")
     (description
@@ -436,7 +419,7 @@ are too large to conveniently hard-code them in the tests.")
              (add-installed-pythonpath inputs outputs)
              (invoke "pytest" "-vv"))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://github.com/astropy/pytest-doctestplus")
     (synopsis "Pytest plugin with advanced doctest features")
     (description
@@ -463,10 +446,8 @@ advanced doctest support and enables the testing of reStructuredText files.")
              (when tests?
                (invoke "pytest" "tests")))))))
     (propagated-inputs
-     `(("python-ipython" ,python-ipython)
-       ("python-py" ,python-py)
-       ("python-pytest" ,python-pytest)))
-    (native-inputs `(("python-pytest" ,python-pytest)))
+     (list python-ipython python-py python-pytest))
+    (native-inputs (list python-pytest))
     (home-page "https://github.com/nokia/pytest-exploratory")
     (synopsis "Interactive console for Pytest")
     (description "This Pytest plugin provides an IPython extension that allows
@@ -496,10 +477,7 @@ for interactively selecting and running Pytest tests.")
              (add-installed-pythonpath inputs outputs)
              (invoke "pytest" "-vv" "-k" "not test_with_rst"))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)
-       ("python-pytest-doctestplus"
-        ,python-pytest-doctestplus)))
+     (list python-pytest python-pytest-cov python-pytest-doctestplus))
     (home-page "https://github.com/astropy/pytest-filter-subpackage")
     (synopsis "Pytest plugin for filtering based on sub-packages")
     (description
@@ -529,11 +507,8 @@ sub-package.")
              (add-installed-pythonpath inputs outputs)
              (invoke "pytest" "-vv"))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-setuptools" ,python-setuptools) ; needs setuptools >= 50.3.2
-       ("python-setuptools-scm" ,python-setuptools-scm)
-       ("python-setuptools-declarative-requirements"
-        ,python-setuptools-declarative-requirements)))
+     (list python-pytest python-setuptools ; needs setuptools >= 50.3.2
+           python-setuptools-scm python-setuptools-declarative-requirements))
     (home-page "https://github.com/saltstack/pytest-helpers-namespace")
     (synopsis "Pytest Helpers Namespace Plugin")
     (description "Pytest Helpers Namespace Plugin provides a helpers pytest
@@ -561,10 +536,9 @@ someone to import them in their actual tests to use them.")
              (add-installed-pythonpath inputs outputs)
              (invoke "pytest" "-vv"))))))
     (native-inputs
-     `(("python-setuptools-scm" ,python-setuptools-scm)
-       ("python-pytest" ,python-pytest)))
+     (list python-setuptools-scm python-pytest))
     (propagated-inputs
-     `(("python-psutil" ,python-psutil)))
+     (list python-psutil))
     (home-page "https://github.com/astropy/pytest-openfiles")
     (synopsis "Pytest plugin for detecting inadvertent open file handles")
     (description
@@ -597,9 +571,9 @@ were inadvertently left open at the end of a unit test.")
                       "not test_default_behavior"
                       " and not test_strict_with_decorator")))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (propagated-inputs
-     `(("python-six" ,python-six)))
+     (list python-six))
     (home-page "https://github.com/astropy/pytest-remotedata")
     (synopsis "Pytest plugin for controlling remote data access")
     (description
@@ -627,9 +601,9 @@ internet.")
              (when tests?
                (invoke "pytest")))))))
     (propagated-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (native-inputs
-     `(("python-setuptools-scm" ,python-setuptools-scm)))
+     (list python-setuptools-scm))
     (home-page "https://github.com/pytest-dev/pytest-repeat")
     (synopsis "Pytest plugin for repeating tests")
     (description "@code{pytest-repeat} is a plugin for Pytest that makes it
@@ -660,8 +634,7 @@ times.")
              (when tests?
                (invoke "python" "-m" "pytest" "-vv")))))))
     (propagated-inputs
-     `(("python-mockito" ,python-mockito)
-       ("python-pytest" ,python-pytest)))
+     (list python-mockito python-pytest))
     (home-page "https://github.com/kaste/pytest-mockito")
     (synopsis "Mockito base fixtures for Pytest")
     (description "The @code{pytest-mockito} plugin provides base Mockito
@@ -695,11 +668,9 @@ framework and makes it easy to undo any monkey patching.  The fixtures are:
            (lambda _
              (invoke "pytest" "-vv"))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (propagated-inputs
-     `(("python-matplotlib" ,python-matplotlib)
-       ("python-nose" ,python-nose)
-       ("python-pillow" ,python-pillow)))
+     (list python-matplotlib python-nose python-pillow))
     (home-page "https://github.com/matplotlib/pytest-mpl")
     (synopsis "Pytest plugin to help with testing figures output from Matplotlib")
     (description
@@ -729,8 +700,7 @@ in Pytest.")
            (lambda _
              (invoke "pytest" "-vv"))))))
     (native-inputs
-     `(("python-coverage" ,python-coverage)
-       ("python-pytest" ,python-pytest)))
+     (list python-coverage python-pytest))
     (home-page "https://github.com/asottile/covdefaults")
     (synopsis "Coverage plugin to provide opinionated default settings")
     (description
@@ -764,8 +734,7 @@ in Pytest.")
                (add-installed-pythonpath inputs outputs)
                (invoke "pytest" "tests/"))))))
       (propagated-inputs
-       `(("python-pytest" ,python-pytest)
-         ("python-vcrpy" ,python-vcrpy)))
+       (list python-pytest python-vcrpy))
       (home-page "https://github.com/ktosiek/pytest-vcr")
       (synopsis "Plugin for managing VCR.py cassettes")
       (description
@@ -784,12 +753,9 @@ in Pytest.")
         (base32 "0m4kn7141i6k8qr8ak3lbmk9vim11xsrlnrggcfwczfrglc6jmia"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-docutils" ,python-docutils)
-       ("python-importlib-metadata" ,python-importlib-metadata)
-       ("python-more-itertools" ,python-more-itertools)))
+     (list python-docutils python-importlib-metadata python-more-itertools))
     (native-inputs
-     `(("python-setuptools-scm" ,python-setuptools-scm)
-       ("python-pytest" ,python-pytest)))
+     (list python-setuptools-scm python-pytest))
     (home-page "https://github.com/jaraco/pytest-checkdocs")
     (synopsis "Check the README when running tests")
     (description
@@ -819,11 +785,9 @@ of the project to ensure it renders properly.")
            (lambda _
              (invoke "pytest" "-vv"))))))
     (native-inputs
-     `(("python-covdefaults" ,python-covdefaults)
-       ("python-coverage" ,python-coverage)
-       ("python-pytest" ,python-pytest)))
+     (list python-covdefaults python-coverage python-pytest))
     (propagated-inputs
-     `(("python-regex" ,python-regex)))
+     (list python-regex))
     (home-page "https://github.com/asottile/re-assert")
     (synopsis "Show where your regex match assertion failed")
     (description
@@ -858,9 +822,7 @@ simpler.")
                          ;; No keyboard interrupt in our build environment.
                          " and not test_actual_test"))))))))
     (native-inputs
-     `(("python-hypothesis" ,python-hypothesis)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)))
+     (list python-hypothesis python-pytest python-pytest-cov))
     (propagated-inputs
       (list python-async-generator python-outcome python-pytest python-trio))
     (home-page "https://github.com/python-trio/pytest-trio")
@@ -884,9 +846,9 @@ friendly library for concurrency and async I/O in Python.")
          "0syx68xk5ss3hgp3nr2y122w0fgkzr5936ghsqrkymh3m5hrf9gh"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-flake8" ,python-flake8)))
+     (list python-flake8))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://github.com/tholo/pytest-flake8")
     (synopsis "Pytest plugin to check FLAKE8 requirements")
     (description
@@ -913,10 +875,9 @@ compliance.")
              (when tests?
                (invoke "pytest")))))))
     (propagated-inputs
-     `(("python-isort" ,python-isort)
-       ("python-pytest" ,python-pytest)))
+     (list python-isort python-pytest))
     (native-inputs
-     `(("python-mock" ,python-mock)))
+     (list python-mock))
     (home-page "https://github.com/moccu/pytest-isort/")
     (synopsis "Pytest plugin to check import ordering using isort")
     (description
@@ -949,14 +910,10 @@ isort.")
                 "bindir = os.path.realpath('/tmp/bin')"))
              #t)))))
     (propagated-inputs
-     `(("python-contextlib2" ,python-contextlib2)
-       ("python-execnet" ,python-execnet)
-       ("python-pathpy" ,python-pathpy)
-       ("python-termcolor" ,python-termcolor)))
+     (list python-contextlib2 python-execnet python-pathpy
+           python-termcolor))
     (native-inputs
-     `(("python-mock" ,python-mock)
-       ("python-pytest" ,python-pytest)
-       ("python-setuptools-git" ,python-setuptools-git)))
+     (list python-mock python-pytest python-setuptools-git))
     (home-page "https://github.com/manahl/pytest-plugins")
     (synopsis "Assorted shell and environment tools for py.test")
     (description
@@ -977,8 +934,7 @@ py.test testing framework.")
          "13i1qpz22w3x4dmw8vih5jdnbqfqvl7jiqs0dg764s0zf8bp98a1"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-setuptools-git" ,python-setuptools-git)))
+     (list python-pytest python-setuptools-git))
     (home-page "https://github.com/manahl/pytest-plugins")
     (synopsis "Fixture configuration utils for py.test")
     (description
@@ -1015,14 +971,11 @@ testing framework.")
                           virtualenv-bin)))
                #t))))))
     (propagated-inputs
-     `(("python-pytest-shutil" ,python-pytest-shutil)
-       ("python-pytest-fixture-config" ,python-pytest-fixture-config)))
+     (list python-pytest-shutil python-pytest-fixture-config))
     (inputs
-     `(("python-virtualenv" ,python-virtualenv)))
+     (list python-virtualenv))
     (native-inputs
-     `(("python-mock" ,python-mock)
-       ("python-pytest" ,python-pytest)
-       ("python-setuptools-git" ,python-setuptools-git)))
+     (list python-mock python-pytest python-setuptools-git))
     (home-page "https://github.com/manahl/pytest-plugins")
     (synopsis "Virtualenv fixture for py.test")
     (description "This package provides a virtualenv fixture for the py.test
@@ -1042,9 +995,9 @@ framework.")
          "02i5gl7pm9cwxk15sn29inz3n8flpj1r3p1l110h43f2na5w8h7z"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-pycodestyle" ,python-pycodestyle)))
+     (list python-pycodestyle))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://github.com/henry0312/pytest-pycodestyle")
     (synopsis "Pytest plugin to run pycodestyle")
     (description "This package provides a plugin to run @code{pycodestyle}
@@ -1064,10 +1017,9 @@ for the @code{pytest} framework.")
          "0a4mpb4j73dsyk47hd1prrjpfk4r458s102cn80rf253jg818hxd"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-py-cpuinfo" ,python-py-cpuinfo)))
+     (list python-py-cpuinfo))
     (native-inputs
-     `(("python-pathlib2" ,python-pathlib2)
-       ("python-pytest" ,python-pytest)))
+     (list python-pathlib2 python-pytest))
     (home-page "https://github.com/ionelmc/pytest-benchmark")
     (synopsis "Pytest fixture for benchmarking code")
     (description
@@ -1099,12 +1051,9 @@ rounds that are calibrated to the chosen timer.")
              (delete-file "tests/test_xvfb_windows.py")
              #t)))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-pytest-runner" ,python-pytest-runner)
-       ("xorg-server" ,xorg-server-for-tests)))
+     (list python-pytest python-pytest-runner xorg-server-for-tests))
     (propagated-inputs
-     `(("python-pyvirtualdisplay"
-        ,python-pyvirtualdisplay)))
+     (list python-pyvirtualdisplay))
     (home-page "https://github.com/The-Compiler/pytest-xvfb")
     (synopsis "Pytest plugin to run Xvfb for tests")
     (description
@@ -1125,10 +1074,9 @@ rounds that are calibrated to the chosen timer.")
     (build-system python-build-system)
     (arguments '(#:tests? #f)) ; Tests not included in release tarball.
     (propagated-inputs
-     `(("python-psutil" ,python-psutil)
-       ("python-requests" ,python-requests)))
+     (list python-psutil python-requests))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://github.com/pytest-dev/pytest-services")
     (synopsis "Services plugin for pytest testing framework")
     (description
@@ -1163,9 +1111,7 @@ service processes for your tests with pytest.")
                (add-installed-pythonpath inputs outputs)
                (invoke "pytest" "-vv")))))))
     (native-inputs
-     `(("python-pydantic" ,python-pydantic)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-isort" ,python-pytest-isort)))
+     (list python-pydantic python-pytest python-pytest-isort))
     (home-page "https://github.com/samuelcolvin/pytest-toolbox")
     (synopsis "Numerous useful plugins for Pytest")
     (description
@@ -1186,9 +1132,9 @@ new fixtures, new methods and new comparison objects.")
          "0kx4mbs9bflycd8x9af0idcjhdgnzri3nw1qb0vpfyb3751qaaf9"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (propagated-inputs
-     `(("python-aiohttp" ,python-aiohttp)))
+     (list python-aiohttp))
     (home-page "https://github.com/aio-libs/pytest-aiohttp/")
     (synopsis "Pytest plugin for aiohttp support")
     (description "This package provides a pytest plugin for aiohttp support.")
@@ -1224,14 +1170,10 @@ new fixtures, new methods and new comparison objects.")
                      ;; https://github.com/computationalmodelling/nbval/pull/148.
                       " and not test_timeouts")))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)
-       ("python-sympy" ,python-sympy)))
+     (list python-pytest python-pytest-cov python-sympy))
     (propagated-inputs
-     `(("python-ipykernel" ,python-ipykernel)
-       ("python-jupyter-client" ,python-jupyter-client)
-       ("python-nbformat" ,python-nbformat)
-       ("python-six" ,python-six)))
+     (list python-ipykernel python-jupyter-client python-nbformat
+           python-six))
     (home-page "https://github.com/computationalmodelling/nbval")
     (synopsis "Pytest plugin to validate Jupyter notebooks")
     (description
@@ -1254,10 +1196,8 @@ also ensuring that the notebooks are running without errors.")
          "1hln7mwgdzfi5ma0kqfsi768l7p24jhkw8l0imhifwy08nh7hmjd"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-flask" ,python-flask)
-       ("python-pytest" ,python-pytest)
-       ("python-setuptools-scm" ,python-setuptools-scm)
-       ("python-werkzeug" ,python-werkzeug)))
+     (list python-flask python-pytest python-setuptools-scm
+           python-werkzeug))
     (home-page "https://github.com/pytest-dev/pytest-flask")
     (synopsis "Pytest fixtures to test Flask applications")
     (description
@@ -1287,10 +1227,9 @@ also ensuring that the notebooks are running without errors.")
                        ;; This one test fails because of PATH assumptions
                        "-k" "not test_elsewhere_in_the_path")))))))
     (propagated-inputs
-     `(("python-mock" ,python-mock)
-       ("python-pytest" ,python-pytest)))
+     (list python-mock python-pytest))
     (native-inputs
-     `(("python-setuptools-scm" ,python-setuptools-scm)))
+     (list python-setuptools-scm))
     (home-page "https://github.com/kvas-it/pytest-console-scripts")
     (synopsis "Pytest plugin for testing console scripts")
     (description
@@ -1319,8 +1258,7 @@ also ensuring that the notebooks are running without errors.")
                (add-installed-pythonpath inputs outputs)
                (invoke "pytest" "--verbose")))))))
     (propagated-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-tornado" ,python-tornado)))
+     (list python-pytest python-tornado))
     (home-page "https://github.com/eukaryote/pytest-tornasync")
     (synopsis "Pytest plugin for testing Tornado code")
     (description
@@ -1341,7 +1279,7 @@ plain (undecoratored) native coroutine tests.")
         (base32 "1hl0ln0cicdid4qjk7mv90lw9xkb0v71dlj7q7rn89vzxxm9b53y"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://github.com/MobileDynasty/pytest-env")
     (synopsis "Pytest plugin that allows you to add environment variables")
     (description
@@ -1389,11 +1327,9 @@ libraries.")
              (setenv "QT_QPA_PLATFORM" "offscreen")
              #t)))))
     (propagated-inputs
-     `(("python-pyqt" ,python-pyqt)))
+     (list python-pyqt))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-pytest-runner" ,python-pytest-runner)
-       ("python-setuptools-scm" ,python-setuptools-scm)))
+     (list python-pytest python-pytest-runner python-setuptools-scm))
     (home-page "https://github.com/pytest-dev/pytest-qt")
     (synopsis "Pytest support for PyQt and PySide applications")
     (description
@@ -1420,8 +1356,7 @@ interaction, like key presses and mouse clicks.")
     (arguments
      `(#:tests? #f)); no tests
     (propagated-inputs
-     `(("python-check-manifest" ,python-check-manifest)
-       ("python-requests" ,python-requests)))
+     (list python-check-manifest python-requests))
     (home-page "https://github.com/codacy/python-codacy-coverage")
     (synopsis "Codacy coverage reporter for Python")
     (description "This package analyses Python test suites and reports how much
@@ -1444,7 +1379,7 @@ analysing code quality.")
     (arguments
      `(#:tests? #f)); no tests
     (propagated-inputs
-     `(("python-requests" ,python-requests)))
+     (list python-requests))
     (home-page "https://github.com/patrys/httmock")
     (synopsis "Mocking library for requests.")
     (description "This package provides a library for replying fake data to
@@ -1474,7 +1409,7 @@ Python software under test, when they make an HTTP query.")
            (lambda _
              (invoke "python" "-m" "nose2" "-v"))))))
     (native-inputs
-     `(("python-nose2" ,python-nose2)))
+     (list python-nose2))
     (home-page "https://public.readthedocs.io/")
     (synopsis "@code{@@public} decorator for populating @code{__all__}")
     (description
@@ -1508,8 +1443,7 @@ the implementation of that name.")
              (when tests?
                (invoke "pytest")))))))
     (native-inputs
-     `(("python-numpy" ,python-numpy)
-       ("python-pytest" ,python-pytest)))
+     (list python-numpy python-pytest))
     (home-page "https://github.com/kaste/mockito-python")
     (synopsis "Mocking library for Python")
     (description "This package provides a Python implementation of the Java
@@ -1567,23 +1501,21 @@ supported by the MyPy typechecker.")
              (when tests?
                (invoke "pytest" "mypyc")))))))
     (native-inputs
-     `(("python-attrs" ,python-attrs)
-       ("python-flake8" ,python-flake8)
-       ("python-flake8-bugbear" ,python-flake8-bugbear)
-       ("python-flake8-pyi" ,python-flake8-pyi)
-       ("python-importlib-metadata" ,python-importlib-metadata)
-       ("python-lxml" ,python-lxml)
-       ("python-psutil" ,python-psutil)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)
-       ("python-pytest-forked" ,python-pytest-forked)
-       ("python-pytest-xdist" ,python-pytest-xdist)
-       ("python-virtualenv" ,python-virtualenv)))
+     (list python-attrs
+           python-flake8
+           python-flake8-bugbear
+           python-flake8-pyi
+           python-importlib-metadata
+           python-lxml
+           python-psutil
+           python-pytest
+           python-pytest-cov
+           python-pytest-forked
+           python-pytest-xdist
+           python-virtualenv))
     (propagated-inputs
-     `(("python-mypy-extensions" ,python-mypy-extensions)
-       ("python-toml" ,python-toml)
-       ("python-typing-extensions" ,python-typing-extensions)
-       ("python-typed-ast" ,python-typed-ast)))
+     (list python-mypy-extensions python-toml python-typing-extensions
+           python-typed-ast))
     (home-page "http://www.mypy-lang.org/")
     (synopsis "Static type checker for Python")
     (description "Mypy is an optional static type checker for Python that aims
@@ -1634,9 +1566,7 @@ any Python VM with basically no runtime overhead.")
                       ;; https://github.com/PyCQA/astroid/issues/881).
                       (delete-file "pylama/lint/pylama_pylint.py"))))))
     (native-inputs
-     `(("python-py" ,python-py)
-       ("python-pytest" ,python-pytest)
-       ("python-radon" ,python-radon)))
+     (list python-py python-pytest python-radon))
     (propagated-inputs
      `(("python-mccabe" ,python-mccabe)
        ("python-mypy", python-mypy-minimal)
@@ -1664,8 +1594,7 @@ McCabe, among others.")
          "16bm0mf7wxvy0lgmcs1p8n1ji8pnvj1jvj8zk3am70dkp825iv84"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-mypy-extensions" ,python-mypy-extensions)
-       ("python-six" ,python-six)))
+     (list python-mypy-extensions python-six))
     (home-page
      "https://github.com/dropbox/pyannotate")
     (synopsis "Auto-generate PEP-484 annotations")
@@ -1708,8 +1637,7 @@ valid Python syntax that are likely to be commented out code.")
     ;; Reported upstream: <https://github.com/vesln/robber.py/issues/20>.
     (arguments '(#:tests? #f))
     (propagated-inputs
-     `(("python-mock" ,python-mock)
-       ("python-termcolor" ,python-termcolor)))
+     (list python-mock python-termcolor))
     ;; URL of the fork used to generate the package available on PyPI.
     (home-page "https://github.com/EastAgile/robber.py")
     (synopsis "Test-driven development (TDD) assertion library for Python")
@@ -1732,15 +1660,15 @@ behavior-driven development (TDD and BDD).")
     (arguments
      `(#:tests? #f))                    ;to avoid circular dependencies
     (native-inputs
-     `(("python-pbr" ,python-pbr)))
+     (list python-pbr))
     (propagated-inputs
-     `(("python-cliff" ,python-cliff)
-       ("python-fixtures" ,python-fixtures)
-       ("python-future" ,python-future)
-       ("python-pyyaml" ,python-pyyaml)
-       ("python-subunit" ,python-subunit)
-       ("python-testtools" ,python-testtools)
-       ("python-voluptuous" ,python-voluptuous)))
+     (list python-cliff
+           python-fixtures
+           python-future
+           python-pyyaml
+           python-subunit
+           python-testtools
+           python-voluptuous))
     (home-page "https://stestr.readthedocs.io/en/latest/")
     (synopsis "Parallel Python test runner")
     (description "This package provides the @command{stestr} command, a
@@ -1766,11 +1694,8 @@ help in debugging failures and optimizing the scheduler to improve speed.")
      ;; Tests depend on python-sanic.
      `(#:tests? #f))
     (propagated-inputs
-      `(("python-httpx" ,python-httpx)
-        ("python-async-generator"
-         ,python-async-generator)
-        ("python-pytest" ,python-pytest)
-        ("python-websockets" ,python-websockets)))
+      (list python-httpx python-async-generator python-pytest
+            python-websockets))
     (home-page
       "https://github.com/yunstanford/pytest-sanic")
     (synopsis "Pytest plugin for Sanic")
@@ -1790,8 +1715,7 @@ code asynchronously.")
         (base32 "1c987h13dly9919d15w3h747rgn50ilnv7dginhlprxbj564hn4k"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-pytest-runner" ,python-pytest-runner)))
+     (list python-pytest python-pytest-runner))
     (home-page "https://github.com/thombashi/allpairspy")
     (synopsis "Pairwise test combinations generator")
     (description
@@ -1816,8 +1740,7 @@ most situations.")
         (base32 "01v98b6n3yvkfmxf2v38xk5ijqlk6ika0yljwkhl5bh6qhq23498"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-psutil" ,python-psutil)))
+     (list python-pytest python-psutil))
     (arguments
      ;; tests require setuptools-markdown, which is deprecated and not in guix
      '(#:tests? #f
@@ -1862,11 +1785,9 @@ tests at one time.")
                  "not test_address_as_instance_of_url_combined_with_pass_through "
                  "and not test_pass_through_with_origin_params"))))))))
     (native-inputs
-     `(("python-pbr" ,python-pbr)
-       ("python-ddt" ,python-ddt)
-       ("python-pytest" ,python-pytest)))
+     (list python-pbr python-ddt python-pytest))
     (propagated-inputs
-     `(("python-aiohttp" ,python-aiohttp)))
+     (list python-aiohttp))
     (home-page "https://github.com/pnuckowski/aioresponses")
     (synopsis "Mock out requests made by ClientSession from aiohttp package")
     (description

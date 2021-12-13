@@ -80,14 +80,8 @@
               (base32
                "0nmlyqhc52v24b4awh914sczmvxbazgq2cnlycvb9dgcwvhlgfn7"))))
    (build-system gnu-build-system)
-   (inputs `(("bdb" ,bdb-5.3)
-             ("cyrus-sasl" ,cyrus-sasl)
-             ("gnutls" ,gnutls)
-             ("libgcrypt" ,libgcrypt)
-             ("zlib" ,zlib)))
-   (native-inputs `(("libtool" ,libtool)
-                    ("groff" ,groff)
-                    ("bdb" ,bdb-5.3)))
+   (inputs (list bdb-5.3 cyrus-sasl gnutls libgcrypt zlib))
+   (native-inputs (list libtool groff bdb-5.3))
    (arguments
     `(#:tests? #f
       #:configure-flags
@@ -159,10 +153,7 @@
                 (string-append (assoc-ref outputs "out")
                                "/etc/nslcd.conf.example"))))))))
     (inputs
-     `(("linux-pam" ,linux-pam)
-       ("openldap" ,openldap)
-       ("mit-krb5" ,mit-krb5)
-       ("python" ,python)))
+     (list linux-pam openldap mit-krb5 python))
     (home-page "https://arthurdejong.org/nss-pam-ldapd")
     (synopsis "NSS and PAM modules for LDAP")
     (description "nss-pam-ldapd provides a @dfn{Name Service Switch} (NSS)
@@ -199,12 +190,9 @@ an LDAP server.")
                                       "/etc/openldap/schema/")))
              #t)))))
     (inputs
-     `(("openldap" ,openldap)
-       ("cyrus-sasl" ,cyrus-sasl)
-       ("mit-krb5" ,mit-krb5)))
+     (list openldap cyrus-sasl mit-krb5))
     (propagated-inputs
-     `(("python-pyasn1" ,python-pyasn1)
-       ("python-pyasn1-modules" ,python-pyasn1-modules)))
+     (list python-pyasn1 python-pyasn1-modules))
     (home-page "https://www.python-ldap.org/")
     (synopsis "Python modules for implementing LDAP clients")
     (description
@@ -396,9 +384,7 @@ Other features include:
          "013bl6h1m3f7vg1lk89d4vi28wbf31zdcs4f9g8css7ngx63v6px"))))
     (build-system python-build-system)
     (inputs
-     `(("mit-krb5" ,mit-krb5)
-       ("cyrus-sasl" ,cyrus-sasl)
-       ("openldap" ,openldap)))
+     (list mit-krb5 cyrus-sasl openldap))
     ;; disabling tests, since they require docker and extensive setup
     (arguments `(#:tests? #f))
     (home-page "https://github.com/noirello/bonsai")

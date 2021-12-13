@@ -93,7 +93,7 @@
                 (assoc-ref outputs "out")))
              #t)))))
     (inputs
-     `(("perl" ,perl)))
+     (list perl))
     (synopsis "LaTeX documents to HTML")
     (description "LaTeX2HTML is a utility that converts LaTeX documents to web
 pages in HTML.")
@@ -160,13 +160,9 @@ release/xsl/current")
                                          "/xml/dtd/docbook/docbookx.dtd")))
                        #t)))))
     (native-inputs
-     `(("autoconf" ,autoconf)))
+     (list autoconf))
     (inputs
-     `(("python" ,python)
-       ("docbook-xml" ,docbook-xml)
-       ("docbook-xsl" ,docbook-xsl)
-       ("libxml2" ,libxml2)
-       ("libxslt" ,libxslt)))
+     (list python docbook-xml docbook-xsl libxml2 libxslt))
     (home-page "https://asciidoc.org/")
     (synopsis "Text-based document generation system")
     (description
@@ -199,10 +195,8 @@ markup) can be customized and extended by the user.")
                "1lcif1qi20gf04qyjrx7x367669g17vz2ilgi4cmamp1whdsxbk7"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("bison" ,bison)
-       ("flex" ,flex)
-       ("libxml2" ,libxml2)             ;provides xmllint for the tests
-       ("python" ,python)))             ;for creating the documentation
+     (list bison flex libxml2 ;provides xmllint for the tests
+           python))             ;for creating the documentation
     (inputs
      `(("bash" ,bash-minimal)))
     (arguments
@@ -281,13 +275,11 @@ or Java class files.")
                             (assoc-ref %build-inputs "docbook-xml")
                             "/xml/dtd/docbook/catalog.xml"))))
     (inputs
-     `(("perl" ,perl)
-       ("libxml2" ,libxml2)
-       ("libxslt" ,libxslt)
-       ;; The configure script checks for either version 4.2 or 4.1.2.
-       ("docbook-xml" ,docbook-xml-4.2)))
+     (list perl libxml2 libxslt
+           ;; The configure script checks for either version 4.2 or 4.1.2.
+           docbook-xml-4.2))
     (native-inputs
-     `(("intltool" ,intltool)))
+     (list intltool))
     (home-page "http://scrollkeeper.sourceforge.net/")
     (synopsis "Open Documentation Cataloging Project")
     (description "ScrollKeeper is a cataloging system for documentation on open
@@ -329,8 +321,7 @@ local system.")
                    `("QTWEBENGINEPROCESS_PATH" = (,qt-process-path)))
                  #t))))))
       (native-inputs
-       `(("extra-cmake-modules" ,extra-cmake-modules)
-         ("pkg-config" ,pkg-config)))
+       (list extra-cmake-modules pkg-config))
       (inputs
        `(("libarchive" ,libarchive)
          ("sqlite" ,sqlite)

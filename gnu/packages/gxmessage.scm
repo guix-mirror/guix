@@ -48,10 +48,9 @@
                (("gtk-update-icon-cache") "true"))
              #t)))))
     (inputs
-     `(("gtk+" ,gtk+)))
+     (list gtk+))
     (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+     (list intltool pkg-config))
     (home-page "https://www.gnu.org/software/gxmessage/")
     (synopsis "Open popup message window with buttons for return")
     (description "GNU gxmessage is a program that pops up dialog windows, which display

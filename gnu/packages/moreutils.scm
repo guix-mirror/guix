@@ -43,14 +43,9 @@
     (build-system gnu-build-system)
     ;; For building the manual pages.
     (native-inputs
-     `(("docbook-xml" ,docbook-xml-4.4)
-       ("docbook-xsl" ,docbook-xsl)
-       ("libxml2" ,libxml2)
-       ("libxslt" ,libxslt)))
+     (list docbook-xml-4.4 docbook-xsl libxml2 libxslt))
     (inputs
-     `(("perl" ,perl)
-       ("perl-timedate" ,perl-timedate)
-       ("perl-time-duration" ,perl-time-duration)))
+     (list perl perl-timedate perl-time-duration))
     (arguments
      `(#:phases
        (modify-phases %standard-phases

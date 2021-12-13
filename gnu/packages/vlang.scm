@@ -102,7 +102,7 @@
               (copy-file "v.mod" vmod))
             #t)))))
    (inputs
-    `(("glib" ,glib)))
+    (list glib))
    (native-inputs
     `(("vc"
        ;; Versions are not consistently tagged, but the matching commit will

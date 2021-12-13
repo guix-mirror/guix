@@ -45,13 +45,13 @@
       (patches (search-patches "orpheus-cast-errors-and-includes.patch"))))
     (build-system gnu-build-system)
     (inputs
-     `(("ncurses" ,ncurses)
-       ("libvorbis" ,libvorbis)
-       ("vorbis-tools" ,vorbis-tools)
-       ("mpg321" ,mpg321)
-       ;; TODO: add ghttp
-       ("libxml2" ,libxml2)
-       ("which" ,which)))
+     (list ncurses
+           libvorbis
+           vorbis-tools
+           mpg321
+           ;; TODO: add ghttp
+           libxml2
+           which))
     (arguments
      `(#:phases
        (modify-phases %standard-phases

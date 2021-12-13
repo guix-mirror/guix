@@ -63,7 +63,7 @@
               (base32
                "0divffvcaim89g4pvqs8kslbcxi475bcl3b4ynphf284k9zfdgx9"))))
     (build-system gnu-build-system)
-    (native-inputs `(("lzip" ,lzip)))
+    (native-inputs (list lzip))
     (home-page "https://www.gnu.org/software/ocrad/")
     (synopsis "Optical character recognition based on feature extraction")
     (description
@@ -269,5 +269,5 @@ that allows us to create any hand-written recognition systems with low-cost.")
              (chdir "zinnia/python")
              #t)))))
     (inputs
-     `(("zinnia" ,zinnia)))))
+     (list zinnia))))
 

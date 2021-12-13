@@ -116,7 +116,7 @@ as \"x86_64-linux\"."
     (build-system cmake-build-system)
     (native-inputs (package-native-inputs llvm))
     (inputs
-     `(("llvm" ,llvm)))
+     (list llvm))
     (arguments
      `(;; Don't use '-g' during the build to save space.
        #:build-type "Release"
@@ -186,8 +186,7 @@ given PATCHES.  When TOOLS-EXTRA is given, it must point to the
              `(("clang-tools-extra" ,tools-extra))
              '())))
     (propagated-inputs
-     `(("llvm" ,llvm)
-       ("clang-runtime" ,clang-runtime)))
+     (list llvm clang-runtime))
     (arguments
      `(#:configure-flags
        (list "-DCLANG_INCLUDE_TESTS=True"
@@ -504,9 +503,9 @@ output), and Binutils.")
      `(("python" ,python-wrapper)
        ("perl"   ,perl)))
     (inputs
-     `(("libffi" ,libffi)))
+     (list libffi))
     (propagated-inputs
-     `(("zlib" ,zlib)))                 ;to use output from llvm-config
+     (list zlib))                 ;to use output from llvm-config
     (arguments
      ;; TODO(core-updates): Unconditionally use quasiquote
      `(#:configure-flags
@@ -984,9 +983,9 @@ of programming tools as well as libraries with equivalent functionality.")
     (native-inputs
      ;; Note: check <https://bugs.llvm.org/show_bug.cgi?id=49228> to see
      ;; whether this is still necessary.
-     `(("libunwind-headers" ,libunwind-headers)))
+     (list libunwind-headers))
     (inputs
-     `(("llvm" ,llvm-12)))
+     (list llvm-12))
     (arguments
      `(#:build-type "Release"
        ;; TODO: Tests require the lit tool, which isn't installed by the LLVM
@@ -1006,12 +1005,10 @@ points to 'lld'."
     (version "0")
     (source #f)
     (build-system trivial-build-system)
-    (inputs `(("ld.lld-wrapper" ,(make-ld-wrapper "ld.lld-wrapper"
-                                                  #:binutils lld
-                                                  #:linker "ld.lld"))
-              ("lld-wrapper" ,(make-ld-wrapper "lld-wrapper"
-                                               #:binutils lld
-                                               #:linker "lld"))))
+    (inputs (list (make-ld-wrapper "ld.lld-wrapper" #:binutils lld
+                                   #:linker "ld.lld")
+                  (make-ld-wrapper "lld-wrapper" #:binutils lld #:linker
+                                   "lld")))
     (arguments
      (list #:builder
            #~(let ((ld.lld (string-append #$(this-package-input
@@ -1054,8 +1051,7 @@ misuse of libraries outside of the store.")
     (arguments
      `(#:configure-flags '("-DCMAKE_CXX_COMPILER=clang++")))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("swig" ,swig)))
+     (list pkg-config swig))
     (inputs
      `(("clang" ,clang-12)
        ("llvm" ,llvm-12)
@@ -1104,8 +1100,7 @@ which highly leverage existing libraries in the larger LLVM project.")
                        (getenv "CPLUS_INCLUDE_PATH"))
                #t))))))
     (native-inputs
-     `(("clang" ,clang)
-       ("llvm" ,llvm)))
+     (list clang llvm))
     (home-page "https://libcxx.llvm.org")
     (synopsis "C++ standard library")
     (description
@@ -1126,8 +1121,7 @@ use with Clang, targeting C++11, C++14 and above.")
         (base32
          "0rzw4qvxp6qx4l4h9amrq02gp7hbg8lw4m0sy3k60f50234gnm3n"))))
     (native-inputs
-     `(("clang" ,clang-6)
-       ("llvm" ,llvm-6)))))
+     (list clang-6 llvm-6))))
 
 (define-public libcxxabi-6
   (package
@@ -1178,9 +1172,7 @@ use with Clang, targeting C++11, C++14 and above.")
                (install-file "../libcxxabi/include/__cxxabi_config.h" include-dir)
                (install-file "../libcxxabi/include/cxxabi.h" include-dir)))))))
     (native-inputs
-     `(("clang" ,clang-6)
-       ("llvm" ,llvm-6)
-       ("libcxx" ,libcxx-6)))
+     (list clang-6 llvm-6 libcxx-6))
     (home-page "https://libcxxabi.llvm.org")
     (synopsis "C++ standard library support")
     (description
@@ -1216,9 +1208,7 @@ standard C++ library.")
                        "environment variable `CPLUS_INCLUDE_PATH' changed to ~a~%"
                        (getenv "CPLUS_INCLUDE_PATH"))))))))
     (native-inputs
-     `(("clang" ,clang-6)
-       ("llvm" ,llvm-6)
-       ("libcxxabi" ,libcxxabi-6)))))
+     (list clang-6 llvm-6 libcxxabi-6))))
 
 (define-public libclc
   (package
@@ -1248,9 +1238,7 @@ standard C++ library.")
          (add-after 'unpack 'chdir
            (lambda _ (chdir "libclc") #t)))))
     (native-inputs
-     `(("clang" ,clang)
-       ("llvm" ,llvm)
-       ("python" ,python)))
+     (list clang llvm python))
     (home-page "https://libclc.llvm.org")
     (synopsis "Libraries for the OpenCL programming language")
     (description
@@ -1279,12 +1267,9 @@ requirements according to version 1.1 of the OpenCL specification.")
                            "-DOPENMP_TEST_CXX_COMPILER=clang++")
        #:test-target "check-libomp"))
     (native-inputs
-     `(("clang" ,clang)
-       ("llvm" ,llvm)
-       ("perl" ,perl)
-       ("pkg-config" ,pkg-config)))
+     (list clang llvm perl pkg-config))
     (inputs
-     `(("hwloc" ,hwloc "lib")))
+     (list `(,hwloc "lib")))
     (home-page "https://openmp.llvm.org")
     (synopsis "OpenMP run-time support library")
     (description
@@ -1337,63 +1322,110 @@ with that of libgomp, the GNU Offloading and Multi Processing Library.")
                (setenv "LDFLAGS" (string-append "-Wl,-rpath="
                                                 llvm "/lib"))))))))
     (inputs
-     `(("llvm"
-        ,(let* ((patches-commit "a4a19e8af2c5ef9b9901f20193e4be070726da97")
-                (patch-uri (lambda (name)
-                             (string-append
-                              "https://raw.githubusercontent.com/numba/"
-                              "llvmlite/" patches-commit "/conda-recipes/"
-                              name)))
-                (patch-origin (lambda (name hash)
-                                (origin
-                                  (method url-fetch)
-                                  (uri (patch-uri name))
-                                  (sha256 (base32 hash)))))
-                (arch-independent-patches
-                 (list
-                  (patch-origin
-                   "partial-testing.patch"
-                   "0g3nkci87knvmn7piqhmh4bcc65ff8r921cvfcibyiv65klv3syg")
-                  (patch-origin
-                   "0001-Revert-Limit-size-of-non-GlobalValue-name.patch"
-                   "0n4k7za0smx6qwdipsh6x5lm7bfvzzb3p9r8q1zq1dqi4na21295"))))
-           (package
-             (inherit llvm-11)
-             (source
-              (origin
-                (inherit (package-source llvm-11))
-                (patches
-                 (if (string=? "aarch64-linux" (%current-system))
-                     `(,(patch-origin
-                         "intel-D47188-svml-VF_LLVM9.patch"
-                         "0gnnlfxr8p1a7ls93hzcpfqpa8r0icypfwj8l9cmkslq5sz8p64r")
-                       ,@arch-independent-patches
-                       ,@(origin-patches (package-source llvm-11)))
-                     `(,(patch-origin
-                         "intel-D47188-svml-VF.patch"
-                         "0gnnlfxr8p1a7ls93hzcpfqpa8r0icypfwj8l9cmkslq5sz8p64r")
-                       ,(patch-origin
-                         "expect-fastmath-entrypoints-in-add-TLI-mappings.ll.patch"
-                         "0jxhjkkwwi1cy898l2n57l73ckpw0v73lqnrifp7r1mwpsh624nv")
-                       ,@arch-independent-patches
-                       ,@(origin-patches (package-source llvm-11)))))))
-             (arguments
-              (substitute-keyword-arguments (package-arguments llvm-11)
-                ((#:phases phases)
-                 `(modify-phases ,phases
-                    (add-after 'unpack 'patch-round-two
-                      ;; We have to do the patching in two rounds because we can't
-                      ;; pass '-p1' and '-p2' in the source field.
-                      (lambda* (#:key inputs #:allow-other-keys)
-                        (invoke "patch"
-                                (assoc-ref inputs "llvm_11_consecutive_registers")
-                                "-p2")))))))
-             (native-inputs
-              `(("llvm_11_consecutive_registers"
-                 ,(patch-origin
-                   "llvm_11_consecutive_registers.patch"
-                   "04msd34dnpr3lpss0pam3mckwnvzrab266z6sml1hya0akv0m3f3"))
-                ,@(package-native-inputs llvm-11))))))))
+     (list (let* ((patches-commit
+                                 "a4a19e8af2c5ef9b9901f20193e4be070726da97") (
+                                                                          patch-uri (
+                                                                                lambda (
+                                                                                  name)
+                                                                                  (
+                                                                                  string-append
+                                                                                               "https://raw.githubusercontent.com/numba/"
+                                                                                               "llvmlite/"
+                                                                                               patches-commit
+                                                                                               "/conda-recipes/"
+                                                                                               name)))
+                                                                          (
+                                                                          patch-origin (
+                                                                                      lambda (
+                                                                                           name
+                                                                                             hash)
+                                                                                           (
+                                                                                           origin (
+                                                                                                 method
+                                                                                                      url-fetch)
+                                                                                                 (
+                                                                                                 uri (
+                                                                                                    patch-uri
+                                                                                                            name))
+                                                                                                 (
+                                                                                                 sha256 (
+                                                                                                       base32
+                                                                                                            hash)))))
+                                                                          (
+                                                                          arch-independent-patches (
+                                                                                                  list (
+                                                                                                     patch-origin
+                                                                                                               "partial-testing.patch"
+                                                                                                               "0g3nkci87knvmn7piqhmh4bcc65ff8r921cvfcibyiv65klv3syg")
+                                                                                                     (
+                                                                                                     patch-origin
+                                                                                                                 "0001-Revert-Limit-size-of-non-GlobalValue-name.patch"
+                                                                                                                 "0n4k7za0smx6qwdipsh6x5lm7bfvzzb3p9r8q1zq1dqi4na21295"))))
+                 (package (inherit llvm-11)
+                          (source (origin (inherit (package-source
+                                                                   llvm-11))
+                                          (patches (if (string=?
+                                                                 "aarch64-linux"
+                                                                 (
+                                                                 %current-system))
+                                                       `(,(patch-origin
+                                                                     "intel-D47188-svml-VF_LLVM9.patch"
+                                                                     "0gnnlfxr8p1a7ls93hzcpfqpa8r0icypfwj8l9cmkslq5sz8p64r") (
+                                                                                                                           unquote-splicing
+                                                                                                                                         arch-independent-patches)
+                                                                                                                           (
+                                                                                                                           unquote-splicing (
+                                                                                                                                           origin-patches (
+                                                                                                                                                        package-source
+                                                                                                                                                                    llvm-11))))
+                                                       `(,(patch-origin
+                                                                     "intel-D47188-svml-VF.patch"
+                                                                     "0gnnlfxr8p1a7ls93hzcpfqpa8r0icypfwj8l9cmkslq5sz8p64r") ,(
+                                                                                                                           patch-origin
+                                                                                                                                   "expect-fastmath-entrypoints-in-add-TLI-mappings.ll.patch"
+                                                                                                                                   "0jxhjkkwwi1cy898l2n57l73ckpw0v73lqnrifp7r1mwpsh624nv")
+                                                                                                                           (
+                                                                                                                           unquote-splicing
+                                                                                                                                           arch-independent-patches)
+                                                                                                                           (
+                                                                                                                           unquote-splicing (
+                                                                                                                                           origin-patches (
+                                                                                                                                                        package-source
+                                                                                                                                                                    llvm-11))))))))
+                          (arguments (substitute-keyword-arguments (
+                                                                   package-arguments
+                                                                                  llvm-11)
+                                                                   ((#:phases
+                                                                             phases) `(
+                                                                                    modify-phases ,
+                                                                                              phases
+                                                                                              (
+                                                                                              add-after '
+                                                                                                       unpack
+                                                                                                       '
+                                                                                                       patch-round-two
+                                                                                                       ;; We have to do the patching in two rounds because we can't
+                                                                                                       ;; pass '-p1' and '-p2' in the source field.
+                                                                                                       (
+                                                                                                       lambda* (
+                                                                                                              #:key
+                                                                                                                  inputs
+                                                                                                                  #:allow-other-keys)
+                                                                                                              (
+                                                                                                              invoke
+                                                                                                                    "patch"
+                                                                                                                    (
+                                                                                                                    assoc-ref
+                                                                                                                             inputs
+                                                                                                                             "llvm_11_consecutive_registers")
+                                                                                                                    "-p2")))))))
+                          (native-inputs `(("llvm_11_consecutive_registers" ,(
+                                                                          patch-origin
+                                                                               "llvm_11_consecutive_registers.patch"
+                                                                               "04msd34dnpr3lpss0pam3mckwnvzrab266z6sml1hya0akv0m3f3")) (
+                                                                                                                                    unquote-splicing (
+                                                                                                                                                package-native-inputs
+                                                                                                                                                                llvm-11))))))))
     (home-page "https://llvmlite.pydata.org")
     (synopsis "Wrapper around basic LLVM functionality")
     (description
@@ -1427,7 +1459,7 @@ setup(name=\"clang\", packages=[\"clang\"])\n")))))
                         (substitute* "clang/cindex.py"
                           (("libclang\\.so")
                            (string-append clang "/lib/libclang.so")))))))))
-    (inputs `(("clang" ,clang)))
+    (inputs (list clang))
     (synopsis "Python bindings to libclang")))
 
 (define-public python-clang-10
@@ -1445,7 +1477,7 @@ setup(name=\"clang\", packages=[\"clang\"])\n")))))
     (name "emacs-clang-format")
     (build-system emacs-build-system)
     (inputs
-     `(("clang" ,clang)))
+     (list clang))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -1469,7 +1501,7 @@ C/C++/Obj-C code according to a set of style options, see
     (name "emacs-clang-rename")
     (build-system emacs-build-system)
     (inputs
-     `(("clang" ,clang)))
+     (list clang))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -1516,15 +1548,11 @@ using @code{clang-rename}.")))
              (lambda _
                (invoke "cmake" "-P" "bindings/ocaml/cmake_install.cmake"))))))
       (inputs
-       `(("llvm" ,llvm)))
+       (list llvm))
       (native-inputs
-       `(("ocaml" ,ocaml)
-         ("ocaml-findlib" ,ocaml-findlib)
-         ("ocaml-ounit" ,ocaml-ounit)
-         ("python" ,python)))
+       (list ocaml ocaml-findlib ocaml-ounit python))
       (propagated-inputs
-       `(("ocaml-integers" ,ocaml-integers)
-         ("ocaml-ctypes" ,ocaml-ctypes)))
+       (list ocaml-integers ocaml-ctypes))
       (synopsis "OCaml bindings to LLVM")
       (description "This package contains the OCaml bindings distributed with
 LLVM."))))
@@ -1826,11 +1854,9 @@ LLVM."))))
                (let ((out (assoc-ref outputs "out")))
                  (for-each delete-file (find-files out "\\.a$"))))))))
       (native-inputs
-       `(("python" ,python)
-         ("python-lit" ,python-lit)))
+       (list python python-lit))
       (inputs
-       `(("clang-cling" ,clang-cling)
-         ("llvm-cling" ,llvm-cling)))
+       (list clang-cling llvm-cling))
       (home-page "https://root.cern/cling/")
       (synopsis "Interactive C++ interpreter")
       (description "Cling is an interactive C++17 standard compliant

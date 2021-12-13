@@ -64,12 +64,9 @@
                 "19jnpzlanq0a1m5lmlcsp50wxf7icxvpvclx7hnf0zxw8azngqd3"))))
     (build-system gnu-build-system)
     (propagated-inputs
-     `(("libusb" ,libusb)))
+     (list libusb))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf automake libtool pkg-config))
     (synopsis "Tools for sending USB device traffic over a network")
     (description
      "Usbredir is a network protocol for sending USB device traffic over a
@@ -96,7 +93,7 @@ different (virtual) machine than the one to which the USB device is attached.")
         ("mesa" ,mesa)
         ("udev" ,eudev)))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (synopsis "Virtual 3D GPU library")
     (description "A virtual 3D GPU library that enables a virtualized operating
 system to use the host GPU to accelerate 3D rendering.")
@@ -147,15 +144,14 @@ which allows users to view a desktop computing environment.")
                 "1drvj8y35gnxbnrxsipwi15yh0vs9ixzv4wslz6r3lra8w3bfa0z"))))
     (build-system gnu-build-system)
     (propagated-inputs
-      `(("gstreamer" ,gstreamer)
-        ("gst-plugins-base" ,gst-plugins-base)
-        ("gst-plugins-good" ,gst-plugins-good)
-        ("spice-protocol" ,spice-protocol)
-
-        ;; These are required by the pkg-config files.
-        ("gtk+" ,gtk+)
-        ("pixman" ,pixman)
-        ("openssl" ,openssl)))
+      (list gstreamer
+            gst-plugins-base
+            gst-plugins-good
+            spice-protocol
+            ;; These are required by the pkg-config files.
+            gtk+
+            pixman
+            openssl))
     (inputs
       `(("glib-networking" ,glib-networking)
         ("gobject-introspection" ,gobject-introspection)
@@ -227,26 +223,23 @@ which allows users to view a desktop computing environment.")
                 "1xd0xffw0g5vvwbq4ksmm3jjfq45f9dw20xpmi82g1fj9f7wy85k"))))
     (build-system gnu-build-system)
     (propagated-inputs
-      `(("openssl" ,openssl)
-        ("pixman" ,pixman)
-        ("spice-protocol" ,spice-protocol)))
+      (list openssl pixman spice-protocol))
     (inputs
-      `(("cyrus-sasl" ,cyrus-sasl)
-        ("glib" ,glib)
-        ("libjpeg-turbo" ,libjpeg-turbo)
-        ("libcacard" ,libcacard)        ; smartcard support
-        ("lz4" ,lz4)
-        ("opus" ,opus)
-        ("orc" ,orc)
-        ("zlib" ,zlib)))
+      (list cyrus-sasl
+            glib
+            libjpeg-turbo
+            libcacard ; smartcard support
+            lz4
+            opus
+            orc
+            zlib))
     (native-inputs
-      `(("pkg-config" ,pkg-config)
-        ("python" ,python)
-        ("spice-gtk" ,spice-gtk)
-
-        ;; These are needed for the server listen tests.
-        ("glib-networking" ,glib-networking)
-        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)))
+      (list pkg-config
+            python
+            spice-gtk
+            ;; These are needed for the server listen tests.
+            glib-networking
+            gsettings-desktop-schemas))
     (arguments
       `(#:configure-flags
         '("--enable-lz4"
@@ -313,21 +306,20 @@ Internet and from a wide variety of machine architectures.")
                (("ps -ef")
                 "ps -efww")))))))
     (inputs
-      `(("alsa-lib" ,alsa-lib)
-        ("dbus" ,dbus)
-        ("glib" ,glib)
-        ("gtk+" ,gtk+)
-        ("libdrm" ,libdrm)
-        ("libpciaccess" ,libpciaccess)
-        ("libx11" ,libx11)
-        ("libxext" ,libxext)
-        ("libxfixes" ,libxfixes)
-        ("libxinerama" ,libxinerama)
-        ("libxrandr" ,libxrandr)
-        ("spice-protocol" ,spice-protocol)))
+      (list alsa-lib
+            dbus
+            glib
+            gtk+
+            libdrm
+            libpciaccess
+            libx11
+            libxext
+            libxfixes
+            libxinerama
+            libxrandr
+            spice-protocol))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("procps" ,procps)))             ;tests use 'ps'
+     (list pkg-config procps))             ;tests use 'ps'
     (synopsis "Spice agent for Linux")
     (description "Spice-vdagent enables sharing the clipboard and guest display
 resolution scaling on graphical console window resize.")
@@ -349,16 +341,16 @@ resolution scaling on graphical console window resize.")
                 "1rrjlclm6ad63gah1fa4yfwrz4z6vgq2yrybbvzvvdbxrgl4vgzv"))))
     (build-system meson-build-system)
     (propagated-inputs
-     `(("glib" ,glib)                   ; Requires: in the pkg-config file
-       ("nss" ,nss)                     ; Requires.private: in the pkg-config
-       ("pcsc-lite" ,pcsc-lite)))       ; file
+     (list glib ; Requires: in the pkg-config file
+           nss ; Requires.private: in the pkg-config
+           pcsc-lite))       ; file
     (native-inputs
-     `(("openssl" ,openssl)
-       ("nss" ,nss "bin")
-       ("opensc" ,opensc)
-       ("gnutls" ,gnutls)
-       ("pkg-config" ,pkg-config)
-       ("which" ,which)))
+     (list openssl
+           `(,nss "bin")
+           opensc
+           gnutls
+           pkg-config
+           which))
     (synopsis "Emulate and share smart cards with virtual machines")
     (description
      "The @acronym{CAC,Common Access Card} library can be used to emulate and
@@ -380,11 +372,7 @@ share smart cards from client system to local or remote virtual machines.")
                 "00y9vi69sja4pkrfnvrkwsscm41bqrjzvp8aijb20pvg6ymczhj7"))))
     (build-system gnu-build-system)
     (inputs
-      `(("gtk+" ,gtk+)
-        ("gtk-vnc" ,gtk-vnc)
-        ("libcap" ,libcap)
-        ("libxml2" ,libxml2)
-        ("spice-gtk" ,spice-gtk)))
+      (list gtk+ gtk-vnc libcap libxml2 spice-gtk))
     (native-inputs
       `(("glib:bin" ,glib "bin")
         ("intltool" ,intltool)

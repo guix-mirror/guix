@@ -73,11 +73,7 @@
                   (string-append "MISC_TERMINFO_DIRS="
                                  "\"" ncurses "/share/terminfo" "\"")))))))))
     (inputs
-     `(("readline" ,readline)
-       ("zlib" ,zlib)
-       ("libpng" ,libpng)
-       ("pcre" ,pcre)
-       ("ncurses" ,ncurses)))
+     (list readline zlib libpng pcre ncurses))
     (home-page "https://www.jedsoft.org/slang/")
     (synopsis "Library for interactive applications and extensibility")
     (description
@@ -105,10 +101,7 @@ slsh, which is part of the S-Lang distribution.")
     (build-system gnu-build-system)
     (outputs '("out" "python"))
     (inputs
-     `(("slang" ,slang)
-       ("popt" ,popt)
-       ("python" ,python)
-       ("fribidi" ,fribidi)))
+     (list slang popt python fribidi))
     (arguments
      `(#:tests? #f    ; no test suite
        #:configure-flags

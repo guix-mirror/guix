@@ -66,11 +66,9 @@
                 "03b7y0h3mf4jfq5y8zw6hv9v44z3n6i8hc1iswax96y3z7sc85y5"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("zlib" ,zlib)
-       ("readline" ,readline)
-       ("gnutls" ,gnutls)))
+     (list zlib readline gnutls))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -137,7 +135,7 @@ reliability in mind.")
                       (invoke "./configure"
                               (string-append "--prefix=" out))))))
        #:tests? #f)) ;there are no tests
-    (inputs `(("ncurses" ,ncurses)))
+    (inputs (list ncurses))
     (home-page "https://www.ncftp.com/ncftp/")
     (synopsis "Command-line File Transfer Protocol (FTP) client")
     (description
@@ -196,8 +194,7 @@ as required.")
        ("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("gnutls" ,gnutls)
-       ("nettle" ,nettle)))
+     (list gnutls nettle))
     (home-page "https://lib.filezilla-project.org")
     (synopsis "Cross-platform C++ library used by Filezilla client")
     (description
@@ -240,15 +237,15 @@ output.
        ("pkg-config" ,pkg-config)
        ("xdg-utils" ,xdg-utils)))
     (inputs
-     `(("dbus" ,dbus)
-       ("gnutls" ,gnutls)
-       ("gtk+" ,gtk+)
-       ("libfilezilla" ,libfilezilla)
-       ("libidn" ,libidn)
-       ("nettle" ,nettle)
-       ("pugixml" ,pugixml)
-       ("sqlite" ,sqlite)
-       ("wxwidgets" ,wxwidgets)))
+     (list dbus
+           gnutls
+           gtk+
+           libfilezilla
+           libidn
+           nettle
+           pugixml
+           sqlite
+           wxwidgets))
     (home-page "https://filezilla-project.org")
     (synopsis "Full-featured graphical FTP/FTPS/SFTP client")
     (description
@@ -299,9 +296,7 @@ directory comparison and more.")
                (("/usr") (assoc-ref outputs "out")))))
          (delete 'configure))))         ; no configure script
     (inputs
-     `(("libcap" ,libcap)
-       ("linux-pam" ,linux-pam)
-       ("openssl" ,openssl)))
+     (list libcap linux-pam openssl))
     (synopsis "Small FTP server with a focus on security")
     (description
      "The Very Secure File Transfer Protocol Daemon or @command{vsftpd} is a

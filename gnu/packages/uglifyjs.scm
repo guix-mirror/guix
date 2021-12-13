@@ -37,8 +37,7 @@
         (base32 "0q1f91xwwm829cl5v727d4qkxy4yh7wri3pgl89f0m3a4y1n7hi4"))))
     (build-system node-build-system)
     (native-inputs
-     `(("node-acorn" ,node-acorn)
-       ("node-semver" ,node-semver)))
+     (list node-acorn node-semver))
     (home-page "https://lisperator.net/uglifyjs/")
     (synopsis "JavaScript parser / mangler / compressor / beautifier toolkit")
     (description "UglifyJS is a JavaScript compressor/minifier written in

@@ -69,7 +69,7 @@ Java libraries.")
                (base32
                 "0b8gsksj2g9f4iywwdma3v4jcg7i9rqvdxfmclwvbf1n72a89xla"))))
     (inputs
-     `(("libunistring" ,libunistring)))
+     (list libunistring))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--disable-static")))

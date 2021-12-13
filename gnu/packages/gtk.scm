@@ -132,7 +132,7 @@
                ;; on the build system.
                '("-Dintrospection=false"))
              '())))
-    (propagated-inputs `(("glib" ,glib))) ; required by atk.pc
+    (propagated-inputs (list glib)) ; required by atk.pc
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("glib" ,glib "bin")             ; glib-mkenums, etc.
@@ -255,12 +255,10 @@ output.  Experimental backends include OpenGL, BeOS, OS/2, and DirectFB.")
    (outputs '("out"
               "bin")) ; 160K, only hb-view depend on cairo
    (inputs
-    `(("cairo" ,cairo)))
+    (list cairo))
    (propagated-inputs
     ;; There are all in the Requires or Requires.private field of '.pc'.
-    `(("glib" ,glib)
-      ("graphite2" ,graphite2)
-      ("icu4c" ,icu4c)))
+    (list glib graphite2 icu4c))
    (native-inputs
     `(("glib:bin" ,glib "bin")          ;for glib-mkenums
       ("gobject-introspection" ,gobject-introspection)
@@ -315,8 +313,7 @@ output.  Experimental backends include OpenGL, BeOS, OS/2, and DirectFB.")
            ;; conditions when running tests in parallel.
            #:parallel-tests? #f))
     (native-inputs
-     `(("doxygen" ,doxygen)
-       ("pkg-config" ,pkg-config)))
+     (list doxygen pkg-config))
     (synopsis "Double-Array Trie Library")
     (description "Libdatrie is an implementation of double-array structure for
 representing trie.  Trie is a kind of digital search tree.")
@@ -396,8 +393,7 @@ applications.")
        ("libxft" ,libxft)
        ("libxrender" ,libxrender)))
     (inputs
-     `(("bash-minimal" ,bash-minimal)
-       ("zlib" ,zlib)))
+     (list bash-minimal zlib))
     (native-inputs
      `(("glib" ,glib "bin")                             ; glib-mkenums, etc.
        ("gobject-introspection" ,gobject-introspection) ; g-ir-compiler, etc.
@@ -455,11 +451,9 @@ handling for GTK+-2.x.")
                "0ip0ziys6mrqqmz4n71ays0kf5cs1xflj1gfpvs4fgy2nsrr482m"))))
     (build-system gnu-build-system)
     (inputs
-     `(("glib" ,glib)
-       ("pango" ,pango-1.42)))
+     (list glib pango-1.42))
     (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+     (list intltool pkg-config))
     (home-page "https://developer.gnome.org/pango")
     (synopsis "Obsolete pango functions")
     (description  "Pangox was a X backend to pango.  It is now obsolete and no
@@ -494,8 +488,8 @@ functions which were removed.")
      `(("gtk" ,gtk+-2)
        ("gtkmm" ,gtkmm-2)))
     (native-inputs
-     `(("glib" ,glib "bin")             ; for glib-genmarshal, etc.
-       ("pkg-config" ,pkg-config)))
+     (list `(,glib "bin") ; for glib-genmarshal, etc.
+           pkg-config))
     (home-page "https://drobilla.net/software/ganv/")
     (synopsis "GTK+ widget for interactive graph-like environments")
     (description
@@ -521,12 +515,12 @@ diagrams.")
                   "gtksourceview-2-add-default-directory.patch"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("intltool" ,intltool)
-       ("glib" ,glib "bin")             ; for glib-genmarshal, etc.
-       ("pkg-config" ,pkg-config)
-       ;; For testing.
-       ("xorg-server" ,xorg-server-for-tests)
-       ("shared-mime-info" ,shared-mime-info)))
+     (list intltool
+           `(,glib "bin") ; for glib-genmarshal, etc.
+           pkg-config
+           ;; For testing.
+           xorg-server-for-tests
+           shared-mime-info))
     (propagated-inputs
      ;; As per the pkg-config file.
      `(("gtk" ,gtk+-2)
@@ -600,9 +594,7 @@ printing and other features typical of a source code editor.")
       ("shared-mime-info" ,shared-mime-info)))
    (propagated-inputs
     ;; gtksourceview-3.0.pc refers to all these.
-    `(("glib" ,glib)
-      ("gtk+" ,gtk+)
-      ("libxml2" ,libxml2)))
+    (list glib gtk+ libxml2))
    (home-page "https://wiki.gnome.org/Projects/GtkSourceView")
    (synopsis "GNOME source code widget")
    (description "GtkSourceView is a text widget that extends the standard
@@ -670,12 +662,12 @@ highlighting and other features typical of a source code editor.")
                      (invoke "meson" "test" "--timeout-multiplier" "5"))))
                '()))))
     (propagated-inputs
-     `( ;; Required by gdk-pixbuf-2.0.pc
-       ("glib" ,glib)
-       ;; Required by gdk-pixbuf-xlib-2.0.pc
-       ("libx11" ,libx11)
-       ;; Used for testing and required at runtime.
-       ("shared-mime-info" ,shared-mime-info)))
+     (list ;; Required by gdk-pixbuf-2.0.pc
+           glib
+           ;; Required by gdk-pixbuf-xlib-2.0.pc
+           libx11
+           ;; Used for testing and required at runtime.
+           shared-mime-info))
     (inputs
      `(,@(if (%current-target-system)
              `(("bash-minimal" ,bash-minimal)) ; for glib-or-gtk-wrap
@@ -737,14 +729,10 @@ scaled, composited, modified, saved, or rendered.")
               (invoke "dbus-launch" "ninja" "test")))
           (delete 'check))))
      (inputs
-      `(("bash-minimal" ,bash-minimal)))
+      (list bash-minimal))
      (propagated-inputs
       ;; atspi-2.pc refers to all these.
-      `(("dbus" ,dbus)
-        ("glib" ,glib)
-        ("libx11" ,libx11)
-        ("libxi" ,libxi)
-        ("libxtst" ,libxtst)))
+      (list dbus glib libx11 libxi libxtst))
      (native-inputs
       `(("gettext" ,gettext-minimal)
         ("glib" ,glib "bin")
@@ -826,15 +814,12 @@ is part of the GNOME accessibility project.")
              (setenv "DBUS_FATAL_WARNINGS" "0")
              (invoke "dbus-launch" "meson" "test"))))))
     (propagated-inputs
-     `(("at-spi2-core" ,at-spi2-core-minimal))) ; required by atk-bridge-2.0.pc
+     (list at-spi2-core-minimal)) ; required by atk-bridge-2.0.pc
     (inputs
-     `(("atk" ,atk)
-       ("glib" ,glib)))
+     (list atk glib))
     (native-inputs
-     `(("dbus" ,dbus)                ; For tests
-       ("gobject-introspection" ,gobject-introspection)
-       ("libxml2" ,libxml2)
-       ("pkg-config" ,pkg-config)))
+     (list dbus ; For tests
+           gobject-introspection libxml2 pkg-config))
     (synopsis "Assistive Technology Service Provider Interface, ATK bindings")
     (description
      "The Assistive Technology Service Provider Interface
@@ -1197,21 +1182,21 @@ application suites.")
        ("vala" ,vala)
        ("xorg-server-for-tests" ,xorg-server-for-tests)))
     (inputs
-     `(("colord" ,colord)               ;for color printing support
-       ("cups" ,cups)                   ;for CUPS print-backend
-       ("ffmpeg" ,ffmpeg)               ;for ffmpeg media-backend
-       ("fribidi" ,fribidi)
-       ("gstreamer" ,gstreamer)         ;for gstreamer media-backend
-       ("gst-plugins-bad" ,gst-plugins-bad) ;provides gstreamer-player
-       ("gst-plugins-base" ,gst-plugins-base) ;provides gstreamer-gl
-       ("harfbuzz" ,harfbuzz)
-       ("iso-codes" ,iso-codes)
-       ("json-glib" ,json-glib)
-       ("libcloudproviders" ,libcloudproviders) ;for cloud-providers support
-       ("librsvg" ,librsvg)
-       ("python" ,python)
-       ("rest" ,rest)
-       ("tracker" ,tracker)))          ;for filechooser search support
+     (list colord ;for color printing support
+           cups ;for CUPS print-backend
+           ffmpeg ;for ffmpeg media-backend
+           fribidi
+           gstreamer ;for gstreamer media-backend
+           gst-plugins-bad ;provides gstreamer-player
+           gst-plugins-base ;provides gstreamer-gl
+           harfbuzz
+           iso-codes
+           json-glib
+           libcloudproviders ;for cloud-providers support
+           librsvg
+           python
+           rest
+           tracker))          ;for filechooser search support
     (propagated-inputs
      ;; Following dependencies are referenced in .pc files.
      `(("cairo" ,cairo)
@@ -1309,14 +1294,12 @@ ranging from small one-off tools to complete application suites.")
                          (find-files module-dir "\\.scm$"))
                #t))))))
     (inputs
-     `(("guile-lib" ,guile-lib)
-       ("expat" ,expat)
-       ("guile" ,guile-3.0)))
+     (list guile-lib expat guile-3.0))
     (propagated-inputs
      ;; The .pc file refers to 'cairo'.
-     `(("cairo" ,cairo)))
+     (list cairo))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://www.nongnu.org/guile-cairo/")
     (synopsis "Cairo bindings for GNU Guile")
     (description
@@ -1395,15 +1378,10 @@ exceptions, macros, and a dynamic programming environment.")
                                        file "-o" go)))
                            (find-files module-dir "\\.scm$"))
                  #t))))))
-      (native-inputs `(("pkg-config" ,pkg-config)
-                       ("autoconf" ,autoconf)
-                       ("automake" ,automake)
-                       ("libtool" ,libtool)
-                       ("texinfo" ,texinfo)))
-      (inputs `(("guile" ,guile-3.0)
-                ("librsvg" ,(librsvg-for-system))
-                ("guile-lib" ,guile-lib)))        ;for (unit-test)
-      (propagated-inputs `(("guile-cairo" ,guile-cairo)))
+      (native-inputs (list pkg-config autoconf automake libtool texinfo))
+      (inputs (list guile-3.0
+                    (librsvg-for-system) guile-lib))        ;for (unit-test)
+      (propagated-inputs (list guile-cairo))
       (synopsis "Render SVG images using Cairo from Guile")
       (description
        "Guile-RSVG wraps the RSVG library for Guile, allowing you to render SVG
@@ -1465,13 +1443,11 @@ images onto Cairo surfaces.")
                                  out "/share/guile/site/" version " -C "
                                  out "/lib/guile/" version "/site-ccache "))))
              #t)))))
-    (native-inputs `(("pkg-config" ,pkg-config)))
-    (inputs `(("guile" ,guile-3.0)))
+    (native-inputs (list pkg-config))
+    (inputs (list guile-3.0))
     (propagated-inputs
      ;; These are used by the (present …) modules.
-     `(("guile-lib" ,guile-lib)
-       ("guile-cairo" ,guile-cairo)
-       ("guile-rsvg" ,guile-rsvg)))
+     (list guile-lib guile-cairo guile-rsvg))
     (home-page "https://wingolog.org/software/guile-present/")
     (synopsis "Create SVG or PDF presentations in Guile")
     (description
@@ -1486,7 +1462,7 @@ documents.")
   (package
     (inherit guile-present)
     (name "guile2.2-present")
-    (inputs `(("guile" ,guile-2.2)))
+    (inputs (list guile-2.2))
     (propagated-inputs
      `(("guile-lib" ,guile2.2-lib)
        ("guile-cairo" ,guile2.2-cairo)
@@ -1507,23 +1483,23 @@ documents.")
                "1gnf3j96nip5kl99a268i0dy1hj7s1cfs66sps3zwysnkd7qr399"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("atk" ,atk)
-       ;;("corba" ,corba) ; not packaged yet
-       ("gconf" ,gconf)
-       ("gobject-introspection" ,gobject-introspection)
-       ;;("gthread" ,gthread) ; not packaged yet
-       ("gnome-vfs" ,gnome-vfs)
-       ("gdk-pixbuf" ,gdk-pixbuf)
-       ("gtk+" ,gtk+-2)
-       ("libglade" ,libglade)
-       ("libgnome" ,libgnome)
-       ("libgnomecanvas" ,libgnomecanvas)
-       ("libgnomeui" ,libgnomeui)
-       ("pango" ,pango)
-       ("libffi" ,libffi)
-       ("glib" ,glib)))
-    (inputs `(("guile" ,guile-2.2)))
+     (list pkg-config
+           atk
+           ;;("corba" ,corba) ; not packaged yet
+           gconf
+           gobject-introspection
+           ;;("gthread" ,gthread) ; not packaged yet
+           gnome-vfs
+           gdk-pixbuf
+           gtk+-2
+           libglade
+           libgnome
+           libgnomecanvas
+           libgnomeui
+           pango
+           libffi
+           glib))
+    (inputs (list guile-2.2))
     (propagated-inputs
      `(("guile-cairo" ,guile2.2-cairo)
        ("g-wrap" ,g-wrap)
@@ -1593,8 +1569,7 @@ guile-gnome-platform (GNOME developer libraries), and guile-gtksourceview.")
     (inputs
      `(("fontconfig" ,fontconfig)))
     (propagated-inputs
-     `(("libsigc++" ,libsigc++)
-       ("cairo" ,cairo)))
+     (list libsigc++ cairo))
     (home-page "https://cairographics.org/")
     (synopsis "C++ bindings to the Cairo 2D graphics library")
     (description
@@ -1616,8 +1591,8 @@ library.")
        (sha256
         (base32 "1qwdj9xw1w651kqwh82nipbryimm1ir5n3c6q34nphsx576bj9h1"))))
     (propagated-inputs
-     `(("libsigc++" ,libsigc++-2)
-       ,@(package-propagated-inputs cairomm)))))
+     (modify-inputs (package-propagated-inputs cairomm)
+       (prepend libsigc++-2)))))
 
 (define-public pangomm
   (package
@@ -1658,10 +1633,7 @@ library.")
        ("pkg-config" ,pkg-config)
        ("xsltproc" ,libxslt)))
     (propagated-inputs
-     `(("cairo" ,cairo)
-       ("cairomm" ,cairomm)
-       ("glibmm" ,glibmm)
-       ("pango" ,pango)))
+     (list cairo cairomm glibmm pango))
     (home-page "https://pango.gnome.org//")
     (synopsis "C++ interface to the Pango text rendering library")
     (description
@@ -1684,9 +1656,7 @@ library.")
        (sha256
         (base32 "06zczkaxf5p5kjgnzrfylzi40w9a8lxpndgs7rpn12qrsq27sy6k"))))
     (propagated-inputs
-     `(("cairomm" ,cairomm-1.14)
-       ("glibmm" ,glibmm-2.64)
-       ("pango" ,pango)))))
+     (list cairomm-1.14 glibmm-2.64 pango))))
 
 (define-public atkmm
   (package
@@ -1727,7 +1697,7 @@ library.")
        ("pkg-config" ,pkg-config)
        ("xsltproc" ,libxslt)))
     (propagated-inputs
-     `(("glibmm" ,glibmm) ("atk" ,atk)))
+     (list glibmm atk))
     (synopsis "C++ bindings for ATK")
     (description "ATKmm is the C++ binding for the ATK library.")
     (home-page "https://wiki.gnome.org/Accessibility")
@@ -1753,8 +1723,8 @@ library.")
        (sha256
         (base32 "1b8vycqzr3lfvk2l73f4kk74hj48081zbh9r1r2ilr3h8xh7cs0i"))))
     (propagated-inputs
-     `(("glibmm" ,glibmm-2.64)
-       ,@(package-propagated-inputs atkmm)))))
+     (modify-inputs (package-propagated-inputs atkmm)
+       (prepend glibmm-2.64)))))
 
 (define-public gtkmm
   (package
@@ -1807,11 +1777,7 @@ library.")
        ("xsltproc" ,libxslt)
        ("xorg-server" ,xorg-server-for-tests)))
     (propagated-inputs
-     `(("atkmm" ,atkmm)
-       ("cairomm" ,cairomm)
-       ("glibmm" ,glibmm)
-       ("gtk" ,gtk)
-       ("pangomm" ,pangomm)))
+     (list atkmm cairomm glibmm gtk pangomm))
     (synopsis "C++ Interfaces for GTK+ and GNOME")
     (description "GTKmm is the official C++ interface for the popular GUI
 library GTK+.  Highlights include typesafe callbacks, and a comprehensive set
@@ -1873,11 +1839,7 @@ tutorial.")
      (strip-keyword-arguments
       '(#:configure-flags) (package-arguments gtkmm)))
     (propagated-inputs
-     `(("atkmm" ,atkmm-2.28)
-       ("cairomm" ,cairomm-1.14)
-       ("glibmm" ,glibmm-2.64)
-       ("gtk+" ,gtk+-2)
-       ("pangomm" ,pangomm-2.46)))))
+     (list atkmm-2.28 cairomm-1.14 glibmm-2.64 gtk+-2 pangomm-2.46))))
 
 (define-public gtksourceviewmm
   (package
@@ -1892,12 +1854,10 @@ tutorial.")
                (base32 "0fgvmhm4h4qmxig87qvangs6ijw53mi40siz7pixlxbrsgiil22i"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (propagated-inputs
      ;; In 'Requires' of gtksourceviewmm-3.0.pc.
-     `(("glibmm" ,glibmm)
-       ("gtkmm" ,gtkmm-3)
-       ("gtksourceview" ,gtksourceview-3)))
+     (list glibmm gtkmm-3 gtksourceview-3))
     (synopsis "C++ interface to the GTK+ 'GtkTextView' widget")
     (description
      "gtksourceviewmm is a portable C++ library that extends the standard GTK+
@@ -1925,10 +1885,9 @@ printing and other features typical of a source code editor.")
         "1326aa2ybhhhrvz3n4p22z5sic25m016ddb5yq0hvbprnw6a35an"))))
     (build-system python-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("python-pytest" ,python-pytest)))
+     (list pkg-config python-pytest))
     (propagated-inputs                  ;pycairo.pc references cairo
-     `(("cairo" ,cairo)))
+     (list cairo))
     (home-page "https://cairographics.org/pycairo/")
     (synopsis "Python bindings for cairo")
     (description
@@ -1971,7 +1930,7 @@ printing and other features typical of a source code editor.")
     (outputs '("out"
                "doc"))                            ;13 MiB of gtk-doc HTML
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
      `(("python" ,python-2)
 
@@ -1982,9 +1941,9 @@ printing and other features typical of a source code editor.")
        ("libglade" ,libglade)
        ("glib"   ,glib)))
     (propagated-inputs
-     `(("python-pycairo"   ,python2-pycairo)     ;loaded at runtime
-       ("python-pygobject" ,python2-pygobject-2) ;referenced in pc file
-       ("gtk+"             ,gtk+-2)))
+     (list python2-pycairo ;loaded at runtime
+           python2-pygobject-2 ;referenced in pc file
+           gtk+-2))
     (arguments
      `(#:tests? #f
        #:phases (modify-phases %standard-phases
@@ -2038,10 +1997,9 @@ write GNOME applications.")
                 "0zq78dv22arg35ma6kah9cwfd1zx8gg7amsibzd128qw81p766c2"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-extutils-depends" ,perl-extutils-depends)
-       ("perl-extutils-pkgconfig" ,perl-extutils-pkgconfig)))
+     (list perl-extutils-depends perl-extutils-pkgconfig))
     (propagated-inputs
-     `(("cairo" ,cairo)))
+     (list cairo))
     (home-page "https://metacpan.org/release/Cairo")
     (synopsis "Perl interface to the cairo 2d vector graphics library")
     (description "Cairo provides Perl bindings for the vector graphics library
@@ -2062,11 +2020,9 @@ produces identical output on all those targets.")
         (base32 "0l2wcz77ndmbgvxx34gdm919a3dxh9fixqr47p50n78ysx2692cd"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-extutils-depends" ,perl-extutils-depends)
-       ("perl-extutils-pkgconfig" ,perl-extutils-pkgconfig)))
+     (list perl-extutils-depends perl-extutils-pkgconfig))
     (propagated-inputs
-     `(("perl-cairo" ,perl-cairo)
-       ("perl-glib" ,perl-glib)))
+     (list perl-cairo perl-glib))
     (home-page "https://metacpan.org/dist/Cairo-GObject")
     (synopsis "Integrate Cairo into the Glib type system")
     (description "Cairo::GObject registers Cairo's types with Glib's type systems,
@@ -2086,12 +2042,11 @@ so that they can be used normally in signals and properties.")
                 "0ry9jfvfgdwzalxcvwsgr7plhk3agx7p40l0fqdf3vrf7ds47i29"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-extutils-depends" ,perl-extutils-depends)
-       ("perl-extutils-pkgconfig" ,perl-extutils-pkgconfig)))
+     (list perl-extutils-depends perl-extutils-pkgconfig))
     (inputs
-     `(("gtk+" ,gtk+-2)))
+     (list gtk+-2))
     (propagated-inputs
-     `(("perl-pango" ,perl-pango)))
+     (list perl-pango))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -2139,11 +2094,8 @@ yet remaining very close in spirit to original API.")
        ("perl-test-simple" ,perl-test-simple)
        ("xorg-server" ,xorg-server-for-tests)))
     (propagated-inputs
-     `(("gtk+" ,gtk+)
-       ("perl-cairo-gobject" ,perl-cairo-gobject)
-       ("perl-carp" ,perl-carp)
-       ("perl-exporter" ,perl-exporter)
-       ("perl-glib-object-introspection" ,perl-glib-object-introspection)))
+     (list gtk+ perl-cairo-gobject perl-carp perl-exporter
+           perl-glib-object-introspection))
     (home-page "https://metacpan.org/dist/Gtk3")
     (synopsis "Perl interface to the 3.x series of the gtk+ toolkit")
     (description "Perl bindings to the 3.x series of the gtk+ toolkit.
@@ -2165,13 +2117,11 @@ yet remaining very close in spirit to original API.")
                 "0wdcidnfnb6nm79fzfs39ivawj3x8m98a147fmcxgv1zvwia9c1l"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-extutils-depends" ,perl-extutils-depends)
-       ("perl-extutils-pkgconfig" ,perl-extutils-pkgconfig)))
+     (list perl-extutils-depends perl-extutils-pkgconfig))
     (inputs
-     `(("pango" ,pango)))
+     (list pango))
     (propagated-inputs
-     `(("perl-cairo" ,perl-cairo)
-       ("perl-glib" ,perl-glib)))
+     (list perl-cairo perl-glib))
     (home-page "https://metacpan.org/release/Pango")
     (synopsis "Layout and render international text")
     (description "Pango is a library for laying out and rendering text, with an
@@ -2208,7 +2158,7 @@ and routines to assist in editing internationalized text.")
                      ("glib:bin" ,glib "bin")
                      ("xorg-server" ,xorg-server-for-tests)))
     ;; Listed in 'Requires.private' of 'girara.pc'.
-    (propagated-inputs `(("gtk+" ,gtk+)))
+    (propagated-inputs (list gtk+))
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (add-before 'check 'start-xserver
@@ -2293,21 +2243,21 @@ information.")
        ("pkg-config" ,pkg-config)
        ("python-wrapper" ,python-wrapper)))
     (inputs
-     `(("bc" ,bc)
-       ("dblatex" ,dblatex)
-       ("docbook-xml" ,docbook-xml-4.3)
-       ("docbook-xsl" ,docbook-xsl)
-       ("glib" ,glib)
-       ("libxml2" ,libxml2)
-       ("libxslt" ,libxslt)
-       ("python" ,python)
-       ("python-anytree" ,python-anytree)
-       ("python-lxml" ,python-lxml)
-       ("python-parameterized" ,python-parameterized)
-       ("python-pygments" ,python-pygments)
-       ("python-unittest2" ,python-unittest2)
-       ("source-highlight" ,source-highlight)
-       ("yelp-tools" ,yelp-tools)))
+     (list bc
+           dblatex
+           docbook-xml-4.3
+           docbook-xsl
+           glib
+           libxml2
+           libxslt
+           python
+           python-anytree
+           python-lxml
+           python-parameterized
+           python-pygments
+           python-unittest2
+           source-highlight
+           yelp-tools))
     (home-page "https://wiki.gnome.org/DocumentationProject/GtkDoc")
     (synopsis "GTK+ DocBook Documentation Generator")
     (description "GtkDoc is a tool used to extract API documentation from C-code
@@ -2350,11 +2300,10 @@ with some extra work.")
      `(#:configure-flags
        `("--enable-animation")))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)))
+     (list pkg-config intltool))
     (inputs
      ;; Don't propagate GTK+ to reduce "profile pollution".
-     `(("gtk+" ,gtk+-2))) ; required by gtk-engines-2.pc
+     (list gtk+-2)) ; required by gtk-engines-2.pc
     (home-page "https://live.gnome.org/GnomeArt")
     (synopsis "Theming engines for GTK+ 2.x")
     (description
@@ -2381,10 +2330,9 @@ Redmond95 and ThinIce.")
        `("--enable-animation"
          "--enable-animationrtl")))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)))
+     (list pkg-config intltool))
     (propagated-inputs
-     `(("gtk+" ,gtk+-2)))
+     (list gtk+-2))
     (home-page "https://live.gnome.org/GnomeArt")
     (synopsis "Cairo-based theming engine for GTK+ 2.x")
     (description
@@ -2405,15 +2353,11 @@ glass artworks done by Venicians glass blowers.")
                 "0cjp6xdcnzh6kka42w9g0w2ihqjlq8yl8hjm9wsfnixk6qwgch5h"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)
-       ("vala" ,vala)))
+     (list intltool pkg-config vala))
     (inputs
-     `(("gobject-introspection" ,gobject-introspection)
-       ("gtk+" ,gtk+)
-       ("pango" ,pango)))
+     (list gobject-introspection gtk+ pango))
     (propagated-inputs
-     `(("enchant" ,enchant)))           ; gtkspell3-3.0.pc refers to it
+     (list enchant))           ; gtkspell3-3.0.pc refers to it
     (home-page "http://gtkspell.sourceforge.net")
     (synopsis "Spell-checking addon for GTK's TextView widget")
     (description
@@ -2436,12 +2380,9 @@ misspelled words in a GtkTextView widget.")
         (base32 "05xi29v2y0rvb33fmvrz7r9j4l858qj7ngwd7dp4pzpkkaybjln0"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf automake intltool pkg-config))
     (inputs
-     `(("gtk+" ,gtk+-2)))
+     (list gtk+-2))
     (home-page "https://github.com/CristianHenzel/ClipIt")
     (synopsis "Lightweight GTK+ clipboard manager")
     (description
@@ -2480,8 +2421,7 @@ Parcellite and adds bugfixes and features.")
        ("mutest" ,mutest)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("glib" ,glib)
-       ("python" ,python)))
+     (list glib python))
     (synopsis "Thin layer of graphic data types")
     (description "Graphene provides graphic types and their relative API; it
 does not deal with windowing system surfaces, drawing, scene graphs, or input.")
@@ -2501,12 +2441,11 @@ does not deal with windowing system surfaces, drawing, scene graphs, or input.")
         (base32 "09rzgp7gabnzab460x874a1ibgyjiibpwzsz5srn9zs6jv2jdxjb"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("glib" ,glib "bin")             ; for glib-genmarshal, etc.
-       ("pkg-config" ,pkg-config)))
+     (list `(,glib "bin") ; for glib-genmarshal, etc.
+           pkg-config))
     ;; In 'Requires' of spread-sheet-widget.pc.
     (propagated-inputs
-     `(("glib" ,glib)
-       ("gtk+" ,gtk+)))
+     (list glib gtk+))
     (home-page "https://www.gnu.org/software/ssw/")
     (synopsis "Gtk+ widget for dealing with 2-D tabular data")
     (description
@@ -2531,12 +2470,9 @@ popular spread sheet programs.")
      `(#:configure-flags
        (list "--enable-notify")))       ; optional libnotify support
     (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+     (list intltool pkg-config))
     (inputs
-     `(("alsa-lib" ,alsa-lib)
-       ("gtk+" ,gtk+)
-       ("libnotify" ,libnotify)))
+     (list alsa-lib gtk+ libnotify))
     (home-page "http://nullwise.com/volumeicon.html")
     (synopsis "System tray volume applet")
     (description
@@ -2575,13 +2511,9 @@ independent of your desktop environment, and supports global key bindings.")
            (lambda _
              (invoke "intltoolize" "--force" "--automake"))))))
     (inputs
-     `(("gspell" ,gspell)
-       ("gtk+" ,gtk+)))
+     (list gspell gtk+))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf automake intltool pkg-config))
     (home-page "https://sourceforge.net/projects/yad-dialog/")
     (synopsis "GTK+ dialog boxes for shell scripts")
     (description
@@ -2605,8 +2537,8 @@ shell scripts.  Example of how to use @code{yad} can be consulted at
               (base32
                "0fgzz39007fdjwq72scp0qygp2v3zc5f1xkm0sxaa8zxm25g1bra"))))
    (build-system gnu-build-system)
-   (inputs `(("gtk+" ,gtk+)))
-   (native-inputs `(("pkg-config" ,pkg-config)))
+   (inputs (list gtk+))
+   (native-inputs (list pkg-config))
    (arguments
     `(#:tests? #f                       ; no check
       #:make-flags
@@ -2712,10 +2644,8 @@ displayed on the other side of the bus.")
         (base32 "1kcp4p3s7sdh9lwniybjdarfy8z69j2j23hfrw98amhwhq39gdcc"))))
     (build-system meson-build-system)
     (arguments `(#:configure-flags (list "-Dtests=true")))
-    (native-inputs `(("pkg-config" ,pkg-config)
-                     ("gobject-introspection" ,gobject-introspection)))
-    (inputs `(("wayland" ,wayland)
-              ("gtk+" ,gtk+)))
+    (native-inputs (list pkg-config gobject-introspection))
+    (inputs (list wayland gtk+))
     (home-page "https://github.com/wmww/gtk-layer-shell")
     (synopsis "Library to create Wayland desktop components using the Layer
 Shell protocol")
@@ -2747,10 +2677,7 @@ popovers.")
        ("pkg-config" ,pkg-config)
        ("python" ,python)))
     (inputs
-     `(("cairo" ,cairo)
-       ("glib" ,glib)
-       ("gtk+" ,gtk+)
-       ("python-pygobject" ,python-pygobject)))
+     (list cairo glib gtk+ python-pygobject))
     (arguments
      `(#:configure-flags '("--disable-rebuilds"
                            "--disable-static")
@@ -2820,16 +2747,9 @@ library for drawing.")
                 (string-append (assoc-ref outputs "out") "/share/pixmaps")))
              #t)))))
     (inputs
-     `(("glade" ,glade3)
-       ("glib" ,glib)
-       ("gtk+" ,gtk+)
-       ("libxml2" ,libxml2)))
+     (list glade3 glib gtk+ libxml2))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("gobject-introspection" ,gobject-introspection)
-       ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf automake gobject-introspection libtool pkg-config))
     (home-page "https://fpaquet.github.io/gtksheet/")
     (synopsis "Spreadsheet widget for GTK+")
     (description "GtkSheet is a matrix widget for GTK+.  It consists of an
@@ -2861,9 +2781,9 @@ foreground and background colors, text justification and more.")
         (base32 "1qykm551bx8j8pfgxs60l2vhpi8lv4r8va69zvn2594lchh71vlb"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("gtk+" ,gtk+)))
+     (list gtk+))
     (synopsis "Display widget for dynamic data")
     (description "GtkDatabox is a widget for live display of large amounts of
 fluctuating numerical data.  It enables data presentation (for example, on
@@ -2900,14 +2820,9 @@ user interaction (e.g.  measuring distances).")
                   (string-append pulse "/lib/libpulse.so.0")))
                #t))))))
     (inputs
-     `(("gtk+" ,gtk+)
-       ("libxfixes" ,libxfixes)
-       ("pulseaudio" ,pulseaudio)))
+     (list gtk+ libxfixes pulseaudio))
     (propagated-inputs
-     `(("python-click" ,python-click)
-       ("python-pycairo" ,python-pycairo)
-       ("python-pygobject" ,python-pygobject)
-       ("python-pyyaml" ,python-pyyaml)))
+     (list python-click python-pycairo python-pygobject python-pyyaml))
     (home-page "https://buzz.github.io/volctl/")
     (synopsis "Per-application volume control and on-screen display (OSD) for graphical desktops")
     (description "Volctl is a PulseAudio-enabled tray icon volume control and

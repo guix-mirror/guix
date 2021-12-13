@@ -125,9 +125,7 @@
                #t))))
        #:tests? #f)) ; no test target
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("pkg-config" ,pkg-config)
-       ("qttools" ,qttools)))
+     (list extra-cmake-modules pkg-config qttools))
     (inputs
      `(("inxi" ,inxi-minimal)
        ("libdbusmenu-qt" ,libdbusmenu-qt)
@@ -175,12 +173,9 @@ irssi, but graphical.")
            (lambda _
              (setenv "HOME" (getcwd)))))))
     (inputs
-     `(("glib" ,glib)
-       ("ncurses" ,ncurses)
-       ("openssl" ,openssl)
-       ("perl" ,perl)))
+     (list glib ncurses openssl perl))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://irssi.org/")
     (synopsis "Terminal-based IRC client")
     (description
@@ -206,19 +201,18 @@ SILC and ICB protocols via plugins.")
        ;; For tests.
        ("cpputest" ,cpputest)))
     (inputs
-     `(("aspell" ,aspell)
-       ("curl" ,curl)
-       ("gnutls" ,gnutls)
-       ("libgcrypt" ,libgcrypt "out")
-       ("ncurses" ,ncurses)
-       ("zlib" ,zlib)
-
-       ;; Scripting language plug-ins.
-       ("guile" ,guile-3.0)
-       ("lua" ,lua-5.1)
-       ("perl" ,perl)
-       ("python" ,python)
-       ("tcl" ,tcl)))
+     (list aspell
+           curl
+           gnutls
+           `(,libgcrypt "out")
+           ncurses
+           zlib
+           ;; Scripting language plug-ins.
+           guile-3.0
+           lua-5.1
+           perl
+           python
+           tcl))
     (arguments
      `(#:configure-flags
        (list "-DENABLE_PHP=OFF"
@@ -264,13 +258,13 @@ using a mouse.  It is customizable and extensible with plugins and scripts.")
        ("python" ,python-wrapper)
        ("python-sphinx" ,python-sphinx)))
     (inputs
-     `(("glib-networking" ,glib-networking)
-       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("gtk+" ,gtk+)
-       ("libconfig" ,libconfig)
-       ("libsecret" ,libsecret)
-       ("libsoup" ,libsoup)
-       ("openssl" ,openssl)))
+     (list glib-networking
+           gsettings-desktop-schemas
+           gtk+
+           libconfig
+           libsecret
+           libsoup
+           openssl))
     (home-page "https://srain.im")
     (synopsis "Modern IRC client written in GTK")
     (description
@@ -315,11 +309,9 @@ for the IRCv3 protocol.")
                (("/bin/rm") "rm")
                (("/bin/mv") "mv")))))))
     (inputs
-     `(("ncurses" ,ncurses)
-       ("openssl" ,openssl)))
+     (list ncurses openssl))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("perl" ,perl)))
+     (list pkg-config perl))
     (home-page "http://www.eterna.com.au/ircii/")
     (synopsis "Terminal-based IRC and ICB client")
     (description
@@ -343,11 +335,9 @@ for the IRCv3 protocol.")
        #:make-flags (list (string-append "PREFIX=" %output)
                           ,(string-append "CC=" (cc-for-target)))))
     (native-inputs
-     `(("universal-ctags" ,universal-ctags)
-       ("pkg-config" ,pkg-config)))
+     (list universal-ctags pkg-config))
     (inputs
-     `(("libressl" ,libressl)
-       ("ncurses" ,ncurses)))
+     (list libressl ncurses))
     (home-page "https://git.causal.agency/catgirl")
     (synopsis "TLS-only terminal IRC client")
     (description
@@ -461,16 +451,16 @@ all RFC 2812 commands, and customized color scheme definitions.")
         (base32 "0853xk1ps3v6lkmfx50wv56vynnzpl84v66hxnhl8i34zl36kk3c"))))
     (build-system python-build-system)
     (inputs
-     `(("python-pytz" ,python-pytz)
-       ("python-chardet" ,python-chardet)
-       ("python-dateutil" ,python-dateutil)
-       ("python-gnupg" ,python-gnupg)
-       ("python-feedparser" ,python-feedparser)
-       ("python-sqlalchemy" ,python-sqlalchemy)
-       ("python-socksipy-branch" ,python-socksipy-branch)
-       ("python-ecdsa" ,python-ecdsa)))
+     (list python-pytz
+           python-chardet
+           python-dateutil
+           python-gnupg
+           python-feedparser
+           python-sqlalchemy
+           python-socksipy-branch
+           python-ecdsa))
     (native-inputs
-     `(("python-mock" ,python-mock)))
+     (list python-mock))
     ;; Despite the existence of a test folder there is no test phase.
     ;; We need to package https://github.com/ProgVal/irctest and write
     ;; our own testphase.
@@ -548,14 +538,14 @@ other enhancements and bug fixes.")
                                       (assoc-ref %build-inputs "tcl")
                                       "/lib/tclConfig.sh"))))))))
     (inputs
-     `(("libressl" ,libressl)
-       ("ncurses" ,ncurses)
-       ("libarchive" ,libarchive) ; CHANGELOG: "Support for loading zip files"
-       ("perl" ,perl)
-       ("tcl" ,tcl)
-       ("ruby" ,ruby)))
+     (list libressl
+           ncurses
+           libarchive ; CHANGELOG: "Support for loading zip files"
+           perl
+           tcl
+           ruby))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "http://epicsol.org")
     (synopsis "Epic5 IRC Client")
     (description
@@ -590,11 +580,9 @@ interface for those who are accustomed to the ircII way of doing things.")
         (string-append "CC=" ,(cc-for-target))
         (string-append "PREFIX=" %output))))
     (native-inputs
-      `(("pkg-config" ,pkg-config)
-        ("universal-ctags" ,universal-ctags)))
+      (list pkg-config universal-ctags))
     (inputs
-      `(("libressl" ,libressl)
-        ("sqlite" ,sqlite)))
+      (list libressl sqlite))
     (home-page "https://code.causal.agency/june/litterbox")
     (synopsis "TLS-only IRC logger")
     (description
@@ -658,21 +646,21 @@ but can also be used independently as a logging bot.")
                        (string-append "--config-dir=" out-etc name)))
              #t)))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("argon2" ,argon2)
-       ("gnutls" ,gnutls)
-       ("libmaxminddb" ,libmaxminddb)
-       ("mbedtls-apache" ,mbedtls-apache)
-       ("mysql" ,mysql)
-       ("openldap" ,openldap)
-       ("openssl" ,openssl)
-       ("pcre" ,pcre "bin")
-       ("perl" ,perl)
-       ("postgresql" ,postgresql)
-       ("re2" ,re2)
-       ("sqlite" ,sqlite)
-       ("tre" ,tre)))
+     (list argon2
+           gnutls
+           libmaxminddb
+           mbedtls-apache
+           mysql
+           openldap
+           openssl
+           `(,pcre "bin")
+           perl
+           postgresql
+           re2
+           sqlite
+           tre))
     (synopsis "Modular IRC server written in C++")
     (description "InspIRCd is a modular Internet Relay Chat
 server written in C++ for Unix-like operating systems.")

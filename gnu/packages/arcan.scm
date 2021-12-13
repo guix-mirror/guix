@@ -151,8 +151,7 @@
                              (base32
                               "0dcxcnqjkyyqdr2yk84mprvkncy5g172kfs6vc4zrkklsbkr8yi2"))))))
       (native-inputs
-       `(("pkg-config" ,pkg-config)
-         ("ruby" ,ruby)))               ; For documentation and testing
+       (list pkg-config ruby))               ; For documentation and testing
       (home-page "https://arcan-fe.com")
       (synopsis "Display server, multimedia framework and game engine (egl-dri)")
       (description "Arcan is a development framework for creating virtually
@@ -171,9 +170,9 @@ engine programmable using Lua.")
     (inherit arcan)
     (name "arcan-sdl")
     (inputs
-     `(("sdl" ,sdl)
-       ,@(fold alist-delete (package-inputs arcan)
-               '("libdrm"))))
+     (modify-inputs (package-inputs arcan)
+       (delete "libdrm")
+       (prepend sdl)))
     (arguments
      `(,@(ensure-keyword-arguments
           (package-arguments arcan)
@@ -219,11 +218,7 @@ engine programmable using Lua.")
            ,(string-append "--with-xkb-output="
                            "/tmp"))))   ; FIXME: Copied from xorg
       (native-inputs
-       `(("pkg-config" ,pkg-config)
-         ("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("libtool" ,libtool)
-         ("util-macros" ,util-macros)))
+       (list pkg-config autoconf automake libtool util-macros))
       (inputs
        `(("arcan" ,arcan)
          ("font-util" ,font-util)
@@ -251,14 +246,14 @@ as a window under Arcan.")
     (inherit arcan)
     (name "arcan-wayland")
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("arcan" ,arcan)
-       ("libseccomp" ,libseccomp)
-       ("libxkbcommon" ,libxkbcommon)
-       ("mesa" ,mesa)
-       ("wayland" ,wayland)
-       ("wayland-protocols" ,wayland-protocols)))
+     (list arcan
+           libseccomp
+           libxkbcommon
+           mesa
+           wayland
+           wayland-protocols))
     (arguments
      `(#:tests? #f
        #:phases

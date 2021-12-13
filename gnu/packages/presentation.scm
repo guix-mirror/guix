@@ -71,16 +71,15 @@
                  '("presentty" "presentty-console")))
              #t)))))
     (inputs
-     `(("cowsay" ,cowsay)
-       ("figlet" ,figlet)
-       ("jp2a" ,jp2a)
-       ("python-docutils" ,python-docutils)
-       ("python-pillow" ,python-pillow-2.9)
-       ("python-six" ,python-six)
-       ("python-urwid" ,python-urwid)))
+     (list cowsay
+           figlet
+           jp2a
+           python-docutils
+           python-pillow-2.9
+           python-six
+           python-urwid))
     (native-inputs
-     `(("python-pbr" ,python-pbr)
-       ("python-pygments" ,python-pygments)))
+     (list python-pbr python-pygments))
     (home-page "http://git.inaugust.com/cgit/presentty/")
     (synopsis "Console-based presentation system")
     (description "Presentty is a console-based presentation program where slides

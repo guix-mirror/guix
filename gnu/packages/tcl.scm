@@ -133,9 +133,9 @@
                 (string-append out "/libtmp") (string-append out "/lib")))
              #t)))))
     (native-inputs
-     `(("tcl" ,tcl)))
+     (list tcl))
     (inputs
-     `(("tcllib" ,tcllib)))
+     (list tcllib))
     (home-page "http://incrtcl.sourceforge.net/")
     (synopsis "Object Oriented programming (OOP) extension for Tcl")
     (description
@@ -158,11 +158,11 @@ multiple inheritance and public and private classes and variables.")
         "0d1cp5hggjl93xwc8h1y6adbnrvpkk0ywkd00inz9ndxn21xm9s9"))))
     (build-system gnu-build-system)
     (inputs
-     `(;; TODO: Add these optional dependencies.
-       ;; ("libX11" ,libX11)
-       ;; ("xorgproto" ,xorgproto)
-       ;; ("tk" ,tk)
-       ("tcl" ,tcl)))
+     (list ;; TODO: Add these optional dependencies.
+           ;; ("libX11" ,libX11)
+           ;; ("xorgproto" ,xorgproto)
+           ;; ("tk" ,tk)
+           tcl))
     (arguments
      '(#:configure-flags
        (let ((out (assoc-ref %outputs "out"))
@@ -242,13 +242,12 @@ X11 GUIs.")
 
        ;; The tests require a running X server, so we just skip them.
        #:tests? #f))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs (list pkg-config))
     (inputs `(("libxft" ,libxft)
               ("fontconfig" ,fontconfig)
               ("tcl" ,tcl)))
     ;; tk.h refers to X11 headers, hence the propagation.
-    (propagated-inputs `(("libx11" ,libx11)
-                         ("libxext" ,libxext)))
+    (propagated-inputs (list libx11 libxext))
 
     (home-page "https://www.tcl.tk/")
     (synopsis "Graphical user interface toolkit for Tcl")
@@ -270,7 +269,7 @@ interfaces (GUIs) in the Tcl language.")
               (base32
                "0pha40m97fzafjnq8vwkbi5sml6xv8jki6qi60rxrzmxlrqp5aij"))))
     (build-system perl-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs (list pkg-config))
     (inputs `(("libx11" ,libx11)
               ("libpng" ,libpng)
               ("libjpeg" ,libjpeg-turbo)))
@@ -305,7 +304,7 @@ interfaces (GUIs) in the Tcl language.")
                 "173abxaazdmf210v651708ab6h7xhskvd52krxk6ifam337qgzh1"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("tcl" ,tcl)))
+     (list tcl))
     (native-search-paths
      (list (search-path-specification
             (variable "TCLLIBPATH")
@@ -330,10 +329,9 @@ utility functions and modules all written in high-level Tcl.")
                 "03y0bzgwbh7nnyqkh8n00bbkq2fyblq39s3bdb6mawna0bbn0wwg"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("tcl" ,tcl)))
+     (list tcl))
     (propagated-inputs
-     `(("tcllib" ,tcllib)
-       ("tk" ,tk))) ; for "wish"
+     (list tcllib tk)) ; for "wish"
     (native-search-paths
      (list (search-path-specification
             (variable "TCLLIBPATH")
@@ -376,11 +374,9 @@ modules for Tk, all written in high-level Tcl.  Examples of provided widgets:
               (patches (search-patches "tclxml-3.2-install.patch"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("tcl" ,tcl)
-       ("libxml2" ,libxml2)
-       ("libxslt" ,libxslt)))
+     (list tcl libxml2 libxslt))
     (propagated-inputs
-     `(("tcllib" ,tcllib))) ; uri
+     (list tcllib)) ; uri
     (native-search-paths
      (list (search-path-specification
             (variable "TCLLIBPATH")
@@ -429,8 +425,7 @@ callback is evaluated.")
                                               (assoc-ref %outputs "out")
                                               "/lib"))))
     (inputs
-     `(("tcl" ,tcl)
-       ("tk" ,tk)))
+     (list tcl tk))
     (home-page "http://tclx.sourceforge.net/")
     (synopsis "System programming extensions for Tcl")
     (description
@@ -459,8 +454,7 @@ debugging tools.")
     (arguments
      `(#:import-path "github.com/nsf/gothic"))
     (propagated-inputs
-     `(("tk" ,tk)
-       ("tcl" ,tcl)))
+     (list tk tcl))
     (home-page "https://github.com/nsf/gothic")
     (synopsis "Tcl/Tk Go bindings")
     (description "Gothic contains Go bindings for Tcl/Tk.  The package contains

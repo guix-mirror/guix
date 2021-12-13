@@ -113,7 +113,7 @@
       ("libvorbis" ,libvorbis)
       ("zlib" ,zlib)))
    (native-inputs
-    `(("pkg-config" ,pkg-config)))
+    (list pkg-config))
    (outputs '("out"
               "static")) ; 420 KiB .a files
    (arguments
@@ -201,10 +201,7 @@ authentication and support for SSL3 and TLS.")
              ("libidn2" ,libidn2)
              ("zlib" ,zlib)))
    (native-inputs
-    `(("libtool" ,libtool)
-      ("perl" ,perl)
-      ("pkg-config" ,pkg-config)
-      ("python" ,python)))
+    (list libtool perl pkg-config python))
    (arguments
     `(#:configure-flags
       ;; All of these produce errors during configure.
@@ -290,11 +287,8 @@ supports HTTP, HTTPS and GnuTLS.")
       ("zbar" ,zbar)
       ("zlib" ,zlib)))
    (native-inputs
-    `(("curl" ,curl)
-      ("pkg-config" ,pkg-config)
-      ("python" ,python)
-      ("xxd" ,xxd)
-      ("which" ,(@ (gnu packages base) which))))
+    (list curl pkg-config python xxd
+          (@ (gnu packages base) which)))
    (arguments
     '(#:parallel-tests? #f ; Parallel tests aren't supported.
       #:phases
@@ -368,11 +362,8 @@ kinds of basic applications for the foundation of a GNU internet.")
                  (base32
                   "0nqc18jh9j30y4l6yh6j35byfg6qalq7yr3frv9rk10qa041c2sv"))))
       (build-system gnu-build-system)
-      (native-inputs `(("pkg-config" ,pkg-config)
-                       ("autoconf" ,autoconf)
-                       ("automake" ,automake)))
-      (inputs `(("guile" ,guile-2.0)
-                ("gnunet" ,gnunet)))
+      (native-inputs (list pkg-config autoconf automake))
+      (inputs (list guile-2.0 gnunet))
       (synopsis "Guile bindings for GNUnet services")
       (description
        "This package provides Guile bindings to the client libraries of various
@@ -411,8 +402,7 @@ services.")
        ("libunique" ,libunique)
        ("qrencode" ,qrencode)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("libglade" ,libglade)))
+     (list pkg-config libglade))
     (synopsis "Graphical front-end tools for GNUnet")
     (properties '((ftp-server . "ftp.gnu.org")
                   (ftp-directory . "/gnunet")))))

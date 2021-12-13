@@ -43,14 +43,14 @@
         (base32 "1bdgqd07f026qk6vpbxqsin536znd33931m3b4z44prlm9wd6pyi"))))
     (build-system gnu-build-system)
     (inputs
-     `(("bzip2" ,bzip2)
-       ("glib" ,glib)
-       ("gnutls" ,gnutls)
-       ("ncurses" ,ncurses)
-       ("sqlite" ,sqlite)
-       ("zlib" ,zlib)))
+     (list bzip2
+           glib
+           gnutls
+           ncurses
+           sqlite
+           zlib))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://dev.yorhel.nl/ncdc")
     (synopsis
      "Lightweight direct connect client with a friendly ncurses interface")

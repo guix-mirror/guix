@@ -39,8 +39,8 @@
        (base32
         "1cxdlhgz3wzjqlq8bgwad93fgqymk2abbldfzw1ffnhcp4mmjjjp"))))
     (native-inputs
-     `(("which" ,which)                 ;for tests
-       ("perl" ,perl)))                 ;for help2man
+     (list which ;for tests
+           perl))                 ;for help2man
     (build-system gnu-build-system)
     (home-page "https://www.gnu.org/software/datamash/")
     (synopsis "Scriptable statistics and data calculation")

@@ -279,11 +279,7 @@
        ("gtk-doc" ,gtk-doc/stable)
        ("pkg-config" ,pkg-config)))
     (propagated-inputs
-     `(("glib" ,glib)
-       ("glib-networking" ,glib-networking)
-       ("gssdp" ,gssdp)
-       ("gupnp" ,gupnp)
-       ("libsoup" ,libsoup)))
+     (list glib glib-networking gssdp gupnp libsoup))
     (synopsis "UPnP IGD for GNOME")
     (description "GUPnP-IGD is a library to handle UPnP IGD port mapping.")
     (home-page "https://gitlab.gnome.org/GNOME/gupnp-igd")
@@ -319,26 +315,26 @@
                  (("(\")(growisofs)" _ prefix command)
                   (string-append prefix dvd+rw-tools "/bin/" command)))))))))
     (propagated-inputs
-     `(("hicolor-icon-theme" ,hicolor-icon-theme)))
+     (list hicolor-icon-theme))
     (native-inputs
-     `(("intltool" ,intltool)
-       ("itstool" ,itstool)
-       ("glib" ,glib "bin")                       ; glib-compile-schemas, etc.
-       ("gobject-introspection" ,gobject-introspection)
-       ("pkg-config" ,pkg-config)))
+     (list intltool
+           itstool
+           `(,glib "bin") ; glib-compile-schemas, etc.
+           gobject-introspection
+           pkg-config))
     (inputs
-     `(("dvd+rw-tools" ,dvd+rw-tools)
-       ("glib" ,glib)
-       ("gnome-doc-utils" ,gnome-doc-utils)
-       ("gstreamer" ,gstreamer)
-       ("gst-plugins-base" ,gst-plugins-base)
-       ("gtk+" ,gtk+)
-       ("libcanberra" ,libcanberra)
-       ("libice" ,libice)
-       ("libnotify" ,libnotify)
-       ("libsm" ,libsm)
-       ("libxml2" ,libxml2)
-       ("totem-pl-parser" ,totem-pl-parser)))
+     (list dvd+rw-tools
+           glib
+           gnome-doc-utils
+           gstreamer
+           gst-plugins-base
+           gtk+
+           libcanberra
+           libice
+           libnotify
+           libsm
+           libxml2
+           totem-pl-parser))
     (home-page "https://wiki.gnome.org/Apps/Brasero")
     (synopsis "CD/DVD burning tool for Gnome")
     (description "Brasero is an application to burn CD/DVD for the Gnome
@@ -371,8 +367,7 @@ features to enable users to create their discs easily and quickly.")
        ("pkg-config" ,pkg-config)
        ("vala" ,vala)))
     (inputs
-     `(("glib" ,glib)
-       ("glib-networking" ,glib-networking)))
+     (list glib glib-networking))
     (synopsis "Cloudproviders Integration API")
     (description "Libcloudproviders is a DBus API that allows cloud storage sync
 clients to expose their services.  Clients such as file managers and desktop
@@ -441,14 +436,10 @@ services.")
                                  "/xml/dtd/docbook/"))))
              #t)))))
     (native-inputs
-     `(("docbook-xml" ,docbook-xml-4.1.2)
-       ("gobject-introspection" ,gobject-introspection)
-       ("gtk-doc" ,gtk-doc/stable)
-       ("pkg-config" ,pkg-config)))
+     (list docbook-xml-4.1.2 gobject-introspection gtk-doc/stable
+           pkg-config))
     (propagated-inputs
-     `(("glib" ,glib)
-       ("libsoup" ,libsoup)
-       ("libxml2" ,libxml2)))
+     (list glib libsoup libxml2))
     (synopsis "Glib library for feeds")
     (description "LibGRSS is a Glib abstraction to handle feeds in RSS, Atom,
 and other formats.")
@@ -602,12 +593,12 @@ in JavaScript.")
                                  "/xml/dtd/docbook/"))))
              #t)))))
     (native-inputs
-     `(("check" ,check)
-       ("docbook-xml" ,docbook-xml-4.3)
-       ("gobject-introspection" ,gobject-introspection)
-       ("pedansee" ,pedansee)
-       ("pkg-config" ,pkg-config)
-       ("vala" ,vala)))
+     (list check
+           docbook-xml-4.3
+           gobject-introspection
+           pedansee
+           pkg-config
+           vala))
     (inputs
      `(("avahi" ,avahi)
        ("librsvg" ,librsvg)
@@ -615,10 +606,7 @@ in JavaScript.")
        ("gst-plugins-base" ,gst-plugins-base)
        ("gtk+" ,gtk+)))
     (propagated-inputs
-     `(("glib" ,glib)
-       ("glib-networking" ,glib-networking)
-       ("gstreamer" ,gstreamer)
-       ("libsoup-minimal" ,libsoup-minimal-2)))
+     (list glib glib-networking gstreamer libsoup-minimal-2))
     (synopsis "Media management library")
     (description "Libdmapsharing is a library which allows programs to access,
 share and control the playback of media content using DMAP (DAAP, DPAP & DACP).
@@ -649,11 +637,9 @@ It is written in C using GObject and libsoup.")
                        (assoc-ref %outputs "doc")
                        "/share/gtk-doc/html"))))
     (native-inputs
-     `(("gobject-introspection" ,gobject-introspection)
-       ("gtk-doc" ,gtk-doc/stable)
-       ("pkg-config" ,pkg-config)))
+     (list gobject-introspection gtk-doc/stable pkg-config))
     (propagated-inputs
-     `(("glib" ,glib)))
+     (list glib))
     (synopsis "GLib Testing Framework")
     (description "GTX is a small collection of convenience functions intended to
 enhance the GLib testing framework.  With specific emphasis on easing the pain
@@ -730,7 +716,7 @@ of writing test cases for asynchronous interactions.")
     (inputs
      `(("icu" ,icu4c)))
     (propagated-inputs
-     `(("glib" ,glib)))
+     (list glib))
     (synopsis "Model to synchronize multiple instances over DBus")
     (description "Dee is a library that uses DBus to provide objects allowing
 you to create Model-View-Controller type programs across DBus.  It also consists
@@ -811,7 +797,7 @@ of known objects without needing a central registrar.")
        ("python-rdflib" ,python-rdflib)
        ("xapian-config" ,xapian)))
     (propagated-inputs
-     `(("glib" ,glib)))
+     (list glib))
     (synopsis "Desktop Activity Logging")
     (description "Zeitgeist is a service which logs the users’s activities and
 events, anywhere from files opened to websites visited and conversations.  It
@@ -1068,16 +1054,14 @@ between different kinds of computer systems.")
      `(#:glib-or-gtk? #t
        #:tests? #f))                    ; FIX-ME: Requires gvfs
     (native-inputs
-     `(("glib" ,glib "bin")
-       ("gobject-introspection" ,gobject-introspection)
-       ("pkg-config" ,pkg-config)))
+     (list `(,glib "bin") gobject-introspection pkg-config))
     (inputs
-     `(("amtk" ,amtk)
-       ("glib" ,glib)
-       ("gtk+" ,gtk+)
-       ("gtksourceview" ,gtksourceview)
-       ("libxml2" ,libxml2)
-       ("uchardet" ,uchardet)))
+     (list amtk
+           glib
+           gtk+
+           gtksourceview
+           libxml2
+           uchardet))
     (synopsis "Text editor product line")
     (description "Tepl is a library that eases the development of
 GtkSourceView-based text editors and IDEs.")
@@ -1116,17 +1100,9 @@ GtkSourceView-based text editors and IDEs.")
          "1w91gsvmifqhiam3xqf88i5rk2w6qadjalmbvvamjdc37j0vdc6x"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
-     `(("intltool" ,intltool)
-       ("itstool" ,itstool)
-       ("libxml2" ,libxml2)
-       ("pkg-config" ,pkg-config)
-       ("python-wrapper" ,python-wrapper)))
+     (list intltool itstool libxml2 pkg-config python-wrapper))
     (inputs
-     `(("glib" ,glib)
-       ("gtk+" ,gtk+)
-       ("libnotify" ,libnotify)
-       ("mit-krb5" ,mit-krb5)
-       ("network-manager" ,network-manager)))
+     (list glib gtk+ libnotify mit-krb5 network-manager))
     (synopsis "Popup dialogs for Kerberos 5")
     (description "krb5-auth-dialog is a simple dialog that monitors Kerberos
 tickets, and pops up a dialog when they are about to expire.")
@@ -1149,8 +1125,7 @@ tickets, and pops up a dialog when they are about to expire.")
          "1rgchqi4j2ll7d6a7lgy7id0w9rrkwkgic1096fbm2zx6n7pc4yx"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+     (list intltool pkg-config))
     (inputs
      `(("glib" ,glib)
        ("gtk+" ,gtk+)
@@ -1190,7 +1165,7 @@ freedesktop.org desktop notification specification.")
        ("pkg-config" ,pkg-config)
        ("sed" ,sed)))
     (inputs
-     `(("python" ,python)))
+     (list python))
     (synopsis "Module of GNOME C++ bindings")
     (description "The mm-common module provides the build infrastructure
 and utilities shared among the GNOME C++ binding libraries.  Release
@@ -1236,9 +1211,7 @@ Library reference documentation.")
       ("gtk-doc" ,gtk-doc/stable)
       ("pkg-config" ,pkg-config)))
    (inputs
-    `(("avahi" ,avahi)
-      ("libgudev" ,libgudev)
-      ("libsoup" ,libsoup)))
+    (list avahi libgudev libsoup))
    (synopsis "WebDav server implementation using libsoup")
    (description "PhoDav was initially developed as a file-sharing mechanism for Spice,
 but it is generic enough to be reused in other projects,
@@ -1279,19 +1252,19 @@ in particular in the GNOME desktop.")
       ("pkg-config" ,pkg-config)
       ("xorg-server" ,xorg-server-for-tests)))
    (inputs
-    `(("adwaita-icon-theme" ,adwaita-icon-theme)
-      ("appstream-glib" ,appstream-glib)
-      ("colord-gtk" ,colord-gtk)
-      ("exiv2" ,exiv2)
-      ("gnome-desktop" ,gnome-desktop)
-      ("libcanberra" ,libcanberra)
-      ("libexif" ,libexif)
-      ("libtiff" ,libtiff)
-      ("libxrandr" ,libxrandr)
-      ("libxtst" ,libxtst)
-      ("libxxf86vm" ,libxxf86vm)
-      ("vte" ,vte)
-      ("xorgproto" ,xorgproto)))
+    (list adwaita-icon-theme
+          appstream-glib
+          colord-gtk
+          exiv2
+          gnome-desktop
+          libcanberra
+          libexif
+          libtiff
+          libxrandr
+          libxtst
+          libxxf86vm
+          vte
+          xorgproto))
    (synopsis "Color profile manager for the GNOME desktop")
    (description "GNOME Color Manager is a session framework that makes
 it easy to manage, install and generate color profiles
@@ -1372,7 +1345,7 @@ It has miners for Facebook, Flickr, Google, ownCloud and SkyDrive.")
       ("pkg-config" ,pkg-config)
       ("vala" ,vala)))
    (inputs
-    `(("gtk+" ,gtk+)))
+    (list gtk+))
    (propagated-inputs
     ;; The .pc file "Requires" libsoup-2.4.
     `(("libsoup" ,libsoup-minimal-2)))
@@ -1412,12 +1385,10 @@ a debugging tool, @command{gssdp-device-sniffer}.")
       ("pkg-config" ,pkg-config)
       ("vala" ,vala)))
    (inputs
-    `(("gssdp" ,gssdp)
-      ("gtk+" ,gtk+)
-      ("libsoup" ,libsoup)))
+    (list gssdp gtk+ libsoup))
    (propagated-inputs
-    `(;; For ‘org.gnome.system.proxy’.
-      ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)))
+    (list ;; For ‘org.gnome.system.proxy’.
+          gsettings-desktop-schemas))
    (synopsis "PnP API for GNOME")
    (description "This package provides GUPnP, an object-oriented framework
 for creating UPnP devices and control points, written in C using
@@ -1447,11 +1418,9 @@ for creating UPnP devices and control points, written in C using
       ("pkg-config" ,pkg-config)
       ("vala" ,vala)))
    (inputs
-    `(("gstreamer" ,gstreamer)
-      ("gupnp" ,gupnp)))
+    (list gstreamer gupnp))
    (propagated-inputs
-    `(("gst-plugins-base" ,gst-plugins-base)
-      ("gst-plugins-good" ,gst-plugins-good)))
+    (list gst-plugins-base gst-plugins-good))
    (synopsis "GUPnP DLNA for GNOME")
    (description "This package provides a small utility library to
 support DLNA-related tasks such as media profile guessing, transcoding to a
@@ -1481,8 +1450,7 @@ given profile, etc.  DLNA is a subset of UPnP A/V.")
       ("pkg-config" ,pkg-config)
       ("vala" ,vala)))
    (inputs
-    `(("gtk+" ,gtk+)
-      ("gupnp" ,gupnp)))
+    (list gtk+ gupnp))
    (synopsis "GUPnP A/V for GNOME")
    (description "This package provides a small library for handling
 and implementation of UPnP A/V profiles.")
@@ -1612,12 +1580,12 @@ tour of all gnome components and allows the user to set them up.")
       ("pkg-config" ,pkg-config)
       ("yelp-tools" ,yelp-tools)))
    (inputs
-    `(("glib" ,glib)
-      ("gnome-bluetooth" ,gnome-bluetooth)
-      ("gtk+" ,gtk+)
-      ("libcanberra" ,libcanberra)
-      ("libnotify" ,libnotify)
-      ("nautilus" ,nautilus)))      ; For nautilus extension.
+    (list glib
+          gnome-bluetooth
+          gtk+
+          libcanberra
+          libnotify
+          nautilus))      ; For nautilus extension.
    (synopsis "File sharing for GNOME desktop")
    (description "GNOME User Share is a small package that binds together
 various free software projects to bring easy to use user-level file
@@ -1708,22 +1676,22 @@ mpris,playbin,ruih,tracker3")))
        ("dockbook-xsl" ,docbook-xsl)
        ("xsltproc" ,libxslt)))
     (inputs
-     `(("gdk-pixbuf" ,gdk-pixbuf)
-       ("gssdp" ,gssdp)
-       ("gstreamer" ,gstreamer)
-       ("gst-plugins-base" ,gst-plugins-base)
-       ("gst-editing-services" ,gst-editing-services)
-       ("gtk+" ,gtk+)
-       ("gupnp" ,gupnp)
-       ("gupnp-av" ,gupnp-av)
-       ("gupnp-dlna" ,gupnp-dlna)
-       ("json-glib" ,json-glib)
-       ("libgee" ,libgee)
-       ("libmediaart" ,libmediaart)
-       ("libsoup" ,libsoup)
-       ("libxslt" ,libxslt)
-       ("libunistring" ,libunistring)
-       ("tracker" ,tracker)))
+     (list gdk-pixbuf
+           gssdp
+           gstreamer
+           gst-plugins-base
+           gst-editing-services
+           gtk+
+           gupnp
+           gupnp-av
+           gupnp-dlna
+           json-glib
+           libgee
+           libmediaart
+           libsoup
+           libxslt
+           libunistring
+           tracker))
     (synopsis "Share audio, video, and pictures with other devices")
     (description
      "Rygel is a home media solution (@dfn{UPnP AV MediaServer and
@@ -1773,11 +1741,8 @@ client devices can handle.")
        ("pkg-config" ,pkg-config)
        ("vala" ,vala)))
     (inputs
-     `(("gcr" ,gcr)
-       ("gtk+" ,gtk+)
-       ("iso-codes" ,iso-codes)
-       ("mobile-broadband-provider-info" ,mobile-broadband-provider-info)
-       ("network-manager" ,network-manager)))
+     (list gcr gtk+ iso-codes mobile-broadband-provider-info
+           network-manager))
     (synopsis "Network Manager's applet library")
     (description "Libnma is an applet library for Network Manager.  It was
 initially part of network-manager-applet and has now become a separate
@@ -1919,10 +1884,7 @@ either on a local, or remote machine via a number of methods.")
        ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("gconf" ,gconf)
-       ("gnome-vfs" ,gnome-vfs)
-       ("gtk+" ,gtk+-2)
-       ("libxml2" ,libxml2)))
+     (list gconf gnome-vfs gtk+-2 libxml2))
     (home-page "https://gcmd.github.io/")
     (synopsis "Two-pane graphical file manager for the GNOME desktop")
     (description
@@ -1988,11 +1950,8 @@ and system administrators.")
          ;; ERROR: Unknown method "dependency" in object.
          ("python-2" ,python-2)))
       (native-inputs
-       `(("appstream-glib" ,appstream-glib)
-         ("docbook-xsl" ,docbook-xsl)
-         ("glib" ,glib "bin")
-         ("intltool" ,intltool)
-         ("pkg-config" ,pkg-config)))
+       (list appstream-glib docbook-xsl
+             `(,glib "bin") intltool pkg-config))
       (home-page "https://wiki.gnome.org/Apps/Dia")
       (synopsis "Diagram creation for GNOME")
       (description "Dia can be used to draw different types of diagrams, and
@@ -2028,9 +1987,7 @@ formats like PNG, SVG, PDF and EPS.")
        ("pkg-config" ,pkg-config)
        ("uhttpmock" ,uhttpmock)))
     (inputs
-     `(("cyrus-sasl" ,cyrus-sasl)
-       ("glib-networking" ,glib-networking)
-       ("vala" ,vala)))
+     (list cyrus-sasl glib-networking vala))
     (propagated-inputs
      `(("gcr" ,gcr)
        ("glib" ,glib)
@@ -2061,8 +2018,7 @@ access the common Google services, and has full asynchronous support.")
                 "07156nj7yrp3h9zyzx6mjwxwmfijialb4gi5d6dwyp53arr8c9vd"))))
     (build-system meson-build-system)
     (native-inputs
-     `(("gobject-introspection" ,gobject-introspection)
-       ("pkg-config" ,pkg-config)))
+     (list gobject-introspection pkg-config))
     (inputs
      `(("gtk+" ,gtk+)
        ("libjpeg" ,libjpeg-turbo)
@@ -2070,9 +2026,7 @@ access the common Google services, and has full asynchronous support.")
        ("libtiff" ,libtiff)))
     (propagated-inputs
      ;; In Requires of libgxps.pc.
-     `(("cairo" ,cairo)
-       ("glib" ,glib)
-       ("libarchive" ,libarchive)))
+     (list cairo glib libarchive))
     (home-page "https://wiki.gnome.org/Projects/libgxps")
     (synopsis "GObject-based library for handling and rendering XPS documents")
     (description
@@ -2114,11 +2068,7 @@ to other formats.")
        ("pkg-config" ,pkg-config)
        ("python" ,python-minimal)))
     (inputs
-     `(("gjs" ,gjs)
-       ("gtk+" ,gtk+)
-       ("libhandy" ,libhandy)
-       ("libunistring" ,libunistring)
-       ("gnome-desktop" ,gnome-desktop)))
+     (list gjs gtk+ libhandy libunistring gnome-desktop))
     (home-page "https://wiki.gnome.org/Apps/CharacterMap")
     (synopsis "Find and insert unusual characters")
     (description "Characters is a simple utility application to find
@@ -2200,8 +2150,7 @@ commonly used macros.")
        ("telepathy-glib" ,telepathy-glib)
        ("vala" ,vala)))
     (propagated-inputs
-     `(("folks" ,folks)
-       ("telepathy-mission-control" ,telepathy-mission-control)))
+     (list folks telepathy-mission-control))
     (synopsis "GNOME's integrated address book")
     (description
      "GNOME Contacts organizes your contact information from online and
@@ -2267,19 +2216,19 @@ offline sources, providing a centralized place for managing your contacts.")
        ("xorg-server" ,xorg-server-for-tests)))
     (propagated-inputs
      ;; Required by gnome-desktop-3.0.pc.
-     `(("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("gtk+" ,gtk+)
-       ("iso-codes" ,iso-codes)
-       ("libseccomp" ,libseccomp)
-       ("libx11" ,libx11)
-       ("xkeyboard-config" ,xkeyboard-config)))
+     (list gsettings-desktop-schemas
+           gtk+
+           iso-codes
+           libseccomp
+           libx11
+           xkeyboard-config))
     (inputs
-     `(("gdk-pixbuf" ,gdk-pixbuf)
-       ("glib" ,glib)
-       ("bubblewrap" ,bubblewrap)
-       ("libxext" ,libxext)
-       ("libxkbfile" ,libxkbfile)
-       ("libxrandr" ,libxrandr)))
+     (list gdk-pixbuf
+           glib
+           bubblewrap
+           libxext
+           libxkbfile
+           libxrandr))
     (home-page "https://www.gnome.org/")
     (synopsis
      "Libgnome-desktop, gnome-about, and desktop-wide documents")
@@ -2357,18 +2306,18 @@ and keep up to date translations of documentation.")
        ("libxml2" ,libxml2)
        ("libxslt" ,libxslt)))
     (inputs
-     `(("elogind" ,elogind)
-       ("glib" ,glib)
-       ("appstream-glib" ,appstream-glib)
-       ("gnome-settings-daemon" ,gnome-settings-daemon)
-       ("gtk+" ,gtk+)
-       ("libcanberra" ,libcanberra)
-       ("libdvdread" ,libdvdread)
-       ("libhandy" ,libhandy)
-       ("libnotify" ,libnotify)
-       ("libpwquality" ,libpwquality)
-       ("libsecret" ,libsecret)
-       ("udisks" ,udisks)))
+     (list elogind
+           glib
+           appstream-glib
+           gnome-settings-daemon
+           gtk+
+           libcanberra
+           libdvdread
+           libhandy
+           libnotify
+           libpwquality
+           libsecret
+           udisks))
     (home-page "https://git.gnome.org/browse/gnome-disk-utility")
     (synopsis "Disk management utility for GNOME")
     (description "Disk management utility for GNOME.")
@@ -2411,11 +2360,7 @@ and keep up to date translations of documentation.")
        ("glib:bin" ,glib "bin")
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("glib" ,glib)
-       ("gnome-desktop" ,gnome-desktop)
-       ("gtk+" ,gtk+)
-       ("libhandy" ,libhandy)
-       ("libxml2" ,libxml2)))
+     (list glib gnome-desktop gtk+ libhandy libxml2))
     (home-page "https://gitlab.gnome.org/GNOME/gnome-font-viewer")
     (synopsis "GNOME Fonts")
     (description "Application to show you the fonts installed on your computer
@@ -2464,10 +2409,8 @@ the font would look under various sizes.")
              (setenv "HOME" "/tmp")
              #t)))))
     (inputs
-     `(("dbus" ,dbus)
-       ("gnupg" ,gnupg)                ;called as a child process during tests
-       ("libgcrypt" ,libgcrypt)
-       ("libsecret" ,libsecret)))
+     (list dbus gnupg ;called as a child process during tests
+           libgcrypt libsecret))
     (native-inputs
      `(("python" ,python-wrapper)       ;for tests
        ("openssh" ,openssh)             ;for tests
@@ -2484,9 +2427,7 @@ the font would look under various sizes.")
        ("xsltproc" ,libxslt)))
     ;; mentioned in gck.pc, gcr.pc and gcr-ui.pc
     (propagated-inputs
-     `(("p11-kit" ,p11-kit)
-       ("glib" ,glib)
-       ("gtk+" ,gtk+)))
+     (list p11-kit glib gtk+))
     (home-page "https://www.gnome.org")
     (synopsis "Libraries for displaying certificates and accessing key stores")
     (description
@@ -2513,20 +2454,20 @@ GNOME Desktop.")
                 "154qcr0x6f68f4q526y87imv0rscmp34n47nk1pp82rsq52h2zna"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("glib" ,glib "bin")             ; for glib-genmarshal, etc.
-       ("gnome-common" ,gnome-common)
-       ("gtk-doc" ,gtk-doc/stable)
-       ("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)
-       ("libtool" ,libtool)
-       ("which" ,which)))
+     (list autoconf
+           automake
+           `(,glib "bin") ; for glib-genmarshal, etc.
+           gnome-common
+           gtk-doc/stable
+           intltool
+           pkg-config
+           libtool
+           which))
     (inputs
-     `(("libxml2" ,libxml2)))
+     (list libxml2))
     (propagated-inputs
      ;; The gdl-3.0.pc file 'Requires' GTK+.
-     `(("gtk+" ,gtk+)))
+     (list gtk+))
     (home-page "https://gitlab.gnome.org/GNOME/gdl/")
     (synopsis "GNOME docking library")
     (description "This library provides docking features for gtk+.")
@@ -2565,15 +2506,13 @@ GNOME Desktop.")
                "10vpjhgbjm7z2djy04qakd02qlzpd02xnbfjhk2aqwjzn3xpihf4"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libgcrypt" ,libgcrypt)
-       ("dbus" ,dbus)))
+     (list libgcrypt dbus))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("glib" ,glib "bin")
-       ("intltool" ,intltool)))
+     (list pkg-config
+           `(,glib "bin") intltool))
     (propagated-inputs
      ;; Referred to in .h files and .pc.
-     `(("glib" ,glib)))
+     (list glib))
     (home-page "https://www.gnome.org")
     (synopsis "Accessing passwords from the GNOME keyring")
     (description
@@ -2630,11 +2569,7 @@ GNOME Desktop.")
              (invoke "aclocal")
              (invoke "automake" "-ac"))))))
     (inputs
-     `(("libgcrypt" ,libgcrypt)
-       ("linux-pam" ,linux-pam)
-       ("openssh" ,openssh)
-       ("dbus" ,dbus)
-       ("gcr" ,gcr)))
+     (list libgcrypt linux-pam openssh dbus gcr))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("glib" ,glib "bin")
@@ -2647,7 +2582,7 @@ GNOME Desktop.")
        ("docbook-xml" ,docbook-xml-4.3)
        ("docbook-xsl" ,docbook-xsl)))
     (propagated-inputs
-     `(("gcr" ,gcr)))
+     (list gcr))
     (home-page "https://www.gnome.org")
     (synopsis "Daemon to store passwords and encryption keys")
     (description
@@ -2691,32 +2626,32 @@ forgotten when the session ends.")
                (("gtk-update-icon-cache") "true"))
              #t)))))
     (inputs
-     `(("libarchive" ,libarchive)
-       ("libgxps" ,libgxps)
-       ("libspectre" ,libspectre)
-       ("djvulibre" ,djvulibre)
-       ("ghostscript" ,ghostscript)
-       ("poppler" ,poppler)
-       ("libtiff" ,libtiff)
-       ("texlive-libkpathsea" ,texlive-libkpathsea) ; for DVI support
-       ("gnome-desktop" ,gnome-desktop)
-       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("gspell" ,gspell)
-       ("libgnome-keyring" ,libgnome-keyring)
-       ("adwaita-icon-theme" ,adwaita-icon-theme)
-       ("gdk-pixbuf" ,gdk-pixbuf)
-       ("atk" ,atk)
-       ("pango" ,pango)
-       ("gtk+" ,gtk+)
-       ("glib" ,glib)
-       ("libxml2" ,libxml2)
-       ("libsm" ,libsm)
-       ("libice" ,libice)
-       ("shared-mime-info" ,shared-mime-info)
-       ("dconf" ,dconf)
-       ("libcanberra" ,libcanberra)
-       ("libsecret" ,libsecret)
-       ("libhandy" ,libhandy)))
+     (list libarchive
+           libgxps
+           libspectre
+           djvulibre
+           ghostscript
+           poppler
+           libtiff
+           texlive-libkpathsea ; for DVI support
+           gnome-desktop
+           gsettings-desktop-schemas
+           gspell
+           libgnome-keyring
+           adwaita-icon-theme
+           gdk-pixbuf
+           atk
+           pango
+           gtk+
+           glib
+           libxml2
+           libsm
+           libice
+           shared-mime-info
+           dconf
+           libcanberra
+           libsecret
+           libhandy))
     (native-inputs
      `(("itstool" ,itstool)
        ("intltool" ,intltool)
@@ -2761,8 +2696,7 @@ on the GNOME Desktop with a single simple application.")
                           ;; Do not reference fonts, that may not exist.
                           (("'Source Code Pro 10'") "'Monospace 11'"))))))))
     (inputs
-     `(("glib" ,glib)
-       ("gnome-backgrounds" ,gnome-backgrounds)))
+     (list glib gnome-backgrounds))
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("glib" ,glib "bin")             ; glib-compile-schemas, etc.
@@ -2798,11 +2732,11 @@ schemas for settings shared by various components of the GNOME desktop.")
              (setenv "DISPLAY" ":1")
              #t)))))
     (native-inputs
-     `(("xorg-server" ,xorg-server-for-tests)))
+     (list xorg-server-for-tests))
     (inputs
-     `(("gtk+" ,gtk+)))
+     (list gtk+))
     (propagated-inputs
-     `(("python-pygobject" ,python-pygobject)))
+     (list python-pygobject))
     (home-page "https://wiki.gnome.org/Projects/liblarch")
     (synopsis "Library to easily handle complex data structures")
     (description
@@ -2854,16 +2788,16 @@ and how they are displayed (View).")
        ("gtk+:bin" ,gtk+ "bin")
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("librsvg" ,librsvg)
-       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("gtk+" ,gtk+)
-       ("pango" ,pango)
-       ("python-dbus" ,python-dbus)
-       ("python-liblarch" ,python-liblarch)
-       ("python-lxml" ,python-lxml)
-       ("python-pycairo" ,python-pycairo)
-       ("python-pygobject" ,python-pygobject)
-       ("python-pyxdg" ,python-pyxdg)))
+     (list librsvg
+           gsettings-desktop-schemas
+           gtk+
+           pango
+           python-dbus
+           python-liblarch
+           python-lxml
+           python-pycairo
+           python-pygobject
+           python-pyxdg))
     (home-page "https://wiki.gnome.org/Apps/GTG")
     (synopsis "Personal organizer for the GNOME desktop")
     (description
@@ -2889,8 +2823,7 @@ know, from small tasks to large projects.")
         "1mc3v28fdfqanx3lqx233vcr4glb4c2376k0kx2v91a4vxwqcdxi"))))
     (build-system gnu-build-system)
     (inputs
-     `(("perl" ,perl)
-       ("perl-xml-simple" ,perl-xml-simple)))
+     (list perl perl-xml-simple))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
@@ -2933,9 +2866,7 @@ GNOME and KDE desktops to the icon names proposed in the specification.")
               (true      (string-append coreutils "/bin/true")))
          (list (string-append "GTK_UPDATE_ICON_CACHE=" true)))))
     (native-inputs
-     `(("icon-naming-utils" ,icon-naming-utils)
-       ("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+     (list icon-naming-utils intltool pkg-config))
     (home-page "https://wiki.gnome.org/Personalization")
     (synopsis "GNOME icon theme")
     (description "Icons for the GNOME desktop.")
@@ -2974,10 +2905,7 @@ GNOME and KDE desktops to the icon names proposed in the specification.")
                 "034r9s944b4yikyfgn602yv7s54wdzlq0qfvqh52b9x6kbx08h79"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("icon-naming-utils" ,icon-naming-utils)
-       ("intltool" ,intltool)
-       ("imagemagick" ,imagemagick)
-       ("pkg-config" ,pkg-config)))
+     (list icon-naming-utils intltool imagemagick pkg-config))
     (home-page "http://tango-project.org/")
     (synopsis "Tango icon theme")
     (description "This is an icon theme that follows the Tango visual
@@ -3002,8 +2930,7 @@ guidelines.")
      ;; The build system appears not to be parallel-safe.
      '(#:parallel-build? #f))
     (inputs
-     `(("glib" ,glib)
-       ("libxml2" ,libxml2)))
+     (list glib libxml2))
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("itstool" ,itstool)
@@ -3070,29 +2997,29 @@ database is translated at Transifex.")
                        "scp-dbus-service"))))
              #t)))))
     (inputs
-     `(("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("gobject-introspection" ,gobject-introspection)
-       ("python" ,python)
-       ("cups" ,cups)
-       ("gtk+" ,gtk+)
-       ("python-dbus" ,python-dbus)
-       ("python-pygobject" ,python-pygobject)
-       ("python-pycups" ,python-pycups)
-       ("python-requests" ,python-requests)
-       ("python-pycairo" ,python-pycairo)
-       ("libnotify" ,libnotify)
-       ("packagekit" ,packagekit)))
+     (list gsettings-desktop-schemas
+           gobject-introspection
+           python
+           cups
+           gtk+
+           python-dbus
+           python-pygobject
+           python-pycups
+           python-requests
+           python-pycairo
+           libnotify
+           packagekit))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("desktop-file-utils" ,desktop-file-utils)
-       ("glib" ,glib)
-       ("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("intltool" ,intltool)
-       ("xmlto" ,xmlto)
-       ("docbook-xml" ,docbook-xml-4.1.2)
-       ("docbook-xsl" ,docbook-xsl)
-       ("libxml2" ,libxml2)))
+     (list pkg-config
+           desktop-file-utils
+           glib
+           autoconf
+           automake
+           intltool
+           xmlto
+           docbook-xml-4.1.2
+           docbook-xsl
+           libxml2))
     (home-page "https://github.com/zdohnal/system-config-printer")
     (synopsis "CUPS administration tool")
     (description
@@ -3152,12 +3079,10 @@ configuring CUPS.")
                                "/manpages/docbook.xsl")))
              #t)))))
     (propagated-inputs
-     `(;; In Requires of libnotify.pc.
-       ("gdk-pixbuf" ,gdk-pixbuf)
-       ("glib" ,glib)))
+     (list ;; In Requires of libnotify.pc.
+           gdk-pixbuf glib))
     (inputs
-     `(("gtk+" ,gtk+)
-       ("libpng" ,libpng)))
+     (list gtk+ libpng))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("glib" ,glib "bin")
@@ -3205,10 +3130,7 @@ some form of information without getting in the user's way.")
                (system (format #f "~a/bin/Xvfb ~a &" xorg-server disp))
                #t))))))
     (inputs
-     `(("gtk+" ,gtk+)
-       ("glade" ,glade3)
-       ("python" ,python)
-       ("python-pygobject" ,python-pygobject)))
+     (list gtk+ glade3 python python-pygobject))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("gettext" ,gettext-minimal)
@@ -3217,7 +3139,7 @@ some form of information without getting in the user's way.")
        ("xorg-server" ,xorg-server-for-tests)))
     (propagated-inputs
      ;; The .pc file "Requires" gobject-introspection.
-     `(("gobject-introspection" ,gobject-introspection)))
+     (list gobject-introspection))
     (home-page "https://wiki.gnome.org/Libpeas")
     (synopsis "GObject plugin system")
     (description
@@ -3251,14 +3173,10 @@ API.")
              (substitute* "gdk/gdkglshapes.c"
                ((" index") " triangle_index"))
              #t)))))
-    (inputs `(("gtk+" ,gtk+-2)
-              ("mesa" ,mesa)
-              ("glu" ,glu)
-              ("libx11" ,libx11)
-              ("libxt" ,libxt)))
-    (native-inputs `(("pkg-config" ,pkg-config)
-                     ("glib" ,glib "bin")))
-    (propagated-inputs `(("pangox-compat" ,pangox-compat)))
+    (inputs (list gtk+-2 mesa glu libx11 libxt))
+    (native-inputs (list pkg-config
+                         `(,glib "bin")))
+    (propagated-inputs (list pangox-compat))
     (home-page "https://projects.gnome.org/gtkglext")
     (synopsis "OpenGL extension to GTK+")
     (description "GtkGLExt is an OpenGL extension to GTK+.  It provides
@@ -3319,8 +3237,7 @@ current/manpages/docbook.xsl")
              (system "Xvfb :1 &")
              (setenv "DISPLAY" ":1"))))))
     (inputs
-     `(("gtk+" ,gtk+)
-       ("libxml2" ,libxml2)))
+     (list gtk+ libxml2))
     (native-inputs
      `(("hicolor-icon-theme" ,hicolor-icon-theme)
        ("intltool" ,intltool)
@@ -3368,11 +3285,9 @@ the GNOME desktop environment.")
                 "1m110rbj5d2raxcdp4iz0qp172284945awrsbdlq99ksmqsc4zkn"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("glib" ,glib)
-       ("libxml2" ,libxml2)
-       ("zlib" ,zlib)))
+     (list glib libxml2 zlib))
     (home-page "https://github.com/GNOME/libcroco")
     (synopsis "CSS2 parsing and manipulation library")
     (description
@@ -3439,12 +3354,9 @@ XML/CSS rendering engine.")
        ("pkg-config" ,pkg-config)
        ("python" ,python-wrapper)))
     (inputs
-     `(("bzip2" ,bzip2)
-       ("gdk-pixbuf" ,gdk-pixbuf)
-       ("zlib" ,zlib)))
+     (list bzip2 gdk-pixbuf zlib))
     (propagated-inputs
-     `(("glib" ,glib)
-       ("libxml2" ,libxml2)))
+     (list glib libxml2))
     (synopsis "G Structured File Library")
     (description "Libgsf aims to provide an efficient extensible I/O abstraction
 for dealing with different structured file formats.")
@@ -3743,11 +3655,9 @@ diagrams.")
                (base32
                 "08129my8s9fbrk0vqvnmx6ph4nid744g5vbwphzkaik51664vln5"))))
     (build-system gnu-build-system)
-    (inputs `(("glib" ,glib)))
+    (inputs (list glib))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("flex" ,flex)
-       ("bison" ,bison)))
+     (list pkg-config flex bison))
     (home-page "http://freecode.com/projects/libidl")
     (synopsis "Create trees of CORBA Interface Definition Language files")
     (description  "Libidl is a library for creating trees of CORBA Interface
@@ -3800,10 +3710,9 @@ $(DEPS) CosNaming.h libname-server-2.a"))))
              (substitute* "linc2/src/Makefile.in"
                (("-DG_DISABLE_DEPRECATED")
                 "-DGLIB_DISABLE_DEPRECATION_WARNINGS")))))))
-    (inputs `(("glib" ,glib)
-              ("libidl" ,libidl)))
+    (inputs (list glib libidl))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://projects.gnome.org/orbit2/")
     (synopsis "CORBA 2.4-compliant Object Request Broker")
     (description  "ORBit2 is a CORBA 2.4-compliant Object Request Broker (orb)
@@ -3848,18 +3757,16 @@ featuring mature C, C++ and Python bindings.")
        ;; at <https://forums.gentoo.org/viewtopic-t-223376-start-550.html>.
        ;; Thus, disable parallel builds.
        #:parallel-build? #f))
-    (inputs `(("popt" ,popt)
-              ("libxml2" ,libxml2)))
+    (inputs (list popt libxml2))
     ;; The following are Required by the .pc file
     (propagated-inputs
-     `(("glib" ,glib)
-       ("orbit2" ,orbit2)))
+     (list glib orbit2))
     (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)
-       ("glib" ,glib "bin")             ; for glib-genmarshal, etc.
-       ("flex" ,flex)
-       ("bison" ,bison)))
+     (list intltool
+           pkg-config
+           `(,glib "bin") ; for glib-genmarshal, etc.
+           flex
+           bison))
     (home-page "https://developer.gnome.org/libbonobo/")
     (synopsis "Framework for creating reusable components for use in GNOME applications")
     (description "Bonobo is a framework for creating reusable components for
@@ -3884,14 +3791,13 @@ use in GNOME applications, built on top of CORBA.")
               (sha256
                (base32 "0k3q9nh53yhc9qxf1zaicz4sk8p3kzq4ndjdsgpaa2db0ccbj4hr"))))
     (build-system gnu-build-system)
-    (inputs `(("dbus-glib" ,dbus-glib)
-              ("libxml2" ,libxml2)))
-    (propagated-inputs `(("glib" ,glib) ; referred to in the .pc file
-                         ("orbit2" ,orbit2)))
+    (inputs (list dbus-glib libxml2))
+    (propagated-inputs (list glib ; referred to in the .pc file
+                             orbit2))
     (native-inputs
-     `(("intltool" ,intltool)
-       ("glib" ,glib "bin")             ; for glib-genmarshal, etc.
-       ("pkg-config" ,pkg-config)))
+     (list intltool
+           `(,glib "bin") ; for glib-genmarshal, etc.
+           pkg-config))
     (home-page "https://projects.gnome.org/gconf/")
     (synopsis "Store application preferences")
     (description "Gconf is a system for storing application preferences.  It
@@ -3914,8 +3820,7 @@ is intended for user preferences; not arbitrary data storage.")
                 "1mvg8glb2a40yilmyabmb7fkbzlqd3i3d31kbkabqnq86xdnn69p"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("perl" ,perl)
-       ("intltool" ,intltool)))
+     (list perl intltool))
     (arguments
      '(#:phases (modify-phases %standard-phases
                   (add-after 'configure 'use-our-intltool
@@ -3962,15 +3867,10 @@ designed to be accessed through the MIME functions in GnomeVFS.")
              (substitute* "test/test-async-cancel.c"
                (("EXIT_FAILURE") "77"))
              #t)))))
-    (inputs `(("libxml2" ,libxml2)
-              ("dbus-glib" ,dbus-glib)
-              ("gconf" ,gconf)
-              ("gnome-mime-data" ,gnome-mime-data)
-              ("zlib" ,zlib)))
+    (inputs (list libxml2 dbus-glib gconf gnome-mime-data zlib))
     (native-inputs
-     `(("glib" ,glib "bin")             ; for glib-mkenums, etc.
-       ("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+     (list `(,glib "bin") ; for glib-mkenums, etc.
+           intltool pkg-config))
     (home-page "https://developer.gnome.org/gnome-vfs/")
     (synopsis "Access files and folders in GNOME applications")
     (description
@@ -4003,21 +3903,16 @@ to access local and remote files with a single consistent API.")
              (substitute* "libgnome/Makefile.in"
                (("-DG_DISABLE_DEPRECATED") "-DGLIB_DISABLE_DEPRECATION_WARNINGS"))
              #t)))))
-    (inputs `(("libxml2" ,libxml2)))
+    (inputs (list libxml2))
     (native-inputs
-     `(("glib" ,glib "bin")             ; for glib-mkenums, etc.
-       ("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+     (list `(,glib "bin") ; for glib-mkenums, etc.
+           intltool pkg-config))
     ;; The following are listed as Required in the .pc file
     ;; (except for libcanberra -- which seems to be oversight on the part
     ;; of the upstream developers -- anything that links against libgnome,
     ;; must also link against libcanberra
     (propagated-inputs
-     `(("libcanberra" ,libcanberra)
-       ("libbonobo" ,libbonobo)
-       ("gconf" ,gconf)
-       ("gnome-vfs" ,gnome-vfs)
-       ("popt" ,popt)))                       ;gnome-program.h includes popt.h
+     (list libcanberra libbonobo gconf gnome-vfs popt))                       ;gnome-program.h includes popt.h
     (home-page "https://developer.gnome.org/libgnome/")
     (synopsis "Useful routines for building applications")
     (description  "The libgnome library provides a number of useful routines
@@ -4041,7 +3936,7 @@ files and URIs, and displaying help.")
                 "1yknfkyzgz9s616is0l9gp5aray0f2ry4dw533jgzj8gq5s1xhgx"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://people.gnome.org/~mathieu/libart")
     (synopsis "2D drawing library")
     (description  "Libart is a 2D drawing library intended as a
@@ -4064,12 +3959,11 @@ high-quality vector-based 2D library with antialiasing and alpha composition.")
                 "1nhnq4lfkk8ljkdafscwaggx0h95mq0rxnd7zgqyq0xb6kkqbjm8"))))
     (build-system gnu-build-system)
     ;; Mentioned as Required in the .pc file
-    (propagated-inputs `(("libart-lgpl" ,libart-lgpl)
-                         ("gtk+" ,gtk+-2)))
+    (propagated-inputs (list libart-lgpl gtk+-2))
     (native-inputs
-     `(("intltool" ,intltool)
-       ("glib" ,glib "bin")             ; for glib-genmarshal, etc.
-       ("pkg-config" ,pkg-config)))
+     (list intltool
+           `(,glib "bin") ; for glib-genmarshal, etc.
+           pkg-config))
     (home-page "https://developer.gnome.org/libgnomecanvas/")
     (synopsis "Flexible widget for creating interactive structured graphics")
     (description  "The GnomeCanvas widget provides a flexible widget for
@@ -4089,7 +3983,7 @@ creating interactive structured graphics.")
                (base32
                 "0679hcnpam2gkag2i63sm0wdm35gwvzafnz1354mg6j5gzwpfrcr"))))
     (build-system gnu-build-system)
-    (propagated-inputs `(("libgnomecanvas" ,libgnomecanvas)))
+    (propagated-inputs (list libgnomecanvas))
     (native-inputs
      `(("gtkmm-2" ,gtkmm-2)
        ("pkg-config" ,pkg-config)))
@@ -4113,19 +4007,16 @@ creating interactive structured graphics.")
                 "03rwbli76crkjl6gp422wrc9lqpl174k56cp9i96b7l8jlj2yddf"))))
     (build-system gnu-build-system)
     ;; Mentioned as Required in the .pc file
-    (propagated-inputs `(("libbonoboui" ,libbonoboui)
-                         ("libgnome" ,libgnome)
-                         ("libgnomecanvas" ,libgnomecanvas)
-                         ("libgnome-keyring" ,libgnome-keyring)))
+    (propagated-inputs (list libbonoboui libgnome libgnomecanvas
+                             libgnome-keyring))
     (inputs `(("libjpeg" ,libjpeg-turbo)
               ("popt" ,popt)
               ("libbonobo" ,libbonobo)
               ("libxml2" ,libxml2)
               ("libglade" ,libglade)))
     (native-inputs
-     `(("glib" ,glib "bin")             ; for glib-mkenums, etc.
-       ("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+     (list `(,glib "bin") ; for glib-mkenums, etc.
+           intltool pkg-config))
     (home-page "https://developer.gnome.org/libgnomeui/")
     (synopsis "Additional widgets for applications")
     (description "The libgnomeui library provides additional widgets for
@@ -4147,12 +4038,12 @@ ported to GTK+.")
                 "1v2x2s04jry4gpabws92i0wq2ghd47yr5n9nhgnkd7c38xv1wdk4"))))
     (build-system gnu-build-system)
     (inputs
-     `(("python" ,python))) ;; needed for the optional libglade-convert program
+     (list python)) ;; needed for the optional libglade-convert program
     (propagated-inputs
      `(("gtk+-2" ,gtk+-2)
        ("libxml2" ,libxml2))) ; required by libglade-2.0.pc
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://developer.gnome.org/libglade")
     (synopsis "Load glade interfaces and access the glade built widgets")
     (description "Libglade is a library that provides interfaces for loading
@@ -4187,18 +4078,14 @@ widgets built in the loading process.")
                ;; Therefore we must do it.
                (zero? (system (format #f "~a/bin/Xvfb ~a &" xorg-server disp)))))))))
     ;; Mentioned as Required by the .pc file
-    (propagated-inputs `(("libxml2" ,libxml2)))
+    (propagated-inputs (list libxml2))
     (inputs
-     `(("popt" ,popt)
-       ("pangox-compat" ,pangox-compat)
-       ("libgnome" ,libgnome)
-       ("libgnomecanvas" ,libgnomecanvas)
-       ("libglade" ,libglade)))
+     (list popt pangox-compat libgnome libgnomecanvas libglade))
     (native-inputs
-     `(("glib" ,glib "bin")             ; for glib-genmarshal, etc.
-       ("intltool" ,intltool)
-       ("xorg-server" ,xorg-server-for-tests) ; For running the tests
-       ("pkg-config" ,pkg-config)))
+     (list `(,glib "bin") ; for glib-genmarshal, etc.
+           intltool
+           xorg-server-for-tests ; For running the tests
+           pkg-config))
     (home-page "https://developer.gnome.org/libbonoboui/")
     (synopsis "Some user interface controls using Bonobo")
     (description  "The Bonobo UI library provides a number of user interface
@@ -4219,14 +4106,12 @@ controls using the Bonobo component framework.")
                 "1jp3p1lnwnwi6fxl2rz3166cmwzwy9vqz896anpwc3wdy9f875cm"))))
     (build-system meson-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("glib" ,glib "bin") ; for glib-mkenums
-       ("gobject-introspection" ,gobject-introspection) ; for g-ir-scanner
-       ("intltool" ,intltool)))
+     (list pkg-config
+           `(,glib "bin") ; for glib-mkenums
+           gobject-introspection ; for g-ir-scanner
+           intltool))
     (propagated-inputs
-     `(("gtk+" ,gtk+)
-       ("libxres" ,libxres)
-       ("startup-notification" ,startup-notification)))
+     (list gtk+ libxres startup-notification))
     (home-page "https://developer.gnome.org/libwnck/")
     (synopsis "Window Navigator Construction Kit")
     (description
@@ -4251,12 +4136,9 @@ Hints specification (EWMH).")
                 "15713yl0f8f3p99jzqqfmbicrdswd3vwpx7r3bkf1bgh6d9lvs4b"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)))
+     (list pkg-config intltool))
     (propagated-inputs
-     `(("gtk+" ,gtk+-2)
-       ("libxres" ,libxres)
-       ("startup-notification" ,startup-notification)))))
+     (list gtk+-2 libxres startup-notification))))
 
 (define-public goffice
   (package
@@ -4277,15 +4159,10 @@ Hints specification (EWMH).")
                                               (assoc-ref %outputs "doc")
                                               "/share/gtk-doc/html"))))
     (inputs
-     `(("gtk+" ,gtk+)
-       ("libgsf" ,libgsf)
-       ("librsvg" ,librsvg)
-       ("libxslt" ,libxslt)
-       ("libxml2" ,libxml2)))
+     (list gtk+ libgsf librsvg libxslt libxml2))
     (native-inputs
-     `(("intltool" ,intltool)
-       ("glib" ,glib "bin")
-       ("pkg-config" ,pkg-config)))
+     (list intltool
+           `(,glib "bin") pkg-config))
     (home-page "https://developer.gnome.org/goffice/")
     (synopsis "Document-centric objects and utilities")
     (description "A GLib/GTK+ set of document-centric objects and utilities.")
@@ -4317,7 +4194,7 @@ Hints specification (EWMH).")
        ,@(package-arguments goffice)))
     (propagated-inputs
      ;; libgoffice-0.8.pc mentions libgsf-1
-     `(("libgsf" ,libgsf)))
+     (list libgsf))
     (inputs
      `(("gtk" ,gtk+-2)
        ,@(alist-delete "gtk" (package-inputs goffice))))))
@@ -4354,16 +4231,16 @@ Hints specification (EWMH).")
                                (assoc-ref outputs "out")
                                "/goffice/plugins"))))))))
     (inputs
-     `(("glib" ,glib)
-       ("gtk+" ,gtk+)
-       ("goffice" ,goffice)
-       ("libgsf" ,libgsf)
-       ("librsvg" ,librsvg)
-       ("libxml2" ,libxml2)
-       ("libxslt" ,libxslt)
-       ("python" ,python)
-       ("python-pygobject" ,python-pygobject)
-       ("zlib" ,zlib)))
+     (list glib
+           gtk+
+           goffice
+           libgsf
+           librsvg
+           libxml2
+           libxslt
+           python
+           python-pygobject
+           zlib))
     (native-inputs
      `(("bison" ,bison)
        ("docbook-xml" ,docbook-xml)
@@ -4421,12 +4298,12 @@ engineering.")
        ("gtk+:bin" ,gtk+ "bin")
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("librsvg" ,librsvg)
-       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("gtk+" ,gtk+)
-       ("pango" ,pango)
-       ("python-pycairo" ,python-pycairo)
-       ("python-pygobject" ,python-pygobject)))
+     (list librsvg
+           gsettings-desktop-schemas
+           gtk+
+           pango
+           python-pycairo
+           python-pygobject))
     (home-page "https://maoschanz.github.io/drawing/")
     (synopsis "Basic image editor for GNOME")
     (description
@@ -4615,9 +4492,9 @@ targeting the GNOME stack simple.")
        ("gperf" ,gperf)
        ("xmllint" ,libxml2)))
     (propagated-inputs
-     `(("gtk+" ,gtk+)                   ; required by vte-2.91.pc
-       ("gnutls" ,gnutls)               ; ditto
-       ("pcre2" ,pcre2)))               ; ditto
+     (list gtk+ ; required by vte-2.91.pc
+           gnutls ; ditto
+           pcre2))               ; ditto
     (home-page "https://www.gnome.org/")
     (synopsis "Virtual Terminal Emulator")
     (description
@@ -4642,8 +4519,8 @@ editors, IDEs, etc.")
                 "0rnm5c6m3abbm81jsfdas0y80z299ny54gr4syn4bfrms3s4g19l"))))
     (build-system meson-build-system)
     (native-inputs
-     `(("gtk-doc" ,gtk-doc/stable)
-       ,@(package-native-inputs vte)))
+     (modify-inputs (package-native-inputs vte)
+       (prepend gtk-doc/stable)))
     (arguments
      `(#:configure-flags '("-Ddocs=true")))
   (synopsis "Enhanced VTE terminal widget")
@@ -4672,12 +4549,11 @@ selection and URL hints.")))
     (arguments
      '(#:configure-flags '("--disable-python")))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)
-       ("glib" ,glib "bin")))   ; for glib-genmarshal, etc.
+     (list pkg-config intltool
+           `(,glib "bin")))   ; for glib-genmarshal, etc.
     (propagated-inputs
-     `(("gtk+" ,gtk+-2)         ; required by libvte.pc
-       ("ncurses" ,ncurses))))) ; required by libvte.la
+     (list gtk+-2 ; required by libvte.pc
+           ncurses)))) ; required by libvte.la
 
 (define-public vinagre
   (package
@@ -4718,15 +4594,15 @@ selection and URL hints.")))
        ("itstool" ,itstool)
        ("glib-bin" ,glib "bin")))                 ;for glib-compile-schemas
     (inputs
-     `(("libxml2" ,libxml2)
-       ("gtk-vnc" ,gtk-vnc)
-       ("gnome-keyring" ,gnome-keyring)
-       ("libsecret" ,libsecret)
-       ("freerdp" ,freerdp)
-       ("spice" ,spice)
-       ("spice-gtk" ,spice-gtk)
-       ("telepathy-glib" ,telepathy-glib)
-       ("vte" ,vte)))
+     (list libxml2
+           gtk-vnc
+           gnome-keyring
+           libsecret
+           freerdp
+           spice
+           spice-gtk
+           telepathy-glib
+           vte))
     (home-page "https://wiki.gnome.org/Apps/Vinagre")
     (synopsis "Remote desktop viewer for GNOME")
     (description "Vinagre is a remote display client supporting the VNC, SPICE
@@ -4749,10 +4625,9 @@ and RDP protocols.")
     (build-system meson-build-system)
     (propagated-inputs
      ;; In Requires of dconf.pc.
-     `(("glib" ,glib)))
+     (list glib))
     (inputs
-     `(("gtk+" ,gtk+)
-       ("dbus" ,dbus)))
+     (list gtk+ dbus))
     (native-inputs
      `(("bash-completion" ,bash-completion)
        ("libxslt" ,libxslt)                     ;for xsltproc
@@ -4801,9 +4676,9 @@ configuration storage systems.")
        ("glib" ,glib "bin")             ;for glib-mkenums and glib-genmarshal
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("bash-minimal" ,bash-minimal)))
+     (list bash-minimal))
     (propagated-inputs
-     `(("glib" ,glib)))                 ;according to json-glib-1.0.pc
+     (list glib))                 ;according to json-glib-1.0.pc
     (home-page "https://wiki.gnome.org/Projects/JsonGlib")
     (synopsis "Glib and GObject implementation of JSON")
     (description "JSON-GLib is a library providing serialization and
@@ -4899,14 +4774,9 @@ GLib and GObject, and integrates JSON with GLib data types.")
        ("libtool" ,libtool)))
     (propagated-inputs
      ;; Required by libxklavier.pc.
-     `(("glib"    ,glib)
-       ("libxml2" ,libxml2)))
+     (list glib libxml2))
     (inputs
-     `(("iso-codes"        ,iso-codes)
-       ("libxi"            ,libxi)
-       ("libxkbfile"       ,libxkbfile)
-       ("xkbcomp"          ,xkbcomp)
-       ("xkeyboard-config" ,xkeyboard-config)))
+     (list iso-codes libxi libxkbfile xkbcomp xkeyboard-config))
     (home-page "https://www.freedesktop.org/wiki/Software/LibXklavier/")
     (synopsis "High-level API for X Keyboard Extension")
     (description
@@ -4932,7 +4802,7 @@ indicators etc).")
          "1s8f9rns9v7qlwjv9qh9lr8crp88dpzfm45hj47zc3ivpy0dbnq9"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
      `(("python" ,python-2)
        ("python2-pygtk" ,python2-pygtk)
@@ -4977,10 +4847,7 @@ library.")
      `(("pkg-config" ,pkg-config)
        ("gettext" ,gettext-minimal)))
     (inputs
-     `(("glib" ,glib)
-       ("gnutls" ,gnutls)
-       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("libproxy" ,libproxy)))
+     (list glib gnutls gsettings-desktop-schemas libproxy))
     (home-page "https://wiki.gnome.org/Projects/GLib")
     (synopsis "Network extensions for GLib")
     (description
@@ -5182,13 +5049,11 @@ and the GLib main loop, to integrate well with GNOME applications.")
        ;("python2-pygobject" ,python2-pygobject)
        ;("python2-pygobject-2" ,python2-pygobject-2)))
     (propagated-inputs
-     `(("glib" ,glib))) ; required by libsecret-1.pc
+     (list glib)) ; required by libsecret-1.pc
     (inputs
      ;; The ‘build’ phase complains about missing docbook-xml-4.2 but adding it
      ;; doesn't seem to affect the build result.
-     `(("docbook-xsl" ,docbook-xsl)
-       ("libgcrypt" ,libgcrypt)
-       ("libxml2" ,libxml2))) ; for XML_CATALOG_FILES
+     (list docbook-xsl libgcrypt libxml2)) ; for XML_CATALOG_FILES
     (home-page "https://wiki.gnome.org/Projects/Libsecret/")
     (synopsis "GObject bindings for \"Secret Service\" API")
     (description
@@ -5228,9 +5093,7 @@ and other secrets.  It communicates with the \"Secret Service\" using DBus.")
        ("vala" ,vala)
        ("xmllint" ,libxml2)))
     (inputs
-     `(("gtk+" ,gtk+)
-       ("libgnome-games-support" ,libgnome-games-support)
-       ("librsvg" ,librsvg)))
+     (list gtk+ libgnome-games-support librsvg))
     (home-page "https://wiki.gnome.org/Apps/Five%20or%20more")
     (synopsis "Logic puzzle game")
     (description "Five or More is a game where you try to align
@@ -5271,9 +5134,7 @@ and other secrets.  It communicates with the \"Secret Service\" using DBus.")
        ("yelp" ,yelp)
        ("appstream-glib" ,appstream-glib)))
     (inputs
-     `(("gtk+" ,gtk+)
-       ("libgnome-games-support" ,libgnome-games-support)
-       ("librsvg" ,librsvg)))
+     (list gtk+ libgnome-games-support librsvg))
     (home-page "https://wiki.gnome.org/Apps/Mines")
     (synopsis "Minesweeper game")
     (description
@@ -5308,13 +5169,13 @@ floating in an ocean using only your brain and a little bit of luck.")
      `(("glib:bin" ,glib "bin")
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("gtk+" ,gtk+)
-       ("glib" ,glib)                   ; for gio
-       ("gusb" ,gusb)
-       ("udisks" ,udisks)
-       ("libgudev" ,libgudev)
-       ("libcanberra" ,libcanberra)
-       ("polkit" ,polkit)))
+     (list gtk+
+           glib ; for gio
+           gusb
+           udisks
+           libgudev
+           libcanberra
+           polkit))
     (home-page "https://wiki.gnome.org/Apps/MultiWriter")
     (synopsis "Write to multiple USB devices at once")
     (description
@@ -5354,11 +5215,7 @@ once.")
        ("vala" ,vala)
        ("xmllint" ,libxml2)))
     (inputs
-     `(("gtk+" ,gtk+)
-       ("json-glib" ,json-glib)
-       ("libgee" ,libgee)
-       ("librsvg" ,librsvg)
-       ("qqwing" ,qqwing)))
+     (list gtk+ json-glib libgee librsvg qqwing))
     (home-page "https://wiki.gnome.org/Apps/Sudoku")
     (synopsis "Japanese logic game")
     (description
@@ -5401,14 +5258,14 @@ more fun.")
        ("libxslt" ,libxslt)
        ("xmllint" ,libxml2)))
     (propagated-inputs
-     `(("dconf" ,dconf)))
+     (list dconf))
     (inputs
-     `(("gtk+" ,gtk+)
-       ("vte" ,vte)
-       ("gnutls" ,gnutls)
-       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("util-linux" ,util-linux "lib")
-       ("vala" ,vala)))
+     (list gtk+
+           vte
+           gnutls
+           gsettings-desktop-schemas
+           `(,util-linux "lib")
+           vala))
     (home-page "https://wiki.gnome.org/Apps/Terminal")
     (synopsis "Terminal emulator")
     (description
@@ -5541,12 +5398,12 @@ output devices.")
     (arguments
      '(#:configure-flags (list "-Ddbus-srv-user=geoclue")))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("gobject-introspection" ,gobject-introspection)
-       ("modem-manager" ,modem-manager)
-       ("libnotify" ,libnotify)
-       ("gtk-doc" ,gtk-doc/stable)
-       ("intltool" ,intltool)))
+     (list pkg-config
+           gobject-introspection
+           modem-manager
+           libnotify
+           gtk-doc/stable
+           intltool))
     (inputs
      `(("avahi" ,avahi)
        ("glib:bin" ,glib "bin")
@@ -5593,7 +5450,7 @@ permission from user.")
        ("json-glib" ,json-glib)))
     (propagated-inputs
      ;; geocode-glib-1.0.pc refers to GIO.
-     `(("glib" ,glib)))
+     (list glib))
     (inputs
      `(("libsoup" ,libsoup-minimal-2)))
     (home-page "https://github.com/GNOME/geocode-glib/")
@@ -5650,33 +5507,29 @@ faster results and to avoid unnecessary server load.")
                                               (assoc-ref %outputs "out")
                                               "/lib/udev/rules.d"))))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("gobject-introspection" ,gobject-introspection)
-       ("gtk-doc" ,gtk-doc)
-       ("intltool" ,intltool)
-       ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)
-       ("python" ,python)
-       ("which" ,which)                 ; for ./autogen.sh
-
-       ;; For tests.
-       ("python-dbus" ,python-dbus)
-       ("python-dbusmock" ,python-dbusmock)
-       ("python-pygobject" ,python-pygobject)
-       ("umockdev" ,umockdev)
-
-       ;; For man pages.
-       ("docbook-xsl" ,docbook-xsl)
-       ("libxslt" ,libxslt)             ; for 'xsltproc'
-       ("libxml2" ,libxml2)))           ; for 'XML_CATALOG_FILES'
+     (list autoconf
+           automake
+           gobject-introspection
+           gtk-doc
+           intltool
+           libtool
+           pkg-config
+           python
+           which ; for ./autogen.sh
+           ;; For tests.
+           python-dbus
+           python-dbusmock
+           python-pygobject
+           umockdev
+           ;; For man pages.
+           docbook-xsl
+           libxslt ; for 'xsltproc'
+           libxml2))           ; for 'XML_CATALOG_FILES'
     (inputs
-     `(("dbus-glib" ,dbus-glib)
-       ("libgudev" ,libgudev)
-       ("libusb" ,libusb)))
+     (list dbus-glib libgudev libusb))
     (propagated-inputs
      ;; In Requires of upower-glib.pc.
-     `(("glib" ,glib)))
+     (list glib))
     (home-page "https://upower.freedesktop.org/")
     (synopsis "System daemon for managing power devices")
     (description
@@ -5721,7 +5574,7 @@ service via the system message bus.")
        ("libsoup" ,libsoup-minimal-2)
        ("geocode-glib" ,geocode-glib)))
     (inputs
-     `(("tzdata" ,tzdata)))
+     (list tzdata))
     (home-page "https://wiki.gnome.org/action/show/Projects/LibGWeather")
     (synopsis "Location, time zone, and weather library for GNOME")
     (description
@@ -5781,32 +5634,32 @@ services for numerous locations.")
        ("docbook-xml" ,docbook-xml-4.2)
        ("docbook-xsl" ,docbook-xsl)))
     (inputs
-     `(("alsa-lib" ,alsa-lib)
-       ("baobab" ,baobab)
-       ("colord" ,colord)
-       ("libgudev" ,libgudev)
-       ("upower" ,upower)
-       ("polkit" ,polkit)
-       ("pulseaudio" ,pulseaudio)
-       ("libcanberra" ,libcanberra)
-       ("libx11" ,libx11)
-       ("libxtst" ,libxtst)
-       ("lcms" ,lcms)
-       ("libnotify" ,libnotify)
-       ("geoclue" ,geoclue)
-       ("geocode-glib" ,geocode-glib)
-       ("libgweather" ,libgweather)
-       ("gnome-desktop" ,gnome-desktop)
-       ("nss" ,nss)
-       ("cups" ,cups)
-       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("libwacom" ,libwacom)
-       ("librsvg" ,librsvg)
-       ("xf86-input-wacom" ,xf86-input-wacom)
-       ("wayland" ,wayland)
-       ("network-manager" ,network-manager)
-       ("gcr" ,gcr)
-       ("modem-manager" ,modem-manager)))
+     (list alsa-lib
+           baobab
+           colord
+           libgudev
+           upower
+           polkit
+           pulseaudio
+           libcanberra
+           libx11
+           libxtst
+           lcms
+           libnotify
+           geoclue
+           geocode-glib
+           libgweather
+           gnome-desktop
+           nss
+           cups
+           gsettings-desktop-schemas
+           libwacom
+           librsvg
+           xf86-input-wacom
+           wayland
+           network-manager
+           gcr
+           modem-manager))
     (home-page "https://www.gnome.org")
     (synopsis "GNOME settings daemon")
     (description
@@ -5833,18 +5686,12 @@ settings, themes, mouse settings, and startup of other daemons.")
     ;; FIXME: Tests require gvfs.
     `(#:tests? #f))
    (native-inputs
-    `(("intltool" ,intltool)
-      ("glib" ,glib "bin")
-      ("gobject-introspection" ,gobject-introspection)
-      ("pkg-config" ,pkg-config)))
+    (list intltool
+          `(,glib "bin") gobject-introspection pkg-config))
    (propagated-inputs
-    `(("glib" ,glib)
-      ("gmime" ,gmime)
-      ("libarchive" ,libarchive)
-      ("libgcrypt" ,libgcrypt)
-      ("libxml2" ,libxml2)))
+    (list glib gmime libarchive libgcrypt libxml2))
    (inputs
-    `(("libsoup" ,libsoup)))
+    (list libsoup))
    (home-page "https://projects.gnome.org/totem")
    (synopsis "Library to parse and save media playlists for GNOME")
    (description "Totem-pl-parser is a GObjects-based library to parse and save
@@ -5876,10 +5723,7 @@ playlists in a variety of formats.")
        ("pkg-config" ,pkg-config)
        ("xmllint" ,libxml2)))
     (inputs
-     `(("gtk+" ,gtk+)
-       ("guile" ,guile-2.2)
-       ("libcanberra" ,libcanberra)
-       ("librsvg" ,librsvg)))
+     (list gtk+ guile-2.2 libcanberra librsvg))
     (home-page "https://wiki.gnome.org/Apps/Aisleriot")
     (synopsis "Solitaire card games")
     (description
@@ -5906,8 +5750,7 @@ which are easy to play with the aid of a mouse.")
        ("gtk-doc" ,gtk-doc/stable)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("glib" ,glib)
-       ("gtk+" ,gtk+)))
+     (list glib gtk+))
     (home-page "https://wiki.gnome.org/Projects/Amtk")
     (synopsis "Actions, Menus and Toolbars Kit for GTK+ applications")
     (description
@@ -5945,7 +5788,7 @@ both a traditional UI or a modern UI with a GtkHeaderBar.")
              (substitute* "devhelp/meson.build"
                (("'WebKit2-4.0'") "'WebKit2-4.1'")))))))
     (propagated-inputs
-     `(("gsettings-desktop-schemas" ,gsettings-desktop-schemas)))
+     (list gsettings-desktop-schemas))
     (native-inputs
      `(("intltool" ,intltool)
        ("itstool" ,itstool)
@@ -5953,9 +5796,7 @@ both a traditional UI or a modern UI with a GtkHeaderBar.")
        ("glib:bin" ,glib "bin") ; for glib-mkmenus
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("amtk" ,amtk)
-       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("webkitgtk" ,webkitgtk)))
+     (list amtk gsettings-desktop-schemas webkitgtk))
     (home-page "https://wiki.gnome.org/Apps/Devhelp")
     (synopsis "API documentation browser for GNOME")
     (description
@@ -6001,21 +5842,21 @@ throughout GNOME for API documentation).")
        ("xorg-server" ,xorg-server-for-tests)
        ("pkg-config" ,pkg-config)))
     (propagated-inputs
-     `(("glib" ,glib)
-       ("gdk-pixbuf" ,gdk-pixbuf)
-       ("libx11" ,libx11)
-       ("libxext" ,libxext)
-       ("libxfixes" ,libxfixes)
-       ("libxdamage" ,libxdamage)
-       ("libxcomposite" ,libxcomposite)
-       ("libxrandr" ,libxrandr)))
+     (list glib
+           gdk-pixbuf
+           libx11
+           libxext
+           libxfixes
+           libxdamage
+           libxcomposite
+           libxrandr))
     (inputs
-     `(("mesa" ,mesa)
-       ("cairo" ,cairo)
-       ("pango" ,pango)
-       ("gstreamer" ,gstreamer)
-       ("gst-plugins-base" ,gst-plugins-base)
-       ("wayland" ,wayland)))
+     (list mesa
+           cairo
+           pango
+           gstreamer
+           gst-plugins-base
+           wayland))
     (arguments
      `(#:disallowed-references (,xorg-server-for-tests)
        #:configure-flags (list "--enable-cogl-gst"
@@ -6087,16 +5928,16 @@ without stepping on each others toes.")
        ("pkg-config" ,pkg-config)
        ("xsltproc" ,libxslt)))
     (propagated-inputs
-     `(("cogl" ,cogl)
-       ("cairo" ,cairo)
-       ("atk" ,atk)
-       ("gtk+" ,gtk+)
-       ("json-glib" ,json-glib)
-       ("glib" ,glib)
-       ("libxcomposite" ,libxcomposite)
-       ("libxdamage" ,libxdamage)
-       ("libxext" ,libxext)
-       ("xinput" ,xinput)))
+     (list cogl
+           cairo
+           atk
+           gtk+
+           json-glib
+           glib
+           libxcomposite
+           libxdamage
+           libxext
+           xinput))
     (inputs
      `(("libxkbcommon" ,libxkbcommon)
        ("udev" ,eudev)))
@@ -6133,12 +5974,10 @@ presentations, kiosk style applications and so on.")
          "01ibniy4ich0fgpam53q252idm7f4fn5xg5qvizcfww90gn9652j"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("gobject-introspection" ,gobject-introspection)))
+     (list pkg-config gobject-introspection))
     (propagated-inputs
      ;; clutter-gtk.pc refers to all these.
-     `(("clutter" ,clutter)
-       ("gtk+" ,gtk+)))
+     (list clutter gtk+))
     (home-page "http://www.clutter-project.org")
     (synopsis "OpenGL-based interactive canvas library GTK+ widget")
     (description
@@ -6165,9 +6004,7 @@ presentations, kiosk style applications and so on.")
        ("pkg-config" ,pkg-config)
        ("gobject-introspection" ,gobject-introspection)))
     (inputs
-     `(("clutter" ,clutter)
-       ("gstreamer" ,gstreamer)
-       ("gst-plugins-base" ,gst-plugins-base)))
+     (list clutter gstreamer gst-plugins-base))
     (home-page "http://www.clutter-project.org")
     (synopsis "Integration library for using GStreamer with Clutter")
     (description
@@ -6191,9 +6028,7 @@ OpenGL-based interactive canvas library.")
                 "0rihpb0npqpihqcdz4w03rq6xl7jdckfqskvv9diq2hkrnzv8ch2"))))
     (build-system meson-build-system)
     (native-inputs
-     `(("gobject-introspection" ,gobject-introspection)
-       ("pkg-config" ,pkg-config)
-       ("vala" ,vala)))
+     (list gobject-introspection pkg-config vala))
     (propagated-inputs
      `(("libsoup" ,libsoup-minimal-2)
        ("sqlite" ,sqlite)
@@ -6227,13 +6062,9 @@ such as OpenStreetMap, OpenCycleMap, OpenAerialMap, and Maps for free.")
          "1zaqqwwkyiswib3v1v8wafpbifpbpak0nn2kp13pizzn9bwz1s5w"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)
-       ("gobject-introspection" ,gobject-introspection)))
+     (list intltool pkg-config gobject-introspection))
     (inputs
-     `(("glib" ,glib)
-       ("gdk-pixbuf" ,gdk-pixbuf)
-       ("sqlite" ,sqlite)))
+     (list glib gdk-pixbuf sqlite))
     ;; XXX TODO: Figure out how to run the test suite.
     (arguments `(#:tests? #f))
     (home-page "https://wiki.gnome.org/Projects/Gom")
@@ -6267,13 +6098,10 @@ queries upon that data.")
                 (setenv "HOME" (getcwd))
                 #t)))))
     (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)
-       ("vala" ,vala)))
+     (list intltool pkg-config vala))
     (propagated-inputs
      ;; Required by libgnome-games-support-1.0.pc
-     `(("gtk+" ,gtk+)
-       ("libgee" ,libgee)))
+     (list gtk+ libgee))
     (home-page "https://www.gnome.org/")
     (synopsis "Useful functionality shared among GNOME games")
     (description
@@ -6313,9 +6141,7 @@ GNOME Games, but it may be used by others.")
        ("vala" ,vala)
        ("xmllint" ,libxml2)))
     (inputs
-     `(("gtk+" ,gtk+)
-       ("libgnome-games-support" ,libgnome-games-support)
-       ("librsvg" ,librsvg)))
+     (list gtk+ libgnome-games-support librsvg))
     (home-page "https://wiki.gnome.org/Apps/Klotski")
     (synopsis "Sliding block puzzles")
     (description
@@ -6448,37 +6274,37 @@ discovery protocols.")
        ("xmllint" ,libxml2)
        ("xorg-server" ,xorg-server-for-tests)))
     (propagated-inputs
-     `(("dconf" ,dconf)))
+     (list dconf))
     (inputs
-     `(("gtk+" ,gtk+)
-       ("gdk-pixbuf" ,gdk-pixbuf)
-       ("atk" ,atk)
-       ("cairo" ,cairo)
-       ("dbus-glib" ,dbus-glib)
-       ("clutter" ,clutter)
-       ("clutter-gtk" ,clutter-gtk)
-       ("clutter-gst" ,clutter-gst)
-       ("xorgproto" ,xorgproto)
-       ("libxxf86vm" ,libxxf86vm)
-       ("libxtst" ,libxtst)
-       ("libxrandr" ,libxrandr)
-       ("libxml2" ,libxml2)
-       ("libsoup" ,libsoup)
-       ("libpeas" ,libpeas)
-       ("librsvg" ,librsvg)
-       ("lirc" ,lirc)
-       ("gnome-desktop" ,gnome-desktop)
-       ("gstreamer" ,gstreamer)
-       ("gst-plugins-base" ,gst-plugins-base)
-       ("gst-plugins-good" ,gst-plugins-good)
-       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("adwaita-icon-theme" ,adwaita-icon-theme)
-       ("python" ,python)
-       ("python-pygobject" ,python-pygobject)
-       ("totem-pl-parser" ,totem-pl-parser)
-       ("grilo" ,grilo)
-       ("grilo-plugins" ,grilo-plugins)
-       ("vala" ,vala)))
+     (list gtk+
+           gdk-pixbuf
+           atk
+           cairo
+           dbus-glib
+           clutter
+           clutter-gtk
+           clutter-gst
+           xorgproto
+           libxxf86vm
+           libxtst
+           libxrandr
+           libxml2
+           libsoup
+           libpeas
+           librsvg
+           lirc
+           gnome-desktop
+           gstreamer
+           gst-plugins-base
+           gst-plugins-good
+           gsettings-desktop-schemas
+           adwaita-icon-theme
+           python
+           python-pygobject
+           totem-pl-parser
+           grilo
+           grilo-plugins
+           vala))
     (arguments
      `(#:meson ,meson-0.59         ;positional arguments error with meson 0.60
        #:glib-or-gtk? #t
@@ -6569,7 +6395,7 @@ which can read a large number of file formats.")
                `("GUIX_PYTHONPATH"             ":" prefix (,python-path))))
            #t)))))
    (propagated-inputs
-    `(("dconf" ,dconf)))
+    (list dconf))
    (native-inputs
     `(("itstool" ,itstool)
       ("intltool" ,intltool)
@@ -6652,7 +6478,7 @@ supports playlists, song ratings, and any codecs installed through gstreamer.")
               (wrap-program (string-append out "/bin/eog")
                 `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path)))))))))
    (propagated-inputs
-    `(("dconf" ,dconf)))
+    (list dconf))
    (native-inputs
     `(("intltool" ,intltool)
       ("itstool" ,itstool)
@@ -6702,12 +6528,12 @@ supports image conversion, rotation, and slideshows.")
      `(("pkg-config" ,pkg-config)
        ("gettext" ,gettext-minimal)))
     (inputs
-     `(("eog" ,eog)
-       ("glib" ,glib)
-       ("gtk+" ,gtk+)
-       ("libpeas" ,libpeas)
-       ("libexif" ,libexif)
-       ("libchamplain" ,libchamplain)))
+     (list eog
+           glib
+           gtk+
+           libpeas
+           libexif
+           libchamplain))
     (description
      "This package provides plugins for the Eye of GNOME (EOG) image viewer,
 notably:
@@ -6741,8 +6567,8 @@ side panel;
        ("gobject-introspection" ,gobject-introspection)
        ("pkg-config" ,pkg-config)))
     (propagated-inputs
-     `(("glib" ,glib)                   ; in Requires of gudev-1.0.pc
-       ("eudev" ,eudev)))               ; in Requires.private of gudev-1.0.pc
+     (list glib ; in Requires of gudev-1.0.pc
+           eudev))               ; in Requires.private of gudev-1.0.pc
     (inputs
      `(("udev" ,eudev)))
     (home-page "https://wiki.gnome.org/Projects/libgudev")
@@ -6846,13 +6672,10 @@ DAV, and others.")
                    "-Dvapi=false")
                  '()))))
     (native-inputs
-     `(("gobject-introspection" ,gobject-introspection)
-       ("pkg-config" ,pkg-config)
-       ("vala" ,vala)))
+     (list gobject-introspection pkg-config vala))
     (propagated-inputs
      ;; Both of these are required by gusb.pc.
-     `(("glib" ,glib)
-       ("libusb" ,libusb)))
+     (list glib libusb))
     (home-page "https://github.com/hughsie/libgusb")
     (synopsis "GLib binding for libusb1")
     (description
@@ -7028,7 +6851,7 @@ a secret password store, an adblocker, and a modern UI.")
        (list (string-append "-Dc_link_args=-Wl,-rpath="
                             (assoc-ref %outputs "out") "/lib/epiphany"))))
     (propagated-inputs
-     `(("dconf" ,dconf)))
+     (list dconf))
     (native-inputs
      `(("desktop-file-utils" ,desktop-file-utils) ; for update-desktop-database
        ("glib:bin" ,glib "bin") ; for glib-mkenums
@@ -7183,13 +7006,9 @@ jQuery.Syntax JavaScript libraries.")
        ("itstool" ,itstool)
        ("pkg-config" ,pkg-config)))
     (propagated-inputs
-     `(("dconf" ,dconf)))
+     (list dconf))
     (inputs
-     `(("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("libxslt" ,libxslt)
-       ("sqlite" ,sqlite)
-       ("webkitgtk" ,webkitgtk)
-       ("yelp-xsl" ,yelp-xsl)))
+     (list gsettings-desktop-schemas libxslt sqlite webkitgtk yelp-xsl))
     (home-page "https://wiki.gnome.org/Apps/Yelp")
     (synopsis "GNOME help browser")
     (description
@@ -7213,9 +7032,9 @@ freedesktop.org help system specification.")
         (base32 "1yg8f5g5wadhmy4yfd9yjhvd8vll4gq4l86ibp0b42qbxnsmcf0q"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("yelp-xsl" ,yelp-xsl)))
+     (list yelp-xsl))
     (propagated-inputs
      ;; Needed by `yelp-build', `yelp-check' or 'yelp.m4'.
      `(("itstool" ,itstool)
@@ -7255,11 +7074,9 @@ wraps things up in a developer-friendly way.")
                 (("@INTROSPECTION_TYPELIBDIR@")
                  (string-append out "/lib/girepository-1.0/")))))))))
     (native-inputs
-     `(("glib" ,glib "bin")
-       ("pkg-config" ,pkg-config)))
+     (list `(,glib "bin") pkg-config))
     (inputs
-     `(("glib" ,glib)
-       ("gobject-introspection" ,gobject-introspection)))
+     (list glib gobject-introspection))
     (home-page "https://wiki.gnome.org/Projects/Libgee")
     (synopsis "GObject collection library")
     (description
@@ -7281,16 +7098,13 @@ classes for commonly used data structures.")
                 "0k4ljzzz5dwqndw8awvlw3ala8rh3b2rk9i4jzvywc53mi9ba8i3"))))
     (build-system meson-build-system)
     (native-inputs
-     `(("gcr" ,gcr)
-       ("glib" ,glib "bin")
-       ("pkg-config" ,pkg-config)
-       ("vala" ,vala)))
+     (list gcr
+           `(,glib "bin") pkg-config vala))
     (propagated-inputs
      ;; Listed in "Requires" section of gexiv2.pc
-     `(("exiv2" ,exiv2)))
+     (list exiv2))
     (inputs
-     `(("glib" ,glib)
-       ("gobject-introspection" ,gobject-introspection)))
+     (list glib gobject-introspection))
     (home-page "https://wiki.gnome.org/Projects/gexiv2")
     (synopsis "GObject wrapper around the Exiv2 photo metadata library")
     (description
@@ -7323,7 +7137,7 @@ metadata in photo and video files of various formats.")
                (("update-desktop-database") (which "true")))
              #t)))))
     (propagated-inputs
-     `(("dconf" ,dconf)))
+     (list dconf))
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin")
@@ -7375,13 +7189,13 @@ share them with others via social networking and more.")
        ("glib:bin" ,glib "bin")))
     ;; TODO: Add libnautilus.
     (inputs
-     `(("gtk+" ,gtk+)
-       ("gdk-pixbuf" ,gdk-pixbuf)
-       ("json-glib" ,json-glib)
-       ("libarchive" ,libarchive)
-       ("libnotify" ,libnotify)
-       ("nettle" ,nettle)
-       ("libxml2" ,libxml2)))
+     (list gtk+
+           gdk-pixbuf
+           json-glib
+           libarchive
+           libnotify
+           nettle
+           libxml2))
     (synopsis "Graphical archive manager for GNOME")
     (description "File Roller is an archive manager for the GNOME desktop
 environment that allows users to view, unpack, and create compressed archives
@@ -7433,17 +7247,17 @@ such as gzip tarballs.")
        ("docbook-xml" ,docbook-xml)
        ("xmlto" ,xmlto)))
     (inputs
-     `(("elogind" ,elogind)
-       ("gnome-desktop" ,gnome-desktop)
-       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("gtk+" ,gtk+)
-       ("json-glib" ,json-glib)
-       ("libsm" ,libsm)
-       ("libxcomposite" ,libxcomposite)
-       ("libxtst" ,libxtst)
-       ("mesa" ,mesa)
-       ("upower" ,upower)
-       ("xtrans" ,xtrans)))
+     (list elogind
+           gnome-desktop
+           gsettings-desktop-schemas
+           gtk+
+           json-glib
+           libsm
+           libxcomposite
+           libxtst
+           mesa
+           upower
+           xtrans))
     (synopsis "Session manager for GNOME")
     (description
      "This package contains the GNOME session manager, as well as a
@@ -7493,12 +7307,9 @@ configuration program to choose applications starting on login.")
        ("xvfb" ,xorg-server-for-tests)))
     (propagated-inputs
      ;; These are all in the Requires.private field of gjs-1.0.pc.
-     `(("cairo" ,cairo)
-       ("gobject-introspection" ,gobject-introspection)
-       ("mozjs" ,mozjs-78)))
+     (list cairo gobject-introspection mozjs-78))
     (inputs
-     `(("gtk+" ,gtk+)
-       ("readline" ,readline)))
+     (list gtk+ readline))
     (synopsis "Javascript bindings for GNOME")
     (home-page "https://live.gnome.org/Gjs")
     (description
@@ -7562,7 +7373,7 @@ javascript engine and the GObject introspection framework.")
                                                                "/share")))))
              #t)))))
     (propagated-inputs
-     `(("dconf" ,dconf)))
+     (list dconf))
     (native-inputs
      `(("desktop-file-utils" ,desktop-file-utils) ; for update-desktop-database
        ("intltool" ,intltool)
@@ -7580,23 +7391,23 @@ javascript engine and the GObject introspection framework.")
             (base32 "16yld0ap7qj1n96h4f2sqkjmibg7xx5xwkqxdfzam2nmyfdlrrrs"))))
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("amtk" ,amtk)
-       ("glib" ,glib)
-       ("gspell" ,gspell)
-       ("gtk+" ,gtk+)
-       ("gtksourceview" ,gtksourceview)
-       ("libpeas" ,libpeas)
-       ("libxml2" ,libxml2)
-       ("iso-codes" ,iso-codes)
-       ("python-pygobject" ,python-pygobject)
-       ("python" ,python)
-       ("tepl" ,tepl)
-       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("libx11" ,libx11)
-       ("vala" ,vala)
-       ("adwaita-icon-theme" ,adwaita-icon-theme)
-       ("libsoup" ,libsoup)
-       ("gnome-desktop" ,gnome-desktop)))
+     (list amtk
+           glib
+           gspell
+           gtk+
+           gtksourceview
+           libpeas
+           libxml2
+           iso-codes
+           python-pygobject
+           python
+           tepl
+           gsettings-desktop-schemas
+           libx11
+           vala
+           adwaita-icon-theme
+           libsoup
+           gnome-desktop))
     (home-page "https://wiki.gnome.org/Apps/Gedit")
     (synopsis "GNOME text editor")
     (description "While aiming at simplicity and ease of use, gedit is a
@@ -7621,8 +7432,7 @@ powerful general purpose text editor.")
        ("itstool" ,itstool)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("libnotify" ,libnotify)
-       ("webkitgtk" ,webkitgtk)))
+     (list libnotify webkitgtk))
     (synopsis "Display graphical dialog boxes from shell scripts")
     (home-page "https://www.gnome.org")
     (description
@@ -7861,8 +7671,8 @@ window manager.")
        ("vala" ,vala)
        ("xsltproc" ,libxslt)))
     (propagated-inputs
-     `(("glib" ,glib)           ; required by goa-1.0.pc
-       ("gtk+" ,gtk+)))         ; required by goa-backend-1.0.pc
+     (list glib ; required by goa-1.0.pc
+           gtk+))         ; required by goa-backend-1.0.pc
     (inputs
      `(("docbook-xsl" ,docbook-xsl)
        ("json-glib" ,json-glib)
@@ -8015,10 +7825,7 @@ Evolution (hence the name), but is now used by other packages as well.")
        ("xsltproc" ,libxslt)))
     (propagated-inputs
      ;; caribou-1.0.pc refers to all these.
-     `(("libgee" ,libgee)
-       ("libxklavier" ,libxklavier)
-       ("libxtst" ,libxtst)
-       ("gtk+" ,gtk+)))
+     (list libgee libxklavier libxtst gtk+))
     (inputs
      `(("clutter" ,clutter)
        ("dconf" ,dconf)
@@ -8131,7 +7938,7 @@ users.")
                             (string-append out directory)))
                          '("/share/doc" "/share/gtk-doc"))))))))
     (propagated-inputs
-     `(("glib" ,glib)))
+     (list glib))
     (native-inputs
      `(("glib:bin" ,glib "bin")         ; for gdbus-codegen
        ("gtk-doc" ,gtk-doc/stable)
@@ -8222,15 +8029,14 @@ services.")
                 '("src/nm-openvpn-service.c" "properties/nm-openvpn-editor.c")))
              #t)))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)))
+     (list pkg-config intltool))
     (inputs
-     `(("gtk+" ,gtk+)
-       ("kmod" ,kmod)
-       ("openvpn" ,openvpn)
-       ("network-manager" ,network-manager)
-       ("libnma" ,libnma)
-       ("libsecret" ,libsecret)))
+     (list gtk+
+           kmod
+           openvpn
+           network-manager
+           libnma
+           libsecret))
     (home-page "https://wiki.gnome.org/Projects/NetworkManager/VPN")
     (synopsis "OpenVPN plug-in for NetworkManager")
     (description
@@ -8273,15 +8079,14 @@ to virtual private networks (VPNs) via OpenVPN.")
                     (("/sbin/modprobe") modprobe)))
              #t)))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)))
+     (list pkg-config intltool))
     (inputs
-     `(("gtk+" ,gtk+)
-       ("kmod" ,kmod)
-       ("vpnc" ,vpnc)
-       ("network-manager" ,network-manager)
-       ("libnma" ,libnma)
-       ("libsecret" ,libsecret)))
+     (list gtk+
+           kmod
+           vpnc
+           network-manager
+           libnma
+           libsecret))
     (home-page "https://wiki.gnome.org/Projects/NetworkManager/VPN")
     (synopsis "VPNC plug-in for NetworkManager")
     (description
@@ -8319,18 +8124,16 @@ Compatible with Cisco VPN concentrators configured to use IPsec.")
                  (("/sbin/modprobe") modprobe)))
              #t)))))
     (native-inputs
-     `(("intltool" ,intltool)
-       ("libnma" ,libnma)
-       ("pkg-config" ,pkg-config)))
+     (list intltool libnma pkg-config))
     (inputs
-     `(("gcr" ,gcr)
-       ("gtk+" ,gtk+)
-       ("kmod" ,kmod)
-       ("libsecret" ,libsecret)
-       ("libxml2" ,libxml2)
-       ("lz4" ,lz4)
-       ("network-manager" ,network-manager)
-       ("openconnect" ,openconnect)))
+     (list gcr
+           gtk+
+           kmod
+           libsecret
+           libxml2
+           lz4
+           network-manager
+           openconnect))
     (home-page "https://wiki.gnome.org/Projects/NetworkManager/VPN")
     (synopsis "OpenConnect plug-in for NetworkManager")
     (description
@@ -8392,20 +8195,18 @@ Cisco's AnyConnect SSL VPN.")
        ("pkg-config" ,pkg-config)))
     (propagated-inputs
      ;; libnm-gtk.pc refers to all these.
-     `(("dbus-glib" ,dbus-glib)
-       ("gtk+" ,gtk+)
-       ("network-manager" ,network-manager)
-       ;; nm-applet need by org.gnome.nm-applet.gschema.xml
-       ("libnma" ,libnma)))
+     (list dbus-glib gtk+ network-manager
+           ;; nm-applet need by org.gnome.nm-applet.gschema.xml
+           libnma))
     (inputs
-     `(("gcr" ,gcr)
-       ("libappindicator" ,libappindicator)
-       ("libgudev" ,libgudev)
-       ("libnotify" ,libnotify)
-       ("libsecret" ,libsecret)
-       ("libselinux" ,libselinux)
-       ("jansson" ,jansson) ; for team support
-       ("modem-manager" ,modem-manager)))
+     (list gcr
+           libappindicator
+           libgudev
+           libnotify
+           libsecret
+           libselinux
+           jansson ; for team support
+           modem-manager))
     (synopsis "Applet for managing network connections")
     (home-page "https://wiki.gnome.org/Projects/NetworkManager")
     (description
@@ -8448,20 +8249,19 @@ the available networks and allows users to easily switch between them.")
                   (string-append xsldoc "/html/chunk.xsl")))))))))
     (propagated-inputs
      ;; libxml++-3.0.pc refers to all these.
-     `(("glibmm" ,glibmm-2.64)
-       ("libxml2" ,libxml2)))
+     (list glibmm-2.64 libxml2))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("doxygen" ,doxygen)
-       ("docbook-xml" ,docbook-xml)
-       ("docbook-xsl" ,docbook-xsl)
-       ("graphviz" ,graphviz) ; for dot
-       ("libtool" ,libtool)
-       ("libxslt" ,libxslt)
-       ("mm-common" ,mm-common)
-       ("perl" ,perl)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf
+           automake
+           doxygen
+           docbook-xml
+           docbook-xsl
+           graphviz ; for dot
+           libtool
+           libxslt
+           mm-common
+           perl
+           pkg-config))
     (home-page "https://github.com/libxmlplusplus/libxmlplusplus/")
     (synopsis "C++ bindings to the libxml2 XML parser library")
     (description
@@ -8684,16 +8484,16 @@ logo='~a'~%" icon))))))
        ("pkg-config" ,pkg-config)
        ("xmllint" ,libxml2)))
     (inputs
-     `(("accountsservice" ,accountsservice)
-       ("check" ,check-0.14)            ;for testing
-       ("elogind" ,elogind)
-       ("eudev" ,eudev)
-       ("gnome-session" ,gnome-session)
-       ("gnome-settings-daemon" ,gnome-settings-daemon)
-       ("gtk+" ,gtk+)
-       ("iso-codes" ,iso-codes)
-       ("libcanberra" ,libcanberra)
-       ("linux-pam" ,linux-pam)))
+     (list accountsservice
+           check-0.14 ;for testing
+           elogind
+           eudev
+           gnome-session
+           gnome-settings-daemon
+           gtk+
+           iso-codes
+           libcanberra
+           linux-pam))
     (synopsis "Display manager for GNOME")
     (home-page "https://wiki.gnome.org/Projects/GDM/")
     (description
@@ -8715,12 +8515,9 @@ providing graphical log-ins and managing local and remote displays.")
                 "1m6jbqk8maa52gxrf223442fr5bvvxgb7ham6v039i3r1i62gwvq"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("gobject-introspection" ,gobject-introspection)
-       ("intltool" ,intltool)
-       ("perl" ,perl)
-       ("pkg-config" ,pkg-config)))
+     (list gobject-introspection intltool perl pkg-config))
     (propagated-inputs
-     `(("glib" ,glib))) ; required by libgtop-2.0.pc
+     (list glib)) ; required by libgtop-2.0.pc
     (synopsis "Portable system access library")
     (home-page "https://www.gnome.org/")
     (description
@@ -8753,13 +8550,9 @@ usage and information about running processes.")
        ("xmllint" ,libxml2)))
     (propagated-inputs
      ;; gnome-bluetooth-1.0.pc refers to all these.
-     `(("glib" ,glib)
-       ("gtk+" ,gtk+)))
+     (list glib gtk+))
     (inputs
-     `(("eudev" ,eudev)
-       ("libcanberra" ,libcanberra)
-       ("libnotify" ,libnotify)
-       ("python-dbus" ,python-dbus)))
+     (list eudev libcanberra libnotify python-dbus))
     (synopsis "GNOME Bluetooth subsystem")
     (home-page "https://wiki.gnome.org/Projects/GnomeBluetooth")
     (description
@@ -8978,41 +8771,41 @@ properties, screen resolution, and other GNOME parameters.")
        ;; For tests
        ("xorg-server" ,xorg-server-for-tests)))
     (inputs
-     `(("accountsservice" ,accountsservice)
-       ("caribou" ,caribou)
-       ("docbook-xsl" ,docbook-xsl)
-       ("evolution-data-server" ,evolution-data-server)
-       ("gcr" ,gcr)
-       ("gdm" ,gdm)
-       ("librsvg" ,librsvg)
-       ("gjs" ,gjs)
-       ("gtk" ,gtk)
-       ("gnome-autoar" ,gnome-autoar)
-       ("gnome-bluetooth" ,gnome-bluetooth)
-       ("gnome-desktop" ,gnome-desktop)
-       ("gnome-settings-daemon" ,gnome-settings-daemon)
-       ("graphene" ,graphene)
-       ("gst-plugins-base" ,gst-plugins-base)
-       ("ibus" ,ibus)
-       ("libcanberra" ,libcanberra)
-       ("libcroco" ,libcroco)
-       ("libgnomekbd" ,libgnomekbd)               ;for gkbd-keyboard-display
-       ("libgweather" ,libgweather)
-       ("libnma" ,libnma)
-       ("libsoup" ,libsoup)
-       ("mesa-headers" ,mesa-headers)
-       ("mutter" ,mutter)
-       ("network-manager-applet" ,network-manager-applet)
-       ("polkit" ,polkit)
-       ("pulseaudio" ,pulseaudio)
-       ("python-pygobject" ,python-pygobject)
-       ("startup-notification" ,startup-notification)
-       ("telepathy-logger" ,telepathy-logger)
-       ("upower" ,upower)
-       ;; XXX: These requirements were added in 3.24, but no mention in NEWS.
-       ;; Missing propagation? See also: <https://bugs.gnu.org/27264>
-       ("librsvg" ,librsvg)
-       ("geoclue" ,geoclue)))
+     (list accountsservice
+           caribou
+           docbook-xsl
+           evolution-data-server
+           gcr
+           gdm
+           librsvg
+           gjs
+           gtk
+           gnome-autoar
+           gnome-bluetooth
+           gnome-desktop
+           gnome-settings-daemon
+           graphene
+           gst-plugins-base
+           ibus
+           libcanberra
+           libcroco
+           libgnomekbd ;for gkbd-keyboard-display
+           libgweather
+           libnma
+           libsoup
+           mesa-headers
+           mutter
+           network-manager-applet
+           polkit
+           pulseaudio
+           python-pygobject
+           startup-notification
+           telepathy-logger
+           upower
+           ;; XXX: These requirements were added in 3.24, but no mention in NEWS.
+           ;; Missing propagation? See also: <https://bugs.gnu.org/27264>
+           librsvg
+           geoclue))
     (synopsis "Desktop shell for GNOME")
     (home-page "https://wiki.gnome.org/Projects/GnomeShell")
     (description
@@ -9057,7 +8850,7 @@ like switching to windows and launching applications.")
        ("x11" ,libx11)
        ("zlib" ,zlib)))
     (propagated-inputs
-     `(("gtk+" ,gtk+)))
+     (list gtk+))
     (synopsis "VNC client viewer widget for GTK+")
     (description "GTK-VNC is a project providing client side APIs for the RFB
 protocol / VNC remote desktop technology.  It is built using coroutines allowing
@@ -9084,9 +8877,9 @@ core C library, and bindings for Python (PyGTK).")
        ("glib:bin" ,glib "bin")
        ("pkg-config" ,pkg-config)))
     (propagated-inputs
-     `(("libarchive" ,libarchive)))  ; Required by gnome-autoar-0.pc
+     (list libarchive))  ; Required by gnome-autoar-0.pc
     (inputs
-     `(("gtk+" ,gtk+)))
+     (list gtk+))
     (synopsis "Archives integration support for GNOME")
     (home-page "https://git.gnome.org/browse/gnome-autoar/")
     (description
@@ -9388,8 +9181,7 @@ files.")
        ("glib" ,glib "bin")
        ("vala" ,vala)))
     (inputs
-     `(("gtk+" ,gtk+)
-       ("libhandy" ,libhandy)))
+     (list gtk+ libhandy))
     (synopsis "Disk usage analyzer for GNOME")
     (description
      "Baobab (Disk Usage Analyzer) is a graphical application to analyse disk
@@ -9459,11 +9251,7 @@ can add your own files to the collection.")
        ("appstream-glib" ,appstream-glib)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("gtk+" ,gtk+)
-       ("libcanberra" ,libcanberra)
-       ("libhandy" ,libhandy)
-       ("libx11" ,libx11)
-       ("libxext" ,libxext)))
+     (list gtk+ libcanberra libhandy libx11 libxext))
     (home-page "https://gitlab.gnome.org/GNOME/gnome-screenshot")
     (synopsis "Take pictures of your screen")
     (description
@@ -9493,9 +9281,7 @@ beautifying border effects.")
        ("pkg-config" ,pkg-config)
        ("vala" ,vala)))
     (inputs
-     `(("dconf" ,dconf)
-       ("gtk+" ,gtk+)
-       ("libxml2" ,libxml2)))
+     (list dconf gtk+ libxml2))
     (arguments
      `(#:meson ,meson-0.59))
     (home-page "https://gitlab.gnome.org/GNOME/dconf-editor")
@@ -9513,8 +9299,7 @@ software that do not provide their own configuration interface.")
     (build-system trivial-build-system)
     (source #f)
     (propagated-inputs
-     `(("nautilus" ,nautilus)
-       ("evince" ,evince)))
+     (list nautilus evince))
     (arguments
      `(#:modules ((guix build utils))
        #:builder
@@ -9588,12 +9373,12 @@ associations for GNOME.")
       ("gtk+:bin" ,gtk+ "bin")
       ("pkg-config" ,pkg-config)))
    (inputs
-    `(("appstream-glib" ,appstream-glib)
-      ("geoclue" ,geoclue)
-      ("gjs" ,gjs)
-      ("gnome-desktop" ,gnome-desktop)
-      ("libgweather" ,libgweather)
-      ("libhandy" ,libhandy)))
+    (list appstream-glib
+          geoclue
+          gjs
+          gnome-desktop
+          libgweather
+          libhandy))
    (arguments
     `(#:meson ,meson-0.59         ;positional arguments error with meson 0.60
       #:glib-or-gtk? #t
@@ -9762,18 +9547,15 @@ documents and diagrams, playing media, scanning, and much more.")
                  (("-Werror") ""))
                #t)))))
       (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("gnome-common" ,gnome-common)
-         ("intltool" ,intltool)
-         ("libtool" ,libtool)
-         ("pkg-config" ,pkg-config)
-         ("which" ,which)))
+       (list autoconf
+             automake
+             gnome-common
+             intltool
+             libtool
+             pkg-config
+             which))
       (inputs
-       `(("glib" ,glib)
-         ("gstreamer" ,gstreamer)
-         ("gst-plugins-base" ,gst-plugins-base)
-         ("gtk+" ,gtk+)))
+       (list glib gstreamer gst-plugins-base gtk+))
       (synopsis "Desktop recording program")
       (description "Byzanz is a simple desktop recording program with a
 command-line interface.  It can record part or all of an X display for a
@@ -9820,18 +9602,18 @@ specified duration and save it as a GIF encoded animated image file.")
        ("gtk+:bin" ,gtk+ "bin")
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("gtk+" ,gtk+)
-       ("libhandy" ,libhandy-0.0)
-       ("libsecret" ,libsecret)
-       ("python-beautifulsoup4" ,python-beautifulsoup4)
-       ("python-pillow" ,python-pillow)
-       ("python-pyfavicon" ,python-pyfavicon)
-       ("python-pygobject" ,python-pygobject)
-       ("python-pyotp" ,python-pyotp)
-       ("python-pyzbar" ,python-pyzbar)
-       ("yoyo-migrations" ,yoyo-migrations)
-       ("zbar" ,zbar)))
+     (list gsettings-desktop-schemas
+           gtk+
+           libhandy-0.0
+           libsecret
+           python-beautifulsoup4
+           python-pillow
+           python-pyfavicon
+           python-pygobject
+           python-pyotp
+           python-pyzbar
+           yoyo-migrations
+           zbar))
     (home-page "https://gitlab.gnome.org/World/Authenticator/")
     (synopsis "Two-factor authentication application built for GNOME")
     (description
@@ -9864,11 +9646,9 @@ Features:
                 "06l80xgykj7x1kqkjvcq06pwj2rmca458zvs053qc55x3sg06bfa"))))
     (build-system meson-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("gobject-introspection" ,gobject-introspection)
-       ("vala" ,vala)))
+     (list pkg-config gobject-introspection vala))
     (propagated-inputs
-     `(("libcanberra" ,libcanberra)))   ; in Requires.private of gsound.pc
+     (list libcanberra))   ; in Requires.private of gsound.pc
     (home-page "https://wiki.gnome.org/Projects/GSound")
     (synopsis "GObject wrapper for libcanberra")
     (description
@@ -9891,9 +9671,7 @@ library.")
                 "0zn3s7ryjc3k1abj4k55dr2na844l451nrg9s6cvnnhh569zj99x"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("gobject-introspection" ,gobject-introspection)
-       ("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+     (list gobject-introspection intltool pkg-config))
     (inputs
      `(("gnome-online-accounts:lib" ,gnome-online-accounts "lib")
        ("json-glib" ,json-glib)
@@ -9935,14 +9713,14 @@ Microsoft SkyDrive and Hotmail, using their REST protocols.")
        ("gettext" ,gettext-minimal)
        ("itstool" ,itstool)))
     (inputs
-     `(("glib" ,glib)
-       ("gtk+" ,gtk+)
-       ("gsound" ,gsound)
-       ("geoclue" ,geoclue)
-       ("geocode-glib" ,geocode-glib)
-       ("libgweather" ,libgweather)
-       ("libhandy" ,libhandy)
-       ("gnome-desktop" ,gnome-desktop)))
+     (list glib
+           gtk+
+           gsound
+           geoclue
+           geocode-glib
+           libgweather
+           libhandy
+           gnome-desktop))
     (home-page "https://wiki.gnome.org/Apps/Clocks")
     (synopsis "GNOME's clock application")
     (description
@@ -9990,7 +9768,7 @@ desktop.  It supports world clock, stop watch, alarms, and count down timer.")
        ("libhandy" ,libhandy)
        ("geoclue" ,geoclue)))
     (propagated-inputs
-     `(("evolution-data-server" ,evolution-data-server)))
+     (list evolution-data-server))
     (home-page "https://wiki.gnome.org/Apps/Calendar")
     (synopsis "GNOME's calendar application")
     (description
@@ -10079,8 +9857,7 @@ fit the GNOME desktop.")
        ("pkg-config" ,pkg-config)
        ("xmllint" ,libxml2)))
     (inputs
-     `(("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("gtk+" ,gtk+)))
+     (list gsettings-desktop-schemas gtk+))
     (home-page "https://wiki.gnome.org/Apps/Dictionary")
     (synopsis "Look up words in dictionary sources")
     (description
@@ -10136,17 +9913,17 @@ existing databases over the internet.")
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("bash-minimal" ,bash-minimal) ; to execute the wrapper program
-       ("gnome-desktop" ,gnome-desktop)
-       ("gtk+" ,gtk+)
-       ("gobject-introspection" ,gobject-introspection)
-       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("libhandy" ,libhandy)
-       ("libnotify" ,libnotify)
-       ("libsoup" ,libsoup)
-       ("nautilus" ,nautilus)
-       ("python" ,python)
-       ("python-pygobject" ,python-pygobject)))
+     (list bash-minimal ; to execute the wrapper program
+           gnome-desktop
+           gtk+
+           gobject-introspection
+           gsettings-desktop-schemas
+           libhandy
+           libnotify
+           libsoup
+           nautilus
+           python
+           python-pygobject))
     (synopsis "Customize advanced GNOME 3 options")
     (home-page "https://wiki.gnome.org/Apps/Tweaks")
     (description
@@ -10176,7 +9953,7 @@ GNOME Shell appearance and extension, etc.")
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     (propagated-inputs
-     `(("glib" ,glib)))
+     (list glib))
     (synopsis "Extensions for GNOME Shell")
     (description "GNOME Shell extensions modify and extend GNOME Shell
 functionality and behavior.")
@@ -10207,13 +9984,13 @@ functionality and behavior.")
                (("gtk-update-icon-cache") "true"))
              #t)))))
     (inputs
-     `(("bdb" ,bdb)
-       ("dbus-glib" ,dbus-glib)
-       ("evolution-data-server" ,evolution-data-server)
-       ("glib" ,glib)
-       ("libgee" ,libgee)
-       ("readline" ,readline)
-       ("telepathy-glib" ,telepathy-glib)))
+     (list bdb
+           dbus-glib
+           evolution-data-server
+           glib
+           libgee
+           readline
+           telepathy-glib))
     (native-inputs
      `(("glib:bin" ,glib "bin")
        ("gobject-introspection" ,gobject-introspection)
@@ -10250,15 +10027,14 @@ compiled.")
                            "--enable-gtk-doc"
                            "--enable-introspection")))
     (native-inputs
-     `(("gobject-introspection" ,gobject-introspection)
-       ("gtk-doc" ,gtk-doc/stable)
-       ("pkg-config" ,pkg-config)
-
-       ;; The 0.2.4 ‘release’ tarball isn't bootstrapped.
-       ("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("which" ,which)))
+     (list gobject-introspection
+           gtk-doc/stable
+           pkg-config
+           ;; The 0.2.4 ‘release’ tarball isn't bootstrapped.
+           autoconf
+           automake
+           libtool
+           which))
     (inputs
      `(("json-glib" ,json-glib)
        ("gnome-online-accounts:lib" ,gnome-online-accounts "lib")
@@ -10283,14 +10059,11 @@ GLib/GObject code.")
                 "0y962ykn3rr9gylj0pwpww7bi20lmhvsw6qvxs5bisbn2mih5jpp"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("glib" ,glib "bin")
-       ("intltool" ,intltool)))
+     (list pkg-config
+           `(,glib "bin") intltool))
     (propagated-inputs
      ;; Referred to in .h files and .pc.
-     `(("glib" ,glib)
-       ("gtk+" ,gtk+)
-       ("libxklavier" ,libxklavier)))
+     (list glib gtk+ libxklavier))
     (home-page "https://www.gnome.org")
     (synopsis "GNOME keyboard configuration library")
     (description
@@ -10326,7 +10099,7 @@ environment, which can notably display keyboard layouts.")
        ("gtk-doc" ,gtk-doc/stable)))
     (propagated-inputs
      ;; Referred to in .h files and .pc.
-     `(("gtk+" ,gtk+)))
+     (list gtk+))
     (home-page "https://wiki.gnome.org/Attic/LibUnique")
     (synopsis "Library for writing single instance applications")
     (description
@@ -10404,8 +10177,7 @@ is suitable as a default application in a Desktop environment.")
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("gtksourceview" ,gtksourceview-3)
-       ("libsm" ,libsm)))
+     (list gtksourceview-3 libsm))
     (home-page "https://wiki.gnome.org/Apps/Xpad")
     (synopsis "Virtual sticky note")
     (description
@@ -10511,9 +10283,7 @@ only know by its Unicode name or code point.")
        ("gtk+:bin" ,gtk+ "bin")
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("gtk+" ,gtk+)
-       ("libportal" ,libportal)))
+     (list gsettings-desktop-schemas gtk+ libportal))
     (home-page "https://www.hjdskes.nl/projects/gcolor3/")
     (synopsis "Simple color chooser written in GTK3")
     (description "Color Picker is a simple color chooser written in GTK3.  It
@@ -10533,9 +10303,7 @@ supports both X and Wayland display servers.")
         (base32 "09hgxq139kbkjda5y073lqhq1z1x7cx0j80jh77afrqa3y9c53wl"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("desktop-file-utils" ,desktop-file-utils)
-       ("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+     (list desktop-file-utils intltool pkg-config))
     (inputs
      `(("enchant" ,enchant)
        ("gtk+" ,gtk+)
@@ -10576,13 +10344,13 @@ Bluefish supports many programming and markup languages.")
        ("polkit" ,polkit)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("gdk-pixbuf" ,gdk-pixbuf) ; for loading SVG files.
-       ("gtk+" ,gtk+)
-       ("gtkmm" ,gtkmm-3)
-       ("libhandy" ,libhandy)
-       ("librsvg" ,librsvg)
-       ("libxml2" ,libxml2)
-       ("libwnck" ,libwnck)))
+     (list gdk-pixbuf ; for loading SVG files.
+           gtk+
+           gtkmm-3
+           libhandy
+           librsvg
+           libxml2
+           libwnck))
     (home-page "https://wiki.gnome.org/Apps/SystemMonitor")
     (synopsis "Process viewer and system resource monitor for GNOME")
     (description
@@ -10619,11 +10387,11 @@ from gi.repository import Gtk
 from gi.repository import Atspi"))
              #t)))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("python" ,python)))
+     (list python))
     (propagated-inputs
-     `(("python-pygobject" ,python-pygobject)))
+     (list python-pygobject))
     (synopsis "Python client bindings for D-Bus AT-SPI")
     (home-page "https://wiki.linuxfoundation.org/accessibility\
 /atk/at-spi/at-spi_on_d-bus")
@@ -10735,7 +10503,7 @@ that support the Assistive Technology Service Provider Interface (AT-SPI).")
              (setenv "ASPELL_DICT_DIR"
                      (search-input-directory inputs "/lib/aspell")))))))
     (inputs
-     `(("iso-codes" ,iso-codes)))
+     (list iso-codes))
     (native-inputs
      `(("glib" ,glib "bin")
        ("gobject-introspection" ,gobject-introspection)
@@ -10748,9 +10516,7 @@ that support the Assistive Technology Service Provider Interface (AT-SPI).")
        ("xorg-server" ,xorg-server-for-tests)))
     (propagated-inputs
      ;; Referred by .pc file.
-     `(("enchant" ,enchant)
-       ("glib" ,glib)
-       ("gtk+" ,gtk+)))
+     (list enchant glib gtk+))
     (home-page "https://wiki.gnome.org/Projects/gspell")
     (synopsis "GNOME's alternative spell checker")
     (description
@@ -10782,19 +10548,17 @@ text views, and buttons to choose the language.")
                    '("--build=aarch64-unknown-linux-gnu")
                    '()))))
     (inputs
-     `(("libgnomecanvas" ,libgnomecanvas)
-       ("libgnomeui" ,libgnomeui)
-       ("libglade" ,libglade)
-       ("gnome-vfs" ,gnome-vfs)
-       ("gconf" ,gconf)
-       ("libxml2" ,libxml2)
-       ("libxslt" ,libxslt)
-       ("gtk+" ,gtk+)
-       ("glib" ,glib)))
+     (list libgnomecanvas
+           libgnomeui
+           libglade
+           gnome-vfs
+           gconf
+           libxml2
+           libxslt
+           gtk+
+           glib))
     (native-inputs
-     `(("intltool" ,intltool)
-       ("scrollkeeper" ,scrollkeeper)
-       ("pkg-config" ,pkg-config)))
+     (list intltool scrollkeeper pkg-config))
     (home-page "https://wiki.gnome.org/Apps/Planner")
     (synopsis "Project management software for the GNOME desktop")
     (description
@@ -10865,10 +10629,9 @@ views can be printed as PDF or PostScript files, or exported to HTML.")
        ("totem-pl-parser" ,totem-pl-parser)
        ("webkitgtk" ,webkitgtk)))
     (propagated-inputs
-     `(;; gst-plugins-base is required to start Lollypop,
-       ;; the others are required to play streaming.
-       ("gst-plugins-good" ,gst-plugins-good)
-       ("gst-plugins-ugly" ,gst-plugins-ugly)))
+     (list ;; gst-plugins-base is required to start Lollypop,
+           ;; the others are required to play streaming.
+           gst-plugins-good gst-plugins-ugly))
     (home-page "https://wiki.gnome.org/Apps/Lollypop")
     (synopsis "GNOME music playing application")
     (description
@@ -10956,23 +10719,23 @@ photo-booth-like software, such as Cheese.")
        ("pkg-config" ,pkg-config)
        ("vala" ,vala)))
     (propagated-inputs
-     `(("gnome-video-effects" ,gnome-video-effects)
-       ("clutter" ,clutter)
-       ("clutter-gst" ,clutter-gst)
-       ("clutter-gtk" ,clutter-gtk)
-       ("libcanberra" ,libcanberra)
-       ("gdk-pixbuf" ,gdk-pixbuf)
-       ("glib" ,glib)
-       ("gstreamer" ,gstreamer)))
+     (list gnome-video-effects
+           clutter
+           clutter-gst
+           clutter-gtk
+           libcanberra
+           gdk-pixbuf
+           glib
+           gstreamer))
     (inputs
-     `(("gnome-desktop" ,gnome-desktop)
-       ("gobject-introspection" ,gobject-introspection)
-       ("gst-plugins-base" ,gst-plugins-base)
-       ("gst-plugins-good" ,gst-plugins-good)
-       ("gst-plugins-bad" ,gst-plugins-bad)
-       ("gtk+" ,gtk+)
-       ("libx11" ,libx11)
-       ("libxtst" ,libxtst)))
+     (list gnome-desktop
+           gobject-introspection
+           gst-plugins-base
+           gst-plugins-good
+           gst-plugins-bad
+           gtk+
+           libx11
+           libxtst))
     (home-page "https://wiki.gnome.org/Apps/Cheese")
     (synopsis "Webcam photo booth software for GNOME")
     (description
@@ -11019,13 +10782,13 @@ apply fancy special effects and lets you share the fun with others.")
        ("gtk+:bin" ,gtk+ "bin")
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("glib" ,glib)
-       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("gtk+" ,gtk+)
-       ("libhandy" ,libhandy)
-       ("libpwquality" ,libpwquality)
-       ("python-pygobject" ,python-pygobject)
-       ("python-pykeepass" ,python-pykeepass)))
+     (list glib
+           gsettings-desktop-schemas
+           gtk+
+           libhandy
+           libpwquality
+           python-pygobject
+           python-pykeepass))
     (home-page "https://gitlab.gnome.org/World/PasswordSafe")
     (synopsis "Password manager for the GNOME desktop")
     (description
@@ -11116,11 +10879,7 @@ mp3, Ogg Vorbis and FLAC")
        ("pkg-config" ,pkg-config)
        ("glib:bin" ,glib "bin")))
     (inputs
-     `(("gtk+" ,gtk+)
-       ("python" ,python)
-       ("python-pygobject" ,python-pygobject)
-       ("gstreamer" ,gstreamer)
-       ("gst-plugins-base" ,gst-plugins-base)))
+     (list gtk+ python python-pygobject gstreamer gst-plugins-base))
     (home-page "https://soundconverter.org/")
     (synopsis "Convert between audio formats with a graphical interface")
     (description
@@ -11148,17 +10907,17 @@ configurable file renaming. ")
     (arguments
      ;; The only tests are maintainer tests (in po/), which fail.
      `(#:tests? #f))
-    (inputs `(("glib" ,glib)
-              ("gtk+" ,gtk+)
-              ("gdk-pixbuf" ,gdk-pixbuf)
-              ("gtkmm" ,gtkmm-3)
-              ("glibmm" ,glibmm)
-              ("libx11" ,libx11)
-              ("libxtst" ,libxtst)
-              ("dconf" ,dconf)
-              ("libice" ,libice)
-              ("libsm" ,libsm)
-              ("libxscrnsaver" ,libxscrnsaver)))
+    (inputs (list glib
+                  gtk+
+                  gdk-pixbuf
+                  gtkmm-3
+                  glibmm
+                  libx11
+                  libxtst
+                  dconf
+                  libice
+                  libsm
+                  libxscrnsaver))
     (native-inputs `(("boost" ,boost)
                      ("pkg-config" ,pkg-config)
                      ("gettext" ,gettext-minimal)
@@ -11241,15 +11000,12 @@ hexadecimal or ASCII.  It is useful for editing binary files in general.")
              (setenv "DISPLAY" ":1")
              #t)))))
     (native-inputs
-     `(("glib" ,glib "bin")             ; glib-compile-resources
-       ("pkg-config" ,pkg-config)
-       ;; For tests.
-       ("xorg-server" ,xorg-server-for-tests)))
+     (list `(,glib "bin") ; glib-compile-resources
+           pkg-config
+           ;; For tests.
+           xorg-server-for-tests))
     (inputs
-     `(("glib" ,glib)
-       ("gobject-introspection" ,gobject-introspection)
-       ("gtk+" ,gtk+)
-       ("vala" ,vala)))
+     (list glib gobject-introspection gtk+ vala))
     (home-page "https://gitlab.gnome.org/GNOME/libdazzle")
     (synopsis "Companion library to GObject and Gtk+")
     (description "The libdazzle library is a companion library to GObject and
@@ -11298,10 +11054,8 @@ generic enough to work for everyone.")
          (add-after 'install 'glib-or-gtk-wrap
            (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-wrap)))))
     (native-inputs
-     `(("glib" ,glib "bin")             ; glib-mkenums
-       ("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)
-       ("itstool" ,itstool)))
+     (list `(,glib "bin") ; glib-mkenums
+           pkg-config intltool itstool))
     (inputs
      `(("enchant" ,enchant)
        ("evolution-data-server" ,evolution-data-server) ; must be the same version
@@ -11419,7 +11173,7 @@ advanced image management tool")
        ("python-pygobject" ,python-pygobject)
        ("vte" ,vte)))
     (propagated-inputs
-     `(("python-configobj" ,python-configobj)))
+     (list python-configobj))
     (arguments
      ;; One test out of 28 fails due to dbus-python and python-notify; skip
      ;; tests.
@@ -11497,8 +11251,7 @@ tabs, and it supports drag and drop re-ordering of terminals.")
              (setenv "DISPLAY" ":1")
              #t)))))
     (inputs
-     `(("gtk+" ,gtk+)
-       ("glade" ,glade3)))
+     (list gtk+ glade3))
     (native-inputs
      `(("glib:bin" ,glib "bin")
        ("gobject-introspection" ,gobject-introspection) ; for g-ir-scanner
@@ -11560,11 +11313,10 @@ for usage on small and big screens.")
        ("python-wrapper" ,python-wrapper)
        ("vala" ,vala)))
     (inputs
-     `(("glib" ,glib)
-       ("libssh2" ,libssh2)))
+     (list glib libssh2))
     (propagated-inputs
-     `(;; In Requires of libgit2-glib.pc.
-       ("libgit2" ,libgit2)))
+     (list ;; In Requires of libgit2-glib.pc.
+           libgit2))
     (synopsis "GLib wrapper around the libgit2 Git access library")
     (description "libgit2-glib is a GLib wrapper library around the libgit2 Git
 access library.  It only implements the core plumbing functions, not really the
@@ -11609,19 +11361,19 @@ higher level porcelain stuff.")
                  `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH"))))
                #t))))))
     (inputs
-     `(("glib" ,glib)
-       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("gtk+" ,gtk+)
-       ("gtkspell3" ,gtkspell3)
-       ("gtksourceview" ,gtksourceview-3)
-       ("json-glib" ,json-glib)
-       ("libdazzle" ,libdazzle)
-       ("libgee" ,libgee)
-       ("libgit2-glib" ,libgit2-glib)
-       ("libpeas" ,libpeas)
-       ("libsecret" ,libsecret)
-       ("libsoup" ,libsoup)
-       ("libxml2" ,libxml2)))
+     (list glib
+           gsettings-desktop-schemas
+           gtk+
+           gtkspell3
+           gtksourceview-3
+           json-glib
+           libdazzle
+           libgee
+           libgit2-glib
+           libpeas
+           libsecret
+           libsoup
+           libxml2))
     (native-inputs
      `(("glib:bin" ,glib "bin")
        ("gtk+:bin" ,gtk+ "bin")
@@ -11694,7 +11446,7 @@ repository and commit your work.")
                             line))))))
                '()))))
     (inputs
-     `(("glib" ,glib)))
+     (list glib))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ,@(if (and=> (%current-target-system) target-aarch64?)
@@ -11733,11 +11485,9 @@ library which detects when a file or a directory has been modified.")
        ("pkg-config" ,pkg-config)
        ("vala" ,vala)))
     (propagated-inputs
-     `(("dconf" ,dconf)))
+     (list dconf))
     (inputs
-     `(("glib" ,glib)
-       ("gtk+" ,gtk+)
-       ("librsvg" ,librsvg)))
+     (list glib gtk+ librsvg))
     (synopsis "Mahjongg tile-matching game")
     (description "GNOME Mahjongg is a game based on the classic Chinese
 tile-matching game Mahjong.  It features multiple board layouts, tile themes,
@@ -11851,15 +11601,15 @@ environment.")
                  `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH"))))
                #t))))))
     (inputs
-     `(("glib" ,glib)
-       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("gspell" ,gspell)
-       ("gtk+" ,gtk+)
-       ("gjs" ,gjs)
-       ("libsecret" ,libsecret)
-       ("libsoup" ,libsoup)
-       ("telepathy-glib" ,telepathy-glib)
-       ("telepathy-logger" ,telepathy-logger)))
+     (list glib
+           gsettings-desktop-schemas
+           gspell
+           gtk+
+           gjs
+           libsecret
+           libsoup
+           telepathy-glib
+           telepathy-logger))
     (native-inputs
      `(("glib:bin" ,glib "bin")
        ("gobject-introspection" ,gobject-introspection)
@@ -11867,8 +11617,7 @@ environment.")
        ("pkg-config" ,pkg-config)
        ("yelp-tools" ,yelp-tools)))
     (propagated-inputs
-     `(("telepathy-idle" ,telepathy-idle)
-       ("telepathy-mission-control" ,telepathy-mission-control)))
+     (list telepathy-idle telepathy-mission-control))
     (synopsis "Simple IRC Client")
     (description
      "Polari is a simple Internet Relay Chat (IRC) client that is designed to
@@ -12069,9 +11818,7 @@ to.")
        ("itstool" ,itstool)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("gtk+" ,gtk+)
-       ("librsvg" ,librsvg)
-       ("libxml2" ,libxml2)))
+     (list gtk+ librsvg libxml2))
     (arguments
      `(#:configure-flags '("CFLAGS=-fcommon")))
     (home-page "https://glabels.org/")
@@ -12105,16 +11852,16 @@ card sheets that you’ll find at most office supply stores.")
        ("pkg-config" ,pkg-config)
        ("vala" ,vala)))
     (inputs
-     `(("amtk" ,amtk)
-       ("dconf" ,dconf)
-       ("glib" ,glib)
-       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("gspell" ,gspell)
-       ("gtk+" ,gtk+)
-       ("gtksourceview" ,gtksourceview)
-       ("libgee" ,libgee)
-       ("tepl" ,tepl-5)
-       ("uchardet" ,uchardet)))
+     (list amtk
+           dconf
+           glib
+           gsettings-desktop-schemas
+           gspell
+           gtk+
+           gtksourceview
+           libgee
+           tepl-5
+           uchardet))
     (home-page "https://wiki.gnome.org/Apps/GNOME-LaTeX")
     (synopsis "LaTeX editor for the GNOME desktop")
     (description
@@ -12220,20 +11967,20 @@ GTK+.  It integrates well with the GNOME desktop environment.")
                                     (search-input-file inputs
                                                        "/bin/pandoc")))))))))))
     (inputs
-     `(("glib" ,glib)
-       ("gobject-introspection" ,gobject-introspection)
-       ("gspell" ,gspell)
-       ("gtk+" ,gtk+)
-       ("libhandy" ,libhandy)
-       ("pandoc" ,pandoc)
-       ("python-chardet" ,python-chardet)
-       ("python-levenshtein" ,python-levenshtein)
-       ("python-regex" ,python-regex)
-       ("python-pycairo" ,python-pycairo)
-       ("python-pygobject" ,python-pygobject)
-       ("python-pyenchant" ,python-pyenchant)
-       ("python-pypandoc" ,python-pypandoc)
-       ("webkitgtk" ,webkitgtk)))
+     (list glib
+           gobject-introspection
+           gspell
+           gtk+
+           libhandy
+           pandoc
+           python-chardet
+           python-levenshtein
+           python-regex
+           python-pycairo
+           python-pygobject
+           python-pyenchant
+           python-pypandoc
+           webkitgtk))
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin")
@@ -12282,10 +12029,7 @@ It uses pandoc as back-end for parsing Markdown.")
                  python-wrap)
                #t))))))
     (native-inputs
-     `(("check" ,check)
-       ("pkg-config" ,pkg-config)
-       ("swig" ,swig)
-       ("valgrind" ,valgrind)))
+     (list check pkg-config swig valgrind))
     (inputs
      `(("glib" ,glib)
        ("json-glib" ,json-glib)
@@ -12419,14 +12163,14 @@ provided there is a DBus service present:
        ("pkg-config" ,pkg-config)
        ("yelp-tools" ,yelp-tools)))
     (inputs
-     `(("gst-plugins-base" ,gst-plugins-base)
-       ("gst-plugins-good" ,gst-plugins-good)
-       ("gstreamer" ,gstreamer)
-       ("gtk+" ,gtk+)
-       ("iso-codes" ,iso-codes)
-       ("pocketsphinx" ,pocketsphinx)
-       ("pulseaudio" ,pulseaudio)
-       ("sphinxbase" ,sphinxbase)))
+     (list gst-plugins-base
+           gst-plugins-good
+           gstreamer
+           gtk+
+           iso-codes
+           pocketsphinx
+           pulseaudio
+           sphinxbase))
     (home-page "https://www.parlatype.org")
     (synopsis "GNOME audio player for transcription")
     (description "Parlatype is an audio player for the GNOME desktop
@@ -12448,8 +12192,7 @@ audio files.")
                 "0j05x4xv2cp3cbmp30m68z8g4rdw7b030ip4wszyfj9ya15v5kni"))))
     (build-system meson-build-system)
     (inputs
-     `(("json-glib" ,json-glib)
-       ("glib" ,glib)))
+     (list json-glib glib))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("glib:bin" ,glib "bin") ; for glib-genmarshal, etc.
@@ -12484,12 +12227,9 @@ host to avoid parser overhead and memory-allocator fragmentation.")
        ("pkg-config" ,pkg-config)
        ("vala" ,vala)))
     (inputs
-     `(("dbus" ,dbus)
-       ("gsound" ,gsound)
-       ("json-glib" ,json-glib)
-       ("libgudev" ,libgudev)))
+     (list dbus gsound json-glib libgudev))
     (propagated-inputs
-     `(("glib" ,glib))) ; in Requires of libfeedback-0.0.pc
+     (list glib)) ; in Requires of libfeedback-0.0.pc
     (synopsis "Haptic/visual/audio feedback via DBus")
     (description "Feedbackd provides a DBus daemon to act on events to provide
 haptic, visual and audio feedback.  It offers the libfeedbackd library and
@@ -12526,13 +12266,9 @@ GObject introspection bindings.")
                (("update-desktop-database") "true"))
              #t)))))
     (propagated-inputs
-     `(("polkit" ,polkit)))
+     (list polkit))
     (inputs
-     `(("glib" ,glib)
-       ("gtk+" ,gtk+)
-       ("json-glib" ,json-glib)
-       ("libdazzle" ,libdazzle)
-       ("polkit" ,polkit)))
+     (list glib gtk+ json-glib libdazzle polkit))
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin") ; for gdbus-codegen, etc.
@@ -12617,7 +12353,7 @@ libraries.  Applications do not need to be recompiled--or even restarted.")
        ("vte" ,vte)
        ("webkitgtk" ,webkitgtk-with-libsoup2)))
     (propagated-inputs
-     `(("gtksourceview" ,gtksourceview)))         ;needed for settings
+     (list gtksourceview))         ;needed for settings
     (native-inputs
      `(("desktop-file-utils" ,desktop-file-utils) ;for desktop-file-validate
        ("glib:bin" ,glib "bin")
@@ -12673,25 +12409,25 @@ integrated profiler via Sysprof, debugging support, and more.")
                 `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH"))))
               #t))))))
     (inputs
-     `(("gtk+" ,gtk+)
-       ("libhandy" ,libhandy)
-       ("libnotify" ,libnotify)
-       ("libsecret" ,libsecret)
-       ("python-beautifulsoup4" ,python-beautifulsoup4)
-       ("python-brotli" ,python-brotli)
-       ("python-cloudscraper" ,python-cloudscraper)
-       ("python-dateparser" ,python-dateparser)
-       ("python-keyring" ,python-keyring)
-       ("python-lxml" ,python-lxml)
-       ("python-magic" ,python-magic)
-       ("python-natsort" ,python-natsort)
-       ("python-pillow" ,python-pillow)
-       ("python-pure-protobuf" ,python-pure-protobuf)
-       ("python-pycairo" ,python-pycairo)
-       ("python-pygobject" ,python-pygobject)
-       ("python-requests" ,python-requests)
-       ("python-unidecode" ,python-unidecode)
-       ("webkitgtk" ,webkitgtk)))
+     (list gtk+
+           libhandy
+           libnotify
+           libsecret
+           python-beautifulsoup4
+           python-brotli
+           python-cloudscraper
+           python-dateparser
+           python-keyring
+           python-lxml
+           python-magic
+           python-natsort
+           python-pillow
+           python-pure-protobuf
+           python-pycairo
+           python-pygobject
+           python-requests
+           python-unidecode
+           webkitgtk))
     (native-inputs
      `(("desktop-file-utils" ,desktop-file-utils)
        ("gettext" ,gettext-minimal)
@@ -12756,16 +12492,16 @@ developed with the aim of being used with the Librem 5 phone.")
                         (string-append moduledir "/" shlib))
                #t))))))
     (propagated-inputs
-     `(("libxml2" ,libxml2)))           ; required by libgda-5.0.pc
+     (list libxml2))           ; required by libgda-5.0.pc
     (inputs
-     `(("glib" ,glib)
-       ("glade" ,glade3)
-       ("gtk+" ,gtk+)
-       ("libsecret" ,libsecret)
-       ("libxslt" ,libxslt)
-       ("openssl" ,openssl)
-       ("sqlite" ,sqlite)
-       ("vala" ,vala)))
+     (list glib
+           glade3
+           gtk+
+           libsecret
+           libxslt
+           openssl
+           sqlite
+           vala))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("autoconf-archive" ,autoconf-archive)
@@ -12820,7 +12556,7 @@ your data.")
        ("itstool" ,itstool)
        ("pkg-config" ,pkg-config)))
     (propagated-inputs
-     `(("gtksourceview" ,gtksourceview))) ; required for source view
+     (list gtksourceview)) ; required for source view
     (arguments
      `(#:meson ,meson-0.59
        #:build-type "release"
@@ -12937,9 +12673,7 @@ Document Analysis and Recognition program.")
          ("vala" ,vala)
          ("xvfb" ,xorg-server-for-tests)))
       (inputs
-       `(("gtk" ,gtk)
-         ("gobject-introspection" ,gobject-introspection)
-         ("libportal" ,libportal)))
+       (list gtk gobject-introspection libportal))
       (home-page "https://gnome.pages.gitlab.gnome.org/libadwaita/")
       (synopsis "Building blocks for GNOME applications")
       (description
@@ -12962,10 +12696,7 @@ successor of @code{libhandy} for GTK4.")
                 "0drfn3wcc8l4n07qwv6p0rw2dwcd00hwzda282q62l6sasks2b2g"))))
     (build-system meson-build-system)
     (inputs
-     `(("upower" ,upower)
-       ("gtk+" ,gtk+)
-       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("adwaita-icon-theme" ,adwaita-icon-theme)))
+     (list upower gtk+ gsettings-desktop-schemas adwaita-icon-theme))
     (native-inputs
      `(("desktop-file-utils" ,desktop-file-utils)
        ("glib:bin" ,glib "bin")

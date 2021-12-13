@@ -57,14 +57,11 @@
        (sha256 (base32 "1m62s8fkjjgq04ayf18jcxc33rqfd7nrkdw1gr54q5pn4cijrp29"))))
     (build-system gnu-build-system)
     (inputs
-     `(("ncurses" ,ncurses)
-       ("lm-sensors" ,lm-sensors "lib")
-       ("rdma-core" ,rdma-core)
-       ("infiniband-diags" ,infiniband-diags "lib")
-       ("net-tools" ,net-tools)))
+     (list ncurses
+           `(,lm-sensors "lib") rdma-core
+           `(,infiniband-diags "lib") net-tools))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("gfortran" ,gfortran)))
+     (list autoconf gfortran))
     (arguments
      `(#:tests? #f ; no check target
        #:configure-flags
@@ -147,7 +144,7 @@ performance measurement opportunites across the hardware and software stack.")
        (uri (string-append "http://www.vi-hps.org/upload/packages/otf2/otf2-"
                            version ".tar.gz"))
        (sha256 (base32 "1ls7rz6qwnqbkifpafc95bnfh3m9xbs74in8zxlnhfbgwx11nn81"))))
-    (native-inputs `(("python" ,python)))
+    (native-inputs (list python))
     (outputs '("doc"                              ; 18MB
                "lib"
                "out"))
@@ -182,9 +179,9 @@ memory-efficient event trace data format plus support library.")
        (sha256
         (base32 "1xaf25lcxk4ky1kzfks40ja9mayh8pnmrzch2107c8dcjrsxsd4h"))))
     (build-system gnu-build-system)
-    (inputs `(("gfortran" ,gfortran)))
-    (native-inputs `(("gawk" ,gawk)     ; for tests
-                     ("which" ,which)))
+    (inputs (list gfortran))
+    (native-inputs (list gawk ; for tests
+                         which))
     (home-page "https://www.vi-hps.org/projects/score-p")
     (synopsis "OpenMP runtime performance measurement instrumenter")
     (description "OPARI2 is a source-to-source instrumentation tool for OpenMP
@@ -204,11 +201,9 @@ with calls to the POMP2 measurement interface.")
              version ".tar.gz"))
        (sha256 (base32 "04irflia4rfw02093w9nx7rr98r640y4q8hisjywvd4b7r3nzhhx"))
        (patches (search-patches "cube-nocheck.patch"))))
-    (inputs `(("dbus" ,dbus)
-              ("zlib" ,zlib)))
-    (native-inputs `(("perl" ,perl)
-                     ("qtbase" ,qtbase-5)           ; native because of qmake
-                     ("which" ,which)))
+    (inputs (list dbus zlib))
+    (native-inputs (list perl qtbase-5 ; native because of qmake
+                         which))
 
     ;; FIXME: The doc is 14MB, but adding a doc output results in a cycle.
     (outputs '("out"                              ;"doc"
@@ -354,13 +349,13 @@ different kinds of performance behavior.")
        ("openmpi" ,openmpi)
        ("zlib" ,zlib)))
     (native-inputs
-     `(("gfortran" ,gfortran)
-       ("flex" ,flex)
-       ("cube" ,cube)                             ;for cube-config
-       ("bison" ,bison)
-       ("python" ,python)
-       ("doxygen" ,doxygen)
-       ("which" ,which)))
+     (list gfortran
+           flex
+           cube ;for cube-config
+           bison
+           python
+           doxygen
+           which))
     (arguments
      `(#:configure-flags
        (list "--enable-shared" "--disable-static"

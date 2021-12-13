@@ -105,7 +105,7 @@ over IRC, instant messaging, network games, and most server software.")
       (sha256
        (base32 "1b5mnn01cx840paggxrajg63gqzmw8mi4p14jhi9r4qyvam80709"))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (build-system gnu-build-system)
     (arguments
      ;; The tests require a network device capable of multicasting which is

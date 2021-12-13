@@ -78,7 +78,7 @@
                                (search-patches "readline-link-ncurses.patch")))
               (patch-flags '("-p0"))))
     (build-system gnu-build-system)
-    (propagated-inputs `(("ncurses" ,ncurses)))
+    (propagated-inputs (list ncurses))
     (arguments `(#:configure-flags
                  (list (string-append "LDFLAGS=-Wl,-rpath -Wl,"
                                       (assoc-ref %build-inputs "ncurses")
@@ -155,11 +155,9 @@ comfortable for anyone.")
         (base32 "1irlcdvj1ddxkfzwa7l2djxgp5xbqch9vaajk2s32x1h5cxl1f5r"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("perl" ,perl)))
+     (list autoconf automake perl))
     (inputs
-     `(("readline" ,readline)))
+     (list readline))
     (synopsis "Wrapper to allow the editing of keyboard commands")
     (description
      "Rlwrap is a 'readline wrapper', a small utility that uses the GNU

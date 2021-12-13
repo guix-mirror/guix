@@ -75,8 +75,8 @@
               (sha256
                (base32 "0xsb4ihf3p767f0zx9p4janwni6r9sg5j6lry0002i8hmnsdnv8r"))))
     (build-system gnu-build-system)
-    (inputs `(("zlib" ,zlib)
-              ("util-linux" ,util-linux "lib")))
+    (inputs (list zlib
+                  `(,util-linux "lib")))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -122,11 +122,9 @@ rich set of boolean query operators.")
                                             (package-version python))
                             "/site-packages/xapian"))))
     (native-inputs
-     `(("python-sphinx" ,python-sphinx))) ;for documentation
+     (list python-sphinx)) ;for documentation
     (inputs
-     `(("python" ,python)
-       ("xapian" ,xapian)
-       ("zlib" ,zlib)))
+     (list python xapian zlib))
     (synopsis "Python bindings for the Xapian search engine library")
     (license gpl2+)))
 
@@ -143,9 +141,9 @@ rich set of boolean query operators.")
         (base32 "1pbl8pbgmbs3i8yik4p63g4pd9bhn0dp3d7l667dkvw0kccl66c7"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-devel-leak" ,perl-devel-leak)))
+     (list perl-devel-leak))
     (inputs
-     `(("xapian" ,xapian)))
+     (list xapian))
     (home-page "https://metacpan.org/release/Search-Xapian")
     (synopsis "Perl XS frontend to the Xapian C++ search library")
     (description
@@ -167,8 +165,8 @@ simplified, more 'perlish' interface to some common operations.")
         (base32
          "1kd2jd74m8ksc8s7hh0haz0q0c3n0mr39bbky262kk4l58f1g068"))))
     (build-system gnu-build-system)
-    (native-inputs `(("catch" ,catch-framework)))
-    (inputs `(("unqlite" ,unqlite)))
+    (native-inputs (list catch-framework))
+    (inputs (list unqlite))
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (add-before 'configure 'chdir-source
@@ -205,8 +203,7 @@ files and directories.")
     (source (package-source libtocc))
     (build-system gnu-build-system)
     (inputs
-     `(("libtocc" ,libtocc)
-       ("unqlite" ,unqlite)))
+     (list libtocc unqlite))
     (arguments
      `(#:tests? #f                      ;No tests
        #:phases (modify-phases %standard-phases
@@ -251,18 +248,18 @@ command line tool for interacting with libtocc.")
                (("requests\\[socks\\]==2.25.1") "requests>=2.25")
                (("==") ">=")))))))
     (propagated-inputs
-     `(("python-babel" ,python-babel)
-       ("python-certifi" ,python-certifi)
-       ("python-dateutil" ,python-dateutil)
-       ("python-flask" ,python-flask)
-       ("python-flask-babel" ,python-flask-babel)
-       ("python-idna" ,python-idna)
-       ("python-jinja2" ,python-jinja2)
-       ("python-langdetect" ,python-langdetect)
-       ("python-lxml" ,python-lxml)
-       ("python-pygments" ,python-pygments)
-       ("python-pyyaml" ,python-pyyaml)
-       ("python-requests" ,python-requests)))
+     (list python-babel
+           python-certifi
+           python-dateutil
+           python-flask
+           python-flask-babel
+           python-idna
+           python-jinja2
+           python-langdetect
+           python-lxml
+           python-pygments
+           python-pyyaml
+           python-requests))
     (home-page "https://searx.github.io/searx/")
     (synopsis "Privacy-respecting metasearch engine")
     (description "Searx is a privacy-respecting, hackable metasearch engine.")
@@ -357,31 +354,29 @@ for parsing HTML files.")
                  `("PERL5LIB" ":" prefix
                    (,(getenv "PERL5LIB"))))))))))
     (inputs
-     `(("aspell" ,aspell)
-       ("chmlib" ,chmlib)
-       ("inotify-tools" ,inotify-tools)
-       ("libxslt" ,libxslt)
-       ("libxml2" ,libxml2)
-       ("python" ,python)
-       ("qtbase" ,qtbase-5)
-       ("unzip" ,unzip)
-       ("xapian" ,xapian)
-       ("zlib" ,zlib)
-
-       ;; For filters
-       ("gawk" ,gawk)
-       ("grep" ,grep)
-       ("groff" ,groff)
-       ("gzip" ,gzip)
-       ("libiconv" ,libiconv)
-       ("perl" ,perl)
-       ("perl-image-exiftool" ,perl-image-exiftool)
-       ("poppler" ,poppler)
-       ("sed" ,sed)
-       ("tar" ,tar)))
+     (list aspell
+           chmlib
+           inotify-tools
+           libxslt
+           libxml2
+           python
+           qtbase-5
+           unzip
+           xapian
+           zlib
+           ;; For filters
+           gawk
+           grep
+           groff
+           gzip
+           libiconv
+           perl
+           perl-image-exiftool
+           poppler
+           sed
+           tar))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("which" ,which)))
+     (list pkg-config which))
     (home-page "https://www.lesbonscomptes.com/recoll/")
     (synopsis "Find documents based on their contents or file names")
     (description "Recoll finds documents based on their contents as well as
@@ -404,8 +399,7 @@ decompression.")
          (base32
           "1qk3pxgzyrpcz5qfyd5xs2hw9q1cbb7j5zd4kp1diq501wcj2vs9"))))
     (inputs
-     `(("qdbm" ,qdbm)
-       ("zlib" ,zlib)))
+     (list qdbm zlib))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list (string-append "LDFLAGS=-Wl,-rpath="
@@ -459,10 +453,10 @@ conflict with slocate compatibility.")
         (string-append
          "--sharedstatedir=" (assoc-ref %outputs "out") "/var"))))
     (inputs
-     `(("liburing" ,liburing)
-       ("zstd" ,zstd "lib")))
+     (list liburing
+           `(,zstd "lib")))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://plocate.sesse.net/")
     (synopsis "Faster locate")
     (description "Plocate is a @code{locate} based on posting lists,
@@ -495,11 +489,8 @@ suitable as a default locate on your system.")
     ;; building: xpdf, catdoc, MP3::Tag, Spreadsheet::ParseExcel,
     ;; HTML::Entities.
     (inputs
-     `(("perl" ,perl)
-       ("perl-uri" ,perl-uri)
-       ("perl-html-parser" ,perl-html-parser)
-       ("perl-html-tagset" ,perl-html-tagset)
-       ("perl-mime-types" ,perl-mime-types)))
+     (list perl perl-uri perl-html-parser perl-html-tagset
+           perl-mime-types))
     (arguments
      `(;; XXX: This fails to build with zlib (API mismatch) and tests fail
        ;; with libxml2, so disable both.
@@ -549,17 +540,14 @@ search the generated indexes.")
          "0ykz6hn3qj46w3c99d6q0pi5ncq2894simcl7vapv047zm3cylmd"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("poppler" ,poppler)
-       ("python-urwid" ,python-urwid)
-       ("xclip" ,xclip)
-       ("xdg-utils" ,xdg-utils)))
+     (list poppler python-urwid xclip xdg-utils))
     (inputs
-     `(("python-latexcodec" ,python-latexcodec)
-       ("python-pybtex" ,python-pybtex)
-       ("python-pycurl" ,python-pycurl)
-       ("python-pyyaml" ,python-pyyaml)
-       ("python-six" ,python-six)
-       ("python-xapian-bindings" ,python-xapian-bindings)))
+     (list python-latexcodec
+           python-pybtex
+           python-pycurl
+           python-pyyaml
+           python-six
+           python-xapian-bindings))
     (arguments
      `(#:modules ((ice-9 rdelim)
                   (guix build python-build-system)
@@ -627,12 +615,12 @@ bibliographic data and simple document and bibtex retrieval.")
                   #t))))
     (build-system gnu-build-system)
     (inputs
-     `(("bzip2" ,bzip2)
-       ("less" ,less)
-       ("lz4" ,lz4)
-       ("lzip" ,lzip)  ;; lzma
-       ("pcre2" ,pcre2)
-       ("zlib" ,zlib)))
+     (list bzip2
+           less
+           lz4
+           lzip ;; lzma
+           pcre2
+           zlib))
     (arguments
      `(#:tests? #f                  ; no way to rebuild the binary input files
        #:test-target "test"

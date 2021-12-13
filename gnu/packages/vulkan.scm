@@ -93,9 +93,8 @@ and for the GLSL.std.450 extended instruction set.
                                (string-append
                                 "-DSPIRV-Headers_SOURCE_DIR="
                                 (assoc-ref %build-inputs "spirv-headers")))))
-    (inputs `(("spirv-headers" ,spirv-headers)))
-    (native-inputs `(("pkg-config" ,pkg-config)
-                     ("python" ,python)))
+    (inputs (list spirv-headers))
+    (native-inputs (list pkg-config python))
     (home-page "https://github.com/KhronosGroup/SPIRV-Tools")
     (synopsis "API and commands for processing SPIR-V modules")
     (description
@@ -138,10 +137,8 @@ parser,disassembler, validator, and optimizer for SPIR-V.")
                 (string-append (assoc-ref inputs "spirv-tools") "/bin")))
              #t)))))
     (inputs
-     `(("glslang" ,glslang)
-       ("spirv-headers" ,spirv-headers)
-       ("spirv-tools" ,spirv-tools)))
-    (native-inputs `(("python" ,python)))
+     (list glslang spirv-headers spirv-tools))
+    (native-inputs (list python))
     (home-page "https://github.com/KhronosGroup/SPIRV-Cross")
     (synopsis "Parser for and converter of SPIR-V to other shader languages")
     (description
@@ -170,8 +167,7 @@ SPIR-V, aiming to emit GLSL or MSL that looks like human-written code.")
      '(#:tests? #f                      ;FIXME: requires bundled SPIRV-Tools
        #:configure-flags '("-DBUILD_SHARED_LIBS=ON")))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("python" ,python)))
+     (list pkg-config python))
     (home-page "https://github.com/KhronosGroup/glslang")
     (synopsis "OpenGL and OpenGL ES shader front end and validator")
     (description
@@ -254,7 +250,7 @@ interpretation of the specifications for these languages.")
        ("python" ,python)
        ("wayland" ,wayland)))
     (inputs
-     `(("vulkan-headers" ,vulkan-headers)))
+     (list vulkan-headers))
     (home-page
      "https://github.com/KhronosGroup/Vulkan-Loader")
     (synopsis "Khronos official ICD loader and validation layers for Vulkan")
@@ -286,14 +282,9 @@ and the ICD.")
          "129wzk7xj3vn3c8b4p7fzkd0npl58118s2i1d88gsfnlix54nagq"))))
     (build-system cmake-build-system)
     (inputs
-     `(("glslang" ,glslang)
-       ("libxrandr" ,libxrandr)
-       ("vulkan-loader" ,vulkan-loader)
-       ("wayland" ,wayland)))
+     (list glslang libxrandr vulkan-loader wayland))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("python" ,python)
-       ("vulkan-headers" ,vulkan-headers)))
+     (list pkg-config python vulkan-headers))
     (arguments
      `(#:tests? #f                      ;no tests
        #:configure-flags (list (string-append "-DGLSLANG_INSTALL_DIR="
@@ -354,12 +345,9 @@ API.")
                          ,(package-version glslang))))
              #t)))))
     (inputs
-     `(("glslang" ,glslang)
-       ("python" ,python)
-       ("spirv-headers" ,spirv-headers)
-       ("spirv-tools" ,spirv-tools)))
+     (list glslang python spirv-headers spirv-tools))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://github.com/google/shaderc")
     (synopsis "Tools for shader compilation")
     (description "Shaderc is a collection of tools, libraries, and tests for
@@ -400,16 +388,16 @@ shader compilation.")
         ("libtool" ,libtool)
         ("pkg-config" ,pkg-config)))
      (inputs
-      `(("libx11" ,libx11)
-        ("libxcb" ,libxcb)
-        ("spirv-headers" ,spirv-headers)
-        ("spirv-tools" ,spirv-tools)
-        ("vulkan-headers" ,vulkan-headers)
-        ("vulkan-loader" ,vulkan-loader)
-        ("wine-minimal" ,wine-minimal) ; Needed for 'widl'.
-        ("xcb-util" ,xcb-util)
-        ("xcb-util-keysyms" ,xcb-util-keysyms)
-        ("xcb-util-wm" ,xcb-util-wm)))
+      (list libx11
+            libxcb
+            spirv-headers
+            spirv-tools
+            vulkan-headers
+            vulkan-loader
+            wine-minimal ; Needed for 'widl'.
+            xcb-util
+            xcb-util-keysyms
+            xcb-util-wm))
      (home-page "https://source.winehq.org/git/vkd3d.git/")
      (synopsis "Direct3D 12 to Vulkan translation library")
      (description "vkd3d is a library for translating Direct3D 12 to Vulkan.")

@@ -100,7 +100,7 @@
        ("pkg-config" ,pkg-config)))
     (propagated-inputs
      ;; dconf is required at runtime according to README.dependencies.
-     `(("dconf" ,dconf)))
+     (list dconf))
     (outputs '("out" "doc" "debug" "python"))
     (arguments
      `(#:test-target "check"
@@ -274,12 +274,9 @@ to be read using the GNOME Yelp program.")
              (string-append "--with-openssl-libs="
                             (assoc-ref %build-inputs "openssl") "/lib"))))
     (inputs
-     `(("libgcrypt" ,libgcrypt)
-       ("gnutls" ,gnutls)
-       ("openssl" ,openssl)
-       ("gtk+" ,gtk+)))
+     (list libgcrypt gnutls openssl gtk+))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://www.aquamaniac.de/sites/aqbanking/index.php")
     (synopsis "Utility library for networking and security applications")
     (description
@@ -306,15 +303,11 @@ applications and libraries.  It is used by AqBanking.")
        ;; built.
        #:parallel-build? #f))
     (propagated-inputs
-     `(("gwenhywfar" ,gwenhywfar)))
+     (list gwenhywfar))
     (inputs
-     `(("gmp" ,gmp)
-       ("xmlsec" ,xmlsec)
-       ("gnutls" ,gnutls)))
+     (list gmp xmlsec gnutls))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("gettext-minimal" ,gettext-minimal)
-       ("libltdl" ,libltdl)))
+     (list pkg-config gettext-minimal libltdl))
     (home-page "https://www.aquamaniac.de/sites/aqbanking/index.php")
     (synopsis "Interface for online banking tasks")
     (description

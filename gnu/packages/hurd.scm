@@ -102,9 +102,7 @@ GNU/Hurd."
 
            #:tests? #f))
        (native-inputs
-        `(("autoconf" ,autoconf)
-          ("automake" ,automake)
-          ("texinfo" ,texinfo-4)))
+        (list autoconf automake texinfo-4))
        (home-page "https://www.gnu.org/software/hurd/microkernel/mach/gnumach.html")
        (synopsis "GNU Mach kernel headers")
        (description
@@ -125,12 +123,9 @@ GNU/Hurd."
         "1gyda8sq6b379nx01hkpbd85lz39irdvz2b9wbr63gicicx8i706"))))
     (build-system gnu-build-system)
     ;; Flex is needed both at build and run time.
-    (inputs `(("gnumach-headers" ,gnumach-headers)
-              ("flex" ,flex)
-              ("perl" ,perl)))
+    (inputs (list gnumach-headers flex perl))
     (native-inputs
-     `(("flex" ,flex)
-       ("bison" ,bison)))
+     (list flex bison))
     (arguments `(#:tests? #f
                  #:phases
                  (modify-phases %standard-phases
@@ -182,9 +177,7 @@ communication.")
                (file-name (git-file-name name version))))
      (build-system gnu-build-system)
      (native-inputs
-      `(("mig" ,mig)
-        ("autoconf" ,autoconf)
-        ("automake" ,automake)))
+      (list mig autoconf automake))
      (arguments
       `(#:phases
         (modify-phases %standard-phases
@@ -229,7 +222,7 @@ Library and other user programs.")
 (define-public hurd-minimal
   (package (inherit hurd-headers)
     (name "hurd-minimal")
-    (inputs `(("glibc-hurd-headers" ,glibc/hurd-headers)))
+    (inputs (list glibc/hurd-headers))
     (arguments
      (substitute-keyword-arguments (package-arguments hurd-headers)
        ((#:phases _)
@@ -285,9 +278,7 @@ Library for GNU/Hurd.")
                         (union-build (assoc-ref %outputs "out")
                                      directories)
                         #t))))))
-    (inputs `(("gnumach-headers" ,gnumach-headers)
-              ("hurd-headers" ,hurd-headers)
-              ("hurd-minimal" ,hurd-minimal)))
+    (inputs (list gnumach-headers hurd-headers hurd-minimal))
     (synopsis "Union of the Hurd headers and libraries")
     (description
      "This package contains the union of the Mach and Hurd headers and the
@@ -314,11 +305,7 @@ Hurd-minimal package which are needed for both glibc and GCC.")
                  (invoke "make" "gnumach.gz")
                  (install-file "gnumach.gz" boot))))))))
     (native-inputs
-     `(("mig" ,mig)
-       ("perl" ,perl)
-       ("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("texinfo" ,texinfo-4)))
+     (list mig perl autoconf automake texinfo-4))
     (supported-systems (cons "i686-linux" %hurd-systems))
     (synopsis "Microkernel of the GNU system")
     (description
@@ -625,9 +612,7 @@ implementing them.")
                                             "/bin"))
                #t)))))
       (inputs
-       `(("hurd" ,hurd)
-         ("libpciaccess" ,libpciaccess)
-         ("zlib" ,zlib)))
+       (list hurd libpciaccess zlib))
       (native-inputs
        `(("coreutils" ,coreutils)
          ("gawk" ,gawk)

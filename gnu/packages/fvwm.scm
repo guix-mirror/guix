@@ -65,16 +65,16 @@
        ("pkg-config" ,pkg-config)
        ("xsltproc" ,libxslt)))
     (inputs
-     `(("fribidi" ,fribidi)
-       ("libpng" ,libpng)
-       ("librsvg" ,librsvg)
-       ("libxcursor" ,libxcursor)
-       ("libxext" ,libxext)
-       ("libxft" ,libxft)
-       ("libxinerama" ,libxinerama)
-       ("libxpm" ,libxpm)
-       ("libxt" ,libxt)
-       ("readline" ,readline)))
+     (list fribidi
+           libpng
+           librsvg
+           libxcursor
+           libxext
+           libxft
+           libxinerama
+           libxpm
+           libxt
+           readline))
     (synopsis "Virtual window manager for X11")
     (description
      "FVWM is an extremely powerful ICCCM-compliant multiple virtual desktop

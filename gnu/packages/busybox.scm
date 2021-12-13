@@ -106,11 +106,11 @@
                (apply invoke "make"
                        (string-append "CONFIG_PREFIX=" out)
                        "install" make-flags)))))))
-    (native-inputs `(("perl" ,perl) ; needed to generate the man pages (pod2man)
-                     ;; The following are needed by the tests.
-                     ("inetutils" ,inetutils)
-                     ("which" ,(@ (gnu packages base) which))
-                     ("zip" ,zip)))
+    (native-inputs (list perl ; needed to generate the man pages (pod2man)
+                         ;; The following are needed by the tests.
+                         inetutils
+                         (@ (gnu packages base) which)
+                         zip))
     (synopsis "Many common UNIX utilities in a single executable")
     (description "BusyBox combines tiny versions of many common UNIX utilities
 into a single small executable.  It provides a fairly complete environment for
@@ -162,7 +162,7 @@ any small or embedded system.")
              (let ((out (assoc-ref outputs "out")))
                (delete-file-recursively (string-append out "/usr"))))))
        #:test-target "tests"))
-    (native-inputs `(("bc" ,bc)))
+    (native-inputs (list bc))
     (synopsis "Many common UNIX utilities in a single executable")
     (description "ToyBox combines tiny versions of many common UNIX utilities
 into a single small executable.  It provides a fairly complete environment for

@@ -76,7 +76,7 @@
          #:install-plan
          '(("." "etc/desec" #:include ("hook.sh")))))
       (inputs
-       `(("curl" ,curl)))
+       (list curl))
       (synopsis "Certbot DNS challenge automatization for deSEC")
       (description "The deSEC can be used to obtain certificates with certbot
 DNS ownership verification.  With the help of this hook script, you can obtain
@@ -133,8 +133,7 @@ that was originally contributed to Debian.")
     (build-system gnu-build-system)
     (outputs '("out"))
     (native-inputs
-     `(("certdata2pem" ,certdata2pem)
-       ("openssl" ,openssl)))
+     (list certdata2pem openssl))
     (inputs '())
     (propagated-inputs '())
     (arguments
@@ -201,8 +200,7 @@ taken from the NSS package and thus ultimately from the Mozilla project.")
                    (string-append openssl "/bin/c_rehash")
                    ".")))))
     (native-inputs
-     `(("openssl" ,openssl)
-       ("perl" ,perl)))                           ;for 'c_rehash'
+     (list openssl perl))                           ;for 'c_rehash'
     (inputs
      `(; The Let's Encrypt root certificate, "ISRG Root X1".
        ("isrgrootx1.pem"

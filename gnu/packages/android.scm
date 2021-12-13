@@ -311,7 +311,7 @@ various Android core host applications.")
          (add-after 'unpack 'enter-source
            (lambda _ (chdir "libsparse") #t)))))
     (inputs
-     `(("zlib" ,zlib)))
+     (list zlib))
     (home-page "https://developer.android.com/")
     (synopsis "Android platform sparse library")
     (description "@code{android-libsparse} is a library in common use by the
@@ -342,11 +342,9 @@ various Android core host applications.")
                                  (string-append out "/include/ziparchive"))
                #t))))))
     (inputs
-     `(("zlib" ,zlib)))
+     (list zlib))
     (native-inputs
-     `(("android-libbase" ,android-libbase)
-       ("android-libutils" ,android-libutils)
-       ("android-liblog" ,android-liblog)))
+     (list android-libbase android-libutils android-liblog))
     (home-page "https://developer.android.com/")
     (synopsis "Android platform ZIP library")
     (description "@code{android-libziparchive} is a library in common use by the
@@ -389,10 +387,7 @@ various Android core host applications.")
              (install-file "diagnose_usb.h" (string-append (assoc-ref outputs "out") "/include"))
              #t)))))
     (inputs
-     `(("android-libbase" ,android-libbase)
-       ("android-libcutils" ,android-libcutils)
-       ("android-liblog" ,android-liblog)
-       ("openssl" ,openssl)))
+     (list android-libbase android-libcutils android-liblog openssl))
     (home-page "https://developer.android.com/studio/command-line/adb.html")
     (synopsis "Android Debug Bridge")
     (description
@@ -511,11 +506,11 @@ that is safe to use for user space.  It also includes
               (("#ifdef HOST") "#ifdef XXX"))
              #t)))))
     (inputs
-     `(("openssl" ,openssl)))
+     (list openssl))
     (native-inputs
-     `(("android-bionic-uapi" ,android-bionic-uapi)
-       ;; pcre is inlined by our package.
-       ("pcre" ,pcre)))
+     (list android-bionic-uapi
+           ;; pcre is inlined by our package.
+           pcre))
     (home-page "https://developer.android.com/")
     (synopsis "Android version of the SELinux libraries and utilities")
     (description
@@ -561,11 +556,8 @@ the core SELinux management utilities.")
                (copy-recursively "." (string-append out "/include")))
              #t)))))
     (inputs
-     `(("android-libcutils" ,android-libcutils)
-       ("android-liblog" ,android-liblog)
-       ("android-libselinux" ,android-libselinux)
-       ("android-libsparse" ,android-libsparse)
-       ("zlib" ,zlib)))
+     (list android-libcutils android-liblog android-libselinux
+           android-libsparse zlib))
     (native-inputs
      `(("android-core" ,(android-platform-system-core version))))
     (home-page "https://developer.android.com/")
@@ -603,11 +595,8 @@ Android core.")
                (install-file "mkf2fsuserimg.sh" bin)
                #t))))))
     (inputs
-     `(("f2fs-tools" ,f2fs-tools-1.7)
-       ("android-libselinux" ,android-libselinux)
-       ("android-libsparse" ,android-libsparse)
-       ("android-libcutils" ,android-libcutils)
-       ("zlib" ,zlib)))
+     (list f2fs-tools-1.7 android-libselinux android-libsparse
+           android-libcutils zlib))
     (home-page "https://developer.android.com/")
     (synopsis "Android f2fs utils")
     (description "@code{android-f2fs-utils} is a library in common use by the
@@ -644,8 +633,7 @@ file system.")
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (copy-recursively "../include/utils" (string-append (assoc-ref outputs "out") "/include/utils")))))))
     (inputs
-     `(("android-safe-iop" ,android-safe-iop)
-       ("android-libcutils" ,android-libcutils)))
+     (list android-safe-iop android-libcutils))
     (native-inputs
      `(("android-bionic-uapi" ,android-bionic-uapi)
        ("android-liblog" ,android-liblog)
@@ -682,22 +670,22 @@ file system.")
                (install-file "fastboot" bin)
                #t))))))
     (inputs
-     `(("adb" ,adb)
-       ("android-safe-iop" ,android-safe-iop)
-       ("android-ext4-utils" ,android-ext4-utils)
-       ("android-f2fs-utils" ,android-f2fs-utils)
-       ("android-libbase" ,android-libbase)
-       ("android-libcutils" ,android-libcutils)
-       ("android-liblog" ,android-liblog)
-       ("android-libutils" ,android-libutils)
-       ("android-libsparse" ,android-libsparse)
-       ("android-libziparchive" ,android-libziparchive)
-       ("android-libselinux" ,android-libselinux)
-       ("pcre" ,pcre)
-       ("mkbootimg" ,mkbootimg)
-       ("zlib" ,zlib)))
+     (list adb
+           android-safe-iop
+           android-ext4-utils
+           android-f2fs-utils
+           android-libbase
+           android-libcutils
+           android-liblog
+           android-libutils
+           android-libsparse
+           android-libziparchive
+           android-libselinux
+           pcre
+           mkbootimg
+           zlib))
     (native-inputs
-     `(("xz" ,xz)))
+     (list xz))
     (home-page "https://developer.android.com/studio/command-line/")
     (synopsis "Android image flasher")
     (description
@@ -897,21 +885,18 @@ safest way, on a file image.")
              (invoke "nosetests" "--with-coverage" "--with-timer"
                      "--timer-top-n" "50"))))))
     (native-inputs
-     `(("python-codecov" ,python-codecov)
-       ("python-coverage" ,python-coverage)
-       ("python-mock" ,python-mock)
-       ("python-nose" ,python-nose)
-       ("python-nose-timer" ,python-nose-timer)))
+     (list python-codecov python-coverage python-mock python-nose
+           python-nose-timer))
     (propagated-inputs
-     `(("python-asn1crypto" ,python-asn1crypto)
-       ("python-colorama" ,python-colorama)
-       ("python-future" ,python-future)
-       ("python-ipython" ,python-ipython)
-       ("python-lxml" ,python-lxml)
-       ("python-matplotlib" ,python-matplotlib)
-       ("python-networkx" ,python-networkx)
-       ("python-pygments" ,python-pygments)
-       ("python-pyperclip" ,python-pyperclip)))
+     (list python-asn1crypto
+           python-colorama
+           python-future
+           python-ipython
+           python-lxml
+           python-matplotlib
+           python-networkx
+           python-pygments
+           python-pyperclip))
     (home-page "https://github.com/androguard/androguard")
     (synopsis "Python tool to play with Android files")
     (description
@@ -946,28 +931,25 @@ useful for reverse engineering, analysis of Android applications and more.")
                (("docker-py >= 1.9, < 2.0") "docker >= 1.9"))
              #t)))))
     (propagated-inputs
-     `(("python-androguard" ,python-androguard)
-       ("python-apache-libcloud" ,python-apache-libcloud)
-       ("python-clint" ,python-clint)
-       ("python-defusedxml" ,python-defusedxml)
-       ("python-docker" ,python-docker)
-       ("python-gitpython" ,python-gitpython)
-       ("python-mwclient" ,python-mwclient)
-       ("python-paramiko" ,python-paramiko)
-       ("python-pillow" ,python-pillow)
-       ("python-pyasn1" ,python-pyasn1)
-       ("python-pyasn1-modules" ,python-pyasn1-modules)
-       ("python-pyyaml" ,python-pyyaml)
-       ("python-qrcode" ,python-qrcode)
-       ("python-ruamel.yaml" ,python-ruamel.yaml)
-       ("python-requests" ,python-requests)
-       ("python-vagrant" ,python-vagrant)))
+     (list python-androguard
+           python-apache-libcloud
+           python-clint
+           python-defusedxml
+           python-docker
+           python-gitpython
+           python-mwclient
+           python-paramiko
+           python-pillow
+           python-pyasn1
+           python-pyasn1-modules
+           python-pyyaml
+           python-qrcode
+           python-ruamel.yaml
+           python-requests
+           python-vagrant))
     (native-inputs
-     `(("python-babel" ,python-babel)
-       ("python-bcrypt" ,python-bcrypt)
-       ("python-docker-pycreds" ,python-docker-pycreds)
-       ("python-pynacl" ,python-pynacl)
-       ("python-websocket-client" ,python-websocket-client)))
+     (list python-babel python-bcrypt python-docker-pycreds python-pynacl
+           python-websocket-client))
     (home-page "https://f-droid.org")
     (synopsis "F-Droid server tools")
     (description
@@ -996,7 +978,7 @@ main repository.")
        #:tests? #f  ; TODO: Inputs missing.
        #:install-source? #f))
     (inputs
-     `(("go-github-com-kr-pretty" ,go-github-com-kr-pretty)))
+     (list go-github-com-kr-pretty))
     ;(native-inputs
     ; `(("go-github-com-rogpeppe-go-internal-testscript"
     ;    ,go-github-com-rogpeppe-go-internal-testscript)))
@@ -1049,7 +1031,7 @@ connected devices via ADB.")
                  (mkdir-p (string-append out "/bin/"))
                  (copy-file "enjarify.sh" (string-append out "/bin/enjarify"))
                  #t))))))
-    (native-inputs `(("openjdk" ,openjdk12)))
+    (native-inputs (list openjdk12))
     (synopsis "Translate Dalvik bytecode to equivalent Java bytecode")
     (description "Android applications are Java programs that run on a
 customized virtual machine, which is part of the Android operating system, the

@@ -46,7 +46,7 @@
        ("libice" ,libice)
        ("libsm" ,libsm)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (arguments
      `(#:tests? #f                      ; there is no check target
        #:phases

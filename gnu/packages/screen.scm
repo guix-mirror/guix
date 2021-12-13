@@ -52,8 +52,7 @@
     (native-inputs
      `(("makeinfo" ,texinfo)))
     (inputs
-     `(("ncurses" ,ncurses)
-       ("perl" ,perl)))
+     (list ncurses perl))
     (arguments
      `(#:configure-flags
        ;; By default, screen supports 16 colors, but we want 256 when

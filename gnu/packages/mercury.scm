@@ -244,8 +244,6 @@ separate compilation, and numerous optimization/time trade-offs.")
            ;; Eventually we need to add inputs for Java, Erlang,
            ;; C#, etc. in order to enable these extra grades.
            (native-inputs
-            `(("mercury-minimal" ,mercury-minimal)
-              ("autoconf" ,autoconf)
-              ("automake" ,automake)
-              ,@(package-native-inputs mercury-minimal)))
+            (modify-inputs (package-native-inputs mercury-minimal)
+              (prepend mercury-minimal autoconf automake)))
            (synopsis "Pure logic programming language")))

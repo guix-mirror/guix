@@ -61,23 +61,22 @@
     ;; - kwin-style-breeze
     ;; - qml-module-qtquick-controls-styles-breeze - QtQuick style
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("pkg-config" ,pkg-config)))
+     (list extra-cmake-modules pkg-config))
     (inputs
-     `(("kcmutils" ,kcmutils) ; optional
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kde-frameworkintegration" ,kde-frameworkintegration) ; optional
-       ("kdecoration" ,kdecoration)
-       ("kguiaddons" ,kguiaddons)
-       ("ki18n" ,ki18n)
-       ("kiconthemes" ,kiconthemes) ; for optional kde-frameworkintegration
-       ("kpackage" ,kpackage)
-       ("kwayland" ,kwayland) ; optional
-       ("kwindowsystem" ,kwindowsystem)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative) ; optional
-       ("qtx11extras" ,qtx11extras)))
+     (list kcmutils ; optional
+           kconfigwidgets
+           kcoreaddons
+           kde-frameworkintegration ; optional
+           kdecoration
+           kguiaddons
+           ki18n
+           kiconthemes ; for optional kde-frameworkintegration
+           kpackage
+           kwayland ; optional
+           kwindowsystem
+           qtbase-5
+           qtdeclarative ; optional
+           qtx11extras))
     (home-page "https://invent.kde.org/plasma/breeze")
     (synopsis "Default KDE Plasma theme")
     (description "Artwork, styles and assets for the Breeze visual style for
@@ -97,10 +96,9 @@ the Plasma Desktop.  Breeze is the default theme for the KDE Plasma desktop.")
                 "0pn8n7zyb0adzjnn92vmbcf7pmpss60k9k1rk5llamj016xzfgnf"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     (list extra-cmake-modules))
     (inputs
-     `(("ki18n" ,ki18n)
-       ("qtbase" ,qtbase-5)))
+     (list ki18n qtbase-5))
     (home-page "https://invent.kde.org/plasma/kdecoration")
     (synopsis "Plugin based library to create window decorations")
     (description "KDecoration is a library to create window decorations.
@@ -121,14 +119,9 @@ manager which re-parents a Client window to a window decoration frame.")
                 "1k2va2v9051f71w78dn3gihk642iyy5yzrkcfnp97fag8g6dpisi"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules kdoctools))
     (inputs
-     `(("kcoreaddons" ,kcoreaddons)
-       ("ki18n" ,ki18n)
-       ("kwallet" ,kwallet)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("qtbase" ,qtbase-5)))
+     (list kcoreaddons ki18n kwallet kwidgetsaddons qtbase-5))
     (home-page "https://invent.kde.org/plasma/ksshaskpass")
     (synopsis "Front-end for ssh-add using kwallet")
     (description "Ksshaskpass is a front-end for @code{ssh-add} which stores the
@@ -168,11 +161,9 @@ call it if it is not associated to a terminal.")
                    (invoke "dbus-launch" "ctest" ".")))
              #t)))))
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("pkg-config" ,pkg-config)
-       ;; For tests.
-       ("dbus" ,dbus)
-       ("xorg-server" ,xorg-server-for-tests)))
+     (list extra-cmake-modules pkg-config
+           ;; For tests.
+           dbus xorg-server-for-tests))
     (inputs
      `(("kcmutils" ,kcmutils)
        ("kcrash" ,kcrash)
@@ -215,14 +206,11 @@ call it if it is not associated to a terminal.")
         (base32 "0rf1pm0yyc069f4n5s9ipdx4glzfr9zvv5cbrmn4q9i4v6z1qd8i"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ;; For testing.
-       ("dbus" ,dbus)))
+     (list extra-cmake-modules
+           ;; For testing.
+           dbus))
     (inputs
-     `(("kwayland" ,kwayland)
-       ("libxrandr" ,libxrandr)
-       ("qtbase" ,qtbase-5)
-       ("qtx11extras" ,qtx11extras)))
+     (list kwayland libxrandr qtbase-5 qtx11extras))
     (arguments
      '(#:tests? #f)) ; FIXME: 55% tests passed, 5 tests failed out of 11
     (home-page "https://community.kde.org/Solid/Projects/ScreenManagement")
@@ -244,8 +232,7 @@ basic needs and easy to configure for those who want special setups.")
        (sha256
         (base32 "1kd0h3p8bf9k5pqp0frhr81pa0yyrpkckg9zznirk9p1v88v7bfq"))))
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("pkg-config" ,pkg-config)))
+     (list extra-cmake-modules pkg-config))
     (inputs
      `(("kconfigwidgets" ,kconfigwidgets)
        ("kiconthemes" ,kiconthemes)

@@ -61,7 +61,7 @@
                             "tirpc/netconfig.h")
                (("/etc/netconfig") (string-append (assoc-ref outputs "out")
                                                   "/etc/netconfig"))))))))
-    (inputs `(("mit-krb5" ,mit-krb5)))
+    (inputs (list mit-krb5))
     (home-page "https://sourceforge.net/projects/libtirpc/")
     (synopsis "Transport-independent Sun/ONC RPC implementation")
     (description
@@ -101,10 +101,9 @@ IPv4 and IPv6.  ONC RPC is notably used by the network file system (NFS).")
      `(#:configure-flags
        `("--with-systemdsystemunitdir=no" "--enable-warmstarts")))
     (inputs
-     `(("libnsl" ,libnsl)
-       ("libtirpc" ,libtirpc)))
+     (list libnsl libtirpc))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "http://rpcbind.sourceforge.net/")
     (synopsis "Server to convert RPC program numbers into universal addresses")
     (description
@@ -156,7 +155,7 @@ from the protocol files.")
        ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("libtirpc" ,libtirpc)))
+     (list libtirpc))
     (synopsis "Public client interface for NIS(YP) and NIS+")
     (description "Libnsl is the public client interface for the Network
 Information Service / Yellow Pages (NIS/YP) and NIS+.  It includes IPv6 support.

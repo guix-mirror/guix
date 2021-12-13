@@ -86,7 +86,7 @@ periodic timestamps for seeking.")
              (base32
               "0jwmf87x5sdis64rbv0l87mdpah1rbilkkxszipbzg128f9w8g5k"))))
    (build-system gnu-build-system)
-   (propagated-inputs `(("libogg" ,libogg)))
+   (propagated-inputs (list libogg))
    (arguments `(#:configure-flags '("LDFLAGS=-lm"
                                     "--disable-static")
                 #:parallel-tests? #f))
@@ -116,9 +116,9 @@ polyphonic) audio and music at fixed and variable bitrates from 16 to
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))
-    (inputs `(("libvorbis" ,libvorbis)))
+    (inputs (list libvorbis))
     ;; The .pc files refer to libogg.
-    (propagated-inputs `(("libogg" ,libogg)))
+    (propagated-inputs (list libogg))
     (synopsis "Library implementing the Theora video format")
     (description
      "The libtheora library implements the ogg theora video format,
@@ -143,10 +143,9 @@ compressed video format.")
     (arguments
      '(#:configure-flags '("--disable-static")))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("libogg" ,libogg)
-       ("speexdsp" ,speexdsp)))
+     (list libogg speexdsp))
     (home-page "https://gnu.org/software/speex")
     (synopsis "Library for patent-free audio compression format")
     (description
@@ -204,13 +203,9 @@ work from the @code{speex} codec.")
     ;; "out" would include only the ALSA back-end, while "pulse" would
     ;; contain 'lib/ao/plugins-4/libpulse.*'.
     (inputs
-     `(("alsa-lib" ,alsa-lib)
-       ("pulseaudio" ,pulseaudio)))
+     (list alsa-lib pulseaudio))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
+     (list pkg-config autoconf automake libtool))
     (synopsis "Cross platform audio library")
     (description
      "Libao is a cross-platform audio library that allows programs to
@@ -255,7 +250,7 @@ It currently supports:
    (arguments
     `(#:parallel-tests? #f))
    ;; FIXME: configure also looks for xmms, input could be added once it exists
-   (propagated-inputs `(("libogg" ,libogg))) ; required by flac.pc
+   (propagated-inputs (list libogg)) ; required by flac.pc
    (synopsis "Free lossless audio codec")
    (description
 "FLAC stands for Free Lossless Audio Codec, an audio format that is lossless,
@@ -276,9 +271,7 @@ meaning that audio is compressed in FLAC without any loss in quality.")
              (base32
               "0s3vr2nxfxlf1k75iqpp4l78yf4gil3f0v778kvlngbchvaq23n4"))))
    (build-system gnu-build-system)
-   (native-inputs `(("doxygen" ,doxygen)
-                    ("bison" ,bison)
-                    ("pkg-config" ,pkg-config)))
+   (native-inputs (list doxygen bison pkg-config))
    ;; FIXME: Add optional input liboggz
    (inputs `(("libogg" ,libogg)
              ("libpng" ,libpng)
@@ -312,14 +305,14 @@ Kate stream.")
              (base32
               "1c7h4ivgfdyygz2hyh6nfibxlkz8kdk868a576qkkjgj5gn78xyv"))))
    (build-system gnu-build-system)
-   (inputs `(("ao" ,ao)
-             ("curl" ,curl)
-             ("flac" ,flac)
-             ("libkate" ,libkate)
-             ("libogg" ,libogg)
-             ("libvorbis" ,libvorbis)
-             ("speex" ,speex)))
-   (native-inputs `(("pkg-config" ,pkg-config)))
+   (inputs (list ao
+                 curl
+                 flac
+                 libkate
+                 libogg
+                 libvorbis
+                 speex))
+   (native-inputs (list pkg-config))
    (synopsis "Ogg vorbis tools")
    (description
     "Ogg vorbis is a non-proprietary, patent-and-royalty-free,
@@ -381,11 +374,9 @@ incorporated technology from Skype's SILK codec and Xiph.Org's CELT codec.")
                                               (assoc-ref %build-inputs "opus")
                                               "/include/opus"))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("libopusenc" ,libopusenc)
-       ("opusfile" ,opusfile)
-       ("flac" ,flac)))
+     (list libopusenc opusfile flac))
     (synopsis
      "Command line utilities to encode, inspect, and decode .opus files")
     (description "Opus is a royalty-free, highly versatile audio codec.
@@ -420,11 +411,9 @@ decoding .opus files.")
                (("opus_multistream\\.h") "opus/opus_multistream.h")))))))
     ;; Required by opusfile.pc and opusurl.pc.
     (propagated-inputs
-     `(("libogg" ,libogg)
-       ("openssl" ,openssl)
-       ("opus" ,opus)))
+     (list libogg openssl opus))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (synopsis "Versatile audio codec")
     (description
      "The opusfile library provides seeking, decode, and playback of Opus
@@ -446,9 +435,9 @@ windows systems.")
                 "1ffb0vhlymlsq70pxsjj0ksz77yfm2x0a1x8q50kxmnkm1hxp642"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (propagated-inputs
-     `(("opus" ,opus)))
+     (list opus))
     (synopsis "Library for encoding Opus audio files and streams ")
     (description "The libopusenc libraries provide a high-level API for
 encoding Opus files and streams.")
@@ -469,16 +458,16 @@ encoding Opus files and streams.")
                 "0i2d9rhav0x6js2qhjf5iy6j2a7f0d11ail0lfv40hb1kygrgda9"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("libxslt" ,libxslt)
-       ("libxml2" ,libxml2)
-       ("openssl" ,openssl)
-       ("curl" ,curl)
-       ("libogg" ,libogg)
-       ("libvorbis" ,libvorbis)
-       ("libtheora" ,libtheora)
-       ("speex" ,speex)))
+     (list libxslt
+           libxml2
+           openssl
+           curl
+           libogg
+           libvorbis
+           libtheora
+           speex))
     (synopsis "Streaming media server")
     (description "Icecast is a streaming media server which currently supports
 Ogg (Vorbis and Theora), Opus, WebM and MP3 audio streams.  It can be used to
@@ -501,12 +490,10 @@ things in between.")
                 "1438da40y73y9068saxrbmm27qq6xqmmzsziwgmr8fb7i9k6irfr"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (propagated-inputs
      ;; shout.pc refers to all these.
-     `(("libtheora" ,libtheora)
-       ("libvorbis" ,libvorbis)
-       ("speex"     ,speex)))
+     (list libtheora libvorbis speex))
     (home-page "https://icecast.org/")
     (synopsis "Audio streaming library for icecast encoders")
     (description

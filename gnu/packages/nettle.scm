@@ -62,8 +62,8 @@
                                     (find-files "." "\\.a$")))
                         #t))))))
     (outputs '("out" "debug" "static"))
-    (native-inputs `(("m4" ,m4)))
-    (propagated-inputs `(("gmp" ,gmp)))
+    (native-inputs (list m4))
+    (propagated-inputs (list gmp))
     (home-page "https://www.lysator.liu.se/~nisse/nettle/")
     (synopsis "C library for low-level cryptographic functionality")
     (description

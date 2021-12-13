@@ -191,13 +191,9 @@
        ("python" ,python-wrapper)
        ("xsltproc" ,libxslt)))
     (inputs
-     `(("libsoup-minimal" ,libsoup-minimal-2)
-       ("libstemmer" ,libstemmer)
-       ("libxml2" ,libxml2)
-       ("libyaml" ,libyaml)
-       ("lmdb" ,lmdb)))
+     (list libsoup-minimal-2 libstemmer libxml2 libyaml lmdb))
     (propagated-inputs
-     `(("glib" ,glib)))
+     (list glib))
     (synopsis "Tools and libraries to work with AppStream metadata")
     (description "AppStream is a cross-distribution effort for enhancing the way
 we interact with the software repositories provided by distributions by
@@ -291,15 +287,9 @@ application-centers for distributions.")
        ("python" ,python-wrapper)
        ("xsltproc" ,libxslt)))
     (inputs
-     `(("glib" ,glib)
-       ("gtk+" ,gtk+)
-       ("gupnp-igd" ,gupnp-igd)
-       ("libnice" ,libnice)))
+     (list glib gtk+ gupnp-igd libnice))
     (propagated-inputs
-     `(("gstreamer" ,gstreamer)
-       ("gst-plugins-bad" ,gst-plugins-bad)
-       ("gst-plugins-base" ,gst-plugins-base)
-       ("gst-plugins-good" ,gst-plugins-good)))
+     (list gstreamer gst-plugins-bad gst-plugins-base gst-plugins-good))
     (synopsis "The Farstream VVoIP framework")
     (description "Farstream is a collection of GStreamer modules and libraries
 for videoconferencing.")
@@ -338,8 +328,7 @@ for videoconferencing.")
        ("pkg-config" ,pkg-config)
        ("gtk-doc" ,gtk-doc/stable)))
     (inputs
-     `(("dbus" ,dbus)
-       ("glib" ,glib)))
+     (list dbus glib))
     (synopsis "Glib testing library")
     (description "Libglib-testing is a test library providing test harnesses and
 mock classes which complement the classes provided by GLib.  It is intended to
@@ -385,15 +374,15 @@ tests.")
        ("libxml2" ,libxml2)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("accountsservice" ,accountsservice)
-       ("appstream-glib" ,appstream-glib)
-       ("dbus" ,dbus)
-       ("flatpak" ,flatpak)
-       ("glib" ,glib)
-       ("gtk+" ,gtk+)
-       ("libostree" ,libostree)
-       ("linux-pam" ,linux-pam)
-       ("polkit" ,polkit)))
+     (list accountsservice
+           appstream-glib
+           dbus
+           flatpak
+           glib
+           gtk+
+           libostree
+           linux-pam
+           polkit))
     (synopsis "Parental controls support")
     (description "MalContent implements parental controls support which can
 be used by applications to filter or limit the access of child accounts to
@@ -419,11 +408,7 @@ inappropriate content.")
              "1nai806smz3zcb2l5iny4x7li0fak0rzmjg6vlyhdqm8z25b166p"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("docbook-xsl" ,docbook-xsl)
-       ("docbook-xml" ,docbook-xml-4.1.2)
-       ("libxslt" ,libxslt)
-       ("w3m" ,w3m)
-       ("xmlto" ,xmlto)))
+     (list docbook-xsl docbook-xml-4.1.2 libxslt w3m xmlto))
     (inputs
      `(("awk" ,gawk)
        ("coreutils" ,coreutils)
@@ -512,15 +497,14 @@ freedesktop.org project.")
        ;; Meson target anyway.
        #:build-type "release"))
     (native-inputs
-     `(("check" ,check)
-       ("pkg-config" ,pkg-config)))
+     (list check pkg-config))
     (inputs
-     `(("cairo" ,cairo)
-       ("glib" ,glib)
-       ("gtk+" ,gtk+)
-       ("libevdev" ,libevdev)
-       ("libwacom" ,libwacom)
-       ("mtdev" ,mtdev)))
+     (list cairo
+           glib
+           gtk+
+           libevdev
+           libwacom
+           mtdev))
     (propagated-inputs
      `(;; libinput.h requires <libudev.h>, so propagate it.
        ("udev" ,eudev)))
@@ -570,9 +554,7 @@ other applications that need to directly deal with input devices.")
                (("^.*\\./configure.*") ""))
              #t)))))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
+     (list autoconf automake libtool))
     (home-page "https://github.com/devnev/libxdg-basedir")
     (synopsis "Implementation of the XDG Base Directory specification")
     (description
@@ -696,15 +678,15 @@ the freedesktop.org XDG Base Directory specification.")
        ("python" ,python)
        ("xsltproc" ,libxslt)))
     (inputs
-     `(("kexec-tools" ,kexec-tools)
-       ("linux-pam" ,linux-pam)
-       ("libcap" ,libcap)
-       ("shadow" ,shadow)                    ;for 'nologin'
-       ("shepherd" ,shepherd)                ;for 'halt' and 'reboot', invoked
-                                             ;when pressing the power button
-       ("dbus" ,dbus)
-       ("eudev" ,eudev)
-       ("acl" ,acl)))           ;to add individual users to ACLs on /dev nodes
+     (list kexec-tools
+           linux-pam
+           libcap
+           shadow ;for 'nologin'
+           shepherd ;for 'halt' and 'reboot', invoked
+           ;when pressing the power button
+           dbus
+           eudev
+           acl))           ;to add individual users to ACLs on /dev nodes
     (home-page "https://github.com/elogind/elogind")
     (synopsis "User, seat, and session management service")
     (description "Elogind is the systemd project's \"logind\" service,
@@ -877,10 +859,9 @@ with localed.  This package is extracted from the broader systemd package.")
     (arguments
      `(#:configure-flags '("-Dlogind=enabled")))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("scdoc" ,scdoc)))
+     (list pkg-config scdoc))
     (propagated-inputs
-     `(("elogind" ,elogind)))
+     (list elogind))
     (home-page "https://sr.ht/~kennylevinsen/seatd")
     (synopsis "Seat management daemon and library")
     (description
@@ -916,11 +897,9 @@ allows applications to use whatever seat management is available.")
        ("python" ,python-wrapper)
        ("glib:bin" ,glib "bin")))
     (inputs
-     `(("glib" ,glib)
-       ("bash-completion" ,bash-completion)
-       ("polkit" ,polkit)))
+     (list glib bash-completion polkit))
     (propagated-inputs
-     `(("sqlite" ,sqlite)))
+     (list sqlite))
     (home-page "https://www.freedesktop.org/software/PackageKit/")
     (synopsis "API for package management, through D-Bus")
     (description
@@ -966,9 +945,7 @@ manager for the current system.")
              (invoke "nosetests" "-v"))))))
     (native-inputs
      ;; For tests.
-     `(("shared-mime-info" ,shared-mime-info)
-       ("hicolor-icon-theme" ,hicolor-icon-theme)
-       ("python-nose" ,python-nose)))
+     (list shared-mime-info hicolor-icon-theme python-nose))
     (home-page "https://www.freedesktop.org/wiki/Software/pyxdg")
     (synopsis "Implementations of freedesktop.org standards in Python")
     (description
@@ -1030,10 +1007,9 @@ Python.")
                ("wayland" ,this-package)) ; for wayland-scanner
              '())))
     (inputs
-     `(("expat" ,expat)
-       ("libxml2" ,libxml2)))           ; for XML_CATALOG_FILES
+     (list expat libxml2))           ; for XML_CATALOG_FILES
     (propagated-inputs
-     `(("libffi" ,libffi)))
+     (list libffi))
     (home-page "https://wayland.freedesktop.org/")
     (synopsis "Core Wayland window system code and protocol")
     (description "Wayland is a project to define a protocol for a compositor to
@@ -1058,9 +1034,9 @@ fullscreen) or other display servers.")
                 "0xizccackgwszjhlq7jjiv2z2gwppljx0w32ga91bxlnby8z22kc"))))
     (build-system meson-build-system)
     (inputs
-     `(("wayland" ,wayland)))
+     (list wayland))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (synopsis "Wayland protocols")
     (description "Wayland-Protocols contains Wayland protocols that add
 functionality not available in the Wayland core protocol.  Such protocols either
@@ -1085,13 +1061,12 @@ protocol either in Wayland core, or some other protocol in wayland-protocols.")
     (arguments
      `(#:tests? #f))                    ; no tests
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("mesa" ,mesa)
-       ("pugixml" ,pugixml)))
+     (list mesa pugixml))
     (propagated-inputs
-     `(;; In Requires of the .pc files.
-       ("wayland" ,wayland)))
+     (list ;; In Requires of the .pc files.
+           wayland))
     (synopsis "Wayland C++ bindings")
     (description
      "This package provides C++ bindings for the Wayland display protocol.")
@@ -1111,9 +1086,7 @@ protocol either in Wayland core, or some other protocol in wayland-protocols.")
                 "1zlql0xgiqc3pvgbpnnvj4xvpd91pwva8qf83xfb23if377ddxaw"))))
     (build-system meson-build-system)
     (native-inputs
-     `(("mscgen" ,mscgen)
-       ("pkg-config" ,pkg-config)
-       ("xorg-server" ,xorg-server)))
+     (list mscgen pkg-config xorg-server))
     (inputs
      `(("cairo" ,cairo-xcb)
        ("colord" ,colord)
@@ -1144,9 +1117,7 @@ protocol either in Wayland core, or some other protocol in wayland-protocols.")
        ("wayland-protocols" ,wayland-protocols)
        ("xorg-server-xwayland" ,xorg-server-xwayland)))
     (propagated-inputs
-     `(("libxkbcommon" ,libxkbcommon)
-       ("pixman" ,pixman)
-       ("wayland" ,wayland)))
+     (list libxkbcommon pixman wayland))
     (arguments
      `(#:configure-flags
        (list
@@ -1222,12 +1193,9 @@ multiplexer to the KMS/DRM Linux kernel devices.")
        (modify-phases %standard-phases
          (delete 'configure))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("scdoc" ,scdoc)))
+     (list pkg-config scdoc))
     (inputs
-     `(("libxkbcommon" ,libxkbcommon)
-       ("wayland" ,wayland)
-       ("wayland-protocols" ,wayland-protocols)))
+     (list libxkbcommon wayland wayland-protocols))
     (home-page "https://git.sr.ht/~sircmpwn/wev")
     (synopsis "Wayland event viewer")
     (description "Wev is a tool that opens a window, printing all events
@@ -1263,10 +1231,9 @@ XEv.")
                                          "/lib/libexempi.a"))
              #t)))))
     (native-inputs
-     `(("boost" ,boost))) ; tests
+     (list boost)) ; tests
     (inputs
-     `(("expat" ,expat)
-       ("zlib" ,zlib)))
+     (list expat zlib))
     (home-page "https://libopenraw.freedesktop.org/exempi/")
     (synopsis "XMP metadata handling library")
     (description "Exempi is an implementation of the Extensible Metadata
@@ -1287,7 +1254,7 @@ formats.")
                 "138gvgdwk6h4ljrjsr09pxk1nrki4b155hqdzyr8mlk3bwsfmw31"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
      `(("udev" ,eudev)))
     (home-page "http://0pointer.de/blog/projects/being-smart.html")
@@ -1321,15 +1288,15 @@ Analysis and Reporting Technology) functionality.")
        ("pkg-config" ,pkg-config)
        ("xsltproc" ,libxslt)))
     (propagated-inputs
-     `(("glib" ,glib))) ; required by udisks2.pc
+     (list glib)) ; required by udisks2.pc
     (inputs
-     `(("acl" ,acl)
-       ("cryptsetup" ,cryptsetup)
-       ("libatasmart" ,libatasmart)
-       ("libblockdev" ,libblockdev)
-       ("libgudev" ,libgudev)
-       ("polkit" ,polkit)
-       ("util-linux" ,util-linux)))
+     (list acl
+           cryptsetup
+           libatasmart
+           libblockdev
+           libgudev
+           polkit
+           util-linux))
     (outputs '("out"
                "doc"))                            ;5 MiB of gtk-doc HTML
     (arguments
@@ -1446,10 +1413,7 @@ message bus.")
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("dbus" ,dbus)
-       ("elogind" ,elogind)
-       ("polkit" ,polkit)
-       ("shadow" ,shadow)))
+     (list dbus elogind polkit shadow))
     (home-page "https://www.freedesktop.org/wiki/Software/AccountsService/")
     (synopsis "D-Bus interface for user account query and manipulation")
     (description
@@ -1476,9 +1440,9 @@ these interfaces, based on the useradd, usermod and userdel commands.")
        ("pkg-config" ,pkg-config)
        ("python" ,python-wrapper)))
     (propagated-inputs
-     `(("glib" ,glib))) ; required by mbim-glib.pc
+     (list glib)) ; required by mbim-glib.pc
     (inputs
-     `(("libgudev" ,libgudev)))
+     (list libgudev))
     (synopsis "Library to communicate with MBIM-powered modems")
     (home-page "https://www.freedesktop.org/wiki/Software/libmbim/")
     (description
@@ -1503,13 +1467,13 @@ which speak the Mobile Interface Broadband Model (MBIM) protocol.")
                 "0zshxqbm9ldybgrzh7pjmwmfjvvvfd0xh8qhgl8xiqdb9ply73r0"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libgudev" ,libgudev)))
+     (list libgudev))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-mkenums
        ("pkg-config" ,pkg-config)
        ("python" ,python-wrapper)))
     (propagated-inputs
-     `(("glib" ,glib))) ; required by qmi-glib.pc
+     (list glib)) ; required by qmi-glib.pc
     (synopsis "Library to communicate with QMI-powered modems")
     (home-page "https://www.freedesktop.org/wiki/Software/libqmi/")
     (description
@@ -1545,12 +1509,9 @@ which speak the Qualcomm MSM Interface (QMI) protocol.")
        ;; For testing.
        ("dbus" ,dbus)))
     (propagated-inputs
-     `(("glib" ,glib))) ; required by mm-glib.pc
+     (list glib)) ; required by mm-glib.pc
     (inputs
-     `(("libgudev" ,libgudev)
-       ("libmbim" ,libmbim)
-       ("libqmi" ,libqmi)
-       ("polkit" ,polkit)))
+     (list libgudev libmbim libqmi polkit))
     (synopsis "Mobile broadband modems manager")
     (home-page "https://www.freedesktop.org/wiki/Software/ModemManager/")
     (description
@@ -1590,9 +1551,7 @@ modems and setup connections with them.")
        ("xsltproc" ,libxslt)))
     (propagated-inputs
      ;; telepathy-logger-0.2.pc refers to all these.
-     `(("libxml2" ,libxml2)
-       ("sqlite" ,sqlite)
-       ("telepathy-glib" ,telepathy-glib)))
+     (list libxml2 sqlite telepathy-glib))
     (synopsis "Telepathy logger library")
     (home-page "https://telepathy.freedesktop.org/")
     (description
@@ -1616,16 +1575,13 @@ different sorts of messages in different formats.")
         (base32 "1pfw4g2cicw3ykxhsy743r0fc1yqbdrqxh2c5ha6am19dajcr95l"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf automake libtool pkg-config))
     (inputs
      `(("xsltproc" ,libxslt)
        ("python" ,python-2)
        ("python-dbus" ,python2-dbus)))
     (propagated-inputs
-     `(("telepathy-glib" ,telepathy-glib)))
+     (list telepathy-glib))
     (home-page "https://telepathy.freedesktop.org/")
     (synopsis "Telepathy IRC connection manager")
     (description
@@ -1657,7 +1613,7 @@ messaging clients such as Empathy, GNOME Shell or KDE Telepathy.")
        ("python" ,python-2)
        ("xsltproc" ,libxslt)))
     (propagated-inputs
-     `(("telepathy-glib" ,telepathy-glib)))
+     (list telepathy-glib))
     (home-page "https://telepathy.freedesktop.org/wiki/Components/Mission_Control/")
     (synopsis "Telepathy real-time communication framework management daemon")
     (description
@@ -1680,14 +1636,10 @@ share connections to real-time communication services without conflicting.")
     (build-system gnu-build-system)
     (arguments '(#:tests? #f)) ; require the colord system service
     (native-inputs
-     `(("gobject-introspection" ,gobject-introspection)
-       ("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)
-       ("vala" ,vala)))
+     (list gobject-introspection intltool pkg-config vala))
     (propagated-inputs
      ;; colord-gtk.pc refers to all these.
-     `(("colord" ,colord)
-       ("gtk+" ,gtk+)))
+     (list colord gtk+))
     (synopsis "GTK integration for libcolord")
     (home-page "https://www.freedesktop.org/software/colord/")
     (description
@@ -1721,13 +1673,12 @@ wish to perform colour calibration.")
        ("gtk-doc" ,gtk-doc/stable)             ; for 88 KiB of API documentation
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("glib" ,glib)
-       ("gusb" ,gusb)
-       ("nss" ,nss)                     ; for the URU4x00 driver
-
-       ;; Replacing this with cairo works but just results in a reference
-       ;; (only) to pixman in the end.
-       ("pixman" ,pixman)))
+     (list glib
+           gusb
+           nss ; for the URU4x00 driver
+           ;; Replacing this with cairo works but just results in a reference
+           ;; (only) to pixman in the end.
+           pixman))
     (home-page "https://fprint.freedesktop.org/")
     (synopsis "Library to access fingerprint readers")
     (description
@@ -1811,17 +1762,16 @@ software.")
        ;;("python-pygobject" ,python-pygobject)
        ;;("python-pypamtest" ,python-pypamtest)
     (inputs
-     `(("dbus-glib" ,dbus-glib)
-       ("elogind" ,elogind)
-       ("libfprint" ,libfprint)
-       ("linux-pam" ,linux-pam)
-       ("polkit" ,polkit)
-
-       ;; XXX These are in libfprint's Requires.private.  Meson refuses to grant
-       ;; the ‘libfprint-2’ dependency if they are not provided here.
-       ("gusb" ,gusb)
-       ("nss" ,nss)
-       ("pixman" ,pixman)))
+     (list dbus-glib
+           elogind
+           libfprint
+           linux-pam
+           polkit
+           ;; XXX These are in libfprint's Requires.private.  Meson refuses to grant
+           ;; the ‘libfprint-2’ dependency if they are not provided here.
+           gusb
+           nss
+           pixman))
     (home-page "https://fprint.freedesktop.org/")
     (synopsis "D-Bus daemon that exposes fingerprint reader functionality")
     (description
@@ -1845,11 +1795,9 @@ to applications simultaneously competing for fingerprint readers.")
                 "02bkfi6fyk4c0gh2avd897882ww5zl7qg7bzzf28qb57kvkvsvdj"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf automake pkg-config))
     (inputs
-     `(("glib" ,glib)))
+     (list glib))
     (home-page "https://www.freedesktop.org/wiki/Software/desktop-file-utils/")
     (synopsis "Utilities for working with desktop entries")
     (description
@@ -1924,13 +1872,10 @@ manually by a user.")
          "1qq5ag9zffx8zc5i9b4z03ar80pqj4drgk3vjdlyfapjwb9zqrf0"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)
-       ("perl-file-which" ,perl-file-which)
-       ("perl-test-pod" ,perl-test-pod)
-       ("perl-test-pod-coverage" ,perl-test-pod-coverage)
-       ("xdg-user-dirs" ,xdg-user-dirs)))
+     (list perl-module-build perl-file-which perl-test-pod
+           perl-test-pod-coverage xdg-user-dirs))
     (propagated-inputs
-     `(("perl-ipc-system-simple" ,perl-ipc-system-simple)))
+     (list perl-ipc-system-simple))
     (home-page "https://metacpan.org/release/File-BaseDir")
     (synopsis "Use the Freedesktop.org base directory specification")
     (description
@@ -1954,11 +1899,9 @@ application data and cache data.")
          "1f1maqix2kbfg2rf008m7mqnvv6nvcf9y6pcgdv2kxp2vbih370n"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-pod" ,perl-test-pod)
-       ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
+     (list perl-test-pod perl-test-pod-coverage))
     (propagated-inputs
-     `(("perl-file-basedir" ,perl-file-basedir)
-       ("perl-uri" ,perl-uri)))
+     (list perl-file-basedir perl-uri))
     (home-page "https://metacpan.org/release/File-DesktopEntry")
     (synopsis "Handle @file{.desktop} files")
     (description
@@ -1983,8 +1926,7 @@ applications define in those files.")
     ;; If the tests are fixed, add perl-test-pod, perl-test-pod-coverage, and
     ;; perl-test-tiny as native-inputs.
     (propagated-inputs
-     `(("shared-mime-info" ,shared-mime-info)
-       ("perl-file-desktopentry" ,perl-file-desktopentry)))
+     (list shared-mime-info perl-file-desktopentry))
     (arguments
      ;; Some tests fail due to requiring the mimetype of perl files to be
      ;; text/plain when they are actually application/x-perl.
@@ -2053,7 +1995,7 @@ encoding names are iconv-compatible.")
           "1bqfz85cd51sw0bvhvdq9ikccxi2ld7g5jpni4jkq1a5clrvca64"))))
   (build-system python-build-system)
   (inputs
-   `(("uchardet" ,uchardet)))
+   (list uchardet))
   (home-page "https://github.com/PyYoshi/cChardet")
   (synopsis "High-performance character encoding detection for Python")
   (description "cChardet is a character encoding detector, written in
@@ -2077,17 +2019,10 @@ Python, that binds to the C library @code{uchardet} to increase performance.")
        ("gettext" ,gettext-minimal)
        ("gobject-introspection" ,gobject-introspection)))
     (inputs
-     `(("gobject-introspection" ,gobject-introspection)
-       ("gtk+" ,gtk+)
-       ("libappindicator" ,libappindicator)
-       ("libnotify" ,libnotify)
-       ("udisks" ,udisks)))
+     (list gobject-introspection gtk+ libappindicator libnotify udisks))
     (propagated-inputs
-     `(("python-docopt" ,python-docopt)
-       ("python-pygobject" ,python-pygobject)
-       ("python-keyutils" ,python-keyutils)
-       ("python-pyxdg" ,python-pyxdg)
-       ("python-pyyaml" ,python-pyyaml)))
+     (list python-docopt python-pygobject python-keyutils python-pyxdg
+           python-pyyaml))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -2169,11 +2104,7 @@ Its features include:
                      (string-append (assoc-ref inputs "docbook-xml")
                                     "/xml/dtd/docbook/catalog.xml")))))))
     (inputs
-     `(("glib" ,glib)
-       ("pango" ,pango)
-       ("libdrm" ,libdrm)
-       ("libpng" ,libpng)
-       ("eudev" ,eudev)))
+     (list glib pango libdrm libpng eudev))
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)
@@ -2210,8 +2141,7 @@ useful with system integration.")
        ("pkg-config" ,pkg-config)
        ("xvfb" ,xorg-server-for-tests)))
     (inputs
-     `(("gtk+" ,gtk+)
-       ("glib" ,glib)))
+     (list gtk+ glib))
     (arguments
      `(#:make-flags '("CFLAGS=-Wno-error")
        #:phases
@@ -2271,8 +2201,7 @@ useful with system integration.")
        ;; ("mono" ,mono) ; requires non-packaged gapi
        ("vala" ,vala)))
     (propagated-inputs
-     `(("gtk+" ,gtk+)
-       ("libdbusmenu" ,libdbusmenu)))
+     (list gtk+ libdbusmenu))
     (arguments
      ;; FIXME: do not hardcode gtk version
      `(#:configure-flags '("--with-gtk=3")
@@ -2345,7 +2274,7 @@ fallback to generic Systray support if none of those are available.")
        ("libxml2" ,libxml2)
        ("glib:bin" ,glib "bin")))
     (propagated-inputs
-     `(("glib" ,glib)))
+     (list glib))
     (outputs '("out" "doc"))
     (home-page "https://github.com/flatpak/libportal")
     (synopsis "Flatpak portal library")
@@ -2460,7 +2389,7 @@ and others.")
        ("gnome-desktop" ,gnome-desktop)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)))
     (propagated-inputs
-     `(("xdg-desktop-portal" ,xdg-desktop-portal)))
+     (list xdg-desktop-portal))
     (home-page "https://github.com/flatpak/xdg-desktop-portal-gtk")
     (synopsis "GTK implementation of xdg-desktop-portal")
     (description
@@ -2489,8 +2418,7 @@ interfaces.")
        '("-Dsystemd=disabled"
          "-Dsd-bus-provider=libelogind")))
     (native-inputs
-     `(("cmake" ,cmake)
-       ("pkg-config" ,pkg-config)))
+     (list cmake pkg-config))
     (inputs
      `(("elogind" ,elogind)
        ("iniparser" ,iniparser)
@@ -2522,10 +2450,9 @@ compositors.")
         (base32 "1v08dv3dfz420v51ahz7qgv3429073kmgrf8f66s4c3jlpch2pa1"))))
     (build-system meson-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("scdoc" ,scdoc)
-       ;; For tests
-       ("python" ,python)))
+     (list pkg-config scdoc
+           ;; For tests
+           python))
     (home-page "https://gitlab.freedesktop.org/mstoeckl/waypipe")
     (synopsis "Proxy for Wayland protocol applications")
     (description

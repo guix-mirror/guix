@@ -38,8 +38,8 @@
        (base32
         "1yg2ln2mm6gzv61cxnv60dw1cr5bl2dhkjy685jrd3aabb7wpyqf"))))
     (build-system gnu-build-system)
-    (native-inputs `(("lzip" ,lzip)))
-    (inputs `(("ncurses" ,ncurses)))
+    (native-inputs (list lzip))
+    (inputs (list ncurses))
     (home-page "https://www.gnu.org/software/moe/moe.html")
     (synopsis "Modeless, multiple-buffer, user-friendly 8-bit text editor")
     (description

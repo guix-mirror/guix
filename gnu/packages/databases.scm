@@ -194,15 +194,15 @@
        ("pcre" ,pcre "bin")                       ;for 'pcre-config'
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("glib" ,glib)
-       ("rasqal" ,rasqal)
-       ("libxml2" ,libxml2)
-       ("raptor2" ,raptor2)
-       ("readline" ,readline)
-       ("avahi" ,avahi)
-       ("cyrus-sasl" ,cyrus-sasl)
-       ("openssl" ,openssl)
-       ("util-linux" ,util-linux "lib")))
+     (list glib
+           rasqal
+           libxml2
+           raptor2
+           readline
+           avahi
+           cyrus-sasl
+           openssl
+           `(,util-linux "lib")))
     ;; http://www.4store.org has been down for a while now.
     (home-page "https://github.com/4store/4store")
     (synopsis "Clustered RDF storage and query engine")
@@ -243,12 +243,10 @@ either single machines or networked clusters.")
              #t)))
        #:test-target "test"))
     (inputs
-     `(("postgresql" ,postgresql)
-       ("util-linux" ,util-linux)))
+     (list postgresql util-linux))
     (native-inputs
      ;; For tests.
-     `(("ruby" ,ruby)
-       ("which" ,which)))
+     (list ruby which))
     (home-page "https://eradman.com/ephemeralpg/")
     (synopsis "Run temporary PostgreSQL databases")
     (description
@@ -274,11 +272,8 @@ garbage-collected after a configurable number of seconds (the default is
     (arguments
      '(#:tests? #f)) ;; No testsuite.
     (propagated-inputs
-     `(("ruby-httpclient" ,ruby-httpclient)
-       ("ruby-multi-json" ,ruby-multi-json)
-       ("ruby-progress_bar" ,ruby-progress_bar)
-       ("ruby-rubyzip" ,ruby-rubyzip)
-       ("ruby-thor" ,ruby-thor)))
+     (list ruby-httpclient ruby-multi-json ruby-progress_bar ruby-rubyzip
+           ruby-thor))
     (synopsis "Utility for dumping and restoring ElasticSearch indexes")
     (description
      "This package provides a utility for dumping the contents of an
@@ -424,12 +419,12 @@ ElasticSearch server")
                                  "lib/firebird/plugins/udr"))
                  #t)))))))
     (inputs
-     `(("boost" ,boost)
-       ("editline" ,editline)
-       ("icu4c" ,icu4c-67)
-       ("libtommath" ,libtommath)
-       ("ncurses" ,ncurses)
-       ("zlib" ,zlib)))
+     (list boost
+           editline
+           icu4c-67
+           libtommath
+           ncurses
+           zlib))
     (home-page "https://www.firebirdsql.org")
     (synopsis "Relational database with many ANSI SQL standard features")
     (description
@@ -481,7 +476,7 @@ database later.")
     (arguments
      `(#:configure-flags '("-DBUILD_SHARED_LIBS=ON" "-DLEVELDB_BUILD_TESTS=ON")))
     (inputs
-     `(("snappy" ,snappy)))
+     (list snappy))
     (home-page "https://github.com/google/leveldb")
     (synopsis "Fast key-value storage library")
     (description
@@ -502,8 +497,7 @@ mapping from string keys to string values.")
         (base32 "0ii3z2mhjrimc6mv5z5x6bwp1s2bbzppja4m3pnmd5zgh9gs74gj"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libevent" ,libevent)
-       ("cyrus-sasl" ,cyrus-sasl)))
+     (list libevent cyrus-sasl))
     (home-page "https://memcached.org/")
     (synopsis "In-memory caching service")
     (description "Memcached is an in-memory key-value store.  It has a small
@@ -530,17 +524,16 @@ applications.")
                (search-patches "libmemcached-build-with-gcc7.patch"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("memcached" ,memcached)
-       ("libtool" ,libtool)
-       ("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("bison" ,bison)
-       ("flex" ,flex)
-       ("perl" ,perl)
-       ("python-sphinx" ,python-sphinx))) ;to build the HTML doc.
+     (list memcached
+           libtool
+           autoconf
+           automake
+           bison
+           flex
+           perl
+           python-sphinx)) ;to build the HTML doc.
     (inputs
-     `(("libevent" ,libevent)
-       ("cyrus-sasl" ,cyrus-sasl)))
+     (list libevent cyrus-sasl))
     (outputs '("out" "doc"))
     (arguments
      '(#:tests? #f                      ;many tests fail and use too much time
@@ -600,12 +593,9 @@ the API, and provides features such as:
            (lambda _
              (invoke "memcached" "-d"))))))
     (native-inputs
-     `(("memcached" ,memcached)
-       ("python-nose" ,python-nose)))
+     (list memcached python-nose))
     (inputs
-     `(("libmemcached" ,libmemcached)
-       ("zlib" ,zlib)
-       ("cyrus-sasl" ,cyrus-sasl)))
+     (list libmemcached zlib cyrus-sasl))
     (home-page "http://sendapatch.se/projects/pylibmc/")
     (synopsis "Python client for memcached")
     (description
@@ -626,15 +616,14 @@ replacement for the code@{python-memcached} library.")
       (base32 "1yb706mgzizzijm1k0fbny98jf58qh5q6f2870rbplxlfla4w9sd"))))
   (build-system python-build-system)
   (propagated-inputs
-   `(("python-cli-helpers" ,python-cli-helpers)
-     ("python-click" ,python-click)
-     ("python-configobj" ,python-configobj)
-     ("python-prompt-toolkit" ,python-prompt-toolkit)
-     ("python-pygments" ,python-pygments)
-     ("python-sqlparse" ,python-sqlparse)))
+   (list python-cli-helpers
+         python-click
+         python-configobj
+         python-prompt-toolkit
+         python-pygments
+         python-sqlparse))
   (native-inputs
-   `(("python-mock" ,python-mock)
-     ("python-pytest" ,python-pytest)))
+   (list python-mock python-pytest))
   (home-page "https://litecli.com")
   (synopsis "CLI for SQLite databases")
   (description
@@ -656,16 +645,16 @@ auto-completion and syntax highlighting.")
     (arguments
      `(#:tests? #f))                    ; tests expect a running MySQL
     (propagated-inputs
-      `(("python-cli-helpers" ,python-cli-helpers)
-        ("python-click" ,python-click)
-        ("python-configobj" ,python-configobj)
-        ("python-cryptography" ,python-cryptography)
-        ("python-prompt-toolkit" ,python-prompt-toolkit)
-        ("python-pyaes" ,python-pyaes)
-        ("python-pygments" ,python-pygments)
-        ("python-pymysql" ,python-pymysql)
-        ("python-pyperclip" ,python-pyperclip)
-        ("python-sqlparse" ,python-sqlparse)))
+      (list python-cli-helpers
+            python-click
+            python-configobj
+            python-cryptography
+            python-prompt-toolkit
+            python-pyaes
+            python-pygments
+            python-pymysql
+            python-pyperclip
+            python-sqlparse))
     (home-page "https://www.mycli.net")
     (synopsis
       "Terminal Client for MySQL with AutoCompletion and Syntax Highlighting")
@@ -750,22 +739,20 @@ auto-completion and syntax highlighting.")
                             ,(string-append sed "/bin"))))
                        #t))))))
     (native-inputs
-     `(("bison" ,bison)
-       ("perl" ,perl)
-       ("pkg-config" ,pkg-config)))
+     (list bison perl pkg-config))
     (inputs
-     `(("boost" ,boost-for-mysql)
-       ("coreutils" ,coreutils)
-       ("gawk" ,gawk)
-       ("grep" ,grep)
-       ("libaio" ,libaio)
-       ("libtirpc" ,libtirpc)
-       ("ncurses" ,ncurses)
-       ("openssl" ,openssl)
-       ("procps" ,procps)
-       ("rpcsvc-proto" ,rpcsvc-proto) ; rpcgen
-       ("sed" ,sed)
-       ("zlib" ,zlib)))
+     (list boost-for-mysql
+           coreutils
+           gawk
+           grep
+           libaio
+           libtirpc
+           ncurses
+           openssl
+           procps
+           rpcsvc-proto ; rpcgen
+           sed
+           zlib))
     (home-page "https://www.mysql.com/")
     (synopsis "Fast, easy to use, and popular database")
     (description
@@ -1015,8 +1002,7 @@ Language.")
                 (("-lssl -lcrypto" all)
                  (string-append "-L" openssl "/lib " all)))))))))
     (native-inputs
-     `(("bison" ,bison)
-       ("perl" ,perl)))
+     (list bison perl))
     (inputs
      `(("jemalloc" ,jemalloc)
        ("libaio" ,libaio)
@@ -1052,7 +1038,7 @@ as a drop-in replacement of MySQL.")
        (sha256
         (base32 "0xb8fiissblxb319y5ifqqp86zblwis789ipb753pcb4zpnsaw82"))))
     (inputs
-     `(("openssl" ,openssl)))
+     (list openssl))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f))                    ; no tests
@@ -1077,9 +1063,7 @@ developed in C/C++ to MariaDB and MySQL databases.")
                (base32 "0h7s670pcasq8wzprhyxqfca2cghi62b8xz2kikb2a86wd453qil"))))
     (build-system cmake-build-system)
     (inputs
-     `(("check" ,check)
-       ("boost" ,boost)
-       ("openssl" ,openssl)))
+     (list check boost openssl))
     (home-page "https://github.com/codership/galera/")
     (synopsis "Extension to the MariaDB database server")
     (description
@@ -1226,8 +1210,7 @@ pictures, sounds, or video.")
                (install-file "build/bin/pgloader"  bin))
              #t)))))
     (native-inputs
-     `(("buildapp" ,buildapp)
-       ("sbcl" ,sbcl)))
+     (list buildapp sbcl))
     (inputs
      `(("alexandria" ,sbcl-alexandria)
        ("cl-abnf" ,sbcl-cl-abnf)
@@ -1279,9 +1262,9 @@ CSV, DB3, iXF, SQLite, MS-SQL or MySQL to PostgreSQL.")
         (base32 "1ry8lxgdc1p3k7gbw20r405jqi5lvhi5wk83kxdbiv8xv3f5kh6q"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-unittest2" ,python-unittest2)))
+     (list python-unittest2))
     (inputs
-     `(("python-cryptography" ,python-cryptography)))
+     (list python-cryptography))
     (arguments
      `(#:tests? #f))                    ; tests expect a running MySQL
     (home-page "https://github.com/PyMySQL/PyMySQL/")
@@ -1464,18 +1447,14 @@ including field and record folding.")))
                             '())
                       ,@make-flags)))))))
     (native-inputs
-     `(("parallel" ,parallel)
-       ("perl" ,perl)
-       ("procps" ,procps)
-       ("python" ,python)
-       ("which" ,which)))
+     (list parallel perl procps python which))
     (inputs
-     `(("bzip2" ,bzip2)
-       ("gflags" ,gflags)
-       ("jemalloc" ,jemalloc)
-       ("lz4" ,lz4)
-       ("snappy" ,snappy)
-       ("zlib" ,zlib)))
+     (list bzip2
+           gflags
+           jemalloc
+           lz4
+           snappy
+           zlib))
     (home-page "https://rocksdb.org/")
     (synopsis "Persistent key-value store for fast storage")
     (description
@@ -1504,13 +1483,9 @@ data in a single database.  RocksDB is partially based on @code{LevelDB}.")
               (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (inputs
-     `(("curl" ,curl)
-       ("glib" ,glib)
-       ("libxml2" ,libxml2)
-       ("ncurses" ,ncurses)
-       ("readline" ,readline)))
+     (list curl glib libxml2 ncurses readline))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (arguments
      `(#:make-flags '("CC=gcc")
        #:phases
@@ -1584,20 +1559,20 @@ for example from a shell script.")
                                     path)))))
              #t)))))
     (native-inputs
-     `(("perl-capture-tiny" ,perl-capture-tiny)
-       ("perl-io-pager" ,perl-io-pager)
-       ("perl-module-build" ,perl-module-build)
-       ("perl-module-runtime" ,perl-module-runtime)
-       ("perl-path-class" ,perl-path-class)
-       ("perl-test-deep" ,perl-test-deep)
-       ("perl-test-dir" ,perl-test-dir)
-       ("perl-test-exception" ,perl-test-exception)
-       ("perl-test-file" ,perl-test-file)
-       ("perl-test-file-contents" ,perl-test-file-contents)
-       ("perl-test-mockmodule" ,perl-test-mockmodule)
-       ("perl-test-mockobject" ,perl-test-mockobject)
-       ("perl-test-nowarnings" ,perl-test-nowarnings)
-       ("perl-test-warn" ,perl-test-warn)))
+     (list perl-capture-tiny
+           perl-io-pager
+           perl-module-build
+           perl-module-runtime
+           perl-path-class
+           perl-test-deep
+           perl-test-dir
+           perl-test-exception
+           perl-test-file
+           perl-test-file-contents
+           perl-test-mockmodule
+           perl-test-mockobject
+           perl-test-nowarnings
+           perl-test-warn))
     (inputs
      `(("perl-class-xsaccessor" ,perl-class-xsaccessor)
        ("perl-clone" ,perl-clone)
@@ -1656,10 +1631,8 @@ which uses SQL to describe changes.")
                   "0x3wy40r93p0jv3nbwj9a77wa4ff697d13r0wffmm7q9h3mzsww8"))))
       (build-system python-build-system)
       (inputs
-       `(("python-cryptography" ,python-cryptography)
-         ("python-psycopg2" ,python-psycopg2)
-         ("python-pymysql" ,python-pymysql)
-         ("python-sqlalchemy" ,python-sqlalchemy)))
+       (list python-cryptography python-psycopg2 python-pymysql
+             python-sqlalchemy))
       (home-page "https://github.com/coffeeandscripts/sqlcrush")
       (synopsis "Text console-based database viewer and editor")
       (description
@@ -1692,12 +1665,12 @@ changes.")
                (invoke "./configure"
                        (string-append "--prefix=" out))))))))
     (native-inputs
-     `(;; TODO: Build the documentation.
-       ;; ("docbook-xsl" ,docbook-xsl)
-       ;; ("libxml2" ,libxml2)
-       ;; ("libxslt" ,libxslt)
-       ("python" ,python)                         ;for the Waf build system
-       ("which" ,which)))
+     (list ;; TODO: Build the documentation.
+           ;; ("docbook-xsl" ,docbook-xsl)
+           ;; ("libxml2" ,libxml2)
+           ;; ("libxslt" ,libxslt)
+           python ;for the Waf build system
+           which))
     (home-page "https://tdb.samba.org/")
     (synopsis "Trivial database")
     (description
@@ -1738,35 +1711,35 @@ extremely small.")
         (base32 "1rh7idjjbibc1zmiaaarask434lh0lx7f2xyfwmy37k9fa0xcpmh"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-dbd-sqlite" ,perl-dbd-sqlite)
-       ("perl-file-temp" ,perl-file-temp)
-       ("perl-module-install" ,perl-module-install)
-       ("perl-package-stash" ,perl-package-stash)
-       ("perl-test-deep" ,perl-test-deep)
-       ("perl-test-exception" ,perl-test-exception)
-       ("perl-test-warn" ,perl-test-warn)))
+     (list perl-dbd-sqlite
+           perl-file-temp
+           perl-module-install
+           perl-package-stash
+           perl-test-deep
+           perl-test-exception
+           perl-test-warn))
     (propagated-inputs
-     `(("perl-class-accessor-grouped" ,perl-class-accessor-grouped)
-       ("perl-class-c3-componentised" ,perl-class-c3-componentised)
-       ("perl-class-inspector" ,perl-class-inspector)
-       ("perl-config-any" ,perl-config-any)
-       ("perl-context-preserve" ,perl-context-preserve)
-       ("perl-data-dumper-concise" ,perl-data-dumper-concise)
-       ("perl-data-page" ,perl-data-page)
-       ("perl-dbi" ,perl-dbi)
-       ("perl-devel-globaldestruction" ,perl-devel-globaldestruction)
-       ("perl-hash-merge" ,perl-hash-merge)
-       ("perl-module-find" ,perl-module-find)
-       ("perl-moo" ,perl-moo)
-       ("perl-mro-compat" ,perl-mro-compat)
-       ("perl-namespace-clean" ,perl-namespace-clean)
-       ("perl-path-class" ,perl-path-class)
-       ("perl-scalar-list-utils" ,perl-scalar-list-utils)
-       ("perl-scope-guard" ,perl-scope-guard)
-       ("perl-sql-abstract-classic" ,perl-sql-abstract-classic)
-       ("perl-sub-name" ,perl-sub-name)
-       ("perl-text-balanced" ,perl-text-balanced)
-       ("perl-try-tiny" ,perl-try-tiny)))
+     (list perl-class-accessor-grouped
+           perl-class-c3-componentised
+           perl-class-inspector
+           perl-config-any
+           perl-context-preserve
+           perl-data-dumper-concise
+           perl-data-page
+           perl-dbi
+           perl-devel-globaldestruction
+           perl-hash-merge
+           perl-module-find
+           perl-moo
+           perl-mro-compat
+           perl-namespace-clean
+           perl-path-class
+           perl-scalar-list-utils
+           perl-scope-guard
+           perl-sql-abstract-classic
+           perl-sub-name
+           perl-text-balanced
+           perl-try-tiny))
     (home-page "https://metacpan.org/release/DBIx-Class")
     (synopsis "Extensible and flexible object <-> relational mapper")
     (description "An SQL to OO mapper with an object API inspired by
@@ -1793,12 +1766,9 @@ single query, \"JOIN\", \"LEFT JOIN\", \"COUNT\", \"DISTINCT\", \"GROUP BY\",
          "09b2jahn2x12qm4f7qm1jzsxbz7qn1czp6a3fnl5l2i3l4r5421p"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-cache-cache" ,perl-cache-cache)
-       ("perl-dbd-sqlite" ,perl-dbd-sqlite)
-       ("perl-module-install" ,perl-module-install)))
+     (list perl-cache-cache perl-dbd-sqlite perl-module-install))
     (propagated-inputs
-     `(("perl-carp-clan" ,perl-carp-clan)
-       ("perl-dbix-class" ,perl-dbix-class)))
+     (list perl-carp-clan perl-dbix-class))
     (home-page "https://metacpan.org/release/DBIx-Class-Cursor-Cached")
     (synopsis "Cursor with built-in caching support")
     (description "DBIx::Class::Cursor::Cached provides a cursor class with
@@ -1819,9 +1789,9 @@ built-in caching support.")
          "1w47rh2241iy5x3a9bqsyd5kdp9sk43dksr99frzv4qn4jsazfn6"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-install" ,perl-module-install)))
+     (list perl-module-install))
     (propagated-inputs
-     `(("perl-dbix-class" ,perl-dbix-class)))
+     (list perl-dbix-class))
     (home-page "https://metacpan.org/release/DBIx-Class-IntrospectableM2M")
     (synopsis "Introspect many-to-many relationships")
     (description "Because the many-to-many relationships are not real
@@ -1846,40 +1816,40 @@ introspected and examined.")
          "0r57fv71ypxafb85cpxph1hdqii7ipjwvc19yb6fpkvq2ggcssg8"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-config-any" ,perl-config-any)
-       ("perl-config-general" ,perl-config-general)
-       ("perl-dbd-sqlite" ,perl-dbd-sqlite)
-       ("perl-dbix-class-introspectablem2m" ,perl-dbix-class-introspectablem2m)
-       ("perl-module-install" ,perl-module-install)
-       ("perl-moose" ,perl-moose)
-       ("perl-moosex-markasmethods" ,perl-moosex-markasmethods)
-       ("perl-moosex-nonmoose" ,perl-moosex-nonmoose)
-       ("perl-namespace-autoclean" ,perl-namespace-autoclean)
-       ("perl-test-deep" ,perl-test-deep)
-       ("perl-test-differences" ,perl-test-differences)
-       ("perl-test-exception" ,perl-test-exception)
-       ("perl-test-pod" ,perl-test-pod)
-       ("perl-test-warn" ,perl-test-warn)))
+     (list perl-config-any
+           perl-config-general
+           perl-dbd-sqlite
+           perl-dbix-class-introspectablem2m
+           perl-module-install
+           perl-moose
+           perl-moosex-markasmethods
+           perl-moosex-nonmoose
+           perl-namespace-autoclean
+           perl-test-deep
+           perl-test-differences
+           perl-test-exception
+           perl-test-pod
+           perl-test-warn))
     (propagated-inputs
-     `(("perl-class-unload" ,perl-class-unload)
-       ("perl-class-inspector" ,perl-class-inspector)
-       ("perl-class-accessor-grouped" ,perl-class-accessor-grouped)
-       ("perl-class-c3-componentised" ,perl-class-c3-componentised)
-       ("perl-carp-clan" ,perl-carp-clan)
-       ("perl-data-dump" ,perl-data-dump)
-       ("perl-dbix-class" ,perl-dbix-class)
-       ("perl-hash-merge" ,perl-hash-merge)
-       ("perl-list-moreutils" ,perl-list-moreutils)
-       ("perl-lingua-en-inflect-phrase" ,perl-lingua-en-inflect-phrase)
-       ("perl-lingua-en-inflect-number" ,perl-lingua-en-inflect-number)
-       ("perl-lingua-en-tagger" ,perl-lingua-en-tagger)
-       ("perl-namespace-clean" ,perl-namespace-clean)
-       ("perl-mro-compat" ,perl-mro-compat)
-       ("perl-scope-guard" ,perl-scope-guard)
-       ("perl-string-camelcase" ,perl-string-camelcase)
-       ("perl-string-toidentifier-en" ,perl-string-toidentifier-en)
-       ("perl-sub-name" ,perl-sub-name)
-       ("perl-try-tiny" ,perl-try-tiny)))
+     (list perl-class-unload
+           perl-class-inspector
+           perl-class-accessor-grouped
+           perl-class-c3-componentised
+           perl-carp-clan
+           perl-data-dump
+           perl-dbix-class
+           perl-hash-merge
+           perl-list-moreutils
+           perl-lingua-en-inflect-phrase
+           perl-lingua-en-inflect-number
+           perl-lingua-en-tagger
+           perl-namespace-clean
+           perl-mro-compat
+           perl-scope-guard
+           perl-string-camelcase
+           perl-string-toidentifier-en
+           perl-sub-name
+           perl-try-tiny))
     (arguments `(#:tests? #f))          ;TODO: t/20invocations.t fails
     (home-page "https://metacpan.org/release/DBIx-Class-Schema-Loader")
     (synopsis "Create a DBIx::Class::Schema based on a database")
@@ -1902,10 +1872,9 @@ columns, primary keys, unique constraints and relationships.")
          "0kcfqq7g3832wiix0sbyvlc885qghjrp2ah3akn7h2lnb22fjwy9"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-dbi" ,perl-dbi)))
+     (list perl-dbi))
     (propagated-inputs
-     `(("perl-dbi" ,perl-dbi)
-       ("postgresql" ,postgresql)))
+     (list perl-dbi postgresql))
     (home-page "https://metacpan.org/release/DBD-Pg")
     (synopsis "DBI PostgreSQL interface")
     (description "This package provides a PostgreSQL driver for the Perl5
@@ -1963,8 +1932,8 @@ columns, primary keys, unique constraints and relationships.")
                (base32
                 "1zljln5nh61gj3k22a1fv2vhx5l83waizmarwkh77hk6kzzmvrw9"))))
     (build-system perl-build-system)
-    (inputs `(("sqlite" ,sqlite)))
-    (propagated-inputs `(("perl-dbi" ,perl-dbi)))
+    (inputs (list sqlite))
+    (propagated-inputs (list perl-dbi))
     (synopsis "SQlite interface for Perl")
     (description "DBD::SQLite is a Perl DBI driver for SQLite, that includes
 the entire thing in the distribution.  So in order to get a fast transaction
@@ -2009,15 +1978,10 @@ libmysqlclient.  It will fill an array with long options, ready to be parsed by
         (base32 "0jhw91b23wc9bkfwcgvka4x5ddxk58m9bcp5ay7a3vx77nla09p9"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-install" ,perl-module-install)
-       ("perl-test-deep" ,perl-test-deep)
-       ("perl-test-exception" ,perl-test-exception)
-       ("perl-test-warn" ,perl-test-warn)))
+     (list perl-module-install perl-test-deep perl-test-exception
+           perl-test-warn))
     (propagated-inputs
-     `(("perl-hash-merge" ,perl-hash-merge)
-       ("perl-moo" ,perl-moo)
-       ("perl-mro-compat" ,perl-mro-compat)
-       ("perl-text-balanced" ,perl-text-balanced)))
+     (list perl-hash-merge perl-moo perl-mro-compat perl-text-balanced))
     (home-page "https://metacpan.org/release/SQL-Abstract")
     (synopsis "Generate SQL from Perl data structures")
     (description "This module was inspired by the excellent DBIx::Abstract.
@@ -2041,12 +2005,9 @@ time your data changes.")
         (base32 "0a7g13hs3kdxrjn43sfli09mgsi9d6w0dfw6hlk268av17yisgaf"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-deep" ,perl-test-deep)
-       ("perl-test-exception" ,perl-test-exception)
-       ("perl-test-warn" ,perl-test-warn)))
+     (list perl-test-deep perl-test-exception perl-test-warn))
     (propagated-inputs
-     `(("perl-mro-compat" ,perl-mro-compat)
-       ("perl-sql-abstract" ,perl-sql-abstract)))
+     (list perl-mro-compat perl-sql-abstract))
     (home-page "https://metacpan.org/release/SQL-Abstract-Classic")
     (synopsis "Generate SQL from Perl data structures")
     (description
@@ -2077,14 +2038,10 @@ your data changes, as this module figures it out.")
         (base32 "0ppkx46nydzlnsxf9a8pkyb74wggfrdiiwafab143lrarlh88x0s"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-differences" ,perl-test-differences)
-       ("perl-test-exception" ,perl-test-exception)
-       ("perl-test-script" ,perl-test-script)))
+     (list perl-test-differences perl-test-exception perl-test-script))
     (propagated-inputs
-     `(("perl-class-accessor" ,perl-class-accessor)
-       ("perl-list-moreutils" ,perl-list-moreutils)
-       ("perl-regexp-common" ,perl-regexp-common)
-       ("perl-sql-tokenizer" ,perl-sql-tokenizer)))
+     (list perl-class-accessor perl-list-moreutils perl-regexp-common
+           perl-sql-tokenizer))
     (home-page "https://metacpan.org/release/SQL-SplitStatement")
     (synopsis "Split SQL code into atomic statements")
     (description "This module tries to split any SQL code, even including
@@ -2154,7 +2111,7 @@ Driver.")
              "-DBUILD_SHARED_LIBS=ON")
        #:tests? #false))
     (inputs
-     `(("unixodbc" ,unixodbc)))
+     (list unixodbc))
     (home-page "https://nanodbc.io/")
     (synopsis "C++ wrapper for the native C ODBC API")
     (description "The goal for nanodbc is to make developers happy by providing
@@ -2242,8 +2199,8 @@ similar to BerkeleyDB, LevelDB, etc.")
                '(begin (delete-file-recursively "deps/jemalloc")))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("procps" ,procps)               ; for tests
-       ("tcl" ,tcl)))                   ; for tests
+     (list procps ; for tests
+           tcl))                   ; for tests
     (arguments
      '(#:phases
        (modify-phases %standard-phases
@@ -2314,7 +2271,7 @@ one-to-one, while still providing an idiomatic interface.")
         "--disable-opt" ;"-march=native". XXX this also turns off -O0.
         (string-append "LDFLAGS=-Wl,-rpath="
                        (assoc-ref %outputs "out") "/lib"))))
-    (inputs `(("zlib" ,zlib)))
+    (inputs (list zlib))
     (home-page "https://fallabs.com/kyotocabinet/")
     (synopsis
      "Kyoto Cabinet is a modern implementation of the DBM database")
@@ -2343,7 +2300,7 @@ database and supports many programming languages.  It is a NoSQL database.")
         (string-append "LDFLAGS=-Wl,-rpath="
                        (assoc-ref %outputs "out") "/lib"))))
     (inputs
-     `(("zlib" ,zlib)))
+     (list zlib))
     (home-page "http://fallabs.com/tokyocabinet/")
     (synopsis "Tokyo Cabinet is a modern implementation of the DBM database")
     (description
@@ -2379,9 +2336,7 @@ organized in hash table, B+ tree, or fixed-length array.")
                (("test/fops") ""))
              #t)))))
     (inputs
-     `(("lz4" ,lz4)
-       ("zlib" ,zlib)
-       ("snappy" ,snappy)))
+     (list lz4 zlib snappy))
     (home-page "http://source.wiredtiger.com/")
     (synopsis "NoSQL data engine")
     (description
@@ -2428,14 +2383,11 @@ trees (LSM), for sustained throughput under random insert workloads.")
                             (assoc-ref %build-inputs "wiredtiger")))
        #:make-flags '("GUILE_AUTO_COMPILE=0")))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf automake pkg-config))
     (inputs
-     `(("wiredtiger" ,wiredtiger-3)
-       ("guile" ,guile-2.2)))
+     (list wiredtiger-3 guile-2.2))
     (propagated-inputs
-     `(("guile-bytestructures" ,guile-bytestructures)))
+     (list guile-bytestructures))
     (synopsis "WiredTiger bindings for GNU Guile")
     (description
      "This package provides Guile bindings to the WiredTiger ``NoSQL''
@@ -2455,8 +2407,8 @@ database.")
       (sha256
         (base32 "1ab6rm2b8lz0g3gc8k9y79gkgajyby0zpybkdg9mk4g35y9bmyfd"))))
   (build-system perl-build-system)
-  (inputs `(("bdb" ,bdb)))
-  (native-inputs `(("perl-test-pod" ,perl-test-pod)))
+  (inputs (list bdb))
+  (native-inputs (list perl-test-pod))
   (arguments
      `(#:phases (modify-phases %standard-phases
                   (add-before
@@ -2547,7 +2499,7 @@ virtual address space — not physical RAM.")
        (modify-phases %standard-phases
          (delete 'configure))))
     (build-system gnu-build-system)
-    (inputs `(("lmdb" ,lmdb)))
+    (inputs (list lmdb))
     (home-page "https://github.com/hoytech/lmdbxx")
     (synopsis "C++11 wrapper for the LMDB embedded B+ tree database library")
     (description "@code{lmdbxx} is a comprehensive @code{C++} wrapper for the
@@ -2571,7 +2523,7 @@ semantics.")
     (build-system gnu-build-system)
     (native-inputs
      `(("python" ,python-2)))
-    (inputs `(("postgresql" ,postgresql)))
+    (inputs (list postgresql))
     (arguments
      `(#:tests? #f   ; # FAIL:  1
        #:phases
@@ -2604,9 +2556,9 @@ on another machine, accessed via TCP/IP.")
     (arguments
      `(#:tests? #f))                    ; fails to import test data
     (inputs
-     `(("sqlite" ,sqlite)))
+     (list sqlite))
     (native-inputs
-     `(("python-cython" ,python-cython)))
+     (list python-cython))
     (home-page "https://github.com/coleifer/peewee/")
     (synopsis "Small object-relational mapping utility")
     (description
@@ -2778,7 +2730,7 @@ with relational data.")
      `(("libcrypto" ,openssl)
        ("libtcl8.6" ,tcl))) ; required for running the tests
     (native-inputs
-     `(("tcl" ,tcl)))
+     (list tcl))
     (arguments
      '(#:configure-flags
        '("--enable-tempstore=yes"
@@ -2825,7 +2777,7 @@ development.")
        (file-name (string-append name "-" version ".tar.gz"))))
     (build-system python-build-system)
     (inputs
-     `(("unixodbc" ,unixodbc)))
+     (list unixodbc))
     (arguments
      `(;; No unit tests exist.
        #:tests? #f))
@@ -2851,7 +2803,7 @@ for ODBC.")
        (file-name (string-append name "-" version ".tar.gz"))))
     (build-system python-build-system)
     (inputs
-     `(("unixodbc" ,unixodbc)))
+     (list unixodbc))
     (arguments
      `(#:tests? #f))                    ; no unit tests exist
     (home-page "https://github.com/mkleehammer/pyodbc")
@@ -2879,14 +2831,14 @@ for ODBC.")
          "0gwcpp9y09xhs21g7my2fs8ncb8i6ahlyixcx8jd3q97jbzj441l"))))
     (build-system gnu-build-system)
     (inputs
-     `(("glib" ,glib)))
+     (list glib))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)
-       ("txt2man" ,txt2man)
-       ("which" ,which)))
+     (list autoconf
+           automake
+           libtool
+           pkg-config
+           txt2man
+           which))
     (home-page "http://mdbtools.sourceforge.net/")
     (synopsis "Read Microsoft Access databases")
     (description "MDB Tools is a set of tools and applications to read the
@@ -2918,7 +2870,7 @@ etc., and an SQL engine for performing simple SQL queries.")
                   #t))))
     (build-system python-build-system)
     (inputs
-     `(("lmdb" ,lmdb)))
+     (list lmdb))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -2958,19 +2910,19 @@ Memory-Mapped Database} (LMDB), a high-performance key-value store.")
     ;; does not contain setup.py.  How to test?
     (arguments '(#:tests? #f))
     (propagated-inputs
-     `(("python-backpack" ,python-backpack)
-       ("python-blinker" ,python-blinker)
-       ("python-cleo" ,python-cleo)
-       ("python-faker" ,python-faker)
-       ("python-inflection" ,python-inflection)
-       ("python-lazy-object-proxy" ,python-lazy-object-proxy)
-       ("python-pendulum" ,python-pendulum)
-       ("python-pyaml" ,python-pyaml)
-       ("python-pygments" ,python-pygments)
-       ("python-pyyaml" ,python-pyyaml)
-       ("python-simplejson" ,python-simplejson)
-       ("python-six" ,python-six)
-       ("python-wrapt" ,python-wrapt)))
+     (list python-backpack
+           python-blinker
+           python-cleo
+           python-faker
+           python-inflection
+           python-lazy-object-proxy
+           python-pendulum
+           python-pyaml
+           python-pygments
+           python-pyyaml
+           python-simplejson
+           python-six
+           python-wrapt))
     (home-page "https://orator-orm.com/")
     (synopsis "ActiveRecord ORM for Python")
     (description
@@ -3009,10 +2961,7 @@ implementation for Python.")
                          '("libvirtuoso-t.a"
                            "libvirtuoso-t.la"))))))))
     (inputs
-     `(("openssl" ,openssl)
-       ("net-tools" ,net-tools)
-       ("readline" ,readline)
-       ("zlib" ,zlib)))
+     (list openssl net-tools readline zlib))
     (home-page "http://vos.openlinksw.com/owiki/wiki/VOS/")
     (synopsis "Multi-model database system")
     (description "Virtuoso is a scalable cross-platform server that combines
@@ -3035,11 +2984,10 @@ and web services platform functionality.")
          "177dfxsmk3k4cih6fh6v8d91bh4nqx7ns6pc07w7m7i3cvdx3c8n"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-pyyaml" ,python-pyyaml)
-       ;; Not listed in setup.py, but used in ccmlib/node.py for full
-       ;; functionality
-       ("python-psutil" ,python-psutil)
-       ("python-six" ,python-six)))
+     (list python-pyyaml
+           ;; Not listed in setup.py, but used in ccmlib/node.py for full
+           ;; functionality
+           python-psutil python-six))
     (home-page "https://github.com/pcmanus/ccm")
     (synopsis "Cassandra Cluster Manager for Apache Cassandra clusters on
 localhost")
@@ -3064,7 +3012,7 @@ on localhost.")
         "1424gwq9sil2ffmnizk60q36vydkv8rxs6m7xs987kz8cdc37lqp"))))
     (build-system python-build-system)
     (inputs
-     `(("sqlite" ,sqlite)))
+     (list sqlite))
     (arguments
      `(#:python ,python-2 ; incompatible with Python 3
        #:tests? #f)) ; no test target
@@ -3087,11 +3035,10 @@ Database API 2.0T.")
        (base32 "031jbd0svrvwr3n52iibp9mkwsj9wicnck45yd26da5kmsfkas6p"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-cython" ,python-cython) ; for C extensions
-       ("python-pytest" ,python-pytest)
-       ("python-mock"   ,python-mock))) ; for tests
+     (list python-cython ; for C extensions
+           python-pytest python-mock)) ; for tests
     (propagated-inputs
-     `(("python-greenlet" ,python-greenlet)))
+     (list python-greenlet))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -3137,8 +3084,7 @@ simple and Pythonic domain language.")
          "1bppjmv7v7m0q8gwg791pgxbx4ay7mna0zq204pn9vw28kfxcrf6"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-mypy" ,python-mypy)
-       ("python-typing-extensions" ,python-typing-extensions)))
+     (list python-mypy python-typing-extensions))
     (home-page "https://github.com/dropbox/sqlalchemy-stubs")
     (synopsis "SQLAlchemy stubs and mypy plugin")
     (description "This package contains type stubs and a mypy plugin to
@@ -3166,14 +3112,10 @@ framework.")
        ;;     (lambda _
        ;;       (zero? (system* "py.test" "sqlalchemy_utils" "tests")))))
     (propagated-inputs
-     `(("python-six" ,python-six)
-       ("python-sqlalchemy" ,python-sqlalchemy)))
+     (list python-six python-sqlalchemy))
     (native-inputs
-     `(("python-dateutil" ,python-dateutil)
-       ("python-flexmock" ,python-flexmock)
-       ("python-psycopg2" ,python-psycopg2)
-       ("python-pytest" ,python-pytest)
-       ("python-pytz" ,python-pytz)))
+     (list python-dateutil python-flexmock python-psycopg2 python-pytest
+           python-pytz))
     (home-page "https://github.com/kvesteri/sqlalchemy-utils")
     (synopsis "Various utility functions for SQLAlchemy")
     (description
@@ -3219,11 +3161,9 @@ doctest_optionflags=IGNORE_EXCEPTION_DETAIL
                       (invoke "pytest" "-vv" "--doctest-modules"
                               "alchemy_mock/"))))))
     (native-inputs
-     `(("python-mock" ,python-mock)
-       ("python-pytest" ,python-pytest)))
+     (list python-mock python-pytest))
     (propagated-inputs
-     `(("python-six" ,python-six)
-       ("python-sqlalchemy" ,python-sqlalchemy)))
+     (list python-six python-sqlalchemy))
     (synopsis "Mock helpers for SQLAlchemy")
     (description
      "This package provides mock helpers for SQLAlchemy that makes it easy
@@ -3251,13 +3191,9 @@ this library provides functions to facilitate such comparisons.")
                     (lambda _
                       (invoke "pytest" "-vv"))))))
     (native-inputs
-     `(("python-mock" ,python-mock)
-       ("python-pytest-cov" ,python-pytest-cov)))
+     (list python-mock python-pytest-cov))
     (propagated-inputs
-     `(("python-dateutil" ,python-dateutil)
-       ("python-sqlalchemy" ,python-sqlalchemy)
-       ("python-mako" ,python-mako)
-       ("python-editor" ,python-editor)))
+     (list python-dateutil python-sqlalchemy python-mako python-editor))
     (home-page "https://bitbucket.org/zzzeek/alembic")
     (synopsis "Database migration tool for SQLAlchemy")
     (description
@@ -3282,7 +3218,7 @@ SQLAlchemy Database Toolkit for Python.")
                     (lambda _
                       (invoke "pytest"))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://github.com/vivainio/pickleshare")
     (synopsis "Tiny key value database with concurrency support")
     (description
@@ -3300,8 +3236,9 @@ PickleShare.")
   (let ((pickleshare (package-with-python2
                       (strip-python2-variant python-pickleshare))))
     (package (inherit pickleshare)
-      (propagated-inputs `(("python2-pathlib2" ,python2-pathlib2)
-                           ,@(package-propagated-inputs pickleshare))))))
+      (propagated-inputs (modify-inputs (package-propagated-inputs
+                                                        pickleshare)
+                           (prepend python2-pathlib2))))))
 
 (define-public python-apsw
   (package
@@ -3317,9 +3254,9 @@ PickleShare.")
            "0w8q73147hv77dlpqrx6h1gx03acc8xqhvdpfp6vkffdm0wmqd8p"))))
     (build-system python-build-system)
     (native-inputs
-     `(("unzip" ,unzip)))
+     (list unzip))
     (inputs
-     `(("sqlite" ,sqlite)))
+     (list sqlite))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -3369,9 +3306,9 @@ translate the complete SQLite API into Python.")
                           (format #t "test suite not run~%"))
                       #t)))))
     (propagated-inputs
-     `(("python-typing-extensions" ,python-typing-extensions)))
+     (list python-typing-extensions))
     (native-inputs
-     `(("python-aiounittest" ,python-aiounittest)))
+     (list python-aiounittest))
     (home-page "https://github.com/jreese/aiosqlite")
     (synopsis
      "Asyncio bridge for sqlite3")
@@ -3439,7 +3376,7 @@ designed to be easy and intuitive to use.")
      ;; and a running postgresql database management service.
      `(#:tests? #f)) ; TODO re-enable after providing a test-db.
     (inputs
-     `(("postgresql" ,postgresql))) ; libpq
+     (list postgresql)) ; libpq
     (home-page "http://initd.org/psycopg/")
     (synopsis "Python PostgreSQL adapter")
     (description
@@ -3471,10 +3408,10 @@ designed to be easy and intuitive to use.")
                             (invoke "pytest" "-vv"))
                           (format #t "test suite not run~%")))))))
     (propagated-inputs
-      `(("python-sqlalchemy" ,python-sqlalchemy)))
+      (list python-sqlalchemy))
     (native-inputs
      ;; For tests.
-      `(("python-pytest" ,python-pytest)))
+      (list python-pytest))
     (home-page "https://bitbucket.org/estin/sadisplay")
     (synopsis "SQLAlchemy schema displayer")
     (description "This package provides a program to build Entity
@@ -3503,8 +3440,7 @@ database).")
      ;; fails to connect to it.
      '(#:tests? #f))
     (propagated-inputs
-     `(("python-sqlparse" ,python-sqlparse)
-       ("python-tabulate" ,python-tabulate)))
+     (list python-sqlparse python-tabulate))
     (home-page "https://ollycope.com/software/yoyo/latest/")
     (synopsis "Database migrations with SQL")
     (description
@@ -3578,9 +3514,7 @@ parsing code in hiredis.  It primarily speeds up parsing of multi bulk replies."
      ;; no tests
      `(#:tests? #f))
     (propagated-inputs
-     `(("python-packaging" ,python-packaging)
-       ("python-redis" ,python-redis)
-       ("python-sortedcontainers" ,python-sortedcontainers)))
+     (list python-packaging python-redis python-sortedcontainers))
     (home-page "https://github.com/jamesls/fakeredis")
     (synopsis "Fake implementation of redis API for testing purposes")
     (description
@@ -3647,12 +3581,9 @@ reasonable substitute.")
                                                       (getenv "PATH")))
                         (invoke "pytest" "-vv")))))))
     (native-inputs
-     `(("python-mock" ,python-mock)
-       ("python-pytest" ,python-pytest)
-       ("redis" ,redis)))
+     (list python-mock python-pytest redis))
     (propagated-inputs
-     `(("python-click" ,python-click)
-       ("python-redis" ,python-redis)))
+     (list python-click python-redis))
     (home-page "https://python-rq.org/")
     (synopsis "Simple job queues for Python")
     (description
@@ -3688,11 +3619,9 @@ is designed to have a low barrier to entry.")
                          (which "env")))
                       (invoke "./run_tests.py"))))))
     (native-inputs
-     `(("redis" ,redis)
-       ("which" ,which)))
+     (list redis which))
     (propagated-inputs
-     `(("python-croniter" ,python-croniter)
-       ("python-rq" ,python-rq)))
+     (list python-croniter python-rq))
     (synopsis "Job scheduling capabilities for RQ (Redis Queue)")
     (description
      "This package provides job scheduling capabilities to @code{python-rq}
@@ -3755,7 +3684,7 @@ is designed to have a low barrier to entry.")
                            (string-append output sitedir))
                          (list python out))))))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://github.com/andialbrecht/sqlparse")
     (synopsis "Non-validating SQL parser")
     (description "Sqlparse is a non-validating SQL parser for Python.  It
@@ -3794,7 +3723,7 @@ transforms idiomatic python function calls to well-formed SQL queries.")
                "001pg36sw9a36zdd1kccbymcxndphjcjbbrsy6ri7ng8h4dgz549"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-parameterized" ,python-parameterized)))
+     (list python-parameterized))
     (home-page "https://github.com/kayak/pypika")
     (synopsis "SQL query builder API for Python")
     (description
@@ -3917,13 +3846,10 @@ the SQL language using a syntax that reflects the resulting query.")
        ("xsimd" ,xsimd)))
     ;; These are all listed under Requires.private in arrow.pc
     (propagated-inputs
-     `(("apache-thrift" ,apache-thrift "lib")
-       ("lz4" ,lz4)
-       ("utf8proc" ,utf8proc)
-       ("zlib" ,zlib)
-       ("zstd" ,zstd "lib")))
+     (list `(,apache-thrift "lib") lz4 utf8proc zlib
+           `(,zstd "lib")))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (outputs '("out" "lib" "include"))
     (home-page "https://arrow.apache.org/")
     (synopsis "Columnar in-memory analytics")
@@ -4004,7 +3930,7 @@ other traditional Python scientific computing packages.")
                 "0ngmlvi320c5gsxab0s7qgq0ck4jdlcwvb6lbjhnfprafdp56vvx"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-urllib3" ,python-urllib3)))
+     (list python-urllib3))
     (home-page "https://github.com/crate/crate-python")
     (synopsis "CrateDB Python client")
     (description
@@ -4048,10 +3974,8 @@ simultaneous database connections by using this framework.")
                 "0m680h8cc4428xin4p733azysamzgzcmv4psjvraykrsaz6ymlj3"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(;; For tests.
-       ("inetutils" ,inetutils)
-       ("glibc-locales" ,glibc-locales)
-       ("mariadb" ,mariadb)))
+     (list ;; For tests.
+           inetutils glibc-locales mariadb))
     (inputs
      `(("libdbi" ,libdbi)
        ("mariadb:dev" ,mariadb "dev")
@@ -4179,7 +4103,7 @@ connecting to MS SQL and Sybase servers over TCP/IP.")
     ;; have a setup.py file (only pyproject).
     (arguments `(#:tests? #f))
     (propagated-inputs
-     `(("python-typing-extensions" ,python-typing-extensions)))
+     (list python-typing-extensions))
     (home-page "https://github.com/msiemens/tinydb")
     (synopsis "TinyDB is a lightweight document oriented database")
     (description

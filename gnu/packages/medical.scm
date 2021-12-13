@@ -49,9 +49,7 @@
               (("/usr") (assoc-ref outputs "out")))
             #t)))))
    (inputs
-    `(("python-pyqt+qscintilla" ,python-pyqt+qscintilla)
-      ("python-mysqlclient" ,python-mysqlclient)
-      ("qscintilla" ,qscintilla)))
+    (list python-pyqt+qscintilla python-mysqlclient qscintilla))
    (home-page "https://openmolar.com/om1")
    (synopsis "Dental practice management software")
    (description "Openmolar is a dental practice management suite.  Its

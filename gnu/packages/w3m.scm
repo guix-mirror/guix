@@ -66,13 +66,13 @@
                                     "scripts/dirlist.cgi.in")
                        (("@PERL@") (which "perl"))))))))
     (inputs
-     `(("gdk-pixbuf" ,gdk-pixbuf)
-       ("imlib2" ,imlib2)
-       ("libgc" ,libgc)
-       ("libx11" ,libx11)
-       ("ncurses" ,ncurses)
-       ("openssl" ,openssl)
-       ("zlib" ,zlib)))
+     (list gdk-pixbuf
+           imlib2
+           libgc
+           libx11
+           ncurses
+           openssl
+           zlib))
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("perl" ,perl)

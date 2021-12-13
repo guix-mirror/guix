@@ -79,7 +79,7 @@
        ("shared-mime-info" ,shared-mime-info)
        ("xdg-utils" ,xdg-utils)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (arguments
      `(#:configure-flags
        '("--with-regex" "--with-libmspack"
@@ -173,9 +173,8 @@ and many other languages.")
               (sha256
                (base32
                 "14kl1rsngm70v3mbyv1mal15iz2b18k97avjx8jn7s81znha1c7f"))))
-           (inputs `(("gstreamer" ,gstreamer)
-                     ("gst-plugins-base" ,gst-plugins-base)
-                     ,@(package-inputs wxwidgets)))
+           (inputs (modify-inputs (package-inputs wxwidgets)
+                     (prepend gstreamer gst-plugins-base)))
            (arguments
             (substitute-keyword-arguments (package-arguments wxwidgets)
               ((#:configure-flags flags)
@@ -231,15 +230,11 @@ and many other languages.")
                (("'build']") "'build_py', '--use_syswx']"))
              #t)))))
     (inputs
-     `(("gtk+" ,gtk+)
-       ("wxwidgets" ,wxwidgets)))
+     (list gtk+ wxwidgets))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("python-waf" ,python-waf)))
+     (list pkg-config python-waf))
     (propagated-inputs
-     `(("python-numpy" ,python-numpy)
-       ("python-pillow" ,python-pillow)
-       ("python-six" ,python-six)))
+     (list python-numpy python-pillow python-six))
     (home-page "https://wxpython.org/")
     (synopsis "Cross platform GUI toolkit for Python")
     (description "wxPython is a cross-platform GUI toolkit for the Python
@@ -312,8 +307,8 @@ provide a 100% native look and feel for the application.")
                (close-pipe port))
              #t)))))
     (native-inputs
-     `(("mesa" ,mesa) ; for glcanvas
-       ("pkg-config" ,pkg-config)))
+     (list mesa ; for glcanvas
+           pkg-config))
     (inputs
      `(("gtk+" ,gtk+-2) ; for wxPython/src/helpers.cpp
        ("wxwidgets" ,wxwidgets-gtk2)))
@@ -335,15 +330,12 @@ provide a 100% native look and feel for the application.")
         (base32 "0agmmwg0zlsw1idygvqjpj1nk41akzlbdha0hsdk1k8ckz6niq8d"))))
     (build-system glib-or-gtk-build-system)
     (inputs
-     `(("wxwidgets" ,wxwidgets-3.1)
-       ("cairo" ,cairo)
-       ("ffmpeg" ,ffmpeg)))
+     (list wxwidgets-3.1 cairo ffmpeg))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (propagated-inputs
      ;; In Requires.private of libwxsvg.pc.
-     `(("libexif" ,libexif)
-       ("pango" ,pango)))
+     (list libexif pango))
     (synopsis "C++ library to create, manipulate and render SVG files")
     (description "wxSVG is a C++ library to create, manipulate and render
 @dfn{Scalable Vector Graphics} (SVG) files with the wxWidgets toolkit.")

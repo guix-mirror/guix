@@ -141,7 +141,7 @@ appropriately.")
      `(#:parallel-build? #f             ; not supported
        #:parallel-tests? #f))           ; likewise
     (native-inputs
-     `(("texinfo" ,texinfo)))
+     (list texinfo))
     (synopsis "Create parsers for command line options")
     (description
      "GNU Gengetopt is a program to generate a C/C++ function for parsing

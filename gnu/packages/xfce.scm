@@ -93,9 +93,8 @@
                 "0g86ywkx0ghzhhn96k88p67bbzlm1aqckly85izp07w80l1934ja"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)))
-    (inputs `(("gtk+" ,gtk+-2)))
+     (list pkg-config intltool))
+    (inputs (list gtk+-2))
     (home-page "https://www.xfce.org/")
     (synopsis "GTK+ theme engine for Xfce")
     (description
@@ -116,11 +115,8 @@
                 "10svnpc8ggasym1pfgh24bfr0ndqs6lc7v1wmpsizj0zbms8snb0"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("gobject-introspection" ,gobject-introspection)
-       ("intltool" ,intltool)
-       ("vala" ,vala)))
-    (propagated-inputs `(("glib" ,glib))) ; required by libxfce4util-1.0.pc
+     (list pkg-config gobject-introspection intltool vala))
+    (propagated-inputs (list glib)) ; required by libxfce4util-1.0.pc
     (home-page "https://www.xfce.org/")
     (synopsis "Basic utility library for Xfce")
     (description
@@ -176,9 +172,9 @@ Xfce Desktop Environment.")
        ("dbus" ,dbus)))
     (propagated-inputs
      ;; libxfconf-0.pc refers to all these.
-     `(("glib" ,glib)))
+     (list glib))
     (inputs
-     `(("libxfce4util" ,libxfce4util)))
+     (list libxfce4util))
     (home-page "https://www.xfce.org/")
     (synopsis "Configuration storage and query system for Xfce")
     (description
@@ -203,17 +199,13 @@ storage system.")
      `(#:configure-flags
        (list "--with-vendor-info=GNU Guix")))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)
-       ("gobject-introspection" ,gobject-introspection)))
+     (list pkg-config intltool gobject-introspection))
     (propagated-inputs
      `(("gtk+-3" ,gtk+)    ; required by libxfce4ui-2.pc
        ;; libxfce4kbd-private-3.pc refers to all these.
        ("libxfce4util" ,libxfce4util)
        ("xfconf" ,xfconf)))
-    (inputs `(("libsm" ,libsm)
-              ("libice" ,libice)
-              ("startup-notification" ,startup-notification)))
+    (inputs (list libsm libice startup-notification))
     (home-page "https://www.xfce.org/")
     (synopsis "Widgets library for Xfce")
     (description
@@ -259,19 +251,12 @@ to share commonly used Xfce widgets among the Xfce applications.")
                  `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH"))))))))
        #:tests? #f))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("python-distutils-extra" ,python-distutils-extra)
-       ("intltool" ,intltool)))
+     (list pkg-config python-distutils-extra intltool))
     (inputs
-     `(("which" ,which)
-       ("xfconf" ,xfconf)
-       ("xdg-utils" ,xdg-utils)))
+     (list which xfconf xdg-utils))
     (propagated-inputs
-     `(("gtk+" ,gtk+)
-       ("python-dbus" ,python-dbus)
-       ("python-pexpect" ,python-pexpect)
-       ("python-pycairo" ,python-pycairo)
-       ("python-pygobject" ,python-pygobject)))
+     (list gtk+ python-dbus python-pexpect python-pycairo
+           python-pygobject))
     (home-page "https://docs.xfce.org/apps/catfish/start")
     (synopsis "File searching tool for Xfce")
     (description
@@ -305,9 +290,7 @@ it to your needs by using several command line options.")
              (for-each make-file-writable (find-files "."))
              #t)))))
     (native-inputs
-     `(("gtk+" ,gtk+)
-       ("optipng" ,optipng)
-       ("pkg-config" ,pkg-config)))
+     (list gtk+ optipng pkg-config))
     (home-page "https://shimmerproject.org/")
     (synopsis "Elementary icons extended and maintained for Xfce")
     (description "This is a fork of the upstream elementary project.  This icon
@@ -329,14 +312,13 @@ upstream occasionally.")
                 "17cybaml221jnw99aig3zajg2kbnn87p5sycj68wpwgvd99zb2af"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)))
+     (list pkg-config intltool))
     (propagated-inputs
      ;; exo-2.pc refers to all these.
      `(("gtk+-3" ,gtk+)
        ("libxfce4util" ,libxfce4util)))
     (inputs
-     `(("libxfce4ui" ,libxfce4ui)))
+     (list libxfce4ui))
     (home-page "https://www.xfce.org/")
     (synopsis "Extension library for Xfce")
     (description
@@ -395,7 +377,7 @@ merging features essential for loading menus modified with menu editors.")
        ("glib:bin" ,glib "bin")         ; need glib-genmarshal
        ("dbus-glib" ,dbus-glib)))       ; need dbus-binding-tool
     (propagated-inputs
-     `(("glib" ,glib)))                 ; required by tumbler-1.pc
+     (list glib))                 ; required by tumbler-1.pc
     (inputs
      `(("dbus" ,dbus)
        ("gdk-pixbuf" ,gdk-pixbuf)
@@ -477,13 +459,8 @@ applications menu, workspace switcher and more.")
                (base32
                 "08n2cig9r2lccwvmk6v9vjiz0xqcp6x30m5b3q702v0m6ylg4z8h"))))
     (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)
-                     ("intltool" ,intltool)))
-    (inputs `(("glib" ,glib)
-              ("gtk+" ,gtk+)
-              ("libxfce4util" ,libxfce4util)
-              ("libxfce4ui" ,libxfce4ui)
-              ("xfce4-panel" ,xfce4-panel)))
+    (native-inputs (list pkg-config intltool))
+    (inputs (list glib gtk+ libxfce4util libxfce4ui xfce4-panel))
     (home-page
      "https://goodies.xfce.org/projects/panel-plugins/xfce4-battery-plugin")
     (synopsis "Battery monitor panel plugin for Xfce4")
@@ -507,13 +484,9 @@ applications menu, workspace switcher and more.")
                 "1f4rjdvyplfkrdqg9179chzxx18k3lx29674j28piccgyvk5z2mb"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+     (list intltool pkg-config))
     (inputs
-     `(("exo" ,exo)
-       ("libxfce4ui" ,libxfce4ui)
-       ("libxtst" ,libxtst)
-       ("xfce4-panel" ,xfce4-panel)))
+     (list exo libxfce4ui libxtst xfce4-panel))
     (home-page
      "https://goodies.xfce.org/projects/panel-plugins/xfce4-clipman-plugin")
     (synopsis "Clipboard manager for Xfce")
@@ -552,16 +525,9 @@ matching them against regular expressions.")
                                     (or (getenv "C_INCLUDE_PATH") "")))
              #t)))))
     (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)
-       ("dbus-glib" ,dbus-glib)
-       ("dbus" ,dbus)))
+     (list intltool pkg-config dbus-glib dbus))
     (inputs
-     `(("exo" ,exo)
-       ("libnotify" ,libnotify)
-       ("libxfce4ui" ,libxfce4ui)
-       ("pulseaudio" ,pulseaudio)
-       ("xfce4-panel" ,xfce4-panel)))
+     (list exo libnotify libxfce4ui pulseaudio xfce4-panel))
     (home-page "https://git.xfce.org/panel-plugins/xfce4-pulseaudio-plugin/")
     (synopsis "PulseAudio panel plugin for Xfce")
     (description
@@ -585,8 +551,7 @@ keys for controlling the audio volume.")
         (base32 "0wpcc9i505mh6vphg27ph43dw4n3z59mwy39416yzmw325q04kl5"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)))
+     (list pkg-config intltool))
     (inputs
      `(("xfce4-panel" ,xfce4-panel)
        ("garcon" ,garcon)
@@ -629,16 +594,15 @@ applications, and includes a search bar to search for applications.")
                 "0rvrz464y7ji989zvi2v85kg47444nqsdq9rv6k8dkbkdwzy2jxv"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+     (list intltool pkg-config))
     (inputs
-     `(("garcon" ,garcon)
-       ("librsvg" ,(librsvg-for-system))
-       ("libwnck" ,libwnck)
-       ("libx11" ,libx11)
-       ("libxfce4ui" ,libxfce4ui)
-       ("libxklavier" ,libxklavier)
-       ("xfce4-panel" ,xfce4-panel)))
+     (list garcon
+           (librsvg-for-system)
+           libwnck
+           libx11
+           libxfce4ui
+           libxklavier
+           xfce4-panel))
     (home-page "https://git.xfce.org/panel-plugins/xfce4-xkb-plugin/")
     (synopsis "XKB layout switching panel plug-in for Xfce")
     (description
@@ -668,12 +632,9 @@ per window.")
                 "1v77h5634n49idci2jiw0k7jjk0vzpsvgyx2fkp18l39jayykqxz"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)))
+     (list pkg-config intltool))
     (inputs
-     `(("garcon" ,garcon)
-       ("gtk+" ,gtk+)
-       ("libxfce4ui" ,libxfce4ui)))
+     (list garcon gtk+ libxfce4ui))
     (home-page "https://www.xfce.org/")
     (synopsis "Xfce application finder")
     (description
@@ -717,16 +678,15 @@ your system in categories, so you can quickly find and launch them.")
                (substitute* "scripts/xflock4"
                  (("xset") (string-append xset "/bin/xset")))))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)))
+     (list pkg-config intltool))
     (inputs
-     `(("iceauth" ,iceauth)
-       ("upower" ,upower)
-       ("polkit" ,polkit)
-       ("libsm" ,libsm)
-       ("libwnck" ,libwnck)
-       ("libxfce4ui" ,libxfce4ui)
-       ("xset" ,xset)))
+     (list iceauth
+           upower
+           polkit
+           libsm
+           libwnck
+           libxfce4ui
+           xset))
     (home-page "https://www.xfce.org/")
     (synopsis "Xfce session manager")
     (description
@@ -753,24 +713,23 @@ allows you to shut down the computer from Xfce.")
                            "--enable-sound-settings"
                            "--enable-xrandr")))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)))
+     (list pkg-config intltool))
     (inputs
-     `(("exo" ,exo)
-       ("garcon" ,garcon)
-       ("libnotify" ,libnotify)
-       ("libxcursor" ,libxcursor)
-       ("libxi" ,libxi)
-       ("libxklavier" ,libxklavier)
-       ("libxrandr" ,libxrandr)
-       ("libxfce4ui" ,libxfce4ui)
-       ("upower" ,upower) ;; TODO needs upower-glib
-       ("python" ,python) ;; for xfce4-compose-mail
-       ("xf86-input-libinput" ,xf86-input-libinput)))
+     (list exo
+           garcon
+           libnotify
+           libxcursor
+           libxi
+           libxklavier
+           libxrandr
+           libxfce4ui
+           upower ;; TODO needs upower-glib
+           python ;; for xfce4-compose-mail
+           xf86-input-libinput))
     (propagated-inputs
      ;; Some operations, such as changing icon themes, require these schemas
      ;; to be in the search path.
-     `(("gsettings-desktop-schemas" ,gsettings-desktop-schemas)))
+     (list gsettings-desktop-schemas))
     (home-page "https://www.xfce.org/")
     (synopsis "Xfce settings manager")
     (description
@@ -792,19 +751,18 @@ like appearance, display, keyboard and mouse settings.")
                 "14lwi4ax0wj77980kkfhdf18b97339b17y8qc8gl2365mgswh1gi"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)))
+     (list pkg-config intltool))
     (inputs
-     `(("exo" ,exo)
-       ("gobject-introspection" ,gobject-introspection)
-       ("gvfs" ,gvfs)
-       ("libexif" ,libexif)
-       ("libgudev" ,libgudev)
-       ("libnotify" ,libnotify)
-       ("libxfce4ui" ,libxfce4ui)
-       ("pcre" ,pcre)
-       ("xfce4-panel" ,xfce4-panel)
-       ("startup-notification" ,startup-notification)))
+     (list exo
+           gobject-introspection
+           gvfs
+           libexif
+           libgudev
+           libnotify
+           libxfce4ui
+           pcre
+           xfce4-panel
+           startup-notification))
     (home-page "https://www.xfce.org/")
     (synopsis "Xfce file manager")
     (description
@@ -826,13 +784,9 @@ fast.")
         (base32 "0zaliahfz9ci2md7g6w9mb7z5azi5n56gihbnwyzvds2n8cygh6j"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)))
+     (list pkg-config intltool))
     (inputs
-     `(("exo" ,exo)
-       ("libgudev" ,libgudev)
-       ("libnotify" ,libnotify)
-       ("libxfce4ui" ,libxfce4ui)))
+     (list exo libgudev libnotify libxfce4ui))
     (home-page "https://www.xfce.org/")
     (synopsis "Removable media manager for Thunar")
     (description
@@ -857,15 +811,14 @@ and import the new pictures from your camera.")
                 "133ip28v6j3x4l413d81ixsisf32sa0xzd54n0nn8g6p9fh4rcmm"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)))
+     (list pkg-config intltool))
     (inputs
-     `(("libdrm" ,libdrm)
-       ("libwnck" ,libwnck)
-       ("libxcomposite" ,libxcomposite)
-       ("libxdamage" ,libxdamage)
-       ("libxfce4ui" ,libxfce4ui)
-       ("libxrandr" ,libxrandr)))
+     (list libdrm
+           libwnck
+           libxcomposite
+           libxdamage
+           libxfce4ui
+           libxrandr))
     (home-page "https://www.xfce.org/")
     (synopsis "Xfce window manager")
     (description
@@ -915,19 +868,16 @@ on the screen.")
 
        #:disallowed-references (,inkscape ,imagemagick)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)
-
-       ;; For our own ‘prepare-background-image’ phase.
-       ("inkscape" ,inkscape)
-       ("imagemagick" ,imagemagick)))
+     (list pkg-config intltool
+           ;; For our own ‘prepare-background-image’ phase.
+           inkscape imagemagick))
     (inputs
-     `(("exo" ,exo)
-       ("garcon" ,garcon)
-       ("libnotify" ,libnotify)
-       ("libwnck" ,libwnck)
-       ("libxfce4ui" ,libxfce4ui)
-       ("thunar" ,thunar)))
+     (list exo
+           garcon
+           libnotify
+           libwnck
+           libxfce4ui
+           thunar))
     (home-page "https://www.xfce.org/")
     (synopsis "Xfce desktop manager")
     (description
@@ -950,11 +900,9 @@ devices and folders.")
                 "1irxyg5vp6vyd9vxdqav6jhchfkmhlqq511386h644p0k30kfcvs"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)))
+     (list pkg-config intltool))
     (inputs
-     `(("libxfce4ui" ,libxfce4ui)
-       ("vte" ,vte)))
+     (list libxfce4ui vte))
     (home-page "https://www.xfce.org/")
     (synopsis "Xfce terminal emulator")
     (description
@@ -1028,7 +976,7 @@ on your desktop.")
        ("xfce4-xkb-plugin"        ,xfce4-xkb-plugin)))
     (propagated-inputs
      ;; Default font that applications such as IceCat require.
-     `(("font-dejavu"             ,font-dejavu)))
+     (list font-dejavu))
     (native-search-paths
      ;; For finding panel plugins.
      (package-native-search-paths xfce4-panel))
@@ -1053,14 +1001,9 @@ system resources, while still being visually appealing and user friendly.")
                 "1wrvqiifaxsgcn1kh4vm2hwxi9lgm6mw4zrfld2zl0mm05y5i77b"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)))
+     (list pkg-config intltool))
     (inputs
-     `(("libxrandr" ,libxrandr)
-       ("gtk+" ,gtk+)
-       ("upower" ,upower)
-       ("libnotify" ,libnotify)
-       ("libxfce4ui" ,libxfce4ui)))
+     (list libxrandr gtk+ upower libnotify libxfce4ui))
     (home-page "https://www.xfce.org/")
     (synopsis "Xfce Power Manager")
     (description
@@ -1087,14 +1030,9 @@ inhibit interface which allows applications to prevent automatic sleep.")
                 "008h8mlq82nwxb7kc8m8d6a51rwl2i9fgv4v6k5w30va46l2s0s7"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("intltool" ,intltool)
-       ("desktop-file-utils" ,desktop-file-utils)
-       ("pkg-config" ,pkg-config)))
+     (list intltool desktop-file-utils pkg-config))
     (inputs
-     `(("gtk+" ,gtk+)
-       ("libexif" ,libexif)
-       ("libxfce4ui" ,libxfce4ui)
-       ("tumbler" ,tumbler)))
+     (list gtk+ libexif libxfce4ui tumbler))
     (home-page "https://docs.xfce.org/apps/ristretto/start")
     (synopsis "Fast and lightweight picture-viewer")
     (description
@@ -1118,15 +1056,14 @@ the desktop wallpaper.")
                 "1ya81si7xhqqbbc9lfcjg2i1pi1qdfw1pnjry7kf95f1w50244nd"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+     (list intltool pkg-config))
     (inputs
-     `(("libwnck" ,libwnck)
-       ("libxmu" ,libxmu)
-       ("gtk+" ,gtk+)
-       ;; FIXME: Remove libxext and libxt when libxmu propagates them.
-       ("libxext" ,libxext)
-       ("libxt" ,libxt)))
+     (list libwnck
+           libxmu
+           gtk+
+           ;; FIXME: Remove libxext and libxt when libxmu propagates them.
+           libxext
+           libxt))
     (home-page "https://goodies.xfce.org/projects/applications/xfce4-taskmanager")
     (synopsis "Easy to use task manager")
     (description
@@ -1156,14 +1093,9 @@ memory usage graphically, and it can display processes as a tree.")
              #t)))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+     (list intltool pkg-config))
     (inputs
-     `(("gtk+" ,gtk+-2)
-       ("libical" ,libical)
-       ("libnotify" ,libnotify)
-       ("popt" ,popt)
-       ("xfce4-panel" ,xfce4-panel)))
+     (list gtk+-2 libical libnotify popt xfce4-panel))
     (home-page "https://www.xfce.org/projects/")
     (synopsis "Simple calendar application with reminders")
     (description
@@ -1188,12 +1120,9 @@ several different time zones.")
                 "0ib5s7kjbr9sy8nh89nfcc4w6qplacnk4s92iycijy2wcv389aqr"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+     (list intltool pkg-config))
     (inputs
-     `(("libxfce4ui" ,libxfce4ui)
-       ("libnotify" ,libnotify)
-       ("xfce4-panel" ,xfce4-panel)))
+     (list libxfce4ui libnotify xfce4-panel))
     (home-page "https://goodies.xfce.org/projects/applications/xfce4-notifyd")
     (synopsis "Show notification bubbles on Xfce")
     (description
@@ -1219,19 +1148,18 @@ sending standard messages over D-Bus using the
                 "09q3s2rkpf0ljzq6bv4hl9byvaggjq7lchfw5zaircwv5q9nwhc3"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+     (list intltool pkg-config))
     (inputs
-     `(("exo" ,exo)
-       ("gstreamer" ,gstreamer)
-       ("gst-plugins-base" ,gst-plugins-base)
-       ("gst-plugins-good" ,gst-plugins-good)
-       ("gst-plugins-ugly" ,gst-plugins-ugly)
-       ("glib" ,glib)
-       ("gtk+" ,gtk+)
-       ("libburn" ,libburn)
-       ("libisofs" ,libisofs)
-       ("libxfce4ui" ,libxfce4ui)))
+     (list exo
+           gstreamer
+           gst-plugins-base
+           gst-plugins-good
+           gst-plugins-ugly
+           glib
+           gtk+
+           libburn
+           libisofs
+           libxfce4ui))
     (home-page "https://goodies.xfce.org/projects/applications/xfburn")
     (synopsis "GTK+ based CD, DVD and Blu-ray burning application")
     (description
@@ -1269,13 +1197,11 @@ of data to either CD/DVD/BD.")
                 `("XDG_DATA_DIRS" ":" prefix (,(string-append gtksourceview
                                                               "/share"))))))))))
     (native-inputs
-     `(("intltool" ,intltool)
-       ("glib" ,glib "bin") ; for glib-compile-schemas.
-       ("pkg-config" ,pkg-config)))
+     (list intltool
+           `(,glib "bin") ; for glib-compile-schemas.
+           pkg-config))
     (inputs
-     `(("gtk+" ,gtk+)
-       ("gtksourceview" ,gtksourceview-3)
-       ("xfconf" ,xfconf)))
+     (list gtk+ gtksourceview-3 xfconf))
     (home-page "https://git.xfce.org/apps/mousepad/")
     (synopsis "Simple text editor for Xfce")
     (description
@@ -1376,14 +1302,9 @@ A plugin for the Xfce panel is also available.")
                 "1q639iwwj7q2plgz0wdgdbi5wkgaq177ca9rnnlrnbdmid5z5fqk"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+     (list intltool pkg-config))
     (inputs
-     `(("xfconf" ,xfconf)
-       ("libnotify" ,libnotify)
-       ("pulseaudio" ,pulseaudio)
-       ("keybinder-3.0" ,keybinder-3.0)
-       ("gtk+" ,gtk+)))
+     (list xfconf libnotify pulseaudio keybinder-3.0 gtk+))
     (home-page "https://goodies.xfce.org/projects/applications/xfce4-volumed")
     (synopsis "XFCE volume keys daemon")
     (description
@@ -1406,11 +1327,9 @@ A plugin for the Xfce panel is also available.")
                 "1c51qf93lr6kr2g4nil21rj1h3h5kp3k50n9hcxvcy9wz3bxpxn2"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+     (list intltool pkg-config))
     (inputs
-     `(("libxfce4ui" ,libxfce4ui)
-       ("xfce4-panel" ,xfce4-panel)))
+     (list libxfce4ui xfce4-panel))
     (home-page
      "https://goodies.xfce.org/projects/panel-plugins/xfce4-cpugraph-plugin")
     (synopsis "Display CPU load as a graph in the Xfce panel")
@@ -1439,11 +1358,9 @@ core or CPU.")
                 "1iaszzkagl1mb0cdafrvlfjnjklhhs9y90517par34sjiqbq1dsd"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+     (list intltool pkg-config))
     (inputs
-     `(("libxfce4ui" ,libxfce4ui)
-       ("xfce4-panel" ,xfce4-panel)))
+     (list libxfce4ui xfce4-panel))
     (home-page
      "https://goodies.xfce.org/projects/panel-plugins/xfce4-eyes-plugin")
     (synopsis "Display a pair of eyes for the Xfce panel")
@@ -1466,8 +1383,7 @@ watch your every step.")
                 "09b9k0n5xm115k44x74w4ad0xqklilyfh0hglsps7zj97pd7a5a3"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+     (list intltool pkg-config))
     (inputs
      `(("gtk+-2" ,gtk+-2)
        ("libxfce4ui" ,libxfce4ui)
@@ -1495,11 +1411,9 @@ each time a new earthquake occurs.")
                 "0h15mxq5lawlxyr6h1vxc60rkf0rpmnv81l0f52mrswww9dz3xp9"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+     (list intltool pkg-config))
     (inputs
-     `(("libxfce4ui" ,libxfce4ui)
-       ("xfce4-panel" ,xfce4-panel)))
+     (list libxfce4ui xfce4-panel))
     (home-page
      "https://goodies.xfce.org/projects/panel-plugins/xfce4-datetime-plugin")
     (synopsis "Display date and time inside the Xfce panel")
@@ -1522,11 +1436,9 @@ and a calendar appears when you left-click on it.")
                 "10fsb9pyr2cr9dj1k3n96dq6g02g61g5y4z4jzfvskpgqc1nl0g4"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+     (list intltool pkg-config))
     (inputs
-     `(("libxfce4ui" ,libxfce4ui)
-       ("xfce4-panel" ,xfce4-panel)))
+     (list libxfce4ui xfce4-panel))
     (home-page
      "https://goodies.xfce.org/projects/panel-plugins/xfce4-calculator-plugin")
     (synopsis "Calculator for the Xfce panel")
@@ -1550,11 +1462,9 @@ precedence rules, and the following functions and common constants.")
                 "17kzy156xqnbk4apskg005p7r09q7zb8crifad5mbawc7ysihll1"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+     (list intltool pkg-config))
     (inputs
-     `(("libxfce4ui" ,libxfce4ui)
-       ("xfce4-panel" ,xfce4-panel)))
+     (list libxfce4ui xfce4-panel))
     (home-page
      "https://goodies.xfce.org/projects/panel-plugins/xfce4-cpufreq-plugin")
     (synopsis "Xfce panel plugin for displaying CPU frequency")
@@ -1577,11 +1487,9 @@ governor and frequencies supported and used by your system.")
                 "0n8wsnjvzw98z8r0f0zr8n2gicjz6hhislp86xrjh0r4xcnymcbk"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+     (list intltool pkg-config))
     (inputs
-     `(("libxfce4ui" ,libxfce4ui)
-       ("xfce4-panel" ,xfce4-panel)))
+     (list libxfce4ui xfce4-panel))
     (home-page
      "https://goodies.xfce.org/projects/panel-plugins/xfce4-diskperf-plugin")
     (synopsis "Display disk performance in the Xfce panel")
@@ -1604,8 +1512,7 @@ performance (bytes transferred per second).")
                 "0a72kqsjjh45swimqlpyrahdnplp0383v0i4phr4n6g8c1ixyry7"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+     (list intltool pkg-config))
     (inputs
      `(("libxfce4ui" ,libxfce4ui)
        ("xfce4-panel" ,xfce4-panel)
@@ -1639,11 +1546,9 @@ this very convenient.")
                 "01a1an5z4kpgi68lk98q7wga7sx676fcbnrsd5cpq4d736ifdn37"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+     (list intltool pkg-config))
     (inputs
-     `(("libxfce4ui" ,libxfce4ui)
-       ("xfce4-panel" ,xfce4-panel)))
+     (list libxfce4ui xfce4-panel))
     (home-page
      "https://goodies.xfce.org/projects/panel-plugins/xfce4-fsguard-plugin")
     (synopsis "Xfce panel plugin to monitor free disk space")
@@ -1669,11 +1574,9 @@ be clicked to open the chosen mount point.")
                 "0d81npcqnmkw2qaqa8c6igh9j5r4ivgb15zcjwxjkyhrzz89y4dj"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+     (list intltool pkg-config))
     (inputs
-     `(("libxfce4ui" ,libxfce4ui)
-       ("xfce4-panel" ,xfce4-panel)))
+     (list libxfce4ui xfce4-panel))
     (home-page
      "https://goodies.xfce.org/projects/panel-plugins/xfce4-genmon-plugin")
     (synopsis "Generic program output monitor for the Xfce panel")
@@ -1700,8 +1603,7 @@ button and a personalized tooltip.")
                 "0bmykjhd3gs1737fl3zn5gg6f3vlncak2xqz89zv5018znz1xy90"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+     (list intltool pkg-config))
     (inputs
      `(("gtk+-2" ,gtk+-2)
        ("libxfce4ui" ,libxfce4ui)
@@ -1738,11 +1640,9 @@ multi-mailbox mail watcher.  Currently, the protocols supported are:
                 "0q3pysdp85b3c7g3b59y3c69g4nw6bvbf518lnri4lxrnsvpizpf"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+     (list intltool pkg-config))
     (inputs
-     `(("libxfce4ui" ,libxfce4ui)
-       ("xfce4-panel" ,xfce4-panel)))
+     (list libxfce4ui xfce4-panel))
     (home-page "https://goodies.xfce.org/projects/panel-plugins/xfce4-mpc-plugin")
     (synopsis "Music Player Daemon plugin for the Xfce panel")
     (description "This is a simple client plugin for Music Player Daemon.
@@ -1781,11 +1681,9 @@ right-click menu
                 "1hlfnlxwwx0hkm82mcz777f3i22x6bh6k3gzl0yjnm4yj9adjk2q"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+     (list intltool pkg-config))
     (inputs
-     `(("libxfce4ui" ,libxfce4ui)
-       ("xfce4-panel" ,xfce4-panel)))
+     (list libxfce4ui xfce4-panel))
     (home-page
      "https://goodies.xfce.org/projects/panel-plugins/xfce4-mount-plugin")
     (synopsis "Mount/unmount plugin for the Xfce panel")
@@ -1810,11 +1708,9 @@ mounted or when unmounting fails.")
                 "036pvhfv1iynvj75va0xl8hpvnfckabyqm9jv56pb40p2072cxkc"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+     (list intltool pkg-config))
     (inputs
-     `(("libxfce4ui" ,libxfce4ui)
-       ("xfce4-panel" ,xfce4-panel)))
+     (list libxfce4ui xfce4-panel))
     (home-page
      "https://goodies.xfce.org/projects/panel-plugins/xfce4-netload-plugin")
     (synopsis "Netload plugin for the Xfce Panel")
@@ -1837,9 +1733,7 @@ interfaces of your choice in the panel.")
                 "1chac4ki70axgvkmhw94m0srsv0pwiwqrqbh8di0y9n90fgj24gj"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("intltool" ,intltool)
-       ("desktop-file-utils" ,desktop-file-utils)
-       ("pkg-config" ,pkg-config)))
+     (list intltool desktop-file-utils pkg-config))
     (inputs
      `(("gtk+-2" ,gtk+-2)
        ("exo" ,exo)
@@ -1879,11 +1773,9 @@ opens up a menu with the following:
                 "1lyd64qc9w6qnpqjb5xk0mjq4l7riv6z7l9aws28clalb8prw9ra"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+     (list intltool pkg-config))
     (inputs
-     `(("libxfce4ui" ,libxfce4ui)
-       ("xfce4-panel" ,xfce4-panel)))
+     (list libxfce4ui xfce4-panel))
     (home-page
      "https://goodies.xfce.org/projects/panel-plugins/xfce4-smartbookmark-plugin")
     (synopsis "Perform custom searches in your browser from the Xfce panel")
@@ -1911,9 +1803,7 @@ favorite search engine or bug tracker right from the Xfce panel.")
        ("pkg-config" ,pkg-config)
        ("glib:bin" ,glib "bin")))
     (inputs
-     `(("libxfce4ui" ,libxfce4ui)
-       ("libdbusmenu" ,libdbusmenu)
-       ("xfce4-panel" ,xfce4-panel)))
+     (list libxfce4ui libdbusmenu xfce4-panel))
     (home-page
      "https://goodies.xfce.org/projects/panel-plugins/xfce4-statusnotifier-plugin")
     (synopsis "Xfce panel plugin for status notifier items")
@@ -1939,11 +1829,9 @@ freedesktop.org specification.")
                 "1q840298jzdqlhc9lw49q32xzdhnbzcgvv69qq5slkc704s5w6vw"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+     (list intltool pkg-config))
     (inputs
-     `(("libxfce4ui" ,libxfce4ui)
-       ("xfce4-panel" ,xfce4-panel)))
+     (list libxfce4ui xfce4-panel))
     (home-page
      "https://goodies.xfce.org/projects/panel-plugins/xfce4-stopwatch-plugin")
     (synopsis "Stopwatch plugin for the Xfce panel")
@@ -1965,12 +1853,9 @@ freedesktop.org specification.")
                 "0lknh5l30qs5c69wwjcblbyhczvdbxs59fqkb8mpqbfm05w01lan"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+     (list intltool pkg-config))
     (inputs
-     `(("libgtop" ,libgtop)
-       ("libxfce4ui" ,libxfce4ui)
-       ("xfce4-panel" ,xfce4-panel)))
+     (list libgtop libxfce4ui xfce4-panel))
     (home-page
      "https://goodies.xfce.org/projects/panel-plugins/xfce4-systemload-plugin")
     (synopsis "System load display plugin for the Xfce panel")
@@ -1994,12 +1879,9 @@ swap space and the system uptime in the Xfce4 panel.")
                 "1m42kmi0x3xb0lzj2nd7q2r5y5r2viqcvxfpbg1aafzzjjkfpn1x"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+     (list intltool pkg-config))
     (inputs
-     `(("gtk+" ,gtk+)
-       ("libxfce4ui" ,libxfce4ui)
-       ("xfce4-panel" ,xfce4-panel)))
+     (list gtk+ libxfce4ui xfce4-panel))
     (home-page
      "https://goodies.xfce.org/projects/panel-plugins/xfce4-time-out-plugin")
     (synopsis "Xfce panel plugin that encourages periodical breaks")
@@ -2024,11 +1906,9 @@ time.")
                 "1qr4m3n2l3rvsizsr3h7fyfajszfalqm7rhvjx2yjj8r3f8x4ljb"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+     (list intltool pkg-config))
     (inputs
-     `(("libxfce4ui" ,libxfce4ui)
-       ("xfce4-panel" ,xfce4-panel)))
+     (list libxfce4ui xfce4-panel))
     (home-page
      "https://goodies.xfce.org/projects/panel-plugins/xfce4-timer-plugin")
     (synopsis "Simple countdown and alarm plugin for the Xfce panel")
@@ -2052,11 +1932,9 @@ period.")
                 "09gqp0jb5ccjh7ny798n5cy9skdx3hpis4kgvjpl4vidnrg5xnpb"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+     (list intltool pkg-config))
     (inputs
-     `(("libxfce4ui" ,libxfce4ui)
-       ("xfce4-panel" ,xfce4-panel)))
+     (list libxfce4ui xfce4-panel))
     (home-page
      "https://goodies.xfce.org/projects/panel-plugins/xfce4-verve-plugin")
     (synopsis "Command line for the Xfce panel")
@@ -2086,11 +1964,9 @@ for the Xfce panel.  It supports several features, such as:
                 "07a8nmc60in48licjj0gmwm77vb8divh1lb7jnib35n5a1ka6ypa"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+     (list intltool pkg-config))
     (inputs
-     `(("libxfce4ui" ,libxfce4ui)
-       ("xfce4-panel" ,xfce4-panel)))
+     (list libxfce4ui xfce4-panel))
     (home-page
      "https://goodies.xfce.org/projects/panel-plugins/xfce4-wavelan-plugin")
     (synopsis "Show stats from WLAN interface in Xfce panel")
@@ -2113,8 +1989,7 @@ lan interface (signal state, signal quality, network name (SSID)).")
                 "1z2k24d599mxf5gqa35i3xmc3gk2yvqs80hxxpyw06yma6ljw973"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+     (list intltool pkg-config))
     (inputs
      `(("gtk+" ,gtk+)
        ("libsoup" ,libsoup-minimal-2)
@@ -2143,9 +2018,9 @@ local weather in the panel, using forecast data provided by the
                 "1iwkqj96x2s7fk4srg1pymvsiwb2rn6vvhy6hrmnc3hl1vqw2d6k"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("glib" ,glib)))
+     (list glib))
     (home-page "https://docs.xfce.org/xfce/xfce4-dev-tools/")
     (synopsis "Xfce developer tools")
     (description

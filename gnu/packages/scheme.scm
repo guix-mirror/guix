@@ -304,21 +304,20 @@ features an integrated Emacs-like editor and a large runtime library.")
                          (string-append "EMACSBRAND=emacs25")
                          (string-append "EMACSDIR=" dir))))))))
       (inputs
-       `(("emacs" ,emacs)                     ;UDE needs the X version of Emacs
-         ("libgc" ,libgc)
-         ("libunistring" ,libunistring)
-         ("libuv" ,libuv)
-         ("openssl" ,openssl)
-         ("sqlite" ,sqlite)
-
-         ;; Optional APIs for which Bigloo has bindings.
-         ("avahi" ,avahi)
-         ("libphidget" ,libphidget)
-         ("pcre" ,pcre)))
+       (list emacs ;UDE needs the X version of Emacs
+             libgc
+             libunistring
+             libuv
+             openssl
+             sqlite
+             ;; Optional APIs for which Bigloo has bindings.
+             avahi
+             libphidget
+             pcre))
       (native-inputs
-       `(("pkg-config" ,pkg-config)))
+       (list pkg-config))
       (propagated-inputs
-       `(("gmp" ,gmp)))                            ; bigloo.h refers to gmp.h
+       (list gmp))                            ; bigloo.h refers to gmp.h
       (home-page "https://www-sop.inria.fr/indes/fp/Bigloo/")
       (synopsis "Efficient Scheme compiler")
       (description
@@ -364,14 +363,14 @@ and between Scheme and Java programs.")
                                       "-copt \\$(CPICFLAGS) "
                                       "-L \\$(BUILDLIBDIR) "
                                       "-ldopt -Wl,-rpath," out "/lib"))))))))
-    (inputs `(("avahi" ,avahi)
-              ("bigloo" ,bigloo)
-              ("libgc" ,libgc)
-              ("libunistring" ,libunistring)
-              ("libuv" ,libuv)
-              ("pcre" ,pcre)
-              ("sqlite" ,sqlite)
-              ("which" ,which)))
+    (inputs (list avahi
+                  bigloo
+                  libgc
+                  libunistring
+                  libuv
+                  pcre
+                  sqlite
+                  which))
     (home-page "http://hop.inria.fr/")
     (synopsis "Multi-tier programming language for the Web 2.0")
     (description
@@ -584,8 +583,7 @@ regular-expression notation.")
                     (invoke "./configure"
                             (string-append "--prefix="
                                            (assoc-ref outputs "out"))))))))
-    (native-inputs `(("unzip" ,unzip)
-                     ("texinfo" ,texinfo)))
+    (native-inputs (list unzip texinfo))
     (home-page "https://people.csail.mit.edu/jaffer/SLIB.html")
     (synopsis "Compatibility and utility library for Scheme")
     (description "SLIB is a portable Scheme library providing compatibility and
@@ -638,9 +636,8 @@ utility functions for all standard Scheme implementations.")
                         ;; We must generate the slibcat file.
                         (invoke (string-append out "/bin/scm")
                                 "-br" "new-catalog")))))))
-    (inputs `(("slib" ,slib)))
-    (native-inputs `(("unzip" ,unzip)
-                     ("texinfo" ,texinfo)))
+    (inputs (list slib))
+    (native-inputs (list unzip texinfo))
     (home-page "https://people.csail.mit.edu/jaffer/SCM")
     (synopsis "Scheme implementation conforming to R5RS and IEEE P1178")
     (description "GNU SCM is an implementation of Scheme.  This
@@ -662,7 +659,7 @@ linked with a SCM executable.")
                 "0rik3qnxqd8wjlazx8rw996pfzkjjg60v6hcbpcqzi7rgml8q4n8"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("unzip" ,unzip)))
+     (list unzip))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -776,9 +773,9 @@ small program, it is easy to comprehend, get to grips with, and use.")
                                (string-append out "/bin"))
                  #t))))))
       (inputs
-       `(("libx11" ,libx11)))
+       (list libx11))
       (propagated-inputs
-       `(("libgc" ,libgc)))
+       (list libgc))
       (supported-systems '("x86_64-linux"))
       (home-page "https://engineering.purdue.edu/~qobi/papers/fdlcc.pdf")
       (synopsis "Brutally efficient Scheme compiler")
@@ -815,7 +812,7 @@ generation.")
              (apply invoke "make" "install-all" make-flags))))
        #:tests? #f))  ; No check target.
     (inputs
-     `(("ncurses" ,ncurses)))
+     (list ncurses))
     (home-page "https://www.t3x.org/s9fes/")
     (synopsis "Interpreter for R4RS Scheme")
     (description
@@ -903,13 +900,10 @@ The core is 12 builtin special forms and 33 builtin functions.")
                    #t))))
     (build-system gnu-build-system)
     (inputs
-     `(("libatomic-ops" ,libatomic-ops)
-       ("slib" ,slib)
-       ("zlib" ,zlib)))
+     (list libatomic-ops slib zlib))
     (native-inputs
-     `(("texinfo" ,texinfo)
-       ("openssl" ,openssl)            ; needed for tests
-       ("pkg-config" ,pkg-config)))    ; needed to find external libatomic-ops
+     (list texinfo openssl ; needed for tests
+           pkg-config))    ; needed to find external libatomic-ops
     (arguments
      `(#:configure-flags
        (list (string-append "--with-slib="
@@ -1036,13 +1030,9 @@ and list gauche extension packages.")
                (copy-recursively "../bin" bin)
                (copy-recursively "../lib" lib)))))))
     (native-inputs
-     `(("coreutils" ,coreutils)
-       ("util-linux" ,util-linux)))
+     (list coreutils util-linux))
     (propagated-inputs
-     `(("gambit-c" ,gambit-c)
-       ("zlib" ,zlib)
-       ("openssl" ,openssl)
-       ("sqlite" ,sqlite)))
+     (list gambit-c zlib openssl sqlite))
     (build-system gnu-build-system)
     (synopsis "Meta-dialect of Scheme with post-modern features")
     (description "Gerbil is an opinionated dialect of Scheme designed for Systems

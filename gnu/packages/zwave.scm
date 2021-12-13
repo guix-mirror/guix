@@ -74,12 +74,9 @@
        ;; the device XML database and it's not entirely clear what to get from
        ;; them.
        #:tests? #f))
-    (native-inputs `(("which" ,which)
-                     ("pkg-config" ,pkg-config)
-                     ("perl" ,perl)               ;for tests
-                     ("perl-xml-simple" ,perl-xml-simple)))
-    (inputs `(("hidapi" ,hidapi)
-              ("eudev" ,eudev)))
+    (native-inputs (list which pkg-config perl ;for tests
+                         perl-xml-simple))
+    (inputs (list hidapi eudev))
     (home-page "http://www.openzwave.net/")
     (synopsis "Access Z-Wave devices from C++ programs")
     (description

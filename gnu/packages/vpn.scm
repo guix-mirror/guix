@@ -240,7 +240,7 @@
          (add-after 'python-wrap 'qt-wrap
            (assoc-ref qt:%standard-phases 'qt-wrap)))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
      `(("iproute" ,iproute)
        ("iptables" ,iptables)
@@ -254,19 +254,13 @@
        ("qtquickcontrols" ,qtquickcontrols)
        ("qtquickcontrols2" ,qtquickcontrols2)))
     (propagated-inputs
-     `(("go-0xacab-org-leap-shapeshifter"
-        ,go-0xacab-org-leap-shapeshifter)
-       ("go-github-com-apparentlymart-go-openvpn-mgmt"
-        ,go-github-com-apparentlymart-go-openvpn-mgmt)
-       ("go-github-com-emersion-go-autostart"
-        ,go-github-com-emersion-go-autostart)
-       ("go-github-com-keybase-go-ps"
-        ,go-github-com-keybase-go-ps)
-       ("go-github-com-rakyll-statik"
-        ,go-github-com-rakyll-statik)
-       ("go-github-com-sevlyar-go-daemon"
-        ,go-github-com-sevlyar-go-daemon)
-       ("go-golang-org-x-sys" ,go-golang-org-x-sys)))
+     (list go-0xacab-org-leap-shapeshifter
+           go-github-com-apparentlymart-go-openvpn-mgmt
+           go-github-com-emersion-go-autostart
+           go-github-com-keybase-go-ps
+           go-github-com-rakyll-statik
+           go-github-com-sevlyar-go-daemon
+           go-golang-org-x-sys))
     (synopsis "Generic VPN client by LEAP")
     (description "Bitmask, by @acronym{LEAP, LEAP Encryption Access Project},
 is an application to provide easy and secure encrypted communication with a
@@ -289,9 +283,8 @@ Networks and The Calyx Institute, where the former is default.")
                 "1cz8n75ksl0l908zc5l3rnfm1hv7130s2w8710799fr5sxrdbszi"))))
     (build-system gnu-build-system)
     (home-page "http://software.schmorp.de/pkg/gvpe.html")
-    (native-inputs `(("pkg-config" ,pkg-config)))
-    (inputs `(("openssl" ,openssl)
-              ("zlib" ,zlib)))
+    (native-inputs (list pkg-config))
+    (inputs (list openssl zlib))
     (synopsis "Secure VPN among multiple nodes over an untrusted network")
     (description
      "The GNU Virtual Private Ethernet creates a virtual network
@@ -384,18 +377,16 @@ endpoints.")
         ;; Use libcap by default.
         "--with-capabilities=libcap")))
     (inputs
-     `(("coreutils" ,coreutils)
-       ("curl" ,curl)
-       ("gmp" ,gmp)
-       ("libcap" ,libcap)
-       ("libgcrypt" ,libgcrypt)
-       ("libsoup" ,libsoup)
-       ("linux-pam" ,linux-pam)
-       ("openssl" ,openssl)))
+     (list coreutils
+           curl
+           gmp
+           libcap
+           libgcrypt
+           libsoup
+           linux-pam
+           openssl))
     (native-inputs
-     `(("coreutils" ,coreutils)
-       ("pkg-config" ,pkg-config)
-       ("tzdata" ,tzdata-for-tests)))
+     (list coreutils pkg-config tzdata-for-tests))
     (synopsis "IKEv1/v2 keying daemon")
     (description "StrongSwan is an IPsec implementation originally based upon
 the FreeS/WAN project.  It contains support for IKEv1, IKEv2, MOBIKE, IPv6,
@@ -441,9 +432,7 @@ file for more details.")
             (sha256 (base32
                      "1128860lis89g1s21hqxvap2nq426c9j4bvgghncc1zj0ays7kj6"))))
    (build-system gnu-build-system)
-   (inputs `(("libgcrypt" ,libgcrypt)
-             ("perl" ,perl)
-             ("vpnc-scripts" ,vpnc-scripts)))
+   (inputs (list libgcrypt perl vpnc-scripts))
    (arguments
     `(#:tests? #f ; there is no check target
       #:phases
@@ -488,13 +477,13 @@ Only \"Universal TUN/TAP device driver support\" is needed in the kernel.")
                  (base32
                   "1pmi4n58q81pmn9arvfixhvv6vkkf3rpwac3hwnwyl882q5q0ccx"))))
       (build-system gnu-build-system)
-      (inputs `(("guile" ,guile-3.0) ; for the wrapper scripts
-                ("coreutils" ,coreutils)
-                ("grep" ,grep)
-                ("iproute2" ,iproute)    ; for ‘ip’
-                ("net-tools" ,net-tools) ; for ‘ifconfig’, ‘route’
-                ("sed" ,sed)
-                ("which" ,which)))
+      (inputs (list guile-3.0 ; for the wrapper scripts
+                    coreutils
+                    grep
+                    iproute ; for ‘ip’
+                    net-tools ; for ‘ifconfig’, ‘route’
+                    sed
+                    which))
       (arguments
        `(#:phases
          (modify-phases %standard-phases
@@ -581,10 +570,9 @@ the entire VPN in a network namespace accessible only through SSH.")
                 "03323nnhb4y9nzwva04mq7xg03dvdrgp689g89f69jqc261skcqx"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)))
+     (list autoconf automake))
     (inputs
-     `(("libevent" ,libevent)))
+     (list libevent))
     (home-page "https://github.com/cernekee/ocproxy")
     (synopsis "OpenConnect proxy")
     (description
@@ -606,12 +594,9 @@ the user specifically asks to proxy, so the @dfn{VPN} interface no longer
              (base32 "1cdsx4nsrwawbsisfkldfc9i4qn60g03vxb13nzppr2br9p4rrih"))))
    (build-system gnu-build-system)
    (propagated-inputs
-    `(("libxml2" ,libxml2)
-      ("gnutls" ,gnutls)
-      ("zlib" ,zlib)))
+    (list libxml2 gnutls zlib))
    (inputs
-    `(("lz4" ,lz4)
-      ("vpnc-scripts" ,vpnc-scripts)))
+    (list lz4 vpnc-scripts))
    (native-inputs
     `(("gettext" ,gettext-minimal)
       ("pkg-config" ,pkg-config)))
@@ -667,23 +652,22 @@ and probably others.")
                  `("QTWEBENGINEPROCESS_PATH" = (,qt-process-path)))
                #t))))))
     (inputs
-     `(("openconnect" ,openconnect)
-       ("python-attrs" ,python-attrs)
-       ("python-colorama" ,python-colorama)
-       ("python-keyring" ,python-keyring)
-       ("python-lxml" ,python-lxml)
-       ("python-prompt-toolkit" ,python-prompt-toolkit)
-       ("python-requests" ,python-requests)
-       ("python-pyqt" ,python-pyqt)
-       ("python-pyqtwebengine" ,python-pyqtwebengine)
-       ("python-pysocks" ,python-pysocks)
-       ("python-pyxdg" ,python-pyxdg)
-       ("python-structlog" ,python-structlog)
-       ("python-toml" ,python-toml)
-       ("qtwebengine" ,qtwebengine)))
+     (list openconnect
+           python-attrs
+           python-colorama
+           python-keyring
+           python-lxml
+           python-prompt-toolkit
+           python-requests
+           python-pyqt
+           python-pyqtwebengine
+           python-pysocks
+           python-pyxdg
+           python-structlog
+           python-toml
+           qtwebengine))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-setuptools-scm" ,python-setuptools-scm)))
+     (list python-pytest python-setuptools-scm))
     (home-page "https://github.com/vlaci/openconnect-sso")
     (synopsis "OpenConnect wrapper script supporting Azure AD (SAMLv2)")
     (description
@@ -710,8 +694,7 @@ and probably others.")
        ("autotools" ,automake)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("openssl" ,openssl)
-       ("ppp" ,ppp)))
+     (list openssl ppp))
     (home-page "https://github.com/adrienverge/openfortivpn")
     (synopsis "Client for PPP+SSL VPN tunnel services")
     (description "Openfortivpn is a client for PPP+SSL VPN tunnel services.  It
@@ -735,12 +718,9 @@ this process.  It is compatible with Fortinet VPNs.")
     (arguments
      '(#:configure-flags '("--enable-iproute2=yes")))
     (native-inputs
-     `(("iproute2" ,iproute)))
+     (list iproute))
     (inputs
-     `(("lz4" ,lz4)
-       ("lzo" ,lzo)
-       ("openssl" ,openssl)
-       ("linux-pam" ,linux-pam)))
+     (list lz4 lzo openssl linux-pam))
     (home-page "https://openvpn.net/")
     (synopsis "Virtual private network daemon")
     (description
@@ -792,18 +772,18 @@ traversing network address translators (@dfn{NAT}s) and firewalls.")
                                           "which")))))
              #t)))))
     (native-inputs
-     `(("python-docopt" ,python-docopt)))
+     (list python-docopt))
     (inputs
-     `(("dialog" ,dialog)
-       ("iproute2" ,iproute)
-       ("iptables" ,iptables)
-       ("ncurses" ,ncurses)
-       ("openvpn" ,openvpn)
-       ("procps" ,procps)
-       ("python-jinja2" ,python-jinja2)
-       ("python-pythondialog" ,python-pythondialog)
-       ("python-requests" ,python-requests)
-       ("which" ,which)))
+     (list dialog
+           iproute
+           iptables
+           ncurses
+           openvpn
+           procps
+           python-jinja2
+           python-pythondialog
+           python-requests
+           which))
     (synopsis "Command-line client for ProtonVPN")
     (description
      "This is the official command-line interface for ProtonVPN, a secure
@@ -829,9 +809,7 @@ VPN.  The gratis tier offers unlimited bandwidth for up to 10 devices.")
      '(#:configure-flags
        '("--sysconfdir=/etc"
          "--localstatedir=/var")))
-    (inputs `(("zlib" ,zlib)
-              ("lzo" ,lzo)
-              ("openssl" ,openssl)))
+    (inputs (list zlib lzo openssl))
     (home-page "https://tinc-vpn.org")
     (synopsis "Virtual Private Network (VPN) daemon")
     (description
@@ -862,12 +840,12 @@ private network between hosts on the internet.")
                (("/bin/sh") "sh"))
              #t)))))
     (native-inputs
-     `(("python-setuptools-scm" ,python-setuptools-scm)
-       ;; For tests only.
-       ("python-flake8" ,python-flake8)
-       ("python-mock" ,python-mock)
-       ("python-pytest-cov" ,python-pytest-cov)
-       ("python-pytest-runner" ,python-pytest-runner)))
+     (list python-setuptools-scm
+           ;; For tests only.
+           python-flake8
+           python-mock
+           python-pytest-cov
+           python-pytest-runner))
     (home-page "https://github.com/sshuttle/sshuttle")
     (synopsis "VPN that transparently forwards connections over SSH")
     (description "sshuttle creates an encrypted virtual private network (VPN)
@@ -901,14 +879,10 @@ DNS domain name queries.")
                (("/bin/sh") (which "sh")))
              #t)))))
     (inputs
-     `(("python-argcomplete" ,python-argcomplete)
-       ("python-prettytable" ,python-prettytable)
-       ("python-pyyaml" ,python-pyyaml)))
+     (list python-argcomplete python-prettytable python-pyyaml))
     ;; For tests only.
     (native-inputs
-     `(("python-fixtures" ,python-fixtures)
-       ("python-pbr" ,python-pbr)
-       ("python-testtools" ,python-testtools)))
+     (list python-fixtures python-pbr python-testtools))
     (home-page "https://github.com/albertodonato/sshoot")
     (synopsis "sshuttle VPN session manager")
     (description "sshoot provides a command-line interface to manage multiple
@@ -933,11 +907,9 @@ with configuration options for most of @command{sshuttle}’s features.")
     (arguments
      '(#:tests? #f))                    ; no tests
     (inputs
-     `(("nspr" ,nspr)
-       ("nss" ,nss)
-       ("openssl" ,openssl)))
+     (list nspr nss openssl))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://github.com/ambrop72/badvpn")
     (synopsis "Peer-to-peer virtual private network (VPN)")
     (description "@code{BadVPN} is a collection of virtual private
@@ -1116,9 +1088,7 @@ public keys and can roam across IP addresses.")
                               (assoc-ref inputs "linux-libre-headers"))
                       #t)))
        #:tests? #f))                    ; no tests provided
-    (inputs `(("libpcap" ,libpcap)
-              ("linux-libre-headers" ,linux-libre-headers)
-              ("ppp" ,ppp)))
+    (inputs (list libpcap linux-libre-headers ppp))
     (home-page "https://www.xelerance.com/software/xl2tpd/")
     (synopsis "Layer 2 Tunnelling Protocol Daemon (RFC 2661)")
     (description

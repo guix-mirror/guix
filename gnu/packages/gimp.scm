@@ -122,15 +122,15 @@
                 (string-append doc "/share/doc/poly2tri-c"))
                #t))))))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("doxygen" ,doxygen)
-       ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)
-       ("unzip" ,unzip)
-       ("which" ,which)))
+     (list autoconf
+           automake
+           doxygen
+           libtool
+           pkg-config
+           unzip
+           which))
     (propagated-inputs
-     `(("glib" ,glib)))
+     (list glib))
     (synopsis "2D constrained Delaunay triangulation library")
     (description "Poly2Tri-C is a library for generating, refining and rendering
 2-Dimensional Constrained Delaunay Triangulations.")
@@ -156,7 +156,7 @@
     (arguments
      `(#:glib-or-gtk? #t))   ; To wrap binaries and/or compile schemas
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (propagated-inputs
      `(("alsa" ,alsa-lib)
        ("cairo" ,cairo)
@@ -194,12 +194,10 @@ of a larger interface.")
        (list "-Denable-gir=false"
              "-Dwith-docs=false")))
     (native-inputs
-     `(("gobject-introspection" ,gobject-introspection)
-       ("pkg-config" ,pkg-config)
-       ("vala" ,vala)))
+     (list gobject-introspection pkg-config vala))
     (propagated-inputs
      ;; Propagated to satisfy ‘babl.pc’.
-     `(("lcms" ,lcms)))
+     (list lcms))
     (home-page "https://gegl.org/babl/")
     (synopsis "Image pixel format conversion library")
     (description
@@ -250,9 +248,7 @@ provided, as well as a framework to add new color models and data types.")
                 (string-append match "0"))))))))
     ;; These are propagated to satisfy 'gegl-0.4.pc'.
     (propagated-inputs
-     `(("babl" ,babl)
-       ("glib" ,glib)
-       ("json-glib" ,json-glib)))
+     (list babl glib json-glib))
     (inputs
      ;; All inputs except libjpeg and libpng are optional.
      `(("cairo" ,cairo)
@@ -273,11 +269,11 @@ provided, as well as a framework to add new color models and data types.")
        ("poppler" ,poppler)
        ("sdl2" ,sdl2)))
     (native-inputs
-     `(("glib" ,glib "bin")             ; for gtester
-       ("gobject-introspection" ,gobject-introspection)
-       ("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)
-       ("vala" ,vala)))
+     (list `(,glib "bin") ; for gtester
+           gobject-introspection
+           intltool
+           pkg-config
+           vala))
     (home-page "https://gegl.org")
     (synopsis "Graph based image processing framework")
     (description "GEGL (Generic Graphics Library) provides infrastructure to
@@ -417,17 +413,17 @@ that is extensible via a plugin system.")
                (mkdir-p target))
              #t)))))
     (inputs
-     `(("fftw" ,fftw)
-       ("gimp" ,gimp)
-       ;; needed by gimp-2.0.pc
-       ("gdk-pixbuf" ,gdk-pixbuf)
-       ("gegl" ,gegl)
-       ("cairo" ,cairo)
-       ("glib" ,glib)
-       ;; needed by gimpui-2.0.pc
-       ("gtk+" ,gtk+-2)))
+     (list fftw
+           gimp
+           ;; needed by gimp-2.0.pc
+           gdk-pixbuf
+           gegl
+           cairo
+           glib
+           ;; needed by gimpui-2.0.pc
+           gtk+-2))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://www.lprp.fr/gimp_plugin_en/#fourier")
     (synopsis "GIMP plug-in to edit image in fourier space")
     (description
@@ -451,14 +447,12 @@ inverse fourier transform.")
                 "0priwpmc7dizccqvn21ig6d649bprl3xl1hmjj7nddznjgr585vl"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+     (list intltool pkg-config))
     ;; As needed by 'libmypaint.pc'.
     (propagated-inputs
-     `(("json-c" ,json-c)
-       ("gobject-introspection" ,gobject-introspection)))
+     (list json-c gobject-introspection))
     (inputs
-     `(("glib" ,glib)))
+     (list glib))
     (synopsis "Artistic brushes library")
     (description "Libmypaint, also called \"brushlib\", is a library for making
 brushstrokes which is used by MyPaint and GIMP.")
@@ -480,8 +474,7 @@ brushstrokes which is used by MyPaint and GIMP.")
         (base32 "0kcqz13vzpy24dhmrx9hbs6s7hqb8y305vciznm15h277sabpmw9"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)))
+     (list autoconf automake))
     (synopsis "Default brushes for MyPaint")
     (description "This package provides the default set of brushes for
 MyPaint.")
@@ -557,12 +550,12 @@ MyPaint.")
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("gimp" ,gimp)
-       ("gdk-pixbuf" ,gdk-pixbuf)                 ; needed by gimp-2.0.pc
-       ("cairo" ,cairo)
-       ("gegl" ,gegl)
-       ("gtk+" ,gtk+-2)                           ; needed by gimpui-2.0.pc
-       ("glib" ,glib)))
+     (list gimp
+           gdk-pixbuf ; needed by gimp-2.0.pc
+           cairo
+           gegl
+           gtk+-2 ; needed by gimpui-2.0.pc
+           glib))
     (home-page "https://github.com/bootchk/resynthesizer")
     (synopsis "GIMP plugins for texture synthesis")
     (description

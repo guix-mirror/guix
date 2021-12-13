@@ -49,8 +49,7 @@
         ("libpng" ,libpng)
         ("zlib" ,zlib)))
     (native-inputs
-      `(("glib" ,glib "bin")
-        ("pkg-config" ,pkg-config)))
+      (list `(,glib "bin") pkg-config))
     (synopsis "Microsoft Word conversion library and utilities")
     (description
      "wv converts files written by Word 2000, 97, 95, and 6 (known internally as

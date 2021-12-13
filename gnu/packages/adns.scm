@@ -52,7 +52,7 @@
        ;; XXX: Tests expect real name resolution to work.
        #:tests? #f))
     (native-inputs
-     `(("m4" ,m4)))
+     (list m4))
     (home-page "https://www.gnu.org/software/adns/")
     (synopsis "Asynchronous DNS client library and utilities")
     (description
@@ -85,7 +85,7 @@ scripts.")
              ;; Filter tests that require internet access.
              (setenv "GTEST_FILTER" "-*.Live*:*.FamilyV4*"))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://c-ares.haxx.se/")
     (synopsis "C library for asynchronous DNS requests")
     (description

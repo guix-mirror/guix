@@ -78,7 +78,7 @@
                 (string-append
                  "uri=\"file://" dtd "/")))
              #t)))))
-    (native-inputs `(("unzip" ,unzip)))
+    (native-inputs (list unzip))
     (home-page "https://docbook.org")
     (synopsis "DocBook XML DTDs for document authoring")
     (description
@@ -221,9 +221,8 @@ by no means limited to these applications.)  This package provides XML DTDs.")
                                        name-version "/")))
                      #t))
        #:modules ((guix build utils))))
-    (native-inputs `(("bzip2" ,bzip2)
-                     ("xz" ,xz)         ;needed for repacked tarballs
-                     ("tar" ,tar)))
+    (native-inputs (list bzip2 xz ;needed for repacked tarballs
+                         tar))
     (home-page "https://docbook.org")
     (synopsis "DocBook XSL style sheets for document authoring")
     (description
@@ -317,10 +316,9 @@ for DocBook.")
            ;; The doc output contains 1.4 MiB of HTML documentation.
            (symlink docbook-dsssl-doc doc)))))
     (inputs
-     `(("docbook-dsssl-doc" ,docbook-dsssl-doc)))
+     (list docbook-dsssl-doc))
     (native-inputs
-     `(("bzip2" ,bzip2)
-       ("tar" ,tar)))
+     (list bzip2 tar))
     (home-page "https://docbook.org/")
     (synopsis "DSSSL style sheets for DocBook")
     (description "This package provides DSSSL style sheets for DocBook.")
@@ -398,9 +396,9 @@ for DocBook.")
              (("(.*ISO 8879.*)\"iso-(.*)\\.gml\"" _ head name)
               (string-append head "\"" iso-entities-dir "/ISO" name "\"")))))))
     (native-inputs
-     `(("unzip" ,unzip)))
+     (list unzip))
     (inputs
-     `(("iso-8879-entities" ,iso-8879-entities)))
+     (list iso-8879-entities))
     (home-page "https://docbook.org")
     (synopsis "DocBook SGML style sheets for document authoring")
     (description "This package provides SGML style sheets for DocBook.")
@@ -591,13 +589,13 @@ DB2LaTeX.")
     ;; Propagated for convenience.  All these tools are used at run time to
     ;; provide the complete functionality of the docbook-utils commands.
     (propagated-inputs
-     `(("texlive-jadetex" ,texlive-jadetex)
-       ("docbook-sgml" ,docbook-sgml-3.1)
-       ("docbook-dsssl" ,docbook-dsssl)
-       ("openjade" ,openjade)
-       ("opensp" ,opensp)
-       ("lynx" ,lynx)
-       ("perl-sgmls" ,perl-sgmls)))
+     (list texlive-jadetex
+           docbook-sgml-3.1
+           docbook-dsssl
+           openjade
+           opensp
+           lynx
+           perl-sgmls))
     (home-page "https://packages.debian.org/sid/docbook-utils")
     (synopsis "DocBook converter to other formats")
     (description "The docbook-utils package is a collection of utilities

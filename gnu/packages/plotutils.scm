@@ -106,10 +106,7 @@
                        (substitute* "test/plot2svg.test"
                          (("^exit .*") "exit 77")))))
                #~%standard-phases)))
-    (inputs `(("libpng" ,libpng)
-              ("libx11" ,libx11)
-              ("libxt" ,libxt)
-              ("libxaw" ,libxaw)))
+    (inputs (list libpng libx11 libxt libxaw))
     (home-page "https://www.gnu.org/software/plotutils/")
     (synopsis "Plotting utilities and library")
     (description
@@ -139,12 +136,9 @@ programs for plotting scientific data.")
                   "03049g7wnpyfi0r36ij4a46kc9l45jbanx02iklkjwav2n6jqnnk"))))
       (build-system gnu-build-system)
       (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("texinfo" ,texinfo)
-         ("pkg-config" ,pkg-config)))
-      (inputs `(("guile" ,guile-3.0)))
-      (propagated-inputs `(("guile-cairo" ,guile-cairo)))
+       (list autoconf automake texinfo pkg-config))
+      (inputs (list guile-3.0))
+      (propagated-inputs (list guile-cairo))
       (home-page "http://wingolog.org/projects/guile-charting/")
       (synopsis "Create charts and graphs in Guile")
       (description
@@ -156,7 +150,7 @@ using the Cairo drawing library.")
   (package
     (inherit guile-charting)
     (name "guile2.2-charting")
-    (inputs `(("guile" ,guile-2.2)))
+    (inputs (list guile-2.2))
     (propagated-inputs `(("guile-cairo" ,guile2.2-cairo)))))
 
 (define-public ploticus
@@ -209,9 +203,7 @@ using the Cairo drawing library.")
                         (wrap-program (string-append bin "/pl")
                           `("PLOTICUS_PREFABS" ":" = (,dir)))))))))
     (inputs
-     `(("libpng" ,libpng)
-       ("libx11" ,libx11)
-       ("zlib" ,zlib)))
+     (list libpng libx11 zlib))
     (home-page "http://ploticus.sourceforge.net/")
     (synopsis "Command-line tool for producing plots and charts")
     (description
@@ -261,18 +253,18 @@ colors, styles, options and details.")
                           texlive-latex-parskip
                           texlive-tex-texinfo)))))
     (inputs
-     `(("fftw" ,fftw)
-       ("freeglut" ,freeglut)
-       ("glew" ,glew)
-       ("glm" ,glm)
-       ("gsl" ,gsl)
-       ("libgc" ,libgc)
-       ("python" ,python)
-       ("python-cson" ,python-cson)
-       ("python-numpy" ,python-numpy)
-       ("python-pyqt" ,python-pyqt)
-       ("readline" ,readline)
-       ("zlib" ,zlib)))
+     (list fftw
+           freeglut
+           glew
+           glm
+           gsl
+           libgc
+           python
+           python-cson
+           python-numpy
+           python-pyqt
+           readline
+           zlib))
     (arguments
      `(#:modules ((guix build emacs-utils)
                   (guix build gnu-build-system)

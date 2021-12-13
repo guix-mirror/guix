@@ -129,14 +129,11 @@ chart.")
                            ("doc/boxes.1"  "share/man/man1/")
                            ("boxes-config" "etc/")))))))))
     (native-inputs
-     `(("bison" ,bison)
-       ("flex" ,flex)
-
-       ;; For the tests.
-       ("xxd" ,xxd)))
+     (list bison flex
+           ;; For the tests.
+           xxd))
     (inputs
-     `(("libunistring" ,libunistring)
-       ("pcre2" ,pcre2)))
+     (list libunistring pcre2))
     (home-page "https://boxes.thomasjensen.com")
     (synopsis "Command line ASCII boxes")
     (description
@@ -159,13 +156,13 @@ text.")
                 "1g3pij5qn2j7v7jjac2a63lxd97mcsgw6xq6k5p7835q9fjiid98"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("ruby" ,ruby)
-       ("ruby-byebug" ,ruby-byebug)
-       ("ruby-pry" ,ruby-pry)
-       ("ruby-rspec" ,ruby-rspec)
-       ("ruby-rspec-wait" ,ruby-rspec-wait)
-       ("tmux" ,tmux)
-       ("zsh" ,zsh)))
+     (list ruby
+           ruby-byebug
+           ruby-pry
+           ruby-rspec
+           ruby-rspec-wait
+           tmux
+           zsh))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
@@ -209,7 +206,7 @@ as you type.")
                 "039g3n59drk818ylcyvkciv8k9mf739cv6v4vis1h9fv9whbcmwl"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("zsh" ,zsh)))
+     (list zsh))
     (arguments
      ;; FIXME: Tests fail when running test regexp
      ;; there is no pcre module in the Guix zsh package
@@ -333,7 +330,7 @@ between various shells or commands.")
                   (string-append "\"" libc "/lib/libc.so.6\"\n"))
                  (("\"df\"")
                   (string-append "\"" coreutils "/bin/df\"")))))))))
-    (inputs `(("coreutils" ,coreutils)))
+    (inputs (list coreutils))
     (home-page "https://github.com/andreafrancia/trash-cli")
     (synopsis "Trash can management tool")
     (description
@@ -386,11 +383,8 @@ are already there.")
                  (invoke "make" "clean")))
              #t)))))
     (native-inputs
-     `(("go-github-com-burntsushi-toml" ,go-github-com-burntsushi-toml)
-       ("go-github-com-direnv-go-dotenv" ,go-github-com-direnv-go-dotenv)
-       ("go-github-com-mattn-go-isatty" ,go-github-com-mattn-go-isatty)
-       ("go-golang-org-x-mod" ,go-golang-org-x-mod)
-       ("which" ,which)))
+     (list go-github-com-burntsushi-toml go-github-com-direnv-go-dotenv
+           go-github-com-mattn-go-isatty go-golang-org-x-mod which))
     (home-page "https://direnv.net/")
     (synopsis "Environment switcher for the shell")
     (description
@@ -464,12 +458,9 @@ below the current cursor position, scrolling the screen if necessary.")
                  (("ncursesw\\/curses.h") "ncurses.h")))
              #t)))))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf automake pkg-config))
     (inputs
-     `(("ncurses" ,ncurses)
-       ("readline" ,readline)))
+     (list ncurses readline))
     (synopsis "Navigate and search command history with shell history suggest box")
     (description "HSTR (HiSToRy) is a command-line utility that brings
 improved Bash and Zsh command completion from the history.  It aims to make
@@ -571,7 +562,7 @@ city, state, zip, or area code, it will check out.")
                    #t))))
     (build-system gnu-build-system)
     (inputs
-     `(("readline" ,readline)))
+     (list readline))
     (home-page "https://www.nongnu.org/renameutils/")
     (synopsis "File renaming utilities")
     (description "The file renaming utilities (renameutils for short) are a

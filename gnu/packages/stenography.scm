@@ -45,18 +45,16 @@
         (base32 "1b2ys77bkjsdmyg97i7lq3lj45q56bycvsm06d4rs656kxhvc0a3"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-mock" ,python-mock)
-       ("python-pytest" ,python-pytest)
-       ("python-setuptools-scm" ,python-setuptools-scm)))
+     (list python-mock python-pytest python-setuptools-scm))
     (inputs
-     `(("python-appdirs" ,python-appdirs)
-       ("python-pyqt" ,python-pyqt)
-       ("python-babel" ,python-babel)
-       ("python-dbus" ,python-dbus)
-       ("python-hidapi" ,python-hidapi)
-       ("python-pyserial" ,python-pyserial)
-       ("python-wxpython" ,python-wxpython)
-       ("python-xlib" ,python-xlib)))
+     (list python-appdirs
+           python-pyqt
+           python-babel
+           python-dbus
+           python-hidapi
+           python-pyserial
+           python-wxpython
+           python-xlib))
     (home-page "https://www.openstenoproject.org/plover/")
     (synopsis "Stenography engine")
     (description

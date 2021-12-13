@@ -63,8 +63,7 @@
        ("perl" ,perl)
        ("m4" ,m4)))
     (native-inputs
-     `(("perl" ,perl)
-       ("m4" ,m4)))
+     (list perl m4))
     (arguments
      `(;; XXX: testsuite: 209 and 279 failed.  The latter is an impurity.  It
        ;; should use our own "cpp" instead of "/lib/cpp".
@@ -313,7 +312,7 @@ contributed as free software by the community.")
                (base32
                 "0gv7g61ja9q9zg1m30k4snqwwy1kq7b4df6sb7d2qra7kbdq8af1"))))
     (build-system gnu-build-system)
-    (inputs `(("perl" ,perl)))
+    (inputs (list perl))
     (synopsis "Process generated build logs")
     (description "Autobuild is a package that processes build logs generated
 when building software.  Autobuild is primarily focused on packages using
@@ -465,7 +464,7 @@ Makefile, simplifying the entire process for the developer.")
                 "0vxj52zm709125gwv9qqlw02silj8bnjnh4y07arrz60r31ai1vw"))
               (patches (search-patches "libtool-skip-tests2.patch"))))
     (build-system gnu-build-system)
-    (propagated-inputs `(("m4" ,m4)))
+    (propagated-inputs (list m4))
     (native-inputs `(("m4" ,m4)
                      ("perl" ,perl)
                      ;; XXX: this shouldn't be necessary, but without it test
@@ -562,7 +561,7 @@ complexity of working with shared libraries across platforms.")
                           (install-file "doc/config.sub.1" man1)
                           #t))))))
       (native-inputs
-       `(("help2man" ,help2man)))
+       (list help2man))
       (home-page "https://savannah.gnu.org/projects/config")
       (synopsis "Ubiquitous config.guess and config.sub scripts")
       (description "The `config.guess' script tries to guess a canonical system triple,
@@ -618,7 +617,7 @@ configuration in nearly all GNU packages (and many others).")
                (("/usr/bin/env python") (which "python3")))
              #t)))))
     (inputs
-     `(("python" ,python-3)))
+     (list python-3))
     (synopsis "@command{configure} interface for Python-based packages")
     (description
      "GNU pyconfigure provides template files for easily implementing

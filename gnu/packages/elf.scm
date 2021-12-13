@@ -100,8 +100,8 @@
                (("run-backtrace-native.sh") ""))
              #t)))))
 
-    (native-inputs `(("m4" ,m4)))
-    (inputs `(("zlib" ,zlib)))
+    (native-inputs (list m4))
+    (inputs (list zlib))
     (home-page "https://sourceware.org/elfutils/")
     (synopsis "Collection of utilities and libraries to handle ELF files and
 DWARF data")
@@ -175,8 +175,8 @@ object or archive file), @command{eu-strip} (for discarding symbols),
        ("python-sphinx" ,python-sphinx)
        ("python" ,python)))             ;for tests
     (propagated-inputs
-     `(("elfutils" ,elfutils)           ;libabigail.la says -lelf
-       ("libxml2" ,libxml2)))           ;in Requires.private of libabigail.pc
+     (list elfutils ;libabigail.la says -lelf
+           libxml2))           ;in Requires.private of libabigail.pc
     (synopsis "Analyze application binary interfaces (ABIs)")
     (description
      "@dfn{ABIGAIL} stands for the Application Binary Interface Generic
@@ -230,9 +230,9 @@ static analysis of the ELF binaries at hand.")
                            "/" file) "."))
                        '("config.sub" "config.guess")))))))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ;; For up-to-date 'config.guess' and 'config.sub'
-       ("automake" ,automake)))
+     (list autoconf
+           ;; For up-to-date 'config.guess' and 'config.sub'
+           automake))
     (home-page (string-append "https://web.archive.org/web/20181111033959/"
                               "http://www.mr511.de/software/english.html"))
     (synopsis "ELF object file access library")

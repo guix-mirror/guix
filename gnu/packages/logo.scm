@@ -37,7 +37,7 @@
          "0cpyj1ji6hjy7zzz05672f0j6fr0mwpc1y3sq36hhkv2fkpidw22"))))
     (build-system gnu-build-system)
     (inputs
-     `(("qtbase" ,qtbase-5)))
+     (list qtbase-5))
     (arguments
      `(#:phases
        (modify-phases %standard-phases

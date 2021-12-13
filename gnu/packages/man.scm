@@ -69,8 +69,7 @@
        (modify-phases %standard-phases
          (delete 'configure))))
     (propagated-inputs
-     `(("perl" ,perl)
-       ("perl-xml-parser" ,perl-xml-parser)))
+     (list perl perl-xml-parser))
     (synopsis "XML to Man converter")
     (description "XMLtoMan and XMLMantoHTML are two small scripts to convert xml
 to man pages in groff format or html.  It features the usual man page items such
@@ -200,18 +199,16 @@ a flexible and convenient way.")
                   (guix build utils)
                   (srfi srfi-1))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("flex" ,flex)
-       ("groff" ,groff)))   ;needed at build time (troff, grops, soelim, etc.)
+     (list pkg-config flex groff))   ;needed at build time (troff, grops, soelim, etc.)
     (inputs
-     `(("gdbm" ,gdbm)
-       ("groff-minimal" ,groff-minimal)
-       ("less" ,less)
-       ("libpipeline" ,libpipeline)
-       ;; FIXME: 4.8 and later can use libseccomp, but it causes test
-       ;; failures in the build chroot.
-       ;;("libseccomp" ,libseccomp)
-       ("util-linux" ,util-linux)))
+     (list gdbm
+           groff-minimal
+           less
+           libpipeline
+           ;; FIXME: 4.8 and later can use libseccomp, but it causes test
+           ;; failures in the build chroot.
+           ;;("libseccomp" ,libseccomp)
+           util-linux))
     (native-search-paths
      (list (search-path-specification
             (variable "MANPATH")
@@ -254,8 +251,8 @@ the traditional flat-text whatis databases.")
                         (("^PREFIX=.*")
                          (string-append "PREFIX=" (assoc-ref outputs "out")
                                         "\n"))))))))
-    (native-inputs `(("perl" ,perl)))             ;used to run tests
-    (inputs `(("zlib" ,zlib)))
+    (native-inputs (list perl))             ;used to run tests
+    (inputs (list zlib))
     (native-search-paths
      (list (search-path-specification
             (variable "MANPATH")
@@ -399,7 +396,7 @@ in C99.")
        #:make-flags (list (string-append "prefix=" (assoc-ref %outputs "out")))
        #:phases (modify-phases %standard-phases (delete 'configure))))
     (inputs
-     `(("gawk" ,gawk)))
+     (list gawk))
     (home-page "https://github.com/mvertes/txt2man")
     (synopsis "Convert text to man page")
     (description "Txt2man converts flat ASCII text to man page format.")

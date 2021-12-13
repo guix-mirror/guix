@@ -51,14 +51,14 @@
       (build-system cmake-build-system)
       (arguments
        '(#:configure-flags '("-DBUILD_SHARED_LIBS=ON")))
-      (native-inputs `(("pkg-config" ,pkg-config)))
+      (native-inputs (list pkg-config))
       (inputs
        ;; Optionally, add Python + Boost for Python bindings.
-       `(("sdl2" ,sdl2)))
+       (list sdl2))
       (propagated-inputs
        ;; 'Viewer.h' includes 'QGLWidget'.
-       `(("qtbase" ,qtbase-5)                ;the viewer module needs Qt5 + MESA
-         ("mesa" ,mesa)))
+       (list qtbase-5 ;the viewer module needs Qt5 + MESA
+             mesa))
       (synopsis "Robot simulator")
       (description
        "Enki is a robot simulator written in C++.  It provides collision and
@@ -101,21 +101,20 @@ hundred times faster than real-time.")
       (arguments
        '(#:configure-flags '("-DBUILD_SHARED_LIBS=ON")))
       (native-inputs
-       `(("pkg-config" ,pkg-config)
-         ("valgrind" ,valgrind)))                 ;for tests
+       (list pkg-config valgrind))                 ;for tests
       (inputs
-       `(("dashel" ,dashel)
-         ("enki" ,enki)
-         ("protobuf" ,protobuf-3.5)               ;for logging
-         ("qtbase" ,qtbase-5)
-         ("qtsvg" ,qtsvg)
-         ("qttools" ,qttools)              ;for libQt5Help, needed by "studio"
-         ("qtwebkit" ,qtwebkit)
-         ("qtx11extras" ,qtx11extras)
-         ("eudev" ,eudev)
-         ("libxml2" ,libxml2)
-         ("sdl2" ,sdl2)
-         ("avahi" ,avahi)))            ;XXX: we need the libdnssd compat layer
+       (list dashel
+             enki
+             protobuf-3.5 ;for logging
+             qtbase-5
+             qtsvg
+             qttools ;for libQt5Help, needed by "studio"
+             qtwebkit
+             qtx11extras
+             eudev
+             libxml2
+             sdl2
+             avahi))            ;XXX: we need the libdnssd compat layer
       (synopsis "Event-based robot programming tools")
       (description
        "Aseba means @dfn{actuator and sensor event-based architecture}.

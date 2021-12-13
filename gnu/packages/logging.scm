@@ -89,10 +89,8 @@ staying as close to their API as is reasonable.")
               (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("perl" ,perl)                             ;for tests
-       ("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
+     (list perl ;for tests
+           autoconf automake libtool))
     (synopsis "C++ logging library")
     (description
      "Google glog is a library that implements application-level logging.
@@ -115,10 +113,8 @@ command line.")
          "0wl2wm6p3pc0vkk33s7rzgcfvs9cwxfmlz997pdfhlw72r00l7s5"))))
     (build-system python-build-system)
     (inputs
-     `(("python-pyyaml" ,python-pyyaml)
-       ("python-sockjs-tornado" ,python-sockjs-tornado)
-       ("python-tornado-http-auth" ,python-tornado-http-auth)
-       ("python-tornado" ,python-tornado)))
+     (list python-pyyaml python-sockjs-tornado python-tornado-http-auth
+           python-tornado))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -170,7 +166,7 @@ commands, displaying the results via a web interface.")
              #t))
          (delete 'configure))           ; no configure script
        #:tests? #f)) ; no test suite (make check just runs cppcheck)
-    (inputs `(("ncurses" ,ncurses)))
+    (inputs (list ncurses))
     (home-page "https://vanheusden.com/multitail/")
     (synopsis "Monitor multiple log files")
     (description

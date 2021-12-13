@@ -80,12 +80,9 @@
                (copy-recursively "examples" (string-append doc "/examples"))
                #t))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("gnutls" ,gnutls)
-       ("libcap" ,libcap)
-       ("libseccomp" ,libseccomp)
-       ("nettle" ,nettle)))
+     (list gnutls libcap libseccomp nettle))
     (home-page "https://chrony.tuxfamily.org/")
     (synopsis "System clock synchronisation service that speaks NTP")
     (description
@@ -147,8 +144,7 @@ time-stamping or reference clock, sub-microsecond accuracy is possible.")
            (rename-file "sntp/libevent:build-aux"
                         "sntp/libevent/build-aux")
            #t))))
-   (native-inputs `(("which" ,which)
-                    ("pkg-config" ,pkg-config)))
+   (native-inputs (list which pkg-config))
    (inputs
     `(("openssl" ,openssl)
       ("libevent" ,libevent)
@@ -207,7 +203,7 @@ computers over a network.")
                (("DESTDIR\\)\\$\\(localstatedir") "TMPDIR"))
              #t)))))
     (inputs
-     `(("libressl" ,libressl))) ; enable TLS time constraints. See ntpd.conf(5).
+     (list libressl)) ; enable TLS time constraints. See ntpd.conf(5).
     (home-page "http://www.openntpd.org/")
     (synopsis "NTP client and server by the OpenBSD Project")
     (description "OpenNTPD is the OpenBSD Project's implementation of a client

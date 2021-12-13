@@ -54,7 +54,7 @@
       (arguments
        `(#:test-target "tests"))
       (inputs
-       `(("boost" ,boost)))
+       (list boost))
       (native-inputs
        `(("cxxtest" ,cxxtest)
          ("python" ,python-minimal)
@@ -93,11 +93,7 @@ utilities use for typical programming tasks in multiple OpenCog projects.")
                               (assoc-ref %outputs "out")
                               "/share/guile/site/2.2/"))))
       (inputs
-       `(("boost" ,boost)
-         ("cogutil" ,cogutil)
-         ("gmp" ,gmp)
-         ("guile" ,guile-2.2)
-         ("postgresql" ,postgresql)))
+       (list boost cogutil gmp guile-2.2 postgresql))
       (native-inputs
        `(("cxxtest" ,cxxtest)
          ("python" ,python-minimal)
@@ -139,11 +135,7 @@ features not otherwise available.")
                               (assoc-ref %outputs "out")
                               "/share/guile/site/2.2/"))))
       (inputs
-       `(("atomspace" ,atomspace)
-         ("boost" ,boost)
-         ("cogutil" ,cogutil)
-         ("gmp" ,gmp)
-         ("guile" ,guile-2.2)))
+       (list atomspace boost cogutil gmp guile-2.2))
       (native-inputs
        `(("cxxtest" ,cxxtest)
          ("python" ,python-minimal)
@@ -182,12 +174,12 @@ OpenCog framework.")
                          (assoc-ref %outputs "out")
                          "/share/guile/site/2.2/"))))
       (inputs
-       `(("atomspace" ,atomspace)
-         ("boost" ,boost)
-         ("cogserver" ,cogserver)
-         ("cogutil" ,cogutil)
-         ("gmp" ,gmp)
-         ("guile" ,guile-2.2)))
+       (list atomspace
+             boost
+             cogserver
+             cogutil
+             gmp
+             guile-2.2))
       (native-inputs
        `(("cxxtest" ,cxxtest)
          ("python" ,python-minimal)
@@ -288,10 +280,7 @@ combination.")
                                          "/share/guile/site/2.2/opencog"))))
                #t)))))
       (inputs
-       `(("atomspace" ,atomspace)
-         ("cogutil" ,cogutil)
-         ("gmp" ,gmp)
-         ("guile" ,guile-2.2)))
+       (list atomspace cogutil gmp guile-2.2))
       (native-inputs
        `(("cxxtest" ,cxxtest)
          ("python" ,python-minimal)

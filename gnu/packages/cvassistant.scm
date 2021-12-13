@@ -69,9 +69,7 @@
          (replace 'configure
            (lambda _ (invoke "qmake"))))))
     (inputs
-     `(("qtbase" ,qtbase-5)
-       ("quazip" ,quazip-0)
-       ("zlib" ,zlib)))
+     (list qtbase-5 quazip-0 zlib))
     (home-page "https://cvassistant.sourceforge.io/")
     (synopsis "Job application organizer")
     (description "Whether you're looking for a job or trying to help

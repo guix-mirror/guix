@@ -142,19 +142,18 @@ between computers.")
          (add-after 'install 'remove-go-references
            (assoc-ref go:%standard-phases 'remove-go-references)))))
     (inputs
-     `(("go-github-com-davecgh-go-xdr" ,go-github-com-davecgh-go-xdr)
-       ("go-github-com-dustin-go-humanize" ,go-github-com-dustin-go-humanize)
-       ("go-github-com-flynn-noise" ,go-github-com-flynn-noise)
-       ("go-github-com-gorhill-cronexpr" ,go-github-com-gorhill-cronexpr)
-       ("go-github-com-hjson-hjson-go" ,go-github-com-hjson-hjson-go)
-       ("go-github-com-klauspost-compress" ,go-github-com-klauspost-compress)
-       ("go-golang-org-x-crypto" ,go-golang-org-x-crypto)
-       ("go-golang-org-x-net" ,go-golang-org-x-net)
-       ("go-golang-org-x-term" ,go-golang-org-x-term)
-       ("go-lukechampine-com-blake3" ,go-lukechampine-com-blake3)))
+     (list go-github-com-davecgh-go-xdr
+           go-github-com-dustin-go-humanize
+           go-github-com-flynn-noise
+           go-github-com-gorhill-cronexpr
+           go-github-com-hjson-hjson-go
+           go-github-com-klauspost-compress
+           go-golang-org-x-crypto
+           go-golang-org-x-net
+           go-golang-org-x-term
+           go-lukechampine-com-blake3))
     (native-inputs
-     `(("go" ,go)
-       ("texinfo" ,texinfo)))
+     (list go texinfo))
     (home-page "http://www.nncpgo.org/")
     (synopsis "Store and forward utilities")
     (description "NNCP (Node to Node copy) is a collection of utilities

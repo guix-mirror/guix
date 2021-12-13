@@ -95,7 +95,7 @@
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--disable-static")))
-    (native-inputs `(("perl" ,perl)))
+    (native-inputs (list perl))
     (home-page "https://www.gnu.org/software/libtasn1/")
     (synopsis "ASN.1 library")
     (description
@@ -118,7 +118,7 @@ specifications.")
         "1fc64g45ykmv73kdndr4zdm4wxhimhrir4rxnygxvwkych5l81w0"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("perl" ,perl)))
+     (list perl))
     (home-page "https://lionet.info/asn1c")
     (synopsis "ASN.1 to C compiler")
     (description "The ASN.1 to C compiler takes ASN.1 module
@@ -304,7 +304,7 @@ living in the same process.")
              `(("datefudge" ,datefudge)))         ;tests rely on 'datefudge'
        ("util-linux" ,util-linux)))               ;one test needs 'setsid'
     (inputs
-     `(("guile" ,guile-3.0)))
+     (list guile-3.0))
     (propagated-inputs
      ;; These are all in the 'Requires.private' field of gnutls.pc.
      `(("libtasn1" ,libtasn1)
@@ -400,7 +400,7 @@ OpenSSL for TARGET."
     (outputs '("out"
                "doc"        ;6.8 MiB of man3 pages and full HTML documentation
                "static"))   ;6.4 MiB of .a files
-    (native-inputs `(("perl" ,perl)))
+    (native-inputs (list perl))
     (arguments
      `(#:parallel-tests? #f
        #:test-target "test"
@@ -682,21 +682,21 @@ netcat implementation that supports TLS.")
                (install-file "docs/_build/man/acme-python.1" man)
                #t))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ;; For documentation
-       ("python-sphinx" ,python-sphinx)
-       ("python-sphinxcontrib-programoutput" ,python-sphinxcontrib-programoutput)
-       ("python-sphinx-rtd-theme" ,python-sphinx-rtd-theme)
-       ("texinfo" ,texinfo)))
+     (list python-pytest
+           ;; For documentation
+           python-sphinx
+           python-sphinxcontrib-programoutput
+           python-sphinx-rtd-theme
+           texinfo))
     (propagated-inputs
-     `(("python-josepy" ,python-josepy)
-       ("python-requests" ,python-requests)
-       ("python-requests-toolbelt" ,python-requests-toolbelt)
-       ("python-pytz" ,python-pytz)
-       ("python-pyrfc3339" ,python-pyrfc3339)
-       ("python-pyasn1" ,python-pyasn1)
-       ("python-cryptography" ,python-cryptography)
-       ("python-pyopenssl" ,python-pyopenssl)))
+     (list python-josepy
+           python-requests
+           python-requests-toolbelt
+           python-pytz
+           python-pyrfc3339
+           python-pyasn1
+           python-cryptography
+           python-pyopenssl))
     (home-page "https://github.com/certbot/certbot")
     (synopsis "ACME protocol implementation in Python")
     (description "ACME protocol implementation in Python")
@@ -730,28 +730,28 @@ netcat implementation that supports TLS.")
                     (install-file "docs/_build/man/certbot.7" man7)
                     #t))))))))
     (native-inputs
-     `(("python-mock" ,python-mock)
-       ("python-pytest" ,python-pytest)
-       ;; For documentation
-       ("python-sphinx" ,python-sphinx)
-       ("python-sphinx-rtd-theme" ,python-sphinx-rtd-theme)
-       ("python-sphinx-repoze-autointerface" ,python-sphinx-repoze-autointerface)
-       ("python-sphinxcontrib-programoutput" ,python-sphinxcontrib-programoutput)
-       ("texinfo" ,texinfo)))
+     (list python-mock
+           python-pytest
+           ;; For documentation
+           python-sphinx
+           python-sphinx-rtd-theme
+           python-sphinx-repoze-autointerface
+           python-sphinxcontrib-programoutput
+           texinfo))
     (propagated-inputs
-     `(("python-acme" ,python-acme)
-       ("python-cryptography" ,python-cryptography)
-       ("python-zope-interface" ,python-zope-interface)
-       ("python-pyrfc3339" ,python-pyrfc3339)
-       ("python-pyopenssl" ,python-pyopenssl)
-       ("python-configobj" ,python-configobj)
-       ("python-configargparse" ,python-configargparse)
-       ("python-distro" ,python-distro)
-       ("python-zope-component" ,python-zope-component)
-       ("python-parsedatetime" ,python-parsedatetime)
-       ("python-psutil" ,python-psutil)
-       ("python-requests" ,python-requests)
-       ("python-pytz" ,python-pytz)))
+     (list python-acme
+           python-cryptography
+           python-zope-interface
+           python-pyrfc3339
+           python-pyopenssl
+           python-configobj
+           python-configargparse
+           python-distro
+           python-zope-component
+           python-parsedatetime
+           python-psutil
+           python-requests
+           python-pytz))
     (synopsis "Let's Encrypt client by the Electronic Frontier Foundation")
     (description "Certbot automatically receives and installs X.509 certificates
 to enable Transport Layer Security (TLS) on servers.  It interoperates with the
@@ -777,7 +777,7 @@ certificates for free.")
                (base32
                 "1pfgh4h3szcpvqlcimc60pjbk9zwls99x5863sva0wc47i4dl010"))))
     (build-system perl-build-system)
-    (inputs `(("openssl" ,openssl)))
+    (inputs (list openssl))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -812,11 +812,9 @@ servers or clients for more complicated applications.")
           "0djl5i6kibl7862b6ih29q8dhg5zpwzq77q9j8hp6xngshx40ws1"))))
   (build-system perl-build-system)
   (native-inputs
-   `(("perl-crypt-openssl-guess" ,perl-crypt-openssl-guess)))
+   (list perl-crypt-openssl-guess))
   (inputs
-    `(("perl-crypt-openssl-bignum" ,perl-crypt-openssl-bignum)
-      ("perl-crypt-openssl-random" ,perl-crypt-openssl-random)
-      ("openssl" ,openssl)))
+    (list perl-crypt-openssl-bignum perl-crypt-openssl-random openssl))
   (arguments perl-crypt-arguments)
   (home-page
     "https://metacpan.org/release/Crypt-OpenSSL-RSA")
@@ -851,7 +849,7 @@ OpenSSL libraries).")
         (base32
           "1p22znbajq91lbk2k3yg12ig7hy5b4vy8igxwqkmbm4nhgxp4ki3"))))
   (build-system perl-build-system)
-  (inputs `(("openssl" ,openssl)))
+  (inputs (list openssl))
   (arguments perl-crypt-arguments)
   (home-page
     "https://metacpan.org/release/Crypt-OpenSSL-Bignum")
@@ -899,9 +897,9 @@ correct OpenSSL include path.  It is intended for use in your
         (base32 "1x6ffps8q7mnawmcfq740llzy7i10g3319vap0wiw4d33fm6z1zh"))))
   (build-system perl-build-system)
   (native-inputs
-   `(("perl-crypt-openssl-guess" ,perl-crypt-openssl-guess)))
+   (list perl-crypt-openssl-guess))
   (inputs
-   `(("openssl" ,openssl)))
+   (list openssl))
   (arguments perl-crypt-arguments)
   (home-page
     "https://metacpan.org/release/Crypt-OpenSSL-Random")
@@ -939,10 +937,9 @@ number generator")
                #t)))
          (delete 'configure)))) ; no './configure' script
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("libbsd" ,libbsd)
-       ("libressl" ,libressl)))
+     (list libbsd libressl))
     (synopsis "Let's Encrypt client by the OpenBSD project")
     (description "acme-client is a Let's Encrypt client implemented in C.  It
 uses a modular design, and attempts to secure itself by dropping privileges and
@@ -991,8 +988,7 @@ then ported to the GNU / Linux environment.")
              (for-each make-file-writable (find-files "."))
              #t)))))
     (native-inputs
-     `(("perl" ,perl)
-       ("python" ,python)))
+     (list perl python))
     (synopsis "Small TLS library")
     (description
      "@code{mbed TLS}, formerly known as PolarSSL, makes it trivially easy
@@ -1088,17 +1084,16 @@ coding footprint.")
                               "sed"))))))
            #t))))
     (inputs
-     `(("bash" ,bash)
-       ("coreutils" ,coreutils)
-       ("curl" ,curl)
-       ("diffutils" ,diffutils)
-       ("gawk" ,gawk)
-       ("grep" ,grep)
-       ("openssl" ,openssl)
-       ("sed" ,sed)))
+     (list bash
+           coreutils
+           curl
+           diffutils
+           gawk
+           grep
+           openssl
+           sed))
     (native-inputs
-     `(("gzip" ,gzip)
-       ("tar" ,tar)))
+     (list gzip tar))
     ;; The following definition is copied from the cURL package to prevent a
     ;; cycle between the curl and tls modules.
     (native-search-paths
@@ -1190,9 +1185,7 @@ compatibility is also supported.")
      '(#:configure-flags
        '("--enable-reproducible-build")))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
+     (list autoconf automake libtool))
     (synopsis "SSL/TLS implementation")
     (description "The wolfSSL embedded SSL library (formerly CyaSSL) is an
 SSL/TLS library written in ANSI C and targeted for embedded, RTOS, and

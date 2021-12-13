@@ -38,7 +38,7 @@
        (base32
         "0qfj2wd4qk1yn9yzam6g8nmyxfazcc0knjyyibycb2ainkhp21hd"))))
     (build-system gnu-build-system)
-    (inputs `(("expect" ,expect)))
+    (inputs (list expect))
     (arguments
      '(#:phases
        (modify-phases %standard-phases

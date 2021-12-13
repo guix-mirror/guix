@@ -60,7 +60,7 @@
    ;; own HTML doc, nor does it change its capabilities, so we removed netpbm
    ;; from 'inputs'.
 
-   (inputs `(("ghostscript" ,ghostscript)))
+   (inputs (list ghostscript))
 
    ;; When cross-compiling, this package depends upon a native install of
    ;; itself.
@@ -207,7 +207,7 @@ is usually the formatter of \"man\" documentation pages.")
                  #t))))))
       (native-inputs `(("html-tree" ,perl-html-tree))) ; for test
       (inputs
-       `(("perl" ,perl)))
+       (list perl))
       (home-page "https://daniel.haxx.se/projects/roffit/")
       (synopsis "Convert nroff files to HTML")
       (description
@@ -250,9 +250,7 @@ It is typically used to display man pages on a web site.")
                                          "ruby-nokogiri")))))
              #t)))))
     (inputs
-     `(("ruby-kramdown" ,ruby-kramdown)
-       ("ruby-mustache" ,ruby-mustache)
-       ("ruby-nokogiri" ,ruby-nokogiri)))
+     (list ruby-kramdown ruby-mustache ruby-nokogiri))
     (synopsis
      "Build manuals in HTML and Unix man page format from Markdown")
     (description

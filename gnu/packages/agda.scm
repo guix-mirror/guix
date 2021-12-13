@@ -49,28 +49,28 @@
          "159hznnsxg7hlp80r1wqizyd7gwgnq0j13cm4d27cns0ganslb07"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-aeson" ,ghc-aeson)
-       ("ghc-alex" ,ghc-alex)
-       ("ghc-async" ,ghc-async)
-       ("ghc-blaze-html" ,ghc-blaze-html)
-       ("ghc-boxes" ,ghc-boxes)
-       ("ghc-case-insensitive" ,ghc-case-insensitive)
-       ("ghc-data-hash" ,ghc-data-hash)
-       ("ghc-edit-distance" ,ghc-edit-distance)
-       ("ghc-equivalence" ,ghc-equivalence)
-       ("ghc-gitrev" ,ghc-gitrev)
-       ("ghc-happy" ,ghc-happy)
-       ("ghc-hashable" ,ghc-hashable)
-       ("ghc-hashtables" ,ghc-hashtables)
-       ("ghc-monad-control" ,ghc-monad-control)
-       ("ghc-murmur-hash" ,ghc-murmur-hash)
-       ("ghc-parallel" ,ghc-parallel)
-       ("ghc-regex-tdfa" ,ghc-regex-tdfa)
-       ("ghc-split" ,ghc-split)
-       ("ghc-strict" ,ghc-strict)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)
-       ("ghc-uri-encode" ,ghc-uri-encode)
-       ("ghc-zlib" ,ghc-zlib)))
+     (list ghc-aeson
+           ghc-alex
+           ghc-async
+           ghc-blaze-html
+           ghc-boxes
+           ghc-case-insensitive
+           ghc-data-hash
+           ghc-edit-distance
+           ghc-equivalence
+           ghc-gitrev
+           ghc-happy
+           ghc-hashable
+           ghc-hashtables
+           ghc-monad-control
+           ghc-murmur-hash
+           ghc-parallel
+           ghc-regex-tdfa
+           ghc-split
+           ghc-strict
+           ghc-unordered-containers
+           ghc-uri-encode
+           ghc-zlib))
     (arguments
      `(#:modules ((guix build haskell-build-system)
                   (guix build utils)
@@ -139,7 +139,7 @@ Agda.  It also aids the input of Unicode characters.")))
                 "0dlis6v6nzbscf713cmwlx8h9n2gxghci8y21qak3hp18gkxdp0g"))))
     (build-system gnu-build-system)
     (inputs
-     `(("agda" ,agda)))
+     (list agda))
     (arguments
      `(#:parallel-build? #f
        #:phases

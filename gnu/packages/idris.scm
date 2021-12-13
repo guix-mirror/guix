@@ -52,41 +52,38 @@
                                        "idris-build-with-megaparsec-9.patch"))))
     (build-system haskell-build-system)
     (native-inputs                      ;For tests
-     `(("perl" ,perl)
-       ("ghc-cheapskate" ,ghc-cheapskate)
-       ("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-golden" ,ghc-tasty-golden)
-       ("ghc-tasty-rerun" ,ghc-tasty-rerun)))
+     (list perl ghc-cheapskate ghc-tasty ghc-tasty-golden
+           ghc-tasty-rerun))
     (inputs
-     `(("gmp" ,gmp)
-       ("ncurses" ,ncurses)
-       ("ghc-aeson" ,ghc-aeson)
-       ("ghc-annotated-wl-pprint" ,ghc-annotated-wl-pprint)
-       ("ghc-ansi-terminal" ,ghc-ansi-terminal)
-       ("ghc-ansi-wl-pprint" ,ghc-ansi-wl-pprint)
-       ("ghc-async" ,ghc-async)
-       ("ghc-base64-bytestring" ,ghc-base64-bytestring)
-       ("ghc-blaze-html" ,ghc-blaze-html)
-       ("ghc-blaze-markup" ,ghc-blaze-markup)
-       ("ghc-cheapskate" ,ghc-cheapskate)
-       ("ghc-code-page" ,ghc-code-page)
-       ("ghc-fingertree" ,ghc-fingertree)
-       ("ghc-fsnotify" ,ghc-fsnotify)
-       ("ghc-ieee754" ,ghc-ieee754)
-       ("ghc-libffi" ,ghc-libffi)
-       ("ghc-megaparsec" ,ghc-megaparsec)
-       ("ghc-network" ,ghc-network)
-       ("ghc-optparse-applicative" ,ghc-optparse-applicative)
-       ("ghc-regex-tdfa" ,ghc-regex-tdfa)
-       ("ghc-safe" ,ghc-safe)
-       ("ghc-split" ,ghc-split)
-       ("ghc-terminal-size" ,ghc-terminal-size)
-       ("ghc-uniplate" ,ghc-uniplate)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)
-       ("ghc-utf8-string" ,ghc-utf8-string)
-       ("ghc-vector" ,ghc-vector)
-       ("ghc-vector-binary-instances" ,ghc-vector-binary-instances)
-       ("ghc-zip-archive" ,ghc-zip-archive)))
+     (list gmp
+           ncurses
+           ghc-aeson
+           ghc-annotated-wl-pprint
+           ghc-ansi-terminal
+           ghc-ansi-wl-pprint
+           ghc-async
+           ghc-base64-bytestring
+           ghc-blaze-html
+           ghc-blaze-markup
+           ghc-cheapskate
+           ghc-code-page
+           ghc-fingertree
+           ghc-fsnotify
+           ghc-ieee754
+           ghc-libffi
+           ghc-megaparsec
+           ghc-network
+           ghc-optparse-applicative
+           ghc-regex-tdfa
+           ghc-safe
+           ghc-split
+           ghc-terminal-size
+           ghc-uniplate
+           ghc-unordered-containers
+           ghc-utf8-string
+           ghc-vector
+           ghc-vector-binary-instances
+           ghc-zip-archive))
     (arguments
      `(#:configure-flags
        (list (string-append "--datasubdir="
@@ -214,7 +211,7 @@ Epigram and Agda.")
                   "1pkxnn3ryr0v0cin4nasw7kgkc9dnnpja1nfbj466mf3qv5s98af"))))
       (build-system gnu-build-system)
       (native-inputs
-       `(("idris" ,idris)))
+       (list idris))
       (arguments (idris-default-arguments name))
       (home-page "https://github.com/ziman/lightyear")
       (synopsis "Lightweight parser combinator library for Idris")
@@ -239,7 +236,7 @@ difference: backtracking.")
                   "0g7c3y9smifdz4sivi3qmvymhdr7v9kfq45fmfmmvkqcrix0spzn"))))
       (build-system gnu-build-system)
       (native-inputs
-       `(("idris" ,idris)))
+       (list idris))
       (arguments (idris-default-arguments name))
       (home-page "https://github.com/shayan-najd/wl-pprint")
       (synopsis "Pretty printing library")
@@ -264,7 +261,7 @@ wl-pprint library.")
                   "02vbsd3rmgnj0l1qq787709qcxjbr9890cbad4ykn27f77jk81h4"))))
       (build-system gnu-build-system)
       (native-inputs
-       `(("idris" ,idris)))
+       (list idris))
       (arguments (idris-default-arguments name))
       (home-page "https://github.com/HuwCampbell/Idris-Bifunctors")
       (synopsis "Bifunctor library")
@@ -288,9 +285,9 @@ excellent Haskell Bifunctors package from Edward Kmett.")
                   "06jzfj6rad08rk92w8jk5byi79svmyg0mrcqhibgx8rkjjy6vmai"))))
       (build-system gnu-build-system)
       (native-inputs
-       `(("idris" ,idris)))
+       (list idris))
       (propagated-inputs
-       `(("idris-bifunctors" ,idris-bifunctors)))
+       (list idris-bifunctors))
       (arguments (idris-default-arguments name))
       (home-page "https://github.com/HuwCampbell/idris-lens")
       (synopsis "Van Laarhoven lenses for Idris")

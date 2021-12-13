@@ -54,7 +54,7 @@
        (base32 "1arp1niiz3qxm8iacpmilwpc5rinsm6hsk4a6fsxfywvkvppbb4s"))))
    (build-system gnu-build-system)
    (native-inputs
-    `(("pkg-config" ,pkg-config)))
+    (list pkg-config))
    (inputs
     `(("libjpeg" ,libjpeg-turbo)
       ("libpng" ,libpng)
@@ -135,11 +135,9 @@ UI builder called FLUID that can be used to create applications in minutes.")
     ;; ntk.pc lists "x11" and "xft" in Requires.private, and "cairo" in
     ;; Requires.
     (propagated-inputs
-     `(("cairo" ,cairo)
-       ("libxft" ,libxft)
-       ("libx11" ,libx11)))
+     (list cairo libxft libx11))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "http://non.tuxfamily.org/ntk/")
     (synopsis "Fork of FLTK with graphics rendering via Cairo")
     (description "The Non Tool Kit (NTK) is a fork of the Fast Light ToolKit

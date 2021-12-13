@@ -40,7 +40,7 @@
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (inputs
-     `(("libpcap" ,libpcap)))
+     (list libpcap))
     (arguments
      '(#:tests? #f
        #:make-flags (list

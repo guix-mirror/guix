@@ -54,20 +54,20 @@
                 "<sys/stat.h>\n#include <sys/sysmacros.h>"))
              #t)))))
     (inputs
-     `(("alsa-lib" ,alsa-lib)
-       ("libx11" ,libx11)
-       ("libxext" ,libxext)
-       ("libxt" ,libxt)
-       ("libxtst" ,libxtst)
-       ("libxinerama" ,libxinerama)
-       ("libxv" ,libxv)
-       ("libxxf86vm" ,libxxf86vm)
-       ("libpng" ,libpng)
-       ("libxml2" ,libxml2)
-       ("freetype" ,freetype)
-       ("zlib" ,zlib)))
+     (list alsa-lib
+           libx11
+           libxext
+           libxt
+           libxtst
+           libxinerama
+           libxv
+           libxxf86vm
+           libpng
+           libxml2
+           freetype
+           zlib))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "http://tvtime.sourceforge.net")
     (synopsis "Television viewer")
     (description

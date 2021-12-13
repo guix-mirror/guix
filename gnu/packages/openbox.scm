@@ -48,8 +48,8 @@
                (base32
                 "0vg2y1qddsdxkjv806mzpvmkgzliab8ll4s7zm7ma5jnriamirxb"))))
     (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)))
-    (propagated-inputs `(("python2-pyxdg" ,python2-pyxdg)))
+    (native-inputs (list pkg-config))
+    (propagated-inputs (list python2-pyxdg))
     (inputs `(("imlib2" ,imlib2)
               ("libxml2" ,libxml2)
               ("librsvg" ,(librsvg-for-system))

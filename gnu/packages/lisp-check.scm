@@ -82,7 +82,7 @@
          ("closer-mop" ,sbcl-closer-mop)
          ("optima" ,sbcl-optima)))
       (native-inputs
-       `(("stefil" ,sbcl-stefil)))
+       (list sbcl-stefil))
       (home-page "https://github.com/arclanguage/Clamp")
       (synopsis "Randomized specification-based testing for Common Lisp")
       (description
@@ -120,9 +120,9 @@ designed to embed randomized tests in whatever framework you like.")
        '(#:asd-files '("checkl.asd")
          #:tests? #f))
       (native-inputs
-       `(("sbcl-fiveam" ,sbcl-fiveam)))
+       (list sbcl-fiveam))
       (inputs
-       `(("sbcl-marshal" ,sbcl-marshal)))
+       (list sbcl-marshal))
       (home-page "https://github.com/rpav/CheckL/")
       (synopsis "Dynamic testing for Common Lisp")
       (description
@@ -160,7 +160,7 @@ against the last run.")
          ("closer-mop" ,sbcl-closer-mop)
          ("trivia" ,sbcl-trivia)))
       (native-inputs
-       `(("fiveam" ,sbcl-fiveam)))
+       (list sbcl-fiveam))
       (home-page "https://github.com/Ferada/cl-mock")
       (synopsis "Mocking functions for Common Lisp testing")
       (description
@@ -381,9 +381,9 @@ interactive development model in mind.")
          (file-name (git-file-name "hu.dwim.stefil" version))))
       (build-system asdf-build-system/sbcl)
       (native-inputs
-       `(("asdf:cl-hu.dwim.asdf" ,sbcl-hu.dwim.asdf)))
+       (list sbcl-hu.dwim.asdf))
       (inputs
-       `(("sbcl-alexandria" ,sbcl-alexandria)))
+       (list sbcl-alexandria))
       (home-page "http://dwim.hu/project/hu.dwim.stefil")
       (synopsis "Simple test framework")
       (description "Stefil is a simple test framework for Common Lisp,

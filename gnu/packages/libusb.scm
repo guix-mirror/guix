@@ -93,9 +93,9 @@ devices on various operating systems.")
         "0nn5icrfm9lkhzw1xjvaks9bq3w6mjg86ggv3fn7kgi4nfvg8kj0"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("libusb" ,libusb)))
+     (list libusb))
     (home-page "https://libusb.info")
     (synopsis "Compatibility shim for libusb")
     (description
@@ -152,7 +152,7 @@ version of libusb to run with newer libusb.")
                (setenv "JAVA_HOME" (assoc-ref inputs "jdk"))
                #t)))))
       (inputs
-       `(("libusb" ,libusb)))
+       (list libusb))
       (native-inputs
        `(("jdk" ,icedtea "jdk")))
       (home-page "https://github.com/usb4java/libusb4java/")
@@ -212,10 +212,7 @@ with usb4java.")
                   (string-append "assumeUsbTestsEnabled();" line))))
              #t)))))
     (inputs
-     `(("libusb4java" ,libusb4java)
-       ("java-commons-lang3" ,java-commons-lang3)
-       ("java-junit" ,java-junit)
-       ("java-hamcrest-core" ,java-hamcrest-core)))
+     (list libusb4java java-commons-lang3 java-junit java-hamcrest-core))
     (home-page "http://usb4java.org/")
     (synopsis "USB library for Java")
     (description
@@ -258,7 +255,7 @@ implementing @code{javax.usb} (JSR-80).")
                                    "^libusb.*\\.so\\..*"))
                  "\"")))
              #t)))))
-    (propagated-inputs `(("libusb" ,libusb)))
+    (propagated-inputs (list libusb))
     (home-page "https://github.com/vpelletier/python-libusb1")
     (synopsis "Pure-python wrapper for libusb-1.0")
     (description "Libusb is a library that gives applications easy access to
@@ -298,7 +295,7 @@ wrapper for accessing libusb-1.0.")
                  "\"")))
              #t)))))
     (inputs
-     `(("libusb" ,libusb)))
+     (list libusb))
     (home-page "https://pyusb.github.io/pyusb/")
     (synopsis "Python bindings to the libusb library")
     (description
@@ -333,10 +330,7 @@ wrapper for accessing libusb-1.0.")
                                          "50-capablerobot-usbhub.rules"))
                #t))))))
     (propagated-inputs
-     `(("python-click" ,python-click)
-       ("python-construct" ,python-construct)
-       ("python-pyusb" ,python-pyusb)
-       ("python-pyyaml" ,python-pyyaml)))
+     (list python-click python-construct python-pyusb python-pyyaml))
     (home-page
      "https://github.com/CapableRobot/CapableRobot_USBHub_Driver")
     (synopsis
@@ -368,13 +362,9 @@ I2C and SPI devices attached to the USB Hub.")
        ;; 'large.test' and 'largecmp.test'.
        #:parallel-tests? #f))
     (inputs
-     `(("python" ,python)))
+     (list python))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)
-       ("python-cython" ,python-cython))) ; to build Python bindings
+     (list autoconf automake libtool pkg-config python-cython)) ; to build Python bindings
     (home-page "https://libimobiledevice.org/")
     (synopsis "C library to handle Apple Property List files")
     (description "This package provides a small portable C library to handle
@@ -395,8 +385,7 @@ Apple Property List files in binary or XML.")
                 "084vg570g1qb506jd7axg6c080mfsmbf52v3lngzlknsaf2q0snc"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("libplist" ,libplist)))
+     (list pkg-config libplist))
     (home-page "https://libimobiledevice.org/")
     (synopsis "Library to multiplex connections from and to iOS devices")
     (description "This package provides a client library to multiplex
@@ -421,14 +410,11 @@ connections from and to iOS devices by connecting to a socket provided by a
     (arguments
      '(#:configure-flags '("PYTHON_VERSION=3")))
     (propagated-inputs
-     `(("openssl" ,openssl)
-       ("libplist" ,libplist)
-       ("libusbmuxd" ,libusbmuxd)))
+     (list openssl libplist libusbmuxd))
     (inputs
-     `(("python" ,python)))
+     (list python))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("python-cython" ,python-cython)))
+     (list pkg-config python-cython))
     (home-page "https://libimobiledevice.org/")
     (synopsis "Protocol library and tools to communicate with Apple devices")
     (description "libimobiledevice is a software library that talks the
@@ -452,10 +438,9 @@ music and video to the device.")
                (base32
                 "11wdv44qwia77sh38n36809ysaib52rwd4fvqwb5ybsbz4p70l1m"))))
     (inputs
-     `(("fuse" ,fuse)
-       ("libimobiledevice" ,libimobiledevice)))
+     (list fuse libimobiledevice))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (build-system gnu-build-system)
     (home-page "https://libimobiledevice.org/")
     (synopsis "Mount iOS devices")
@@ -476,11 +461,9 @@ iOS devices and access their contents.")
                (base32
                 "17idzpxrvkbff0jpynf35df95lh7wsm8vndynp63bxib2w09gv60"))))
     (inputs
-     `(("libplist" ,libplist)
-       ("libusb" ,libusb)
-       ("libimobiledevice" ,libimobiledevice)))
+     (list libplist libusb libimobiledevice))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (build-system gnu-build-system)
     (home-page "https://libimobiledevice.org/")
     (synopsis "Multiplex connections over USB to an iOS device")
@@ -503,12 +486,12 @@ over USB.")
                "0a1jlf5b2c2vylkvdd3cxjs20a96jlbrdyx7rwai5rzmcdpszd6y"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("libgcrypt" ,libgcrypt)))
+     (list libgcrypt))
     (propagated-inputs
      ;; libmtp.pc refers to all these.
-     `(("libusb" ,libusb)))
+     (list libusb))
     (arguments
      `(#:configure-flags
        (list "--disable-static"
@@ -549,13 +532,9 @@ proposed for standardization.")
           (string-append "ID3TAG_CFLAGS=-I" libid3tag "/include")
           (string-append "ID3TAG_LIBS=-L" libid3tag "/lib -lid3tag -lz")))))
     (inputs
-     `(("gtk+" ,gtk+)
-       ("flac" ,flac)
-       ("libvorbis" ,libvorbis)
-       ("libid3tag" ,libid3tag)
-       ("libmtp" ,libmtp)))
+     (list gtk+ flac libvorbis libid3tag libmtp))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "http://gmtp.sourceforge.net/")
     (synopsis "Simple graphical MTP client")
     (description "gMTP is a simple graphical client for the Media Transfer Protocol
@@ -581,10 +560,7 @@ devices.")
      `(("libusb" ,libusb)
        ("udev" ,eudev)))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf automake libtool pkg-config))
     (home-page "https://github.com/libusb/hidapi")
     (synopsis "HID API library")
     (description
@@ -639,11 +615,9 @@ HID-Class devices.")
                      (string-append "--prefix=" (assoc-ref outputs "out"))
                      "--single-version-externally-managed" "--root=/"))))))
     (inputs
-     `(("hidapi" ,hidapi)
-       ("libusb" ,libusb)
-       ("eudev" ,eudev)))
+     (list hidapi libusb eudev))
     (native-inputs
-     `(("python-cython" ,python-cython)))
+     (list python-cython))
     (home-page "https://github.com/trezor/cython-hidapi")
     (synopsis "Cython interface to hidapi")
     (description "This package provides a Cython interface to @code{hidapi}.")

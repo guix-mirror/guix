@@ -86,9 +86,9 @@
      `(("pkg-config" ,pkg-config)
        ("python" ,python-wrapper)))
     (inputs
-     `(("mesa" ,mesa)))
+     (list mesa))
     (propagated-inputs
-     `(("libxkbcommon" ,libxkbcommon)))
+     (list libxkbcommon))
     (synopsis "General-purpose library for WPE")
     (description "LibWPE is general-purpose library specifically developed for
 the WPE-flavored port of WebKit.")
@@ -110,12 +110,9 @@ the WPE-flavored port of WebKit.")
     (arguments
      `(#:tests? #f))                    ;no tests
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("glib" ,glib)
-       ("libwpe" ,libwpe)
-       ("mesa" ,mesa)
-       ("wayland" ,wayland)))
+     (list glib libwpe mesa wayland))
     (home-page "https://wpewebkit.org/")
     (synopsis "Wayland WPE backend")
     (description
@@ -317,8 +314,7 @@ acceleration in mind, leveraging common 3D graphics APIs for best performance.")
        ("docbook-xml" ,docbook-xml) ; For documentation generation
        ("ruby" ,ruby)))
     (propagated-inputs
-     `(("gtk+" ,gtk+)
-       ("libsoup" ,libsoup)))
+     (list gtk+ libsoup))
     (inputs
      `(("at-spi2-core" ,at-spi2-core)
        ("bubblewrap" ,bubblewrap)

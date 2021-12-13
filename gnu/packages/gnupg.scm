@@ -204,8 +204,7 @@ generation.")
         "1r1lvcp67gn5lfrj1g388sd77ca6qwnmxndirdysd71gk362z34f"))))
     (build-system gnu-build-system)
     (propagated-inputs
-     `(("libgpg-error" ,libgpg-error)
-       ("pth" ,pth)))
+     (list libgpg-error pth))
     (home-page "https://gnupg.org")
     (synopsis
      "IPC library used by GnuPG and related software")
@@ -233,9 +232,9 @@ provided.")
         "12x40y9ihs8nw2xs2y2vjfw90mhikbm5rvabma0dh5frybk87mns"))))
     (build-system gnu-build-system)
     (propagated-inputs
-     `(("libgpg-error" ,libgpg-error)))
+     (list libgpg-error))
     (native-inputs
-     `(("libgpg-error" ,libgpg-error)))
+     (list libgpg-error))
     (arguments
      `(#:configure-flags
        (list ,@(if (%current-target-system)
@@ -291,19 +290,19 @@ compatible to GNU Pth.")
                 "1111ry31gaxv76miqsy6l0kwxwlx8sz0jk41jhyrjwx649p6sqyc"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("gnutls" ,gnutls)
-       ("libassuan" ,libassuan)
-       ("libgcrypt" ,libgcrypt)
-       ("libgpg-error" ,libgpg-error)
-       ("libksba" ,libksba)
-       ("npth" ,npth)
-       ("openldap" ,openldap)
-       ("pcsc-lite" ,pcsc-lite)
-       ("readline" ,readline)
-       ("sqlite" ,sqlite)
-       ("zlib" ,zlib)))
+     (list gnutls
+           libassuan
+           libgcrypt
+           libgpg-error
+           libksba
+           npth
+           openldap
+           pcsc-lite
+           readline
+           sqlite
+           zlib))
    (arguments
     `(#:configure-flags '(;; Otherwise, the test suite looks for the `gpg`
                           ;; executable in its installation directory in
@@ -380,11 +379,7 @@ libskba (working with X.509 certificates and CMS data).")
               (patches (search-patches "gnupg-1-build-with-gcc10.patch"))))
     (native-inputs '())
     (inputs
-     `(("zlib" ,zlib)
-       ("bzip2" ,bzip2)
-       ("curl" ,curl)
-       ("readline" ,readline)
-       ("libgpg-error" ,libgpg-error)))
+     (list zlib bzip2 curl readline libgpg-error))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -406,12 +401,12 @@ libskba (working with X.509 certificates and CMS data).")
        (base32 "1bg13l5s8x9p1v0jyv29n84bay27pflindpzjsc9gj7i4wdkrg7f"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("gnupg" ,gnupg)))
+     (list gnupg))
     (propagated-inputs
      ;; Needs to be propagated because gpgme.h includes gpg-error.h.
-     `(("libgpg-error" ,libgpg-error)))
+     (list libgpg-error))
     (inputs
-     `(("libassuan" ,libassuan)))
+     (list libassuan))
     (home-page "https://www.gnupg.org/related_software/gpgme/")
     (synopsis "Library providing simplified access to GnuPG functionality")
     (description
@@ -494,14 +489,9 @@ gpgpme starting with version 1.7.")
                          (search-input-file inputs "bin/libgcrypt-config"))
                         ":" (getenv "PATH")))))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("texinfo" ,texinfo)
-       ("guile" ,guile-3.0)))
+     (list pkg-config autoconf automake texinfo guile-3.0))
     (inputs
-     `(("guile" ,guile-3.0)
-       ("libgcrypt" ,libgcrypt)))
+     (list guile-3.0 libgcrypt))
     (synopsis "Cryptography library for Guile using Libgcrypt")
     (description
      "Guile-Gcrypt provides a Guile interface to a subset of the
@@ -515,22 +505,22 @@ interface (FFI) of Guile.")
   (package (inherit guile-gcrypt)
     (name "guile2.0-gcrypt")
     (native-inputs
-     `(("guile" ,guile-2.0)
-       ,@(alist-delete "guile" (package-native-inputs guile-gcrypt))))
+     (modify-inputs (package-native-inputs guile-gcrypt)
+       (replace "guile" guile-2.0)))
     (inputs
-     `(("guile" ,guile-2.0)
-       ,@(alist-delete "guile" (package-inputs guile-gcrypt))))))
+     (modify-inputs (package-inputs guile-gcrypt)
+       (replace "guile" guile-2.0)))))
 
 (define-public guile2.2-gcrypt
   (package
     (inherit guile-gcrypt)
     (name "guile2.2-gcrypt")
     (native-inputs
-     `(("guile" ,guile-2.2)
-       ,@(alist-delete "guile" (package-native-inputs guile-gcrypt))))
+     (modify-inputs (package-native-inputs guile-gcrypt)
+       (replace "guile" guile-2.2)))
     (inputs
-     `(("guile" ,guile-2.2)
-       ,@(alist-delete "guile" (package-inputs guile-gcrypt))))))
+     (modify-inputs (package-inputs guile-gcrypt)
+       (replace "guile" guile-2.2)))))
 
 (define-public python-gpg
   (package
@@ -553,9 +543,9 @@ interface (FFI) of Guile.")
              #t)))
        #:tests? #f)) ; No test suite.
     (inputs
-     `(("gpgme" ,gpgme)))
+     (list gpgme))
     (native-inputs
-     `(("swig" ,swig)))
+     (list swig))
     (home-page (package-home-page gpgme))
     (synopsis "Python bindings for GPGME GnuPG cryptography library")
     (description "This package provides Python bindings to the GPGME GnuPG
@@ -591,9 +581,9 @@ distributed separately.")
            (lambda _ (invoke "make" "check"))))))
     (build-system python-build-system)
     (native-inputs
-     `(("gnupg" ,gnupg-1)))
+     (list gnupg-1))
     (inputs
-     `(("gpgme" ,gpgme)))
+     (list gpgme))
     (home-page "https://launchpad.net/pygpgme")
     (synopsis "Python module for working with OpenPGP messages")
     (description
@@ -632,7 +622,7 @@ decrypt messages using the OpenPGP format by making use of GPGME.")
                (invoke "python"
                        "test_gnupg.py" "--no-doctests")))))))
     (native-inputs
-     `(("gnupg" ,gnupg)))
+     (list gnupg))
     (home-page "https://pythonhosted.org/python-gnupg/index.html")
     (synopsis "Wrapper for the GNU Privacy Guard")
     (description
@@ -664,14 +654,11 @@ and signature functionality from Python programs.")
              (delete-file "t/encrypt_symmetrically.t")
              #t)))))
     (inputs
-     `(("gnupg" ,gnupg-1)))
+     (list gnupg-1))
     (propagated-inputs
-     `(("perl-moo" ,perl-moo)
-       ("perl-moox-handlesvia" ,perl-moox-handlesvia)
-       ("perl-moox-late" ,perl-moox-late)))
+     (list perl-moo perl-moox-handlesvia perl-moox-late))
     (native-inputs
-     `(("which" ,which)
-       ("perl-module-install" ,perl-module-install)))
+     (list which perl-module-install))
     (home-page "https://metacpan.org/release/GnuPG-Interface")
     (synopsis "Perl interface to GnuPG")
     (description "@code{GnuPG::Interface} and its associated modules are
@@ -741,12 +728,12 @@ PGP keysigning parties.")
      ;; 'configure phase.
      `(("autoconf" ,autoconf-wrapper)
        ("automake" ,automake)))
-    (inputs `(("perl" ,perl)
-              ("perl-text-template" ,perl-text-template)
-              ("perl-mime-tools" ,perl-mime-tools)
-              ("perl-gnupg-interface" ,perl-gnupg-interface)
-              ("perl-net-idn-encode" ,perl-net-idn-encode)
-              ("libmd" ,libmd)))
+    (inputs (list perl
+                  perl-text-template
+                  perl-mime-tools
+                  perl-gnupg-interface
+                  perl-net-idn-encode
+                  libmd))
     (arguments
      `(#:tests? #f ; no test suite
        #:phases
@@ -841,11 +828,10 @@ including tools for signing keys, keyring analysis, and party preparation.
     (arguments
      `(#:configure-flags '("--enable-pinentry-tty")))
     (inputs
-     `(("ncurses" ,ncurses)
-       ("libassuan" ,libassuan)
-       ("libsecret" ,libsecret "out")))
+     (list ncurses libassuan
+           `(,libsecret "out")))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://gnupg.org/aegypten2/")
     (synopsis "GnuPG's interface to passphrase input")
     (description
@@ -873,9 +859,8 @@ enter a passphrase when required by @code{gpg} or other software.")))
     (arguments
      `(#:configure-flags '("--enable-fallback-curses")))
     (inputs
-     `(("gtk+" ,gtk+-2)
-       ("glib" ,glib)
-       ,@(package-inputs pinentry-tty)))
+     (modify-inputs (package-inputs pinentry-tty)
+       (prepend gtk+-2 glib)))
     (description
      "Pinentry provides a console and a GTK+ GUI that allows users to enter a
 passphrase when @code{gpg} is run and needs it.")))
@@ -885,10 +870,8 @@ passphrase when @code{gpg} is run and needs it.")))
     (inherit pinentry-tty)
     (name "pinentry-gnome3")
     (inputs
-     `(("gtk+" ,gtk+-2)
-       ("gcr" ,gcr)
-       ("glib" ,glib)
-       ,@(package-inputs pinentry-tty)))
+     (modify-inputs (package-inputs pinentry-tty)
+       (prepend gtk+-2 gcr glib)))
     (arguments
      `(#:configure-flags '("--enable-pinentry-gnome3"
                            "--enable-fallback-curses")))
@@ -904,8 +887,8 @@ software.")))
     (arguments
      `(#:configure-flags '("--enable-fallback-curses")))
     (inputs
-     `(("qtbase" ,qtbase-5)
-       ,@(package-inputs pinentry-tty)))
+     (modify-inputs (package-inputs pinentry-tty)
+       (prepend qtbase-5)))
   (description
    "Pinentry provides a console and a Qt GUI that allows users to enter a
 passphrase when @code{gpg} is run and needs it.")))
@@ -928,8 +911,8 @@ passphrase when @code{gpg} is run and needs it.")))
        ("gettext" ,gettext-minimal)
        ,@(package-native-inputs pinentry-tty)))
     (inputs
-     `(("efl" ,efl)
-       ,@(package-inputs pinentry-tty)))
+     (modify-inputs (package-inputs pinentry-tty)
+       (prepend efl)))
     (description
    "Pinentry provides a console and a graphical interface for @acronym{EFL,
 the Enlightenment Foundation Libraries} that allows users to enter a
@@ -972,13 +955,8 @@ passphrase when @code{gpg} is run and needs it.")))
            (lambda* rest
              (invoke "make" "installcheck"))))))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("autoconf-archive" ,autoconf-archive)
-       ("automake" ,automake)
-       ("pkg-config" ,pkg-config)
-       ("texinfo" ,texinfo)))
-    (inputs `(("guile" ,guile-3.0)
-              ("rofi" ,rofi)))
+     (list autoconf autoconf-archive automake pkg-config texinfo))
+    (inputs (list guile-3.0 rofi))
     (synopsis "Rofi GUI for GnuPG's passphrase input")
     (description "Pinentry-rofi is a simple graphical user interface for
 passphrase or PIN when required by @code{gpg} or other software.  It is using
@@ -1002,12 +980,9 @@ with @code{rofi-pass} a good front end for @code{password-store}.")
         (base32 "1faxaydhc9lr97b2r3sylcy320bn54g4a5p727y3227mz3gg1mn1"))))
     (build-system meson-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("bemenu" ,bemenu)
-       ("libassuan" ,libassuan)
-       ("libgpg-error" ,libgpg-error)
-       ("popt" ,popt)))
+     (list bemenu libassuan libgpg-error popt))
     (home-page "https://github.com/t-8ch/pinentry-bemenu")
     (synopsis "Pinentry implementation based on @code{bemenu}")
     (description
@@ -1068,7 +1043,7 @@ them to transform your existing public key into a secret key.")
        #:make-flags (list ,(string-append "CC=" (cc-for-target))
                           (string-append "DESTDIR=" (assoc-ref %outputs "out")))))
     (inputs
-     `(("zlib" ,zlib)))
+     (list zlib))
     (home-page "https://www.mew.org/~kazu/proj/pgpdump/en/")
     (synopsis "PGP packet visualizer")
     (description "pgpdump displays the sequence of OpenPGP or PGP version 2
@@ -1101,7 +1076,7 @@ however, pgpdump produces more detailed and easier to understand output.")
                  `("PATH" ":" prefix (,(string-append gnupg "/bin"))))
                #t))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
      `(("gnupg" ,gnupg)
        ("gpgme" ,gpgme)
@@ -1170,7 +1145,7 @@ files, to verify signatures, and to manage the private and public keys.")
        ("perl-xml-twig" ,perl-xml-twig)
        ("torsocks" ,torsocks)))
     (native-inputs
-     `(("xorg-server" ,xorg-server-for-tests)))
+     (list xorg-server-for-tests))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -1251,8 +1226,7 @@ over.")
                #t))))
        #:tests? #f)) ; no test phase
     (inputs
-     `(("gnupg" ,gnupg)
-       ("perl" ,perl)))
+     (list gnupg perl))
     (home-page "https://joeyh.name/code/jetring/")
     (synopsis "GnuPG keyring maintenance using changesets")
     (description

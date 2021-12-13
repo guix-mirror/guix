@@ -62,9 +62,7 @@
             (sha256 (base32
                      "1syyvh3k659xf1hdv9pilnnhbbhs6vfapayp4xgdcc8mfgf9v4gz"))))
    (build-system gnu-build-system)
-   (inputs `(("nettle" ,nettle)
-             ("shishi" ,shishi)
-             ("zlib" ,zlib)))
+   (inputs (list nettle shishi zlib))
    (synopsis "Generic Security Service library")
    (description
     "The GNU Generic Security Service provides a free implementation of the
@@ -92,18 +90,14 @@ the underlying security implementation.")
     `(#:configure-flags '("--with-gssapi-impl=mit"
                           "--disable-static")))
    (inputs
-    `(("libgcrypt" ,libgcrypt)
-      ("libidn" ,libidn)
-      ("libntlm" ,libntlm)
-      ("mit-krb5" ,mit-krb5)
-      ("zlib" ,zlib)))
+    (list libgcrypt libidn libntlm mit-krb5 zlib))
    (native-inputs
-    `(;; Needed for cross compiling.
-      ("libgcrypt" ,libgcrypt)))
+    (list ;; Needed for cross compiling.
+          libgcrypt))
    (propagated-inputs
     ;; Propagate GnuTLS because libgnutls.la reads `-lnettle', and Nettle is a
     ;; propagated input of GnuTLS.
-    `(("gnutls" ,gnutls)))
+    (list gnutls))
    (synopsis "Simple Authentication and Security Layer library")
    (description
     "GNU SASL is an implementation of the Simple Authentication and

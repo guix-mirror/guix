@@ -39,9 +39,8 @@
               (sha256
                (base32 "060q42lf1bx403smxm97cz8r4ksq942mq5z708vavy6syv3fkap4"))))
     (build-system gnu-build-system)
-    (inputs `(("readline" ,readline)))
-    (native-inputs `(("automake" ,automake)
-                     ("autoconf" ,autoconf)))
+    (inputs (list readline))
+    (native-inputs (list automake autoconf))
     (home-page  "https://git.pengutronix.de/?p=tools/microcom.git")
     (synopsis "Minimalistic serial line terminal program")
  (description "Microcom is a minimalistic terminal program for accessing

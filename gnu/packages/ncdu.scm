@@ -37,7 +37,7 @@
                (base32
                 "1m0gk09jaz114piidiw8fkg0id5l6nhz1cg5nlaf1yl3l595g49b"))))
     (build-system gnu-build-system)
-    (inputs `(("ncurses" ,ncurses)))
+    (inputs (list ncurses))
     (synopsis "Ncurses-based disk usage analyzer")
     (description
      "Ncdu is a disk usage analyzer with an ncurses interface, aimed to be

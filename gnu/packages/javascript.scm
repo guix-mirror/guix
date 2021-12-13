@@ -87,7 +87,7 @@
                   (string-append "--outdir=" target)
                   (find-files "ts" "\\.ts$"))))))
     (native-inputs
-     `(("esbuild" ,esbuild)))
+     (list esbuild))
     (home-page "https://github.com/zorkow/context-menu")
     (synopsis "Generic context menu")
     (description "This package provides a reimplementation of the MathJax
@@ -219,7 +219,7 @@ be able to view it naturally and easily.")))
                    (string-append "--outfile=" target "/index.min.js")
                    "index.js")))))
     (native-inputs
-     `(("esbuild" ,esbuild)))
+     (list esbuild))
     (home-page "https://github.com/tj/commander.js")
     (synopsis "Library for node.js command-line interfaces")
     (description "Commander.js aims to be the complete solution for node.js
@@ -259,7 +259,7 @@ command-line interfaces.  ")
                      (string-append "--outfile=" target "/dom-parser.min.js")
                      "dom-parser.js")))))
       (native-inputs
-       `(("esbuild" ,esbuild)))
+       (list esbuild))
       (home-page "https://github.com/zorkow/xmldom/")
       (synopsis "DOM parser and XML serializer")
       (description "This is a fork of the xmldom library.  It allows the use
@@ -428,7 +428,7 @@ detection.")
      `(#:javascript-files '("media/js/dataTables.bootstrap.js"
                             "media/js/jquery.dataTables.js")))
     (native-inputs
-     `(("unzip" ,unzip)))
+     (list unzip))
     (home-page "https://datatables.net")
     (synopsis "DataTables plug-in for jQuery")
     (description "DataTables is a table enhancing plug-in for the jQuery
@@ -578,7 +578,7 @@ external server.")
              (string-append "prefix=" (assoc-ref %outputs "out")))
        #:tests? #f))                    ; no tests
     (inputs
-     `(("readline" ,readline)))
+     (list readline))
     (home-page "https://mujs.com/")
     (synopsis "JavaScript interpreter written in C")
     (description "MuJS is a lightweight Javascript interpreter designed for

@@ -38,7 +38,7 @@
     (build-system gnu-build-system)     ; actually, just a makefile
     (outputs '("out" "doc"))
     (native-inputs
-     `(("ghostscript" ,ghostscript)))
+     (list ghostscript))
     (arguments
      `(#:modules ((guix build utils)
                   (guix build gnu-build-system)

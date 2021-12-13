@@ -162,7 +162,7 @@ code is Valgrind-clean and unit tested.")
     `(#:configure-flags '("--disable-static")))
 
    ;; libpng.la says "-lz", so propagate it.
-   (propagated-inputs `(("zlib" ,zlib)))
+   (propagated-inputs (list zlib))
 
    (synopsis "Library for handling PNG files")
    (description
@@ -226,10 +226,10 @@ library.  It supports almost all PNG features and is extensible.")
                    (base32
                     "1dh0250mw9b2hx7cdmnb2blk7ddl49n6vx8zz7jdmiwxy38v4fw2"))))))
     (native-inputs
-     `(("libtool" ,libtool)))
+     (list libtool))
     ;; libpng.la says "-lz", so propagate it.
     (propagated-inputs
-     `(("zlib" ,zlib)))
+     (list zlib))
     (synopsis "APNG patch for libpng")
     (description
      "APNG (Animated Portable Network Graphics) is an unofficial
@@ -284,8 +284,7 @@ APNG patch provides APNG support to libpng.")
                (string-append (assoc-ref outputs "out") "/")))
             #t)))))
    (inputs
-    `(("libpng" ,libpng)
-      ("zlib" , zlib)))
+    (list libpng zlib))
    (home-page "https://pmt.sourceforge.io/pngcrush")
    (synopsis "Utility to compress PNG files")
    (description "Pngcrush optimizes @acronym{PNG, Portable Network Graphics}
@@ -340,7 +339,7 @@ images.  It can further losslessly compress them by as much as 40%.")
                  (install-file "pnglite.h" include)
                  (install-file "README.md" doc)
                  #t))))))
-      (inputs `(("zlib" ,zlib)))
+      (inputs (list zlib))
       (home-page "https://github.com/dankar/pnglite")
       (synopsis "Pretty small png library")
       (description "A pretty small png library.
@@ -390,12 +389,9 @@ and other PNG optimizers.")
        #:configure-flags
        '("--with-openmp" "--with-lcms2")))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("libpng" ,libpng)
-       ("zlib" , zlib)
-       ("lcms" ,lcms)
-       ("libimagequant" ,libimagequant)))
+     (list libpng zlib lcms libimagequant))
     (home-page "https://pngquant.org/")
     (synopsis "Utility and library for lossy compressing PNG images")
     (description "pngquant is a PNG compressor that significantly reduces file
@@ -566,8 +562,7 @@ maximum quality factor.")
                 "1hjm8lwap7bjyyxsyi94fh5817xzqhk4kb5y0b7mb6675xw10prk"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libpng" ,libpng)
-       ("jasper" ,jasper)))
+     (list libpng jasper))
     (arguments
      `(#:tests? #t)) ; No tests.
     (home-page "http://icns.sourceforge.net/")
@@ -633,11 +628,11 @@ collection of tools for doing simple manipulations of TIFF images.")
         (base32 "12ddln72z5l3icz0i9rpsfkg5xik8fcwcn8lb0cp3jigjxi8gvkg"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("gnuplot" ,gnuplot)             ;needed for test suite
-       ("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)))
+     (list gnuplot ;needed for test suite
+           autoconf
+           automake
+           libtool
+           pkg-config))
     (inputs
      `(("giflib" ,giflib)
        ("libjpeg" ,libjpeg-turbo)
@@ -861,12 +856,9 @@ test suite, including conformance tests (following Rec. ITU-T T.803 | ISO/IEC
                (("subsampling.*") "")
                (("zoo.*") "")))))))
     (native-inputs
-     `(("openjpeg-data" ,openjpeg-data))) ; Files for test-suite
+     (list openjpeg-data)) ; Files for test-suite
     (inputs
-     `(("lcms" ,lcms)
-       ("libpng" ,libpng)
-       ("libtiff" ,libtiff)
-       ("zlib" ,zlib)))
+     (list lcms libpng libtiff zlib))
     (synopsis "OPENJPEG Library and Applications")
     (description "OpenJPEG is an implementation of JPEG 2000 codec written in C
 language.  It has been developed in order to promote the use of JPEG 2000, a
@@ -981,7 +973,7 @@ compose, and analyze GIF images.")
                    (("^EXECINPUT=.*")
                     (format #f "EXECINPUT=~a~%" execinput)))
                  (invoke "sh" "testit.sh"))))))))
-    (native-inputs `(("drm-tools" ,drm-tools))) ;for tests
+    (native-inputs (list drm-tools)) ;for tests
     (home-page "http://libuemf.sourceforge.net/")
     (synopsis "Library for working with WFM, EMF and EMF+ images")
     (description "The libUEMF library is a portable C99 implementation for
@@ -1002,7 +994,7 @@ Metafile}, and @acronym{EMF+, Enhanced Metafile Plus} files.")
                (base32
                 "0cnksimmmjngdrys302ik1385sg1sj4i0gxivzldhgwd46n7x2kh"))))
     (build-system gnu-build-system)
-    (inputs `(("perl" ,perl)))          ;package ships some perl tools
+    (inputs (list perl))          ;package ships some perl tools
     (home-page "http://giflib.sourceforge.net/")
     (synopsis "GIF decompression library")
     (description
@@ -1074,8 +1066,7 @@ more modular, simple, and flexible.")
                 "1b4bmbmj52glq0s898lppkpzxlprq9aav49r06j2wx4dv3212rhp"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libx11" ,libx11)
-       ("imlib2" ,imlib2)))
+     (list libx11 imlib2))
     (home-page
      ;; This vanished page is universally accepted as giblib's home despite not
      ;; mentioning the package once.
@@ -1159,8 +1150,7 @@ supplies a generic doubly-linked list and some string functions.")
                            "-I" (assoc-ref %build-inputs "libjxr") "/include/jxrlib"))
       #:tests? #f)) ; no check target
    (native-inputs
-    `(("pkg-config" ,pkg-config)
-      ("unzip" ,unzip)))
+    (list pkg-config unzip))
    (inputs
     `(("libjpeg" ,libjpeg-turbo)
       ("libjxr" ,libjxr)
@@ -1281,12 +1271,9 @@ graphics image formats like PNG, BMP, JPEG, TIFF and others.")
       (arguments
        `(#:tests? #f))                  ; No test target.
       (native-inputs
-       `(("doxygen" ,doxygen)))
+       (list doxygen))
       (inputs
-       `(("fftw" ,fftw)
-         ("fftwf" ,fftwf)
-         ("hdf5" ,hdf5)
-         ("vigra" ,vigra)))
+       (list fftw fftwf hdf5 vigra))
       (synopsis "C interface to the VIGRA computer vision library")
       (description
        "This package provides a C interface to the VIGRA C++ computer vision
@@ -1317,9 +1304,7 @@ language bindings to VIGRA.")
        ("libpng" ,libpng)
        ("libtiff" ,libtiff)))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
+     (list autoconf automake libtool))
     (arguments
      '(#:configure-flags '("--enable-libwebpmux"
                            "--enable-libwebpdemux"
@@ -1384,11 +1369,9 @@ channels.")
                     (lib (string-append out "/lib")))
                (for-each delete-file (find-files lib "\\.a$"))))))))
     (propagated-inputs
-     `(("expat" ,expat)
-       ("zlib" ,zlib)))
+     (list expat zlib))
     (native-inputs
-     `(("googletest" ,googletest)
-       ("python" ,python)))
+     (list googletest python))
     (home-page "https://www.exiv2.org/")
     (synopsis "Library and command-line utility to manage image metadata")
     (description
@@ -1423,7 +1406,7 @@ and XMP metadata of images in various formats.")
          (add-before 'configure 'change-directory
            (lambda _ (chdir "DevIL") #t)))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
      `(("lcms" ,lcms)
        ("libjpeg" ,libjpeg-turbo)
@@ -1477,9 +1460,7 @@ ISO/IEC 15444-1).")
          (base32 "0pwgf1mybpa3fs13p6jryzm32vfldyql9biwaypqdcimlnlmyk20"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
+     (list autoconf automake libtool))
     (synopsis "Scaling, colorspace conversion, and dithering library")
     (description "Zimg implements the commonly required image processing basics
 of scaling, colorspace conversion, and depth conversion.  A simple API enables
@@ -1504,7 +1485,7 @@ the programmer.")
        (sha256
         (base32 "0yys55f9i9g3wjjg0j2m0p0k21zwnid8520a8lrr30khm4k5gibp"))))
     (build-system cmake-build-system)
-    (inputs `(("freeimage" ,freeimage)))
+    (inputs (list freeimage))
     (arguments
      '(#:phases (modify-phases %standard-phases
                   (add-after 'unpack 'fix-tests
@@ -1583,8 +1564,7 @@ changed, making the embedding resistant against first-order statistical tests.")
             #t))))
     (build-system gnu-build-system)
     (inputs
-     `(("libpng" ,libpng)
-       ("zlib" ,zlib)))
+     (list libpng zlib))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
@@ -1624,7 +1604,7 @@ PNG, and performs PNG integrity checks and corrections.")
              (rename-file "imgp.py" "imgp")
              #t)))))
     (inputs
-     `(("python-pillow" ,python-pillow)))
+     (list python-pillow))
     (home-page "https://github.com/jarun/imgp")
     (synopsis "High-performance CLI batch image resizer & rotator")
     (description
@@ -1683,7 +1663,7 @@ is hereby granted."))))
                 "0pbv6pc97kbj7ib31qcwi7lnmm9xg5y3b11aasmkhfjvf7rgdy0n"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("nasm" ,nasm)))
+     (list nasm))
     (arguments
      `(#:configure-flags '("-DCMAKE_INSTALL_LIBDIR:PATH=lib"
                            "-DENABLE_STATIC=0"
@@ -1768,7 +1748,7 @@ and decompress to 32-bit and big-endian pixel buffers (RGBX, XBGR, etc.).")
              #t))
          (delete 'configure))))
     (inputs
-     `(("zlib" ,zlib)))
+     (list zlib))
     (synopsis "Library for reading and writing files in the nifti-1 format")
     (description "Niftilib is a set of i/o libraries for reading and writing
 files in the nifti-1 data format - a binary file format for storing
@@ -1856,10 +1836,9 @@ parsing, viewing, modifying, and saving this metadata.")
          "1z77igs60lz106vsf6wsayxjafxm3llf2lm4dpvsqyyrxybfq191"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("qttools" ,qttools)))
+     (list qttools))
     (inputs
-     `(("qtbase" ,qtbase-5)
-       ("qtsvg" ,qtsvg)))
+     (list qtbase-5 qtsvg))
     (arguments
      `(#:tests? #f))                    ;no tests
     (home-page "https://github.com/flameshot-org/flameshot")
@@ -1891,15 +1870,13 @@ Features:
         (base32 "1s2lp3bz30svqdg6467jvncim0qgl0q1b1nqxnnci6kljbp5g0xh"))))
     (build-system meson-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("scdoc" ,scdoc)
-       ("glib" ,glib "bin"))) ; for 'glib-compile-resources'
+     (list pkg-config scdoc
+           `(,glib "bin"))) ; for 'glib-compile-resources'
     (inputs
-     `(("gtk+" ,gtk+)
-       ("libnotify" ,libnotify)))
+     (list gtk+ libnotify))
     (propagated-inputs
      ;; Needed to properly render the icons.
-     `(("font-awesome" ,font-awesome)))
+     (list font-awesome))
     (home-page "https://github.com/jtheoof/swappy")
     (synopsis "Grab and edit on the fly snapshots of a Wayland compositor")
     (description
@@ -1934,8 +1911,8 @@ stdout.")
               (("/bin/rm")
                (which "rm")))
             #t)))))
-   (native-inputs `(("perl" ,perl)))    ; only for tests
-   (inputs `(("libx11" ,libx11)))
+   (native-inputs (list perl))    ; only for tests
+   (inputs (list libx11))
    (home-page "https://www.lcdf.org/gifsicle/")
    (synopsis "Edit GIF images and animations")
    (description "Gifsicle is a command-line GIF image manipulation tool that:
@@ -1993,12 +1970,8 @@ identical visual appearance.")
      (sha256
       (base32 "1l4gwvvc0zvg5b6f6w92xjhmwj7cg9hlgrf43lc7ygaz8dh6cmzg"))))
    (build-system meson-build-system)
-   (native-inputs `(("pkg-config" ,pkg-config)
-                    ("scdoc" ,scdoc)))
-   (inputs `(("cairo" ,cairo)
-             ("libjpeg-turbo" ,libjpeg-turbo)
-             ("wayland" ,wayland)
-             ("wayland-protocols" ,wayland-protocols)))
+   (native-inputs (list pkg-config scdoc))
+   (inputs (list cairo libjpeg-turbo wayland wayland-protocols))
    (home-page "https://github.com/emersion/grim")
    (synopsis "Create screenshots from a Wayland compositor")
    (description "grim can create screenshots from a Wayland compositor.")
@@ -2020,13 +1993,9 @@ identical visual appearance.")
       (base32 "00dx6ds1227qnxqrw58k0am78q8fa49rgp1zingrkjcbpbi7g475"))))
    (build-system meson-build-system)
    (native-inputs
-    `(("pkg-config" ,pkg-config)
-      ("scdoc" ,scdoc)))
+    (list pkg-config scdoc))
    (inputs
-    `(("cairo" ,cairo)
-      ("libxkbcommon" ,libxkbcommon)
-      ("wayland" ,wayland)
-      ("wayland-protocols" ,wayland-protocols)))
+    (list cairo libxkbcommon wayland wayland-protocols))
    (home-page "https://github.com/emersion/slurp")
    (synopsis "Select a region in a Wayland compositor")
    (description "Slurp can select a region in a Wayland compositor and print it
@@ -2057,9 +2026,8 @@ to the standard output.  It works well together with grim.")
        (list (string-append "--with-rgbtxt="
                             (assoc-ref %build-inputs "xorg-rgb")
                             "/share/X11/rgb.txt"))))
-    (inputs `(("xorg-rgb" ,xorg-rgb)
-              ("libpng" ,libpng)))
-    (native-inputs `(("pngsuite" ,pngsuite)))
+    (inputs (list xorg-rgb libpng))
+    (native-inputs (list pngsuite))
     (home-page "http://sng.sourceforge.net")
     (synopsis "Markup language for representing PNG contents")
     (description "SNG (Scriptable Network Graphics) is a minilanguage designed
@@ -2087,9 +2055,7 @@ losslessly translates between SNG and PNG.")
         (base32 "0jy2iigarskwfhskyladbb6l92x1fb3i3vz4bvcks0za4w5hfxk5"))))
     (build-system meson-build-system)
     (native-inputs
-     `(("cmake" ,cmake)
-       ("doctest" ,doctest)
-       ("gcc" ,gcc-8)))
+     (list cmake doctest gcc-8))
     (home-page "https://github.com/Nheko-Reborn/blurhash")
     (synopsis "C++ blurhash encoder/decoder")
     (description "Simple encoder and decoder for blurhashes.  Contains a
@@ -2164,10 +2130,9 @@ wrapper with a more convenient interface on top.")
         (base32 "1q66cksms4l62y0wizb8vfavhmf7kyfgcfkynil3n99s0hny1aqp"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libpng" ,libpng)
-       ("perl" ,perl)))
+     (list libpng perl))
     (propagated-inputs
-     `(("perl-libwww" ,perl-libwww)))
+     (list perl-libwww))
     (home-page "https://www.nongnu.org/icoutils/")
     (synopsis "Extract and convert bitmaps from Windows icon and cursor files")
     (description "Icoutils are a set of program for extracting and converting
@@ -2250,20 +2215,14 @@ by AOM, including with alpha.")
     (arguments
      `(#:tests? #f)) ;no test target although there is a tests folder
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf automake libtool pkg-config))
     (inputs
      `(("gdk-pixbuf" ,gdk-pixbuf) ;optional
        ("libjpeg" ,libjpeg-turbo)
        ("libpng" ,libpng)))
      ;; Propagated to satisfy 'libheif.pc'.
      (propagated-inputs
-      `(("dav1d" ,dav1d)
-        ("libaom" ,libaom)
-        ("libde265" ,libde265)
-        ("x265" ,x265)))
+      (list dav1d libaom libde265 x265))
     (home-page "https://github.com/strukturag/libheif")
     (synopsis "HEIF and AVIF file format decoder and encoder")
     (description
@@ -2361,16 +2320,16 @@ GIF, TIFF, WEBP, BMP, PNG, XPM formats.")
        ("swig" ,swig)
        ("gettext" ,gettext-minimal)))
     (inputs
-     `(("gtk+" ,gtk+)
-       ("librsvg" ,librsvg)
-       ("hicolor-icon-theme" ,hicolor-icon-theme)
-       ("libmypaint" ,libmypaint)
-       ("mypaint-brushes" ,mypaint-brushes)
-       ("json-c" ,json-c)
-       ("lcms" ,lcms)
-       ("python-numpy" ,python-numpy)
-       ("python-pycairo" ,python-pycairo)
-       ("python-pygobject" ,python-pygobject)))
+     (list gtk+
+           librsvg
+           hicolor-icon-theme
+           libmypaint
+           mypaint-brushes
+           json-c
+           lcms
+           python-numpy
+           python-pycairo
+           python-pygobject))
     (home-page "http://mypaint.org/")
     (synopsis "Fast and simple painting app for artists")
     (description
@@ -2420,12 +2379,9 @@ Wacom-style graphics tablets.")
                    ,(search-path-as-string->list
                      (getenv "GUIX_PYTHONPATH"))))))))))
     (inputs
-     `(("perl-image-exiftool" ,perl-image-exiftool)
-       ("python" ,python)
-       ("python-tqdm" ,python-tqdm)))
+     (list perl-image-exiftool python python-tqdm))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-pytest-mock" ,python-pytest-mock)))
+     (list python-pytest python-pytest-mock))
     (home-page "https://github.com/ivandokov/phockup")
     (synopsis "Organize photos and videos in folders")
     (description "Phockup is a media sorting tool that uses creation date and

@@ -196,11 +196,7 @@
     (outputs
      '("out" "lib"))
     (native-inputs
-     `(("gperf" ,gperf)
-       ("pkg-config" ,pkg-config)
-       ("python-cython" ,python-cython)
-       ("python-sphinx" ,python-sphinx)
-       ("yasm" ,yasm)))
+     (list gperf pkg-config python-cython python-sphinx yasm))
     (inputs
      `(("boost" ,boost)
        ("curl" ,curl)

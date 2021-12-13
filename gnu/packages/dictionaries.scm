@@ -100,9 +100,7 @@
                              "vera.texi" "--force" "--html" "-o"
                              (string-append html "/vera.html"))))
       #:modules ((guix build utils))))
-    (native-inputs `(("texinfo" ,texinfo)
-                     ("tar" ,tar)
-                     ("gzip" ,gzip)))
+    (native-inputs (list texinfo tar gzip))
     (home-page "https://savannah.gnu.org/projects/vera/")
     (synopsis "List of acronyms")
     (description
@@ -167,7 +165,7 @@ work, such as sentence length and other readability measures.")
                (base32
                 "0chjqs3z9zs1w3l7b5lsaj682rgnkf9kibcbzhggqqcn1pbvl5sq"))))
     (build-system gnu-build-system)
-    (inputs `(("tk" ,tk)))
+    (inputs (list tk))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -290,9 +288,7 @@ and a Python library.")
                   (guix build utils))
        #:test-target "test"))
     (inputs
-     `(("curl" ,curl)
-       ("fribidi" ,fribidi)
-       ("rlwrap" ,rlwrap)))
+     (list curl fribidi rlwrap))
     (native-inputs
      `(("emacs" ,emacs-minimal)
        ("util-linux" ,util-linux)))     ; hexdump, for the test
@@ -329,12 +325,9 @@ translation engines from your terminal.")
            (lambda _
              (invoke "autoreconf" "-vfi"))))))
     (inputs
-     `(("libxml2" ,libxml2)))
+     (list libxml2))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf automake libtool pkg-config))
     (home-page "https://wiki.apertium.org/wiki/Lttoolbox")
     (synopsis "Lexical processing toolbox")
     (description "Lttoolbox is a toolbox for lexical processing, morphological
@@ -360,10 +353,7 @@ word (e.g. cats) into its lemma \"cat\" and the grammatical information
        (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libxml2" ,libxml2)
-       ("libxslt" ,libxslt)
-       ("lttoolbox" ,lttoolbox)
-       ("pcre" ,pcre)))
+     (list libxml2 libxslt lttoolbox pcre))
     (native-inputs
      `(("apertium-get"
         ,(origin
@@ -435,10 +425,7 @@ intelligible and easily correctable.")
      `(("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("glib" ,glib)
-       ("ncurses" ,ncurses)
-       ("readline" ,readline)
-       ("zlib" ,zlib)))
+     (list glib ncurses readline zlib))
     (home-page "https://dushistov.github.io/sdcv/")
     (synopsis "Console version of StarDict")
     (description "sdcv is simple text-based utility for work with dictionaries

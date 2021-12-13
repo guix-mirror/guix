@@ -62,8 +62,7 @@
                 "1cml5wqd99hm398gl8f147ccsck9v179l7a6vqjj4kfkdnja37sg"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)
-       ("perl-test-most" ,perl-test-most)))
+     (list perl-module-build perl-test-most))
     (home-page "https://metacpan.org/release/Math-MatrixReal")
     (synopsis "Manipulate NxN matrices of real numbers")
     (description "This package provides the @code{Math::MatrixReal} module.

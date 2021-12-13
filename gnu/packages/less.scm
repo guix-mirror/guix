@@ -45,7 +45,7 @@
        (sha256
         (base32 "044fl3izmsi8n1vqzsqdp65q0qyyn5kmsg4sk7id0mxzx15zbbba"))))
     (build-system gnu-build-system)
-    (inputs `(("ncurses" ,ncurses)))
+    (inputs (list ncurses))
     (home-page "https://www.gnu.org/software/less/")
     (synopsis "Paginator for terminals")
     (description
@@ -90,9 +90,8 @@ text editors.")
                          (string-append (search-input-file inputs "/bin/file")
                                         " -"))))))))
     (inputs
-     `(("file" ,file)
-       ("ncurses" ,ncurses)))  ; for tput
-    (native-inputs `(("perl" ,perl)))
+     (list file ncurses))  ; for tput
+    (native-inputs (list perl))
     (home-page "https://github.com/wofr06/lesspipe")
     (synopsis "Input filter for less")
     (description "To browse files, the excellent viewer @code{less} can be

@@ -163,10 +163,7 @@
                 (lambda (y) (install-file y man8-dir))
                 (find-files "doc" "\\.8$"))))))))
     (native-inputs
-     `(("doxygen" ,doxygen)
-       ("flex" ,flex)
-       ("perl" ,perl)
-       ("pkg-config" ,pkg-config)))
+     (list doxygen flex perl pkg-config))
     (inputs
      `(("libx86emu" ,libx86emu)
        ("util-linux:lib" ,util-linux "lib")))
@@ -189,15 +186,15 @@ support.")
         (base32 "19kkwb9ijzn6ya3mvjanggh1c96fcc0lkbk7xnyi2qp6wsr4nhxp"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("eudev" ,eudev)
-       ("glib" ,glib)
-       ("libdrm" ,libdrm)               ; enhanced diagnostics
-       ("libusb" ,libusb)               ; support USB monitors
-       ("libx11" ,libx11)               ; enhanced diagnostics
-       ("libxrandr" ,libxrandr)
-       ("zlib" ,zlib)))
+     (list eudev
+           glib
+           libdrm ; enhanced diagnostics
+           libusb ; support USB monitors
+           libx11 ; enhanced diagnostics
+           libxrandr
+           zlib))
     (home-page "https://www.ddcutil.com/")
     (synopsis "Control external monitor settings")
     (description
@@ -235,12 +232,9 @@ calibrated, and restored when the calibration is applied.")
     (arguments
      '(#:tests? #f))                    ; No test suite
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("qttools" ,qttools)))
+     (list pkg-config qttools))
     (inputs
-     `(("ddcutil" ,ddcutil)
-       ("glib" ,glib)
-       ("qtbase" ,qtbase-5)))
+     (list ddcutil glib qtbase-5))
     (home-page "https://www.ddcutil.com/")
     (synopsis "Graphical user interface for ddcutil")
     (description "ddcui is a graphical user interface for ddcutil, implemented
@@ -308,11 +302,7 @@ human-readable format and checks if it conforms to the standards.")
          ;; build container.
          #:tests? #f))
       (inputs
-       `(("python2" ,python-2)
-         ("python2-pycurl", python2-pycurl)
-         ("python2-pygtk", python2-pygtk)
-         ("pciutils", pciutils)
-         ("usbutils", usbutils)))
+       (list python-2 python2-pycurl python2-pygtk pciutils usbutils))
       (synopsis "Graphical client for the h-node hardware database
 project")
       (description
@@ -357,7 +347,7 @@ whether the hardware works with a fully free operating system or not.")
          (modify-phases %standard-phases
            (delete 'configure))))       ; no configure script
       (inputs
-       `(("ncurses" ,ncurses)))
+       (list ncurses))
       (home-page "https://github.com/afontenot/i7z")
       (synopsis "Thermal and C-state reporting on older Intel Core CPUs")
       (description
@@ -397,7 +387,7 @@ information can be viewed in real time and/or logged to a file.")
        ("perl" ,perl)
        ("python" ,python)))
     (inputs
-     `(("libxml2" ,libxml2)))
+     (list libxml2))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -457,7 +447,7 @@ specific SMBIOS tables.")
                #t))))))
     (native-inputs
      ;; Newer GCCs fail with a deluge of "multiple definition of `__foo'" errors.
-     `(("gcc" ,gcc-4.9)))
+     (list gcc-4.9))
     (supported-systems (list "i686-linux" "x86_64-linux"))
     (home-page "https://www.memtest.org/")
     (synopsis "Thorough real-mode memory tester")
@@ -548,7 +538,7 @@ It can also be told to test memory starting at a particular physical address.")
                #t))))
        #:tests? #f))                    ; no test suite
     (native-inputs
-     `(("unzip" ,unzip)))
+     (list unzip))
     ;; These registers and the CPUID instruction only exist on (most) x86 chips.
     (supported-systems (list "i686-linux" "x86_64-linux"))
     (home-page "https://01.org/msr-tools/")
@@ -587,9 +577,9 @@ be dangerous and may void your CPU or system board's warranty.")
     (arguments
      `(#:tests? #f)) ; no test target although there is a test folder
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("hidapi" ,hidapi)))
+     (list hidapi))
     (home-page "http://www.openhmd.net/")
     (synopsis "API and drivers for immersive technology")
     (description "OpenHMD aims to provide an API and drivers for immersive
@@ -619,11 +609,9 @@ technology, such as head mounted displays with built in head tracking.")
                             "/share/doc/" ,name "-" ,version))
        #:tests? #f))                    ; no tests
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("libcap" ,libcap)
-       ("libnl" ,libnl)
-       ("ncurses" ,ncurses)))
+     (list libcap libnl ncurses))
     (home-page "https://github.com/uoaerg/wavemon")
     (synopsis "Wireless network device monitor")
     (description
@@ -655,11 +643,9 @@ supported by the Linux kernel.")
           (base32 "0zwrkqfxd671iy69v3q0844gfdpm1yk51i9qh2rqc969bd8glxga"))))
       (build-system gnu-build-system)
       (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("pkg-config" ,pkg-config)))
+       (list autoconf automake pkg-config))
       (inputs
-       `(("libusb" ,libusb)))
+       (list libusb))
       (home-page "https://github.com/rockchip-linux/rkdeveloptool")
       (synopsis "Read from and write to RockChicp devices over USB")
       (description
@@ -791,15 +777,14 @@ Simply put, it is a USB device whitelisting tool.")
         (base32 "0gv3xj9sbk1wsyijfw9xjnvy8pg7j4arjnma2r2kfi18qy32wd30"))))
     (build-system gnu-build-system)
     (inputs
-     `(("glib" ,glib)
-       ("gtk+" ,gtk+-2)))
+     (list glib gtk+-2))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("intltool" ,intltool)
-       ("libtool" ,libtool)
-       ("glib" ,glib "bin")
-       ("automake" ,automake)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf
+           intltool
+           libtool
+           `(,glib "bin")
+           automake
+           pkg-config))
     (synopsis "Simple screen testing tool")
     (description "This is a program for testing the quality of CRT/LCD
 screens.  It displays various patterns and allows you to estimate the quality
@@ -821,11 +806,9 @@ of your CRT/LCD monitor.")
         (base32 "05xynpwq851fp8f5fy7ac0blvz8mr5m5cbqj3gslgbwv63kjnfbq"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("curl" ,curl)
-       ("json-c" ,json-c)
-       ("openssl" ,openssl)))
+     (list curl json-c openssl))
     (home-page "https://tpm2-software.github.io/")
     (synopsis "OSS Implementation of the TCG TPM2 Software Stack (TSS2)")
     (description

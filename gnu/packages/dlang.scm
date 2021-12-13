@@ -75,7 +75,7 @@
             (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
               (install-file "rdmd" bin)))))))
     (native-inputs
-     `(("ldc" ,ldc)))
+     (list ldc))
     (home-page "https://github.com/D-Programming-Language/tools/")
     (synopsis "Specialized equivalent to 'make' for the D language")
     (description
@@ -448,9 +448,9 @@ integration tests...\n")
                (install-file "bin/dub" bin)
                #t))))))
     (inputs
-     `(("curl" ,curl)))
+     (list curl))
     (native-inputs
-     `(("ldc" ,ldc)))
+     (list ldc))
     (home-page "https://code.dlang.org/getting_started")
     (synopsis "Package and build manager for D projects")
     (description

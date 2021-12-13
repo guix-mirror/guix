@@ -75,7 +75,7 @@
                (("return gdNumFailures\\(\\)")
                  "return 0")))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
      `(("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
@@ -115,7 +115,7 @@ most common applications of GD involve website development.")
        ("libjpeg" ,libjpeg-turbo)
        ("zlib" ,zlib)))
     (native-inputs
-     `(("perl-extutils-pkgconfig" ,perl-extutils-pkgconfig)))
+     (list perl-extutils-pkgconfig))
     (arguments
      `(#:make-maker-flags
        (list (string-append "--lib_jpeg_path="
@@ -145,10 +145,9 @@ you can create PNG images on the fly or modify existing files.")
          (add-after 'unpack 'set-env
            (lambda _ (setenv "PERL_USE_UNSAFE_INC" "1") #t)))))
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)))
+     (list perl-module-build))
     (propagated-inputs
-     `(("perl-gd" ,perl-gd)
-       ("perl-image-magick" ,perl-image-magick)))
+     (list perl-gd perl-image-magick))
     (home-page "https://metacpan.org/release/GD-SecurityImage")
     (synopsis "Security image generator")
     (description "This module provides a basic interface to create

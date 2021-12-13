@@ -263,11 +263,11 @@ menu to select one of the installed operating systems.")
     (inherit grub)
     (name "grub-minimal")
     (inputs
-     (fold alist-delete (package-inputs grub)
-           '("lvm2" "mdadm" "fuse" "console-setup")))
+     (modify-inputs (package-inputs grub)
+       (delete "lvm2" "mdadm" "fuse" "console-setup")))
     (native-inputs
-     (fold alist-delete (package-native-inputs grub)
-           '("help2man" "texinfo" "parted" "qemu" "xorriso")))
+     (modify-inputs (package-native-inputs grub)
+       (delete "help2man" "texinfo" "parted" "qemu" "xorriso")))
     (arguments
      (substitute-keyword-arguments (package-arguments grub)
        ((#:configure-flags _ ''())
@@ -295,9 +295,8 @@ menu to select one of the installed operating systems.")
     (name "grub-efi")
     (synopsis "GRand Unified Boot loader (UEFI version)")
     (inputs
-     `(("efibootmgr" ,efibootmgr)
-       ("mtools" ,mtools)
-       ,@(package-inputs grub)))
+     (modify-inputs (package-inputs grub)
+       (prepend efibootmgr mtools)))
     (arguments
      `(;; TODO: Tests need a UEFI firmware for qemu. There is one at
        ;; https://github.com/tianocore/edk2/tree/master/OvmfPkg .
@@ -344,8 +343,8 @@ menu to select one of the installed operating systems.")
     (name "grub-hybrid")
     (synopsis "GRand Unified Boot loader (hybrid version)")
     (inputs
-     `(("grub" ,grub)
-       ,@(package-inputs grub-efi)))
+     (modify-inputs (package-inputs grub-efi)
+       (prepend grub)))
     (arguments
      (substitute-keyword-arguments (package-arguments grub-efi)
        ((#:modules modules `((guix build utils) (guix build gnu-build-system)))
@@ -455,14 +454,14 @@ menu to select one of the installed operating systems.")
                 "0wrl43rvd8nnm1v1wyfdr17vk8q7ymib62vli6da8n9ni4lwbkk5"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("bison" ,bison)
-       ("flex" ,flex)
-       ("libyaml" ,libyaml)
-       ("pkg-config" ,pkg-config)
-       ("swig" ,swig)
-       ("valgrind" ,valgrind)))
+     (list bison
+           flex
+           libyaml
+           pkg-config
+           swig
+           valgrind))
     (inputs
-     `(("python" ,python)))
+     (list python))
     (arguments
      `(#:make-flags
        (list (string-append "CC=" ,(cc-for-target))
@@ -556,8 +555,8 @@ also initializes the boards (RAM etc).")
     (inherit u-boot)
     (name "u-boot-tools")
     (native-inputs
-     `(("sdl2" ,sdl2)
-       ,@(package-native-inputs u-boot)))
+     (modify-inputs (package-native-inputs u-boot)
+       (prepend sdl2)))
     (arguments
      `(#:make-flags '("HOSTCC=gcc")
        #:test-target "tcheck"
@@ -1263,9 +1262,7 @@ order to add a suitable bootloader menu entry.")
              (lambda _ (chdir "..") #t)))
          #:tests? #f))                  ; no test suite
       (native-inputs
-       `(("perl" ,perl)
-         ("syslinux" ,syslinux)
-         ("xorriso" ,xorriso)))
+       (list perl syslinux xorriso))
       (home-page "https://ipxe.org")
       (synopsis "PXE-compliant network boot firmware")
       (description "iPXE is a network boot firmware.  It provides a full PXE

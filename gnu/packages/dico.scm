@@ -65,7 +65,7 @@
                     (lambda _
                       ;; Test '71: append + dooffs + env' fails if $V is not 2.
                       (invoke "make" "check" "V=2"))))))
-    (native-inputs `(("groff" ,groff)))
+    (native-inputs (list groff))
     (inputs
      `(("m4" ,m4)                                 ;used at run time
        ("pcre" ,pcre)

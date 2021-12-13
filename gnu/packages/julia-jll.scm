@@ -91,9 +91,9 @@
               (find-files "src/wrappers/" "\\.jl$"))
              #t)))))
     (inputs
-     `(("bzip2" ,bzip2)))
+     (list bzip2))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)))
+     (list julia-jllwrappers))
     (home-page "https://github.com/JuliaBinaryWrappers/Bzip2_jll.jl")
     (synopsis "Bzip2 binary wrappers")
     (description "This Julia module provides a wrapper for the @code{Bzip2}
@@ -128,19 +128,19 @@ compression program.")
                ;; There's a Julia file for each platform, override them all
                (find-files "src/wrappers/" "\\.jl$")))))))
     (inputs
-     `(("cairo" ,cairo)))
+     (list cairo))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)
-       ("julia-bzip2-jll" ,julia-bzip2-jll)
-       ("julia-fontconfig-jll" ,julia-fontconfig-jll)
-       ("julia-freetype2-jll" ,julia-freetype2-jll)
-       ("julia-glib-jll" ,julia-glib-jll)
-       ("julia-libpng-jll" ,julia-libpng-jll)
-       ("julia-lzo-jll" ,julia-lzo-jll)
-       ("julia-pixman-jll" ,julia-pixman-jll)
-       ("julia-xorg-libxext-jll" ,julia-xorg-libxext-jll)
-       ("julia-xorg-libxrender-jll" ,julia-xorg-libxrender-jll)
-       ("julia-zlib-jll" ,julia-zlib-jll)))
+     (list julia-jllwrappers
+           julia-bzip2-jll
+           julia-fontconfig-jll
+           julia-freetype2-jll
+           julia-glib-jll
+           julia-libpng-jll
+           julia-lzo-jll
+           julia-pixman-jll
+           julia-xorg-libxext-jll
+           julia-xorg-libxrender-jll
+           julia-zlib-jll))
     (home-page "https://github.com/JuliaBinaryWrappers/Cairo_jll.jl")
     (synopsis "Cairo library wrappers")
     (description "This package provides a wrapper for the cairo library.")
@@ -179,7 +179,7 @@ compression program.")
     (inputs                             ;required by artifacts
      `(("gfortran:lib" ,gfortran "lib")))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)))
+     (list julia-jllwrappers))
     (home-page "https://github.com/JuliaBinaryWrappers/CompilerSupportLibraries_jll.jl")
     (synopsis "Internal wrappers")
     (description "This package provides compiler support for libraries.  It is
@@ -218,9 +218,9 @@ build tree Yggdrasil.")
                ;; There's a Julia file for each platform, override them all
                (find-files "src/wrappers/" "\\.jl$")))))))
     (inputs
-     `(("expat" ,expat)))
+     (list expat))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)))
+     (list julia-jllwrappers))
     (home-page "https://github.com/JuliaBinaryWrappers/Expat_jll.jl")
     (synopsis "Expat library wrappers")
     (description "This package provides a wrapper for the expat library.")
@@ -254,22 +254,22 @@ build tree Yggdrasil.")
                ;; There's a Julia file for each platform, override them all
                (find-files "src/wrappers/" "\\.jl$")))))))
     (inputs
-     `(("ffmpeg" ,ffmpeg)))
+     (list ffmpeg))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)
-       ("julia-bzip2-jll" ,julia-bzip2-jll)
-       ("julia-freetype2-jll" ,julia-freetype2-jll)
-       ("julia-fribidi-jll" ,julia-fribidi-jll)
-       ("julia-lame-jll" ,julia-lame-jll)
-       ("julia-libass-jll" ,julia-libass-jll)
-       ("julia-libfdk-aac-jll" ,julia-libfdk-aac-jll)
-       ("julia-libvorbis-jll" ,julia-libvorbis-jll)
-       ("julia-openssl-jll" ,julia-openssl-jll)
-       ("julia-opus-jll" ,julia-opus-jll)
-       ("julia-ogg-jll" ,julia-ogg-jll)
-       ("julia-x264-jll" ,julia-x264-jll)
-       ("julia-x265-jll" ,julia-x265-jll)
-       ("julia-zlib-jll" ,julia-zlib-jll)))
+     (list julia-jllwrappers
+           julia-bzip2-jll
+           julia-freetype2-jll
+           julia-fribidi-jll
+           julia-lame-jll
+           julia-libass-jll
+           julia-libfdk-aac-jll
+           julia-libvorbis-jll
+           julia-openssl-jll
+           julia-opus-jll
+           julia-ogg-jll
+           julia-x264-jll
+           julia-x265-jll
+           julia-zlib-jll))
     (home-page "https://github.com/JuliaBinaryWrappers/FFMPEG_jll.jl")
     (synopsis "ffmpeg library wrappers")
     (description "This package provides a wrapper for ffmpeg.")
@@ -307,12 +307,12 @@ build tree Yggdrasil.")
     (inputs
      `(("fontconfig" ,fontconfig)))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)
-       ("julia-bzip2-jll" ,julia-bzip2-jll)
-       ("julia-expat-jll" ,julia-expat-jll)
-       ("julia-freetype2-jll" ,julia-freetype2-jll)
-       ("julia-libuuid-jll" ,julia-libuuid-jll)
-       ("julia-zlib-jll" ,julia-zlib-jll)))
+     (list julia-jllwrappers
+           julia-bzip2-jll
+           julia-expat-jll
+           julia-freetype2-jll
+           julia-libuuid-jll
+           julia-zlib-jll))
     (home-page "https://github.com/JuliaBinaryWrappers/Fontconfig_jll.jl")
     (synopsis "Fontconfig library wrappers")
     (description "This package provides a wrapper for the fontconfig library.")
@@ -349,11 +349,9 @@ build tree Yggdrasil.")
               (find-files "src/wrappers/" "\\.jl$"))
              #t)))))
     (inputs
-     `(("freetype" ,freetype)))
+     (list freetype))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)
-       ("julia-bzip2-jll" ,julia-bzip2-jll)
-       ("julia-zlib-jll" ,julia-zlib-jll)))
+     (list julia-jllwrappers julia-bzip2-jll julia-zlib-jll))
     (home-page "https://github.com/JuliaBinaryWrappers/FreeType2_jll.jl")
     (synopsis "Freetype2 binary wrappers")
     (description "This Julia module provides a wrapper for the freetype font
@@ -388,9 +386,9 @@ rendering library.")
                ;; There's a Julia file for each platform, override them all
                (find-files "src/wrappers/" "\\.jl$")))))))
     (inputs
-     `(("fribidi" ,fribidi)))
+     (list fribidi))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)))
+     (list julia-jllwrappers))
     (home-page "https://github.com/JuliaBinaryWrappers/FriBidi_jll.jl")
     (synopsis "Fribidi library wrappers")
     (description "This package provides a wrapper for the fribidi library.")
@@ -428,10 +426,8 @@ rendering library.")
     (inputs
      `(("gettext" ,gettext-minimal)))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)
-       ("julia-compilersupportlibraries-jll" ,julia-compilersupportlibraries-jll)
-       ("julia-libiconv-jll" ,julia-libiconv-jll)
-       ("julia-xml2-jll" ,julia-xml2-jll)))
+     (list julia-jllwrappers julia-compilersupportlibraries-jll
+           julia-libiconv-jll julia-xml2-jll))
     (home-page "https://github.com/JuliaBinaryWrappers/Gettext_jll.jl")
     (synopsis "Gettext library wrappers")
     (description "This package provides a wrapper for the gettext library.")
@@ -467,14 +463,14 @@ rendering library.")
                ;; There's a Julia file for each platform, override them all
                (find-files "src/wrappers/" "\\.jl$")))))))
     (inputs
-     `(("glfw" ,glfw)))
+     (list glfw))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)
-       ("julia-libglvnd-jll" ,julia-libglvnd-jll)
-       ("julia-xorg-libxcursor-jll" ,julia-xorg-libxcursor-jll)
-       ("julia-xorg-libxinerama-jll" ,julia-xorg-libxinerama-jll)
-       ("julia-xorg-libxrandr-jll" ,julia-xorg-libxrandr-jll)
-       ("julia-xorg-libxi-jll" ,julia-xorg-libxi-jll)))
+     (list julia-jllwrappers
+           julia-libglvnd-jll
+           julia-xorg-libxcursor-jll
+           julia-xorg-libxinerama-jll
+           julia-xorg-libxrandr-jll
+           julia-xorg-libxi-jll))
     (home-page "https://github.com/JuliaBinaryWrappers/GLFW_jll.jl")
     (synopsis "Glfw library wrappers")
     (description "This package provides a wrapper for the glfw library.")
@@ -510,15 +506,15 @@ rendering library.")
                ;; There's a Julia file for each platform, override them all
                (find-files "src/wrappers/" "\\.jl$")))))))
     (inputs
-     `(("glib" ,glib)))
+     (list glib))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)
-       ("julia-gettext-jll" ,julia-gettext-jll)
-       ("julia-libffi-jll" ,julia-libffi-jll)
-       ("julia-libiconv-jll" ,julia-libiconv-jll)
-       ("julia-libmount-jll" ,julia-libmount-jll)
-       ("julia-pcre-jll" ,julia-pcre-jll)
-       ("julia-zlib-jll" ,julia-zlib-jll)))
+     (list julia-jllwrappers
+           julia-gettext-jll
+           julia-libffi-jll
+           julia-libiconv-jll
+           julia-libmount-jll
+           julia-pcre-jll
+           julia-zlib-jll))
     (home-page "https://github.com/JuliaBinaryWrappers/Glib_jll.jl")
     (synopsis "Glib library wrappers")
     (description "This package provides a wrapper for the glib library.")
@@ -554,20 +550,20 @@ rendering library.")
                ;; There's a Julia file for each platform, override them all
                (find-files "src/wrappers/" "\\.jl$")))))))
     (inputs
-     `(("gr-framework" ,gr-framework)))
+     (list gr-framework))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)
-       ("julia-bzip2-jll" ,julia-bzip2-jll)
-       ("julia-cairo-jll" ,julia-cairo-jll)
-       ("julia-ffmpeg-jll" ,julia-ffmpeg-jll)
-       ("julia-fontconfig-jll" ,julia-fontconfig-jll)
-       ("julia-glfw-jll" ,julia-glfw-jll)
-       ("julia-jpegturbo-jll" ,julia-jpegturbo-jll)
-       ("julia-libpng-jll" ,julia-libpng-jll)
-       ("julia-libtiff-jll" ,julia-libtiff-jll)
-       ("julia-pixman-jll" ,julia-pixman-jll)
-       ("julia-qt5base-jll" ,julia-qt5base-jll)
-       ("julia-zlib-jll" ,julia-zlib-jll)))
+     (list julia-jllwrappers
+           julia-bzip2-jll
+           julia-cairo-jll
+           julia-ffmpeg-jll
+           julia-fontconfig-jll
+           julia-glfw-jll
+           julia-jpegturbo-jll
+           julia-libpng-jll
+           julia-libtiff-jll
+           julia-pixman-jll
+           julia-qt5base-jll
+           julia-zlib-jll))
     (home-page "https://github.com/JuliaBinaryWrappers/GR_jll.jl")
     (synopsis "GR framework library wrappers")
     (description "This package provides a wrapper for the GR framework.")
@@ -604,9 +600,9 @@ rendering library.")
                 ;; There's a Julia file for each platform, override them all
                 (find-files "src/wrappers/" "\\.jl$"))))))))
     (inputs
-     `(("gumbo-parser" ,gumbo-parser)))
+     (list gumbo-parser))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)))
+     (list julia-jllwrappers))
     (home-page "https://github.com/JuliaBinaryWrappers/Gumbo_jll.jl")
     (synopsis "Gumbo HTML parsing library wrappers")
     (description "This package provides a wrapper for Gumbo HTML parsing library.")
@@ -643,13 +639,10 @@ rendering library.")
                ;; There's a Julia file for each platform, override them all
                (find-files "src/wrappers/" "\\.jl$")))))))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)
-       ("julia-jpegturbo-jll" ,julia-jpegturbo-jll)
-       ("julia-libpng-jll" ,julia-libpng-jll)
-       ("julia-libtiff-jll" ,julia-libtiff-jll)
-       ("julia-zlib-jll" ,julia-zlib-jll)))
+     (list julia-jllwrappers julia-jpegturbo-jll julia-libpng-jll
+           julia-libtiff-jll julia-zlib-jll))
     (inputs
-     `(("imagemagick" ,imagemagick)))
+     (list imagemagick))
     (home-page "https://github.com/JuliaBinaryWrappers/ImageMagick_jll.jl")
     (synopsis "Imagemagick library wrappers")
     (description "This package provides a wrapper for Imagemagick.")
@@ -692,7 +685,7 @@ rendering library.")
              #t)))))
     (build-system julia-build-system)
     (propagated-inputs
-     `(("julia-preferences" ,julia-preferences)))
+     (list julia-preferences))
     (home-page "https://github.com/JuliaPackaging/JLLWrappers.jl")
     (synopsis "Julia macros used by JLL packages")
     (description "This package contains Julia macros that enable JLL packages
@@ -729,9 +722,9 @@ used in autogenerated packages via @code{BinaryBuilder.jl}.")
                ;; There's a Julia file for each platform, override them all
                (find-files "src/wrappers/" "\\.jl$")))))))
     (inputs
-     `(("libjpeg-turbo" ,libjpeg-turbo)))
+     (list libjpeg-turbo))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)))
+     (list julia-jllwrappers))
     (home-page "https://github.com/JuliaBinaryWrappers/JpegTurbo_jll.jl")
     (synopsis "Libjpeg-turbo library wrappers")
     (description "This package provides a wrapper for the libjpeg-turbo library.")
@@ -765,9 +758,9 @@ used in autogenerated packages via @code{BinaryBuilder.jl}.")
                ;; There's a Julia file for each platform, override them all
                (find-files "src/wrappers/" "\\.jl$")))))))
     (inputs
-     `(("lame" ,lame)))
+     (list lame))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)))
+     (list julia-jllwrappers))
     (home-page "https://github.com/JuliaBinaryWrappers/LAME_jll.jl")
     (synopsis "Lame library wrappers")
     (description "This package provides a wrapper for the lame audio encoder.")
@@ -801,13 +794,10 @@ used in autogenerated packages via @code{BinaryBuilder.jl}.")
                ;; There's a Julia file for each platform, override them all
                (find-files "src/wrappers/" "\\.jl$")))))))
     (inputs
-     `(("libass" ,libass)))
+     (list libass))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)
-       ("julia-bzip2-jll" ,julia-bzip2-jll)
-       ("julia-freetype2-jll" ,julia-freetype2-jll)
-       ("julia-fribidi-jll" ,julia-fribidi-jll)
-       ("julia-zlib-jll" ,julia-zlib-jll)))
+     (list julia-jllwrappers julia-bzip2-jll julia-freetype2-jll
+           julia-fribidi-jll julia-zlib-jll))
     (home-page "https://github.com/JuliaBinaryWrappers/libass_jll.jl")
     (synopsis "Libass library wrappers")
     (description "This package provides a wrapper for libass.")
@@ -841,9 +831,9 @@ used in autogenerated packages via @code{BinaryBuilder.jl}.")
                ;; There's a Julia file for each platform, override them all
                (find-files "src/wrappers/" "\\.jl$")))))))
     (inputs
-     `(("libfdk" ,libfdk)))
+     (list libfdk))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)))
+     (list julia-jllwrappers))
     (home-page "https://github.com/JuliaBinaryWrappers/libfdk_aac_jll.jl")
     (synopsis "FDK library wrappers")
     (description "This package provides a wrapper for the libfdk audio library.")
@@ -878,9 +868,9 @@ used in autogenerated packages via @code{BinaryBuilder.jl}.")
                ;; There's a Julia file for each platform, override them all
                (find-files "src/wrappers/" "\\.jl$")))))))
     (inputs
-     `(("libffi" ,libffi)))
+     (list libffi))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)))
+     (list julia-jllwrappers))
     (home-page "https://github.com/JuliaBinaryWrappers/Libffi_jll.jl")
     (synopsis "Libffi library wrappers")
     (description "This package provides a wrapper for the libffi library.")
@@ -916,10 +906,9 @@ used in autogenerated packages via @code{BinaryBuilder.jl}.")
                ;; There's a Julia file for each platform, override them all
                (find-files "src/wrappers/" "\\.jl$")))))))
     (inputs
-     `(("libgcrypt" ,libgcrypt)))
+     (list libgcrypt))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)
-       ("julia-libgpg-error-jll" ,julia-libgpg-error-jll)))
+     (list julia-jllwrappers julia-libgpg-error-jll))
     (home-page "https://github.com/JuliaBinaryWrappers/Libgcrypt_jll.jl")
     (synopsis "libgcrypt library wrappers")
     (description "This package provides a wrapper for the libgcrypt library.")
@@ -953,11 +942,9 @@ used in autogenerated packages via @code{BinaryBuilder.jl}.")
                ;; There's a Julia file for each platform, override them all
                (find-files "src/wrappers/" "\\.jl$")))))))
     (inputs
-     `(("libglvnd" ,libglvnd)))
+     (list libglvnd))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)
-       ("julia-xorg-libx11-jll" ,julia-xorg-libx11-jll)
-       ("julia-xorg-libxext-jll" ,julia-xorg-libxext-jll)))
+     (list julia-jllwrappers julia-xorg-libx11-jll julia-xorg-libxext-jll))
     (home-page "https://github.com/JuliaBinaryWrappers/Libglvnd_jll.jl")
     (synopsis "Libglvnd library wrappers")
     (description "This package provides a wrapper for the libglvnd library.")
@@ -993,9 +980,9 @@ used in autogenerated packages via @code{BinaryBuilder.jl}.")
                ;; There's a Julia file for each platform, override them all
                (find-files "src/wrappers/" "\\.jl$")))))))
     (inputs
-     `(("libgpg-error" ,libgpg-error)))
+     (list libgpg-error))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)))
+     (list julia-jllwrappers))
     (home-page "https://github.com/JuliaBinaryWrappers/Libgpg_error_jll.jl")
     (synopsis "libgpg-error library wrappers")
     (description "This package provides a wrapper for the libgpg-error library.")
@@ -1031,9 +1018,9 @@ used in autogenerated packages via @code{BinaryBuilder.jl}.")
                ;; There's a Julia file for each platform, override them all
                (find-files "src/wrappers/" "\\.jl$")))))))
     (inputs
-     `(("libiconv" ,libiconv)))
+     (list libiconv))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)))
+     (list julia-jllwrappers))
     (home-page "https://github.com/JuliaBinaryWrappers/Libiconv_jll.jl")
     (synopsis "Libiconv library wrappers")
     (description "This package provides a wrapper for the libiconv library.")
@@ -1069,9 +1056,9 @@ used in autogenerated packages via @code{BinaryBuilder.jl}.")
                ;; There's a Julia file for each platform, override them all
                (find-files "src/wrappers/" "\\.jl$")))))))
     (inputs
-     `(("util-linux" ,util-linux "lib")))
+     (list `(,util-linux "lib")))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)))
+     (list julia-jllwrappers))
     (home-page "https://github.com/JuliaBinaryWrappers/Libmount_jll.jl")
     (synopsis "Libmount library wrappers")
     (description "This package provides a wrapper for the libmount library
@@ -1106,10 +1093,9 @@ from util-linux.")
                ;; There's a Julia file for each platform, override them all
                (find-files "src/wrappers/" "\\.jl$")))))))
     (inputs
-     `(("libpng" ,libpng)))
+     (list libpng))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)
-       ("julia-zlib-jll" ,julia-zlib-jll)))
+     (list julia-jllwrappers julia-zlib-jll))
     (home-page "https://github.com/JuliaBinaryWrappers/LibPNG_jll.jl")
     (synopsis "Libpng library wrappers")
     (description "This package provides a wrapper for the libpng library.")
@@ -1147,9 +1133,9 @@ from util-linux.")
                 (find-files "src/wrappers/" "\\.jl$"))
                #t)))))
       (inputs
-       `(("libsass" ,libsass)))
+       (list libsass))
       (propagated-inputs
-       `(("julia-jllwrappers" ,julia-jllwrappers)))
+       (list julia-jllwrappers))
       (home-page "https://github.com/JuliaBinaryWrappers/libsass_jll.jl")
       (synopsis "Julia wrapper for libsass")
       (description "This package provides a wrapper for libsass.  It is an
@@ -1186,12 +1172,10 @@ build tree Yggdrasil.")
                ;; There's a Julia file for each platform, override them all
                (find-files "src/wrappers/" "\\.jl$")))))))
     (inputs
-     `(("libtiff" ,libtiff)))
+     (list libtiff))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)
-       ("julia-jpegturbo-jll" ,julia-jpegturbo-jll)
-       ("julia-zlib-jll" ,julia-zlib-jll)
-       ("julia-zstd-jll" ,julia-zstd-jll)))
+     (list julia-jllwrappers julia-jpegturbo-jll julia-zlib-jll
+           julia-zstd-jll))
     (home-page "https://github.com/JuliaBinaryWrappers/Libtiff_jll.jl")
     (synopsis "Libtiff library wrappers")
     (description "This package provides a wrapper for libtiff")
@@ -1227,9 +1211,9 @@ build tree Yggdrasil.")
                ;; There's a Julia file for each platform, override them all
                (find-files "src/wrappers/" "\\.jl$")))))))
     (inputs
-     `(("util-linux" ,util-linux "lib")))
+     (list `(,util-linux "lib")))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)))
+     (list julia-jllwrappers))
     (home-page "https://github.com/JuliaBinaryWrappers/Libmount_jll.jl")
     (synopsis "Libuuid library wrappers")
     (description "This package provides a wrapper for the libuuid library from util-linux.")
@@ -1263,10 +1247,9 @@ build tree Yggdrasil.")
                ;; There's a Julia file for each platform, override them all
                (find-files "src/wrappers/" "\\.jl$")))))))
     (inputs
-     `(("libvorbis" ,libvorbis)))
+     (list libvorbis))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)
-       ("julia-ogg-jll" ,julia-ogg-jll)))
+     (list julia-jllwrappers julia-ogg-jll))
     (home-page "https://github.com/JuliaBinaryWrappers/libvorbis_jll.jl")
     (synopsis "Libvorbis library wrappers")
     (description
@@ -1303,9 +1286,9 @@ build tree Yggdrasil.")
                ;; There's a Julia file for each platform, override them all
                (find-files "src/wrappers/" "\\.jl$")))))))
     (inputs
-     `(("lzo" ,lzo)))
+     (list lzo))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)))
+     (list julia-jllwrappers))
     (home-page "https://github.com/JuliaBinaryWrappers/LZO_jll.jl")
     (synopsis "LZO library wrappers")
     (description "This package provides a wrapper for the lzo library.")
@@ -1341,8 +1324,8 @@ build tree Yggdrasil.")
               ;; There's a Julia file for each platform, override them all
               (find-files "src/wrappers/" "\\.jl$"))
              #t)))))
-    (inputs `(("mbedtls-apache" ,mbedtls-apache)))
-    (propagated-inputs `(("julia-jllwrappers" ,julia-jllwrappers)))
+    (inputs (list mbedtls-apache))
+    (propagated-inputs (list julia-jllwrappers))
     (home-page "https://github.com/JuliaBinaryWrappers/MbedTLS_jll.jl")
     (synopsis "Apache's mbed TLS binary wrappers")
     (description "This Julia module provides @code{mbed TLS} libraries and
@@ -1377,9 +1360,9 @@ wrappers.")
                ;; There's a Julia file for each platform, override them all
                (find-files "src/wrappers/" "\\.jl$")))))))
     (inputs
-     `(("libogg" ,libogg)))
+     (list libogg))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)))
+     (list julia-jllwrappers))
     (home-page "https://github.com/JuliaBinaryWrappers/Ogg_jll.jl")
     (synopsis "Libogg library wrappers")
     (description "This package provides a wrapper for the libogg library.")
@@ -1417,10 +1400,9 @@ wrappers.")
                 (find-files "src/wrappers/" "\\.jl$"))
                #t)))))
       (inputs
-       `(("openspecfun" ,openspecfun)))
+       (list openspecfun))
       (propagated-inputs
-       `(("julia-jllwrappers" ,julia-jllwrappers)
-         ("julia-compilersupportlibraries-jll" ,julia-compilersupportlibraries-jll)))
+       (list julia-jllwrappers julia-compilersupportlibraries-jll))
       (home-page "https://github.com/JuliaBinaryWrappers/OpenSpecFun_jll.jl")
       (synopsis "Internal wrappers")
       (description "This package provides a wrapper for OpenSpecFun.  It is an
@@ -1457,9 +1439,9 @@ build tree Yggdrasil.")
                ;; There's a Julia file for each platform, override them all
                (find-files "src/wrappers/" "\\.jl$")))))))
     (inputs
-     `(("openssl" ,openssl)))
+     (list openssl))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)))
+     (list julia-jllwrappers))
     (home-page "https://github.com/JuliaBinaryWrappers/OpenSSL_jll.jl")
     (synopsis "Openssl library wrappers")
     (description "This package provides a wrapper for the openssl library.")
@@ -1493,9 +1475,9 @@ build tree Yggdrasil.")
                ;; There's a Julia file for each platform, override them all
                (find-files "src/wrappers/" "\\.jl$")))))))
     (inputs
-     `(("opus" ,opus)))
+     (list opus))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)))
+     (list julia-jllwrappers))
     (home-page "https://github.com/JuliaBinaryWrappers/Opus_jll.jl")
     (synopsis "Opus library wrappers")
     (description "This package provides a wrapper for the opus audio library.")
@@ -1531,9 +1513,9 @@ build tree Yggdrasil.")
                ;; There's a Julia file for each platform, override them all
                (find-files "src/wrappers/" "\\.jl$")))))))
     (inputs
-     `(("pcre" ,pcre)))
+     (list pcre))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)))
+     (list julia-jllwrappers))
     (home-page "https://github.com/JuliaBinaryWrappers/PCRE_jll.jl")
     (synopsis "PCRE library wrappers")
     (description "This package provides a wrapper for the pcre library.")
@@ -1569,9 +1551,9 @@ build tree Yggdrasil.")
                ;; There's a Julia file for each platform, override them all
                (find-files "src/wrappers/" "\\.jl$")))))))
     (inputs
-     `(("pixman" ,pixman)))
+     (list pixman))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)))
+     (list julia-jllwrappers))
     (home-page "https://github.com/JuliaBinaryWrappers/Pixman_jll.jl")
     (synopsis "Pixman library wrappers")
     (description "This package provides a wrapper for the pixman library.")
@@ -1607,22 +1589,22 @@ build tree Yggdrasil.")
                ;; There's a Julia file for each platform, override them all
                (find-files "src/wrappers/" "\\.jl$")))))))
     (inputs
-     `(("qtbase" ,qtbase-5)))
+     (list qtbase-5))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)
-       ("julia-libglvnd-jll" ,julia-libglvnd-jll)
-       ("julia-compilersupportlibraries-jll" ,julia-compilersupportlibraries-jll)
-       ("julia-fontconfig-jll" ,julia-fontconfig-jll)
-       ("julia-glib-jll" ,julia-glib-jll)
-       ("julia-openssl-jll" ,julia-openssl-jll)
-       ("julia-xkbcommon-jll" ,julia-xkbcommon-jll)
-       ("julia-xorg-libxcb-jll" ,julia-xorg-libxcb-jll)
-       ("julia-xorg-libxext-jll" ,julia-xorg-libxext-jll)
-       ("julia-xorg-xcb-util-image-jll" ,julia-xorg-xcb-util-image-jll)
-       ("julia-xorg-xcb-util-keysyms-jll" ,julia-xorg-xcb-util-keysyms-jll)
-       ("julia-xorg-xcb-util-renderutil-jll" ,julia-xorg-xcb-util-renderutil-jll)
-       ("julia-xorg-xcb-util-wm-jll" ,julia-xorg-xcb-util-wm-jll)
-       ("julia-zlib-jll" ,julia-zlib-jll)))
+     (list julia-jllwrappers
+           julia-libglvnd-jll
+           julia-compilersupportlibraries-jll
+           julia-fontconfig-jll
+           julia-glib-jll
+           julia-openssl-jll
+           julia-xkbcommon-jll
+           julia-xorg-libxcb-jll
+           julia-xorg-libxext-jll
+           julia-xorg-xcb-util-image-jll
+           julia-xorg-xcb-util-keysyms-jll
+           julia-xorg-xcb-util-renderutil-jll
+           julia-xorg-xcb-util-wm-jll
+           julia-zlib-jll))
     (home-page "https://github.com/JuliaBinaryWrappers/Qt5Base_jll.jl")
     (synopsis "Qtbase library wrappers")
     (description "This package provides a wrapper for the qtbase library.")
@@ -1656,12 +1638,10 @@ build tree Yggdrasil.")
                ;; There's a Julia file for each platform, override them all
                (find-files "src/wrappers/" "\\.jl$")))))))
     (inputs
-     `(("wayland" ,wayland)))
+     (list wayland))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)
-       ("julia-expat-jll" ,julia-expat-jll)
-       ("julia-libffi-jll" ,julia-libffi-jll)
-       ("julia-xml2-jll" ,julia-xml2-jll)))
+     (list julia-jllwrappers julia-expat-jll julia-libffi-jll
+           julia-xml2-jll))
     (home-page "https://github.com/JuliaBinaryWrappers/Wayland_jll.jl")
     (synopsis "Wayland library wrappers")
     (description "This package provides a wrapper for the wayland library.")
@@ -1695,10 +1675,9 @@ build tree Yggdrasil.")
                ;; There's a Julia file for each platform, override them all
                (find-files "src/wrappers/" "\\.jl$")))))))
     (inputs
-     `(("wayland-protocols" ,wayland-protocols)))
+     (list wayland-protocols))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)
-       ("julia-wayland-jll" ,julia-wayland-jll)))
+     (list julia-jllwrappers julia-wayland-jll))
     (home-page "https://github.com/JuliaBinaryWrappers/Wayland_protocols_jll.jl")
     (synopsis "Wayland-protocols library wrappers")
     (description "This package provides a wrapper for the wayland-protocols library.")
@@ -1737,9 +1716,9 @@ build tree Yggdrasil.")
                ;; There's a Julia file for each platform, override them all
                (find-files "src/wrappers/" "\\.jl$"))))))))
     (inputs
-     `(("libx264" ,libx264)))
+     (list libx264))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)))
+     (list julia-jllwrappers))
     (home-page "https://github.com/JuliaBinaryWrappers/x264_jll.jl")
     (synopsis "x264 library wrappers")
     (description "This package provides a wrapper for the x264 video library.")
@@ -1773,9 +1752,9 @@ build tree Yggdrasil.")
                ;; There's a Julia file for each platform, override them all
                (find-files "src/wrappers/" "\\.jl$")))))))
     (inputs
-     `(("x265" ,x265)))
+     (list x265))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)))
+     (list julia-jllwrappers))
     (home-page "https://github.com/JuliaBinaryWrappers/x265_jll.jl")
     (synopsis "x265 library wrappers")
     (description "This package provides a wrapper for the x265 video library.")
@@ -1809,13 +1788,11 @@ build tree Yggdrasil.")
                ;; There's a Julia file for each platform, override them all
                (find-files "src/wrappers/" "\\.jl$")))))))
     (inputs
-     `(("libxkbcommon" ,libxkbcommon)))
+     (list libxkbcommon))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)
-       ("julia-xorg-libxcb-jll" ,julia-xorg-libxcb-jll)
-       ("julia-xorg-xkeyboard-config-jll" ,julia-xorg-xkeyboard-config-jll)
-       ("julia-wayland-jll" ,julia-wayland-jll)
-       ("julia-wayland-protocols-jll" ,julia-wayland-protocols-jll)))
+     (list julia-jllwrappers julia-xorg-libxcb-jll
+           julia-xorg-xkeyboard-config-jll julia-wayland-jll
+           julia-wayland-protocols-jll))
     (home-page "https://github.com/JuliaBinaryWrappers/xkbcommon_jll.jl")
     (synopsis "Libxkbcommon library wrappers")
     (description "This package provides a wrapper for the libxkbcommon library.")
@@ -1851,11 +1828,9 @@ build tree Yggdrasil.")
                ;; There's a Julia file for each platform, override them all
                (find-files "src/wrappers/" "\\.jl$")))))))
     (inputs
-     `(("libxml2" ,libxml2)))
+     (list libxml2))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)
-       ("julia-libiconv-jll" ,julia-libiconv-jll)
-       ("julia-zlib-jll" ,julia-zlib-jll)))
+     (list julia-jllwrappers julia-libiconv-jll julia-zlib-jll))
     (home-page "https://github.com/JuliaBinaryWrappers/XML2_jll.jl")
     (synopsis "XML2 library wrappers")
     (description "This package provides a wrapper for the libxml2 library.")
@@ -1889,10 +1864,9 @@ build tree Yggdrasil.")
                ;; There's a Julia file for each platform, override them all
                (find-files "src/wrappers/" "\\.jl$")))))))
     (inputs
-     `(("libpthread-stubs" ,libpthread-stubs)))
+     (list libpthread-stubs))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)
-       ("julia-xslt-jll" ,julia-xslt-jll)))
+     (list julia-jllwrappers julia-xslt-jll))
     (home-page "https://github.com/JuliaBinaryWrappers/Xorg_libpthread_stubs_jll.jl")
     (synopsis "Libpthread-stubs library wrappers")
     (description "This package provides a wrapper for the libpthread-stubs library.")
@@ -1926,11 +1900,9 @@ build tree Yggdrasil.")
                ;; There's a Julia file for each platform, override them all
                (find-files "src/wrappers/" "\\.jl$")))))))
     (inputs
-     `(("libx11" ,libx11)))
+     (list libx11))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)
-       ("julia-xorg-libxcb-jll" ,julia-xorg-libxcb-jll)
-       ("julia-xorg-xtrans-jll" ,julia-xorg-xtrans-jll)))
+     (list julia-jllwrappers julia-xorg-libxcb-jll julia-xorg-xtrans-jll))
     (home-page "https://github.com/JuliaBinaryWrappers/Xorg_libX11_jll.jl")
     (synopsis "LibX11 library wrappers")
     (description "This package provides a wrapper for the libx11 library.")
@@ -1964,9 +1936,9 @@ build tree Yggdrasil.")
                ;; There's a Julia file for each platform, override them all
                (find-files "src/wrappers/" "\\.jl$")))))))
     (inputs
-     `(("libxau" ,libxau)))
+     (list libxau))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)))
+     (list julia-jllwrappers))
     (home-page "https://github.com/JuliaBinaryWrappers/Xorg_libXau_jll.jl")
     (synopsis "Libxau library wrappers")
     (description "This package provides a wrapper for the libxau library.")
@@ -2000,13 +1972,11 @@ build tree Yggdrasil.")
                ;; There's a Julia file for each platform, override them all
                (find-files "src/wrappers/" "\\.jl$")))))))
     (inputs
-     `(("libxcb" ,libxcb)))
+     (list libxcb))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)
-       ("julia-xorg-libxau-jll" ,julia-xorg-libxau-jll)
-       ("julia-xorg-libpthread-stubs-jll" ,julia-xorg-libpthread-stubs-jll)
-       ("julia-xorg-libxdmcp-jll" ,julia-xorg-libxdmcp-jll)
-       ("julia-xslt-jll" ,julia-xslt-jll)))
+     (list julia-jllwrappers julia-xorg-libxau-jll
+           julia-xorg-libpthread-stubs-jll julia-xorg-libxdmcp-jll
+           julia-xslt-jll))
     (home-page "https://github.com/JuliaBinaryWrappers/Xorg_libxcb_jll.jl")
     (synopsis "Libxcb library wrappers")
     (description "This package provides a wrapper for the libxcb library.")
@@ -2040,11 +2010,10 @@ build tree Yggdrasil.")
                ;; There's a Julia file for each platform, override them all
                (find-files "src/wrappers/" "\\.jl$")))))))
     (inputs
-     `(("libxcursor" ,libxcursor)))
+     (list libxcursor))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)
-       ("julia-xorg-libxfixes-jll" ,julia-xorg-libxfixes-jll)
-       ("julia-xorg-libxrender-jll" ,julia-xorg-libxrender-jll)))
+     (list julia-jllwrappers julia-xorg-libxfixes-jll
+           julia-xorg-libxrender-jll))
     (home-page "https://github.com/JuliaBinaryWrappers/Xorg_libXcursor_jll.jl")
     (synopsis "Libxcursor library wrappers")
     (description "This package provides a wrapper for the libxcursor library.")
@@ -2078,9 +2047,9 @@ build tree Yggdrasil.")
                ;; There's a Julia file for each platform, override them all
                (find-files "src/wrappers/" "\\.jl$")))))))
     (inputs
-     `(("libxdmcp" ,libxdmcp)))
+     (list libxdmcp))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)))
+     (list julia-jllwrappers))
     (home-page "https://github.com/JuliaBinaryWrappers/Xorg_libXdmcp_jll.jl")
     (synopsis "Libxdmcp library wrappers")
     (description "This package provides a wrapper for the libxdmcp library.")
@@ -2114,10 +2083,9 @@ build tree Yggdrasil.")
                ;; There's a Julia file for each platform, override them all
                (find-files "src/wrappers/" "\\.jl$")))))))
     (inputs
-     `(("libxext" ,libxext)))
+     (list libxext))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)
-       ("julia-xorg-libx11-jll" ,julia-xorg-libx11-jll)))
+     (list julia-jllwrappers julia-xorg-libx11-jll))
     (home-page "https://github.com/JuliaBinaryWrappers/Xorg_libXext_jll.jl")
     (synopsis "LibXext library wrappers")
     (description "This package provides a wrapper for the libxext library.")
@@ -2151,10 +2119,9 @@ build tree Yggdrasil.")
                ;; There's a Julia file for each platform, override them all
                (find-files "src/wrappers/" "\\.jl$")))))))
     (inputs
-     `(("libxfixes" ,libxfixes)))
+     (list libxfixes))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)
-       ("julia-xorg-libx11-jll" ,julia-xorg-libx11-jll)))
+     (list julia-jllwrappers julia-xorg-libx11-jll))
     (home-page "https://github.com/JuliaBinaryWrappers/Xorg_libXfixes_jll.jl")
     (synopsis "Libxfixes library wrappers")
     (description "This package provides a wrapper for the libxfixes library.")
@@ -2188,11 +2155,10 @@ build tree Yggdrasil.")
                ;; There's a Julia file for each platform, override them all
                (find-files "src/wrappers/" "\\.jl$")))))))
     (inputs
-     `(("libxi" ,libxi)))
+     (list libxi))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)
-       ("julia-xorg-libxext-jll" ,julia-xorg-libxext-jll)
-       ("julia-xorg-libxfixes-jll" ,julia-xorg-libxfixes-jll)))
+     (list julia-jllwrappers julia-xorg-libxext-jll
+           julia-xorg-libxfixes-jll))
     (home-page "https://github.com/JuliaBinaryWrappers/Xorg_libXi_jll.jl")
     (synopsis "Libxi library wrappers")
     (description "This package provides a wrapper for the libxi library.")
@@ -2226,10 +2192,9 @@ build tree Yggdrasil.")
                ;; There's a Julia file for each platform, override them all
                (find-files "src/wrappers/" "\\.jl$")))))))
     (inputs
-     `(("libxinerama" ,libxinerama)))
+     (list libxinerama))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)
-       ("julia-xorg-libxext-jll" ,julia-xorg-libxext-jll)))
+     (list julia-jllwrappers julia-xorg-libxext-jll))
     (home-page "https://github.com/JuliaBinaryWrappers/Xorg_libXinerama_jll.jl")
     (synopsis "Libxinerama library wrappers")
     (description "This package provides a wrapper for the libxinerama library.")
@@ -2263,10 +2228,9 @@ build tree Yggdrasil.")
                ;; There's a Julia file for each platform, override them all
                (find-files "src/wrappers/" "\\.jl$")))))))
     (inputs
-     `(("libxkbfile" ,libxkbfile)))
+     (list libxkbfile))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)
-       ("julia-xorg-libx11-jll" ,julia-xorg-libx11-jll)))
+     (list julia-jllwrappers julia-xorg-libx11-jll))
     (home-page "https://github.com/JuliaBinaryWrappers/Xorg_libxkbfile_jll.jl")
     (synopsis "Libxkbfile library wrappers")
     (description "This package provides a wrapper for the libxkbfile library.")
@@ -2300,11 +2264,10 @@ build tree Yggdrasil.")
                ;; There's a Julia file for each platform, override them all
                (find-files "src/wrappers/" "\\.jl$")))))))
     (inputs
-     `(("libxrandr" ,libxrandr)))
+     (list libxrandr))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)
-       ("julia-xorg-libxext-jll" ,julia-xorg-libxext-jll)
-       ("julia-xorg-libxrender-jll" ,julia-xorg-libxrender-jll)))
+     (list julia-jllwrappers julia-xorg-libxext-jll
+           julia-xorg-libxrender-jll))
     (home-page "https://github.com/JuliaBinaryWrappers/Xorg_libXrandr_jll.jl")
     (synopsis "Libxrandr library wrappers")
     (description "This package provides a wrapper for the libxrandr library.")
@@ -2338,10 +2301,9 @@ build tree Yggdrasil.")
                ;; There's a Julia file for each platform, override them all
                (find-files "src/wrappers/" "\\.jl$")))))))
     (inputs
-     `(("libxrender" ,libxrender)))
+     (list libxrender))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)
-       ("julia-xorg-libx11-jll" ,julia-xorg-libx11-jll)))
+     (list julia-jllwrappers julia-xorg-libx11-jll))
     (home-page "https://github.com/JuliaBinaryWrappers/Xorg_libXrender_jll.jl")
     (synopsis "libXrender library wrappers")
     (description "This package provides a wrapper for the libXrender library.")
@@ -2375,10 +2337,9 @@ build tree Yggdrasil.")
                ;; There's a Julia file for each platform, override them all
                (find-files "src/wrappers/" "\\.jl$")))))))
     (inputs
-     `(("xcb-util" ,xcb-util)))
+     (list xcb-util))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)
-       ("julia-xorg-libxcb-jll" ,julia-xorg-libxcb-jll)))
+     (list julia-jllwrappers julia-xorg-libxcb-jll))
     (home-page "https://github.com/JuliaBinaryWrappers/Xorg_xcb_util_jll.jl")
     (synopsis "Xcb-util library wrappers")
     (description "This package provides a wrapper for the xcb-util library.")
@@ -2412,10 +2373,9 @@ build tree Yggdrasil.")
                ;; There's a Julia file for each platform, override them all
                (find-files "src/wrappers/" "\\.jl$")))))))
     (inputs
-     `(("xcb-util-image" ,xcb-util-image)))
+     (list xcb-util-image))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)
-       ("julia-xorg-xcb-util-jll" ,julia-xorg-xcb-util-jll)))
+     (list julia-jllwrappers julia-xorg-xcb-util-jll))
     (home-page "https://github.com/JuliaBinaryWrappers/Xorg_xcb_util_image_jll.jl")
     (synopsis "Xcb-util-image library wrappers")
     (description "This package provides a wrapper for the xcb-util-image library.")
@@ -2449,10 +2409,9 @@ build tree Yggdrasil.")
                ;; There's a Julia file for each platform, override them all
                (find-files "src/wrappers/" "\\.jl$")))))))
     (inputs
-     `(("xcb-util-keysyms" ,xcb-util-keysyms)))
+     (list xcb-util-keysyms))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)
-       ("julia-xorg-xcb-util-jll" ,julia-xorg-xcb-util-jll)))
+     (list julia-jllwrappers julia-xorg-xcb-util-jll))
     (home-page "https://github.com/JuliaBinaryWrappers/Xorg_xcb_util_keysyms_jll.jl")
     (synopsis "Xcb-util-keysyms library wrappers")
     (description "This package provides a wrapper for the xcb-util-keysyms library.")
@@ -2486,10 +2445,9 @@ build tree Yggdrasil.")
                ;; There's a Julia file for each platform, override them all
                (find-files "src/wrappers/" "\\.jl$")))))))
     (inputs
-     `(("xcb-util-renderutil" ,xcb-util-renderutil)))
+     (list xcb-util-renderutil))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)
-       ("julia-xorg-xcb-util-jll" ,julia-xorg-xcb-util-jll)))
+     (list julia-jllwrappers julia-xorg-xcb-util-jll))
     (home-page "https://github.com/JuliaBinaryWrappers/Xorg_xcb_util_renderutil_jll.jl")
     (synopsis "Xcb-util-renderutil library wrappers")
     (description "This package provides a wrapper for the xcb-util-renderutil library.")
@@ -2523,10 +2481,9 @@ build tree Yggdrasil.")
                ;; There's a Julia file for each platform, override them all
                (find-files "src/wrappers/" "\\.jl$")))))))
     (inputs
-     `(("xcb-util-wm" ,xcb-util-wm)))
+     (list xcb-util-wm))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)
-       ("julia-xorg-xcb-util-jll" ,julia-xorg-xcb-util-jll)))
+     (list julia-jllwrappers julia-xorg-xcb-util-jll))
     (home-page "https://github.com/JuliaBinaryWrappers/Xorg_xcb_util_wm_jll.jl")
     (synopsis "Xcb-util-wm library wrappers")
     (description "This package provides a wrapper for the xcb-util-wm library.")
@@ -2560,10 +2517,9 @@ build tree Yggdrasil.")
                ;; There's a Julia file for each platform, override them all
                (find-files "src/wrappers/" "\\.jl$")))))))
     (inputs
-     `(("xkbcomp" ,xkbcomp)))
+     (list xkbcomp))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)
-       ("julia-xorg-libxkbfile-jll" ,julia-xorg-libxkbfile-jll)))
+     (list julia-jllwrappers julia-xorg-libxkbfile-jll))
     (home-page "https://github.com/JuliaBinaryWrappers/Xorg_xkbcomp_jll.jl")
     (synopsis "xkbcomp library wrappers")
     (description "This package provides a wrapper for the xkbcomp library.")
@@ -2597,10 +2553,9 @@ build tree Yggdrasil.")
                ;; There's a Julia file for each platform, override them all
                (find-files "src/wrappers/" "\\.jl$")))))))
     (inputs
-     `(("xkeyboard-config" ,xkeyboard-config)))
+     (list xkeyboard-config))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)
-       ("julia-xorg-xkbcomp-jll" ,julia-xorg-xkbcomp-jll)))
+     (list julia-jllwrappers julia-xorg-xkbcomp-jll))
     (home-page "https://github.com/JuliaBinaryWrappers/Xorg_xkeyboard_config_jll.jl")
     (synopsis "Xkeyboard-config library wrappers")
     (description "This package provides a wrapper for the xkeyboard-config library.")
@@ -2634,9 +2589,9 @@ build tree Yggdrasil.")
                ;; There's a Julia file for each platform, override them all
                (find-files "src/wrappers/" "\\.jl$")))))))
     (inputs
-     `(("xtrans" ,xtrans)))
+     (list xtrans))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)))
+     (list julia-jllwrappers))
     (home-page "https://github.com/JuliaBinaryWrappers/Xorg_xtrans_jll.jl")
     (synopsis "xtrans library wrappers")
     (description "This package provides a wrapper for the xtrans library.")
@@ -2672,14 +2627,14 @@ build tree Yggdrasil.")
                ;; There's a Julia file for each platform, override them all
                (find-files "src/wrappers/" "\\.jl$")))))))
     (inputs
-     `(("libxslt" ,libxslt)))
+     (list libxslt))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)
-       ("julia-libgcrypt-jll" ,julia-libgcrypt-jll)
-       ("julia-libgpg-error-jll" ,julia-libgpg-error-jll)
-       ("julia-libiconv-jll" ,julia-libiconv-jll)
-       ("julia-xml2-jll" ,julia-xml2-jll)
-       ("julia-zlib-jll" ,julia-zlib-jll)))
+     (list julia-jllwrappers
+           julia-libgcrypt-jll
+           julia-libgpg-error-jll
+           julia-libiconv-jll
+           julia-xml2-jll
+           julia-zlib-jll))
     (home-page "https://github.com/JuliaBinaryWrappers/XSLT_jll.jl")
     (synopsis "Xslt library wrappers")
     (description "This package provides a wrapper for the libxslt library.")
@@ -2715,9 +2670,9 @@ build tree Yggdrasil.")
                ;; There's a Julia file for each platform, override them all
                (find-files "src/wrappers/" "\\.jl$")))))))
     (inputs
-     `(("zlib" ,zlib)))
+     (list zlib))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)))
+     (list julia-jllwrappers))
     (home-page "https://github.com/JuliaBinaryWrappers/Zlib_jll.jl")
     (synopsis "Zlib library wrappers")
     (description "This package provides a wrapper for Zlib.")
@@ -2755,7 +2710,7 @@ build tree Yggdrasil.")
     (inputs
      `(("zstd:lib" ,zstd "lib")))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)))
+     (list julia-jllwrappers))
     (home-page "https://github.com/JuliaBinaryWrappers/Zstd_jll.jl")
     (synopsis "Zstd library wrappers")
     (description "This package provides a wrapper for the zstd library.")
@@ -2793,7 +2748,7 @@ build tree Yggdrasil.")
     (inputs
      `(("sundials" ,sundials-julia)))
     (propagated-inputs
-     `(("julia-jllwrappers" ,julia-jllwrappers)))
+     (list julia-jllwrappers))
     (home-page "https://github.com/JuliaBinaryWrappers/Sundials_jll.jl")
     (synopsis "SUndials library wrappers")
     (description "This package provides a wrapper for the sundials library.")

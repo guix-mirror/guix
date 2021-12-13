@@ -91,4 +91,4 @@ fragmentation avoidance and scalable concurrency support.")
         ;; https://github.com/jemalloc/jemalloc/issues/937
         ((#:configure-flags base-configure-flags '())
          `(cons "--disable-initial-exec-tls" ,base-configure-flags))))
-    (inputs `(("perl" ,perl)))))
+    (inputs (list perl))))

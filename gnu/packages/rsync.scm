@@ -54,11 +54,9 @@
       (list "--without-included-zlib"
             "--without-included-popt")))
    (native-inputs
-    `(("perl" ,perl)))
+    (list perl))
    (inputs
-    `(("acl" ,acl)
-      ("popt" ,popt)
-      ("zlib" ,zlib)))
+    (list acl popt zlib))
    (synopsis "Remote (and local) file copying tool")
    (description
     "Rsync is a fast and versatile file copying tool.  It can copy locally,
@@ -89,7 +87,7 @@ files in the destination.")
             ;; Avoid these dependencies for now.
             "--disable-openssl")))
    (native-inputs
-    `(("perl" ,perl)))
+    (list perl))
    (inputs
     `(("acl" ,acl)
       ("lz4" ,lz4)
@@ -122,10 +120,9 @@ files in the destination.")
               "0bn29npmbw26akc6y54661irpdh6qcivcs6q48cgp3llklhhxp0q"))))
    (build-system cmake-build-system)
    (inputs
-    `(("popt" ,popt)))
+    (list popt))
    (native-inputs
-    `(("which" ,which)
-      ("perl" ,perl)))
+    (list which perl))
    (home-page "http://librsync.sourceforge.net/")
    (synopsis "Implementation of the rsync remote-delta algorithm")
    (description

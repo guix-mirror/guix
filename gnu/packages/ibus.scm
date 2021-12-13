@@ -271,9 +271,8 @@ may also simplify input method development.")
        ("pygobject2" ,python-pygobject)
        ("gtk+" ,gtk+)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)
-       ("glib" ,glib "bin")))
+     (list pkg-config intltool
+           `(,glib "bin")))
     (synopsis "Chinese pinyin and ZhuYin input methods for IBus")
     (description
      "This package includes a Chinese pinyin input method and a Chinese
@@ -295,10 +294,9 @@ ZhuYin (Bopomofo) input method based on libpinyin for IBus.")
                 "10h5mjgv4ibhispvr3s1k36a4aclx4dcvcc2knd4sg1xibw0dp4w"))))
     (build-system gnu-build-system)
     (inputs
-     `(("glib" ,glib)
-       ("bdb" ,bdb)))
+     (list glib bdb))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (synopsis "Library to handle Chinese pinyin")
     (description
      "The libpinyin C++ library provides algorithms needed for sentence-based
@@ -344,11 +342,7 @@ Chinese pinyin input methods.")
        ("pkg-config" ,pkg-config)
        ("python" ,python)))
     (inputs
-     `(("anthy" ,anthy)
-       ("gtk+" ,gtk+)
-       ("ibus" ,ibus)
-       ("gobject-introspection" ,gobject-introspection)
-       ("python-pygobject" ,python-pygobject)))
+     (list anthy gtk+ ibus gobject-introspection python-pygobject))
     (synopsis "Anthy Japanese language input method for IBus")
     (description "IBus-Anthy is an engine for the input bus \"IBus\").  It
 adds the Anthy Japanese language input method to IBus.  Because most graphical
@@ -390,17 +384,15 @@ Japanese language input in most graphical applications.")
                (("link_directories\\($\\{PROJECT_SOURCE_DIR\\}/thirdparty/lib\\)") ""))
              #t)))))
     (inputs
-     `(("boost" ,boost)
-       ("capnproto" ,capnproto)
-       ("glog" ,glog)
-       ("leveldb" ,leveldb)
-       ("marisa" ,marisa)
-       ("opencc" ,opencc)
-       ("yaml-cpp" ,yaml-cpp)))
+     (list boost
+           capnproto
+           glog
+           leveldb
+           marisa
+           opencc
+           yaml-cpp))
     (native-inputs
-     `(("googletest" ,googletest)
-       ("pkg-config" ,pkg-config)
-       ("xorgproto" ,xorgproto))) ; keysym.h
+     (list googletest pkg-config xorgproto)) ; keysym.h
     (home-page "https://rime.im/")
     (synopsis "The core library of Rime Input Method Engine")
     (description "@dfn{librime} is the core library of Rime Input Method
@@ -744,12 +736,12 @@ Method Engine.")
                 "DESTINATION \"${CMAKE_INSTALL_DATADIR}/rime-data\""))
              #t)))))
     (inputs
-     `(("gdk-pixbuf" ,gdk-pixbuf)
-       ("glib" ,glib)
-       ("ibus" ,ibus)
-       ("libnotify" ,libnotify)
-       ("librime" ,librime)
-       ("rime-data" ,rime-data)))
+     (list gdk-pixbuf
+           glib
+           ibus
+           libnotify
+           librime
+           rime-data))
     (native-inputs
      `(("cmake" ,cmake-minimal)
        ("pkg-config" ,pkg-config)))
@@ -815,12 +807,12 @@ hanja dictionary and small hangul character classification.")
        ("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin")))
     (inputs
-     `(("ibus" ,ibus)
-       ("glib" ,glib)
-       ("python-pygobject" ,python-pygobject)
-       ("gtk+" ,gtk+)
-       ("libhangul" ,libhangul)
-       ("python" ,python)))
+     (list ibus
+           glib
+           python-pygobject
+           gtk+
+           libhangul
+           python))
     (home-page "https://github.com/libhangul/ibus-hangul")
     (synopsis "Hangul engine for IBus")
     (description
@@ -845,8 +837,7 @@ hanja dictionary and small hangul character classification.")
     (arguments
      `(#:tests? #f)) ; No tests
     (propagated-inputs
-     `(("python-tinycss2" ,python-tinycss2)
-       ("python-pygobject" ,python-pygobject)))
+     (list python-tinycss2 python-pygobject))
     (native-inputs
      `(("gettext" ,gettext-minimal)))
     (home-page "https://github.com/openSUSE/IBus-Theme-Tools")

@@ -165,9 +165,7 @@
                 "# ADD_TEST(Test_BulletInverseForward"))
              #t)))))
     (inputs
-     `(("glu" ,glu)
-       ("libx11" ,libx11)
-       ("mesa" ,mesa)))
+     (list glu libx11 mesa))
     (home-page "https://pybullet.org/wordpress/")
     (synopsis "3D physics engine library")
     (description
@@ -189,11 +187,9 @@ is used in some video games and movies.")
        (base32 "0psb2za6ldrlak7s8pjvli98ij5yiwjx8j1ms2v7rj9yadx0xv8h"))))
    (build-system gnu-build-system)
    (inputs
-    `(("libpng" ,libpng)))
+    (list libpng))
    (native-inputs
-    `(("asciidoc" ,asciidoc)
-      ("pkg-config" ,pkg-config)
-      ("zstd" ,zstd)))
+    (list asciidoc pkg-config zstd))
    (home-page "https://github.com/Doom-Utils/deutex")
    (synopsis "WAD file composer for Doom and related games")
    (description
@@ -245,9 +241,7 @@ DeuTex has functions such as merging wads, etc.")
                            (find-files "." "\\.1"))))
              #t)))))
     (inputs
-     `(("boost" ,boost)
-       ("libpng" ,libpng)
-       ("zlib" ,zlib)))
+     (list boost libpng zlib))
     (synopsis "GRF development tools")
     (description
      "The @dfn{Graphics Resource File} (GRF) development tools are a set of
@@ -312,13 +306,13 @@ PCM data.")
                         (("-Werror") ""))
                       #t)))))
     (native-inputs `(("pkgconfig" ,pkg-config)))
-    (inputs `(("bdb" ,bdb)
-              ("glib" ,glib)
-              ("guile" ,guile-3.0)
-              ("libmicrohttpd" ,libmicrohttpd)
-              ("ncurses" ,ncurses)
-              ("sdl" ,sdl)
-              ("zlib" ,zlib)))
+    (inputs (list bdb
+                  glib
+                  guile-3.0
+                  libmicrohttpd
+                  ncurses
+                  sdl
+                  zlib))
     (home-page "https://www.nongnu.org/gzochi/")
     (synopsis "Scalable middleware for multiplayer games")
     (description
@@ -347,8 +341,7 @@ provide connectivity for client applications written in any language.")
     (arguments
      '(#:tests? #f))
     (propagated-inputs
-     `(("python-pillow" ,python-pillow)
-       ("python-ply" ,python-ply)))
+     (list python-pillow python-ply))
     (home-page "https://github.com/OpenTTD/nml")
     (synopsis "NML compiler")
     (description
@@ -370,8 +363,7 @@ files) into @file{.grf} and/or @file{.nfo} files.")
          "0s5d5qzlzfmqb10iyrqi62n36ll94d99xjaznp5ca6dz1b91qkvr"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-pygame" ,python-pygame)
-       ("python-uniseg" ,python-uniseg)))
+     (list python-pygame python-uniseg))
     (home-page "https://python-sge.github.io/")
     (synopsis "2D game engine for Python")
     (description
@@ -396,7 +388,7 @@ possible, and it also makes the SGE easy to learn.")
          "073q0prg1nzlkga2b45vhscz374206qh4x68ccg00mxxwagn64z0"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-six" ,python-six)))
+     (list python-six))
     (home-page "http://python-tmx.nongnu.org")
     (synopsis "Python library for the @code{Tiled} TMX format")
     (description
@@ -414,8 +406,8 @@ levels.")
     (package
       (inherit python2-tmx)
       (propagated-inputs
-       `(("python2-pathlib" ,python2-pathlib)
-         ,@(package-propagated-inputs python2-tmx))))))
+       (modify-inputs (package-propagated-inputs python2-tmx)
+         (prepend python2-pathlib))))))
 
 (define-public python-xsge
   (package
@@ -442,9 +434,9 @@ levels.")
                      "--root=/"))))
        #:tests? #f)) ; no check target
     (native-inputs
-     `(("unzip" ,unzip)))
+     (list unzip))
     (propagated-inputs
-     `(("python-sge" ,python-sge)))
+     (list python-sge))
     (home-page "https://python-sge.github.io/")
     (synopsis "Extensions for the SGE Game Engine")
     (description
@@ -504,9 +496,7 @@ support.")
        ("sfml" ,sfml)
        ("wxwidgets" ,wxwidgets-3.1)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("which" ,which)
-       ("zip" ,zip)))
+     (list pkg-config which zip))
     (home-page "https://slade.mancubus.net")
     (synopsis "Doom game data editor")
     (description "SLADE3 is a modern editor for Doom-engine based games and
@@ -530,12 +520,9 @@ formats such as PNG.")
                 "1ifxh3sv6gz32gahgi7ba0ivcw5mfgwnrw6iycpav150w9xla43i"))))
     (build-system gnu-build-system)
     (inputs
-     `(("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)
-       ("qtsvg" ,qtsvg)
-       ("zlib" ,zlib)))
+     (list qtbase-5 qtdeclarative qtsvg zlib))
     (native-inputs
-     `(("qttools" ,qttools)))
+     (list qttools))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
@@ -665,7 +652,7 @@ experimental.")
              "-DSFML_OS_PKGCONFIG_DIR=lib/pkgconfig")
        #:tests? #f)) ; no tests
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
      `(("mesa" ,mesa)
        ("glew" ,glew)
@@ -679,10 +666,7 @@ experimental.")
        ("stb-image-write" ,stb-image-write)))
     (propagated-inputs
      ;; In Requires.private of pkg-config files.
-     `(("flac" ,flac)
-       ("freetype" ,freetype)
-       ("libvorbis" ,libvorbis)
-       ("openal" ,openal)))
+     (list flac freetype libvorbis openal))
     (home-page "https://www.sfml-dev.org")
     (synopsis "Simple and Fast Multimedia Library")
     (description
@@ -716,11 +700,9 @@ of five modules: system, window, graphics, audio and network.")
                         #t))))
        #:tests? #f)) ; no tests
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("desktop-file-utils" ,desktop-file-utils)))
+     (list pkg-config desktop-file-utils))
     (inputs
-     `(("sdl" ,sdl)
-       ("gtk+" ,gtk+)))
+     (list sdl gtk+))
     (synopsis "Simple sound effect generator")
     (description "Sfxr is a tool for quickly generating simple sound effects.
 Originally created for use in video game prototypes, it can generate random
@@ -783,9 +765,9 @@ garbage collection and can be extended with plugins.")
                         (("CMAKE_COMPILER_IS_GNUCC") "FALSE"))
                       #t)))))
     (inputs
-     `(("zlib" ,zlib)))
+     (list zlib))
     (native-inputs
-     `(("doxygen" ,doxygen)))
+     (list doxygen))
     (home-page "https://icculus.org/physfs")
     (synopsis "File system abstraction library")
     (description
@@ -812,19 +794,19 @@ archive on a per-file basis.")
                "0m8lvlabmcchskx4qpzkdlsm44360f3j0q3vvvj2388cfnvhv7v4"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("devil" ,devil)
-       ("freetype" ,freetype)
-       ("libmodplug" ,libmodplug)
-       ("libtheora" ,libtheora)
-       ("libvorbis" ,libvorbis)
-       ("luajit" ,luajit)
-       ("mesa" ,mesa)
-       ("mpg123" ,mpg123)
-       ("openal" ,openal)
-       ("sdl2" ,sdl2)
-       ("zlib" ,zlib)))
+     (list devil
+           freetype
+           libmodplug
+           libtheora
+           libvorbis
+           luajit
+           mesa
+           mpg123
+           openal
+           sdl2
+           zlib))
     (synopsis "2D game framework for Lua")
     (description "LÖVE is a framework for making 2D games in the Lua
 programming language.")
@@ -858,7 +840,7 @@ programming language.")
              (substitute* "CMakeLists.txt"
                (("DESTINATION .") "DESTINATION lib/love")))))))
     (inputs
-     `(("luajit" ,luajit)))
+     (list luajit))
     (synopsis "Lightweight immediate mode GUI for LÖVE games")
     (description "LÖVE is a Lua framework for making 2D games.  Nuklear
 is a minimal state immediate mode graphical user interface toolkit.  This
@@ -891,11 +873,7 @@ package is the Nuklear bindings for LÖVE created by Kevin Harrison.")
                (("ADDON_LINKAGE STATIC")
                 "ADDON_LINKAGE SHARED")))))))
     (inputs
-     `(("glu" ,glu)
-       ("libpng" ,libpng)
-       ("libvorbis" ,libvorbis)
-       ("mesa" ,mesa)
-       ("zlib" ,zlib)))
+     (list glu libpng libvorbis mesa zlib))
     (synopsis "Game programming library")
     (description "Allegro is a library mainly aimed at video game and
 multimedia programming.  It handles common, low-level tasks such as creating
@@ -936,7 +914,7 @@ etc.")
        ("physfs" ,physfs)
        ("zlib" ,zlib)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (synopsis "Game programming library")
     (description "Allegro is a library mainly aimed at video game and
 multimedia programming.  It handles common, low-level tasks such as creating
@@ -997,7 +975,7 @@ etc.")
                             (assoc-ref %build-inputs "freetype")
                             "/include/freetype2"))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     ;; TODO: Use a patched Allegro 4 that supports window resizing.  This
     ;; patched version is bundled with Aseprite, but the patches should be
     ;; extracted and applied on top of a standalone Allegro 4 package.
@@ -1089,7 +1067,7 @@ LibreSprite is a fork of the latest GPLv2 commit of Aseprite.")
                 "0bw0papyqjg22z6irf36gs54y8236wa37b6gyn2h1spy65n76lqp"))))
     (build-system gnu-build-system)
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (home-page "https://qqwing.com/")
     (synopsis "Sudoku puzzle solver and generator")
     (description
@@ -1119,7 +1097,7 @@ It offers the following features:
                (base32
                 "08ddhywdy2qg17m592ng3yr0p1ih96irg8wg729g75hsxxq9ipks"))))
     (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs (list pkg-config))
     (inputs `(("fontconfig" ,fontconfig)
               ("freeglute" ,freeglut)
               ("fribidi" ,fribidi)
@@ -1277,10 +1255,9 @@ to create fully featured games and multimedia programs in the python language.")
                                       "/lib -Wl,--enable-new-dtags -lSDL2"))
                #t)))))
       (inputs
-       `(("sdl-union"
-          ,(sdl-union (list sdl2 sdl2-image sdl2-mixer sdl2-ttf)))))
+       (list (sdl-union (list sdl2 sdl2-image sdl2-mixer sdl2-ttf))))
       (native-inputs
-       `(("python-cython" ,python-cython)))
+       (list python-cython))
       (home-page "https://www.renpy.org/")
       (synopsis "Reimplementation of the Pygame API using SDL2")
       (description "Pygame_SDL2 reimplements the Pygame API using SDL2,
@@ -1365,19 +1342,18 @@ developed mainly for Ren'py.")
                (delete-file-recursively (string-append out site "/renpy/common")))
              #t)))))
     (inputs
-     `(("ffmpeg" ,ffmpeg)
-       ("freetype" ,freetype)
-       ("fribidi" ,fribidi)
-       ("glew" ,glew)
-       ("libpng" ,libpng)
-       ("sdl-union"
-        ,(sdl-union (list sdl2 sdl2-image sdl2-mixer sdl2-ttf)))
-       ("xdg-utils" ,xdg-utils)))
+     (list ffmpeg
+           freetype
+           fribidi
+           glew
+           libpng
+           (sdl-union (list sdl2 sdl2-image sdl2-mixer sdl2-ttf))
+           xdg-utils))
     (propagated-inputs
      `(("python2-future" ,python2-future)
        ("python2-pygame" ,python2-pygame-sdl2)))
     (native-inputs
-     `(("python2-cython" ,python2-cython)))
+     (list python2-cython))
     (home-page "https://www.renpy.org/")
     (synopsis "Ren'py python module")
     (description "This package contains the shared libraries and Python modules
@@ -1595,7 +1571,7 @@ if __name__ == \"__main__\":
        ("xdg-utils" ,xdg-utils)))
     (propagated-inputs '())
     (native-inputs
-     `(("xorg-server" ,xorg-server-for-tests)))
+     (list xorg-server-for-tests))
     (outputs
      (list "out" "tutorial" "the-question"))
     (home-page "https://www.renpy.org/")
@@ -1650,7 +1626,7 @@ games.")
      `(("gifsicle" ,gifsicle)
        ("sdl2" ,(sdl-union (list sdl2 sdl2-image)))))
     (native-inputs
-     `(("gcc" ,gcc-10)))                  ; for std::filesystem
+     (list gcc-10))                  ; for std::filesystem
     (home-page "https://github.com/kitao/pyxel")
     (synopsis "Retro game engine for Python")
     (description "Pyxel is a game engine inspired by retro gaming consoles.
@@ -1690,11 +1666,10 @@ also comes with a built-in image and sound editor.")
                             (assoc-ref %outputs "out")))
        #:tests? #f)) ; no check target
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("libpng" ,libpng)
-       ("lua" ,lua-5.1)
-       ("sdl-union" ,(sdl-union (list sdl sdl-image sdl-ttf)))))
+     (list libpng lua-5.1
+           (sdl-union (list sdl sdl-image sdl-ttf))))
     (synopsis "Bitmap paint program")
     (description "GrafX2 is a bitmap paint program inspired by the Amiga
 programs Deluxe Paint and Brilliance.  Specializing in 256-color drawing, it
@@ -1721,7 +1696,7 @@ painted with a mouse.")
     (arguments
      `(#:tests? #f))                    ; no test suite
     (inputs
-     `(("libx11" ,libx11)))
+     (list libx11))
     (synopsis "Object Oriented Input System")
     (description
      "Cross Platform Object Oriented Input Lib System is a cross platform,
@@ -1758,16 +1733,14 @@ robust and compatible with many systems and operating systems.")
              "-DMYGUI_BUILD_DEMOS=FALSE"
              "-DMYGUI_BUILD_TOOLS=FALSE")))
     (native-inputs
-     `(("boost" ,boost)
-       ("doxygen" ,doxygen)
-       ("pkg-config" ,pkg-config)))
+     (list boost doxygen pkg-config))
     (inputs
-     `(("font-dejavu" ,font-dejavu)
-       ("freetype" ,freetype)
-       ("graphviz" ,graphviz)
-       ("libx11" ,libx11)
-       ("ogre" ,ogre)
-       ("ois" ,ois)))
+     (list font-dejavu
+           freetype
+           graphviz
+           libx11
+           ogre
+           ois))
     (synopsis "Fast, flexible and simple GUI")
     (description
      "MyGUI is a library for creating Graphical User Interfaces (GUIs) for games
@@ -1793,10 +1766,9 @@ of use.")
                       "-DMYGUI_BUILD_DEMOS=FALSE"
                       "-DMYGUI_BUILD_TOOLS=FALSE")))))
     (inputs
-     `(("mesa" ,mesa)
-       ("glu" ,glu)
-       ,@(fold alist-delete (package-inputs mygui)
-               '("ogre"))))
+     (modify-inputs (package-inputs mygui)
+       (delete "ogre")
+       (prepend mesa glu)))
     (synopsis "Fast, flexible and simple GUI (OpenGL backend)")))
 
 (define-public openmw
@@ -1819,9 +1791,7 @@ of use.")
        #:configure-flags
        (list "-DDESIRED_QT_VERSION=5")))
     (native-inputs
-     `(("boost" ,boost)
-       ("doxygen" ,doxygen)
-       ("pkg-config" ,pkg-config)))
+     (list boost doxygen pkg-config))
     (inputs
      `(("bullet" ,bullet)
        ("ffmpeg" ,ffmpeg)
@@ -1981,7 +1951,7 @@ games.")
                            ,(string-append icons "/scalable/apps/godot.svg"))))
              #t)))))
     (outputs '("out" "headless"))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs (list pkg-config))
     (inputs `(("alsa-lib" ,alsa-lib)
               ("bullet" ,bullet)
               ("freetype" ,freetype)
@@ -2035,11 +2005,10 @@ scripted in a Python-like language.")
        ;; Only tests are compiled, and they need assertions to work correctly.
        #:build-type "Debug"))
     (native-inputs
-     `(;; for testing
-       ("googletest" ,googletest)
-       ;; for documentation
-       ("doxygen" ,doxygen)
-       ("graphviz" ,graphviz)))
+     (list ;; for testing
+           googletest
+           ;; for documentation
+           doxygen graphviz))
     (synopsis "Entity component system")
     (description "EnTT is a header-only library, containing (among other things)
 @itemize
@@ -2095,8 +2064,7 @@ scripted in a Python-like language.")
               ("libpng" ,libpng)
               ("fltk" ,fltk)
               ("zlib" ,zlib)))
-    (native-inputs `(("pkg-config" ,pkg-config)
-                     ("xdg-utils" ,xdg-utils)))
+    (native-inputs (list pkg-config xdg-utils))
     (synopsis "Doom map editor")
     (description "Eureka is a map editor for the classic DOOM games, and a few
 related games such as Heretic and Hexen.  It comes with a 3d preview mode and
@@ -2122,16 +2090,14 @@ a 2D editor view.")
      `(("guile-opengl" ,guile3.0-opengl)
        ("guile-sdl2" ,guile-sdl2)))
     (inputs
-     `(("freetype" ,freetype)
-       ("guile" ,guile-3.0-latest)
-       ("libvorbis" ,libvorbis)
-       ("mpg123" ,mpg123)
-       ("openal" ,openal)
-       ("readline" ,readline)))
+     (list freetype
+           guile-3.0-latest
+           libvorbis
+           mpg123
+           openal
+           readline))
     (native-inputs
-     `(("guile" ,guile-3.0-latest)
-       ("pkg-config" ,pkg-config)
-       ("texinfo" ,texinfo)))
+     (list guile-3.0-latest pkg-config texinfo))
     (home-page "https://dthompson.us/projects/chickadee.html")
     (synopsis "Game development toolkit for Guile Scheme with SDL2 and OpenGL")
     (description "Chickadee is a game development toolkit for Guile Scheme
@@ -2183,12 +2149,8 @@ that parenthetically inclined game developers need to make 2D (and eventually
 
             i*86)"))
                #t)))))
-    (inputs `(("openssl" ,openssl)
-              ("zlib" ,zlib)))
-    (native-inputs `(("pkg-config" ,pkg-config)
-                     ("autoconf" ,autoconf)
-                     ("automake" ,automake)
-                     ("libtool" ,libtool)))
+    (inputs (list openssl zlib))
+    (native-inputs (list pkg-config autoconf automake libtool))
     (synopsis "Programming language to create games")
     (description "Bennu Game Development, also known as bennudg, is a
 programming language tailored at game development.  It is the successor of
@@ -2210,11 +2172,7 @@ Fenix.")
                  (("extern fixed fmul\\( int x, int y \\);") "")
                  (("extern fixed fdiv\\( int x, int y \\);") "")))
              (chdir "modules"))))))
-    (inputs `(("zlib" ,zlib)
-              ("libpng" ,libpng)
-              ("openssl" ,openssl)
-              ("sdl-mixer" ,sdl-mixer)
-              ("bennu-game-development" ,bennu-game-development)))
+    (inputs (list zlib libpng openssl sdl-mixer bennu-game-development))
     (synopsis "Modules for the Bennu Game Development programming language")
     (description "This package contains a collection of modules for the Bennu
 Game Development programming language, from CD handling through SDL to
@@ -2235,11 +2193,9 @@ joystick support.")))
                                        "plib-CVE-2012-4552.patch"))))
     (build-system gnu-build-system)
     (inputs
-     `(("mesa" ,mesa)
-       ("libxi" ,libxi)
-       ("libxmu" ,libxmu)))
+     (list mesa libxi libxmu))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "http://plib.sourceforge.net/")
     (synopsis "Suite of portable game libraries")
     (description "PLIB is a set of libraries that will permit programmers to
@@ -2280,8 +2236,8 @@ of the others")
          ("freetype" ,freetype)
          ("libogg" ,libogg)))
       (native-inputs
-       `(("which" ,which)               ; Else SDL_version.h won't be found.
-         ("pkg-config" ,pkg-config)))
+       (list which ; Else SDL_version.h won't be found.
+             pkg-config))
       (arguments
        '(#:tests? #f                    ; No tests.
          #:make-flags '("CC=gcc"
@@ -2412,7 +2368,7 @@ specific knowledge of the hardware they are targeting.")
                                       sdl-union)))
              #t)))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
      `(("sdl" ,(sdl-union (list sdl sdl-image sdl-mixer)))))
     (home-page "http://perso.b2b2c.ca/~sarrazip/dev/burgerspace.html")
@@ -2460,7 +2416,7 @@ double-buffering.")
                (install-file "bin/Release/FNA.dll" (string-append out "/lib"))
                #t))))))
     (native-inputs
-     `(("mono" ,mono)))
+     (list mono))
     (inputs `(("sdl2-cs-src" ,(package-source sdl2-cs))
               ("mojoshader-src" ,(package-source mojoshader-cs))
               ("faudio-src" ,(package-source faudio))
@@ -2493,7 +2449,7 @@ focuses solely on developing a fully accurate XNA4 runtime for the desktop.")
                            "-DBUILD_TESTING=ON"
                            "-DENABLE_DOUBLE_PRECISION=ON")))
     (native-inputs
-     `(("python-sphinx" ,python-sphinx)))
+     (list python-sphinx))
     (home-page "https://github.com/danfis/libccd")
     (synopsis "Library for collision detection between two convex shapes")
     (description "@code{libccd} is library for a collision detection
@@ -2530,9 +2486,7 @@ a.k.a. XenoCollide) as described in Game Programming Gems 7.")
                (("configure_file\\(libccd/.*") ""))
              #t)))))
     (inputs
-     `(("glu" ,glu)
-       ("libccd" ,libccd)
-       ("mesa" ,mesa)))
+     (list glu libccd mesa))
     (home-page "https://www.ode.org/")
     (synopsis "High performance library for simulating rigid body dynamics")
     (description "ODE is a high performance library for simulating
@@ -2564,9 +2518,7 @@ computer games, 3D authoring tools and simulation tools.")
        #:configure-flags '("-DBUILD_STATIC=OFF"
                            "-DBUILD_DEMOS=OFF")))
     (inputs
-     `(("freeglut" ,freeglut)
-       ("libxmu" ,libxmu)
-       ("libxrandr" ,libxrandr)))
+     (list freeglut libxmu libxrandr))
     (home-page "https://chipmunk-physics.net/")
     (synopsis "Fast and lightweight 2D game physics library")
     (description "Chipmunk is a simple, lightweight, fast and portable 2D
@@ -2597,7 +2549,7 @@ rigid body physics library written in C.")
        #:configure-flags '("-DBUILD_SHARED_LIBS=ON"
                            "-DBOX2D_BUILD_TESTBED=OFF")))
     (inputs
-     `(("libx11" ,libx11)))
+     (list libx11))
     (home-page "https://box2d.org/")
     (synopsis "2D physics engine for games")
     (description "Box2D is a 2D rigid body simulation library for games.
@@ -2658,18 +2610,15 @@ physics engine is just a system for procedural animation.")
              (patch-shebang "get_version.py")
              #t)))))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("python" ,python)
-       ("pkg-config" ,pkg-config)
-       ("stb-sprintf" ,stb-sprintf)
-       ("stb-truetype" ,stb-truetype)))
+     (list autoconf
+           automake
+           libtool
+           python
+           pkg-config
+           stb-sprintf
+           stb-truetype))
     (inputs
-     `(("lodepng" ,lodepng)
-       ("sdl2" ,sdl2)
-       ("utf8proc" ,utf8proc)
-       ("zlib" ,zlib)))
+     (list lodepng sdl2 utf8proc zlib))
     (home-page "https://github.com/libtcod/libtcod")
     (synopsis "Library specifically designed for writing roguelikes")
     (description
@@ -2754,7 +2703,7 @@ utilities frequently used in roguelikes.")
          ("uuid.h" ,util-linux "lib")
          ("zlib" ,zlib)))
       (native-inputs
-       `(("pkg-config" ,pkg-config)))
+       (list pkg-config))
       (home-page "https://github.com/Warsow/qfusion")
       (supported-systems '("i686-linux" "x86_64-linux"))
       (synopsis "Warsow's fork of qfusion, the id Tech 2 derived game engine")

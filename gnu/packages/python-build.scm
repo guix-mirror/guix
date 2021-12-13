@@ -189,8 +189,7 @@ Python file, so it can be easily copied into your project.")
      (arguments
       `(#:tests? #f))                     ;to avoid circular dependencies
      (propagated-inputs
-      `(("python-toml" ,python-toml)
-        ("python-wheel" ,python-wheel)))
+      (list python-toml python-wheel))
      (home-page "https://github.com/pypa/pep517")
      (synopsis "Wrappers to build Python packages using PEP 517 hooks")
      (description
@@ -268,8 +267,7 @@ that client code uses to construct the grammar directly in Python code.")
     (build-system python-build-system)
     (arguments `(#:tests? #f))         ;disabled to avoid extra dependencies
     (propagated-inputs
-     `(("python-pyparsing" ,python-pyparsing)
-       ("python-six-bootstrap" ,python-six-bootstrap)))
+     (list python-pyparsing python-six-bootstrap))
     (home-page "https://github.com/pypa/packaging")
     (synopsis "Core utilities for Python packages")
     (description "Packaging is a Python module for dealing with Python packages.
@@ -350,7 +348,7 @@ compatible build front-ends to build Poetry managed projects.")
         (base32 "10vjqnybvjdqdbmyc0asbhhvq51yjnnj00645yiq9849gnr8h0ir"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-toml" ,python-toml)))
+     (list python-toml))
     (arguments
      ;; flit-core has a test suite, but it requires Pytest.  Disable it so
      ;; as to not pull pytest as an input.

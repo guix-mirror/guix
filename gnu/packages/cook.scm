@@ -70,17 +70,17 @@
 
              (setenv "SH" (which "sh"))
              #t)))))
-    (native-inputs `(("bison" ,bison)
-                     ;; For building the documentation:
-                     ("groff" ,groff)
-                     ;; For the tests:
-                     ("sharutils" ,sharutils)
-                     ;; One test wants rsh.  However there is no rsh server
-                     ;; running in the build environment and so far as I'm
-                     ;; aware, it cannot be started without root.
-                     ;; This test is therefore just skipped.
-                     ;; ("inetutils" ,inetutils)
-                     ("ed" ,ed)))
+    (native-inputs (list bison
+                         ;; For building the documentation:
+                         groff
+                         ;; For the tests:
+                         sharutils
+                         ;; One test wants rsh.  However there is no rsh server
+                         ;; running in the build environment and so far as I'm
+                         ;; aware, it cannot be started without root.
+                         ;; This test is therefore just skipped.
+                         ;; ("inetutils" ,inetutils)
+                         ed))
     (home-page (string-append "https://web.archive.org/web/20140727122520/"
                               "http://miller.emu.id.au/pmiller/software/cook/"))
     (synopsis "Tool for constructing files")

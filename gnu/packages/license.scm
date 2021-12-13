@@ -51,11 +51,9 @@
         (base32 "0kznpv628jrndn4nw646f6pl7yqvmacwljlygvsjfdkyh0i4sr2k"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-regexp-pattern" ,perl-regexp-pattern)
-       ("perl-test-exception" ,perl-test-exception)))
+     (list perl-regexp-pattern perl-test-exception))
     (propagated-inputs
-     `(("perl-strictures" ,perl-strictures-2)
-       ("perl-try-tiny" ,perl-try-tiny)))
+     (list perl-strictures-2 perl-try-tiny))
     (home-page "https://metacpan.org/release/Regexp-Pattern-License")
     (synopsis "Regular expressions for legal licenses")
     (description "Regexp::Pattern::License provides a hash of regular
@@ -79,9 +77,9 @@ Regexp::Pattern is a convention for organizing reusable regex patterns.")
          "0fzymv065nn3glwnw34nkyadzw2dh4rcz8avmki4zrnk4k45m01a"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-number-range" ,perl-number-range)))
+     (list perl-number-range))
     (propagated-inputs
-     `(("perl-exporter-tiny" ,perl-exporter-tiny)))
+     (list perl-exporter-tiny))
     (home-page "https://metacpan.org/release/String-Copyright")
     (synopsis "Representation of text-based copyright statements")
     (description "String::Copyright Parses common styles of copyright
@@ -103,10 +101,9 @@ statements and serializes in normalized format.")
          "128pbm9pf5drakm9bpkifc1zg8f005xabfwzg21nc03m5mhfligb"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-try-tiny" ,perl-try-tiny)))
+     (list perl-try-tiny))
     (propagated-inputs
-     `(("perl-data-section" ,perl-data-section)
-       ("perl-text-template" ,perl-text-template)))
+     (list perl-data-section perl-text-template))
     (home-page "https://metacpan.org/release/Software-License")
     (synopsis "Templated software licenses")
     (description "This package provides templated software licenses.")
@@ -126,14 +123,14 @@ statements and serializes in normalized format.")
                 "12l83zf85zagpagizmzy3bwkc659sbzqf18cycx8g4h6d3mc5kqw"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-regexp-pattern" ,perl-regexp-pattern)
-       ("perl-software-license" ,perl-software-license)
-       ("perl-test-requires" ,perl-test-requires)
-       ("perl-test-roo" ,perl-test-roo)
-       ("perl-test-script" ,perl-test-script)
-       ("perl-universal-require" ,perl-universal-require)
-       ("perl-number-range" ,perl-number-range)
-       ("perl-sub-quote" ,perl-sub-quote)))
+     (list perl-regexp-pattern
+           perl-software-license
+           perl-test-requires
+           perl-test-roo
+           perl-test-script
+           perl-universal-require
+           perl-number-range
+           perl-sub-quote))
     (propagated-inputs
      `(("perl-getopt-long-descriptive" ,perl-getopt-long-descriptive)
        ("perl-moo" ,perl-moo-2)
@@ -179,15 +176,14 @@ belonging to various licenses.")
         (base32 "00gqpw124lz6kf3gi6m2i1bnxp3k5n3id0bgqff0bj08jga7pj49"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-setuptools-scm" ,python-setuptools-scm)))
+     (list python-pytest python-setuptools-scm))
     (inputs
-     `(("python-binaryornot" ,python-binaryornot)
-       ("python-boolean.py" ,python-boolean.py)
-       ("python-debian" ,python-debian)
-       ("python-jinja2" ,python-jinja2)
-       ("python-license-expression" ,python-license-expression)
-       ("python-requests" ,python-requests)))
+     (list python-binaryornot
+           python-boolean.py
+           python-debian
+           python-jinja2
+           python-license-expression
+           python-requests))
     (home-page "https://reuse.software/")
     (synopsis "Provide and verify copyright and licensing information")
     (description
@@ -230,7 +226,7 @@ designed to be simple.")
                 "\"filenames\": [\"CMakeLists.txt\"], \n        \"extensions\": [],"))
              #t)))))
     (propagated-inputs
-     `(("python-regex" ,python-regex)))
+     (list python-regex))
     (home-page "https://github.com/johann-petrak/licenseheaders")
     (synopsis "Add or change license headers for all files in a directory")
     (description

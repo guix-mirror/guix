@@ -77,8 +77,7 @@
          (add-after 'unpack 'chdir
            (lambda _ (chdir "lang/c++"))))))
     (inputs
-     `(("boost" ,boost)
-       ("snappy" ,snappy)))
+     (list boost snappy))
     (home-page "https://avro.apache.org/")
     (synopsis "Data serialization system")
     (description "Apache Avro is a data serialization system.  Avro provides:
@@ -160,7 +159,7 @@ implement RPC protocols.")
                (mkdir-p doc)
                (copy-recursively "doc/html" doc)))))))
     (native-inputs
-     `(("doxygen" ,doxygen)))
+     (list doxygen))
     (home-page "https://uscilab.github.io/cereal/")
     (synopsis "C++11 library for serialization")
     (description
@@ -190,10 +189,9 @@ such as compact binary encodings, XML, or JSON.")
         (base32 "0yzhq50ijvwrfkr97knhvn54lj3f4hr3zy39yq8wpf6xll94s4bf"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("googletest" ,googletest-1.8)
-       ("pkg-config" ,pkg-config)))
+     (list googletest-1.8 pkg-config))
     (propagated-inputs
-     `(("zlib" ,zlib))) ;; Msgpack installs two headers (zbuffer.h,
+     (list zlib)) ;; Msgpack installs two headers (zbuffer.h,
     ;; zbuffer.hpp) which #include <zlib.h>.  However, 'guix gc --references'
     ;; does not detect a store reference to zlib since these headers are not
     ;; compiled.
@@ -226,7 +224,7 @@ serialization.")
        (modify-phases %standard-phases
          (delete 'configure))))
     (native-inputs
-     `(("libtool" ,libtool)))
+     (list libtool))
     (home-page "https://github.com/tarruda/libmpack")
     (synopsis "Small binary serialization library")
     (description "Libmpack is a small binary serialization and RPC library
@@ -278,7 +276,7 @@ that implements both the msgpack and msgpack-rpc specifications.")
                                "mpack-src")
              #t)))))
     (inputs
-     `(("lua" ,lua)))
+     (list lua))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("libmpack" ,(package-source libmpack))))
@@ -380,9 +378,9 @@ that implements both the msgpack and msgpack-rpc specifications.")
              (setenv "CC" "gcc")
              (invoke "make" "test"))))))
     (inputs
-     `(("libyaml" ,libyaml)))
+     (list libyaml))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (synopsis "C library for reading and writing YAML")
     (description
      "LibCYAML is a C library written in ISO C11 for reading and writing
@@ -410,7 +408,7 @@ in which the loaded data is arranged in memory.")
     (arguments
      '(#:configure-flags '("-DYAML_BUILD_SHARED_LIBS=ON")))
     (native-inputs
-     `(("python" ,python)))
+     (list python))
     (home-page "https://github.com/jbeder/yaml-cpp")
     (synopsis "YAML parser and emitter in C++")
     (description "YAML parser and emitter in C++ matching the YAML 1.2 spec.")
@@ -498,9 +496,7 @@ it a convenient format to store user input files.")
                       ":"))))
                 #t)))))
       (inputs
-       `(("bash-minimal" ,bash-minimal)
-         ("grep" ,grep)
-         ("sed" ,sed)))
+       (list bash-minimal grep sed))
       (synopsis "Pipeable JSON parser written in shell")
       (description
         "This package provides a JSON parser written in shell, compatible with
@@ -560,7 +556,7 @@ RPC system.  Think JSON, except binary.  Or think Protocol Buffers, except faste
          (base32
           "1fj4554msq0rrz14snbj908dzqj46gh7jg9w9j0akn2b7q911m5a"))))
     (build-system gnu-build-system)
-    (native-inputs `(("perl" ,perl)))
+    (native-inputs (list perl))
     (home-page "http://mongoc.org/libbson/current/index.html")
     (synopsis "C BSON library")
     (description "Libbson can create and parse BSON documents.  It can also
@@ -581,9 +577,9 @@ it is comparable to protobuf.")
          "0hm9yg785f46bkrgqknd6fdvmkby9dpzjnm0b63qf0i748acaj5v"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (propagated-inputs
-     `(("python-ruamel.yaml.clib" ,python-ruamel.yaml.clib)))
+     (list python-ruamel.yaml.clib))
     (arguments
      `(;; TODO: Tests require packaging "ruamel.std.pathlib".
        #:tests? #f))
@@ -627,7 +623,7 @@ style and key ordering are kept, so you can diff the source.")
            (lambda _
              (invoke "cython" "_ruamel_yaml.pyx"))))))
     (native-inputs
-     `(("python-cython" ,python-cython)))
+     (list python-cython))
     (home-page "https://sourceforge.net/p/ruamel-yaml-clib/code/ci/default/tree")
     (synopsis "C version of reader, parser and emitter for ruamel.yaml")
     (description
@@ -702,8 +698,7 @@ game development and other performance-critical applications.")
           "00w9hwz7sj3fkdjc378r066vdy6lpxmn6vfac3qx956k8lvpxxj5"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-pandas" ,python-pandas)
-       ("python-pyarrow" ,python-pyarrow)))
+     (list python-pandas python-pyarrow))
     (home-page "https://github.com/wesm/feather")
     (synopsis "Python wrapper to the Feather file format")
     (description "This package provides a Python wrapper library to the

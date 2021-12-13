@@ -243,8 +243,7 @@
                           "postcollector")))
              #t)))))
     (inputs
-     `(("http-parser" ,http-parser)
-       ("qtbase" ,qtbase-5)))
+     (list http-parser qtbase-5))
     (home-page "https://github.com/azadkuh/qhttp/")
     (synopsis "Qt-based HTTP Library")
     (description
@@ -264,11 +263,8 @@
               (base32
                "1x1qp10pfh33x1b56liwsjl0jamjm5lkk7j3lj87c1ygzs0ivq10"))))
     (build-system gnu-build-system)
-    (native-inputs `(("pcre" ,pcre "bin")))       ;for 'pcre-config'
-    (inputs `(("apr" ,apr)
-              ("apr-util" ,apr-util)
-              ("openssl" ,openssl)
-              ("perl" ,perl))) ; needed to run bin/apxs
+    (native-inputs (list `(,pcre "bin")))       ;for 'pcre-config'
+    (inputs (list apr apr-util openssl perl)) ; needed to run bin/apxs
     (arguments
      `(#:test-target "test"
        #:configure-flags (list "--enable-rewrite"
@@ -351,9 +347,9 @@ Interface} specification.")
        #:cargo-development-inputs
        (("rust-assert-cmd" ,rust-assert-cmd-1))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("openssl" ,openssl)))
+     (list openssl))
     (home-page "https://github.com/Y2Z/monolith")
     (synopsis "Command line tool for saving web pages as a single HTML file")
     (description
@@ -384,11 +380,7 @@ the same, being completely separated from the Internet.")
                (base32
                 "1ziv3xargxhxycd5hp6r3r5mww54nvvydiywcpsamg3i9r3jzxyi"))))
     (build-system gnu-build-system)
-    (inputs `(("libxml2" ,libxml2)
-              ("libxslt" ,libxslt)
-              ("openssl" ,openssl)
-              ("pcre" ,pcre)
-              ("zlib" ,zlib)))
+    (inputs (list libxml2 libxslt openssl pcre zlib))
     (arguments
      `(#:tests? #f                      ; no test target
        #:phases
@@ -519,9 +511,7 @@ and as a proxy to reduce the load on back-end HTTP or mail servers.")
                  (copy-recursively "libxslt" output)
                  #t))))))
       (native-inputs
-       `(("libxml2" ,libxml2)
-         ("libxslt" ,libxslt)
-         ("nginx-xslscript" ,nginx-xslscript)))
+       (list libxml2 libxslt nginx-xslscript))
       (home-page "https://nginx.org")
       (synopsis "Documentation for the nginx web server")
       (description
@@ -884,9 +874,8 @@ stream.  Remote control of the module is possible over HTTP.")
        ("pcre:bin" ,pcre "bin")
        ("zlib" ,zlib)))
     (native-inputs
-     `(("perl" ,perl) ; for tests
-       ("pkg-config" ,pkg-config)
-       ("which" ,which)))
+     (list perl ; for tests
+           pkg-config which))
     (home-page "https://www.lighttpd.net/")
     (synopsis "Lightweight HTTP and reverse proxy server")
     (description
@@ -914,9 +903,7 @@ CGI, authentication, output compression, URL rewriting and many more.")
     ;; Parallel building is not supported.
     (arguments `(#:parallel-build? #f))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
+     (list autoconf automake libtool))
     ;; This is an archived fork of the original home page, www.fastcgi.com.
     (home-page "https://fastcgi-archives.github.io/")
     (synopsis "Language-independent, high-performant extension to CGI")
@@ -953,11 +940,9 @@ APIs.")
                ((" -Werror") ""))
              #t)))))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf automake pkg-config))
     (inputs
-     `(("fcgi" ,fcgi)))
+     (list fcgi))
     (home-page "https://nginx.localdomain.pl/wiki/FcgiWrap")
     (synopsis "Simple server for running CGI applications over FastCGI")
     (description "Fcgiwrap is a simple server for running CGI applications
@@ -978,17 +963,15 @@ servers that may need it).")
         (base32 "1y1kn4929k299fbf6sw9lxcsdlq9fvq777p6yrzk591rr9xhkx8h"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-libwww" ,perl-libwww)
-       ("perl-module-build-tiny" ,perl-module-build-tiny)
-       ("perl-test-requires" ,perl-test-requires)))
+     (list perl-libwww perl-module-build-tiny perl-test-requires))
     (propagated-inputs
-     `(("perl-data-dump" ,perl-data-dump)
-       ("perl-http-date" ,perl-http-date)
-       ("perl-http-message" ,perl-http-message)
-       ("perl-http-parser-xs" ,perl-http-parser-xs)
-       ("perl-net-server" ,perl-net-server)
-       ("perl-plack" ,perl-plack)
-       ("perl-test-tcp" ,perl-test-tcp)))
+     (list perl-data-dump
+           perl-http-date
+           perl-http-message
+           perl-http-parser-xs
+           perl-net-server
+           perl-plack
+           perl-test-tcp))
     (home-page "https://metacpan.org/release/Starman")
     (synopsis "PSGI/Plack web server")
     (description "Starman is a PSGI perl web server that has unique features
@@ -1017,8 +1000,7 @@ and UNIX socket support.")
              (string-append "--with-jdk-home=" (assoc-ref %build-inputs "jdk")))))
     (outputs '("out" "doc"))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("zip" ,zip)))
+     (list pkg-config zip))
     (inputs
      `(("gtk+" ,gtk+)
        ("jdk" ,icedtea "jdk")))
@@ -1188,7 +1170,7 @@ project)
          (add-before 'check 'render-offscreen
            (lambda _ (setenv "QT_QPA_PLATFORM" "offscreen") #t)))))
     (inputs
-     `(("qtbase" ,qtbase-5)))
+     (list qtbase-5))
     (home-page "http://qjson.sourceforge.net")
     (synopsis "Library that maps JSON data to QVariant objects")
     (description "QJson is a Qt-based library that maps JSON data to
@@ -1212,8 +1194,7 @@ instances, while JSON's objects will be mapped to @code{QVariantMap}.")
                 "1b2jdqs526ac635yb2whm049spcsk7almnnr6r5b4yqhq922anw3"))))
     (build-system gnu-build-system)
     (inputs
-     `(("qca" ,qca)
-       ("qtbase" ,qtbase-5)))
+     (list qca qtbase-5))
     (arguments
      '(#:tests? #f                      ;FIXME: some tests are failing
        #:phases
@@ -1351,9 +1332,7 @@ efficiently.  It gives the application developer no more than 4 methods.")
                (invoke (string-append (assoc-ref outputs "out") "/bin/ktImportText")
                        "ec.tsv")))))))
    (inputs
-    `(("curl" ,curl)
-      ("make" ,gnu-make)
-      ("perl" ,perl)))
+    (list curl gnu-make perl))
    (home-page "https://github.com/marbl/Krona/wiki")
    (synopsis "Hierarchical data exploration with zoomable HTML5 pie charts")
    (description
@@ -1453,9 +1432,8 @@ parser written in ANSI C and a small validating JSON generator.")
      ;; doesn't use 'add_test', and it's unclear how to run the test suite.
      '(#:tests? #f))
 
-    (native-inputs `(("perl" ,perl)))             ; to build the HTML doc
-    (inputs `(("zlib" ,zlib)
-              ("openssl" ,openssl)))
+    (native-inputs (list perl))             ; to build the HTML doc
+    (inputs (list zlib openssl))
     (synopsis "WebSockets library written in C")
     (description
      "Libwebsockets is a library that allows C programs to establish client
@@ -1525,8 +1503,7 @@ other systems that want to manipulate WebAssembly files.")
         (base32 "1ww4fhl8qf12hkv6jaild8zzsygdspxm1gqpk2f63gv1xfi31wpm"))
        (patches (search-patches "websocketpp-fix-for-cmake-3.15.patch"))))
     (build-system cmake-build-system)
-    (inputs `(("boost" ,boost)
-              ("openssl" ,openssl)))
+    (inputs (list boost openssl))
     (arguments '(#:configure-flags '("-DBUILD_TESTS=ON")
                  #:phases
                  (modify-phases %standard-phases
@@ -1562,12 +1539,12 @@ high performance.")
      ;; Parallel builds don't reliably succeed.
      `(#:parallel-build? #f))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("cunit" ,cunit)                 ; for tests
-       ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)
-       ("python-sphinx" ,python-sphinx)))
+     (list autoconf
+           automake
+           cunit ; for tests
+           libtool
+           pkg-config
+           python-sphinx))
     (home-page "https://tatsuhiro-t.github.io/wslay/")
     (synopsis "C WebSocket library")
     (description "@code{Wslay} is an event-based C library for the WebSocket
@@ -1596,8 +1573,7 @@ perform the opening handshake in HTTP.")
        ;; For tests.
        ("python" ,python-wrapper)))
     (inputs
-     `(("libidn2" ,libidn2)
-       ("libunistring" ,libunistring)))
+     (list libidn2 libunistring))
     (home-page "https://github.com/rockdaboot/libpsl")
     (synopsis "C library for the Publix Suffix List")
     (description
@@ -1644,9 +1620,7 @@ UTS#46.")
                       (setenv "AUTOMAKE" "automake --foreign")
                       (invoke "autoreconf" "-vfi"))))))
     (native-inputs
-     `(("automake" ,automake)
-       ("autoconf" ,autoconf)
-       ("libtool" ,libtool)))
+     (list automake autoconf libtool))
     (synopsis "HTML validator and tidier")
     (description "HTML Tidy is a command-line tool and C library that can be
 used to validate and fix HTML data.")
@@ -1728,7 +1702,7 @@ and other data, for distribution on the web.")
              ;; (setenv "XML_DEBUG_CATALOG" "1")
              #t)))))
     (native-inputs
-     `(("perl" ,perl)))                 ; for tests
+     (list perl))                 ; for tests
     (home-page "https://tinyproxy.github.io/")
     (synopsis "Light-weight HTTP/HTTPS proxy daemon")
     (description "Tinyproxy is a light-weight HTTP/HTTPS proxy
@@ -1751,7 +1725,7 @@ unavailable.")
        (sha256
         (base32
          "05g09sg9qkkhnc2mxldm1w1xkxzs2ylybkjzs28w8ydbjc3pand2"))))
-    (native-inputs `(("texinfo" ,texinfo)))
+    (native-inputs (list texinfo))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -1789,10 +1763,9 @@ of people.")
      `(#:tests? #f)) ; FIXME: 2 out of 6 tests fail with "ImportError: No module
      ; named 'stubout'". The tests can be run by replacing the check phase with
      ; the command "python setup.py nosetests --verbosity=3".
-    (native-inputs `(; Required for tests:
-                     ("python-mox3" ,python-mox3)
-                     ("python-nose" ,python-nose)))
-    (propagated-inputs `(("python-numpy" ,python-numpy)))
+    (native-inputs (list ; Required for tests:
+                         python-mox3 python-nose))
+    (propagated-inputs (list python-numpy))
     (home-page "https://github.com/novnc/websockify")
     (synopsis "WebSockets support for any application/server")
     (description "Websockify translates WebSockets traffic to normal socket
@@ -1817,7 +1790,7 @@ directions.")
     (arguments
      `(#:configure-flags '("--with-gnutls")
        #:tests? #f))                         ; no test target
-    (native-inputs `(("flex" ,flex)))
+    (native-inputs (list flex))
     (inputs `(("gnutls" ,gnutls)
               ("libcrypt" ,libgcrypt)))
     (home-page "https://www.gedanken.org.uk/software/wwwoffle/")
@@ -1842,10 +1815,9 @@ changes, and much more.")
                 "07w1aq8y8wld43wmbk2q8134p3bfkp2vma78mmsfgw2jn1bh3xhd"))))
     (build-system gnu-build-system)
     (arguments '(#:configure-flags '("--enable-nss")))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs (list pkg-config))
     (propagated-inputs
-     `(("curl" ,curl)
-       ("nss" ,nss)))
+     (list curl nss))
     (home-page "https://sourceforge.net/projects/liboauth")
     (synopsis "C library implementing the OAuth API")
     (description
@@ -1889,14 +1861,14 @@ parse media stream properties.")
        (sha256
         (base32 "00x9gbmzc5cns0gnfag0hsphcr3cb33vbbb9s7ppvvd6bxz2z1mm"))))
     (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs (list pkg-config))
     (inputs
-     `(("curl" ,curl)
-       ("cyrus-sasl" ,cyrus-sasl)
-       ("libquvi-scripts" ,libquvi-scripts)
-       ("lua" ,lua-5.1)
-       ("openssl" ,openssl)
-       ("zlib" ,zlib)))
+     (list curl
+           cyrus-sasl
+           libquvi-scripts
+           lua-5.1
+           openssl
+           zlib))
     (arguments
      ;; Lua provides no .pc file, so add CFLAGS/LIBS manually.
      '(#:configure-flags
@@ -1923,10 +1895,9 @@ URLs and extracting their actual media files.")
        (sha256
         (base32 "09lhl6dv5zpryasx7yjslfrcdcqlsbwapvd5lg7w6sm5x5n3k8ci"))))
     (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs (list pkg-config))
     (inputs
-     `(("curl" ,curl)
-       ("libquvi" ,libquvi)))
+     (list curl libquvi))
     (home-page "http://quvi.sourceforge.net/")
     (synopsis "Media stream URL parser")
     (description "quvi is a command-line-tool suite to extract media files
@@ -1947,13 +1918,11 @@ from streaming URLs.  It is a command-line wrapper for the libquvi library.")
         (base32 "1k47gbgpp52049andr28y28nbwh9m36bbb0g8p0aka3pqlhjv72l"))))
     (build-system scons-build-system)
     (propagated-inputs
-     `(("apr" ,apr)
-       ("apr-util" ,apr-util)
-       ("openssl" ,openssl)))
+     (list apr apr-util openssl))
     (inputs
-     `(;; TODO: Fix build with gss.
-       ;;("gss" ,gss)
-       ("zlib" ,zlib)))
+     (list ;; TODO: Fix build with gss.
+           ;;("gss" ,gss)
+           zlib))
     (arguments
      `(#:scons-flags (list (string-append "APR=" (assoc-ref %build-inputs "apr"))
                            (string-append "APU=" (assoc-ref %build-inputs "apr-util"))
@@ -2034,9 +2003,7 @@ minimum to provide high performance operation.")
              (setenv "LIBSASS_VERSION" ,version)
              #t)))))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
+     (list autoconf automake libtool))
     (home-page "https://sass-lang.com/libsass")
     (synopsis "SASS Compiler, implemented as a C/C++ library")
     (description
@@ -2087,7 +2054,7 @@ stylesheets, you'll need to use another program that uses this library,
              (setenv "SASSC_VERSION" ,version)
              #t)))))
     (inputs
-     `(("libsass" ,libsass)))
+     (list libsass))
     (synopsis "CSS pre-processor")
     (description "SassC is a compiler written in C for the CSS pre-processor
 language known as SASS.")
@@ -2101,21 +2068,16 @@ language known as SASS.")
     (inherit sassc)
     (name "sassc")
     (inputs
-     `(("libsass" ,
-        (package
-          (inherit libsass)
-          (name "libsass")
-          (version "3.5.5")
-          (source
-           (origin
-             (method git-fetch)
-             (uri (git-reference
-                   (url "https://github.com/sass/libsass")
-                   (commit version)))
-             (file-name (git-file-name name version))
-             (sha256
-              (base32
-               "0830pjcvhzxh6yixj82x5k5r1xnadjqzi16kp53213icbly0r9ma"))))))))
+     (list (package (inherit libsass)
+                    (name "libsass")
+                    (version "3.5.5")
+                    (source (origin (method git-fetch)
+                                    (uri (git-reference (url
+                                                             "https://github.com/sass/libsass")
+                                                        (commit version)))
+                                    (file-name (git-file-name name version))
+                                    (sha256 (base32
+                                                    "0830pjcvhzxh6yixj82x5k5r1xnadjqzi16kp53213icbly0r9ma")))))))
     (properties '((hidden? . #t)))))
 
 
@@ -2132,13 +2094,10 @@ language known as SASS.")
         (base32 "05xcl7j65vakx7x79jqjikyw0nzf60bc2w6hhc0q5sklxq1ral4l"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-http-message" ,perl-http-message)
-       ("perl-module-build-tiny" ,perl-module-build-tiny)
-       ("perl-test-mocktime" ,perl-test-mocktime)
-       ("perl-try-tiny" ,perl-try-tiny)
-       ("perl-uri" ,perl-uri)))
+     (list perl-http-message perl-module-build-tiny perl-test-mocktime
+           perl-try-tiny perl-uri))
     (propagated-inputs
-     `(("perl-posix-strftime-compiler" ,perl-posix-strftime-compiler)))
+     (list perl-posix-strftime-compiler))
     (arguments `(#:tests? #f))          ; TODO: Timezone test failures
     (home-page "https://metacpan.org/release/Apache-LogFormat-Compiler")
     (synopsis "Compile a log format string to perl-code")
@@ -2167,8 +2126,7 @@ to perl-code, for faster generation of access_log lines.")
            ;; versions of perl-authen-sasl.
            (lambda _ (setenv "PERL_USE_UNSAFE_INC" "1") #t)))))
     (propagated-inputs
-     `(("perl-digest-hmac" ,perl-digest-hmac)
-       ("perl-gssapi" ,perl-gssapi)))
+     (list perl-digest-hmac perl-gssapi))
     (home-page "https://metacpan.org/release/Authen-SASL")
     (synopsis "SASL authentication framework")
     (description "Authen::SASL provides an SASL authentication framework.")
@@ -2189,12 +2147,9 @@ to perl-code, for faster generation of access_log lines.")
          "0j1rrld13cjk7ks92b5hv3xw4rfm2lvmksb4rlzd8mx0a0wj0rc5"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-http-request-ascgi" ,perl-http-request-ascgi)
-       ("perl-module-install" ,perl-module-install)))
+     (list perl-http-request-ascgi perl-module-install))
     (propagated-inputs
-     `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
-       ("perl-data-visitor" ,perl-data-visitor)
-       ("perl-mro-compat" ,perl-mro-compat)))
+     (list perl-catalyst-runtime perl-data-visitor perl-mro-compat))
     (home-page "https://metacpan.org/release/Catalyst-Action-RenderView")
     (synopsis "Sensible default Catalyst action")
     (description "This Catalyst action implements a sensible default end
@@ -2214,20 +2169,19 @@ action, which will forward to the first available view.")
                 "086bykggzalbjfk0islac4b48g9s2ypj7y81d6ns1lq0aax1py6c"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-requires" ,perl-test-requires)
-       ("perl-module-install" ,perl-module-install)))
+     (list perl-test-requires perl-module-install))
     (propagated-inputs
-     `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
-       ("perl-class-inspector" ,perl-class-inspector)
-       ("perl-config-general" ,perl-config-general)
-       ("perl-cpanel-json-xs" ,perl-cpanel-json-xs)
-       ("perl-libwww" ,perl-libwww)
-       ("perl-moose" ,perl-moose)
-       ("perl-mro-compat" ,perl-mro-compat)
-       ("perl-namespace-autoclean" ,perl-namespace-autoclean)
-       ("perl-params-validate" ,perl-params-validate)
-       ("perl-uri-find" ,perl-uri-find)
-       ("perl-xml-simple" ,perl-xml-simple)))
+     (list perl-catalyst-runtime
+           perl-class-inspector
+           perl-config-general
+           perl-cpanel-json-xs
+           perl-libwww
+           perl-moose
+           perl-mro-compat
+           perl-namespace-autoclean
+           perl-params-validate
+           perl-uri-find
+           perl-xml-simple))
     (home-page "https://metacpan.org/release/Catalyst-Action-REST")
     (synopsis "Automated REST Method Dispatching")
     (description "This Action handles doing automatic method dispatching for
@@ -2252,19 +2206,12 @@ regular method.")
          "0i5ja7690fs9nhxcij6lw51j804sm8s06m5mvk1n8pi8jljrymvw"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-catalyst-plugin-authorization-roles"
-        ,perl-catalyst-plugin-authorization-roles)
-       ("perl-catalyst-plugin-session-state-cookie"
-        ,perl-catalyst-plugin-session-state-cookie)
-       ("perl-dbd-sqlite" ,perl-dbd-sqlite)
-       ("perl-module-install" ,perl-module-install)
-       ("perl-test-www-mechanize-catalyst" ,perl-test-www-mechanize-catalyst)))
+     (list perl-catalyst-plugin-authorization-roles
+           perl-catalyst-plugin-session-state-cookie perl-dbd-sqlite
+           perl-module-install perl-test-www-mechanize-catalyst))
     (propagated-inputs
-     `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
-       ("perl-catalyst-plugin-authentication"
-        ,perl-catalyst-plugin-authentication)
-       ("perl-dbix-class" ,perl-dbix-class)
-       ("perl-catalyst-model-dbic-schema" ,perl-catalyst-model-dbic-schema)))
+     (list perl-catalyst-runtime perl-catalyst-plugin-authentication
+           perl-dbix-class perl-catalyst-model-dbic-schema))
     (home-page
      "https://metacpan.org/release/Catalyst-Authentication-Store-DBIx-Class")
     (synopsis "Storage class for Catalyst authentication using DBIx::Class")
@@ -2288,10 +2235,9 @@ DBIx::Class.")
          "0wfj4vnn2cvk6jh62amwlg050p37fcwdgrn9amcz24z6w4qgjqvz"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-install" ,perl-module-install)))
+     (list perl-module-install))
     (propagated-inputs
-     `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
-       ("perl-moose" ,perl-moose)))
+     (list perl-catalyst-runtime perl-moose))
     (home-page
      "https://metacpan.org/release/Catalyst-Component-InstancePerContext")
     (synopsis "Create only one instance of Moose component per context")
@@ -2312,24 +2258,23 @@ instance of a component on each request.")
         (base32 "1r8arq7sw37d0mjyfzkc3pg1a9plgydqbscryc8qpvba4swpljls"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-fatal" ,perl-test-fatal)))
+     (list perl-test-fatal))
     (propagated-inputs
-     `(("perl-catalyst-action-renderview" ,perl-catalyst-action-renderview)
-       ("perl-catalyst-plugin-configloader" ,perl-catalyst-plugin-configloader)
-       ("perl-catalyst-plugin-static-simple" ,perl-catalyst-plugin-static-simple)
-       ("perl-catalyst-runtime" ,perl-catalyst-runtime)
-       ("perl-config-general" ,perl-config-general)
-       ("perl-file-changenotify" ,perl-file-changenotify)
-       ("perl-file-copy-recursive" ,perl-file-copy-recursive)
-       ("perl-file-sharedir" ,perl-file-sharedir)
-       ("perl-module-install" ,perl-module-install)
-       ("perl-moose" ,perl-moose)
-       ("perl-moosex-emulate-class-accessor-fast"
-        ,perl-moosex-emulate-class-accessor-fast)
-       ("perl-namespace-autoclean" ,perl-namespace-autoclean)
-       ("perl-namespace-clean" ,perl-namespace-clean)
-       ("perl-path-class" ,perl-path-class)
-       ("perl-template-toolkit" ,perl-template-toolkit)))
+     (list perl-catalyst-action-renderview
+           perl-catalyst-plugin-configloader
+           perl-catalyst-plugin-static-simple
+           perl-catalyst-runtime
+           perl-config-general
+           perl-file-changenotify
+           perl-file-copy-recursive
+           perl-file-sharedir
+           perl-module-install
+           perl-moose
+           perl-moosex-emulate-class-accessor-fast
+           perl-namespace-autoclean
+           perl-namespace-clean
+           perl-path-class
+           perl-template-toolkit))
     (home-page "https://metacpan.org/release/Catalyst-Devel")
     (synopsis "Catalyst Development Tools")
     (description "The Catalyst-Devel distribution includes a variety of
@@ -2354,12 +2299,10 @@ modules.")
          "06jq1lmpq88rmp9zik5gqczg234xac0hiyc3l698iif7zsgcyb80"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build) ;needs Module::Build >= 0.4004
-       ("perl-namespace-autoclean" ,perl-namespace-autoclean)
-       ("perl-catalyst-runtime" ,perl-catalyst-runtime)))
+     (list perl-module-build ;needs Module::Build >= 0.4004
+           perl-namespace-autoclean perl-catalyst-runtime))
     (propagated-inputs
-     `(("perl-moose" ,perl-moose)
-       ("perl-text-simpletable" ,perl-text-simpletable)))
+     (list perl-moose perl-text-simpletable))
     (home-page "https://metacpan.org/release/Catalyst-DispatchType-Regex")
     (synopsis "Regex DispatchType for Catalyst")
     (description "Dispatch type managing path-matching behaviour using
@@ -2385,31 +2328,28 @@ when the dispatch type is first seen in your application.")
           "1spfjcjc0b9dv3k2gbanqj1m1cqzyxb32p76dhdwizzpbvpi3a96"))))
   (build-system perl-build-system)
   (native-inputs
-   `(("perl-dbd-sqlite" ,perl-dbd-sqlite)
-     ("perl-module-install" ,perl-module-install)
-     ("perl-test-exception" ,perl-test-exception)
-     ("perl-test-requires" ,perl-test-requires)))
+   (list perl-dbd-sqlite perl-module-install perl-test-exception
+         perl-test-requires))
   (propagated-inputs
-   `(("perl-carp-clan" ,perl-carp-clan)
-     ("perl-catalyst-component-instancepercontext"
-      ,perl-catalyst-component-instancepercontext)
-     ("perl-catalyst-runtime" ,perl-catalyst-runtime)
-     ("perl-catalystx-component-traits" ,perl-catalystx-component-traits)
-     ("perl-dbix-class" ,perl-dbix-class)
-     ("perl-dbix-class-cursor-cached" ,perl-dbix-class-cursor-cached)
-     ("perl-dbix-class-schema-loader" ,perl-dbix-class-schema-loader)
-     ("perl-hash-merge" ,perl-hash-merge)
-     ("perl-list-moreutils" ,perl-list-moreutils)
-     ("perl-module-runtime" ,perl-module-runtime)
-     ("perl-moose" ,perl-moose)
-     ("perl-moosex-markasmethods" ,perl-moosex-markasmethods)
-     ("perl-moosex-nonmoose" ,perl-moosex-nonmoose)
-     ("perl-moosex-types" ,perl-moosex-types)
-     ("perl-moosex-types-loadableclass" ,perl-moosex-types-loadableclass)
-     ("perl-namespace-autoclean" ,perl-namespace-autoclean)
-     ("perl-namespace-clean" ,perl-namespace-clean)
-     ("perl-tie-ixhash" ,perl-tie-ixhash)
-     ("perl-try-tiny" ,perl-try-tiny)))
+   (list perl-carp-clan
+         perl-catalyst-component-instancepercontext
+         perl-catalyst-runtime
+         perl-catalystx-component-traits
+         perl-dbix-class
+         perl-dbix-class-cursor-cached
+         perl-dbix-class-schema-loader
+         perl-hash-merge
+         perl-list-moreutils
+         perl-module-runtime
+         perl-moose
+         perl-moosex-markasmethods
+         perl-moosex-nonmoose
+         perl-moosex-types
+         perl-moosex-types-loadableclass
+         perl-namespace-autoclean
+         perl-namespace-clean
+         perl-tie-ixhash
+         perl-try-tiny))
   (home-page "https://metacpan.org/release/Catalyst-Model-DBIC-Schema")
   (synopsis "DBIx::Class::Schema Model Class")
   (description "This is a Catalyst Model for DBIx::Class::Schema-based
@@ -2430,10 +2370,8 @@ Models.")
          "0811rj45q4v2y8wka3wb9d5m4vbyhcmkvddf2wz4x69awzjbhgc7"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
-       ("perl-datetime" ,perl-datetime)
-       ("perl-moose" ,perl-moose)
-       ("perl-namespace-autoclean" ,perl-namespace-autoclean)))
+     (list perl-catalyst-runtime perl-datetime perl-moose
+           perl-namespace-autoclean))
     (home-page "https://metacpan.org/release/Catalyst-Plugin-AccessLog")
     (synopsis "Request logging from within Catalyst")
     (description "This Catalyst plugin enables you to create \"access logs\"
@@ -2456,19 +2394,18 @@ for you.  It will work even with Catalyst debug logging turned off.")
          "0v6hb4r1wv3djrnqvnjcn3xx1scgqzx8nyjdg9lfc1ybvamrl0rn"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-install" ,perl-module-install)))
+     (list perl-module-install))
     (propagated-inputs
-     `(("perl-catalyst-plugin-session" ,perl-catalyst-plugin-session)
-       ("perl-catalyst-runtime" ,perl-catalyst-runtime)
-       ("perl-class-inspector" ,perl-class-inspector)
-       ("perl-moose" ,perl-moose)
-       ("perl-moosex-emulate-class-accessor-fast"
-        ,perl-moosex-emulate-class-accessor-fast)
-       ("perl-mro-compat" ,perl-mro-compat)
-       ("perl-namespace-autoclean" ,perl-namespace-autoclean)
-       ("perl-string-rewriteprefix" ,perl-string-rewriteprefix)
-       ("perl-test-exception" ,perl-test-exception)
-       ("perl-try-tiny" ,perl-try-tiny)))
+     (list perl-catalyst-plugin-session
+           perl-catalyst-runtime
+           perl-class-inspector
+           perl-moose
+           perl-moosex-emulate-class-accessor-fast
+           perl-mro-compat
+           perl-namespace-autoclean
+           perl-string-rewriteprefix
+           perl-test-exception
+           perl-try-tiny))
     (home-page "https://metacpan.org/release/Catalyst-Plugin-Authentication")
     (synopsis "Infrastructure plugin for the Catalyst authentication framework")
     (description "The authentication plugin provides generic user support for
@@ -2492,14 +2429,10 @@ system authorises them to do).")
          "0l83lkwmq0lngwh8b1rv3r719pn8w1gdbyhjqm74rnd0wbjl8h7f"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-install" ,perl-module-install)
-       ("perl-test-exception" ,perl-test-exception)))
+     (list perl-module-install perl-test-exception))
     (propagated-inputs
-     `(("perl-catalyst-plugin-authentication"
-        ,perl-catalyst-plugin-authentication)
-       ("perl-catalyst-runtime" ,perl-catalyst-runtime)
-       ("perl-set-object" ,perl-set-object)
-       ("perl-universal-isa" ,perl-universal-isa)))
+     (list perl-catalyst-plugin-authentication perl-catalyst-runtime
+           perl-set-object perl-universal-isa))
     (home-page
      "https://metacpan.org/release/Catalyst-Plugin-Authorization-Roles")
     (synopsis "Role-based authorization for Catalyst")
@@ -2521,10 +2454,8 @@ authorization for Catalyst based on Catalyst::Plugin::Authentication.")
          "0llyj3v5nx9cx46jdbbvxf1lc9s9cxq5ml22xmx3wkb201r5qgaa"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-catalyst-plugin-session" ,perl-catalyst-plugin-session)
-       ("perl-catalyst-runtime" ,perl-catalyst-runtime)
-       ("perl-gd-securityimage" ,perl-gd-securityimage)
-       ("perl-http-date" ,perl-http-date)))
+     (list perl-catalyst-plugin-session perl-catalyst-runtime
+           perl-gd-securityimage perl-http-date))
     (home-page "https://metacpan.org/release/Catalyst-Plugin-Captcha")
     (synopsis "Captchas for Catalyst")
     (description "This plugin creates and validates Captcha images for
@@ -2545,13 +2476,10 @@ Catalyst.")
         (base32 "0w8r3bbxqnlykvra6sx3sh3wh8ylkj914xg5ql6nw11ddy56jaly"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-path-class" ,perl-path-class)
-       ("perl-module-install" ,perl-module-install)))
+     (list perl-path-class perl-module-install))
     (propagated-inputs
-     `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
-       ("perl-config-any" ,perl-config-any)
-       ("perl-data-visitor" ,perl-data-visitor)
-       ("perl-mro-compat" ,perl-mro-compat)))
+     (list perl-catalyst-runtime perl-config-any perl-data-visitor
+           perl-mro-compat))
     (home-page "https://metacpan.org/release/Catalyst-Plugin-ConfigLoader")
     (synopsis "Load config files of various types")
     (description "This module will attempt to load find and load configuration
@@ -2572,18 +2500,15 @@ formats.")
         (base32 "0a451997zc2vjx7rvndgx1ldbrpic8sfbddyvncynh0zr8bhlqc5"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-install" ,perl-module-install)
-       ("perl-test-deep" ,perl-test-deep)
-       ("perl-test-exception" ,perl-test-exception)))
+     (list perl-module-install perl-test-deep perl-test-exception))
     (propagated-inputs
-     `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
-       ("perl-moose" ,perl-moose)
-       ("perl-moosex-emulate-class-accessor-fast"
-        ,perl-moosex-emulate-class-accessor-fast)
-       ("perl-mro-compat" ,perl-mro-compat)
-       ("perl-namespace-clean" ,perl-namespace-clean)
-       ("perl-object-signature" ,perl-object-signature)
-       ("perl-test-www-mechanize-psgi" ,perl-test-www-mechanize-psgi)))
+     (list perl-catalyst-runtime
+           perl-moose
+           perl-moosex-emulate-class-accessor-fast
+           perl-mro-compat
+           perl-namespace-clean
+           perl-object-signature
+           perl-test-www-mechanize-psgi))
     (home-page "https://metacpan.org/release/Catalyst-Plugin-Session")
     (synopsis "Catalyst generic session plugin")
     (description "This plugin links the two pieces required for session
@@ -2605,13 +2530,10 @@ management in web applications together: the state, and the store.")
          "1rvxbfnpf9x2pc2zgpazlcgdlr2dijmxgmcs0m5nazs0w6xikssb"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-install" ,perl-module-install)))
+     (list perl-module-install))
     (propagated-inputs
-     `(("perl-catalyst-plugin-session" ,perl-catalyst-plugin-session)
-       ("perl-catalyst-runtime" ,perl-catalyst-runtime)
-       ("perl-moose" ,perl-moose)
-       ("perl-mro-compat" ,perl-mro-compat)
-       ("perl-namespace-autoclean" ,perl-namespace-autoclean)))
+     (list perl-catalyst-plugin-session perl-catalyst-runtime perl-moose
+           perl-mro-compat perl-namespace-autoclean))
     (home-page
      "https://metacpan.org/release/Catalyst-Plugin-Session-State-Cookie")
     (synopsis "Maintain session IDs using cookies")
@@ -2636,13 +2558,12 @@ cookie mechanism.")
          "0x3j6zv3wr41jlwr6yb2jpmcx019ibyn11y8653ffnwhpzbpzsxs"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-cache-fastmmap" ,perl-cache-fastmmap)
-       ("perl-catalyst-plugin-session" ,perl-catalyst-plugin-session)
-       ("perl-catalyst-runtime" ,perl-catalyst-runtime)
-       ("perl-moosex-emulate-class-accessor-fast"
-        ,perl-moosex-emulate-class-accessor-fast)
-       ("perl-mro-compat" ,perl-mro-compat)
-       ("perl-path-class" ,perl-path-class)))
+     (list perl-cache-fastmmap
+           perl-catalyst-plugin-session
+           perl-catalyst-runtime
+           perl-moosex-emulate-class-accessor-fast
+           perl-mro-compat
+           perl-path-class))
     (home-page
      "https://metacpan.org/release/Catalyst-Plugin-Session-Store-FastMmap")
     (synopsis "FastMmap session storage backend")
@@ -2665,11 +2586,9 @@ memory interprocess cache.  It is based on Cache::FastMmap.")
          "1b2ksz74cpigxqzf63rddar3vfmnbpwpdcbs11v0ml89pb8ar79j"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-install" ,perl-module-install)))
+     (list perl-module-install))
     (propagated-inputs
-     `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
-       ("perl-devel-stacktrace" ,perl-devel-stacktrace)
-       ("perl-mro-compat" ,perl-mro-compat)))
+     (list perl-catalyst-runtime perl-devel-stacktrace perl-mro-compat))
     (home-page "https://metacpan.org/release/Catalyst-Plugin-StackTrace")
     (synopsis "Stack trace on the Catalyst debug screen")
     (description "This plugin enhances the standard Catalyst debug screen by
@@ -2692,13 +2611,10 @@ number, file name, and code context surrounding the line number.")
          "0m4l627p2fvzr4i6sgdxhdvsx4wpa6qmaibsbxlg5x5yjs7k7drn"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-install" ,perl-module-install)))
+     (list perl-module-install))
     (propagated-inputs
-     `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
-       ("perl-mime-types" ,perl-mime-types)
-       ("perl-moose" ,perl-moose)
-       ("perl-moosex-types" ,perl-moosex-types)
-       ("perl-namespace-autoclean" ,perl-namespace-autoclean)))
+     (list perl-catalyst-runtime perl-mime-types perl-moose
+           perl-moosex-types perl-namespace-autoclean))
     (home-page "https://metacpan.org/release/Catalyst-Plugin-Static-Simple")
     (synopsis "Simple serving of static pages")
     (description "The Static::Simple plugin is designed to make serving static
@@ -2724,45 +2640,40 @@ MIME type directly to the browser, without being processed through Catalyst.")
          "001yk1i0xwn4v308qx15nvnp6v9qfdigdlvz1rgw5zpnq7kwnq1a"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-fatal" ,perl-test-fatal)))
+     (list perl-test-fatal))
     (propagated-inputs
-     `(("perl-cgi-simple" ,perl-cgi-simple)
-       ("perl-cgi-struct" ,perl-cgi-struct)
-       ("perl-class-c3-adopt-next" ,perl-class-c3-adopt-next)
-       ("perl-class-date" ,perl-class-date)
-       ("perl-class-load" ,perl-class-load)
-       ("perl-data-dump" ,perl-data-dump)
-       ("perl-http-body" ,perl-http-body)
-       ("perl-http-message" ,perl-http-message)
-       ("perl-json-maybexs" ,perl-json-maybexs)
-       ("perl-libwww" ,perl-libwww)
-       ("perl-module-pluggable" ,perl-module-pluggable)
-       ("perl-moose" ,perl-moose)
-       ("perl-moosex-emulate-class-accessor-fast"
-        ,perl-moosex-emulate-class-accessor-fast)
-       ("perl-moosex-getopt" ,perl-moosex-getopt)
-       ("perl-moosex-methodattributes" ,perl-moosex-methodattributes)
-       ("perl-namespace-clean" ,perl-namespace-clean)
-       ("perl-path-class" ,perl-path-class)
-       ("perl-perlio-utf8-strict" ,perl-perlio-utf8_strict)
-       ("perl-plack" ,perl-plack)
-       ("perl-plack-middleware-fixmissingbodyinredirect"
-        ,perl-plack-middleware-fixmissingbodyinredirect)
-       ("perl-plack-middleware-methodoverride"
-        ,perl-plack-middleware-methodoverride)
-       ("perl-plack-middleware-removeredundantbody"
-        ,perl-plack-middleware-removeredundantbody)
-       ("perl-plack-middleware-reverseproxy"
-        ,perl-plack-middleware-reverseproxy)
-       ("perl-plack-test-externalserver" ,perl-plack-test-externalserver)
-       ("perl-safe-isa" ,perl-safe-isa)
-       ("perl-string-rewriteprefix" ,perl-string-rewriteprefix)
-       ("perl-text-simpletable" ,perl-text-simpletable)
-       ("perl-tree-simple" ,perl-tree-simple)
-       ("perl-tree-simple-visitorfactory" ,perl-tree-simple-visitorfactory)
-       ("perl-try-tiny" ,perl-try-tiny)
-       ("perl-uri" ,perl-uri)
-       ("perl-uri-ws" ,perl-uri-ws)))
+     (list perl-cgi-simple
+           perl-cgi-struct
+           perl-class-c3-adopt-next
+           perl-class-date
+           perl-class-load
+           perl-data-dump
+           perl-http-body
+           perl-http-message
+           perl-json-maybexs
+           perl-libwww
+           perl-module-pluggable
+           perl-moose
+           perl-moosex-emulate-class-accessor-fast
+           perl-moosex-getopt
+           perl-moosex-methodattributes
+           perl-namespace-clean
+           perl-path-class
+           perl-perlio-utf8_strict
+           perl-plack
+           perl-plack-middleware-fixmissingbodyinredirect
+           perl-plack-middleware-methodoverride
+           perl-plack-middleware-removeredundantbody
+           perl-plack-middleware-reverseproxy
+           perl-plack-test-externalserver
+           perl-safe-isa
+           perl-string-rewriteprefix
+           perl-text-simpletable
+           perl-tree-simple
+           perl-tree-simple-visitorfactory
+           perl-try-tiny
+           perl-uri
+           perl-uri-ws))
     (home-page "https://metacpan.org/release/Catalyst-Runtime")
     (synopsis "The Catalyst Framework Runtime")
     (description "Catalyst is a modern framework for making web applications.
@@ -2786,14 +2697,10 @@ run an application on the web, either by doing them itself, or by letting you
          "02kir63d5cs2ipj3fn1qlmmx3gqi1xqzrxfr4pv5vjhjgsm0zgx7"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
-       ("perl-catalystx-roleapplicator" ,perl-catalystx-roleapplicator)
-       ("perl-http-message" ,perl-http-message)
-       ("perl-module-install" ,perl-module-install)))
+     (list perl-catalyst-runtime perl-catalystx-roleapplicator
+           perl-http-message perl-module-install))
     (propagated-inputs
-     `(("perl-moose" ,perl-moose)
-       ("perl-namespace-autoclean" ,perl-namespace-autoclean)
-       ("perl-uri" ,perl-uri)))
+     (list perl-moose perl-namespace-autoclean perl-uri))
     (home-page
      "https://metacpan.org/release/Catalyst-TraitFor-Request-ProxyBase")
     (synopsis "Replace request base with value passed by HTTP proxy")
@@ -2817,12 +2724,12 @@ replaced with the contents of the X-Request-Base header.")
          "1qgq6y9iwfbhbkbgpw9czang2ami6z8jk1zlagrzdisy4igqzkvs"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
-       ("perl-module-install" ,perl-module-install)
-       ("perl-test-simple" ,perl-test-simple)
-       ("perl-test-www-mechanize-catalyst" ,perl-test-www-mechanize-catalyst)
-       ("perl-text-csv" ,perl-text-csv)
-       ("perl-xml-simple" ,perl-xml-simple)))
+     (list perl-catalyst-runtime
+           perl-module-install
+           perl-test-simple
+           perl-test-www-mechanize-catalyst
+           perl-text-csv
+           perl-xml-simple))
     (home-page "https://metacpan.org/release/Catalyst-View-Download")
     (synopsis "Download data in many formats")
     (description "The purpose of this module is to provide a method for
@@ -2844,12 +2751,9 @@ table based report in a variety of formats (CSV, HTML, etc.).")
          "1v4xkzazs743sc7cd1kxkbi99cf00a4dadyyancckcbpi9p3znn5"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-install" ,perl-module-install)
-       ("perl-yaml" ,perl-yaml)))
+     (list perl-module-install perl-yaml))
     (inputs
-     `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
-       ("perl-json-maybexs" ,perl-json-maybexs)
-       ("perl-mro-compat" ,perl-mro-compat)))
+     (list perl-catalyst-runtime perl-json-maybexs perl-mro-compat))
     (home-page "https://metacpan.org/release/Catalyst-View-JSON")
     (synopsis "Catalyst JSON view")
     (description "Catalyst::View::JSON is a Catalyst View handler that returns
@@ -2869,13 +2773,13 @@ stash data in JSON format.")
       (base32 "0jzgpkgq5pwq82zlb0nykdyk40dfpsyn9ilz91d0wpixgi9i5pr8"))))
   (build-system perl-build-system)
   (propagated-inputs
-   `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
-     ("perl-class-accessor" ,perl-class-accessor)
-     ("perl-data-dump" ,perl-data-dump)
-     ("perl-mro-compat" ,perl-mro-compat)
-     ("perl-path-class" ,perl-path-class)
-     ("perl-template-timer" ,perl-template-timer)
-     ("perl-template-toolkit" ,perl-template-toolkit)))
+   (list perl-catalyst-runtime
+         perl-class-accessor
+         perl-data-dump
+         perl-mro-compat
+         perl-path-class
+         perl-template-timer
+         perl-template-toolkit))
   (home-page "https://metacpan.org/release/Catalyst-View-TT")
   (synopsis "Template View Class")
   (description "This module is a Catalyst view class for the Template
@@ -2896,16 +2800,14 @@ Toolkit.")
          "0iq4ci8m6g2c4g01fvdl568y7pjz28f3widk986v3pyhr7ll8j88"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-moose" ,perl-moose)
-       ("perl-catalyst-runtime" ,perl-catalyst-runtime)
-       ("perl-moosex-methodattributes" ,perl-moosex-methodattributes)))
+     (list perl-moose perl-catalyst-runtime perl-moosex-methodattributes))
     (propagated-inputs
-     `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
-       ("perl-class-load" ,perl-class-load)
-       ("perl-moose" ,perl-moose)
-       ("perl-moosex-traits-pluggable" ,perl-moosex-traits-pluggable)
-       ("perl-namespace-autoclean" ,perl-namespace-autoclean)
-       ("perl-list-moreutils" ,perl-list-moreutils)))
+     (list perl-catalyst-runtime
+           perl-class-load
+           perl-moose
+           perl-moosex-traits-pluggable
+           perl-namespace-autoclean
+           perl-list-moreutils))
     (home-page "https://metacpan.org/release/CatalystX-Component-Traits")
     (synopsis "Trait Loading and Resolution for Catalyst Components")
     (description "Adds a \"COMPONENT\" in Catalyst::Component method to your
@@ -2929,9 +2831,7 @@ MooseX::Traits::Pluggable.")
          "0vwaapxn8g5hs2xp63c4dwv9jmapmji4272fakssvgc9frklg3p2"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
-       ("perl-moose" ,perl-moose)
-       ("perl-moosex-relatedclassroles" ,perl-moosex-relatedclassroles)))
+     (list perl-catalyst-runtime perl-moose perl-moosex-relatedclassroles))
     (home-page "https://metacpan.org/release/CatalystX-RoleApplicator")
     (synopsis "Apply roles to Catalyst classes")
     (description "CatalystX::RoleApplicator applies roles to Catalyst
@@ -2953,13 +2853,10 @@ application classes.")
          "08jvibq4v8xjj0c3cr93h0w8w0c88ajwjn37xjy7ygxl9krlffp6"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-install" ,perl-module-install)
-       ("perl-test-www-mechanize-catalyst" ,perl-test-www-mechanize-catalyst)))
+     (list perl-module-install perl-test-www-mechanize-catalyst))
     (propagated-inputs
-     `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
-       ("perl-moose" ,perl-moose)
-       ("perl-namespace-autoclean" ,perl-namespace-autoclean)
-       ("starman" ,starman)))
+     (list perl-catalyst-runtime perl-moose perl-namespace-autoclean
+           starman))
     (home-page "https://metacpan.org/release/CatalystX-Script-Server-Starman")
     (synopsis "Catalyst development server with Starman")
     (description "This module provides a Catalyst extension to replace the
@@ -2979,11 +2876,9 @@ development server with Starman.")
         (base32 "1bxrpxv95js8yinicminxdg41xvd85haj2gvlywg3zqdb66smqy8"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-deep" ,perl-test-deep)
-       ("perl-test-nowarnings" ,perl-test-nowarnings)
-       ("perl-test-warn" ,perl-test-warn)))
+     (list perl-test-deep perl-test-nowarnings perl-test-warn))
     (propagated-inputs
-     `(("perl-html-parser" ,perl-html-parser)))
+     (list perl-html-parser))
     (home-page "https://metacpan.org/release/CGI")
     (synopsis "Handle Common Gateway Interface requests and responses")
     (description "CGI.pm is a stable, complete and mature solution for
@@ -3007,7 +2902,7 @@ headers.")
         (base32
          "163ixq9kninqq094z2rnkg9pv3bcmvjphlww4vksfrzhq3h9pjdf"))))
     (build-system perl-build-system)
-    (inputs `(("perl-cgi" ,perl-cgi)))
+    (inputs (list perl-cgi))
     (home-page
      "https://metacpan.org/release/CGI-FormBuilder")
     (synopsis
@@ -3033,8 +2928,8 @@ form-based applications.")
          "1xsl2pz1jrh127pq0b01yffnj4mnp9nvkp88h5mndrscq9hn8xa6"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)))
-    (inputs `(("perl-cgi" ,perl-cgi)))
+     (list perl-module-build))
+    (inputs (list perl-cgi))
     (home-page
      "https://metacpan.org/release/CGI-Session")
     (synopsis
@@ -3057,10 +2952,8 @@ HTTP requests.")
         (base32 "13c7iwnnavky10ab87pi8jc1kqph03s0rhvj7myn7szhbfisc4gn"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-io-stringy" ,perl-io-stringy) ; for IO::Scalar
-       ("perl-module-build" ,perl-module-build)
-       ("perl-test-exception" ,perl-test-exception)
-       ("perl-test-nowarnings" ,perl-test-nowarnings)))
+     (list perl-io-stringy ; for IO::Scalar
+           perl-module-build perl-test-exception perl-test-nowarnings))
     (home-page "https://metacpan.org/release/CGI-Simple")
     (synopsis "CGI interface that is CGI.pm compliant")
     (description "CGI::Simple provides a relatively lightweight drop in
@@ -3082,7 +2975,7 @@ parameter parsing, file upload, cookie handling and header generation.")
          "0v4xq2qpryr7i6jngw1wpn8yr2kiib10yxp4aih90vfdznkqsgfi"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-deep" ,perl-test-deep)))
+     (list perl-test-deep))
     (home-page "https://metacpan.org/release/CGI-Struct")
     (synopsis "Build structures from CGI data")
     (description "This is a module for building structured data from CGI
@@ -3103,10 +2996,9 @@ inputs, in a manner reminiscent of how PHP does.")
          "0h6qqdg1yzqkdxp7hqlp0qa7d1y64nilgimxs79dys2ryjfpcknh"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)))
+     (list perl-module-build))
     (propagated-inputs
-     `(("perl-datetime" ,perl-datetime)
-       ("perl-http-date" ,perl-http-date)))
+     (list perl-datetime perl-http-date))
     (home-page "https://metacpan.org/release/DateTime-Format-HTTP")
     (synopsis "Date conversion routines")
     (description "This module provides functions that deal with the date
@@ -3127,7 +3019,7 @@ formats used by the HTTP protocol.")
          "060jzf45dlwysw5wsm7av1wvpl06xgk415kwwpvv89r6wda3md5d"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-libwww" ,perl-libwww)))
+     (list perl-libwww))
     (home-page "https://metacpan.org/release/Digest-MD5-File")
     (synopsis "MD5 sums for files and urls")
     (description "Digest::MD5::File is a Perl extension for getting MD5 sums
@@ -3180,10 +3072,7 @@ with Encode::decode(locale => $string).")
          (add-after 'unpack 'set-env
            (lambda _ (setenv "PERL_USE_UNSAFE_INC" "1"))))))
     (inputs
-     `(("perl-class-errorhandler" ,perl-class-errorhandler)
-       ("perl-html-parser" ,perl-html-parser)
-       ("perl-libwww" ,perl-libwww)
-       ("perl-uri" ,perl-uri)))
+     (list perl-class-errorhandler perl-html-parser perl-libwww perl-uri))
     (home-page "https://metacpan.org/release/Feed-Find")
     (synopsis "Syndication feed auto-discovery")
     (description "@code{Feed::Find} implements feed auto-discovery for finding
@@ -3205,7 +3094,7 @@ RSS 0.91, RSS 1.0, RSS 2.0, Atom.")
                "0vmzw1mhv580flzkla80gvwfpficnhlbqr1dnlf9x50bw7n18k62"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-http-date" ,perl-http-date)))
+     (list perl-http-date))
     (license license:perl-license)
     (synopsis "Perl directory listing parser")
     (description
@@ -3228,17 +3117,17 @@ which can be used to parse directory listings.")
                 "perl-finance-quote-unuse-mozilla-ca.patch"))))
    (build-system perl-build-system)
    (propagated-inputs
-    `(("perl-cgi" ,perl-cgi)
-      ("perl-datetime" ,perl-datetime)
-      ("perl-html-parser" ,perl-html-parser)
-      ("perl-html-tableextract" ,perl-html-tableextract)
-      ("perl-html-tree" ,perl-html-tree)
-      ("perl-http-cookies" ,perl-http-cookies)
-      ("perl-http-message" ,perl-http-message)
-      ("perl-json" ,perl-json)
-      ("perl-libwww" ,perl-libwww)
-      ("perl-lwp-protocol-https" ,perl-lwp-protocol-https)
-      ("perl-uri" ,perl-uri)))
+    (list perl-cgi
+          perl-datetime
+          perl-html-parser
+          perl-html-tableextract
+          perl-html-tree
+          perl-http-cookies
+          perl-http-message
+          perl-json
+          perl-libwww
+          perl-lwp-protocol-https
+          perl-uri))
    (home-page "https://metacpan.org/release/Finance-Quote")
    (synopsis "Stock and mutual fund quotes")
    (description
@@ -3283,7 +3172,7 @@ described in RFC 2744.")
          "0axknss8c368r5i082yhkfj8mq0w4nglfrpcxcayyzzj13qimvzk"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-html-tree" ,perl-html-tree)))
+     (list perl-html-tree))
     (home-page "https://metacpan.org/release/HTML-Element-Extended")
     (synopsis "Manipulate tables of HTML::Element")
     (description
@@ -3304,11 +3193,8 @@ composed of HTML::Element style components.")
         (base32 "14i4ldyvdvhdhvfhh9kiq6z853q2f84biq8vcpv1k5w2r80wdiin"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-html-parser" ,perl-html-parser)
-       ("perl-html-tagset" ,perl-html-tagset)
-       ("perl-http-message" ,perl-http-message)
-       ("perl-lwp-mediatypes" ,perl-lwp-mediatypes)
-       ("perl-uri" ,perl-uri)))
+     (list perl-html-parser perl-html-tagset perl-http-message
+           perl-lwp-mediatypes perl-uri))
     (home-page "https://metacpan.org/release/HTML-Form")
     (synopsis "Perl class representing an HTML form element")
     (description "Objects of the HTML::Form class represents a single HTML
@@ -3331,14 +3217,14 @@ composed of HTML::Element style components.")
          "06p7w4zd42b2yh541mlzyqj40lwmvvn3fyqi8big4mf34la7m2jm"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)
-       ("perl-test-cpan-meta" ,perl-test-cpan-meta)
-       ("perl-test-differences" ,perl-test-differences)
-       ("perl-test-eol" ,perl-test-eol)
-       ("perl-test-memory-cycle" ,perl-test-memory-cycle)
-       ("perl-test-notabs" ,perl-test-notabs)))
+     (list perl-module-build
+           perl-test-cpan-meta
+           perl-test-differences
+           perl-test-eol
+           perl-test-memory-cycle
+           perl-test-notabs))
     (inputs
-     `(("perl-html-parser" ,perl-html-parser)))
+     (list perl-html-parser))
     (home-page
      "https://metacpan.org/release/HTML-Scrubber")
     (synopsis
@@ -3360,9 +3246,7 @@ composed of HTML::Element style components.")
         (base32 "0lk02xpfxcg7ij4dvpsa4wjlzhmiizj0jfr3rwmdpbj69nvc93br"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-html-parser" ,perl-html-parser)
-       ("perl-html-tagset" ,perl-html-tagset)
-       ("perl-libwww" ,perl-libwww)))
+     (list perl-html-parser perl-html-tagset perl-libwww))
     (home-page "https://metacpan.org/release/HTML-Lint")
     (synopsis "Check for HTML errors in a string or file")
     (description "HTML::Lint is a pure-Perl HTML parser and checker for
@@ -3383,8 +3267,7 @@ syntactic legitmacy.")
          "01jimmss3q68a89696wmclvqwb2ybz6xgabpnbp6mm6jcni82z8a"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-html-element-extended" ,perl-html-element-extended)
-       ("perl-html-parser" ,perl-html-parser)))
+     (list perl-html-element-extended perl-html-parser))
     (home-page "https://metacpan.org/release/HTML-TableExtract")
     (synopsis "Extract contents from HTML tables")
     (description
@@ -3406,12 +3289,9 @@ in tables within an HTML document, either as text or encoded element trees.")
          "1gyvm4qlwm9y6hczkpnrdfl303ggbybr0nqxdjw09hii8yw4sdzh"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)
-       ("perl-test-fatal" ,perl-test-fatal)))
+     (list perl-module-build perl-test-fatal))
     (propagated-inputs
-     `(("perl-html-parser" ,perl-html-parser)
-       ("perl-html-tagset" ,perl-html-tagset)
-       ("perl-libwww" ,perl-libwww)))
+     (list perl-html-parser perl-html-tagset perl-libwww))
     (home-page "https://metacpan.org/release/HTML-Tree")
     (synopsis "Work with HTML in a DOM-like tree structure")
     (description "This distribution contains a suite of modules for
@@ -3432,8 +3312,7 @@ representing, creating, and extracting information from HTML syntax trees.")
                "12v05ywlnsi9lc17z32k9jxx3sj1viy7y1wpl7n4az76v7hwfa7c"))))
     (build-system perl-build-system)
     (inputs
-     `(("perl-html-tagset" ,perl-html-tagset)
-       ("perl-http-message" ,perl-http-message)))
+     (list perl-html-tagset perl-http-message))
     (license license:perl-license)
     (synopsis "Perl HTML parser class")
     (description
@@ -3476,7 +3355,7 @@ kinds of HTML parsing operations.")
                 "17qjw8swj2q4b1ic285pndgrkmvpsqw0j68nhqzpk1daydhsyiv5"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-cgi" ,perl-cgi)))
+     (list perl-cgi))
     (home-page "https://metacpan.org/release/HTML-Template")
     (synopsis "HTML-like templates")
     (description
@@ -3503,10 +3382,9 @@ you to separate design from the data.")
          "15vj488i62mdp4ps9k77h39prj70i7anb6b0j8nm7l9vbdc2q3gw"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-deep" ,perl-test-deep)))
+     (list perl-test-deep))
     (propagated-inputs
-     `(("perl-file-temp" ,perl-file-temp)
-       ("perl-http-message" ,perl-http-message))) ;For HTTP::Headers
+     (list perl-file-temp perl-http-message)) ;For HTTP::Headers
     (home-page "https://metacpan.org/release/HTTP-Body")
     (synopsis "HTTP Body Parser")
     (description "HTTP::Body parses chunks of HTTP POST data and supports
@@ -3527,13 +3405,9 @@ and multipart/form-data.")
         (base32 "0jk0ps4i67dhhhwaxwwa9nkv3n6n5w44xlnwyzvk59735pwvyjh0"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-deep" ,perl-test-deep)
-       ("perl-test-requires" ,perl-test-requires)
-       ("perl-time-mock" ,perl-time-mock)
-       ("perl-uri" ,perl-uri)))
+     (list perl-test-deep perl-test-requires perl-time-mock perl-uri))
     (inputs
-     `(("perl-time-local" ,perl-time-local)
-       ("perl-http-date" ,perl-http-date)))
+     (list perl-time-local perl-http-date))
     (home-page "https://metacpan.org/release/HTTP-CookieJar")
     (synopsis "Minimalist HTTP user agent cookie jar")
     (description "This module implements a minimalist HTTP user agent cookie
@@ -3554,7 +3428,7 @@ jar in conformance with RFC 6265 <http://tools.ietf.org/html/rfc6265>.")
                "13rnz3233vbsfariya4njiyfaj6k94j6bvlyh3dmfmh24hpqgx77"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-http-message" ,perl-http-message)))
+     (list perl-http-message))
     (license license:perl-license)
     (synopsis "Perl HTTP cookie jars")
     (description
@@ -3577,8 +3451,7 @@ object knows about.")
                "1hmd2isrkilf0q0nkxms1q64kikjmcw9imbvrjgky6kh89vqdza3"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-http-message" ,perl-http-message)
-       ("perl-lwp-mediatypes" ,perl-lwp-mediatypes)))
+     (list perl-http-message perl-lwp-mediatypes))
     (license license:perl-license)
     (synopsis "Perl simple http server class")
     (description
@@ -3621,7 +3494,7 @@ used by the HTTP protocol (and then some more).")
        (base32
         "0z77nflj8zdcfg70kc93glq5kmd6qxn2nf7h70x4xhfg25wkvr1q"))))
     (build-system perl-build-system)
-    (native-inputs `(("perl-cgi" ,perl-cgi)))
+    (native-inputs (list perl-cgi))
     (home-page "https://metacpan.org/release/HTTP-Lite")
     (synopsis "Lightweight HTTP implementation")
     (description "@code{HTTP::Lite} is a stand-alone lightweight
@@ -3650,13 +3523,10 @@ processing of request data as it arrives.")
                "04lih0fn89jpyk74c4aq1rzq18h8v4zd3x0lik2r9dl8sdqd2q6h"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-try-tiny" ,perl-try-tiny)))
+     (list perl-try-tiny))
     (propagated-inputs
-     `(("perl-encode-locale" ,perl-encode-locale)
-       ("perl-http-date" ,perl-http-date)
-       ("perl-io-html" ,perl-io-html)
-       ("perl-lwp-mediatypes" ,perl-lwp-mediatypes)
-       ("perl-uri" ,perl-uri)))
+     (list perl-encode-locale perl-http-date perl-io-html
+           perl-lwp-mediatypes perl-uri))
     (license license:perl-license)
     (synopsis "Perl HTTP style message")
     (description
@@ -3677,7 +3547,7 @@ processing of request data as it arrives.")
                "05p053vjs5g91v5cmjnny7a3xzddz5k7vnjw81wfh01ilqg9qwhw"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-http-message" ,perl-http-message)))
+     (list perl-http-message))
     (license license:perl-license)
     (synopsis "Perl http content negotiation")
     (description
@@ -3703,8 +3573,7 @@ fields in the request.")
          "0idwq3jk595xil65lmxz128ha7s3r2n5zknisddpgwnqrghs3igq"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-http-message" ,perl-http-message)
-       ("perl-uri" ,perl-uri)))
+     (list perl-http-message perl-uri))
     (home-page "https://metacpan.org/release/HTTP-Parser")
     (synopsis "Parse HTTP/1.1 requests")
     (description "This is an HTTP request parser.  It takes chunks of text as
@@ -3727,7 +3596,7 @@ supported.")
          "02d84xq1mm53c7jl33qyb7v5w4372vydp74z6qj0vc96wcrnhkkr"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-install" ,perl-module-install)))
+     (list perl-module-install))
     (home-page "https://metacpan.org/release/HTTP-Parser-XS")
     (synopsis "Fast HTTP request parser")
     (description "HTTP::Parser::XS is a fast, primitive HTTP request/response
@@ -3748,8 +3617,7 @@ parser.")
          "1smwmiarwcgq7vjdblnb6ldi2x1s5sk5p15p7xvm5byiqq3znnwl"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-class-accessor" ,perl-class-accessor)
-       ("perl-http-message" ,perl-http-message)))
+     (list perl-class-accessor perl-http-message))
     (home-page "https://metacpan.org/release/HTTP-Request-AsCGI")
     (synopsis "Set up a CGI environment from an HTTP::Request")
     (description "This module provides a convenient way to set up a CGI
@@ -3770,7 +3638,7 @@ environment from an HTTP::Request.")
          "0k6bg7k6mjixfzxdkkdrhqvaqmdhjszx0zsk8g0bimiby6j9z4yq"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-cgi" ,perl-cgi)))
+     (list perl-cgi))
     (arguments
      ;; See the discussion of a related tests issue at
      ;; https://lists.gnu.org/archive/html/guix-devel/2015-01/msg00346.html
@@ -3805,11 +3673,8 @@ http-based UI to your existing tools.")
          "11wkxxqj3ff84rgj9q2gzkdgscwp3fzj205846k9ycqinlpsmgfx"))))
     (build-system perl-build-system)
     (inputs
-     `(("perl-http-cookiejar" ,perl-http-cookiejar)
-       ("perl-io-socket-ip" ,perl-io-socket-ip)
-       ("perl-io-socket-ssl" ,perl-io-socket-ssl)
-       ("perl-mozilla-ca" ,perl-mozilla-ca)
-       ("perl-net-ssleay" ,perl-net-ssleay)))
+     (list perl-http-cookiejar perl-io-socket-ip perl-io-socket-ssl
+           perl-mozilla-ca perl-net-ssleay))
     (home-page "https://metacpan.org/release/HTTP-Tiny")
     (synopsis "HTTP/1.1 client")
     (description "This is a very simple HTTP/1.1 client, designed for doing
@@ -3833,8 +3698,7 @@ It supports proxies and redirection.  It also correctly resumes after EINTR.")
          "199sa722amvwhq0czjfb7psj3hbqmvni5vxkrm579r5943pg0rax"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-file-which" ,perl-file-which)
-       ("perl-ipc-run3" ,perl-ipc-run3)))
+     (list perl-file-which perl-ipc-run3))
     (home-page "https://metacpan.org/release/HTTP-Tinyish")
     (synopsis "@code{HTTP::Tiny} compatible HTTP client wrappers")
     (description
@@ -3877,7 +3741,7 @@ algorithm specified in section 8.2.2.1 of the draft standard.")
        (sha256
         (base32 "0ihlpxrkq1xrvhnq52nhghanskic718ch8kpp642afgq72i4b6l4"))))
     (build-system perl-build-system)
-    (native-inputs `(("perl-module-build" ,perl-module-build)))
+    (native-inputs (list perl-module-build))
     (home-page "https://metacpan.org/release/IO-Socket-IP")
     (synopsis "Family-neutral IP socket supporting both IPv4 and IPv6")
     (description "This module provides a protocol-independent way to use IPv4
@@ -3897,9 +3761,9 @@ and IPv6 sockets, intended as a replacement for IO::Socket::INET.")
                 "1ycgzg1l7p07y5wc0vzgnj122vm51p5aqpi4s56pp0piaq0gq824"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-net-ssleay" ,perl-net-ssleay)
-       ;; for IDN support
-       ("perl-uri" ,perl-uri)))
+     (list perl-net-ssleay
+           ;; for IDN support
+           perl-uri))
     (synopsis "Nearly transparent SSL encapsulation for IO::Socket::INET")
     (description
      "IO::Socket::SSL makes using SSL/TLS much easier by wrapping the
@@ -3924,22 +3788,20 @@ select or poll.")
                "0869hn711d6fd6yil8p88wij6p1zdrbnycy7p9p176q39ajd7l61"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-fatal" ,perl-test-fatal)
-       ("perl-test-needs" ,perl-test-needs)
-       ("perl-test-requiresinternet" ,perl-test-requiresinternet)))
+     (list perl-test-fatal perl-test-needs perl-test-requiresinternet))
     (propagated-inputs
-     `(("perl-encode-locale" ,perl-encode-locale)
-       ("perl-file-listing" ,perl-file-listing)
-       ("perl-html-parser" ,perl-html-parser)
-       ("perl-http-cookies" ,perl-http-cookies)
-       ("perl-http-daemon" ,perl-http-daemon)
-       ("perl-http-date" ,perl-http-date)
-       ("perl-http-message" ,perl-http-message)
-       ("perl-http-negotiate" ,perl-http-negotiate)
-       ("perl-net-http" ,perl-net-http)
-       ("perl-try-tiny" ,perl-try-tiny)
-       ("perl-uri" ,perl-uri)
-       ("perl-www-robotrules" ,perl-www-robotrules)))
+     (list perl-encode-locale
+           perl-file-listing
+           perl-html-parser
+           perl-http-cookies
+           perl-http-daemon
+           perl-http-date
+           perl-http-message
+           perl-http-negotiate
+           perl-net-http
+           perl-try-tiny
+           perl-uri
+           perl-www-robotrules))
     (license license:perl-license)
     (synopsis "Perl modules for the WWW")
     (description
@@ -3966,10 +3828,9 @@ help you implement simple HTTP servers.")
          "176f6vbk1018i0y7xj9d406ndbjgwzan2j9nihxnsahzg2vr2vz2"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-libwww" ,perl-libwww)
-       ("perl-uri" ,perl-uri)))
+     (list perl-libwww perl-uri))
     (native-inputs
-     `(("perl-module-install" ,perl-module-install)))
+     (list perl-module-install))
     (home-page "https://metacpan.org/release/LWP-Online")
     (synopsis "Checks whether your process has access to the web")
     (description "This module attempts to answer, as accurately as it can, one
@@ -3994,7 +3855,7 @@ not have DNS.  We might not have a network card at all!")
                "1n8rg6csv3dsvymg06cmxipimr6cb1g9r903ghm1qsmiv89cl6wg"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-fatal" ,perl-test-fatal)))
+     (list perl-test-fatal))
     (license license:perl-license)
     (synopsis "Perl module to guess the media type for a file or a URL")
     (description
@@ -4018,12 +3879,9 @@ exists it is used instead.")
     (build-system perl-build-system)
     (native-inputs
      ;; For tests.
-     `(("perl-test-requiresinternet" ,perl-test-requiresinternet)))
+     (list perl-test-requiresinternet))
     (propagated-inputs
-     `(("perl-io-socket-ssl" ,perl-io-socket-ssl)
-       ("perl-libwww" ,perl-libwww)
-       ("perl-mozilla-ca" ,perl-mozilla-ca)
-       ("perl-net-http" ,perl-net-http)))
+     (list perl-io-socket-ssl perl-libwww perl-mozilla-ca perl-net-http))
     (home-page "https://metacpan.org/release/LWP-Protocol-https")
     (synopsis "HTTPS support for LWP::UserAgent")
     (description "The LWP::Protocol::https module provides support for using
@@ -4044,7 +3902,7 @@ https schemed URLs with LWP.")
          "1hw7wy7f82kl61xjwkgmhv1ixgg56dhgfr45wxn6ahc0qys5mkix"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-libwww" ,perl-libwww)))
+     (list perl-libwww))
     (home-page "https://metacpan.org/release/LWP-UserAgent-Cached")
     (synopsis "Simple caching for LWP::UserAgent")
     (description "LWP::UserAgent::Cached is an LWP::UserAgent subclass with
@@ -4066,7 +3924,7 @@ instead of making an HTTP request.")
          "0lyvbpjng7yfvyha9rp2y2c6liz5hhplmd2grc8jlsfkih7dbn06"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-libwww" ,perl-libwww)))
+     (list perl-libwww))
     (home-page "https://metacpan.org/release/LWP-UserAgent-Determined")
     (synopsis "Virtual browser that retries errors")
     (description "LWP::UserAgent::Determined works just like LWP::UserAgent,
@@ -4090,10 +3948,10 @@ and retry a few times.")
         "0gfhw3jbs25yya2dryv8xvyn9myngcfcmsybj7gkq62fnznil16c"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-libwww" ,perl-libwww)
-       ;; Users should instead make sure SSL_ca_path is set properly.
-       ;; ("perl-mozilla-ca" ,perl-mozilla-ca)
-       ("perl-net-dns" ,perl-net-dns)))
+     (list perl-libwww
+           ;; Users should instead make sure SSL_ca_path is set properly.
+           ;; ("perl-mozilla-ca" ,perl-mozilla-ca)
+           perl-net-dns))
     (home-page "https://metacpan.org/release/LWPx-ParanoidAgent")
     (synopsis "Security enhanced subclass of LWP::UserAgent")
     (description "@code{LWPx::ParanoidAgent} is a class subclassing
@@ -4120,28 +3978,26 @@ is limited to http and https.")
                  "perl-net-amazon-s3-moose-warning.patch"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-libwww" ,perl-libwww)
-       ("perl-test-exception" ,perl-test-exception)))
+     (list perl-libwww perl-test-exception))
     (propagated-inputs
-     `(("perl-data-stream-bulk" ,perl-data-stream-bulk)
-       ("perl-datetime-format-http" ,perl-datetime-format-http)
-       ("perl-digest-hmac" ,perl-digest-hmac)
-       ("perl-digest-md5-file" ,perl-digest-md5-file)
-       ("perl-file-find-rule" ,perl-file-find-rule)
-       ("perl-http-date" ,perl-http-date)
-       ("perl-http-message" ,perl-http-message)
-       ("perl-lwp-useragent-determined" ,perl-lwp-useragent-determined)
-       ("perl-mime-types" ,perl-mime-types)
-       ("perl-moose" ,perl-moose)
-       ("perl-moosex-strictconstructor" ,perl-moosex-strictconstructor)
-       ("perl-moosex-types-datetime-morecoercions"
-        ,perl-moosex-types-datetime-morecoercions)
-       ("perl-path-class" ,perl-path-class)
-       ("perl-regexp-common" ,perl-regexp-common)
-       ("perl-term-encoding" ,perl-term-encoding)
-       ("perl-term-progressbar-simple" ,perl-term-progressbar-simple)
-       ("perl-uri" ,perl-uri)
-       ("perl-xml-libxml" ,perl-xml-libxml)))
+     (list perl-data-stream-bulk
+           perl-datetime-format-http
+           perl-digest-hmac
+           perl-digest-md5-file
+           perl-file-find-rule
+           perl-http-date
+           perl-http-message
+           perl-lwp-useragent-determined
+           perl-mime-types
+           perl-moose
+           perl-moosex-strictconstructor
+           perl-moosex-types-datetime-morecoercions
+           perl-path-class
+           perl-regexp-common
+           perl-term-encoding
+           perl-term-progressbar-simple
+           perl-uri
+           perl-xml-libxml))
     (home-page "https://metacpan.org/release/Net-Amazon-S3")
     (synopsis "Perl interface to Amazon S3")
     (description "This module provides a Perlish interface to Amazon S3.")
@@ -4161,8 +4017,7 @@ is limited to http and https.")
                "1i7fk6q1iaxzgf82mjd5hg77hvy7dbb79488cijg16dyfrds6nip"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-io-socket-ssl" ,perl-io-socket-ssl)
-       ("perl-uri" ,perl-uri)))
+     (list perl-io-socket-ssl perl-uri))
     (license license:perl-license)
     (synopsis "Perl low-level HTTP connection (client)")
     (description
@@ -4213,7 +4068,7 @@ or to multiple server ports.")
          "001a6dcfahf7kkyirqkc8jd4fh4fkal7n7vm9c4dblqrvmdc8abv"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-io-socket-ssl" ,perl-io-socket-ssl)))
+     (list perl-io-socket-ssl))
     (home-page "https://metacpan.org/release/Net-SMTP-SSL")
     (synopsis "SSL support for Net::SMTP")
     (description "SSL support for Net::SMTP.")
@@ -4233,22 +4088,21 @@ or to multiple server ports.")
          "081jg0xddzpg2anmqi9i6d7vs6c8z7k557bf8xl6vgb3h95pin5w"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-requires" ,perl-test-requires)
-       ("perl-file-sharedir-install" ,perl-file-sharedir-install)))
+     (list perl-test-requires perl-file-sharedir-install))
     (propagated-inputs
-     `(("perl-apache-logformat-compiler" ,perl-apache-logformat-compiler)
-       ("perl-devel-stacktrace" ,perl-devel-stacktrace)
-       ("perl-devel-stacktrace-ashtml" ,perl-devel-stacktrace-ashtml)
-       ("perl-file-sharedir" ,perl-file-sharedir)
-       ("perl-hash-multivalue" ,perl-hash-multivalue)
-       ("perl-http-body" ,perl-http-body)
-       ("perl-http-message" ,perl-http-message)
-       ("perl-http-tiny" ,perl-http-tiny)
-       ("perl-libwww" ,perl-libwww)
-       ("perl-stream-buffered" ,perl-stream-buffered)
-       ("perl-test-tcp" ,perl-test-tcp)
-       ("perl-try-tiny" ,perl-try-tiny)
-       ("perl-uri" ,perl-uri)))
+     (list perl-apache-logformat-compiler
+           perl-devel-stacktrace
+           perl-devel-stacktrace-ashtml
+           perl-file-sharedir
+           perl-hash-multivalue
+           perl-http-body
+           perl-http-message
+           perl-http-tiny
+           perl-libwww
+           perl-stream-buffered
+           perl-test-tcp
+           perl-try-tiny
+           perl-uri))
     (home-page "https://metacpan.org/release/Plack")
     (synopsis "Perl Superglue for Web frameworks and servers (PSGI toolkit)")
     (description "Plack is a set of tools for using the PSGI stack.  It
@@ -4272,10 +4126,9 @@ WSGI.")
          "0xf2visi16hgwgyp9q0cjr10ikbn474hjia5mj8mb2scvbkrbni8"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-install" ,perl-module-install)
-       ("perl-test-requires" ,perl-test-requires)))
+     (list perl-module-install perl-test-requires))
     (propagated-inputs
-     `(("perl-plack" ,perl-plack)))
+     (list perl-plack))
     (home-page "https://metacpan.org/release/Plack-Middleware-Deflater")
     (synopsis "Compress response body with Gzip or Deflate")
     (description
@@ -4301,9 +4154,8 @@ servers.")
          "14dkrmccq7a5vpymx5dv8032gfcvhsw2i6v5sh3c4ym5ymlx08kc"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-html-parser" ,perl-html-parser) ;for HTML::Entities
-       ("perl-http-message" ,perl-http-message)
-       ("perl-plack" ,perl-plack)))     ;for Plack::Test
+     (list perl-html-parser ;for HTML::Entities
+           perl-http-message perl-plack))     ;for Plack::Test
     (home-page
      "https://metacpan.org/release/Plack-Middleware-FixMissingBodyInRedirect")
     (synopsis "Plack::Middleware which sets body for redirect response")
@@ -4325,9 +4177,9 @@ already set.")
         (base32 "1wdmmav3rbhv49zpw311zrxxqmg1fz3f3q9src0ypgs8zcp5myyv"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)))
+     (list perl-module-build))
     (propagated-inputs
-     `(("perl-plack" ,perl-plack)))
+     (list perl-plack))
     (home-page "https://metacpan.org/release/Plack-Middleware-MethodOverride")
     (synopsis "Override REST methods to Plack apps via POST")
     (description "This middleware allows for POST requests that pretend to be
@@ -4350,7 +4202,7 @@ can say what method it actually meant.")
         (base32 "0zh83001rn5aqwpc1pn3di2h3ibzlf2dvkmkv05hnadpss9mzm40"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-plack" ,perl-plack)))
+     (list perl-plack))
     (home-page
      "https://metacpan.org/release/Plack-Middleware-RemoveRedundantBody")
     (synopsis "Plack::Middleware which removes body for HTTP response")
@@ -4372,9 +4224,9 @@ required.")
         (base32 "0a512n62pnk5ayj3zdzyj50iy1qi8nwh6ygks2h7nrh7gp9k2jc7"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-install" ,perl-module-install)))
+     (list perl-module-install))
     (propagated-inputs
-     `(("perl-plack" ,perl-plack)))
+     (list perl-plack))
     (home-page "https://metacpan.org/release/Plack-Middleware-ReverseProxy")
     (synopsis "Supports app to run as a reverse proxy backend")
     (description "Plack::Middleware::ReverseProxy resets some HTTP headers,
@@ -4395,7 +4247,7 @@ and stop fake requests using @code{enable_if} directive in your app.psgi.")
         (base32 "1l1yj1l25679x7cbpd27ii7s1f1ajpkspif9xqnl21hczrbmrbsv"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-plack" ,perl-plack)))
+     (list perl-plack))
     (home-page "https://metacpan.org/release/Plack-Test-ExternalServer")
     (synopsis "Run HTTP tests on external live servers")
     (description "This module allows your to run your Plack::Test tests
@@ -4416,7 +4268,7 @@ either mocked HTTP or a locally spawned server.")
         (base32 "0mvv9rqwrwlcfh8qrs0s47p85rhlnw15d4gbpyi802bddp0c6lry"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-test-sharedfork" ,perl-test-sharedfork)))
+     (list perl-test-sharedfork))
     (arguments `(#:tests? #f))          ;related to signaling in t/05_sigint.t
     (home-page "https://metacpan.org/release/Test-TCP")
     (synopsis "Testing TCP programs")
@@ -4436,13 +4288,13 @@ either mocked HTTP or a locally spawned server.")
         (base32 "1jsywlbxhqw39ij7s8vmgff5vys58vlfaq27072awacnxc65aal4"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-carp-assert-more" ,perl-carp-assert-more)
-       ("perl-html-form" ,perl-html-form)
-       ("perl-html-lint" ,perl-html-lint)
-       ("perl-http-server-simple" ,perl-http-server-simple)
-       ("perl-libwww" ,perl-libwww)
-       ("perl-test-longstring" ,perl-test-longstring)
-       ("perl-www-mechanize" ,perl-www-mechanize)))
+     (list perl-carp-assert-more
+           perl-html-form
+           perl-html-lint
+           perl-http-server-simple
+           perl-libwww
+           perl-test-longstring
+           perl-www-mechanize))
     (home-page "https://metacpan.org/release/Test-WWW-Mechanize")
     (synopsis "Testing-specific WWW::Mechanize subclass")
     (description "Test::WWW::Mechanize is a subclass of the Perl module
@@ -4462,21 +4314,20 @@ WWW::Mechanize that incorporates features for web application testing.")
         (base32 "1cdc2q16vs6fb335pzaislz2rx1ph9acaxyp7v5hv9xbwwddwfqq"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-catalyst-plugin-session" ,perl-catalyst-plugin-session)
-       ("perl-catalyst-plugin-session-state-cookie"
-        ,perl-catalyst-plugin-session-state-cookie)
-       ("perl-module-install" ,perl-module-install)
-       ("perl-test-exception" ,perl-test-exception)
-       ("perl-test-pod" ,perl-test-pod)
-       ("perl-test-utf8" ,perl-test-utf8)))
+     (list perl-catalyst-plugin-session
+           perl-catalyst-plugin-session-state-cookie
+           perl-module-install
+           perl-test-exception
+           perl-test-pod
+           perl-test-utf8))
     (propagated-inputs
-     `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
-       ("perl-class-load" ,perl-class-load)
-       ("perl-libwww" ,perl-libwww)
-       ("perl-moose" ,perl-moose)
-       ("perl-namespace-clean" ,perl-namespace-clean)
-       ("perl-test-www-mechanize" ,perl-test-www-mechanize)
-       ("perl-www-mechanize" ,perl-www-mechanize)))
+     (list perl-catalyst-runtime
+           perl-class-load
+           perl-libwww
+           perl-moose
+           perl-namespace-clean
+           perl-test-www-mechanize
+           perl-www-mechanize))
     (home-page "https://metacpan.org/release/Test-WWW-Mechanize-Catalyst")
     (synopsis "Test::WWW::Mechanize for Catalyst")
     (description "The Test::WWW::Mechanize::Catalyst module meshes the
@@ -4498,10 +4349,9 @@ testing of Catalyst applications without needing to start up a web server.")
          "0fsh2i05kf1kfavv2r9kmnjl7qlyqrd11ikc0qcqzzxsqzzjkg9r"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-pod" ,perl-test-pod)))
+     (list perl-test-pod))
     (propagated-inputs
-     `(("perl-plack" ,perl-plack)
-       ("perl-test-www-mechanize" ,perl-test-www-mechanize)))
+     (list perl-plack perl-test-www-mechanize))
     (home-page "https://metacpan.org/release/Test-WWW-Mechanize-PSGI")
     (synopsis "Test PSGI programs using WWW::Mechanize")
     (description "PSGI is a specification to decouple web server environments
@@ -4525,7 +4375,7 @@ applications.")
     (build-system perl-build-system)
     (native-inputs
      ;; For tests.
-     `(("perl-test-needs" ,perl-test-needs)))
+     (list perl-test-needs))
     (license license:perl-license)
     (synopsis "Perl Uniform Resource Identifiers (absolute and relative)")
     (description
@@ -4549,9 +4399,7 @@ and updated by RFC 2732.")
     (arguments
      `(#:tests? #f)) ; Tests require internet connection to succeed
     (inputs
-     `(("perl-class-errorhandler" ,perl-class-errorhandler)
-       ("perl-libwww" ,perl-libwww)
-       ("perl-uri" ,perl-uri)))
+     (list perl-class-errorhandler perl-libwww perl-uri))
     (home-page "https://metacpan.org/release/URI-Fetch")
     (synopsis "Smart URI fetching/caching")
     (description "@code{URI::Fetch} is a smart client for fetching HTTP pages,
@@ -4573,9 +4421,9 @@ and time-saving way.")
          "1mk3jv8x0mcq3ajrn9garnxd0jc7sw4pkwqi88r5apqvlljs84z2"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)))
+     (list perl-module-build))
     (propagated-inputs
-     `(("perl-uri" ,perl-uri)))
+     (list perl-uri))
     (home-page "https://metacpan.org/release/URI-Find")
     (synopsis "Find URIs in arbitrary text")
     (description "This module finds URIs and URLs (according to what URI.pm
@@ -4598,7 +4446,7 @@ URI::Find::Schemeless.  For a command-line interface, urifind is provided.")
          "1vs1wm80sq685944g1l4a0fxcbccc00c0f9648yabdmcf90hwsvf"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-uri" ,perl-uri)))
+     (list perl-uri))
     (home-page "https://metacpan.org/release/URI-ws")
     (synopsis "WebSocket support for URI package")
     (description "With this module, the URI package provides the same set of
@@ -4618,12 +4466,10 @@ methods for WebSocket URIs as it does for HTTP URIs.")
                 "1phibcmam2hklrddzj79l43va1gcqpyszbw21ynxq53ynmhjvbk8"))))
     (build-system perl-build-system)
     (inputs
-     `(("perl-uri" ,perl-uri)))
+     (list perl-uri))
     (native-inputs
-     `(("perl-test-pod-coverage" ,perl-test-pod-coverage)
-       ("perl-test-pod" ,perl-test-pod)
-       ("perl-module-install" ,perl-module-install)
-       ("perl-json" ,perl-json)))
+     (list perl-test-pod-coverage perl-test-pod perl-module-install
+           perl-json))
     (home-page "https://metacpan.org/release/URI-Template")
     (synopsis "Object for handling URI templates")
     (description "This perl module provides a wrapper around URI templates as described in
@@ -4656,8 +4502,8 @@ RFC 6570.")
                                               (getenv "PERL5LIB")))
                        #t)))))
     (native-inputs
-     `(("perl-module-install" ,perl-module-install)))
-    (inputs `(("curl" ,curl)))
+     (list perl-module-install))
+    (inputs (list curl))
     (synopsis "Perl extension interface for libcurl")
     (description
      "This is a Perl extension interface for the libcurl file downloading
@@ -4678,20 +4524,17 @@ library.")
         (base32 "0cb14m1vhaf0mgn2fqwi5hm72xhfi77hpq2g57swgy0w83x7m27b"))))
     (build-system perl-build-system)
     (native-inputs                      ;only for tests
-     `(("perl-cgi" ,perl-cgi)
-       ("perl-test-deep" ,perl-test-deep)
-       ("perl-test-fatal" ,perl-test-fatal)
-       ("perl-test-output" ,perl-test-output)
-       ("perl-test-warnings" ,perl-test-warnings)))
+     (list perl-cgi perl-test-deep perl-test-fatal perl-test-output
+           perl-test-warnings))
     (propagated-inputs
-     `(("perl-html-form" ,perl-html-form)
-       ("perl-html-parser" ,perl-html-parser)
-       ("perl-html-tree" ,perl-html-tree)
-       ("perl-http-message" ,perl-http-message)
-       ("perl-http-server-simple" ,perl-http-server-simple)
-       ("perl-libwww" ,perl-libwww)
-       ("perl-test-warn" ,perl-test-warn)
-       ("perl-uri" ,perl-uri)))
+     (list perl-html-form
+           perl-html-parser
+           perl-html-tree
+           perl-http-message
+           perl-http-server-simple
+           perl-libwww
+           perl-test-warn
+           perl-uri))
     (home-page "https://metacpan.org/release/WWW-Mechanize")
     (synopsis "Web browsing in a Perl object")
     (description "WWW::Mechanize is a Perl module for stateful programmatic
@@ -4711,24 +4554,24 @@ web browsing, used for automating interaction with websites.")
                 "1yxplx1q1qk2fvnzqrbk01lz26fy1lyhay51a3ky7q3jgh9p01rb"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-class-errorhandler" ,perl-class-errorhandler)
-       ("perl-datetime" ,perl-datetime)
-       ("perl-datetime-format-mail" ,perl-datetime-format-mail)
-       ("perl-datetime-format-w3cdtf" ,perl-datetime-format-w3cdtf)
-       ("perl-feed-find" ,perl-feed-find)
-       ("perl-module-install" ,perl-module-install)
-       ("perl-module-pluggable" ,perl-module-pluggable)
-       ("perl-uri-fetch" ,perl-uri-fetch)
-       ("perl-test-simple" ,perl-test-simple)
-       ("perl-xml-atom" ,perl-xml-atom)
-       ("perl-xml-rss" ,perl-xml-rss)))
+     (list perl-class-errorhandler
+           perl-datetime
+           perl-datetime-format-mail
+           perl-datetime-format-w3cdtf
+           perl-feed-find
+           perl-module-install
+           perl-module-pluggable
+           perl-uri-fetch
+           perl-test-simple
+           perl-xml-atom
+           perl-xml-rss))
     (inputs
-     `(("perl-data-page" ,perl-data-page)
-       ("perl-libwww" ,perl-libwww)
-       ("perl-uri" ,perl-uri)
-       ("perl-uri-template" ,perl-uri-template)
-       ("perl-xml-feed" ,perl-xml-feed)
-       ("perl-xml-libxml" ,perl-xml-libxml)))
+     (list perl-data-page
+           perl-libwww
+           perl-uri
+           perl-uri-template
+           perl-xml-feed
+           perl-xml-libxml))
     (home-page "https://metacpan.org/release/WWW-OpenSearch")
     (synopsis "Search A9 OpenSearch compatible engines")
     (description
@@ -4750,7 +4593,7 @@ http://opensearch.a9.com} compatible search engines.")
                "07m50dp5n5jxv3m93i55qvnd67a6g7cvbvlik115kmc8lbkh5da6"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-uri" ,perl-uri)))
+     (list perl-uri))
     (license license:perl-license)
     (synopsis "Perl database of robots.txt-derived permissions")
     (description
@@ -4774,7 +4617,7 @@ their web site.")
          "0qcnkyjjfj5gg5rhd1j4zzlqx5h34bma18zwgj68q95b0l543q2w"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-sgmllib3k" ,python-sgmllib3k)))
+     (list python-sgmllib3k))
     (arguments
      '(#:tests? #f))
     (home-page
@@ -4883,16 +4726,16 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
                  #t)))
            (delete 'strip))))           ; As the .go files aren't compatible
       (inputs
-       `(("guix" ,guix)
-         ("guile-fibers" ,guile-fibers)
-         ("guile-json" ,guile-json-4)
-         ("guile-email" ,guile-email)
-         ("guile-prometheus" ,guile-prometheus)
-         ("guile-squee" ,guile-squee)
-         ("ephemeralpg" ,ephemeralpg)
-         ("util-linux" ,util-linux)
-         ("postgresql" ,postgresql-13)
-         ("sqitch" ,sqitch)))
+       (list guix
+             guile-fibers
+             guile-json-4
+             guile-email
+             guile-prometheus
+             guile-squee
+             ephemeralpg
+             util-linux
+             postgresql-13
+             sqitch))
       (native-inputs
        `(("guile" ,@(assoc-ref (package-native-inputs guix) "guile"))
          ("autoconf" ,autoconf)
@@ -4927,9 +4770,7 @@ PostgreSQL database.")
      `(#:tests? #f))         ;tests require bundling googletest sources
     ;; The release tarball lacks the generated files.
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
+     (list autoconf automake libtool))
     (home-page "https://github.com/google/gumbo-parser")
     (synopsis "HTML5 parsing library")
     (description
@@ -4995,14 +4836,14 @@ embedded_plugins =
      `(("pkg-config" ,pkg-config)
        ("python" ,python-wrapper)))
     (inputs
-     `(("jansson" ,jansson)
-       ("libxml2" ,libxml2)
-       ("libyaml" ,libyaml)
-       ("openssl" ,openssl)
-       ("pcre" ,pcre)
-       ("zlib" ,zlib)
-       ;; For plugins.
-       ("python" ,python)))
+     (list jansson
+           libxml2
+           libyaml
+           openssl
+           pcre
+           zlib
+           ;; For plugins.
+           python))
     (home-page "https://uwsgi-docs.readthedocs.org/")
     (synopsis "Application container server")
     (description
@@ -5030,12 +4871,12 @@ It uses the uwsgi protocol for all the networking/interprocess communications.")
            (delete-file-recursively "modules")
            #t))))
     (inputs
-     `(("oniguruma" ,oniguruma)))
+     (list oniguruma))
     (native-inputs
-     `(;; TODO fix gems to generate documentation
-       ;;("ruby" ,ruby)
-       ;;("bundler" ,bundler)
-       ("valgrind" ,valgrind)))
+     (list ;; TODO fix gems to generate documentation
+           ;;("ruby" ,ruby)
+           ;;("bundler" ,bundler)
+           valgrind))
     (build-system gnu-build-system)
     (home-page "https://stedolan.github.io/jq/")
     (synopsis "Command-line JSON processor")
@@ -5087,11 +4928,9 @@ fast and flexible way of exploring HTML from the terminal.")
         (base32 "0bqizz69hxk8rn4z57asz1d45vizl1rj6i5k3rzxn2x3qcik514h"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
-     `(("gobject-introspection" ,gobject-introspection)
-       ;; For check phase.
-       ("glib-networking" ,glib-networking)
-       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("pkg-config" ,pkg-config)))
+     (list gobject-introspection
+           ;; For check phase.
+           glib-networking gsettings-desktop-schemas pkg-config))
     (inputs
      `(("libsoup" ,libsoup-minimal-2)))
     (arguments
@@ -5197,9 +5036,7 @@ libraries.")
          "1n2794y2l0c8nv8z2pxwfnbn882987ifmxjv60zdxkhcndhswarj"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("netsurf-buildsystem" ,netsurf-buildsystem)
-       ("pkg-config" ,pkg-config)
-       ("perl" ,perl)))                 ;for test harness
+     (list netsurf-buildsystem pkg-config perl))                 ;for test harness
     (arguments netsurf-buildsystem-arguments)
     (home-page "https://www.netsurf-browser.org/projects/libparserutils/")
     (synopsis "Parser building library")
@@ -5223,13 +5060,13 @@ C.  It is developed as part of the NetSurf project.")
        (patches (search-patches "hubbub-sort-entities.patch"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("netsurf-buildsystem" ,netsurf-buildsystem)
-       ("pkg-config" ,pkg-config)
-       ("doxygen" ,doxygen)
-       ("json-c" ,json-c-0.12)      ; check whether json-c-0.12 can be removed
-       ("perl" ,perl)))
+     (list netsurf-buildsystem
+           pkg-config
+           doxygen
+           json-c-0.12 ; check whether json-c-0.12 can be removed
+           perl))
     (propagated-inputs
-     `(("libparserutils" ,libparserutils))) ;for libhubbub.pc
+     (list libparserutils)) ;for libhubbub.pc
     (arguments netsurf-buildsystem-arguments)
     (home-page "https://www.netsurf-browser.org/projects/hubbub/")
     (synopsis "HTML5 compliant parsing library")
@@ -5340,18 +5177,18 @@ NetSurf project.")
        ("perl-yaml-tiny" ,perl-yaml-tiny)
        ("po4a" ,po4a)))
     (propagated-inputs
-     `(("perl-cgi-formbuilder" ,perl-cgi-formbuilder)
-       ("perl-cgi-session" ,perl-cgi-session)
-       ("perl-html-parser" ,perl-html-parser)
-       ("perl-html-scrubber" ,perl-html-scrubber)
-       ("perl-html-template" ,perl-html-template)
-       ("perl-json" ,perl-json)
-       ("perl-mail-sendmail" ,perl-mail-sendmail)
-       ("perl-text-markdown-discount" ,perl-text-markdown-discount)
-       ("perl-timedate" ,perl-timedate)
-       ("perl-uri" ,perl-uri)
-       ("perl-xml-simple" ,perl-xml-simple)
-       ("perl-yaml-libyaml" ,perl-yaml-libyaml)))
+     (list perl-cgi-formbuilder
+           perl-cgi-session
+           perl-html-parser
+           perl-html-scrubber
+           perl-html-template
+           perl-json
+           perl-mail-sendmail
+           perl-text-markdown-discount
+           perl-timedate
+           perl-uri
+           perl-xml-simple
+           perl-yaml-libyaml))
     (home-page "https://ikiwiki.info/")
     (synopsis "Wiki compiler, capable of generating HTML")
     (description
@@ -5374,9 +5211,7 @@ commenting.")
          "0p0c2q9lsj4vs97aa7vjllfhw33zv3dpysdkjblzhib6dpfs2alv"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("netsurf-buildsystem" ,netsurf-buildsystem)
-       ("pkg-config" ,pkg-config)
-       ("check" ,check-0.14)))          ;for tests
+     (list netsurf-buildsystem pkg-config check-0.14))          ;for tests
     (arguments netsurf-buildsystem-arguments)
     (home-page "https://www.netsurf-browser.org/projects/libwapcaplet/")
     (synopsis "String internment library")
@@ -5406,12 +5241,9 @@ developed as part of the Netsurf project.")
              (("css_unit unit;") "css_unit unit = CSS_UNIT_PX;"))))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("netsurf-buildsystem" ,netsurf-buildsystem)
-       ("pkg-config" ,pkg-config)
-       ("perl" ,perl)))
+     (list netsurf-buildsystem pkg-config perl))
     (propagated-inputs                  ;needed for libcss.pc
-     `(("libparserutils" ,libparserutils)
-       ("libwapcaplet" ,libwapcaplet)))
+     (list libparserutils libwapcaplet))
     (arguments netsurf-buildsystem-arguments)
     (home-page "https://www.netsurf-browser.org/projects/libcss/")
     (synopsis "CSS parser and selection library")
@@ -5434,18 +5266,17 @@ written in C.  It is developed as part of the NetSurf project.")
          "0jpg5hx3y0mdxk5szd47dyijqimd2321brbqk2620pp5f4j0gvlq"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("netsurf-buildsystem" ,netsurf-buildsystem)
-       ("pkg-config" ,pkg-config)
-       ("perl" ,perl)                   ;for test harness
-       ("perl-libxml" ,perl-libxml)
-       ("perl-switch" ,perl-switch)
-       ("perl-xml-xpath" ,perl-xml-xpath)))
+     (list netsurf-buildsystem
+           pkg-config
+           perl ;for test harness
+           perl-libxml
+           perl-switch
+           perl-xml-xpath))
     (inputs
-     `(("libparserutils" ,libparserutils)
-       ("libwapcaplet" ,libwapcaplet)))
+     (list libparserutils libwapcaplet))
     (propagated-inputs
-     `(("expat" ,expat)                 ;needed for headers and linking
-       ("hubbub" ,hubbub)))             ;for libdom.pc
+     (list expat ;needed for headers and linking
+           hubbub))             ;for libdom.pc
     (arguments
      `(#:tests? #f                 ;TODO: re-enable. tests take a looong time.
        ,@netsurf-buildsystem-arguments))
@@ -5470,13 +5301,11 @@ developed as part of the NetSurf project.")
          "10bpkmvfpydj74im3r6kqm9vnvgib6afy0alx71q5n0w5yawy39c"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("netsurf-buildsystem" ,netsurf-buildsystem)
-       ("pkg-config" ,pkg-config)
-       ("gperf" ,gperf-3.0)))
+     (list netsurf-buildsystem pkg-config gperf-3.0))
     (inputs
-     `(("libwapcaplet" ,libwapcaplet)))
+     (list libwapcaplet))
     (propagated-inputs
-     `(("libdom" ,libdom)))             ;for libsvgtiny.pc
+     (list libdom))             ;for libsvgtiny.pc
     (arguments netsurf-buildsystem-arguments)
     (home-page "https://www.netsurf-browser.org/projects/libsvgtiny/")
     (synopsis "Library for parsing SVG files")
@@ -5501,7 +5330,7 @@ project.")
          "0krjg69a2amxjsahdgm3wmy9ngnyr3gfs2a1zhdlbvb0z1jr7i3r"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("netsurf-buildsystem" ,netsurf-buildsystem)))
+     (list netsurf-buildsystem))
     (arguments netsurf-buildsystem-arguments)
     (home-page "https://www.netsurf-browser.org/projects/libnsbmp/")
     (synopsis "Decoding library for BMP and ICO files")
@@ -5524,7 +5353,7 @@ written in C.  It is developed as part of the NetSurf project.")
          "0jwshypgmx16xlsbx3d8njk8a5khazlplca5mxd3rdbhrlsabbly"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("netsurf-buildsystem" ,netsurf-buildsystem)))
+     (list netsurf-buildsystem))
     (arguments netsurf-buildsystem-arguments)
     (home-page "https://www.netsurf-browser.org/projects/libnsgif/")
     (synopsis "Decoding library for GIF files")
@@ -5547,11 +5376,11 @@ C.  It is developed as part of the NetSurf project.")
          "1l2k0kdv9iv18svhv360vszjavhl4g09cp8a8yb719pgsylxr67w"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("netsurf-buildsystem" ,netsurf-buildsystem)
-       ("pkg-config" ,pkg-config)
-       ("check" ,check)                 ; For tests
-       ("bison" ,bison)
-       ("flex" ,flex)))
+     (list netsurf-buildsystem
+           pkg-config
+           check ; For tests
+           bison
+           flex))
     (arguments netsurf-buildsystem-arguments)
     (home-page "https://www.netsurf-browser.org/")
     (synopsis "Logging library")
@@ -5575,7 +5404,7 @@ client applications.  It is developed as part of the NetSurf project.")
          "1w5fyy2i60a3v3if3iqcn9sy9sycx6966rcx53v85gja6hb6a33r"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("netsurf-buildsystem" ,netsurf-buildsystem)))
+     (list netsurf-buildsystem))
     (arguments netsurf-buildsystem-arguments)
     (home-page "https://www.netsurf-browser.org/")
     (synopsis "Utility library for NetSurf")
@@ -5598,7 +5427,7 @@ developed as part of the NetSurf project.")
          "02q28n5i6fwqcz1nn167rb71k1q95mx38mfah6zi1lvqrc2q5ifk"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("netsurf-buildsystem" ,netsurf-buildsystem)))
+     (list netsurf-buildsystem))
     (arguments netsurf-buildsystem-arguments)
     (home-page "https://www.netsurf-browser.org/")
     (synopsis "Library to generate a static Public Suffix List")
@@ -5621,9 +5450,7 @@ Public Suffix List.  It is developed as part of the NetSurf project.")
          "1cqwgwca49jvmijwiyaab2bwxicgxdrnlpinf8kp3nha02nm73ad"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("netsurf-buildsystem" ,netsurf-buildsystem)
-       ("bison" ,bison)
-       ("flex" ,flex)))
+     (list netsurf-buildsystem bison flex))
     (arguments
      (substitute-keyword-arguments netsurf-buildsystem-arguments
        ((#:make-flags flags)
@@ -5653,14 +5480,14 @@ w3c webidl files and a binding configuration file.")
                                 "netsurf-message-timestamp.patch"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
-     `(("netsurf-buildsystem" ,netsurf-buildsystem)
-       ("nsgenbind" ,nsgenbind)
-       ("libidn" ,libidn)               ;only for tests
-       ("check" ,check)
-       ("perl" ,perl)
-       ("perl-html-parser" ,perl-html-parser)
-       ("pkg-config" ,pkg-config)
-       ("xxd" ,xxd)))
+     (list netsurf-buildsystem
+           nsgenbind
+           libidn ;only for tests
+           check
+           perl
+           perl-html-parser
+           pkg-config
+           xxd))
     (inputs
      `(("curl" ,curl)
        ("gtk+" ,gtk+)
@@ -5791,10 +5618,7 @@ handling many of the web standards in use today.")
                (with-directory-excursion man
                  (invoke "gzip" "elvi.1sr"))))))))
     (inputs
-     `(("perl" ,perl)
-       ("perl-www-opensearch" ,perl-www-opensearch)
-       ("perl-html-parser" ,perl-html-parser)
-       ("perl-libwww" ,perl-libwww)))
+     (list perl perl-www-opensearch perl-html-parser perl-libwww))
     (synopsis "Unix command line interface to the www")
     (description "Surfraw (Shell Users' Revolutionary Front Rage Against the Web)
 provides a unix command line interface to a variety of popular www search engines
@@ -5854,10 +5678,9 @@ config files---you only have to specify the www root.")
     (build-system gnu-build-system)
     (inputs
      ;; TODO: Add dependency on geoip-tools.
-     `(("glib" ,glib)
-       ("ncurses" ,ncurses)))
+     (list glib ncurses))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://goaccess.io")
     (synopsis "Analyze Web server logs in real time")
     (description
@@ -5912,8 +5735,7 @@ on the fly.")
        ("procps" ,procps)
        ("python" ,python)))
     (inputs
-     `(("libev" ,libev)
-       ("openssl" ,openssl)))
+     (list libev openssl))
     (synopsis "Scalable TLS proxy")
     (description
      "Hitch is a performant TLS proxy based on @code{libev}.  It terminates
@@ -5977,7 +5799,7 @@ tools like SSH (Secure Shell) to reach the outside world.")
    `(("iproute" ,iproute)
      ("netcat" ,netcat)
      ("procps" ,procps)))
-  (inputs `(("openssl" ,openssl)))
+  (inputs (list openssl))
   (arguments
    `(#:configure-flags
      (list (string-append "--with-ssl=" (assoc-ref %build-inputs "openssl")))
@@ -6073,13 +5895,13 @@ deployments.")
        ("python-sphinx" ,python-sphinx)
        ("rst2man" ,python-docutils)))
     (inputs
-     `(("bash-minimal" ,bash-minimal)
-       ("coreutils" ,coreutils)
-       ("jemalloc" ,jemalloc)
-       ("ncurses" ,ncurses)
-       ("pcre2" ,pcre2)
-       ("python" ,python)
-       ("readline" ,readline)))
+     (list bash-minimal
+           coreutils
+           jemalloc
+           ncurses
+           pcre2
+           python
+           readline))
     (synopsis "Web application accelerator")
     (description
      "Varnish is a high-performance HTTP accelerator.  It acts as a caching
@@ -6115,8 +5937,7 @@ configuration language.")
        ;; For generating manuals.
        ("rst2man" ,python-docutils)))
     (inputs
-     `(("python" ,python)
-       ("varnish" ,varnish)))
+     (list python varnish))
     (synopsis "Collection of Varnish modules")
     (description
      "This package provides a collection of modules (@dfn{vmods}) for the Varnish
@@ -6143,10 +5964,7 @@ additional capabilities.")
      `(#:configure-flags '("--with-loadavg")
        #:tests? #f))                    ; no tests
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf automake libtool pkg-config))
     (home-page "https://github.com/openSUSE/xinetd")
     (synopsis "Internet services daemon")
     (description "@code{xinetd}, a more secure replacement for @code{inetd},
@@ -6192,7 +6010,7 @@ used to start services with both privileged and non-privileged port numbers.")
                          (find-files lib "\\.a$"))
                #t))))))
     (native-inputs
-     `(("libxslt" ,libxslt)))
+     (list libxslt))
     (home-page "http://www.html-tidy.org/")
     (synopsis "HTML Tidy with HTML5 support")
     (description
@@ -6253,11 +6071,8 @@ functions of Tidy.")
                  `("PATH" ":" prefix (,mbed)))))))))
     (inputs
      ;; TODO: package "hiawatha-monitor", an optional dependency of "hiawatha".
-     `(("libxslt" ,libxslt)
-       ("libxml2" ,libxml2)
-       ("mbedtls-apache" ,mbedtls-for-hiawatha)
-       ("nghttp2" ,nghttp2 "lib")
-       ("zlib" ,zlib)))
+     (list libxslt libxml2 mbedtls-for-hiawatha
+           `(,nghttp2 "lib") zlib))
     (home-page "https://www.hiawatha-webserver.org")
     (synopsis "Webserver with focus on security")
     (description
@@ -6279,11 +6094,8 @@ exploit attempts.")
          "1dc92lnk846hpilslrqnr63x55cxll4qx88gif8fm521gv9cbyvr"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-decorator" ,python-decorator)
-       ("python-flask" ,python-flask)
-       ("python-itsdangerous" ,python-itsdangerous)
-       ("python-markupsafe" ,python-markupsafe)
-       ("python-six" ,python-six)))
+     (list python-decorator python-flask python-itsdangerous
+           python-markupsafe python-six))
     (home-page "https://github.com/Runscope/httpbin")
     (synopsis "HTTP request and response service")
     (description "Testing an HTTP Library can become difficult sometimes.
@@ -6305,9 +6117,7 @@ JSON-encoded.")
          "1y0v2v7xpzpyd4djwp7ad8ifnlxp8r1y6dfbxg5ckzvllkgridn5"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-six" ,python-six)
-       ("python-httpbin" ,python-httpbin)
-       ("python-pytest" ,python-pytest)))
+     (list python-six python-httpbin python-pytest))
     (home-page
      "https://github.com/kevin1024/pytest-httpbin")
     (synopsis
@@ -6408,13 +6218,13 @@ message stream (in a web server that is per connection).")
              (when tests?
                (invoke "nosetests")))))))
     (native-inputs
-     `(("python-coverage" ,python-coverage)
-       ("python-eventlet" ,python-eventlet)
-       ("python-nose" ,python-nose)
-       ("python-rednose" ,python-rednose)
-       ("python-requests" ,python-requests)
-       ("python-sure" ,python-sure)
-       ("python-tornado" ,python-tornado)))
+     (list python-coverage
+           python-eventlet
+           python-nose
+           python-rednose
+           python-requests
+           python-sure
+           python-tornado))
     (home-page "https://httpretty.readthedocs.io")
     (synopsis "HTTP client mock for Python")
     (description "@code{httpretty} is a helper for faking web requests,
@@ -6483,17 +6293,15 @@ command-line arguments or read from stdin.")
                       "not test_get_item_with_kwargs"
                       " and not test_ia")))))))
     (propagated-inputs
-     `(("python-requests" ,python-requests)
-       ("python-jsonpatch" ,python-jsonpatch-0.4)
-       ("python-docopt" ,python-docopt)
-       ("python-clint" ,python-clint)
-       ("python-six" ,python-six)
-       ("python-schema" ,python-schema-0.5)
-       ("python-backports-csv" ,python-backports-csv)))
+     (list python-requests
+           python-jsonpatch-0.4
+           python-docopt
+           python-clint
+           python-six
+           python-schema-0.5
+           python-backports-csv))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-pytest-capturelog" ,python-pytest-capturelog)
-       ("python-responses" ,python-responses)))
+     (list python-pytest python-pytest-capturelog python-responses))
     (home-page "https://github.com/jjjake/internetarchive")
     (synopsis "Command-line interface to archive.org")
     (description "@code{ia} is a command-line tool for using
@@ -6515,12 +6323,12 @@ internetarchive python module for programmatic access to archive.org.")
            "0zlkzqnpz7a4iavsq5vaz0nf5nr7qm5znpg1vlpz6rwnx6hikjdb"))))
       (build-system python-build-system)
       (propagated-inputs
-       `(("python-docopt" ,python-docopt)
-         ("python-pygments" ,python-pygments)
-         ("python-requests" ,python-requests)
-         ("python-nose" ,python-nose)
-         ("python-lxml" ,python-lxml)
-         ("python-pyaml" ,python-pyaml)))
+       (list python-docopt
+             python-pygments
+             python-requests
+             python-nose
+             python-lxml
+             python-pyaml))
       (inputs
        `(("test-clf"
           ,(origin
@@ -6607,10 +6415,8 @@ Instagram and YouTube.")
          "1j97dc9a4yhpscwadhv5dxp7036pnrxiaky18l8ddr3pvxdjvkxs"))))
     (build-system python-build-system)
     (inputs
-     `(("python-beautifulsoup4" ,python-beautifulsoup4)
-       ("python-dnspython" ,python-dnspython)
-       ("python-pyxdg" ,python-pyxdg)
-       ("python-requests" ,python-requests)))
+     (list python-beautifulsoup4 python-dnspython python-pyxdg
+           python-requests))
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("python-pytest" ,python-pytest)
@@ -6662,14 +6468,14 @@ file links.")
         ("rust-percent-encoding" ,rust-percent-encoding-2)
         ("rust-url" ,rust-url-2))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("atk" ,atk)
-       ("cairo" ,cairo)
-       ("gdk-pixbuf" ,gdk-pixbuf)
-       ("gtk+" ,gtk+)
-       ("libressl" ,libressl)
-       ("pango" ,pango)))
+     (list atk
+           cairo
+           gdk-pixbuf
+           gtk+
+           libressl
+           pango))
     (home-page "https://git.sr.ht/~julienxx/castor")
     (synopsis "Graphical client for plain-text protocols")
     (description
@@ -6717,8 +6523,7 @@ encoder/decoder based on the draft-12 specification for UBJSON.")
                   #t))))
     (build-system ant-build-system)
     (inputs
-     `(("java-commons-daemon" ,java-commons-daemon)
-       ("java-ecj" ,java-ecj)))
+     (list java-commons-daemon java-ecj))
     (arguments
      `(#:build-target "deploy"
        #:tests? #f; requires downloading some files.
@@ -7216,8 +7021,7 @@ infrastructure")))
        #:source-dir "jetty-util-ajax/src/main/java"
        #:tests? #f)); require junit 5
     (inputs
-     `(("java-eclipse-jetty-util" ,java-eclipse-jetty-util)
-       ("java-javaee-servletapi" ,java-javaee-servletapi)))))
+     (list java-eclipse-jetty-util java-javaee-servletapi))))
 
 (define-public java-eclipse-jetty-servlet
   (package
@@ -7292,10 +7096,10 @@ container.")))
              (chdir "jetty-xml")
              #t)))))
     (inputs
-     `(("java-eclipse-jetty-util" ,java-eclipse-jetty-util)))
+     (list java-eclipse-jetty-util))
     (native-inputs
-     `(("java-eclipse-jetty-io" ,java-eclipse-jetty-io)
-       ,@(package-native-inputs java-eclipse-jetty-util)))))
+     (modify-inputs (package-native-inputs java-eclipse-jetty-util)
+       (prepend java-eclipse-jetty-io)))))
 
 (define-public java-eclipse-jetty-xml-9.2
   (package
@@ -7338,14 +7142,14 @@ container.")))
              (chdir "jetty-webapp")
              #t)))))
     (inputs
-     `(("java-eclipse-jetty-util" ,java-eclipse-jetty-util)
-       ("java-eclipse-jetty-http" ,java-eclipse-jetty-http)
-       ("java-eclipse-jetty-io" ,java-eclipse-jetty-io)
-       ("java-eclipse-jetty-server" ,java-eclipse-jetty-server)
-       ("java-eclipse-jetty-servlet" ,java-eclipse-jetty-servlet)
-       ("java-eclipse-jetty-security" ,java-eclipse-jetty-security)
-       ("java-eclipse-jetty-xml" ,java-eclipse-jetty-xml)
-       ("java-javaee-servletapi" ,java-javaee-servletapi)))))
+     (list java-eclipse-jetty-util
+           java-eclipse-jetty-http
+           java-eclipse-jetty-io
+           java-eclipse-jetty-server
+           java-eclipse-jetty-servlet
+           java-eclipse-jetty-security
+           java-eclipse-jetty-xml
+           java-javaee-servletapi))))
 
 (define-public java-eclipse-jetty-webapp-9.2
   (package
@@ -7406,9 +7210,7 @@ container.")))
                    (find-files "." ".*.properties"))))
              #t)))))
     (native-inputs
-     `(("java-junit" ,java-junit)
-       ("java-hamcrest-core" ,java-hamcrest-core)
-       ("java-gson" ,java-gson)))
+     (list java-junit java-hamcrest-core java-gson))
     (home-page "https://jsoup.org")
     (synopsis "HTML parser")
     (description "Jsoup is a Java library for working with real-world HTML.  It
@@ -7437,7 +7239,7 @@ best of DOM, CSS, and jQuery-like methods.")
        ;; Tests all fail with InstantiationException from mockito
        #:tests? #f))
     (propagated-inputs
-     `(("java-commons-codec" ,java-commons-codec)))
+     (list java-commons-codec))
     (home-page "https://github.com/mttkay/signpost")
     (synopsis "Lightweight client-side OAuth library for Java")
     (description "Signpost is the easy and intuitive solution for signing
@@ -7499,10 +7301,9 @@ based on this library, allowing Perl programmers to easily validate HTML.")
                  "-L" (assoc-ref inputs "tidyp") "/lib")))
              #t)))))
     (inputs
-     `(("perl-libwww" ,perl-libwww)
-       ("tidyp" ,tidyp)))
+     (list perl-libwww tidyp))
     (native-inputs
-     `(("perl-test-exception" ,perl-test-exception)))
+     (list perl-test-exception))
     (home-page "https://metacpan.org/release/HTML-Tidy")
     (synopsis "(X)HTML validation in a Perl object")
     (description "@code{HTML::Tidy} is an HTML checker in a handy dandy
@@ -7606,12 +7407,9 @@ derivation by David Revoy from the original MonsterID by Andreas Gohr.")
     (outputs (list "out"
                    "lib"))              ; only libnghttp2
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-
-       ;; Required by tests.
-       ("cunit" ,cunit)
-       ("python" ,python)
-       ("tzdata" ,tzdata-for-tests)))
+     (list pkg-config
+           ;; Required by tests.
+           cunit python tzdata-for-tests))
     (inputs
      ;; Required to build the tools (i.e. without ‘--enable-lib-only’).
      `(("c-ares" ,c-ares)
@@ -7772,8 +7570,7 @@ instructions on how to use Guix in a shared HPC environment.")
                 "09a0gm67nml86qby1k1gh7rdxamnrnzwr6l9r5iiq94favjs0xrl"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libressl" ,libressl)
-       ("zlib" ,zlib)))
+     (list libressl zlib))
     (home-page "https://www.httrack.com/")
     (synopsis "Easy-to-use offline browser utility")
     (description "HTTrack allows you to download a World Wide Web site from
@@ -7803,11 +7600,8 @@ HTTrack is fully configurable, and has an integrated help system.")
     (arguments
      `(#:tests? #f))                    ;FIXME: many tests need network access
     (inputs
-     `(("python-beautifulsoup4" ,python-beautifulsoup4)
-       ("python-certifi" ,python-certifi)
-       ("python-cryptography" ,python-cryptography)
-       ("python-html5lib" ,python-html5lib)
-       ("python-urllib3" ,python-urllib3)))
+     (list python-beautifulsoup4 python-certifi python-cryptography
+           python-html5lib python-urllib3))
     (home-page "https://github.com/jarun/buku")
     (synopsis "Bookmark manager")
     (description
@@ -7861,8 +7655,7 @@ Anonip can also be uses as a Python module in your own Python application.")
          "0kckcwvqklavd855np9aq5js6mg84isrlwchr504yigwma0sm7hm"))))
     (build-system go-build-system)
     (propagated-inputs
-     `(("go-github-com-robfig-cron" ,go-github-com-robfig-cron)
-       ("go-golang-org-x-time" ,go-golang-org-x-time)))
+     (list go-github-com-robfig-cron go-golang-org-x-time))
     (arguments
      `(#:import-path "github.com/tsileo/poussetaches"))
     (home-page "https://github.com/tsileo/poussetaches")
@@ -7933,7 +7726,7 @@ of the DOM tree
            (lambda _
              (chdir "Build"))))))
     (inputs
-     `(("freetype" ,freetype)))
+     (list freetype))
     (home-page "https://github.com/libRocket/libRocket") ; http://librocket.com/ is down.
     (synopsis "HTML/CSS user interface library")
     (description "libRocket is a C++ user interface package based on the HTML
@@ -7974,11 +7767,9 @@ solution for any project's interface needs:
                                               "/etc/mime.types"))
        #:make-flags (list (string-append "CC=" ,(cc-for-target)))))
     (inputs
-     `(("mailcap" ,mailcap)
-       ("openssl" ,openssl)))
+     (list mailcap openssl))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("scdoc" ,scdoc)))
+     (list pkg-config scdoc))
     (synopsis "Simple Gemini protocol server")
     (description "gmnisrv is a simple Gemini protocol server written in C.")
     (license (list license:gpl3+
@@ -8008,8 +7799,7 @@ solution for any project's interface needs:
        ("xapian" ,xapian)
        ("zstd" ,zstd "lib")))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("googletest" ,googletest)))
+     (list pkg-config googletest))
     (home-page "https://wiki.openzim.org/wiki/Main_Page")
     (synopsis "Reference implementation of the ZIM specification")
     (description "The openZIM project proposes offline storage solutions for
@@ -8046,15 +7836,15 @@ for ZIM files.")
                                "/bin/aria2c\"")))
              #t)))))
     (inputs
-     `(("aria2" ,aria2)
-       ("curl" ,curl)
-       ("icu4c" ,icu4c)
-       ("libmicrohttpd" ,libmicrohttpd)
-       ("libzim" ,libzim)
-       ("pugixml" ,pugixml)
-       ("xapian" ,xapian)
-       ("zlib" ,zlib)
-       ("zstd" ,zstd "lib")))
+     (list aria2
+           curl
+           icu4c
+           libmicrohttpd
+           libzim
+           pugixml
+           xapian
+           zlib
+           `(,zstd "lib")))
     (native-inputs
      `(("mustache" ,(origin
                       (method git-fetch)
@@ -8117,19 +7907,19 @@ It contains the code shared by all Kiwix ports.")
                  `("QTWEBENGINEPROCESS_PATH" = (,qt-process-path)))
                #t))))))
     (inputs
-     `(("curl" ,curl)
-       ("icu4c" ,icu4c)
-       ("kiwix-lib" ,kiwix-lib)
-       ("libmicrohttpd" ,libmicrohttpd)
-       ("libzim" ,libzim)
-       ("pugixml" ,pugixml)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)
-       ("qtwebchannel" ,qtwebchannel)
-       ("qtwebengine" ,qtwebengine)
-       ("xapian" ,xapian)
-       ("zlib" ,zlib)
-       ("zstd" ,zstd "lib")))
+     (list curl
+           icu4c
+           kiwix-lib
+           libmicrohttpd
+           libzim
+           pugixml
+           qtbase-5
+           qtdeclarative
+           qtwebchannel
+           qtwebengine
+           xapian
+           zlib
+           `(,zstd "lib")))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("qmake" ,qtbase-5)))
@@ -8152,17 +7942,17 @@ offline (such as Wikipedia), without any access to Internet.")
                 "1npf9ddhpkmx97gxmvmwmi8a69md8kh2szimd9rpg6ggd4big03a"))))
     (build-system meson-build-system)
     (inputs
-     `(("curl" ,curl)
-       ("icu4c" ,icu4c)
-       ("kiwix-lib" ,kiwix-lib)
-       ("libmicrohttpd" ,libmicrohttpd)
-       ("libzim" ,libzim)
-       ("pugixml" ,pugixml)
-       ("xapian" ,xapian)
-       ("zlib" ,zlib)
-       ("zstd" ,zstd "lib")))
+     (list curl
+           icu4c
+           kiwix-lib
+           libmicrohttpd
+           libzim
+           pugixml
+           xapian
+           zlib
+           `(,zstd "lib")))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://wiki.kiwix.org/wiki/Software")
     (synopsis "Kiwix command line tools")
     (description "The Kiwix tools are a collection of Kiwix-related command line

@@ -57,10 +57,7 @@
        ("automake" ,automake)
        ("libtool"  ,libtool)))
     (inputs
-     `(("gdbm"     ,gdbm)
-       ("gmp"      ,gmp)
-       ("libffi"   ,libffi)
-       ("readline" ,readline)))
+     (list gdbm gmp libffi readline))
     (native-search-paths
      (list (search-path-specification
             (variable "REP_DL_LOAD_PATH")
@@ -107,14 +104,10 @@ implementing both small and large scale systems.")
              (delete-file "autogen.sh")
              #t)))))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf automake libtool pkg-config))
     (propagated-inputs
      ;; required by rep-gtk.pc.
-     `(("gtk+"   ,gtk+-2)
-       ("librep" ,librep)))
+     (list gtk+-2 librep))
     (home-page "https://sawfish.fandom.com/wiki/Rep-GTK")
     (synopsis "GTK+ binding for librep")
     (description
@@ -180,12 +173,12 @@ backend of Sawfish.")
        ("pkg-config"  ,pkg-config)
        ("which"       ,which)))
     (inputs
-     `(("libsm"       ,libsm)
-       ("libxft"      ,libxft)
-       ("libxinerama" ,libxinerama)
-       ("libxrandr"   ,libxrandr)
-       ("libxtst"     ,libxtst)
-       ("rep-gtk"     ,rep-gtk)))
+     (list libsm
+           libxft
+           libxinerama
+           libxrandr
+           libxtst
+           rep-gtk))
     (home-page "https://sawfish.tuxfamily.org")
     (synopsis "Configurable window manager")
     (description

@@ -52,11 +52,11 @@
        ;; "./examples/c/reccalc/scan.l:13:10: fatal error: parse.h: No such file
        ;; or directory".  Full log in <https://bugs.gnu.org/36238>.
        #:parallel-tests? #f))
-    (native-inputs `(("perl" ,perl)
-                     ;; m4 is not present in PATH when cross-building.
-                     ("m4" ,m4)))
-    (inputs `(("flex" ,flex)))
-    (propagated-inputs `(("m4" ,m4)))
+    (native-inputs (list perl
+                         ;; m4 is not present in PATH when cross-building.
+                         m4))
+    (inputs (list flex))
+    (propagated-inputs (list m4))
     (home-page "https://www.gnu.org/software/bison/")
     (synopsis "Yacc-compatible parser generator")
     (description

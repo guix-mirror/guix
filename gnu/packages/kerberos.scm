@@ -73,11 +73,9 @@
                 "0snz1jm2w4dkk65zcz953jmmv9mqa30fanch2bk8r3rs9vp3yi8h"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("bison" ,bison)
-       ("perl" ,perl)
-       ("tcl" ,tcl)))                   ;required for some tests
+     (list bison perl tcl))                   ;required for some tests
     (inputs
-     `(("openssl" ,openssl)))
+     (list openssl))
     (arguments
      `(;; XXX: On 32-bit systems, 'kdb5_util' hangs on an fcntl/F_SETLKW call
        ;; while running the tests in 'src/tests'. Also disable tests when
@@ -149,14 +147,14 @@ cryptography.")
              (("^install-data-hook:")
               "install-data-hook:\nx:\n"))
             #t)))))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs (list pkg-config))
     (inputs
-     `(("gnutls" ,gnutls)
-       ("libidn" ,libidn)
-       ("linux-pam" ,linux-pam-1.2)
-       ("zlib" ,zlib)
-       ("libgcrypt" ,libgcrypt)
-       ("libtasn1" ,libtasn1)))
+     (list gnutls
+           libidn
+           linux-pam-1.2
+           zlib
+           libgcrypt
+           libtasn1))
     (home-page "https://www.gnu.org/software/shishi/")
     (synopsis "Implementation of the Kerberos 5 network security system")
     (description
@@ -264,16 +262,16 @@ After installation, the system administrator should generate keys using
                           (format #t "#!~a~%exit 1~%" (which "sh")))))))
        ;; Tests fail when run in parallel.
        #:parallel-tests? #f))
-    (native-inputs `(("e2fsprogs" ,e2fsprogs)     ;for 'compile_et'
-                     ("texinfo" ,texinfo)
-                     ("unzip" ,unzip)             ;for tests
-                     ("perl" ,perl)))
-    (inputs `(("readline" ,readline)
-              ("bash-minimal" ,bash-minimal)
-              ("bdb" ,bdb)
-              ("e2fsprogs" ,e2fsprogs)            ;for libcom_err
-              ("mit-krb5" ,mit-krb5)
-              ("sqlite" ,sqlite)))
+    (native-inputs (list e2fsprogs ;for 'compile_et'
+                         texinfo
+                         unzip ;for tests
+                         perl))
+    (inputs (list readline
+                  bash-minimal
+                  bdb
+                  e2fsprogs ;for libcom_err
+                  mit-krb5
+                  sqlite))
     (home-page "http://www.h5l.org/")
     (synopsis "Kerberos 5 network authentication")
     (description

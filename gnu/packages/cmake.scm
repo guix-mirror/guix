@@ -83,7 +83,7 @@
       (arguments
        `(#:tests? #f))                  ; No target
       (native-inputs
-       `(("extra-cmake-modules" ,extra-cmake-modules)))
+       (list extra-cmake-modules))
       (synopsis "Shared CMake functions and macros")
       (description "CMake-Shared are shared functions and macros for projects
 using the CMake build system.")
@@ -291,8 +291,8 @@ and workspaces that can be used in the compiler environment of your choice.")
                                     lstat)
                   #t))))
     (inputs
-     `(("jsoncpp" ,jsoncpp)
-       ,@(package-inputs cmake-bootstrap)))
+     (modify-inputs (package-inputs cmake-bootstrap)
+       (prepend jsoncpp)))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
@@ -373,8 +373,9 @@ and workspaces that can be used in the compiler environment of your choice.")
                                    (string-append doc html))
                  (delete-file-recursively (string-append out html)))))))))
     (inputs
-     `(("ncurses" ,ncurses)             ;required for ccmake
-       ,@(package-inputs cmake-minimal)))
+     (modify-inputs (package-inputs cmake-minimal)
+       (prepend ncurses ;required for ccmake
+                )))
     ;; Extra inputs required to build the documentation.
     (native-inputs
      `(,@(package-native-inputs cmake-minimal)

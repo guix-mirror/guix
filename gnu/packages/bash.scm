@@ -137,8 +137,7 @@ number/base32-hash tuples, directly usable in the 'patch-series' form."
      (outputs '("out"
                 "doc"                         ;1.7 MiB of HTML and extra files
                 "include"))                   ;headers used by extensions
-     (inputs `(("readline" ,readline)
-               ("ncurses" ,ncurses)))             ;TODO: add texinfo
+     (inputs (list readline ncurses))             ;TODO: add texinfo
      (arguments
       `(;; When cross-compiling, `configure' incorrectly guesses that job
         ;; control is missing.
@@ -285,7 +284,7 @@ without modification.")
               (patches
                (search-patches "bash-completion-directories.patch"))))
     (build-system gnu-build-system)
-    (native-inputs `(("util-linux" ,util-linux)))
+    (native-inputs (list util-linux))
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (add-after
@@ -378,10 +377,8 @@ capturing.")
                (base32
                 "0f59zh4d4pa1a7ybs5zl6h0csbqqv11lbnq0jl1dgwm1s6p49bsq"))))
     (inputs
-     `(("bash" ,bash)
-       ("coreutils" ,coreutils)
-       ("guile" ,guile-3.0) ;for wrap-script
-       ("grep" ,grep)))
+     (list bash coreutils guile-3.0 ;for wrap-script
+           grep))
     (arguments
      `(#:modules ((guix build utils))
        #:builder
@@ -428,14 +425,14 @@ in Bash, but you can use it to test any UNIX program.")
         (base32 "0s1sifqzqmr0dnciv06yqrpzgj11d7n0gy5zaxh6b3x8bx7k75l8"))))
     (build-system gnu-build-system)
     (inputs
-     `(("elfutils" ,elfutils)
-       ("libelf" ,libelf)
-       ("libffi" ,libffi)
-       ("zlib" ,zlib)
-       ;; Require a bash with C plugin support to build.
-       ("bash" ,bash)))
+     (list elfutils
+           libelf
+           libffi
+           zlib
+           ;; Require a bash with C plugin support to build.
+           bash))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://github.com/taviso/ctypes.sh")
     (synopsis "Foreign function interface for Bash")
     (description "Bash-ctypes is a Bash plugin that provides a foreign

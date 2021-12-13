@@ -136,8 +136,7 @@
         (base32 "1xmcv6rwinqsbr863rgl9005h2jlmd7k2qrwsc1h4fb8r61ykpjl"))))
     (build-system meson-build-system)
     (native-inputs
-     `(("luajit" ,luajit)
-       ("pkg-config" ,pkg-config)))
+     (list luajit pkg-config))
     (inputs
      `(("alsa" ,alsa-lib)
        ("sdl" ,sdl)
@@ -172,11 +171,7 @@ framebuffer graphics, audio output and input event.")
                (("^.*\\$srcdir/configure.*") ""))
              #t)))))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("perl" ,perl)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf automake libtool perl pkg-config))
     (inputs
      `(("alsa" ,alsa-lib)
        ("ffmpeg" ,ffmpeg)
@@ -210,7 +205,7 @@ framebuffer graphics, audio output and input event.")
        ("xproto" ,xorgproto)
        ("zlib" ,zlib)))
     (propagated-inputs
-     `(("flux" ,flux)))
+     (list flux))
     (synopsis "DFB Graphics Library")
     (description "DirectFB is a graphics library which was designed with embedded
 systems in mind.  It offers maximum hardware accelerated performance at a
@@ -234,10 +229,7 @@ minimum of resource usage and overhead.")
         (base32 "11f3ypg0sdq5kj69zgz6kih1yrzgm48r16spyvzwvlswng147410"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf automake libtool pkg-config))
     (synopsis "Interface description language")
     (description "Flux is an interface description language used by DirectFB.
 Fluxcomp compiles .flux files to .cpp or .c files.")
@@ -269,7 +261,7 @@ Fluxcomp compiles .flux files to .cpp or .c files.")
                                 "/include/freetype2"))))
              #t)))))
     (native-inputs
-     `(("doxygen" ,doxygen)))
+     (list doxygen))
     (inputs
      `(("bzip2" ,lbzip2)
        ("freetype" ,freetype)
@@ -375,8 +367,7 @@ with the @command{autotrace} utility or as a C library, @code{libautotrace}.")
          (list
           "-DEMBREE_ISPC_SUPPORT=OFF")))
     (inputs
-     `(("tbb" ,tbb)
-       ("glfw" ,glfw)))
+     (list tbb glfw))
     (home-page "https://www.embree.org/")
     (synopsis "High performance ray tracing kernels")
     (description
@@ -405,13 +396,9 @@ applications.")
        (list (string-append "-DCMAKE_EXE_LINKER_FLAGS=-Wl,-rpath="
                             (assoc-ref %outputs "out") "/lib"))))
     (inputs
-     `(("boost" ,boost)
-       ("c-blosc" ,c-blosc)
-       ("ilmbase" ,ilmbase)
-       ("tbb" ,tbb-2020)
-       ("zlib" ,zlib)))
+     (list boost c-blosc ilmbase tbb-2020 zlib))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://www.openvdb.org/")
     (synopsis "Sparse volume data structure and tools")
     (description "OpenVDB is a C++ library comprising a hierarchical data
@@ -642,7 +629,7 @@ OpenGL 3.  It is retained for use with older computers.")
        #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
                           "release")))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
      `(("gtk3" ,gtk+)
        ("glfw" ,glfw)
@@ -670,7 +657,7 @@ and export to various formats including the format used by Magicavoxel.")
                 "1rhyqfhzifdj7yibyanph3rh13ykw3i98dnn8mz65j780472hw28"))))
     (build-system cmake-build-system)
     (inputs
-     `(("zlib" ,zlib)))
+     (list zlib))
     (home-page "http://www.assimp.org/")
     (synopsis "Asset import library")
     (description
@@ -703,9 +690,7 @@ more.")
                             ,name "-" ,version))
        #:tests? #f))                    ; no test target
     (inputs
-     `(("mpfr" ,mpfr)
-       ("gmp" ,gmp)
-       ("boost" ,boost)))
+     (list mpfr gmp boost))
     (home-page "https://www.cgal.org/")
     (synopsis "Computational geometry algorithms library")
     (description
@@ -832,7 +817,7 @@ exception-handling library.")
               ("glib" ,glib)
               ("gsl" ,gsl)))
     (propagated-inputs
-     `(("boost" ,boost)))               ;referred to in 2geom/pathvector.h.
+     (list boost))               ;referred to in 2geom/pathvector.h.
     (home-page "https://gitlab.com/inkscape/lib2geom/")
     (synopsis "C++ 2D graphics library")
     (description "2geom is a C++ library of mathematics for paths, curves,
@@ -857,7 +842,7 @@ basic geometries.")
                 "02av76j75g5sq3bg353yl6dlllda9ihmmk4c8hvgiscix816nv4s"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
      `(("ghostscript" ,ghostscript)
        ("imagemagick" ,imagemagick)
@@ -936,9 +921,7 @@ other vector formats such as:
             (base32 "1xhk34pzpha6k5l2j150capq66y8czhmsi04ib09wvb34ahqxpby"))))
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("freetype" ,freetype)
-       ("stb-rect-pack" ,stb-rect-pack)
-       ("stb-truetype" ,stb-truetype)))
+     (list freetype stb-rect-pack stb-truetype))
     (home-page "https://github.com/ocornut/imgui")
     (synopsis "Immediate-mode C++ GUI library with minimal dependencies")
     (description
@@ -1005,16 +988,16 @@ operating system features.")
        ("googletest" ,googletest-1.8)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("font-dejavu" ,font-dejavu)
-       ("freeimage" ,freeimage)
-       ("freetype" ,freetype)
-       ("glu" ,glu)
-       ("libxaw" ,libxaw)
-       ("libxrandr" ,libxrandr)
-       ("pugixml" ,pugixml)
-       ("sdl2" ,sdl2)
-       ("tinyxml" ,tinyxml)
-       ("zziplib" ,zziplib)))
+     (list font-dejavu
+           freeimage
+           freetype
+           glu
+           libxaw
+           libxrandr
+           pugixml
+           sdl2
+           tinyxml
+           zziplib))
     (synopsis "Scene-oriented, flexible 3D engine written in C++")
     (description
      "OGRE (Object-Oriented Graphics Rendering Engine) is a scene-oriented,
@@ -1050,8 +1033,7 @@ graphics.")
                             "src/test/OpenEXRCoreTest/main.cpp")
                (("/var/tmp") "/tmp")))))))
     (inputs
-     `(("imath" ,imath)
-       ("zlib" ,zlib)))
+     (list imath zlib))
     (home-page "https://www.openexr.com/")
     (synopsis "High-dynamic-range file format library")
     (description
@@ -1103,10 +1085,10 @@ with strong support for multi-part, multi-channel use cases.")
                      #t)))
                '()))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (propagated-inputs
-     `(("ilmbase" ,ilmbase)                       ;used in public headers
-       ("zlib" ,zlib)))                           ;OpenEXR.pc reads "-lz"
+     (list ilmbase ;used in public headers
+           zlib))                           ;OpenEXR.pc reads "-lz"
     (home-page (package-home-page openexr))
     (synopsis (package-synopsis openexr))
     (description (package-description openexr))
@@ -1133,7 +1115,7 @@ with strong support for multi-part, multi-channel use cases.")
      `(#:tests? #f
        #:configure-flags (list "-DUSE_EXTERNAL_PUGIXML=1")))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
      `(("boost" ,boost)
        ("fmt" ,fmt)
@@ -1184,8 +1166,7 @@ visual effects work for film.")
                             (assoc-ref %outputs "out") "/lib:"
                             (assoc-ref %outputs "out") "/lib64"))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("unzip" ,unzip)))
+     (list pkg-config unzip))
     (inputs
      `(("giflib" ,giflib)
        ("libjpeg" ,libjpeg-turbo)       ; required for the JPEG texture plugin.
@@ -1311,9 +1292,7 @@ in Julia).")
                   #t))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf automake pkg-config))
     (inputs
      `(("boost" ,boost)
        ("libjpeg" ,libjpeg-turbo)
@@ -1396,11 +1375,7 @@ realistic reflections, shading, perspective and other effects.")
     ;; These libraries are listed in the "Required" section of the pkg-config
     ;; file.
     (propagated-inputs
-     `(("librsvg" ,librsvg)
-       ("cairo" ,cairo)
-       ("pango" ,pango)
-       ("libxml2" ,libxml2)
-       ("python2-enum34" ,python2-enum34)))
+     (list librsvg cairo pango libxml2 python2-enum34))
     (inputs
      `(("gdk-pixbuf" ,gdk-pixbuf)
        ("libpng" ,libpng-1.2)
@@ -1440,7 +1415,7 @@ and is connected to the programming logic using data bindings and commands.")
     (arguments '(#:tests? #f))                    ;no 'test' target
 
     ;; Headers include OpenEXR and IlmBase headers.
-    (propagated-inputs `(("openexr" ,openexr-2)))
+    (propagated-inputs (list openexr-2))
 
     (home-page "http://ampasctl.sourceforge.net")
     (synopsis "Color Transformation Language")
@@ -1501,13 +1476,9 @@ exec -a \"$0\" ~a/.brdf-real~%"
                             (chmod "brdf" #o555)))
                         #t)))))
       (native-inputs
-       `(("qttools" ,qttools))) ;for 'qmake'
+       (list qttools)) ;for 'qmake'
       (inputs
-       `(("qtbase" ,qtbase-5)
-         ("mesa" ,mesa)
-         ("glew" ,glew)
-         ("freeglut" ,freeglut)
-         ("zlib" ,zlib)))
+       (list qtbase-5 mesa glew freeglut zlib))
       (home-page "https://www.disneyanimation.com/technology/brdf.html")
       (synopsis
        "Analyze bidirectional reflectance distribution functions (BRDFs)")
@@ -1557,14 +1528,9 @@ and understanding different BRDFs (and other component functions).")
              (substitute* "autogen.sh" (("./configure") "# ./configure"))
              (invoke "sh" "autogen.sh"))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("libtool" ,libtool)
-       ("autoconf" ,autoconf)
-       ("automake" ,automake)))
+     (list pkg-config libtool autoconf automake))
     (inputs
-     `(("libx11" ,libx11)
-       ("freetype" ,freetype)
-       ("sdl" ,sdl)))
+     (list libx11 freetype sdl))
 
     ;; Antigrain.com was discontinued.
     (home-page "http://agg.sourceforge.net/antigrain.com/index.html")
@@ -1592,7 +1558,7 @@ rendering @acronym{SVG, Scalable Vector Graphics}.")
                   (replace 'check
                     (lambda _ (invoke "pytest" "pastel" "tests/"))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://github.com/sdispater/pastel")
     (synopsis "Library to colorize strings in your terminal")
     (description "Pastel is a simple library to help you colorize strings in
@@ -1663,7 +1629,7 @@ your terminal.")
                  `("PERL5LIB" ":" prefix (,perl5lib)))
                #t))))))
     (native-inputs
-     `(("unzip" ,unzip)))
+     (list unzip))
     ;; TODO: Add missing optional dependency: facedetect.
     (inputs
      `(("imagemagick" ,imagemagick)
@@ -1713,15 +1679,15 @@ requirements.")
                       (setenv "DISPLAY" ":1")
                       #t)))))
     (native-inputs
-     `(("xorg-server" ,xorg-server-for-tests)))
+     (list xorg-server-for-tests))
     (inputs
-     `(("glew" ,glew)
-       ("libxrandr" ,libxrandr)
-       ("libxcursor" ,libxcursor)
-       ("libxinerama" ,libxinerama)
-       ("libxi" ,libxi)
-       ("zlib" ,zlib)
-       ("glfw" ,glfw)))
+     (list glew
+           libxrandr
+           libxcursor
+           libxinerama
+           libxi
+           zlib
+           glfw))
     (home-page "https://graphics.pixar.com/opensubdiv/")
     (synopsis "High performance subdivision surface evaluation")
     (description "OpenSubdiv is a set of libraries that implement high
@@ -1758,8 +1724,7 @@ and GPU architectures.")
            (add-before 'build 'skip-example
              (lambda _ (chdir "src") #t)))))
       (inputs
-       `(("glew" ,glew)
-         ("freeglut" ,freeglut)))
+       (list glew freeglut))
       (synopsis "Library for rendering Constructive Solid Geometry (CSG)")
       (description
        "OpenCSG is a library for rendering Constructive Solid Geometry (CSG) using
@@ -1796,12 +1761,9 @@ or by subtracting one shape from the other.")
              #t))))
       (build-system cmake-build-system)
       (native-inputs
-       `(("doxygen" ,doxygen)
-         ("graphviz" ,graphviz)))
+       (list doxygen graphviz))
       (inputs
-       `(("boost" ,boost)
-         ("freeglut" ,freeglut)
-         ("glew" ,glew)))
+       (list boost freeglut glew))
       (arguments
        `(#:configure-flags
          (list
@@ -1849,12 +1811,9 @@ software in the scientific and engineering community.")
              #t))))
     (build-system cmake-build-system)
     (native-inputs
-      `(("doxygen" ,doxygen)
-        ("graphviz" ,graphviz)))
+      (list doxygen graphviz))
     (inputs
-      `(("boost" ,boost)
-        ("freeglut" ,freeglut)
-        ("glew" ,glew)))
+      (list boost freeglut glew))
     (arguments
       `(#:configure-flags
         (list
@@ -1928,22 +1887,21 @@ Automated palette selection is supported.")
        '(#:configure-flags
          (list "-DTESTS=ON" "-DTOOLS=ON" "-DKIS_TABLET=ON")))
       (native-inputs
-       `(("extra-cmake-modules" ,extra-cmake-modules)
-         ("pkg-config" ,pkg-config)))
+       (list extra-cmake-modules pkg-config))
       (inputs
-       `(("giflib" ,giflib)
-         ("karchive" ,karchive)
-         ("kdnssd" ,kdnssd)
-         ("libmicrohttpd" ,libmicrohttpd)
-         ("libsodium" ,libsodium)
-         ("libvpx" ,libvpx)
-         ("libxi" ,libxi)
-         ;; ("miniupnpc" ,miniupnpc) ;segfaults for some reason
-         ("qtbase" ,qtbase-5)
-         ("qtkeychain" ,qtkeychain)
-         ("qtmultimedia" ,qtmultimedia)
-         ("qtsvg" ,qtsvg)
-         ("qtx11extras" ,qtx11extras)))
+       (list giflib
+             karchive
+             kdnssd
+             libmicrohttpd
+             libsodium
+             libvpx
+             libxi
+             ;; ("miniupnpc" ,miniupnpc) ;segfaults for some reason
+             qtbase-5
+             qtkeychain
+             qtmultimedia
+             qtsvg
+             qtx11extras))
       (home-page "https://drawpile.net")
       (synopsis "Collaborative drawing program")
       (description "Drawpile is a drawing program that allows share the canvas
@@ -1988,9 +1946,7 @@ Some feature highlights:
        ("v4l" ,v4l-utils)
        ("vulkan-loader" ,vulkan-loader)))
     (native-inputs
-     `(("eigen" ,eigen)
-       ("pkg-config" ,pkg-config)
-       ("vulkan-headers" ,vulkan-headers)))
+     (list eigen pkg-config vulkan-headers))
     (arguments
      `(#:configure-flags
        (list "-Dinstall-active-runtime=false")))

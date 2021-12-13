@@ -114,7 +114,7 @@
        ("openssl" ,openssl)
        ("zlib" ,zlib)))
     (native-inputs
-     `(("doxygen" ,doxygen)))           ; for HTML documentation
+     (list doxygen))           ; for HTML documentation
     (home-page "https://dcmtk.org")
     (synopsis "Libraries and programs implementing parts of the DICOM standard")
     (description "DCMTK is a collection of libraries and applications
@@ -226,15 +226,12 @@ of external libraries that provide additional functionality.")
                (("/bin/sh") (which "bash")))
              #t)))))
     (native-inputs
-     `(("git" ,git)
-       ("pkg-config" ,pkg-config)))
+     (list git pkg-config))
     (inputs
      ;; XXX Adding freeglut, glew, ilmbase, mesa, and openimageio for
      ;; ocioconvert fails: error: conflicting declaration ?typedef void
      ;; (* PFNGLGETFRAGMENTMATERIALFVSGIXPROC)(GLenum, GLenum, GLfloat*)
-     `(("lcms" ,lcms)
-       ("openexr" ,openexr-2)
-       ("tinyxml" ,tinyxml)))
+     (list lcms openexr-2 tinyxml))
     (home-page "https://opencolorio.org")
     (synopsis "Color management for visual effects and animation")
     (description
@@ -345,7 +342,7 @@ many popular formats.")
     (propagated-inputs
      ;; VTK's 'VTK-vtk-module-find-packages.cmake' calls
      ;; 'find_package(THEORA)', which in turns looks for libogg.
-     `(("libogg" ,libogg)))
+     (list libogg))
     (home-page "https://vtk.org/")
     (synopsis "Libraries for 3D computer graphics")
     (description
@@ -372,8 +369,8 @@ integrates with various databases on GUI toolkits such as Qt and Tk.")
                (base32
                 "0pla1r5mvkgl4sl213gfdhzrypdgai0h3z5mfgm6p9jz9hsr794j"))))
     (inputs
-     `(("jsoncpp" ,jsoncpp-for-tensorflow)
-       ,@(alist-delete "jsoncpp" (package-inputs vtk))))))
+     (modify-inputs (package-inputs vtk)
+       (replace "jsoncpp" jsoncpp-for-tensorflow)))))
 
 (define-public opencv
   (package
@@ -592,8 +589,7 @@ vision algorithms.  It can be used to do things like:
         (base32 "0vjsh3i0861f6h9as3bch956cidz824zz499pvhjs3lfjn6hhs14"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("gobject-introspection" ,gobject-introspection)
-       ("pkg-config" ,pkg-config)))
+     (list gobject-introspection pkg-config))
     (inputs
      `(("expat" ,expat)
        ("fftw" ,fftw)
@@ -654,18 +650,18 @@ due to its architecture which automatically parallelises the image workflows.")
                       "-Wl,-rpath="
                       (assoc-ref outputs "out") "/lib")))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("curl" ,curl)
-       ("fftw" ,fftw)
-       ("graphicsmagick" ,graphicsmagick)
-       ("libjpeg-turbo" ,libjpeg-turbo)
-       ("libpng" ,libpng)
-       ("libtiff" ,libtiff)
-       ("libx11" ,libx11)
-       ;;("opencv" ,opencv) ;OpenCV is currently broken in the CI
-       ("openexr" ,openexr-2)
-       ("zlib" ,zlib)))
+     (list curl
+           fftw
+           graphicsmagick
+           libjpeg-turbo
+           libpng
+           libtiff
+           libx11
+           ;;("opencv" ,opencv) ;OpenCV is currently broken in the CI
+           openexr-2
+           zlib))
     (home-page "https://gmic.eu/")
     (synopsis "Full-featured framework for digital image processing")
     (description "G'MIC is a full-featured framework for digital image
@@ -691,12 +687,10 @@ including 2D color images.")
             (add-after 'unpack 'qt-chdir
               (lambda _ (chdir "gmic-qt") #t))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("qttools" ,qttools)))
+     (list pkg-config qttools))
     (inputs
-     `(("gmic" ,gmic)
-       ("qtbase" ,qtbase-5)
-       ,@(package-inputs gmic)))
+     (modify-inputs (package-inputs gmic)
+       (prepend gmic qtbase-5)))
     (synopsis "Qt frontend for the G'MIC image processing framework")
     (license license:gpl3+)))
 
@@ -718,11 +712,8 @@ including 2D color images.")
     (name "gmic-qt-gimp")
     (inputs
      ;; GIMP and its dependencies.
-     `(("gimp" ,gimp)
-       ("gdk-pixbuf" ,gdk-pixbuf)
-       ("cairo" ,cairo)
-       ("gegl" ,gegl)
-       ,@(package-inputs gmic-qt)))
+     (modify-inputs (package-inputs gmic-qt)
+       (prepend gimp gdk-pixbuf cairo gegl)))
     (arguments
      (substitute-keyword-arguments (package-arguments gmic-qt)
        ((#:configure-flags flags)
@@ -774,9 +765,7 @@ including 2D color images.")
        ("poppler" ,poppler)
        ("gsl" ,gsl)))
     (native-inputs
-     `(("flex" ,flex)
-       ("bison" ,bison)
-       ("pkg-config" ,pkg-config)))
+     (list flex bison pkg-config))
     (home-page "https://github.com/libvips/nip2")
     (synopsis "Spreadsheet-like GUI for libvips")
     (description "This package provide a graphical user interface (GUI) for
@@ -906,8 +895,7 @@ libraries designed for computer vision research and implementation.")
        ("vxl" ,vxl-1)
        ("zlib" ,zlib)))
     (native-inputs
-     `(("googletest" ,googletest)
-       ("pkg-config" ,pkg-config)))
+     (list googletest pkg-config))
     (home-page "https://github.com/InsightSoftwareConsortium/ITK/")
     (synopsis "Scientific image processing, segmentation and registration")
     (description "The Insight Toolkit (ITK) is a toolkit for N-dimensional
@@ -1163,7 +1151,7 @@ substituted by matching images.")
            "0kixwjb2x457dq7927hkh34c803p7yh1pmn6n61rk9shqrcg492h"))))
       (build-system qt-build-system)
       (native-inputs
-       `(("qttools" ,qttools)))
+       (list qttools))
       (inputs
        `(("boost" ,boost)
          ("libjpeg" ,libjpeg-turbo)
@@ -1206,9 +1194,7 @@ and Scan Tailor Enhanced versions as well as including many more bug fixes.")
         (base32 "14m92dskzw7bwsr64ha4p0mj3ndv13gwcbfic3qxrs3zq5353s7l"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libtiff" ,libtiff)
-       ("zlib" ,zlib)
-       ("libjpeg-turbo" ,libjpeg-turbo)))
+     (list libtiff zlib libjpeg-turbo))
     (home-page "https://www.astromatic.net/software/stiff")
     (synopsis "Convert scientific FITS images to TIFF format")
     (description
@@ -1242,11 +1228,8 @@ purposes.")
                (invoke "pytest" "-v" "tests"))
              #t)))))
     (propagated-inputs
-      `(("python-matplotlib" ,python-matplotlib)
-        ("python-numpy" ,python-numpy)
-        ("python-pillow" ,python-pillow)
-        ("python-pyyaml" ,python-pyyaml)))
-    (native-inputs `(("python-pytest" ,python-pytest)))
+      (list python-matplotlib python-numpy python-pillow python-pyyaml))
+    (native-inputs (list python-pytest))
     (home-page "http://github.com/wkentaro/imgviz")
     (synopsis "Image Visualization Tools")
     (description "Python library for object detection, semantic and instance
@@ -1298,17 +1281,15 @@ segmentation.")
                (setenv "MPLBACKEND" "agg")
                (invoke "pytest" "-v" "tests" "-m" "not gpu")))))))
     (propagated-inputs
-      `(("python-imgviz" ,python-imgviz)
-        ("python-matplotlib" ,python-matplotlib)
-        ("python-numpy" ,python-numpy)
-        ("python-pillow" ,python-pillow)
-        ("python-pyyaml" ,python-pyyaml)
-        ("python-qtpy" ,python-qtpy)
-        ("python-termcolor" ,python-termcolor)))
+      (list python-imgviz
+            python-matplotlib
+            python-numpy
+            python-pillow
+            python-pyyaml
+            python-qtpy
+            python-termcolor))
     (native-inputs
-      `(("python-pytest" ,python-pytest)
-        ("python-pytest-qt" ,python-pytest-qt)
-        ("xorg-server" ,xorg-server-for-tests)))
+      (list python-pytest python-pytest-qt xorg-server-for-tests))
     (home-page "https://github.com/wkentaro/labelme")
     (synopsis
       "Image Polygonal Annotation")

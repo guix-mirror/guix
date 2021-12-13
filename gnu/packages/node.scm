@@ -256,15 +256,15 @@
             (variable "NODE_PATH")
             (files '("lib/node_modules")))))
     (inputs
-     `(("bash" ,bash)
-       ("coreutils" ,coreutils)
-       ("c-ares" ,c-ares)
-       ("http-parser" ,http-parser)
-       ("icu4c" ,icu4c)
-       ("libuv" ,libuv)
-       ("nghttp2" ,nghttp2 "lib")
-       ("openssl" ,openssl)
-       ("zlib" ,zlib)))
+     (list bash
+           coreutils
+           c-ares
+           http-parser
+           icu4c
+           libuv
+           `(,nghttp2 "lib")
+           openssl
+           zlib))
     (synopsis "Evented I/O for V8 JavaScript")
     (description "Node.js is a platform built on Chrome's JavaScript runtime
 for easily building fast, scalable network applications.  Node.js uses an
@@ -387,7 +387,7 @@ formats to milliseconds.")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))
-    (inputs `(("node-ms" ,node-ms-bootstrap)))
+    (inputs (list node-ms-bootstrap))
     (home-page "https://github.com/visionmedia/debug#readme")
     (properties '((hidden? . #t)))
     (synopsis "Small debugging utility")
@@ -450,10 +450,9 @@ Node.js and web browsers.")
                        "--bundle"
                        "src/builder.ts")))))))
     (inputs
-     `(("node-binary-search" ,node-binary-search-bootstrap)
-       ("node-debug" ,node-debug-bootstrap)))
+     (list node-binary-search-bootstrap node-debug-bootstrap))
     (native-inputs
-     `(("esbuild" ,esbuild)))
+     (list esbuild))
     (home-page "https://github.com/indutny/llparse-builder#readme")
     (properties '((hidden? . #t)))
     (synopsis "Graph builder for consumption by llparse")
@@ -505,10 +504,9 @@ Node.js and web browsers.")
                        "--bundle"
                        "src/frontend.ts")))))))
     (inputs
-     `(("node-debug" ,node-debug-bootstrap)
-       ("node-llparse-builder" ,node-llparse-builder-bootstrap)))
+     (list node-debug-bootstrap node-llparse-builder-bootstrap))
     (native-inputs
-     `(("esbuild" ,esbuild)))
+     (list esbuild))
     (home-page "https://github.com/indutny/llparse-frontend#readme")
     (properties '((hidden? . #t)))
     (synopsis "Frontend for the llparse compiler")
@@ -559,10 +557,9 @@ Node.js and web browsers.")
                        "--bundle"
                        "src/api.ts")))))))
     (inputs
-     `(("node-debug" ,node-debug-bootstrap)
-       ("node-llparse-frontend" ,node-llparse-frontend-bootstrap)))
+     (list node-debug-bootstrap node-llparse-frontend-bootstrap))
     (native-inputs
-     `(("esbuild" ,esbuild)))
+     (list esbuild))
     (home-page "https://github.com/nodejs/llparse#readme")
     (properties '((hidden? . #t)))
     (synopsis "Compile incremental parsers to C code")
@@ -818,31 +815,31 @@ source files.")
                  (copy-file (string-append llhttp "/include/llhttp.h")
                             "deps/llhttp/include/llhttp.h"))))))))
     (native-inputs
-     `(;; Runtime dependencies for binaries used as a bootstrap.
-       ("c-ares" ,c-ares-for-node)
-       ("brotli" ,brotli)
-       ("icu4c" ,icu4c-67)
-       ("libuv" ,libuv-for-node)
-       ("nghttp2" ,nghttp2 "lib")
-       ("openssl" ,openssl)
-       ("zlib" ,zlib)
-       ;; Regular build-time dependencies.
-       ("perl" ,perl)
-       ("pkg-config" ,pkg-config)
-       ("procps" ,procps)
-       ("python" ,python)
-       ("util-linux" ,util-linux)))
+     (list ;; Runtime dependencies for binaries used as a bootstrap.
+           c-ares-for-node
+           brotli
+           icu4c-67
+           libuv-for-node
+           `(,nghttp2 "lib")
+           openssl
+           zlib
+           ;; Regular build-time dependencies.
+           perl
+           pkg-config
+           procps
+           python
+           util-linux))
     (inputs
-     `(("bash" ,bash)
-       ("coreutils" ,coreutils)
-       ("c-ares" ,c-ares-for-node)
-       ("icu4c" ,icu4c-67)
-       ("libuv" ,libuv-for-node)
-       ("llhttp" ,llhttp-bootstrap)
-       ("brotli" ,brotli)
-       ("nghttp2" ,nghttp2 "lib")
-       ("openssl" ,openssl)
-       ("zlib" ,zlib)))))
+     (list bash
+           coreutils
+           c-ares-for-node
+           icu4c-67
+           libuv-for-node
+           llhttp-bootstrap
+           brotli
+           `(,nghttp2 "lib")
+           openssl
+           zlib))))
 
 (define-public libnode
   (package/inherit node

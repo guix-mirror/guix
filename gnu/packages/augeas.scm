@@ -44,11 +44,11 @@
     (build-system gnu-build-system)
     ;; Marked as "required" in augeas.pc.
     (propagated-inputs
-     `(("libxml2" ,libxml2)))
+     (list libxml2))
     (inputs
-     `(("readline" ,readline)))
+     (list readline))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://augeas.net")
     (synopsis "Edit configuration files programmatically")
     (description

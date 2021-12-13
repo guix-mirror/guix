@@ -40,63 +40,63 @@
         (base32 "1by2d84fbckspczddl4npfsf89q6nprmbg0i5g8yr1psp0fpl4ab"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-aeson" ,ghc-aeson)
-       ("ghc-aeson-pretty" ,ghc-aeson-pretty)
-       ("ghc-ansi-terminal" ,ghc-ansi-terminal)
-       ("ghc-atomic-write" ,ghc-atomic-write-0.2.0.7)
-       ("ghc-case-insensitive" ,ghc-case-insensitive)
-       ("ghc-cborg" ,ghc-cborg)
-       ("ghc-cborg-json" ,ghc-cborg-json)
-       ("ghc-contravariant" ,ghc-contravariant)
-       ("ghc-data-fix" ,ghc-data-fix)
-       ("ghc-diff" ,ghc-diff)
-       ("ghc-dotgen" ,ghc-dotgen)
-       ("ghc-either" ,ghc-either)
-       ("ghc-exceptions" ,ghc-exceptions)
-       ("ghc-half" ,ghc-half)
-       ("ghc-hashable" ,ghc-hashable)
-       ("ghc-lens-family-core" ,ghc-lens-family-core)
-       ("ghc-megaparsec" ,ghc-megaparsec)
-       ("ghc-memory" ,ghc-memory)
-       ("ghc-mmorph" ,ghc-mmorph)
-       ("ghc-network-uri" ,ghc-network-uri)
-       ("ghc-optparse-applicative" ,ghc-optparse-applicative)
-       ("ghc-parsers" ,ghc-parsers)
-       ("ghc-parser-combinators" ,ghc-parser-combinators)
-       ("ghc-prettyprinter" ,ghc-prettyprinter)
-       ("ghc-prettyprinter-ansi-terminal" ,ghc-prettyprinter-ansi-terminal)
-       ("ghc-pretty-simple" ,ghc-pretty-simple)
-       ("ghc-profunctors" ,ghc-profunctors)
-       ("ghc-pretty-simple" ,ghc-pretty-simple)
-       ("ghc-repline" ,ghc-repline)
-       ("ghc-serialise" ,ghc-serialise)
-       ("ghc-scientific" ,ghc-scientific)
-       ("ghc-text-manipulate" ,ghc-text-manipulate)
-       ("ghc-th-lift-instances" ,ghc-th-lift-instances)
-       ("ghc-transformers-compat" ,ghc-transformers-compat)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)
-       ("ghc-uri-encode" ,ghc-uri-encode)
-       ("ghc-vector" ,ghc-vector)
-       ("ghc-cryptonite" ,ghc-cryptonite)
-       ("ghc-http-types" ,ghc-http-types)
-       ("ghc-http-client" ,ghc-http-client)
-       ("ghc-http-client-tls" ,ghc-http-client-tls)))
+     (list ghc-aeson
+           ghc-aeson-pretty
+           ghc-ansi-terminal
+           ghc-atomic-write-0.2.0.7
+           ghc-case-insensitive
+           ghc-cborg
+           ghc-cborg-json
+           ghc-contravariant
+           ghc-data-fix
+           ghc-diff
+           ghc-dotgen
+           ghc-either
+           ghc-exceptions
+           ghc-half
+           ghc-hashable
+           ghc-lens-family-core
+           ghc-megaparsec
+           ghc-memory
+           ghc-mmorph
+           ghc-network-uri
+           ghc-optparse-applicative
+           ghc-parsers
+           ghc-parser-combinators
+           ghc-prettyprinter
+           ghc-prettyprinter-ansi-terminal
+           ghc-pretty-simple
+           ghc-profunctors
+           ghc-pretty-simple
+           ghc-repline
+           ghc-serialise
+           ghc-scientific
+           ghc-text-manipulate
+           ghc-th-lift-instances
+           ghc-transformers-compat
+           ghc-unordered-containers
+           ghc-uri-encode
+           ghc-vector
+           ghc-cryptonite
+           ghc-http-types
+           ghc-http-client
+           ghc-http-client-tls))
     (native-inputs
-     `(("ghc-foldl" ,ghc-foldl)
-       ("ghc-generic-random" ,ghc-generic-random-1.3.0.1)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-quickcheck-instances" ,ghc-quickcheck-instances)
-       ("ghc-semigroups" ,ghc-semigroups)
-       ("ghc-special-values" ,ghc-special-values)
-       ("ghc-spoon" ,ghc-spoon)
-       ("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-expected-failure" ,ghc-tasty-expected-failure)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
-       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
-       ("ghc-tasty-silver" ,ghc-tasty-silver)
-       ("ghc-turtle" ,ghc-turtle)
-       ("ghc-mockery" ,ghc-mockery)
-       ("ghc-doctest" ,ghc-doctest)))
+     (list ghc-foldl
+           ghc-generic-random-1.3.0.1
+           ghc-quickcheck
+           ghc-quickcheck-instances
+           ghc-semigroups
+           ghc-special-values
+           ghc-spoon
+           ghc-tasty
+           ghc-tasty-expected-failure
+           ghc-tasty-hunit
+           ghc-tasty-quickcheck
+           ghc-tasty-silver
+           ghc-turtle
+           ghc-mockery
+           ghc-doctest))
     (arguments
      `(#:phases
        (modify-phases %standard-phases

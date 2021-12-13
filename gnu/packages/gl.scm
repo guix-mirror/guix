@@ -83,7 +83,7 @@
                 "1xqhk9bn10nbvffw3r4p4rjslwz1l7gaycc0x2pqkr2irp7q9x7n"))))
     (build-system gnu-build-system)
     (propagated-inputs
-     `(("mesa" ,mesa))) ; according to glu.pc
+     (list mesa)) ; according to glu.pc
     (home-page "http://www.opengl.org/archives/resources/faq/technical/glu.htm")
     (synopsis "Mesa OpenGL Utility library")
     (description
@@ -116,14 +116,10 @@ as ASCII text.")
     (arguments
      '(#:tests? #f                      ;no test target
        #:configure-flags '("-DFREEGLUT_BUILD_STATIC_LIBS=OFF")))
-    (inputs `(("libx11" ,libx11)
-              ("libxi" ,libxi)
-              ("libxrandr" ,libxrandr)
-              ("libxxf86vm" ,libxxf86vm)))
+    (inputs (list libx11 libxi libxrandr libxxf86vm))
     (propagated-inputs
      ;; Headers from Mesa and GLU are needed.
-     `(("glu" ,glu)
-       ("mesa" ,mesa)))
+     (list glu mesa))
     (home-page "http://freeglut.sourceforge.net/")
     (synopsis "Alternative to the OpenGL Utility Toolkit (GLUT)")
     (description
@@ -174,15 +170,10 @@ the X-Consortium license.")
     (arguments
      `(#:configure-flags '("--disable-static")))
     ;; The pkg-config file lists "freetype2" as Requires.private.
-    (propagated-inputs `(("freetype" ,freetype)))
-    (inputs `(("libx11" ,libx11)
-              ("mesa" ,mesa)
-              ("glu" ,glu)))
+    (propagated-inputs (list freetype))
+    (inputs (list libx11 mesa glu))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
+     (list pkg-config autoconf automake libtool))
     (synopsis "Font rendering library for OpenGL applications")
     (description
      "FTGL is a font rendering library for OpenGL applications.  Supported
@@ -205,11 +196,9 @@ Polygon meshes, and Extruded polygon meshes.")
         (base32 "1fg323fk7wlv2xh6lw66wswgcv6qi8aaadk7c28h2f2lj1s7njnf"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
+     (list autoconf automake libtool))
     (inputs
-     `(("mesa-headers" ,mesa-headers)))
+     (list mesa-headers))
     (home-page "https://github.com/divVerent/s2tc")
     (synopsis "S3 Texture Compression implementation")
     (description
@@ -255,15 +244,15 @@ also known as DXTn or DXTC) for Mesa.")
          (search-patches "mesa-skip-tests.patch"))))
     (build-system meson-build-system)
     (propagated-inputs
-      `(;; The following are in the Requires.private field of gl.pc.
-        ("libdrm" ,libdrm)
-        ("libvdpau" ,libvdpau)
-        ("libx11" ,libx11)
-        ("libxdamage" ,libxdamage)
-        ("libxfixes" ,libxfixes)
-        ("libxshmfence" ,libxshmfence)
-        ("libxxf86vm" ,libxxf86vm)
-        ("xorgproto" ,xorgproto)))
+      (list ;; The following are in the Requires.private field of gl.pc.
+            libdrm
+            libvdpau
+            libx11
+            libxdamage
+            libxfixes
+            libxshmfence
+            libxxf86vm
+            xorgproto))
     (inputs
       `(("expat" ,expat)
         ("libelf" ,elfutils)  ;required for r600 when using llvm
@@ -552,7 +541,7 @@ from software emulation to complete hardware acceleration for modern GPUs.")
        ("glut" ,freeglut)
        ("glew" ,glew)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
@@ -602,13 +591,10 @@ glxgears, glxheads, and glxinfo.")
                                          (assoc-ref %outputs "out")))
        #:tests? #f))                              ;no 'check' target
     (inputs
-     `(("libxi" ,libxi)
-       ("libxmu" ,libxmu)
-       ("libx11" ,libx11)
-       ("mesa" ,mesa)))
+     (list libxi libxmu libx11 mesa))
 
     ;; <GL/glew.h> includes <GL/glu.h>.
-    (propagated-inputs `(("glu" ,glu)))
+    (propagated-inputs (list glu))
 
     (home-page "http://glew.sourceforge.net/")
     (synopsis "OpenGL extension loading library for C and C++")
@@ -631,11 +617,8 @@ extension functionality is exposed in a single header file.")
               (base32
                "13qfx4xh8baryxqrv986l848ygd0piqwm6s2s90pxk9c0m9vklim"))))
     (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)))
-    (inputs `(("guile" ,guile-2.2)
-              ("mesa" ,mesa)
-              ("glu" ,glu)
-              ("freeglut" ,freeglut)))
+    (native-inputs (list pkg-config))
+    (inputs (list guile-2.2 mesa glu freeglut))
     (arguments
      '(#:phases (modify-phases %standard-phases
                  (add-after 'configure 'patch-makefile
@@ -685,10 +668,7 @@ OpenGL graphics API.")
                   "_guile_versions_to_search=\"3.0 "))
                #t))))))
     (inputs
-     `(("guile" ,guile-3.0)
-       ("mesa" ,mesa)
-       ("glu" ,glu)
-       ("freeglut" ,freeglut)))))
+     (list guile-3.0 mesa glu freeglut))))
 
 (define-public libepoxy
   (package
@@ -719,11 +699,10 @@ OpenGL graphics API.")
                #t))))))
     (build-system meson-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("python" ,python)))
+     (list pkg-config python))
     (propagated-inputs
      ;; epoxy.pc: 'Requires.private: gl egl'
-     `(("mesa" ,mesa)))
+     (list mesa))
     (home-page "https://github.com/anholt/libepoxy/")
     (synopsis "A library for handling OpenGL function pointer management")
     (description
@@ -757,11 +736,9 @@ OpenGL graphics API.")
                         (("if with_glx")
                          "if false")))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("libx11" ,libx11)
-       ("libxext" ,libxext)
-       ("xorgproto" ,xorgproto)))
+     (list libx11 libxext xorgproto))
     (synopsis "Vendor-neutral OpenGL dispatch library")
     (description
      "libglvnd is a vendor-neutral dispatch layer for arbitrating OpenGL
@@ -808,9 +785,9 @@ Both GLX and EGL are supported, in any combination with OpenGL and OpenGL ES.")
                           ;; Remove these flags from 'install' commands.
                           (("-o root -g root") ""))))))))
     (native-inputs
-     `(("unzip" ,unzip)))
+     (list unzip))
     (inputs
-     `(("mesa" ,mesa)))
+     (list mesa))
     (home-page "https://www.lonesock.net/soil.html")
     (synopsis "OpenGL texture loading library")
     (description
@@ -835,18 +812,16 @@ OpenGL.")
      '(#:tests? #f ; no test target
        #:configure-flags '("-DBUILD_SHARED_LIBS=ON")))
     (native-inputs
-     `(("doxygen" ,doxygen)
-       ("unzip" ,unzip)))
+     (list doxygen unzip))
     (propagated-inputs
-     `(("mesa" ,mesa)                             ;included in public headers
-
-       ;; These are in 'Requires.private' of 'glfw3.pc'.
-       ("libx11" ,libx11)
-       ("libxrandr" ,libxrandr)
-       ("libxi" ,libxi)
-       ("libxinerama" ,libxinerama)
-       ("libxcursor" ,libxcursor)
-       ("libxxf86vm" ,libxxf86vm)))
+     (list mesa ;included in public headers
+           ;; These are in 'Requires.private' of 'glfw3.pc'.
+           libx11
+           libxrandr
+           libxi
+           libxinerama
+           libxcursor
+           libxxf86vm))
     (home-page "https://www.glfw.org")
     (synopsis "OpenGL application development library")
     (description
@@ -874,7 +849,7 @@ and surfaces, receiving input and events.")
       (build-system cmake-build-system)
       (arguments `(#:tests? #f))        ; no tests included
       (inputs
-       `(("mesa" ,mesa)))
+       (list mesa))
       ;; Extempore refuses to build on architectures other than x86_64
       (supported-systems '("x86_64-linux"))
       (home-page "https://github.com/extemporelang/nanovg")
@@ -899,9 +874,7 @@ and visualizations.")
         (base32 "1sgzv547h7hrskb9qd0x5yp45kmhvibjwj2mfswv95lg070h074d"))))
     (build-system cmake-build-system)
     (inputs
-     `(("libpng" ,libpng)
-       ("mesa" ,mesa)
-       ("zlib" ,zlib)))
+     (list libpng mesa zlib))
     (arguments
      `(#:tests? #f))                    ; no tests
     (home-page "http://www.geuz.org/gl2ps/")
@@ -937,12 +910,8 @@ mixed vector/bitmap output.")
                                          (assoc-ref %outputs "out") "/lib")
                           "-DVGL_USESSL=1"))) ; use OpenSSL
     (build-system cmake-build-system)
-    (inputs `(("glu" ,glu)
-              ("libjpeg-turbo" ,libjpeg-turbo)
-              ("libxtst" ,libxtst)
-              ("mesa" ,mesa)
-              ("openssl" ,openssl)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs (list glu libjpeg-turbo libxtst mesa openssl))
+    (native-inputs (list pkg-config))
     (home-page "https://www.virtualgl.org")
     (synopsis "Redirects 3D commands from an OpenGL application onto a 3D
 graphics card")
@@ -1059,7 +1028,7 @@ the glProgramViewportFlip before it was replaced with glProgramViewportInfo.")
                  (install-file "csharp/bin/MojoShader-CS.dll" (string-append out "/lib"))
                  #t))))))
       (native-inputs
-       `(("mono" ,mono)))
+       (list mono))
       (home-page "https://github.com/FNA-XNA/MojoShader")
       (synopsis "C# wrapper for MojoShader")
       (description
@@ -1109,17 +1078,17 @@ is written in a way that can be used for any general C# application.")
                  (("libGLESv2.so") (string-append mesa "/lib/libGLESv2.so")))
                #t))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("eudev" ,eudev)
-       ("libdrm" ,libdrm)
-       ("libjpeg-turbo" ,libjpeg-turbo)
-       ("libpng" ,libpng)
-       ("libx11" ,libx11)
-       ("libxcb" ,libxcb)
-       ("mesa" ,mesa)
-       ("wayland" ,wayland)
-       ("wayland-protocols" ,wayland-protocols)))
+     (list eudev
+           libdrm
+           libjpeg-turbo
+           libpng
+           libx11
+           libxcb
+           mesa
+           wayland
+           wayland-protocols))
     (home-page "https://github.com/glmark2/glmark2")
     (synopsis "OpenGL 2.0 and OpenGL ES 2.0 benchmark")
     (description

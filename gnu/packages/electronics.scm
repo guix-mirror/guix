@@ -94,14 +94,10 @@ to take care of the OS-specific details when writing software that uses serial p
                                               "/share/doc/libsigrokdecode"))
              #t)))))
     (native-inputs
-     `(("check" ,check-0.14)
-       ("doxygen" ,doxygen)
-       ("graphviz" ,graphviz)
-       ("pkg-config" ,pkg-config)))
+     (list check-0.14 doxygen graphviz pkg-config))
     ;; libsigrokdecode.pc lists "python" in Requires.private, and "glib" in Requires.
     (propagated-inputs
-     `(("glib" ,glib)
-       ("python" ,python)))
+     (list glib python))
     (build-system gnu-build-system)
     (home-page "https://www.sigrok.org/wiki/Libsigrokdecode")
     (synopsis "Library providing (streaming) protocol decoding functionality")
@@ -192,23 +188,19 @@ as simple logic analyzer and/or oscilloscope hardware.")
                 (find-files input-dir ".")))
              #t)))))
     (native-inputs
-     `(("doxygen" ,doxygen)
-       ("graphviz" ,graphviz)
-       ("sigrok-firmware-fx2lafw" ,sigrok-firmware-fx2lafw)
-       ("pkg-config" ,pkg-config)))
+     (list doxygen graphviz sigrok-firmware-fx2lafw pkg-config))
     (inputs
-     `(("python" ,python)
-       ("zlib" ,zlib)))
+     (list python zlib))
     ;; libsigrokcxx.pc lists "glibmm" in Requires
     ;; libsigrok.pc lists "libserialport", "libusb", "libftdi" and "libzip" in
     ;; Requires.private and "glib" in Requires
     (propagated-inputs
-     `(("glib" ,glib)
-       ("glibmm" ,glibmm)
-       ("libserialport" ,libserialport)
-       ("libusb" ,libusb)
-       ("libftdi" ,libftdi)
-       ("libzip" ,libzip)))
+     (list glib
+           glibmm
+           libserialport
+           libusb
+           libftdi
+           libzip))
     (build-system gnu-build-system)
     (home-page "https://www.sigrok.org/wiki/Libsigrok")
     (synopsis "Library which provides the basic hardware access drivers for logic
@@ -231,11 +223,9 @@ format support.")
                (base32
                 "1f0a2k8qdcin0pqiqq5ni4khzsnv61l21v1dfdjzayw96qzl9l3i"))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("glib" ,glib)
-       ("libsigrok" ,libsigrok)
-       ("libsigrokdecode" ,libsigrokdecode)))
+     (list glib libsigrok libsigrokdecode))
     (build-system gnu-build-system)
     (home-page "https://sigrok.org/wiki/Sigrok-cli")
     (synopsis "Command-line frontend for sigrok")
@@ -269,16 +259,15 @@ format support.")
                  (rmdir "doc"))
                #t))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("qttools" ,qttools)))
+     (list pkg-config qttools))
     (inputs
-     `(("boost" ,boost)
-       ("glib" ,glib)
-       ("glibmm" ,glibmm)
-       ("libsigrok" ,libsigrok)
-       ("libsigrokdecode" ,libsigrokdecode)
-       ("qtbase" ,qtbase-5)
-       ("qtsvg" ,qtsvg)))
+     (list boost
+           glib
+           glibmm
+           libsigrok
+           libsigrokdecode
+           qtbase-5
+           qtsvg))
     (home-page "https://www.sigrok.org/wiki/PulseView")
     (synopsis "Qt based logic analyzer, oscilloscope and MSO GUI for sigrok")
     (description "PulseView is a Qt based logic analyzer, oscilloscope and MSO GUI
@@ -319,14 +308,9 @@ individual low-level driver modules.")
                 "0a5ycfc1qdmibvagc82r2mhv2i99m6pndy5i6ixas3j2297g6pgq"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("m4" ,m4)
-       ("pkg-config" ,pkg-config)))
+     (list m4 pkg-config))
     (inputs
-     `(("alsa-lib" ,alsa-lib)
-       ("comedilib" ,comedilib)
-       ("fftw" ,fftw)
-       ("gtk+" ,gtk+)
-       ("gtkdatabox" ,gtkdatabox)))
+     (list alsa-lib comedilib fftw gtk+ gtkdatabox))
     (synopsis "Digital oscilloscope")
     (description "Xoscope is a digital oscilloscope that can acquire signals
 from ALSA, ESD, and COMEDI sources.  This package currently does not include

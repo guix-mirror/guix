@@ -152,7 +152,7 @@
        (base32 "00m7l90ws72k1qm101sd2rx92ckd50cszyng5d4dd77jncbf9lmq"))))
     (build-system gnu-build-system)
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (inputs
       `(("xorg-cf-files" ,xorg-cf-files)
         ("xorgproto" ,xorgproto)))
@@ -203,9 +203,9 @@ autotools system.")
                 "0pdngiy8zdhsiqx2am75yfcl36l7kd7d7nl0rss8shcdvsqgmx29"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("xorgproto" ,xorgproto)))
+     (list xorgproto))
     (home-page "https://www.x.org/")
     (synopsis "Symlink directory into tree")
     (description "Create a shadow directory of symbolic links to another
@@ -228,9 +228,9 @@ directory tree.")
             "18hiscgljrz10zjcws25bis32nyrg3hzgmiq6scrh7izqmgz0kab"))))
     (build-system gnu-build-system)
     (inputs
-      `(("libxfont" ,libxfont2)))
+      (list libxfont2))
     (native-inputs
-       `(("pkg-config" ,pkg-config)))
+       (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Convert X font from BDF to PCF")
     (description
@@ -253,7 +253,7 @@ which can be read by any architecture.")
     (build-system gnu-build-system)
     (propagated-inputs
      ;; To get util-macros in (almost?) all package inputs.
-     `(("util-macros" ,util-macros)))
+     (list util-macros))
     (home-page "https://cgit.freedesktop.org/xorg/proto/xorgproto")
     (synopsis "Xorg protocol headers")
     (description
@@ -276,7 +276,7 @@ the core protocol and (many) extensions for the X Window System.")
           (base32
             "07hvfm84scz8zjw14riiln2v4w03jlhp756ypwhq27g48jmic8a6"))))
     (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg BigReqsProto protocol headers")
     (description
@@ -301,9 +301,9 @@ requests that exceed 262140 bytes in length.")
             "1z0crmf669hirw4s7972mmp8xig80kfndja9h559haqbpvq5k4q4"))))
     (build-system gnu-build-system)
     (inputs
-      `(("xorgproto" ,xorgproto)))
+      (list xorgproto))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg CompositeProto protocol headers")
     (description
@@ -327,7 +327,7 @@ the damage protocol.")
           (base32
             "0nzwr5pv9hg7c21n995pdiv0zqhs91yz3r8rn3aska4ykcp12z2w"))))
     (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg DamageProto protocol headers")
     (description
@@ -351,7 +351,7 @@ the damage protocol.")
           (base32
             "02b5x9dkgajizm8dqyx2w6hmqx3v25l67mgf35nj6sz0lgk52877"))))
     (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg DMXProto protocol headers")
     (description
@@ -433,11 +433,9 @@ provided.")
        (list (string-append "--with-appdefaultdir="
                             %output ,%app-defaults-dir))))
     (inputs
-     `(("libxaw" ,libxaw)
-       ("libxmu" ,libxmu)
-       ("libxt" ,libxt)))
+     (list libxaw libxmu libxt))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Tool to browse and edit X Toolkit resource specifications")
     (description
@@ -466,9 +464,9 @@ Resources file.")
           (base32 "0caafx0yqqnqyvbalxhh3mb0r9v36xmcy5zjhygb2i508dhy35mx"))))
     (build-system gnu-build-system)
     (inputs
-      `(("mkfontscale" ,mkfontscale)))
+      (list mkfontscale))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg font encoding files")
     (description "Xorg font encoding files.")
@@ -503,11 +501,9 @@ Resources file.")
              "0m60f5bd0caambrk8ksknb5dks7wzsg7g7xaf0j21jxmx8rq9h5j"))
     (build-system gnu-build-system)
     (inputs
-      `(("bdftopcf" ,bdftopcf)
-        ("font-util" ,font-util)
-        ("mkfontdir" ,mkfontdir)))
+      (list bdftopcf font-util mkfontdir))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (arguments
       `(#:configure-flags (list
         ;; install fonts into subdirectory of package output instead of
@@ -528,11 +524,9 @@ Resources file.")
              "02advcv9lyxpvrjv8bjh1b797lzg6jvhipclz49z8r8y98g4l0n6"))
     (build-system gnu-build-system)
     (inputs
-      `(("bdftopcf" ,bdftopcf)
-        ("font-util" ,font-util)
-        ("mkfontdir" ,mkfontdir)))
+      (list bdftopcf font-util mkfontdir))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (arguments
       `(#:configure-flags (list
         (string-append "--with-fontrootdir=" %output "/share/fonts/X11"))))
@@ -556,7 +550,7 @@ Resources file.")
              name version
              "0xjjjindczv3g7m1597l0x19zz75xy70wh5garghz61fpzl1l4gk"))
     (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs (list pkg-config))
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (add-after
@@ -591,10 +585,9 @@ For example: @code{6x10}, @code{9x15bold}, etc.")
              "1x246dfnxnmflzf0qzy62k8jdpkb6jkgspcjgbk8jcq9lw99npah"))
     (build-system gnu-build-system)
     (inputs
-      `(("mkfontdir" ,mkfontdir)
-        ("bdftopcf" ,bdftopcf)))
+      (list mkfontdir bdftopcf))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg arabic-misc font")
     (description "Xorg arabic-misc font.")
@@ -621,10 +614,9 @@ For example: @code{6x10}, @code{9x15bold}, etc.")
              "0ai1v4n61k8j9x2a1knvfbl2xjxk3xxmqaq3p9vpqrspc69k31kf"))
     (build-system gnu-build-system)
     (inputs
-      `(("mkfontdir" ,mkfontdir)
-        ("bdftopcf" ,bdftopcf)))
+      (list mkfontdir bdftopcf))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg cronyx-cyrillic font")
     (description "Xorg cronyx-cyrillic font.")
@@ -647,10 +639,9 @@ For example: @code{6x10}, @code{9x15bold}, etc.")
              "0yzza0l4zwyy7accr1s8ab7fjqkpwggqydbm2vc19scdby5xz7g1"))
     (build-system gnu-build-system)
     (inputs
-      `(("mkfontdir" ,mkfontdir)
-        ("bdftopcf" ,bdftopcf)))
+      (list mkfontdir bdftopcf))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg dec-misc font")
     (description "Xorg dec-misc font.")
@@ -669,10 +660,9 @@ For example: @code{6x10}, @code{9x15bold}, etc.")
              "0rx8q02rkx673a7skkpnvfkg28i8gmqzgf25s9yi0lar915sn92q"))
     (build-system gnu-build-system)
     (inputs
-      `(("mkfontdir" ,mkfontdir)
-        ("bdftopcf" ,bdftopcf)))
+      (list mkfontdir bdftopcf))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg isas-misc font")
     (description "Xorg isas-misc font.")
@@ -692,10 +682,9 @@ For example: @code{6x10}, @code{9x15bold}, etc.")
              "1dldxlh54zq1yzfnrh83j5vm0k4ijprrs5yl18gm3n9j1z0q2cws"))
     (build-system gnu-build-system)
     (inputs
-      `(("mkfontdir" ,mkfontdir)
-        ("bdftopcf" ,bdftopcf)))
+      (list mkfontdir bdftopcf))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg micro-misc font")
     (description "Xorg micro-misc font.")
@@ -711,10 +700,9 @@ For example: @code{6x10}, @code{9x15bold}, etc.")
              "0q2ybxs8wvylvw95j6x9i800rismsmx4b587alwbfqiw6biy63z4"))
     (build-system gnu-build-system)
     (inputs
-      `(("mkfontdir" ,mkfontdir)
-        ("bdftopcf" ,bdftopcf)))
+      (list mkfontdir bdftopcf))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg misc-cyrillic fonts")
     (description "Xorg misc-cyrillic fonts.")
@@ -730,10 +718,9 @@ For example: @code{6x10}, @code{9x15bold}, etc.")
              "1q2azkdwc4x3kh53xclwpf9q654k70lhiyns1cjq594wvxnhz339"))
     (build-system gnu-build-system)
     (inputs
-      `(("mkfontdir" ,mkfontdir)
-        ("mkfontscale" ,mkfontscale)))
+      (list mkfontdir mkfontscale))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg misc-ethiopic fonts")
     (description "Xorg misc-ethiopic fonts.")
@@ -753,11 +740,9 @@ For example: @code{6x10}, @code{9x15bold}, etc.")
              "150pq6n8n984fah34n3k133kggn9v0c5k07igv29sxp1wi07krxq"))
     (build-system gnu-build-system)
     (inputs
-      `(("mkfontdir" ,mkfontdir)
-        ("font-util" ,font-util)
-        ("bdftopcf" ,bdftopcf)))
+      (list mkfontdir font-util bdftopcf))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (arguments
       `(#:configure-flags (list
         (string-append "--with-fontrootdir=" %output "/share/fonts/X11"))))
@@ -776,10 +761,9 @@ For example: @code{6x10}, @code{9x15bold}, etc.")
              "13qghgr1zzpv64m0p42195k1kc77pksiv059fdvijz1n6kdplpxx"))
     (build-system gnu-build-system)
     (inputs
-      `(("mkfontdir" ,mkfontdir)
-        ("bdftopcf" ,bdftopcf)))
+      (list mkfontdir bdftopcf))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg mutt-misc fonts")
     (description "Xorg mutt-misc fonts.")
@@ -795,11 +779,9 @@ For example: @code{6x10}, @code{9x15bold}, etc.")
              "0nkym3n48b4v36y4s927bbkjnsmicajarnf6vlp7wxp0as304i74"))
     (build-system gnu-build-system)
     (inputs
-      `(("mkfontdir" ,mkfontdir)
-        ("font-util" ,font-util)
-        ("bdftopcf" ,bdftopcf)))
+      (list mkfontdir font-util bdftopcf))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (arguments
       `(#:configure-flags (list
         (string-append "--with-fontrootdir=" %output "/share/fonts/X11"))))
@@ -818,10 +800,9 @@ For example: @code{6x10}, @code{9x15bold}, etc.")
              "0yayf1qlv7irf58nngddz2f1q04qkpr5jwp4aja2j5gyvzl32hl2"))
     (build-system gnu-build-system)
     (inputs
-      `(("mkfontdir" ,mkfontdir)
-        ("bdftopcf" ,bdftopcf)))
+      (list mkfontdir bdftopcf))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg screen-cyrillic fonts")
     (description "Xorg screen-cyrillic fonts.")
@@ -837,10 +818,9 @@ For example: @code{6x10}, @code{9x15bold}, etc.")
              "1xfgcx4gsgik5mkgkca31fj3w72jw9iw76qyrajrsz1lp8ka6hr0"))
     (build-system gnu-build-system)
     (inputs
-      `(("mkfontdir" ,mkfontdir)
-        ("bdftopcf" ,bdftopcf)))
+      (list mkfontdir bdftopcf))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg sony-misc fonts")
     (description "Xorg sony-misc fonts.")
@@ -856,10 +836,9 @@ For example: @code{6x10}, @code{9x15bold}, etc.")
              "1q6jcqrffg9q5f5raivzwx9ffvf7r11g6g0b125na1bhpz5ly7s8"))
     (build-system gnu-build-system)
     (inputs
-      `(("mkfontdir" ,mkfontdir)
-        ("bdftopcf" ,bdftopcf)))
+      (list mkfontdir bdftopcf))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg sun-misc fonts")
     (description "Xorg sun-misc fonts.")
@@ -880,7 +859,7 @@ For example: @code{6x10}, @code{9x15bold}, etc.")
         (sha256
           (base32 "10i2a8b3d1h3w7klsqf31iz7zbd6l8wglil54fkhdb1385281n1s"))))
     (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg font utilities")
     (description
@@ -897,10 +876,9 @@ For example: @code{6x10}, @code{9x15bold}, etc.")
              "181n1bgq8vxfxqicmy1jpm1hnr6gwn1kdhl6hr4frjigs1ikpldb"))
     (build-system gnu-build-system)
     (inputs
-      `(("mkfontdir" ,mkfontdir)
-        ("bdftopcf" ,bdftopcf)))
+      (list mkfontdir bdftopcf))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg winitzki-cyrillic font")
     (description "Xorg winitzki-cyrillic font.")
@@ -916,10 +894,9 @@ For example: @code{6x10}, @code{9x15bold}, etc.")
              "0jp3zc0qfdaqfkgzrb44vi9vi0a8ygb35wp082yz7rvvxhmg9sya"))
     (build-system gnu-build-system)
     (inputs
-      `(("mkfontdir" ,mkfontdir)
-        ("mkfontscale" ,mkfontscale)))
+      (list mkfontdir mkfontscale))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg xfree86-type1 font")
     (description "Xorg xfree86-type1 font.")
@@ -941,7 +918,7 @@ For example: @code{6x10}, @code{9x15bold}, etc.")
           (base32
             "1f2sdsd74y34nnaf4m1zlcbhyv8xb6irnisc99f84c4ivnq4d415"))))
     (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg FontsProto protocol headers")
     (description
@@ -965,7 +942,7 @@ the fonts protocol.")
           (base32
             "0h5ykmcddwid5qj6sbrszgkcypwn3mslvswxpgy2n2iixnyr9amd"))))
     (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg GLProto protocol headers")
     (description
@@ -990,9 +967,9 @@ rendering commands to the X server.")
             "1ik0mdidmyvy48hn8p2hwvf3535rf3m96hhf0mvcqrbj44x23vp6"))))
     (build-system gnu-build-system)
     (inputs
-      `(("libice" ,libice)))
+      (list libice))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "ICE authority file utility")
     (description
@@ -1018,7 +995,7 @@ authentication records.")
           (base32
             "07gk7v006zqn3dcfh16l06gnccy7xnqywf3vl9c209ikazsnlfl9"))))
     (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg InputProto protocol headers")
     (description
@@ -1042,7 +1019,7 @@ devices management such as graphic tablets.")
           (base32
             "0mxqj1pzhjpz9495vrjnpi10kv2n1s4vs7di0sh3yvipfq5j30pq"))))
     (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg KBProto protocol headers")
     (description
@@ -1073,11 +1050,9 @@ of new capabilities and controls for text keyboards.")
     (arguments
      '(#:configure-flags '("--disable-static")))
     (inputs
-      `(("xorgproto" ,xorgproto)
-        ("libxext" ,libxext)
-        ("libx11" ,libx11)))
+      (list xorgproto libxext libx11))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg DMX library")
     (description
@@ -1100,8 +1075,8 @@ of new capabilities and controls for text keyboards.")
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))
-    (native-inputs `(("pkg-config" ,pkg-config)))
-    (inputs `(("xorgproto" ,xorgproto)))
+    (native-inputs (list pkg-config))
+    (inputs (list xorgproto))
     (home-page "https://www.x.org/")
     (synopsis "Xorg shared memory fences library")
     (description
@@ -1130,10 +1105,9 @@ synchronization between the X server and direct-rendering clients.")
     (arguments
      '(#:configure-flags '("--disable-static")))
     (inputs
-      `(("zlib" ,zlib)
-        ("xorgproto" ,xorgproto)))
+      (list zlib xorgproto))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (home-page "https://gitlab.freedesktop.org/xorg/lib/libfontenc")
     (synopsis "Xorg font encoding library")
     (description "Xorg font encoding library.")
@@ -1155,10 +1129,9 @@ synchronization between the X server and direct-rendering clients.")
           (base32 "03xxyvpfa3rhqcld4p2chkil482jn9cp80hj17jdybcv2hkkgqf8"))))
     (build-system gnu-build-system)
     (inputs
-      `(("xtrans" ,xtrans)
-        ("xorgproto" ,xorgproto)))
+      (list xtrans xorgproto))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg Font Service client library")
     (description
@@ -1204,10 +1177,9 @@ themselves.")
                   (string-append "-L" zlib "/lib -lz")))
                #t))))))
     (inputs
-     `(("zlib" ,zlib)
-       ("pciutils" ,pciutils)))                   ;for 'pci.ids.gz'
+     (list zlib pciutils))                   ;for 'pci.ids.gz'
     (native-inputs
-       `(("pkg-config" ,pkg-config)))
+       (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg PCI access library")
     (description "Xorg Generic PCI access library.")
@@ -1229,7 +1201,7 @@ themselves.")
           (base32
             "0cz7s9w8lqgzinicd4g36rjg08zhsbyngh0w68c3np8nlc8mkl74"))))
     (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Library with pthread stubs")
     (description
@@ -1259,12 +1231,12 @@ hit when running single-threaded.")
     (arguments
      '(#:configure-flags '("--disable-static")))
     (propagated-inputs
-      `(("libice" ,libice))) ; SMlib.h includes ICElib.h
+      (list libice)) ; SMlib.h includes ICElib.h
     (inputs
       `(("xtrans" ,xtrans)
         ("libuuid" ,util-linux "lib")))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg Session Management library")
     (description "Xorg Session Management library.")
@@ -1287,11 +1259,9 @@ hit when running single-threaded.")
             "1p0flwb67xawyv6yhri9w17m1i4lji5qnd0gq8v1vsfb8zw7rw15"))))
     (build-system gnu-build-system)
     (inputs
-      `(("xorgproto" ,xorgproto)
-        ("libxext" ,libxext)
-        ("libx11" ,libx11)))
+      (list xorgproto libxext libx11))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg WindowsWM library")
     (description
@@ -1321,11 +1291,9 @@ with the Cygwin XWin server when running X11 in a rootless mode.")
      '(#:configure-flags '("--disable-static")))
     (propagated-inputs
      ;; xcomposite.pc refers to all these.
-      `(("xorgproto" ,xorgproto)
-        ("libxfixes" ,libxfixes)
-        ("libx11" ,libx11)))
+      (list xorgproto libxfixes libx11))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg Composite library")
     (description
@@ -1351,10 +1319,9 @@ with the Cygwin XWin server when running X11 in a rootless mode.")
     (arguments
      '(#:configure-flags '("--disable-static")))
     (inputs
-      `(("libbsd" ,libbsd)
-        ("xorgproto" ,xorgproto)))
+      (list libbsd xorgproto))
     (native-inputs
-       `(("pkg-config" ,pkg-config)))
+       (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg Display Manager Control Protocol library")
     (description "Xorg Display Manager Control Protocol library.")
@@ -1384,10 +1351,9 @@ with the Cygwin XWin server when running X11 in a rootless mode.")
         ("freetype" ,freetype)
         ("fontconfig" ,fontconfig)))
     (inputs
-      `(("libx11" ,libx11)
-        ("xorgproto" ,xorgproto)))
+      (list libx11 xorgproto))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg FreeType library")
     (description
@@ -1416,10 +1382,9 @@ configuration files.")
      '(#:configure-flags '("--disable-static")))
     (propagated-inputs
      ;; Required in xkbfile.pc.
-     `(("libx11" ,libx11)
-       ("kbproto" ,kbproto)))
+     (list libx11 kbproto))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg XKB file handling library")
     (description "Xorg XKB file handling library.")
@@ -1444,11 +1409,9 @@ configuration files.")
     (arguments
      '(#:configure-flags '("--disable-static")))
     (inputs
-      `(("libxt" ,libxt)
-        ("xorgproto" ,xorgproto)
-        ("libxext" ,libxext)))
+      (list libxt xorgproto libxext))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg Xmu library")
     (description
@@ -1478,9 +1441,7 @@ treat it as part of their software base when porting.")
     (arguments
      '(#:configure-flags '("--disable-static")))
     (inputs
-      `(("libxt" ,libxt)
-        ("xorgproto" ,xorgproto)
-        ("libxext" ,libxext)))
+      (list libxt xorgproto libxext))
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
@@ -1508,11 +1469,9 @@ treat it as part of their software base when porting.")
     (arguments
      '(#:configure-flags '("--disable-static")))
     (inputs
-      `(("xorgproto" ,xorgproto)
-        ("libxext" ,libxext)
-        ("libx11" ,libx11)))
+      (list xorgproto libxext libx11))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg Resource extension library")
     (description "X Resource extension library.")
@@ -1537,11 +1496,9 @@ treat it as part of their software base when porting.")
     (arguments
      '(#:configure-flags '("--disable-static")))
     (propagated-inputs
-      `(("libx11" ,libx11)
-        ("libxext" ,libxext)
-        ("xorgproto" ,xorgproto)))
+      (list libx11 libxext xorgproto))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg Screen Saver library")
     (description "X11 Screen Saver extension client library.")
@@ -1563,12 +1520,11 @@ treat it as part of their software base when porting.")
     (arguments
      '(#:configure-flags '("--disable-static")))
     (propagated-inputs
-     `(("xorgproto" ,xorgproto)))
+     (list xorgproto))
     (inputs
-     `(("libx11" ,libx11)
-       ("libxext" ,libxext)))
+     (list libx11 libxext))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg XFree86-DGA library")
     (description "Client library for the XFree86-DGA extension.")
@@ -1594,9 +1550,9 @@ treat it as part of their software base when porting.")
         (patches (search-patches "luit-posix.patch"))))
     (build-system gnu-build-system)
     (inputs
-      `(("libfontenc" ,libfontenc)))
+      (list libfontenc))
     (native-inputs
-       `(("pkg-config" ,pkg-config)))
+       (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Convert terminal I/O from legacy encodings to UTF-8")
     (description
@@ -1623,8 +1579,8 @@ input from UTF-8 into the locale's encoding.")
             "072h9nzh8s5vqfz35dli4fba36fnr219asjrb7p89n8ph0paan6m"))))
     (build-system gnu-build-system)
     (inputs
-      `(("xorgproto" ,xorgproto)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+      (list xorgproto))
+    (native-inputs (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg makedepend utility")
     (description
@@ -1647,12 +1603,9 @@ input from UTF-8 into the locale's encoding.")
           (base32 "1ixsnsm2mn0zy9ksdid0lj6irnhvasfik9mz8bbrs5sajzmra16a"))))
     (build-system gnu-build-system)
     (inputs
-      `(("zlib" ,zlib)
-        ("xorgproto" ,xorgproto)
-        ("freetype" ,freetype)
-        ("libfontenc" ,libfontenc)))
+      (list zlib xorgproto freetype libfontenc))
     (native-inputs
-       `(("pkg-config" ,pkg-config)))
+       (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Create an index of scalable font files for X server")
     (description
@@ -1702,7 +1655,7 @@ mechanism than copying the contents of the source pixmap.")
           (base32
             "06liap8n4s25sgp27d371cc7yg9a08dxcr3pmdjp761vyin3360j"))))
     (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg PrintProto protocol headers")
     (description
@@ -1726,7 +1679,7 @@ network-transparent printing system.")
           (base32
             "0s4496z61y5q45q20gldwpf788b9nsa8hb13gnck1mwwwwrmarsc"))))
     (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg RandRProto protocol headers")
     (description
@@ -1752,7 +1705,7 @@ window of a screen.")
           (base32
             "0w3kgr1zabwf79bpc28dcnj0fpni6r53rpi82ngjbalj5s6m8xx7"))))
     (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg RecordProto protocol headers")
     (description
@@ -1776,7 +1729,7 @@ of user actions in the X Window System.")
           (base32
             "0dr5xw6s0qmqg0q5pdkb4jkdhaja0vbfqla79qh5j1xjj9dmlwq6"))))
     (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg RenderProto protocol headers")
     (description
@@ -1800,7 +1753,7 @@ as the foundation of a new rendering model within the X Window System.")
           (base32
             "0638iyfiiyjw1hg3139pai0j6m65gkskrvd9684zgc6ydcx00riw"))))
     (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg ResourceProto protocol headers")
     (description
@@ -1824,7 +1777,7 @@ query the X server about its usage of various resources.")
           (base32
             "0rfdbfwd35d761xkfifcscx56q0n56043ixlmv70r4v4l66hmdwb"))))
     (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg ScrnSaverProto protocol headers")
     (description
@@ -1846,9 +1799,9 @@ features and to query screensaver info on specific windows.")
         (base32 "0crczl25zynkrslmm8sjaxszhrh4i33m7h5fg4wfdb3k8aarxjyz"))))
     (build-system gnu-build-system)
     (inputs
-      `(("xorgproto" ,xorgproto)))
+      (list xorgproto))
     (native-inputs
-       `(("pkg-config" ,pkg-config)))
+       (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Register X sessions in system utmp/utmpx databases")
     (description
@@ -1874,11 +1827,9 @@ used with other display managers such as gdm or kdm.")
             "1xdrxs65v7d0rw1yaz0vsz55w4hxym99216p085ya9978j379wlg"))))
     (build-system gnu-build-system)
     (inputs
-      `(("libxkbfile" ,libxkbfile)
-        ("xkeyboard-config" ,xkeyboard-config)
-        ("libx11" ,libx11)))
+      (list libxkbfile xkeyboard-config libx11))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (arguments
      `(#:configure-flags
        (list (string-append "--with-xkb-config-root="
@@ -1909,10 +1860,9 @@ listed on the command line.")
             "0rkjyzmsdqmlrkx8gy2j4q6iksk58hcc92xzdprkf8kml9ar3wbc"))))
     (build-system gnu-build-system)
     (inputs
-      `(("libxt" ,libxt)
-        ("libxmu" ,libxmu)))
+      (list libxt libxmu))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Session Manager Proxy")
     (description
@@ -1936,7 +1886,7 @@ management to participate in an X11R6 session.")
           (base32
             "0w8ryfqylprz37zj9grl4jzdsqq67ibfwq5raj7vm1i7kmp2x08g"))))
     (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs (list pkg-config))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -1978,7 +1928,7 @@ generate new versions of their configure scripts with autoconf.")
           (base32
             "00m7rh3pwmsld4d5fpii3xfk5ciqn17kkk38gfpzrrh8zn4ki067"))))
     (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg VideoProto protocol headers")
     (description
@@ -2002,7 +1952,7 @@ mainly to rescale video playback in the video controller hardware.")
           (base32
             "0syjxgy4m8l94qrm03nvn5k6bkxc8knnlld1gbllym97nvnv0ny0"))))
     (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg WindowsWMProto protocol headers")
     (description
@@ -2029,12 +1979,9 @@ server.")
             "0d3wh6z6znwhfdiv0zaggfj0xgish98xa10yy76b9517zj7hnzhw"))))
     (build-system gnu-build-system)
     (inputs
-      `(("libx11" ,libx11)
-        ("libxft" ,libxft)
-        ("libxmu" ,libxmu)
-        ("libxrender" ,libxrender)))
+      (list libx11 libxft libxmu libxrender))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "X server performance benchmarker")
     (description
@@ -2055,13 +2002,9 @@ server.")
         (base32 "032klzzw8r09z36x1272ssd79bcisz8j5p8gbdy111fiknvx27bd"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libxmu" ,libxmu)
-       ("libxext" ,libxext)
-       ("libxau" ,libxau)
-       ("libx11" ,libx11)))
+     (list libxmu libxext libxau libx11))
     (native-inputs
-     `(("cmdtest" ,cmdtest)
-       ("pkg-config" ,pkg-config)))
+     (list cmdtest pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "X authority file utility")
     (description
@@ -2086,10 +2029,9 @@ information used in connecting to the X server.")
             "1plssg0s3pbslg6rfzxp9sx8ryvn8l32zyvc8zp9zsbsfwjg69rs"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libxcb" ,libxcb)
-       ("xcb-util" ,xcb-util)))
+     (list libxcb xcb-util))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Control display backlight")
     (description
@@ -2115,7 +2057,7 @@ the same way.")
           (base32
             "1vh73sc13s7w5r6gnc6irca56s7998bja7wgdivkfn8jccawgw5r"))))
     (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "X bitmaps")
     (description
@@ -2146,9 +2088,9 @@ legacy X clients.")
                                        ,%app-defaults-dir "\n")))
                      #t)))))
     (inputs
-     `(("libxaw" ,libxaw)))
+     (list libxaw))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Hand calculator for the X Window system")
     (description "Xcalc is a scientific calculator desktop accessory that can
@@ -2209,7 +2151,7 @@ generators in individual language bindings.")
           (base32
             "1pyjv45wivnwap2wvsbrzdvjc5ql8bakkbkrvcv6q9bjjf33ccmi"))))
     (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg XCMiscProto protocol headers")
     (description
@@ -2234,9 +2176,9 @@ to query the server for available resource IDs.")
             "1ik7gzlp2igz183x70883000ygp99r20x3aah6xhaslbpdhm6n75"))))
     (build-system gnu-build-system)
     (inputs
-      `(("libx11" ,libx11)))
+      (list libx11))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Device Color Characterization utility")
     (description
@@ -2263,10 +2205,9 @@ X11 Inter-Client Communication Conventions Manual (ICCCM).")
             "16a96li0s0ggg60v7f6ywxmsrmxdfizcw55ccv7sp4qjfisca7pf"))))
     (build-system gnu-build-system)
     (inputs
-      `(("libxcursor" ,libxcursor)
-        ("xcursorgen" ,xcursorgen)))
+      (list libxcursor xcursorgen))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (arguments
      `(#:configure-flags
        (list (string-append "--with-cursordir="
@@ -2322,9 +2263,7 @@ X server: @code{handhelds}, @code{redglass} and @code{whiteglass}.")
            (lambda* (#:key make-flags #:allow-other-keys)
              (apply invoke `("make" "install" ,@make-flags
                              "THEME_NAME=Hackneyed-Dark")))))))
-    (native-inputs `(("imagemagick" ,imagemagick)
-                     ("inkscape" ,inkscape)
-                     ("xcursorgen" ,xcursorgen)))
+    (native-inputs (list imagemagick inkscape xcursorgen))
     (home-page "https://gitlab.com/Enthymeme/hackneyed-x11-cursors")
     (synopsis "Classic cursor theme for X11")
     (description "Hackneyed is a scalable cursor theme mildly resembling old
@@ -2348,10 +2287,9 @@ left-handed version of the cursors is also included.")
             "0ggbv084cavp52hjgcz3vdj0g018axs0m23c03lpc5sgn92gidim"))))
     (build-system gnu-build-system)
     (inputs
-      `(("libxcursor" ,libxcursor)
-        ("libpng" ,libpng)))
+      (list libxcursor libpng))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Create an X cursor file from PNG images")
     (description
@@ -2375,18 +2313,18 @@ left-handed version of the cursors is also included.")
             "0ldgrj4w2fa8jng4b3f3biaj0wyn8zvya88pnk70d7k12pcqw8rh"))))
     (build-system gnu-build-system)
     (inputs
-      `(("xorgproto" ,xorgproto)
-        ("libx11" ,libx11)
-        ("libxxf86vm" ,libxxf86vm)
-        ("libxxf86dga" ,libxxf86dga)
-        ("libxtst" ,libxtst)
-        ("libxrender" ,libxrender)
-        ("libxinerama" ,libxinerama)
-        ("libxi" ,libxi)
-        ("libxcomposite" ,libxcomposite)
-        ("libdmx" ,libdmx)))
+      (list xorgproto
+            libx11
+            libxxf86vm
+            libxxf86dga
+            libxtst
+            libxrender
+            libxinerama
+            libxi
+            libxcomposite
+            libdmx))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg display information utility")
     (description
@@ -2414,10 +2352,9 @@ available.")
             "0lcx8h3zd11m4w8wf7dyp89826d437iz78cyrix436bqx31x5k6r"))))
     (build-system gnu-build-system)
     (inputs
-      `(("mesa" ,mesa)
-        ("libx11" ,libx11)))
+      (list mesa libx11))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Query DRI configuration information")
     (description
@@ -2443,12 +2380,9 @@ DRI (Direct Rendering Infrastructure) drivers.")
     (build-system gnu-build-system)
     (arguments `(#:configure-flags ',(malloc0-flags)))
     (inputs
-      `(("libxrender" ,libxrender)
-        ("libxrandr" ,libxrandr)
-        ("xorgproto" ,xorgproto)
-        ("libx11" ,libx11)))
+      (list libxrender libxrandr xorgproto libx11))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://gitlab.freedesktop.org/xorg/app/xev")
     (synopsis "Print contents of X events")
     (description
@@ -2477,7 +2411,7 @@ usage.")
           (base32
             "1c2vma9gqgc2v06rfxdiqgwhxmzk2cbmknwf1ng3m76vr0xb5x7k"))))
     (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg XExtProto protocol headers")
     (description
@@ -2503,7 +2437,7 @@ XC-APPGROUP, XTEST.")
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--disable-static")))
-    (native-inputs `(("python" ,python)))
+    (native-inputs (list python))
     (home-page "https://www.freedesktop.org/wiki/Software/libevdev/")
     (synopsis "Wrapper library for evdev devices")
     (description
@@ -2536,7 +2470,7 @@ devices, thus making direct access unnecessary.")
         ("libevdev" ,libevdev)
         ("mtdev" ,mtdev)
         ("xorg-server" ,xorg-server)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs (list pkg-config))
     (arguments
      `(#:configure-flags
        (list (string-append "--with-sdkdir="
@@ -2568,7 +2502,7 @@ including most mice, keyboards, tablets and touchscreens.")
        (list (string-append "--with-sdkdir="
                             %output "/include/xorg"))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
      `(("libinput" ,libinput-minimal)
        ("xorg-server" ,xorg-server)))
@@ -2596,8 +2530,8 @@ provide all features that libinput supports it does little beyond.")
           (base32
             "1awfq496d082brgjbr60lhm6jvr9537rflwxqdfqwfzjy3n6jxly"))))
     (build-system gnu-build-system)
-    (inputs `(("xorg-server" ,xorg-server)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs (list xorg-server))
+    (native-inputs (list pkg-config))
     (arguments
      `(#:configure-flags
        (list (string-append "--with-sdkdir="
@@ -2626,8 +2560,8 @@ It is used to control the pointer with a joystick device.")
           (base32
             "12032yg412kyvnmc5fha1in7mpi651d8sa1bk4138s2j2zr01jgp"))))
     (build-system gnu-build-system)
-    (inputs `(("xorg-server" ,xorg-server)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs (list xorg-server))
+    (native-inputs (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Keyboard input driver for X server")
     (description
@@ -2650,8 +2584,8 @@ It is used to control the pointer with a joystick device.")
           (base32
             "1iawr1wyl2qch1mqszcs0s84i92mh4xxprflnycbw1adc18b7v4k"))))
     (build-system gnu-build-system)
-    (inputs `(("xorg-server" ,xorg-server)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs (list xorg-server))
+    (native-inputs (list pkg-config))
     (arguments
      `(#:configure-flags
        (list (string-append "--with-sdkdir="
@@ -2682,12 +2616,8 @@ as USB mice.")
           (base32
             "0xhm03qywwfgkpfl904d08lx00y28m1b6lqmks5nxizixwk3by3s"))))
     (build-system gnu-build-system)
-    (inputs `(("libx11" ,libx11)
-              ("libxi" ,libxi)
-              ("libevdev" ,libevdev)
-              ("mtdev" ,mtdev)
-              ("xorg-server" ,xorg-server)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs (list libx11 libxi libevdev mtdev xorg-server))
+    (native-inputs (list pkg-config))
     (arguments
      `(#:configure-flags
        (list (string-append "--with-sdkdir="
@@ -2718,8 +2648,8 @@ as USB mice.")
           (base32
             "171k8b8s42s3w73l7ln9jqwk88w4l7r1km2blx1vy898c854yvpr"))))
     (build-system gnu-build-system)
-    (inputs `(("xorg-server" ,xorg-server)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs (list xorg-server))
+    (native-inputs (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Void (null) input driver for X server")
     (description
@@ -2738,8 +2668,8 @@ as USB mice.")
        (sha256
         (base32 "125dq85n46yqmnmr2hknxwcqicwlvz2b2phf0m963fpg9l1j6y30"))))
     (build-system gnu-build-system)
-    (inputs `(("xorg-server" ,xorg-server)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs (list xorg-server))
+    (native-inputs (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "AMD Radeon video driver for X server")
     (description
@@ -2763,8 +2693,8 @@ X server.")
            "07p5vdsj2ckxb6wh02s61akcv4qfg6s1d5ld3jn3lfaayd3f1466"))
         (patches (search-patches "xf86-video-ark-remove-mibstore.patch"))))
     (build-system gnu-build-system)
-    (inputs `(("xorg-server" ,xorg-server)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs (list xorg-server))
+    (native-inputs (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Ark Logic video driver for X server")
     (description
@@ -2785,8 +2715,8 @@ X server.")
                (base32
                 "1pm2cy81ma7ldsw0yfk28b33h9z2hcj5rccrxhfxfgvxsiavrnqy"))))
     (build-system gnu-build-system)
-    (inputs `(("xorg-server" ,xorg-server)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs (list xorg-server))
+    (native-inputs (list pkg-config))
     (synopsis "ASpeed Technologies video driver for X server")
     (description
      "xf86-video-ast is an ASpeed Technologies video driver for the Xorg
@@ -2810,14 +2740,9 @@ X server.")
          (sha256
           (base32 "1n49wx0v13jh8vv17sxgrmmpi1mk3n2wph07jfmxmzqahpcn4lkn"))))
       (build-system gnu-build-system)
-      (inputs `(("mesa" ,mesa)
-                ("xorgproto" ,xorgproto)
-                ("xorg-server" ,xorg-server)))
+      (inputs (list mesa xorgproto xorg-server))
       (native-inputs
-       `(("pkg-config" ,pkg-config)
-         ("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("libtool" ,libtool)))
+       (list pkg-config autoconf automake libtool))
       (home-page "https://www.x.org/wiki/")
       (synopsis "ATI Radeon video driver for X server")
       (description
@@ -2841,8 +2766,8 @@ X server.")
           (base32
             "1asifc6ld2g9kap15vfhvsvyl69lj7pw3d9ra9mi4najllh7pj7d"))))
     (build-system gnu-build-system)
-    (inputs `(("xorg-server" ,xorg-server)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs (list xorg-server))
+    (native-inputs (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Cirrus Logic video driver for X server")
     (description
@@ -2862,8 +2787,8 @@ X server.")
        (sha256
         (base32 "1fcm9vwgv8wnffbvkzddk4yxrh3kc0np6w65wj8k88q7jf3bn4ip"))))
     (build-system gnu-build-system)
-    (inputs `(("xorg-server" ,xorg-server)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs (list xorg-server))
+    (native-inputs (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Dummy video driver for X server")
     (description
@@ -2886,8 +2811,8 @@ X server.")
           (base32
             "16a66zr0l1lmssa07i3rzy07djxnb45c17ks8c71h8l06xgxihyw"))))
     (build-system gnu-build-system)
-    (inputs `(("xorg-server" ,xorg-server)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs (list xorg-server))
+    (native-inputs (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Framebuffer device video driver for X server")
     (description
@@ -2921,10 +2846,7 @@ framebuffer device.")
          ("xorg-server" ,xorg-server)
          ("zlib" ,zlib)))
       (native-inputs
-       `(("pkg-config" ,pkg-config)
-         ("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("libtool" ,libtool)))
+       (list pkg-config autoconf automake libtool))
        ;; This driver is only supported on ARM systems.
       (supported-systems '("armhf-linux" "aarch64-linux"))
       (arguments
@@ -2958,8 +2880,8 @@ It supports a variety of Adreno graphics chipsets.")
        (sha256
         (base32 "0r2dz0agg0k5wrqdbicji6mh6svzyl0xgqk76hpcfdlzn2zx15zl"))))
     (build-system gnu-build-system)
-    (inputs `(("xorg-server" ,xorg-server)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs (list xorg-server))
+    (native-inputs (list pkg-config))
     (supported-systems
      ;; This driver is only supported on i686 systems.
      (filter (lambda (system) (string-prefix? "i686-" system))
@@ -3016,9 +2938,8 @@ compositing.  Both support Xv overlay and dynamic rotation with XRandR.")
           (base32
            "1lkpspvrvrp9s539bhfdjfh4andaqyk63l6zjn8m3km95smk6a45"))))
     (build-system gnu-build-system)
-    (inputs `(("xorgproto" ,xorgproto)
-              ("xorg-server" ,xorg-server)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs (list xorgproto xorg-server))
+    (native-inputs (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "GLINT/Permedia video driver for X server")
     (description
@@ -3042,8 +2963,8 @@ X server.")
           (base32
            "1snhpv1igrhifcls3r498kjd14ml6x2xvih7zk9xlsd1ymmhlb4g"))))
     (build-system gnu-build-system)
-    (inputs `(("xorg-server" ,xorg-server)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs (list xorg-server))
+    (native-inputs (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "I128 video driver for X server")
     (description
@@ -3076,10 +2997,7 @@ X server.")
                 ("libxfont" ,libxfont2)
                 ("xorg-server" ,xorg-server)))
       (native-inputs
-       `(("pkg-config" ,pkg-config)
-         ("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("libtool" ,libtool)))
+       (list pkg-config autoconf automake libtool))
       (supported-systems
        ;; This driver is only supported on Intel systems.
        (filter (lambda (system) (or (string-prefix? "i686-" system)
@@ -3112,11 +3030,9 @@ It supports a variety of Intel graphics chipsets.")
         (patches (search-patches "xf86-video-mach64-glibc-2.20.patch"
                                  "xf86-video-mach64-bool-to-boolean.patch"))))
     (build-system gnu-build-system)
-    (inputs `(("mesa" ,mesa)
-              ("xorgproto" ,xorgproto)
-              ("xorg-server" ,xorg-server)))
+    (inputs (list mesa xorgproto xorg-server))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Mach64 video driver for X server")
     (description
@@ -3143,10 +3059,8 @@ the same level of support for generic VGA or 8514/A adapters.")
           (base32
            "0yaxpgyyj9398nzzr5vnsfxcis76z46p9814yzj8179yl7hld296"))))
     (build-system gnu-build-system)
-    (inputs `(("mesa" ,mesa)
-              ("xorgproto" ,xorgproto)
-              ("xorg-server" ,xorg-server)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs (list mesa xorgproto xorg-server))
+    (native-inputs (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Matrox video driver for X server")
     (description
@@ -3168,9 +3082,8 @@ the same level of support for generic VGA or 8514/A adapters.")
           (base32
             "0r4h673kw8fl7afc30anwbjlbhp82mg15fvaxf470xg7z983k0wk"))))
     (build-system gnu-build-system)
-    (inputs `(("xorgproto" ,xorgproto)
-              ("xorg-server" ,xorg-server)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs (list xorgproto xorg-server))
+    (native-inputs (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "NeoMagic video driver for X server")
     (description
@@ -3220,8 +3133,8 @@ the same level of support for generic VGA or 8514/A adapters.")
           (base32
            "0bdk3pc5y0n7p53q4gc2ff7bw16hy5hwdjjxkm5j3s7hdyg6960z"))))
     (build-system gnu-build-system)
-    (inputs `(("xorg-server" ,xorg-server)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs (list xorg-server))
+    (native-inputs (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "NVIDIA video driver for X server")
     (description
@@ -3245,8 +3158,8 @@ supported, and the RENDER extension is not accelerated by this driver.")
         (base32 "0sqm1jwjg15sp8v7039y2hsbhph8gpjd2bdzcqqiij2mgbi254s9"))
        (patches (search-patches "xf86-video-nouveau-fixup-ABI.patch"))))
     (build-system gnu-build-system)
-    (inputs `(("xorg-server" ,xorg-server)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs (list xorg-server))
+    (native-inputs (list pkg-config))
     (home-page "https://nouveau.freedesktop.org")
     (synopsis "NVIDIA video driver for X server")
     (description
@@ -3269,14 +3182,14 @@ graphics cards.")
          (base32
           "0x9gq3hw6k661k82ikd1y2kkk4dmgv310xr5q59dwn4k6z37aafs"))))
     (build-system gnu-build-system)
-    (inputs `(("libx11" ,libx11)
-              ("libxext" ,libxext)
-              ("libxvmc" ,libxvmc)
-              ("mesa" ,mesa)
-              ("xorgproto" ,xorgproto)
-              ("xorg-server" ,xorg-server)))
+    (inputs (list libx11
+                  libxext
+                  libxvmc
+                  mesa
+                  xorgproto
+                  xorg-server))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Openchrome video driver for X server")
     (description
@@ -3300,12 +3213,9 @@ UniChrome Pro and Chrome9 integrated graphics processors.")
                 "14jc24znnahhmz4kqalafmllsg8awlz0y6gpgdpk5ih38ph851mi"))))
     (build-system gnu-build-system)
     (inputs
-      `(("libxfont" ,libxfont2)
-        ("spice-protocol" ,spice-protocol)
-        ("xorg-server" ,xorg-server)
-        ("xorgproto" ,xorgproto)))
+      (list libxfont2 spice-protocol xorg-server xorgproto))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (synopsis "Qxl video driver for X server")
     (description "xf86-video-qxl is a video driver for the Xorg X server.
 This driver is intended for the spice qxl virtio device.")
@@ -3324,11 +3234,9 @@ This driver is intended for the spice qxl virtio device.")
                (base32
                 "0mz0v5mqmmbncr2drd5zvia1fb7frz2xqwflhhqbnaxx5j48c740"))))
     (build-system gnu-build-system)
-    (inputs `(("mesa" ,mesa)
-              ("xorgproto" ,xorgproto)
-              ("xorg-server" ,xorg-server)))
+    (inputs (list mesa xorgproto xorg-server))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "ATI Rage 128 video driver for X server")
     (description
@@ -3352,10 +3260,8 @@ This driver is intended for ATI Rage 128 based cards.")
           (base32
            "11pcrsdpdrwk0mrgv83s5nsx8a9i4lhmivnal3fjbrvi3zdw94rc"))))
     (build-system gnu-build-system)
-    (inputs `(("mesa" ,mesa)
-              ("xorgproto" ,xorgproto)
-              ("xorg-server" ,xorg-server)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs (list mesa xorgproto xorg-server))
+    (native-inputs (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Savage video driver for X server")
     (description
@@ -3379,8 +3285,8 @@ This driver is intended for ATI Rage 128 based cards.")
            "1g2r6gxqrmjdff95d42msxdw6vmkg2zn5sqv0rxd420iwy8wdwyh"))
         (patches (search-patches "xf86-video-siliconmotion-fix-ftbfs.patch"))))
     (build-system gnu-build-system)
-    (inputs `(("xorg-server" ,xorg-server)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs (list xorg-server))
+    (native-inputs (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Silicon Motion video driver for X server")
     (description
@@ -3404,11 +3310,9 @@ Xorg X server.")
          (base32
           "0nrs6cjldlhakx5987fiiggjrlzilsbdc7l9pz22x1iwslbkz78i"))))
     (build-system gnu-build-system)
-    (inputs `(("mesa" ,mesa)
-              ("xorgproto" ,xorgproto)
-              ("xorg-server" ,xorg-server)))
+    (inputs (list mesa xorgproto xorg-server))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Sis video driver for X server")
     (description
@@ -3432,8 +3336,8 @@ This driver supports SiS chipsets of 300/315/330/340 series.")
           (base32
             "04fgwgk02m4nimlv67rrg1wnyahgymrn6rb2cjj1l8bmzkii4glr"))))
     (build-system gnu-build-system)
-    (inputs `(("xorg-server" ,xorg-server)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs (list xorg-server))
+    (native-inputs (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "GX/TurboGX video driver for X server")
     (description
@@ -3456,8 +3360,8 @@ This driver supports SiS chipsets of 300/315/330/340 series.")
           (base32
             "07z3ngifwg2d4jgq8pms47n5lr2yn0ai72g86xxjnb3k20n5ym7s"))))
     (build-system gnu-build-system)
-    (inputs `(("xorg-server" ,xorg-server)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs (list xorg-server))
+    (native-inputs (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "SUNFFB video driver for X server")
     (description
@@ -3480,10 +3384,8 @@ This driver supports SiS chipsets of 300/315/330/340 series.")
           (base32
            "0qc5wzwf1n65si9rc37bh224pzahh7gp67vfimbxs0b9yvhq0i9g"))))
     (build-system gnu-build-system)
-    (inputs `(("mesa" ,mesa)
-              ("xorgproto" ,xorgproto)
-              ("xorg-server" ,xorg-server)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs (list mesa xorgproto xorg-server))
+    (native-inputs (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "3Dfx video driver for X server")
     (description
@@ -3507,9 +3409,8 @@ This driver supports SiS chipsets of 300/315/330/340 series.")
            "0cb161lvdgi6qnf1sfz722qn38q7kgakcvj7b45ba3i0020828r0"))
         (patches (search-patches "xf86-video-tga-remove-mibstore.patch"))))
     (build-system gnu-build-system)
-    (inputs `(("xorgproto" ,xorgproto)
-              ("xorg-server" ,xorg-server)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs (list xorgproto xorg-server))
+    (native-inputs (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "TGA video driver for X server")
     (description
@@ -3533,9 +3434,8 @@ X server.")
           (base32
            "0gxcar434kx813fxdpb93126lhmkl3ikabaljhcj5qn3fkcijlcy"))))
     (build-system gnu-build-system)
-    (inputs `(("xorgproto" ,xorgproto)
-              ("xorg-server" ,xorg-server)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs (list xorgproto xorg-server))
+    (native-inputs (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Trident video driver for X server")
     (description
@@ -3562,8 +3462,8 @@ X server.")
           (base32
             "0nf6ai74c60xk96kgr8q9mx6lrxm5id3765ws4d801irqzrj85hz"))))
     (build-system gnu-build-system)
-    (inputs `(("xorg-server" ,xorg-server)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs (list xorg-server))
+    (native-inputs (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "VESA video driver for X server")
     (description
@@ -3686,14 +3586,13 @@ server driver works.")
            "0v06qhm059klq40m2yx4wypzb7h53aaassbjfmm6clcyclj1k5s7"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libx11" ,libx11)
-       ("libxext" ,libxext)
-       ("llvm" ,llvm)
-       ("mesa" ,mesa)                   ; for xatracker
-       ("xorg-server" ,xorg-server)))
+     (list libx11
+           libxext
+           llvm
+           mesa ; for xatracker
+           xorg-server))
     (native-inputs
-     `(("eudev" ,eudev)
-       ("pkg-config" ,pkg-config)))
+     (list eudev pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "VMware SVGA video driver for X server")
     (description
@@ -3718,9 +3617,8 @@ server driver works.")
         (patches
          (search-patches "xf86-video-voodoo-pcitag.patch"))))
     (build-system gnu-build-system)
-    (inputs `(("xorgproto" ,xorgproto)
-              ("xorg-server" ,xorg-server)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs (list xorgproto xorg-server))
+    (native-inputs (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Voodoo/Voodoo2 video driver for X server")
     (description
@@ -3841,10 +3739,9 @@ configuring modelines and gamma.")
             "1lr2nb1fhg5fk2fchqxdxyl739602ggwhmgl2wiv5c8qbidw7w8f"))))
     (build-system gnu-build-system)
     (inputs
-      `(("libxxf86vm" ,libxxf86vm)
-        ("libx11" ,libx11)))
+      (list libxxf86vm libx11))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Alter a monitor's gamma correction")
     (description
@@ -3869,11 +3766,9 @@ monitor via the X video mode extension.")
             "15n3mnd4i5kh4z32qv11580qjgvnng0wry2y753ljrqkkrbkrp52"))))
     (build-system gnu-build-system)
     (inputs
-      `(("libxmu" ,libxmu)
-        ("libxau" ,libxau)
-        ("libx11" ,libx11)))
+      (list libxmu libxau libx11))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (home-page "https://gitlab.freedesktop.org/xorg/app/xhost")
     (synopsis "Xorg server access control utility")
     (description
@@ -3897,7 +3792,7 @@ allowed to make connections to the X server.")
           (base32
             "0ns8abd27x7gbp4r44z3wc5k9zqxxj8zjnazqpcyr4n17nxp8xcp"))))
     (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg XineramaProto protocol headers")
     (description
@@ -3928,15 +3823,15 @@ alternative implementations like XRandR or TwinView.")
             "1vb6xdd1xmk5f7pwc5zcbxfray5sf1vbnscqwf2yl8lv7gfq38im"))))
     (build-system gnu-build-system)
     (inputs
-      `(("libxrender" ,libxrender)
-        ("libxrandr" ,libxrandr)
-        ("libxinerama" ,libxinerama)
-        ("libxext" ,libxext)
-        ("libxi" ,libxi)
-        ("libx11" ,libx11)
-        ("xorgproto" ,xorgproto)))
+      (list libxrender
+            libxrandr
+            libxinerama
+            libxext
+            libxi
+            libx11
+            xorgproto))
     (native-inputs
-       `(("pkg-config" ,pkg-config)))
+       (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Configure input devices for X server")
     (description
@@ -3958,11 +3853,9 @@ alternative implementations like XRandR or TwinView.")
          "0pmhshqinwqh5rip670l3szjpywky67hv232ql6gvdj489n0hlb8"))))
     (build-system gnu-build-system)
     (inputs
-     `(("xorgproto" ,xorgproto)
-       ("libxkbfile" ,libxkbfile)
-       ("libx11" ,libx11)))
+     (list xorgproto libxkbfile libx11))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Compile XKB keyboard description")
     (description
@@ -4013,10 +3906,9 @@ make keyboards more accessible to people with physical impairments.")
             "0sprjx8i86ljk0l7ldzbz2xlk8916z5zh78cafjv8k1a63js4c14"))))
     (build-system gnu-build-system)
     (inputs
-      `(("libxkbfile" ,libxkbfile)
-        ("libx11" ,libx11)))
+      (list libxkbfile libx11))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "XKB event daemon demo")
     (description
@@ -4037,11 +3929,9 @@ requested commands if they occur.")
           (base32 "1yi3232g25hhp241irncd8znv3090k2gm0yjcdnz08h89y1zwn2v"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libx11" ,libx11)
-       ("libxkbfile" ,libxkbfile)
-        ("xorgproto" ,xorgproto)))
+     (list libx11 libxkbfile xorgproto))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Visualise an XKB keyboard layout description")
     (description
@@ -4067,11 +3957,9 @@ one from a running X server.")
             "0c412isxl65wplhl7nsk12vxlri29lk48g3p52hbrs3m0awqm8fj"))))
     (build-system gnu-build-system)
     (inputs
-      `(("libxt" ,libxt)
-        ("libxaw" ,libxaw)
-        ("xorgproto" ,xorgproto)))
+      (list libxt libxaw xorgproto))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "XKB utilities")
     (description
@@ -4102,8 +3990,7 @@ extension to the X11 protocol.  It includes:
             "1kmq2ykwmh10sd6155gml4jhdxmvsll6xdg7zw86czpfhrvd48dk"))))
     (build-system gnu-build-system)
     (inputs
-      `(("libx11" ,libx11)
-        ("xkbcomp-intermediate" ,xkbcomp-intermediate)))
+      (list libx11 xkbcomp-intermediate))
     (native-inputs
       `(("gettext" ,gettext-minimal)
         ("perl" ,perl)
@@ -4135,10 +4022,9 @@ can be combined together using the @code{rules} component of this database.")
             "0szzd9nzn0ybkhnfyizb876irwnjsnb78rcaxx6prb71jmmbpw65"))))
     (build-system gnu-build-system)
     (inputs
-      `(("libxmu" ,libxmu)
-        ("libx11" ,libx11)))
+      (list libxmu libx11))
     (native-inputs
-       `(("pkg-config" ,pkg-config)))
+       (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Kill a client by its X resource")
     (description
@@ -4164,9 +4050,9 @@ programs that have displayed undesired windows on a user's screen.")
             "10m3a046jvaw5ywx4y65kl84lsxqan70gww1g1r7cf96ijaqz1jp"))))
     (build-system gnu-build-system)
     (inputs
-      `(("libxcb" ,libxcb)))
+      (list libxcb))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (home-page "https://gitlab.freedesktop.org/xorg/app/xlsatoms")
     (synopsis "List interned X server atoms")
     (description
@@ -4190,9 +4076,9 @@ programs that have displayed undesired windows on a user's screen.")
             "1h8931sn34mcip6vpi4v7hdmr1r58gkbw4s2p97w98kykks2lgvp"))))
     (build-system gnu-build-system)
     (inputs
-      `(("libxcb" ,libxcb)))
+      (list libxcb))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "List client applications running on a display")
     (description
@@ -4217,10 +4103,9 @@ running on X server.")
          "0s6kxgv78chkwsqmhw929f4pf91gq63f4yvixxnan1h00cx0pf49"))))
     (build-system gnu-build-system)
     (inputs
-     `(("xorgproto" ,xorgproto)
-       ("libx11" ,libx11)))
+     (list xorgproto libx11))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "List fonts available from an X server")
     (description
@@ -4246,12 +4131,9 @@ protocol.")
        (list (string-append "--with-appdefaultdir="
                             %output ,%app-defaults-dir))))
     (inputs
-     `(("libx11" ,libx11)
-       ("libxaw" ,libxaw)
-       ("libxmu" ,libxmu)
-       ("libxt" ,libxt)))
+     (list libx11 libxaw libxmu libxt))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Browse and select X font names")
     (description
@@ -4313,10 +4195,9 @@ containing one glyph per cell.")
             "0z28331i2pm16x671fa9qwsfqdmr6a43bzwmp0dm17a3sx0hjgs7"))))
     (build-system gnu-build-system)
     (inputs
-      `(("xorgproto" ,xorgproto)
-        ("libx11" ,libx11)))
+      (list xorgproto libx11))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (home-page "https://gitlab.freedesktop.org/xorg/app/xmodmap")
     (synopsis "Modify keymaps and button mappings on X server")
     (description
@@ -4347,7 +4228,7 @@ tastes.")
           (base32
             "0k5pffyi5bx8dmfn033cyhgd3gf6viqj3x769fqixifwhbgy2777"))))
     (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg SGML documentation tools")
     (description
@@ -4376,11 +4257,9 @@ refers to the included common xorg.css stylesheet.")
             "07qy9lwjvxighcmg6qvjkgagad3wwvidrfx0jz85lgynz3qy0dmr"))))
     (build-system gnu-build-system)
     (inputs
-      `(("xorgproto" ,xorgproto)
-        ("libxmu" ,libxmu)
-        ("libx11" ,libx11)))
+      (list xorgproto libxmu libx11))
     (native-inputs
-        `(("pkg-config" ,pkg-config)))
+        (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Print an X window dump from xwd")
     (description
@@ -4403,10 +4282,9 @@ it for output on various types of printers.")
          "18ckr8g1z50zkc01hprkpm1npwbq32yqib4b3l98c95z2q1yv4lv"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libx11" ,libx11)
-       ("xorgproto" ,xorgproto)))
+     (list libx11 xorgproto))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Display X server properties")
     (description
@@ -4430,12 +4308,9 @@ an X server.")
             "0ql75s1n3dm2m3g1ilb9l6hqh15r0v709bgghpwazy3jknpnvivv"))))
     (build-system gnu-build-system)
     (inputs
-      `(("libxrender" ,libxrender)
-        ("libxrandr" ,libxrandr)
-        ("xorgproto" ,xorgproto)
-        ("libx11" ,libx11)))
+      (list libxrender libxrandr xorgproto libx11))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Command line interface to X RandR extension")
     (description
@@ -4457,10 +4332,9 @@ and Reflect (RandR) extension.")
           (base32 "1d78prd8sfszq2rwwlb32ksph4fymf988lp75aj8iysg44f06pag"))))
     (build-system gnu-build-system)
     (inputs
-      `(("libxmu" ,libxmu)
-        ("libx11" ,libx11)))
+      (list libxmu libx11))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (home-page "https://gitlab.freedesktop.org/xorg/app/xrdb")
     (synopsis "X server resource database utility")
     (description
@@ -4488,9 +4362,9 @@ file.")
             "0lv3rlshh7s0z3aqx5ahnnf8cl082m934bk7gv881mz8nydznz98"))))
     (build-system gnu-build-system)
     (inputs
-      `(("libx11" ,libx11)))
+      (list libx11))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Refresh all or part of an X screen")
     (description
@@ -4516,12 +4390,9 @@ up your screen.")
             "0my987wjvra7l92ry6q44ky383yg3phzxhdbn3lqhapm1ll9bzg4"))))
     (build-system gnu-build-system)
     (inputs
-      `(("xorgproto" ,xorgproto)
-        ("libxmu" ,libxmu)
-        ("libxext" ,libxext)
-        ("libx11" ,libx11)))
+      (list xorgproto libxmu libxext libx11))
     (native-inputs
-       `(("pkg-config" ,pkg-config)))
+       (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "User preference utility for X server")
     (description
@@ -4545,11 +4416,9 @@ up your screen.")
             "0z21mqvmdl6rl63q77479wgkfygnll57liza1i3va7sr4fx45i0h"))))
     (build-system gnu-build-system)
     (inputs
-      `(("libxmu" ,libxmu)
-        ("libxcursor" ,libxcursor)
-        ("xbitmaps" ,xbitmaps)))
+      (list libxmu libxcursor xbitmaps))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Root window parameter setting utility for X server")
     (description
@@ -4573,7 +4442,7 @@ a display running X server.")
           (base32
             "0wyp0yc6gi72hwc3kjmvm3vkj9p6s407cb6dxx37jh9wb68l8z1p"))))
     (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg Network Transport layer library")
     (description
@@ -4600,11 +4469,9 @@ libICE, the X font server, and related components.")
             "0gz7fvxavqlrqynpfbrm2nc9yx8h0ksnbnv34fj7n1q6cq6j4lq3"))))
     (build-system gnu-build-system)
     (inputs
-      `(("libxext" ,libxext)
-        ("libxv" ,libxv)
-        ("libx11" ,libx11)))
+      (list libxext libxv libx11))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (home-page "https://gitlab.freedesktop.org/xorg/app/xvinfo")
     (synopsis "Print out X-Video extension adaptor information")
     (description
@@ -4627,11 +4494,9 @@ extension.")
           (base32 "06q36fh55r62ms0igfxsanrn6gv8lh794q1bw9xzw51p2qs2papv"))))
     (build-system gnu-build-system)
     (inputs
-      `(("libxt" ,libxt)
-        ("libxkbfile" ,libxkbfile)
-        ("xorgproto" ,xorgproto)))
+      (list libxt libxkbfile xorgproto))
     (native-inputs
-       `(("pkg-config" ,pkg-config)))
+       (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Dump current contents of X window or screen to file")
     (description
@@ -4660,10 +4525,9 @@ dump and twice when the dump is completed.")
             "03h8clirhw5ki1xxp18xbf5vynm7r0dwspsgfin6cxn4vx0m8h3s"))))
     (build-system gnu-build-system)
     (inputs
-      `(("libx11" ,libx11)
-        ("xorgproto" ,xorgproto)))
+      (list libx11 xorgproto))
     (native-inputs
-       `(("pkg-config" ,pkg-config)))
+       (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Window information utility for X server")
     (description
@@ -4688,10 +4552,9 @@ Various information is displayed depending on which options are selected.")
             "1a8hdgy40smvblnh3s9f0vkqckl68nmivx7d48zk34m8z18p16cr"))))
     (build-system gnu-build-system)
     (inputs
-      `(("xorgproto" ,xorgproto)
-        ("libx11" ,libx11)))
+      (list xorgproto libx11))
     (native-inputs
-       `(("pkg-config" ,pkg-config)))
+       (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Display an X window dump from xwd")
     (description
@@ -4715,9 +4578,9 @@ formatted dump file, such as produced by xwd.")
             "1c76zcjs39ljil6f6jpx1x17c8fnvwazz7zvl3vbjfcrlmm7rjmv"))))
     (build-system gnu-build-system)
     (inputs
-     `(("xorgproto" ,xorgproto)))
+     (list xorgproto))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "X color name database")
     (description
@@ -4742,9 +4605,9 @@ formatted dump file, such as produced by xwd.")
             "1ki4wiq2iivx5g4w5ckzbjbap759kfqd72yg18m3zpbb4hqkybxs"))))
     (build-system gnu-build-system)
     (propagated-inputs
-      `(("xorgproto" ,xorgproto)))
+      (list xorgproto))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg FixesProto protocol headers")
     (description
@@ -4771,11 +4634,9 @@ cannot be adequately worked around on the client side of the wire.")
     (build-system gnu-build-system)
     (propagated-inputs
       ;; These are all in the Requires or Requires.private field of xdamage.pc
-      `(("libxfixes" ,libxfixes)
-        ("xorgproto" ,xorgproto)
-        ("libx11" ,libx11)))
+      (list libxfixes xorgproto libx11))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg Damage Extension library")
     (description "Xorg library for the XDamage extension.")
@@ -4806,12 +4667,11 @@ cannot be adequately worked around on the client side of the wire.")
                             "/share/man")
              ,@(malloc0-flags))))
     (propagated-inputs
-      `(("xorgproto" ,xorgproto)))
+      (list xorgproto))
     (inputs
-      `(("libxau" ,libxau)
-        ("libx11" ,libx11)))
+      (list libxau libx11))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg Common extensions library")
     (description
@@ -4837,12 +4697,11 @@ cannot be adequately worked around on the client side of the wire.")
     (arguments
      `(#:configure-flags '("--disable-static" ,@(malloc0-flags))))
     (propagated-inputs
-      `(("xorgproto" ,xorgproto)))
+      (list xorgproto))
     (inputs
-      `(("libxext" ,libxext)
-        ("libx11" ,libx11)))
+      (list libxext libx11))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg Xinerama protocol library")
     (description "API for Xinerama extension to X11 protocol.")
@@ -4865,12 +4724,11 @@ cannot be adequately worked around on the client side of the wire.")
             "0mwc2jwmq03b1m9ihax5c6gw2ln8rc70zz4fsj3kb7440nchqdkz"))))
     (build-system gnu-build-system)
     (propagated-inputs
-      `(("printproto" ,printproto)))
+      (list printproto))
     (inputs
-      `(("libx11" ,libx11)
-        ("libxext" ,libxext)))
+      (list libx11 libxext))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg Print Client library")
     (description "Xorg Print Client library.")
@@ -4896,11 +4754,11 @@ cannot be adequately worked around on the client side of the wire.")
      `(#:configure-flags
        (list "--disable-static" ,@(malloc0-flags))))
     (propagated-inputs
-      `(("xorgproto" ,xorgproto)))
+      (list xorgproto))
     (inputs
-      `(("libx11" ,libx11)))
+      (list libx11))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg Render Extension library")
     (description "Library for the Render Extension to the X11 protocol.")
@@ -4924,12 +4782,11 @@ cannot be adequately worked around on the client side of the wire.")
     (arguments
      '(#:configure-flags '("--disable-static")))
     (propagated-inputs
-     `(("libxi" ,libxi)
-       ("xorgproto" ,xorgproto)))
+     (list libxi xorgproto))
     (inputs
-      `(("libx11" ,libx11)))
+      (list libx11))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg library for Xtest and Record extensions")
     (description
@@ -4963,12 +4820,11 @@ protocol and arbitrary X extension protocol.")
     (arguments
      `(#:configure-flags '(,@(malloc0-flags) "--disable-static")))
     (propagated-inputs
-     `(("xorgproto" ,xorgproto)))
+     (list xorgproto))
     (inputs
-      `(("libxext" ,libxext)
-        ("libx11" ,libx11)))
+      (list libxext libx11))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg XVideo Extension library")
     (description "Library for the X Video Extension to the X11 protocol.")
@@ -5013,10 +4869,9 @@ protocol and arbitrary X extension protocol.")
                  (,(dirname
                     (search-input-file inputs "/bin/mkfontscale"))))))))))
     (inputs
-      `(("mkfontscale" ,mkfontscale)))
+      (list mkfontscale))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("automake" ,automake))) ;For up to date 'config.guess' and 'config.sub'.
+     (list pkg-config automake)) ;For up to date 'config.guess' and 'config.sub'.
     (home-page "https://www.x.org/wiki/")
     (synopsis "Create an index of X font files in a directory")
     (description
@@ -5041,9 +4896,9 @@ script around the mkfontscale program.")
             "0ivpxz0rx2a7nahkpkhfgymz7j0pwzaqvyqpdgw9afmxl1yp9yf6"))))
     (build-system gnu-build-system)
     (propagated-inputs
-      `(("util-macros" ,util-macros))) ; to get util-macros in (almost?) all package inputs
+      (list util-macros)) ; to get util-macros in (almost?) all package inputs
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg X11Proto protocol headers")
     (description
@@ -5076,12 +4931,11 @@ common definitions and porting layer.")
     (arguments
      '(#:configure-flags '("--disable-static")))
     (propagated-inputs
-      `(("xorgproto" ,xorgproto)))
+      (list xorgproto))
     (inputs
-      `(("libbsd" ,libbsd)
-        ("xtrans" ,xtrans)))
+      (list libbsd xtrans))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg Inter-Client Exchange library")
     (description "Xorg Inter-Client Exchange library.")
@@ -5106,9 +4960,9 @@ common definitions and porting layer.")
     (arguments
      '(#:configure-flags '("--disable-static")))
     (propagated-inputs
-      `(("xorgproto" ,xorgproto)))
+      (list xorgproto))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg Authorization library")
     (description
@@ -5134,11 +4988,11 @@ an X Window System display.")
     (arguments
      '(#:configure-flags '("--disable-static")))
     (propagated-inputs
-      `(("xorgproto" ,xorgproto)))
+      (list xorgproto))
     (inputs
-      `(("libx11" ,libx11)))
+      (list libx11))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg Fixes Extension library")
     (description "Library for the XFixes Extension to the X11 protocol.")
@@ -5162,14 +5016,11 @@ an X Window System display.")
     (arguments
      '(#:configure-flags '("--disable-static")))
     (propagated-inputs
-      `(("freetype" ,freetype)
-        ("libfontenc" ,libfontenc)
-        ("xorgproto" ,xorgproto)))
+      (list freetype libfontenc xorgproto))
     (inputs
-      `(("zlib" ,zlib)
-        ("xtrans" ,xtrans)))
+      (list zlib xtrans))
     (native-inputs
-       `(("pkg-config" ,pkg-config)))
+       (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg Font handling library")
     (description
@@ -5216,12 +5067,9 @@ new API's in libXft, or the legacy API's in libX11.")
                                               "/share/man")
                                ,@(malloc0-flags))))
     (propagated-inputs
-      `(("xorgproto" ,xorgproto)
-        ("libx11" ,libx11)
-        ("libxext" ,libxext)
-        ("libxfixes" ,libxfixes)))
+      (list xorgproto libx11 libxext libxfixes))
     (native-inputs
-       `(("pkg-config" ,pkg-config)))
+       (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg Input Extension library")
     (description "Library for the XInput Extension to the X11 protocol.")
@@ -5246,12 +5094,9 @@ new API's in libXft, or the legacy API's in libX11.")
      `(#:configure-flags '("--disable-static" ,@(malloc0-flags))))
     (propagated-inputs
       ;; In accordance with xrandr.pc.
-      `(("libx11" ,libx11)
-        ("libxext" ,libxext)
-        ("libxrender" ,libxrender)
-        ("xorgproto" ,xorgproto)))
+      (list libx11 libxext libxrender xorgproto))
     (native-inputs
-       `(("pkg-config" ,pkg-config)))
+       (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg Resize and Rotate Extension library")
     (description
@@ -5276,13 +5121,11 @@ new API's in libXft, or the legacy API's in libX11.")
     (arguments
      `(#:configure-flags '(,@(malloc0-flags) "--disable-static")))
     (propagated-inputs
-      `(("libxv" ,libxv)))
+      (list libxv))
     (inputs
-      `(("xorgproto" ,xorgproto)
-        ("libxext" ,libxext)
-        ("libx11" ,libx11)))
+      (list xorgproto libxext libx11))
     (native-inputs
-       `(("pkg-config" ,pkg-config)))
+       (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg XvMC library")
     (description "Xorg XvMC library.")
@@ -5306,12 +5149,11 @@ new API's in libXft, or the legacy API's in libX11.")
     (arguments
      `(#:configure-flags '("--disable-static" ,@(malloc0-flags))))
     (propagated-inputs
-      `(("libxext" ,libxext)
-        ("xorgproto" ,xorgproto)))
+      (list libxext xorgproto))
     (inputs
-      `(("libx11" ,libx11)))
+      (list libx11))
     (native-inputs
-       `(("pkg-config" ,pkg-config)))
+       (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg XF86 Video Mode Extension library")
     (description
@@ -5337,12 +5179,9 @@ protocol.")
     (build-system gnu-build-system)
     (outputs '("out" "doc"))                      ;5.5 MiB of man pages
     (propagated-inputs
-      `(("libpthread-stubs" ,libpthread-stubs)
-        ("libxau" ,libxau)
-        ("libxdmcp" ,libxdmcp)))
+      (list libpthread-stubs libxau libxdmcp))
     (inputs
-      `(("xcb-proto" ,xcb-proto)
-        ("libxslt" ,libxslt)))
+      (list xcb-proto libxslt))
     (native-inputs
       `(("pkg-config" ,pkg-config)
         ("python" ,python-minimal-wrapper)))
@@ -5422,11 +5261,7 @@ by the Xorg server.")
     (build-system gnu-build-system)
     (propagated-inputs
      ;; The following libraries are required by xorg-server.pc.
-     `(("libpciaccess" ,libpciaccess)
-       ("libxcvt" ,libxcvt)
-       ("mesa" ,mesa)
-       ("pixman" ,pixman)
-       ("xorgproto" ,xorgproto)))
+     (list libpciaccess libxcvt mesa pixman xorgproto))
     (inputs
      `(("udev" ,eudev)
        ("dbus" ,dbus)
@@ -5591,15 +5426,12 @@ application-facing EGL functions.")
         (base32 "1iz86cpc4v7izckrcslllnw0vvvgsxg1sr65yb8s9d0f8xa8djdd"))))
     (build-system meson-build-system)
     (native-inputs
-     `(("libglvnd" ,libglvnd)           ;needed for headers
-       ("mesa-headers" ,mesa-headers)
-       ("pkg-config" ,pkg-config)))
+     (list libglvnd ;needed for headers
+           mesa-headers pkg-config))
     (inputs
-     `(("mesa" ,mesa)
-       ("wayland" ,wayland)
-       ("wayland-protocols" ,wayland-protocols)))
+     (list mesa wayland wayland-protocols))
     (propagated-inputs
-     `(("eglexternalplatform" ,eglexternalplatform)))
+     (list eglexternalplatform))
     (synopsis "EGLStream-based Wayland external platform")
     (description "EGL-Wayland is an implementation of a EGL External Platform
 library to add client-side Wayland support to EGL on top of EGLDevice and
@@ -5696,13 +5528,11 @@ Wayland.")
              "--disable-static"
              ,@(malloc0-flags))))
     (propagated-inputs
-      `(("xorgproto" ,xorgproto)
-        ("libxcb" ,libxcb)))
+      (list xorgproto libxcb))
     (inputs
-      `(("xtrans" ,xtrans)))
+      (list xtrans))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("xorgproto" ,xorgproto)))
+     (list pkg-config xorgproto))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg Core X11 protocol client library")
     (description "Xorg Core X11 protocol client library.")
@@ -5728,12 +5558,9 @@ Wayland.")
     (arguments
      '(#:configure-flags '("--disable-static")))
     (propagated-inputs
-     `(("libx11" ,libx11)
-       ("libxrender" ,libxrender)
-       ("libxfixes" ,libxfixes)
-       ("xorgproto" ,xorgproto)))
+     (list libx11 libxrender libxfixes xorgproto))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     ;; FIXME: The search path below won't be very effective until the bugs
     ;; <http://bugs.gnu.org/20255> and <http://bugs.gnu.org/22138> are solved.
     (native-search-paths
@@ -5771,13 +5598,11 @@ Wayland.")
              "--disable-static"
              ,@(malloc0-flags))))
     (propagated-inputs
-      `(("libx11" ,libx11)
-        ("libice" ,libice)
-        ("libsm" ,libsm)))
+      (list libx11 libice libsm))
     (inputs
-      `(("libx11" ,libx11)))
+      (list libx11))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg XToolkit Intrinsics library")
     (description "Xorg XToolkit Intrinsics library.")
@@ -5802,14 +5627,11 @@ Wayland.")
     (arguments
      '(#:configure-flags '("--disable-static")))
     (propagated-inputs
-      `(("libxext" ,libxext)
-        ("libxmu" ,libxmu)
-        ("libxpm" ,libxpm)
-        ("libxt" ,libxt)))
+      (list libxext libxmu libxpm libxt))
     (inputs
-      `(("xorgproto" ,xorgproto)))
+      (list xorgproto))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg Xaw library")
     (description
@@ -5831,13 +5653,9 @@ Intrinsics (Xt) Library.")
          "1iv8kdb18n9vk3is5fyh6l40ipq9mkgx8ppj86byf464vr1ais7l"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libxt" ,libxt)
-       ("libxmu" ,libxmu)
-       ("libxext" ,libxext)
-       ("xorgproto" ,xorgproto)))
+     (list libxt libxmu libxext xorgproto))
     (native-inputs
-     `(("bison" ,bison)
-       ("pkg-config" ,pkg-config)))
+     (list bison pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Tab Window Manager for the X Window System")
     (description "Twm is a window manager for the X Window System.
@@ -5861,9 +5679,9 @@ keyboard focus, and user-specified key and pointer button bindings.")
     (arguments
      '(#:configure-flags '("--disable-static")))
     (propagated-inputs
-     `(("libxcb" ,libxcb)))
+     (list libxcb))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://cgit.freedesktop.org/xcb/util/")
     (synopsis "Core XCB utility functions")
     (description
@@ -5899,13 +5717,11 @@ The XCB util module provides the following libraries:
     (arguments
      '(#:configure-flags '("--disable-static")))
     (native-inputs
-     `(("m4" ,m4)
-       ("pkg-config" ,pkg-config)))
+     (list m4 pkg-config))
     (inputs
-     `(("libxcb" ,libxcb)))
+     (list libxcb))
     (propagated-inputs
-     `(("xcb-util-renderutil" ,xcb-util-renderutil)
-       ("xcb-util-image" ,xcb-util-image)))
+     (list xcb-util-renderutil xcb-util-image))
     (home-page "https://cgit.freedesktop.org/xcb/util-cursor/")
     (synopsis "Port of libxcursor")
     (description "XCB-util-cursor is a port of libxcursor.")
@@ -5934,10 +5750,9 @@ The XCB util module provides the following libraries:
      (build-system gnu-build-system)
      (outputs '("out"))
      (inputs
-      `(("util-macros" ,util-macros)
-        ("xcb-proto" ,xcb-proto)))
+      (list util-macros xcb-proto))
      (propagated-inputs
-      `(("libxcb" ,libxcb)))
+      (list libxcb))
      (native-inputs
       `(("autoconf" ,autoconf)
         ("automake" ,automake)
@@ -5983,11 +5798,11 @@ numbers.")
     (arguments
      '(#:configure-flags '("--disable-static")))
     (propagated-inputs
-     `(("libxcb" ,libxcb)))
+     (list libxcb))
     (inputs
-     `(("xcb-util" ,xcb-util)))
+     (list xcb-util))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://cgit.freedesktop.org/xcb/util-image/")
     (synopsis "XCB port of Xlib's XImage and XShmImage")
     (description
@@ -6019,9 +5834,9 @@ The XCB util-image module provides the following library:
     (arguments
      '(#:configure-flags '("--disable-static")))
     (propagated-inputs
-     `(("libxcb" ,libxcb)))
+     (list libxcb))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://cgit.freedesktop.org/xcb/util-keysyms/")
     (synopsis "Standard X constants and conversion to/from keycodes")
     (description
@@ -6053,9 +5868,9 @@ The XCB util-keysyms module provides the following library:
     (arguments
      '(#:configure-flags '("--disable-static")))
     (propagated-inputs
-     `(("libxcb" ,libxcb)))
+     (list libxcb))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://cgit.freedesktop.org/xcb/util-renderutil/")
     (synopsis "Convenience functions for the Render extension")
     (description
@@ -6087,10 +5902,9 @@ The XCB util-renderutil module provides the following library:
     (arguments
      '(#:configure-flags '("--disable-static")))
     (propagated-inputs
-     `(("libxcb" ,libxcb)))
+     (list libxcb))
     (native-inputs
-     `(("m4" ,m4)
-       ("pkg-config" ,pkg-config)))
+     (list m4 pkg-config))
     (home-page "https://cgit.freedesktop.org/xcb/util-wm/")
     (synopsis "Client and window-manager helpers for ICCCM and EWMH")
     (description
@@ -6121,12 +5935,11 @@ The XCB util-wm module provides the following libraries:
                 "1fdbakx59vyh474skjydj1bbglpby3y03nl7mxn0z9v8gdhqz6yy"))))
     (build-system gnu-build-system)
     (inputs
-     `(("xorgproto" ,xorgproto)
-       ("libx11" ,libx11)))
+     (list xorgproto libx11))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (propagated-inputs
-     `(("xauth" ,xauth)))
+     (list xauth))
     (home-page "https://www.x.org/")
     (synopsis "Commands to start the X Window server")
     (description
@@ -6154,13 +5967,11 @@ user-friendly mechanism to start the X server.")
             "0i653s8g25cc0mimkwid9366bqkbyhdyjhckx7bw77j20hzrkfid"))))
     (build-system gnu-build-system)
     (propagated-inputs
-      `(("libxext" ,libxext)
-        ("libxmu" ,libxmu)
-        ("libxt" ,libxt)))
+      (list libxext libxmu libxt))
     (inputs
-     `(("libx11" ,libx11)))
+     (list libx11))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg Xaw3d library")
     (description
@@ -6185,14 +5996,14 @@ Intrinsics (Xt) Library.")
        (list (string-append "--with-appdefaultdir="
                             %output ,%app-defaults-dir))))
     (inputs
-     `(("libxmu" ,libxmu)
-       ("libx11" ,libx11)
-       ("libxaw" ,libxaw)
-       ("libxrender" ,libxrender)
-       ("libxft" ,libxft)
-       ("libxkbfile" ,libxkbfile)))
+     (list libxmu
+           libx11
+           libxaw
+           libxrender
+           libxft
+           libxkbfile))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://gitlab.freedesktop.org/xorg/app/xclock")
     (synopsis "Analog / digital clock for X")
     (description "The xclock program displays the time in analog or digital
@@ -6219,9 +6030,9 @@ form.")
        (list (string-append "--with-appdefaultdir="
                             %output ,%app-defaults-dir))))
     (inputs
-     `(("libxaw" ,libxaw)))
+     (list libxaw))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Display or capture a magnified part of a X11 screen")
     (description "Xmag displays and captures a magnified snapshot of a portion
@@ -6248,9 +6059,9 @@ of an X11 screen.")
        (list (string-append "--with-appdefaultdir="
                             %output ,%app-defaults-dir))))
     (inputs
-     `(("libxaw" ,libxaw)))
+     (list libxaw))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Displays a message or query in a window")
     (description
@@ -6292,7 +6103,7 @@ to answer a question.  Xmessage can also exit after a specified time.")
                  (("=xterm")
                   (string-append "=" out "/bin/xterm")))))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
      `(("luit" ,luit)
        ("libXft" ,libxft)
@@ -6351,24 +6162,18 @@ programs that cannot use the window system directly.")
        ;; Tests require a running X11 server.
        #:tests? #f))
     (native-inputs
-     `(("perl-extutils-depends" ,perl-extutils-depends)
-       ("perl-extutils-pkgconfig" ,perl-extutils-pkgconfig)
-       ("perl-module-install" ,perl-module-install)
-       ("perl-test-deep" ,perl-test-deep)
-       ("perl-test-exception" ,perl-test-exception)))
+     (list perl-extutils-depends perl-extutils-pkgconfig
+           perl-module-install perl-test-deep perl-test-exception))
     (propagated-inputs
-     `(("perl-data-dump" ,perl-data-dump)
-       ("perl-mouse" ,perl-mouse)
-       ("perl-mousex-nativetraits" ,perl-mousex-nativetraits)
-       ("perl-try-tiny" ,perl-try-tiny)
-       ("perl-xml-descent" ,perl-xml-descent)
-       ("perl-xml-simple" ,perl-xml-simple)
-       ("perl-xs-object-magic" ,perl-xs-object-magic)))
+     (list perl-data-dump
+           perl-mouse
+           perl-mousex-nativetraits
+           perl-try-tiny
+           perl-xml-descent
+           perl-xml-simple
+           perl-xs-object-magic))
     (inputs
-     `(("libxcb" ,libxcb)
-       ("xcb-proto" ,xcb-proto)
-       ("xcb-util" ,xcb-util)
-       ("xcb-util-wm" ,xcb-util-wm)))
+     (list libxcb xcb-proto xcb-util xcb-util-wm))
     (home-page "https://metacpan.org/release/X11-XCB")
     (synopsis "Perl bindings for libxcb")
     (description
@@ -6418,10 +6223,9 @@ perl programs to display windows and graphics on X11 servers.")
         (base32 "1x3kvic52jgp2mvd5wzrqrprqi82cdk8l4075v8b33ksvj9mjqiw"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-encode-hanextra" ,perl-encode-hanextra)
-       ("perl-module-util" ,perl-module-util)))
+     (list perl-encode-hanextra perl-module-util))
     (propagated-inputs
-     `(("perl-x11-protocol" ,perl-x11-protocol)))
+     (list perl-x11-protocol))
     (home-page "https://metacpan.org/release/X11-Protocol-Other")
     (synopsis "Miscellaneous helpers for @code{X11::Protocol} connections")
     (description
@@ -6447,9 +6251,7 @@ Conventions Manual) and some of the @dfn{EWMH}
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("autoconf" ,autoconf)
-       ("automake" ,automake)))
+     (list pkg-config autoconf automake))
     (inputs
      `(("libX11" ,libx11)
        ("libXext" ,libxext)
@@ -6514,9 +6316,7 @@ basic eye-candy effects.")
               ("dbus" ,dbus)               ; For dbus-launch command.
               ("python-lz4" ,python-lz4) ; Faster compression than zlib.
               ("python-netifaces" ,python-netifaces)))
-    (native-inputs `(("pkg-config" ,pkg-config)
-                     ("pandoc" ,pandoc)
-                     ("python-cython" ,python-cython)))
+    (native-inputs (list pkg-config pandoc python-cython))
     (arguments
      `(#:configure-flags '("--without-Xdummy"
 						   "--without-Xdummy_wrapper"
@@ -6608,11 +6408,7 @@ X11 servers, Windows, or macOS.")
          "1p7sl0js47ja4glmax93ci59h02ipqw3wxkh4f1qgaz5qjy9nn9l"))))
     (build-system gnu-build-system)
     (inputs
-     `(("anthy" ,anthy)
-       ("libedit" ,libedit)
-       ("libxft" ,libxft)
-       ("m17n-lib" ,m17n-lib)
-       ("ncurses" ,ncurses)))
+     (list anthy libedit libxft m17n-lib ncurses))
     (native-inputs
      `(("emacs" ,emacs-minimal)
        ("intltool" ,intltool)
@@ -6716,15 +6512,15 @@ and embedded platforms.")
          "1gizjhji3yspxxxvb90js3z1bv18rbf5phxg8rciixpj3cccff8z"))))
     (build-system gnu-build-system)
     (inputs
-     `(("cairo" ,cairo)
-       ("glib" ,glib)
-       ("libx11" ,libx11)
-       ("libxext" ,libxext)
-       ("libxinerama" ,libxinerama)
-       ("libxtst" ,libxtst)
-       ("xdotool" ,xdotool)))
+     (list cairo
+           glib
+           libx11
+           libxext
+           libxinerama
+           libxtst
+           xdotool))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (arguments
      `(#:tests? #f ;No tests.
        #:phases
@@ -6777,10 +6573,8 @@ mouse click.  You can do everything mouse can do with a keyboard.")
                 "0rya202y87dwl35jnmq8hs3arzdrv5z4vf1xmi0py4rnmhdpszaw"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
-    (inputs `(("libxcomposite" ,libxcomposite)
-              ("libxdamage" ,libxdamage)
-              ("libxrender" ,libxrender)))
+     (list pkg-config))
+    (inputs (list libxcomposite libxdamage libxrender))
     (synopsis "Set the transparency of X11 windows")
     (description "@command{transset} is a simple program for X servers
 supporting the XFIXES, DAMAGE, and COMPOSITE extensions.  It lets the
@@ -6823,9 +6617,7 @@ user set the transparency on a window.")
               (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("autoconf" ,autoconf)
-       ("automake" ,automake)))
+     (list pkg-config autoconf automake))
     (synopsis "Resize fonts in the BDF format")
     (description
      "This package provides @command{bdfresize}, a command to magnify or
@@ -6884,13 +6676,13 @@ output.")
                                                  "bash")
                                       "/bin/bash"))))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("bdftopcf" ,bdftopcf)
-       ("bdfresize" ,bdfresize)
-       ("sharutils" ,sharutils)         ; for 'uuencode'
-       ("perl" ,perl)))
+     (list pkg-config
+           bdftopcf
+           bdfresize
+           sharutils ; for 'uuencode'
+           perl))
     (inputs
-     `(("perl" ,perl)))                 ; used by 'ckbcomp'
+     (list perl))                 ; used by 'ckbcomp'
     (synopsis "Set up the Linux console font and keyboard")
     (description
      "console-setup provides the console with the same keyboard
@@ -6927,10 +6719,9 @@ Thai).")
         (base32 "0858wn2p14bxpv9lvaz2bz1rk6zk0g8zgxf8iy595m8fqv4q2fya"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("libpng" ,libpng)
-       ("libxcursor" ,libxcursor)))
+     (list libpng libxcursor))
     (synopsis "Decode X cursors")
     (description
      "xcur2png is a program decomposes an X cursor into a set of PNG images and
@@ -6971,7 +6762,7 @@ changed.")
                (base32
                 "16jqparb33lfq4cvd9l3jgd7fq86fk9gv2ixc8vgqibid6cnhi0x"))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
      `(("glib" ,glib)
        ("gettext" ,gettext-minimal)
@@ -7048,11 +6839,10 @@ box, and a calendar.  It uses GTK+, and will match your desktop theme.")
                (install-file "xvfb-run" bin)
                (install-file "xvfb-run.1" man)))))))
     (inputs
-     `(("util-linux" ,util-linux)       ; for getopt
-       ("xauth" ,xauth)
-       ("xorg-server" ,xorg-server)))
+     (list util-linux ; for getopt
+           xauth xorg-server))
     (native-inputs
-     `(("xterm" ,xterm)))               ; for the test
+     (list xterm))               ; for the test
     ;; This script is not part of the upstream xorg-server.  It is provided only
     ;; as a patch added to Debian's package.
     (home-page "https://packages.debian.org/sid/xorg-server-source")
@@ -7091,9 +6881,7 @@ the server and cleaning up before returning the exit status of the command.")
        (modify-phases %standard-phases
          (delete 'configure))))
     (inputs
-     `(("imlib2" ,imlib2)
-       ("libx11" ,libx11)
-       ("libxinerama" ,libxinerama)))
+     (list imlib2 libx11 libxinerama))
     (home-page "https://github.com/ttzhou/setroot")
     (synopsis "Simple X background setter inspired by imlibsetroot and feh")
     (description "Setroot is a lightweight X background setter with feh's

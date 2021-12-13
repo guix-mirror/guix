@@ -222,12 +222,12 @@ endif()~%~%"
        ("python-numpy" ,python-numpy)
        ("python-lxml" ,python-lxml)))
     (native-inputs
-     `(("imagemagick" ,imagemagick)     ;for tests
-       ("intltool" ,intltool)
-       ("glib" ,glib "bin")
-       ("googletest" ,googletest)
-       ("perl" ,perl)
-       ("pkg-config" ,pkg-config)))
+     (list imagemagick ;for tests
+           intltool
+           `(,glib "bin")
+           googletest
+           perl
+           pkg-config))
     (home-page "https://inkscape.org/")
     (synopsis "Vector graphics editor")
     (description "Inkscape is a vector graphics editor.  What sets Inkscape

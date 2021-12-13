@@ -70,10 +70,7 @@
                          (find-files %output ".*\\.t?gz$"))
                #t)))))
       (inputs
-       `(("php" ,php)
-         ("git" ,git)
-         ("mercurial" ,mercurial)
-         ("subversion" ,subversion)))
+       (list php git mercurial subversion))
       (home-page "https://github.com/phacility/arcanist")
       (synopsis "Command-line interface for Phabricator")
       (description

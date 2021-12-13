@@ -66,10 +66,7 @@
                (("shrext_cmds") "shrext"))
              #t)))))
     (inputs
-      `(("glib" ,glib)
-        ("popt" ,popt)
-        ("libxml2" ,libxml2)
-        ("zlib" ,zlib)))
+      (list glib popt libxml2 zlib))
     (native-inputs
       `(("glib:bin" ,glib "bin")
         ("pkg-config" ,pkg-config)))

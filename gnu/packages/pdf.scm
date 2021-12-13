@@ -134,7 +134,7 @@
        ("pkg-config" ,pkg-config)
        ("texlive" ,texlive-tiny)))
     (inputs
-     `(("poppler" ,poppler)))
+     (list poppler))
     (home-page "https://github.com/trueroad/extractpdfmark")
     (synopsis "Extract page mode and named destinations as PDFmark from PDF")
     (description
@@ -179,10 +179,7 @@ information.")
                    (,(string-append qtbase "/lib/qt5/plugins/platforms"))))
                #t))))))
     (inputs
-     `(("python-pypdf2" ,python-pypdf2)
-       ("python-pyqt" ,python-pyqt)
-       ("python-poppler-qt5" ,python-poppler-qt5)
-       ("qtbase" ,qtbase-5)))
+     (list python-pypdf2 python-pyqt python-poppler-qt5 qtbase-5))
     (home-page "http://crazy-compilers.com/flyer-composer")
     (synopsis "Rearrange PDF pages to print as flyers on one sheet")
     (description "@command{flyer-composer} can be used to prepare one- or
@@ -254,11 +251,11 @@ please install the @code{flyer-composer-gui} package.")))
     ;; As per poppler-cairo and poppler-glib.pc.
     ;; XXX: Ideally we'd propagate Cairo too, but that would require a
     ;; different solution to the circular dependency mentioned above.
-    `(("glib" ,glib)))
+    (list glib))
    (native-inputs
-      `(("pkg-config" ,pkg-config)
-        ("glib" ,glib "bin")                      ; glib-mkenums, etc.
-        ("gobject-introspection" ,gobject-introspection)))
+      (list pkg-config
+            `(,glib "bin") ; glib-mkenums, etc.
+            gobject-introspection))
    (arguments
     `(#:tests? #f                      ;no test data provided with the tarball
       #:configure-flags
@@ -351,12 +348,9 @@ When present, Poppler is able to correctly render CJK and Cyrillic text.")
                                                (assoc-ref inputs "python-pyqt")
                                                "/share/sip")) #t))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("python-sip" ,python-sip-4)
-       ("python-pyqt" ,python-pyqt)
-       ("poppler-qt5" ,poppler-qt5)
-       ("qtbase" ,qtbase-5)))
+     (list python-sip-4 python-pyqt poppler-qt5 qtbase-5))
     (home-page "https://pypi.org/project/python-poppler-qt5/")
     (synopsis "Python bindings for Poppler-Qt5")
     (description
@@ -387,12 +381,9 @@ Poppler PDF rendering library.")
             (string-append "--with-png="
                            (assoc-ref %build-inputs "libpng")))))
    (inputs
-    `(("zlib" ,zlib)
-      ("libpng" ,libpng)))
+    (list zlib libpng))
    (native-inputs
-    `(("autoconf" ,autoconf)
-      ("automake" ,automake)
-      ("libtool" ,libtool)))
+    (list autoconf automake libtool))
    (home-page "http://libharu.org/")
    (synopsis "Library for generating PDF files")
    (description
@@ -411,11 +402,7 @@ reading and editing of existing PDF files.")
       (sha256
        (base32 "0ip81c9vy0igjnasl9iv2lz214fb01vvvdzbvjmgwc63fi1jgr0g"))))
    (build-system cmake-build-system)
-   (inputs `(("cups" ,cups)
-             ("freetype" ,freetype)
-             ("libpng" ,libpng)
-             ("qtbase" ,qtbase-5)
-             ("zlib" ,zlib)))
+   (inputs (list cups freetype libpng qtbase-5 zlib))
    (arguments
     `(#:tests? #f))                   ; there is no check target
    (synopsis "Viewer for PDF files based on the Motif toolkit")
@@ -436,9 +423,8 @@ reading and editing of existing PDF files.")
               (sha256
                (base32
                 "1i6cf0vks501cggwvfsl6qb7mdaf3sszdymphimfvnspw810faj5"))))
-    (native-inputs `(("pkg-config" ,pkg-config)))
-    (inputs `(("libarchive" ,libarchive)
-              ("zathura" ,zathura)))
+    (native-inputs (list pkg-config))
+    (inputs (list libarchive zathura))
     (build-system meson-build-system)
     (arguments
      `(#:tests? #f                      ; package does not contain tests
@@ -471,9 +457,8 @@ using libarchive.")
               (sha256
                (base32
                 "0wygq89nyjrjnsq7vbpidqdsirjm6iq4w2rijzwpk2f83ys8bc3y"))))
-    (native-inputs `(("pkg-config" ,pkg-config)))
-    (inputs `(("libspectre" ,libspectre)
-              ("zathura" ,zathura)))
+    (native-inputs (list pkg-config))
+    (inputs (list libspectre zathura))
     (build-system meson-build-system)
     (arguments
      `(#:tests? #f                      ; package does not contain tests
@@ -506,10 +491,9 @@ using libspectre.")
               (sha256
                (base32
                 "0062n236414db7q7pnn3ccg5111ghxj3407pn9ri08skxskgirln"))))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs (list pkg-config))
     (inputs
-     `(("djvulibre" ,djvulibre)
-       ("zathura" ,zathura)))
+     (list djvulibre zathura))
     (build-system meson-build-system)
     (arguments
      `(#:tests? #f                      ; package does not contain tests
@@ -542,7 +526,7 @@ using the DjVuLibre library.")
               (sha256
                (base32
                 "1r3v37k9fl2rxipvacgxr36llywvy7n20a25h3ajlyk70697sa66"))))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs (list pkg-config))
     (inputs
      `(("jbig2dec" ,jbig2dec)
        ("libjpeg" ,libjpeg-turbo)
@@ -592,10 +576,9 @@ by using the @code{mupdf} rendering library.")
               (sha256
                (base32
                 "1vfl4vkyy3rf39r1sqaa7y8113bgkh2bkfq3nn2inis9mrykmk6m"))))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs (list pkg-config))
     (inputs
-     `(("poppler" ,poppler)
-       ("zathura" ,zathura)))
+     (list poppler zathura))
     (build-system meson-build-system)
     (arguments
      `(#:tests? #f                      ; package does not include tests
@@ -641,10 +624,9 @@ by using the poppler rendering engine.")
                      ;; For tests.
                      ("check" ,check)
                      ("xorg-server" ,xorg-server-for-tests)))
-    (inputs `(("sqlite" ,sqlite)))
+    (inputs (list sqlite))
     ;; Listed in 'Requires.private' of 'zathura.pc'.
-    (propagated-inputs `(("cairo" ,cairo)
-                         ("girara" ,girara)))
+    (propagated-inputs (list cairo girara))
     (native-search-paths
      (list (search-path-specification
             (variable "ZATHURA_PLUGINS_PATH")
@@ -688,8 +670,7 @@ interaction.")
                 "1f0yvkx6nf99fp741w2y706d8bs9824x1z2gqm3rdy5fv8bfgwkw"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("cppunit" ,cppunit)
-       ("pkg-config" ,pkg-config)))
+     (list cppunit pkg-config))
     (inputs
      `(("libjpeg" ,libjpeg-turbo)
        ("libtiff" ,libtiff)
@@ -763,7 +744,7 @@ extracting content or merging files.")
         ("openssl" ,openssl)
         ("zlib" ,zlib)))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      (list pkg-config))
     (arguments
       `(#:tests? #f                     ; no check target
         #:make-flags (list "verbose=yes"
@@ -822,12 +803,10 @@ line tools for batch rendering @command{pdfdraw}, rewriting files
               (("/usr/bin/env") (which "env")))
             #t)))))
    (native-inputs
-    `(("pkg-config" ,pkg-config)
-      ("perl" ,perl)))
+    (list pkg-config perl))
    (propagated-inputs
     ;; In Requires.private of libqpdf.pc.
-    `(("libjpeg-turbo" ,libjpeg-turbo)
-      ("zlib" ,zlib)))
+    (list libjpeg-turbo zlib))
    (synopsis "Command-line tools and library for transforming PDF files")
    (description
     "QPDF is a command-line program that does structural, content-preserving
@@ -855,14 +834,14 @@ program capable of converting PDF into other formats.")
        (patches (search-patches "qpdfview-qt515-compat.patch"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("cups" ,cups)
-       ("djvulibre" ,djvulibre)
-       ("libspectre" ,libspectre)
-       ("poppler-qt5" ,poppler-qt5)
-       ("qtbase" ,qtbase-5)
-       ("qtsvg" ,qtsvg)))
+     (list cups
+           djvulibre
+           libspectre
+           poppler-qt5
+           qtbase-5
+           qtsvg))
     (arguments
      `(#:tests? #f ; no tests
        #:phases
@@ -900,7 +879,7 @@ SyncTeX support, and rudimentary support for annotations and forms.")
        ("glib" ,glib)
        ("libgnomecanvas" ,libgnomecanvas)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "http://xournal.sourceforge.net/")
     (synopsis "Notetaking using a stylus")
     (description
@@ -952,16 +931,16 @@ using a stylus.")
        ("help2man" ,help2man)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("alsa-lib" ,alsa-lib)
-       ("gtk+" ,gtk+)
-       ("librsvg" ,librsvg)
-       ("libsndfile" ,libsndfile)
-       ("libxml2" ,libxml2)
-       ("libzip" ,libzip)
-       ("lua" ,lua)
-       ("poppler" ,poppler)
-       ("portaudio" ,portaudio)
-       ("texlive-bin" ,texlive-bin)))
+     (list alsa-lib
+           gtk+
+           librsvg
+           libsndfile
+           libxml2
+           libzip
+           lua
+           poppler
+           portaudio
+           texlive-bin))
     (home-page "https://github.com/xournalpp/xournalpp")
     (synopsis "Handwriting notetaking software with PDF annotation support")
     (description "Xournal++ is a hand note taking software written in
@@ -1040,7 +1019,7 @@ optimize toolbar for portrait / landscape
             (base32
              "1v0gy4mbx02ys96ssx89420y0njknlrxs2bx64bv4rp8a0al66w5"))))))
     (propagated-inputs
-     `(("python-pillow" ,python-pillow)))
+     (list python-pillow))
     (home-page "https://www.reportlab.com")
     (synopsis "Python library for generating PDFs and graphics")
     (description "This is the ReportLab PDF Toolkit.  It allows rapid creation
@@ -1066,10 +1045,7 @@ vector formats.")
     (build-system python-build-system)
 
     ;; TODO: Add dependency on pdftk.
-    (inputs `(("python2-pygame" ,python2-pygame)
-              ("python2-pillow" ,python2-pillow)
-              ("sdl" ,sdl)
-              ("xpdf" ,xpdf)))
+    (inputs (list python2-pygame python2-pillow sdl xpdf))
 
     (arguments
      `(#:python ,python-2
@@ -1172,7 +1148,7 @@ information for every pixel as the input.")
               ("libepoxy" ,libepoxy)
               ("libpng" ,libpng)
               ("poppler" ,poppler)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs (list pkg-config))
     (synopsis "Framebuffer and drm-based image viewer")
     (description
       "fbida contains a few applications for viewing and editing images on
@@ -1194,10 +1170,9 @@ the framebuffer.")
                 "14ffdm4y26imq99wjhkrhy9lp33165xci1l5ndwfia8hz53bl02k"))))
     (build-system gnu-build-system)
     (inputs
-     `(("cairo" ,cairo)
-       ("poppler" ,poppler)))
+     (list cairo poppler))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "http://www.cityinthesky.co.uk/opensource/pdf2svg/")
     (synopsis "PDF to SVG converter")
     (description "@command{pdf2svg} is a simple command-line PDF to SVG
@@ -1301,17 +1276,12 @@ python-pypdf2 instead.")
                  `("GI_TYPELIB_PATH" ":" prefix
                    (,(getenv "GI_TYPELIB_PATH"))))))))))
     (native-inputs
-     `(("intltool" ,intltool)
-       ("python-distutils-extra" ,python-distutils-extra)))
+     (list intltool python-distutils-extra))
     (inputs
-     `(("gtk+" ,gtk+)
-       ("poppler" ,poppler)))
+     (list gtk+ poppler))
     (propagated-inputs
-     `(("img2pdf" ,img2pdf)
-       ("python-dateutil" ,python-dateutil)
-       ("python-pikepdf" ,python-pikepdf)
-       ("python-pycairo" ,python-pycairo)
-       ("python-pygobject" ,python-pygobject)))
+     (list img2pdf python-dateutil python-pikepdf python-pycairo
+           python-pygobject))
     (home-page "https://github.com/jeromerobert/pdfarranger")
     (synopsis "Merge, split and re-arrange pages from PDF documents")
     (description
@@ -1336,7 +1306,7 @@ PDF Arranger was formerly known as PDF-Shuffler.")
     (arguments
      `(#:tests? #f))  ; test-suite not included in source archive
     (inputs
-     `(("python-pypdf2" ,python-pypdf2)))
+     (list python-pypdf2))
     (home-page "https://pythonhosted.org/pdftools.pdfposter/")
     (synopsis "Scale and tile PDF images/pages to print on multiple pages")
     (description "@command{pdfposter} can be used to create a large poster by
@@ -1364,11 +1334,9 @@ PDF.  Indeed @command{pdfposter} was inspired by @command{poster}.")
          "1fia10djcxxl7n9jw2prargw4yzbykk6izig2443ycj9syhxrwqf"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("libgcrypt" ,libgcrypt)
-       ("pcre" ,pcre)
-       ("poppler" ,poppler)))
+     (list libgcrypt pcre poppler))
     (home-page "https://pdfgrep.org")
     (synopsis "Command-line utility to search text in PDF files")
     (description
@@ -1416,7 +1384,7 @@ multiple files.")
        ("vala" ,vala)
        ("webkitgtk" ,webkitgtk-with-libsoup2)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://pdfpc.github.io/")
     (synopsis "Presenter console with multi-monitor support for PDF files")
     (description
@@ -1441,10 +1409,9 @@ presentation.  The input files processed by pdfpc are PDF documents.")
         (base32 "1z1w1fg2bvb8p92n1jlpqp3n9mq42szb2mqhh4xqmmnmfcdkpi9s"))))
     (build-system gnu-build-system)
     (inputs
-     `(("pango" ,pango)))
+     (list pango))
     (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+     (list intltool pkg-config))
     (home-page "https://github.com/dov/paps")
     (synopsis "Pango to PostScript converter")
     (description
@@ -1475,8 +1442,7 @@ rendering of the file through the Pango Cairo back end.")
                (("more-itertools>=2\\.2,<6\\.0\\.0") "more-itertools>=2.2"))
              #t)))))
     (propagated-inputs
-     `(("python-more-itertools" ,python-more-itertools)
-       ("python-pypdf2" ,python-pypdf2)))
+     (list python-more-itertools python-pypdf2))
     (home-page "https://github.com/hellerbarde/stapler")
     (synopsis "PDF manipulation tool")
     (description "Stapler is a pure Python alternative to PDFtk, a tool for
@@ -1554,18 +1520,17 @@ manipulating PDF documents from the command line.  It supports
        ("glib" ,glib)
        ("pango" ,pango)))
     (propagated-inputs
-     `(("gdk-pixbuf" ,gdk-pixbuf)
-       ("python-cairocffi" ,python-cairocffi)
-       ("python-cairosvg" ,python-cairosvg)
-       ("python-cffi" ,python-cffi)
-       ("python-cssselect2" ,python-cssselect2)
-       ("python-html5lib" ,python-html5lib)
-       ("python-pyphen" ,python-pyphen)
-       ("python-tinycss2" ,python-tinycss2)))
+     (list gdk-pixbuf
+           python-cairocffi
+           python-cairosvg
+           python-cffi
+           python-cssselect2
+           python-html5lib
+           python-pyphen
+           python-tinycss2))
     (native-inputs
-     `(("font-dejavu" ,font-dejavu)     ;tests depend on it
-       ("python-pytest-cov" ,python-pytest-cov)
-       ("python-pytest-runner" ,python-pytest-runner)))
+     (list font-dejavu ;tests depend on it
+           python-pytest-cov python-pytest-runner))
     (home-page "https://weasyprint.org/")
     (synopsis "Document factory for creating PDF files from HTML")
     (description "WeasyPrint helps web developers to create PDF documents.  It

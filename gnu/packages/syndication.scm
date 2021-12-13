@@ -146,7 +146,7 @@
        ("sqlite" ,sqlite)
        ("x11" ,libx11)))
     (propagated-inputs
-     `(("dconf" ,dconf)))
+     (list dconf))
     (synopsis "Client for Twitter")
     (description "Cawbird is a Twitter client built with GTK and Vala.
 It supports all features except non-mention notifications, polls, threads and
@@ -208,7 +208,7 @@ cards.")
        ("python-requests" ,python-requests)
        ("webkitgtk" ,webkitgtk-with-libsoup2)))
     (propagated-inputs
-     `(("dconf" ,dconf)))
+     (list dconf))
     (synopsis "Client for Reddit")
     (description "Giara is a reddit app, built with Python, GTK and Handy.")
     (home-page "https://giara.gabmus.org/")
@@ -233,12 +233,12 @@ cards.")
        ;; For building documentation.
        ("asciidoctor" ,ruby-asciidoctor)))
     (inputs
-     `(("curl" ,curl)
-       ("json-c" ,json-c)
-       ("libxml2" ,libxml2)
-       ("ncurses" ,ncurses)
-       ("stfl" ,stfl)
-       ("sqlite" ,sqlite)))
+     (list curl
+           json-c
+           libxml2
+           ncurses
+           stfl
+           sqlite))
     (arguments
      `(#:modules ((guix build cargo-build-system)
                   (guix build utils)
@@ -323,8 +323,8 @@ file system, and many more features.")
        ;; For building documentation.
        ("asciidoc" ,asciidoc)))
     (inputs
-     `(("json-c" ,json-c-0.13)
-       ,@(alist-delete "json-c" (package-inputs newsboat))))
+     (modify-inputs (package-inputs newsboat)
+       (replace "json-c" json-c-0.13)))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
@@ -380,24 +380,24 @@ file system, and many more features.")
        ("pkg-config" ,pkg-config)
        ("which" ,which)))
     (inputs
-     `(("glib" ,glib)
-       ("glib-networking" ,glib-networking)
-       ("gnome-keyring" ,gnome-keyring)
-       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("gstreamer" ,gstreamer)
-       ("json-glib" ,json-glib)
-       ("libnotify" ,libnotify)
-       ("libpeas" ,libpeas)
-       ("libsecret" ,libsecret)
-       ("libsoup" ,libsoup)
-       ("libxml2" ,libxml2)
-       ("libxslt" ,libxslt)
-       ("pango" ,pango)
-       ("python" ,python)
-       ("python-pycairo" ,python-pycairo)
-       ("python-pygobject" ,python-pygobject)
-       ("sqlite" ,sqlite)
-       ("webkitgtk" ,webkitgtk)))
+     (list glib
+           glib-networking
+           gnome-keyring
+           gsettings-desktop-schemas
+           gstreamer
+           json-glib
+           libnotify
+           libpeas
+           libsecret
+           libsoup
+           libxml2
+           libxslt
+           pango
+           python
+           python-pycairo
+           python-pygobject
+           sqlite
+           webkitgtk))
     (home-page "https://lzone.de/liferea/")
     (synopsis "News reader for GTK/GNOME")
     (description "Liferea is a desktop feed reader/news aggregator that
@@ -427,19 +427,16 @@ a simple interface that makes it easy to organize and browse feeds.")
                      (search-input-directory inputs "share/terminfo")))))
        #:tests? #f)) ; tests fail: _curses.error: nocbreak() returned ERR
     (propagated-inputs
-     `(("python-beautifulsoup4" ,python-beautifulsoup4)
-       ("python-decorator" ,python-decorator)
-       ("python-kitchen" ,python-kitchen)
-       ("python-requests" ,python-requests)
-       ("python-six" ,python-six)))
+     (list python-beautifulsoup4 python-decorator python-kitchen
+           python-requests python-six))
     (native-inputs
-     `(("ncurses" ,ncurses)
-       ("python-coveralls" ,python-coveralls)
-       ("python-coverage" ,python-coverage)
-       ("python-mock" ,python-mock)
-       ("python-pylint" ,python-pylint)
-       ("python-pytest" ,python-pytest)
-       ("python-vcrpy" ,python-vcrpy)))
+     (list ncurses
+           python-coveralls
+           python-coverage
+           python-mock
+           python-pylint
+           python-pytest
+           python-vcrpy))
     (home-page "https://github.com/michael-lazar/rtv")
     (synopsis "Terminal viewer for Reddit (Reddit Terminal Viewer)")
     (description
@@ -468,18 +465,15 @@ a simple interface that makes it easy to organize and browse feeds.")
              (when tests?
                (invoke "pytest")))))))
     (inputs
-     `(("python-beautifulsoup4" ,python-beautifulsoup4)
-       ("python-decorator" ,python-decorator)
-       ("python-kitchen" ,python-kitchen)
-       ("python-requests" ,python-requests)
-       ("python-six" ,python-six)))
+     (list python-beautifulsoup4 python-decorator python-kitchen
+           python-requests python-six))
     (native-inputs
-     `(("python-coverage" ,python-coverage)
-       ("python-coveralls" ,python-coveralls)
-       ("python-mock" ,python-mock)
-       ("python-pylint" ,python-pylint)
-       ("python-pytest" ,python-pytest)
-       ("python-vcrpy" ,python-vcrpy)))
+     (list python-coverage
+           python-coveralls
+           python-mock
+           python-pylint
+           python-pytest
+           python-vcrpy))
     (home-page "https://gitlab.com/ajak/tuir")
     (synopsis "Terminal viewer for Reddit (Terminal UI for Reddit)")
     (description
@@ -503,8 +497,7 @@ a simple interface that makes it easy to organize and browse feeds.")
     (arguments
      `(#:python ,python-2.7))
     (inputs
-     `(("python2-feedparser" ,python2-feedparser)
-       ("python2-pytidylib" ,python2-pytidylib)))
+     (list python2-feedparser python2-pytidylib))
     (home-page "https://offog.org/code/rawdog/")
     (synopsis "RSS Aggregator Without Delusions Of Grandeur")
     (description
@@ -554,14 +547,9 @@ formats, including all versions of RSS and Atom.")
                                     (assoc-ref inputs "qttools")
                                     "/bin/lrelease")))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("qttools" ,qttools)))
+     (list pkg-config qttools))
     (inputs
-     `(("qtwebkit" ,qtwebkit)
-       ("qtbase" ,qtbase-5)
-       ("qtmultimedia" ,qtmultimedia)
-       ("phonon" ,phonon)
-       ("sqlite" ,sqlite)))
+     (list qtwebkit qtbase-5 qtmultimedia phonon sqlite))
     (home-page "https://quiterss.org/")
     (synopsis "RSS/Atom news feeds reader written on Qt/C++")
     (description "QuiteRSS is an RSS/Atom news feeds reader written on Qt/C++
@@ -604,26 +592,26 @@ that aims to be quite fast and comfortable to its user.")
        ("gtk+:bin" ,gtk+ "bin")
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("glib" ,glib)
-       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("gtk+" ,gtk+)
-       ("hicolor-icon-theme" ,hicolor-icon-theme)
-       ("libhandy" ,libhandy)
-       ("mpv" ,mpv)
-       ("python" ,python)
-       ("python-beautifulsoup4" ,python-beautifulsoup4)
-       ("python-dateutil" ,python-dateutil)
-       ("python-feedparser" ,python-feedparser)
-       ("python-html5lib" ,python-html5lib)
-       ("python-listparser" ,python-listparser)
-       ("python-lxml" ,python-lxml)
-       ("python-pillow" ,python-pillow)
-       ("python-pygments" ,python-pygments)
-       ("python-pytz" ,python-pytz)
-       ("python-readability" ,python-readability)
-       ("python-requests" ,python-requests)
-       ("webkitgtk" ,webkitgtk)
-       ("python-pygobject" ,python-pygobject)))
+     (list glib
+           gsettings-desktop-schemas
+           gtk+
+           hicolor-icon-theme
+           libhandy
+           mpv
+           python
+           python-beautifulsoup4
+           python-dateutil
+           python-feedparser
+           python-html5lib
+           python-listparser
+           python-lxml
+           python-pillow
+           python-pygments
+           python-pytz
+           python-readability
+           python-requests
+           webkitgtk
+           python-pygobject))
     (home-page "https://gfeeds.gabmus.org/")
     (synopsis "Easy-to-use GTK+ RSS/Atom feed reader")
     (description "Feeds is an RSS/Atom feed reader made with GTK+

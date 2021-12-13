@@ -140,14 +140,14 @@
                       (let* ((out (assoc-ref outputs "out"))
                              (man (string-append out "/share/man/man1")))
                         (install-file "doc/diffoscope.1" man)))))))
-    (inputs `(("rpm" ,rpm)              ;for rpm-python
-              ("python-debian" ,python-debian)
-              ("python-libarchive-c" ,python-libarchive-c)
-              ("python-magic" ,python-magic)
-              ("python-tlsh" ,python-tlsh)
-              ("acl" ,acl)              ;for getfacl
-              ("colordiff" ,colordiff)
-              ("xxd" ,xxd)))
+    (inputs (list rpm ;for rpm-python
+                  python-debian
+                  python-libarchive-c
+                  python-magic
+                  python-tlsh
+                  acl ;for getfacl
+                  colordiff
+                  xxd))
     (native-inputs `(("help2man" ,help2man)
                      ;; Below are modules used for tests.
                      ("binwalk" ,binwalk)
@@ -243,10 +243,7 @@ install.")
         (base32
          "19lwsxq53isgfkvlxvxqqmbjfcim3lhcxwk7m9ddfjiynhq74949"))))
     (inputs
-     `(("python-debian" ,python-debian)
-       ("python-distro" ,python-distro)
-       ("python-libarchive-c" ,python-libarchive-c)
-       ("python-rstr" ,python-rstr)))
+     (list python-debian python-distro python-libarchive-c python-rstr))
     (native-inputs
      `(("diffoscope" ,diffoscope)
        ("help2man" ,help2man)
@@ -324,10 +321,9 @@ them in detail for later analysis.")
                           (string-append share "/doc/" ,name "-" ,version)))
              #t)))))
     (propagated-inputs
-     `(("python-requests" ,python-requests)))
+     (list python-requests))
     (native-inputs
-     `(("gzip" ,gzip)
-       ("python-docutils" ,python-docutils)))
+     (list gzip python-docutils))
     (build-system python-build-system)
     (home-page "https://try.diffoscope.org")
     (synopsis "Client for remote diffoscope service")

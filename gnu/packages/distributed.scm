@@ -58,20 +58,17 @@
                 "1p8y3mnf5yfhavhqxwf9v68prg1601h8q1pllm5z89zh661di3mj"))))
     (build-system gnu-build-system)
     (arguments '(#:configure-flags '("--disable-server")))
-    (inputs `(("openssl" ,openssl)
-              ("curl" ,curl)
-              ("wxwidgets" ,wxwidgets)
-              ("gtk+" ,gtk+)
-              ("gdk-pixbuf" ,gdk-pixbuf)
-              ("libnotify" ,libnotify)
-              ("sqlite" ,sqlite)
-              ("python" ,python)
-              ("python-pyserial" ,python-pyserial)))
+    (inputs (list openssl
+                  curl
+                  wxwidgets
+                  gtk+
+                  gdk-pixbuf
+                  libnotify
+                  sqlite
+                  python
+                  python-pyserial))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf automake libtool pkg-config))
     (synopsis "Help cutting-edge science research using your computer")
     (description "BOINC is a platform for high-throughput computing on a large
 scale (thousands or millions of computers).  It can be used for volunteer

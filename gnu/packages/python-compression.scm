@@ -56,14 +56,14 @@
          "0j46wab4b09s3favjzp3zs1cn2sn8pr7qyngs5wn31hpqqxbbz76"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pep517" ,python-pep517)
-       ("python-setuptools" ,python-setuptools)
-       ("python-setuptools-scm" ,python-setuptools-scm)
-       ("python-coverage" ,python-coverage)
-       ("python-coveralls" ,python-coveralls)
-       ("python-pyannotate" ,python-pyannotate)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)))
+     (list python-pep517
+           python-setuptools
+           python-setuptools-scm
+           python-coverage
+           python-coveralls
+           python-pyannotate
+           python-pytest
+           python-pytest-cov))
     (home-page "https://github.com/miurahr/multivolume")
     (synopsis "Treat multiple files as one")
     (description "MultiVolumefile is a Python library that provides a
@@ -84,14 +84,10 @@ were a single file.")
          "1jcczrb8zgg6w7v76w1wpz3nw75fghk3xwxkn09ll7kck7sdf68d"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-cffi" ,python-cffi)
-       ("python-toml" ,python-toml)
-       ("python-setuptools-scm" ,python-setuptools-scm)))
+     (list python-cffi python-toml python-setuptools-scm))
     (native-inputs
-     `(("python-setuptools" ,python-setuptools)
-       ("python-coverage" ,python-coverage)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)))
+     (list python-setuptools python-coverage python-pytest
+           python-pytest-cov))
     (home-page "https://github.com/miurahr/bcj-cffi")
     (synopsis "Branch / Call /Jump CFFI library in Python")
     (description "This package provides an implementation of the Branch / Call /
@@ -111,14 +107,14 @@ Jump conversion filter by CFFI for Python.")
          "01wcd9l6pp6hivdmd275qh9dhcwficjqfl67hxix5n07vvq7jzz0"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-cffi" ,python-cffi)))
+     (list python-cffi))
     (native-inputs
-     `(("python-setuptools" ,python-setuptools)
-       ("python-setuptools-scm" ,python-setuptools-scm)
-       ("python-pep517" ,python-pep517)
-       ("python-coverage" ,python-coverage)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)))
+     (list python-setuptools
+           python-setuptools-scm
+           python-pep517
+           python-coverage
+           python-pytest
+           python-pytest-cov))
     (home-page "https://github.com/miurahr/ppmd")
     (synopsis "Prediction by Partial Matching compression library")
     (description "PPMd is a compression algorithm library using the Prediction
@@ -139,26 +135,26 @@ several possible methods.")
          "1zmgp7yax328fj8yj8pj4l7yh78hp727j6wk12vfi6nmi82wl32i"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-bcj-cffi" ,python-bcj-cffi)
-       ("python-multivolumefile" ,python-multivolumefile)
-       ("python-ppmd-cffi" ,python-ppmd-cffi)
-       ("python-pycryptodome" ,python-pycryptodome)
-       ("python-pyzstd" ,python-pyzstd)
-       ("python-texttable" ,python-texttable)
-       ("python-zstandard" ,python-zstandard)))
+     (list python-bcj-cffi
+           python-multivolumefile
+           python-ppmd-cffi
+           python-pycryptodome
+           python-pyzstd
+           python-texttable
+           python-zstandard))
     (native-inputs
-     `(("python-setuptools" ,python-setuptools)
-       ("python-setuptools-scm" ,python-setuptools-scm)
-       ("python-coverage" ,python-coverage)
-       ("python-coveralls" ,python-coveralls)
-       ("python-libarchive-c" ,python-libarchive-c)
-       ("python-py-cpuinfo" ,python-py-cpuinfo)
-       ("python-pyannotate" ,python-pyannotate)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-benchmark" ,python-pytest-benchmark)
-       ("python-pytest-cov" ,python-pytest-cov)
-       ("python-pytest-remotedata" ,python-pytest-remotedata)
-       ("python-pytest-timeout" ,python-pytest-timeout)))
+     (list python-setuptools
+           python-setuptools-scm
+           python-coverage
+           python-coveralls
+           python-libarchive-c
+           python-py-cpuinfo
+           python-pyannotate
+           python-pytest
+           python-pytest-benchmark
+           python-pytest-cov
+           python-pytest-remotedata
+           python-pytest-timeout))
     (home-page "https://github.com/miurahr/py7zr")
     (synopsis "7-zip in Python")
     (description "This package provides py7zr, which implements 7-zip
@@ -192,7 +188,7 @@ Python.")
                                "')")))
              #t)))))
     (inputs
-     `(("lzo" ,lzo)))
+     (list lzo))
     (home-page "https://github.com/jd-boyd/python-lzo")
     (synopsis "Python bindings for the LZO data compression library")
     (description
@@ -223,11 +219,9 @@ Python strings.")
            #t))))
     (build-system python-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("python-nose" ,python-nose)
-       ("python-setuptools-scm" ,python-setuptools-scm)))
+     (list pkg-config python-nose python-setuptools-scm))
     (inputs
-     `(("lz4" ,lz4)))
+     (list lz4))
     (home-page "https://github.com/python-lz4/python-lz4")
     (synopsis "LZ4 bindings for Python")
     (description
@@ -252,7 +246,7 @@ the LZ4 frame format.")
          "18ly9pppy2yspxzw7k1b23wk77k7m44rz2g0271bqgqrk3jn3yhs"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-future" ,python-future)))
+     (list python-future))
     (home-page "https://github.com/gkovacs/lz-string-python")
     (synopsis "String compression")
     (description "Lz-string is a string compressor library for Python.")
@@ -359,9 +353,9 @@ install: libbitshuffle.so
          "0v3qayhqv7vyzydpydwcp51bqciw8p2ajddw68x5k8zppc0vx3yk"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-more-itertools" ,python-more-itertools)))
+     (list python-more-itertools))
     (native-inputs
-     `(("python-setuptools-scm" ,python-setuptools-scm)))
+     (list python-setuptools-scm))
     (home-page "https://github.com/jaraco/zipp")
     (synopsis
      "Backport of pathlib-compatible object wrapper for zip files")
@@ -405,7 +399,7 @@ wrapper.  It provides a backport of the @code{Path} object.")
         (base32 "0by9z7nxnkzhmza075q6q91rs8lnpf91129k8ppv7kymbwshipjj"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-hypothesis" ,python-hypothesis)))
+     (list python-hypothesis))
     (home-page "https://github.com/indygreg/python-zstandard")
     (synopsis "Zstandard bindings for Python")
     (description "This project provides Python bindings for interfacing with

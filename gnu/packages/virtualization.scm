@@ -419,12 +419,22 @@ server and embedded PowerPC, and S390 guests.")
            (delete 'install-user-static)))))
 
     ;; Remove dependencies on optional libraries, notably GUI libraries.
-    (native-inputs (fold alist-delete (package-native-inputs qemu)
-                         '("gettext" "glib:static" "pcre:static" "zlib:static")))
-    (inputs (fold alist-delete (package-inputs qemu)
-                  '("libusb" "mesa" "sdl2" "spice" "virglrenderer" "gtk+"
-                    "usbredir" "libdrm" "libepoxy" "pulseaudio" "vde2"
-                    "libcacard")))))
+    (native-inputs (modify-inputs (package-native-inputs qemu)
+                     (delete "gettext" "glib:static" "pcre:static"
+                             "zlib:static")))
+    (inputs (modify-inputs (package-inputs qemu)
+              (delete "libusb"
+                      "mesa"
+                      "sdl2"
+                      "spice"
+                      "virglrenderer"
+                      "gtk+"
+                      "usbredir"
+                      "libdrm"
+                      "libepoxy"
+                      "pulseaudio"
+                      "vde2"
+                      "libcacard")))))
 
 (define (system->qemu-target system)
   (cond
@@ -488,8 +498,7 @@ server and embedded PowerPC, and S390 guests.")
                  (("/usr/include") include)))))
          (delete 'configure))))         ; no configure script
     (native-inputs
-     `(("nasm" ,nasm)
-       ("perl" ,perl)))
+     (list nasm perl))
     (synopsis "Library for x86 emulation")
     (description "Libx86emu is a small library to emulate x86 instructions.  The
 focus here is not a complete emulation but to cover enough for typical
@@ -873,8 +882,7 @@ commodity hardware.")
     (arguments
      '(#:configure-flags '("--sysconfdir=/etc" "--localstatedir=/var")))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)))
+     (list autoconf automake))
     (inputs
      `(("util-linux" ,util-linux)
        ("qemu-img" ,qemu-minimal)))
@@ -965,8 +973,7 @@ Guix to build virtual machines.")
                                  "variants.list"))
                       #t)))))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)))
+     (list autoconf automake))
     (inputs
      `(("debianutils" ,debianutils)
        ("debootstrap" ,debootstrap)
@@ -1059,13 +1066,9 @@ all common programming languages.  Vala bindings are also provided.")
                 "1sgsic9dzj3wv2k5bx2vhcgappivhp1glkqfc2yrgr6jas052351"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("docbook2x" ,docbook2x)))
+     (list pkg-config docbook2x))
     (inputs
-     `(("gnutls" ,gnutls)
-       ("libcap" ,libcap)
-       ("libseccomp" ,libseccomp)
-       ("libselinux" ,libselinux)))
+     (list gnutls libcap libseccomp libselinux))
     (arguments
      `(#:configure-flags
        (list (string-append "--docdir=" (assoc-ref %outputs "out")
@@ -1109,12 +1112,9 @@ manage system or application containers.")
     (arguments
      '(#:configure-flags '("--localstatedir=/var")))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf automake libtool pkg-config))
     (inputs
-     `(("fuse" ,fuse)))
+     (list fuse))
     (build-system gnu-build-system)
     (synopsis "FUSE-based file system for LXC")
     (description "LXCFS is a small FUSE file system written with the intention
@@ -1199,11 +1199,11 @@ It started as a side project of LXC but can be used by any run-time.")
                  (install-file "scripts/bash/lxd" completions-dir)))
              #t)))))
     (native-inputs
-     `(;; test dependencies:
-       ;; ("go-github-com-rogpeppe-godeps" ,go-github-com-rogpeppe-godeps)
-       ;; ("go-github-com-tsenart-deadcode" ,go-github-com-tsenart-deadcode)
-       ;; ("go-golang-org-x-lint" ,go-golang-org-x-lint)
-       ("pkg-config" ,pkg-config)))
+     (list ;; test dependencies:
+           ;; ("go-github-com-rogpeppe-godeps" ,go-github-com-rogpeppe-godeps)
+           ;; ("go-github-com-tsenart-deadcode" ,go-github-com-tsenart-deadcode)
+           ;; ("go-golang-org-x-lint" ,go-golang-org-x-lint)
+           pkg-config))
     (inputs
      `(("acl" ,acl)
        ("eudev" ,eudev)
@@ -1339,21 +1339,14 @@ to integrate other virtualization mechanisms if needed.")
     (arguments
      `(#:meson ,meson-0.59))          ;KeyError: 'install_dir' with meson 0.60
     (inputs
-     `(("openssl" ,openssl)
-       ("cyrus-sasl" ,cyrus-sasl)
-       ("lvm2" ,lvm2)                   ; for libdevmapper
-       ("libyajl" ,libyajl)))
+     (list openssl cyrus-sasl lvm2 ; for libdevmapper
+           libyajl))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)
-       ("glib" ,glib "bin")
-       ("vala" ,vala)))
+     (list pkg-config intltool
+           `(,glib "bin") vala))
     (propagated-inputs
      ;; ‘Required:’ by the installed .pc files.
-     `(("glib" ,glib)
-       ("libvirt" ,libvirt)
-       ("libxml2" ,libxml2)
-       ("gobject-introspection" ,gobject-introspection)))
+     (list glib libvirt libxml2 gobject-introspection))
     (home-page "https://libvirt.org")
     (synopsis "GLib wrapper around libvirt")
     (description "libvirt-glib wraps the libvirt library to provide a
@@ -1393,12 +1386,11 @@ three libraries:
                (setenv "LIBVIRT_API_COVERAGE" "whynot")
                (invoke "python" "setup.py" "test")))))))
     (inputs
-     `(("libvirt" ,libvirt)))
+     (list libvirt))
     (propagated-inputs
-     `(("python-lxml" ,python-lxml)))
+     (list python-lxml))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("python-pytest" ,python-pytest)))
+     (list pkg-config python-pytest))
     (home-page "https://libvirt.org")
     (synopsis "Python bindings to libvirt")
     (description "This package provides Python bindings to the libvirt
@@ -1479,23 +1471,23 @@ virtualization library.")
          (add-after 'wrap 'glib-or-gtk-wrap
            (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-wrap)))))
     (inputs
-     `(("dconf" ,dconf)
-       ("gtk+" ,gtk+)
-       ("gtk-vnc" ,gtk-vnc)
-       ("gtksourceview" ,gtksourceview)
-       ("libvirt" ,libvirt)
-       ("libvirt-glib" ,libvirt-glib)
-       ("libosinfo" ,libosinfo)
-       ("vte" ,vte)
-       ("python-libvirt" ,python-libvirt)
-       ("python-requests" ,python-requests)
-       ("python-pycairo" ,python-pycairo)
-       ("python-pygobject" ,python-pygobject)
-       ("python-libxml2" ,python-libxml2)
-       ("spice-gtk" ,spice-gtk)))
+     (list dconf
+           gtk+
+           gtk-vnc
+           gtksourceview
+           libvirt
+           libvirt-glib
+           libosinfo
+           vte
+           python-libvirt
+           python-requests
+           python-pycairo
+           python-pygobject
+           python-libxml2
+           spice-gtk))
     ;; virt-manager searches for qemu-img or kvm-img in the PATH.
     (propagated-inputs
-     `(("qemu" ,qemu)))
+     (list qemu))
     (native-inputs
      `(("glib" ,glib "bin")             ; glib-compile-schemas
        ("gobject-introspection" ,gobject-introspection)
@@ -1605,13 +1597,13 @@ domains, their live performance and resource utilization statistics.")
        ("libbsd" ,libbsd)
        ("nftables" ,nftables)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("perl" ,perl)
-       ("protobuf-c" ,protobuf-c)
-       ("asciidoc" ,asciidoc)
-       ("xmlto" ,xmlto)
-       ("docbook-xml" ,docbook-xml)
-       ("docbook-xsl" ,docbook-xsl)))
+     (list pkg-config
+           perl
+           protobuf-c
+           asciidoc
+           xmlto
+           docbook-xml
+           docbook-xsl))
     (home-page "https://criu.org")
     (synopsis "Checkpoint and restore in user space")
     (description "Using this tool, you can freeze a running application (or
@@ -1679,9 +1671,7 @@ Machine Protocol.")
                ("sdl2-ttf" ,sdl2-ttf)
                ("spice-protocol" ,spice-protocol)
                ("wayland" ,wayland)))
-     (native-inputs `(("libconfig" ,libconfig)
-                      ("nettle" ,nettle)
-                      ("pkg-config" ,pkg-config)))
+     (native-inputs (list libconfig nettle pkg-config))
      (arguments
       `(#:tests? #f ;; No tests are available.
         #:make-flags '("CC=gcc")
@@ -1754,7 +1744,7 @@ monitor/GPU.")
      `(("go-md2man" ,go-github-com-go-md2man)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("libseccomp" ,libseccomp)))
+     (list libseccomp))
     (synopsis "Open container initiative runtime")
     (home-page "https://opencontainers.org/")
     (description
@@ -1826,17 +1816,16 @@ Open Container Initiative (OCI) image layout and its tagged images.")
                 "0n22sdif437ddg5ch0ipwim3fg0n6ihc9bfi52qkhy3r1grz04hs"))))
     (build-system go-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("go-github-com-go-md2man" ,go-github-com-go-md2man)))
+     (list pkg-config go-github-com-go-md2man))
     (inputs
-     `(("btrfs-progs" ,btrfs-progs)
-       ("eudev" ,eudev)
-       ("libassuan" ,libassuan)
-       ("libselinux" ,libselinux)
-       ("libostree" ,libostree)
-       ("lvm2" ,lvm2)
-       ("glib" ,glib)
-       ("gpgme" ,gpgme)))
+     (list btrfs-progs
+           eudev
+           libassuan
+           libselinux
+           libostree
+           lvm2
+           glib
+           gpgme))
     (arguments
      '(#:import-path "github.com/containers/skopeo"
        #:install-source? #f
@@ -1947,7 +1936,7 @@ virtual machines.")
              (delete-file-recursively (string-append (assoc-ref outputs "out") "/tmp"))
              #t)))))
     (inputs
-     `(("libcap" ,libcap)))
+     (list libcap))
     (native-inputs
      `(("python" ,python-wrapper)
        ("util-linux" ,util-linux)))
@@ -1976,7 +1965,7 @@ by default and can be made read-only.")
     (arguments
      `(#:tests? #f))                    ; no tests exist
     (inputs
-     `(("libxrandr" ,libxrandr)))
+     (list libxrandr))
     (home-page "http://bochs.sourceforge.net/")
     (synopsis "Emulator for x86 PC")
     (description
@@ -2252,8 +2241,7 @@ administrators and developers in managing the database.")
            (mkdir-p osinfo-dir)
            (invoke osinfo-db-import "--dir" osinfo-dir source)))))
     (native-inputs
-     `(("intltool" ,intltool)
-       ("osinfo-db-tools" ,osinfo-db-tools)))
+     (list intltool osinfo-db-tools))
     (home-page "https://gitlab.com/libosinfo/osinfo-db")
     (synopsis "Database of information about operating systems")
     (description "Osinfo-db provides the database files for use with the
@@ -2296,20 +2284,16 @@ use with virtualization provisioning tools")
                          ">="))
                       #t)))))
     (propagated-inputs
-     `(("python-beautifultable" ,python-beautifultable)
-       ("python-click" ,python-click)
-       ("python-importlib-resources"
-        ,python-importlib-resources)
-       ("python-lark-parser" ,python-lark-parser)
-       ("python-marshmallow" ,python-marshmallow)
-       ("python-progressbar2" ,python-progressbar2)
-       ("python-requests" ,python-requests)
-       ("python-toml" ,python-toml)))
+     (list python-beautifultable
+           python-click
+           python-importlib-resources
+           python-lark-parser
+           python-marshmallow
+           python-progressbar2
+           python-requests
+           python-toml))
     (native-inputs
-     `(("python-black" ,python-black)
-       ("python-mypy" ,python-mypy)
-       ("python-pyhamcrest" ,python-pyhamcrest)
-       ("python-twine" ,python-twine)))
+     (list python-black python-mypy python-pyhamcrest python-twine))
     (home-page
      "https://github.com/ALSchwalm/transient")
     (synopsis

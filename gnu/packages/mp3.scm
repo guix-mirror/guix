@@ -155,7 +155,7 @@ This package contains the library.")
                            Libs: -L${libdir} -lid3tag -lz~@
                            Cflags: -I${includedir}~%"
                           out ,version)))))))))
-   (inputs `(("zlib" ,zlib)))
+   (inputs (list zlib))
    (synopsis "Library for reading ID3 tags")
    (description
     "Libid3tag is a library for reading ID3 tags, both ID3v1 and the various
@@ -180,7 +180,7 @@ versions of ID3v2.")
             (patches (search-patches "id3lib-CVE-2007-4460.patch"
                                      "id3lib-UTF16-writing-bug.patch"))))
    (build-system gnu-build-system)
-   (inputs `(("zlib" ,zlib)))
+   (inputs (list zlib))
    (arguments
     `(#:phases
       (modify-phases %standard-phases
@@ -235,7 +235,7 @@ a highly stable and efficient implementation.")
                                          (assoc-ref inputs "zlib")
                                          "/lib -lz\")")))
                        #t)))))
-    (inputs `(("zlib" ,zlib)))
+    (inputs (list zlib))
     (home-page "https://taglib.org")
     (synopsis "Library to access audio file meta-data")
     (description
@@ -297,10 +297,9 @@ Speex, WavPack TrueAudio, WAV, AIFF, MP4 and ASF files.")
              #t)))
         #:tests? #f))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("gtk+" ,gtk+-2)
-       ("ncurses" ,ncurses)))
+     (list gtk+-2 ncurses))
     (home-page "https://www.ibiblio.org/mp3info/")
     (synopsis "MP3 technical info viewer and ID3 1.x tag editor")
     (description
@@ -323,15 +322,15 @@ pre-defined or user-specifiable output format.")
              (base32
               "1p1mn2hsmj5cp40fnc8g1yfvk72p8pjxi866gjdkgjsqrr7xdvih"))))
    (build-system gnu-build-system)
-   (inputs `(("flac" ,flac)
-             ("libid3tag" ,libid3tag)
-             ("libmad" ,libmad)
-             ("libogg" ,libogg)
-             ("libltdl" ,libltdl)
-             ("libvorbis" ,libvorbis)
-             ("pcre" ,pcre)))
+   (inputs (list flac
+                 libid3tag
+                 libmad
+                 libogg
+                 libltdl
+                 libvorbis
+                 pcre))
    (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
    (synopsis "Library for splitting mp3 and ogg vorbis files")
    (description
     "Mp3splt is a utility to split mp3 and ogg vorbis files selecting a begin
@@ -357,8 +356,8 @@ This package contains the library.")
              (base32
               "1aiv20gypb6r84qabz8gblk8vi42cg3x333vk2pi3fyqvl82phry"))))
    (build-system gnu-build-system)
-   (native-inputs `(("pkg-config" ,pkg-config)))
-   (inputs `(("libmp3splt" ,libmp3splt)))
+   (native-inputs (list pkg-config))
+   (inputs (list libmp3splt))
    (synopsis "Utility for splitting mp3 and ogg vorbis files")
    (description
     "Mp3splt is a utility to split mp3 and ogg vorbis files selecting a begin
@@ -388,10 +387,9 @@ This package contains the binary.")
     (build-system gnu-build-system)
     (arguments '(#:configure-flags '("--with-default-audio=pulse")))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("alsa-lib" ,alsa-lib)
-       ("pulseaudio" ,pulseaudio)))
+     (list alsa-lib pulseaudio))
     (home-page "https://www.mpg123.org/")
     (synopsis "Console MP3 player and decoder library")
     (description
@@ -483,18 +481,11 @@ use with CD-recording software).")
             (patches (search-patches "ripperx-missing-file.patch"))))
    (build-system gnu-build-system)
    (propagated-inputs
-    `(("font-ghostscript" ,font-ghostscript)
-      ("cdparanoia" ,cdparanoia)
-      ("flac" ,flac)
-      ("lame" ,lame)
-      ("vorbis-tools" ,vorbis-tools)))
+    (list font-ghostscript cdparanoia flac lame vorbis-tools))
    (inputs
-    `(("glib" ,glib)
-      ("gtk+" ,gtk+-2)
-      ("id3lib" ,id3lib)
-      ("taglib" ,taglib)))
+    (list glib gtk+-2 id3lib taglib))
    (native-inputs
-    `(("pkg-config" ,pkg-config)))
+    (list pkg-config))
    (synopsis "GTK program to rip and encode CD audio tracks")
    (description
     "RipperX is a GTK program to rip CD audio tracks and encode them to the
@@ -581,10 +572,7 @@ compression format (.mpc files).")
     (arguments
      `(#:tests? #f))    ; the required test data contains copyrighted material
     (propagated-inputs
-     `(("python-grako" ,python-grako)
-       ("python-magic" ,python-magic)
-       ("python-pathlib" ,python-pathlib)
-       ("python-six" ,python-six)))
+     (list python-grako python-magic python-pathlib python-six))
     (synopsis "MP3 tag ID3 metadata editor")
     (description "eyeD3 is a Python tool for working with audio files,
 specifically mp3 files containing ID3 metadata (i.e. song info).  It provides a
@@ -615,8 +603,7 @@ command-line tool.")
     (inputs
      ;; requires one of FFmpeg (prefered), FFTW3 or vDSP
      ;; use the same ffmpeg version as for acoustid-fingerprinter
-     `(("ffmpeg" ,ffmpeg)
-       ("boost" ,boost)))
+     (list ffmpeg boost))
     (home-page "https://acoustid.org/chromaprint")
     (synopsis "Audio fingerprinting library")
     (description "Chromaprint is a library for calculating audio
@@ -637,8 +624,7 @@ is to provide an accurate identifier for record tracks.")
     (build-system python-build-system)
     (arguments `(#:tests? #f)) ; there is no "audiofile" fixture
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-pytest-runner" ,python-pytest-runner)))
+     (list python-pytest python-pytest-runner))
     (home-page "https://github.com/sampsyo/audioread")
     (synopsis "Decode audio files using whichever backend is available")
     (description
@@ -673,10 +659,9 @@ FFmpeg, etc.")
                 (string-append "'" (assoc-ref inputs "chromaprint")
                                "/bin/fpcalc'")))
              #t)))))
-    (inputs `(("chromaprint" ,chromaprint)))
+    (inputs (list chromaprint))
     (propagated-inputs
-     `(("python-audioread" ,python-audioread)
-       ("python-requests" ,python-requests)))
+     (list python-audioread python-requests))
     (home-page "https://github.com/beetbox/pyacoustid")
     (synopsis "Bindings for Chromaprint acoustic fingerprinting")
     (description
@@ -709,10 +694,9 @@ fingerprinting library and the Acoustid API.")
            (lambda _
              (setenv "PYTAGLIB_CYTHONIZE" "1"))))))
     (native-inputs
-     `(("python-cython" ,python-cython)
-       ("python-pytest" ,python-pytest)))
+     (list python-cython python-pytest))
     (inputs
-     `(("taglib" ,taglib)))
+     (list taglib))
     (home-page
      "https://github.com/supermihi/pytaglib")
     (synopsis

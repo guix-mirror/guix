@@ -104,7 +104,7 @@ following the Japanese kanban (boarding) style.")
           (base32 "0c8zn7l0xq65wp07h7mxnb5ww56d1443l2vkjvx5sj6wpcchfn0s"))))
       (build-system python-build-system)
       (native-inputs
-       `(("python-cram" ,python-cram)))
+       (list python-cram))
       (synopsis "Command-line todo list manager")
       (description
        "@command{t} is a command-line todo list manager for people that want
@@ -125,8 +125,8 @@ to finish tasks, not organize them.")
                 "0kq8n2y4srax48yp7shz7ngac0q75dnvdbr9z9f9ldyqncr61ah0"))))
     (build-system cmake-build-system)
     (inputs
-     `(("gnutls" ,gnutls)
-       ("util-linux" ,util-linux "lib")))
+     (list gnutls
+           `(,util-linux "lib")))
     (arguments
      `(#:tests? #f ; No tests implemented.
        #:phases
@@ -224,14 +224,14 @@ a task.")
        ("gtk+:bin" ,gtk+ "bin")
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("appstream-glib" ,appstream-glib)
-       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("gst-plugins-bad" ,gst-plugins-bad)
-       ("gst-plugins-good" ,gst-plugins-good) ;for ScaleTempo plugin
-       ("gtk+" ,gtk+)
-       ("libhandy" ,libhandy)
-       ("python-gst" ,python-gst)
-       ("python-pygobject" ,python-pygobject)))
+     (list appstream-glib
+           gsettings-desktop-schemas
+           gst-plugins-bad
+           gst-plugins-good ;for ScaleTempo plugin
+           gtk+
+           libhandy
+           python-gst
+           python-pygobject))
     (home-page "https://github.com/rafaelmardojai/blanket")
     (synopsis "Ambient sound and noise player")
     (description

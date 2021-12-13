@@ -86,7 +86,7 @@
                ((".*test/cp\\.test.*") "")
                ((".*test/setfacl-X\\.test.*") ""))
              #t)))))
-    (inputs `(("attr" ,attr)))
+    (inputs (list attr))
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("perl" ,perl)))
@@ -125,8 +125,8 @@
              (when tests?
                (add-installed-pythonpath inputs outputs)
                (invoke "pytest" "tests")))))))
-    (inputs `(("acl" ,acl)))
-    (native-inputs `(("python-pytest" ,python-pytest)))
+    (inputs (list acl))
+    (native-inputs (list python-pytest))
     (home-page "https://pylibacl.k1024.org/")
     (synopsis "POSIX.1e @acronym{ACLs, access control lists} for Python")
     (description

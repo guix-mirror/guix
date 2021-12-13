@@ -92,19 +92,16 @@
                         (("\\$\\(XMLTO\\)" xmlto)
                          (string-append xmlto " --searchpath " xsldir "/html"))))))))))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("docbook-xml" ,docbook-xml)
-       ("docbook-xsl" ,docbook-xsl)
-       ("libtool" ,libtool)
-       ("libxslt" ,libxslt)
-       ("util-linux" ,util-linux) ; For `rev` command used in tests.
-       ("xmlto" ,xmlto)))
+     (list autoconf
+           automake
+           docbook-xml
+           docbook-xsl
+           libtool
+           libxslt
+           util-linux ; For `rev` command used in tests.
+           xmlto))
     (inputs
-     `(("cyrus-sasl" ,cyrus-sasl)
-       ("mit-krb5" ,mit-krb5)
-       ("samba" ,samba)
-       ("openldap" ,openldap)))
+     (list cyrus-sasl mit-krb5 samba openldap))
     (home-page "https://gitlab.freedesktop.org/realmd/adcli/")
     (synopsis "Helper library and tools for Active Directory client operations")
     (description "@command{adcli} is a command‐line tool to join a computer to
@@ -199,40 +196,40 @@ fundamental object types for C.")
                (("tcase_add_test\\(tc_utils, resp_str_to_array_test\\);") ""))
              #t)))))
     (inputs
-     `(("augeas" ,augeas)
-       ("bind" ,isc-bind "utils")
-       ("c-ares" ,c-ares)
-       ("curl" ,curl)
-       ("cyrus-sasl" ,cyrus-sasl)
-       ("dbus" ,dbus)
-       ("ding-libs" ,ding-libs)
-       ("glib" ,glib)
-       ("gnutls" ,gnutls)
-       ("http-parser" ,http-parser)
-       ("jansson" ,jansson)
-       ("ldb" ,ldb)
-       ("libselinux" ,libselinux)
-       ("libsemanage" ,libsemanage)
-       ("libunistring" ,libunistring)
-       ("linux-pam" ,linux-pam)
-       ("mit-krb5" ,mit-krb5)
-       ("nss" ,nss)
-       ("openldap" ,openldap)
-       ("openssl" ,openssl)
-       ("pcre" ,pcre)
-       ("popt" ,popt)
-       ("samba" ,samba)
-       ("talloc" ,talloc)
-       ("tdb" ,tdb)
-       ("tevent" ,tevent)))
+     (list augeas
+           `(,isc-bind "utils")
+           c-ares
+           curl
+           cyrus-sasl
+           dbus
+           ding-libs
+           glib
+           gnutls
+           http-parser
+           jansson
+           ldb
+           libselinux
+           libsemanage
+           libunistring
+           linux-pam
+           mit-krb5
+           nss
+           openldap
+           openssl
+           pcre
+           popt
+           samba
+           talloc
+           tdb
+           tevent))
     (native-inputs
-     `(("check" ,check-0.14)
-       ("docbook-xsl" ,docbook-xsl)
-       ("docbook-xml" ,docbook-xml)
-       ("libxml2" ,libxml2)             ; for xmllint
-       ("libxslt" ,libxslt)
-       ("pkg-config" ,pkg-config)
-       ("util-linux" ,util-linux "lib"))) ;for uuid.h, reqired for KCM
+     (list check-0.14
+           docbook-xsl
+           docbook-xml
+           libxml2 ; for xmllint
+           libxslt
+           pkg-config
+           `(,util-linux "lib"))) ;for uuid.h, reqired for KCM
     (home-page "https://pagure.io/SSSD/sssd/")
     (synopsis "System security services daemon")
     (description "SSSD is a system daemon.  Its primary function is to provide

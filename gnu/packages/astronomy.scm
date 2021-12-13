@@ -144,8 +144,7 @@ in FITS files.")
              (substitute* "fitsio/test.py"
                (("'SKIP_BZIP_TEST' in os.environ") "True")))))))
     (propagated-inputs
-     `(("python-numpy" ,python-numpy)
-       ("cfitsio" ,cfitsio)))
+     (list python-numpy cfitsio))
     (home-page "https://github.com/esheldon/fitsio")
     (synopsis
      "Python library to read from and write to FITS files")
@@ -250,7 +249,7 @@ feature detection and cosmetic corrections.")
        (sha256
         (base32 "1536gmcpm6pckn9xrb6j8s4pm1vryjhzvhfaj9wx3jwxcpbdy0dw"))))
     (inputs
-     `(("cfitsio" ,cfitsio)))
+     (list cfitsio))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -321,8 +320,7 @@ astronomical image-processing packages like Drizzle, Swarp or SExtractor.")
        ("wcslib" ,wcslib)
        ("zlib" ,zlib)))
     (native-inputs
-     `(("libtool" ,libtool)
-       ("lzip" ,lzip)))
+     (list libtool lzip))
     (home-page "https://www.gnu.org/software/gnuastro/")
     (synopsis "Astronomy utilities")
     (description "The GNU Astronomy Utilities (Gnuastro) is a suite of
@@ -360,9 +358,7 @@ programs for the manipulation and analysis of astronomical data.")
         (string-append
          "--with-fftw-incdir=" (assoc-ref %build-inputs "fftw") "/include"))))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
+     (list autoconf automake libtool))
     (inputs
      `(("openblas" ,openblas)
        ("fftw" ,fftwf)))
@@ -454,11 +450,9 @@ astronomical fields.  SkyMaker is part of the EFIGI
                (copy-recursively "lang" lang))
              #t)))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
      (inputs
-      `(("gtkmm" ,gtkmm-3)
-        ("libskry" ,libskry)
-        ("ffmpeg" ,ffmpeg)))
+      (list gtkmm-3 libskry ffmpeg))
      (home-page "https://github.com/GreatAttractor/stackistry")
      (synopsis "Astronomical lucky imaging/image stacking tool")
      (description
@@ -483,12 +477,12 @@ deconvolution).  Such post-processing is not performed by Stackistry.")
         (base32 "049jlc8vx06pad5h2syrmf7f1l346yr5iraai0wkn8s8pk30j8q7"))))
     (build-system cmake-build-system)
     (inputs
-     `(("qtbase" ,qtbase-5)
-       ("qtlocation" ,qtlocation)
-       ("qtmultimedia" ,qtmultimedia)
-       ("qtscript" ,qtscript)
-       ("qtserialport" ,qtserialport)
-       ("zlib" ,zlib)))
+     (list qtbase-5
+           qtlocation
+           qtmultimedia
+           qtscript
+           qtserialport
+           zlib))
     (native-inputs
      `(("gettext" ,gettext-minimal)     ; xgettext is used at compile time
        ("perl" ,perl)                   ; for pod2man
@@ -591,7 +585,7 @@ any arbitrary astrometric projection defined in the WCS standard.")
          ;; glut: for glut interface
          ("freeglut" ,freeglut)))
       (propagated-inputs
-       `(("lua" ,lua)))
+       (list lua))
       (arguments
        `(#:configure-flags '("-DENABLE_GLUT=ON" "-DENABLE_QT=OFF")
          #:tests? #f))                            ;no tests
@@ -683,27 +677,23 @@ accurately in real time at any rate desired.")
                        ;; Skip tests that need remote data.
                        "-m" "not remote_data")))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("python-coverage" ,python-coverage)
-       ("python-cython" ,python-cython)
-       ("python-extension-helpers" ,python-extension-helpers)
-       ("python-ipython" ,python-ipython)
-       ("python-jplephem" ,python-jplephem)
-       ("python-objgraph" ,python-objgraph)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-astropy" ,python-pytest-astropy)
-       ("python-pytest-xdist" ,python-pytest-xdist)
-       ("python-setuptools-scm" ,python-setuptools-scm)
-       ("python-sgp4" ,python-sgp4)
-       ("python-skyfield" ,python-skyfield)))
+     (list pkg-config
+           python-coverage
+           python-cython
+           python-extension-helpers
+           python-ipython
+           python-jplephem
+           python-objgraph
+           python-pytest
+           python-pytest-astropy
+           python-pytest-xdist
+           python-setuptools-scm
+           python-sgp4
+           python-skyfield))
     (inputs
-     `(("cfitsio" ,cfitsio)
-       ("expat" ,expat)))
+     (list cfitsio expat))
     (propagated-inputs
-     `(("python-configobj" ,python-configobj)
-       ("python-numpy" ,python-numpy)
-       ("python-ply" ,python-ply)
-       ("python-pyerfa" ,python-pyerfa)))
+     (list python-configobj python-numpy python-ply python-pyerfa))
     (home-page "https://www.astropy.org/")
     (synopsis "Core package for Astronomy in Python")
     (description
@@ -736,9 +726,7 @@ astronomy and astrophysics.")
                (("/bin/sh") (which "sh")))
              #t)))))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
+     (list autoconf automake libtool))
     (synopsis "Celestial mechanics, astrometry and astrodynamics library")
     (description "Libnova is a general purpose, double precision, Celestial
 Mechanics, Astrometry and Astrodynamics library.")
@@ -779,7 +767,7 @@ Mechanics, Astrometry and Astrodynamics library.")
                (copy-recursively "include" include))
              #t)))))
     (inputs
-     `(("ffmpeg" ,ffmpeg)))
+     (list ffmpeg))
     (home-page "https://github.com/GreatAttractor/libskry")
     (synopsis "Astronimical lucky imaging library")
     (description
@@ -885,7 +873,7 @@ on FITS files:
          "xplanet-1.3.1-xpUtil-Add2017LeapSecond.cpp.patch"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
      `(("libx11" ,libx11)
        ("libxscrnsaver" ,libxscrnsaver)
@@ -933,10 +921,7 @@ Mercator, Mollweide, Peters, polyconic, orthographic and rectangular.")
        ("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("curl" ,curl)
-       ("glib" ,glib)
-       ("goocanvas" ,goocanvas)
-       ("gtk+" ,gtk+)))
+     (list curl glib goocanvas gtk+))
     (arguments
      `(#:configure-flags '("CFLAGS=-O2 -g -fcommon")
        #:phases
@@ -1020,13 +1005,9 @@ It can be used to calculate the trajectory of satellites.")
               (string-append "-DCMAKE_INSTALL_PREFIX=" (assoc-ref outputs "out"))
               ".."))))))
     (native-inputs
-     `(("boost" ,boost)
-       ("pkg-config" ,pkg-config)))
+     (list boost pkg-config))
     (inputs
-     `(("cfitsio" ,cfitsio)
-       ("freeimage" ,freeimage)
-       ("glew" ,glew)
-       ("wxwidgets" ,wxwidgets)))
+     (list cfitsio freeimage glew wxwidgets))
     (home-page "https://github.com/GreatAttractor/imppg")
     (synopsis "Astronomical Image Post-Proccessor (ImPPG)")
     (description
@@ -1076,17 +1057,17 @@ floating-point (no compression, LZW- or ZIP-compressed), FITS 8-bit, 16-bit,
              (let ((out (assoc-ref outputs "out")))
                (mkdir-p (string-append out "/lib/udev/rules.d"))))))))
     (native-inputs
-     `(("googletest" ,googletest)))
+     (list googletest))
     (inputs
-     `(("cfitsio" ,cfitsio)
-       ("curl" ,curl)
-       ("fftw" ,fftw)
-       ("gsl" ,gsl)
-       ("libjpeg-turbo" ,libjpeg-turbo)
-       ("libnova" ,libnova)
-       ("libtiff" ,libtiff)
-       ("libusb" ,libusb)
-       ("zlib" ,zlib)))
+     (list cfitsio
+           curl
+           fftw
+           gsl
+           libjpeg-turbo
+           libnova
+           libtiff
+           libusb
+           zlib))
     (home-page "https://www.indilib.org")
     (synopsis "Library for astronimical intrumentation control")
     (description
@@ -1144,12 +1125,9 @@ gzip -f \\*.vmf")
                (invoke "xmkmf"))))
          #:tests? #f))  ; No check target.
       (inputs
-       `(("libjpeg-turbo" ,libjpeg-turbo)
-         ("libpng" ,libpng)
-         ("libx11" ,libx11)
-         ("libxpm" ,libxpm)))
+       (list libjpeg-turbo libpng libx11 libxpm))
       (native-inputs
-       `(("imake" ,imake)))
+       (list imake))
       (home-page "https://github.com/nongiach/Sunclock")
       (synopsis
        "Map of the Earth that shows which portion is illuminated by the Sun")
@@ -1184,7 +1162,7 @@ Moon position, etc.")
                  (setenv "PATH" (string-append out "/bin:" (getenv "PATH")))
                  (invoke "python" "-m" "unittest" "discover" "-s" "test"))))))))
     (inputs
-     `(("python-numpy" ,python-numpy)))
+     (list python-numpy))
     (home-page "https://github.com/brandon-rhodes/python-jplephem")
     (synopsis "Python version of NASA DE4xx ephemerides")
     (description
@@ -1223,7 +1201,7 @@ JPL ephemerides use to predict raw (x,y,z) planetary positions.")
     (inputs
      `(("liberfa" ,erfa)))
     (propagated-inputs
-     `(("python-numpy" ,python-numpy)))
+     (list python-numpy))
     (home-page "https://github.com/liberfa/pyerfa")
     (synopsis "Python bindings for ERFA")
     (description
@@ -1333,10 +1311,7 @@ astronomical images, especially when there is no WCS information available.")
      ;; framework https://github.com/brandon-rhodes/assay
      `(#:tests? #f))
     (inputs
-     `(("python-certifi" ,python-certifi)
-       ("python-jplephem" ,python-jplephem)
-       ("python-numpy" ,python-numpy)
-       ("python-sgp4" ,python-sgp4)))
+     (list python-certifi python-jplephem python-numpy python-sgp4))
     (home-page "https://rhodesmill.org/skyfield/")
     (synopsis "Astronomy for Python")
     (description

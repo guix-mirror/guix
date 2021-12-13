@@ -310,7 +310,7 @@ files from LOCATIONS with expected checksum HASH.  CODE is not currently in use.
        ("zlib" ,zlib)
        ("zziplib" ,zziplib)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (arguments
      `(#:modules ((guix build gnu-build-system)
                   (guix build utils)
@@ -730,7 +730,7 @@ to adapt the plain e-TeX source file to work with XeTeX and LuaTeX.")
                              (copy-recursively where (string-append mf where)))
                            (list "base" "misc" "config")))))))))
     (native-inputs
-     `(("texlive-bin" ,texlive-bin)))
+     (list texlive-bin))
     (home-page "https://www.ctan.org/pkg/metafont")
     (synopsis "Metafont base files")
     (description "This package provides the Metafont base files needed to
@@ -815,8 +815,7 @@ build fonts using the Metafont system.")
                                 "fontdoc.sty")))
                    #t)))))))
       (native-inputs
-       `(("texlive-bin" ,texlive-bin)
-         ("texlive-docstrip" ,texlive-docstrip)))
+       (list texlive-bin texlive-docstrip))
       (home-page "https://www.ctan.org/pkg/fontinst")
       (synopsis "Tools for converting and installing fonts for TeX and LaTeX")
       (description "This package provides TeX macros for converting Adobe Font
@@ -910,8 +909,7 @@ documents.")
                    (copy-recursively "pk" pk)
                    #t)))))))
       (native-inputs
-       `(("texlive-bin" ,texlive-bin)
-         ("texlive-metafont" ,texlive-metafont)))
+       (list texlive-bin texlive-metafont))
       (home-page "https://www.ctan.org/pkg/cm")
       (synopsis "Computer Modern fonts for TeX")
       (description "This package provides the Computer Modern fonts by Donald
@@ -1102,8 +1100,7 @@ Computers & Typesetting series.")
                                (find-files "build" "\\.tfm"))
                      #t))))))))
       (native-inputs
-       `(("texlive-bin" ,texlive-bin)
-         ("texlive-metafont" ,texlive-metafont)))
+       (list texlive-bin texlive-metafont))
       (home-page "https://www.ctan.org/pkg/knuth-lib")
       (synopsis "Small library of METAFONT sources")
       (description "This is a collection of core TeX and METAFONT macro files
@@ -1178,9 +1175,7 @@ fonts.")
                          (find-files "." "\\.mf"))
                #t))))))
     (native-inputs
-     `(("texlive-bin" ,texlive-bin)
-       ("texlive-metafont" ,texlive-metafont)
-       ("texlive-cm" ,texlive-cm)))
+     (list texlive-bin texlive-metafont texlive-cm))
     (home-page "https://www.ctan.org/pkg/latex-fonts")
     (synopsis "Collection of fonts used in LaTeX distributions")
     (description "This is a collection of fonts for use with standard LaTeX
@@ -1251,9 +1246,7 @@ symbol fonts.")
                              (find-files "build" "\\.tfm"))
                    #t)))))))
       (native-inputs
-       `(("texlive-bin" ,texlive-bin)
-         ("texlive-metafont" ,texlive-metafont)
-         ("texlive-knuth-lib" ,texlive-knuth-lib)))
+       (list texlive-bin texlive-metafont texlive-knuth-lib))
       (home-page "http://www.ctan.org/pkg/mflogo")
       (synopsis "LaTeX support for Metafont logo fonts")
       (description
@@ -1402,8 +1395,7 @@ Taco Hoekwater.")
                                     (assoc-ref outputs "out")
                                     "/share/texmf-dist/fonts/tfm/public/amsfonts"))))))))
       (native-inputs
-       `(("texlive-updmap.cfg" ,(texlive-updmap.cfg
-                                 (list texlive-fontinst)))))
+       (list (texlive-updmap.cfg (list texlive-fontinst))))
       (home-page "https://www.ctan.org/pkg/amsfonts")
       (synopsis "TeX fonts from the American Mathematical Society")
       (description
@@ -1490,9 +1482,7 @@ output encodings, and features generation of clean UTF-8 patterns.")
                                  "/share/texmf-dist/fonts/tfm/public/etex/"))
                  #t))))))
       (native-inputs
-       `(("texlive-bin" ,texlive-bin)
-         ("texlive-metafont" ,texlive-metafont)
-         ("texlive-cm" ,texlive-cm)))
+       (list texlive-bin texlive-metafont texlive-cm))
       (home-page "https://www.ctan.org/pkg/etex")
       (synopsis "Extended version of TeX")
       (description
@@ -2474,14 +2464,14 @@ T1/EC and UTF-8 encodings.")
                 (string-append out "/share/texmf-dist/tex/luatex/hyph-utf8/")))
              #t)))))
     (native-inputs
-     `(("ruby" ,ruby)
-       ("texlive-bin" ,texlive-bin)
-       ;; The following packages are needed for build "tex.fmt", which we need
-       ;; for a working "tex".
-       ("texlive-tex-plain" ,texlive-tex-plain)
-       ("texlive-cm" ,texlive-cm)
-       ("texlive-knuth-lib" ,texlive-knuth-lib)
-       ("texlive-hyphen-base" ,texlive-hyphen-base)))
+     (list ruby
+           texlive-bin
+           ;; The following packages are needed for build "tex.fmt", which we need
+           ;; for a working "tex".
+           texlive-tex-plain
+           texlive-cm
+           texlive-knuth-lib
+           texlive-hyphen-base))
     (home-page "https://ctan.org/pkg/hyph-utf8")
     (synopsis "Hyphenation patterns expressed in UTF-8")
     (description "Modern native UTF-8 engines such as XeTeX and LuaTeX need
@@ -2525,8 +2515,7 @@ converters, will completely supplant the older patterns.")
                "0l57a0r4gycp94kz6lrxqvh9m57j2shmbr2laf5zjb0qnrisq46d")
               #:trivial? #t))
     (propagated-inputs
-     `(("texlive-hyphen-base" ,texlive-hyphen-base)
-       ("texlive-hyph-utf8" ,texlive-hyph-utf8)))
+     (list texlive-hyphen-base texlive-hyph-utf8))
     (home-page "http://projekte.dante.de/Trennmuster/WebHome")
     (synopsis "Hyphenation patterns for German")
     (description "The package provides experimental hyphenation patterns for
@@ -2582,11 +2571,7 @@ T2A.")
                      (invoke "make" "-f"
                              (string-append cwd "/source/generic/ruhyphen/Makefile"))))))))))
       (native-inputs
-       `(("coreutils" ,coreutils)
-         ("gawk" ,gawk)
-         ("sed" ,sed)
-         ("grep" ,grep)
-         ("perl" ,perl)))
+       (list coreutils gawk sed grep perl))
       (home-page "https://www.ctan.org/pkg/ruhyphen")
       (synopsis "Hyphenation patterns for Russian")
       (description "The package provides a collection of Russian hyphenation
@@ -2802,80 +2787,80 @@ formats.")
             (base32
              "0yjx7nw9mgfgnq1givkzbxh7z7ncw1liaddjgm7n2nwn0aw6xfdg")))))
       (propagated-inputs
-       `(("texlive-dehyph-exptl" ,texlive-dehyph-exptl)
-         ("texlive-etex" ,texlive-etex)
-         ("texlive-hyph-utf8" ,texlive-hyph-utf8)
-         ("texlive-hyphen-base" ,texlive-hyphen-base)
-         ("texlive-hyphen-afrikaans" ,texlive-hyphen-afrikaans)
-         ("texlive-hyphen-ancientgreek" ,texlive-hyphen-ancientgreek)
-         ("texlive-hyphen-armenian" ,texlive-hyphen-armenian)
-         ("texlive-hyphen-basque" ,texlive-hyphen-basque)
-         ("texlive-hyphen-belarusian" ,texlive-hyphen-belarusian)
-         ("texlive-hyphen-bulgarian" ,texlive-hyphen-bulgarian)
-         ("texlive-hyphen-catalan" ,texlive-hyphen-catalan)
-         ("texlive-hyphen-chinese" ,texlive-hyphen-chinese)
-         ("texlive-hyphen-churchslavonic" ,texlive-hyphen-churchslavonic)
-         ("texlive-hyphen-coptic" ,texlive-hyphen-coptic)
-         ("texlive-hyphen-croatian" ,texlive-hyphen-croatian)
-         ("texlive-hyphen-czech" ,texlive-hyphen-czech)
-         ("texlive-hyphen-danish" ,texlive-hyphen-danish)
-         ("texlive-hyphen-dutch" ,texlive-hyphen-dutch)
-         ("texlive-hyphen-english" ,texlive-hyphen-english)
-         ("texlive-hyphen-esperanto" ,texlive-hyphen-esperanto)
-         ("texlive-hyphen-estonian" ,texlive-hyphen-estonian)
-         ("texlive-hyphen-ethiopic" ,texlive-hyphen-ethiopic)
-         ("texlive-hyphen-finnish" ,texlive-hyphen-finnish)
-         ("texlive-hyphen-schoolfinnish" ,texlive-hyphen-schoolfinnish)
-         ("texlive-hyphen-french" ,texlive-hyphen-french)
-         ("texlive-hyphen-friulan" ,texlive-hyphen-friulan)
-         ("texlive-hyphen-galician" ,texlive-hyphen-galician)
-         ("texlive-hyphen-georgian" ,texlive-hyphen-georgian)
-         ("texlive-hyphen-german" ,texlive-hyphen-german)
-         ("texlive-hyphen-greek" ,texlive-hyphen-greek)
-         ("texlive-hyphen-hungarian" ,texlive-hyphen-hungarian)
-         ("texlive-hyphen-icelandic" ,texlive-hyphen-icelandic)
-         ("texlive-hyphen-indic" ,texlive-hyphen-indic)
-         ("texlive-hyphen-indonesian" ,texlive-hyphen-indonesian)
-         ("texlive-hyphen-interlingua" ,texlive-hyphen-interlingua)
-         ("texlive-hyphen-irish" ,texlive-hyphen-irish)
-         ("texlive-hyphen-italian" ,texlive-hyphen-italian)
-         ("texlive-hyphen-kurmanji" ,texlive-hyphen-kurmanji)
-         ("texlive-hyphen-latin" ,texlive-hyphen-latin)
-         ("texlive-hyphen-latvian" ,texlive-hyphen-latvian)
-         ("texlive-hyphen-lithuanian" ,texlive-hyphen-lithuanian)
-         ("texlive-hyphen-macedonian" ,texlive-hyphen-macedonian)
-         ("texlive-hyphen-mongolian" ,texlive-hyphen-mongolian)
-         ("texlive-hyphen-norwegian" ,texlive-hyphen-norwegian)
-         ("texlive-hyphen-occitan" ,texlive-hyphen-occitan)
-         ("texlive-hyphen-pali" ,texlive-hyphen-pali)
-         ("texlive-hyphen-piedmontese" ,texlive-hyphen-piedmontese)
-         ("texlive-hyphen-polish" ,texlive-hyphen-polish)
-         ("texlive-hyphen-portuguese" ,texlive-hyphen-portuguese)
-         ("texlive-hyphen-romanian" ,texlive-hyphen-romanian)
-         ("texlive-hyphen-romansh" ,texlive-hyphen-romansh)
-         ("texlive-hyphen-russian" ,texlive-hyphen-russian)
-         ("texlive-hyphen-sanskrit" ,texlive-hyphen-sanskrit)
-         ("texlive-hyphen-serbian" ,texlive-hyphen-serbian)
-         ("texlive-hyphen-slovak" ,texlive-hyphen-slovak)
-         ("texlive-hyphen-slovenian" ,texlive-hyphen-slovenian)
-         ("texlive-hyphen-spanish" ,texlive-hyphen-spanish)
-         ("texlive-hyphen-swedish" ,texlive-hyphen-swedish)
-         ("texlive-hyphen-thai" ,texlive-hyphen-thai)
-         ("texlive-hyphen-turkish" ,texlive-hyphen-turkish)
-         ("texlive-hyphen-turkmen" ,texlive-hyphen-turkmen)
-         ("texlive-hyphen-ukrainian" ,texlive-hyphen-ukrainian)
-         ("texlive-hyphen-uppersorbian" ,texlive-hyphen-uppersorbian)
-         ("texlive-hyphen-welsh" ,texlive-hyphen-welsh)
-         ("texlive-unicode-data" ,texlive-unicode-data)
-         ("texlive-ukrhyph" ,texlive-ukrhyph)
-         ("texlive-ruhyphen" ,texlive-ruhyphen)
-         ("texlive-latex-l3kernel" ,texlive-latex-l3kernel)
-         ("texlive-latex-l3backend" ,texlive-latex-l3backend)
-         ;; TODO: This dependency isn't needed for LaTeX version 2021-06-01
-         ;; and later. See:
-         ;; https://tug.org/pipermail/tex-live/2021-June/047180.html
-         ("texlive-latex-l3packages" ,texlive-latex-l3packages)
-         ("texlive-latexconfig" ,texlive-latexconfig)))
+       (list texlive-dehyph-exptl
+             texlive-etex
+             texlive-hyph-utf8
+             texlive-hyphen-base
+             texlive-hyphen-afrikaans
+             texlive-hyphen-ancientgreek
+             texlive-hyphen-armenian
+             texlive-hyphen-basque
+             texlive-hyphen-belarusian
+             texlive-hyphen-bulgarian
+             texlive-hyphen-catalan
+             texlive-hyphen-chinese
+             texlive-hyphen-churchslavonic
+             texlive-hyphen-coptic
+             texlive-hyphen-croatian
+             texlive-hyphen-czech
+             texlive-hyphen-danish
+             texlive-hyphen-dutch
+             texlive-hyphen-english
+             texlive-hyphen-esperanto
+             texlive-hyphen-estonian
+             texlive-hyphen-ethiopic
+             texlive-hyphen-finnish
+             texlive-hyphen-schoolfinnish
+             texlive-hyphen-french
+             texlive-hyphen-friulan
+             texlive-hyphen-galician
+             texlive-hyphen-georgian
+             texlive-hyphen-german
+             texlive-hyphen-greek
+             texlive-hyphen-hungarian
+             texlive-hyphen-icelandic
+             texlive-hyphen-indic
+             texlive-hyphen-indonesian
+             texlive-hyphen-interlingua
+             texlive-hyphen-irish
+             texlive-hyphen-italian
+             texlive-hyphen-kurmanji
+             texlive-hyphen-latin
+             texlive-hyphen-latvian
+             texlive-hyphen-lithuanian
+             texlive-hyphen-macedonian
+             texlive-hyphen-mongolian
+             texlive-hyphen-norwegian
+             texlive-hyphen-occitan
+             texlive-hyphen-pali
+             texlive-hyphen-piedmontese
+             texlive-hyphen-polish
+             texlive-hyphen-portuguese
+             texlive-hyphen-romanian
+             texlive-hyphen-romansh
+             texlive-hyphen-russian
+             texlive-hyphen-sanskrit
+             texlive-hyphen-serbian
+             texlive-hyphen-slovak
+             texlive-hyphen-slovenian
+             texlive-hyphen-spanish
+             texlive-hyphen-swedish
+             texlive-hyphen-thai
+             texlive-hyphen-turkish
+             texlive-hyphen-turkmen
+             texlive-hyphen-ukrainian
+             texlive-hyphen-uppersorbian
+             texlive-hyphen-welsh
+             texlive-unicode-data
+             texlive-ukrhyph
+             texlive-ruhyphen
+             texlive-latex-l3kernel
+             texlive-latex-l3backend
+             ;; TODO: This dependency isn't needed for LaTeX version 2021-06-01
+             ;; and later. See:
+             ;; https://tug.org/pipermail/tex-live/2021-June/047180.html
+             texlive-latex-l3packages
+             texlive-latexconfig))
       (home-page "https://www.ctan.org/pkg/latex-base")
       (synopsis "Base sources of LaTeX")
       (description
@@ -3016,7 +3001,7 @@ verbatim source).")
                "0b66fy06safyrd717rfr476g1gz6nqfv1vqvam7ac2yy0g0djb17")
               #:trivial? #t))
     (propagated-inputs
-     `(("texlive-latex-epstopdf-pkg" ,texlive-latex-epstopdf-pkg)))
+     (list texlive-latex-epstopdf-pkg))
     (home-page "https://www.ctan.org/pkg/latex-graphics")
     (synopsis "Color and graphics option files")
     (description
@@ -3056,8 +3041,7 @@ set default \"driver\" options for the color and graphics packages.")
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/graphics"))
     (propagated-inputs
-     `(("texlive-graphics-cfg" ,texlive-graphics-cfg)
-       ("texlive-graphics-def" ,texlive-graphics-def)))
+     (list texlive-graphics-cfg texlive-graphics-def))
     (home-page "https://www.ctan.org/pkg/latex-graphics")
     (synopsis "LaTeX standard graphics bundle")
     (description
@@ -3181,7 +3165,7 @@ tables.")
                        texlive-stmaryrd
                        texlive-wasy)))))
       (native-inputs
-       `(("texlive-tex-ini-files" ,texlive-tex-ini-files)))
+       (list texlive-tex-ini-files))
       (home-page "https://www.ctan.org/pkg/xmltex/")
       (synopsis "Support for parsing XML documents")
       (description "The package provides an implementation of a parser for
@@ -3212,26 +3196,26 @@ XML, using UTF-8 or a suitable 8-bit encoding.")
              (add-after 'unpack 'chdir
                (lambda _ (chdir "source/latex/hyperref") #t))))))
       (propagated-inputs
-       `(("texlive-generic-atbegshi" ,texlive-generic-atbegshi)
-         ("texlive-generic-bitset" ,texlive-generic-bitset)
-         ("texlive-generic-etexcmds" ,texlive-generic-etexcmds)
-         ("texlive-generic-gettitlestring" ,texlive-generic-gettitlestring)
-         ("texlive-generic-iftex" ,texlive-generic-iftex)
-         ("texlive-generic-infwarerr" ,texlive-generic-infwarerr)
-         ("texlive-generic-intcalc" ,texlive-generic-intcalc)
-         ("texlive-generic-kvdefinekeys" ,texlive-generic-kvdefinekeys)
-         ("texlive-generic-kvsetkeys" ,texlive-generic-kvsetkeys)
-         ("texlive-generic-ltxcmds" ,texlive-generic-ltxcmds)
-         ("texlive-generic-pdfescape" ,texlive-generic-pdfescape)
-         ("texlive-latex-auxhook" ,texlive-latex-auxhook)
-         ("texlive-latex-atveryend" ,texlive-latex-atveryend)
-         ("texlive-latex-hycolor" ,texlive-latex-hycolor)
-         ("texlive-latex-kvoptions" ,texlive-latex-kvoptions)
-         ("texlive-latex-letltxmacro" ,texlive-latex-letltxmacro)
-         ("texlive-latex-pdftexcmds" ,texlive-latex-pdftexcmds)
-         ("texlive-latex-refcount" ,texlive-latex-refcount)
-         ("texlive-latex-rerunfilecheck" ,texlive-latex-rerunfilecheck)
-         ("texlive-url" ,texlive-url)))
+       (list texlive-generic-atbegshi
+             texlive-generic-bitset
+             texlive-generic-etexcmds
+             texlive-generic-gettitlestring
+             texlive-generic-iftex
+             texlive-generic-infwarerr
+             texlive-generic-intcalc
+             texlive-generic-kvdefinekeys
+             texlive-generic-kvsetkeys
+             texlive-generic-ltxcmds
+             texlive-generic-pdfescape
+             texlive-latex-auxhook
+             texlive-latex-atveryend
+             texlive-latex-hycolor
+             texlive-latex-kvoptions
+             texlive-latex-letltxmacro
+             texlive-latex-pdftexcmds
+             texlive-latex-refcount
+             texlive-latex-rerunfilecheck
+             texlive-url))
       (home-page "https://www.ctan.org/pkg/hyperref")
       (synopsis "Extensive support for hypertext in LaTeX")
       (description
@@ -3271,7 +3255,7 @@ pdf and HTML backends.  The package is distributed with the @code{backref} and
                (("ifpdf.ins") "ifpdf.dtx"))
              #t)))))
     (propagated-inputs
-     `(("texlive-generic-iftex" ,texlive-generic-iftex)))
+     (list texlive-generic-iftex))
     (home-page "https://www.ctan.org/pkg/oberdiek")
     (synopsis "Bundle of packages submitted by Heiko Oberdiek")
     (description
@@ -3292,11 +3276,9 @@ arrows; record information about document class(es) used; and many more.")
                "1myz0d5bxhxvl4220ikywh921qld8n324kk9kscqbc5iw4063g56")
               #:trivial? #t))
     (propagated-inputs
-     `(("texlive-generic-infwarerr" ,texlive-generic-infwarerr)
-       ("texlive-generic-uniquecounter" ,texlive-generic-uniquecounter)
-       ("texlive-latex-atveryend" ,texlive-latex-atveryend)
-       ("texlive-latex-kvoptions" ,texlive-latex-kvoptions)
-       ("texlive-latex-pdftexcmds" ,texlive-latex-pdftexcmds)))
+     (list texlive-generic-infwarerr texlive-generic-uniquecounter
+           texlive-latex-atveryend texlive-latex-kvoptions
+           texlive-latex-pdftexcmds))
     (home-page "https://www.ctan.org/pkg/rerunfilecheck")
     (synopsis "Checksum based rerun checks on auxiliary files")
     (description
@@ -3402,7 +3384,7 @@ Live distribution.")
        #:tex-format #f
        #:texlive-latex-base #f))
     (native-inputs
-     `(("texlive-docstrip" ,texlive-docstrip)))
+     (list texlive-docstrip))
     (home-page "https://www.ctan.org/pkg/l3kernel")
     (synopsis "LaTeX3 programmers’ interface")
     (description
@@ -3431,7 +3413,7 @@ that the LaTeX3 conventions can be used with regular LaTeX 2e packages.")
        #:tex-format #f
        #:texlive-latex-base #f))
     (native-inputs
-     `(("texlive-docstrip" ,texlive-docstrip)))
+     (list texlive-docstrip))
     (home-page "https://www.ctan.org/pkg/l3backend")
     (synopsis "LaTeX3 backend drivers")
     (description
@@ -3493,9 +3475,9 @@ an independent schedule.")
                (copy-recursively "tex/latex/l3packages/xparse" dest)))))
        ))
     (native-inputs
-     `(("texlive-docstrip" ,texlive-docstrip)))
+     (list texlive-docstrip))
     (propagated-inputs
-     `(("texlive-latex-l3kernel" ,texlive-latex-l3kernel)))
+     (list texlive-latex-l3kernel))
     (home-page "https://www.ctan.org/pkg/l3packages")
     (synopsis "High-level LaTeX3 concepts")
     (description
@@ -3550,7 +3532,7 @@ here are defined for the dvips engine only.")
              (add-after 'unpack 'chdir
                (lambda _ (chdir "source/latex/fontspec/") #t))))))
       (propagated-inputs
-       `(("texlive-latex-l3packages" ,texlive-latex-l3packages)))
+       (list texlive-latex-l3packages))
       (home-page "https://www.ctan.org/pkg/fontspec")
       (synopsis "Advanced font selection in XeLaTeX and LuaLaTeX")
       (description
@@ -3664,8 +3646,7 @@ string between different encodings.  Both LaTeX and plain-TeX are supported.")
                              (find-files (assoc-ref outputs "out")))
                    #t)))))))
       (inputs
-       `(("coreutils" ,coreutils)
-         ("texlive-bin" ,texlive-bin)))
+       (list coreutils texlive-bin))
       (home-page "https://github.com/latex3/luaotfload")
       (synopsis "Testing and building system for LaTeX")
       (description
@@ -3702,9 +3683,7 @@ releases.  The bundle consists of a Lua script to run the tasks and a
        (modify-phases %standard-phases
          (delete 'configure))))
     (native-inputs
-     `(("texlive-bin" ,texlive-bin)
-       ("unzip" ,unzip)
-       ("zip" ,zip)))
+     (list texlive-bin unzip zip))
     (home-page "https://github.com/lualatex/lualibs")
     (synopsis "Lua modules for general programming (in the (La)TeX world)")
     (description
@@ -3732,7 +3711,7 @@ this bundle for use independent of ConTeXt.")
     (package
       (inherit template)
       (propagated-inputs
-       `(("texlive-luatex-lualibs" ,texlive-luatex-lualibs)))
+       (list texlive-luatex-lualibs))
       (home-page "https://github.com/lualatex/luaotfload")
       (synopsis "OpenType font loader for LuaTeX")
       (description
@@ -3798,14 +3777,14 @@ loading fonts by their proper names instead of file names.")
                (mkdir-p web2c)
                (copy-recursively "web2c" web2c)))))))
     (native-inputs
-     `(("texlive-bin" ,texlive-bin)
-       ("texlive-babel" ,texlive-babel)
-       ("texlive-cm" ,texlive-cm)
-       ("texlive-fonts-latex" ,texlive-fonts-latex)
-       ("texlive-kpathsea" ,texlive-kpathsea)
-       ("texlive-latex-base" ,texlive-latex-base)
-       ("texlive-lm" ,texlive-lm)
-       ("texlive-tex-ini-files" ,texlive-tex-ini-files)))
+     (list texlive-bin
+           texlive-babel
+           texlive-cm
+           texlive-fonts-latex
+           texlive-kpathsea
+           texlive-latex-base
+           texlive-lm
+           texlive-tex-ini-files))
     (home-page (package-home-page texlive-latex-base))
     (synopsis "LuaLaTeX format files for LuaTeX")
     (description "This package is necessary to use LaTeX with the LuaTeX engine.")
@@ -3904,7 +3883,7 @@ distribution.")
                    (invoke "unzip" "locale.zip" "-d"
                            locale-directory))))))))
       (native-inputs
-       `(("unzip" ,unzip)))
+       (list unzip))
       (home-page "https://www.ctan.org/pkg/babel")
       (synopsis "Multilingual support for Plain TeX or LaTeX")
       (description
@@ -4120,7 +4099,7 @@ language that is written in a Cyrillic alphabet.")
                (lambda _
                  (chdir "source/latex/psnfss") #t))))))
       (native-inputs
-       `(("texlive-cm" ,texlive-cm)))
+       (list texlive-cm))
       (home-page "https://www.ctan.org/pkg/psnfss")
       (synopsis "Font support for common PostScript fonts")
       (description
@@ -4692,9 +4671,8 @@ Unicode option of @code{inputenc} or @code{inputenx}, or by XeLaTeX/LuaLaTeX.")
                "1hph0djbfc8hlwfc41rzlf8l3ccyyvc0n7a0qdrr9881jwd6iv1b")
               #:trivial? #t))
     (propagated-inputs
-     `(("texlive-generic-iftex" ,texlive-generic-iftex)
-       ("texlive-generic-infwarerr" ,texlive-generic-infwarerr)
-       ("texlive-generic-ltxcmds" ,texlive-generic-ltxcmds)))
+     (list texlive-generic-iftex texlive-generic-infwarerr
+           texlive-generic-ltxcmds))
     (home-page "https://www.ctan.org/pkg/pdftexcmds")
     (synopsis "LuaTeX support for pdfTeX utility functions")
     (description
@@ -4737,16 +4715,16 @@ rotated.")
                "12clzcw2cl7g2chr2phgmmiwxw4859cln1gbx1wgp8bl9iw590nc")
               #:trivial? #t))
     (propagated-inputs
-     `(("texlive-latex-bigfoot" ,texlive-latex-bigfoot) ; for suffix
-       ("texlive-filemod" ,texlive-filemod)
-       ("texlive-latex-graphics" ,texlive-latex-graphics)
-       ("texlive-latex-ifplatform" ,texlive-latex-ifplatform)
-       ("texlive-latex-l3kernel" ,texlive-latex-l3kernel) ; for expl3
-       ("texlive-oberdiek" ,texlive-oberdiek)
-       ("texlive-latex-psfrag" ,texlive-latex-psfrag)
-       ("texlive-latex-tools" ,texlive-latex-tools) ; for shellesc
-       ("texlive-latex-trimspaces" ,texlive-latex-trimspaces)
-       ("texlive-latex-xkeyval" ,texlive-latex-xkeyval)))
+     (list texlive-latex-bigfoot ; for suffix
+           texlive-filemod
+           texlive-latex-graphics
+           texlive-latex-ifplatform
+           texlive-latex-l3kernel ; for expl3
+           texlive-oberdiek
+           texlive-latex-psfrag
+           texlive-latex-tools ; for shellesc
+           texlive-latex-trimspaces
+           texlive-latex-xkeyval))
     (home-page "https://www.ctan.org/pkg/pstool")
     (synopsis "Process PostScript graphics within pdfLaTeX documents")
     (description
@@ -4857,7 +4835,7 @@ be changed. ")
                (("pstool.tex") "trimspaces.tex"))
              #t)))))
     (inputs
-     `(("texlive-latex-filecontents" ,texlive-latex-filecontents)))
+     (list texlive-latex-filecontents))
     (home-page "https://www.ctan.org/pkg/trimspaces")
     (synopsis "Trim spaces around an argument or within a macro")
     (description
@@ -5108,7 +5086,7 @@ BibLaTeX, and is considered experimental.")
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/geometry"))
     (propagated-inputs
-     `(("texlive-oberdiek" ,texlive-oberdiek))) ;for ifpdf
+     (list texlive-oberdiek)) ;for ifpdf
     (home-page "https://www.ctan.org/pkg/geometry")
     (synopsis "Flexible and complete interface to document dimensions")
     (description
@@ -5610,8 +5588,7 @@ in SGML; use maths minus in text as appropriate; simple Young tableaux.")
                "02i4n2n3j4lg68d3nam08m63kb4irc99wfhyc2z51r02lm1wwmvw")
               #:trivial? #t))
     (propagated-inputs
-     `(("texlive-generic-kvsetkeys" ,texlive-generic-kvsetkeys)
-       ("texlive-generic-ltxcmds" ,texlive-generic-ltxcmds)))
+     (list texlive-generic-kvsetkeys texlive-generic-ltxcmds))
     (home-page "https://www.ctan.org/pkg/kvoptions")
     (synopsis "Key/value format for package options")
     (description
@@ -5680,9 +5657,7 @@ package options.")
                          (find-files "." "\\.mf"))
                #t))))))
     (native-inputs
-     `(("texlive-bin" ,texlive-bin)
-       ("texlive-metafont" ,texlive-metafont)
-       ("texlive-cm" ,texlive-cm)))
+     (list texlive-bin texlive-metafont texlive-cm))
     (home-page "https://www.ctan.org/pkg/ec")
     (synopsis "Computer modern fonts in T1 and TS1 encodings")
     (description
@@ -5894,9 +5869,7 @@ Adobe's basic set.")
                          (find-files "." "\\.mf"))
                #t))))))
     (native-inputs
-     `(("texlive-bin" ,texlive-bin)
-       ("texlive-metafont" ,texlive-metafont)
-       ("texlive-cm" ,texlive-cm)))
+     (list texlive-bin texlive-metafont texlive-cm))
     (home-page "https://www.ctan.org/pkg/rsfs")
     (synopsis "Ralph Smith's Formal Script font")
     (description
@@ -6313,7 +6286,7 @@ TeX metrics (VF and TFM files) and macros for use with LaTeX.")
            (copy-recursively "iwona" target)
            #t))))
     (native-inputs
-     `(("unzip" ,unzip)))
+     (list unzip))
     (home-page "http://jmn.pl/en/kurier-i-iwona/")
     (synopsis "Sans-serif typeface for TeX")
     (description "Iwona is a two-element sans-serif typeface. It was created
@@ -6429,22 +6402,21 @@ Simple Young tableaux.
       (propagated-inputs
        ;; Propagate the texlive-updmap.cfg input used by xmltex, which provides the
        ;; required fonts for its use.
-       `(("texlive-xmltex" ,texlive-xmltex)
-         ("texlive-kpathsea" ,texlive-kpathsea))) ;for fmtutil.cnf template
+       (list texlive-xmltex texlive-kpathsea)) ;for fmtutil.cnf template
       (native-inputs
-       `(("texlive-cm" ,texlive-cm)     ;for cmex10 and others
-         ("texlive-fonts-latex" ,texlive-fonts-latex) ;for lasy6
-         ;; The t1cmr.fd file of texlive-latex-base refers to the ecrm font,
-         ;; provided by the jknappen package collection.
-         ("texlive-jknappen" ,texlive-jknappen)
-         ("texlive-generic-ulem" ,texlive-generic-ulem)
-         ("texlive-hyperref" ,texlive-hyperref)
-         ("texlive-latex-colortbl" ,texlive-latex-colortbl)
-         ("texlive-latex-fancyhdr" ,texlive-latex-fancyhdr)
-         ("texlive-latex-graphics" ,texlive-latex-graphics) ;for color.sty
-         ("texlive-latex-tools" ,texlive-latex-tools)       ;for array.sty
-         ("texlive-marvosym" ,texlive-marvosym)
-         ("texlive-tex-ini-files" ,texlive-tex-ini-files))) ;for pdftexconfig
+       (list texlive-cm ;for cmex10 and others
+             texlive-fonts-latex ;for lasy6
+             ;; The t1cmr.fd file of texlive-latex-base refers to the ecrm font,
+             ;; provided by the jknappen package collection.
+             texlive-jknappen
+             texlive-generic-ulem
+             texlive-hyperref
+             texlive-latex-colortbl
+             texlive-latex-fancyhdr
+             texlive-latex-graphics ;for color.sty
+             texlive-latex-tools ;for array.sty
+             texlive-marvosym
+             texlive-tex-ini-files)) ;for pdftexconfig
       (home-page "https://www.ctan.org/pkg/jadetex/")
       (synopsis "TeX macros to produce TeX output using OpenJade")
       (description "JadeTeX is a companion package to the OpenJade DSSSL
@@ -6940,13 +6912,13 @@ e-TeX.")
     ;; TODO: add this missing package:
     ;; dehyph
     (propagated-inputs
-     `(("texlive-cm" ,texlive-cm)
-       ("texlive-etex" ,texlive-etex)
-       ("texlive-knuth-lib" ,texlive-knuth-lib)
-       ("texlive-hyphen-base" ,texlive-hyphen-base)
-       ("texlive-kpathsea" ,texlive-kpathsea)
-       ("texlive-tex-ini-files" ,texlive-tex-ini-files)
-       ("texlive-tex-plain" ,texlive-tex-plain)))
+     (list texlive-cm
+           texlive-etex
+           texlive-knuth-lib
+           texlive-hyphen-base
+           texlive-kpathsea
+           texlive-tex-ini-files
+           texlive-tex-plain))
     (home-page "https://www.ctan.org/pkg/pdftex")
     (synopsis "TeX extension for direct creation of PDF")
     (description
@@ -7131,10 +7103,8 @@ This package contains the complete TeX Live distribution.")
                (("lib64") "lib"))
              #t)))))
     (native-inputs
-     `(("perl-capture-tiny" ,perl-capture-tiny)
-       ("perl-config-autoconf" ,perl-config-autoconf)
-       ("perl-extutils-libbuilder" ,perl-extutils-libbuilder)
-       ("perl-module-build" ,perl-module-build)))
+     (list perl-capture-tiny perl-config-autoconf perl-extutils-libbuilder
+           perl-module-build))
     (home-page "https://metacpan.org/release/Text-BibTeX")
     (synopsis "Interface to read and parse BibTeX files")
     (description "@code{Text::BibTeX} is a Perl library for reading, parsing,
@@ -7174,45 +7144,45 @@ values (strings, macros, or numbers) pasted together.")
                                     "/lib/perl5/site_perl")))))
              #t)))))
     (inputs
-     `(("perl-autovivification" ,perl-autovivification)
-       ("perl-class-accessor" ,perl-class-accessor)
-       ("perl-data-dump" ,perl-data-dump)
-       ("perl-data-compare" ,perl-data-compare)
-       ("perl-data-uniqid" ,perl-data-uniqid)
-       ("perl-datetime-format-builder" ,perl-datetime-format-builder)
-       ("perl-datetime-calendar-julian" ,perl-datetime-calendar-julian)
-       ("perl-file-slurper" ,perl-file-slurper)
-       ("perl-io-string" ,perl-io-string)
-       ("perl-ipc-cmd" ,perl-ipc-cmd)
-       ("perl-ipc-run3" ,perl-ipc-run3)
-       ("perl-list-allutils" ,perl-list-allutils)
-       ("perl-list-moreutils" ,perl-list-moreutils)
-       ("perl-mozilla-ca" ,perl-mozilla-ca)
-       ("perl-regexp-common" ,perl-regexp-common)
-       ("perl-log-log4perl" ,perl-log-log4perl)
-       ("perl-parse-recdescent" ,perl-parse-recdescent)
-       ("perl-unicode-collate" ,perl-unicode-collate)
-       ("perl-unicode-normalize" ,perl-unicode-normalize)
-       ("perl-unicode-linebreak" ,perl-unicode-linebreak)
-       ("perl-encode-eucjpascii" ,perl-encode-eucjpascii)
-       ("perl-encode-jis2k" ,perl-encode-jis2k)
-       ("perl-encode-hanextra" ,perl-encode-hanextra)
-       ("perl-xml-libxml" ,perl-xml-libxml)
-       ("perl-xml-libxml-simple" ,perl-xml-libxml-simple)
-       ("perl-xml-libxslt" ,perl-xml-libxslt)
-       ("perl-xml-writer" ,perl-xml-writer)
-       ("perl-sort-key" ,perl-sort-key)
-       ("perl-text-csv" ,perl-text-csv)
-       ("perl-text-csv-xs" ,perl-text-csv-xs)
-       ("perl-text-roman" ,perl-text-roman)
-       ("perl-uri" ,perl-uri)
-       ("perl-text-bibtex" ,perl-text-bibtex)
-       ("perl-libwww" ,perl-libwww)
-       ("perl-lwp-protocol-https" ,perl-lwp-protocol-https)
-       ("perl-business-isbn" ,perl-business-isbn)
-       ("perl-business-issn" ,perl-business-issn)
-       ("perl-business-ismn" ,perl-business-ismn)
-       ("perl-lingua-translit" ,perl-lingua-translit)))
+     (list perl-autovivification
+           perl-class-accessor
+           perl-data-dump
+           perl-data-compare
+           perl-data-uniqid
+           perl-datetime-format-builder
+           perl-datetime-calendar-julian
+           perl-file-slurper
+           perl-io-string
+           perl-ipc-cmd
+           perl-ipc-run3
+           perl-list-allutils
+           perl-list-moreutils
+           perl-mozilla-ca
+           perl-regexp-common
+           perl-log-log4perl
+           perl-parse-recdescent
+           perl-unicode-collate
+           perl-unicode-normalize
+           perl-unicode-linebreak
+           perl-encode-eucjpascii
+           perl-encode-jis2k
+           perl-encode-hanextra
+           perl-xml-libxml
+           perl-xml-libxml-simple
+           perl-xml-libxslt
+           perl-xml-writer
+           perl-sort-key
+           perl-text-csv
+           perl-text-csv-xs
+           perl-text-roman
+           perl-uri
+           perl-text-bibtex
+           perl-libwww
+           perl-lwp-protocol-https
+           perl-business-isbn
+           perl-business-issn
+           perl-business-ismn
+           perl-lingua-translit))
     (native-inputs
      `(("perl-config-autoconf" ,perl-config-autoconf)
        ("perl-extutils-libbuilder" ,perl-extutils-libbuilder)
@@ -7253,7 +7223,7 @@ other things it comes with full Unicode support.")
              ;; build it.
              (invoke "python" "setup.py" "build" "--pdf=False" "install"
                      (string-append "--prefix=" (assoc-ref outputs "out"))))))))
-    (native-inputs `(("texinfo" ,texinfo)))
+    (native-inputs (list texinfo))
     (home-page "https://launchpad.net/rubber")
     (synopsis "Wrapper for LaTeX and friends")
     (description
@@ -7291,13 +7261,9 @@ PDF documents.")
                        (string-append "METAINFODIR=" out "/share/metainfo")
                        "texmaker.pro")))))))
     (inputs
-     `(("poppler-qt5" ,poppler-qt5)
-       ("qtbase" ,qtbase-5)
-       ("qtscript" ,qtscript)
-       ("qtwebkit" ,qtwebkit)
-       ("zlib" ,zlib)))
+     (list poppler-qt5 qtbase-5 qtscript qtwebkit zlib))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "http://www.xm1math.net/texmaker/")
     (synopsis "LaTeX editor")
     (description "Texmaker is a program that integrates many tools needed to
@@ -7391,19 +7357,18 @@ and Karl Berry.")
                    (with-output-to-file "src/tests/check_layout.cmake"
                      (const #t)))))))
     (inputs
-     `(("boost" ,boost)
-       ("hunspell" ,hunspell)           ; Note: Could also use aspell instead.
-       ("libx11" ,libx11)
-       ("mythes" ,mythes)
-       ("python" ,python)
-       ("qtbase" ,qtbase-5)
-       ("qtsvg" ,qtsvg)
-       ("zlib" ,zlib)))
+     (list boost
+           hunspell ; Note: Could also use aspell instead.
+           libx11
+           mythes
+           python
+           qtbase-5
+           qtsvg
+           zlib))
     (propagated-inputs
      `(("texlive" ,(texlive-updmap.cfg (list texlive-fonts-ec)))))
     (native-inputs
-     `(("python" ,python)
-       ("pkg-config" ,pkg-config)))
+     (list python pkg-config))
     (home-page "https://www.lyx.org/")
     (synopsis "Document preparation system with GUI")
     (description "LyX is a document preparation system.  It excels at letting
@@ -7544,7 +7509,7 @@ It also ensures compatibility with the @code{media9} and @code{animate} packages
      '(#:tex-directory "latex/needspace"
        #:tex-format "latex"))
     (inputs
-     `(("texlive-latex-filecontents" ,texlive-latex-filecontents)))
+     (list texlive-latex-filecontents))
     (home-page "https://www.ctan.org/pkg/needspace")
     (synopsis "Insert pagebreak if not enough space")
     (description
@@ -7570,7 +7535,7 @@ page, a new page will be started.")
      '(#:tex-directory "latex/changepage"
        #:tex-format "latex"))
     (inputs
-     `(("texlive-latex-filecontents" ,texlive-latex-filecontents)))
+     (list texlive-latex-filecontents))
     (home-page "https://www.ctan.org/pkg/changepage")
     (synopsis "Margin adjustment and detection of odd/even pages")
     (description
@@ -7684,7 +7649,7 @@ striking out (line through words) and crossing out (/// over words).")
             (base32
              "05zdq7y3am109m5534ahqqp9x5iar3ha68v1r4zkrdly2mijxz2j"))))))
     (propagated-inputs
-     `(("texlive-xcolor" ,texlive-xcolor)))
+     (list texlive-xcolor))
     (arguments
      `(#:modules ((guix build utils))
        #:builder
@@ -7799,7 +7764,7 @@ be used either with LaTeX or with plain TeX.")
                "19grk4p1dh566hgpzhnjyjnrw57hpjijcpr7ci401n9jszcc1xkz")
               #:trivial? #t))
     (propagated-inputs
-     `(("texlive-latex-pdftexcmds" ,texlive-latex-pdftexcmds)))
+     (list texlive-latex-pdftexcmds))
     (home-page "https://www.ctan.org/pkg/bigintcalc")
     (synopsis "Integer calculations on very large numbers")
     (description
@@ -7817,9 +7782,8 @@ integers that can exceed TeX's number limits.")
                "0inj6qpzizvsbxdfsaijnl4iq976kyrnchnm3gc1kc2w389zrn1l")
               #:trivial? #t))
     (propagated-inputs
-     `(("texlive-generic-infwarerr" ,texlive-generic-infwarerr)
-       ("texlive-generic-intcalc" ,texlive-generic-intcalc)
-       ("texlive-generic-bigintcalc" ,texlive-generic-bigintcalc)))
+     (list texlive-generic-infwarerr texlive-generic-intcalc
+           texlive-generic-bigintcalc))
     (home-page "https://www.ctan.org/pkg/bitset")
     (synopsis "Handle bit-vector datatype")
     (description
@@ -7838,8 +7802,7 @@ can be manipulated.")
                "11y6pnlq13bp0ybi7c82g8ds8085zv1zaslgqv3dzhgi3dklpc0c")
               #:trivial? #t))
     (propagated-inputs
-     `(("texlive-generic-infwarerr" ,texlive-generic-infwarerr)
-       ("texlive-generic-iftex" ,texlive-generic-iftex)))
+     (list texlive-generic-infwarerr texlive-generic-iftex))
     (home-page "https://www.ctan.org/pkg/etexcmds")
     (synopsis "Avoid name clashes with e-TeX commands")
     (description
@@ -8006,8 +7969,7 @@ using TeX or e-TeX.")
                "1bjh8vwiqlkmjqndnh4xp116524x4m3hdcyq2s231jiqy8il8dcc")
               #:trivial? #t))
     (propagated-inputs
-     `(("texlive-generic-bigintcalc" ,texlive-generic-bigintcalc)
-       ("texlive-generic-infwarerr" ,texlive-generic-infwarerr)))
+     (list texlive-generic-bigintcalc texlive-generic-infwarerr))
     (home-page "https://www.ctan.org/pkg/uniquecounter")
     (synopsis "Unlimited unique counter")
     (description
@@ -8043,7 +8005,7 @@ values are not limited.")
            (copy-recursively (assoc-ref %build-inputs "source") target)
            #t))))
     (propagated-inputs
-     `(("texlive-generic-listofitems" ,texlive-generic-listofitems)))
+     (list texlive-generic-listofitems))
     (home-page "https://www.ctan.org/pkg/readarray")
     (synopsis "Read, store and recall array-formatted data")
     (description
@@ -8080,7 +8042,7 @@ formatted text.")
            (copy-recursively (assoc-ref %build-inputs "source") target)
            #t))))
     (propagated-inputs
-     `(("texlive-latex-readarray" ,texlive-latex-readarray)))
+     (list texlive-latex-readarray))
     (home-page "https://www.ctan.org/pkg/verbatimbox")
     (synopsis "Deposit verbatim text in a box")
     (description
@@ -8218,7 +8180,7 @@ package, such as @command{natbib} as well).")
               #:trivial? #t))
     ;; This provides charter.map.
     (propagated-inputs
-     `(("texlive-psnfss" ,texlive-psnfss)))
+     (list texlive-psnfss))
     (home-page "https://www.ctan.org/pkg/charter")
     (synopsis "Charter fonts for TeX")
     (description "This package provides a copy of the Charter Type-1 fonts
@@ -8309,12 +8271,12 @@ Support for use with LaTeX is available in @code{freenfss}, part of
     ;; TODO: add these missing packages:
     ;; xetex, luatex, lm-math, manfnt-font, and mptopdf
     (propagated-inputs
-     `(("texlive-amsfonts" ,texlive-amsfonts)
-       ("texlive-lm" ,texlive-lm)
-       ("texlive-pdftex" ,texlive-pdftex)
-       ("texlive-metapost" ,texlive-metapost)
-       ("texlive-stmaryrd" ,texlive-stmaryrd)
-       ("texlive-mflogo-font" ,texlive-mflogo-font)))
+     (list texlive-amsfonts
+           texlive-lm
+           texlive-pdftex
+           texlive-metapost
+           texlive-stmaryrd
+           texlive-mflogo-font))
     (home-page "https://www.ctan.org/pkg/context")
     (synopsis "Full featured, parameter driven macro package for TeX")
     (description "ConTeXt is a full featured, parameter driven macro package,
@@ -8338,10 +8300,8 @@ for a wealth of support information.")
                "091n27n4l3iac911bvmpp735ffryyzaq46mkclgn3q9jsvc4ngiv")
               #:trivial? #t))
     (propagated-inputs
-     `(("texlive-hyperref" ,texlive-hyperref)
-       ("texlive-oberdiek" ,texlive-oberdiek)
-       ("texlive-etoolbox" ,texlive-etoolbox)
-       ("texlive-latex-pgf" ,texlive-latex-pgf)))
+     (list texlive-hyperref texlive-oberdiek texlive-etoolbox
+           texlive-latex-pgf))
     (home-page "https://www.ctan.org/pkg/beamer")
     (synopsis "LaTeX class for producing presentations and slides")
     (description "The beamer LaTeX class can be used for producing slides.
@@ -8411,7 +8371,7 @@ the file to which it applies.")
                    (("    .+umaczy") "umaczy"))
                  #t))))))
       (propagated-inputs
-       `(("texlive-pdftex" ,texlive-pdftex)))
+       (list texlive-pdftex))
       (home-page "https://www.ctan.org/pkg/pdfx")
       (synopsis "PDF/X and PDF/A support for pdfTeX, LuaTeX and XeTeX")
       (description
@@ -8500,7 +8460,7 @@ or shading the cells of tables.")
     (package
       (inherit template)
       (propagated-inputs
-       `(("texlive-pstricks" ,texlive-pstricks)))
+       (list texlive-pstricks))
       (home-page "http://www.ctan.org/pkg/pst-text")
       (synopsis "Text and character manipulation in PSTricks")
       (description "Pst-text is a PSTricks based package for plotting text along
@@ -8644,19 +8604,19 @@ are part of the LaTeX required tools distribution, comprising the packages:
                            "xkvutils.tex"))
                #t))))))
     (native-inputs
-     `(("texlive-latex-base" ,texlive-latex-base)
-       ("texlive-cm" ,texlive-cm)
-       ("texlive-lm" ,texlive-lm)
-       ("texlive-url" ,texlive-url)
-       ("texlive-graphics-def" ,texlive-graphics-def)
-       ("texlive-xcolor" ,texlive-xcolor)
-       ("texlive-latex-footmisc" ,texlive-latex-footmisc)
-       ("texlive-latex-listings" ,texlive-latex-listings)
-       ("texlive-generic-iftex" ,texlive-generic-iftex)
-       ("texlive-pstricks" ,texlive-pstricks)
-       ("texlive-pst-text" ,texlive-pst-text)
-       ("texlive-tools" ,texlive-tools)
-       ("texlive-latex-pgf" ,texlive-latex-pgf)))
+     (list texlive-latex-base
+           texlive-cm
+           texlive-lm
+           texlive-url
+           texlive-graphics-def
+           texlive-xcolor
+           texlive-latex-footmisc
+           texlive-latex-listings
+           texlive-generic-iftex
+           texlive-pstricks
+           texlive-pst-text
+           texlive-tools
+           texlive-latex-pgf))
     (home-page "http://www.ctan.org/pkg/xkeyval")
     (synopsis "Extension of the keyval package")
     (description
@@ -8683,9 +8643,9 @@ keys.")
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/standalone"))
     (propagated-inputs
-     `(("texlive-latex-xkeyval" ,texlive-latex-xkeyval)))
+     (list texlive-latex-xkeyval))
     (native-inputs
-     `(("texlive-ydoc" ,texlive-ydoc)))
+     (list texlive-ydoc))
     (home-page "http://www.ctan.org/pkg/standalone")
     (synopsis "Compile TeX pictures stand-alone or as part of a document")
     (description "A class and package is provided which allows TeX pictures or
@@ -8717,8 +8677,7 @@ The behaviour in standalone mode may adjusted using a configuration file
          (add-after 'unpack 'chdir
            (lambda _ (chdir "source/latex/siunitx") #t)))))
     (propagated-inputs
-     `(("texlive-latex-l3kernel" ,texlive-latex-l3kernel)
-       ("texlive-latex-l3packages" ,texlive-latex-l3packages)))
+     (list texlive-latex-l3kernel texlive-latex-l3packages))
     (home-page "http://www.ctan.org/pkg/siunitx")
     (synopsis "Comprehensive SI units package")
     (description
@@ -8770,7 +8729,7 @@ to what constitutes a good table in this context.  The package offers
     (package
       (inherit template)
       (propagated-inputs
-       `(("texlive-etoolbox" ,texlive-etoolbox)))
+       (list texlive-etoolbox))
       (home-page "https://www.ctan.org/pkg/csquotes")
       (synopsis "Context sensitive quotation facilities")
       (description "This package provides advanced facilities for inline and
@@ -8796,7 +8755,7 @@ styles as well as the optional active quotes are freely configurable.")
     (package
       (inherit template)
       (propagated-inputs
-       `(("texlive-etoolbox" ,texlive-etoolbox)))
+       (list texlive-etoolbox))
       (home-page "https://www.ctan.org/pkg/logreq")
       (synopsis "Support for automation of the LaTeX workflow")
       (description "The package helps to automate a typical LaTeX
@@ -8828,8 +8787,7 @@ XML file.
     (package
       (inherit template)
       (propagated-inputs
-       `(("texlive-logreq" ,texlive-logreq)
-         ("texlive-url" ,texlive-url)))
+       (list texlive-logreq texlive-url))
       (home-page "https://www.ctan.org/pkg/biblatex")
       (synopsis "Sophisticated bibliographies in LaTeX")
       (description "BibLaTeX is a complete reimplementation of the
@@ -8867,8 +8825,7 @@ section.
     (package
       (inherit template)
       (propagated-inputs
-       `(("texlive-latex-pgf" ,texlive-latex-pgf)
-         ("texlive-latex-xkeyval" ,texlive-latex-xkeyval)))
+       (list texlive-latex-pgf texlive-latex-xkeyval))
       (home-page "http://www.ctan.org/pkg/todonotes")
       (synopsis "Marking things to do in a LaTeX document")
       (description "The @code{todonotes} package lets the user mark
@@ -9390,7 +9347,7 @@ floats merely delays the arrival of the inevitable error message.")
              (add-after 'unpack 'chdir
                (lambda _ (chdir "source/latex/ifmtarg")))))))
       (inputs
-       `(("texlive-latex-filecontents" ,texlive-latex-filecontents)))
+       (list texlive-latex-filecontents))
       (home-page "https://www.ctan.org/pkg/ifmtarg")
       (synopsis "If-then-else command for processing potentially empty arguments")
       (description "This package provides a command for the LaTeX programmer for
@@ -9417,7 +9374,7 @@ testing whether an argument is empty.")
              (add-after 'unpack 'chdir
                (lambda _ (chdir "source/latex/pagenote")))))))
       (propagated-inputs
-       `(("texlive-ifmtarg" ,texlive-ifmtarg)))
+       (list texlive-ifmtarg))
       (home-page "https://www.ctan.org/pkg/pagenote")
       (synopsis "Notes at end of document")
       (description "The pagenote package provides tagged notes on a separate
@@ -9445,7 +9402,7 @@ page (also known as ‘end notes’).")
              (add-after 'unpack 'chdir
                (lambda _ (chdir "source/latex/titling")))))))
       (native-inputs
-       `(("texlive-cm" ,texlive-cm)))
+       (list texlive-cm))
       (home-page "https://www.ctan.org/pkg/titling")
       (synopsis "Control typesetting of the \\maketitle command")
       (description "The @code{titling} package provides control over the
@@ -9475,7 +9432,7 @@ a physical page.")
              (add-after 'unpack 'chdir
                (lambda _ (chdir "source/latex/ifoddpage")))))))
       (native-inputs
-       `(("texlive-ydoc" ,texlive-ydoc)))
+       (list texlive-ydoc))
       (home-page "https://www.ctan.org/pkg/ifoddpage")
       (synopsis "Determine if the current page is odd or even")
       (description "This package provides an @code{\\ifoddpage} conditional to
@@ -9505,7 +9462,7 @@ the conditional @code{\\ifoddpageoronside} is provided which is also true in
              (add-after 'unpack 'chdir
                (lambda _ (chdir "source/latex/storebox")))))))
       (native-inputs
-       `(("texlive-ydoc" ,texlive-ydoc)))
+       (list texlive-ydoc))
       (home-page "https://www.ctan.org/pkg/storebox")
       (synopsis "Storing information for reuse")
       (description "The package provides \"store boxes\" whose user interface
@@ -9534,7 +9491,7 @@ DVI is output, store boxes behave the same as save boxes.")
              (add-after 'unpack 'chdir
                (lambda _ (chdir "source/latex/collectbox")))))))
       (native-inputs
-       `(("texlive-ydoc" ,texlive-ydoc)))
+       (list texlive-ydoc))
       (home-page "https://www.ctan.org/pkg/collectbox")
       (synopsis "Collect and process macro arguments as boxes")
       (description "The package provides macros to collect and process a macro
@@ -9593,14 +9550,14 @@ the list of graphics file extensions recognised by package graphics.")
              (add-after 'unpack 'chdir
                (lambda _ (chdir "source/latex/adjustbox")))))))
       (native-inputs
-       `(("texlive-ydoc" ,texlive-ydoc)))
+       (list texlive-ydoc))
       (propagated-inputs
-       `(("texlive-latex-pgf" ,texlive-latex-pgf)
-         ("texlive-latex-varwidth" ,texlive-latex-varwidth)
-         ("texlive-latex-xkeyval" ,texlive-latex-xkeyval)
-         ("texlive-collectbox" ,texlive-collectbox)
-         ("texlive-ifoddpage" ,texlive-ifoddpage)
-         ("texlive-storebox" ,texlive-storebox)))
+       (list texlive-latex-pgf
+             texlive-latex-varwidth
+             texlive-latex-xkeyval
+             texlive-collectbox
+             texlive-ifoddpage
+             texlive-storebox))
       (home-page "https://www.ctan.org/pkg/adjustbox")
       (synopsis "Graphics package-alike macros for “general” boxes")
       (description "The package provides several macros to adjust boxed
@@ -9625,10 +9582,8 @@ provided box macros are @code{\\lapbox}, @code{\\marginbox},
     (package
       (inherit template)
       (propagated-inputs
-       `(("texlive-etoolbox" ,texlive-etoolbox)
-         ("texlive-latex-environ" ,texlive-latex-environ)
-         ("texlive-latex-pgf" ,texlive-latex-pgf)
-         ("texlive-latex-tools" ,texlive-latex-tools)))
+       (list texlive-etoolbox texlive-latex-environ texlive-latex-pgf
+             texlive-latex-tools))
       (home-page "https://www.ctan.org/pkg/tcolorbox")
       (synopsis "Colored boxes, for LaTeX examples and theorems, etc")
       (description "This package provides an environment for colored and
@@ -9657,7 +9612,7 @@ parts.")
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/ebproof"))
     (propagated-inputs
-     `(("texlive-latex-l3kernel" ,texlive-latex-l3kernel)))
+     (list texlive-latex-l3kernel))
     (home-page "http://www.ctan.org/pkg/ebproof")
     (synopsis
      "Formal proofs in the style of sequent calculus")
@@ -9837,7 +9792,7 @@ handle complex tests.")
     (arguments
      `(#:test-target "test"))
     (native-inputs
-     `(("perl" ,perl)))
+     (list perl))
     (home-page "http://www.gerd-neugebauer.de/software/TeX/BibTool/en")
     (synopsis "Tool for manipulating BibTeX databases")
     (description

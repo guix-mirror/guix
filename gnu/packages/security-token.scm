@@ -98,11 +98,9 @@
                (("/bin/echo") (which "echo")))
              #t)))))
     (native-inputs
-     `(("perl" ,perl)
-       ("pkg-config" ,pkg-config)))
+     (list perl pkg-config))
     (inputs
-     `(("libusb" ,libusb)
-       ("pcsc-lite" ,pcsc-lite)))
+     (list libusb pcsc-lite))
     (home-page "https://ccid.apdu.fr/")
     (synopsis "PC/SC driver for USB smart card devices")
     (description
@@ -137,15 +135,15 @@ readers and is needed to communicate with such devices through the
        ("pkg-config" ,pkg-config)
        ("perl" ,perl)))
     (inputs
-     `(("curl" ,curl)
-       ("libbsd" ,libbsd)
-       ("openssl" ,openssl)
-       ("gtk+" ,gtk+)
-       ("pcsc-lite" ,pcsc-lite)
-       ("p11-kit" ,p11-kit)
-       ("libproxy" ,libproxy)
-       ("libxml2" ,libxml2)
-       ("cyrus-sasl" ,cyrus-sasl)))
+     (list curl
+           libbsd
+           openssl
+           gtk+
+           pcsc-lite
+           p11-kit
+           libproxy
+           libxml2
+           cyrus-sasl))
     (arguments
      `(#:configure-flags
        (list "--disable-static"
@@ -209,10 +207,9 @@ the low-level development kit for the Yubico YubiKey authentication device.")
      '(#:configure-flags '("--disable-gost"))) ; TODO Missing the OpenSSL
                                                ; engine for GOST
     (inputs
-     `(("openssl" ,openssl)))
+     (list openssl))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("cppunit" ,cppunit)))
+     (list pkg-config cppunit))
     (synopsis "Software implementation of a generic cryptographic device")
     (description
      "SoftHSM 2 is a software implementation of a generic cryptographic device
@@ -236,8 +233,8 @@ with a PKCS #11 Cryptographic Token Interface.")
      `(#:configure-flags '("--enable-usbdropdir=/var/lib/pcsc/drivers"
                            "--disable-libsystemd")))
     (native-inputs
-     `(("perl" ,perl)                   ; for pod2man
-       ("pkg-config" ,pkg-config)))
+     (list perl ; for pod2man
+           pkg-config))
     (inputs
      `(("libudev" ,eudev)))
     (home-page "https://pcsclite.apdu.fr/")
@@ -268,9 +265,8 @@ from a client application and provide access to the desired reader.")
     ;; yubico.com, so skip it.
     (arguments '(#:tests? #f))
 
-    (native-inputs `(("pkg-config" ,pkg-config)
-                     ("help2man" ,help2man)))
-    (inputs `(("curl" ,curl)))
+    (native-inputs (list pkg-config help2man))
+    (inputs (list curl))
     (synopsis "C library to validate one-time-password YubiKeys")
     (description
      "YubiKey C Client Library (libykclient) is a C library used to validate a
@@ -309,14 +305,9 @@ website for more information about Yubico and the YubiKey.")
                    "DEFAULT_PCSC_PROVIDER=\"" libpcsclite "\"")))
                #t))))))
     (inputs
-     `(("readline" ,readline)
-       ("openssl" ,openssl)
-       ("pcsc-lite" ,pcsc-lite)
-       ("ccid" ,ccid)))
+     (list readline openssl pcsc-lite ccid))
     (native-inputs
-     `(("libxslt" ,libxslt)
-       ("docbook-xsl" ,docbook-xsl)
-       ("pkg-config" ,pkg-config)))
+     (list libxslt docbook-xsl pkg-config))
     (home-page "https://github.com/OpenSC/OpenSC/wiki")
     (synopsis "Tools and libraries related to smart cards")
     (description
@@ -341,17 +332,14 @@ authentication, encryption and digital signatures.  OpenSC implements the PKCS
                 "10xgdc51xvszkxmsvqnbjs8ixxz7rfnfahh3wn8glllynmszbhwi"))))
     (build-system gnu-build-system)
     (inputs
-     `(("gengetopt" ,gengetopt)
-       ("perl" ,perl)
-       ("pcsc-lite" ,pcsc-lite)
-       ("openssl" ,openssl)))
+     (list gengetopt perl pcsc-lite openssl))
     (native-inputs
-     `(("doxygen" ,doxygen)
-       ("graphviz" ,graphviz)
-       ("help2man" ,help2man)
-       ("check" ,check)
-       ("texlive-bin" ,texlive-bin)
-       ("pkg-config" ,pkg-config)))
+     (list doxygen
+           graphviz
+           help2man
+           check
+           texlive-bin
+           pkg-config))
     (home-page "https://developers.yubico.com/yubico-piv-tool/")
     (synopsis "Interact with the PIV application on a YubiKey")
     (description
@@ -389,13 +377,11 @@ and other operations.  It includes a library and a command-line tool.")
                                               (assoc-ref %outputs "out")
                                               "/lib/udev/rules.d"))))
     (inputs
-     `(("json-c" ,json-c-0.13)
-       ("libusb" ,libusb)
-       ;; The library "libyubikey" is also known as "yubico-c".
-       ("libyubikey" ,libyubikey)))
+     (list json-c-0.13 libusb
+           ;; The library "libyubikey" is also known as "yubico-c".
+           libyubikey))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("eudev" ,eudev)))
+     (list pkg-config eudev))
     (home-page "https://developers.yubico.com/yubikey-personalization/")
     (synopsis "Library and tools to personalize YubiKeys")
     (description
@@ -444,9 +430,9 @@ retrieve a YubiKey's serial number, and so forth.")
                                                   "/lib/libpcsclite.so.1"))))
              #t)))))
     (inputs
-     `(("pcsc-lite" ,pcsc-lite)))
+     (list pcsc-lite))
     (native-inputs
-     `(("swig" ,swig)))
+     (list swig))
     (home-page "https://github.com/LudovicRousseau/pyscard")
     (synopsis "Smart card library for Python")
     (description
@@ -489,15 +475,14 @@ PCSC API Python wrapper module.")
                                "/xml/dtd/docbook/docbookx.dtd")))
              #t)))))
     (inputs
-     `(("json-c" ,json-c-0.13)
-       ("hidapi" ,hidapi)))
+     (list json-c-0.13 hidapi))
     (native-inputs
-     `(("help2man" ,help2man)
-       ("gengetopt" ,gengetopt)
-       ("pkg-config" ,pkg-config)
-       ("gtk-doc" ,gtk-doc)
-       ("docbook-xml" ,docbook-xml-4.3)
-       ("eudev" ,eudev)))
+     (list help2man
+           gengetopt
+           pkg-config
+           gtk-doc
+           docbook-xml-4.3
+           eudev))
     (home-page "https://developers.yubico.com/libu2f-host/")
     ;; TRANSLATORS: The U2F protocol has a "server side" and a "host side".
     (synopsis "U2F host-side C library and tool")
@@ -529,18 +514,17 @@ operations.")
        (list "--enable-gtk-doc"
              "--enable-tests")))
     (inputs
-     `(("json-c" ,json-c-0.13)
-       ("libressl" ,libressl)))
+     (list json-c-0.13 libressl))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("check" ,check)
-       ("gengetopt" ,gengetopt)
-       ("help2man" ,help2man)
-       ("pkg-config" ,pkg-config)
-       ("gtk-doc" ,gtk-doc)
-       ("which" ,which)))
+     (list autoconf
+           automake
+           libtool
+           check
+           gengetopt
+           help2man
+           pkg-config
+           gtk-doc
+           which))
     (home-page "https://developers.yubico.com/libu2f-server/")
     ;; TRANSLATORS: The U2F protocol has a "server side" and a "host side".
     (synopsis "U2F server-side C library")
@@ -572,15 +556,9 @@ verifying the cryptographic operations.")
        (list (string-append "--with-pam-dir="
                             (assoc-ref %outputs "out") "/lib/security"))))
     (inputs
-     `(("libu2f-host" ,libu2f-host)
-       ("libu2f-server" ,libu2f-server)
-       ("linux-pam" ,linux-pam)))
+     (list libu2f-host libu2f-server linux-pam))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("asciidoc" ,asciidoc)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf automake libtool asciidoc pkg-config))
     (home-page "https://developers.yubico.com/pam-u2f/")
     (synopsis "PAM module for U2F authentication")
     (description
@@ -620,12 +598,9 @@ your existing infrastructure.")
               "fido2/public_suffix_list.dat")
              #t)))))
     (propagated-inputs
-     `(("python-cryptography" ,python-cryptography)
-       ("python-six" ,python-six)))
+     (list python-cryptography python-six))
     (native-inputs
-     `(("python-mock" ,python-mock)
-       ("python-pyfakefs" ,python-pyfakefs)
-       ("public-suffix-list" ,public-suffix-list)))
+     (list python-mock python-pyfakefs public-suffix-list))
     (home-page "https://github.com/Yubico/python-fido2")
     (synopsis "Python library for communicating with FIDO devices over USB")
     (description
@@ -675,20 +650,17 @@ implementing a Relying Party.")
                  "')")))
              #t)))))
     (propagated-inputs
-     `(("python-six" ,python-six)
-       ("python-pyscard" ,python-pyscard)
-       ("python-pyusb" ,python-pyusb)
-       ("python-click" ,python-click)
-       ("python-cryptography" ,python-cryptography)
-       ("python-pyopenssl" ,python-pyopenssl)
-       ("python-fido2" ,python-fido2)))
+     (list python-six
+           python-pyscard
+           python-pyusb
+           python-click
+           python-cryptography
+           python-pyopenssl
+           python-fido2))
     (inputs
-     `(("yubikey-personalization" ,yubikey-personalization)
-       ("pcsc-lite" ,pcsc-lite)
-       ("libusb" ,libusb)))
+     (list yubikey-personalization pcsc-lite libusb))
     (native-inputs
-     `(("swig" ,swig)
-       ("python-mock" ,python-mock)))
+     (list swig python-mock))
     (home-page "https://developers.yubico.com/yubikey-manager/")
     (synopsis "Command line tool and library for configuring a YubiKey")
     (description
@@ -731,8 +703,7 @@ an unprivileged user.")
         ("rust-regex" ,rust-regex-1)
         ("rust-tempfile" ,rust-tempfile-3))))
     (inputs
-     `(("hidapi" ,hidapi)
-       ("gnupg" ,gnupg)))
+     (list hidapi gnupg))
     (home-page "https://github.com/d-e-s-o/nitrocli")
     (synopsis "Command line tool for Nitrokey devices")
     (description
@@ -755,17 +726,16 @@ devices.")
 
     (build-system cmake-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("qttools" ,qttools)))
+     (list pkg-config qttools))
     (inputs
-     `(("qtbase" ,qtbase-5)
-       ("qtsvg" ,qtsvg)
-       ("qtdeclarative" ,qtdeclarative)
-       ("qtwebsockets" ,qtwebsockets)
-       ("qtgraphicaleffects" ,qtgraphicaleffects)
-       ("qtquickcontrols2" ,qtquickcontrols2)
-       ("pcsc-lite" ,pcsc-lite)
-       ("openssl" ,openssl)))
+     (list qtbase-5
+           qtsvg
+           qtdeclarative
+           qtwebsockets
+           qtgraphicaleffects
+           qtquickcontrols2
+           pcsc-lite
+           openssl))
     (arguments
      `(#:modules ((guix build cmake-build-system)
                   (guix build qt-utils)
@@ -800,7 +770,7 @@ phone is required.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256 (base32 "12zy4cnlcffcb64lsx8198y09j1dwi0bcn9rr82q6i1k950yzd3p"))))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs (list pkg-config))
     (inputs
      `(("zlib" ,zlib)
        ("udev" ,eudev)

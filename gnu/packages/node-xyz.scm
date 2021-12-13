@@ -118,7 +118,7 @@ architecture supporting plugins.")
              ;; We skip the two tests which are supposed to fail.
              (invoke "bin/node-far" "-v" "test/" "-e" "test.*fail.js"))))))
     (inputs
-     `(("node-oop" ,node-oop)))
+     (list node-oop))
     (home-page "https://github.com/felixge/node-far")
     (synopsis "Node.js test runner")
     (description "This package provides a simple test runner that finds and runs
@@ -223,8 +223,7 @@ while being as light-weight and simple as possible.")
                (("far.include") "far.exclude(/test-parse.js/)\nfar.include"))
              #t)))))
       (native-inputs
-       `(("node-far" ,node-far)
-         ("node-long-stack-traces" ,node-long-stack-traces)))
+       (list node-far node-long-stack-traces))
       (home-page "https://github.com/felixge/node-stack-trace")
       (synopsis "Get v8 stack traces as an array of CallSite objects")
       (description "Get v8 stack traces as an array of CallSite objects.")
@@ -349,7 +348,7 @@ function with browser support.")
          ;; still works as a dependency of node-glob and node-inflight.
          (delete 'configure))))
     (inputs
-     `(("node-wrappy" ,node-wrappy)))
+     (list node-wrappy))
     (home-page "https://github.com/isaacs/once")
     (synopsis "Node.js module to call a function only once")
     (description
@@ -409,7 +408,7 @@ such as rainbows.")
          ;; being missing, as we don't have them packaged yet.
          (delete 'configure))))
     (inputs
-     `(("node-irc-colors" ,node-irc-colors)))
+     (list node-irc-colors))
     (home-page "https://github.com/martynsmith/node-irc")
     (synopsis "IRC client library for Node.js")
     (description "@code{node-irc} is an IRC client library for Node.js.

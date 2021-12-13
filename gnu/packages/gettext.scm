@@ -64,13 +64,12 @@
     (outputs '("out"
                "doc"))                            ;9 MiB of HTML
     (inputs
-     `(("libunistring" ,libunistring)
-       ("libxml2" ,libxml2)
-
-       ;; TODO: ncurses is only needed for the 'libtextstyle' library.
-       ;; The next version of gettext can use a separate libtextstyle,
-       ;; but for now we include it here in 'gettext-minimal'.
-       ("ncurses" ,ncurses)))
+     (list libunistring
+           libxml2
+           ;; TODO: ncurses is only needed for the 'libtextstyle' library.
+           ;; The next version of gettext can use a separate libtextstyle,
+           ;; but for now we include it here in 'gettext-minimal'.
+           ncurses))
     (arguments
      `(#:configure-flags '("--with-included-libunistring=no"
                            "--with-included-libxml=no")
@@ -199,22 +198,21 @@ color, font attributes (weight, posture), or underlining.")
         (base32 "0kgbm0af7jwpfspa2xxiy9nc2l1r2s1rhbhz4r229zcqv49ak6sq"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-bump2version" ,python-bump2version)
-       ("python-flake8" ,python-flake8)
-       ("python-flake8-implicit-str-concat" ,python-flake8-implicit-str-concat)
-       ("python-flake8-print" ,python-flake8-print)
-       ("python-isort" ,python-isort)
-       ("python-pre-commit" ,python-pre-commit)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)
-       ("python-sphinx" ,python-sphinx)
-       ("python-sphinx-argparse" ,python-sphinx-argparse)
-       ("python-sphinx-rtd-theme" ,python-sphinx-rtd-theme)
-       ("python-twine" ,python-twine)
-       ("python-yamllint" ,python-yamllint)))
+     (list python-bump2version
+           python-flake8
+           python-flake8-implicit-str-concat
+           python-flake8-print
+           python-isort
+           python-pre-commit
+           python-pytest
+           python-pytest-cov
+           python-sphinx
+           python-sphinx-argparse
+           python-sphinx-rtd-theme
+           python-twine
+           python-yamllint))
     (propagated-inputs
-     `(("python-polib" ,python-polib)
-       ("python-pymd4c" ,python-pymd4c)))
+     (list python-polib python-pymd4c))
     (home-page "https://github.com/mondeja/mdpo")
     (synopsis "Markdown file translation utilities using pofiles")
     (description
@@ -296,7 +294,7 @@ from Markdown files.")
        ("perl-yaml-tiny" ,perl-yaml-tiny)
        ("texlive" ,texlive-tiny)))
     (inputs
-     `(("perl-pod-parser" ,perl-pod-parser)))
+     (list perl-pod-parser))
     (home-page "https://po4a.org/")
     (synopsis "Scripts to ease maintenance of translations")
     (description

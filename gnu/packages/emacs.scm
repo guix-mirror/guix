@@ -346,8 +346,8 @@ languages.")
           (base32
            "0igjm9kwiswn2dpiy2k9xikbdfc7njs07ry48fqz70anljj8y7y3"))))
       (native-inputs
-       `(("autoconf" ,autoconf)
-         ,@(package-native-inputs emacs))))))
+       (modify-inputs (package-native-inputs emacs)
+         (prepend autoconf))))))
 
 (define-public emacs-next-pgtk
   (let ((commit "ae18c8ec4f0ef37c8c9cda473770ff47e41291e2")
@@ -371,8 +371,7 @@ languages.")
          ((#:configure-flags flags ''())
           `(cons* "--with-pgtk" "--with-xwidgets" ,flags))))
       (propagated-inputs
-       `(("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-         ("glib-networking" ,glib-networking)))
+       (list gsettings-desktop-schemas glib-networking))
       (inputs
        `(("webkitgtk" ,webkitgtk-with-libsoup2)
          ,@(package-inputs emacs-next)))
@@ -565,12 +564,12 @@ This package contains the library database.")
          "0jp61y09xqj10mclpip48qlfhniw8gwy8b28cbzxy8hq8pkwmfkq"))))
     (build-system gnu-build-system)
     (inputs
-     `(("fribidi" ,fribidi)
-       ("gd" ,gd)
-       ("libotf" ,libotf)
-       ("libxft" ,libxft)
-       ("libxml2" ,libxml2)
-       ("m17n-db" ,m17n-db)))
+     (list fribidi
+           gd
+           libotf
+           libxft
+           libxml2
+           m17n-db))
     (arguments
      `(#:parallel-build? #f))
     ;; With `guix lint' the home-page URI returns a small page saying

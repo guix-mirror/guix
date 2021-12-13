@@ -74,20 +74,20 @@
                (install-file "src/conky" bin))
              #t)))))
     (inputs
-     `(("freetype" ,freetype)
-       ("imlib2" ,imlib2)
-       ("libx11" ,libx11)
-       ("libxdamage" ,libxdamage)
-       ("libxext" ,libxext)
-       ("libxft" ,libxft)
-       ("libxinerama" ,libxinerama)
-       ("pulseaudio" ,pulseaudio)
-       ("lua" ,lua)
-       ("ncurses" ,ncurses)
-       ("curl" ,curl)
-       ("wireless-tools" ,wireless-tools)))
+     (list freetype
+           imlib2
+           libx11
+           libxdamage
+           libxext
+           libxft
+           libxinerama
+           pulseaudio
+           lua
+           ncurses
+           curl
+           wireless-tools))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (synopsis "Lightweight system monitor for X")
     (description
      "Conky is a lightweight system monitor for X that displays operating

@@ -84,7 +84,7 @@
         "184wh35pf2ddx97319s6sgkzpz48xxkbwzcjpycv009bm53lh61q"))))
     (build-system gnu-build-system)
     (inputs                             ;Installed programs are perl scripts
-     `(("perl" ,perl)))
+     (list perl))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -127,7 +127,7 @@ program to exhibit a bug.")
       (sha256
        (base32 "0qx0zq8jxzx2as2zf0740g7kvgq163ayn3041di4vwk77490y76v"))))
     (build-system gnu-build-system)
-    (native-inputs `(("flex" ,flex)))
+    (native-inputs (list flex))
     (inputs
      `(("astyle"          ,astyle)
        ("llvm"            ,llvm)
@@ -189,9 +189,7 @@ tools that process C/C++ code.")
        (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("flex" ,flex)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-flake8" ,python-pytest-flake8)))
+     (list flex python-pytest python-pytest-flake8))
     (inputs
      `(("bash" ,bash-minimal)           ; For wrap-program
        ("clang" ,clang)
@@ -252,7 +250,7 @@ tool.")
          (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (inputs
-       `(("qemu" ,qemu-for-american-fuzzy-lop)))
+       (list qemu-for-american-fuzzy-lop))
       (arguments
        `(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
                             (string-append "DOC_PATH=$(PREFIX)/share/doc/"
@@ -470,9 +468,7 @@ server and embedded PowerPC, and S390 guests.")
            "0k55cy7x0hlc6rgpascl6ibhcfxaash3p9r9r8kwvbm3zag1rmac"))))
       (build-system gnu-build-system)
       (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("go" ,go)))
+       (list autoconf automake go))
       (inputs
        `(("make-source" ,(package-source gnu-make))))
       (arguments
@@ -572,17 +568,17 @@ input.  Zzuf's behaviour is deterministic, making it easy to reproduce bugs.")
                  `("GUIX_PYTHONPATH"             ":" prefix (,python-path))))
              #t)))))
     (native-inputs
-     `(("libtool" ,libtool)
-       ("python-wrapper" ,python-wrapper)
-       ("gobject-introspection" ,gobject-introspection)
-       ("gtk+" ,gtk+)
-       ("intltool" ,intltool)
-       ("automake" ,automake)
-       ("autoconf" ,autoconf)))
+     (list libtool
+           python-wrapper
+           gobject-introspection
+           gtk+
+           intltool
+           automake
+           autoconf))
     (inputs
-     `(("readline" ,readline)))
+     (list readline))
     (propagated-inputs
-     `(("python-pygobject" ,python-pygobject)))
+     (list python-pygobject))
     (home-page "https://github.com/scanmem/scanmem")
     (synopsis "Memory scanner")
     (description "Scanmem is a debugging utility designed to isolate the
@@ -612,8 +608,8 @@ the position of the variable and allows you to modify its value.")
                 "0xlx2485y0israv2pfghmv74lxcv9i5y65agy69mif76yc4vfvif"))
               (patches (search-patches "remake-impure-dirs.patch"))))
     (inputs
-     `(("readline" ,readline)
-       ,@(package-inputs gnu-make)))
+     (modify-inputs (package-inputs gnu-make)
+       (prepend readline)))
     (home-page "http://bashdb.sourceforge.net/remake/")
     (description "Remake is an enhanced version of GNU Make that adds improved
 error reporting, better tracing, profiling, and a debugger.")
@@ -665,14 +661,9 @@ error reporting, better tracing, profiling, and a debugger.")
                       (setenv "HOME" (getcwd))
                       #t)))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("ninja" ,ninja)
-       ("which" ,which)))
+     (list pkg-config ninja which))
     (inputs
-     `(("gdb" ,gdb)
-       ("capnproto" ,capnproto)
-       ("python" ,python)
-       ("python-pexpect" ,python-pexpect)))
+     (list gdb capnproto python python-pexpect))
     (home-page "https://rr-project.org/")
     (synopsis "Record and reply debugging framework")
     (description
@@ -741,8 +732,7 @@ program to produce symbolic backtraces.")
                       (let* ((out (assoc-ref outputs "out")))
                         (install-file "libleak.so" (string-append out "/lib"))
                         #t))))))
-    (inputs `(("libbacktrace" ,libbacktrace)
-              ("libwuya" ,libwuya)))
+    (inputs (list libbacktrace libwuya))
     (home-page "https://github.com/WuBingzheng/libleak")
     (synopsis "Memory leaks detection tool")
     (description "The libleak tool detects memory leaks by hooking memory
@@ -781,8 +771,7 @@ use than similar tools like @command{mtrace}.")
                "INSTALL=install"
                (string-append "PREFIX=" %output))))
       (inputs
-       `(("libusb-compat" ,libusb-compat)
-         ("readline" ,readline)))
+       (list libusb-compat readline))
       (synopsis "Debugging tool for MSP430 MCUs")
       (description "MspDebug supports FET430UIF, eZ430, RF2500 and Olimex
 MSP430-JTAG-TINY programmers, as well as many other compatible

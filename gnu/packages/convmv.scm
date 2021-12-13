@@ -50,7 +50,7 @@
              (patch-shebang "suite/parsable_tester.pl")
              #t)))))
     (inputs
-     `(("perl" ,perl)))
+     (list perl))
     (synopsis "Convert filenames between character sets")
     (description
      "convmv is a file renamer, that converts between different encodings,

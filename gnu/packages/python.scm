@@ -382,16 +382,16 @@
          (add-after 'install 'install-sitecustomize.py
            ,(customize-site version)))))
     (inputs
-     `(("bzip2" ,bzip2)
-       ("expat" ,expat)
-       ("gdbm" ,gdbm)
-       ("libffi" ,libffi)               ; for ctypes
-       ("sqlite" ,sqlite)               ; for sqlite extension
-       ("openssl" ,openssl)
-       ("readline" ,readline)
-       ("zlib" ,zlib)
-       ("tcl" ,tcl)
-       ("tk" ,tk)))                     ; for tkinter
+     (list bzip2
+           expat
+           gdbm
+           libffi ; for ctypes
+           sqlite ; for sqlite extension
+           openssl
+           readline
+           zlib
+           tcl
+           tk))                     ; for tkinter
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("sitecustomize.py" ,(local-file (search-auxiliary-file
@@ -729,7 +729,7 @@ To function properly, this package should not be installed together with the
      `(("pkg-config" ,pkg-config)
        ("python" ,python-wrapper)))
     (inputs
-     `(("libffi" ,libffi)))
+     (list libffi))
     (home-page "https://micropython.org/")
     (synopsis "Python implementation for microcontrollers and constrained systems")
     (description "MicroPython is a lean and efficient implementation of the
@@ -764,18 +764,18 @@ ease from the desktop to a microcontroller or embedded system.")
        ("nss-certs" ,nss-certs)         ; For ssl tests
        ("gzip" ,gzip)))
     (inputs
-     `(("libffi" ,libffi)
-       ("zlib" ,zlib)
-       ("ncurses" ,ncurses)
-       ("openssl" ,openssl)
-       ("expat" ,expat)
-       ("bzip2" ,bzip2)
-       ("sqlite" ,sqlite)
-       ("gdbm" ,gdbm)
-       ("tcl" ,tcl)
-       ("tk" ,tk)
-       ("glibc" ,glibc)
-       ("xz" ,xz)))                     ; liblzma
+     (list libffi
+           zlib
+           ncurses
+           openssl
+           expat
+           bzip2
+           sqlite
+           gdbm
+           tcl
+           tk
+           glibc
+           xz))                     ; liblzma
     (arguments
      `(#:tests? #f                     ;FIXME: 43 out of 364 tests are failing
        #:modules ((ice-9 ftw) (ice-9 match)

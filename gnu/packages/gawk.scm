@@ -80,10 +80,10 @@
                        (("#! /usr/bin/gawk")
                         (string-append "#!" (which "gawk")))))))))
 
-   (inputs `(("libsigsegv" ,libsigsegv)
-             ;; Use the full-fledged Bash package, otherwise the test suite
-             ;; sometimes fail non-deterministically.
-             ("bash" ,bash)))
+   (inputs (list libsigsegv
+                 ;; Use the full-fledged Bash package, otherwise the test suite
+                 ;; sometimes fail non-deterministically.
+                 bash))
 
    (home-page "https://www.gnu.org/software/gawk/")
    (synopsis "Text scanning and processing language")

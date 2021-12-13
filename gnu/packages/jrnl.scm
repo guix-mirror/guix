@@ -45,16 +45,16 @@
         (base32 "1bjjyfc3fnsy0h299s3jj42wnigj43xdyp5ppi1cvkqbwl369935"))))
     (build-system python-build-system)
     (native-inputs
-     `(("behave" ,behave)))
+     (list behave))
     (inputs
-     `(("python" ,python)
-       ("python-keyring" ,python-keyring)
-       ("python-pycrypto" ,python-pycrypto)
-       ("python-pytz" ,python-pytz)
-       ("python-tzlocal" ,python-tzlocal)
-       ("python-six" ,python-six)
-       ("python-dateutil" ,python-dateutil)
-       ("python-parsedatetime" ,python-parsedatetime)))
+     (list python
+           python-keyring
+           python-pycrypto
+           python-pytz
+           python-tzlocal
+           python-six
+           python-dateutil
+           python-parsedatetime))
     (home-page "https://maebert.github.io/jrnl/")
     (synopsis "Personal journal application")
     (description

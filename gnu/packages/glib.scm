@@ -141,20 +141,20 @@
                             "sysconfdir=/tmp/dummy"
                             "install"))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ;; Dependencies to generate the doc.
-       ("docbook-xml" ,docbook-xml-4.4)
-       ("docbook-xsl" ,docbook-xsl)
-       ("doxygen" ,doxygen)
-       ("xmlto" ,xmlto)
-       ("libxml2" ,libxml2)             ;for XML_CATALOG_FILES
-       ("libxslt" ,libxslt)
-       ("yelp-tools" ,yelp-tools)))
+     (list pkg-config
+           ;; Dependencies to generate the doc.
+           docbook-xml-4.4
+           docbook-xsl
+           doxygen
+           xmlto
+           libxml2 ;for XML_CATALOG_FILES
+           libxslt
+           yelp-tools))
     (inputs
-     `(("expat" ,expat)
-       ;; Add a dependency on libx11 so that 'dbus-launch' has support for
-       ;; '--autolaunch'.
-       ("libx11" ,libx11)))
+     (list expat
+           ;; Add a dependency on libx11 so that 'dbus-launch' has support for
+           ;; '--autolaunch'.
+           libx11))
     (outputs '("out" "doc"))            ;22 MiB of HTML doc
     (home-page "https://www.freedesktop.org/wiki/Software/dbus/")
     (synopsis "Message bus for inter-process communication (IPC)")
@@ -310,21 +310,21 @@ shared NFS home directories.")
        ("python-wrapper" ,python-wrapper)
        ("tzdata" ,tzdata-for-tests)))   ; for tests/gdatetime.c
     (inputs
-     `(("bash-completion" ,bash-completion)
-       ;; "python", "python-wrapper" and "bash-minimal"
-       ;; are for the 'patch-shebangs' phase, to make
-       ;; sure the installed scripts end up with a correct shebang
-       ;; when cross-compiling.
-       ("python" ,python)
-       ("python-wrapper" ,python-wrapper)
-       ("bash-minimal" ,bash-minimal)
-       ("dbus" ,dbus)
-       ("libelf" ,libelf)))
+     (list bash-completion
+           ;; "python", "python-wrapper" and "bash-minimal"
+           ;; are for the 'patch-shebangs' phase, to make
+           ;; sure the installed scripts end up with a correct shebang
+           ;; when cross-compiling.
+           python
+           python-wrapper
+           bash-minimal
+           dbus
+           libelf))
     (propagated-inputs
-     `(("libffi" ,libffi)    ; in the Requires.private field of gobject-2.0.pc
-       ("pcre" ,pcre)        ; in the Requires.private field of glib-2.0.pc
-       ("util-linux" ,util-linux "lib") ;for libmount
-       ("zlib" ,zlib)))         ; in the Requires.private field of glib-2.0.pc
+     (list libffi ; in the Requires.private field of gobject-2.0.pc
+           pcre ; in the Requires.private field of glib-2.0.pc
+           `(,util-linux "lib") ;for libmount
+           zlib))         ; in the Requires.private field of glib-2.0.pc
     (native-search-paths
      ;; This variable is not really "owned" by GLib, but several related
      ;; packages refer to it: gobject-introspection's tools use it as a search
@@ -496,10 +496,10 @@ be used when cross-compiling."
                ("python" ,python-wrapper)))
        ("zlib" ,zlib)))
     (propagated-inputs
-     `(("glib" ,glib)
-       ;; In practice, GIR users will need libffi when using
-       ;; gobject-introspection.
-       ("libffi" ,libffi)))
+     (list glib
+           ;; In practice, GIR users will need libffi when using
+           ;; gobject-introspection.
+           libffi))
     (native-search-paths
      (list
       (search-path-specification
@@ -535,7 +535,7 @@ provide bindings to call into the C library.")
                "1karx4sb7bnm2j67q0q74hspkfn6lqprpy5r99vkn5bb36a4viv7"))))
     (build-system gnu-build-system)
     (inputs
-     `(("file" ,file)))
+     (list file))
     (propagated-inputs
      `(;; Propagate gettext because users expect it to be there, and so does
        ;; the `intltool-update' script.
@@ -583,9 +583,7 @@ The intltool collection can be used to do these things:
                "1acjgf8zlyk7qckdk19iqaca4jcmywd7vxjbcs1mm6kaf8icqcv2"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libxml2" ,libxml2)
-       ("python-libxml2" ,python-libxml2)
-       ("python" ,python)))
+     (list libxml2 python-libxml2 python))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
@@ -642,13 +640,11 @@ translated.")
                 #+(file-append this-package "/bin/dbus-binding-tool"))))
          '()))
     (propagated-inputs ; according to dbus-glib-1.pc
-     `(("dbus" ,dbus)
-       ("glib" ,glib)))
+     (list dbus glib))
     (inputs
-     `(("expat" ,expat)))
+     (list expat))
     (native-inputs
-     `(("glib" ,glib "bin")
-       ("pkg-config" ,pkg-config)))
+     (list `(,glib "bin") pkg-config))
     (home-page "https://dbus.freedesktop.org/doc/dbus-glib/")
     (synopsis "D-Bus GLib bindings")
     (description
@@ -705,7 +701,7 @@ by GDBus included in Glib.")
        ("xmllint" ,libxml2)
        ("xsltproc" ,libxslt)))
     (inputs
-     `(("boost" ,boost)))
+     (list boost))
     (home-page "https://libsigcplusplus.github.io/libsigcplusplus/")
     (synopsis "Type-safe callback system for standard C++")
     (description
@@ -803,8 +799,7 @@ by GDBus included in Glib.")
        ("pkg-config" ,pkg-config)
        ("xsltproc" ,libxslt)))
     (propagated-inputs
-     `(("libsigc++" ,libsigc++)
-       ("glib" ,glib)))
+     (list libsigc++ glib))
     (home-page "https://gtkmm.org/")
     (synopsis "C++ interface to the GLib library")
     (description
@@ -827,8 +822,8 @@ useful for C++.")
        (sha256
         (base32 "11m37sbx0i18cl17d0fkq0bik4bbzlb5n8kcl651jhci5ipci3sh"))))
      (propagated-inputs
-      `(("libsigc++" ,libsigc++-2)
-        ,@(package-propagated-inputs glibmm)))))
+      (modify-inputs (package-propagated-inputs glibmm)
+        (prepend libsigc++-2)))))
 
 (define-public python2-pygobject-2
   (package
@@ -858,7 +853,7 @@ useful for C++.")
        ("python2-pycairo" ,python2-pycairo)
        ("gobject-introspection" ,gobject-introspection)))
     (propagated-inputs
-     `(("libffi" ,libffi)))             ;mentioned in pygobject-2.0.pc
+     (list libffi))             ;mentioned in pygobject-2.0.pc
     (arguments
      `(#:tests? #f                      ;segfaults during tests
        #:configure-flags '("LIBS=-lcairo-gobject")))
@@ -906,13 +901,10 @@ useful for C++.")
        ("python-pytest" ,python-pytest)
        ("python-wrapper" ,python-wrapper))) ; For patching shebangs
     (inputs
-     `(("python" ,python)
-       ("python-pycairo" ,python-pycairo)
-       ("gobject-introspection" ,gobject-introspection)))
+     (list python python-pycairo gobject-introspection))
     (propagated-inputs
      ;; pygobject-3.0.pc refers to all these.
-     `(("glib" ,glib)
-       ("libffi" ,libffi)))
+     (list glib libffi))
     ;; For finding typelib files, since gobject-introscpetion isn't propagated.
     (native-search-paths (package-native-search-paths gobject-introspection))
     (home-page "https://live.gnome.org/PyGObject")
@@ -965,10 +957,9 @@ useful for C++.")
                 "1q5075d6v2g5sm675hyzrcpxsrh09z83crfci8b0wl3jwmnz0frg"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-extutils-depends" ,perl-extutils-depends)
-       ("perl-extutils-pkgconfig" ,perl-extutils-pkgconfig)))
+     (list perl-extutils-depends perl-extutils-pkgconfig))
     (propagated-inputs
-     `(("glib" ,glib)))
+     (list glib))
     (home-page "https://metacpan.org/release/Glib")
     (synopsis "Perl wrappers for the GLib utility and Object libraries")
     (description "This module provides perl access to GLib and GLib's GObject
@@ -991,12 +982,9 @@ up the Gnome environment, and are used in many unrelated projects.")
         (base32 "0mxg6pz8qfyipw0ypr54alij0c4adzg94f62702b2a6hkp5jhij6"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-extutils-depends" ,perl-extutils-depends)
-       ("perl-extutils-pkgconfig" ,perl-extutils-pkgconfig)))
+     (list perl-extutils-depends perl-extutils-pkgconfig))
     (propagated-inputs
-     `(("gobject-introspection" ,gobject-introspection)
-       ("perl-cairo-gobject" ,perl-cairo-gobject)
-       ("perl-glib" ,perl-glib)))
+     (list gobject-introspection perl-cairo-gobject perl-glib))
     (home-page "https://metacpan.org/dist/Glib-Object-Introspection")
     (synopsis "Dynamically create Perl language bindings")
     (description "Glib::Object::Introspection uses the gobject-introspection and
@@ -1061,9 +1049,7 @@ libraries.  Examples include gtk+, webkit, libsoup and many more.")
        ("xsltproc" ,libxslt)))
     (propagated-inputs
      ;; There are all in the Requires.private field of telepathy-glib.pc.
-     `(("dbus" ,dbus)
-       ("dbus-glib" ,dbus-glib)
-       ("glib" ,glib)))
+     (list dbus dbus-glib glib))
     (home-page "https://telepathy.freedesktop.org/wiki/")
     (synopsis "GLib Real-time communications framework over D-Bus")
     (description "Telepathy is a flexible, modular communications framework
@@ -1092,14 +1078,11 @@ This package provides the library for GLib applications.")
                 "0qafmy2i6dzx4n1dqp6pygyy6gjljnb7hwjcj2z11c1wgclsq4dw"))))
     (build-system gnu-build-system)
     (propagated-inputs
-     `(("dbus" ,dbus)))                      ;mentioned in the pkg-config file
+     (list dbus))                      ;mentioned in the pkg-config file
     (inputs
-     `(("efl" ,efl)
-       ("expat" ,expat)
-       ("glib" ,glib)
-       ("libunwind" ,libunwind)))
+     (list efl expat glib libunwind))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (arguments
      `(;; The 'configure' machinery fails to detect that it needs -lpthread.
        #:configure-flags (list "LDFLAGS=-lpthread")
@@ -1134,14 +1117,13 @@ programming language.  It also provides the @command{dbusxx-xml2cpp} and
      `(#:configure-flags '("-DENABLE_TESTS=ON"
                            "-DENABLE_TOOLS=ON"
                            "-DENABLE_GLIBMM=ON")))
-    (inputs `(("dbus" ,dbus)
-              ("libsigc++" ,libsigc++)
-              ("glibmm" ,glibmm)
-              ("python" ,python)
-              ("popt" ,popt)
-              ("expat" ,expat)))
-    (native-inputs `(("pkg-config" ,pkg-config)
-                     ("m4" ,m4)))
+    (inputs (list dbus
+                  libsigc++
+                  glibmm
+                  python
+                  popt
+                  expat))
+    (native-inputs (list pkg-config m4))
     (synopsis "C++ wrapper for dbus")
     (description "Dbus-cxx is a C++ wrapper for dbus.\n
 It exposes the C API to allow direct manipulation and
@@ -1224,13 +1206,11 @@ metadata.")
          "1g0w8i5scmh7kfy9mmvv8q326627qf38z26mvczmn8x1yjgar8g7"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("perl-test-pod" ,perl-test-pod)
-       ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
+     (list pkg-config perl-test-pod perl-test-pod-coverage))
     (inputs
-     `(("dbus" ,dbus)))
+     (list dbus))
     (propagated-inputs
-     `(("perl-xml-twig" ,perl-xml-twig)))
+     (list perl-xml-twig))
     (home-page "https://metacpan.org/release/Net-DBus")
     (synopsis "Extension for the DBus bindings")
     (description "@code{Net::DBus} provides a Perl XS API to the DBus
@@ -1252,9 +1232,9 @@ of the DBus APIs, not concerning itself yet with the GLib or QT wrappers.")
          "1z4mbv8z0rad604xahijpg5szzi8qak07hbahh230z4jf96fkxvj"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("dbus-glib" ,dbus-glib)))
+     (list dbus-glib))
     (home-page "https://metacpan.org/release/Net-DBus-GLib")
     (synopsis "Perl extension for the DBus GLib bindings")
     (description "This package provides an extension to the @code{Net::DBus}
@@ -1326,7 +1306,7 @@ simple methods via GObject-Introspection.")
        ("libxml2" ,libxml2)
        ("xsltproc" ,libxslt)))
     (inputs
-     `(("glib" ,glib)))
+     (list glib))
     (home-page "https://github.com/flatpak/xdg-dbus-proxy")
     (synopsis "D-Bus connection proxy")
     (description
@@ -1364,9 +1344,7 @@ to the host system, optionally with filters applied.")
                (("/bin/true") (which "true")))
              #t)))))
     (inputs
-     `(("gtk+" ,gtk+)
-       ("glib" ,glib)
-       ("dbus-glib" ,dbus-glib)))
+     (list gtk+ glib dbus-glib))
     (native-inputs
      `(("glib:bin" ,glib "bin")
        ("intltool" ,intltool)

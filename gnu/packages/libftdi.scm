@@ -39,7 +39,7 @@
                 "0x0vncf6i92slgrn0h7ghkskqbglbs534220qa84d0qg114zndpc"))))
     (build-system cmake-build-system)
     (propagated-inputs
-     `(("libusb" ,libusb))) ; required by libftdi1.pc
+     (list libusb)) ; required by libftdi1.pc
     (home-page "https://www.intra2net.com/en/developer/libftdi/")
     (synopsis "FTDI USB driver with bitbang mode")
     (description

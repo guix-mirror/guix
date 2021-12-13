@@ -55,13 +55,12 @@
        ("pango" ,pango)
        ("python" ,python-2)))
     (native-inputs
-     `(("groff" ,groff)
-       ("pkg-config" ,pkg-config)
-
-       ;; For tests.
-       ("bc" ,bc)
-       ("perl" ,perl)                   ; will also build Perl bindings
-       ("tzdata" ,tzdata-for-tests)))
+     (list groff
+           pkg-config
+           ;; For tests.
+           bc
+           perl ; will also build Perl bindings
+           tzdata-for-tests))
     (arguments
      '(#:phases
        (modify-phases %standard-phases

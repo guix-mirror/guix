@@ -70,7 +70,7 @@
              (base32
               "1qxwkfvd185dfcqbakrzikrsw6ffr5jp1gl3dch9dsdyjvmw745x"))))
    (build-system gnu-build-system)
-   (inputs `(("readline" ,readline)))
+   (inputs (list readline))
    (outputs '("out" "static"))
    (arguments
     `(#:configure-flags

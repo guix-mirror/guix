@@ -92,7 +92,7 @@
                (setenv "HASKELLPROG" "./bin/clisp-haskell")
                #t)))))
       (inputs
-       `(("clisp" ,clisp)))
+       (list clisp))
       (home-page "https://git.elephly.net/software/yale-haskell.git")
       (synopsis "Port of the Yale Haskell system to CLISP")
       (description "This package provides the Yale Haskell system running on
@@ -422,9 +422,7 @@ interactive environment for the functional language Haskell.")
        (sha256
         (base32 "1ch4j2asg7pr52ai1hwzykxyj553wndg7wq93i47ql4fllspf48i"))))
     (inputs
-     `(("gmp" ,gmp)
-       ("ncurses" ,ncurses)
-       ("libffi" ,libffi)))
+     (list gmp ncurses libffi))
     (native-inputs
      `(("perl" ,perl)
        ("python" ,python)               ; for tests

@@ -193,7 +193,7 @@ runs on top of IP or UDP, and supports both v4 and v6 versions.")
      `(("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("libressl" ,libressl)))
+     (list libressl))
     (home-page "https://github.com/axel-download-accelerator/axel")
     (synopsis "Light command line download accelerator")
     (description
@@ -328,13 +328,9 @@ Android, and ChromeOS.")
          ("gtk-doc" ,gtk-doc/stable)
          ("pkg-config" ,pkg-config)))
       (inputs
-       `(("gstreamer" ,gstreamer)
-         ("gst-plugins-base" ,gst-plugins-base)
-         ("libnsl" ,libnsl)))
+       (list gstreamer gst-plugins-base libnsl))
       (propagated-inputs
-       `(("glib" ,glib)
-         ("glib-networking" ,glib-networking)
-         ("gnutls" ,gnutls)))
+       (list glib glib-networking gnutls))
       (synopsis "GLib ICE implementation")
       (description "LibNice is a library that implements the Interactive
 Connectivity Establishment (ICE) standard (RFC 5245 & RFC 8445).  It provides a
@@ -393,8 +389,7 @@ GLib-based library, libnice, as well as GStreamer elements to use it.")
                   "CRYPTO=GNUTLS"))))
            (delete 'configure))))
       (inputs
-       `(("gnutls" ,gnutls)
-         ("zlib" ,zlib)))
+       (list gnutls zlib))
       (synopsis "Tools and library for handling RTMP streams")
       (description "RTMPdump is a toolkit for RTMP streams.  All forms of RTMP are
 supported, including rtmp://, rtmpt://, rtmpe://, rtmpte://, and rtmps://.")
@@ -422,7 +417,7 @@ supported, including rtmp://, rtmpt://, rtmpe://, rtmpte://, and rtmps://.")
         (base32 "1n6pgrcs8gwrcq5fch1q3yk3jipjwrf21s9a13fbjrl903g5zzv9"))))
     (build-system cmake-build-system)
     (arguments `(#:tests? #f)) ;no tests
-    (inputs `(("ncurses" ,ncurses)))
+    (inputs (list ncurses))
     (synopsis "Network load monitor")
     (description
      "Slurm is a network load monitor.  It shows real-time traffic statistics
@@ -458,7 +453,7 @@ from any network device in any of three ASCII graph formats.")
        ("pkg-config" ,pkg-config)
        ("tclsh" ,tcl)))
     (propagated-inputs
-     `(("openssl" ,openssl)))
+     (list openssl))
     (synopsis "Secure Reliable Transport")
     (description "SRT is a transport technology that optimizes streaming
 performance across unpredictable networks, such as the Internet.")
@@ -499,10 +494,7 @@ performance across unpredictable networks, such as the Internet.")
         (base32 "1jfq58j365mlgssavyw5wcal42n0xjkr40vmj9b8w265wgs28j20"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf automake libtool pkg-config))
     (inputs
      `(("linux-headers" ,linux-libre-headers)))
     (synopsis
@@ -533,7 +525,7 @@ It also includes some SCTP-related helper utilities.")
         (base32 "14h2qlmfi24bizhvvqkfqfa78pzm3911ibrzy9k94i97xy1978dy"))))
     (build-system python-build-system)
     (inputs
-     `(("lksctp-tools" ,lksctp-tools)))
+     (list lksctp-tools))
     (arguments
      `(#:tests? #f  ;; tests require network
        #:phases
@@ -570,7 +562,7 @@ SCTP-aware kernel (most are).")
        (list (string-append "--docdir=" (assoc-ref %outputs "out")
                             "/share/doc/" ,name "-" ,version))))
     (inputs
-     `(("libpcap" ,libpcap)))
+     (list libpcap))
     (home-page "https://www.zeroflux.org/projects/knock")
     (synopsis "Small port-knock daemon")
     (description "@command{knockd} is a port-knock daemon.  It listens to all traffic on
@@ -934,7 +926,7 @@ useful for making transparent firewalls.")
                 "1sbmqqvni3ss9wyay6ik5v81kxffkra80mh4ypgj74g82iba5b1z"))))
     (build-system gnu-build-system)
     (arguments '(#:tests? #f))          ; no test suite
-    (inputs `(("openssl" ,openssl)))
+    (inputs (list openssl))
     (home-page "http://www.dest-unreach.org/socat/")
     (synopsis
      "Open bidirectional communication channels from the command line")
@@ -964,8 +956,8 @@ or server shell scripts with network connections.")
                 "1qxnbpyly00kml3sjan9iqg6pqacsi3yqq66x25w455cwkjc2h72"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("which" ,which)))
-    (inputs `(("openssl" ,openssl)))
+     (list which))
+    (inputs (list openssl))
     (home-page "http://www.maier-komor.de/mbuffer.html")
     (synopsis
      "Swiss army knife for data stream buffering (network aware)")
@@ -1114,7 +1106,7 @@ more.")
     (arguments
      '(#:configure-flags '("--enable-drafts")))
     (inputs
-     `(("zeromq" ,zeromq)))
+     (list zeromq))
     (home-page "https://zeromq.org")
     (synopsis "High-level C bindings for ØMQ")
     (description
@@ -1143,9 +1135,9 @@ between different versions of ØMQ.")
        #:tests? #f
        #:configure-flags '("-DCPPZMQ_BUILD_TESTS=OFF")))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("zeromq" ,zeromq)))
+     (list zeromq))
     (home-page "https://zeromq.org")
     (synopsis "C++ bindings for the ØMQ messaging library")
     (description
@@ -1217,7 +1209,7 @@ written in the C programming language.")
     (native-inputs
      `(("python" ,python-wrapper)))
     (propagated-inputs
-     `(("zlib" ,zlib))) ; in the Libs.private field of rdkafka.pc
+     (list zlib)) ; in the Libs.private field of rdkafka.pc
     (home-page "https://github.com/edenhill/librdkafka")
     (synopsis "Apache Kafka C/C++ client library")
     (description
@@ -1258,9 +1250,9 @@ receiving NDP messages.")
                 "0v8i592vwjypf111w0lfvaxdwhzybp6w600g28m9rm490c8xcvv8"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("libmnl" ,libmnl)))
+     (list libmnl))
     (home-page "https://www.kernel.org/pub/software/network/ethtool/")
     (synopsis "Display or change Ethernet device settings")
     (description
@@ -1302,7 +1294,7 @@ Ethernet devices.")
                       (copy-file "ifstatus"
                                  (string-append bin "/ifstatus")))
                     #t)))))
-    (inputs `(("ncurses" ,ncurses)))
+    (inputs (list ncurses))
     (home-page "http://ifstatus.sourceforge.net/graphic/index.html")
     (synopsis "Text based network interface status monitor")
     (description
@@ -1352,9 +1344,7 @@ intended as a substitute for the PPPStatus and EthStatus projects.")
        ("libxml2" ,libxml2)          ;for XML_CATALOG_FILES
        ("xsltproc" ,libxslt)))
     (inputs
-     `(("libcap" ,libcap)
-       ("libidn2" ,libidn2)
-       ("openssl" ,openssl)))
+     (list libcap libidn2 openssl))
     (synopsis "Collection of network utilities")
     (description
      "This package contains a variety of tools for dealing with network
@@ -1394,7 +1384,7 @@ discover MTU along the way.
                (base32
                 "1rb9skch2kgqzigf19x8bzk211jdfjfdkrcvaqyj89jy2pkm3h61"))))
     (build-system gnu-build-system)
-    (inputs `(("ncurses" ,ncurses)))
+    (inputs (list ncurses))
     (home-page "http://www.roland-riegel.de/nload/")
     (synopsis "Realtime console network usage monitor")
     (description
@@ -1438,10 +1428,8 @@ test_parse_format_ipv(4(|_listen_all|_mapped_ipv6)|6)\\);")
        #:make-flags (list ,(string-append "CC=" (cc-for-target))
                           (string-append "prefix=" (assoc-ref %outputs "out")))
        #:test-target "test"))
-    (inputs `(("net-tools" ,net-tools)
-              ("zlib" ,zlib)))
-    (native-inputs `(("check" ,check-0.14)
-                     ("pkg-config" ,pkg-config)))
+    (inputs (list net-tools zlib))
+    (native-inputs (list check-0.14 pkg-config))
     (home-page "https://code.kryo.se/iodine/")
     (synopsis "Tunnel IPv4 data through a DNS server")
     (description "Iodine tunnels IPv4 data through a DNS server.  This
@@ -1478,7 +1466,7 @@ and up to 1 Mbit/s downstream.")
              (setenv "HAVE_ICONV" "1")
              #t)))))
     (inputs
-     `(("libidn2" ,libidn2)))
+     (list libidn2))
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("perl" ,perl)
@@ -1628,18 +1616,12 @@ round-robin fashion.")
                    (invoke "rst2man.py" "gandicli.man.rst")))
                #t))))))
     (native-inputs
-     `(("python-docutils" ,python-docutils)   ; for rst2man.py
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)
-       ("python-tox" ,python-tox)))
+     (list python-docutils ; for rst2man.py
+           python-pytest python-pytest-cov python-tox))
     (propagated-inputs
-     `(("openssh" ,openssh)))           ; used by gandi/cli/modules/iass.py
+     (list openssh))           ; used by gandi/cli/modules/iass.py
     (inputs
-     `(("openssl" ,openssl)
-       ("python-click" ,python-click)
-       ("python-ipy" ,python-ipy)
-       ("python-pyyaml" ,python-pyyaml)
-       ("python-requests" ,python-requests)))
+     (list openssl python-click python-ipy python-pyyaml python-requests))
     (home-page "https://cli.gandi.net")
     (synopsis "Command-line interface to the Gandi.net Web API")
     (description
@@ -1716,9 +1698,7 @@ transmission protocol (SCTP) in a Go application.")
     (native-inputs
      `(("gettext" ,gettext-minimal)))
     (inputs
-     `(("fftw" ,fftw)
-       ("ncurses" ,ncurses)
-       ("openssl" ,openssl)))
+     (list fftw ncurses openssl))
     (arguments
      `(#:make-flags (list ,(string-append "CC=" (cc-for-target))
                           (string-append "DESTDIR=" (assoc-ref %outputs "out"))
@@ -1748,7 +1728,7 @@ application stack itself.")
        (sha256
         (base32 "0cw8299a080m42slsimz31xs0gjnh833gpbj2dsr4hkcinrn4iyd"))))
     (build-system python-build-system)
-    (inputs `(("curl" ,curl)))
+    (inputs (list curl))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
@@ -1797,17 +1777,16 @@ TCP connection, TLS handshake and so on) in the terminal.")
                (("/bin/true")
                 (search-input-file inputs "/bin/true"))))))))
     (inputs
-     `(("perl" ,perl)
-       ("openldap" ,openldap)
-       ("linux-pam" ,linux-pam)
-       ("libcap" ,libcap)
-       ("cyrus-sasl" ,cyrus-sasl)
-       ("expat" ,expat)
-       ("libxml2" ,libxml2)
-       ("openssl" ,openssl)))
+     (list perl
+           openldap
+           linux-pam
+           libcap
+           cyrus-sasl
+           expat
+           libxml2
+           openssl))
     (native-inputs
-     `(("cppunit" ,cppunit)
-       ("pkg-config" ,pkg-config)))
+     (list cppunit pkg-config))
     (synopsis "Web caching proxy")
     (description "Squid is a caching proxy for the Web supporting HTTP, HTTPS,
 FTP, and more.  It reduces bandwidth and improves response times by caching and
@@ -1839,10 +1818,9 @@ reusing frequently-requested web pages.")
                 "true"))
              #t)))))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)))
+     (list autoconf automake))
     (inputs
-     `(("ncurses" ,ncurses)))
+     (list ncurses))
     (synopsis "Console based live network and disk I/O bandwidth monitor")
     (description "Bandwidth Monitor NG is a small and simple console based
 live network and disk I/O bandwidth monitor.")
@@ -1862,19 +1840,15 @@ live network and disk I/O bandwidth monitor.")
         (base32 "0ix2k64qg7x3w0bzdsbk1m50kcpq1ws59g3zkwiafvpwdr4gs2sg"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)
-       ("which" ,which)))
+     (list autoconf automake libtool pkg-config which))
     (inputs
-     `(("libgcrypt" ,libgcrypt)
-       ("libnl" ,libnl)
-       ("libpcap" ,libpcap)
-       ("ethtool" ,ethtool)
-       ("pcre" ,pcre)
-       ("sqlite" ,sqlite)
-       ("zlib" ,zlib)))
+     (list libgcrypt
+           libnl
+           libpcap
+           ethtool
+           pcre
+           sqlite
+           zlib))
     (arguments
      `(#:configure-flags
        (list "CFLAGS=-fcommon"
@@ -1970,10 +1944,9 @@ non-existing entropy of some access points.")
                #t))))
        #:tests? #f))                    ; there are no tests
     (inputs
-     `(("libpcap" ,libpcap)))
+     (list libpcap))
     (propagated-inputs
-     `(("aircrack-ng" ,aircrack-ng)
-       ("pixiewps" ,pixiewps)))
+     (list aircrack-ng pixiewps))
     (home-page "https://github.com/t6x/reaver-wps-fork-t6x/")
     (synopsis "Attack tool for Wi-Fi Protected Setup")
     (description "Reaver performs a brute force attack against an access
@@ -1995,9 +1968,9 @@ reconfigured.")
         (base32 "0x4bvirmf0kphks19jwgva00zz73zx344218dfaiv8gigrw3yg4m"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-tcp" ,perl-test-tcp)))
+     (list perl-test-tcp))
     (propagated-inputs
-     `(("perl-sys-syscall" ,perl-sys-syscall)))
+     (list perl-sys-syscall))
     (home-page "https://metacpan.org/release/Danga-Socket")
     (synopsis "Event loop and event-driven async socket base class")
     (description
@@ -2021,9 +1994,9 @@ loop.")
         (base32 "074adrlvkiahj1fdc9nvb95dpfyjzm2jzhi90m8xaw4bw5ipcbzy"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-requires" ,perl-test-requires)))
+     (list perl-test-requires))
     (propagated-inputs
-     `(("perl-netaddr-ip" ,perl-netaddr-ip)))
+     (list perl-netaddr-ip))
     (home-page "https://metacpan.org/release/Data-Validate-IP")
     (synopsis "IPv4 and IPv6 validation methods")
     (description
@@ -2051,7 +2024,7 @@ private (reserved).")
        (base32 "05f6rzvvmm6xd0p100k5y9kczdzqgala09ra8bccc18n6y74l0h0"))))
   (build-system perl-build-system)
   (inputs
-    `(("perl-digest-hmac" ,perl-digest-hmac)))
+    (list perl-digest-hmac))
   (home-page "https://www.net-dns.org/")
   (synopsis
     "Perl Interface to the Domain Name System")
@@ -2108,8 +2081,8 @@ definitions and structure manipulators for Perl.")
        (search-patches "perl-net-dns-resolver-programmable-fix.patch"))))
   (build-system perl-build-system)
   (native-inputs
-    `(("perl-module-build" ,perl-module-build)))
-  (inputs `(("perl-net-dns" ,perl-net-dns)))
+    (list perl-module-build))
+  (inputs (list perl-net-dns))
   (home-page
     "https://metacpan.org/release/Net-DNS-Resolver-Programmable")
   (synopsis
@@ -2132,7 +2105,7 @@ offline emulation of DNS.")
                 "0m3rxpkv1b9121srvbqkrgzg4m8mnydiydqv34in1i1ixwrl6jn9"))))
     (build-system perl-build-system)
     (inputs
-     `(("perl-net-dns" ,perl-net-dns)))
+     (list perl-net-dns))
     (home-page "https://metacpan.org/release/Net-DNS-Resolver-Mock")
     (synopsis "Mock DNS Resolver object for testing")
     (description
@@ -2198,8 +2171,7 @@ It is intended primarily for use in testing.")
              (("-lnsl") ""))
            #t)))))
   (inputs
-    `(("perl-net-cidr-lite" ,perl-net-cidr-lite)
-      ("perl-socket6" ,perl-socket6)))
+    (list perl-net-cidr-lite perl-socket6))
   (home-page
     "https://metacpan.org/release/Net-Patricia")
   (synopsis
@@ -2245,10 +2217,8 @@ It is intended primarily for use in testing.")
           "1fqypz6qa5rw2d5y2zq7f49frwra0aln13nhq5gi514j2zx21q45"))))
   (build-system perl-build-system)
   (native-inputs
-    `(("perl-module-build" ,perl-module-build)
-      ("perl-test-pod" ,perl-test-pod)
-      ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
-  (propagated-inputs `(("perl-socket6" ,perl-socket6)))
+    (list perl-module-build perl-test-pod perl-test-pod-coverage))
+  (propagated-inputs (list perl-socket6))
   (arguments `(;; Need network socket API
                #:tests? #f))
   (home-page
@@ -2273,10 +2243,9 @@ sockets in Perl.")
                 "01cbgz6lc3v59sldqk96l1281kp2qxnsa2qwlf2ikvjlyr1gi2dw"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("dbus" ,dbus)
-       ("zlib" ,zlib)))
+     (list dbus zlib))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -2342,7 +2311,7 @@ HTTP proxies.")
         (base32 "1p6f9mby86af6cs7pv6h48032ip9g32c05cb7d9mimam8lchz3x3"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (synopsis "Network communication layer on top of UDP")
     (description
      "ENet's purpose is to provide a relatively thin, simple and robust network
@@ -2369,18 +2338,15 @@ library remains flexible, portable, and easily embeddable.")
         (base32 "19h32dn0076p3s7dn35qi5yp2xvnxw9sqphppmn72vyb8caxvw1z"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(;; Test dependencies.
-       ("lcov" ,lcov)
-       ("perl" ,perl)
-       ("perl-conf-libconfig" ,perl-conf-libconfig)
-       ("perl-io-socket-inet6" ,perl-io-socket-inet6)
-       ("perl-socket6" ,perl-socket6)
-       ("psmisc" ,psmisc)))             ; for ‘killall’
+     (list ;; Test dependencies.
+           lcov
+           perl
+           perl-conf-libconfig
+           perl-io-socket-inet6
+           perl-socket6
+           psmisc))             ; for ‘killall’
     (inputs
-     `(("libcap" ,libcap)
-       ("libconfig" ,libconfig)
-       ("pcre" ,pcre)
-       ("tcp-wrappers" ,tcp-wrappers)))
+     (list libcap libconfig pcre tcp-wrappers))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -2469,8 +2435,7 @@ the bandwidth, loss, and other parameters.")
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (inputs
-     `(("libpcap" ,libpcap)
-       ("ncurses" ,ncurses)))
+     (list libpcap ncurses))
     (arguments
      `(#:make-flags `(,,(string-append "CC=" (cc-for-target))
                       ,(string-append "PREFIX=" %output)
@@ -2511,11 +2476,8 @@ gone wild and are suddenly taking up your bandwidth.")
                        (assoc-ref %build-inputs "ncurses") "/lib")
         (string-append "--with-tlslib=GnuTLS"))))
     (build-system gnu-build-system)
-    (inputs `(("gnutls" ,gnutls)
-              ("libxml2" ,libxml2)
-              ("ncurses" ,ncurses)
-              ("zlib" ,zlib)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs (list gnutls libxml2 ncurses zlib))
+    (native-inputs (list pkg-config))
     (home-page "https://github.com/nzbget/nzbget")
     (synopsis "Usenet binary file downloader")
     (description
@@ -2596,9 +2558,7 @@ ps --no-header -p $1 -o state= | grep -qv '^Z$'"
        ("procps" ,procps)
        ("util-linux" ,util-linux)))
     (inputs
-     `(("bash-minimal" ,bash-minimal)
-       ("libcap-ng" ,libcap-ng)
-       ("openssl" ,openssl)))
+     (list bash-minimal libcap-ng openssl))
     (synopsis "Virtual network switch")
     (home-page "https://www.openvswitch.org/")
     (description
@@ -2717,9 +2677,9 @@ enabled due to license conflicts between the BSD advertising clause and the GPL.
                (install-file "DESIGN.md" misc)
                #t))))))
     (native-inputs
-     `(("procps" ,procps))) ; `ps` is used by the test suite.
+     (list procps)) ; `ps` is used by the test suite.
     (inputs
-     `(("openssl" ,openssl)))
+     (list openssl))
     (home-page "https://www.tarsnap.com/spiped.html")
     (synopsis "Create secure pipes between sockets")
     (description "Spiped (pronounced \"ess-pipe-dee\") is a utility for creating
@@ -2745,11 +2705,8 @@ does not use SSH and requires a pre-shared symmetric key.")
               (patches
                (search-patches "quagga-reproducible-build.patch"))))
     (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)
-                     ("perl" ,perl)
-                     ("dejagnu" ,dejagnu)))
-    (inputs `(("readline" ,readline)
-              ("c-ares" ,c-ares)))
+    (native-inputs (list pkg-config perl dejagnu))
+    (inputs (list readline c-ares))
     (synopsis "Routing Software Suite")
     (description "Quagga is a routing software suite, providing implementations
 of OSPFv2, OSPFv3, RIP v1 and v2, RIPng and BGP-4 for Unix platforms.
@@ -2798,9 +2755,7 @@ updates to the zebra daemon.")
                  #t))))))
       ;; TODO Add libnetfilter-queue once packaged.
       (inputs
-       `(("libpcap" ,libpcap)
-         ("openssl" ,openssl)
-         ("perl" ,perl)))
+       (list libpcap openssl perl))
       (home-page "https://github.com/vanhauser-thc/thc-ipv6")
       (synopsis "IPv6 security research toolkit")
       (description "The THC IPv6 Toolkit provides command-line tools and a library
@@ -2824,11 +2779,9 @@ newer and only works on Ethernet network interfaces.")
          "0ylzriv4pwh76344abzl1w219x188gshbycbna35gsyfp09c7z82"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libconfuse" ,libconfuse)
-       ("libnl" ,libnl)
-       ("ncurses" ,ncurses)))
+     (list libconfuse libnl ncurses))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (synopsis "Bandwidth monitor")
     (description "bmon is a monitoring and debugging tool to capture
 networking-related statistics and prepare them visually in a human-friendly
@@ -2863,9 +2816,8 @@ interface and a programmable text output for scripting.")
              (apply invoke "make" "-C" "doc" "doc"
                     make-flags))))))
     (native-inputs
-     `(;; To build the documentation, Doxygen and Perl is required.
-       ("doxygen" ,doxygen)
-       ("perl" ,perl)))
+     (list ;; To build the documentation, Doxygen and Perl is required.
+           doxygen perl))
     (home-page "https://github.com/libnet/libnet")
     (synopsis "Framework for low-level network packet construction")
     (description
@@ -2889,8 +2841,7 @@ can be whipped up with little effort.")
         (base32 "1glxvlqskcmjkxlqk9i12hcfaxb389cx2n8ji7776gmix3aq4z1z"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libcap" ,libcap)
-       ("ncurses" ,ncurses)))
+     (list libcap ncurses))
     (arguments
      `(#:tests? #f))                    ; tests require network access
     (home-page "https://www.bitwizard.nl/mtr/")
@@ -2943,15 +2894,9 @@ displays the results in real time.")
          "--enable-webserver"
          "--with-denoise-level=0")))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("gettext-minimal" ,gettext-minimal)
-       ("perl" ,perl)))
+     (list autoconf automake gettext-minimal perl))
     (inputs
-     `(("zlib" ,zlib)
-       ("crypto++" ,crypto++)
-       ("libpng" ,libpng)
-       ("wxwidgets-gtk2" ,wxwidgets-gtk2)))
+     (list zlib crypto++ libpng wxwidgets-gtk2))
     (home-page "https://amule.org/")
     (synopsis "Peer-to-peer client for the eD2K and Kademlia networks")
     (description
@@ -2975,9 +2920,7 @@ remotely.")
                (base32
                 "13596507ma1474cjqzxym5jlvcshvw7sjhw80rdz788gyz6kz90b"))))
     (build-system gnu-build-system)
-    (inputs `(("zeromq" ,zeromq)
-              ("czmq" ,czmq)
-              ("libsodium" ,libsodium)))
+    (inputs (list zeromq czmq libsodium))
     (synopsis "Framework for proximity-based peer-to-peer applications")
     (description "Zyre provides reliable group messaging over local area
 networks using zeromq.  It has these key characteristics:
@@ -3010,9 +2953,7 @@ networks using zeromq.  It has these key characteristics:
                 "17z2y2r9xkixhr9bxr50m77fh710afl30s7jdhbxrvf56vmal2jr"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
+     (list autoconf automake libtool))
     (home-page "https://git.pengutronix.de/cgit/tools/libsocketcan")
     (synopsis "SocketCAN user-space library")
     (description "This library allows controlling basic functions in SocketCAN
@@ -3072,8 +3013,7 @@ eight bytes) tools
         (base32 "0335kyxdnwnp96sh9p3jq1s87qnfmp5l7hzlcdxbbwfzrb9p8hr0"))))
     (build-system gnu-build-system)
     (inputs
-     `(("boost" ,boost)
-       ("openssl" ,openssl)))
+     (list boost openssl))
     (arguments
      `(#:configure-flags
        (list
@@ -3100,7 +3040,7 @@ asynchronous model using a modern C++ approach.")
         (base32 "02mp5905nz02d7amb4zc77rcrkxmvy8mf5rci7mvy58g24lvbw25"))
        (file-name (git-file-name name version))))
     (inputs
-     `(("openssl" ,openssl)))
+     (list openssl))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
@@ -3186,17 +3126,12 @@ Features:
                                " -NET")))
              #t)))))
     (inputs
-     `(("libnl" ,libnl)
-       ("ncurses" ,ncurses)             ; for the ‘apps’
-       ("openssl" ,openssl)
-       ("perl" ,perl)))
+     (list libnl ncurses ; for the ‘apps’
+           openssl perl))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-
-       ;; For tests only.
-       ("net-tools" ,net-tools)
-       ("coreutils" ,coreutils)
-       ("grep" ,grep)))
+     (list pkg-config
+           ;; For tests only.
+           net-tools coreutils grep))
     (home-page "http://www.net-snmp.org/")
     (synopsis "Simple Network Management Protocol library and tools")
     (description "The @dfn{Simple Network Management Protocol} (SNMP) is a
@@ -3243,7 +3178,7 @@ SNMP v3 using both IPv4 and IPv6.")
                  (("\tsetcap cap_net.*$") "")))
              #t)))))
     (inputs
-     `(("libpcap" ,libpcap)))
+     (list libpcap))
     (home-page "https://github.com/GNS3/ubridge/")
     (synopsis "Bridge for UDP tunnels, Ethernet, TAP and VMnet interfaces")
     (description "uBridge is a simple program to create user-land bridges
@@ -3266,10 +3201,7 @@ Ethernet and TAP interfaces is supported.  Packet capture is also supported.")
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (inputs
-     `(("curl" ,curl)
-       ("libpcap" ,libpcap)
-       ("openssl" ,openssl)
-       ("zlib" ,zlib)))
+     (list curl libpcap openssl zlib))
     (arguments
      `(#:make-flags
        (list ,(string-append "CC=" (cc-for-target))
@@ -3308,7 +3240,7 @@ packets from wireless devices for use with hashcat or John the Ripper.")
        (modify-phases %standard-phases
          (delete 'configure))))
     (inputs
-     `(("openssl" ,openssl)))
+     (list openssl))
     (home-page "https://github.com/ZerBea/hcxdumptool")
     (synopsis "Small tool to capture packets from wlan devices")
     (description
@@ -3361,9 +3293,7 @@ never see any machines other than the one Dante is running on.")
         (base32 "15j09x36i6zj6innl0w1mfzlc56qmjwrs82my8dsagqa2ikd08ya"))))
     (build-system cmake-build-system)
     (inputs
-     `(("asio" ,asio)
-       ("catch" ,catch-framework)
-       ("openssl" ,openssl)))
+     (list asio catch-framework openssl))
     (arguments
      `(#:configure-flags
        '("-DBUILD_SSL=NO")
@@ -3409,17 +3339,15 @@ communication over HTTP.")
                 "0gb0yc88hdzwm08zdiviay6s08q427za33kfbygib7bdzp2wr2dm"))))
     (build-system cmake-build-system)
     (inputs                             ; TODO: Need to force-keep references on some inputs, e.g. boost.
-     `(("zlib" ,zlib)
-       ("catch2" ,catch-framework2)
-       ("openssl" ,openssl)
-       ("boost" ,boost)
-       ("pcre" ,pcre)
-       ("pcre2" ,pcre2)
-       ("sobjectizer" ,sobjectizer)))
+     (list zlib
+           catch-framework2
+           openssl
+           boost
+           pcre
+           pcre2
+           sobjectizer))
     (propagated-inputs
-     `(("asio" ,asio)
-       ("fmt" ,fmt)
-       ("http-parser" ,http-parser)))
+     (list asio fmt http-parser))
     (arguments
      `(#:configure-flags '("-DRESTINIO_INSTALL=on")
        #:tests? #f ; TODO: The tests are called from the root CMakelist, need RESTINIO_TEST=on.
@@ -3455,24 +3383,24 @@ and targeted primarily for asynchronous processing of HTTP-requests.")
       (outputs '("out" "tools" "debug"))
       (build-system cmake-build-system)
       (inputs
-       `(("argon2" ,argon2)
-         ("nettle" ,nettle)
-         ("readline" ,readline)
-         ("jsoncpp" ,jsoncpp)
-         ("openssl" ,openssl)             ;required for the DHT proxy
-         ("fmt" ,fmt)))
+       (list argon2
+             nettle
+             readline
+             jsoncpp
+             openssl ;required for the DHT proxy
+             fmt))
       (propagated-inputs
-       `(("gnutls" ,gnutls)               ;included in opendht/crypto.h
-         ("msgpack" ,msgpack)             ;included in several installed headers
-         ("restinio" ,restinio)))         ;included in opendht/http.h
+       (list gnutls ;included in opendht/crypto.h
+             msgpack ;included in several installed headers
+             restinio))         ;included in opendht/http.h
       (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("pkg-config" ,pkg-config)
-         ("python" ,python)
-         ("python-cython" ,python-cython)
-         ("libtool" ,libtool)
-         ("cppunit" ,cppunit)))
+       (list autoconf
+             automake
+             pkg-config
+             python
+             python-cython
+             libtool
+             cppunit))
       (arguments
        `(#:imported-modules ((guix build python-build-system) ;for site-packages
                              ,@%cmake-build-system-modules)
@@ -3558,11 +3486,7 @@ A very simple IM client working over the DHT.
                 "1r7gh5h27ii7d1d0z0x48wx7hs8vvympv3gqvy3cwzg05q5vk9xs"))))
     (build-system gnu-build-system)
     (inputs
-     `(("c-ares" ,c-ares)
-       ("json-c" ,json-c)
-       ("libcap" ,libcap)
-       ("libyang" ,libyang)
-       ("readline" ,readline)))
+     (list c-ares json-c libcap libyang readline))
     (native-inputs
      `(("perl" ,perl)
        ("pkg-config" ,pkg-config)
@@ -3586,11 +3510,9 @@ protocol daemons for BGP, IS-IS, LDP, OSPF, PIM, and RIP. ")
                (base32
                 "1xp7f0im1v8pqqx3xqyfkd1nsxk8vnbqgrdrwnwhg8r5xs1xxlhr"))))
     (inputs
-     `(("libssh" ,libssh)
-       ("readline" ,readline)))
+     (list libssh readline))
     (native-inputs
-     `(("bison" ,bison)
-       ("flex" ,flex)))
+     (list bison flex))
     (arguments
      `(#:configure-flags '("--localstatedir=/var" "--enable-ipv6")
        #:phases
@@ -3623,9 +3545,7 @@ powerful route filtering syntax and an easy-to-use configuration interface.")
                 "0ngng9a9ra5w0mp2813yy2ihfibyx10ns6v5icdcp99db608xax7"))))
     (build-system gnu-build-system)
     (inputs
-     `(("dbus" ,dbus)
-       ("ell" ,ell)
-       ("readline" ,readline)))
+     (list dbus ell readline))
     (native-inputs
      `(("pkgconfig" ,pkg-config)
        ("python" ,python)
@@ -3675,9 +3595,8 @@ maximum extent possible.")
     (arguments
      `(#:configure-flags
        (list "-DENABLE_BUILD_TESTS=ON" "-DENABLE_LYD_PRIV=ON")))
-    (propagated-inputs `(("pcre" ,pcre)))
-    (native-inputs `(("cmocka" ,cmocka)
-                     ("pkg-config" ,pkg-config)))
+    (propagated-inputs (list pcre))
+    (native-inputs (list cmocka pkg-config))
     (home-page "https://github.com/CESNET/libyang")
     (synopsis "YANG data modelling language library")
     (description "libyang is a YANG data modelling language parser and toolkit
@@ -3697,9 +3616,9 @@ written (and providing API) in C.  Current implementation covers YANG 1.0 (RFC
      (sha256
       (base32 "1ryqz90av2p5pgmmpi1afmycd18zhpwz1i4f7r0s359jis86xndn"))))
    (inputs
-    `(("libnl" ,libnl)))
+    (list libnl))
    (native-inputs
-    `(("pkg-config" ,pkg-config)))
+    (list pkg-config))
    (build-system gnu-build-system)
    (arguments
     `(#:tests? #f
@@ -3743,8 +3662,7 @@ module @code{batman-adv}, for Layer 2.")
                (invoke "make" "doc/pagekite.1")
                (install-file "doc/pagekite.1" (string-append man "/man1"))))))))
     (inputs
-     `(("python-six" ,python-six)
-       ("python-socksipychain" ,python-socksipychain)))
+     (list python-six python-socksipychain))
     (home-page "https://pagekite.net/")
     (synopsis "Make localhost servers publicly visible")
     (description
@@ -3917,13 +3835,9 @@ some traces for unprivileged users.")
     (arguments
      `(#:parallel-build? #f))           ; Build fails if #t.
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
+     (list autoconf automake libtool))
     (inputs
-     `(("python" ,python)
-       ("libpcap" ,libpcap)
-       ("wolfssl" ,wolfssl)))
+     (list python libpcap wolfssl))
     (home-page "https://github.com/virtualsquare/vde-2")
     (synopsis "Virtual Distributed Ethernet")
     (description "VDE is a set of programs to provide virtual software-defined
@@ -3965,10 +3879,7 @@ cables.")
        (modify-phases %standard-phases
          (delete 'configure))))
     (inputs
-     `(("lua" ,lua)
-       ("openssl" ,openssl)
-       ("pcre2" ,pcre2)
-       ("zlib" ,zlib)))
+     (list lua openssl pcre2 zlib))
     (home-page "https://www.haproxy.org/")
     (synopsis "Reliable, high performance TCP/HTTP load balancer")
     (description "HAProxy is a free, very fast and reliable solution offering
@@ -4011,12 +3922,9 @@ thousands of connections is clearly realistic with today's hardware.")
                        "/lib/systemd/system"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libevent" ,libevent)
-       ("libxml2" ,libxml2)
-       ("openssl" ,openssl)
-       ("readline" ,readline)))
+     (list libevent libxml2 openssl readline))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://vincentbernat.github.io/lldpd/")
     (synopsis "Locate neighbors of your network equipment")
     (description
@@ -4086,11 +3994,9 @@ stamps.")
          (base32 "1ljx6vb3lja5p0lr28vmjp27n9d6krlvq49bhqbcm2ns8vxd1vh6"))))
     (build-system gnu-build-system)
     (inputs
-     `(("glib" ,glib)))
+     (list glib))
     (native-inputs
-     `(("bison" ,bison)
-       ("pkg-config" ,pkg-config)
-       ("which" ,which)))
+     (list bison pkg-config which))
     (home-page "https://nbd.sourceforge.io/")
     (synopsis "NBD client and server")
     (description "This package provides the NBD (Network Block Devices)
@@ -4135,43 +4041,27 @@ network.")
              #t)))))
     ;; https://github.com/kardianos/minwinsvc is windows only
     (propagated-inputs
-     `(;;("go-golang-zx2c4-com-wireguard-windows"
-       ;; ,go-golang-zx2c4-com-wireguard-windows)
-       ("go-golang-zx2c4-com-wireguard"
-        ,go-golang-zx2c4-com-wireguard)
-       ("go-golang-org-x-text" ,go-golang-org-x-text)
-       ("go-golang-org-x-sys" ,go-golang-org-x-sys)
-       ("go-golang-org-x-net" ,go-golang-org-x-net)
-       ("go-golang-org-x-crypto"
-        ,go-golang-org-x-crypto)
-       ("go-netns"
-        ,go-netns)
-       ("go-netlink"
-        ,go-netlink)
-       ("go-github-com-mitchellh-mapstructure"
-        ,go-github-com-mitchellh-mapstructure)
-       ("go-github-com-mattn-go-runewidth"
-        ,go-github-com-mattn-go-runewidth)
-       ("go-github-com-mattn-go-isatty"
-        ,go-github-com-mattn-go-isatty)
-       ("go-github-com-kardianos-minwinsvc"
-        ,go-github-com-kardianos-minwinsvc)
-       ("go-github-com-hjson-hjson-go"
-        ,go-github-com-hjson-hjson-go)
-       ("go-github-com-hashicorp-go-syslog"
-        ,go-github-com-hashicorp-go-syslog)
-       ("go-github-com-gologme-log"
-        ,go-github-com-gologme-log)
-       ("go-github-com-fatih-color"
-        ,go-github-com-fatih-color)
-       ("go-github-com-cheggaaa-pb-v3"
-        ,go-github-com-cheggaaa-pb-v3)
-       ("go-github-com-vividcortex-ewma"
-        ,go-github-com-vividcortex-ewma)
-       ("go-github-com-arceliar-phony"
-        ,go-github-com-arceliar-phony)
-       ("go-github-com-arceliar-ironwood"
-        ,go-github-com-arceliar-ironwood)))
+     (list ;;("go-golang-zx2c4-com-wireguard-windows"
+           ;; ,go-golang-zx2c4-com-wireguard-windows)
+           go-golang-zx2c4-com-wireguard
+           go-golang-org-x-text
+           go-golang-org-x-sys
+           go-golang-org-x-net
+           go-golang-org-x-crypto
+           go-netns
+           go-netlink
+           go-github-com-mitchellh-mapstructure
+           go-github-com-mattn-go-runewidth
+           go-github-com-mattn-go-isatty
+           go-github-com-kardianos-minwinsvc
+           go-github-com-hjson-hjson-go
+           go-github-com-hashicorp-go-syslog
+           go-github-com-gologme-log
+           go-github-com-fatih-color
+           go-github-com-cheggaaa-pb-v3
+           go-github-com-vividcortex-ewma
+           go-github-com-arceliar-phony
+           go-github-com-arceliar-ironwood))
     (home-page "https://yggdrasil-network.github.io/blog.html")
     (synopsis
      "Experiment in scalable routing as an encrypted IPv6 overlay network")
@@ -4216,11 +4106,9 @@ IPv6 Internet connectivity - it also works over IPv4.")
     `(#:tests? #f)) ;; no tests
    (build-system gnu-build-system)
    (inputs
-    `(("libnet" ,libnet)
-      ("libpcap" ,libpcap)))
+    (list libnet libpcap))
    (native-inputs
-    `(("autoconf" ,autoconf)
-      ("automake" ,automake)))
+    (list autoconf automake))
    (synopsis "Network address discovery tool")
    (description "Netdiscover is a network address discovery tool developed
 mainly for wireless networks without a @acronym{DHCP} server.  It also works
@@ -4250,10 +4138,9 @@ on hub/switched networks.  It is based on @acronym{ARP} packets, it will send
            (lambda _
              (chdir "unix"))))))
     (inputs
-     `(("gtk+" ,gtk+)))
+     (list gtk+))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("python" ,python))) ; for tests
+     (list pkg-config python)) ; for tests
     (synopsis "Graphical @acronym{SSH, Secure SHell} and telnet client")
     (description "PuTTY is a graphical text terminal client.  It supports
 @acronym{SSH, Secure SHell}, telnet, and raw socket connections with good

@@ -42,10 +42,8 @@
        (sha256
         (base32 "16mlbdys8q4ckxlvxyhwkdnh1ay9f6g0cyp1kylkpalgnik398gq"))))
     (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)
-                     ("which" ,which)))
-    (inputs `(("guile" ,guile-2.2)
-              ("perl" ,perl)))          ; for doc generator mdoc
+    (native-inputs (list pkg-config which))
+    (inputs (list guile-2.2 perl))          ; for doc generator mdoc
     (arguments
      '(#:configure-flags
        ;; XXX Needed to build 5.18.16.  ./configure fails without it:

@@ -237,9 +237,7 @@ compressor/decompressor.")
          (replace 'install (install-from-pom "pom.xml")))))
     (home-page "https://github.com/dain/snappy")
     (native-inputs
-     `(("java-guava" ,java-guava)
-       ("java-snappy" ,java-snappy)
-       ("java-testng" ,java-testng)))
+     (list java-guava java-snappy java-testng))
     (synopsis "Java port of the Snappy (de)compressor")
     (description
      "Iq80-snappy is a port of the Snappy compressor and decompressor rewritten
@@ -263,8 +261,7 @@ output created by the original C++ code, and is extremely fast.")
                 "0ncmhlqmrfmj96nqf6p77b9ws35lcfsvpfxzwxi2asissc83z1l3"))))
     (build-system ant-build-system)
     (native-inputs
-     `(("unzip" ,unzip)
-       ("java-junit" ,java-junit)))
+     (list unzip java-junit))
     (arguments
      `(#:tests? #f                      ; no tests
        #:jar-name "jbzip2.jar"
@@ -319,7 +316,7 @@ It can be used as a replacement for the Apache @code{CBZip2InputStream} /
         (replace 'install
           (install-from-pom "pom.xml")))))
     (native-inputs
-     `(("unzip" ,unzip)))
+     (list unzip))
     (home-page "https://tukaani.org")
     (synopsis "XZ in Java")
     (description "Tukaani-xz is an implementation of xz compression/decompression

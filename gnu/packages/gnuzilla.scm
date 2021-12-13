@@ -119,9 +119,9 @@
        ("pkg-config" ,pkg-config)
        ("python" ,python-2)))
     (propagated-inputs
-     `(("nspr" ,nspr))) ; in the Requires.private field of mozjs-17.0.pc
+     (list nspr)) ; in the Requires.private field of mozjs-17.0.pc
     (inputs
-     `(("zlib" ,zlib)))
+     (list zlib))
     (arguments
      `(;; XXX: parallel build fails, lacking:
        ;;   mkdir -p "system_wrapper_js/"
@@ -196,8 +196,7 @@ in C/C++.")
                                 '("--host=aarch64-unknown-linux-gnu")
                                 '())))))))))
     (inputs
-     `(("libffi" ,libffi)
-       ("zlib" ,zlib)))))
+     (list libffi zlib))))
 
 (define-public mozjs-38
   (package
@@ -280,10 +279,7 @@ in C/C++.")
        ("pkg-config" ,pkg-config)
        ("python-2" ,python-2)))
     (inputs
-     `(("libffi" ,libffi)
-       ("readline" ,readline)
-       ("icu4c" ,icu4c)
-       ("zlib" ,zlib)))))
+     (list libffi readline icu4c zlib))))
 
 (define-public mozjs-52
   ;; No releases yet at <https://archive.mozilla.org/pub/spidermonkey/releases/>.
@@ -349,9 +345,8 @@ in C/C++.")
                         (cons (string-append "--prefix=" out)
                               configure-flags))))))))
       (native-inputs
-       `(("autoconf" ,autoconf-2.13)
-         ("automake" ,automake)
-         ,@(package-native-inputs mozjs-38))))))
+       (modify-inputs (package-native-inputs mozjs-38)
+         (prepend autoconf-2.13 automake))))))
 
 (define-public mozjs-60
   ;; No releases yet at <https://archive.mozilla.org/pub/spidermonkey/releases/>.
@@ -579,9 +574,7 @@ in C/C++.")
        ("rust" ,rust)
        ("cargo" ,rust "cargo")))
     (inputs
-     `(("icu4c" ,icu4c)
-       ("readline" ,readline)
-       ("zlib" ,zlib)))))
+     (list icu4c readline zlib))))
 
 (define mozilla-compare-locales
   (origin
@@ -1702,8 +1695,7 @@ Thunderbird.  It supports email, news feeds, chat, calendar and contacts.")
                 "17yyyxp47z4m8hnflcq34rc1y871515kr3f1y42j1l0yx3g0il07"))))
     (build-system trivial-build-system)
     (inputs
-     `(("nss" ,nss)
-       ("python" ,python)))
+     (list nss python))
     (arguments
      `(#:modules ((guix build utils))
        #:builder
@@ -1742,8 +1734,8 @@ Mozilla (Firefox, Waterfox, Thunderbird, SeaMonkey) profiles.")
        (sha256
         (base32 "1xxn8yzr6j8j6prmbj6mxspdczigarfiv3vlm9k70yxmky65ijh3"))))
     (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)))
-    (inputs `(("lz4" ,lz4)))
+    (native-inputs (list pkg-config))
+    (inputs (list lz4))
     (arguments
      `(#:tests? #f                              ; no check target
        #:phases

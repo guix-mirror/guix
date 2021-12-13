@@ -257,10 +257,8 @@ generator library for C++.")
     (arguments
      '(#:configure-flags '("SH=sh")))
     (native-inputs
-     `(("ghostscript" ,ghostscript) ; ps2pdf
-       ("groff" ,groff)
-       ("libtool" ,libtool)
-       ("which" ,which)))
+     (list ghostscript ; ps2pdf
+           groff libtool which))
     (synopsis "fuzzy comparison of strings")
     (description
      "The fstrcmp project provides a library that is used to make fuzzy
@@ -499,9 +497,7 @@ plug-in system.")
                 (file-name (string-append name "-" version "-checkout"))))
       (build-system trivial-build-system)
       (inputs
-       `(("bash"        ,bash)
-         ("curl"        ,curl)
-         ("mps-youtube" ,mps-youtube)))
+       (list bash curl mps-youtube))
       (arguments
        `(#:modules ((guix build utils))
          #:builder

@@ -74,7 +74,7 @@
                (rename-file orig dest)
                #t))))))
     (native-inputs
-     `(("perl" ,perl)))
+     (list perl))
     (home-page "https://www.valgrind.org/")
     (synopsis "Debugging and profiling tool suite")
     (description

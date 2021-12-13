@@ -254,7 +254,7 @@ removable devices or support for multimedia.")
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("efl" ,efl)))
+     (list efl))
     (home-page "https://www.enlightenment.org/about-terminology")
     (synopsis "Powerful terminal emulator based on EFL")
     (description
@@ -285,9 +285,9 @@ contents and more.")
            ;; FATAL: Cannot create run dir '/homeless-shelter/.run' - errno=2
            (lambda _ (setenv "HOME" "/tmp") #t)))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("efl" ,efl)))
+     (list efl))
     (home-page "https://www.enlightenment.org/about-rage")
     (synopsis "Video and audio player based on EFL")
     (description
@@ -379,12 +379,9 @@ Libraries with some extra bells and whistles.")
        ("xkeyboard-config" ,xkeyboard-config)
        ("xorg-server-xwayland" ,xorg-server-xwayland)))
     (propagated-inputs
-     `(("efl" ,efl)
-       ("libxkbcommon" ,libxkbcommon)
-       ("wayland-protocols" ,wayland-protocols)
-
-       ;; Default font that applications such as IceCat require.
-       ("font-dejavu" ,font-dejavu)))
+     (list efl libxkbcommon wayland-protocols
+           ;; Default font that applications such as IceCat require.
+           font-dejavu))
     (home-page "https://www.enlightenment.org/about-enlightenment")
     (synopsis "Lightweight desktop environment")
     (description
@@ -441,11 +438,9 @@ embedded systems.")
             (delete-file "tests/ecore/test_11_con.py")
             #t)))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("python-cython" ,python-cython)))
+     (list pkg-config python-cython))
     (inputs
-     `(("efl" ,efl)
-       ("python-dbus" ,python-dbus)))
+     (list efl python-dbus))
     (home-page "https://www.enlightenment.org/")
     (synopsis "Python bindings for EFL")
     (description
@@ -486,8 +481,7 @@ Libraries stack (eo, evas, ecore, edje, emotion, ethumb and elementary).")
        ("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("clang" ,clang)
-       ("efl" ,efl)))
+     (list clang efl))
     (home-page "https://www.enlightenment.org/about-edi")
     (synopsis "Development environment for Enlightenment")
     (description "EDI is a development environment designed for and built using
@@ -519,9 +513,7 @@ and in creating applications based on the Enlightenment Foundation Library suite
                        (("'/usr/")"'"))
              #t)))))
     (propagated-inputs
-     `(("python2-efl" ,python2-efl)
-       ("python2-pypdf2" ,python2-pypdf2)
-       ("python2-pyxdg" ,python2-pyxdg)))
+     (list python2-efl python2-pypdf2 python2-pyxdg))
     (synopsis "Simple PDF viewer")
     (description
      "Simple PDF viewer based on the Enlightenment Foundation Libraries.")
@@ -547,10 +539,9 @@ and in creating applications based on the Enlightenment Foundation Library suite
            ;; FATAL: Cannot create run dir '/homeless-shelter/.run' - errno=2
            (lambda _ (setenv "HOME" "/tmp") #t)))))
     (native-inputs
-     `(("check" ,check)
-       ("pkg-config" ,pkg-config)))
+     (list check pkg-config))
     (inputs
-     `(("efl" ,efl)))
+     (list efl))
     (home-page "https://smhouston.us/projects/ephoto/")
     (synopsis "EFL image viewer/editor/manipulator/slideshow creator")
     (description "Ephoto is an image viewer and editor written using the
@@ -598,7 +589,7 @@ directories.
      `(("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("efl" ,efl)))
+     (list efl))
     (home-page "https://www.enlightenment.org")
     (synopsis "EFL process viewer")
     (description
@@ -632,13 +623,9 @@ directories.
                   (string-append "join(\"" out "/share/epour\"")))
                #t))))))
     (native-inputs
-     `(("intltool" ,intltool)
-       ("python-distutils-extra" ,python-distutils-extra)))
+     (list intltool python-distutils-extra))
     (inputs
-     `(("libtorrent-rasterbar" ,libtorrent-rasterbar)
-       ("python-dbus" ,python-dbus)
-       ("python-efl" ,python-efl)
-       ("python-pyxdg" ,python-pyxdg)))
+     (list libtorrent-rasterbar python-dbus python-efl python-pyxdg))
     (home-page "https://www.enlightenment.org")
     (synopsis "EFL Bittorrent client")
     (description "Epour is a BitTorrent client based on the @dfn{Enlightenment

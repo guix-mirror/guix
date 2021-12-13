@@ -84,9 +84,7 @@
                               (assoc-ref %outputs "out")
                               "/lib/cups"))))
       (inputs
-       `(("ghostscript" ,ghostscript)
-         ("cups" ,cups)
-         ("zlib" ,zlib)))
+       (list ghostscript cups zlib))
       (home-page "https://github.com/pdewacht/brlaser")
       (synopsis "Brother laser printer driver")
       (description "Brlaser is a CUPS driver for Brother laser printers.  This
@@ -213,8 +211,8 @@ driver is known to work with these printers:
                                                out "/lib/cups/filter")))
                         #t))))))
     (native-inputs
-     `(("glib" ,glib "bin")             ; for gdbus-codegen
-       ("pkg-config" ,pkg-config)))
+     (list `(,glib "bin") ; for gdbus-codegen
+           pkg-config))
     (inputs
      `(("avahi"        ,avahi)
        ("fontconfig"   ,fontconfig)
@@ -327,10 +325,9 @@ filters for the PDF-centric printing workflow introduced by OpenPrinting.")
                 "#elif defined(HAVE_AVAHI)"))
              #t)))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("zlib"  ,zlib)
-       ("gnutls" ,gnutls)))
+     (list zlib gnutls))
     (home-page "https://openprinting.github.io/")
     (synopsis "The Common Unix Printing System")
     (description
@@ -486,11 +483,7 @@ device-specific programs to convert and print many types of files.")
                 "0a52jw6rm7lr5nbyksiia0rn7sasyb5cjqcb95z1wxm2yprgi6lm"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)
-       ("glib" ,glib)
-       ("polkit" ,polkit)
-       ("cups" ,cups)))
+     (list intltool pkg-config glib polkit cups))
     (home-page "https://www.freedesktop.org/wiki/Software/cups-pk-helper/")
     (synopsis "PolicyKit helper to configure CUPS with fine-grained privileges")
     (description
@@ -692,8 +685,7 @@ should only be used as part of the Guix cups-pk-helper service.")
        ("sane-backends" ,sane-backends-minimal)
        ("zlib" ,zlib)))
     (native-inputs
-     `(("perl" ,perl)
-       ("pkg-config" ,pkg-config)))))
+     (list perl pkg-config))))
 
 (define-public hplip-minimal
   (package/inherit hplip
@@ -735,11 +727,9 @@ should only be used as part of the Guix cups-pk-helper service.")
     (home-page
      "https://wiki.linuxfoundation.org/openprinting/database/foomatic")
     (native-inputs
-     `(("perl" ,perl)
-       ("pkg-config" ,pkg-config)))
+     (list perl pkg-config))
     (inputs
-     `(("dbus" ,dbus)
-       ("a2ps" ,a2ps)))
+     (list dbus a2ps))
     (arguments
      '( ;; Specify the installation directories.
        #:configure-flags (list (string-append "ac_cv_path_CUPS_BACKENDS="
@@ -853,13 +843,9 @@ printer/driver specific, but spooler-independent PPD file.")
        #:tests? #f                                ;no tests
        #:make-flags '("CC=gcc")))
     (inputs
-     `(("coreutils" ,coreutils)
-       ("sed" ,sed)
-       ("ghostscript" ,ghostscript)
-       ("foomatic-filters" ,foomatic-filters)))   ;for 'foomatic-rip'
+     (list coreutils sed ghostscript foomatic-filters))   ;for 'foomatic-rip'
     (native-inputs
-     `(("bc" ,bc)
-       ("groff" ,groff)))
+     (list bc groff))
     ;; The domain has expired and no one has meaningfully taken up the torch.
     (home-page (string-append "https://web.archive.org/web/20210129024712/"
                               "http://foo2zjs.rkkda.com/"))
@@ -923,8 +909,7 @@ HP@tie{}LaserJet, and possibly other printers.  See @file{README} for details.")
                  (for-each (cut invoke "gzip" "-9" <>)
                            (find-files "share/cups" "\\.ppd$")))))))))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)))
+     (list autoconf automake))
     (inputs
      `(("cups" ,cups-minimal)))
     (synopsis "ESC/P-R printer driver")
@@ -1024,7 +1009,7 @@ obtained and installed separately.")
      '(;; Tests require CUPS to be running
        #:tests? #f))
     (inputs
-     `(("cups" ,cups)))
+     (list cups))
     (home-page "https://github.com/zdohnal/pycups")
     (synopsis "Python bindings for libcups")
     (description
