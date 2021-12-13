@@ -20478,7 +20478,7 @@ a system which relies on @code{%desktop-services}, you may use
 
 (operating-system
   @dots{}
-  (services %my-desktop-services)
+  (services %my-desktop-services))
 @end lisp
 @end defvr
 
