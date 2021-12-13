@@ -396,13 +396,13 @@ WSGI.  This package includes libraries for implementing ASGI servers.")
 (define-public python-aws-sam-translator
   (package
     (name "python-aws-sam-translator")
-    (version "1.38.0")
+    (version "1.40.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "aws-sam-translator" version))
               (sha256
                (base32
-                "1djwlsjpbh13m4biglimrm9lq7hmla0k29giay7k3cjsrylxvjhf"))))
+                "1hq5ggbzcq4k3ks439hki493w4sasgaxns6j5x57xsj822acalmf"))))
     (build-system python-build-system)
     (arguments
      `(;; XXX: Tests are not distributed with the PyPI archive, and would
@@ -415,13 +415,12 @@ WSGI.  This package includes libraries for implementing ASGI servers.")
                       ;; of dependencies, when it works fine with others.
                       (substitute* "requirements/base.txt"
                         (("(.*)(~=[0-9\\.]+)" all package version)
-                         package))
-                      #t)))))
+                         package)))))))
     (propagated-inputs
      `(("python-boto3" ,python-boto3)
        ("python-jsonschema" ,python-jsonschema)
        ("python-six" ,python-six)))
-    (home-page "https://github.com/awslabs/serverless-application-model")
+    (home-page "https://github.com/aws/serverless-application-model")
     (synopsis "Transform AWS SAM templates into AWS CloudFormation templates")
     (description
      "AWS SAM Translator is a library that transform @dfn{Serverless Application
@@ -496,8 +495,8 @@ emit information from within their applications to the AWS X-Ray service.")
 (define-public python-cfn-lint
   (package
     (name "python-cfn-lint")
-    (version "0.54.1")
-    (home-page "https://github.com/aws-cloudformation/cfn-python-lint")
+    (version "0.54.3")
+    (home-page "https://github.com/aws-cloudformation/cfn-lint")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -506,21 +505,26 @@ emit information from within their applications to the AWS X-Ray service.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "161mzzlpbi85q43kwzrj39qb32l6wg6xhnbbd4z860yrfbymsn87"))))
+                "106qf19n2k6sdjkb4006aidibd24qqiw901c1613xgjpnyw4dyl6"))))
     (build-system python-build-system)
     (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (replace 'check
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (let ((out (assoc-ref outputs "out")))
-                        ;; Remove test for the documentation update scripts
-                        ;; to avoid a dependency on 'git'.
-                        (delete-file
-                         "test/unit/module/maintenance/test_update_documentation.py")
-                        (delete-file
-                         "test/unit/module/maintenance/test_update_resource_specs.py")
-                        (invoke "python" "-m" "unittest" "discover" "-v"
-                                "-s" "test")))))))
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (let ((out (assoc-ref outputs "out")))
+                 ;; Remove test for the documentation update scripts
+                 ;; to avoid a dependency on 'git'.
+                 (delete-file
+                  "test/unit/module/maintenance/test_update_documentation.py")
+                 (delete-file
+                  "test/unit/module/maintenance/test_update_resource_specs.py")
+                 (add-installed-pythonpath inputs outputs)
+                 (setenv "PATH" (string-append out "/bin:"
+                                               (getenv "PATH")))
+                 (invoke "python" "-m" "unittest" "discover"
+                         "-s" "test"))))))))
     (native-inputs
      `(("python-pydot" ,python-pydot)
        ("python-mock" ,python-mock)))
@@ -2838,14 +2842,14 @@ supports url redirection and retries, and also gzip and deflate decoding.")
   (package
     ;; Note: updating awscli typically requires updating botocore as well.
     (name "awscli")
-    (version "1.20.64")
+    (version "1.21.11")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri name version))
        (sha256
         (base32
-         "0pl88y70rgwfprgv5gqkc2fcbasc9d0qyffl98l82bsc24d4c8b9"))))
+         "0fkivwbx4nind5b7l4jhqm5bb9drgqsclcslrg4aggf9rcs4g4s0"))))
     (build-system python-build-system)
     (arguments
      ;; FIXME: The 'pypi' release does not contain tests.
@@ -3384,10 +3388,11 @@ Betamax that may possibly end up in the main package.")
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _
-             ;; Some of the 'integration' tests require network access or
-             ;; login credentials.
-             (invoke "nosetests" "--exclude=integration"))))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               ;; Some of the 'integration' tests require network access or
+               ;; login credentials.
+               (invoke "nosetests" "--exclude=integration")))))))
     (native-inputs
      `(("python-docutils" ,python-docutils)
        ("python-mock" ,python-mock)

@@ -11416,9 +11416,9 @@ implementations of ASN.1-based codecs and protocols.")
 (define-public python2-pyasn1-modules
   (package-with-python2 python-pyasn1-modules))
 
-(define-public python2-ipaddress
+(define-public python-ipaddress
   (package
-    (name "python2-ipaddress")
+    (name "python-ipaddress")
     (version "1.0.23")
     (source (origin
               (method url-fetch)
@@ -11427,16 +11427,16 @@ implementations of ASN.1-based codecs and protocols.")
                (base32
                 "1qp743h30s04m3cg3yk3fycad930jv17q7dsslj4mfw0jlvf1y5p"))))
     (build-system python-build-system)
-    (arguments
-     `(#:python ,python-2))
     (home-page "https://github.com/phihag/ipaddress")
     (synopsis "IP address manipulation library")
     (description
       "This package provides a fast, lightweight IPv4/IPv6 manipulation library
  in Python.  This library is used to create, poke at, and manipulate IPv4 and
- IPv6 addresses and networks.  This is a port of the Python 3.3 ipaddress
- module to older versions of Python.")
+ IPv6 addresses and networks.")
     (license license:psfl)))
+
+(define-public python2-ipaddress
+  (package-with-python2 python-ipaddress))
 
 (define-public python-asn1tools
   (package
@@ -13385,32 +13385,40 @@ text.")
 (define-public python-moto
   (package
     (name "python-moto")
-    ;; XXX: Use a pre-release for compatibility with latest botocore & friends.
-    (version "1.3.16.dev134")
+    (version "2.2.12")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "moto" version))
               (sha256
                (base32
-                "1pix0c7zszjwzfy88n1rpih9vkdm25nqcvz93z850xvgwb4v81bd"))))
+                "0pvay0jp119lzzwf5qj5h6311271yq0w2i6344ds20grpf6g6gz8"))))
     (build-system python-build-system)
     (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'patch-hardcoded-executable-names
-                    (lambda _
-                      (substitute* "moto/batch/models.py"
-                        (("/bin/sh")
-                         (which "sh")))
-                      (substitute* (find-files "tests" "\\.py$")
-                        (("#!/bin/bash")
-                         (string-append "#!" (which "bash"))))
-                      #t))
-                  (replace 'check
-                    (lambda _
-                      (invoke "pytest" "-vv" "-m" "not network"
-                              ;; These tests require Docker.
-                              "-k" "not test_terminate_job \
-and not test_invoke_function_from_sqs_exception"))))))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-hardcoded-executable-names
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((bash-exec (search-input-file inputs "/bin/sh")))
+               (substitute* "moto/batch/models.py"
+                 (("/bin/sh") bash-exec))
+               (substitute* (find-files "tests" "\\.py$")
+                 (("#!/bin/bash") (string-append "#!" bash-exec))))))
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest" "-vv" "-m" "not network" "-k"
+                       (string-append
+                        ;; These tests require Docker.
+                        "not test_terminate_job"
+                        " and not test_invoke_function_from_sqs_exception"
+                        " and not test_rotate_secret_lambda_invocations"
+                        ;; These tests also require the network.
+                        " and not test_put_record_batch_http_destination"
+                        " and not test_put_record_http_destination"
+                        " and not test_dependencies"
+                        " and not test_cancel_running_job"
+                        " and not test_container_overrides"))))))))
     (native-inputs
      `(("python-flask" ,python-flask)
        ("python-flask-cors" ,python-flask-cors)
@@ -13418,6 +13426,8 @@ and not test_invoke_function_from_sqs_exception"))))))
        ("python-parameterized" ,python-parameterized)
        ("python-pytest" ,python-pytest)
        ("python-sure" ,python-sure)))
+    (inputs
+     `(("bash" ,bash-minimal)))
     (propagated-inputs
      `(("python-aws-xray-sdk" ,python-aws-xray-sdk)
        ("python-boto" ,python-boto)
@@ -13761,14 +13771,14 @@ This software is unmaintained, and new projects should use @code{boto3} instead.
   ;; are compatible.
   (package
     (name "python-botocore")
-    (version "1.21.64")
+    (version "1.22.11")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "botocore" version))
        (sha256
         (base32
-         "0z8cdv3lyr8vw452zqm1r8k4gz4sbzlsqwg6avc3zm6pvajdqc0a"))))
+         "1z7g2scyzvfq4yj9b4w911k7802ry1v6lqfnwq12l0ak7ywmsvrh"))))
     (build-system python-build-system)
     (arguments
      ;; FIXME: Many tests are failing.
@@ -13789,7 +13799,7 @@ interface to the Amazon Web Services (AWS) API.")
 (define-public python-boto3
   (package
     (name "python-boto3")
-    (version "1.18.64")
+    (version "1.19.11")
     (home-page "https://github.com/boto/boto3")
     (source (origin
               (method git-fetch)
@@ -13797,14 +13807,14 @@ interface to the Amazon Web Services (AWS) API.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "02hy80xfyxln5yr43cbrmq3kpkdijv8v228alz1x92y4gghnb8cj"))))
+                "1wv0ci2z5ywvm63dh4mp64vqyyvkm4qxc8dxv8ncrqiiphpgr9aq"))))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'delete-network-tests
            ;; Deleting integration tests because they are trying to connect to AWS.
-	   (lambda _
-	     (delete-file-recursively "tests/integration"))))))
+           (lambda _
+             (delete-file-recursively "tests/integration"))))))
     (build-system python-build-system)
     (native-inputs
      `(("python-nose" ,python-nose)

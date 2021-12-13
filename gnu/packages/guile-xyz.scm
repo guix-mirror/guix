@@ -556,7 +556,7 @@ you send to a FIFO file.")
 (define-public guile-dsv
   (package
     (name "guile-dsv")
-    (version "0.4.0")
+    (version "0.5.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -565,7 +565,7 @@ you send to a FIFO file.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "1mvyc8i38j56frjh3p6vwziv8lrzlyqndz30663h5nwcp0044sdn"))))
+                "0s9zan08ala7432pn44z3vmb3sc19rf18zfr9mskydnam5xn6qlw"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -581,21 +581,6 @@ you send to a FIFO file.")
        #:imported-modules ((guix build guile-build-system)
                            ,@%gnu-build-system-modules)
        #:phases (modify-phases %standard-phases
-                  (add-before 'configure 'set-guilesitedir
-                    (lambda _
-                      (substitute* "Makefile.in"
-                        (("^guilesitedir =.*$")
-                         "guilesitedir = \
-$(datadir)/guile/site/$(GUILE_EFFECTIVE_VERSION)\n"))
-                      (substitute* "modules/Makefile.in"
-                        (("^guilesitedir =.*$")
-                         "guilesitedir = \
-$(datadir)/guile/site/$(GUILE_EFFECTIVE_VERSION)\n"))
-                      (substitute* "modules/dsv/Makefile.in"
-                        (("^guilesitedir =.*$")
-                         "guilesitedir = \
-$(datadir)/guile/site/$(GUILE_EFFECTIVE_VERSION)\n"))
-                      #t))
                   (add-after 'install 'wrap-program
                     (lambda* (#:key inputs outputs #:allow-other-keys)
                       (let* ((out (assoc-ref outputs "out"))
@@ -4783,14 +4768,13 @@ locations.")
         (base32
          "0jcl6mzqy04if5drflmygmggbgzsxa42mlmskqb3cfqmksq0zj0y"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:tests? #f)); no tests
     (inputs
      `(("guile" ,guile-3.0)))
     (native-inputs
      `(("automake" ,automake)
        ("autoconf" ,autoconf)
        ("pkg-config" ,pkg-config)
+       ("guile" ,guile-3.0)                    ;for 'guild compile' + guile.m4
        ("texinfo" ,texinfo)))
     (home-page "https://git.lepiller.eu/guile-netlink")
     (synopsis "Netlink protocol implementation for Guile")

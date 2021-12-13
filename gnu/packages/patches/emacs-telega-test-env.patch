@@ -1,14 +1,24 @@
-Test Emacs environment on startup.
+From 237ea2471bb6521390bbac174ac2a8a5e9683e4d Mon Sep 17 00:00:00 2001
+From: Andrew Tropin <andrew@trop.in>
+Date: Tue, 7 Dec 2021 16:20:38 +0300
+Subject: [PATCH] Test Emacs environment on startup.
 
-Patch by Diego N. Barbato
+---
+ telega.el | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/telega.el	2020-02-07 17:07:18.549970090 +0100
-+++ b/telega.el	2020-02-07 17:10:08.383499765 +0100
-@@ -82,6 +82,7 @@
-   "Start telegramming.
- If prefix ARG is given, then will not pop to telega root buffer."
+diff --git a/telega.el b/telega.el
+index d6b28b5..40854ec 100644
+--- a/telega.el
++++ b/telega.el
+@@ -181,7 +181,7 @@ can't write to `telega-server-logfile'" logfile-dir)))
+ Pop to root buffer.
+ If `\\[universal-argument]' is specified, then do not pop to root buffer."
    (interactive "P")
+-
 +  (telega-test-env t)
-   (telega--create-hier)
- 
-   (unless (telega-server-live-p)
+   ;; For multiple accounts setup possibly select (if there is no
+   ;; default account declared) an account to use
+   (if (and telega-accounts (not (telega-account-current)))
+-- 
+2.34.0

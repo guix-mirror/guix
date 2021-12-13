@@ -2715,7 +2715,7 @@ a built-in wiki, built-in file browsing, built-in tickets system, etc.")
 (define-public stagit
   (package
     (name "stagit")
-    (version "0.9.6")
+    (version "1.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2724,7 +2724,7 @@ a built-in wiki, built-in file browsing, built-in tickets system, etc.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0hcf1rmsp9s6jjg1dypq7sa3dqmqg2q3x1kj23rb5gwrsb31vyfj"))))
+                "0j2242vx5pbwdv79gcjxdbrwii48qphr8gk1lk7szj2irxdql171"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; No tests

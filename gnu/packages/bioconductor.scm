@@ -1518,6 +1518,36 @@ data.  In addition, provides numerous plotting functions for commonly
 used visualizations.")
    (license license:artistic2.0)))
 
+(define-public r-dearseq
+  (package
+    (name "r-dearseq")
+    (version "1.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "dearseq" version))
+       (sha256
+        (base32
+         "07vr27rv3z86ajd62c0ilvfgz9z35qsiwwi5pv4sygbhnnjwh3rc"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-kernsmooth" ,r-kernsmooth)
+       ("r-matrixstats" ,r-matrixstats)
+       ("r-patchwork" ,r-patchwork)
+       ("r-pbapply" ,r-pbapply)
+       ("r-statmod" ,r-statmod)
+       ("r-survey" ,r-survey)
+       ("r-viridislite" ,r-kernsmooth)))
+    (home-page "https://github.com/borishejblum/dearseq")
+    (synopsis "DEA for RNA-seq data through a robust variance component test")
+    (description
+     "This is a package for Differential Expression Analysis of RNA-seq data.
+It features a variance component score test accounting for data
+heteroscedasticity through precision weights.  Perform both gene-wise and gene
+set analyses, and can deal with repeated or longitudinal data.")
+    (license license:gpl2)))
+
 (define-public r-decipher
   (package
     (name "r-decipher")
@@ -1638,6 +1668,41 @@ spent loading the full derfinder package when running the F-statistics
 calculation in parallel.")
     (license license:artistic2.0)))
 
+(define-public r-drimseq
+  (package
+    (name "r-drimseq")
+    (version "1.22.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "DRIMSeq" version))
+       (sha256
+        (base32 "0y2jb0hb633id038zmwnfny6h4ai77fdyy02f77vha1z8xg5nl02"))))
+    (properties `((upstream-name . "DRIMSeq")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-biocparallel" ,r-biocparallel)
+       ("r-edger" ,r-edger)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-iranges" ,r-iranges)
+       ("r-limma" ,r-limma)
+       ("r-mass" ,r-mass)
+       ("r-reshape2" ,r-reshape2)
+       ("r-s4vectors" ,r-s4vectors)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://bioconductor.org/packages/DRIMSeq")
+    (synopsis "Differential transcript usage and tuQTL analyses with Dirichlet-multinomial model in RNA-seq")
+    (description
+     "The package provides two frameworks.  One for the differential
+transcript usage analysis between different conditions and one for the tuQTL
+analysis.  Both are based on modeling the counts of genomic features (i.e.,
+transcripts) with the Dirichlet-multinomial distribution.  The package also
+makes available functions for visualization and exploration of the data and
+results.")
+    (license license:gpl3+)))
+
 (define-public r-bluster
   (package
    (name "r-bluster")
@@ -1720,6 +1785,59 @@ instances of the basic classes.  All classes in the package use consistent
 naming and share the same rich and consistent \"Vector API\" as much as
 possible.")
     (license license:artistic2.0)))
+
+(define-public r-isoformswitchanalyzer
+  (package
+    (name "r-isoformswitchanalyzer")
+    (version "1.16.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "IsoformSwitchAnalyzeR" version))
+       (sha256
+        (base32 "14bqf39gw5ab5r9sr3afkig1jbzdvds1bmcvc6bpb45kschx7fwf"))))
+    (properties `((upstream-name . "IsoformSwitchAnalyzeR")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-biostrings" ,r-biostrings)
+       ("r-bsgenome" ,r-bsgenome)
+       ("r-dbi" ,r-dbi)
+       ("r-dexseq" ,r-dexseq)
+       ("r-dplyr" ,r-dplyr)
+       ("r-drimseq" ,r-drimseq)
+       ("r-edger" ,r-edger)
+       ("r-futile-logger" ,r-futile-logger)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gridextra" ,r-gridextra)
+       ("r-iranges" ,r-iranges)
+       ("r-limma" ,r-limma)
+       ("r-magrittr" ,r-magrittr)
+       ("r-plyr" ,r-plyr)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-rcurl" ,r-rcurl)
+       ("r-readr" ,r-readr)
+       ("r-reshape2" ,r-reshape2)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-stringr" ,r-stringr)
+       ("r-tibble" ,r-tibble)
+       ("r-tximeta" ,r-tximeta)
+       ("r-tximport" ,r-tximport)
+       ("r-venndiagram" ,r-venndiagram)
+       ("r-xvector" ,r-xvector)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://bioconductor.org/packages/IsoformSwitchAnalyzeR/")
+    (synopsis "Analyze alternative splicing in RNA-seq data")
+    (description
+     "This is a package for the analysis of alternative splicing and isoform
+switches with predicted functional consequences (e.g. gain/loss of protein
+domains etc.) from quantification of all types of RNASeq by tools such as
+Kallisto, Salmon, StringTie, Cufflinks/Cuffdiff etc.")
+    (license license:gpl2+)))
 
 ;; This is a CRAN package, but it depends on r-biobase and r-limma from Bioconductor.
 (define-public r-absfiltergsea
@@ -6733,6 +6851,37 @@ equivalent of the @code{find_partition} function.  This package includes the
 required source code files from the official Leidenalg distribution and
 several functions from the R igraph package.")
       (license license:gpl3+))))
+
+(define-public r-sanssouci
+  ;; sansscouci doesn't have a (versioned) release yet.
+  ;; This is the latest commit as of packaging for Guix.
+  (let ((commit "5fe20a9aaf4ac637fa83d9cc73ff1c22de97ca6f")
+        (revision "1"))
+    (package
+      (name "r-sanssouci")
+      (version (git-version "0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/pneuvial/sanssouci.git")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "13ycdd790qw64qy2zdvcrpj3fc8as628rsly32438d3rifnlc5sk"))))
+      (build-system r-build-system)
+      (propagated-inputs
+       `(("r-generics" ,r-generics)
+         ("r-matrix" ,r-matrix)
+         ("r-matrixstats" ,r-matrixstats)
+         ("r-rcpp" ,r-rcpp)
+         ("r-rcpparmadillo" ,r-rcpparmadillo)))
+      (home-page "https://pneuvial.github.io/sanssouci")
+      (synopsis "Post Hoc multiple testing inference")
+      (description
+       "The goal of sansSouci is to perform post hoc inference: in a multiple
+testing context, sansSouci provides statistical guarantees on possibly
+user-defined and/or data-driven sets of hypotheses.")
+      (license license:gpl3))))
 
 (define-public r-monocle3
   (package

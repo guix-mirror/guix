@@ -7952,39 +7952,37 @@ solution for any project's interface needs:
     (license license:expat)))
 
 (define-public gmnisrv
-  (let ((commit "32854b79c73b278bf33eb5123abf1c36abdc7c01")
-        (revision "2"))
-    (package
-      (name "gmnisrv")
-      (version (git-version "0" revision commit))
-      (home-page "https://git.sr.ht/~sircmpwn/gmnisrv")
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url home-page)
-                      (commit commit)))
-                (sha256
-                 (base32
-                  "0lbb3ablwkdcgm1cjr1hikr55y8gpl420nh8b8g9wn4abhm2xgr9"))
-                (file-name (git-file-name name version))))
-      (build-system gnu-build-system)
-      (arguments
-       `(#:tests? #f ; no check target
-         #:configure-flags (list "--sysconfdir=/etc"
-                                 (string-append "--with-mimedb="
-                                                (assoc-ref %build-inputs "mailcap")
-                                                "/etc/mime.types"))
-         #:make-flags (list (string-append "CC=" ,(cc-for-target)))))
-      (inputs
-       `(("mailcap" ,mailcap)
-         ("openssl" ,openssl)))
-      (native-inputs
-       `(("pkg-config" ,pkg-config)
-         ("scdoc" ,scdoc)))
-      (synopsis "Simple Gemini protocol server")
-      (description "gmnisrv is a simple Gemini protocol server written in C.")
-      (license (list license:gpl3+
-                     license:bsd-3))))) ;; for ini.c and ini.h
+  (package
+    (name "gmnisrv")
+    (version "1.0")
+    (home-page "https://git.sr.ht/~sircmpwn/gmnisrv")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit version)))
+       (sha256
+        (base32 "115r1dw9k08r2nvygy8ll21qvsc5kmzi5jcqm7g7r8q8hifxglap"))
+       (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ;no check target
+       #:configure-flags (list "--sysconfdir=/etc"
+                               (string-append "--with-mimedb="
+                                              (assoc-ref %build-inputs "mailcap")
+                                              "/etc/mime.types"))
+       #:make-flags (list (string-append "CC=" ,(cc-for-target)))))
+    (inputs
+     `(("mailcap" ,mailcap)
+       ("openssl" ,openssl)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("scdoc" ,scdoc)))
+    (synopsis "Simple Gemini protocol server")
+    (description "gmnisrv is a simple Gemini protocol server written in C.")
+    (license (list license:gpl3+
+                   license:bsd-3)))) ;; for ini.c and ini.h
 
 (define-public libzim
   (package

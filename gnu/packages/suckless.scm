@@ -10,6 +10,7 @@
 ;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2021 Raghav Gururajan <rg@raghavgururajan.name>
 ;;; Copyright © 2021 Alexandru-Sergiu Marton <brown121407@posteo.ro>
+;;; Copyright © 2021 Nikolay Korotkiy <sikmir@disroot.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -963,3 +964,31 @@ running a command.")
 Single daemon and configuration file.  Log to stdout or syslog.  No mail
 support.")
     (license license:expat)))
+
+(define-public sfm
+  (package
+    (name "sfm")
+    (version "0.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "git://git.afify.dev/sfm.git")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0g6k884mggryld0k054sjcj6kpkbca9cvr50w98klszym73yw0sp"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ;no check target
+       #:make-flags
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "PREFIX=" %output))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))         ;no configure script
+    (home-page "https://github.com/afify/sfm")
+    (synopsis "Simple file manager")
+    (description "sfm is a simple file manager.")
+    (license license:isc)))

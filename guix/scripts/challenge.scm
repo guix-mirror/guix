@@ -35,10 +35,10 @@
   #:use-module (gcrypt hash)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
-  #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-37)
+  #:use-module (srfi srfi-71)
   #:use-module (ice-9 match)
   #:use-module (ice-9 vlist)
   #:use-module (ice-9 format)
@@ -196,65 +196,68 @@ taken since we do not import the archives."
 
 (define (port-sha256* port size)
   ;; Like 'port-sha256', but limited to SIZE bytes.
-  (let-values (((out get) (open-sha256-port)))
+  (let ((out get (open-sha256-port)))
     (dump-port* port out size)
     (close-port out)
     (get)))
 
 (define (archive-contents port)
-  "Return a list representing the files contained in the nar read from PORT."
-  (fold-archive (lambda (file type contents result)
-                  (match type
-                    ((or 'regular 'executable)
-                     (match contents
-                       ((port . size)
-                        (cons `(,file ,type ,(port-sha256* port size))
-                              result))))
-                    ('directory result)
-                    ('directory-complete result)
-                    ('symlink
-                     (cons `(,file ,type ,contents) result))))
-                '()
-                port
-                ""))
+  "Return a list representing the files contained in the nar read from PORT.
+The list is sorted in canonical order--i.e., the order in which entries appear
+in the nar."
+  (reverse
+   (fold-archive (lambda (file type contents result)
+                   (match type
+                     ((or 'regular 'executable)
+                      (match contents
+                        ((port . size)
+                         (cons `(,file ,type ,(port-sha256* port size))
+                               result))))
+                     ('directory result)
+                     ('directory-complete result)
+                     ('symlink
+                      (cons `(,file ,type ,contents) result))))
+                 '()
+                 port
+                 "")))
 
 (define (store-item-contents item)
   "Return a list of files and contents for ITEM in the same format as
 'archive-contents'."
-  (file-system-fold (const #t)                    ;enter?
-                    (lambda (file stat result)    ;leaf
-                      (define short
-                        (string-drop file (string-length item)))
+  (let loop ((file item))
+    (define stat
+      (lstat file))
 
-                      (match (stat:type stat)
-                        ('regular
-                         (let ((size (stat:size stat))
-                               (type (if (zero? (logand (stat:mode stat)
-                                                        #o100))
-                                         'regular
-                                         'executable)))
-                           (cons `(,short ,type
-                                          ,(call-with-input-file file
-                                             (cut port-sha256* <> size)))
-                                 result)))
-                        ('symlink
-                         (cons `(,short symlink ,(readlink file))
-                               result))))
-                    (lambda (directory stat result) result)  ;down
-                    (lambda (directory stat result) result)  ;up
-                    (lambda (file stat result) result)       ;skip
-                    (lambda (file stat errno result) result) ;error
-                    '()
-                    item
-                    lstat))
+    (define short
+      (string-drop file (string-length item)))
+
+    (match (stat:type stat)
+      ('regular
+       (let ((size (stat:size stat))
+             (type (if (zero? (logand (stat:mode stat)
+                                      #o100))
+                       'regular
+                       'executable)))
+         `((,short ,type
+                   ,(call-with-input-file file
+                      (cut port-sha256* <> size))))))
+      ('symlink
+       `((,short symlink ,(readlink file))))
+      ('directory
+       (append-map (match-lambda
+                     ((or "." "..")
+                      '())
+                     (entry
+                      (loop (string-append file "/" entry))))
+                   ;; Traverse entries in canonical order, the same as the
+                   ;; order of entries in nars.
+                   (scandir file (const #t) string<?))))))
 
 (define (call-with-nar narinfo proc)
   "Call PROC with an input port from which it can read the nar pointed to by
 NARINFO."
-  (let*-values (((uri compression size)
-                 (narinfo-best-uri narinfo))
-                ((port actual-size)
-                 (http-fetch uri)))
+  (let* ((uri compression size (narinfo-best-uri narinfo))
+         (port actual-size     (http-fetch uri)))
     (define reporter
       (progress-reporter/file (narinfo-path narinfo)
                               (and size

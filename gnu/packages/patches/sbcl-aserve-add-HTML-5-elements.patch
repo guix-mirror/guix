@@ -1,0 +1,63 @@
+From 940679fb75073a59186099e3dd7fb381e727db6b Mon Sep 17 00:00:00 2001
+From: Kevin Layer <layer@franz.com>
+Date: Thu, 31 Oct 2013 04:27:29 -0700
+Subject: [PATCH 1/2] rfe12668: add HTML 5 elements to htmlgen
+
+Add the new elements listed here:
+  http://www.w3.org/TR/html5-diff/#new-elements
+
+Change-Id: I7f64363751130644caf90ecdd65c13175d77ae97
+---
+ aserve/htmlgen/htmlgen.cl | 38 ++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 36 insertions(+), 2 deletions(-)
+
+diff --git a/aserve/htmlgen/htmlgen.cl b/aserve/htmlgen/htmlgen.cl
+index 59248ef..0c0d6e8 100644
+--- a/aserve/htmlgen/htmlgen.cl
++++ b/aserve/htmlgen/htmlgen.cl
+@@ -747,6 +747,40 @@
+ 
+ (def-std-html :var 	t nil)
+ 
+-(def-std-html :wbr  	nil nil)
+-
+ (def-std-html :xmp 	t nil)
++
++;; html 5
++
++(def-std-html :section		t nil)
++(def-std-html :article		t nil)
++(def-std-html :main		t nil)
++(def-std-html :aside		t nil)
++(def-std-html :hgroup		t nil)
++(def-std-html :header		t nil)
++(def-std-html :footer		t nil)
++(def-std-html :nav		t nil)
++(def-std-html :figure		t nil)
++(def-std-html :figcaption 	t nil)
++
++(def-std-html :video	 	t nil)
++(def-std-html :audio	 	t nil)
++(def-std-html :source	 	t nil)
++(def-std-html :track	 	t nil)
++(def-std-html :embed	 	t nil)
++(def-std-html :mark	 	t nil)
++(def-std-html :progress	 	t nil)
++(def-std-html :meter	 	t nil)
++(def-std-html :time	 	t nil)
++(def-std-html :data	 	t nil)
++(def-std-html :dialog	 	t nil)
++(def-std-html :ruby	 	t nil)
++(def-std-html :rt	 	t nil)
++(def-std-html :rp	 	t nil)
++(def-std-html :bdi	 	t nil)
++(def-std-html :wbr		nil nil)
++(def-std-html :canvas	 	t nil)
++(def-std-html :menuitem	 	t nil)
++(def-std-html :details	 	t nil)
++(def-std-html :datalist	 	t nil)
++(def-std-html :keygen	 	t nil)
++(def-std-html :output	 	t nil)
+-- 
+2.25.1
+

@@ -102,7 +102,7 @@
        ("java-asm-util" ,java-asm-util-8)
        ("java-classpathx-servletapi" ,java-classpathx-servletapi)
        ("java-commons-cli" ,java-commons-cli)
-       ("java-jansi" ,java-jansi)
+       ("java-jansi" ,java-jansi-1)
        ("java-jline-2" ,java-jline-2)
        ("java-picocli" ,java-picocli)
        ("java-xstream" ,java-xstream)))

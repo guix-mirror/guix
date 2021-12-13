@@ -7901,14 +7901,14 @@ JavaMail API.")
 (define-public java-log4j-api
   (package
     (name "java-log4j-api")
-    (version "2.4.1")
+    (version "2.15.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://apache/logging/log4j/" version
                                   "/apache-log4j-" version "-src.tar.gz"))
               (sha256
                (base32
-                "0j5p9gik0jysh37nlrckqbky12isy95cpwg2gv5fas1rcdqbraxd"))))
+                "0h4ndw096h9cql0kyi1zd0ymp8hqxc1jdgdxkn0kxf8vd9b4dx14"))))
     (build-system ant-build-system)
     (arguments
      `(#:tests? #f ; tests require unpackaged software
@@ -7929,6 +7929,7 @@ JavaMail API.")
      `(("java-osgi-core" ,java-osgi-core)
        ("java-hamcrest-core" ,java-hamcrest-core)
        ("java-junit" ,java-junit)))
+    (properties '((cpe-name . "log4j")))
     (home-page "https://logging.apache.org/log4j/2.x/")
     (synopsis "API module of the Log4j logging framework for Java")
     (description
@@ -7946,7 +7947,11 @@ Java.")
        ("java-log4j-api" ,java-log4j-api)
        ("java-mail" ,java-mail)
        ("java-jboss-jms-api-spec" ,java-jboss-jms-api-spec)
+       ("java-conversant-disruptor" ,java-conversant-disruptor)
        ("java-lmax-disruptor" ,java-lmax-disruptor)
+       ("java-jctools-core" ,java-jctools-core-1)
+       ("java-stax2-api" ,java-stax2-api)
+       ("java-jansi" ,java-jansi)
        ("java-kafka" ,java-kafka-clients)
        ("java-datanucleus-javax-persistence" ,java-datanucleus-javax-persistence)
        ("java-fasterxml-jackson-annotations" ,java-fasterxml-jackson-annotations)
@@ -7993,6 +7998,7 @@ logging framework for Java.")))
     (inputs
      `(("log4j-api" ,java-log4j-api)
        ("log4j-core" ,java-log4j-core)
+       ("java-jboss-jms-api-spec" ,java-jboss-jms-api-spec)
        ("osgi-core" ,java-osgi-core)
        ("eclipse-osgi" ,java-eclipse-osgi)
        ("java-lmax-disruptor" ,java-lmax-disruptor)))))
@@ -11377,15 +11383,16 @@ programming language.")
 (define-public java-lmax-disruptor
   (package
     (name "java-lmax-disruptor")
-    (version "3.3.7")
+    (version "3.4.4")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/LMAX-Exchange/disruptor/"
-                                  "archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/LMAX-Exchange/disruptor")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "17da2gwj5abnlsfgn2xqjk5lgzbg4vkb0hdv2dvc8r2fx4bi7w3g"))))
+                "02c5kp3n8a73dq9ay7ar53s1k3x61z9yzc5ikqb03m6snr1wpfqn"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "java-lmax-disruptor.jar"
@@ -11407,6 +11414,68 @@ programming language.")
     (description "LMAX Disruptor is a software pattern and software component
 for high performance inter-thread communication that avoids the need for
 message queues or resource locking.")
+    (license license:asl2.0)))
+
+(define-public java-conversant-disruptor
+  (package
+    (name "java-conversant-disruptor")
+    (version "1.2.19")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/conversant/disruptor")
+                     (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0gx1dm7sfg7pa05cs4qby10gfcplai5b5lf1f7ik1a76dh3vhl0g"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-conversant-disruptor.jar"
+       #:source-dir "src/main/java"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-resources
+           (lambda _
+            (copy-recursively "src/main/resources" "build/classes")))
+         (add-before 'build 'remove-module
+           (lambda _
+             (delete-file "src/main/java/module-info.java"))))))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (home-page "https://github.com/conversant/disruptor")
+    (synopsis "High performance intra-thread communication")
+    (description "Conversant Disruptor is the highest performing intra-thread
+transfer mechanism available in Java.  Conversant Disruptor is an implementation
+of this type of ring buffer that has almost no overhead and that exploits a
+particularly simple design.")
+    (license license:asl2.0)))
+
+(define-public java-jctools-core-1
+  (package
+    (name "java-jctools-core")
+    (version "1.2.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/JCTools/JCTools")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "105my29nwd4djvdllmq8s3jdzbyplbkxzwmddxiiilb4yqr1pghb"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-jctools-core.jar"
+       #:source-dir "jctools-core/src/main/java"
+       #:test-dir "jctools-core/src/test"))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-all" ,java-hamcrest-all)))
+    (home-page "https://github.com/JCTools/JCTools")
+    (synopsis "Concurrency tools for Java")
+    (description "This library implements concurrent data structures that are
+not natively available in Java.")
     (license license:asl2.0)))
 
 (define-public java-commons-bcel
@@ -12193,15 +12262,79 @@ console output.")
 (define-public java-jansi
   (package
     (name "java-jansi")
-    (version "1.16")
+    (version "2.4.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/fusesource/jansi/archive/"
-                                  "jansi-project-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/fusesource/jansi")
+                     (commit (string-append "jansi-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "11kh3144i3fzp21dpy8zg52mjmsr214k7km9p8ly0rqk2px0qq2z"))))
+                "1s6fva06990798b5fyxqzr30zwyj1byq5wrm54j2larcydaryggf"))
+              (modules '((guix build utils)))
+              (snippet
+                ;; contains pre-compiled libraries
+                '(delete-file-recursively
+                   "src/main/resources/org/fusesource/jansi/internal"))))
     (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "jansi.jar"
+       #:source-dir "src/main/java"
+       #:test-dir "src/test"
+       #:tests? #f; require junit 3
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'build-native
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "src/main/native"
+               (for-each
+                 (lambda (cfile)
+                   (let ((cfile (basename cfile))
+                         (ofile (string-append (basename cfile ".c") ".o")))
+                     (invoke ,(cc-for-target) "-c" cfile "-o" ofile
+                             (string-append "-I" (assoc-ref inputs "jdk")
+                                            "/include/linux")
+                             "-fPIC" "-O2")))
+                 (find-files "." "\\.c$"))
+               (apply invoke ,(cc-for-target) "-o" "libjansi.so" "-shared"
+                      (find-files "." "\\.o$")))))
+         (add-before 'build 'install-native
+           (lambda _
+             (let ((dir (string-append "build/classes/org/fusesource/"
+                                       "jansi/internal/native/"
+                                       ,(match (or (%current-target-system) (%current-system))
+                                          ("i686-linux" "Linux/x86")
+                                          ("x86_64-linux" "Linux/x86_64")
+                                          ("armhf-linux" "Linux/armv7")
+                                          ("aarch64-linux" "Linux/arm64")
+                                          ("mips64el-linux" "Linux/mips64")
+                                          (_ "unknown-kernel")))))
+               (install-file "src/main/native/libjansi.so" dir))))
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively "src/main/resources" "build/classes")))
+         (replace 'install
+           (install-from-pom "pom.xml")))))
+    (home-page "https://fusesource.github.io/jansi/")
+    (synopsis "Portable ANSI escape sequences")
+    (description "Jansi is a Java library that allows you to use ANSI escape
+sequences to format your console output which works on every platform.")
+    (license license:asl2.0)))
+
+(define-public java-jansi-1
+  (package
+    (inherit java-jansi)
+    (version "1.16")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/fusesource/jansi")
+                     (commit (string-append "jansi-project-" version))))
+              (file-name (git-file-name "jansi" version))
+              (sha256
+               (base32
+                "0ikk0x352gh30b42qn1jd89xwsjj0mavrc5kms7fss15bd8vsayx"))))
     (arguments
      `(#:jar-name "jansi.jar"
        #:source-dir "jansi/src/main/java"
@@ -12232,12 +12365,7 @@ console output.")
      `(("java-jansi-native" ,java-jansi-native)))
     (native-inputs
      `(("java-junit" ,java-junit)
-       ("java-hamcrest-core" ,java-hamcrest-core)))
-    (home-page "https://fusesource.github.io/jansi/")
-    (synopsis "Portable ANSI escape sequences")
-    (description "Jansi is a Java library that allows you to use ANSI escape
-sequences to format your console output which works on every platform.")
-    (license license:asl2.0)))
+       ("java-hamcrest-core" ,java-hamcrest-core)))))
 
 (define-public java-jboss-el-api-spec
   (package
@@ -12600,7 +12728,7 @@ features that bring it on par with the Z shell line editor.")
      `(#:jdk ,icedtea-8
        ,@(package-arguments java-jline)))
     (inputs
-     `(("java-jansi" ,java-jansi)
+     `(("java-jansi" ,java-jansi-1)
        ("java-jansi-native" ,java-jansi-native)))
     (native-inputs
      `(("java-powermock-modules-junit4" ,java-powermock-modules-junit4)

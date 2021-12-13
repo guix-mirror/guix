@@ -13863,6 +13863,39 @@ commands are bound to keys reachable with the left hand and movement keys are
 reached with the right hand.")
     (license license:gpl3+)))
 
+(define-public emacs-cc-mode
+  (package
+   (name "emacs-cc-mode")
+   (version "5.35")
+   (source
+    (origin
+     (method hg-fetch)
+     (uri (hg-reference
+           (url "http://hg.code.sf.net/p/cc-mode/cc-mode")
+           (changeset
+            (string-append "Release_"
+                           (string-replace-substring version "." "_")))))
+     (file-name (hg-file-name name version))
+     (sha256
+      (base32 "03cvl61baccx57zd62nz2wy4hvij5hl2syg7byaxgrs4c7grr414"))))
+   (build-system emacs-build-system)
+   (arguments
+    '(#:tests? #t
+      #:test-command '("make" "test")
+      #:phases
+      (modify-phases %standard-phases
+        (add-before 'install 'make-info
+          (lambda _
+            (invoke "make" "info"))))))
+   (native-inputs
+    `(("texinfo" ,texinfo)))
+   (home-page "http://cc-mode.sourceforge.net/")
+   (synopsis "Framework for creating major modes for C-style languages")
+   (description
+    "CC Mode is an Emacs and XEmacs mode for editing C and other languages with
+similar syntax; currently C++, Objective-C, Java, CORBA's IDL, Pike, and AWK.")
+   (license license:gpl3+)))
+
 (define-public emacs-csharp-mode
   (package
     (name "emacs-csharp-mode")
@@ -21400,30 +21433,27 @@ package recipes.")
     (license license:gpl3+)))
 
 (define-public emacs-dpd
-  ;; XXX: Upstream does not use tag yet.  Version is extracted from "dpd.el".
-  (let ((commit "f53f251a58859f375617ce4f257fecc83c8ca5da")
-        (revision "0"))
-    (package
-      (name "emacs-dpd")
-      (version (git-version "0.1.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://gitlab.com/lilyp/emacs-dpd")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "1nislvaxjb53x2ah330szcca4d595npx6zxrrwa5xximj6365wk0"))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-packed" ,emacs-packed)))
-      (home-page "https://gitlab.com/lilyp/emacs-dpd")
-      (synopsis "Deliver packages to package.el")
-      (description
-       "This package provides tools for generating package-desc structures and
+  (package
+    (name "emacs-dpd")
+    (version "0.2.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/lilyp/emacs-dpd")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0wrqmpfcqp87dr5blpskf9kvm9slvffldqfxx77n15gcw516zzc8"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-packed" ,emacs-packed)))
+    (home-page "https://gitlab.com/lilyp/emacs-dpd")
+    (synopsis "Deliver packages to package.el")
+    (description
+     "This package provides tools for generating package-desc structures and
 feeding them to package.el library.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-picpocket
   (let ((version "41")
@@ -27135,55 +27165,57 @@ other @code{helm-type-file} sources such as @code{helm-locate}.")
     (license license:gpl3+)))
 
 (define-public emacs-telega-server
-  (package
-    (name "emacs-telega-server")
-    (version "0.7.031")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/zevlg/telega.el")
-             (commit (string-append "v" version))))
-       (sha256
-        (base32 "05j82796s4k3yr0igl6hir3p8qj0cw66vvhbpbcy28d6q9v9vjjz"))
-       (file-name (git-file-name "emacs-telega" version))
-       (patches
-        (search-patches "emacs-telega-path-placeholder.patch"
-                        "emacs-telega-test-env.patch"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:make-flags
-       (list (string-append "CC=" ,(cc-for-target))
-             (string-append "INSTALL_PREFIX="
-                            (assoc-ref %outputs "out") "/bin"))
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'enter-subdirectory
-           (lambda _ (chdir "server") #t))
-         (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (substitute* "run_tests.py"
-                 (("^(TELEGA_SERVER = ).*$" _all prefix)
-                  (string-append prefix
-                                 "\"" out "/bin/telega-server\"\n"))))))
-         (delete 'check)
-         (add-after 'install 'check
-           (assoc-ref %standard-phases 'check))
-         (add-before 'install-license-files 'leave-subdirectory
-           (lambda _ (chdir "..") #t)))
-       #:test-target "test"))
-    (inputs
-     `(("tdlib" ,tdlib)
-       ("libappindicator" ,libappindicator)))
-    (native-inputs
-     `(("python" ,python)
-       ("pkg-config" ,pkg-config)))
-    (home-page "https://zevlg.github.io/telega.el/")
-    (synopsis "Server process of Telega")
-    (description "Telega-server is helper program to interact with Telegram
+  (let ((commit "b4a5e206bd259f3d7f7633a725b2990704d6a1e8")
+        (revision "1"))
+    (package
+      (name "emacs-telega-server")
+      (version (git-version  "0.7.15" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/zevlg/telega.el")
+               (commit commit)))
+         (sha256
+          (base32 "0gr4nmpk175hxmj357bpzaqywbjc6dmmvfxnyzkh884vyzbwdxlc"))
+         (file-name (git-file-name "emacs-telega" version))
+         (patches
+          (search-patches "emacs-telega-path-placeholder.patch"
+                          "emacs-telega-test-env.patch"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:make-flags
+         (list (string-append "CC=" ,(cc-for-target))
+               (string-append "INSTALL_PREFIX="
+                              (assoc-ref %outputs "out") "/bin"))
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'configure 'enter-subdirectory
+             (lambda _ (chdir "server")))
+           (replace 'configure
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 (substitute* "run_tests.py"
+                   (("^(TELEGA_SERVER = ).*$" _all prefix)
+                    (string-append prefix
+                                   "\"" out "/bin/telega-server\"\n"))))))
+           (delete 'check)
+           (add-after 'install 'check
+             (assoc-ref %standard-phases 'check))
+           (add-before 'install-license-files 'leave-subdirectory
+             (lambda _ (chdir ".."))))
+         #:test-target "test"))
+      (inputs
+       `(("tdlib" ,tdlib)
+         ("libappindicator" ,libappindicator)))
+      (native-inputs
+       `(("python" ,python)
+         ("pkg-config" ,pkg-config)))
+      (home-page "https://zevlg.github.io/telega.el/")
+      (synopsis "Server process of Telega")
+      (description "Telega-server is helper program to interact with Telegram
 service, and connect it with Emacs via inter-process communication.")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public emacs-telega
   (package
@@ -27217,7 +27249,7 @@ service, and connect it with Emacs via inter-process communication.")
                                  "\"" ffmpeg-bin "\")"))))))
          (add-after 'unpack 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (substitute* "telega-server.el"
+             (substitute* "telega-customize.el"
                (("@TELEGA_SERVER_BIN@")
                 (search-input-file inputs "/bin/telega-server")))
              (substitute* "telega-util.el"
@@ -29737,7 +29769,7 @@ released, and track their progress in watching a series.")
 (define-public emacs-webpaste
   (package
     (name "emacs-webpaste")
-    (version "3.2.1")
+    (version "3.2.2")
     (source
      (origin
        (method git-fetch)
@@ -29746,8 +29778,7 @@ released, and track their progress in watching a series.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1d481pdnh7cnbyka7wn59czlci63zwfqms8n515svg92qm573ckd"))))
+        (base32 "07hj9nr7x6c9w2dnvc58cfbprgp9cqzdxflp5qlpglzdw0bi9s3c"))))
     (build-system emacs-build-system)
     (arguments
      `(#:tests? #t

@@ -55,6 +55,44 @@
   #:use-module (gnu packages tmux)
   #:use-module (gnu packages vim))
 
+(define-public ascii
+  (package
+    (name "ascii")
+    (version "3.18")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.catb.org/~esr/ascii/"
+                                  "ascii-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0b87vy06s8s3a8q70pqavsbk4m4ff034sdml2xxa6qfsykaj513j"))))
+    (build-system gnu-build-system)
+    (arguments `(#:make-flags
+                 (list (string-append "CC=" ,(cc-for-target))
+                       (string-append "PREFIX=" %output))
+                 #:phases
+                 (modify-phases %standard-phases
+                   (delete 'configure)
+                   (add-before 'install 'create-directories
+                     (lambda* (#:key outputs #:allow-other-keys)
+                       (let* ((out (assoc-ref outputs "out"))
+                              (bin (string-append out "/bin"))
+                              (man1 (string-append out "/share/man/man1")))
+                         (mkdir-p bin)
+                         (mkdir-p man1)))))
+                 #:tests? #f))
+    (home-page "http://www.catb.org/~esr/ascii/")
+    (synopsis "ASCII name and synonym chart")
+    (description
+      "The @code{ascii} utility provides easy conversion between various byte
+representations and the American Standard Code for Information Interchange
+(ASCII) character table.  It knows about a wide variety of hex, binary, octal,
+Teletype mnemonic, ISO/ECMA code point, slang names, XML entity names, and
+other representations.  Given any one on the command line, it will try to
+display all others.  Called with no arguments it displays a handy small ASCII
+chart.")
+    (license license:bsd-2)))
+
 (define-public boxes
   (package
     (name "boxes")

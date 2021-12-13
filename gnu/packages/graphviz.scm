@@ -10,6 +10,7 @@
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2021 Bonface Munyoki Kilyungi <me@bonfacemunyoki.com>
+;;; Copyright © 2021 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -442,3 +443,45 @@ This approach allows:
 @item Using backend specific styles to customize the output
 @end itemize")
     (license license:expat)))
+
+(define-public gprof2dot
+  (package
+    (name "gprof2dot")
+    (version "2021.02.21")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jrfonseca/gprof2dot")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1jjhsjf5fdi1fkn7mvhnzkh6cynl8gcjrygd3cya5mmda3akhzic"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "python" "tests/test.py")))))))
+    (native-inputs
+     `(("graphviz" ,graphviz)))
+    (home-page "https://github.com/jrfonseca/gprof2dot")
+    (synopsis "Generate a dot graph from the output of several profilers")
+    (description "This package provides a Python script to convert the output
+from many profilers into a dot graph.
+
+It can:
+
+@itemize
+
+@item prune nodes and edges below a certain threshold;
+@item use an heuristic to propagate time inside mutually recursive functions;
+@item use color efficiently to draw attention to hot-spots;
+@item work on any platform where Python and Graphviz is available.
+
+@end itemize")
+    (license license:lgpl3+)))

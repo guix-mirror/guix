@@ -144,7 +144,9 @@ must contain the original contents of a narinfo file."
                    (map (lambda (url)
                           (or (string->uri url)
                               (string->uri
-                               (string-append cache-url "/" url))))
+                               (if (string-suffix? "/" cache-url)
+                                   (string-append cache-url url)
+                                   (string-append cache-url "/" url)))))
                         urls)
                    compressions
                    (match file-sizes

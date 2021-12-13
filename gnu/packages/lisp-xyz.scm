@@ -93,6 +93,7 @@
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages sqlite)
+  #:use-module (gnu packages statistics)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages video)
@@ -2112,7 +2113,7 @@ writing code that contains string literals that contain code themselves.")
 (define-public sbcl-slime-swank
   (package
     (name "sbcl-slime-swank")
-    (version "2.26")
+    (version "2.26.1")
     (source
      (origin
        (file-name (git-file-name "slime-swank" version))
@@ -2122,7 +2123,7 @@ writing code that contains string literals that contain code themselves.")
              (commit (string-append "v" version))))
        (sha256
         (base32
-         "0mxb1wnw19v0s72w2wkz5afdlzvpy5nn7pr4vav403qybac0sw5c"))))
+         "1a25ixb7q4svqabxnhwkk43v47mbsh13qwm7qlazkd3zkr8j3cli"))))
     (build-system asdf-build-system/sbcl)
     (arguments
      '(#:asd-systems '("swank")))
@@ -2185,7 +2186,7 @@ With the simplistic tools provided, one may accomplish similar effects as with
 Literate Programming, but documentation is generated from code, not vice versa
 and there is no support for chunking yet.  Code is first, code must look
 pretty, documentation is code.")
-      (home-page "http://quotenil.com/")
+      (home-page "https://melisgl.github.io/mgl-pax/")
       (license license:expat))))
 
 (define-public cl-mgl-pax
@@ -12638,25 +12639,28 @@ XML to Lisp structures or s-expressions and back.")
          ((#:tests? _ #f) #f))))))
 
 (define-public sbcl-geco
-  (package
-    (name "sbcl-geco")
-    (version "2.1.1")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/gpwwjr/GECO")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name "geco" version))
-       (sha256
-        (base32 "1rc8a4mk40hjx5qy980hjylv6xxqdbq38hg8c4w30y93abfd519s"))))
-    (build-system asdf-build-system/sbcl)
-    (home-page "http://hiwaay.net/~gpw/geco/geco.html")
-    (synopsis "Genetic algorithm toolkit for Common Lisp")
-    (description
-     "GECO (Genetic Evolution through Combination of Objects) is an extensible,
-object-oriented framework for prototyping genetic algorithms in Common Lisp.")
-    (license license:lgpl2.1+)))
+  (let ((commit "db13c9384491092975f46f6a837ccdc04681a93a")
+        (revision "1"))
+    (package
+      (name "sbcl-geco")
+      (version (git-version "2.1.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/gpwwjr/GECO")
+               (commit commit)))
+         (file-name (git-file-name "cl-geco" version))
+         (sha256
+          (base32 "1ncaf9ab7jz59zmga0p97blsjjb1m6db0qih57wipfhqdb5ylz17"))))
+      (build-system asdf-build-system/sbcl)
+      (home-page "https://github.com/gpwwjr/GECO")
+      (synopsis "Genetic algorithm toolkit for Common Lisp")
+      (description
+       "GECO (Genetic Evolution through Combination of Objects) is an
+extensible, object-oriented framework for prototyping genetic algorithms in
+Common Lisp.")
+      (license license:lgpl2.0+))))
 
 (define-public cl-geco
   (sbcl-package->cl-source-package sbcl-geco))
@@ -17890,10 +17894,11 @@ functions allow Lisp programs to explore the web.")
 
 (define-public sbcl-aserve
   ;; There does not seem to be proper releases.
-  (let ((commit "cac1d6920998ddcbee8310a873414732e707d8e5"))
+  (let ((commit "cac1d6920998ddcbee8310a873414732e707d8e5")
+        (revision "2"))
     (package
       (name "sbcl-aserve")
-      (version (git-version "1.2.50" "1" commit))
+      (version (git-version "1.2.50" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -17904,7 +17909,14 @@ functions allow Lisp programs to explore the web.")
                (commit commit)))
          (file-name (git-file-name "aserve" version))
          (sha256
-          (base32 "0ak6mqp84sjr0a7h5svr16vra4bf4fcx6wpir0n88dc1vjwy5xqa"))))
+          (base32 "0ak6mqp84sjr0a7h5svr16vra4bf4fcx6wpir0n88dc1vjwy5xqa"))
+         (patches (search-patches
+                   ;; Add HTML5 elements to htmlgen.
+                   ;; Adapted from https://github.com/franzinc/aserve/ commits:
+                   ;; * e47bd763: "rfe12668: add HTML 5 elements to htmlgen"
+                   ;; * 7371ce59: "fix bugs in rfe12668 implementation"
+                   "sbcl-aserve-add-HTML-5-elements.patch"
+                   "sbcl-aserve-fix-rfe12668.patch"))))
       (build-system asdf-build-system/sbcl)
       (arguments
        `(#:phases
@@ -17925,7 +17937,8 @@ functions allow Lisp programs to explore the web.")
                #t)))))
       (inputs
        `(("acl-compat" ,sbcl-acl-compat)))
-      (home-page "https://franz.com/support/documentation/current/doc/aserve/aserve.html")
+      (home-page
+       "https://franz.com/support/documentation/current/doc/aserve/aserve.html")
       (synopsis "AllegroServe, a web server written in Common Lisp")
       (description
        "The server part of AllegroServe can be used either as a standalone web
@@ -19349,6 +19362,225 @@ command in Common Lisp.")
 (define-public ecl-which
   (sbcl-package->ecl-package sbcl-which))
 
+(define-public sbcl-cl-num-utils
+  (let ((commit "97a88cd34540acf52e872a82ebfef3da0a34fa12")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-num-utils")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/tpapp/cl-num-utils")
+               (commit commit)))
+         (file-name (git-file-name "cl-num-utils" version))
+         (sha256
+          (base32 "15ihsxxs76xnldmqfsbxybckqjwrxwcpphgghiwzr2mnbqjpdqkh"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("anaphora" ,sbcl-anaphora)
+         ("alexandria" ,sbcl-alexandria)
+         ("array-operations" ,sbcl-array-operations)
+         ("cl-slice" ,sbcl-cl-slice)
+         ("let-plus" ,sbcl-let-plus)))
+      (native-inputs
+       `(("clunit" ,sbcl-clunit)))
+      (home-page "https://github.com/tpapp/cl-num-utils")
+      (synopsis "Numerical utilities for Common Lisp")
+      (description
+       "@code{cl-num-utils} implements simple numerical functions for Common
+Lisp, including:
+@itemize
+@item @code{num=}, a comparison operator for floats
+@item simple arithmeric functions, like @code{sum} and @code{l2norm}
+@item elementwise operations for arrays
+@item intervals
+@item special matrices and shorthand for their input
+@item sample statistics
+@item Chebyshev polynomials
+@item univariate rootfinding
+@end itemize")
+      (license license:boost1.0))))
+
+(define-public cl-num-utils
+  (sbcl-package->cl-source-package sbcl-cl-num-utils))
+
+(define-public ecl-cl-num-utils
+  (sbcl-package->ecl-package sbcl-cl-num-utils))
+
+(define-public sbcl-lla
+  (let ((commit "ded805d1e9b1493e17b601116ba9bd8a3de3024f")
+        (revision "1"))
+    (package
+      (name "sbcl-lla")
+      (version (git-version "0.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/tpapp/lla")
+               (commit commit)))
+         (file-name (git-file-name "cl-lla" version))
+         (sha256
+          (base32 "0n9vc7dnyjbbsv1n7rd8sylwda5fsdf8f890g4nachanyx0xps9k"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "src/configuration.lisp"
+                 (("\"libblas.so.3gf\"")
+                  (string-append "\"" (assoc-ref inputs "lapack")
+                                 "/lib/libblas.so\""))
+                 (("\"liblapack.so.3gf\"")
+                  (string-append "\"" (assoc-ref inputs "lapack")
+                                 "/lib/liblapack.so\""))))))))
+      (inputs
+       `(("anaphora" ,sbcl-anaphora)
+         ("alexandria" ,sbcl-alexandria)
+         ("cffi" ,sbcl-cffi)
+         ("cl-num-utils" ,sbcl-cl-num-utils)
+         ("cl-slice" ,sbcl-cl-slice)
+         ("lapack" ,lapack)
+         ("let-plus" ,sbcl-let-plus)))
+      (native-inputs
+       `(("clunit" ,sbcl-clunit)))
+      (home-page "https://github.com/tpapp/lla")
+      (synopsis "Linear algebra library for Common Lisp")
+      (description
+       "LLA is a high-level Common Lisp library built on BLAS and LAPACK, but
+providing a much more abstract interface with the purpose of freeing the user
+from low-level concerns and reducing the number of bugs in numerical code.")
+      (license license:boost1.0))))
+
+(define-public cl-lla
+  (sbcl-package->cl-source-package sbcl-lla))
+
+(define-public ecl-lla
+  (sbcl-package->ecl-package sbcl-lla))
+
+(define-public sbcl-cl-rmath
+  (let ((commit "f6add1edda31547691d08e36ccf6c17305161aca")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-rmath")
+      (version (git-version "0.0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/tpapp/cl-rmath")
+               (commit commit)))
+         (file-name (git-file-name "cl-rmath" version))
+         (sha256
+          (base32 "1ld8vbpy10paymx2hn0mcgd21i7cjhdrayln1jx0kayqxm12mmk4"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "cl-rmath.lisp"
+                 (("\\(cffi:define-foreign-library librmath" all)
+                  (string-append all "\n"
+                                 "  (:unix \""
+                                 (assoc-ref inputs "librmath")
+                                 "/lib/libRmath.so\")"))))))))
+      (inputs
+       `(("cffi" ,sbcl-cffi)
+         ("librmath" ,rmath-standalone)))
+      (home-page "https://github.com/tpapp/cl-rmath")
+      (synopsis "Common Lisp wrapper for libRmath")
+      (description
+       "@code{cl-rmath} is a simple, autogenerated foreign interface for the
+standalone R API @code{libRmath}.  There has been no effort to provide a
+high-level interface for the original library, instead, this library is meant
+to serve as a building block for such an interface.")
+      (license license:boost1.0))))
+
+(define-public cl-rmath
+  (sbcl-package->cl-source-package sbcl-cl-rmath))
+
+(define-public ecl-cl-rmath
+  (sbcl-package->ecl-package sbcl-cl-rmath))
+
+(define-public sbcl-cl-random
+  (let ((commit "5bb65911037f95a4260bd29a594a09df3849f4ea")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-random")
+      (version (git-version "0.0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/tpapp/cl-random")
+               (commit commit)))
+         (file-name (git-file-name "cl-random" version))
+         (sha256
+          (base32 "0jn80xphyvyp2v72acr6b8a2f6dw06myr5vrjfl14brsvks7wr89"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("anaphora" ,sbcl-anaphora)
+         ("array-operations" ,sbcl-array-operations)
+         ("cl-num-utils" ,sbcl-cl-num-utils)
+         ("cl-rmath" ,sbcl-cl-rmath)
+         ("cl-slice" ,sbcl-cl-slice)
+         ("gsll" ,sbcl-gsll)
+         ("let-plus" ,sbcl-let-plus)
+         ("lla" ,sbcl-lla)))
+      (native-inputs
+       `(("clunit" ,sbcl-clunit)))
+      (home-page "https://github.com/tpapp/cl-random")
+      (synopsis "Random variates for Common Lisp")
+      (description
+       "@code{cl-random} is a library for generating random draws from various
+commonly used distributions, and for calculating statistical functions, such as
+density, distribution and quantiles for these distributions.")
+      (license license:expat))))
+
+(define-public cl-random
+  (sbcl-package->cl-source-package sbcl-cl-random))
+
+(define-public ecl-cl-random
+  (sbcl-package->ecl-package sbcl-cl-random))
+
+(define-public sbcl-mgl-gpr
+  (let ((commit "cb6ce51e2f87bf1d589f3703c13eea6e25780afe")
+        (revision "1"))
+    (package
+      (name "sbcl-mgl-gpr")
+      (version (git-version "0.0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/melisgl/mgl-gpr")
+               (commit commit)))
+         (file-name (git-file-name "cl-mgl-gpr" version))
+         (sha256
+          (base32 "0w51dqixh277k6sl8bqvvp1400y6kd1l5h3d9q2f40l9bpxy8gjx"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("cl-random" ,sbcl-cl-random)
+         ("mgl-pax" ,sbcl-mgl-pax)))
+      (home-page "https://melisgl.github.io/mgl-gpr/")
+      (synopsis "Common Lisp library of evolutionary algorithms")
+      (description
+       "@code{MGL-GPR} is a library of evolutionary algorithms such as
+Genetic Programming (evolving typed expressions from a set of operators and
+constants) and Differential Evolution.")
+      (license license:expat))))
+
+(define-public cl-mgl-gpr
+  (sbcl-package->cl-source-package sbcl-mgl-gpr))
+
+(define-public ecl-mgl-gpr
+  (sbcl-package->ecl-package sbcl-mgl-gpr))
+
 (define-public sbcl-cl-tld
   ;; No release.
   (let ((commit "f5014da8d831fa9481d4181d4450f10a52850c75"))
@@ -19768,6 +20000,36 @@ score.  When evaluated, the musical score is rendered to an image.")
 (define-public ecl-cmn
   (sbcl-package->ecl-package sbcl-cmn))
 
+(define-public sbcl-core-gp
+  (let ((commit "90ec1c4599a19c5a911be1f703f78d5108aee160")
+        (revision "1"))
+    (package
+      (name "sbcl-core-gp")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/jorgetavares/core-gp")
+               (commit commit)))
+         (file-name (git-file-name "cl-core-gp" version))
+         (sha256
+          (base32 "0nzlb2gwqisa1amlpl4zc5xxph2g3qwhfyaxchci67d31rzws6l3"))))
+      (build-system asdf-build-system/sbcl)
+      (home-page "https://github.com/jorgetavares/core-gp")
+      (synopsis "Common Lisp library for genetic programming")
+      (description
+       "@code{core-gp} is a Common Lisp library for genetic programming (GP)
+algorithms.  It allows standard GP, strongly-typed GP, grammatical evolution as
+well as standard genetic algorithms.")
+      (license license:expat))))
+
+(define-public cl-core-gp
+  (sbcl-package->cl-source-package sbcl-core-gp))
+
+(define-public ecl-core-gp
+  (sbcl-package->ecl-package sbcl-core-gp))
+
 (define-public sbcl-data-sift
   (let ((commit "fd617d8200cdcc1b87ecf45ab59bb38e8b16ef7e")
         (revision "1"))
@@ -19853,6 +20115,40 @@ library inspired by @code{cl-data-format-validation} and WTForms validators.")
 
 (define-public ecl-restas
   (sbcl-package->ecl-package sbcl-restas))
+
+(define-public sbcl-zsort
+  (let ((commit "f6724a6fff7662a942195cedb0d7f00da59c74ed")
+        (revision "1"))
+    (package
+      (name "sbcl-zsort")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/jorgetavares/zsort")
+               (commit commit)))
+         (file-name (git-file-name "cl-zsort" version))
+         (sha256
+          (base32 "1vyklyh99712zsll4qi0m4mm8yb1nz04403vl8i57bjv5p5max49"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)))
+      (home-page "https://github.com/jorgetavares/zsort")
+      (synopsis "Collection of portable sorting algorithms in Common Lisp")
+      (description
+       "@code{zsort} is a collection of portable sorting algorithms.  Common
+Lisp provides the @code{sort} and @code{stable-sort} functions but these can
+have different algorithms implemented according to each implementation.  Also,
+the standard sorting functions might not be the best for a certain situations.
+This library aims to provide developers with more options.")
+      (license license:expat))))
+
+(define-public cl-zsort
+  (sbcl-package->cl-source-package sbcl-zsort))
+
+(define-public ecl-zsort
+  (sbcl-package->ecl-package sbcl-zsort))
 
 (define-public sbcl-cl-https-everywhere
   ;; No release.

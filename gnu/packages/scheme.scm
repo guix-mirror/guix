@@ -16,6 +16,7 @@
 ;;; Copyright © 2020 Edouard Klein <edk@beaver-labs.com>
 ;;; Copyright © 2021 Philip McGrath <philip@philipmcgrath.com>
 ;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2021 Foo Chuan Wei <chuanwei.foo@hotmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,7 +37,7 @@
   #:use-module (gnu packages)
   #:use-module ((guix licenses)
                 #:select (gpl2+ lgpl2.0+ lgpl2.1 lgpl2.1+ lgpl3+ asl2.0 bsd-3
-                          cc-by-sa4.0 non-copyleft expat))
+                          cc-by-sa4.0 non-copyleft expat public-domain))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -791,6 +792,45 @@ in-lining, unboxing, and flow-directed program-specific and
 program-point-specific low-level representation selection and code
 generation.")
       (license gpl2+))))
+
+(define-public s9fes
+  (package
+    (name "s9fes")
+    (version "20181205")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.t3x.org/s9fes/s9fes-" version ".tgz"))
+       (sha256
+        (base32 "0ynpl707bc9drwkdpdgvw14bz9zmwd3wffl1k02sxppjl28xm7rf"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "PREFIX=" %output))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (apply invoke "make" "install-all" make-flags))))
+       #:tests? #f))  ; No check target.
+    (inputs
+     `(("ncurses" ,ncurses)))
+    (home-page "https://www.t3x.org/s9fes/")
+    (synopsis "Interpreter for R4RS Scheme")
+    (description
+     "Scheme 9 from Empty Space (S9fES) is a mature, portable, and
+comprehensible public-domain interpreter for R4RS Scheme offering:
+@itemize
+@item bignum arithmetics
+@item decimal-based real number arithmetics
+@item support for low-level Unix programming
+@item cursor addressing with Curses
+@item basic networking procedures
+@item an integrated online help system
+@item loads of useful library functions
+@end itemize")
+    (license public-domain)))
 
 (define-public femtolisp
   (let ((commit "ec7601076a976f845bc05ad6bd3ed5b8cde58a97")

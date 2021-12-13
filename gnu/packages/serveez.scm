@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,22 +23,22 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages guile))
 
 (define-public serveez
   (package
     (name "serveez")
-    (version "0.2.2")
+    (version "0.3.0")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://gnu/serveez/serveez-"
-                          version ".tar.xz"))
+                          version ".tar.lz"))
       (sha256
        (base32
-        "09a5jh762ps71ivlg7vdlzp3y29ncl3nsad7qbcni78bq2mzwxsc"))))
+        "0capm8i6fyjvh5rflxkfd07llfaa0kk4i3y836qpld9vzy49q6ky"))))
     (build-system gnu-build-system)
-    (inputs `(("guile" ,guile-2.0)))
     (arguments
      `(#:configure-flags '("--enable-libserveez-install")
        #:phases
@@ -48,6 +49,10 @@
                  (find-files "test" "^t[0-9]{3}$")
                (("/bin/sh") (which "sh")))
              #t)))))
+    (native-inputs
+     `(("lzip" ,lzip)))
+    (inputs
+     `(("guile" ,guile-2.2)))
     (home-page "https://www.gnu.org/software/serveez/")
     (synopsis "Framework for implementing IP-based servers")
     (description

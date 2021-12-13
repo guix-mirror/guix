@@ -92,7 +92,9 @@
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages man)
+  #:use-module (gnu packages maths)
   #:use-module (gnu packages multiprecision)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages popt)
@@ -106,6 +108,7 @@
   #:use-module (gnu packages qt)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages sphinx)
+  #:use-module (gnu packages tex)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages time)
@@ -1838,6 +1841,37 @@ Interface (UI) for the hledger accounting system.  It can be used as a
 local, single-user UI, or as a multi-user UI for viewing, adding, and
 editing on the Web.")
     (license license:gpl3)))
+
+(define-public optionmatrix
+  (package
+    (name "optionmatrix")
+    (version "1.4.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://sourceforge/optionmatrix/optionmatrix-"
+             version ".tar.xz"))
+       (sha256
+        (base32 "1zd0pfiphnijh1l94swb3mjrpmjsn37z11mklamd7zw6h2d4zh4d"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("gsl" ,gsl)
+       ("gtk3" ,gtk+)
+       ("ncurses" ,ncurses)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("texinfo" ,texinfo)
+       ("texlive" ,(texlive-union (list texlive-epsf
+                                        texlive-tex-texinfo)))))
+    (home-page "https://anthonybradford.github.io/optionmatrix/")
+    (synopsis "Financial derivative calculator")
+    (description
+     "The OptionMatrix programs are financial derivative calculators.  These
+calculators are real-time multi-model option chain pricers with analytics and
+interactive controls.  This package provides a GTK+ graphical user interface
+(@code{optionmatrix}) and a curses interface (@code{optionmatrix_console}).")
+    (license license:gpl3+)))
 
 (define-public python-ta-lib
   (package
