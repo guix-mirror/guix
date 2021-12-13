@@ -794,13 +794,13 @@ content using a variety of algorithms.")
 (define-public python-jsonpickle
   (package
     (name "python-jsonpickle")
-    (version "1.4.1")
+    (version "1.5.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "jsonpickle" version))
               (sha256
                (base32
-                "1fn86z468hamw8njh2grw2xdhsm7g48dyxs3lw0n10nn1g6vgm78"))))
+                "0n93h9b9ad58lxdfbvgsh4b25mkg146qikzcgghyc75vjk7rp2cy"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
