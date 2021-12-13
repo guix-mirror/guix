@@ -22350,11 +22350,17 @@ decisions with any given backend.")
              (commit "5a8275dd53193b47457cdfadc0e2356ea3eb6ccd")))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0h8w7c03mn6s2mmwbqd2sqay3k4vaqiwlsbvliziggw28042zfw2"))))
+        (base32 "0h8w7c03mn6s2mmwbqd2sqay3k4vaqiwlsbvliziggw28042zfw2"))
+       (snippet
+        ;; Delete generated copy of python-versioneer.  We recreate it below.
+        '(delete-file "versioneer.py"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'versioneer
+           (lambda _
+             (invoke "versioneer" "install")))
          (replace 'check
            (lambda* (#:key tests? #:allow-other-keys)
              (when tests? (invoke "pytest" "-vv")))))))
@@ -22368,7 +22374,8 @@ decisions with any given backend.")
            python-toolz
            python-pyyaml))
     (native-inputs
-     (list python-pytest python-pytest-runner python-pytest-rerunfailures))
+     (list python-pytest python-pytest-runner python-pytest-rerunfailures
+           python-versioneer))
     (home-page "https://github.com/dask/dask/")
     (synopsis "Parallel computing with task scheduling")
     (description
