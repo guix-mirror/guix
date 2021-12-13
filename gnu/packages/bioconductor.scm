@@ -1786,6 +1786,59 @@ naming and share the same rich and consistent \"Vector API\" as much as
 possible.")
     (license license:artistic2.0)))
 
+(define-public r-isoformswitchanalyzer
+  (package
+    (name "r-isoformswitchanalyzer")
+    (version "1.16.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "IsoformSwitchAnalyzeR" version))
+       (sha256
+        (base32 "14bqf39gw5ab5r9sr3afkig1jbzdvds1bmcvc6bpb45kschx7fwf"))))
+    (properties `((upstream-name . "IsoformSwitchAnalyzeR")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-biostrings" ,r-biostrings)
+       ("r-bsgenome" ,r-bsgenome)
+       ("r-dbi" ,r-dbi)
+       ("r-dexseq" ,r-dexseq)
+       ("r-dplyr" ,r-dplyr)
+       ("r-drimseq" ,r-drimseq)
+       ("r-edger" ,r-edger)
+       ("r-futile-logger" ,r-futile-logger)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gridextra" ,r-gridextra)
+       ("r-iranges" ,r-iranges)
+       ("r-limma" ,r-limma)
+       ("r-magrittr" ,r-magrittr)
+       ("r-plyr" ,r-plyr)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-rcurl" ,r-rcurl)
+       ("r-readr" ,r-readr)
+       ("r-reshape2" ,r-reshape2)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-stringr" ,r-stringr)
+       ("r-tibble" ,r-tibble)
+       ("r-tximeta" ,r-tximeta)
+       ("r-tximport" ,r-tximport)
+       ("r-venndiagram" ,r-venndiagram)
+       ("r-xvector" ,r-xvector)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://bioconductor.org/packages/IsoformSwitchAnalyzeR/")
+    (synopsis "Analyze alternative splicing in RNA-seq data")
+    (description
+     "This is a package for the analysis of alternative splicing and isoform
+switches with predicted functional consequences (e.g. gain/loss of protein
+domains etc.) from quantification of all types of RNASeq by tools such as
+Kallisto, Salmon, StringTie, Cufflinks/Cuffdiff etc.")
+    (license license:gpl2+)))
+
 ;; This is a CRAN package, but it depends on r-biobase and r-limma from Bioconductor.
 (define-public r-absfiltergsea
   (package
