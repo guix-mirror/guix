@@ -3550,6 +3550,10 @@ buffers.")
      `(#:tests? #f              ; many of the tests try to load kernel modules
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'find-rst2man.py
+           (lambda _
+             (substitute* "man/meson.build"
+               (("'rst2man'") "'rst2man.py'"))))
          (add-after 'unpack 'fix-meson.build
            ;; Fix ‘ERROR: Function does not take positional arguments.’
            (lambda _
@@ -3566,7 +3570,7 @@ buffers.")
            libunwind
            procps))
     (native-inputs
-     (list bison flex pkg-config))
+     (list bison flex pkg-config python-docutils))
     (home-page "https://gitlab.freedesktop.org/drm/igt-gpu-tools")
     (synopsis "Tools for development and testing of the Intel DRM driver")
     (description "IGT GPU Tools is a collection of tools for development and
