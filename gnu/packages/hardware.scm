@@ -25,6 +25,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages hardware)
+  #:use-module (gnu packages)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages bash)
@@ -330,6 +331,8 @@ whether the hardware works with a fully free operating system or not.")
          (file-name (git-file-name name version))
          (sha256
           (base32 "0jxm63a8y1mfl1sa4mzzfs3bgnym6achj1yc0jglmp05xal16lm1"))
+         (patches
+          (search-patches "i7z-gcc-10.patch"))
          (modules '((guix build utils)))
          (snippet
           '(begin
