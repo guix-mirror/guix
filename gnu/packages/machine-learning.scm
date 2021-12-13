@@ -1899,8 +1899,7 @@ set(eigen_INCLUDE_DIRS ${CMAKE_CURRENT_BINARY_DIR}/external/eigen_archive "
              (invoke "tar" "xf" (assoc-ref inputs "protobuf:src")
                      "-C" "protobuf-src" "--strip-components=1")
              (mkdir-p "eigen-src")
-             (invoke "tar" "xf" (assoc-ref inputs "eigen:src")
-                     "-C" "eigen-src" "--strip-components=1")
+             (copy-recursively (assoc-ref inputs "eigen:src") "eigen-src")
 
              (substitute* "tensorflow/contrib/cmake/tf_python.cmake"
                ;; Take protobuf source files from our source package.
