@@ -586,7 +586,8 @@ included.")
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "1cmd0riv37bqy9mwbg6n3523qgr8b3bbm5kwj19sjrasl4yq9d0c"))))
+               "1cmd0riv37bqy9mwbg6n3523qgr8b3bbm5kwj19sjrasl4yq9d0c"))
+             (patches '())))
    (arguments
     (substitute-keyword-arguments (package-arguments binutils)
       ((#:make-flags _ ''()) ''())))
