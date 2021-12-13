@@ -1183,6 +1183,34 @@ biscuiteer.")
 chromstaR package.")
     (license license:gpl3)))
 
+(define-public r-chromvarmotifs
+  (let ((commit "38bed559c1f4770b6c91c80bf3f8ea965da26076")
+        (revision "1"))
+    (package
+      (name "r-chromvarmotifs")
+      (version (git-version "0.2.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/GreenleafLab/chromVARmotifs")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0i9v1m1hrg1lkd2pnkj5nnrpks6vhhhpbdhsfl2lmjak4npxxr5q"))))
+      (properties `((upstream-name . "chromVARmotifs")))
+      (build-system r-build-system)
+      (propagated-inputs
+       `(("r-tfbstools" ,r-tfbstools)))
+      (home-page "https://github.com/GreenleafLab/chromVARmotifs")
+      (synopsis "Stores motif collections for use with motifmatchr or chromVAR")
+      (description
+       "This package stores motif collections as lists of @dfn{position
+frequency matrix} (PWMatrixList) objects provided by the @code{TFBSTools}
+package for use in R with packages like @code{motifmatchr} or
+@code{chromVAR}.")
+      (license license:expat))))
+
 (define-public r-copyhelper
   (package
     (name "r-copyhelper")
