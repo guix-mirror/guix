@@ -3534,6 +3534,7 @@ buffers.")
 (define-public igt-gpu-tools
   (package
     (name "igt-gpu-tools")
+    ;; You should very likely remove the 'fix-meson.build phase when upgrading.
     (version "1.26")
     (source
      (origin
@@ -3546,7 +3547,15 @@ buffers.")
         (base32 "0m124pqv7zna25jnvk566c4kk628jr0w8mgnp8mr5xqz9cprgczm"))))
     (build-system meson-build-system)
     (arguments
-     `(#:tests? #f))            ; many of the tests try to load kernel modules
+     `(#:tests? #f              ; many of the tests try to load kernel modules
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-meson.build
+           ;; Fix ‘ERROR: Function does not take positional arguments.’
+           (lambda _
+             (substitute* "lib/meson.build"
+               (("f\\.underscorify\\(f\\)")
+                "f.underscorify()")))))))
     (inputs
      (list cairo
            elfutils ; libdw
