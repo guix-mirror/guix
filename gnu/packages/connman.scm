@@ -71,22 +71,22 @@
      `(("pkg-config" ,pkg-config)
        ("python" ,python-wrapper)))
     (inputs
-     `(("dbus" ,dbus)
-       ("glib" ,glib)
-       ("gnutls" ,gnutls)
-       ("iptables" ,iptables)
-       ("libmnl" ,libmnl)
-       ("lz4" ,lz4)                     ; required by openconnect.pc
-       ("readline" ,readline)
-       ;; These inputs are needed for connman to include the interface to
-       ;; these technologies so IF they are installed they can be used.
-       ;; TODO: add neard, ofono
-       ("openconnect" ,openconnect)
-       ("openvpn" ,openvpn)
-       ("ppp" ,ppp)
-       ("vpnc" ,vpnc)
-       ("wpa-supplicant" ,wpa-supplicant)
-       ("xl2tpd" ,xl2tpd)))
+     (list dbus
+           glib
+           gnutls
+           iptables
+           libmnl
+           lz4 ; required by openconnect.pc
+           readline
+           ;; These inputs are needed for connman to include the interface to
+           ;; these technologies so IF they are installed they can be used.
+           ;; TODO: add neard, ofono
+           openconnect
+           openvpn
+           ppp
+           vpnc
+           wpa-supplicant
+           xl2tpd))
     (home-page "https://01.org/connman")
     (synopsis "Connection management daemon")
     (description "Connman provides a daemon for managing Internet connections.
@@ -123,9 +123,9 @@ sharing) to clients via USB, ethernet, WiFi, cellular and Bluetooth.")
              (let* ((out (assoc-ref outputs "out"))
                     (bin (string-append out "/bin/econnman-bin")))
                (wrap-program bin
-                 `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH"))))
+                 `("GUIX_PYTHONPATH" ":" prefix (,(getenv "GUIX_PYTHONPATH"))))
                #t))))))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs (list pkg-config))
     (inputs
      `(("efl" ,efl)
        ("python" ,python-wrapper)
@@ -150,9 +150,9 @@ sharing) to clients via USB, ethernet, WiFi, cellular and Bluetooth.")
        (sha256
         (base32 "0jn12wxwjznady6aniwmvahg1dj25p902sdwj0070biv6vx5c7dq"))))
     (inputs
-     `(("qtbase" ,qtbase-5)))
+     (list qtbase-5))
     (native-inputs
-     `(("qttools" ,qttools)))
+     (list qttools))
     (build-system gnu-build-system)
     (arguments
      '(#:phases

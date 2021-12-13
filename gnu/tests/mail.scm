@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@member.fsf.org>
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
-;;; Copyright © 2017, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2019 Christopher Baines <mail@cbaines.net>
@@ -85,9 +85,7 @@ match from any for local action inbound
                   code
                   (read-reply-code port))))
 
-          (mkdir #$output)
-          (chdir #$output)
-
+          (test-runner-current (system-test-runner #$output))
           (test-begin "opensmptd")
 
           (test-assert "service is running"
@@ -157,8 +155,7 @@ match from any for local action inbound
                          (sleep 1) (wait (- n 1))))))
              marionette))
 
-          (test-end)
-          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          (test-end))))
 
   (gexp->derivation "opensmtpd-test" test))
 
@@ -230,9 +227,7 @@ acl_check_data:
           (define smtp (socket AF_INET SOCK_STREAM 0))
           (define addr (make-socket-address AF_INET INADDR_LOOPBACK 1025))
 
-          (mkdir #$output)
-          (chdir #$output)
-
+          (test-runner-current (system-test-runner #$output))
           (test-begin "exim")
 
           (test-assert "service is running"
@@ -285,8 +280,7 @@ acl_check_data:
                                  (lambda (x) (not (string-prefix? "." x))))))
              marionette))
 
-          (test-end)
-          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          (test-end))))
 
   (gexp->derivation "exim-test" test))
 
@@ -338,9 +332,7 @@ acl_check_data:
           (define message "From: test@example.com\n\
 Subject: Hello Nice to meet you!")
 
-          (mkdir #$output)
-          (chdir #$output)
-
+          (test-runner-current (system-test-runner #$output))
           (test-begin "dovecot")
 
           ;; Wait for dovecot to be up and running.
@@ -399,8 +391,7 @@ Subject: Hello Nice to meet you!")
                        get-string-all)))))
              marionette))
 
-          (test-end)
-          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          (test-end))))
 
   (gexp->derivation "dovecot-test" test))
 
@@ -489,9 +480,7 @@ Subject: Hello Nice to meet you!")
           (define message "From: test@example.com\n\
 Subject: Hello Nice to meet you!")
 
-          (mkdir #$output)
-          (chdir #$output)
-
+          (test-runner-current (system-test-runner #$output))
           (test-begin "getmail")
 
           ;; Wait for dovecot to be up and running.
@@ -577,8 +566,7 @@ Subject: Hello Nice to meet you!")
               marionette)
              message))
 
-          (test-end)
-          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          (test-end))))
 
   (gexp->derivation "getmail-test" test))
 

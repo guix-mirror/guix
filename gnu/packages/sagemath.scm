@@ -55,12 +55,11 @@
          "0ymc4i9y60aazscc1blivirkr1rflzz6akkmvfzyn5l7mgnlbk83"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-cython" ,python-cython)))
+     (list python-cython))
     (propagated-inputs
-     `(("python-cysignals" ,python-cysignals)))
+     (list python-cysignals))
     (inputs
-     `(("gmp" ,gmp)
-       ("pari-gp" ,pari-gp)))
+     (list gmp pari-gp))
     (home-page "https://cypari2.readthedocs.io/")
     (synopsis
      "Python interface to the number theory library libpari")
@@ -91,11 +90,9 @@ but it can be used independently.")
                 "0ljvnmhxqdfsp0yy4c2hynhk5sggm63kkqsq4iwq4k9vsnx2xm97"))))
     (build-system python-build-system)
     (native-inputs
-     `(("unzip" ,unzip)))
+     (list unzip))
     (inputs
-     `(("gmp" ,gmp)
-       ("mpfr" ,mpfr)
-       ("mpc" ,mpc)))
+     (list gmp mpfr mpc))
     (home-page "https://github.com/aleaxit/gmpy")
     (synopsis
      "GMP/MPIR, MPFR, and MPC interface to Python 2.6+ and 3.x")
@@ -150,9 +147,7 @@ function for every found clique.")
          "0l68rikfr7k2l547gb3pp3g8cj5zzxwipm79xrb5r8ffj466ydxg"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
+     (list autoconf automake libtool))
     (synopsis "Computations with braid groups")
     (description "libbraiding performs computations with braid groups,
 in particular it computes normal forms of group elements.")
@@ -176,11 +171,9 @@ in particular it computes normal forms of group elements.")
          "0sv3cwrf9v9sb5a8wbhjmarxvya13ma3j8y8592f9ymxlk5y0ldk"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
+     (list autoconf automake libtool))
     (inputs
-     `(("libgc" ,libgc)))
+     (list libgc))
     (synopsis "Computation of homfly polynomials of links")
     (description "libhomfly computes homfly polynomials of links,
 represented as strings.")
@@ -223,15 +216,9 @@ represented as strings.")
         (base32 "09d2p74x1arkydlxy6pw4p4byi7r8q7f29w373h4d8a215kadc6d"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf automake libtool pkg-config))
     (inputs
-     `(("flint" ,flint)
-       ("gmp" ,gmp)
-       ("python" ,python)
-       ("singular" ,singular)))
+     (list flint gmp python singular))
     (synopsis "Sage fork of GiNaC")
     (description "Pynac is a derivative of the C++ library GiNaC, which
 allows manipulation of symbolic expressions.  It currently provides the
@@ -260,7 +247,7 @@ on numerical types, while GiNaC depends on CLN for this purpose.")
     (native-inputs
      `(("python" ,python-2)))
     (inputs
-     `(("gmp" ,gmp)))
+     (list gmp))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -313,14 +300,9 @@ coefficients of which are modular integers.")
        (base32 "0qhgckd4fvbs40jw14mvw89rccv94d3df27kipd27hxd4cx7y80y"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf automake libtool pkg-config))
     (inputs
-     `(("boost" ,boost)
-       ("libpng" ,libpng)
-       ("m4ri" ,m4ri)))
+     (list boost libpng m4ri))
     (arguments
     ;; We are missing the boost unit test framework.
      `(#:tests? #f
@@ -426,7 +408,7 @@ zeta function and its twists by quadratic characters.")
                            '("bin" "include" "lib"))))
              #t)))))
     (inputs
-     `(("gmp" ,gmp)))
+     (list gmp))
     (home-page "http://www.mathe2.uni-bayreuth.de/stoll/programs/")
     (synopsis "Find rational points on hyperelliptic curves")
     (description "Ratpoints tries to find all rational points within

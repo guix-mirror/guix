@@ -1,5 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2021 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2021 Thiago Jung Bauermann <bauermann@kolabnow.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,7 +22,8 @@
   #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module (guix packages)
-  #:use-module (guix derivations)
+  #:use-module (guix monads)
+  #:use-module (guix gexp)
   #:use-module (guix search-paths)
   #:use-module (guix build-system)
   #:use-module (guix build-system gnu)
@@ -42,8 +45,8 @@
 
 ;; These variables specify the SVN tag and the matching SVN revision.  They
 ;; are taken from https://www.tug.org/svn/texlive/tags/
-(define %texlive-tag "texlive-2019.3")
-(define %texlive-revision 51265)
+(define %texlive-tag "texlive-2021.3")
+(define %texlive-revision 59745)
 
 (define (texlive-origin name version locations hash)
   "Return an <origin> object for a TeX Live package consisting of multiple
@@ -59,13 +62,17 @@ name for the checkout directory."
     (file-name (string-append name "-" version "-checkout"))
     (sha256 hash)))
 
-(define (texlive-ref component id)
+(define* (texlive-ref component #:optional id)
   "Return a <svn-reference> object for the package ID, which is part of the
-given Texlive COMPONENT."
+given Texlive COMPONENT.  If ID is not provided, COMPONENT is used as the top
+level package ID."
   (svn-reference
    (url (string-append "svn://www.tug.org/texlive/tags/"
                        %texlive-tag "/Master/texmf-dist/"
-                       "source/" component "/" id))
+                       "source/" component
+                       (if id
+                           (string-append "/" id)
+                           "")))
    (revision %texlive-revision)))
 
 (define %texlive-build-system-modules
@@ -96,7 +103,7 @@ given Texlive COMPONENT."
                 #:rest arguments)
   "Return a bag for NAME."
   (define private-keywords
-    '(#:source #:target #:inputs #:native-inputs
+    '(#:target #:inputs #:native-inputs
       #:texlive-latex-base #:texlive-bin))
 
   (bag
@@ -110,18 +117,29 @@ given Texlive COMPONENT."
                    ;; Keep the standard inputs of 'gnu-build-system'.
                    ,@(standard-packages)))
     (build-inputs `(("texlive-bin" ,texlive-bin)
-                    ("texlive-latex-base" ,texlive-latex-base)
+                    ,@(if texlive-latex-base
+                          `(("texlive-latex-base" ,texlive-latex-base))
+                          '())
                     ,@native-inputs))
     (outputs outputs)
     (build texlive-build)
     (arguments (strip-keyword-arguments private-keywords arguments))))
 
-(define* (texlive-build store name inputs
+(define* (texlive-build name inputs
                         #:key
+                        source
                         (tests? #f)
                         tex-directory
                         (build-targets #f)
-                        (tex-format "luatex")
+                        (tex-engine #f)
+
+                        ;; FIXME: This would normally default to "luatex" but
+                        ;; LuaTeX has a bug where sometimes it corrupts the
+                        ;; heap and aborts. This causes the build of texlive
+                        ;; packages to fail at random. The problem is being
+                        ;; tracked at <https://issues.guix.gnu.org/48064>.
+                        (tex-format "pdftex")
+
                         (phases '(@ (guix build texlive-build-system)
                                     %standard-phases))
                         (outputs '("out"))
@@ -135,43 +153,34 @@ given Texlive COMPONENT."
                                    (guix build utils))))
   "Build SOURCE with INPUTS."
   (define builder
-    `(begin
-       (use-modules ,@modules)
-       (texlive-build #:name ,name
-                      #:source ,(match (assoc-ref inputs "source")
-                                       (((? derivation? source))
-                                        (derivation->output-path source))
-                                       ((source)
-                                        source)
-                                       (source
-                                        source))
-                      #:tex-directory ,tex-directory
-                      #:build-targets ,build-targets
-                      #:tex-format ,tex-format
-                      #:system ,system
-                      #:tests? ,tests?
-                      #:phases ,phases
-                      #:outputs %outputs
-                      #:search-paths ',(map search-path-specification->sexp
-                                            search-paths)
-                      #:inputs %build-inputs)))
+    (with-imported-modules imported-modules
+      #~(begin
+          (use-modules #$@(sexp->gexp modules))
 
-  (define guile-for-build
-    (match guile
-      ((? package?)
-       (package-derivation store guile system #:graft? #f))
-      (#f                               ; the default
-       (let* ((distro (resolve-interface '(gnu packages commencement)))
-              (guile  (module-ref distro 'guile-final)))
-         (package-derivation store guile system #:graft? #f)))))
+          #$(with-build-variables inputs outputs
+              #~(texlive-build #:name #$name
+                               #:source #+source
+                               #:tex-directory #$tex-directory
+                               #:build-targets #$build-targets
+                               #:tex-engine #$(if tex-engine
+                                                  tex-engine
+                                                  tex-format)
+                               #:tex-format #$tex-format
+                               #:system #$system
+                               #:tests? #$tests?
+                               #:phases #$(if (pair? phases)
+                                              (sexp->gexp phases)
+                                              phases)
+                               #:outputs %outputs
+                               #:inputs %build-inputs
+                               #:search-paths '#$(sexp->gexp
+                                                  (map search-path-specification->sexp
+                                                       search-paths)))))))
 
-  (build-expression->derivation store name builder
-                                #:inputs inputs
-                                #:system system
-                                #:modules imported-modules
-                                #:outputs outputs
-                                #:guile-for-build guile-for-build
-                                #:substitutable? substitutable?))
+  (gexp->derivation name builder
+                    #:system system
+                    #:target #f
+                    #:substitutable? substitutable?))
 
 (define texlive-build-system
   (build-system

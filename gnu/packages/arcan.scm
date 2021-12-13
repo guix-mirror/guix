@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 L  p R n  d n <guix@lprndn.info>
+;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -65,7 +66,8 @@
                  (base32 "1pd0avlzc2rig1hd37zbhc7r2s6fjzdhshfg9l9cfzibl7caclyw"))))
       (build-system cmake-build-system)
       (arguments
-       `(#:configure-flags '("-DVIDEO_PLATFORM=egl-dri" "-DBUILTIN_LUA=off"
+       `(#:configure-flags '("-DCMAKE_C_FLAGS=-fcommon"
+                             "-DVIDEO_PLATFORM=egl-dri" "-DBUILTIN_LUA=off"
                              "-DSTATIC_OPENAL=off""-DENABLE_LWA=on"
                              "-DSTATIC_SQLITE3=off" "-DSTATIC_FREETYPE=off"
                              "-DSHMIF_TUI_ACCEL=on")
@@ -75,12 +77,10 @@
              (lambda* (#:key inputs #:allow-other-keys)
                (substitute* "src/platform/cmake/modules/FindGBMKMS.cmake"
                  (("/usr/local/include/libdrm")
-                  (string-append (assoc-ref inputs "libdrm")
-                                 "/include/libdrm")))
+                  (search-input-directory inputs "include/libdrm")))
                (substitute* "src/platform/cmake/modules/FindAPR.cmake"
                  (("/usr/local/apr/include/apr-1")
-                  (string-append (assoc-ref inputs "apr")
-                                 "/include/apr-1")))
+                  (search-input-directory inputs "include/apr-1")))
                #t))
            ;; Normally, it tries to fetch patched openal with git
            ;; but copying files manually in the right place seems to work too.
@@ -151,8 +151,7 @@
                              (base32
                               "0dcxcnqjkyyqdr2yk84mprvkncy5g172kfs6vc4zrkklsbkr8yi2"))))))
       (native-inputs
-       `(("pkg-config" ,pkg-config)
-         ("ruby" ,ruby)))               ; For documentation and testing
+       (list pkg-config ruby))               ; For documentation and testing
       (home-page "https://arcan-fe.com")
       (synopsis "Display server, multimedia framework and game engine (egl-dri)")
       (description "Arcan is a development framework for creating virtually
@@ -171,14 +170,15 @@ engine programmable using Lua.")
     (inherit arcan)
     (name "arcan-sdl")
     (inputs
-     `(("sdl" ,sdl)
-       ,@(fold alist-delete (package-inputs arcan)
-               '("libdrm"))))
+     (modify-inputs (package-inputs arcan)
+       (delete "libdrm")
+       (prepend sdl)))
     (arguments
      `(,@(ensure-keyword-arguments
           (package-arguments arcan)
           '(#:configure-flags
-            '("-DVIDEO_PLATFORM=sdl" "-DBUILTIN_LUA=off"
+            '("-DCMAKE_C_FLAGS=-fcommon"
+              "-DVIDEO_PLATFORM=sdl" "-DBUILTIN_LUA=off"
               "-DSTATIC_OPENAL=off" "-DDISABLE_JIT=off"
               "-DENABLE_LWA=on" "-DSTATIC_SQLITE3=off"
               "-DSTATIC_FREETYPE=off" "-DSHMIF_TUI_ACCEL=on")))))
@@ -218,11 +218,7 @@ engine programmable using Lua.")
            ,(string-append "--with-xkb-output="
                            "/tmp"))))   ; FIXME: Copied from xorg
       (native-inputs
-       `(("pkg-config" ,pkg-config)
-         ("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("libtool" ,libtool)
-         ("util-macros" ,util-macros)))
+       (list pkg-config autoconf automake libtool util-macros))
       (inputs
        `(("arcan" ,arcan)
          ("font-util" ,font-util)
@@ -250,14 +246,14 @@ as a window under Arcan.")
     (inherit arcan)
     (name "arcan-wayland")
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("arcan" ,arcan)
-       ("libseccomp" ,libseccomp)
-       ("libxkbcommon" ,libxkbcommon)
-       ("mesa" ,mesa)
-       ("wayland" ,wayland)
-       ("wayland-protocols" ,wayland-protocols)))
+     (list arcan
+           libseccomp
+           libxkbcommon
+           mesa
+           wayland
+           wayland-protocols))
     (arguments
      `(#:tests? #f
        #:phases

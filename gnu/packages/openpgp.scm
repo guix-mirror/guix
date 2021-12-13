@@ -46,8 +46,7 @@
                 "179b5jx3mqs9hgsj8cfwk6x8qib60kw9szk9fkz6s1gl3v83mnyx"))))
     (build-system gnu-build-system)
     (arguments '(#:configure-flags '("--enable-silent-rules")))
-    (inputs `(("gmp" ,gmp)
-              ("libgcrypt" ,libgcrypt)))
+    (inputs (list gmp libgcrypt))
     (synopsis
      "C++ library for creating secure and fair online card games")
     (description
@@ -79,11 +78,7 @@ LibTMCG provides the first practical implementation of such protocols.")
                  '("--enable-silent-rules")
                  ;; https://savannah.nongnu.org/bugs/?58772
                  #:parallel-tests? #f))
-    (inputs `(("bzip2" ,bzip2)
-              ("gmp" ,gmp)
-              ("libgcrypt" ,libgcrypt)
-              ("libtmcg" ,libtmcg)
-              ("zlib" ,zlib)))
+    (inputs (list bzip2 gmp libgcrypt libtmcg zlib))
     (synopsis
      "Distributed Key Generation and Threshold Cryptography for OpenPGP")
     (description
@@ -159,10 +154,7 @@ environments.")
          ("pkg-config" ,pkg-config)
          ("python" ,python)
          ("python2" ,python-2.7)))
-      (inputs `(("botan" ,botan)
-                ("bzip2" ,bzip2)
-                ("json-c" ,json-c)
-                ("zlib" ,zlib)))
+      (inputs (list botan bzip2 json-c zlib))
       (synopsis
        "RFC4880-compliant OpenPGP library written in C++")
       (description

@@ -3,6 +3,7 @@
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,9 +23,11 @@
 (define-module (gnu packages avahi)
   #:use-module ((guix licenses) #:select (lgpl2.1+))
   #:use-module (guix packages)
+  #:use-module (guix gexp)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages dbm)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
@@ -58,7 +61,7 @@
                  #t))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags '("--with-distro=none"
+     `(#:configure-flags '("--with-distro=none"
                            "--disable-static"
                            "--localstatedir=/var" ; for the DBus socket
                            "--disable-python"
@@ -68,13 +71,35 @@
                            "--enable-tests"
                            "--disable-qt4" "--disable-qt5"
                            "--disable-gtk" "--disable-gtk3"
-                           "--enable-compat-libdns_sd")))
+                           "--enable-compat-libdns_sd"
+                           ,@(if (%current-target-system)
+                                 '("ac_cv_prog_have_pkg_config=yes")
+                                 '()))
+       ;; TODO(core-updates): Make this unconditional.
+       ,@(if (%current-target-system)
+             `(#:modules ((srfi srfi-26)
+                          (guix build utils)
+                          (guix build gnu-build-system))
+               #:phases
+               ,#~(modify-phases %standard-phases
+                    (add-after 'patch-shebangs 'patch-more-shebangs
+                      (lambda* (#:key inputs #:allow-other-keys)
+                        (define path
+                          `(,(dirname (search-input-file inputs "bin/sh"))))
+                        (for-each
+                         (cut patch-shebang <> path)
+                         (find-files (string-append #$output "/etc/avahi")))))))
+             '())))
     (inputs
-     `(("dbus" ,dbus)
+     ;; TODO(core-updates): Make this input unconditional.
+     `(,@(if (%current-target-system)
+             `(("bash-minimal" ,bash-minimal))
+             '())
+       ("dbus" ,dbus)
        ("expat" ,expat)
        ("gdbm" ,gdbm)
        ("glib" ,glib)
-       ("libcap" ,libcap-2.31)       ;to enable chroot support in avahi-daemon
+       ("libcap" ,libcap)            ;to enable chroot support in avahi-daemon
        ("libdaemon" ,libdaemon)
        ("libevent" ,libevent)))
     (native-inputs

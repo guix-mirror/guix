@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -65,20 +65,24 @@
                                  " -c"))))
              #t)))
 
-       #:parallel-build? #f))
+       #:parallel-build? #f
 
-    (native-inputs `(("pkg-config" ,pkg-config)))
+       ;; XXX: Temporarily disable tests because they rely on
+       ;; 'test-runner-current' *not* returning #f after 'test-end', which is
+       ;; no longer the case in Guile >= 3.0.6.  This is fixed upstream.
+       #:tests? #f))
 
-    (inputs `(("guile" ,guile-3.0)
-              ("imagemagick" ,imagemagick)
-              ("ghostscript" ,ghostscript)        ; for 'convert'
-              ("ploticus" ,ploticus)
-              ("lout" ,lout)))
+    (native-inputs (list pkg-config))
+
+    (inputs (list guile-3.0
+                  imagemagick
+                  ghostscript ; for 'convert'
+                  ploticus
+                  lout))
 
     ;; The 'skribilo' command needs them, and for people using Skribilo as a
     ;; library, these inputs are needed as well.
-    (propagated-inputs `(("guile-reader" ,guile-reader)
-                         ("guile-lib" ,guile-lib)))
+    (propagated-inputs (list guile-reader guile-lib))
 
     (home-page "https://www.nongnu.org/skribilo/")
     (synopsis "Document production tool written in Guile Scheme")

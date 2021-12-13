@@ -79,8 +79,7 @@
        ("readline" ,readline)
        ("xorgproto" ,xorgproto)))
     (native-inputs
-     `(("perl" ,perl)
-       ("pkg-config" ,pkg-config)))
+     (list perl pkg-config))
     (home-page "https://www.nongnu.org/ratpoison/")
     (synopsis "Simple mouse-free tiling window manager")
     (description

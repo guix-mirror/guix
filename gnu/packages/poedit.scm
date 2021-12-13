@@ -60,19 +60,16 @@
                             (assoc-ref %build-inputs "boost")
                             "/lib"))))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("gettext-minimal" ,gettext-minimal)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf automake gettext-minimal pkg-config))
     (inputs
-     `(("boost" ,boost)
-       ("enchant" ,enchant)
-       ("gtk+" ,gtk+)
-       ("gtkspell3" ,gtkspell3)
-       ("icu4c" ,icu4c)
-       ("lucene++" ,lucene++)
-       ("pugixml" ,pugixml)
-       ("wxwidgets" ,wxwidgets)))
+     (list boost
+           enchant
+           gtk+
+           gtkspell3
+           icu4c
+           lucene++
+           pugixml
+           wxwidgets))
     (home-page "https://poedit.net/")
     (synopsis "Gettext catalog editing tool")
     (description "Poedit is a GUI frontend to the GNU gettext utilities and

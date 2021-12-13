@@ -28,16 +28,16 @@
 (define-public ed
   (package
     (name "ed")
-    (version "1.16")
+    (version "1.17")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/ed/ed-"
                                  version ".tar.lz"))
              (sha256
               (base32
-               "0b4b1lwizvng9bvpcjnmpj2i80xz9xw2w8nfff27b2h4mca7mh6g"))))
+               "0m2yrkfjjraakxr98nsiakqrn351h99n706x9asgmdi57j43kpki"))))
     (build-system gnu-build-system)
-    (native-inputs `(("lzip" ,lzip)))
+    (native-inputs (list lzip))
     (arguments
      '(#:configure-flags '("CC=gcc")
        #:phases

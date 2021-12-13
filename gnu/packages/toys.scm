@@ -61,10 +61,9 @@
            #t))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("imake" ,imake)))
+     (list imake))
     (inputs
-     `(("libx11" ,libx11)
-       ("libxext" ,libxext)))
+     (list libx11 libxext))
     (arguments
      `(#:tests? #f ; no tests
        #:phases
@@ -113,7 +112,7 @@ mouse pointer around the screen while you work.")
         (base32 "1zrfd71zx2px2xpapg45s8xvi81xii63yl0h60q72j71zh4sif8b"))))
     (build-system gnu-build-system)
     (inputs
-     `(("ncurses" ,ncurses)))
+     (list ncurses))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -178,10 +177,9 @@ typing @command{sl} instead of @command{ls}.")
              #t)))
        #:tests? #f))                    ; no test suite
     (native-inputs
-     `(("bison" ,bison)
-       ("flex" ,flex)))
+     (list bison flex))
     (inputs
-     `(("perl" ,perl)))
+     (list perl))
     (home-page "https://joeyh.name/code/filters/")
     (synopsis "Various amusing text filters")
     (description
@@ -257,7 +255,7 @@ The GNU project hosts a similar collection of filters, the GNU talkfilters.")
        ("libxt" ,libxt)
        ("libxxml2" ,libxml2)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://www.ratrabbit.nl/ratrabbit/content/xsnow/introduction")
     (synopsis "Let it snow on the desktop")
     (description "@code{Xsnow} animates snowfall and Santa with reindeer on
@@ -329,10 +327,9 @@ of the Nyan Cat / Poptart Cat animation.")
                                         ,(package-version this-package))))
                (install-file "README.md" doc)))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("scdoc" ,scdoc)))
+     (list pkg-config scdoc))
     (inputs
-     `(("ncurses" ,ncurses)))
+     (list ncurses))
     (home-page "https://gitlab.com/jallbrit/cbonsai")
     (synopsis "Grow bonsai trees in a terminal")
     (description "Cbonsai is a bonsai tree generator using ASCII art.  It

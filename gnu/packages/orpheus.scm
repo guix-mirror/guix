@@ -45,13 +45,13 @@
       (patches (search-patches "orpheus-cast-errors-and-includes.patch"))))
     (build-system gnu-build-system)
     (inputs
-     `(("ncurses" ,ncurses)
-       ("libvorbis" ,libvorbis)
-       ("vorbis-tools" ,vorbis-tools)
-       ("mpg321" ,mpg321)
-       ;; TODO: add ghttp
-       ("libxml2" ,libxml2)
-       ("which" ,which)))
+     (list ncurses
+           libvorbis
+           vorbis-tools
+           mpg321
+           ;; TODO: add ghttp
+           libxml2
+           which))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -76,12 +76,9 @@
              ;; To avoid propagating the mpg321 and vorbis-tools inputs, we can
              ;; make the orpheus application execute the needed players from the
              ;; store.
-             (let ((ogg123 (string-append (assoc-ref inputs "vorbis-tools")
-                                          "/bin/ogg123"))
-                   (mpg321 (string-append (assoc-ref inputs "mpg321")
-                                          "/bin/mpg321"))
-                   (which  (string-append (assoc-ref inputs "which")
-                                          "/bin/which")))
+             (let ((ogg123 (search-input-file inputs "/bin/ogg123"))
+                   (mpg321 (search-input-file inputs "/bin/mpg321"))
+                   (which  (search-input-file inputs "/bin/which")))
                (substitute* "src/orpheusconf.cc"
                  (("ogg123") ogg123)
                  (("which")  which)

@@ -6,7 +6,7 @@
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017, 2021 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
-;;; Copyright © 2017, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Christine Lemmer-Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
@@ -118,11 +118,11 @@
        ("pygobject" ,python-pygobject)
        ("urllib3" ,python-urllib3)))
     (inputs
-     `(("dbus" ,dbus)                   ; dbus-launch (Gio backend)
-       ("librsync" ,librsync)
-       ("lftp" ,lftp)
-       ("gnupg" ,gnupg)                 ; gpg executable needed
-       ("util-linux" ,util-linux)))     ; for setsid
+     (list dbus ; dbus-launch (Gio backend)
+           librsync
+           lftp
+           gnupg ; gpg executable needed
+           util-linux))     ; for setsid
     (arguments
      `(#:test-target "test"
        #:phases
@@ -144,8 +144,7 @@
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "HOME" (getcwd))   ; gpg needs to write to $HOME
              (setenv "TZDIR"            ; some timestamp checks need TZDIR
-                     (string-append (assoc-ref inputs "tzdata")
-                                    "/share/zoneinfo"))
+                     (search-input-directory inputs "share/zoneinfo"))
              ;; Some things respect TMPDIR, others hard-code /tmp, and the
              ;; defaults don't match up, breaking test_restart.  Fix it.
              (setenv "TMPDIR" "/tmp"))))))
@@ -174,8 +173,7 @@ spying and/or modification by the server.")
                (base32
                 "11mx8q29cr0sryd11awab7y4mhqgbamb1ss77rffjj6in8pb4hdk"))))
     (native-inputs
-     `(("automake" ,automake)
-       ("autoconf" ,autoconf)))
+     (list automake autoconf))
     (build-system gnu-build-system)
     (synopsis "File verification and repair tools")
     (description "Par2cmdline uses Reed-Solomon error-correcting codes to
@@ -201,14 +199,14 @@ can even repair them.")
        (base32
         "02bnczg01cyhajmm4rhbnc0ja0dd9ikv9fwv28asxh1rlx9yr0b7"))))
     (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs (list pkg-config))
     (inputs
-     `(("glib" ,glib)
-       ("tar" ,tar)
-       ("lzop" ,lzop)
-       ("mcrypt" ,mcrypt)
-       ("openssh" ,openssh)
-       ("gnupg" ,gnupg-1)))
+     (list glib
+           tar
+           lzop
+           mcrypt
+           openssh
+           gnupg-1))
     (arguments
      `(#:configure-flags
        `(,(string-append "--sbindir=" (assoc-ref %outputs "out") "/bin"))
@@ -226,7 +224,7 @@ backups (called chunks) to allow easy burning to CD/DVD.")
 (define-public libarchive
   (package
     (name "libarchive")
-    (version "3.4.2")
+    (version "3.5.1")
     (source
      (origin
        (method url-fetch)
@@ -237,16 +235,16 @@ backups (called chunks) to allow easy burning to CD/DVD.")
                                  version ".tar.xz")))
        (sha256
         (base32
-         "18dd01ahs2hv74xm7axjc3yhq839p0x0s4vssvlmm8fknja09qfq"))))
+         "16r95rlmikll1k8vbhh06vq6x3srkc10hzxjjf3021mjs2ld65qf"))))
     (build-system gnu-build-system)
     (inputs
-     `(("bzip2" ,bzip2)
-       ("libxml2" ,libxml2)
-       ("lzo" ,lzo)
-       ("nettle" ,nettle)
-       ("xz" ,xz)
-       ("zlib" ,zlib)
-       ("zstd" ,zstd "lib")))
+     (list bzip2
+           libxml2
+           lzo
+           nettle
+           xz
+           zlib
+           `(,zstd "lib")))
     (arguments
      `(#:configure-flags '("--disable-static")
        #:phases
@@ -338,21 +336,15 @@ random access nor for in-place modification.")
         (base32 "0bzyv6qmnivxnv9nw7lnfn46k0m1dlxcjj53zcva6v8y8084l1iw"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("pkg-config" ,pkg-config)
-
-       ;; For tests.
-       ("dejagnu" ,dejagnu)))
+     (list autoconf automake pkg-config
+           ;; For tests.
+           dejagnu))
     (inputs
      ;; XXX Compiling with nettle (encryption) support requires patching out
      ;; -Werror from GNUmakefile.in.  Then, rdup-tr-{en,de}crypt tests fail:
      ;; free(): invalid pointer
      ;; ** rdup-tr: SIGPIPE received, exiting
-     `(("glib" ,glib)
-       ("pcre" ,pcre)
-       ("libarchive" ,libarchive)
-       ("mcrypt" ,mcrypt)))
+     (list glib pcre libarchive mcrypt))
     (arguments
      `(#:parallel-build? #f             ;race conditions
        #:phases
@@ -415,13 +407,11 @@ list and implement the backup strategy.")
              (setenv "VERSION" ,version)
              (patch-shebang "autover.sh"))))))
     (native-inputs
-     `(("automake" ,automake)
-       ("autoconf" ,autoconf)
-
-       ;; For the tests.
-       ("valgrind" ,valgrind)))
+     (list automake autoconf
+           ;; For the tests.
+           valgrind))
     (inputs
-     `(("util-linux" ,util-linux "lib"))) ; libblkid
+     (list `(,util-linux "lib"))) ; libblkid
     (home-page "https://www.snapraid.it/")
     (synopsis "Efficient backups using parity snapshots across disk arrays")
     (description
@@ -463,7 +453,7 @@ remain fully idle, saving power and producing less noise.")
          "0miklk4bqblpyzh1bni4x6lqn88fa8fjn15x1k1n8bxkx60nlymd"))))
     (build-system gnu-build-system)
     (inputs
-     `(("librsync" ,librsync-0.9)))
+     (list librsync-0.9))
     (arguments
      `(#:make-flags `(,(string-append "PREFIX=" (assoc-ref %outputs "out"))
                       ,(string-append "CC=" ,(cc-for-target)))
@@ -494,10 +484,9 @@ errors.")
         (base32 "11rvjcp77zwgkphz1kyf5yqgr3rlss7dm9xzmvpvc4lp99xq7drb"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-setuptools-scm" ,python-setuptools-scm)))
+     (list python-setuptools-scm))
     (inputs
-     `(("python" ,python)
-       ("librsync" ,librsync)))
+     (list python librsync))
     (arguments
      `(#:tests? #f))                    ; Tests require root/sudo
     (home-page "https://rdiff-backup.net/")
@@ -536,8 +525,7 @@ rdiff-backup is easy to use and settings have sensible defaults.")
            (lambda _
              (invoke "make" "test"))))))
     (inputs
-     `(("perl" ,perl)
-       ("rsync" ,rsync)))
+     (list perl rsync))
     (home-page "https://rsnapshot.org")
     (synopsis "Deduplicating snapshot backup utility based on rsync")
     (description "rsnapshot is a file system snapshot utility based on rsync.
@@ -557,7 +545,6 @@ rsnapshot uses hard links to deduplicate identical files.")
               (sha256
                (base32
                 "0fpdyxww41ba52d98blvnf543xvirq1v9xz1i3x1gm9lzlzpmc2g"))
-              (patches (search-patches "diffutils-gets-undeclared.patch"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -584,41 +571,38 @@ rsnapshot uses hard links to deduplicate identical files.")
                       (substitute* "configure"
                         (("GUILE=(.*)--variable bindir`" _ middle)
                          (string-append "GUILE=" middle
-                                        "--variable bindir`/guile")))
-                      #t))
+                                        "--variable bindir`/guile")))))
                   (add-before 'build 'set-libtirpc-include-path
                     (lambda* (#:key inputs #:allow-other-keys)
                       ;; Allow <rpc/rpc.h> & co. to be found.
-                      (let ((libtirpc (assoc-ref inputs "libtirpc")))
-                        (setenv "CPATH"
-                                (string-append (getenv "CPATH")
-                                               ":" libtirpc
-                                               "/include/tirpc"))
-                        #t)))
+                      (let ((tirpc (string-append (assoc-ref inputs "libtirpc")
+                                                  "/include/tirpc")))
+                        (if (getenv "CPATH")
+                          (setenv "CPATH"
+                                  (string-append (getenv "CPATH")
+                                                 ":" tirpc))
+                          (setenv "CPATH" tirpc)))))
                   (add-before 'check 'skip-test
                     (lambda _
                       ;; XXX: This test fails (1) because current GnuTLS no
                       ;; longer supports OpenPGP authentication, and (2) for
                       ;; some obscure reason.  Better skip it.
-                      (setenv "XFAIL_TESTS" "utils/block-server")
-                      #t)))))
+                      (setenv "XFAIL_TESTS" "utils/block-server"))))))
     (native-inputs
-     `(("guile" ,guile-2.0)
-       ("gperf" ,gperf-3.0)                  ;see <https://bugs.gnu.org/32382>
-       ("pkg-config" ,pkg-config)
-       ("rpcsvc-proto" ,rpcsvc-proto)))           ;for 'rpcgen'
+     (list guile-2.0 gperf-3.0 ;see <https://bugs.gnu.org/32382>
+           pkg-config rpcsvc-proto))           ;for 'rpcgen'
     (inputs
-     `(("guile" ,guile-2.0)
-       ("util-linux" ,util-linux)
-       ("libtirpc" ,libtirpc)
-       ("gnutls" ,gnutls)
-       ("tdb" ,tdb)
-       ("bdb" ,bdb)
-       ("gdbm" ,gdbm)
-       ("libgcrypt" ,libgcrypt)
-       ("lzo" ,lzo)
-       ("bzip2" ,bzip2)
-       ("zlib" ,zlib)))
+     (list guile-2.0
+           util-linux
+           libtirpc
+           gnutls
+           tdb
+           bdb
+           gdbm
+           libgcrypt
+           lzo
+           bzip2
+           zlib))
     (home-page "https://nongnu.org/libchop/")
     (synopsis "Tools & library for data backup and distributed storage")
     (description
@@ -743,16 +727,14 @@ detection, and lossless compression.")
                                (string-append share "/fish/vendor_completions.d")))
                #t))))))
     (native-inputs
-     `(("python-cython" ,python-cython)
-       ("python-setuptools-scm" ,python-setuptools-scm)
-       ("python-pytest" ,python-pytest)))
+     (list python-cython python-setuptools-scm python-pytest))
     (inputs
-     `(("acl" ,acl)
-       ("libb2" ,libb2)
-       ("lz4" ,lz4)
-       ("openssl" ,openssl)
-       ("python-llfuse" ,python-llfuse)
-       ("zstd" ,zstd "lib")))
+     (list acl
+           libb2
+           lz4
+           openssl
+           python-llfuse
+           `(,zstd "lib")))
     (synopsis "Deduplicated, encrypted, authenticated and compressed backups")
     (description "Borg is a deduplicating backup program.  Optionally, it
 supports compression and authenticated encryption.  The main goal of Borg is to
@@ -776,12 +758,9 @@ to not fully trusted targets.  Borg is a fork of Attic.")
                 "04ny5s5z05gk6davbwkjkraan781k2xzw6kjwp75h6ncv45dv1sb"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("fuse" ,fuse)
-       ("libxml2" ,libxml2)
-       ("ntfs-3g" ,ntfs-3g)
-       ("openssl" ,openssl)))
+     (list fuse libxml2 ntfs-3g openssl))
     (arguments
      `(#:configure-flags
        (list "--disable-static"
@@ -837,12 +816,11 @@ NTFS volumes using @code{ntfs-3g}, preserving NTFS-specific attributes.")
                     (output-dir
                      (assoc-ref outputs "out"))
 
-                    ;; Just a default... not so useful on guixsd though
-                    ;; You probably want to a service with file(s) to point to.
+                    ;; Just a default... not so useful on Guix Systems though.
+                    ;; You probably want a service with file(s) to point to.
                     (confdir "/etc/dirvish")
 
-                    (perl (string-append (assoc-ref %build-inputs "perl")
-                                         "/bin/perl"))
+                    (perl (search-input-file inputs "/bin/perl"))
                     (loadconfig.pl (call-with-input-file "loadconfig.pl"
                                      read-string)))
 
@@ -893,10 +871,7 @@ NTFS volumes using @code{ntfs-3g}, preserving NTFS-specific attributes.")
                (for-each write-man man-pages)
                #t))))))
     (inputs
-     `(("perl" ,perl)
-       ("rsync" ,rsync)
-       ("perl-libtime-period" ,perl-libtime-period)
-       ("perl-libtime-parsedate" ,perl-libtime-parsedate)))
+     (list perl rsync perl-libtime-period perl-libtime-parsedate))
     (home-page "http://dirvish.org/")
     (synopsis "Fast, disk based, rotating network backup system")
     (description
@@ -1042,11 +1017,7 @@ precious backup space.
     (arguments
      `(#:tests? #f))                    ;no test
     (inputs
-     `(("lzo" ,lzo)
-       ("libressl" ,libressl)
-       ("protobuf" ,protobuf)
-       ("xz" ,xz)
-       ("zlib" ,zlib)))
+     (list lzo libressl protobuf xz zlib))
     (home-page "http://zbackup.org")
     (synopsis "Versatile deduplicating backup tool")
     (description
@@ -1080,12 +1051,10 @@ is format-agnostic, so you can feed virtually any files to it.")
          "--disable-readline"
          "--disable-rmt")))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("openssl" ,openssl)
-       ("zlib" ,zlib)
-       ("util-linux" ,util-linux "lib")
-       ("e2fsprogs" ,e2fsprogs)))
+     (list openssl zlib
+           `(,util-linux "lib") e2fsprogs))
     (home-page "https://dump.sourceforge.io/")
     (synopsis "Ext2/3/4 file system dump/restore utilities")
     (description "Dump examines files in a file system, determines which ones
@@ -1122,17 +1091,14 @@ interactive mode.")
                 (string-append prefix " 3600" suffix "\n")))
              #t)))))
     (inputs
-     `(("acl" ,acl)
-       ("librsync" ,librsync)
-       ("ncurses" ,ncurses)             ; for the live status monitor
-       ("openssl" ,openssl)
-       ("uthash" ,uthash)
-       ("zlib" ,zlib)))
+     (list acl
+           librsync
+           ncurses ; for the live status monitor
+           openssl
+           uthash
+           zlib))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("check" ,check-0.14)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf automake check-0.14 pkg-config))
     (home-page "https://burp.grke.org")
     (synopsis "Differential backup and restore")
     (description "Burp is a network backup and restore program.  It attempts
@@ -1153,17 +1119,16 @@ backup.")
                 "0jgc53rrbas8i4z13l2ii99cpav1ma73spsjg70ygihf0635r3dh"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("pkg-config" ,pkg-config)
-       ("guile" ,guile-3.0)             ;for cross-compilation
-       ("guile-gcrypt" ,guile-gcrypt)
-       ("guile-quickcheck" ,guile-quickcheck)))
+     (list autoconf
+           automake
+           pkg-config
+           guile-3.0 ;for cross-compilation
+           guile-gcrypt
+           guile-quickcheck))
     (inputs
-     `(("guile" ,guile-3.0)
-       ("zlib" ,zlib)))
+     (list guile-3.0 zlib))
     (propagated-inputs
-     `(("guile-gcrypt" ,guile-gcrypt)))
+     (list guile-gcrypt))
     (home-page "https://ngyro.com/software/disarchive.html")
     (synopsis "Software archive disassembler")
     (description "Disarchive can disassemble software archives into data
@@ -1204,15 +1169,10 @@ compression parameters used by Gzip.")
                                              ":" (getenv "PATH")))
                (invoke "pytest")))))))
     (inputs
-     `(("borg" ,borg)
-       ("python-colorama" ,python-colorama)
-       ("python-jsonschema" ,python-jsonschema)
-       ("python-requests" ,python-requests)
-       ("python-ruamel.yaml" ,python-ruamel.yaml)))
+     (list borg python-colorama python-jsonschema python-requests
+           python-ruamel.yaml))
     (native-inputs
-     `(("python-flexmock" ,python-flexmock)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)))
+     (list python-flexmock python-pytest python-pytest-cov))
     (home-page "https://torsion.org/borgmatic/")
     (synopsis "Simple, configuration-driven backup software")
     (description

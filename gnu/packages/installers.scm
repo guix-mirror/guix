@@ -48,7 +48,7 @@
       (native-inputs `(("xgcc" ,xgcc)
                        ("xbinutils" ,xbinutils)
                        ("mingw-w64" ,xlibc)))
-      (inputs `(("zlib" ,zlib)))
+      (inputs (list zlib))
       (arguments
        `(#:scons ,scons-python2
          #:modules ((srfi srfi-1)

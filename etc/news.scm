@@ -312,6 +312,54 @@ Ce recours à Software Heritage fonctionne aussi pour les autres clones Git que
 Guix peut faire, comme lorsqu'on utilise @option{--with-commit} et les options
 de transformation de paquet similaires.")))
 
+ (entry (commit "db4681a4c17d282a661552f2f57e5c453d02e414")
+        (title
+         (en "@code{gdm-service-type} now supports Wayland")
+         (fr "@code{gdm-service-type} prend maintenant en charge Wayland"))
+        (body
+         (en "@code{gdm-service-type} has been updated to support being launched
+as a Wayland client, and to launch Wayland sessions. The @code{wayland?} boolean
+field in @code{gdm-configuration} controls whether GDM starts in Wayland or X
+mode. See @command{info \"(guix) X Window\"} for more information.
+
+Wayland mode for GDM will soon become the default in Guix, so if your
+hardware doesn't support Wayland (Nvidia users are the most concerned here),
+please consider disabling it now.")
+         (fr "@code{gdm-service-type} a été mis à jour et peut maintenant être
+lancé comme client Wayland, ainsi que lancer des sessions Wayland. Le champ
+booléen @code{wayland?} de @code{gdm-configuration} contrôle le mode dans lequel
+GDM est lancé (Wayland ou X). Pour plus d'informations, voir
+@command{info \"(guix) X Window\"} (en anglais).
+
+GDM sera bientôt lancé en mode Wayland par défaut sur Guix, donc si votre matériel
+ne le prend pas en charge (les utilisateur·ices de cartes Nvidia sont les plus
+concerné·es), merci de le désactiver dès maintenant.")))
+
+ (entry (commit "f23803af2018a148fb088f2516d79c20d6bf95f0")
+        (title
+         (en "Input labels can now be omitted in package definitions"))
+        (body
+         (en "If you have written package definitions before, you may know
+that package inputs required a bit of boilerplate: each input needs to have an
+associated label (a string), which you can refer to in ``build-side code''.
+
+Input labels are now unnecessary, meaning that you can write code like:
+
+@lisp
+(package
+  ;; @dots{}
+  (inputs (list libunistring libffi libgc)))
+@end lisp
+
+Notice that the @code{inputs} field is simplified compared to the ``old
+style''.  When needed, you can now use g-expressions (gexps) to refer to
+another package in build-side code.  Additionally, the new
+@code{modify-inputs} macro facilitates common operations on inputs---deleting,
+replacing, adding inputs.
+
+To ease transition to the ``new style'', a new @command{guix style} command is
+provided.  Run @command{info \"(guix) Invoking guix style\"} for more info.")))
+
  (entry (commit "82daab42811a2e3c7684ebdf12af75ff0fa67b99")
         (title
          (en "New @samp{deb} format for the @command{guix pack} command")

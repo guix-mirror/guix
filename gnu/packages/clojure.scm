@@ -207,7 +207,7 @@ that can be implemented for any data type.")
        #:test-dirs '("src/test/clojure/")
        #:doc-dirs '()))
     (native-inputs
-     `(("clojure-tools-macro" ,clojure-tools-macro)))
+     (list clojure-tools-macro))
     (synopsis
      "Monad Macros and Definitions")
     (description

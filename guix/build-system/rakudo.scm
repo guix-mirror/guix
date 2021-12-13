@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,7 +20,8 @@
 (define-module (guix build-system rakudo)
   #:use-module (guix store)
   #:use-module (guix utils)
-  #:use-module (guix derivations)
+  #:use-module (guix gexp)
+  #:use-module (guix monads)
   #:use-module (guix search-paths)
   #:use-module (guix build-system)
   #:use-module (guix build-system gnu)
@@ -71,7 +73,7 @@
                 #:rest arguments)
   "Return a bag for NAME."
   (define private-keywords
-    '(#:source #:target #:rakudo #:prove6 #:zef #:inputs #:native-inputs))
+    '(#:target #:rakudo #:prove6 #:zef #:inputs #:native-inputs))
 
   (and (not target)                               ;XXX: no cross-compilation
        (bag
@@ -96,12 +98,12 @@
          (build rakudo-build)
          (arguments (strip-keyword-arguments private-keywords arguments)))))
 
-(define* (rakudo-build store name inputs
+(define* (rakudo-build name inputs
                        #:key
+                       source
                        (search-paths '())
                        (tests? #t)
-                       (phases '(@ (guix build rakudo-build-system)
-                                   %standard-phases))
+                       (phases '%standard-phases)
                        (outputs '("out"))
                        (system (%current-system))
                        (guile #f)
@@ -112,39 +114,25 @@
                                   (guix build utils))))
   "Build SOURCE using PERL6, and with INPUTS."
   (define builder
-    `(begin
-       (use-modules ,@modules)
-       (rakudo-build #:name ,name
-                     #:source ,(match (assoc-ref inputs "source")
-                                      (((? derivation? source))
-                                       (derivation->output-path source))
-                                      ((source)
-                                       source)
-                                      (source
-                                        source))
-                     #:search-paths ',(map search-path-specification->sexp
-                                           search-paths)
-                     #:phases ,phases
-                     #:system ,system
-                     #:tests? ,tests?
-                     #:outputs %outputs
-                     #:inputs %build-inputs)))
+    (with-imported-modules imported-modules
+      #~(begin
+          (use-modules #$@(sexp->gexp modules))
+          (rakudo-build #:name #$name
+                        #:source #+source
+                        #:search-paths '#$(sexp->gexp
+                                           (map search-path-specification->sexp
+                                                search-paths))
+                        #:phases #$phases
+                        #:system #$system
+                        #:tests? #$tests?
+                        #:outputs #$(outputs->gexp outputs)
+                        #:inputs #$(input-tuples->gexp inputs)))))
 
-  (define guile-for-build
-    (match guile
-      ((? package?)
-       (package-derivation store guile system #:graft? #f))
-      (#f                                         ; the default
-       (let* ((distro (resolve-interface '(gnu packages commencement)))
-              (guile  (module-ref distro 'guile-final)))
-         (package-derivation store guile system #:graft? #f)))))
-
-  (build-expression->derivation store name builder
-                                #:system system
-                                #:inputs inputs
-                                #:modules imported-modules
-                                #:outputs outputs
-                                #:guile-for-build guile-for-build))
+  (mlet %store-monad ((guile (package->derivation (or guile (default-guile))
+                                                  system #:graft? #f)))
+    (gexp->derivation name builder
+                      #:system system
+                      #:guile-for-build guile)))
 
 (define rakudo-build-system
   (build-system

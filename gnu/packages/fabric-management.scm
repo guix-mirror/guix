@@ -56,15 +56,14 @@
         (base32 "19scwwpwqhqsyq4hbr5cflcmypss828lalxxd36yby7mbimca38y"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("bison" ,bison)
-       ("flex" ,flex)
-
-       ;; The 3.3.21 'release' tarball isn't properly bootstrapped.
-       ("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
+     (list bison
+           flex
+           ;; The 3.3.21 'release' tarball isn't properly bootstrapped.
+           autoconf
+           automake
+           libtool))
     (inputs
-     `(("rdma-core" ,rdma-core)))
+     (list rdma-core))
     (arguments
      `(#:configure-flags '("--disable-static")
        #:phases
@@ -103,17 +102,11 @@ running the opensm daemon.")
         (base32 "1ns9sjwvxnklhi47d6k5x8kxdk1n7f5362y45xwxqmr7gwfvpmwa"))))
     (build-system gnu-build-system)
     (inputs
-     `(("rdma-core" ,rdma-core)
-       ("opensm" ,opensm)
-       ("glib" ,glib)))
+     (list rdma-core opensm glib))
     (outputs '("out" "lib"))
     (native-inputs
      ;; FIXME: needs rst2man for man pages
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("perl" ,perl)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf automake libtool perl pkg-config))
     (arguments
      '(#:configure-flags
        (list (string-append "CPPFLAGS=-I" (assoc-ref %build-inputs "opensm")
@@ -159,14 +152,14 @@ interface to this library is not guaranteed to be stable.")
        (sha256
         (base32 "00x7v6cf8l5y6g9xwh1sg738ch42fhv19msx0h0090nhr0bv98v7"))))
     (build-system gnu-build-system)
-    (inputs `(("graphviz" ,graphviz)
-              ("tcl" ,tcl)
-              ("tk" ,tk)
-              ("infiniband-diags" ,infiniband-diags)
-              ("rdma-core" ,rdma-core)
-              ("opensm" ,opensm)
-              ("perl" ,perl)))
-    (native-inputs `(("swig" ,swig)))
+    (inputs (list graphviz
+                  tcl
+                  tk
+                  infiniband-diags
+                  rdma-core
+                  opensm
+                  perl))
+    (native-inputs (list swig))
     (arguments
      `(#:configure-flags
        (list (string-append "--with-osm="  (assoc-ref %build-inputs "opensm"))
@@ -219,13 +212,9 @@ testing InfiniBand networks.")
        ;; Be verbose so that compiler flags are displayed.
        #:make-flags '("V=1")))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf automake libtool pkg-config))
     (inputs
-     `(("numactl" ,numactl)
-       ("rdma-core" ,rdma-core)))
+     (list numactl rdma-core))
     (synopsis "Optimized communication layer for message passing in HPC")
     (description
      "Unified Communication X (UCX) provides an optimized communication layer

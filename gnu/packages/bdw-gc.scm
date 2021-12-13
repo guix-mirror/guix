@@ -46,17 +46,21 @@
       (list
        ;; Install gc_cpp.h et al.
        "--enable-cplusplus"
-       ;; In GNU/Hurd systems during the 'Check' phase,
+
+       ;; Work around <https://github.com/ivmai/bdwgc/issues/353>.
+       "--disable-munmap"
+
+       ;; In GNU/Hurd systems during the 'check' phase,
        ;; there is a deadlock caused by the 'gctest' test.
        ;; To disable the error set "--disable-gcj-support"
        ;; to configure script. See bug report and discussion:
        ;; <https://lists.opendylan.org/pipermail/bdwgc/2017-April/006275.html>
        ;; <https://lists.gnu.org/archive/html/bug-hurd/2017-01/msg00008.html>
-       ,@(if (hurd-triplet? (or (%current-system)
-                                (%current-target-system)))
+       ,@(if (target-hurd? (or (%current-system)
+                               (%current-target-system)))
              '("--disable-gcj-support")
              '()))))
-   (native-inputs `(("pkg-config" ,pkg-config)))
+   (native-inputs (list pkg-config))
    (propagated-inputs
     (if (%current-target-system)
         ;; The build system refuses to check for compiler intrinsics when
@@ -85,17 +89,6 @@ C or C++ programs, though that is not its primary goal.")
 
    (license (x11-style (string-append home-page "license.txt")))))
 
-(define-public libgc/disable-munmap
-  ;; TODO: Use '--disable-munmap' by default on next rebuild cycle.
-  (package/inherit libgc
-    (arguments
-     ;; Work around <https://github.com/ivmai/bdwgc/issues/353>.
-     (substitute-keyword-arguments (package-arguments libgc)
-       ((#:configure-flags flags ''())
-        `(cons "--disable-munmap" ,flags))))
-    (properties `((hidden? . #t)
-                  ,@(package-properties libgc)))))
-
 ;; TODO: Add a static output in libgc in the next rebuild cycle.
 (define-public libgc/static-libs
   (package/inherit
@@ -116,7 +109,7 @@ C or C++ programs, though that is not its primary goal.")
              (sha256
               (base32
                "10jhhi79d5brwlsyhwgpnrmc8nhlf7aan2lk9xhgihk5jc6srbvc"))))
-   (propagated-inputs `(("libatomic-ops" ,libatomic-ops)))))
+   (propagated-inputs (list libatomic-ops))))
 
 (define-public libgc/back-pointers
   (package/inherit

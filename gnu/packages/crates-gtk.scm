@@ -55,8 +55,7 @@
        (("rust-shell-words" ,rust-shell-words-0.1)
         ("rust-tempfile" ,rust-tempfile-3))))
     (inputs
-     `(("atk" ,atk)
-       ("glib" ,glib)))
+     (list atk glib))
     (home-page "https://gtk-rs.org/")
     (synopsis "FFI bindings to libatk-1")
     (description "FFI bindings to libatk-1")
@@ -86,8 +85,7 @@
        #:cargo-development-inputs
        (("rust-gir-format-check" ,rust-gir-format-check-0.1))))
     (inputs
-     `(("atk" ,atk)
-       ("glib" ,glib)))
+     (list atk glib))
     (home-page "https://gtk-rs.org/")
     (synopsis "Rust bindings for the ATK library")
     (description "Rust bindings for the ATK library")
@@ -119,7 +117,7 @@
        #:cargo-development-inputs
        (("rust-tempfile" ,rust-tempfile-3))))
     (inputs
-     `(("cairo" ,cairo)))
+     (list cairo))
     (home-page "https://gtk-rs.org/")
     (synopsis "Rust bindings for the Cairo library")
     (description "Rust bindings for the Cairo library")
@@ -198,7 +196,7 @@
         ("rust-winapi" ,rust-winapi-0.3)
         ("rust-x11" ,rust-x11-2))))
     (inputs
-     `(("cairo" ,cairo)))
+     (list cairo))
     (home-page "https://gtk-rs.org/")
     (synopsis "FFI bindings to libcairo")
     (description "This package provides FFI bindings to libcairo.")
@@ -255,11 +253,7 @@
        #:cargo-development-inputs
        (("rust-gir-format-check" ,rust-gir-format-check-0.1))))
     (inputs
-     `(("cairo" ,cairo)
-       ("gdk-pixbuf" ,gdk-pixbuf)
-       ("glib" ,glib)
-       ("gtk+" ,gtk+)
-       ("pango" ,pango)))
+     (list cairo gdk-pixbuf glib gtk+ pango))
     (home-page "https://gtk-rs.org/")
     (synopsis "Rust bindings for the GDK 3 library")
     (description "This package provides Rust bindings for the GDK 3 library.")
@@ -321,7 +315,7 @@
        #:cargo-development-inputs
        (("rust-gir-format-check" ,rust-gir-format-check-0.1))))
     (inputs
-     `(("gdk-pixbuf" ,gdk-pixbuf)))
+     (list gdk-pixbuf))
     (home-page "https://gtk-rs.org/")
     (synopsis "Rust bindings for the GdkPixbuf library")
     (description "Rust bindings for the GdkPixbuf library")
@@ -405,7 +399,7 @@
        (("rust-shell-words" ,rust-shell-words-0.1)
         ("rust-tempfile" ,rust-tempfile-3))))
     (inputs
-     `(("gdk-pixbuf" ,gdk-pixbuf)))
+     (list gdk-pixbuf))
     (home-page "https://gtk-rs.org/")
     (synopsis "FFI bindings to libgdk_pixbuf-2.0")
     (description "This package provides FFI bindings to @code{libgdk_pixbuf-2.0}.")
@@ -463,11 +457,7 @@
        (("rust-shell-words" ,rust-shell-words-0.1)
         ("rust-tempfile" ,rust-tempfile-3))))
     (inputs
-     `(("cairo" ,cairo)
-       ("gdk-pixbuf" ,gdk-pixbuf)
-       ("gtk+" ,gtk+)
-       ("glib" ,glib)
-       ("pango" ,pango)))
+     (list cairo gdk-pixbuf gtk+ glib pango))
     (home-page "https://gtk-rs.org/")
     (synopsis "FFI bindings to libgdk-3")
     (description "FFI bindings to libgdk-3")
@@ -533,7 +523,7 @@
        (("rust-gir-format-check" ,rust-gir-format-check-0.1)
         ("rust-serial-test" ,rust-serial-test-0.4))))
     (inputs
-     `(("glib" ,glib)))
+     (list glib))
     (home-page "https://gtk-rs.org/")
     (synopsis "Rust bindings for the Gio library")
     (description "Rust bindings for the Gio library")
@@ -621,7 +611,7 @@
         ("rust-system-deps" ,rust-system-deps-1)
         ("rust-winapi" ,rust-winapi-0.3))))
     (inputs
-     `(("glib" ,glib)))
+     (list glib))
     (home-page "https://gtk-rs.org/")
     (synopsis "FFI bindings to libgio-2.0")
     (description "This package provides FFI bindings to libgio-2.0.")
@@ -697,7 +687,7 @@
         ("rust-libc" ,rust-libc-0.2)
         ("rust-once-cell" ,rust-once-cell-1))))
     (inputs
-     `(("glib" ,glib)))
+     (list glib))
     (home-page "https://gtk-rs.org/")
     (synopsis "Rust bindings for the GLib library")
     (description "Rust bindings for the GLib library")
@@ -807,7 +797,7 @@
        (("rust-shell-words" ,rust-shell-words-0.1)
         ("rust-tempfile" ,rust-tempfile-3))))
     (inputs
-     `(("glib" ,glib)))
+     (list glib))
     (home-page "https://gtk-rs.org/")
     (synopsis "FFI bindings to libglib-2.0")
     (description "This package provides FFI bindings to libglib-2.0.")
@@ -858,7 +848,7 @@
        (("rust-shell-words" ,rust-shell-words-0.1)
         ("rust-tempfile" ,rust-tempfile-3))))
     (inputs
-     `(("glib" ,glib)))
+     (list glib))
     (home-page "https://gtk-rs.org/")
     (synopsis "FFI bindings to libgobject-2.0")
     (description "This package provides FFI bindings to libgobject-2.0.")
@@ -925,11 +915,7 @@
        #:cargo-development-inputs
        (("rust-gir-format-check" ,rust-gir-format-check-0.1))))
     (inputs
-     `(("atk" ,atk)
-       ("cairo" ,cairo)
-       ("glib" ,glib)
-       ("gtk+" ,gtk+)
-       ("pango" ,pango)))
+     (list atk cairo glib gtk+ pango))
     (home-page "https://gtk-rs.org/")
     (synopsis "Rust bindings for the GTK+ 3 library")
     (description "This package provides Rust bindings for the GTK+ 3 library.")
@@ -985,7 +971,7 @@
        (("rust-shell-words" ,rust-shell-words-0.1)
         ("rust-tempfile" ,rust-tempfile-3))))
     (inputs
-     `(("gtk+" ,gtk+)))
+     (list gtk+))
     (home-page "https://gtk-rs.org/")
     (synopsis "FFI bindings to libgtk-3")
     (description "This package provides FFI bindings to libgtk-3.")
@@ -1017,7 +1003,7 @@
        #:cargo-development-inputs
        (("rust-gir-format-check" ,rust-gir-format-check-0.1))))
     (inputs
-     `(("pango" ,pango)))
+     (list pango))
     (home-page "https://gtk-rs.org/")
     (synopsis "Rust bindings for the Pango library")
     (description "Rust bindings for the Pango library")
@@ -1097,7 +1083,7 @@
         ("rust-libc" ,rust-libc-0.2)
         ("rust-system-deps" ,rust-system-deps-1))))
     (inputs
-     `(("pango" ,pango)))
+     (list pango))
     (home-page "https://gtk-rs.org/")
     (synopsis "FFI bindings to libpango-1.0")
     (description "This package provides FFI bindings to @code{libpango-1.0}.")
@@ -1156,7 +1142,7 @@
        #:cargo-development-inputs
        (("rust-gir-format-check" ,rust-gir-format-check-0.1))))
     (inputs
-     `(("gtk+" ,gtk+)))
+     (list gtk+))
     (home-page "https://gtk-rs.org/")
     (synopsis "Rust bindings for the PangoCairo library")
     (description
@@ -1218,7 +1204,7 @@
        (("rust-shell-words" ,rust-shell-words-0.1)
         ("rust-tempfile" ,rust-tempfile-3))))
     (inputs
-     `(("gtk+" ,gtk+)))
+     (list gtk+))
     (home-page "https://gtk-rs.org/")
     (synopsis "FFI bindings to libgtk-3")
     (description "This package provides FFI bindings to libgtk-3.")

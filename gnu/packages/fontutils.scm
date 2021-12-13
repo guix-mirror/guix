@@ -8,10 +8,13 @@
 ;;; Copyright © 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2017, 2018, 2020, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,10 +35,10 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages bison)
-  #:use-module (gnu packages build-tools)   ;for meson-0.55
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages datastructures)
+  #:use-module (gnu packages docbook)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fonts)
   #:use-module (gnu packages freedesktop)
@@ -59,6 +62,7 @@
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu packages tex)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -88,12 +92,11 @@
     ;; depend on it.
     `(#:configure-flags (list "--enable-freetype-config")))
    (native-inputs
-    `(("pkg-config" ,pkg-config)))
+    (list pkg-config))
    (propagated-inputs
     ;; These are all in the Requires.private field of freetype2.pc.
     ;; XXX: add harfbuzz.
-    `(("libpng" ,libpng)
-      ("zlib" ,zlib)))
+    (list libpng zlib))
    (synopsis "Font rendering library")
    (description
     "Freetype is a library that can be used by applications to access the
@@ -118,12 +121,9 @@ anti-aliased glyph bitmap generation with 256 gray levels.")
          "0zpqgihn3yh3v51ynxwr8asqrijvs4gv686clwv7bm8sawr4kfw7"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("flex" ,flex)
-       ("bison" ,bison)
-       ("pkg-config" ,pkg-config)))
+     (list flex bison pkg-config))
     (inputs
-     `(("freetype" ,freetype)
-       ("harfbuzz" ,harfbuzz)))
+     (list freetype harfbuzz))
     (arguments
      `(#:configure-flags '("--disable-static"
                            "--with-qt=no"))) ;no gui
@@ -151,7 +151,7 @@ scripts.")
          "1i97gkqa6jfzlslsngqf556kx60knlgf7yc9pzsq2pizc6f0d4zl"))))
     (build-system gnu-build-system)
     (inputs
-     `(("zlib" ,zlib)))
+     (list zlib))
     (arguments
      `(#:make-flags '(,(string-append "CC=" (cc-for-target)))
        #:tests? #f                      ;no tests
@@ -254,7 +254,7 @@ TTF (TrueType/OpenType Font) files.")
                       (invoke "make" "-j"
                               (number->string (parallel-job-count))
                               "all" "CC=gcc"))))))
-    (inputs `(("perl" ,perl)))
+    (inputs (list perl))
     (synopsis "Convert TrueType fonts to Postscript Type 1")
     (description
      "TTF2PT1 provides tools to convert most TrueType fonts (or other formats
@@ -307,9 +307,9 @@ work with most software requiring Type 1 fonts.")
                 "BUILD_SHARED_LIBS"))
              #t)))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("brotli" ,brotli)))
+     (list brotli))
     (synopsis "Libraries and tools for WOFF2 font format")
     (description "WOFF2 provides libraries and tools to handle the Web Open
 Font Format (WOFF).")
@@ -317,55 +317,61 @@ Font Format (WOFF).")
     (license license:expat)))
 
 (define-public fontconfig
-  (package
-   (name "fontconfig")
-   (version "2.13.1")
-   (source (origin
-            (method url-fetch)
-            (uri (string-append
-                   "https://www.freedesktop.org/software/fontconfig/release/fontconfig-"
-                   version ".tar.bz2"))
-            (patches (search-patches "fontconfig-hurd-path-max.patch"))
-            (sha256 (base32
-                     "0hb700a68kk0ip51wdlnjjc682kvlrmb6q920mzajykdk0mdsmgn"))))
-   (build-system gnu-build-system)
-   ;; In Requires or Requires.private of fontconfig.pc.
-   (propagated-inputs `(("expat" ,expat)
-                        ("freetype" ,freetype)
-                        ("libuuid" ,util-linux "lib")))
-   (inputs
-    ;; We use to use 'gs-fonts' but they are not recognized by newer versions
-    ;; of Pango, causing many applications to fail to find fonts otherwise.
-    `(("font-dejavu" ,font-dejavu)))
-   (native-inputs
-    `(("gperf" ,gperf)
-      ("pkg-config" ,pkg-config)))
-   (arguments
-    `(#:configure-flags
-      (list "--with-cache-dir=/var/cache/fontconfig"
-            ;; register the default fonts
-            (string-append "--with-default-fonts="
-                           (assoc-ref %build-inputs "font-dejavu")
-                           "/share/fonts")
+  (hidden-package
+   (package
+     (name "fontconfig-minimal")
+     (version "2.13.94")
+     (source (origin
+               (method url-fetch)
+               (uri (string-append
+                     "https://www.freedesktop.org/software/"
+                     "fontconfig/release/fontconfig-" version ".tar.xz"))
+               (sha256 (base32
+                        "0g004r0bkkqz00mpm3svnnxn7d83158q0yb9ggxryizxfg5m5w55"))
+               (patches (search-patches "fontconfig-cache-ignore-mtime.patch"))))
+     (build-system gnu-build-system)
+     ;; In Requires or Requires.private of fontconfig.pc.
+     (propagated-inputs `(("expat" ,expat)
+                          ("freetype" ,freetype)
+                          ("libuuid" ,util-linux "lib")))
+     (inputs
+      ;; We use to use 'font-ghostscript' but they are not recognized by newer
+      ;; versions of Pango, causing many applications to fail to find fonts
+      ;; otherwise.
+      (list font-dejavu))
+     (native-inputs
+      `(("gperf" ,gperf)
+        ("pkg-config" ,pkg-config)
+        ("python" ,python-minimal)))    ;to avoid a cycle through tk
+     (arguments
+      `(#:configure-flags
+        (list "--disable-docs"
+              "--with-cache-dir=/var/cache/fontconfig"
+              ;; register the default fonts
+              (string-append "--with-default-fonts="
+                             (assoc-ref %build-inputs "font-dejavu")
+                             "/share/fonts"))
+        #:phases
+        (modify-phases %standard-phases
+          (add-before 'check 'skip-problematic-tests
+            (lambda _
+              ;; SOURCE_DATE_EPOCH doesn't make sense when ignoring mtime
+              (unsetenv "SOURCE_DATE_EPOCH")
 
-            ;; Register fonts from user and system profiles.
-            (string-append "--with-add-fonts="
-                           "~/.guix-profile/share/fonts,"
-                           "/run/current-system/profile/share/fonts")
-
-            ;; python is not actually needed
-            "PYTHON=false")
-      #:phases
-      (modify-phases %standard-phases
-        (replace 'install
-                 (lambda _
-                   ;; Don't try to create /var/cache/fontconfig.
-                   (invoke "make" "install"
-                           "fc_cachedir=$(TMPDIR)"
-                           "RUN_FC_CACHE_TEST=false"))))))
-   (synopsis "Library for configuring and customizing font access")
-   (description
-    "Fontconfig can discover new fonts when installed automatically;
+              (substitute* "test/run-test.sh"
+                ;; The crbug1004254 test attempts to fetch fonts from the
+                ;; network.
+                (("\\[ -x \"\\$BUILDTESTDIR\"/test-crbug1004254 \\]")
+                 "false"))))
+          (replace 'install
+            (lambda _
+              ;; Don't try to create /var/cache/fontconfig.
+              (invoke "make" "install"
+                      "fc_cachedir=$(TMPDIR)"
+                      "RUN_FC_CACHE_TEST=false"))))))
+     (synopsis "Library for configuring and customizing font access")
+     (description
+      "Fontconfig can discover new fonts when installed automatically;
 perform font name substitution, so that appropriate alternative fonts can
 be selected if fonts are missing;
 identify the set of fonts required to completely cover a set of languages;
@@ -373,10 +379,56 @@ have GUI configuration tools built as it uses an XML-based configuration file;
 efficiently and quickly find needed fonts among the set of installed fonts;
 be used in concert with the X Render Extension and FreeType to implement
 high quality, anti-aliased and subpixel rendered text on a display.")
-   ; The exact license is more X11-style than BSD-style.
-   (license (license:non-copyleft "file://COPYING"
-                       "See COPYING in the distribution."))
-   (home-page "https://www.freedesktop.org/wiki/Software/fontconfig")))
+                                        ; The exact license is more X11-style than BSD-style.
+     (license (license:non-copyleft "file://COPYING"
+                                    "See COPYING in the distribution."))
+     (native-search-paths
+      ;; Since version 2.13.94, fontconfig knows to find fonts from
+      ;; XDG_DATA_DIRS.
+      (list (search-path-specification
+             (variable "XDG_DATA_DIRS")
+             (files '("share")))))
+     (home-page "https://www.freedesktop.org/wiki/Software/fontconfig"))))
+
+;;; The documentation of fontconfig is built in a separate package, as it
+;;; causes a dramatic increase in the size of the closure of fontconfig.  This
+;;; is intentionally named 'fontconfig', as it's intended as the user-facing
+;;; fontconfig package.
+(define-public fontconfig-with-documentation
+  (package
+    (inherit fontconfig)
+    (name "fontconfig")
+    (outputs (cons "doc" (package-outputs fontconfig)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments fontconfig)
+       ((#:configure-flags configure-flags)
+        `(delete "--disable-docs" ,configure-flags))
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'no-pdf-doc
+             (lambda _
+               ;; Don't build documentation as PDF.
+               (substitute* "doc/Makefile.in"
+                 (("^PDF_FILES = .*")
+                  "PDF_FILES =\n"))))
+           (add-after 'install 'move-man-sections
+             (lambda* (#:key outputs #:allow-other-keys)
+               ;; Move share/man/man{3,5} to the "doc" output.  Leave "man1" in
+               ;; "out" for convenience.
+               (let ((out (assoc-ref outputs "out"))
+                     (doc (assoc-ref outputs "doc")))
+                 (for-each (lambda (section)
+                             (let ((source (string-append out "/share/man/"
+                                                          section))
+                                   (target (string-append doc "/share/man/"
+                                                          section)))
+                               (copy-recursively source target)
+                               (delete-file-recursively source)))
+                           '("man3" "man5")))))))))
+    (native-inputs
+     (append (package-native-inputs fontconfig)
+             `(("docbook-utils" ,docbook-utils))))
+    (properties (alist-delete 'hidden? (package-properties fontconfig)))))
 
 (define-public t1lib
   (package
@@ -421,22 +473,21 @@ X11-system or any other graphical user interface.")
 (define-public teckit
   (package
     (name "teckit")
-    (version "2.5.9")                   ;signed by key 0xC9183BEA0288CDEE
+    (version "2.5.10")                  ; signed by key 0xC9183BEA0288CDEE
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/silnrsi/teckit/releases/"
                            "download/v" version "/teckit-" version ".tar.gz"))
        (sha256
-        (base32 "0gbxyip4wdibirdg2pvzayzyy927vxyd6dfyfiflx8zg88qzn8v8"))))
+        (base32 "12qnf8nhxyr4d5pc01s3vc6h726506957an4vvmmfz633cqi5796"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))
     (inputs
-     `(("zlib" ,zlib)
-       ("expat" ,expat)))
+     (list zlib expat))
     (native-inputs
-     `(("perl" ,perl)))                 ;for the tests
+     (list perl))                 ;for the tests
     (synopsis "Toolkit for encoding conversions")
     (description
      "TECkit is a low-level toolkit intended to be used by other applications
@@ -472,22 +523,10 @@ applications should be.")
         (base32
          "01jzhwnj1c3d68dmw15jdxly0hwkmd8ja4kw755rbkykn1ly2qyx"))))
    (build-system cmake-build-system)
-   (arguments
-    `(#:phases (modify-phases %standard-phases
-                 (add-after 'unpack 'adjust-test-PYTHONPATH
-                   (lambda _
-                     ;; Tell the build system not to override PYTHONPATH
-                     ;; while running the Python tests.
-                     (substitute* "Graphite.cmake"
-                       (("ENVIRONMENT PYTHONPATH=")
-                        (string-append "ENVIRONMENT PYTHONPATH="
-                                       (getenv "PYTHONPATH") ":")))
-                     #t)))))
    (native-inputs
-    `(("python" ,python)
-      ("python-fonttools" ,python-fonttools)))
+    (list python python-fonttools))
    (inputs
-    `(("freetype" ,freetype)))
+    (list freetype))
    (synopsis "Reimplementation of the SIL Graphite text processing engine")
    (description
     "Graphite2 is a reimplementation of the SIL Graphite text processing
@@ -510,8 +549,8 @@ and returns a sequence of positioned glyphids from the font.")
        (base32
         "1k3sxgjqq0jnpk9xxys05q32sl5hbf1lbk1gmfxcrmpdgnhli0my"))))
     (build-system gnu-build-system)
-    (native-inputs `(("ghostscript" ,ghostscript))) ;for tests
-    (inputs `(("zlib" ,zlib)))
+    (native-inputs (list ghostscript)) ;for tests
+    (inputs (list zlib))
     (arguments
      `(#:configure-flags
       `("--with-libpotrace"))) ; install library and headers
@@ -539,9 +578,9 @@ resolution.")
                (base32 "0sq6g3xaxw388akws6qrllp3kp2sxgk2dv4j79k6mm52rnihrnv8"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (propagated-inputs
-     `(("freetype" ,freetype)))
+     (list freetype))
     (home-page "https://www.nongnu.org/m17n/")
     (synopsis "Library for handling OpenType Font")
     (description "This library can read Open Type Layout Tables from an OTF
@@ -601,17 +640,17 @@ definitions.")
 (define-public fontforge
   (package
    (name "fontforge")
-   (version "20200314")
+   (version "20201107")
    (source (origin
             (method url-fetch)
             (uri (string-append
                   "https://github.com/fontforge/fontforge/releases/download/"
                   version "/fontforge-" version ".tar.xz"))
             (sha256
-             (base32 "0qf88wd6riycq56d24brybyc93ns74s0nyyavm43zp2kfcihn6fd"))))
+             (base32 "0y3c8x1i6yf6ak9m5dhr1nldgfmg7zhnwdfd57ffs698c27vmg38"))))
    (build-system cmake-build-system)
    (native-inputs
-    `(("pkg-config" ,pkg-config)))
+    (list pkg-config))
    (inputs `(("cairo"           ,cairo)
              ("fontconfig"      ,fontconfig) ;dlopen'd
              ("freetype"        ,freetype)
@@ -651,7 +690,8 @@ definitions.")
         (add-after 'install 'set-library-path
           (lambda* (#:key inputs outputs #:allow-other-keys)
             (let ((out (assoc-ref outputs "out"))
-                  (potrace (string-append (assoc-ref inputs "potrace") "/bin")))
+                  (potrace (dirname
+                            (search-input-file inputs "bin/potrace"))))
               (wrap-program (string-append out "/bin/fontforge")
                 ;; Fontforge dynamically opens libraries.
                 `("LD_LIBRARY_PATH" ":" prefix
@@ -711,11 +751,9 @@ generate bitmaps.")
     (arguments
      `(#:python ,python-2))
     (propagated-inputs
-     `(("python2-fonttools" ,python2-fonttools)))
+     (list python2-fonttools))
     (native-inputs
-     `(("unzip" ,unzip)
-       ("python2-pytest" ,python2-pytest)
-       ("python2-pytest-runner" ,python2-pytest-runner)))
+     (list unzip python2-pytest python2-pytest-runner))
     (home-page "https://github.com/unified-font-object/ufoLib")
     (synopsis "Low-level UFO reader and writer")
     (description
@@ -738,12 +776,9 @@ files.  UFO is a file format that stores fonts source files.")
     (arguments
      `(#:python ,python-2))
     (native-inputs
-     `(("unzip" ,unzip)
-       ("python2-pytest" ,python2-pytest)
-       ("python2-pytest-runner" ,python2-pytest-runner)))
+     (list unzip python2-pytest python2-pytest-runner))
     (propagated-inputs
-     `(("python2-fonttools" ,python2-fonttools)
-       ("python2-ufolib" ,python2-ufolib)))
+     (list python2-fonttools python2-ufolib))
     (home-page "https://pypi.org/project/defcon/")
     (synopsis "Flexible objects for representing @acronym{UFO, unified font object} data")
     (description
@@ -774,12 +809,12 @@ implements UFO3 as described by the UFO font format.")
     (arguments
      `(#:python ,python-2))
     (propagated-inputs
-     `(("python2-booleanoperations" ,python2-booleanoperations)
-       ("python2-defcon" ,python2-defcon)
-       ("python2-fonttools" ,python2-fonttools)
-       ("python2-pillow" ,python2-pillow)
-       ("python2-pyclipper" ,python2-pyclipper)
-       ("python2-ufolib" ,python2-ufolib)))
+     (list python2-booleanoperations
+           python2-defcon
+           python2-fonttools
+           python2-pillow
+           python2-pyclipper
+           python2-ufolib))
     (home-page "https://github.com/googlei18n/nototools")
     (synopsis "Noto fonts support tools and scripts")
     (description
@@ -810,20 +845,16 @@ maintain the Noto Fonts project.")
                (base32
                 "0jh05wzrif7z1xf9jzs8bgf49lpj5zs55agj414bmmwdddk7my7j"))))
     (build-system meson-build-system)
-    (arguments
-     `(#:meson ,meson-0.55))
     (native-inputs
-     `(("check" ,check)
-       ("gcc" ,gcc-10)    ;TODO: Remove when the default compiler is > GCC 7.
-       ("pkg-config" ,pkg-config)
-       ("scdoc" ,scdoc)))
+     (list check gcc-10 ;TODO: Remove when the default compiler is > GCC 7.
+           pkg-config scdoc))
     (propagated-inputs
-     `(;; Required by fcft.pc.
-       ("fontconfig" ,fontconfig)
-       ("freetype" ,freetype)
-       ("harfbuzz" ,harfbuzz)
-       ("pixman" ,pixman)
-       ("tllist" ,tllist)))
+     (list ;; Required by fcft.pc.
+           fontconfig
+           freetype
+           harfbuzz
+           pixman
+           tllist))
     (synopsis "Font loading and glyph rasterization library")
     (description
      "@code{fcft} is a small font loading and glyph rasterization library
@@ -868,7 +899,7 @@ generated list of fallback fonts are checked.")
       ("glib" ,glib "bin")
       ("gobject-introspection" ,gobject-introspection)
       ("pkg-config" ,pkg-config)
-      ("vala" ,vala-0.50)
+      ("vala" ,vala)
       ("yelp-tools" ,yelp-tools)))
    (inputs
     `(("fonconfig" ,fontconfig)
@@ -964,13 +995,9 @@ Unicode Charts.  It was developed for use with DejaVu Fonts project.")
         (base32 "1shcs5l27l7380dvacvhl8wrdq3lix0wnhzvfdh7vx2pkzjs3zk6"))))
     (build-system meson-build-system)
     (native-inputs
-     `(("gtk-doc" ,gtk-doc/stable)
-       ("pkg-config" ,pkg-config)
-       ("python" ,python-wrapper)))
+     (list gtk-doc/stable pkg-config python-wrapper))
     (inputs
-     `(("freetype" ,freetype)
-       ("fribidi" ,fribidi)
-       ("harfbuzz" ,harfbuzz)))
+     (list freetype fribidi harfbuzz))
     (home-page "https://github.com/HOST-Oman/libraqm")
     (synopsis "Library for complex text layout")
     (description
@@ -1002,8 +1029,7 @@ can support most writing systems covered by Unicode.")
        ;; FIXME: texlive-kpathsea doesn't come with the library and headers
        (list "--without-kpathsea")))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)))
+     (list autoconf automake))
     (home-page "https://lcdf.org/type/")
     (synopsis "Multiple font manipulation tools")
     (description "LCDF Typetools comprises several programs for manipulating

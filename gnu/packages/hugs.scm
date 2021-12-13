@@ -72,7 +72,7 @@
              #t)))
        #:tests? #f)) ; no test target
     ;; FIXME: Fails to build with GCC 5.
-    (native-inputs `(("gcc" ,gcc-4.9)))
+    (native-inputs (list gcc-4.9))
     (home-page "https://www.haskell.org/hugs/")
     (synopsis "Functional programming system based on Haskell 98")
     (description

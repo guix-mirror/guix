@@ -40,7 +40,7 @@
        (base32 "0wch48nml28jj6ild889745dsg2agm7mpvrmbl1gi98nw6vjrf6v"))))
     (build-system gnu-build-system)
     (inputs
-     `(("ncurses" ,ncurses)))
+     (list ncurses))
     (home-page "https://thrysoee.dk/editline/")
     (synopsis "NetBSD Editline library")
     (description

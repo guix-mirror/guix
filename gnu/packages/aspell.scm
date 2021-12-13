@@ -73,7 +73,7 @@
                   (string-append "\"filter-path" middle
                                  "\"" libdir "\"")))
                #t))))))
-    (inputs `(("perl" ,perl)))
+    (inputs (list perl))
 
     (native-search-paths
      ;; This is a Guix-specific environment variable that takes a single
@@ -131,8 +131,7 @@ dictionaries, including personal ones.")
          (list (string-append "dictdir=" out "/lib/aspell")
                (string-append "datadir=" out "/lib/aspell")))
        #:tests? #f))
-    (native-inputs `(("aspell" ,aspell)
-                     ("which" ,which)))
+    (native-inputs (list aspell which))
     (synopsis (string-append full-name " dictionary for GNU Aspell")) ; XXX: i18n
     (description
      "This package provides a dictionary for the GNU Aspell spell checker.")
@@ -389,10 +388,7 @@ dictionaries, including personal ones.")
                (base32
                 "11lkrnhwrf5mvrrq45k4mads3n9aswgac8dc25ba61c75alxb5rs"))))
     (native-inputs
-     `(("tar" ,tar)
-       ("gzip" ,gzip)
-       ("perl" ,perl)
-       ("aspell" ,aspell)))
+     (list tar gzip perl aspell))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -522,10 +518,9 @@ under permissive licensing terms.  See the 'Copyright' file."))))
                    (format port "#define MAN45DIR \"~a/share/man/man5\"~%" out))))
              #t)))))
     (inputs
-     `(("grep" ,grep)
-       ("ncurses" ,ncurses)))
+     (list grep ncurses))
     (native-inputs
-     `(("bison" ,bison)))
+     (list bison))
     (synopsis "Interactive spell-checking tool for Unix")
     (description "Ispell is an interactive spell-checking tool supporting many
 European languages.")

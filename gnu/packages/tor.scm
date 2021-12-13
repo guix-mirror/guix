@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2017, 2018, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
@@ -64,7 +64,8 @@
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0sj7qn6d6js6gk4vjfkc7p9g021czbfaq00yfq3mn5ycnhvimkhm"))))
+               "0sj7qn6d6js6gk4vjfkc7p9g021czbfaq00yfq3mn5ycnhvimkhm"))
+             (patches (search-patches "tor-sandbox-i686.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -75,18 +76,28 @@
          (add-before 'check 'skip-practracker
            ;; This is a style linter.  It doesn't get to throw fatal errors.
            (lambda _
-             (setenv "TOR_DISABLE_PRACTRACKER" "set")
-             #t)))))
+             (setenv "TOR_DISABLE_PRACTRACKER" "set")))
+         ,@(if (or (target-aarch64?)
+                   (target-ppc32?))
+             ;; Work around upstream issue relating to sandboxing and glibc-2.33.
+             ;; This is similar to the issue the tor-sandbox-i686 patch fixes
+             ;; but for other architectures.
+             ;; https://gitlab.torproject.org/tpo/core/tor/-/issues/40381
+             ;; https://gitlab.torproject.org/tpo/core/tor/-/merge_requests/446
+             `((add-before 'check 'adjust-test-suite
+                 (lambda _
+                   (substitute* "src/test/test_include.sh"
+                     ((".*Sandbox 1.*") "")))))
+             '()))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("python" ,python)))             ; for tests
+     (list pkg-config python))             ; for tests
     (inputs
-     `(("libevent" ,libevent)
-       ("libseccomp" ,libseccomp)
-       ("openssl" ,openssl)
-       ("xz" ,xz)
-       ("zlib" ,zlib)
-       ("zstd" ,zstd "lib")))
+     (list libevent
+           libseccomp
+           openssl
+           xz
+           zlib
+           `(,zstd "lib")))
     (home-page "https://www.torproject.org/")
     (synopsis "Anonymous network router to improve privacy on the Internet")
     (description
@@ -143,7 +154,7 @@ This package only provides a client to the Tor Network.")))
                 "08inrkap29gikb6sdmb58z43hw4abwrfw7ny40c4xzdkss0vkwdr"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libcap" ,libcap)))
+     (list libcap))
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (add-after 'build 'absolutize
@@ -204,14 +215,9 @@ rejects UDP traffic from the application you're using.")
                  (("^logdir") "#logdir")
                  (("^logfile") "#logfile"))))))))
     (inputs
-     `(("brotli" ,brotli)
-       ("openssl" ,openssl)
-       ("pcre" ,pcre)
-       ("w3m" ,w3m)
-       ("zlib" ,zlib)))
+     (list brotli openssl pcre w3m zlib))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)))
+     (list autoconf automake))
     (home-page "https://www.privoxy.org")
     (synopsis "Web proxy with advanced filtering capabilities for enhancing privacy")
     (description
@@ -226,7 +232,7 @@ networks.")
 (define-public onionshare-cli
   (package
     (name "onionshare-cli")
-    (version "2.3.2")
+    (version "2.4")
     (source
       (origin
         (method git-fetch)
@@ -235,26 +241,27 @@ networks.")
               (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "1qk0zvbaws9md1lmi0al1jc8v86l65nf7n3w1s36iwsfzazc6clv"))))
+         (base32 "157ryxm4p1q7b3nj32v9fziw1li6s6s203b7ll80js14cbp6dj9d"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (inputs
      ;; TODO: obfs4proxy
-     `(("python-click" ,python-click)
-       ("python-colorama" ,python-colorama)
-       ("python-eventlet" ,python-eventlet)
-       ("python-flask" ,python-flask)
-       ("python-flask-httpauth" ,python-flask-httpauth)
-       ("python-flask-socketio" ,python-flask-socketio)
-       ("python-psutil" ,python-psutil)
-       ("python-pycryptodome" ,python-pycryptodome)
-       ("python-pysocks" ,python-pysocks)
-       ("python-requests" ,python-requests)
-       ("python-stem" ,python-stem)
-       ("python-unidecode" ,python-unidecode)
-       ("python-urllib3" ,python-urllib3)
-       ("tor" ,tor)))
+     (list python-click
+           python-colorama
+           python-eventlet
+           python-flask
+           python-flask-httpauth
+           python-flask-socketio
+           python-pynacl
+           python-psutil
+           python-pycryptodome
+           python-pysocks
+           python-requests
+           python-stem
+           python-unidecode
+           python-urllib3
+           tor))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -264,18 +271,21 @@ networks.")
                                 "desktop/src/onionshare/gui_common.py")
                (("shutil\\.which\\(\\\"tor\\\"\\)")
                 (string-append "\"" (which "tor") "\"")))
-             #t))
+             (substitute* "cli/tests/test_cli_common.py"
+               (("/usr/share/tor")
+                (string-append (assoc-ref inputs "tor") "/share/tor")))))
          (add-before 'build 'change-directory
-           (lambda _ (chdir "cli") #t))
+           (lambda _ (chdir "cli")))
          (replace 'check
-           (lambda _
-             (setenv "HOME" "/tmp")
-             ;; Greendns is not needed for testing, and if eventlet tries to
-             ;; load it, an OSError is thrown when getprotobyname is called.
-             ;; Thankfully there is an environment variable to disable the
-             ;; greendns import, so use it:
-             (setenv "EVENTLET_NO_GREENDNS" "yes")
-             (invoke "pytest" "-v" "./tests"))))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (setenv "HOME" "/tmp")
+               ;; Greendns is not needed for testing, and if eventlet tries to
+               ;; load it, an OSError is thrown when getprotobyname is called.
+               ;; Thankfully there is an environment variable to disable the
+               ;; greendns import, so use it:
+               (setenv "EVENTLET_NO_GREENDNS" "yes")
+               (invoke "pytest" "-v" "./tests")))))))
     (home-page "https://onionshare.org/")
     (synopsis "Securely and anonymously share files")
     (description "OnionShare lets you securely and anonymously share files,
@@ -294,7 +304,7 @@ OnionShare.")
       ((#:phases phases)
        `(modify-phases ,phases
          (replace 'change-directory
-           (lambda _ (chdir "desktop/src") #t))
+           (lambda _ (chdir "desktop/src")))
          (add-after 'unpack 'patch-tests
            (lambda _
              ;; Disable tests that require starting servers, which will hang
@@ -334,22 +344,19 @@ OnionShare.")
                              (display line out)
                              (loop))))))))))
          (replace 'check
-           (lambda _
-             ;; Some tests need a writable homedir:
-             (setenv "HOME" "/tmp")
-             ;; Ensure installed modules can be found:
-             (setenv "PYTHONPATH"
-                     (string-append %output "/lib/python"
-                                    ,(version-major+minor (package-version python))
-                                    "/site-packages:"
-                                    (getenv "PYTHONPATH")))
-             ;; Avoid `getprotobyname` issues:
-             (setenv "EVENTLET_NO_GREENDNS" "yes")
-             ;; Make Qt render "offscreen":
-             (setenv "QT_QPA_PLATFORM" "offscreen")
-             ;; Must be run from "desktop" dir:
-             (chdir "..")
-             (invoke "./tests/run.sh")))
+           (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+             (when tests?
+               ;; Some tests need a writable homedir:
+               (setenv "HOME" "/tmp")
+               ;; Ensure installed modules can be found:
+               (add-installed-pythonpath inputs outputs)
+               ;; Avoid `getprotobyname` issues:
+               (setenv "EVENTLET_NO_GREENDNS" "yes")
+               ;; Make Qt render "offscreen":
+               (setenv "QT_QPA_PLATFORM" "offscreen")
+               ;; Must be run from "desktop" dir:
+               (with-directory-excursion ".."
+                 (invoke "./tests/run.sh")))))
          (add-after 'install 'install-data
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -357,21 +364,21 @@ OnionShare.")
                (install-file "org.onionshare.OnionShare.svg"
                              (string-append share "/icons/hicolor/scalable/apps"))
                (install-file "org.onionshare.OnionShare.desktop"
-                             (string-append share "/applications"))
-               #t)))))))
+                             (string-append share "/applications")))))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (inputs
      ;; TODO: obfs4proxy
-     `(("onionshare-cli" ,onionshare-cli)
-       ("python-shiboken-2" ,python-shiboken-2)
-       ("python-pyside-2" ,python-pyside-2)
-       ("python-qrcode" ,python-qrcode)
-       ;; The desktop client uses onionshare-cli like a python module.  But
-       ;; propagating onionshare-cli's inputs is not great, since a user would
-       ;; not expect to have those installed when using onionshare-cli as a
-       ;; standalone utility.  So add onionshare-cli's inputs here.
-       ,@(package-inputs onionshare-cli)))
+     (modify-inputs (package-inputs onionshare-cli)
+       (prepend onionshare-cli
+                python-shiboken-2
+                python-pyside-2
+                python-qrcode
+                ;; The desktop client uses onionshare-cli like a python module.  But
+                ;; propagating onionshare-cli's inputs is not great, since a user would
+                ;; not expect to have those installed when using onionshare-cli as a
+                ;; standalone utility.  So add onionshare-cli's inputs here.
+                )))
     (description "OnionShare lets you securely and anonymously share files,
 host websites, and chat with friends using the Tor network.")))
 
@@ -388,7 +395,7 @@ host websites, and chat with friends using the Tor network.")))
          "02rrlllz2ci6i6cs3iddyfns7ang9a54jrlygd2jw1f9s6418ll8"))))
     (build-system python-build-system)
     (inputs
-     `(("python-stem" ,python-stem)))
+     (list python-stem))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -446,12 +453,12 @@ Potential client and exit connections are scrubbed of sensitive information.")
     (native-inputs
      `(("glib:bin" ,glib "bin")))       ; for glib-compile-schemas.
     (inputs
-     `(("python-fire" ,python-fire)
-       ("python-psutil" ,python-psutil)
-       ("python-pygobject" ,python-pygobject)
-       ("python-requests" ,python-requests)
-       ("python-stem" ,python-stem)
-       ("python-termcolor" ,python-termcolor)))
+     (list python-fire
+           python-psutil
+           python-pygobject
+           python-requests
+           python-stem
+           python-termcolor))
     (arguments
      `(#:phases
        (modify-phases %standard-phases

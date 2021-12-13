@@ -40,7 +40,7 @@
     (arguments
      '(#:configure-flags '("--disable-static")))
     (inputs
-     `(("libgcrypt" ,libgcrypt)))
+     (list libgcrypt))
     (home-page "https://www.gnu.org/software/freeipmi/")
     (synopsis "Platform management, including sensor and power monitoring")
     (description

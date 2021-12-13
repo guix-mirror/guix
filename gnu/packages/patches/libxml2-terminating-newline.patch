@@ -1,0 +1,33 @@
+Fix a regression in 2.9.12 where serializing empty HTML documents would
+not add a terminating newline.
+
+  https://gitlab.gnome.org/GNOME/libxml2/-/issues/266
+
+Taken from upstream:
+
+  https://gitlab.gnome.org/GNOME/libxml2/-/commit/92d9ab4c28842a09ca2b76d3ff2f933e01b6cd6f
+
+diff --git a/HTMLtree.c b/HTMLtree.c
+--- a/HTMLtree.c
++++ b/HTMLtree.c
+@@ -763,11 +763,15 @@ htmlNodeDumpFormatOutput(xmlOutputBufferPtr buf, xmlDocPtr doc,
+             if (((xmlDocPtr) cur)->intSubset != NULL) {
+                 htmlDtdDumpOutput(buf, (xmlDocPtr) cur, NULL);
+             }
+-            /* Always validate cur->parent when descending. */
+-            if ((cur->parent == parent) && (cur->children != NULL)) {
+-                parent = cur;
+-                cur = cur->children;
+-                continue;
++            if (cur->children != NULL) {
++                /* Always validate cur->parent when descending. */
++                if (cur->parent == parent) {
++                    parent = cur;
++                    cur = cur->children;
++                    continue;
++                }
++            } else {
++                xmlOutputBufferWriteString(buf, "\n");
+             }
+             break;
+ 

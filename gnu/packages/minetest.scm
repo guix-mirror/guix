@@ -116,7 +116,7 @@
             (variable "MINETEST_MOD_PATH")
             (files '("share/minetest/mods")))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
      `(("coreutils" ,coreutils)
        ("curl" ,curl)
@@ -136,7 +136,7 @@
        ("openal" ,openal)
        ("sqlite" ,sqlite)))
     (propagated-inputs
-     `(("minetest-data" ,minetest-data)))
+     (list minetest-data))
     (synopsis "Infinite-world block sandbox game")
     (description
      "Minetest is a sandbox construction game.  Players can create and destroy
@@ -226,7 +226,7 @@ as swords and tools made of different materials.  It also adds copper rails.")
     (propagated-inputs
      ;; basic_materials:silver_wire cannot be crafted without
      ;; moreores:silver_ingot.
-     `(("minetest-moreores" ,minetest-moreores)))
+     (list minetest-moreores))
     (home-page (minetest-topic 21000))
     (synopsis "Some \"basic\" materials and items for other Minetest mods to use")
     (description
@@ -253,7 +253,7 @@ like steel bars and chains, wire, plastic strips and sheets, and more.")
        (file-name (git-file-name name version))))
     (build-system minetest-mod-build-system)
     (propagated-inputs
-     `(("minetest-unifieddyes" ,minetest-unifieddyes)))
+     (list minetest-unifieddyes))
     (home-page (minetest-topic 2411))
     (synopsis "Painted wood in Minetest")
     (description
@@ -311,8 +311,7 @@ special items, intending to make an interesting adventure.")
        (file-name (git-file-name name version))))
     (build-system minetest-mod-build-system)
     (propagated-inputs
-     `(("minetest-basic-materials" ,minetest-basic-materials)
-       ("minetest-unifieddyes" ,minetest-unifieddyes)))
+     (list minetest-basic-materials minetest-unifieddyes))
     (home-page (minetest-topic 2041))
     (synopsis "Home decor mod for Minetest")
     (description
@@ -431,7 +430,7 @@ add some mobs, a mod like e.g. @code{mobs_animal} provided by the
        (file-name (git-file-name name version))))
     (build-system minetest-mod-build-system)
     (propagated-inputs
-     `(("minetest-mobs" ,minetest-mobs)))
+     (list minetest-mobs))
     (home-page "https://notabug.org/TenPlus1/mobs_animal")
     (synopsis "Add animals to Minetest")
     (description
@@ -457,7 +456,7 @@ bunnies, chickens, cows, kittens, rats, sheep, warthogs, penguins and pandas.")
        (file-name (git-file-name name version))))
     (build-system minetest-mod-build-system)
     (propagated-inputs
-     `(("minetest-basic-materials" ,minetest-basic-materials)))
+     (list minetest-basic-materials))
     (home-page (minetest-topic 2155))
     (synopsis "Pipes, item-transport tubes and related devices for Minetest")
     (description
@@ -489,8 +488,7 @@ breakers simulate a player punching a node.")
        (file-name (git-file-name name version))))
     (build-system minetest-mod-build-system)
     (propagated-inputs
-     `(("minetest-pipeworks" ,minetest-pipeworks)
-       ("minetest-basic-materials" ,minetest-basic-materials)))
+     (list minetest-pipeworks minetest-basic-materials))
     (home-page (minetest-topic 2538))
     (synopsis "Machinery and automation for Minetest")
     (description
@@ -554,7 +552,7 @@ arrow and bow, but @code{minetest-throwing-arrows} does.")
          (file-name (git-file-name name version))))
       (build-system minetest-mod-build-system)
       (propagated-inputs
-       `(("minetest-throwing" ,minetest-throwing)))
+       (list minetest-throwing))
       (home-page (minetest-topic 16365))
       (synopsis "Arrows and bows for Minetest")
       (description
@@ -603,7 +601,7 @@ to and from the file system.")
        (file-name (git-file-name name version))))
     (build-system minetest-mod-build-system)
     (propagated-inputs
-     `(("minetest-basic-materials" ,minetest-basic-materials)))
+     (list minetest-basic-materials))
     (home-page (minetest-topic 2178))
     (synopsis
      "Unified Dyes expands the standard dye set of Minetest to up to 256 colours")
@@ -707,7 +705,7 @@ stopping before signals.
        (file-name (git-file-name name version))))
     (build-system minetest-mod-build-system)
     (propagated-inputs
-     `(("minetest-advtrains" ,minetest-advtrains)))
+     (list minetest-advtrains))
     (home-page
      "http://advtrains.de/wiki/doku.php?id=usage:trains:basic_trains")
     (synopsis "Collection of basic trains for the Advanced Trains mod")

@@ -55,10 +55,7 @@
          "0h9mllhw9cd0rn34xhj8grwmbny7z7hpd8qmp9lfcdj0s4qx9vx8"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-generic-deriving" ,ghc-generic-deriving)
-       ("ghc-xml" ,ghc-xml)
-       ("ghc-tagged" ,ghc-tagged)
-       ("ghc-tasty" ,ghc-tasty)))
+     (list ghc-generic-deriving ghc-xml ghc-tagged ghc-tasty))
     (home-page
      "https://github.com/ocharles/tasty-ant-xml")
     (synopsis
@@ -85,10 +82,7 @@ framework.")
          "0csgwn3vch0jnpqyyfnrfjq4z0dpl67imh5a7byll3hhlyidgjym"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-tasty" ,ghc-tasty)
-       ("ghc-smallcheck" ,ghc-smallcheck)
-       ("ghc-async" ,ghc-async)
-       ("ghc-tagged" ,ghc-tagged)))
+     (list ghc-tasty ghc-smallcheck ghc-async ghc-tagged))
     (home-page "https://documentup.com/feuerbach/tasty")
     (synopsis "SmallCheck support for the Tasty test framework")
     (description "This package provides SmallCheck support for the Tasty
@@ -110,13 +104,13 @@ Haskell test framework.")
          "0i1i78587znqzwps49milyr5n2k388ld2kr9ysz1vw8gcw51qq49"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-tagged" ,ghc-tagged)
-       ("ghc-tasty" ,ghc-tasty)
-       ("ghc-random" ,ghc-random)
-       ("ghc-ansi-terminal" ,ghc-ansi-terminal)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
-       ("ghc-pcre-light" ,ghc-pcre-light)))
+     (list ghc-quickcheck
+           ghc-tagged
+           ghc-tasty
+           ghc-random
+           ghc-ansi-terminal
+           ghc-tasty-hunit
+           ghc-pcre-light))
     (home-page "http://documentup.com/feuerbach/tasty")
     (synopsis "QuickCheck support for the Tasty test framework")
     (description "This package provides QuickCheck support for the Tasty
@@ -139,13 +133,13 @@ Haskell test framework.")
          "1nskavqgfxx1cw7q6c0cmizlwj54rnlv93yhgssaa77gv1nbvwpn"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-async" ,ghc-async)
-       ("ghc-optparse-applicative" ,ghc-optparse-applicative)
-       ("ghc-tagged" ,ghc-tagged)
-       ("ghc-tasty" ,ghc-tasty)
-       ("ghc-temporary" ,ghc-temporary)
-       ("ghc-unix-compat" ,ghc-unix-compat)))
-    (native-inputs `(("ghc-tasty-hunit" ,ghc-tasty-hunit)))
+     (list ghc-async
+           ghc-optparse-applicative
+           ghc-tagged
+           ghc-tasty
+           ghc-temporary
+           ghc-unix-compat))
+    (native-inputs (list ghc-tasty-hunit))
     (home-page
      "https://github.com/feuerbach/tasty-golden")
     (synopsis "Golden tests support for tasty")
@@ -172,14 +166,14 @@ contains the correct result for the test.")
          "0574hbqzxzyv6vsk5kzbf04kz58y0iy8x9ydcj4b8fpncgmgy63g"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-tagged" ,ghc-tagged)
-       ("ghc-regex-tdfa" ,ghc-regex-tdfa)
-       ("ghc-optparse-applicative" ,ghc-optparse-applicative)
-       ("ghc-unbounded-delays" ,ghc-unbounded-delays)
-       ("ghc-async" ,ghc-async)
-       ("ghc-ansi-terminal" ,ghc-ansi-terminal)
-       ("ghc-clock-bootstrap" ,ghc-clock-bootstrap)
-       ("ghc-wcwidth" ,ghc-wcwidth-bootstrap)))
+     (list ghc-tagged
+           ghc-regex-tdfa
+           ghc-optparse-applicative
+           ghc-unbounded-delays
+           ghc-async
+           ghc-ansi-terminal
+           ghc-clock-bootstrap
+           ghc-wcwidth-bootstrap))
     (home-page "http://documentup.com/feuerbach/tasty")
     (synopsis "Modern and extensible testing framework")
     (description "Tasty is a modern testing framework for Haskell.  It lets
@@ -201,11 +195,9 @@ and any other types of tests into a single test suite.")
          "0cy49z8n124xh2ra2482vfy5if1n6d9lbdjma2zg1mxfj0k0zyfb"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-tagged" ,ghc-tagged)
-       ("ghc-tasty" ,ghc-tasty)
-       ("ghc-hedgehog" ,ghc-hedgehog)))
+     (list ghc-tagged ghc-tasty ghc-hedgehog))
     (native-inputs
-     `(("ghc-tasty-expected-failure" ,ghc-tasty-expected-failure)))
+     (list ghc-tasty-expected-failure))
     (home-page "https://github.com/qfpl/tasty-hedgehog")
     (synopsis "Integration for tasty and hedgehog")
     (description "This package provides the means for integrating the
@@ -230,13 +222,13 @@ framework}.")
          "02s82ijs2ringqxsqbm7m3vcy5brmwxa617azxv0v2phi3rdkjvl"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-hspec" ,ghc-hspec)
-       ("ghc-hspec-core" ,ghc-hspec-core)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-tagged" ,ghc-tagged)
-       ("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-smallcheck" ,ghc-tasty-smallcheck)
-       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)))
+     (list ghc-hspec
+           ghc-hspec-core
+           ghc-quickcheck
+           ghc-tagged
+           ghc-tasty
+           ghc-tasty-smallcheck
+           ghc-tasty-quickcheck))
     (arguments
      `(#:cabal-revision
        ("1" "0za15rg0szacxq9yfxxjzddr77ai7ng5827a20pj9dr5anjlnajj")))
@@ -264,8 +256,7 @@ framework}.")
          "0gz6zz3w7s44pymw33xcxnawryl27zk33766sab96nz2xh91kvxp"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-call-stack" ,ghc-call-stack-boot)
-       ("ghc-tasty" ,ghc-tasty)))
+     (list ghc-call-stack-boot ghc-tasty))
     (home-page "http://documentup.com/feuerbach/tasty")
     (synopsis "HUnit support for the Tasty test framework")
     (description "This package provides HUnit support for the Tasty Haskell
@@ -285,9 +276,7 @@ test framework.")
                 "14yvlpli6cv6bn3kh8mlfp4x1l6ns4fvmfv6hmj75cvxyzq029d7"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)))
+     (list ghc-tasty ghc-tasty-quickcheck ghc-tasty-hunit))
     (home-page "https://github.com/vincenthz/tasty-kat")
     (synopsis "Known Answer Tests (KAT) framework for tasty")
     (description
@@ -309,11 +298,9 @@ tasty.")
          "0wa73ihkjcxi50lgpdzwwdx7s903lqi79hw7hxlvhbcvdly1cq53"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-file-embed" ,ghc-file-embed)
-       ("ghc-hslua" ,ghc-hslua)
-       ("ghc-tasty" ,ghc-tasty)))
+     (list ghc-file-embed ghc-hslua ghc-tasty))
     (native-inputs
-     `(("ghc-tasty-hunit" ,ghc-tasty-hunit)))
+     (list ghc-tasty-hunit))
     (home-page "https://github.com/hslua/tasty-lua")
     (synopsis "Write tests in Lua, integrate into tasty")
     (description "This package gives users the ability to define tasty tests
@@ -335,9 +322,7 @@ from Lua.")
          "0b2ivrw2257m4cy4rjnkwqlarh83j1y3zywnmaqqqbvy667sqnj3"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-haskell-src-exts" ,ghc-haskell-src-exts)
-       ("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)))
+     (list ghc-haskell-src-exts ghc-tasty ghc-tasty-hunit))
     (home-page "https://github.com/bennofs/tasty-th")
     (synopsis "Automatically generate tasty TestTrees")
     (description
@@ -361,11 +346,8 @@ test-framework.")
                 "0sccp5zx9v2rx741nbmgd8mzjhy5m4v74hk26d23xz93ph8aqx7s"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-optparse-applicative" ,ghc-optparse-applicative)
-       ("ghc-reducers" ,ghc-reducers)
-       ("ghc-split" ,ghc-split)
-       ("ghc-tagged" ,ghc-tagged)
-       ("ghc-tasty" ,ghc-tasty)))
+     (list ghc-optparse-applicative ghc-reducers ghc-split ghc-tagged
+           ghc-tasty))
     (home-page "https://github.com/ocharles/tasty-rerun")
     (synopsis "Run tests by filtering the test tree")
     (description "This package adds the ability to run tests by filtering the
@@ -395,9 +377,7 @@ been added since previous test run.")
 ;       ("ghc-hedgehog" ,ghc-hedgehog)
 ;       ("ghc-tasty-hedgehog" ,ghc-tasty-hedgehog)))
     (inputs
-     `(("ghc-tagged" ,ghc-tagged)
-       ("ghc-tasty" ,ghc-tasty)
-       ("ghc-unbounded-delays" ,ghc-unbounded-delays)))
+     (list ghc-tagged ghc-tasty ghc-unbounded-delays))
     (home-page "https://github.com/nomeata/tasty-expected-failure")
     (synopsis "Mark tasty tests as failure expected")
     (description
@@ -426,22 +406,22 @@ development.")
      `(#:cabal-revision
        ("2" "1lsa3pbg4ljlk29fhm3mdklnx3hwffyga1nr5krbpcyc3ywq8fq8")))
     (inputs
-     `(("ghc-case-insensitive" ,ghc-case-insensitive)
-       ("ghc-data-fix" ,ghc-data-fix)
-       ("ghc-hashable" ,ghc-hashable)
-       ("ghc-integer-logarithms" ,ghc-integer-logarithms)
-       ("ghc-old-time" ,ghc-old-time)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-scientific" ,ghc-scientific)
-       ("ghc-splitmix" ,ghc-splitmix)
-       ("ghc-strict" ,ghc-strict)
-       ("ghc-tagged" ,ghc-tagged)
-       ("ghc-these" ,ghc-these)
-       ("ghc-time-compat" ,ghc-time-compat)
-       ("ghc-transformers-compat" ,ghc-transformers-compat)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)
-       ("ghc-uuid-types" ,ghc-uuid-types)
-       ("ghc-vector" ,ghc-vector)))
+     (list ghc-case-insensitive
+           ghc-data-fix
+           ghc-hashable
+           ghc-integer-logarithms
+           ghc-old-time
+           ghc-quickcheck
+           ghc-scientific
+           ghc-splitmix
+           ghc-strict
+           ghc-tagged
+           ghc-these
+           ghc-time-compat
+           ghc-transformers-compat
+           ghc-unordered-containers
+           ghc-uuid-types
+           ghc-vector))
     (home-page "https://github.com/aslatter/qc-instances")
     (synopsis "Common quickcheck instances")
     (description "This package provides QuickCheck instances for types
@@ -462,7 +442,7 @@ provided by the Haskell Platform.")
         (base32
          "0s43s1bzbg3gwsjgm7fpyksd1339f0m26dlw2famxwyzgvm0a80k"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-quickcheck" ,ghc-quickcheck)))
+    (inputs (list ghc-quickcheck))
     (home-page
      "https://github.com/bos/quickcheck-unicode")
     (synopsis "Generator functions Unicode-related tests")
@@ -486,8 +466,7 @@ testing Unicode-related software.")
          "08k4v7pkgjf30pv5j2dfv1gqv6hclxlniyq2sps8zq4zswcr2xzv"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-hunit" ,ghc-hunit)))
+     (list ghc-quickcheck ghc-hunit))
     (home-page
      "https://github.com/hspec/quickcheck-io#readme")
     (synopsis "Use HUnit assertions as QuickCheck properties")
@@ -511,8 +490,7 @@ use HUnit assertions as QuickCheck properties.")
          "1wrnrm9sq4s0bly0q58y80g4153q45iglqa34xsi2q3bd62nqyyq"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-random" ,ghc-random)
-       ("ghc-splitmix" ,ghc-splitmix-bootstrap)))
+     (list ghc-random ghc-splitmix-bootstrap))
     (home-page "https://github.com/nick8325/quickcheck")
     (synopsis "Automatic testing of Haskell programs")
     (description
@@ -537,11 +515,9 @@ expressed in Haskell, using combinators defined in the QuickCheck library.")
         (base32 "1kyam4cy7qmnizjwjm8jamq43w7f0fs6ljfplwj0ib6wi2kjh0wv"))))
     (build-system haskell-build-system)
     (native-inputs
-     `(("ghc-hspec" ,ghc-hspec)))
+     (list ghc-hspec))
     (inputs
-     `(("ghc-ieee754" ,ghc-ieee754)
-       ("ghc-pretty-show" ,ghc-pretty-show)
-       ("ghc-quickcheck" ,ghc-quickcheck)))
+     (list ghc-ieee754 ghc-pretty-show ghc-quickcheck))
     (home-page "https://github.com/s9gf4ult/quickcheck-assertions")
     (synopsis "HUnit-like assertions for QuickCheck")
     (description
@@ -568,8 +544,7 @@ HUnit.")
        #:cabal-revision
        ("6" "0wbq9wiaag69nsqxwijzhs5y1hb9kbpkp1x65dvx158cxp8i9w9r")))
     (native-inputs
-     `(("ghc-hunit" ,ghc-hunit)
-       ("ghc-quickcheck" ,ghc-quickcheck)))
+     (list ghc-hunit ghc-quickcheck))
     (inputs
      `(("ghc-ansi-terminal" ,ghc-ansi-terminal)
        ("ghc-ansi-wl-pprint" ,ghc-ansi-wl-pprint)
@@ -608,9 +583,7 @@ reporting and test statistics output.")
      `(#:cabal-revision
        ("3" "0i9mlalv7cl1iq43ld5myrnpszq5rxmd79hk495dcb08rglhgl3z")))
     (inputs
-     `(("ghc-extensible-exceptions" ,ghc-extensible-exceptions)
-       ("ghc-hunit" ,ghc-hunit)
-       ("ghc-test-framework" ,ghc-test-framework)))
+     (list ghc-extensible-exceptions ghc-hunit ghc-test-framework))
     (home-page "https://batterseapower.github.io/test-framework/")
     (synopsis "HUnit support for test-framework")
     (description
@@ -635,10 +608,8 @@ reporting and test statistics output.")
      `(#:cabal-revision
        ("3" "0mglqfimla4vvv80mg08aj76zf4993wmngqlirh05h8i9nmgv6lh")))
     (inputs
-     `(("ghc-extensible-exceptions" ,ghc-extensible-exceptions)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-random" ,ghc-random)
-       ("ghc-test-framework" ,ghc-test-framework)))
+     (list ghc-extensible-exceptions ghc-quickcheck ghc-random
+           ghc-test-framework))
     (home-page "https://batterseapower.github.io/test-framework/")
     (synopsis "QuickCheck2 support for test-framework")
     (description
@@ -660,8 +631,7 @@ package.")
         (base32 "1xpgpk1gp4w7w46b4rhj80fa0bcyz8asj2dcjb5x1c37b7rw90b0"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-smallcheck" ,ghc-smallcheck)
-       ("ghc-test-framework" ,ghc-test-framework)))
+     (list ghc-smallcheck ghc-test-framework))
     (home-page "https://github.com/Bodigrim/smallcheck")
     (synopsis "SmallCheck support for test-framework")
     (description
@@ -684,10 +654,8 @@ test-framework.  New projects should use ghc-tasty-smallcheck instead.")
          "12lw7yj02jb9s0i7rb98jjam43j2h0gzmnbj9zi933fx7sg0sy4b"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-test-framework" ,ghc-test-framework)
-       ("ghc-language-haskell-extract" ,ghc-language-haskell-extract)
-       ("ghc-haskell-src-exts" ,ghc-haskell-src-exts)
-       ("ghc-regex-posix" ,ghc-regex-posix)))
+     (list ghc-test-framework ghc-language-haskell-extract
+           ghc-haskell-src-exts ghc-regex-posix))
     (home-page "https://github.com/finnsson/test-generator")
     (synopsis "Auto generate the HUnit- and Quickcheck-bulk-code
 using Template Haskell")
@@ -720,7 +688,7 @@ using Template Haskell")
     (inputs
      ;; We cannot use ghc-call-stack there, because it depends on
      ;; ghc-nanospec, which depends on ghc-hunit.
-     `(("ghc-call-stack" ,ghc-call-stack-boot)))
+     (list ghc-call-stack-boot))
     (home-page "http://hunit.sourceforge.net/")
     (synopsis "Unit testing framework for Haskell")
     (description
@@ -743,8 +711,7 @@ JUnit tool for Java.")
          "13yzvd3b679skvs1insk4s0wc4zvmz6hs38kc8q0j6vzqq06smqa"))))
     (build-system haskell-build-system)
     (native-inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-hspec-meta" ,ghc-hspec-meta)))
+     (list ghc-quickcheck ghc-hspec-meta))
     (home-page "https://hspec.github.io/")
     (synopsis "Automatically discover and run Hspec tests")
     (description "hspec-discover is a tool which automatically discovers and
@@ -766,15 +733,15 @@ runs Hspec tests.")
     (build-system haskell-build-system)
     (arguments `(#:tests? #f)) ; FIXME: testing libraries are missing.
     (inputs
-     `(("ghc-setenv" ,ghc-setenv)
-       ("ghc-ansi-terminal" ,ghc-ansi-terminal)
-       ("ghc-clock" ,ghc-clock)
-       ("ghc-quickcheck-io" ,ghc-quickcheck-io)
-       ("ghc-hunit" ,ghc-hunit)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-hspec-expectations" ,ghc-hspec-expectations)
-       ("ghc-silently" ,ghc-silently)
-       ("ghc-tf-random" ,ghc-tf-random)))
+     (list ghc-setenv
+           ghc-ansi-terminal
+           ghc-clock
+           ghc-quickcheck-io
+           ghc-hunit
+           ghc-quickcheck
+           ghc-hspec-expectations
+           ghc-silently
+           ghc-tf-random))
     (home-page "https://hspec.github.io/")
     (synopsis "Testing framework for Haskell")
     (description "This library exposes internal types and functions that can
@@ -795,14 +762,14 @@ be used to extend Hspec's functionality.")
          "0sfj0n2hy1r8ifysgbcmfdygcd7vyzr13ldkcp0l2ml337f8j0si"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-hunit" ,ghc-hunit)
-       ("ghc-ansi-terminal" ,ghc-ansi-terminal)
-       ("ghc-clock" ,ghc-clock)
-       ("ghc-hspec-expectations" ,ghc-hspec-expectations)
-       ("ghc-setenv" ,ghc-setenv)
-       ("ghc-random" ,ghc-random)
-       ("ghc-quickcheck-io" ,ghc-quickcheck-io)))
+     (list ghc-quickcheck
+           ghc-hunit
+           ghc-ansi-terminal
+           ghc-clock
+           ghc-hspec-expectations
+           ghc-setenv
+           ghc-random
+           ghc-quickcheck-io))
     (home-page "https://hspec.github.io/")
     (synopsis "Version of Hspec to test Hspec itself")
     (description "This library provides a stable version of Hspec which is
@@ -824,13 +791,13 @@ used to test the in-development version of Hspec.")
     (build-system haskell-build-system)
     (outputs '("out" "static" "doc"))
     (inputs
-     `(("ghc-hspec-core" ,ghc-hspec-core)
-       ("hspec-discover" ,hspec-discover)
-       ("ghc-hspec-expectations" ,ghc-hspec-expectations)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-hunit" ,ghc-hunit)
-       ("ghc-stringbuilder" ,ghc-stringbuilder)
-       ("ghc-hspec-meta" ,ghc-hspec-meta)))
+     (list ghc-hspec-core
+           hspec-discover
+           ghc-hspec-expectations
+           ghc-quickcheck
+           ghc-hunit
+           ghc-stringbuilder
+           ghc-hspec-meta))
     (home-page "https://hspec.github.io/")
     (synopsis "Testing Framework for Haskell")
     (description "This library provides the Hspec testing framework for
@@ -851,12 +818,9 @@ Haskell, inspired by the Ruby library RSpec.")
                 "0hhzxaa3fxz5mk5qcsrnfr98a7bn3szx2ydgr0x9mbqmm1jg06rc"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-hspec-core" ,ghc-hspec-core)
-       ("ghc-hunit" ,ghc-hunit)
-       ("ghc-hspec" ,ghc-hspec)
-       ("ghc-quickcheck" ,ghc-quickcheck)))
+     (list ghc-hspec-core ghc-hunit ghc-hspec ghc-quickcheck))
     (native-inputs
-     `(("hspec-discover" ,hspec-discover)))
+     (list hspec-discover))
     (home-page "https://hspec.github.io/")
     (synopsis "Contributed functionality for Hspec")
     (description
@@ -879,7 +843,7 @@ Haskell, inspired by the Ruby library RSpec.")
     (build-system haskell-build-system)
     ;; Tests depend on ghc-nanospec.
     (arguments '(#:tests? #f))
-    (inputs `(("ghc-hunit" ,ghc-hunit)))
+    (inputs (list ghc-hunit))
     (home-page "https://github.com/sol/hspec-expectations")
     (synopsis "Catchy combinators for HUnit")
     (description "This library provides catchy combinators for HUnit, see
@@ -901,8 +865,7 @@ Haskell, inspired by the Ruby library RSpec.")
          "1rcmhl9bhyfvanalnf1r86wkx6rq6wdvagnw1h011jcnnb1cq56g"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-hspec" ,ghc-hspec)
-       ("ghc-silently" ,ghc-silently)))
+     (list ghc-hspec ghc-silently))
     (home-page "https://github.com/hspec/nanospec#readme")
     (synopsis "Lightweight implementation of a subset of Hspec's API")
     (description
@@ -924,14 +887,14 @@ minimal dependencies.")
         (base32
          "19wqignlq90qwpam01hnmmrxaxh5lkax9l1l6rlbi4a07nvp1dnz"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-quickcheck" ,ghc-quickcheck)
-              ("ghc-hunit" ,ghc-hunit)
-              ("ghc-test-framework" ,ghc-test-framework)
-              ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)
-              ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
-              ("ghc-byteable" ,ghc-byteable)
-              ("ghc-securemem" ,ghc-securemem)
-              ("ghc-crypto-cipher-types" ,ghc-crypto-cipher-types)))
+    (inputs (list ghc-quickcheck
+                  ghc-hunit
+                  ghc-test-framework
+                  ghc-test-framework-quickcheck2
+                  ghc-test-framework-hunit
+                  ghc-byteable
+                  ghc-securemem
+                  ghc-crypto-cipher-types))
     (home-page "https://github.com/vincenthz/hs-crypto-cipher")
     (synopsis "Generic cryptography cipher tests for Haskell")
     (description " This Haskell package contains generic tests for
@@ -955,21 +918,20 @@ implementations of cryptographic ciphers.")
          "1qsqs8lmxa3wmw228cwi98vvvh9hqbc9d43i1sy2c9igw9xlhfi6"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-ansi-terminal" ,ghc-ansi-terminal)
-       ("ghc-async" ,ghc-async)
-       ("ghc-concurrent-output" ,ghc-concurrent-output)
-       ("ghc-erf" ,ghc-erf)
-       ;("ghc-exceptions" ,ghc-exceptions)
-       ("ghc-lifted-async" ,ghc-lifted-async)
-       ("ghc-mmorph" ,ghc-mmorph)
-       ("ghc-monad-control" ,ghc-monad-control)
-       ("ghc-pretty-show" ,ghc-pretty-show)
-       ("ghc-primitive" ,ghc-primitive)
-       ("ghc-random" ,ghc-random)
-       ("ghc-resourcet" ,ghc-resourcet)
-       ("ghc-transformers-base" ,ghc-transformers-base)
-       ("ghc-wl-pprint-annotated"
-        ,ghc-wl-pprint-annotated)))
+     (list ghc-ansi-terminal
+           ghc-async
+           ghc-concurrent-output
+           ghc-erf
+           ;("ghc-exceptions" ,ghc-exceptions)
+           ghc-lifted-async
+           ghc-mmorph
+           ghc-monad-control
+           ghc-pretty-show
+           ghc-primitive
+           ghc-random
+           ghc-resourcet
+           ghc-transformers-base
+           ghc-wl-pprint-annotated))
     (home-page "https://hedgehog.qa")
     (synopsis "Property-based testing in the spirt of QuickCheck")
     (description
@@ -1043,10 +1005,8 @@ testing frameworks.")
             "1v2qzzpf1s008g7q6q67glf7vbm1pkpq4rc3ii74f4g6vhfx610r"))))
     (build-system haskell-build-system)
     (inputs
-      `(("ghc-quickcheck" ,ghc-quickcheck)
-        ("ghc-size-based" ,ghc-size-based)
-        ("ghc-testing-type-modifiers" ,ghc-testing-type-modifiers)
-        ("ghc-semigroups" ,ghc-semigroups)))
+      (list ghc-quickcheck ghc-size-based ghc-testing-type-modifiers
+            ghc-semigroups))
     (home-page "https://github.com/JonasDuregard/testing-feat")
     (synopsis "Functional Enumeration of Algebraic Types")
     (description "Feat (Functional Enumeration of Algebraic Types)
@@ -1111,12 +1071,12 @@ examples and more information.")
           (base32 "16c6gq4cqpkwnq1pzkhm6r7mrwk4an50ha5w77bmiia2qkhla6ch"))))
     (build-system haskell-build-system)
     (inputs
-      `(("ghc-quickcheck" ,ghc-quickcheck)
-        ("ghc-contravariant" ,ghc-contravariant)
-        ("ghc-bifunctors" ,ghc-bifunctors)
-        ("ghc-semigroups" ,ghc-semigroups)
-        ("ghc-fail" ,ghc-fail)
-        ("ghc-tagged" ,ghc-tagged)))
+      (list ghc-quickcheck
+            ghc-contravariant
+            ghc-bifunctors
+            ghc-semigroups
+            ghc-fail
+            ghc-tagged))
     (home-page "https://github.com/andrewthad/quickcheck-classes#readme")
     (synopsis "QuickCheck common typeclasses from `base`")
     (description
@@ -1172,9 +1132,7 @@ these constraints more cleanly.")
           (base32 "1g3c7yrqq2mwqbmvs8vkx1a3cf0p0x74b7fnn344dsk7bsfpgv0x"))))
     (build-system haskell-build-system)
     (inputs
-      `(("ghc-doctest-lib" ,ghc-doctest-lib)
-        ("ghc-quickcheck" ,ghc-quickcheck)
-        ("ghc-semigroups" ,ghc-semigroups)))
+      (list ghc-doctest-lib ghc-quickcheck ghc-semigroups))
     (home-page "https://hub.darcs.net/thielema/doctest-exitcode-stdio/")
     (synopsis "Run Doctests in a @code{Cabal.Test.exitcode-stdio} environment")
     (description
@@ -1220,18 +1178,17 @@ environment.")
           (base32 "0nvh2k8iqqkanmp7lpwd3asimyarzisly8wavbdahcxryn0j4xb7"))))
     (build-system haskell-build-system)
     (inputs
-      `(("ghc-ansi-terminal" ,ghc-ansi-terminal)
-        ("ghc-async" ,ghc-async)
-        ("ghc-optparse-applicative" ,ghc-optparse-applicative)
-        ("ghc-process-extras" ,ghc-process-extras)
-        ("ghc-regex-tdfa" ,ghc-regex-tdfa)
-        ("ghc-semigroups" ,ghc-semigroups)
-        ("ghc-tagged" ,ghc-tagged)
-        ("ghc-tasty" ,ghc-tasty)
-        ("ghc-temporary" ,ghc-temporary)))
+      (list ghc-ansi-terminal
+            ghc-async
+            ghc-optparse-applicative
+            ghc-process-extras
+            ghc-regex-tdfa
+            ghc-semigroups
+            ghc-tagged
+            ghc-tasty
+            ghc-temporary))
     (native-inputs
-     `(("ghc-tasty-hunit" ,ghc-tasty-hunit)
-       ("ghc-silently" ,ghc-silently)))
+     (list ghc-tasty-hunit ghc-silently))
     (home-page "https://github.com/phile314/tasty-silver")
     (synopsis "Fancy test runner, including support for golden tests")
     (description

@@ -2,6 +2,7 @@
 ;;; Copyright © 2017 Peter Mikkelsen <petermikkelsen10@gmail.com>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -63,16 +64,17 @@
                            (number->string (parallel-job-count))
                            "1")))
 
-(define* (check #:key test-target parallel-tests? tests?
+(define* (check #:key tests? test-options parallel-tests?
                 #:allow-other-keys)
-  (setenv "MESON_TESTTHREADS"
-          (if parallel-tests?
-              (number->string (parallel-job-count))
-              "1"))
   (if tests?
-      (invoke "ninja" test-target)
-      (format #t "test suite not run~%"))
-  #t)
+      (begin
+        (setenv "MESON_TESTTHREADS"
+                (if parallel-tests?
+                    (number->string (parallel-job-count))
+                    "1"))
+        ;; Always provide "-t 0" to disable the 30 s default timeout.
+        (apply invoke "meson" "test" "--print-errorlogs" "-t" "0" test-options))
+      (format #t "test suite not run~%")))
 
 (define* (install #:rest args)
   (invoke "ninja" "install"))
@@ -100,7 +102,7 @@ for example libraries only needed for the tests."
                                             (find-files dir elf-pred))
                                           existing-elf-dirs))))
          (for-each strip-runpath elf-list)))))
-  (for-each handle-output outputs)
+  (for-each handle-output (alist-delete "debug" outputs))
   #t)
 
 (define %standard-phases

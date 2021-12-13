@@ -1,0 +1,32 @@
+Taken from upstream:
+https://gitlab.gnome.org/GNOME/glade/-/commit/eb0429d318c017b57b9e59de1d5b3f142a0f455e.
+
+From 6cf1d3e11d4f8035f33c3003d33f6465896025a5 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Marco=20Trevisan=20=28Trevi=C3=B1o=29?= <mail@3v1n0.net>
+Date: Tue, 18 May 2021 19:54:50 +0200
+Subject: [PATCH] plugins: Define an invalid but non-null file path as script
+ path
+
+This is following the gjs applications behaviors, setting a valid string
+as the script path that will be shown in JS stack traces, even though
+won't load a real file through g_file_new_for_commandline_arg()
+---
+ plugins/gjs/glade-gjs.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/plugins/gjs/glade-gjs.c b/plugins/gjs/glade-gjs.c
+index e1779665..aeae9906 100644
+--- a/plugins/gjs/glade-gjs.c
++++ b/plugins/gjs/glade-gjs.c
+@@ -93,7 +93,7 @@ glade_gjs_init (const gchar *name)
+ 
+   /* Importing the module will create all the GTypes so that glade can use them at runtime */
+   retval = gjs_context_eval (gjs_context_get_current (),
+-                             import_sentence, -1, NULL,
++                             import_sentence, -1, "<glade-gjs>",
+                              &exit_status,
+                              &error);
+   if (!retval && error)
+-- 
+GitLab
+

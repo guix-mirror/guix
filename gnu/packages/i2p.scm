@@ -44,10 +44,7 @@
         (base32 "1a35grcfw5a9dsj0rnm2i86fjf4px96xbnjj3hkril7hv5jvl37k"))))
     (build-system cmake-build-system)
     (inputs
-     `(("boost" ,boost)
-       ("miniupnpc" ,miniupnpc)
-       ("openssl" ,openssl)
-       ("zlib" ,zlib)))
+     (list boost miniupnpc openssl zlib))
     (arguments
      '(#:configure-flags
        (let ((source (assoc-ref %build-inputs "source")))

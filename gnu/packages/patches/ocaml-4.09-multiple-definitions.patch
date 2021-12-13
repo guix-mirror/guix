@@ -1,0 +1,41 @@
+Avoid multiply-defined symbols that lead to link errors such as:
+
+  ld: libcamlrund.a(backtrace_bd.o):/tmp/guix-build-ocaml-4.09.0.drv-0/ocaml-4.09.0/runtime/backtrace.c:31: multiple definition of `caml_debug_info'; libcamlrund.a(backtrace_byt_bd.o):/tmp/guix-build-ocaml-4.09.0.drv-0/ocaml-4.09.0/runtime/backtrace_byt.c:47: first defined here
+
+diff --git a/runtime/backtrace.c b/runtime/backtrace.c
+index a3c2c08..f57c81c 100644
+--- a/runtime/backtrace.c
++++ b/runtime/backtrace.c
+@@ -28,7 +28,7 @@
+ #include "caml/fail.h"
+ 
+ /* The table of debug information fragments */
+-struct ext_table caml_debug_info;
++static struct ext_table caml_debug_info;
+ 
+ CAMLexport int32_t caml_backtrace_active = 0;
+ CAMLexport int32_t caml_backtrace_pos = 0;
+diff --git a/runtime/backtrace_byt.c b/runtime/backtrace_byt.c
+index b913dac..b5ec926 100644
+--- a/runtime/backtrace_byt.c
++++ b/runtime/backtrace_byt.c
+@@ -44,7 +44,7 @@
+ #include "caml/backtrace_prim.h"
+ 
+ /* The table of debug information fragments */
+-struct ext_table caml_debug_info;
++static struct ext_table caml_debug_info;
+ 
+ CAMLexport char_os * caml_cds_file = NULL;
+ 
+diff --git a/runtime/startup_nat.c b/runtime/startup_nat.c
+index b4e6bc4..7eca5fa 100644
+--- a/runtime/startup_nat.c
++++ b/runtime/startup_nat.c
+@@ -44,6 +44,5 @@
+ #endif
+ 
+ extern int caml_parser_trace;
+-CAMLexport header_t caml_atom_table[256];
+ char * caml_code_area_start, * caml_code_area_end;
+ struct ext_table caml_code_fragments_table;

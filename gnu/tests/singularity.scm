@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -72,9 +72,7 @@
           (define marionette
             (make-marionette (list #$(virtual-machine os))))
 
-          (mkdir #$output)
-          (chdir #$output)
-
+          (test-runner-current (system-test-runner #$output))
           (test-begin "singularity")
 
           (test-assert "singularity exec /bin/guile (as root)"
@@ -126,8 +124,7 @@
                         "--debug" "run" #$image "-c" "(use-modules (json))"))
              marionette))
 
-          (test-end)
-          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          (test-end))))
 
   (gexp->derivation "singularity-test" test))
 

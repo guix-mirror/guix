@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2020 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,7 +20,8 @@
 (define-module (guix build-system maven)
   #:use-module (guix store)
   #:use-module (guix utils)
-  #:use-module (guix derivations)
+  #:use-module (guix gexp)
+  #:use-module (guix monads)
   #:use-module (guix search-paths)
   #:use-module (guix build-system)
   #:use-module (guix build-system gnu)
@@ -119,7 +121,7 @@
                 #:rest arguments)
   "Return a bag for NAME."
   (define private-keywords
-    '(#:source #:target #:jdk #:maven #:maven-plugins #:inputs #:native-inputs))
+    '(#:target #:jdk #:maven #:maven-plugins #:inputs #:native-inputs))
 
   (and (not target)                               ;XXX: no cross-compilation
        (bag
@@ -140,70 +142,56 @@
          (build maven-build)
          (arguments (strip-keyword-arguments private-keywords arguments)))))
 
-(define* (maven-build store name inputs
-                       #:key (guile #f)
-                       (outputs '("out"))
-                       (search-paths '())
-                       (out-of-source? #t)
-                       (validate-runpath? #t)
-                       (patch-shebangs? #t)
-                       (strip-binaries? #t)
-                       (exclude %default-exclude)
-                       (local-packages '())
-                       (tests? #t)
-                       (strip-flags ''("--strip-debug"))
-                       (strip-directories ''("lib" "lib64" "libexec"
-                                             "bin" "sbin"))
-                       (phases '(@ (guix build maven-build-system)
-                                   %standard-phases))
-                       (system (%current-system))
-                       (imported-modules %maven-build-system-modules)
-                       (modules '((guix build maven-build-system)
-                                  (guix build maven pom)
-                                  (guix build utils))))
+(define* (maven-build name inputs
+                      #:key
+                      source (guile #f)
+                      (outputs '("out"))
+                      (search-paths '())
+                      (out-of-source? #t)
+                      (validate-runpath? #t)
+                      (patch-shebangs? #t)
+                      (strip-binaries? #t)
+                      (exclude %default-exclude)
+                      (local-packages '())
+                      (tests? #t)
+                      (strip-flags ''("--strip-debug"))
+                      (strip-directories ''("lib" "lib64" "libexec"
+                                            "bin" "sbin"))
+                      (phases '%standard-phases)
+                      (system (%current-system))
+                      (imported-modules %maven-build-system-modules)
+                      (modules '((guix build maven-build-system)
+                                 (guix build maven pom)
+                                 (guix build utils))))
   "Build SOURCE using PATCHELF, and with INPUTS. This assumes that SOURCE
 provides its own binaries."
   (define builder
-    `(begin
-       (use-modules ,@modules)
-       (maven-build #:source ,(match (assoc-ref inputs "source")
-                                 (((? derivation? source))
-                                  (derivation->output-path source))
-                                 ((source)
-                                  source)
-                                 (source
-                                  source))
-                     #:system ,system
-                     #:outputs %outputs
-                     #:inputs %build-inputs
-                     #:search-paths ',(map search-path-specification->sexp
-                                           search-paths)
-                     #:phases ,phases
-                     #:exclude (quote ,exclude)
-                     #:local-packages (quote ,local-packages)
-                     #:tests? ,tests?
-                     #:out-of-source? ,out-of-source?
-                     #:validate-runpath? ,validate-runpath?
-                     #:patch-shebangs? ,patch-shebangs?
-                     #:strip-binaries? ,strip-binaries?
-                     #:strip-flags ,strip-flags
-                     #:strip-directories ,strip-directories)))
+    (with-imported-modules imported-modules
+      #~(begin
+          (use-modules #$@(sexp->gexp modules))
+          (maven-build #:source #+source
+                       #:system #$system
+                       #:outputs #$(outputs->gexp outputs)
+                       #:inputs #$(input-tuples->gexp inputs)
+                       #:search-paths '#$(sexp->gexp
+                                          (map search-path-specification->sexp
+                                               search-paths))
+                       #:phases #$phases
+                       #:exclude '#$exclude
+                       #:local-packages '#$local-packages
+                       #:tests? #$tests?
+                       #:out-of-source? #$out-of-source?
+                       #:validate-runpath? #$validate-runpath?
+                       #:patch-shebangs? #$patch-shebangs?
+                       #:strip-binaries? #$strip-binaries?
+                       #:strip-flags #$(sexp->gexp strip-flags)
+                       #:strip-directories #$(sexp->gexp strip-directories)))))
 
-  (define guile-for-build
-    (match guile
-      ((? package?)
-       (package-derivation store guile system #:graft? #f))
-      (#f                                         ; the default
-       (let* ((distro (resolve-interface '(gnu packages commencement)))
-              (guile  (module-ref distro 'guile-final)))
-         (package-derivation store guile system #:graft? #f)))))
-
-  (build-expression->derivation store name builder
-                                #:system system
-                                #:inputs inputs
-                                #:modules imported-modules
-                                #:outputs outputs
-                                #:guile-for-build guile-for-build))
+  (mlet %store-monad ((guile (package->derivation (or guile (default-guile))
+                                                  system #:graft? #f)))
+    (gexp->derivation name builder
+                      #:system system
+                      #:guile-for-build guile)))
 
 (define maven-build-system
   (build-system

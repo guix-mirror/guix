@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2021 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -62,8 +62,8 @@
                                     (find-files "." "\\.a$")))
                         #t))))))
     (outputs '("out" "debug" "static"))
-    (native-inputs `(("m4" ,m4)))
-    (propagated-inputs `(("gmp" ,gmp)))
+    (native-inputs (list m4))
+    (propagated-inputs (list gmp))
     (home-page "https://www.lysator.liu.se/~nisse/nettle/")
     (synopsis "C library for low-level cryptographic functionality")
     (description
@@ -73,35 +73,10 @@ cryptographic toolkits for object-oriented languages or in applications
 themselves.")
     (license gpl2+)))
 
-(define-public nettle-3.5
+(define-public nettle
   ;; This version is not API-compatible with version 2.  In particular, lsh
   ;; cannot use it yet.  So keep it separate.
   (package (inherit nettle-2)
-    (version "3.5.1")
-    (replacement nettle-3.5/fixed)
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnu/nettle/nettle-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "06clvkdfxhlbagn4afssylmn5vrak59dlmnvy8b2xc31hycs3k3m"))))
-    (arguments
-     (substitute-keyword-arguments (package-arguments nettle-2)
-       ((#:configure-flags flags)
-        ;; Build "fat" binaries where the right implementation is chosen
-        ;; at run time based on CPU features (starting from 3.1.)
-        `(cons "--enable-fat" ,flags))))))
-
-(define nettle-3.5/fixed
-  (package-with-extra-patches
-   nettle-3.5
-   (search-patches "nettle-3.5-check-_pkcs1_sec_decrypt-msg-len.patch"
-                   "nettle-3.5-CVE-2021-3580-pt1.patch"
-                   "nettle-3.5-CVE-2021-3580-pt2.patch")))
-
-(define-public nettle-3.7
-  (package (inherit nettle-3.5)
     (version "3.7.3")
     (source (origin
               (method url-fetch)
@@ -109,7 +84,10 @@ themselves.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1w5wwc3q0r97d2ifhx77cw7y8s20bm8x52is9j93p2h47yq5w7v6"))))))
-
-;;; Upgrading Nettle on master would cause 10000+ packages to be rebuilt.
-(define-public nettle nettle-3.5)
+                "1w5wwc3q0r97d2ifhx77cw7y8s20bm8x52is9j93p2h47yq5w7v6"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments nettle-2)
+       ((#:configure-flags flags)
+        ;; Build "fat" binaries where the right implementation is chosen
+        ;; at run time based on CPU features (starting from 3.1.)
+        `(cons "--enable-fat" ,flags))))))

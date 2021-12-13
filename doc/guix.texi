@@ -96,6 +96,7 @@ Copyright @copyright{} 2021 Domagoj Stolfa@*
 Copyright @copyright{} 2021 Hui Lu@*
 Copyright @copyright{} 2021 pukkamustard@*
 Copyright @copyright{} 2021 Alice Brenon@*
+Copyright @copyright{} 2021 Josselin Poiret@*
 Copyright @copyright{} 2021 Andrew Tropin@*
 Copyright @copyright{} 2021 Sarah Morgensen@*
 Copyright @copyright{} 2021 Josselin Poiret@*
@@ -297,6 +298,7 @@ Utilities
 * Invoking guix hash::          Computing the cryptographic hash of a file.
 * Invoking guix import::        Importing package definitions.
 * Invoking guix refresh::       Updating package definitions.
+* Invoking guix style::         Styling package definitions.
 * Invoking guix lint::          Finding errors in package definitions.
 * Invoking guix size::          Profiling disk usage.
 * Invoking guix graph::         Visualizing the graph of packages.
@@ -1918,12 +1920,12 @@ themselves.
 @subsection X11 Fonts
 
 @cindex fonts
-The majority of graphical applications use Fontconfig to locate and
-load fonts and perform X11-client-side rendering.  The @code{fontconfig}
-package in Guix looks for fonts in @file{$HOME/.guix-profile}
-by default.  Thus, to allow graphical applications installed with Guix
-to display fonts, you have to install fonts with Guix as well.
-Essential font packages include @code{gs-fonts}, @code{font-dejavu}, and
+The majority of graphical applications use Fontconfig to locate and load
+fonts and perform X11-client-side rendering.  The @code{fontconfig}
+package in Guix looks for fonts in @file{$HOME/.guix-profile} by
+default.  Thus, to allow graphical applications installed with Guix to
+display fonts, you have to install fonts with Guix as well.  Essential
+font packages include @code{font-ghostscript}, @code{font-dejavu}, and
 @code{font-gnu-freefont}.
 
 @cindex @code{fc-cache}
@@ -2822,8 +2824,8 @@ you should add them to @file{~/.bash_profile} (or equivalent file if you
 do not use Bash) so that environment variables are set next time you
 spawn a shell.  You only need to do this once and other search paths
 environment variables will be taken care of similarly---e.g., if you
-eventually install @code{python} and Python libraries, @code{PYTHONPATH}
-will be defined.
+eventually install @code{python} and Python libraries,
+@env{GUIX_PYTHONPATH} will be defined.
 
 You can go on installing packages at your will.  To list installed
 packages, run:
@@ -3578,23 +3580,25 @@ Show details about @var{package}, taken from the list of available packages, in
 recutils manual}).
 
 @example
-$ guix package --show=python | recsel -p name,version
-name: python
-version: 2.7.6
+$ guix package --show=guile | recsel -p name,version
+name: guile
+version: 3.0.5
 
-name: python
-version: 3.3.5
+name: guile
+version: 3.0.2
+
+name: guile
+version: 2.2.7
+@dots{}
 @end example
 
 You may also specify the full name of a package to only get details about a
 specific version of it (this time using the @command{guix show} alias):
 @example
-$ guix show python@@3.4 | recsel -p name,version
-name: python
-version: 3.4.3
+$ guix show guile@@3.0.5 | recsel -p name,version
+name: guile
+version: 3.0.5
 @end example
-
-
 
 @item --list-installed[=@var{regexp}]
 @itemx -I [@var{regexp}]
@@ -6033,11 +6037,11 @@ guix environment guile -- make -j4
 
 In other situations, it is more convenient to specify the list of
 packages needed in the environment.  For example, the following command
-runs @command{python} from an environment containing Python@tie{}2.7 and
+runs @command{python} from an environment containing Python@tie{}3 and
 NumPy:
 
 @example
-guix environment --ad-hoc python2-numpy python-2.7 -- python
+guix environment --ad-hoc python-numpy python -- python3
 @end example
 
 Furthermore, one might want the dependencies of a package and also some
@@ -6917,7 +6921,7 @@ package looks like this:
                 "0ssi1wpaf7plaswqqjwigppsg5fyh99vdlb9kzl7c9lng89ndq1i"))))
     (build-system gnu-build-system)
     (arguments '(#:configure-flags '("--enable-silent-rules")))
-    (inputs `(("gawk" ,gawk)))
+    (inputs (list gawk))
     (synopsis "Hello, GNU world: An example GNU package")
     (description "Guess what GNU Hello prints!")
     (home-page "https://www.gnu.org/software/hello/")
@@ -7005,8 +7009,8 @@ Reference Manual}).
 
 @item
 The @code{inputs} field specifies inputs to the build process---i.e.,
-build-time or run-time dependencies of the package.  Here, we define an
-input called @code{"gawk"} whose value is that of the @code{gawk}
+build-time or run-time dependencies of the package.  Here, we add
+an input, a reference to the @code{gawk}
 variable; @code{gawk} is itself bound to a @code{<package>} object.
 
 @cindex backquote (quasiquote)
@@ -7131,19 +7135,41 @@ list, typically containing sequential keyword-value pairs.
 @itemx @code{native-inputs} (default: @code{'()})
 @itemx @code{propagated-inputs} (default: @code{'()})
 @cindex inputs, of packages
-These fields list dependencies of the package.  Each one is a list of
-tuples, where each tuple has a label for the input (a string) as its
-first element, a package, origin, or derivation as its second element,
-and optionally the name of the output thereof that should be used, which
-defaults to @code{"out"} (@pxref{Packages with Multiple Outputs}, for
-more on package outputs).  For example, the list below specifies three
-inputs:
+These fields list dependencies of the package.  Each element of these
+lists is either a package, origin, or other ``file-like object''
+(@pxref{G-Expressions}); to specify the output of that file-like object
+that should be used, pass a two-element list where the second element is
+the output (@pxref{Packages with Multiple Outputs}, for more on package
+outputs).  For example, the list below specifies three inputs:
 
 @lisp
+(list libffi libunistring
+      `(,glib "bin"))      ;the "bin" output of GLib
+@end lisp
+
+In the example above, the @code{"out"} output of @code{libffi} and
+@code{libunistring} is used.
+
+@quotation Compatibility Note
+Until version 1.3.0, input lists were a list of tuples,
+where each tuple has a label for the input (a string) as its
+first element, a package, origin, or derivation as its second element,
+and optionally the name of the output thereof that should be used, which
+defaults to @code{"out"}.  For example, the list below is equivalent to
+the one above, but using the @dfn{old input style}:
+
+@lisp
+;; Old input style (deprecated).
 `(("libffi" ,libffi)
   ("libunistring" ,libunistring)
-  ("glib:bin" ,glib "bin"))  ;the "bin" output of Glib
+  ("glib:bin" ,glib "bin"))  ;the "bin" output of GLib
 @end lisp
+
+This style is now deprecated; it is still supported but support will be
+removed in a future version.  It should not be used for new package
+definitions.  @xref{Invoking guix style}, on how to migrate to the new
+style.
+@end quotation
 
 @cindex cross compilation, package dependencies
 The distinction between @code{native-inputs} and @code{inputs} is
@@ -7230,11 +7256,35 @@ cross-compiling:
   ;; When cross-compiled, Guile, for example, depends on
   ;; a native version of itself.  Add it here.
   (native-inputs (if (%current-target-system)
-                     `(("self" ,this-package))
+                     (list this-package)
                      '())))
 @end lisp
 
 It is an error to refer to @code{this-package} outside a package definition.
+@end deffn
+
+The following helper procedures are provided to help deal with package
+inputs.
+
+@deffn {Scheme Procedure} lookup-package-input @var{package} @var{name}
+@deffnx {Scheme Procedure} lookup-package-native-input @var{package} @var{name}
+@deffnx {Scheme Procedure} lookup-package-propagated-input @var{package} @var{name}
+@deffnx {Scheme Procedure} lookup-package-direct-input @var{package} @var{name}
+Look up @var{name} among @var{package}'s inputs (or native, propagated,
+or direct inputs).  Return it if found, @code{#f} otherwise.
+
+@var{name} is the name of a package depended on.  Here's how you might
+use it:
+
+@lisp
+(use-modules (guix packages) (gnu packages base))
+
+(lookup-package-direct-input coreutils "gmp")
+@result{} #<package gmp@@6.2.1 @dots{}>
+@end lisp
+
+In this example we obtain the @code{gmp} package that is among the
+direct inputs of @code{coreutils}.
 @end deffn
 
 @cindex development inputs, of a package
@@ -7558,20 +7608,42 @@ optional dependency, you can define a variant that removes that
 dependency like so:
 
 @lisp
-(use-modules (gnu packages gdb)    ;for 'gdb'
-             (srfi srfi-1))        ;for 'alist-delete'
+(use-modules (gnu packages gdb))   ;for 'gdb'
 
 (define gdb-sans-guile
   (package
     (inherit gdb)
-    (inputs (alist-delete "guile"
-                          (package-inputs gdb)))))
+    (inputs (modify-inputs (package-inputs gdb)
+              (delete "guile")))))
 @end lisp
 
-The @code{alist-delete} call above removes the tuple from the
-@code{inputs} field that has @code{"guile"} as its first element
-(@pxref{SRFI-1 Association Lists,,, guile, GNU Guile Reference
-Manual}).
+The @code{modify-inputs} form above removes the @code{"guile"} package
+from the @code{inputs} field of @code{gdb}.  The @code{modify-inputs}
+macro is a helper that can prove useful anytime you want to remove, add,
+or replace package inputs.
+
+@deffn {Scheme Syntax} modify-inputs @var{inputs} @var{clauses}
+Modify the given package inputs, as returned by @code{package-inputs} & co.,
+according to the given clauses.  The example below removes the GMP and ACL
+inputs of Coreutils and adds libcap to the back of the input list:
+
+@lisp
+(modify-inputs (package-inputs coreutils)
+  (delete "gmp" "acl")
+  (append libcap))
+@end lisp
+
+The example below replaces the @code{guile} package from the inputs of
+@code{guile-redis} with @code{guile-2.2}:
+
+@lisp
+(modify-inputs (package-inputs guile-redis)
+  (replace "guile" guile-2.2))
+@end lisp
+
+The last type of clause is @code{prepend}, to add inputs to the front of
+the list.
+@end deffn
 
 In some cases, you may find it useful to write functions
 (``procedures'', in Scheme parlance) that return a package based on some
@@ -7588,8 +7660,7 @@ depends on it:
     (name name)
     (version "3.0")
     ;; several fields omitted
-    (inputs
-     `(("lua" ,lua)))
+    (inputs (list lua))
     (synopsis "Socket library for Lua")))
 
 (define-public lua5.1-socket
@@ -8429,8 +8500,9 @@ packages, which consists in running @code{python setup.py build} and
 then @code{python setup.py install --prefix=/gnu/store/@dots{}}.
 
 For packages that install stand-alone Python programs under @code{bin/},
-it takes care of wrapping these programs so that their @env{PYTHONPATH}
-environment variable points to all the Python libraries they depend on.
+it takes care of wrapping these programs so that their
+@env{GUIX_PYTHONPATH} environment variable points to all the Python
+libraries they depend on.
 
 Which Python package is used to perform the build can be specified with
 the @code{#:python} parameter.  This is a useful way to force a package
@@ -8442,6 +8514,13 @@ By default guix calls @code{setup.py} under control of
 @code{setuptools}, much like @command{pip} does.  Some packages are not
 compatible with setuptools (and pip), thus you can disable this by
 setting the @code{#:use-setuptools?} parameter to @code{#f}.
+
+If a @code{"python"} output is available, the package is installed into it
+instead of the default @code{"out"} output. This is useful for packages that
+include a Python package as only a part of the software, and thus want to
+combine the phases of @code{python-build-system} with another build system.
+Python bindings are a common usecase.
+
 @end defvr
 
 @defvr {Scheme Variable} perl-build-system
@@ -8662,9 +8741,7 @@ implements the build procedure for packages that use
 
 It adds both Meson and @uref{https://ninja-build.org/, Ninja} to the set
 of inputs, and they can be changed with the parameters @code{#:meson}
-and @code{#:ninja} if needed.  The default Meson is
-@code{meson-for-build}, which is special because it doesn't clear the
-@code{RUNPATH} of binaries and libraries when they are installed.
+and @code{#:ninja} if needed.
 
 This build system is an extension of @code{gnu-build-system}, but with the
 following phases changed to some specific for Meson:
@@ -8682,8 +8759,10 @@ The phase runs @code{ninja} to build the package in parallel by default, but
 this can be changed with @code{#:parallel-build?}.
 
 @item check
-The phase runs @code{ninja} with the target specified in @code{#:test-target},
-which is @code{"test"} by default.
+The phase runs @samp{meson test} with a base set of options that cannot
+be overridden.  This base set of options can be extended via the
+@code{#:test-options} argument, for example to select or skip a specific
+test suite.
 
 @item install
 The phase runs @code{ninja install} and can not be changed.
@@ -8695,11 +8774,11 @@ Apart from that, the build system also adds the following phases:
 
 @item fix-runpath
 This phase ensures that all binaries can find the libraries they need.
-It searches for required libraries in subdirectories of the package being
-built, and adds those to @code{RUNPATH} where needed.  It also removes
-references to libraries left over from the build phase by
-@code{meson-for-build}, such as test dependencies, that aren't actually
-required for the program to run.
+It searches for required libraries in subdirectories of the package
+being built, and adds those to @code{RUNPATH} where needed.  It also
+removes references to libraries left over from the build phase by
+@code{meson}, such as test dependencies, that aren't actually required
+for the program to run.
 
 @item glib-or-gtk-wrap
 This phase is the phase provided by @code{glib-or-gtk-build-system}, and it
@@ -9078,12 +9157,14 @@ Make @var{file} writable for its owner.
 @end deffn
 
 @deffn {Scheme Procedure} copy-recursively @var{source} @var{destination} @
-  [#:log (current-output-port)] [#:follow-symlinks? #f] [#:keep-mtime? #f]
+  [#:log (current-output-port)] [#:follow-symlinks? #f] @
+  [#:copy-file copy-file] [#:keep-mtime? #f] [#:keep-permissions? #t]
 Copy @var{source} directory to @var{destination}.  Follow symlinks if
-@var{follow-symlinks?}  is true; otherwise, just preserve them.  When
-@var{keep-mtime?} is true, keep the modification time of the files in
-@var{source} on those of @var{destination}.  Write verbose output to the
-@var{log} port.
+@var{follow-symlinks?}  is true; otherwise, just preserve them.  Call
+@var{copy-file} to copy regular files.  When @var{keep-mtime?} is true,
+keep the modification time of the files in @var{source} on those of
+@var{destination}.  When @var{keep-permissions?} is true, preserve file
+permissions.  Write verbose output to the @var{log} port.
 @end deffn
 
 @deffn {Scheme Procedure} delete-file-recursively @var{dir} @
@@ -9166,6 +9247,31 @@ the root of the Guix source tree:
 Return the complete file name for @var{program} as found in
 @code{$PATH}, or @code{#f} if @var{program} could not be found.
 @end deffn
+
+@deffn {Scheme Procedure} search-input-file @var{inputs} @var{name}
+@deffnx {Scheme Procedure} search-input-directory @var{inputs} @var{name}
+Return the complete file name for @var{name} as found in @var{inputs};
+@code{search-input-file} searches for a regular file and
+@code{search-input-directory} searches for a directory.  If @var{name}
+could not be found, an exception is raised.
+
+Here, @var{inputs} must be an association list like @code{inputs} and
+@code{native-inputs} as available to build phases (@pxref{Build
+Phases}).
+@end deffn
+
+Here is a (simplified) example of how @code{search-input-file} is used
+in a build phase of the @code{wireguard-tools} package:
+
+@lisp
+(add-after 'install 'wrap-wg-quick
+  (lambda* (#:key inputs outputs #:allow-other-keys)
+    (let ((coreutils (string-append (assoc-ref inputs "coreutils")
+                                    "/bin")))
+      (wrap-program (search-input-file outputs "bin/wg-quick")
+        #:sh (search-input-file inputs "bin/bash")
+        `("PATH" ":" prefix ,(list coreutils))))))
+@end lisp
 
 @subsection Build Phases
 
@@ -10664,6 +10770,7 @@ the Scheme programming interface of Guix in a convenient way.
 * Invoking guix hash::          Computing the cryptographic hash of a file.
 * Invoking guix import::        Importing package definitions.
 * Invoking guix refresh::       Updating package definitions.
+* Invoking guix style::         Styling package definitions.
 * Invoking guix lint::          Finding errors in package definitions.
 * Invoking guix size::          Profiling disk usage.
 * Invoking guix graph::         Visualizing the graph of packages.
@@ -12579,6 +12686,102 @@ token procured from @uref{https://github.com/settings/tokens} or
 otherwise.
 
 
+@node Invoking guix style
+@section Invoking @command{guix style}
+
+The @command{guix style} command helps packagers style their package
+definitions according to the latest fashionable trends.  The command
+currently focuses on one aspect: the style of package inputs.  It may
+eventually be extended to handle other stylistic matters.
+
+The way package inputs are written is going through a transition
+(@pxref{package Reference}, for more on package inputs).  Until version
+1.3.0, package inputs were written using the ``old style'', where each
+input was given an explicit label, most of the time the package name:
+
+@lisp
+(package
+  ;; @dots{}
+  ;; The "old style" (deprecated).
+  (inputs `(("libunistring" ,libunistring)
+            ("libffi" ,libffi))))
+@end lisp
+
+Today, the old style is deprecated and the preferred style looks like
+this:
+
+@lisp
+(package
+  ;; @dots{}
+  ;; The "new style".
+  (inputs (list libunistring libffi)))
+@end lisp
+
+Likewise, uses of @code{alist-delete} and friends to manipulate inputs
+is now deprecated in favor of @code{modify-inputs} (@pxref{Defining
+Package Variants}, for more info on @code{modify-inputs}).
+
+In the vast majority of cases, this is a purely mechanical change on the
+surface syntax that does not even incur a package rebuild.  Running
+@command{guix style} can do that for you, whether you're working on
+packages in Guix proper or in an external channel.
+
+The general syntax is:
+
+@example
+guix style [@var{options}] @var{package}@dots{}
+@end example
+
+This causes @command{guix style} to analyze and rewrite the definition
+of @var{package}@dots{}.  It does so in a conservative way: preserving
+comments and bailing out if it cannot make sense of the code that
+appears in an inputs field.  The available options are listed below.
+
+@table @code
+@item --dry-run
+@itemx -n
+Show source file locations that would be edited but do not modify them.
+
+@item --load-path=@var{directory}
+@itemx -L @var{directory}
+Add @var{directory} to the front of the package module search path
+(@pxref{Package Modules}).
+
+@item --expression=@var{expr}
+@itemx -e @var{expr}
+Style the package @var{expr} evaluates to.
+
+For example, running:
+
+@example
+guix style -e '(@@ (gnu packages gcc) gcc-5)'
+@end example
+
+styles the @code{gcc-5} package definition.
+
+@item --input-simplification=@var{policy}
+Specify the package input simplification policy for cases where an input
+label does not match the corresponding package name.  @var{policy} may
+be one of the following:
+
+@table @code
+@item silent
+Simplify inputs only when the change is ``silent'', meaning that the
+package does not need to be rebuilt (its derivation is unchanged).
+
+@item safe
+Simplify inputs only when that is ``safe'' to do: the package might need
+to be rebuilt, but the change is known to have no observable effect.
+
+@item always
+Simplify inputs even when input labels do not match package names, and
+even if that might have an observable effect.
+@end table
+
+The default is @code{silent}, meaning that input simplifications do not
+trigger any package rebuild.
+@end table
+
 @node Invoking guix lint
 @section Invoking @command{guix lint}
 
@@ -12707,6 +12910,13 @@ declare them as in this example:
 @item formatting
 Warn about obvious source code formatting issues: trailing white space,
 use of tabulations, etc.
+
+@item input-labels
+Report old-style input labels that do not match the name of the
+corresponding package.  This aims to help migrate from the ``old input
+style''.  @xref{package Reference}, for more information on package
+inputs and input styles.  @xref{Invoking guix style}, on how to migrate
+to the new style.
 @end table
 
 The general syntax is:
@@ -18837,19 +19047,26 @@ example the @code{windowmaker} or @code{openbox} packages---preferably
 by adding it to the @code{packages} field of your operating system
 definition (@pxref{operating-system Reference, system-wide packages}).
 
+@anchor{wayland-gdm}
+GDM also supports Wayland: it can itself use Wayland instead of X11 for
+its user interface, and it can also start Wayland sessions.  The former is
+required for the latter, to enable, set @code{wayland?} to @code{#t} in
+@code{gdm-configuration}.
+
 @defvr {Scheme Variable} gdm-service-type
 This is the type for the @uref{https://wiki.gnome.org/Projects/GDM/, GNOME
 Desktop Manager} (GDM), a program that manages graphical display servers and
 handles graphical user logins.  Its value must be a @code{gdm-configuration}
 (see below).
 
-@cindex session types (X11)
-@cindex X11 session types
+@cindex session types
 GDM looks for @dfn{session types} described by the @file{.desktop} files in
-@file{/run/current-system/profile/share/xsessions} and allows users to choose
-a session from the log-in screen.  Packages such as @code{gnome}, @code{xfce},
-and @code{i3} provide @file{.desktop} files; adding them to the system-wide
-set of packages automatically makes them available at the log-in screen.
+@file{/run/current-system/profile/share/xsessions} (for X11 sessions) and
+@file{/run/current-system/profile/share/wayland-sessions} (for Wayland
+sessions) and allows users to choose a session from the log-in screen.
+Packages such as @code{gnome}, @code{xfce}, @code{i3} and @code{sway} provide
+@file{.desktop} files; adding them to the system-wide set of packages
+automatically makes them available at the log-in screen.
 
 In addition, @file{~/.xsession} files are honored.  When available,
 @file{~/.xsession} must be an executable that starts a window manager
@@ -18882,6 +19099,13 @@ File name of the @code{dbus-daemon} executable.
 
 @item @code{gdm} (default: @code{gdm})
 The GDM package to use.
+
+@item @code{wayland?} (default: @code{#f})
+When true, enables Wayland in GDM, necessary to use Wayland sessions.
+
+@item @code{wayland-session} (default: @code{gdm-wayland-session-wrapper})
+The Wayland session wrapper to use, needed to setup the
+environment.
 @end table
 @end deftp
 
@@ -19361,6 +19585,12 @@ Specifies the group name or ID that will be used when executing external
 programs.
 
 Defaults to @samp{"lp"}.
+@end deftypevr
+
+@deftypevr {@code{files-configuration} parameter} string log-file-group
+Specifies the group name or ID that will be used for log files.
+
+Defaults to @samp{"lpadmin"}.
 @end deftypevr
 
 @deftypevr {@code{files-configuration} parameter} string log-file-perm
@@ -20103,11 +20333,12 @@ expected.
 
 The desktop environments in Guix use the Xorg display server by
 default.  If you'd like to use the newer display server protocol
-called Wayland, you need to use the @code{sddm-service} instead of
-GDM as the graphical login manager.  You should then
-select the ``GNOME (Wayland)'' session in SDDM@.  Alternatively you can
-also try starting GNOME on Wayland manually from a TTY with the
-command ``XDG_SESSION_TYPE=wayland exec dbus-run-session
+called Wayland, you need to enable Wayland support in GDM
+(@pxref{wayland-gdm}).  Another solution is to use the
+@code{sddm-service} instead of GDM as the graphical login manager.
+You should then select the ``GNOME (Wayland)'' session in SDDM@.
+Alternatively you can also try starting GNOME on Wayland manually from a
+TTY with the command ``XDG_SESSION_TYPE=wayland exec dbus-run-session
 gnome-session``.  Currently only GNOME has support for Wayland.
 
 @defvr {Scheme Variable} gnome-desktop-service-type
@@ -20849,7 +21080,7 @@ configuration.
 @item @code{ident-file} (default: @code{%default-postgres-ident})
 Filename or G-expression for the user name mapping configuration.
 
-@item @code{socket-directory} (default: @code{#false})
+@item @code{socket-directory} (default: @code{"/var/run/postgresql"})
 Specifies the directory of the Unix-domain socket(s) on which PostgreSQL
 is to listen for connections from client applications. If set to
 @code{""} PostgreSQL does not listen on any Unix-domain sockets, in
@@ -33606,8 +33837,7 @@ The common way to create this file is as follows:
 (let* ((out       (assoc-ref %outputs "out"))
        (targetdir (string-append out "/share/" ,name))
        (app       (string-append out "/bin/" ,name))
-       (Rbin      (string-append (assoc-ref %build-inputs "r-min")
-                                 "/bin/Rscript")))
+       (Rbin      (search-input-file %build-inputs "/bin/Rscript")))
   ;; @dots{}
   (mkdir-p (string-append out "/bin"))
   (call-with-output-file app
@@ -35701,6 +35931,15 @@ are created using @code{define-record-type*}, you can write a succinct
 @var{body} that evaluates to the new service parameters by using the
 @code{inherit} feature that @code{define-record-type*} provides.
 
+Clauses can also have the following form:
+
+@lisp
+(delete @var{type})
+@end lisp
+
+Such a clause removes all services of the given @var{type} from
+@var{services}.
+
 @xref{Using the Configuration System}, for example usage.
 
 @end deffn
@@ -37098,6 +37337,20 @@ GDB}):
 
 From there on, GDB will pick up debugging information from the
 @file{.debug} files under @file{~/.guix-profile/lib/debug}.
+
+Below is an alternative GDB script which is useful when working with
+other profiles.  It takes advantage of the optional Guile integration in
+GDB.  This snippet is included by default on Guix System in the
+@file{~/.gdbinit} file.
+
+@example
+guile
+(use-modules (gdb))
+(execute (string-append "set debug-file-directory "
+                        (or (getenv "GDB_DEBUG_FILE_DIRECTORY")
+                            "~/.guix-profile/lib/debug")))
+end
+@end example
 
 In addition, you will most likely want GDB to be able to show the source
 code being debugged.  To do that, you will have to unpack the source

@@ -28,6 +28,7 @@
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
   #:use-module (gnu packages autotools)
@@ -41,7 +42,7 @@
 (define-public libevent
   (package
     (name "libevent")
-    (version "2.1.11")
+    (version "2.1.12")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -49,16 +50,17 @@
                     version "-stable/libevent-" version "-stable.tar.gz"))
               (sha256
                (base32
-                "0g988zqm45sj1hlhhz4il5z4dpi5dl74hzjwzl4md37a09iaqnx6"))))
+                "1fq30imk8zd26x8066di3kpc5zyfc5z6frr3zll685zcx4dxxrlj"))))
     (build-system gnu-build-system)
     (outputs '("out" "bin"))
     (arguments
      ;; This skips some of the tests which fail on armhf and aarch64.
-     '(#:configure-flags '("--disable-libevent-regress")))
+     '(#:configure-flags '("--disable-libevent-regress"
+                           "--disable-openssl")))
     (inputs
      `(("python" ,python-wrapper)))     ;for 'event_rpcgen.py'
     (native-inputs
-     `(("which" ,which)))
+     (list which))
     (home-page "https://libevent.org/")
     (synopsis "Event notification library")
     (description
@@ -76,7 +78,7 @@ loop.")
 (define-public libev
   (package
     (name "libev")
-    (version "4.31")
+    (version "4.33")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://dist.schmorp.de/libev/Attic/libev-"
@@ -84,7 +86,7 @@ loop.")
                                   ".tar.gz"))
               (sha256
                (base32
-                "0nkfqv69wfyy2bpga4d53iqydycpik8jp8x6q70353hia8mmv1gd"))))
+                "1sjs4324is7fp21an4aas2z4dwsvs6z4xwrmp72vwpq1s6wbfzjh"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))
@@ -102,26 +104,22 @@ limited support for fork events.")
 (define-public libuv
   (package
     (name "libuv")
-    (version "1.35.0")
+    (version "1.41.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://dist.libuv.org/dist/v" version
                                   "/libuv-v" version ".tar.gz"))
               (sha256
                (base32
-                "0126mfmaw3s92dsga60sydgwjmzwg9cd36n127pydmisah17v50f"))))
+                "0zb818sjwnxn5yv3qvkxaprjf037yqmjipk5i3a8rg1q4izhrnv5"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")
        ;; XXX: Some tests want /dev/tty, attempt to make connections, etc.
        #:tests? #f))
-    ;; TODO replace with autoconf on core-updates
-    (native-inputs `(("autoconf" ,autoconf-wrapper)
-                     ("automake" ,automake)
-                     ("libtool" ,libtool)
-
-                     ;; libuv.pc is installed only when pkg-config is found.
-                     ("pkg-config" ,pkg-config)))
+    (native-inputs (list autoconf automake libtool
+                         ;; libuv.pc is installed only when pkg-config is found.
+                         pkg-config))
     (home-page "https://github.com/libuv/libuv")
     (synopsis "Library for asynchronous I/O")
     (description
@@ -150,6 +148,27 @@ resolution, asynchronous file system operations, and threading primitives.")
                 "0wpb9pz3r8nksnrf4zbixj2kk9whr7abi45ydrwyv2js2ljrc4j3"))))
     (properties '((hidden? . #t)))))
 
+(define-public libuv-julia
+  (let ((commit "fb3e3364c33ae48c827f6b103e05c3f0e78b79a9")
+        (revision "3"))
+    ;; When upgrading Julia, also upgrade this.  Get the commit from
+    ;; https://github.com/JuliaLang/julia/blob/v1.6.1/deps/libuv.version
+    (package
+      (inherit libuv)
+      (name "libuv-julia")
+      (version (git-version "2.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/JuliaLang/libuv")
+                       (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1kqpn19d20aka30h6q5h8lnzyp0vw0xzgx0wm4w2r5j6yf76m2hr"))))
+      (home-page "https://github.com/JuliaLang/libuv")
+      (properties '((hidden? . #t))))))
+
 (define-public perl-anyevent
   (package
     (name "perl-anyevent")
@@ -163,15 +182,15 @@ resolution, asynchronous file system operations, and threading primitives.")
                 "11drlj8r02czhjgzkb39axnr8zzyp506r043xfmf93q9kilfmgjh"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-canary-stability" ,perl-canary-stability)))
+     (list perl-canary-stability))
     (propagated-inputs
-     `(("perl-async-interrupt" ,perl-async-interrupt)
-       ("perl-ev" ,perl-ev)
-       ("perl-guard" ,perl-guard)
-       ("perl-json" ,perl-json)
-       ("perl-json-xs" ,perl-json-xs)
-       ("perl-net-ssleay" ,perl-net-ssleay)
-       ("perl-task-weaken" ,perl-task-weaken)))
+     (list perl-async-interrupt
+           perl-ev
+           perl-guard
+           perl-json
+           perl-json-xs
+           perl-net-ssleay
+           perl-task-weaken))
     (home-page "https://metacpan.org/release/AnyEvent")
     (synopsis
      "API for I/O, timer, signal, child process and completion events")
@@ -216,7 +235,7 @@ not rely on XS.")
      `(("libev-source" ,(package-source libev))
        ("perl-canary-stability" ,perl-canary-stability)))
     (propagated-inputs
-     `(("perl-common-sense" ,perl-common-sense)))
+     (list perl-common-sense))
     (home-page "https://metacpan.org/release/EV")
     (synopsis "Perl interface to libev")
     (description
@@ -240,11 +259,9 @@ and still be faster than other event loops currently supported in Perl.")
          "1qwb284z4ig3xzy21m1b3w8bkb8k6l2ij6cjz93znn2j6qs42pwp"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)
-       ("perl-test-simple" ,perl-test-simple)))
+     (list perl-module-build perl-test-simple))
     (propagated-inputs
-     `(("perl-anyevent" ,perl-anyevent)
-       ("perl-data-sexpression" ,perl-data-sexpression)))
+     (list perl-anyevent perl-data-sexpression))
     (arguments
      ;; Tests seem to fail because they try to start a server.
      `(#:tests? #f))

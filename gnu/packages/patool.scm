@@ -54,25 +54,25 @@
                       (when tests?
                         (invoke "pytest")))))))
     (native-inputs
-     `(("bzip2" ,bzip2)
-       ("cabextract" ,cabextract)
-       ("cdrtools" ,cdrtools)
-       ("clzip" ,clzip)
-       ("cpio" ,cpio)
-       ("dpkg" ,dpkg)
-       ("file" ,file)
-       ("flac" ,flac)
-       ("libarchive" ,libarchive)       ;for bsdtar
-       ("lhasa" ,lhasa)
-       ("lrzip" ,lrzip)
-       ("lzip" ,lzip)
-       ("lzop" ,lzop)
-       ("python-pytest" ,python-pytest)
-       ("p7zip" ,p7zip)
-       ("pbzip2" ,pbzip2)
-       ("pigz" ,pigz)
-       ("plzip" ,plzip)
-       ("rpm" ,rpm)))
+     (list bzip2
+           cabextract
+           cdrtools
+           clzip
+           cpio
+           dpkg
+           file
+           flac
+           libarchive ;for bsdtar
+           lhasa
+           lrzip
+           lzip
+           lzop
+           python-pytest
+           p7zip
+           pbzip2
+           pigz
+           plzip
+           rpm))
     (home-page "https://wummel.github.io/patool/")
     (synopsis "Portable archive file manager")
     (description "Patool provides a unified command line interface for a

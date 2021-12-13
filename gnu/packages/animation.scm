@@ -82,8 +82,7 @@
         "-Dlog=true"
         "-Dtest=true")))
     (native-inputs
-     `(("googletest" ,googletest)
-       ("pkg-config" ,pkg-config)))
+     (list googletest pkg-config))
     (synopsis "Lottie Animation Library")
     (description "Rlottie is a platform independent standalone c++ library for
 rendering vector based animations and art in realtime.")
@@ -182,8 +181,7 @@ C++ @dfn{Standard Template Library} (STL).")
        ("openexr" ,openexr-2)
        ("pango" ,pango)))
     (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+     (list intltool pkg-config))
     (home-page "https://www.synfig.org")
     (synopsis "Vector-based 2D animation renderer")
     (description
@@ -225,13 +223,9 @@ for tweening, preventing the need to hand-draw each frame.")
                  `("XDG_DATA_DIRS" ":" prefix (,gtk-share)))
                #t))))))
     (inputs
-     `(("gtkmm" ,gtkmm)
-       ("gtk+" ,gtk+)
-       ("libsigc++" ,libsigc++)
-       ("synfig" ,synfig)))
+     (list gtkmm-3 gtk+ libsigc++ synfig))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)))
+     (list pkg-config intltool))
     (home-page "https://www.synfig.org")
     (synopsis "Vector-based 2D animation package (GUI)")
     (description
@@ -454,7 +448,7 @@ language.")
          ("qtmultimedia" ,qtmultimedia)
          ("libsndfile" ,libsndfile)))
       (native-inputs
-       `(("qttools" ,qttools)))
+       (list qttools))
       (home-page "https://www.lostmarble.com/papagayo/")
       (synopsis "Lip-syncing for animations")
       (description
@@ -480,10 +474,7 @@ waveform until they line up with the proper sounds.")
                 "0b1nwiwyg01087q318vymg4si76dw41ykxbn2zwd6dqbxzbpr1dh"))))
     (build-system gnu-build-system)
     (inputs
-     `(("qtbase" ,qtbase-5)
-       ("qtxmlpatterns" ,qtxmlpatterns)
-       ("qtmultimedia" ,qtmultimedia)
-       ("qtsvg" ,qtsvg)))
+     (list qtbase-5 qtxmlpatterns qtmultimedia qtsvg))
     (arguments
      `(#:phases
        (modify-phases %standard-phases

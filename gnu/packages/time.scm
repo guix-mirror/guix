@@ -86,7 +86,7 @@ to a file.")
         (base32
          "02kaambsgpjx3zi42j6l11rwms2p35b9hsk4f3kdf979gd3kcqg8"))))
     (native-inputs
-     `(("python-nose" ,python-nose)))
+     (list python-nose))
     (build-system python-build-system)
     (home-page "https://github.com/wroberts/pytimeparse")
     (synopsis "Time expression parser")
@@ -110,7 +110,7 @@ expressions.")
     ;; repository lacks a setup.py!  How to build from git?
     (arguments '(#:tests? #f))
     (propagated-inputs
-     `(("python-cleo" ,python-cleo)))
+     (list python-cleo))
     (home-page "https://github.com/sdispater/pytzdata")
     (synopsis "Timezone database for Python")
     (description
@@ -159,8 +159,7 @@ saving time.  Almost all of the Olson timezones are supported.")
     ;; lacks a setup.py!
     (arguments '(#:tests? #f))
     (propagated-inputs
-     `(("python-dateutil" ,python-dateutil)
-       ("python-pytzdata" ,python-pytzdata)))
+     (list python-dateutil python-pytzdata))
     (home-page "https://github.com/sdispater/pendulum")
     (synopsis "Alternate API for Python datetimes")
     (description "Pendulum is a drop-in replacement for the standard
@@ -172,14 +171,14 @@ Pendulum instances.")
 (define-public python-dateutil
   (package
     (name "python-dateutil")
-    (version "2.8.1")
+    (version "2.8.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-dateutil" version))
        (sha256
         (base32
-         "0g42w7k5007iv9dam6gnja2ry8ydwirh99mgdll35s12pyfzxsvk"))))
+         "11iy7m4bp2lgfkcl0r6xzf34bvk7ppjmsyn2ygfikbi72v6cl8q1"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -195,11 +194,9 @@ Pendulum instances.")
 
                       (invoke "pytest" "-vv"))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)
-       ("python-setuptools-scm" ,python-setuptools-scm)))
+     (list python-pytest python-pytest-cov python-setuptools-scm))
     (propagated-inputs
-     `(("python-six" ,python-six)))
+     (list python-six))
     (home-page "https://dateutil.readthedocs.io/en/stable/")
     (synopsis "Extensions to the standard datetime module")
     (description
@@ -226,12 +223,9 @@ datetime module, available in Python 2.3+.")
          "0jxqkjks7z9dn222cqgvskp4wr6d92aglinxq7pd2w4mzdc7r09x"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-nose" ,python-nose)
-       ("python-pyicu" ,python-pyicu)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-runner" ,python-pytest-runner)))
+     (list python-nose python-pyicu python-pytest python-pytest-runner))
     (propagated-inputs
-     `(("python-future" ,python-future)))
+     (list python-future))
     (home-page "https://github.com/bear/parsedatetime/")
     (synopsis "Parse human-readable date/time text")
     (description
@@ -260,7 +254,7 @@ datetime module, available in Python 2.3+.")
     ;; Pytz should only be required for Python 2, but the test suite fails
     ;; without it.
     (native-inputs
-     `(("python-pytz" ,python-pytz)))
+     (list python-pytz))
     (home-page "https://github.com/closeio/ciso8601")
     (synopsis
      "Fast ISO8601 date time parser")
@@ -295,9 +289,9 @@ Python datetime objects.")
                (("def test_fail") "def _test_fail"))
              #t)))))
     (propagated-inputs
-     `(("python-pytz" ,python-pytz)))
+     (list python-pytz))
     (native-inputs
-     `(("python-mock" ,python-mock)))
+     (list python-mock))
     (home-page "https://github.com/regebro/tzlocal")
     (synopsis "Local timezone information for Python")
     (description
@@ -320,7 +314,7 @@ under several distributions that's hard or impossible to figure out.")
          "1n7jkz68kk5pwni540pr5zdh99bf6ywydk1p5pdrqisrawylldif"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-six" ,python-six)))
+     (list python-six))
     (home-page "https://github.com/gweis/isodate/")
     (synopsis "Python date parser and formatter")
     (description
@@ -349,7 +343,7 @@ ISO 8601 dates, time and duration.")
                     (lambda _
                       (invoke "pytest" "-vv" "iso8601"))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://bitbucket.org/micktwomey/pyiso8601")
     (synopsis "Module to parse ISO 8601 dates")
     (description
@@ -396,9 +390,9 @@ value (in fractional seconds) of a clock which never goes backwards.")
          "06jv7ar7lpvvk0dixzwdr3wgm0g1lipxs429s2z7knwwa7hwpf41"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-pytz" ,python-pytz)))
+     (list python-pytz))
     (native-inputs
-     `(("python-nose" ,python-nose)))
+     (list python-nose))
     (home-page "https://github.com/kurtraschke/pyRFC3339")
     (synopsis "Python timestamp library")
     (description "Python library for generating and parsing RFC 3339-compliant
@@ -430,15 +424,15 @@ timestamps.")
                        ;; Remove when python-dateutil > 2.8.1.
                        "-k" "not test_parse_tz_name_zzz")))))))
     (native-inputs
-     `(;; For testing
-       ("python-chai" ,python-chai)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)
-       ("python-pytest-mock" ,python-pytest-mock)
-       ("python-pytz" ,python-pytz)
-       ("python-simplejson" ,python-simplejson)))
+     (list ;; For testing
+           python-chai
+           python-pytest
+           python-pytest-cov
+           python-pytest-mock
+           python-pytz
+           python-simplejson))
     (propagated-inputs
-     `(("python-dateutil" ,python-dateutil)))
+     (list python-dateutil))
     (home-page "https://github.com/arrow-py/arrow")
     (synopsis "Dates and times for Python")
     (description
@@ -450,17 +444,15 @@ datetime type.")
 (define-public python-aniso8601
   (package
     (name "python-aniso8601")
-    (version "1.3.0")
+    (version "9.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "aniso8601" version))
        (sha256
         (base32
-         "1waj54iv3n3lw1fapbz8a93yjgrybgpc86wif5baxdh1arpj9df3"))))
+         "0wxry6riyqajl02mkad8g2q98sx5jr13zndj3fandpzfcxv13qvj"))))
     (build-system python-build-system)
-    (propagated-inputs
-     `(("python-dateutil" ,python-dateutil)))
     (home-page "https://bitbucket.org/nielsenb/aniso8601")
     (synopsis "Python library for parsing ISO 8601 strings")
     (description
@@ -503,7 +495,7 @@ datetime type.")
              #t))
          (delete 'configure))))
     (native-inputs
-     `(("perl" ,perl)))
+     (list perl))
     (home-page "https://salsa.debian.org/debian/datefudge")
     (synopsis "Pretend the system date is different")
     (description

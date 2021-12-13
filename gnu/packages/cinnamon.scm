@@ -53,24 +53,24 @@
     (build-system gnu-build-system)
     ;; TODO: package 'libgsystem'.
     (inputs
-     `(("accountsservice" ,accountsservice)
-       ("gtk+" ,gtk+)
-       ("glib" ,glib)
-       ("gobject-introspection" ,gobject-introspection)
-       ("gnome-common" ,gnome-common)
-       ("libxkbfile" ,libxkbfile)
-       ("libxrandr" ,libxrandr)
-       ("python-2" ,python-2)
-       ("pulseaudio" ,pulseaudio)
-       ("xkeyboard-config" ,xkeyboard-config)))
+     (list accountsservice
+           gtk+
+           glib
+           gobject-introspection
+           gnome-common
+           libxkbfile
+           libxrandr
+           python-2
+           pulseaudio
+           xkeyboard-config))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("gettext" ,gettext-minimal)
-       ("glib" ,glib "bin") ; glib-gettextize
-       ("intltool" ,intltool)
-       ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf
+           automake
+           gettext-minimal
+           `(,glib "bin") ; glib-gettextize
+           intltool
+           libtool
+           pkg-config))
     (home-page "https://github.com/linuxmint/cinnamon-desktop/")
     (synopsis "Library for the Cinnamon Desktop")
     (description

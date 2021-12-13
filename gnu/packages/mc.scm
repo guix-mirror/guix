@@ -47,15 +47,14 @@
       (sha256
        (base32 "1x2g5ahgzg951y4ldbsgkv8icni2mgh3p2wsds0j16gsbwi5kgii"))))
     (build-system gnu-build-system)
-    (native-inputs `(("perl" ,perl)
-                     ("pkg-config" ,pkg-config)))
-    (inputs `(("aspell" ,aspell)
-              ("check" ,check)
-              ("glib" ,glib)
-              ("gpm" ,gpm)
-              ("libssh2" ,libssh2)
-              ("ncurses" ,ncurses)
-              ("unzip" ,unzip)))
+    (native-inputs (list perl pkg-config))
+    (inputs (list aspell
+                  check
+                  glib
+                  gpm
+                  libssh2
+                  ncurses
+                  unzip))
     (arguments
      `(#:configure-flags
        '("--with-screen=ncurses" "--enable-aspell")

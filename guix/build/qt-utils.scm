@@ -4,6 +4,7 @@
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021 Brendan Tildesley <mail@brendan.scot>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -133,7 +134,10 @@ add a dependency of that output on Qt."
   (define (find-files-to-wrap output-dir)
     (append-map
      (lambda (dir)
-       (if (directory-exists? dir) (find-files dir ".*") (list)))
+       (if (directory-exists? dir)
+           (find-files dir (lambda (file stat)
+                             (not (wrapped-program? file))))
+           (list)))
      (list (string-append output-dir "/bin")
            (string-append output-dir "/sbin")
            (string-append output-dir "/libexec")

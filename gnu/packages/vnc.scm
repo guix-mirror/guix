@@ -119,7 +119,7 @@
        ("ffmpeg" ,ffmpeg)
        ("freerdp" ,freerdp)             ; for rdp plugin
        ("gcrypt" ,libgcrypt)
-       ("gdk-pixbuf" ,gdk-pixbuf+svg)
+       ("librsvg" ,librsvg)
        ("glib" ,glib)
        ("gnome-keyring" ,gnome-keyring)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
@@ -127,7 +127,7 @@
        ("harfbuzz" ,harfbuzz)
        ("json-glib" ,json-glib)
        ("libsecret" ,libsecret)         ; for secret plugin
-       ("libsoup" ,libsoup)
+       ("libsoup" ,libsoup-minimal-2)
        ("libssh" ,libssh)               ; for ssh plugin
        ("libvnc" ,libvnc)               ; for vnc plugin
        ("openssl" ,openssl)
@@ -145,7 +145,7 @@
        ("xdg-utils" ,xdg-utils)
        ("xkbfile" ,libxkbfile)))        ; for nx plugin
     (propagated-inputs
-     `(("dconf" ,dconf)))
+     (list dconf))
     (home-page "https://remmina.org/")
     (synopsis "Remote Desktop Client")
     (description "Remmina is a client to use other desktops remotely.
@@ -175,21 +175,19 @@ RDP, VNC, SPICE, NX, XDMCP, SSH and EXEC network protocols are supported.")
                       (with-directory-excursion "vncviewer"
                         (invoke "make" "install")))))))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("gettext-minimal" ,gettext-minimal)
-       ("automake" ,automake)))
+     (list autoconf gettext-minimal automake))
     (inputs
-     `(("zlib" ,zlib)
-       ("gnutls" ,gnutls)
-       ("libjpeg-turbo" ,libjpeg-turbo)
-       ("fltk" ,fltk)
-       ("linux-pam" ,linux-pam)
-       ("libx11" ,libx11)
-       ("libxext" ,libxext)
-       ("libxtst" ,libxtst)
-       ("libxrandr" ,libxrandr)
-       ("libxdamage" ,libxdamage)
-       ("pixman" ,pixman)))
+     (list zlib
+           gnutls
+           libjpeg-turbo
+           fltk
+           linux-pam
+           libx11
+           libxext
+           libxtst
+           libxrandr
+           libxdamage
+           pixman))
     (home-page "https://tigervnc.org/")
     (synopsis "High-performance, platform-neutral
 implementation of VNC (client)")
@@ -227,13 +225,11 @@ application which is needed to connect to VNC servers.")
        ,@(package-inputs tigervnc-client)
        ,@(package-native-inputs xorg-server)))
     (inputs
-     `(("perl" ,perl)
-       ("coreutils" ,coreutils)
-       ("xauth" ,xauth)
-       ,@(package-inputs xorg-server)))
+     (modify-inputs (package-inputs xorg-server)
+       (prepend perl coreutils xauth)))
     (propagated-inputs
-     `(("xauth" ,xauth)
-       ,@(package-propagated-inputs xorg-server)))
+     (modify-inputs (package-propagated-inputs xorg-server)
+       (prepend xauth)))
     (arguments
      (substitute-keyword-arguments
          (package-arguments xorg-server)
@@ -362,7 +358,7 @@ where the server is installed.")))
                          "gcc -I"))
                       #t)))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
      `(("gnutls" ,gnutls)
        ("libgcrypt" ,libgcrypt)

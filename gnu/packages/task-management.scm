@@ -104,7 +104,7 @@ following the Japanese kanban (boarding) style.")
           (base32 "0c8zn7l0xq65wp07h7mxnb5ww56d1443l2vkjvx5sj6wpcchfn0s"))))
       (build-system python-build-system)
       (native-inputs
-       `(("python-cram" ,python-cram)))
+       (list python-cram))
       (synopsis "Command-line todo list manager")
       (description
        "@command{t} is a command-line todo list manager for people that want
@@ -125,8 +125,8 @@ to finish tasks, not organize them.")
                 "0kq8n2y4srax48yp7shz7ngac0q75dnvdbr9z9f9ldyqncr61ah0"))))
     (build-system cmake-build-system)
     (inputs
-     `(("gnutls" ,gnutls)
-       ("util-linux" ,util-linux "lib")))
+     (list gnutls
+           `(,util-linux "lib")))
     (arguments
      `(#:tests? #f ; No tests implemented.
        #:phases
@@ -189,7 +189,7 @@ a task.")
 (define-public blanket
   (package
     (name "blanket")
-    (version "0.4.1")
+    (version "0.5.0")
     (source
      (origin
        (method git-fetch)
@@ -198,7 +198,7 @@ a task.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1rk9xxiflj8rf75q56s907xp3jzxc7r88njlmxg07gl6i35mmcmi"))))
+        (base32 "00i821zqfbigxmc709322r16z75qsw4rg23yhv35gza9sl65bzkg"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -210,11 +210,11 @@ a task.")
              (let* ((out               (assoc-ref outputs "out"))
                     (gi-typelib-path   (getenv "GI_TYPELIB_PATH"))
                     (gst-plugin-path   (getenv "GST_PLUGIN_SYSTEM_PATH"))
-                    (python-path       (getenv "PYTHONPATH")))
+                    (python-path       (getenv "GUIX_PYTHONPATH")))
                (wrap-program (string-append out "/bin/blanket")
                  `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))
                  `("GST_PLUGIN_SYSTEM_PATH" ":" prefix (,gst-plugin-path))
-                 `("PYTHONPATH" ":" prefix (,python-path))))
+                 `("GUIX_PYTHONPATH" ":" prefix (,python-path))))
              #t)))))
     (native-inputs
      `(("desktop-file-utils" ,desktop-file-utils)
@@ -224,14 +224,14 @@ a task.")
        ("gtk+:bin" ,gtk+ "bin")
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("appstream-glib" ,appstream-glib)
-       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("gst-plugins-bad" ,gst-plugins-bad)
-       ("gst-plugins-good" ,gst-plugins-good) ;for ScaleTempo plugin
-       ("gtk+" ,gtk+)
-       ("libhandy" ,libhandy)
-       ("python-gst" ,python-gst)
-       ("python-pygobject" ,python-pygobject)))
+     (list appstream-glib
+           gsettings-desktop-schemas
+           gst-plugins-bad
+           gst-plugins-good ;for ScaleTempo plugin
+           gtk+
+           libhandy
+           python-gst
+           python-pygobject))
     (home-page "https://github.com/rafaelmardojai/blanket")
     (synopsis "Ambient sound and noise player")
     (description

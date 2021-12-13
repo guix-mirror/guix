@@ -10,6 +10,7 @@
 ;;; Copyright © 2020 Fredrik Salomonsson <plattfot@gmail.com>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2021 Zheng Junjie <873216071@qq.com>
+;;; Copyright © 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,6 +38,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (guix packages)
   #:use-module (guix utils)
+  #:use-module (guix gexp)
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages bash)
@@ -72,47 +74,43 @@
                 "0hcdysw8ibr66vk8i7v56l0v5ijvhlq67v4460mc2xf2910g2m72"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("pkg-config" ,pkg-config)
-       ("qttools" ,qttools)))
+     (list extra-cmake-modules pkg-config qttools))
     (inputs
-     `(("elogind" ,elogind)
-       ("glib" ,glib)
-       ("libxcb" ,libxcb)
-       ("libxkbcommon" ,libxkbcommon)
-       ("linux-pam" ,linux-pam)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)
-
-       ;; Some user-defined themes use QtQuick components internally.  Adding
-       ;; QtQuick & co. here; they end up in QML2_IMPORT_PATH thanks to
-       ;; 'wrap-qt-program'.
-       ("qtgraphicaleffects" ,qtgraphicaleffects)
-       ("qtquickcontrols" ,qtquickcontrols)
-       ("qtquickcontrols2" ,qtquickcontrols2)
-       ("qtsvg" ,qtsvg)
-
-       ("shadow" ,shadow)
-       ("wayland" ,wayland)))
+     (list elogind
+           glib
+           libxcb
+           libxkbcommon
+           linux-pam
+           qtbase-5
+           qtdeclarative
+           ;; Some user-defined themes use QtQuick components internally.  Adding
+           ;; QtQuick & co. here; they end up in QML2_IMPORT_PATH thanks to
+           ;; 'wrap-qt-program'.
+           qtgraphicaleffects
+           qtquickcontrols
+           qtquickcontrols2
+           qtsvg
+           shadow
+           wayland))
     (arguments
      `(#:configure-flags
-       (list
-        ;; This option currently does nothing, but will presumably be enabled
-        ;; if/when <https://github.com/sddm/sddm/pull/616> is merged.
-        "-DENABLE_WAYLAND=ON"
-        "-DENABLE_PAM=ON"
-        ;; Both flags are required for elogind support.
-        "-DNO_SYSTEMD=ON" "-DUSE_ELOGIND=ON"
-        "-DCONFIG_FILE=/etc/sddm.conf"
-        ;; Set path to /etc/login.defs.
-        ;; An alternative would be to use -DUID_MIN and -DUID_MAX.
-        (string-append "-DLOGIN_DEFS_PATH="
-                       (assoc-ref %build-inputs "shadow")
-                       "/etc/login.defs")
-        (string-append "-DQT_IMPORTS_DIR="
-                       (assoc-ref %outputs "out") "/lib/qt5/qml")
-        (string-append "-DCMAKE_INSTALL_SYSCONFDIR="
-                       (assoc-ref %outputs "out") "/etc"))
+       ,#~(list
+            ;; This option currently does nothing, but will presumably be enabled
+            ;; if/when <https://github.com/sddm/sddm/pull/616> is merged.
+            "-DENABLE_WAYLAND=ON"
+            "-DENABLE_PAM=ON"
+            ;; Both flags are required for elogind support.
+            "-DNO_SYSTEMD=ON" "-DUSE_ELOGIND=ON"
+            "-DCONFIG_FILE=/etc/sddm.conf"
+            ;; Set path to /etc/login.defs.
+            ;; An alternative would be to use -DUID_MIN and -DUID_MAX.
+            (string-append "-DLOGIN_DEFS_PATH="
+                           #$(this-package-input "shadow")
+                           "/etc/login.defs")
+            (string-append "-DQT_IMPORTS_DIR="
+                           #$output "/lib/qt5/qml")
+            (string-append "-DCMAKE_INSTALL_SYSCONFDIR="
+                           #$output "/etc"))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'embed-loginctl-reference
@@ -224,7 +222,7 @@ easy to use, login interface with a modern yet classy touch.")
            ;; Run test-suite under a dbus session.
            (lambda* (#:key inputs #:allow-other-keys)
              (wrap-program "tests/src/test-python-greeter"
-               `("PYTHONPATH"      ":" prefix (,(getenv "PYTHONPATH")))
+               `("GUIX_PYTHONPATH"      ":" prefix (,(getenv "GUIX_PYTHONPATH")))
                `("GI_TYPELIB_PATH" ":" prefix (,(getenv "GI_TYPELIB_PATH"))))
 
              ;; Avoid printing locale warnings, which trip up the text
@@ -232,11 +230,11 @@ easy to use, login interface with a modern yet classy touch.")
              (unsetenv "LC_ALL")
              #t)))))
     (inputs
-     `(("audit" ,audit)
-       ("linux-pam" ,linux-pam)
-       ("shadow" ,shadow)                         ;for sbin/nologin
-       ("libgcrypt" ,libgcrypt)
-       ("libxcb" ,libxcb)))
+     (list audit
+           linux-pam
+           shadow ;for sbin/nologin
+           libgcrypt
+           libxcb))
     (native-inputs
      `(("gobject-introspection" ,gobject-introspection)
        ("pkg-config" ,pkg-config)
@@ -249,9 +247,7 @@ easy to use, login interface with a modern yet classy touch.")
        ("python-pygobject" ,python2-pygobject)))
     ;; Required by liblightdm-gobject-1.pc.
     (propagated-inputs
-     `(("glib" ,glib)
-       ("libx11" ,libx11)
-       ("libxklavier" ,libxklavier)))
+     (list glib libx11 libxklavier))
     (home-page "https://www.freedesktop.org/wiki/Software/LightDM/")
     (synopsis "Lightweight display manager")
     (description "The Light Display Manager (LightDM) is a cross-desktop
@@ -303,10 +299,7 @@ display manager which supports different greeters.")
                  `("GIO_EXTRA_MODULES" ":" prefix (,gtk))))
              #t)))))
     (native-inputs
-     `(("exo" ,exo)
-       ("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)
-       ("xfce4-dev-tools" ,xfce4-dev-tools)))
+     (list exo intltool pkg-config xfce4-dev-tools))
     (inputs
      `(("bash" ,bash-minimal) ; for wrap-program
        ("lightdm" ,lightdm)
@@ -351,7 +344,7 @@ GTK+, lets you select a desktop session and log in to it.")
 	      ("libxmu" ,libxmu)
 	      ("xauth" ,xauth)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (arguments
      '(#:phases
        (modify-phases %standard-phases

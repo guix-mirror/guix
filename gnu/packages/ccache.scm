@@ -40,10 +40,10 @@
        (sha256
         (base32 "186b5lfbdd48cvbxqv2yh93pgr8lhahl1jzw00k2rmjzmbxwl04j"))))
     (build-system cmake-build-system)
-    (native-inputs `(("perl" ,perl)     ; for test/run
-                     ("which" ,(@ (gnu packages base) which))))
-    (inputs `(("zlib" ,zlib)
-              ("zstd" ,zstd "lib")))
+    (native-inputs (list perl ; for test/run
+                         (@ (gnu packages base) which)))
+    (inputs (list zlib
+                  `(,zstd "lib")))
     (arguments
      '( ;; The Redis backend must be explicitly disabled to build without Redis.
        #:configure-flags

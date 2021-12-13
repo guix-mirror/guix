@@ -8,6 +8,8 @@
 ;;; Copyright © 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
+;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2021 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,6 +38,7 @@
   #:use-module (gnu packages dbm)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages gawk)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages less)
   #:use-module (gnu packages perl)
@@ -50,10 +53,9 @@
     (source
      (origin
        (method url-fetch)
-       (uri
-        (string-append "https://sourceforge.net/projects/xmltoman/files/"
-                       "xmltoman/xmltoman-" version ".tar.gz/xmltoman-"
-                       version ".tar.gz/download"))
+       (uri (string-append "mirror://sourceforge/xmltoman/xmltoman/"
+                           "xmltoman-" version ".tar.gz/"
+                           "xmltoman-" version ".tar.gz"))
        (sha256
         (base32 "1c0lvzr7kdy63wbn1jv6s126ds7add3pxqb0vlxd3v5a2sir91wl"))))
     (build-system gnu-build-system)
@@ -67,8 +69,7 @@
        (modify-phases %standard-phases
          (delete 'configure))))
     (propagated-inputs
-     `(("perl" ,perl)
-       ("perl-xml-parser" ,perl-xml-parser)))
+     (list perl perl-xml-parser))
     (synopsis "XML to Man converter")
     (description "XMLtoMan and XMLMantoHTML are two small scripts to convert xml
 to man pages in groff format or html.  It features the usual man page items such
@@ -198,18 +199,16 @@ a flexible and convenient way.")
                   (guix build utils)
                   (srfi srfi-1))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("flex" ,flex)
-       ("groff" ,groff)))   ;needed at build time (troff, grops, soelim, etc.)
+     (list pkg-config flex groff))   ;needed at build time (troff, grops, soelim, etc.)
     (inputs
-     `(("gdbm" ,gdbm)
-       ("groff-minimal" ,groff-minimal)
-       ("less" ,less)
-       ("libpipeline" ,libpipeline)
-       ;; FIXME: 4.8 and later can use libseccomp, but it causes test
-       ;; failures in the build chroot.
-       ;;("libseccomp" ,libseccomp)
-       ("util-linux" ,util-linux)))
+     (list gdbm
+           groff-minimal
+           less
+           libpipeline
+           ;; FIXME: 4.8 and later can use libseccomp, but it causes test
+           ;; failures in the build chroot.
+           ;;("libseccomp" ,libseccomp)
+           util-linux))
     (native-search-paths
      (list (search-path-specification
             (variable "MANPATH")
@@ -252,8 +251,8 @@ the traditional flat-text whatis databases.")
                         (("^PREFIX=.*")
                          (string-append "PREFIX=" (assoc-ref outputs "out")
                                         "\n"))))))))
-    (native-inputs `(("perl" ,perl)))             ;used to run tests
-    (inputs `(("zlib" ,zlib)))
+    (native-inputs (list perl))             ;used to run tests
+    (inputs (list zlib))
     (native-search-paths
      (list (search-path-specification
             (variable "MANPATH")
@@ -307,9 +306,11 @@ Linux kernel and C library interfaces employed by user-space programs.")
     (license license:gpl2+)))
 
 (define-public help2man
+  ;; TODO: Manual pages for languages not available from the implicit
+  ;; input "locales" contain the original (English) text.
   (package
     (name "help2man")
-    (version "1.47.13")
+    (version "1.48.3")
     (source
      (origin
       (method url-fetch)
@@ -317,18 +318,28 @@ Linux kernel and C library interfaces employed by user-space programs.")
                           version ".tar.xz"))
       (sha256
        (base32
-        "08q5arxz4j4pyx5q4712c2rn7p7dw7as9xg38yvmsh1c3ynvpy5p"))))
+        "1b58s40dh2lflrkgbyxg1s48p8icb5a5yzp9ch83kg9zchygyqc3"))))
     (build-system gnu-build-system)
     (arguments `(;; There's no `check' target.
-                 #:tests? #f))
+                 #:tests? #f
+                 #:phases
+                 (modify-phases %standard-phases
+                   (add-after 'unpack 'patch-help2man-with-perl-gettext
+                     (lambda* (#:key inputs #:allow-other-keys)
+                       (let ((lib (assoc-ref inputs "perl-gettext"))
+                             (fmt "use lib '~a/lib/perl5/site_perl';~%~a"))
+                         (substitute* "help2man.PL"
+                           (("^use Locale::gettext.*$" load)
+                            (format #f fmt lib load))))
+                       #t)))))
     (inputs
      `(("perl" ,perl)
-       ;; TODO: Add these optional dependencies.
-       ;; ("perl-LocaleGettext" ,perl-LocaleGettext)
-       ;; ("gettext" ,gettext-minimal)
-       ))
+       ,@(if (%current-target-system)
+             '()
+             `(("perl-gettext" ,perl-gettext)))))
     (native-inputs
-     `(("perl" ,perl)))
+     `(("perl" ,perl)
+       ("gettext" ,gettext-minimal)))
     (home-page "https://www.gnu.org/software/help2man/")
     (synopsis "Automatically generate man pages from program --help")
     (description
@@ -385,7 +396,7 @@ in C99.")
        #:make-flags (list (string-append "prefix=" (assoc-ref %outputs "out")))
        #:phases (modify-phases %standard-phases (delete 'configure))))
     (inputs
-     `(("gawk" ,gawk)))
+     (list gawk))
     (home-page "https://github.com/mvertes/txt2man")
     (synopsis "Convert text to man page")
     (description "Txt2man converts flat ASCII text to man page format.")

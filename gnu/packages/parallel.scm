@@ -99,8 +99,7 @@
                      "echo"
                      ":::" "1" "2" "3"))))))
     (inputs
-     `(("perl" ,perl)
-       ("procps" ,procps)))
+     (list perl procps))
     (home-page "https://www.gnu.org/software/parallel/")
     (synopsis "Build and execute command lines in parallel")
     (description
@@ -152,8 +151,7 @@ execution is also possible.")
     (build-system gnu-build-system)
     (arguments `(#:tests? #f)) ;; No tests
     (native-inputs
-     `(("flex" ,flex)
-       ("which" ,which)))
+     (list flex which))
     (home-page "http://www.maier-komor.de/xjobs.html")
     (properties `((release-monitoring-url . ,home-page)))
     (synopsis
@@ -199,13 +197,13 @@ when jobs finish.")
                 #t))))
    ;; FIXME: More optional inputs could be added,
    ;; in particular mysql and gtk+.
-   (inputs `(("freeipmi" ,freeipmi)
-             ("hwloc" ,hwloc-2 "lib")
-             ("json-c" ,json-c)
-             ("linux-pam" , linux-pam)
-             ("munge" ,munge)
-             ("numactl" ,numactl)
-             ("readline" ,readline)))
+   (inputs (list freeipmi
+                 `(,hwloc-2 "lib")
+                 json-c
+                 linux-pam
+                 munge
+                 numactl
+                 readline))
    (native-inputs
     `(("autoconf" ,autoconf)
       ("expect" ,expect)
@@ -319,9 +317,9 @@ by managing a queue of pending work.")
     (build-system gnu-build-system)
     (arguments `(#:tests? #f)) ; The tests require "bats".
     (inputs
-     `(("slurm" ,slurm)))
+     (list slurm))
     (native-inputs
-     `(("which" ,which)))
+     (list which))
     (home-page "https://github.com/natefoo/slurm-drmaa")
     (synopsis "Distributed resource management application API for SLURM")
     (description
@@ -364,10 +362,9 @@ cluster/resource management systems.")
                                             value "\n")))
                           #t))))))
       (inputs
-       `(("slurm" ,slurm)))
+       (list slurm))
       (propagated-inputs
-       `(("python-ipython" ,python-ipython)
-         ("python-pandas" ,python-pandas)))
+       (list python-ipython python-pandas))
       (synopsis "Control the SLURM batch scheduler from Jupyter Notebook")
       (description
        "This package implements Jupyter/IPython
@@ -401,9 +398,7 @@ command---e.g., @code{%salloc}, @code{%sbatch}, etc.")
       (build-system cmake-build-system)
       (arguments '(#:configure-flags '("-DBUILD_SHARED_LIBS=ON")))
       (inputs
-       `(("googletest" ,googletest)
-         ("googlebenchmark" ,googlebenchmark)
-         ("fxdiv" ,fxdiv)))
+       (list googletest googlebenchmark fxdiv))
       (synopsis "Efficient thread pool implementation")
       (description
        "The pthreadpool library implements an efficient and portable thread
@@ -432,8 +427,7 @@ features.")
       (build-system cmake-build-system)
       (arguments '(#:configure-flags '("-DBUILD_SHARED_LIBS=ON")))
       (inputs
-       `(("googletest" ,googletest)
-         ("googlebenchmark" ,googlebenchmark)))
+       (list googletest googlebenchmark))
       (synopsis "C/C++ library to obtain information about the CPU")
       (description
        "The cpuinfo library provides a C/C++ and a command-line interface to

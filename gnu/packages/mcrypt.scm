@@ -44,9 +44,7 @@
                  "mcrypt-CVE-2012-4527.patch"))))
     (build-system gnu-build-system)
     (inputs
-     `(("zlib" ,zlib)
-       ("libmcrypt" ,libmcrypt)
-       ("libmhash" ,libmhash)))
+     (list zlib libmcrypt libmhash))
     (home-page "http://mcrypt.sourceforge.net/")
     (synopsis "Replacement for the popular Unix crypt command")
     (description
@@ -98,7 +96,7 @@ XTEA, 3WAY, TWOFISH, BLOWFISH, ARCFOUR, WAKE and more.")
                                "libmhash-hmac-fix-uaf.patch"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("perl" ,perl)))                 ;for tests
+     (list perl))                 ;for tests
     (home-page "http://mhash.sourceforge.net/")
     (synopsis "Thread-safe hash library")
     (description

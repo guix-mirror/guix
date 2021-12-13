@@ -113,9 +113,7 @@ HTTP-PORT."
           (define marionette
             (make-marionette (list #$vm)))
 
-          (mkdir #$output)
-          (chdir #$output)
-
+          (test-runner-current (system-test-runner #$output))
           (test-begin #$name)
 
           (test-assert #$(string-append name " service running")
@@ -150,8 +148,7 @@ HTTP-PORT."
                       marionette)))
                  '())
 
-          (test-end)
-          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          (test-end))))
 
   (gexp->derivation (string-append name "-test") test))
 
@@ -309,9 +306,7 @@ HTTP-PORT, along with php-fpm."
           (define marionette
             (make-marionette (list #$vm)))
 
-          (mkdir #$output)
-          (chdir #$output)
-
+          (test-runner-current (system-test-runner #$output))
           (test-begin "php-fpm")
 
           (test-assert "php-fpm running"
@@ -350,9 +345,7 @@ HTTP-PORT, along with php-fpm."
                   (and matches
                        (match:substring matches 0))))))
 
-          (test-end)
-
-          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          (test-end))))
 
   (gexp->derivation "php-fpm-test" test))
 
@@ -394,9 +387,7 @@ HTTP-PORT, along with php-fpm."
           (define marionette
             (make-marionette (list #$vm)))
 
-          (mkdir #$output)
-          (chdir #$output)
-
+          (test-runner-current (system-test-runner #$output))
           (test-begin #$name)
 
           (test-assert "hpcguix-web running"
@@ -422,8 +413,7 @@ HTTP-PORT, along with php-fpm."
                #:times 10
                #:delay 5)))
 
-          (test-end)
-          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          (test-end))))
 
   (gexp->derivation (string-append name "-test") test))
 
@@ -487,9 +477,7 @@ HTTP-PORT."
             ;; port 8080 in the host.
             (make-marionette (list #$vm)))
 
-          (mkdir #$output)
-          (chdir #$output)
-
+          (test-runner-current (system-test-runner #$output))
           (test-begin "tailon")
 
           (test-assert "service running"
@@ -513,8 +501,7 @@ HTTP-PORT."
              #:times 10
              #:delay 5))
 
-          (test-end)
-          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          (test-end))))
 
   (gexp->derivation "tailon-test" test))
 
@@ -631,9 +618,7 @@ HTTP-PORT."
           (define marionette
             (make-marionette (list #$vm)))
 
-          (mkdir #$output)
-          (chdir #$output)
-
+          (test-runner-current (system-test-runner #$output))
           (test-begin "patchwork")
 
           (test-assert "patchwork-postgresql-user-and-service started"
@@ -668,8 +653,7 @@ HTTP-PORT."
              #:times 10
              #:delay 5))
 
-          (test-end)
-          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          (test-end))))
 
   (gexp->derivation "patchwork-test" test))
 

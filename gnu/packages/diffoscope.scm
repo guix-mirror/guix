@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018, 2019 Rutger Helling <rhelling@mykolab.com>
@@ -88,11 +88,12 @@
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
-                  ;; This test is broken because our `file` package has a
-                  ;; bug in berkeley-db file type detection.
-                  (add-after 'unpack 'remove-berkeley-test
+                  ;; These tests are broken because our `file` package has a
+                  ;; bug in berkeley-db and wasm file type detection.
+                  (add-after 'unpack 'remove-broken-file-type-detection-test
                     (lambda _
-                      (delete-file "tests/comparators/test_berkeley_db.py")))
+                      (delete-file "tests/comparators/test_berkeley_db.py")
+                      (delete-file "tests/comparators/test_wasm.py")))
                   (add-after 'unpack 'embed-tool-references
                     (lambda* (#:key inputs #:allow-other-keys)
                       (substitute* "diffoscope/comparators/utils/compare.py"
@@ -139,14 +140,14 @@
                       (let* ((out (assoc-ref outputs "out"))
                              (man (string-append out "/share/man/man1")))
                         (install-file "doc/diffoscope.1" man)))))))
-    (inputs `(("rpm" ,rpm)              ;for rpm-python
-              ("python-debian" ,python-debian)
-              ("python-libarchive-c" ,python-libarchive-c)
-              ("python-magic" ,python-magic)
-              ("python-tlsh" ,python-tlsh)
-              ("acl" ,acl)              ;for getfacl
-              ("colordiff" ,colordiff)
-              ("xxd" ,xxd)))
+    (inputs (list rpm ;for rpm-python
+                  python-debian
+                  python-libarchive-c
+                  python-magic
+                  python-tlsh
+                  acl ;for getfacl
+                  colordiff
+                  xxd))
     (native-inputs `(("help2man" ,help2man)
                      ;; Below are modules used for tests.
                      ("binwalk" ,binwalk)
@@ -242,10 +243,7 @@ install.")
         (base32
          "19lwsxq53isgfkvlxvxqqmbjfcim3lhcxwk7m9ddfjiynhq74949"))))
     (inputs
-     `(("python-debian" ,python-debian)
-       ("python-distro" ,python-distro)
-       ("python-libarchive-c" ,python-libarchive-c)
-       ("python-rstr" ,python-rstr)))
+     (list python-debian python-distro python-libarchive-c python-rstr))
     (native-inputs
      `(("diffoscope" ,diffoscope)
        ("help2man" ,help2man)
@@ -323,10 +321,9 @@ them in detail for later analysis.")
                           (string-append share "/doc/" ,name "-" ,version)))
              #t)))))
     (propagated-inputs
-     `(("python-requests" ,python-requests)))
+     (list python-requests))
     (native-inputs
-     `(("gzip" ,gzip)
-       ("python-docutils" ,python-docutils)))
+     (list gzip python-docutils))
     (build-system python-build-system)
     (home-page "https://try.diffoscope.org")
     (synopsis "Client for remote diffoscope service")

@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2020 raingloom <raingloom@riseup.net>
+;;; Copyright © 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -19,7 +20,9 @@
 
 (define-module (guix build-system chicken)
   #:use-module (guix utils)
-  #:use-module (guix derivations)
+  #:use-module (guix gexp)
+  #:use-module (guix store)
+  #:use-module (guix monads)
   #:use-module (guix search-paths)
   #:use-module (guix build-system)
   #:use-module (guix build-system gnu)
@@ -55,7 +58,7 @@ EXTENSION is the file name extension, such as '.tar.gz'."
                 #:rest arguments)
   "Return a bag for NAME."
   (define private-keywords
-    '(#:source #:target #:chicken #:inputs #:native-inputs))
+    '(#:target #:chicken #:inputs #:native-inputs))
 
   ;; TODO: cross-compilation support
   (and (not target)
@@ -77,60 +80,45 @@ EXTENSION is the file name extension, such as '.tar.gz'."
          (build chicken-build)
          (arguments (strip-keyword-arguments private-keywords arguments)))))
 
-(define* (chicken-build store name inputs
-                   #:key
-                   (phases '(@ (guix build chicken-build-system)
-                               %standard-phases))
-                   (outputs '("out"))
-                   (search-paths '())
-                   (egg-name "")
-                   (unpack-path "")
-                   (build-flags ''())
-                   (tests? #t)
-                   (system (%current-system))
-                   (guile #f)
-                   (imported-modules %chicken-build-system-modules)
-                   (modules '((guix build chicken-build-system)
-                              (guix build union)
-                              (guix build utils))))
+(define* (chicken-build name inputs
+                        #:key
+                        source
+                        (phases '%standard-phases)
+                        (outputs '("out"))
+                        (search-paths '())
+                        (egg-name "")
+                        (unpack-path "")
+                        (build-flags ''())
+                        (tests? #t)
+                        (system (%current-system))
+                        (guile #f)
+                        (imported-modules %chicken-build-system-modules)
+                        (modules '((guix build chicken-build-system)
+                                   (guix build union)
+                                   (guix build utils))))
   (define builder
-    `(begin
-       (use-modules ,@modules)
-       (chicken-build #:name ,name
-                 #:source ,(match (assoc-ref inputs "source")
-                             (((? derivation? source))
-                              (derivation->output-path source))
-                             ((source)
-                              source)
-                             (source
-                              source))
-                 #:system ,system
-                 #:phases ,phases
-                 #:outputs %outputs
-                 #:search-paths ',(map search-path-specification->sexp
-                                       search-paths)
-                 #:egg-name ,egg-name
-                 #:unpack-path ,unpack-path
-                 #:build-flags ,build-flags
-                 #:tests? ,tests?
-                 #:inputs %build-inputs)))
+    (with-imported-modules imported-modules
+      #~(begin
+          (use-modules #$@(sexp->gexp modules))
+          (chicken-build #:name #$name
+                         #:source #+source
+                         #:system #$system
+                         #:phases #$phases
+                         #:outputs #$(outputs->gexp outputs)
+                         #:search-paths '#$(sexp->gexp
+                                            (map search-path-specification->sexp
+                                                 search-paths))
+                         #:egg-name #$egg-name
+                         #:unpack-path #$unpack-path
+                         #:build-flags #$build-flags
+                         #:tests? #$tests?
+                         #:inputs #$(input-tuples->gexp inputs)))))
 
-  (define guile-for-build
-    (match guile
-      ((? package?)
-       (package-derivation store guile system #:graft? #f))
-      (#f                                         ; the default
-       (let* ((distro (resolve-interface '(gnu packages commencement)))
-              (guile  (module-ref distro 'guile-final)))
-         (package-derivation store guile system
-                             #:graft? #f)))))
-
-  (build-expression->derivation store name builder
-                                #:inputs inputs
-                                #:system system
-                                #:modules imported-modules
-                                #:outputs outputs
-                                #:guile-for-build guile-for-build))
+  (mlet %store-monad ((guile (package->derivation (or guile (default-guile))
+                                                  system #:graft? #f)))
+    (gexp->derivation name builder
+                      #:system system
+                      #:guile-for-build guile)))
 
 (define chicken-build-system
   (build-system

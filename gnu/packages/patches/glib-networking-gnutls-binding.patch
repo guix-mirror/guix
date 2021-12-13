@@ -1,0 +1,21 @@
+Skip failing test in 'test_connection_binding_match_tls_unique'
+in 'tls/tests/connection.c' when building glib-networking against
+GnuTLS 3.7.2.  The failure stems from the fact that
+'gnutls_session_channel_binding' returns GNUTLS_E_INVALID_REQUEST
+is known upstream:
+
+  https://gitlab.gnome.org/GNOME/glib-networking/-/issues/164
+
+diff --git a/tls/tests/connection.c b/tls/tests/connection.c
+index 036df04..347c7a4 100644
+--- a/tls/tests/connection.c
++++ b/tls/tests/connection.c
+@@ -3037,8 +3037,6 @@ main (int   argc,
+               setup_connection, test_connection_missing_server_identity, teardown_connection);
+   g_test_add ("/tls/" BACKEND "/connection/peer-certificate-notify", TestConnection, NULL,
+               setup_connection, test_peer_certificate_notify, teardown_connection);
+-  g_test_add ("/tls/" BACKEND "/connection/binding/match-tls-unique", TestConnection, NULL,
+-              setup_connection, test_connection_binding_match_tls_unique, teardown_connection);
+   g_test_add ("/tls/" BACKEND "/connection/binding/match-tls-server-end-point", TestConnection, NULL,
+               setup_connection, test_connection_binding_match_tls_server_end_point, teardown_connection);
+   g_test_add ("/tls/" BACKEND "/connection/binding/match-tls-exporter", TestConnection, NULL,

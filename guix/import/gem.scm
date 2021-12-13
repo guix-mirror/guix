@@ -4,6 +4,7 @@
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
+;;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -110,12 +111,7 @@ VERSION, HASH, HOME-PAGE, DESCRIPTION, DEPENDENCIES, and LICENSES."
      ,@(if (null? dependencies)
            '()
            `((propagated-inputs
-              (,'quasiquote
-               ,(map (lambda (name)
-                       `(,name
-                         (,'unquote
-                          ,(string->symbol name))))
-                     dependencies)))))
+              (list ,@(map string->symbol dependencies)))))
      (synopsis ,synopsis)
      (description ,description)
      (home-page ,home-page)

@@ -164,8 +164,8 @@ the #:references-graphs parameter of 'derivation'."
          "-cpu" "max"
          "-m" (number->string memory-size)
          "-nic" "user,model=virtio-net-pci"
-         "-object" "rng-random,filename=/dev/urandom,id=guixsd-vm-rng"
-         "-device" "virtio-rng-pci,rng=guixsd-vm-rng"
+         "-object" "rng-random,filename=/dev/urandom,id=guix-vm-rng"
+         "-device" "virtio-rng-pci,rng=guix-vm-rng"
          "-virtfs"
          (string-append "local,id=store_dev,path="
                         (%store-directory)

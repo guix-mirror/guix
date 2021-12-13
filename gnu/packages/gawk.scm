@@ -30,13 +30,13 @@
 (define-public gawk
   (package
    (name "gawk")
-   (version "5.0.1")
+   (version "5.1.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/gawk/gawk-" version
                                 ".tar.xz"))
             (sha256
-             (base32 "15570p7g2x54asvr2fsc56sxzmm08fbk4mzpcs5n92fp9vq8cklf"))))
+             (base32 "1gc2cccqy1x1bf6rhwlmd8q7dz7gnam6nwgl38bxapv6qm5flpyg"))))
    (build-system gnu-build-system)
    (arguments
     `(#:phases (modify-phases %standard-phases
@@ -55,9 +55,7 @@
                              '((substitute* "extension/Makefile.in"
                                  (("^.*: check-for-shared-lib-support" match)
                                   (string-append "### " match))))
-                             '())
-
-                       #t)))
+                             '()))))
 
                  (add-before 'check 'adjust-test-infrastructure
                    (lambda _
@@ -66,18 +64,26 @@
                      (substitute* "test/Makefile"
                        (("\\| more") ""))
 
+                     ;; Silence a warning from bash about not being able
+                     ;; to change to an ISO-8859-1 locale.  The test itself
+                     ;; works fine, but newer versions of bash give a
+                     ;; locale warning which mangles the test output.
+                     (substitute* "test/localenl.sh"
+                       (("for LC_ALL in")
+                        "for LC in")
+                       (("export LC_ALL\n")
+                        "export LC_ALL=$LC 2>/dev/null\n"))
+
                      ;; Adjust the shebang in that file since it is then diff'd
                      ;; against the actual test output.
                      (substitute* "test/watchpoint1.ok"
                        (("#! /usr/bin/gawk")
-                        (string-append "#!" (which "gawk"))))
-                     #t)))))
+                        (string-append "#!" (which "gawk")))))))))
 
-   (inputs `(("libsigsegv" ,libsigsegv)
-
-             ,@(if (%current-target-system)
-                   `(("bash" ,bash))
-                   '())))
+   (inputs (list libsigsegv
+                 ;; Use the full-fledged Bash package, otherwise the test suite
+                 ;; sometimes fail non-deterministically.
+                 bash))
 
    (home-page "https://www.gnu.org/software/gawk/")
    (synopsis "Text scanning and processing language")

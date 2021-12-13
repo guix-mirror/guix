@@ -38,7 +38,7 @@
                 "0jy96z01qbrnmsrywn5mfa14615qdix6b8520qd65c6yjyrk8gs0"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("readline" ,readline)))
+     (list readline))
     (synopsis "Numeric oriented programming language")
     (description
      "Nickle is a programming language based prototyping environment with

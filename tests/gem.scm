@@ -2,6 +2,7 @@
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -93,10 +94,7 @@
                      ('base32
                       "1a270mlajhrmpqbhxcqjqypnvgrq4pgixpv3w9gwp1wrrapnwrzk"))))
          ('build-system 'ruby-build-system)
-         ('propagated-inputs
-          ('quasiquote
-           (("bundler" ('unquote 'bundler))
-            ("ruby-bar" ('unquote 'ruby-bar)))))
+         ('propagated-inputs ('list 'bundler 'ruby-bar))
          ('synopsis "A cool gem")
          ('description "This package provides a cool gem")
          ('home-page "https://example.com")
@@ -132,9 +130,7 @@
                   ('base32
                    "1a270mlajhrmpqbhxcqjqypnvgrq4pgixpv3w9gwp1wrrapnwrzk"))))
               ('build-system 'ruby-build-system)
-              ('propagated-inputs
-               ('quasiquote
-                (('"bundler" ('unquote 'bundler)))))
+              ('propagated-inputs ('list 'bundler))
               ('synopsis "Another cool gem")
               ('description "Another cool gem")
               ('home-page "https://example.com")
@@ -165,10 +161,7 @@
                   ('base32
                    "1a270mlajhrmpqbhxcqjqypnvgrq4pgixpv3w9gwp1wrrapnwrzk"))))
               ('build-system 'ruby-build-system)
-              ('propagated-inputs
-               ('quasiquote
-                (("bundler" ('unquote 'bundler))
-                 ("ruby-bar" ('unquote 'ruby-bar)))))
+              ('propagated-inputs ('list 'bundler 'ruby-bar))
               ('synopsis "A cool gem")
               ('description "This package provides a cool gem")
               ('home-page "https://example.com")

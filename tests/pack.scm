@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
@@ -54,7 +54,7 @@
   ;; Compressor that uses the bootstrap 'gzip'.
   ((@ (guix scripts pack) compressor) "gzip"
    ".gz"
-   #~(#+(file-append %bootstrap-coreutils&co "/bin/gzip") "-6n")))
+   #~(list #+(file-append %bootstrap-coreutils&co "/bin/gzip") "-6n")))
 
 (define %tar-bootstrap %bootstrap-coreutils&co)
 

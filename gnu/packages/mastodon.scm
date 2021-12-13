@@ -57,12 +57,10 @@
                (add-installed-pythonpath inputs outputs)
                (invoke "py.test")))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (inputs
-     `(("python-beautifulsoup4" ,python-beautifulsoup4)
-       ("python-requests" ,python-requests)
-       ("python-urwid" ,python-urwid)
-       ("python-wcwidth" ,python-wcwidth)))
+     (list python-beautifulsoup4 python-requests python-urwid
+           python-wcwidth))
     (home-page "https://github.com/ihabunek/toot/")
     (synopsis "Mastodon CLI client")
     (description "Interact with Mastodon social network from the command line.
@@ -122,14 +120,14 @@ Features include:
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("glib-networking" ,glib-networking)
-       ("gtk+" ,gtk+)
-       ("json-glib" ,json-glib)
-       ("libgee" ,libgee)
-       ("libhandy" ,libhandy)
-       ("libsoup" ,libsoup)
-       ("vala" ,vala-0.50)
-       ("xdg-utils" ,xdg-utils)))
+     (list glib-networking
+           gtk+
+           json-glib
+           libgee
+           libhandy
+           libsoup
+           vala
+           xdg-utils))
     (home-page "https://github.com/bleakgrey/tootle")
     (synopsis "GTK3 client for Mastodon")
     (description "Tootle is a GTK client for Mastodon.  It provides a clean,
@@ -150,24 +148,24 @@ seamlessly with your desktop environment.")
           "1vikvkzcij2gd730cssigxi38vlmzqmwdy58r3y2cwsxifnxpz9a"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-blurhash" ,python-blurhash)
-       ("python-dateutil" ,python-dateutil)
-       ("python-decorator" ,python-decorator)
-       ("python-magic" ,python-magic)
-       ("python-pytz" ,python-pytz)
-       ("python-requests" ,python-requests)
-       ("python-six" ,python-six)))
+     (list python-blurhash
+           python-dateutil
+           python-decorator
+           python-magic
+           python-pytz
+           python-requests
+           python-six))
     (native-inputs
-     `(("python-blurhash" ,python-blurhash)
-       ("python-cryptography" ,python-cryptography)
-       ("python-http-ece" ,python-http-ece)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)
-       ("python-pytest-mock" ,python-pytest-mock)
-       ("python-pytest-runner" ,python-pytest-runner)
-       ("python-pytest-vcr" ,python-pytest-vcr)
-       ("python-requests-mock" ,python-requests-mock)
-       ("python-vcrpy" ,python-vcrpy)))
+     (list python-blurhash
+           python-cryptography
+           python-http-ece
+           python-pytest
+           python-pytest-cov
+           python-pytest-mock
+           python-pytest-runner
+           python-pytest-vcr
+           python-requests-mock
+           python-vcrpy))
     (home-page "https://github.com/halcy/Mastodon.py")
     (synopsis "Python wrapper for the Mastodon API")
     (description

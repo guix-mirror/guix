@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -58,7 +59,7 @@ In the above, FILTERS are optional.
       one of the elements in the list.
     - With `#:include-regexp`, install subpaths matching the regexps in the list.
     - The `#:exclude*` FILTERS work similarly.  Without `#:include*` flags,
-      install every subpath but the files matching the `#:exlude*` filters.
+      install every subpath but the files matching the `#:exclude*` filters.
       If both `#:include*` and `#:exclude*` are specified, the exclusion is done
       on the inclusion list.
 
@@ -133,8 +134,8 @@ given, then the predicate always returns DEFAULT-VALUE."
              file-list))))
 
   (define* (install source target #:key include exclude include-regexp exclude-regexp)
-    (set! target (string-append (assoc-ref outputs "out") "/" target))
-    (let ((filters? (or include exclude include-regexp exclude-regexp)))
+    (let ((final-target (string-append (assoc-ref outputs "out") "/" target))
+          (filters? (or include exclude include-regexp exclude-regexp)))
       (when (and (not (file-is-directory? source))
                  filters?)
         (error "Cannot use filters when SOURCE is a file."))
@@ -143,12 +144,12 @@ given, then the predicate always returns DEFAULT-VALUE."
                  (and (file-is-directory? source)
                       filters?))))
         (if multi-files-in-source?
-            (install-file-list source target
+            (install-file-list source final-target
                                #:include include
                                #:exclude exclude
                                #:include-regexp include-regexp
                                #:exclude-regexp exclude-regexp)
-            (install-simple source target)))))
+            (install-simple source final-target)))))
 
   (for-each (lambda (plan) (apply install plan)) install-plan)
   #t)

@@ -55,7 +55,7 @@
                (("/dev/tty") "/dev/null"))
              #t)))))
     (native-inputs
-     `(("which" ,which)))
+     (list which))
     (home-page "https://www.gnu.org/software/gnu-pw-mgr/")
     (synopsis "Retrieve login credentials without recording passwords")
     (description

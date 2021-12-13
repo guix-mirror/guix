@@ -23,6 +23,7 @@
   #:use-module (guix build utils)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
+  #:use-module (ice-9 match)
   #:use-module (ice-9 popen)
   #:export (%standard-phases
             minify-build
@@ -42,14 +43,17 @@
          (minified (open-pipe* OPEN_READ "uglifyjs" file)))
     (call-with-output-file installed
       (cut dump-port minified <>))
-    #t))
+    (match (close-pipe minified)
+      (0 #t)
+      (status
+       (error "uglify-js failed" status)))))
 
 (define* (build #:key javascript-files
                 #:allow-other-keys)
   (let ((files (or javascript-files
                    (find-files "src" "\\.js$"))))
     (mkdir-p "guix/build")
-    (every (cut minify <> #:directory "guix/build/") files)))
+    (for-each (cut minify <> #:directory "guix/build/") files)))
 
 (define* (install #:key outputs #:allow-other-keys)
   (let* ((out (assoc-ref outputs "out"))
@@ -60,8 +64,7 @@
         (if (not (zero? (stat:size (stat file))))
           (install-file file js)
           (error "File is empty: " file)))
-      (find-files "guix/build" "\\.min\\.js$")))
-  #t)
+      (find-files "guix/build" "\\.min\\.js$"))))
 
 (define %standard-phases
   (modify-phases gnu:%standard-phases

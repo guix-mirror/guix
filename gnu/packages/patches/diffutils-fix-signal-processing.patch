@@ -1,0 +1,58 @@
+Author: Frédéric Bonnard <frediz@debian.org>
+
+Obtained from:
+
+https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=922552#19
+
+Fixes bug reported upstream at:
+
+https://debbugs.gnu.org/cgi/bugreport.cgi?bug=34519
+
+diff --git a/src/diff.c b/src/diff.c
+index e2eb32437353..b574e8282dc9 100644
+--- a/src/diff.c
++++ b/src/diff.c
+@@ -1451,6 +1451,8 @@ compare_files (struct comparison const *parent,
+ 	}
+     }
+ 
++  final_process_signals ();
++
+   /* Now the comparison has been done, if no error prevented it,
+      and STATUS is the value this function will return.  */
+ 
+diff --git a/src/diff.h b/src/diff.h
+index 03daaa4a0530..e177fe600a25 100644
+--- a/src/diff.h
++++ b/src/diff.h
+@@ -390,6 +390,7 @@ extern enum changes analyze_hunk (struct change *, lin *, lin *, lin *, lin *);
+ extern void begin_output (void);
+ extern void debug_script (struct change *);
+ extern void fatal (char const *) __attribute__((noreturn));
++extern void final_process_signals (void);
+ extern void finish_output (void);
+ extern void message (char const *, char const *, char const *);
+ extern void message5 (char const *, char const *, char const *,
+diff --git a/src/util.c b/src/util.c
+index 4f4d9bb285eb..56d292de2927 100644
+--- a/src/util.c
++++ b/src/util.c
+@@ -237,6 +237,18 @@ process_signals (void)
+     }
+ }
+ 
++/* Process remaining signals once before exit  */
++void
++final_process_signals (void)
++{
++  static int last = 1;
++
++  if (last) {
++    process_signals ();
++    last = 0;
++  }
++}
++
+ static void
+ install_signal_handlers (void)
+ {

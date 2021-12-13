@@ -57,20 +57,23 @@
        #:parallel-build? #f  ; there's at least one race
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'reduce-array-test-size
+           ;; Reduce the size of the array, otherwise the array.sl/array.slc
+           ;; tests fails with "Unable to create a multi-dimensional array of
+           ;; the desired size" on 32 bit systems.
+           (lambda _
+             (substitute* "src/test/array.sl"
+               (("10000,10000,10000,10000,10000,10000")
+                "10,10,10,10,10,10"))))
          (add-before 'configure 'substitute-before-config
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((ncurses (assoc-ref inputs "ncurses")))
                (substitute* "configure"
                  (("MISC_TERMINFO_DIRS=\"\"")
                   (string-append "MISC_TERMINFO_DIRS="
-                                 "\"" ncurses "/share/terminfo" "\"")))
-               #t))))))
+                                 "\"" ncurses "/share/terminfo" "\"")))))))))
     (inputs
-     `(("readline" ,readline)
-       ("zlib" ,zlib)
-       ("libpng" ,libpng)
-       ("pcre" ,pcre)
-       ("ncurses" ,ncurses)))
+     (list readline zlib libpng pcre ncurses))
     (home-page "https://www.jedsoft.org/slang/")
     (synopsis "Library for interactive applications and extensibility")
     (description
@@ -98,10 +101,7 @@ slsh, which is part of the S-Lang distribution.")
     (build-system gnu-build-system)
     (outputs '("out" "python"))
     (inputs
-     `(("slang" ,slang)
-       ("popt" ,popt)
-       ("python" ,python)
-       ("fribidi" ,fribidi)))
+     (list slang popt python fribidi))
     (arguments
      `(#:tests? #f    ; no test suite
        #:configure-flags

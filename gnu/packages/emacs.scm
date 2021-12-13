@@ -73,6 +73,7 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (guix utils)
+  #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
 
 (define-public emacs
@@ -287,8 +288,9 @@
        ;; must also provide zlib as an input.
        ("libpng" ,libpng)
        ("zlib" ,zlib)
-
-       ("librsvg" ,librsvg)
+       ("librsvg" ,@(if (target-x86-64?)
+                         (list librsvg-bootstrap)
+                         (list librsvg-2.40)))
        ("libxpm" ,libxpm)
        ("libxml2" ,libxml2)
        ("libice" ,libice)
@@ -344,8 +346,8 @@ languages.")
           (base32
            "0igjm9kwiswn2dpiy2k9xikbdfc7njs07ry48fqz70anljj8y7y3"))))
       (native-inputs
-       `(("autoconf" ,autoconf)
-         ,@(package-native-inputs emacs))))))
+       (modify-inputs (package-native-inputs emacs)
+         (prepend autoconf))))))
 
 (define-public emacs-next-pgtk
   (let ((commit "ae18c8ec4f0ef37c8c9cda473770ff47e41291e2")
@@ -369,10 +371,9 @@ languages.")
          ((#:configure-flags flags ''())
           `(cons* "--with-pgtk" "--with-xwidgets" ,flags))))
       (propagated-inputs
-       `(("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-         ("glib-networking" ,glib-networking)))
+       (list gsettings-desktop-schemas glib-networking))
       (inputs
-       `(("webkitgtk" ,webkitgtk)
+       `(("webkitgtk" ,webkitgtk-with-libsoup2)
          ,@(package-inputs emacs-next)))
       (home-page "https://github.com/masm11/emacs")
       (synopsis "Emacs text editor with @code{pgtk} and @code{xwidgets} support")
@@ -418,7 +419,7 @@ editor (with xwidgets support)")
            (delete 'restore-emacs-pdmp)
            (delete 'strip-double-wrap)))))
     (inputs
-     `(("webkitgtk" ,webkitgtk)
+     `(("webkitgtk" ,webkitgtk-with-libsoup2)
        ("libxcomposite" ,libxcomposite)
        ,@(package-inputs emacs)))))
 
@@ -563,12 +564,12 @@ This package contains the library database.")
          "0jp61y09xqj10mclpip48qlfhniw8gwy8b28cbzxy8hq8pkwmfkq"))))
     (build-system gnu-build-system)
     (inputs
-     `(("fribidi" ,fribidi)
-       ("gd" ,gd)
-       ("libotf" ,libotf)
-       ("libxft" ,libxft)
-       ("libxml2" ,libxml2)
-       ("m17n-db" ,m17n-db)))
+     (list fribidi
+           gd
+           libotf
+           libxft
+           libxml2
+           m17n-db))
     (arguments
      `(#:parallel-build? #f))
     ;; With `guix lint' the home-page URI returns a small page saying

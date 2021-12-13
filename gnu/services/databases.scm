@@ -116,7 +116,7 @@ host	all	all	::1/128 	md5"))
   (ident-file        postgresql-config-file-ident-file
                      (default %default-postgres-ident))
   (socket-directory  postgresql-config-file-socket-directory
-                     (default #false))
+                     (default "/var/run/postgresql"))
   (extra-config      postgresql-config-file-extra-config
                      (default '())))
 
@@ -364,7 +364,7 @@ and stores the database cluster in @var{data-directory}."
   postgresql-role-configuration make-postgresql-role-configuration
   postgresql-role-configuration?
   (host             postgresql-role-configuration-host ;string
-                    (default "/tmp"))
+                    (default "/var/run/postgresql"))
   (log              postgresql-role-configuration-log ;string
                     (default "/var/log/postgresql_roles.log"))
   (roles            postgresql-role-configuration-roles

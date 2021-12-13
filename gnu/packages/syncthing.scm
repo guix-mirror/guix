@@ -184,17 +184,16 @@ Protocol.")
                    `("GI_TYPELIB_PATH" ":" prefix
                      (,(getenv "GI_TYPELIB_PATH"))))))))))
       (inputs
-       `(("gtk+" ,gtk+)
-         ("libappindicator" ,libappindicator)
-         ("libnotify" ,libnotify)
-         ("librsvg" ,librsvg)
-         ("python-bcrypt" ,python-bcrypt)
-         ("python-dateutil" ,python-dateutil)
-         ("python-pycairo" ,python-pycairo)
-         ("python-pygobject" ,python-pygobject)
-         ("python-nautilus" ,python-nautilus)
-         ("psmisc" ,psmisc)
-         ("syncthing" ,syncthing)))
+       (list gtk+
+             libappindicator
+             libnotify
+             librsvg
+             python-bcrypt
+             python-dateutil
+             python-pycairo
+             python-pygobject
+             psmisc
+             syncthing))
       ;; (native-inputs
       ;;  `(("python2-setuptools" ,python2-setuptools)))
       (home-page "https://github.com/syncthing/syncthing-gtk")
@@ -249,8 +248,7 @@ firewall.")
                 "1m1xna1kb78pkmr1lfmvvnpk9j7c4x71j3a7c6vj7zpzc4srpsmf"))))
     (build-system go-build-system)
     (inputs
-     `(("go-github-com-pkg-errors" ,go-github-com-pkg-errors)
-       ("go-github-com-urfave-cli" ,go-github-com-urfave-cli)))
+     (list go-github-com-pkg-errors go-github-com-urfave-cli))
     (arguments
      `(#:import-path "github.com/AudriusButkevicius/recli"))
     (synopsis "Reflection-based CLI generator")
@@ -486,9 +484,7 @@ database/sql package.")
                 "1jj4rbdpy87rbl79czg5hs5dyn6xlbnk0bnvyzi71dsxan57nixw"))))
     (build-system go-build-system)
     (propagated-inputs
-     `(("go-github-com-oschwald-maxminddb-golang"
-        ,go-github-com-oschwald-maxminddb-golang)
-       ("go-golang-org-x-sys" ,go-golang-org-x-sys)))
+     (list go-github-com-oschwald-maxminddb-golang go-golang-org-x-sys))
     (arguments
      `(#:import-path "github.com/oschwald/geoip2-golang"
        #:tests? #f)) ; Requires some unpackaged software and test data
@@ -513,7 +509,7 @@ GeoLite2 and GeoIP2 databases in Go.")
                 "100wd5qv00pkcm6cb8c4x5gavc9jnn7drh6xrqh85hzci4rils66"))))
     (build-system go-build-system)
     (propagated-inputs
-     `(("go-golang-org-x-sys" ,go-golang-org-x-sys)))
+     (list go-golang-org-x-sys))
     (arguments
      `(#:import-path "github.com/oschwald/maxminddb-golang"
        #:tests? #f)) ; Requires some unpackaged software and test data
@@ -570,7 +566,7 @@ higher-level API for doing so.")
                                                       (%current-system))))
          #:import-path "github.com/rcrowley/go-metrics"))
       (propagated-inputs
-       `(("go-github-com-stathat-go" ,go-github-com-stathat-go)))
+       (list go-github-com-stathat-go))
       (synopsis "Go port of Coda Hale's Metrics library")
       (description "This package provides a Go implementation of Coda Hale's
 Metrics library.")
@@ -594,7 +590,7 @@ Metrics library.")
     (arguments
      `(#:import-path "github.com/sasha-s/go-deadlock"))
     (propagated-inputs
-     `(("go-github-com-petermattis-goid" ,go-github-com-petermattis-goid)))
+     (list go-github-com-petermattis-goid))
     (synopsis "Deadlock detection in go")
     (description "This package provides tools for detecting deadlocks at
 run-time in Go.")
@@ -618,7 +614,7 @@ run-time in Go.")
                   "0mnkzrz4di13g6ggd54my7bkb9nwk8f5k672dyasn467wsg7bf8f"))))
       (build-system go-build-system)
       (propagated-inputs
-       `(("go-github-com-golang-snappy" ,go-github-com-golang-snappy)))
+       (list go-github-com-golang-snappy))
       (arguments
        `(#:import-path "github.com/syndtr/goleveldb/leveldb"
          #:unpack-path "github.com/syndtr/goleveldb"
@@ -778,7 +774,7 @@ using sh's word-splitting rules.")
       (arguments
        '(#:import-path "github.com/syncthing/notify"))
       (propagated-inputs
-       `(("go-golang-org-x-sys" ,go-golang-org-x-sys)))
+       (list go-golang-org-x-sys))
       (synopsis "File system event notification library")
       (description "This package provides @code{notify}, a file system event
 notification library in Go.")
@@ -835,8 +831,7 @@ bounds.")
            ;; Source-only package
            (delete 'build))))
       (propagated-inputs
-       `(("go-github-com-golang-protobuf-proto"
-          ,go-github-com-golang-protobuf-proto)))
+       (list go-github-com-golang-protobuf-proto))
       (synopsis "Data model artifacts for Prometheus")
       (description "This package provides data model artifacts for Prometheus.")
       (home-page "https://github.com/prometheus/client_model")
@@ -864,8 +859,7 @@ bounds.")
        '(#:import-path "github.com/matttproud/golang_protobuf_extensions/pbutil"
          #:unpack-path "github.com/matttproud/golang_protobuf_extensions"))
       (propagated-inputs
-       `(("go-github-com-golang-protobuf-proto"
-          ,go-github-com-golang-protobuf-proto)))
+       (list go-github-com-golang-protobuf-proto))
       (synopsis "Streaming Protocol Buffers in Go")
       (description "This package provides various Protocol Buffer
 extensions for the Go language, namely support for record length-delimited
@@ -904,12 +898,9 @@ message streaming.")
            ;; Source-only package
            (delete 'build))))
       (propagated-inputs
-       `(("go-github-com-golang-protobuf-proto"
-          ,go-github-com-golang-protobuf-proto)
-         ("go-github-com-matttproud-golang-protobuf-extensions-pbutil"
-          ,go-github-com-matttproud-golang-protobuf-extensions-pbutil)
-         ("go-github-com-prometheus-client-model"
-          ,go-github-com-prometheus-client-model)))
+       (list go-github-com-golang-protobuf-proto
+             go-github-com-matttproud-golang-protobuf-extensions-pbutil
+             go-github-com-prometheus-client-model))
       (synopsis "Prometheus metrics")
       (description "This package provides tools for reading and writing
 Prometheus metrics.")
@@ -963,16 +954,12 @@ system, kernel, and process metrics from the @file{/proc} pseudo file system.")
            ;; Source-only package
            (delete 'build))))
       (propagated-inputs
-       `(("go-github-com-beorn7-perks-quantile"
-          ,go-github-com-beorn7-perks-quantile)
-         ("go-github-com-golang-protobuf-proto"
-          ,go-github-com-golang-protobuf-proto)
-         ("go-github-com-prometheus-client-model"
-          ,go-github-com-prometheus-client-model)
-         ("go-github-com-prometheus-common"
-          ,go-github-com-prometheus-common)
-         ("go-github-com-prometheus-procfs" ,go-github-com-prometheus-procfs)
-         ("go-github-com-cespare-xxhash" ,go-github-com-cespare-xxhash)))
+       (list go-github-com-beorn7-perks-quantile
+             go-github-com-golang-protobuf-proto
+             go-github-com-prometheus-client-model
+             go-github-com-prometheus-common
+             go-github-com-prometheus-procfs
+             go-github-com-cespare-xxhash))
       (synopsis "HTTP server and client tools for Prometheus")
       (description "This package @code{promhttp} provides HTTP client and
 server tools for Prometheus metrics.")
@@ -1019,7 +1006,7 @@ Go language.")
      '(#:import-path "github.com/go-ldap/ldap/v3"
        #:tests? #f)) ; test suite requires internet access
     (propagated-inputs
-     `(("go-github-com-go-asn1-ber-asn1-ber" ,go-github-com-go-asn1-ber-asn1-ber)))
+     (list go-github-com-go-asn1-ber-asn1-ber))
     (home-page "https://github.com/go-ldap/ldap")
     (synopsis "LDAP v3 functionality for Go")
     (description "This package provides basic LDAP v3 functionality in the Go

@@ -55,8 +55,7 @@
                  (install-file "drawterm" bin)
                  (install-file "drawterm.1" man)))))))
       (inputs
-       `(("libx11" ,libx11)
-         ("libxt" ,libxt)))
+       (list libx11 libxt))
       (synopsis "Connect to Plan 9 systems")
       (home-page "http://drawterm.9front.org")
       (description

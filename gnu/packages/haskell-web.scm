@@ -55,7 +55,7 @@
          "1m9sx6gr9y9yxvkmcap8xsks8cnhznvma1mrfl39zljkv005azms"))))
     (build-system haskell-build-system)
     (native-inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)))
+     (list ghc-quickcheck))
     (home-page "https://github.com/ndmitchell/tagsoup")
     (synopsis
      "Parsing and extracting information from (possibly malformed) HTML/XML
@@ -84,14 +84,14 @@ for screen-scraping.")
          "10rmdasb7mypbwxdj2mhr810vqhkakpik7hyd8fvj60hng8r8zvh"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-old-locale" ,ghc-old-locale)
-       ("ghc-blaze-builder" ,ghc-blaze-builder)
-       ("ghc-data-default-class" ,ghc-data-default-class)
-       ("ghc-hunit" ,ghc-hunit)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
-       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)))
+     (list ghc-old-locale
+           ghc-blaze-builder
+           ghc-data-default-class
+           ghc-hunit
+           ghc-quickcheck
+           ghc-tasty
+           ghc-tasty-hunit
+           ghc-tasty-quickcheck))
     (home-page "https://github.com/snoyberg/cookie")
     (synopsis "HTTP cookie parsing and rendering")
     (description "HTTP cookie parsing and rendering library for Haskell.")
@@ -110,7 +110,7 @@ for screen-scraping.")
                 "0vj4hpaa30jz7c702xpsfvqaqdxz28zslsqnsfx6bf6dpwvck1wh"))))
     (build-system haskell-build-system)
     (inputs
-     `(("curl" ,curl)))
+     (list curl))
     (home-page "https://hackage.haskell.org/package/curl")
     (synopsis "Haskell bindings for libcurl")
     (description
@@ -132,9 +132,7 @@ This package provides a Haskell binding to libcurl.")
          "19dgdimpzr7pxk7pqvyin6j87gmvnf0rm35gzhmna8qr835wy3sr"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-network-bsd" ,ghc-network-bsd)
-       ("ghc-network-uri" ,ghc-network-uri)
-       ("ghc-network" ,ghc-network)))
+     (list ghc-network-bsd ghc-network-uri ghc-network))
     (home-page "https://hackage.haskell.org/package/httpd-shed")
     (synopsis "Simple web-server with an interact style API")
     (description
@@ -157,13 +155,10 @@ requests, and the library is intended for implementing Ajax APIs.")
          "05j00b9nqmwh9zaq9y9x50k81v2pd3j7a71kd91zlnbl8xk4m2jf"))))
     (build-system haskell-build-system)
     (native-inputs
-     `(("ghc-doctest" ,ghc-doctest)
-       ("ghc-hspec" ,ghc-hspec)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-quickcheck-instances" ,ghc-quickcheck-instances)
-       ("hspec-discover" ,hspec-discover)))
+     (list ghc-doctest ghc-hspec ghc-quickcheck ghc-quickcheck-instances
+           hspec-discover))
     (inputs
-     `(("ghc-case-insensitive" ,ghc-case-insensitive)))
+     (list ghc-case-insensitive))
     (home-page "https://github.com/aristidb/http-types")
     (synopsis "Generic HTTP types for Haskell")
     (description "This package provides generic HTTP types for Haskell (for
@@ -185,20 +180,18 @@ both client and server code).")
          "0bgyj3ahqlyg0jw6qsm2sncp8mklc4h0dj91s043vb3ig01iq2fn"))))
     (build-system haskell-build-system)
     (native-inputs
-     `(("ghc-httpd-shed" ,ghc-httpd-shed)
-       ("ghc-hunit" ,ghc-hunit)
-       ("ghc-test-framework" ,ghc-test-framework)
-       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)))
+     (list ghc-httpd-shed ghc-hunit ghc-test-framework
+           ghc-test-framework-hunit))
     (inputs
-     `(("ghc-case-insensitive" ,ghc-case-insensitive)
-       ("ghc-conduit" ,ghc-conduit)
-       ("ghc-conduit-extra" ,ghc-conduit-extra)
-       ("ghc-http-types" ,ghc-http-types)
-       ("ghc-old-time" ,ghc-old-time)
-       ("ghc-puremd5" ,ghc-puremd5)
-       ("ghc-network" ,ghc-network)
-       ("ghc-network-uri" ,ghc-network-uri)
-       ("ghc-split" ,ghc-split)))
+     (list ghc-case-insensitive
+           ghc-conduit
+           ghc-conduit-extra
+           ghc-http-types
+           ghc-old-time
+           ghc-puremd5
+           ghc-network
+           ghc-network-uri
+           ghc-split))
     (arguments
      `(#:tests? #f  ; FIXME: currently missing libraries used for tests.
        #:phases
@@ -241,24 +234,24 @@ responses coming back.")
     ;; Tests require access to the web.
     (arguments `(#:tests? #f))
     (inputs
-     `(("ghc-async" ,ghc-async)
-       ("ghc-base64-bytestring" ,ghc-base64-bytestring)
-       ("ghc-blaze-builder" ,ghc-blaze-builder)
-       ("ghc-case-insensitive" ,ghc-case-insensitive)
-       ("ghc-cookie" ,ghc-cookie)
-       ("ghc-data-default-class" ,ghc-data-default-class)
-       ("ghc-exceptions" ,ghc-exceptions)
-       ("ghc-http-types" ,ghc-http-types)
-       ("ghc-memory" ,ghc-memory)
-       ("ghc-mime-types" ,ghc-mime-types)
-       ("ghc-monad-control" ,ghc-monad-control)
-       ("ghc-network" ,ghc-network)
-       ("ghc-network-uri" ,ghc-network-uri)
-       ("ghc-random" ,ghc-random)
-       ("ghc-streaming-commons" ,ghc-streaming-commons)
-       ("ghc-zlib" ,ghc-zlib)))
+     (list ghc-async
+           ghc-base64-bytestring
+           ghc-blaze-builder
+           ghc-case-insensitive
+           ghc-cookie
+           ghc-data-default-class
+           ghc-exceptions
+           ghc-http-types
+           ghc-memory
+           ghc-mime-types
+           ghc-monad-control
+           ghc-network
+           ghc-network-uri
+           ghc-random
+           ghc-streaming-commons
+           ghc-zlib))
     (native-inputs
-     `(("ghc-hspec" ,ghc-hspec)))
+     (list ghc-hspec))
     (home-page "https://github.com/snoyberg/http-client")
     (synopsis "HTTP client engine")
     (description
@@ -282,14 +275,14 @@ for more user-friendly packages.")
     ;; Tests require Internet access
     (arguments `(#:tests? #f))
     (inputs
-     `(("ghc-data-default-class" ,ghc-data-default-class)
-       ("ghc-http-client" ,ghc-http-client)
-       ("ghc-connection" ,ghc-connection)
-       ("ghc-network" ,ghc-network)
-       ("ghc-tls" ,ghc-tls)
-       ("ghc-http-types" ,ghc-http-types)))
+     (list ghc-data-default-class
+           ghc-http-client
+           ghc-connection
+           ghc-network
+           ghc-tls
+           ghc-http-types))
     (native-inputs
-     `(("ghc-hspec" ,ghc-hspec)))
+     (list ghc-hspec))
     (home-page "https://github.com/snoyberg/http-client")
     (synopsis "Backend for http-client using the TLS library")
     (description
@@ -313,12 +306,9 @@ libraries, such as http-conduit.")
          "1lzlrj2flcnz3k5kfhf11nk5n8m6kcya0lkwrsnzxgfr3an27y9j"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-attoparsec" ,ghc-attoparsec)))
+     (list ghc-attoparsec))
     (native-inputs
-     `(("ghc-doctest" ,ghc-doctest)
-       ("ghc-hspec" ,ghc-hspec)
-       ("hspec-discover" ,hspec-discover)
-       ("ghc-old-locale" ,ghc-old-locale)))
+     (list ghc-doctest ghc-hspec hspec-discover ghc-old-locale))
     (home-page "https://github.com/kazu-yamamoto/http-date")
     (synopsis "HTTP Date parser/formatter")
     (description "Library for Parsing and formatting HTTP
@@ -340,28 +330,28 @@ Date in Haskell.")
          "13c2z35gdimncgpyg5dn5cpjvd83rbrigc8b40crg36678m0k0d1"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-aeson" ,ghc-aeson)
-       ("ghc-aeson-pretty" ,ghc-aeson-pretty)
-       ("ghc-base16-bytestring" ,ghc-base16-bytestring)
-       ("ghc-case-insensitive" ,ghc-case-insensitive)
-       ("ghc-cryptonite" ,ghc-cryptonite)
-       ("ghc-http-types" ,ghc-http-types)
-       ("ghc-network-byte-order" ,ghc-network-byte-order)
-       ("ghc-network" ,ghc-network)
-       ("ghc-network-run" ,ghc-network-run)
-       ("ghc-psqueues" ,ghc-psqueues)
-       ("ghc-time-manager" ,ghc-time-manager)
-       ("ghc-unix-time" ,ghc-unix-time)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)
-       ("ghc-vector" ,ghc-vector)
-       ("ghc-word8" ,ghc-word8)))
+     (list ghc-aeson
+           ghc-aeson-pretty
+           ghc-base16-bytestring
+           ghc-case-insensitive
+           ghc-cryptonite
+           ghc-http-types
+           ghc-network-byte-order
+           ghc-network
+           ghc-network-run
+           ghc-psqueues
+           ghc-time-manager
+           ghc-unix-time
+           ghc-unordered-containers
+           ghc-vector
+           ghc-word8))
     (native-inputs
-     `(("ghc-async" ,ghc-async)
-       ("ghc-doctest" ,ghc-doctest)
-       ("ghc-glob" ,ghc-glob)
-       ("ghc-hspec" ,ghc-hspec)
-       ("hspec-discover" ,hspec-discover)
-       ("ghc-typed-process" ,ghc-typed-process)))
+     (list ghc-async
+           ghc-doctest
+           ghc-glob
+           ghc-hspec
+           hspec-discover
+           ghc-typed-process))
     (home-page "https://github.com/kazu-yamamoto/http2")
     (synopsis "HTTP/2 library including frames, priority queues and HPACK")
     (description "This package provides a HTTP/2.0 library including frames
@@ -387,39 +377,39 @@ and HPACK.  Currently HTTP/2 16 framing and HPACK 10 is supported.")
     ;; name: tcp)
     (arguments `(#:tests? #f))
     (inputs
-     `(("ghc-aeson" ,ghc-aeson)
-       ("ghc-resourcet" ,ghc-resourcet)
-       ("ghc-conduit" ,ghc-conduit)
-       ("ghc-conduit-extra" ,ghc-conduit-extra)
-       ("ghc-http-types" ,ghc-http-types)
-       ("ghc-lifted-base" ,ghc-lifted-base)
-       ("ghc-http-client" ,ghc-http-client)
-       ("ghc-http-client-tls" ,ghc-http-client-tls)
-       ("ghc-monad-control" ,ghc-monad-control)
-       ("ghc-exceptions" ,ghc-exceptions)
-       ("ghc-unliftio" ,ghc-unliftio)))
+     (list ghc-aeson
+           ghc-resourcet
+           ghc-conduit
+           ghc-conduit-extra
+           ghc-http-types
+           ghc-lifted-base
+           ghc-http-client
+           ghc-http-client-tls
+           ghc-monad-control
+           ghc-exceptions
+           ghc-unliftio))
     (native-inputs
-     `(("ghc-hunit" ,ghc-hunit)
-       ("ghc-hspec" ,ghc-hspec)
-       ("ghc-data-default-class" ,ghc-data-default-class)
-       ("ghc-connection" ,ghc-connection)
-       ("ghc-warp-tls" ,ghc-warp-tls)
-       ("ghc-blaze-builder" ,ghc-blaze-builder)
-       ("ghc-conduit" ,ghc-conduit)
-       ("ghc-utf8-string" ,ghc-utf8-string)
-       ("ghc-case-insensitive" ,ghc-case-insensitive)
-       ("ghc-lifted-base" ,ghc-lifted-base)
-       ("ghc-network" ,ghc-network)
-       ("ghc-wai" ,ghc-wai)
-       ("ghc-warp" ,ghc-warp)
-       ("ghc-wai-conduit" ,ghc-wai-conduit)
-       ("ghc-http-types" ,ghc-http-types)
-       ("ghc-cookie" ,ghc-cookie)
-       ("ghc-conduit-extra" ,ghc-conduit-extra)
-       ("ghc-streaming-commons" ,ghc-streaming-commons)
-       ("ghc-aeson" ,ghc-aeson)
-       ("ghc-temporary" ,ghc-temporary)
-       ("ghc-resourcet" ,ghc-resourcet)))
+     (list ghc-hunit
+           ghc-hspec
+           ghc-data-default-class
+           ghc-connection
+           ghc-warp-tls
+           ghc-blaze-builder
+           ghc-conduit
+           ghc-utf8-string
+           ghc-case-insensitive
+           ghc-lifted-base
+           ghc-network
+           ghc-wai
+           ghc-warp
+           ghc-wai-conduit
+           ghc-http-types
+           ghc-cookie
+           ghc-conduit-extra
+           ghc-streaming-commons
+           ghc-aeson
+           ghc-temporary
+           ghc-resourcet))
     (home-page "https://hackage.haskell.org/package/http-conduit")
     (synopsis "HTTP/HTTPS client with conduit interface")
     (description "This library uses attoparsec for parsing the actual
@@ -442,23 +432,21 @@ which allow you to avoid direct usage of conduits.")
          "1a6i5njf85b2lhg8m83njagcf09wih5q2irnyb2890s724qr277v"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-case-insensitive" ,ghc-case-insensitive)
-       ("ghc-http-types" ,ghc-http-types)
-       ("ghc-word8" ,ghc-word8)
-       ("ghc-blaze-builder" ,ghc-blaze-builder)
-       ("ghc-http-client" ,ghc-http-client)
-       ("ghc-wai" ,ghc-wai)
-       ("ghc-network" ,ghc-network)
-       ("ghc-conduit" ,ghc-conduit)
-       ("ghc-conduit-extra" ,ghc-conduit-extra)
-       ("ghc-wai-logger" ,ghc-wai-logger)
-       ("ghc-resourcet" ,ghc-resourcet)
-       ("ghc-unliftio" ,ghc-unliftio)
-       ("ghc-streaming-commons" ,ghc-streaming-commons)))
+     (list ghc-case-insensitive
+           ghc-http-types
+           ghc-word8
+           ghc-blaze-builder
+           ghc-http-client
+           ghc-wai
+           ghc-network
+           ghc-conduit
+           ghc-conduit-extra
+           ghc-wai-logger
+           ghc-resourcet
+           ghc-unliftio
+           ghc-streaming-commons))
     (native-inputs
-     `(("ghc-hspec" ,ghc-hspec)
-       ("ghc-warp" ,ghc-warp)
-       ("ghc-http-conduit" ,ghc-http-conduit)))
+     (list ghc-hspec ghc-warp ghc-http-conduit))
     (home-page
      "https://github.com/fpco/http-reverse-proxy")
     (synopsis
@@ -485,17 +473,14 @@ approach performs full request/response parsing via WAI and http-conduit.")
          "1y19h9v0cq1fl17ywcyyvd6419fhgyw2s0yk0ki8z60021adcx2m"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-bytestring-builder" ,ghc-bytestring-builder)
-       ("ghc-unix-compat" ,ghc-unix-compat)
-       ("ghc-vault" ,ghc-vault)
-       ("ghc-blaze-builder" ,ghc-blaze-builder)
-       ("ghc-network" ,ghc-network)
-       ("ghc-http-types" ,ghc-http-types)))
+     (list ghc-bytestring-builder
+           ghc-unix-compat
+           ghc-vault
+           ghc-blaze-builder
+           ghc-network
+           ghc-http-types))
     (native-inputs
-     `(("hspec-discover" ,hspec-discover)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-hunit" ,ghc-hunit)
-       ("ghc-hspec" ,ghc-hspec)))
+     (list hspec-discover ghc-quickcheck ghc-hunit ghc-hspec))
     (home-page "https://hackage.haskell.org/package/wai")
     (synopsis "Web application interface for Haskell")
     (description "This package provides a Web Application Interface (WAI)
@@ -521,16 +506,16 @@ communication between web applications and web servers.")
     (arguments `(#:tests? #f)) ; FIXME: Tests cannot find libraries exported
                                ; by propagated-inputs.
     (inputs
-     `(("ghc-auto-update" ,ghc-auto-update)
-       ("ghc-byteorder" ,ghc-byteorder)
-       ("ghc-easy-file" ,ghc-easy-file)
-       ("ghc-unix-time" ,ghc-unix-time)
-       ("ghc-blaze-builder" ,ghc-blaze-builder)
-       ("ghc-case-insensitive" ,ghc-case-insensitive)
-       ("ghc-fast-logger" ,ghc-fast-logger)
-       ("ghc-http-types" ,ghc-http-types)
-       ("ghc-network" ,ghc-network)
-       ("ghc-wai" ,ghc-wai)))
+     (list ghc-auto-update
+           ghc-byteorder
+           ghc-easy-file
+           ghc-unix-time
+           ghc-blaze-builder
+           ghc-case-insensitive
+           ghc-fast-logger
+           ghc-http-types
+           ghc-network
+           ghc-wai))
     (home-page "https://hackage.haskell.org/package/wai-logger")
     (synopsis "Logging system for WAI")
     (description "This package provides the logging system for WAI.")
@@ -552,29 +537,26 @@ communication between web applications and web servers.")
          "1avf7bjcsbs8l6klp5kkd0cd2dc5n0j0a2yf8813pnwfn5b7qyd4"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-ansi-terminal" ,ghc-ansi-terminal)
-       ("ghc-base64-bytestring" ,ghc-base64-bytestring)
-       ("ghc-call-stack" ,ghc-call-stack)
-       ("ghc-cookie" ,ghc-cookie)
-       ("ghc-network" ,ghc-network)
-       ("ghc-streaming-commons" ,ghc-streaming-commons)
-       ("ghc-resourcet" ,ghc-resourcet)
-       ("ghc-fast-logger" ,ghc-fast-logger)
-       ("ghc-wai-logger" ,ghc-wai-logger)
-       ("ghc-word8" ,ghc-word8)
-       ("ghc-iproute" ,ghc-iproute)
-       ("ghc-wai" ,ghc-wai)
-       ("ghc-http-types" ,ghc-http-types)
-       ("ghc-http2" ,ghc-http2)
-       ("ghc-case-insensitive" ,ghc-case-insensitive)
-       ("ghc-data-default-class" ,ghc-data-default-class)
-       ("ghc-vault" ,ghc-vault)
-       ("ghc-aeson" ,ghc-aeson)))
+     (list ghc-ansi-terminal
+           ghc-base64-bytestring
+           ghc-call-stack
+           ghc-cookie
+           ghc-network
+           ghc-streaming-commons
+           ghc-resourcet
+           ghc-fast-logger
+           ghc-wai-logger
+           ghc-word8
+           ghc-iproute
+           ghc-wai
+           ghc-http-types
+           ghc-http2
+           ghc-case-insensitive
+           ghc-data-default-class
+           ghc-vault
+           ghc-aeson))
     (native-inputs
-     `(("hspec-discover" ,hspec-discover)
-       ("ghc-hspec" ,ghc-hspec)
-       ("ghc-hunit" ,ghc-hunit)
-       ("ghc-zlib" ,ghc-zlib)))
+     (list hspec-discover ghc-hspec ghc-hunit ghc-zlib))
     (home-page "https://github.com/yesodweb/wai")
     (synopsis "Some basic WAI handlers and middleware")
     (description "This library provides basic WAI handlers and middleware
@@ -596,10 +578,7 @@ functionality.")
          "07yn41rn2skd5p3wqqa09wa761vj7ibl8l19gh4bi4i8slxhk417"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-conduit" ,ghc-conduit)
-       ("ghc-http-types" ,ghc-http-types)
-       ("ghc-wai" ,ghc-wai)
-       ("ghc-blaze-builder" ,ghc-blaze-builder)))
+     (list ghc-conduit ghc-http-types ghc-wai ghc-blaze-builder))
     (home-page "https://github.com/yesodweb/wai")
     (synopsis "Conduit wrappers for Haskell's WAI")
     (description "This package provides data streaming abstraction for
@@ -629,13 +608,13 @@ Haskell's Web Application Interface (WAI).")
        #:cabal-revision
        ("3" "15hg352id2f4x0dnvv47bdiz6gv5hp5a2mki9yzmhc7ajpk31mdd")))
     (native-inputs
-     `(("ghc-attoparsec" ,ghc-attoparsec)
-       ("ghc-blaze-builder" ,ghc-blaze-builder)
-       ("ghc-hedgehog" ,ghc-hedgehog)
-       ("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-hedgehog" ,ghc-tasty-hedgehog)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
-       ("ghc-doctest" ,ghc-doctest)))
+     (list ghc-attoparsec
+           ghc-blaze-builder
+           ghc-hedgehog
+           ghc-tasty
+           ghc-tasty-hedgehog
+           ghc-tasty-hunit
+           ghc-doctest))
     (home-page "https://github.com/sjakobi/bsb-http-chunked")
     (synopsis "Chunked HTTP transfer encoding for bytestring builders")
     (description "This Haskell library contains functions for encoding
@@ -657,35 +636,35 @@ transfers.")
         (base32 "0v54ca3wpa79gdyiikwhbv9h8b5vr3d60piq3ndb2v7s7fi1qpm0"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-async" ,ghc-async)
-       ("ghc-auto-update" ,ghc-auto-update)
-       ("ghc-bsb-http-chunked" ,ghc-bsb-http-chunked)
-       ("ghc-case-insensitive" ,ghc-case-insensitive)
-       ("ghc-hashable" ,ghc-hashable)
-       ("ghc-http-types" ,ghc-http-types)
-       ("ghc-iproute" ,ghc-iproute)
-       ("ghc-network" ,ghc-network)
-       ("ghc-streaming-commons" ,ghc-streaming-commons)
-       ("ghc-time-manager" ,ghc-time-manager)
-       ("ghc-unix-compat" ,ghc-unix-compat)
-       ("ghc-vault" ,ghc-vault)
-       ("ghc-wai" ,ghc-wai)
-       ("ghc-word8" ,ghc-word8)
-       ("ghc-http-date" ,ghc-http-date)
-       ("ghc-simple-sendfile" ,ghc-simple-sendfile)
-       ("ghc-unliftio" ,ghc-unliftio)
-       ("ghc-x509" ,ghc-x509)
-       ("ghc-http2" ,ghc-http2)))
+     (list ghc-async
+           ghc-auto-update
+           ghc-bsb-http-chunked
+           ghc-case-insensitive
+           ghc-hashable
+           ghc-http-types
+           ghc-iproute
+           ghc-network
+           ghc-streaming-commons
+           ghc-time-manager
+           ghc-unix-compat
+           ghc-vault
+           ghc-wai
+           ghc-word8
+           ghc-http-date
+           ghc-simple-sendfile
+           ghc-unliftio
+           ghc-x509
+           ghc-http2))
     (native-inputs
-     `(("curl" ,curl)
-       ("ghc-silently" ,ghc-silently)
-       ("ghc-hspec" ,ghc-hspec)
-       ("ghc-doctest" ,ghc-doctest)
-       ("ghc-lifted-base" ,ghc-lifted-base)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-hunit" ,ghc-hunit)
-       ("ghc-http-client" ,ghc-http-client)
-       ("hspec-discover" ,hspec-discover)))
+     (list curl
+           ghc-silently
+           ghc-hspec
+           ghc-doctest
+           ghc-lifted-base
+           ghc-quickcheck
+           ghc-hunit
+           ghc-http-client
+           hspec-discover))
     (home-page "https://github.com/yesodweb/wai")
     (synopsis "HTTP server library for Haskell's WAI")
     (description "Warp is a server library for HTTP/1.x and HTTP/2
@@ -708,10 +687,7 @@ based WAI (Web Application Interface in Haskell).")
           "134kb5nz668f4xrr5g98g7fc1bwb3ri6q433a1i6asjkniwpy85s"))))
   (build-system haskell-build-system)
   (inputs
-    `(("ghc-auto-update" ,ghc-auto-update)
-      ("ghc-clock" ,ghc-clock)
-      ("ghc-psqueues" ,ghc-psqueues)
-      ("ghc-tls" ,ghc-tls)))
+    (list ghc-auto-update ghc-clock ghc-psqueues ghc-tls))
   (home-page "https://hackage.haskell.org/package/tls-session-manager")
   (synopsis "In-memory TLS session manager")
   (description "This Haskell library provides a TLS session manager with
@@ -733,15 +709,15 @@ limitation, automatic pruning, energy saving and replay resistance.")
          "0b9viw26ymzq4q8snfddz3w59sqcf5ankxnw6f99iacxjhk6zs6m"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-cryptonite" ,ghc-cryptonite)
-       ("ghc-data-default-class" ,ghc-data-default-class)
-       ("ghc-network" ,ghc-network)
-       ("ghc-streaming-commons" ,ghc-streaming-commons)
-       ("ghc-tls" ,ghc-tls)
-       ("ghc-tls-session-manager" ,ghc-tls-session-manager)
-       ("ghc-unliftio" ,ghc-unliftio)
-       ("ghc-wai" ,ghc-wai)
-       ("ghc-warp" ,ghc-warp)))
+     (list ghc-cryptonite
+           ghc-data-default-class
+           ghc-network
+           ghc-streaming-commons
+           ghc-tls
+           ghc-tls-session-manager
+           ghc-unliftio
+           ghc-wai
+           ghc-warp))
     (home-page "https://github.com/yesodweb/wai")
     (synopsis "SSL/TLS support for Warp")
     (description "This package provides SSL/TLS support for Warp,
@@ -764,23 +740,20 @@ a WAI handler, via the native Haskell TLS implementation.")
          "1b92a41l2var1ccg350mh2bjmb2plb6d79yzvmlwkd41nifmmi44"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-attoparsec" ,ghc-attoparsec)
-       ("ghc-base64-bytestring" ,ghc-base64-bytestring)
-       ("ghc-bytestring-builder" ,ghc-bytestring-builder)
-       ("ghc-case-insensitive" ,ghc-case-insensitive)
-       ("ghc-network" ,ghc-network)
-       ("ghc-random" ,ghc-random)
-       ("ghc-sha" ,ghc-sha)
-       ("ghc-clock" ,ghc-clock)
-       ("ghc-async" ,ghc-async)
-       ("ghc-streaming-commons" ,ghc-streaming-commons)
-       ("ghc-entropy" ,ghc-entropy)))
+     (list ghc-attoparsec
+           ghc-base64-bytestring
+           ghc-bytestring-builder
+           ghc-case-insensitive
+           ghc-network
+           ghc-random
+           ghc-sha
+           ghc-clock
+           ghc-async
+           ghc-streaming-commons
+           ghc-entropy))
     (native-inputs
-     `(("ghc-hunit" ,ghc-hunit)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-test-framework" ,ghc-test-framework)
-       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
-       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
+     (list ghc-hunit ghc-quickcheck ghc-test-framework
+           ghc-test-framework-hunit ghc-test-framework-quickcheck2))
     (home-page "https://jaspervdj.be/websockets/")
     (synopsis
      "Write WebSocket-capable servers in Haskell")
@@ -817,11 +790,8 @@ See also:
          "0b2xmdsrsqpssyib53wbr6r8hf75789ndyyanv37sv99iyqcwz4i"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-wai" ,ghc-wai)
-       ("ghc-case-insensitive" ,ghc-case-insensitive)
-       ("ghc-network" ,ghc-network)
-       ("ghc-websockets" ,ghc-websockets)
-       ("ghc-http-types" ,ghc-http-types)))
+     (list ghc-wai ghc-case-insensitive ghc-network ghc-websockets
+           ghc-http-types))
     (arguments
      `(#:configure-flags '("--flags=-example")))
     (home-page "https://github.com/yesodweb/wai")
@@ -846,14 +816,9 @@ See also:
          "1d72s3a6520iwwc1wbn9v2znqgbw6a5wwzb23iq8ny9ccnjyx1dk"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-tagsoup" ,ghc-tagsoup)
-       ("ghc-utf8-string" ,ghc-utf8-string)
-       ("ghc-css-text" ,ghc-css-text)
-       ("ghc-network-uri" ,ghc-network-uri)))
+     (list ghc-tagsoup ghc-utf8-string ghc-css-text ghc-network-uri))
     (native-inputs
-     `(("ghc-attoparsec" ,ghc-attoparsec)
-       ("ghc-hspec" ,ghc-hspec)
-       ("ghc-hunit" ,ghc-hunit)))
+     (list ghc-attoparsec ghc-hspec ghc-hunit))
     (home-page "https://github.com/yesodweb/haskell-xss-sanitize")
     (synopsis "Sanitize untrusted HTML to prevent XSS attacks")
     (description "This library provides @code{sanitizeXSS}.  Run untrusted
@@ -877,9 +842,7 @@ attacks.")
          "0ynd9f4hn2sfwqzbsa0y7phmxq8za7jiblpjwx0ry8b372zhgxaz"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-attoparsec" ,ghc-attoparsec)
-       ("ghc-hspec" ,ghc-hspec)
-       ("ghc-quickcheck" ,ghc-quickcheck)))
+     (list ghc-attoparsec ghc-hspec ghc-quickcheck))
     (home-page "https://www.yesodweb.com/")
     (synopsis "CSS parser and renderer")
     (description "This package provides a CSS parser and renderer for
@@ -943,15 +906,14 @@ documents.")
          "09bwrdam3y47kqllgg6w098ghqb8jb10dp4wxirsvx5ddpx9zpi6"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-resourcet" ,ghc-resourcet)
-       ("ghc-conduit" ,ghc-conduit)
-       ("ghc-xml-conduit" ,ghc-xml-conduit)
-       ("ghc-xml-types" ,ghc-xml-types)
-       ("ghc-attoparsec" ,ghc-attoparsec)
-       ("ghc-conduit-extra" ,ghc-conduit-extra)))
+     (list ghc-resourcet
+           ghc-conduit
+           ghc-xml-conduit
+           ghc-xml-types
+           ghc-attoparsec
+           ghc-conduit-extra))
     (native-inputs
-     `(("ghc-hspec" ,ghc-hspec)
-       ("ghc-hunit" ,ghc-hunit)))
+     (list ghc-hspec ghc-hunit))
     (home-page "https://github.com/snoyberg/xml")
     (synopsis "Parse HTML documents using xml-conduit datatypes")
     (description
@@ -982,14 +944,10 @@ entity decoding bugfixes applied.")
        #:cabal-revision
        ("1" "0wvlfb3rd9cm3p894p5rl9kggrsr5da3n8x9ydrbagx91yvkxns9")))
     (inputs
-     `(("ghc-blaze-builder" ,ghc-blaze-builder)
-       ("ghc-blaze-markup" ,ghc-blaze-markup)))
+     (list ghc-blaze-builder ghc-blaze-markup))
     (native-inputs
-     `(("ghc-hunit" ,ghc-hunit)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-test-framework" ,ghc-test-framework)
-       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
-       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
+     (list ghc-hunit ghc-quickcheck ghc-test-framework
+           ghc-test-framework-hunit ghc-test-framework-quickcheck2))
     (home-page "http://jaspervdj.be/blaze")
     (synopsis "Fast HTML combinator library")
     (description "This library provides HTML combinators for Haskell.")
@@ -1016,21 +974,21 @@ entity decoding bugfixes applied.")
        ("2" "1zxkarvmbgc2cpcc9sx1rlqm7nfh473052898ypiwk8azawp1hbj")))
     (outputs '("out" "static" "doc"))
     (inputs
-     `(("ghc-attoparsec" ,ghc-attoparsec)
-       ("ghc-base-compat-batteries" ,ghc-base-compat-batteries)
-       ("ghc-data-fix" ,ghc-data-fix)
-       ("ghc-dlist" ,ghc-dlist)
-       ("ghc-hashable" ,ghc-hashable)
-       ("ghc-primitive" ,ghc-primitive)
-       ("ghc-scientific" ,ghc-scientific)
-       ("ghc-strict" ,ghc-strict)
-       ("ghc-tagged" ,ghc-tagged)
-       ("ghc-th-abstraction" ,ghc-th-abstraction)
-       ("ghc-these" ,ghc-these)
-       ("ghc-time-compat" ,ghc-time-compat)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)
-       ("ghc-uuid-types" ,ghc-uuid-types)
-       ("ghc-vector" ,ghc-vector)))
+     (list ghc-attoparsec
+           ghc-base-compat-batteries
+           ghc-data-fix
+           ghc-dlist
+           ghc-hashable
+           ghc-primitive
+           ghc-scientific
+           ghc-strict
+           ghc-tagged
+           ghc-th-abstraction
+           ghc-these
+           ghc-time-compat
+           ghc-unordered-containers
+           ghc-uuid-types
+           ghc-vector))
 ;    (native-inputs
 ;     `(("ghc-base16-bytestring" ,ghc-base16-bytestring)
 ;       ("ghc-base-compat" ,ghc-base-compat)
@@ -1066,13 +1024,13 @@ naming: in Greek mythology, Aeson was the father of Jason.)")
                 "021az9az6xik9c9s3rnar5fr1lgy2h3igibf5ixnc7ps3m2lzg2x"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-aeson" ,ghc-aeson)
-       ("ghc-base-compat" ,ghc-base-compat)
-       ("ghc-scientific" ,ghc-scientific)
-       ("ghc-vector" ,ghc-vector)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)
-       ("ghc-attoparsec" ,ghc-attoparsec)
-       ("ghc-cmdargs" ,ghc-cmdargs)))
+     (list ghc-aeson
+           ghc-base-compat
+           ghc-scientific
+           ghc-vector
+           ghc-unordered-containers
+           ghc-attoparsec
+           ghc-cmdargs))
     (home-page "https://github.com/informatikr/aeson-pretty")
     (synopsis "JSON pretty-printing library and command-line tool")
     (description
@@ -1098,15 +1056,14 @@ essentially the opposite of pretty-printing.")
                 "0dpklq2xdhrkg1rdc7zfdjnzm6c3qxx2i1xskrqdxpqi84ffnlyh"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-base-compat" ,ghc-base-compat)
-       ("ghc-attoparsec" ,ghc-attoparsec)
-       ("ghc-scientific" ,ghc-scientific)
-       ("ghc-vector" ,ghc-vector)
-       ("ghc-aeson" ,ghc-aeson)
-       ("ghc-haskell-src-meta" ,ghc-haskell-src-meta)))
+     (list ghc-base-compat
+           ghc-attoparsec
+           ghc-scientific
+           ghc-vector
+           ghc-aeson
+           ghc-haskell-src-meta))
     (native-inputs
-     `(("ghc-hspec" ,ghc-hspec)
-       ("hspec-discover" ,hspec-discover)))
+     (list ghc-hspec hspec-discover))
     (home-page "https://github.com/zalora/aeson-qq")
     (synopsis "JSON quasiquoter for Haskell")
     (description
@@ -1131,13 +1088,13 @@ of a JSON value into a @code{Data.Aeson.Value}.")
          "09vkyrhwak3bmpfsqcd2az8hfqqkxyhg468hv5avgisy0nzh3w38"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-aeson" ,ghc-aeson)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)
-       ("ghc-dlist" ,ghc-dlist)
-       ("ghc-scientific" ,ghc-scientific)
-       ("ghc-vector" ,ghc-vector)
-       ("ghc-transformers-compat" ,ghc-transformers-compat)
-       ("ghc-void" ,ghc-void)))
+     (list ghc-aeson
+           ghc-unordered-containers
+           ghc-dlist
+           ghc-scientific
+           ghc-vector
+           ghc-transformers-compat
+           ghc-void))
     (home-page
      "https://github.com/hdgarrood/aeson-better-errors")
     (synopsis
@@ -1164,7 +1121,7 @@ good error messages when parsing fails.  See also
          "0p6n4knxpjv70nbl6cmd6x7gkdjsjqp4ya7fz00bfrqp7jvhlivn"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-stringsearch" ,ghc-stringsearch)))
+     (list ghc-stringsearch))
     (home-page
      "http://www.github.com/silkapp/multipart")
     (synopsis
@@ -1188,8 +1145,7 @@ good error messages when parsing fails.  See also
          "0lj2h701af12539p957rw24bxr07mfqd5r4h52i42f43ax165767"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-utf8-string" ,ghc-utf8-string)
-       ("ghc-network-uri" ,ghc-network-uri)))
+     (list ghc-utf8-string ghc-network-uri))
     (home-page "https://hackage.haskell.org/package/uri-encode")
     (synopsis "Unicode aware uri-encoding")
     (description "Unicode aware uri-encoding for Haskell.")
@@ -1209,9 +1165,7 @@ good error messages when parsing fails.  See also
         (base32
          "0vx3sivcsld76058925hym2j6hm3g71f0qjr7v59f1g2afgx82q8"))))
     (build-system haskell-build-system)
-    (native-inputs `(("ghc-hunit" ,ghc-hunit)
-                     ("ghc-hspec" ,ghc-hspec)
-                     ("ghc-quickcheck" ,ghc-quickcheck)))
+    (native-inputs (list ghc-hunit ghc-hspec ghc-quickcheck))
     (home-page "https://github.com/yesodweb/path-pieces")
     (synopsis "Used in Yesod to automatically marshall data in the request path")
     (description  "This Haskell package provides two typeclasses for converting
@@ -1232,10 +1186,8 @@ Haskell data types to and from route pieces.")
         (base32
          "1jdqdk0rz2wnvw735clnj8jh0a9rkrbqjg7vk3w6wczdql6cm0pq"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-cereal" ,ghc-cereal)
-              ("ghc-tagged" ,ghc-tagged)
-              ("ghc-crpto-api" ,ghc-crypto-api)))
-    (native-inputs `(("ghc-hspec" ,ghc-hspec)))
+    (inputs (list ghc-cereal ghc-tagged ghc-crypto-api))
+    (native-inputs (list ghc-hspec))
     (home-page "https://github.com/yesodweb/path-pieces")
     (synopsis "Skein family of cryptographic hash functions for Haskell")
     (description "@uref{(http://www.skein-hash.info, Skein} is a family of
@@ -1260,19 +1212,17 @@ This Haskell package uses bindings to the optimized C implementation of Skein.")
         (base32
          "0s6h4ykj16mpf7nlw2iqn2ji0p8g1fn5ni0s7yqaili6vv2as5ar"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-cereal" ,ghc-cereal)
-              ("ghc-tagged" ,ghc-tagged)
-              ("ghc-crypto-api" ,ghc-crypto-api)
-              ("ghc-skein" ,ghc-skein)
-              ("ghc-base64-bytestring" ,ghc-base64-bytestring)
-              ("ghc-entropy" ,ghc-entropy)
-              ("ghc-cprng-aes" ,ghc-cprng-aes)
-              ("ghc-cipher-aes" ,ghc-cipher-aes)
-              ("ghc-crypto-random" ,ghc-crypto-random)
-              ("ghc-setenv" ,ghc-setenv)))
-    (native-inputs `(("ghc-hunit" ,ghc-hunit)
-                     ("ghc-hspec" ,ghc-hspec)
-                     ("ghc-quickcheck" ,ghc-quickcheck)))
+    (inputs (list ghc-cereal
+                  ghc-tagged
+                  ghc-crypto-api
+                  ghc-skein
+                  ghc-base64-bytestring
+                  ghc-entropy
+                  ghc-cprng-aes
+                  ghc-cipher-aes
+                  ghc-crypto-random
+                  ghc-setenv))
+    (native-inputs (list ghc-hunit ghc-hspec ghc-quickcheck))
     (home-page "https://github.com/yesodweb/clientsession/tree/master")
     (synopsis "Haskell library for securely store session data in a
 client-side cookie")
@@ -1295,54 +1245,54 @@ avoid any issues with characters.")
         (base32
          "0wmh7ip318p89lyy6k5mvxkkpq43knp41wlq9iaf3icz0ahqdmb7"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-wai" ,ghc-wai)
-              ("ghc-extra" ,ghc-extra)
-              ("ghc-shakespeare" ,ghc-shakespeare)
-              ("ghc-blaze-builder" ,ghc-blaze-builder)
-              ("ghc-clientsession" ,ghc-clientsession)
-              ("ghc-random" ,ghc-random)
-              ("ghc-cereal" ,ghc-cereal)
-              ("ghc-old-locale" ,ghc-old-locale)
-              ("ghc-unliftio" ,ghc-unliftio)
-              ("ghc-unordered-containers" ,ghc-unordered-containers)
-              ("ghc-monad-control" ,ghc-monad-control)
-              ("ghc-transformers-base" ,ghc-transformers-base)
-              ("ghc-cookie" ,ghc-cookie)
-              ("ghc-http-types" ,ghc-http-types)
-              ("ghc-case-insensitive" ,ghc-case-insensitive)
-              ("ghc-vector" ,ghc-vector)
-              ("ghc-aeson" ,ghc-aeson)
-              ("ghc-fast-logger" ,ghc-fast-logger)
-              ("ghc-wai-logger" ,ghc-wai-logger)
-              ("ghc-monad-logger" ,ghc-monad-logger)
-              ("ghc-conduit" ,ghc-conduit)
-              ("ghc-resourcet" ,ghc-resourcet)
-              ("ghc-rio" ,ghc-rio)
-              ("ghc-lifted-base" ,ghc-lifted-base)
-              ("ghc-blaze-html" ,ghc-blaze-html)
-              ("ghc-blaze-markup" ,ghc-blaze-markup)
-              ("ghc-data-default" ,ghc-data-default)
-              ("ghc-safe" ,ghc-safe)
-              ("ghc-warp" ,ghc-warp)
-              ("ghc-unix-compat" ,ghc-unix-compat)
-              ("ghc-conduit-extra" ,ghc-conduit-extra)
-              ("ghc-exceptions" ,ghc-exceptions)
-              ("ghc-deepseq-generics" ,ghc-deepseq-generics)
-              ("ghc-mwc-random" ,ghc-mwc-random)
-              ("ghc-primitive" ,ghc-primitive)
-              ("ghc-word8" ,ghc-word8)
-              ("ghc-auto-update" ,ghc-auto-update)
-              ("ghc-semigroups" ,ghc-semigroups)
-              ("ghc-byteable" ,ghc-byteable)))
-    (native-inputs `(("ghc-hspec" ,ghc-hspec)
-                     ("ghc-path-pieces" ,ghc-path-pieces)
-                     ("ghc-hunit" ,ghc-hunit)
-                     ("ghc-hspec-expectations" ,ghc-hspec-expectations)
-                     ("ghc-quickcheck" ,ghc-quickcheck)
-                     ("ghc-network" ,ghc-network)
-                     ("ghc-async" ,ghc-async)
-                     ("ghc-streaming-commons" ,ghc-streaming-commons)
-                     ("ghc-wai-extra" ,ghc-wai-extra)))
+    (inputs (list ghc-wai
+                  ghc-extra
+                  ghc-shakespeare
+                  ghc-blaze-builder
+                  ghc-clientsession
+                  ghc-random
+                  ghc-cereal
+                  ghc-old-locale
+                  ghc-unliftio
+                  ghc-unordered-containers
+                  ghc-monad-control
+                  ghc-transformers-base
+                  ghc-cookie
+                  ghc-http-types
+                  ghc-case-insensitive
+                  ghc-vector
+                  ghc-aeson
+                  ghc-fast-logger
+                  ghc-wai-logger
+                  ghc-monad-logger
+                  ghc-conduit
+                  ghc-resourcet
+                  ghc-rio
+                  ghc-lifted-base
+                  ghc-blaze-html
+                  ghc-blaze-markup
+                  ghc-data-default
+                  ghc-safe
+                  ghc-warp
+                  ghc-unix-compat
+                  ghc-conduit-extra
+                  ghc-exceptions
+                  ghc-deepseq-generics
+                  ghc-mwc-random
+                  ghc-primitive
+                  ghc-word8
+                  ghc-auto-update
+                  ghc-semigroups
+                  ghc-byteable))
+    (native-inputs (list ghc-hspec
+                         ghc-path-pieces
+                         ghc-hunit
+                         ghc-hspec-expectations
+                         ghc-quickcheck
+                         ghc-network
+                         ghc-async
+                         ghc-streaming-commons
+                         ghc-wai-extra))
     (home-page "https://www.yesodweb.com")
     (synopsis "Core package for the Yesod web framework")
     (description "This Haskell package provides all core functionality, for
@@ -1365,17 +1315,15 @@ functions, widgets, etc.")
          "102xmp7n08sk1g5rv31jpln2v9kqf1zsqsnmi83mnhmgggcbj1k4"))))
     (build-system haskell-build-system)
     (arguments `(#:tests? #f)) ; FIXME: hspec-discover not available in PATH.
-    (inputs `(("ghc-yesod-core" ,ghc-yesod-core)
-              ("ghc-persistent" ,ghc-persistent)
-              ("ghc-persistent-template" ,ghc-persistent-template)
-              ("ghc-blaze-builder" ,ghc-blaze-builder)
-              ("ghc-conduit" ,ghc-conduit)
-              ("ghc-resourcet" ,ghc-resourcet)
-              ("ghc-resource-pool" ,ghc-resource-pool)))
-    (native-inputs `(("ghc-hspec" ,ghc-hspec)
-                     ("ghc-wai-extra" ,ghc-wai-extra)
-                     ("ghc-yesod-core" ,ghc-yesod-core)
-                     ("ghc-persistent-sqlite" ,ghc-persistent-sqlite)))
+    (inputs (list ghc-yesod-core
+                  ghc-persistent
+                  ghc-persistent-template
+                  ghc-blaze-builder
+                  ghc-conduit
+                  ghc-resourcet
+                  ghc-resource-pool))
+    (native-inputs (list ghc-hspec ghc-wai-extra ghc-yesod-core
+                         ghc-persistent-sqlite))
     (home-page "https://www.yesodweb.com/")
     (synopsis "Helpers for using Persistent from Yesod")
     (description "This Haskell package provides helpers for using Persistent
@@ -1398,24 +1346,24 @@ from Yesod.")
             "170gby381h5pg9njn908cyx2931yiv79x3rc5npg2rd74kif06vi"))))
     (build-system haskell-build-system)
     (inputs
-      `(("ghc-yesod-core" ,ghc-yesod-core)
-        ("ghc-yesod-persistent" ,ghc-yesod-persistent)
-        ("ghc-shakespeare" ,ghc-shakespeare)
-        ("ghc-persistent" ,ghc-persistent)
-        ("ghc-data-default" ,ghc-data-default)
-        ("ghc-xss-sanitize" ,ghc-xss-sanitize)
-        ("ghc-blaze-builder" ,ghc-blaze-builder)
-        ("ghc-email-validate" ,ghc-email-validate)
-        ("ghc-wai" ,ghc-wai)
-        ("ghc-blaze-html" ,ghc-blaze-html)
-        ("ghc-blaze-markup" ,ghc-blaze-markup)
-        ("ghc-attoparsec" ,ghc-attoparsec)
-        ("ghc-byteable" ,ghc-byteable)
-        ("ghc-aeson" ,ghc-aeson)
-        ("ghc-resourcet" ,ghc-resourcet)
-        ("ghc-semigroups" ,ghc-semigroups)
-        ("ghc-network-uri" ,ghc-network-uri)
-        ("ghc-hspec" ,ghc-hspec)))
+      (list ghc-yesod-core
+            ghc-yesod-persistent
+            ghc-shakespeare
+            ghc-persistent
+            ghc-data-default
+            ghc-xss-sanitize
+            ghc-blaze-builder
+            ghc-email-validate
+            ghc-wai
+            ghc-blaze-html
+            ghc-blaze-markup
+            ghc-attoparsec
+            ghc-byteable
+            ghc-aeson
+            ghc-resourcet
+            ghc-semigroups
+            ghc-network-uri
+            ghc-hspec))
     (home-page "https://www.yesodweb.com")
     (synopsis "Form handling support for Yesod Web Framework")
     (description "This Haskell package provides a set of basic form inputs such
@@ -1439,23 +1387,23 @@ providing richtext field using Nic editor. ")
          "13r0ispprj41kgn2rkc7zhy1rxfmgpjbmdlnys15h0ihhh3zhw2f"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-yesod-core" ,ghc-yesod-core)
-       ("ghc-yesod-persistent" ,ghc-yesod-persistent)
-       ("ghc-yesod-form" ,ghc-yesod-form)
-       ("ghc-wai" ,ghc-wai)
-       ("ghc-wai-extra" ,ghc-wai-extra)
-       ("ghc-warp" ,ghc-warp)
-       ("ghc-aeson" ,ghc-aeson)
-       ("ghc-file-embed" ,ghc-file-embed)
-       ("ghc-data-default-class" ,ghc-data-default-class)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)
-       ("ghc-yaml" ,ghc-yaml)
-       ("ghc-monad-logger" ,ghc-monad-logger)
-       ("ghc-fast-logger" ,ghc-fast-logger)
-       ("ghc-conduit" ,ghc-conduit)
-       ("ghc-shakespeare" ,ghc-shakespeare)
-       ("ghc-streaming-commons" ,ghc-streaming-commons)
-       ("ghc-wai-logger" ,ghc-wai-logger)))
+     (list ghc-yesod-core
+           ghc-yesod-persistent
+           ghc-yesod-form
+           ghc-wai
+           ghc-wai-extra
+           ghc-warp
+           ghc-aeson
+           ghc-file-embed
+           ghc-data-default-class
+           ghc-unordered-containers
+           ghc-yaml
+           ghc-monad-logger
+           ghc-fast-logger
+           ghc-conduit
+           ghc-shakespeare
+           ghc-streaming-commons
+           ghc-wai-logger))
     (home-page "https://www.yesodweb.com")
     (synopsis "Framework for creating type-safe, RESTful web applications")
     (description "The Haskell package package groups together the various
@@ -1501,7 +1449,7 @@ supported Unicode version is 7.0.0")
          "0rj48cy8z4fl3zpg5bpa458kqr83adav6jnqv4i71dclpprj6n3v"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-hxt-charproperties" ,ghc-hxt-charproperties)))
+     (list ghc-hxt-charproperties))
     (home-page
      "http://www.fh-wedel.de/~si/HXmlToolbox/index.html https://github.com/UweSchmidt/hxt")
     (synopsis
@@ -1528,8 +1476,7 @@ ignored.")
          "0ynrf65m7abq2fjnarlwq6i1r99pl89npibxx05rlplcgpybrdmr"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-hxt-charproperties" ,ghc-hxt-charproperties)
-       ("ghc-hunit" ,ghc-hunit)))
+     (list ghc-hxt-charproperties ghc-hunit))
     (home-page "https://wiki.haskell.org/Regular_expressions_for_XML_Schema")
     (synopsis "Regular expression library for W3C XML Schema regular expressions")
     (description
@@ -1555,10 +1502,8 @@ derivations of regular expressions.")
     (build-system haskell-build-system)
     (outputs '("out" "static" "doc"))
     (inputs
-     `(("ghc-hxt-charproperties" ,ghc-hxt-charproperties)
-       ("ghc-hxt-unicode" ,ghc-hxt-unicode)
-       ("ghc-hxt-regex-xmlschema" ,ghc-hxt-regex-xmlschema)
-       ("ghc-network-uri" ,ghc-network-uri)))
+     (list ghc-hxt-charproperties ghc-hxt-unicode ghc-hxt-regex-xmlschema
+           ghc-network-uri))
     (home-page "https://github.com/UweSchmidt/hxt")
     (synopsis "Collection of tools for processing XML with Haskell")
     (description
@@ -1580,12 +1525,12 @@ introduces a more general approach for processing XML with Haskell.")
          "1xpbnfac0fqa5r670ggwm4kq3cmz9jpaw9bx40j9w9qiw6xi4i28"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-base64-bytestring" ,ghc-base64-bytestring)
-       ("ghc-blaze-builder" ,ghc-blaze-builder)
-       ("ghc-case-insensitive" ,ghc-case-insensitive)
-       ("ghc-network" ,ghc-network)
-       ("ghc-random" ,ghc-random)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)))
+     (list ghc-base64-bytestring
+           ghc-blaze-builder
+           ghc-case-insensitive
+           ghc-network
+           ghc-random
+           ghc-unordered-containers))
     (home-page "https://github.com/afcowie/http-streams/")
     (synopsis "Common types for HTTP clients and servers")
     (description "Base types used by a variety of HTTP clients and
@@ -1609,18 +1554,18 @@ pipes-http re-export this package's types and functions.")
          "03xdcb0v735xdrkjlm1w56mskh3x08cbsjrcd7wn4li65ixc20xa"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-attoparsec" ,ghc-attoparsec)
-       ("ghc-base64-bytestring" ,ghc-base64-bytestring)
-       ("ghc-blaze-builder" ,ghc-blaze-builder)
-       ("ghc-case-insensitive" ,ghc-case-insensitive)
-       ("ghc-io-streams" ,ghc-io-streams)
-       ("ghc-hsopenssl" ,ghc-hsopenssl)
-       ("ghc-openssl-streams" ,ghc-openssl-streams)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)
-       ("ghc-aeson" ,ghc-aeson)
-       ("ghc-http-common" ,ghc-http-common)
-       ("ghc-network-uri" ,ghc-network-uri)
-       ("ghc-network" ,ghc-network)))
+     (list ghc-attoparsec
+           ghc-base64-bytestring
+           ghc-blaze-builder
+           ghc-case-insensitive
+           ghc-io-streams
+           ghc-hsopenssl
+           ghc-openssl-streams
+           ghc-unordered-containers
+           ghc-aeson
+           ghc-http-common
+           ghc-network-uri
+           ghc-network))
     (arguments
      `(#:tests? #f)) ; tests rely on an outdated version of snap-server
     (home-page "https://github.com/afcowie/http-streams/")
@@ -1649,31 +1594,31 @@ deal with the result.")
        #:cabal-revision
        ("1" "065v61clskzikywv0gy9n4fjaszi2fnjklal83kqbzhzzgkf83ng")))
     (inputs
-     `(("ghc-old-locale" ,ghc-old-locale)
-       ("ghc-hunit" ,ghc-hunit)
-       ("ghc-attoparsec" ,ghc-attoparsec)
-       ("ghc-bytestring-builder" ,ghc-bytestring-builder)
-       ("ghc-case-insensitive" ,ghc-case-insensitive)
-       ("ghc-lifted-base" ,ghc-lifted-base)
-       ("ghc-io-streams" ,ghc-io-streams)
-       ("ghc-hashable" ,ghc-hashable)
-       ("ghc-monad-control" ,ghc-monad-control)
-       ("ghc-random" ,ghc-random)
-       ("ghc-readable" ,ghc-readable)
-       ("ghc-regex-posix" ,ghc-regex-posix)
-       ("ghc-transformers-base" ,ghc-transformers-base)
-       ("ghc-unix-compat" ,ghc-unix-compat)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)
-       ("ghc-vector" ,ghc-vector)
-       ("ghc-network-uri" ,ghc-network-uri)
-       ("ghc-network" ,ghc-network)))
+     (list ghc-old-locale
+           ghc-hunit
+           ghc-attoparsec
+           ghc-bytestring-builder
+           ghc-case-insensitive
+           ghc-lifted-base
+           ghc-io-streams
+           ghc-hashable
+           ghc-monad-control
+           ghc-random
+           ghc-readable
+           ghc-regex-posix
+           ghc-transformers-base
+           ghc-unix-compat
+           ghc-unordered-containers
+           ghc-vector
+           ghc-network-uri
+           ghc-network))
     (native-inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-parallel" ,ghc-parallel)
-       ("ghc-test-framework" ,ghc-test-framework)
-       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
-       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)
-       ("ghc-zlib" ,ghc-zlib)))
+     (list ghc-quickcheck
+           ghc-parallel
+           ghc-test-framework
+           ghc-test-framework-hunit
+           ghc-test-framework-quickcheck2
+           ghc-zlib))
     (home-page "http://snapframework.com/")
     (synopsis "Haskell Web Framework (core interfaces and types)")
     (description "Snap is a simple and fast web development framework
@@ -1696,32 +1641,32 @@ contains the core definitions and types for the Snap framework.")
          "0w4yv9a5ilpma0335ariwap2iscmdbaaif88lq3cm7px910nyc4j"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-attoparsec" ,ghc-attoparsec)
-       ("ghc-blaze-builder" ,ghc-blaze-builder)
-       ("ghc-bytestring-builder" ,ghc-bytestring-builder)
-       ("ghc-case-insensitive" ,ghc-case-insensitive)
-       ("ghc-clock" ,ghc-clock)
-       ("ghc-io-streams" ,ghc-io-streams)
-       ("ghc-io-streams-haproxy" ,ghc-io-streams-haproxy)
-       ("ghc-lifted-base" ,ghc-lifted-base)
-       ("ghc-network" ,ghc-network)
-       ("ghc-old-locale" ,ghc-old-locale)
-       ("ghc-snap-core" ,ghc-snap-core)
-       ("ghc-unix-compat" ,ghc-unix-compat)
-       ("ghc-vector" ,ghc-vector)))
+     (list ghc-attoparsec
+           ghc-blaze-builder
+           ghc-bytestring-builder
+           ghc-case-insensitive
+           ghc-clock
+           ghc-io-streams
+           ghc-io-streams-haproxy
+           ghc-lifted-base
+           ghc-network
+           ghc-old-locale
+           ghc-snap-core
+           ghc-unix-compat
+           ghc-vector))
     (native-inputs
-     `(("ghc-base16-bytestring" ,ghc-base16-bytestring)
-       ("ghc-monad-control" ,ghc-monad-control)
-       ("ghc-random" ,ghc-random)
-       ("ghc-threads" ,ghc-threads)
-       ("ghc-hunit" ,ghc-hunit)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-http-streams" ,ghc-http-streams)
-       ("ghc-http-common" ,ghc-http-common)
-       ("ghc-parallel" ,ghc-parallel)
-       ("ghc-test-framework" ,ghc-test-framework)
-       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
-       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
+     (list ghc-base16-bytestring
+           ghc-monad-control
+           ghc-random
+           ghc-threads
+           ghc-hunit
+           ghc-quickcheck
+           ghc-http-streams
+           ghc-http-common
+           ghc-parallel
+           ghc-test-framework
+           ghc-test-framework-hunit
+           ghc-test-framework-quickcheck2))
     (home-page "http://snapframework.com/")
     (synopsis "Web server for the Snap Framework")
     (description "Snap is a simple and fast web development framework
@@ -1775,7 +1720,7 @@ users (e.g. Debian).")
          "0yjyzqh3qzhy5h3nql1fckw0gcfb0f4wj9pm85nafpfqp2kg58hv"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-http" ,ghc-http)))
+     (list ghc-http))
     (home-page "https://github.com/ndmitchell/js-flot")
     (synopsis "Obtain minified flot code")
     (description "This package bundles the minified
@@ -1801,29 +1746,27 @@ requirements of downstream users (e.g. Debian).")
          "0nc5rnvrzl9m3pinmdq234m80qkf4jszbdqnd567f7lh09yiqw9n"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-network" ,ghc-network)
-       ("ghc-network-bsd" ,ghc-network-bsd)
-       ("ghc-network-uri" ,ghc-network-uri)
-       ("ghc-base64-bytestring" ,ghc-base64-bytestring)
-       ("ghc-blaze-html" ,ghc-blaze-html)
-       ("ghc-exceptions" ,ghc-exceptions)
-       ("ghc-extensible-exceptions"
-        ,ghc-extensible-exceptions)
-       ("ghc-hslogger" ,ghc-hslogger)
-       ("ghc-html" ,ghc-html)
-       ("ghc-monad-control" ,ghc-monad-control)
-       ("ghc-old-locale" ,ghc-old-locale)
-       ("ghc-semigroups" ,ghc-semigroups)
-       ("ghc-sendfile" ,ghc-sendfile)
-       ("ghc-system-filepath" ,ghc-system-filepath)
-       ("ghc-syb" ,ghc-syb)
-       ("ghc-threads" ,ghc-threads)
-       ("ghc-transformers-base" ,ghc-transformers-base)
-       ("ghc-transformers-compat"
-        ,ghc-transformers-compat)
-       ("ghc-utf8-string" ,ghc-utf8-string)
-       ("ghc-zlib" ,ghc-zlib)))
-    (native-inputs `(("ghc-hunit" ,ghc-hunit)))
+     (list ghc-network
+           ghc-network-bsd
+           ghc-network-uri
+           ghc-base64-bytestring
+           ghc-blaze-html
+           ghc-exceptions
+           ghc-extensible-exceptions
+           ghc-hslogger
+           ghc-html
+           ghc-monad-control
+           ghc-old-locale
+           ghc-semigroups
+           ghc-sendfile
+           ghc-system-filepath
+           ghc-syb
+           ghc-threads
+           ghc-transformers-base
+           ghc-transformers-compat
+           ghc-utf8-string
+           ghc-zlib))
+    (native-inputs (list ghc-hunit))
     (home-page "http://happstack.com")
     (synopsis "Web related tools and services for Haskell")
     (description
@@ -1846,7 +1789,7 @@ cookies, serving files, and more.")
         (base32
          "0988snmx3bylpw3kcq8hsgji8idc6xcrcfp275qjv3apfdgc9rp0"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-network" ,ghc-network)))
+    (inputs (list ghc-network))
     (home-page
      "https://hub.darcs.net/stepcut/sendfile")
     (synopsis "Portable sendfile library for Haskell")
@@ -1869,14 +1812,14 @@ cookies, serving files, and more.")
           "07mjff8aqwabx8yhq8bd7jpnarkkrjqss8h8s2wkfmfj808fllmf"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-data-default" ,ghc-data-default)
-       ("ghc-fail" ,ghc-fail)
-       ("ghc-pointedlist" ,ghc-pointedlist)
-       ("ghc-regex-base" ,ghc-regex-base)
-       ("ghc-regex-tdfa" ,ghc-regex-tdfa)
-       ("ghc-tagsoup" ,ghc-tagsoup)
-       ("ghc-vector" ,ghc-vector)))
-    (native-inputs `(("ghc-hunit" ,ghc-hunit)))
+     (list ghc-data-default
+           ghc-fail
+           ghc-pointedlist
+           ghc-regex-base
+           ghc-regex-tdfa
+           ghc-tagsoup
+           ghc-vector))
+    (native-inputs (list ghc-hunit))
     (home-page "https://github.com/fimad/scalpel")
     (synopsis
      "High level web scraping library for Haskell")
@@ -1901,12 +1844,12 @@ non-Haskell dependencies.")
           "04hhvk0yjxha3yg6n9fxivrz97hpjjiiblnj0bvs5myax1ggkjch"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-scalpel-core" ,ghc-scalpel-core)
-       ("ghc-case-insensitive" ,ghc-case-insensitive)
-       ("ghc-data-default" ,ghc-data-default)
-       ("ghc-http-client" ,ghc-http-client)
-       ("ghc-http-client-tls" ,ghc-http-client-tls)
-       ("ghc-tagsoup" ,ghc-tagsoup)))
+     (list ghc-scalpel-core
+           ghc-case-insensitive
+           ghc-data-default
+           ghc-http-client
+           ghc-http-client-tls
+           ghc-tagsoup))
     (home-page "https://github.com/fimad/scalpel")
     (synopsis
      "High level web scraping library for Haskell")
@@ -1932,10 +1875,8 @@ declarative and monadic interface.")
          "0kz8xpcd5syg5s4qa2qq8ylaxjhabj127w42may46vv6i0q1bf8a"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-aeson" ,ghc-aeson)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)
-       ("ghc-attoparsec" ,ghc-attoparsec)
-       ("ghc-utf8-string" ,ghc-utf8-string)))
+     (list ghc-aeson ghc-unordered-containers ghc-attoparsec
+           ghc-utf8-string))
     (arguments
      `(#:tests? #f ; FIXME: Fail to compile
        #:cabal-revision
@@ -1966,14 +1907,9 @@ proposed by Google and Mozilla here
          "0s6igb54cxm2jywgc3sq53f52gcsc39wd3g78yisfzvl9jm3d86i"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-blaze-builder" ,ghc-blaze-builder)
-       ("ghc-utf8-string" ,ghc-utf8-string)))
+     (list ghc-blaze-builder ghc-utf8-string))
     (native-inputs
-     `(("ghc-alex" ,ghc-alex)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-happy" ,ghc-happy)
-       ("ghc-hspec" ,ghc-hspec)
-       ("ghc-utf8-light" ,ghc-utf8-light)))
+     (list ghc-alex ghc-quickcheck ghc-happy ghc-hspec ghc-utf8-light))
     (home-page
      "https://github.com/erikd/language-javascript")
     (synopsis "Parser for JavaScript")
@@ -1998,14 +1934,10 @@ as frontend to hjsmin.")
          "0wvygg3rdbxzrmr61a9w6ddv9pfric85ih8hnxyk0ydzn7i59abs"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-aeson" ,ghc-aeson)
-       ("ghc-aeson-better-errors" ,ghc-aeson-better-errors)
-       ("ghc-scientific" ,ghc-scientific)
-       ("ghc-transformers" ,ghc-transformers)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)))
+     (list ghc-aeson ghc-aeson-better-errors ghc-scientific
+           ghc-transformers ghc-unordered-containers))
     (native-inputs
-     `(("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)))
+     (list ghc-tasty ghc-tasty-hunit))
     (home-page "https://github.com/hdgarrood/bower-json")
     (synopsis "Read bower.json from Haskell")
     (description
@@ -2026,21 +1958,21 @@ Bower's package manifest file, bower.json.")
         (base32 "1isvi4fahq70lzxfz23as7qzkc01g7kba568l6flrgd0j1984fsy"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-case-insensitive" ,ghc-case-insensitive)
-       ("ghc-data-default" ,ghc-data-default)
-       ("ghc-exceptions" ,ghc-exceptions)
-       ("ghc-http-client" ,ghc-http-client)
-       ("ghc-http-client-tls" ,ghc-http-client-tls)
-       ("ghc-http-types" ,ghc-http-types)
-       ("ghc-lens" ,ghc-lens)
-       ("ghc-transformers-base" ,ghc-transformers-base)
-       ("ghc-transformers-compat" ,ghc-transformers-compat)
-       ("ghc-utf8-string" ,ghc-utf8-string)
-       ("ghc-xml-conduit" ,ghc-xml-conduit)
-       ("ghc-xml-hamlet" ,ghc-xml-hamlet)
-       ("ghc-network" ,ghc-network)
-       ("ghc-network-uri" ,ghc-network-uri)
-       ("ghc-optparse-applicative" ,ghc-optparse-applicative)))
+     (list ghc-case-insensitive
+           ghc-data-default
+           ghc-exceptions
+           ghc-http-client
+           ghc-http-client-tls
+           ghc-http-types
+           ghc-lens
+           ghc-transformers-base
+           ghc-transformers-compat
+           ghc-utf8-string
+           ghc-xml-conduit
+           ghc-xml-hamlet
+           ghc-network
+           ghc-network-uri
+           ghc-optparse-applicative))
     (home-page "http://floss.scru.org/hDAV")
     (synopsis "RFC 4918 WebDAV support")
     (description "This package provides a library for the Web Distributed
@@ -2062,31 +1994,28 @@ Authoring and Versioning (WebDAV) extensions to HTTP as well an executable,
          "1xgy7dzhqjgllqcpyyxs0spdg6vlz2c1sjvni7w7qnsf0ckyw2l8"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-hunit" ,ghc-hunit)
-       ("ghc-aeson" ,ghc-aeson)
-       ("ghc-attoparsec" ,ghc-attoparsec)
-       ("ghc-blaze-builder" ,ghc-blaze-builder)
-       ("ghc-blaze-html" ,ghc-blaze-html)
-       ("ghc-case-insensitive" ,ghc-case-insensitive)
-       ("ghc-conduit" ,ghc-conduit)
-       ("ghc-cookie" ,ghc-cookie)
-       ("ghc-hspec-core" ,ghc-hspec-core)
-       ("ghc-html-conduit" ,ghc-html-conduit)
-       ("ghc-http-types" ,ghc-http-types)
-       ("ghc-network" ,ghc-network)
-       ("ghc-memory" ,ghc-memory)
-       ("ghc-pretty-show" ,ghc-pretty-show)
-       ("ghc-semigroups" ,ghc-semigroups)
-       ("ghc-wai" ,ghc-wai)
-       ("ghc-wai-extra" ,ghc-wai-extra)
-       ("ghc-xml-conduit" ,ghc-xml-conduit)
-       ("ghc-xml-types" ,ghc-xml-types)
-       ("ghc-yesod-core" ,ghc-yesod-core)))
+     (list ghc-hunit
+           ghc-aeson
+           ghc-attoparsec
+           ghc-blaze-builder
+           ghc-blaze-html
+           ghc-case-insensitive
+           ghc-conduit
+           ghc-cookie
+           ghc-hspec-core
+           ghc-html-conduit
+           ghc-http-types
+           ghc-network
+           ghc-memory
+           ghc-pretty-show
+           ghc-semigroups
+           ghc-wai
+           ghc-wai-extra
+           ghc-xml-conduit
+           ghc-xml-types
+           ghc-yesod-core))
     (native-inputs
-     `(("ghc-hspec" ,ghc-hspec)
-       ("ghc-yesod-form" ,ghc-yesod-form)
-       ("ghc-unliftio" ,ghc-unliftio)
-       ("ghc-unliftio-core" ,ghc-unliftio-core)))
+     (list ghc-hspec ghc-yesod-form ghc-unliftio ghc-unliftio-core))
     (home-page "https://www.yesodweb.com")
     (synopsis "Integration testing for WAI/Yesod Applications")
     (description "This package's main goal is to encourage integration
@@ -2111,27 +2040,24 @@ HTML responses using CSS selectors.")
          "138gd5482psq0wbm8s1az672lksi7vbavq6ayiyjkliivf6xpry8"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-wai" ,ghc-wai)
-       ("ghc-http-types" ,ghc-http-types)
-       ("ghc-unix-compat" ,ghc-unix-compat)
-       ("ghc-old-locale" ,ghc-old-locale)
-       ("ghc-file-embed" ,ghc-file-embed)
-       ("ghc-cryptonite" ,ghc-cryptonite)
-       ("ghc-memory" ,ghc-memory)
-       ("ghc-http-date" ,ghc-http-date)
-       ("ghc-blaze-html" ,ghc-blaze-html)
-       ("ghc-blaze-markup" ,ghc-blaze-markup)
-       ("ghc-mime-types" ,ghc-mime-types)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)
-       ("ghc-zlib" ,ghc-zlib)
-       ("ghc-wai-extra" ,ghc-wai-extra)
-       ("ghc-optparse-applicative" ,ghc-optparse-applicative)
-       ("ghc-warp" ,ghc-warp)))
+     (list ghc-wai
+           ghc-http-types
+           ghc-unix-compat
+           ghc-old-locale
+           ghc-file-embed
+           ghc-cryptonite
+           ghc-memory
+           ghc-http-date
+           ghc-blaze-html
+           ghc-blaze-markup
+           ghc-mime-types
+           ghc-unordered-containers
+           ghc-zlib
+           ghc-wai-extra
+           ghc-optparse-applicative
+           ghc-warp))
     (native-inputs
-     `(("ghc-hspec" ,ghc-hspec)
-       ("ghc-network" ,ghc-network)
-       ("ghc-temporary" ,ghc-temporary)
-       ("ghc-mockery" ,ghc-mockery)))
+     (list ghc-hspec ghc-network ghc-temporary ghc-mockery))
     (arguments
      `(#:cabal-revision
        ("1" "1q7zwjasysgbp9rdp75535igd7s6mhi2bnl4pzsn6vbyfw3qnsxd")))
@@ -2163,10 +2089,9 @@ helper functions and datatypes for use outside of WAI.")
              (substitute* '("test/test-cli.hs" "test/cli/core/runner")
                (("dist-newstyle") "dist")))))))
     (inputs
-     `(("ghc-language-javascript" ,ghc-language-javascript)
-       ("ghc-optparse-applicative" ,ghc-optparse-applicative)))
+     (list ghc-language-javascript ghc-optparse-applicative))
     (native-inputs
-     `(("ghc-extra" ,ghc-extra)))
+     (list ghc-extra))
     (home-page "https://github.com/erikd/hjsmin")
     (synopsis "Haskell implementation of a JavaScript minifier")
     (description "This library provides tools reduce the size of
@@ -2188,32 +2113,28 @@ syntactic elements, without changing the semantics.")
          "18f5hm9ncvkzl8bkn39cg841z0k5iqs5w45afsyk9y6k98pjd54p"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-async" ,ghc-async)
-       ("ghc-attoparsec" ,ghc-attoparsec)
-       ("ghc-base64-bytestring" ,ghc-base64-bytestring)
-       ("ghc-blaze-builder" ,ghc-blaze-builder)
-       ("ghc-conduit" ,ghc-conduit)
-       ("ghc-cryptonite" ,ghc-cryptonite)
-       ("ghc-cryptonite-conduit" ,ghc-cryptonite-conduit)
-       ("ghc-css-text" ,ghc-css-text)
-       ("ghc-data-default" ,ghc-data-default)
-       ("ghc-file-embed" ,ghc-file-embed)
-       ("ghc-hashable" ,ghc-hashable)
-       ("ghc-hjsmin" ,ghc-hjsmin)
-       ("ghc-http-types" ,ghc-http-types)
-       ("ghc-memory" ,ghc-memory)
-       ("ghc-mime-types" ,ghc-mime-types)
-       ("ghc-unix-compat" ,ghc-unix-compat)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)
-       ("ghc-wai" ,ghc-wai)
-       ("ghc-wai-app-static" ,ghc-wai-app-static)
-       ("ghc-yesod-core" ,ghc-yesod-core)))
+     (list ghc-async
+           ghc-attoparsec
+           ghc-base64-bytestring
+           ghc-blaze-builder
+           ghc-conduit
+           ghc-cryptonite
+           ghc-cryptonite-conduit
+           ghc-css-text
+           ghc-data-default
+           ghc-file-embed
+           ghc-hashable
+           ghc-hjsmin
+           ghc-http-types
+           ghc-memory
+           ghc-mime-types
+           ghc-unix-compat
+           ghc-unordered-containers
+           ghc-wai
+           ghc-wai-app-static
+           ghc-yesod-core))
     (native-inputs
-     `(("ghc-hspec" ,ghc-hspec)
-       ("ghc-yesod-test" ,ghc-yesod-test)
-       ("ghc-wai-extra" ,ghc-wai-extra)
-       ("ghc-hunit" ,ghc-hunit)
-       ("ghc-rio" ,ghc-rio)))
+     (list ghc-hspec ghc-yesod-test ghc-wai-extra ghc-hunit ghc-rio))
     (home-page "https://www.yesodweb.com/")
     (synopsis "Static file serving subsite for Yesod")
     (description "This package provides a static file serving subsite
@@ -2235,11 +2156,8 @@ for the Yesod Web Framework.")
          "1ifqgyc1ccig5angh5l1iq7vyms4lvi8wzvysg5dw82nml49n02m"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-wai" ,ghc-wai)
-       ("ghc-warp" ,ghc-warp)
-       ("ghc-http-types" ,ghc-http-types)
-       ("ghc-streaming-commons" ,ghc-streaming-commons)
-       ("ghc-async" ,ghc-async)))
+     (list ghc-wai ghc-warp ghc-http-types ghc-streaming-commons
+           ghc-async))
     (home-page "https://hackage.haskell.org/package/wai-handler-launch")
     (synopsis "Launch a Web application in the default browser")
     (description "This package handles cross-platform Web browser
@@ -2270,22 +2188,19 @@ server no longer receives pings, it shuts down.")
            (lambda _
              (invoke "runhaskell" "Setup.hs" "test" "unit-tests"))))))
     (inputs
-     `(("ghc-attoparsec" ,ghc-attoparsec)
-       ("ghc-base-unicode-symbols" ,ghc-base-unicode-symbols)
-       ("ghc-case-insensitive" ,ghc-case-insensitive)
-       ("ghc-http-types" ,ghc-http-types)
-       ("ghc-wai" ,ghc-wai)))
+     (list ghc-attoparsec ghc-base-unicode-symbols ghc-case-insensitive
+           ghc-http-types ghc-wai))
     (native-inputs
-     `(("ghc-network" ,ghc-network)
-       ("ghc-wai-websockets" ,ghc-wai-websockets)
-       ("ghc-warp" ,ghc-warp)
-       ("ghc-websockets" ,ghc-websockets)
-       ("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
-       ("ghc-wai-extra" ,ghc-wai-extra)
-       ("ghc-wai-websockets" ,ghc-wai-websockets)
-       ("ghc-warp" ,ghc-warp)
-       ("ghc-websockets" ,ghc-websockets)))
+     (list ghc-network
+           ghc-wai-websockets
+           ghc-warp
+           ghc-websockets
+           ghc-tasty
+           ghc-tasty-hunit
+           ghc-wai-extra
+           ghc-wai-websockets
+           ghc-warp
+           ghc-websockets))
     (home-page "https://github.com/larskuhtz/wai-cors")
     (synopsis "Cross-Origin Resource Sharing (CORS) for WAI")
     (description "This package provides an implementation of Cross-Origin
@@ -2307,7 +2222,7 @@ aims to be compliant with @url{https://www.w3.org/TR/cors}.")
         (sha256
           (base32 "0w3dmwk03j4n01xkiq8m4sqa27bskh239mpw7m4ihjmkxqcwc5gl"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-network" ,ghc-network)))
+    (inputs (list ghc-network))
     (home-page "https://hackage.haskell.org/package/network-run")
     (synopsis "Simple network runner library")
     (description

@@ -14,6 +14,7 @@
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
+;;; Copyright © 2021 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -49,7 +50,9 @@
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
-  #:use-module (gnu packages dbm)
+  #:use-module (gnu packages databases)
+  #:use-module (gnu packages documentation)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnome)
@@ -99,13 +102,10 @@
                    (("^/usr/bin/env") "env"))
                  #t))))
     (build-system gnu-build-system)
-    (inputs
-     `(("libvorbis" ,libvorbis)
-       ("libogg" ,libogg)
-       ("flac" ,flac)))
+    (propagated-inputs
+     (list flac libogg libvorbis opus))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("python" ,python)))
+     (list pkg-config python))
     (home-page "http://www.mega-nerd.com/libsndfile/")
     (synopsis "Reading and writing files containing sampled sound")
     (description
@@ -127,10 +127,7 @@ for reading and writing new sound file formats.")
     (inherit libsndfile)
     (inputs '())
     (propagated-inputs
-     `(("libvorbis" ,libvorbis)
-       ("libogg" ,libogg)
-       ("flac" ,flac)
-       ("opus" ,opus)))))
+     (list libvorbis libogg flac opus))))
 
 (define-public libsamplerate
   (package
@@ -145,11 +142,9 @@ for reading and writing new sound file formats.")
                "1ha46i0nbibq0pl0pjwcqiyny4hj8lp1bnl4dpxm64zjw9lb2zha"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("automake" ,automake))) ;For up to date 'config.guess' and 'config.sub'.
+     (list pkg-config automake)) ;For up to date 'config.guess' and 'config.sub'.
     (propagated-inputs
-     `(("libsndfile" ,libsndfile)
-       ("fftw" ,fftw)))
+     (list libsndfile fftw))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -191,7 +186,7 @@ rates.")
 (define-public pulseaudio
   (package
     (name "pulseaudio")
-    (version "14.0")
+    (version "15.0")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -199,7 +194,7 @@ rates.")
                    name "-" version ".tar.xz"))
              (sha256
               (base32
-               "0qf20rgg0ysrnvg3359j56ndls07qmfn5rsy9r85bc42jdfpfd58"))
+               "1851rg4h6sjwanvd294hn52z321rc6vbs4gbfrlw53597dx8h2x4"))
              (modules '((guix build utils)))
              (snippet
               ;; Disable console-kit support by default since it's deprecated
@@ -212,14 +207,19 @@ rates.")
              (patches (search-patches
                        "pulseaudio-fix-mult-test.patch"
                        "pulseaudio-longer-test-timeout.patch"))))
-    (build-system gnu-build-system)
+    (build-system meson-build-system)
     (arguments
-     `(#:configure-flags (list "--localstatedir=/var" ;"--sysconfdir=/etc"
-                               "--disable-oss-output"
-                               "--enable-bluez5"
-                               (string-append "--with-udev-rules-dir="
-                                              (assoc-ref %outputs "out")
-                                              "/lib/udev/rules.d"))
+     `(#:configure-flags
+       (let ((out (assoc-ref %outputs "out")))
+         (list "-Doss-output=disabled"
+               "-Dlocalstatedir=/var"
+               (string-append "-Dudevrulesdir="
+                              out "/lib/udev/rules.d")
+               ;; Ensure the RUNPATH contains all installed library locations.
+               (string-append "-Dc_link_args=-Wl,-rpath="
+                              out "/lib/pulseaudio:"
+                              out "/lib:"
+                              out "/lib/pulse-" ,version "/modules")))
        #:phases (modify-phases %standard-phases
                  (add-before 'check 'pre-check
                    (lambda _
@@ -231,28 +231,28 @@ rates.")
                      (setenv "CK_DEFAULT_TIMEOUT" "120")
                      #t)))))
     (inputs
-     ;; TODO: Add optional inputs (GTK+?).
-     `(("alsa-lib" ,alsa-lib)
-       ("bluez" ,bluez)
-       ("sbc" ,sbc)
-       ("speexdsp" ,speexdsp)
-       ("libsndfile" ,libsndfile)
-       ("jack" ,jack-1) ; For routing the output to jack.
-       ("dbus" ,dbus)
-       ("glib" ,glib)
-       ("libltdl" ,libltdl)
-       ("fftwf" ,fftwf)
-       ("avahi" ,avahi)
-
-       ;; For the optional X11 modules.
-       ("libice" ,libice)
-       ("libsm" ,libsm)
-       ("libxcb" ,libxcb)
-       ("libxtst" ,libxtst)
-
-       ("eudev" ,eudev)))         ;for the detection of hardware audio devices
+     (list alsa-lib
+           bluez
+           sbc
+           speexdsp
+           libsndfile
+           jack-1 ; For routing the output to jack.
+           dbus
+           glib
+           libltdl
+           fftwf
+           avahi
+           webrtc-audio-processing
+           ;; For the optional X11 modules.
+           libice
+           libsm
+           libxcb
+           libxtst
+           elogind
+           eudev))         ;for the detection of hardware audio devices
     (native-inputs
      `(("check" ,check)
+       ("doxygen" ,doxygen)
        ("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin")
        ("m4" ,m4)
@@ -260,9 +260,8 @@ rates.")
        ("perl-xml-parser" ,perl-xml-parser)
        ("pkg-config" ,pkg-config)))
     (propagated-inputs
-     ;; 'libpulse*.la' contain `-lgdbm' and `-lcap', so propagate them.
-     `(("libcap" ,libcap)
-       ("gdbm" ,gdbm)))
+     ;; 'libpulse*.la' contain `-ltdb' and `-lcap', so propagate them.
+     (list libcap tdb))
     (home-page "http://www.pulseaudio.org/")
     (synopsis "Sound server")
     (description
@@ -293,14 +292,13 @@ sound server.")
                "0yjfiwpaydh5s8v3l78dhwhbsmcl1xsq3p8rvz80m9zinp1p4ayf"))))
     (build-system glib-or-gtk-build-system)
     (inputs
-     `(("adwaita-icon-theme" ,adwaita-icon-theme)          ;hard-coded theme
-       ("gtkmm" ,gtkmm)
-       ("json-glib" ,json-glib)
-       ("libcanberra" ,libcanberra)
-       ("pulseaudio" ,pulseaudio)))
+     (list adwaita-icon-theme ;hard-coded theme
+           gtkmm-3
+           json-glib
+           libcanberra
+           pulseaudio))
     (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+     (list intltool pkg-config))
     (home-page "https://www.freedesktop.org/software/pulseaudio/pavucontrol/")
     (synopsis "PulseAudio volume control")
     (description
@@ -335,9 +333,9 @@ easily control the volume of all clients, sinks, etc.")
                (("/usr") ""))))
          (delete 'configure)))) ; There's no configure phase.
     (inputs
-     `(("pulseaudio" ,pulseaudio)))
+     (list pulseaudio))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://github.com/falconindy/ponymix")
     (synopsis "Console-based PulseAudio mixer")
     (description "Ponymix is a PulseAudio mixer and volume controller with a
@@ -370,7 +368,7 @@ sinks.")
                   (string-append pulse "/lib/libpulse.so.0")))
                #t))))))
     (inputs
-     `(("pulseaudio" ,pulseaudio)))
+     (list pulseaudio))
     (home-page "https://github.com/GeorgeFilipkin/pulsemixer/")
     (synopsis "Command-line and curses mixer for PulseAudio")
     (description "Pulsemixer is a PulseAudio mixer with command-line and
@@ -397,20 +395,20 @@ curses-style interfaces.")
       (build-system python-build-system)
       (arguments `(#:python ,python-2))
       (inputs
-       `(("python2-chardet" ,python2-chardet)
-         ("python2-dbus" ,python2-dbus)
-         ("python2-docopt" ,python2-docopt)
-         ("python2-futures" ,python2-futures)
-         ("python2-pygobject" ,python2-pygobject)
-         ("python2-lxml" ,python2-lxml)
-         ("python2-netifaces" ,python2-netifaces)
-         ("python2-notify2" ,python2-notify2)
-         ("python2-protobuf" ,python2-protobuf)
-         ("python2-psutil" ,python2-psutil)
-         ("python2-requests" ,python2-requests)
-         ("python2-pyroute2" ,python2-pyroute2)
-         ("python2-setproctitle" ,python2-setproctitle)
-         ("python2-zeroconf" ,python2-zeroconf)))
+       (list python2-chardet
+             python2-dbus
+             python2-docopt
+             python2-futures
+             python2-pygobject
+             python2-lxml
+             python2-netifaces
+             python2-notify2
+             python2-protobuf
+             python2-psutil
+             python2-requests
+             python2-pyroute2
+             python2-setproctitle
+             python2-zeroconf))
       (home-page "https://github.com/masmu/pulseaudio-dlna")
       (synopsis "Stream audio to DLNA/UPnP and Chromecast devices")
       (description "This lightweight streaming server brings DLNA/UPnP and
@@ -454,8 +452,7 @@ install one or more of the following packages alongside pulseaudio-dlna:
            (lambda _
              (mkdir-p (string-append (assoc-ref %outputs "out") "/bin")))))))
     (inputs
-     `(("boost" ,boost)
-       ("pulseaudio" ,pulseaudio)))
+     (list boost pulseaudio))
     (home-page "https://github.com/cdemoulins/pamixer")
     (synopsis "PulseAudio command line mixer")
     (description
@@ -486,15 +483,9 @@ volume levels of the sinks (get, set, decrease, increase, toggle mute, etc).")
              (delete-file "bootstrap.sh")
              #t)))))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf automake pkg-config))
     (inputs
-     `(("avahi" ,avahi)
-       ("gtk+" ,gtk+)
-       ("libnotify" ,libnotify)
-       ("libx11" ,libx11)
-       ("pulseaudio" ,pulseaudio)))
+     (list avahi gtk+ libnotify libx11 pulseaudio))
     (home-page "https://github.com/christophgysin/pasystray")
     (synopsis "PulseAudio controller for the system tray")
     (description "@command{pasystray} enables control of various
@@ -516,11 +507,9 @@ README.md for a detailed list of features.")
          "189z5p20hk0xv9vwvym293503j4pwl03xqk9hl7cl6dwgv0l7wkf"))))
     (build-system meson-build-system)
     (native-inputs
-     `(("gettext" ,gettext-minimal)
-       ("pkg-config" ,pkg-config)))
+     (list gettext-minimal pkg-config))
     (inputs
-     `(("gtkmm" ,gtkmm)
-       ("pulseaudio" ,pulseaudio)))
+     (list gtkmm-3 pulseaudio))
     (home-page "https://freedesktop.org/software/pulseaudio/paprefs/")
     (synopsis "Simple GTK based configuration dialog for the PulseAudio sound
 server")
@@ -548,8 +537,8 @@ module-gsettings is loaded in the sound server.")
      ;; No tests.
      '(#:tests? #f))
     (inputs
-     `(;; TODO: Package VST to build the corresponding plugin.
-       ("pulseaudio" ,pulseaudio)))
+     (list ;; TODO: Package VST to build the corresponding plugin.
+           pulseaudio))
     (home-page "https://github.com/werman/noise-suppression-for-voice")
     (synopsis "Real-time Noise suppression plugin based on Xiph's RNNoise")
     (description "The plugin is meant to suppress a wide range of noise
@@ -611,7 +600,7 @@ The plugin is made to work with 1 or 2 channels (ladspa plugin),
              (with-directory-excursion "src/github.com/lawl/NoiseTorch"
                (invoke "go" "generate")))))))
     (inputs
-     `(("rnnoise" ,rnnoise)))
+     (list rnnoise))
     (home-page "https://github.com/lawl/NoiseTorch")
     (synopsis "Real-time microphone noise suppression")
     (description "NoiseTorch creates a virtual PulseAudio microphone that

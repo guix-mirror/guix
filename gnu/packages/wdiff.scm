@@ -47,9 +47,9 @@
                         (("#! /bin/sh")
                          (string-append "#!" (which "sh")))))))))
     (native-inputs
-     `(("which" ,which)
-       ;; For some reason wdiff.info gets rebuilt.
-       ("texinfo" ,texinfo)))
+     (list which
+           ;; For some reason wdiff.info gets rebuilt.
+           texinfo))
     (home-page "https://www.gnu.org/software/wdiff/")
     (synopsis "Word difference finder")
     (description

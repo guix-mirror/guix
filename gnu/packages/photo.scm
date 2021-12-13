@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2017, 2019, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2017 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2021 Efraim Flashner <efraim@flashner.co.il>
@@ -41,6 +41,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages build-tools)
   #:use-module (gnu packages check)
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
@@ -103,9 +104,7 @@
                 "15p7sssg6vmqbm5xnc4j5dr89d7gl7y5qyq44a240yl5aqkjnybw"))))
     (build-system python-build-system)
     (native-inputs
-     `(("file" ,file)
-       ("intltool" ,intltool)
-       ("gobject-introspection" ,gobject-introspection)))
+     (list file intltool gobject-introspection))
     (inputs
      `(("gdk-pixbuf" ,gdk-pixbuf)
        ("gexiv2" ,gexiv2)
@@ -156,13 +155,13 @@
                                               "/bin"))
                                        ":"))
                    (gi-typelib-path   (getenv "GI_TYPELIB_PATH"))
-                   (python-path       (getenv "PYTHONPATH")))
+                   (python-path       (getenv "GUIX_PYTHONPATH")))
                (for-each
                 (lambda (program)
                   (wrap-program program
                     `("PATH" ":" prefix (,path))
                     `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))
-                    `("PYTHONPATH"             ":" prefix (,python-path))))
+                    `("GUIX_PYTHONPATH"             ":" prefix (,python-path))))
                 (map (lambda (name)
                        (string-append out "/bin/" name))
                      '("analyze-pv-structure"
@@ -187,11 +186,11 @@ cards and generate meaningful file and folder names.")
                 "18wlsvj6c1rv036ph3695kknpgzc3lk2ikgshy8417yfl8ykh2hz"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("libjpeg" ,libjpeg-turbo)))     ;for lossy DNGs and old Kodak cameras
+     (list libjpeg-turbo))     ;for lossy DNGs and old Kodak cameras
     (propagated-inputs
-     `(("lcms" ,lcms)))                 ;for color profiles
+     (list lcms))                 ;for color profiles
     (home-page "https://www.libraw.org")
     (synopsis "Raw image decoder")
     (description
@@ -249,15 +248,12 @@ data as produced by digital cameras.")
                (base32
                 "1ms06b3dj1p33aypcb16gg5pn7fylbylsk9cnnqa0j29qiw59f7q"))))
     (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs (list pkg-config))
     (inputs
-     `(("libjpeg-turbo" ,libjpeg-turbo)
-       ("libltdl" ,libltdl)
-       ("libusb" ,libusb)
-       ("libxml2" ,libxml2)))
+     (list libjpeg-turbo libltdl libusb libxml2))
     (propagated-inputs
-     `(;; The .pc refers to libexif.
-       ("libexif" ,libexif)))
+     (list ;; The .pc refers to libexif.
+           libexif))
     (home-page "http://www.gphoto.org/proj/libgphoto2/")
     (synopsis "Accessing digital cameras")
     (description
@@ -281,13 +277,9 @@ from digital cameras.")
                 "0f4d3q381jnnkcqkb2dj1k709skp65qihl5xm80zandvl69lw19h"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("readline" ,readline)
-       ("libjpeg-turbo" ,libjpeg-turbo)
-       ("popt" ,popt)
-       ("libexif" ,libexif)
-       ("libgphoto2" ,libgphoto2)))
+     (list readline libjpeg-turbo popt libexif libgphoto2))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
@@ -368,10 +360,7 @@ and a wide variety of other metadata.")
                 "12cv4886l1czfjwy7k6ipgf3zjksgwhdjzr2s9fdg33vqcv2hlrv"))))
     (build-system cmake-build-system)
     (inputs
-     `(("libjpeg" ,libjpeg-turbo)
-       ("libpng" ,libpng)
-       ("libtiff" ,libtiff)
-       ("zlib" ,zlib)))
+     (list libjpeg-turbo libpng libtiff zlib))
     (home-page "http://panotools.sourceforge.net/")
     (synopsis "Library for panoramic images")
     (description
@@ -448,9 +437,9 @@ scene to produce an image that looks much like a tone-mapped image.")
         '(#:configure-flags '("-DBUILD_FOR_SSE=OFF" "-DBUILD_FOR_SSE2=OFF")))
        #:tests? #f)) ; There are no tests to run.
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("glib" ,glib)))
+     (list glib))
     (home-page "https://sourceforge.net/projects/lensfun/")
     (synopsis "Library to correct optical lens defects with a lens database")
     (description "Digital photographs are not ideal.  Of course, the better is
@@ -503,18 +492,12 @@ photographic equipment.")
              (substitute* "CMakeLists.txt"
                (("\\$\\{LLVM_INSTALL_PREFIX\\}")
                 (assoc-ref %build-inputs "clang")))))
-         (add-before 'configure 'set-LDFLAGS-and-CPATH
-           (lambda* (#:key inputs outputs #:allow-other-keys)
+         (add-before 'configure 'set-LDFLAGS
+           (lambda* (#:key outputs #:allow-other-keys)
              (setenv "LDFLAGS"
                      (string-append
                       "-Wl,-rpath="
-                      (assoc-ref outputs "out") "/lib/darktable"))
-
-             ;; Ensure the OpenEXR headers are found.
-             (setenv "CPATH"
-                     (string-append (assoc-ref inputs "ilmbase")
-                                    "/include/OpenEXR:"
-                                    (or (getenv "CPATH") "")))))
+                      (assoc-ref outputs "out") "/lib/darktable"))))
          (add-after 'install 'wrap-program
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (wrap-program (string-append (assoc-ref outputs "out")
@@ -549,7 +532,7 @@ photographic equipment.")
        ("graphicsmagick" ,graphicsmagick)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("gtk+" ,gtk+)
-       ("ilmbase" ,ilmbase)
+       ("imath" ,imath)
        ("iso-codes" ,iso-codes) ;optional, for language names in the preferences
        ("json-glib" ,json-glib)
        ("lcms" ,lcms)
@@ -561,14 +544,14 @@ photographic equipment.")
        ("libpng" ,libpng)
        ("librsvg" ,librsvg)
        ("libsecret" ,libsecret) ;optional, for storing passwords
-       ("libsoup" ,libsoup)
+       ("libsoup" ,libsoup-minimal-2)
        ("libtiff" ,libtiff)
        ("libwebp" ,libwebp) ;optional, for WebP support
        ("libxml2" ,libxml2)
        ("libxslt" ,libxslt)
        ("lua" ,lua) ;optional, for plugins
        ("opencl-icd-loader" ,opencl-icd-loader) ;optional, for OpenCL support
-       ("openexr" ,openexr-2) ;optional, for EXR import/export
+       ("openexr" ,openexr) ;optional, for EXR import/export
        ("openjpeg" ,openjpeg) ;optional, for JPEG2000 export
        ("osm-gps-map" ,osm-gps-map) ;optional, for geotagging view
        ("pugixml" ,pugixml)
@@ -613,12 +596,9 @@ and enhance them.")
                        (string-append "PREFIX=" out)
                        "Photoflare.pro")))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("qttools" ,qttools)))
+     (list pkg-config qttools))
     (inputs
-     `(("graphicsmagick" ,graphicsmagick)
-       ("libomp" ,libomp)
-       ("qtbase" ,qtbase-5)))
+     (list graphicsmagick libomp qtbase-5))
     (home-page "https://photoflare.io")
     (synopsis "Quick, simple but powerful image editor")
     (description "Photoflare is a cross-platform image editor with an aim
@@ -645,6 +625,7 @@ such as Batch image processing.")
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
+       #:meson ,meson-0.59                     ;fails to build with Meson 0.60
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'skip-gtk-update-icon-cache
@@ -658,10 +639,10 @@ such as Batch image processing.")
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out               (assoc-ref outputs "out"))
                    (gi-typelib-path   (getenv "GI_TYPELIB_PATH"))
-                   (python-path       (getenv "PYTHONPATH")))
+                   (python-path       (getenv "GUIX_PYTHONPATH")))
                (wrap-program (string-append out "/bin/entangle")
                  `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))
-                 `("PYTHONPATH" ":" prefix (,python-path))))
+                 `("GUIX_PYTHONPATH" ":" prefix (,python-path))))
              #t)))))
     (native-inputs
      `(("cmake" ,cmake)
@@ -673,18 +654,18 @@ such as Batch image processing.")
        ("pkg-config" ,pkg-config)
        ("xmllint" ,libxml2)))
     (inputs
-     `(("gdk-pixbuf" ,gdk-pixbuf)
-       ("gexiv2" ,gexiv2)
-       ("gst-plugins-base" ,gst-plugins-base)
-       ("gstreamer" ,gstreamer)
-       ("gtk+" ,gtk+)
-       ("lcms" ,lcms)
-       ("libgphoto2" ,libgphoto2)
-       ("libgudev" ,libgudev)
-       ("libpeas" ,libpeas)
-       ("libraw" ,libraw)
-       ("python" ,python)
-       ("python-pygobject" ,python-pygobject)))
+     (list gdk-pixbuf
+           gexiv2
+           gst-plugins-base
+           gstreamer
+           gtk+
+           lcms
+           libgphoto2
+           libgudev
+           libpeas
+           libraw
+           python
+           python-pygobject))
     (home-page "https://entangle-photo.org/")
     (synopsis "Camera control and capture")
     (description
@@ -792,14 +773,14 @@ a complete panorama and stitch any series of overlapping pictures.")
              "-O3"
              "-DCACHE_NAME_SUFFIX=\"\"")))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
      `(("expat" ,expat)
        ("fftw" ,fftwf)
        ("glib" ,glib)
        ("glibmm" ,glibmm)
        ("gtk+" ,gtk+)
-       ("gtkmm" ,gtkmm)
+       ("gtkmm" ,gtkmm-3)
        ("lcms" ,lcms)
        ("lensfun" ,lensfun)
        ("libcanberra" ,libcanberra)

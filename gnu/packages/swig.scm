@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018, 2021 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
@@ -35,7 +35,7 @@
 (define-public swig
   (package
     (name "swig")
-    (version "4.0.1")
+    (version "4.0.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/" name "/" name "/"
@@ -43,25 +43,15 @@
                                  name "-" version ".tar.gz"))
              (sha256
               (base32
-               "1ac7g0gd8ndwv3ybqn5vjgqxa7090bby4db164a7mn9ssp8b803s"))))
+               "1z06m5zv87mha6hvys1iay810ghc1jngilfby1ms2n4d1mryjfym"))))
     (build-system gnu-build-system)
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'workaround-gcc-bug
-           (lambda _
-             ;; XXX: Don't add the -isystem flag, or GCCs #include_next
-             ;; won't be able to find <stdlib.h>.
-             (substitute* "configure"
-               (("-isystem ") "-I"))
-             #t)))))
-    (native-inputs `(("boost" ,boost)
-                     ("pcre" ,pcre "bin")       ;for 'pcre-config'
-                     ;; The following are for tests and examples:
-                     ("guile" ,guile-3.0)
-                     ("perl" ,perl)))
+    (native-inputs (list boost
+                         `(,pcre "bin") ;for 'pcre-config'
+                         ;; The following are for tests and examples:
+                         guile-3.0
+                         perl))
                      ;;("python" ,python-wrapper)
-    (inputs `(("pcre" ,pcre)))
+    (inputs (list pcre))
     (home-page "http://swig.org/")
     (synopsis
      "Interface compiler that connects C/C++ code to higher-level languages")

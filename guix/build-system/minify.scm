@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,7 +21,8 @@
   #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module (guix packages)
-  #:use-module (guix derivations)
+  #:use-module (guix gexp)
+  #:use-module (guix monads)
   #:use-module (guix search-paths)
   #:use-module (guix build-system)
   #:use-module (guix build-system gnu)
@@ -54,7 +56,7 @@
                 #:rest arguments)
   "Return a bag for NAME."
   (define private-keywords
-    '(#:source #:target #:inputs #:native-inputs))
+    '(#:target #:inputs #:native-inputs))
 
   (bag
     (name name)
@@ -70,11 +72,11 @@
     (build minify-build)
     (arguments (strip-keyword-arguments private-keywords arguments))))
 
-(define* (minify-build store name inputs
+(define* (minify-build name inputs
                        #:key
+                       source
                        (javascript-files #f)
-                       (phases '(@ (guix build minify-build-system)
-                                   %standard-phases))
+                       (phases '%standard-phases)
                        (outputs '("out"))
                        (system (%current-system))
                        search-paths
@@ -84,38 +86,24 @@
                                   (guix build utils))))
   "Build SOURCE with INPUTS."
   (define builder
-    `(begin
-       (use-modules ,@modules)
-       (minify-build #:name ,name
-                     #:source ,(match (assoc-ref inputs "source")
-                                 (((? derivation? source))
-                                  (derivation->output-path source))
-                                 ((source)
-                                  source)
-                                 (source
-                                  source))
-                     #:javascript-files ,javascript-files
-                     #:phases ,phases
-                     #:outputs %outputs
-                     #:search-paths ',(map search-path-specification->sexp
-                                           search-paths)
-                     #:inputs %build-inputs)))
+    (with-imported-modules imported-modules
+      #~(begin
+          (use-modules #$@(sexp->gexp modules))
+          (minify-build #:name #$name
+                        #:source #+source
+                        #:javascript-files #$javascript-files
+                        #:phases #$phases
+                        #:outputs #$(outputs->gexp outputs)
+                        #:search-paths '#$(sexp->gexp
+                                           (map search-path-specification->sexp
+                                                search-paths))
+                        #:inputs #$(input-tuples->gexp inputs)))))
 
-  (define guile-for-build
-    (match guile
-      ((? package?)
-       (package-derivation store guile system #:graft? #f))
-      (#f                               ; the default
-       (let* ((distro (resolve-interface '(gnu packages commencement)))
-              (guile  (module-ref distro 'guile-final)))
-         (package-derivation store guile system #:graft? #f)))))
-
-  (build-expression->derivation store name builder
-                                #:inputs inputs
-                                #:system system
-                                #:modules imported-modules
-                                #:outputs outputs
-                                #:guile-for-build guile-for-build))
+  (mlet %store-monad ((guile (package->derivation (or guile (default-guile))
+                                                  system #:graft? #f)))
+    (gexp->derivation name builder
+                      #:system system
+                      #:guile-for-build guile)))
 
 (define minify-build-system
   (build-system

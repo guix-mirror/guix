@@ -1,12 +1,12 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2015, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2015, 2018, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2016, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Sree Harsha Totakura <sreeharsha@totakura.in>
 ;;; Copyright © 2015, 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -45,34 +45,32 @@
 ;;; This module has been separated from (gnu packages databases) to reduce the
 ;;; number of module references for core packages.
 
+(define (sqlite-uri version year)
+  (let ((numeric-version
+         (match (string-split version #\.)
+           ((first-digit other-digits ...)
+            (string-append first-digit
+                           (string-pad-right
+                            (string-concatenate
+                             (map (cut string-pad <> 2 #\0)
+                                  other-digits))
+                            6 #\0))))))
+    (string-append "https://sqlite.org/" (number->string year)
+                   "/sqlite-autoconf-" numeric-version ".tar.gz")))
+
 (define-public sqlite
   (package
    (name "sqlite")
-   (version "3.31.1")
+   (version "3.36.0")
    (source (origin
             (method url-fetch)
-            (uri (let ((numeric-version
-                        (match (string-split version #\.)
-                          ((first-digit other-digits ...)
-                           (string-append first-digit
-                                          (string-pad-right
-                                           (string-concatenate
-                                            (map (cut string-pad <> 2 #\0)
-                                                 other-digits))
-                                           6 #\0))))))
-                   (string-append "https://sqlite.org/2020/sqlite-autoconf-"
-                                  numeric-version ".tar.gz")))
+            (uri (sqlite-uri version 2021))
+            (patches (search-patches "sqlite-hurd.patch"))
             (sha256
              (base32
-              "1bj936svd8i5g25xd1bj52hj4zca01fgl3sqkj86z9q5pkz4wa32"))))
-   (replacement sqlite/fixed)
+              "1qxwkfvd185dfcqbakrzikrsw6ffr5jp1gl3dch9dsdyjvmw745x"))))
    (build-system gnu-build-system)
-   (inputs `(("readline" ,readline)))
-   (native-inputs (if (hurd-target?)
-                      ;; TODO move into origin on the next rebuild cycle.
-                      `(("hurd-locking-mode.patch"
-                         ,@(search-patches "sqlite-hurd.patch")))
-                      '()))
+   (inputs (list readline))
    (outputs '("out" "static"))
    (arguments
     `(#:configure-flags
@@ -80,25 +78,13 @@
       ;; -DSQLITE_ENABLE_UNLOCK_NOTIFY and -DSQLITE_ENABLE_DBSTAT_VTAB
       ;; to CFLAGS.  GNU Icecat will refuse to use the system SQLite
       ;; unless these options are enabled.
-      (list (string-append "CFLAGS=-O2 -DSQLITE_SECURE_DELETE "
+      (list (string-append "CFLAGS=-O2 -g -DSQLITE_SECURE_DELETE "
                            "-DSQLITE_ENABLE_FTS3 "
                            "-DSQLITE_ENABLE_UNLOCK_NOTIFY "
                            "-DSQLITE_ENABLE_DBSTAT_VTAB "
                            ;; Column metadata is required by GNU Jami and Qt, et.al.
                            "-DSQLITE_ENABLE_COLUMN_METADATA"))
       #:phases (modify-phases %standard-phases
-                 ;; TODO: remove in the next rebuild cycle
-                 ,@(if (hurd-target?)
-                       `((add-after 'unpack 'patch-sqlite/hurd
-                           (lambda* (#:key inputs native-inputs
-                                     #:allow-other-keys)
-                             (let ((patch (assoc-ref
-                                           (if ,(%current-target-system)
-                                               native-inputs
-                                               inputs)
-                                           "hurd-locking-mode.patch")))
-                               (invoke "patch" "-p1" "--force" "-i" patch)))))
-                       '())
                  (add-after 'install 'move-static-library
                    (lambda* (#:key outputs #:allow-other-keys)
                      (let* ((out    (assoc-ref outputs "out"))
@@ -123,23 +109,13 @@ widely deployed SQL database engine in the world.  The source code for SQLite
 is in the public domain.")
    (license license:public-domain)))
 
-(define-public sqlite/fixed
+(define-public sqlite-3.33
   (package
     (inherit sqlite)
-    (version "3.32.3")
+    (version "3.33.0")
     (source (origin
               (method url-fetch)
-              (uri (let ((numeric-version
-                          (match (string-split version #\.)
-                            ((first-digit other-digits ...)
-                             (string-append first-digit
-                                            (string-pad-right
-                                             (string-concatenate
-                                              (map (cut string-pad <> 2 #\0)
-                                                   other-digits))
-                                             6 #\0))))))
-                     (string-append "https://sqlite.org/2020/sqlite-autoconf-"
-                                    numeric-version ".tar.gz")))
+              (uri (sqlite-uri version 2020))
               (sha256
                (base32
                 "0rlbaq177gcgk5dswd3akbhv2nvvzljrbhgy18hklbhw7h90f5d3"))))))

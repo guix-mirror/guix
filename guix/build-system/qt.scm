@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
@@ -23,9 +23,10 @@
 (define-module (guix build-system qt)
   #:use-module (guix store)
   #:use-module (guix utils)
+  #:use-module (guix gexp)
+  #:use-module (guix monads)
   #:use-module ((guix build qt-utils)
                 #:select (%qt-wrap-excluded-inputs))
-  #:use-module (guix derivations)
   #:use-module (guix search-paths)
   #:use-module (guix build-system)
   #:use-module (guix build-system cmake)
@@ -75,7 +76,7 @@
                 #:rest arguments)
   "Return a bag for NAME."
   (define private-keywords
-    `(#:source #:cmake #:inputs #:native-inputs #:outputs
+    `(#:cmake #:inputs #:native-inputs #:outputs
       ,@(if target '() '(#:target))))
 
   (bag
@@ -109,8 +110,9 @@
     (arguments (strip-keyword-arguments private-keywords arguments))))
 
 
-(define* (qt-build store name inputs
-                   #:key (guile #f)
+(define* (qt-build name inputs
+                   #:key
+                   source (guile #f)
                    (outputs '("out")) (configure-flags ''())
                    (search-paths '())
                    (make-flags ''())
@@ -125,8 +127,7 @@
                    (strip-flags ''("--strip-debug"))
                    (strip-directories ''("lib" "lib64" "libexec"
                                          "bin" "sbin"))
-                   (phases '(@ (guix build qt-build-system)
-                               %standard-phases))
+                   (phases '%standard-phases)
                    (qt-wrap-excluded-outputs ''())
                    (qt-wrap-excluded-inputs %qt-wrap-excluded-inputs)
                    (system (%current-system))
@@ -136,61 +137,50 @@
   "Build SOURCE using CMAKE, and with INPUTS. This assumes that SOURCE
 provides a 'CMakeLists.txt' file as its build system."
   (define builder
-    `(begin
-       (use-modules ,@modules)
-       (qt-build #:source ,(match (assoc-ref inputs "source")
-                                  (((? derivation? source))
-                                   (derivation->output-path source))
-                                  ((source)
-                                   source)
-                                  (source
-                                   source))
-                 #:system ,system
-                 #:outputs %outputs
-                 #:inputs %build-inputs
-                 #:search-paths ',(map search-path-specification->sexp
-                                       search-paths)
-                 #:phases ,phases
-                 #:qt-wrap-excluded-outputs ,qt-wrap-excluded-outputs
-                 #:qt-wrap-excluded-inputs ,qt-wrap-excluded-inputs
-                 #:configure-flags ,configure-flags
-                 #:make-flags ,make-flags
-                 #:out-of-source? ,out-of-source?
-                 #:build-type ,build-type
-                 #:tests? ,tests?
-                 #:test-target ,test-target
-                 #:parallel-build? ,parallel-build?
-                 #:parallel-tests? ,parallel-tests?
-                 #:validate-runpath? ,validate-runpath?
-                 #:patch-shebangs? ,patch-shebangs?
-                 #:strip-binaries? ,strip-binaries?
-                 #:strip-flags ,strip-flags
-                 #:strip-directories ,strip-directories)))
+    (with-imported-modules imported-modules
+      #~(begin
+          (use-modules #$@(sexp->gexp modules))
+          (qt-build #:source #+source
+                    #:system #$system
+                    #:outputs #$(outputs->gexp outputs)
+                    #:inputs #$(input-tuples->gexp inputs)
+                    #:search-paths '#$(sexp->gexp
+                                       (map search-path-specification->sexp
+                                            search-paths))
+                    #:phases #$(if (pair? phases)
+                                   (sexp->gexp phases)
+                                   phases)
+                    #:qt-wrap-excluded-outputs #$qt-wrap-excluded-outputs
+                    #:qt-wrap-excluded-inputs #$qt-wrap-excluded-inputs
+                    #:configure-flags #$configure-flags
+                    #:make-flags #$make-flags
+                    #:out-of-source? #$out-of-source?
+                    #:build-type #$build-type
+                    #:tests? #$tests?
+                    #:test-target #$test-target
+                    #:parallel-build? #$parallel-build?
+                    #:parallel-tests? #$parallel-tests?
+                    #:validate-runpath? #$validate-runpath?
+                    #:patch-shebangs? #$patch-shebangs?
+                    #:strip-binaries? #$strip-binaries?
+                    #:strip-flags #$strip-flags
+                    #:strip-directories #$strip-directories))))
 
-  (define guile-for-build
-    (match guile
-      ((? package?)
-       (package-derivation store guile system #:graft? #f))
-      (#f                                         ; the default
-       (let* ((distro (resolve-interface '(gnu packages commencement)))
-              (guile  (module-ref distro 'guile-final)))
-         (package-derivation store guile system #:graft? #f)))))
-
-  (build-expression->derivation store name builder
-                                #:system system
-                                #:inputs inputs
-                                #:modules imported-modules
-                                #:outputs outputs
-                                #:guile-for-build guile-for-build))
+  (mlet %store-monad ((guile (package->derivation (or guile (default-guile))
+                                                  system #:graft? #f)))
+    (gexp->derivation name builder
+                      #:system system
+                      #:guile-for-build guile)))
 
 
 ;;;
 ;;; Cross-compilation.
 ;;;
 
-(define* (qt-cross-build store name
+(define* (qt-cross-build name
                          #:key
-                         target native-drvs target-drvs
+                         source target
+                         build-inputs target-inputs host-inputs
                          (guile #f)
                          (outputs '("out"))
                          (configure-flags ''())
@@ -199,7 +189,7 @@ provides a 'CMakeLists.txt' file as its build system."
                          (make-flags ''())
                          (out-of-source? #t)
                          (build-type "RelWithDebInfo")
-                         (tests? #f) ; nothing can be done
+                         (tests? #f)              ; nothing can be done
                          (test-target "test")
                          (parallel-build? #t) (parallel-tests? #f)
                          (validate-runpath? #t)
@@ -209,8 +199,7 @@ provides a 'CMakeLists.txt' file as its build system."
                                          "--enable-deterministic-archives"))
                          (strip-directories ''("lib" "lib64" "libexec"
                                                "bin" "sbin"))
-                         (phases '(@ (guix build qt-build-system)
-                                     %standard-phases))
+                         (phases '%standard-phases)
                          (system (%current-system))
                          (build (nix-system->gnu-triplet system))
                          (imported-modules %qt-build-system-modules)
@@ -220,77 +209,53 @@ provides a 'CMakeLists.txt' file as its build system."
 with INPUTS.  This assumes that SOURCE provides a 'CMakeLists.txt' file as its
 build system."
   (define builder
-    `(begin
-       (use-modules ,@modules)
-       (let ()
-         (define %build-host-inputs
-           ',(map (match-lambda
-                    ((name (? derivation? drv) sub ...)
-                     `(,name . ,(apply derivation->output-path drv sub)))
-                    ((name path)
-                     `(,name . ,path)))
-                  native-drvs))
+    (with-imported-modules imported-modules
+      #~(begin
+          (use-modules #$@(sexp->gexp modules))
 
-         (define %build-target-inputs
-           ',(map (match-lambda
-                    ((name (? derivation? drv) sub ...)
-                     `(,name . ,(apply derivation->output-path drv sub)))
-                    ((name (? package? pkg) sub ...)
-                     (let ((drv (package-cross-derivation store pkg
-                                                          target system)))
-                       `(,name . ,(apply derivation->output-path drv sub))))
-                    ((name path)
-                     `(,name . ,path)))
-                  target-drvs))
+          (define %build-host-inputs
+            #+(input-tuples->gexp build-inputs))
 
-         (qt-build #:source ,(match (assoc-ref native-drvs "source")
-                                    (((? derivation? source))
-                                     (derivation->output-path source))
-                                    ((source)
-                                     source)
-                                    (source
-                                     source))
-                   #:system ,system
-                   #:build ,build
-                   #:target ,target
-                   #:outputs %outputs
-                   #:inputs %build-target-inputs
-                   #:native-inputs %build-host-inputs
-                   #:search-paths ',(map search-path-specification->sexp
-                                         search-paths)
-                   #:native-search-paths ',(map
-                                            search-path-specification->sexp
-                                            native-search-paths)
-                   #:phases ,phases
-                   #:configure-flags ,configure-flags
-                   #:make-flags ,make-flags
-                   #:out-of-source? ,out-of-source?
-                   #:build-type ,build-type
-                   #:tests? ,tests?
-                   #:test-target ,test-target
-                   #:parallel-build? ,parallel-build?
-                   #:parallel-tests? ,parallel-tests?
-                   #:validate-runpath? ,validate-runpath?
-                   #:patch-shebangs? ,patch-shebangs?
-                   #:strip-binaries? ,strip-binaries?
-                   #:strip-flags ,strip-flags
-                   #:strip-directories ,strip-directories))))
+          (define %build-target-inputs
+            (append #$(input-tuples->gexp host-inputs)
+                    #+(input-tuples->gexp target-inputs)))
 
-  (define guile-for-build
-    (match guile
-      ((? package?)
-       (package-derivation store guile system #:graft? #f))
-      (#f                               ; the default
-       (let* ((distro (resolve-interface '(gnu packages commencement)))
-              (guile  (module-ref distro 'guile-final)))
-         (package-derivation store guile system #:graft? #f)))))
+          (define %outputs
+            #$(outputs->gexp outputs))
 
-  (build-expression->derivation store name builder
-                                #:system system
-                                #:inputs (append native-drvs target-drvs)
-                                #:outputs outputs
-                                #:modules imported-modules
-                                #:guile-for-build guile-for-build))
+          (qt-build #:source #+source
+                    #:system #$system
+                    #:build #$build
+                    #:target #$target
+                    #:outputs %outputs
+                    #:inputs %build-target-inputs
+                    #:native-inputs %build-host-inputs
+                    #:search-paths '#$(sexp->gexp
+                                       (map search-path-specification->sexp
+                                            search-paths))
+                    #:native-search-paths '#$(map
+                                              search-path-specification->sexp
+                                              native-search-paths)
+                    #:phases #$phases
+                    #:configure-flags #$configure-flags
+                    #:make-flags #$make-flags
+                    #:out-of-source? #$out-of-source?
+                    #:build-type #$build-type
+                    #:tests? #$tests?
+                    #:test-target #$test-target
+                    #:parallel-build? #$parallel-build?
+                    #:parallel-tests? #$parallel-tests?
+                    #:validate-runpath? #$validate-runpath?
+                    #:patch-shebangs? #$patch-shebangs?
+                    #:strip-binaries? #$strip-binaries?
+                    #:strip-flags #$strip-flags
+                    #:strip-directories #$strip-directories))))
+
+  (mlet %store-monad ((guile (package->derivation (or guile (default-guile))
+                                                  system #:graft? #f)))
+    (gexp->derivation name builder
+                      #:system system
+                      #:guile-for-build guile)))
 
 (define qt-build-system
   (build-system

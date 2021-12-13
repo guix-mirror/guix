@@ -40,7 +40,7 @@
                 "09mklc1p6ms1jayg2f89hqfmhca3h5744lli936l38ypn1d00sxx"))))
     (build-system cmake-build-system)
     (inputs
-     `(("gmp" ,gmp)))
+     (list gmp))
     (arguments
      `(#:build-type "Release"           ; default upstream build type
        ;; XXX: Test phases currently fail on 32-bit sytems.

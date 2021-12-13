@@ -78,11 +78,9 @@
           (base32 "1kbjwpniffdpv003igmlz5r0vy65m7wpfnhg54fhwirp1227hgg7"))))
       (build-system asdf-build-system/sbcl)
       (inputs
-       `(("alexandria" ,sbcl-alexandria)
-         ("closer-mop" ,sbcl-closer-mop)
-         ("optima" ,sbcl-optima)))
+       (list sbcl-alexandria sbcl-closer-mop sbcl-optima))
       (native-inputs
-       `(("stefil" ,sbcl-stefil)))
+       (list sbcl-stefil))
       (home-page "https://github.com/arclanguage/Clamp")
       (synopsis "Randomized specification-based testing for Common Lisp")
       (description
@@ -120,9 +118,9 @@ designed to embed randomized tests in whatever framework you like.")
        '(#:asd-files '("checkl.asd")
          #:tests? #f))
       (native-inputs
-       `(("sbcl-fiveam" ,sbcl-fiveam)))
+       (list sbcl-fiveam))
       (inputs
-       `(("sbcl-marshal" ,sbcl-marshal)))
+       (list sbcl-marshal))
       (home-page "https://github.com/rpav/CheckL/")
       (synopsis "Dynamic testing for Common Lisp")
       (description
@@ -156,11 +154,9 @@ against the last run.")
           (base32 "0f40wikcf783jx26ip0nnhwjjfjvjiw7njqsqrb6kaphc8bgw0i1"))))
       (build-system asdf-build-system/sbcl)
       (inputs
-       `(("alexandria" ,sbcl-alexandria)
-         ("closer-mop" ,sbcl-closer-mop)
-         ("trivia" ,sbcl-trivia)))
+       (list sbcl-alexandria sbcl-closer-mop sbcl-trivia))
       (native-inputs
-       `(("fiveam" ,sbcl-fiveam)))
+       (list sbcl-fiveam))
       (home-page "https://github.com/Ferada/cl-mock")
       (synopsis "Mocking functions for Common Lisp testing")
       (description
@@ -315,8 +311,7 @@ that of Eos has not.  Thus, Eos is now deprecated in favor of FiveAM.")
            "1k8i2kq57201bvy3zfpsxld530hd104dgbglxigqb6i408c1a7aw"))))
       (build-system asdf-build-system/sbcl)
       (inputs
-       `(("alexandria" ,sbcl-alexandria)
-         ("trivial-gray-streams" ,sbcl-trivial-gray-streams)))
+       (list sbcl-alexandria sbcl-trivial-gray-streams))
       (synopsis "Simple and powerful test framework for Common Lisp")
       (description "A Common Lisp test framework that treasures your failures,
 logical continuation of Stefil.  It focuses on interactive debugging.")
@@ -347,9 +342,8 @@ logical continuation of Stefil.  It focuses on interactive debugging.")
        (sha256
         (base32 "04mh5plmlb15jbq3dkd8b9jl1dmbbg4hnd3k7859vpf6s12k5p4j"))))
     (inputs
-     `(("alexandria" ,sbcl-alexandria)
-       ("net.didierverna.asdf-flv" ,sbcl-net.didierverna.asdf-flv)
-       ("trivial-backtrace" ,sbcl-trivial-backtrace)))
+     (list sbcl-alexandria sbcl-net.didierverna.asdf-flv
+           sbcl-trivial-backtrace))
     (build-system asdf-build-system/sbcl)
     (synopsis "Common Lisp testing framework")
     (description "FiveAM is a simple (as far as writing and running tests
@@ -381,9 +375,9 @@ interactive development model in mind.")
          (file-name (git-file-name "hu.dwim.stefil" version))))
       (build-system asdf-build-system/sbcl)
       (native-inputs
-       `(("asdf:cl-hu.dwim.asdf" ,sbcl-hu.dwim.asdf)))
+       (list sbcl-hu.dwim.asdf))
       (inputs
-       `(("sbcl-alexandria" ,sbcl-alexandria)))
+       (list sbcl-alexandria))
       (home-page "http://dwim.hu/project/hu.dwim.stefil")
       (synopsis "Simple test framework")
       (description "Stefil is a simple test framework for Common Lisp,
@@ -413,7 +407,7 @@ with a focus on interactive development.")
           (base32 "10a78032vnf12kjjpfmq9ign38cad237ycyq37dwnx922nxjjaj4"))))
       (build-system asdf-build-system/sbcl)
       (inputs
-       `(("cl-ppcre" ,sbcl-cl-ppcre)))
+       (list sbcl-cl-ppcre))
       (home-page "https://github.com/foretspaisibles/cl-kaputt")
       (synopsis "Simple interactive test framework for Common Lisp")
       (description
@@ -527,10 +521,8 @@ testing.  It is an extension of the library written by Chris Riesbeck.")
            "1rsqy8y0jqll6xn9a593848f5wvd5ribv4csry1ly0hmdhfnqzlp"))))
       (build-system asdf-build-system/sbcl)
       (inputs
-       `(("alexandria" ,sbcl-alexandria)
-         ("cl-interpol" ,sbcl-cl-interpol)
-         ("iterate" ,sbcl-iterate)
-         ("symbol-munger" ,sbcl-symbol-munger)))
+       (list sbcl-alexandria sbcl-cl-interpol sbcl-iterate
+             sbcl-symbol-munger))
       (synopsis "Test Framework for Common Lisp")
       (description
        "LISP-UNIT2 is a Common Lisp library that supports unit testing in the
@@ -562,8 +554,7 @@ by Chris Riesbeck.")
         (base32 "1hf3r6pqbnd9vsd1i24qmz928kia72hdgmiafiwb6jw1hmj3r6ga"))))
      (build-system asdf-build-system/sbcl)
      (inputs
-      `(("closer-mop" ,sbcl-closer-mop)
-        ("org-sampler" ,sbcl-org-sampler)))
+      (list sbcl-closer-mop sbcl-org-sampler))
      (home-page "https://github.com/jphmrst/cl-nst")
      (synopsis "Unit testing for Common Lisp")
      (description
@@ -595,8 +586,7 @@ by Chris Riesbeck.")
            "1mvsm3r0r6a2bg75nw0q7n9vlby3ch45qjl7hnb5k1z2n5x5lh60"))))
       (build-system asdf-build-system/sbcl)
       (inputs
-       `(("documentation-utils" ,sbcl-documentation-utils)
-         ("form-fiddle" ,sbcl-form-fiddle)))
+       (list sbcl-documentation-utils sbcl-form-fiddle))
       (synopsis "Extensible and cross-compatible testing framework for Common Lisp")
       (description
        "Parachute is a simple-to-use and extensible testing framework.
@@ -628,10 +618,8 @@ Each test can contain a bunch of test forms that make up its body.")
          (file-name (git-file-name "prove" version))))
       (build-system asdf-build-system/sbcl)
       (inputs
-       `(("alexandria" ,sbcl-alexandria)
-         ("cl-colors" ,sbcl-cl-colors)
-         ("cl-ppcre" ,sbcl-cl-ppcre)
-         ("cl-ansi-text" ,sbcl-cl-ansi-text)))
+       (list sbcl-alexandria sbcl-cl-colors sbcl-cl-ppcre
+             sbcl-cl-ansi-text))
       (synopsis "Yet another unit testing framework for Common Lisp")
       (description
        "This project was originally called @command{cl-test-more}.
@@ -699,9 +687,7 @@ tester module.")
          "07ala4l2fncxf540fzxj3h5mhi9i4wqllhj0rqk8m2ljl5zbz89q"))))
     (build-system asdf-build-system/sbcl)
     (inputs
-     `(("bordeaux-threads" ,sbcl-bordeaux-threads)
-       ("dissect" ,sbcl-dissect)
-       ("trivial-gray-streams" ,sbcl-trivial-gray-streams)))
+     (list sbcl-bordeaux-threads sbcl-dissect sbcl-trivial-gray-streams))
     (home-page "https://github.com/fukamachi/rove")
     (synopsis
      "Yet another common lisp testing library")
@@ -761,10 +747,7 @@ This is intended to be a successor of Prove.")
           (base32 "1fqqa7lhf28qg60ji9libkylkcy747x576qpjn1y7c945j2fxmnm"))))
       (build-system asdf-build-system/sbcl)
       (inputs
-       `(("cl-ppcre" ,sbcl-cl-ppcre)
-         ("local-time" ,sbcl-local-time)
-         ("osicat" ,sbcl-osicat)
-         ("rutils" ,sbcl-rutils)))
+       (list sbcl-cl-ppcre sbcl-local-time sbcl-osicat sbcl-rutils))
       (home-page "https://github.com/vseloved/should-test")
       (synopsis "Minimal yet feature-rich Common Lisp test framework")
       (description

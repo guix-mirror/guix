@@ -54,7 +54,7 @@
         (base32 "0fm1x1fv4lwcpbn59s55idzf7x173n59xpz8rlrxalmi6gvsjijr"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-lxml" ,python-lxml)))
+     (list python-lxml))
     (home-page "https://fdik.org/yml/")
     (synopsis "Use a Domain Specific Language for XML without defining
 a grammar")
@@ -127,9 +127,8 @@ OPENPGP=SEQUOIA
            (lambda _
              (invoke "make" "-C" "db" "install"))))))
     (native-inputs
-     `(("asn1c" ,asn1c) ; >= 0.9.27
-       ("pkg-config" ,pkg-config)
-       ("yml2" ,yml2)))
+     (list asn1c ; >= 0.9.27
+           pkg-config yml2))
     (inputs
      `(("libetpan" ,fdik-libetpan)
        ("libiconv" ,libiconv)
@@ -181,7 +180,7 @@ ENGINE_INC_PATH=~a/include
 " out engine engine))))
              #t)))))
     (inputs
-     `(("pep-engine" ,pep-engine)))
+     (list pep-engine))
     (home-page "https://pep.foundation/")
     (synopsis "Library for building p≡p adapters")
     (description "This C++ library provides common structures used in p≡p
@@ -238,14 +237,10 @@ ENGINE_INC_PATH=~a/include
                (("\"wheel *>=.*\"") ""))
              #t)))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-pytest-forked" ,python-pytest-forked)))
+     (list python-pytest python-pytest-forked))
     (inputs
-     `(("boost" ,boost)
-       ("libpepadapter" ,libpepadapter)
-       ("pep-engine" ,pep-engine)
-       ("python-setuptools-scm" ,python-setuptools-scm/next)
-       ("util-linux" ,util-linux "lib"))) ;; uuid.h
+     (list boost libpepadapter pep-engine python-setuptools-scm
+           `(,util-linux "lib"))) ;; uuid.h
     (home-page "https://pep.foundation/")
     (synopsis "Python adapter for p≡p (pretty Easy Privacy)")
     (description "The p≡p Python adapter is an adaptor interface to the p≡p
@@ -329,15 +324,11 @@ JAVA_HOME=~a
                (copy-recursively "doc/doxygen/java/html" javaout)
                #t))))))
     (native-inputs
-     `(("doxygen" ,doxygen)
-       ("graphviz" ,graphviz)
-       ("openjdk" ,openjdk9 "jdk")
-       ("which" ,which)
-       ("yml2" ,yml2)))
+     (list doxygen graphviz
+           `(,openjdk9 "jdk") which yml2))
     (inputs
-     `(("libpepadapter" ,libpepadapter)
-       ("pep-engine" ,pep-engine)
-       ("util-linux" ,util-linux "lib"))) ;; uuid.h
+     (list libpepadapter pep-engine
+           `(,util-linux "lib"))) ;; uuid.h
     (home-page "https://pep.foundation/")
     (synopsis "Java adapter for p≡p (pretty Easy Privacy)")
     (description "The p≡p JNI adapter is a Java adapter interface to the p≡p

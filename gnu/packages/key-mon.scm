@@ -44,9 +44,7 @@
      `(#:python ,python-2                    ;uses the Python 2 'print' syntax
        #:tests? #f))                         ;no tests
     (inputs
-     `(("python2-xlib" ,python2-xlib)
-       ("python2-pygtk" ,python2-pygtk)
-       ("python2-rsvg" ,python2-rsvg)))
+     (list python2-xlib python2-pygtk python2-rsvg))
     (home-page "https://code.google.com/p/key-mon")
     (synopsis "Show keyboard and mouse status")
     (description

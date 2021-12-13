@@ -2,6 +2,7 @@
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2020 Timothy Sample <samplet@ngyro.com>
 ;;; Copyright © 2020 Simon Tournier <zimon.toutoune@gmail.com>
+;;; Copyright © 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -23,7 +24,8 @@
   #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module (guix packages)
-  #:use-module (guix derivations)
+  #:use-module (guix gexp)
+  #:use-module (guix monads)
   #:use-module (guix download)
   #:use-module (guix search-paths)
   #:use-module (guix build-system)
@@ -125,7 +127,7 @@ version REVISION."
                                (cons name propagated-names))))))
                        extra-directories))))))))
 
-(define* (haskell-build store name inputs
+(define* (haskell-build name inputs
                         #:key source
                         (haddock? #t)
                         (haddock-flags ''())
@@ -136,8 +138,7 @@ version REVISION."
                         (parallel-build? #f)
                         (configure-flags ''())
                         (extra-directories ''())
-                        (phases '(@ (guix build haskell-build-system)
-                                    %standard-phases))
+                        (phases '%standard-phases)
                         (outputs '("out" "static"))
                         (search-paths '())
                         (system (%current-system))
@@ -148,50 +149,43 @@ version REVISION."
   "Build SOURCE using HASKELL, and with INPUTS.  This assumes that SOURCE
 provides a 'Setup.hs' file as its build system."
   (define builder
-    `(begin
-       (use-modules ,@modules)
-       (haskell-build #:name ,name
-                      #:source ,(match (assoc-ref inputs "source")
-                                  (((? derivation? source))
-                                   (derivation->output-path source))
-                                  ((source)
-                                   source)
-                                  (source
-                                   source))
-                      #:cabal-revision ,(match (assoc-ref inputs
-                                                          "cabal-revision")
-                                          (((? derivation? revision))
-                                           (derivation->output-path revision))
-                                          (revision revision))
-                      #:configure-flags ,configure-flags
-                      #:extra-directories ,extra-directories
-                      #:haddock-flags ,haddock-flags
-                      #:system ,system
-                      #:test-target ,test-target
-                      #:tests? ,tests?
-                      #:parallel-build? ,parallel-build?
-                      #:haddock? ,haddock?
-                      #:phases ,phases
-                      #:outputs %outputs
-                      #:search-paths ',(map search-path-specification->sexp
-                                            search-paths)
-                      #:inputs %build-inputs)))
+    (with-imported-modules imported-modules
+      #~(begin
+          (use-modules #$@(sexp->gexp modules))
 
-  (define guile-for-build
-    (match guile
-      ((? package?)
-       (package-derivation store guile system #:graft? #f))
-      (#f                                         ; the default
-       (let* ((distro (resolve-interface '(gnu packages commencement)))
-              (guile  (module-ref distro 'guile-final)))
-         (package-derivation store guile system #:graft? #f)))))
+          #$(with-build-variables inputs outputs
+              #~(haskell-build #:name #$name
+                               #:source #+source
 
-  (build-expression->derivation store name builder
-                                #:inputs inputs
-                                #:system system
-                                #:modules imported-modules
-                                #:outputs outputs
-                                #:guile-for-build guile-for-build))
+                               ;; XXX: INPUTS contains <gexp-input> records as
+                               ;; opposed to raw lowerable objects, hence the
+                               ;; use of ungexp-splicing.
+                               #:cabal-revision
+                               #$@(match (assoc-ref inputs "cabal-revision")
+                                    (#f '(#f))
+                                    (lst lst))
+
+                               #:configure-flags #$configure-flags
+                               #:extra-directories #$extra-directories
+                               #:extra-directories #$extra-directories
+                               #:haddock-flags #$haddock-flags
+                               #:system #$system
+                               #:test-target #$test-target
+                               #:tests? #$tests?
+                               #:parallel-build? #$parallel-build?
+                               #:haddock? #$haddock?
+                               #:phases #$phases
+                               #:outputs #$(outputs->gexp outputs)
+                               #:search-paths '#$(sexp->gexp
+                                                  (map search-path-specification->sexp
+                                                       search-paths))
+                               #:inputs #$(input-tuples->gexp inputs))))))
+
+  (mlet %store-monad ((guile (package->derivation (or guile (default-guile))
+                                                  system #:graft? #f)))
+    (gexp->derivation name builder
+                      #:system system
+                      #:guile-for-build guile)))
 
 (define haskell-build-system
   (build-system

@@ -20,3 +20,25 @@ index 0fb067e..b342e2c 100644
      {
          struct tm tms;
          time_t t;
+--- orig/gnu-ghostscript-9.14.0/devices/vector/gdevpdfe.c
++++ gnu-ghostscript-9.14.0/devices/vector/gdevpdfe.c
+@@ -692,6 +692,9 @@
+             pdf_xml_attribute_name(s, "xmlns:xmp");
+             pdf_xml_attribute_value(s, "http://ns.adobe.com/xap/1.0/");
+             pdf_xml_tag_end(s);
++            if (!getenv("GS_GENERATE_UUIDS") ||
++                (strcasecmp(getenv("GS_GENERATE_UUIDS"), "0") != 0 &&
++                 strcasecmp(getenv("GS_GENERATE_UUIDS"), "no") != 0))
+             {
+                 pdf_xml_tag_open_beg(s, "xmp:ModifyDate");
+                 pdf_xml_tag_end(s);
+@@ -700,6 +701,9 @@
+                 pdf_xml_tag_close(s, "xmp:ModifyDate");
+                 pdf_xml_newline(s);
+             }
++            if (!getenv("GS_GENERATE_UUIDS") ||
++                (strcasecmp(getenv("GS_GENERATE_UUIDS"), "0") != 0 &&
++                 strcasecmp(getenv("GS_GENERATE_UUIDS"), "no") != 0))
+             {
+                 pdf_xml_tag_open_beg(s, "xmp:CreateDate");
+                 pdf_xml_tag_end(s);

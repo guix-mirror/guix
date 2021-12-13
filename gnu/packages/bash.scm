@@ -6,6 +6,7 @@
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Zhu Zihao <all_but_last@163.com>
+;;; Copyright © 2021 Marius Bakke <marius@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -57,7 +58,7 @@
 
 (define (patch-url seqno)
   "Return the URL of Bash patch number SEQNO."
-  (format #f "mirror://gnu/bash/bash-5.0-patches/bash50-~3,'0d" seqno))
+  (format #f "mirror://gnu/bash/bash-5.1-patches/bash51-~3,'0d" seqno))
 
 (define (bash-patch seqno sha256-bv)
   "Return the origin of Bash patch SEQNO, with expected hash SHA256-BV."
@@ -70,26 +71,18 @@
   (list (bash-patch seqno (base32 hash))
         ...))
 
-(define %patch-series-5.0
+(define %patch-series-5.1
   ;; This is the current patches series for 5.0, generated using
   ;; 'download-patches' below.
   (patch-series
-    (1 "12bjfdy6bg8nhyw27bdgxn7h4paylx8d927skfmi9pxd1wgrxzpj")
-    (2 "01w7yrzmz10mw06ys0546vhl7isv2v402ziyvfd7k67588spvs47")
-    (3 "0ny81ridp5n0j69hb8ixrc7dmxybby54jbsz5hikly8kgg1wvssf")
-    (4 "021gqqvgydixkrmqss64b6srfdlkvnx88lyfzpxfrn5d6bc7li0l")
-    (5 "0xl2kyzm84nlyklrqzkn73ixabhzfhn9x91lzcmis89cppclvxav")
-    (6 "0844749ixk1z60437nkznzms1f0nzh9an62kj7sny6r0zyk2k1fn")
-    (7 "16xg37gp1b8zlj5969w8mcrparwqlcbj9695vn3qhgb7wdz1xd0p")
-    (8 "1qyp19krjh8zxvb0jgwmyjz40djslwcf4xi7kc1ab0iaca44bipf")
-    (9 "00yrjjqd95s81b21qq3ba1y7h879q8jaajlkjggc6grhcwbs4g7d")
-    (10 "04ca5bjv456v538mkspzvn4xb2zdphh31r4fpvfm9p5my0jw7yyn")
-    (11 "1sklyixvsv8993kxzs0jigacpdchjrq7jv5xpdx7kbqyp4rf6k9c")
-    (12 "0cz21qg2gbr40lfgza7g02bqi2qknwqgxnq459pjj640d0cywhr9")
-    (13 "16h9nwz3yzwj7fnxvlidjymdc4yr30h818433gh9j1x3in6igmzm")
-    (14 "12gm5bvv2pd3m72z2ilj26pa08c61az253dsgfl24vpf2ijywvjx")
-    (15 "0pm0px758w4i23s55wajcv6lqfiym7zgxvq0pxf6vclkv8nxy5x5")
-    (16 "0vdha332km2iwx8g2ld15jy7d24cbplzgr1531dpzylr9ajxglgz")))
+   (1 "1ymm8ppss6gyh9ifznjwiabrb4k91npd09c10y7mk66xp8yppc7b")
+   (2 "1gjx9zqcm407am3n2sh44b8dxm48kgm15rzfiijqxr01m0hn3shm")
+   (3 "1cdnpbfc64yhvkjj4d12s9ywp11g195vzfl1cab24sq55wkcrwi2")
+   (4 "11iwhy6v562bv0kk7lwj7f5jj65ma9bblivy0v02h3ggcibbdbls")
+   (5 "19bdyigdr81824nxvqr6a7k0cax60wq7376j6b91afbnwvlvbjyc")
+   (6 "051x8wlwrqk0yr0zg378vh824iklfl5g9pkmcdf62qp8gn9pvqbm")
+   (7 "0fir80pp1gmlpadmqcgkrv4y119pc7xllchjzg05fd7px73viz5c")
+   (8 "1lfjgshk8i9vch92p5wgc9r90j3phw79aa7gbai89w183b2z6b7j")))
 
 (define (download-patches store count)
   "Download COUNT Bash patches into store.  Return a list of
@@ -125,7 +118,7 @@ number/base32-hash tuples, directly usable in the 'patch-series' form."
                " -Wl,-rpath -Wl,"
                (assoc-ref %build-inputs "ncurses")
                "/lib")))
-         (version "5.0"))
+         (version "5.1"))
     (package
      (name "bash")
      (source (origin
@@ -134,18 +127,17 @@ number/base32-hash tuples, directly usable in the 'patch-series' form."
                     "mirror://gnu/bash/bash-" version ".tar.gz"))
               (sha256
                (base32
-                "0kgvfwqdcd90waczf4gx39xnrxzijhjrzyzv7s8v4w31qqm0za5l"))
+                "1alv68wplnfdm6mh39hm57060xgssb9vqca4yr1cyva0c342n0fc"))
               (patch-flags '("-p0"))
               (patches (cons (search-patch "bash-linux-pgrp-pipe.patch")
-                             %patch-series-5.0))))
-     (version (string-append version "." (number->string (length %patch-series-5.0))))
+                             %patch-series-5.1))))
+     (version (string-append version "." (number->string (length %patch-series-5.1))))
      (build-system gnu-build-system)
 
      (outputs '("out"
                 "doc"                         ;1.7 MiB of HTML and extra files
                 "include"))                   ;headers used by extensions
-     (inputs `(("readline" ,readline)
-               ("ncurses" ,ncurses)))             ;TODO: add texinfo
+     (inputs (list readline ncurses))             ;TODO: add texinfo
      (arguments
       `(;; When cross-compiling, `configure' incorrectly guesses that job
         ;; control is missing.
@@ -292,7 +284,7 @@ without modification.")
               (patches
                (search-patches "bash-completion-directories.patch"))))
     (build-system gnu-build-system)
-    (native-inputs `(("util-linux" ,util-linux)))
+    (native-inputs (list util-linux))
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (add-after
@@ -385,10 +377,8 @@ capturing.")
                (base32
                 "0f59zh4d4pa1a7ybs5zl6h0csbqqv11lbnq0jl1dgwm1s6p49bsq"))))
     (inputs
-     `(("bash" ,bash)
-       ("coreutils" ,coreutils)
-       ("guile" ,guile-3.0) ;for wrap-script
-       ("grep" ,grep)))
+     (list bash coreutils guile-3.0 ;for wrap-script
+           grep))
     (arguments
      `(#:modules ((guix build utils))
        #:builder
@@ -409,6 +399,7 @@ capturing.")
          ;; Install phase
          (invoke "./install.sh" %output)
          (wrap-script (string-append %output "/bin/bats")
+                      #:guile (search-input-file %build-inputs "bin/guile")
                       (list "PATH" 'prefix (string-split (getenv "PATH")
                                                          #\:))))))
     (build-system trivial-build-system)
@@ -434,14 +425,14 @@ in Bash, but you can use it to test any UNIX program.")
         (base32 "0s1sifqzqmr0dnciv06yqrpzgj11d7n0gy5zaxh6b3x8bx7k75l8"))))
     (build-system gnu-build-system)
     (inputs
-     `(("elfutils" ,elfutils)
-       ("libelf" ,libelf)
-       ("libffi" ,libffi)
-       ("zlib" ,zlib)
-       ;; Require a bash with C plugin support to build.
-       ("bash" ,bash)))
+     (list elfutils
+           libelf
+           libffi
+           zlib
+           ;; Require a bash with C plugin support to build.
+           bash))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://github.com/taviso/ctypes.sh")
     (synopsis "Foreign function interface for Bash")
     (description "Bash-ctypes is a Bash plugin that provides a foreign

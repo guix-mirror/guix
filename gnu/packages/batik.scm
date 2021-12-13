@@ -84,7 +84,7 @@ public interface TimeEvent extends Event {
 ")))
              #t)))))
     (native-inputs
-     `(("unzip" ,unzip)))
+     (list unzip))
     (home-page "https://www.w3.org/Style/CSS/SAC/")
     (synopsis "W3C SAC interface for CSS parsers in Java")
     (description "This package provides a SAC interface by the W3C.
@@ -136,9 +136,9 @@ public interface EventListenerInitializer {
 ")))
              #t)))))
     (propagated-inputs
-     `(("java-w3c-smil" ,java-w3c-smil-3.0)))
+     (list java-w3c-smil-3.0))
     (native-inputs
-     `(("unzip" ,unzip)))
+     (list unzip))
     (home-page "https://www.w3.org/Style/CSS/SAC/")
     (synopsis "W3C SVG 1.0 interface")
     (description "This package provides a SVG 1.0 interface.")
@@ -189,7 +189,7 @@ public interface EventListenerInitializer {
            (lambda* (#:key source #:allow-other-keys)
              (invoke "unzip" source))))))
     (native-inputs
-     `(("unzip" ,unzip)))
+     (list unzip))
     (home-page "https://www.w3.org/Style/CSS/SAC/")
     (synopsis "W3C SAC interface for CSS parsers in Java")
     (description "This package provides a SAC interface by the W3C.
@@ -248,8 +248,7 @@ SAC is an interface for CSS parsers.")
        ("java-mockito" ,java-mockito-1)
        ("java-objenesis" ,java-objenesis)))
     (propagated-inputs
-     `(("java-commons-io" ,java-commons-io)
-       ("java-commons-logging-minimal" ,java-commons-logging-minimal)))
+     (list java-commons-io java-commons-logging-minimal))
     (home-page "https://xmlgraphics.apache.org/commons/")
     (synopsis "XMLGraphics constants")
     (description "This package provides XMLGraphics constants (originally

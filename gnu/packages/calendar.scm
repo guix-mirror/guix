@@ -80,7 +80,7 @@
           ;; Install pkg-config files
           ;; https://github.com/HowardHinnant/date/pull/538
           (search-patches "date-output-pkg-config-files.patch"))))
-      (inputs `(("tzdata" ,tzdata)))
+      (inputs (list tzdata))
       (build-system cmake-build-system)
       (arguments
        '(#:configure-flags (list "-DUSE_SYSTEM_TZ_DB=ON"
@@ -98,8 +98,8 @@
              (lambda* (#:key inputs #:allow-other-keys)
                (substitute* "src/tz.cpp"
                  (("/usr/share/zoneinfo")
-                  (string-append (assoc-ref inputs "tzdata") "/share/zoneinfo")))
-               #t))
+                  (search-input-directory inputs
+                                          "share/zoneinfo")))))
            (replace 'check
              (lambda _
                ;; Disable test that requires checking timezone that
@@ -118,7 +118,7 @@ the <tz.h> library for handling time zones and leap seconds.")
 (define-public libical
   (package
     (name "libical")
-    (version "3.0.8")
+    (version "3.0.10")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -126,7 +126,7 @@ the <tz.h> library for handling time zones and leap seconds.")
                     version "/libical-" version ".tar.gz"))
               (sha256
                (base32
-                "0vr8s7hn8204lyc4ys5bs3j5qss4lmc9ffly2m1a59avyz5cmzh9"))))
+                "1d1nqcfilb4k8bc5x85fhnd26l1ski58wpk2nmds6mlxrzkb6czr"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; test suite appears broken
@@ -158,19 +158,17 @@ the <tz.h> library for handling time zones and leap seconds.")
                  (("\\\"/usr/share/lib/zoneinfo\\\"") "")))
              #t)))))
     (native-inputs
-     `(("docbook-xml" ,docbook-xml-4.3)
-       ("gobject-introspection" ,gobject-introspection)
-       ("gtk-doc" ,gtk-doc/stable)
-       ("perl" ,perl)
-       ("pkg-config" ,pkg-config)
-       ("vala" ,vala)))
+     (list docbook-xml-4.3
+           gobject-introspection
+           gtk-doc/stable
+           perl
+           pkg-config
+           vala))
     (inputs
-     `(("glib" ,glib)
-       ("libxml2" ,libxml2)
-       ("tzdata" ,tzdata)))
+     (list glib libxml2 tzdata))
     (propagated-inputs
      ;; In Requires.private of libical.pc.
-     `(("icu4c" ,icu4c)))
+     (list icu4c))
     (home-page "https://libical.github.io/libical/")
     (synopsis "iCalendar protocols and data formats implementation")
     (description
@@ -204,23 +202,22 @@ data units.")
              (string-append (assoc-ref outputs "out") "/share/man/man1"))
             #t)))))
     (native-inputs
-     `(("python-setuptools-scm" ,python-setuptools-scm)
-       ;; Required to build manpage
-       ("python-sphinxcontrib-newsfeed" ,python-sphinxcontrib-newsfeed)
-       ("python-sphinx" ,python-sphinx)))
+     (list python-setuptools-scm
+           ;; Required to build manpage
+           python-sphinxcontrib-newsfeed python-sphinx))
     (inputs
-     `(("sqlite" ,sqlite)
-       ("python-configobj" ,python-configobj)
-       ("python-dateutil" ,python-dateutil)
-       ("python-icalendar" ,python-icalendar)
-       ("python-tzlocal" ,python-tzlocal)
-       ("python-urwid" ,python-urwid)
-       ("python-pytz" ,python-pytz)
-       ("python-setproctitle" ,python-setproctitle)
-       ("python-atomicwrites" ,python-atomicwrites)
-       ("python-click" ,python-click)
-       ("python-click-log" ,python-click-log)
-       ("python-pyxdg" ,python-pyxdg)))
+     (list sqlite
+           python-configobj
+           python-dateutil
+           python-icalendar
+           python-tzlocal
+           python-urwid
+           python-pytz
+           python-setproctitle
+           python-atomicwrites
+           python-click
+           python-click-log
+           python-pyxdg))
     (synopsis "Console calendar program")
     (description "Khal is a standards based console calendar program,
 able to synchronize with CalDAV servers through vdirsyncer.")
@@ -275,10 +272,7 @@ able to synchronize with CalDAV servers through vdirsyncer.")
                 (list "bin/cm2rem.tcl"
                       "bin/tkremind"))))))))
     (inputs
-     `(("inetutils" ,inetutils)
-       ("tcl" ,tcl)
-       ("tcllib" ,tcllib)
-       ("tk" ,tk)))
+     (list inetutils tcl tcllib tk))
     (home-page "https://dianne.skoll.ca/projects/remind/")
     (synopsis "Sophisticated calendar and alarm program")
     (description
@@ -347,9 +341,9 @@ and ruby.  It includes two illustrative command-line programs, @code{hcal} and
                #t))))
        #:tests? #f)) ; no tests
     (native-inputs
-     `(("perl" ,perl))) ; pod2man
+     (list perl)) ; pod2man
     (inputs
-     `(("qtbase" ,qtbase-5)))
+     (list qtbase-5))
     (home-page "https://www.toastfreeware.priv.at/confclerk")
     (synopsis "Offline conference schedule application")
     (description
@@ -423,11 +417,9 @@ traditional Chinese characters.")
                          "1qyf65l088dqsz25hm6s1cv18j52yaias0llqvpqwjfnvssa5cxg"))
                 (modules '((guix build utils)))))
       (build-system gnu-build-system)
-      (inputs `(("gtk+" ,gtk+)))
+      (inputs (list gtk+))
       (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("pkg-config" ,pkg-config)))
+       (list autoconf automake pkg-config))
       (home-page "https://dmedvinsky.github.io/gsimplecal/")
       (synopsis "Lightweight calendar applet")
       (description "@command{gsimplecal} is a lightweight calendar application

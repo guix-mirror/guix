@@ -198,6 +198,20 @@
                                 "Zend/tests/concat_003.phpt")))
                    '())
 
+             ,@(if (target-ppc64le?)
+                   ;; Drop tests known to fail on powerpc64le.
+                   '((for-each delete-file
+                               (list
+                                ;; phpdbg watchpoints don't work.
+                                ;; Bug tracked upstream at:
+                                ;; https://bugs.php.net/bug.php?id=81408
+                                "sapi/phpdbg/tests/watch_001.phpt"
+                                "sapi/phpdbg/tests/watch_003.phpt"
+                                "sapi/phpdbg/tests/watch_004.phpt"
+                                "sapi/phpdbg/tests/watch_005.phpt"
+                                "sapi/phpdbg/tests/watch_006.phpt")))
+                   '())
+
              ;; Drop tests that are known to fail.
              (for-each delete-file
                        '("ext/posix/tests/posix_getgrgid.phpt"    ; Requires /etc/group.
@@ -327,7 +341,9 @@
                          ;; Expects an empty Array; gets one with " " in it.
                          "ext/pcre/tests/bug80118.phpt"
                          ;; Renicing a process fails in the build environment.
-                         "ext/standard/tests/general_functions/proc_nice_basic.phpt"))
+                         "ext/standard/tests/general_functions/proc_nice_basic.phpt"
+                         ;; Can fail on fast machines?
+                         "Zend/tests/bug74093.phpt"))
 
              ;; Accomodate two extra openssl errors flanking the expected one:
              ;; random number generator:RAND_{load,write}_file:Cannot open file

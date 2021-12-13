@@ -2,6 +2,7 @@
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Nikita <nikita@n0.is>
 ;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,10 +24,37 @@
   #:use-module (guix licenses)
   #:use-module (guix git-download)
   #:use-module (guix utils)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages))
 
 (define-public tbb
+  (package
+    (name "tbb")
+    (version "2021.4.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/oneapi-src/oneTBB")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0ih727g802j9lvwkqhw021bk1wb7xlvfgd0vl1i6jng4am1wv7vq"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags '("-DTBB_STRICT=OFF"))) ;; Don't fail on warnings
+    (home-page "https://www.threadingbuildingblocks.org")
+    (synopsis "C++ library for parallel programming")
+    (description
+     "Threading Building Blocks (TBB) is a C++ runtime library that abstracts
+the low-level threading details necessary for optimal multi-core performance.
+It uses common C++ templates and coding style to eliminate tedious threading
+implementation work.  It provides parallel loop constructs, asynchronous
+tasks, synchronization primitives, atomic operations, and more.")
+    (license asl2.0)))
+
+(define-public tbb-2020
   (package
     (name "tbb")
     (version "2020.3")
@@ -55,8 +83,7 @@
                     (("os_kernel_version:=.*")
                      "os_kernel_version:=5\n")
                     (("os_version:=.*")
-                     "os_version:=1\n"))
-                  #t))))
+                     "os_version:=1\n"))))))
     (outputs '("out" "doc"))
     (build-system gnu-build-system)
     (arguments
@@ -68,8 +95,7 @@
          (add-after 'unpack 'fail-on-test-errors
            (lambda _
              (substitute* "Makefile"
-               (("-\\$\\(MAKE") "$(MAKE"))
-             #t))
+               (("-\\$\\(MAKE") "$(MAKE"))))
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
              (substitute* "build/linux.gcc.inc"
@@ -94,8 +120,7 @@
                 (find-files "build/guix_release" "\\.so"))
                (copy-recursively "doc" doc)
                (copy-recursively "examples" examples)
-               (copy-recursively "include" include)
-               #t))))))
+               (copy-recursively "include" include)))))))
     (home-page "https://www.threadingbuildingblocks.org")
     (synopsis "C++ library for parallel programming")
     (description

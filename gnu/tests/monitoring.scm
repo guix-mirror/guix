@@ -63,9 +63,7 @@
           (define marionette
             (make-marionette (list #$vm)))
 
-          (mkdir #$output)
-          (chdir #$output)
-
+          (test-runner-current (system-test-runner #$output))
           (test-begin #$name)
 
           (test-assert "prometheus-node-exporter running"
@@ -87,8 +85,7 @@
                             (http-get "http://localhost:8080")))
                 (response-code response))))
 
-          (test-end)
-          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          (test-end))))
 
   (gexp->derivation (string-append name "-test") test))
 
@@ -165,9 +162,7 @@ cat ~a | sudo -u zabbix psql zabbix;
           (define marionette
             (make-marionette (list #$vm)))
 
-          (mkdir #$output)
-          (chdir #$output)
-
+          (test-runner-current (system-test-runner #$output))
           (test-begin #$name)
 
           ;; XXX: Shepherd reads the config file *before* binding its control
@@ -296,9 +291,7 @@ zabbix||{}
             (test-url "/")
             (test-url "/does-not-exist" 404))
 
-          (test-end)
-
-          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          (test-end))))
 
   (gexp->derivation (string-append name "-test") test))
 

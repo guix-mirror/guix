@@ -65,7 +65,7 @@
        ("java-mockito-1" ,java-mockito-1)
        ("java-objenesis" ,java-objenesis)))
     (propagated-inputs
-     `(("maven-resolver-parent-pom" ,maven-resolver-parent-pom)))
+     (list maven-resolver-parent-pom))
     (home-page "https://github.com/apache/maven-resolver")
     (synopsis "Maven repository system API")
     (description "This package contains the API for the maven repository system.")
@@ -103,7 +103,7 @@
          (replace 'install
            (install-from-pom "maven-resolver-spi/pom.xml")))))
     (propagated-inputs
-     `(("maven-resolver-api" ,maven-resolver-api)))
+     (list maven-resolver-api))
     (synopsis "Maven repository system SPI")
     (description "This package contains the service provider interface (SPI)
 for repository system implementations and repository connectors.")))
@@ -118,8 +118,7 @@ for repository system implementations and repository connectors.")))
        #:test-dir "maven-resolver-test-util/src/test"
        #:jdk ,icedtea-8))
     (inputs
-     `(("maven-resolver-api" ,maven-resolver-api)
-       ("maven-resolver-spi" ,maven-resolver-spi)))
+     (list maven-resolver-api maven-resolver-spi))
     (synopsis "Utility classes for testing the maven repository system")
     (description "This package contains a collection of utility classes to
 ease testing of the repository system.")))
@@ -137,11 +136,9 @@ ease testing of the repository system.")))
          (replace 'install
            (install-from-pom "maven-resolver-util/pom.xml")))))
     (propagated-inputs
-     `(("maven-resolver-api" ,maven-resolver-api)))
+     (list maven-resolver-api))
     (native-inputs
-     `(("java-junit" ,java-junit)
-       ("java-hamcrest-core" ,java-hamcrest-core)
-       ("maven-resolver-test-util" ,maven-resolver-test-util)))
+     (list java-junit java-hamcrest-core maven-resolver-test-util))
     (synopsis "Utility classes for the maven repository system")
     (description "This package contains a collection of utility classes to
 ease usage of the repository system.")))
@@ -167,14 +164,10 @@ ease usage of the repository system.")))
          (replace 'install
            (install-from-pom "maven-resolver-connector-basic/pom.xml")))))
     (propagated-inputs
-     `(("maven-resolver-api" ,maven-resolver-api)
-       ("maven-resolver-spi" ,maven-resolver-spi)
-       ("maven-resolver-util" ,maven-resolver-util)
-       ("java-slf4j-api" ,java-slf4j-api)))
+     (list maven-resolver-api maven-resolver-spi maven-resolver-util
+           java-slf4j-api))
     (native-inputs
-     `(("java-javax-inject" ,java-javax-inject)
-       ("java-junit" ,java-junit)
-       ("maven-resolver-test-util" ,maven-resolver-test-util)))
+     (list java-javax-inject java-junit maven-resolver-test-util))
     (synopsis "Maven repository connector implementation")
     (description "This package contains a repository connector implementation
 for repositories using URI-based layouts.")))
@@ -224,17 +217,16 @@ for repositories using URI-based layouts.")))
          (replace 'install
            (install-from-pom "maven-resolver-impl/pom.xml")))))
     (propagated-inputs
-     `(("maven-resolver-api" ,maven-resolver-api)
-       ("maven-resolver-spi" ,maven-resolver-spi)
-       ("maven-resolver-util" ,maven-resolver-util)
-       ("java-eclipse-sisu-inject" ,java-eclipse-sisu-inject)
-       ("java-javax-inject" ,java-javax-inject)
-       ("java-guice" ,java-guice)
-       ("java-slf4j-api" ,java-slf4j-api)
-       ("maven-resolver-parent-pom" ,maven-resolver-parent-pom)))
+     (list maven-resolver-api
+           maven-resolver-spi
+           maven-resolver-util
+           java-eclipse-sisu-inject
+           java-javax-inject
+           java-guice
+           java-slf4j-api
+           maven-resolver-parent-pom))
     (native-inputs
-     `(("java-junit" ,java-junit)
-       ("maven-resolver-test-util" ,maven-resolver-test-util)))))
+     (list java-junit maven-resolver-test-util))))
 
 (define-public maven-resolver-transport-wagon
   (package
@@ -308,14 +300,14 @@ for repositories using URI-based layouts.")))
        ("java-eclipse-sisu-inject" ,java-eclipse-sisu-inject)
        ("java-eclipse-sisu-plexus" ,java-eclipse-sisu-plexus)))
     (native-inputs
-     `(("java-junit" ,java-junit)
-       ("java-hamcrest-core" ,java-hamcrest-core)
-       ("maven-resolver-test-util" ,maven-resolver-test-util)
-       ("java-guava" ,java-guava)
-       ("java-cglib" ,java-cglib)
-       ("java-asm" ,java-asm)
-       ("java-aopalliance" ,java-aopalliance)
-       ("java-guice" ,java-guice)))
+     (list java-junit
+           java-hamcrest-core
+           maven-resolver-test-util
+           java-guava
+           java-cglib
+           java-asm
+           java-aopalliance
+           java-guice))
     (synopsis "Transport implementation for Maven")
     (description "This package contains a transport implementation based on
 Maven Wagon, for use in Maven.")))
@@ -347,8 +339,8 @@ Maven Wagon, for use in Maven.")))
          (add-before 'install 'install-parent (install-pom-file "pom.xml"))
          (replace 'install (install-from-pom "aether-api/pom.xml")))))
     (propagated-inputs
-     `(("java-sonatype-forge-parent-pom" ,java-sonatype-forge-parent-pom-6)))
-    (native-inputs `(("java-junit" ,java-junit)))
+     (list java-sonatype-forge-parent-pom-6))
+    (native-inputs (list java-junit))
     (home-page "https://github.com/sonatype/sonatype-aether")
     (synopsis "Maven repository system API")
     (description "This package contains the API for the maven repository system.")
@@ -366,7 +358,7 @@ Maven Wagon, for use in Maven.")))
        (modify-phases %standard-phases
          (replace 'install (install-from-pom "aether-spi/pom.xml")))))
     (propagated-inputs
-     `(("java-sonatype-aether-api" ,java-sonatype-aether-api)))
+     (list java-sonatype-aether-api))
     (synopsis "Maven repository system SPI")
     (description "This package contains the service provider interface (SPI)
 for repository system implementations and repository connectors.")))
@@ -380,8 +372,7 @@ for repository system implementations and repository connectors.")))
        #:source-dir "aether-test-util/src/main/java"
        #:test-dir "aether-test-util/src/test"))
     (inputs
-     `(("java-sonatype-aether-api" ,java-sonatype-aether-api)
-       ("java-sonatype-aether-spi" ,java-sonatype-aether-spi)))
+     (list java-sonatype-aether-api java-sonatype-aether-spi))
     (synopsis "Utility classes for testing the maven repository system")
     (description "This package contains a collection of utility classes to
 ease testing of the repository system.")))
@@ -398,10 +389,9 @@ ease testing of the repository system.")))
        (modify-phases %standard-phases
          (replace 'install (install-from-pom "aether-util/pom.xml")))))
     (propagated-inputs
-     `(("java-sonatype-aether-api" ,java-sonatype-aether-api)))
+     (list java-sonatype-aether-api))
     (native-inputs
-     `(("java-junit" ,java-junit)
-       ("java-sonatype-aether-test-util" ,java-sonatype-aether-test-util)))
+     (list java-junit java-sonatype-aether-test-util))
     (synopsis "Utility classes for the maven repository system")
     (description "This package contains a collection of utility classes to
 ease usage of the repository system.")))
@@ -437,16 +427,15 @@ ease usage of the repository system.")))
              #t))
          (replace 'install (install-from-pom "aether-impl/pom.xml")))))
     (propagated-inputs
-     `(("java-sonatype-aether-api" ,java-sonatype-aether-api)
-       ("java-sonatype-aether-spi" ,java-sonatype-aether-spi)
-       ("java-sonatype-aether-util" ,java-sonatype-aether-util)
-       ("java-plexus-component-annotations" ,java-plexus-component-annotations)
-       ("java-plexus-container-default" ,java-plexus-container-default)
-       ("java-slf4j-api" ,java-slf4j-api)))
+     (list java-sonatype-aether-api
+           java-sonatype-aether-spi
+           java-sonatype-aether-util
+           java-plexus-component-annotations
+           java-plexus-container-default
+           java-slf4j-api))
     (native-inputs
-     `(("java-junit" ,java-junit)
-       ("java-plexus-component-metadata" ,java-plexus-component-metadata)
-       ("java-sonatype-aether-test-util" ,java-sonatype-aether-test-util)))))
+     (list java-junit java-plexus-component-metadata
+           java-sonatype-aether-test-util))))
 
 ;; Again, this old version is required by some maven plugins
 (define-public java-eclipse-aether-api
@@ -471,7 +460,7 @@ ease usage of the repository system.")))
        (modify-phases %standard-phases
          (add-before 'install 'install-parent (install-pom-file "pom.xml"))
          (replace 'install (install-from-pom "aether-api/pom.xml")))))
-    (native-inputs `(("java-junit" ,java-junit)))
+    (native-inputs (list java-junit))
     (home-page "https://github.com/sonatype/sonatype-aether")
     (synopsis "Maven repository system API")
     (description "This package contains the API for the maven repository system.")
@@ -489,7 +478,7 @@ ease usage of the repository system.")))
        (modify-phases %standard-phases
          (replace 'install (install-from-pom "aether-spi/pom.xml")))))
     (propagated-inputs
-     `(("java-eclipse-aether-api" ,java-eclipse-aether-api)))
+     (list java-eclipse-aether-api))
     (synopsis "Maven repository system SPI")
     (description "This package contains the service provider interface (SPI)
 for repository system implementations and repository connectors.")))
@@ -506,8 +495,7 @@ for repository system implementations and repository connectors.")))
        (modify-phases %standard-phases
          (replace 'install (install-from-pom "aether-util/pom.xml")))))
     (propagated-inputs
-     `(("java-eclipse-aether-api" ,java-eclipse-aether-api)
-       ("java-eclipse-aether-spi" ,java-eclipse-aether-spi)))
+     (list java-eclipse-aether-api java-eclipse-aether-spi))
     (synopsis "Utility classes for testing the maven repository system")
     (description "This package contains a collection of utility classes to
 ease testing of the repository system.")))
@@ -524,10 +512,9 @@ ease testing of the repository system.")))
        (modify-phases %standard-phases
          (replace 'install (install-from-pom "aether-util/pom.xml")))))
     (propagated-inputs
-     `(("java-eclipse-aether-api" ,java-eclipse-aether-api)))
+     (list java-eclipse-aether-api))
     (native-inputs
-     `(("java-eclipse-aether-test-util" ,java-eclipse-aether-test-util)
-       ("java-junit" ,java-junit)))
+     (list java-eclipse-aether-test-util java-junit))
     (synopsis "Utility classes for the maven repository system")
     (description "This package contains a collection of utility classes to
 ease usage of the repository system.")))
@@ -544,16 +531,15 @@ ease usage of the repository system.")))
        (modify-phases %standard-phases
          (replace 'install (install-from-pom "aether-impl/pom.xml")))))
     (propagated-inputs
-     `(("java-eclipse-aether-api" ,java-eclipse-aether-api)
-       ("java-eclipse-aether-spi" ,java-eclipse-aether-spi)
-       ("java-eclipse-aether-util" ,java-eclipse-aether-util)
-       ("java-javax-inject" ,java-javax-inject)
-       ("java-eclipse-sisu-inject" ,java-eclipse-sisu-inject)
-       ("java-guice" ,java-guice)
-       ("java-slf4j-api" ,java-slf4j-api)))
+     (list java-eclipse-aether-api
+           java-eclipse-aether-spi
+           java-eclipse-aether-util
+           java-javax-inject
+           java-eclipse-sisu-inject
+           java-guice
+           java-slf4j-api))
     (native-inputs
-     `(("java-eclipse-aether-test-util" ,java-eclipse-aether-test-util)
-       ("java-junit" ,java-junit)))))
+     (list java-eclipse-aether-test-util java-junit))))
 
 (define-public maven-shared-utils
   (package
@@ -591,10 +577,7 @@ ease usage of the repository system.")))
        ("java-plexus-container-default" ,java-plexus-container-default)
        ("maven-parent-pom-30" ,maven-parent-pom-30)))
     (native-inputs
-     `(("unzip" ,unzip)
-       ("java-junit" ,java-junit)
-       ("java-hamcrest-core" ,java-hamcrest-core)
-       ("java-commons-lang3" ,java-commons-lang3)))
+     (list unzip java-junit java-hamcrest-core java-commons-lang3))
     (home-page "https://maven.apache.org/shared/maven-shared-utils/")
     (synopsis "Plexus-util replacement for maven")
     (description "This project aims to be a functional replacement for
@@ -622,10 +605,9 @@ replacement with improvements.")
          (replace 'install
            (install-from-pom "maven-plugin-annotations/pom.xml")))))
     (propagated-inputs
-     `(("maven-artifact" ,maven-artifact)
-       ("maven-plugin-tools-parent-pom" ,maven-plugin-tools-parent-pom)))
+     (list maven-artifact maven-plugin-tools-parent-pom))
     (native-inputs
-     `(("unzip" ,unzip)))
+     (list unzip))
     (home-page "https://maven.apache.org/plugin-tools/maven-plugin-annotations/")
     (synopsis "Java 5 annotations to use in Mojos")
     (description "This package contains Java 5 annotations for use in Mojos.")
@@ -669,9 +651,7 @@ replacement with improvements.")
      `(("java-plexus-utils" ,java-plexus-utils)
        ("maven-wagon-parent-pom" ,maven-wagon-parent-pom)))
     (native-inputs
-     `(("unzip" ,unzip)
-       ("java-junit" ,java-junit)
-       ("java-easymock" ,java-easymock)))
+     (list unzip java-junit java-easymock))
     (home-page "https://maven.apache.org/wagon")
     (synopsis "Transport abstraction for Maven")
     (description "Maven Wagon is a transport abstraction that is used in Maven's
@@ -752,8 +732,7 @@ classes used in multiple maven-wagon components.")))
              (invoke "ant" "jar")
              #t)))))
     (inputs
-     `(("java-plexus-utils" ,java-plexus-utils)
-       ("maven-wagon-provider-api" ,maven-wagon-provider-api)))
+     (list java-plexus-utils maven-wagon-provider-api))
     (native-inputs
      `(("maven-wagon-provider-test" ,maven-wagon-provider-test)
        ("java-plexus-component-metadata" ,java-plexus-component-metadata)
@@ -836,12 +815,12 @@ Test Compatibility Kit.")))
              (invoke "ant" "jar")
              #t)))))
     (inputs
-     `(("java-plexus-utils" ,java-plexus-utils)
-       ("java-httpcomponents-httpclient" ,java-httpcomponents-httpclient)
-       ("java-httpcomponents-httpcore" ,java-httpcomponents-httpcore)
-       ("java-commons-io" ,java-commons-io)
-       ("java-jsoup" ,java-jsoup)
-       ("maven-wagon-provider-api" ,maven-wagon-provider-api)))
+     (list java-plexus-utils
+           java-httpcomponents-httpclient
+           java-httpcomponents-httpcore
+           java-commons-io
+           java-jsoup
+           maven-wagon-provider-api))
     (native-inputs
      `(("maven-wagon-provider-test" ,maven-wagon-provider-test)
        ("java-plexus-component-metadata" ,java-plexus-component-metadata)
@@ -908,12 +887,12 @@ wagon providers supporting HTTP.")))
                (("src/test") "wagon-providers/wagon-http/src/test"))
              #t)))))
     (inputs
-     `(("java-plexus-utils" ,java-plexus-utils)
-       ("java-httpcomponents-httpclient" ,java-httpcomponents-httpclient)
-       ("java-httpcomponents-httpcore" ,java-httpcomponents-httpcore)
-       ("maven-wagon-http-shared" ,maven-wagon-http-shared)
-       ("maven-wagon-tck-http" ,maven-wagon-tck-http)
-       ("maven-wagon-provider-api" ,maven-wagon-provider-api)))
+     (list java-plexus-utils
+           java-httpcomponents-httpclient
+           java-httpcomponents-httpcore
+           maven-wagon-http-shared
+           maven-wagon-tck-http
+           maven-wagon-provider-api))
     (native-inputs
      `(("maven-wagon-provider-test" ,maven-wagon-provider-test)
        ("java-plexus-component-metadata" ,java-plexus-component-metadata)
@@ -1062,11 +1041,9 @@ tool.  This package contains the Maven pom file, used by all maven components.")
          (replace 'install
            (install-from-pom "maven-artifact/pom.xml")))))
     (propagated-inputs
-     `(("java-plexus-utils" ,java-plexus-utils)
-       ("java-commons-lang3" ,java-commons-lang3)
-       ("maven-pom" ,maven-pom)))
+     (list java-plexus-utils java-commons-lang3 maven-pom))
     (native-inputs
-     `(("java-junit" ,java-junit)))
+     (list java-junit))
     (description "Apache Maven is a software project management and comprehension
 tool.  This package contains the Maven Artifact classes, providing the
 @code{Artifact} interface, with its @code{DefaultArtifact} implementation.  The
@@ -1097,29 +1074,27 @@ and compares versions:")))
              #t))
          (replace 'install (install-from-pom "maven-model/pom.xml")))))
     (propagated-inputs
-     `(("java-commons-lang3" ,java-commons-lang3)
-       ("java-plexus-utils" ,java-plexus-utils)
-       ("maven-pom" ,maven-pom)))
+     (list java-commons-lang3 java-plexus-utils maven-pom))
     (native-inputs
-     `(("java-modello-core" ,java-modello-core)
-       ;; for modello:
-       ("java-eclipse-sisu-plexus" ,java-eclipse-sisu-plexus)
-       ("java-plexus-component-annotations" ,java-plexus-component-annotations)
-       ("java-guice" ,java-guice)
-       ("java-cglib" ,java-cglib)
-       ("java-asm" ,java-asm)
-       ("java-eclipse-sisu-inject" ,java-eclipse-sisu-inject)
-       ("java-javax-inject" ,java-javax-inject)
-       ("java-plexus-classworlds" ,java-plexus-classworlds)
-       ("java-guava" ,java-guava)
-       ("java-geronimo-xbean-reflect" ,java-geronimo-xbean-reflect)
-       ("java-sisu-build-api" ,java-sisu-build-api)
-       ;; modello plugins:
-       ("java-modello-plugins-java" ,java-modello-plugins-java)
-       ("java-modello-plugins-xml" ,java-modello-plugins-xml)
-       ("java-modello-plugins-xpp3" ,java-modello-plugins-xpp3)
-       ;; for tests
-       ("java-junit" ,java-junit)))
+     (list java-modello-core
+           ;; for modello:
+           java-eclipse-sisu-plexus
+           java-plexus-component-annotations
+           java-guice
+           java-cglib
+           java-asm
+           java-eclipse-sisu-inject
+           java-javax-inject
+           java-plexus-classworlds
+           java-guava
+           java-geronimo-xbean-reflect
+           java-sisu-build-api
+           ;; modello plugins:
+           java-modello-plugins-java
+           java-modello-plugins-xml
+           java-modello-plugins-xpp3
+           ;; for tests
+           java-junit))
     (description "Apache Maven is a software project management and comprehension
 tool.  This package contains the model for Maven @dfn{POM} (Project Object Model),
 so really just plain Java objects.")))
@@ -1145,9 +1120,9 @@ so really just plain Java objects.")))
              #t))
          (replace 'install (install-from-pom "maven-builder-support/pom.xml")))))
     (propagated-inputs
-     `(("maven-pom" ,maven-pom)))
+     (list maven-pom))
     (native-inputs
-     `(("java-junit" ,java-junit)))
+     (list java-junit))
     (description "Apache Maven is a software project management and comprehension
 tool.  This package contains a support library for descriptor builders (model,
 setting, toolchains)")))
@@ -1175,28 +1150,27 @@ setting, toolchains)")))
              #t))
          (replace 'install (install-from-pom "maven-settings/pom.xml")))))
     (propagated-inputs
-     `(("java-plexus-utils" ,java-plexus-utils)
-       ("maven-pom" ,maven-pom)))
+     (list java-plexus-utils maven-pom))
     (native-inputs
-     `(("java-modello-core" ,java-modello-core)
-       ;; for modello:
-       ;("container" ,java-plexus-container-default)
-       ("java-eclipse-sisu-plexus" ,java-eclipse-sisu-plexus)
-       ("java-plexus-component-annotations" ,java-plexus-component-annotations)
-       ("java-guice" ,java-guice)
-       ("java-cglib" ,java-cglib)
-       ("java-asm" ,java-asm)
-       ("java-eclipse-sisu-inject" ,java-eclipse-sisu-inject)
-       ("java-javax-inject" ,java-javax-inject)
-       ("java-plexus-classworlds" ,java-plexus-classworlds)
-       ("java-plexus-utils" ,java-plexus-utils)
-       ("java-guava" ,java-guava)
-       ("java-geronimo-xbean-reflect" ,java-geronimo-xbean-reflect)
-       ("java-sisu-build-api" ,java-sisu-build-api)
-       ;; modello plugins:
-       ("java-modello-plugins-java" ,java-modello-plugins-java)
-       ("java-modello-plugins-xml" ,java-modello-plugins-xml)
-       ("java-modello-plugins-xpp3" ,java-modello-plugins-xpp3)))
+     (list java-modello-core
+           ;; for modello:
+           ;("container" ,java-plexus-container-default)
+           java-eclipse-sisu-plexus
+           java-plexus-component-annotations
+           java-guice
+           java-cglib
+           java-asm
+           java-eclipse-sisu-inject
+           java-javax-inject
+           java-plexus-classworlds
+           java-plexus-utils
+           java-guava
+           java-geronimo-xbean-reflect
+           java-sisu-build-api
+           ;; modello plugins:
+           java-modello-plugins-java
+           java-modello-plugins-xml
+           java-modello-plugins-xpp3))
     (description "Apache Maven is a software project management and comprehension
 tool.  This package contains strictly the model for Maven settings, that is
 simply plain java objects.")))
@@ -1221,15 +1195,14 @@ simply plain java objects.")))
              #t))
          (replace 'install (install-from-pom "maven-settings-builder/pom.xml")))))
     (propagated-inputs
-     `(("java-plexus-utils" ,java-plexus-utils)
-       ("java-plexus-interpolation" ,java-plexus-interpolation)
-       ("java-plexus-sec-dispatcher" ,java-plexus-sec-dispatcher)
-       ("maven-builder-support" ,maven-builder-support)
-       ("maven-settings" ,maven-settings)
-       ("maven-pom" ,maven-pom)))
+     (list java-plexus-utils
+           java-plexus-interpolation
+           java-plexus-sec-dispatcher
+           maven-builder-support
+           maven-settings
+           maven-pom))
     (native-inputs
-     `(("java-junit" ,java-junit)
-       ("java-plexus-component-annotations" ,java-plexus-component-annotations)))
+     (list java-junit java-plexus-component-annotations))
     (description "Apache Maven is a software project management and comprehension
 tool.  This package contains the effective model builder, with profile activation,
 inheritance, interpolation, @dots{}")))
@@ -1265,12 +1238,12 @@ inheritance, interpolation, @dots{}")))
          (replace 'install
            (install-from-pom "maven-model-builder/pom.xml")))))
     (propagated-inputs
-     `(("java-plexus-interpolation" ,java-plexus-interpolation)
-       ("java-plexus-utils" ,java-plexus-utils)
-       ("maven-artifact" ,maven-artifact)
-       ("maven-builder-support" ,maven-builder-support)
-       ("maven-model" ,maven-model)
-       ("maven-pom" ,maven-pom)))
+     (list java-plexus-interpolation
+           java-plexus-utils
+           maven-artifact
+           maven-builder-support
+           maven-model
+           maven-pom))
     (native-inputs
      `(("java-junit" ,java-junit)
        ("java-guava" ,java-guava)
@@ -1314,8 +1287,7 @@ inheritance, interpolation, @dots{}")))
          (replace 'install
            (install-from-pom "maven-repository-metadata/pom.xml")))))
     (propagated-inputs
-     `(("java-plexus-utils" ,java-plexus-utils)
-       ("maven-pom" ,maven-pom)))
+     (list java-plexus-utils maven-pom))
     (native-inputs
      `(("modello" ,java-modello-core)
        ;; for modello:
@@ -1361,18 +1333,18 @@ so really just plain objects.")))
          (replace 'install
            (install-from-pom "maven-resolver-provider/pom.xml")))))
     (propagated-inputs
-     `(("maven-model" ,maven-model)
-       ("maven-model-builder" ,maven-model-builder)
-       ("maven-resolver-spi" ,maven-resolver-spi)
-       ("maven-resolver-api" ,maven-resolver-api)
-       ("maven-resolver-impl" ,maven-resolver-impl)
-       ("maven-resolver-util" ,maven-resolver-util)
-       ("maven-builder-support" ,maven-builder-support)
-       ("maven-repository-metadata" ,maven-repository-metadata)
-       ("java-plexus-utils" ,java-plexus-utils)
-       ("java-plexus-component-annotations" ,java-plexus-component-annotations)
-       ("java-guice" ,java-guice)
-       ("java-javax-inject" ,java-javax-inject)))))
+     (list maven-model
+           maven-model-builder
+           maven-resolver-spi
+           maven-resolver-api
+           maven-resolver-impl
+           maven-resolver-util
+           maven-builder-support
+           maven-repository-metadata
+           java-plexus-utils
+           java-plexus-component-annotations
+           java-guice
+           java-javax-inject))))
 
 (define-public maven-plugin-api
   (package
@@ -1874,20 +1846,20 @@ logging support.")))
          (replace 'install
            (install-from-pom "pom.xml")))))
     (propagated-inputs
-     `(("maven-artifact" ,maven-artifact)
-       ("maven-repository-metadata" ,maven-repository-metadata)
-       ("maven-builder-support" ,maven-builder-support)
-       ("maven-model" ,maven-model)
-       ("maven-model-builder" ,maven-model-builder)
-       ("maven-settings" ,maven-settings)
-       ("maven-settings-builder" ,maven-settings-builder)
-       ("maven-core" ,maven-core)
-       ("maven-wagon-provider-api" ,maven-wagon-provider-api)
-       ("maven-wagon-file" ,maven-wagon-file)
-       ("maven-resolver-api" ,maven-resolver-api)
-       ("maven-resolver-util" ,maven-resolver-util)
-       ("maven-resolver-spi" ,maven-resolver-spi)
-       ("java-plexus-interpolation" ,java-plexus-interpolation)))
+     (list maven-artifact
+           maven-repository-metadata
+           maven-builder-support
+           maven-model
+           maven-model-builder
+           maven-settings
+           maven-settings-builder
+           maven-core
+           maven-wagon-provider-api
+           maven-wagon-file
+           maven-resolver-api
+           maven-resolver-util
+           maven-resolver-spi
+           java-plexus-interpolation))
     (native-inputs
      `(("java-modello-core" ,java-modello-core)
        ("java-plexus-utils" ,java-plexus-utils)
@@ -2000,59 +1972,58 @@ layer for plugins that need to keep Maven2 compatibility.")))
                (copy-recursively "apache-maven/src/conf" conf))
              #t)))))
     (inputs
-     `(("java-plexus-classworlds" ,java-plexus-classworlds)
-       ("maven-artifact" ,maven-artifact)
-       ("maven-embedder" ,maven-embedder)
-       ("maven-core" ,maven-core)
-       ("maven-compat" ,maven-compat)
-       ("maven-builder-support" ,maven-builder-support)
-       ("maven-model" ,maven-model)
-       ("maven-model-builder" ,maven-model-builder)
-       ("maven-settings" ,maven-settings)
-       ("maven-settings-builder" ,maven-settings-builder)
-       ("maven-plugin-api" ,maven-plugin-api)
-       ("maven-repository-metadata" ,maven-repository-metadata)
-       ("maven-shared-utils" ,maven-shared-utils)
-       ("maven-resolver-api" ,maven-resolver-api)
-       ("maven-resolver-spi" ,maven-resolver-spi)
-       ("maven-resolver-util" ,maven-resolver-util)
-       ("maven-resolver-impl" ,maven-resolver-impl)
-       ("maven-resolver-connector-basic" ,maven-resolver-connector-basic)
-       ("maven-resolver-provider" ,maven-resolver-provider)
-       ("maven-resolver-transport-wagon" ,maven-resolver-transport-wagon)
-       ("maven-wagon-provider-api" ,maven-wagon-provider-api)
-       ("maven-wagon-file" ,maven-wagon-file)
-       ("maven-wagon-http" ,maven-wagon-http)
-       ("java-commons-logging-minimal" ,java-commons-logging-minimal)
-       ("java-httpcomponents-httpclient" ,java-httpcomponents-httpclient)
-       ("java-httpcomponents-httpcore" ,java-httpcomponents-httpcore)
-       ("maven-wagon-http-shared" ,maven-wagon-http-shared)
-       ("maven-wagon-tck-http" ,maven-wagon-tck-http)
-       ("java-eclipse-sisu-plexus" ,java-eclipse-sisu-plexus)
-       ("java-guice" ,java-guice)
-       ("java-aopalliance" ,java-aopalliance)
-       ("java-cglib" ,java-cglib)
-       ("java-asm" ,java-asm)
-       ("java-eclipse-sisu-inject" ,java-eclipse-sisu-inject)
-       ("java-javax-inject" ,java-javax-inject)
-       ("java-plexus-component-annotations" ,java-plexus-component-annotations)
-       ("java-plexus-utils" ,java-plexus-utils)
-       ("java-plexus-interpolation" ,java-plexus-interpolation)
-       ("java-plexus-sec-dispatcher" ,java-plexus-sec-dispatcher)
-       ("java-plexus-cipher" ,java-plexus-cipher)
-       ("java-guava" ,java-guava)
-       ("java-jansi" ,java-jansi)
-       ("java-jsr250" ,java-jsr250)
-       ("java-cdi-api" ,java-cdi-api)
-       ("java-commons-cli" ,java-commons-cli)
-       ("java-commons-io" ,java-commons-io)
-       ("java-commons-lang3" ,java-commons-lang3)
-       ("java-slf4j-api" ,java-slf4j-api)
-       ;; TODO: replace with maven-slf4j-provider
-       ("java-slf4j-simple" ,java-slf4j-simple)))
+     (list java-plexus-classworlds
+           maven-artifact
+           maven-embedder
+           maven-core
+           maven-compat
+           maven-builder-support
+           maven-model
+           maven-model-builder
+           maven-settings
+           maven-settings-builder
+           maven-plugin-api
+           maven-repository-metadata
+           maven-shared-utils
+           maven-resolver-api
+           maven-resolver-spi
+           maven-resolver-util
+           maven-resolver-impl
+           maven-resolver-connector-basic
+           maven-resolver-provider
+           maven-resolver-transport-wagon
+           maven-wagon-provider-api
+           maven-wagon-file
+           maven-wagon-http
+           java-commons-logging-minimal
+           java-httpcomponents-httpclient
+           java-httpcomponents-httpcore
+           maven-wagon-http-shared
+           maven-wagon-tck-http
+           java-eclipse-sisu-plexus
+           java-guice
+           java-aopalliance
+           java-cglib
+           java-asm
+           java-eclipse-sisu-inject
+           java-javax-inject
+           java-plexus-component-annotations
+           java-plexus-utils
+           java-plexus-interpolation
+           java-plexus-sec-dispatcher
+           java-plexus-cipher
+           java-guava
+           java-jansi
+           java-jsr250
+           java-cdi-api
+           java-commons-cli
+           java-commons-io
+           java-commons-lang3
+           java-slf4j-api
+           ;; TODO: replace with maven-slf4j-provider
+           java-slf4j-simple))
     (propagated-inputs
-     `(("coreutils" ,coreutils)
-       ("which" ,which)))
+     (list coreutils which))
     (description "Apache Maven is a software project management and comprehension
 tool.  Based on the concept of a project object model: builds, dependency
 management, documentation creation, site publication, and distribution
@@ -2227,8 +2198,8 @@ reporting or the build process.")))
             (_ input)))
         (package-propagated-inputs maven-model-builder)))
     (native-inputs
-     `(("java-plexus-container-default" ,java-plexus-container-default)
-       ,@(package-native-inputs maven-plugin-api)))))
+     (modify-inputs (package-native-inputs maven-plugin-api)
+       (prepend java-plexus-container-default)))))
 
 (define-public maven-3.0-repository-metadata
   (package
@@ -2279,7 +2250,7 @@ reporting or the build process.")))
        ("java-plexus-utils" ,java-plexus-utils)
        ("maven-pom" ,maven-3.0-pom)))
     (native-inputs
-     `(("java-plexus-component-metadata" ,java-plexus-component-metadata)))))
+     (list java-plexus-component-metadata))))
 
 (define-public maven-3.0-core
   (package
@@ -2360,23 +2331,23 @@ reporting or the build process.")))
          (replace 'install
            (install-from-pom "pom.xml")))))
     (propagated-inputs
-     `(("maven-model" ,maven-3.0-model)
-       ("maven-settings" ,maven-3.0-settings)
-       ("maven-settings-builder" ,maven-3.0-settings-builder)
-       ("maven-repository-metadata" ,maven-3.0-repository-metadata)
-       ("maven-artifact" ,maven-3.0-artifact)
-       ("maven-model-builder" ,maven-3.0-model-builder)
-       ("maven-aether-provider" ,maven-3.0-aether-provider)
-       ("java-sonatype-aether-impl" ,java-sonatype-aether-impl)
-       ("java-sonatype-aether-api" ,java-sonatype-aether-api)
-       ("java-sonatype-aether-util" ,java-sonatype-aether-util)
-       ("java-plexus-interpolation" ,java-plexus-interpolation)
-       ("java-plexus-utils" ,java-plexus-utils)
-       ("java-plexus-classworlds" ,java-plexus-classworlds)
-       ("java-plexus-component-annotations" ,java-plexus-component-annotations)
-       ("java-plexus-container-default" ,java-plexus-container-default)
-       ("java-plexus-sec-dispatcher" ,java-plexus-sec-dispatcher)
-       ("maven-pom" ,maven-3.0-pom)))))
+     (list maven-3.0-model
+           maven-3.0-settings
+           maven-3.0-settings-builder
+           maven-3.0-repository-metadata
+           maven-3.0-artifact
+           maven-3.0-model-builder
+           maven-3.0-aether-provider
+           java-sonatype-aether-impl
+           java-sonatype-aether-api
+           java-sonatype-aether-util
+           java-plexus-interpolation
+           java-plexus-utils
+           java-plexus-classworlds
+           java-plexus-component-annotations
+           java-plexus-container-default
+           java-plexus-sec-dispatcher
+           maven-3.0-pom))))
 
 (define-public maven-3.0-compat
   (package
@@ -2396,24 +2367,24 @@ reporting or the build process.")))
                   #t))
               (delete 'build-tests))))))
     (propagated-inputs
-     `(("maven-model" ,maven-3.0-model)
-       ("maven-model-builder" ,maven-3.0-model-builder)
-       ("maven-settings" ,maven-3.0-settings)
-       ("maven-settings-builder" ,maven-3.0-settings-builder)
-       ("maven-artifact" ,maven-3.0-artifact)
-       ("maven-core" ,maven-3.0-core)
-       ("maven-aether-provider" ,maven-3.0-aether-provider)
-       ("maven-repository-metadata" ,maven-3.0-repository-metadata)
-       ("java-sonatype-aether-api" ,java-sonatype-aether-api)
-       ("java-sonatype-aether-util" ,java-sonatype-aether-util)
-       ("java-sonatype-aether-impl" ,java-sonatype-aether-impl)
-       ("java-plexus-utils" ,java-plexus-utils)
-       ("java-plexus-interpolation" ,java-plexus-interpolation)
-       ("java-eclipse-sisu-plexus" ,java-eclipse-sisu-plexus)
-       ("java-plexus-component-annotations" ,java-plexus-component-annotations)
-       ("java-plexus-container-default" ,java-plexus-container-default)
-       ("maven-wagon-provider-api" ,maven-wagon-provider-api)
-       ("maven-pom" ,maven-3.0-pom)))))
+     (list maven-3.0-model
+           maven-3.0-model-builder
+           maven-3.0-settings
+           maven-3.0-settings-builder
+           maven-3.0-artifact
+           maven-3.0-core
+           maven-3.0-aether-provider
+           maven-3.0-repository-metadata
+           java-sonatype-aether-api
+           java-sonatype-aether-util
+           java-sonatype-aether-impl
+           java-plexus-utils
+           java-plexus-interpolation
+           java-eclipse-sisu-plexus
+           java-plexus-component-annotations
+           java-plexus-container-default
+           maven-wagon-provider-api
+           maven-3.0-pom))))
 
 (define-public maven-shared-utils-3.0
   (package
@@ -2427,9 +2398,8 @@ reporting or the build process.")))
                (base32
                 "0qm8y85kip2hyhnhlkqgj0rhmf83z07s7l7gzsfl5dzl3kvp8nal"))))
     (propagated-inputs
-     `(("maven-core" ,maven-3.0-core)
-       ("maven-components-parent-pom" ,maven-components-parent-pom-21)
-       ,@(package-propagated-inputs maven-shared-utils)))))
+     (modify-inputs (package-propagated-inputs maven-shared-utils)
+       (prepend maven-3.0-core maven-components-parent-pom-21)))))
 
 (define-public maven-shared-utils-3.1
   (package
@@ -2470,17 +2440,15 @@ reporting or the build process.")))
          (replace 'install
            (install-from-pom "pom.xml")))))
     (propagated-inputs
-     `(("maven-artifact" ,maven-3.0-artifact)
-       ("maven-compat" ,maven-3.0-compat)
-       ("maven-plugin-api" ,maven-3.0-plugin-api)
-       ("maven-shared-utils" ,maven-shared-utils)
-       ("maven-wagon-provider-api" ,maven-wagon-provider-api)
-       ("java-plexus-utils" ,java-plexus-utils)
-       ("maven-components-parent-pom" ,maven-components-parent-pom-22)))
+     (list maven-3.0-artifact
+           maven-3.0-compat
+           maven-3.0-plugin-api
+           maven-shared-utils
+           maven-wagon-provider-api
+           java-plexus-utils
+           maven-components-parent-pom-22))
     (native-inputs
-     `(("unzip" ,unzip)
-       ("java-junit" ,java-junit)
-       ("java-easymock" ,java-easymock)))
+     (list unzip java-junit java-easymock))
     (home-page "https://maven.apache.org/shared/maven-dependency-tree")
     (synopsis "Tree-based API for resolution of Maven project dependencies")
     (description "This package provides a tree-based API for resolution of
@@ -2524,11 +2492,8 @@ Maven project dependencies.")
          (replace 'install
            (install-from-pom "pom.xml")))))
     (propagated-inputs
-     `(("maven-plugin-api" ,maven-3.0-plugin-api)
-       ("maven-shared-io" ,maven-shared-io)
-       ("maven-shared-utils" ,maven-shared-utils)
-       ("java-plexus-utils" ,java-plexus-utils)
-       ("maven-components-parent-pom" ,maven-components-parent-pom-22)))
+     (list maven-3.0-plugin-api maven-shared-io maven-shared-utils
+           java-plexus-utils maven-components-parent-pom-22))
     (native-inputs
      `(("java-modello-core" ,java-modello-core)
        ;; modello plugins:
@@ -2572,9 +2537,7 @@ Maven project dependencies.")
        ("java-plexus-utils" ,java-plexus-utils)
        ("maen-parent-pom" ,maven-parent-pom-33)))
     (native-inputs
-     `(("java-junit" ,java-junit)
-       ("java-assertj" ,java-assertj)
-       ("unzip" ,unzip)))
+     (list java-junit java-assertj unzip))
     (home-page "https://maven.apache.org/shared/maven-dependency-tree")
     (synopsis "Tree-based API for resolution of Maven project dependencies")
     (description "This package provides a tree-based API for resolution of
@@ -2602,17 +2565,13 @@ Maven project dependencies.")
          (replace 'install
            (install-from-pom "pom.xml")))))
     (propagated-inputs
-     `(("maven-core" ,maven-3.0-core)
-       ("java-plexus-component-annotations" ,java-plexus-component-annotations)
-       ("maven-parent-pom" ,maven-parent-pom-30)))
+     (list maven-3.0-core java-plexus-component-annotations
+           maven-parent-pom-30))
     (inputs
-     `(("java-sonatype-aether-api"  ,java-sonatype-aether-api)
-       ("java-sonatype-aether-util" ,java-sonatype-aether-util)
-       ("java-eclipse-aether-api" ,java-eclipse-aether-api)
-       ("java-eclipse-aether-util" ,java-eclipse-aether-util)))
+     (list java-sonatype-aether-api java-sonatype-aether-util
+           java-eclipse-aether-api java-eclipse-aether-util))
     (native-inputs
-     `(("unzip" ,unzip)
-       ("java-junit" ,java-junit)))
+     (list unzip java-junit))
     (home-page "https://maven.apache.org/shared/maven-dependency-tree")
     (synopsis "Tree-based API for resolution of Maven project dependencies")
     (description "This package provides a tree-based API for resolution of
@@ -2649,19 +2608,18 @@ Maven project dependencies.")
          (replace 'install
            (install-from-pom "pom.xml")))))
     (propagated-inputs
-     `(("maven-artifact" ,maven-3.0-artifact)
-       ("maven-model" ,maven-3.0-model)
-       ("maven-core" ,maven-3.0-core)
-       ("maven-plugin-api" ,maven-3.0-plugin-api)
-       ("maven-shared-utils" ,maven-shared-utils)
-       ("maven-parent-pom" ,maven-parent-pom-33)
-       ("java-sonatype-aether-api" ,java-sonatype-aether-api)
-       ("java-sonatype-aether-util" ,java-sonatype-aether-util)))
+     (list maven-3.0-artifact
+           maven-3.0-model
+           maven-3.0-core
+           maven-3.0-plugin-api
+           maven-shared-utils
+           maven-parent-pom-33
+           java-sonatype-aether-api
+           java-sonatype-aether-util))
     (inputs
-     `(("maven-resolver-api" ,maven-resolver-api)
-       ("maven-resolver-util" ,maven-resolver-util)))
+     (list maven-resolver-api maven-resolver-util))
     (native-inputs
-     `(("unzip" ,unzip)))
+     (list unzip))
    (home-page "https://maven.apache.org/shared/maven-dependency-tree")
     (synopsis "Tree-based API for resolution of Maven project dependencies")
     (description "This package provides a tree-based API for resolution of
@@ -2691,12 +2649,10 @@ Maven project dependencies.")
          (replace 'install
            (install-from-pom "enforcer-api/pom.xml")))))
     (propagated-inputs
-     `(("maven-plugin-api" ,maven-plugin-api)
-       ("java-plexus-container-default" ,java-plexus-container-default)
-       ("java-jsr305" ,java-jsr305)
-       ("maven-enforcer-parent-pom" ,maven-enforcer-parent-pom)))
+     (list maven-plugin-api java-plexus-container-default java-jsr305
+           maven-enforcer-parent-pom))
     (native-inputs
-     `(("unzip" ,unzip)))
+     (list unzip))
     (home-page "https://maven.apache.org/shared/maven-dependency-tree")
     (synopsis "Tree-based API for resolution of Maven project dependencies")
     (description "This package provides a tree-based API for resolution of
@@ -2741,18 +2697,18 @@ Maven project dependencies.")
          (replace 'install
            (install-from-pom "enforcer-rules/pom.xml")))))
     (propagated-inputs
-     `(("maven-artifact" ,maven-artifact)
-       ("maven-plugin-api" ,maven-plugin-api)
-       ("maven-core" ,maven-core)
-       ("maven-common-artifact-filters" ,maven-common-artifact-filters)
-       ("java-commons-codec" ,java-commons-codec)
-       ("java-commons-lang3" ,java-commons-lang3)
-       ("maven-enforcer-api" ,maven-enforcer-api)
-       ("maven-resolver-util" ,maven-resolver-util)
-       ("java-bsh" ,java-bsh)
-       ("maven-dependency-tree" ,maven-dependency-tree)
-       ("maven-compat" ,maven-3.0-compat)
-       ("maven-enforcer-parent-pom" ,maven-enforcer-parent-pom)))))
+     (list maven-artifact
+           maven-plugin-api
+           maven-core
+           maven-common-artifact-filters
+           java-commons-codec
+           java-commons-lang3
+           maven-enforcer-api
+           maven-resolver-util
+           java-bsh
+           maven-dependency-tree
+           maven-3.0-compat
+           maven-enforcer-parent-pom))))
 
 (define-public maven-enforcer-plugin
   (package
@@ -2774,14 +2730,14 @@ Maven project dependencies.")
          (replace 'install
            (install-from-pom "maven-enforcer-plugin/pom.xml")))))
     (propagated-inputs
-     `(("maven-artifact" ,maven-artifact)
-       ("maven-plugin-api" ,maven-plugin-api)
-       ("maven-core" ,maven-core)
-       ("java-plexus-utils" ,java-plexus-utils)
-       ("maven-enforcer-api" ,maven-enforcer-api)
-       ("maven-enforcer-rules" ,maven-enforcer-rules)
-       ("maven-plugin-annotations" ,maven-plugin-annotations)
-       ("maven-enforcer-parent-pom" ,maven-enforcer-parent-pom)))))
+     (list maven-artifact
+           maven-plugin-api
+           maven-core
+           java-plexus-utils
+           maven-enforcer-api
+           maven-enforcer-rules
+           maven-plugin-annotations
+           maven-enforcer-parent-pom))))
 
 (define-public maven-artifact-transfer
   (package
@@ -2818,21 +2774,20 @@ Maven project dependencies.")
          (replace 'install
            (install-from-pom "pom.xml")))))
     (propagated-inputs
-     `(("java-commons-codec" ,java-commons-codec)
-       ("maven-artifact" ,maven-3.0-artifact)
-       ("maven-core" ,maven-3.0-core)
-       ("maven-common-artifact-filters" ,maven-common-artifact-filters)
-       ("java-plexus-component-annotations" ,java-plexus-component-annotations)
-       ("java-plexus-utils" ,java-plexus-utils)
-       ("java-slf4j-api" ,java-slf4j-api)
-       ("java-plexus-classworlds" ,java-plexus-classworlds)
-       ("java-sonatype-aether-api" ,java-sonatype-aether-api)
-       ("java-eclipse-aether-api" ,java-eclipse-aether-api)
-       ("java-eclipse-aether-util" ,java-eclipse-aether-util)
-       ("java-eclipse-aether-impl" ,java-eclipse-aether-impl)))
+     (list java-commons-codec
+           maven-3.0-artifact
+           maven-3.0-core
+           maven-common-artifact-filters
+           java-plexus-component-annotations
+           java-plexus-utils
+           java-slf4j-api
+           java-plexus-classworlds
+           java-sonatype-aether-api
+           java-eclipse-aether-api
+           java-eclipse-aether-util
+           java-eclipse-aether-impl))
     (native-inputs
-     `(("unzip" ,unzip)
-       ("java-plexus-component-metadata" ,java-plexus-component-metadata)))
+     (list unzip java-plexus-component-metadata))
     (home-page "https://maven.apache.org/shared/maven-artifact-transfer")
     (synopsis "API to install, deploy and resolve artifacts in Maven")
     (description "This package contains an API to install, deploy and resolve
@@ -2882,10 +2837,9 @@ artifacts in Maven 3.")
        ("maven-plugins-pom-23" ,maven-plugins-pom-23)
        ("java-plexus-digest" ,java-plexus-digest)))
     (inputs
-     `(("maven-plugin-annotations" ,maven-plugin-annotations)
-       ("java-slf4j-api" ,java-slf4j-api)))
+     (list maven-plugin-annotations java-slf4j-api))
     (native-inputs
-     `(("unzip" ,unzip)))
+     (list unzip))
     (home-page "https://maven.apache.org/plugin/maven-install-plugin")
     (synopsis "Maven's install plugin")
     (description "The Install Plugin is used during the install phase to add
@@ -2951,14 +2905,14 @@ build are stored.  By default, it is located within the user's home directory
          (replace 'install
            (install-from-pom "pom.xml")))))
     (propagated-inputs
-     `(("maven-core" ,maven-3.0-core)
-       ("maven-shared-utils" ,maven-shared-utils)
-       ("java-plexus-utils" ,java-plexus-utils)
-       ("java-plexus-interpolation" ,java-plexus-interpolation)
-       ("java-sisu-build-api" ,java-sisu-build-api)
-       ("maven-parent-pom" ,maven-parent-pom-30)))
+     (list maven-3.0-core
+           maven-shared-utils
+           java-plexus-utils
+           java-plexus-interpolation
+           java-sisu-build-api
+           maven-parent-pom-30))
     (inputs
-     `(("java-jsr305" ,java-jsr305)))
+     (list java-jsr305))
     (native-inputs
      `(("unzip" ,unzip)
        ("java-assertj" ,java-assertj)
@@ -3004,17 +2958,16 @@ projects.")
          (replace 'install
            (install-from-pom "pom.xml")))))
     (propagated-inputs
-     `(("maven-plugin-api" ,maven-plugin-api)
-       ("maven-core" ,maven-core)
-       ("java-plexus-utils" ,java-plexus-utils)
-       ("maven-filtering" ,maven-filtering)
-       ("java-plexus-interpolation" ,java-plexus-interpolation)
-       ("maven-parent-pom" ,maven-parent-pom-31)))
+     (list maven-plugin-api
+           maven-core
+           java-plexus-utils
+           maven-filtering
+           java-plexus-interpolation
+           maven-parent-pom-31))
     (inputs
-     `(("maven-plugin-annotations" ,maven-plugin-annotations)
-       ("java-commons-io" ,java-commons-io)))
+     (list maven-plugin-annotations java-commons-io))
     (native-inputs
-     `(("java-plexus-component-metadata" ,java-plexus-component-metadata)))
+     (list java-plexus-component-metadata))
     (home-page "https://maven.apache.org/plugins/maven-resources-plugin")
     (synopsis "Maven plugin to collect and install resources")
     (description "The Resources Plugin handles the copying of project resources
@@ -3068,14 +3021,10 @@ unit tests.")
          (replace 'install
            (install-from-pom "pom.xml")))))
     (propagated-inputs
-     `(("maven-plugin-api" ,maven-plugin-api)
-       ("maven-core" ,maven-core)
-       ("maven-shared-utils" ,maven-shared-utils)
-       ("java-plexus-component-annotations" ,java-plexus-component-annotations)
-       ("maven-parent-pom" ,maven-parent-pom-30)))
+     (list maven-plugin-api maven-core maven-shared-utils
+           java-plexus-component-annotations maven-parent-pom-30))
     (native-inputs
-     `(("unzip" ,unzip)
-       ("java-plexus-component-metadata" ,java-plexus-component-metadata)))
+     (list unzip java-plexus-component-metadata))
     (home-page "https://maven.apache.org/shared/maven-shared-incremental")
     (synopsis "Maven Incremental Build support utilities")
     (description "This package contains various utility classes and plexus
@@ -3121,19 +3070,18 @@ components for supporting incremental build functionality in maven plugins.")
          (replace 'install
            (install-from-pom "pom.xml")))))
     (propagated-inputs
-     `(("maven-plugin-api" ,maven-plugin-api)
-       ("maven-artifact" ,maven-artifact)
-       ("maven-core" ,maven-core)
-       ("maven-shared-utils" ,maven-shared-utils)
-       ("maven-shared-incremental" ,maven-shared-incremental)
-       ("java-plexus-java" ,java-plexus-java)
-       ("java-plexus-compiler-api" ,java-plexus-compiler-api)
-       ("java-plexus-compiler-manager" ,java-plexus-compiler-manager)
-       ("java-plexus-compiler-javac" ,java-plexus-compiler-javac)
-       ("maven-parent-pom" ,maven-parent-pom-33)))
+     (list maven-plugin-api
+           maven-artifact
+           maven-core
+           maven-shared-utils
+           maven-shared-incremental
+           java-plexus-java
+           java-plexus-compiler-api
+           java-plexus-compiler-manager
+           java-plexus-compiler-javac
+           maven-parent-pom-33))
     (inputs
-     `(("maven-plugin-annotations" ,maven-plugin-annotations)
-       ("java-commons-io" ,java-commons-io)))
+     (list maven-plugin-annotations java-commons-io))
     (home-page "https://maven.apache.org/plugins/maven-compiler-plugin")
     (synopsis "Compiler plugin for Maven")
     (description "The Compiler Plugin is used to compile the sources of your
@@ -3172,9 +3120,9 @@ AspectJ, .NET, and C#.")
          (replace 'install
            (install-from-pom "surefire-logger-api/pom.xml")))))
     (propagated-inputs
-     `(("java-surefire-parent-pom" ,java-surefire-parent-pom)))
+     (list java-surefire-parent-pom))
     (native-inputs
-     `(("unzip" ,unzip)))
+     (list unzip))
     (home-page "https://maven.apache.org/surefire/surefire-logger-api")
     (synopsis "Interfaces and Utilities related only to internal SureFire Logger API")
     (description "This package contains interfaces and utilities that are
@@ -3220,7 +3168,7 @@ internal to the SureFire Logger API.  It is designed to have no dependency.")
          (replace 'install
            (install-pom-file "pom.xml")))))
     (propagated-inputs
-     `(("maven-parent-pom" ,maven-parent-pom-33)))))
+     (list maven-parent-pom-33))))
 
 (define-public java-surefire-api
   (package
@@ -3276,15 +3224,12 @@ internal to the SureFire Logger API.  It is designed to have no dependency.")
          (replace 'install
            (install-from-pom "surefire-api/pom.xml")))))
     (propagated-inputs
-     `(("java-surefire-logger-api" ,java-surefire-logger-api)
-       ("java-commons-codec" ,java-commons-codec)
-       ("java-surefire-parent-pom" ,java-surefire-parent-pom)
-       ("maven-shared-utils" ,maven-shared-utils-3.1)))
+     (list java-surefire-logger-api java-commons-codec
+           java-surefire-parent-pom maven-shared-utils-3.1))
     (inputs
-     `(("java-jsr305" ,java-jsr305)))
+     (list java-jsr305))
     (native-inputs
-     `(("unzip" ,unzip)
-       ("java-jarjar" ,java-jarjar)))
+     (list unzip java-jarjar))
     (synopsis "Maven SureFire API")
     (description "This package contains the API to use Maven SureFire.")))
 
@@ -3306,12 +3251,10 @@ internal to the SureFire Logger API.  It is designed to have no dependency.")
          (replace 'install
            (install-from-pom "surefire-booter/pom.xml")))))
     (propagated-inputs
-     `(("java-surefire-api" ,java-surefire-api)
-       ("java-commons-lang3" ,java-commons-lang3)
-       ("java-commons-io" ,java-commons-io)
-       ("java-surefire-parent-pom" ,java-surefire-parent-pom)))
+     (list java-surefire-api java-commons-lang3 java-commons-io
+           java-surefire-parent-pom))
     (inputs
-     `(("java-jsr305" ,java-jsr305)))
+     (list java-jsr305))
     (synopsis "API and Facilities used by forked tests running in JVM sub-process")
     (description "SureFire runs tests inside a forked JVM subprocess.  This
 package contains an API and facilities used inside that forked JVM.")))
@@ -3329,10 +3272,9 @@ package contains an API and facilities used inside that forked JVM.")))
          (replace 'install
            (install-from-pom "surefire-extensions-api/pom.xml")))))
     (propagated-inputs
-     `(("java-surefire-api" ,java-surefire-api)
-       ("java-surefire-parent-pom" ,java-surefire-parent-pom)))
+     (list java-surefire-api java-surefire-parent-pom))
     (inputs
-     `(("java-plexus-component-annotations" ,java-plexus-component-annotations)))
+     (list java-plexus-component-annotations))
     (synopsis "Extension API for Maven SureFire")
     (description "Surefire is a test framework project.  This is the aggregator
 POM in Apache Maven Surefire project.")))
@@ -3383,14 +3325,10 @@ POM in Apache Maven Surefire project.")))
          (replace 'install
            (install-from-pom "surefire-providers/common-java5/pom.xml")))))
     (propagated-inputs
-     `(("maven-shared-utils" ,maven-shared-utils-3.1)
-       ("java-surefire-api" ,java-surefire-api)
-       ("java-surefire-parent-pom" ,java-surefire-parent-pom)))
+     (list maven-shared-utils-3.1 java-surefire-api
+           java-surefire-parent-pom))
     (native-inputs
-     `(("unzip" ,unzip)
-       ("java-jarjar" ,java-jarjar)
-       ("java-junit" ,java-junit)
-       ("java-fest-assert" ,java-fest-assert)))
+     (list unzip java-jarjar java-junit java-fest-assert))
     (synopsis "Common java5 facilities for Maven SureFire")
     (description "This package contains shared Java 5 code for all providers.")))
 
@@ -3407,13 +3345,9 @@ POM in Apache Maven Surefire project.")))
          (replace 'install
            (install-from-pom "surefire-providers/common-junit3/pom.xml")))))
     (propagated-inputs
-     `(("java-junit" ,java-junit)
-       ("java-surefire-api" ,java-surefire-api)
-       ("java-surefire-parent-pom" ,java-surefire-parent-pom)))
+     (list java-junit java-surefire-api java-surefire-parent-pom))
     (native-inputs
-     `(("unzip" ,unzip)
-       ("java-junit" ,java-junit)
-       ("java-fest-assert" ,java-fest-assert)))
+     (list unzip java-junit java-fest-assert))
     (synopsis "Shared JUnit3 provider code for Maven SureFire")
     (description "This package contains shared code for all JUnit providers.")))
 
@@ -3430,12 +3364,12 @@ POM in Apache Maven Surefire project.")))
          (replace 'install
            (install-from-pom "surefire-providers/common-junit4/pom.xml")))))
     (propagated-inputs
-     `(("java-junit" ,java-junit)
-       ("java-surefire-api" ,java-surefire-api)
-       ("java-surefire-common-java5" ,java-surefire-common-java5)
-       ("java-surefire-common-junit3" ,java-surefire-common-junit3)
-       ("maven-shared-utils" ,maven-shared-utils-3.1)
-       ("java-surefire-parent-pom" ,java-surefire-parent-pom)))
+     (list java-junit
+           java-surefire-api
+           java-surefire-common-java5
+           java-surefire-common-junit3
+           maven-shared-utils-3.1
+           java-surefire-parent-pom))
     (synopsis "Shared JUnit4 provider code for Maven SureFire")
     (description "This package contains shared code for all JUnit providers,
 starting from JUnit 4.")))
@@ -3509,19 +3443,13 @@ starting from JUnit 4.")))
          (replace 'install
            (install-from-pom "surefire-providers/surefire-junit4/pom.xml")))))
     (propagated-inputs
-     `(("java-junit" ,java-junit)
-       ("java-surefire-parent-pom" ,java-surefire-parent-pom)))
+     (list java-junit java-surefire-parent-pom))
     (inputs
-     `(("java-surefire-common-junit4" ,java-surefire-common-junit4)
-       ("java-surefire-common-junit3" ,java-surefire-common-junit3)
-       ("java-surefire-common-java5" ,java-surefire-common-java5)
-       ("java-surefire-api" ,java-surefire-api)))
+     (list java-surefire-common-junit4 java-surefire-common-junit3
+           java-surefire-common-java5 java-surefire-api))
     (native-inputs
-     `(("java-jarjar" ,java-jarjar)
-       ("unzip" ,unzip)
-       ("java-junit" ,java-junit)
-       ("java-hamcrest-all" ,java-hamcrest-all)
-       ("java-fest-assert" ,java-fest-assert)))
+     (list java-jarjar unzip java-junit java-hamcrest-all
+           java-fest-assert))
     (synopsis "SureFire JUnit 4.0+ runner")
     (description "This package contains the runner for tests run on a forked
 JVM, using JUnit 4.0 or later.")))
@@ -3591,25 +3519,24 @@ JVM, using JUnit 4.0 or later.")))
          (replace 'install
            (install-from-pom "maven-surefire-common/pom.xml")))))
     (propagated-inputs
-     `(("java-surefire-api" ,java-surefire-api)
-       ("java-surefire-extensions-api" ,java-surefire-extensions-api)
-       ("java-surefire-booter" ,java-surefire-booter)
-       ("maven-core" ,maven-core)
-       ("maven-plugin-annotations" ,maven-plugin-annotations)
-       ("maven-common-artifact-filters" ,maven-common-artifact-filters)
-       ("maven-artifact-transfer" ,maven-artifact-transfer)
-       ("java-plexus-java" ,java-plexus-java)
-       ("java-jansi" ,java-jansi)
-       ("java-commons-io" ,java-commons-io)
-       ("java-commons-lang3" ,java-commons-lang3)
-       ("java-commons-compress" ,java-commons-compress)
-       ("maven-shared-utils" ,maven-shared-utils-3.1)
-       ("java-surefire-parent-pom" ,java-surefire-parent-pom)))
+     (list java-surefire-api
+           java-surefire-extensions-api
+           java-surefire-booter
+           maven-core
+           maven-plugin-annotations
+           maven-common-artifact-filters
+           maven-artifact-transfer
+           java-plexus-java
+           java-jansi
+           java-commons-io
+           java-commons-lang3
+           java-commons-compress
+           maven-shared-utils-3.1
+           java-surefire-parent-pom))
     (inputs
-     `(("java-jsr305" ,java-jsr305)))
+     (list java-jsr305))
     (native-inputs
-     `(("unzip" ,unzip)
-       ("java-jarjar" ,java-jarjar)))
+     (list unzip java-jarjar))
     (synopsis "API used in Surefire and Failsafe MOJO")
     (description "This package contains an API used in SureFire and Failsafe
 MOJO.")))
@@ -3635,11 +3562,9 @@ MOJO.")))
          (replace 'install
            (install-from-pom "maven-surefire-plugin/pom.xml")))))
     (propagated-inputs
-     `(("maven-surefire-common" ,maven-surefire-common)
-       ("maven-core" ,maven-core)))
+     (list maven-surefire-common maven-core))
     (native-inputs
-     `(("maven-plugin-annotations" ,maven-plugin-annotations)
-       ("unzip" ,unzip)))
+     (list maven-plugin-annotations unzip))
     (synopsis "SureFire Maven plugin that runs tests.")
     (description "The Surefire Plugin is used during the test phase of the
 build lifecycle to execute the unit tests of an application.  It generates
@@ -3675,16 +3600,16 @@ reports in two different file formats, plain text and xml.")))
          (replace 'install
            (install-from-pom "pom.xml")))))
     (propagated-inputs
-     `(("maven-archiver" ,maven-archiver)
-       ("maven-artifact" ,maven-3.0-artifact)
-       ("maven-core" ,maven-3.0-core)
-       ("maven-plugin-api" ,maven-3.0-plugin-api)
-       ("maven-file-management" ,maven-file-management)
-       ("maven-shared-utils" ,maven-shared-utils)
-       ("java-plexus-archiver" ,java-plexus-archiver)
-       ("java-plexus-utils" ,java-plexus-utils)))
+     (list maven-archiver
+           maven-3.0-artifact
+           maven-3.0-core
+           maven-3.0-plugin-api
+           maven-file-management
+           maven-shared-utils
+           java-plexus-archiver
+           java-plexus-utils))
     (inputs
-     `(("maven-plugin-annotations" ,maven-plugin-annotations)))
+     (list maven-plugin-annotations))
     (home-page "https://maven.apache.org/plugins/maven-jar-plugin")
     (synopsis "Jar builder plugin for Maven")
     (description "This plugin provides the capability to build jars.  If you

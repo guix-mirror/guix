@@ -117,15 +117,9 @@ Date/Publication: 2015-07-14 14:15:16
                       (? string? hash)))))
          ('properties ('quasiquote (('upstream-name . "My-Example"))))
          ('build-system 'r-build-system)
-         ('inputs
-          ('quasiquote
-           (("cairo" ('unquote 'cairo)))))
+         ('inputs ('list 'cairo))
          ('propagated-inputs
-          ('quasiquote
-           (("r-bh" ('unquote 'r-bh))
-            ("r-proto" ('unquote 'r-proto))
-            ("r-rcpp" ('unquote 'r-rcpp))
-            ("r-scales" ('unquote 'r-scales)))))
+          ('list 'r-bh 'r-proto 'r-rcpp 'r-scales))
          ('home-page "http://gnu.org/s/my-example")
          ('synopsis "Example package")
          ('description

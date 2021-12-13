@@ -5,7 +5,7 @@
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2014 Cyrill Schenkel <cyrill.schenkel@gmail.com>
 ;;; Copyright © 2014 Sylvain Beucler <beuc@beuc.net>
-;;; Copyright © 2014, 2015, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2018, 2019, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2014, 2015, 2019 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016 Andreas Enge <andreas@enge.fr>
@@ -42,7 +42,7 @@
 ;;; Copyright © 2019 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2019, 2020 Jesse Gibbons <jgibbons2357+guix@gmail.com>
 ;;; Copyright © 2019 Dan Frumin <dfrumin@cs.ru.nl>
-;;; Copyright © 2019, 2020 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2019, 2020, 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019, 2020 Timotej Lazar <timotej.lazar@araneo.si>
 ;;; Copyright © 2019 Josh Holland <josh@inv.alid.pw>
 ;;; Copyright © 2019 Pkill -9 <pkill9@runbox.com>
@@ -178,6 +178,7 @@
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages readline)
@@ -271,8 +272,7 @@
                     (#f "Side-scrolling game")))))
              #t)))))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)))
+     (list autoconf automake))
     (inputs
      `(("libxi" ,libxi)
        ("libxmu" ,libxmu)
@@ -415,14 +415,14 @@ The game includes a built-in editor so you can design and share your own maps.")
                 "18gn4sg4j5sw38ngb90sl50raliplrsgjcvy8fjwry733k0cgdjr"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("libxml2" ,libxml2)
-       ("sdl" ,sdl)
-       ("sdl-image" ,sdl-image)
-       ("freeglut" ,freeglut)
-       ("libpng" ,libpng)
-       ("libjpeg-turbo" ,libjpeg-turbo)))
+     (list libxml2
+           sdl
+           sdl-image
+           freeglut
+           libpng
+           libjpeg-turbo))
     (home-page "http://www.armagetronad.org")
     (synopsis "Tron clone in 3D")
     (description "Armagetron Advanced is a multiplayer game in 3d that
@@ -473,13 +473,13 @@ physics settings to tweak as well.")
                               (string-append icons "/astromenace.png")))))
              #t)))))
     (inputs
-     `(("freealut" ,freealut)
-       ("freetype" ,freetype)
-       ("glu" ,glu)
-       ("libogg" ,libogg)
-       ("libvorbis" ,libvorbis)
-       ("openal" ,openal)
-       ("sdl2" ,sdl2)))
+     (list freealut
+           freetype
+           glu
+           libogg
+           libvorbis
+           openal
+           sdl2))
     (home-page "https://www.viewizard.com/")
     (synopsis "3D space shooter with spaceship upgrade possibilities")
     (description
@@ -544,10 +544,9 @@ regret their insolence.")
                              (string-append out "/share/man/man6"))
                #t))))))
     (native-inputs
-     `(("hicolor-icon-theme" ,hicolor-icon-theme)))
+     (list hicolor-icon-theme))
     (inputs
-     `(("boost" ,boost)
-       ("ncurses" ,ncurses)))
+     (list boost ncurses))
     (home-page "https://fph.altervista.org/prog/bastet.html")
     (synopsis "Antagonistic Tetris-style falling brick game for text terminals")
     (description
@@ -574,7 +573,7 @@ canyons and wait for the long I-shaped block to clear four rows at a time.")
          "0b4pddqz6is1771qmvcj8qqlr4in2djdbkk13agvp9yhfah2v8x7"))))
     (build-system gnu-build-system)
     (inputs
-     `(("ncurses" ,ncurses)))
+     (list ncurses))
     (arguments
      `(#:tests? #f                      ;no tests
        #:make-flags '("CC=gcc")
@@ -711,8 +710,7 @@ possible, while battling many vicious aliens.")
          "bsd-games-add-wrapper.patch"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("flex" ,flex)
-       ("bison" ,bison)))
+     (list flex bison))
     (inputs
      `(("curses" ,ncurses)
        ("pager" ,less)
@@ -727,8 +725,7 @@ possible, while battling many vicious aliens.")
                     (bin (string-append out "/bin"))
                     (doc (string-append out "/share/doc/bsd-games-" ,version))
                     (man (string-append out "/share/man"))
-                    (word-list (string-append (assoc-ref inputs "miscfiles")
-                                              "/share/web2"))
+                    (word-list (search-input-file inputs "/share/web2"))
                     (static-data (string-append out "/share/games/bsd-games"))
                     ;; Not a "./" because of substitute* in 'patch-install
                     ;; below.  The .// allow us not to mess with the games'
@@ -852,14 +849,14 @@ Quizzes: arithmetic and quiz.")
                          '("48" "256")))
              #t)))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("c-ares" ,c-ares)
-       ("curl" ,curl)
-       ("glew" ,glew)
-       ("glu" ,glu)
-       ("sdl2" ,sdl2)
-       ("zlib" ,zlib)))
+     (list c-ares
+           curl
+           glew
+           glu
+           sdl2
+           zlib))
     (home-page "https://www.bzflag.org/")
     (synopsis "3D first person tank battle game")
     (description
@@ -935,14 +932,14 @@ high a score as possible.")
        ("pkg-config" ,pkg-config)
        ("astyle" ,astyle)))
     (inputs
-     `(("freetype" ,freetype)
-       ("libogg" ,libogg)
-       ("libvorbis" ,libvorbis)
-       ("ncurses" ,ncurses)
-       ("sdl2" ,sdl2)
-       ("sdl2-image" ,sdl2-image)
-       ("sdl2-ttf" ,sdl2-ttf)
-       ("sdl2-mixer" ,sdl2-mixer)))
+     (list freetype
+           libogg
+           libvorbis
+           ncurses
+           sdl2
+           sdl2-image
+           sdl2-ttf
+           sdl2-mixer))
     (home-page "https://cataclysmdda.org/")
     (synopsis "Survival horror roguelike video game")
     (description
@@ -983,17 +980,16 @@ want what you have.")
                              "-DWITH_ORACLE=1"
                              "-DTEST=1")))
       (native-inputs
-       `(("googletest" ,googletest)
-         ("pkg-config" ,pkg-config)))
+       (list googletest pkg-config))
       (inputs
-       `(("protobuf" ,protobuf)
-         ("qtbase" ,qtbase-5)
-         ("qtmultimedia" ,qtmultimedia)
-         ("qtsvg" ,qtsvg)
-         ("qttools" ,qttools)
-         ("qtwebsockets" ,qtwebsockets)
-         ("xz" ,xz)
-         ("zlib" ,zlib)))
+       (list protobuf
+             qtbase-5
+             qtmultimedia
+             qtsvg
+             qttools
+             qtwebsockets
+             xz
+             zlib))
       (home-page "https://cockatrice.github.io")
       (synopsis "Tabletop card game simulator")
       (description "Cockatrice is a program for playing tabletop card games
@@ -1039,14 +1035,14 @@ allows users to brew while offline.")
        #:tests? #f)) ; TODO need busted package to run tests
     ;; Omit Lua-Socket dependency to disable automatic updates.
     (inputs
-     `(("ffmpeg" ,ffmpeg)
-       ("fluid-3" ,fluid-3)
-       ("freetype" ,freetype)
-       ("lua" ,lua)
-       ("lua-filesystem" ,lua-filesystem)
-       ("lua-lpeg" ,lua-lpeg)
-       ("sdl2" ,sdl2)
-       ("sdl2-mixer" ,sdl2-mixer)))
+     (list ffmpeg
+           fluid-3
+           freetype
+           lua
+           lua-filesystem
+           lua-lpeg
+           sdl2
+           sdl2-mixer))
     (home-page "https://corsixth.com")
     (synopsis "Implementation of the @i{Theme Hospital} game engine")
     (description
@@ -1088,7 +1084,7 @@ more.  This package does @emph{not} provide the game assets.")
                                     "/bin/cowsay")
                      "We're done!"))))))
     (inputs
-     `(("perl" ,perl)))
+     (list perl))
     (home-page (string-append "https://web.archive.org/web/20071026043648/"
                               "http://www.nog.net:80/~tony/warez/cowsay.shtml"))
     (synopsis "Speaking cow text filter")
@@ -1154,7 +1150,7 @@ characters and lines resulting in a rainbow effect.")
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f)) ; no tests provided
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs (list pkg-config))
     (inputs `(("sdl" ,(sdl-union (list sdl2
                                        sdl2-image
                                        sdl2-mixer)))
@@ -1236,10 +1232,9 @@ should be placed in @file{~/.local/share/falltergeist}.")
              ;; Set correct environment for SDL.
              (lambda* (#:key inputs #:allow-other-keys)
                (setenv "CPATH"
-                       (string-append (assoc-ref inputs "sdl")
-                                      "/include/SDL:"
-                                      (or (getenv "CPATH") "")))
-               #t))
+                       (string-append
+                        (search-input-directory inputs "include/SDL")
+                        ":" (or (getenv "CPATH") "")))))
            (add-before 'build 'fix-settings-directory
              ;; Hide foobillardplus settings directory in $HOME.
              (lambda _
@@ -1265,9 +1260,7 @@ should be placed in @file{~/.local/share/falltergeist}.")
                             "foobillardplus"))
                  #t))))))
       (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("pkg-config" ,pkg-config)))
+       (list autoconf automake pkg-config))
       (inputs
        `(("font-dejavu" ,font-dejavu)
          ("freetype" ,freetype)
@@ -1332,10 +1325,7 @@ The game features:
                   (string-append "IWAD=" wad-dir "/freedoom2.wad")))
                #t))))))
     (native-inputs
-     `(("asciidoc" ,asciidoc)
-       ("deutex" ,deutex)
-       ("python" ,python)
-       ("python-pillow" ,python-pillow)))
+     (list asciidoc deutex python python-pillow))
     (home-page "https://freedoom.github.io/")
     (synopsis "Free content game based on the Doom engine")
     (native-search-paths
@@ -1379,7 +1369,7 @@ effects and music to make a completely free game.")
        ;;   SDL_AUDIODRIVER=dummy ./src/freedroidRPG -nb text
        #:tests? #f))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
      `(("glu" ,glu)
        ("libjpeg" ,libjpeg-turbo)
@@ -1465,7 +1455,7 @@ real-time combat.")
                          '("Help" "Patterns" "Rules" "Scripts")))
              #t)))))
     (native-inputs
-     `(("lua" ,lua)))
+     (list lua))
     (inputs
      `(("glu" ,glu)
        ("mesa" ,mesa)
@@ -1526,10 +1516,9 @@ automata.  The following features are available:
                     (string-append out "/etc/modules-load.d"))
                    (("/usr/bin")
                     (string-append out "/bin")))))))))
-      (native-inputs `(("pkg-config" ,pkg-config)))
+      (native-inputs (list pkg-config))
       (inputs
-       `(("eudev" ,eudev)
-         ("libevdev" ,libevdev)))
+       (list eudev libevdev))
       (home-page "https://github.com/DanielOgorchock/joycond")
       (synopsis "Joy-Con controller daemon")
       (description "This package provides a userspace daemon for the Nintendo
@@ -1558,9 +1547,7 @@ Joy-Con controllers.")
            #t))))
     (build-system cmake-build-system)
     (inputs
-     `(("libpng" ,libpng)
-       ("sdl2" ,sdl2)
-       ("sdl2-mixer" ,sdl2-mixer)))
+     (list libpng sdl2 sdl2-mixer))
     (home-page "https://github.com/bvschaik/julius")
     (synopsis "Re-implementation of Caesar III game engine")
     (description
@@ -1626,7 +1613,7 @@ game Caesar III.  Gameplay enhancements include:
     (arguments
      `(#:tests? #f))                    ; there are no tests
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
      `(("curl" ,curl)
        ("libarchive" ,libarchive)
@@ -1675,8 +1662,7 @@ shadow mimic them to reach blocks you couldn't reach alone.")
              ;; Look for xdg-open in the store.
              (substitute* "src/core/web.c"
                (("/usr(/bin/xdg-open)" _ bin)
-                (string-append (assoc-ref inputs "xdg-utils") bin)))
-             #t))
+                (search-input-file inputs bin)))))
          (add-after 'unpack 'unbundle-fonts
            (lambda* (#:key inputs #:allow-other-keys)
              ;; Replace bundled Roboto fonts with links to the store.
@@ -1691,10 +1677,7 @@ shadow mimic them to reach blocks you couldn't reach alone.")
                   '("Roboto-Black.ttf" "Roboto-Bold.ttf" "Roboto-Medium.ttf")))
                #t))))))
     (inputs
-     `(("allegro" ,allegro)
-       ("font-google-roboto" ,font-google-roboto)
-       ("surgescript" ,surgescript)
-       ("xdg-utils" ,xdg-utils)))
+     (list allegro font-google-roboto surgescript xdg-utils))
     (home-page "https://opensurge2d.org")
     (synopsis "2D retro side-scrolling game")
     (description "@code{Open Surge} is a 2D retro side-scrolling platformer
@@ -1740,7 +1723,7 @@ built-in level editor.")
        ("fontconfig" ,fontconfig)
        ("curl" ,curl)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "http://www.knightsgame.org.uk/")
     (synopsis "Multiplayer dungeon game involving knights and quests")
     (description "Knights is a multiplayer game involving several knights who
@@ -1770,7 +1753,8 @@ destroying an ancient book using a special wand.")
                 "0s5fg4z5in1h39fcr69j1qc5ynmg7a8mfprk3mc3c0csq3snfwz2"))))
     (build-system meson-build-system)
     (arguments
-     '(#:glib-or-gtk? #t
+     `(#:glib-or-gtk? #t
+       #:meson ,meson-0.59
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'skip-gtk-update-icon-cache
@@ -1780,11 +1764,7 @@ destroying an ancient book using a special wand.")
                (("gtk-update-icon-cache") "true"))
              #t)))))
     (inputs
-     `(("gtk+" ,gtk+)
-       ("clutter" ,clutter)
-       ("clutter-gtk" ,clutter-gtk)
-       ("libgee" ,libgee)
-       ("libgnome-games-support" ,libgnome-games-support)))
+     (list gtk+ clutter clutter-gtk libgee libgnome-games-support))
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin") ; for desktop-file-validate and appstream-util
@@ -1824,8 +1804,7 @@ in one tile.")
                (("gtk-update-icon-cache") "true"))
              #t)))))
     (inputs
-     `(("gtk+" ,gtk+)
-       ("librsvg" ,librsvg)))
+     (list gtk+ librsvg))
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin") ; for desktop-file-validate and appstream-util
@@ -1853,18 +1832,17 @@ such as chess or stockfish.")
         (base32
          "11xwhcli1h12k6rnhhyq4jphzrhfik7i8ah3k32pqw803460n6yf"))))
     (build-system gnu-build-system)
-    (inputs `(;; XXX: Build with an older Pango for 'pango_font_get_hb_font' and
-              ;; 'pango_coverage_get_type'.  Try removing this for versions > 1.06.002.
-              ("pango" ,pango-1.42)
-
-              ("glib" ,glib)
-              ("readline" ,readline)
-              ("gtk+" ,gtk+-2)
-              ("mesa" ,mesa)
-              ("glu" ,glu)
-              ("gtkglext" ,gtkglext)
-              ("sqlite" ,sqlite)
-              ("libcanberra" ,libcanberra)))
+    (inputs (list ;; XXX: Build with an older Pango for 'pango_font_get_hb_font' and
+                  ;; 'pango_coverage_get_type'.  Try removing this for versions > 1.06.002.
+                  pango-1.42
+                  glib
+                  readline
+                  gtk+-2
+                  mesa
+                  glu
+                  gtkglext
+                  sqlite
+                  libcanberra))
     (native-inputs `(("python-2" ,python-2)
                      ("pkg-config" ,pkg-config)))
     (arguments
@@ -1926,12 +1904,12 @@ also features an attractive, 3D representation of the playing board.")
                         (("gtk-update-icon-cache")
                          "true"))
                       #t)))))
-    (inputs `(("gtk+" ,gtk+-2)
-              ("mesa" ,mesa)
-              ("glu" ,glu)
-              ("libx11" ,libx11)
-              ("guile" ,guile-2.0)
-              ("gtkglext" ,gtkglext)))
+    (inputs (list gtk+-2
+                  mesa
+                  glu
+                  libx11
+                  guile-2.0
+                  gtkglext))
     (native-inputs `(("gettext" ,gettext-minimal)
                      ("pkg-config" ,pkg-config)))
     (home-page "https://www.gnu.org/software/gnubik/")
@@ -1982,12 +1960,11 @@ Chess).  It is similar to standard chess but this variant is far more complicate
          (add-after 'set-paths 'set-sdl-paths
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "CPATH"
-                     (string-append (assoc-ref inputs "sdl-union")
-                                    "/include/SDL:"
-                                    (or (getenv "CPATH") "")))
-             #t)))))
+                     (string-append
+                      (search-input-directory inputs "include/SDL")
+                      ":" (or (getenv "CPATH") ""))))))))
     (inputs
-     `(("sdl-union" ,(sdl-union (list sdl sdl-mixer)))))
+     (list (sdl-union (list sdl sdl-mixer))))
     (home-page "http://lgames.sourceforge.net/LTris/")
     (synopsis "Tetris clone based on the SDL library")
     (description
@@ -2016,11 +1993,9 @@ watch your CPU playing while enjoying a cup of tea!")
         (sha256
           (base32 "1liyckjp34j354qnxc1zn9730lh1p2dabrg1hap24z6xnqx0rpng"))))
     (native-inputs
-      `(("bison" ,bison)
-        ("flex" ,flex)))
+      (list bison flex))
     (inputs
-      `(("ncurses" ,ncurses)
-        ("less" ,less)))
+      (list ncurses less))
     (build-system gnu-build-system)
     (arguments
       '(#:make-flags
@@ -2156,9 +2131,7 @@ role, and your gender.")
                 (string-append assignment "$(docdir)\n")))
              #t)))))
     (inputs
-     `(("libpng" ,libpng)
-       ("mesa" ,mesa)
-       ("sdl" ,sdl)))
+     (list libpng mesa sdl))
     (home-page "http://pipewalker.sourceforge.net/")
     (synopsis "Logical tile puzzle")
     (description
@@ -2196,19 +2169,18 @@ Every puzzle has a complete solution, although there may be more than one.")
         (add-after 'set-paths 'set-sdl'paths
           (lambda* (#:key inputs #:allow-other-keys)
             (setenv "CPATH"
-                    (string-append (assoc-ref inputs "sdl-union")
-                                   "/include/SDL:"
-                                   (or (getenv "CPATH") "")))
-            #t)))))
+                    (string-append
+                     (search-input-directory inputs "/include/SDL")
+                     ":" (or (getenv "CPATH") ""))))))))
    (inputs
-    `(("fluidsynth" ,fluidsynth)
-      ("glu" ,glu)
-      ("libmad" ,libmad)
-      ("libpng" ,libpng)
-      ("libvorbis" ,libvorbis)
-      ("pcre" ,pcre)
-      ("portmidi" ,portmidi)
-      ("sdl-union" ,(sdl-union (list sdl sdl-image sdl-mixer sdl-net)))))
+    (list fluidsynth
+          glu
+          libmad
+          libpng
+          libvorbis
+          pcre
+          portmidi
+          (sdl-union (list sdl sdl-image sdl-mixer sdl-net))))
    (home-page "http://prboom-plus.sourceforge.net/")
    (synopsis "Version of the classic 3D shoot'em'up game Doom")
    (description
@@ -2256,11 +2228,9 @@ Every puzzle has a complete solution, although there may be more than one.")
                  (copy-recursively "data" data)
                  #t))))))
       (native-inputs
-       `(("unzip" ,unzip)))
+       (list unzip))
       (inputs
-       `(("python-sge" ,python-sge)
-         ("python-six" ,python-six)
-         ("python-xsge" ,python-xsge)))
+       (list python-sge python-six python-xsge))
       (home-page "https://retux-game.github.io/")
       (synopsis "Action platformer game")
       (description
@@ -2360,18 +2330,17 @@ utilizing the art assets from the @code{SuperTux} project.")
                  (lambda (p)
                    (format p "\
 #!~a
-export PYTHONPATH=~a/LIB:~a
+export GUIX_PYTHONPATH=~a/LIB:~a
 exec -a \"~a\" ~a \"$@\"\n"
-                           (which "bash") data (getenv "PYTHONPATH")
+                           (which "bash") data (getenv "GUIX_PYTHONPATH")
                            (which "python3")
                            (string-append lib "/main.py"))))
                (chmod roguebox-adventures #o555))
              #t)))))
     (native-inputs
-     `(("unzip" ,unzip)))
+     (list unzip))
     (inputs
-     `(("python-pygame" ,python-pygame)
-       ("python-tmx" ,python-tmx)))
+     (list python-pygame python-tmx))
     (home-page "https://rogueboxadventures.tuxfamily.org")
     (synopsis "A classical roguelike/sandbox game")
     (description
@@ -2436,9 +2405,9 @@ can be explored and changed freely.")
                    (lambda (p)
                      (format p
                              "#!~a~@
-                              export PYTHONPATH=~a:~a~@
+                              export GUIX_PYTHONPATH=~a:~a~@
                               exec -a \"~a\" ~a \"$@\"~%"
-                             (which "bash") data (getenv "PYTHONPATH")
+                             (which "bash") data (getenv "GUIX_PYTHONPATH")
                              (which "python3")
                              (string-append data "/run_game.py"))))
                  (chmod executable #o555))
@@ -2469,8 +2438,8 @@ can be explored and changed freely.")
            (lambda* (#:key outputs inputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (data (string-append out "/share/seahorse-adventures"))
-                    (vera (string-append (assoc-ref inputs "font-bitstream-vera")
-                                         "/share/fonts/truetype/Vera.ttf")))
+                    (vera (search-input-file
+                           inputs "/share/fonts/truetype/Vera.ttf")))
                (let ((themes-dir (string-append data "/data/themes/")))
                  (for-each
                   (lambda (theme)
@@ -2483,8 +2452,7 @@ can be explored and changed freely.")
                  (("f_scale = 0.35") "f_scale = 0.47")))
              #t)))))
     (inputs
-     `(("font-bitstream-vera" ,font-bitstream-vera)
-       ("python-pygame" ,python-pygame)))
+     (list font-bitstream-vera python-pygame))
     (home-page "http://www.imitationpickles.org/barbie/")
     (synopsis "Help Barbie the seahorse float on bubbles to the moon")
     (description
@@ -2534,8 +2502,7 @@ and defeat them with your bubbles!")
              (setenv "XDG_RUNTIME_DIR" (getcwd))
              #t)))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("qttools" ,qttools)))
+     (list pkg-config qttools))
     (inputs
      `(("glm" ,glm)
        ("libmodplug" ,libmodplug)
@@ -2574,8 +2541,8 @@ in mind.")
     (arguments
      `(#:tests? #false))                ; no test suite
     (inputs
-     `(("solarus" ,solarus)
-       ,@(package-inputs solarus)))
+     (modify-inputs (package-inputs solarus)
+       (prepend solarus)))
     (synopsis "Create and modify quests for the Solarus engine")
     (description
      "Solarus Quest Editor is a graphical user interface to create and
@@ -2651,7 +2618,7 @@ runnable=true
     (native-inputs
      `(("godot-headless" ,godot "headless")))
     (inputs
-     `(("godot" ,godot)))
+     (list godot))
     (home-page "https://notapixel.itch.io/superstarfighter")
     (synopsis "Fast-paced local multiplayer arcade game")
     (description "In SuperStarfighter, up to four local players compete in a
@@ -2835,7 +2802,7 @@ equipped with spoken co-driver notes and co-driver icons.")
                                       (string-append out "/share/man/man6"))
                         #t))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
      `(("libjpeg" ,libjpeg-turbo)
        ("libpng" ,libpng)
@@ -3006,8 +2973,7 @@ properly.")
         "1dns0nhymak44by18sv48m4xb2skiwbi2i3nb9hl6w9iwd2i2brf"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libxaw" ,libxaw)
-       ("libxt" ,libxt)))
+     (list libxaw libxt))
     (home-page "https://www.gnu.org/software/gnushogi/")
     (synopsis "User interface for gnushogi")
     (description  "A graphical user interface for the package @code{gnushogi}.")
@@ -3041,9 +3007,9 @@ properly.")
                   (add-after 'set-paths 'set-sdl-paths
                     (lambda* (#:key inputs #:allow-other-keys)
                       (setenv "CPATH"
-                              (string-append (assoc-ref inputs "sdl-union")
-                                             "/include/SDL:"
-                                             (or (getenv "CPATH") "")))))
+                              (string-append
+                               (search-input-directory inputs "include/SDL2")
+                               ":" (or (getenv "CPATH") "")))))
                   (add-after 'patch-source-shebangs 'patch-makefile
                     (lambda* (#:key outputs #:allow-other-keys)
                       ;; Replace /usr with package output directory.
@@ -3059,8 +3025,8 @@ properly.")
                   ;; No configure script.
                   (delete 'configure))
        #:tests? #f)) ;; No check target.
-    (native-inputs `(("pkg-config" ,pkg-config)))
-    (inputs `(("sdl-union" ,(sdl-union (list sdl2 sdl2-image sdl2-mixer)))))
+    (native-inputs (list pkg-config))
+    (inputs (list (sdl-union (list sdl2 sdl2-image sdl2-mixer))))
     (home-page "https://github.com/nevat/abbayedesmorts-gpl")
     (synopsis "GNU/Linux port of the indie game \"l'Abbaye des Morts\"")
     (description "L'Abbaye des Morts is a 2D platform game set in 13th century
@@ -3105,9 +3071,8 @@ that beneath its ruins lay buried an ancient evil.")
      `(#:tests? #f                      ; no check target
        #:configure-flags (list (string-append "--bindir=" %output "/bin"))))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)))
-    (inputs `(("ncurses" ,ncurses)))
+     (list autoconf automake))
+    (inputs (list ncurses))
     (home-page "https://rephial.org/")
     (synopsis "Dungeon exploration roguelike")
     (description "Angband is a Classic dungeon exploration roguelike.  Explore
@@ -3141,15 +3106,14 @@ fight Morgoth, the Lord of Darkness.")
               "#include <iostream>\n#include <functional>"))
            #t))))
     (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)
-                     ("scons-python2" ,scons-python2)))
-    (inputs `(("sdl" ,sdl)
-              ("sdl-image" ,sdl-image)
-              ("sdl-mixer" ,sdl-mixer)
-              ("mesa" ,mesa)
-              ("glu" ,glu)
-              ("libpng" ,libpng)
-              ("boost" ,boost)))
+    (native-inputs (list pkg-config scons-python2))
+    (inputs (list sdl
+                  sdl-image
+                  sdl-mixer
+                  mesa
+                  glu
+                  libpng
+                  boost))
     (arguments
      '(#:make-flags (list (string-append "PREFIX=" %output))
        #:tests? #f                      ; no check target
@@ -3208,24 +3172,21 @@ a C library, so they can easily be integrated into other programs.")
              "-Dr_gles30=true"
              "-Dshader_transpiler=true")))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("python" ,python)
-       ("python-docutils" ,python-docutils)
-       ("python-pygments" ,python-pygments)))
+     (list pkg-config python python-docutils python-pygments))
     (inputs
-     `(("cglm" ,cglm)
-       ("freetype" ,freetype)
-       ("libpng" ,libpng)
-       ("libwebp" ,libwebp)
-       ("libzip" ,libzip)
-       ("mesa" ,mesa)
-       ("openssl" ,openssl)
-       ("opusfile" ,opusfile)
-       ("sdl2" ,sdl2)
-       ("sdl2-mixer" ,sdl2-mixer)
-       ("shaderc" ,shaderc)
-       ("spirv-cross" ,spirv-cross)
-       ("zlib" ,zlib)))
+     (list cglm
+           freetype
+           libpng
+           libwebp
+           libzip
+           mesa
+           openssl
+           opusfile
+           sdl2
+           sdl2-mixer
+           shaderc
+           spirv-cross
+           zlib))
     (home-page "https://taisei-project.org/")
     (synopsis "Shoot'em up fangame and libre clone of Touhou Project")
     (description
@@ -3257,8 +3218,7 @@ is very small), and shoot at the adversaries that keep appear on the screen.")
          "1h9jz4m4s5l8c3figaq46ja0km1gimrkfxm4dg7mf4s84icmasbm"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)))
+     (list autoconf automake))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
@@ -3270,7 +3230,7 @@ is very small), and shoot at the adversaries that keep appear on the screen.")
                (setenv "CONFIG_SHELL" (which "bash"))
                (invoke "./configure"
                        (string-append "--prefix=" out))))))))
-    (inputs `(("ncurses" ,ncurses)))
+    (inputs (list ncurses))
     (home-page "http://www.asty.org/cmatrix")
     (synopsis "Simulate the display from \"The Matrix\"")
     (description "CMatrix simulates the display from \"The Matrix\" and is
@@ -3410,10 +3370,9 @@ To that extent, it also includes a front-end for managing all of your D-Mods.")
                 "1yp8n3w426xnlp10xk06vfi2y3k9xrcfyck7s7qs1v0ys7n284d5"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("intltool" ,intltool)))
+     (list intltool))
     (inputs
-     `(("bzip2" ,bzip2)
-       ("wxwidgets" ,wxwidgets)))
+     (list bzip2 wxwidgets))
     (properties '((ftp-directory . "/freedink")
                   (upstream-name . "dfarc")))
     (home-page "https://www.gnu.org/software/freedink/")
@@ -3464,14 +3423,16 @@ exec ~a/bin/freedink -refdir ~a/share/dink\n"
          "1mkh36xnnacnz9r00b5f9ld9309k32jv6mcavklbdnca8bl56bib"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
+     `(#:configure-flags '("CFLAGS=-fcommon")
+       #:phases
        (modify-phases %standard-phases
          ;; Fixes https://issues.guix.gnu.org/47195.
          (add-after 'unpack 'patch-aplay-path
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "xboard.conf"
                (("aplay -q")
-                (string-append (assoc-ref inputs "alsa-utils") "/bin/aplay -q")))))
+                (string-append (search-input-file inputs "/bin/aplay")
+                               " -q")))))
          ;; Fixes https://issues.guix.gnu.org/45236.
          (add-after 'unpack 'patch-default-engine
            (lambda* (#:key inputs #:allow-other-keys)
@@ -3481,13 +3442,9 @@ exec ~a/bin/freedink -refdir ~a/share/dink\n"
                                (assoc-ref inputs "chess")
                                "/bin/gnuchessx"))))))))
     (inputs
-     `(("alsa-utils" ,alsa-utils)
-       ("chess" ,chess)
-       ("gtk+" ,gtk+-2)
-       ("librsvg" ,librsvg)))
+     (list alsa-utils chess gtk+-2 librsvg))
     (native-inputs
-     `(("texinfo" ,texinfo)
-       ("pkg-config" ,pkg-config)))
+     (list texinfo pkg-config))
     (home-page "https://www.gnu.org/software/xboard/")
     (synopsis "Graphical user interface for chess programs")
     (description "GNU XBoard is a graphical board for all varieties of chess,
@@ -3521,8 +3478,7 @@ Portable Game Notation.")
                             (find-files "." "configure$|\\.c$"))
                   #t))))
     (build-system gnu-build-system)
-    (inputs `(("ncurses" ,ncurses)
-              ("perl" ,perl)))
+    (inputs (list ncurses perl))
     (home-page "https://www.gnu.org/software/gtypist/")
     (synopsis "Typing tutor")
     (description
@@ -3571,6 +3527,10 @@ are primarily in English, however some in other languages are provided.")
              ;; The actual source is buried a few directories deep.
              (chdir "source/Irrlicht/")
              #t))
+         (add-after 'chdir-to-source 'remove-<sys/sysctl.h>
+           (lambda _
+             (substitute* "COSOperator.cpp"
+               (("#include <sys/sysctl.h>") ""))))
          (add-after 'chdir-to-source 'fix-build-env
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
@@ -3641,10 +3601,7 @@ for common mesh file formats, and collision detection.")
                                 "/share/games/marsshooter/\";")))
               #t)))))
       (inputs
-       `(("mesa" ,mesa)
-         ("fribidi" ,fribidi)
-         ("taglib" ,taglib)
-         ("sfml" ,sfml)))
+       (list mesa fribidi taglib sfml))
       (home-page "http://mars-game.sourceforge.net/")
       (synopsis "2D space shooter")
       (description
@@ -3747,9 +3704,7 @@ reference interpreter, using the Glk API.")
                 "0wxs9vz5x9y8chghd8vp7vfk089lfb0qnzggi17zrqkrngs5zgi9"))))
     (build-system cmake-build-system)
     (inputs
-     `(("sdl2" ,sdl2)
-       ("sdl2-image" ,sdl2-image)
-       ("mesa" ,mesa)))
+     (list sdl2 sdl2-image mesa))
     (arguments
      '(#:tests? #f))                    ; No included tests
     (home-page "https://fifengine.github.io/fifechan/")
@@ -3776,9 +3731,12 @@ Widgets, and allows users to create more.")
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f            ; TODO The test running fails to run some tests.
-       #:modules ((srfi srfi-1)
-                  (guix build cmake-build-system)
-                  (guix build utils))
+       #:imported-modules ,(cons '(guix build python-build-system)
+                                 %cmake-build-system-modules)
+       #:modules ((guix build cmake-build-system)
+                  ((guix build python-build-system) #:select (guix-pythonpath))
+                  (guix build utils)
+                  (srfi srfi-1))
        #:configure-flags
        (list
         (string-append "-DOPENALSOFT_INCLUDE_DIR="
@@ -3805,49 +3763,34 @@ Widgets, and allows users to create more.")
          (delete 'check)
          (add-after 'install 'check
            (lambda* (#:key inputs outputs tests? #:allow-other-keys)
-             (define python-version
-               (let* ((version     (last (string-split
-                                          (assoc-ref inputs "python")
-                                          #\-)))
-                      (components  (string-split version #\.))
-                      (major+minor (take components 2)))
-                 (string-join major+minor ".")))
-
              (when tests?
-               ;; Set PYTHONPATH so that python finds the installed modules.
-               (setenv "PYTHONPATH"
-                       (string-append (getenv "PYTHONPATH") ":"
-                                      (assoc-ref outputs "out")
-                                      "/lib/python"
-                                      python-version
-                                      "/site-packages"))
+               (add-installed-pythonpath inputs outputs)
                ;; The tests require an X server.
                (system "Xvfb :1 &")
                (setenv "DISPLAY" ":1")
                (setenv "XDG_RUNTIME_DIR" "/tmp")
                ;; Run tests
                (chdir ,(string-append "../" name "-" version))
-               (invoke "python3" "run_tests.py" "-a"))
-             #t)))))
+               (invoke "python3" "run_tests.py" "-a")))))))
     (inputs
-     `(("sdl2" ,sdl2)
-       ("sdl2-image" ,sdl2-image)
-       ("sdl2-ttf" ,sdl2-ttf)
-       ("tinyxml" ,tinyxml)
-       ("openal" ,openal)
-       ("libogg" ,libogg)
-       ("glew" ,glew)
-       ("libvorbis" ,libvorbis)
-       ("boost" ,boost)
-       ("fifechan" ,fifechan)
-       ("swig" ,swig)
-       ("python" ,python)))
+     (list sdl2
+           sdl2-image
+           sdl2-ttf
+           tinyxml
+           openal
+           libogg
+           glew
+           libvorbis
+           boost
+           fifechan
+           swig
+           python))
     (native-inputs
      `(("python" ,python)
        ("swig" ,swig)
        ("xvfb" ,xorg-server)))
     (propagated-inputs
-     `(("python-future" ,python-future)))
+     (list python-future))
     (home-page "https://www.fifengine.net/")
     (synopsis "FIFE is a multi-platform isometric game engine written in C++")
     (description
@@ -3874,7 +3817,7 @@ games using Python as well as C++.")
              (ncurses (assoc-ref %build-inputs "ncurses")))
          (list (string-append "--with-jpeg-includedir=" libjpeg "/include")))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
      `(("freetype" ,freetype)
        ("libjpeg" ,libjpeg-turbo)
@@ -3903,7 +3846,10 @@ either by Infocom or created using the Inform compiler.")
               (base32
                "0wkahvqpzq6lzl5r49a4sd4p52frdmphnqsfdv7gdp24bykdfs6s"))))
     (build-system gnu-build-system)
-    (inputs `(("readline" ,readline)))
+    (inputs
+     (list readline))
+    (arguments
+     `(#:configure-flags '("CFLAGS=-fcommon")))
     (synopsis "Play the game of Go")
     (description
      "GNU Go is a program that plays the game of Go, in which players
@@ -3930,10 +3876,9 @@ Protocol).")
                 "0hc3qd9hv3h9qm53yxgc7iy1v1wyajwxyvil4vqvzf9ascz9dnlj"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("glu" ,glu)
-       ("sfml" ,sfml)))
+     (list glu sfml))
     (synopsis "High-speed arctic racing game based on Tux Racer")
     ;; Snarfed straight from Debian.
     (description "Extreme Tux Racer, or etracer as it is called for short, is
@@ -4007,7 +3952,7 @@ This game is based on the GPL version of the famous game TuxRacer.")
        ("libjpeg" ,libjpeg-turbo)
        ("openssl" ,openssl)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://supertuxkart.net/Main_Page")
     (synopsis "3D kart racing game")
     (description "SuperTuxKart is a 3D kart racing game, with a focus on
@@ -4076,14 +4021,13 @@ also available.")
        ("python-pillow" ,python-pillow)
        ("python-pyyaml" ,python-pyyaml)))
     (native-inputs
-     `(("intltool" ,intltool)
-       ("python-distro" ,python-distro)
-
-       ;; Required for tests
-       ("python-greenlet" ,python-greenlet)
-       ("python-polib" ,python-polib)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-mock" ,python-pytest-mock)))
+     (list intltool
+           python-distro
+           ;; Required for tests
+           python-greenlet
+           python-polib
+           python-pytest
+           python-pytest-mock))
     (home-page "https://unknown-horizons.org/")
     (synopsis "Isometric realtime strategy, economy and city building simulation")
     (description
@@ -4135,11 +4079,7 @@ trade and diplomacy.")
                            Categories=Game;ArcadeGame~%"
                            out)))))))))
     (inputs
-     `(("glu" ,glu)
-       ("mesa" ,mesa)
-       ("sdl" ,sdl)
-       ("sdl-image" ,sdl-image)
-       ("sdl-mixer" ,sdl-mixer)))
+     (list glu mesa sdl sdl-image sdl-mixer))
     (home-page "http://gnujump.es.gnu.org/")
     (synopsis
      "Game of jumping to the next floor, trying not to fall")
@@ -4170,13 +4110,13 @@ falling, themeable graphics and sounds, and replays.")
      `(("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("boost" ,boost)
-       ("dbus" ,dbus)
-       ("fribidi" ,fribidi)
-       ("libvorbis" ,libvorbis)
-       ("openssl" ,openssl)
-       ("pango" ,pango)
-       ("sdl-union" ,(sdl-union (list sdl2 sdl2-image sdl2-mixer sdl2-ttf)))))
+     (list boost
+           dbus
+           fribidi
+           libvorbis
+           openssl
+           pango
+           (sdl-union (list sdl2 sdl2-image sdl2-mixer sdl2-ttf))))
     (home-page "https://www.wesnoth.org/")
     (synopsis "Turn-based strategy game")
     (description
@@ -4195,10 +4135,7 @@ next campaign.")
     (inherit wesnoth)
     (name "wesnoth-server")
     (inputs
-     `(("boost" ,boost)
-       ("icu4c" ,icu4c)
-       ("openssl" ,openssl)
-       ("sdl2" ,sdl2)))
+     (list boost icu4c openssl sdl2))
     (arguments
      `(#:configure-flags '("-DENABLE_GAME=OFF")
        ,@(package-arguments wesnoth)))
@@ -4219,13 +4156,12 @@ Battle for Wesnoth}.")))
                 "1sc6f4445ciigd6yw0ri92746k4hk6ps0bvj9fm1gbp3c3fslk5n"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)))
+     (list pkg-config intltool))
     (inputs
-     `(("gstreamer" ,gstreamer)
-       ("gst-plugins-base" ,gst-plugins-base) ; playbin plugin
-       ("gst-plugins-good" ,gst-plugins-good) ; for wav playback
-       ("gtk+" ,gtk+)))
+     (list gstreamer
+           gst-plugins-base ; playbin plugin
+           gst-plugins-good ; for wav playback
+           gtk+))
     (arguments
      `(#:tests? #f
        #:make-flags
@@ -4271,13 +4207,10 @@ on the screen and keyboard to display letters.")
                             (assoc-ref %build-inputs "sdl-union")
                             "/include/SDL"))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("glu" ,glu)
-       ("curl" ,curl)
-       ("libxml2" ,libxml2)
-       ("mesa" ,mesa)
-       ("sdl-union" ,(sdl-union))))
+     (list glu curl libxml2 mesa
+           (sdl-union)))
     (home-page "https://manaplus.org")
     (synopsis "Client for 'The Mana World' and similar games")
     (description
@@ -4407,8 +4340,8 @@ OpenGFX provides you with...
     (arguments
      `(#:make-flags
        (list (string-append "DIR_NAME=opensfx")
-             (string-append "TAR=" (assoc-ref %build-inputs "tar")
-                            "/bin/tar"))
+             (string-append "TAR="
+                            (search-input-file %build-inputs "/bin/tar")))
        ;; The check phase only verifies md5sums, see openttd-opengfx.
        #:tests? #f
        #:phases
@@ -4459,8 +4392,8 @@ the original Transport Tycoon Deluxe.")
     (arguments
      `(#:make-flags
        (list (string-append "DIR_NAME=openmsx")
-             (string-append "TAR=" (assoc-ref %build-inputs "tar")
-                            "/bin/tar"))
+             (string-append "TAR="
+                            (search-input-file %build-inputs "/bin/tar")))
        ;; The check phase only verifies md5sums, see openttd-opengfx.
        #:tests? #f
        #:phases
@@ -4497,8 +4430,8 @@ Transport Tycoon Deluxe.")
                                   (assoc-ref outputs "out")))
               (list "opengfx" "openmsx" "opensfx")))))))
     (inputs
-     `(("timidity++" ,timidity++)
-       ,@(package-inputs openttd-engine)))
+     (modify-inputs (package-inputs openttd-engine)
+       (prepend timidity++)))
     (native-inputs
      `(("opengfx" ,openttd-opengfx)
        ("openmsx" ,openttd-openmsx)
@@ -4533,7 +4466,7 @@ Transport Tycoon Deluxe.")
                (openrct2-title-sequences (string-append out
                                          "/share/openrct2/title-sequences"))
                (source (assoc-ref %build-inputs "source"))
-               (unzip (string-append (assoc-ref %build-inputs "unzip") "/bin/unzip")))
+               (unzip (search-input-file %build-inputs "/bin/unzip")))
           (copy-file source (string-append ,name "-" ,version ".zip"))
           (invoke unzip (string-append ,name "-" ,version ".zip"))
           (delete-file (string-append ,name "-" ,version ".zip"))
@@ -4573,7 +4506,7 @@ Transport Tycoon Deluxe.")
                (openrct2-objects (string-append out
                                          "/share/openrct2/objects"))
                (source (assoc-ref %build-inputs "source"))
-               (unzip (string-append (assoc-ref %build-inputs "unzip") "/bin/unzip")))
+               (unzip (search-input-file %build-inputs "/bin/unzip")))
           (copy-file source (string-append ,name "-" ,version ".zip"))
           (invoke unzip (string-append ,name "-" ,version ".zip"))
           (delete-file (string-append ,name "-" ,version ".zip"))
@@ -4644,7 +4577,7 @@ Transport Tycoon Deluxe.")
               ("speexdsp" ,speexdsp)
               ("zlib" ,zlib)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://github.com/OpenRCT2/OpenRCT2")
     (synopsis "Free software re-implementation of RollerCoaster Tycoon 2")
     (description "OpenRCT2 is a free software re-implementation of
@@ -4673,17 +4606,14 @@ images, etc.)")
              (patches (search-patches "pinball-system-ltdl.patch"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("pkg-config" ,pkg-config)
-       ("libtool" ,libtool)))
+     (list autoconf automake pkg-config libtool))
     (inputs
-     `(("glu" ,glu)
-       ("libltdl" ,libltdl)
-       ("mesa" ,mesa)
-       ("sdl" ,sdl)
-       ("sdl-image" ,sdl-image)
-       ("sdl-mixer" ,sdl-mixer)))
+     (list glu
+           libltdl
+           mesa
+           sdl
+           sdl-image
+           sdl-mixer))
     (arguments
      '(#:configure-flags
        ;; Configure tries to use pkg-config, but falls short, so:
@@ -4730,14 +4660,8 @@ are only two levels to play with, but they are very addictive.")
                (("\"beep\"")
                 (string-append "\"" (assoc-ref inputs "beep") "/bin/beep\"")))
              #t)))))
-    (inputs `(("avahi" ,avahi)
-              ("beep" ,beep)
-              ("gtk+" ,gtk+)
-              ("librsvg" ,librsvg)))
-    (native-inputs `(("intltool" ,intltool)
-                     ("itstool" ,itstool)
-                     ("libxml2" ,libxml2)
-                     ("pkg-config" ,pkg-config)))
+    (inputs (list avahi beep gtk+ librsvg))
+    (native-inputs (list intltool itstool libxml2 pkg-config))
     (synopsis "Board game inspired by The Settlers of Catan")
     (description "Pioneers is an emulation of the board game The Settlers of
 Catan.  It can be played on a local network, on the internet, and with AI
@@ -4763,7 +4687,7 @@ players.")
        ("sdl" ,(sdl-union (list sdl sdl-mixer sdl-ttf)))
        ("zlib" ,zlib)))
     (native-inputs
-     `(("font-dejavu" ,font-dejavu)))
+     (list font-dejavu))
     (arguments
      `(#:tests? #f ; no check target
        #:phases
@@ -4771,8 +4695,8 @@ players.")
           (replace 'configure
           (lambda* (#:key outputs inputs #:allow-other-keys)
             (let ((out (assoc-ref outputs "out"))
-                  (dejavu (string-append (assoc-ref inputs "font-dejavu")
-                                         "/share/fonts/truetype/DejaVuSans.ttf")))
+                  (dejavu (search-input-file
+                           inputs "/share/fonts/truetype/DejaVuSans.ttf")))
               (substitute* "Makefile"
                 (("PREFIX=/usr/local") (string-append "PREFIX=" out)))
               ;; The patch above registers a free font for use by the binary,
@@ -4806,7 +4730,7 @@ is attributed to Albert Einstein.")
                (base32
                 "1wkl6j91pp40aps2hhnsv0bndgq49smfffws4hqcn7847bpnwwm6"))))
     (inputs
-     `(("ncurses" ,ncurses)))
+     (list ncurses))
     (build-system gnu-build-system)
     (home-page "https://www.hoopajoo.net/projects/powwow.html")
     (synopsis "MUD and telnet client")
@@ -4864,10 +4788,9 @@ http://lavachat.symlynx.com/unix/")
            (add-after 'set-paths 'set-sdl-paths
              (lambda* (#:key inputs #:allow-other-keys)
                (setenv "CPATH"
-                       (string-append (assoc-ref inputs "sdl-union")
-                                      "/include/SDL2:"
-                                      (or (getenv "CPATH") "")))
-               #t))
+                       (string-append
+                        (search-input-directory inputs "/include/SDL2")
+                        ":" (or (getenv "CPATH") "")))))
            (add-after 'install 'copy-data
              (lambda* (#:key outputs #:allow-other-keys)
                (let ((out (assoc-ref outputs "out")))
@@ -4912,14 +4835,10 @@ exec -a \"$0\" ~a/.redeclipse_server_linux-real~%"
                    (chmod "redeclipse_server_linux" #o555)))
                #t)))))
       (native-inputs
-       `(("pkg-config" ,pkg-config)))
+       (list pkg-config))
       (inputs
-       `(("curl" ,curl)
-         ("freetype" ,freetype)
-         ("glu" ,glu)
-         ("sdl-union" ,(sdl-union (list sdl2
-                                        sdl2-image
-                                        sdl2-mixer)))))
+       (list curl freetype glu
+             (sdl-union (list sdl2 sdl2-image sdl2-mixer))))
       (home-page "https://redeclipse.net/")
       (synopsis "Arena shooter derived from the Cube 2 engine")
       (description
@@ -5020,15 +4939,10 @@ capture it and get out alive?")
                   #t))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("imagemagick" ,imagemagick)
-       ("pkg-config" ,pkg-config)
-       ("util-linux" ,util-linux)
-       ("sox" ,sox)))
+     (list imagemagick pkg-config util-linux sox))
     (inputs
-     `(("boost" ,boost)
-       ("libconfig" ,libconfig)
-       ("sdl-union" ,(sdl-union (list sdl sdl-image sdl-mixer)))
-       ("zlib" ,zlib)))
+     (list boost libconfig
+           (sdl-union (list sdl sdl-image sdl-mixer)) zlib))
     (home-page "https://gitlab.com/lierolibre/lierolibre")
     (synopsis "Old-school earthworm action game")
     (description
@@ -5105,7 +5019,7 @@ fullscreen, use F5 or Alt+Enter.")
            (lambda _
              (invoke "./configure" "--prefix" (assoc-ref %outputs "out")))))))
     (native-inputs
-     `(("which" ,which)))
+     (list which))
     (inputs
      `(("python" ,python-wrapper)
        ("sdl" ,(sdl-union (list sdl sdl-image sdl-mixer sdl-ttf sdl-net)))))
@@ -5319,13 +5233,9 @@ of war.  Widelands also offers an Artificial Intelligence to challenge you.")
                 "0ips79j3sdy8wa64jqka0skbbqkzqiln9bbiiilh4z717q7vz9r5"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("pango" ,pango)
-       ("sdl2" ,sdl2)
-       ("sdl2-image" ,sdl2-image)
-       ("sdl2-mixer" ,sdl2-mixer)
-       ("sdl2-ttf" ,sdl2-ttf)))
+     (list pango sdl2 sdl2-image sdl2-mixer sdl2-ttf))
     (home-page "https://pr-starfighter.github.io/")
     (synopsis "2D scrolling shooter game")
     (description
@@ -5354,11 +5264,9 @@ in strikes against the evil corporation.")
                (base32
                 "0jk2w5b6s6nkzri585bbz16cif2fhqcnl5l1mq3rd98r9nil3hd1"))))
     (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)))
-    (inputs `(("gettext" ,gettext-minimal)
-              ("glu" ,glu)
-              ("quesoglc" ,quesoglc)
-              ("sdl-union" ,(sdl-union (list sdl sdl-image sdl-mixer)))))
+    (native-inputs (list pkg-config))
+    (inputs (list gettext-minimal glu quesoglc
+                  (sdl-union (list sdl sdl-image sdl-mixer))))
     (home-page "http://chromium-bsu.sourceforge.net/")
     (synopsis "Fast-paced, arcade-style, top-scrolling space shooter")
     (description
@@ -5396,8 +5304,7 @@ safety of the Chromium vessel.")
        (patches (search-patches "tuxpaint-stamps-path.patch"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("gperf" ,gperf)
-       ("pkg-config" ,pkg-config)))
+     (list gperf pkg-config))
     (inputs
      `(("cairo" ,cairo)
        ("fribidi" ,fribidi)
@@ -5468,8 +5375,7 @@ your child be creative.")
          "1skr23k27yj3vgwfazpzxp90lb2a278gxrkr3bxw7az6zpkmb3yp"))))
     (build-system trivial-build-system)
     (native-inputs
-     `(("tar" ,tar)
-       ("gzip" ,gzip)))
+     (list tar gzip))
     (arguments
      `(#:modules ((guix build utils))
        #:builder (begin
@@ -5507,12 +5413,12 @@ with the \"Stamp\" tool within Tux Paint.")
     (native-inputs
      `(("gettext" ,gettext-minimal)))
     (inputs
-     `(("fltk" ,fltk)
-       ("libpaper" ,libpaper)
-       ;; TODO: Should the following be propagated by fltk?
-       ("libx11" ,libx11)
-       ("libxft" ,libxft)
-       ("mesa" ,mesa)))
+     (list fltk
+           libpaper
+           ;; TODO: Should the following be propagated by fltk?
+           libx11
+           libxft
+           mesa))
     (arguments
      `(#:make-flags `("VER_DATE=2018-09-01"
                       "CONFDIR=/etc/tuxpaint" ;don't write to store
@@ -5571,21 +5477,21 @@ with the \"Stamp\" tool within Tux Paint.")
                  (string-append "${SQUIRREL_PREFIX}/include/squirrel"))))
             #t)))))
    (build-system cmake-build-system)
-   (inputs `(("sdl2" ,sdl2)
-             ("sdl2-image" ,sdl2-image)
-             ("sdl2-mixer" ,sdl2-mixer)
-             ("openal" ,openal)
-             ("mesa" ,mesa)
-             ("glew" ,glew)
-             ("libvorbis" ,libvorbis)
-             ("libogg" ,libogg)
-             ("physfs" ,physfs)
-             ("curl" ,curl)
-             ("boost" ,boost)
-             ("freetype" ,freetype)
-             ("squirrel" ,squirrel)))
+   (inputs (list sdl2
+                 sdl2-image
+                 sdl2-mixer
+                 openal
+                 mesa
+                 glew
+                 libvorbis
+                 libogg
+                 physfs
+                 curl
+                 boost
+                 freetype
+                 squirrel))
    (native-inputs
-    `(("pkg-config" ,pkg-config)))
+    (list pkg-config))
    (synopsis "2D platformer game")
    (description "SuperTux is a classic 2D jump'n run sidescroller game in
 a style similar to the original Super Mario games.")
@@ -5605,10 +5511,7 @@ a style similar to the original Super Mario games.")
        (sha256
         (base32 "1xdim1ckq1kgjyxmghcnvnahq1llv2y70gz3yyvzbli63vpqk4mk"))))
     (inputs
-     `(("gnutls" ,gnutls)
-       ("pcre" ,pcre)
-       ("readline" ,readline)
-       ("zlib" ,zlib)))
+     (list gnutls pcre readline zlib))
     (arguments
      '(#:tests? #f                      ; no test suite
        #:phases
@@ -5698,7 +5601,7 @@ programmers may also add their own favorite language.")
                (copy-recursively "data" (string-append share "/bambam/data")))
              #t)))))
     (inputs
-     `(("python-pygame" ,python-pygame)))
+     (list python-pygame))
     (home-page "https://github.com/porridge/bambam")
     (synopsis "Keyboard mashing and doodling game for babies")
     (description "Bambam is a simple baby keyboard (and gamepad) masher
@@ -5729,14 +5632,10 @@ colors, pictures, and sounds.")
                 (script (string-append out "/bin/" ,name))
                 (data   (string-append out "/share/" ,name))
                 (source (assoc-ref %build-inputs "source"))
-                (unzip  (string-append (assoc-ref %build-inputs "unzip")
-                                       "/bin/unzip"))
-                (patch  (string-append (assoc-ref %build-inputs "patch")
-                                       "/bin/patch"))
-                (bash   (string-append (assoc-ref %build-inputs "bash")
-                                       "/bin/bash"))
-                (love   (string-append (assoc-ref %build-inputs "love")
-                                       "/bin/love")))
+                (unzip  (search-input-file %build-inputs "/bin/unzip"))
+                (patch  (search-input-file %build-inputs "/bin/patch"))
+                (bash   (search-input-file %build-inputs "/bin/bash"))
+                (love   (search-input-file %build-inputs "/bin/love")))
 
            (mkdir-p (dirname script))
            (with-output-to-file script
@@ -5762,8 +5661,7 @@ colors, pictures, and sounds.")
        ("patch" ,patch)
        ("love-11.patch" ,(search-patch "mrrescue-support-love-11.patch"))))
     (inputs
-     `(("bash" ,bash)
-       ("love" ,love)))
+     (list bash love))
     (home-page "https://tangramgames.dk/games/mrrescue")
     (synopsis "Arcade-style fire fighting game")
     (description
@@ -5842,7 +5740,7 @@ throwing people around in pseudo-randomly generated buildings.")
              (let* ((data (assoc-ref inputs "hyperrogue-data"))
                     (out (assoc-ref outputs "out"))
                     (sounds (string-append out "/share/hyperrogue/sounds"))
-                    (unzip (string-append (assoc-ref inputs "unzip") "/bin/unzip")))
+                    (unzip (search-input-file inputs "/bin/unzip")))
                ;; Extract media license information into sounds directory.
                (invoke unzip "-j" data
                        (string-append
@@ -5869,13 +5767,8 @@ throwing people around in pseudo-randomly generated buildings.")
              "11yhbia45f1w9z0j67h9nynwjqmvakr9l6rnrmdrdkzin6lvzzj4"))))
        ("unzip" ,unzip)))
     (inputs
-     `(("font-dejavu" ,font-dejavu)
-       ("glew" ,glew)
-       ("libpng" ,libpng)
-       ("sdl-union" ,(sdl-union (list sdl
-                                      sdl-gfx
-                                      sdl-mixer
-                                      sdl-ttf)))))
+     (list font-dejavu glew libpng
+           (sdl-union (list sdl sdl-gfx sdl-mixer sdl-ttf))))
     (home-page "https://www.roguetemple.com/z/hyper/")
     (synopsis "Non-euclidean graphical rogue-like game")
     (description
@@ -5922,8 +5815,8 @@ symbols, it still needs graphics to render the non-euclidean world.")
                             (assoc-ref %build-inputs "sdl-union")
                             "/include/SDL"))))
     (inputs
-     `(("glu" ,glu)
-       ("sdl-union" ,(sdl-union (list sdl sdl-image)))))
+     (list glu
+           (sdl-union (list sdl sdl-image))))
     (synopsis "Shooter with space station destruction")
     (description
      "Kobo Deluxe is an enhanced version of Akira Higuchi's XKobo graphical game
@@ -5949,13 +5842,9 @@ for Un*x systems with X11.")
       (base32 "0ngcj59ak71i6m8yvbr0g3aryzpw1scalpdzgfqsq4mf9p3y2r1f"))))
    (build-system gnu-build-system)
    (inputs
-    `(("curl" ,curl)
-      ("cyrus-sasl" ,cyrus-sasl)
-      ("gtk+" ,gtk+)
-      ("sdl-mixer" ,sdl-mixer)
-      ("zlib" ,zlib)))
+    (list curl cyrus-sasl gtk+ sdl-mixer zlib))
    (native-inputs
-    `(("pkg-config" ,pkg-config)))
+    (list pkg-config))
    (home-page "http://www.freeciv.org/")
    (synopsis "Turn-based empire building strategy game")
    (description "Freeciv is a turn-based empire building strategy game
@@ -5987,7 +5876,7 @@ into the Space Age.")
        (modify-phases %standard-phases
          (delete 'configure))))
     (inputs
-     `(("ncurses" ,ncurses)))
+     (list ncurses))
     (home-page "https://github.com/bartobri/no-more-secrets")
     (synopsis "Recreation of data decryption effect in \"Sneakers\"")
     (description
@@ -6054,11 +5943,12 @@ starting a decryption sequence to reveal the original plaintext characters.")
        ("sdl2" ,sdl2)
        ("wxwidgets" ,wxwidgets)))
     (native-inputs
-     `(("cppunit" ,cppunit)
-       ("pkg-config" ,pkg-config)))
+     (list cppunit pkg-config))
     (arguments
      `(#:configure-flags
-       (list (string-append "-DCUSTOM_DATA_INSTALL_PATH="
+       (list "-DCMAKE_CXX_FLAGS=-fcommon"
+             "-DCMAKE_C_FLAGS=-fcommon"
+             (string-append "-DCUSTOM_DATA_INSTALL_PATH="
                             (assoc-ref %build-inputs "megaglest-data")
                             "/share/megaglest")
              "-DBUILD_MEGAGLEST_TESTS=ON")
@@ -6116,13 +6006,13 @@ Magic, Egypt, Indians, Norsemen, Persian or Romans.")
                                  line)))
                #t)))))
       (inputs
-       `(("sdl-union" ,(sdl-union (list sdl sdl-mixer)))
-         ("openal" ,openal)
-         ("libvorbis" ,libvorbis)
-         ("libogg" ,libogg)
-         ("mesa" ,mesa)
-         ("libpng" ,libpng)
-         ("zlib" ,zlib)))
+       (list (sdl-union (list sdl sdl-mixer))
+             openal
+             libvorbis
+             libogg
+             mesa
+             libpng
+             zlib))
       (home-page "https://github.com/freegish/freegish")
       (synopsis "Side-scrolling physics platformer with a ball of tar")
       (description "In FreeGish you control Gish, a ball of tar who lives
@@ -6156,13 +6046,9 @@ emerges from a sewer hole and pulls her below ground.")
                             (assoc-ref %outputs "out")
                             "/share/cdogs-sdl/"))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("gtk+" ,gtk+)
-       ("mesa" ,mesa)
-       ("sdl2" ,sdl2)
-       ("sdl2-image" ,sdl2-image)
-       ("sdl2-mixer" ,sdl2-mixer)))
+     (list gtk+ mesa sdl2 sdl2-image sdl2-mixer))
     (home-page "https://cxong.github.io/cdogs-sdl/")
     (synopsis "Classic overhead run-and-gun game")
     (description "C-Dogs SDL is a classic overhead run-and-gun game,
@@ -6208,11 +6094,10 @@ over 100 user-created campaigns.")
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (setenv "CPLUS_INCLUDE_PATH"
-                     (string-append (assoc-ref inputs "sdl-union")
-                                    "/include/SDL:"
-                                    (assoc-ref inputs "python")
-                                    "/include/python2.7:"
-                                    (or (getenv "CPLUS_INCLUDE_PATH") "")))
+                     (string-append
+                      (search-input-directory inputs "include/SDL") ":"
+                      (search-input-directory inputs "include/python2.7")
+                      ":" (or (getenv "CPLUS_INCLUDE_PATH") "")))
              (substitute* "src/main/main.cpp"
                (("#include <SDL.h>" line)
                 (string-append line "
@@ -6263,7 +6148,7 @@ over 100 user-created campaigns.")
                                       sdl-image)))
        ("python" ,python-2)))
     (native-inputs
-     `(("swig" ,swig)))
+     (list swig))
     (home-page "http://kiki.sourceforge.net/")
     (synopsis "3D puzzle game")
     (description "Kiki the nano bot is a 3D puzzle game.  It is basically a
@@ -6324,18 +6209,18 @@ small robot living in the nano world, repair its maker.")
                       "datasrc/fonts/DejaVuSans.ttf")
              #t)))))
     (inputs
-     `(("freetype" ,freetype)
-       ("font-dejavu" ,font-dejavu)
-       ("glu" ,glu)
-       ("json-parser" ,json-parser)
-       ("mesa" ,mesa)
-       ("pnglite" ,pnglite)
-       ("sdl2" ,sdl2)
-       ("sdl2-image" ,sdl2-image)
-       ("sdl2-mixer" ,sdl2-mixer)
-       ("wavpack" ,wavpack)
-       ("openssl" ,openssl)
-       ("zlib" ,zlib)))
+     (list freetype
+           font-dejavu
+           glu
+           json-parser
+           mesa
+           pnglite
+           sdl2
+           sdl2-image
+           sdl2-mixer
+           wavpack
+           openssl
+           zlib))
     (native-inputs
      `(("googletest" ,googletest)
        ("python" ,python-wrapper)
@@ -6395,13 +6280,11 @@ The Flag.  You can even design your own maps!")
                 (string-append "#include \"SDL/SDL_" header ".h\"")))
              #t)))))
     (inputs
-     `(("xerces-c" ,xerces-c)
-       ("sdl-union" ,(sdl-union (list sdl sdl-image sdl-mixer sdl-ttf)))
-       ("curl" ,curl)
-       ("enet" ,enet)))
+     (list xerces-c
+           (sdl-union (list sdl sdl-image sdl-mixer sdl-ttf)) curl
+           enet))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("imagemagick" ,imagemagick)))
+     (list pkg-config imagemagick))
     (home-page "https://www.nongnu.org/enigma")
     (synopsis "Puzzle game with a dexterity component")
     (description "Enigma is a puzzle game with 550 unique levels.  The object
@@ -6435,7 +6318,7 @@ with the mouse isn’t always trivial.")
        ("fontconfig" ,fontconfig)
        ("libxft" ,libxft)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "http://level7.org.uk/chroma/")
     (synopsis "Abstract puzzle game")
     (description "Chroma is an abstract puzzle game. A variety of colourful
@@ -6488,13 +6371,8 @@ becoming difficult enough to tax even the brightest of minds.")
                        "--strip-components=1"
                        "-C" data)))))))
     (inputs
-     `(("sdl-union" ,(sdl-union (list sdl
-                                      sdl-mixer
-                                      sdl-image
-                                      sdl-ttf)))
-       ("fribidi" ,fribidi)
-       ("libx11" ,libx11)
-       ("lua" ,lua-5.1)))
+     (list (sdl-union (list sdl sdl-mixer sdl-image sdl-ttf)) fribidi
+           libx11 lua-5.1))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("fillets-ng-data"
@@ -6642,7 +6520,7 @@ monsters in a quest to find the mystifyingly fabulous Orb of Zot.")
        ;; no test target
        #:tests? #f))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
      `(("sdl2" ,sdl2)
        ("glu" ,glu)
@@ -6677,9 +6555,7 @@ fight against their plot and save his fellow rabbits from slavery.")
        (sha256
         (base32 "1c9zrddmjxvvacismld6fbwbw9vrdbq6g6d3424p8w5p6xg5wlwy"))))
     (build-system trivial-build-system)
-    (native-inputs `(("tar" ,tar)
-                     ("unzip" ,unzip)
-                     ("xz" ,xz)))
+    (native-inputs (list tar unzip xz))
     (arguments
      `(#:modules ((guix build utils))
        #:builder
@@ -6687,9 +6563,8 @@ fight against their plot and save his fellow rabbits from slavery.")
          (use-modules (guix build utils))
          (let ((out (assoc-ref %outputs "out"))
                (source (assoc-ref %build-inputs "source"))
-               (tar (string-append (assoc-ref %build-inputs "tar") "/bin/tar"))
-               (unzip (string-append (assoc-ref %build-inputs "unzip")
-                                     "/bin/unzip"))
+               (tar (search-input-file %build-inputs "/bin/tar"))
+               (unzip (search-input-file %build-inputs "/bin/unzip"))
                (xz-path (string-append (assoc-ref %build-inputs "xz") "/bin")))
            (setenv "PATH" xz-path)
            (mkdir out)
@@ -6729,24 +6604,24 @@ fight against their plot and save his fellow rabbits from slavery.")
     ;; A snippet here would cause a build failure because of timestamps
     ;; reset.  See https://bugs.gnu.org/26734.
     (inputs
-     `(("0ad-data" ,0ad-data)
-       ("curl" ,curl)
-       ("enet" ,enet)
-       ("fmt" ,fmt)
-       ("gloox" ,gloox)
-       ("icu4c" ,icu4c-68)
-       ("libidn" ,libidn)
-       ("libpng" ,libpng)
-       ("libsodium" ,libsodium)
-       ("libvorbis" ,libvorbis)
-       ("libxcursor" ,libxcursor)
-       ("libxml2" ,libxml2)
-       ("miniupnpc" ,miniupnpc)
-       ("mozjs" ,mozjs-78)
-       ("openal" ,openal)
-       ("sdl2" ,sdl2)
-       ("wxwidgets" ,wxwidgets)
-       ("zlib" ,zlib)))
+     (list #{0ad-data}#
+           curl
+           enet
+           fmt
+           gloox
+           icu4c-68
+           libidn
+           libpng
+           libsodium
+           libvorbis
+           libxcursor
+           libxml2
+           miniupnpc
+           mozjs-78
+           openal
+           sdl2
+           wxwidgets
+           zlib))
     (native-inputs
      `(("boost" ,boost)
        ("cmake" ,cmake-minimal)
@@ -6927,7 +6802,7 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
              (("#include <GL/glext.h>") ""))))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("unzip" ,unzip)))
+     (list unzip))
     (inputs
      `(("sdl-union" ,(sdl-union (list sdl2 sdl2-image sdl2-mixer sdl2-ttf)))
        ("glu" ,glu)
@@ -6951,9 +6826,9 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
                   (add-after 'set-paths 'set-sdl-paths
                     (lambda* (#:key inputs #:allow-other-keys)
                       (setenv "CPATH"
-                              (string-append (assoc-ref inputs "sdl-union")
-                                             "/include/SDL2:"
-                                             (or (getenv "CPATH") "")))))
+                              (string-append
+                               (search-input-directory inputs "/include/SDL2")
+                               ":" (or (getenv "CPATH") "")))))
                   (delete 'check)
                   ;; premake doesn't provide install target
                   (replace 'install
@@ -7053,12 +6928,12 @@ Tales of Maj’Eyal offers engaging roguelike gameplay for the 21st century.")
                            (string-append out "/bin")))
                         #t))))))
     (build-system gnu-build-system)
-    (inputs `(("libmikmod" ,libmikmod)
-              ("libvorbis" ,libvorbis)
-              ("flac" ,flac)
-              ("mesa" ,mesa)
-              ("mpg123" ,mpg123)
-              ("sdl2" ,sdl2)))
+    (inputs (list libmikmod
+                  libvorbis
+                  flac
+                  mesa
+                  mpg123
+                  sdl2))
     (synopsis "First person shooter engine for Quake 1")
     (description "Quakespasm is a modern engine for id software's Quake 1.
 It includes support for 64 bit CPUs, custom music playback, a new sound driver,
@@ -7115,9 +6990,8 @@ some graphical niceities, and numerous bug-fixes and other improvements.")
                         #t))))
        ,@(strip-keyword-arguments '(#:make-flags #:phases)
                                   (package-arguments quakespasm))))
-    (inputs `(("vulkan-headers" ,vulkan-headers)
-              ("vulkan-loader" ,vulkan-loader)
-              ,@(package-inputs quakespasm)))
+    (inputs (modify-inputs (package-inputs quakespasm)
+              (prepend vulkan-headers vulkan-loader)))
     (description "vkquake is a modern engine for id software's Quake 1.
 It includes support for 64 bit CPUs, custom music playback, a new sound driver,
 some graphical niceities, and numerous bug-fixes and other improvements.")
@@ -7174,14 +7048,14 @@ some graphical niceities, and numerous bug-fixes and other improvements.")
                (symlink (string-append out "/lib/yamagi-quake2/q2ded")
                         (string-append out "/bin/yamagi-q2ded"))))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("curl" ,curl-minimal)
-       ("libvorbis" ,libvorbis)
-       ("mesa" ,mesa)
-       ("openal" ,openal)
-       ("sdl2" ,sdl2)
-       ("zlib" ,zlib)))
+     (list curl
+           libvorbis
+           mesa
+           openal
+           sdl2
+           zlib))
     (synopsis "First person shooter engine based on quake2")
     (description "Yamagi Quake II is an enhanced client for id Software's Quake II.
 The main focus is an unchanged single player experience like back in 1997,
@@ -7211,12 +7085,9 @@ making Yamagi Quake II one of the most solid Quake II implementations available.
         (base32 "12v00z3p0ymi8f3w4b4bgl4c76irawn3kmd147r0ap6s9ssx2q6m"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("gettext" ,gettext-minimal)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf automake gettext-minimal pkg-config))
     (inputs
-     `(("ncurses" ,ncurses)))
+     (list ncurses))
     (home-page "https://jubalh.github.io/nudoku/")
     (synopsis "Sudoku for your terminal")
     (description "Nudoku is a ncurses-based Sudoku game for your terminal.")
@@ -7259,8 +7130,7 @@ making Yamagi Quake II one of the most solid Quake II implementations available.
        ;; with multiple "QPainter:: ... Painter not active" warnings.
        #:tests? #f))
     (inputs
-     `(("qtbase" ,qtbase-5)
-       ("qtsvg" ,qtsvg)))
+     (list qtbase-5 qtsvg))
     (native-inputs
      `(("cmake" ,cmake-minimal)
        ("gettext-minimal" ,gettext-minimal)
@@ -7290,7 +7160,7 @@ elements to achieve a simple goal in the most complex way possible.")
                 "1hj99jxb9n3r0bkq87p1c24862xa1xyzjyfdyyx88ckszxb05qf3"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
      `(("assimp" ,assimp)
        ("curl" ,curl)
@@ -7504,8 +7374,7 @@ You can save humanity and get programming skills!")
               ("sdl2" ,sdl2)
               ("timidity++" ,timidity++)
               ("zlib" ,zlib)))
-    (native-inputs `(("pkg-config" ,pkg-config)
-                     ("unzip" ,unzip)))
+    (native-inputs (list pkg-config unzip))
     (synopsis "Modern Doom 2 source port")
     (description "GZdoom is a port of the Doom 2 game engine, with a modern
 renderer.  It improves modding support with ZDoom's advanced mapping features
@@ -7536,7 +7405,7 @@ Strife, Chex Quest, and fan-created games like Harmony, Hacx and Freedoom.")
     (build-system cmake-build-system)
     (arguments `(#:tests? #f))          ; no tests
     (native-inputs
-     `(("deutex" ,deutex)))
+     (list deutex))
     (inputs
      `(("sdl" ,sdl2)
        ("sdl-mixer" ,sdl2-mixer)
@@ -7566,11 +7435,11 @@ online.")
                (base32
                 "1iy8rx7kjvi1zjiw4zh77szzmd1sgpqajvbhprh1sj93fhbxcdfl"))))
     (build-system gnu-build-system)
-    (inputs `(("sdl2-net" ,sdl2-net)
-              ("sdl2-mixer" , sdl2-mixer)
-              ("sdl2" ,sdl2)))
+    (arguments
+     `(#:configure-flags (list "CFLAGS=-fcommon")))
+    (inputs (list sdl2-net sdl2-mixer sdl2))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (synopsis "Doom source port preserving the look, feel, and bugs of vanilla
 Doom")
     (description
@@ -7605,7 +7474,8 @@ affect gameplay).")
       `(("automake" ,automake)
         ("autoreconf" ,autoconf))))
     (arguments
-     `(#:phases
+     `(#:configure-flags '("CFLAGS=-fcommon")
+       #:phases
        (modify-phases %standard-phases
          (replace 'bootstrap
            ;; The bundled autogen.sh script unconditionally runs ./configure.
@@ -7653,16 +7523,16 @@ original.")
        ("cmake-rules" ,shlomif-cmake-modules)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("cmocka" ,cmocka)
-       ("perl-env-path" ,perl-env-path)
-       ("perl-inline" ,perl-inline)
-       ("perl-inline-c" ,perl-inline-c)
-       ("perl-string-shellquote" ,perl-string-shellquote)
-       ("perl-test-trailingspace" ,perl-test-trailingspace)
-       ("perl-file-find-object-rule" ,perl-file-find-object-rule)
-       ("perl-text-glob" ,perl-text-glob)
-       ("perl-number-compare" ,perl-number-compare)
-       ("perl-moo" ,perl-moo)))
+     (list cmocka
+           perl-env-path
+           perl-inline
+           perl-inline-c
+           perl-string-shellquote
+           perl-test-trailingspace
+           perl-file-find-object-rule
+           perl-text-glob
+           perl-number-compare
+           perl-moo))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -7731,7 +7601,7 @@ original.")
                             (string-append bin "/fortune"))
                (rmdir games)
                #t))))))
-    (inputs `(("recode" ,recode)))
+    (inputs (list recode))
     (native-inputs
      `(("perl" ,perl)
        ;; The following is only needed for tests.
@@ -7772,7 +7642,7 @@ quotation from a collection of quotes.")
          (let* ((out (assoc-ref %outputs "out"))
                 (xonotic (string-append out "/share/xonotic"))
                 (source (assoc-ref %build-inputs "source"))
-                (unzip (string-append (assoc-ref %build-inputs "unzip") "/bin/unzip")))
+                (unzip (search-input-file %build-inputs "/bin/unzip")))
            (copy-file source (string-append ,name "-" ,version ".zip"))
            (invoke unzip (string-append ,name "-" ,version ".zip"))
            (mkdir-p out)
@@ -7973,12 +7843,12 @@ quotation from a collection of quotes.")
        ("libpng" ,libpng)
        ("hicolor-icon-theme" ,hicolor-icon-theme)))
     (native-inputs
-     `(("unzip" ,unzip)
-       ("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("pkg-config" ,pkg-config)
-       ("libtool" ,libtool)
-       ("gmp" ,gmp)))
+     (list unzip
+           autoconf
+           automake
+           pkg-config
+           libtool
+           gmp))
     (home-page "https://xonotic.org")
     (synopsis "Fast-paced first-person shooter game")
     (description
@@ -8027,11 +7897,7 @@ open-source FPS of its kind.")
                (mkdir-p man)
                (install-file "doc/frotz.6" man)
                #t))))))
-    (inputs `(("libmodplug" ,libmodplug)
-              ("libsamplerate" ,libsamplerate)
-              ("libsndfile" ,libsndfile)
-              ("libvorbis" ,libvorbis)
-              ("ncurses" ,ncurses)))
+    (inputs (list libmodplug libsamplerate libsndfile libvorbis ncurses))
     (synopsis "Portable Z-machine interpreter (ncurses version) for text adventure games")
     (description "Frotz is an interpreter for Infocom games and other Z-machine
 games in the text adventure/interactive fiction genre.  This version of Frotz
@@ -8058,8 +7924,7 @@ ncurses for text display.")
     (arguments
      ;; XXX: Do not add debugging symbols, which cause the build to fail.
      `(#:configure-flags (list "--buildtype=release")
-       #:tests? #f            ;sole test fails with a missing "/dev/dri" error
-       #:meson ,meson-0.55))
+       #:tests? #f))          ;sole test fails with a missing "/dev/dri" error
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
@@ -8186,18 +8051,16 @@ to play games on webpages.  It can also be made into a chat bot.")
                  (install-file "doc/sfrotz.6" man)
                  #t))))))
       (native-inputs
-       `(("pkg-config" ,pkg-config)
-         ("which" ,which)
-         ("perl" ,perl)))
-      (inputs `(("sdl2" ,sdl2)
-                ("sdl2-mixer" ,sdl2-mixer)
-                ("libmodplug" ,libmodplug)
-                ("libsamplerate" ,libsamplerate)
-                ("libsndfile" ,libsndfile)
-                ("libvorbis" ,libvorbis)
-                ("ncurses" ,ncurses)
-                ("freetype" ,freetype)
-                ("libjpeg-turbo" ,libjpeg-turbo)))
+       (list pkg-config which perl))
+      (inputs (list sdl2
+                    sdl2-mixer
+                    libmodplug
+                    libsamplerate
+                    libsndfile
+                    libvorbis
+                    ncurses
+                    freetype
+                    libjpeg-turbo))
       (synopsis "Portable Z-machine interpreter (SDL port) for text adventure games")
       (description "Frotz is an interpreter for Infocom games and other Z-machine
 games in the text adventure/interactive fiction genre.  This version of Frotz
@@ -8276,11 +8139,8 @@ when packaged in Blorb container files or optionally from individual files.")
                            (find-files "bin" ".")))
                #t)))))
       (native-inputs
-       `(("perl-alien-sdl" ,perl-alien-sdl)
-         ("perl-capture-tiny" ,perl-capture-tiny)
-         ("perl-locale-maketext-lexicon" ,perl-locale-maketext-lexicon)
-         ("perl-module-build" ,perl-module-build)
-         ("pkg-config" ,pkg-config)))
+       (list perl-alien-sdl perl-capture-tiny perl-locale-maketext-lexicon
+             perl-module-build pkg-config))
       (inputs
        `(("glib" ,glib)
          ("perl-compress-bzip2" ,perl-compress-bzip2)
@@ -8320,13 +8180,10 @@ their own levels.")
                 "1b3bcdkk5xd5asq797cch9id8692grsjxrc1ss87vv11m1ck4rb3"))))
     (build-system meson-build-system)
     (native-inputs
-     `(("glib" ,glib "bin")             ; for glib-compile-resources
-       ("gobject-introspection" ,gobject-introspection)
-       ("pkg-config" ,pkg-config)
-       ("vala" ,vala)))
+     (list `(,glib "bin") ; for glib-compile-resources
+           gobject-introspection pkg-config vala))
     (inputs
-     `(("libevdev" ,libevdev)
-       ("libgudev" ,libgudev)))
+     (list libevdev libgudev))
     (home-page "https://wiki.gnome.org/Apps/Games")
     (synopsis "Game controller library")
     (description "Libmanette is a small GObject library giving you simple
@@ -8367,13 +8224,13 @@ GameController.")
        ("pkg-config" ,pkg-config)
        ("vala" ,vala)))
     (inputs
-     `(("clutter" ,clutter)
-       ("clutter-gtk" ,clutter-gtk)
-       ("gsound" ,gsound)
-       ("gtk+" ,gtk+)
-       ("libcanberra" ,libcanberra)
-       ("libmanette" ,libmanette)
-       ("librsvg" ,librsvg)))
+     (list clutter
+           clutter-gtk
+           gsound
+           gtk+
+           libcanberra
+           libmanette
+           librsvg))
     (home-page "https://wiki.gnome.org/Apps/Quadrapassel")
     (synopsis "GNOME version of Tetris")
     (description "Quadrapassel comes from the classic falling-block game,
@@ -8547,8 +8404,7 @@ civilized than your own.")
                  (symlink "../stepmania/Docs" "doc/stepmania"))
                #t))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("yasm" ,yasm)))
+     (list pkg-config yasm))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ;; Per upstream, StepMania is only guaranteed to work with a very
@@ -8606,13 +8462,9 @@ to download and install them in @file{$HOME/.stepmania-X.Y/Songs} directory.")
            ;; `make test' doesn't actually build the test executable
            (lambda _ (invoke "make" "zerotokei"))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("cairo" ,cairo)
-       ("ffmpeg" ,ffmpeg)
-       ("pango" ,pango)
-       ("sdl2" ,sdl2)
-       ("sdl2-image" ,sdl2-image)))
+     (list cairo ffmpeg pango sdl2 sdl2-image))
     (home-page "https://github.com/fmang/oshu/")
     (synopsis "Rhythm game in which you click on circles")
     (description "@i{oshu!} is a minimalist variant of the @i{osu!} rhythm game,
@@ -8652,10 +8504,9 @@ download and unpack them separately.")
          (add-after 'set-paths 'set-sdl-paths
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "CPATH"
-                     (string-append (assoc-ref inputs "sdl")
-                                    "/include/SDL:"
-                                    (or (getenv "CPATH") "")))
-             #t))
+                     (string-append
+                      (search-input-directory inputs "/include/SDL")
+                      ":" (or (getenv "CPATH") "")))))
          (add-after 'unpack 'fix-compilation-errors
            (lambda _
              (substitute* "mrt/base_file.h"
@@ -8696,8 +8547,7 @@ download and unpack them separately.")
                                 sdl-ttf)))
        ("zlib" ,zlib)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("zip" ,zip)))
+     (list pkg-config zip))
     (home-page "http://btanks.sourceforge.net")
     (synopsis "Multiplayer tank battle game")
     (description "Battle Tanks (also known as \"btanks\") is a funny battle
@@ -8761,7 +8611,7 @@ the ground, the set ends and all balls are served again.")
     (arguments
      `(#:python ,python-2))
     (inputs
-     `(("python-pygame" ,python2-pygame)))
+     (list python2-pygame))
     (home-page "https://github.com/ryanakca/slingshot")
     (synopsis "Simple 2D shooting strategy game set in space")
     (description "Slingshot is a two-dimensional strategy game where two
@@ -8786,7 +8636,8 @@ affected by the gravity of the planets.")
          "1nfkhcm0l89jyw8yr65na97g4l385zhjf7whkyg47c3v5sdqq2g7"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
+     `(#:configure-flags '("CFLAGS=-fcommon")
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-install-directories
            (lambda* (#:key outputs #:allow-other-keys)
@@ -8802,10 +8653,9 @@ affected by the gravity of the planets.")
          (add-after 'set-paths 'set-sdl-paths
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "CPATH"
-                     (string-append (assoc-ref inputs "sdl")
-                                    "/include/SDL:"
-                                    (or (getenv "CPATH") "")))
-             #t)))))
+                     (string-append
+                      (search-input-directory inputs "/include/SDL")
+                      ":" (or (getenv "CPATH") ""))))))))
     (inputs
      `(("fontconfig" ,fontconfig)
        ("freeglut" ,freeglut)
@@ -8873,20 +8723,20 @@ game field is extended to 4D space, which has to filled up by the gamer with
                (rename-file (string-append out "/bin/arx-install-data")
                             (string-append installer "/bin/arx-install-data"))))))))
     (inputs
-     `(("sdl2" ,sdl2)
-       ("libepoxy" ,libepoxy)
-       ("glew" ,glew)
-       ("openal" ,openal)
-       ("zlib" ,zlib)
-       ("boost" ,boost)
-       ("glm" ,glm)
-       ("freetype" ,freetype)
-       ;; The following are only needed by the arx-install-data script.
-       ("p7zip" ,p7zip) ; Install-helper uses it to extract ISO and .cab archives.
-       ("zenity" ,zenity)           ; GUI for install-helper.
-       ("wget" ,wget)     ; Used by the install-helper to download the patch.
-       ;; The install-helper needs it to extract the patch.
-       ("innoextract" ,innoextract)))
+     (list sdl2
+           libepoxy
+           glew
+           openal
+           zlib
+           boost
+           glm
+           freetype
+           ;; The following are only needed by the arx-install-data script.
+           p7zip ; Install-helper uses it to extract ISO and .cab archives.
+           zenity ; GUI for install-helper.
+           wget ; Used by the install-helper to download the patch.
+           ;; The install-helper needs it to extract the patch.
+           innoextract))
     (home-page "https://arx-libertatis.org/")
     (synopsis "Port of Arx Fatalis, a first-person role-playing game")
     (description "Arx Libertatis is a cross-platform port of Arx Fatalis, a 2002
@@ -8921,10 +8771,9 @@ where the player draws runes in real time to effect the desired spell.")
                    (add-before 'build 'fix-env
                      (lambda* (#:key inputs #:allow-other-keys)
                        (setenv "CPATH"
-                               (string-append (assoc-ref inputs "sdl2-union")
-                                              "/include/SDL2:"
-                                              (or (getenv "CPATH") "")))
-                       #t)))))
+                               (string-append
+                                (search-input-directory inputs "/include/SDL2")
+                                ":" (or (getenv "CPATH") ""))))))))
     (inputs
      `(("sdl2-union" ,(sdl-union (list sdl2 sdl2-image sdl2-mixer sdl2-ttf)))
        ("zlib" ,zlib)))
@@ -9115,10 +8964,8 @@ action RPGs.")
            ;; parameters.
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
-                    (bash (string-append (assoc-ref inputs "bash")
-                                         "/bin/bash"))
-                    (flare (string-append (assoc-ref inputs "flare-engine")
-                                          "/bin/flare"))
+                    (bash (search-input-file inputs "/bin/bash"))
+                    (flare (search-input-file inputs "/bin/flare"))
                     (script (string-append out "/bin/flare-game")))
                (mkdir-p (dirname script))
                (call-with-output-file script
@@ -9132,7 +8979,7 @@ exec ~a --data-path=~a/share/flare --mods=empyrean_campaign~%"
                (chmod script #o755))
              #t)))))
     (inputs
-     `(("flare-engine" ,flare-engine)))
+     (list flare-engine))
     (home-page "http://www.flarerpg.org/")
     (synopsis "Fantasy action RPG using the FLARE engine")
     (description "Flare is a single-player 2D action RPG with
@@ -9181,7 +9028,7 @@ fast-paced action and a dark fantasy style.")
                 (string-append "// " all)))
              #t)))))
     (native-inputs
-     `(("intltool" ,intltool)))
+     (list intltool))
     (inputs
      `(("sdl" ,(sdl-union (list sdl sdl-image sdl-mixer)))
        ("zlib" ,zlib)))
@@ -9244,11 +9091,9 @@ Orcus Dome from evil.")
                  (install-file "MarbleMarcher" bin))
                #t)))))
       (inputs
-       `(("eigen" ,eigen)
-         ("mesa" ,mesa)
-         ("sfml" ,sfml)))
+       (list eigen mesa sfml))
       (native-inputs
-       `(("pkg-config" ,pkg-config)))
+       (list pkg-config))
       (home-page "https://codeparade.itch.io/marblemarcher")
       (synopsis "Guide a marble across fractal landscapes")
       (description "Marble Marcher is a video game that uses a fractal physics
@@ -9364,23 +9209,23 @@ and also provides the base for the FlightGear Flight Simulator.")
                          "--strip-components=1")))
              #t)))))
     (inputs
-     `(("boost" ,boost)
-       ("dbus" ,dbus)
-       ("eudev" ,eudev)
-       ("freeglut" ,freeglut)
-       ("freetype" ,freetype)
-       ("glew" ,glew)
-       ("libpng" ,libpng)
-       ("openal" ,openal)
-       ("openscenegraph" ,openscenegraph)
-       ("plib" ,plib)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)
-       ("qtsvg" ,qtsvg)
-       ("simgear" ,simgear)
-       ("speexdsp" ,speexdsp)
-       ("sqlite" ,sqlite)
-       ("zlib" ,zlib)))
+     (list boost
+           dbus
+           eudev
+           freeglut
+           freetype
+           glew
+           libpng
+           openal
+           openscenegraph
+           plib
+           qtbase-5
+           qtdeclarative
+           qtsvg
+           simgear
+           speexdsp
+           sqlite
+           zlib))
     (native-inputs
      `(("cppunit" ,cppunit)
        ("pkg-config" ,pkg-config)
@@ -9425,7 +9270,14 @@ simulator.")
        #:tests? #f                      ;no test
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)            ;no configure script
+         ;; There is no configure script
+         (replace 'configure
+           (lambda _
+             (substitute* "Makefile"
+               (("-funroll-loops")
+                "-funroll-loops -fcommon")
+               (("SDL_CFLAGS =")
+                "SDL_CFLAGS = -fcommon"))))
          (add-after 'unpack 'fix-sdl-path
            ;; XXX: For some reason, `sdl2-config' reports stand-alone SDL
            ;; directory, not SDL-union provided as an input to the package.
@@ -9433,8 +9285,7 @@ simulator.")
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "Makefile"
                (("sdl2-config" command)
-                (string-append command " --prefix=" (assoc-ref inputs "sdl"))))
-             #t)))))
+                (string-append command " --prefix=" (assoc-ref inputs "sdl")))))))))
     (inputs
      `(("bzip2" ,bzip2)
        ("sdl" ,(sdl-union (list sdl2 sdl2-mixer sdl2-net)))
@@ -9506,10 +9357,7 @@ play with up to four players simultaneously.  It has network support.")
        ("sdl" ,(sdl-union
                 (list sdl2 sdl2-mixer sdl2-net sdl2-ttf sdl2-image)))))
     (native-inputs
-     `(("clang" ,clang)
-       ("ghc" ,ghc)
-       ("pkg-config" ,pkg-config)
-       ("qttools" ,qttools)))
+     (list clang ghc pkg-config qttools))
     (home-page "https://hedgewars.org/")
     (synopsis "Turn-based artillery game featuring fighting hedgehogs")
     (description
@@ -9544,7 +9392,7 @@ and bring the war to your enemy.")
     (arguments
      '(#:import-path "github.com/anaseto/gruid"))
     (propagated-inputs
-     `(("go-golang-org-x-image" ,go-golang-org-x-image)))
+     (list go-golang-org-x-image))
     (home-page "https://github.com/anaseto/gruid")
     (synopsis "Cross-platform grid-based UI and game framework")
     (description "The gruid module provides packages for easily building
@@ -9635,8 +9483,7 @@ on items and player adaptability for character progression.")
                 (share (string-append out "/share/drascula"))
                 (scummvm (assoc-ref %build-inputs "scummvm")))
            ;; Install data.
-           (let ((unzip (string-append (assoc-ref %build-inputs "unzip")
-                                       "/bin/unzip"))
+           (let ((unzip (search-input-file %build-inputs "/bin/unzip"))
                  (doc (string-append out "/share/doc/" ,name "-" ,version)))
              (for-each
               (lambda (input)
@@ -9662,8 +9509,7 @@ on items and player adaptability for character progression.")
            ;; Create standalone executable.
            (let* ((bin (string-append out "/bin"))
                   (executable (string-append bin "/drascula"))
-                  (bash (string-append (assoc-ref %build-inputs "bash")
-                                       "/bin/bash")))
+                  (bash (search-input-file %build-inputs "/bin/bash")))
              (mkdir-p bin)
              (with-output-to-file executable
                (lambda ()
@@ -9690,8 +9536,7 @@ on items and player adaptability for character progression.")
                           ("it" "Gioco classico di avventura punta e clicca 2D"))))
            #t))))
     (native-inputs
-     `(("bash" ,bash)
-       ("unzip" ,unzip)))
+     (list bash unzip))
     (inputs
      `(("scummvm" ,scummvm)
        ("drascula-int"
@@ -9753,8 +9598,7 @@ the World and demonstrating that he is even more evil than his brother Vlad.")
                 (bin (string-append out "/bin"))
                 (executable (string-append bin "/" ,name))
                 (scummvm (assoc-ref %build-inputs "scummvm")))
-           (let ((unzip (string-append (assoc-ref %build-inputs "unzip")
-                                       "/bin/unzip")))
+           (let ((unzip (search-input-file %build-inputs "/bin/unzip")))
              (invoke unzip "-j" (assoc-ref %build-inputs "source")))
            (let ((doc (string-append share "/doc/" ,name "-" ,version)))
              (for-each (lambda (f) (install-file f doc))
@@ -9791,10 +9635,9 @@ the World and demonstrating that he is even more evil than his brother Vlad.")
                        executable scummvm)))
            #t))))
     (native-inputs
-     `(("unzip" ,unzip)))
+     (list unzip))
     (inputs
-     `(("bash" ,bash)
-       ("scummvm" ,scummvm)))
+     (list bash scummvm))
     (home-page "https://www.scummvm.org")
     (synopsis "2D point and click fantasy adventure game")
     (description
@@ -9860,8 +9703,7 @@ Skorl.  Maybe it would be an idea to try and escape...")
                 (bin (string-append out "/bin"))
                 (executable (string-append bin "/" ,name))
                 (scummvm (assoc-ref %build-inputs "scummvm")))
-           (let ((unzip (string-append (assoc-ref %build-inputs "unzip")
-                                       "/bin/unzip")))
+           (let ((unzip (search-input-file %build-inputs "/bin/unzip")))
              (invoke unzip "-j" (assoc-ref %build-inputs "source")))
            (let ((doc (string-append share "/doc/" ,name "-" ,version)))
              (install-file "readme.txt" doc))
@@ -9893,10 +9735,9 @@ Skorl.  Maybe it would be an idea to try and escape...")
                        executable scummvm))))
          #t)))
     (native-inputs
-     `(("unzip" ,unzip)))
+     (list unzip))
     (inputs
-     `(("bash" ,bash)
-       ("scummvm" ,scummvm)))
+     (list bash scummvm))
     (home-page "https://www.scummvm.org/")
     (synopsis "Classic 2D point and click adventure game")
     (description "Flight of the Amazon Queen is a 2D point-and-click
@@ -9959,8 +9800,7 @@ women and 6-foot-tall pygmies.")
                 (bin (string-append out "/bin"))
                 (executable (string-append bin "/" ,name))
                 (scummvm (assoc-ref %build-inputs "scummvm")))
-           (let ((unzip (string-append (assoc-ref %build-inputs "unzip")
-                                       "/bin/unzip")))
+           (let ((unzip (search-input-file %build-inputs "/bin/unzip")))
              (invoke unzip "-j" (assoc-ref %build-inputs "source")))
            (let ((doc (string-append share "/doc/bass-" ,version)))
              (install-file "readme.txt" doc))
@@ -9994,10 +9834,9 @@ angesiedelt in einer düsteren, postapokalyptischen Vision der Zukunft~@
                        executable scummvm)))
            #t))))
     (native-inputs
-     `(("unzip" ,unzip)))
+     (list unzip))
     (inputs
-     `(("bash" ,bash)
-       ("scummvm" ,scummvm)))
+     (list bash scummvm))
     (home-page "https://www.scummvm.org/")
     (synopsis "Classic 2D point and click science-fiction adventure game")
     (description
@@ -10036,13 +9875,9 @@ and to seek vengeance for the killing of his tribe.")
          "07gi3lsmbzzsjambgixj6xy79lh22km84z7bnzgwzxdy806lyvwb"))))
     (build-system gnu-build-system)
     (inputs
-     `(("glib" ,glib)
-       ("gtk+" ,gtk+-2)
-       ("vte" ,vte/gtk+-2)
-       ("readline" ,readline)
-       ("guile" ,guile-1.8)))
+     (list glib gtk+-2 vte/gtk+-2 readline guile-1.8))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (arguments
      `(#:make-flags
        (list
@@ -10219,14 +10054,14 @@ remake of that series or any other game.")
      (patches (search-patches "leela-zero-gtest.patch"))))
    (build-system cmake-build-system)
    (native-inputs
-    `(("googletest" ,googletest)))
+    (list googletest))
    (inputs
-    `(("boost" ,boost)
-      ("opencl-icd-loader" ,opencl-icd-loader)
-      ("openblas" ,openblas)
-      ("opencl-headers" ,opencl-headers)
-      ("qtbase" ,qtbase-5)
-      ("zlib" ,zlib)))
+    (list boost
+          opencl-icd-loader
+          openblas
+          opencl-headers
+          qtbase-5
+          zlib))
    (arguments
     '(#:configure-flags '("-DUSE_BLAS=YES")
       #:phases (modify-phases %standard-phases
@@ -10266,11 +10101,9 @@ can be downloaded from @url{https://zero.sjeng.org/best-network}.")
               "1gdlfqcqkqv7vph3qwq78d0qz6dhmdsranxq9bmixiisbzkqby31"))))
    (build-system gnu-build-system)
    (native-inputs
-    `(("pkg-config" ,pkg-config)))
+    (list pkg-config))
    (inputs
-    `(("qtbase" ,qtbase-5)
-      ("qtmultimedia" ,qtmultimedia)
-      ("qtsvg" ,qtsvg)))
+    (list qtbase-5 qtmultimedia qtsvg))
    (arguments
     '(#:phases
       (modify-phases %standard-phases
@@ -10283,6 +10116,11 @@ can be downloaded from @url{https://zero.sjeng.org/best-network}.")
               (("qtchooser -run-tool=(.*) -qt=qt5" _ command)
                command))
             #t))
+        (add-after 'unpack 'fix-header
+          (lambda _
+            (substitute* "src/bitarray.h"
+              (("#include <cstring>" all)
+               (string-append all "\n#include <stdexcept>")))))
         (add-after 'unpack 'fix-paths
           (lambda _
             (substitute* '("src/pics/Makefile.in"
@@ -10345,25 +10183,23 @@ can be downloaded from @url{https://zero.sjeng.org/best-network}.")
        (base32 "0mlv9qllg70p26dbrcsr820c70d3ib88hapc1z6wgjhdpmc12ni1"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)
-       ("perl" ,perl)))
+     (list extra-cmake-modules kdoctools perl))
     (inputs
-     `(("kcompletion" ,kcompletion)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kcrash" ,kcrash)
-       ("kdbusaddons" ,kdbusaddons)
-       ("ki18n" ,ki18n)
-       ("kio" ,kio)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kxmlgui" ,kxmlgui)
-       ("libkdegames" ,libkdegames)
-       ("python" ,python-wrapper)
-       ("qtbase" ,qtbase-5)
-       ("qtmultimedia" ,qtmultimedia)
-       ("qtdeclarative" ,qtdeclarative)
-       ("qtsvg" ,qtsvg)))
+     (list kcompletion
+           kconfigwidgets
+           kcoreaddons
+           kcrash
+           kdbusaddons
+           ki18n
+           kio
+           kwidgetsaddons
+           kxmlgui
+           libkdegames
+           python-wrapper
+           qtbase-5
+           qtmultimedia
+           qtdeclarative
+           qtsvg))
     (home-page "https://games.kde.org/")
     (synopsis "Stamp drawing toy")
     (description "KTuberling is a drawing toy intended for small children and
@@ -10396,21 +10232,20 @@ This package is part of the KDE games module.")
        (base32 "1dfq9m4njh0czz8zws46rkz6xq2n6xra5w223m3s2f5civiw5msz"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules kdoctools))
     (inputs
-     `(("kcoreaddons" ,kcoreaddons)
-       ("kcrash" ,kcrash)
-       ("kdbusaddons" ,kdbusaddons)
-       ("kdeclarative" ,kdeclarative)
-       ("ki18n" ,ki18n)
-       ("kio" ,kio)
-       ("knewstuff" ,knewstuff)
-       ("kxmlgui" ,kxmlgui)
-       ("libkdegames" ,libkdegames)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)
-       ("qtsvg" ,qtsvg)))
+     (list kcoreaddons
+           kcrash
+           kdbusaddons
+           kdeclarative
+           ki18n
+           kio
+           knewstuff
+           kxmlgui
+           libkdegames
+           qtbase-5
+           qtdeclarative
+           qtsvg))
     (home-page "https://games.kde.org/")
     (synopsis "Number logic game")
     (description "Picmi is a number logic game in which cells in a grid have
@@ -10433,22 +10268,21 @@ This package is part of the KDE games module.")
         (base32 "1lpp6pzr5dgd4si4a8c7hcvgxgqy0bgyhkx9m6jqb0zhll6dxj10"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules kdoctools))
     (inputs
-     `(("kcompletion" ,kcompletion)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kcrash" ,kcrash)
-       ("kdbusaddons" ,kdbusaddons)
-       ("ki18n" ,ki18n)
-       ("kio" ,kio)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kxmlgui" ,kxmlgui)
-       ("ktextwidgets" ,ktextwidgets)
-       ("libkdegames" ,libkdegames)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)))
+     (list kcompletion
+           kconfigwidgets
+           kcoreaddons
+           kcrash
+           kdbusaddons
+           ki18n
+           kio
+           kwidgetsaddons
+           kxmlgui
+           ktextwidgets
+           libkdegames
+           qtbase-5
+           qtdeclarative))
     (home-page "https://games.kde.org/")
     (synopsis "Miniature golf game")
     (description "Kolf is a miniature golf game for one to ten players.  The
@@ -10481,18 +10315,18 @@ This package is part of the KDE games module.")
        (base32 "10ljzbf7qki5flydankrbksaihhkqpfyljb8c71fbwqwmkr7rgfq"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     (list extra-cmake-modules))
     (inputs
-     `(("kauth" ,kauth)
-       ("kcompletion" ,kcompletion)
-       ;("kconfig" ,kconfig)
-       ("kcodecs" ,kcodecs)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcoreaddons" ,kcoreaddons)
-       ("ki18n" ,ki18n)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("qtbase" ,qtbase-5)
-       ("qtsvg" ,qtsvg)))
+     (list kauth
+           kcompletion
+           ;("kconfig" ,kconfig)
+           kcodecs
+           kconfigwidgets
+           kcoreaddons
+           ki18n
+           kwidgetsaddons
+           qtbase-5
+           qtsvg))
     (home-page "https://games.kde.org/")
     (synopsis "Shared library for kmahjongg and kshisen")
     (description "Shared library and common files for kmahjongg, kshisen and
@@ -10512,21 +10346,20 @@ other Mah Jongg like games.")
        (base32 "1fcj4jb2zzbaxp7cp04w36y0c7lh77yzin66fmvrcxkl11xi2wwd"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules kdoctools))
     (inputs
-     `(("kcompletion" ,kcompletion)
-       ("kcrash" ,kcrash)
-       ("kdbusaddons" ,kdbusaddons)
-       ("kdeclarative" ,kdeclarative)
-       ("ki18n" ,ki18n)
-       ("knewstuff" ,knewstuff)
-       ("kxmlgui" ,kxmlgui)
-       ("libkdegames" ,libkdegames)
-       ("libkmahjongg" ,libkmahjongg)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)
-       ("qtsvg" ,qtsvg)))
+     (list kcompletion
+           kcrash
+           kdbusaddons
+           kdeclarative
+           ki18n
+           knewstuff
+           kxmlgui
+           libkdegames
+           libkmahjongg
+           qtbase-5
+           qtdeclarative
+           qtsvg))
     (home-page "https://games.kde.org/")
     (synopsis "Tile laying patience")
     (description "In KMahjongg the tiles are scrambled and staked on top of
@@ -10552,23 +10385,23 @@ This package is part of the KDE games module.")
        (base32 "1hrwr0f1kidivsp8lnwdbqz3xxagjvjwh72r3gma8smfilybygfb"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ;("perl" ,perl)
-       ;("pkg-config" ,pkg-config)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules
+           ;("perl" ,perl)
+           ;("pkg-config" ,pkg-config)
+           kdoctools))
     (inputs
-     `(("kauth" ,kauth)
-       ("kcompletion" ,kcompletion)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kcrash" ,kcrash)
-       ("kdbusaddons" ,kdbusaddons)
-       ("ki18n" ,ki18n)
-       ("kxmlgui" ,kxmlgui)
-       ("libkdegames" ,libkdegames)
-       ("libkmahjongg" ,libkmahjongg)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)))
+     (list kauth
+           kcompletion
+           kconfigwidgets
+           kcoreaddons
+           kcrash
+           kdbusaddons
+           ki18n
+           kxmlgui
+           libkdegames
+           libkmahjongg
+           qtbase-5
+           qtdeclarative))
     (home-page "https://games.kde.org/")
     (synopsis "Shisen-Sho solitaire game")
     (description "KShisen is a solitaire-like game played using the standard
@@ -10593,27 +10426,37 @@ This package is part of the KDE games module.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'install 'wrap
+         (add-after 'unpack 'fix-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "src/mjresource.py"
+               (("'share', 'kmahjongglib'" all)
+                (string-append "'" (assoc-ref inputs "libkmahjongg")
+                               "/share', 'kmahjongglib'")))))
+         (add-after 'qt-wrap 'wrap
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
-               (wrap-program (string-append out "/bin/kajongg")
-                 `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH"))))
-               #t))))))
+               (for-each (lambda (program)
+                           (wrap-program program
+                             `("GUIX_PYTHONPATH" ":" prefix
+                               (,(getenv "GUIX_PYTHONPATH")))))
+                         (list (string-append out "/bin/kajongg")
+                               (string-append out "/bin/kajonggserver")))))))))
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ;("perl" ,perl)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules
+           ;("perl" ,perl)
+           kdoctools))
     (inputs
-     `(("kconfig" ,kconfig)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcoreaddons" ,kcoreaddons)
-       ("ki18n" ,ki18n)
-       ("libkmahjongg" ,libkmahjongg)
-       ("python" ,python)
-       ("python-twisted" ,python-twisted)
-       ("python-pyqt" ,python-pyqt)
-       ("qtbase" ,qtbase-5)
-       ("qtsvg" ,qtsvg)))
+     (list kconfig
+           kconfigwidgets
+           kcoreaddons
+           ki18n
+           libkmahjongg
+           python
+           python-twisted
+           python-pyqt
+           python-zope-interface
+           qtbase-5
+           qtsvg))
     (home-page "https://games.kde.org/")
     (synopsis "Classical Mah Jongg game for 4 players")
     (description "Kajongg is the ancient Chinese board game for 4 players.
@@ -10642,21 +10485,20 @@ This package is part of the KDE games module.")
        (base32 "0kqj2cx0ny3qq65c6w5fpnzmrwl9irg8slzvpd3anck5cnvma3j4"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules kdoctools))
     (inputs
-     `(("kcompletion" ,kcompletion)
-       ("kconfig" ,kconfig)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kcrash" ,kcrash)
-       ("kdbusaddons" ,kdbusaddons)
-       ("ki18n" ,ki18n)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kxmlgui" ,kxmlgui)
-       ("libkdegames" ,libkdegames)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)))
+     (list kcompletion
+           kconfig
+           kconfigwidgets
+           kcoreaddons
+           kcrash
+           kdbusaddons
+           ki18n
+           kwidgetsaddons
+           kxmlgui
+           libkdegames
+           qtbase-5
+           qtdeclarative))
     (home-page "https://games.kde.org/")
     (synopsis "Breakout like game")
     (description "KBreakout is similar to the classics breakout and xboing,
@@ -10680,22 +10522,21 @@ This package is part of the KDE games module.")
        (base32 "0hqjwh3jq2npqwkvh67fyn2xnq8swiasdw5jz8f0ikl0k28id775"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules kdoctools))
     (inputs
-     `(("kcompletion" ,kcompletion)
-       ("kconfig" ,kconfig)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kcrash" ,kcrash)
-       ("kdbusaddons" ,kdbusaddons)
-       ("ki18n" ,ki18n)
-       ("ktextwidgets" ,ktextwidgets)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kxmlgui" ,kxmlgui)
-       ("libkdegames" ,libkdegames)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)))
+     (list kcompletion
+           kconfig
+           kconfigwidgets
+           kcoreaddons
+           kcrash
+           kdbusaddons
+           ki18n
+           ktextwidgets
+           kwidgetsaddons
+           kxmlgui
+           libkdegames
+           qtbase-5
+           qtdeclarative))
     (home-page "https://games.kde.org/")
     (synopsis "Classical mine sweeper game")
     (description "KMines is a classic Minesweeper game.  The idea is to
@@ -10718,22 +10559,21 @@ This package is part of the KDE games module.")
        (base32 "0lnwj06vv4qx05hr8pzysnvrxh8y04asajrph0rsj37v8hs9g5lh"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules kdoctools))
     (inputs
-     `(("kcompletion" ,kcompletion)
-       ("kconfig" ,kconfig)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kcrash" ,kcrash)
-       ("kdbusaddons" ,kdbusaddons)
-       ("kguiaddons" ,kguiaddons)
-       ("ki18n" ,ki18n)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kxmlgui" ,kxmlgui)
-       ("libkdegames" ,libkdegames)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)
-       ("qtsvg" ,qtsvg)))
+     (list kcompletion
+           kconfig
+           kcoreaddons
+           kcrash
+           kdbusaddons
+           kguiaddons
+           ki18n
+           kwidgetsaddons
+           kxmlgui
+           libkdegames
+           qtbase-5
+           qtdeclarative
+           qtsvg))
     (home-page "https://games.kde.org/")
     (synopsis "Simple turn-based strategy game")
     (description "Konquest is the KDE version of Gnu-Lactic Konquest.  Players
@@ -10758,22 +10598,21 @@ This package is part of the KDE games module.")
        (base32 "0ymy0z1qlw3n653xs3dsa1xm78q4xaj09dnnci4km77rzis26vb6"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules kdoctools))
     (inputs
-     `(("kcompletion" ,kcompletion)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kcrash" ,kcrash)
-       ("kdbusaddons" ,kdbusaddons)
-       ("ki18n" ,ki18n)
-       ("kio" ,kio)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kxmlgui" ,kxmlgui)
-       ("libkdegames" ,libkdegames)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)
-       ("qtsvg" ,qtsvg)))
+     (list kcompletion
+           kconfigwidgets
+           kcoreaddons
+           kcrash
+           kdbusaddons
+           ki18n
+           kio
+           kwidgetsaddons
+           kxmlgui
+           libkdegames
+           qtbase-5
+           qtdeclarative
+           qtsvg))
     (home-page "https://games.kde.org/")
     (synopsis "Jezzball arcade game")
     (description "KBounce is a single player arcade game with the elements of
@@ -10797,22 +10636,21 @@ This package is part of the KDE games module.")
        (base32 "09yfm9mzbamp294cvc5finq6ilxvxr68i0dnb0m72pa4sfzmij32"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules kdoctools))
     (inputs
-     `(("kcompletion" ,kcompletion)
-       ("kconfig" ,kconfig)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kcrash" ,kcrash)
-       ("kdbusaddons" ,kdbusaddons)
-       ("ki18n" ,ki18n)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kxmlgui" ,kxmlgui)
-       ("libkdegames" ,libkdegames)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)
-       ("qtsvg" ,qtsvg)))
+     (list kcompletion
+           kconfig
+           kconfigwidgets
+           kcoreaddons
+           kcrash
+           kdbusaddons
+           ki18n
+           kwidgetsaddons
+           kxmlgui
+           libkdegames
+           qtbase-5
+           qtdeclarative
+           qtsvg))
     (home-page "https://games.kde.org/")
     (synopsis "Single player falling blocks puzzle game")
     (description "KBlocks is the classic Tetris-like falling blocks game.
@@ -10838,25 +10676,24 @@ This package is part of the KDE games module.")
        (base32 "0pj6ry7ak1rnpb93mqypaxrcbmrhwg9ir6zhb3ybzfkfcrh67g12"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules kdoctools))
     (inputs
-     `(("karchive" ,karchive)
-       ("kconfig" ,kconfig)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kcrash" ,kcrash)
-       ("kguiaddons" ,kguiaddons)
-       ("ki18n" ,ki18n)
-       ("kiconthemes" ,kiconthemes)
-       ("kio" ,kio)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kxmlgui" ,kxmlgui)
-       ("libkdegames" ,libkdegames)
-       ("glu" ,glu)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)
-       ("qtsvg" ,qtsvg)))
+     (list karchive
+           kconfig
+           kconfigwidgets
+           kcoreaddons
+           kcrash
+           kguiaddons
+           ki18n
+           kiconthemes
+           kio
+           kwidgetsaddons
+           kxmlgui
+           libkdegames
+           glu
+           qtbase-5
+           qtdeclarative
+           qtsvg))
     (home-page "https://games.kde.org/")
     (synopsis "Sudoku puzzle game and solver")
     (description "KSudoku is a Sudoku game and solver, supporting a range of
@@ -10899,20 +10736,19 @@ This package is part of the KDE games module.")
        (base32 "0y8lnwawrkl4ixn7v4dg48k2zpr083krv7dv4d94b2dpkh7xfvih"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules kdoctools))
     (inputs
-     `(("kcompletion" ,kcompletion)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kcrash" ,kcrash)
-       ("kdbusaddons" ,kdbusaddons)
-       ("ki18n" ,ki18n)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kxmlgui" ,kxmlgui)
-       ("libkdegames" ,libkdegames)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)))
+     (list kcompletion
+           kconfigwidgets
+           kcoreaddons
+           kcrash
+           kdbusaddons
+           ki18n
+           kwidgetsaddons
+           kxmlgui
+           libkdegames
+           qtbase-5
+           qtdeclarative))
     (home-page "https://games.kde.org/")
     (synopsis "Place 5 equal pieces together, but wait, there are 3 new ones")
     (description "KLines is a simple but highly addictive one player game.
@@ -10943,20 +10779,19 @@ This package is part of the KDE games module.")
        (base32 "17ra5d3r9ajy2inj17gwd5xphzhvbzx5kpvdwyj6msx4dd9wxgfi"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules kdoctools))
     (inputs
-     `(("kcompletion" ,kcompletion)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kcrash" ,kcrash)
-       ("kdbusaddons" ,kdbusaddons)
-       ("ki18n" ,ki18n)
-       ("kio" ,kio)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kxmlgui" ,kxmlgui)
-       ("libkdegames" ,libkdegames)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)))
+     (list kcompletion
+           kcoreaddons
+           kcrash
+           kdbusaddons
+           ki18n
+           kio
+           kwidgetsaddons
+           kxmlgui
+           libkdegames
+           qtbase-5
+           qtdeclarative))
     (home-page "https://games.kde.org/")
     (synopsis "Action and puzzle solving game")
     (description "KGoldrunner is an action game where the hero runs through a
@@ -10984,23 +10819,22 @@ This package is part of the KDE games module.")
        (base32 "1iyxrx3422asa58kh0siwvi1svds5kccrym6gdfpdhlmhmciqlzi"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules kdoctools))
     (inputs
-     `(("kcompletion" ,kcompletion)
-       ("kconfig" ,kconfig)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kcrash" ,kcrash)
-       ("kdbusaddons" ,kdbusaddons)
-       ("ki18n" ,ki18n)
-       ("knotifications" ,knotifications)
-       ("knotifyconfig" ,knotifyconfig)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kxmlgui" ,kxmlgui)
-       ("libkdegames" ,libkdegames)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)))
+     (list kcompletion
+           kconfig
+           kconfigwidgets
+           kcoreaddons
+           kcrash
+           kdbusaddons
+           ki18n
+           knotifications
+           knotifyconfig
+           kwidgetsaddons
+           kxmlgui
+           libkdegames
+           qtbase-5
+           qtdeclarative))
     (home-page "https://games.kde.org/")
     (synopsis "Three-in-a-row game")
     (description "KDiamond is a three-in-a-row game like Bejeweled.  It
@@ -11023,21 +10857,20 @@ This package is part of the KDE games module.")
        (base32 "0plx3lv35fc8q9svbyl71mms3ji6zn58j306bvm1f8kkgg0x395b"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules kdoctools))
     (inputs
-     `(("kcompletion" ,kcompletion)
-       ("kconfig" ,kconfig)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kcrash" ,kcrash)
-       ("kdnssd" ,kdnssd)
-       ("ki18n" ,ki18n)
-       ("kxmlgui" ,kxmlgui)
-       ("libkdegames" ,libkdegames)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)
-       ("qtsvg" ,qtsvg)))
+     (list kcompletion
+           kconfig
+           kconfigwidgets
+           kcoreaddons
+           kcrash
+           kdnssd
+           ki18n
+           kxmlgui
+           libkdegames
+           qtbase-5
+           qtdeclarative
+           qtsvg))
     (home-page "https://games.kde.org/")
     (synopsis "Place 4 pieces in a row")
     (description "KFourInLine is a board game for two players based on the
@@ -11062,22 +10895,21 @@ This package is part of the KDE games module.")
        (base32 "0la5w44b0gl72g3wfp0pw8gwnm287lh7nd9k5ikpszw5nn49db0h"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules kdoctools))
     (inputs
-     `(("karchive" ,karchive)
-       ("kcompletion" ,kcompletion)
-       ("kconfig" ,kconfig)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kcrash" ,kcrash)
-       ("kdbusaddons" ,kdbusaddons)
-       ("ki18n" ,ki18n)
-       ("ktextwidgets" ,ktextwidgets)
-       ("kxmlgui" ,kxmlgui)
-       ("libkdegames" ,libkdegames)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)
-       ("qtsvg" ,qtsvg)))
+     (list karchive
+           kcompletion
+           kconfig
+           kcoreaddons
+           kcrash
+           kdbusaddons
+           ki18n
+           ktextwidgets
+           kxmlgui
+           libkdegames
+           qtbase-5
+           qtdeclarative
+           qtsvg))
     (home-page "https://games.kde.org/")
     (synopsis "Find atoms in a grid by shooting electrons")
     (description "KBlackbox is a game of hide and seek played on a grid of
@@ -11103,22 +10935,21 @@ This package is part of the KDE games module.")
        (base32 "060kj06vpigdy570izsjfgnmqqrpmb8bkr9arqc109hg3avl5wjz"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules kdoctools))
     (inputs
-     `(("kcompletion" ,kcompletion)
-       ("kconfig" ,kconfig)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kcrash" ,kcrash)
-       ("kdbusaddons" ,kdbusaddons)
-       ("ki18n" ,ki18n)
-       ("ktextwidgets" ,ktextwidgets)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kxmlgui" ,kxmlgui)
-       ("libkdegames" ,libkdegames)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)))
+     (list kcompletion
+           kconfig
+           kconfigwidgets
+           kcoreaddons
+           kcrash
+           kdbusaddons
+           ki18n
+           ktextwidgets
+           kwidgetsaddons
+           kxmlgui
+           libkdegames
+           qtbase-5
+           qtdeclarative))
     (home-page "https://games.kde.org/")
     (synopsis "Turn the board pieces to get all computers connected")
     (description "KNetWalk is a small game where you have to build up a
@@ -11145,19 +10976,18 @@ This package is part of the KDE games module.")
         (base32 "1fjcwm591jgx3bgqpi0j5fnb2l2r2h3r6lav3vhaxz4rkf56pg2a"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules kdoctools))
     (inputs
-     `(("kcompletiom" ,kcompletion)
-       ("kconfig" ,kconfig)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kcrash" ,kcrash)
-       ("kdbusaddons" ,kdbusaddons)
-       ("ki18n" ,ki18n)
-       ("kxmlgui" ,kxmlgui)
-       ("libkdegames" ,libkdegames)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)))
+     (list kcompletion
+           kconfig
+           kcoreaddons
+           kcrash
+           kdbusaddons
+           ki18n
+           kxmlgui
+           libkdegames
+           qtbase-5
+           qtdeclarative))
     (home-page "https://games.kde.org/")
     (synopsis "Arcade bombing game")
     (description "Bomber is a single player arcade game.
@@ -11187,23 +11017,22 @@ This package is part of the KDE games module.")
        (base32 "1fyh7zyacb3pnlfd29jw2jmyl8a7sjw354pi234nd5x5999xw5z6"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules kdoctools))
     (inputs
-     `(("kcompletion" ,kcompletion)
-       ("kconfig" ,kconfig)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kcrash" ,kcrash)
-       ("kdbusaddons" ,kdbusaddons)
-       ("ki18n" ,ki18n)
-       ("knewstuff" ,knewstuff)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kxmlgui" ,kxmlgui)
-       ("libkdegames" ,libkdegames)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)
-       ("qtsvg" ,qtsvg)))
+     (list kcompletion
+           kconfig
+           kconfigwidgets
+           kcoreaddons
+           kcrash
+           kdbusaddons
+           ki18n
+           knewstuff
+           kwidgetsaddons
+           kxmlgui
+           libkdegames
+           qtbase-5
+           qtdeclarative
+           qtsvg))
     (home-page "https://games.kde.org/")
     (synopsis "Bomberman clone")
     (description "Granatier is a clone of the classic Bomberman game,
@@ -11225,23 +11054,22 @@ This package is part of the KDE games module.")
         (base32 "10y7nm0x6zcc0gh3am69bbxyyb8azbbfyrdqsa023ggr7n04cn21"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules kdoctools))
     (inputs
-     `(("kcrash" ,kcrash)
-       ("ki18n" ,ki18n)
-       ("kiconthemes" ,kiconthemes)
-       ("kio" ,kio)
-       ("knewstuff" ,knewstuff)
-       ("kwallet" ,kwallet)
-       ("kxmlgui" ,kxmlgui)
-       ("libkdegames" ,libkdegames)
-       ("phonon" ,phonon)
-       ("qca" ,qca)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)
-       ("qtsvg" ,qtsvg)
-       ("zlib" ,zlib)))
+     (list kcrash
+           ki18n
+           kiconthemes
+           kio
+           knewstuff
+           kwallet
+           kxmlgui
+           libkdegames
+           phonon
+           qca
+           qtbase-5
+           qtdeclarative
+           qtsvg
+           zlib))
     (home-page "https://games.kde.org/")
     (synopsis "Computerized version of the well known strategy board game
 'Risk'")
@@ -11281,29 +11109,28 @@ This package is part of the KDE games module.")
         (base32 "0xxz9g4zxljlg20g88a5lkbwzzm9yg4vxnrfigk8m018cz0nqd5b"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules kdoctools))
     (inputs
-     `(("karchive" ,karchive)
-       ("kcompletion" ,kcompletion)
-       ("kconfig" ,kconfig)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kcrash" ,kcrash)
-       ("kcrash" ,kcrash)
-       ("ki18n" ,ki18n)
-       ("ki18n" ,ki18n)
-       ("kio" ,kio)
-       ("kitemviews" ,kitemviews)
-       ("knotifications" ,knotifications)
-       ("kservice" ,kservice)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kxmlgui" ,kxmlgui)
-       ("libkdegames" ,libkdegames)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)
-       ("qtsvg" ,qtsvg)
-       ("shared-mime-info" ,shared-mime-info)))
+     (list karchive
+           kcompletion
+           kconfig
+           kconfigwidgets
+           kcoreaddons
+           kcrash
+           kcrash
+           ki18n
+           ki18n
+           kio
+           kitemviews
+           knotifications
+           kservice
+           kwidgetsaddons
+           kxmlgui
+           libkdegames
+           qtbase-5
+           qtdeclarative
+           qtsvg
+           shared-mime-info))
     (home-page "https://games.kde.org/")
     (synopsis "Jigsaw puzzle game")
     (description "Palapeli is a jigsaw puzzle game.  Unlike other games in
@@ -11329,21 +11156,20 @@ This package is part of the KDE games module.")
         (base32 "0milc8fl1rj4yrwdvm60ampd47dyiys1xvqi5f0g7y6mgymgyk4x"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules kdoctools))
     (inputs
-     `(("kcompletion" ,kcompletion)
-       ("kconfig" ,kconfig)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kcrash" ,kcrash)
-       ("kdbusaddons" ,kdbusaddons)
-       ("ki18n" ,ki18n)
-       ("kiconthemes" ,kiconthemes)
-       ("kxmlgui" ,kxmlgui)
-       ("libkdegames" ,libkdegames)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)))
+     (list kcompletion
+           kconfig
+           kconfigwidgets
+           kcoreaddons
+           kcrash
+           kdbusaddons
+           ki18n
+           kiconthemes
+           kxmlgui
+           libkdegames
+           qtbase-5
+           qtdeclarative))
     (home-page "https://games.kde.org/")
     (synopsis "Yahtzee dice game")
     (description "Kiriki is an addictive and fun dice game, designed to be
@@ -11368,23 +11194,22 @@ This package is part of the KDE games module.")
         (base32 "088752yzmfsnppd27p8hld4x5s7sw5fagm08024l5ra1mlicdfz9"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules kdoctools))
     (inputs
-     `(("kconfig" ,kconfig)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kcrash" ,kcrash)
-       ("kdbusaddons" ,kdbusaddons)
-       ("ki18n" ,ki18n)
-       ("kio" ,kio)
-       ("knewstuff" ,knewstuff)
-       ("ktextwidgets" ,ktextwidgets)
-       ("kxmlgui" ,kxmlgui)
-       ("libkdegames" ,libkdegames)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)
-       ("qtsvg" ,qtsvg)))
+     (list kconfig
+           kconfigwidgets
+           kcoreaddons
+           kcrash
+           kdbusaddons
+           ki18n
+           kio
+           knewstuff
+           ktextwidgets
+           kxmlgui
+           libkdegames
+           qtbase-5
+           qtdeclarative
+           qtsvg))
     (home-page "https://games.kde.org/")
     (synopsis "Go board game")
     (description "Kigo is an open-source implementation of the popular Go
@@ -11415,22 +11240,21 @@ This package is part of the KDE games module.")
         (base32 "0h3mypwd67sss08j5vvrih5f5ss85m9kax6412y40xmsm51lz2pq"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules kdoctools))
     (inputs
-     `(("glu" ,glu)
-       ("kconfig" ,kconfig)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kcrash" ,kcrash)
-       ("ki18n" ,ki18n)
-       ("kio" ,kio)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kxmlgui" ,kxmlgui)
-       ("libkdegames" ,libkdegames)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)
-       ("qtsvg" ,qtsvg)))
+     (list glu
+           kconfig
+           kconfigwidgets
+           kcoreaddons
+           kcrash
+           ki18n
+           kio
+           kwidgetsaddons
+           kxmlgui
+           libkdegames
+           qtbase-5
+           qtdeclarative
+           qtsvg))
     (home-page "https://games.kde.org/")
     (synopsis "Game based on Rubik's Cube")
     (description "Kubrick is a game based on the Rubik's Cube puzzle.
@@ -11457,21 +11281,20 @@ This package is part of the KDE games module.")
         (base32 "1wg9zxp64kwjxqs4qw0h7j8yhgffbmvh8j9d4dgmz45dscngnjli"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules kdoctools))
     (inputs
-     `(("kcompletion" ,kcompletion)
-       ("kconfig" ,kconfig)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kcrash" ,kcrash)
-       ("kguiaddons" ,kguiaddons)
-       ("ki18n" ,ki18n)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kxmlgui" ,kxmlgui)
-       ("libkdegames" ,libkdegames)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)
-       ("qtsvg" ,qtsvg)))
+     (list kcompletion
+           kconfig
+           kcoreaddons
+           kcrash
+           kguiaddons
+           ki18n
+           kwidgetsaddons
+           kxmlgui
+           libkdegames
+           qtbase-5
+           qtdeclarative
+           qtsvg))
     (home-page "https://games.kde.org/")
     (synopsis "Lieutnant Skat card game")
     (description "Lieutnant Skat (from German \"Offiziersskat\") is a fun and
@@ -11496,21 +11319,20 @@ This package is part of the KDE games module.")
        (base32 "14x3v6li4r3gzzwfd6ar9saq2rhc7yxs0sp9ygalzq8vq4d7i1kh"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules kdoctools))
     (inputs
-     `(("kcompletion" ,kcompletion)
-       ("kconfig" ,kconfig)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kcrash" ,kcrash)
-       ("kdbusaddons" ,kdbusaddons)
-       ("ki18n" ,ki18n)
-       ("kxmlgui" ,kxmlgui)
-       ("libkdegames" ,libkdegames)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)
-       ("qtsvg" ,qtsvg)))
+     (list kcompletion
+           kconfig
+           kconfigwidgets
+           kcoreaddons
+           kcrash
+           kdbusaddons
+           ki18n
+           kxmlgui
+           libkdegames
+           qtbase-5
+           qtdeclarative
+           qtsvg))
     (home-page "https://games.kde.org/")
     (synopsis "Pac-Man clone")
     (description "Kapman is a clone of the well known game Pac-Man.
@@ -11536,21 +11358,20 @@ This package is part of the KDE games module.")
         (base32 "1aixh6ygif2cm1a5g32sl5y6b5x68139pzihaxq4334c6avamdai"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules kdoctools))
     (inputs
-     `(("kcompletion" ,kcompletion)
-       ("kconfig" ,kconfig)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kcrash" ,kcrash)
-       ("kdbusaddons" ,kdbusaddons)
-       ("ki18n" ,ki18n)
-       ("kxmlgui" ,kxmlgui)
-       ("libkdegames" ,libkdegames)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)
-       ("qtsvg" ,qtsvg)))
+     (list kcompletion
+           kconfig
+           kconfigwidgets
+           kcoreaddons
+           kcrash
+           kdbusaddons
+           ki18n
+           kxmlgui
+           libkdegames
+           qtbase-5
+           qtdeclarative
+           qtsvg))
     (home-page "https://games.kde.org/")
     (synopsis "Two player game with shooting spaceships flying around a sun")
     (description "KSpaceduel is a space battle game for one or two players,
@@ -11572,19 +11393,18 @@ This package is part of the KDE games module.")
         (base32 "18qbac366m0xma3ary11q9zxz0wgnysppcl7kpypl6ic3nf61wqz"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules kdoctools))
     (inputs
-     `(("kcompletion" ,kcompletion)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kcrash" ,kcrash)
-       ("kdbusaddons" ,kdbusaddons)
-       ("ki18n" ,ki18n)
-       ("kxmlgui" ,kxmlgui)
-       ("libkdegames" ,libkdegames)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)
-       ("qtsvg" ,qtsvg)))
+     (list kcompletion
+           kcoreaddons
+           kcrash
+           kdbusaddons
+           ki18n
+           kxmlgui
+           libkdegames
+           qtbase-5
+           qtdeclarative
+           qtsvg))
     (home-page "https://games.kde.org/")
     (synopsis "Classic pen and paper game: five in a line")
     (description "Bovo is a Gomoku (from Japanese 五目並べ - lit.  \"five
@@ -11609,21 +11429,20 @@ This package is part of the KDE games module.")
         (base32 "1296gww42nwnai7y6m2qpjqpyc30p7z9chfv5rv0n48jvdhva88y"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules kdoctools))
     (inputs
-     `(("kcompletion" ,kcompletion)
-       ("kconfig" ,kconfig)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kcrash" ,kcrash)
-       ("kdbusaddons" ,kdbusaddons)
-       ("ki18n" ,ki18n)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kxmlgui" ,kxmlgui)
-       ("libkdegames" ,libkdegames)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)))
+     (list kcompletion
+           kconfig
+           kconfigwidgets
+           kcoreaddons
+           kcrash
+           kdbusaddons
+           ki18n
+           kwidgetsaddons
+           kxmlgui
+           libkdegames
+           qtbase-5
+           qtdeclarative))
     (home-page "https://games.kde.org/")
     (synopsis "Port of the classic BSD console game robots")
     (description "Killbots is a simple game of evading killer robots.
@@ -11651,22 +11470,21 @@ This package is part of the KDE games module.")
        (base32 "0mp6g258n3xzvgf23jnhkw10xgwqwqdzqfdc6r9jq6a6m8v77swz"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules kdoctools))
     (inputs
-     `(("kcompletion" ,kcompletion)
-       ("kconfig" ,kconfig)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kcrash" ,kcrash)
-       ("kdbusaddons" ,kdbusaddons)
-       ("kguiaddons" ,kguiaddons)
-       ("ki18n" ,ki18n)
-       ("kxmlgui" ,kxmlgui)
-       ("libkdegames" ,libkdegames)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)
-       ("qtsvg" ,qtsvg)))
+     (list kcompletion
+           kconfig
+           kconfigwidgets
+           kcoreaddons
+           kcrash
+           kdbusaddons
+           kguiaddons
+           ki18n
+           kxmlgui
+           libkdegames
+           qtbase-5
+           qtdeclarative
+           qtsvg))
     (home-page "https://games.kde.org/")
     (synopsis "Snake race played against the computer")
     (description "KSnakeDuel is a fast action game where you steer a snake
@@ -11690,20 +11508,19 @@ This package is part of the KDE games module.")
        (base32 "180ybafizpwjsg80npy0l9142cjsnlyxwv9dz3bq6r8v4smn2g6b"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules kdoctools))
     (inputs
-     `(("kcompletion" ,kcompletion)
-       ("kconfig" ,kconfig)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kcrash" ,kcrash)
-       ("kdbusaddons" ,kdbusaddons)
-       ("ki18n" ,ki18n)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kxmlgui" ,kxmlgui)
-       ("libkdegames" ,libkdegames)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)))
+     (list kcompletion
+           kconfig
+           kcoreaddons
+           kcrash
+           kdbusaddons
+           ki18n
+           kwidgetsaddons
+           kxmlgui
+           libkdegames
+           qtbase-5
+           qtdeclarative))
     (home-page "https://games.kde.org/")
     (synopsis "Simple ball dodging game")
     (description "In Kollision you use mouse to control a small blue ball in a
@@ -11728,23 +11545,22 @@ This package is part of the KDE games module.")
        (base32 "03rqf4avn61b0v340ymmzgp7s0axygjgxq1nlp5aaqbx70zcb4lq"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules kdoctools))
     (inputs
-     `(("kauth" ,kauth)
-       ("kcompletion" ,kcompletion)
-       ("kconfig" ,kconfig)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kcrash" ,kcrash)
-       ("kdbusaddons" ,kdbusaddons)
-       ("kdnssd" ,kdnssd)
-       ("ki18n" ,ki18n)
-       ("ktextwidgets" ,ktextwidgets)
-       ("kxmlgui" ,kxmlgui)
-       ("libkdegames" ,libkdegames)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)))
+     (list kauth
+           kcompletion
+           kconfig
+           kconfigwidgets
+           kcoreaddons
+           kcrash
+           kdbusaddons
+           kdnssd
+           ki18n
+           ktextwidgets
+           kxmlgui
+           libkdegames
+           qtbase-5
+           qtdeclarative))
     (home-page "https://games.kde.org/")
     (synopsis "Battleship board game with built-in game server")
     (description "KBattleship is a Battle Ship game for KDE.
@@ -11769,23 +11585,22 @@ This package is part of the KDE games module.")
        (base32 "0d3y072q61xcik9lf0pz0c9njvarwlvf6hqv5fp5jyqaf2902pmi"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules kdoctools))
     (inputs
-     `(("kconfig" ,kconfig)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kcrash" ,kcrash)
-       ("kdbusaddons" ,kdbusaddons)
-       ("kdeclarative" ,kdeclarative)
-       ("ki18n" ,ki18n)
-       ("kiconthemes" ,kiconthemes)
-       ("kio" ,kio)
-       ("kxmlgui" ,kxmlgui)
-       ("libkdegames" ,libkdegames)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)
-       ("qtsvg" ,qtsvg)))
+     (list kconfig
+           kconfigwidgets
+           kcoreaddons
+           kcrash
+           kdbusaddons
+           kdeclarative
+           ki18n
+           kiconthemes
+           kio
+           kxmlgui
+           libkdegames
+           qtbase-5
+           qtdeclarative
+           qtsvg))
     (home-page "https://games.kde.org/")
     (synopsis "Old reversi board game, also known as othello")
     (description "KReversi is a simple one player strategy game played
@@ -11812,21 +11627,20 @@ This package is part of the KDE games module.")
        (base32 "0chd30byl2kww1k699vkygrxq2wdyvi84m2bimk23q96fl8h831y"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules kdoctools))
     (inputs
-     `(("kcompletion" ,kcompletion)
-       ("kconfig" ,kconfig)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kcrash" ,kcrash)
-       ("kdbusaddons" ,kdbusaddons)
-       ("ki18n" ,ki18n)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kxmlgui" ,kxmlgui)
-       ("libkdegames" ,libkdegames)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)))
+     (list kcompletion
+           kconfig
+           kconfigwidgets
+           kcoreaddons
+           kcrash
+           kdbusaddons
+           ki18n
+           kwidgetsaddons
+           kxmlgui
+           libkdegames
+           qtbase-5
+           qtdeclarative))
     (home-page "https://games.kde.org/")
     (synopsis "Dots and Boxes game")
     (description "KSquares is an implementation of the popular paper based
@@ -11849,22 +11663,21 @@ This package is part of the KDE games module.")
        (base32 "1mk73il4jh15z5pm3fp65hsyvmrga11c3h7w96yamy2n2bbniapq"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules kdoctools))
     (inputs
-     `(("kconfig" ,kconfig)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kcrash" ,kcrash)
-       ("kdbusaddons" ,kdbusaddons)
-       ("ki18n" ,ki18n)
-       ("kio" ,kio)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kxmlgui" ,kxmlgui)
-       ("libkdegames" ,libkdegames)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)
-       ("qtsvg" ,qtsvg)))
+     (list kconfig
+           kconfigwidgets
+           kcoreaddons
+           kcrash
+           kdbusaddons
+           ki18n
+           kio
+           kwidgetsaddons
+           kxmlgui
+           libkdegames
+           qtbase-5
+           qtdeclarative
+           qtsvg))
     (home-page "https://games.kde.org/")
     (synopsis "Simple tactical game for number-crunchers")
     (description "KJumpingcube is a simple tactical game for one or two
@@ -11981,12 +11794,9 @@ the more difficult challenges.")
         (base32 "1z4pwpqyvxhlda99h6arh2rjk90fbms9q29fqizjblrdn01dlxn1"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("perl" ,perl)
-       ("pkg-config" ,pkg-config)))
+     (list perl pkg-config))
     (inputs
-     `(("gtk+" ,gtk+-2)
-       ("libpng" ,libpng)
-       ("gstreamer" ,gstreamer)))
+     (list gtk+-2 libpng gstreamer))
     (arguments
      `(#:tests? #f
        #:phases
@@ -12023,13 +11833,9 @@ and chess engines.")
         (base32 "01fjchil2h6ry2ywr0dwjw2g7zd29580cr4c74d5z74h999lp6nh"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("qttools" ,qttools)))
+     (list qttools))
     (inputs
-     `(("qtbase" ,qtbase-5)
-       ("qtmultimedia" ,qtmultimedia)
-       ("qtspeech" ,qtspeech)
-       ("qtsvg" ,qtsvg)
-       ("zlib" ,zlib)))
+     (list qtbase-5 qtmultimedia qtspeech qtsvg zlib))
     (arguments
      `(#:tests? #f
        #:phases
@@ -12038,8 +11844,7 @@ and chess engines.")
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "chessx.pro"
                (("\\$\\$\\[QT_INSTALL_BINS\\]/lrelease")
-                (string-append (assoc-ref inputs "qttools") "/bin/lrelease")))
-             #t))
+                (search-input-file inputs "/bin/lrelease")))))
          (add-after 'fix-paths 'make-qt-deterministic
            (lambda _
              (setenv "QT_RCC_SOURCE_DATE_OVERRIDE" "1")
@@ -12137,9 +11942,7 @@ ChessX.")
         (base32 "0139wxyrir10cbkvkjn548xgmp84wax8mfwk80yxbxlcdamrg257"))))
     (build-system gnu-build-system)
     (inputs
-     `(("hicolor-icon-theme" ,hicolor-icon-theme)
-       ("sdl" ,sdl)
-       ("sdl-mixer" ,sdl-mixer)))
+     (list hicolor-icon-theme sdl sdl-mixer))
     (arguments
      `(#:configure-flags
        (list
@@ -12169,9 +11972,9 @@ get high scores.")
         (base32 "1xb4immzmd419aa08lgkzf7ibxa6ax238zb2l5iw9nkgvzlh1v6l"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("flatzebra" ,flatzebra)))
+     (list flatzebra))
     (home-page "http://perso.b2b2c.ca/~sarrazip/dev/burgerspace.html")
     (synopsis "Avoid evil foodstuffs and make burgers")
     (description
@@ -12197,13 +12000,9 @@ protect you.")
         (base32 "1y7v0jhp3apb619p7asikqr1dnwb2yxbh40wbx1ppmr5f03mq9ph"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("gettext" ,gettext-minimal)
-       ("pkg-config" ,pkg-config)))
+     (list gettext-minimal pkg-config))
     (inputs
-     `(("curl" ,curl)
-       ("enet" ,enet)
-       ("openal" ,openal)
-       ("sdl2" ,sdl2)))
+     (list curl enet openal sdl2))
     (home-page "https://7kfans.com/")
     (synopsis "Seven Kingdoms Ancient Adversaries: real-time strategy game")
     (description
@@ -12375,8 +12174,7 @@ game.")  ;thanks to Debian for description
                (("/opt/gsasl")
                 (assoc-ref inputs "gsasl"))
                (("\\$\\$\\{PREFIX\\}/include/libircclient")
-                (string-append (assoc-ref inputs "libircclient")
-                               "/include/libircclient"))
+                (search-input-directory inputs "/include/libircclient"))
                (("LIB_DIRS =")
                 (string-append "LIB_DIRS = "
                                (assoc-ref inputs "boost") "/lib")))
@@ -12433,7 +12231,7 @@ computer opponents or against real players online.")
          (add-after 'unpack 'fix-install ; set install directory
            (lambda* (#:key outputs #:allow-other-keys)
              (substitute* "Makefile" (("/usr") (assoc-ref outputs "out"))) #t)))))
-    (inputs `(("sdl" ,sdl)))
+    (inputs (list sdl))
     (home-page "https://mdsteele.games/azimuth/")
     (synopsis "Metroidvania game with vector graphics")
     (description
@@ -12454,9 +12252,7 @@ inside the Zenith Colony.")
         (base32 "0qlvkiaglqq0izfph3l04mp4rqqqm9ks6rcsrmzrggw9x706z2iv"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libx11" ,libx11)
-       ("libxt" ,libxt)
-       ("xorgproto" ,xorgproto)))
+     (list libx11 libxt xorgproto))
     (home-page "http://cgoban1.sourceforge.net/")
     (synopsis "Go client for X11")
     (description "Provides a large set of Go-related services for X11:
@@ -12515,7 +12311,7 @@ such as GnuGo.
     (inputs
      `(("sdl" ,(sdl-union (list sdl sdl-mixer)))))
     (native-inputs
-     `(("imagemagick" ,imagemagick)))
+     (list imagemagick))
     (home-page "http://hcsoftware.sourceforge.net/passage/")
     (synopsis "Memento mori game")
     (description
@@ -12543,7 +12339,7 @@ there's no right way to interpret it.")
                   "09sb9sg44fvkgfdyycrm1ndpx7cnkrglxhci41y8f3gpagnvi7jk"))))
       (build-system gnu-build-system)
       (inputs
-       `(("sdl2" ,sdl2)))
+       (list sdl2))
       (arguments
        '(#:tests? #f ;no tests
          #:make-flags
@@ -12580,7 +12376,7 @@ game FPS.")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))
-    (inputs `(("ncurses" ,ncurses)))
+    (inputs (list ncurses))
     (home-page "https://a-nikolaev.github.io/curseofwar/")
     (synopsis "Fast-paced action strategy game")
     (description "Curse of War is a fast-paced action strategy game originally
@@ -12610,9 +12406,9 @@ available.")
        `(#:tests? #f                              ; no tests
          #:build-type "Release"))
       (native-inputs
-       `(("gcc" ,gcc-11)))                    ; need C++20-compatible compiler
+       (list gcc-11))                    ; need C++20-compatible compiler
       (inputs
-       `(("sfml" ,sfml)))
+       (list sfml))
       (home-page "https://github.com/sandsmark/Schiffbruch/")
       (synopsis "Pixelart survival game")
       (description
@@ -12671,7 +12467,7 @@ get attention, so you get found.")
                (copy-recursively "data" (string-append bin "/data"))
                (copy-recursively "doc" opt)
                (copy-recursively "mods" opt)))))))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs (list pkg-config))
     (inputs `(("sdl" ,(sdl-union (list sdl2
                                        sdl2-image
                                        sdl2-mixer)))))

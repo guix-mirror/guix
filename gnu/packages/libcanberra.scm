@@ -82,7 +82,7 @@
        ("udev" ,eudev)
        ("sound-theme-freedesktop" ,sound-theme-freedesktop)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -122,7 +122,7 @@ null) and is designed to be portable.")
                (base32
                 "054abv4gmfk9maw93fis0bf605rc56dah7ys5plc4pphxqh8nlfb"))))
     (build-system gnu-build-system)
-    (native-inputs `(("intltool" ,intltool)))
+    (native-inputs (list intltool))
     (synopsis "Audio samples for use as a desktop sound theme")
     (description
      "This package provides audio samples that can be used by libcanberra as
@@ -149,7 +149,7 @@ sounds for various system events.")
     (arguments
      `(#:tests? #f)) ;No tests included.
     (propagated-inputs
-     `(("libcanberra" ,libcanberra)))
+     (list libcanberra))
     (synopsis "Ctypes wrapper for the libcanberra API")
     (description
      "Pycanberra is a basic Python wrapper for libcanberra.")

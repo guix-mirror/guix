@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -20,6 +20,7 @@
 (define-module (gnu build marionette)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-64)
   #:use-module (rnrs io ports)
   #:use-module (ice-9 match)
   #:use-module (ice-9 popen)
@@ -33,7 +34,9 @@
             marionette-screen-text
             wait-for-screen-text
             %qwerty-us-keystrokes
-            marionette-type))
+            marionette-type
+
+            system-test-runner))
 
 ;;; Commentary:
 ;;;
@@ -357,5 +360,70 @@ keystrokes."
 to actual keystrokes."
   (for-each (cut marionette-control <> marionette)
             (string->keystroke-commands str keystrokes)))
+
+
+;;;
+;;; Test helper.
+;;;
+
+(define* (system-test-runner #:optional log-directory)
+  "Return a SRFI-64 test runner that calls 'exit' upon 'test-end'.  When
+LOG-DIRECTORY is specified, create log file within it."
+  (let ((runner  (test-runner-simple)))
+    ;; Log to a file under LOG-DIRECTORY.
+    (test-runner-on-group-begin! runner
+      (let ((on-begin (test-runner-on-group-begin runner)))
+        (lambda (runner suite-name count)
+          (when log-directory
+            (catch 'system-error
+              (lambda ()
+                (mkdir log-directory))
+              (lambda args
+                (unless (= (system-error-errno args) EEXIST)
+                  (apply throw args))))
+            (set! test-log-to-file
+                  (string-append log-directory "/" suite-name ".log")))
+          (on-begin runner suite-name count))))
+
+    ;; The default behavior on 'test-end' is to only write a line if the test
+    ;; failed.  Arrange to also write a line on success.
+    (test-runner-on-test-end! runner
+      (let ((on-end (test-runner-on-test-end runner)))
+        (lambda (runner)
+          (let* ((kind      (test-result-ref runner 'result-kind))
+                 (results   (test-result-alist runner))
+                 (test-name (assq-ref results 'test-name)))
+            (unless (memq kind '(fail xpass))
+              (format (current-output-port) "~a: ~a~%"
+                      (string-upcase (symbol->string kind))
+                      test-name)))
+
+          (on-end runner))))
+
+    ;; On 'test-end', display test results and exit with zero if and only if
+    ;; there were no test failures.
+    (test-runner-on-final! runner
+      (lambda (runner)
+        (let ((success? (= (test-runner-fail-count runner) 0)))
+          (test-on-final-simple runner)
+
+          (when (not success?)
+            (let* ((log-port (test-runner-aux-value runner))
+                   (log-file (port-filename log-port)))
+              (format (current-error-port)
+                      "\nTests failed, dumping log file '~a'.\n\n"
+                      log-file)
+
+              ;; At this point LOG-PORT is not closed yet; flush it.
+              (force-output log-port)
+
+              ;; Brute force to avoid dependency on (guix build utils) for
+              ;; 'dump-port'.
+              (let ((content (call-with-input-file log-file
+                               get-bytevector-all)))
+                (put-bytevector (current-error-port) content))))
+
+          (exit success?))))
+    runner))
 
 ;;; marionette.scm ends here

@@ -1,0 +1,84 @@
+This is needed to run Python on the Hurd, especially during the build of
+python-boot0.
+
+Adapted from https://salsa.debian.org/glibc-team/glibc/-/blob/glibc-2.31/debian/patches/hurd-i386/unsubmitted-clock_t_centiseconds.diff
+
+Use the realtime clock for the monotonic clock. This is of course not a proper
+implementation (which is being done in Mach), but will permit to fix at least
+the iceweasel stack.
+
+vlc however doesn't build when _POSIX_CLOCK_SELECTION is enabled but
+_POSIX_TIMERS is not, and they refuse to fix that (see #765578), so disable the
+former.
+
+From 0aa1dfd580cf9ad7b812c307b128decb782b825f Mon Sep 17 00:00:00 2001
+From: Jan Nieuwenhuizen <janneke@gnu.org>
+Date: Mon, 2 Mar 2020 18:59:04 +0100
+Subject: [PATCH 2/2] Use realtime clock for the monotonic clock.
+
+---
+ sysdeps/mach/clock_gettime.c       | 2 +-
+ sysdeps/mach/hurd/bits/posix_opt.h | 6 +++---
+ sysdeps/posix/clock_getres.c       | 1 +
+ sysdeps/pthread/timer_create.c     | 2 +-
+ 4 files changed, 6 insertions(+), 5 deletions(-)
+
+diff --git a/sysdeps/mach/clock_gettime.c b/sysdeps/mach/clock_gettime.c
+index ac3547df3c..af8681ba4e 100644
+--- a/sysdeps/mach/clock_gettime.c
++++ b/sysdeps/mach/clock_gettime.c
+@@ -25,7 +25,7 @@
+ int
+ __clock_gettime (clockid_t clock_id, struct timespec *ts)
+ {
+-  if (clock_id != CLOCK_REALTIME)
++  if (clock_id != CLOCK_MONOTONIC && clock_id != CLOCK_REALTIME)
+     {
+       errno = EINVAL;
+       return -1;
+diff --git a/sysdeps/mach/hurd/bits/posix_opt.h b/sysdeps/mach/hurd/bits/posix_opt.h
+index 0050151332..27b3a28ab7 100644
+--- a/sysdeps/mach/hurd/bits/posix_opt.h
++++ b/sysdeps/mach/hurd/bits/posix_opt.h
+@@ -163,10 +163,10 @@
+ #define _POSIX_THREAD_PROCESS_SHARED	-1
+ 
+ /* The monotonic clock might be available.  */
+-#define _POSIX_MONOTONIC_CLOCK	0
++#define _POSIX_MONOTONIC_CLOCK	200809L
+ 
+-/* The clock selection interfaces are available.  */
+-#define _POSIX_CLOCK_SELECTION	200809L
++/* The clock selection interfaces are not really available yet.  */
++#define _POSIX_CLOCK_SELECTION	-1
+ 
+ /* Advisory information interfaces could be available in future.  */
+ #define _POSIX_ADVISORY_INFO	0
+diff --git a/sysdeps/posix/clock_getres.c b/sysdeps/posix/clock_getres.c
+index fcd79fd554..1dd02aa449 100644
+--- a/sysdeps/posix/clock_getres.c
++++ b/sysdeps/posix/clock_getres.c
+@@ -52,6 +52,7 @@ __clock_getres (clockid_t clock_id, struct timespec *res)
+   switch (clock_id)
+     {
+     case CLOCK_REALTIME:
++    case CLOCK_MONOTONIC:
+       retval = realtime_getres (res);
+       break;
+ 
+diff --git a/sysdeps/pthread/timer_create.c b/sysdeps/pthread/timer_create.c
+index 9d8a9ea8ae..3430582c09 100644
+--- a/sysdeps/pthread/timer_create.c
++++ b/sysdeps/pthread/timer_create.c
+@@ -48,7 +48,7 @@ timer_create (clockid_t clock_id, struct sigevent *evp, timer_t *timerid)
+       return -1;
+     }
+ 
+-  if (clock_id != CLOCK_REALTIME)
++  if (clock_id != CLOCK_REALTIME && clock_id != CLOCK_MONOTONIC)
+     {
+       __set_errno (EINVAL);
+       return -1;
+-- 
+2.24.0
+

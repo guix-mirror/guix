@@ -1,0 +1,51 @@
+From 889294a93fc6464c2c2919bc47f6fd85ec823363 Mon Sep 17 00:00:00 2001
+From: Raghav Gururajan <rg@raghavgururajan.name>
+Date: Tue, 18 May 2021 19:57:00 -0400
+Subject: [PATCH] [PATCH]: Honor GUIX_GTK4_PATH.
+
+This patch makes GTK look for additional modules in a list of directories
+specified by the environment variable "GUIX_GTK4_PATH". This can be used
+instead of "GTK_PATH" to make GTK find modules that are incompatible with
+other major versions of GTK.
+---
+ gtk/gtkmodules.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/gtk/gtkmodules.c b/gtk/gtkmodules.c
+index aace5dcbc9..193b6a02e9 100644
+--- a/gtk/gtkmodules.c
++++ b/gtk/gtkmodules.c
+@@ -105,6 +105,7 @@ static char **
+ get_module_path (void)
+ {
+   const char *module_path_env;
++  const gchar *module_guix_gtk4_path_env;
+   const char *exe_prefix;
+   char *module_path;
+   char *default_dir;
+@@ -114,6 +115,7 @@ get_module_path (void)
+     return result;
+ 
+   module_path_env = g_getenv ("GTK_PATH");
++  module_guix_gtk4_path_env = g_getenv ("GUIX_GTK4_PATH");
+   exe_prefix = g_getenv ("GTK_EXE_PREFIX");
+ 
+   if (exe_prefix)
+@@ -121,7 +123,13 @@ get_module_path (void)
+   else
+     default_dir = g_build_filename (_gtk_get_libdir (), "gtk-4.0", NULL);
+ 
+-  if (module_path_env)
++  if (module_guix_gtk4_path_env && module_path_env)
++    module_path = g_build_path (G_SEARCHPATH_SEPARATOR_S,
++				module_guix_gtk4_path_env, module_path_env, default_dir, NULL);
++  else if (module_guix_gtk4_path_env)
++    module_path = g_build_path (G_SEARCHPATH_SEPARATOR_S,
++				module_guix_gtk4_path_env, default_dir, NULL);
++  else if (module_path_env)
+     module_path = g_build_path (G_SEARCHPATH_SEPARATOR_S,
+ 				module_path_env, default_dir, NULL);
+   else
+-- 
+2.31.1
+

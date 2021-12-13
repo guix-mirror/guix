@@ -3,7 +3,7 @@
 ;;; Copyright © 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
@@ -42,7 +42,7 @@
     ;; Note: With libgd.org now pointing to github.com, genuine old
     ;; tarballs are no longer available.  Notably, versions 2.0.x are
     ;; missing.
-    (version "2.3.0")
+    (version "2.3.2")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -50,9 +50,14 @@
                    version "/libgd-" version ".tar.xz"))
              (sha256
               (base32
-               "0n5czhxzinvjvmhkf5l9fwjdx5ip69k5k7pj6zwb6zs1k9dibngc"))
-             (patches (search-patches "gd-fix-tests-on-i686.patch"
-                                      "gd-brect-bounds.patch"))))
+               "1yypywkh8vphcy4qqpf51kxpb0a3r7rjqk3fc61rpn70hiq092j7"))
+             (patches
+              (search-patches "gd-fix-tests-on-i686.patch"
+                              "gd-brect-bounds.patch"
+                              ;; Drop when
+                              ;; https://github.com/libgd/libgd/issues/691
+                              ;; is solved.
+                              "gd-Revert-fix-303-gdlib.pc.patch"))))
     (build-system gnu-build-system)
     (arguments
       ;; As recommended by github.com/libgd/libgd/issues/278 to fix rounding
@@ -61,17 +66,16 @@
        #:configure-flags '("--disable-static")
        #:phases
        (modify-phases %standard-phases
-         ;; This test is known to fail on i686-linux:
+         ;; This test is known to fail on most architectures:
          ;; https://github.com/libgd/libgd/issues/359
          ;; TODO Replace this substitution with an upstream bug fix.
          (add-after 'unpack 'disable-failing-test
            (lambda _
              (substitute* "tests/gdimagegrayscale/basic.c"
                (("return gdNumFailures\\(\\)")
-                 "return 0"))
-             #t)))))
+                 "return 0")))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
      `(("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
@@ -111,7 +115,7 @@ most common applications of GD involve website development.")
        ("libjpeg" ,libjpeg-turbo)
        ("zlib" ,zlib)))
     (native-inputs
-     `(("perl-extutils-pkgconfig" ,perl-extutils-pkgconfig)))
+     (list perl-extutils-pkgconfig))
     (arguments
      `(#:make-maker-flags
        (list (string-append "--lib_jpeg_path="
@@ -141,10 +145,9 @@ you can create PNG images on the fly or modify existing files.")
          (add-after 'unpack 'set-env
            (lambda _ (setenv "PERL_USE_UNSAFE_INC" "1") #t)))))
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)))
+     (list perl-module-build))
     (propagated-inputs
-     `(("perl-gd" ,perl-gd)
-       ("perl-image-magick" ,perl-image-magick)))
+     (list perl-gd perl-image-magick))
     (home-page "https://metacpan.org/release/GD-SecurityImage")
     (synopsis "Security image generator")
     (description "This module provides a basic interface to create

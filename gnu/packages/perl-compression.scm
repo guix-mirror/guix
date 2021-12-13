@@ -57,7 +57,7 @@
                (setenv "BZLIB_LIB" (string-append bzip2 "/lib"))
                #t))))))
     (inputs
-     `(("bzip2" ,bzip2)))
+     (list bzip2))
     (home-page "https://metacpan.org/release/Compress-Bzip2")
     (synopsis "Interface to Bzip2 compression library")
     (description
@@ -98,7 +98,7 @@ compression library.")
         (base32 "04jrqvqsa2c655idw7skv5rhb9vx9997h4n9if5p99srq4hblk6d"))))
     (build-system perl-build-system)
     (inputs
-     `(("zlib" ,zlib)))
+     (list zlib))
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (add-before
@@ -134,8 +134,7 @@ compression library.")
     (build-system perl-build-system)
     (propagated-inputs
      ;; These two packages should be updated to this one's version first.
-     `(("perl-compress-raw-zlib" ,perl-compress-raw-zlib)
-       ("perl-compress-raw-bzip2" ,perl-compress-raw-bzip2)))
+     (list perl-compress-raw-zlib perl-compress-raw-bzip2))
     (home-page "https://metacpan.org/release/IO-Compress")
     (synopsis "IO Interface to compressed files/buffers")
     (description "IO-Compress provides a Perl interface to allow reading and
@@ -160,7 +159,7 @@ writing of compressed data created with the zlib and bzip2 libraries.")
        ;; MakeMaker doesn't honor LIBRARY_PATH.
        (let ((zlib (assoc-ref %build-inputs "zlib")))
          (list (format #f "LIBS=-L~a/lib/ -lz" zlib)))))
-    (inputs `(("zlib" ,zlib)))
+    (inputs (list zlib))
     (home-page "https://metacpan.org/pod/PerlIO::gzip")
     (synopsis "Perl extension to provide a PerlIO layer to gzip/gunzip")
     (description "PerlIO::gzip provides a PerlIO layer that manipulates files
@@ -202,7 +201,7 @@ type by using either Perl modules, or command-line tools on your system.")
     (build-system perl-build-system)
     (native-inputs
      ;; For tests.
-     `(("perl-test-mockmodule" ,perl-test-mockmodule)))
+     (list perl-test-mockmodule))
     (synopsis  "Provides an interface to Zip archive files")
     (description "The @code{Archive::Zip} module allows a Perl program to
 create, manipulate, read, and write Zip archive files.")

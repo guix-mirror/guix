@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
@@ -24,7 +24,8 @@
   #:use-module (guix search-paths)
   #:use-module (guix store)
   #:use-module (guix utils)
-  #:use-module (guix derivations)
+  #:use-module (guix gexp)
+  #:use-module (guix monads)
   #:use-module (guix packages)
   #:use-module (guix build-system)
   #:use-module (guix build-system gnu)
@@ -56,57 +57,43 @@
     (guix build syscalls)
     ,@%gnu-build-system-modules))
 
-(define* (dub-build store name inputs
-                      #:key
-                      (tests? #t)
-                      (test-target #f)
-                      (dub-build-flags ''())
-                      (phases '(@ (guix build dub-build-system)
-                                  %standard-phases))
-                      (outputs '("out"))
-                      (search-paths '())
-                      (system (%current-system))
-                      (guile #f)
-                      (imported-modules %dub-build-system-modules)
-                      (modules '((guix build dub-build-system)
-                                 (guix build utils))))
+(define* (dub-build name inputs
+                    #:key
+                    source
+                    (tests? #t)
+                    (test-target #f)
+                    (dub-build-flags ''())
+                    (phases '%standard-phases)
+                    (outputs '("out"))
+                    (search-paths '())
+                    (system (%current-system))
+                    (guile #f)
+                    (imported-modules %dub-build-system-modules)
+                    (modules '((guix build dub-build-system)
+                               (guix build utils))))
   "Build SOURCE using DUB, and with INPUTS."
   (define builder
-    `(begin
-       (use-modules ,@modules)
-       (dub-build #:name ,name
-                    #:source ,(match (assoc-ref inputs "source")
-                                (((? derivation? source))
-                                 (derivation->output-path source))
-                                ((source)
-                                 source)
-                                (source
-                                 source))
-                    #:system ,system
-                    #:test-target ,test-target
-                    #:dub-build-flags ,dub-build-flags
-                    #:tests? ,tests?
-                    #:phases ,phases
-                    #:outputs %outputs
-                    #:search-paths ',(map search-path-specification->sexp
-                                          search-paths)
-                    #:inputs %build-inputs)))
+    (with-imported-modules imported-modules
+      #~(begin
+          (use-modules #$@(sexp->gexp modules))
+          (dub-build #:name #$name
+                     #:source #+source
+                     #:system #$system
+                     #:test-target #$test-target
+                     #:dub-build-flags #$dub-build-flags
+                     #:tests? #$tests?
+                     #:phases #$phases
+                     #:outputs #$(outputs->gexp outputs)
+                     #:search-paths '#$(sexp->gexp
+                                        (map search-path-specification->sexp
+                                             search-paths))
+                     #:inputs #$(input-tuples->gexp inputs)))))
 
-  (define guile-for-build
-    (match guile
-      ((? package?)
-       (package-derivation store guile system #:graft? #f))
-      (#f                                         ; the default
-       (let* ((distro (resolve-interface '(gnu packages commencement)))
-              (guile  (module-ref distro 'guile-final)))
-         (package-derivation store guile system #:graft? #f)))))
-
-  (build-expression->derivation store name builder
-                                #:inputs inputs
-                                #:system system
-                                #:modules imported-modules
-                                #:outputs outputs
-                                #:guile-for-build guile-for-build))
+  (mlet %store-monad ((guile (package->derivation (or guile (default-guile))
+                                                  system #:graft? #f)))
+    (gexp->derivation name builder
+                      #:system system
+                      #:guile-for-build guile)))
 
 (define* (lower name
                 #:key source inputs native-inputs outputs system target
@@ -118,7 +105,7 @@
   "Return a bag for NAME."
 
   (define private-keywords
-    '(#:source #:target #:ldc #:dub #:pkg-config #:inputs #:native-inputs #:outputs))
+    '(#:target #:ldc #:dub #:pkg-config #:inputs #:native-inputs #:outputs))
 
   (and (not target) ;; TODO: support cross-compilation
        (bag

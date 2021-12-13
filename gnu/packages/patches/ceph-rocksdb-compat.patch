@@ -1,0 +1,303 @@
+Adjust for newer versions of RocksDB.
+
+Taken from upstream:
+
+  https://github.com/ceph/ceph/pull/42815
+  https://github.com/ceph/ceph/commit/ff7f192ea3cf88ca1098bcf9396ff4f8ed1e8792.diff
+
+diff --git a/src/kv/rocksdb_cache/BinnedLRUCache.cc b/src/kv/rocksdb_cache/BinnedLRUCache.cc
+index 0d657883e92de..47c56e2ddd769 100644
+--- a/src/kv/rocksdb_cache/BinnedLRUCache.cc
++++ b/src/kv/rocksdb_cache/BinnedLRUCache.cc
+@@ -151,13 +151,20 @@ void BinnedLRUCacheShard::EraseUnRefEntries() {
+   }
+ }
+ 
+-void BinnedLRUCacheShard::ApplyToAllCacheEntries(void (*callback)(void*, size_t),
+-                                           bool thread_safe) {
++void BinnedLRUCacheShard::ApplyToAllCacheEntries(
++  const std::function<void(const rocksdb::Slice& key,
++                           void* value,
++                           size_t charge,
++                           DeleterFn)>& callback,
++  bool thread_safe)
++{
+   if (thread_safe) {
+     mutex_.lock();
+   }
+   table_.ApplyToAllCacheEntries(
+-      [callback](BinnedLRUHandle* h) { callback(h->value, h->charge); });
++    [callback](BinnedLRUHandle* h) {
++      callback(h->key(), h->value, h->charge, h->deleter);
++    });
+   if (thread_safe) {
+     mutex_.unlock();
+   }
+@@ -345,7 +352,7 @@ bool BinnedLRUCacheShard::Release(rocksdb::Cache::Handle* handle, bool force_era
+ 
+ rocksdb::Status BinnedLRUCacheShard::Insert(const rocksdb::Slice& key, uint32_t hash, void* value,
+                              size_t charge,
+-                             void (*deleter)(const rocksdb::Slice& key, void* value),
++                             DeleterFn deleter,
+                              rocksdb::Cache::Handle** handle, rocksdb::Cache::Priority priority) {
+   auto e = new BinnedLRUHandle();
+   rocksdb::Status s;
+@@ -464,6 +471,12 @@ std::string BinnedLRUCacheShard::GetPrintableOptions() const {
+   return std::string(buffer);
+ }
+ 
++DeleterFn BinnedLRUCacheShard::GetDeleter(rocksdb::Cache::Handle* h) const
++{
++  auto* handle = reinterpret_cast<BinnedLRUHandle*>(h);
++  return handle->deleter;
++}
++
+ BinnedLRUCache::BinnedLRUCache(CephContext *c, 
+                                size_t capacity, 
+                                int num_shard_bits,
+@@ -519,6 +532,13 @@ void BinnedLRUCache::DisownData() {
+ #endif  // !__SANITIZE_ADDRESS__
+ }
+ 
++#if (ROCKSDB_MAJOR >= 6 && ROCKSDB_MINOR >= 22)
++DeleterFn BinnedLRUCache::GetDeleter(Handle* handle) const
++{
++  return reinterpret_cast<const BinnedLRUHandle*>(handle)->deleter;
++}
++#endif
++
+ size_t BinnedLRUCache::TEST_GetLRUSize() {
+   size_t lru_size_of_all_shards = 0;
+   for (int i = 0; i < num_shards_; i++) {
+diff --git a/src/kv/rocksdb_cache/BinnedLRUCache.h b/src/kv/rocksdb_cache/BinnedLRUCache.h
+index 85608be0e5734..88bf4502e8927 100644
+--- a/src/kv/rocksdb_cache/BinnedLRUCache.h
++++ b/src/kv/rocksdb_cache/BinnedLRUCache.h
+@@ -56,7 +56,7 @@ std::shared_ptr<rocksdb::Cache> NewBinnedLRUCache(
+ 
+ struct BinnedLRUHandle {
+   void* value;
+-  void (*deleter)(const rocksdb::Slice&, void* value);
++  DeleterFn deleter;
+   BinnedLRUHandle* next_hash;
+   BinnedLRUHandle* next;
+   BinnedLRUHandle* prev;
+@@ -189,7 +189,7 @@ class alignas(CACHE_LINE_SIZE) BinnedLRUCacheShard : public CacheShard {
+   // Like Cache methods, but with an extra "hash" parameter.
+   virtual rocksdb::Status Insert(const rocksdb::Slice& key, uint32_t hash, void* value,
+                         size_t charge,
+-                        void (*deleter)(const rocksdb::Slice& key, void* value),
++                        DeleterFn deleter,
+                         rocksdb::Cache::Handle** handle,
+                         rocksdb::Cache::Priority priority) override;
+   virtual rocksdb::Cache::Handle* Lookup(const rocksdb::Slice& key, uint32_t hash) override;
+@@ -205,13 +205,19 @@ class alignas(CACHE_LINE_SIZE) BinnedLRUCacheShard : public CacheShard {
+   virtual size_t GetUsage() const override;
+   virtual size_t GetPinnedUsage() const override;
+ 
+-  virtual void ApplyToAllCacheEntries(void (*callback)(void*, size_t),
+-                                      bool thread_safe) override;
++  virtual void ApplyToAllCacheEntries(
++    const std::function<void(const rocksdb::Slice& key,
++                             void* value,
++                             size_t charge,
++                             DeleterFn)>& callback,
++    bool thread_safe) override;
+ 
+   virtual void EraseUnRefEntries() override;
+ 
+   virtual std::string GetPrintableOptions() const override;
+ 
++  virtual DeleterFn GetDeleter(rocksdb::Cache::Handle* handle) const override;
++
+   void TEST_GetLRUList(BinnedLRUHandle** lru, BinnedLRUHandle** lru_low_pri);
+ 
+   //  Retrieves number of elements in LRU, for unit test purpose only
+@@ -304,7 +310,9 @@ class BinnedLRUCache : public ShardedCache {
+   virtual size_t GetCharge(Handle* handle) const override;
+   virtual uint32_t GetHash(Handle* handle) const override;
+   virtual void DisownData() override;
+-
++#if (ROCKSDB_MAJOR >= 6 && ROCKSDB_MINOR >= 22)
++  virtual DeleterFn GetDeleter(Handle* handle) const override;
++#endif
+   //  Retrieves number of elements in LRU, for unit test purpose only
+   size_t TEST_GetLRUSize();
+   // Sets the high pri pool ratio
+diff --git a/src/kv/rocksdb_cache/ShardedCache.cc b/src/kv/rocksdb_cache/ShardedCache.cc
+index 367140a94d8be..6cbd89ad6472c 100644
+--- a/src/kv/rocksdb_cache/ShardedCache.cc
++++ b/src/kv/rocksdb_cache/ShardedCache.cc
+@@ -44,7 +44,7 @@ void ShardedCache::SetStrictCapacityLimit(bool strict_capacity_limit) {
+ }
+ 
+ rocksdb::Status ShardedCache::Insert(const rocksdb::Slice& key, void* value, size_t charge,
+-                            void (*deleter)(const rocksdb::Slice& key, void* value),
++                            DeleterFn deleter,
+                             rocksdb::Cache::Handle** handle, Priority priority) {
+   uint32_t hash = HashSlice(key);
+   return GetShard(Shard(hash))
+@@ -109,13 +109,36 @@ size_t ShardedCache::GetPinnedUsage() const {
+   return usage;
+ }
+ 
++#if (ROCKSDB_MAJOR >= 6 && ROCKSDB_MINOR >= 22)
++DeleterFn ShardedCache::GetDeleter(Handle* handle) const
++{
++  uint32_t hash = GetHash(handle);
++  return GetShard(Shard(hash))->GetDeleter(handle);
++}
++
++void ShardedCache::ApplyToAllEntries(
++    const std::function<void(const rocksdb::Slice& key, void* value, size_t charge,
++                             DeleterFn deleter)>& callback,
++    const ApplyToAllEntriesOptions& opts)
++{
++  int num_shards = 1 << num_shard_bits_;
++  for (int s = 0; s < num_shards; s++) {
++    GetShard(s)->ApplyToAllCacheEntries(callback, true /* thread_safe */);
++  }
++}
++#else
+ void ShardedCache::ApplyToAllCacheEntries(void (*callback)(void*, size_t),
+                                           bool thread_safe) {
+   int num_shards = 1 << num_shard_bits_;
+   for (int s = 0; s < num_shards; s++) {
+-    GetShard(s)->ApplyToAllCacheEntries(callback, thread_safe);
++    GetShard(s)->ApplyToAllCacheEntries(
++      [callback](const rocksdb::Slice&, void* value, size_t charge, DeleterFn) {
++        callback(value, charge);
++      },
++      thread_safe);
+   }
+ }
++#endif
+ 
+ void ShardedCache::EraseUnRefEntries() {
+   int num_shards = 1 << num_shard_bits_;
+@@ -131,7 +154,7 @@ std::string ShardedCache::GetPrintableOptions() const {
+   char buffer[kBufferSize];
+   {
+     std::lock_guard<std::mutex> l(capacity_mutex_);
+-    snprintf(buffer, kBufferSize, "    capacity : %" ROCKSDB_PRIszt "\n",
++    snprintf(buffer, kBufferSize, "    capacity : %zu\n",
+              capacity_);
+     ret.append(buffer);
+     snprintf(buffer, kBufferSize, "    num_shard_bits : %d\n", num_shard_bits_);
+diff --git a/src/kv/rocksdb_cache/ShardedCache.h b/src/kv/rocksdb_cache/ShardedCache.h
+index 4d64893ab1c7b..f98421a09a33a 100644
+--- a/src/kv/rocksdb_cache/ShardedCache.h
++++ b/src/kv/rocksdb_cache/ShardedCache.h
+@@ -14,6 +14,7 @@
+ #include <string>
+ #include <mutex>
+ 
++#include "rocksdb/version.h"
+ #include "rocksdb/cache.h"
+ #include "include/ceph_hash.h"
+ #include "common/PriorityCache.h"
+@@ -22,10 +23,11 @@
+ #ifndef CACHE_LINE_SIZE
+ #define CACHE_LINE_SIZE 64 // XXX arch-specific define 
+ #endif
+-#define ROCKSDB_PRIszt "zu"
+ 
+ namespace rocksdb_cache {
+ 
++using DeleterFn = void (*)(const rocksdb::Slice& key, void* value);
++
+ // Single cache shard interface.
+ class CacheShard {
+  public:
+@@ -34,7 +36,7 @@ class CacheShard {
+ 
+   virtual rocksdb::Status Insert(const rocksdb::Slice& key, uint32_t hash, void* value,
+                                  size_t charge,
+-                                 void (*deleter)(const rocksdb::Slice& key, void* value),
++                                 DeleterFn deleter,
+                                  rocksdb::Cache::Handle** handle, rocksdb::Cache::Priority priority) = 0;
+   virtual rocksdb::Cache::Handle* Lookup(const rocksdb::Slice& key, uint32_t hash) = 0;
+   virtual bool Ref(rocksdb::Cache::Handle* handle) = 0;
+@@ -44,10 +46,15 @@ class CacheShard {
+   virtual void SetStrictCapacityLimit(bool strict_capacity_limit) = 0;
+   virtual size_t GetUsage() const = 0;
+   virtual size_t GetPinnedUsage() const = 0;
+-  virtual void ApplyToAllCacheEntries(void (*callback)(void*, size_t),
+-                                      bool thread_safe) = 0;
++  virtual void ApplyToAllCacheEntries(
++    const std::function<void(const rocksdb::Slice& key,
++                             void* value,
++                             size_t charge,
++                             DeleterFn)>& callback,
++    bool thread_safe) = 0;
+   virtual void EraseUnRefEntries() = 0;
+   virtual std::string GetPrintableOptions() const { return ""; }
++  virtual DeleterFn GetDeleter(rocksdb::Cache::Handle* handle) const = 0;
+ };
+ 
+ // Generic cache interface which shards cache by hash of keys. 2^num_shard_bits
+@@ -57,34 +64,43 @@ class ShardedCache : public rocksdb::Cache, public PriorityCache::PriCache {
+  public:
+   ShardedCache(size_t capacity, int num_shard_bits, bool strict_capacity_limit);
+   virtual ~ShardedCache() = default;
++  // rocksdb::Cache
+   virtual const char* Name() const override = 0;
+-  virtual CacheShard* GetShard(int shard) = 0;
+-  virtual const CacheShard* GetShard(int shard) const = 0;
+-  virtual void* Value(Handle* handle) override = 0;
+-  virtual size_t GetCharge(Handle* handle) const = 0;
+-  virtual uint32_t GetHash(Handle* handle) const = 0;
+-  virtual void DisownData() override = 0;
+-
+-  virtual void SetCapacity(size_t capacity) override;
+-  virtual void SetStrictCapacityLimit(bool strict_capacity_limit) override;
+-
+   virtual rocksdb::Status Insert(const rocksdb::Slice& key, void* value, size_t charge,
+-                                 void (*deleter)(const rocksdb::Slice& key, void* value),
++                                 DeleterFn,
+                                  rocksdb::Cache::Handle** handle, Priority priority) override;
+   virtual rocksdb::Cache::Handle* Lookup(const rocksdb::Slice& key, rocksdb::Statistics* stats) override;
+   virtual bool Ref(rocksdb::Cache::Handle* handle) override;
+   virtual bool Release(rocksdb::Cache::Handle* handle, bool force_erase = false) override;
++  virtual void* Value(Handle* handle) override = 0;
+   virtual void Erase(const rocksdb::Slice& key) override;
+   virtual uint64_t NewId() override;
+-  virtual size_t GetCapacity() const override;
++  virtual void SetCapacity(size_t capacity) override;
++  virtual void SetStrictCapacityLimit(bool strict_capacity_limit) override;
+   virtual bool HasStrictCapacityLimit() const override;
++  virtual size_t GetCapacity() const override;
+   virtual size_t GetUsage() const override;
+   virtual size_t GetUsage(rocksdb::Cache::Handle* handle) const override;
+   virtual size_t GetPinnedUsage() const override;
++  virtual size_t GetCharge(Handle* handle) const = 0;
++#if (ROCKSDB_MAJOR >= 6 && ROCKSDB_MINOR >= 22)
++  virtual DeleterFn GetDeleter(Handle* handle) const override;
++#endif
++  virtual void DisownData() override = 0;
++#if (ROCKSDB_MAJOR >= 6 && ROCKSDB_MINOR >= 22)
++  virtual void ApplyToAllEntries(
++      const std::function<void(const rocksdb::Slice& key, void* value, size_t charge,
++                               DeleterFn deleter)>& callback,
++      const ApplyToAllEntriesOptions& opts) override;
++#else
+   virtual void ApplyToAllCacheEntries(void (*callback)(void*, size_t),
+                                       bool thread_safe) override;
++#endif
+   virtual void EraseUnRefEntries() override;
+   virtual std::string GetPrintableOptions() const override;
++  virtual CacheShard* GetShard(int shard) = 0;
++  virtual const CacheShard* GetShard(int shard) const = 0;
++  virtual uint32_t GetHash(Handle* handle) const = 0;
+ 
+   int GetNumShardBits() const { return num_shard_bits_; }
+ 
+@@ -120,7 +136,7 @@ class ShardedCache : public rocksdb::Cache, public PriorityCache::PriCache {
+ //    return Hash(s.data(), s.size(), 0);
+   }
+ 
+-  uint32_t Shard(uint32_t hash) {
++  uint32_t Shard(uint32_t hash) const {
+     // Note, hash >> 32 yields hash in gcc, not the zero we expect!
+     return (num_shard_bits_ > 0) ? (hash >> (32 - num_shard_bits_)) : 0;
+   }

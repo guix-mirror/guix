@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -43,9 +43,7 @@
           (define marionette
             (make-marionette '(#$vm)))
 
-          (mkdir #$output)
-          (chdir #$output)
-
+          (test-runner-current (system-test-runner #$output))
           (test-begin "elogind")
 
           ;; Log in as root on tty1, and check what 'loginctl' returns.
@@ -83,8 +81,7 @@
                       (guest-file "/root/seats")
                       (guest-file "/root/users")))))
 
-          (test-end)
-          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          (test-end))))
 
   (gexp->derivation "elogind" test))
 

@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
-;;; Copyright © 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2018, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -98,9 +98,7 @@
                     (else
                      (error "file didn't show up" file)))))
 
-          (mkdir #$output)
-          (chdir #$output)
-
+          (test-runner-current (system-test-runner #$output))
           (test-begin "xmpp")
 
           ;; Wait for XMPP service to be up and running.
@@ -128,8 +126,7 @@
               (system* freetalk-bin "-s" #$script.ft)
               (host-wait-for-file #$witness)))
 
-          (test-end)
-          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          (test-end))))
 
   (gexp->derivation name test))
 
@@ -191,9 +188,7 @@
           (define marionette
             (make-marionette (list #$vm)))
 
-          (mkdir #$output)
-          (chdir #$output)
-
+          (test-runner-current (system-test-runner #$output))
           (test-begin "bitlbee")
 
           (test-assert "service started"
@@ -231,8 +226,7 @@
               (->bool (string-contains (pk 'message (read-line sock))
                                        "BitlBee"))))
 
-          (test-end)
-          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          (test-end))))
 
   (gexp->derivation "bitlbee-test" test))
 
@@ -264,9 +258,7 @@
           (define marionette
             (make-marionette (list #$vm)))
 
-          (mkdir #$output)
-          (chdir #$output)
-
+          (test-runner-current (system-test-runner #$output))
           (test-begin "quassel")
 
           (test-assert "service started"
@@ -281,8 +273,7 @@
               '(file-exists? "/var/lib/quassel/quasselCert.pem")
               marionette))
 
-          (test-end)
-          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          (test-end))))
 
   (gexp->derivation "quassel-test" test))
 

@@ -55,22 +55,19 @@
     (build-system cargo-build-system)
     (outputs '("out" "python"))
     (native-inputs
-     `(("clang" ,clang)
-       ("pkg-config" ,pkg-config)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-runner" ,python-pytest-runner)
-       ("python-wrapper" ,python-wrapper)))
+     (list clang pkg-config python-pytest python-pytest-runner
+           python-wrapper))
     (inputs
-     `(("capnproto" ,capnproto)
-       ("gmp" ,gmp)
-       ("nettle" ,nettle)
-       ("openssl" ,openssl)
-       ("python" ,python)
-       ("python-cffi" ,python-cffi)
-       ("sqlite" ,sqlite)))
+     (list capnproto
+           gmp
+           nettle
+           openssl
+           python
+           python-cffi
+           sqlite))
     (arguments
      `(#:tests? #f ;; building the tests requires 9.7GB total
-       #:rust ,rust-1.46
+       #:rust ,rust
        #:cargo-inputs
        (("rust-anyhow" ,rust-anyhow-1)
         ("rust-backtrace" ,rust-backtrace-0.3)

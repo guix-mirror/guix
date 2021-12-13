@@ -1,0 +1,32 @@
+Allow parallel tests with isolated environment.
+
+See https://github.com/JuliaLang/julia/issues/43205 and
+https://github.com/JuliaLang/julia/pull/43211.
+
+diff --git a/test/runtests.jl b/test/runtests.jl
+index 2f9cd058bb..150395e78c 100644
+--- a/test/runtests.jl
++++ b/test/runtests.jl
+@@ -4,7 +4,7 @@ using Test
+ using Distributed
+ using Dates
+ import REPL
+-using Printf: @sprintf
++using Printf: @sprintf, @printf
+ using Base: Experimental
+ 
+ include("choosetests.jl")
+@@ -83,11 +83,12 @@ prepend!(tests, linalg_tests)
+ import LinearAlgebra
+ cd(@__DIR__) do
+     n = 1
+-    if net_on
++    if net_on || haskey(ENV, "JULIA_CPU_THREADS")
+         n = min(Sys.CPU_THREADS, length(tests))
+         n > 1 && addprocs_with_testenv(n)
+         LinearAlgebra.BLAS.set_num_threads(1)
+     end
++    @printf("Number of threads: %i\n", n)
+     skipped = 0
+ 
+     @everywhere include("testdefs.jl")

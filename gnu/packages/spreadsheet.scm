@@ -68,16 +68,14 @@
                %standard-phases
                  (delete 'configure))))
       (inputs
-        `(("gnuplot" ,gnuplot)
-          ("libxls" ,libxls)
-          ("libxlsxwriter" ,libxlsxwriter)
-          ("libxml2" ,libxml2)
-          ("libzip" ,libzip)
-          ("ncurses" ,ncurses)))
+        (list gnuplot
+              libxls
+              libxlsxwriter
+              libxml2
+              libzip
+              ncurses))
       (native-inputs
-        `(("pkg-config" ,pkg-config)
-          ("which" ,which)
-          ("bison" ,bison)))
+        (list pkg-config which bison))
       (synopsis "Spreadsheet program with vim-like keybindings")
       (description
  "@code{sc-im} is a highly configurable spreadsheet program

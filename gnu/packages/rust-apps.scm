@@ -145,10 +145,9 @@ low-end hardware and serving many concurrent requests.")
         ("rust-tempfile" ,rust-tempfile-3)
         ("rust-wait-timeout" ,rust-wait-timeout-0.2))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("libgit2" ,libgit2)
-       ("zlib" ,zlib)))
+     (list libgit2 zlib))
     (home-page "https://github.com/sharkdp/bat")
     (synopsis "@command{cat} clone with syntax highlighting and git integration")
     (description
@@ -228,9 +227,9 @@ highlighting tool to ease code review from your terminal.")
          ("rust-url" ,rust-url-2)
          ("rust-yaml-rust" ,rust-yaml-rust-0.4))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("openssl" ,openssl)))
+     (list openssl))
     (home-page "https://github.com/fcsonline/drill")
     (synopsis "HTTP load testing application")
     (description
@@ -356,10 +355,9 @@ Features include:
                           (string-append share "/zsh/site-functions/_exa"))
                #t))))))
     (inputs
-     `(("libgit2" ,libgit2)
-       ("zlib" ,zlib)))
+     (list libgit2 zlib))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://the.exa.website/")
     (synopsis "Modern replacement for ls")
     (description "@code{exa} is a modern replacement for the command-line
@@ -431,7 +429,7 @@ also knows about symlinks, extended attributes, and Git.")
                (rename-file (string-append out "/etc/bash_completion.d/fd.bash")
                             (string-append out "/etc/bash_completion.d/fd"))
                #t))))))
-    (inputs `(("jemalloc" ,jemalloc)))
+    (inputs (list jemalloc))
     (home-page "https://github.com/sharkdp/fd")
     (synopsis "Simple, fast and user-friendly alternative to find")
     (description
@@ -483,8 +481,7 @@ characters, ASCII whitespace characters, other ASCII characters and non-ASCII.")
           "0m5lrvx6wwkxqdc5digm1k4diiaqcg5j4pia77s5nw1aam7k51hy"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:rust ,rust-1.46
-       #:modules ((guix build cargo-build-system)
+     `(#:modules ((guix build cargo-build-system)
                   (guix build utils)
                   (srfi srfi-26))
        #:cargo-inputs
@@ -598,7 +595,7 @@ characters, ASCII whitespace characters, other ASCII characters and non-ASCII.")
                (wrap-program (string-append out "/bin/i3status-rs")
                  `("PATH" prefix ,paths))))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
      `(("alsa-utils" ,alsa-utils)
        ("bash-minimal" ,bash-minimal)
@@ -672,9 +669,7 @@ bar.  It is also compatible with sway.")
              #t)))
        #:features '("pcre2")))
     (native-inputs
-     `(("asciidoc" ,asciidoc)
-       ("pcre2" ,pcre2)
-       ("pkg-config" ,pkg-config)))
+     (list asciidoc pcre2 pkg-config))
     (home-page "https://github.com/BurntSushi/ripgrep")
     (synopsis "Line-oriented search tool")
     (description
@@ -691,7 +686,7 @@ gitignore rules.")
       (origin
         (method url-fetch)
         (uri (crate-uri "cbindgen" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.xz"))
         (sha256
          (base32
           "0673pq96hs7waavkv58v2pakpxpsfyjvbraa5kyl2b44phgdzcid"))))
@@ -743,7 +738,7 @@ gitignore rules.")
        #:cargo-development-inputs
        (("rust-serial-test" ,rust-serial-test-0.5))))
     (native-inputs
-     `(("python-cython" ,python-cython)))))
+     (list python-cython))))
 
 (define-public rust-cbindgen-0.16
   (package
@@ -875,8 +870,7 @@ gitignore rules.")
        #:cargo-development-inputs
        (("rust-boxxy" ,rust-boxxy-0.11))))
     (inputs
-     `(("libpcap" ,libpcap)
-       ("libseccomp" ,libseccomp)))
+     (list libpcap libseccomp))
     (home-page "https://github.com/kpcyrd/sniffglue")
     (synopsis "Secure multithreaded packet sniffer")
     (description
@@ -913,8 +907,8 @@ of the project is to be runnable on untrusted networks without crashing.")
          ("rust-tokio" ,rust-tokio-0.2)
          ("rust-tui" ,rust-tui-0.16)
          ("rust-unicode-width" ,rust-unicode-width-0.1))))
-    (native-inputs `(("pkg-config" ,pkg-config)))
-    (inputs `(("openssl" ,openssl)))
+    (native-inputs (list pkg-config))
+    (inputs (list openssl))
     (home-page "https://github.com/Rigellute/spotify-tui")
     (synopsis "Terminal user interface for Spotify")
     (description "This package provides a terminal user interface for Spotify")
@@ -933,8 +927,7 @@ of the project is to be runnable on untrusted networks without crashing.")
         (base32 "0hzyqpjxya6g1ifb3hvjvj0zl2aigx898pz7h5pl46z50jp2pdc8"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:rust ,rust-1.52
-       #:cargo-build-flags '("--release" "--features" "external-harfbuzz")
+     `(#:cargo-build-flags '("--release" "--features" "external-harfbuzz")
        #:cargo-inputs
        (("rust-atty" ,rust-atty-0.2)
         ("rust-byte-unit" ,rust-byte-unit-4)
@@ -983,7 +976,7 @@ of the project is to be runnable on untrusted networks without crashing.")
                     (doc (string-append out "/share/doc/" ,name "-" ,version)))
                (copy-recursively "docs/src" doc)))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
      `(("fontconfig" ,fontconfig)
        ("harfbuzz" ,harfbuzz)
@@ -1070,11 +1063,9 @@ colorized view to stdout.")
         ("rust-regex" ,rust-regex-1)
         ("rust-tempfile" ,rust-tempfile-3))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("libgit2" ,libgit2)
-       ("openssl" ,openssl)
-       ("zlib" ,zlib)))
+     (list libgit2 openssl zlib))
     (home-page "https://tokei.rs")
     (synopsis "Count code, quickly")
     (description
@@ -1177,8 +1168,7 @@ runs a command whenever it detects modifications.")
          "06bc3s5kjwpyr2cq79p0306a9bqp3xp928d750ybby9npq2dvj3z"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:rust ,rust-1.52
-       #:install-source? #f             ; virtual manifest
+     `(#:install-source? #f             ; virtual manifest
        #:cargo-test-flags
        '("--release" "--"
          "--skip=tests::test_version_check"         ;; It need rustc's version
@@ -1305,8 +1295,7 @@ support for Rust.")
           "0fwdxhdj2963xr6xfqr56i7hikhsdv562vgxq2dj3h2mi3dil1k6"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:rust ,rust-1.52                ;inherited from rust-cargo
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-cbindgen" ,rust-cbindgen-0.19)
         ("rust-cargo" ,rust-cargo-0.53) ;
         ("rust-anyhow" ,rust-anyhow-1)
@@ -1321,12 +1310,9 @@ support for Rust.")
         ("rust-serde-json" ,rust-serde-json-1)
         ("rust-regex" ,rust-regex-1))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("curl" ,curl)
-       ("libssh2" ,libssh2)
-       ("openssl" ,openssl)
-       ("zlib" ,zlib)))
+     (list curl libssh2 openssl zlib))
     (home-page "https://github.com/lu-zero/cargo-c")
     (synopsis "Build and install C-compatible libraries")
     (description
@@ -1401,9 +1387,9 @@ C-compatible) software.")
         ("rust-remove-dir-all" ,rust-remove-dir-all-0.5.2)
         ("rust-tempfile" ,rust-tempfile-3))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("openssl" ,openssl)))
+     (list openssl))
     (home-page "https://github.com/dbrgn/tealdeer/")
     (synopsis "Fetch and show tldr help pages for many CLI commands")
     (description
@@ -1451,7 +1437,7 @@ Full featured offline client with caching support.")
                     (man   (string-append out "/share/man/man1")))
                (install-file "Documentation/git-absorb.1" man)))))))
     (inputs
-     `(("zlib" ,zlib)))
+     (list zlib))
     (home-page "https://github.com/tummychow/git-absorb")
     (synopsis "Git tool for making automatic fixup commits")
     (description

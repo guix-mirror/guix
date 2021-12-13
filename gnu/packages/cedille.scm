@@ -42,11 +42,7 @@
         (base32
          "1h5s6ayh3s76z184jai3jidcs4cjk8s4nvkkv2am8dg4gfsybq22"))))
     (inputs
-     `(("agda" ,agda)
-       ("agda-ial" ,agda-ial)
-       ("ghc" ,ghc)
-       ("ghc-alex" ,ghc-alex)
-       ("ghc-happy" ,ghc-happy)))
+     (list agda agda-ial ghc ghc-alex ghc-happy))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
@@ -89,8 +85,7 @@
          (add-after 'unpack 'copy-ial
            (lambda* (#:key inputs #:allow-other-keys)
              (copy-recursively
-              (string-append (assoc-ref inputs "agda-ial")
-                             "/include/agda/ial")
+              (search-input-directory inputs "/include/agda/ial")
               "ial")
              ;; Ambiguous module if main is included from ial
              (delete-file "ial/main.agda")

@@ -2,13 +2,14 @@
 ;;; Copyright © 2014 Cyrill Schenkel <cyrill.schenkel@gmail.com>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016 David Thompson <davet@gnu.org>
-;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Mike Gerwitz <mtg@gnu.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019, 2020, 2021 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2020, 2021 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
+;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -217,9 +218,8 @@
                (setenv "CXX" ,(cxx-for-target))
                (setenv "PKG_CONFIG" ,(pkg-config-for-target))
                (apply invoke
-                      (string-append (assoc-ref (or native-inputs inputs)
-                                                "python")
-                                     "/bin/python")
+                      (search-input-file (or native-inputs inputs)
+                                         "/bin/python")
                       "configure" flags))))
          (add-after 'patch-shebangs 'patch-npm-shebang
            (lambda* (#:key outputs #:allow-other-keys)
@@ -256,15 +256,15 @@
             (variable "NODE_PATH")
             (files '("lib/node_modules")))))
     (inputs
-     `(("bash" ,bash)
-       ("coreutils" ,coreutils)
-       ("c-ares" ,c-ares)
-       ("http-parser" ,http-parser)
-       ("icu4c" ,icu4c)
-       ("libuv" ,libuv)
-       ("nghttp2" ,nghttp2 "lib")
-       ("openssl" ,openssl)
-       ("zlib" ,zlib)))
+     (list bash
+           coreutils
+           c-ares
+           http-parser
+           icu4c
+           libuv
+           `(,nghttp2 "lib")
+           openssl
+           zlib))
     (synopsis "Evented I/O for V8 JavaScript")
     (description "Node.js is a platform built on Chrome's JavaScript runtime
 for easily building fast, scalable network applications.  Node.js uses an
@@ -387,7 +387,7 @@ formats to milliseconds.")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))
-    (inputs `(("node-ms" ,node-ms-bootstrap)))
+    (inputs (list node-ms-bootstrap))
     (home-page "https://github.com/visionmedia/debug#readme")
     (properties '((hidden? . #t)))
     (synopsis "Small debugging utility")
@@ -443,18 +443,16 @@ Node.js and web browsers.")
          (delete 'configure)
          (replace 'build
            (lambda* (#:key inputs #:allow-other-keys)
-             (let ((esbuild (string-append (assoc-ref inputs "esbuild")
-                                           "/bin/esbuild")))
+             (let ((esbuild (search-input-file inputs "/bin/esbuild")))
                (invoke esbuild
                        "--platform=node"
                        "--outfile=lib/builder.js"
                        "--bundle"
                        "src/builder.ts")))))))
     (inputs
-     `(("node-binary-search" ,node-binary-search-bootstrap)
-       ("node-debug" ,node-debug-bootstrap)))
+     (list node-binary-search-bootstrap node-debug-bootstrap))
     (native-inputs
-     `(("esbuild" ,esbuild)))
+     (list esbuild))
     (home-page "https://github.com/indutny/llparse-builder#readme")
     (properties '((hidden? . #t)))
     (synopsis "Graph builder for consumption by llparse")
@@ -499,18 +497,16 @@ Node.js and web browsers.")
          (delete 'configure)
          (replace 'build
            (lambda* (#:key inputs #:allow-other-keys)
-             (let ((esbuild (string-append (assoc-ref inputs "esbuild")
-                                           "/bin/esbuild")))
+             (let ((esbuild (search-input-file inputs "/bin/esbuild")))
                (invoke esbuild
                        "--platform=node"
                        "--outfile=lib/frontend.js"
                        "--bundle"
                        "src/frontend.ts")))))))
     (inputs
-     `(("node-debug" ,node-debug-bootstrap)
-       ("node-llparse-builder" ,node-llparse-builder-bootstrap)))
+     (list node-debug-bootstrap node-llparse-builder-bootstrap))
     (native-inputs
-     `(("esbuild" ,esbuild)))
+     (list esbuild))
     (home-page "https://github.com/indutny/llparse-frontend#readme")
     (properties '((hidden? . #t)))
     (synopsis "Frontend for the llparse compiler")
@@ -554,18 +550,16 @@ Node.js and web browsers.")
          (delete 'configure)
          (replace 'build
            (lambda* (#:key inputs #:allow-other-keys)
-             (let ((esbuild (string-append (assoc-ref inputs "esbuild")
-                                           "/bin/esbuild")))
+             (let ((esbuild (search-input-file inputs "/bin/esbuild")))
                (invoke esbuild
                        "--platform=node"
                        "--outfile=lib/api.js"
                        "--bundle"
                        "src/api.ts")))))))
     (inputs
-     `(("node-debug" ,node-debug-bootstrap)
-       ("node-llparse-frontend" ,node-llparse-frontend-bootstrap)))
+     (list node-debug-bootstrap node-llparse-frontend-bootstrap))
     (native-inputs
-     `(("esbuild" ,esbuild)))
+     (list esbuild))
     (home-page "https://github.com/nodejs/llparse#readme")
     (properties '((hidden? . #t)))
     (synopsis "Compile incremental parsers to C code")
@@ -607,10 +601,9 @@ parser definition into a C output.")
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
-           (lambda* (#:key native-inputs inputs #:allow-other-keys)
-             (let ((esbuild (string-append
-                              (assoc-ref (or native-inputs inputs) "esbuild")
-                              "/bin/esbuild")))
+           (lambda* (#:key inputs native-inputs #:allow-other-keys)
+             (let ((esbuild (search-input-file (or native-inputs inputs)
+                                               "/bin/esbuild")))
                (invoke esbuild
                        "--platform=node"
                        "--outfile=bin/generate.js"
@@ -748,9 +741,8 @@ source files.")
                  (setenv "CXX" ,(cxx-for-target))
                  (setenv "PKG_CONFIG" ,(pkg-config-for-target))
                  (apply invoke
-                        (string-append (assoc-ref (or native-inputs inputs)
-                                                  "python")
-                                       "/bin/python3")
+                        (search-input-file (or native-inputs inputs)
+                                           "/bin/python3")
                         "configure" flags))))
            (replace 'patch-files
              (lambda* (#:key inputs #:allow-other-keys)
@@ -823,31 +815,31 @@ source files.")
                  (copy-file (string-append llhttp "/include/llhttp.h")
                             "deps/llhttp/include/llhttp.h"))))))))
     (native-inputs
-     `(;; Runtime dependencies for binaries used as a bootstrap.
-       ("c-ares" ,c-ares-for-node)
-       ("brotli" ,brotli)
-       ("icu4c" ,icu4c-67)
-       ("libuv" ,libuv-for-node)
-       ("nghttp2" ,nghttp2 "lib")
-       ("openssl" ,openssl)
-       ("zlib" ,zlib)
-       ;; Regular build-time dependencies.
-       ("perl" ,perl)
-       ("pkg-config" ,pkg-config)
-       ("procps" ,procps)
-       ("python" ,python)
-       ("util-linux" ,util-linux)))
+     (list ;; Runtime dependencies for binaries used as a bootstrap.
+           c-ares-for-node
+           brotli
+           icu4c-67
+           libuv-for-node
+           `(,nghttp2 "lib")
+           openssl
+           zlib
+           ;; Regular build-time dependencies.
+           perl
+           pkg-config
+           procps
+           python
+           util-linux))
     (inputs
-     `(("bash" ,bash)
-       ("coreutils" ,coreutils)
-       ("c-ares" ,c-ares-for-node)
-       ("icu4c" ,icu4c-67)
-       ("libuv" ,libuv-for-node)
-       ("llhttp" ,llhttp-bootstrap)
-       ("brotli" ,brotli)
-       ("nghttp2" ,nghttp2 "lib")
-       ("openssl" ,openssl)
-       ("zlib" ,zlib)))))
+     (list bash
+           coreutils
+           c-ares-for-node
+           icu4c-67
+           libuv-for-node
+           llhttp-bootstrap
+           brotli
+           `(,nghttp2 "lib")
+           openssl
+           zlib))))
 
 (define-public libnode
   (package/inherit node

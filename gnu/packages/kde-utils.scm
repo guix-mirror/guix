@@ -77,35 +77,32 @@
                            (string-append p "/bin"))
                          (list lrzip lzop p7zip unzip zip zstd))))))))))
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("pkg-config" ,pkg-config)
-       ("kdoctools" ,kdoctools)
-       ("xorg-server" ,xorg-server)))
+     (list extra-cmake-modules pkg-config kdoctools xorg-server))
     (inputs
-     `(("breeze-icons" ,breeze-icons)
-       ("karchive" ,karchive)
-       ("kconfig" ,kconfig)
-       ("kcrash" ,kcrash)
-       ("kdbusaddons" ,kdbusaddons)
-       ("khtml" ,khtml)
-       ("ki18n" ,ki18n)
-       ("kio" ,kio)
-       ("kitemmodels" ,kitemmodels)
-       ("kparts" ,kparts)
-       ("kpty" ,kpty)
-       ("kservice" ,kservice)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("libarchive" ,libarchive)
-       ("libzip" ,libzip)
-       ("qtbase" ,qtbase-5)
-       ("zlib" ,zlib)
-       ;; Command line tools used by Ark.
-       ("lrzip" ,lrzip)
-       ("lzop" ,lzop)
-       ("p7zip" ,p7zip)
-       ("unzip" ,unzip)
-       ("zip" ,zip)
-       ("zstd" ,zstd)))
+     (list breeze-icons
+           karchive
+           kconfig
+           kcrash
+           kdbusaddons
+           khtml
+           ki18n
+           kio
+           kitemmodels
+           kparts
+           kpty
+           kservice
+           kwidgetsaddons
+           libarchive
+           libzip
+           qtbase-5
+           zlib
+           ;; Command line tools used by Ark.
+           lrzip
+           lzop
+           p7zip
+           unzip
+           zip
+           zstd))
     (home-page "https://apps.kde.org/en/ark")
     (synopsis "Graphical archiving tool")
     (description "Ark is a graphical file compression/decompression utility
@@ -126,30 +123,29 @@ well as CD-ROM images.")
         (base32 "0nrby307syrqlxrf9lwdzc9c15ifw47418qwszqwg345ma2pww7i"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules kdoctools))
     (inputs
-     `(("kactivities" ,kactivities)
-       ("kconfig" ,kconfig)
-       ("kcrash" ,kcrash)
-       ("kdbusaddons" ,kdbusaddons)
-       ("kguiaddons" ,kguiaddons)
-       ("ki18n" ,ki18n)
-       ("kiconthemes" ,kiconthemes)
-       ("kitemmodels" ,kitemmodels)
-       ("threadweaver" ,threadweaver)
-       ("knewstuff" ,knewstuff)
-       ("kio" ,kio)
-       ("kjobwidgets" ,kjobwidgets)
-       ("kparts" ,kparts)
-       ("ktexteditor" ,ktexteditor)
-       ("kwallet" ,kwallet)
-       ("plasma-framework" ,plasma-framework)
-       ("kwindowsystem" ,kwindowsystem)
-       ("kxmlgui" ,kxmlgui)
-       ("oxygen-icons" ,oxygen-icons) ;; default icon set
-       ("qtbase" ,qtbase-5)
-       ("qtscript" ,qtscript)))
+     (list kactivities
+           kconfig
+           kcrash
+           kdbusaddons
+           kguiaddons
+           ki18n
+           kiconthemes
+           kitemmodels
+           threadweaver
+           knewstuff
+           kio
+           kjobwidgets
+           kparts
+           ktexteditor
+           kwallet
+           plasma-framework
+           kwindowsystem
+           kxmlgui
+           oxygen-icons ;; default icon set
+           qtbase-5
+           qtscript))
     (arguments
      `(#:tests? #f ;; 2/7 tests fail
        #:phases
@@ -193,15 +189,14 @@ Kate's features include:
        (base32 "18lk8i2r90gvw8q5j179xgpniih92mwk06krk7w4jv98yinqf6m5"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules kdoctools))
     (inputs
-     `(("ki18n" ,ki18n)
-       ("kio" ,kio)
-       ("kxmlgui" ,kxmlgui)
-       ("oxygen-icons" ,oxygen-icons) ;; default icon set
-       ;; TODO: QAccessibilityClient - libqaccessibilityclien
-       ("qtbase" ,qtbase-5)))
+     (list ki18n
+           kio
+           kxmlgui
+           oxygen-icons ;; default icon set
+           ;; TODO: QAccessibilityClient - libqaccessibilityclien
+           qtbase-5))
     (home-page "https://kde.org/applications/utilities/org.kde.kmag")
     (synopsis "Screen magnifier tool")
     (description "You can use KMagnifier to magnify a part of the screen just
@@ -224,23 +219,22 @@ artists to web-designers to people with low vision.")
         (base32 "01j6bx8zihns4ip8maj0gb3w3bhx1ha2ljhfmsm6lcyay531ay98"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules kdoctools))
     (inputs
-     `(("kauth" ,kauth)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kdbusaddons" ,kdbusaddons)
-       ("ki18n" ,ki18n)
-       ("kiconthemes" ,kiconthemes)
-       ("knotifications" ,knotifications)
-       ("kxmlgui" ,kxmlgui)
-       ("kwindowsystem" ,kwindowsystem)
-       ("libxtst" ,libxtst)
-       ("libxt" ,libxt)
-       ("phonon" ,phonon)
-       ("oxygen-icons" ,oxygen-icons) ;; default icon set
-       ("qtbase" ,qtbase-5)))
+     (list kauth
+           kcoreaddons
+           kconfigwidgets
+           kdbusaddons
+           ki18n
+           kiconthemes
+           knotifications
+           kxmlgui
+           kwindowsystem
+           libxtst
+           libxt
+           phonon
+           oxygen-icons ;; default icon set
+           qtbase-5))
     (home-page "https://kde.org/applications/utilities/org.kde.kmousetool")
     (synopsis "Automatic mouse click and mouse manipulation tool for the
 disabled")
@@ -263,21 +257,20 @@ whom pressing buttons hurts.")
         (base32 "1afgxlys9mvmc3rd33g7gchfb0ylx83x3x0a0qf3dra6cpgsgcg7"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules kdoctools))
     (inputs
-     `(("kcompletion" ,kcompletion)
-       ("kconfig" ,kconfig)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kcrash" ,kcrash)
-       ("ki18n" ,ki18n)
-       ("kio" ,kio)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kxmlgui" ,kxmlgui)
-       ("oxygen-icons" ,oxygen-icons) ;; default icon set
-       ("qtbase" ,qtbase-5)
-       ("qtspeech" ,qtspeech)))
+     (list kcompletion
+           kconfig
+           kconfigwidgets
+           kcoreaddons
+           kcrash
+           ki18n
+           kio
+           kwidgetsaddons
+           kxmlgui
+           oxygen-icons ;; default icon set
+           qtbase-5
+           qtspeech))
     (home-page "https://kde.org/applications/utilities/org.kde.kmouth")
     (synopsis "Type-and-say frontend for speech synthesizers")
     (description "KMouth is a program which enables persons that cannot speak
@@ -303,19 +296,18 @@ sentences to be re-spoken.")
         (base32 "05hs8729a3aqjpwmn2xdf2sriacrll4sj4ax3lm4s1ravj09n9bm"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules kdoctools))
     (inputs
-     `(("kauth" ,kauth)
-       ("kconfig" ,kconfig)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kcrash" ,kcrash)
-       ("ki18n" ,ki18n)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kxmlgui" ,kxmlgui)
-       ("oxygen-icons" ,oxygen-icons) ;; default icon set
-       ("qtbase" ,qtbase-5)))
+     (list kauth
+           kconfig
+           kconfigwidgets
+           kcoreaddons
+           kcrash
+           ki18n
+           kwidgetsaddons
+           kxmlgui
+           oxygen-icons ;; default icon set
+           qtbase-5))
     (home-page "https://kde.org/applications/utilities/org.kde.kronometer")
     (synopsis "Simple stopwatch application")
     (description "Kronometer is a stopwatch application.  It features the
@@ -337,31 +329,30 @@ to save the times and resume them later.")
         (base32 "02b1jz5a7cjr13v6c7fczrhs1xmg1krnva5fxk8x2bf4nd1rm8s1"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules kdoctools))
     (inputs
-     `(("karchive" ,karchive)
-       ("kbookmarks" ,kbookmarks)
-       ("kcodecs" ,kcodecs)
-       ("kcompletion" ,kcompletion)
-       ("kconfig" ,kconfig)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kguiaddons" ,kguiaddons)
-       ("ki18n" ,ki18n)
-       ("kiconthemes" ,kiconthemes)
-       ("kio" ,kio)
-       ("kitemviews" ,kitemviews)
-       ("knotifications" ,knotifications)
-       ("kparts" ,kparts)
-       ("ktextwidgets" ,ktextwidgets)
-       ("kwallet" ,kwallet)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kwindowsystem" ,kwindowsystem)
-       ("kxmlgui" ,kxmlgui)
-       ("oxygen-icons" ,oxygen-icons) ;; default icon set
-       ("qtbase" ,qtbase-5)
-       ("solid" ,solid)
-       ("zlib" ,zlib)))
+     (list karchive
+           kbookmarks
+           kcodecs
+           kcompletion
+           kconfig
+           kcoreaddons
+           kguiaddons
+           ki18n
+           kiconthemes
+           kio
+           kitemviews
+           knotifications
+           kparts
+           ktextwidgets
+           kwallet
+           kwidgetsaddons
+           kwindowsystem
+           kxmlgui
+           oxygen-icons ;; default icon set
+           qtbase-5
+           solid
+           zlib))
     (home-page "https://www.krusader.org")
     (synopsis "Twin-panel (commander-style) file manager")
     (description "Krusader is a simple, easy, yet powerful,
@@ -392,14 +383,9 @@ great on your desktop.")
         (base32 "1q6blvcqz6hxdfrkdi0fplmz7rmk3im56kpp68r0yrivhx3hn8sc"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)
-       ("pkg-config" ,pkg-config)))
+     (list extra-cmake-modules kdoctools pkg-config))
     (inputs
-     `(("ktexteditor" ,ktexteditor)
-       ("imagemagick" ,imagemagick)
-       ("qtbase" ,qtbase-5)
-       ("qtx11extras" ,qtx11extras)))
+     (list ktexteditor imagemagick qtbase-5 qtx11extras))
     (home-page "https://kde.org/applications/en/graphics/org.kde.kxstitch")
     (synopsis "Create and print cross stitch patterns")
     (description
@@ -421,30 +407,27 @@ either be created or generated from a image.")
         (base32 "03wsv83l1cay2dpcsksad124wzan7kh8zxdw1h0yicn398kdbck4"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)
-       ("qttools" ,qttools)
-       ("shared-mime-info" ,shared-mime-info)))
+     (list extra-cmake-modules kdoctools qttools shared-mime-info))
     (inputs
-     `(("kbookmarks" ,kbookmarks)
-       ("kcmutils" ,kcmutils)
-       ("kcodecs" ,kcodecs)
-       ("kcrash" ,kcrash)
-       ("kcompletion" ,kcompletion)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kdbusaddons" ,kdbusaddons)
-       ("ki18n" ,ki18n)
-       ("kiconthemes" ,kiconthemes)
-       ("kio" ,kio)
-       ("knewstuff" ,knewstuff)
-       ("kparts" ,kparts)
-       ("kservice" ,kservice)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kxmlgui" ,kxmlgui)
-       ("oxygen-icons" ,oxygen-icons) ;; default icon set
-       ("qca" ,qca)
-       ("qtbase" ,qtbase-5)
-       ("qtscript" ,qtscript)))
+     (list kbookmarks
+           kcmutils
+           kcodecs
+           kcrash
+           kcompletion
+           kconfigwidgets
+           kdbusaddons
+           ki18n
+           kiconthemes
+           kio
+           knewstuff
+           kparts
+           kservice
+           kwidgetsaddons
+           kxmlgui
+           oxygen-icons ;; default icon set
+           qca
+           qtbase-5
+           qtscript))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -483,25 +466,24 @@ redone.")
         (base32 "0yjv5awngi2hk6xzlwzmj92i6qppnfc0inqdp16rd8gzfpw7xqqw"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules kdoctools))
     (inputs
-     `(("kauth" ,kauth)
-       ("kconfig" ,kconfig)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kcrash" ,kcrash)
-       ("kdbusaddons" ,kdbusaddons)
-       ("ki18n" ,ki18n)
-       ("kiconthemes" ,kiconthemes)
-       ("kidletime" ,kidletime)
-       ("knotifications" ,knotifications)
-       ("knotifyconfig" ,knotifyconfig)
-       ("ktextwidgets" ,ktextwidgets)
-       ("kwindowsystem" ,kwindowsystem)
-       ("kxmlgui" ,kxmlgui)
-       ("oxygen-icons" ,oxygen-icons) ;; default icon set
-       ("qtbase" ,qtbase-5)))
+     (list kauth
+           kconfig
+           kconfigwidgets
+           kcoreaddons
+           kcrash
+           kdbusaddons
+           ki18n
+           kiconthemes
+           kidletime
+           knotifications
+           knotifyconfig
+           ktextwidgets
+           kwindowsystem
+           kxmlgui
+           oxygen-icons ;; default icon set
+           qtbase-5))
     (home-page "https://kde.org/applications/utilities/org.kde.rsibreak")
     (synopsis "Assists in the Recovery and Prevention of Repetitive Strain
 Injury")
@@ -524,33 +506,32 @@ remind you to take a break now and then.")
         (base32 "0hz6nfd845bykf78s4g2qs77szl96gy6g8rpg44pqd39a0k0xbh7"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules kdoctools))
     (inputs
-     `(("kauth" ,kauth)
-       ("kconfig" ,kconfig)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcompletion" ,kcompletion)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kcrash" ,kcrash)
-       ("kdbusaddons" ,kdbusaddons)
-       ("ki18n" ,ki18n)
-       ("kiconthemes" ,kiconthemes)
-       ("kio" ,kio)
-       ("kjobwidgets" ,kjobwidgets)
-       ("knotifications" ,knotifications)
-       ("knotifyconfig" ,knotifyconfig)
-       ("ktextwidgets" ,ktextwidgets)
-       ("kwallet" ,kwallet)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kwindowsystem" ,kwindowsystem)
-       ("kxmlgui" ,kxmlgui)
-       ("libsmbclient" ,samba)
-       ("oxygen-icons" ,oxygen-icons) ;; default icon set
-       ("plasma-framework" ,plasma-framework)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)
-       ("solid" ,solid)))
+     (list kauth
+           kconfig
+           kconfigwidgets
+           kcompletion
+           kcoreaddons
+           kcrash
+           kdbusaddons
+           ki18n
+           kiconthemes
+           kio
+           kjobwidgets
+           knotifications
+           knotifyconfig
+           ktextwidgets
+           kwallet
+           kwidgetsaddons
+           kwindowsystem
+           kxmlgui
+           samba
+           oxygen-icons ;; default icon set
+           plasma-framework
+           qtbase-5
+           qtdeclarative
+           solid))
     (home-page "https://kde.org/applications/utilities/org.kde.smb4k")
     (synopsis "Samba (SMB) share advanced browser")
     (description "Smb4K is an network neighborhood browser for the KDE
@@ -596,21 +577,20 @@ Features:
         (base32 "1az3c2khnh51bbmqpamj4p26d3a0ff4l5rd3vcrylg94mk7wgh59"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules kdoctools))
     (inputs
-     `(("kactivities-stats" ,kactivities-stats)
-       ("kbookmarks" ,kbookmarks)
-       ("kcrash" ,kcrash)
-       ("kconfig" ,kconfig)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcoreaddons" ,kcoreaddons)
-       ("ki18n" ,ki18n)
-       ("kio" ,kio)
-       ("ktextwidgets" ,ktextwidgets)
-       ("kxmlgui" ,kxmlgui)
-       ("oxygen-icons" ,oxygen-icons) ;; default icon set
-       ("qtbase" ,qtbase-5)))
+     (list kactivities-stats
+           kbookmarks
+           kcrash
+           kconfig
+           kconfigwidgets
+           kcoreaddons
+           ki18n
+           kio
+           ktextwidgets
+           kxmlgui
+           oxygen-icons ;; default icon set
+           qtbase-5))
     (home-page "https://kde.org/applications/utilities/org.kde.sweeper")
     (synopsis "Temporary file and history cleaner")
     (description "

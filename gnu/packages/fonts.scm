@@ -320,7 +320,7 @@ The Lato 2.010 family supports more than 100 Latin-based languages, over
                                    (find-files "." "")))))))
        #:test-target "tests"))
     ;; FreeFont anno 2012 requires a FontForge built with Python 2.
-    (native-inputs `(("fontforge" ,fontforge-20190801)))
+    (native-inputs (list fontforge-20190801))
     (home-page "https://www.gnu.org/software/freefont/")
     (synopsis "Unicode-encoded outline fonts")
     (description
@@ -393,7 +393,7 @@ and Bitstream Vera Sans Mono).
                          (find-files "." "\\.sfd$"))
                #t))))))
     (native-inputs
-     `(("fontforge" ,fontforge)))
+     (list fontforge))
     (home-page "http://www.linuxlibertine.org/")
     (synopsis "Serif and sans serif typefaces")
     (description "The Linux Libertine fonts is a set of typefaces containing
@@ -473,11 +473,7 @@ The unified Libertinus family consists of:
                (apply invoke "make" "install-otb" (string-append "prefix=" otb)
                       make-flags)))))))
     (native-inputs
-     `(("bdftopcf" ,bdftopcf)
-       ("font-util" ,font-util)
-       ("mkfontdir" ,mkfontdir)
-       ("pkg-config" ,pkg-config)
-       ("python" ,python)))
+     (list bdftopcf font-util mkfontdir pkg-config python))
     (home-page "http://terminus-font.sourceforge.net/")
     (synopsis "Simple bitmap programming font")
     (description "Terminus Font is a clean, fixed-width bitmap font, designed
@@ -784,7 +780,7 @@ for use at smaller text sizes")))
               (install-file "doc/unifont.info.gz"
                             (string-append bin "/share/info"))))))))
     (inputs
-     `(("perl" ,perl))) ; for utilities
+     (list perl)) ; for utilities
     (synopsis
      "Large bitmap font covering Unicode's Basic Multilingual Plane")
     (description
@@ -1464,7 +1460,7 @@ programming.  Iosevka is completely generated from its source code.")
                       (mkdir "source")
                       (chdir "source")
                       (invoke "7z" "x" source))))))
-    (native-inputs `(("p7zip" ,p7zip)))
+    (native-inputs (list p7zip))
     (home-page "https://github.com/be5invis/Sarasa-Gothic")
     (license license:silofl1.1)
     (synopsis "Sarasa Gothic / 更纱黑体 / 更紗黑體 / 更紗ゴシック / 사라사 고딕")
@@ -1580,7 +1576,7 @@ resolutions.")
          (base32
           "11ml7v4iyf3hr0fbnkwz8afb8vi58wbcfnmn4gyvrwh9jk5pybdr"))))
     (build-system font-build-system)
-    (native-inputs `(("unzip" ,unzip)))
+    (native-inputs (list unzip))
     (home-page "https://opendyslexic.org/")
     (synopsis "Font for dyslexics and high readability")
     (description "OpenDyslexic is a font designed to help readability for some
@@ -1608,7 +1604,7 @@ emphasis while still being readable.")
          "0wvvg5vnc950h8v23wfgjyi7rv89mgm5hqq6viqv0bxcc3azglxb"))))
     (build-system font-build-system)
     (native-inputs
-     `(("unzip" ,unzip)))
+     (list unzip))
     (home-page "https://openmoji.org")
     (synopsis "Font for rendering emoji characters")
     (description
@@ -1677,7 +1673,7 @@ ExtraLight, Light, Book, Medium, Semibold, Bold & ExtraBold")
                          (find-files "." "^Nachlieli.*\\.sfd$"))
                #t))))))
     (native-inputs
-     `(("fontforge" ,fontforge)))
+     (list fontforge))
     (home-page "http://culmus.sourceforge.net/")
     (synopsis "TrueType Hebrew Fonts for X11")
     (description "14 Hebrew trivial families.  Contain ASCII glyphs from various
@@ -1980,7 +1976,7 @@ in small sizes, the text looks crisper.")
                       (mkdir "source")
                       (chdir "source")
                       (invoke "tar" "xzf" source))))))
-    (native-inputs `(("tar" ,tar)))
+    (native-inputs (list tar))
     (home-page "https://github.com/cormullion/juliamono")
     (synopsis "Monospaced font for programming")
     (description
@@ -2223,12 +2219,12 @@ suitable for a wide range of uses.")
            (lambda _
              (invoke "python3" "build.py" "fonts"))))))
     (native-inputs
-     `(("fontforge" ,fontforge)
-       ("python" ,python)
-       ("python-crayons" ,python-crayons)
-       ("python-fonttools" ,python-fonttools)
-       ("python-numpy" ,python-numpy)
-       ("python-pillow" ,python-pillow)))
+     (list fontforge
+           python
+           python-crayons
+           python-fonttools
+           python-numpy
+           python-pillow))
     (home-page "https://github.com/slavfox/Cozette")
     (synopsis "Bitmap programming font")
     (description "Cozette is a 6x13px (bounding box) bitmap font based on Dina

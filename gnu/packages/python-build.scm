@@ -23,9 +23,11 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages python-build)
+  #:use-module (gnu packages)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system python)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix packages))
 
 ;;; Commentary:
@@ -39,14 +41,14 @@
 (define-public python-wheel
   (package
     (name "python-wheel")
-    (version "0.36.2")
+    (version "0.33.6")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "wheel" version))
         (sha256
          (base32
-          "0pi4w0brz7a86ddk6pm8p6j0w6d7jgacgxm0c2dab3k5cb8yy7p1"))))
+          "0ii6f34rvpjg3nmw4bc2h7fhdsy38y1h93hghncfs5akfrldmj8h"))))
     (build-system python-build-system)
     (arguments
      ;; FIXME: The test suite runs "python setup.py bdist_wheel", which in turn
@@ -107,6 +109,70 @@ Language (TOML) configuration files.")
     (description "This package provides a Python parser for TOML-0.4.0.")
     (license license:expat)))
 
+(define-public python-six-bootstrap
+  (package
+    (name "python-six-bootstrap")
+    (version "1.16.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "six" version))
+       (sha256
+        (base32
+         "09n9qih9rpj95q3r4a40li7hk6swma11syvgwdc68qm1fxsc6q8y"))))
+    (build-system python-build-system)
+    (arguments `(#:tests? #f))          ;to avoid pytest dependency
+    (home-page "https://pypi.org/project/six/")
+    (synopsis "Python 2 and 3 compatibility utilities")
+    (description
+     "Six is a Python 2 and 3 compatibility library.  It provides utility
+functions for smoothing over the differences between the Python versions with
+the goal of writing Python code that is compatible on both Python versions.
+Six supports every Python version since 2.5.  It is contained in only one
+Python file, so it can be easily copied into your project.")
+    (license license:x11)))
+
+(define-public python2-six-bootstrap
+  (package-with-python2 python-six-bootstrap))
+
+(define-public python-tomli
+  (package
+    (name "python-tomli")
+    (version "1.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "tomli" version))
+       (sha256
+        (base32 "1vjg44narb7hdiazdmbv8bfv7pi6phnq7nxm6aphx0iqxcah1kn6"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f                      ;disabled to avoid extra dependencies
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'build
+           (lambda _
+             (setenv "PYTHONPATH" (string-append (getcwd) ":"
+                                                 (getenv "GUIX_PYTHONPATH")))
+             (invoke "python" "-m" "build" "--wheel" "--no-isolation"
+                     "--skip-dependency-check")))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (whl (car (find-files "dist" "\\.whl$"))))
+               (invoke "pip" "--no-cache-dir" "--no-input"
+                       "install" "--no-deps" "--prefix" out whl)))))))
+    (native-inputs
+     `(("python-flit-core" ,python-flit-core)
+       ("python-pypa-build" ,python-pypa-build)
+       ("python-six", python-six-bootstrap)))
+    (home-page "https://github.com/hukkin/tomli")
+    (synopsis "Small and fast TOML parser")
+    (description "Tomli is a minimal TOML parser that is fully compatible with
+@url{https://toml.io/en/v1.0.0,TOML v1.0.0}.  It is about 2.4 times as fast as
+@code{python-toml}.")
+    (license license:expat)))
+
 (define-public python-pep517-bootstrap
   (hidden-package
    (package
@@ -123,31 +189,124 @@ Language (TOML) configuration files.")
      (arguments
       `(#:tests? #f))                     ;to avoid circular dependencies
      (propagated-inputs
-      `(("python-toml" ,python-toml)
-        ("python-wheel" ,python-wheel)))
+      (list python-toml python-wheel))
      (home-page "https://github.com/pypa/pep517")
      (synopsis "Wrappers to build Python packages using PEP 517 hooks")
      (description
       "Wrappers to build Python packages using PEP 517 hooks.")
      (license license:expat))))
 
+(define-public python-pyparsing
+  (package
+    (name "python-pyparsing")
+    (version "2.4.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pyparsing" version))
+       (sha256
+        (base32 "1hgc8qrbq1ymxbwfbjghv01fm3fbpjwpjwi0bcailxxzhf3yq0y2"))))
+    (build-system python-build-system)
+    (outputs '("out" "doc"))
+    (arguments
+     `(#:tests? #f                      ;no test target
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((doc (string-append (assoc-ref outputs "doc")
+                                        "/share/doc/" ,name "-" ,version))
+                    (html-doc (string-append doc "/html"))
+                    (examples (string-append doc "/examples")))
+               (mkdir-p html-doc)
+               (mkdir-p examples)
+               (for-each
+                (lambda (dir tgt)
+                  (map (lambda (file)
+                         (install-file file tgt))
+                       (find-files dir ".*")))
+                (list "docs" "htmldoc" "examples")
+                (list doc html-doc examples))))))))
+    (home-page "https://github.com/pyparsing/pyparsing")
+    (synopsis "Python parsing class library")
+    (description
+     "The pyparsing module is an alternative approach to creating and
+executing simple grammars, vs. the traditional lex/yacc approach, or the use
+of regular expressions.  The pyparsing module provides a library of classes
+that client code uses to construct the grammar directly in Python code.")
+    (license license:expat)))
+
+(define-public python-pyparsing-2.4.7
+  (package
+    (inherit python-pyparsing)
+    (version "2.4.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pyparsing" version))
+       (sha256
+        (base32 "1hgc8qrbq1ymxbwfbjghv01fm3fbpjwpjwi0bcailxxzhf3yq0y2"))))))
+
+(define-public python2-pyparsing
+  (package-with-python2 python-pyparsing))
+
+(define-public python-packaging-bootstrap
+  (package
+    (name "python-packaging-bootstrap")
+    (version "20.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "packaging" version))
+       ;; XXX: The URL in the patch file is wrong, it should be
+       ;; <https://github.com/pypa/packaging/pull/256>.
+       (patches (search-patches "python-packaging-test-arch.patch"))
+       (sha256
+        (base32
+         "1y2ip3a4ykkpgnwgn85j6hkspcl0cg3mzms97f40mk57vwqq67gy"))))
+    (build-system python-build-system)
+    (arguments `(#:tests? #f))         ;disabled to avoid extra dependencies
+    (propagated-inputs
+     (list python-pyparsing python-six-bootstrap))
+    (home-page "https://github.com/pypa/packaging")
+    (synopsis "Core utilities for Python packages")
+    (description "Packaging is a Python module for dealing with Python packages.
+It offers an interface for working with package versions, names, and dependency
+information.")
+    ;; From 'LICENSE': This software is made available under the terms of
+    ;; *either* of the licenses found in LICENSE.APACHE or LICENSE.BSD.
+    ;; Contributions to this software is made under the terms of *both* these
+    ;; licenses.
+    (license (list license:asl2.0 license:bsd-2))))
+
+(define-public python2-packaging-bootstrap
+  (package-with-python2 python-packaging-bootstrap))
+
 ;;; The name 'python-pypa-build' is chosen rather than 'python-build' to avoid
 ;;; a name clash with python-build from (guix build-system python).
 (define-public python-pypa-build
   (package
     (name "python-pypa-build")
-    (version "0.1.0")
+    (version "0.7.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "build" version))
               (sha256
                (base32
-                "1d6m21lijwm04g50nwgsgj7x3vhblzw7jv05ah8psqgzk20bbch8"))))
+                "17xqija27x4my1yrnk6q2vwln60r39g2dhby9zg2l99qjgbdrahs"))))
     (build-system python-build-system)
     (arguments
-     `(#:tests? #f))                    ;to tests in the PyPI release
+     `(#:tests? #f                      ;to tests in the PyPI release
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'use-toml-instead-of-tomli
+                    ;; Using toml instead of tomli eases bootstrapping.
+                    (lambda _
+                      (substitute* "setup.cfg"
+                        (("tomli>=.*")
+                         "toml\n")))))))
     (propagated-inputs
-     `(("python-pep517", python-pep517-bootstrap)
+     `(("python-packaging" ,python-packaging-bootstrap)
+       ("python-pep517", python-pep517-bootstrap)
        ("python-toml" ,python-toml)))
     (home-page "https://pypa-build.readthedocs.io/en/latest/")
     (synopsis "Simple Python PEP 517 package builder")
@@ -176,3 +335,44 @@ implementation developed for Poetry.  This project is intended to be
 a light weight, fully compliant, self-contained package allowing PEP 517
 compatible build front-ends to build Poetry managed projects.")
     (license license:expat)))
+
+(define-public python-flit-core
+  (package
+    (name "python-flit-core")
+    (version "3.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "flit" version))
+       (sha256
+        (base32 "10vjqnybvjdqdbmyc0asbhhvq51yjnnj00645yiq9849gnr8h0ir"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     (list python-toml))
+    (arguments
+     ;; flit-core has a test suite, but it requires Pytest.  Disable it so
+     ;; as to not pull pytest as an input.
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'build
+           ;; flit-core requires itself to build.  Luckily, a
+           ;; bootstrapping script exists, which does so using just
+           ;; the checkout sources and Python.
+           (lambda _
+             (invoke "python" "flit_core/build_dists.py")))
+         (replace 'install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (whl (car (find-files "." "\\.whl$"))))
+               (invoke "pip" "--no-cache-dir" "--no-input"
+                       "install" "--no-deps" "--prefix" out whl))))
+         ;; The sanity-check phase fails because flit depends on tomli at
+         ;; run-time, but this core variant avoids it to avoid a cycle.
+         (delete 'sanity-check))))
+    (home-page "https://github.com/takluyver/flit")
+    (synopsis "Core package of the Flit Python build system")
+    (description "This package provides @code{flit-core}, a PEP 517 build
+backend for packages using Flit.  The only public interface is the API
+specified by PEP 517, @code{flit_core.buildapi}.")
+    (license license:bsd-3)))

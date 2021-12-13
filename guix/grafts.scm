@@ -42,6 +42,7 @@
             graft-derivation/shallow
 
             %graft?
+            without-grafting
             set-grafting
             grafting?))
 
@@ -340,6 +341,17 @@ DRV, and graft DRV itself to refer to those grafted dependencies."
 (define %graft?
   ;; Whether to honor package grafts by default.
   (make-parameter #t))
+
+(define (call-without-grafting thunk)
+  (lambda (store)
+    (values (parameterize ((%graft? #f))
+              (run-with-store store (thunk)))
+            store)))
+
+(define-syntax-rule (without-grafting mexp ...)
+  "Bind monadic expressions MEXP in a dynamic extent where '%graft?' is
+false."
+  (call-without-grafting (lambda () (mbegin %store-monad mexp ...))))
 
 (define-inlinable (set-grafting enable?)
   ;; This monadic procedure enables grafting when ENABLE? is true, and

@@ -2,6 +2,7 @@
 ;;; Copyright © 2012, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2021 Thiago Jung Bauermann <bauermann@kolabnow.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,6 +20,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages pth)
+  #:use-module (gnu packages autotools)
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -38,12 +40,20 @@
         "0ckjqw5kz5m30srqi87idj7xhpw6bpki43mj07bazjm2qmh3cdbj"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:parallel-build? #f
-       #:configure-flags (list 
-                           ,@(if (string=? "aarch64-linux"
-                                           (%current-system))
-                               '("--host=aarch64-unknown-linux-gnu")
-                               '()))))
+     '(#:parallel-build? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'update-config-scripts
+           (lambda* (#:key inputs native-inputs #:allow-other-keys)
+             ;; Replace outdated config.guess and config.sub.
+             (for-each (lambda (file)
+                         (install-file
+                          (search-input-file
+                           (or native-inputs inputs)
+                           (string-append "/bin/" file)) "."))
+                       '("config.guess" "config.sub")))))))
+    (native-inputs
+     (list config))
     (home-page "https://www.gnu.org/software/pth/")
     (synopsis "Portable thread library")
     (description

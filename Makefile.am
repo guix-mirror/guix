@@ -229,7 +229,6 @@ MODULES =					\
   guix/build/union.scm				\
   guix/build/profiles.scm			\
   guix/build/compile.scm			\
-  guix/build/rpath.scm				\
   guix/build/cvs.scm				\
   guix/build/svn.scm				\
   guix/build/syscalls.scm                       \
@@ -240,6 +239,7 @@ MODULES =					\
   guix/build/emacs-utils.scm			\
   guix/build/java-utils.scm			\
   guix/build/lisp-utils.scm			\
+  guix/build/meson-configuration.scm		\
   guix/build/maven/java.scm			\
   guix/build/maven/plugin.scm			\
   guix/build/maven/pom.scm			\
@@ -294,6 +294,7 @@ MODULES =					\
   guix/scripts/refresh.scm			\
   guix/scripts/repl.scm				\
   guix/scripts/describe.scm			\
+  guix/scripts/style.scm			\
   guix/scripts/system.scm			\
   guix/scripts/system/search.scm		\
   guix/scripts/system/reconfigure.scm		\
@@ -400,6 +401,8 @@ AUX_FILES =						\
   gnu/packages/aux-files/linux-libre/4.4-i686.conf	\
   gnu/packages/aux-files/linux-libre/4.4-x86_64.conf	\
   gnu/packages/aux-files/pack-audit.c			\
+  gnu/packages/aux-files/python/sanity-check.py		\
+  gnu/packages/aux-files/python/sitecustomize.py	\
   gnu/packages/aux-files/run-in-namespace.c
 
 # Templates, examples.
@@ -514,6 +517,7 @@ SCM_TESTS =					\
   tests/swh.scm				\
   tests/syscalls.scm				\
   tests/system.scm				\
+  tests/style.scm				\
   tests/texlive.scm				\
   tests/transformations.scm			\
   tests/ui.scm					\

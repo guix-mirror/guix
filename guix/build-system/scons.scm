@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,7 +20,8 @@
 (define-module (guix build-system scons)
   #:use-module (guix utils)
   #:use-module (guix packages)
-  #:use-module (guix derivations)
+  #:use-module (guix monads)
+  #:use-module (guix gexp)
   #:use-module (guix search-paths)
   #:use-module (guix build-system)
   #:use-module (guix build-system gnu)
@@ -53,7 +55,7 @@
                 #:rest arguments)
   "Return a bag for NAME."
   (define private-keywords
-    '(#:source #:target #:scons #:inputs #:native-inputs))
+    '(#:target #:scons #:inputs #:native-inputs))
 
   (and (not target)                               ;XXX: no cross-compilation
        (bag
@@ -72,15 +74,15 @@
          (build scons-build)
          (arguments (strip-keyword-arguments private-keywords arguments)))))
 
-(define* (scons-build store name inputs
+(define* (scons-build name inputs
                       #:key
+                      (source #f)
                       (tests? #t)
                       (scons-flags ''())
-                      (build-targets ''())
+                      (build-targets #~'())
                       (test-target "test")
-                      (install-targets ''("install"))
-                      (phases '(@ (guix build scons-build-system)
-                                  %standard-phases))
+                      (install-targets #~'("install"))
+                      (phases '%standard-phases)
                       (outputs '("out"))
                       (search-paths '())
                       (system (%current-system))
@@ -91,43 +93,33 @@
   "Build SOURCE using SCons, and with INPUTS.  This assumes that SOURCE
 provides a 'SConstruct' file as its build system."
   (define builder
-    `(begin
-       (use-modules ,@modules)
-       (scons-build #:name ,name
-                    #:source ,(match (assoc-ref inputs "source")
-                                (((? derivation? source))
-                                 (derivation->output-path source))
-                                ((source)
-                                 source)
-                                (source
-                                 source))
-                    #:scons-flags ,scons-flags
-                    #:system ,system
-                    #:build-targets ,build-targets
-                    #:test-target ,test-target
-                    #:tests? ,tests?
-                    #:install-targets ,install-targets
-                    #:phases ,phases
-                    #:outputs %outputs
-                    #:search-paths ',(map search-path-specification->sexp
-                                          search-paths)
-                    #:inputs %build-inputs)))
+    (with-imported-modules imported-modules
+      #~(begin
+          (use-modules #$@(sexp->gexp modules))
 
-  (define guile-for-build
-    (match guile
-      ((? package?)
-       (package-derivation store guile system #:graft? #f))
-      (#f                                         ; the default
-       (let* ((distro (resolve-interface '(gnu packages commencement)))
-              (guile  (module-ref distro 'guile-final)))
-         (package-derivation store guile system #:graft? #f)))))
+          #$(with-build-variables inputs outputs
+              #~(scons-build #:name #$name
+                             #:source #+source
+                             #:scons-flags #$(sexp->gexp scons-flags)
+                             #:system #$system
+                             #:build-targets #$build-targets
+                             #:test-target #$test-target
+                             #:tests? #$tests?
+                             #:install-targets #$install-targets
+                             #:phases #$(if (pair? phases)
+                                            (sexp->gexp phases)
+                                            phases)
+                             #:outputs %outputs
+                             #:inputs %build-inputs
+                             #:search-paths
+                             '#$(sexp->gexp
+                                 (map search-path-specification->sexp
+                                      search-paths)))))))
 
-  (build-expression->derivation store name builder
-                                #:inputs inputs
-                                #:system system
-                                #:modules imported-modules
-                                #:outputs outputs
-                                #:guile-for-build guile-for-build))
+  (gexp->derivation name builder
+                    #:system system
+                    #:target #f
+                    #:guile-for-build guile))
 
 (define scons-build-system
   (build-system

@@ -81,14 +81,13 @@
                  "/lib/qt5/plugins")))
              #t)))))
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("pkg-config" ,pkg-config)))
+     (list extra-cmake-modules pkg-config))
     (inputs
      `(("fcitx" ,fcitx)
        ("libintl" ,intltool)
        ("libxkbcommon" ,libxkbcommon)))
     (propagated-inputs
-     `(("qtbase" ,qtbase-5)))
+     (list qtbase-5))
     (synopsis "Fcitx Qt5 Input Context")
     (description "This package provides a Qt5 frontend for fcitx.")
     (home-page "https://github.com/fcitx/fcitx-qt5/")
@@ -139,11 +138,7 @@
        ("pkg-config" ,pkg-config)
        ("python-wrapper" ,python-wrapper)))
     (inputs
-     `(("glib" ,glib)
-       ("gtk+" ,gtk+)
-       ("libx11" ,libx11)
-       ("sqlite" ,sqlite)
-       ("tinyxml" ,tinyxml)))
+     (list glib gtk+ libx11 sqlite tinyxml))
     (synopsis "Intelligent Predictive Text Entry System")
     (description "Presage generates predictions by modelling natural language as
 a combination of redundant information sources.  It computes probabilities for

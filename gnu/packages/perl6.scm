@@ -62,6 +62,7 @@
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out        (assoc-ref outputs "out"))
                    (pkg-config (assoc-ref inputs "pkg-config")))
+               (setenv "CFLAGS" "-fcommon")
                (setenv "LDFLAGS" (string-append "-Wl,-rpath=" out "/lib"))
                (invoke "perl" "Configure.pl"
                        "--prefix" out
@@ -73,12 +74,9 @@
     (home-page "https://moarvm.org/")
     ;; These should be inputs but moar.h can't find them when building rakudo
     (propagated-inputs
-     `(("libatomic-ops" ,libatomic-ops)
-       ("libffi" ,libffi)
-       ("libtommath" ,libtommath-1.0)
-       ("libuv" ,libuv)))
+     (list libatomic-ops libffi libtommath-1.0 libuv))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (synopsis "VM for NQP And Rakudo Perl 6")
     (description
      "Short for \"Metamodel On A Runtime\", MoarVM is a modern virtual machine
@@ -149,7 +147,7 @@ with native libraries.
                        "--with-moar" (string-append moar "/bin/moar")
                        "--prefix" out)))))))
     (inputs
-     `(("moarvm" ,moarvm)))
+     (list moarvm))
     (home-page "https://github.com/perl6/nqp")
     (synopsis "Not Quite Perl")
     (description "This is \"Not Quite Perl\" -- a lightweight Perl 6-like
@@ -212,9 +210,7 @@ regular expression engine for the virtual machine.")
                   (string-append out "/bin/perl6"))))
              #t)))))
     (inputs
-     `(("moarvm" ,moarvm)
-       ("nqp" ,nqp)
-       ("openssl" ,openssl)))
+     (list moarvm nqp openssl))
     (home-page "https://rakudo.org/")
     (native-search-paths
       (list (search-path-specification
@@ -247,7 +243,7 @@ specification and runs on top of several virtual machines.")
             "0y826z3m276n7ia810hgcb3div67nxmx125m2fzlc16994zd5vm5"))))
       (build-system rakudo-build-system)
       (propagated-inputs
-       `(("perl6-terminal-ansicolor" ,perl6-terminal-ansicolor)))
+       (list perl6-terminal-ansicolor))
       (home-page "https://github.com/jnthn/grammar-debugger")
       (synopsis "Simple tracing and debugging support for Perl 6 grammars")
       (description "This module provides a simple debugger for grammars.  Just
@@ -323,10 +319,9 @@ deserializing JSON.")
           "1zyzajc57j3m8q0nr72h9pw4w2nx92rafywlvysgphc5q9sb8np2"))))
     (build-system rakudo-build-system)
     (propagated-inputs
-     `(("perl6-json-marshal" ,perl6-json-marshal)
-       ("perl6-json-unmarshal" ,perl6-json-unmarshal)))
+     (list perl6-json-marshal perl6-json-unmarshal))
     (native-inputs
-     `(("perl6-json-fast" ,perl6-json-fast)))
+     (list perl6-json-fast))
     (home-page "https://github.com/jonathanstowe/JSON-Class")
     (synopsis "Provide simple serialisation/deserialisation of objects to/from JSON")
     (description "This is a simple role that provides methods to instantiate a
@@ -378,10 +373,9 @@ but it offers a few extra features.")
           "0qy7j83h6gjzyyv74ncd92cd9h45rv8diaz3vldiv3b6fqwz4c6i"))))
     (build-system rakudo-build-system)
     (propagated-inputs
-     `(("perl6-json-fast" ,perl6-json-fast)
-       ("perl6-json-name" ,perl6-json-name)))
+     (list perl6-json-fast perl6-json-name))
     (native-inputs
-     `(("perl6-json-fast" ,perl6-json-fast)))
+     (list perl6-json-fast))
     (home-page "https://github.com/jonathanstowe/JSON-Marshal")
     (synopsis "Simple serialisation of objects to JSON")
     (description "This library provides a single exported subroutine to create
@@ -434,8 +428,7 @@ It will of course also be needed in classes thar are going to use
           "14azsmzmwdn8k0gqcpvballharcvzylmlyrx2wmv4kpqfnz29fjc"))))
       (build-system rakudo-build-system)
       (propagated-inputs
-       `(("perl6-json-fast" ,perl6-json-fast)
-         ("perl6-json-name" ,perl6-json-name)))
+       (list perl6-json-fast perl6-json-name))
       (home-page "https://github.com/tadzik/JSON-Unmarshal")
       (synopsis "Make JSON from an Object")
       (description "This library provides a single exported subroutine to
@@ -458,7 +451,7 @@ create an object from a JSON representation of an object.")
           "0dl263c3fbxk001gm5fisrzqz1dx182ipaa0x2qva2gxvl075xm8"))))
     (build-system rakudo-build-system)
     (propagated-inputs
-     `(("perl6-json-class" ,perl6-json-class)))
+     (list perl6-json-class))
     (home-page "https://github.com/jonathanstowe/License-SPDX")
     (synopsis "Abstraction over the SPDX License List")
     (description "This provides an abstraction over the SPDX License List as
@@ -483,9 +476,9 @@ licences therein.")
           "1xnlaamfbdlfb2zidim3bbc4mawsrg6qxhxi6gbld46z1cyry1cw"))))
     (build-system rakudo-build-system)
     (propagated-inputs
-     `(("perl6-json-class" ,perl6-json-class)))
+     (list perl6-json-class))
     (native-inputs
-     `(("perl6-json-fast" ,perl6-json-fast)))
+     (list perl6-json-fast))
     (home-page "https://github.com/jonathanstowe/META6")
     (synopsis "Do things with Perl 6 [META files]")
     (description "This provides a representation of the Perl 6 META files
@@ -568,7 +561,7 @@ monitor.  Condition variables are also supported.")
             "0mkjdhg7ajksdn61n8fqhyzfd7ly9myazsvpsm02a5c2q73hdygg"))))
       (build-system rakudo-build-system)
       (propagated-inputs
-       `(("perl6-xml-writer" ,perl6-xml-writer)))
+       (list perl6-xml-writer))
       (home-page "https://github.com/moritz/svg")
       (synopsis "Perl 6 module to generate SVG")
       (description "This is a Perl 6 module that makes it easy to write
@@ -596,7 +589,7 @@ XML file as SVG.")
             "095ga5hbg92jnmczxvhk1hjz14yr334zyf8cph4w5w5frcza44my"))))
       (build-system rakudo-build-system)
       (propagated-inputs
-       `(("perl6-svg" ,perl6-svg)))
+       (list perl6-svg))
       (home-page "https://github.com/moritz/svg-plot")
       (synopsis "Perl 6 charting and plotting library that produces SVG output")
       (description "@code{SVG::Plot} is a simple 2D chart plotter for Perl 6.
@@ -672,8 +665,7 @@ minimal wrapper around an instance of this module.")
           "1mzrglb7lbiy5h9dlc7dyhvv9gppxmdmpmrv6nzbd695jzr38bri"))))
     (build-system rakudo-build-system)
     (propagated-inputs
-     `(("perl6-meta6" ,perl6-meta6)
-       ("perl6-uri" ,perl6-uri)))
+     (list perl6-meta6 perl6-uri))
     (home-page "https://github.com/jonathanstowe/Test-META")
     (synopsis "Test a distributions META file")
     (description "This provides a simple mechanism for module authors to have
@@ -697,7 +689,7 @@ some confidence that they have a working distribution META description file.")
           "07yr3qimc8fl29p23562ayj2j9h53madcnf9sgqvgf2kcprh0zd2"))))
     (build-system rakudo-build-system)
     (propagated-inputs
-     `(("perl6-oo-monitors" ,perl6-oo-monitors)))
+     (list perl6-oo-monitors))
     (home-page "https://github.com/jnthn/test-mock")
     (synopsis "Module for simply generating and checking mock objects")
     (description "@code{Test::Mock} is a module that works alongside the

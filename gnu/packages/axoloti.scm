@@ -205,7 +205,7 @@
        ;; for uploading compiled patches and firmware
        ("dfu-util" ,dfu-util-for-axoloti)))
     (native-inputs
-     `(("unzip" ,unzip)))
+     (list unzip))
     (home-page "http://www.axoloti.com/")
     (synopsis "Audio development environment for the Axoloti core board")
     (description
@@ -318,8 +318,8 @@ runtime.")
                    (lambda ()
                      (let* ((dir       (string-append (assoc-ref outputs "out")
                                                       "/share/axoloti"))
-                            (runtime   (string-append (assoc-ref inputs "axoloti-runtime")
-                                                      "/share/axoloti"))
+                            (runtime   (search-input-directory inputs
+                                                               "share/axoloti"))
                             (toolchain (assoc-ref inputs "cross-toolchain"))
                             (includes  (string-append
                                         toolchain
@@ -351,9 +351,8 @@ runtime.")
        ("java-jgit" ,java-jgit-4.2)
        ("axoloti-runtime" ,axoloti-runtime)))
     (native-inputs
-     `(("ant" ,ant)
-       ("zip" ,zip) ; for repacking the jar
-       ("unzip" ,unzip)))
+     (list ant zip ; for repacking the jar
+           unzip))
     (description
      "The Axoloti patcher offers a “patcher” environment similar to Pure Data
 for sketching digital audio algorithms.  The patches run on a standalone
@@ -530,8 +529,8 @@ patcher application.")))
                ;; Install old firmware
                (let ((target (string-append share "/old_firmware/firmware-1.0.12"))
                      (old-firmware
-                      (string-append (assoc-ref inputs "axoloti-runtime")
-                                     "/share/axoloti/firmware/")))
+                      (search-input-directory inputs
+                                              "share/axoloti/firmware")))
                  (mkdir-p target)
                  (install-file (string-append old-firmware
                                               "flasher/flasher_build/flasher.bin")

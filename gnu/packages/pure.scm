@@ -56,9 +56,7 @@
                 "`$LLVMCONF --libs`"))
              #t)))))
     (inputs
-     `(("gmp" ,gmp)
-       ("llvm" ,llvm-3.5)
-       ("mpfr" ,mpfr)))
+     (list gmp llvm-3.5 mpfr))
     (home-page "https://agraef.github.io/pure-lang/")
     (synopsis "Pure programming Language")
     (description "@code{pure} is a programming language based on term

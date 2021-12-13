@@ -3,7 +3,7 @@
 ;;; Copyright © 2015 Siniša Biđin <sinisa@bidin.eu>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2015, 2019 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2016, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2018, 2019, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2016, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
@@ -94,7 +94,7 @@
         (base32
          "18jwswjxwzc9bjiy4ds6hw2a74ki797jmfcifxd2ga4kh7ri1ah9"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-random" ,ghc-random)))
+    (inputs (list ghc-random))
     (home-page "https://github.com/rrnewton/haskell-lockfree/wiki")
     (synopsis "Abstract, parameterized interface to mutable Deques for Haskell")
     (description "This Haskell package provides an abstract interface to
@@ -154,13 +154,10 @@ module for more details.")
          "019xr66pahsssqr2hybs88mga4qshv1vmd22j7624wqafqm57d74"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-vector" ,ghc-vector)
-       ("ghc-semigroups" ,ghc-semigroups)
-       ("ghc-semigroupoids" ,ghc-semigroupoids)
-       ("ghc-lens" ,ghc-lens)
-       ("ghc-linear" ,ghc-linear)))
+     (list ghc-vector ghc-semigroups ghc-semigroupoids ghc-lens
+           ghc-linear))
     (native-inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)))
+     (list ghc-quickcheck))
     (home-page "https://hackage.haskell.org/package/active")
     (synopsis "Abstractions for animation")
     (description "This package defines an @code{Active} abstraction for
@@ -189,20 +186,18 @@ diagrams framework}.")
      `(#:cabal-revision
        ("2" "1yfsjx7dqikg3hvld7i91xfsg5lawmr5980lvfd794sybmgxsf17")))
     (inputs
-     `(("ghc-profunctors" ,ghc-profunctors)
-       ("ghc-comonad" ,ghc-comonad)
-       ("ghc-contravariant" ,ghc-contravariant)
-       ("ghc-distributive" ,ghc-distributive)
-       ("ghc-free" ,ghc-free)
-       ("ghc-tagged" ,ghc-tagged)
-       ("ghc-semigroupoids" ,ghc-semigroupoids)
-       ("ghc-semigroups" ,ghc-semigroups)
-       ("ghc-transformers-compat" ,ghc-transformers-compat)
-       ("ghc-void" ,ghc-void)))
+     (list ghc-profunctors
+           ghc-comonad
+           ghc-contravariant
+           ghc-distributive
+           ghc-free
+           ghc-tagged
+           ghc-semigroupoids
+           ghc-semigroups
+           ghc-transformers-compat
+           ghc-void))
     (native-inputs
-     `(("ghc-generic-deriving" ,ghc-generic-deriving)
-       ("ghc-hspec" ,ghc-hspec)
-       ("hspec-discover" ,hspec-discover)))
+     (list ghc-generic-deriving ghc-hspec hspec-discover))
     (home-page "https://github.com/ekmett/adjunctions/")
     (synopsis "Adjunctions and representable functors")
     (description "This library provides adjunctions and representable functors
@@ -223,23 +218,23 @@ for Haskell.")
         (base32
          "0ia3qfdpbrzhwwg4ywpdwca0z1m85k081pcz6jh1sx8qjsvcr71w"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-base-compat" ,ghc-base-compat)
-              ("ghc-aeson" ,ghc-aeson)
-              ("ghc-attoparsec" ,ghc-attoparsec)
-              ("ghc-attoparsec-iso8601" ,ghc-attoparsec-iso8601)
-              ("ghc-hashable" ,ghc-hashable)
-              ("ghc-scientific" ,ghc-scientific)
-              ("ghc-time-locale-compat" ,ghc-time-locale-compat)
-              ("ghc-unordered-containers" ,ghc-unordered-containers)
-              ("ghc-vector" ,ghc-vector)
-              ("ghc-tagged" ,ghc-tagged)))
+    (inputs (list ghc-base-compat
+                  ghc-aeson
+                  ghc-attoparsec
+                  ghc-attoparsec-iso8601
+                  ghc-hashable
+                  ghc-scientific
+                  ghc-time-locale-compat
+                  ghc-unordered-containers
+                  ghc-vector
+                  ghc-tagged))
     (native-inputs
-     `(("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
-       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-quickcheck-instances" ,ghc-quickcheck-instances)
-       ("ghc-base-orphans" ,ghc-base-orphans)))
+     (list ghc-tasty
+           ghc-tasty-hunit
+           ghc-tasty-quickcheck
+           ghc-quickcheck
+           ghc-quickcheck-instances
+           ghc-base-orphans))
     (home-page "https://github.com/phadej/aeson-compat")
     (synopsis "Compatibility layer for ghc-aeson")
     (description "This Haskell package provides compatibility layer for
@@ -260,23 +255,23 @@ ghc-aeson.")
          "18bm4qyjjwgrr6dxc4y0vai0z6qgrh2lcqb4jrr4xqs4cxrlwr92"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-aeson" ,ghc-aeson)
-       ("ghc-edit-distance-vector" ,ghc-edit-distance-vector)
-       ("ghc-hashable" ,ghc-hashable)
-       ("ghc-scientific" ,ghc-scientific)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)
-       ("ghc-vector" ,ghc-vector)
-       ("ghc-semigroups" ,ghc-semigroups)
-       ("ghc-optparse-applicative" ,ghc-optparse-applicative)))
+     (list ghc-aeson
+           ghc-edit-distance-vector
+           ghc-hashable
+           ghc-scientific
+           ghc-unordered-containers
+           ghc-vector
+           ghc-semigroups
+           ghc-optparse-applicative))
     (native-inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-quickcheck-instances" ,ghc-quickcheck-instances)
-       ("ghc-glob" ,ghc-glob)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-quickcheck-instances" ,ghc-quickcheck-instances)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-doctest" ,ghc-doctest)
-       ("hlint" ,hlint)))
+     (list ghc-quickcheck
+           ghc-quickcheck-instances
+           ghc-glob
+           ghc-quickcheck
+           ghc-quickcheck-instances
+           ghc-quickcheck
+           ghc-doctest
+           hlint))
     (home-page "https://github.com/thsutton/aeson-diff")
     (synopsis "Extract and apply patches to JSON documents")
     (description "This is a small library for working with changes to JSON
@@ -309,9 +304,9 @@ systems.")
                                            (getenv "PATH")))
              (setenv "alex_datadir" (string-append (getcwd) "/data"))
              #t)))))
-    (inputs `(("ghc-quickcheck" ,ghc-quickcheck)))
+    (inputs (list ghc-quickcheck))
     (native-inputs
-     `(("which" ,which)))
+     (list which))
     (home-page "https://www.haskell.org/alex/")
     (synopsis
      "Tool for generating lexical analysers in Haskell")
@@ -340,10 +335,9 @@ tool lex or flex for C/C++.")
     (arguments
      `(#:extra-directories ("alsa-lib")))
     (inputs
-     `(("ghc-extensible-exceptions" ,ghc-extensible-exceptions)
-       ("alsa-lib" ,alsa-lib)))
+     (list ghc-extensible-exceptions alsa-lib))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://wiki.haskell.org/ALSA")
     (synopsis "Binding to the ALSA Library API (Exceptions)")
     (description "This package provides access to ALSA infrastructure, that is
@@ -365,8 +359,8 @@ needed by both alsa-seq and alsa-pcm.")
       (base32
        "00ny2p3276jilidjs44npc8zmbhynz3f2lpmlwwl6swwx5yijsnb"))))
    (build-system haskell-build-system)
-   (inputs `(("ghc-alsa-core" ,ghc-alsa-core)))
-   (native-inputs `(("ghc-c2hs" ,ghc-c2hs)))
+   (inputs (list ghc-alsa-core))
+   (native-inputs (list ghc-c2hs))
    (home-page "https://github.com/ttuegel/alsa-mixer")
    (synopsis "Bindings to the ALSA simple mixer API")
    (description
@@ -414,7 +408,7 @@ a variety of ways.")
          "14rp62c7y79n9dmmi7m0l9n3mcq6dh331b4yyyrivm5da6g1nqf6"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-colour" ,ghc-colour)))
+     (list ghc-colour))
     (home-page "https://github.com/feuerbach/ansi-terminal")
     (synopsis "ANSI terminal support for Haskell")
     (description "This package provides ANSI terminal support for Haskell.  It
@@ -440,7 +434,7 @@ cursor, and changing the title.")
      `(#:cabal-revision
        ("2" "1xrv66v5hqchjhj8a0g3awy1qpsswk2jqb4w4yh3mm1py5s0dlr0")))
     (inputs
-     `(("ghc-ansi-terminal" ,ghc-ansi-terminal)))
+     (list ghc-ansi-terminal))
     (home-page "https://github.com/ekmett/ansi-wl-pprint")
     (synopsis "Wadler/Leijen Pretty Printer for colored ANSI terminal output")
     (description "This is a pretty printing library based on Wadler's paper
@@ -486,8 +480,7 @@ style.")
          "0kqlizznjy94fm8zr1ng633yxbinjff7cnsiaqs7m33ix338v66q"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-bifunctors" ,ghc-bifunctors)
-       ("ghc-tagged" ,ghc-tagged)))
+     (list ghc-bifunctors ghc-tagged))
     (home-page
      "http://hackage.haskell.org/package/assoc")
     (synopsis
@@ -514,11 +507,9 @@ similar operations (e.g. @code{Either}, @code{These}).")
          "09d7w3krfhnmf9dp6yffa9wykinhw541wibnjgnlyv77w1dzhka8"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-hashable" ,ghc-hashable)))
+     (list ghc-hashable))
     (native-inputs
-     `(("ghc-hunit" ,ghc-hunit)
-       ("ghc-test-framework" ,ghc-test-framework)
-       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)))
+     (list ghc-hunit ghc-test-framework ghc-test-framework-hunit))
     (home-page "https://github.com/simonmar/async")
     (synopsis "Library to run IO operations asynchronously")
     (description "Async provides a library to run IO operations
@@ -540,7 +531,7 @@ will eventually deliver a value of type @code{a}.")
         (base32
          "0gidqyk913vhcz3q4vnpadx3vkkrwb66rqhsxvdba8g2p5z63a12"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-primitive" ,ghc-primitive)))
+    (inputs (list ghc-primitive))
     (home-page "https://github.com/rrnewton/haskell-lockfree/wiki")
     (synopsis "Safe approach to CAS and other atomic ops")
     (description
@@ -565,13 +556,9 @@ This library provides a safer method based on the concept of @code{Ticket}s.")
          "1xs3shwnlj8hmnm3q6jc8nv78z0481i5n4hrqqdmbpx8grvlnqyl"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-temporary" ,ghc-temporary)
-       ("ghc-unix-compat" ,ghc-unix-compat)))
+     (list ghc-temporary ghc-unix-compat))
     (native-inputs
-     `(("ghc-temporary" ,ghc-temporary)
-       ("ghc-unix-compat" ,ghc-unix-compat)
-       ("ghc-hspec" ,ghc-hspec)
-       ("hspec-discover" ,hspec-discover)))
+     (list ghc-temporary ghc-unix-compat ghc-hspec hspec-discover))
     (home-page "https://github.com/stackbuilders/atomic-write")
     (synopsis "Atomically write to a file")
     (description
@@ -626,13 +613,10 @@ permissions while atomically writing to a file.")
                ((", testProperty \"satisfyWith\" satisfyWith")
                 "")))))))
     (inputs
-     `(("ghc-scientific" ,ghc-scientific)))
+     (list ghc-scientific))
     (native-inputs
-     `(("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-quickcheck-unicode" ,ghc-quickcheck-unicode)
-       ("ghc-vector" ,ghc-vector)))
+     (list ghc-tasty ghc-tasty-quickcheck ghc-quickcheck
+           ghc-quickcheck-unicode ghc-vector))
     (home-page "https://github.com/bos/attoparsec")
     (synopsis "Fast combinator parsing for bytestrings and text")
     (description "This library provides a fast parser combinator library,
@@ -667,9 +651,7 @@ complicated text/binary file formats.")
     (arguments
      `(#:cabal-revision
        ("2" "18557xy5gvkhj0sb35wwxmhqirkiqrkwm0y0pqygsr0aimccs5zm")))
-    (inputs `(("ghc-attoparsec" ,ghc-attoparsec)
-              ("ghc-base-compat-batteries" ,ghc-base-compat-batteries)
-              ("ghc-time-compat" ,ghc-time-compat)))
+    (inputs (list ghc-attoparsec ghc-base-compat-batteries ghc-time-compat))
     (home-page "https://github.com/bos/aeson")
     (synopsis "Parse ISO 8601 dates")
     (description "Haskell library for parsing of ISO 8601 dates, originally
@@ -692,10 +674,7 @@ from aeson.")
          "1i36xc2i34aync8271x3pv515l3zb53i518dybn8ghqkhzf27q7l"))))
     (build-system haskell-build-system)
     (native-inputs
-     `(("ghc-hspec" ,ghc-hspec)
-       ("ghc-hunit" ,ghc-hunit)
-       ("ghc-retry" ,ghc-retry)
-       ("hspec-discover" ,hspec-discover)))
+     (list ghc-hspec ghc-hunit ghc-retry hspec-discover))
     (home-page "https://github.com/yesodweb/wai")
     (synopsis "Efficiently run periodic, on-demand actions")
     (description "This library provides mechanisms to efficiently run
@@ -727,42 +706,42 @@ periodic, on-demand actions in Haskell.")
                (("(base64-bytestring)\\s+==\\s+1\\.0\\.\\*" all dep)
                 dep)))))))
     (inputs
-     `(("ghc-aeson" ,ghc-aeson)
-       ("ghc-attoparsec" ,ghc-attoparsec)
-       ("ghc-base16-bytestring" ,ghc-base16-bytestring)
-       ("ghc-base64-bytestring" ,ghc-base64-bytestring)
-       ("ghc-blaze-builder" ,ghc-blaze-builder)
-       ("ghc-byteable" ,ghc-byteable)
-       ("ghc-case-insensitive" ,ghc-case-insensitive)
-       ("ghc-cereal" ,ghc-cereal)
-       ("ghc-conduit" ,ghc-conduit)
-       ("ghc-conduit-extra" ,ghc-conduit-extra)
-       ("ghc-cryptonite" ,ghc-cryptonite)
-       ("ghc-data-default" ,ghc-data-default)
-       ("ghc-http-conduit" ,ghc-http-conduit)
-       ("ghc-http-types" ,ghc-http-types)
-       ("ghc-lifted-base" ,ghc-lifted-base)
-       ("ghc-monad-control" ,ghc-monad-control)
-       ("ghc-network" ,ghc-network)
-       ("ghc-network-bsd" ,ghc-network-bsd)
-       ("ghc-old-locale" ,ghc-old-locale)
-       ("ghc-safe" ,ghc-safe)
-       ("ghc-scientific" ,ghc-scientific)
-       ("ghc-tagged" ,ghc-tagged)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)
-       ("ghc-utf8-string" ,ghc-utf8-string)
-       ("ghc-vector" ,ghc-vector)
-       ("ghc-xml-conduit" ,ghc-xml-conduit)))
+     (list ghc-aeson
+           ghc-attoparsec
+           ghc-base16-bytestring
+           ghc-base64-bytestring
+           ghc-blaze-builder
+           ghc-byteable
+           ghc-case-insensitive
+           ghc-cereal
+           ghc-conduit
+           ghc-conduit-extra
+           ghc-cryptonite
+           ghc-data-default
+           ghc-http-conduit
+           ghc-http-types
+           ghc-lifted-base
+           ghc-monad-control
+           ghc-network
+           ghc-network-bsd
+           ghc-old-locale
+           ghc-safe
+           ghc-scientific
+           ghc-tagged
+           ghc-unordered-containers
+           ghc-utf8-string
+           ghc-vector
+           ghc-xml-conduit))
     (native-inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-errors" ,ghc-errors)
-       ("ghc-http-client" ,ghc-http-client)
-       ("ghc-http-client-tls" ,ghc-http-client-tls)
-       ("ghc-quickcheck-instances" ,ghc-quickcheck-instances)
-       ("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
-       ("ghc-conduit-combinators" ,ghc-conduit-combinators)))
+     (list ghc-quickcheck
+           ghc-errors
+           ghc-http-client
+           ghc-http-client-tls
+           ghc-quickcheck-instances
+           ghc-tasty
+           ghc-tasty-quickcheck
+           ghc-tasty-hunit
+           ghc-conduit-combinators))
     (home-page "https://github.com/aristidb/aws")
     (synopsis "Amazon Web Services for Haskell")
     (description "This package attempts to provide support for using
@@ -786,11 +765,8 @@ Web Services.")
          "1ynnplw8iz3v5ld0xxgpxgasb0hg62x62wxxf5lx6lxyb15hmiy0"))))
     (build-system haskell-build-system)
     (native-inputs
-     `(("ghc-hunit" ,ghc-hunit)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-test-framework" ,ghc-test-framework)
-       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
-       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
+     (list ghc-hunit ghc-quickcheck ghc-test-framework
+           ghc-test-framework-hunit ghc-test-framework-quickcheck2))
     (home-page "https://github.com/bos/base16-bytestring")
     (synopsis "Fast base16 (hex) encoding and decoding for ByteStrings")
     (description
@@ -836,9 +812,7 @@ Haskell @code{ByteString}s.")
     (build-system haskell-build-system)
     (outputs '("out" "static" "doc"))
     (native-inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-hspec" ,ghc-hspec)
-       ("hspec-discover" ,hspec-discover)))
+     (list ghc-quickcheck ghc-hspec hspec-discover))
     (home-page "https://hackage.haskell.org/package/base-compat")
     (synopsis "Haskell compiler compatibility library")
     (description "This library provides functions available in later versions
@@ -861,11 +835,9 @@ pragmas in your code.")
          "08rh9nlm9ir28fm42xim06ga8qwdqdcvkbb5ckz99bwnmajndq1i"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-base-compat" ,ghc-base-compat)))
+     (list ghc-base-compat))
     (native-inputs
-     `(("ghc-hspec" ,ghc-hspec)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("hspec-discover" ,hspec-discover)))
+     (list ghc-hspec ghc-quickcheck hspec-discover))
     (home-page "https://hackage.haskell.org/package/base-compat-batteries")
     (synopsis "base-compat with extra batteries")
     (description "This library provides functions available in later
@@ -913,9 +885,7 @@ packages.")
          "1lw1jhrrsdq7x9wr2bwkxq9mscidcad0n30kh9gfk8kgifl5xh9k"))))
     (build-system haskell-build-system)
     (native-inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-hspec" ,ghc-hspec)
-       ("hspec-discover" ,hspec-discover)))
+     (list ghc-quickcheck ghc-hspec hspec-discover))
     (home-page "https://hackage.haskell.org/package/base-orphans")
     (synopsis "Orphan instances for backwards compatibility")
     (description "This package defines orphan instances that mimic instances
@@ -999,10 +969,7 @@ stand for certain ASCII character sequences, i.e. → instead of @code{->},
          "0yckmnvm6i4vw0mykj4fzl4ldsf67v8d2h0vp1bakyj84n4myx8h"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-hashable" ,ghc-hashable)
-       ("ghc-unordered-containers"
-        ,ghc-unordered-containers)
-       ("ghc-vector" ,ghc-vector)))
+     (list ghc-hashable ghc-unordered-containers ghc-vector))
     (home-page "https://github.com/snoyberg/basic-prelude#readme")
     (synopsis "Enhanced core prelude; a common foundation for alternate preludes")
     (description
@@ -1037,10 +1004,9 @@ wishing to create a new prelude should use CorePrelude.")
         (base32 "0znv0y3b3zm5jvhlvj5f5s7y93db67j9yd59w1bnrw2pqv30gqaq"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-transformers-compat" ,ghc-transformers-compat)))
+     (list ghc-transformers-compat))
     (native-inputs
-     `(("ghc-hspec" ,ghc-hspec)
-       ("ghc-quickcheck" ,ghc-quickcheck)))
+     (list ghc-hspec ghc-quickcheck))
     (home-page "https://hackage.haskell.org/package/bencode")
     (synopsis "Parsers and printers for bencoded data")
     (description
@@ -1065,16 +1031,14 @@ storing and transmitting loosely structured data.")
          "070964w7gz578379lyj6xvdbcf367csmz22cryarjr5bz9r9csrb"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-base-orphans" ,ghc-base-orphans)
-       ("ghc-comonad" ,ghc-comonad)
-       ("ghc-th-abstraction" ,ghc-th-abstraction)
-       ("ghc-transformers-compat" ,ghc-transformers-compat)
-       ("ghc-tagged" ,ghc-tagged)
-       ("ghc-semigroups" ,ghc-semigroups)))
+     (list ghc-base-orphans
+           ghc-comonad
+           ghc-th-abstraction
+           ghc-transformers-compat
+           ghc-tagged
+           ghc-semigroups))
     (native-inputs
-     `(("ghc-hspec" ,ghc-hspec)
-       ("hspec-discover" ,hspec-discover)
-       ("ghc-quickcheck" ,ghc-quickcheck)))
+     (list ghc-hspec hspec-discover ghc-quickcheck))
     (home-page "https://github.com/ekmett/bifunctors/")
     (synopsis "Bifunctors for Haskell")
     (description "This package provides bifunctors for Haskell.")
@@ -1142,15 +1106,14 @@ functions.")
          "0rxg6vjr0ji6g1nngrqpl4k1q9w66fwkhld9cqm5yfhx0a69kp1c"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-bytestring-builder" ,ghc-bytestring-builder)
-       ("ghc-semigroups" ,ghc-semigroups)))
+     (list ghc-bytestring-builder ghc-semigroups))
     (native-inputs
-     `(("ghc-hunit" ,ghc-hunit)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-test-framework" ,ghc-test-framework)
-       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
-       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)
-       ("ghc-utf8-string" ,ghc-utf8-string)))
+     (list ghc-hunit
+           ghc-quickcheck
+           ghc-test-framework
+           ghc-test-framework-hunit
+           ghc-test-framework-quickcheck2
+           ghc-utf8-string))
     (home-page "https://github.com/lpsmith/blaze-builder")
     (synopsis "Efficient buffered output")
     (description "This library provides an implementation of the older
@@ -1183,13 +1146,10 @@ interoperate with code that uses the new implementation.")
                (("tasty            >= 1\\.0  && < 1\\.1")
                 "tasty            >= 1.0  && < 1.2")))))))
     (inputs
-     `(("ghc-blaze-builder" ,ghc-blaze-builder)))
+     (list ghc-blaze-builder))
     (native-inputs
-     `(("ghc-hunit" ,ghc-hunit)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
-       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)))
+     (list ghc-hunit ghc-quickcheck ghc-tasty ghc-tasty-hunit
+           ghc-tasty-quickcheck))
     (home-page "https://jaspervdj.be/blaze")
     (synopsis "Fast markup combinator library for Haskell")
     (description "This library provides core modules of a markup combinator
@@ -1210,10 +1170,8 @@ library for Haskell.")
          "03vrmncg1c10a2wcg5skq30m1yiknn7nwxz2gblyyfaxglshspkc"))))
     (build-system haskell-build-system)
     (native-inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-random" ,ghc-random)
-       ("ghc-test-framework" ,ghc-test-framework)
-       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
+     (list ghc-quickcheck ghc-random ghc-test-framework
+           ghc-test-framework-quickcheck2))
     (home-page "https://github.com/bos/bloomfilter")
     (synopsis "Pure and impure Bloom filter implementations")
     (description "This package provides both mutable and immutable Bloom
@@ -1234,8 +1192,7 @@ interface.")
         (base32 "1hsnmw95i58d4bkpxby3ddsj1cawypw4mdyb18m393s5i8p7iq9q"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-split" ,ghc-split)
-       ("ghc-quickcheck" ,ghc-quickcheck)))
+     (list ghc-split ghc-quickcheck))
     (home-page "https://hackage.haskell.org/package/boxes")
     (synopsis "2D text pretty-printing library")
     (description
@@ -1303,13 +1260,13 @@ system.")
       (base32
        "1qmps8vvg98wfm9xm734hwzi56bsk8r1zc6vx20rlhc79krv5s9s"))))
    (build-system haskell-build-system)
-   (inputs `(("ghc-binary-orphans" ,ghc-binary-orphans)
-             ("ghc-cereal" ,ghc-cereal)
-             ("ghc-hashable" ,ghc-hashable)
-             ("ghc-scientific" ,ghc-scientific)
-             ("ghc-transformers-compat" ,ghc-transformers-compat)
-             ("ghc-unordered-containers" ,ghc-unordered-containers)
-             ("ghc-void" ,ghc-void)))
+   (inputs (list ghc-binary-orphans
+                 ghc-cereal
+                 ghc-hashable
+                 ghc-scientific
+                 ghc-transformers-compat
+                 ghc-unordered-containers
+                 ghc-void))
    (synopsis "Serialization between @code{binary} and @code{cereal}")
    (description "This package provides a simple compatibility shim that lets
 you work with both @code{binary} and @code{cereal} with one chunk of
@@ -1357,11 +1314,8 @@ Compatibility package for older packages.")
      `(#:cabal-revision
        ("2" "1x1sy3dz2ph9v6jk22wmcv5gk2bka5fv4s68i8q0j9m9pk085w37")))
     (inputs
-     `(("ghc-hunit" ,ghc-hunit)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-test-framework" ,ghc-test-framework)
-       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
-       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
+     (list ghc-hunit ghc-quickcheck ghc-test-framework
+           ghc-test-framework-hunit ghc-test-framework-quickcheck2))
     (home-page "https://hub.darcs.net/ganesh/bytestring-handle")
     (synopsis "ByteString-backed Handles")
     (description "ByteString-backed Handles") ; There is no description
@@ -1382,9 +1336,7 @@ Compatibility package for older packages.")
          "1p7i2haix4m11an3djaq65cnd293hzwqy4cd2i8jxzcl248pk6iy"))))
     (build-system haskell-build-system)
     (native-inputs
-     `(("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
-       ("ghc-tasty-smallcheck" ,ghc-tasty-smallcheck)))
+     (list ghc-tasty ghc-tasty-quickcheck ghc-tasty-smallcheck))
     (home-page "http://code.haskell.org/~wren/")
     (synopsis "Parse and produce literals from strict or lazy bytestrings")
     (description
@@ -1406,13 +1358,10 @@ from strict or lazy bytestrings.")
          "0a21zin5plsl37hkxh2jv8cxwyjrbs2fy7n5cyrzgdaa7lmp6b7b"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-bindings-dsl" ,ghc-bindings-dsl)
-       ("ghc-conduit" ,ghc-conduit)
-       ("ghc-data-default-class" ,ghc-data-default-class)
-       ("ghc-resourcet" ,ghc-resourcet)))
+     (list ghc-bindings-dsl ghc-conduit ghc-data-default-class
+           ghc-resourcet))
     (native-inputs
-     `(("ghc-hspec" ,ghc-hspec)
-       ("ghc-random" ,ghc-random)))
+     (list ghc-hspec ghc-random))
     (home-page "https://github.com/snoyberg/bzlib-conduit")
     (synopsis "Streaming compression/decompression via conduits")
     (description
@@ -1436,13 +1385,10 @@ streaming compression and decompression.")
          "0k482wv94jbpwd96a2c2lc7qz9k8072slx7l7943472nzk7k41ir"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-language-c" ,ghc-language-c)
-       ("ghc-dlist" ,ghc-dlist)))
+     (list ghc-language-c ghc-dlist))
     (native-inputs
-     `(("ghc-test-framework" ,ghc-test-framework)
-       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
-       ("ghc-hunit" ,ghc-hunit)
-       ("ghc-shelly" ,ghc-shelly)))
+     (list ghc-test-framework ghc-test-framework-hunit ghc-hunit
+           ghc-shelly))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -1494,11 +1440,9 @@ imported with the correct Haskell types.")
          "1hpkyhrlg1d24s34kq6d379z8l8fvznm98wpq37haqjma4nl25hk"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-utf8-string" ,ghc-utf8-string)
-       ("cairo" ,cairo)))
+     (list ghc-utf8-string cairo))
     (native-inputs
-     `(("ghc-gtk2hs-buildtools" ,ghc-gtk2hs-buildtools)
-       ("pkg-config" ,pkg-config)))
+     (list ghc-gtk2hs-buildtools pkg-config))
     (home-page "http://projects.haskell.org/gtk2hs/")
     (synopsis "Haskell bindings to the Cairo vector graphics library")
     (description
@@ -1521,7 +1465,7 @@ documents, amongst others.")
         (base32
          "0ski7ihdxah7x4x07qgkjljg8hzqs9d6aa5k4cmr40bzp3i8s3mq"))))
     (build-system haskell-build-system)
-    (native-inputs `(("ghc-nanospec" ,ghc-nanospec)))
+    (native-inputs (list ghc-nanospec))
     (home-page "https://github.com/sol/call-stack#readme")
     (synopsis "Use GHC call-stacks in a backward compatible way")
     (description "This package provides a compatibility layer for using GHC
@@ -1555,7 +1499,7 @@ call stacks with different versions of the compiler.")
     (build-system haskell-build-system)
     ;; these inputs are necessary to use this library
     (inputs
-     `(("ghc-hashable" ,ghc-hashable)))
+     (list ghc-hashable))
     (arguments
      `(#:tests? #f)) ; FIXME: currently missing libraries used for tests.
     (home-page
@@ -1584,21 +1528,21 @@ the resulting type will be insensitive to cases.")
          "01h1zrdqb313cjd4rqm1107azzx4czqi018c2djf66a5i7ajl3dk"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-attoparsec" ,ghc-attoparsec)
-       ("ghc-hashable" ,ghc-hashable)
-       ("ghc-scientific" ,ghc-scientific)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)
-       ("ghc-vector" ,ghc-vector)
-       ("ghc-only" ,ghc-only)
-       ("ghc-text-short" ,ghc-text-short)
-       ("ghc-bytestring-builder" ,ghc-bytestring-builder)))
+     (list ghc-attoparsec
+           ghc-hashable
+           ghc-scientific
+           ghc-unordered-containers
+           ghc-vector
+           ghc-only
+           ghc-text-short
+           ghc-bytestring-builder))
     (native-inputs
-     `(("ghc-hunit" ,ghc-hunit)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-quickcheck-instances" ,ghc-quickcheck-instances)
-       ("ghc-test-framework" ,ghc-test-framework)
-       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
-       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
+     (list ghc-hunit
+           ghc-quickcheck
+           ghc-quickcheck-instances
+           ghc-test-framework
+           ghc-test-framework-hunit
+           ghc-test-framework-quickcheck2))
     (arguments
      `(#:cabal-revision
        ("4"
@@ -1666,13 +1610,9 @@ very simple example of encoding CSV data:
          "0pg9z38jmrylbj683b6pf7psipp7lrdq6mn1hbj8v2gj5lh8yf8n"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-cassava" ,ghc-cassava)
-       ("ghc-megaparsec" ,ghc-megaparsec)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)
-       ("ghc-vector" ,ghc-vector)))
+     (list ghc-cassava ghc-megaparsec ghc-unordered-containers ghc-vector))
     (native-inputs
-     `(("ghc-hspec" ,ghc-hspec)
-       ("ghc-hspec-megaparsec" ,ghc-hspec-megaparsec)))
+     (list ghc-hspec ghc-hspec-megaparsec))
     (home-page "https://github.com/stackbuilders/cassava-megaparsec")
     (synopsis "Megaparsec parser for CSV files that plays nicely with Cassava")
     (description
@@ -1696,19 +1636,18 @@ provides for better error messages at the expense of some speed.")
          "08da498bpbnl5c919m45mjm7sr78nn6qs7xyl0smfgd06wwm65xf"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-half" ,ghc-half)
-       ("ghc-primitive" ,ghc-primitive)))
+     (list ghc-half ghc-primitive))
     (native-inputs
-     `(("ghc-aeson" ,ghc-aeson)
-       ("ghc-base64-bytestring" ,ghc-base64-bytestring)
-       ("ghc-base16-bytestring" ,ghc-base16-bytestring)
-       ("ghc-fail" ,ghc-fail)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-scientific" ,ghc-scientific)
-       ("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
-       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
-       ("ghc-vector" ,ghc-vector)))
+     (list ghc-aeson
+           ghc-base64-bytestring
+           ghc-base16-bytestring
+           ghc-fail
+           ghc-quickcheck
+           ghc-scientific
+           ghc-tasty
+           ghc-tasty-hunit
+           ghc-tasty-quickcheck
+           ghc-vector))
     (home-page "http://hackage.haskell.org/package/cborg")
     (synopsis "Concise Binary Object Representation")
     (description
@@ -1746,12 +1685,12 @@ command-line utility for working with CBOR data.")
      `(#:cabal-revision
        ("3" "1sn2f9nfjcbr0n62n4kklbdi3pzpwrcy7ilg7m3v41nwrk53ifwy")))
     (inputs
-     `(("ghc-aeson" ,ghc-aeson)
-       ("ghc-aeson-pretty" ,ghc-aeson-pretty)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)
-       ("ghc-scientific" ,ghc-scientific)
-       ("ghc-vector" ,ghc-vector)
-       ("ghc-cborg" ,ghc-cborg)))
+     (list ghc-aeson
+           ghc-aeson-pretty
+           ghc-unordered-containers
+           ghc-scientific
+           ghc-vector
+           ghc-cborg))
     (home-page "https://github.com/well-typed/cborg")
     (synopsis "A library for encoding JSON as CBOR")
     (description
@@ -1775,10 +1714,8 @@ defined in the CBOR specification, RFC 7049.")
          "1mqvd1iwzr50az4y24332x3g3wsrzw8j1iwph02vr7jbjfn8i7id"))))
     (build-system haskell-build-system)
     (native-inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-fail" ,ghc-fail)
-       ("ghc-test-framework" ,ghc-test-framework)
-       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
+     (list ghc-quickcheck ghc-fail ghc-test-framework
+           ghc-test-framework-quickcheck2))
     (home-page "https://hackage.haskell.org/package/cereal")
     (synopsis "Binary serialization library")
     (description "This package provides a binary serialization library,
@@ -1801,11 +1738,9 @@ parser isolation, and labeled blocks for better error messages.")
          "1srr7agvgfw78q5s1npjq5sgynvhjgllpihiv37ylkwqm4c4ap6r"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-conduit" ,ghc-conduit)
-       ("ghc-resourcet" ,ghc-resourcet)
-       ("ghc-cereal" ,ghc-cereal)))
+     (list ghc-conduit ghc-resourcet ghc-cereal))
     (native-inputs
-     `(("ghc-hunit" ,ghc-hunit)))
+     (list ghc-hunit))
     (home-page "https://github.com/snoyberg/conduit")
     (synopsis "Turn Data.Serialize Gets and Puts into Sources, Sinks, and Conduits")
     (description
@@ -1829,13 +1764,9 @@ parser isolation, and labeled blocks for better error messages.")
          "09wvp9vkqasns4flw9z46nhcy96r4qxjv6h47d5f90drz77pmm8a"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-exceptions" ,ghc-exceptions)
-       ("ghc-multipart" ,ghc-multipart)
-       ("ghc-network-uri" ,ghc-network-uri)
-       ("ghc-network" ,ghc-network)))
+     (list ghc-exceptions ghc-multipart ghc-network-uri ghc-network))
     (native-inputs
-     `(("ghc-doctest" ,ghc-doctest)
-       ("ghc-quickcheck" ,ghc-quickcheck)))
+     (list ghc-doctest ghc-quickcheck))
     (home-page
      "https://github.com/cheecheeo/haskell-cgi")
     (synopsis "Library for writing CGI programs")
@@ -1859,8 +1790,7 @@ parser isolation, and labeled blocks for better error messages.")
          "1rw6y2insgljbi5l1nwqwv9v865sswjly9rvwipd8zajkgks7aks"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-semigroups" ,ghc-semigroups)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)))
+     (list ghc-semigroups ghc-unordered-containers))
     (home-page "https://github.com/ekmett/charset")
     (synopsis "Fast unicode character sets for Haskell")
     (description "This package provides fast unicode character sets for
@@ -1884,12 +1814,12 @@ Haskell, based on complemented PATRICIA tries.")
      `(#:cabal-revision
        ("2" "04mmsm54mdqcrypvgawhhbwjscmky3j7g5841bc71c0q6d33h2k4")))
     (inputs
-     `(("ghc-old-locale" ,ghc-old-locale)
-       ("ghc-lens" ,ghc-lens)
-       ("ghc-colour" ,ghc-colour)
-       ("ghc-data-default-class" ,ghc-data-default-class)
-       ("ghc-operational" ,ghc-operational)
-       ("ghc-vector" ,ghc-vector)))
+     (list ghc-old-locale
+           ghc-lens
+           ghc-colour
+           ghc-data-default-class
+           ghc-operational
+           ghc-vector))
     (home-page "https://github.com/timbod7/haskell-chart/wiki")
     (synopsis "Library for generating 2D charts and plots")
     (description
@@ -1914,14 +1844,14 @@ backends provided by the @code{Cairo} and @code{Diagrams} libraries.")
      `(#:cabal-revision
        ("2" "0z93znn3dpgj80iiz3a67m90x0j9ljr0jd1ws9jkzj7rk88014gp")))
     (inputs
-     `(("ghc-old-locale" ,ghc-old-locale)
-       ("ghc-cairo" ,ghc-cairo)
-       ("ghc-colour" ,ghc-colour)
-       ("ghc-data-default-class" ,ghc-data-default-class)
-       ("ghc-operational" ,ghc-operational)
-       ("ghc-lens" ,ghc-lens)
-       ("ghc-chart" ,ghc-chart)
-       ("zlib" ,zlib)))
+     (list ghc-old-locale
+           ghc-cairo
+           ghc-colour
+           ghc-data-default-class
+           ghc-operational
+           ghc-lens
+           ghc-chart
+           zlib))
     (home-page "https://github.com/timbod7/haskell-chart/wiki")
     (synopsis "Cairo backend for Charts")
     (description "This package provides a Cairo vector graphics rendering
@@ -1942,9 +1872,7 @@ backend for the Charts library.")
          "1flr56hd8ny0ddlv1agi0ikdjv5wgx0aba6xqdsn3nv6dyw9nbf3"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-random" ,ghc-random)
-       ("ghc-syb" ,ghc-syb)))
+     (list ghc-quickcheck ghc-random ghc-syb))
     (home-page "https://hackage.haskell.org/package/ChasingBottoms")
     (synopsis "Testing of partial and infinite values in Haskell")
     (description
@@ -1974,11 +1902,8 @@ Partial and Infinite Values\"}.")
          "17n6laihqrjn62l8qw4565nf77zkvrl68bjmc3vzr4ckqfblhdzd"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-blaze-html" ,ghc-blaze-html)
-       ("ghc-xss-sanitize" ,ghc-xss-sanitize)
-       ("ghc-data-default" ,ghc-data-default)
-       ("ghc-syb" ,ghc-syb)
-       ("ghc-uniplate" ,ghc-uniplate)))
+     (list ghc-blaze-html ghc-xss-sanitize ghc-data-default ghc-syb
+           ghc-uniplate))
     (home-page "https://github.com/jgm/cheapskate")
     (synopsis "Experimental markdown processor")
     (description "Cheapskate is an experimental Markdown processor in pure
@@ -2006,10 +1931,8 @@ cross-site scripting (@dfn{XSS}) attacks.")
      `(#:cabal-revision
        ("1" "1q93wrw03ix4cmnkz3lzkixcvvizw6i2ia2zifdfak1dvxnblxk0")))
     (inputs
-     `(("ghc-options-bootstrap" ,ghc-options-bootstrap)
-       ("ghc-patience" ,ghc-patience)
-       ("ghc-random" ,ghc-random)
-       ("ghc-ansi-terminal" ,ghc-ansi-terminal)))
+     (list ghc-options-bootstrap ghc-patience ghc-random
+           ghc-ansi-terminal))
     (home-page "https://john-millikin.com/software/chell/")
     (synopsis "Simple and intuitive library for automated testing")
     (description
@@ -2042,10 +1965,8 @@ testing strategies.")
                (("QuickCheck >= 2\\.3 && < 2\\.13")
                 "QuickCheck >= 2.3 && < 2.15")))))))
     (inputs
-     `(("ghc-chell" ,ghc-chell)
-       ("ghc-chell-quickcheck-bootstrap" ,ghc-chell-quickcheck-bootstrap)
-       ("ghc-random" ,ghc-random)
-       ("ghc-quickcheck" ,ghc-quickcheck)))
+     (list ghc-chell ghc-chell-quickcheck-bootstrap ghc-random
+           ghc-quickcheck))
     (home-page "https://john-millikin.com/software/chell/")
     (synopsis "QuickCheck support for the Chell testing library")
     (description "More complex tests for @code{chell}.")
@@ -2097,8 +2018,7 @@ testing strategies.")
         (base32
          "16m7y7fwrirbjbqqcsfmr4yxa9qvfax6r7pw0zl9ky71ms0wa47p"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-vector" ,ghc-vector)
-              ("ghc-semigroups" ,ghc-semigroups)))
+    (inputs (list ghc-vector ghc-semigroups))
     (home-page "https://github.com/snoyberg/mono-traversable")
     (synopsis "Typeclasses for dealing with various chunked data
 representations for Haskell")
@@ -2121,8 +2041,7 @@ classy-prelude.")
         (base32 "0qg4ljwmw28vvxjzr4sknh8220abjcx2b0sq3ljqprh3qw8b2p8b"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)))
+     (list ghc-tasty ghc-tasty-quickcheck))
     (home-page "https://hackage.haskell.org/package/clock")
     (synopsis "High-resolution clock for Haskell")
     (description "A package for convenient access to high-resolution clock and
@@ -2154,7 +2073,7 @@ timer functions of different operating systems via a unified API.")
                 "1p41z6z8dqxk62287lvhhg4ayy9laai9ljh4azsnzb029v6mbv0d"))))
     (build-system haskell-build-system)
     (native-inputs
-     `(("ghc-hunit" ,ghc-hunit)))
+     (list ghc-hunit))
     (home-page "https://github.com/jgm/commonmark-hs")
     (synopsis "Fast, accurate CommonMark (Markdown) parser and renderer")
     (description
@@ -2179,7 +2098,7 @@ sources, and does not require prior installation of the C library.")
          "1skzdg1icmhn0zrkhbnba4200ymah8sd5msk4qfgawrk77zilw7f"))))
     (build-system haskell-build-system)
     (native-inputs
-     `(("ghc-hunit" ,ghc-hunit)))
+     (list ghc-hunit))
     (home-page "https://github.com/kivikakk/cmark-gfm-hs")
     (synopsis
      "Fast, accurate GitHub Flavored Markdown parser and renderer")
@@ -2275,10 +2194,8 @@ supported.  A module of colour names (\"Data.Colour.Names\") is provided.")
          "04rxycp2pbkrvhjgpgx08jmsipjz4cdmhv59dbp47k4jq8ndyv7g"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-distributive" ,ghc-distributive)
-       ("ghc-tagged" ,ghc-tagged)
-       ("ghc-indexed-traversable" ,ghc-indexed-traversable)
-       ("ghc-transformers-compat" ,ghc-transformers-compat)))
+     (list ghc-distributive ghc-tagged ghc-indexed-traversable
+           ghc-transformers-compat))
     (home-page "https://github.com/ekmett/comonad/")
     (synopsis "Comonads for Haskell")
     (description "This library provides @code{Comonad}s for Haskell.")
@@ -2324,13 +2241,10 @@ postfix notation.  For more information on stack based languages, see
      ;; XXX: The ReadWriteLock 'stressTest' fails.
      `(#:tests? #f))
     (inputs
-     `(("ghc-unbounded-delays" ,ghc-unbounded-delays)))
+     (list ghc-unbounded-delays))
     (native-inputs
-     `(("ghc-async" ,ghc-async)
-       ("ghc-hunit" ,ghc-hunit)
-       ("ghc-random" ,ghc-random)
-       ("ghc-test-framework" ,ghc-test-framework)
-       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)))
+     (list ghc-async ghc-hunit ghc-random ghc-test-framework
+           ghc-test-framework-hunit))
     (home-page "https://github.com/basvandijk/concurrent-extra")
     (synopsis "Extra concurrency primitives")
     (description "This Haskell library offers (among other things) the
@@ -2373,10 +2287,7 @@ Python.")
          "081wpag1d5znr0ynrjvkc14xl816m88vz9hgfm3g3sp6ak7s3y47"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-async" ,ghc-async)
-       ("ghc-exceptions" ,ghc-exceptions)
-       ("ghc-ansi-terminal" ,ghc-ansi-terminal)
-       ("ghc-terminal-size" ,ghc-terminal-size)))
+     (list ghc-async ghc-exceptions ghc-ansi-terminal ghc-terminal-size))
     (home-page
      "https://hackage.haskell.org/package/concurrent-output")
     (synopsis
@@ -2404,22 +2315,19 @@ concurrent threads.  Can be used for progress displays etc.")
     (build-system haskell-build-system)
     (outputs '("out" "static" "doc"))
     (inputs
-     `(("ghc-exceptions" ,ghc-exceptions)
-       ("ghc-lifted-base" ,ghc-lifted-base)
-       ("ghc-mono-traversable" ,ghc-mono-traversable)
-       ("ghc-mmorph" ,ghc-mmorph)
-       ("ghc-resourcet" ,ghc-resourcet)
-       ("ghc-silently" ,ghc-silently)
-       ("ghc-transformers-base" ,ghc-transformers-base)
-       ("ghc-unliftio" ,ghc-unliftio)
-       ("ghc-unliftio-core" ,ghc-unliftio-core)
-       ("ghc-vector" ,ghc-vector)
-       ("ghc-void" ,ghc-void)))
+     (list ghc-exceptions
+           ghc-lifted-base
+           ghc-mono-traversable
+           ghc-mmorph
+           ghc-resourcet
+           ghc-silently
+           ghc-transformers-base
+           ghc-unliftio
+           ghc-unliftio-core
+           ghc-vector
+           ghc-void))
     (native-inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-hspec" ,ghc-hspec)
-       ("ghc-safe" ,ghc-safe)
-       ("ghc-split" ,ghc-split)))
+     (list ghc-quickcheck ghc-hspec ghc-safe ghc-split))
     (home-page "https://github.com/snoyberg/conduit")
     (synopsis "Streaming data library ")
     (description
@@ -2445,26 +2353,24 @@ space as enumerator/iteratee and pipes.")
          "0c1jwz30kkvimx7lb61782yk0kyfamrf5bqc3g1h7g51lk8bbv9i"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-async" ,ghc-async)
-       ("ghc-bzlib-conduit" ,ghc-bzlib-conduit)
-       ("ghc-conduit" ,ghc-conduit)
-       ("ghc-conduit-combinators" ,ghc-conduit-combinators)
-       ("ghc-conduit-extra" ,ghc-conduit-extra)
-       ("ghc-conduit-zstd" ,ghc-conduit-zstd)
-       ("ghc-exceptions" ,ghc-exceptions)
-       ("ghc-lzma-conduit" ,ghc-lzma-conduit)
-       ("ghc-monad-control" ,ghc-monad-control)
-       ("ghc-pqueue" ,ghc-pqueue)
-       ("ghc-resourcet" ,ghc-resourcet)
-       ("ghc-stm-conduit" ,ghc-stm-conduit)
-       ("ghc-streaming-commons" ,ghc-streaming-commons)
-       ("ghc-unliftio-core" ,ghc-unliftio-core)
-       ("ghc-vector" ,ghc-vector)))
+     (list ghc-async
+           ghc-bzlib-conduit
+           ghc-conduit
+           ghc-conduit-combinators
+           ghc-conduit-extra
+           ghc-conduit-zstd
+           ghc-exceptions
+           ghc-lzma-conduit
+           ghc-monad-control
+           ghc-pqueue
+           ghc-resourcet
+           ghc-stm-conduit
+           ghc-streaming-commons
+           ghc-unliftio-core
+           ghc-vector))
     (native-inputs
-     `(("ghc-hunit" ,ghc-hunit)
-       ("ghc-test-framework" ,ghc-test-framework)
-       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
-       ("ghc-test-framework-th" ,ghc-test-framework-th)))
+     (list ghc-hunit ghc-test-framework ghc-test-framework-hunit
+           ghc-test-framework-th))
     (home-page "https://github.com/luispedro/conduit-algorithms#readme")
     (synopsis "Conduit-based algorithms")
     (description
@@ -2486,24 +2392,21 @@ level asynchronous processing and some other utilities.")
         (base32
          "1lz70vwp4y4lpsivxl0cshq7aq3968rh48r6rjvpyaj2l0bdj5wp"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-conduit" ,ghc-conduit)
-              ("ghc-conduit-extra" ,ghc-conduit-extra)
-              ("ghc-transformers-base" ,ghc-transformers-base)
-              ("ghc-primitive" ,ghc-primitive)
-              ("ghc-vector" ,ghc-vector)
-              ("ghc-void" ,ghc-void)
-              ("ghc-mwc-random" ,ghc-mwc-random)
-              ("ghc-unix-compat" ,ghc-unix-compat)
-              ("ghc-base16-bytestring" ,ghc-base16-bytestring)
-              ("ghc-base64-bytestring" ,ghc-base64-bytestring)
-              ("ghc-resourcet" ,ghc-resourcet)
-              ("ghc-monad-control" ,ghc-monad-control)
-              ("ghc-chunked-data" ,ghc-chunked-data)
-              ("ghc-mono-traversable" ,ghc-mono-traversable)))
-    (native-inputs `(("ghc-hspec" ,ghc-hspec)
-                     ("ghc-silently" ,ghc-silently)
-                     ("ghc-safe" ,ghc-safe)
-                     ("ghc-quickcheck" ,ghc-quickcheck)))
+    (inputs (list ghc-conduit
+                  ghc-conduit-extra
+                  ghc-transformers-base
+                  ghc-primitive
+                  ghc-vector
+                  ghc-void
+                  ghc-mwc-random
+                  ghc-unix-compat
+                  ghc-base16-bytestring
+                  ghc-base64-bytestring
+                  ghc-resourcet
+                  ghc-monad-control
+                  ghc-chunked-data
+                  ghc-mono-traversable))
+    (native-inputs (list ghc-hspec ghc-silently ghc-safe ghc-quickcheck))
     (home-page "https://github.com/snoyberg/mono-traversable")
     (synopsis "Commonly used conduit functions, for both chunked and
 unchunked data")
@@ -2526,23 +2429,23 @@ as well as a convenient Conduit module.")
          "1n8js1y1rdswvp0bkjmmz19fag19bdxgwsrqz93yc09w43p8sr4a"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-conduit" ,ghc-conduit)
-       ("ghc-exceptions" ,ghc-exceptions)
-       ("ghc-monad-control" ,ghc-monad-control)
-       ("ghc-transformers-base" ,ghc-transformers-base)
-       ("ghc-typed-process" ,ghc-typed-process)
-       ("ghc-async" ,ghc-async)
-       ("ghc-attoparsec" ,ghc-attoparsec)
-       ("ghc-blaze-builder" ,ghc-blaze-builder)
-       ("ghc-network" ,ghc-network)
-       ("ghc-primitive" ,ghc-primitive)
-       ("ghc-resourcet" ,ghc-resourcet)
-       ("ghc-streaming-commons" ,ghc-streaming-commons)
-       ("ghc-hspec" ,ghc-hspec)
-       ("ghc-bytestring-builder" ,ghc-bytestring-builder)
-       ("ghc-quickcheck" ,ghc-quickcheck)))
+     (list ghc-conduit
+           ghc-exceptions
+           ghc-monad-control
+           ghc-transformers-base
+           ghc-typed-process
+           ghc-async
+           ghc-attoparsec
+           ghc-blaze-builder
+           ghc-network
+           ghc-primitive
+           ghc-resourcet
+           ghc-streaming-commons
+           ghc-hspec
+           ghc-bytestring-builder
+           ghc-quickcheck))
     (native-inputs
-     `(("hspec-discover" ,hspec-discover)))
+     (list hspec-discover))
     (home-page "https://github.com/snoyberg/conduit")
     (synopsis "Conduit adapters for common libraries")
     (description
@@ -2567,14 +2470,10 @@ dependencies.  The basic idea is that this package should only depend on
          "0f0ir4zs3skw33c8mfppxhfsyqh1c2cnc4gkf8bvv3bdiikdj1yl"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-conduit" ,ghc-conduit)
-       ("ghc-zstd" ,ghc-zstd)))
+     (list ghc-conduit ghc-zstd))
     (native-inputs
-     `(("ghc-conduit-combinators" ,ghc-conduit-combinators)
-       ("ghc-conduit-extra" ,ghc-conduit-extra)
-       ("ghc-quickcheck-instances" ,ghc-quickcheck-instances)
-       ("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)))
+     (list ghc-conduit-combinators ghc-conduit-extra
+           ghc-quickcheck-instances ghc-tasty ghc-tasty-quickcheck))
     (home-page "https://github.com/luispedro/conduit-zstd#readme")
     (synopsis "Conduit-based ZStd Compression")
     (description "Zstandard compression packaged as a conduit.  This is
@@ -2602,13 +2501,9 @@ interface}.")
        #:cabal-revision
        ("2" "0iwraaa0y1b3xdsg760j1wpylkqshky0k2djcg0k4s97lrwqpbcz")))
     (native-inputs
-     `(("ghc-doctest" ,ghc-doctest)
-       ("ghc-hedgehog" ,ghc-hedgehog)
-       ("ghc-ini" ,ghc-ini)
-       ("ghc-microlens" ,ghc-microlens)))
+     (list ghc-doctest ghc-hedgehog ghc-ini ghc-microlens))
     (inputs
-     `(("ghc-megaparsec" ,ghc-megaparsec)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)))
+     (list ghc-megaparsec ghc-unordered-containers))
     (home-page "https://github.com/aisamanra/config-ini")
     (synopsis "Monadic Haskell DSL for parsing simple INI configuration files")
     (description
@@ -2636,14 +2531,10 @@ human-readable error messages when things go wrong.")
          "1d1iq1knwiq6ia5g64rw5hqm6dakz912qj13r89737rfcxmrkfbf"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-attoparsec" ,ghc-attoparsec)
-       ("ghc-hashable" ,ghc-hashable)
-       ("ghc-unix-compat" ,ghc-unix-compat)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)))
+     (list ghc-attoparsec ghc-hashable ghc-unix-compat
+           ghc-unordered-containers))
     (native-inputs
-     `(("ghc-hunit" ,ghc-hunit)
-       ("ghc-test-framework" ,ghc-test-framework)
-       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)))
+     (list ghc-hunit ghc-test-framework ghc-test-framework-hunit))
     (home-page "https://github.com/bos/configurator")
     (synopsis "Configuration management")
     (description
@@ -2677,15 +2568,15 @@ and daemons.  The features include:
                 "1nbmafhlg0wy4aa3p7amjddbamdz6avzrxn4py3lvhrjqn4raxax"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-byteable" ,ghc-byteable)
-       ("ghc-data-default-class" ,ghc-data-default-class)
-       ("ghc-network" ,ghc-network)
-       ("ghc-tls" ,ghc-tls)
-       ("ghc-socks" ,ghc-socks)
-       ("ghc-x509" ,ghc-x509)
-       ("ghc-x509-store" ,ghc-x509-store)
-       ("ghc-x509-system" ,ghc-x509-system)
-       ("ghc-x509-validation" ,ghc-x509-validation)))
+     (list ghc-byteable
+           ghc-data-default-class
+           ghc-network
+           ghc-tls
+           ghc-socks
+           ghc-x509
+           ghc-x509-store
+           ghc-x509-system
+           ghc-x509-validation))
     (home-page "https://github.com/vincenthz/hs-connection")
     (synopsis "Simple and easy network connections API")
     (description
@@ -2709,13 +2600,10 @@ the choice of SSL/TLS, and SOCKS.")
          "143558jykvya7y8134dx30g6nh27q5s61nbq369p69igd1aayncj"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-hashable" ,ghc-hashable)
-       ("ghc-semigroups" ,ghc-semigroups)
-       ("ghc-transformers-compat" ,ghc-transformers-compat)
-       ("ghc-type-equality" ,ghc-type-equality)))
+     (list ghc-hashable ghc-semigroups ghc-transformers-compat
+           ghc-type-equality))
     (native-inputs
-     `(("ghc-hspec" ,ghc-hspec)
-       ("hspec-discover" ,hspec-discover)))
+     (list ghc-hspec hspec-discover))
     (home-page "https://github.com/ekmett/constraints/")
     (synopsis "Constraint manipulation")
     (description
@@ -2740,10 +2628,7 @@ a vocabulary for working with them.")
          "1ynz89vfn7czxpa203zmdqknkvpylzzl9rlkpasx1anph1jxcbq6"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-void" ,ghc-void)
-       ("ghc-transformers-compat" ,ghc-transformers-compat)
-       ("ghc-statevar" ,ghc-statevar)
-       ("ghc-semigroups" ,ghc-semigroups)))
+     (list ghc-void ghc-transformers-compat ghc-statevar ghc-semigroups))
     (home-page
      "https://github.com/ekmett/contravariant/")
     (synopsis "Contravariant functors")
@@ -2765,8 +2650,7 @@ a vocabulary for working with them.")
          "0ikwzg0992j870yp0x2ssf4mv2hw2nml979apg493m72xnvr1jz9"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-contravariant" ,ghc-contravariant)
-       ("ghc-template-haskell-compat-v0208" ,ghc-template-haskell-compat-v0208)))
+     (list ghc-contravariant ghc-template-haskell-compat-v0208))
     (home-page "https://github.com/nikita-volkov/contravariant-extras")
     (synopsis "Extras for the @code{ghc-contravariant} Haskell package")
     (description "This Haskell package provides extras for the
@@ -2817,8 +2701,7 @@ Free Monads, MPC'08}
          "0v18ap1mccnndgxmbfgyjdicg8jlss01bd5fq8a576dr0h4sgyg9"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-old-time" ,ghc-old-time)
-       ("ghc-old-locale" ,ghc-old-locale)))
+     (list ghc-old-time ghc-old-locale))
     (home-page "https://hackage.haskell.org/package/convertible")
     (synopsis "Typeclasses and instances for converting between types")
     (description
@@ -2894,7 +2777,7 @@ manipulating fields of records.")
        (sha256
         (base32 "0yp030vafbpddl27m606aibbbr5ar5j5bsv4bksscz3cq4yq5j10"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-data-accessor" ,ghc-data-accessor)))
+    (inputs (list ghc-data-accessor))
     (home-page "https://wiki.haskell.org/Record_access")
     (synopsis "Use Accessor to access state in transformers State monad")
     (description "This package provides Haskell modules to allow use of
@@ -2914,7 +2797,7 @@ Accessor to access state in transformers State monad.")
         (base32 "1mwfhnmvi3vicyjzl33m6pcipi2v887zazyqxygq258ndd010s9m"))))
     (build-system haskell-build-system)
     (native-inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)))
+     (list ghc-quickcheck))
     (arguments
      `(#:cabal-revision
        ("1" "13hg7a3d4ky8b765dl03ryxg28lq8iaqj5ky3j51r0i1i4f2a9hy")))
@@ -2942,16 +2825,10 @@ observed.")
         (base32 "04d5n8ybmcxba9qb6h389w9zfq1lvj81b82jh6maqp6pkhkmvydh"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-data-default-class"
-        ,ghc-data-default-class)
-       ("ghc-data-default-instances-base"
-        ,ghc-data-default-instances-base)
-       ("ghc-data-default-instances-containers"
-        ,ghc-data-default-instances-containers)
-       ("ghc-data-default-instances-dlist"
-        ,ghc-data-default-instances-dlist)
-       ("ghc-data-default-instances-old-locale"
-        ,ghc-data-default-instances-old-locale)))
+     (list ghc-data-default-class ghc-data-default-instances-base
+           ghc-data-default-instances-containers
+           ghc-data-default-instances-dlist
+           ghc-data-default-instances-old-locale))
     (home-page "https://hackage.haskell.org/package/data-default")
     (synopsis "Types with default values")
     (description
@@ -2994,7 +2871,7 @@ packages.")
         (base32 "0ym1sw3ssdzzifxxhh76qlv8kkmb2iclc158incv1dklyr9y8kw4"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-data-default-class" ,ghc-data-default-class)))
+     (list ghc-data-default-class))
     (home-page "https://hackage.haskell.org/package/data-default-instances-base")
     (synopsis "Default instances for types in base")
     (description
@@ -3017,7 +2894,7 @@ package.")
         (base32 "06h8xka031w752a7cjlzghvr8adqbl95xj9z5zc1b62w02phfpm5"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-data-default-class" ,ghc-data-default-class)))
+     (list ghc-data-default-class))
     (home-page "https://hackage.haskell.org/package/data-default-instances-containers")
     (synopsis "Default instances for types in containers")
     (description "Provides default instances for types from the containers
@@ -3039,8 +2916,7 @@ package.")
         (base32 "0narkdqiprhgayjiawrr4390h4rq4pl2pb6mvixbv2phrc8kfs3x"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-data-default-class" ,ghc-data-default-class)
-       ("ghc-dlist" ,ghc-dlist)))
+     (list ghc-data-default-class ghc-dlist))
     (home-page "https://hackage.haskell.org/package/data-default-instances-dlist")
     (synopsis "Default instances for types in dlist")
     (description "Provides default instances for types from the dlist
@@ -3062,8 +2938,7 @@ package.")
           (base32 "00h81i5phib741yj517p8mbnc48myvfj8axzsw44k34m48lv1lv0"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-data-default-class" ,ghc-data-default-class)
-       ("ghc-old-locale" ,ghc-old-locale)))
+     (list ghc-data-default-class ghc-old-locale))
     (home-page
       "https://hackage.haskell.org/package/data-default-instances-old-locale")
     (synopsis "Default instances for types in old-locale")
@@ -3084,7 +2959,7 @@ package.")
        (sha256
         (base32 "1k0rcbb6dzv0ggdxqa2bh4jr829y0bczjrg98mrk5733q0xjs5rs"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-hashable" ,ghc-hashable)))
+    (inputs (list ghc-hashable))
     (home-page "https://github.com/spell-music/data-fix")
     (synopsis "Fixpoint data types")
     (description
@@ -3107,9 +2982,8 @@ Thanks for contribution to: Matej Kollar, Herbert Valerio Riedel")
         (base32 "1ghbqvc48gf9p8wiy71hdpaj7by3b9cw6wgwi3qqz8iw054xs5wi"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-test-framework" ,ghc-test-framework)
-       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
+     (list ghc-quickcheck ghc-test-framework
+           ghc-test-framework-quickcheck2))
     (home-page "https://hackage.haskell.org/package/data-hash")
     (synopsis "Combinators for building fast hashing functions")
     (description
@@ -3153,24 +3027,24 @@ It includes hashing functions for all basic Haskell98 types.")
             "0iyfnkxcnm1vl379ry88fqxgn2y8q6ilsvpic6ciassnyv5pcbrv"))))
     (build-system haskell-build-system)
     (inputs
-      `(("ghc-cereal" ,ghc-cereal)
-        ("ghc-conduit" ,ghc-conduit)
-        ("ghc-exceptions" ,ghc-exceptions)
-        ("ghc-lens" ,ghc-lens)
-        ("ghc-network" ,ghc-network)
-        ("ghc-random" ,ghc-random)
-        ("ghc-split" ,ghc-split)
-        ("ghc-th-lift" ,ghc-th-lift)
-        ("ghc-vector" ,ghc-vector)
-        ("ghc-xml-conduit" ,ghc-xml-conduit)
-        ("ghc-xml-types" ,ghc-xml-types)))
+      (list ghc-cereal
+            ghc-conduit
+            ghc-exceptions
+            ghc-lens
+            ghc-network
+            ghc-random
+            ghc-split
+            ghc-th-lift
+            ghc-vector
+            ghc-xml-conduit
+            ghc-xml-types))
     (native-inputs
-      `(("ghc-extra" ,ghc-extra)
-        ("ghc-quickcheck" ,ghc-quickcheck)
-        ("ghc-resourcet" ,ghc-resourcet)
-        ("ghc-tasty" ,ghc-tasty)
-        ("ghc-tasty-hunit" ,ghc-tasty-hunit)
-        ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)))
+      (list ghc-extra
+            ghc-quickcheck
+            ghc-resourcet
+            ghc-tasty
+            ghc-tasty-hunit
+            ghc-tasty-quickcheck))
     ;; FIXME - Some tests try to talk to network.
     (arguments `(#:tests? #f))
     (home-page "https://github.com/rblaze/haskell-dbus")
@@ -3202,11 +3076,8 @@ interfaces common to foreign bindings.")
          "19w7i9f0lbiyzwa0v3bm95233vi7f1688f0xms6cnjsf88h04ym3"))))
     (build-system haskell-build-system)
     (native-inputs
-     `(("ghc-hunit" ,ghc-hunit)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-test-framework" ,ghc-test-framework)
-       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)
-       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)))
+     (list ghc-hunit ghc-quickcheck ghc-test-framework
+           ghc-test-framework-quickcheck2 ghc-test-framework-hunit))
     (home-page "https://github.com/PaulJohnson/Haskell-Decimal")
     (synopsis "Decimal numbers with variable precision")
     (description
@@ -3232,9 +3103,7 @@ value.")
      `(#:cabal-revision
        ("6" "1qwnpdjsrqzn18pjmvv9aqz3l12fbdcimf62wkj33yfh69rx4s42")))
     (native-inputs
-     `(("ghc-hunit" ,ghc-hunit)
-       ("ghc-test-framework" ,ghc-test-framework)
-       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)))
+     (list ghc-hunit ghc-test-framework ghc-test-framework-hunit))
     (home-page "https://github.com/hvr/deepseq-generics")
     (synopsis "Generic RNF implementation")
     (description
@@ -3258,15 +3127,14 @@ providing an @code{rnf} implementation.")
          "1m7jjxahqxj7ilic3r9806mwp5rnnsmn8vvipkmk40xl65wplxzp"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-math-functions" ,ghc-math-functions)
-       ("ghc-primitive" ,ghc-primitive)
-       ("ghc-vector" ,ghc-vector)
-       ("ghc-vector-algorithms" ,ghc-vector-algorithms)
-       ("ghc-vector-th-unbox" ,ghc-vector-th-unbox)
-       ("ghc-vector-binary-instances" ,ghc-vector-binary-instances)))
+     (list ghc-math-functions
+           ghc-primitive
+           ghc-vector
+           ghc-vector-algorithms
+           ghc-vector-th-unbox
+           ghc-vector-binary-instances))
     (native-inputs
-     `(("ghc-hspec" ,ghc-hspec)
-       ("ghc-quickcheck" ,ghc-quickcheck)))
+     (list ghc-hspec ghc-quickcheck))
     (home-page "https://hackage.haskell.org/package/dense-linear-algebra")
     (synopsis "Simple and incomplete implementation of linear algebra")
     (description "This library is simply a collection of linear-algebra
@@ -3289,13 +3157,9 @@ related modules split from the statistics library.")
          "0y5693zm2kvqjilybbmrcv1g6n6x2p6zjgi0k0axjw1sdhh1g237"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-aeson" ,ghc-aeson)
-       ("ghc-bifunctors" ,ghc-bifunctors)
-       ("ghc-scientific" ,ghc-scientific)
-       ("ghc-vector" ,ghc-vector)))
+     (list ghc-aeson ghc-bifunctors ghc-scientific ghc-vector))
     (native-inputs
-     `(("ghc-hunit" ,ghc-hunit)
-       ("ghc-hspec" ,ghc-hspec)))
+     (list ghc-hunit ghc-hspec))
     (home-page
      "https://github.com/chrisdone/descriptive")
     (synopsis
@@ -3319,15 +3183,15 @@ and parsers with useful semantics.")
          "0y3smp3hiyfdirdak3j4048cgqv7a5q9p2jb6z8na2llys5mrmdn"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-unordered-containers" ,ghc-unordered-containers)
-       ("ghc-semigroups" ,ghc-semigroups)
-       ("ghc-monoid-extras" ,ghc-monoid-extras)
-       ("ghc-dual-tree" ,ghc-dual-tree)
-       ("ghc-lens" ,ghc-lens)
-       ("ghc-linear" ,ghc-linear)
-       ("ghc-adjunctions" ,ghc-adjunctions)
-       ("ghc-distributive" ,ghc-distributive)
-       ("ghc-profunctors" ,ghc-profunctors)))
+     (list ghc-unordered-containers
+           ghc-semigroups
+           ghc-monoid-extras
+           ghc-dual-tree
+           ghc-lens
+           ghc-linear
+           ghc-adjunctions
+           ghc-distributive
+           ghc-profunctors))
     (home-page "https://archives.haskell.org/projects.haskell.org/diagrams/")
     (synopsis "Core libraries for diagrams embedded domain-specific language")
     (description "This package provides the core modules underlying
@@ -3349,34 +3213,32 @@ declarative drawing.")
          "09np7kj8si8kcb854f95a0cq392mgbxif8lnazbpfsa1k87d9vzy"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-semigroups" ,ghc-semigroups)
-       ("ghc-monoid-extras" ,ghc-monoid-extras)
-       ("ghc-dual-tree" ,ghc-dual-tree)
-       ("ghc-diagrams-core" ,ghc-diagrams-core)
-       ("ghc-diagrams-solve" ,ghc-diagrams-solve)
-       ("ghc-active" ,ghc-active)
-       ("ghc-colour" ,ghc-colour)
-       ("ghc-data-default-class" ,ghc-data-default-class)
-       ("ghc-fingertree" ,ghc-fingertree)
-       ("ghc-intervals" ,ghc-intervals)
-       ("ghc-lens" ,ghc-lens)
-       ("ghc-tagged" ,ghc-tagged)
-       ("ghc-optparse-applicative" ,ghc-optparse-applicative)
-       ("ghc-juicypixels" ,ghc-juicypixels)
-       ("ghc-hashable" ,ghc-hashable)
-       ("ghc-linear" ,ghc-linear)
-       ("ghc-adjunctions" ,ghc-adjunctions)
-       ("ghc-distributive" ,ghc-distributive)
-       ("ghc-fsnotify" ,ghc-fsnotify)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)
-       ("ghc-profunctors" ,ghc-profunctors)
-       ("ghc-exceptions" ,ghc-exceptions)
-       ("ghc-cereal" ,ghc-cereal)))
+     (list ghc-semigroups
+           ghc-monoid-extras
+           ghc-dual-tree
+           ghc-diagrams-core
+           ghc-diagrams-solve
+           ghc-active
+           ghc-colour
+           ghc-data-default-class
+           ghc-fingertree
+           ghc-intervals
+           ghc-lens
+           ghc-tagged
+           ghc-optparse-applicative
+           ghc-juicypixels
+           ghc-hashable
+           ghc-linear
+           ghc-adjunctions
+           ghc-distributive
+           ghc-fsnotify
+           ghc-unordered-containers
+           ghc-profunctors
+           ghc-exceptions
+           ghc-cereal))
     (native-inputs
-     `(("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
-       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
-       ("ghc-numeric-extras" ,ghc-numeric-extras)))
+     (list ghc-tasty ghc-tasty-hunit ghc-tasty-quickcheck
+           ghc-numeric-extras))
     (arguments
      `(#:cabal-revision
        ("1" "1c7kpnbvxwdcmk5znqyig3l6s986ppj168ck5v72dfbp8cjvwa8i")))
@@ -3404,9 +3266,7 @@ primitives and operations for creating diagrams.")
          "09qqwcvbvd3a0j5fnp40dbzw0i3py9c7kgizj2aawajwbyjvpd17"))))
     (build-system haskell-build-system)
     (native-inputs
-     `(("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
-       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)))
+     (list ghc-tasty ghc-tasty-hunit ghc-tasty-quickcheck))
     (arguments
      `(#:cabal-revision
        ("1" "0dp61igq17l7hvhs3167skdi1vmlm773qrrmsqmj08951l4cgv0h")))
@@ -3434,18 +3294,18 @@ and cyclic tridiagonal linear systems.")
          "1ysv6cz0fngrndl4wjmw4hrdj2rik5fxa1dkxzwnlgf1xwpvxgk8"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-base64-bytestring" ,ghc-base64-bytestring)
-       ("ghc-colour" ,ghc-colour)
-       ("ghc-diagrams-core" ,ghc-diagrams-core)
-       ("ghc-diagrams-lib" ,ghc-diagrams-lib)
-       ("ghc-monoid-extras" ,ghc-monoid-extras)
-       ("ghc-svg-builder" ,ghc-svg-builder)
-       ("ghc-juicypixels" ,ghc-juicypixels)
-       ("ghc-split" ,ghc-split)
-       ("ghc-lens" ,ghc-lens)
-       ("ghc-hashable" ,ghc-hashable)
-       ("ghc-optparse-applicative" ,ghc-optparse-applicative)
-       ("ghc-semigroups" ,ghc-semigroups)))
+     (list ghc-base64-bytestring
+           ghc-colour
+           ghc-diagrams-core
+           ghc-diagrams-lib
+           ghc-monoid-extras
+           ghc-svg-builder
+           ghc-juicypixels
+           ghc-split
+           ghc-lens
+           ghc-hashable
+           ghc-optparse-applicative
+           ghc-semigroups))
     (arguments
      `(#:cabal-revision
        ("4" "0irjf0g1barr06fy409r0ld2hypihrhh6n80ig3487xxny6gfzs0")))
@@ -3492,9 +3352,8 @@ members are shared.")
                 "1is9y5rlqyxacnj6kbi6h9laym5shp699r0hkj5p9d6qi84sr43j"))))
     (build-system haskell-build-system)
     (native-inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-test-framework" ,ghc-test-framework)
-       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
+     (list ghc-quickcheck ghc-test-framework
+           ghc-test-framework-quickcheck2))
     (home-page "https://hub.darcs.net/sterlingclover/Diff")
     (synopsis "O(ND) diff algorithm in Haskell")
     (description
@@ -3538,16 +3397,10 @@ disk space usage.")
          "14bb66qyfn43bj688igfvnfjw7iycjf4n2k38sm8rxbqw2916dfp"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-tagged" ,ghc-tagged)
-       ("ghc-base-orphans" ,ghc-base-orphans)
-       ("ghc-transformers-compat" ,ghc-transformers-compat)
-       ("ghc-semigroups" ,ghc-semigroups)
-       ("ghc-generic-deriving" ,ghc-generic-deriving)))
+     (list ghc-tagged ghc-base-orphans ghc-transformers-compat
+           ghc-semigroups ghc-generic-deriving))
     (native-inputs
-     `(("cabal-doctest" ,cabal-doctest)
-       ("ghc-doctest" ,ghc-doctest)
-       ("ghc-hspec" ,ghc-hspec)
-       ("hspec-discover" ,hspec-discover)))
+     (list cabal-doctest ghc-doctest ghc-hspec hspec-discover))
     (home-page "https://github.com/ekmett/distributive/")
     (synopsis "Distributive functors for Haskell")
     (description "This package provides distributive functors for Haskell.
@@ -3569,7 +3422,7 @@ Dual to @code{Traversable}.")
         (base32 "0581a60xw4gw7pmqlmg5w2hr4hm9yjgx4c2z6v63y5xv51rn6g8p"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)))
+     (list ghc-quickcheck))
     (home-page "https://github.com/spl/dlist")
     (synopsis "Difference lists")
     (description
@@ -3593,20 +3446,17 @@ Writer monad), where list append quickly becomes too expensive.")
          "048h8ka849h1f0xxwkasjbrrwq03rfz2m7aqg5xc5286kp02w9ns"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-aeson" ,ghc-aeson)
-       ("ghc-doclayout" ,ghc-doclayout)
-       ("ghc-hsyaml" ,ghc-hsyaml)
-       ("ghc-safe" ,ghc-safe)
-       ("ghc-scientific" ,ghc-scientific)
-       ("ghc-text-conversions" ,ghc-text-conversions)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)
-       ("ghc-vector" ,ghc-vector)))
+     (list ghc-aeson
+           ghc-doclayout
+           ghc-hsyaml
+           ghc-safe
+           ghc-scientific
+           ghc-text-conversions
+           ghc-unordered-containers
+           ghc-vector))
     (native-inputs
-     `(("ghc-glob" ,ghc-glob)
-       ("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-golden" ,ghc-tasty-golden)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
-       ("ghc-temporary" ,ghc-temporary)))
+     (list ghc-glob ghc-tasty ghc-tasty-golden ghc-tasty-hunit
+           ghc-temporary))
     (home-page "https://github.com/jgm/doctemplates#readme")
     (synopsis "Pandoc-style document templates")
     (description
@@ -3630,18 +3480,15 @@ Writer monad), where list append quickly becomes too expensive.")
     (build-system haskell-build-system)
     (arguments `(#:tests? #f))          ; FIXME: missing test framework
     (inputs
-     `(("ghc-base-compat" ,ghc-base-compat)
-       ("ghc-code-page" ,ghc-code-page)
-       ("ghc-paths" ,ghc-paths)
-       ("ghc-syb" ,ghc-syb)))
+     (list ghc-base-compat ghc-code-page ghc-paths ghc-syb))
     (native-inputs
-     `(("ghc-hunit" ,ghc-hunit)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-hspec" ,ghc-hspec)
-       ("ghc-mockery" ,ghc-mockery)
-       ("ghc-setenv" ,ghc-setenv)
-       ("ghc-silently" ,ghc-silently)
-       ("ghc-stringbuilder" ,ghc-stringbuilder)))
+     (list ghc-hunit
+           ghc-quickcheck
+           ghc-hspec
+           ghc-mockery
+           ghc-setenv
+           ghc-silently
+           ghc-stringbuilder))
     (home-page
      "https://github.com/sol/doctest#readme")
     (synopsis "Test interactive Haskell examples")
@@ -3689,10 +3536,8 @@ monadic interface for building graphs.")
          "0sx2kc1gw72mjvd8vph8bbjw5whfxfv92rsdhjg1c0al75rf3ka4"))))
     (build-system haskell-build-system)
     (native-inputs
-     `(("ghc-hunit" ,ghc-hunit)
-       ("ghc-test-framework" ,ghc-test-framework)
-       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
-       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
+     (list ghc-hunit ghc-test-framework ghc-test-framework-hunit
+           ghc-test-framework-quickcheck2))
     (home-page "https://github.com/bos/double-conversion")
     (synopsis "Fast conversion between double precision floating point and text")
     (description
@@ -3718,9 +3563,7 @@ between double precision floating point and text.")
        #:cabal-revision
        ("1" "1babd7ybsgk73x57yl35q0n1i7mbbqmv4am710kq1hzg3in4g9dv")))
     (inputs
-     `(("ghc-semigroups" ,ghc-semigroups)
-       ("ghc-newtype-generics" ,ghc-newtype-generics)
-       ("ghc-monoid-extras" ,ghc-monoid-extras)))
+     (list ghc-semigroups ghc-newtype-generics ghc-monoid-extras))
 ;    (native-inputs
 ;     `(("ghc-quickcheck" ,ghc-quickcheck)
 ;       ("ghc-testing-feat" ,ghc-testing-feat)))
@@ -3767,7 +3610,7 @@ diagrams framework}, but potentially has other applications as well.")
        (sha256
         (base32 "18kndgvdj2apjpfga6fp7m16y1gx8zrwp3c5vfj03sx4v6jvciqk"))))
     (build-system haskell-build-system)
-    (propagated-inputs `(("gnuplot" ,gnuplot)))
+    (propagated-inputs (list gnuplot))
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (add-after 'unpack 'fix-setup-suffix
@@ -3821,10 +3664,8 @@ MinTTY and other consoles.")
        #:cabal-revision
        ("1" "1vjn4ryzdilz7l1ad7czh11nw48h5mj8if7ij3q0mmc3sffa8csd")))
     (inputs
-     `(("ghc-random" ,ghc-random)
-       ("ghc-test-framework" ,ghc-test-framework)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
+     (list ghc-random ghc-test-framework ghc-quickcheck
+           ghc-test-framework-quickcheck2))
     (home-page "https://github.com/phadej/edit-distance")
     (synopsis "Levenshtein and restricted Damerau-Levenshtein edit distances")
     (description
@@ -3848,10 +3689,9 @@ Damerau-Levenshtein algorithms.")
          "07qgc8dyi9kkzkd3xcd78wdlljy0xwhz65b4r2qg2piidpcdvpxp"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-vector" ,ghc-vector)))
+     (list ghc-vector))
     (native-inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-quickcheck-instances" ,ghc-quickcheck-instances)))
+     (list ghc-quickcheck ghc-quickcheck-instances))
     (home-page "https://github.com/thsutton/edit-distance-vector")
     (synopsis "Calculate edit distances and edit scripts between vectors")
     (description "This package provides implementation of the
@@ -3894,9 +3734,8 @@ but is otherwise agnostic to:
               ("ghc-semigroupoids" ,ghc-semigroupoids)
               ("ghc-transformers-base" ,ghc-transformers-base)))
     (native-inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-test-framework" ,ghc-test-framework)
-       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
+     (list ghc-quickcheck ghc-test-framework
+           ghc-test-framework-quickcheck2))
     (home-page "https://github.com/ekmett/either")
     (synopsis "Provides an either monad transformer for Haskell")
     (description "This Haskell package provides an either monad transformer.")
@@ -3919,10 +3758,7 @@ but is otherwise agnostic to:
          "0n67wss6k8lhwfkybkhsa04bbdfdv541sacbxlylkx2hqpj5r5gh"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-attoparsec" ,ghc-attoparsec)
-       ("ghc-hspec" ,ghc-hspec)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-doctest" ,ghc-doctest)))
+     (list ghc-attoparsec ghc-hspec ghc-quickcheck ghc-doctest))
     (home-page
      "https://github.com/Porges/email-validate-hs")
     (synopsis "Email address validator for Haskell")
@@ -3948,13 +3784,10 @@ address string against RFC 5322.")
     ;; "thread blocked indefinitely in an MVar operation"
     (arguments '(#:tests? #f))
     (inputs
-     `(("ghc-lifted-base" ,ghc-lifted-base)
-       ("ghc-monad-control" ,ghc-monad-control)
-       ("ghc-async" ,ghc-async)
-       ("ghc-transformers-base" ,ghc-transformers-base)))
+     (list ghc-lifted-base ghc-monad-control ghc-async
+           ghc-transformers-base))
     (native-inputs
-     `(("ghc-hspec" ,ghc-hspec)
-       ("ghc-quickcheck" ,ghc-quickcheck)))
+     (list ghc-hspec ghc-quickcheck))
     (home-page "https://github.com/jcristovao/enclosed-exceptions")
     (synopsis "Catch all exceptions from within an enclosed computation")
     (description
@@ -3976,10 +3809,8 @@ asynchronous exceptions.")
         (base32 "167njzd1cf32aa7br90rjafrxy6hw3fxkk8awifqbxjrcwm5maqp"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-stmonadtrans" ,ghc-stmonadtrans)
-       ("ghc-transformers-compat" ,ghc-transformers-compat)
-       ("ghc-fail" ,ghc-fail)
-       ("ghc-quickcheck" ,ghc-quickcheck)))
+     (list ghc-stmonadtrans ghc-transformers-compat ghc-fail
+           ghc-quickcheck))
     (home-page "https://github.com/pa-ba/equivalence")
     (synopsis "Maintaining an equivalence relation implemented as union-find")
     (description
@@ -4026,11 +3857,9 @@ Double.")
          "0hqw82m8bbrxy5vgdwb83bhzdx070ibqrm9rshyja7cb808ahijm"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-base-orphans" ,ghc-base-orphans)))
+     (list ghc-base-orphans))
     (native-inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-hspec" ,ghc-hspec)
-       ("hspec-discover" ,hspec-discover)))
+     (list ghc-quickcheck ghc-hspec hspec-discover))
     (home-page "https://hackage.haskell.org/package/errorcall-eq-instance")
     (synopsis "Orphan Eq instance for ErrorCall")
     (description
@@ -4053,10 +3882,8 @@ This package provides an orphan instance.")
          "0x8znwn31qcx6kqx99wp7bc86kckfb39ncz3zxvj1s07kxlfawk7"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-exceptions" ,ghc-exceptions)
-       ("ghc-transformers-compat" ,ghc-transformers-compat)
-       ("ghc-unexceptionalio" ,ghc-unexceptionalio)
-       ("ghc-safe" ,ghc-safe)))
+     (list ghc-exceptions ghc-transformers-compat ghc-unexceptionalio
+           ghc-safe))
     (home-page "https://github.com/gabriel439/haskell-errors-library")
     (synopsis "Error handling library for Haskell")
     (description "This library encourages an error-handling style that
@@ -4079,28 +3906,28 @@ directly uses the type system, rather than out-of-band exceptions.")
     (arguments
      `(#:tests? #f))  ; TODO: Cannot connect to mysql server.
     (inputs
-     `(("ghc-aeson" ,ghc-aeson)
-       ("ghc-attoparsec" ,ghc-attoparsec)
-       ("ghc-blaze-html" ,ghc-blaze-html)
-       ("ghc-conduit" ,ghc-conduit)
-       ("ghc-monad-logger" ,ghc-monad-logger)
-       ("ghc-persistent" ,ghc-persistent)
-       ("ghc-resourcet" ,ghc-resourcet)
-       ("ghc-tagged" ,ghc-tagged)
-       ("ghc-unliftio" ,ghc-unliftio)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)
-       ("openssl" ,openssl)
-       ("zlib" ,zlib)))
+     (list ghc-aeson
+           ghc-attoparsec
+           ghc-blaze-html
+           ghc-conduit
+           ghc-monad-logger
+           ghc-persistent
+           ghc-resourcet
+           ghc-tagged
+           ghc-unliftio
+           ghc-unordered-containers
+           openssl
+           zlib))
     (native-inputs
-     `(("ghc-hspec-core" ,ghc-hspec-core)
-       ("ghc-hspec" ,ghc-hspec)
-       ("ghc-mysql" ,ghc-mysql)
-       ("ghc-mysql-simple" ,ghc-mysql-simple)
-       ("ghc-persistent-mysql" ,ghc-persistent-mysql)
-       ("ghc-persistent-postgresql" ,ghc-persistent-postgresql)
-       ("ghc-persistent-sqlite" ,ghc-persistent-sqlite)
-       ("ghc-postgresql-simple" ,ghc-postgresql-simple)
-       ("ghc-quickcheck" ,ghc-quickcheck)))
+     (list ghc-hspec-core
+           ghc-hspec
+           ghc-mysql
+           ghc-mysql-simple
+           ghc-persistent-mysql
+           ghc-persistent-postgresql
+           ghc-persistent-sqlite
+           ghc-postgresql-simple
+           ghc-quickcheck))
     (home-page "https://github.com/bitemyapp/esqueleto")
     (synopsis "Type-safe embedded domain specific language for SQL queries")
     (description "This library provides a type-safe embedded domain specific
@@ -4125,14 +3952,9 @@ generated SQL and optimize it for your backend.")
          "0a6baza962d4pz2m02hxmh8234i47zkizmwhsy68namr05dmlgpw"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-paths" ,ghc-paths)
-       ("ghc-syb" ,ghc-syb)
-       ("ghc-free" ,ghc-free)))
+     (list ghc-paths ghc-syb ghc-free))
     (native-inputs
-     `(("ghc-hunit" ,ghc-hunit)
-       ("ghc-diff" ,ghc-diff)
-       ("ghc-silently" ,ghc-silently)
-       ("ghc-filemanip" ,ghc-filemanip)))
+     (list ghc-hunit ghc-diff ghc-silently ghc-filemanip))
     (home-page
      "https://hackage.haskell.org/package/ghc-exactprint")
     (synopsis "ExactPrint for GHC")
@@ -4161,12 +3983,10 @@ excluding @file{.lhs} files.")
      `(#:cabal-revision
        ("2" "1154g0dqil2xf4wc1v6gndzhnbf5saf2dzf77c6lcjxssx360m6j")))
     (native-inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-test-framework" ,ghc-test-framework)
-       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
-       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
+     (list ghc-quickcheck ghc-test-framework ghc-test-framework-hunit
+           ghc-test-framework-quickcheck2))
     (inputs
-     `(("ghc-transformers-compat" ,ghc-transformers-compat)))
+     (list ghc-transformers-compat))
     (home-page "https://github.com/ekmett/exceptions/")
     (synopsis "Extensible optionally-pure exceptions")
     (description "This library provides extensible optionally-pure exceptions
@@ -4231,10 +4051,8 @@ versions of GHC (i.e., < 6.10).")
          "17fzmxwrv0w7inhq7kia36prc2nsx845r9v56sihqvr17fk2cvpn"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-clock" ,ghc-clock)
-       ("ghc-semigroups" ,ghc-semigroups)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-quickcheck-instances" ,ghc-quickcheck-instances)))
+     (list ghc-clock ghc-semigroups ghc-quickcheck
+           ghc-quickcheck-instances))
     (home-page "https://github.com/ndmitchell/extra")
     (synopsis "Extra Haskell functions")
     (description "This library provides extra functions for the standard
@@ -4284,13 +4102,9 @@ when used with GHC versions which already provide the
          "1mbnah6n8lig494523czcd95dfn01f438qai9pf20wpa2gdbz4x6"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-auto-update" ,ghc-auto-update)
-       ("ghc-easy-file" ,ghc-easy-file)
-       ("ghc-unix-time" ,ghc-unix-time)
-       ("ghc-unix-compat" ,ghc-unix-compat)))
+     (list ghc-auto-update ghc-easy-file ghc-unix-time ghc-unix-compat))
     (native-inputs
-     `(("hspec-discover" ,hspec-discover)
-       ("ghc-hspec" ,ghc-hspec)))
+     (list hspec-discover ghc-hspec))
     (home-page "https://hackage.haskell.org/package/fast-logger")
     (synopsis "Fast logging system")
     (description "This library provides a fast logging system for Haskell.")
@@ -4311,22 +4125,22 @@ when used with GHC versions which already provide the
     (build-system haskell-build-system)
     (arguments `(#:tests? #f)) ; TODO: Fail.
     (inputs
-     `(("ghc-base-compat" ,ghc-base-compat)
-       ("ghc-old-locale" ,ghc-old-locale)
-       ("ghc-old-time" ,ghc-old-time)
-       ("ghc-safe" ,ghc-safe)
-       ("ghc-time-locale-compat" ,ghc-time-locale-compat)
-       ("ghc-utf8-string" ,ghc-utf8-string)
-       ("ghc-xml-conduit" ,ghc-xml-conduit)
-       ("ghc-xml-types" ,ghc-xml-types)))
+     (list ghc-base-compat
+           ghc-old-locale
+           ghc-old-time
+           ghc-safe
+           ghc-time-locale-compat
+           ghc-utf8-string
+           ghc-xml-conduit
+           ghc-xml-types))
     (native-inputs
-     `(("ghc-doctest-driver-gen" ,ghc-doctest-driver-gen)
-       ("ghc-doctest" ,ghc-doctest)
-       ("ghc-hunit" ,ghc-hunit)
-       ("ghc-markdown-unlit" ,ghc-markdown-unlit)
-       ("ghc-syb" ,ghc-syb)
-       ("ghc-test-framework" ,ghc-test-framework)
-       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)))
+     (list ghc-doctest-driver-gen
+           ghc-doctest
+           ghc-hunit
+           ghc-markdown-unlit
+           ghc-syb
+           ghc-test-framework
+           ghc-test-framework-hunit))
     (home-page "https://github.com/bergmark/feed")
     (synopsis "Haskell package for handling various syndication formats")
     (description "This Haskell package includes tools for generating and
@@ -4360,8 +4174,7 @@ consuming feeds in both RSS (Really Simple Syndication) and Atom format.")
                (("hspec >= 2\\.1 && < 2\\.7")
                 "hspec >= 2.1 && < 2.8")))))))
     (inputs
-     `(("ghc-hspec" ,ghc-hspec)
-       ("ghc-quickcheck" ,ghc-quickcheck)))
+     (list ghc-hspec ghc-quickcheck))
     (home-page "https://web.engr.oregonstate.edu/~erwig/fgl/haskell")
     (synopsis
      "Martin Erwig's Functional Graph Library")
@@ -4386,9 +4199,7 @@ encourages inductive, recursive definitions of graph algorithms.")
          "1mykbd1r43gpsn10ys8q3nr0i4wnhn6wq23hcici18mxxji11wkc"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-fgl" ,ghc-fgl)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-hspec" ,ghc-hspec)))
+     (list ghc-fgl ghc-quickcheck ghc-hspec))
     (home-page "https://hackage.haskell.org/package/fgl-arbitrary")
     (synopsis "QuickCheck support for fgl")
     (description
@@ -4432,7 +4243,7 @@ embedded in your Haskell code.")
                 "0ilqr8jv41zxcj5qyicg29m8s30b9v70x6f9h2h2rw5ap8bxldl8"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-unix-compat" ,ghc-unix-compat)))
+     (list ghc-unix-compat))
     (home-page "https://github.com/bos/filemanip")
     (synopsis "File and directory manipulation for Haskell")
     (description
@@ -4456,7 +4267,7 @@ file contents, and more.")
          "0qrrvbjpjsk75ghqrdqzwqg7wjgm3rr9kk7p04ax98ilv90pm0ip"))))
     (build-system haskell-build-system)
     (native-inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)))
+     (list ghc-quickcheck))
     (home-page "https://hackage.haskell.org/package/filepath-bytestring")
     (synopsis "Library for manipulating RawFilePaths in a cross-platform way")
     (description "This package provides a drop-in replacement for the standard
@@ -4502,11 +4313,8 @@ an executable.")
          "0zvandj8fysck7ygpn0dw5bhrhmj1s63i326nalxbfkh2ls4iacm"))))
     (build-system haskell-build-system)
     (native-inputs
-     `(("ghc-hunit" ,ghc-hunit)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-test-framework" ,ghc-test-framework)
-       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
-       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
+     (list ghc-hunit ghc-quickcheck ghc-test-framework
+           ghc-test-framework-hunit ghc-test-framework-quickcheck2))
     (home-page "https://hackage.haskell.org/package/fingertree")
     (synopsis "Generic finger-tree structure")
     (description "This library provides finger trees, a general sequence
@@ -4595,17 +4403,17 @@ completely unverified though.")
          "0zf4yljh3s2ddxa7dhzdglmylj14kfldhkclc44g37zvjq6kcnag"))))
     (build-system haskell-build-system)
     (outputs '("out" "static" "doc"))
-    (inputs `(("ghc-comonad" ,ghc-comonad)
-              ("ghc-contravariant" ,ghc-contravariant)
-              ("ghc-hashable" ,ghc-hashable)
-              ("ghc-primitive" ,ghc-primitive)
-              ("ghc-profunctors" ,ghc-profunctors)
-              ("ghc-random" ,ghc-random)
-              ("ghc-semigroupoids" ,ghc-semigroupoids)
-              ("ghc-semigroups" ,ghc-semigroups)
-              ("ghc-unordered-containers" ,ghc-unordered-containers)
-              ("ghc-vector" ,ghc-vector)))
-    (native-inputs `(("ghc-doctest" ,ghc-doctest)))
+    (inputs (list ghc-comonad
+                  ghc-contravariant
+                  ghc-hashable
+                  ghc-primitive
+                  ghc-profunctors
+                  ghc-random
+                  ghc-semigroupoids
+                  ghc-semigroups
+                  ghc-unordered-containers
+                  ghc-vector))
+    (native-inputs (list ghc-doctest))
     (home-page "https://github.com/Gabriel439/Haskell-Foldl-Library")
     (synopsis "Composable, streaming, and efficient left folds for Haskell")
     (description "This Haskell library provides strict left folds that stream
@@ -4638,7 +4446,7 @@ and are often as efficient as hand-written folds.")
                ((", testDividible proxy") ""))
              #t)))))
     (outputs '("out" "static" "doc"))
-    (inputs `(("ghc-basement" ,ghc-basement)))
+    (inputs (list ghc-basement))
     (home-page "https://github.com/haskell-foundation/foundation")
     (synopsis "Alternative prelude with batteries and no dependencies")
     (description
@@ -4676,16 +4484,16 @@ Foundation has the following goals:
     (build-system haskell-build-system)
     (outputs '("out" "static" "doc"))
     (inputs
-     `(("ghc-prelude-extras" ,ghc-prelude-extras)
-       ("ghc-profunctors" ,ghc-profunctors)
-       ("ghc-exceptions" ,ghc-exceptions)
-       ("ghc-bifunctors" ,ghc-bifunctors)
-       ("ghc-comonad" ,ghc-comonad)
-       ("ghc-distributive" ,ghc-distributive)
-       ("ghc-semigroupoids" ,ghc-semigroupoids)
-       ("ghc-semigroups" ,ghc-semigroups)
-       ("ghc-transformers-base" ,ghc-transformers-base)
-       ("ghc-transformers-compat" ,ghc-transformers-compat)))
+     (list ghc-prelude-extras
+           ghc-profunctors
+           ghc-exceptions
+           ghc-bifunctors
+           ghc-comonad
+           ghc-distributive
+           ghc-semigroupoids
+           ghc-semigroups
+           ghc-transformers-base
+           ghc-transformers-compat))
     (home-page "https://github.com/ekmett/free/")
     (synopsis "Unrestricted monads for Haskell")
     (description "This library provides free monads, which are useful for many
@@ -4711,14 +4519,14 @@ definition of @code{Monad}.")
                 "19bdbz9wb9jvln6yg6qm0hz0w84bypvkxf0wjhgrgd52f9gidlny"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-async" ,ghc-async)
-       ("ghc-unix-compat" ,ghc-unix-compat)
-       ("ghc-hinotify" ,ghc-hinotify)
-       ("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
-       ("ghc-random" ,ghc-random)
-       ("ghc-shelly" ,ghc-shelly)
-       ("ghc-temporary" ,ghc-temporary)))
+     (list ghc-async
+           ghc-unix-compat
+           ghc-hinotify
+           ghc-tasty
+           ghc-tasty-hunit
+           ghc-random
+           ghc-shelly
+           ghc-temporary))
     (home-page "https://github.com/haskell-fswatch/hfsnotify")
     (synopsis "Cross platform library for file change notification.")
     (description "Cross platform library for file creation, modification, and
@@ -4743,10 +4551,9 @@ specific Windows, Mac, and Linux file system event notification.")
     (build-system haskell-build-system)
     (outputs '("out" "static" "doc"))
     (inputs
-     `(("ghc-th-abstraction" ,ghc-th-abstraction)))
+     (list ghc-th-abstraction))
     (native-inputs
-     `(("ghc-hspec" ,ghc-hspec)
-       ("hspec-discover" ,hspec-discover)))
+     (list ghc-hspec hspec-discover))
     (home-page "https://hackage.haskell.org/package/generic-deriving")
     (synopsis "Generalise the deriving mechanism to arbitrary classes")
     (description "This package provides functionality for generalising the
@@ -4766,9 +4573,9 @@ deriving mechanism in Haskell to arbitrary classes.")
        (sha256
         (base32 "130lmblycxnpqbsl7vf6a90zccibnvcb5zaclfajcn3by39007lv"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-quickcheck" ,ghc-quickcheck)))
+    (inputs (list ghc-quickcheck))
     (native-inputs
-     `(("ghc-inspection-testing" ,ghc-inspection-testing)))
+     (list ghc-inspection-testing))
     (arguments
      `(#:cabal-revision
        ("1" "1d0hx41r7yq2a86ydnfh2fv540ah8cz05l071s2z4wxcjw0ymyn4")))
@@ -4823,8 +4630,7 @@ and @code{withBaseCase}) or implicitly (@code{genericArbitrary'}).")
     (build-system haskell-build-system)
     (outputs '("out" "static" "doc"))
     (inputs
-     `(("ghc-sop-core" ,ghc-sop-core)
-       ("ghc-th-abstraction" ,ghc-th-abstraction)))
+     (list ghc-sop-core ghc-th-abstraction))
     (home-page "https://github.com/well-typed/generics-sop")
     (synopsis "Generic Programming using True Sums of Products for Haskell")
     (description "This Haskell package supports the definition of generic
@@ -4870,12 +4676,9 @@ geniplate} package, written by Lennart Augustsson.")
          "16bd5dx0ngc8z7mij23i2l3a8v3c112x8ksd623alik18zx7pi8j"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-validity" ,ghc-validity)))
+     (list ghc-quickcheck ghc-validity))
     (native-inputs
-     `(("ghc-hspec" ,ghc-hspec)
-       ("hspec-discover" ,hspec-discover)
-       ("ghc-hspec-core" ,ghc-hspec-core)))
+     (list ghc-hspec hspec-discover ghc-hspec-core))
     (home-page
      "https://github.com/NorfairKing/validity")
     (synopsis
@@ -4902,13 +4705,13 @@ with the @code{Validity} typeclass.")
          "0cvzc4z4771vpycwfgcj0yswyglzl6cl1h2wrfhs224nrcmk5a7z"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-genvalidity" ,ghc-genvalidity)
-       ("ghc-hspec" ,ghc-hspec)
-       ("hspec-discover" ,hspec-discover)
-       ("ghc-pretty-show" ,ghc-pretty-show)
-       ("ghc-validity" ,ghc-validity)))
-    (native-inputs `(("ghc-doctest" ,ghc-doctest)))
+     (list ghc-quickcheck
+           ghc-genvalidity
+           ghc-hspec
+           hspec-discover
+           ghc-pretty-show
+           ghc-validity))
+    (native-inputs (list ghc-doctest))
     (home-page
      "https://github.com/NorfairKing/validity")
     (synopsis
@@ -4933,16 +4736,9 @@ properties for functions operating on them.")
          "1rszkcn1rg38wf35538ljk5bbqjc57y9sb3a0al7qxm82gy8yigr"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-base-compat" ,ghc-base-compat)
-       ("ghc-base-orphans" ,ghc-base-orphans)
-       ("ghc-generics-sop" ,ghc-generics-sop)
-       ("ghc-tagged" ,ghc-tagged)))
+     (list ghc-base-compat ghc-base-orphans ghc-generics-sop ghc-tagged))
     (native-inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-hspec" ,ghc-hspec)
-       ("ghc-safe" ,ghc-safe)
-       ("ghc-silently" ,ghc-silently)
-       ("hspec-discover" ,hspec-discover)))
+     (list ghc-quickcheck ghc-hspec ghc-safe ghc-silently hspec-discover))
     (home-page "https://github.com/soenkehahn/getopt-generics")
     (synopsis "Create command line interfaces with ease")
     (description "This library provides tools to create command line
@@ -4961,7 +4757,7 @@ interfaces with ease.")
        (sha256
         (base32 "0cl3lfm6k1h8fxp2vxa6ihfp4v8igkz9h35iwyq2frzm4kdn96d8"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-base-compat" ,ghc-base-compat)))
+    (inputs (list ghc-base-compat))
     (home-page "https://github.com/acfoltzer/gitrev")
     (synopsis "Compile git revision info into Haskell projects")
     (description
@@ -4986,15 +4782,10 @@ info for more informative bug reports.")
          "05fknrb114qvfzv6324ngx0fz43cwgrhrc700l3h2is9jinlgr6a"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-dlist" ,ghc-dlist)
-       ("ghc-semigroups" ,ghc-semigroups)
-       ("ghc-transformers-compat" ,ghc-transformers-compat)))
+     (list ghc-dlist ghc-semigroups ghc-transformers-compat))
     (native-inputs
-     `(("ghc-hunit" ,ghc-hunit)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-test-framework" ,ghc-test-framework)
-       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
-       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
+     (list ghc-hunit ghc-quickcheck ghc-test-framework
+           ghc-test-framework-hunit ghc-test-framework-quickcheck2))
     (home-page "http://iki.fi/matti.niemenmaa/glob/")
     (synopsis "Haskell library matching glob patterns against file paths")
     (description "This package provides a Haskell library for @dfn{globbing}:
@@ -5017,7 +4808,7 @@ matching patterns against file paths.")
          "1i2xi35n5z0d372px9mh6cyhgg1m0cfaiy3fnspkf6kbn9fgsqxq"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-openglraw" ,ghc-openglraw)))
+     (list ghc-openglraw))
     (home-page "https://wiki.haskell.org/Opengl")
     (synopsis "Raw Haskell bindings GLU")
     (description "GLURaw is a raw Haskell binding for the GLU 1.3 OpenGL
@@ -5041,10 +4832,7 @@ basis for a nicer interface.")
          "0vdkfj4wjzigdpzgr5l001y9wkhwgl00mclr26gf93kps14fkymn"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-statevar" ,ghc-statevar)
-       ("ghc-opengl" ,ghc-opengl)
-       ("ghc-openglraw" ,ghc-openglraw)
-       ("freeglut" ,freeglut)))
+     (list ghc-statevar ghc-opengl ghc-openglraw freeglut))
     (home-page "https://wiki.haskell.org/Opengl")
     (synopsis "Haskell bindings for the OpenGL Utility Toolkit")
     (description "This library provides Haskell bindings for the OpenGL
@@ -5066,12 +4854,12 @@ programs.")
         (base32 "1rfq94lnsyjr8y9p5r56jpllv3p8rvh9xxzjji016b6r5adi8cnb"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-temporary" ,ghc-temporary)
-       ("ghc-utility-ht" ,ghc-utility-ht)
-       ("ghc-data-accessor-transformers" ,ghc-data-accessor-transformers)
-       ("ghc-data-accessor" ,ghc-data-accessor)
-       ("ghc-semigroups" ,ghc-semigroups)
-       ("gnuplot" ,gnuplot)))
+     (list ghc-temporary
+           ghc-utility-ht
+           ghc-data-accessor-transformers
+           ghc-data-accessor
+           ghc-semigroups
+           gnuplot))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -5100,18 +4888,15 @@ programs.")
                 "0l0zxgb938hh09qirggbaskq79mgj3s081cnr42y5vm1rp1jir2s"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-colour" ,ghc-colour)
-       ("ghc-dlist" ,ghc-dlist)
-       ("ghc-fgl" ,ghc-fgl)
-       ("ghc-polyparse" ,ghc-polyparse)
-       ("ghc-temporary" ,ghc-temporary)
-       ("ghc-wl-pprint-text" ,ghc-wl-pprint-text)))
+     (list ghc-colour
+           ghc-dlist
+           ghc-fgl
+           ghc-polyparse
+           ghc-temporary
+           ghc-wl-pprint-text))
     (native-inputs
-     `(("ghc-hspec" ,ghc-hspec)
-       ("graphviz" ,graphviz)
-       ("ghc-fgl-arbitrary" ,ghc-fgl-arbitrary)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("hspec-discover" ,hspec-discover)))
+     (list ghc-hspec graphviz ghc-fgl-arbitrary ghc-quickcheck
+           hspec-discover))
     (home-page "https://hackage.haskell.org/package/graphviz")
     (synopsis "Bindings to Graphviz for graph visualisation")
     (description
@@ -5166,11 +4951,9 @@ monoid with invertibility.")
          "102x753jbc90lfm9s0ng5kvm0risqwpar331xwsd752as0bms142"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-random" ,ghc-random)
-       ("ghc-hashtables" ,ghc-hashtables)))
+     (list ghc-random ghc-hashtables))
     (native-inputs
-     `(("ghc-alex" ,ghc-alex)
-       ("ghc-happy" ,ghc-happy)))
+     (list ghc-alex ghc-happy))
     (home-page "http://projects.haskell.org/gtk2hs/")
     (synopsis "Tools to build the Gtk2Hs suite of user interface libraries")
     (description
@@ -5201,24 +4984,24 @@ tools are not needed to actually run Gtk2Hs programs.")
        ("8" "1xpzcdpfz0agbv75sadsylq6r8pq7zr0pyzbzrz0nz130yixsv5f")
        #:tests? #f)) ; Tests fail because of framework updates.
     (inputs
-     `(("ghc-base16-bytestring" ,ghc-base16-bytestring)
-       ("ghc-base64-bytestring" ,ghc-base64-bytestring)
-       ("ghc-cryptohash-sha256" ,ghc-cryptohash-sha256)
-       ("ghc-ed25519" ,ghc-ed25519)
-       ("ghc-lukko" ,ghc-lukko)
-       ("ghc-network" ,ghc-network)
-       ("ghc-network-uri" ,ghc-network-uri)
-       ("ghc-tar" ,ghc-tar)
-       ("ghc-zlib" ,ghc-zlib)))
+     (list ghc-base16-bytestring
+           ghc-base64-bytestring
+           ghc-cryptohash-sha256
+           ghc-ed25519
+           ghc-lukko
+           ghc-network
+           ghc-network-uri
+           ghc-tar
+           ghc-zlib))
     (native-inputs
-     `(("ghc-aeson" ,ghc-aeson)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
-       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
-       ("ghc-temporary" ,ghc-temporary)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)
-       ("ghc-vector" ,ghc-vector)))
+     (list ghc-aeson
+           ghc-quickcheck
+           ghc-tasty
+           ghc-tasty-hunit
+           ghc-tasty-quickcheck
+           ghc-temporary
+           ghc-unordered-containers
+           ghc-vector))
     (home-page "https://github.com/haskell/hackage-security")
     (synopsis "Hackage security library")
     (description "This Hackage security library provides both server and
@@ -5254,7 +5037,7 @@ Tor project}.")
              (setenv "PATH" (string-append (getcwd) "/dist/build/haddock"
                                            ":" (getenv "PATH")))
              #t)))))
-    (inputs `(("ghc-haddock-api" ,ghc-haddock-api)))
+    (inputs (list ghc-haddock-api))
 ;    (native-inputs
 ;     `(("ghc-haddock-test" ,ghc-haddock-test)
 ;       ("ghc-hspec" ,ghc-hspec)))
@@ -5281,12 +5064,9 @@ Tor project}.")
          "1jj2csi85nlywsyvnbwhclfdz27j2kyfbhrl9cm7av0243br9vg1"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-paths" ,ghc-paths)
-       ("ghc-haddock-library" ,ghc-haddock-library)))
+     (list ghc-paths ghc-haddock-library))
     (native-inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-hspec" ,ghc-hspec)
-       ("hspec-discover" ,hspec-discover)))
+     (list ghc-quickcheck ghc-hspec hspec-discover))
     (home-page "https://www.haskell.org/haddock/")
     (synopsis "API for documentation-generation tool Haddock")
     (description "This package provides an API to Haddock, the
@@ -5310,12 +5090,12 @@ documentation-generation tool for Haskell libraries.")
     (build-system haskell-build-system)
     (arguments `(#:tests? #f)) ; TODO: optparse-applicative ==0.15.*, tree-diff ==0.1.*
     (native-inputs
-     `(("ghc-base-compat" ,ghc-base-compat)
-       ("ghc-hspec" ,ghc-hspec)
-       ("ghc-optparse-applicative" ,ghc-optparse-applicative)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-tree-diff" ,ghc-tree-diff)
-       ("hspec-discover" ,hspec-discover)))
+     (list ghc-base-compat
+           ghc-hspec
+           ghc-optparse-applicative
+           ghc-quickcheck
+           ghc-tree-diff
+           hspec-discover))
     (home-page "https://www.haskell.org/haddock/")
     (synopsis "Library exposing some functionality of Haddock")
     (description
@@ -5374,9 +5154,8 @@ the ‘haddock’ package.")
          "1l8m2spqg0ac50qys2jk5b32v6wxklbbk5ypjp3ga6z14hkw7bz2"))))
     (build-system haskell-build-system)
     (native-inputs
-     `(("ghc-test-framework" ,ghc-test-framework)
-       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)
-       ("ghc-quickcheck" ,ghc-quickcheck)))
+     (list ghc-test-framework ghc-test-framework-quickcheck2
+           ghc-quickcheck))
     (home-page "https://github.com/ekmett/half")
     (synopsis "Half-precision floating-point computations")
     (description "This library provides a half-precision floating-point
@@ -5435,11 +5214,8 @@ Happy works in a similar way to the yacc tool for C.")
        #:cabal-revision
        ("2" "16va8hx4ynw0n5s2warhs13ilj7hrs5fcdn140h1fiix480as36n")))
     (native-inputs
-     `(("ghc-test-framework" ,ghc-test-framework)
-       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
-       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)
-       ("ghc-hunit" ,ghc-hunit)
-       ("ghc-quickcheck" ,ghc-quickcheck)))
+     (list ghc-test-framework ghc-test-framework-hunit
+           ghc-test-framework-quickcheck2 ghc-hunit ghc-quickcheck))
     (home-page "https://github.com/tibbe/hashable")
     (synopsis "Class for types that can be converted to a hash value")
     (description
@@ -5478,8 +5254,7 @@ combine hash values.")
      `(#:cabal-revision
        ("1" "151gxiprdlj3masa95vvrxal9nwa72n3p1y15xyj4hp7mvvl4s2l")))
     (inputs
-     `(("ghc-hashable" ,ghc-hashable)
-       ("ghc-time-compat" ,ghc-time-compat)))
+     (list ghc-hashable ghc-time-compat))
     (home-page "https://hackage.haskell.org/package/hashable-time")
     (synopsis "Hashable instances for Data.Time")
     (description
@@ -5501,16 +5276,14 @@ combine hash values.")
         (base32 "0vgggm7bqq55zmqj6qji89bfj3k1rdkikkfhyg81vsqf0f3bzhqa"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-hashable" ,ghc-hashable)
-       ("ghc-primitive" ,ghc-primitive)
-       ("ghc-vector" ,ghc-vector)))
+     (list ghc-hashable ghc-primitive ghc-vector))
     (native-inputs
-     `(("ghc-mwc-random" ,ghc-mwc-random)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-hunit" ,ghc-hunit)
-       ("ghc-test-framework" ,ghc-test-framework)
-       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)
-       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)))
+     (list ghc-mwc-random
+           ghc-quickcheck
+           ghc-hunit
+           ghc-test-framework
+           ghc-test-framework-quickcheck2
+           ghc-test-framework-hunit))
     (home-page "https://github.com/gregorycollins/hashtables")
     (synopsis "Haskell Mutable hash tables in the ST monad")
     (description "This package provides a Haskell library including a
@@ -5534,8 +5307,8 @@ a set of wrappers to use the hash tables in the IO monad.")
         (base32
          "0gqsa5s0drim9m42hv4wrq61mnvcdylxysfxfw3acncwilfrn9pb"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-exceptions" ,ghc-exceptions)))
-    (native-inputs `(("ghc-hunit" ,ghc-hunit)))
+    (inputs (list ghc-exceptions))
+    (native-inputs (list ghc-hunit))
     ;; FIXME: Tests failing
     (arguments `(#:tests? #f))
     (home-page "https://github.com/judah/haskeline")
@@ -5588,8 +5361,7 @@ Haskeline runs both on POSIX-compatible systems and on Windows.")
      `(#:cabal-revision
        ("4" "0cyqdw77clzz7mq0b4c0jg2d1kdz9xii41268w2psmqmfpyn29pc")))
     (inputs
-     `(("ghc-happy" ,ghc-happy)
-       ("ghc-syb" ,ghc-syb)))
+     (list ghc-happy ghc-syb))
     (home-page
      "https://hackage.haskell.org/package/haskell-src")
     (synopsis
@@ -5618,14 +5390,9 @@ package are to parse or generate Haskell 98 code.")
     (build-system haskell-build-system)
     (outputs '("out" "static" "doc"))
     (inputs
-     `(("cpphs" ,cpphs)
-       ("ghc-happy" ,ghc-happy)
-       ("ghc-pretty-show" ,ghc-pretty-show)))
+     (list cpphs ghc-happy ghc-pretty-show))
     (native-inputs
-     `(("ghc-smallcheck" ,ghc-smallcheck)
-       ("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-smallcheck" ,ghc-tasty-smallcheck)
-       ("ghc-tasty-golden" ,ghc-tasty-golden)))
+     (list ghc-smallcheck ghc-tasty ghc-tasty-smallcheck ghc-tasty-golden))
     (home-page "https://github.com/haskell-suite/haskell-src-exts")
     (synopsis "Library for manipulating Haskell source")
     (description "Haskell-Source with Extensions (HSE, haskell-src-exts) is an
@@ -5650,10 +5417,8 @@ patterns as per the HaRP extension as well as HSX-style embedded XML syntax.")
          "0fvqi72m74p7q5sbpy8m2chm8a1lgy10mfrcxcz8wrh59vngj0n8"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-data-default" ,ghc-data-default)
-       ("ghc-haskell-src-exts" ,ghc-haskell-src-exts)
-       ("ghc-semigroups" ,ghc-semigroups)
-       ("ghc-uniplate" ,ghc-uniplate)))
+     (list ghc-data-default ghc-haskell-src-exts ghc-semigroups
+           ghc-uniplate))
     (home-page "https://github.com/pepeiborra/haskell-src-exts-util")
     (synopsis "Helper functions for working with haskell-src-exts trees")
     (description
@@ -5675,13 +5440,9 @@ patterns as per the HaRP extension as well as HSX-style embedded XML syntax.")
                 "1yy2dfb1ip1zqx3xh28g92209555abzvxrxiwcl95j27zzqxc6in"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-haskell-src-exts" ,ghc-haskell-src-exts)
-       ("ghc-syb" ,ghc-syb)
-       ("ghc-th-orphans" ,ghc-th-orphans)))
+     (list ghc-haskell-src-exts ghc-syb ghc-th-orphans))
     (native-inputs
-     `(("ghc-hunit" ,ghc-hunit)
-       ("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)))
+     (list ghc-hunit ghc-tasty ghc-tasty-hunit))
     (home-page "https://hackage.haskell.org/package/haskell-src-meta")
     (synopsis "Parse source to template-haskell abstract syntax")
     (description
@@ -5708,13 +5469,9 @@ template-haskell abstract syntax.")
      `(#:cabal-revision
        ("1" "0q39ssdgm6lcmqj92frjvr53i34divx53zli0qar39mx8ka1l8ml")))
     (inputs
-     `(("ghc-system-filepath" ,ghc-system-filepath)
-       ("ghc-optparse-applicative" ,ghc-optparse-applicative)))
+     (list ghc-system-filepath ghc-optparse-applicative))
     (native-inputs
-     `(("ghc-json" ,ghc-json)
-       ("ghc-utf8-string" ,ghc-utf8-string)
-       ("ghc-microlens-platform" ,ghc-microlens-platform)
-       ("ghc-hunit" ,ghc-hunit)))
+     (list ghc-json ghc-utf8-string ghc-microlens-platform ghc-hunit))
     (home-page "https://github.com/MarcWeber/hasktags")
     (synopsis "Make @code{Ctags} and @code{Etags} files for Haskell programs")
     (description
@@ -5756,11 +5513,9 @@ hexadecimal string representation.")
                 "1bqv00gfmrsf0jjr4qf3lhshvfkyzmhbi3pjb6mafbnsyn2k7f6q"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-diff" ,ghc-diff)
-       ("ghc-regex-pcre-builtin" ,ghc-regex-pcre-builtin)))
+     (list ghc-diff ghc-regex-pcre-builtin))
     (native-inputs
-     `(("ghc-blaze-html" ,ghc-blaze-html)
-       ("ghc-utf8-string" ,ghc-utf8-string)))
+     (list ghc-blaze-html ghc-utf8-string))
     (home-page "https://github.com/jgm/highlighting-kate")
     (synopsis "Syntax highlighting library")
     (description
@@ -5800,8 +5555,7 @@ descriptions.")
              (let* ((out   (assoc-ref outputs "out"))
                     (elisp-file "elisp/hindent.el")
                     (dest  (string-append out "/share/emacs/site-lisp"))
-                    (emacs (string-append (assoc-ref inputs "emacs")
-                                          "/bin/emacs")))
+                    (emacs (search-input-file inputs "/bin/emacs")))
                (make-file-writable elisp-file)
                (emacs-substitute-variables elisp-file
                  ("hindent-process-path"
@@ -5809,15 +5563,15 @@ descriptions.")
                (install-file elisp-file dest)
                (emacs-generate-autoloads "hindent" dest)))))))
     (inputs
-     `(("ghc-haskell-src-exts" ,ghc-haskell-src-exts)
-       ("ghc-monad-loops" ,ghc-monad-loops)
-       ("ghc-utf8-string" ,ghc-utf8-string)
-       ("ghc-exceptions" ,ghc-exceptions)
-       ("ghc-yaml" ,ghc-yaml)
-       ("ghc-unix-compat" ,ghc-unix-compat)
-       ("ghc-path" ,ghc-path)
-       ("ghc-path-io" ,ghc-path-io)
-       ("ghc-optparse-applicative" ,ghc-optparse-applicative)))
+     (list ghc-haskell-src-exts
+           ghc-monad-loops
+           ghc-utf8-string
+           ghc-exceptions
+           ghc-yaml
+           ghc-unix-compat
+           ghc-path
+           ghc-path-io
+           ghc-optparse-applicative))
     (native-inputs
      `(("ghc-hspec" ,ghc-hspec)
        ("ghc-diff" ,ghc-diff)
@@ -5844,7 +5598,7 @@ library and an executable.")
                 "06pqfikfa61i45g92b65br83kplwmizqkm42yp8d0ddgmq0b21qk"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-async" ,ghc-async)))
+     (list ghc-async))
     (home-page "https://github.com/kolmodin/hinotify.git")
     (synopsis "Haskell binding to inotify")
     (description "This library provides a wrapper to the Linux kernel's inotify
@@ -5868,35 +5622,35 @@ accessed or modified.")
          "00prslqk8vnbyz388cpc0nsamzy8xcjzday5q9n3m9lx4p2dhb5y"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-aeson" ,ghc-aeson)
-       ("ghc-aeson-pretty" ,ghc-aeson-pretty)
-       ("ghc-ansi-terminal" ,ghc-ansi-terminal)
-       ("ghc-base-compat-batteries" ,ghc-base-compat-batteries)
-       ("ghc-blaze-markup" ,ghc-blaze-markup)
-       ("ghc-call-stack" ,ghc-call-stack)
-       ("ghc-cassava" ,ghc-cassava)
-       ("ghc-cassava-megaparsec" ,ghc-cassava-megaparsec)
-       ("ghc-cmdargs" ,ghc-cmdargs)
-       ("ghc-data-default" ,ghc-data-default)
-       ("ghc-decimal" ,ghc-decimal)
-       ("ghc-extra" ,ghc-extra)
-       ("ghc-file-embed" ,ghc-file-embed)
-       ("ghc-glob" ,ghc-glob)
-       ("ghc-hashtables" ,ghc-hashtables)
-       ("ghc-megaparsec" ,ghc-megaparsec)
-       ("ghc-old-time" ,ghc-old-time)
-       ("ghc-parser-combinators" ,ghc-parser-combinators)
-       ("ghc-pretty-simple" ,ghc-pretty-simple)
-       ("ghc-regex-tdfa" ,ghc-regex-tdfa)
-       ("ghc-safe" ,ghc-safe)
-       ("ghc-tabular" ,ghc-tabular)
-       ("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
-       ("ghc-timeit" ,ghc-timeit)
-       ("ghc-uglymemo" ,ghc-uglymemo)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)
-       ("ghc-utf8-string" ,ghc-utf8-string)))
-    (native-inputs `(("ghc-doctest" ,ghc-doctest)))
+     (list ghc-aeson
+           ghc-aeson-pretty
+           ghc-ansi-terminal
+           ghc-base-compat-batteries
+           ghc-blaze-markup
+           ghc-call-stack
+           ghc-cassava
+           ghc-cassava-megaparsec
+           ghc-cmdargs
+           ghc-data-default
+           ghc-decimal
+           ghc-extra
+           ghc-file-embed
+           ghc-glob
+           ghc-hashtables
+           ghc-megaparsec
+           ghc-old-time
+           ghc-parser-combinators
+           ghc-pretty-simple
+           ghc-regex-tdfa
+           ghc-safe
+           ghc-tabular
+           ghc-tasty
+           ghc-tasty-hunit
+           ghc-timeit
+           ghc-uglymemo
+           ghc-unordered-containers
+           ghc-utf8-string))
+    (native-inputs (list ghc-doctest))
     (home-page "https://hledger.org")
     (synopsis "Reusable library providing the core functionality of hledger")
     (description
@@ -5927,13 +5681,13 @@ Accounting.")
     (arguments
      `(#:extra-directories ("lapack")))
     (inputs
-     `(("ghc-random" ,ghc-random)
-       ("ghc-split" ,ghc-split)
-       ("ghc-storable-complex" ,ghc-storable-complex)
-       ("ghc-semigroups" ,ghc-semigroups)
-       ("ghc-vector" ,ghc-vector)
-       ;;("openblas" ,openblas)
-       ("lapack" ,lapack)))
+     (list ghc-random
+           ghc-split
+           ghc-storable-complex
+           ghc-semigroups
+           ghc-vector
+           ;;("openblas" ,openblas)
+           lapack))
     ;; Guix's OpenBLAS is built with the flag "NO_LAPACK=1" which
     ;; disables inclusion of the LAPACK functions.
     ;; (arguments `(#:configure-flags '("--flags=openblas")))
@@ -5960,11 +5714,8 @@ numerical computations based on BLAS and LAPACK.")
     (arguments
      `(#:extra-directories ("gsl")))
     (inputs
-     `(("ghc-hmatrix" ,ghc-hmatrix)
-       ("ghc-vector" ,ghc-vector)
-       ("ghc-random" ,ghc-random)
-       ("gsl" ,gsl)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+     (list ghc-hmatrix ghc-vector ghc-random gsl))
+    (native-inputs (list pkg-config))
     (home-page "https://github.com/albertoruiz/hmatrix")
     (synopsis "Haskell GSL binding")
     (description "This Haskell library provides a purely functional
@@ -5987,11 +5738,8 @@ using GSL.")
         (base32 "1cq049sj3q5r06x7i35hqrkf2jc4p4kfi9zv0jmi2vp7w4644i5q"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-vector" ,ghc-vector)
-       ("ghc-storable-complex" ,ghc-storable-complex)
-       ("ghc-hmatrix" ,ghc-hmatrix)
-       ("gsl" ,gsl)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+     (list ghc-vector ghc-storable-complex ghc-hmatrix gsl))
+    (native-inputs (list pkg-config))
     (home-page "http://code.haskell.org/hmatrix-gsl-stats")
     (synopsis "GSL Statistics interface for Haskell")
     (description "This Haskell library provides a purely functional
@@ -6013,8 +5761,7 @@ interface for statistics based on hmatrix and GSL.")
         (base32 "1mywr61kr852sbff26n9x95kswx9l4ycbv6s68qsbkh02xzqq7qz"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-hmatrix" ,ghc-hmatrix)
-       ("ghc-hmatrix-gsl" ,ghc-hmatrix-gsl)))
+     (list ghc-hmatrix ghc-hmatrix-gsl))
     (home-page "https://github.com/albertoruiz/hmatrix")
     (synopsis "Haskell interface to GSL special functions")
     (description "This library provides an interface to GSL special
@@ -6053,11 +5800,9 @@ determine the hostname.")
                 "0jnay5j13vpz6i1rkaj3j0d9v8jfpri499xn3l7wd01f81f5ncs4"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-old-locale" ,ghc-old-locale)))
+     (list ghc-old-locale))
     (native-inputs
-     `(("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)))
+     (list ghc-tasty ghc-tasty-quickcheck ghc-tasty-hunit))
     (home-page "https://github.com/vincenthz/hs-hourglass")
     (synopsis "Simple time-related library for Haskell")
     (description
@@ -6082,26 +5827,26 @@ representations of current time.")
          "0gmm6jgi1sgyilphww6apq1x04grqznm7xhyb7g1rj5j7my40ws2"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-aeson" ,ghc-aeson)
-       ("ghc-bifunctors" ,ghc-bifunctors)
-       ("ghc-cryptonite" ,ghc-cryptonite)
-       ("ghc-glob" ,ghc-glob)
-       ("ghc-http-client" ,ghc-http-client)
-       ("ghc-http-client-tls" ,ghc-http-client-tls)
-       ("ghc-http-types" ,ghc-http-types)
-       ("ghc-infer-license" ,ghc-infer-license)
-       ("ghc-scientific" ,ghc-scientific)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)
-       ("ghc-vector" ,ghc-vector)
-       ("ghc-yaml" ,ghc-yaml)))
+     (list ghc-aeson
+           ghc-bifunctors
+           ghc-cryptonite
+           ghc-glob
+           ghc-http-client
+           ghc-http-client-tls
+           ghc-http-types
+           ghc-infer-license
+           ghc-scientific
+           ghc-unordered-containers
+           ghc-vector
+           ghc-yaml))
     (native-inputs
-     `(("ghc-hspec" ,ghc-hspec)
-       ("ghc-hunit" ,ghc-hunit)
-       ("ghc-interpolate" ,ghc-interpolate)
-       ("ghc-mockery" ,ghc-mockery)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-temporary" ,ghc-temporary)
-       ("hspec-discover" ,hspec-discover)))
+     (list ghc-hspec
+           ghc-hunit
+           ghc-interpolate
+           ghc-mockery
+           ghc-quickcheck
+           ghc-temporary
+           hspec-discover))
     (home-page "https://github.com/sol/hpack")
     (synopsis "Tools for an alternative Haskell package format")
     (description
@@ -6130,10 +5875,9 @@ are described in a file named @code{package.yaml}.  Both @code{cabal2nix} and
          "0hyf06gzzqd6sqd76crwxycwgx804sd39z7i0c2vmv1qgsxv82gn"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-hspec-expectations" ,ghc-hspec-expectations)
-       ("ghc-megaparsec" ,ghc-megaparsec)))
+     (list ghc-hspec-expectations ghc-megaparsec))
     (native-inputs
-     `(("ghc-hspec" ,ghc-hspec)))
+     (list ghc-hspec))
     (home-page "https://github.com/mrkkrp/hspec-megaparsec")
     (synopsis "Utility functions for testing Megaparsec parsers with Hspec")
     (description
@@ -6155,7 +5899,7 @@ with Hspec.")
         (base32
          "1wnpy1v5rbii2iwlcc9psnww8pkirv9zl21s64cmbi6q7dv15g3n"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-syb" ,ghc-syb)))
+    (inputs (list ghc-syb))
     (home-page "https://hackage.haskell.org/package/hs-bibutils")
     (synopsis "Haskell bindings to bibutils")
     (description
@@ -6181,11 +5925,9 @@ MODS-format XML intermediate.")
      `(#:cabal-revision
        ("3" "04mda3bwr2a00f5nbkqc84d46lmqfsk3gibzg3amdh74ngb451xq")))
     (inputs
-     `(("ghc-network" ,ghc-network)
-       ("ghc-old-locale" ,ghc-old-locale)))
+     (list ghc-network ghc-old-locale))
     (native-inputs
-     `(("ghc-hunit" ,ghc-hunit)
-       ("ghc-network-bsd" ,ghc-network-bsd)))
+     (list ghc-hunit ghc-network-bsd))
     (home-page "https://software.complete.org/hslogger")
     (synopsis "Logging framework for Haskell, similar to Python's logging module")
     (description "Hslogger lets each log message have a priority and source be
@@ -6210,16 +5952,15 @@ handler built in.")
      `(#:configure-flags '("-fsystem-lua")
        #:extra-directories ("lua")))
     (inputs
-     `(("lua" ,lua)
-       ("ghc-base-compat" ,ghc-base-compat)))
+     (list lua ghc-base-compat))
     (native-inputs
-     `(("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
-       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-quickcheck-instances" ,ghc-quickcheck-instances)
-       ("ghc-fail" ,ghc-fail)
-       ("ghc-semigroups" ,ghc-semigroups)))
+     (list ghc-tasty
+           ghc-tasty-hunit
+           ghc-tasty-quickcheck
+           ghc-quickcheck
+           ghc-quickcheck-instances
+           ghc-fail
+           ghc-semigroups))
     (home-page "https://hackage.haskell.org/package/hslua")
     (synopsis "Lua language interpreter embedding in Haskell")
     (description
@@ -6242,12 +5983,9 @@ described in @url{https://www.lua.org/}.")
          "0hk2splyasbplnggknjhlb423axc5b32xq8aq8zal4vvwlqhzvf1"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-hslua" ,ghc-hslua)
-       ("ghc-temporary" ,ghc-temporary)))
+     (list ghc-hslua ghc-temporary))
     (native-inputs
-     `(("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-lua" ,ghc-tasty-lua)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)))
+     (list ghc-tasty ghc-tasty-lua ghc-tasty-hunit))
     (home-page "https://github.com/hslua/hslua-module-system")
     (synopsis "Lua module wrapper around Haskell's System module")
     (description "This library provides access to system information and
@@ -6272,11 +6010,9 @@ already been loaded before the loader can be added.")
          "1vmd15n905i2pcsx748hz3h9kv5nnv74y663rj57q8mp0b40cbfl"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-hslua" ,ghc-hslua)))
+     (list ghc-hslua))
     (native-inputs
-     `(("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-lua" ,ghc-tasty-lua)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)))
+     (list ghc-tasty ghc-tasty-lua ghc-tasty-hunit))
     (home-page "https://github.com/hslua/hslua-module-text")
     (synopsis "Lua module for text")
     (description
@@ -6350,23 +6086,23 @@ for user-defined custom schemas).
         (base32
          "0xzfvxxh33ivlnrnzmm19cni3jgb5ph18n9hykkw3d6l3rhwzcnl"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-attoparsec" ,ghc-attoparsec)
-              ("ghc-attoparsec-iso8601" ,ghc-attoparsec-iso8601)
-              ("ghc-cookie" ,ghc-cookie)
-              ("ghc-hashable" ,ghc-hashable)
-              ("ghc-http-types" ,ghc-http-types)
-              ("ghc-time-compat" ,ghc-time-compat)
-              ("ghc-unordered-containers" ,ghc-unordered-containers)
-              ("ghc-uuid-types" ,ghc-uuid-types)))
+    (inputs (list ghc-attoparsec
+                  ghc-attoparsec-iso8601
+                  ghc-cookie
+                  ghc-hashable
+                  ghc-http-types
+                  ghc-time-compat
+                  ghc-unordered-containers
+                  ghc-uuid-types))
     (native-inputs
-     `(("cabal-doctest" ,cabal-doctest)
-       ("ghc-nats" ,ghc-nats)
-       ("ghc-hunit" ,ghc-hunit)
-       ("ghc-hspec" ,ghc-hspec)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-quickcheck-instances" ,ghc-quickcheck-instances)
-       ("ghc-doctest" ,ghc-doctest)
-       ("hspec-discover" ,hspec-discover)))
+     (list cabal-doctest
+           ghc-nats
+           ghc-hunit
+           ghc-hspec
+           ghc-quickcheck
+           ghc-quickcheck-instances
+           ghc-doctest
+           hspec-discover))
     (home-page "https://github.com/fizruk/http-api-data")
     (synopsis "Convert to/from HTTP API data like URL pieces, headers and
 query parameters")
@@ -6430,10 +6166,9 @@ monads with anaphoric variants on @code{if} and @code{when} and a C-like
     ;; This package needs an older version of tasty.
     (arguments '(#:tests? #f))
     (inputs
-     `(("ghc-concatenative" ,ghc-concatenative)))
+     (list ghc-concatenative))
     (native-inputs
-     `(("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)))
+     (list ghc-tasty ghc-tasty-hunit))
     (home-page "https://github.com/jaspervdj/indents")
     (synopsis "Indentation sensitive parser-combinators for parsec")
     (description
@@ -6456,10 +6191,9 @@ lines continued at an indented level below.")
          "0wlfm6bf55kfvm74xar9lmjg5v1103rs9m3grw1rq5bmcmhzxrhj"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-text-metrics" ,ghc-text-metrics)))
+     (list ghc-text-metrics))
     (native-inputs
-     `(("ghc-hspec" ,ghc-hspec)
-       ("hspec-discover" ,hspec-discover)))
+     (list ghc-hspec hspec-discover))
     (home-page "https://hackage.haskell.org/package/infer-license")
     (synopsis "Infer software license from a given license file")
     (description "This library provides tools to infer a software
@@ -6478,10 +6212,9 @@ license from a given license file.")
        (sha256
         (base32 "0mvwii8jbh2ll54qb9dij5m66c6324s2y4vrwz1qr4wz40m3qa8l"))))
     (build-system haskell-build-system)
-    (native-inputs `(("ghc-hspec" ,ghc-hspec)))
+    (native-inputs (list ghc-hspec))
     (inputs
-     `(("ghc-attoparsec" ,ghc-attoparsec)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)))
+     (list ghc-attoparsec ghc-unordered-containers))
     (home-page "https://github.com/chrisdone/ini")
     (synopsis
      "Haskell library to easily handle configuration files in the INI format")
@@ -6504,17 +6237,11 @@ read and write configuration files in the simple INI format.")
          "0a0m3bhh910c5g46cwkxgflsgw5ab7lzymwll9hijyvwgnsw3h7i"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-ansi-wl-pprint" ,ghc-ansi-wl-pprint)
-       ("ghc-hashable" ,ghc-hashable)
-       ("ghc-parsers" ,ghc-parsers)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)
-       ("ghc-vector" ,ghc-vector)))
+     (list ghc-ansi-wl-pprint ghc-hashable ghc-parsers
+           ghc-unordered-containers ghc-vector))
     (native-inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-hspec" ,ghc-hspec)
-       ("ghc-raw-strings-qq" ,ghc-raw-strings-qq)
-       ("ghc-regex-posix" ,ghc-regex-posix)
-       ("ghc-split" ,ghc-split)))
+     (list ghc-quickcheck ghc-hspec ghc-raw-strings-qq ghc-regex-posix
+           ghc-split))
     (home-page "https://hackage.haskell.org/package/inline-c")
     (synopsis "Write Haskell source files including C code inline")
     (description
@@ -6538,10 +6265,9 @@ minimal overhead.  No FFI required.")
          "0bqrhyic3cw1pqg7knsmkqx5swpr4kvf9bmz0mhmqbl6brmv5il0"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-inline-c" ,ghc-inline-c)
-       ("ghc-safe-exceptions" ,ghc-safe-exceptions)))
+     (list ghc-inline-c ghc-safe-exceptions))
     (native-inputs
-     `(("ghc-hspec" ,ghc-hspec)))
+     (list ghc-hspec))
     (home-page "https://hackage.haskell.org/package/inline-c-cpp")
     (synopsis "Lets you embed C++ code into Haskell")
     (description
@@ -6565,12 +6291,12 @@ minimal overhead.  No FFI required.")
     (build-system haskell-build-system)
     (arguments `(#:tests? #f)) ; TODO: Needs tasty<1.4
     (native-inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-smallcheck" ,ghc-smallcheck)
-       ("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
-       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
-       ("ghc-tasty-smallcheck" ,ghc-tasty-smallcheck)))
+     (list ghc-quickcheck
+           ghc-smallcheck
+           ghc-tasty
+           ghc-tasty-hunit
+           ghc-tasty-quickcheck
+           ghc-tasty-smallcheck))
     (home-page "https://github.com/Bodigrim/integer-logarithms")
     (synopsis "Integer logarithms")
     (description
@@ -6604,13 +6330,10 @@ in migrated modules.")
          "03jrkj9c62w0c2awym8mhpsgpd0jffl50cqwfrm7bbdfhd8dsxi7"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-haskell-src-meta" ,ghc-haskell-src-meta)))
+     (list ghc-haskell-src-meta))
     (native-inputs
-     `(("ghc-base-compat" ,ghc-base-compat)
-       ("ghc-hspec" ,ghc-hspec)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-quickcheck-instances" ,ghc-quickcheck-instances)
-       ("hspec-discover" ,hspec-discover)))
+     (list ghc-base-compat ghc-hspec ghc-quickcheck
+           ghc-quickcheck-instances hspec-discover))
     (home-page "https://github.com/sol/interpolate")
     (synopsis "String interpolation library")
     (description "This package provides a string interpolation library for
@@ -6631,7 +6354,7 @@ Haskell.")
          "03smzhwk1zf5na544b0azp49j4gvafqsih9ggwf6yng38yhixwld"))))
     (build-system haskell-build-system)
     (native-inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)))
+     (list ghc-quickcheck))
     (home-page "http://www.chr-breitkopf.de/comp/IntervalMap")
     (synopsis "Containers for intervals, with efficient search")
     (description
@@ -6654,9 +6377,9 @@ example code on the home page for a quick introduction.")
          "1qibvgys8lw61x9na3iy3dcglyj9qyhcbfc00glnagl7cbk1shlv"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-distributive" ,ghc-distributive)))
+     (list ghc-distributive))
     (native-inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)))
+     (list ghc-quickcheck))
     (home-page "https://github.com/ekmett/intervals")
     (synopsis "Interval arithmetic")
     (description "This library provides @code{Numeric.Interval.Interval},
@@ -6678,20 +6401,18 @@ which represets a closed, convex set of floating point values.")
          "1jlp0gbfjsx7k08275djh8m3v4rpg8llw5gdkg9s9qfx0lc0mymr"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-bifunctors" ,ghc-bifunctors)
-       ("ghc-comonad" ,ghc-comonad)
-       ("ghc-contravariant" ,ghc-contravariant)
-       ("ghc-profunctors" ,ghc-profunctors)
-       ("ghc-semigroups" ,ghc-semigroups)
-       ("ghc-statevar" ,ghc-statevar)
-       ("ghc-tagged" ,ghc-tagged)
-       ("ghc-th-abstraction" ,ghc-th-abstraction)
-       ("ghc-transformers-compat" ,ghc-transformers-compat)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)))
+     (list ghc-bifunctors
+           ghc-comonad
+           ghc-contravariant
+           ghc-profunctors
+           ghc-semigroups
+           ghc-statevar
+           ghc-tagged
+           ghc-th-abstraction
+           ghc-transformers-compat
+           ghc-unordered-containers))
     (native-inputs
-     `(("ghc-hspec" ,ghc-hspec)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("hspec-discover" ,hspec-discover)))
+     (list ghc-hspec ghc-quickcheck hspec-discover))
     (home-page "https://github.com/nfrisby/invariant-functors")
     (synopsis "Haskell98 invariant functors")
     (description "Haskell98 invariant functors (also known as exponential
@@ -6713,19 +6434,19 @@ functors).  For more information, see Edward Kmett's article
          "1y3sqmxrwiksz7pl4hf3vzvg8p8n00qnv98nj5xbpcadlh468rny"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-attoparsec" ,ghc-attoparsec)
-       ("ghc-bytestring-builder" ,ghc-bytestring-builder)
-       ("ghc-network" ,ghc-network)
-       ("ghc-primitive" ,ghc-primitive)
-       ("ghc-vector" ,ghc-vector)
-       ("ghc-zlib-bindings" ,ghc-zlib-bindings)))
+     (list ghc-attoparsec
+           ghc-bytestring-builder
+           ghc-network
+           ghc-primitive
+           ghc-vector
+           ghc-zlib-bindings))
     (native-inputs
-     `(("ghc-hunit" ,ghc-hunit)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-test-framework" ,ghc-test-framework)
-       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
-       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)
-       ("ghc-zlib" ,ghc-zlib)))
+     (list ghc-hunit
+           ghc-quickcheck
+           ghc-test-framework
+           ghc-test-framework-hunit
+           ghc-test-framework-quickcheck2
+           ghc-zlib))
     (home-page "https://hackage.haskell.org/package/io-streams")
     (synopsis "Simple and composable stream I/O")
     (description "This library contains simple and easy-to-use
@@ -6750,13 +6471,9 @@ primitives for I/O using streams.")
      `(#:cabal-revision
        ("3" "02k9halblgnynlm781ahc81yxla8z7cck1gikm8555v78rf5hv7x")))
     (inputs
-     `(("ghc-attoparsec" ,ghc-attoparsec)
-       ("ghc-io-streams" ,ghc-io-streams)
-       ("ghc-network" ,ghc-network)))
+     (list ghc-attoparsec ghc-io-streams ghc-network))
     (native-inputs
-     `(("ghc-hunit" ,ghc-hunit)
-       ("ghc-test-framework" ,ghc-test-framework)
-       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)))
+     (list ghc-hunit ghc-test-framework ghc-test-framework-hunit))
     (home-page "http://snapframework.com/")
     (synopsis "HAProxy protocol 1.5 support for io-streams")
     (description "HAProxy protocol version 1.5 support
@@ -6784,10 +6501,7 @@ through a forwarding proxy that is configured to speak this protocol.")
     (arguments `(#:tests? #f)) ; FIXME: Tests cannot find System.ByteOrder,
                                ; exported by ghc-byteorder.  Doctest issue.
     (inputs
-     `(("ghc-appar" ,ghc-appar)
-       ("ghc-byteorder" ,ghc-byteorder)
-       ("ghc-network" ,ghc-network)
-       ("ghc-safe" ,ghc-safe)))
+     (list ghc-appar ghc-byteorder ghc-network ghc-safe))
     (home-page "https://www.mew.org/~kazu/proj/iproute/")
     (synopsis "IP routing table")
     (description "IP Routing Table is a tree of IP ranges to search one of
@@ -6809,15 +6523,10 @@ removed.  Both IPv4 and IPv6 are supported.")
          "0qky4l5aaiq7ypwbxh0mr7s572290fi596f18dg68qpyzc49a9kx"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-unordered-containers" ,ghc-unordered-containers)
-       ("ghc-base64-bytestring" ,ghc-base64-bytestring)
-       ("ghc-aeson" ,ghc-aeson)
-       ("ghc-semigroups" ,ghc-semigroups)))
+     (list ghc-unordered-containers ghc-base64-bytestring ghc-aeson
+           ghc-semigroups))
     (native-inputs
-     `(("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
-       ("ghc-microlens-aeson" ,ghc-microlens-aeson)
-       ("ghc-microlens" ,ghc-microlens)))
+     (list ghc-tasty ghc-tasty-hunit ghc-microlens-aeson ghc-microlens))
     (home-page "https://hackage.haskell.org/package/ipynb")
     (synopsis "Data structure for working with Jupyter notebooks")
     (description "This library defines a data structure for representing
@@ -6840,7 +6549,7 @@ instances for conversion to and from JSON .ipynb files.")
     (arguments
      `(#:extra-directories ("wireless-tools")))
     (inputs
-     `(("wireless-tools" ,wireless-tools)))
+     (list wireless-tools))
     (home-page "https://github.com/jaor/iwlib")
     (synopsis "Haskell binding to the iw wireless networking library")
     (description
@@ -6866,7 +6575,7 @@ supported systems.")
      `(#:cabal-revision
        ("1" "16fp0y95gaibjravzj1hxdkng1cr8zqjqzd14m48kf4jrq3npz6r")))
     (inputs
-     `(("ghc-syb" ,ghc-syb)))
+     (list ghc-syb))
     (home-page "https://hackage.haskell.org/package/json")
     (synopsis "Serializes Haskell data to and from JSON")
     (description "This package provides a parser and pretty printer for
@@ -6889,9 +6598,7 @@ Notation, JSON} is a lightweight data-interchange format.")
     (build-system haskell-build-system)
     (outputs '("out" "static" "doc"))
     (inputs
-     `(("ghc-zlib" ,ghc-zlib)
-       ("ghc-vector" ,ghc-vector)
-       ("ghc-primitive" ,ghc-primitive)))
+     (list ghc-zlib ghc-vector ghc-primitive))
     (home-page "https://github.com/Twinside/Juicy.Pixels")
     (synopsis "Picture loading and serialization library")
     (description
@@ -6915,15 +6622,15 @@ TIFF and GIF formats.")
          "1rkjxwc2k2425d2shdra6wzd4f4dpj76hxmq8mish4f0lz9gxxml"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-adjunctions" ,ghc-adjunctions)
-       ("ghc-comonad" ,ghc-comonad)
-       ("ghc-contravariant" ,ghc-contravariant)
-       ("ghc-distributive" ,ghc-distributive)
-       ("ghc-free" ,ghc-free)
-       ("ghc-invariant" ,ghc-invariant)
-       ("ghc-semigroupoids" ,ghc-semigroupoids)
-       ("ghc-tagged" ,ghc-tagged)
-       ("ghc-transformers-compat" ,ghc-transformers-compat)))
+     (list ghc-adjunctions
+           ghc-comonad
+           ghc-contravariant
+           ghc-distributive
+           ghc-free
+           ghc-invariant
+           ghc-semigroupoids
+           ghc-tagged
+           ghc-transformers-compat))
     (home-page "https://github.com/ekmett/kan-extensions/")
     (synopsis "Kan extensions library")
     (description "This library provides Kan extensions, Kan lifts, various
@@ -6943,10 +6650,9 @@ forms of the Yoneda lemma, and (co)density (co)monads for Haskell.")
         (base32
          "0bi02jdirkys8v7flf39vrpla2a74z1z0sdhy9lb9v7cmcc6rmpk"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-syb" ,ghc-syb)))
+    (inputs (list ghc-syb))
     (native-inputs
-     `(("ghc-happy" ,ghc-happy)
-       ("ghc-alex" ,ghc-alex)))
+     (list ghc-happy ghc-alex))
     (home-page "https://visq.github.io/language-c/")
     (synopsis "Analysis and generation of C code")
     (description
@@ -6968,7 +6674,7 @@ and a large set of GNU extensions.")
         (base32
          "0hdg67ainlqpjjghg3qin6fg4p783m0zmjqh4rd5gyizwiplxkp1"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-prettyclass" ,ghc-prettyclass)))
+    (inputs (list ghc-prettyclass))
     (arguments
      `(#:tests? #f
        #:cabal-revision
@@ -7005,8 +6711,7 @@ representation, parsing, and pretty-printing of GLSL 1.50 code.")
                (("(template-haskell)\\s+[^,]+" all dep)
                 dep)))))))
     (inputs
-     `(("ghc-regex-posix" ,ghc-regex-posix)
-       ("ghc-template-haskell" ,ghc-template-haskell)))
+     (list ghc-regex-posix ghc-template-haskell))
     (home-page "https://github.com/finnsson/template-helper")
     (synopsis "Haskell module to automatically extract functions from
 the local code")
@@ -7038,38 +6743,38 @@ with @code{wc} (for a web service).")
        ("6" "1k08my9rh1il3ibiyhljxkgndfgk143pn5a6nyzjnckw3la09myl")))
     (outputs '("out" "static" "doc"))
     (inputs
-     `(("ghc-base-orphans" ,ghc-base-orphans)
-       ("ghc-bifunctors" ,ghc-bifunctors)
-       ("ghc-distributive" ,ghc-distributive)
-       ("ghc-exceptions" ,ghc-exceptions)
-       ("ghc-free" ,ghc-free)
-       ("ghc-kan-extensions" ,ghc-kan-extensions)
-       ("ghc-parallel" ,ghc-parallel)
-       ("ghc-reflection" ,ghc-reflection)
-       ("ghc-semigroupoids" ,ghc-semigroupoids)
-       ("ghc-vector" ,ghc-vector)
-       ("ghc-call-stack" ,ghc-call-stack)
-       ("ghc-comonad" ,ghc-comonad)
-       ("ghc-contravariant" ,ghc-contravariant)
-       ("ghc-hashable" ,ghc-hashable)
-       ("ghc-profunctors" ,ghc-profunctors)
-       ("ghc-semigroups" ,ghc-semigroups)
-       ("ghc-tagged" ,ghc-tagged)
-       ("ghc-transformers-compat" ,ghc-transformers-compat)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)
-       ("ghc-void" ,ghc-void)
-       ("ghc-generic-deriving" ,ghc-generic-deriving)
-       ("ghc-nats" ,ghc-nats)
-       ("ghc-simple-reflect" ,ghc-simple-reflect)
-       ("hlint" ,hlint)))
+     (list ghc-base-orphans
+           ghc-bifunctors
+           ghc-distributive
+           ghc-exceptions
+           ghc-free
+           ghc-kan-extensions
+           ghc-parallel
+           ghc-reflection
+           ghc-semigroupoids
+           ghc-vector
+           ghc-call-stack
+           ghc-comonad
+           ghc-contravariant
+           ghc-hashable
+           ghc-profunctors
+           ghc-semigroups
+           ghc-tagged
+           ghc-transformers-compat
+           ghc-unordered-containers
+           ghc-void
+           ghc-generic-deriving
+           ghc-nats
+           ghc-simple-reflect
+           hlint))
     (native-inputs
-     `(("cabal-doctest" ,cabal-doctest)
-       ("ghc-doctest" ,ghc-doctest)
-       ("ghc-hunit" ,ghc-hunit)
-       ("ghc-test-framework" ,ghc-test-framework)
-       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
-       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)
-       ("ghc-quickcheck" ,ghc-quickcheck)))
+     (list cabal-doctest
+           ghc-doctest
+           ghc-hunit
+           ghc-test-framework
+           ghc-test-framework-hunit
+           ghc-test-framework-quickcheck2
+           ghc-quickcheck))
     (home-page "https://github.com/ekmett/lens/")
     (synopsis "Lenses, Folds and Traversals")
     (description "This library provides @code{Control.Lens}.  The combinators
@@ -7127,8 +6832,8 @@ lenses and traversals for those who require Haskell 98.")
         (base32
          "0g7jnhng3j7z5517aaqga0144aamibsbpgm3yynwyfzkq1kp0f28"))))
     (build-system haskell-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)))
-    (inputs `(("libffi" ,libffi)))
+    (native-inputs (list pkg-config))
+    (inputs (list libffi))
     (home-page "https://hackage.haskell.org/package/libffi")
     (synopsis "Haskell binding to libffi")
     (description
@@ -7152,15 +6857,10 @@ to be called from Haskell.")
          "088vlir0n3wps2p5ydgyx51p41nfjcm2v02sszpyjj3c8z7f4qkh"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-attoparsec" ,ghc-attoparsec)
-       ("ghc-data-default-class" ,ghc-data-default-class)
-       ("ghc-network" ,ghc-network)
-       ("ghc-safe-exceptions" ,ghc-safe-exceptions)
-       ("ghc-utf8-string" ,ghc-utf8-string)))
+     (list ghc-attoparsec ghc-data-default-class ghc-network
+           ghc-safe-exceptions ghc-utf8-string))
     (native-inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-hspec" ,ghc-hspec)
-       ("hspec-discover" ,hspec-discover)))
+     (list ghc-quickcheck ghc-hspec hspec-discover))
     (home-page "https://github.com/vimus/libmpd-haskell")
     (synopsis "Haskell client library for the Music Player Daemon")
     (description "This package provides a pure Haskell client library for the
@@ -7182,8 +6882,7 @@ Music Player Daemon.")
     (build-system haskell-build-system)
     (outputs '("out" "static" "doc")) ; documentation is 39M
     (native-inputs
-     `(("ghc-alex" ,ghc-alex)
-       ("ghc-happy" ,ghc-happy)))
+     (list ghc-alex ghc-happy))
     (home-page "https://github.com/digital-asset/ghc-lib")
     (synopsis "The GHC API, decoupled from GHC versions")
     (description "This library implements the GHC API.  It is like the
@@ -7205,7 +6904,7 @@ compiler versions.")
          "01zvk86kg726lf2vnlr7dxiz7g3xwi5a4ak9gcfbwyhynkzjmsfi"))))
     (build-system haskell-build-system)
     (inputs
-     `(("libxml2" ,libxml2)))
+     (list libxml2))
     (arguments
      `(#:configure-flags
        `(,(string-append "--extra-include-dirs="
@@ -7240,9 +6939,7 @@ compiler versions.")
      `(#:configure-flags `("--flags=system-libyaml")
        #:extra-directories ("libyaml+static")))
     (inputs
-     `(("ghc-conduit" ,ghc-conduit)
-       ("ghc-resourcet" ,ghc-resourcet)
-       ("libyaml+static" ,libyaml+static)))
+     (list ghc-conduit ghc-resourcet libyaml+static))
     (home-page "https://github.com/snoyberg/yaml#readme")
     (synopsis "Low-level, streaming YAML interface.")
     (description "This package provides a Haskell wrapper over the
@@ -7264,16 +6961,16 @@ LibYAML C library.")
          "0j4f5471qfxkxy84ri87bcvp30ikh4m30imcggwn8m5v8igp218d"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-async" ,ghc-async)
-       ("ghc-lifted-base" ,ghc-lifted-base)
-       ("ghc-transformers-base" ,ghc-transformers-base)
-       ("ghc-monad-control" ,ghc-monad-control)
-       ("ghc-constraints" ,ghc-constraints)
-       ("ghc-hunit" ,ghc-hunit)
-       ("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-expected-failure" ,ghc-tasty-expected-failure)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
-       ("ghc-tasty-th" ,ghc-tasty-th)))
+     (list ghc-async
+           ghc-lifted-base
+           ghc-transformers-base
+           ghc-monad-control
+           ghc-constraints
+           ghc-hunit
+           ghc-tasty
+           ghc-tasty-expected-failure
+           ghc-tasty-hunit
+           ghc-tasty-th))
     (home-page "https://github.com/maoe/lifted-async")
     (synopsis "Run lifted IO operations asynchronously and wait for their results")
     (description
@@ -7298,10 +6995,8 @@ instance of @code{MonadBase} or @code{MonadBaseControl}.")
     (build-system haskell-build-system)
     (arguments `(#:tests? #f)) ; FIXME: Missing testing libraries.
     (inputs
-     `(("ghc-transformers-base" ,ghc-transformers-base)
-       ("ghc-monad-control" ,ghc-monad-control)
-       ("ghc-transformers-compat" ,ghc-transformers-compat)
-       ("ghc-hunit" ,ghc-hunit)))
+     (list ghc-transformers-base ghc-monad-control ghc-transformers-compat
+           ghc-hunit))
     (home-page "https://github.com/basvandijk/lifted-base")
     (synopsis "Lifted IO operations from the base library")
     (description "Lifted-base exports IO operations from the @code{base}
@@ -7325,28 +7020,28 @@ Kaseorg.")
          "0ax6prmc7b53w0lz5ddc40wrjj9bm7wldpp57283gx9hdf8qrb35"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-adjunctions" ,ghc-adjunctions)
-       ("ghc-base-orphans" ,ghc-base-orphans)
-       ("ghc-bytes" ,ghc-bytes)
-       ("ghc-cereal" ,ghc-cereal)
-       ("ghc-distributive" ,ghc-distributive)
-       ("ghc-hashable" ,ghc-hashable)
-       ("ghc-lens" ,ghc-lens)
-       ("ghc-reflection" ,ghc-reflection)
-       ("ghc-semigroups" ,ghc-semigroups)
-       ("ghc-semigroupoids" ,ghc-semigroupoids)
-       ("ghc-tagged" ,ghc-tagged)
-       ("ghc-transformers-compat" ,ghc-transformers-compat)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)
-       ("ghc-vector" ,ghc-vector)
-       ("ghc-void" ,ghc-void)))
+     (list ghc-adjunctions
+           ghc-base-orphans
+           ghc-bytes
+           ghc-cereal
+           ghc-distributive
+           ghc-hashable
+           ghc-lens
+           ghc-reflection
+           ghc-semigroups
+           ghc-semigroupoids
+           ghc-tagged
+           ghc-transformers-compat
+           ghc-unordered-containers
+           ghc-vector
+           ghc-void))
     (native-inputs
-     `(("cabal-doctest" ,cabal-doctest)
-       ("ghc-doctest" ,ghc-doctest)
-       ("ghc-simple-reflect" ,ghc-simple-reflect)
-       ("ghc-test-framework" ,ghc-test-framework)
-       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
-       ("ghc-hunit" ,ghc-hunit)))
+     (list cabal-doctest
+           ghc-doctest
+           ghc-simple-reflect
+           ghc-test-framework
+           ghc-test-framework-hunit
+           ghc-hunit))
     (home-page "https://github.com/ekmett/linear/")
     (synopsis "Linear algebra library for Haskell")
     (description
@@ -7370,13 +7065,13 @@ vector spaces.")
          "08jip0q2f9qc95wcqka2lrqpf8r7sswsi5104w73kyrbmfirqnrd"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-vector" ,ghc-vector)
-       ("ghc-dlist" ,ghc-dlist)
-       ("ghc-fmlist" ,ghc-fmlist)
-       ("ghc-hunit" ,ghc-hunit)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-random" ,ghc-random)
-       ("ghc-utf8-string" ,ghc-utf8-string)))
+     (list ghc-vector
+           ghc-dlist
+           ghc-fmlist
+           ghc-hunit
+           ghc-quickcheck
+           ghc-random
+           ghc-utf8-string))
     (home-page "https://github.com/JohnLato/listlike")
     (synopsis "Generic support for list-like structures")
     (description "The ListLike module provides a common interface to the
@@ -7403,13 +7098,9 @@ can handle infinite lists.")
          "0pxb5ah8r5pzpz2ibqw3g9g1isigb4z7pbzfrwr8kmcjn74ab3kf"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-attoparsec" ,ghc-attoparsec)
-       ("ghc-fail" ,ghc-fail)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)))
+     (list ghc-attoparsec ghc-fail ghc-unordered-containers))
     (native-inputs
-     `(("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
-       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)))
+     (list ghc-tasty ghc-tasty-hunit ghc-tasty-quickcheck))
     (home-page "https://github.com/llvm-hs/llvm-hs/")
     (synopsis "Pure Haskell LLVM functionality (no FFI)")
     (description "llvm-hs-pure is a set of pure Haskell types and functions
@@ -7432,19 +7123,16 @@ llvm-hs-pure does not require LLVM to be available.")
          "0723xgh45h9cyxmmjsvxnsp8bpn1ljy4qgh7a7vqq3sj9d6wzq00"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-attoparsec" ,ghc-attoparsec)
-       ("ghc-exceptions" ,ghc-exceptions)
-       ("ghc-utf8-string" ,ghc-utf8-string)
-       ("ghc-llvm-hs-pure" ,ghc-llvm-hs-pure)
-       ("llvm" ,llvm-9)))
+     (list ghc-attoparsec ghc-exceptions ghc-utf8-string ghc-llvm-hs-pure
+           llvm-9))
     (native-inputs
-     `(("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
-       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-temporary" ,ghc-temporary)
-       ("ghc-pretty-show" ,ghc-pretty-show)
-       ("ghc-temporary" ,ghc-temporary)))
+     (list ghc-tasty
+           ghc-tasty-hunit
+           ghc-tasty-quickcheck
+           ghc-quickcheck
+           ghc-temporary
+           ghc-pretty-show
+           ghc-temporary))
     (home-page "https://github.com/llvm-hs/llvm-hs/")
     (synopsis "General purpose LLVM bindings for Haskell")
     (description "llvm-hs is a set of Haskell bindings for LLVM.  Unlike other
@@ -7469,8 +7157,7 @@ into Haskell.")
                 "0d0lwxxgd16is9aw6v3ps4r9prv3dj8xscmm45fvzq3nicjiawcf"))))
     (build-system haskell-build-system)
     (native-inputs
-     `(("ghc-hspec" ,ghc-hspec)
-       ("hspec-discover" ,hspec-discover)))
+     (list ghc-hspec hspec-discover))
     (home-page "https://hackage.haskell.org/package/logging-facade")
     (synopsis "Simple logging abstraction that allows multiple back-ends")
     (description
@@ -7493,11 +7180,9 @@ back-ends.")
         (base32
          "1d22b7r8lnak5k8ars166cxbk1lv7gf8g0qs604irsx2s474ybi7"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-fail" ,ghc-fail)))
+    (inputs (list ghc-fail))
     (native-inputs
-     `(("ghc-async" ,ghc-async)
-       ("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)))
+     (list ghc-async ghc-tasty ghc-tasty-hunit))
     (home-page "http://code.haskell.org/~dolio/")
     (synopsis "Backtracking logic-programming monad")
     (description "This library provides a continuation-based, backtracking,
@@ -7523,14 +7208,10 @@ online}.")
          "0nky4pqxd6828kg3js90ks6r3hxs5x48ibfz37pw2dr7y1nygq21"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-blaze-builder" ,ghc-blaze-builder)
-       ("ghc-hashable" ,ghc-hashable)
-       ("ghc-mmorph" ,ghc-mmorph)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)))
+     (list ghc-blaze-builder ghc-hashable ghc-mmorph
+           ghc-unordered-containers))
     (native-inputs
-     `(("ghc-hunit" ,ghc-hunit)
-       ("ghc-hspec" ,ghc-hspec)
-       ("ghc-bifunctors" ,ghc-bifunctors)))
+     (list ghc-hunit ghc-hspec ghc-bifunctors))
     (arguments
      `(#:cabal-revision
        ("1"
@@ -7567,11 +7248,8 @@ Same combinator can be used for attributes and elements
        #:cabal-revision
        ("6" "1sh2g5wkh0m6646cxnii0k20f0crwdcnprfl9jfg7gxn5875bkip")))
     (native-inputs
-     `(("ghc-hunit" ,ghc-hunit)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
-       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)))
+     (list ghc-hunit ghc-quickcheck ghc-tasty ghc-tasty-hunit
+           ghc-tasty-quickcheck))
     (home-page "https://github.com/hvr/lzma")
     (synopsis "LZMA/XZ compression and decompression")
     (description
@@ -7594,16 +7272,14 @@ monadic incremental interface is provided as well.")
          "1z6q16hzp2r5a4gdbg9akky5l9bfarzzhzswrgvh0v28ax400whb"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-conduit" ,ghc-conduit)
-       ("ghc-lzma" ,ghc-lzma)
-       ("ghc-resourcet" ,ghc-resourcet)))
+     (list ghc-conduit ghc-lzma ghc-resourcet))
     (native-inputs
-     `(("ghc-base-compat" ,ghc-base-compat)
-       ("ghc-test-framework" ,ghc-test-framework)
-       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
-       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)
-       ("ghc-hunit" ,ghc-hunit)
-       ("ghc-quickcheck" ,ghc-quickcheck)))
+     (list ghc-base-compat
+           ghc-test-framework
+           ghc-test-framework-hunit
+           ghc-test-framework-quickcheck2
+           ghc-hunit
+           ghc-quickcheck))
     (home-page "https://github.com/alphaHeavy/lzma-conduit")
     (synopsis "Conduit interface for lzma/xz compression")
     (description
@@ -7683,13 +7359,13 @@ orphan instances
                 "0njzn56m8z6lm70xyixbylbnpjz1gk7x8vdsdvi3qld9m66gc3n7"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-base-compat" ,ghc-base-compat)
-       ("ghc-hspec" ,ghc-hspec)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-silently" ,ghc-silently)
-       ("ghc-stringbuilder" ,ghc-stringbuilder)
-       ("ghc-temporary" ,ghc-temporary)
-       ("hspec-discover" ,hspec-discover)))
+     (list ghc-base-compat
+           ghc-hspec
+           ghc-quickcheck
+           ghc-silently
+           ghc-stringbuilder
+           ghc-temporary
+           hspec-discover))
     (home-page "https://github.com/sol/markdown-unlit#readme")
     (synopsis "Literate Haskell support for Markdown")
     (description "This package allows you to have a README.md that at the
@@ -7712,16 +7388,14 @@ same time is a literate Haskell program.")
     (build-system haskell-build-system)
     (arguments `(#:tests? #f))  ; FIXME: 1 test fails.
     (inputs
-     `(("ghc-data-default-class" ,ghc-data-default-class)
-       ("ghc-vector" ,ghc-vector)
-       ("ghc-vector-th-unbox" ,ghc-vector-th-unbox)))
+     (list ghc-data-default-class ghc-vector ghc-vector-th-unbox))
     (native-inputs
-     `(("ghc-hunit" ,ghc-hunit)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-erf" ,ghc-erf)
-       ("ghc-test-framework" ,ghc-test-framework)
-       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
-       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
+     (list ghc-hunit
+           ghc-quickcheck
+           ghc-erf
+           ghc-test-framework
+           ghc-test-framework-hunit
+           ghc-test-framework-quickcheck2))
     (home-page "https://github.com/bos/math-functions")
     (synopsis "Special functions and Chebyshev polynomials for Haskell")
     (description "This Haskell library provides implementations of
@@ -7744,14 +7418,9 @@ functions are often useful in statistical and numerical computing.")
          "00953zvxfyjibw8c1ssmixxh0cwn59pz24zbh6s34rk3v14vqa3j"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-case-insensitive" ,ghc-case-insensitive)
-       ("ghc-parser-combinators" ,ghc-parser-combinators)
-       ("ghc-scientific" ,ghc-scientific)))
+     (list ghc-case-insensitive ghc-parser-combinators ghc-scientific))
     (native-inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-hspec" ,ghc-hspec)
-       ("ghc-hspec-expectations" ,ghc-hspec-expectations)
-       ("hspec-discover" ,hspec-discover)))
+     (list ghc-quickcheck ghc-hspec ghc-hspec-expectations hspec-discover))
     (home-page "https://github.com/mrkkrp/megaparsec")
     (synopsis "Monadic parser combinators")
     (description
@@ -7773,12 +7442,9 @@ speed, flexibility, and quality of parse errors.")
                 "0a9mxcddnqn4359hk59d6l2zbh0vp154yb5vs1a8jw4l38n8kzz3"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-basement" ,ghc-basement)
-       ("ghc-foundation" ,ghc-foundation)))
+     (list ghc-basement ghc-foundation))
     (native-inputs
-     `(("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)))
+     (list ghc-tasty ghc-tasty-quickcheck ghc-tasty-hunit))
     (home-page "https://github.com/vincenthz/hs-memory")
     (synopsis "Memory abstractions for Haskell")
     (description
@@ -7805,7 +7471,7 @@ set, memory copy, ..) and more")
          "0lxsarhyhhkp58wpbp7b08scmjxq7s46jfl9vhp2yfq973hz0kaq"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-newtype-generics" ,ghc-newtype-generics)))
+     (list ghc-newtype-generics))
     (home-page "https://github.com/conal/MemoTrie")
     (synopsis "Trie-based memo functions")
     (description "This package provides a functional library for creating
@@ -7852,16 +7518,15 @@ stripped.  As the result, this package has no dependencies.")
          "074mzpk7av6i0xf7xy42jpzgljlmyw805md1vz4sqy85m99f0ikr"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-aeson" ,ghc-aeson)
-       ("ghc-attoparsec" ,ghc-attoparsec)
-       ("ghc-hashable" ,ghc-hashable)
-       ("ghc-microlens" ,ghc-microlens)
-       ("ghc-scientific" ,ghc-scientific)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)
-       ("ghc-vector" ,ghc-vector)))
+     (list ghc-aeson
+           ghc-attoparsec
+           ghc-hashable
+           ghc-microlens
+           ghc-scientific
+           ghc-unordered-containers
+           ghc-vector))
     (native-inputs
-     `(("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)))
+     (list ghc-tasty ghc-tasty-hunit))
     (home-page "https://github.com/fosskers/microlens-aeson")
     (synopsis "Law-abiding lenses for Aeson, using microlens")
     (description "This library provides law-abiding lenses for Aeson, using
@@ -7883,7 +7548,7 @@ microlens.")
         (base32
          "1r6x788br3f9rksj0dmk1nyh5mfvd9zzasclf1mi3rxhb7c0j926"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-microlens" ,ghc-microlens)))
+    (inputs (list ghc-microlens))
     (home-page "https://github.com/monadfix/microlens")
     (synopsis "Use @code{microlens} with GHC libraries like @code{array}")
     (description "This library provides everything that @code{microlens}
@@ -7910,8 +7575,7 @@ microlens} family; see the readme
          "0ijy7xyd5lbc3calhcrhy8czkf3fjcxrv68p7kd2a5b352rfi7fp"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-microlens" ,ghc-microlens)
-       ("ghc-transformers-compat" ,ghc-transformers-compat)))
+     (list ghc-microlens ghc-transformers-compat))
     (home-page "https://github.com/monadfix/microlens")
     (synopsis
      "@code{microlens} support for Reader/Writer/State from mtl")
@@ -7938,13 +7602,13 @@ readme @uref{https://github.com/aelve/microlens#readme, on Github}.")
          "0yf0z0glq2d6mpclzswc64h9w2cck4fd8l8ffm89pyb0a5n8m4c7"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-hashable" ,ghc-hashable)
-       ("ghc-microlens" ,ghc-microlens)
-       ("ghc-microlens-ghc" ,ghc-microlens-ghc)
-       ("ghc-microlens-mtl" ,ghc-microlens-mtl)
-       ("ghc-microlens-th" ,ghc-microlens-th)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)
-       ("ghc-vector" ,ghc-vector)))
+     (list ghc-hashable
+           ghc-microlens
+           ghc-microlens-ghc
+           ghc-microlens-mtl
+           ghc-microlens-th
+           ghc-unordered-containers
+           ghc-vector))
     (home-page "https://github.com/monadfix/microlens")
     (synopsis "Feature-complete microlens")
     (description
@@ -7980,9 +7644,8 @@ readme @uref{https://github.com/aelve/microlens#readme, on Github}.")
         (base32
          "1dg2xhj85fy8q39m5dd94kjlabjyxgc0336vzkg0174l6l110l1c"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-microlens" ,ghc-microlens)
-              ("ghc-th-abstraction" ,ghc-th-abstraction)))
-    (native-inputs `(("ghc-tagged" ,ghc-tagged)))
+    (inputs (list ghc-microlens ghc-th-abstraction))
+    (native-inputs (list ghc-tagged))
     (home-page
      "https://github.com/aelve/microlens")
     (synopsis "Automatic generation of record lenses for
@@ -8015,17 +7678,15 @@ used both from lens and microlens).")
                (("(random)\\s+[^,]+" all dep)
                 dep)))))))
     (inputs
-     `(("ghc-network" ,ghc-network)
-       ("ghc-hunit" ,ghc-hunit)
-       ("ghc-regex-compat" ,ghc-regex-compat)
-       ("ghc-hslogger" ,ghc-hslogger)
-       ("ghc-random" ,ghc-random)
-       ("ghc-old-time" ,ghc-old-time)
-       ("ghc-old-locale" ,ghc-old-locale)))
+     (list ghc-network
+           ghc-hunit
+           ghc-regex-compat
+           ghc-hslogger
+           ghc-random
+           ghc-old-time
+           ghc-old-locale))
     (native-inputs
-     `(("ghc-errorcall-eq-instance" ,ghc-errorcall-eq-instance)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-hunit" ,ghc-hunit)))
+     (list ghc-errorcall-eq-instance ghc-quickcheck ghc-hunit))
     ;; ‘Official’ <http://software.complete.org/missingh> redirects to a 404.
     (home-page "https://github.com/haskell-hvr/missingh")
     (synopsis "Large utility library")
@@ -8072,7 +7733,7 @@ do on-demand loading.")
          "0bq9m3hlfax1826gg5yhih79x33rvfx59wdh8yf43azd7l74bys6"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-transformers-compat" ,ghc-transformers-compat)))
+     (list ghc-transformers-compat))
     (home-page "https://hackage.haskell.org/package/mmorph")
     (synopsis "Monad morphisms")
     (description
@@ -8093,12 +7754,9 @@ manipulating monad transformer stacks.")
                 "09ypgm3z69gq8mj6y66ss58kbjnk15r8frwcwbqcfbfksfnfv8dp"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-temporary" ,ghc-temporary)
-       ("ghc-logging-facade" ,ghc-logging-facade)
-       ("ghc-base-compat" ,ghc-base-compat)))
+     (list ghc-temporary ghc-logging-facade ghc-base-compat))
     (native-inputs
-     `(("ghc-hspec" ,ghc-hspec)
-       ("hspec-discover" ,hspec-discover)))
+     (list ghc-hspec hspec-discover))
     (home-page "https://hackage.haskell.org/package/mockery")
     (synopsis "Support functions for automated testing")
     (description
@@ -8120,8 +7778,7 @@ manipulating monad transformer stacks.")
          "0g3if9km8ik80bcy130a826ig9wlk4bnf0qli3vmwdwr9nhaw2xf"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-transformers-base" ,ghc-transformers-base)
-       ("ghc-transformers-compat" ,ghc-transformers-compat)))
+     (list ghc-transformers-base ghc-transformers-compat))
     (home-page "https://github.com/basvandijk/monad-control")
     (synopsis "Monad transformers to lift control operations like exception
 catching")
@@ -8144,18 +7801,18 @@ a subset of @code{MonadBase} into which generic control operations such as
         (base32
          "12rw0k01gkhiqjm2fhxgkmribksmizhj14xphfn8fkd86wzl0vbh"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-transformers-compat" ,ghc-transformers-compat)
-              ("ghc-stm-chans" ,ghc-stm-chans)
-              ("ghc-lifted-base" ,ghc-lifted-base)
-              ("ghc-resourcet" ,ghc-resourcet)
-              ("ghc-conduit" ,ghc-conduit)
-              ("ghc-conduit-extra" ,ghc-conduit-extra)
-              ("ghc-fast-logger" ,ghc-fast-logger)
-              ("ghc-transformers-base" ,ghc-transformers-base)
-              ("ghc-monad-control" ,ghc-monad-control)
-              ("ghc-monad-loops" ,ghc-monad-loops)
-              ("ghc-blaze-builder" ,ghc-blaze-builder)
-              ("ghc-exceptions" ,ghc-exceptions)))
+    (inputs (list ghc-transformers-compat
+                  ghc-stm-chans
+                  ghc-lifted-base
+                  ghc-resourcet
+                  ghc-conduit
+                  ghc-conduit-extra
+                  ghc-fast-logger
+                  ghc-transformers-base
+                  ghc-monad-control
+                  ghc-monad-loops
+                  ghc-blaze-builder
+                  ghc-exceptions))
     (home-page "https://github.com/kazu-yamamoto/logger")
     (synopsis "Provides a class of monads which can log messages for Haskell")
     (description "This Haskell package uses a monad transformer approach
@@ -8179,8 +7836,7 @@ code locations of messages.")
         (base32
          "062c2sn3hc8h50p1mhqkpyv6x8dydz2zh3ridvlfjq9nqimszaky"))))
     (build-system haskell-build-system)
-    (native-inputs `(("ghc-tasty" ,ghc-tasty)
-                     ("ghc-tasty-hunit" ,ghc-tasty-hunit)))
+    (native-inputs (list ghc-tasty ghc-tasty-hunit))
     (home-page "https://github.com/mokus0/monad-loops")
     (synopsis "Monadic loops for Haskell")
     (description "This Haskell package provides some useful control
@@ -8205,19 +7861,15 @@ operators for looping.")
      `(#:tests? #f ; TODO: ghc-test-framework-th does not build.
        #:cabal-revision
        ("1" "17l7zjykf5iqjmw1pq4iwls7v9x9d3in94iikxabx43q5l2iccsm")))
-    (inputs `(("ghc-abstract-par" ,ghc-abstract-par)
-              ("ghc-abstract-deque" ,ghc-abstract-deque)
-              ("ghc-monad-par-extras" ,ghc-monad-par-extras)
-              ("ghc-mwc-random" ,ghc-mwc-random)
-              ("ghc-parallel" ,ghc-parallel)))
-    (native-inputs `(("ghc-quickcheck" ,ghc-quickcheck)
-                     ("ghc-hunit" ,ghc-hunit)
-                     ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
-                     ("ghc-test-framework-quickcheck2"
-                      ,ghc-test-framework-quickcheck2)
-                     ("ghc-test-framework" ,ghc-test-framework)
-                     ;("ghc-test-framework-th" ,ghc-test-framework-th)
-                     ))
+    (inputs (list ghc-abstract-par ghc-abstract-deque ghc-monad-par-extras
+                  ghc-mwc-random ghc-parallel))
+    (native-inputs (list ghc-quickcheck
+                         ghc-hunit
+                         ghc-test-framework-hunit
+                         ghc-test-framework-quickcheck2
+                         ghc-test-framework
+                         ;("ghc-test-framework-th" ,ghc-test-framework-th)
+                         ))
     (home-page "https://github.com/simonmar/monad-par")
     (synopsis "Haskell library for parallel programming based on a monad")
     (description "The @code{Par} monad offers an API for parallel
@@ -8241,9 +7893,7 @@ that are much lighter weight than IO-threads.")
         (base32
          "0bl4bd6jzdc5zm20q1g67ppkfh6j6yn8fwj6msjayj621cck67p2"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-abstract-par" ,ghc-abstract-par)
-              ("ghc-cereal" ,ghc-cereal)
-              ("ghc-random" ,ghc-random)))
+    (inputs (list ghc-abstract-par ghc-cereal ghc-random))
     (home-page "https://github.com/simonmar/monad-par")
     (synopsis "Combinators and extra features for Par monads for Haskell")
     (description "This Haskell package provides additional data structures,
@@ -8264,10 +7914,8 @@ and other added capabilities layered on top of the @code{Par} monad.")
         (base32
          "17qaw1gg42p9v6f87dj5vih7l88lddbyd8880ananj8avanls617"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-transformers-compat" ,ghc-transformers-compat)
-              ("ghc-primitive" ,ghc-primitive)
-              ("ghc-fail" ,ghc-fail)
-              ("ghc-random" ,ghc-random)))
+    (inputs (list ghc-transformers-compat ghc-primitive ghc-fail
+                  ghc-random))
     (home-page "https://github.com/byorgey/MonadRandom")
     (synopsis "Random-number generation monad for Haskell")
     (description "This Haskell package provides support for computations
@@ -8312,15 +7960,9 @@ the @code{mtl-tf} package.")
          "1dvlp7r7r1lc3fxkwaz68f1nffg83240q8a989x24x1x67rj1clq"))))
     (build-system haskell-build-system)
     (outputs '("out" "static" "doc"))
-    (inputs `(("ghc-unordered-containers" ,ghc-unordered-containers)
-              ("ghc-hashable" ,ghc-hashable)
-              ("ghc-vector" ,ghc-vector)
-              ("ghc-vector-algorithms" ,ghc-vector-algorithms)
-              ("ghc-split" ,ghc-split)))
-    (native-inputs `(("ghc-hspec" ,ghc-hspec)
-                     ("ghc-hunit" ,ghc-hunit)
-                     ("ghc-quickcheck" ,ghc-quickcheck)
-                     ("ghc-foldl" ,ghc-foldl)))
+    (inputs (list ghc-unordered-containers ghc-hashable ghc-vector
+                  ghc-vector-algorithms ghc-split))
+    (native-inputs (list ghc-hspec ghc-hunit ghc-quickcheck ghc-foldl))
     (home-page "https://github.com/snoyberg/mono-traversable")
     (synopsis "Haskell classes for mapping, folding, and traversing monomorphic
 containers")
@@ -8345,8 +7987,7 @@ data structures as non-empty.")
          "0ki1d3b1xpf653qj7brlqdgngghwrnmapy5gja75iiydfx2506a1"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-groups" ,ghc-groups)
-       ("ghc-semigroupoids" ,ghc-semigroupoids)))
+     (list ghc-groups ghc-semigroupoids))
     (home-page "https://hackage.haskell.org/package/monoid-extras")
     (synopsis "Various extra monoid-related definitions and utilities")
     (description "This package provides various extra monoid-related
@@ -8449,17 +8090,12 @@ binding.")
          "0ny2mw4am24d6ykrm8rbcjnrq6p2cjmzjb4m6qfk54wfdxflvmim"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-primitive" ,ghc-primitive)
-       ("ghc-vector" ,ghc-vector)
-       ("ghc-math-functions" ,ghc-math-functions)))
+     (list ghc-primitive ghc-vector ghc-math-functions))
     (arguments
      `(#:tests? #f)) ; FIXME: Test-Suite `spec` fails.
     (native-inputs
-     `(("ghc-hunit" ,ghc-hunit)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-test-framework" ,ghc-test-framework)
-       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
-       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
+     (list ghc-hunit ghc-quickcheck ghc-test-framework
+           ghc-test-framework-hunit ghc-test-framework-quickcheck2))
     (home-page "https://github.com/bos/mwc-random")
     (synopsis "Random number generation library for Haskell")
     (description "This Haskell package contains code for generating
@@ -8490,7 +8126,7 @@ between 2 and 3 times faster than the Mersenne Twister.")
     (build-system haskell-build-system)
     (arguments `(#:haddock? #f))
     (inputs
-     `(("ghc-hashable" ,ghc-hashable)))
+     (list ghc-hashable))
     (home-page "https://hackage.haskell.org/package/nats")
     (synopsis "Natural numbers")
     (description "This library provides the natural numbers for Haskell.")
@@ -8533,8 +8169,8 @@ between 2 and 3 times faster than the Mersenne Twister.")
        #:cabal-revision
        ("1"
         "1wfdy716s5p1sqp2gsg43x8wch2dxg0vmbbndlb2h3d8c9jzxnca")))
-    (inputs `(("ncurses" ,ncurses)))
-    (native-inputs `(("ghc-c2hs" ,ghc-c2hs)))
+    (inputs (list ncurses))
+    (native-inputs (list ghc-c2hs))
     (home-page "https://john-millikin.com/software/haskell-ncurses/")
     (synopsis "Modernised bindings to GNU ncurses")
     (description "GNU ncurses is a library for creating command-line application
@@ -8561,10 +8197,8 @@ ncurses.")
     ;; The regression tests depend on an unpublished module.
     (arguments `(#:tests? #f))
     (native-inputs
-     `(("ghc-hunit" ,ghc-hunit)
-       ("ghc-doctest" ,ghc-doctest)
-       ("ghc-test-framework" ,ghc-test-framework)
-       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)))
+     (list ghc-hunit ghc-doctest ghc-test-framework
+           ghc-test-framework-hunit))
     (home-page "https://github.com/haskell/network")
     (synopsis "Low-level networking interface")
     (description
@@ -8588,7 +8222,7 @@ ncurses.")
      `(#:cabal-revision
        ("4" "1gd9a8j7fwg0jz0s6il5fk9sl0hm19ja1w56ix51wa0qi2h5x56d")))
     (inputs
-     `(("ghc-network" ,ghc-network)))
+     (list ghc-network))
     (home-page "https://github.com/haskell/network-bsd")
     (synopsis "POSIX network database (<netdb.h>) API")
     (description "This package provides Haskell bindings to the the POSIX
@@ -8610,7 +8244,7 @@ network database (<netdb.h>) API.")
          "0pnwcg13k4qw82n0zc1xibyc24sc77y79j5a62pqdmjrnz4wrc7j"))))
     (build-system haskell-build-system)
     (native-inputs
-     `(("ghc-doctest" ,ghc-doctest)))
+     (list ghc-doctest))
     (home-page "https://hackage.haskell.org/package/network-byte-order")
     (synopsis "Network byte order utilities")
     (description "This library provides peek and poke functions for network
@@ -8655,8 +8289,7 @@ IPv4, IPv6 and MAC addresses.")
          "0whvi0pbwjy6dbwfdf9rv1j3yr3lcmfp3q7a8pwq63g537l4l2l3"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-network" ,ghc-network)
-       ("ghc-network-bsd" ,ghc-network-bsd)))
+     (list ghc-network ghc-network-bsd))
     (home-page
      "http://hackage.haskell.org/package/network-multicast")
     (synopsis "Simple multicast library for Haskell")
@@ -8686,13 +8319,10 @@ sending UDP datagrams over multicast (class D) addresses.")
          "111m485rx2kyqdymi1x6sl08hi6lp34q3f41yqcx99086swnv1ap"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-th-compat" ,ghc-th-compat)))
+     (list ghc-th-compat))
     (native-inputs
-     `(("ghc-hunit" ,ghc-hunit)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
-       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)))
+     (list ghc-hunit ghc-quickcheck ghc-tasty ghc-tasty-hunit
+           ghc-tasty-quickcheck))
     (home-page
      "https://github.com/haskell/network-uri")
     (synopsis "Library for URI manipulation")
@@ -8716,8 +8346,7 @@ sending UDP datagrams over multicast (class D) addresses.")
          "04bymwhkvlsgcsd0v630mndrzf0xnh3v81ba6nfzwcvbg3ksr2wa"))))
     (build-system haskell-build-system)
     (native-inputs
-     `(("ghc-hspec" ,ghc-hspec)
-       ("hspec-discover" ,hspec-discover)))
+     (list ghc-hspec hspec-discover))
     (home-page "https://github.com/sjakobi/newtype-generics")
     (synopsis "Typeclass and set of functions for working with newtypes")
     (description "The @code{Newtype} typeclass represents the packing and
@@ -8743,9 +8372,7 @@ and an alternative to newtype-th.")
          "0f01q916dzkl1i0v15qrw9cviycki5g3fgi6x8gs45iwbzssq52n"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-semigroups" ,ghc-semigroups)
-       ("ghc-utility-ht" ,ghc-utility-ht)
-       ("ghc-quickcheck" ,ghc-quickcheck)))
+     (list ghc-semigroups ghc-utility-ht ghc-quickcheck))
     (home-page "https://hackage.haskell.org/package/non-negative")
     (synopsis "Non-negative numbers class")
     (description "This library provides a class for non-negative numbers,
@@ -8772,10 +8399,8 @@ of Peano numbers).")
      `(#:cabal-revision
        ("2" "09xvg4lpmb1hw153afhbjrdg9v3npfwpdfhpv5y8b0qvb4zi3n9q")))
     (inputs
-     `(("ghc-base64-bytestring" ,ghc-base64-bytestring)
-       ("ghc-entropy" ,ghc-entropy)
-       ("ghc-unliftio" ,ghc-unliftio)
-       ("ghc-unliftio-core" ,ghc-unliftio-core)))
+     (list ghc-base64-bytestring ghc-entropy ghc-unliftio
+           ghc-unliftio-core))
     (home-page "https://github.com/prowdsponsor/nonce")
     (synopsis "Generate cryptographic nonces in Haskell")
     (description
@@ -8873,7 +8498,7 @@ date and time formats.")
      `(#:cabal-revision
        ("2" "1j6ln1dkvhdvnwl33bp0xf9lhc4sybqk0aw42p8cq81xwwzbn7y9")))
     (inputs
-     `(("ghc-old-locale" ,ghc-old-locale)))
+     (list ghc-old-locale))
     (home-page "https://hackage.haskell.org/package/old-time")
     (synopsis "Time compatibility library for Haskell")
     (description "Old-time is a package for backwards compatibility with the
@@ -8932,10 +8557,7 @@ traditionally so named type-wrapper for attaching typeclass instances.")
      `(#:cabal-revision
        ("1" "1748mrb6r9mpf5jbrx436lwbg8w6dadyy8dhxw2dwnrj5z7zf741")))
     (inputs
-     `(("ghc-objectname" ,ghc-objectname)
-       ("ghc-gluraw" ,ghc-gluraw)
-       ("ghc-statevar" ,ghc-statevar)
-       ("ghc-openglraw" ,ghc-openglraw)))
+     (list ghc-objectname ghc-gluraw ghc-statevar ghc-openglraw))
     (home-page "https://wiki.haskell.org/Opengl")
     (synopsis "Haskell bindings for the OpenGL graphics system")
     (description "This package provides Haskell bindings for the OpenGL
@@ -8961,9 +8583,7 @@ version 1.3).")
     (arguments
      `(#:extra-directories ("glu")))
     (inputs
-     `(("ghc-half" ,ghc-half)
-       ("ghc-fixed" ,ghc-fixed)
-       ("glu" ,glu)))
+     (list ghc-half ghc-fixed glu))
     (home-page "https://wiki.haskell.org/Opengl")
     (synopsis "Raw Haskell bindings for the OpenGL graphics system")
     (description "OpenGLRaw is a raw Haskell binding for the OpenGL 4.5
@@ -8991,7 +8611,7 @@ found at runtime, a userError is thrown.")
          "1hwmwbsxzwv68b39rv4gn3da6irv8zm89gqrkc3rdsgwi5ziyn3i"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-random" ,ghc-random)))
+     (list ghc-random))
     (home-page "http://wiki.haskell.org/Operational")
     (synopsis "Implementation of difficult monads made easy with operational semantics")
     (description
@@ -9048,9 +8668,7 @@ arguments.")
                (("chell >= 0\\.4 && < 0\\.5") "chell >= 0.4 && < 0.6"))
              #t)))))
     (inputs
-     `(("ghc-monads-tf" ,ghc-monads-tf)
-       ("ghc-chell" ,ghc-chell)
-       ("ghc-chell-quickcheck" ,ghc-chell-quickcheck)))
+     (list ghc-monads-tf ghc-chell ghc-chell-quickcheck))
     (home-page "https://john-millikin.com/software/haskell-options/")
     (synopsis "Powerful and easy-to-use command-line option parser")
     (description
@@ -9103,10 +8721,9 @@ easily work with command-line options.")
      `(#:cabal-revision
        ("1" "0401ik87gm9gjpch6lmkczygp59na3f1j7bcs6mc2r929c2xgsqn")))
     (inputs
-     `(("ghc-transformers-compat" ,ghc-transformers-compat)
-       ("ghc-ansi-wl-pprint" ,ghc-ansi-wl-pprint)))
+     (list ghc-transformers-compat ghc-ansi-wl-pprint))
     (native-inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)))
+     (list ghc-quickcheck))
     (home-page "https://github.com/pcapriotti/optparse-applicative")
     (synopsis "Utilities and combinators for parsing command line options")
     (description "This package provides utilities and combinators for parsing
@@ -9127,8 +8744,7 @@ command line options in Haskell.")
         (base32 "0p6axj6km4440ss5naw68r3r85si4qxqgrklp6ssfyapawy0s88w"))))
     (build-system haskell-build-system)
     (native-inputs
-     `(("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)))
+     (list ghc-tasty ghc-tasty-hunit))
     (home-page "https://github.com/tarleb/jira-wiki-markup")
     (synopsis "Handle Jira wiki markup")
     (description
@@ -9150,7 +8766,7 @@ to other formats.")
         (base32 "09x2xrppwypi369y7rzf3ln2g7c3g9qfckn2gydxpfzglcp9rziw"))))
     (build-system haskell-build-system)
     (native-inputs
-     `(("ghc-hunit" ,ghc-hunit)))
+     (list ghc-hunit))
     (home-page "https://github.com/jgm/emojis#readme")
     (synopsis "Conversion between emoji characters and their names.")
     (description
@@ -9183,12 +8799,9 @@ require aeson
         (base32 "0kbxin1q8xj9sgdl185gncrdjwcfzndp8sl5qll8y93l60yq8dxi"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-base16-bytestring" ,ghc-base16-bytestring)
-       ("ghc-base64-bytestring" ,ghc-base64-bytestring)
-       ("ghc-errors" ,ghc-errors)))
+     (list ghc-base16-bytestring ghc-base64-bytestring ghc-errors))
     (native-inputs
-     `(("ghc-hspec" ,ghc-hspec)
-       ("hspec-discover" ,hspec-discover)))
+     (list ghc-hspec hspec-discover))
     (home-page "https://github.com/cjdev/text-conversions#readme")
     (synopsis "Safe conversions between textual types")
     (description "Safe conversions between textual types")
@@ -9209,13 +8822,10 @@ require aeson
         (base32
          "0xyrxlb602z8bc9sr2y1fag0x56a20yj5qrkvy7iwc6hnznrynxz"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-hashable" ,ghc-hashable)))
+    (inputs (list ghc-hashable))
     (native-inputs
-     `(("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
-       ("ghc-quickcheck-instances"
-        ,ghc-quickcheck-instances)))
+     (list ghc-tasty ghc-tasty-quickcheck ghc-tasty-hunit
+           ghc-quickcheck-instances))
     (arguments
      `(#:tests? #f ; TODO: Needs tasty<1.3
        #:cabal-revision
@@ -9246,11 +8856,9 @@ plus the length of the UTF-8 encoded payload.")
         (base32 "07l1pyx93gv95cn1wh1di129axhm9sqsn4znykliacv60ld854ys"))))
     (build-system haskell-build-system)
     (native-inputs
-     `(("ghc-hspec" ,ghc-hspec)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("hspec-discover" ,hspec-discover)))
+     (list ghc-hspec ghc-quickcheck hspec-discover))
     (inputs
-     `(("ghc-vector" ,ghc-vector)))
+     (list ghc-vector))
     (home-page "https://github.com/jtdaugherty/text-zipper/")
     (synopsis "Text editor zipper library")
     (description
@@ -9277,13 +8885,10 @@ Implementations using both of these examples are provided.")
         (base32 "1p9kgjlf7y4p1symvkwndgs4lvyw2c45bsgld09y9r4aiqbhdrxp"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-safe" ,ghc-safe)
-       ("ghc-emojis" ,ghc-emojis)))
+     (list ghc-safe ghc-emojis))
     (native-inputs
-     `(("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-golden" ,ghc-tasty-golden)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
-       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)))
+     (list ghc-tasty ghc-tasty-golden ghc-tasty-hunit
+           ghc-tasty-quickcheck))
     (home-page "https://github.com/jgm/doclayout")
     (synopsis "Pretty-printing library for laying out text documents")
     (description
@@ -9317,68 +8922,68 @@ code.  It was designed for use in @code{Pandoc}.")
              #t)))))
     (outputs '("out" "static" "doc"))
     (inputs
-     `(("ghc-aeson" ,ghc-aeson)
-       ("ghc-aeson-pretty" ,ghc-aeson-pretty)
-       ("ghc-attoparsec" ,ghc-attoparsec)
-       ("ghc-base64-bytestring" ,ghc-base64-bytestring)
-       ("ghc-base-compat" ,ghc-base-compat)
-       ("ghc-blaze-html" ,ghc-blaze-html)
-       ("ghc-blaze-markup" ,ghc-blaze-markup)
-       ("ghc-case-insensitive" ,ghc-case-insensitive)
-       ("ghc-citeproc" ,ghc-citeproc)
-       ("ghc-commonmark-extensions" ,ghc-commonmark-extensions)
-       ("ghc-commonmark" ,ghc-commonmark)
-       ("ghc-commonmark-pandoc" ,ghc-commonmark-pandoc)
-       ("ghc-connection" ,ghc-connection)
-       ("ghc-data-default" ,ghc-data-default)
-       ("ghc-doclayout" ,ghc-doclayout)
-       ("ghc-doctemplates" ,ghc-doctemplates)
-       ("ghc-emojis" ,ghc-emojis)
-       ("ghc-file-embed" ,ghc-file-embed)
-       ("ghc-glob" ,ghc-glob)
-       ("ghc-haddock-library" ,ghc-haddock-library)
-       ("ghc-hslua" ,ghc-hslua)
-       ("ghc-hslua-module-path" ,ghc-hslua-module-path)
-       ("ghc-hslua-module-system" ,ghc-hslua-module-system)
-       ("ghc-hslua-module-text" ,ghc-hslua-module-text)
-       ("ghc-hsyaml" ,ghc-hsyaml)
-       ("ghc-http-client" ,ghc-http-client)
-       ("ghc-http-client-tls" ,ghc-http-client-tls)
-       ("ghc-http" ,ghc-http)
-       ("ghc-http-types" ,ghc-http-types)
-       ("ghc-ipynb" ,ghc-ipynb)
-       ("ghc-jira-wiki-markup" ,ghc-jira-wiki-markup)
-       ("ghc-juicypixels" ,ghc-juicypixels)
-       ("ghc-network" ,ghc-network)
-       ("ghc-network-uri" ,ghc-network-uri)
-       ("ghc-pandoc-types" ,ghc-pandoc-types)
-       ("ghc-random" ,ghc-random)
-       ("ghc-safe" ,ghc-safe)
-       ("ghc-scientific" ,ghc-scientific)
-       ("ghc-sha" ,ghc-sha)
-       ("ghc-skylighting-core" ,ghc-skylighting-core)
-       ("ghc-skylighting" ,ghc-skylighting)
-       ("ghc-split" ,ghc-split)
-       ("ghc-syb" ,ghc-syb)
-       ("ghc-tagsoup" ,ghc-tagsoup)
-       ("ghc-temporary" ,ghc-temporary)
-       ("ghc-texmath" ,ghc-texmath)
-       ("ghc-text-conversions" ,ghc-text-conversions)
-       ("ghc-unicode-collation" ,ghc-unicode-collation)
-       ("ghc-unicode-transforms" ,ghc-unicode-transforms)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)
-       ("ghc-xml-conduit" ,ghc-xml-conduit)
-       ("ghc-xml" ,ghc-xml)
-       ("ghc-zip-archive" ,ghc-zip-archive)
-       ("ghc-zlib" ,ghc-zlib)))
+     (list ghc-aeson
+           ghc-aeson-pretty
+           ghc-attoparsec
+           ghc-base64-bytestring
+           ghc-base-compat
+           ghc-blaze-html
+           ghc-blaze-markup
+           ghc-case-insensitive
+           ghc-citeproc
+           ghc-commonmark-extensions
+           ghc-commonmark
+           ghc-commonmark-pandoc
+           ghc-connection
+           ghc-data-default
+           ghc-doclayout
+           ghc-doctemplates
+           ghc-emojis
+           ghc-file-embed
+           ghc-glob
+           ghc-haddock-library
+           ghc-hslua
+           ghc-hslua-module-path
+           ghc-hslua-module-system
+           ghc-hslua-module-text
+           ghc-hsyaml
+           ghc-http-client
+           ghc-http-client-tls
+           ghc-http
+           ghc-http-types
+           ghc-ipynb
+           ghc-jira-wiki-markup
+           ghc-juicypixels
+           ghc-network
+           ghc-network-uri
+           ghc-pandoc-types
+           ghc-random
+           ghc-safe
+           ghc-scientific
+           ghc-sha
+           ghc-skylighting-core
+           ghc-skylighting
+           ghc-split
+           ghc-syb
+           ghc-tagsoup
+           ghc-temporary
+           ghc-texmath
+           ghc-text-conversions
+           ghc-unicode-collation
+           ghc-unicode-transforms
+           ghc-unordered-containers
+           ghc-xml-conduit
+           ghc-xml
+           ghc-zip-archive
+           ghc-zlib))
     (native-inputs
-     `(("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-golden" ,ghc-tasty-golden)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
-       ("ghc-tasty-lua" ,ghc-tasty-lua)
-       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
-       ("ghc-diff" ,ghc-diff)
-       ("ghc-quickcheck" ,ghc-quickcheck)))
+     (list ghc-tasty
+           ghc-tasty-golden
+           ghc-tasty-hunit
+           ghc-tasty-lua
+           ghc-tasty-quickcheck
+           ghc-diff
+           ghc-quickcheck))
     (home-page "https://pandoc.org")
     (synopsis "Conversion between markup formats")
     (description
@@ -9545,15 +9150,14 @@ version = Version [~a] []
 " (string-map (lambda (chr) (if (eq? chr #\.) #\, chr)) ,version))))
              #t)))))
     (inputs
-     `(("ghc-syb" ,ghc-syb)
-       ("ghc-aeson" ,ghc-aeson)))
+     (list ghc-syb ghc-aeson))
     (native-inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-test-framework" ,ghc-test-framework)
-       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
-       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)
-       ("ghc-string-qq" ,ghc-string-qq)
-       ("ghc-hunit" ,ghc-hunit)))
+     (list ghc-quickcheck
+           ghc-test-framework
+           ghc-test-framework-hunit
+           ghc-test-framework-quickcheck2
+           ghc-string-qq
+           ghc-hunit))
     (home-page "https://pandoc.org")
     (synopsis "Types for representing a structured document")
     (description
@@ -9645,12 +9249,12 @@ combinators.")
     (arguments `(#:tests? #f)) ; FIXME: Test fails with "cannot satisfy
                                ; -package attoparsec-0.13.0.1"
     (inputs
-     `(("ghc-base-orphans" ,ghc-base-orphans)
-       ("ghc-attoparsec" ,ghc-attoparsec)
-       ("ghc-scientific" ,ghc-scientific)
-       ("ghc-semigroups" ,ghc-semigroups)
-       ("ghc-charset" ,ghc-charset)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)))
+     (list ghc-base-orphans
+           ghc-attoparsec
+           ghc-scientific
+           ghc-semigroups
+           ghc-charset
+           ghc-unordered-containers))
     (home-page "https://github.com/ekmett/parsers/")
     (synopsis "Parsing combinators")
     (description "This library provides convenient combinators for working
@@ -9679,16 +9283,15 @@ the parsers provided by @code{parsec}, @code{attoparsec} and @code{base}'s
      `(#:cabal-revision
        ("1" "02vhx94mqapyigvayb6cj7p7snn354pb542n3qyvsm0gih52wlja")))
     (inputs
-     `(("ghc-aeson" ,ghc-aeson)
-       ("ghc-hashable" ,ghc-hashable)))
+     (list ghc-aeson ghc-hashable))
     (native-inputs
-     `(("ghc-hspec" ,ghc-hspec)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-genvalidity" ,ghc-genvalidity)
-       ("ghc-genvalidity-hspec" ,ghc-genvalidity-hspec)
-       ("ghc-genvalidity-property" ,ghc-genvalidity-property)
-       ("ghc-hspec" ,ghc-hspec)
-       ("ghc-validity" ,ghc-validity)))
+     (list ghc-hspec
+           ghc-quickcheck
+           ghc-genvalidity
+           ghc-genvalidity-hspec
+           ghc-genvalidity-property
+           ghc-hspec
+           ghc-validity))
     (home-page
      "https://hackage.haskell.org/package/path")
     (synopsis "Support for well-typed paths")
@@ -9715,14 +9318,14 @@ invariants.")
      `(#:cabal-revision
        ("3" "0rsr9r2175lf7zcz2sns0mhxkvl21pm50sjidjq5v75nalrsw6rp")))
     (inputs
-     `(("ghc-dlist" ,ghc-dlist)
-       ("ghc-exceptions" ,ghc-exceptions)
-       ("ghc-path" ,ghc-path)
-       ("ghc-transformers-base" ,ghc-transformers-base)
-       ("ghc-unix-compat" ,ghc-unix-compat)
-       ("ghc-temporary" ,ghc-temporary)))
+     (list ghc-dlist
+           ghc-exceptions
+           ghc-path
+           ghc-transformers-base
+           ghc-unix-compat
+           ghc-temporary))
     (native-inputs
-     `(("ghc-hspec" ,ghc-hspec)))
+     (list ghc-hspec))
     (home-page
      "https://github.com/mrkkrp/path-io")
     (synopsis "Functions for manipulating well-typed paths")
@@ -9820,10 +9423,9 @@ rules.")
     (arguments
      `(#:extra-directories ("pcre")))
     (inputs
-     `(("pcre" ,pcre)))
+     (list pcre))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("ghc-hunit" ,ghc-hunit)))
+     (list pkg-config ghc-hunit))
     (home-page "https://github.com/Daniel-Diaz/pcre-light")
     (synopsis "Haskell library for Perl 5 compatible regular expressions")
     (description "This package provides a small, efficient, and portable regex
@@ -9847,30 +9449,28 @@ syntax and semantics as Perl 5.")
          "13lp9i94f57qhifdmr1vnsrra34526f7kqa1sybcaj2jh2v3q85k"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-aeson" ,ghc-aeson)
-       ("ghc-attoparsec" ,ghc-attoparsec)
-       ("ghc-base64-bytestring" ,ghc-base64-bytestring)
-       ("ghc-blaze-html" ,ghc-blaze-html)
-       ("ghc-conduit" ,ghc-conduit)
-       ("ghc-fast-logger" ,ghc-fast-logger)
-       ("ghc-http-api-data" ,ghc-http-api-data)
-       ("ghc-lift-type" ,ghc-lift-type)
-       ("ghc-monad-logger" ,ghc-monad-logger)
-       ("ghc-path-pieces" ,ghc-path-pieces)
-       ("ghc-resource-pool" ,ghc-resource-pool)
-       ("ghc-resourcet" ,ghc-resourcet)
-       ("ghc-scientific" ,ghc-scientific)
-       ("ghc-silently" ,ghc-silently)
-       ("ghc-th-lift-instances" ,ghc-th-lift-instances)
-       ("ghc-unliftio-core" ,ghc-unliftio-core)
-       ("ghc-unliftio" ,ghc-unliftio)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)
-       ("ghc-vector" ,ghc-vector)))
+     (list ghc-aeson
+           ghc-attoparsec
+           ghc-base64-bytestring
+           ghc-blaze-html
+           ghc-conduit
+           ghc-fast-logger
+           ghc-http-api-data
+           ghc-lift-type
+           ghc-monad-logger
+           ghc-path-pieces
+           ghc-resource-pool
+           ghc-resourcet
+           ghc-scientific
+           ghc-silently
+           ghc-th-lift-instances
+           ghc-unliftio-core
+           ghc-unliftio
+           ghc-unordered-containers
+           ghc-vector))
     (native-inputs
-     `(("ghc-hspec" ,ghc-hspec)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-quickcheck-instances" ,ghc-quickcheck-instances)
-       ("ghc-shakespeare" ,ghc-shakespeare)))
+     (list ghc-hspec ghc-quickcheck ghc-quickcheck-instances
+           ghc-shakespeare))
     (home-page "https://www.yesodweb.com/book/persistent")
     (synopsis "Type-safe, multi-backend data serialization for Haskell")
     (description "This Haskell package allows Haskell programs to access data
@@ -9892,28 +9492,26 @@ storage systems like PostgreSQL, SQLite, and MariaDB in a type-safe way.")
          "12za89crbk74mya4qxpw5fp5fqp64vwz5s8vbjd7m8r3j3vbw338"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-persistent" ,ghc-persistent)
-       ("ghc-aeson" ,ghc-aeson)
-       ("ghc-conduit" ,ghc-conduit)
-       ("ghc-microlens-th" ,ghc-microlens-th)
-       ("ghc-monad-logger" ,ghc-monad-logger)
-       ("ghc-resource-pool" ,ghc-resource-pool)
-       ("ghc-resourcet" ,ghc-resourcet)
-       ("ghc-unliftio-core" ,ghc-unliftio-core)
-       ("ghc-unordered-containers"
-        ,ghc-unordered-containers)))
+     (list ghc-persistent
+           ghc-aeson
+           ghc-conduit
+           ghc-microlens-th
+           ghc-monad-logger
+           ghc-resource-pool
+           ghc-resourcet
+           ghc-unliftio-core
+           ghc-unordered-containers))
     (native-inputs
-     `(("ghc-persistent-template"
-        ,ghc-persistent-template)
-       ("ghc-persistent-test" ,ghc-persistent-test)
-       ("ghc-exceptions" ,ghc-exceptions)
-       ("ghc-fast-logger" ,ghc-fast-logger)
-       ("ghc-hspec" ,ghc-hspec)
-       ("ghc-hunit" ,ghc-hunit)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-system-fileio" ,ghc-system-fileio)
-       ("ghc-system-filepath" ,ghc-system-filepath)
-       ("ghc-temporary" ,ghc-temporary)))
+     (list ghc-persistent-template
+           ghc-persistent-test
+           ghc-exceptions
+           ghc-fast-logger
+           ghc-hspec
+           ghc-hunit
+           ghc-quickcheck
+           ghc-system-fileio
+           ghc-system-filepath
+           ghc-temporary))
     (home-page
      "https://www.yesodweb.com/book/persistent")
     (synopsis "Backend for the persistent library using sqlite3")
@@ -9937,18 +9535,16 @@ system dependencies.")
          "0c9cs27j43azimj74s2m2cdks87682ibpy1xbyzvygipgmb8nj6w"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-persistent" ,ghc-persistent)
-       ("ghc-aeson" ,ghc-aeson)
-       ("ghc-http-api-data" ,ghc-http-api-data)
-       ("ghc-monad-control" ,ghc-monad-control)
-       ("ghc-monad-logger" ,ghc-monad-logger)
-       ("ghc-path-pieces" ,ghc-path-pieces)
-       ("ghc-th-lift-instances" ,ghc-th-lift-instances)
-       ("ghc-unordered-containers"
-        ,ghc-unordered-containers)))
+     (list ghc-persistent
+           ghc-aeson
+           ghc-http-api-data
+           ghc-monad-control
+           ghc-monad-logger
+           ghc-path-pieces
+           ghc-th-lift-instances
+           ghc-unordered-containers))
     (native-inputs
-     `(("ghc-hspec" ,ghc-hspec)
-       ("ghc-quickcheck" ,ghc-quickcheck)))
+     (list ghc-hspec ghc-quickcheck))
     (home-page "https://www.yesodweb.com/book/persistent")
     (synopsis "Type-safe, non-relational, multi-backend persistence")
     (description "This Haskell package provides interfaces and helper
@@ -9970,26 +9566,23 @@ functions for the ghc-persistent package.")
          "07q53jvhz00cf10k7a8fkvykgwcl10fgzh8k9gv1d248f336crvs"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-aeson" ,ghc-aeson)
-       ("ghc-blaze-html" ,ghc-blaze-html)
-       ("ghc-conduit" ,ghc-conduit)
-       ("ghc-monad-control" ,ghc-monad-control)
-       ("ghc-monad-logger" ,ghc-monad-logger)
-       ("ghc-path-pieces" ,ghc-path-pieces)
-       ("ghc-persistent" ,ghc-persistent)
-       ("ghc-persistent-template" ,ghc-persistent-template)
-       ("ghc-random" ,ghc-random)
-       ("ghc-resourcet" ,ghc-resourcet)
-       ("ghc-transformers-base" ,ghc-transformers-base)
-       ("ghc-unliftio" ,ghc-unliftio)
-       ("ghc-unliftio-core" ,ghc-unliftio-core)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)))
+     (list ghc-aeson
+           ghc-blaze-html
+           ghc-conduit
+           ghc-monad-control
+           ghc-monad-logger
+           ghc-path-pieces
+           ghc-persistent
+           ghc-persistent-template
+           ghc-random
+           ghc-resourcet
+           ghc-transformers-base
+           ghc-unliftio
+           ghc-unliftio-core
+           ghc-unordered-containers))
     (native-inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-quickcheck-instances" ,ghc-quickcheck-instances)
-       ("ghc-hspec" ,ghc-hspec)
-       ("ghc-hspec-expectations" ,ghc-hspec-expectations)
-       ("ghc-hunit" ,ghc-hunit)))
+     (list ghc-quickcheck ghc-quickcheck-instances ghc-hspec
+           ghc-hspec-expectations ghc-hunit))
     (home-page "https://www.yesodweb.com/book/persistent")
     (synopsis "Tests for the Persistent database library")
     (description
@@ -10014,13 +9607,10 @@ libraries.")
          "15g6qh0fb7kjj3l0w8cama7cxgnhnhybw760md9yy7cqfq15cfzg"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-vector" ,ghc-vector)))
+     (list ghc-vector))
     (native-inputs
-     `(("ghc-hunit" ,ghc-hunit)
-       ("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
-       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
-       ("ghc-doctest" ,ghc-doctest)))
+     (list ghc-hunit ghc-tasty ghc-tasty-hunit ghc-tasty-quickcheck
+           ghc-doctest))
     (home-page
      "https://github.com/quchen/pgp-wordlist")
     (synopsis
@@ -10052,15 +9642,10 @@ For further information, see
          "163lx5sf68zx5kik5h1fjsyckwr9shdsn5k2dsjq3mhg077nxqgl"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-exceptions" ,ghc-exceptions)
-       ("ghc-mmorph" ,ghc-mmorph)
-       ("ghc-void" ,ghc-void)
-       ("ghc-semigroups" ,ghc-semigroups)))
+     (list ghc-exceptions ghc-mmorph ghc-void ghc-semigroups))
     (native-inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-test-framework" ,ghc-test-framework)
-       ("ghc-test-framework-quickcheck2"
-        ,ghc-test-framework-quickcheck2)))
+     (list ghc-quickcheck ghc-test-framework
+           ghc-test-framework-quickcheck2))
     (home-page
      "https://hackage.haskell.org/package/pipes")
     (synopsis "Compositional pipelines")
@@ -10150,7 +9735,7 @@ Strings.")
          "1sz7hlnfd86hbwrgqxczmsjsl1ki0ryi9dgzscxlsgjkdgcdia2p"))))
     (build-system haskell-build-system)
     (native-inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)))
+     (list ghc-quickcheck))
     (home-page "https://hackage.haskell.org/package/pqueue")
     (synopsis "Reliable, persistent, fast priority queues")
     (description
@@ -10216,13 +9801,13 @@ types.")
         (base32 "0i8b3wjjpdvp5b857j065jwyrpgcnzgk75imrj7i3yhl668acvjy"))))
     (build-system haskell-build-system)
     (native-inputs
-     `(("ghc-doctest" ,ghc-doctest)
-       ("ghc-pgp-wordlist" ,ghc-pgp-wordlist)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-quickcheck-instances" ,ghc-quickcheck-instances)
-       ("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
-       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)))
+     (list ghc-doctest
+           ghc-pgp-wordlist
+           ghc-quickcheck
+           ghc-quickcheck-instances
+           ghc-tasty
+           ghc-tasty-hunit
+           ghc-tasty-quickcheck))
     (home-page "https://github.com/quchen/prettyprinter")
     (synopsis
      "Modern, easy to use, well-documented, extensible pretty-printer")
@@ -10246,9 +9831,8 @@ clashes, @code{Text}-based, extensible.")
         (base32 "1cqxbcmy9ykk4pssq5hp6h51g2h547zfz549awh0c1fni8q3jdw1"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-ansi-terminal" ,ghc-ansi-terminal)
-       ("ghc-prettyprinter" ,ghc-prettyprinter)))
-    (native-inputs `(("ghc-doctest" ,ghc-doctest)))
+     (list ghc-ansi-terminal ghc-prettyprinter))
+    (native-inputs (list ghc-doctest))
     (home-page
      "https://github.com/quchen/prettyprinter")
     (synopsis
@@ -10290,8 +9874,7 @@ ByteStrings in the style of other common *nix hex dump tools.")
          "1lkgvbv00v1amvpqli6y4dzsbs25l4v3wlagvhwx8qxhw2390zrh"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-haskell-lexer" ,ghc-haskell-lexer)
-       ("ghc-happy" ,ghc-happy)))
+     (list ghc-haskell-lexer ghc-happy))
     (home-page "https://wiki.github.com/yav/pretty-show")
     (synopsis "Tools for working with derived `Show` instances")
     (description
@@ -10319,15 +9902,10 @@ examination.")
     (build-system haskell-build-system)
 
     (inputs
-     `(("ghc-aeson" ,ghc-aeson)
-       ("ghc-optparse-applicative" ,ghc-optparse-applicative)
-       ("ghc-prettyprinter-ansi-terminal" ,ghc-prettyprinter-ansi-terminal)
-       ("ghc-prettyprinter" ,ghc-prettyprinter)))
+     (list ghc-aeson ghc-optparse-applicative
+           ghc-prettyprinter-ansi-terminal ghc-prettyprinter))
     (native-inputs
-     `(("cabal-doctest" ,cabal-doctest)
-       ("ghc-doctest" ,ghc-doctest)
-       ("ghc-glob" ,ghc-glob)
-       ("ghc-quickcheck" ,ghc-quickcheck)))
+     (list cabal-doctest ghc-doctest ghc-glob ghc-quickcheck))
     (home-page "https://github.com/cdepillabout/pretty-simple")
     (synopsis "Pretty printer for data types with a 'Show' instance")
     (description
@@ -10382,10 +9960,7 @@ Show instance.")
          "0klqgr37f1z2z6i0a9b0giapmq0p35l5k9kz1p7f0k1597w7agi9"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-data-default" ,ghc-data-default)
-       ("ghc-generic-deriving" ,ghc-generic-deriving)
-       ("ghc-hunit" ,ghc-hunit)
-       ("ghc-listlike" ,ghc-listlike)))
+     (list ghc-data-default ghc-generic-deriving ghc-hunit ghc-listlike))
     (home-page "https://github.com/seereason/process-extras")
     (synopsis "Extra tools for managing processes")
     (description "This package extends
@@ -10413,13 +9988,13 @@ API.")
     (build-system haskell-build-system)
     (outputs '("out" "static" "doc"))
     (inputs
-     `(("ghc-base-orphans" ,ghc-base-orphans)
-       ("ghc-bifunctors" ,ghc-bifunctors)
-       ("ghc-comonad" ,ghc-comonad)
-       ("ghc-contravariant" ,ghc-contravariant)
-       ("ghc-distributive" ,ghc-distributive)
-       ("ghc-semigroups" ,ghc-semigroups)
-       ("ghc-tagged" ,ghc-tagged)))
+     (list ghc-base-orphans
+           ghc-bifunctors
+           ghc-comonad
+           ghc-contravariant
+           ghc-distributive
+           ghc-semigroups
+           ghc-tagged))
     (home-page "https://github.com/ekmett/profunctors/")
     (synopsis "Profunctors for Haskell")
     (description "This library provides profunctors for Haskell.")
@@ -10440,14 +10015,10 @@ API.")
          "0ac43x36i6b595jhflif1qqhri1rrqw90ama5n7rsh0ffnzyb69d"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-base64-bytestring" ,ghc-base64-bytestring)
-       ("ghc-conduit" ,ghc-conduit)
-       ("ghc-conduit-extra" ,ghc-conduit-extra)
-       ("ghc-resourcet" ,ghc-resourcet)))
+     (list ghc-base64-bytestring ghc-conduit ghc-conduit-extra
+           ghc-resourcet))
     (native-inputs
-     `(("ghc-hspec" ,ghc-hspec)
-       ("hspec-discover" ,hspec-discover)
-       ("ghc-quickcheck" ,ghc-quickcheck)))
+     (list ghc-hspec hspec-discover ghc-quickcheck))
     (home-page "https://github.com/fpco/haskell-ide")
     (synopsis "Specify Haskell project templates and generate files")
     (description
@@ -10477,11 +10048,8 @@ the ideal templating system.")
          "1b6wprbwfdjyvds2bm6na0fbqgzdkj5ikkk33whbkyh3krd3i0s0"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-async" ,ghc-async)
-       ("ghc-hashable" ,ghc-hashable)
-       ("ghc-mtl-compat" ,ghc-mtl-compat)
-       ("ghc-paths" ,ghc-paths)
-       ("ghc-transformers-compat" ,ghc-transformers-compat)))
+     (list ghc-async ghc-hashable ghc-mtl-compat ghc-paths
+           ghc-transformers-compat))
     (home-page "https://github.com/protolude/protolude")
     (synopsis "Sensible set of defaults for writing custom Preludes")
     (description
@@ -10534,14 +10102,14 @@ keys, in linear time.")
        #:cabal-revision
        ("1" "0d0mm3c8x31dasfzp1884r2irkm3c9irvvbahjzfr1bzzxfb7vyv")))
     (inputs
-     `(("ghc-hashable" ,ghc-hashable)))
+     (list ghc-hashable))
     (native-inputs
-     `(("ghc-hunit" ,ghc-hunit)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-tagged" ,ghc-tagged)
-       ("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
-       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)))
+     (list ghc-hunit
+           ghc-quickcheck
+           ghc-tagged
+           ghc-tasty
+           ghc-tasty-hunit
+           ghc-tasty-quickcheck))
     (home-page "https://github.com/jaspervdj/psqueues")
     (synopsis "Pure priority search queues")
     (description "The psqueues package provides
@@ -10599,10 +10167,7 @@ Typical applications of Priority Search Queues include:
          "1cpvlwzg3qznhygrr78f75p65mnljd9v5cvnagfxjqppnrkay6bj"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-base64-bytestring" ,ghc-base64-bytestring)
-       ("ghc-cryptohash" ,ghc-cryptohash)
-       ("ghc-random" ,ghc-random)
-       ("ghc-byteable" ,ghc-byteable)))
+     (list ghc-base64-bytestring ghc-cryptohash ghc-random ghc-byteable))
     (home-page "https://github.com/PeterScott/pwstore")
     (synopsis "Secure password storage")
     (description
@@ -10676,7 +10241,7 @@ library, including the ability to split random number generators.")
         (base32
          "1lxy1wy3awf52968iy5y9r5z4qgnn2sxkdrh7js3m9gadb11w09f"))))
     (build-system haskell-build-system)
-    (native-inputs `(("ghc-hunit" ,ghc-hunit)))
+    (native-inputs (list ghc-hunit))
     (home-page "https://github.com/23Skidoo/raw-strings-qq")
     (synopsis "Raw string literals for Haskell")
     (description
@@ -10723,22 +10288,22 @@ includes efficient implementations for common data types.")
     (build-system haskell-build-system)
     (outputs '("out" "static" "doc"))
     (inputs
-     `(("ghc-bifunctors" ,ghc-bifunctors)
-       ("ghc-comonad" ,ghc-comonad)
-       ("ghc-contravariant" ,ghc-contravariant)
-       ("ghc-dlist" ,ghc-dlist)
-       ("ghc-either" ,ghc-either)
-       ("ghc-hashable" ,ghc-hashable)
-       ("ghc-hashable-time" ,ghc-hashable-time)
-       ("ghc-profunctors" ,ghc-profunctors)
-       ("ghc-scientific" ,ghc-scientific)
-       ("ghc-selective" ,ghc-selective)
-       ("ghc-semigroupoids" ,ghc-semigroupoids)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)
-       ("ghc-uuid-types" ,ghc-uuid-types)
-       ("ghc-vector" ,ghc-vector)
-       ("ghc-vector-instances" ,ghc-vector-instances)
-       ("ghc-void" ,ghc-void)))
+     (list ghc-bifunctors
+           ghc-comonad
+           ghc-contravariant
+           ghc-dlist
+           ghc-either
+           ghc-hashable
+           ghc-hashable-time
+           ghc-profunctors
+           ghc-scientific
+           ghc-selective
+           ghc-semigroupoids
+           ghc-unordered-containers
+           ghc-uuid-types
+           ghc-vector
+           ghc-vector-instances
+           ghc-void))
     (home-page "https://github.com/nikita-volkov/rebase")
     (synopsis "Progressive alternative to the base package
 for Haskell")
@@ -10784,11 +10349,8 @@ the community, with the missing features being added with pull-requests.")
      '(#:cabal-revision
        ("2" "1kd38n9h2hxl09khvkvkhnflgm6rbky1zkw3iazlpb8xk9zkk39s")))
     (inputs
-     `(("ghc-fingertree" ,ghc-fingertree)
-       ("ghc-hashable" ,ghc-hashable)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)
-       ("ghc-semigroupoids" ,ghc-semigroupoids)
-       ("ghc-semigroups" ,ghc-semigroups)))
+     (list ghc-fingertree ghc-hashable ghc-unordered-containers
+           ghc-semigroupoids ghc-semigroups))
     (home-page "https://github.com/ekmett/reducers/")
     (synopsis "Semigroups, specialized containers and a general map/reduce framework")
     (description "This library provides various semigroups, specialized
@@ -10832,11 +10394,9 @@ specify refactorings without depending on GHC.")
         (base32
          "1kd6dgnp99dzbkxdnj01g81j03v7zq5cwg0sf19rlcmvgs8i8gmz"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-tagged" ,ghc-tagged)))
+    (inputs (list ghc-tagged))
     (native-inputs
-     `(("ghc-hspec" ,ghc-hspec)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("hspec-discover" ,hspec-discover)))
+     (list ghc-hspec ghc-quickcheck hspec-discover))
     (home-page "https://github.com/ekmett/reflection")
     (synopsis "Reify arbitrary terms into types that can be reflected back
 into terms")
@@ -10871,14 +10431,14 @@ configurations to coexist without resorting to mutable global variables or
                 "template-haskell >= 2.7\n"))
              #t)))))
     (inputs
-     `(("ghc-base-compat" ,ghc-base-compat)
-       ("ghc-hashable" ,ghc-hashable)
-       ("ghc-regex-base" ,ghc-regex-base)
-       ("ghc-regex-pcre-builtin" ,ghc-regex-pcre-builtin)
-       ("ghc-regex-tdfa" ,ghc-regex-tdfa)
-       ("ghc-time-locale-compat" ,ghc-time-locale-compat)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)
-       ("ghc-utf8-string" ,ghc-utf8-string)))
+     (list ghc-base-compat
+           ghc-hashable
+           ghc-regex-base
+           ghc-regex-pcre-builtin
+           ghc-regex-tdfa
+           ghc-time-locale-compat
+           ghc-unordered-containers
+           ghc-utf8-string))
     (home-page "http://regex.uk")
     (synopsis "Toolkit for regex-base")
     (description
@@ -10904,12 +10464,9 @@ copious examples.")
         (base32
          "0di66pi2kq5rrsn0k6pwakzwa0bgi9jfb2csm72kp5gzqdws8s8p"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-filtrable" ,ghc-filtrable)))
+    (inputs (list ghc-filtrable))
     (native-inputs
-     `(("ghc-smallcheck" ,ghc-smallcheck)
-       ("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
-       ("ghc-tasty-smallcheck" ,ghc-tasty-smallcheck)))
+     (list ghc-smallcheck ghc-tasty ghc-tasty-hunit ghc-tasty-smallcheck))
     (home-page "https://github.com/feuerbach/regex-applicative")
     (synopsis "Regex-based parsing with applicative interface")
     (description
@@ -10955,8 +10512,7 @@ regex-posix, regex-pcre, regex-parsec, regex-tdfa, regex-dfa.")
          "0ivrdrcphrz3g6nr5wbsmfiv8i82caw0kf6z5qlmlq7xf9n3hywg"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-regex-base" ,ghc-regex-base)
-       ("ghc-regex-posix" ,ghc-regex-posix)))
+     (list ghc-regex-base ghc-regex-posix))
     (home-page "https://sourceforge.net/projects/lazy-regex")
     (synopsis "Replaces/Enhances Text.Regex")
     (description "This library provides one module layer over
@@ -10978,8 +10534,7 @@ regex-posix, regex-pcre, regex-parsec, regex-tdfa, regex-dfa.")
          "1p90fn90yhp7fvljjdqjp41cszidcfz4pw7fwvzyx4739b98x8sg"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-regex-base" ,ghc-regex-base)
-       ("ghc-regex-tdfa" ,ghc-regex-tdfa)))
+     (list ghc-regex-base ghc-regex-tdfa))
     (home-page "https://hub.darcs.net/shelarcy/regex-compat-tdfa")
     (synopsis "Unicode Support version of Text.Regex, using regex-tdfa")
     (description
@@ -11005,10 +10560,9 @@ this problem.")
      `(#:extra-directories ("pcre")
        #:cabal-revision
        ("3" "1mxy2y7dmv37hhsasm17x2mb9dhmzza13pc7jfrk77inpig78ib8")))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs (list pkg-config))
     (inputs
-     `(("ghc-regex-base" ,ghc-regex-base)
-       ("pcre" ,pcre)))
+     (list ghc-regex-base pcre))
     (home-page "https://hackage.haskell.org/package/regex-pcre")
     (synopsis "Enhancement of the builtin Text.Regex library")
     (description
@@ -11031,7 +10585,7 @@ expressions.")
                 "0pn55ssrwr05c9sa9jvp0knvzjksz04wn3pmzf5dz4xgbyjadkna"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-regex-base" ,ghc-regex-base)))
+     (list ghc-regex-base))
     (home-page "https://hackage.haskell.org/package/regex-pcre-builtin")
     (synopsis "Enhancement of the builtin Text.Regex library")
     (description
@@ -11056,7 +10610,7 @@ providing the PCRE backend to accompany regex-base, with bundled code from
          "1715b57z67q4hg0jz44wkxrxi3v7n5iagw6gw48pf8hr34wpr0n7"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-regex-base" ,ghc-regex-base)))
+     (list ghc-regex-base))
     (home-page "https://sourceforge.net/projects/lazy-regex")
     (synopsis "POSIX regular expressions for Haskell")
     (description "This library provides the POSIX regex backend used by the
@@ -11081,8 +10635,8 @@ Haskell library @code{regex-base}.")
      '(#:cabal-revision
        ("1" "02gwf740vs0jy3l6dgw72r8c04yggshia6w16n140ncpsici8c4r")))
     (inputs
-     `(("ghc-regex-base" ,ghc-regex-base)))
-    (native-inputs `(("ghc-utf8-string" ,ghc-utf8-string)))
+     (list ghc-regex-base))
+    (native-inputs (list ghc-utf8-string))
     (home-page "https://github.com/haskell-hvr/regex-tdfa")
     (synopsis "POSIX extended regular expressions in Haskell.")
     (description
@@ -11107,8 +10661,7 @@ inspired by libtre.")
          "1dspwi28krinkxdd7waq4y6plz0dfmzz72885p9pcqp1r14qrhj3"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-exceptions" ,ghc-exceptions)
-       ("ghc-haskeline" ,ghc-haskeline)))
+     (list ghc-exceptions ghc-haskeline))
     (home-page "https://github.com/sdiehl/repline")
     (synopsis "Haskeline wrapper for GHCi-like REPL interfaces")
     (description
@@ -11132,7 +10685,7 @@ normal mtl transformers.")
     (build-system haskell-build-system)
     (outputs '("out" "static" "doc"))
     (inputs
-     `(("ghc-rebase" ,ghc-rebase)))
+     (list ghc-rebase))
     (home-page "https://github.com/nikita-volkov/rerebase")
     (synopsis "Reexports from ``base'' with many other standard libraries")
     (description "A rich drop-in replacement for @code{base}.  For details and
@@ -11159,10 +10712,9 @@ the project's home page}.")
        #:cabal-revision
        ("3" "0af5dsdyn04i76d012xhhfkkml10bqzl6q2yivkhf8rlvh1fiii5")))
     (inputs
-     `(("ghc-base16-bytestring" ,ghc-base16-bytestring)))
+     (list ghc-base16-bytestring))
     (native-inputs
-     `(("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)))
+     (list ghc-tasty ghc-tasty-hunit))
     (home-page "https://github.com/haskell/hackage-security")
     (synopsis "Domain Name Service (DNS) lookup via @code{libresolv}")
     (description "This package implements an API for accessing the
@@ -11186,10 +10738,8 @@ Unix systems.")
         (base32
          "04mw8b9djb14zp4rdi6h7mc3zizh597ffiinfbr4m0m8psifw9w6"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-hashable" ,ghc-hashable)
-              ("ghc-monad-control" ,ghc-monad-control)
-              ("ghc-transformers-base" ,ghc-transformers-base)
-              ("ghc-vector" ,ghc-vector)))
+    (inputs (list ghc-hashable ghc-monad-control ghc-transformers-base
+                  ghc-vector))
     (home-page "https://github.com/bos/pool")
     (synopsis "Striped resource pooling implementation in Haskell")
     (description "This Haskell package provides striped pooling abstraction
@@ -11211,15 +10761,14 @@ connections.")
          "0zrvnikw1a0r2j59k12fxikyrg0ki5a7xhqhjgfl9h6dqpz54h85"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-transformers-base" ,ghc-transformers-base)
-       ("ghc-monad-control" ,ghc-monad-control)
-       ("ghc-transformers-compat" ,ghc-transformers-compat)
-       ("ghc-mmorph" ,ghc-mmorph)
-       ("ghc-exceptions" ,ghc-exceptions)
-       ("ghc-unliftio-core" ,ghc-unliftio-core)))
+     (list ghc-transformers-base
+           ghc-monad-control
+           ghc-transformers-compat
+           ghc-mmorph
+           ghc-exceptions
+           ghc-unliftio-core))
     (native-inputs
-     `(("ghc-lifted-base" ,ghc-lifted-base)
-       ("ghc-hspec" ,ghc-hspec)))
+     (list ghc-lifted-base ghc-hspec))
     (home-page "https://github.com/snoyberg/conduit")
     (synopsis "Deterministic allocation and freeing of scarce resources")
     (description "ResourceT is a monad transformer which creates a region of
@@ -11240,14 +10789,10 @@ code where you can safely allocate resources.")
          "0nwyis42xpmxfw8nz8qn59r3v7q0dkfzkzkhllgn30cdjbbmwhf5"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-exceptions" ,ghc-exceptions)
-       ("ghc-random" ,ghc-random)))
+     (list ghc-exceptions ghc-random))
     (native-inputs
-     `(("ghc-hunit" ,ghc-hunit)
-       ("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
-       ("ghc-tasty-hedgehog" ,ghc-tasty-hedgehog)
-       ("ghc-hedgehog" ,ghc-hedgehog)))
+     (list ghc-hunit ghc-tasty ghc-tasty-hunit ghc-tasty-hedgehog
+           ghc-hedgehog))
     (home-page "https://github.com/Soostone/retry")
     (synopsis "Retry combinators for monadic actions that may fail")
     (description "This package exposes combinators that can wrap
@@ -11298,19 +10843,17 @@ better for some purposes.")
          "013m4xgsmg8h1rba9krxppz49lc5wz26gksms5zibsjj0w59m58h"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-hashable" ,ghc-hashable)
-       ("ghc-microlens" ,ghc-microlens)
-       ("ghc-microlens-mtl" ,ghc-microlens-mtl)
-       ("ghc-primitive" ,ghc-primitive)
-       ("ghc-typed-process" ,ghc-typed-process)
-       ("ghc-unliftio-core" ,ghc-unliftio-core)
-       ("ghc-unliftio" ,ghc-unliftio)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)
-       ("ghc-vector" ,ghc-vector)))
+     (list ghc-hashable
+           ghc-microlens
+           ghc-microlens-mtl
+           ghc-primitive
+           ghc-typed-process
+           ghc-unliftio-core
+           ghc-unliftio
+           ghc-unordered-containers
+           ghc-vector))
     (native-inputs
-     `(("ghc-hspec" ,ghc-hspec)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("hspec-discover" ,hspec-discover)))
+     (list ghc-hspec ghc-quickcheck hspec-discover))
     (home-page "https://github.com/commercialhaskell/rio#readme")
     (synopsis "A standard library for Haskell")
     (description "This package works as a prelude replacement for Haskell,
@@ -11342,7 +10885,7 @@ expose it from another module in the hierarchy.
          "18pp6cn9np9jgs01x9mac6wk41k34g86fx5ibfarbapqr1138115"))))
     (build-system haskell-build-system)
     (native-inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)))
+     (list ghc-quickcheck))
     (home-page "https://github.com/ndmitchell/safe#readme")
     (synopsis "Library of safe (exception free) functions")
     (description "This library provides wrappers around @code{Prelude} and
@@ -11365,9 +10908,7 @@ exceptions.")
          "15a80s87f603w8l7fnaba2cyqx62042vvcidpjzyga2685wpyqv9"))))
     (build-system haskell-build-system)
     (native-inputs
-     `(("ghc-hspec" ,ghc-hspec)
-       ("ghc-void" ,ghc-void)
-       ("hspec-discover" ,hspec-discover)))
+     (list ghc-hspec ghc-void hspec-discover))
     (home-page "https://github.com/fpco/safe-exceptions")
     (synopsis "Safe, consistent, and easy exception handling")
     (description "Runtime exceptions - as exposed in @code{base} by the
@@ -11393,15 +10934,11 @@ handling wrong.")
          "04g3070cbjdqj0h9l9ii6470xcbn40xfv4fr89a8yvnkdim9nyfm"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-conduit" ,ghc-conduit)
-       ("ghc-conduit-combinators" ,ghc-conduit-combinators)
-       ("ghc-exceptions" ,ghc-exceptions)
-       ("ghc-resourcet" ,ghc-resourcet)))
+     (list ghc-conduit ghc-conduit-combinators ghc-exceptions
+           ghc-resourcet))
     (native-inputs
-     `(("ghc-hunit" ,ghc-hunit)
-       ("ghc-test-framework" ,ghc-test-framework)
-       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
-       ("ghc-test-framework-th" ,ghc-test-framework-th)))
+     (list ghc-hunit ghc-test-framework ghc-test-framework-hunit
+           ghc-test-framework-th))
     (home-page "https://github.com/luispedro/safeio")
     (synopsis "Write output to disk atomically")
     (description
@@ -11423,7 +10960,7 @@ avoid the problem of partial intermediate files.")
          "0rpg9j6fy70i0b9dkrip9d6wim0nac0snp7qzbhykjkqlcvvgr91"))))
     (build-system haskell-build-system)
     (native-inputs
-     `(("ghc-hunit" ,ghc-hunit)))
+     (list ghc-hunit))
     (home-page "https://github.com/ChrisKuklewicz/SafeSemaphore")
     (synopsis "Exception safe semaphores")
     (description "This library provides exception safe semaphores that can be
@@ -11446,14 +10983,14 @@ are not exception safe and can be broken by @code{killThread}.")
          "1ndgai8idlxyccvkz5zsgq06v58blc30i6hkky5b1sf5x6gs2h29"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-stringsearch" ,ghc-stringsearch)
-       ("ghc-conduit" ,ghc-conduit)
-       ("ghc-exceptions" ,ghc-exceptions)
-       ("ghc-hunit" ,ghc-hunit)
-       ("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
-       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
-       ("ghc-tasty-th" ,ghc-tasty-th)))
+     (list ghc-stringsearch
+           ghc-conduit
+           ghc-exceptions
+           ghc-hunit
+           ghc-tasty
+           ghc-tasty-hunit
+           ghc-tasty-quickcheck
+           ghc-tasty-th))
     (home-page "https://hackage.haskell.org/package/sandi")
     (synopsis "Data encoding library")
     (description "Reasonably fast data encoding library.")
@@ -11475,9 +11012,7 @@ are not exception safe and can be broken by @code{killThread}.")
          "1r5kffjfwpas45g74sip8glrj1m9nygrnxjm7xgw898rq9pnafgn"))))
     (build-system haskell-build-system)
     (native-inputs
-     `(("ghc-hspec" ,ghc-hspec)
-       ("hspec-discover" ,hspec-discover)
-       ("ghc-unliftio" ,ghc-unliftio)))
+     (list ghc-hspec hspec-discover ghc-unliftio))
     (home-page "https://github.com/fpco/say")
     (synopsis
      "Send textual messages to a Handle in a thread-friendly way")
@@ -11509,17 +11044,15 @@ as sending some messages to the terminal - that has the following properties:
          "1aa3ngb71l2sh1x2829napnr1w285q0sn2f7z2wvi3ynng2238d3"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-integer-logarithms" ,ghc-integer-logarithms)
-       ("ghc-hashable" ,ghc-hashable)
-       ("ghc-primitive" ,ghc-primitive)))
+     (list ghc-integer-logarithms ghc-hashable ghc-primitive))
     (native-inputs
-     `(("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-ant-xml" ,ghc-tasty-ant-xml)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
-       ("ghc-tasty-smallcheck" ,ghc-tasty-smallcheck)
-       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
-       ("ghc-smallcheck" ,ghc-smallcheck)
-       ("ghc-quickcheck" ,ghc-quickcheck)))
+     (list ghc-tasty
+           ghc-tasty-ant-xml
+           ghc-tasty-hunit
+           ghc-tasty-smallcheck
+           ghc-tasty-quickcheck
+           ghc-smallcheck
+           ghc-quickcheck))
     (home-page "https://github.com/basvandijk/scientific")
     (synopsis "Numbers represented using scientific notation")
     (description "This package provides @code{Data.Scientific}, which provides
@@ -11557,7 +11090,7 @@ notation}.")
          "00y67v80a8l09i3k76z09lg25kw72ivl09nag8ckdlk4a0cfnzfq"))))
     (build-system haskell-build-system)
     (inputs
-     `(("sdl" ,sdl)))
+     (list sdl))
     (home-page "https://hackage.haskell.org/package/SDL")
     (synopsis "LibSDL for Haskell")
     (description "Simple DirectMedia Layer (libSDL) is a cross-platform
@@ -11582,14 +11115,9 @@ award winning Linux port of \"Civilization: Call To Power.\"")
     (build-system haskell-build-system)
     (arguments '(#:tests? #f)) ; tests require graphical environment
     (inputs
-     `(("ghc-exceptions" ,ghc-exceptions)
-       ("ghc-linear" ,ghc-linear)
-       ("ghc-statevar" ,ghc-statevar)
-       ("ghc-vector" ,ghc-vector)
-       ("sdl2" ,sdl2)))
+     (list ghc-exceptions ghc-linear ghc-statevar ghc-vector sdl2))
     (native-inputs
-     `(("ghc-weigh" ,ghc-weigh)
-       ("pkg-config" ,pkg-config)))
+     (list ghc-weigh pkg-config))
     (home-page "https://hackage.haskell.org/package/sdl2")
     (synopsis "High- and low-level bindings to the SDL library")
     (description
@@ -11617,10 +11145,9 @@ programming.")
          "1pr6dkg73cy9z0w54lrkj9c5bhxj56nl92lxikjy8kz6nyr455rr"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-sdl2" ,ghc-sdl2)
-       ("sdl2-image" ,sdl2-image)))
+     (list ghc-sdl2 sdl2-image))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://hackage.haskell.org/package/sdl2-image")
     (synopsis "Bindings to SDL2_image")
     (description "This package provides Haskell bindings to
@@ -11641,14 +11168,14 @@ programming.")
          "1k8avyccq5l9z7bwxigim312yaancxl1sr3q6a96bcm7pnhiak0g"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-data-default-class" ,ghc-data-default-class)
-       ("ghc-lifted-base" ,ghc-lifted-base)
-       ("ghc-monad-control" ,ghc-monad-control)
-       ("ghc-sdl2" ,ghc-sdl2)
-       ("ghc-vector" ,ghc-vector)
-       ("sdl2-mixer" ,sdl2-mixer)))
+     (list ghc-data-default-class
+           ghc-lifted-base
+           ghc-monad-control
+           ghc-sdl2
+           ghc-vector
+           sdl2-mixer))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://hackage.haskell.org/package/sdl2-mixer")
     (synopsis "Bindings to SDL2 mixer")
     (description "This package provides Haskell bindings to
@@ -11676,8 +11203,7 @@ programming.")
               (sdl-image-include (string-append sdl-image "/include/SDL")))
          (list (string-append "--extra-include-dirs=" sdl-image-include)))))
     (inputs
-     `(("ghc-sdl" ,ghc-sdl)
-       ("sdl-image" ,sdl-image)))
+     (list ghc-sdl sdl-image))
     (home-page "https://hackage.haskell.org/package/SDL-image")
     (synopsis "Haskell bindings to libSDL_image")
     (description "SDL_image is an image file loading library.  It loads images
@@ -11706,8 +11232,7 @@ PNG, PNM, TGA, TIFF, XCF, XPM, XV.")
               (sdl-mixer-include (string-append sdl-mixer "/include/SDL")))
          (list (string-append "--extra-include-dirs=" sdl-mixer-include)))))
     (inputs
-     `(("ghc-sdl" ,ghc-sdl)
-       ("sdl-mixer" ,sdl-mixer)))
+     (list ghc-sdl sdl-mixer))
     (home-page "https://hackage.haskell.org/package/SDL-mixer")
     (synopsis "Haskell bindings to libSDL_mixer")
     (description "SDL_mixer is a sample multi-channel audio mixer library.  It
@@ -11730,8 +11255,7 @@ MIDI, Ogg Vorbis, and SMPEG MP3 libraries.")
         (base32
          "19hnw2cfbsfjynxq1bq9f6djbxhsc1k751ml0y1ab3ah913mm29j"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-byteable" ,ghc-byteable)
-              ("ghc-memory" ,ghc-memory)))
+    (inputs (list ghc-byteable ghc-memory))
     (home-page "https://github.com/vincenthz/hs-securemem")
     (synopsis "Auto-scrubbing and const-time-eq memory chunk abstraction for
 Haskell")
@@ -11755,13 +11279,13 @@ a memory chunk that will be auto-scrubbed after it run out of scope.")
          "11qs4imy3cq4cx9mm6g30r6qk3rngqrmz7lkl5379gs1yvgvs44q"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-these" ,ghc-these)
-       ("ghc-base-compat" ,ghc-base-compat)
-       ("ghc-hashable" ,ghc-hashable)
-       ("ghc-tagged" ,ghc-tagged)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)
-       ("ghc-vector" ,ghc-vector)
-       ("ghc-semigroupoids" ,ghc-semigroupoids)))
+     (list ghc-these
+           ghc-base-compat
+           ghc-hashable
+           ghc-tagged
+           ghc-unordered-containers
+           ghc-vector
+           ghc-semigroupoids))
     (home-page
      "https://github.com/isomorphism/these")
     (synopsis
@@ -11792,16 +11316,16 @@ class, forming lattice-like structure.")
     (build-system haskell-build-system)
     (outputs '("out" "static" "doc"))
     (inputs
-     `(("ghc-base-orphans" ,ghc-base-orphans)
-       ("ghc-transformers-compat" ,ghc-transformers-compat)
-       ("ghc-bifunctors" ,ghc-bifunctors)
-       ("ghc-comonad" ,ghc-comonad)
-       ("ghc-contravariant" ,ghc-contravariant)
-       ("ghc-distributive" ,ghc-distributive)
-       ("ghc-generic-deriving" ,ghc-generic-deriving)
-       ("ghc-hashable" ,ghc-hashable)
-       ("ghc-tagged" ,ghc-tagged)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)))
+     (list ghc-base-orphans
+           ghc-transformers-compat
+           ghc-bifunctors
+           ghc-comonad
+           ghc-contravariant
+           ghc-distributive
+           ghc-generic-deriving
+           ghc-hashable
+           ghc-tagged
+           ghc-unordered-containers))
     (home-page "https://github.com/ekmett/semigroupoids")
     (synopsis "Semigroupoids operations for Haskell")
     (description "This library provides a wide array of (semi)groupoids and
@@ -11830,10 +11354,7 @@ just a @code{Semigroup} are added.")
          "0h1sl3i6k8csy5zkkpy65rxzds9wg577z83aaakybr3n1gcv4855"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-nats" ,ghc-nats)
-       ("ghc-tagged" ,ghc-tagged)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)
-       ("ghc-hashable" ,ghc-hashable)))
+     (list ghc-nats ghc-tagged ghc-unordered-containers ghc-hashable))
     (home-page "https://github.com/ekmett/semigroups/")
     (synopsis "Semigroup operations for Haskell")
     (description "This package provides semigroups for Haskell.  In
@@ -11850,10 +11371,8 @@ semigroup.")
     (inherit ghc-semigroups)
     (name "ghc-semigroups-bootstrap")
     (inputs
-     `(("ghc-nats" ,ghc-nats-bootstrap)
-       ("ghc-tagged" ,ghc-tagged)
-       ("ghc-unordered-containers" ,ghc-unordered-containers-bootstrap)
-       ("ghc-hashable" ,ghc-hashable-bootstrap)))
+     (list ghc-nats-bootstrap ghc-tagged
+           ghc-unordered-containers-bootstrap ghc-hashable-bootstrap))
     (properties '((hidden? #t)))))
 
 (define-public ghc-serialise
@@ -11872,18 +11391,15 @@ semigroup.")
          "0vp4wyxpximpx10pssfgdsir1pc23zb62fg3kj3iblpzqfrryy69"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-cborg" ,ghc-cborg)
-       ("ghc-half" ,ghc-half)
-       ("ghc-hashable" ,ghc-hashable)
-       ("ghc-primitive" ,ghc-primitive)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)
-       ("ghc-vector" ,ghc-vector)))
+     (list ghc-cborg
+           ghc-half
+           ghc-hashable
+           ghc-primitive
+           ghc-unordered-containers
+           ghc-vector))
     (native-inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
-       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
-       ("ghc-quickcheck-instances" ,ghc-quickcheck-instances)))
+     (list ghc-quickcheck ghc-tasty ghc-tasty-hunit ghc-tasty-quickcheck
+           ghc-quickcheck-instances))
     (arguments
      `(#:cabal-revision
        ("2" "1qcsp15v0swxy2qlvc40fil09zq32y3wl00y3passc2a4b4yhmr4")))
@@ -11960,16 +11476,14 @@ environment variables.")
         (base32
          "1fjv3yg425d87d3dih0l3ff95g5a5yp9w85m58sjara6xqivj9s4"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-aeson" ,ghc-aeson)
-              ("ghc-blaze-markup" ,ghc-blaze-markup)
-              ("ghc-blaze-html" ,ghc-blaze-html)
-              ("ghc-vector" ,ghc-vector)
-              ("ghc-th-lift" ,ghc-th-lift)
-              ("ghc-unordered-containers" ,ghc-unordered-containers)
-              ("ghc-scientific" ,ghc-scientific)))
-    (native-inputs `(("ghc-hspec" ,ghc-hspec)
-                     ("ghc-hunit" ,ghc-hunit)
-                     ("hspec-discover" ,hspec-discover)))
+    (inputs (list ghc-aeson
+                  ghc-blaze-markup
+                  ghc-blaze-html
+                  ghc-vector
+                  ghc-th-lift
+                  ghc-unordered-containers
+                  ghc-scientific))
+    (native-inputs (list ghc-hspec ghc-hunit hspec-discover))
     (home-page "https://www.yesodweb.com/book/shakespearean-templates")
     (synopsis "Family of type-safe template languages for Haskell")
     (description "This Haskell package provides a family of type-safe
@@ -11993,19 +11507,19 @@ interpolates variables according to the type being inserted.")
          "1kma77gixhyciimh19p64h1ndbcrs9qhk8fgyv71iqh5q57zvday"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-unix-compat" ,ghc-unix-compat)
-       ("ghc-system-filepath-bootstrap" ,ghc-system-filepath-bootstrap)
-       ("ghc-system-fileio-bootstrap" ,ghc-system-fileio-bootstrap)
-       ("ghc-monad-control" ,ghc-monad-control)
-       ("ghc-lifted-base" ,ghc-lifted-base)
-       ("ghc-lifted-async" ,ghc-lifted-async)
-       ("ghc-exceptions" ,ghc-exceptions)
-       ("ghc-enclosed-exceptions" ,ghc-enclosed-exceptions)
-       ("ghc-async" ,ghc-async)
-       ("ghc-transformers-base" ,ghc-transformers-base)
-       ("ghc-hunit" ,ghc-hunit)
-       ("ghc-hspec" ,ghc-hspec)
-       ("ghc-hspec-contrib" ,ghc-hspec-contrib)))
+     (list ghc-unix-compat
+           ghc-system-filepath-bootstrap
+           ghc-system-fileio-bootstrap
+           ghc-monad-control
+           ghc-lifted-base
+           ghc-lifted-async
+           ghc-exceptions
+           ghc-enclosed-exceptions
+           ghc-async
+           ghc-transformers-base
+           ghc-hunit
+           ghc-hspec
+           ghc-hspec-contrib))
     (home-page "https://github.com/yesodweb/Shelly.hs")
     (synopsis "Shell-like (systems) programming in Haskell")
     (description
@@ -12077,13 +11591,9 @@ them.")
          "112j0qfsjazf9wg1zywf7hjybgsiywk9wkm27yi8xzv27hmlv1mn"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-conduit" ,ghc-conduit)
-       ("ghc-conduit-extra" ,ghc-conduit-extra)
-       ("ghc-network" ,ghc-network)
-       ("ghc-resourcet" ,ghc-resourcet)))
+     (list ghc-conduit ghc-conduit-extra ghc-network ghc-resourcet))
     (native-inputs
-     `(("ghc-hspec" ,ghc-hspec)
-       ("hspec-discover" ,hspec-discover)))
+     (list ghc-hspec hspec-discover))
     (home-page "https://github.com/kazu-yamamoto/simple-sendfile")
     (synopsis "Cross platform library for the sendfile system call")
     (description "This library tries to call minimum system calls which
@@ -12104,9 +11614,8 @@ are the bottleneck of web servers.")
          "06hmlic0n73ncwlkpx49xlv09bzsrr27ncnp5byhzlknak2gd7vp"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-dictionary-sharing" ,ghc-dictionary-sharing)
-       ("ghc-testing-type-modifiers" ,ghc-testing-type-modifiers)
-       ("ghc-template-haskell" ,ghc-template-haskell)))
+     (list ghc-dictionary-sharing ghc-testing-type-modifiers
+           ghc-template-haskell))
     (arguments
      `(#:cabal-revision
        ("1" "0kax1ypjyglkn6iff1x4yz12y7f2n249m95xvdhrc63hsa4xlcqv")
@@ -12137,24 +11646,24 @@ enumerations.")
                 "0bskci0gng6nf324wna9ss4xbr1mwjkgk3mlfkr96r1m3wza5g3d"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-aeson" ,ghc-aeson)
-       ("ghc-ansi-terminal" ,ghc-ansi-terminal)
-       ("ghc-attoparsec" ,ghc-attoparsec)
-       ("ghc-base64-bytestring" ,ghc-base64-bytestring)
-       ("ghc-blaze-html" ,ghc-blaze-html)
-       ("ghc-case-insensitive" ,ghc-case-insensitive)
-       ("ghc-colour" ,ghc-colour)
-       ("ghc-safe" ,ghc-safe)
-       ("ghc-utf8-string" ,ghc-utf8-string)
-       ("ghc-xml-conduit" ,ghc-xml-conduit)))
+     (list ghc-aeson
+           ghc-ansi-terminal
+           ghc-attoparsec
+           ghc-base64-bytestring
+           ghc-blaze-html
+           ghc-case-insensitive
+           ghc-colour
+           ghc-safe
+           ghc-utf8-string
+           ghc-xml-conduit))
     (native-inputs
-     `(("ghc-diff" ,ghc-diff)
-       ("ghc-pretty-show" ,ghc-pretty-show)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-golden" ,ghc-tasty-golden)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
-       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)))
+     (list ghc-diff
+           ghc-pretty-show
+           ghc-quickcheck
+           ghc-tasty
+           ghc-tasty-golden
+           ghc-tasty-hunit
+           ghc-tasty-quickcheck))
     (home-page "https://github.com/jgm/skylighting")
     (synopsis "Syntax highlighting library")
     (description "Skylighting is a syntax highlighting library with support
@@ -12177,8 +11686,8 @@ provided.  Skylighting is intended to be the successor to highlighting-kate.")
                (base32
                 "152ywiy7h04xjy0fdl571jwahl6c9350isqbm4p0na4cjd9cczzh"))))
     (inputs
-     `(("ghc-skylighting-core" ,ghc-skylighting-core)
-       ,@(package-inputs ghc-skylighting-core)))))
+     (modify-inputs (package-inputs ghc-skylighting-core)
+       (prepend ghc-skylighting-core)))))
 
 (define-public ghc-smallcheck
   (package
@@ -12196,7 +11705,7 @@ provided.  Skylighting is intended to be the successor to highlighting-kate.")
          "0sf87zjlrgjw7q6a0499g2ywx66zvpv6rg6953fjc18fnl8rs7z4"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-logict" ,ghc-logict)))
+     (list ghc-logict))
     (home-page
      "https://github.com/feuerbach/smallcheck")
     (synopsis "Property-based testing library")
@@ -12218,9 +11727,7 @@ automatically by SmallCheck.")
                 "0wvaxy3dkv97wrncjv1rxrmjr4014hgxz82kixvcwqdhidalfi3k"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-cereal" ,ghc-cereal)
-       ("ghc-basement" ,ghc-basement)
-       ("ghc-network" ,ghc-network)))
+     (list ghc-cereal ghc-basement ghc-network))
     (home-page "https://github.com/vincenthz/hs-socks")
     (synopsis "SOCKS proxy (version 5) implementation")
     (description
@@ -12265,9 +11772,7 @@ generics-sop}.")
          "1kkdw2c4d2hha99v9f89ahmifjxp7fxmxyfwq9a8xk6s0h9xs51w"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-scientific" ,ghc-scientific)
-       ("ghc-ieee754" ,ghc-ieee754)
-       ("ghc-nats" ,ghc-nats)))
+     (list ghc-scientific ghc-ieee754 ghc-nats))
     (home-page
      "https://github.com/minad/special-values#readme")
     (synopsis "Typeclass providing special values")
@@ -12295,7 +11800,7 @@ used for example by QuickCheck, see quickcheck-special."  )
      `(#:cabal-revision
        ("1" "06pmlvyrz4rr7rsrghpyrdypprphm9522rvnz4l3i8333n4pb304")))
     (native-inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)))
+     (list ghc-quickcheck))
     (home-page "https://hackage.haskell.org/package/split")
     (synopsis "Combinator library for splitting lists")
     (description "This package provides a collection of Haskell functions for
@@ -12317,16 +11822,16 @@ mainstream languages.")
          "0das5n44dhlcv5i233iakx37d17kidqvhrvp6w9nd7hc015ry026"))))
     (build-system haskell-build-system)
     (native-inputs
-     `(("ghc-async" ,ghc-async)
-       ("ghc-base-compat-batteries" ,ghc-base-compat-batteries)
-       ("ghc-base-compat" ,ghc-base-compat)
-       ("ghc-hunit" ,ghc-hunit)
-       ("ghc-math-functions" ,ghc-math-functions)
-       ("ghc-random" ,ghc-random-bootstrap)
-       ("ghc-test-framework" ,ghc-test-framework)
-       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
-       ("ghc-tf-random" ,ghc-tf-random)
-       ("ghc-vector" ,ghc-vector)))
+     (list ghc-async
+           ghc-base-compat-batteries
+           ghc-base-compat
+           ghc-hunit
+           ghc-math-functions
+           ghc-random-bootstrap
+           ghc-test-framework
+           ghc-test-framework-hunit
+           ghc-tf-random
+           ghc-vector))
     (home-page "https://hackage.haskell.org/package/splitmix")
     (synopsis "Fast and splittable pseudorandom number generator")
     (description "This package provides a Pure Haskell implementation of the
@@ -12421,27 +11926,27 @@ in the @code{IO} monad, like @code{IORef}s or parts of the OpenGL state.")
      '(;; Two tests fail: "Discrete CDF is OK" and "Quantile is CDF inverse".
        #:tests? #t))
     (inputs
-     `(("ghc-aeson" ,ghc-aeson)
-       ("ghc-async" ,ghc-async)
-       ("ghc-base-orphans" ,ghc-base-orphans)
-       ("ghc-data-default-class" ,ghc-data-default-class)
-       ("ghc-dense-linear-algebra" ,ghc-dense-linear-algebra)
-       ("ghc-math-functions" ,ghc-math-functions)
-       ("ghc-monad-par" ,ghc-monad-par)
-       ("ghc-mwc-random" ,ghc-mwc-random)
-       ("ghc-primitive" ,ghc-primitive)
-       ("ghc-vector" ,ghc-vector)
-       ("ghc-vector-algorithms" ,ghc-vector-algorithms)
-       ("ghc-vector-th-unbox" ,ghc-vector-th-unbox)
-       ("ghc-vector-binary-instances" ,ghc-vector-binary-instances)))
+     (list ghc-aeson
+           ghc-async
+           ghc-base-orphans
+           ghc-data-default-class
+           ghc-dense-linear-algebra
+           ghc-math-functions
+           ghc-monad-par
+           ghc-mwc-random
+           ghc-primitive
+           ghc-vector
+           ghc-vector-algorithms
+           ghc-vector-th-unbox
+           ghc-vector-binary-instances))
     (native-inputs
-     `(("ghc-erf" ,ghc-erf)
-       ("ghc-ieee754" ,ghc-ieee754)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-tasty-expected-failure" ,ghc-tasty-expected-failure)
-       ("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
-       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)))
+     (list ghc-erf
+           ghc-ieee754
+           ghc-quickcheck
+           ghc-tasty-expected-failure
+           ghc-tasty
+           ghc-tasty-hunit
+           ghc-tasty-quickcheck))
     (home-page "https://github.com/bos/mwc-random")
     (synopsis "Haskell library of statistical types, data, and functions")
     (description "This library provides a number of common functions
@@ -12501,23 +12006,23 @@ features.")
          "0hhlxvpp7mah8dcvkknh6skx44jfk3092zz2w52zlr255bkmn3p8"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-stm-chans" ,ghc-stm-chans)
-       ("ghc-cereal" ,ghc-cereal)
-       ("ghc-cereal-conduit" ,ghc-cereal-conduit)
-       ("ghc-conduit" ,ghc-conduit)
-       ("ghc-conduit-extra" ,ghc-conduit-extra)
-       ("ghc-exceptions" ,ghc-exceptions)
-       ("ghc-resourcet" ,ghc-resourcet)
-       ("ghc-async" ,ghc-async)
-       ("ghc-monad-loops" ,ghc-monad-loops)
-       ("ghc-unliftio" ,ghc-unliftio)))
+     (list ghc-stm-chans
+           ghc-cereal
+           ghc-cereal-conduit
+           ghc-conduit
+           ghc-conduit-extra
+           ghc-exceptions
+           ghc-resourcet
+           ghc-async
+           ghc-monad-loops
+           ghc-unliftio))
     (native-inputs
-     `(("ghc-doctest" ,ghc-doctest)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-hunit" ,ghc-hunit)
-       ("ghc-test-framework" ,ghc-test-framework)
-       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
-       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
+     (list ghc-doctest
+           ghc-quickcheck
+           ghc-hunit
+           ghc-test-framework
+           ghc-test-framework-hunit
+           ghc-test-framework-quickcheck2))
     (home-page "https://github.com/cgaebel/stm-conduit")
     (synopsis "Introduces conduits to channels and promotes using conduits concurrently")
     (description
@@ -12538,7 +12043,7 @@ source and a sink.")
         (base32 "0rvhh0hhwz601ibpzisry7xf3j61r5sxfgp47imaa37i5bvrlynb"))))
     (build-system haskell-build-system)
     (arguments `(#:tests? #f)) ; TODO: Loops.
-    (inputs `(("ghc-fail" ,ghc-fail)))
+    (inputs (list ghc-fail))
 ;    (native-inputs
 ;     `(("ghc-tasty" ,ghc-tasty)
 ;       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
@@ -12565,7 +12070,7 @@ for strict state threads.")
         (base32 "0fnwbfmd5vsaaqvf9182qdcjrzcfjd1zhdyvjwzifbwvn6r9kx4s"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-base-orphans" ,ghc-base-orphans)))
+     (list ghc-base-orphans))
     (home-page "https://github.com/cartazio/storable-complex")
     (synopsis "Haskell Storable instance for Complex")
     (description "This package provides a Haskell library including a
@@ -12589,10 +12094,7 @@ and Fortran complex data types.")
          "17nf0bx3g169cpslf8prr5h5lvxl389m23rbsyb3kdai45fibpwf"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-semigroups" ,ghc-semigroups)
-       ("ghc-utility-ht" ,ghc-utility-ht)
-       ("ghc-storablevector" ,ghc-storablevector)
-       ("ghc-timeit" ,ghc-timeit)))
+     (list ghc-semigroups ghc-utility-ht ghc-storablevector ghc-timeit))
     (home-page "https://hackage.haskell.org/package/storable-record")
     (synopsis "Elegant definition of Storable instances for records")
     (description "With this package you can build a Storable instance of
@@ -12621,9 +12123,7 @@ alignment of the record elements.")
          "0dfzhxgkn1l6ls7zh6iifhyvhm8l47n40z0ar23c6ibsa94w1ynw"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-storable-record" ,ghc-storable-record)
-       ("ghc-utility-ht" ,ghc-utility-ht)
-       ("ghc-base-orphans" ,ghc-base-orphans)))
+     (list ghc-storable-record ghc-utility-ht ghc-base-orphans))
     (home-page "https://hackage.haskell.org/package/storable-tuple")
     (synopsis "Storable instance for pairs and triples")
     (description "This package provides a Storable instance for pairs
@@ -12649,12 +12149,12 @@ together.")
          "06fgxbnc5vwmiv7dxywj7ncjhmxv0wjs0bys5hza6mrwn3sw5r2w"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-non-negative" ,ghc-non-negative)
-       ("ghc-utility-ht" ,ghc-utility-ht)
-       ("ghc-semigroups" ,ghc-semigroups)
-       ("ghc-unsafe" ,ghc-unsafe)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-syb" ,ghc-syb)))
+     (list ghc-non-negative
+           ghc-utility-ht
+           ghc-semigroups
+           ghc-unsafe
+           ghc-quickcheck
+           ghc-syb))
     (home-page "https://wiki.haskell.org/Storable_Vector")
     (synopsis "Fast, packed, strict storable arrays with a list interface")
     (description "This library provides fast, packed, strict storable
@@ -12686,15 +12186,9 @@ a library that provides fusion with lazy lists.")
          "1lmyx3wkjsayhy5yilzvy0kf8qwmycwlk26r1d8f3cxbfhkr7s52"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-async" ,ghc-async)
-       ("ghc-blaze-builder" ,ghc-blaze-builder)
-       ("ghc-network" ,ghc-network)
-       ("ghc-random" ,ghc-random)
-       ("ghc-zlib" ,ghc-zlib)))
+     (list ghc-async ghc-blaze-builder ghc-network ghc-random ghc-zlib))
     (native-inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-hspec" ,ghc-hspec)
-       ("hspec-discover" ,hspec-discover)))
+     (list ghc-quickcheck ghc-hspec hspec-discover))
     (home-page "https://hackage.haskell.org/package/streaming-commons")
     (synopsis "Conduit and pipes needed by some streaming data libraries")
     (description "This package provides low-dependency functionality commonly
@@ -12715,9 +12209,7 @@ needed by various Haskell streaming data libraries, such as @code{conduit} and
         (base32 "0hb24a09c3agsq7sdv8r2b2jc2f4g1blg2xvj4cfadynib0apxnz"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-hashable" ,ghc-hashable)
-       ("ghc-these" ,ghc-these)
-       ("ghc-assoc" ,ghc-assoc)))
+     (list ghc-hashable ghc-these ghc-assoc))
     (home-page "https://hackage.haskell.org/package/strict")
     (synopsis "Strict data types and String IO")
     (description
@@ -12765,7 +12257,7 @@ literals.")
          "0wfxkw4x6j6jq9nd82k83g2k3hskpsvk1dp4cpkshvjr4wg9qny8"))))
     (build-system haskell-build-system)
     (native-inputs
-     `(("ghc-hunit" ,ghc-hunit)))
+     (list ghc-hunit))
     (home-page "https://hackage.haskell.org/package/string-qq")
     (synopsis
      "QuasiQuoter for non-interpolated strings, texts and bytestrings.")
@@ -12814,9 +12306,7 @@ occurrences of a substring (the first in case of overlaps) with another.")
          "1k420f497lzkymmxin88ql6ib8dziic43avykv31yq65rgrf7l2g"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-blaze-builder" ,ghc-blaze-builder)
-       ("ghc-hashable" ,ghc-hashable)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)))
+     (list ghc-blaze-builder ghc-hashable ghc-unordered-containers))
     (arguments
      `(#:cabal-revision
        ("3" "1zc7shja5i63rn7kd9mnq2m052qhp7nh44qy8qp93dm64v9m9pi2")))
@@ -12843,8 +12333,7 @@ building Scalable Vector Graphics (SVG).")
          "15ld5929n3lzfb5sy9nnm77x2l6i2sgsxw47jdrqcrz6fxpwc1qq"))))
     (build-system haskell-build-system)
     (native-inputs
-     `(("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)))
+     (list ghc-tasty ghc-tasty-hunit))
     (home-page
      "http://www.cs.uu.nl/wiki/GenericProgramming/SYB")
     (synopsis "Scrap Your Boilerplate")
@@ -12879,9 +12368,7 @@ variety of traversals.")
                (("chell >= 0\\.4 && < 0\\.5") "chell >= 0.4"))
              #t)))))
     (inputs
-     `(("ghc-system-filepath" ,ghc-system-filepath)
-       ("ghc-chell" ,ghc-chell)
-       ("ghc-temporary" ,ghc-temporary)))
+     (list ghc-system-filepath ghc-chell ghc-temporary))
     (home-page "https://github.com/fpco/haskell-filesystem")
     (synopsis "Consistent file system interaction across GHC versions")
     (description
@@ -12942,9 +12429,7 @@ which can't be decoded in the current locale encoding.")
        #:cabal-revision
        ("1" "18llfvisghrn9w9yfgacqn51gs50a0lngah3bmg852h0swj7vkp8")))
     (native-inputs
-     `(("ghc-chell" ,ghc-chell)
-       ("ghc-chell-quickcheck" ,ghc-chell-quickcheck)
-       ("ghc-quickcheck" ,ghc-quickcheck)))
+     (list ghc-chell ghc-chell-quickcheck ghc-quickcheck))
     (home-page "https://github.com/fpco/haskell-filesystem")
     (synopsis "High-level, byte-based file and directory path manipulations")
     (description
@@ -12999,8 +12484,7 @@ increasing type safety.")
          "0z936gh8n8i8qdkagyxwd9gqq13skd5fv013vdvwsibrxkm0czfb"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-csv" ,ghc-csv)
-       ("ghc-html" ,ghc-html)))
+     (list ghc-csv ghc-html))
     (home-page "https://github.com/bgamari/tabular")
     (synopsis "Two-dimensional data tables with rendering functions")
     (description
@@ -13046,7 +12530,7 @@ B 3 ||       meh |   well... ||  worst ever |          ok
      `(#:cabal-revision
        ("2" "0qi63c3z40i9qm44r571yjzcpb8d473vj2km4kq0fij0ljc7vii9")))
     (inputs
-     `(("ghc-transformers-compat" ,ghc-transformers-compat)))
+     (list ghc-transformers-compat))
     (home-page "https://hackage.haskell.org/package/tagged")
     (synopsis "Haskell phantom types to avoid passing dummy arguments")
     (description "This library provides phantom types for Haskell 98, to avoid
@@ -13071,10 +12555,8 @@ having to unsafely pass dummy arguments.")
      `(#:cabal-revision
        ("4" "03a33nj9k62f318qgmp5pgk7i99c8cyqy5f7m7p0bwc5ni39ysfq")))
     (inputs
-     `(("ghc-bytestring-handle" ,ghc-bytestring-handle)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)))
+     (list ghc-bytestring-handle ghc-quickcheck ghc-tasty
+           ghc-tasty-quickcheck))
     (home-page "https://hackage.haskell.org/package/tar")
     (synopsis "Reading, writing and manipulating \".tar\" archive files")
     (description
@@ -13101,15 +12583,10 @@ an index.")
          "0bgn3hyf20g1gfnzy8f41s7nj54kfcyjk2izw99svrw8f3dphi80"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-conduit" ,ghc-conduit)
-       ("ghc-conduit-combinators" ,ghc-conduit-combinators)
-       ("ghc-safe-exceptions" ,ghc-safe-exceptions)))
+     (list ghc-conduit ghc-conduit-combinators ghc-safe-exceptions))
     (native-inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-conduit-extra" ,ghc-conduit-extra)
-       ("ghc-hspec" ,ghc-hspec)
-       ("ghc-hspec" ,ghc-hspec)
-       ("ghc-weigh" ,ghc-weigh)))
+     (list ghc-quickcheck ghc-conduit-extra ghc-hspec ghc-hspec
+           ghc-weigh))
     (home-page "https://github.com/snoyberg/tar-conduit#readme")
     (synopsis "Extract and create tar files using conduit for streaming")
     (description "This library provides a conduit-based, streaming
@@ -13132,12 +12609,9 @@ interface for extracting and creating tar files.")
          "144qhwfwg37l3k313raf4ssiz16jbgwlm1nf4flgqpsbd69jji4c"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-exceptions" ,ghc-exceptions)
-       ("ghc-random" ,ghc-random)))
+     (list ghc-exceptions ghc-random))
     (native-inputs
-     `(("ghc-base-compat" ,ghc-base-compat)
-       ("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)))
+     (list ghc-base-compat ghc-tasty ghc-tasty-hunit))
     (home-page "https://www.github.com/batterseapower/temporary")
     (synopsis "Temporary file and directory support")
     (description "The functions for creating temporary files and directories
@@ -13162,7 +12636,7 @@ installed.")
         (base32
          "1nqih0qks439k3pr5kmbbc8rjdw730slrxlflqb27fbxbzb8skqs"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-exceptions" ,ghc-exceptions)))
+    (inputs (list ghc-exceptions))
     (home-page
      "https://www.github.com/feuerbach/temporary")
     (synopsis
@@ -13208,14 +12682,9 @@ dependency.")
                 "1d9r3na7hmkgr0j63fs50ssll506l1wyqhw0dpap7jk0rdz8pv6n"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-syb" ,ghc-syb)
-       ("ghc-network-uri" ,ghc-network-uri)
-       ("ghc-split" ,ghc-split)
-       ("ghc-xml" ,ghc-xml)
-       ("ghc-pandoc-types" ,ghc-pandoc-types)))
+     (list ghc-syb ghc-network-uri ghc-split ghc-xml ghc-pandoc-types))
     (native-inputs
-     `(("ghc-temporary" ,ghc-temporary)
-       ("ghc-utf8-string" ,ghc-utf8-string)))
+     (list ghc-temporary ghc-utf8-string))
     (home-page "https://github.com/jgm/texmath")
     (synopsis "Conversion between formats used to represent mathematics")
     (description
@@ -13266,8 +12735,7 @@ text package.")
          "0pmzp38m3r0k6ps97b1wqplxlgvvlaid09x53jl3gxng0fwq910a"))))
     (build-system haskell-build-system)
     (native-inputs
-     `(("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)))
+     (list ghc-tasty ghc-tasty-hunit))
     (home-page
      "https://github.com/brendanhay/text-manipulate")
     (synopsis
@@ -13301,10 +12769,9 @@ upgraded.  Consider yourself warned!")
          "17bp1lnbkqr5ykrcd6v5sqv0fhljck7hky8zrrpw7rlkb1f3sdc2"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-vector" ,ghc-vector)))
+     (list ghc-vector))
     (native-inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-hspec" ,ghc-hspec)))
+     (list ghc-quickcheck ghc-hspec))
     (arguments
      `(#:cabal-revision
        ("4" "017drxq9x56b345d8w5m8xdsi1zzs0z16pbdx8j35cd1lsnh3kf1")))
@@ -13330,8 +12797,7 @@ string metrics efficiently.")
         (base32 "0445r2nns6009fmq0xbfpyv7jpzwv0snccjdg7hwj4xk4z0cwc1f"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-primitive" ,ghc-primitive)
-       ("ghc-random" ,ghc-random)))
+     (list ghc-primitive ghc-random))
     (home-page "https://hackage.haskell.org/package/tf-random")
     (synopsis "High-quality splittable pseudorandom number generator")
     (description "This package contains an implementation of a high-quality
@@ -13381,8 +12847,7 @@ Template Haskell.")
      `(#:cabal-revision
        ("1" "0l30cmwm20lgjpvr3a5yxj6429s1hqahjsij8z2ap88754phd41l")))
     (inputs
-     `(("ghc-syb" ,ghc-syb)
-       ("ghc-th-abstraction" ,ghc-th-abstraction)))
+     (list ghc-syb ghc-th-abstraction))
     (home-page "https://hackage.haskell.org/package/th-expand-syns")
     (synopsis "Expands type synonyms in Template Haskell ASTs")
     (description
@@ -13403,7 +12868,7 @@ Template Haskell.")
                 "1r2wrnrn6qwy6ysyfnlqn6xbfckw0b22h8n00pk67bhhg81jfn9s"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-th-abstraction" ,ghc-th-abstraction)))
+     (list ghc-th-abstraction))
     (home-page "https://github.com/mboes/th-lift")
     (synopsis "Derive Template Haskell's Lift class for datatypes")
     (description
@@ -13426,9 +12891,7 @@ datatypes.")
          "09nv1zsffvv6zfz1fjzcqrla3lc350qr4i4xf7wgvzp049sprrdy"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-th-lift" ,ghc-th-lift)
-       ("ghc-vector" ,ghc-vector)
-       ("ghc-quickcheck" ,ghc-quickcheck)))
+     (list ghc-th-lift ghc-vector ghc-quickcheck))
     (home-page "https://github.com/bennofs/th-lift-instances/")
     (synopsis "Lift instances for template-haskell for common data types.")
     (description "Most data types in the Haskell platform do not have Lift
@@ -13452,14 +12915,14 @@ instances.  This package provides orphan instances for @code{containers},
      `(#:cabal-revision
        ("1" "0vfz9dl5g9xwp2zmwqc5gngyvjaqj3i0s97vbcslafcqhdqw3qaj")))
     (inputs
-     `(("ghc-th-lift" ,ghc-th-lift)
-       ("ghc-th-lift-instances" ,ghc-th-lift-instances)
-       ("ghc-th-reify-many" ,ghc-th-reify-many)
-       ("ghc-th-compat" ,ghc-th-compat)
-       ("ghc-th-expand-syns" ,ghc-th-expand-syns)
-       ("ghc-generic-deriving" ,ghc-generic-deriving)))
+     (list ghc-th-lift
+           ghc-th-lift-instances
+           ghc-th-reify-many
+           ghc-th-compat
+           ghc-th-expand-syns
+           ghc-generic-deriving))
     (native-inputs
-     `(("ghc-hspec" ,ghc-hspec)))
+     (list ghc-hspec))
     (home-page "https://hackage.haskell.org/package/th-orphans")
     (synopsis "Orphan instances for TH datatypes")
     (description
@@ -13485,8 +12948,7 @@ package, and that's where the version number started.")
          "027m1gd7i6jf2ppfkld9qrv3xnxg276587pmx10z9phpdvswk66p"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-hashable" ,ghc-hashable)
-       ("ghc-assoc" ,ghc-assoc)))
+     (list ghc-hashable ghc-assoc))
     (arguments
      `(#:cabal-revision
        ("2" "16x3am622jn97j1d9879x7j5zbjn33bkfaa0dq0xyp1fbc0s7h5x")))
@@ -13534,10 +12996,8 @@ variant of @code{These}.
          "0bjnjhnq3km6xqk0fn1fgyz5xdw4h6lylbwwbcmkkfzwcz0c76hk"))))
     (build-system haskell-build-system)
     (native-inputs
-     `(("ghc-concurrent-extra" ,ghc-concurrent-extra)
-       ("ghc-hunit" ,ghc-hunit)
-       ("ghc-test-framework" ,ghc-test-framework)
-       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)))
+     (list ghc-concurrent-extra ghc-hunit ghc-test-framework
+           ghc-test-framework-hunit))
     (home-page "https://github.com/basvandijk/threads")
     (synopsis "Fork threads and wait for their result")
     (description "This package provides functions to fork threads and
@@ -13571,8 +13031,7 @@ package is similar to the @code{threadmanager}, @code{async} and
                 "19g4gc1q3zxbylmvrgk3dqjzychq2k02i7fwvs3vhbrg4ihhw9cx"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-safe" ,ghc-safe)
-       ("ghc-th-expand-syns" ,ghc-th-expand-syns)))
+     (list ghc-safe ghc-th-expand-syns))
     (home-page "https://github.com/mgsloan/th-reify-many")
     (synopsis "Recurseively reify template haskell datatype info")
     (description
@@ -13596,15 +13055,15 @@ function which generates instances.")
          "19p3056i6kh8lgcdsnwsh8pj80xyi23kmw9n7hmdacczs5kv49ii"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-base-orphans" ,ghc-base-orphans)))
+     (list ghc-base-orphans))
     (native-inputs
-     `(("ghc-hunit" ,ghc-hunit)
-       ("ghc-base-compat" ,ghc-base-compat)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-tagged" ,ghc-tagged)
-       ("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
-       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)))
+     (list ghc-hunit
+           ghc-base-compat
+           ghc-quickcheck
+           ghc-tagged
+           ghc-tasty
+           ghc-tasty-hunit
+           ghc-tasty-quickcheck))
     (arguments
      `(#:cabal-revision
        ("1" "1f6r8cyfgzpfg9nrsqbf99pi44fyds9wcmgwxb4s0zmlb5dbv1m5")))
@@ -13628,7 +13087,7 @@ features as possible.")
         (base32
          "0b2hmj8wwrfkndwzgm11qr496ca2ahwdxcj3m0ii91bxvrk1bzq7"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-old-locale" ,ghc-old-locale)))
+    (inputs (list ghc-old-locale))
     (home-page "https://github.com/khibino/haskell-time-locale-compat")
     (synopsis "Compatibility of TimeLocale between old-locale and time-1.5")
     (description "This package contains a wrapped name module for
@@ -13649,7 +13108,7 @@ features as possible.")
          "1nzwj0fxz370ks6vr1sylcidx33rnqq45y3q9yv9n4dj43nid9lh"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-auto-update" ,ghc-auto-update)))
+     (list ghc-auto-update))
     (home-page "https://github.com/yesodweb/wai")
     (synopsis "Scalable timer")
     (description "This library contains scalable timer functions provided by a
@@ -13716,8 +13175,7 @@ create timezone series, see the ghc-timezone-olson package.")
        "0b9vh27b9nz803yhd93d5z63bs370lvn4vkdajxaak9clxlw6mwg"))))
    (build-system haskell-build-system)
    (inputs
-    `(("ghc-timezone-series" ,ghc-timezone-series)
-      ("ghc-extensible-exceptions" ,ghc-extensible-exceptions)))
+    (list ghc-timezone-series ghc-extensible-exceptions))
    (home-page "https://archives.haskell.org/projects.haskell.org/time-ng/")
    (synopsis "Parser and renderer for binary Olson timezone files")
    (description
@@ -13745,16 +13203,15 @@ objects from the timezone-series package.")
          "1yypb9zhsj9ks7bbw2sayqv3rn9y8z3w5p1xmsnwb4w99dqmvcx5"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-ansi-terminal" ,ghc-ansi-terminal)
-       ("ghc-attoparsec" ,ghc-attoparsec)
-       ("ghc-cmark" ,ghc-cmark)
-       ("ghc-http-conduit" ,ghc-http-conduit)
-       ("ghc-optparse-applicative" ,ghc-optparse-applicative)
-       ("ghc-semigroups" ,ghc-semigroups)
-       ("ghc-zip-archive" ,ghc-zip-archive)))
+     (list ghc-ansi-terminal
+           ghc-attoparsec
+           ghc-cmark
+           ghc-http-conduit
+           ghc-optparse-applicative
+           ghc-semigroups
+           ghc-zip-archive))
     (native-inputs
-     `(("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-golden" ,ghc-tasty-golden)))
+     (list ghc-tasty ghc-tasty-golden))
     (home-page "https://github.com/psibi/tldr-hs#readme")
     (synopsis "Haskell tldr client")
     (description "This package provides the @command{tldr} command and a
@@ -13777,8 +13234,7 @@ man pages with practical examples.")
         (base32 "0m7s0q7f8c7glxzqhf2j86ch5xhk6jnzwwsa4mkywag22119c290"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-bencode" ,ghc-bencode)
-       ("ghc-syb" ,ghc-syb)))
+     (list ghc-bencode ghc-syb))
     (home-page "https://hackage.haskell.org/package/torrent")
     (synopsis "BitTorrent file parser and generator")
     (description "This library provides support for parsing and generating
@@ -13840,7 +13296,7 @@ other transformers.")
          "146g69yxmlrmvqnzwcw4frxfl3z04lda9zqwcqib34dnkrlghfrj"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-transformers-compat" ,ghc-transformers-compat)))
+     (list ghc-transformers-compat))
     (home-page
      "https://hackage.haskell.org/package/transformers-compat")
     (synopsis
@@ -13892,28 +13348,25 @@ but also need those types.")
      `(#:cabal-revision
        ("1" "0brlnq5ddmambidll1dn4jnjac2i44a9hd5hwp2p0rbh1s8jfyhm")))
     (inputs
-     `(("ghc-aeson" ,ghc-aeson)
-       ("ghc-ansi-terminal" ,ghc-ansi-terminal)
-       ("ghc-ansi-wl-pprint" ,ghc-ansi-wl-pprint)
-       ("ghc-base-compat" ,ghc-base-compat)
-       ("ghc-bytestring-builder" ,ghc-bytestring-builder)
-       ("ghc-hashable" ,ghc-hashable)
-       ("ghc-parsers" ,ghc-parsers)
-       ("ghc-primitive" ,ghc-primitive)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-scientific" ,ghc-scientific)
-       ("ghc-semialign" ,ghc-semialign)
-       ("ghc-strict" ,ghc-strict)
-       ("ghc-tagged" ,ghc-tagged)
-       ("ghc-these" ,ghc-these)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)
-       ("ghc-uuid-types" ,ghc-uuid-types)
-       ("ghc-vector" ,ghc-vector)))
+     (list ghc-aeson
+           ghc-ansi-terminal
+           ghc-ansi-wl-pprint
+           ghc-base-compat
+           ghc-bytestring-builder
+           ghc-hashable
+           ghc-parsers
+           ghc-primitive
+           ghc-quickcheck
+           ghc-scientific
+           ghc-semialign
+           ghc-strict
+           ghc-tagged
+           ghc-these
+           ghc-unordered-containers
+           ghc-uuid-types
+           ghc-vector))
     (native-inputs
-     `(("ghc-trifecta" ,ghc-trifecta)
-       ("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-golden" ,ghc-tasty-golden)
-       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)))
+     (list ghc-trifecta ghc-tasty ghc-tasty-golden ghc-tasty-quickcheck))
     (home-page "https://github.com/phadej/tree-diff")
     (synopsis "Compute difference between (expression) trees")
     (description "This Haskell library provides a function for computing
@@ -13936,25 +13389,25 @@ compute the difference between arbitrary abstract datatypes (ADTs) using
                 "1lhzi0xxvilvgjy3yf3f85wfmrks562hhsnl0kg1xwji36rgwp6y"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-ansi-terminal" ,ghc-ansi-terminal)
-       ("ghc-blaze-builder" ,ghc-blaze-builder)
-       ("ghc-blaze-html" ,ghc-blaze-html)
-       ("ghc-blaze-markup" ,ghc-blaze-markup)
-       ("ghc-charset" ,ghc-charset)
-       ("ghc-comonad" ,ghc-comonad)
-       ("ghc-fingertree" ,ghc-fingertree)
-       ("ghc-hashable" ,ghc-hashable)
-       ("ghc-indexed-traversable" ,ghc-indexed-traversable)
-       ("ghc-lens" ,ghc-lens)
-       ("ghc-parsers" ,ghc-parsers)
-       ("ghc-prettyprinter-ansi-terminal" ,ghc-prettyprinter-ansi-terminal)
-       ("ghc-prettyprinter" ,ghc-prettyprinter)
-       ("ghc-profunctors" ,ghc-profunctors)
-       ("ghc-reducers" ,ghc-reducers)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)
-       ("ghc-utf8-string" ,ghc-utf8-string)))
+     (list ghc-ansi-terminal
+           ghc-blaze-builder
+           ghc-blaze-html
+           ghc-blaze-markup
+           ghc-charset
+           ghc-comonad
+           ghc-fingertree
+           ghc-hashable
+           ghc-indexed-traversable
+           ghc-lens
+           ghc-parsers
+           ghc-prettyprinter-ansi-terminal
+           ghc-prettyprinter
+           ghc-profunctors
+           ghc-reducers
+           ghc-unordered-containers
+           ghc-utf8-string))
     (native-inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)))
+     (list ghc-quickcheck))
     (home-page "https://github.com/ekmett/trifecta/")
     (synopsis "Parser combinator library with convenient diagnostics")
     (description "Trifecta is a modern parser combinator library for Haskell,
@@ -13999,24 +13452,23 @@ statically known size.")
          "14lf43b5rxci6p9sy1gkb715m4b1s4rl65swn2qpdqv3h2yvpi4s"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-ansi-wl-pprint" ,ghc-ansi-wl-pprint)
-       ("ghc-async" ,ghc-async)
-       ("ghc-clock" ,ghc-clock)
-       ("ghc-exceptions" ,ghc-exceptions)
-       ("ghc-foldl" ,ghc-foldl)
-       ("ghc-hostname" ,ghc-hostname)
-       ("ghc-managed" ,ghc-managed)
-       ("ghc-semigroups" ,ghc-semigroups)
-       ("ghc-system-filepath" ,ghc-system-filepath)
-       ("ghc-system-fileio" ,ghc-system-fileio)
-       ("ghc-streaming-commons" ,ghc-streaming-commons)
-       ("ghc-temporary" ,ghc-temporary)
-       ("ghc-optparse-applicative" ,ghc-optparse-applicative)
-       ("ghc-optional-args" ,ghc-optional-args)
-       ("ghc-unix-compat" ,ghc-unix-compat)))
+     (list ghc-ansi-wl-pprint
+           ghc-async
+           ghc-clock
+           ghc-exceptions
+           ghc-foldl
+           ghc-hostname
+           ghc-managed
+           ghc-semigroups
+           ghc-system-filepath
+           ghc-system-fileio
+           ghc-streaming-commons
+           ghc-temporary
+           ghc-optparse-applicative
+           ghc-optional-args
+           ghc-unix-compat))
     (native-inputs
-     `(("ghc-doctest" ,ghc-doctest)
-       ("ghc-fail" ,ghc-fail)))
+     (list ghc-doctest ghc-fail))
     (home-page
      "http://hackage.haskell.org/package/turtle")
     (synopsis "Shell programming, Haskell-style")
@@ -14058,13 +13510,9 @@ similar functionality.")
          "071mw4yv4xr5n82si33qbcqcxvcr7h56zlyd8gmsfrsdnacbq47k"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-async" ,ghc-async)
-       ("ghc-unliftio-core" ,ghc-unliftio-core)))
+     (list ghc-async ghc-unliftio-core))
     (native-inputs
-     `(("ghc-base64-bytestring" ,ghc-base64-bytestring)
-       ("ghc-hspec" ,ghc-hspec)
-       ("hspec-discover" ,hspec-discover)
-       ("ghc-temporary" ,ghc-temporary)))
+     (list ghc-base64-bytestring ghc-hspec hspec-discover ghc-temporary))
     (home-page "https://haskell-lang.org/library/typed-process")
     (synopsis "Run external processes with strong typing of streams")
     (description
@@ -14109,8 +13557,7 @@ function.")
          "15fnk9x4fd2ryp31fjfrwm8k61m3a0qyb95m4065zc0yi0jyacp2"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-atomic-primops" ,ghc-atomic-primops)
-       ("ghc-primitive" ,ghc-primitive)))
+     (list ghc-atomic-primops ghc-primitive))
     (arguments
      `(#:tests? #f)) ; TODO: Fail.
     (home-page "https://hackage.haskell.org/package/unagi-chan")
@@ -14159,9 +13606,7 @@ unbounded @code{Integer} type.")
        (sha256 (base32 "07py2nffdgxpz8sryvqcghzb2kiiagpdf5ja1dia4z0rpwi79smh"))))
     (build-system haskell-build-system)
     (native-inputs
-     `(("ghc-hunit" ,ghc-hunit)
-       ("ghc-test-framework" ,ghc-test-framework)
-       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)))
+     (list ghc-hunit ghc-test-framework ghc-test-framework-hunit))
     (home-page "https://github.com/singpolyma/unexceptionalio")
     (synopsis "IO without any non-error, synchronous exceptions")
     (description "When you've caught all the exceptions that can be
@@ -14183,10 +13628,7 @@ handled safely, this is what you're left with.")
          "1010sahi4mjzqmxqlj3w73rlymbl2370x5vizjqbx7mb86kxzx4f"))))
     (build-system haskell-build-system)
     (native-inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-getopt-generics" ,ghc-getopt-generics)
-       ("ghc-split" ,ghc-split)
-       ("ghc-hspec" ,ghc-hspec)))
+     (list ghc-quickcheck ghc-getopt-generics ghc-split ghc-hspec))
     (home-page "https://github.com/composewell/unicode-transforms")
     (synopsis "Unicode normalization")
     (description "This library provides tools for fast Unicode 12.1.0
@@ -14234,9 +13676,7 @@ constant-time:
          "1lis5qcb5j7yzd1cqjaqpb6bmkyjfb7l4nhk3ykmcma4513cjxz7"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-syb" ,ghc-syb)
-       ("ghc-hashable" ,ghc-hashable)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)))
+     (list ghc-syb ghc-hashable ghc-unordered-containers))
     (home-page "https://github.com/ndmitchell/uniplate")
     (synopsis "Simple, concise and fast generic operations")
     (description "Uniplate is a library for writing simple and concise generic
@@ -14287,8 +13727,7 @@ isn't available, portable implementations are used.")
      `(#:tests? #f)) ; FIXME: Test fails with "System.Time not found".  This
                      ; is weird, that should be provided by GHC 7.10.2.
     (inputs
-     `(("ghc-old-time" ,ghc-old-time)
-       ("ghc-old-locale" ,ghc-old-locale)))
+     (list ghc-old-time ghc-old-locale))
     (home-page "https://hackage.haskell.org/package/unix-time")
     (synopsis "Unix time parser/formatter and utilities")
     (description "This library provides fast parsing and formatting utilities
@@ -14313,9 +13752,8 @@ for Unix time in Haskell.")
     (arguments `(#:tests? #f)) ; FIXME: hspec-discover not in PATH
     (outputs '("out" "static" "doc"))
     (inputs
-     `(("ghc-async" ,ghc-async)
-       ("ghc-unliftio-core" ,ghc-unliftio-core)))
-    (native-inputs `(("ghc-hspec" ,ghc-hspec)))
+     (list ghc-async ghc-unliftio-core))
+    (native-inputs (list ghc-hspec))
     (home-page "https://github.com/fpco/unliftio")
     (synopsis "Provides MonadUnliftIO typecplass for unlifting monads to
 IO (batteries included)")
@@ -14365,13 +13803,13 @@ functions.")
          "0rw8kmg7xjlacmr1hcpin95abkd387awf154s9ran7zg9jllh3x1"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-chasingbottoms" ,ghc-chasingbottoms)
-       ("ghc-hunit" ,ghc-hunit)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-test-framework" ,ghc-test-framework)
-       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
-       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)
-       ("ghc-hashable" ,ghc-hashable)))
+     (list ghc-chasingbottoms
+           ghc-hunit
+           ghc-quickcheck
+           ghc-test-framework
+           ghc-test-framework-hunit
+           ghc-test-framework-quickcheck2
+           ghc-hashable))
     (home-page
      "https://github.com/tibbe/unordered-containers")
     (synopsis
@@ -14432,17 +13870,15 @@ a style ready for qualification, that is, you should import them by
         (base32
          "0s0k26v5x6601rbpkjkl5vp3dkp9xwj1dlgy4xkl470i4sna1rzk"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-attoparsec" ,ghc-attoparsec)
-              ("ghc-blaze-builder" ,ghc-blaze-builder)
-              ("ghc-th-lift-instances" ,ghc-th-lift-instances)))
-    (native-inputs `(("ghc-hunit" ,ghc-hunit)
-                     ("ghc-tasty" ,ghc-tasty)
-                     ("ghc-tasty-hunit" ,ghc-tasty-hunit)
-                     ("ghc-hedgehog" ,ghc-hedgehog)
-                     ("ghc-tasty-hedgehog" ,ghc-tasty-hedgehog)
-                     ("ghc-base-compat" ,ghc-base-compat)
-                     ("ghc-semigroups" ,ghc-semigroups)
-                     ("ghc-safe" ,ghc-safe)))
+    (inputs (list ghc-attoparsec ghc-blaze-builder ghc-th-lift-instances))
+    (native-inputs (list ghc-hunit
+                         ghc-tasty
+                         ghc-tasty-hunit
+                         ghc-hedgehog
+                         ghc-tasty-hedgehog
+                         ghc-base-compat
+                         ghc-semigroups
+                         ghc-safe))
     (home-page "https://github.com/Soostone/uri-bytestring")
     (synopsis "Haskell URI parsing as ByteStrings")
     (description "This Haskell package aims to be an RFC3986 compliant URI
@@ -14488,7 +13924,7 @@ including only one module.")
        (sha256
         (base32 "16mh36ffva9rh6k37bi1046pgpj14h0cnmj1iir700v0lynxwj7f"))))
     (build-system haskell-build-system)
-    (native-inputs `(("ghc-hunit" ,ghc-hunit)))
+    (native-inputs (list ghc-hunit))
     (home-page "https://github.com/glguy/utf8-string/")
     (synopsis "Support for reading and writing UTF8 Strings")
     (description
@@ -14510,9 +13946,7 @@ UTF8 without truncation.")
         (base32 "10dvmfhhhj5w4wz5drhvs6i0yv35kbbcbzhy6ci34r3ppcik5rdw"))))
     (build-system haskell-build-system)
     (native-inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-doctest-exitcode-stdio" ,ghc-doctest-exitcode-stdio)
-       ("ghc-doctest-lib" ,ghc-doctest-lib)))
+     (list ghc-quickcheck ghc-doctest-exitcode-stdio ghc-doctest-lib))
     (synopsis "Haskell helper functions for Lists, Maybes, Tuples, Functions")
     (description "This package includes Hakell modules providing various
 helper functions for Lists, Maybes, Tuples, Functions.")
@@ -14532,16 +13966,14 @@ helper functions for Lists, Maybes, Tuples, Functions.")
         (base32
          "0r05h16gd7fgfpq9iz43jcn9jzrgfa0gk4cv1xy0p4rli66rb1gq"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-cryptohash-sha1" ,ghc-cryptohash-sha1)
-              ("ghc-cryptohash-md5" ,ghc-cryptohash-md5)
-              ("ghc-entropy" ,ghc-entropy)
-              ("ghc-network-info" ,ghc-network-info)
-              ("ghc-random" ,ghc-random)
-              ("ghc-uuid-types" ,ghc-uuid-types)))
-    (native-inputs `(("ghc-quickcheck" ,ghc-quickcheck)
-                     ("ghc-tasty" ,ghc-tasty)
-                     ("ghc-tasty-hunit" ,ghc-tasty-hunit)
-                     ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)))
+    (inputs (list ghc-cryptohash-sha1
+                  ghc-cryptohash-md5
+                  ghc-entropy
+                  ghc-network-info
+                  ghc-random
+                  ghc-uuid-types))
+    (native-inputs (list ghc-quickcheck ghc-tasty ghc-tasty-hunit
+                         ghc-tasty-quickcheck))
     (home-page "https://github.com/hvr/uuid")
     (synopsis "Haskell library to create, compare, parse, and print UUIDs")
     (description "This Haskell library provides utilities creating, comparing,
@@ -14563,13 +13995,9 @@ parsing and printing @dfn{Universally Unique Identifiers} or UUIDs.")
          "1pd7xd6inkmmwjscf7pmiwqjks9y0gi1p8ahqbapvh34gadvhs5d"))))
     (build-system haskell-build-system)
     (arguments `(#:tests? #f)) ; TODO: Wrong byteorder version?
-    (inputs `(("ghc-hashable" ,ghc-hashable)
-              ("ghc-random" ,ghc-random)))
-    (native-inputs `(("ghc-byteorder" ,ghc-byteorder)
-                     ("ghc-quickcheck" ,ghc-quickcheck)
-                     ("ghc-tasty" ,ghc-tasty)
-                     ("ghc-tasty-hunit" ,ghc-tasty-hunit)
-                     ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)))
+    (inputs (list ghc-hashable ghc-random))
+    (native-inputs (list ghc-byteorder ghc-quickcheck ghc-tasty
+                         ghc-tasty-hunit ghc-tasty-quickcheck))
     (home-page "https://github.com/hvr/uuid")
     (synopsis "Haskell type definitions for UUIDs")
     (description "This Haskell library contains type definitions for
@@ -14594,14 +14022,10 @@ functions.")
          "1dv7azpljdcf7irbnznnz31hq611bn1aj2m6ywghz3hgv835qqak"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-semigroups" ,ghc-semigroups)
-       ("ghc-semigroupoids" ,ghc-semigroupoids)
-       ("ghc-assoc" ,ghc-assoc)
-       ("ghc-bifunctors" ,ghc-bifunctors)
-       ("ghc-lens" ,ghc-lens)))
+     (list ghc-semigroups ghc-semigroupoids ghc-assoc ghc-bifunctors
+           ghc-lens))
     (native-inputs
-     `(("ghc-hedgehog" ,ghc-hedgehog)
-       ("ghc-hunit" ,ghc-hunit)))
+     (list ghc-hedgehog ghc-hunit))
     (home-page "https://github.com/qfpl/validation")
     (synopsis
      "Data-type like Either but with an accumulating Applicative")
@@ -14638,8 +14062,7 @@ example of, \"An applicative functor that is not a monad.\"")
         (base32
          "086nj5ymp4mxxfw9qjgjhd4j3z7gl2y9d89p0b7bkap5ampgdw2x"))))
     (build-system haskell-build-system)
-    (native-inputs `(("ghc-hspec" ,ghc-hspec)
-                     ("hspec-discover" ,hspec-discover)))
+    (native-inputs (list ghc-hspec hspec-discover))
     (home-page
      "https://github.com/NorfairKing/validity")
     (synopsis "Validity typeclass")
@@ -14665,9 +14088,7 @@ explicit by providing a function to check whether the invariants hold.")
          "181ksk1yixjg0jiggw5jvm8am8m8c7lim4xaixf8qnaqvxm6namc"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-unordered-containers" ,ghc-unordered-containers)
-       ("ghc-hashable" ,ghc-hashable)
-       ("ghc-semigroups" ,ghc-semigroups)))
+     (list ghc-unordered-containers ghc-hashable ghc-semigroups))
     (home-page
      "https://github.com/HeinrichApfelmus/vault")
     (synopsis "Persistent store for arbitrary values")
@@ -14700,12 +14121,12 @@ representing a store for a single element.")
     (arguments
      `(#:tests? #f))
     (inputs
-     `(("ghc-primitive" ,ghc-primitive)
-       ;; ("ghc-hunit" ,ghc-hunit)
-       ;; ("ghc-test-framework" ,ghc-test-framework)
-       ;; ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
-       ;; ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)
-       ))
+     (list ghc-primitive
+           ;; ("ghc-hunit" ,ghc-hunit)
+           ;; ("ghc-test-framework" ,ghc-test-framework)
+           ;; ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
+           ;; ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)
+           ))
     (home-page "https://github.com/haskell/vector")
     (synopsis "Efficient Arrays")
     (description "This library provides an efficient implementation of
@@ -14728,9 +14149,9 @@ optimisation framework.")
          "0fxg6w0vh5g2vzw4alajj9ywdijfn9nyx28hbckhmwwbfxb6l5vn"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-vector" ,ghc-vector)))
+     (list ghc-vector))
     (native-inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)))
+     (list ghc-quickcheck))
     (home-page "https://github.com/bos/math-functions")
     (synopsis "Algorithms for vector arrays in Haskell")
     (description "This Haskell library algorithms for vector arrays.")
@@ -14752,10 +14173,9 @@ optimisation framework.")
          "0kgmlb4rf89b18d348cf2k06xfhdpamhmvq7iz5pab5014hknbmp"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-vector" ,ghc-vector)))
+     (list ghc-vector))
     (native-inputs
-     `(("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)))
+     (list ghc-tasty ghc-tasty-quickcheck))
     (home-page "https://github.com/bos/vector-binary-instances")
     (synopsis "Instances of Data.Binary and Data.Serialize for vector")
     (description "This library provides instances of @code{Binary} for the
@@ -14779,16 +14199,14 @@ boxed and storable vectors.")
         (base32
          "1g1zxp6xcwcq3372a5qqs44cl09a48p21m1jsys5bsampprlmcgs"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-vector" ,ghc-vector)
-              ("ghc-semigroups" ,ghc-semigroups)
-              ("ghc-base-prelude" ,ghc-base-prelude)))
-    (native-inputs `(("ghc-attoparsec" ,ghc-attoparsec)
-                     ("ghc-tasty" ,ghc-tasty)
-                     ("ghc-tasty-hunit" ,ghc-tasty-hunit)
-                     ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
-                     ("ghc-hunit" ,ghc-hunit)
-                     ("ghc-quickcheck-instances" ,ghc-quickcheck-instances)
-                     ("ghc-rerebase" ,ghc-rerebase)))
+    (inputs (list ghc-vector ghc-semigroups ghc-base-prelude))
+    (native-inputs (list ghc-attoparsec
+                         ghc-tasty
+                         ghc-tasty-hunit
+                         ghc-tasty-quickcheck
+                         ghc-hunit
+                         ghc-quickcheck-instances
+                         ghc-rerebase))
     (home-page "https://github.com/nikita-volkov/vector-builder")
     (synopsis "Vector builder for Haskell")
     (description "This Haskell package provides an API for constructing vectors.
@@ -14815,8 +14233,7 @@ vector. ")
          "0jbzm31d91kxn8m0h6iplj54h756q6f4zzdrnb2w7rzz5zskgqyl"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-vector" ,ghc-vector)
-       ("ghc-data-default" ,ghc-data-default)))
+     (list ghc-vector ghc-data-default))
     (home-page "https://github.com/liyang/vector-th-unbox")
     (synopsis "Deriver for Data.Vector.Unboxed using Template Haskell")
     (description "This Haskell library provides a Template Haskell
@@ -14840,8 +14257,7 @@ and from some existing type with an Unbox instance.")
          "05vk3x1r9a2pqnzfji475m5gdih2im1h7rbi2sc67p1pvj6pbbsk"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-semigroups" ,ghc-semigroups)
-       ("ghc-hashable" ,ghc-hashable)))
+     (list ghc-semigroups ghc-hashable))
     (home-page "https://github.com/ekmett/void")
     (synopsis
      "Logically uninhabited data type")
@@ -14873,14 +14289,9 @@ given term should not exist.")
                (("temporary.* < 1\\.3")
                 "temporary >= 1.1 && < 1.4")))))))
     (inputs
-     `(("ghc-cereal" ,ghc-cereal)
-       ("ghc-data-default-class"
-        ,ghc-data-default-class)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-temporary" ,ghc-temporary)))
+     (list ghc-cereal ghc-data-default-class ghc-quickcheck ghc-temporary))
     (native-inputs
-     `(("hspec-discover" ,hspec-discover)
-       ("ghc-hspec" ,ghc-hspec)))
+     (list hspec-discover ghc-hspec))
     (home-page "https://github.com/mrkkrp/wave")
     (synopsis "Work with WAVE and RF64 files in Haskell")
     (description "This package allows you to work with WAVE and RF64
@@ -14901,9 +14312,7 @@ files in Haskell.")
          "1n1fq7v64b59ajf5g50iqj9sa34wm7s2j3viay0kxpmvlcv8gipz"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-setlocale" ,ghc-setlocale)
-       ("ghc-utf8-string" ,ghc-utf8-string)
-       ("ghc-attoparsec" ,ghc-attoparsec)))
+     (list ghc-setlocale ghc-utf8-string ghc-attoparsec))
     (home-page "https://github.com/solidsnack/wcwidth/")
     (synopsis "Haskell bindings to wcwidth")
     (description "This package provides Haskell bindings to your system's
@@ -14917,9 +14326,7 @@ widths to the Char type.")
     (inherit ghc-wcwidth)
     (name "ghc-wcwidth-bootstrap")
     (inputs
-     `(("ghc-setlocale" ,ghc-setlocale)
-       ("ghc-utf8-string" ,ghc-utf8-string)
-       ("ghc-attoparsec" ,ghc-attoparsec-bootstrap)))
+     (list ghc-setlocale ghc-utf8-string ghc-attoparsec-bootstrap))
     (properties '((hidden? #t)))))
 
 (define-public ghc-weigh
@@ -14936,8 +14343,7 @@ widths to the Char type.")
          "13pbjr7fzqy3s9c1nd2jhfwzbpccmpfwdn7y46z9k2bfkch1jam9"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-split" ,ghc-split)
-       ("ghc-temporary" ,ghc-temporary)))
+     (list ghc-split ghc-temporary))
     (home-page "https://github.com/fpco/weigh#readme")
     (synopsis "Measure allocations of a Haskell functions/values")
     (description "This package provides tools to measure the memory usage of a
@@ -14960,7 +14366,7 @@ Haskell value or function.")
          "1clvbd1ckhvy29qrbmpkn7bya7300fq6znnps23nn3nxyrxhsr85"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-control-monad-free" ,ghc-control-monad-free)))
+     (list ghc-control-monad-free))
     (arguments
      `(#:cabal-revision
        ("1"
@@ -15023,8 +14429,7 @@ instances of the @code{Pretty} class.")
          "1br7qyf27iza213inwhf9bm2k6in0zbmfw6w4clqlc9f9cj2nrkb"))))
     (build-system haskell-build-system)
     (native-inputs
-     `(("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)))
+     (list ghc-tasty ghc-tasty-hunit))
     (home-page
      "https://github.com/minad/wl-pprint-annotated#readme")
     (synopsis
@@ -15052,7 +14457,7 @@ modernized interface.")
          "030ckgzz14sv2c317g4j5g68hyq9xi40cmv0apwclw6sc6xgsvly"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-base-compat" ,ghc-base-compat)))
+     (list ghc-base-compat))
     (home-page "https://hackage.haskell.org/package/wl-pprint-text")
     (synopsis "Wadler/Leijen Pretty Printer for Text values")
     (description
@@ -15071,7 +14476,7 @@ modernized interface.")
        (sha256
         (base32 "15rcqhg9vb7qisk9ryjnyhhfgigxksnkrczycaw2rin08wczjwpb"))))
     (build-system haskell-build-system)
-    (native-inputs `(("ghc-hspec" ,ghc-hspec)))
+    (native-inputs (list ghc-hspec))
     (arguments
      `(#:cabal-revision
        ("1" "1k4w4g053vhmpp08542hrqaw81p3p35i567xgdarqmpghfrk68pp")))
@@ -15097,8 +14502,7 @@ modernized interface.")
          "12jx7f13d2h1djq4fh4dyrab61sm49mj1w61j3rzp2vjfm696c16"))))
     (build-system haskell-build-system)
     (native-inputs
-     `(("ghc-hspec" ,ghc-hspec)
-       ("hspec-discover" ,hspec-discover)))
+     (list ghc-hspec hspec-discover))
     (home-page "https://hackage.haskell.org/package/word8")
     (synopsis "Word8 library for Haskell")
     (description "Word8 library to be used with @code{Data.ByteString}.")
@@ -15119,9 +14523,9 @@ modernized interface.")
         (base32
          "1mbcrq89jz0dcibw66w0jdy4f4bfpx4zwjfs98rm3jjgdikwdzb4"))))
     (build-system haskell-build-system)
-    (native-inputs `(("ghc-c2hs" ,ghc-c2hs)))
+    (native-inputs (list ghc-c2hs))
     (inputs
-     `(("ghc-semigroups" ,ghc-semigroups)))
+     (list ghc-semigroups))
     (home-page "https://hackage.haskell.org/package/wordexp")
     (synopsis "Library wrapping @code{wordexp} for Haskell")
     (description "@code{wordexp(3)} wrapper library for Haskell to perform
@@ -15144,11 +14548,8 @@ word expansion like a posix-shell.")
      `(#:extra-directories
        ("libx11" "libxrandr" "libxinerama" "libxscrnsaver")))
     (inputs
-     `(("libx11" ,libx11)
-       ("libxrandr" ,libxrandr)
-       ("libxinerama" ,libxinerama)
-       ("libxscrnsaver" ,libxscrnsaver)
-       ("ghc-data-default-class" ,ghc-data-default-class)))
+     (list libx11 libxrandr libxinerama libxscrnsaver
+           ghc-data-default-class))
     (home-page "https://github.com/haskell-pkg-janitors/X11")
     (synopsis "Bindings to the X11 graphics library")
     (description
@@ -15170,13 +14571,9 @@ bindings are a direct translation of the C bindings.")
     (arguments
      `(#:extra-directories ("libx11" "libxft" "xorgproto")))
     (inputs
-     `(("ghc-x11" ,ghc-x11)
-       ("ghc-utf8-string" ,ghc-utf8-string)
-       ("libx11" ,libx11)
-       ("libxft" ,libxft)
-       ("xorgproto" ,xorgproto)))
+     (list ghc-x11 ghc-utf8-string libx11 libxft xorgproto))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (build-system haskell-build-system)
     (home-page "https://hackage.haskell.org/package/X11-xft")
     (synopsis "Bindings to Xft")
@@ -15238,19 +14635,16 @@ parts.")
          "1zzh7xnmbm68dab1vqsjkr6ghxqgnla5nik4amrwlmhbdih1gcdx"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-conduit" ,ghc-conduit)
-       ("ghc-conduit-extra" ,ghc-conduit-extra)
-       ("ghc-resourcet" ,ghc-resourcet)
-       ("ghc-xml-types" ,ghc-xml-types)
-       ("ghc-attoparsec" ,ghc-attoparsec)
-       ("ghc-data-default-class" ,ghc-data-default-class)
-       ("ghc-blaze-markup" ,ghc-blaze-markup)
-       ("ghc-blaze-html" ,ghc-blaze-html)))
+     (list ghc-conduit
+           ghc-conduit-extra
+           ghc-resourcet
+           ghc-xml-types
+           ghc-attoparsec
+           ghc-data-default-class
+           ghc-blaze-markup
+           ghc-blaze-html))
     (native-inputs
-     `(("ghc-doctest" ,ghc-doctest)
-       ("ghc-hspec" ,ghc-hspec)
-       ("ghc-cabal-doctest" ,ghc-cabal-doctest)
-       ("ghc-hunit" ,ghc-hunit)))
+     (list ghc-doctest ghc-hspec ghc-cabal-doctest ghc-hunit))
     (home-page "https://github.com/snoyberg/xml")
     (synopsis "Utilities for dealing with XML with the conduit package")
     (description
@@ -15290,11 +14684,9 @@ documents.")
         (base32 "0jrhcjy7ww59dafg857f2g2df1fw2jmbwcs1q379ph0pc5rxj3lj"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-shakespeare" ,ghc-shakespeare)
-       ("ghc-xml-conduit" ,ghc-xml-conduit)))
+     (list ghc-shakespeare ghc-xml-conduit))
     (native-inputs
-     `(("ghc-hspec" ,ghc-hspec)
-       ("ghc-hunit" ,ghc-hunit)))
+     (list ghc-hspec ghc-hunit))
     (home-page "https://www.yesodweb.com/")
     (synopsis "Hamlet-style quasiquoter for XML content")
     (description "This package provides a type-safe tool for generating XML
@@ -15314,23 +14706,23 @@ code via quasi-quoting built on top of @code{ghc-shakespeare}.")
                 "0s08kw0hqxixxripwjmz7b4yh9130dws3jaj460x8ds8q4b6khbx"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-conduit" ,ghc-conduit)
-       ("ghc-resourcet" ,ghc-resourcet)
-       ("ghc-aeson" ,ghc-aeson)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)
-       ("ghc-vector" ,ghc-vector)
-       ("ghc-attoparsec" ,ghc-attoparsec)
-       ("ghc-scientific" ,ghc-scientific)
-       ("ghc-libyaml" ,ghc-libyaml)
-       ("ghc-optparse-applicative" ,ghc-optparse-applicative)))
+     (list ghc-conduit
+           ghc-resourcet
+           ghc-aeson
+           ghc-unordered-containers
+           ghc-vector
+           ghc-attoparsec
+           ghc-scientific
+           ghc-libyaml
+           ghc-optparse-applicative))
     (native-inputs
-     `(("ghc-hspec" ,ghc-hspec)
-       ("ghc-hunit" ,ghc-hunit)
-       ("ghc-base-compat" ,ghc-base-compat)
-       ("hspec-discover" ,hspec-discover)
-       ("ghc-mockery" ,ghc-mockery)
-       ("ghc-raw-strings-qq" ,ghc-raw-strings-qq)
-       ("ghc-temporary" ,ghc-temporary)))
+     (list ghc-hspec
+           ghc-hunit
+           ghc-base-compat
+           hspec-discover
+           ghc-mockery
+           ghc-raw-strings-qq
+           ghc-temporary))
     (home-page "https://github.com/snoyberg/yaml/")
     (synopsis "Parsing and rendering YAML documents")
     (description
@@ -15363,13 +14755,9 @@ code via quasi-quoting built on top of @code{ghc-shakespeare}.")
                (setenv "PATH" (string-append unzip "/bin:" which "/bin:" path))
                #t))))))
     (inputs
-     `(("ghc-digest" ,ghc-digest)
-       ("ghc-temporary" ,ghc-temporary)
-       ("ghc-zlib" ,ghc-zlib)))
+     (list ghc-digest ghc-temporary ghc-zlib))
     (native-inputs
-     `(("ghc-hunit" ,ghc-hunit)
-       ("unzip" ,unzip)
-       ("which" ,which)))
+     (list ghc-hunit unzip which))
     (home-page "https://hackage.haskell.org/package/zip-archive")
     (synopsis "Zip archive library for Haskell")
     (description "The zip-archive library provides functions for creating,
@@ -15402,12 +14790,9 @@ modifying, and extracting files from zip archives in Haskell.")
                (("tasty            >= 0\\.8 && < 0\\.12") "tasty")
                (("tasty-hunit      >= 0\\.8 && < 0\\.10") "tasty-hunit")
                (("tasty-quickcheck == 0\\.8\\.\\*") "tasty-quickcheck")))))))
-    (inputs `(("zlib" ,zlib)))
+    (inputs (list zlib))
     (native-inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
-       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)))
+     (list ghc-quickcheck ghc-tasty ghc-tasty-hunit ghc-tasty-quickcheck))
     (home-page "https://hackage.haskell.org/package/zlib")
     (synopsis
      "Compression and decompression in the gzip and zlib formats")
@@ -15434,10 +14819,9 @@ provides access to the full zlib feature set.")
          "02ciywlz4wdlymgc3jsnicz9kzvymjw1www2163gxidnz4wb8fy8"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-zlib" ,ghc-zlib)))
+     (list ghc-zlib))
     (native-inputs
-     `(("ghc-hspec" ,ghc-hspec)
-       ("ghc-quickcheck" ,ghc-quickcheck)))
+     (list ghc-hspec ghc-quickcheck))
     (arguments
      `(#:cabal-revision
        ("2" "0fq49694gqkab8m0vq4i879blswczwd66n7xh4r4gwiahf0ryvqc")))
@@ -15461,9 +14845,8 @@ provides access to the full zlib feature set.")
          "0vghl48cxcqy72sqk2gpi7rvy5ya36j13vndaxi6kck6bqivbhm0"))))
     (build-system haskell-build-system)
     (native-inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-test-framework" ,ghc-test-framework)
-       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
+     (list ghc-quickcheck ghc-test-framework
+           ghc-test-framework-quickcheck2))
     (home-page "https://github.com/luispedro/hs-zstd")
     (synopsis "Haskell bindings to the Zstandard compression algorithm")
     (description "This library provides Haskell bindings to the
@@ -15486,7 +14869,7 @@ compression ratios.")
        (sha256
         (base32 "0fc18vdm1894yjbjkj9wjm27bf37ac3gvkzak677mgiw2pinmhvs"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-generic-deriving" ,ghc-generic-deriving)))
+    (inputs (list ghc-generic-deriving))
     (arguments
      `(#:cabal-revision
        ("1" "0krvp9v5dh4w2076kar48cpkk62ndqp769v2ai3b38rsa5bj6q74")))
@@ -15562,10 +14945,8 @@ for compilers with @code{PolyKinds}.")
         (base32 "1mg5hnr3f4zjh3ajy16jkxj630rnfa9iqnnmpjqd9gkjdxpssd5l"))))
     (build-system haskell-build-system)
     (native-inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-expected-failure" ,ghc-tasty-expected-failure)
-       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)))
+     (list ghc-quickcheck ghc-tasty ghc-tasty-expected-failure
+           ghc-tasty-quickcheck))
     (home-page "https://github.com/snowleopard/selective")
     (synopsis "Selective applicative functors")
     (description
@@ -15591,14 +14972,14 @@ on selective functors} for more details.")
         (base32 "0ik6wsff306dnbz0v3gpiajlj5b558hrk9176fzcb2fclf4447nm"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-comonad" ,ghc-comonad)
-       ("ghc-free" ,ghc-free)
-       ("ghc-hashable" ,ghc-hashable)
-       ("ghc-semigroupoids" ,ghc-semigroupoids)
-       ("ghc-semigroups" ,ghc-semigroups)
-       ("ghc-tagged" ,ghc-tagged)
-       ("ghc-transformers-compat" ,ghc-transformers-compat)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)))
+     (list ghc-comonad
+           ghc-free
+           ghc-hashable
+           ghc-semigroupoids
+           ghc-semigroups
+           ghc-tagged
+           ghc-transformers-compat
+           ghc-unordered-containers))
     (home-page "http://github.com/ekmett/keys/")
     (synopsis "Keyed functors and containers")
     (description
@@ -15623,15 +15004,15 @@ dependencies.")
         (base32 "07p92y62dibys3xa59rvx52xyyr39nghl73z7hzwnksa3ry3vfmq"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-data-default-class" ,ghc-data-default-class)
-       ("ghc-comonad" ,ghc-comonad)
-       ("ghc-kan-extensions" ,ghc-kan-extensions)
-       ("ghc-semigroupoids" ,ghc-semigroupoids)
-       ("ghc-semigroups" ,ghc-semigroups)
-       ("ghc-tagged" ,ghc-tagged)
-       ("ghc-transformers-compat" ,ghc-transformers-compat)
-       ("ghc-hashable" ,ghc-hashable)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)))
+     (list ghc-data-default-class
+           ghc-comonad
+           ghc-kan-extensions
+           ghc-semigroupoids
+           ghc-semigroups
+           ghc-tagged
+           ghc-transformers-compat
+           ghc-hashable
+           ghc-unordered-containers))
     (home-page "https://github.com/ekmett/pointed/")
     (synopsis "Pointed and copointed data types")
     (description
@@ -15653,13 +15034,13 @@ dependencies.")
         (base32 "10akvpa5w9bp0d8hflab63r9laa9gy2hv167smhjsdzq1kplc0hv"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-vector" ,ghc-vector)
-       ("ghc-semigroupoids" ,ghc-semigroupoids)
-       ("ghc-semigroups" ,ghc-semigroups)
-       ("ghc-comonad" ,ghc-comonad)
-       ("ghc-pointed" ,ghc-pointed)
-       ("ghc-keys" ,ghc-keys)
-       ("ghc-hashable" ,ghc-hashable)))
+     (list ghc-vector
+           ghc-semigroupoids
+           ghc-semigroups
+           ghc-comonad
+           ghc-pointed
+           ghc-keys
+           ghc-hashable))
     (home-page "https://github.com/ekmett/vector-instances")
     (synopsis "Orphan instances for @code{Data.Vector}")
     (description
@@ -15682,9 +15063,7 @@ the @code{ghc-vector} package.")
         (base32 "1il1hs5yjfkb417c224pw1vrh4anyprasfwmjbd4fkviyv55jl3b"))))
     (build-system haskell-build-system)
     (native-inputs
-     `(("ghc-base-compat" ,ghc-base-compat)
-       ("ghc-hspec" ,ghc-hspec)
-       ("hspec-discover" ,hspec-discover)))
+     (list ghc-base-compat ghc-hspec hspec-discover))
     (home-page "https://github.com/haskell-compat/th-compat")
     (synopsis
      "Backward- and forward-compatible @code{Quote} and @code{Code} types")
@@ -15711,9 +15090,8 @@ range of @code{template-haskell} versions.  On recent versions of
         (base32 "0nznzji5haxl4ninm2a79dqf4c7fj6pc3z9gdc6wbf5h1pp14afr"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-extra" ,ghc-extra)
-       ("ghc-semigroups" ,ghc-semigroups)))
-    (native-inputs `(("ghc-quickcheck" ,ghc-quickcheck)))
+     (list ghc-extra ghc-semigroups))
+    (native-inputs (list ghc-quickcheck))
     (home-page "https://github.com/ndmitchell/filepattern")
     (synopsis "File path glob-like matching")
     (description
@@ -15754,11 +15132,9 @@ traverals using patterns.
        (sha256
         (base32 "0r5sl7hhn0cxp0b1dskx1lshplc0yka7hcvs2nh10nrj07fjd3vj"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-uniplate" ,ghc-uniplate)))
+    (inputs (list ghc-uniplate))
     (native-inputs
-     `(("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
-       ("ghc-extra" ,ghc-extra)))
+     (list ghc-tasty ghc-tasty-hunit ghc-extra))
     (home-page "https://github.com/shayne-fletcher/ghc-lib-parser-ex")
     (synopsis "Algorithms on GHC parse trees")
     (description
@@ -15802,13 +15178,10 @@ it.")
        (sha256
         (base32 "0nbxkpd29ivdi6vcikbaasffkcz9m2vd4nhv29p6gmvckzmhj7zi"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-th-lift-instances" ,ghc-th-lift-instances)))
+    (inputs (list ghc-th-lift-instances))
     (native-inputs
-     `(("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
-       ("ghc-unicode-transforms" ,ghc-unicode-transforms)
-       ("ghc-doctest" ,ghc-doctest)))
+     (list ghc-tasty ghc-tasty-quickcheck ghc-tasty-hunit
+           ghc-unicode-transforms ghc-doctest))
     (home-page "https://github.com/jgm/unicode-collation")
     (synopsis "Haskell implementation of the Unicode Collation Algorithm")
     (description
@@ -15834,21 +15207,21 @@ provided.")
         (base32 "13hgbcbr7jbyfbxp8fsc43c2wq4fhlbxzqwh1plfkdi5n9bif1lv"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-safe" ,ghc-safe)
-       ("ghc-case-insensitive" ,ghc-case-insensitive)
-       ("ghc-vector" ,ghc-vector)
-       ("ghc-scientific" ,ghc-scientific)
-       ("ghc-uniplate" ,ghc-uniplate)
-       ("ghc-xml-conduit" ,ghc-xml-conduit)
-       ("ghc-attoparsec" ,ghc-attoparsec)
-       ("ghc-data-default" ,ghc-data-default)
-       ("ghc-aeson" ,ghc-aeson)
-       ("ghc-file-embed" ,ghc-file-embed)
-       ("ghc-pandoc-types" ,ghc-pandoc-types)
-       ("ghc-unicode-collation" ,ghc-unicode-collation)
-       ("ghc-base-compat" ,ghc-base-compat)
-       ("ghc-aeson-pretty" ,ghc-aeson-pretty)))
-    (native-inputs `(("ghc-timeit" ,ghc-timeit) ("ghc-diff" ,ghc-diff)))
+     (list ghc-safe
+           ghc-case-insensitive
+           ghc-vector
+           ghc-scientific
+           ghc-uniplate
+           ghc-xml-conduit
+           ghc-attoparsec
+           ghc-data-default
+           ghc-aeson
+           ghc-file-embed
+           ghc-pandoc-types
+           ghc-unicode-collation
+           ghc-base-compat
+           ghc-aeson-pretty))
+    (native-inputs (list ghc-timeit ghc-diff))
     (home-page "https://hackage.haskell.org/package/citeproc")
     (synopsis "Generate citations and bibliography from CSL styles")
     (description
@@ -15871,11 +15244,9 @@ entries.  For more information about CSL, see @uref{https://citationstyles.org/}
        (sha256
         (base32 "105szy7l4ji255fwv0kbfcy3i3a3a4197zgj6s9jb12kwbn6n0c7"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-unicode-transforms" ,ghc-unicode-transforms)))
+    (inputs (list ghc-unicode-transforms))
     (native-inputs
-     `(("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)))
+     (list ghc-tasty ghc-tasty-quickcheck ghc-tasty-hunit))
     (home-page "https://github.com/jgm/commonmark-hs")
     (synopsis "Pure Haskell Commonmark parser")
     (description
@@ -15910,11 +15281,9 @@ varies linearly with input length.")
         (base32 "0jm6w84p2a2gyaljvnlvjjwrwnir1lss3ps53d0bd8mkvhixxrqr"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-network-uri" ,ghc-network-uri)
-       ("ghc-commonmark" ,ghc-commonmark)
-       ("ghc-emojis" ,ghc-emojis)))
+     (list ghc-network-uri ghc-commonmark ghc-emojis))
     (native-inputs
-     `(("ghc-tasty" ,ghc-tasty) ("ghc-tasty-hunit" ,ghc-tasty-hunit)))
+     (list ghc-tasty ghc-tasty-hunit))
     (home-page "https://github.com/jgm/commonmark-hs")
     (synopsis "Extensions for @code{ghc-commonmark}")
     (description
@@ -15938,9 +15307,7 @@ footnotes, math, and more.")
         (base32 "15rfaz49msswb7gh5wyxpm9vckbf3wzyd2m5m2f3hggb82ydk5cp"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-commonmark" ,ghc-commonmark)
-       ("ghc-commonmark-extensions" ,ghc-commonmark-extensions)
-       ("ghc-pandoc-types" ,ghc-pandoc-types)))
+     (list ghc-commonmark ghc-commonmark-extensions ghc-pandoc-types))
     (home-page "https://github.com/jgm/commonmark-hs")
     (synopsis "Bridge between Commonmark and Pandoc AST.")
     (description
@@ -15962,11 +15329,9 @@ Pandoc types.")
        (sha256
         (base32 "1zxfljcn74rky26ijqmba6grpj0h9plgr47wxdaf7gcz1y8dhn68"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-hslua" ,ghc-hslua)))
+    (inputs (list ghc-hslua))
     (native-inputs
-     `(("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
-       ("ghc-tasty-lua" ,ghc-tasty-lua)))
+     (list ghc-tasty ghc-tasty-hunit ghc-tasty-lua))
     (home-page "https://github.com/hslua/hslua-module-path")
     (synopsis "Lua module to work with file paths")
     (description
@@ -15988,7 +15353,7 @@ platform independent way.")
        (sha256
         (base32 "1nk1cv35szp80qkhbyh5gn6vn194zzl0wz186qrqdrdx3a9r9w4g"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-boot-th" ,ghc-boot-th)))
+    (inputs (list ghc-boot-th))
     (home-page "http://hackage.haskell.org/package/template-haskell")
     (synopsis "Support library for Template Haskell")
     (description
@@ -16013,13 +15378,13 @@ information.")
         (base32 "0aajx07n2rznyqxb0c4pn9j2cvkzw5brz9ki4grhhigbcri3jzmv"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-genvalidity" ,ghc-genvalidity)
-       ("ghc-genvalidity-property" ,ghc-genvalidity-property)
-       ("ghc-hspec" ,ghc-hspec)
-       ("hspec-discover" ,hspec-discover)
-       ("ghc-hspec-core" ,ghc-hspec-core)
-       ("ghc-validity" ,ghc-validity)))
+     (list ghc-quickcheck
+           ghc-genvalidity
+           ghc-genvalidity-property
+           ghc-hspec
+           hspec-discover
+           ghc-hspec-core
+           ghc-validity))
     (home-page "https://github.com/NorfairKing/validity")
     (synopsis "Standard spec's for @code{GenValidity} instances")
     (description
@@ -16066,11 +15431,8 @@ upon by user code.")
         (base32 "0gbmn5rpvyxhw5bxjmxwld6918lslv03b2f6hshssaw1il5x86j3"))))
     (build-system haskell-build-system)
     (native-inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-quickcheck-instances" ,ghc-quickcheck-instances)
-       ("ghc-tagged" ,ghc-tagged)
-       ("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)))
+     (list ghc-quickcheck ghc-quickcheck-instances ghc-tagged ghc-tasty
+           ghc-tasty-quickcheck))
     (arguments
      `(#:cabal-revision
        ("5" "1h2d37szfrcwn9rphnijn4q9l947b0wwqjs1aqmm62xkhbad7jf6")))
@@ -16096,11 +15458,8 @@ upon by user code.")
         (base32 "1q8sxycv93sap6dgbw70scklnpjj5vav6qlvsxm5500jlvb3jnf0"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-cereal" ,ghc-cereal)
-       ("ghc-monad-loops" ,ghc-monad-loops)
-       ("ghc-pretty-hex" ,ghc-pretty-hex)
-       ("ghc-language-c" ,ghc-language-c)
-       ("ghc-regex-pcre" ,ghc-regex-pcre)))
+     (list ghc-cereal ghc-monad-loops ghc-pretty-hex ghc-language-c
+           ghc-regex-pcre))
     (home-page "https://github.com/Ongy/netlink-hs")
     (synopsis "Netlink communication for Haskell")
     (description
@@ -16124,7 +15483,7 @@ of Netlink families.")
         (base32 "1fbqi4s4ajxhyv4a7nbh3v98limla0z8rfqlh02pwc1a90qpwy1a"))))
     (build-system haskell-build-system)
     (arguments `(#:tests? #f)) ; TODO: Fail to open shared library.
-    (native-inputs `(("ghc-doctest" ,ghc-doctest)))
+    (native-inputs (list ghc-doctest))
     (home-page "https://github.com/Hexirp/doctest-driver-gen")
     (synopsis "Generate driver file for Doctest's Cabal integration")
     (description
@@ -16169,10 +15528,8 @@ Haskell newer than 2.8.")
     (build-system haskell-build-system)
     (arguments `(#:tests? #f)) ; TODO: Fails to connect to server.
     (inputs
-     `(("mysql" ,mysql)
-       ("zlib" ,zlib)
-       ("openssl" ,openssl)))
-    (native-inputs `(("ghc-hspec" ,ghc-hspec)))
+     (list mysql zlib openssl))
+    (native-inputs (list ghc-hspec))
     (home-page "https://github.com/paul-rouse/mysql")
     (synopsis "Low-level MySQL client library")
     (description
@@ -16201,14 +15558,10 @@ built.")
         (base32 "0zjnwnjpcpnnm0815h9ngr3a3iy0szsnb3nrcavkbx4905s9k4bs"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-blaze-builder" ,ghc-blaze-builder)
-       ("ghc-old-locale" ,ghc-old-locale)
-       ("ghc-vector" ,ghc-vector)))
+     (list ghc-blaze-builder ghc-old-locale ghc-vector))
     (native-inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-double-conversion" ,ghc-double-conversion)
-       ("ghc-test-framework" ,ghc-test-framework)
-       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
+     (list ghc-quickcheck ghc-double-conversion ghc-test-framework
+           ghc-test-framework-quickcheck2))
     (home-page "https://github.com/bos/blaze-textual")
     (synopsis "Fast rendering of common datatypes")
     (description
@@ -16232,17 +15585,17 @@ Haskell datatypes in text form using the @code{ghc-blaze-builder} library.")
     (build-system haskell-build-system)
     (arguments `(#:tests? #f)) ; TODO: Fails to connect to server.
     (inputs
-     `(("ghc-attoparsec" ,ghc-attoparsec)
-       ("ghc-base16-bytestring" ,ghc-base16-bytestring)
-       ("ghc-blaze-builder" ,ghc-blaze-builder)
-       ("ghc-mysql" ,ghc-mysql)
-       ("ghc-pcre-light" ,ghc-pcre-light)
-       ("ghc-old-locale" ,ghc-old-locale)
-       ("ghc-blaze-textual" ,ghc-blaze-textual)
-       ("ghc-vector" ,ghc-vector)
-       ("openssl" ,openssl)
-       ("zlib" ,zlib)))
-    (native-inputs `(("ghc-hspec" ,ghc-hspec)))
+     (list ghc-attoparsec
+           ghc-base16-bytestring
+           ghc-blaze-builder
+           ghc-mysql
+           ghc-pcre-light
+           ghc-old-locale
+           ghc-blaze-textual
+           ghc-vector
+           openssl
+           zlib))
+    (native-inputs (list ghc-hspec))
     (home-page "https://github.com/paul-rouse/mysql-simple")
     (synopsis "Mid-level MySQL client library")
     (description
@@ -16265,17 +15618,16 @@ Haskell datatypes in text form using the @code{ghc-blaze-builder} library.")
         (base32 "1dvniapxjaw2vmdqd5cplwxdxiy2l6z6gns8gp3ci3rn3xp0pf6p"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-haskell-src-meta" ,ghc-haskell-src-meta)
-       ("ghc-persistent" ,ghc-persistent)))
+     (list ghc-haskell-src-meta ghc-persistent))
     (native-inputs
-     `(("ghc-hunit" ,ghc-hunit)
-       ("ghc-aeson" ,ghc-aeson)
-       ("ghc-fast-logger" ,ghc-fast-logger)
-       ("ghc-hspec" ,ghc-hspec)
-       ("ghc-monad-logger" ,ghc-monad-logger)
-       ("ghc-persistent-sqlite" ,ghc-persistent-sqlite)
-       ("ghc-resourcet" ,ghc-resourcet)
-       ("ghc-unliftio" ,ghc-unliftio)))
+     (list ghc-hunit
+           ghc-aeson
+           ghc-fast-logger
+           ghc-hspec
+           ghc-monad-logger
+           ghc-persistent-sqlite
+           ghc-resourcet
+           ghc-unliftio))
     (home-page "https://github.com/yesodweb/persistent")
     (synopsis "Quasi-quoter for raw SQL for @code{ghc-persistent}")
     (description
@@ -16299,28 +15651,28 @@ Language} for @code{ghc-persistent}.")
     (build-system haskell-build-system)
     (arguments `(#:tests? #f)) ; TODO: Fails to import MaybeFieldDefsTest.
     (inputs
-     `(("ghc-persistent" ,ghc-persistent)
-       ("ghc-aeson" ,ghc-aeson)
-       ("ghc-blaze-builder" ,ghc-blaze-builder)
-       ("ghc-conduit" ,ghc-conduit)
-       ("ghc-monad-logger" ,ghc-monad-logger)
-       ("ghc-mysql" ,ghc-mysql)
-       ("ghc-mysql-simple" ,ghc-mysql-simple)
-       ("ghc-resourcet" ,ghc-resourcet)
-       ("ghc-resource-pool" ,ghc-resource-pool)
-       ("ghc-unliftio-core" ,ghc-unliftio-core)
-       ("openssl" ,openssl)
-       ("zlib" ,zlib)))
+     (list ghc-persistent
+           ghc-aeson
+           ghc-blaze-builder
+           ghc-conduit
+           ghc-monad-logger
+           ghc-mysql
+           ghc-mysql-simple
+           ghc-resourcet
+           ghc-resource-pool
+           ghc-unliftio-core
+           openssl
+           zlib))
     (native-inputs
-     `(("ghc-fast-logger" ,ghc-fast-logger)
-       ("ghc-hspec" ,ghc-hspec)
-       ("ghc-http-api-data" ,ghc-http-api-data)
-       ("ghc-hunit" ,ghc-hunit)
-       ("ghc-path-pieces" ,ghc-path-pieces)
-       ("ghc-persistent-qq" ,ghc-persistent-qq)
-       ("ghc-persistent-test" ,ghc-persistent-test)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-quickcheck-instances" ,ghc-quickcheck-instances)))
+     (list ghc-fast-logger
+           ghc-hspec
+           ghc-http-api-data
+           ghc-hunit
+           ghc-path-pieces
+           ghc-persistent-qq
+           ghc-persistent-test
+           ghc-quickcheck
+           ghc-quickcheck-instances))
     (home-page "http://www.yesodweb.com/book/persistent")
     (synopsis
      "Backend for the @code{ghc-persistent} library using MySQL database server")
@@ -16346,7 +15698,7 @@ is officially supported.")
        (sha256
         (base32 "0a1qwz0n80lph8m9cq6cb06m8bsmqgg8ifx0acpylvrrkd8g3k92"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-hspec-expectations" ,ghc-hspec-expectations)))
+    (inputs (list ghc-hspec-expectations))
     (home-page "https://hackage.haskell.org/package/hspec-expectations-lifted")
     (synopsis "Version of @code{ghc-hspec-expectations} generalized to @code{MonadIO}")
     (description
@@ -16368,12 +15720,10 @@ to @code{MonadIO}.")
        (sha256
         (base32 "150rdank90h7v08x0wq4dffjbxv2daf5v9sqfs5mab76kinwxg26"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-utf8-string" ,ghc-utf8-string)))
+    (inputs (list ghc-utf8-string))
     (native-inputs
-     `(("hspec-discover" ,hspec-discover)
-       ("ghc-hspec" ,ghc-hspec)
-       ("ghc-quickcheck-instances" ,ghc-quickcheck-instances)
-       ("ghc-quickcheck" ,ghc-quickcheck)))
+     (list hspec-discover ghc-hspec ghc-quickcheck-instances
+           ghc-quickcheck))
     (home-page "https://github.com/soenkehahn/string-conversions")
     (synopsis "Simplify dealing with different types for strings")
     (description
@@ -16398,7 +15748,7 @@ string types into values of other string types.")
     (arguments
      `(#:cabal-revision
        ("1" "1clivf13z15w954a0kcfkv8yc0d8kx61b68x2hk7a9236ck7l2m2")))
-    (inputs `(("postgresql" ,postgresql)))
+    (inputs (list postgresql))
     (home-page "https://github.com/haskellari/postgresql-libpq")
     (synopsis "Low-level bindings to @code{libpq}")
     (description
@@ -16423,27 +15773,27 @@ server and to receive the results of these queries.")
         (base32 "0rz2bklxp4pvbxb2w49h5p6pbwabn6d5d4j4mrya4fpa0d13k43d"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-time-compat" ,ghc-time-compat)
-       ("ghc-aeson" ,ghc-aeson)
-       ("ghc-attoparsec" ,ghc-attoparsec)
-       ("ghc-bytestring-builder" ,ghc-bytestring-builder)
-       ("ghc-case-insensitive" ,ghc-case-insensitive)
-       ("ghc-hashable" ,ghc-hashable)
-       ("ghc-only" ,ghc-only)
-       ("ghc-postgresql-libpq" ,ghc-postgresql-libpq)
-       ("ghc-scientific" ,ghc-scientific)
-       ("ghc-uuid-types" ,ghc-uuid-types)
-       ("ghc-vector" ,ghc-vector)))
+     (list ghc-time-compat
+           ghc-aeson
+           ghc-attoparsec
+           ghc-bytestring-builder
+           ghc-case-insensitive
+           ghc-hashable
+           ghc-only
+           ghc-postgresql-libpq
+           ghc-scientific
+           ghc-uuid-types
+           ghc-vector))
     (native-inputs
-     `(("ghc-inspection-testing" ,ghc-inspection-testing)
-       ("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
-       ("ghc-base16-bytestring" ,ghc-base16-bytestring)
-       ("ghc-cryptohash-md5" ,ghc-cryptohash-md5)
-       ("ghc-hunit" ,ghc-hunit)
-       ("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-golden" ,ghc-tasty-golden)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)))
+     (list ghc-inspection-testing
+           ghc-tasty
+           ghc-tasty-hunit
+           ghc-base16-bytestring
+           ghc-cryptohash-md5
+           ghc-hunit
+           ghc-tasty
+           ghc-tasty-golden
+           ghc-tasty-hunit))
     (arguments
      `(#:cabal-revision
        ("2" "1kwjlj0bsc1yd4dgfc0ydawq9acfjlf0bymwc830dryp16wpj9zv")))
@@ -16470,33 +15820,33 @@ server and to receive the results of these queries.")
     (build-system haskell-build-system)
     (arguments `(#:tests? #f)) ; TODO: Cannot import MaybeFieldDefsTest.
     (inputs
-     `(("ghc-persistent" ,ghc-persistent)
-       ("ghc-aeson" ,ghc-aeson)
-       ("ghc-attoparsec" ,ghc-attoparsec)
-       ("ghc-blaze-builder" ,ghc-blaze-builder)
-       ("ghc-conduit" ,ghc-conduit)
-       ("ghc-monad-logger" ,ghc-monad-logger)
-       ("ghc-postgresql-simple" ,ghc-postgresql-simple)
-       ("ghc-postgresql-libpq" ,ghc-postgresql-libpq)
-       ("ghc-resourcet" ,ghc-resourcet)
-       ("ghc-resource-pool" ,ghc-resource-pool)
-       ("ghc-string-conversions" ,ghc-string-conversions)
-       ("ghc-unliftio-core" ,ghc-unliftio-core)
-       ("ghc-unliftio" ,ghc-unliftio)))
+     (list ghc-persistent
+           ghc-aeson
+           ghc-attoparsec
+           ghc-blaze-builder
+           ghc-conduit
+           ghc-monad-logger
+           ghc-postgresql-simple
+           ghc-postgresql-libpq
+           ghc-resourcet
+           ghc-resource-pool
+           ghc-string-conversions
+           ghc-unliftio-core
+           ghc-unliftio))
     (native-inputs
-     `(("ghc-persistent-qq" ,ghc-persistent-qq)
-       ("ghc-persistent-test" ,ghc-persistent-test)
-       ("ghc-fast-logger" ,ghc-fast-logger)
-       ("ghc-hunit" ,ghc-hunit)
-       ("ghc-hspec" ,ghc-hspec)
-       ("ghc-hspec-expectations" ,ghc-hspec-expectations)
-       ("ghc-hspec-expectations-lifted" ,ghc-hspec-expectations-lifted)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-quickcheck-instances" ,ghc-quickcheck-instances)
-       ("ghc-path-pieces" ,ghc-path-pieces)
-       ("ghc-http-api-data" ,ghc-http-api-data)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)
-       ("ghc-vector" ,ghc-vector)))
+     (list ghc-persistent-qq
+           ghc-persistent-test
+           ghc-fast-logger
+           ghc-hunit
+           ghc-hspec
+           ghc-hspec-expectations
+           ghc-hspec-expectations-lifted
+           ghc-quickcheck
+           ghc-quickcheck-instances
+           ghc-path-pieces
+           ghc-http-api-data
+           ghc-unordered-containers
+           ghc-vector))
     (home-page "http://www.yesodweb.com/book/persistent")
     (synopsis "Backend for the @code{ghc-persistent library} using Postgresql")
     (description
@@ -16520,9 +15870,7 @@ using the @code{ghc-postgresql-simple} package.")
     (build-system haskell-build-system)
     (arguments `(#:tests? #f)) ; TODO: Needs tasty >=1.3.1 && <1.4
     (native-inputs
-     `(("ghc-smallcheck" ,ghc-smallcheck)
-       ("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-smallcheck" ,ghc-tasty-smallcheck)))
+     (list ghc-smallcheck ghc-tasty ghc-tasty-smallcheck))
     (home-page "https://github.com/strake/filtrable.hs")
     (synopsis "Class of filtrable containers")
     (description "This package provides filtrable containers.")
@@ -16543,8 +15891,7 @@ using the @code{ghc-postgresql-simple} package.")
         (base32 "06a44i7a956d7xkk2na4090xj2a7b7a228pk4spmccs4x20ymssh"))))
     (build-system haskell-build-system)
     (native-inputs
-     `(("ghc-async" ,ghc-async)
-       ("ghc-async" ,ghc-async)))
+     (list ghc-async ghc-async))
     (home-page "https://github.com/takano-akio/filelock")
     (synopsis "Portable interface to file locking")
     (description
@@ -16566,11 +15913,8 @@ using the @code{ghc-postgresql-simple} package.")
         (base32 "12sxww260pc0bbpiyirm7911haxhljdi2f08a9ddpbgw8d5n7ffg"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-hsyaml" ,ghc-hsyaml)
-       ("ghc-aeson" ,ghc-aeson)
-       ("ghc-scientific" ,ghc-scientific)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)
-       ("ghc-vector" ,ghc-vector)))
+     (list ghc-hsyaml ghc-aeson ghc-scientific ghc-unordered-containers
+           ghc-vector))
     (arguments
      `(#:cabal-revision
        ("3" "0vhdndyj5f07vvvnssn5ybdja5wmaydq0n2lfpihvdg4dkhczrx2")))
@@ -16604,12 +15948,12 @@ data into native Haskell data types.")
         (base32 "07xb926kixqv5scqdl8w34z42zjzdpbq06f0ha3f3nm3rxhgn3m8"))))
     (build-system haskell-build-system)
     (native-inputs
-     `(("ghc-async" ,ghc-async)
-       ("ghc-singleton-bool" ,ghc-singleton-bool)
-       ("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-expected-failure" ,ghc-tasty-expected-failure)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
-       ("ghc-temporary" ,ghc-temporary)))
+     (list ghc-async
+           ghc-singleton-bool
+           ghc-tasty
+           ghc-tasty-expected-failure
+           ghc-tasty-hunit
+           ghc-temporary))
     (arguments
      `(#:cabal-revision
        ("1" "0mmq1q82mrbayiij0p8wdnkf0j8drmq1iibg8kn4cak3nrn9pd1d")))
@@ -16673,7 +16017,7 @@ data Dec a
        (sha256
         (base32 "17w9vv6arn7vvc7kykqcx81q2364ji43khrryl27r1cjx9yxapa0"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-dec" ,ghc-dec)))
+    (inputs (list ghc-dec))
     (arguments
      `(#:cabal-revision
        ("3" "11rhzpy4xiry39bbxzwrqff75f0f4g7z0vkr3v9l8rv3w40jlf7x")))

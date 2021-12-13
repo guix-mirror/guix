@@ -2,6 +2,8 @@
 ;;; Copyright © 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2021 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -47,49 +49,43 @@
 (define-public libsepol
   (package
     (name "libsepol")
-    (version "3.0")
-    (source (let ((release "20191204"))
-              (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/SELinuxProject/selinux")
-                      (commit release)))
-                (file-name (string-append "selinux-" release "-checkout"))
-                (sha256
-                 (base32
-                  "05rpzm72cgprd0ccr6lvx9hm8j8b5nkqi4avshlsyg7s3sdlcxjs")))))
+    (version "3.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/SELinuxProject/selinux")
+                     (commit version)))
+              (file-name (git-file-name "selinux" version))
+              (sha256
+               (base32
+                "03p3lmvrvkcvsmiczsjzhyfgxlxdkdyq0p8igv3s3hdak5n92jjn"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; tests require checkpolicy, which requires libsepol
        #:test-target "test"
        #:make-flags
-       (let ((out (assoc-ref %outputs "out"))
-             (target ,(%current-target-system)))
+       (let ((out (assoc-ref %outputs "out")))
          (list (string-append "PREFIX=" out)
                (string-append "SHLIBDIR=" out "/lib")
                (string-append "MAN3DIR=" out "/share/man/man3")
                (string-append "MAN5DIR=" out "/share/man/man5")
                (string-append "MAN8DIR=" out "/share/man/man8")
+               (string-append "CFLAGS=-Wno-error")
                (string-append "LDFLAGS=-Wl,-rpath=" out "/lib")
-               (string-append "CC="
-                              (if target
-                                  (string-append (assoc-ref %build-inputs "cross-gcc")
-                                                 "/bin/" target "-gcc")
-                                  "gcc"))))
+               (string-append "CC=" ,(cc-for-target))))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
          (add-after 'unpack 'enter-dir
-           (lambda _ (chdir ,name) #t))
+           (lambda _ (chdir ,name)))
          (add-after 'enter-dir 'portability
            (lambda _
              (substitute* "src/ibpkeys.c"
                (("#include \"ibpkey_internal.h\"" line)
                 (string-append line "\n#include <inttypes.h>\n"))
-               (("%#lx") "%#\" PRIx64 \""))
-             #t)))))
+               (("%#lx") "%#\" PRIx64 \"")))))))
     (native-inputs
-     `(("flex" ,flex)))
+     (list flex))
     (home-page "https://selinuxproject.org/")
     (synopsis "Library for manipulating SELinux policies")
     (description
@@ -106,23 +102,18 @@ boolean settings).")
     (arguments
      `(#:tests? #f ; there is no check target
        #:make-flags
-       (let ((out (assoc-ref %outputs "out"))
-             (target ,(%current-target-system)))
+       (let ((out (assoc-ref %outputs "out")))
          (list (string-append "PREFIX=" out)
                (string-append "LIBSEPOLA="
                               (assoc-ref %build-inputs "libsepol")
                               "/lib/libsepol.a")
-               (string-append "CC="
-                              (if target
-                                  (string-append (assoc-ref %build-inputs "cross-gcc")
-                                                 "/bin/" target "-gcc")
-                                  "gcc"))))
+               (string-append "CC=" ,(cc-for-target))))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
          (delete 'portability)
          (add-after 'unpack 'enter-dir
-           (lambda _ (chdir ,name) #t)))))
+           (lambda _ (chdir ,name))))))
     (inputs
      `(("libsepol" ,libsepol)))
     (native-inputs
@@ -159,7 +150,7 @@ module into a binary representation.")
         `(modify-phases ,phases
            (delete 'portability)
            (replace 'enter-dir
-             (lambda _ (chdir ,name) #t))
+             (lambda _ (chdir ,name)))
            (add-after 'build 'pywrap
              (lambda* (#:key make-flags #:allow-other-keys)
                (apply invoke "make" "pywrap" make-flags)))
@@ -209,13 +200,12 @@ the core SELinux management utilities.")
         `(modify-phases ,phases
            (delete 'portability)
            (replace 'enter-dir
-             (lambda _ (chdir ,name) #t))
+             (lambda _ (chdir ,name)))
            (add-before 'install 'adjust-semanage-conf-location
              (lambda _
                (substitute* "src/Makefile"
                  (("DEFAULT_SEMANAGE_CONF_LOCATION=/etc")
-                  "DEFAULT_SEMANAGE_CONF_LOCATION=$(PREFIX)/etc"))
-               #t))
+                  "DEFAULT_SEMANAGE_CONF_LOCATION=$(PREFIX)/etc"))))
            (add-after 'build 'pywrap
              (lambda* (#:key make-flags #:allow-other-keys)
                (apply invoke "make" "pywrap" make-flags)))
@@ -256,7 +246,7 @@ binary policies.")
         `(modify-phases ,phases
            (delete 'portability)
            (replace 'enter-dir
-             (lambda _ (chdir ,name) #t))))))
+             (lambda _ (chdir ,name)))))))
     (inputs
      `(("libsepol" ,libsepol)))
     (native-inputs
@@ -279,7 +269,7 @@ binary policies.")
             `(modify-phases ,phases
                (delete 'portability)
                (replace 'enter-dir
-                 (lambda _ (chdir "python/sepolgen") #t))
+                 (lambda _ (chdir "python/sepolgen")))
                ;; By default all Python files would be installed to
                ;; $out/gnu/store/...-python-.../, so we override the
                ;; PACKAGEDIR to fix this.
@@ -301,8 +291,7 @@ binary policies.")
                                         (assoc-ref inputs "python"))
                                        "/site-packages/sepolgen")))
                      (substitute* "src/share/Makefile"
-                       (("\\$\\(DESTDIR\\)") (assoc-ref outputs "out"))))
-                   #t)))))))
+                       (("\\$\\(DESTDIR\\)") (assoc-ref outputs "out")))))))))))
     (inputs
      `(("python" ,python-wrapper)))
     (native-inputs '())
@@ -342,8 +331,7 @@ based on required access.")
          (add-after 'unpack 'set-SEPOL-variable
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "SEPOL"
-                     (string-append (assoc-ref inputs "libsepol")
-                                    "/lib/libsepol.a"))))
+                     (search-input-file inputs "/lib/libsepol.a"))))
          (add-after 'unpack 'remove-Werror
            (lambda _
              (substitute* "setup.py"
@@ -356,14 +344,11 @@ based on required access.")
                 (string-append "join(\"" (assoc-ref outputs "out") "/\"")))
              #t)))))
     (propagated-inputs
-     `(("python-networkx" ,python-networkx)))
+     (list python-networkx))
     (inputs
-     `(("libsepol" ,libsepol)
-       ("libselinux" ,libselinux)))
+     (list libsepol libselinux))
     (native-inputs
-     `(("bison" ,bison)
-       ("flex" ,flex)
-       ("swig" ,swig)))
+     (list bison flex swig))
     (home-page "https://github.com/TresysTechnology/setools")
     (synopsis "Tools for SELinux policy analysis")
     (description "SETools is a collection of graphical tools, command-line
@@ -379,7 +364,7 @@ tools, and libraries designed to facilitate SELinux policy analysis.")
      `(#:test-target "test"
        #:make-flags
        (let ((out (assoc-ref %outputs "out")))
-         (list "CC=gcc"
+         (list (string-append "CC=" ,(cc-for-target))
                (string-append "PREFIX=" out)
                (string-append "LOCALEDIR=" out "/share/locale")
                (string-append "BASHCOMPLETIONDIR=" out
@@ -401,9 +386,8 @@ tools, and libraries designed to facilitate SELinux policy analysis.")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
-         (delete 'portability)
          (add-after 'unpack 'enter-dir
-           (lambda _ (chdir ,name) #t))
+           (lambda _ (chdir ,name)))
          (add-after 'enter-dir 'ignore-/usr-tests
            (lambda* (#:key inputs #:allow-other-keys)
              ;; Rewrite lookup paths for header files.
@@ -411,10 +395,9 @@ tools, and libraries designed to facilitate SELinux policy analysis.")
                             "setfiles/Makefile"
                             "run_init/Makefile")
                (("/usr(/include/security/pam_appl.h)" _ file)
-                (string-append (assoc-ref inputs "pam") file))
+                (search-input-file inputs file))
                (("/usr(/include/libaudit.h)" _ file)
-                (string-append (assoc-ref inputs "audit") file)))
-             #t)))))
+                (search-input-file inputs file))))))))
     (inputs
      `(("audit" ,audit)
        ("pam" ,linux-pam)

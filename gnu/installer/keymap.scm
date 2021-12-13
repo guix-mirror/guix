@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2018, 2021 Mathieu Othacehe <othacehe@gnu.org>
 ;;; Copyright © 2020 Florian Pelz <pelzflorian@pelzflorian.de>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -79,6 +79,11 @@
   "Parse FILE and return two values, the list of supported X11-KEYMAP-MODEL
 and X11-KEYMAP-LAYOUT records. FILE is an XML file from the X Keyboard
 Configuration Database, describing possible XKB configurations."
+  (define maybe-empty
+    (match-lambda
+      ((x) x)
+      (#f "")))
+
   (define (model m)
     (sxml-match m
                 [(model
@@ -108,7 +113,7 @@ Configuration Database, describing possible XKB configurations."
                    . ,rest-variant))
                  (x11-keymap-variant
                   (name name)
-                  (description (car
+                  (description (maybe-empty
                                 (assoc-ref rest-variant 'description))))]))
 
   (define (layout l)
@@ -120,9 +125,9 @@ Configuration Database, describing possible XKB configurations."
                   (variantList ,[variant -> v] ...))
                  (x11-keymap-layout
                   (name name)
-                  (synopsis (car
+                  (synopsis (maybe-empty
                              (assoc-ref rest-layout 'shortDescription)))
-                  (description (car
+                  (description (maybe-empty
                                 (assoc-ref rest-layout 'description)))
                   (variants (list v ...)))]
                 [(layout
@@ -131,9 +136,9 @@ Configuration Database, describing possible XKB configurations."
                    . ,rest-layout))
                  (x11-keymap-layout
                   (name name)
-                  (synopsis (car
+                  (synopsis (maybe-empty
                              (assoc-ref rest-layout 'shortDescription)))
-                  (description (car
+                  (description (maybe-empty
                                 (assoc-ref rest-layout 'description)))
                   (variants '()))]))
 

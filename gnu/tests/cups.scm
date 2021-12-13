@@ -54,9 +54,7 @@
           (define marionette
             (make-marionette (list #$vm)))
 
-          (mkdir #$output)
-          (chdir #$output)
-
+          (test-runner-current (system-test-runner #$output))
           (test-begin "cups")
 
           ;; Wait for the web interface to become ready.
@@ -80,8 +78,7 @@
                             #:decode-body? #t)))
               (response-code response)))
 
-          (test-end)
-          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          (test-end))))
 
   (gexp->derivation "cups-test" test))
 

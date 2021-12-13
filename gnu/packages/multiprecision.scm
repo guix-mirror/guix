@@ -39,7 +39,7 @@
 (define-public gmp
   (package
    (name "gmp")
-   (version "6.2.0")
+   (version "6.2.1")
    (source (origin
             (method url-fetch)
             (uri
@@ -47,10 +47,10 @@
                             version ".tar.xz"))
             (sha256
              (base32
-              "09hmg8k63mbfrx1x3yy6y1yzbbq85kw5avbibhcgrg9z3ganr3i5"))
+              "1wml97fdmpcynsbw9yl77rj29qibfp652d0w3222zlfx5j8jjj7x"))
             (patches (search-patches "gmp-faulty-test.patch"))))
    (build-system gnu-build-system)
-   (native-inputs `(("m4" ,m4)))
+   (native-inputs (list m4))
    (outputs '("out" "debug"))
    (arguments
     `(#:parallel-tests? #f ; mpz/reuse fails otherwise
@@ -114,16 +114,16 @@ It is aimed at use in, for example, cryptography and computational algebra.")
 (define-public mpfr
   (package
    (name "mpfr")
-   (version "4.0.2")
+   (version "4.1.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/mpfr/mpfr-" version
                                 ".tar.xz"))
             (sha256 (base32
-                     "12m3amcavhpqygc499s3fzqlb8f2j2rr7fkqsm10xbjfc04fffqx"))))
+                     "0zwaanakrqjf84lfr5hfsdr7hncwv9wj0mchlr7cmxigfgqs760c"))))
    (build-system gnu-build-system)
    (outputs '("out" "debug"))
-   (propagated-inputs `(("gmp" ,gmp)))            ; <mpfr.h> refers to <gmp.h>
+   (propagated-inputs (list gmp))            ; <mpfr.h> refers to <gmp.h>
    (synopsis "C library for arbitrary-precision floating-point arithmetic")
    (description
     "GNU@tie{}@acronym{MPFR, Multiple Precision Floating-Point Reliably} is a C
@@ -135,18 +135,18 @@ correct rounding.")
 (define-public mpc
   (package
    (name "mpc")
-   (version "1.1.0")
+   (version "1.2.1")
    (source (origin
             (method url-fetch)
             (uri (string-append
                   "mirror://gnu/mpc/mpc-" version ".tar.gz"))
             (sha256
               (base32
-                "0biwnhjm3rx3hc0rfpvyniky4lpzsvdcwhmcn7f0h4iw2hwcb1b9"))))
+                "0n846hqfqvmsmim7qdlms0qr86f1hck19p12nq3g3z2x74n3sl0p"))))
    (build-system gnu-build-system)
    (outputs '("out" "debug"))
-   (propagated-inputs `(("gmp" ,gmp)              ; <mpc.h> refers to both
-                        ("mpfr" ,mpfr)))
+   (propagated-inputs (list gmp ; <mpc.h> refers to both
+                            mpfr))
    (synopsis "C library for arbitrary-precision complex arithmetic")
    (description
     "GNU@tie{}@acronym{MPC, Multiple Precision Complex library} is a C library
@@ -176,8 +176,8 @@ precision and correctly rounds the results.")
        ("libtool" ,libtool)
        ("texinfo" ,texinfo)))
     (propagated-inputs
-     `(("gmp" ,gmp)                     ; <mpfi.h> refers to both
-       ("mpfr" ,mpfr)))
+     (list gmp ; <mpfi.h> refers to both
+           mpfr))
     (home-page "https://gforge.inria.fr/projects/mpfi/")
     (synopsis "C library for arbitrary-precision interval arithmetic")
     (description
@@ -204,8 +204,8 @@ multiple-precision arithmetic.")
        (sha256
         (base32 "1cdmvb4hsa161rfdjqyhd9sb3fcr43p3a6nsj7cb4kn9f94qmjpj"))))
     (build-system gnu-build-system)
-    (propagated-inputs `(("gmp" ,gmp)   ; <mpfi.h> refers to both
-                         ("mpfr" ,mpfr)))
+    (propagated-inputs (list gmp ; <mpfi.h> refers to both
+                             mpfr))
     (arguments
      `(#:parallel-build? #f))
     (synopsis "C++ package for real arithmetic based on the Real-RAM concept")
@@ -232,7 +232,7 @@ error.  Additionally, iRRAM uses the concept of multi-valued functions.")
         (base32 "1lq609rsp6zpg7zda75lyxzzk1fabzp4jn88j7xfk84mdgjgzh9h"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("gfortran" ,gfortran)))
+     (list gfortran))
     (arguments
      `(#:configure-flags `("--disable-enable_fma" ;weird :/
                            "--enable-shared"
@@ -272,7 +272,7 @@ and numerical quadrature programs are included.")
     (arguments
      `(#:configure-flags (list "--disable-static")))
     (inputs
-     `(("gmp" ,gmp)))
+     (list gmp))
     (home-page "https://www.ginac.de/CLN/")
     (synopsis "Library for arbitrary precision computations")
     (description "CLN is a C++ library for efficient computations with all
@@ -295,7 +295,7 @@ classes and elementary, logical and transcendental functions.")
                 "0f0pmiaskh89sp0q933pafxb914shpaj5ad8sb5rzk1wv8d7mja7"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("libtool" ,libtool)))
+     (list libtool))
     (arguments
      `(#:make-flags (list "-f" "makefile.shared"
                           (string-append "LIBPATH=" %output "/lib")
@@ -403,13 +403,14 @@ multiplies.")
        #:make-flags
        (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
              "CFLAGS += -DLTM_DESC -DUSE_LTM"
-             (string-append "EXTRALIBS=" (assoc-ref %build-inputs "libtommath")
-                            "/lib/libtommath.so")
+             (string-append "EXTRALIBS="
+                            (search-input-file %build-inputs
+                                               "/lib/libtommath.so"))
              (string-append "CC=" ,(cc-for-target)))))
     (native-inputs
-     `(("libtool" ,libtool)))
+     (list libtool))
     (inputs
-     `(("libtommath" ,libtommath)))
+     (list libtommath))
     (home-page "https://www.libtom.net/LibTomCrypt/")
     (synopsis "Cryptographic toolkit")
     (description "LibTomCrypt is a fairly comprehensive, modular and portable
@@ -462,7 +463,7 @@ number generators, public key cryptography and a plethora of other routines.")
        #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
                           "CC=gcc")))
     (native-inputs
-     `(("libtool" ,libtool)))
+     (list libtool))
     (home-page "https://www.libtom.net/LibTomMath/")
     (synopsis "Portable number theoretic multiple-precision integer library")
     (description "LibTomMath is a portable number theoretic multiple-precision

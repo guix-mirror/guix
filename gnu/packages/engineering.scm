@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016, 2018, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
@@ -191,14 +191,9 @@
                (copy-recursively "unix/resources" share))
              #t)))))
     (inputs
-     `(("boost" ,boost)
-       ("muparser" ,muparser)
-       ("freetype" ,freetype)
-       ("qtbase" ,qtbase-5)
-       ("qtsvg" ,qtsvg)))
+     (list boost muparser freetype qtbase-5 qtsvg))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("which" ,which)))
+     (list pkg-config which))
     (home-page "https://librecad.org/")
     (synopsis "Computer-aided design (CAD) application")
     (description
@@ -209,7 +204,7 @@ plans and designs.")
 (define-public geda-gaf
   (package
     (name "geda-gaf")
-    (version "1.10.0")
+    (version "1.10.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -218,7 +213,7 @@ plans and designs.")
                     version "/geda-gaf-" version ".tar.gz"))
               (sha256
                (base32
-                "06ivgarvwbzjz2wigxzzkm8iszldi2p6x3a6jnlczjyrz4csddsy"))))
+                "19688b0671imy2i3jphcnq1120b8ymhr4wz2psiqylr82ljanqp8"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -253,9 +248,7 @@ plans and designs.")
        ("pcb" ,pcb)
        ("python" ,python-2))) ; for xorn
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("desktop-file-utils" ,desktop-file-utils)
-       ("perl" ,perl))) ; for tests
+     (list groff pkg-config desktop-file-utils perl)) ; for tests
     (home-page "http://geda-project.org/")
     (synopsis "Schematic capture, netlister, symbols, symbol checker, and utils")
     (description
@@ -316,7 +309,8 @@ utilities.")
                (string-append "--with-pcb-datadir=" pcb "/share")
                (string-append "--with-pcb-lib-path="
                               pcb "/share/pcb/pcblib-newlib:"
-                              pcb "/share/pcb/newlib")))
+                              pcb "/share/pcb/newlib")
+               "CFLAGS=-fcommon"))
        #:phases
        (modify-phases %standard-phases
          (add-before 'build 'fix-dynamic-link
@@ -328,12 +322,10 @@ utilities.")
              (substitute* '("libleptongui/scheme/schematic/ffi/gtk.scm.in"
                             "utils/attrib/lepton-attrib.scm")
                (("@LIBGTK@")
-                (string-append (assoc-ref inputs "gtk")
-                               "/lib/libgtk-3.so")))
+                (search-input-file inputs "/lib/libgtk-3.so")))
              (substitute* '("libleptongui/scheme/schematic/ffi/gobject.scm.in")
                (("@LIBGOBJECT@")
-                (string-append (assoc-ref inputs "glib")
-                               "/lib/libgobject-2.0.so")))
+                (search-input-file inputs "/lib/libgobject-2.0.so")))
              (substitute* "liblepton/scheme/lepton/ffi.scm.in"
                (("@LIBLEPTON@")
                 (string-append (assoc-ref outputs "out")
@@ -344,8 +336,7 @@ utilities.")
                                "/lib/libleptonattrib.so")))
              (substitute* "liblepton/scheme/lepton/log.scm.in"
                (("@LIBGLIB@")
-                (string-append (assoc-ref inputs "glib")
-                               "/lib/libglib-2.0.so")))
+                (search-input-file inputs "/lib/libglib-2.0.so")))
 
              ;; For finding libraries when running tests before installation.
              (setenv "LIBLEPTONGUI"
@@ -430,7 +421,8 @@ features.")))
              ;; fix of the mesa package we wrap the pcb executable such that
              ;; Mesa can find libudev.so.0 through LD_LIBRARY_PATH.
              (let* ((out (assoc-ref outputs "out"))
-                    (path (string-append (assoc-ref inputs "udev") "/lib")))
+                    (path (dirname
+                           (search-input-file inputs "/lib/libudev.so"))))
                (wrap-program (string-append out "/bin/pcb")
                  `("LD_LIBRARY_PATH" ":" prefix (,path))))
              #t))
@@ -519,7 +511,7 @@ featuring various improvements and bug fixes.")))
      ;; FIXME: with texlive-tiny citation references are rendered as question
      ;; marks.  During the build warnings like these are printed:
      ;; LaTeX Warning: Citation `nabors91' on page 2 undefined on input line 3.
-     `(("texlive" ,(texlive-union (list texlive-fonts-amsfonts)))
+     `(("texlive" ,(texlive-updmap.cfg (list texlive-amsfonts)))
        ("ghostscript" ,ghostscript)))
     (arguments
      `(#:make-flags '("CC=gcc" "RM=rm" "SHELL=sh" "all")
@@ -735,6 +727,8 @@ ready for production.")
                (base32
                 "1d2k43k7i4yvbpi4sw1263a8d0q98z2n7aqhmpinpkih8a681vn5"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("CFLAGS=-fcommon")))
     (native-inputs
      `(("glib:bin" ,glib "bin")         ; for glib-compile-schemas, etc.
        ("desktop-file-utils" ,desktop-file-utils)
@@ -823,13 +817,9 @@ fonts to gEDA.")
                (substitute* "CMakeLists.txt" (("-march=native") ""))
                #t)))))
       (native-inputs
-       `(("pkg-config" ,pkg-config)))
+       (list pkg-config))
       (inputs
-       `(("boost" ,boost)
-         ("libpng" ,libpng)
-         ("qtbase" ,qtbase-5)
-         ("eigen" ,eigen)
-         ("guile" ,guile-3.0)))
+       (list boost libpng qtbase-5 eigen guile-3.0))
       (home-page "https://libfive.com")
       (synopsis "Tool for programmatic computer-aided design")
       (description
@@ -876,12 +866,9 @@ language.")
                                  "/lib/libfive-guile")))
                #t)))))
       (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("pkg-config" ,pkg-config)))
+       (list autoconf automake pkg-config))
       (inputs
-       `(("mesa" ,mesa)
-         ("guile" ,guile-3.0)))
+       (list mesa guile-3.0))
       (propagated-inputs
        `(("libfive" ,libfive)
          ("guile-opengl" ,guile3.0-opengl)))
@@ -924,6 +911,16 @@ Emacs).")
                 (string-append "NGSPICE_DLL_FILE=\""
                                (assoc-ref inputs "libngspice")
                                "/lib/libngspice.so\"")))))
+         (add-after 'unpack 'fix-python-detection
+           (lambda _
+             (substitute* "CMakeModules/FindPythonLibs.cmake"
+               (("_PYTHON3_VERSIONS 3\\.8 3\\.7")
+                "_PYTHON3_VERSIONS 3.9 3.8 3.7"))))
+         (add-after 'unpack 'add-missing-include
+           (lambda _
+             (substitute* "common/lib_tree_model.cpp"
+               (("#include <eda_pattern_match.h>" all)
+                (string-append "#include <algorithm>\n" all)))))
          (add-after 'install 'install-translations
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (copy-recursively (assoc-ref inputs "kicad-i18n")
@@ -941,9 +938,9 @@ Emacs).")
                            ,(version-major+minor
                              (package-version python))
                            "/site-packages:"
-                           (getenv "PYTHONPATH"))))
+                           (getenv "GUIX_PYTHONPATH"))))
                (wrap-program file
-                 `("PYTHONPATH" ":" prefix (,path))
+                 `("GUIX_PYTHONPATH" ":" prefix (,path))
                  `("PATH" ":" prefix
                    (,(string-append python "/bin:")))))
              #t)))))
@@ -1147,6 +1144,8 @@ worksheet templates.")))
                (base32
                 "13qj7n9826qc9shkkgd1p6vcpj78v4h9d67wbg45prg7rbnzkzds"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("CFLAGS=-fcommon")))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("gtk" ,gtk+-2)
@@ -1181,14 +1180,14 @@ the 'showing the effect of'-style of operation.")
            (when tests?
              (invoke "./valeronoi-tests")))))))
   (inputs
-   `(("boost" ,boost)
-     ("cgal" ,cgal)
-     ("gmp" ,gmp)
-     ("libxkbcommon" ,libxkbcommon)
-     ("mpfr" ,mpfr)
-     ("openssl" ,openssl)
-     ("qtbase" ,qtbase-5)
-     ("qtsvg" ,qtsvg)))
+   (list boost
+         cgal
+         gmp
+         libxkbcommon
+         mpfr
+         openssl
+         qtbase-5
+         qtsvg))
   (home-page "https://github.com/ccoors/Valeronoi")
   (synopsis "WiFi mapping companion application for Valetudo")
   (description
@@ -1233,9 +1232,9 @@ WiFi signal strength maps.  It visualizes them using a Voronoi diagram.")
                            ,(version-major+minor
                              (package-version python))
                            "/site-packages:"
-                           (getenv "PYTHONPATH"))))
+                           (getenv "GUIX_PYTHONPATH"))))
                (wrap-program file
-                 `("PYTHONPATH" ":" prefix (,path))
+                 `("GUIX_PYTHONPATH" ":" prefix (,path))
                  `("PATH" ":" prefix
                    (,(string-append python "/bin:")))))
              #t)))))
@@ -1274,7 +1273,7 @@ use on a given system.")
        ("python" ,python-wrapper)
        ("python-libxml2" ,python-libxml2)))
     (inputs
-     `(("pcre2" ,pcre2)))
+     (list pcre2))
     (home-page "https://www.gnu.org/software/libredwg/")
     (synopsis "C library to handle DWG (CAD-related) files")
     (description
@@ -1319,7 +1318,7 @@ replacement for the OpenDWG libraries.")
        ("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("ncurses" ,ncurses)))
+     (list ncurses))
     (home-page "https://salsa.debian.org/minicom-team/minicom")
     (synopsis "Serial terminal emulator")
     (description "@code{minicom} is a serial terminal emulator.")
@@ -1382,7 +1381,7 @@ send break and throttle transmission speed.")
     (native-inputs
      `(("fortran" ,gfortran)))
     (inputs
-     `(("lapack" ,lapack)))
+     (list lapack))
     (home-page "https://github.com/stevengj/harminv")
     (synopsis "Harmonic inversion solver")
     (description
@@ -1411,7 +1410,7 @@ determines the frequencies, decay constants, amplitudes, and phases of those sin
     (native-inputs
      `(("fortran" ,gfortran)))
     (inputs
-     `(("guile" ,guile-2.2)))
+     (list guile-2.2))
     (home-page "http://ab-initio.mit.edu/wiki/index.php/Libctl")
     (synopsis "Flexible control files implementation for scientific simulations")
     (description
@@ -1516,13 +1515,13 @@ developed at MIT to model electromagnetic systems.")
                 "0i37c9k6q1iglmzp9736rrgsnx7sw8xn3djqbbjw29zsyl3pf62c"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("bison" ,bison)
-       ("flex" ,flex)
-       ("libtool" ,libtool)
-       ("perl" ,perl)
-       ("perl-xml-libxml" ,perl-xml-libxml)))
+     (list autoconf
+           automake
+           bison
+           flex
+           libtool
+           perl
+           perl-xml-libxml))
     (home-page "https://github.com/Qucs/ADMS")
     (synopsis "Automatic device model synthesizer")
     (description
@@ -1575,7 +1574,7 @@ bindings for Python, Java, OCaml and more.")
     (inherit capstone)
     (name "python-capstone")
     (propagated-inputs
-     `(("capstone" ,capstone)))
+     (list capstone))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -1611,9 +1610,7 @@ bindings for Python, Java, OCaml and more.")
     (arguments
      `(#:tests? #f))                    ;XXX: require python-reedsolo
     (propagated-inputs
-     `(("python-ecdsa" ,python-ecdsa)
-       ("python-pyaes" ,python-pyaes)
-       ("python-pyserial" ,python-pyserial)))
+     (list python-ecdsa python-pyaes python-pyserial))
     (home-page "https://github.com/espressif/esptool")
     (synopsis "Bootloader utility for Espressif ESP8266 & ESP32 chips")
     (description
@@ -1654,15 +1651,12 @@ bootloader in Espressif ESP8266 & ESP32 series chips.")
        (list "CC=gcc")))
     ;; TODO: Add gmp and libzip and make the build system actually find them.
     (inputs
-     `(("capstone" ,capstone)
-       ("libuv" ,libuv)
-       ("openssl" ,openssl)
-       ("zip" ,zip)))
+     (list capstone libuv openssl zip))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (propagated-inputs
      ;; In the Libs: section of r_hash.pc.
-     `(("xxhash" ,xxhash)))
+     (list xxhash))
     (home-page "https://radare.org/")
     (synopsis "Reverse engineering framework")
     (description
@@ -1721,7 +1715,7 @@ it suitable for security research and analysis.")
     (native-inputs
      `(("mpi" ,openmpi)))
     (inputs
-     `(("coreutils-minimal" ,coreutils-minimal)))
+     (list coreutils-minimal))
     (home-page "http://asco.sourceforge.net/")
     (synopsis "SPICE circuit optimizer")
     (description
@@ -1777,8 +1771,7 @@ high-performance parallel differential evolution (DE) optimization algorithm.")
              ;; https://bugs.archlinux.org/task/70563 for reference.
              "--with-readline=no")))
     (native-inputs
-     `(("bison" ,bison)
-       ("flex" ,flex)))
+     (list bison flex))
     (inputs
      `(("libxaw" ,libxaw)
        ("mpi" ,openmpi)))
@@ -1812,8 +1805,7 @@ an embedded event driven algorithm.")
            (delete 'delete-program-manuals)
            (delete 'delete-script-files)))))
     (inputs
-     `(("libngspice" ,libngspice)
-       ("readline" ,readline)))))
+     (list libngspice readline))))
 
 (define trilinos-serial-xyce
   ;; Note: This is a Trilinos containing only the packages Xyce needs, so we
@@ -1990,19 +1982,14 @@ parallel computing platforms.  It also supports serial execution.")
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "freehdl/freehdl-config"
                (("pkg-config")
-                (string-append (assoc-ref inputs "pkg-config")
-                               "/bin/pkg-config"))
+                (search-input-file inputs "/bin/pkg-config"))
                (("cat")
-                (string-append (assoc-ref inputs "coreutils")
-                               "/bin/cat")))
-             #t))
+                (search-input-file inputs "/bin/cat")))))
          (add-after 'patch-pkg-config 'setenv
            (lambda* (#:key inputs #:allow-other-keys)
-             (setenv "CXX" (string-append (assoc-ref inputs "gcc")
-                                          "/bin/g++"))
-             (setenv "SYSTEM_LIBTOOL" (string-append (assoc-ref inputs "libtool")
-                                                     "/bin/libtool"))
-             #t))
+             (setenv "CXX" (search-input-file inputs "/bin/g++"))
+             (setenv "SYSTEM_LIBTOOL"
+                     (search-input-file inputs "/bin/libtool"))))
          (add-after 'setenv 'patch-gvhdl
            (lambda _
              (substitute* "v2cc/gvhdl.in"
@@ -2013,7 +2000,7 @@ parallel computing platforms.  It also supports serial execution.")
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "freehdl/freehdl-gennodes.in"
                (("guile")
-                (string-append (assoc-ref inputs "guile") "/bin/guile"))
+                (search-input-file inputs "/bin/guile"))
                (("\\(debug") ";(debug")
                (("\\(@ ") "(apply-emit")
                (("\\(@@ ") "(apply-mini-format"))
@@ -2049,12 +2036,12 @@ parallel computing platforms.  It also supports serial execution.")
                  `("PKG_CONFIG_PATH" ":" prefix (,(string-append out "/lib/pkgconfig")))))
              #t)))))
     (inputs
-     `(("coreutils" ,coreutils)
-       ("gcc-toolchain" ,gcc-toolchain)
-       ("guile" ,guile-2.2)
-       ("perl" ,perl)
-       ("pkg-config" ,pkg-config)
-       ("libtool" ,libtool)))
+     (list coreutils
+           gcc-toolchain
+           guile-2.2
+           perl
+           pkg-config
+           libtool))
     (native-inputs
      `(("pkg-config-native" ,pkg-config)
        ("libtool-native" ,libtool)))
@@ -2079,12 +2066,10 @@ parallel computing platforms.  It also supports serial execution.")
         (base32 "0smp1p7wnrj0vh4rmz1cr2krfawc2lzx0pbzmgyay7xdp6jxympr"))))
     (build-system gnu-build-system)
     (inputs
-     `(("qtbase" ,qtbase-5)
-       ("qtsvg" ,qtsvg)
-       ("zlib" ,zlib)))
+     (list qtbase-5 qtsvg zlib))
     (native-inputs
-     `(("qttools" ,qttools)             ; for lrelease
-       ("unzip" ,unzip)))
+     (list qttools ; for lrelease
+           unzip))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -2092,8 +2077,7 @@ parallel computing platforms.  It also supports serial execution.")
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (mkdir-p "build")
              (chdir "build")
-             (let ((lrelease (string-append (assoc-ref inputs "qttools")
-                                            "/bin/lrelease"))
+             (let ((lrelease (search-input-file inputs "/bin/lrelease"))
                    (out (assoc-ref outputs "out")))
                (invoke "qmake"
                        (string-append "QMAKE_LRELEASE=" lrelease)
@@ -2154,7 +2138,7 @@ printers.")
          "16m09xa685qhj5fqq3bcgakrwnb74xhf5f7rpqkkf9fg8plzbb1g"))))
     (build-system gnu-build-system)
     (inputs
-     `(("readline" ,readline)))
+     (list readline))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -2239,14 +2223,14 @@ simulation.")
                        (string-append "PREFIX=" out)
                        "./src/Cutter.pro")))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("qtbase" ,qtbase-5)
-       ("qtsvg" ,qtsvg)
-       ("openssl" ,openssl)
-       ;; Depends on radare2 4.5.1 officially, builds and works fine with
-       ;; radare2 5.0.0 but fails to build with radare2 5.1.1.
-       ("radare2" ,radare2-for-cutter)))
+     (list qtbase-5
+           qtsvg
+           openssl
+           ;; Depends on radare2 4.5.1 officially, builds and works fine with
+           ;; radare2 5.0.0 but fails to build with radare2 5.1.1.
+           radare2-for-cutter))
     (home-page "https://github.com/radareorg/cutter")
     (synopsis "GUI for radare2 reverse engineering framework")
     (description "Cutter is a GUI for radare2 reverse engineering framework.
@@ -2276,8 +2260,7 @@ engineers for reverse engineers.")
                                "-DUSE_INCLUDED_GTEST=0"
                                "-DUSE_INCLUDED_SSL=0")))
     (native-inputs
-     `(("googletest" ,googletest)
-       ("pkg-config" ,pkg-config)))
+     (list googletest pkg-config))
     (inputs
      `(("libuuid" ,util-linux "lib")
        ("libzip" ,libzip)
@@ -2405,88 +2388,93 @@ comments.")))
     (name "freecad")
     (version "0.19.2")
     (source
-      (origin
-        (method git-fetch)
-        (uri (git-reference
-               (url "https://github.com/FreeCAD/FreeCAD")
-               (commit version)))
-        (file-name (git-file-name name version))
-        (sha256
-          (base32 "0fhjv0x3dix1c7jml91yx63z9xifjlbhjbcdb73lw80smpxrq7mm"))))
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/FreeCAD/FreeCAD")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0fhjv0x3dix1c7jml91yx63z9xifjlbhjbcdb73lw80smpxrq7mm"))
+       (patches (search-patches "freecad-vtk9.patch"
+                                "freecad-boost-serialization.patch"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("doxygen" ,doxygen)
-       ("graphviz" ,graphviz)
-       ("qttools" ,qttools)
-       ("pkg-config" ,pkg-config)
-       ("python-pyside-2-tools" ,python-pyside-2-tools)
-       ("swig" ,swig)))
+     (list doxygen
+           graphviz
+           qttools
+           pkg-config
+           python-pyside-2-tools
+           swig))
     (inputs
-     `(("boost" ,boost)
-       ("coin3D" ,coin3D)
-       ("double-conversion" ,double-conversion)
-       ("eigen" ,eigen)
-       ("freetype" ,freetype)
-       ("gl2ps" ,gl2ps)
-       ("glew" ,glew)
-       ("hdf5" ,hdf5-1.10)
-       ("jsoncpp" ,jsoncpp)
-       ("libarea" ,libarea)
-       ("libjpeg-turbo" ,libjpeg-turbo)
-       ("libmedfile" ,libmedfile)
-       ("libspnav" ,libspnav)
-       ("libtheora" ,libtheora)
-       ("libtiff" ,libtiff)
-       ("libxi" ,libxi)
-       ("libxml++" ,libxml++)
-       ("libxmu" ,libxmu)
-       ("lz4" ,lz4)
-       ("netcdf" ,netcdf)
-       ("opencascade-occt" ,opencascade-occt)
-       ("openmpi" ,openmpi)
-       ("proj" ,proj)
-       ("python-gitpython" ,python-gitpython)
-       ("python-matplotlib" ,python-matplotlib)
-       ("python-pivy" ,python-pivy)
-       ("python-pyside-2" ,python-pyside-2)
-       ("python-pyyaml" ,python-pyyaml)
-       ("python-shiboken-2" ,python-shiboken-2)
-       ("python-wrapper" ,python-wrapper)
-       ("qtbase" ,qtbase-5)
-       ("qtsvg" ,qtsvg)
-       ("qtwebkit" ,qtwebkit)
-       ("qtx11extras" ,qtx11extras)
-       ("qtxmlpatterns" ,qtxmlpatterns)
-       ("sqlite" ,sqlite)
-       ("tbb" ,tbb)
-       ("vtk" ,vtk-8)
-       ("xerces-c" ,xerces-c)
-       ("zlib" ,zlib)))
+     (list boost
+           coin3D
+           double-conversion
+           eigen
+           freetype
+           gl2ps
+           glew
+           hdf5-1.10
+           jsoncpp
+           libarea
+           libjpeg-turbo
+           libmedfile
+           libspnav
+           libtheora
+           libtiff
+           libxi
+           libxml++
+           libxmu
+           lz4
+           netcdf
+           opencascade-occt
+           openmpi
+           proj
+           python-gitpython
+           python-matplotlib
+           python-pivy
+           python-pyside-2
+           python-pyyaml
+           python-shiboken-2
+           python-wrapper
+           qtbase-5
+           qtsvg
+           qtwebkit
+           qtx11extras
+           qtxmlpatterns
+           sqlite
+           tbb
+           vtk
+           xerces-c
+           zlib))
     (arguments
      `(#:tests? #f          ; Project has no tests
        #:configure-flags
-       (list
-        "-DBUILD_QT5=ON"
-        "-DBUILD_FLAT_MESH:BOOL=ON"
-        (string-append "-DCMAKE_INSTALL_LIBDIR=" (assoc-ref %outputs "out") "/lib")
-        (string-append "-DPYSIDE2UICBINARY="
-                       (assoc-ref %build-inputs "python-pyside-2-tools")
-                       "/bin/uic")
-        (string-append "-DPYSIDE2RCCBINARY="
-                       (assoc-ref %build-inputs "python-pyside-2-tools")
-                       "/bin/rcc")
-        "-DPYSIDE_LIBRARY=PySide2::pyside2"
-        (string-append
-         "-DPYSIDE_INCLUDE_DIR="
-         (assoc-ref %build-inputs "python-pyside-2") "/include;"
-         (assoc-ref %build-inputs "python-pyside-2") "/include/PySide2;"
-         (assoc-ref %build-inputs "python-pyside-2") "/include/PySide2/QtCore;"
-         (assoc-ref %build-inputs "python-pyside-2") "/include/PySide2/QtWidgets;"
-         (assoc-ref %build-inputs "python-pyside-2") "/include/PySide2/QtGui;")
-        "-DSHIBOKEN_LIBRARY=Shiboken2::libshiboken"
-        (string-append "-DSHIBOKEN_INCLUDE_DIR="
-                       (assoc-ref %build-inputs "python-shiboken-2")
-                       "/include/shiboken2"))
+       ,#~(list
+           "-DBUILD_QT5=ON"
+           "-DBUILD_FLAT_MESH:BOOL=ON"
+           "-DBUILD_ENABLE_CXX_STD:STRING=C++17"
+           (string-append "-DCMAKE_INSTALL_LIBDIR=" #$output "/lib")
+           (string-append "-DPYSIDE2UICBINARY="
+                          #$(this-package-native-input
+                             "python-pyside-2-tools")
+                          "/bin/uic")
+           (string-append "-DPYSIDE2RCCBINARY="
+                          #$(this-package-native-input
+                             "python-pyside-2-tools")
+                          "/bin/rcc")
+           "-DPYSIDE_LIBRARY=PySide2::pyside2"
+           (string-append
+            "-DPYSIDE_INCLUDE_DIR="
+            #$(this-package-input "python-pyside-2") "/include;"
+            #$(this-package-input "python-pyside-2") "/include/PySide2;"
+            #$(this-package-input "python-pyside-2") "/include/PySide2/QtCore;"
+            #$(this-package-input "python-pyside-2") "/include/PySide2/QtWidgets;"
+            #$(this-package-input "python-pyside-2") "/include/PySide2/QtGui;")
+           "-DSHIBOKEN_LIBRARY=Shiboken2::libshiboken"
+           (string-append "-DSHIBOKEN_INCLUDE_DIR="
+                          #$(this-package-input "python-shiboken-2")
+                          "/include/shiboken2"))
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'restore-pythonpath
@@ -2497,8 +2485,8 @@ comments.")))
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
                (wrap-program (string-append out "/bin/FreeCAD")
-                 (list "PYTHONPATH"
-                       'prefix (list (getenv "PYTHONPATH"))))))))))
+                 (list "GUIX_PYTHONPATH"
+                       'prefix (list (getenv "GUIX_PYTHONPATH"))))))))))
     (home-page "https://www.freecadweb.org/")
     (synopsis "Your Own 3D Parametric Modeler")
     (description
@@ -2529,7 +2517,7 @@ customization.")
         (base32
          "017h9p0x533fm4gn6pwc8kmp72rvqmcn6vznx72nkkl2b05yjx54"))))
     (build-system cmake-build-system)
-    (inputs `(("hdf5" ,hdf5-1.10)))
+    (inputs (list hdf5-1.10))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -2575,8 +2563,7 @@ interpolation toolkit.")
          (sha256
           (base32 "0pvqz6cabxqdz5y26wnj6alkn8v5d7gkx0d3h8xmg4lvy9r3kh3g"))))
       (build-system gnu-build-system)
-      (inputs `(("boost" ,boost)
-                ("python-wrapper" ,python-wrapper)))
+      (inputs (list boost python-wrapper))
       (native-inputs
        `(("cmake" ,cmake-minimal)))
       (arguments
@@ -2618,7 +2605,7 @@ operations.")
               (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (inputs
-     `(("libx11" ,libx11)))
+     (list libx11))
     (arguments `(#:tests? #f))
     (home-page "http://spacenav.sourceforge.net/")
     (synopsis
@@ -2656,7 +2643,7 @@ official SDK.")
           (base32 "01wb70m48xh5gwhv60a5brv4sxl0i0rh038w32cgnlxn5x86s9f1"))))
       (build-system gnu-build-system)
       (native-inputs
-       `(("pkg-config" ,pkg-config)))
+       (list pkg-config))
       (inputs
        `(("mesa" ,mesa)
          ("glu" ,glu)
@@ -2709,7 +2696,7 @@ accessible through a simple API")
         (base32 "1qr9arfdkjf7q11xhvxwzmhxqz3nhcjkyb8zzfjpz9jm54q0rc7m"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("unzip" ,unzip)))
+     (list unzip))
     (home-page "https://code.google.com/archive/p/lib3ds")
     (synopsis "3DS format file toolkit")
     (description "Lib3ds is a toolkit for handling the 3DS format for 3D
@@ -2732,22 +2719,22 @@ export filters.")
                (base32 "1cgx24wxh2ah5pff51rcrk6x8qcdjpkxcdak7s4cfzmxvjlshydd"))))
     (build-system cmake-build-system)
     (inputs
-     `(("qtbase" ,qtbase-5)
-       ("qtscript" ,qtscript)
-       ("qtxmlpatterns" ,qtxmlpatterns)
-       ("mesa" ,mesa)
-       ("glu" ,glu)
-       ("glew" ,glew)
-       ("muparser" ,muparser)
-       ("gmp" ,gmp)
-       ("eigen" ,eigen)
-       ("libfreenect" ,libfreenect)
-       ("lib3ds" ,lib3ds)
-       ("openctm" ,openctm)
-       ;; FIXME: Compilation fails with system qhull:
-       ;; https://github.com/cnr-isti-vclab/meshlab/issues/678
-       ;; ("qhull" ,qhull)
-       ))
+     (list qtbase-5
+           qtscript
+           qtxmlpatterns
+           mesa
+           glu
+           glew
+           muparser
+           gmp
+           eigen
+           libfreenect
+           lib3ds
+           openctm
+           ;; FIXME: Compilation fails with system qhull:
+           ;; https://github.com/cnr-isti-vclab/meshlab/issues/678
+           ;; ("qhull" ,qhull)
+           ))
     (arguments
      `(#:tests? #f                                ; Has no tests
        #:phases
@@ -2828,18 +2815,9 @@ GUI.")
                   (delete-file "libpoke/pvm-vm2.c")))))
     (build-system gnu-build-system)
     ;; The GUI, which we elide, requires tcl and tk.
-    (native-inputs `(;; Requires bison 3.6+ but we currently only have 3.5.
-                     ;; Bison 3.6 will be available in the next core update.
-                     ("bison-3.6" ,bison-3.6)
-                     ("dejagnu" ,dejagnu)
-                     ("flex" ,flex)
-                     ("libtool" ,libtool)
-                     ("pkg-config" ,pkg-config)))
+    (native-inputs (list bison dejagnu flex libtool pkg-config))
     ;; FIXME: Enable NBD support by adding `libnbd' (currently unpackaged).
-    (inputs `(("json-c" ,json-c)
-              ("libgc" ,libgc)
-              ("readline" ,readline)
-              ("libtextstyle" ,libtextstyle)))
+    (inputs (list json-c libgc readline libtextstyle))
     (arguments
      ;; To build the GUI, add the `--enable-gui' configure flag.
      ;; To enable the "hyperlink server", add the `--enable-hserver' flag.
@@ -2869,17 +2847,14 @@ data structures and to operate on them.")
          "0nzglcyh6ban27cc73j4l7w7r9k38qivq0jz8iwnci02pfalw4ry"))))
      (build-system gnu-build-system)
      (inputs
-      `(("boost" ,boost)
-        ("geos" ,geos)
-        ("gerbv" ,gerbv)
-        ("glibmm" ,glibmm)
-        ("gtkmm" ,gtkmm-2)
-        ("librsvg" ,librsvg)))
+      (list boost
+            geos
+            gerbv
+            glibmm
+            gtkmm-2
+            librsvg))
      (native-inputs
-      `(("autoconf" ,autoconf)
-        ("automake" ,automake)
-        ("libtool" ,libtool)
-        ("pkg-config" ,pkg-config)))
+      (list autoconf automake libtool pkg-config))
      (home-page "https://github.com/pcb2gcode/pcb2gcode")
      (synopsis "Generate G-code for milling PCBs")
      (description "pcb2gcode is a command-line program for isolation routing
@@ -2906,10 +2881,9 @@ dynamic calibration of the milling depth.")
          (sha256
           (base32 "17sw78xp5wjzv25adpbq3khl8fi0avj7bgpi57q3jnvl3c68xy5z"))))
       (native-inputs
-       `(("perl" ,perl)
-         ("pkg-config" ,pkg-config)))
+       (list perl pkg-config))
       (inputs
-       `(("capstone" ,capstone)))
+       (list capstone))
       (build-system cmake-build-system)
       (arguments
        `(#:build-type "Release"
@@ -3114,7 +3088,7 @@ visualization, matrix manipulation.")
          ;; Use wxWidgets 3.0.x.x to prevent GUI crashes when adding support enforcers.
          "-DSLIC3R_WX_STABLE=1")))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
      `(("boost" ,boost)
        ("cereal" ,cereal)

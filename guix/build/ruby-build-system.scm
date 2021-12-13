@@ -2,6 +2,7 @@
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015 Pjotr Prins <pjotr.public01@thebird.nl>
 ;;; Copyright © 2015, 2016 Ben Woodcroft <donttrustben@gmail.com>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -73,13 +74,19 @@ directory."
 
 (define* (replace-git-ls-files #:key source #:allow-other-keys)
   "Many gemspec files downloaded from outside rubygems.org use `git ls-files`
-to list of the files to be included in the built gem.  However, since this
+to list the files to be included in the built gem.  However, since this
 operation is not deterministic, we replace it with `find`."
-  (when (not (gem-archive? source))
+  (unless (gem-archive? source)
     (let ((gemspec (first-gemspec)))
+      ;; Do not include the freshly built .gem itself as it causes problems.
+      ;; Strip the first 2 characters ("./") to more exactly match the output
+      ;; given by 'git ls-files'.  This is useful to prevent breaking regexps
+      ;; that could be used to filter the list of files.
       (substitute* gemspec
-        (("`git ls-files`") "`find . -type f |sort`")
-        (("`git ls-files -z`") "`find . -type f -print0 |sort -z`"))))
+        (("`git ls-files`")
+         "`find . -type f -not -regex '.*\\.gem$' | sort | cut -c3-`")
+        (("`git ls-files -z`")
+         "`find . -type f -not -regex '.*\\.gem$' -print0 | sort -z | cut -zc3-`"))))
   #t)
 
 (define* (extract-gemspec #:key source #:allow-other-keys)
@@ -129,11 +136,7 @@ is #f."
                   #:allow-other-keys)
   "Install the gem archive SOURCE to the output store item.  Additional
 GEM-FLAGS are passed to the 'gem' invocation, if present."
-  (let* ((ruby-version
-          (match:substring (string-match "ruby-(.*)\\.[0-9]$"
-                                         (assoc-ref inputs "ruby"))
-                           1))
-         (out (assoc-ref outputs "out"))
+  (let* ((out (assoc-ref outputs "out"))
          (vendor-dir (string-append out "/lib/ruby/vendor_ruby"))
          (gem-file (first-matching-file "\\.gem$"))
          (gem-file-basename (basename gem-file))
@@ -144,8 +147,8 @@ GEM-FLAGS are passed to the 'gem' invocation, if present."
     (setenv "GEM_VENDOR" vendor-dir)
 
     (or (zero?
-          ;; 'zero? system*' allows the custom error handling to function as
-          ;; expected, while 'invoke' raises its own exception.
+         ;; 'zero? system*' allows the custom error handling to function as
+         ;; expected, while 'invoke' raises its own exception.
          (apply system* "gem" "install" gem-file
                 "--verbose"
                 "--local" "--ignore-dependencies" "--vendor"

@@ -16,7 +16,7 @@
 ;;; Copyright © 2020 Konrad Hinsen <konrad.hinsen@fastmail.net>
 ;;; Copyright © 2020 Edouard Klein <edk@beaver-labs.com>
 ;;; Copyright © 2020, 2021 Vinicius Monego <monego@posteo.net>
-;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -141,20 +141,28 @@ sparsely connected networks.")
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no "check" target
-       #:phases (modify-phases %standard-phases
-                  (delete 'configure)
-                  (replace
-                   'install             ; no ‘install’ target
-                   (lambda* (#:key outputs #:allow-other-keys)
-                     (let* ((out (assoc-ref outputs "out"))
-                            (bin (string-append out "/bin/")))
-                       (mkdir-p bin)
-                       (for-each (lambda (file)
-                                   (copy-file file (string-append bin file)))
-                                 '("svm-train"
-                                   "svm-predict"
-                                   "svm-scale")))
-                     #t)))))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'build 'build-lib
+           (lambda _
+             (invoke "make" "lib")))
+         (replace 'install              ; no ‘install’ target
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin/"))
+                    (lib (string-append out "/lib/"))
+                    (inc (string-append out "/include/libsvm")))
+               (mkdir-p bin)
+               (for-each (lambda (file)
+                           (copy-file file (string-append bin file)))
+                         '("svm-train"
+                           "svm-predict"
+                           "svm-scale"))
+               (mkdir-p lib)
+               (install-file "libsvm.so.2" lib)
+               (mkdir-p inc)
+               (install-file "svm.h" inc)))))))
     (home-page "https://www.csie.ntu.edu.tw/~cjlin/libsvm/")
     (synopsis "Library for Support Vector Machines")
     (description
@@ -193,7 +201,7 @@ classification.")
                          (string-append site "libsvm.so.2")))
             #t)))))
     (inputs
-     `(("python" ,python)))
+     (list python))
     (synopsis "Python bindings of libSVM")))
 
 (define-public ghmm
@@ -222,20 +230,7 @@ classification.")
          #:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'enter-dir
-             (lambda _ (chdir "ghmm") #t))
-           (delete 'check)
-           (add-after 'install 'check
-             (assoc-ref %standard-phases 'check))
-           (add-before 'check 'fix-PYTHONPATH
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (let ((python-version (python-version
-                                      (assoc-ref inputs "python"))))
-                 (setenv "PYTHONPATH"
-                         (string-append (getenv "PYTHONPATH")
-                                        ":" (assoc-ref outputs "out")
-                                        "/lib/python" python-version
-                                        "/site-packages")))
-               #t))
+             (lambda _ (chdir "ghmm")))
            (add-after 'enter-dir 'fix-runpath
              (lambda* (#:key outputs #:allow-other-keys)
                (substitute* "ghmmwrapper/setup.py"
@@ -246,8 +241,7 @@ classification.")
                                  line
                                  "\"-Wl,-rpath="
                                  (assoc-ref outputs "out")
-                                 "/lib\", ")))
-               #t))
+                                 "/lib\", ")))))
            (add-after 'enter-dir 'disable-broken-tests
              (lambda _
                (substitute* "tests/Makefile.am"
@@ -267,18 +261,17 @@ classification.")
                    line indent)
                   (string-append indent
                                  "@unittest.skip(\"Disabled by Guix\")\n"
-                                 line)))
-               #t)))))
+                                 line))))))))
       (inputs
        `(("python" ,python-2) ; only Python 2 is supported
          ("libxml2" ,libxml2)))
       (native-inputs
-       `(("pkg-config" ,pkg-config)
-         ("dejagnu" ,dejagnu)
-         ("swig" ,swig)
-         ("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("libtool" ,libtool)))
+       (list pkg-config
+             dejagnu
+             swig
+             autoconf
+             automake
+             libtool))
       (home-page "http://ghmm.org")
       (synopsis "Hidden Markov Model library")
       (description
@@ -303,9 +296,10 @@ training, HMM clustering, HMM mixtures.")
                 "15xlax3z31lsn62vlg94hkm75nm40q4679amnfg13jm8m2bnhy5m"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags (list "--enable-blast")))
+     `(#:configure-flags (list "--enable-blast"
+                               "CFLAGS=-fcommon")))
     (inputs
-     `(("perl" ,perl)))
+     (list perl))
     (home-page "http://micans.org/mcl/")
     (synopsis "Clustering algorithm for graphs")
     (description
@@ -341,7 +335,7 @@ networks) based on simulation of (stochastic) flow in graphs.")
              (substitute* "setup.ml"
                (("LDFLAGS=-fPIC")
                 (string-append "LDFLAGS=-fPIC\"; \"SHELL=" (which "sh")))
-               (("-std=c89") "-std=gnu99")
+               (("-std=c89") "-std=gnu99 -fcommon")
 
                ;; This is a mutable string, which is no longer supported.  Use
                ;; a byte buffer instead.
@@ -354,14 +348,14 @@ networks) based on simulation of (stochastic) flow in graphs.")
                ((" s;")
                 " s);"))
              (substitute* "myocamlbuild.ml"
-               (("std=c89") "std=gnu99"))
+               (("std=c89") "std=gnu99 -fcommon"))
              ;; Since we build with a more recent OCaml, we have to use C99 or
              ;; later.  This causes problems with the old C code.
              (substitute* "src/impala/matrix.c"
                (("restrict") "restrict_"))
              #t)))))
     (native-inputs
-     `(("ocamlbuild" ,ocamlbuild)))
+     (list ocamlbuild))
     (home-page "https://github.com/fhcrc/mcl")
     (synopsis "OCaml wrappers around MCL")
     (description
@@ -402,10 +396,7 @@ algorithm.")
          (add-before 'configure 'set-CXXFLAGS
            (lambda _ (setenv "CXXFLAGS" "-fpermissive "))))))
     (inputs
-     `(("boost" ,boost)
-       ("gsl" ,gsl)
-       ("libxml2" ,libxml2)
-       ("zlib" ,zlib)))
+     (list boost gsl libxml2 zlib))
     (native-inputs
      `(("gfortran" ,gfortran)
        ("gfortran:lib" ,gfortran "lib")))
@@ -575,8 +566,7 @@ optimizing, and searching weighted finite-state transducers (FSTs).")
        ("lzo" ,lzo)
        ("zlib" ,zlib)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("rxcpp" ,rxcpp)))
+     (list pkg-config rxcpp))
     ;; Non-portable SSE instructions are used so building fails on platforms
     ;; other than x86_64.
     (supported-systems '("x86_64-linux"))
@@ -653,22 +643,18 @@ in terms of new algorithms.")
                       (invoke "make" "install"
                               "-C" ".setuptools-cmake-build"))))))
     (native-inputs
-     `(("cmake" ,cmake)
-       ("googletest" ,googletest)
-       ("pybind11" ,pybind11)
-       ("python-coverage" ,python-coverage)
-       ("python-nbval" ,python-nbval)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-runner" ,python-pytest-runner)))
+     (list cmake
+           googletest
+           pybind11
+           python-coverage
+           python-nbval
+           python-pytest
+           python-pytest-runner))
     (inputs
-     `(("protobuf" ,protobuf)))
+     (list protobuf))
     (propagated-inputs
-     `(("python-numpy" ,python-numpy)
-       ("python-protobuf" ,python-protobuf)
-       ("python-six" ,python-six)
-       ("python-tabulate" ,python-tabulate)
-       ("python-typing-extensions"
-        ,python-typing-extensions)))
+     (list python-numpy python-protobuf python-six python-tabulate
+           python-typing-extensions))
     (home-page "https://onnx.ai/")
     (synopsis "Open Neural Network Exchange")
     (description
@@ -705,17 +691,12 @@ standard data types.")
     (build-system python-build-system)
     (arguments (package-arguments onnx))          ;reuse build system tweaks
     (native-inputs
-     `(("cmake" ,cmake)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-runner" ,python-pytest-runner)
-       ("python-nbval" ,python-nbval)
-       ("python-coverage" ,python-coverage)))
+     (list cmake python-pytest python-pytest-runner python-nbval
+           python-coverage))
     (inputs
-     `(("onnx" ,onnx)
-       ("protobuf" ,protobuf)
-       ("pybind11" ,pybind11)))
+     (list onnx protobuf pybind11))
     (propagated-inputs
-     `(("python-numpy" ,python-numpy)))
+     (list python-numpy))
     (synopsis "Library to optimize ONNX models")
     (description
      "This package provides a C++ and Python library for performing arbitrary
@@ -754,7 +735,7 @@ with a single function call.")
            (lambda _
              (invoke "ctest"))))))
     (native-inputs
-     `(("catch" ,catch-framework)))
+     (list catch-framework))
     (home-page "http://reactivex.io/")
     (synopsis "Reactive Extensions for C++")
     (description
@@ -859,7 +840,7 @@ than 8 bits, and at the end only some significant 8 bits are kept.")
                              '("meta" "profiling" "public" "fixedpoint"
                                "eight_bit_int_gemm" "internal")))))))))
       (native-inputs
-       `(("unzip" ,unzip)))
+       (list unzip))
       (properties '((hidden? . #t))))))
 
 (define-public dlib
@@ -922,9 +903,9 @@ than 8 bits, and at the end only some significant 8 bits are kept.")
                  (invoke "./dtest" "--runall"))
                #t))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ;; For tests.
-       ("libnsl" ,libnsl)))
+     (list pkg-config
+           ;; For tests.
+           libnsl))
     (inputs
      `(("giflib" ,giflib)
        ("lapack" ,lapack)
@@ -946,7 +927,7 @@ computing environments.")
 (define-public python-scikit-learn
   (package
     (name "python-scikit-learn")
-    (version "0.24.2")
+    (version "1.0.1")
     (source
      (origin
        (method git-fetch)
@@ -956,7 +937,7 @@ computing environments.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0hm92biqwwc87bqnr56lwa5bz77lr7k9q21rdwksnfzq3vsdp2nm"))))
+         "07k92y78sk4074vh5hp8y63pwl592wgl8azrfp0q84chxk8igfx9"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -964,14 +945,17 @@ computing environments.")
          (add-after 'build 'build-ext
            (lambda _ (invoke "python" "setup.py" "build_ext" "--inplace")))
          (replace 'check
-           (lambda _
-             ;; Restrict OpenBLAS threads to prevent segfaults while testing!
-             (setenv "OPENBLAS_NUM_THREADS" "1")
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               ;; Restrict OpenBLAS threads to prevent segfaults while testing!
+               (setenv "OPENBLAS_NUM_THREADS" "1")
 
-             ;; Some tests require write access to $HOME.
-             (setenv "HOME" "/tmp")
+               ;; Some tests require write access to $HOME.
+               (setenv "HOME" "/tmp")
 
-             (invoke "pytest" "sklearn" "-m" "not network")))
+               (invoke "pytest" "sklearn" "-m" "not network"
+                       ;; This test tries to access the internet.
+                       "-k" "not test_load_boston_alternative"))))
          (add-before 'reset-gzip-timestamps 'make-files-writable
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Make sure .gz files are writable so that the
@@ -980,16 +964,12 @@ computing environments.")
                (for-each make-file-writable
                          (find-files out "\\.gz$"))))))))
     (inputs
-     `(("openblas" ,openblas)))
+     (list openblas))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-pandas" ,python-pandas) ;for tests
-       ("python-cython" ,python-cython)))
+     (list python-pytest python-pandas ;for tests
+           python-cython))
     (propagated-inputs
-     `(("python-numpy" ,python-numpy)
-       ("python-threadpoolctl" ,python-threadpoolctl)
-       ("python-scipy" ,python-scipy)
-       ("python-joblib" ,python-joblib)))
+     (list python-numpy python-threadpoolctl python-scipy python-joblib))
     (home-page "https://scikit-learn.org/")
     (synopsis "Machine Learning in Python")
     (description
@@ -1014,16 +994,35 @@ data analysis.")
                 (sha256
                  (base32
                   "08zbzi8yx5wdlxfx9jap61vg1malc9ajf576w7a0liv6jvvrxlpj"))))
+      (arguments
+       `(#:python ,python-2
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'build 'build-ext
+             (lambda _ (invoke "python" "setup.py" "build_ext" "--inplace")))
+           (replace 'check
+             (lambda* (#:key tests? #:allow-other-keys)
+               (when tests?
+                 ;; Restrict OpenBLAS threads to prevent segfaults while testing!
+                 (setenv "OPENBLAS_NUM_THREADS" "1")
+
+                 ;; Some tests require write access to $HOME.
+                 (setenv "HOME" "/tmp")
+
+                 (invoke "pytest" "sklearn" "-m" "not network"
+                         "-k"
+                         (string-append
+                          ;; This test tries to access the internet.
+                          "not test_load_boston_alternative"
+                          ;; This test fails for unknown reasons
+                          " and not test_rank_deficient_design"))))))))
       (inputs
-       `(("openblas" ,openblas)))
+       (list openblas))
       (native-inputs
-       `(("python2-pytest" ,python2-pytest)
-         ("python2-pandas" ,python2-pandas) ;for tests
-         ("python2-cython" ,python2-cython)))
+       (list python2-pytest python2-pandas ;for tests
+             python2-cython))
       (propagated-inputs
-       `(("python2-numpy" ,python2-numpy)
-         ("python2-scipy" ,python2-scipy)
-         ("python2-joblib" ,python2-joblib))))))
+       (list python2-numpy python2-scipy python2-joblib)))))
 
 (define-public python-threadpoolctl
   (package
@@ -1047,7 +1046,7 @@ data analysis.")
                (invoke "pytest"))
              #t)))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://github.com/joblib/threadpoolctl")
     (synopsis "Python helpers for common threading libraries")
     (description "Thread-pool Controls provides Python helpers to limit the
@@ -1067,13 +1066,10 @@ for scientific computing and data science (e.g. BLAS and OpenMP).")
         (base32 "0w87c2v0li2rdbx6qfc2lb6y6bxpdy3jwfgzfs1kcr4d1chj5zfr"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-nose" ,python-nose)))
+     (list python-nose))
     (propagated-inputs
-     `(("python-joblib" ,python-joblib)
-       ("python-llvmlite" ,python-llvmlite)
-       ("python-numba" ,python-numba)
-       ("python-scikit-learn" ,python-scikit-learn)
-       ("python-scipy" ,python-scipy)))
+     (list python-joblib python-llvmlite python-numba python-scikit-learn
+           python-scipy))
     (home-page "https://github.com/lmcinnes/pynndescent")
     (synopsis "Nearest neighbor descent for approximate nearest neighbors")
     (description
@@ -1110,14 +1106,12 @@ for k-neighbor-graph construction and approximate nearest neighbor search.")
              (setenv "NUMBA_CACHE_DIR" "/tmp")
              #t)))))
     (native-inputs
-     `(("python-cython" ,python-cython)))
+     (list python-cython))
     (inputs
-     `(("fftw" ,fftw)))
+     (list fftw))
     (propagated-inputs
-     `(("python-numpy" ,python-numpy)
-       ("python-pynndescent" ,python-pynndescent)
-       ("python-scikit-learn" ,python-scikit-learn)
-       ("python-scipy" ,python-scipy)))
+     (list python-numpy python-pynndescent python-scikit-learn
+           python-scipy))
     (home-page "https://github.com/pavlin-policar/openTSNE")
     (synopsis "Extensible, parallel implementations of t-SNE")
     (description
@@ -1139,12 +1133,9 @@ visualizing high-dimensional data sets.")
     (build-system python-build-system)
     ;; Pandas is only needed to run the tests.
     (native-inputs
-     `(("python-pandas" ,python-pandas)))
+     (list python-pandas))
     (propagated-inputs
-     `(("python-numpy" ,python-numpy)
-       ("python-scipy" ,python-scipy)
-       ("python-scikit-learn" ,python-scikit-learn)
-       ("python-joblib" ,python-joblib)))
+     (list python-numpy python-scipy python-scikit-learn python-joblib))
     (home-page "https://epistasislab.github.io/scikit-rebate/")
     (synopsis "Relief-based feature selection algorithms for Python")
     (description "Scikit-rebate is a scikit-learn-compatible Python
@@ -1170,10 +1161,10 @@ standard feature selection algorithms.")
        (file-name (git-file-name name version))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-setuptools" ,python-setuptools) ;build fails without this
-       ("python-wheel" ,python-wheel)))
+     (list python-setuptools ;build fails without this
+           python-wheel))
     (propagated-inputs
-     `(("python-numpy" ,python-numpy)))
+     (list python-numpy))
     (home-page "https://github.com/CyberAgent/cmaes")
     (synopsis "CMA-ES implementation for Python")
     (description "This package provides provides an implementation of the
@@ -1199,11 +1190,9 @@ Covariance Matrix Adaptation Evolution Strategy (CMA-ES) for Python.")
       (version version)
       (build-system python-build-system)
       (native-inputs
-       `(("python-nose" ,python-nose)
-         ("python-pytest" ,python-pytest)))
+       (list python-nose python-pytest))
       (propagated-inputs
-       `(("python-future" ,python-future)
-         ("python-numpy" ,python-numpy)))
+       (list python-future python-numpy))
       (arguments
        `(#:phases (modify-phases %standard-phases
                     (replace 'check
@@ -1237,13 +1226,11 @@ main intended application of Autograd is gradient-based optimization.")
                 "0jlvyn7k81dzrh9ij3zw576wbgiwmmr26rzpdxjn1dbpc3njpvzi"))
               (file-name (git-file-name name version))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-nose" ,python-nose)))
+     (list python-pytest python-nose))
     (inputs
-     `(("openmpi" ,openmpi)))
+     (list openmpi))
     (propagated-inputs
-     `(("python-numpy" ,python-numpy)
-       ("python-scipy" ,python-scipy)))
+     (list python-numpy python-scipy))
     (arguments
      `(#:configure-flags
        '("-DUSE_MPI=ON")
@@ -1284,8 +1271,7 @@ the following advantages:
                 "04bwzk6ifgnz3fmzid8b7avxf9n5pnx9xcjm61nkjng1vv0bpj8x"))
               (file-name (git-file-name name version))))
     (inputs
-     `(("boost" ,boost)
-       ("zlib" ,zlib)))
+     (list boost zlib))
     (arguments
      `(#:configure-flags
        (list (string-append "--with-boost="
@@ -1328,17 +1314,14 @@ interactive learning.")
      `(#:tests? #f ; some test files are missing
        #:python ,python-2)) ; only Python 2.7 is supported
     (propagated-inputs
-     `(("python2-numpy" ,python2-numpy)
-       ("python2-scipy" ,python2-scipy)
-       ("python2-matplotlib" ,python2-matplotlib)
-       ("python2-pandas" ,python2-pandas)
-       ("python2-scikit-learn" ,python2-scikit-learn)
-       ("python2-pysnptools" ,python2-pysnptools)))
+     (list python2-numpy
+           python2-scipy
+           python2-matplotlib
+           python2-pandas
+           python2-scikit-learn
+           python2-pysnptools))
     (native-inputs
-     `(("unzip" ,unzip)
-       ("python2-cython" ,python2-cython)
-       ("python2-mock" ,python2-mock)
-       ("python2-nose" ,python2-nose)))
+     (list unzip python2-cython python2-mock python2-nose))
     (home-page "http://research.microsoft.com/en-us/um/redmond/projects/mscompbio/fastlmm/")
     (synopsis "Perform genome-wide association studies on large data sets")
     (description
@@ -1377,20 +1360,20 @@ association studies (GWAS) on extremely large data sets.")
                                            " and not test_quadratic1"
                                            " and not test_twoarms"))))))))
     (propagated-inputs
-     `(("python-cloudpickle" ,python-cloudpickle)
-       ("python-future" ,python-future)
-       ("python-networkx" ,python-networkx)
-       ("python-numpy" ,python-numpy)
-       ("python-scipy" ,python-scipy)
-       ("python-six" ,python-six)
-       ("python-tqdm" ,python-tqdm)))
+     (list python-cloudpickle
+           python-future
+           python-networkx
+           python-numpy
+           python-scipy
+           python-six
+           python-tqdm))
     (native-inputs
-     `(("python-black" ,python-black)
-       ("python-ipython" ,python-ipython)
-       ("python-ipyparallel" ,python-ipyparallel)
-       ("python-nose" ,python-nose)
-       ("python-pymongo" ,python-pymongo)
-       ("python-pytest" ,python-pytest)))
+     (list python-black
+           python-ipython
+           python-ipyparallel
+           python-nose
+           python-pymongo
+           python-pytest))
     (home-page "https://hyperopt.github.io/hyperopt/")
     (synopsis "Library for hyperparameter optimization")
     (description "Hyperopt is a Python library for serial and parallel
@@ -1489,21 +1472,21 @@ discrete, and conditional dimensions.")
                                (string-append lib "/gstreamer-1.0"))
                  #t))))))
       (inputs
-       `(("alsa-lib" ,alsa-lib)
-         ("gfortran" ,gfortran "lib")
-         ("glib" ,glib)
-         ("gstreamer" ,gstreamer)
-         ("jack" ,jack-1)
-         ("openblas" ,openblas)
-         ("openfst" ,openfst)
-         ("portaudio" ,portaudio)
-         ("python" ,python)))
+       (list alsa-lib
+             `(,gfortran "lib")
+             glib
+             gstreamer
+             jack-1
+             openblas
+             openfst
+             portaudio
+             python))
       (native-inputs
-       `(("glib" ,glib "bin")             ; glib-genmarshal
-         ("grep" ,grep)
-         ("sed" ,sed)
-         ("pkg-config" ,pkg-config)
-         ("which" ,which)))
+       (list `(,glib "bin") ; glib-genmarshal
+             grep
+             sed
+             pkg-config
+             which))
       (home-page "https://kaldi-asr.org/")
       (synopsis "Speech recognition toolkit")
       (description "Kaldi is an extensible toolkit for speech recognition
@@ -1563,11 +1546,7 @@ written in C++.")
                  (install-file "libgstkaldinnet2onlinedecoder.so" lib)
                  #t))))))
       (inputs
-       `(("glib" ,glib)
-         ("gstreamer" ,gstreamer)
-         ("jansson" ,jansson)
-         ("openfst" ,openfst)
-         ("kaldi" ,kaldi)))
+       (list glib gstreamer jansson openfst kaldi))
       (native-inputs
        `(("bash" ,bash)
          ("glib:bin" ,glib "bin")       ; glib-genmarshal
@@ -1647,7 +1626,7 @@ automatically.")
                  (let* ((server (string-append bin "/kaldi-gst-server"))
                         (client (string-append bin "/kaldi-gst-client"))
                         (worker (string-append bin "/kaldi-gst-worker"))
-                        (PYTHONPATH (getenv "PYTHONPATH"))
+                        (PYTHONPATH (getenv "GUIX_PYTHONPATH"))
                         (GST_PLUGIN_PATH (string-append
                                           (assoc-ref inputs "gst-kaldi-nnet2-online")
                                           "/lib/gstreamer-1.0:${GST_PLUGIN_PATH}"))
@@ -1656,7 +1635,7 @@ automatically.")
                                   (lambda _
                                     (format #t
                                             "#!~a
-export PYTHONPATH=~a
+export GUIX_PYTHONPATH=~a
 export GST_PLUGIN_PATH=~a
 exec ~a ~a/~a \"$@\"~%"
                                             (which "bash") PYTHONPATH GST_PLUGIN_PATH
@@ -1750,7 +1729,7 @@ Python.")
                   ((guix build python-build-system)
                    #:select (python-version)))
        #:imported-modules (,@%cmake-build-system-modules
-                            (guix build python-build-system))
+                           (guix build python-build-system))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'set-source-file-times-to-1980
@@ -1780,10 +1759,9 @@ Python.")
              ;; https://github.com/tensorflow/tensorflow/issues/34197
              (substitute* (find-files "tensorflow/python" ".*\\.cc$")
                (("(nullptr,)(\\ +/. tp_print)" _ _ tp_print)
-                (string-append "NULL,   " tp_print)))
-             #t))
+                (string-append "NULL,   " tp_print)))))
          (add-after 'python3.7-compatibility 'chdir
-           (lambda _ (chdir "tensorflow/contrib/cmake") #t))
+           (lambda _ (chdir "tensorflow/contrib/cmake")))
          (add-after 'chdir 'disable-downloads
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* (find-files "external" "\\.cmake$")
@@ -1798,36 +1776,31 @@ Python.")
                  ;; Sqlite
                  (("include\\(sqlite\\)") "")
                  (("\\$\\{sqlite_STATIC_LIBRARIES\\}")
-                  (string-append (assoc-ref inputs "sqlite")
-                                 "/lib/libsqlite3.so"))
+                  (search-input-file inputs "/lib/libsqlite3.so"))
                  (("sqlite_copy_headers_to_destination") "")
 
                  ;; PNG
                  (("include\\(png\\)") "")
                  (("\\$\\{png_STATIC_LIBRARIES\\}")
-                  (string-append (assoc-ref inputs "libpng")
-                                 "/lib/libpng16.so"))
+                  (search-input-file inputs "/lib/libpng16.so"))
                  (("png_copy_headers_to_destination") "")
 
                  ;; JPEG
                  (("include\\(jpeg\\)") "")
                  (("\\$\\{jpeg_STATIC_LIBRARIES\\}")
-                  (string-append (assoc-ref inputs "libjpeg")
-                                 "/lib/libjpeg.so"))
+                  (search-input-file inputs "/lib/libjpeg.so"))
                  (("jpeg_copy_headers_to_destination") "")
 
                  ;; GIF
                  (("include\\(gif\\)") "")
                  (("\\$\\{gif_STATIC_LIBRARIES\\}")
-                  (string-append (assoc-ref inputs "giflib")
-                                 "/lib/libgif.so"))
+                  (search-input-file inputs "/lib/libgif.so"))
                  (("gif_copy_headers_to_destination") "")
 
                  ;; lmdb
                  (("include\\(lmdb\\)") "")
                  (("\\$\\{lmdb_STATIC_LIBRARIES\\}")
-                  (string-append (assoc-ref inputs "lmdb")
-                                 "/lib/liblmdb.so"))
+                  (search-input-file inputs "/lib/liblmdb.so"))
                  (("lmdb_copy_headers_to_destination") "")
 
                  ;; Protobuf
@@ -1879,8 +1852,7 @@ set(eigen_INCLUDE_DIRS ${CMAKE_CURRENT_BINARY_DIR}/external/eigen_archive "
                (("tf_core_cpu grpc") "tf_core_cpu"))
 
              ;; This directory is a dependency of many targets.
-             (mkdir-p "protobuf")
-             #t))
+             (mkdir-p "protobuf")))
          (add-after 'configure 'unpack-third-party-sources
            (lambda* (#:key inputs #:allow-other-keys)
              ;; This is needed to configure bundled packages properly.
@@ -1920,8 +1892,7 @@ set(eigen_INCLUDE_DIRS ${CMAKE_CURRENT_BINARY_DIR}/external/eigen_archive "
                     "re2"))
 
              (rename-file "../build/cub/src/cub/cub-1.8.0/"
-                          "../build/cub/src/cub/cub/")
-             #t))
+                          "../build/cub/src/cub/cub/")))
          (add-after 'unpack 'fix-python-build
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (mkdir-p "protobuf-src")
@@ -1932,9 +1903,6 @@ set(eigen_INCLUDE_DIRS ${CMAKE_CURRENT_BINARY_DIR}/external/eigen_archive "
                      "-C" "eigen-src" "--strip-components=1")
 
              (substitute* "tensorflow/contrib/cmake/tf_python.cmake"
-               ;; Ensure that all Python dependencies can be found at build time.
-               (("PYTHONPATH=\\$\\{CMAKE_CURRENT_BINARY_DIR\\}/tf_python" m)
-                (string-append m ":" (getenv "PYTHONPATH")))
                ;; Take protobuf source files from our source package.
                (("\\$\\{CMAKE_CURRENT_BINARY_DIR\\}/protobuf/src/protobuf/src/google")
                 (string-append (getcwd) "/protobuf-src/src/google")))
@@ -1946,7 +1914,7 @@ set(eigen_INCLUDE_DIRS ${CMAKE_CURRENT_BINARY_DIR}/external/eigen_archive "
                 (string-append (getcwd) "/eigen-src/"))
                ;; Take Eigen headers from our own package.
                (("\\$\\{CMAKE_CURRENT_BINARY_DIR\\}/external/eigen_archive")
-                (string-append (assoc-ref inputs "eigen") "/include/eigen3")))
+                (search-input-directory inputs "/include/eigen3")))
 
              ;; Correct the RUNPATH of ops libraries generated for Python.
              ;; TODO: this doesn't work :(
@@ -1960,21 +1928,22 @@ set(eigen_INCLUDE_DIRS ${CMAKE_CURRENT_BINARY_DIR}/external/eigen_archive "
                 (string-append "set_target_properties(${_AT_TARGET} PROPERTIES \
 COMPILE_FLAGS ${target_compile_flags} \
 INSTALL_RPATH_USE_LINK_PATH TRUE \
-INSTALL_RPATH " (assoc-ref outputs "out") "/lib)\n")))
-             #t))
+INSTALL_RPATH " (assoc-ref outputs "out") "/lib)\n")))))
          (add-after 'build 'build-pip-package
-           (lambda* (#:key outputs #:allow-other-keys)
+           (lambda* (#:key outputs parallel-build? #:allow-other-keys)
              (setenv "LDFLAGS"
                      (string-append "-Wl,-rpath="
                                     (assoc-ref outputs "out") "/lib"))
-             (invoke "make" "tf_python_build_pip_package")
-             #t))
+             (invoke "make" "-j" (if parallel-build?
+                                     (number->string (parallel-job-count))
+                                     "1")
+                     "tf_python_build_pip_package")))
          (add-after 'build-pip-package 'install-python
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
                    (wheel (car (find-files "../build/tf_python/dist/" "\\.whl$")))
                    (python-version (python-version
-                                     (assoc-ref inputs "python"))))
+                                    (assoc-ref inputs "python"))))
                (invoke "python" "-m" "pip" "install" wheel
                        (string-append "--prefix=" out))
 
@@ -1983,8 +1952,7 @@ INSTALL_RPATH " (assoc-ref outputs "out") "/lib)\n")))
                 (string-append
                  out "/lib/python" python-version
                  "/site-packages/tensorflow/contrib/"
-                 "seq2seq/python/ops/lib_beam_search_ops.so"))
-               #t))))))
+                 "seq2seq/python/ops/lib_beam_search_ops.so"))))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("protobuf:native" ,protobuf-3.6) ; protoc
@@ -2244,7 +2212,7 @@ advanced research.")
                       (install-file file target-dir)))
                   (find-files "." "\\.h$")))))))))
     (inputs
-     `(("abseil-cpp" ,abseil-cpp)
+     `(("abseil-cpp" ,abseil-cpp-20200923.3)
        ("eigen" ,eigen-for-tensorflow-lite)
        ("flatbuffers" ,flatbuffers)
        ("python" ,python)))
@@ -2364,7 +2332,7 @@ learning libraries.")
      `(("googletest" ,googletest)
        ("python" ,python-wrapper)))
     (inputs
-     `(("dmlc-core" ,dmlc-core)))
+     (list dmlc-core))
     (home-page "https://xgboost.ai/")
     (synopsis "Gradient boosting (GBDT, GBRT or GBM) library")
     (description
@@ -2434,14 +2402,11 @@ in a fast and accurate way.")
                         ;; "'['./runexp.sh']' returned non-zero exit status 1"
                         " and not test_cli_binary_classification"))))))))
     (native-inputs
-     `(("python-pandas" ,python-pandas)
-       ("python-pytest" ,python-pytest)
-       ("python-scikit-learn" ,python-scikit-learn)))
+     (list python-pandas python-pytest python-scikit-learn))
     (inputs
-     `(("xgboost" ,xgboost)))
+     (list xgboost))
     (propagated-inputs
-     `(("python-numpy" ,python-numpy)
-       ("python-scipy" ,python-scipy)))
+     (list python-numpy python-scipy))
     (synopsis "Python interface for the XGBoost library")))
 
 (define-public python-iml
@@ -2457,12 +2422,9 @@ in a fast and accurate way.")
          "1k8szlpm19rcwcxdny9qdm3gmaqq8akb4xlvrzyz8c2d679aak6l"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("ipython" ,python-ipython)
-       ("numpy" ,python-numpy)
-       ("pandas" ,python-pandas)
-       ("scipy" ,python-scipy)))
+     (list python-ipython python-numpy python-pandas python-scipy))
     (native-inputs
-     `(("nose" ,python-nose)))
+     (list python-nose))
     (home-page "https://github.com/interpretable-ml/iml")
     (synopsis "Interpretable Machine Learning (iML) package")
     (description "Interpretable ML (iML) is a set of data type objects,
@@ -2487,13 +2449,10 @@ project, and it will potentially also do the same for the Lime project.")
     ;; The tests require Keras, but this package is needed to build Keras.
     (arguments '(#:tests? #f))
     (propagated-inputs
-     `(("python-h5py" ,python-h5py)
-       ("python-numpy" ,python-numpy)))
+     (list python-h5py python-numpy))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)
-       ("python-pytest-pep8" ,python-pytest-pep8)
-       ("python-pytest-xdist" ,python-pytest-xdist)))
+     (list python-pytest python-pytest-cov python-pytest-pep8
+           python-pytest-xdist))
     (home-page "https://github.com/keras-team/keras-applications")
     (synopsis "Reference implementations of popular deep learning models")
     (description
@@ -2514,15 +2473,14 @@ models for use with the Keras deep learning framework.")
          "1r98nm4k1svsqjyaqkfk23i31bl1kcfcyp7094yyj3c43phfp3as"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-numpy" ,python-numpy)
-       ("python-six" ,python-six)))
+     (list python-numpy python-six))
     (native-inputs
-     `(("python-pandas" ,python-pandas)
-       ("python-pillow" ,python-pillow)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)
-       ("python-pytest-xdist" ,python-pytest-xdist)
-       ("tensorflow" ,tensorflow)))
+     (list python-pandas
+           python-pillow
+           python-pytest
+           python-pytest-cov
+           python-pytest-xdist
+           tensorflow))
     (home-page "https://github.com/keras-team/keras-preprocessing/")
     (synopsis "Data preprocessing and augmentation for deep learning models")
     (description
@@ -2552,51 +2510,57 @@ with image data, text data, and sequence data.")
              (delete-file "keras/backend/theano_backend.py")
              (delete-file "keras/backend/cntk_backend.py")
              (delete-file "tests/keras/backend/backend_test.py")
-
              ;; FIXME: This doesn't work because Tensorflow is missing the
              ;; coder ops library.
-             (delete-file "tests/keras/test_callbacks.py")
-             #t))
+             (delete-file "tests/keras/test_callbacks.py")))
          (replace 'check
-           (lambda _
-             ;; These tests attempt to download data files from the internet.
-             (delete-file "tests/integration_tests/test_datasets.py")
-             (delete-file "tests/integration_tests/imagenet_utils_test.py")
-             ;; Backport https://github.com/keras-team/keras/pull/12479.
-             (substitute* "tests/keras/engine/test_topology.py"
-               (("np.ones\\(\\(3, 2\\)\\)")
-                "1."))
-             (invoke "python" "-m" "pytest"
-                     ;; The following test fail only in the build container;
-                     ;; skip it.
-                     "-k" "not test_selu"))))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               ;; These tests attempt to download data files from the internet.
+               (delete-file "tests/integration_tests/test_datasets.py")
+               (delete-file "tests/integration_tests/imagenet_utils_test.py")
+               ;; Backport https://github.com/keras-team/keras/pull/12479.
+               (substitute* "tests/keras/engine/test_topology.py"
+                 (("np.ones\\(\\(3, 2\\)\\)")
+                  "1."))
+               (invoke "python" "-m" "pytest" "tests"
+                       "-p" "no:pep8"
+                       ;; FIXME: python-build-system lacks PARALLEL-TESTS?
+                       "-n" (number->string (parallel-job-count))
+                       "-k"
+                       (string-append
+                        ;; The following test fails only in the build
+                        ;; container; skip it.
+                        "not test_selu "
+                        ;; The following test was found flaky and removed in
+                        ;; recent versions.
+                        "and not test_stateful_metrics"))))))))
     (propagated-inputs
-     `(("python-h5py" ,python-h5py)
-       ("python-keras-applications" ,python-keras-applications)
-       ("python-keras-preprocessing" ,python-keras-preprocessing)
-       ("python-numpy" ,python-numpy)
-       ("python-pydot" ,python-pydot)
-       ("python-pyyaml" ,python-pyyaml)
-       ("python-scipy" ,python-scipy)
-       ("python-six" ,python-six)
-       ("tensorflow" ,tensorflow)
-       ("graphviz" ,graphviz)))
+     (list python-h5py
+           python-keras-applications
+           python-keras-preprocessing
+           python-numpy
+           python-pydot
+           python-pyyaml
+           python-scipy
+           python-six
+           tensorflow
+           graphviz))
     (native-inputs
-     `(("python-pandas" ,python-pandas)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)
-       ("python-pytest-pep8" ,python-pytest-pep8)
-       ("python-pytest-timeout" ,python-pytest-timeout)
-       ("python-pytest-xdist" ,python-pytest-xdist)
-       ("python-sphinx" ,python-sphinx)
-       ("python-requests" ,python-requests)))
+     (list python-pandas
+           python-pytest
+           python-pytest-cov
+           python-pytest-pep8
+           python-pytest-timeout
+           python-pytest-xdist
+           python-sphinx
+           python-requests))
     (home-page "https://github.com/keras-team/keras")
     (synopsis "High-level deep learning framework")
     (description "Keras is a high-level neural networks API, written in Python
 and capable of running on top of TensorFlow.  It was developed with a focus on
 enabling fast experimentation.  Use Keras if you need a deep learning library
 that:
-
 @itemize
 @item Allows for easy and fast prototyping (through user friendliness,
   modularity, and extensibility).
@@ -2625,9 +2589,9 @@ that:
            "1crmqgybzkgkpbmcx16912gsl5qsj49swa0ikx6mhqgph0chrh11"))))
       (build-system cmake-build-system)
       (native-inputs
-       `(("googletest" ,googletest)))
+       (list googletest))
       (inputs
-       `(("openssl" ,openssl)))
+       (list openssl))
       (arguments
        `(#:configure-flags '("-DBUILD_TEST=1")
          #:phases
@@ -2657,13 +2621,9 @@ These include a barrier, broadcast, and allreduce.")
          "02ada2yy6km6zgk2836kg1c97yrcpalvan34p8c57446finnpki1"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-joblib" ,python-joblib)
-       ("python-nose" ,python-nose)))
+     (list python-joblib python-nose))
     (propagated-inputs
-     `(("python-numba" ,python-numba)
-       ("python-numpy" ,python-numpy)
-       ("python-scikit-learn" ,python-scikit-learn)
-       ("python-scipy" ,python-scipy)))
+     (list python-numba python-numpy python-scikit-learn python-scipy))
     (home-page "https://github.com/lmcinnes/umap")
     (synopsis
      "Uniform Manifold Approximation and Projection")
@@ -2712,16 +2672,14 @@ instead it provides low-level performance primitives leveraged in leading deep
 learning frameworks, such as PyTorch, Caffe2, MXNet, tiny-dnn, Caffe, Torch,
 and Darknet.")
       (inputs
-       `(("cpuinfo" ,cpuinfo)
-         ("fp16" ,fp16)
-         ("fxdiv" ,fxdiv)
-         ("psimd" ,psimd)
-         ("pthreadpool" ,pthreadpool)
-         ("googletest" ,googletest)))
+       (list cpuinfo
+             fp16
+             fxdiv
+             psimd
+             pthreadpool
+             googletest))
       (native-inputs
-       `(("python" ,python)
-         ("python-peachpy" ,python-peachpy)
-         ("python-six" ,python-six)))
+       (list python python-peachpy python-six))
       (license license:bsd-2))))
 
 (define-public xnnpack
@@ -2755,13 +2713,13 @@ and Darknet.")
          ;;   another target with the same name already exists.
          #:tests? #f))
       (inputs
-       `(("cpuinfo" ,cpuinfo)
-         ("pthreadpool" ,pthreadpool)
-         ("googletest" ,googletest)
-         ("googlebenchmark" ,googlebenchmark)
-         ("fxdiv" ,fxdiv)
-         ("fp16" ,fp16)
-         ("psimd" ,psimd)))
+       (list cpuinfo
+             pthreadpool
+             googletest
+             googlebenchmark
+             fxdiv
+             fp16
+             psimd))
       (synopsis "Optimized floating-point neural network inference operators")
       (description
        "XNNPACK is a highly optimized library of floating-point neural network
@@ -2836,13 +2794,10 @@ TensorFlow.js, PyTorch, and MediaPipe.")
                     (lambda* (#:key inputs outputs tests? #:allow-other-keys)
                       ;; Run the test suite following the instructions in
                       ;; 'CONTRIBUTING.md'.  XXX: Unfortunately this doesn't
-                      ;; work, unless you set PYTHONPATH presumably.
+                      ;; work, unless you set GUIX_PYTHONPATH presumably.
                       (when tests?
-                        (let ((python-site (site-packages inputs outputs)))
-                          (setenv "PYTHONPATH"
-                                  (string-append python-site ":"
-                                                 (getenv "PYTHONPATH")))
-                          (invoke "python" "test/run_test.py")))))
+                        (add-installed-pythonpath inputs outputs)
+                        (invoke "python" "test/run_test.py"))))
                   (add-after 'install 'remove-test-executables
                     (lambda* (#:key inputs outputs #:allow-other-keys)
                       ;; Remove test executables, but keep other executables
@@ -2855,39 +2810,40 @@ TensorFlow.js, PyTorch, and MediaPipe.")
 
        ;; XXX: Tests attempt to download data such as
        ;; <https://raw.githubusercontent.com/pytorch/test-infra/master/stats/slow-tests.json>.
+       ;; We're also missing some Python modules, such as expecttest.
        #:tests? #f))
     (native-inputs
-     `(("cmake" ,cmake)
-       ("ninja" ,ninja)))
+     (list cmake ninja))
     (inputs
-     `(("eigen" ,eigen)
-       ;; ("fmt" ,fmt)
-       ("fp16" ,fp16)
-       ("gemmlowp" ,gemmlowp)
-       ("googletest" ,googletest)
-       ("googlebenchmark" ,googlebenchmark)
-       ("gloo" ,gloo)
-       ("nnpack" ,nnpack)
-       ("openblas" ,openblas)
-       ("openmpi" ,openmpi)
-       ("pthreadpool" ,pthreadpool)
-       ("protobuf" ,protobuf)
-       ("pybind11" ,pybind11)
-       ("sleef" ,sleef)
-       ("xnnpack" ,xnnpack)
-       ("zstd" ,zstd)))
+     (list eigen
+           ;; ("fmt" ,fmt)
+           fp16
+           gemmlowp
+           googletest
+           googlebenchmark
+           gloo
+           nnpack
+           openblas
+           openmpi
+           pthreadpool
+           protobuf
+           pybind11
+           sleef
+           xnnpack
+           zstd))
     (propagated-inputs
-     `(("python-astunparse" ,python-astunparse)
-       ("python-numpy" ,python-numpy)
-       ("python-pyyaml" ,python-pyyaml)
-       ("python-cffi" ,python-cffi)
-       ("python-typing-extensions" ,python-typing-extensions)
-       ("python-future" ,python-future)
-       ("python-six" ,python-six)
-       ("python-requests" ,python-requests)
-       ("onnx" ,onnx)                       ;propagated for its Python modules
-       ("onnx-optimizer" ,onnx-optimizer)
-       ("cpuinfo" ,cpuinfo)))
+     (list python-astunparse
+           python-click
+           python-numpy
+           python-pyyaml
+           python-cffi
+           python-typing-extensions
+           python-future
+           python-six
+           python-requests
+           onnx ;propagated for its Python modules
+           onnx-optimizer
+           cpuinfo))
     (home-page "https://pytorch.org/")
     (synopsis "Python library for tensor computation and deep neural networks")
     (description
@@ -2926,13 +2882,10 @@ Note: currently this package does not provide GPU support.")
                (with-directory-excursion (string-append (assoc-ref outputs "out") "/lib")
                  (invoke "python" "-m" "pytest"))))))))
     (propagated-inputs
-     `(("python-cython" ,python-cython)
-       ("python-numpy" ,python-numpy)
-       ("python-scikit-learn" ,python-scikit-learn)
-       ("python-scipy" ,python-scipy)
-       ("python-setuptools-scm" ,python-setuptools-scm)))
+     (list python-cython python-numpy python-scikit-learn python-scipy
+           python-setuptools-scm))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://github.com/hmmlearn/hmmlearn")
     (synopsis "Hidden Markov Models with scikit-learn like API")
     (description

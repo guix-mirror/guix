@@ -75,7 +75,7 @@ the C programming language.")
     (name name)
     (version version)
     (source #f)
-    (inputs `(("stb" ,stb)))
+    (inputs (list stb))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))

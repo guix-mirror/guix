@@ -27,6 +27,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-build)
   #:use-module (gnu packages python-check)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
@@ -61,12 +62,9 @@
      ;; python-stestr.
      `(#:tests? #f))
     (propagated-inputs
-     `(("python-gitpython" ,python-gitpython)
-       ("python-pyyaml" ,python-pyyaml)
-       ("python-six" ,python-six)
-       ("python-stevedore" ,python-stevedore)))
+     (list python-gitpython python-pyyaml python-six python-stevedore))
     (native-inputs
-     `(("python-pbr" ,python-pbr)))
+     (list python-pbr))
     (home-page "https://github.com/PyCQA/bandit")
     (synopsis "Security oriented static analyser for python code")
     (description "Bandit is a tool designed to find common security issues in
@@ -90,14 +88,14 @@ scanning all the files it generates a report.")
     (arguments
      `(#:tests? #f))
     (native-inputs
-     `(("python-pbr" ,python-pbr)))
+     (list python-pbr))
     (propagated-inputs
-     `(("python-cmd2" ,python-cmd2)
-       ("python-prettytable" ,python-prettytable)
-       ("python-pyparsing" ,python-pyparsing)
-       ("python-pyyaml" ,python-pyyaml)
-       ("python-bandit" ,python-bandit)
-       ("python-stevedore" ,python-stevedore)))
+     (list python-cmd2
+           python-prettytable
+           python-pyparsing
+           python-pyyaml
+           python-bandit
+           python-stevedore))
     (home-page "https://opendev.org/openstack/cliff")
     (synopsis "Framework for building command line programs")
     (description "The @code{cliff} framework allows creating multi-level
@@ -120,14 +118,10 @@ formatters, and other extensions.")
            "06c7vyn184y9f0lsrwaz13aq63hdz5fjrd191b8nifx6acsni42f"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-pbr" ,python-pbr)
-       ("python-six" ,python-six)
-       ("python-wrapt" ,python-wrapt)))
+     (list python-pbr python-six python-wrapt))
     (native-inputs
-     `(;; Tests.
-       ("python-subunit" ,python-subunit)
-       ("python-testrepository" ,python-testrepository)
-       ("python-testtools" ,python-testtools)))
+     (list ;; Tests.
+           python-subunit python-testrepository python-testtools))
     (home-page "https://www.openstack.org/")
     (synopsis
      "Find deprecated patterns and strategies in Python code")
@@ -150,20 +144,20 @@ manner.")
          "0fg19rlcky3n1y1ri61xyjp7534yzf8r102z9dw3zqg93f4kj20m"))))
     (build-system python-build-system)
      (propagated-inputs
-     `(("python-flake8" ,python-flake8-3.8)))
+     (list python-flake8-3.8))
     (native-inputs
-     `( ;; Tests
-       ("python-coverage" ,python-coverage)
-       ("python-ddt" ,python-ddt)
-       ("python-dnspython" ,python-dnspython)
-       ("python-fixtures" ,python-fixtures)
-       ("python-eventlet" ,python-eventlet)
-       ("python-mock" ,python-mock)
-       ("python-monotonic" ,python-monotonic)
-       ("python-subunit" ,python-subunit)
-       ("python-stestr" ,python-stestr)
-       ("python-testscenarios" ,python-testscenarios)
-       ("python-testtools" ,python-testtools)))
+     (list ;; Tests
+           python-coverage
+           python-ddt
+           python-dnspython
+           python-fixtures
+           python-eventlet
+           python-mock
+           python-monotonic
+           python-subunit
+           python-stestr
+           python-testscenarios
+           python-testtools))
     (home-page "https://github.com/openstack-dev/hacking")
     (synopsis "OpenStack hacking guideline enforcement")
     (description
@@ -186,14 +180,10 @@ guidelines}.")
            "0w58adwv7q9wzvmq9mlrk2asfk73myq9fpwy7mjkzsz3baa95zf5"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-fixtures" ,python-fixtures)
-       ("python-pbr" ,python-pbr)))
+     (list python-fixtures python-pbr))
     (native-inputs
-      `(("python-openstackdocstheme" ,python-openstackdocstheme)
-        ("python-sphinx" ,python-sphinx)
-        ("python-subunit" ,python-subunit)
-        ("python-testrepository" ,python-testrepository)
-        ("python-testtools" ,python-testtools)))
+      (list python-openstackdocstheme python-sphinx python-subunit
+            python-testrepository python-testtools))
     (home-page "https://www.openstack.org/")
     (synopsis "Mock object framework for Python")
     (description
@@ -218,10 +208,9 @@ with mox as possible, but small enhancements have been made.")
      ;; turn depends on mox3 which depends on this package.
      `(#:tests? #f))
     (propagated-inputs
-     `(("python-dulwich" ,python-dulwich)
-       ("python-pbr" ,python-pbr)))
+     (list python-dulwich python-pbr))
     (native-inputs
-     `(("python-sphinx" ,python-sphinx)))
+     (list python-sphinx))
     (home-page "https://docs.openstack.org/openstackdocstheme/latest/")
     (synopsis "OpenStack Docs Theme")
     (description
@@ -244,15 +233,14 @@ to docs.openstack.org and developer.openstack.org.")
     (arguments
      `(#:tests? #f)) ;; Circular dependency with python-oslotest
     (propagated-inputs
-      `(("python-appdirs" ,python-appdirs)
-        ("python-pyyaml" ,python-pyyaml)))
+      (list python-appdirs python-pyyaml))
     (native-inputs
-      `(("python-pbr" ,python-pbr)
-        ("python-fixtures" ,python-fixtures)
-        ("python-mimeparse" ,python-mimeparse)
-        ("python-testrepository" ,python-testrepository)
-        ("python-testscenarios" ,python-testscenarios)
-        ("python-testtools" ,python-testtools)))
+      (list python-pbr
+            python-fixtures
+            python-mimeparse
+            python-testrepository
+            python-testscenarios
+            python-testtools))
     (home-page "https://www.openstack.org/")
     (synopsis
       "OpenStack Client Configuration Library")
@@ -280,11 +268,9 @@ to docs.openstack.org and developer.openstack.org.")
      ;; when building the package. Skip the tests for now.
      `(#:tests? #f))
     (propagated-inputs
-     `(("python-subunit" ,python-subunit)))
+     (list python-subunit))
     (native-inputs
-     `(("python-pbr" ,python-pbr)
-       ("python-testtools" ,python-testtools)
-       ("python-babel" ,python-babel)))
+     (list python-pbr python-testtools python-babel))
     (home-page "https://www.openstack.org/")
     (synopsis "Testr wrapper to provide functionality for OpenStack projects")
     (description
@@ -316,7 +302,7 @@ to docs.openstack.org and developer.openstack.org.")
                             "requirements.txt")
                (("pbr!=2.1.0,>=2.0.0") "pbr>=3.0.0")))))))
     (propagated-inputs
-     `(("python-pbr" ,python-pbr)))
+     (list python-pbr))
     (home-page "https://github.com/dreamhost/stevedore")
     (synopsis "Manage dynamic plugins for Python applications")
     (description
@@ -352,19 +338,16 @@ extensions.")
             (substitute* "tempest_lib/tests/cli/test_execute.py"
               (("/bin/ls") (which "ls"))))))))
     (propagated-inputs
-      `(("python-fixtures" ,python-fixtures)
-        ("python-httplib2" ,python-httplib2)
-        ("python-iso8601" ,python-iso8601)
-        ("python-jsonschema" ,python-jsonschema)
-        ("python-oslo.log" ,python-oslo.log)
-        ("python-paramiko" ,python-paramiko)
-        ("python-pbr" ,python-pbr)
-        ("python-six" ,python-six)))
+      (list python-fixtures
+            python-httplib2
+            python-iso8601
+            python-jsonschema
+            python-oslo.log
+            python-paramiko
+            python-pbr
+            python-six))
     (native-inputs
-      `(("python-babel" ,python-babel)
-        ("python-mock" ,python-mock)
-        ("python-os-testr" ,python-os-testr)
-        ("python-oslotest" ,python-oslotest)))
+      (list python-babel python-mock python-os-testr python-oslotest))
     (home-page "https://www.openstack.org/")
     (synopsis "OpenStack functional testing library")
     (description
@@ -390,25 +373,25 @@ common features used in Tempest.")
          "0ymf7jxbq29fifyvkwhfiys1qvljqfxdw8ajwzwaf3yiqidgpxqd"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-debtcollector" ,python-debtcollector)
-       ("python-netaddr" ,python-netaddr)
-       ("python-oslo.i18n" ,python-oslo.i18n)
-       ("python-pbr" ,python-pbr)
-       ("python-rfc3986" ,python-rfc3986)
-       ("python-six" ,python-six)
-       ("python-stevedore" ,python-stevedore)
-       ("python-pyyaml" ,python-pyyaml)))
+     (list python-debtcollector
+           python-netaddr
+           python-oslo.i18n
+           python-pbr
+           python-rfc3986
+           python-six
+           python-stevedore
+           python-pyyaml))
     (native-inputs
-     `(("python-bandit" ,python-bandit)
-       ("python-coverage" ,python-coverage)
-       ("python-mock" ,python-mock)
-       ("python-openstackdocstheme" ,python-openstackdocstheme)
-       ("python-oslotest" ,python-oslotest)
-       ("python-reno" ,python-reno)
-       ("python-sphinx" ,python-sphinx)
-       ("python-testrepository" ,python-testrepository)
-       ("python-testscenarios" ,python-testscenarios)
-       ("python-testtools" ,python-testtools)))
+     (list python-bandit
+           python-coverage
+           python-mock
+           python-openstackdocstheme
+           python-oslotest
+           python-reno
+           python-sphinx
+           python-testrepository
+           python-testscenarios
+           python-testtools))
     (home-page "https://launchpad.net/oslo")
     (synopsis "Oslo Configuration API")
     (description
@@ -437,15 +420,15 @@ common features used in Tempest.")
                          "hacking>=3.0.1"))
                       #t)))))
     (propagated-inputs
-     `(("python-debtcollector" ,python-debtcollector)))
+     (list python-debtcollector))
     (native-inputs
-     `(("python-bandit" ,python-bandit)
-       ("python-coverage" ,python-coverage)
-       ("python-fixtures" ,python-fixtures)
-       ("python-hacking" ,python-hacking)
-       ("python-oslotest" ,python-oslotest)
-       ("python-pbr" ,python-pbr)
-       ("python-stestr" ,python-stestr)))
+     (list python-bandit
+           python-coverage
+           python-fixtures
+           python-hacking
+           python-oslotest
+           python-pbr
+           python-stestr))
     (home-page "https://launchpad.net/oslo")
     (synopsis "Oslo context library")
     (description
@@ -467,15 +450,14 @@ pipeline and used by various modules such as logging.")
          "0kjcdw4bk3mi4vqmqwhhq053kxbbbj05si6nwxd1pzx33z067ky3"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-babel" ,python-babel)
-       ("python-six" ,python-six)))
+     (list python-babel python-six))
     (native-inputs
-     `(("python-pbr" ,python-pbr)
-       ;; Tests
-       ("python-mock" ,python-mock)
-       ("python-mox3" ,python-mox3)
-       ("python-oslotest" ,python-oslotest)
-       ("python-testscenarios" ,python-testscenarios)))
+     (list python-pbr
+           ;; Tests
+           python-mock
+           python-mox3
+           python-oslotest
+           python-testscenarios))
     (home-page "https://launchpad.net/oslo")
     (synopsis "Oslo internationalization (i18n) library")
     (description
@@ -497,23 +479,20 @@ in an application or library.")
           "0h7hplf1h8k24v75m3mq1jlrl74x5ynyr4hwgffsg5campxnza4x"))))
   (build-system python-build-system)
   (propagated-inputs
-   `(("python-dateutil" ,python-dateutil)
-     ("python-debtcollector" ,python-debtcollector)
-     ("python-monotonic" ,python-monotonic)
-     ("python-oslo.config" ,python-oslo.config)
-     ("python-oslo.context" ,python-oslo.context)
-     ("python-oslo.i18n" ,python-oslo.i18n)
-     ("python-oslo.utils" ,python-oslo.utils)
-     ("python-oslo.serialization" ,python-oslo.serialization)
-     ("python-pbr" ,python-pbr)
-     ("python-pyinotify" ,python-pyinotify)
-     ("python-six" ,python-six)))
+   (list python-dateutil
+         python-debtcollector
+         python-monotonic
+         python-oslo.config
+         python-oslo.context
+         python-oslo.i18n
+         python-oslo.utils
+         python-oslo.serialization
+         python-pbr
+         python-pyinotify
+         python-six))
   (native-inputs
-    `(("python-mock" ,python-mock)
-      ("python-oslotest" ,python-oslotest)
-      ("python-subunit" ,python-subunit)
-      ("python-testrepository" ,python-testrepository)
-      ("python-testtools" ,python-testtools)))
+    (list python-mock python-oslotest python-subunit
+          python-testrepository python-testtools))
   (home-page "https://launchpad.net/oslo")
   (synopsis "Python logging library of the Oslo project")
   (description
@@ -535,17 +514,12 @@ handlers and support for context specific logging (like resource id’s etc).")
          "08bxkp98c617y58x630xq44iiffm7f0f3cwh6zbnlkgq0zgh7jk1"))))
     (build-system python-build-system)
     (propagated-inputs
-      `(("python-msgpack" ,python-msgpack)
-        ("python-netaddr" ,python-netaddr)
-        ("python-oslo.utils" ,python-oslo.utils)
-        ("python-six" ,python-six)
-        ("python-pytz" ,python-pytz)))
+      (list python-msgpack python-netaddr python-oslo.utils python-six
+            python-pytz))
     (native-inputs
-      `(("python-pbr" ,python-pbr)
-        ;; Tests.
-        ("python-mock" ,python-mock)
-        ("python-oslo.i18n" ,python-oslo.i18n)
-        ("python-oslotest" ,python-oslotest)))
+      (list python-pbr
+            ;; Tests.
+            python-mock python-oslo.i18n python-oslotest))
     (home-page "https://launchpad.net/oslo")
     (synopsis "Oslo serialization library")
     (description
@@ -572,10 +546,7 @@ in transmittable and storable formats, such as JSON and MessagePack.")
              ;; reno expects a git repo
              (invoke "git" "init"))))))
     (propagated-inputs
-      `(("python-dulwich" ,python-dulwich)
-        ("python-pbr" ,python-pbr)
-        ("python-pyyaml" ,python-pyyaml)
-        ("python-six" ,python-six)))
+      (list python-dulwich python-pbr python-pyyaml python-six))
     (native-inputs
       `(("python-testtools" ,python-testtools)
         ("python-testscenarios" ,python-testscenarios)
@@ -613,13 +584,10 @@ and building documentation from them.")
                 "hacking!=0.13.0,>=0.12.0"))
              #t)))))
     (propagated-inputs
-     `(("python-requests" ,python-requests)))
+     (list python-requests))
     (native-inputs
-     `(("python-hacking" ,python-hacking)
-       ("python-openstackdocstheme" ,python-openstackdocstheme)
-       ("python-pbr" ,python-pbr)
-       ("python-reno" ,python-reno)
-       ("python-sphinx" ,python-sphinx)))
+     (list python-hacking python-openstackdocstheme python-pbr
+           python-reno python-sphinx))
     (home-page "https://www.openstack.org/")
     (synopsis "OpenStack sphinx extensions and theme")
     (description "This package provides themes and extensions for Sphinx
@@ -642,10 +610,7 @@ documentation from the OpenStack project.")
      ;; The tests are disabled to avoid a circular dependency with oslo.config.
      `(#:tests? #f))
     (propagated-inputs
-     `(("python-fixtures" ,python-fixtures)
-       ("python-six" ,python-six)
-       ("python-subunit" ,python-subunit)
-       ("python-testtools" ,python-testtools)))
+     (list python-fixtures python-six python-subunit python-testtools))
     (home-page "https://launchpad.net/oslo")
     (synopsis "Oslo test framework")
     (description "The Oslo Test framework provides common fixtures, support
@@ -665,27 +630,27 @@ for debugging, and better support for mocking results.")
            "1ipjcgg9z697wmibhcbg5lqpk5gafakdx4qkff3w255zr0mvw04r"))))
     (build-system python-build-system)
     (propagated-inputs
-      `(("python-debtcollector" ,python-debtcollector)
-        ("python-oslo.i18n" ,python-oslo.i18n)
-        ("python-iso8601" ,python-iso8601)
-        ("python-monotonic" ,python-monotonic)
-        ("python-netaddr" ,python-netaddr)
-        ("python-netifaces" ,python-netifaces)
-        ("python-pyparsing" ,python-pyparsing)
-        ("python-pytz" ,python-pytz)
-        ("python-six" ,python-six)))
+      (list python-debtcollector
+            python-oslo.i18n
+            python-iso8601
+            python-monotonic
+            python-netaddr
+            python-netifaces
+            python-pyparsing
+            python-pytz
+            python-six))
     (native-inputs
-      `(("python-pbr" ,python-pbr)
-        ;; Tests.
-        ("python-bandit" ,python-bandit)
-        ("python-ddt" ,python-ddt)
-        ("python-fixtures" ,python-fixtures)
-        ("python-oslo.config" ,python-oslo.config)
-        ("python-oslotest" ,python-oslotest)
-        ("python-mock" ,python-mock)
-        ("python-testrepository" ,python-testrepository)
-        ("python-testscenarios" ,python-testscenarios)
-        ("python-testtools" ,python-testtools)))
+      (list python-pbr
+            ;; Tests.
+            python-bandit
+            python-ddt
+            python-fixtures
+            python-oslo.config
+            python-oslotest
+            python-mock
+            python-testrepository
+            python-testscenarios
+            python-testtools))
     (home-page "https://launchpad.net/oslo")
     (synopsis "Oslo utility library")
     (description
@@ -731,19 +696,19 @@ handling.")
        ("python-testtools" ,python-testtools)
        ("python-webob" ,python-webob)))
     (propagated-inputs
-     `(("python-babel" ,python-babel)
-       ("python-debtcollector" ,python-debtcollector)
-       ("python-iso8601" ,python-iso8601)
-       ("python-netaddr" ,python-netaddr)
-       ("python-oslo.config" ,python-oslo.config)
-       ("python-oslo.i18n" ,python-oslo.i18n)
-       ("python-oslo.serialization" ,python-oslo.serialization)
-       ("python-oslo.utils" ,python-oslo.utils)
-       ("python-pbr" ,python-pbr)
-       ("python-prettytable" ,python-prettytable)
-       ("python-requests" ,python-requests)
-       ("python-six" ,python-six)
-       ("python-stevedore" ,python-stevedore)))
+     (list python-babel
+           python-debtcollector
+           python-iso8601
+           python-netaddr
+           python-oslo.config
+           python-oslo.i18n
+           python-oslo.serialization
+           python-oslo.utils
+           python-pbr
+           python-prettytable
+           python-requests
+           python-six
+           python-stevedore))
     (home-page "https://www.openstack.org/")
     (synopsis "Client Library for OpenStack Identity")
     (description
@@ -768,20 +733,19 @@ LDAP.")
           "1j33l4z9vqh0scfncl4fxg01zr1hgqxhhai6gvcih1gccqm4nd7p"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pbr" ,python-pbr)
-       ("python-sphinx" ,python-sphinx)
-       ;; The folloing packages are needed for the tests.
-       ("python-coverage" ,python-coverage)
-       ("python-discover" ,python-discover)
-       ("python-hacking" ,python-hacking)
-       ("python-mock" ,python-mock)
-       ("python-oslosphinx" ,python-oslosphinx)
-       ("python-keystoneclient" ,python-keystoneclient)
-       ("python-testrepository" ,python-testrepository)
-       ("python-testtools" ,python-testtools)))
+     (list python-pbr
+           python-sphinx
+           ;; The folloing packages are needed for the tests.
+           python-coverage
+           python-discover
+           python-hacking
+           python-mock
+           python-oslosphinx
+           python-keystoneclient
+           python-testrepository
+           python-testtools))
     (propagated-inputs
-     `(("python-requests" ,python-requests)
-       ("python-six" ,python-six)))
+     (list python-requests python-six))
     (home-page "https://www.openstack.org/")
     (synopsis "OpenStack Object Storage API Client Library")
     (description
@@ -823,12 +787,11 @@ permanence.")
                          (list git openssh)))))
              #t)))))
     (native-inputs
-     `(("python-pbr" ,python-pbr)))
+     (list python-pbr))
     (propagated-inputs
-     `(("python-requests" ,python-requests)))
+     (list python-requests))
     (inputs
-     `(("git" ,git)
-       ("openssh" ,openssh)))
+     (list git openssh))
     (home-page "https://docs.openstack.org/infra/git-review/")
     (synopsis "Command-line tool for Gerrit")
     (description

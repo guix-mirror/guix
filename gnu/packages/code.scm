@@ -116,8 +116,7 @@ a major mode for Emacs for examining the flowcharts that it produces.")
                 "0lr0l9kj2w3jilz9h9y4np9pf9i9ccpy6331lanki2fnz4z8ldvd"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("texinfo" ,texinfo)
-       ("autogen" ,autogen)))
+     (list texinfo autogen))
     (home-page "https://www.gnu.org/software/complexity/")
     (synopsis "Analyze complexity of C functions")
     (description
@@ -182,7 +181,7 @@ highlighting your own code that seemed comprehensible when you wrote it.")
              (wrap-program
                (string-append (assoc-ref outputs "out")
                               "/share/gtags/script/pygments_parser.py")
-               `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH"))))))
+               `("GUIX_PYTHONPATH" ":" prefix (,(getenv "GUIX_PYTHONPATH"))))))
         (add-after 'install 'post-install
           (lambda* (#:key outputs #:allow-other-keys)
             ;; Install the plugin files in the right place.
@@ -256,7 +255,7 @@ around in a large, deeply nested project.")
 
         #:make-flags (list (string-append "PREFIX="
                                           (assoc-ref %outputs "out")))))
-    (inputs `(("perl" ,perl)))
+    (inputs (list perl))
     (home-page "https://dwheeler.com/sloccount/")
     (synopsis "Count physical source lines of code (SLOC)")
     (description
@@ -282,12 +281,12 @@ COCOMO model or user-provided parameters.")
         (base32 "0ic9q6qqw5f1wafp9lpmhr0miasbdb9zr59c0jlymnzffdmnliyc"))))
     (build-system gnu-build-system)
     (inputs
-     `(("coreutils" ,coreutils)
-       ("perl" ,perl)
-       ("perl-algorithm-diff" ,perl-algorithm-diff)
-       ("perl-digest-md5" ,perl-digest-md5)
-       ("perl-parallel-forkmanager" ,perl-parallel-forkmanager)
-       ("perl-regexp-common" ,perl-regexp-common)))
+     (list coreutils
+           perl
+           perl-algorithm-diff
+           perl-digest-md5
+           perl-parallel-forkmanager
+           perl-regexp-common))
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (delete 'configure)   ; nothing to configure
@@ -335,12 +334,14 @@ cloc can handle a greater variety of programming languages.")
                (base32
                 "0w1icjqd8hd45rn1y6nbfznk1a6ip54whwbfbhxp7ws2hn3ilqnr"))))
     (build-system gnu-build-system)
+    (arguments
+     ;; Required since GCC 10, see:
+     ;; https://gcc.gnu.org/gcc-10/porting_to.html.
+     `(#:configure-flags (list "CFLAGS=-fcommon")))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("pcre" ,pcre)
-       ("xz" ,xz)
-       ("zlib" ,zlib)))
+     (list pcre xz zlib))
     (home-page "https://geoff.greer.fm/ag/")
     (synopsis "Fast code searching tool")
     (description
@@ -422,16 +423,9 @@ features that are not supported by the standard @code{stdio} implementation.")
                       (substitute* "Tmain/utils.sh"
                         (("/bin/echo") (which "echo"))))))))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("packcc" ,packcc)
-       ("perl" ,perl)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf automake packcc perl pkg-config))
     (inputs
-     `(("jansson" ,jansson)
-       ("libseccomp" ,libseccomp)
-       ("libxml2" ,libxml2)
-       ("libyaml" ,libyaml)))
+     (list jansson libseccomp libxml2 libyaml))
     (home-page "https://ctags.io/")
     (synopsis "Generate tag files for source code")
     (description
@@ -487,9 +481,8 @@ expressions, and its ability to generate emacs-style TAGS files.")
             #t)))))
     (home-page "https://github.com/cameronwhite/withershins")
     (inputs
-     `(("libiberty" ,libiberty)
-       ("binutils" ,binutils) ;for libbfd
-       ("zlib" ,zlib)))
+     (list libiberty binutils ;for libbfd
+           zlib))
     (synopsis "C++11 library for generating stack traces")
     (description
      "Withershins is a simple cross-platform C++11 library for generating
@@ -534,9 +527,7 @@ stack traces.")
                (wrap-program (string-append out "/bin/geninfo")
                  `("PERL5LIB" ":" prefix (,(getenv "PERL5LIB")))))
              #t)))))
-    (inputs `(("perl" ,perl)
-              ("perl-io-compress" ,perl-io-compress)
-              ("perl-json" ,perl-json)))
+    (inputs (list perl perl-io-compress perl-json))
     (home-page "http://ltp.sourceforge.net/coverage/lcov.php")
     (synopsis "Code coverage tool that enhances GNU gcov")
     (description "LCOV is an extension of @command{gcov}, a tool part of the
@@ -594,13 +585,9 @@ results and determine build stability.")
                (("/bin/(bash|sh)" shell)
                 (string-append (assoc-ref inputs "bash") shell)))))))))
     (inputs
-     `(("curl" ,curl)
-       ("elfutils" ,elfutils)
-       ("libelf" ,libelf)
-       ("openssl" ,openssl)
-       ("zlib" ,zlib)))
+     (list curl elfutils libelf openssl zlib))
     (native-inputs
-     `(("python" ,python)))
+     (list python))
     (home-page "https://github.com/SimonKagstrom/kcov")
     (synopsis "Code coverage tester for compiled languages, Python and Bash")
     (description "Kcov is a FreeBSD/Linux/OSX code coverage tester for compiled
@@ -645,14 +632,14 @@ possible to collect coverage information without special compiler switches.")
          "-DBUILD_TESTING=FALSE")
        #:tests? #f))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("bash-completion" ,bash-completion)
-       ("clang" ,clang)
-       ("llvm" ,llvm)
-       ("lua" ,lua)
-       ("rct" ,rct)
-       ("selene" ,selene)))
+     (list bash-completion
+           clang
+           llvm
+           lua
+           rct
+           selene))
     (home-page "https://github.com/Andersbakken/rtags")
     (synopsis "Indexer for the C language family with Emacs integration")
     (description
@@ -678,8 +665,7 @@ importantly we give you proper follow-symbol and find-references support.")
         (base32 "1f9v5s0viq4yc9iv6701h3pv7j21zz1ckl37lpp9hsnliiizv03p"))))
     (build-system trivial-build-system)
     (native-inputs
-     `(("bash" ,bash)
-       ("perl" ,perl)))
+     (list bash perl))
     (arguments
      `(#:modules ((guix build utils))
        #:builder
@@ -700,7 +686,7 @@ importantly we give you proper follow-symbol and find-references support.")
            (substitute* "colormake"
              (("colormake\\.pl") (string-append bin "/colormake.pl"))
              (("/bin/bash")
-              (string-append (assoc-ref %build-inputs "bash") "/bin/sh")))
+              (search-input-file %build-inputs "/bin/sh")))
            (install-file "colormake.1" (string-append doc "/man/man1"))
            (install-files '("AUTHORS" "BUGS" "ChangeLog" "README") doc)
            (install-files '("colormake" "colormake-short" "clmake"
@@ -734,7 +720,7 @@ produce colored output.")
        (modify-phases %standard-phases
          (delete 'configure))))
     (native-inputs
-     `(("graphviz" ,graphviz)))
+     (list graphviz))
     (home-page "https://github.com/lindenb/makefile2graph")
     (synopsis "Creates a graph of dependencies from GNU Make")
     (description
@@ -881,8 +867,7 @@ the C, C++, C++/CLI, Objective‑C, C#, and Java programming languages.")
                         '("config.sub" "config.guess")))
             #t)))))
    (native-inputs
-    `(("texinfo" ,texinfo)
-      ("automake" ,automake))) ; For up to date 'config.guess' and 'config.sub'.
+    (list texinfo automake)) ; For up to date 'config.guess' and 'config.sub'.
    (synopsis "Code reformatter")
    (description
     "Indent is a program that makes source code easier to read by
@@ -951,7 +936,7 @@ source and header amalgamation in projects.")
        (sha256
         (base32 "0ngiv4aj3rr35k3q3wjx0y19gh7i1ydqa0cqip6sjwd8fph5ll65"))))
     (build-system gnu-build-system)
-    (inputs `(("ncurses" ,ncurses)))
+    (inputs (list ncurses))
     (arguments
      `(#:configure-flags
        ;; Specify the correct ncurses directory to prevent incorrect fallback

@@ -51,11 +51,10 @@
                 "0n2k4brd264jg9p6918x7dnb2iimpzjh8q3v1fws58450xbgnkqc"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (propagated-inputs
      ;; Required by 'liblcf.pc'.
-     `(("expat" ,expat)
-       ("icu" ,icu4c)))
+     (list expat icu4c))
     (home-page "https://easyrpg.org/")
     (synopsis "Library to handle RPG Maker 2000 and 2003 game data")
     (description
@@ -91,23 +90,23 @@ It can read and write LCF and XML files.")
        (list (string-append "--with-bash-completion-dir="
                             %output "/etc/bash_completion.d/"))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("freetype" ,freetype)
-       ("harfbuzz" ,harfbuzz)
-       ("liblcf" ,liblcf)
-       ("libpng" ,libpng)
-       ("libsndfile" ,libsndfile)
-       ("libvorbis" ,libvorbis)
-       ("libxmp" ,libxmp)
-       ("mpg123" ,mpg123)
-       ("opusfile" ,opusfile)
-       ("pixman" ,pixman)
-       ("sdl2-mixer" ,sdl2-mixer)
-       ("sdl2" ,sdl2)
-       ("speexdsp" ,speexdsp)
-       ("wildmidi" ,wildmidi)
-       ("zlib" ,zlib)))
+     (list freetype
+           harfbuzz
+           liblcf
+           libpng
+           libsndfile
+           libvorbis
+           libxmp
+           mpg123
+           opusfile
+           pixman
+           sdl2-mixer
+           sdl2
+           speexdsp
+           wildmidi
+           zlib))
     (home-page "https://easyrpg.org/")
     (synopsis "Play RPG Maker 2000 and 2003 games")
     (description

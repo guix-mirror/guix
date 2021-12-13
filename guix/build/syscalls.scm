@@ -125,6 +125,8 @@
             with-file-lock
             with-file-lock/no-wait
 
+            set-child-subreaper!
+
             set-thread-name
             thread-name
 
@@ -1433,6 +1435,11 @@ handler if the lock is already held by another process."
 
 (define PR_SET_NAME 15)                           ;<linux/prctl.h>
 (define PR_GET_NAME 16)
+(define PR_SET_CHILD_SUBREAPER 36)
+
+(define (set-child-subreaper!)
+  "Set the CHILD_SUBREAPER capability for the current process."
+  (%prctl PR_SET_CHILD_SUBREAPER 1 0 0 0))
 
 (define %max-thread-name-length
   ;; Maximum length in bytes of the process name, including the terminating

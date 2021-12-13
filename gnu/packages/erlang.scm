@@ -69,9 +69,7 @@
             (base32
              "1c9ccp93pmm54mmvpiyrmj8v00pq11a60c4xv220k97i965zkwsg"))))))
     (inputs
-     `(("ncurses" ,ncurses)
-       ("openssl" ,openssl)
-       ("wxwidgets" ,wxwidgets)))
+     (list ncurses openssl wxwidgets))
     (propagated-inputs
      `(("fontconfig" ,fontconfig)
        ("glu" ,glu)

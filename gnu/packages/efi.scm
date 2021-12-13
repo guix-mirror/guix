@@ -143,12 +143,12 @@ information.")
              (setenv "CC" "gcc")
              #t)))))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("bash" ,bash)
-       ("help2man" ,help2man)
-       ("pkg-config" ,pkg-config)
-       ("util-linux" ,util-linux))) ; getopt
+     (list autoconf
+           automake
+           bash
+           help2man
+           pkg-config
+           util-linux)) ; getopt
     (inputs
      `(("gnu-efi" ,gnu-efi)
        ("libuuid" ,util-linux "lib")
@@ -202,13 +202,9 @@ information.")
              #t))
          (delete 'configure))))
     (native-inputs
-     `(("help2man" ,help2man)
-       ("perl" ,perl)
-       ("perl-file-slurp" ,perl-file-slurp)
-       ("sbsigntools" ,sbsigntools)))
+     (list help2man perl perl-file-slurp sbsigntools))
     (inputs
-     `(("gnu-efi" ,gnu-efi)
-       ("openssl" ,openssl)))
+     (list gnu-efi openssl))
     (synopsis "EFI tools (key management, variable management)")
     (description "This package provides EFI tools for EFI key management
 and EFI variable management.")
@@ -257,7 +253,7 @@ and EFI variable management.")
                                           "/libexec"))
              #t)))))
     (inputs
-     `(("gnu-efi" ,gnu-efi)))
+     (list gnu-efi))
     (synopsis "Minimal Linux loader for UEFI")
     (description "This package provides a minimal Linux loader as an UEFI
 program.")

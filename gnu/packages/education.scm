@@ -101,10 +101,9 @@
          (add-after 'set-paths 'set-sdl-paths
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "CPATH"
-                     (string-append (assoc-ref inputs "sdl-mixer")
-                                    "/include/SDL:"
-                                    (or (getenv "CPATH") "")))
-             #t)))))
+                     (string-append
+                      (search-input-directory inputs "include/SDL")
+                      ":" (or (getenv "CPATH") ""))))))))
     (inputs
      `(("gtk+" ,gtk+-2)
        ("librsvg" ,librsvg)
@@ -157,8 +156,7 @@ of categories with some of the activities available in that category.
          (add-before 'check 'start-xorg-server
            (lambda* (#:key inputs #:allow-other-keys)
              ;; The test suite requires a running X server.
-             (system (string-append (assoc-ref inputs "xorg-server")
-                                    "/bin/Xvfb :1 &"))
+             (system "Xvfb :1 &")
              (setenv "DISPLAY" ":1")
              ;; The test suite wants to write to /homeless-shelter
              (setenv "HOME" (getcwd))
@@ -243,8 +241,7 @@ Currently available boards include:
                  (with-directory-excursion bin
                    (rename-file "v1" "gotypist"))))))))
       (native-inputs
-       `(("go-github-com-gizak-termui" ,go-github-com-gizak-termui)
-         ("go-github-com-stretchr-testify" ,go-github-com-stretchr-testify)))
+       (list go-github-com-gizak-termui go-github-com-stretchr-testify))
       (home-page "https://github.com/KappaDistributive/gotypist")
       (synopsis "Simple typing trainer for text terminals")
       (description
@@ -299,8 +296,7 @@ frequently used words in American English.")
                ;; Recreate Makefile
                (invoke "qmake")))))))
     (inputs
-     `(("qtbase" ,qtbase-5)
-       ("qtmultimedia" ,qtmultimedia)))
+     (list qtbase-5 qtmultimedia))
     (home-page "https://www.tipp10.com/")
     (synopsis "Touch typing tutor")
     (description "Tipp10 is a touch typing tutor.  The ingenious thing about
@@ -339,17 +335,16 @@ easy.")
            ;; Replace the sole minified file in the package.
            (with-directory-excursion (string-append share "/src")
              (delete-file "FileSaver.min.js")
-             (symlink (string-append (assoc-ref %build-inputs "js-filesaver")
-                                     "/share/javascript/FileSaver.min.js")
+             (symlink (search-input-file %build-inputs
+                                         "/share/javascript/FileSaver.min.js")
                       "FileSaver.min.js"))
            ;; Create a "snap" executable.
            (let* ((bin (string-append out "/bin"))
                   (script (string-append bin "/snap"))
                   (snap (string-append share "/snap.html"))
-                  (bash (string-append (assoc-ref %build-inputs "bash")
-                                       "/bin/sh"))
-                  (xdg-open (string-append (assoc-ref %build-inputs "xdg-utils")
-                                           "/bin/xdg-open")))
+                  (bash (search-input-file %build-inputs "/bin/sh"))
+                  (xdg-open (search-input-file %build-inputs
+                                               "/bin/xdg-open")))
              (mkdir-p bin)
              (call-with-output-file script
                (lambda (port)
@@ -431,9 +426,9 @@ to open the application in a web browser, for offline usage.")
                            out)))
                #t))))))
     (native-inputs
-     `(("unzip" ,unzip)))
+     (list unzip))
     (inputs
-     `(("python-pyqt" ,python-pyqt)))
+     (list python-pyqt))
     (synopsis "School tools for physically disabled children")
     (description "ToutEnClic is intended to facilitate the schooling
 of physically disabled children in ordinary schools.  It is both
@@ -498,8 +493,7 @@ specialized device.")
                #t)))
          (add-after 'install 'create-executable
            (lambda* (#:key outputs inputs #:allow-other-keys)
-             (let* ((python (string-append (assoc-ref inputs "python")
-                                           "/bin/python"))
+             (let* ((python (search-input-file inputs "/bin/python"))
                     (out (assoc-ref outputs "out"))
                     (bin (string-append out "/bin"))
                     (executable (string-append bin "/childsplay")))
@@ -567,8 +561,7 @@ letters of the alphabet, spelling, eye-hand coordination, etc.")
            #t))))
     (build-system python-build-system)
     (inputs
-     `(("python2-pygame" ,python2-pygame)
-       ("python2-pygtk" ,python2-pygtk)))
+     (list python2-pygame python2-pygtk))
     (arguments
      `(#:tests? #f                      ;no test
        #:python ,python-2
@@ -592,10 +585,9 @@ letters of the alphabet, spelling, eye-hand coordination, etc.")
                ;; Install the launcher.
                (let* ((bin (string-append out "/bin"))
                       (script (string-append bin "/omnitux"))
-                      (bash (string-append (assoc-ref %build-inputs "bash")
-                                           "/bin/bash"))
-                      (python (string-append (assoc-ref %build-inputs "python")
-                                             "/bin/python2")))
+                      (bash (search-input-file %build-inputs "/bin/bash"))
+                      (python (search-input-file %build-inputs
+                                                 "/bin/python2")))
                  (mkdir-p bin)
                  (with-output-to-file script
                    (lambda ()
@@ -677,7 +669,7 @@ Portuguese, Spanish and Italian.")
          (replace 'configure
            (lambda _ (invoke "qmake" "fet.pro"))))))
     (inputs
-     `(("qtbase" ,qtbase)))
+     (list qtbase))
     (home-page "https://www.lalescu.ro/liviu/fet/")
     (synopsis "Timetabling software")
     (description
@@ -703,14 +695,9 @@ hours.")
          (base32 "0z6c3lqikk50mkz3ipm93l48qj7b98lxyip8y6ndg9y9k0z0n878"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+     (list intltool pkg-config))
     (inputs
-     `(("cairo" ,cairo)
-       ("curl" ,curl)
-       ("gtk+" ,gtk+)
-       ("gtkdatabox" ,gtkdatabox)
-       ("pango" ,pango)))
+     (list cairo curl gtk+ gtkdatabox pango))
     (home-page "https://klavaro.sourceforge.io/en/index.html")
     (synopsis "Touch typing tutor")
     (description
@@ -731,32 +718,30 @@ language and very flexible regarding to new or unknown keyboard layouts.")
          (base32 "10lm2p8w26c9n6lhvw3301myfss0dq7hl7rawzb3hsy1lqvmvdib"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)
-       ("pkg-config" ,pkg-config)))
+     (list extra-cmake-modules kdoctools pkg-config))
     (inputs
-     `(("kcmutils" ,kcmutils)
-       ("kcompletion" ,kcompletion)
-       ("kconfig" ,kconfig)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kdeclarative" ,kdeclarative)
-       ("ki18n" ,ki18n)
-       ("kiconthemes" ,kiconthemes)
-       ("kitemviews" ,kitemviews)
-       ("kqtquickcharts" ,kqtquickcharts)
-       ("ktextwidgets" ,ktextwidgets)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kwindowsystem" ,kwindowsystem)
-       ("kxmlgui" ,kxmlgui)
-       ("libxcb" ,libxcb)
-       ("libxkbfile" ,libxkbfile)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)
-       ("qtgraphicaleffects" ,qtgraphicaleffects)
-       ("qtquickcontrols2" ,qtquickcontrols2)
-       ("qtx11extras" ,qtx11extras)
-       ("qtxmlpatterns" ,qtxmlpatterns)))
+     (list kcmutils
+           kcompletion
+           kconfig
+           kconfigwidgets
+           kcoreaddons
+           kdeclarative
+           ki18n
+           kiconthemes
+           kitemviews
+           kqtquickcharts
+           ktextwidgets
+           kwidgetsaddons
+           kwindowsystem
+           kxmlgui
+           libxcb
+           libxkbfile
+           qtbase-5
+           qtdeclarative
+           qtgraphicaleffects
+           qtquickcontrols2
+           qtx11extras
+           qtxmlpatterns))
     (home-page "https://edu.kde.org/ktouch/")
     (synopsis "Touch typing tutor")
     (description
@@ -786,11 +771,10 @@ adjust the level of difficulty.")
           (base32 "0dz63m9p4ggzw0yb309qmgnl664qb5q268vaa3i9v0i8qsl66d78"))))
       (build-system gnu-build-system)
       (native-inputs
-       `(("gettext" ,gettext-minimal)   ; for msgfmt
-         ("pkg-config" ,pkg-config)))
+       (list gettext-minimal ; for msgfmt
+             pkg-config))
       (inputs
-       `(("libxml2" ,libxml2)
-         ("gtk+" ,gtk+)))
+       (list libxml2 gtk+))
       (home-page "https://kanatest.sourceforge.io/")
       (synopsis "Hiragana and Katakana simple flashcard tool")
       (description "Kanatest is a Japanese kana (Hiragana and Katakana) simple
@@ -854,8 +838,8 @@ stored and user can review his performance in any time.")
                                     (string-prefix? "python-" label)))
                                  inputs)))
                    (qtwebengineprocess
-                    (string-append (assoc-ref inputs "qtwebengine")
-                                   "/lib/qt5/libexec/QtWebEngineProcess")))
+                    (search-input-file inputs
+                                       "lib/qt5/libexec/QtWebEngineProcess")))
                ;; The program fails to find the QtWebEngineProcess program, so
                ;; we set QTWEBENGINEPROCESS_PATH to help it.  PYTHONPATH is
                ;; wrapped to avoid declaring Python libraries as propagated
@@ -867,11 +851,11 @@ stored and user can review his performance in any time.")
                              `("PATH" prefix (,(string-append
                                                 (assoc-ref inputs "mpv")
                                                 "/bin")))
-                             `("PYTHONPATH" = ,site-packages)))
+                             `("GUIX_PYTHONPATH" = ,site-packages)))
                          (find-files bin ".")))
              #t)))))
     (native-inputs
-     `(("xdg-utils" ,xdg-utils)))
+     (list xdg-utils))
     (inputs
      `(("lame" ,lame)
        ("mpv" ,mpv)
@@ -925,8 +909,13 @@ endless.  For example:
        (file-name (git-file-name name version))
        (sha256
         (base32 "13q02xpmps9qg8zrzzy2gzv4a6afgi28lxk4z242j780v0gphchp"))
-       (patches
-        (search-patches "t4k-common-libpng16.patch"))))
+       (patches (search-patches "t4k-common-libpng16.patch"))
+       (modules '((guix build utils)))
+       (snippet
+        `(begin
+           (substitute* "src/t4k_common.h"
+             (("char wrapped_lines") "extern char wrapped_lines"))
+           #t))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ;FIXME: cannot find how to run tests
@@ -934,9 +923,10 @@ endless.  For example:
        (modify-phases %standard-phases
          (add-after 'set-paths 'set-sdl-paths
            (lambda* (#:key inputs #:allow-other-keys)
-             (setenv "CPATH" (string-append (assoc-ref inputs "sdl")
-                                            "/include/SDL:"
-                                            (or (getenv "CPATH") "")))))
+             (setenv "CPATH"
+                     (string-append
+                      (search-input-directory inputs "/include/SDL")
+                      ":" (or (getenv "CPATH") "")))))
          (add-after 'unpack 'fix-andika-font-path
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "src/t4k_sdl.c"
@@ -945,7 +935,7 @@ endless.  For example:
                                "/share/fonts/truetype")))
              #t)))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
      `(("font-andika" ,font-sil-andika)
        ("libpng" ,libpng)
@@ -975,6 +965,9 @@ TuxMath and TuxType.")
        ;; Unbundle fonts.
        (snippet
         `(begin
+           ;; Remove duplicate definition.
+           (substitute* "src/menu_lan.c"
+             (("lan_player_type.*MAX_CLIENTS\\];") ""))
            (for-each delete-file (find-files "data/fonts" "\\.ttf$"))
            #t))))
     (build-system gnu-build-system)
@@ -985,10 +978,10 @@ TuxMath and TuxType.")
          (add-after 'set-paths 'set-sdl-paths
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "CPATH"
-                     (string-append (assoc-ref inputs "sdl")
-                                    "/include/SDL:"
-                                    (or (getenv "CPATH") "")))
-             #t))
+                     (string-append
+                      (search-input-directory inputs "/include/SDL")
+                      ":"
+                      (or (getenv "CPATH") "")))))
          (add-after 'install 'install-desktop-file
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -1000,7 +993,7 @@ TuxMath and TuxType.")
                                      "tuxmath\\.(png|ico|svg)$"))
                #t))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
      `(("librsvg" ,librsvg)
        ("libxml2" ,libxml2)
@@ -1034,9 +1027,9 @@ floating through space.")
          "0psbdzirazfnn02hp3gsx7xxss9f1brv4ywp6a15ihvggjki1rxb"))))
     (build-system gnu-build-system)
     (native-inputs ; Required for building docs
-     `(("perl" ,perl)))
+     (list perl))
     (inputs
-     `(("zlib" ,zlib)))
+     (list zlib))
     (synopsis "C library for accessing Japanese CD-ROM books")
     (description "The EB library is a library for accessing CD-ROM
 books, which are a common way to distribute electronic dictionaries in
@@ -1063,16 +1056,16 @@ formats.")
     (arguments
      '(#:tests? #f)) ; no test target
     (native-inputs
-     `(("qttools", qttools)))
+     (list qttools))
     (inputs
-     `(("libeb" ,libeb)
-       ("qtbase" ,qtbase-5)
-       ("qtmultimedia" ,qtmultimedia)
-       ("qtquickcontrols2" ,qtquickcontrols2)
-       ("qtdeclarative" ,qtdeclarative)
-       ("qtwebchannel" ,qtwebchannel)
-       ("qtwebengine" ,qtwebengine)
-       ("zlib" ,zlib)))
+     (list libeb
+           qtbase-5
+           qtmultimedia
+           qtquickcontrols2
+           qtdeclarative
+           qtwebchannel
+           qtwebengine
+           zlib))
     (synopsis "EPWING dictionary reader")
     (description "qolibri is a dictionary viewer for the EPWING dictionary
 format.  Most monolingual Japanese dictionaries can only be found in the
@@ -1096,16 +1089,14 @@ EPWING format.")
     (arguments
      `(#:configure-flags (list "--enable-gui=yes" "-with-readline=yes")))
     (native-inputs
-     `(("flex" ,flex)
-       ("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+     (list flex intltool pkg-config))
     (inputs
-     `(("glib" ,glib)
-       ("gtk+" ,gtk+)
-       ("libglade" ,libglade)
-       ("ncurses" ,ncurses)
-       ("pango" ,pango)
-       ("readline" ,readline)))
+     (list glib
+           gtk+
+           libglade
+           ncurses
+           pango
+           readline))
     (home-page "https://www.gnu.org/software/mdk/manual/")
     (synopsis "Virtual development environment for Knuth's MIX")
     (description

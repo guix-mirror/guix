@@ -127,7 +127,7 @@
                ("freetype" ,freetype)
                ("bzip2" ,bzip2)
                ("xz" ,xz)))
-     (native-inputs `(("pkg-config" ,pkg-config)))
+     (native-inputs (list pkg-config))
      (outputs '("out"
                 "doc"))                 ; 26 MiB of HTML documentation
      (home-page "https://www.imagemagick.org/")
@@ -175,8 +175,8 @@ text, lines, polygons, ellipses and Bézier curves.")
         (base32
          "0n9afy1z5bhf9phrbahnkwhgcmijn8jggpbzwrivw1zhliliiy68"))))
     (build-system perl-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)))
-    (inputs `(("imagemagick" ,imagemagick)))
+    (native-inputs (list pkg-config))
+    (inputs (list imagemagick))
     (arguments
      `(#:tests? #f ;;Failed 2/23 test programs. 2/353 subtests failed.
        #:phases
@@ -235,12 +235,12 @@ script.")
              "--with-quantum-depth=16" ; required by Octave
              "--enable-quantum-library-names"
              (string-append "--with-gs-font-dir="
-                            (assoc-ref %build-inputs "gs-fonts")
+                            (assoc-ref %build-inputs "font-ghostscript")
                             "/share/fonts/type1/ghostscript"))))
     (inputs
      `(("graphviz" ,graphviz)
        ("ghostscript" ,ghostscript)
-       ("gs-fonts" ,gs-fonts)
+       ("font-ghostscript" ,font-ghostscript)
        ("lcms" ,lcms)
        ("libx11" ,libx11)
        ("libxml2" ,libxml2)
@@ -253,7 +253,7 @@ script.")
        ("xz" ,xz)
        ("zlib" ,zlib)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (outputs '("out"                  ; 13 MiB
                "doc"))                ; ~7 MiB
     (home-page "http://www.graphicsmagick.org")

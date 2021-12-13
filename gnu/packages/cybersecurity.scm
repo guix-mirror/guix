@@ -44,7 +44,7 @@
         (base32 "08ms7x4af07970ij9899l75sghnxsa7xyx73gkn6gv0l05p1hqfw"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-capstone" ,python-capstone)))
+     (list python-capstone))
     (home-page "http://shell-storm.org/project/ROPgadget/")
     (synopsis "Semiautomatic return oriented programming")
     (description
@@ -68,23 +68,22 @@ chains of gadgets to execute system calls.")
     (arguments
      '(#:tests? #f))                 ;XXX: needs a specific version of unicorn
     (propagated-inputs
-     `(("capstone" ,capstone)
-       ("python-dateutil" ,python-dateutil)
-       ("python-intervaltree" ,python-intervaltree)
-       ("python-mako" ,python-mako)
-       ("python-packaging" ,python-packaging)
-       ("python-paramiko" ,python-paramiko)
-       ("python-psutil" ,python-psutil)
-       ("python-pyelftools" ,python-pyelftools)
-       ("python-pygments" ,python-pygments)
-       ("python-pyserial" ,python-pyserial)
-       ("python-pysocks" ,python-pysocks)
-       ("python-requests" ,python-requests)
-       ("ropgadget" ,ropgadget)
-       ("python-six" ,python-six)
-       ("python-sortedcontainers"
-        ,python-sortedcontainers)
-       ("unicorn" ,unicorn)))
+     (list capstone
+           python-dateutil
+           python-intervaltree
+           python-mako
+           python-packaging
+           python-paramiko
+           python-psutil
+           python-pyelftools
+           python-pygments
+           python-pyserial
+           python-pysocks
+           python-requests
+           ropgadget
+           python-six
+           python-sortedcontainers
+           unicorn))
     (home-page "https://github.com/Gallopsled/pwntools")
     (synopsis
      "Capture-the-flag (CTF) framework and exploit development library")

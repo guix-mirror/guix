@@ -4,7 +4,7 @@
 ;;; Copyright © 2016, 2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2019, 2020, 2021 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2019 Carl Dong <contact@carldong.me>
 ;;; Copyright © 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
@@ -153,12 +153,6 @@ base compiler and using LIBC (which may be either a libc package or #f.)"
                                "--disable-decimal-float" ;would need libc
                                "--disable-libcilkrts"
 
-                              ,@(if (string-prefix? "powerpc64le-" target)
-                                   ;; On POWER9 (little endian) glibc needs
-                                   ;; the 128-bit long double type.
-                                   '("--with-long-double-128")
-                                   '())
-
                                ;; When target is any OS other than 'none' these
                                ;; libraries will fail if there is no libc
                                ;; present. See
@@ -243,6 +237,9 @@ target that libc."
         (append
          (origin-patches (package-source xgcc))
          (append (cond
+                  ((version>=? (package-version xgcc) "10.0")
+                   (search-patches "gcc-10-cross-environment-variables.patch"
+                                   "gcc-cross-gxx-include-dir.patch"))
                   ((version>=? (package-version xgcc) "8.0")
                    (search-patches "gcc-8-cross-environment-variables.patch"))
                   ((version>=? (package-version xgcc) "6.0")
@@ -341,15 +338,18 @@ target that libc."
            `(#:implicit-cross-inputs? #f
              ,@(package-arguments linux-headers))
          ((#:phases phases)
-          `(alist-replace
-            'build
-            (lambda _
-              (setenv "ARCH" ,(system->linux-architecture target))
-              (format #t "`ARCH' set to `~a' (cross compiling)~%" (getenv "ARCH"))
+          `(modify-phases ,phases
+             (replace 'build
+               (lambda _
+                 (setenv "ARCH" ,(system->linux-architecture target))
+                 (format #t "`ARCH' set to `~a' (cross compiling)~%"
+                         (getenv "ARCH"))
 
-              (invoke "make" ,(system->defconfig target))
-              (invoke "make" "mrproper" "headers_check"))
-            ,phases))))
+                 (invoke "make" ,(system->defconfig target))
+                 (invoke "make" "mrproper"
+                         ,@(if (version>=? (package-version linux-headers) "5.3")
+                               '("headers")
+                               '("headers_check")))))))))
       (native-inputs `(("cross-gcc" ,xgcc)
                        ("cross-binutils" ,xbinutils)
                        ,@(package-native-inputs linux-headers)))))
@@ -505,7 +505,7 @@ and the cross tool chain."
                ,@(package-arguments libc))
            ((#:configure-flags flags)
             `(cons ,(string-append "--host=" target)
-                   ,(if (hurd-triplet? target)
+                   ,(if (target-hurd? target)
                         `(cons "--disable-werror" ,flags)
                         flags)))
            ((#:phases phases)
@@ -519,7 +519,7 @@ and the cross tool chain."
                      (setenv "CROSS_LIBRARY_PATH"
                              (string-append kernel "/lib")) ; for Hurd's libihash
                      #t)))
-               ,@(if (hurd-triplet? target)
+               ,@(if (target-hurd? target)
                      '((add-after 'install 'augment-libc.so
                          (lambda* (#:key outputs #:allow-other-keys)
                            (let* ((out (assoc-ref outputs "out")))
@@ -527,35 +527,16 @@ and the cross tool chain."
                                (("/[^ ]+/lib/libc.so.0.3")
                                 (string-append out "/lib/libc.so.0.3"
                                                " libmachuser.so libhurduser.so"))))
-                           #t))
-                       ;; TODO: move to glibc in the next rebuild cycle
-                       (add-after 'unpack 'patch-libc/hurd
-                         (lambda* (#:key inputs #:allow-other-keys)
-                           (for-each
-                            (lambda (name)
-                              (let ((patch (assoc-ref inputs name)))
-                                (invoke "patch" "-p1" "--force" "-i" patch)))
-                            '("hurd-mach-print.patch"
-                              "hurd-gettyent.patch")))))
+                           #t)))
                      '())))))
 
         ;; Shadow the native "kernel-headers" because glibc's recipe expects the
         ;; "kernel-headers" input to point to the right thing.
         (propagated-inputs `(("kernel-headers" ,xheaders)))
 
-        ;; FIXME: 'static-bash' should really be an input, not a native input, but
-        ;; to do that will require building an intermediate cross libc.
-        (inputs (if (hurd-triplet? target)
-                    `(;; TODO: move to glibc in the next rebuild cycle
-                      ("hurd-mach-print.patch"
-                       ,(search-patch "glibc-hurd-mach-print.patch"))
-                      ("hurd-gettyent.patch"
-                       ,(search-patch "glibc-hurd-gettyent.patch")))
-                    '()))
-
         (native-inputs `(("cross-gcc" ,xgcc)
                          ("cross-binutils" ,xbinutils)
-                         ,@(if (hurd-triplet? target)
+                         ,@(if (target-hurd? target)
                                `(("cross-mig"
                                   ,@(assoc-ref (package-native-inputs xheaders)
                                                "cross-mig")))

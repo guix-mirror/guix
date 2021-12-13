@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,8 +22,10 @@
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix gexp)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
+  #:use-module (gnu packages bash)
   #:use-module (guix memoization)
   #:export (pkg-config))
 
@@ -130,3 +133,37 @@ build, or a GNU triplet."
 ;; environment or not.
 (define-syntax pkg-config
   (identifier-syntax (pkg-config-for-target (%current-target-system))))
+
+;; This hack allows for using both "pkg-config" and "TARGET-pkg-config"
+;; at the same time.  Simply using '%pkg-config' and 'pkg-config' won't
+;; work because they both use the "PKG_CONFIG_PATH" environment variable.
+(define-public pkg-config-for-build
+  (package
+    (inherit (hidden-package %pkg-config))
+    (name "pkg-config-for-build")
+    (version "0")
+    (source #f)
+    (build-system trivial-build-system)
+    (inputs
+     (list bash-minimal %pkg-config))
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       ,#~(begin
+            (use-modules (guix build utils))
+            (define where (string-append #$output "/bin/pkg-config"))
+            (mkdir-p (dirname where))
+            (call-with-output-file where
+              (lambda (port)
+                (format port "#!~a
+export PKG_CONFIG_PATH=\"$PKG_CONFIG_PATH_FOR_BUILD\"
+exec ~a \"$@\""
+                        (search-input-file %build-inputs "bin/bash")
+                        (search-input-file %build-inputs "bin/pkg-config"))))
+            (chmod where #o500))))
+    (native-search-paths
+     (map (lambda (original)
+            (search-path-specification
+             (inherit original)
+             (variable "PKG_CONFIG_PATH_FOR_BUILD")))
+          (package-native-search-paths %pkg-config)))))

@@ -71,13 +71,9 @@
     (build-system gnu-build-system)
     (native-inputs
      ;; The 3.5.28 release tarball isn't bootstrapped.
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
+     (list autoconf automake libtool))
     (inputs
-     `(("libjpeg-turbo" ,libjpeg-turbo)
-       ("libtiff" ,libtiff)
-       ("zlib" ,zlib)))
+     (list libjpeg-turbo libtiff zlib))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -109,17 +105,9 @@ utilities.")
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)
-       ("qttools" ,qttools)))
+     (list autoconf automake libtool pkg-config qttools))
     (inputs
-     `(("djvulibre" ,djvulibre)
-       ("glib" ,glib)
-       ("libxt" ,libxt)
-       ("libtiff" ,libtiff)
-       ("qtbase" ,qtbase-5)))
+     (list djvulibre glib libxt libtiff qtbase-5))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -182,7 +170,10 @@ a continuous layout.")
              (substitute* "tests/test-xmp-broken.py"
                ;; Error message changed in recent versions of XML parser
                (("XML parsing failure")
-                "Error in XMLValidator")))))))
+                "Error in XMLValidator"))))
+         (add-before 'check 'set-home-for-tests
+           (lambda _
+             (setenv "HOME" "/tmp"))))))
     (synopsis "PDF to DjVu converter")
     (description
      "@code{pdf2djvu} creates DjVu files from PDF files.
@@ -210,12 +201,12 @@ It is able to extract:
         (base32 "0v2ax30m7j1yi4m02nzn9rc4sn4vzqh5vywdh96r64j4pwvn5s5g"))))
     (build-system gnu-build-system)
     (inputs
-     `(("djvulibre" ,djvulibre)
-       ("gawk" ,gawk)
-       ("ghostscript" ,ghostscript)
-       ("grep" ,grep)
-       ("ncurses" ,ncurses)
-       ("which" ,which)))
+     (list djvulibre
+           gawk
+           ghostscript
+           grep
+           ncurses
+           which))
     (arguments
      `(#:tests? #f ; No test suite
        #:phases
@@ -274,9 +265,7 @@ It is able to extract:
     (native-inputs
      `(("gettext" ,gettext-minimal)))
     (inputs
-     `(("libjpeg-turbo" ,libjpeg-turbo)
-       ("libtiff" ,libtiff)
-       ("zlib" ,zlib)))
+     (list libjpeg-turbo libtiff zlib))
     (arguments
      '(#:configure-flags '("--disable-static")
        #:parallel-build? #f
@@ -315,10 +304,8 @@ and white.")
         (base32 "0z403cklvxzz0qaczgv83ax0nknrd9h8micp04j9kjfdxk2sgval"))))
     (build-system python-build-system)
     (inputs
-     `(("djvulibre" ,djvulibre)
-       ("python2-djvulibre" ,python2-djvulibre)
-       ("python2-subprocess32" ,python2-subprocess32)
-       ("python2-wxpython" ,python2-wxpython)))
+     (list djvulibre python2-djvulibre python2-subprocess32
+           python2-wxpython))
     (arguments
      `(#:python ,python-2
        #:phases
@@ -357,7 +344,7 @@ It is able to:
         (base32 "0xyrnk8d2khi7q1zr28gjkjq6frz4mkb5jdl8821yzf12k7c8pbv"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("python2-nose" ,python2-nose)))
+     (list python2-nose))
     (inputs
      `(("djvulibre" ,djvulibre)
        ("minidjvu" ,minidjvu)
@@ -424,9 +411,7 @@ and background layers of images, which can then be encoded into a DjVu file.")
         (base32 "09w9rqr7z2jd5kwp178zz2yrsc82mxs7gksipg92znxzgzhmw2ng"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("libxml2" ,libxml2)
-       ("python2-nose" ,python2-nose)
-       ("python2-pillow" ,python2-pillow)))
+     (list libxml2 python2-nose python2-pillow))
     (inputs
      `(("djvulibre" ,djvulibre)
        ("ocrad" ,ocrad)

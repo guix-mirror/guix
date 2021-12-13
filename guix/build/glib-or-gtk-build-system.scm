@@ -2,6 +2,8 @@
 ;;; Copyright © 2014 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,6 +29,8 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:export (%standard-phases
+            %gdk-pixbuf-loaders-cache-file
+            generate-gdk-pixbuf-loaders-cache
             glib-or-gtk-build))
 
 ;; Commentary:
@@ -50,12 +54,24 @@
   "Check for the existence of \"libdir/gtk-v.0\" in INPUTS.  Return a list
 with all found directories."
   (let* ((version
-          (if (string-match "gtk\\+-3"
-                            (or (assoc-ref inputs "gtk+")
-                                (assoc-ref inputs "source")
-                                "gtk+-3")) ; we default to version 3
-              "3.0"
-              "2.0"))
+          (cond
+           ((string-match "gtk-4"
+                          (or (assoc-ref inputs "gtk")
+                              (assoc-ref inputs "source")
+                              ""))
+            "4.0")
+           ((string-match "gtk\\+-3"
+                          (or (assoc-ref inputs "gtk+")
+                              (assoc-ref inputs "source")
+                              ""))
+            "3.0")
+           ((string-match "gtk\\+-2"
+                          (or (assoc-ref inputs "gtk+")
+                              (assoc-ref inputs "source")
+                              ""))
+            "2.0")
+           (else
+            "4.0"))) ; We default to version 4.0.
          (gtk-module
           (lambda (input prev)
             (let* ((in (match input
@@ -136,69 +152,41 @@ Wrapping is not applied to outputs whose name is listed in
 GLIB-OR-GTK-WRAP-EXCLUDED-OUTPUTS.  This is useful when an output is known not
 to contain any GLib or GTK+ binaries, and where wrapping would gratuitously
 add a dependency of that output on GLib and GTK+."
+  ;; Do not require bash to be present in the package inputs
+  ;; even when there is nothing to wrap.
+  ;; Also, calculate (sh) only once to prevent some I/O.
+  (define %sh (delay (search-input-file inputs "bin/bash")))
+  (define (sh) (force %sh))
   (define handle-output
     (match-lambda
-     ((output . directory)
-      (unless (member output glib-or-gtk-wrap-excluded-outputs)
-        (let* ((bindir       (string-append directory "/bin"))
-               (libexecdir   (string-append directory "/libexec"))
-               (bin-list     (append (find-files bindir ".*")
-                                     (find-files libexecdir ".*")))
-               (datadirs     (data-directories
-                              (alist-cons output directory inputs)))
-               (gtk-mod-dirs (gtk-module-directories
-                              (alist-cons output directory inputs)))
-               (gio-mod-dirs (gio-module-directories
-                              (alist-cons output directory inputs)))
-               (data-env-var
-                (if (not (null? datadirs))
-                    `("XDG_DATA_DIRS" ":" prefix ,datadirs)
-                    #f))
-               (gtk-mod-env-var
-                (if (not (null? gtk-mod-dirs))
-                    `("GTK_PATH" ":" prefix ,gtk-mod-dirs)
-                    #f))
-               (gio-mod-env-var 
-                (if (not (null? gio-mod-dirs))
-                    `("GIO_EXTRA_MODULES" ":" prefix ,gio-mod-dirs)
-                    #f)))
-          (cond
-           ((and data-env-var gtk-mod-env-var gio-mod-env-var)
-            (for-each (cut wrap-program <>
-                           data-env-var
-                           gtk-mod-env-var
-                           gio-mod-env-var)
-                      bin-list))
-           ((and data-env-var gtk-mod-env-var (not gio-mod-env-var))
-            (for-each (cut wrap-program <>
-                           data-env-var
-                           gtk-mod-env-var)
-                      bin-list))
-           ((and data-env-var (not gtk-mod-env-var) gio-mod-env-var)
-            (for-each (cut wrap-program <>
-                           data-env-var
-                           gio-mod-env-var)
-                      bin-list))
-           ((and (not data-env-var) gtk-mod-env-var gio-mod-env-var)
-            (for-each (cut wrap-program <>
-                           gio-mod-env-var
-                           gtk-mod-env-var)
-                      bin-list))
-           ((and data-env-var (not gtk-mod-env-var) (not gio-mod-env-var))
-            (for-each (cut wrap-program <>
-                           data-env-var)
-                      bin-list))
-           ((and (not data-env-var) gtk-mod-env-var (not gio-mod-env-var))
-            (for-each (cut wrap-program <>
-                           gtk-mod-env-var)
-                      bin-list))
-           ((and (not data-env-var) (not gtk-mod-env-var) gio-mod-env-var)
-            (for-each (cut wrap-program <>
-                           gio-mod-env-var)
-                      bin-list))))))))
+      ((output . directory)
+       (unless (member output glib-or-gtk-wrap-excluded-outputs)
+         (let* ((bindir       (string-append directory "/bin"))
+                (libexecdir   (string-append directory "/libexec"))
+                (bin-list     (filter (negate wrapped-program?)
+                                      (append (find-files bindir ".*")
+                                          (find-files libexecdir ".*"))))
+                (datadirs     (data-directories
+                               (alist-cons output directory inputs)))
+                (gtk-mod-dirs (gtk-module-directories
+                               (alist-cons output directory inputs)))
+                (gio-mod-dirs (gio-module-directories
+                               (alist-cons output directory inputs)))
+                (env-vars `(,@(if (not (null? datadirs))
+                                  (list `("XDG_DATA_DIRS" ":" prefix ,datadirs))
+                                  '())
+                            ,@(if (not (null? gtk-mod-dirs))
+                                  (list `("GTK_PATH" ":" prefix ,gtk-mod-dirs))
+                                  '())
+                            ,@(if (not (null? gio-mod-dirs))
+                                  (list `("GIO_EXTRA_MODULES" ":"
+                                          prefix ,gio-mod-dirs))
+                                  '()))))
+           (for-each (lambda (program)
+                       (apply wrap-program program #:sh (sh) env-vars))
+                     bin-list))))))
 
-  (for-each handle-output outputs)
-  #t)
+  (for-each handle-output outputs))
 
 (define* (compile-glib-schemas #:key outputs #:allow-other-keys)
   "Implement phase \"glib-or-gtk-compile-schemas\": compile \"glib\" schemas
@@ -211,11 +199,58 @@ if needed."
                             (not (file-exists?
                                   (string-append schemasdir "/gschemas.compiled"))))
                    (invoke "glib-compile-schemas" schemasdir)))))
-            outputs)
-  #t)
+            outputs))
+
+;; This file is to be generated by the
+;; `generate-gdk-pixbuf-loaders-cache' build phase defined below.
+(define %gdk-pixbuf-loaders-cache-file
+  "lib/gdk-pixbuf-2.0/2.10.0/loaders.cache")
+
+(define (generate-gdk-pixbuf-loaders-cache directories outputs)
+  "Generate the loaders.cache file used by gdk-pixbuf to locate the available
+loaders among DIRECTORIES, and set the GDK_PIXBUF_MODULE_FILE environment
+variable.  The cache file is installed under OUTPUTS.  Return the first cache
+file name if one was created else #f."
+  (let* ((loaders (append-map
+                   (cut find-files <> "^libpixbufloader-.*\\.so$")
+                   directories))
+         (outputs* (map (cut string-append <> "/"
+                             %gdk-pixbuf-loaders-cache-file)
+                        outputs))
+         (loaders.cache (first outputs*))
+         (loaders.cache-copies (cdr outputs*)))
+    (if (not (null? loaders))
+        (begin
+          (mkdir-p (dirname loaders.cache))
+          (setenv "GDK_PIXBUF_MODULE_FILE" loaders.cache)
+          (apply invoke "gdk-pixbuf-query-loaders" "--update-cache" loaders)
+          (for-each (lambda (f)
+                      (mkdir-p (dirname f))
+                      (copy-file loaders.cache f))
+                    loaders.cache-copies)
+          loaders.cache)
+        #f)))
+
+(define* (generate-gdk-pixbuf-loaders-cache-file #:key inputs outputs
+                                                 #:allow-other-keys)
+  "Build phase that Wraps the GENERATE-GDK-PIXBUF-LOADERS-CACHE procedure."
+  ;; Conditionally compute the cache file if the gdk-pixbuf command is
+  ;; available on PATH (it comes with gdk-pixbuf).
+  (when (which "gdk-pixbuf-query-loaders")
+    (let ((loaders.cache (generate-gdk-pixbuf-loaders-cache
+                          (map cdr inputs)
+                          (filter-map identity
+                                      (list
+                                       (assoc-ref outputs "out")
+                                       (assoc-ref outputs "bin")
+                                       (assoc-ref outputs "lib"))))))
+      (when loaders.cache
+        (format #t "GDK_PIXBUF_MODULE_FILE set to `~a'~%" loaders.cache)))))
 
 (define %standard-phases
   (modify-phases gnu:%standard-phases
+    (add-after 'unpack 'generate-gdk-pixbuf-loaders-cache-file
+      generate-gdk-pixbuf-loaders-cache-file)
     (add-after 'install 'glib-or-gtk-compile-schemas compile-glib-schemas)
     (add-after 'install 'glib-or-gtk-wrap wrap-all-programs)))
 

@@ -5,7 +5,7 @@
 ;;; Copyright © 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Pierre-Moana Levesque <pierre.moana.levesque@gmail.com>
-;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2019, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
@@ -59,26 +59,21 @@
      ;; with the native compiler, the environment is reset. This leads to
      ;; multiple environment variables missing. Do not reset the environment
      ;; to prevent that.
-     (if (%current-target-system)
-         '(#:phases
-           (modify-phases %standard-phases
-             (add-before 'configure 'fix-cross-configure
-               (lambda _
-                 (substitute* "configure"
-                   (("env -i")
-                    "env "))
-                 #t))))
-         '()))
-    (inputs `(("ncurses" ,ncurses)
-              ;; TODO: remove `if' in the next rebuild cycle.
-              ,@(if (%current-target-system)
-                    `(("perl" ,perl))
-                    '())))
+     `(#:phases
+       (if ,(%current-target-system)
+            (modify-phases %standard-phases
+              (add-before 'configure 'fix-cross-configure
+                (lambda _
+                  (substitute* "configure"
+                    (("env -i")
+                     "env "))
+                  #t)))
+            %standard-phases)))
+    (inputs (list ncurses perl))
     ;; When cross-compiling, texinfo will build some of its own binaries with
     ;; the native compiler. This means ncurses is needed both in both inputs
     ;; and native-inputs.
-    (native-inputs `(("perl" ,perl)
-                     ("ncurses" ,ncurses)))
+    (native-inputs (list perl ncurses))
 
     (native-search-paths
      ;; This is the variable used by the standalone Info reader.
@@ -121,11 +116,10 @@ is on expressing the content semantically, avoiding physical markup commands.")
               (sha256
                (base32
                 "1rf9ckpqwixj65bw469i634897xwlgkm5i9g2hv3avl6mv7b0a3d"))))
-    (inputs `(("ncurses" ,ncurses)
-              ("xz" ,xz)))
+    (inputs (list ncurses xz))
     (native-inputs
-      `(("automake" ,automake)
-        ,@(package-native-inputs texinfo)))
+      (modify-inputs (package-native-inputs texinfo)
+        (prepend automake)))
     (arguments
      (substitute-keyword-arguments (package-arguments texinfo)
        ((#:phases phases)
@@ -210,7 +204,7 @@ is on expressing the content semantically, avoiding physical markup commands.")
                   (utime "texi2html.pl" 0 0 0 0)
                   #t))))
     (build-system gnu-build-system)
-    (inputs `(("perl" ,perl)))
+    (inputs (list perl))
     (arguments
      ;; Tests fail because of warnings on stderr from Perl 5.22.  Adjusting
      ;; texi2html.pl to avoid the warnings seems non-trivial, so we simply
@@ -276,8 +270,7 @@ Texi2HTML.")
                 (string-append "\"" (which "clear") "\"")))
              #t)))))
     (inputs
-     `(("ncurses" ,ncurses)
-       ("readline" ,readline)))
+     (list ncurses readline))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)

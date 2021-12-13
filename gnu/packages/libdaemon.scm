@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -17,8 +18,10 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages libdaemon)
+  #:use-module (gnu packages autotools)
   #:use-module (guix licenses)
   #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module (guix download)
   #:use-module (guix build-system gnu))
 
@@ -45,21 +48,34 @@
                "0d5qlq5ab95wh1xc87rqrh1vx6i8lddka1w3f1zcqvcqdxgyn8zx"))
              (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
-    (arguments
-     (if (%current-target-system)
-         ;; The 'setpgrp' test cannot provide an answer when cross-compiling,
-         ;; so provide the right one for glibc.
-         `(#:configure-flags (list "ac_cv_func_setpgrp_void=yes"
-
-                                   ;; TODO: Move this globally on the next
-                                   ;; rebuild cycle.
-                                   ;; Set a valid localstatedir for the
-                                   ;; benefit of the default
-                                   ;; 'daemon_pid_file_proc', used by the
-                                   ;; Hurd's console client.
-                                   "--localstatedir=/var"))
+    (native-inputs
+     (if (and=> (%current-target-system) target-aarch64?)
+         `(("config" ,config)) ; for config.sub
          '()))
+    (arguments
+     `(,@(if (%current-target-system)
+             ;; The 'setpgrp' test cannot provide an answer when cross-compiling,
+             ;; so provide the right one for glibc.
+             `(#:configure-flags (list "ac_cv_func_setpgrp_void=yes"
 
+                                       ;; TODO: Move this globally on the next
+                                       ;; rebuild cycle.
+                                       ;; Set a valid localstatedir for the
+                                       ;; benefit of the default
+                                       ;; 'daemon_pid_file_proc', used by the
+                                       ;; Hurd's console client.
+                                       "--localstatedir=/var"))
+             '())
+       ,@(if (and=> (%current-target-system) target-aarch64?)
+             `(#:phases
+               (modify-phases %standard-phases
+                 (add-before 'configure 'update-config.sub
+                   (lambda _
+                     ;; Replace outdated config.sub such that aarch64
+                     ;; will be recognised as an architecture.
+                     (delete-file "config.sub")
+                     (symlink (which "config.sub") "config.sub")))))
+             '())))
     ;; XXX: Stale URL, missing replacement.  See <http://bugs.gnu.org/18639>.
     (home-page "http://0pointer.de/lennart/projects/libdaemon/")
 

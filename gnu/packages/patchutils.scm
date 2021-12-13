@@ -64,8 +64,7 @@
          "1va5pzmxbzpi87vdnbjm9qdf9bvzps9xfv0gi4mycgg3bybb0xc8"))))
     (build-system gnu-build-system)
     (inputs
-     `(("perl" ,perl)
-       ("python" ,python)))
+     (list perl python))
     (arguments
      '(#:parallel-tests? #f
        #:phases
@@ -112,11 +111,7 @@ listing the files modified by a patch.")
     (build-system gnu-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)))
-    (inputs `(("perl" ,perl)
-              ("less" ,less)
-              ("file" ,file)
-              ("ed" ,ed)
-              ("diffstat" ,diffstat)))
+    (inputs (list perl less file ed diffstat))
     (arguments
      '(#:parallel-tests? #f
        #:phases
@@ -183,8 +178,7 @@ refreshed, and more.")
          (delete 'configure)            ; no configure script
          (delete 'build))))             ; nothing to build
     (inputs
-     `(("perl" ,perl)
-       ("xmlto" ,xmlto)))
+     (list perl xmlto))
     (home-page "https://www.colordiff.org")
     (synopsis "Display diff output with colors")
     (description
@@ -208,7 +202,7 @@ refreshed, and more.")
                   "11rdmhv0l1s8nqb20ywmw2zqizczch2p62qf9apyx5wqgxlnjshk"))
                 (file-name (string-append name "-"version "-checkout"))))
       (build-system python-build-system)
-      (inputs `(("python-notmuch" ,python2-notmuch)))
+      (inputs (list python2-notmuch))
       (arguments
        `(#:tests? #f                             ;no "test" target
          #:python ,python-2))                    ;not compatible with Python 3
@@ -234,7 +228,7 @@ the command-line or from Emacs via its Notmuch integration.")
                 "1f1kj4jki08bnrwpzi663mjfkrx4wnfpzdfwd2qgijlkx5ysjkgh"))))
     (build-system gnu-build-system)
     (inputs
-     `(("ncurses" ,ncurses)))
+     (list ncurses))
     (home-page "https://www.cjmweb.net/vbindiff/")
     (synopsis "Console-based tool for comparing binary data")
     (description "Visual Binary Diff (@command{vbindiff}) displays files in
@@ -267,7 +261,7 @@ GiB).")
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("gtksourceview" ,gtksourceview-3)))
     (propagated-inputs
-     `(("dconf" ,dconf)))
+     (list dconf))
     (arguments
      `(#:imported-modules ((guix build glib-or-gtk-build-system)
                            ,@%python-build-system-modules)
@@ -355,7 +349,7 @@ you to figure out what is going on in that merge you keep avoiding.")
                  ;; as the python modules in this package in the wsgi.py file,
                  ;; as this will ensure they are available at runtime.
                  (define pythonpath
-                   (string-append (getenv "PYTHONPATH")
+                   (string-append (getenv "GUIX_PYTHONPATH")
                                   ":"
                                   (site-packages inputs outputs)))
                  (display
@@ -390,22 +384,22 @@ application = get_wsgi_application()\n") port)))))
                (for-each (lambda (directory)
                            (copy-recursively
                             directory
-                            (string-append out-site-packages directory)))
+                            (string-append out-site-packages "/" directory)))
                          '(;; Contains the python code
                            "patchwork"
                            ;; Contains the templates for the generated HTML
                            "templates"))
                (delete-file-recursively
-                (string-append out-site-packages "patchwork/tests"))
+                (string-append out-site-packages "/patchwork/tests"))
 
                ;; Install patchwork related tools
                (for-each (lambda (file)
                            (install-file file (string-append out "/bin")))
                          (list
                           (string-append out-site-packages
-                                         "patchwork/bin/parsemail.sh")
+                                         "/patchwork/bin/parsemail.sh")
                           (string-append out-site-packages
-                                         "patchwork/bin/parsemail-batch.sh")))
+                                         "/patchwork/bin/parsemail-batch.sh")))
 
                ;; Collect the static assets, this includes JavaScript, CSS and
                ;; fonts. This is a standard Django process when running a
@@ -459,15 +453,15 @@ if __name__ == \"__main__\":
                (chmod (string-append out "/bin/patchwork-admin") #o555))
              #t)))))
     (inputs
-     `(("python-wrapper" ,python-wrapper)))
+     (list python-wrapper))
     (propagated-inputs
-     `(("python-django" ,python-django-2.2)
-       ;; TODO: Make this configurable
-       ("python-psycopg2" ,python-psycopg2)
-       ("python-mysqlclient" ,python-mysqlclient)
-       ("python-django-filter" ,python-django-filter)
-       ("python-djangorestframework" ,python-djangorestframework)
-       ("python-django-debug-toolbar" ,python-django-debug-toolbar)))
+     (list python-django-2.2
+           ;; TODO: Make this configurable
+           python-psycopg2
+           python-mysqlclient
+           python-django-filter
+           python-djangorestframework
+           python-django-debug-toolbar))
     (synopsis "Web based patch tracking system")
     (description
      "Patchwork is a patch tracking system.  It takes in emails containing
@@ -518,10 +512,7 @@ Users can login allowing them to change the state of patches.")
                             "/share/man/man1"))
              #t)))))
     (native-inputs
-     `(("python-pbr" ,python-pbr)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)
-       ("python-mock" ,python-mock)))
+     (list python-pbr python-pytest python-pytest-cov python-mock))
     (home-page
      "https://github.com/getpatchwork/pwclient")
     (synopsis "Command-line client for the Patchwork patch tracking tool")

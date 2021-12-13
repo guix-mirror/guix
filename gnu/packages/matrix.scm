@@ -49,11 +49,9 @@
          "1mgjd0ymf9mvqjkvgx3xjhxap7rzdmpa21wfy0cxbw2xcswcrqyw"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-requests" ,python-requests)))
+     (list python-requests))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-pytest-runner" ,python-pytest-runner)
-       ("python-responses" ,python-responses)))
+     (list python-pytest python-pytest-runner python-responses))
     (home-page
      "https://github.com/matrix-org/matrix-python-sdk")
     (synopsis "Client-Server SDK for Matrix")
@@ -76,9 +74,7 @@
      ;; tests require synapse, creating a circular dependency.
      '(#:tests? #f))
     (propagated-inputs
-     `(("python-twisted" ,python-twisted)
-       ("python-ldap3" ,python-ldap3)
-       ("python-service-identity" ,python-service-identity)))
+     (list python-twisted python-ldap3 python-service-identity))
     (home-page "https://github.com/matrix-org/matrix-synapse-ldap3")
     (synopsis "LDAP3 auth provider for Synapse")
     (description
@@ -100,51 +96,50 @@ an LDAP server.")
     (build-system python-build-system)
     ;; TODO Run tests with ‘PYTHONPATH=. trial3 tests’.
     (propagated-inputs
-     `(("python-simplejson" ,python-simplejson) ; not attested but required
-       ;; requirements (synapse/python_dependencies.py)
-       ("python-jsonschema" ,python-jsonschema)
-       ("python-frozendict" ,python-frozendict)
-       ("python-unpaddedbase64" ,python-unpaddedbase64)
-       ("python-canonicaljson" ,python-canonicaljson)
-       ("python-signedjson" ,python-signedjson)
-       ("python-pynacl" ,python-pynacl)
-       ("python-idna" ,python-idna)
-       ("python-service-identity" ,python-service-identity)
-       ("python-twisted" ,python-twisted)
-       ("python-treq" ,python-treq)
-       ("python-pyopenssl" ,python-pyopenssl)
-       ("python-pyyaml" ,python-pyyaml)
-       ("python-pyasn1" ,python-pyasn1)
-       ("python-pyasn1-modules" ,python-pyasn1-modules)
-       ("python-daemonize" ,python-daemonize)
-       ("python-bcrypt" ,python-bcrypt)
-       ("python-pillow" ,python-pillow)
-       ("python-sortedcontainers" ,python-sortedcontainers)
-       ("python-pymacaroons" ,python-pymacaroons)
-       ("python-msgpack" ,python-msgpack)
-       ("python-phonenumbers" ,python-phonenumbers)
-       ("python-six" ,python-six)
-       ("python-prometheus-client" ,python-prometheus-client)
-       ("python-attrs" ,python-attrs)
-       ("python-netaddr" ,python-netaddr)
-       ("python-jinja2" ,python-jinja2)
-       ("python-bleach" ,python-bleach)
-       ("python-typing-extensions" ,python-typing-extensions)
-       ;; conditional requirements (synapse/python_dependencies.py)
-       ;;("python-hiredis" ,python-hiredis)
-       ("python-matrix-synapse-ldap3" ,python-matrix-synapse-ldap3)
-       ("python-psycopg2" ,python-psycopg2)
-       ("python-jinja2" ,python-jinja2)
-       ("python-txacme" ,python-txacme)
-       ("python-pysaml2" ,python-pysaml2)
-       ("python-lxml" ,python-lxml)
-       ("python-packaging" ,python-packaging)
-       ;; sentry-sdk, jaeger-client, and opentracing could be included, but
-       ;; all are monitoring aids and not essential.
-       ("python-pyjwt" ,python-pyjwt)))
+     (list python-simplejson ; not attested but required
+           ;; requirements (synapse/python_dependencies.py)
+           python-jsonschema
+           python-frozendict
+           python-unpaddedbase64
+           python-canonicaljson
+           python-signedjson
+           python-pynacl
+           python-idna
+           python-service-identity
+           python-twisted
+           python-treq
+           python-pyopenssl
+           python-pyyaml
+           python-pyasn1
+           python-pyasn1-modules
+           python-daemonize
+           python-bcrypt
+           python-pillow
+           python-sortedcontainers
+           python-pymacaroons
+           python-msgpack
+           python-phonenumbers
+           python-six
+           python-prometheus-client
+           python-attrs
+           python-netaddr
+           python-jinja2
+           python-bleach
+           python-typing-extensions
+           ;; conditional requirements (synapse/python_dependencies.py)
+           ;;("python-hiredis" ,python-hiredis)
+           python-matrix-synapse-ldap3
+           python-psycopg2
+           python-jinja2
+           python-txacme
+           python-pysaml2
+           python-lxml
+           python-packaging
+           ;; sentry-sdk, jaeger-client, and opentracing could be included, but
+           ;; all are monitoring aids and not essential.
+           python-pyjwt))
     (native-inputs
-     `(("python-mock" ,python-mock)
-       ("python-parameterized" ,python-parameterized)))
+     (list python-mock python-parameterized))
     (home-page "https://github.com/matrix-org/synapse")
     (synopsis "Matrix reference homeserver")
     (description "Synapse is a reference \"homeserver\" implementation of
@@ -207,20 +202,20 @@ homeserver and generally help bootstrap the ecosystem.")
             (base32
              "152prkndk53pfxm4in4xak4hwzyaxlbp6wv2zbk2xpzgyy9bvn3s"))))))
     (propagated-inputs
-     `(("python-aiofiles" ,python-aiofiles)
-       ("python-aiohttp" ,python-aiohttp)
-       ("python-aiohttp-socks" ,python-aiohttp-socks)
-       ("python-atomicwrites" ,python-atomicwrites-1.4)
-       ("python-cachetools" ,python-cachetools)
-       ("python-future" ,python-future)
-       ("python-h11" ,python-h11)
-       ("python-h2" ,python-h2)
-       ("python-jsonschema" ,python-jsonschema)
-       ("python-logbook" ,python-logbook)
-       ("python-olm" ,python-olm)
-       ("python-peewee" ,python-peewee)
-       ("python-pycryptodome" ,python-pycryptodome)
-       ("python-unpaddedbase64" ,python-unpaddedbase64)))
+     (list python-aiofiles
+           python-aiohttp
+           python-aiohttp-socks
+           python-atomicwrites-1.4
+           python-cachetools
+           python-future
+           python-h11
+           python-h2
+           python-jsonschema
+           python-logbook
+           python-olm
+           python-peewee
+           python-pycryptodome
+           python-unpaddedbase64))
     (home-page "https://github.com/poljar/matrix-nio")
     (synopsis
      "Python Matrix client library, designed according to sans I/O principles")
@@ -261,22 +256,20 @@ fledged batteries-included asyncio layer using aiohttp.")
                (add-installed-pythonpath inputs outputs)
                (invoke "pytest" "-vv" "tests")))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-faker" ,python-faker)
-       ("python-pytest-aiohttp" ,python-pytest-aiohttp)
-       ("python-aioresponses" ,python-aioresponses)))
+     (list python-pytest python-faker python-pytest-aiohttp
+           python-aioresponses))
     (propagated-inputs
-     `(("python-aiohttp" ,python-aiohttp)
-       ("python-appdirs" ,python-appdirs)
-       ("python-attrs" ,python-attrs)
-       ("python-cachetools" ,python-cachetools)
-       ("python-click" ,python-click)
-       ("python-janus" ,python-janus)
-       ("python-keyring" ,python-keyring)
-       ("python-logbook" ,python-logbook)
-       ("python-matrix-nio" ,python-matrix-nio)
-       ("python-peewee" ,python-peewee)
-       ("python-prompt-toolkit" ,python-prompt-toolkit)))
+     (list python-aiohttp
+           python-appdirs
+           python-attrs
+           python-cachetools
+           python-click
+           python-janus
+           python-keyring
+           python-logbook
+           python-matrix-nio
+           python-peewee
+           python-prompt-toolkit))
     (home-page "https://github.com/matrix-org/pantalaimon")
     (synopsis "Matrix proxy daemon that adds E2E encryption capabilities")
     (description

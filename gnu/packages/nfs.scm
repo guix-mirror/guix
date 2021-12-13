@@ -126,7 +126,7 @@
        ("libtirpc" ,libtirpc)
        ("python-wrapper" ,python-wrapper))) ;for the Python based tools
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://www.kernel.org/pub/linux/utils/nfs-utils/")
     (synopsis "Tools for loading and managing Linux NFS mounts")
     (description "The Network File System (NFS) was developed to allow
@@ -167,11 +167,9 @@ disk.  It allows for fast, seamless sharing of files across a network.")
                (("/bin/sh") (which "sh")))
              #t)))))
     (native-inputs
-     `(("automake" ,automake)
-       ("autoconf" ,autoconf)
-       ("libtool" ,libtool)))
+     (list automake autoconf libtool))
     (inputs
-     `(("attr" ,attr)))
+     (list attr))
     (home-page "https://linux-nfs.org/wiki/index.php/Main_Page")
     (synopsis "Commandline ACL utilities for the Linux NFSv4 client")
     (description "This package provides the commandline utilities

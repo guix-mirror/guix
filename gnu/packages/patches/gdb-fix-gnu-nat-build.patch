@@ -1,0 +1,254 @@
+Fix build on the Hurd.
+
+Patch #1 taken from upstream
+
+    https://sourceware.org/git/?p=binutils-gdb.git;a=commit;h=a1700a3199d31910b87cd7db3c394ddd091cfcde
+
+Patch #2 taken from upstream mailing list
+
+    https://sourceware.org/pipermail/gdb/2021-November/049777.html
+
+Patch #3 sent to upstream
+
+    https://sourceware.org/pipermail/gdb/2021-November/049788.html
+
+From 30d89407ad6bb62fafc72fa9c547c2d7ff371401 Mon Sep 17 00:00:00 2001
+From: Simon Marchi <simon.marchi@polymtl.ca>
+Date: Wed, 3 Nov 2021 15:09:19 -0400
+Subject: [PATCH 1/3] gdb: fix gnu-nat build
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+
+When building gnu-nat.c, we get:
+
+      CXX    gnu-nat.o
+    gnu-nat.c: In member function 'virtual void gnu_nat_target::create_inferior(const char*, const string&, char**, int)':
+    gnu-nat.c:2117:13: error: 'struct inf' has no member named 'target_is_pushed'
+     2117 |   if (!inf->target_is_pushed (this))
+          |             ^~~~~~~~~~~~~~~~
+    gnu-nat.c:2118:10: error: 'struct inf' has no member named 'push_target'
+     2118 |     inf->push_target (this);
+          |          ^~~~~~~~~~~
+
+This is because of a confusion between the generic `struct inferior`
+variable and the gnu-nat-specific `struct inf` variable.  Fix by
+referring to `inferior`, not `inf`.
+
+Adjust the comment on top of `struct inf` to clarify the purpose of that
+type.
+
+Co-Authored-By: Andrea Monaco <andrea.monaco@autistici.org>
+Change-Id: I2fe2f7f6ef61a38d79860fd262b08835c963fc77
+---
+ gdb/gnu-nat.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/gdb/gnu-nat.c b/gdb/gnu-nat.c
+index 67ce00e9c30..ab539b4d8b4 100644
+--- a/gdb/gnu-nat.c
++++ b/gdb/gnu-nat.c
+@@ -149,7 +149,7 @@ struct inf_wait
+     int suppress;		/* Something trivial happened.  */
+   };
+ 
+-/* The state of an inferior.  */
++/* Further Hurd-specific state of an inferior.  */
+ struct inf
+   {
+     /* Fields describing the current inferior.  */
+@@ -2114,8 +2114,8 @@ gnu_nat_target::create_inferior (const char *exec_file,
+ 
+   inf_debug (inf, "creating inferior");
+ 
+-  if (!inf->target_is_pushed (this))
+-    inf->push_target (this);
++  if (!inferior->target_is_pushed (this))
++    inferior->push_target (this);
+ 
+   pid = fork_inferior (exec_file, allargs, env, gnu_ptrace_me,
+ 		       NULL, NULL, NULL, NULL);
+From ebc0837f4693232f74eb2cc3033515b18a8f0900 Mon Sep 17 00:00:00 2001
+From: "Jan (janneke) Nieuwenhuizen" <janneke@gnu.org>
+Date: Mon, 22 Nov 2021 07:47:28 +0100
+Subject: [PATCH 2/3] gdb: gnu-nat.c: port-rights.
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+
+Taken from:
+
+    https://sourceware.org/pipermail/gdb/2021-November/049777.html
+---
+ gdb/gnu-nat.c | 18 ++++++++++--------
+ 1 file changed, 10 insertions(+), 8 deletions(-)
+
+diff --git a/gdb/gnu-nat.c b/gdb/gnu-nat.c
+index ab539b4d8b4..8cd876b21d0 100644
+--- a/gdb/gnu-nat.c
++++ b/gdb/gnu-nat.c
+@@ -3292,15 +3292,17 @@ This is the same as setting `task pause', `exceptions', and\n\
+ 	    _("Show information about the task's send rights."));
+   add_info ("receive-rights", info_recv_rights_cmd,
+ 	    _("Show information about the task's receive rights."));
+-  add_info ("port-rights", info_port_rights_cmd,
+-	    _("Show information about the task's port rights."));
+-  add_info ("port-sets", info_port_sets_cmd,
+-	    _("Show information about the task's port sets."));
++  cmd_list_element *port_rights_cmd =
++    add_info ("port-rights", info_port_rights_cmd,
++             _("Show information about the task's port rights."));
++  cmd_list_element *port_sets_cmd =
++    add_info ("port-sets", info_port_sets_cmd,
++             _("Show information about the task's port sets."));
+   add_info ("dead-names", info_dead_names_cmd,
+-	    _("Show information about the task's dead names."));
+-  add_info_alias ("ports", "port-rights", 1);
+-  add_info_alias ("port", "port-rights", 1);
+-  add_info_alias ("psets", "port-sets", 1);
++            _("Show information about the task's dead names."));
++  add_info_alias ("ports", port_rights_cmd, 1);
++  add_info_alias ("port", port_rights_cmd, 1);
++  add_info_alias ("psets", port_sets_cmd, 1);
+ }
+ 
+ 
+From e8df985cdd95e4808c390e226a0e852d23c502f9 Mon Sep 17 00:00:00 2001
+From: "Jan (janneke) Nieuwenhuizen" <janneke@gnu.org>
+Date: Mon, 22 Nov 2021 08:22:15 +0100
+Subject: [PATCH 3/3] gdb: More compile fixes for gnu-nat.c.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+
+This fixes compile errors like
+
+    ../../gdb-11.1/gdb/gnu-nat.c: In function ‘void add_task_commands()’:
+    ../../gdb-11.1/gdb/gnu-nat.c:3204:17: error: no matching function for call to ‘add_cmd(const char [8], command_class, cmd_list_element*&, char*, cmd_list_element**)’
+     3204 |         &setlist);
+          |                 ^
+    In file included from ../../gdb-11.1/gdb/completer.h:21,
+                     from ../../gdb-11.1/gdb/symtab.h:36,
+                     from ../../gdb-11.1/gdb/infrun.h:21,
+                     from ../../gdb-11.1/gdb/target.h:42,
+                     from ../../gdb-11.1/gdb/inf-child.h:23,
+                     from ../../gdb-11.1/gdb/gnu-nat.h:38,
+                     from ../../gdb-11.1/gdb/gnu-nat.c:24:
+    ../../gdb-11.1/gdb/command.h:160:33: note: candidate: ‘cmd_list_element* add_cmd(const char*, command_class, void (*)(const char*, int), const char*, cmd_list_element**)’
+      160 | extern struct cmd_list_element *add_cmd (const char *, enum command_class,
+          |                                 ^~~~~~~
+    ../../gdb-11.1/gdb/command.h:161:30: note:   no known conversion for argument 3 from ‘cmd_list_element*’ to ‘void (*)(const char*, int)’
+      161 |       cmd_const_cfunc_ftype *fun,
+          |       ~~~~~~~~~~~~~~~~~~~~~~~^~~
+    ../../gdb-11.1/gdb/command.h:167:33: note: candidate: ‘cmd_list_element* add_cmd(const char*, command_class, const char*, cmd_list_element**)’
+      167 | extern struct cmd_list_element *add_cmd (const char *, enum command_class,
+          |                                 ^~~~~~~
+    ../../gdb-11.1/gdb/command.h:167:33: note:   candidate expects 4 arguments, 5 provided
+    ../../gdb-11.1/gdb/gnu-nat.c:3210:18: error: no matching function for call to ‘add_cmd(const char [8], command_class, cmd_list_element*&, char*, cmd_list_element**)’
+     3210 |         &showlist);
+          |                  ^
+
+* gdb/gnu-nat.c (add_task_commands): Use a fresh variable instead of
+shadowing set_signals_cmd etc.
+(add_thread_commands): Likewise.
+---
+ gdb/gnu-nat.c | 33 +++++++++++++++++----------------
+ 1 file changed, 17 insertions(+), 16 deletions(-)
+
+diff --git a/gdb/gnu-nat.c b/gdb/gnu-nat.c
+index 8cd876b21d0..7aecc2295f8 100644
+--- a/gdb/gnu-nat.c
++++ b/gdb/gnu-nat.c
+@@ -3197,31 +3197,31 @@ Show whether new threads are allowed to run (once gdb has noticed them)."),
+ 	   _("Show the default detach-suspend-count value for new threads."),
+ 	   &show_thread_default_cmd_list);
+ 
+-  cmd_list_element *set_signals_cmd
++  cmd_list_element *set_signals_cmd_
+     = add_cmd ("signals", class_run, set_signals_cmd, _("\
+ Set whether the inferior process's signals will be intercepted.\n\
+ Mach exceptions (such as breakpoint traps) are not affected."),
+ 	       &setlist);
+-  add_alias_cmd ("sigs", set_signals_cmd, class_run, 1, &setlist);
++  add_alias_cmd ("sigs", set_signals_cmd_, class_run, 1, &setlist);
+ 
+-  cmd_list_element *show_signals_cmd
++  cmd_list_element *show_signals_cmd_
+     = add_cmd ("signals", no_class, show_signals_cmd, _("\
+ Show whether the inferior process's signals will be intercepted."),
+ 	       &showlist);
+-  add_alias_cmd ("sigs", show_signals_cmd, no_class, 1, &showlist);
++  add_alias_cmd ("sigs", show_signals_cmd_, no_class, 1, &showlist);
+ 
+-  cmd_list_element *set_signal_thread_cmd
++  cmd_list_element *set_signal_thread_cmd_
+     = add_cmd ("signal-thread", class_run, set_sig_thread_cmd, _("\
+ Set the thread that gdb thinks is the libc signal thread.\n\
+ This thread is run when delivering a signal to a non-stopped process."),
+ 	       &setlist);
+-  add_alias_cmd ("sigthread", set_signal_thread_cmd, class_run, 1, &setlist);
++  add_alias_cmd ("sigthread", set_signal_thread_cmd_, class_run, 1, &setlist);
+ 
+-  cmd_list_element *show_signal_thread_cmd
++  cmd_list_element *show_signal_thread_cmd_
+     = add_cmd ("signal-thread", no_class, show_sig_thread_cmd, _("\
+ Set the thread that gdb thinks is the libc signal thread."),
+ 	       &showlist);
+-  add_alias_cmd ("sigthread", show_signal_thread_cmd, no_class, 1, &showlist);
++  add_alias_cmd ("sigthread", show_signal_thread_cmd_, no_class, 1, &showlist);
+ 
+   add_cmd ("stopped", class_run, set_stopped_cmd, _("\
+ Set whether gdb thinks the inferior process is stopped as with SIGSTOP.\n\
+@@ -3231,13 +3231,13 @@ Stopped process will be continued by sending them a signal."),
+ Show whether gdb thinks the inferior process is stopped as with SIGSTOP."),
+ 	   &showlist);
+ 
+-  cmd_list_element *set_exceptions_cmd
++  cmd_list_element *set_exceptions_cmd_
+     = add_cmd ("exceptions", class_run, set_exceptions_cmd, _("\
+ Set whether exceptions in the inferior process will be trapped.\n\
+ When exceptions are turned off, neither breakpoints nor single-stepping\n\
+ will work."), &setlist);
+   /* Allow `set exc' despite conflict with `set exception-port'.  */
+-  add_alias_cmd ("exc", set_exceptions_cmd, class_run, 1, &setlist);
++  add_alias_cmd ("exc", set_exceptions_cmd_, class_run, 1, &setlist);
+ 
+   add_cmd ("exceptions", no_class, show_exceptions_cmd, _("\
+ Show whether exceptions in the inferior process will be trapped."),
+@@ -3269,14 +3269,14 @@ used to pause individual threads by default instead."),
+ 	     "on the thread when detaching."),
+ 	   &show_task_cmd_list);
+ 
+-  cmd_list_element *set_task_exception_port_cmd
++  cmd_list_element *set_task_exception_port_cmd_
+     = add_cmd ("exception-port", no_class, set_task_exc_port_cmd, _("\
+ Set the task exception port to which we forward exceptions.\n\
+ The argument should be the value of the send right in the task."),
+ 	       &set_task_cmd_list);
+-  add_alias_cmd ("excp", set_task_exception_port_cmd, no_class, 1,
++  add_alias_cmd ("excp", set_task_exception_port_cmd_, no_class, 1,
+ 		 &set_task_cmd_list);
+-  add_alias_cmd ("exc-port", set_task_exception_port_cmd, no_class, 1,
++  add_alias_cmd ("exc-port", set_task_exception_port_cmd_, no_class, 1,
+ 		 &set_task_cmd_list);
+ 
+   /* A convenient way of turning on all options require to noninvasively
+@@ -3464,14 +3464,15 @@ Note that this is relative to suspend count when gdb noticed the thread;\n\
+ use the `thread takeover-suspend-count' to force it to an absolute value."),
+ 	   &show_thread_cmd_list);
+ 
+-  add_cmd ("exception-port", no_class, set_thread_exc_port_cmd, _("\
++  cmd_list_element *set_thread_exception_port_cmd_
++    = add_cmd ("exception-port", no_class, set_thread_exc_port_cmd, _("\
+ Set the thread exception port to which we forward exceptions.\n\
+ This overrides the task exception port.\n\
+ The argument should be the value of the send right in the task."),
+ 	   &set_thread_cmd_list);
+-  add_alias_cmd ("excp", set_thread_exception_port_cmd, no_class, 1,
++  add_alias_cmd ("excp", set_thread_exception_port_cmd_, no_class, 1,
+ 		 &set_thread_cmd_list);
+-  add_alias_cmd ("exc-port", set_thread_exception_port_cmd, no_class, 1,
++  add_alias_cmd ("exc-port", set_thread_exception_port_cmd_, no_class, 1,
+ 		 &set_thread_cmd_list);
+ 
+   add_cmd ("takeover-suspend-count", no_class, thread_takeover_sc_cmd, _("\

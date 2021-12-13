@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2015, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
@@ -34,6 +34,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix utils)
+  #:use-module (guix gexp)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages bison)
@@ -50,6 +51,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-build)
   #:use-module (gnu packages python-check)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages sphinx)
@@ -63,48 +65,48 @@
 (define-public graphviz
   (package
     (name "graphviz")
-    (replacement graphviz/fixed)
-    (version "2.42.3")
+    (version "2.49.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://www2.graphviz.org/Packages/stable/portable_source/"
-                    "graphviz-" version ".tar.gz"))
+              (uri (string-append "https://gitlab.com/api/v4/projects/4207231"
+                                  "/packages/generic/graphviz-releases/"
+                                  version "/graphviz-" version ".tar.xz"))
               (sha256
                (base32
-                "1pbswjbx3fjdlsxcm7cmlsl5bvaa3d6gcnr0cr8x3c8pag13zbwg"))))
+                "042s6mbi681pwgffqww2ap780230nrsrfpfiz9a41dcjb5a0m524"))))
     (build-system gnu-build-system)
     (arguments
      ;; FIXME: rtest/rtest.sh is a ksh script (!).  Add ksh as an input.
-     '(#:tests? #f
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'move-docs
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out"))
-                   (doc (assoc-ref outputs "doc")))
-               (mkdir-p (string-append doc "/share/graphviz"))
-               (rename-file (string-append out "/share/graphviz/doc")
-                            (string-append doc "/share/graphviz/doc"))
-               #t)))
-         (add-after 'move-docs 'move-guile-bindings
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (lib (string-append out "/lib"))
-                    (extdir (string-append lib
-                                           "/guile/2.0/extensions")))
-               (mkdir-p extdir)
-               (rename-file (string-append
-                             lib "/graphviz/guile/libgv_guile.so")
-                            (string-append extdir
-                                           "/libgv_guile.so"))
-               #t))))))
+     (list #:tests? #f
+           #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'install 'move-docs
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (let ((out (assoc-ref outputs "out"))
+                         (doc (assoc-ref outputs "doc")))
+                     (mkdir-p (string-append doc "/share/graphviz"))
+                     (rename-file (string-append out "/share/graphviz/doc")
+                                  (string-append doc "/share/graphviz/doc")))))
+               (add-after 'move-docs 'move-guile-bindings
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (let* ((out (assoc-ref outputs "out"))
+                          (lib (string-append out "/lib"))
+                          (extdir (string-append lib "/guile/"
+                                                 #$(version-major+minor
+                                                    (package-version
+                                                     (this-package-input "guile")))
+                                                 "/extensions")))
+                     (mkdir-p extdir)
+                     (rename-file (string-append
+                                   lib "/graphviz/guile/libgv_guile.so")
+                                  (string-append extdir
+                                                 "/libgv_guile.so"))))))))
     (inputs
      `(("libXrender" ,libxrender)
        ("libX11" ,libx11)
        ("gts" ,gts)
-       ("gd" ,gd)                                 ; FIXME: Our GD is too old
-       ("guile" ,guile-2.0)                       ;Guile bindings
+       ("gd" ,gd)
+       ("guile" ,guile-3.0)                       ;Guile bindings
        ("pango" ,pango)
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
@@ -114,9 +116,7 @@
        ("libjpeg" ,libjpeg-turbo)
        ("libpng" ,libpng)))
     (native-inputs
-     `(("bison" ,bison)
-       ("swig" ,swig)
-       ("pkg-config" ,pkg-config)))
+     (list bison swig pkg-config))
     (outputs '("out" "doc"))                      ; 5 MiB of html + pdfs
     (home-page "https://www.graphviz.org/")
     (synopsis "Graph visualization software")
@@ -127,15 +127,6 @@ networks.  It has important applications in networking, bioinformatics,
 software engineering, database and web design, machine learning, and in visual
 interfaces for other technical domains.")
     (license license:epl1.0)))
-
-(define-public graphviz/fixed
-  (hidden-package
-    (package
-      (inherit graphviz)
-      (source (origin
-                (inherit (package-source graphviz))
-                (patches (append (search-patches "graphviz-CVE-2020-18032.patch")
-                                 (origin-patches (package-source graphviz)))))))))
 
 ;; Older Graphviz needed for pygraphviz.  See
 ;; https://github.com/pygraphviz/pygraphviz/issues/175
@@ -159,27 +150,28 @@ interfaces for other technical domains.")
       (arguments
        (substitute-keyword-arguments (package-arguments graphviz)
          ((#:phases phases)
-          `(modify-phases ,phases
-             (add-after 'unpack 'prepare-bootstrap
-               (lambda _
-                 (substitute* "autogen.sh"
-                   (("/bin/sh") (which "sh"))
-                   (("\\$GRAPHVIZ_VERSION_DATE") "0"))
-                 (setenv "CONFIG_SHELL" (which "sh"))
-                 (setenv "SHELL" (which "sh"))
+          #~(modify-phases #$phases
+              (add-after 'unpack 'prepare-bootstrap
+                (lambda _
+                  (substitute* "autogen.sh"
+                    (("/bin/sh") (which "sh"))
+                    (("\\$GRAPHVIZ_VERSION_DATE") "0"))
+                  (setenv "CONFIG_SHELL" (which "sh"))
+                  (setenv "SHELL" (which "sh"))
 
-                 (map make-file-writable (find-files "." ".*"))
-                 #t))
-             (replace 'bootstrap
-               (lambda _ (invoke (which "sh") "autogen.sh" "NOCONFIG") #t))))))
+                  (map make-file-writable (find-files "." ".*"))
+                  #t))
+              (replace 'bootstrap
+                (lambda _
+                  (invoke (which "sh") "autogen.sh" "NOCONFIG") #t))))))
       (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("libtool" ,libtool)
-         ("flex" ,flex)
-         ("perl" ,perl)
-         ("tcl" ,tcl)
-         ,@(package-native-inputs graphviz))))))
+       (modify-inputs (package-native-inputs graphviz)
+         (prepend autoconf
+                  automake
+                  libtool
+                  flex
+                  perl
+                  tcl))))))
 
 (define-public python-graphviz
   (package
@@ -201,14 +193,13 @@ interfaces for other technical domains.")
                           (format #t "test suite not run~%"))
                       #t)))))
     (native-inputs
-     `(("unzip" ,unzip)
-
-       ;; For tests.
-       ("graphviz" ,graphviz)
-       ("python-mock" ,python-mock)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)
-       ("python-pytest-mock" ,python-pytest-mock)))
+     (list unzip
+           ;; For tests.
+           graphviz
+           python-mock
+           python-pytest
+           python-pytest-cov
+           python-pytest-mock))
     (home-page "https://github.com/xflr6/graphviz")
     (synopsis "Simple Python interface for Graphviz")
     (description
@@ -222,7 +213,7 @@ visualization tool suite.")
 (define-public python-pygraphviz
   (package
     (name "python-pygraphviz")
-    (version "1.5")
+    (version "1.7")
     (source
      (origin
        (method git-fetch)
@@ -232,19 +223,13 @@ visualization tool suite.")
        (file-name (string-append "pygraphviz-" version "-checkout"))
        (sha256
         (base32
-         "1yldym38m8ckgflln83i88143pd9fjj1vfp23sq39fs6np5g0nzp"))))
+         "0jqc3dzy9n0hn3b99zq8jp53901zpjzvvi5ns5mbaxg8kdrb1lfx"))))
     (build-system python-build-system)
-    (arguments
-     `(#:configure-flags
-       (let ((graphviz (assoc-ref %build-inputs "graphviz")))
-         (list (string-append "--include-path=" graphviz "/include")
-               (string-append "--library-path=" graphviz "/lib")))))
     (inputs
-     `(("graphviz" ,graphviz-2.38)))
+     (list graphviz))
     (native-inputs
-     `(("python-nose" ,python-nose)
-       ("python-mock" ,python-mock)
-       ("python-doctest-ignore-unicode" ,python-doctest-ignore-unicode)))
+     (list python-nose python-mock python-pytest
+           python-doctest-ignore-unicode))
     (home-page "https://pygraphviz.github.io")
     (synopsis "Python interface to Graphviz")
     (description "PyGraphviz is a Python interface to the Graphviz graph
@@ -252,9 +237,6 @@ layout and visualization package.  With PyGraphviz you can create, edit, read,
 write, and draw graphs using Python to access the Graphviz graph data
 structure and layout algorithms.")
     (license license:bsd-3)))
-
-(define-public python2-pygraphviz
-  (package-with-python2 python-pygraphviz))
 
 (define-public python-uqbar
   (package
@@ -287,17 +269,15 @@ structure and layout algorithms.")
                (invoke "python" "-m" "pytest" "tests"))
              #t)))))
     (native-inputs
-     `(("graphviz" ,graphviz)
-       ("python-flake8" ,python-flake8)
-       ("python-isort" ,python-isort)
-       ("python-mypy" ,python-mypy)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)))
+     (list graphviz
+           python-flake8
+           python-isort
+           python-mypy
+           python-pytest
+           python-pytest-cov))
     (propagated-inputs
-     `(("python-black" ,python-black)
-       ("python-sphinx" ,python-sphinx)
-       ("python-sphinx-rtd-theme" ,python-sphinx-rtd-theme)
-       ("python-unidecode" ,python-unidecode)))
+     (list python-black python-sphinx python-sphinx-rtd-theme
+           python-unidecode))
     (home-page "https://github.com/josiah-wolf-oberholtzer/uqbar")
     (synopsis "Tools for building documentation with Sphinx, Graphviz and LaTeX")
     (description
@@ -329,10 +309,10 @@ Graphviz and LaTeX.")
        ;; See <http://sourceforge.net/p/gts/bugs/41/>.
        #:tests? #f))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (propagated-inputs
      ;; The gts.pc file has glib-2.0 as required.
-     `(("glib" ,glib)))
+     (list glib))
     (home-page "http://gts.sourceforge.net/")
 
     ;; Note: Despite the name, this is not official GNU software.
@@ -368,15 +348,14 @@ Graphviz and LaTeX.")
                     ":" (assoc-ref inputs "gdk-pixbuf") "/lib/girepository-1.0"
                     ":" (assoc-ref inputs "atk") "/lib/girepository-1.0")))
                `("PATH" ":" prefix
-                 (,(string-append (assoc-ref inputs "graphviz") "/bin"))))
-             #t)))))
+                 (,(dirname (search-input-file inputs "bin/dot"))))))))))
     (inputs
-     `(("atk" ,atk)
-       ("gdk-pixbuf" ,gdk-pixbuf+svg)
-       ("graphviz" ,graphviz)
-       ("gtk+" ,gtk+)
-       ("python-pycairo" ,python-pycairo)
-       ("python-pygobject" ,python-pygobject)))
+     (list atk
+           librsvg
+           graphviz
+           gtk+
+           python-pycairo
+           python-pygobject))
     (home-page "https://pypi.org/project/xdot/")
     (synopsis "Interactive viewer for graphviz dot files")
     (description "Xdot is an interactive viewer for graphs written in
@@ -411,10 +390,9 @@ can be used either as a standalone application, or as a Python library.")
              #t)))))
     (native-inputs
      ;; For tests.
-     `(("graphviz" ,graphviz)
-       ("python-chardet" ,python-chardet)))
+     (list graphviz python-chardet))
     (propagated-inputs
-     `(("python-pyparsing" ,python-pyparsing)))
+     (list python-pyparsing))
     (home-page "https://github.com/pydot/pydot")
     (synopsis "Python interface to Graphviz's DOT language")
     (description
@@ -439,10 +417,9 @@ graphs in Graphviz's DOT language, written in pure Python.")
     (arguments
      `(#:python ,python-2))
     (inputs
-     `(("texlive-latex-preview" ,texlive-latex-preview)
-       ("graphviz" ,graphviz)))
+     (list texlive-latex-preview graphviz))
     (propagated-inputs
-     `(("python-pyparsing" ,python2-pyparsing)))
+     (list python2-pyparsing))
     (home-page "https://github.com/kjellmf/dot2tex")
     (synopsis "Graphviz to LaTeX converter")
     (description
@@ -482,7 +459,7 @@ This approach allows:
                (add-installed-pythonpath inputs outputs)
                (invoke "python" "tests/test.py")))))))
     (native-inputs
-     `(("graphviz" ,graphviz)))
+     (list graphviz))
     (home-page "https://github.com/jrfonseca/gprof2dot")
     (synopsis "Generate a dot graph from the output of several profilers")
     (description "This package provides a Python script to convert the output

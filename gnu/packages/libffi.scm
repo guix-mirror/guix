@@ -2,11 +2,11 @@
 ;;; Copyright © 2012, 2013, 2014, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015, 2019 Ricardo Wurmus <ricardo.wurmus@mdc-berlin.de>
-;;; Copyright © 2016, 2017, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017, 2019, 2020 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2019, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 John Doe <dftxbs3e@free.fr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -51,45 +51,15 @@
                               name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0mi0cpf8aa40ljjmzxb7im6dbj45bb0kllcd09xgmp834y9agyvj"))))
+                "0mi0cpf8aa40ljjmzxb7im6dbj45bb0kllcd09xgmp834y9agyvj"))
+              (patches (search-patches "libffi-3.3-powerpc-fixes.patch"
+                                       "libffi-float128-powerpc64le.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(;; Prevent the build system from passing -march and -mtune to the
        ;; compiler.  See "ax_cc_maxopt.m4" and "ax_gcc_archflag.m4".
-       #:configure-flags '("--enable-portable-binary" "--without-gcc-arch")
-
-       ;; TODO: Inline patches on next rebuild cycle.
-       ,@(if (string-prefix? "powerpc-" (or (%current-target-system)
-                                            (%current-system)))
-             '(#:phases (modify-phases %standard-phases
-                          (add-after 'unpack 'apply-patch
-                            (lambda* (#:key inputs #:allow-other-keys)
-                              (let ((patch (assoc-ref inputs
-                                                      "powerpc-patch")))
-                                (invoke "patch" "--force" "-p1"
-                                        "-i" patch))))))
-             '())
-       ,@(if (string-prefix? "powerpc64le-" (or (%current-target-system)
-                                                (%current-system)))
-             '(#:phases (modify-phases %standard-phases
-                          (add-after 'unpack 'apply-patch2
-                            (lambda* (#:key inputs #:allow-other-keys)
-                              (let ((patch (assoc-ref inputs
-                                                      "powerpc64le-patch")))
-                                (invoke "patch" "--force" "-p1"
-                                        "-i" patch))))))
-             '())))
-    (inputs
-     (cond
-      ((string-prefix? "powerpc-" (or (%current-target-system)
-                                        (%current-system)))
-       `(("powerpc-patch" ,@(search-patches
-                             "libffi-3.3-powerpc-fixes.patch"))))
-      ((string-prefix? "powerpc64le-" (or (%current-target-system)
-                                          (%current-system)))
-       `(("powerpc64le-patch" ,@(search-patches
-                                 "libffi-float128-powerpc64le.patch"))))
-      (else '())))
+       #:configure-flags '("--enable-portable-binary"
+                           "--without-gcc-arch")))
     (outputs '("out" "debug"))
     (synopsis "Foreign function call interface library")
     (description
@@ -121,27 +91,16 @@ conversions for values passed between the two languages.")
        (base32 "0v080s7vlrjz9z823x2yh36yc8drwpvvir6w8wfkkzd7k2z5qihs"))))
     (build-system python-build-system)
     (inputs
-     `(("libffi" ,libffi)))
+     (list libffi))
     (propagated-inputs ; required at run-time
-     `(("python-pycparser" ,python-pycparser)))
+     (list python-pycparser))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("python-pytest" ,python-pytest)))
+     (list pkg-config python-pytest))
     (arguments
-     `(#:modules ((ice-9 ftw)
-                  (srfi srfi-26)
-                  (guix build utils)
-                  (guix build python-build-system))
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (setenv "PYTHONPATH"
-                     (string-append
-                      (getenv "PYTHONPATH")
-                      ":" (getcwd) "/build/"
-                      (car (scandir "build" (cut string-prefix? "lib." <>)))))
-
              ;; XXX The "normal" approach of setting CC and friends does
              ;; not work here.  Is this the correct way of doing things?
              (substitute* "testing/embedding/test_basic.py"
@@ -152,8 +111,7 @@ conversions for values passed between the two languages.")
                                "linker_so='gcc -shared')")))
              (substitute* "testing/cffi0/test_ownlib.py"
                (("\"cc testownlib") "\"gcc testownlib"))
-             (invoke "py.test" "-v" "c/" "testing/")
-             #t))
+             (invoke "py.test" "-v" "c/" "testing/")))
          (add-before 'check 'patch-paths-of-dynamically-loaded-libraries
            (lambda* (#:key inputs #:allow-other-keys)
              ;; Shared libraries should be referred by their absolute path as
@@ -176,8 +134,7 @@ conversions for values passed between the two languages.")
                   (format #f "lib_m = ['~a']" libm)))
                (substitute* "c/test_c.py"
                  (("find_and_load_library\\(['\"]{1}c['\"]{1}")
-                  (format #f "find_and_load_library('~a'" libc)))
-               #t))))))
+                  (format #f "find_and_load_library('~a'" libc)))))))))
     (home-page "https://cffi.readthedocs.io/")
     (synopsis "Foreign function interface for Python")
     (description "Foreign Function Interface for Python calling C code.")
@@ -273,11 +230,9 @@ project.")
                  (format #t "test suite not run~%"))
              #t)))))
     (native-inputs
-     `(("ruby-rake-compiler" ,ruby-rake-compiler)
-       ("ruby-rspec" ,ruby-rspec)
-       ("ruby-rubygems-tasks" ,ruby-rubygems-tasks)))
+     (list ruby-rake-compiler ruby-rspec ruby-rubygems-tasks))
     (inputs
-     `(("libffi" ,libffi)))
+     (list libffi))
     (synopsis "Ruby foreign function interface library")
     (description "Ruby-FFI is a Ruby extension for programmatically loading
 dynamic libraries, binding functions within them, and calling those functions

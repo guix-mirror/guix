@@ -170,6 +170,7 @@
             %setuid-programs
             %sudoers-specification
             %base-packages
+            %base-packages-artwork
             %base-packages-interactive
             %base-packages-linux
             %base-packages-networking
@@ -266,6 +267,7 @@
                       (default (operating-system-default-essential-services
                                 this-operating-system)))
   (services operating-system-user-services        ; list of services
+            (thunked)                     ;allow for system-dependent services
             (default %base-services))
 
   (pam-services operating-system-pam-services     ; list of PAM services
@@ -789,6 +791,10 @@ of PROVENANCE-SERVICE-TYPE to its services."
   (list ath9k-htc-firmware
         openfwwf-firmware))
 
+(define %base-packages-artwork
+  ;; Default set of artwork packages.
+  (list guix-icons))
+
 (define %base-packages-utils
   ;; Default set of  utilities packages.
  (cons* procps psmisc which
@@ -850,6 +856,7 @@ of PROVENANCE-SERVICE-TYPE to its services."
   ;; Default set of packages globally visible.  It should include anything
   ;; required for basic administrator tasks.
   (append (list e2fsprogs)
+          %base-packages-artwork
           %base-packages-interactive
           %base-packages-linux
           %base-packages-networking
@@ -880,6 +887,19 @@ syntactically correct."
                        (invoke #+(file-append sudo "/sbin/visudo")
                                "--check" "--file" #$file)
                        (copy-file #$file #$output)))))
+
+(define (os-release)
+  (plain-file "os-release"
+              "\
+NAME=\"Guix System\"
+ID=guix
+PRETTY_NAME=\"Guix System\"
+LOGO=guix-icon
+HOME_URL=\"https://guix.gnu.org\"
+DOCUMENTATION_URL=\"https://guix.gnu.org/en/manual\"
+SUPPORT_URL=\"https://guix.gnu.org/en/help\"
+BUG_REPORT_URL=\"https://lists.gnu.org/mailman/listinfo/bug-guix\"
+"))
 
 (define* (operating-system-etc-service os)
   "Return a <service> that builds a directory containing the static part of
@@ -986,7 +1006,8 @@ then
   source /run/current-system/profile/etc/profile.d/bash_completion.sh
 fi\n")))
     (etc-service
-     `(("services" ,(file-append net-base "/etc/services"))
+     `(("os-release" ,#~#$(os-release))
+       ("services" ,(file-append net-base "/etc/services"))
        ("protocols" ,(file-append net-base "/etc/protocols"))
        ("rpc" ,(file-append net-base "/etc/rpc"))
        ("login.defs" ,#~#$login.defs)

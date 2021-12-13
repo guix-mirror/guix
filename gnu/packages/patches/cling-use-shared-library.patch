@@ -1,0 +1,329 @@
+From 811f0a575231496318b5e9c9a0ff0ed195b16dc0 Mon Sep 17 00:00:00 2001
+From: Maxim Cournoyer <maxim.cournoyer@gmail.com>
+Date: Tue, 7 Sep 2021 16:35:07 -0400
+Subject: [PATCH] build: Allow building Cling using the Clang shared library.
+
+The officially supported way to build LLVM/Clang as a shared library
+is via the LLVM_BUILD_LLVM_DYLIB and LLVM_LINK_LLVM_DYLIB CMake
+options (see: https://llvm.org/docs/BuildingADistribution.html).  When
+built this way, the whole of Clang API is exposed as a shared
+library (libclang-cpp.so).
+
+* CMakeLists.txt: Query if we're in shared mode via llvm-config, and
+register the result as LLVM_LIB_IS_SHARED.
+[LLVM_LIB_IS_SHARED] <target_link_libraries>: Use the PUBLIC interface of the
+LLVM shared library.
+* lib/Interpreter/CMakeLists.txt [LLVM_LIB_IS_SHARED]: When defined, replace the
+individual Clang components by clang-cpp.
+* lib/MetaProcessor/CMakeLists.txt: Likewise.
+* lib/Utils/CMakeLists.txt: Likewise.
+* tools/Jupyter/CMakeLists.txt: Likewise.
+* tools/driver/CMakeLists.txt: Likewise.
+* tools/libcling/CMakeLists.txt: Likewise.
+---
+ CMakeLists.txt                   | 10 ++++++--
+ lib/Interpreter/CMakeLists.txt   | 40 ++++++++++++++++++--------------
+ lib/MetaProcessor/CMakeLists.txt | 16 +++++++++----
+ lib/Utils/CMakeLists.txt         | 34 +++++++++++++++------------
+ tools/Jupyter/CMakeLists.txt     | 11 ++++++++-
+ tools/driver/CMakeLists.txt      | 16 +++----------
+ tools/libcling/CMakeLists.txt    | 38 +++++++++++++++---------------
+ 7 files changed, 93 insertions(+), 72 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 65b14b27..888f7ee9 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -23,6 +23,7 @@ if( CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR )
+       "--libdir"
+       "--includedir"
+       "--prefix"
++      "--shared-mode"
+       "--src-root")
+     execute_process(
+       COMMAND ${CONFIG_COMMAND}
+@@ -47,7 +48,8 @@ if( CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR )
+   list(GET CONFIG_OUTPUT 2 LIBRARY_DIR)
+   list(GET CONFIG_OUTPUT 3 INCLUDE_DIR)
+   list(GET CONFIG_OUTPUT 4 LLVM_OBJ_ROOT)
+-  list(GET CONFIG_OUTPUT 5 MAIN_SRC_DIR)
++  list(GET CONFIG_OUTPUT 5 LLVM_LIB_IS_SHARED)
++  list(GET CONFIG_OUTPUT 6 MAIN_SRC_DIR)
+ 
+   if(NOT MSVC_IDE)
+     set(LLVM_ENABLE_ASSERTIONS ${ENABLE_ASSERTIONS}
+@@ -427,7 +429,11 @@ macro(add_cling_library name)
+   endif()
+ 
+   if(TARGET ${name})
+-    target_link_libraries(${name} INTERFACE ${LLVM_COMMON_LIBS})
++      if(LLVM_LIB_IS_SHARED)
++          target_link_libraries(${name} PUBLIC LLVM)
++      else()
++          target_link_libraries(${name} INTERFACE ${LLVM_COMMON_LIBS})
++      endif()
+ 
+     if (NOT LLVM_INSTALL_TOOLCHAIN_ONLY OR ${name} STREQUAL "libcling")
+       install(TARGETS ${name}
+diff --git a/lib/Interpreter/CMakeLists.txt b/lib/Interpreter/CMakeLists.txt
+index 921c773c..af65c020 100644
+--- a/lib/Interpreter/CMakeLists.txt
++++ b/lib/Interpreter/CMakeLists.txt
+@@ -6,22 +6,28 @@
+ # LICENSE.TXT for details.
+ #------------------------------------------------------------------------------
+ 
+-set(LIBS
+-  clingUtils
+-  clangCodeGen
+-  clangDriver
+-  clangFrontend
+-  clangParse
+-  clangSema
+-  clangAnalysis
+-  clangEdit
+-  clangRewrite
+-  clangRewriteFrontend
+-  clangSerialization
+-  clangAST
+-  clangBasic
+-  clangLex
+-)
++if (LLVM_LIB_IS_SHARED)
++    set(LIBS
++        clang-cpp
++        clingUtils)
++else()
++    set(LIBS
++        clingUtils
++        clangCodeGen
++        clangDriver
++        clangFrontend
++        clangParse
++        clangSema
++        clangAnalysis
++        clangEdit
++        clangRewrite
++        clangRewriteFrontend
++        clangSerialization
++        clangAST
++        clangBasic
++        clangLex
++        )
++endif()
+ 
+ set(LLVM_LINK_COMPONENTS
+   analysis
+@@ -369,4 +375,4 @@ if ((NOT builtin_llvm) AND builtin_clang)
+   get_property(P SOURCE TransactionUnloader.cpp PROPERTY INCLUDE_DIRECTORIES)
+   list(INSERT P 0 ${FixInclude})
+   set_property(SOURCE TransactionUnloader.cpp PROPERTY INCLUDE_DIRECTORIES "${P}")
+-endif()
+\ No newline at end of file
++endif()
+diff --git a/lib/MetaProcessor/CMakeLists.txt b/lib/MetaProcessor/CMakeLists.txt
+index e753dca3..5f4641bb 100644
+--- a/lib/MetaProcessor/CMakeLists.txt
++++ b/lib/MetaProcessor/CMakeLists.txt
+@@ -10,7 +10,16 @@ set( LLVM_LINK_COMPONENTS
+   core
+   support
+   binaryformat
+-)
++  )
++
++if (LLVM_LIB_IS_SHARED)
++    set(LIBS clang-cpp)
++else()
++    set(LIBS
++        clangLex
++        clangAST
++        clangBasic)
++endif()
+ 
+ add_cling_library(clingMetaProcessor OBJECT
+   Display.cpp
+@@ -21,10 +30,7 @@ add_cling_library(clingMetaProcessor OBJECT
+   MetaSema.cpp
+ 
+   LINK_LIBS
+-  clangLex
+-  clangAST
+-  clangBasic
+-
++  ${LIBS}
+   clingInterpreter
+   clingUtils
+ )
+diff --git a/lib/Utils/CMakeLists.txt b/lib/Utils/CMakeLists.txt
+index 327c9fff..fbe4bd87 100644
+--- a/lib/Utils/CMakeLists.txt
++++ b/lib/Utils/CMakeLists.txt
+@@ -26,21 +26,25 @@ set(LLVM_LINK_COMPONENTS
+   ${LLVM_TARGETS_TO_BUILD}
+ )
+ 
+-set(LIBS
+-  clangCodeGen
+-  clangDriver
+-  clangFrontend
+-  clangParse
+-  clangSema
+-  clangAnalysis
+-  clangEdit
+-  clangRewrite
+-  clangRewriteFrontend
+-  clangSerialization
+-  clangAST
+-  clangBasic
+-  clangLex
+-)
++if (LLVM_LIB_IS_SHARED)
++    set(LIBS clang-cpp)
++else()
++    set(LIBS
++        clangCodeGen
++        clangDriver
++        clangFrontend
++        clangParse
++        clangSema
++        clangAnalysis
++        clangEdit
++        clangRewrite
++        clangRewriteFrontend
++        clangSerialization
++        clangAST
++        clangBasic
++        clangLex
++        )
++endif()
+ 
+ find_library(DL_LIBRARY_PATH dl)
+ if (DL_LIBRARY_PATH)
+diff --git a/tools/Jupyter/CMakeLists.txt b/tools/Jupyter/CMakeLists.txt
+index aad5f3f7..8b4ac36f 100644
+--- a/tools/Jupyter/CMakeLists.txt
++++ b/tools/Jupyter/CMakeLists.txt
+@@ -39,6 +39,14 @@ else()
+    endif()
+ endif()
+ 
++if (LLVM_LIB_IS_SHARED)
++    set(LIBS
++        clang-cpp
++        clingUserInterface
++        clingMetaProcessor
++        ${INTERPRETER}
++        clingUtils)
++else()
+ set(LIBS
+         clangAST
+         clangBasic
+@@ -54,7 +62,8 @@ set(LIBS
+         clingMetaProcessor
+         ${INTERPRETER}
+         clingUtils
+-    )
++        )
++endif()
+ 
+ if( LLVM_ENABLE_PIC )
+     set(ENABLE_SHARED SHARED)
+diff --git a/tools/driver/CMakeLists.txt b/tools/driver/CMakeLists.txt
+index 1968b97f..5ed53fb7 100644
+--- a/tools/driver/CMakeLists.txt
++++ b/tools/driver/CMakeLists.txt
+@@ -9,23 +9,13 @@
+ # Keep symbols for JIT resolution
+ set(LLVM_NO_DEAD_STRIP 1)
+ 
+-if(BUILD_SHARED_LIBS)
+-  set(LIBS
+-    LLVMSupport
+-
+-    clangFrontendTool
+-
+-    clingInterpreter
+-    clingMetaProcessor
+-    clingUserInterface
+-    clingUtils
+-  )
++if(LLVM_LIB_IS_SHARED)
++  set(LIBS clang-cpp clingUserInterface)
+   add_cling_executable(cling
+     cling.cpp
+   )
+ else()
+   set(LIBS
+-    LLVMSupport
+ 
+     clangASTMatchers
+     clangFrontendTool
+@@ -38,7 +28,7 @@ else()
+     $<TARGET_OBJECTS:obj.clingMetaProcessor>
+     $<TARGET_OBJECTS:obj.clingUtils>
+   )
+-endif(BUILD_SHARED_LIBS)
++endif(LLVM_LIB_IS_SHARED)
+ 
+ set_target_properties(cling
+   PROPERTIES ENABLE_EXPORTS 1)
+diff --git a/tools/libcling/CMakeLists.txt b/tools/libcling/CMakeLists.txt
+index 143d3bdb..ba000d44 100644
+--- a/tools/libcling/CMakeLists.txt
++++ b/tools/libcling/CMakeLists.txt
+@@ -10,21 +10,25 @@ set(SOURCES
+   ADDITIONAL_HEADERS
+   )
+ 
+-set(LIBS
+-  clangAnalysis
+-  clangDriver
+-  clangFrontend
+-  clangParse
+-  clangSema
+-  clangAST
+-  clangLex
+-  clangSerialization
+-  clangCodeGen
+-  clangBasic
+-  clangEdit
+-
+-  clingUtils
+-)
++if (LLVM_LIB_IS_SHARED)
++    set(LIBS clang-cpp)
++else()
++    set(LIBS
++        clangAnalysis
++        clangDriver
++        clangFrontend
++        clangParse
++        clangSema
++        clangAST
++        clangLex
++        clangSerialization
++        clangCodeGen
++        clangBasic
++        clangEdit
++
++        clingUtils
++        )
++endif()
+ 
+ set( LLVM_LINK_COMPONENTS
+   analysis
+@@ -63,10 +67,6 @@ option(LIBCLING_BUILD_STATIC
+ #  set(LLVM_EXPORTED_SYMBOL_FILE)
+ #endif()
+ 
+-if( LLVM_ENABLE_PIC )
+-  set(ENABLE_SHARED SHARED)
+-endif()
+-
+ if((NOT LLVM_ENABLE_PIC OR LIBCLING_BUILD_STATIC) AND NOT WIN32)
+   set(ENABLE_STATIC STATIC)
+ endif()
+-- 
+2.33.0
+

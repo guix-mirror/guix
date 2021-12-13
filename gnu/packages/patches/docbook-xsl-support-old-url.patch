@@ -1,0 +1,17 @@
+Docbook 1.79.2 makes very few changes apart from changing the canonical URL
+to cdn.docbook.org.  This patch adds support for the previous URL to avoid
+breaking packages that still use that.
+
+Adapted from Debian:
+https://salsa.debian.org/debian/docbook-xsl/-/blob/master/debian/patches/0005-catalog.xml-Compatibility-with-1.79.1-or-earlier.patch
+
+--- a/catalog.xml
++++ b/catalog.xml
+@@ -5,4 +5,7 @@
+   <rewriteSystem systemIdStartString="http://cdn.docbook.org/release/xsl/current/" rewritePrefix="./"/>
+   <rewriteURI uriStartString="http://cdn.docbook.org/release/xsl/1.79.2/" rewritePrefix="./"/>
+   <rewriteSystem systemIdStartString="http://cdn.docbook.org/release/xsl/1.79.2/" rewritePrefix="./"/>
++  <!-- Also support old URI of v1.79.1 or earlier -->
++  <rewriteURI uriStartString="http://docbook.sourceforge.net/release/xsl/current/" rewritePrefix="./"/>
++  <rewriteSystem systemIdStartString="http://docbook.sourceforge.net/release/xsl/current/" rewritePrefix="./"/>
+ </catalog>

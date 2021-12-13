@@ -115,7 +115,7 @@ desktop.")
 (define-public sideload
   (package
     (name "sideload")
-    (version "1.1.1")
+    (version "6.0.2")
     (source
      (origin
        (method git-fetch)
@@ -125,27 +125,22 @@ desktop.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0mlc3nm2navzxm8k1rwpbw4w6mv30lmhqybm8jqxd4v8x7my73vq"))))
+         "0abpcawmmv5mgzk2i5n9rlairmjr2v9rg9b8c9g7xa085s496bi9"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
-       #:configure-flags (list (string-append "-Dflatpak="
-                                              (assoc-ref %build-inputs "flatpak")
-                                              "/include"))
        #:phases
        (modify-phases %standard-phases
          (add-before 'install 'set-environment-variables
            (lambda _
              ;; Disable compiling schemas and updating desktop databases
-             (setenv "DESTDIR" "/")
-             #t))
+             (setenv "DESTDIR" "/")))
          (add-after 'install 'install-symlinks
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (bin (string-append out "/bin/io.elementary.sideload"))
                     (link (string-append out "/bin/sideload")))
-               (symlink bin link)
-               #t))))))
+               (symlink bin link)))))))
     (inputs
      `(("flatpak" ,flatpak)
        ("glib" ,glib)
@@ -153,13 +148,13 @@ desktop.")
        ("gtk" ,gtk+)
        ("hicolor-icon-theme" ,hicolor-icon-theme)
        ("libgee" ,libgee)
+       ("libhandy" ,libhandy)
        ("libostree" ,libostree)
        ("libxml2" ,libxml2)))
     (propagated-inputs
      ;; Sideload needs these in the environment to fetch data securely from
      ;; Flatpak remotes.
-     `(("gnupg" ,gnupg)
-       ("gpgme" ,gpgme)))
+     (list gnupg gpgme))
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin")

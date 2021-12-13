@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;; Copyright © 2021 Brice Waegeneire <brice@waegenei.re>
@@ -301,9 +301,18 @@ tuples, are all set as environment variables when the bus daemon launches it."
   polkit-configuration make-polkit-configuration
   polkit-configuration?
   (polkit   polkit-configuration-polkit           ;file-like
-            (default polkit))
+            (default %default-polkit))
   (actions  polkit-configuration-actions          ;list of file-like
             (default '())))
+
+(define %default-polkit
+  ;; The default polkit package.
+  (let-system (system target)
+    ;; Since mozjs depends on Rust, which is currently x86_64-only, use
+    ;; polkit-duktape on other systems.
+    (if (string-prefix? "x86_64-" (or target system))
+        polkit-mozjs
+        polkit-duktape)))
 
 (define %polkit-accounts
   (list (user-group (name "polkitd") (system? #t))

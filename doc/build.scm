@@ -725,7 +725,7 @@ makeinfo OPTIONS."
   ;; accented letters.
   ;;
   ;; (define texlive
-  ;;   (texlive-union (list texlive-tex-texinfo
+  ;;   (texlive-updmap.cfg (list texlive-tex-texinfo
   ;;                        texlive-generic-epsf
   ;;                        texlive-fonts-ec)))
 

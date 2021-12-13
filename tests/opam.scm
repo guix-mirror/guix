@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
+;;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -101,13 +102,9 @@ url {
                                ('base32
                                 (? string? hash)))))
                    ('build-system 'ocaml-build-system)
-                   ('propagated-inputs
-                    ('quasiquote
-                     (("ocaml-zarith" ('unquote 'ocaml-zarith)))))
+                   ('propagated-inputs ('list 'ocaml-zarith))
                    ('native-inputs
-                    ('quasiquote
-                     (("ocaml-alcotest" ('unquote 'ocaml-alcotest))
-                      ("ocamlbuild" ('unquote 'ocamlbuild)))))
+                    ('list 'ocaml-alcotest 'ocamlbuild))
                    ('home-page "https://example.org/")
                    ('synopsis "Some example package")
                    ('description "This package is just an example.")

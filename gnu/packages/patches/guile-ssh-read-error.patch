@@ -1,0 +1,18 @@
+This patch adjusts to slightly different 'read-error' in Guile 3.0.6
+compared to earlier versions:
+
+  https://github.com/artyom-poptsov/guile-ssh/issues/28
+
+--- a/tests/dist.scm
++++ b/tests/dist.scm
+@@ -183,8 +183,8 @@ Unbound variable: e"
+    rrepl-get-result))
+ 
+ (test-error-with-log/= "rrepl-get-result, unknown # object error"
+-  'node-repl-error "Reader error: scm_lreadr: #<unknown port>:1:3: \
+-Unknown # object: (#\\<): scheme@(guile-user)> \
++  'node-repl-error "Reader error: #f: #<unknown port>:1:3: \
++Unknown # object: (\"#<\"): scheme@(guile-user)> \
+ $4 = #<session #<undefined>@#<undefined>:22 (disconnected) 453fff>"
+   (call-with-input-string
+    (string-append  "scheme@(guile-user)> $4 = "

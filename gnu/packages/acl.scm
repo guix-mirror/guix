@@ -40,7 +40,7 @@
 (define-public acl
   (package
     (name "acl")
-    (version "2.2.53")
+    (version "2.3.1")
     (source
      (origin
       (method url-fetch)
@@ -48,7 +48,7 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "1ir6my3w74s6nfbgbqgzj6w570sn0qjf3524zx8xh67lqrjrigh6"))))
+        "1bqi7hj0xkpivwg7lx5cv3yvs9ks1i6azvpgbvfpzcq1i736233n"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((ice-9 ftw)
@@ -86,7 +86,7 @@
                ((".*test/cp\\.test.*") "")
                ((".*test/setfacl-X\\.test.*") ""))
              #t)))))
-    (inputs `(("attr" ,attr)))
+    (inputs (list attr))
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("perl" ,perl)))
@@ -125,8 +125,8 @@
              (when tests?
                (add-installed-pythonpath inputs outputs)
                (invoke "pytest" "tests")))))))
-    (inputs `(("acl" ,acl)))
-    (native-inputs `(("python-pytest" ,python-pytest)))
+    (inputs (list acl))
+    (native-inputs (list python-pytest))
     (home-page "https://pylibacl.k1024.org/")
     (synopsis "POSIX.1e @acronym{ACLs, access control lists} for Python")
     (description

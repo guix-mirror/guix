@@ -6,6 +6,7 @@
 ;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,6 +28,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
+  #:use-module (guix build utils)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
@@ -84,9 +86,9 @@
      `(("pkg-config" ,pkg-config)
        ("python" ,python-wrapper)))
     (inputs
-     `(("mesa" ,mesa)))
+     (list mesa))
     (propagated-inputs
-     `(("libxkbcommon" ,libxkbcommon)))
+     (list libxkbcommon))
     (synopsis "General-purpose library for WPE")
     (description "LibWPE is general-purpose library specifically developed for
 the WPE-flavored port of WebKit.")
@@ -108,12 +110,9 @@ the WPE-flavored port of WebKit.")
     (arguments
      `(#:tests? #f))                    ;no tests
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("glib" ,glib)
-       ("libwpe" ,libwpe)
-       ("mesa" ,mesa)
-       ("wayland" ,wayland)))
+     (list glib libwpe mesa wayland))
     (home-page "https://wpewebkit.org/")
     (synopsis "Wayland WPE backend")
     (description
@@ -239,7 +238,7 @@ acceleration in mind, leveraging common 3D graphics APIs for best performance.")
               (patches (search-patches "webkitgtk-share-store.patch"
                                        "webkitgtk-bind-all-fonts.patch"))))
     (build-system cmake-build-system)
-    (outputs '("out" "doc"))
+    (outputs '("out" "doc" "debug"))
     (arguments
      `(#:tests? #f ; no tests
        #:build-type "Release" ; turn off debugging symbols to save space
@@ -253,10 +252,6 @@ acceleration in mind, leveraging common 3D graphics APIs for best performance.")
                           (string-append ; uses lib64 by default
                            "-DLIB_INSTALL_DIR="
                            (assoc-ref %outputs "out") "/lib")
-
-                          ;; XXX TODO: Use libsoup@3.
-                          "-DUSE_SOUP2=ON"
-
                           ;; XXX Adding GStreamer GL support would apparently
                           ;; require adding gst-plugins-bad to the inputs,
                           ;; which might entail a security risk as a result of
@@ -277,8 +272,7 @@ acceleration in mind, leveraging common 3D graphics APIs for best performance.")
              (let ((store-directory (%store-directory)))
                (substitute*
                    "Source/WebKit/UIProcess/Launcher/glib/BubblewrapLauncher.cpp"
-                 (("@storedir@") store-directory))
-               #t)))
+                 (("@storedir@") store-directory)))))
          (add-after 'unpack 'patch-gtk-doc-scan
            (lambda* (#:key inputs #:allow-other-keys)
              (for-each (lambda (file)
@@ -286,27 +280,13 @@ acceleration in mind, leveraging common 3D graphics APIs for best performance.")
                            (("http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd")
                             (string-append (assoc-ref inputs "docbook-xml")
                                            "/xml/dtd/docbook/docbookx.dtd"))))
-                       (find-files "Source" "\\.sgml$"))
-             #t))
+                       (find-files "Source" "\\.sgml$"))))
          (add-after 'unpack 'embed-absolute-wpebackend-reference
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((wpebackend-fdo (assoc-ref inputs "wpebackend-fdo")))
                (substitute* "Source/WebKit/UIProcess/glib/WebProcessPoolGLib.cpp"
                  (("libWPEBackend-fdo-([\\.0-9]+)\\.so" all version)
-                  (string-append wpebackend-fdo "/lib/" all)))
-               #t)))
-         (add-before 'configure 'prepare-build-environment
-           (lambda* (#:key inputs #:allow-other-keys)
-             (setenv "CC" "clang")
-             (setenv "CXX" "clang++")
-             ;; XXX Until we switch back to using GCC,
-             ;; work around <https://bugs.gnu.org/51591>.
-             ,@(if (target-x86-32?)
-                   '((substitute* "Source/WTF/wtf/CheckedArithmetic.h"
-                       (("#define USE_MUL_OVERFLOW 1")
-                        "#define USE_MUL_OVERFLOW 0")))
-                   '())
-             #t))
+                  (string-append wpebackend-fdo "/lib/" all))))))
          ,@(if (target-x86-64?)
                '()
                '((add-after 'unpack 'disable-sse2
@@ -320,11 +300,9 @@ acceleration in mind, leveraging common 3D graphics APIs for best performance.")
                    (doc (assoc-ref outputs "doc")))
                (mkdir-p (string-append doc "/share"))
                (rename-file (string-append out "/share/gtk-doc")
-                            (string-append doc "/share/gtk-doc"))
-               #t))))))
+                            (string-append doc "/share/gtk-doc"))))))))
     (native-inputs
-     `(("clang" ,clang-11)
-       ("bison" ,bison)
+     `(("bison" ,bison)
        ("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin") ; for glib-mkenums, etc.
        ("gobject-introspection" ,gobject-introspection)
@@ -336,8 +314,7 @@ acceleration in mind, leveraging common 3D graphics APIs for best performance.")
        ("docbook-xml" ,docbook-xml) ; For documentation generation
        ("ruby" ,ruby)))
     (propagated-inputs
-     `(("gtk+" ,gtk+)
-       ("libsoup" ,libsoup)))
+     (list gtk+ libsoup))
     (inputs
      `(("at-spi2-core" ,at-spi2-core)
        ("bubblewrap" ,bubblewrap)
@@ -380,3 +357,18 @@ HTML/CSS applications to full-fledged web browsers.")
                    license:lgpl2.1+
                    license:bsd-2
                    license:bsd-3))))
+
+;;; Required by gnome-online-accounts; as webkitgtk 2.34 propagates libsoup 3,
+;;; which causes the build to fail.
+;;; Also required by e.g. emacs-next-pgtk,  emacs-xwidgets, and some other
+;;; Gnome packages for webkit2gtk-4.0. See also the upstream tracker for
+;;; libsoup 3: https://gitlab.gnome.org/GNOME/libsoup/-/issues/218
+(define-public webkitgtk-with-libsoup2
+  (package/inherit webkitgtk
+    (name "webkitgtk-with-libsoup2")
+    (arguments (substitute-keyword-arguments (package-arguments webkitgtk)
+                 ((#:configure-flags flags)
+                  `(cons "-DUSE_SOUP2=ON" ,flags))))
+    (propagated-inputs
+     (alist-replace "libsoup" (list libsoup-minimal-2)
+                    (package-propagated-inputs webkitgtk)))))

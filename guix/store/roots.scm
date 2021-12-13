@@ -50,7 +50,7 @@
 
 (define (gc-roots)
   "Return the list of garbage collector roots (\"GC roots\").  This includes
-\"regular\" roots fount in %GC-ROOTS-DIRECTORY as well as indirect roots that
+\"regular\" roots found in %GC-ROOTS-DIRECTORY as well as indirect roots that
 are user-controlled symlinks stored anywhere on the file system."
   (define (regular? file)
     (match file

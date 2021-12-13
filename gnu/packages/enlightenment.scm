@@ -50,6 +50,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages ibus)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages libunwind)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages lua)
@@ -91,7 +92,11 @@
        ("ibus" ,ibus)
        ("mesa" ,mesa)
        ("libraw" ,libraw)
-       ("librsvg" ,librsvg)
+       ;; Only enable the optional SVG support on x86_64, as this is the only
+       ;; architecture where librsvg can be built.
+       ,@(if (target-x86-64?)
+             `(("librsvg" ,librsvg))
+             '())
        ("libspectre" ,libspectre)
        ("libtiff" ,libtiff)
        ("libxau" ,libxau)
@@ -127,6 +132,7 @@
        ("libjpeg" ,libjpeg-turbo)
        ("libsndfile" ,libsndfile)
        ("libpng" ,libpng)
+       ("libunwind" ,libunwind)
        ("libx11" ,libx11)
        ("libxkbcommon" ,libxkbcommon)
        ("luajit" ,luajit)
@@ -136,20 +142,23 @@
        ("wayland" ,wayland)
        ("zlib" ,zlib)))
     (arguments
-     `(#:configure-flags '("-Dembedded-lz4=false"
-                           "-Dbuild-examples=false"
-                           "-Decore-imf-loaders-disabler=scim"
-                           "-Dglib=true"
-                           "-Dmount-path=/run/setuid-programs/mount"
-                           "-Dunmount-path=/run/setuid-programs/umount"
-                           ;(string-append "-Ddictionaries-hyphen-dir="
-                           ;               (assoc-ref %build-inputs "hyphen")
-                           ;               "/share/hyphen")
-                           "-Dnetwork-backend=connman"
-                           ;; for wayland
-                           "-Dwl=true"
-                           "-Ddrm=true")
-       #:tests? #f ; Many tests fail due to timeouts and network requests.
+     `(#:configure-flags
+       `("-Dembedded-lz4=false"
+         "-Dbuild-examples=false"
+         "-Decore-imf-loaders-disabler=scim"
+         "-Dglib=true"
+         "-Dmount-path=/run/setuid-programs/mount"
+         "-Dunmount-path=/run/setuid-programs/umount"
+         "-Dnetwork-backend=connman"
+         ;; Add 'rsvg' to the default list (json and avif) of disabled loaders
+         ;; unless librsvg is available.
+         ,,@(if (target-x86-64?)
+                '()
+                (list "-Devas-loaders-disabler=json,avif,rsvg"))
+         ;; For Wayland.
+         "-Dwl=true"
+         "-Ddrm=true")
+       #:tests? #f     ; Many tests fail due to timeouts and network requests.
        #:phases
        (modify-phases %standard-phases
          ;; If we don't hardcode the location of libcurl.so and others then we
@@ -245,7 +254,7 @@ removable devices or support for multimedia.")
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("efl" ,efl)))
+     (list efl))
     (home-page "https://www.enlightenment.org/about-terminology")
     (synopsis "Powerful terminal emulator based on EFL")
     (description
@@ -276,9 +285,9 @@ contents and more.")
            ;; FATAL: Cannot create run dir '/homeless-shelter/.run' - errno=2
            (lambda _ (setenv "HOME" "/tmp") #t)))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("efl" ,efl)))
+     (list efl))
     (home-page "https://www.enlightenment.org/about-rage")
     (synopsis "Video and audio player based on EFL")
     (description
@@ -360,6 +369,7 @@ Libraries with some extra bells and whistles.")
        ("bluez" ,bluez)
        ("dbus" ,dbus)
        ("freetype" ,freetype)
+       ("libdrm" ,libdrm)
        ("libxcb" ,libxcb)
        ("libxext" ,libxext)
        ("linux-pam" ,linux-pam)
@@ -369,12 +379,9 @@ Libraries with some extra bells and whistles.")
        ("xkeyboard-config" ,xkeyboard-config)
        ("xorg-server-xwayland" ,xorg-server-xwayland)))
     (propagated-inputs
-     `(("efl" ,efl)
-       ("libxkbcommon" ,libxkbcommon)
-       ("wayland-protocols" ,wayland-protocols)
-
-       ;; Default font that applications such as IceCat require.
-       ("font-dejavu" ,font-dejavu)))
+     (list efl libxkbcommon wayland-protocols
+           ;; Default font that applications such as IceCat require.
+           font-dejavu))
     (home-page "https://www.enlightenment.org/about-enlightenment")
     (synopsis "Lightweight desktop environment")
     (description
@@ -431,11 +438,9 @@ embedded systems.")
             (delete-file "tests/ecore/test_11_con.py")
             #t)))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("python-cython" ,python-cython)))
+     (list pkg-config python-cython))
     (inputs
-     `(("efl" ,efl)
-       ("python-dbus" ,python-dbus)))
+     (list efl python-dbus))
     (home-page "https://www.enlightenment.org/")
     (synopsis "Python bindings for EFL")
     (description
@@ -476,8 +481,7 @@ Libraries stack (eo, evas, ecore, edje, emotion, ethumb and elementary).")
        ("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("clang" ,clang)
-       ("efl" ,efl)))
+     (list clang efl))
     (home-page "https://www.enlightenment.org/about-edi")
     (synopsis "Development environment for Enlightenment")
     (description "EDI is a development environment designed for and built using
@@ -509,9 +513,7 @@ and in creating applications based on the Enlightenment Foundation Library suite
                        (("'/usr/")"'"))
              #t)))))
     (propagated-inputs
-     `(("python2-efl" ,python2-efl)
-       ("python2-pypdf2" ,python2-pypdf2)
-       ("python2-pyxdg" ,python2-pyxdg)))
+     (list python2-efl python2-pypdf2 python2-pyxdg))
     (synopsis "Simple PDF viewer")
     (description
      "Simple PDF viewer based on the Enlightenment Foundation Libraries.")
@@ -537,10 +539,9 @@ and in creating applications based on the Enlightenment Foundation Library suite
            ;; FATAL: Cannot create run dir '/homeless-shelter/.run' - errno=2
            (lambda _ (setenv "HOME" "/tmp") #t)))))
     (native-inputs
-     `(("check" ,check)
-       ("pkg-config" ,pkg-config)))
+     (list check pkg-config))
     (inputs
-     `(("efl" ,efl)))
+     (list efl))
     (home-page "https://smhouston.us/projects/ephoto/")
     (synopsis "EFL image viewer/editor/manipulator/slideshow creator")
     (description "Ephoto is an image viewer and editor written using the
@@ -588,7 +589,7 @@ directories.
      `(("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("efl" ,efl)))
+     (list efl))
     (home-page "https://www.enlightenment.org")
     (synopsis "EFL process viewer")
     (description
@@ -622,13 +623,9 @@ directories.
                   (string-append "join(\"" out "/share/epour\"")))
                #t))))))
     (native-inputs
-     `(("intltool" ,intltool)
-       ("python-distutils-extra" ,python-distutils-extra)))
+     (list intltool python-distutils-extra))
     (inputs
-     `(("libtorrent-rasterbar" ,libtorrent-rasterbar)
-       ("python-dbus" ,python-dbus)
-       ("python-efl" ,python-efl)
-       ("python-pyxdg" ,python-pyxdg)))
+     (list libtorrent-rasterbar python-dbus python-efl python-pyxdg))
     (home-page "https://www.enlightenment.org")
     (synopsis "EFL Bittorrent client")
     (description "Epour is a BitTorrent client based on the @dfn{Enlightenment

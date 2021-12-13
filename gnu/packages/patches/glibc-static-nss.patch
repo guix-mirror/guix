@@ -1,0 +1,1244 @@
+This patch reinstates support for static NSS, which glibc 2.33 broke:
+
+  https://sourceware.org/bugzilla/show_bug.cgi?id=27959
+
+Patch obtained by running:
+
+  git diff f0c28504a9877be5da3ed1215f2da2d5914bbb0b..f9c8b11ed7726b858cd7b7cea0d3d7c5233d78cf
+  git diff 5e1ce61e3e71fb7ffe53f58fe96e67cb15f94854{^,}
+  git diff 135425a1dd50cbe2b9db0628d6c2b36c7889f30b{^,}
+
+It corresponds to these changes:
+
+  f9c8b11ed7 * nss: Access nss_files through direct references
+  6212bb67f4 * nss_files: Move into libc
+  36861a968a * nss_files: Add generic code for set*ent, end*ent and file open
+  f0c28504a9 * nss_files: Allocate nscd file registration data on the heap
+  5e1ce61e3e * nss: Fix NSS_DECLARE_MODULE_FUNCTIONS handling of _nss_*_endnetgrent
+  135425a1dd * nss: Fix build error with --disable-nscd
+
+... plus a manual fix in 'files-network.c' to address this compilation error:
+
+  nss_files/files-network.c: In function ‘_nss_files_parse_netent’:
+  nss_files/files-network.c:72:20: error: implicit declaration of function ‘__inet_network’; did you mean ‘inet_network’? [-Werror=implicit-function-declaration]
+     72 |    result->n_net = __inet_network (addr);
+	|                    ^~~~~~~~~~~~~~
+  nss_files/files-parse.c:106:3: note: in definition of macro ‘LINE_PARSER’
+    106 |   BODY;               \
+	|   ^~~~
+
+diff --git a/include/libc-symbols.h b/include/libc-symbols.h
+index 127ea656c2..d41ecf4384 100644
+--- a/include/libc-symbols.h
++++ b/include/libc-symbols.h
+@@ -798,29 +798,6 @@ for linking")
+ # define libdl_hidden_data_ver(local, name)
+ #endif
+ 
+-#if IS_IN (libnss_files)
+-# define libnss_files_hidden_proto(name, attrs...) hidden_proto (name, ##attrs)
+-# define libnss_files_hidden_tls_proto(name, attrs...) \
+-  hidden_tls_proto (name, ##attrs)
+-# define libnss_files_hidden_def(name) hidden_def (name)
+-# define libnss_files_hidden_weak(name) hidden_weak (name)
+-# define libnss_files_hidden_ver(local, name) hidden_ver (local, name)
+-# define libnss_files_hidden_data_def(name) hidden_data_def (name)
+-# define libnss_files_hidden_tls_def(name) hidden_tls_def (name)
+-# define libnss_files_hidden_data_weak(name) hidden_data_weak (name)
+-# define libnss_files_hidden_data_ver(local, name) hidden_data_ver(local, name)
+-#else
+-# define libnss_files_hidden_proto(name, attrs...)
+-# define libnss_files_hidden_tls_proto(name, attrs...)
+-# define libnss_files_hidden_def(name)
+-# define libnss_files_hidden_weak(name)
+-# define libnss_files_hidden_ver(local, name)
+-# define libnss_files_hidden_data_def(name)
+-# define libnss_files_hidden_tls_def(name)
+-# define libnss_files_hidden_data_weak(name)
+-# define libnss_files_hidden_data_ver(local, name)
+-#endif
+-
+ #if IS_IN (libnsl)
+ # define libnsl_hidden_proto(name, attrs...) hidden_proto (name, ##attrs)
+ # define libnsl_hidden_tls_proto(name, attrs...) \
+diff --git a/include/netdb.h b/include/netdb.h
+index 82e102ff76..4dcdbb8cd4 100644
+--- a/include/netdb.h
++++ b/include/netdb.h
+@@ -217,7 +217,7 @@ extern enum nss_status _nss_netgroup_parseline (char **cursor,
+ 						struct __netgrent *result,
+ 						char *buffer, size_t buflen,
+ 						int *errnop);
+-libnss_files_hidden_proto (_nss_netgroup_parseline)
++libc_hidden_proto (_nss_netgroup_parseline)
+ 
+ #define DECLARE_NSS_PROTOTYPES(service)					      \
+ extern enum nss_status _nss_ ## service ## _setprotoent (int);		      \
+diff --git a/include/nss_files.h b/include/nss_files.h
+index 6a0dcdb85b..6190cac6be 100644
+--- a/include/nss_files.h
++++ b/include/nss_files.h
+@@ -19,7 +19,11 @@
+ #ifndef _NSS_FILES_H
+ #define _NSS_FILES_H
+ 
++#include <nss.h>
+ #include <stdio.h>
++#if IS_IN (libc)
++#include <libc-lock.h>
++#endif
+ 
+ /* Open PATH for reading, as a data source for nss_files.  */
+ FILE *__nss_files_fopen (const char *path);
+@@ -47,6 +51,63 @@ int __nss_readline_seek (FILE *fp, off64_t offset) attribute_hidden;
+ int __nss_parse_line_result (FILE *fp, off64_t offset, int parse_line_result);
+ libc_hidden_proto (__nss_parse_line_result)
+ 
++/* Per-file data.  Used by the *ent functions that need to preserve
++   state across calls.  */
++struct nss_files_per_file_data
++{
++  FILE *stream;
++#if IS_IN (libc)
++  /* The size of locks changes between libc and nss_files, so this
++     member must be last and is only available in libc.  */
++  __libc_lock_define (, lock);
++#endif
++};
++
++/* File index for __nss_files_data_get.  */
++enum nss_files_file
++  {
++    nss_file_aliasent,
++    nss_file_etherent,
++    nss_file_grent,
++    nss_file_hostent,
++    nss_file_netent,
++    nss_file_protoent,
++    nss_file_pwent,
++    nss_file_rpcent,
++    nss_file_servent,
++    nss_file_sgent,
++    nss_file_spent,
++
++    nss_file_count
++  };
++
++/* Obtains a pointer to the per-file data for FILE, which is written
++   to *PDATA, and tries to open the file at PATH for it.  On success,
++   returns NSS_STATUS_SUCCESS, and the caller must later call
++   __nss_files_data_put.  On failure, NSS_STATUS_TRYAGAIN is returned,
++   and *ERRNOP and *HERRNOP are updated if these pointers are not
++   null.  */
++enum nss_status __nss_files_data_open (struct nss_files_per_file_data **pdata,
++                                       enum nss_files_file file,
++                                       const char *path,
++                                       int *errnop, int *herrnop);
++libc_hidden_proto (__nss_files_data_open)
++
++/* Unlock the per-file data, previously obtained by
++   __nss_files_data_open.  */
++void __nss_files_data_put (struct nss_files_per_file_data *data);
++libc_hidden_proto (__nss_files_data_put)
++
++/* Performs the set*ent operation for FILE.  PATH is the file to
++   open.  */
++enum nss_status __nss_files_data_setent (enum nss_files_file file,
++                                           const char *path);
++libc_hidden_proto (__nss_files_data_setent)
++
++/* Performs the end*ent operation for FILE.  */
++enum nss_status __nss_files_data_endent (enum nss_files_file file);
++libc_hidden_proto (__nss_files_data_endent)
++
+ struct parser_data;
+ 
+ /* Instances of the parse_line function from
+@@ -64,16 +125,25 @@ extern nss_files_parse_line _nss_files_parse_servent;
+ extern nss_files_parse_line _nss_files_parse_sgent;
+ extern nss_files_parse_line _nss_files_parse_spent;
+ 
+-libnss_files_hidden_proto (_nss_files_parse_etherent)
++libc_hidden_proto (_nss_files_parse_etherent)
+ libc_hidden_proto (_nss_files_parse_grent)
+-libnss_files_hidden_proto (_nss_files_parse_netent)
+-libnss_files_hidden_proto (_nss_files_parse_protoent)
++libc_hidden_proto (_nss_files_parse_netent)
++libc_hidden_proto (_nss_files_parse_protoent)
+ libc_hidden_proto (_nss_files_parse_pwent)
+-libnss_files_hidden_proto (_nss_files_parse_rpcent)
+-libnss_files_hidden_proto (_nss_files_parse_servent)
++libc_hidden_proto (_nss_files_parse_rpcent)
++libc_hidden_proto (_nss_files_parse_servent)
+ libc_hidden_proto (_nss_files_parse_sgent)
+ libc_hidden_proto (_nss_files_parse_spent)
+ 
++NSS_DECLARE_MODULE_FUNCTIONS (files)
++#undef DEFINE_NSS_FUNCTION
++#define DEFINE_NSS_FUNCTION(x) libc_hidden_proto (_nss_files_##x)
++#include <nss/function.def>
++#undef DEFINE_NSS_FUNCTION
++
++void _nss_files_init (void (*cb) (size_t, struct traced_file *));
++libc_hidden_proto (_nss_files_init)
++
+ /* Generic implementation of fget*ent_r.  Reads lines from FP until
+    EOF or a successful parse into *RESULT using PARSER.  Returns 0 on
+    success, ENOENT on EOF, ERANGE on too-small buffer.  */
+diff --git a/nss/Makefile b/nss/Makefile
+index 9682a31e20..63a386af18 100644
+--- a/nss/Makefile
++++ b/nss/Makefile
+@@ -31,7 +31,8 @@ routines		= nsswitch getnssent getnssent_r digits_dots \
+ 			  compat-lookup nss_hash nss_files_fopen \
+ 			  nss_readline nss_parse_line_result \
+ 			  nss_fgetent_r nss_module nss_action \
+-			  nss_action_parse nss_database
++			  nss_action_parse nss_database nss_files_data \
++			  nss_files_functions
+ 
+ # These are the databases that go through nss dispatch.
+ # Caution: if you add a database here, you must add its real name
+@@ -98,9 +99,11 @@ subdir-dirs = $(services:%=nss_%)
+ vpath %.c $(subdir-dirs) ../locale/programs ../intl
+ 
+ 
+-libnss_files-routines	:= $(addprefix files-, \
+-			     $(filter-out key, $(databases))) \
+-			   files-initgroups files-init
++routines += \
++  $(addprefix files-, $(filter-out key, $(databases))) \
++  files-init \
++  files-initgroups \
++  # routines
+ 
+ libnss_db-dbs		:= $(addprefix db-,\
+ 				       $(filter-out hosts network key alias,\
+@@ -116,12 +119,9 @@ libnss_compat-routines	:= $(addprefix compat-,grp pwd spwd initgroups) \
+ install-others		+= $(inst_vardbdir)/Makefile
+ 
+ # Build static module into libc if requested
+-libnss_files-inhibit-o	= $(filter-out .os,$(object-suffixes))
+ libnss_db-inhibit-o	= $(filter-out .os,$(object-suffixes))
+ libnss_compat-inhibit-o	= $(filter-out .os,$(object-suffixes))
+ ifeq ($(build-static-nss),yes)
+-routines                += $(libnss_files-routines)
+-static-only-routines    += $(libnss_files-routines)
+ tests-static		+= tst-nss-static
+ endif
+ extra-test-objs		+= nss_test1.os nss_test2.os
+@@ -138,8 +138,6 @@ libnss-libc = $(common-objpfx)linkobj/libc.so
+ # for new links:
+ $(services:%=$(objpfx)libnss_%.so): libc-for-link = $(libnss-libc)
+ 
+-$(objpfx)libnss_db.so: $(objpfx)libnss_files.so
+-
+ $(libnss_db-dbs:%=$(objpfx)%.c): $(objpfx)db-%.c: nss_files/files-%.c
+ 	@rm -f $@.new
+ 	(echo '#define EXTERN_PARSER';\
+diff --git a/nss/Versions b/nss/Versions
+index fdddea104c..e551524aa9 100644
+--- a/nss/Versions
++++ b/nss/Versions
+@@ -19,11 +19,12 @@ libc {
+     __nss_services_lookup2; __nss_next2; __nss_lookup;
+     __nss_hash; __nss_database_get;
+     __nss_files_fopen; __nss_readline; __nss_parse_line_result;
+-  }
+-}
++    __nss_files_data_endent;
++    __nss_files_data_open;
++    __nss_files_data_put;
++    __nss_files_data_setent;
+ 
+-libnss_files {
+-  GLIBC_PRIVATE {
++    # Routines formerly in libnss_files.so.2.
+     _nss_files_setaliasent;
+     _nss_files_endaliasent;
+     _nss_files_getaliasbyname_r;
+@@ -109,6 +110,14 @@ libnss_files {
+   }
+ }
+ 
++libnss_files {
++  GLIBC_PRIVATE {
++    # Keep a version node (with a synthesized local: * directive) so that
++    # __bss_* symbols are hidden on targets that need it.
++    __libnss_files_version_placeholder;
++  }
++}
++
+ libnss_db {
+   GLIBC_PRIVATE {
+     _nss_db_setetherent;
+diff --git a/nss/nss_files/files-XXX.c b/nss/nss_files/files-XXX.c
+index b4b989d9bb..c158a891bd 100644
+--- a/nss/nss_files/files-XXX.c
++++ b/nss/nss_files/files-XXX.c
+@@ -45,10 +45,12 @@
+ # include <netdb.h>
+ # define H_ERRNO_PROTO	, int *herrnop
+ # define H_ERRNO_ARG	, herrnop
++# define H_ERRNO_ARG_OR_NULL herrnop
+ # define H_ERRNO_SET(val) (*herrnop = (val))
+ #else
+ # define H_ERRNO_PROTO
+ # define H_ERRNO_ARG
++# define H_ERRNO_ARG_OR_NULL NULL
+ # define H_ERRNO_SET(val) ((void) 0)
+ #endif
+ 
+@@ -58,15 +60,11 @@
+ # define EXTRA_ARGS_VALUE
+ #endif
+ 
+-/* Locks the static variables in this file.  */
+-__libc_lock_define_initialized (static, lock)
+ 
+ /* Maintenance of the stream open on the database file.  For getXXent
+    operations the stream needs to be held open across calls, the other
+    getXXbyYY operations all use their own stream.  */
+ 
+-static FILE *stream;
+-
+ /* Open database file if not already opened.  */
+ static enum nss_status
+ internal_setent (FILE **stream)
+@@ -91,42 +89,16 @@ internal_setent (FILE **stream)
+ enum nss_status
+ CONCAT(_nss_files_set,ENTNAME) (int stayopen)
+ {
+-  enum nss_status status;
+-
+-  __libc_lock_lock (lock);
+-
+-  status = internal_setent (&stream);
+-
+-  __libc_lock_unlock (lock);
+-
+-  return status;
++  return __nss_files_data_setent (CONCAT (nss_file_, ENTNAME), DATAFILE);
+ }
++libc_hidden_def (CONCAT (_nss_files_set,ENTNAME))
+ 
+-
+-/* Close the database file.  */
+-static void
+-internal_endent (FILE **stream)
+-{
+-  if (*stream != NULL)
+-    {
+-      fclose (*stream);
+-      *stream = NULL;
+-    }
+-}
+-
+-
+-/* Thread-safe, exported version of that.  */
+ enum nss_status
+ CONCAT(_nss_files_end,ENTNAME) (void)
+ {
+-  __libc_lock_lock (lock);
+-
+-  internal_endent (&stream);
+-
+-  __libc_lock_unlock (lock);
+-
+-  return NSS_STATUS_SUCCESS;
++  return __nss_files_data_endent (CONCAT (nss_file_, ENTNAME));
+ }
++libc_hidden_def (CONCAT (_nss_files_end,ENTNAME))
+ 
+ 
+ /* Parsing the database file into `struct STRUCTURE' data structures.  */
+@@ -194,28 +166,22 @@ CONCAT(_nss_files_get,ENTNAME_r) (struct STRUCTURE *result, char *buffer,
+ 				  size_t buflen, int *errnop H_ERRNO_PROTO)
+ {
+   /* Return next entry in host file.  */
+-  enum nss_status status = NSS_STATUS_SUCCESS;
+-
+-  __libc_lock_lock (lock);
+ 
+-  /* Be prepared that the set*ent function was not called before.  */
+-  if (stream == NULL)
+-    {
+-      int save_errno = errno;
+-
+-      status = internal_setent (&stream);
+-
+-      __set_errno (save_errno);
+-    }
+-
+-  if (status == NSS_STATUS_SUCCESS)
+-    status = internal_getent (stream, result, buffer, buflen, errnop
+-			      H_ERRNO_ARG EXTRA_ARGS_VALUE);
++  struct nss_files_per_file_data *data;
++  enum nss_status status = __nss_files_data_open (&data,
++						  CONCAT (nss_file_, ENTNAME),
++						  DATAFILE,
++						  errnop, H_ERRNO_ARG_OR_NULL);
++  if (status != NSS_STATUS_SUCCESS)
++    return status;
+ 
+-  __libc_lock_unlock (lock);
++  status = internal_getent (data->stream, result, buffer, buflen, errnop
++			    H_ERRNO_ARG EXTRA_ARGS_VALUE);
+ 
++  __nss_files_data_put (data);
+   return status;
+ }
++libc_hidden_def (CONCAT (_nss_files_get,ENTNAME_r))
+ 
+ /* Macro for defining lookup functions for this file-based database.
+ 
+@@ -248,8 +214,9 @@ _nss_files_get##name##_r (proto,					      \
+ 	     == NSS_STATUS_SUCCESS)					      \
+ 	{ break_if_match }						      \
+ 									      \
+-      internal_endent (&stream);					      \
++      fclose (stream);							      \
+     }									      \
+ 									      \
+   return status;							      \
+-}
++}									      \
++libc_hidden_def (_nss_files_get##name##_r)
+diff --git a/nss/nss_files/files-alias.c b/nss/nss_files/files-alias.c
+index 30971bfe56..8c6e176ff6 100644
+--- a/nss/nss_files/files-alias.c
++++ b/nss/nss_files/files-alias.c
+@@ -31,18 +31,11 @@
+ #include "nsswitch.h"
+ #include <nss_files.h>
+ 
+-NSS_DECLARE_MODULE_FUNCTIONS (files)
+-
+-/* Locks the static variables in this file.  */
+-__libc_lock_define_initialized (static, lock)
+ 
+ /* Maintenance of the stream open on the database file.  For getXXent
+    operations the stream needs to be held open across calls, the other
+    getXXbyYY operations all use their own stream.  */
+ 
+-static FILE *stream;
+-
+-
+ static enum nss_status
+ internal_setent (FILE **stream)
+ {
+@@ -66,42 +59,16 @@ internal_setent (FILE **stream)
+ enum nss_status
+ _nss_files_setaliasent (void)
+ {
+-  enum nss_status status;
+-
+-  __libc_lock_lock (lock);
+-
+-  status = internal_setent (&stream);
+-
+-  __libc_lock_unlock (lock);
+-
+-  return status;
++  return __nss_files_data_setent (nss_file_aliasent, "/etc/aliases");
+ }
++libc_hidden_def (_nss_files_setaliasent)
+ 
+-
+-/* Close the database file.  */
+-static void
+-internal_endent (FILE **stream)
+-{
+-  if (*stream != NULL)
+-    {
+-      fclose (*stream);
+-      *stream = NULL;
+-    }
+-}
+-
+-
+-/* Thread-safe, exported version of that.  */
+ enum nss_status
+ _nss_files_endaliasent (void)
+ {
+-  __libc_lock_lock (lock);
+-
+-  internal_endent (&stream);
+-
+-  __libc_lock_unlock (lock);
+-
+-  return NSS_STATUS_SUCCESS;
++  return __nss_files_data_endent (nss_file_aliasent);
+ }
++libc_hidden_def (_nss_files_endaliasent)
+ 
+ /* Parsing the database file into `struct aliasent' data structures.  */
+ static enum nss_status
+@@ -131,7 +98,7 @@ get_next_alias (FILE *stream, const char *match, struct aliasent *result,
+       /* Read the first line.  It must contain the alias name and
+ 	 possibly some alias names.  */
+       first_unused[room_left - 1] = '\xff';
+-      line = fgets_unlocked (first_unused, room_left, stream);
++      line = __fgets_unlocked (first_unused, room_left, stream);
+       if (line == NULL)
+ 	/* Nothing to read.  */
+ 	break;
+@@ -220,7 +187,7 @@ get_next_alias (FILE *stream, const char *match, struct aliasent *result,
+ 		      /* If the file does not exist we simply ignore
+ 			 the statement.  */
+ 		      if (listfile != NULL
+-			  && (old_line = strdup (line)) != NULL)
++			  && (old_line = __strdup (line)) != NULL)
+ 			{
+ 			  while (! feof_unlocked (listfile))
+ 			    {
+@@ -232,8 +199,8 @@ get_next_alias (FILE *stream, const char *match, struct aliasent *result,
+ 				}
+ 
+ 			      first_unused[room_left - 1] = '\xff';
+-			      line = fgets_unlocked (first_unused, room_left,
+-						     listfile);
++			      line = __fgets_unlocked (first_unused, room_left,
++						       listfile);
+ 			      if (line == NULL)
+ 				break;
+ 			      if (first_unused[room_left - 1] != '\xff')
+@@ -335,7 +302,7 @@ get_next_alias (FILE *stream, const char *match, struct aliasent *result,
+ 		  /* The just read character is a white space and so
+ 		     can be ignored.  */
+ 		  first_unused[room_left - 1] = '\xff';
+-		  line = fgets_unlocked (first_unused, room_left, stream);
++		  line = __fgets_unlocked (first_unused, room_left, stream);
+ 		  if (line == NULL)
+ 		    {
+ 		      /* Continuation line without any data and
+@@ -369,29 +336,25 @@ _nss_files_getaliasent_r (struct aliasent *result, char *buffer, size_t buflen,
+ 			  int *errnop)
+ {
+   /* Return next entry in host file.  */
+-  enum nss_status status = NSS_STATUS_SUCCESS;
+ 
+-  __libc_lock_lock (lock);
+-
+-  /* Be prepared that the set*ent function was not called before.  */
+-  if (stream == NULL)
+-    status = internal_setent (&stream);
+-
+-  if (status == NSS_STATUS_SUCCESS)
+-    {
+-      result->alias_local = 1;
++  struct nss_files_per_file_data *data;
++  enum nss_status status = __nss_files_data_open (&data, nss_file_aliasent,
++						  "/etc/aliases", errnop, NULL);
++  if (status != NSS_STATUS_SUCCESS)
++    return status;
+ 
+-      /* Read lines until we get a definite result.  */
+-      do
+-	status = get_next_alias (stream, NULL, result, buffer, buflen, errnop);
+-      while (status == NSS_STATUS_RETURN);
+-    }
++  result->alias_local = 1;
+ 
+-  __libc_lock_unlock (lock);
++  /* Read lines until we get a definite result.  */
++  do
++    status = get_next_alias (data->stream, NULL, result, buffer, buflen,
++			     errnop);
++  while (status == NSS_STATUS_RETURN);
+ 
++  __nss_files_data_put (data);
+   return status;
+ }
+-
++libc_hidden_def (_nss_files_getaliasent_r)
+ 
+ enum nss_status
+ _nss_files_getaliasbyname_r (const char *name, struct aliasent *result,
+@@ -418,9 +381,10 @@ _nss_files_getaliasbyname_r (const char *name, struct aliasent *result,
+       do
+ 	status = get_next_alias (stream, name, result, buffer, buflen, errnop);
+       while (status == NSS_STATUS_RETURN);
+-    }
+ 
+-  internal_endent (&stream);
++      fclose (stream);
++    }
+ 
+   return status;
+ }
++libc_hidden_def (_nss_files_getaliasbyname_r)
+diff --git a/nss/nss_files/files-ethers.c b/nss/nss_files/files-ethers.c
+index 2fe7f81e4b..7c2c2b9833 100644
+--- a/nss/nss_files/files-ethers.c
++++ b/nss/nss_files/files-ethers.c
+@@ -20,8 +20,6 @@
+ #include <netinet/if_ether.h>
+ #include <nss.h>
+ 
+-NSS_DECLARE_MODULE_FUNCTIONS (files)
+-
+ struct etherent_data {};
+ 
+ #define ENTNAME		etherent
+diff --git a/nss/nss_files/files-grp.c b/nss/nss_files/files-grp.c
+index 49be38e8b1..a716d948e2 100644
+--- a/nss/nss_files/files-grp.c
++++ b/nss/nss_files/files-grp.c
+@@ -19,8 +19,6 @@
+ #include <grp.h>
+ #include <nss.h>
+ 
+-NSS_DECLARE_MODULE_FUNCTIONS (files)
+-
+ #define STRUCTURE	group
+ #define ENTNAME		grent
+ #define DATABASE	"group"
+diff --git a/nss/nss_files/files-hosts.c b/nss/nss_files/files-hosts.c
+index 2b47ec3e53..d54d91d038 100644
+--- a/nss/nss_files/files-hosts.c
++++ b/nss/nss_files/files-hosts.c
+@@ -26,8 +26,6 @@
+ #include <alloc_buffer.h>
+ #include <nss.h>
+ 
+-NSS_DECLARE_MODULE_FUNCTIONS (files)
+-
+ /* Get implementation for some internal functions.  */
+ #include "../resolv/res_hconf.h"
+ 
+@@ -57,12 +55,13 @@ LINE_PARSER
+    STRING_FIELD (addr, isspace, 1);
+ 
+    /* Parse address.  */
+-   if (inet_pton (af == AF_UNSPEC ? AF_INET : af, addr, entdata->host_addr)
++   if (__inet_pton (af == AF_UNSPEC ? AF_INET : af, addr, entdata->host_addr)
+        > 0)
+      af = af == AF_UNSPEC ? AF_INET : af;
+    else
+      {
+-       if (af == AF_INET && inet_pton (AF_INET6, addr, entdata->host_addr) > 0)
++       if (af == AF_INET
++	   && __inet_pton (AF_INET6, addr, entdata->host_addr) > 0)
+ 	 {
+ 	   if (IN6_IS_ADDR_V4MAPPED (entdata->host_addr))
+ 	     memcpy (entdata->host_addr, entdata->host_addr + 12, INADDRSZ);
+@@ -76,7 +75,7 @@ LINE_PARSER
+ 	     return 0;
+ 	 }
+        else if (af == AF_UNSPEC
+-		&& inet_pton (AF_INET6, addr, entdata->host_addr) > 0)
++		&& __inet_pton (AF_INET6, addr, entdata->host_addr) > 0)
+ 	 af = AF_INET6;
+        else
+ 	 /* Illegal address: ignore line.  */
+@@ -349,7 +348,7 @@ _nss_files_gethostbyname3_r (const char *name, int af, struct hostent *result,
+ 	status = gethostbyname3_multi
+ 	  (stream, name, af, result, buffer, buflen, errnop, herrnop);
+ 
+-      internal_endent (&stream);
++      fclose (stream);
+     }
+ 
+   if (canonp && status == NSS_STATUS_SUCCESS)
+@@ -357,6 +356,7 @@ _nss_files_gethostbyname3_r (const char *name, int af, struct hostent *result,
+ 
+   return status;
+ }
++libc_hidden_def (_nss_files_gethostbyname3_r)
+ 
+ enum nss_status
+ _nss_files_gethostbyname_r (const char *name, struct hostent *result,
+@@ -366,6 +366,7 @@ _nss_files_gethostbyname_r (const char *name, struct hostent *result,
+   return _nss_files_gethostbyname3_r (name, AF_INET, result, buffer, buflen,
+ 				      errnop, herrnop, NULL, NULL);
+ }
++libc_hidden_def (_nss_files_gethostbyname_r)
+ 
+ enum nss_status
+ _nss_files_gethostbyname2_r (const char *name, int af, struct hostent *result,
+@@ -375,6 +376,7 @@ _nss_files_gethostbyname2_r (const char *name, int af, struct hostent *result,
+   return _nss_files_gethostbyname3_r (name, af, result, buffer, buflen,
+ 				      errnop, herrnop, NULL, NULL);
+ }
++libc_hidden_def (_nss_files_gethostbyname2_r)
+ 
+ enum nss_status
+ _nss_files_gethostbyname4_r (const char *name, struct gaih_addrtuple **pat,
+@@ -475,7 +477,7 @@ _nss_files_gethostbyname4_r (const char *name, struct gaih_addrtuple **pat,
+ 	  status = NSS_STATUS_SUCCESS;
+ 	}
+ 
+-      internal_endent (&stream);
++      fclose (stream);
+     }
+   else if (status == NSS_STATUS_TRYAGAIN)
+     {
+@@ -490,3 +492,4 @@ _nss_files_gethostbyname4_r (const char *name, struct gaih_addrtuple **pat,
+ 
+   return status;
+ }
++libc_hidden_def (_nss_files_gethostbyname4_r)
+diff --git a/nss/nss_files/files-init.c b/nss/nss_files/files-init.c
+index 717c9fd334..18ed288d04 100644
+--- a/nss/nss_files/files-init.c
++++ b/nss/nss_files/files-init.c
+@@ -21,8 +21,7 @@
+ #include <string.h>
+ #include <nscd/nscd.h>
+ #include <nss.h>
+-
+-NSS_DECLARE_MODULE_FUNCTIONS (files)
++#include <nss_files.h>
+ 
+ static void
+ register_file (void (*cb) (size_t, struct traced_file *),
+@@ -49,5 +48,6 @@ _nss_files_init (void (*cb) (size_t, struct traced_file *))
+   register_file (cb, servdb, "/etc/services", 0);
+   register_file (cb, netgrdb, "/etc/netgroup", 0);
+ }
++libc_hidden_def (_nss_files_init)
+ 
+ #endif
+diff --git a/nss/nss_files/files-initgroups.c b/nss/nss_files/files-initgroups.c
+index 6fcea40b55..b44211e50b 100644
+--- a/nss/nss_files/files-initgroups.c
++++ b/nss/nss_files/files-initgroups.c
+@@ -28,8 +28,6 @@
+ #include <nss.h>
+ #include <nss_files.h>
+ 
+-NSS_DECLARE_MODULE_FUNCTIONS (files)
+-
+ enum nss_status
+ _nss_files_initgroups_dyn (const char *user, gid_t group, long int *start,
+ 			   long int *size, gid_t **groupsp, long int limit,
+@@ -129,3 +127,4 @@ _nss_files_initgroups_dyn (const char *user, gid_t group, long int *start,
+ 
+   return status == NSS_STATUS_SUCCESS && !any ? NSS_STATUS_NOTFOUND : status;
+ }
++libc_hidden_def (_nss_files_initgroups_dyn)
+diff --git a/nss/nss_files/files-netgrp.c b/nss/nss_files/files-netgrp.c
+index f8c821c2f0..75bfbd9e44 100644
+--- a/nss/nss_files/files-netgrp.c
++++ b/nss/nss_files/files-netgrp.c
+@@ -28,11 +28,9 @@
+ #include "netgroup.h"
+ #include <nss_files.h>
+ 
+-NSS_DECLARE_MODULE_FUNCTIONS (files)
+-
+ #define DATAFILE	"/etc/netgroup"
+ 
+-libnss_files_hidden_proto (_nss_files_endnetgrent)
++libc_hidden_proto (_nss_files_endnetgrent)
+ 
+ #define EXPAND(needed)							      \
+   do									      \
+@@ -152,7 +150,7 @@ _nss_files_setnetgrent (const char *group, struct __netgrent *result)
+ 
+   return status;
+ }
+-
++libc_hidden_def (_nss_files_setnetgrent)
+ 
+ enum nss_status
+ _nss_files_endnetgrent (struct __netgrent *result)
+@@ -164,7 +162,7 @@ _nss_files_endnetgrent (struct __netgrent *result)
+   result->cursor = NULL;
+   return NSS_STATUS_SUCCESS;
+ }
+-libnss_files_hidden_def (_nss_files_endnetgrent)
++libc_hidden_def (_nss_files_endnetgrent)
+ 
+ static char *
+ strip_whitespace (char *str)
+@@ -279,7 +277,7 @@ _nss_netgroup_parseline (char **cursor, struct __netgrent *result,
+ 
+   return status;
+ }
+-libnss_files_hidden_def (_nss_netgroup_parseline)
++libc_hidden_def (_nss_netgroup_parseline)
+ 
+ 
+ enum nss_status
+@@ -293,3 +291,4 @@ _nss_files_getnetgrent_r (struct __netgrent *result, char *buffer,
+ 
+   return status;
+ }
++libc_hidden_def (_nss_files_getnetgrent_r)
+diff --git a/nss/nss_files/files-network.c b/nss/nss_files/files-network.c
+index 9cd7d7dc79..217ed78609 100644
+--- a/nss/nss_files/files-network.c
++++ b/nss/nss_files/files-network.c
+@@ -22,8 +22,6 @@
+ #include <stdint.h>
+ #include <nss.h>
+ 
+-NSS_DECLARE_MODULE_FUNCTIONS (files)
+-
+ #define ENTNAME		netent
+ #define DATABASE	"networks"
+ #define NEED_H_ERRNO
+@@ -71,7 +69,7 @@ LINE_PARSER
+        *cp = '\0';
+        addr = newp;
+      }
+-   result->n_net = inet_network (addr);
++   result->n_net = inet_network (addr);
+    result->n_addrtype = AF_INET;
+ 
+  })
+diff --git a/nss/nss_files/files-parse.c b/nss/nss_files/files-parse.c
+index 68c51c7cbf..997eac573a 100644
+--- a/nss/nss_files/files-parse.c
++++ b/nss/nss_files/files-parse.c
+@@ -74,13 +74,7 @@ struct parser_data
+ /* Export the line parser function so it can be used in nss_db.  */
+ # define parser_stclass /* Global */
+ # define parse_line CONCAT(_nss_files_parse_,ENTNAME)
+-# if IS_IN (libc)
+-/* We are defining one of the functions that actually lives in libc
+-   because it is used to implement fget*ent and suchlike.  */
+-#  define nss_files_parse_hidden_def(name) libc_hidden_def (name)
+-# else
+-#  define nss_files_parse_hidden_def(name) libnss_files_hidden_def (name)
+-# endif
++# define nss_files_parse_hidden_def(name) libc_hidden_def (name)
+ #endif
+ 
+ 
+diff --git a/nss/nss_files/files-proto.c b/nss/nss_files/files-proto.c
+index 98d082c642..13072692c1 100644
+--- a/nss/nss_files/files-proto.c
++++ b/nss/nss_files/files-proto.c
+@@ -19,8 +19,6 @@
+ #include <netdb.h>
+ #include <nss.h>
+ 
+-NSS_DECLARE_MODULE_FUNCTIONS (files)
+-
+ #define ENTNAME		protoent
+ #define DATABASE	"protocols"
+ 
+diff --git a/nss/nss_files/files-pwd.c b/nss/nss_files/files-pwd.c
+index b04165ddde..5c74c6da9b 100644
+--- a/nss/nss_files/files-pwd.c
++++ b/nss/nss_files/files-pwd.c
+@@ -19,8 +19,6 @@
+ #include <pwd.h>
+ #include <nss.h>
+ 
+-NSS_DECLARE_MODULE_FUNCTIONS (files)
+-
+ #define STRUCTURE	passwd
+ #define ENTNAME		pwent
+ #define DATABASE	"passwd"
+diff --git a/nss/nss_files/files-rpc.c b/nss/nss_files/files-rpc.c
+index eeb2725d2c..3dea8f18f2 100644
+--- a/nss/nss_files/files-rpc.c
++++ b/nss/nss_files/files-rpc.c
+@@ -19,8 +19,6 @@
+ #include <rpc/netdb.h>
+ #include <nss.h>
+ 
+-NSS_DECLARE_MODULE_FUNCTIONS (files)
+-
+ #define ENTNAME		rpcent
+ #define DATABASE	"rpc"
+ 
+diff --git a/nss/nss_files/files-service.c b/nss/nss_files/files-service.c
+index f4f0985377..a8d83e094e 100644
+--- a/nss/nss_files/files-service.c
++++ b/nss/nss_files/files-service.c
+@@ -20,8 +20,6 @@
+ #include <netdb.h>
+ #include <nss.h>
+ 
+-NSS_DECLARE_MODULE_FUNCTIONS (files)
+-
+ #define ENTNAME		servent
+ #define DATABASE	"services"
+ 
+diff --git a/nss/nss_files/files-sgrp.c b/nss/nss_files/files-sgrp.c
+index 6b1c9eac02..213a408e7b 100644
+--- a/nss/nss_files/files-sgrp.c
++++ b/nss/nss_files/files-sgrp.c
+@@ -19,8 +19,6 @@
+ #include <gshadow.h>
+ #include <nss.h>
+ 
+-NSS_DECLARE_MODULE_FUNCTIONS (files)
+-
+ #define STRUCTURE	sgrp
+ #define ENTNAME		sgent
+ #define DATABASE	"gshadow"
+diff --git a/nss/nss_files/files-spwd.c b/nss/nss_files/files-spwd.c
+index 976deaf918..d031257a20 100644
+--- a/nss/nss_files/files-spwd.c
++++ b/nss/nss_files/files-spwd.c
+@@ -19,8 +19,6 @@
+ #include <shadow.h>
+ #include <nss.h>
+ 
+-NSS_DECLARE_MODULE_FUNCTIONS (files)
+-
+ #define STRUCTURE	spwd
+ #define ENTNAME		spent
+ #define DATABASE	"shadow"
+diff --git a/nss/nss_files_data.c b/nss/nss_files_data.c
+new file mode 100644
+index 0000000000..80fbfe5fff
+--- /dev/null
++++ b/nss/nss_files_data.c
+@@ -0,0 +1,161 @@
++/* Returns a pointer to the global nss_files data structure.
++   Copyright (C) 2021 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#include <nss_files.h>
++
++#include <allocate_once.h>
++#include <errno.h>
++#include <netdb.h>
++#include <nss.h>
++#include <stdlib.h>
++
++/* This collects all per file-data.   */
++struct nss_files_data
++{
++  struct nss_files_per_file_data files[nss_file_count];
++};
++
++/* For use with allocate_once.  */
++static void *nss_files_global;
++static void *
++nss_files_global_allocate (void *closure)
++{
++  struct nss_files_data *result = malloc (sizeof (*result));
++  if (result != NULL)
++    {
++      for (int i = 0; i < nss_file_count; ++i)
++        {
++          result->files[i].stream = NULL;
++          __libc_lock_init (result->files[i].lock);
++        }
++    }
++  return result;
++}
++/* Like __nss_files_data_open, but does not perform the open call.  */
++static enum nss_status
++__nss_files_data_get (struct nss_files_per_file_data **pdata,
++                      enum nss_files_file file, int *errnop, int *herrnop)
++{
++  struct nss_files_data *data = allocate_once (&nss_files_global,
++                                               nss_files_global_allocate,
++                                               NULL, NULL);
++  if (data == NULL)
++    {
++      if (errnop != NULL)
++        *errnop = errno;
++      if (herrnop != NULL)
++        {
++          __set_h_errno (NETDB_INTERNAL);
++          *herrnop = NETDB_INTERNAL;
++        }
++      return NSS_STATUS_TRYAGAIN;
++    }
++
++  *pdata = &data->files[file];
++  __libc_lock_lock ((*pdata)->lock);
++  return NSS_STATUS_SUCCESS;
++}
++
++/* Helper function for opening the backing file at PATH.  */
++static enum nss_status
++__nss_files_data_internal_open (struct nss_files_per_file_data *data,
++                                const char *path)
++{
++  enum nss_status status = NSS_STATUS_SUCCESS;
++
++  if (data->stream == NULL)
++    {
++      data->stream = __nss_files_fopen (path);
++
++      if (data->stream == NULL)
++        status = errno == EAGAIN ? NSS_STATUS_TRYAGAIN : NSS_STATUS_UNAVAIL;
++    }
++
++  return status;
++}
++
++
++enum nss_status
++__nss_files_data_open (struct nss_files_per_file_data **pdata,
++                       enum nss_files_file file, const char *path,
++                       int *errnop, int *herrnop)
++{
++  enum nss_status status = __nss_files_data_get (pdata, file, errnop, herrnop);
++  if (status != NSS_STATUS_SUCCESS)
++    return status;
++
++  /* Be prepared that the set*ent function was not called before.  */
++  if ((*pdata)->stream == NULL)
++    {
++      int saved_errno = errno;
++      status = __nss_files_data_internal_open (*pdata, path);
++      __set_errno (saved_errno);
++      if (status != NSS_STATUS_SUCCESS)
++        __nss_files_data_put (*pdata);
++    }
++
++  return status;
++}
++
++libc_hidden_def (__nss_files_data_open)
++
++void
++__nss_files_data_put (struct nss_files_per_file_data *data)
++{
++  __libc_lock_unlock (data->lock);
++}
++libc_hidden_def (__nss_files_data_put)
++
++enum nss_status
++__nss_files_data_setent (enum nss_files_file file, const char *path)
++{
++  struct nss_files_per_file_data *data;
++  enum nss_status status = __nss_files_data_get (&data, file, NULL, NULL);
++  if (status != NSS_STATUS_SUCCESS)
++    return status;
++
++  if (data->stream == NULL)
++    status = __nss_files_data_internal_open (data, path);
++  else
++    rewind (data->stream);
++
++  __nss_files_data_put (data);
++  return status;
++}
++libc_hidden_def (__nss_files_data_setent)
++
++enum nss_status
++__nss_files_data_endent (enum nss_files_file file)
++{
++  /* No cleanup is necessary if not initialized.  */
++  struct nss_files_data *data = atomic_load_acquire (&nss_files_global);
++  if (data == NULL)
++    return NSS_STATUS_SUCCESS;
++
++  struct nss_files_per_file_data *fdata = &data->files[file];
++  __libc_lock_lock (fdata->lock);
++  if (fdata->stream != NULL)
++    {
++      fclose (fdata->stream);
++      fdata->stream = NULL;
++    }
++  __libc_lock_unlock (fdata->lock);
++
++  return NSS_STATUS_SUCCESS;
++}
++libc_hidden_def (__nss_files_data_endent)
+diff --git a/nss/nss_files_functions.c b/nss/nss_files_functions.c
+new file mode 100644
+index 0000000000..85720b4311
+--- /dev/null
++++ b/nss/nss_files_functions.c
+@@ -0,0 +1,43 @@
++/* Direct access for nss_files functions for NSS module loading.
++   Copyright (C) 2021 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#include <nss_module.h>
++#include <nss_files.h>
++
++void
++__nss_files_functions (nss_module_functions_untyped pointers)
++{
++  void **fptr = pointers;
++
++  /* Functions which are not implemented.  */
++#define _nss_files_getcanonname_r NULL
++#define _nss_files_gethostbyaddr2_r NULL
++#define _nss_files_getpublickey NULL
++#define _nss_files_getsecretkey NULL
++#define _nss_files_netname2user NULL
++
++#undef DEFINE_NSS_FUNCTION
++#define DEFINE_NSS_FUNCTION(x) *fptr++ = _nss_files_##x;
++#include "function.def"
++
++#ifdef PTR_MANGLE
++  void **end = fptr;
++  for (fptr = pointers; fptr != end; ++fptr)
++    PTR_MANGLE (*fptr);
++#endif
++}
+diff --git a/nss/nss_module.c b/nss/nss_module.c
+index 60c070c851..7b42c585a4 100644
+--- a/nss/nss_module.c
++++ b/nss/nss_module.c
+@@ -30,6 +30,7 @@
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>
++#include <nss_files.h>
+ 
+ /* Suffix after .so of NSS service modules.  This is a bit of magic,
+    but we assume LIBNSS_FILES_SO looks like "libnss_files.so.2" and we
+@@ -110,10 +111,45 @@ static const function_name nss_function_name_array[] =
+ #include "function.def"
+   };
+ 
++static bool
++module_load_nss_files (struct nss_module *module)
++{
++  if (is_nscd)
++    {
++      void (*cb) (size_t, struct traced_file *) = nscd_init_cb;
++#  ifdef PTR_DEMANGLE
++      PTR_DEMANGLE (cb);
++#  endif
++      _nss_files_init (cb);
++    }
++
++  /* Initialize the function pointers, following the double-checked
++     locking idiom.  */
++  __libc_lock_lock (nss_module_list_lock);
++  switch ((enum nss_module_state) atomic_load_acquire (&module->state))
++    {
++    case nss_module_uninitialized:
++    case nss_module_failed:
++      __nss_files_functions (module->functions.untyped);
++      module->handle = NULL;
++      /* Synchronizes with unlocked __nss_module_load atomic_load_acquire.  */
++      atomic_store_release (&module->state, nss_module_loaded);
++      break;
++    case nss_module_loaded:
++      /* Nothing to clean up.  */
++      break;
++    }
++  __libc_lock_unlock (nss_module_list_lock);
++  return true;
++}
++
+ /* Internal implementation of __nss_module_load.  */
+ static bool
+ module_load (struct nss_module *module)
+ {
++  if (strcmp (module->name, "files") == 0)
++    return module_load_nss_files (module);
++
+   void *handle;
+   {
+     char *shlib_name;
+@@ -360,7 +396,7 @@ __nss_module_freeres (void)
+   struct nss_module *current = nss_module_list;
+   while (current != NULL)
+     {
+-      if (current->state == nss_module_loaded)
++      if (current->state == nss_module_loaded && current->handle != NULL)
+         __libc_dlclose (current->handle);
+ 
+       struct nss_module *next = current->next;
+diff --git a/nss/nss_module.h b/nss/nss_module.h
+index 05c4791d11..c1a1d90b60 100644
+--- a/nss/nss_module.h
++++ b/nss/nss_module.h
+@@ -38,6 +38,10 @@ struct nss_module_functions
+ typedef void *nss_module_functions_untyped[sizeof (struct nss_module_functions)
+                                            / sizeof (void *)];
+ 
++/* Locate the nss_files functions, as if by dlopen/dlsym.  */
++void __nss_files_functions (nss_module_functions_untyped pointers)
++  attribute_hidden;
++
+ /* Initialization state of a NSS module.  */
+ enum nss_module_state
+ {
+diff --git a/nss/nss_readline.c b/nss/nss_readline.c
+index 4b3ecbccc8..a2f397a11f 100644
+--- a/nss/nss_readline.c
++++ b/nss/nss_readline.c
+@@ -40,7 +40,7 @@ __nss_readline (FILE *fp, char *buf, size_t len, off64_t *poffset)
+       *poffset = __ftello64 (fp);
+ 
+       buf[len - 1] = '\xff';        /* Marker to recognize truncation.  */
+-      if (fgets_unlocked (buf, len, fp) == NULL)
++      if (__fgets_unlocked (buf, len, fp) == NULL)
+         {
+           if (feof_unlocked (fp))
+             {
+@@ -61,7 +61,7 @@ __nss_readline (FILE *fp, char *buf, size_t len, off64_t *poffset)
+            line on the next call.  */
+         return __nss_readline_seek (fp, *poffset);
+ 
+-      /* fgets_unlocked succeeded.  */
++      /* __fgets_unlocked succeeded.  */
+ 
+       /* Remove leading whitespace.  */
+       char *p = buf;
+diff --git a/nss/nss.h b/nss/nss.h
+index ae213f9a6c..c6d62adc0f 100644
+--- a/nss/nss.h
++++ b/nss/nss.h
+@@ -196,7 +196,7 @@ typedef enum nss_status nss_setspent (int);
+   extern nss_endgrent _nss_##module##_endgrent;                          \
+   extern nss_endhostent _nss_##module##_endhostent;                      \
+   extern nss_endnetent _nss_##module##_endnetent;                        \
+-  extern nss_endnetgrent _nss_##module##__endnetgrent;                   \
++  extern nss_endnetgrent _nss_##module##_endnetgrent;                    \
+   extern nss_endprotoent _nss_##module##_endprotoent;                    \
+   extern nss_endpwent _nss_##module##_endpwent;                          \
+   extern nss_endrpcent _nss_##module##_endrpcent;                        \
+diff --git a/nss/nss_module.c b/nss/nss_module.c
+index 7b42c585a4..7ea5ad9887 100644
+--- a/nss/nss_module.c
++++ b/nss/nss_module.c
+@@ -114,14 +114,16 @@ static const function_name nss_function_name_array[] =
+ static bool
+ module_load_nss_files (struct nss_module *module)
+ {
++#ifdef USE_NSCD
+   if (is_nscd)
+     {
+       void (*cb) (size_t, struct traced_file *) = nscd_init_cb;
+-#  ifdef PTR_DEMANGLE
++# ifdef PTR_DEMANGLE
+       PTR_DEMANGLE (cb);
+-#  endif
++# endif
+       _nss_files_init (cb);
+     }
++#endif
+ 
+   /* Initialize the function pointers, following the double-checked
+      locking idiom.  */

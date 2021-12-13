@@ -6,7 +6,7 @@ Patch adapted from Nixpkgs, originally by Eelco Dolstra
 diff -ru -x '*~' -x '*.rej' perl-5.20.0-orig/Configure perl-5.20.0/Configure
 --- perl-5.20.0-orig/Configure	2014-05-26 15:34:18.000000000 +0200
 +++ perl-5.20.0/Configure	2014-06-25 10:43:35.368285986 +0200
-@@ -106,15 +106,7 @@
+@@ -108,15 +108,7 @@
  fi
  
  : Proper PATH setting
@@ -23,8 +23,8 @@ diff -ru -x '*~' -x '*.rej' perl-5.20.0-orig/Configure perl-5.20.0/Configure
  
  for p in $paths
  do
-@@ -1337,8 +1329,7 @@
- archname=''
+@@ -1435,8 +1427,7 @@
+ i_whoami=''
  : Possible local include directories to search.
  : Set locincpth to "" in a hint file to defeat local include searches.
 -locincpth="/usr/local/include /opt/local/include /usr/gnu/include"
@@ -33,8 +33,8 @@ diff -ru -x '*~' -x '*.rej' perl-5.20.0-orig/Configure perl-5.20.0/Configure
  :
  : no include file wanted by default
  inclwanted=''
-@@ -1349,17 +1340,12 @@
- 
+@@ -1450,17 +1441,12 @@
+ archobjs=''
  libnames=''
  : change the next line if compiling for Xenix/286 on Xenix/386
 -xlibpth='/usr/lib/386 /lib/386'
@@ -54,8 +54,8 @@ diff -ru -x '*~' -x '*.rej' perl-5.20.0-orig/Configure perl-5.20.0/Configure
  
  : Private path used by Configure to find libraries.  Its value
  : is prepended to libpth. This variable takes care of special
-@@ -1391,8 +1377,6 @@
- libswanted="$libswanted m crypt sec util c cposix posix ucb bsd BSD"
+@@ -1495,8 +1481,6 @@
+ libswanted="$libswanted sun m crypt sec util c cposix posix ucb bsd BSD"
  : We probably want to search /usr/shlib before most other libraries.
  : This is only used by the lib/ExtUtils/MakeMaker.pm routine extliblist.
 -glibpth=`echo " $glibpth " | sed -e 's! /usr/shlib ! !'`
@@ -63,7 +63,7 @@ diff -ru -x '*~' -x '*.rej' perl-5.20.0-orig/Configure perl-5.20.0/Configure
  : Do not use vfork unless overridden by a hint file.
  usevfork=false
  
-@@ -2446,7 +2430,6 @@
+@@ -2553,7 +2537,6 @@
  zip
  "
  pth=`echo $PATH | sed -e "s/$p_/ /g"`
@@ -71,7 +71,7 @@ diff -ru -x '*~' -x '*.rej' perl-5.20.0-orig/Configure perl-5.20.0/Configure
  for file in $loclist; do
  	eval xxx=\$$file
  	case "$xxx" in
-@@ -4936,7 +4919,7 @@
+@@ -5049,7 +5033,7 @@
  : Set private lib path
  case "$plibpth" in
  '') if ./mips; then
@@ -80,7 +80,7 @@ diff -ru -x '*~' -x '*.rej' perl-5.20.0-orig/Configure perl-5.20.0/Configure
      fi;;
  esac
  case "$libpth" in
-@@ -8600,13 +8583,8 @@
+@@ -8877,13 +8861,8 @@
  echo " "
  case "$sysman" in
  '')
@@ -96,7 +96,7 @@ diff -ru -x '*~' -x '*.rej' perl-5.20.0-orig/Configure perl-5.20.0/Configure
  	;;
  esac
  if $test -d "$sysman"; then
-@@ -19900,9 +19878,10 @@
+@@ -21027,9 +21006,10 @@
  case "$full_ar" in
  '') full_ar=$ar ;;
  esac
@@ -169,7 +169,7 @@ diff -ru -x '*~' -x '*.rej' perl-5.20.0-orig/hints/freebsd.sh perl-5.20.0/hints/
 diff -ru -x '*~' -x '*.rej' perl-5.20.0-orig/hints/linux.sh perl-5.20.0/hints/linux.sh
 --- perl-5.20.0-orig/hints/linux.sh	2014-05-26 15:34:20.000000000 +0200
 +++ perl-5.20.0/hints/linux.sh	2014-06-25 10:33:47.354883843 +0200
-@@ -150,25 +150,6 @@
+@@ -150,28 +150,6 @@
      ;;
  esac
  
@@ -188,6 +188,9 @@ diff -ru -x '*~' -x '*.rej' perl-5.20.0-orig/hints/linux.sh perl-5.20.0/hints/li
 -# plibpth to bypass this check.
 -if [ -x /usr/bin/gcc ] ; then
 -    gcc=/usr/bin/gcc
+-# clang also provides -print-search-dirs
+-elif ${cc:-cc} --version 2>/dev/null | grep -q '^clang ' ; then
+-    gcc=${cc:-cc}
 -else
 -    gcc=gcc
 -fi
@@ -195,7 +198,40 @@ diff -ru -x '*~' -x '*.rej' perl-5.20.0-orig/hints/linux.sh perl-5.20.0/hints/li
  case "$plibpth" in
  '') plibpth=`LANG=C LC_ALL=C $gcc $ccflags $ldflags -print-search-dirs | grep libraries |
  	cut -f2- -d= | tr ':' $trnl | grep -v 'gcc' | sed -e 's:/$::'`
-@@ -367,33 +322,6 @@
+@@ -208,32 +186,6 @@
+   ;;
+ esac
+ 
+-case "$libc" in
+-'')
+-# If you have glibc, then report the version for ./myconfig bug reporting.
+-# (Configure doesn't need to know the specific version since it just uses
+-# gcc to load the library for all tests.)
+-# We don't use __GLIBC__ and  __GLIBC_MINOR__ because they
+-# are insufficiently precise to distinguish things like
+-# libc-2.0.6 and libc-2.0.7.
+-    for p in $plibpth
+-    do
+-        for trylib in libc.so.6 libc.so
+-        do
+-            if $test -e $p/$trylib; then
+-                libc=`ls -l $p/$trylib | awk '{print $NF}'`
+-                if $test "X$libc" != X; then
+-                    break
+-                fi
+-            fi
+-        done
+-        if $test "X$libc" != X; then
+-            break
+-        fi
+-    done
+-    ;;
+-esac
+-
+ if ${sh:-/bin/sh} -c exit; then
+   echo ''
+   echo 'You appear to have a working bash.  Good.'
+@@ -311,33 +263,6 @@
  	;;
  esac
  
@@ -229,40 +265,3 @@ diff -ru -x '*~' -x '*.rej' perl-5.20.0-orig/hints/linux.sh perl-5.20.0/hints/li
  # Linux on Synology.
  if [ -f /etc/synoinfo.conf -a -d /usr/syno ]; then
      # Tested on Synology DS213 and DS413
-diff --git a/hints/linux.sh b/hints/linux.sh
-index 3f38ea0..97aed11 100644
---- a/hints/linux.sh
-+++ b/hints/linux.sh
-@@ -195,32 +195,6 @@ case "$usequadmath" in
-   ;;
- esac
- 
--case "$libc" in
--'')
--# If you have glibc, then report the version for ./myconfig bug reporting.
--# (Configure doesn't need to know the specific version since it just uses
--# gcc to load the library for all tests.)
--# We don't use __GLIBC__ and  __GLIBC_MINOR__ because they
--# are insufficiently precise to distinguish things like
--# libc-2.0.6 and libc-2.0.7.
--    for p in $plibpth
--    do
--        for trylib in libc.so.6 libc.so
--        do
--            if $test -e $p/$trylib; then
--                libc=`ls -l $p/$trylib | awk '{print $NF}'`
--                if $test "X$libc" != X; then
--                    break
--                fi
--            fi
--        done
--        if $test "X$libc" != X; then
--            break
--        fi
--    done
--    ;;
--esac
--
- if ${sh:-/bin/sh} -c exit; then
-   echo ''
-   echo 'You appear to have a working bash.  Good.'

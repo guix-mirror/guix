@@ -57,6 +57,12 @@
    (eval . (put 'substitute* 'scheme-indent-function 1))
    (eval . (put 'match-record 'scheme-indent-function 2))
 
+   ;; 'modify-inputs' and its keywords.
+   (eval . (put 'modify-inputs 'scheme-indent-function 1))
+   (eval . (put 'replace 'scheme-indent-function 1))
+   (eval . (put 'prepend 'scheme-indent-function 2))
+   (eval . (put 'append 'scheme-indent-function 2))
+
    ;; 'modify-phases' and its keywords.
    (eval . (put 'modify-phases 'scheme-indent-function 1))
    (eval . (put 'replace 'scheme-indent-function 1))
@@ -120,6 +126,7 @@
    (eval . (put 'with-extensions 'scheme-indent-function 1))
    (eval . (put 'with-parameters 'scheme-indent-function 1))
    (eval . (put 'let-system 'scheme-indent-function 1))
+   (eval . (put 'with-build-variables 'scheme-indent-function 2))
 
    (eval . (put 'with-database 'scheme-indent-function 2))
    (eval . (put 'call-with-database 'scheme-indent-function 1))

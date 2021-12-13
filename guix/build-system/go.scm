@@ -2,6 +2,7 @@
 ;;; Copyright © 2016 Petter <petter@mykolab.ch>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
+;;; Copyright © 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -21,7 +22,9 @@
 
 (define-module (guix build-system go)
   #:use-module (guix utils)
-  #:use-module (guix derivations)
+  #:use-module (guix gexp)
+  #:use-module (guix store)
+  #:use-module (guix monads)
   #:use-module (guix search-paths)
   #:use-module (guix build-system)
   #:use-module (guix build-system gnu)
@@ -116,7 +119,7 @@ commit hash and its date rather than a proper release tag."
                 #:rest arguments)
   "Return a bag for NAME."
   (define private-keywords
-    '(#:source #:target #:go #:inputs #:native-inputs))
+    '(#:target #:go #:inputs #:native-inputs))
 
   (bag
     (name name)
@@ -150,10 +153,10 @@ commit hash and its date rather than a proper release tag."
     (build (if target go-cross-build go-build))
     (arguments (strip-keyword-arguments private-keywords arguments))))
 
-(define* (go-build store name inputs
+(define* (go-build name inputs
                    #:key
-                   (phases '(@ (guix build go-build-system)
-                               %standard-phases))
+                   source
+                   (phases '%standard-phases)
                    (outputs '("out"))
                    (search-paths '())
                    (install-source? #t)
@@ -171,53 +174,38 @@ commit hash and its date rather than a proper release tag."
                               (guix build union)
                               (guix build utils))))
   (define builder
-   `(begin
-      (use-modules ,@modules)
-      (go-build #:name ,name
-                #:source ,(match (assoc-ref inputs "source")
-                                 (((? derivation? source))
-                                  (derivation->output-path source))
-                                 ((source)
-                                  source)
-                                 (source
-                                  source))
-                #:system ,system
-                #:phases ,phases
-                #:outputs %outputs
-                #:goarch ,goarch
-                #:goos ,goos
-                #:search-paths ',(map search-path-specification->sexp
-                                      search-paths)
-                #:install-source? ,install-source?
-                #:import-path ,import-path
-                #:unpack-path ,unpack-path
-                #:build-flags ,build-flags
-                #:tests? ,tests?
-                #:allow-go-reference? ,allow-go-reference?
-                #:inputs %build-inputs)))
+    (with-imported-modules imported-modules
+      #~(begin
+          (use-modules #$@modules)
+          (go-build #:name #$name
+                    #:source #+source
+                    #:system #$system
+                    #:phases #$phases
+                    #:outputs #$(outputs->gexp outputs)
+                    #:goarch #$goarch
+                    #:goos #$goos
+                    #:search-paths '#$(sexp->gexp
+                                       (map search-path-specification->sexp
+                                            search-paths))
+                    #:install-source? #$install-source?
+                    #:import-path #$import-path
+                    #:unpack-path #$unpack-path
+                    #:build-flags #$build-flags
+                    #:tests? #$tests?
+                    #:allow-go-reference? #$allow-go-reference?
+                    #:inputs #$(input-tuples->gexp inputs)))))
 
-  (define guile-for-build
-    (match guile
-      ((? package?)
-       (package-derivation store guile system #:graft? #f))
-      (#f                                         ; the default
-       (let* ((distro (resolve-interface '(gnu packages commencement)))
-              (guile  (module-ref distro 'guile-final)))
-         (package-derivation store guile system
-                             #:graft? #f)))))
+  (mlet %store-monad ((guile (package->derivation (or guile (default-guile))
+                                                  system #:graft? #f)))
+    (gexp->derivation name builder
+                      #:system system
+                      #:guile-for-build guile)))
 
-  (build-expression->derivation store name builder
-                                #:inputs inputs
-                                #:system system
-                                #:modules imported-modules
-                                #:outputs outputs
-                                #:guile-for-build guile-for-build))
-
-(define* (go-cross-build store name
+(define* (go-cross-build name
                          #:key
-                         target native-drvs target-drvs
-                         (phases '(@ (guix build go-build-system)
-                                     %standard-phases))
+                         source target
+                         build-inputs target-inputs host-inputs
+                         (phases '%standard-phases)
                          (outputs '("out"))
                          (search-paths '())
                          (native-search-paths '())
@@ -225,7 +213,7 @@ commit hash and its date rather than a proper release tag."
                          (import-path "")
                          (unpack-path "")
                          (build-flags ''())
-                         (tests? #f) ; nothing can be done
+                         (tests? #f)              ; nothing can be done
                          (allow-go-reference? #f)
                          (system (%current-system))
                          (goarch (first (go-target target)))
@@ -237,73 +225,53 @@ commit hash and its date rather than a proper release tag."
                                     (guix build utils))))
   "Cross-build NAME using GO, where TARGET is a GNU triplet and with INPUTS."
   (define builder
-    `(begin
-       (use-modules ,@modules)
-       (let ()
-         (define %build-host-inputs
-           ',(map (match-lambda
-                    ((name (? derivation? drv) sub ...)
-                     `(,name . ,(apply derivation->output-path drv sub)))
-                    ((name path)
-                     `(,name . ,path)))
-                  native-drvs))
+    #~(begin
+        (use-modules #$@(sexp->gexp modules))
 
-         (define %build-target-inputs
-           ',(map (match-lambda
-                    ((name (? derivation? drv) sub ...)
-                     `(,name . ,(apply derivation->output-path drv sub)))
-                    ((name (? package? pkg) sub ...)
-                     (let ((drv (package-cross-derivation store pkg
-                                                          target system)))
-                       `(,name . ,(apply derivation->output-path drv sub))))
-                    ((name path)
-                     `(,name . ,path)))
-                  target-drvs))
+        (define %build-host-inputs
+          #+(input-tuples->gexp build-inputs))
 
-         (go-build #:name ,name
-                   #:source ,(match (assoc-ref native-drvs "source")
-                                    (((? derivation? source))
-                                     (derivation->output-path source))
-                                    ((source)
-                                     source)
-                                    (source
-                                      source))
-                   #:system ,system
-                   #:phases ,phases
-                   #:outputs %outputs
-                   #:target ,target
-                   #:goarch ,goarch
-                   #:goos ,goos
-                   #:inputs %build-target-inputs
-                   #:native-inputs %build-host-inputs
-                   #:search-paths ',(map search-path-specification->sexp
+        (define %build-target-inputs
+          (append #$(input-tuples->gexp host-inputs)
+              #+(input-tuples->gexp target-inputs)))
+
+        (define %build-inputs
+          (append %build-host-inputs %build-target-inputs))
+
+        (define %outputs
+          #$(outputs->gexp outputs))
+
+        (go-build #:name #$name
+                  #:source #+source
+                  #:system #$system
+                  #:phases #$phases
+                  #:outputs %outputs
+                  #:target #$target
+                  #:goarch #$goarch
+                  #:goos #$goos
+                  #:inputs %build-target-inputs
+                  #:native-inputs %build-host-inputs
+                  #:search-paths '#$(map search-path-specification->sexp
                                          search-paths)
-                   #:native-search-paths ',(map
-                                             search-path-specification->sexp
-                                             native-search-paths)
-                   #:install-source? ,install-source?
-                   #:import-path ,import-path
-                   #:unpack-path ,unpack-path
-                   #:build-flags ,build-flags
-                   #:tests? ,tests?
-                   #:allow-go-reference? ,allow-go-reference?
-                   #:inputs %build-inputs))))
+                  #:native-search-paths '#$(map
+                                            search-path-specification->sexp
+                                            native-search-paths)
+                  #:install-source? #$install-source?
+                  #:import-path #$import-path
+                  #:unpack-path #$unpack-path
+                  #:build-flags #$build-flags
+                  #:tests? #$tests?
+                  #:allow-go-reference? #$allow-go-reference?
+                  #:inputs %build-inputs)))
 
-    (define guile-for-build
-      (match guile
-             ((? package?)
-              (package-derivation store guile system #:graft? #f))
-             (#f                               ; the default
-              (let* ((distro (resolve-interface '(gnu packages commencement)))
-                     (guile  (module-ref distro 'guile-final)))
-                (package-derivation store guile system #:graft? #f)))))
-
-    (build-expression->derivation store name builder
-                                  #:system system
-                                  #:inputs (append native-drvs target-drvs)
-                                  #:outputs outputs
-                                  #:modules imported-modules
-                                  #:guile-for-build guile-for-build))
+  (mlet %store-monad ((guile (package->derivation (or guile (default-guile))
+                                                  system #:graft? #f)))
+    (gexp->derivation name builder
+                      #:system system
+                      #:target target
+                      #:graft? #f
+                      #:substitutable? substitutable?
+                      #:guile-for-build guile)))
 
 (define go-build-system
   (build-system

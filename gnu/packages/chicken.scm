@@ -68,7 +68,7 @@
             (variable "CHICKEN_REPOSITORY_PATH")
             ;; TODO extract binary version into a module level definition.
             (files (list "var/lib/chicken/11")))))
-    (propagated-inputs `(("gcc-toolchain" ,gcc-toolchain)))
+    (propagated-inputs (list gcc-toolchain))
     (home-page "https://www.call-cc.org/")
     (synopsis "R5RS Scheme implementation that compiles native code via C")
     (description
@@ -99,7 +99,7 @@ language standard, and includes many enhancements and extensions.")
     (build-system chicken-build-system)
     (arguments '(#:egg-name "srfi-1"))
     (inputs
-     `(("chicken-test" ,chicken-test)))
+     (list chicken-test))
     (home-page "https://wiki.call-cc.org/eggref/5/srfi-1")
     (synopsis "SRFI-1 list library")
     (description
@@ -182,11 +182,9 @@ CHICKEN Scheme, along with
     ;; TODO do we really have to make these propagated?
     ;; I don't know Chicken's module system well enough to tell
     (propagated-inputs
-     `(("chicken-datatype" ,chicken-datatype)
-       ("chicken-srfi-1" ,chicken-srfi-1)
-       ("chicken-srfi-14" ,chicken-srfi-14)))
+     (list chicken-datatype chicken-srfi-1 chicken-srfi-14))
     (inputs
-     `(("chicken-test" ,chicken-test)))
+     (list chicken-test))
     (build-system chicken-build-system)
     (arguments '(#:egg-name "agrep"))
     (synopsis "Approximate string matching library")
@@ -217,8 +215,7 @@ file indexing tool.")
     (build-system chicken-build-system)
     (arguments '(#:egg-name "datatype"))
     (inputs
-     `(("chicken-srfi-1" ,chicken-srfi-1)
-       ("chicken-test" ,chicken-test)))
+     (list chicken-srfi-1 chicken-test))
     (home-page "https://wiki.call-cc.org/eggref/5/datatype")
     (synopsis "Facility for creating and using variant records")
     (description
@@ -245,7 +242,7 @@ Languages} by Friedman, Wand, and Haynes.")
         (base32
          "0gz50n5i561n5sk9prry0lrxz6bfrq9if5bclaq6a0f7lzinhnzb"))))
     (inputs
-     `(("chicken-test" ,chicken-test)))
+     (list chicken-test))
     (build-system chicken-build-system)
     (arguments '(#:egg-name "iset"))
     (synopsis "Integer set library")

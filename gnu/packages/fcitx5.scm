@@ -69,13 +69,9 @@
            #t))))
     (build-system cmake-build-system)
     (inputs
-     `(("uthash" ,uthash)
-       ("libxcb" ,libxcb)
-       ("xcb-util" ,xcb-util)
-       ("xcb-util-keysyms" ,xcb-util-keysyms)))
+     (list uthash libxcb xcb-util xcb-util-keysyms))
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("pkg-config" ,pkg-config)))
+     (list extra-cmake-modules pkg-config))
     (home-page "https://github.com/fcitx/xcb-imdkit")
     (synopsis "Input method development support for XCB")
     (description "Xcb-imdkit is an implementation of xim protocol in XCB,
@@ -133,9 +129,8 @@ client.")
        ("xcb-util-wm" ,xcb-util-wm)
        ("xkeyboard-config" ,xkeyboard-config)))
     (native-inputs
-     `(("gcc" ,gcc-9)                   ; for #include <charconv>
-       ("extra-cmake-modules" ,extra-cmake-modules)
-       ("pkg-config" ,pkg-config)))
+     (list gcc-9 ; for #include <charconv>
+           extra-cmake-modules pkg-config))
     (native-search-paths
      (list (search-path-specification
             (variable "FCITX_ADDON_DIRS")
@@ -159,12 +154,9 @@ client.")
         (base32 "0f3raxzkq0nwdfpc9hxvg65vga09gznjjgy9dr6jlkamzx8zlyw9"))))
     (build-system cmake-build-system)
     (inputs
-     `(("fcitx5" ,fcitx5)
-       ("lua" ,lua)
-       ("gettext" ,gettext-minimal)
-       ("libpthread-stubs" ,libpthread-stubs)))
+     (list fcitx5 lua gettext-minimal libpthread-stubs))
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     (list extra-cmake-modules))
     (home-page "https://github.com/fcitx/fcitx5-lua")
     (synopsis "Lua support for Fcitx 5")
     (description "Fcitx5-lua allows writing Fcitx5 extension in Lua.")
@@ -183,12 +175,10 @@ client.")
         (base32 "06smx1kqq3qh0xra8070cjfhw79hcm0vksrswk05wq6jyhvrk5sd"))))
     (build-system cmake-build-system)
     (inputs
-     `(("fcitx5" ,fcitx5)
-       ("boost" ,boost)))
+     (list fcitx5 boost))
     (native-inputs
-     `(("gcc" ,gcc-9)                  ;for #include <filesystem> and ld support
-       ("extra-cmake-modules" ,extra-cmake-modules)
-       ("python" ,python)))             ;needed to run test
+     (list gcc-9 ;for #include <filesystem> and ld support
+           extra-cmake-modules python))             ;needed to run test
     (home-page "https://github.com/fcitx/libime")
     (synopsis "Library for implementing generic input methods")
     (description "Libime is a library for implementing various input method
@@ -238,9 +228,8 @@ editors.")
        ("libx11" ,libx11)
        ("gettext" ,gettext-minimal)))
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("pkg-config" ,pkg-config)
-       ("glib" ,glib "bin")))           ;for glib-genmarshal
+     (list extra-cmake-modules pkg-config
+           `(,glib "bin")))           ;for glib-genmarshal
     ;; TODO: Add "lib" output to reduce the closure size of "gtk2".
     (outputs '("out" "gtk2"))
     (home-page "https://github.com/fcitx/fcitx5-gtk")
@@ -274,7 +263,7 @@ for GTK+2/GTK+3 application.")
        ("qtbase" ,qtbase-5)
        ("gettext" ,gettext-minimal)))
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     (list extra-cmake-modules))
     (home-page "https://github.com/fcitx/fcitx5-qt")
     (synopsis "Qt library and IM module for Fcitx 5")
     (description "Fcitx5-qt provides Qt library for development and IM module
@@ -321,8 +310,7 @@ for Qt based application.")
        ("fcitx5-qt" ,fcitx5-qt)
        ("qtwebkit" ,qtwebkit)))
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("pkg-config" ,pkg-config)))
+     (list extra-cmake-modules pkg-config))
     (outputs '("out" "gui"))
     (home-page "https://github.com/fcitx/fcitx5-chinese-addons")
     (synopsis "Chinese related addons for Fcitx 5")
@@ -375,9 +363,7 @@ including input methods previous bundled inside Fcitx 4:
        ("gettext" ,gettext-minimal)
        ("iso-codes" ,iso-codes)))
     (native-inputs
-     `(("gcc" ,gcc-9)
-       ("extra-cmake-modules" ,extra-cmake-modules)
-       ("pkg-config" ,pkg-config)))
+     (list gcc-9 extra-cmake-modules pkg-config))
     (home-page "https://github.com/fcitx/fcitx5-configtool")
     (synopsis "Graphical configuration tool for Fcitx 5")
     (description "Fcitx5-configtool is a graphical configuration tool

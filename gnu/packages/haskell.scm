@@ -3,7 +3,7 @@
 ;;; Copyright © 2015 Siniša Biđin <sinisa@bidin.eu>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2015, 2019 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2016, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2018, 2019, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
@@ -22,6 +22,7 @@
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2021 Matthew James Kraai <kraai@ftbfs.org>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
+;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -91,7 +92,7 @@
                (setenv "HASKELLPROG" "./bin/clisp-haskell")
                #t)))))
       (inputs
-       `(("clisp" ,clisp)))
+       (list clisp))
       (home-page "https://git.elephly.net/software/yale-haskell.git")
       (synopsis "Port of the Yale Haskell system to CLISP")
       (description "This package provides the Yale Haskell system running on
@@ -248,9 +249,8 @@ top of CLISP.")
                      (gmp-lib (string-append gmp "/lib"))
                      (gmp-include (string-append gmp "/include"))
                      (ncurses-lib
-                      (string-append (assoc-ref inputs "ncurses") "/lib"))
-                     (ld-so (string-append (assoc-ref inputs "libc")
-                                           ,(glibc-dynamic-linker)))
+                      (dirname (search-input-file inputs "/lib/libncurses.so")))
+                     (ld-so (search-input-file inputs ,(glibc-dynamic-linker)))
                      (libtinfo-dir
                       (string-append ghc-bootstrap-prefix
                                      "/lib/ghc-7.8.4/terminfo-0.4.0.0")))
@@ -422,9 +422,7 @@ interactive environment for the functional language Haskell.")
        (sha256
         (base32 "1ch4j2asg7pr52ai1hwzykxyj553wndg7wq93i47ql4fllspf48i"))))
     (inputs
-     `(("gmp" ,gmp)
-       ("ncurses" ,ncurses)
-       ("libffi" ,libffi)))
+     (list gmp ncurses libffi))
     (native-inputs
      `(("perl" ,perl)
        ("python" ,python)               ; for tests
@@ -635,7 +633,7 @@ interactive environment for the functional language Haskell.")
            (sha256
             (base32
              "0c55pj2820q26rikhpf636sn4mjgqsxjrl94vsywrh79dxp3k14z"))))
-       ("git" ,git)                     ; invoked during tests
+       ("git" ,git-minimal/fixed)                 ; invoked during tests
        ,@(filter (match-lambda
                    (("ghc-bootstrap" . _) #f)
                    (("ghc-testsuite" . _) #f)
@@ -688,7 +686,7 @@ interactive environment for the functional language Haskell.")
            (sha256
             (base32
              "1zl25gg6bpx5601k8h3cqnns1xfc0nqgwnh8jvn2s65ra3f2g1nz"))))
-       ("git" ,git-minimal)                     ; invoked during tests
+       ("git" ,git-minimal/fixed)                 ; invoked during tests
        ,@(filter (match-lambda
                    (("ghc-bootstrap" . _) #f)
                    (("ghc-testsuite" . _) #f)
@@ -712,12 +710,18 @@ interactive environment for the functional language Haskell.")
                  (("\\]\\), " all)
                   (string-append all "expect_broken(0)], ")))))
            ;; TODO: Turn this into an undconditional patch on the next rebuild.
-           ,@(if (string=? "i686-linux" (%current-system))
+           ,@(if (string-prefix? "i686" (or (%current-target-system)
+                                                  (%current-system)))
               '((add-after 'skip-more-tests 'skip-failing-tests-i686
                  (lambda _
                    (substitute* '("testsuite/tests/codeGen/should_compile/all.T")
                      (("(test\\('T15155l', )when\\(unregisterised\\(\\), skip\\)" all before)
-                      (string-append before "when(arch('i386'), skip)"))))))
+                      (string-append before "when(arch('i386'), skip)")))
+                   ;; Unexpected failures:
+                   ;;    quasiquotation/T14028.run  T14028 [bad stderr] (dyn)
+                   (substitute* '("testsuite/tests/quasiquotation/all.T")
+                     (("unless\\(config.have_ext_interp, skip\\),")
+                      "unless(config.have_ext_interp, skip), when(arch('i386'), skip),")))))
               '())))))
     (native-search-paths (list (search-path-specification
                                 (variable "GHC_PACKAGE_PATH")

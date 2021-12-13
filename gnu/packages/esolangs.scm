@@ -52,7 +52,7 @@
       ;; The tests are not designed to be run and evaluated automatically.
      '(#:tests? #f))
     (inputs
-     `(("ncurses" ,ncurses)))
+     (list ncurses))
     (home-page "https://github.com/VorpalBlade/cfunge")
     (synopsis "Fast conforming Befunge93/98/109 interpreter in C")
     (description "@command{cfunge} is a fast conforming Befunge93/98/109 interpreter
@@ -75,9 +75,9 @@ identified by unique ID codes).")
         (base32 "0syw60b93iajgh91ffchirwwhm2kix2753ibx845kyrhzggmdh2l"))))
     (build-system cmake-build-system)
     (inputs
-     `(("readline" ,readline)))
+     (list readline))
     (native-inputs
-     `(("python-2" ,python-2)))         ; for the tests
+     (list python-2))         ; for the tests
     (synopsis "LOLCODE interpreter written in C")
     (description
      "@code{lci} is a LOLCODE interpreter written in C and is designed to be
@@ -122,8 +122,7 @@ whenever possible to the extent that the above points are not compromized.
          (add-before 'install 'build
            (assoc-ref gnu:%standard-phases 'build)))))
     (native-inputs
-     `(("bison" ,bison)
-       ("flex" ,flex)))
+     (list bison flex))
     (home-page "http://shakespearelang.sourceforge.net/")
     (synopsis "Write programs like Shakespearean plays")
     (description "Shakespeare is a programming language with the design goal

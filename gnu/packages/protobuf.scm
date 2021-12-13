@@ -60,9 +60,9 @@
          "1i9y8a1712aj80p5a1kcp378bnjrg3s2127q7304hklhmjcrjl1d"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("libevent" ,libevent)))
+     (list libevent))
     (home-page "https://github.com/farsightsec/fstrm")
     (synopsis "Implementation of the Frame Streams data transport protocol")
     (description
@@ -95,7 +95,7 @@ data in motion, or as a file format for data at rest.")
                (base32
                 "1jzqrklhj9grs6xbddyb5dyxfbgbgbyhl5zig8ml50wb22gwkkji"))))
     (build-system gnu-build-system)
-    (inputs `(("zlib" ,zlib)))
+    (inputs (list zlib))
     (outputs (list "out"
                    "static"))           ; ~12 MiB of .a files
     (arguments
@@ -195,8 +195,8 @@ internal RPC protocols and file formats.")
                (base32
                 "0y3yaanq97si7iyld06p8w20m0shpj7sf4xwzbhhvijhxw36d592"))))
     (build-system gnu-build-system)
-    (inputs `(("protobuf" ,protobuf)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs (list protobuf))
+    (native-inputs (list pkg-config))
     (home-page "https://github.com/protobuf-c/protobuf-c")
     (synopsis "Protocol Buffers implementation in C")
     (description
@@ -243,9 +243,9 @@ encoder in C++.  The developer using protozero has to manually translate the
          "0mj6z58aiw532s1mq48m9xdrm3gdyp2vv9cdinfb5wmnfpm5m7n9"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-wheel" ,python-wheel)))
+     (list python-wheel))
     (propagated-inputs
-     `(("python-six" ,python-six)))
+     (list python-six))
     (home-page "https://github.com/google/protobuf")
     (synopsis "Protocol buffers is a data interchange format")
     (description
@@ -269,33 +269,17 @@ mechanism for serializing structured data.")
         (base32 "15dp5pvazd0jx4wzzh79080ah7hkpd3axh40al9vhzs2hf3v90hx"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-flake8" ,python-flake8)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)
-       ("python-isort" ,python-isort)))
+     (list python-flake8 python-pytest python-pytest-cov python-isort))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'check 'setup-test-env
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (py3sitedir
-                     (string-append out "/lib/python"
-                                    ,(version-major+minor
-                                      (package-version python))
-                                    "/site-packages")))
-               (setenv "PYTHONPATH"
-                       (string-append py3sitedir ":"
-                                      (getenv "PYTHONPATH"))))
-             #t))
          (replace 'check
            (lambda _
              (invoke "pytest" "--cov-report" "term-missing" "--cov"
                      "pure_protobuf")
              (invoke "flake8" "pure_protobuf" "tests"
                      "--ignore=F541")
-             (invoke "isort" "-rc" "-c" "pure_protobuf" "tests")
-             #t)))))
+             (invoke "isort" "-rc" "-c" "pure_protobuf" "tests"))))))
     (home-page "https://pypi.org/project/pure-protobuf/")
     (synopsis "Protobuf implementation using dataclasses")
     (description
@@ -398,26 +382,23 @@ source files.")
            (lambda _
              (invoke "rspec"))))))
     (native-inputs
-     `(("ruby-benchmark-ips" ,ruby-benchmark-ips)
-       ("ruby-ffi-rzmq" ,ruby-ffi-rzmq)
-       ("ruby-parser" ,ruby-parser)
-       ("ruby-pry-byebug" ,ruby-pry-byebug)
-       ("ruby-pry-stack-explorer" ,ruby-pry-stack-explorer)
-       ("ruby-rake" ,ruby-rake)
-       ("ruby-rspec" ,ruby-rspec)
-       ("ruby-rubocop" ,ruby-rubocop)
-       ("ruby-ruby-prof" ,ruby-ruby-prof)
-       ("ruby-simplecov" ,ruby-simplecov)
-       ("ruby-timecop" ,ruby-timecop)
-       ("ruby-varint" ,ruby-varint)
-       ("ruby-yard" ,ruby-yard)))
+     (list ruby-benchmark-ips
+           ruby-ffi-rzmq
+           ruby-parser
+           ruby-pry-byebug
+           ruby-pry-stack-explorer
+           ruby-rake
+           ruby-rspec
+           ruby-rubocop
+           ruby-ruby-prof
+           ruby-simplecov
+           ruby-timecop
+           ruby-varint
+           ruby-yard))
     (inputs
-     `(("protobuf" ,protobuf)))
+     (list protobuf))
     (propagated-inputs
-     `(("ruby-activesupport" ,ruby-activesupport)
-       ("ruby-middleware" ,ruby-middleware)
-       ("ruby-thor" ,ruby-thor)
-       ("ruby-thread-safe" ,ruby-thread-safe)))
+     (list ruby-activesupport ruby-middleware ruby-thor ruby-thread-safe))
     (home-page "https://github.com/ruby-protobuf/protobuf")
     (synopsis "Implementation of Google's Protocol Buffers in Ruby")
     (description "Protobuf is an implementation of Google's Protocol Buffers

@@ -437,13 +437,13 @@
        ("webrtc-audio-processing" ,webrtc-audio-processing)
        ("yaml-cpp" ,yaml-cpp)))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("gcc" ,gcc-8)                   ;charconv requires GCC 8.1+
-       ("libtool" ,libtool)
-       ("perl" ,perl)                   ;to generate manpages with pod2man
-       ("pkg-config" ,pkg-config)
-       ("which" ,which)))
+     (list autoconf
+           automake
+           gcc-8 ;charconv requires GCC 8.1+
+           libtool
+           perl ;to generate manpages with pod2man
+           pkg-config
+           which))
     (arguments
      `(#:tests? #f         ; The tests fail to compile due to missing headers.
        #:make-flags '("V=1")            ;build verbosely
@@ -472,10 +472,9 @@ protocols, as well as decentralized calling using P2P-DHT.")
     (build-system cmake-build-system)
     (outputs '("out" "debug"))
     (inputs
-     `(("libring" ,libring)
-       ("network-manager" ,network-manager)))
+     (list libring network-manager))
     (propagated-inputs
-     `(("qtbase" ,qtbase-5)))     ; Qt is included in several installed headers.
+     (list qtbase-5))     ; Qt is included in several installed headers.
     (arguments
      `(#:tests? #f                      ; There is no testsuite.
        #:configure-flags
@@ -515,25 +514,25 @@ decentralized calling using P2P-DHT.")
     (build-system cmake-build-system)
     (outputs '("out" "debug"))
     (inputs
-     `(("clutter" ,clutter)
-       ("clutter-gtk" ,clutter-gtk)
-       ("gtk+" ,gtk+)
-       ("libcanberra" ,libcanberra)
-       ("libappindicator" ,libappindicator)
-       ("libnotify" ,libnotify)
-       ("libringclient" ,libringclient)
-       ("network-manager" ,network-manager)
-       ("qrencode" ,qrencode)
-       ("sqlite" ,sqlite)
-       ("webkitgtk" ,webkitgtk)))
+     (list clutter
+           clutter-gtk
+           gtk+
+           libcanberra
+           libappindicator
+           libnotify
+           libringclient
+           network-manager
+           qrencode
+           sqlite
+           webkitgtk))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin")))       ;for glib-compile-resources
     (propagated-inputs
-     `(("libring" ,libring) ; Contains 'dring', the daemon, which is
-                            ; automatically started by DBus.
-       ("adwaita-icon-theme" ,adwaita-icon-theme)))
+     (list libring ; Contains 'dring', the daemon, which is
+           ; automatically started by DBus.
+           adwaita-icon-theme))
     (arguments
      `(#:tests? #f                      ;no test suite
        #:imported-modules (,@%cmake-build-system-modules
@@ -546,6 +545,11 @@ decentralized calling using P2P-DHT.")
          (add-after 'unpack 'change-directory
            (lambda _
              (chdir "client-gnome")))
+         (add-after 'change-directory 'fix-webkit-detection
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("WEBKIT webkit2gtk-4.0")
+                "WEBKIT webkit2gtk-4.1"))))
          (add-after 'install 'glib-or-gtk-compile-schemas
            (assoc-ref gtk:%standard-phases 'glib-or-gtk-compile-schemas))
          (add-after 'glib-or-gtk-compile-schemas 'glib-or-gtk-wrap
@@ -579,25 +583,22 @@ decentralized calling using P2P-DHT.")
              (lambda _
                (chdir "client-qt"))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("qttools" ,qttools)
-       ("doxygen" ,doxygen)
-       ("graphviz" ,graphviz)))
+     (list pkg-config qttools doxygen graphviz))
     (inputs
-     `(("libnotify" ,libnotify)
-       ("libringclient" ,libringclient)
-       ("network-manager" ,network-manager)
-       ("qrencode" ,qrencode)
-       ("qtsvg" ,qtsvg)
-       ("qtwebengine" ,qtwebengine)
-       ("qtwebchannel" ,qtwebchannel)
-       ("qtmultimedia" ,qtmultimedia)
-       ("qtdeclarative" ,qtdeclarative)
-       ("qtgraphicaleffects" ,qtgraphicaleffects)
-       ("qtquickcontrols" ,qtquickcontrols)
-       ("qtquickcontrols2" ,qtquickcontrols2)))
+     (list libnotify
+           libringclient
+           network-manager
+           qrencode
+           qtsvg
+           qtwebengine
+           qtwebchannel
+           qtmultimedia
+           qtdeclarative
+           qtgraphicaleffects
+           qtquickcontrols
+           qtquickcontrols2))
     (propagated-inputs
-     `(("libring" ,libring)))           ;for dring
+     (list libring))           ;for dring
     (home-page "https://jami.net")
     (synopsis "Qt Jami client")
     (description "This package provides the Jami Qt client.  Jami is a secure

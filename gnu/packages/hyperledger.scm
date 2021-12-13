@@ -63,10 +63,7 @@
               (file-name (git-file-name name version))))
     (build-system go-build-system)
     (native-inputs
-     `(("which" ,which)
-       ("docker-cli" ,docker-cli)
-       ("git" ,git)
-       ("curl" ,curl)))
+     (list which docker-cli git curl))
     (arguments
      `(#:import-path "github.com/hyperledger/fabric"
        #:unpack-path "github.com/hyperledger/fabric"
@@ -122,7 +119,7 @@ different components.")
                 "0kr1zwah8mhnpfrpk3h6hdafyqdl3ixhs7czdfscqv6vxqfiabc4"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("googletest" ,googletest)))
+     (list googletest))
     (arguments
      `(#:tests? #f      ; Tests don't build because CMake cannot find GTest main.
        #:configure-flags '("-DHUNTER_ENABLED=OFF"
@@ -182,20 +179,16 @@ link-time.  New implementations can be added as well.")
        #:test-target "."))
     ;; https://github.com/hyperledger/iroha/blob/master/vcpkg/VCPKG_DEPS_LIST
     (native-inputs
-     `(("fmt" ,fmt)
-       ("googletest" ,googletest)
-       ("rapidjson" ,rapidjson)
-       ("rxcpp" ,rxcpp)
-       ("spdlog" ,spdlog)))
+     (list fmt googletest rapidjson rxcpp spdlog))
     (inputs
-     `(("boost" ,boost)
-       ("gflags" ,gflags)
-       ("grpc" ,grpc-1.16.1)
-       ("hyperledger-iroha-ed25519" ,hyperledger-iroha-ed25519)
-       ("postgresql" ,postgresql)
-       ("protobuf" ,protobuf)
-       ("soci" ,soci)
-       ("tbb" ,tbb)))
+     (list boost
+           gflags
+           grpc-1.16.1
+           hyperledger-iroha-ed25519
+           postgresql
+           protobuf
+           soci
+           tbb))
     (synopsis "Simple, decentralized ledger")
     (description "Iroha is a distributed ledger technology (DLT).  Iroha has
 essential functionality for your asset, information and identity management

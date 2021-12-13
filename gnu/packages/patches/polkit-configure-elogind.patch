@@ -1,0 +1,15 @@
+Even when the polkit configure script detects elogind, it does not use
+it.  This patch ensures that elogind is used when it is detected.
+
+diff -ruN a/configure b/configure
+--- a/configure	1969-12-31 19:00:01.000000000 -0500
++++ b/configure	2021-11-19 00:04:55.581385020 -0500
+@@ -20390,7 +20390,7 @@
+ 
+ 
+ 
+- if test "$have_libsystemd" = "yes"; then
++ if test "$have_libsystemd" = "yes" || test "$have_libelogind" = "yes"; then
+   HAVE_LIBSYSTEMD_TRUE=
+   HAVE_LIBSYSTEMD_FALSE='#'
+ else

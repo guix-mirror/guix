@@ -48,8 +48,7 @@
                 "1a119qxhxhr0yn37r26dkydm6g5kykdkx98ghb59i4ipa6i95vkq"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-memory" ,ghc-memory)
-       ("ghc-hourglass" ,ghc-hourglass)))
+     (list ghc-memory ghc-hourglass))
     (home-page "https://github.com/vincenthz/hs-asn1-types")
     (synopsis "ASN.1 types for Haskell")
     (description
@@ -71,11 +70,9 @@ format.")
                 "02nsr30h5yic1mk7znf0q4z3n560ip017n60hg7ya25rsfmxxy6r"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-hourglass" ,ghc-hourglass)
-       ("ghc-asn1-types" ,ghc-asn1-types)))
+     (list ghc-hourglass ghc-asn1-types))
     (native-inputs
-     `(("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)))
+     (list ghc-tasty ghc-tasty-quickcheck))
     (home-page "https://github.com/vincenthz/hs-asn1")
     (synopsis "ASN1 data reader and writer in RAW, BER and DER forms")
     (description
@@ -97,8 +94,7 @@ supports for high level forms of ASN1 (BER, and DER).")
                 "17pk8y3nwv9b9i5j15qlmwi7fmq9ab2z4kfpjk2rvcrh9lsf27wg"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-asn1-types" ,ghc-asn1-types)
-       ("ghc-asn1-encoding" ,ghc-asn1-encoding)))
+     (list ghc-asn1-types ghc-asn1-encoding))
     (home-page "https://github.com/vincenthz/hs-asn1")
     (synopsis "Simple monadic parser for ASN1 stream types")
     (description
@@ -120,9 +116,7 @@ when ASN1 pattern matching is not convenient.")
         (base32
          "19bsmkqkpnvh01b77pmyarx00fic15j4hvg4pzscrj4prskrx2i9"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-cereal" ,ghc-cereal)
-              ("ghc-tagged" ,ghc-tagged)
-              ("ghc-entropy" ,ghc-entropy)))
+    (inputs (list ghc-cereal ghc-tagged ghc-entropy))
     (home-page "https://github.com/TomMD/crypto-api")
     (synopsis "Provides generic interface for cryptographic operations
 for Haskell")
@@ -152,13 +146,13 @@ algorithm (ex: padding) is within scope of this package.")
          "0w3j43jdrlj28jryp18hc6q84nkl2yf4vs1hhgrsk7gb9kfyqjpl"))))
     (build-system haskell-build-system)
     (outputs '("out" "static" "doc"))
-    (inputs `(("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)
-              ("ghc-crypto-api" ,ghc-crypto-api)
-              ("ghc-cereal" ,ghc-cereal)
-              ("ghc-test-framework" ,ghc-test-framework)
-              ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
-              ("ghc-hunit" ,ghc-hunit)
-              ("ghc-quickcheck" ,ghc-quickcheck)))
+    (inputs (list ghc-test-framework-quickcheck2
+                  ghc-crypto-api
+                  ghc-cereal
+                  ghc-test-framework
+                  ghc-test-framework-hunit
+                  ghc-hunit
+                  ghc-quickcheck))
     (home-page "https://github.com/TomMD/crypto-api-tests")
     (synopsis "Test framework and KATs for cryptographic operations for Haskell")
     (description "This Haskell package provides a test framework for hash and
@@ -181,14 +175,14 @@ for common cryptographic algorithms are included.")
          "1yr2iyb779znj79j3fq4ky8l1y8a600a2x1fx9p5pmpwq5zq93y2"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-byteable" ,ghc-byteable)
-       ("ghc-cryptonite" ,ghc-cryptonite)
-       ("ghc-memory" ,ghc-memory)
-       ("ghc-hunit" ,ghc-hunit)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)))
+     (list ghc-byteable
+           ghc-cryptonite
+           ghc-memory
+           ghc-hunit
+           ghc-quickcheck
+           ghc-tasty
+           ghc-tasty-quickcheck
+           ghc-tasty-hunit))
     (home-page "https://github.com/vincenthz/hs-cryptohash")
     (synopsis "Collection of cryptographic hashes in Haskell")
     (description
@@ -212,11 +206,8 @@ that hides the C implementation.")
         (base32
          "018g13hkmq5782i24b4518hcd926fl6x6fh5hd7b9wlxwc5dn21v"))))
     (build-system haskell-build-system)
-    (native-inputs `(("ghc-base16-bytestring" ,ghc-base16-bytestring)
-                     ("ghc-puremd5" ,ghc-puremd5)
-                     ("ghc-tasty" ,ghc-tasty)
-                     ("ghc-tasty-hunit" ,ghc-tasty-hunit)
-                     ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)))
+    (native-inputs (list ghc-base16-bytestring ghc-puremd5 ghc-tasty
+                         ghc-tasty-hunit ghc-tasty-quickcheck))
     (home-page "https://github.com/hvr/cryptohash-md5")
     (synopsis "MD5 implementation for Haskell")
     (description "This Haskell package provides implementation of MD5.")
@@ -240,11 +231,8 @@ that hides the C implementation.")
      `(#:cabal-revision
        ("6" "10rpxrmqgwihmplczglwxf5q3l13z9j3kvi065z884y4dymmnkgc")
        #:tests? #f)) ; tests require old version of ghc-hunit (0.9)
-    (native-inputs `(("ghc-base16-bytestring" ,ghc-base16-bytestring)
-                     ("ghc-sha" ,ghc-sha)
-                     ("ghc-tasty" ,ghc-tasty)
-                     ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
-                     ("ghc-hunit" ,ghc-hunit)))
+    (native-inputs (list ghc-base16-bytestring ghc-sha ghc-tasty
+                         ghc-tasty-quickcheck ghc-hunit))
     (home-page "https://github.com/hvr/cryptohash-sha1")
     (synopsis "SHA-1 implementation for Haskell")
     (description "This Haskell package provides an incremental and one-pass,
@@ -275,11 +263,8 @@ the C implementation.")
        ("1" "0v5ppc7r2lxbk49h1kwj4b5vyb1dw2fnppykvp5m9rm0p3vhlykr")
        #:tests? #f)) ; TODO: tasty ==1.1.*
     (native-inputs
-     `(("ghc-base16-bytestring" ,ghc-base16-bytestring)
-       ("ghc-sha" ,ghc-sha)
-       ("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
-       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)))
+     (list ghc-base16-bytestring ghc-sha ghc-tasty ghc-tasty-hunit
+           ghc-tasty-quickcheck))
     (home-page "https://github.com/hvr/cryptohash-sha1")
     (synopsis "SHA-256 implementation for Haskell")
     (description "This Haskell package provides an incremental and
@@ -309,14 +294,9 @@ the C implementation.")
     (arguments '(#:tests? #f))
     (outputs '("out" "static" "doc"))
     (inputs
-     `(("ghc-basement" ,ghc-basement)
-       ("ghc-memory" ,ghc-memory)
-       ("ghc-byteable" ,ghc-byteable)))
+     (list ghc-basement ghc-memory ghc-byteable))
     (native-inputs
-     `(("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
-       ("ghc-tasty-kat" ,ghc-tasty-kat)))
+     (list ghc-tasty ghc-tasty-quickcheck ghc-tasty-hunit ghc-tasty-kat))
     (home-page "https://github.com/haskell-crypto/cryptonite")
     (synopsis "Cryptography primitives")
     (description
@@ -344,7 +324,7 @@ generators, and more.")
     (arguments
      `(#:extra-directories ("zlib")))
     (inputs
-     `(("zlib" ,zlib)))
+     (list zlib))
     (home-page
      "https://hackage.haskell.org/package/digest")
     (synopsis
@@ -387,14 +367,10 @@ to obtain cryptographically strong entropy.")
                 "1m7qjsxrd8m88cvkqmr8kscril500j2a9y0iynvksjyjkhdlq33p"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-basement" ,ghc-basement)
-       ("ghc-memory" ,ghc-memory)))
+     (list ghc-basement ghc-memory))
     (native-inputs
-     `(("ghc-test-framework" ,ghc-test-framework)
-       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)
-       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
-       ("ghc-hunit" ,ghc-hunit)
-       ("ghc-quickcheck" ,ghc-quickcheck)))
+     (list ghc-test-framework ghc-test-framework-quickcheck2
+           ghc-test-framework-hunit ghc-hunit ghc-quickcheck))
     (home-page "https://github.com/vincenthz/hs-pem")
     (synopsis "Privacy Enhanced Mail (PEM) format reader and writer")
     (description
@@ -416,15 +392,10 @@ Mail} (PEM) format.")
         (base32
          "0qwkvxwi9wh6knn69rg2hvc8ngmv1if77kmpcnp0xqr0l30fwavq"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-cereal" ,ghc-cereal)
-              ("ghc-crypto-api" ,ghc-crypto-api)
-              ("ghc-tagged" ,ghc-tagged)))
-    (native-inputs `(("ghc-crypto-api-tests" ,ghc-crypto-api-tests)
-                     ("ghc-quickcheck" ,ghc-quickcheck)
-                     ("ghc-test-framework" ,ghc-test-framework)
-                     ("ghc-test-framework-quickcheck2"
-                      ,ghc-test-framework-quickcheck2)
-                     ("ghc-pretty-hex" ,ghc-pretty-hex)))
+    (inputs (list ghc-cereal ghc-crypto-api ghc-tagged))
+    (native-inputs (list ghc-crypto-api-tests ghc-quickcheck
+                         ghc-test-framework ghc-test-framework-quickcheck2
+                         ghc-pretty-hex))
     (home-page "https://github.com/TomMD/pureMD5")
     (synopsis "Haskell implementation of the MD5 hash algorithm")
     (description "This package provides a Haskell-only implementation of
@@ -445,9 +416,8 @@ interface.")
                 "0i4b2wjisivdy72synal711ywhx05mfqfba5n65rk8qidggm1nbb"))))
     (build-system haskell-build-system)
     (native-inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-test-framework" ,ghc-test-framework)
-       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
+     (list ghc-quickcheck ghc-test-framework
+           ghc-test-framework-quickcheck2))
     (home-page "https://hackage.haskell.org/package/SHA")
     (synopsis "SHA suite of message digest functions")
     (description
@@ -472,16 +442,15 @@ libraries, like OpenSSL.")
                 "1j67c35g8334jx7x32hh6awhr43dplp0qwal5gnlkmx09axzrc5i"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-memory" ,ghc-memory)
-       ("ghc-hourglass" ,ghc-hourglass)
-       ("ghc-pem" ,ghc-pem)
-       ("ghc-asn1-types" ,ghc-asn1-types)
-       ("ghc-asn1-encoding" ,ghc-asn1-encoding)
-       ("ghc-asn1-parse" ,ghc-asn1-parse)
-       ("ghc-cryptonite" ,ghc-cryptonite)))
+     (list ghc-memory
+           ghc-hourglass
+           ghc-pem
+           ghc-asn1-types
+           ghc-asn1-encoding
+           ghc-asn1-parse
+           ghc-cryptonite))
     (native-inputs
-     `(("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)))
+     (list ghc-tasty ghc-tasty-quickcheck))
     (home-page "https://github.com/vincenthz/hs-certificate")
     (synopsis "X509 reader and writer")
     (description
@@ -502,14 +471,10 @@ libraries, like OpenSSL.")
                 "1y8yyr1i95jkllg8k0z54k5v4vachp848clc07m33xpxidn3b1lp"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-pem" ,ghc-pem)
-       ("ghc-asn1-types" ,ghc-asn1-types)
-       ("ghc-asn1-encoding" ,ghc-asn1-encoding)
-       ("ghc-cryptonite" ,ghc-cryptonite)
-       ("ghc-x509" ,ghc-x509)))
+     (list ghc-pem ghc-asn1-types ghc-asn1-encoding ghc-cryptonite
+           ghc-x509))
     (native-inputs
-     `(("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)))
+     (list ghc-tasty ghc-tasty-hunit))
     (home-page "https://github.com/vincenthz/hs-certificate")
     (synopsis "X.509 collection accessing and storing methods")
     (description
@@ -531,19 +496,18 @@ collections, certificates, revocation lists, and exception lists.")
                 "16yihzljql3z8w5rgdl95fv3hgk7yd86kbl9b3glllsark5j2hzr"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-memory" ,ghc-memory)
-       ("ghc-byteable" ,ghc-byteable)
-       ("ghc-hourglass" ,ghc-hourglass)
-       ("ghc-data-default-class" ,ghc-data-default-class)
-       ("ghc-pem" ,ghc-pem)
-       ("ghc-asn1-types" ,ghc-asn1-types)
-       ("ghc-asn1-encoding" ,ghc-asn1-encoding)
-       ("ghc-x509" ,ghc-x509)
-       ("ghc-x509-store" ,ghc-x509-store)
-       ("ghc-cryptonite" ,ghc-cryptonite)))
+     (list ghc-memory
+           ghc-byteable
+           ghc-hourglass
+           ghc-data-default-class
+           ghc-pem
+           ghc-asn1-types
+           ghc-asn1-encoding
+           ghc-x509
+           ghc-x509-store
+           ghc-cryptonite))
     (native-inputs
-     `(("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)))
+     (list ghc-tasty ghc-tasty-hunit))
     (home-page "https://github.com/vincenthz/hs-certificate")
     (synopsis "X.509 certificate and revocation list validation")
     (description
@@ -565,9 +529,7 @@ list validation.")
                 "06a4m9c7vlr9nhp9gmqbb46arf0yj1dkdm4nip03hzy67spdmp20"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-pem" ,ghc-pem)
-       ("ghc-x509" ,ghc-x509)
-       ("ghc-x509-store" ,ghc-x509-store)))
+     (list ghc-pem ghc-x509 ghc-x509-store))
     (home-page "https://github.com/vincenthz/hs-certificate")
     (synopsis "Handle system X.509 accessors and storage")
     (description
@@ -589,8 +551,7 @@ for X.509 certificates.")
         (base32
          "03qa1i1kj07pfrxsi7fiaqnnd0vi94jd4jfswbmnm4gp1nvzcwr0"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-byteable" ,ghc-byteable)
-              ("ghc-securemem" ,ghc-securemem)))
+    (inputs (list ghc-byteable ghc-securemem))
     (home-page "https://github.com/vincenthz/hs-crypto-cipher")
     (synopsis "Generic cryptography cipher types for Haskell")
     (description "This Haskell package provides basic typeclasses and types
@@ -611,13 +572,10 @@ for symmetric ciphers.")
         (base32
          "05ahz6kjq0fl1w66gpiqy0vndli5yx1pbsbw9ni3viwqas4p3cfk"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-byteable" ,ghc-byteable)
-              ("ghc-securemem" ,ghc-securemem)
-              ("ghc-crypto-cipher-types" ,ghc-crypto-cipher-types)))
-    (native-inputs `(("ghc-quickcheck" ,ghc-quickcheck)
-                     ("ghc-test-framework" ,ghc-test-framework)
-                     ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)
-                     ("ghc-crypto-cipher-tests" ,ghc-crypto-cipher-tests)))
+    (inputs (list ghc-byteable ghc-securemem ghc-crypto-cipher-types))
+    (native-inputs (list ghc-quickcheck ghc-test-framework
+                         ghc-test-framework-quickcheck2
+                         ghc-crypto-cipher-tests))
     (home-page "https://github.com/vincenthz/hs-cipher-aes")
     (synopsis "AES cipher implementation with advanced mode of operations for
 Haskell")
@@ -651,8 +609,7 @@ AES-NI available, or you'll need to use a different implementation.")
         (base32
          "0139kbbb2h7vshf68y3fvjda29lhj7jjwl4vq78w4y8k8hc7l2hp"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-securemem" ,ghc-securemem)
-              ("ghc-vector" ,ghc-vector)))
+    (inputs (list ghc-securemem ghc-vector))
     (home-page "https://github.com/vincenthz/hs-crypto-random")
     (synopsis "Simple cryptographic random related types for Haskell")
     (description "Simple cryptographic random related types: a safe
@@ -673,9 +630,7 @@ abstraction for CPRNGs.")
         (base32
          "1wr15kbmk1g3l8a75n0iwbzqg24ixv78slwzwb2q6rlcvq0jlnb4"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-byteable" ,ghc-byteable)
-              ("ghc-crypto-random" ,ghc-crypto-random)
-              ("ghc-cipher-aes" ,ghc-cipher-aes)))
+    (inputs (list ghc-byteable ghc-crypto-random ghc-cipher-aes))
     (home-page "https://github.com/vincenthz/hs-cprng-aes")
     (synopsis "Crypto Pseudo Random Number Generator using AES in counter mode
 in Haskell")
@@ -748,22 +703,20 @@ guidelines.")
                 "0j1rxxq5lzs584nk19610mk7mmsqqkgfxw2qj74ibb1zsk7baj4a"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-cereal" ,ghc-cereal)
-       ("ghc-data-default-class" ,ghc-data-default-class)
-       ("ghc-memory" ,ghc-memory)
-       ("ghc-cryptonite" ,ghc-cryptonite)
-       ("ghc-asn1-types" ,ghc-asn1-types)
-       ("ghc-asn1-encoding" ,ghc-asn1-encoding)
-       ("ghc-x509" ,ghc-x509)
-       ("ghc-x509-store" ,ghc-x509-store)
-       ("ghc-x509-validation" ,ghc-x509-validation)
-       ("ghc-async" ,ghc-async)
-       ("ghc-network" ,ghc-network)
-       ("ghc-hourglass" ,ghc-hourglass)))
+     (list ghc-cereal
+           ghc-data-default-class
+           ghc-memory
+           ghc-cryptonite
+           ghc-asn1-types
+           ghc-asn1-encoding
+           ghc-x509
+           ghc-x509-store
+           ghc-x509-validation
+           ghc-async
+           ghc-network
+           ghc-hourglass))
     (native-inputs
-     `(("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
-       ("ghc-quickcheck" ,ghc-quickcheck)))
+     (list ghc-tasty ghc-tasty-quickcheck ghc-quickcheck))
     (home-page "https://github.com/vincenthz/hs-tls")
     (synopsis
      "TLS/SSL protocol native implementation (Server and Client)")
@@ -793,8 +746,7 @@ extensions.")
     (arguments
      `(#:extra-directories ("openssl")))
     (inputs
-     `(("ghc-network" ,ghc-network)
-       ("openssl" ,openssl)))
+     (list ghc-network openssl))
     (home-page "https://github.com/vshabanov/HsOpenSSL")
     (synopsis "Partial OpenSSL binding for Haskell")
     (description "HsOpenSSL is an OpenSSL binding for Haskell.  It can
@@ -822,13 +774,9 @@ implementation of SSL.")
          "10pnnpzgb5xr811kc9qdk7h2cgn6hk2yiyhnzz8f8p0fjzc0pwjm"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-hsopenssl" ,ghc-hsopenssl)
-       ("ghc-io-streams" ,ghc-io-streams)
-       ("ghc-network" ,ghc-network)))
+     (list ghc-hsopenssl ghc-io-streams ghc-network))
     (native-inputs
-     `(("ghc-hunit" ,ghc-hunit)
-       ("ghc-test-framework" ,ghc-test-framework)
-       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)))
+     (list ghc-hunit ghc-test-framework ghc-test-framework-hunit))
     (home-page "https://hackage.haskell.org/package/openssl-streams")
     (synopsis "OpenSSL network support for io-streams")
     (description "This library contains io-streams routines for secure
@@ -850,17 +798,15 @@ networking using OpenSSL (by way of HsOpenSSL).")
          "1bldcmda4xh52mw1wfrjljv8crhw3al7v7kv1j0vidvr7ymnjpbh"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-conduit" ,ghc-conduit)
-       ("ghc-conduit-extra" ,ghc-conduit-extra)
-       ("ghc-cryptonite" ,ghc-cryptonite)
-       ("ghc-exceptions" ,ghc-exceptions)
-       ("ghc-memory" ,ghc-memory)
-       ("ghc-resourcet" ,ghc-resourcet)))
+     (list ghc-conduit
+           ghc-conduit-extra
+           ghc-cryptonite
+           ghc-exceptions
+           ghc-memory
+           ghc-resourcet))
     (native-inputs
-     `(("ghc-conduit-combinators" ,ghc-conduit-combinators)
-       ("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
-       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)))
+     (list ghc-conduit-combinators ghc-tasty ghc-tasty-hunit
+           ghc-tasty-quickcheck))
     (arguments
      `(#:cabal-revision
        ("1" "1hh2nzfz4qpxgivfilgk4ll416lph8b2fdkzpzrmqfjglivydfmz")))

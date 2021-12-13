@@ -94,9 +94,7 @@
                          (find-files oldbin script?))))))))
     (outputs '("out" "utils"))
     (inputs
-     `(("libaio" ,libaio)
-       ("python" ,python)
-       ("zlib" ,zlib)))
+     (list libaio python zlib))
     (home-page "https://github.com/axboe/fio")
     (synopsis "Flexible I/O tester")
     (description
@@ -132,7 +130,7 @@ is to write a job file matching the I/O load one wants to simulate.")
                   #t))))
     (build-system gnu-build-system)
     (inputs
-     `(("openmpi" ,openmpi)))
+     (list openmpi))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -241,7 +239,7 @@ tests.")
                 "010bmlmi0nrlp3aq7p624sfaj5a65lswnyyxk3cnz1bqig0cn2vf"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("perl" ,perl)))
+     (list perl))
     (arguments '(#:tests? #f)) ; there are no tests
     (home-page "https://doc.coker.com.au/projects/bonnie/")
     (synopsis "Hard drive and file system benchmark suite")
@@ -298,20 +296,18 @@ file metadata operations that can be performed per second.")
                             "not test_custom_exit_code"
                             "not test_webserver") " and ")))))))
     (propagated-inputs
-     `(("python-configargparse" ,python-configargparse)
-       ("python-flask" ,python-flask)
-       ("python-flask-basicauth" ,python-flask-basicauth)
-       ("python-gevent" ,python-gevent)
-       ("python-geventhttpclient" ,python-geventhttpclient)
-       ("python-msgpack" ,python-msgpack)
-       ("python-psutil" ,python-psutil)
-       ("python-pyzmq" ,python-pyzmq)
-       ("python-requests" ,python-requests)
-       ("python-werkzeug" ,python-werkzeug)))
+     (list python-configargparse
+           python-flask
+           python-flask-basicauth
+           python-gevent
+           python-geventhttpclient
+           python-msgpack
+           python-psutil
+           python-pyzmq
+           python-requests
+           python-werkzeug))
     (native-inputs
-     `(("python-mock" ,python-mock)
-       ("python-pyquery" ,python-pyquery)
-       ("python-pytest" ,python-pytest))) ;for more easily skipping tests
+     (list python-mock python-pyquery python-pytest)) ;for more easily skipping tests
     (home-page "https://locust.io/")
     (synopsis "Distributed load testing framework")
     (description "Locust is a performance testing tool that aims to be easy to
@@ -383,8 +379,7 @@ and options.  With careful benchmarking, different hardware can be compared.")
       (build-system cmake-build-system)
       (home-page "https://github.com/krrishnarraj/clpeak")
       (inputs
-        `(("opencl-clhpp" ,opencl-clhpp)
-          ("opencl-icd-loader" ,opencl-icd-loader)))
+        (list opencl-clhpp opencl-icd-loader))
       (synopsis "OpenCL benchmark tool")
       (description
         "A synthetic benchmarking tool to measure peak capabilities of OpenCL

@@ -91,9 +91,7 @@
        ("qtdeclarative" ,qtdeclarative)
        ("zlib" ,zlib)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("qttools" ,qttools)
-       ("util-linux" ,util-linux)))
+     (list pkg-config qttools util-linux))
     (home-page "https://www.scribus.net")
     (synopsis "Desktop publishing and page layout program")
     (description

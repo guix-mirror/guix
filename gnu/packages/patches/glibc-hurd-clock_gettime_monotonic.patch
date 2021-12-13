@@ -24,18 +24,17 @@ Subject: [PATCH 2/2] Use realtime clock for the monotonic clock.
  4 files changed, 6 insertions(+), 5 deletions(-)
 
 diff --git a/sysdeps/mach/clock_gettime.c b/sysdeps/mach/clock_gettime.c
-index ac3547df3c..af8681ba4e 100644
+index 6862fc8c..be1449bf 100644
 --- a/sysdeps/mach/clock_gettime.c
 +++ b/sysdeps/mach/clock_gettime.c
-@@ -25,7 +25,7 @@
- int
- __clock_gettime (clockid_t clock_id, struct timespec *ts)
- {
--  if (clock_id != CLOCK_REALTIME)
-+  if (clock_id != CLOCK_MONOTONIC && clock_id != CLOCK_REALTIME)
-     {
-       errno = EINVAL;
-       return -1;
+@@ -32,6 +32,7 @@ __clock_gettime (clockid_t clock_id, struct timespec *ts)
+   switch (clock_id) {
+ 
+     case CLOCK_REALTIME:
++    case CLOCK_MONOTONIC:
+       {
+ 	/* __host_get_time can only fail if passed an invalid host_t.
+ 	   __mach_host_self could theoretically fail (producing an
 diff --git a/sysdeps/mach/hurd/bits/posix_opt.h b/sysdeps/mach/hurd/bits/posix_opt.h
 index 0050151332..27b3a28ab7 100644
 --- a/sysdeps/mach/hurd/bits/posix_opt.h

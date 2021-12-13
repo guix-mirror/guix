@@ -89,9 +89,9 @@
              '())))
     (propagated-inputs
      ;; hwloc.pc lists it in 'Requires.private'.
-     `(("libpciaccess" ,libpciaccess)))
+     (list libpciaccess))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (arguments
      `(#:configure-flags '("--localstatedir=/var")
        #:phases
@@ -232,8 +232,7 @@ bind processes, and much more.")
        ("valgrind" ,valgrind)
        ("slurm" ,slurm)))              ;for PMI support (launching via "srun")
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("perl" ,perl)))
+     (list pkg-config perl))
     (outputs '("out" "debug"))
     (arguments
      `(#:configure-flags `("--enable-mpi-ext=affinity" ;cr doesn't work
@@ -263,12 +262,11 @@ bind processes, and much more.")
                   (add-after 'unpack 'find-opensm-headers
                     (lambda* (#:key inputs #:allow-other-keys)
                       (setenv "C_INCLUDE_PATH"
-                              (string-append (assoc-ref inputs "opensm")
-                                             "/include/infiniband"))
+                              (search-input-directory inputs
+                                                      "/include/infiniband"))
                       (setenv "CPLUS_INCLUDE_PATH"
-                              (string-append (assoc-ref inputs "opensm")
-                                             "/include/infiniband"))
-                      #t))
+                              (search-input-directory inputs
+                                                      "/include/infiniband"))))
                   (add-before 'build 'remove-absolute
                     (lambda _
                       ;; Remove compiler absolute file names (OPAL_FC_ABSOLUTE
@@ -359,8 +357,7 @@ software vendors, application developers and computer science researchers.")
                  (lambda* (#:key inputs #:allow-other-keys)
                    (substitute* "ompi/mpi/java/c/Makefile.in"
                      (("\\$\\(top_builddir\\)/ompi/lib@OMPI_LIBMPI_NAME@.la")
-                      (string-append (assoc-ref inputs "openmpi") "/lib/libmpi.la")))
-                   #t))
+                      (search-input-file inputs "/lib/libmpi.la")))))
                (add-after 'install 'strip-jar-timestamps
                  (assoc-ref ant:%standard-phases 'strip-jar-timestamps)))))))
     (synopsis "Java bindings for MPI")))
@@ -424,7 +421,7 @@ only provides @code{MPI_THREAD_FUNNELED}.")))
                 "unittest.skipMPI('openmpi')"))
              #t)))))
     (inputs
-     `(("openmpi" ,openmpi)))
+     (list openmpi))
     (home-page "https://bitbucket.org/mpi4py/mpi4py/")
     (synopsis "Python bindings for the Message Passing Interface standard")
     (description "MPI for Python (mpi4py) provides bindings of the Message
@@ -459,9 +456,7 @@ arrays) that expose a buffer interface.")
              `(("ucx" ,ucx))
              '())))
     (native-inputs
-     `(("perl" ,perl)
-       ("which" ,which)
-       ("gfortran" ,gfortran)))
+     (list perl which gfortran))
     (outputs '("out" "debug"))
     (arguments
      `(#:configure-flags

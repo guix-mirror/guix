@@ -293,7 +293,7 @@ this repository contains."
                                #:key with-plugins? with-build-dependencies?
                                      with-modules? (excludes '())
                                      (local-packages '()))
-  "Open @var{pom-file}, and override its content, rewritting its dependencies
+  "Open @var{pom-file}, and override its content, rewriting its dependencies
 to set their version to the latest version available in the @var{inputs}.
 
 @var{#:with-plugins?} controls whether plugins are also overridden.

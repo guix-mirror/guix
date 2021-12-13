@@ -1,0 +1,27 @@
+This test timed out on powerpc-linux even after extending the
+test_timeout_slow to 1800 seconds. Previously we tried to work around
+this test by extending test_timeout_slow by 1.5 its previous value.
+
+---
+ gio/tests/meson.build | 4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/gio/tests/meson.build b/gio/tests/meson.build
+index a926ae0..4fdbe7a 100644
+--- a/gio/tests/meson.build
++++ b/gio/tests/meson.build
+@@ -317,10 +317,6 @@ if host_machine.system() != 'windows'
+         'extra_sources' : [extra_sources, gdbus_test_codegen_generated, gdbus_test_codegen_generated_interface_info],
+         'c_args' : ['-DGLIB_VERSION_MIN_REQUIRED=GLIB_VERSION_2_32'],
+       },
+-      'gdbus-threading' : {
+-        'extra_sources' : extra_sources,
+-        'suite' : ['slow'],
+-      },
+       'gmenumodel' : {
+         'extra_sources' : extra_sources,
+         'suite' : ['slow'],
+
+-- 
+2.31.1
+

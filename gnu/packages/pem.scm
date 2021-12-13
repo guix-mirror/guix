@@ -36,7 +36,7 @@
        (base32
         "03iqcki1lakkck1akdyvljjapgqda3l0rh38id7jhrac9kcxqgg2"))))
     (build-system gnu-build-system)
-    (inputs `(("perl" ,perl)))
+    (inputs (list perl))
     (home-page "https://www.gnu.org/software/pem/")
     (synopsis "Personal expenses manager")
     (description

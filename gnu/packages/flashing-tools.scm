@@ -2,7 +2,7 @@
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
-;;; Copyright © 2016, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2018, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
@@ -67,11 +67,8 @@
                (base32
                 "0ax4kqnh7kd3z120ypgp73qy1knz47l6qxsqzrfkd97mh5cdky71"))))
     (build-system gnu-build-system)
-    (inputs `(("dmidecode" ,dmidecode)
-              ("pciutils" ,pciutils)
-              ("libusb" ,libusb)
-              ("libftdi" ,libftdi)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs (list dmidecode pciutils libusb libftdi))
+    (native-inputs (list pkg-config))
     (arguments
      '(#:make-flags
        (list "CC=gcc"
@@ -86,9 +83,15 @@
              (substitute* "dmi.c"
                (("\"dmidecode\"")
                 (format #f "~S"
-                        (string-append (assoc-ref inputs "dmidecode")
-                                       "/sbin/dmidecode"))))
-             #t)))))
+                        (search-input-file inputs "/sbin/dmidecode"))))))
+         (add-before 'build 'patch-type-error
+           (lambda _
+             ;; See https://github.com/flashrom/flashrom/pull/133
+             (substitute* "libflashrom.c"
+               (("supported_boards\\[i\\].working = binfo\\[i\\].working")
+                "supported_boards[i].working = (enum flashrom_test_state)binfo[i].working")
+               (("supported_chipsets\\[i\\].status = chipset\\[i\\].status")
+                "supported_chipsets[i].status = (enum flashrom_test_state)chipset[i].status")))))))
     (home-page "https://flashrom.org/")
     (synopsis "Identify, read, write, erase, and verify ROM/flash chips")
     (description
@@ -116,7 +119,7 @@ programmer devices.")
     (inputs
      ;; Building with libusb-compat will succeed but the result will be broken.
      ;; See <https://github.com/pali/0xFFFF/issues/3>.
-     `(("libusb" ,libusb-0.1)))
+     (list libusb-0.1))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -149,12 +152,9 @@ brick your device.")
        (base32 "15m1w1qad3dj7r8n5ng1qqcaiyx1gyd6hnc3p2apgjllccdp77qg"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libelf" ,libelf)
-       ("libusb" ,libusb-compat)
-       ("libftdi" ,libftdi)))
+     (list libelf libusb-compat libftdi))
     (native-inputs
-     `(("bison" ,bison)
-       ("flex" ,flex)))
+     (list bison flex))
     (home-page "https://www.nongnu.org/avrdude/")
     (synopsis "AVR downloader and uploader")
     (description
@@ -178,9 +178,9 @@ programming} technique.")
       (patches (search-patches "dfu-programmer-fix-libusb.patch"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("libusb" ,libusb)))
+     (list libusb))
     (home-page "https://dfu-programmer.github.io/")
     (synopsis "Device firmware update programmer for Atmel chips")
     (description
@@ -203,9 +203,9 @@ ISP.")
                 "17piiyp08pccqmbhnswv957lkypmmm92kps79hypxvw23ai3pddl"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libusb" ,libusb)))
+     (list libusb))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (synopsis "Host side of the USB Device Firmware Upgrade (DFU) protocol")
     (description
      "The DFU (Universal Serial Bus Device Firmware Upgrade) protocol is
@@ -257,7 +257,7 @@ firmware from it.")
                  (install-file "teensy_loader_cli" bin)
                  #t))))))
       (inputs
-       `(("libusb-compat" ,libusb-compat)))
+       (list libusb-compat))
       (synopsis "Command line firmware uploader for Teensy development boards")
       (description
        "The Teensy loader program communicates with your Teensy board when the
@@ -292,9 +292,9 @@ non-root users.")
          #:make-flags (list (string-append "PREFIX=" %output))
          #:tests? #f)) ; no tests
       (native-inputs
-       `(("pkg-config" ,pkg-config)))
+       (list pkg-config))
       (inputs
-       `(("libusb" ,libusb)))
+       (list libusb))
       (home-page "https://github.com/linux-rockchip/rkflashtool")
       (synopsis "Tools for flashing Rockchip devices")
       (description "Allows flashing of Rockchip based embedded linux devices.
@@ -338,9 +338,7 @@ RK3036, RK3066, RK312X, RK3168, RK3188, RK3288, RK3368.")
                (install-file "libpit/libpit.a" lib)
                #t))))))
     (inputs
-     `(("libusb" ,libusb)
-       ("qtbase" ,qtbase-5)
-       ("zlib" ,zlib)))
+     (list libusb qtbase-5 zlib))
     (home-page "https://glassechidna.com.au/heimdall/")
     (synopsis "Flash firmware onto Samsung mobile devices")
     (description "@command{heimdall} is a tool suite used to flash firmware (aka
@@ -398,8 +396,7 @@ dump Intel Firmware Descriptor data of an image file.")
                 "0nw555i0fm5kljha9h47bk70ykbwv8ddfk6qhz6kfqb79vzhy4h2"))))
     (build-system gnu-build-system)
     (inputs
-     `(("pciutils" ,pciutils)
-       ("zlib" ,zlib)))
+     (list pciutils zlib))
     (arguments
      `(#:make-flags
        (list "CC=gcc"
@@ -481,7 +478,7 @@ ME as far as possible (it only edits ME firmware image files).")
              (install-file "UEFITool" (string-append (assoc-ref outputs "out")
                                                      "/bin")))))))
     (inputs
-     `(("qtbase" ,qtbase-5)))
+     (list qtbase-5))
     (home-page "https://github.com/LongSoft/UEFITool/")
     (synopsis "UEFI image editor")
     (description "@code{uefitool} is a graphical image file editor for
@@ -507,15 +504,14 @@ Unifinished Extensible Firmware Interface (UEFI) images.")
                             (assoc-ref %build-inputs "bash")
                             "/bin/bash"))))
     (inputs
-     `(("boost" ,boost)
-       ("libgcrypt" ,libgcrypt)))
+     (list boost libgcrypt))
     (native-inputs
-     `(("bison" ,bison)
-       ("diffutils" ,diffutils)
-       ("ghostscript" ,ghostscript)
-       ("groff" ,groff)
-       ("libtool" ,libtool)
-       ("which" ,which)))
+     (list bison
+           diffutils
+           ghostscript
+           groff
+           libtool
+           which))
     (home-page "http://srecord.sourceforge.net/")
     (synopsis "Tools for EPROM files")
     (description "The SRecord package is a collection of powerful tools for
@@ -562,13 +558,9 @@ formats, and can perform many different manipulations.")
                  (cut dump-port pipe <>))))))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("libusb" ,libusb)
-       ("bzip2" ,bzip2)
-       ("zlib" ,zlib)
-       ("libzip" ,libzip)
-       ("openssl" ,openssl)))
+     (list libusb bzip2 zlib libzip openssl))
     (home-page "https://github.com/NXPmicro/mfgtools")
     (synopsis "Freescale/NXP I.MX chip image deploy tools")
     (description "@code{uuu} is a command line tool, evolved out of MFGTools.

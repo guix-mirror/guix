@@ -281,7 +281,7 @@ DEPENDENCY-PREFIXES to ensure references to those libraries are retained."
                               type
                               compress?
                               #:allow-other-keys)
-  "Generate an executable by using asdf operation TYPE, containing whithin the
+  "Generate an executable by using asdf operation TYPE, containing within the
 image all DEPENDENCIES, and running ENTRY-PROGRAM in the case of an
 executable.  Link in any asd files from DEPENDENCY-PREFIXES to ensure
 references to those libraries are retained."

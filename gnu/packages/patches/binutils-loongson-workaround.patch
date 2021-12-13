@@ -4,22 +4,22 @@ Patch by Mark H Weaver <mhw@netris.org>.
 
 --- binutils/gas/config/tc-mips.c.orig	2012-09-04 10:21:03.000000000 -0400
 +++ binutils/gas/config/tc-mips.c	2013-10-06 02:23:21.651983768 -0400
-@@ -910,10 +910,10 @@
+@@ -934,10 +934,10 @@ enum fix_vr4120_class
  };
  
  /* ...likewise -mfix-loongson2f-jump.  */
--static bfd_boolean mips_fix_loongson2f_jump;
-+static bfd_boolean mips_fix_loongson2f_jump = FALSE;
+-static bool mips_fix_loongson2f_jump;
++static bool mips_fix_loongson2f_jump = FALSE;
  
  /* ...likewise -mfix-loongson2f-nop.  */
--static bfd_boolean mips_fix_loongson2f_nop;
-+static bfd_boolean mips_fix_loongson2f_nop = TRUE;
+-static bool mips_fix_loongson2f_nop;
++static bool mips_fix_loongson2f_nop = TRUE;
  
  /* True if -mfix-loongson2f-nop or -mfix-loongson2f-jump passed.  */
- static bfd_boolean mips_fix_loongson2f;
+ static bool mips_fix_loongson2f;
 --- binutils/gas/testsuite/gas/mips/mips.exp.orig	2012-09-04 10:17:13.000000000 -0400
 +++ binutils/gas/testsuite/gas/mips/mips.exp	2013-10-06 02:23:21.663983768 -0400
-@@ -91,6 +91,12 @@
+@@ -110,6 +110,12 @@ proc mips_arch_init {} {
  
      # Catch because the variable won't be set the first time through.
      catch {unset mips_arches}

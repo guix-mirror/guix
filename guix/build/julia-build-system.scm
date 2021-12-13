@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019, 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;; Copyright © 2021 Jean-Baptiste Volatier <jbv@pm.me>
+;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -74,8 +75,7 @@ Project.toml)."
                                       julia-package-name
                                       (project.toml->name "Project.toml")))))
     (mkdir-p package-dir)
-    (copy-recursively (getcwd) package-dir))
-  #t)
+    (copy-recursively (getcwd) package-dir)))
 
 (define* (precompile #:key source inputs outputs julia-package-name
                      #:allow-other-keys)
@@ -99,15 +99,22 @@ Project.toml)."
      ;; element of DEPOT_PATH.  Once the cache file exists, this hack is not
      ;; needed anymore (like in the check phase).  If the user install new
      ;; packages, those will be installed and precompiled in the home dir.
-     (string-append "pushfirst!(DEPOT_PATH, pop!(DEPOT_PATH)); using " package)))
-  #t)
+     (string-append "pushfirst!(DEPOT_PATH, pop!(DEPOT_PATH)); using "
+                    package))))
 
 (define* (check #:key tests? source inputs outputs julia-package-name
-                #:allow-other-keys)
+                parallel-tests? #:allow-other-keys)
   (when tests?
     (let* ((out (assoc-ref outputs "out"))
            (package (or julia-package-name (project.toml->name "Project.toml")))
-           (builddir (string-append out "/share/julia/")))
+           (builddir (string-append out "/share/julia/"))
+           (job-count (if parallel-tests?
+                          (parallel-job-count)
+                          1))
+           ;; The --proc argument of Julia *adds* extra processors rather than
+           ;; specify the exact count to use, so zero must be specified to
+           ;; disable parallel processing...
+           (additional-procs (max 0 (1- job-count))))
       ;; With a patch, SOURCE_DATE_EPOCH is honored
       (setenv "SOURCE_DATE_EPOCH" "1")
       (setenv "JULIA_DEPOT_PATH" builddir)
@@ -115,14 +122,21 @@ Project.toml)."
               (string-append builddir "loadpath/" ":"
                              (or (getenv "JULIA_LOAD_PATH")
                                  "")))
+      (setenv "JULIA_CPU_THREADS" (number->string job-count))
       (setenv "HOME" "/tmp")
-      (invoke "julia" "--depwarn=yes"
-              (string-append builddir "loadpath/"
-                             package "/test/runtests.jl"))))
-  #t)
+      (apply invoke "julia"
+             `("--depwarn=yes"
+               ,@(if parallel-tests?
+                     ;; XXX: ... but '--procs' doesn't accept 0 as a valid
+                     ;; value, so just omit the argument entirely.
+                     (list (string-append  "--procs="
+                                           (number->string additional-procs)))
+                     '())
+               ,(string-append builddir "loadpath/"
+                               package "/test/runtests.jl"))))))
 
-(define* (link-depot #:key source inputs outputs julia-package-name julia-package-uuid
-                     #:allow-other-keys)
+(define* (link-depot #:key source inputs outputs
+                     julia-package-name julia-package-uuid  #:allow-other-keys)
   (let* ((out (assoc-ref outputs "out"))
          (package-name (or
                         julia-package-name
@@ -137,10 +151,11 @@ println(Base.version_slug(Base.UUID(\"~a\"),
     ;; When installing a package, julia looks first at in the JULIA_DEPOT_PATH
     ;; for a path like packages/PACKAGE/XXXX
     ;; Where XXXX is a slug encoding the package UUID and SHA1 of the files
-    ;; Here we create a link with the correct path to enable julia to find the package
+    ;; Here we create a link with the correct path to enable julia to find the
+    ;; package
     (mkdir-p (string-append out "/share/julia/packages/" package-name))
-    (symlink package-dir (string-append out "/share/julia/packages/" package-name "/" slug)))
-  #t)
+    (symlink package-dir (string-append out "/share/julia/packages/"
+                                        package-name "/" slug))))
 
 (define (julia-create-package-toml outputs source
                                    name uuid version
@@ -166,8 +181,7 @@ version = \"" version "\"
                   (display (string-append (car (car dep)) " = \"" (cdr (car dep)) "\"\n")
                            f))
                 deps))
-    (close-port f))
-  #t)
+    (close-port f)))
 
 (define %standard-phases
   (modify-phases gnu:%standard-phases

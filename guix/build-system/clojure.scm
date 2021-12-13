@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
-;;; Copyright © 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,7 +25,9 @@
                 #:select (standard-packages)
                 #:prefix gnu:)
 
-  #:use-module (guix derivations)
+  #:use-module (guix gexp)
+  #:use-module (guix store)
+  #:use-module (guix monads)
   #:use-module (guix packages)
   #:use-module ((guix search-paths)
                 #:select
@@ -102,26 +104,9 @@
              (arguments (strip-keyword-arguments private-keywords
                                                  arguments))))))
 
-(define-with-docs source->output-path
-  "Convert source input to output path."
-  (match-lambda
-    (((? derivation? source))
-     (derivation->output-path source))
-    ((source)
-     source)
-    (source
-     source)))
-
-(define-with-docs maybe-guile->guile
-  "Find the right guile."
-  (match-lambda
-    ((and maybe-guile (? package?))
-     maybe-guile)
-    (#f ; default
-     (@* (gnu packages commencement) guile-final))))
-
-(define* (clojure-build store name inputs
+(define* (clojure-build name inputs
                         #:key
+                        source
                         (source-dirs `',%source-dirs)
                         (test-dirs `',%test-dirs)
                         (compile-dir %compile-dir)
@@ -133,7 +118,7 @@
                         (aot-include `',%aot-include)
                         (aot-exclude `',%aot-exclude)
 
-                        doc-dirs ; no sensible default
+                        doc-dirs                  ; no sensible default
                         (doc-regex %doc-regex)
 
                         (tests? %tests?)
@@ -149,48 +134,45 @@
                         (imported-modules %clojure-build-system-modules)
                         (modules %default-modules))
   "Build SOURCE with INPUTS."
-  (let ((builder `(begin
-                    (use-modules ,@modules)
-                    (clojure-build #:name ,name
-                                   #:source ,(source->output-path
-                                              (assoc-ref inputs "source"))
+  (define builder
+    (with-imported-modules imported-modules
+      #~(begin
+          (use-modules #$@(sexp->gexp modules))
 
-                                   #:source-dirs ,source-dirs
-                                   #:test-dirs ,test-dirs
-                                   #:compile-dir ,compile-dir
+          (clojure-build #:name #$name
+                         #:source #+source
 
-                                   #:jar-names ,jar-names
-                                   #:main-class ,main-class
-                                   #:omit-source? ,omit-source?
+                         #:source-dirs #$source-dirs
+                         #:test-dirs #$test-dirs
+                         #:compile-dir #$compile-dir
 
-                                   #:aot-include ,aot-include
-                                   #:aot-exclude ,aot-exclude
+                         #:jar-names #$jar-names
+                         #:main-class #$main-class
+                         #:omit-source? #$omit-source?
 
-                                   #:doc-dirs ,doc-dirs
-                                   #:doc-regex ,doc-regex
+                         #:aot-include #$aot-include
+                         #:aot-exclude #$aot-exclude
 
-                                   #:tests? ,tests?
-                                   #:test-include ,test-include
-                                   #:test-exclude ,test-exclude
+                         #:doc-dirs #$doc-dirs
+                         #:doc-regex #$doc-regex
 
-                                   #:phases ,phases
-                                   #:outputs %outputs
-                                   #:search-paths ',(map search-path-spec->sexp
-                                                         search-paths)
-                                   #:system ,system
-                                   #:inputs %build-inputs)))
+                         #:tests? #$tests?
+                         #:test-include #$test-include
+                         #:test-exclude #$test-exclude
 
-        (guile-for-build (package-derivation store
-                                             (maybe-guile->guile guile)
-                                             system
-                                             #:graft? #f)))
+                         #:phases #$phases
+                         #:outputs #$(outputs->gexp outputs)
+                         #:search-paths '#$(sexp->gexp
+                                            (map search-path-spec->sexp
+                                                 search-paths))
+                         #:system #$system
+                         #:inputs #$(input-tuples->gexp inputs)))))
 
-    (build-expression->derivation store name builder
-                                  #:inputs inputs
-                                  #:system system
-                                  #:modules imported-modules
-                                  #:outputs outputs
-                                  #:guile-for-build guile-for-build)))
+  (mlet %store-monad ((guile (package->derivation (or guile (default-guile))
+                                                  system #:graft? #f)))
+    (gexp->derivation name builder
+                      #:system system
+                      #:guile-for-build guile)))
 
 (define clojure-build-system
   (build-system

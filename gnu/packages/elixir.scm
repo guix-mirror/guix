@@ -98,8 +98,7 @@
              (setenv "HOME" "/tmp")))
          (delete 'configure))))
     (inputs
-     `(("erlang" ,erlang)
-       ("git" ,git)))
+     (list erlang git))
     (home-page "https://elixir-lang.org/")
     (synopsis "Elixir programming language")
     (description "Elixir is a dynamic, functional language used to build

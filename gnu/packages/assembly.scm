@@ -9,6 +9,8 @@
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Christine Lemmer-Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2020 B. Wilson <elaexuotee@wilsonb.com>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -57,17 +59,17 @@
 (define-public nasm
   (package
     (name "nasm")
-    (version "2.14.02")
+    (version "2.15.05")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.nasm.us/pub/nasm/releasebuilds/"
                                   version "/nasm-" version ".tar.xz"))
               (sha256
                (base32
-                "1xg8dfr49py15vbwk1rzcjc3zpqydmr49ahlijm56wlgj8zdwjp2"))))
+                "0gqand86b0r86k3h46dh560lykxmxqqywz5m55kgjfq7q4lngbrw"))))
     (build-system gnu-build-system)
-    (native-inputs `(("perl" ,perl)  ;for doc and test target
-                     ("texinfo" ,texinfo)))
+    (native-inputs (list perl ;for doc and test target
+                         texinfo))
     (arguments
      `(#:test-target "test"
        #:phases
@@ -75,11 +77,10 @@
          (add-after 'unpack 'dont-build-ps-pdf-outputs
            (lambda _
              (substitute* "doc/Makefile.in"
-               (("html nasmdoc.txt nasmdoc.pdf")
+               (("html nasmdoc.txt nasmdoc.pdf \\$\\(XZFILES\\)")
                 "html nasmdoc.txt")
                (("\\$\\(INSTALL_DATA\\) nasmdoc.pdf")
-                "$(INSTALL_DATA)"))
-             #t))
+                "$(INSTALL_DATA)"))))
          (add-after 'install 'install-info
            (lambda _
              (invoke "make" "install_doc"))))))
@@ -139,7 +140,10 @@ debugging information in STABS, DWARF 2, and CodeView 8 formats.")
               (base32
                "1jgxbq2cm51dzi3zhz38mmgwdcgs328mfl8iviw8dxn6dn36p1gd"))))
     (build-system gnu-build-system)
-    (native-inputs `(("zlib" ,zlib)))
+    (native-inputs (list zlib))
+    (arguments
+     ;; Some tests fail when run in parallel.
+     `(#:parallel-tests? #f))
     (synopsis "Library for generating assembly code at runtime")
     (description
      "GNU Lightning is a library that generates assembly language code at
@@ -267,15 +271,15 @@ assembler, a C compiler and a linker.  The assembler uses Intel syntax
                   "0p6wklslkkp3s4aisj3w5a53bagqn5fy4m6088ppd4fcfxgqkrcd"))))
       (build-system gnu-build-system)
       (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("bison" ,bison)
-         ("flex" ,flex)
-         ("help2man" ,help2man)
-         ("gettext" ,gettext-minimal)
-         ("libtool" ,libtool)
-         ("makeinfo" ,texinfo)
-         ("pkg-config" ,pkg-config)))
+       (list autoconf
+             automake
+             bison
+             flex
+             help2man
+             gettext-minimal
+             libtool
+             texinfo
+             pkg-config))
       (home-page "https://www.gnu.org/software/libjit/")
       (synopsis "Just-In-Time compilation library")
       (description
@@ -320,12 +324,9 @@ runtime")
                       ,(string-append "PREFIX="
                                       (assoc-ref %outputs "out")))))
     (native-inputs
-     `(("bison" ,bison)
-       ("flex" ,flex)
-       ("pkg-config" ,pkg-config)
-       ("util-linux" ,util-linux)))
+     (list bison flex pkg-config util-linux))
     (inputs
-     `(("libpng" ,libpng)))
+     (list libpng))
     (home-page "https://github.com/gbdev/rgbds")
     (synopsis "Rednex Game Boy Development System")
     (description
@@ -398,7 +399,7 @@ Supported architectures are:
        (modify-phases %standard-phases
          (delete 'configure))            ; no "configure" script
        #:make-flags (list (string-append "DESTDIR=" (assoc-ref %outputs "out")))))
-    (native-inputs `(("perl" ,perl)))
+    (native-inputs (list perl))
     (home-page "https://www.floodgap.com/retrotech/xa/")
     (synopsis "Two-pass portable cross-assembler")
     (description
@@ -445,19 +446,19 @@ sets, both THUMB and ARM mode.")
 (define-public intel-xed
   (package
     (name "intel-xed")
-    (version "11.2.0")
+    (version "12.0.1")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/intelxed/xed")
              (commit version)))
-       (sha256 (base32 "1jffayski2gpd54vaska7fmiwnnia8v3cka4nfyzjgl8xsky9v2s"))
+       (sha256 (base32 "07zfff8zf29c2n0wal87hiqfq3cwcjn80zz78mz0nyjfj09nd39f"))
        (file-name (git-file-name name version))
        (patches (search-patches "intel-xed-fix-nondeterminism.patch"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("python-wrapper" ,python-wrapper)
+     `(("python" ,python-wrapper)
        ("tcsh" ,tcsh)
        ;; As of the time of writing this comment, mbuild does not exist in the
        ;; Python Package Index and seems to only be used by intel-xed, so we
@@ -471,10 +472,10 @@ sets, both THUMB and ARM mode.")
              (method git-fetch)
              (uri (git-reference
                    (url "https://github.com/intelxed/mbuild")
-                   (commit "5304b94361fccd830c0e2417535a866b79c1c297")))
+                   (commit "3de3f0d753c11dbe634bec611d4cc13f74768e4f")))
              (sha256
               (base32
-               "0r3avc3035aklqxcnc14rlmmwpj3jp09vbcbwynhvvmcp8srl7dl"))
+               "0z8hdhpmk8y5c9429p2yns9daswnffbprni9czkq3vij8f58lkg4"))
              (file-name (git-file-name name version)))))))
     (outputs '("out" "lib"))
     (arguments
@@ -489,8 +490,7 @@ sets, both THUMB and ARM mode.")
            (replace 'build
              (lambda* (#:key inputs #:allow-other-keys)
                (let ((mbuild (assoc-ref inputs "mbuild")))
-                 (setenv "PYTHONPATH" (string-append
-                                       (getenv "PYTHONPATH") ":" mbuild))
+                 (setenv "PYTHONPATH" mbuild)
                  (invoke "./mfile.py"
                          (string-append "--build-dir=" build-dir)
                          (string-append "--install-dir=" kit-dir)
@@ -517,8 +517,7 @@ sets, both THUMB and ARM mode.")
                  (copy-recursively (string-append kit-dir "/include")
                                    (string-append lib "/include"))
                  (copy-recursively (string-append kit-dir "/lib")
-                                   (string-append lib "/lib"))
-                 #t)))))))
+                                   (string-append lib "/lib")))))))))
     (home-page "https://intelxed.github.io/")
     (synopsis "Encoder and decoder for x86 (IA32 and Intel64) instructions")
     (description "The Intel X86 Encoder Decoder (XED) is a software library and

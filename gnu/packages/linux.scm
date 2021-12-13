@@ -22,7 +22,7 @@
 ;;; Copyright © 2017, 2018, 2020, 2021 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 José Miguel Sánchez García <jmi2k@openmailbox.com>
 ;;; Copyright © 2017 Gábor Boskovits <boskovits@gmail.com>
-;;; Copyright © 2017, 2019 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2017, 2019, 2021 Mathieu Othacehe <othacehe@gnu.org>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 nee <nee-git@hidamari.blue>
@@ -52,7 +52,13 @@
 ;;; Copyright © 2020 pukkamustard <pukkamustard@posteo.net>
 ;;; Copyright © 2021 B. Wilson <elaexuotee@wilsonb.com>
 ;;; Copyright © 2021 Ivan Gankevich <i.gankevich@spbu.ru>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
+;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
+;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
+;;; Copyright © 2021 Josselin Poiret <josselin.poiret@protonmail.ch>
 ;;; Copyright © 2021 Olivier Dion <olivier.dion@polymtl.ca>
+;;; Copyright © 2021 Solene Rapenne <solene@perso.pw>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -76,6 +82,7 @@
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages avahi)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
@@ -144,10 +151,10 @@
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages groff)
-  #:use-module (gnu packages rsync)
   #:use-module (gnu packages selinux)
   #:use-module (gnu packages swig)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system copy)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
   #:use-module (guix build-system meson)
@@ -542,14 +549,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                      ,@(if (version>=? version "4.16")
                            `(("flex" ,flex)
                              ("bison" ,bison))
-                           '())
-                     ,@(if (version>=? version "5.3")
-                           `(("rsync" ,rsync))
                            '())))
     (arguments
      `(#:modules ((guix build gnu-build-system)
                   (guix build utils)
-                  (srfi srfi-1))
+                  (srfi srfi-1)
+                  (ice-9 match))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
@@ -560,32 +565,37 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                               (%current-system))))
                    (defconfig ,(system->defconfig
                                 (or (%current-target-system)
-                                    (%current-system)))))
+                                    (%current-system))))
+                   (make-target ,(if (version>=? version "5.3")
+                                     "headers"
+                                     "headers_check")))
                (setenv "ARCH" arch)
                (format #t "`ARCH' set to `~a'~%" (getenv "ARCH"))
                (invoke "make" defconfig)
-               (invoke "make" "mrproper" "headers_check"))))
+               (invoke "make" "mrproper" make-target))))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
-               (invoke "make"
-                       (string-append "INSTALL_HDR_PATH=" out)
-                       "headers_install")
+
+               ;; Mimic the quiet_cmd_headers_install target to avoid a
+               ;; dependency on rsync.
+               (for-each (lambda (file)
+                           (let ((destination (string-append
+                                               out "/include/"
+                                               ;; Drop the 'usr/include' prefix.
+                                               (match (string-split file #\/)
+                                                 ((_ _ path ...)
+                                                  (string-join path "/"))))))
+                             (format #t "`~a' -> `~a'~%" file destination)
+                             (install-file file (dirname destination))))
+                         (find-files "usr/include" "\\.h$"))
 
                (mkdir (string-append out "/include/config"))
                (call-with-output-file
                    (string-append out
                                   "/include/config/kernel.release")
                  (lambda (p)
-                   (format p "~a-default~%" ,version)))
-
-               ;; Remove the '.install' and '..install.cmd' files; the
-               ;; latter contains store paths, which pulls in bootstrap
-               ;; binaries in the build environment, and prevents bit
-               ;; reproducibility for the bootstrap binaries.
-               (for-each delete-file (find-files out "\\.install"))
-
-               #t))))
+                   (format p "~a-default~%" ,version)))))))
        #:allowed-references ()
        #:tests? #f))
     (home-page "https://www.gnu.org/software/linux-libre/")
@@ -630,11 +640,11 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 
 ;; The following package is used in the early bootstrap, and thus must be kept
 ;; stable and with minimal build requirements.
-(define-public linux-libre-headers-5.4.20
-  (make-linux-libre-headers "5.4.20" "gnu"
-                            "1qxhf6dmcwjblzx8fgn6vr10p38xw10iwh6d1y1v1mxb25y30b47"))
+(define-public linux-libre-headers-5.10.35
+  (make-linux-libre-headers "5.10.35" "gnu"
+                            "0q2rnchad55d49f3rajrkazz0fcjv1irwrdb1hwjnl01fzm2gjk3"))
 
-(define-public linux-libre-headers linux-libre-headers-5.4.20)
+(define-public linux-libre-headers linux-libre-headers-5.10.35)
 
 
 ;;;
@@ -804,15 +814,18 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
          (add-after 'unpack 'patch-/bin/pwd
            (lambda _
              (substitute* (find-files "." "^Makefile(\\.include)?$")
-               (("/bin/pwd") "pwd"))
-             #t))
+               (("/bin/pwd") "pwd"))))
          (replace 'configure
            (lambda* (#:key inputs native-inputs target #:allow-other-keys)
-             ;; Avoid introducing timestamps
+             ;; Avoid introducing timestamps.
              (setenv "KCONFIG_NOTIMESTAMP" "1")
              (setenv "KBUILD_BUILD_TIMESTAMP" (getenv "SOURCE_DATE_EPOCH"))
 
-             ;; Set ARCH and CROSS_COMPILE
+             ;; Other variables useful for reproducibility.
+             (setenv "KBUILD_BUILD_USER" "guix")
+             (setenv "KBUILD_BUILD_HOST" "guix")
+
+             ;; Set ARCH and CROSS_COMPILE.
              (let ((arch ,(system->linux-architecture
                            (or (%current-target-system)
                                (%current-system)))))
@@ -883,8 +896,7 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
                  (false-if-file-not-found
                   (delete-file (string-append moddir "/" version "/build")))
                  (false-if-file-not-found
-                  (delete-file (string-append moddir "/" version "/source"))))
-               #t))))
+                  (delete-file (string-append moddir "/" version "/source"))))))))
        #:tests? #f))
     (home-page "https://www.gnu.org/software/linux-libre/")
     (synopsis "100% free redistribution of a cleaned Linux kernel")
@@ -1153,7 +1165,8 @@ It has been modified to remove all non-free binary blobs.")
                   %default-extra-linux-options))))
     (package
       (inherit base-linux-libre)
-      (inputs `(("cpio" ,cpio) ,@(package-inputs base-linux-libre))))))
+      (inputs (modify-inputs (package-inputs base-linux-libre)
+                (prepend cpio))))))
 
 
 
@@ -1580,12 +1593,11 @@ rules, which need to be installed separately.")
 
     (build-system gnu-build-system)
     (native-inputs
-     `(("flex" ,flex)
-
-       ;; TODO: optional dependencies
-       ;; ("libxcrypt" ,libxcrypt)
-       ;; ("cracklib" ,cracklib)
-       ))
+     (list flex
+           ;; TODO: optional dependencies
+           ;; ("libxcrypt" ,libxcrypt)
+           ;; ("cracklib" ,cracklib)
+           ))
     (arguments
      `(;; Most users, such as `shadow', expect the headers to be under
        ;; `security'.
@@ -1662,9 +1674,9 @@ at login.  Local and dynamic reconfiguration are its key features.")
                  (invoke "python" "-m" "pamela" "-a" "`whoami`"))
                #t))))))
     (inputs
-     `(("linux-pam" ,linux-pam)))
+     (list linux-pam))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://github.com/minrk/pamela")
     (synopsis "PAM interface using ctypes")
     (description "This package provides a PAM interface using @code{ctypes}.")
@@ -1685,12 +1697,9 @@ at login.  Local and dynamic reconfiguration are its key features.")
                 "1bf91gi6zmfzzmczxm7pajxdlgnikasvg5xsd3j0a368rcr7lf9l"))))
     (build-system gnu-build-system)
     (inputs
-     `(("gnupg" ,gnupg)
-       ("linux-pam" ,linux-pam)))
+     (list gnupg linux-pam))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
+     (list autoconf automake libtool))
     (arguments
      `(#:tests? #f ;no tests suite
        #:configure-flags
@@ -1793,7 +1802,7 @@ deviation, and minimum and maximum values.  It can show a nice histogram too.")
                 "ac_cv_func_malloc_0_nonnull=yes"
                 "ac_cv_func_realloc_0_nonnull=yes"))
              '())))
-    (inputs `(("ncurses" ,ncurses)))
+    (inputs (list ncurses))
     (home-page "https://gitlab.com/psmisc/psmisc")
     (synopsis "Small utilities that use the proc file system")
     (description
@@ -1805,7 +1814,7 @@ providing the system administrator with some help in common tasks.")
 (define-public util-linux
   (package
     (name "util-linux")
-    (version "2.35.1")
+    (version "2.37.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/utils/"
@@ -1813,7 +1822,7 @@ providing the system administrator with some help in common tasks.")
                                   "util-linux-" version ".tar.xz"))
               (sha256
                (base32
-                "1yfpy6bkab4jw61mpx48gfy24yrqp4a7arvpis8csrkk53fkxpnr"))
+                "0xkb7vw2040zi4m0sbhs5qn5l8nrq4xsf4sdxf3cy9mpachd8jwf"))
               (patches (search-patches "util-linux-tests.patch"))
               (modules '((guix build utils)))
               (snippet
@@ -1831,7 +1840,10 @@ providing the system administrator with some help in common tasks.")
                "static"))       ;2.9 MiB static .a libraries
     (arguments
      `(#:configure-flags (list "--disable-use-tty-group"
-                               "--enable-fs-paths-default=/run/current-system/profile/sbin"
+                               (string-append
+                                "--enable-fs-paths-default="
+                                "/run/setuid-programs"
+                                ":/run/current-system/profile/sbin")
                                ;; Don't try to chown root:root mount and umount
                                "--disable-makeinstall-chown"
                                "--localstatedir=/var"
@@ -1857,44 +1869,45 @@ providing the system administrator with some help in common tasks.")
                         ;; libraries below $exec_prefix when $libdir does not
                         ;; match any of the "usual" locations.  Fix that.
                         (("usrlib_execdir='\\$\\{exec_prefix\\}'\\$libdir")
-                         "usrlib_execdir=$libdir"))
-                      #t))
+                         "usrlib_execdir=$libdir"))))
                   (add-before 'build 'set-umount-file-name
                     (lambda* (#:key outputs #:allow-other-keys)
                       ;; Tell 'eject' the right file name of 'umount'.
                       (let ((out (assoc-ref outputs "out")))
                         (substitute* "sys-utils/eject.c"
                           (("\"/bin/umount\"")
-                           (string-append "\"" out "/bin/umount\"")))
-                        #t)))
+                           (string-append "\"" out "/bin/umount\""))))))
                   (add-before 'check 'pre-check
-                    (lambda* (#:key inputs outputs #:allow-other-keys)
-                      (let ((out (assoc-ref outputs "out"))
-                            (net (assoc-ref inputs "net-base")))
+                    (lambda* (#:key native-inputs inputs #:allow-other-keys)
+                      (let ((services (search-input-file (or native-inputs inputs)
+                                                         "etc/services")))
                         ;; Change the test to refer to the right file.
                         (substitute* "tests/ts/misc/mcookie"
                           (("/etc/services")
-                           (string-append net "/etc/services")))
+                           services))
 
                         ;; The C.UTF-8 locale does not exist in our libc.
                         (substitute* "tests/ts/column/invalid-multibyte"
-                          (("C\\.UTF-8") "en_US.utf8"))
-                        #t)))
-                  ;; TODO: Remove the conditional on the next rebuild cycle.
-                  ,@(if (string-prefix? "arm" (%current-system))
-                        '((add-before 'check 'disable-setarch-test
-                            (lambda _
-                              ;; The setarch tests are unreliable in QEMU's
-                              ;; user-mode emulation, which is our primary
-                              ;; method of building ARMv7 packages.
-                              ;; <https://github.com/karelzak/util-linux/issues/601>
-                              (substitute* "tests/ts/misc/setarch"
-                                (("ts_init_subtest.*" all)
-                                 (string-append
-                                  all "\n"
-                                  "ts_skip \"setarch tests are unreliable under QEMU\"")))
-                              #t)))
-                        '())
+                          (("C\\.UTF-8") "en_US.utf8")))))
+                  (add-before 'check 'disable-setarch-test
+                    (lambda _
+                      ;; The setarch tests are unreliable in QEMU's user-mode
+                      ;; emulation, which is our primary method of building
+                      ;; ARMv7 packages.  See
+                      ;; <https://github.com/karelzak/util-linux/issues/601>.
+                      (substitute* "tests/ts/misc/setarch"
+                        (("ts_init_subtest.*" all)
+                         (string-append
+                          all "\n"
+                          "ts_skip \"setarch tests are unreliable under QEMU\"")))))
+                  (add-before 'check 'disable-lsns-test
+                    (lambda _
+                      ;; The lsns tests can fail due to ioctl(_, NS_GET_USERNS)
+                      ;; returning ENOTTY, indicating this kernel does not
+                      ;; support user namespaces.  Curiously, this test can fail
+                      ;; on i686 even if the same test passes on x86_64 on the
+                      ;; same machine.  See <https://issues.guix.gnu.org/49933>.
+                      (delete-file "tests/ts/lsns/ioctl_ns")))
                   (add-after 'install 'move-static-libraries
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let ((lib    (assoc-ref outputs "lib"))
@@ -1913,9 +1926,7 @@ providing the system administrator with some help in common tasks.")
                           ;; files so that Libtool does the right thing when both
                           ;; the shared and static library is available.
                           (substitute* (find-files "lib" "\\.la$")
-                            (("old_library=.*") "old_library=''\n")))
-
-                        #t)))
+                            (("old_library=.*") "old_library=''\n"))))))
                   (add-after 'install 'adjust-pkg-config-files
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let ((lib (assoc-ref outputs "lib")))
@@ -1923,18 +1934,14 @@ providing the system administrator with some help in common tasks.")
                         ;; the pkg-config files to avoid a cyclic reference on "out".
                         (substitute* (find-files (string-append lib "/lib/pkgconfig")
                                                  "\\.pc$")
-                          (("^(exec_)?prefix=.*") "")))
-                        #t)))))
-    (inputs `(("zlib" ,zlib)
-              ("ncurses" ,ncurses)
-
-              ;; XXX: This is so that the 'pre-check' phase can find it.
-              ,@(if (%current-target-system)
-                    `(("net-base" ,net-base))
-                    '())))
+                          (("^(exec_)?prefix=.*") ""))))))))
+    (inputs
+     (list file                         ;for libmagic
+           ncurses
+           zlib))
     (native-inputs
-     `(("perl" ,perl)
-       ("net-base" ,net-base)))         ;for tests
+     (list net-base                     ;for tests
+           perl))
     (home-page "https://www.kernel.org/pub/linux/utils/util-linux/")
     (synopsis "Collection of utilities for the Linux kernel")
     (description "Util-linux is a diverse collection of Linux kernel
@@ -2025,8 +2032,7 @@ by Robert Shea and Robert Anton Wilson.")
        #:parallel-build? #f
        #:tests? #f))                    ; no test suite
     (native-inputs
-     `(("bison" ,bison)
-       ("flex" ,flex)))
+     (list bison flex))
     (home-page "http://users.telenet.be/geertu/Linux/fbdev/")
     (synopsis "Show and modify Linux frame buffer settings")
     (description
@@ -2071,7 +2077,7 @@ parameters.")
                                     '("^kill" "^uptime"))))
               (for-each delete-file dup)
               #t))))))
-    (inputs `(("ncurses" ,ncurses)))
+    (inputs (list ncurses))
     (home-page "https://gitlab.com/procps-ng/procps/")
     (synopsis "Utilities that give information about processes")
     (description
@@ -2113,14 +2119,9 @@ slabtop, tload, top, vmstat, w, watch and sysctl.")
                              (rename-file old new)))
                          (list "bin/lsusb.py"))))))))
     (inputs
-     `(("eudev" ,eudev)
-       ("libusb" ,libusb)
-       ("python" ,python)))
+     (list eudev libusb python))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf automake libtool pkg-config))
     (home-page "http://www.linux-usb.org/")
     (synopsis
      "Tools for working with USB devices, such as lsusb")
@@ -2145,7 +2146,7 @@ slabtop, tload, top, vmstat, w, watch and sysctl.")
      `(("automake" ,automake)
        ("autoreconf" ,autoconf)
        ("libtool" ,libtool)))
-    (inputs `(("eudev" ,eudev)))
+    (inputs (list eudev))
     (home-page (package-home-page linux-libre))
     (synopsis "Utilities for sharing USB devices over IP networks")
     (description
@@ -2163,7 +2164,7 @@ module.")
 (define-public e2fsprogs
   (package
     (name "e2fsprogs")
-    (version "1.45.6")
+    (version "1.46.4")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -2172,15 +2173,14 @@ module.")
                    "e2fsprogs-" version ".tar.xz"))
              (sha256
               (base32
-               "0mj2yizwygs7xww8jfy5mxjn8ww4pvc0b1hg1p2vsnirailsx9zz"))))
+               "04wp77fg842dhribgn0xvbd77idh0n7a839ga4bwy78v7i9l445i"))))
     (build-system gnu-build-system)
-    (inputs `(("util-linux" ,util-linux "lib")))
-    (native-inputs `(("pkg-config" ,pkg-config)
-                     ("texinfo" ,texinfo)       ;for the libext2fs Info manual
-
-                     ;; For tests.
-                     ("perl" ,perl)
-                     ("procps" ,procps)))
+    (inputs (list `(,util-linux "lib")))
+    (native-inputs (list pkg-config
+                         texinfo ;for the libext2fs Info manual
+                         ;; For tests.
+                         perl
+                         procps))
     (arguments
      '(;; util-linux is the preferred source for some of the libraries and
        ;; commands, so disable them (see, e.g.,
@@ -2214,8 +2214,7 @@ module.")
                 "INSTALL_SYMLINK = sh"))
              (substitute* (find-files "." "^Makefile.in$")
                (("#!/bin/sh")
-                (string-append "#!" (which "sh"))))
-             #t))
+                (string-append "#!" (which "sh"))))))
            (add-after 'install 'install-libs
              (lambda* (#:key outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
@@ -2230,8 +2229,7 @@ module.")
                  (let ((archives (find-files lib "\\.a$")))
                    (for-each (lambda (file)
                                (chmod file #o666))
-                             archives))
-                 #t))))))
+                             archives))))))))
     (home-page "http://e2fsprogs.sourceforge.net/")
     (synopsis "Creating and checking ext2/ext3/ext4 file systems")
     (description
@@ -2258,7 +2256,7 @@ module.")
     (build-system trivial-build-system)
     (source #f)
     (inputs
-     `(("e2fsprogs" ,e2fsprogs/static)))
+     (list e2fsprogs/static))
     (arguments
      `(#:modules ((guix build utils))
        #:builder
@@ -2267,8 +2265,7 @@ module.")
                       (ice-9 ftw)
                       (srfi srfi-26))
 
-         (let ((e2fsck (string-append (assoc-ref %build-inputs "e2fsprogs")
-                                      "/sbin/e2fsck"))
+         (let ((e2fsck (search-input-file %build-inputs "/sbin/e2fsck"))
                (bin    (string-append (assoc-ref %outputs "out") "/sbin")))
            (mkdir-p bin)
            (with-directory-excursion bin
@@ -2297,7 +2294,7 @@ from the e2fsprogs package.  It is meant to be used in initrds.")
          "1x0r7ylxlp9lbj3d7sqf6j2a222dwy2nfpff05jd6mkh4ihxvyd1"))
        (patches (search-patches "extundelete-e2fsprogs-1.44.patch"))))
     (build-system gnu-build-system)
-    (inputs `(("e2fsprogs" ,e2fsprogs)))
+    (inputs (list e2fsprogs))
     (home-page "http://extundelete.sourceforge.net/")
     (synopsis "Recover deleted files from ext2/3/4 partitions")
     (description
@@ -2343,7 +2340,7 @@ Zerofree requires the file system to be unmounted or mounted read-only.")
 (define-public strace
   (package
     (name "strace")
-    (version "5.8")
+    (version "5.13")
     (home-page "https://strace.io")
     (source (origin
              (method url-fetch)
@@ -2351,27 +2348,32 @@ Zerofree requires the file system to be unmounted or mounted read-only.")
                                  "/strace-" version ".tar.xz"))
              (sha256
               (base32
-               "1abs3svkg9985f4jrxx34sj1dcpsf95vv1a0g01c777zgygncjnz"))))
+               "0mmns22bjjvakxj29si0x4dcylcgy26llpcimkb0llcxif439k2s"))
+             (patches (search-patches "strace-readlink-tests.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-/bin/sh
            (lambda _
-             (substitute* "strace.c"
+             (substitute* "src/strace.c"
                (("/bin/sh") (which "sh")))
              #t))
          (add-after 'unpack 'disable-failing-tests
            (lambda _
-             ;; XXX These hang forever even if the test time-out is extended.
              (substitute* "tests/Makefile.in"
-               (("^\tstrace-DD?D?\\.test \\\\.*") ""))
+               ;; XXX: These hang forever even if the test time-out is
+               ;; extended.
+               (("^\tstrace-DD?D?\\.test \\\\.*") "")
+               (("^\tpidns-cache.test \\\\.*") "")
+               (("^\t.*--pidns-translation.test \\\\.*") ""))
              #t)))
-       ;; Don't fail if the architecture doesn't support different personalities.
+       ;; Don't fail if the architecture doesn't support different
+       ;; personalities.
        #:configure-flags '("--enable-mpers=check")
        ;; See <https://debbugs.gnu.org/cgi/bugreport.cgi?bug=32459>.
        #:parallel-tests? #f))           ; undeterministic failures
-    (native-inputs `(("perl" ,perl)))
+    (native-inputs (list perl))
     (synopsis "System call tracer for Linux")
     (description
      "strace is a system call tracer, i.e. a debugging tool which prints out a
@@ -2402,24 +2404,95 @@ an executed process and the signals received by that process.  It can also
 intercept and print the system calls executed by the program.")
     (license license:gpl2+)))
 
+(define-public alsa-ucm-conf
+  (package
+    (name "alsa-ucm-conf")
+    (version "1.2.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "ftp://ftp.alsa-project.org/pub/lib/" name "-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32
+                "0h6kzi1cfdqyxp4pwpqh5wb89c8s9wrgix315bvamffwfxf56frc"))))
+    (build-system copy-build-system)
+    (arguments
+     '(#:install-plan
+       '(("ucm" "share/alsa/ucm")
+         ("ucm2" "share/alsa/ucm2"))))
+    (home-page "https://www.alsa-project.org/wiki/Main_Page")
+    (synopsis "The Advanced Linux Sound Architecture Use Case Manager")
+    (description
+     "This package contains Advanced Linux Sound Architecture Use Case Manager
+configuration of audio input/output names and routing for specific audio
+hardware.")
+    (license license:bsd-3)))
+
+(define-public alsa-topology-conf
+  (package
+    (name "alsa-topology-conf")
+    (version "1.2.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "ftp://ftp.alsa-project.org/pub/lib/" name "-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32
+                "01zdg6q4s6d01k39z96wi4vbhrfw1i2g4yi5dijwfk6a5vjfdq2m"))))
+    (build-system copy-build-system)
+    (arguments
+     '(#:install-plan
+       '(("topology" "share/alsa/topology"))))
+    (home-page "https://www.alsa-project.org/wiki/Main_Page")
+    (synopsis "The Advanced Linux Sound Architecture libraries")
+    (description
+     "This package contains Advanced Linux Sound Architecture topology
+configuration files that can be used for specific audio hardware.")
+    (license license:bsd-3)))
+
 (define-public alsa-lib
   (package
     (name "alsa-lib")
     (version "1.2.4")
     (source (origin
-             (method url-fetch)
-             (uri (string-append
-                   "ftp://ftp.alsa-project.org/pub/lib/alsa-lib-"
-                   version ".tar.bz2"))
-             (sha256
-              (base32
-               "1xq8d48wfy59qw4x7383j32n8j5njndw5hcgnmlg9pvclphlnmgp"))))
+              (method url-fetch)
+              (uri (string-append
+                    "ftp://ftp.alsa-project.org/pub/lib/alsa-lib-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32
+                "1xq8d48wfy59qw4x7383j32n8j5njndw5hcgnmlg9pvclphlnmgp"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags (list (string-append "LDFLAGS=-Wl,-rpath="
                                               (assoc-ref %outputs "out")
-                                              "/lib"))))
-    (home-page "https://www.alsa-project.org/")
+                                              "/lib"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'pre-install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((ucm
+                     (string-append (assoc-ref inputs "alsa-ucm-conf")))
+                    (topology
+                     (string-append (assoc-ref inputs "alsa-topology-conf")))
+                    (alsa
+                     (string-append (assoc-ref outputs "out") "/share/alsa"))
+                    (ucm-share
+                     (string-append ucm "/share/alsa/ucm"))
+                    (ucm2-share
+                     (string-append ucm "/share/alsa/ucm2"))
+                    (topology-share
+                     (string-append topology "/share/alsa/topology")))
+               (mkdir-p alsa)
+               (symlink ucm-share (string-append alsa "/ucm"))
+               (symlink ucm2-share (string-append alsa "/ucm2"))
+               (symlink topology-share (string-append alsa "/topology")))
+             #t)))))
+    (inputs
+     (list alsa-ucm-conf alsa-topology-conf))
+    (home-page "https://www.alsa-project.org/wiki/Main_Page")
     (synopsis "The Advanced Linux Sound Architecture libraries")
     (description
      "The Advanced Linux Sound Architecture (ALSA) provides audio and
@@ -2467,10 +2540,7 @@ MIDI functionality to the Linux-based operating system.")
     (native-inputs
      `(("gettext" ,gettext-minimal)))
     (inputs
-     `(("libsamplerate" ,libsamplerate)
-       ("ncurses" ,ncurses)
-       ("alsa-lib" ,alsa-lib)
-       ("xmlto" ,xmlto)))
+     (list libsamplerate ncurses alsa-lib xmlto))
     (home-page "http://www.alsa-project.org/")
     (synopsis "Utilities for the Advanced Linux Sound Architecture (ALSA)")
     (description
@@ -2532,14 +2602,14 @@ MIDI functionality to the Linux-based operating system.")
                          (find-files out ".*pulse\\.(la|so)"))
                #t))))))
     (inputs
-     `(("alsa-lib" ,alsa-lib)
-       ("jack" ,jack-1)
-       ("speex" ,speex) ; libspeexdsp resampling plugin
-       ("libsamplerate" ,libsamplerate) ; libsamplerate resampling plugin
-       ("ffmpeg" ,ffmpeg) ; libavcodec resampling plugin, a52 plugin
-       ("pulseaudio" ,pulseaudio))) ; PulseAudio plugin
+     (list alsa-lib
+           jack-1
+           speex ; libspeexdsp resampling plugin
+           libsamplerate ; libsamplerate resampling plugin
+           ffmpeg ; libavcodec resampling plugin, a52 plugin
+           pulseaudio)) ; PulseAudio plugin
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "http://www.alsa-project.org/")
     (synopsis "Plugins for the Advanced Linux Sound Architecture (ALSA)")
     (description
@@ -2567,12 +2637,9 @@ external rate conversion.")
         (base32 "1w6qx3sxzkv80shk21f63rq41c84irpx68k62m2cv629n1mwj2f1"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("flex" ,flex)
-       ("bison" ,bison)))
+     (list pkg-config flex bison))
     (inputs
-     `(("libmnl" ,libmnl)
-       ("libnftnl" ,libnftnl)))
+     (list libmnl libnftnl/fixed))
     (arguments
      '(#:tests? #f       ; no test suite
        #:configure-flags ; add $libdir to the RUNPATH of executables
@@ -2672,8 +2739,7 @@ name.")
                "0apxgmkhsk3vxn9q3libxn3dgrdljrxyy4mli2gk49m7hi3na7xp"))))
     (build-system gnu-build-system)
     (inputs
-     `(("perl" ,perl)
-       ("iptables" ,iptables)))
+     (list perl iptables))
     (synopsis "Ethernet bridge frame table administration")
     (home-page "https://ebtables.netfilter.org/")
     (description
@@ -2733,9 +2799,7 @@ that the Ethernet protocol is much simpler than the IP protocol.")
        ("iptables" ,iptables)
        ("libmnl" ,libmnl)))
     (native-inputs
-     `(("bison" ,bison)
-       ("flex" ,flex)
-       ("pkg-config" ,pkg-config)))
+     (list bison flex pkg-config))
     ;; For tests.
     ;; ("libmnl" ,libmnl)
     ;; ("util-linux" ,util-linux)
@@ -2831,10 +2895,10 @@ network hardware types (plipconfig, slattach) and advanced aspects of IP
 configuration (iptunnel, ipmaddr).")
       (license license:gpl2+))))
 
-(define-public libcap-2.31
+(define-public libcap
   (package
     (name "libcap")
-    (version "2.31")
+    (version "2.51")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -2842,24 +2906,35 @@ configuration (iptunnel, ipmaddr).")
                    "libcap2/libcap-" version ".tar.xz"))
              (sha256
               (base32
-               "0ikwm0kngrqa4ci80lqnrkk17kg09q7dxrz28y0gm5qw3vj8s266"))))
+               "1ych13qc1mvzv8iscbims5b317vxcmy5ffpmfy98zk7bgamz62b6"))))
     (build-system gnu-build-system)
-    (arguments '(#:phases
-                 (modify-phases %standard-phases
-                   (replace 'configure
-                            ;; Add $libdir to the RUNPATH of executables.
-                            (lambda _
-                              (substitute* "Make.Rules"
-                                (("LDFLAGS := #-g")
-                                 (string-append "LDFLAGS := -Wl,-rpath="
-                                                %output "/lib")))
-                              #t)))
+    (arguments `(#:phases
+                 ,#~(modify-phases %standard-phases
+                      (replace 'configure
+                        ;; Add $libdir to the RUNPATH of executables.
+                        (lambda _
+                          (substitute* "Make.Rules"
+                            (("LDFLAGS \\?= #-g")
+                             (string-append "LDFLAGS ?= -Wl,-rpath="
+                                            ;; TODO(core-updates): Use #$output
+                                            ;; unconditionally.
+                                            #$(if (%current-target-system)
+                                                  #~#$output
+                                                  '%output)
+                                            "/lib"))))))
                  #:test-target "test"
-                 #:make-flags (list "lib=lib"
-                                    (string-append "prefix="
-                                                   (assoc-ref %outputs "out"))
-                                    "RAISE_SETFCAP=no")))
-    (native-inputs `(("perl" ,perl)))
+                 #:make-flags
+                 (list "lib=lib"
+                       (string-append "prefix=" (assoc-ref %outputs "out"))
+                       "RAISE_SETFCAP=no"
+                       ;; Tell the makefile to use TARGET-gcc and friends
+                       ;; when cross-compiling.
+                       ,@(if (%current-target-system)
+                             `(,(string-append "CROSS_COMPILE="
+                                               (%current-target-system) "-")
+                               "BUILD_CC=gcc")
+                             '()))))
+    (native-inputs (list perl))
     (supported-systems (delete "i586-gnu" %supported-systems))
     (home-page "https://sites.google.com/site/fullycapable/")
     (synopsis "Library for working with POSIX capabilities")
@@ -2869,37 +2944,6 @@ Linux-based operating systems.")
 
     ;; License is BSD-3 or GPLv2, at the user's choice.
     (license license:gpl2)))
-
-;; libcap 2.31 has problems with newer kernels, so provide this newer variant.
-;; Keep the old libcap around to avoid rebuilding 'coreutils' and 'avahi'.
-;; To be merged with libcap on the next rebuild cycle.
-(define-public libcap
-  (package
-    (inherit libcap-2.31)
-    (version "2.45")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "mirror://kernel.org/linux/libs/security/linux-privs/"
-                    "libcap2/libcap-" version ".tar.xz"))
-              (sha256
-               (base32
-                "11ijmi7jik9iw6pdszc6bylhggghr8cza03bcrbhbqf0cpvkjrnn"))))
-    (arguments
-     (substitute-keyword-arguments (package-arguments libcap-2.31)
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (replace 'configure
-             (lambda _
-               ;; Add $libdir to the RUNPATH of executables.
-               (substitute* "Make.Rules"
-                 (("LDFLAGS \\?= #-g")
-                  (string-append "LDFLAGS ?= -Wl,-rpath="
-                                 %output "/lib")))
-               #t))))))))
-
-(define-deprecated libcap/next libcap)
-(export libcap/next)
 
 (define-public bridge-utils
   (package
@@ -2915,8 +2959,7 @@ Linux-based operating systems.")
     (build-system gnu-build-system)
 
     ;; The tarball lacks all the generated files.
-    (native-inputs `(("autoconf" ,autoconf)
-                     ("automake" ,automake)))
+    (native-inputs (list autoconf automake))
     (arguments
      '(#:tests? #f))                    ; no 'check' target
 
@@ -2997,7 +3040,7 @@ configuration and monitoring interfaces.")
                     `(("python-2" ,python-2)))
                    ((string=? python "python3")
                     `(("python-3" ,python-3))))))
-      (propagated-inputs `(("libnl" ,libnl)))
+      (propagated-inputs (list libnl))
       (outputs '("out"))
       (arguments
        `(#:modules ((guix build gnu-build-system)
@@ -3034,8 +3077,8 @@ configuration and monitoring interfaces.")
                (base32
                 "12ddd6vh6vs97135bnlyr0szv7hvpbnmfh48584frzab0z0725ph"))))
     (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)))
-    (inputs `(("libnl" ,libnl)))
+    (native-inputs (list pkg-config))
+    (inputs (list libnl))
     (arguments
      `(#:make-flags
        (let* ((target ,(%current-target-system))
@@ -3092,11 +3135,7 @@ devices.  It replaces @code{iwconfig}, which is deprecated.")
                  (("/usr/sbin/hciconfig") "hciconfig"))
                #t))))))
     (inputs
-     `(("kmod" ,kmod)
-       ("libnl" ,libnl)
-       ("ncurses" ,ncurses)
-       ("pciutils" ,pciutils)
-       ("zlib" ,zlib)))
+     (list kmod libnl ncurses pciutils zlib))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -3126,7 +3165,10 @@ settings.")
                (base32
                 "0a8fwyxnc5qdxff8sl2sfsbnvgh6pkij4yafiln0fxgg6bal7knj"))))
     (build-system gnu-build-system)
-    (inputs `(("ncurses" ,ncurses)))
+    (arguments
+     ;; Allow compilation with GCC 10.
+     '(#:configure-flags '("CFLAGS=-O2 -g -fcommon")))
+    (inputs (list ncurses))
     (home-page "http://www.jpj.net/~trevor/aumix.html")
     (synopsis "Audio mixer for X and the console")
     (description
@@ -3156,7 +3198,7 @@ the command line or a script.")
              #t)))
        ;; There are currently no checks in the package.
        #:tests? #f))
-    (native-inputs `(("python" ,python)))
+    (native-inputs (list python))
     (home-page "http://guichaz.free.fr/iotop/")
     (synopsis
      "Displays the IO activity of running processes")
@@ -3180,8 +3222,7 @@ processes currently causing I/O.")
               (patches (search-patches "fuse-overlapping-headers.patch"))))
     (build-system gnu-build-system)
     (inputs
-     `(("bash-minimal" ,bash-minimal)
-       ("util-linux" ,util-linux)))
+     (list bash-minimal util-linux))
     (arguments
      '(#:configure-flags (list (string-append "MOUNT_FUSE_PATH="
                                               (assoc-ref %outputs "out")
@@ -3202,11 +3243,12 @@ processes currently causing I/O.")
              ;; it refers to the right ones.
              (substitute* '("lib/mount_util.c" "util/mount_util.c")
                (("/bin/(u?)mount" _ maybe-u)
-                (string-append (assoc-ref inputs "util-linux")
-                               "/bin/" maybe-u "mount")))
-             (substitute* "util/mount.fuse.c"
-               (("/bin/sh" command)
-                (string-append (assoc-ref inputs "bash-minimal") command)))
+                (search-input-file inputs
+                                   (string-append "bin/"
+                                                  maybe-u "mount"))))
+             (substitute* '("util/mount.fuse.c")
+               (("/bin/sh")
+                (search-input-file inputs "/bin/sh")))
 
              ;; This hack leads libfuse to search for 'fusermount' in
              ;; $PATH, where it may find a setuid-root binary, instead of
@@ -3228,6 +3270,66 @@ user-space processes.")
     (license (list license:lgpl2.1                ;library
                    license:gpl2+))))              ;command-line utilities
 
+(define-public fuse-3
+  (package
+    (inherit fuse)
+    (name "fuse")
+    (version "3.10.5")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "https://github.com/libfuse/libfuse/releases/"
+                              "download/fuse-" version
+                              "/fuse-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0rlnnsiw614qcmgy8xz67044gqc1pbvvf2yxjv44lh27bm487qmj"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:configure-flags
+       ,#~(list
+           (string-append "-Dudevrulesdir=" #$output "/udev/rules.d")
+           "-Duseroot=false")
+       #:tests? #f
+       #:phases
+       ,#~(modify-phases %standard-phases
+            (add-after 'unpack 'set-file-names
+              (lambda* (#:key inputs #:allow-other-keys)
+                ;; libfuse calls out to mount(8) and umount(8).  Make sure
+                ;; it refers to the right ones.
+                (substitute* '("lib/mount_util.c")
+                  (("/bin/(u?)mount" _ maybe-u)
+                   (search-input-file inputs
+                                      (string-append "bin/"
+                                                     maybe-u "mount"))))
+                (substitute* '("util/mount.fuse.c")
+                  (("/bin/sh")
+                   (search-input-file inputs "/bin/sh")))
+
+                ;; This hack leads libfuse to search for 'fusermount' in
+                ;; $PATH, where it may find a setuid-root binary, instead of
+                ;; trying solely $out/sbin/fusermount and failing because
+                ;; it's not setuid.
+                (substitute* "lib/meson.build"
+                  (("-DFUSERMOUNT_DIR=[[:graph:]]+")
+                   "-DFUSERMOUNT_DIR=\"/var/empty\"'"))))
+            (add-after 'unpack 'fix-install
+              (lambda* (#:key inputs #:allow-other-keys)
+                (substitute* '("util/meson.build")
+                  (("install_helper.sh") "true"))
+               (substitute* '("util/meson.build")
+                  (("fuseconf_path = .*")
+                   "fuseconf_path = '/etc/fuse.conf'"))))
+            (add-before 'configure 'set-paths
+              (lambda* (#:key inputs outputs #:allow-other-keys)
+                (let ((dummy-init.d
+                       (string-append (getcwd) "/etc/init.d")))
+                  (setenv "MOUNT_FUSE_PATH"
+                          (string-append #$output "/sbin"))
+                  (setenv "UDEV_RULES_PATH"
+                          (string-append #$output
+                                         "/lib/udev/rules.d"))))))))))
+
 (define-public unionfs-fuse
   (package
     (name "unionfs-fuse")
@@ -3243,8 +3345,8 @@ user-space processes.")
                 "1yigh8z1q6iq6yjyq7kl7vpbpjnxjld32apvjaw2bl44pqqg56hh"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("python" ,python)))
-    (inputs `(("fuse" ,fuse)))
+     (list python))
+    (inputs (list fuse))
     (arguments
      ;; The tests were never actually run ("collected 0 items"), but in recent
      ;; versions of pytest that causes an error.
@@ -3325,10 +3427,9 @@ UnionFS-FUSE additionally supports copy-on-write.")
                 "00fir2iykdx11g8nv5gijg0zjrp2g3ldypnv0yi6lq3h5pg5v13h"))))
     (build-system gnu-build-system)
     (inputs
-     `(("fuse" ,fuse)
-       ("glib" ,glib)))
+     (list fuse glib))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://github.com/libfuse/sshfs")
     (synopsis "Mount remote file systems over SSH")
     (description
@@ -3355,9 +3456,8 @@ file system is as easy as logging into the server with an SSH client.")
        (sha256
         (base32 "1cy5b6qril9c3ry6fv7ir87s8iyy5vxxmbyx90dm86fbra0vjaf5"))))
     (build-system gnu-build-system)
-    (inputs `(("fuse" ,fuse)
-              ("libarchive" ,libarchive)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs (list fuse libarchive))
+    (native-inputs (list pkg-config))
     (home-page "https://www.cybernoia.de/software/archivemount.html")
     (synopsis "Tool for mounting archive files with FUSE")
     (description "archivemount is a FUSE-based file system for Unix variants,
@@ -3478,8 +3578,7 @@ NUMA performance on your system.")
                              `("PATH" ":" prefix (,bin))))
                          '("unicode_start" "unicode_stop"))))))))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf pkg-config))
     (inputs
      `(("bzip2" ,bzip2)
        ("gzip" ,gzip)
@@ -3552,9 +3651,7 @@ for systems using the Linux kernel.  This includes commands such as
                 "1m8avqccrhm38krlhp88a7v949f3hrzx060bbrr5dp5qw2nmw9j2"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
+     (list autoconf automake libtool))
     (arguments
      `(#:configure-flags
        (list "--disable-static")))
@@ -3568,7 +3665,7 @@ to use Linux' inotify mechanism, which allows file accesses to be monitored.")
 (define-public kmod
   (package
     (name "kmod")
-    (version "27")
+    (version "29")
     (source (origin
               (method url-fetch)
               (uri
@@ -3576,16 +3673,19 @@ to use Linux' inotify mechanism, which allows file accesses to be monitored.")
                               "kmod-" version ".tar.xz"))
               (sha256
                (base32
-                "035wzfzjx4nwidk747p8n085mgkvy531ppn16krrajx2dkqzply1"))
+                "0am54mi5rk72g5q7k6l6f36gw3r9vwgjmyna43ywcjhqmakyx00b"))
               (patches (search-patches "kmod-module-directory.patch"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config
+           ;; For tests.
+           zstd))
     (inputs
      `(("xz" ,xz)
-       ("zlib" ,zlib)))
+       ("zlib" ,zlib)
+       ("zstd-lib" ,zstd "lib")))
     (arguments
-     `(#:configure-flags '("--with-xz" "--with-zlib"
+     `(#:configure-flags '("--with-xz" "--with-zlib" "--with-zstd"
                            "--disable-test-modules")
        #:phases
        (modify-phases %standard-phases
@@ -3661,8 +3761,8 @@ from the module-init-tools project.")
                             (string-append "PREFIX=" prefix)
                             (string-append "SYSCONFDIR=" prefix "/etc")))
        #:test-target "test"))
-    (native-inputs `(("go" ,go)           ;for the test suite
-                     ("pandoc" ,pandoc))) ;to generate the manpage
+    (native-inputs (list go ;for the test suite
+                         pandoc)) ;to generate the manpage
     (home-page "https://github.com/rfjakob/earlyoom")
     (synopsis "Simple out of memory (OOM) daemon for the Linux kernel")
     (description "Early OOM is a minimalist out of memory (OOM) daemon that
@@ -3758,8 +3858,8 @@ to the in-kernel OOM killer.")
      ;; When linked against libblkid, eudev can populate /dev/disk/by-label
      ;; and similar; it also installs the '60-persistent-storage.rules' file,
      ;; which contains the rules to do that.
-     `(("util-linux" ,util-linux "lib")           ;for blkid
-       ("kmod" ,kmod)))
+     (list `(,util-linux "lib") ;for blkid
+           kmod))
     (outputs '("out" "static"))
     (home-page "https://wiki.gentoo.org/wiki/Project:Eudev")
     (synopsis "Userspace device management")
@@ -3821,7 +3921,7 @@ devices that can inject events directly into the input subsystem.")
                 "0wcmppa7092b33wb8vc782day5phf90pc25cn1x7rk0rlw565z36"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
      `(("boost" ,boost)
        ("libevdev" ,libevdev)
@@ -3860,8 +3960,7 @@ devices that can inject events directly into the input subsystem.")
                 "0s49vbg3j4rwh78i8rx8qr7myql09p7b3lhrjl0p7dd98xp6ann6"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libevdev" ,libevdev)
-       ("yaml-cpp" ,yaml-cpp)))
+     (list libevdev yaml-cpp))
     (arguments
      `(#:make-flags (list ,(string-append "CC=" (cc-for-target))
                           ,(string-append "CXX=" (cxx-for-target))
@@ -3913,8 +4012,7 @@ one to send arbitrary keycodes when a given key is tapped or held.")
               (patches (search-patches "lvm2-static-link.patch"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("procps" ,procps)))                       ;tests use 'pgrep'
+     (list pkg-config procps))                       ;tests use 'pgrep'
     (inputs
      `(("libaio" ,libaio)
        ("udev" ,eudev)))
@@ -4023,9 +4121,7 @@ mapper.  Kernel components are part of Linux-libre.")
      `(("automake" ,automake)
        ("autoreconf" ,autoconf)))
     (inputs
-     `(("boost" ,boost)
-       ("expat" ,expat)
-       ("libaio" ,libaio)))
+     (list boost expat libaio))
     (synopsis "Tools for manipulating the metadata of device-mapper targets")
     (description "A suite of tools for manipulating the metadata of the
 dm-thin, dm-cache and dm-era device-mapper targets.")
@@ -4158,9 +4254,8 @@ interface.")
                        (string-append "REG_BIN=" regdb
                                       "/lib/crda/regulatory.bin")
                        "all_noverify"))))
-    (native-inputs `(("pkg-config" ,pkg-config)
-                     ("wireless-regdb" ,wireless-regdb)))
-    (inputs `(("libnl" ,libnl)))
+    (native-inputs (list pkg-config wireless-regdb))
+    (inputs (list libnl))
     (home-page
      "https://wireless.wiki.kernel.org/en/developers/Regulatory/CRDA")
     (synopsis "Central regulatory domain agent (CRDA) for WiFi")
@@ -4256,14 +4351,8 @@ country-specific regulations for the wireless spectrum.")
         (base32 "1ipf6wjx037sqyhy0r5jh4983h216anq9l68ckn2x5c3qc4wfmzn"))
        (patches (search-patches "lm-sensors-hwmon-attrs.patch"))))
     (build-system gnu-build-system)
-    (inputs `(("rrdtool" ,rrdtool)
-              ("perl" ,perl)
-              ("kmod" ,kmod)
-              ("gnuplot" ,gnuplot)))
-    (native-inputs `(("pkg-config" ,pkg-config)
-                     ("flex" ,flex)
-                     ("bison" ,bison)
-                     ("which" ,which)))
+    (inputs (list rrdtool perl kmod gnuplot))
+    (native-inputs (list pkg-config flex bison which))
     (outputs '("lib"                    ; avoid perl in closure
                "out"))
     (arguments
@@ -4290,27 +4379,28 @@ country-specific regulations for the wireless spectrum.")
              (substitute* '("prog/pwm/pwmconfig"
                             "prog/pwm/fancontrol")
                (("gnuplot")
-                (string-append (assoc-ref inputs "gnuplot")
-                               "/bin/gnuplot"))
+                (search-input-file inputs "/bin/gnuplot"))
                (("cat ")
-                (string-append (assoc-ref inputs "coreutils")
-                               "/bin/cat "))
+                (string-append (search-input-file inputs "/bin/cat")
+                               " "))
                (("e?grep " match)
-                (string-append (assoc-ref inputs "grep")
-                               "/bin/" match))
+                (string-append (search-input-file inputs
+                                                  (string-append
+                                                   "/bin/"
+                                                   (string-trim-right match)))
+                               " "))
                (("sed -e")
-                (string-append (assoc-ref inputs "sed")
-                               "/bin/sed -e"))
+                (string-append (search-input-file inputs "/bin/sed")
+                               " -e"))
                (("cut -d")
-                (string-append (assoc-ref inputs "coreutils")
-                               "/bin/cut -d"))
+                (string-append (search-input-file inputs "/bin/cut")
+                               " -d"))
                (("sleep ")
-                (string-append (assoc-ref inputs "coreutils")
-                               "/bin/sleep "))
+                (string-append (search-input-file inputs "/bin/sleep")
+                               " "))
                (("readlink -f")
-                (string-append (assoc-ref inputs "coreutils")
-                               "/bin/readlink -f")))
-             #t)))))
+                (string-append (search-input-file inputs "/bin/readlink")
+                               " -f"))))))))
     (home-page "https://hwmon.wiki.kernel.org/lm_sensors")
     (synopsis "Utilities to read temperature/voltage/fan sensors")
     (description
@@ -4361,7 +4451,7 @@ create a firmware image suitable for the Linux kernel, and more.")
        ;; No configure script.
        #:phases (modify-phases %standard-phases (delete 'configure))))
     (inputs
-     `(("perl" ,perl)))
+     (list perl))
     (home-page "http://jdelvare.nerim.net/devel.html#i2ctools")
     (synopsis "I2C tools for Linux")
     (description
@@ -4386,7 +4476,7 @@ SMBus access.")
     (build-system gnu-build-system)
     (inputs `(("lm-sensors" ,lm-sensors "lib")
               ("gtk" ,gtk+-2)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs (list pkg-config))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -4817,9 +4907,9 @@ protocol in question.")
                 "0lsv46jdqvdx5hx92v0z2cz3yh6212pz9gk0k3513sbaa04zzcbw"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (propagated-inputs
-     `(("libraw1394" ,libraw1394))) ; required by libavc1394.pc
+     (list libraw1394)) ; required by libavc1394.pc
     (home-page "https://sourceforge.net/projects/libavc1394/")
     (synopsis "AV/C protocol library for IEEE 1394")
     (description
@@ -4841,9 +4931,9 @@ the 1394 Trade Association.  AV/C stands for Audio/Video Control.")
                 "17ph458zya2l8dr2xwqnzy195qd9swrir31g78qkgb3g4xz2rq6i"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (propagated-inputs
-     `(("libraw1394" ,libraw1394))) ; required by libiec61883.pc
+     (list libraw1394)) ; required by libiec61883.pc
     (home-page "https://ieee1394.wiki.kernel.org/index.php/Main_Page")
     (synopsis "Isochronous streaming media library for IEEE 1394")
     (description
@@ -5018,12 +5108,9 @@ arrays when needed.")
              #t))
          (delete 'configure))))         ; no configure script
     (native-inputs
-     `(("perl" ,perl)
-       ("pkg-config" ,pkg-config)
-       ("valgrind" ,valgrind)
-
-       ;; For tests.
-       ("cmocka" ,cmocka)))
+     (list perl pkg-config valgrind
+           ;; For tests.
+           cmocka))
     (inputs
      `(("json-c" ,json-c)
        ("libaio" ,libaio)
@@ -5136,9 +5223,9 @@ event traces from the kernel (via the relaying through the debug file system).")
                 "1liig5856crb331dps18mp0s13zbkv7yh007zqhq97m94fcddfhc"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libsndfile" ,libsndfile)))
+     (list libsndfile))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://www.kernel.org/pub/linux/bluetooth/")
     (synopsis "Bluetooth subband audio codec")
     (description
@@ -5149,7 +5236,7 @@ Bluetooth audio output devices like headphones or loudspeakers.")
 (define-public bluez
   (package
     (name "bluez")
-    (version "5.55")
+    (version "5.61")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -5157,7 +5244,7 @@ Bluetooth audio output devices like headphones or loudspeakers.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "124v9s4y1s7s6klx5vlmzpk1jlr4x84ch7r7scm7x2f42dqp2qw8"))))
+                "0fs2kjsdhylxniqhii63i85fjszbqbz3iddwmgz4nmbr472xdbw3"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -5198,17 +5285,14 @@ Bluetooth audio output devices like headphones or loudspeakers.")
                  (("hid2hci --method")
                   (string-append out "/lib/udev/hid2hci --method"))
                  (("/sbin/udevadm")
-                  (string-append (assoc-ref inputs "eudev") "/bin/udevadm")))
+                  (search-input-file inputs "/bin/udevadm")))
                #t))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
+       ("rst2man" ,python-docutils)
        ("gettext" ,gettext-minimal)))
     (inputs
-     `(("glib" ,glib)
-       ("dbus" ,dbus)
-       ("eudev" ,eudev)
-       ("libical" ,libical)
-       ("readline" ,readline)))
+     (list glib dbus eudev libical readline))
     (home-page "http://www.bluez.org/")
     (synopsis "Linux Bluetooth protocol stack")
     (description
@@ -5230,9 +5314,9 @@ is flexible, efficient and uses a modular implementation.")
                 "1lz00q8g4590mrdqmf13ba1s9zrqq645ymgm5p9y99ad0qv22r87"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("fuse" ,fuse)))
+     (list fuse))
     (home-page "https://github.com/relan/exfat")
     (synopsis "Mount exFAT file systems")
     (description
@@ -5253,11 +5337,9 @@ write access to exFAT devices.")
                 "127xql52dcdhmh7s5m9xc6q39jdlj3zhbjar1j821kb6gl3jw94b"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("fuse" ,fuse)
-       ("glib" ,glib)
-       ("zlib" ,zlib)))
+     (list fuse glib zlib))
     (home-page "https://sourceforge.net/projects/fuseiso/")
     (synopsis "Mount ISO file system images")
     (description
@@ -5306,12 +5388,12 @@ Ridge, Joliet, and zisofs.")
                                               (assoc-ref %outputs "out")
                                               "/lib"))))
     (native-inputs
-     `(("texinfo" ,texinfo)
-       ("bison" ,bison)
-       ("flex" ,flex)
-       ("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
+     (list texinfo
+           bison
+           flex
+           autoconf
+           automake
+           libtool))
     (home-page "https://www.nico.schottelius.org/software/gpm/")
     (synopsis "Mouse support for the Linux console")
     (description
@@ -5453,7 +5535,7 @@ from the btrfs-progs package.  It is meant to be used in initrds.")
                (install-file "cramfsck" (string-append out "/sbin")))
              #t)))))
     (inputs
-     `(("zlib" ,zlib)))
+     (list zlib))
     (synopsis "Tools to manage Cramfs file systems")
     (description "Cramfs is a Linux file system designed to be simple, small,
 and to compress things well.  It is used on a number of embedded systems and
@@ -5476,7 +5558,7 @@ blocks and random block placement.")
               (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (inputs
-     `(("btrfs-progs" ,btrfs-progs)))
+     (list btrfs-progs))
     (arguments
      `(#:tests? #f                      ; No tests.
        #:make-flags
@@ -5520,7 +5602,8 @@ obviously it can be shared with files outside our set).")
 
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
+     `(#:configure-flags '("CFLAGS=-fcommon")
+       #:phases
        (modify-phases %standard-phases
          (add-after 'install 'install-headers
            (lambda* (#:key outputs #:allow-other-keys)
@@ -5530,10 +5613,7 @@ obviously it can be shared with files outside our set).")
                (install-file "mkfs/f2fs_format_utils.h" out-include)
                #t))))))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf automake libtool pkg-config))
     (inputs
      `(("libuuid" ,util-linux "lib")
        ("libselinux" ,libselinux)))
@@ -5627,7 +5707,7 @@ disks and SD cards.  This package provides the userland utilities.")
              (chmod fsck #o555))
            #t))))
     (inputs
-     `(("f2fs-tools-static" ,f2fs-tools/static)))
+     (list f2fs-tools/static))
     (home-page (package-home-page f2fs-tools/static))
     (synopsis "Statically-linked fsck.f2fs command from f2fs-tools")
     (description "This package provides statically-linked fsck.f2fs command taken
@@ -5713,10 +5793,9 @@ feature, and a laptop with an accelerometer.  It has no effect on SSDs.")
                   (string-append out directory)))
                #t))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("libatasmart" ,libatasmart)
-       ("yaml-cpp" ,yaml-cpp)))
+     (list libatasmart yaml-cpp))
     (home-page "https://github.com/vmatare/thinkfan")
     (synopsis "Simple fan control program")
     (description
@@ -5772,7 +5851,7 @@ from userspace.")
                          (list "battery_asl" "examples" "README.md"))
                #t))))))
     (inputs
-     `(("perl" ,perl)))
+     (list perl))
     (home-page "https://github.com/teleshoes/tpacpi-bat")
     (synopsis "ThinkPad battery charge controller")
     (description
@@ -5816,7 +5895,7 @@ supported.")
                #t)))
          (delete 'configure))))         ; no configure script
     (inputs
-     `(("ncurses" ,ncurses)))
+     (list ncurses))
     (home-page (package-home-page linux-libre))
     (synopsis "Monitor and test the Linux thermal subsystem in real time")
     (description
@@ -5857,7 +5936,7 @@ by hand is no trivial task: @command{tmon} aims to make it understandable.")
              #t))
          (delete 'configure))))         ; no configure script
     (inputs
-     `(("libcap" ,libcap)))
+     (list libcap))
     (supported-systems '("i686-linux" "x86_64-linux"))
     (home-page (package-home-page linux-libre))
     (synopsis "Report x86 processor frequency and idle statistics")
@@ -5894,11 +5973,12 @@ invocations of itself.")
                              "@sbindir@"))
                           #t))))
     (build-system gnu-build-system)
-    (inputs `(("util-linux" ,util-linux) ; libuuid
-              ("fuse" ,fuse)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs (list util-linux ; libuuid
+                  fuse))
+    (native-inputs (list pkg-config))
     (arguments
      '(#:configure-flags (list "--disable-static"
+                               "--disable-ldconfig" ;not necessary
                                "--exec-prefix=${prefix}"
                                "--with-fuse=external" ;use our own FUSE
                                "--enable-mount-helper"
@@ -6065,7 +6145,7 @@ The following service daemons are also provided:
                             "src/raw_ethernet_send_lat.c")
                (("/usr/include/netinet/ip.h") "netinet/ip.h"))
              #t)))))
-    (inputs `(("rdma-core" ,rdma-core)))
+    (inputs (list rdma-core))
     (home-page "https://github.com/linux-rdma/perftest/")
     (synopsis "Open Fabrics Enterprise Distribution (OFED) Performance Tests")
     (description "This is a collection of tests written over uverbs intended for
@@ -6104,9 +6184,7 @@ The collection contains a set of bandwidth and latency benchmark such as:
                            "--without-pkcs11"
                            "--without-rtlsdr")))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf automake pkg-config))
     (inputs
      `(("libsysfs" ,sysfsutils)
        ("openssl" ,openssl)))
@@ -6150,7 +6228,7 @@ from that to the system kernel's @file{/dev/random} machinery.")
                             "PACKAGE_BUGREPORT=bug-guix@gnu.org"))
        #:tests? #f)) ;no tests
     (native-inputs `(("gettext" ,gettext-minimal)))
-    (inputs `(("pciutils" ,pciutils)))
+    (inputs (list pciutils))
     (home-page (package-home-page linux-libre))
     (synopsis "CPU frequency and voltage scaling tools for Linux")
     (description
@@ -6286,9 +6364,8 @@ not as a replacement for it.")
                  (("/sbin/dmsetup")
                   (string-append lvm2 "/sbin/dmsetup")))))))))
     (native-inputs
-     `(("intltool" ,intltool)
-       ("perl" ,perl)                   ; for pod2man
-       ("pkg-config" ,pkg-config)))
+     (list intltool perl ; for pod2man
+           pkg-config))
     (inputs
      `(("keyutils" ,keyutils)
        ("linux-pam" ,linux-pam)
@@ -6327,7 +6404,7 @@ native Linux file system, and has been part of the Linux kernel since version
                                          (assoc-ref %outputs "out")
                                          "/lib/libnfsidmap"))))
     (native-inputs
-     `(("autoconf" ,autoconf)))         ; 0.27 still needs autoheader
+     (list autoconf))         ; 0.27 still needs autoheader
     (home-page
      "http://www.citi.umich.edu/projects/nfsv4/crossrealm/libnfsidmap_config.html")
     (synopsis "NFSv4 support library for name/ID mapping")
@@ -6427,8 +6504,7 @@ exceeded.")
     (arguments
      '(#:configure-flags '("--enable-unit-tests")))
     (native-inputs
-     `(("cmocka" ,cmocka)
-       ("pkg-config" ,pkg-config)))
+     (list cmocka pkg-config))
     (inputs
      `(("acl" ,acl)                     ; extended attributes (xattr)
        ("libuuid" ,util-linux "lib")
@@ -6468,8 +6544,7 @@ of flash storage.")
                       ;; run under QEMU user-mode emulation.  Just skip it.
                       (delete-file "tests/52-basic-load.tests"))))))
     (native-inputs
-     `(("gperf" ,gperf)
-       ("which" ,which)))
+     (list gperf which))
     (synopsis "Interface to Linux's seccomp syscall filtering mechanism")
     (description "The libseccomp library provides an easy to use, platform
 independent, interface to the Linux Kernel's syscall filtering mechanism.  The
@@ -6511,10 +6586,7 @@ developers.")
      `(("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("libdrm" ,libdrm)
-       ("libpciaccess" ,libpciaccess)
-       ("libxcb" ,libxcb)
-       ("ncurses" ,ncurses)))
+     (list libdrm libpciaccess libxcb ncurses))
     (home-page "https://github.com/clbr/radeontop/")
     (synopsis "Usage monitor for AMD Radeon graphics")
     (description "RadeonTop monitors resource consumption on supported AMD
@@ -6559,9 +6631,9 @@ under OpenGL graphics workloads.")
        (modify-phases %standard-phases
          (delete 'configure))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("popt" ,popt)))
+     (list popt))
     (home-page "https://github.com/rhboot/efivar")
     (synopsis "Tool and library to manipulate EFI variables")
     (description "This package provides a library and a command line
@@ -6595,10 +6667,9 @@ interface to the variable facility of UEFI boot firmware.")
                           "EFIDIR=gnu")
        #:phases (modify-phases %standard-phases (delete 'configure))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("efivar" ,efivar)
-       ("popt" ,popt)))
+     (list efivar popt))
     (home-page "https://github.com/rhinstaller/efibootmgr")
     (synopsis "Modify the Extensible Firmware Interface (EFI) boot manager")
     (description
@@ -6660,7 +6731,8 @@ monitoring tools for Linux.  These include @code{mpstat}, @code{iostat},
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
+     `(#:configure-flags '("CFLAGS=-fcommon")
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-udev-rules-absolute-path-bins
            (lambda* (#:key inputs #:allow-other-keys)
@@ -6675,8 +6747,7 @@ monitoring tools for Linux.  These include @code{mpstat}, @code{iostat},
                 "90-backlight.rules" (string-append out "/lib/udev/rules.d"))
                #t))))))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)))
+     (list autoconf automake))
     (home-page "https://haikarainen.github.io/light/")
     (synopsis "GNU/Linux application to control backlights")
     (description
@@ -6723,9 +6794,9 @@ set the screen to be pitch black at a value of 0 (or higher).
                (("/bin/") "/run/current-system/profile/bin/"))
              #t)))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("elogind" ,elogind)))
+     (list elogind))
     (synopsis "Backlight and LED brightness control")
     (description
      "This program allows you read and control device brightness.  Devices
@@ -6750,7 +6821,7 @@ interface in sysfs, which can be accomplished with the included udev rules.")
        (sha256
         (base32 "0bnsz9bw9rj1apl80jwz39zj5mnlps3jbckihvl8bbdbrbhj6p06"))))
     (native-inputs
-     `(("shellcheck" ,shellcheck)))
+     (list shellcheck))
     (inputs
      `(("bash" ,bash)
        ("dbus" ,dbus)
@@ -6927,9 +6998,9 @@ re-use code and to avoid re-inventing the wheel.")
         (base32 "0z4khm2mnys9mcl8ckwf19cw20jgrv8650nfncy3xcgs2k2aa23m"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("libmnl" ,libmnl)))
+     (list libmnl))
     (home-page "https://www.netfilter.org/projects/libnftnl/index.html")
     (synopsis "Netlink programming interface to the Linux nf_tables subsystem")
     (description "Libnftnl is a userspace library providing a low-level netlink
@@ -6937,6 +7008,24 @@ programming interface to the in-kernel nf_tables subsystem.  The library
 libnftnl has been previously known as libnftables.  This library is currently
 used by nftables.")
     (license license:gpl2+)))
+
+;; This is used in iptables, which contributes to rust.  We're pinning this
+;; variant to avoid accidental rebuilds of rust.
+(define-public libnftnl/fixed
+  (package (inherit libnftnl)
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://netfilter.org/libnftnl/"
+                           "libnftnl-" version ".tar.bz2"))
+       (sha256
+        (base32 "1xblq1cbcxhr6qmjpy98i1qdza148idgz99vbhjc7s4vzvfizc4h"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     (list pkg-config))
+    (inputs
+     (list libmnl))))
 
 (define-public nftables
   (package
@@ -6956,13 +7045,8 @@ used by nftables.")
                  '("--disable-man-doc"  ; FIXME: needs docbook2x
                    "--disable-static"
                    "--with-cli=readline")))
-    (inputs `(("gmp" ,gmp)
-              ("libmnl" ,libmnl)
-              ("libnftnl" ,libnftnl)
-              ("readline" ,readline)))
-    (native-inputs `(("pkg-config" ,pkg-config)
-                     ("bison" ,bison)
-                     ("flex" ,flex)))
+    (inputs (list gmp libmnl libnftnl readline))
+    (native-inputs (list pkg-config bison flex))
     (home-page "https://www.nftables.org")
     (synopsis "Userspace utility for Linux packet filtering")
     (description "nftables is the project that aims to replace the existing
@@ -7096,15 +7180,14 @@ userspace queueing component and the logging subsystem.")
                           (mkdir-p man1)
                           (copy-file "doc/proot/man.1"
                                      (string-append man1 "/proot.1"))))))))
-      (native-inputs `(("which" ,which)
-                       ;; For 'mcookie', used by some of the tests.
-                       ("util-linux" ,util-linux)
-                       ("coreutils" ,coreutils)
-                       ("pkg-config" ,pkg-config)
-                       ;; For rst2man, used to generate the manual page.
-                       ("python-docutils" ,python-docutils)))
-      (inputs `(("libarchive" ,libarchive)
-                ("talloc" ,talloc)))
+      (native-inputs (list which
+                           ;; For 'mcookie', used by some of the tests.
+                           util-linux
+                           coreutils
+                           pkg-config
+                           ;; For rst2man, used to generate the manual page.
+                           python-docutils))
+      (inputs (list libarchive talloc))
       (home-page "https://github.com/proot-me/PRoot")
       (synopsis "Unprivileged chroot, bind mount, and binfmt_misc")
       (description
@@ -7167,7 +7250,7 @@ available in the kernel Linux.")
                       ;; reset-gzip-timestamps phase does not error out.
                       (substitute* "Makefile"
                         (("-m 444") "-m 644")))))))
-    (inputs `(("perl" ,perl)))
+    (inputs (list perl))
     (supported-systems '("i686-linux" "x86_64-linux"))
     (home-page "http://www.etallen.com/cpuid.html")
     (synopsis "Dump x86 CPUID processor information")
@@ -7193,11 +7276,9 @@ NexGen, Rise, and SiS CPUs.")
           "1pm68agkhrwgrplrfrnbwdcvx5lrivdmqw8pb5gdmm3xppnryji1"))))
     (build-system gnu-build-system)
     (inputs
-     `(("file" ,file)
-       ("fuse" ,fuse)
-       ("libmtp" ,libmtp)))
+     (list file fuse libmtp))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://github.com/JasonFerrara/jmtpfs")
     (synopsis "Use a FUSE file system to access data over MTP")
     (description "jmtpfs uses FUSE (file system in userspace) to provide access
@@ -7220,15 +7301,11 @@ the MTP device as a file system.")
       (base32 "00d7q0h4qjc8lg435lq77lp2fx6ikm5piq90m81mr1dqqna1g6pz"))))
    (build-system gnu-build-system)
    (native-inputs
-    `(("pkg-config" ,pkg-config)
-
-      ;; For tests.
-      ("check" ,check)
-      ("groff" ,groff)))
+    (list pkg-config
+          ;; For tests.
+          check groff))
    (inputs
-    `(("expat" ,expat)
-      ("libcap" ,libcap)
-      ("libselinux" ,libselinux)))
+    (list expat libcap libselinux))
    (synopsis "Utility to show process environment")
    (description
     "Procenv is a command-line tool that displays as much detail about
@@ -7296,6 +7373,11 @@ libraries, which are often integrated directly into libfabric.")
     (arguments
      '(#:make-flags `("PSM_USE_SYS_UUID=1" "CC=gcc" "WERROR="
                       ,(string-append "INSTALL_PREFIX=" %output)
+                      ,(string-append "CFLAGS=-Wall -fpic -fPIC -D_GNU_SOURCE"
+                                      " -funwind-tables -O3 -g3"
+                                      " -DPSM_USE_SYS_UUID"
+                                      " -Wno-strict-aliasing -DNVALGRIND"
+                                      " -fcommon")
                       ,(string-append "LDFLAGS=-Wl,-rpath=" %output "/lib"))
        #:tests? #f
        #:phases (modify-phases %standard-phases
@@ -7440,10 +7522,9 @@ emulates the behaviour of Gunnar Monell's older fbgrab utility.")
     (arguments
      `(#:tests? #f))
     (native-inputs
-     `(("bison" ,bison)
-       ("flex" ,flex)))
+     (list bison flex))
     (inputs
-     `(("linux-pam" ,linux-pam)))
+     (list linux-pam))
     (home-page "https://sourceforge.net/projects/libcg/")
     (synopsis "Control groups management tools")
     (description "Control groups is Linux kernel method for process resource
@@ -7522,8 +7603,7 @@ privileges.")
                       (invoke "make" "install")
                       #t)))))
     (inputs
-     `(("rdma-core" ,rdma-core)
-       ("numactl" ,numactl)))
+     (list rdma-core numactl))
     (synopsis "Intel Performance Scaled Messaging 2 (PSM2) library")
     (description
      "This package is low-level user-level Intel's communications interface.
@@ -7622,8 +7702,7 @@ management tools in userspace.")
     (arguments
      `(#:import-path "github.com/vishvananda/netlink"))
     (native-inputs
-     `(("go-golang-org-x-sys" ,go-golang-org-x-sys)
-       ("go-netns" ,go-netns)))
+     (list go-golang-org-x-sys go-netns))
     (home-page "https://github.com/vishvananda/netlink")
     (synopsis "Simple netlink library for Go")
     (description "The netlink package provides a simple netlink library for
@@ -7806,8 +7885,7 @@ from the xfsprogs package.  It is meant to be used in initrds.")
                     "byteswap_fix.diff"))
              #t)))))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)))
+     (list autoconf automake))
     (home-page "https://github.com/jeremie-koenig/genext2fs")
     (synopsis "Generate ext2 file system as a normal user")
     (description "This package provides a program to generate an ext2
@@ -7902,11 +7980,7 @@ the superuser to make device nodes.")
        ("sharutils" ,sharutils)
        ("xz" ,xz)))
     (inputs
-     `(("acl" ,acl)
-       ("libcap" ,libcap)
-       ("util-linux" ,util-linux)
-       ("sed" ,sed)
-       ("coreutils" ,coreutils)))
+     (list acl libcap util-linux sed coreutils))
     (synopsis "Run commands in an environment with fake root privileges")
     (description
      "@command{fakeroot} runs a command in an environment where it appears to
@@ -7922,34 +7996,42 @@ without using the archiver.")
     (license license:gpl3+)))
 
 (define-public fakechroot
-  (package
-    (name "fakechroot")
-    (version "2.20.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/dex4er/fakechroot/releases/download/"
-                    version "/fakechroot-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1aijkd0b45wav25v01qhw8zxwa3pl0nnp9fabmmy1nlx7hr09gas"))))
-    (build-system gnu-build-system)
-    (arguments
-     ;; XXX: The tests heavily assume they run on an FHS system so for now
-     ;; skip them.
-     '(#:tests? #f
-       #:configure-flags '("--disable-static")))
-    (synopsis "Emulate @code{chroot} by overriding file system calls")
-    (description
-     "@command{fakechroot} runs a command in an environment were is additional
+  ;; XXX: Build from the change submitted at
+  ;; <https://github.com/dex4er/fakechroot/pull/85> to allow compilation
+  ;; against glibc 2.33.  Switch back to the official repository on the next
+  ;; release.
+  (let ((commit "e7c1f3a446e594a4d0cce5f5d499c9439ce1d5c5")
+        (revision "0"))
+    (package
+      (name "fakechroot")
+      (version (git-version "2.20.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/lipnitsk/fakechroot")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0gac6a6djx3nf343vd33sr5qqngz8ss3aij54zl8x9wb47pc11kb"))))
+      (build-system gnu-build-system)
+      (arguments
+       ;; XXX: The tests heavily assume they run on an FHS system so for now
+       ;; skip them.
+       '(#:tests? #f
+         #:configure-flags '("--disable-static")))
+      (native-inputs (list autoconf automake libtool perl))
+      (synopsis "Emulate @code{chroot} by overriding file system calls")
+      (description
+       "@command{fakechroot} runs a command in an environment were is additional
 possibility to use @code{chroot} command without root privileges.  This is
 useful for allowing users to create own chrooted environment with possibility
 to install another packages without need for root privileges.
 
 It works by providing @file{libfakechroot.so}, a shared library meant to be
 set as @code{LD_PRELOAD} to override the C library file system functions.")
-    (home-page "https://github.com/dex4er/fakechroot/")
-    (license license:lgpl2.1+)))
+      (home-page "https://github.com/dex4er/fakechroot/")
+      (license license:lgpl2.1+))))
 
 (define-public inputattach
   (package
@@ -7972,10 +8054,8 @@ set as @code{LD_PRELOAD} to override the C library file system functions.")
          (replace 'build
            (lambda* (#:key inputs #:allow-other-keys)
              (with-directory-excursion "inputattach"
-               (invoke (string-append (assoc-ref inputs "gcc")
-                                      "/bin/gcc")
-                       "-O2" "-o" "inputattach" "inputattach.c"))
-             #t))
+               (invoke "gcc" "-O2" "-o" "inputattach"
+                       "inputattach.c"))))
          (delete 'check)
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
@@ -8005,22 +8085,23 @@ types and interfaces and translates so that the X server can use them.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1q5wrqnhhs6r49p8yvkw1pl0cnsd4rndxy4h5lvdydwgf1civcwc"))))
+                "1q5wrqnhhs6r49p8yvkw1pl0cnsd4rndxy4h5lvdydwgf1civcwc"))
+              (patches (search-patches "pipewire-0.2.7-fno-common.patch"))))
     (build-system meson-build-system)
     (arguments
      '(#:configure-flags '("-Dsystemd=false")))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("alsa-lib" ,alsa-lib)
-       ("dbus" ,dbus)
-       ("eudev" ,eudev)
-       ("ffmpeg" ,ffmpeg)
-       ("gstreamer" ,gstreamer)
-       ("gst-plugins-base" ,gst-plugins-base)
-       ("libva" ,libva)
-       ("sbc" ,sbc)
-       ("sdl2" ,sdl2)))
+     (list alsa-lib
+           dbus
+           eudev
+           ffmpeg
+           gstreamer
+           gst-plugins-base
+           libva
+           sbc
+           sdl2))
     (home-page "https://pipewire.org/")
     (synopsis "Server and user space API to deal with multimedia pipelines")
     (description
@@ -8038,7 +8119,7 @@ of Linux application development.")
   (package
     (inherit pipewire)
     (name "pipewire")
-    (version "0.3.29")
+    (version "0.3.40")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -8047,20 +8128,23 @@ of Linux application development.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "16jjxcnahxqfcawz77ywx837ybhwzcivn7hgqb9cmlp1y2syy8gk"))))
+                "1c6gni23l5w3ghwqnfs712kjj6l1825f0ib8a6r2xc1ymr0sx3kr"))))
     (arguments
      '(#:configure-flags
        (list (string-append "-Dudevrulesdir=" (assoc-ref %outputs "out")
                             "/lib/udev/rules.d")
-             "-Dsystemd=disabled")
+             "-Dsystemd=disabled"
+             "-Dsession-managers=[]")
        #:phases
        (modify-phases %standard-phases
          ;; Skip shrink-runpath, otherwise validate-runpath fails.
          (delete 'shrink-runpath))))
     (inputs
      (append (package-inputs pipewire)
-             `(("bluez" ,bluez)
+             `(("avahi" ,avahi)
+               ("bluez" ,bluez)
                ("jack" ,jack-2)
+               ("ldacbt" ,ldacbt)
                ("pulseaudio" ,pulseaudio)
                ("vulkan-loader" ,vulkan-loader)
                ("vulkan-headers" ,vulkan-headers))))))
@@ -8090,7 +8174,7 @@ of Linux application development.")
                (("/usr/bin/dbus-daemon") (which "dbus-daemon")))
              #t)))))
     (inputs
-     `(("dbus" ,dbus)))
+     (list dbus))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("libtool" ,libtool)
@@ -8118,11 +8202,9 @@ platforms, it is not limited to resource-constrained systems.")
                 "0l0p6y2zrd9hgd015dhafjmpcj7waz762n6wf5ws1xlwcwrwkr2l"))))
     (build-system gnu-build-system)
     (inputs
-     `(("liburcu" ,liburcu)
-       ("numactl" ,numactl)))
+     (list liburcu numactl))
     (native-inputs
-     `(("python" ,python-3)
-       ("pkg-config", pkg-config)))
+     (list python-3 pkg-config))
     (home-page "https://lttng.org/")
     (synopsis "LTTng userspace tracer libraries")
     (description "The user space tracing library, liblttng-ust, is the LTTng
@@ -8169,12 +8251,9 @@ to ring buffers shared with a consumer daemon.")
     ;; bindings.  We don't put it in the inputs, because the rest of the tools
     ;; can work without it.
     (inputs
-     `(("liburcu" ,liburcu)
-       ("popt" ,popt)
-       ("numactl" ,numactl)))
+     (list liburcu popt numactl))
     (propagated-inputs
-     `(("kmod" ,kmod)
-       ("module-init-tools" ,module-init-tools)))
+     (list kmod module-init-tools))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("perl" ,perl)
@@ -8224,13 +8303,13 @@ line for tracing control, a @code{lttng-ctl} library for tracing control and a
              (setenv "BABELTRACE_DEV_MODE" "1")
              (setenv "BABELTRACE_MINIMAL_LOG_LEVEL" "TRACE"))))))
     (inputs
-     `(("glib" ,glib)))
+     (list glib))
     ;; NOTE - elfutils is used for the LTTng debug information filter
     ;; component class.  This can be moved to `native-inputs` if
     ;; `--enable-debug-info` is replaced by `--disable-debug-info` in
     ;; `#:configure-flags`.
     (propagated-inputs
-     `(("elfutils" ,elfutils)))
+     (list elfutils))
     ;; NOTE - python-3 is set here for generating the bindings.  Users need to
     ;; install python-3 in their profile in order to use these bindings.
     (native-inputs
@@ -8266,6 +8345,11 @@ bindings, and the command-line tool @command{babeltrace2}.")
     (arguments
      ;; There are no automated tests.
      '(#:tests? #f))
+    ;; This variant of binutils is used for the 64 bit support needed to
+    ;; assemble the `purgatory/arch/i386/compat_x86_64.S' program on i686-linux.
+    (native-inputs (list (make-ld-wrapper "ld-wrapper"
+                                          #:binutils binutils-next)
+                         binutils-next))
     (home-page "https://projects.horms.net/projects/kexec/")
     (synopsis "Tools for booting directly into different kernels")
     (description "This package provides the @code{kexec} program and ancillary
@@ -8323,11 +8407,10 @@ persistent over reboots.")
          "0ilnnm4q22f8fagwp8kb37licy4ks861i2iqh2djsypqhnxvx3fv"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (propagated-inputs
      ;; In Requires.private of libbpf.pc.
-     `(("libelf" ,libelf)
-       ("zlib" ,zlib)))
+     (list libelf zlib))
     (arguments
      `(#:tests? #f                      ; no tests
        #:make-flags
@@ -8367,8 +8450,7 @@ headers.")
          "1367c0bzrpclvjvmk0sxgi49rh7j2f9izqk5a7g3yvawh1fmvvjh"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("bison" ,bison)
-       ("flex" ,flex)))
+     (list bison flex))
     (inputs
      `(("clang-toolchain" ,clang-toolchain)
        ("libbpf" ,(package-source libbpf))
@@ -8415,7 +8497,7 @@ headers.")
                 (lambda (python-executable)
                   (format #t "Wrapping: ~A.~%" python-executable)
                   (wrap-program python-executable
-                    `("PYTHONPATH" ":" prefix
+                    `("GUIX_PYTHONPATH" ":" prefix
                       (,(string-append lib
                                        "/python"
                                        ,(version-major+minor
@@ -8449,14 +8531,9 @@ and above.")
        (patches (search-patches "bpftrace-disable-bfd-disasm.patch"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("bison" ,bison)
-       ("flex" ,flex)))
+     (list bison flex))
     (inputs
-     `(("bcc" ,bcc)
-       ("clang-toolchain" ,clang-toolchain)
-       ("elfutils" ,elfutils)
-       ("libbpf" ,libbpf)
-       ("linux-libre-headers" ,linux-libre-headers)))
+     (list bcc clang-toolchain elfutils libbpf linux-libre-headers))
     (arguments
      `(#:tests? #f ;Tests require googletest sources.
        #:configure-flags
@@ -8517,9 +8594,9 @@ receiving.  It is dedicated to the PL011 UART of the Raspberry Pi.")
         (base32 "0l8pcaym6057hq3a4zwnk53p5y6xg1m3d3c83wn18h5nmnm4am8a"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libmnl" ,libmnl)))
+     (list libmnl))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (arguments
      `(#:configure-flags '("--disable-static"
                            "--with-kmod=no")))
@@ -8593,13 +8670,10 @@ kernel side implementation.")
         (base32 "1ygaw69pfz2hfzw9cqzg9rfnjzrdbfkwsiinz6qs2h56dssjz0y9"))))
     (build-system gnu-build-system)
     (inputs
-     `(("lz4" ,lz4)
-       ("libuuid" ,util-linux "lib")))
+     (list lz4
+           `(,util-linux "lib")))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf automake libtool pkg-config))
     (home-page "https://git.kernel.org/pub/scm/linux/kernel/git/xiang/erofs-utils.git/")
     (synopsis "User-space tools for the EROFS file system")
     (description
@@ -8621,10 +8695,8 @@ provides user-space tools for creating EROFS file systems.")
        (file-name (git-file-name name version))
        (sha256
         (base32 "12ih96jwmr7imp9zyckf9zjqqm5ra1kv5fj6kbw71y6yl31069dz"))))
-    (native-inputs `(("autoconf" ,autoconf)
-                     ("automake" ,automake)
-                     ("libtool" ,libtool)))
-    (inputs `(("sqlite" ,sqlite)))
+    (native-inputs (list autoconf automake libtool))
+    (inputs (list sqlite))
     (arguments
      `(#:configure-flags
        (list "--enable-all"
@@ -8675,12 +8747,12 @@ through standard log mechanisms like syslog.")
           "--enable-bindings-cxx"
           "--enable-bindings-python")))
     (native-inputs
-      `(("automake" ,automake)
-        ("autoconf" ,autoconf)
-        ("libtool" ,libtool)
-        ("autoconf-archive" ,autoconf-archive)
-        ("pkg-config" ,pkg-config)
-        ("python" ,python-3)))
+      (list automake
+            autoconf
+            libtool
+            autoconf-archive
+            pkg-config
+            python-3))
     (synopsis "Interact with the Linux GPIO character device")
     (description
      "This package provides a C library with C++/Python bindings and

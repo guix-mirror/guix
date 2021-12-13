@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
+;;; Copyright © 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,7 +21,8 @@
   #:use-module (guix search-paths)
   #:use-module (guix store)
   #:use-module (guix utils)
-  #:use-module (guix derivations)
+  #:use-module (guix gexp)
+  #:use-module (guix monads)
   #:use-module (guix packages)
   #:use-module (guix build-system)
   #:use-module (guix build-system gnu)
@@ -34,62 +36,51 @@
     (guix build syscalls)
     ,@%gnu-build-system-modules))
 
-(define* (android-ndk-build store name inputs
-                      #:key
-                      (tests? #t)
-                      (test-target #f)
-                      (phases '(@ (guix build android-ndk-build-system)
-                                  %standard-phases))
-                      (outputs '("out"))
-                      (make-flags ''())
-                      (search-paths '())
-                      (system (%current-system))
-                      (guile #f)
-                      (imported-modules %android-ndk-build-system-modules)
-                      (modules '((guix build android-ndk-build-system)
-                                 (guix build utils))))
+(define* (android-ndk-build name inputs
+                            #:key
+                            source
+                            (tests? #t)
+                            (test-target #f)
+                            (phases '%standard-phases)
+                            (outputs '("out"))
+                            (make-flags #~'())
+                            (search-paths '())
+                            (system (%current-system))
+                            (guile #f)
+                            (imported-modules %android-ndk-build-system-modules)
+                            (modules '((guix build android-ndk-build-system)
+                                       (guix build utils))))
   "Build SOURCE using Android NDK, and with INPUTS."
   (define builder
-    `(begin
-       (use-modules ,@modules)
-       (android-ndk-build #:name ,name
-                    #:source ,(match (assoc-ref inputs "source")
-                                (((? derivation? source))
-                                 (derivation->output-path source))
-                                ((source)
-                                 source)
-                                (source
-                                 source))
-                    #:system ,system
-                    #:test-target ,test-target
-                    #:tests? ,tests?
-                    #:phases ,phases
-                    #:make-flags (cons* "-f"
-                                         ,(string-append
-                                          (derivation->output-path
-                                           (car (assoc-ref inputs "android-build")))
-                                          "/share/android/build/core/main.mk")
-                                         ,make-flags)
-                    #:outputs %outputs
-                    #:search-paths ',(map search-path-specification->sexp
-                                          search-paths)
-                    #:inputs %build-inputs)))
+    (with-imported-modules imported-modules
+      #~(begin
+          (use-modules #$@(sexp->gexp modules))
 
-  (define guile-for-build
-    (match guile
-      ((? package?)
-       (package-derivation store guile system #:graft? #f))
-      (#f                                         ; the default
-       (let* ((distro (resolve-interface '(gnu packages commencement)))
-              (guile  (module-ref distro 'guile-final)))
-         (package-derivation store guile system #:graft? #f)))))
+          (android-ndk-build #:name #$name
+                             #:source #+source
+                             #:system #$system
+                             #:test-target #$test-target
+                             #:tests? #$tests?
+                             #:phases #$phases
+                             #:bootstrap-scripts '() ;no autotools machinery
+                             #:make-flags
+                             (cons* "-f"
+                                    #$(file-append (gexp-input-thing
+                                                    (car (assoc-ref inputs
+                                                                    "android-build")))
+                                                   "/share/android/build/core/main.mk")
+                                    #$make-flags)
+                             #:outputs #$(outputs->gexp outputs)
+                             #:search-paths '#$(sexp->gexp
+                                                (map search-path-specification->sexp
+                                                     search-paths))
+                             #:inputs #$(input-tuples->gexp inputs)))))
 
-  (build-expression->derivation store name builder
-                                #:inputs inputs
-                                #:system system
-                                #:modules imported-modules
-                                #:outputs outputs
-                                #:guile-for-build guile-for-build))
+  (mlet %store-monad  ((guile (package->derivation (or guile (default-guile))
+                                                   system #:graft? #f)))
+    (gexp->derivation name builder
+                      #:system system
+                      #:guile-for-build guile)))
 
 (define* (lower name
                 #:key source inputs native-inputs outputs system target
@@ -98,7 +89,7 @@
   "Return a bag for NAME."
 
   (define private-keywords
-    '(#:source #:target #:inputs #:native-inputs #:outputs))
+    '(#:target #:inputs #:native-inputs #:outputs))
 
   (and (not target) ;; TODO: support cross-compilation
        (bag

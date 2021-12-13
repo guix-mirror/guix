@@ -6,9 +6,10 @@
 ;;; Copyright © 2017 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 ison <ison@airmail.cc>
-;;; Copyright © 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2019, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Meiyo Peng <meiyo@riseup.net>
+;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -76,14 +77,13 @@
                (base32
                 "1rfira3lx8v6scz1aq69925j4vslpp36bmgrrzcfby2c60q2c155"))))
     (build-system gnu-build-system)
-    (inputs `(("glib" ,glib)
-              ("gtk+" ,gtk+-2)))
-    (native-inputs `(("intltool"   ,intltool)
-                     ("glib"       ,glib "bin") ; for gtester
-                     ("libtool"    ,libtool)
-                     ("menu-cache" ,menu-cache)
-                     ("pkg-config" ,pkg-config)
-                     ("vala"       ,vala)))
+    (inputs (list glib gtk+-2))
+    (native-inputs (list intltool
+                         `(,glib "bin") ; for gtester
+                         libtool
+                         menu-cache
+                         pkg-config
+                         vala))
     (synopsis "File management support (core library)")
     (description "LibFM provides file management functions built on top of
 Glib/GIO giving a higher-level API.")
@@ -94,10 +94,8 @@ Glib/GIO giving a higher-level API.")
   (package (inherit libfm)
     (name "libfm-extra")
     (arguments '(#:configure-flags '("--with-extra-only")))
-    (inputs `(("glib" ,glib)))
-    (native-inputs `(("intltool"   ,intltool)
-                     ("libtool"    ,libtool)
-                     ("pkg-config" ,pkg-config)))
+    (inputs (list glib))
+    (native-inputs (list intltool libtool pkg-config))
     (synopsis "File management support (extra library)")
     (description "This package contains a stand-alone library which extends the
 libFM file management library.")))
@@ -114,9 +112,8 @@ libFM file management library.")))
        (sha256
         (base32 "0f4bjaamfxxdr9civvy55pa6vv9dx1hjs522gjbbgx7yp1cdh8kj"))))
     (build-system gnu-build-system)
-    (inputs `(("gtk+" ,gtk+-2)))
-    (native-inputs `(("intltool"   ,intltool)
-                     ("pkg-config" ,pkg-config)))
+    (inputs (list gtk+-2))
+    (native-inputs (list intltool pkg-config))
     (synopsis "LXDE GTK+ theme switcher")
     (description "LXAppearance is a desktop-independent GTK+ theme switcher
 able to change themes, icons, and fonts used by GTK+ applications.")
@@ -148,10 +145,8 @@ able to change themes, icons, and fonts used by GTK+ applications.")
                (("(\"|')xrandr\"" _ match)
                 (string-append match (which "xrandr") "\"")))
              #t)))))
-    (inputs `(("gtk+" ,gtk+-2)
-              ("xrandr" ,xrandr)))
-    (native-inputs `(("intltool"   ,intltool)
-                     ("pkg-config" ,pkg-config)))
+    (inputs (list gtk+-2 xrandr))
+    (native-inputs (list intltool pkg-config))
     (synopsis "LXDE monitor configuration tool")
     (description "LXRandR is a very basic monitor configuration tool.  It
 relies on the X11 resize-and-rotate (RandR) extension but doesn't aim to be a
@@ -175,9 +170,8 @@ or external monitor.")
                (base32
                 "0b2fxg8jjjpk219gh7qa18g45365598nd2bq7rrq0bdvqjdxy5i2"))))
     (build-system gnu-build-system)
-    (inputs `(("gtk+" ,gtk+-2)))
-    (native-inputs `(("intltool"   ,intltool)
-                     ("pkg-config" ,pkg-config)))
+    (inputs (list gtk+-2))
+    (native-inputs (list intltool pkg-config))
     (synopsis "LXDE task manager")
     (description "LXTask is a lightweight task manager derived from Xfce task
 manager with all dependencies on Xfce removed.  LXTask is based on the GTK+
@@ -198,10 +192,8 @@ toolkit.  It allows users to monitor and control of running processes.")
                (base32
                 "1124pghrhnx6q4391ri8nvi6bsmvbj1dx81an08mird8jf2b2rii"))))
     (build-system gnu-build-system)
-    (inputs `(("gtk+" ,gtk+-2)
-              ("vte"  ,vte/gtk+-2)))
-    (native-inputs `(("intltool"   ,intltool)
-                     ("pkg-config" ,pkg-config)))
+    (inputs (list gtk+-2 vte/gtk+-2))
+    (native-inputs (list intltool pkg-config))
     (synopsis "LXDE terminal emulator")
     (description "LXTerminal is a VTE-based terminal emulator.  It supports
 multiple tabs and has only minimal dependencies thus being completely
@@ -225,7 +217,9 @@ performance, all instances of the terminal are sharing a single process.")
     (build-system gnu-build-system)
     (inputs `(("glib"  ,glib)
               ("libfm" ,libfm-extra)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs (list pkg-config))
+    (arguments
+     `(#:configure-flags '("CFLAGS=-fcommon")))
     (synopsis "LXDE implementation of the freedesktop menu's cache")
     (description "Menu-cache is a library creating and utilizing caches to
 speed up the access to freedesktop.org defined application menus.")
@@ -245,15 +239,11 @@ speed up the access to freedesktop.org defined application menus.")
                (base32
                 "1xqc2k2jh165mm81xg0ghxx0ml1s3rhh4ndvbzkcri4kfhj7pjql"))))
     (build-system gnu-build-system)
-    (inputs `(("gtk+"   ,gtk+-2)
-              ("gvfs"   ,gvfs)          ; for trash and mount support
-              ("libfm"  ,libfm)
-              ("libx11" ,libx11)))
-    (native-inputs `(("intltool"   ,intltool)
-                     ("libtool"    ,libtool)
-                     ("pkg-config" ,pkg-config)))
+    (inputs (list gtk+-2 gvfs ; for trash and mount support
+                  libfm libx11))
+    (native-inputs (list intltool libtool pkg-config))
     (propagated-inputs
-     `(("lxmenu-data" ,lxmenu-data)))   ; for "Open With..." application list
+     (list lxmenu-data))   ; for "Open With..." application list
     (synopsis "LXDE file manager")
     (description "PCMan is a lightweight GTK+ based file manager, compliant
 with freedesktop.org standard.")
@@ -293,33 +283,33 @@ with freedesktop.org standard.")
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("bash" ,bash)
-       ("btrfs-progs" ,btrfs-progs)
-       ("cairo" ,cairo)
-       ("coreutils" ,coreutils)
-       ("curlftpfs" ,curlftpfs)
-       ("e2fsprogs" ,e2fsprogs)
-       ("eudev" ,eudev)
-       ("fakeroot" ,fakeroot)
-       ("ffmpegthumbnailer" ,ffmpegthumbnailer)
-       ("fsarchiver" ,fsarchiver)
-       ("fuseiso" ,fuseiso)
-       ("glib" ,glib)
-       ("gphotofs" ,gphotofs)
-       ("gtk+" ,gtk+)
-       ("ifuse" ,ifuse)
-       ("jmtpfs" ,jmtpfs)
-       ("ktsuss" ,ktsuss)
-       ("libx11" ,libx11)
-       ("lsof" ,lsof)
-       ("ntfs-3g" ,ntfs-3g)
-       ("pango" ,pango)
-       ("procps" ,procps)
-       ("shared-mime-info" ,shared-mime-info)
-       ("startup-notification" ,startup-notification)
-       ("udevil" ,udevil)
-       ("util-linux" ,util-linux)
-       ("wget" ,wget)))
+     (list bash
+           btrfs-progs
+           cairo
+           coreutils
+           curlftpfs
+           e2fsprogs
+           eudev
+           fakeroot
+           ffmpegthumbnailer
+           fsarchiver
+           fuseiso
+           glib
+           gphotofs
+           gtk+
+           ifuse
+           jmtpfs
+           ktsuss
+           libx11
+           lsof
+           ntfs-3g
+           pango
+           procps
+           shared-mime-info
+           startup-notification
+           udevil
+           util-linux
+           wget))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -370,8 +360,7 @@ with freedesktop.org standard.")
                #t)))
          (add-after 'patch-share-dirs 'patch-mime-dirs
            (lambda* (#:key inputs #:allow-other-keys)
-             (let* ((mime (string-append (assoc-ref inputs "shared-mime-info")
-                                         "/share/mime")))
+             (let* ((mime (search-input-directory inputs "/share/mime")))
                (with-directory-excursion "src"
                  (substitute* '("mime-type/mime-type.c" "ptk/ptk-file-menu.c")
                    (("/usr(/local)?/share/mime") mime)))
@@ -398,10 +387,9 @@ with freedesktop.org standard.")
                 "terminal_su=/run/setuid-programs/su")
                (("#graphical_su=/usr/bin/gksu")
                 (string-append "graphical_su="
-                               (string-append (assoc-ref inputs "ktsuss")
-                                              "/bin/ktsuss"))))
-             #t)))
+                               (search-input-file inputs "/bin/ktsuss")))))))
        #:configure-flags (list
+                          "CFLAGS=-fcommon"
                           (string-append "--with-preferable-sudo="
                                          (assoc-ref %build-inputs "ktsuss")
                                          "/bin/ktsuss")
@@ -434,8 +422,7 @@ customizable menu system, and Bash integration.")
          "1f5sh2dvb3pdnjlcsyzq9543ck2jsqizkx3204cr22zm5s6j3qwz"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)))
+     (list pkg-config intltool))
     (synopsis "Freedesktop.org desktop menus for LXDE")
     (description
      "Lxmenu-data provides files required to build freedesktop.org
@@ -457,7 +444,7 @@ menu spec-compliant desktop menus for LXDE.")
          "0v4i6x86fr2hbx4fb2si7y2qzmj7h6hcjwaifnin18r8kwwvgl73"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (synopsis "LXDE default icon theme based on nuoveXT2")
     (description
      "Lxde-icon-theme provides an default icon theme for LXDE.")
@@ -489,14 +476,11 @@ menu spec-compliant desktop menus for LXDE.")
                                           "/bin/lxsession")))
                         #t))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)
-       ("lxmenu-data" ,lxmenu-data)
-       ("lxde-icon-theme" ,lxde-icon-theme)))
+     (list pkg-config intltool lxmenu-data lxde-icon-theme))
     (inputs
-     `(("lxsession" ,lxsession)
-       ;; ("lxlock" ,lxlock) ;for 'lxde-screenlock.desktop'
-       ))
+     (list lxsession
+           ;; ("lxlock" ,lxlock) ;for 'lxde-screenlock.desktop'
+           ))
     (synopsis "Common files of the LXDE Desktop")
     (description
      "Lxde-common provides common files of the LXDE Desktop.")
@@ -517,10 +501,9 @@ menu spec-compliant desktop menus for LXDE.")
          "123f3yn4rp1w5b3n5aj3ad9snkxab29qkrs7bcvf5bx4cn57g3sf"))))
     (build-system gnu-build-system)
     (inputs
-     `(("gtk+-2" ,gtk+-2)))
+     (list gtk+-2))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)))
+     (list pkg-config intltool))
     (synopsis "Tool for mouse and keyboard configuration in LXDE")
     (description
      "Lxinput provides a small program to configure keyboard and mouse
@@ -567,14 +550,13 @@ in LXDE.")
      `(("gtk+-2" ,gtk+-2)
        ("polkit" ,polkit)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)
-       ("docbook-xsl" ,docbook-xsl)
-       ("vala" ,vala)
-
-       ;; For bootstrapping.
-       ("autoconf" ,autoconf)
-       ("automake" ,automake)))
+     (list pkg-config
+           intltool
+           docbook-xsl
+           vala
+           ;; For bootstrapping.
+           autoconf
+           automake))
     (synopsis "Lightweight X11 session manager")
     (description
      "Lxsession provides an lightweight X11 session manager.")
@@ -618,14 +600,9 @@ in LXDE.")
        ("libx11" ,libx11)
        ("wireless-tools" ,wireless-tools)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)
-       ("docbook-xml" ,docbook-xml)
-       ("gettext-minimal" ,gettext-minimal)))
+     (list pkg-config intltool docbook-xml gettext-minimal))
     (propagated-inputs
-     `(("lxmenu-data" ,lxmenu-data)
-       ("libfm" ,libfm)
-       ("menu-cache" ,menu-cache)))
+     (list lxmenu-data libfm menu-cache))
     (synopsis "X11 Desktop panel for LXDE")
     (description
      "Lxpanel provides an X11 desktop panel for LXDE.")
@@ -643,23 +620,23 @@ in LXDE.")
      ;; TODO:
      ;; lxshortcut, lxsession-edit
      ;; lxappearance-obconf
-     `(("menu-cache" ,menu-cache)
-       ("gpicview" ,gpicview)
-       ("leafpad" ,leafpad)
-       ("lxappearance" ,lxappearance)
-       ("lxde-icon-theme" ,lxde-icon-theme)
-       ("lxde-common" ,lxde-common)
-       ("lxmenu-data" ,lxmenu-data)
-       ("lxpanel" ,lxpanel)
-       ("lxrandr" ,lxrandr)
-       ("lxsession" ,lxsession)
-       ("libfm" ,libfm)
-       ("libfm-extra" ,libfm-extra)
-       ("lxtask" ,lxtask)
-       ("lxterminal" ,lxterminal)
-       ("pcmanfm" ,pcmanfm)
-       ("openbox" ,openbox)
-       ("obconf" ,obconf)))
+     (list menu-cache
+           gpicview
+           leafpad
+           lxappearance
+           lxde-icon-theme
+           lxde-common
+           lxmenu-data
+           lxpanel
+           lxrandr
+           lxsession
+           libfm
+           libfm-extra
+           lxtask
+           lxterminal
+           pcmanfm
+           openbox
+           obconf))
     (synopsis "Lightweight X11 Desktop Environment")
     (description
      "LXDE, which stands for Lightweight X11 Desktop Environment, is a

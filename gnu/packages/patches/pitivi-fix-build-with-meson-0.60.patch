@@ -1,0 +1,46 @@
+From b54da52289f9578d7021f466d731cfd48330e5fe Mon Sep 17 00:00:00 2001
+From: Leo Famulari <leo@famulari.name>
+Date: Thu, 25 Nov 2021 18:56:44 -0500
+Subject: [PATCH] Fix build with Meson 0.60.
+
+https://gitlab.gnome.org/GNOME/pitivi/-/issues/2593
+
+* data/meson.build: Adjust to changes in Meson 0.60.
+---
+ data/meson.build | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/data/meson.build b/data/meson.build
+index 2ea82cf..60d2316 100644
+--- a/data/meson.build
++++ b/data/meson.build
+@@ -6,7 +6,7 @@ install_subdir('audiopresets', install_dir: pkgdatadir)
+ install_subdir('videopresets', install_dir: pkgdatadir)
+ install_subdir('gstpresets', install_dir: pkgdatadir)
+ 
+-desktop_file = i18n.merge_file('org.pitivi.Pitivi.desktop',
++desktop_file = i18n.merge_file(
+     type: 'desktop',
+     output : 'org.pitivi.Pitivi.desktop',
+     input : 'org.pitivi.Pitivi.desktop.in',
+@@ -25,7 +25,7 @@ if desktop_file_validate.found()
+   )
+ endif
+ 
+-appdata_file = i18n.merge_file('org.pitivi.Pitivi.appdata.xml',
++appdata_file = i18n.merge_file(
+     type: 'xml',
+     output : 'org.pitivi.Pitivi.appdata.xml',
+     input : 'org.pitivi.Pitivi.appdata.xml.in',
+@@ -43,7 +43,7 @@ if appstream_util.found()
+   )
+ endif
+ 
+-i18n.merge_file('org.pitivi.Pitivi-mime.xml',
++i18n.merge_file(
+     output : 'org.pitivi.Pitivi-mime.xml',
+     input : 'org.pitivi.Pitivi-mime.xml.in',
+     po_dir: podir,
+-- 
+2.33.1
+

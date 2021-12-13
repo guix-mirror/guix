@@ -4,7 +4,8 @@
 ;;; Copyright © 2015, 2016, 2019, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
-;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2020, 2021 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,6 +24,7 @@
 
 (define-module (gnu packages gdb)
   #:use-module (gnu packages)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages hurd)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages readline)
@@ -34,65 +36,74 @@
   #:use-module (gnu packages pretty-print)
   #:use-module (gnu packages python)
   #:use-module (gnu packages pkg-config)
+  #:use-module (guix download)
   #:use-module ((guix licenses) #:select (gpl3+))
   #:use-module (guix packages)
-  #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module ((guix build utils) #:select (alist-replace))
   #:use-module (srfi srfi-1))
 
-(define-public gdb-10
+(define-public gdb-11
   (package
     (name "gdb")
-    (version "10.2")
+    (version "11.1")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "mirror://gnu/gdb/gdb-"
-                                 version ".tar.xz"))
-             (sha256
-              (base32
-               "0aag1c0fw875pvhjg1qp7x8pf6gf92bjv5gcic5716scacyj58da"))))
-
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/gdb/gdb-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "151z6d0265hv9cgx9zqqa4bd6vbp20hrljhd6bxl7lr0gd0crkyc"))))
     (build-system gnu-build-system)
+    (outputs '("out" "debug"))
     (arguments
-     `(#:tests? #f ; FIXME "make check" fails on single-processor systems.
-
+     `(#:tests? #f                      ;FIXME: 217 unexpected failures
        #:out-of-source? #t
-
        #:modules ((srfi srfi-1)
                   ,@%gnu-build-system-modules)
-
        #:phases (modify-phases %standard-phases
-                  (add-after
-                   'configure 'post-configure
-                   (lambda _
-                     (for-each patch-makefile-SHELL
-                               (find-files "." "Makefile\\.in"))
-                     #t))
-                  (add-after
-                   'install 'remove-libs-already-in-binutils
-                   (lambda* (#:key native-inputs inputs outputs
-                             #:allow-other-keys)
-                     ;; Like Binutils, GDB installs libbfd, libopcodes, etc.
-                     ;; However, this leads to collisions when both are
-                     ;; installed, and really is none of its business,
-                     ;; conceptually.  So remove them.
-                     (let* ((binutils (or (assoc-ref inputs "binutils")
-                                          (assoc-ref native-inputs "binutils")))
-                            (out      (assoc-ref outputs "out"))
-                            (files1   (with-directory-excursion binutils
-                                        (append (find-files "lib")
-                                                (find-files "include"))))
-                            (files2   (with-directory-excursion out
-                                        (append (find-files "lib")
-                                                (find-files "include"))))
-                            (common   (lset-intersection string=?
-                                                         files1 files2)))
-                       (with-directory-excursion out
-                         (for-each delete-file common)
-                         #t)))))))
+                  (add-after 'unpack 'patch-paths
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (let ((sh (string-append (assoc-ref inputs "bash")
+                                               "/bin/sh")))
+                        (substitute* '("gdb/ser-pipe.c"
+                                       "gdbsupport/pathstuff.cc")
+                          (("\"/bin/sh\"")
+                           (format #f "~s" sh))))))
+                  ,@(if (hurd-target?)
+                        '((add-after 'unpack 'patch-gdb/hurd
+                            (lambda* (#:key inputs #:allow-other-keys)
+                              (let ((patch (assoc-ref inputs "hurd-build.patch")))
+                                (invoke "patch" "-p1" "--force" "-i" patch)))))
+                        '())
+                  (add-after 'configure 'post-configure
+                    (lambda _
+                      (for-each patch-makefile-SHELL
+                                (find-files "." "Makefile\\.in"))))
+                  (add-after 'install 'remove-libs-already-in-binutils
+                    (lambda* (#:key native-inputs inputs outputs
+                              #:allow-other-keys)
+                      ;; Like Binutils, GDB installs libbfd, libopcodes, etc.
+                      ;; However, this leads to collisions when both are
+                      ;; installed, and really is none of its business,
+                      ;; conceptually.  So remove them.
+                      (let* ((binutils (or (assoc-ref inputs "binutils")
+                                           (assoc-ref native-inputs "binutils")))
+                             (out      (assoc-ref outputs "out"))
+                             (files1   (with-directory-excursion binutils
+                                         (append (find-files "lib")
+                                             (find-files "include"))))
+                             (files2   (with-directory-excursion out
+                                         (append (find-files "lib")
+                                             (find-files "include"))))
+                             (common   (lset-intersection string=?
+                                                          files1 files2)))
+                        (with-directory-excursion out
+                          (for-each delete-file common))))))))
     (inputs
-     `(("expat" ,expat)
+     `(("bash" ,bash)
+       ("expat" ,expat)
        ("mpfr" ,mpfr)
        ("gmp" ,gmp)
        ("readline" ,readline)
@@ -106,18 +117,28 @@
        ("libxml2" ,libxml2)
 
        ;; The Hurd needs -lshouldbeinlibc.
-       ,@(if (hurd-target?) `(("hurd" ,hurd)) '())))
+       ,@(if (hurd-target?)
+             `(("hurd" ,hurd)
+               ("hurd-build.patch"
+                ,(search-patch "gdb-fix-gnu-nat-build.patch")))
+             '())))
     (native-inputs
-      `(("texinfo" ,texinfo)
-        ("dejagnu" ,dejagnu)
-        ("pkg-config" ,pkg-config)
-        ,@(if (hurd-target?)
-              ;; When cross-compiling from x86_64-linux, make sure to use a
-              ;; 32-bit MiG because we assume target i586-pc-gnu.
-              `(("mig" ,(if (%current-target-system)
-                            mig/32-bit
-                            mig)))
-              '())))
+     `(("texinfo" ,texinfo)
+       ("dejagnu" ,dejagnu)
+       ("pkg-config" ,pkg-config)
+       ,@(if (hurd-target?)
+             ;; When cross-compiling from x86_64-linux, make sure to use a
+             ;; 32-bit MiG because we assume target i586-pc-gnu.
+             `(("mig" ,(if (%current-target-system)
+                           mig/32-bit
+                           mig)))
+             '())))
+    ;; TODO: Add support for the GDB_DEBUG_FILE_DIRECTORY environment
+    ;; variable in GDB itself instead of relying on some glue code in
+    ;; the Guix-provided .gdbinit file.
+    (native-search-paths (list (search-path-specification
+                                (variable "GDB_DEBUG_FILE_DIRECTORY")
+                                (files '("lib/debug")))))
     (home-page "https://www.gnu.org/software/gdb/")
     (synopsis "The GNU debugger")
     (description
@@ -128,31 +149,13 @@ the program is running to try to fix bugs.  It can be used to debug programs
 written in C, C++, Ada, Objective-C, Pascal and more.")
     (license gpl3+)))
 
-;; This version of GDB is required by some of the Rust compilers, see
-;; <https://bugs.gnu.org/37810>.
-(define-public gdb-8.2
-  (package
-    (inherit gdb-10)
-    (version "8.2.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnu/gdb/gdb-"
-                                  version ".tar.xz"))
-              (sha256
-               (base32
-                "00i27xqawjv282a07i73lp1l02n0a3ywzhykma75qg500wll6sha"))))
-    (inputs
-     (alist-replace "guile" (list guile-2.0)
-                    (package-inputs gdb-10)))))
-
 (define-public gdb
   ;; This is the fixed version that packages depend on.  Update it rarely
   ;; enough to avoid massive rebuilds.
-  gdb-10)
+  gdb-11)
 
 (define-public gdb-minimal
-  (package/inherit
-   gdb
-   (name "gdb-minimal")
-   (inputs (fold alist-delete (package-inputs gdb)
-                 '("libxml2" "ncurses" "python-wrapper" "source-highlight")))))
+  (package/inherit gdb
+    (name "gdb-minimal")
+    (inputs (fold alist-delete (package-inputs gdb)
+                  '("libxml2" "ncurses" "python-wrapper" "source-highlight")))))

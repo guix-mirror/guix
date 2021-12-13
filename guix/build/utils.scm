@@ -1,10 +1,13 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2015, 2018 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015, 2018, 2021 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -49,9 +52,14 @@
             package-name->name+version
             parallel-job-count
 
+            compressor
+            tarball?
+            %xz-parallel-args
+
             directory-exists?
             executable-file?
             symbolic-link?
+            call-with-temporary-output-file
             call-with-ascii-input-file
             elf-file?
             ar-file?
@@ -72,6 +80,11 @@
             search-path-as-string->list
             list->search-path-as-string
             which
+            search-input-file
+            search-input-directory
+            search-error?
+            search-error-path
+            search-error-file
 
             every*
             alist-cons-before
@@ -89,7 +102,7 @@
             patch-/usr/bin/file
             fold-port-matches
             remove-store-references
-            wrapper?
+            wrapped-program?
             wrap-program
             wrap-script
 
@@ -134,12 +147,39 @@
 
 
 ;;;
+;;; Compression helpers.
+;;;
+
+(define (compressor file-name)
+  "Return the name of the compressor package/binary used to compress or
+decompress FILE-NAME, based on its file extension, else false."
+  (cond ((string-suffix? "gz"  file-name)  "gzip")
+        ((string-suffix? "Z"   file-name)  "gzip")
+        ((string-suffix? "bz2" file-name)  "bzip2")
+        ((string-suffix? "lz"  file-name)  "lzip")
+        ((string-suffix? "zip" file-name)  "unzip")
+        ((string-suffix? "xz"  file-name)  "xz")
+        (else #f)))                ;no compression used/unknown file extension
+
+(define (tarball? file-name)
+  "True when FILE-NAME has a tar file extension."
+  (string-match "\\.(tar(\\..*)?|tgz|tbz)$" file-name))
+
+(define (%xz-parallel-args)
+  "The xz arguments required to enable bit-reproducible, multi-threaded
+compression."
+  (list "--memlimit=50%"
+        (format #f "--threads=~a" (max 2 (parallel-job-count)))))
+
+
+;;;
 ;;; Directories.
 ;;;
 
 (define (%store-directory)
   "Return the directory name of the store."
-  (or (getenv "NIX_STORE")
+  (or (getenv "NIX_STORE_DIR")          ;outside of builder
+      (getenv "NIX_STORE")              ;inside builder, set by the daemon
       "/gnu/store"))
 
 (define (store-file-name? file)
@@ -196,6 +236,22 @@ introduce the version part."
 (define (symbolic-link? file)
   "Return #t if FILE is a symbolic link (aka. \"symlink\".)"
   (eq? (stat:type (lstat file)) 'symlink))
+
+(define (call-with-temporary-output-file proc)
+  "Call PROC with a name of a temporary file and open output port to that
+file; close the file and delete it when leaving the dynamic extent of this
+call."
+  (let* ((directory (or (getenv "TMPDIR") "/tmp"))
+         (template  (string-append directory "/guix-file.XXXXXX"))
+         (out       (mkstemp! template)))
+    (dynamic-wind
+      (lambda ()
+        #t)
+      (lambda ()
+        (proc template out))
+      (lambda ()
+        (false-if-exception (close out))
+        (false-if-exception (delete-file template))))))
 
 (define (call-with-ascii-input-file file proc)
   "Open FILE as an ASCII or binary file, and pass the resulting port to
@@ -322,11 +378,13 @@ name."
                            #:key
                            (log (current-output-port))
                            (follow-symlinks? #f)
-                           keep-mtime?)
+                           (copy-file copy-file)
+                           keep-mtime? keep-permissions?)
   "Copy SOURCE directory to DESTINATION.  Follow symlinks if FOLLOW-SYMLINKS?
-is true; otherwise, just preserve them.  When KEEP-MTIME? is true, keep the
-modification time of the files in SOURCE on those of DESTINATION.  Write
-verbose output to the LOG port."
+is true; otherwise, just preserve them.  Call COPY-FILE to copy regular files.
+When KEEP-MTIME? is true, keep the modification time of the files in SOURCE on
+those of DESTINATION.  When KEEP-PERMISSIONS? is true, preserve file
+permissions.  Write verbose output to the LOG port."
   (define strip-source
     (let ((len (string-length source)))
       (lambda (file)
@@ -343,16 +401,21 @@ verbose output to the LOG port."
                              (symlink target dest)))
                           (else
                            (copy-file file dest)
-                           (when keep-mtime?
-                             (set-file-time dest stat))))))
+                           (when keep-permissions?
+                             (chmod dest (stat:perms stat)))))
+                        (when keep-mtime?
+                          (set-file-time dest stat))))
                     (lambda (dir stat result)     ; down
                       (let ((target (string-append destination
                                                    (strip-source dir))))
-                        (mkdir-p target)
-                        (when keep-mtime?
-                          (set-file-time target stat))))
+                        (mkdir-p target)))
                     (lambda (dir stat result)     ; up
-                      result)
+                      (let ((target (string-append destination
+                                                   (strip-source dir))))
+                        (when keep-mtime?
+                          (set-file-time target stat))
+                        (when keep-permissions?
+                          (chmod target (stat:perms stat)))))
                     (const #t)                    ; skip
                     (lambda (file stat errno result)
                       (format (current-error-port) "i/o error: ~a: ~a~%"
@@ -365,6 +428,16 @@ verbose output to the LOG port."
                         stat
                         lstat)))
 
+(define-syntax-rule (warn-on-error expr file)
+  (catch 'system-error
+    (lambda ()
+      expr)
+    (lambda args
+      (format (current-error-port)
+              "warning: failed to delete ~a: ~a~%"
+              file (strerror
+                    (system-error-errno args))))))
+
 (define* (delete-file-recursively dir
                                   #:key follow-mounts?)
   "Delete DIR recursively, like `rm -rf', without following symlinks.  Don't
@@ -375,10 +448,10 @@ errors."
                         (or follow-mounts?
                             (= dev (stat:dev stat))))
                       (lambda (file stat result)   ; leaf
-                        (delete-file file))
+                        (warn-on-error (delete-file file) file))
                       (const #t)                   ; down
                       (lambda (dir stat result)    ; up
-                        (rmdir dir))
+                        (warn-on-error (rmdir dir) dir))
                       (const #t)                   ; skip
                       (lambda (file stat errno result)
                         (format (current-error-port)
@@ -545,6 +618,40 @@ denoting file names to look for under the directories designated by FILES:
 PROGRAM could not be found."
   (search-path (search-path-as-string->list (getenv "PATH"))
                program))
+
+(define-condition-type &search-error &error
+  search-error?
+  (path         search-error-path)
+  (file         search-error-file))
+
+(define (search-input-file inputs file)
+  "Find a file named FILE among the INPUTS and return its absolute file name.
+
+FILE must be a string like \"bin/sh\". If FILE is not found, an exception is
+raised."
+  (match inputs
+    (((_ . directories) ...)
+     ;; Accept both "bin/sh" and "/bin/sh" as FILE argument.
+     (let ((file (string-trim file #\/)))
+       (or (search-path directories file)
+           (raise
+            (condition (&search-error (path directories) (file file)))))))))
+
+(define (search-input-directory inputs directory)
+  "Find a sub-directory named DIRECTORY among the INPUTS and return its
+absolute file name.
+
+DIRECTORY must be a string like \"xml/dtd/docbook\".  If DIRECTORY is not
+found, an exception is raised."
+  (match inputs
+    (((_ . directories) ...)
+     (or (any (lambda (parent)
+                (let ((directory (string-append parent "/" directory)))
+                  (and (directory-exists? directory)
+                       directory)))
+              directories)
+         (raise (condition
+                 (&search-error (path directories) (file directory))))))))
 
 
 ;;;
@@ -746,6 +853,31 @@ PROC's result is returned."
       (lambda (key . args)
         (false-if-exception (delete-file template))))))
 
+(define (unused-private-use-code-point s)
+  "Find a code point within a Unicode Private Use Area that is not
+present in S, and return the corresponding character object.  If one
+cannot be found, return false."
+  (define (scan lo hi)
+    (and (<= lo hi)
+         (let ((c (integer->char lo)))
+           (if (string-index s c)
+               (scan (+ lo 1) hi)
+               c))))
+  (or (scan   #xE000   #xF8FF)
+      (scan  #xF0000  #xFFFFD)
+      (scan #x100000 #x10FFFD)))
+
+(define (replace-char c1 c2 s)
+  "Return a string which is equal to S except with all instances of C1
+replaced by C2.  If C1 and C2 are equal, return S."
+  (if (char=? c1 c2)
+      s
+      (string-map (lambda (c)
+                    (if (char=? c c1)
+                        c2
+                        c))
+                  s)))
+
 (define (substitute file pattern+procs)
   "PATTERN+PROCS is a list of regexp/two-argument-procedure pairs.  For each
 line of FILE, and for each PATTERN that it matches, call the corresponding
@@ -764,16 +896,26 @@ end of a line; by itself it won't match the terminating newline of a line."
         (let loop ((line (read-line in 'concat)))
           (if (eof-object? line)
               #t
-              (let ((line (fold (lambda (r+p line)
-                                  (match r+p
-                                    ((regexp . proc)
-                                     (match (list-matches regexp line)
-                                       ((and m+ (_ _ ...))
-                                        (proc line m+))
-                                       (_ line)))))
-                                line
-                                rx+proc)))
-                (display line out)
+              ;; Work around the fact that Guile's regexp-exec does not handle
+              ;; NUL characters (a limitation of the underlying GNU libc's
+              ;; regexec) by temporarily replacing them by an unused private
+              ;; Unicode code point.
+              ;; TODO: Use SRFI-115 instead, once available in Guile.
+              (let* ((nul* (or (and (string-index line #\nul)
+                                    (unused-private-use-code-point line))
+                               #\nul))
+                     (line* (replace-char #\nul nul* line))
+                     (line1* (fold (lambda (r+p line)
+                                     (match r+p
+                                       ((regexp . proc)
+                                        (match (list-matches regexp line)
+                                          ((and m+ (_ _ ...))
+                                           (proc line m+))
+                                          (_ line)))))
+                                   line*
+                                   rx+proc))
+                     (line1 (replace-char nul* #\nul line1*)))
+                (display line1 out)
                 (loop (read-line in 'concat)))))))))
 
 
@@ -800,7 +942,7 @@ sub-expression.  For example:
      ((\"hello\")
       \"good morning\\n\")
      ((\"foo([a-z]+)bar(.*)$\" all letters end)
-      (string-append \"baz\" letter end)))
+      (string-append \"baz\" letters end)))
 
 Here, anytime a line of FILE contains \"hello\", it is replaced by \"good
 morning\".  Anytime a line of FILE matches the second regexp, ALL is bound to
@@ -853,29 +995,45 @@ match the terminating newline of a line."
 ;;;
 
 (define* (dump-port in out
+                    #:optional len
                     #:key (buffer-size 16384)
                     (progress (lambda (t k) (k))))
-  "Read as much data as possible from IN and write it to OUT, using chunks of
-BUFFER-SIZE bytes.  Call PROGRESS at the beginning and after each successful
-transfer of BUFFER-SIZE bytes or less, passing it the total number of bytes
-transferred and the continuation of the transfer as a thunk."
+  "Read LEN bytes from IN or as much data as possible if LEN is #f, and write
+it to OUT, using chunks of BUFFER-SIZE bytes.  Call PROGRESS at the beginning
+and after each successful transfer of BUFFER-SIZE bytes or less, passing it
+the total number of bytes transferred and the continuation of the transfer as
+a thunk."
   (define buffer
     (make-bytevector buffer-size))
 
   (define (loop total bytes)
     (or (eof-object? bytes)
+        (and len (= total len))
         (let ((total (+ total bytes)))
           (put-bytevector out buffer 0 bytes)
           (progress total
                     (lambda ()
                       (loop total
-                            (get-bytevector-n! in buffer 0 buffer-size)))))))
+                            (get-bytevector-n! in buffer 0
+                                               (if len
+                                                   (min (- len total) buffer-size)
+                                                   buffer-size))))))))
 
   ;; Make sure PROGRESS is called when we start so that it can measure
   ;; throughput.
   (progress 0
             (lambda ()
-              (loop 0 (get-bytevector-n! in buffer 0 buffer-size)))))
+              (loop 0 (get-bytevector-n! in buffer 0
+                                         (if len
+                                             (min len buffer-size)
+                                             buffer-size))))))
+
+(define AT_SYMLINK_NOFOLLOW
+  ;; Guile 2.0 did not define this constant, hence this hack.
+  (let ((variable (module-variable the-root-module 'AT_SYMLINK_NOFOLLOW)))
+    (if variable
+        (variable-ref variable)
+        256)))                                    ;for GNU/Linux
 
 (define (set-file-time file stat)
   "Set the atime/mtime of FILE to that specified by STAT."
@@ -883,7 +1041,8 @@ transferred and the continuation of the transfer as a thunk."
          (stat:atime stat)
          (stat:mtime stat)
          (stat:atimensec stat)
-         (stat:mtimensec stat)))
+         (stat:mtimensec stat)
+         AT_SYMLINK_NOFOLLOW))
 
 (define (get-char* p)
   ;; We call it `get-char', but that's really a binary version
@@ -1108,14 +1267,14 @@ known as `nuke-refs' in Nixpkgs."
   (program    wrap-error-program)
   (type       wrap-error-type))
 
-(define (wrapper? prog)
-  "Return #t if PROG is a wrapper as produced by 'wrap-program'."
+(define (wrapped-program? prog)
+  "Return #t if PROG is a program that was moved and wrapped by 'wrap-program'."
   (and (file-exists? prog)
        (let ((base (basename prog)))
          (and (string-prefix? "." base)
               (string-suffix? "-real" base)))))
 
-(define* (wrap-program prog #:rest vars)
+(define* (wrap-program prog #:key (sh (which "bash")) #:rest vars)
   "Make a wrapper for PROG.  VARS should look like this:
 
   '(VARIABLE DELIMITER POSITION LIST-OF-DIRECTORIES)
@@ -1142,7 +1301,12 @@ programs that expect particular shared libraries to be in $LD_LIBRARY_PATH, or
 modules in $GUILE_LOAD_PATH, etc.
 
 If PROG has previously been wrapped by 'wrap-program', the wrapper is extended
-with definitions for VARS."
+with definitions for VARS. If it is not, SH will be used as interpreter."
+  (define vars/filtered
+    (match vars
+      ((#:sh _ . vars) vars)
+      (vars vars)))
+
   (define wrapped-file
     (string-append (dirname prog) "/." (basename prog) "-real"))
 
@@ -1184,6 +1348,9 @@ with definitions for VARS."
        (format #f "export ~a=\"$~a${~a:+:}~a\""
                var var var (string-join rest ":")))))
 
+  (when (wrapped-program? prog)
+    (error (string-append prog " is a wrapper. Refusing to wrap.")))
+
   (if already-wrapped?
 
       ;; PROG is already a wrapper: add the new "export VAR=VALUE" lines just
@@ -1193,7 +1360,7 @@ with definitions for VARS."
         (for-each (lambda (var)
                     (display (export-variable var) port)
                     (newline port))
-                  vars)
+                  vars/filtered)
         (display last port)
         (close-port port))
 
@@ -1205,8 +1372,8 @@ with definitions for VARS."
           (lambda (port)
             (format port
                     "#!~a~%~a~%exec -a \"$0\" \"~a\" \"$@\"~%"
-                    (which "bash")
-                    (string-join (map export-variable vars) "\n")
+                    sh
+                    (string-join (map export-variable vars/filtered) "\n")
                     (canonicalize-path wrapped-file))))
 
         (chmod prog-tmp #o755)
@@ -1307,7 +1474,7 @@ not supported."
                 (lambda ()
                   (call-with-ascii-input-file prog
                     (lambda (p)
-                      (format out header)
+                      (display header out)
                       (dump-port p out)
                       (close out)
                       (chmod template mode)

@@ -51,6 +51,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages backup)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
@@ -125,10 +126,12 @@
            (assoc-ref glib-or-gtk:%standard-phases
                       'glib-or-gtk-wrap)))))
     (native-inputs
-     `(("glib:bin" ,glib "bin")
+     `(("desktop-file-utils" ,desktop-file-utils) ;for tests
+       ("glib:bin" ,glib "bin")
        ("gtk+:bin" ,gtk+ "bin")
        ("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("which" ,which))) ;for tests
     (inputs
      `(("adwaita-icon-theme" ,adwaita-icon-theme)
        ("gcr" ,gcr)
@@ -139,10 +142,9 @@
        ("json-glib" ,json-glib)
        ("libarchive" ,libarchive)
        ("libpeas" ,libpeas)
-       ("libsoup" ,libsoup)
        ("sqlite" ,sqlite)
        ("vala" ,vala)
-       ("webkitgtk" ,webkitgtk)))
+       ("webkitgtk" ,webkitgtk-with-libsoup2)))
     (synopsis "Lightweight graphical web browser")
     (description "@code{Midori} is a lightweight, Webkit-based web browser.
 It features integration with GTK+3, configurable web search engine, bookmark
@@ -179,8 +181,7 @@ management, extensions such as advertisement blocker and colorful tabs.")
                (invoke "./configure"
                        (string-append "--prefix=" out)
                        "--enable-graphics")))))))
-    (native-inputs `(("linux-libre-headers" ,linux-libre-headers)
-                     ("pkg-config" ,pkg-config)))
+    (native-inputs (list linux-libre-headers pkg-config))
     (inputs `(("gpm" ,gpm)
               ("libevent" ,libevent)
               ("libjpeg" ,libjpeg-turbo)
@@ -222,10 +223,10 @@ features including, tables, builtin image display, bookmarks, SSL and more.")
        ("glib-networking" ,glib-networking)
        ("lua5.1-filesystem" ,lua5.1-filesystem)
        ("luajit" ,luajit)
-       ("webkitgtk" ,webkitgtk)
+       ("webkitgtk" ,webkitgtk-with-libsoup2)
        ("sqlite" ,sqlite)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:make-flags
@@ -284,16 +285,15 @@ and the GTK+ toolkit.")
                (base32
                 "06jhv8ibfw1xkf8d8zrnkc2aw4d462s77hlp6f6xa6k8awzxvmkg"))))
     (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)
-                     ("perl" ,perl)))
-    (inputs `(("ncurses" ,ncurses)
-              ("libidn" ,libidn)
-              ("openssl" ,openssl)
-              ("libgcrypt" ,libgcrypt)
-              ("unzip" ,unzip)
-              ("zlib" ,zlib)
-              ("gzip" ,gzip)
-              ("bzip2" ,bzip2)))
+    (native-inputs (list pkg-config perl))
+    (inputs (list ncurses
+                  libidn
+                  openssl
+                  libgcrypt
+                  unzip
+                  zlib
+                  gzip
+                  bzip2))
     (arguments
      `(#:configure-flags
        (let ((openssl (assoc-ref %build-inputs "openssl")))
@@ -441,13 +441,13 @@ access.")
                 (base32
                  "1kvkxkisi3czldnb43ig60l55pi4a3m2a4ixp7krhpf9fc5wp294")))))))
       (inputs
-       `(("cmark" ,cmark)
-         ("font-google-noto" ,font-google-noto)
-         ("font-openmoji" ,font-openmoji)
-         ("openssl" ,openssl)
-         ("qtbase" ,qtbase-5)
-         ("qtmultimedia" ,qtmultimedia)
-         ("qtsvg" ,qtsvg)))
+       (list cmark
+             font-google-noto
+             font-openmoji
+             openssl
+             qtbase-5
+             qtmultimedia
+             qtsvg))
       (home-page "https://kristall.random-projects.net")
       (synopsis "Small-internet graphical client")
       (description "Graphical small-internet client with with many features
@@ -472,23 +472,23 @@ interface.")
         (base32 "05n64mw9lzzxpxr7lhakbkm9ir3x8p0rwk6vbbg01aqg5iaanyj0"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-attrs" ,python-attrs))) ; for tests
+     (list python-attrs)) ; for tests
     (inputs
-     `(("python-colorama" ,python-colorama)
-       ("python-cssutils" ,python-cssutils)
-       ("python-importlib-resources" ,python-importlib-resources)
-       ("python-jinja2" ,python-jinja2)
-       ("python-markupsafe" ,python-markupsafe)
-       ("python-pygments" ,python-pygments)
-       ("python-pypeg2" ,python-pypeg2)
-       ("python-pyyaml" ,python-pyyaml)
-       ;; FIXME: python-pyqtwebengine needs to come before python-pyqt so
-       ;; that it's __init__.py is used first.
-       ("python-pyqtwebengine" ,python-pyqtwebengine)
-       ("python-pyqt" ,python-pyqt)
-       ;; While qtwebengine is provided by python-pyqtwebengine, it's
-       ;; included here so we can wrap QTWEBENGINEPROCESS_PATH.
-       ("qtwebengine" ,qtwebengine)))
+     (list python-colorama
+           python-cssutils
+           python-importlib-resources
+           python-jinja2
+           python-markupsafe
+           python-pygments
+           python-pypeg2
+           python-pyyaml
+           ;; FIXME: python-pyqtwebengine needs to come before python-pyqt so
+           ;; that it's __init__.py is used first.
+           python-pyqtwebengine
+           python-pyqt
+           ;; While qtwebengine is provided by python-pyqtwebengine, it's
+           ;; included here so we can wrap QTWEBENGINEPROCESS_PATH.
+           qtwebengine))
     (arguments
      `(;; FIXME: With the existance of qtwebengine, tests can now run.  But
        ;; they are still disabled because test phase hangs.  It's not readily
@@ -563,9 +563,9 @@ GUI.  It is based on PyQt5 and QtWebEngine.")
     (inputs
      `(("glib-networking" ,glib-networking)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("webkitgtk" ,webkitgtk)))
+       ("webkitgtk" ,webkitgtk-with-libsoup2)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://fanglingsu.github.io/vimb/")
     (synopsis "Fast and lightweight Vim-like web browser")
     (description "Vimb is a fast and lightweight vim like web browser based on
@@ -713,18 +713,17 @@ is fully configurable and extensible in Common Lisp.")
      `(#:tests? #false                  ;no tests
        #:configure-flags (list "-DTFDN_ENABLE_SSE41=OFF")))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("zip" ,zip)))
+     (list pkg-config zip))
     (inputs
-     `(("fribidi" ,fribidi)
-       ("harfbuzz" ,harfbuzz)
-       ("libunistring" ,libunistring)
-       ("libwebp" ,libwebp)
-       ("mpg123" ,mpg123)
-       ("openssl" ,openssl)
-       ("pcre" ,pcre)
-       ("sdl2" ,sdl2)
-       ("zlib" ,zlib)))
+     (list fribidi
+           harfbuzz
+           libunistring
+           libwebp
+           mpg123
+           openssl
+           pcre
+           sdl2
+           zlib))
     (home-page "https://gmi.skyjake.fi/lagrange/")
     (synopsis "Graphical Gemini client")
     (description
@@ -754,10 +753,9 @@ history, and page outlines.")
        `(#:tests? #f ; no check target
          #:make-flags (list (string-append "CC=" ,(cc-for-target)))))
       (inputs
-       `(("openssl" ,openssl)))
+       (list openssl))
       (native-inputs
-       `(("pkg-config" ,pkg-config)
-         ("scdoc" ,scdoc)))
+       (list pkg-config scdoc))
       (home-page "https://sr.ht/~sircmpwn/gmni")
       (synopsis "Minimalist command line Gemini client")
       (description "The gmni package includes:
@@ -919,9 +917,7 @@ interface.")
      `(("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("libevent"  ,libevent)
-       ("libressl"  ,libressl)
-       ("ncurses"   ,ncurses)))
+     (list libevent libressl ncurses))
     (home-page "https://git.omarpolo.com/telescope/about/")
     (synopsis "Gemini client with a terminal interface")
     (description "Telescope is a w3m-like browser for Gemini.")

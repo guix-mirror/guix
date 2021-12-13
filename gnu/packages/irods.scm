@@ -120,18 +120,15 @@
                (("'usr', 'lib', 'irods'") "'lib', 'irods'"))
              (substitute* "scripts/irods/pypyodbc.py"
                (("\"/usr/lib/libodbc.so\"")
-                (string-append (assoc-ref inputs "unixodbc") "/lib/libodbc.so")))))
+                (search-input-file inputs "/lib/libodbc.so")))))
          (add-after 'set-paths 'adjust-CPLUS_INCLUDE_PATH
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((gcc (assoc-ref inputs  "gcc")))
                (setenv "CPLUS_INCLUDE_PATH"
                        (string-join
-                        (cons* (string-append (assoc-ref inputs "libcxx+libcxxabi")
-                                              "/include/c++/v1")
-                               (string-append (assoc-ref inputs "catch2")
-                                              "/include/catch2")
-                               (string-append (assoc-ref inputs "json")
-                                              "/include/nlohmann")
+                        (cons* (search-input-directory inputs "/include/c++/v1")
+                               (search-input-directory inputs "/include/catch2")
+                               (search-input-directory inputs "/include/nlohmann")
                                ;; Hide GCC's C++ headers so that they do not interfere with
                                ;; the Clang headers.
                                (delete (string-append gcc "/include/c++")
@@ -231,10 +228,10 @@ stored.")
              (let ((gcc (assoc-ref inputs  "gcc")))
                (setenv "CPLUS_INCLUDE_PATH"
                        (string-join
-                        (cons* (string-append (assoc-ref inputs "libcxx+libcxxabi")
-                                              "/include/c++/v1")
-                               (string-append (assoc-ref inputs "json")
-                                              "/include/nlohmann")
+                        (cons* (search-input-directory inputs
+                                                       "include/c++/v1")
+                               (search-input-directory inputs
+                                                       "include/nlohmann")
                                ;; Hide GCC's C++ headers so that they do not interfere with
                                ;; the Clang headers.
                                (delete (string-append gcc "/include/c++")

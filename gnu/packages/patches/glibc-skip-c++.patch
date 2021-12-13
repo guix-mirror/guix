@@ -1,0 +1,31 @@
+When building, say, glibc 2.31 using a compiler that's itself linked
+against 2.33, linking fails with:
+
+  gcc -Wl,-rpath-link=/tmp/guix-build-glibc-2.31.drv-0/build:/tmp/guix-build-glibc-2.31.drv-0/build/math:/tmp/guix-build-glibc-2.31.drv-0/build/elf:/tmp/guix-build-glibc-2.31.drv-0/build/dlfcn:/tmp/guix-build-glibc-2.31.drv-0/build/nss:/tmp/guix-build-glibc-2.31.drv-0/build/nis:/tmp/guix-build-glibc-2.31.drv-0/build/rt:/tmp/guix-build-glibc-2.31.drv-0/build/resolv:/tmp/guix-build-glibc-2.31.drv-0/build/mathvec:/tmp/guix-build-glibc-2.31.drv-0/build/support:/tmp/guix-build-glibc-2.31.drv-0/build/crypt:/tmp/guix-build-glibc-2.31.drv-0/build/nptl -nostdlib -nostartfiles -o /tmp/guix-build-glibc-2.31.drv-0/build/support/links-dso-program    -Wl,-z,combreloc -Wl,-z,relro -Wl,--hash-style=both /tmp/guix-build-glibc-2.31.drv-0/build/csu/crt1.o /tmp/guix-build-glibc-2.31.drv-0/build/csu/crti.o `gcc  --print-file-name=crtbegin.o` /tmp/guix-build-glibc-2.31.drv-0/build/support/links-dso-program.o -lstdc++ -lgcc -lgcc_s  -Wl,-dynamic-linker=/gnu/store/...-glibc-2.31/lib/ld-linux-x86-64.so.2  /tmp/guix-build-glibc-2.31.drv-0/build/libc.so.6 /tmp/guix-build-glibc-2.31.drv-0/build/libc_nonshared.a -Wl,--as-needed /tmp/guix-build-glibc-2.31.drv-0/build/elf/ld.so -Wl,--no-as-needed -lgcc  `gcc  --print-file-name=crtend.o` /tmp/guix-build-glibc-2.31.drv-0/build/csu/crtn.o
+  ld: /gnu/store/...-gcc-10.3.0-lib/lib/gcc/x86_64-unknown-linux-gnu/10.3.0/../../../libstdc++.so: undefined reference to `fstat64@GLIBC_2.33'
+  ld: /gnu/store/...-gcc-10.3.0-lib/lib/gcc/x86_64-unknown-linux-gnu/10.3.0/../../../libstdc++.so: undefined reference to `lstat@GLIBC_2.33'
+  ld: /gnu/store/...-gcc-10.3.0-lib/lib/gcc/x86_64-unknown-linux-gnu/10.3.0/../../../libstdc++.so: undefined reference to `stat@GLIBC_2.33'
+  collect2: error: ld returned 1 exit status
+
+This is unsurprising given that libstdc++.so here is linked against 2.33,
+whereas libc.so.6 here is 2.31.
+
+This patch works around it by not building the offending program.
+
+diff --git a/support/Makefile b/support/Makefile
+index bb9889ef..6614943b 100644
+--- a/support/Makefile
++++ b/support/Makefile
+@@ -210,12 +210,7 @@ CFLAGS-support_paths.c = \
+ # -fexcess-precision=standard.
+ CFLAGS-timespec.c += -fexcess-precision=standard
+ 
+-ifeq (,$(CXX))
+ LINKS_DSO_PROGRAM = links-dso-program-c
+-else
+-LINKS_DSO_PROGRAM = links-dso-program
+-LDLIBS-links-dso-program = -lstdc++ -lgcc -lgcc_s $(libunwind)
+-endif
+ 
+ ifeq (yes,$(have-selinux))
+ LDLIBS-$(LINKS_DSO_PROGRAM) += -lselinux

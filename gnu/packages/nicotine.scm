@@ -62,9 +62,7 @@
          (add-after 'glib-or-gtk-wrap 'glib-or-gtk-compile-schemas
            (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-compile-schemas)))))
     (inputs
-     `(("gtk+" ,gtk+)
-       ("python-pygobject" ,python-pygobject)
-       ("python-pytaglib" ,python-pytaglib)))
+     (list gtk+ python-pygobject python-pytaglib))
     (native-inputs
      `(("python-pytest" ,python-pytest)
        ("gettext" ,gettext-minimal)))

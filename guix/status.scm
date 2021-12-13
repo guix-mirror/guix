@@ -381,6 +381,8 @@ the current build phase."
      (G_ "building CA certificate bundle..."))
     ('emacs-subdirs
      (G_ "listing Emacs sub-directories..."))
+    ('gdk-pixbuf-loaders-cache-file
+     (G_ "generating GdkPixbuf loaders cache..."))
     ('glib-schemas
      (G_ "generating GLib schema cache..."))
     ('gtk-icon-themes

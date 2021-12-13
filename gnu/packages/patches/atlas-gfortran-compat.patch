@@ -1,0 +1,37 @@
+Fix build with gfortran 10.
+
+Taken from Debian:
+https://salsa.debian.org/science-team/atlas/-/blob/master/debian/patches/gfortran-10.patch
+
+--- a/interfaces/blas/C/testing/c_dblat1.f
++++ b/interfaces/blas/C/testing/c_dblat1.f
+@@ -247,11 +247,11 @@
+             IF (ICASE.EQ.7) THEN
+ *              .. DNRM2TEST ..
+                STEMP(1) = DTRUE1(NP1)
+-               CALL STEST1(DNRM2TEST(N,SX,INCX),STEMP,STEMP,SFAC)
++               CALL STEST1(DNRM2TEST(N,SX,INCX),STEMP(1),STEMP,SFAC)
+             ELSE IF (ICASE.EQ.8) THEN
+ *              .. DASUMTEST ..
+                STEMP(1) = DTRUE3(NP1)
+-               CALL STEST1(DASUMTEST(N,SX,INCX),STEMP,STEMP,SFAC)
++               CALL STEST1(DASUMTEST(N,SX,INCX),STEMP(1),STEMP,SFAC)
+             ELSE IF (ICASE.EQ.9) THEN
+ *              .. DSCALTEST ..
+                CALL DSCALTEST(N,SA((INCX-1)*5+NP1),SX,INCX)
+--- a/interfaces/blas/C/testing/c_sblat1.f
++++ b/interfaces/blas/C/testing/c_sblat1.f
+@@ -247,11 +247,11 @@
+             IF (ICASE.EQ.7) THEN
+ *              .. SNRM2TEST ..
+                STEMP(1) = DTRUE1(NP1)
+-               CALL STEST1(SNRM2TEST(N,SX,INCX),STEMP,STEMP,SFAC)
++               CALL STEST1(SNRM2TEST(N,SX,INCX),STEMP(1),STEMP,SFAC)
+             ELSE IF (ICASE.EQ.8) THEN
+ *              .. SASUMTEST ..
+                STEMP(1) = DTRUE3(NP1)
+-               CALL STEST1(SASUMTEST(N,SX,INCX),STEMP,STEMP,SFAC)
++               CALL STEST1(SASUMTEST(N,SX,INCX),STEMP(1),STEMP,SFAC)
+             ELSE IF (ICASE.EQ.9) THEN
+ *              .. SSCALTEST ..
+                CALL SSCALTEST(N,SA((INCX-1)*5+NP1),SX,INCX)

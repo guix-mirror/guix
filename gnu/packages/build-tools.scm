@@ -91,7 +91,7 @@
     (native-inputs
      `(("python" ,python-2)))
     (inputs
-     `(("lua" ,lua)))
+     (list lua))
     (home-page "https://matricks.github.io/bam/")
     (synopsis "Fast and flexible build system")
     (description "Bam is a fast and flexible build system.  Bam uses Lua to
@@ -166,7 +166,7 @@ generate such a compilation database.")
     (inputs
      `(("bash" ,bash-minimal)))
     (native-inputs
-     `(("coreutils" ,coreutils)))
+     (list coreutils))
     (arguments
      `(#:tests? #f                      ; test during build
        #:phases
@@ -264,7 +264,7 @@ files and generates build instructions for the Ninja build system.")
 (define-public meson
   (package
     (name "meson")
-    (version "0.53.2")
+    (version "0.60.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/mesonbuild/meson/"
@@ -272,20 +272,27 @@ files and generates build instructions for the Ninja build system.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "07y2hh9dfn1m9g4bsy49nbn3vdmd0b2iwr8bxg19fhqq6c7q73ry"))))
+                "0irdn7hx5a182jbvq2kmdwd1v7mljzh5fm27pg4xk879hnv6h388"))
+              (patches (search-patches
+                        "meson-allow-dirs-outside-of-prefix.patch"))))
     (build-system python-build-system)
     (arguments
-     `(;; FIXME: Tests require many additional inputs, a fix for the RUNPATH
-       ;; patch in meson-for-build, and patching many hard-coded file system
-       ;; locations in "run_unittests.py".
+     `(;; FIXME: Tests require many additional inputs and patching many
+       ;; hard-coded file system locations in "run_unittests.py".
        #:tests? #f
        #:phases (modify-phases %standard-phases
                   ;; Meson calls the various executables in out/bin through the
                   ;; Python interpreter, so we cannot use the shell wrapper.
                   (delete 'wrap))))
-    (inputs `(("ninja" ,ninja)))
-    (propagated-inputs `(("python" ,python)))
+    (inputs (list ninja))
+
+    ;; XXX: Python is propagated just to 'GUIX_PYTHONPATH' is set (!).
+    ;; MESON-WRAPPED below fixes that by wrapping the 'meson' executable.
+    ;; TODO: Make MESON-WRAPPED the new MESON on the next core update cycle.
+    (propagated-inputs (list python))
+
     (home-page "https://mesonbuild.com/")
+    (properties '((hidden? . #t)))
     (synopsis "Build system designed to be fast and user-friendly")
     (description
      "The Meson build system is focused on user-friendliness and speed.
@@ -296,12 +303,37 @@ files}, are written in a custom domain-specific language (@dfn{DSL}) that
 resembles Python.")
     (license license:asl2.0)))
 
-;; Added temporarily for packages that need it.
-;; TODO: Remove when core-updates is merged.
-(define-public meson-0.55
-  (package
-    (inherit meson)
-    (version "0.55.1")
+(define-public meson-wrapped
+  (package/inherit meson
+    (propagated-inputs '())                       ;don't propagate Python
+    (inputs (modify-inputs (package-inputs meson)
+              (prepend python-wrapper)))
+    (arguments
+     `(;; FIXME: Tests require many additional inputs and patching many
+       ;; hard-coded file system locations in "run_unittests.py".
+       #:tests? #f
+       #:phases (modify-phases %standard-phases
+                  ;; Meson calls the various executables in out/bin through the
+                  ;; Python interpreter, so we cannot use the shell wrapper.
+                  (replace 'wrap
+                    (lambda* (#:key outputs inputs #:allow-other-keys)
+                      (let ((python-version
+                             (python-version (assoc-ref inputs "python")))
+                            (output (assoc-ref outputs "out")))
+                        (substitute* (string-append output "/bin/meson")
+                          (("# EASY-INSTALL-ENTRY-SCRIPT")
+                           (format #f "\
+import sys
+sys.path.insert(0, '~a/lib/python~a/site-packages')
+# EASY-INSTALL-ENTRY-SCRIPT"
+                                   output python-version)))))))))
+    (properties '())))
+
+;;; This older Meson variant is kept for now for gtkmm and others that may
+;;; have problems with 0.60.
+(define-public meson-0.59
+  (package/inherit meson
+    (version "0.59.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/mesonbuild/meson/"
@@ -309,31 +341,9 @@ resembles Python.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1070kjiirxxdfppmrhi3wsc6rykay1zlciqrzayjhjg0hkw42mrv"))))))
-
-(define-public meson-next
-  (package
-    (inherit meson)
-    (version "0.57.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/mesonbuild/meson/"
-                                  "releases/download/" version  "/meson-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "1iac7p99zfgkznq4qlnkk7b8xwwlilcrnkf33sczm56yqnqyg0rs"))))))
-
-(define-public meson-for-build
-  (package
-    (inherit meson)
-    (name "meson-for-build")
-    (source (origin
-              (inherit (package-source meson))
-              (patches (search-patches "meson-for-build-rpath.patch"))))
-
-    ;; People should probably install "meson", not "meson-for-build".
-    (properties `((hidden? . #t)))))
+                "117cm8794h291lca1wljz1pwnzidgbvrpg3mw3np6ksma368hyd7"))
+              (patches (search-patches
+                        "meson-allow-dirs-outside-of-prefix.patch"))))))
 
 (define-public premake4
   (package
@@ -348,7 +358,7 @@ resembles Python.")
                 "1017rd0wsjfyq2jvpjjhpszaa7kmig6q1nimw76qx3cjz2868lrn"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("unzip" ,unzip))) ; for unpacking the source
+     (list unzip)) ; for unpacking the source
     (arguments
      `(#:make-flags (list (string-append "CC=" ,(cc-for-target)))
        #:tests? #f ; No test suite
@@ -455,12 +465,11 @@ other lower-level build files.")))
                    (display "au BufNewFile,BufRead Tupfile,*.tup setf tup")))
                #t))))))
     (inputs
-     `(("fuse" ,fuse)
-       ("pcre" ,pcre)
-       ("pcre" ,pcre "bin") ; pcre-config
-       ("sqlite" ,sqlite)))
+     (list fuse pcre
+           `(,pcre "bin") ; pcre-config
+           sqlite))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "http://gittup.org/tup/")
     (synopsis "Fast build system that's hard to get wrong")
     (description "Tup is a generic build system based on a directed acyclic
@@ -497,11 +506,9 @@ a build worked by accident.")
                 (string-append bin "osc"))
                #t))))))
     (native-inputs
-     `(("python-chardet" ,python-chardet)))
+     (list python-chardet))
     (inputs
-     `(("python-m2crypto" ,python-m2crypto)
-       ("python-pycurl" ,python-pycurl)
-       ("rpm" ,rpm)))                   ; for python-rpm
+     (list python-m2crypto python-pycurl rpm))                   ; for python-rpm
     (home-page "https://github.com/openSUSE/osc")
     (synopsis "Open Build Service command line tool")
     (description "@command{osc} is a command line interface to the Open Build
@@ -530,10 +537,9 @@ be reached via direct API calls.")
              (substitute* "setup.py" (("^ *'shutilwhich'\n") ""))
              (substitute* "compiledb/compiler.py" (("shutilwhich") "shutil")))))))
     (propagated-inputs
-      `(("python-bashlex" ,python-bashlex)
-        ("python-click" ,python-click)))
+      (list python-bashlex python-click))
     (native-inputs
-      `(("python-pytest" ,python-pytest)))
+      (list python-pytest))
     (home-page
       "https://github.com/nickdiego/compiledb")
     (synopsis

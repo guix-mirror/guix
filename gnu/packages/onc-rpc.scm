@@ -37,7 +37,7 @@
 (define-public libtirpc
   (package
     (name "libtirpc")
-    (version "1.2.5")
+    (version "1.3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/libtirpc/libtirpc/"
@@ -45,27 +45,23 @@
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "1jl6a5kkw2vrp4gb6pmvf72rqimywvwfb9f7iz2xjg4wgq63bdpk"))))
+                "05zf16ilwwkzv4cccaac32nssrj3rg444n9pskiwbgk6y359an14"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--disable-static")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'remote-dangling-symlink
-           (lambda _
+         (add-after 'unpack 'adjust-netconfig-reference
+           (lambda* (#:key outputs #:allow-other-keys)
              (substitute* '("man/netconfig.5"
                             "man/getnetconfig.3t"
                             "man/getnetpath.3t"
                             "man/rpc.3t"
                             "src/getnetconfig.c"
                             "tirpc/netconfig.h")
-               (("/etc/netconfig") (string-append %output "/etc/netconfig")))
-
-             ;; Remove the dangling symlinks since it breaks the
-             ;; 'patch-source-shebangs' file tree traversal.
-             (delete-file "INSTALL")
-             #t)))))
-    (inputs `(("mit-krb5" ,mit-krb5)))
+               (("/etc/netconfig") (string-append (assoc-ref outputs "out")
+                                                  "/etc/netconfig"))))))))
+    (inputs (list mit-krb5))
     (home-page "https://sourceforge.net/projects/libtirpc/")
     (synopsis "Transport-independent Sun/ONC RPC implementation")
     (description
@@ -78,9 +74,7 @@ IPv4 and IPv6.  ONC RPC is notably used by the network file system (NFS).")
   (package/inherit libtirpc
     (name "libtirpc-hurd")
     (source (origin (inherit (package-source libtirpc))
-                    (patches (append (origin-patches (package-source libtirpc))
-                                     (search-patches "libtirpc-hurd.patch"
-                                                     "libtirpc-hurd-client.patch")))))
+                    (patches (search-patches "libtirpc-hurd.patch"))))
     (arguments
      (substitute-keyword-arguments (package-arguments libtirpc)
        ((#:configure-flags flags ''())
@@ -107,10 +101,9 @@ IPv4 and IPv6.  ONC RPC is notably used by the network file system (NFS).")
      `(#:configure-flags
        `("--with-systemdsystemunitdir=no" "--enable-warmstarts")))
     (inputs
-     `(("libnsl" ,libnsl)
-       ("libtirpc" ,libtirpc)))
+     (list libnsl libtirpc))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "http://rpcbind.sourceforge.net/")
     (synopsis "Server to convert RPC program numbers into universal addresses")
     (description
@@ -162,7 +155,7 @@ from the protocol files.")
        ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("libtirpc" ,libtirpc)))
+     (list libtirpc))
     (synopsis "Public client interface for NIS(YP) and NIS+")
     (description "Libnsl is the public client interface for the Network
 Information Service / Yellow Pages (NIS/YP) and NIS+.  It includes IPv6 support.

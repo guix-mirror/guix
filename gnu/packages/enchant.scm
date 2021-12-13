@@ -58,16 +58,16 @@
         (base32 "0wbb6dwmzlsyy224y0liis0azgzwbjdvcyzc31pw1aw6vbp36na6"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("catch" ,catch-framework2)
-       ("git" ,git-minimal)
-       ("perl" ,perl)
-       ;;FIX-ME: Building with ronn fails.
-       ;;("ronn" ,ronn)
-       ("pkg-config" ,pkg-config)))
+     (list catch-framework2
+           git-minimal
+           perl
+           ;;FIX-ME: Building with ronn fails.
+           ;;("ronn" ,ronn)
+           pkg-config))
     (inputs
-     `(("boost" ,boost)))
+     (list boost))
     (propagated-inputs
-     `(("icu4c" ,icu4c)))
+     (list icu4c))
     (synopsis "Fast and safe spellchecking C++ library")
     (description "Nuspell is a fast and safe spelling checker software
 program.  It is designed for languages with rich morphology and complex word
@@ -94,11 +94,10 @@ dictionaries.")
                            ;; Tests require a relocatable build.
                            "--enable-relocatable")))
     (inputs
-     `(("aspell" ,aspell)
-       ("hunspell" ,hunspell)))
+     (list aspell hunspell))
     (propagated-inputs
      ;; Required by enchant.pc.
-     `(("glib" ,glib)))
+     (list glib))
     (native-inputs
      `(("glib:bin" ,glib "bin")
        ("pkg-config" ,pkg-config)
@@ -157,7 +156,7 @@ working\".")
                                "    yield \"" (assoc-ref inputs "enchant")
                                "/lib/libenchant-2.so\""))))))))
     (inputs
-     `(("enchant" ,enchant)))
+     (list enchant))
     (home-page "https://github.com/pyenchant/pyenchant")
     (synopsis "Spellchecking library for Python")
     (description "PyEnchant is a spellchecking library for Python, based on the

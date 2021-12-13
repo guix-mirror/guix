@@ -76,23 +76,26 @@ that MODULES are actually loaded."
     (marionette-operating-system
      base-os
      #:imported-modules '((guix combinators))))
+
   (define vm (virtual-machine os))
+
   (define (test script)
     (with-imported-modules '((gnu build marionette))
       #~(begin
           (use-modules (gnu build marionette)
                        (srfi srfi-64))
+
           (define marionette
             (make-marionette (list #$vm)))
-          (mkdir #$output)
-          (chdir #$output)
+
+          (test-runner-current (system-test-runner #$output))
           (test-begin "loadable-kernel-modules")
           (test-assert "script successfully evaluated"
             (marionette-eval
              '(primitive-load #$script)
              marionette))
-          (test-end)
-          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          (test-end))))
+
   (gexp->derivation "loadable-kernel-modules"
                     (test (modules-loaded?-program os module-names))))
 

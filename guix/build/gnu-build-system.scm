@@ -1,7 +1,8 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2020 Brendan Tildesley <mail@brendan.scot>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,6 +36,7 @@
   #:use-module (rnrs io ports)
   #:export (%standard-phases
             %license-file-regexp
+            %bootstrap-scripts
             dump-file-contents
             gnu-build))
 
@@ -57,23 +59,26 @@
   "Set the 'SOURCE_DATE_EPOCH' environment variable.  This is used by tools
 that incorporate timestamps as a way to tell them to use a fixed timestamp.
 See https://reproducible-builds.org/specs/source-date-epoch/."
-  (setenv "SOURCE_DATE_EPOCH" "1")
-  #t)
+  (setenv "SOURCE_DATE_EPOCH" "1"))
 
 (define (first-subdirectory directory)
-  "Return the file name of the first sub-directory of DIRECTORY."
+  "Return the file name of the first sub-directory of DIRECTORY or false, when
+there are none."
   (match (scandir directory
                   (lambda (file)
                     (and (not (member file '("." "..")))
                          (file-is-directory? (string-append directory "/"
                                                             file)))))
-    ((first . _) first)))
+    ((first . _) first)
+    (_ #f)))
 
 (define* (set-paths #:key target inputs native-inputs
                     (search-paths '()) (native-search-paths '())
                     #:allow-other-keys)
   (define input-directories
-    (match inputs
+    ;; The "source" input can be a directory, but we don't want it for search
+    ;; paths.  See <https://issues.guix.gnu.org/44924>.
+    (match (alist-delete "source" inputs)
       (((_ . dir) ...)
        dir)))
 
@@ -113,9 +118,7 @@ See https://reproducible-builds.org/specs/source-date-epoch/."
                                                #:separator separator
                                                #:type type
                                                #:pattern pattern)))
-              native-search-paths))
-
-  #t)
+              native-search-paths)))
 
 (define* (install-locale #:key
                          (locale "en_US.utf8")
@@ -134,15 +137,13 @@ chance to be set."
       (setenv (locale-category->string locale-category) locale)
 
       (format (current-error-port) "using '~a' locale for category ~s~%"
-              locale (locale-category->string locale-category))
-      #t)
+              locale (locale-category->string locale-category)))
     (lambda args
       ;; This is known to fail for instance in early bootstrap where locales
       ;; are not available.
       (format (current-error-port)
               "warning: failed to install '~a' locale: ~a~%"
-              locale (strerror (system-error-errno args)))
-      #t)))
+              locale (strerror (system-error-errno args))))))
 
 (define* (unpack #:key source #:allow-other-keys)
   "Unpack SOURCE in the working directory, and change directory within the
@@ -156,13 +157,25 @@ working directory."
         ;; Preserve timestamps (set to the Epoch) on the copied tree so that
         ;; things work deterministically.
         (copy-recursively source "."
-                          #:keep-mtime? #t))
+                          #:keep-mtime? #t)
+        ;; Make the source checkout files writable, for convenience.
+        (for-each (lambda (f)
+                    (false-if-exception (make-file-writable f)))
+                  (find-files ".")))
       (begin
-        (if (string-suffix? ".zip" source)
-            (invoke "unzip" source)
-            (invoke "tar" "xvf" source))
-        (chdir (first-subdirectory "."))))
-  #t)
+        (cond
+         ((string-suffix? ".zip" source)
+          (invoke "unzip" source))
+         ((tarball? source)
+          (invoke "tar" "xvf" source))
+         (else
+          (let ((name (strip-store-file-name source))
+                (command (compressor source)))
+            (copy-file source name)
+            (when command
+              (invoke command "--decompress" name)))))
+        ;; Attempt to change into child directory.
+        (and=> (first-subdirectory ".") chdir))))
 
 (define %bootstrap-scripts
   ;; Typical names of Autotools "bootstrap" scripts.
@@ -205,8 +218,7 @@ working directory."
                 (invoke "autoreconf" "-vif")
                 (format #t "no 'configure.ac' or anything like that, \
 doing nothing~%"))))
-      (format #t "GNU build system bootstrapping not needed~%"))
-  #t)
+      (format #t "GNU build system bootstrapping not needed~%")))
 
 ;; See <http://bugs.gnu.org/17840>.
 (define* (patch-usr-bin-file #:key native-inputs inputs
@@ -220,8 +232,7 @@ things like the ABI being used."
     (for-each (lambda (file)
                 (when (executable-file? file)
                   (patch-/usr/bin/file file)))
-              (find-files "." "^configure$")))
-  #t)
+              (find-files "." "^configure$"))))
 
 (define* (patch-source-shebangs #:key source #:allow-other-keys)
   "Patch shebangs in all source files; this includes non-executable
@@ -233,8 +244,7 @@ $CONFIG_SHELL, but some don't, such as `mkinstalldirs' or Automake's
                         (lambda (file stat)
                           ;; Filter out symlinks.
                           (eq? 'regular (stat:type stat)))
-                        #:stat lstat))
-  #t)
+                        #:stat lstat)))
 
 (define (patch-generated-file-shebangs . rest)
   "Patch shebangs in generated files, including `SHELL' variables in
@@ -249,9 +259,7 @@ makefiles."
                         #:stat lstat))
 
   ;; Patch `SHELL' in generated makefiles.
-  (for-each patch-makefile-SHELL (find-files "." "^(GNU)?[mM]akefile$"))
-
-  #t)
+  (for-each patch-makefile-SHELL (find-files "." "^(GNU)?[mM]akefile$")))
 
 (define* (configure #:key build target native-inputs inputs outputs
                     (configure-flags '()) out-of-source?
@@ -381,8 +389,7 @@ makefiles."
                        `("-j" ,(number->string (parallel-job-count)))
                        '())
                  ,@make-flags)))
-      (format #t "test suite not run~%"))
-  #t)
+      (format #t "test suite not run~%")))
 
 (define* (install #:key (make-flags '()) #:allow-other-keys)
   (apply invoke "make" "install" make-flags))
@@ -400,7 +407,8 @@ makefiles."
     (match-lambda
      ((_ . dir)
       (list (string-append dir "/bin")
-            (string-append dir "/sbin")))))
+            (string-append dir "/sbin")
+            (string-append dir "/libexec")))))
 
   (define output-bindirs
     (append-map bin-directories outputs))
@@ -415,8 +423,7 @@ makefiles."
       (for-each (lambda (dir)
                   (let ((files (list-of-files dir)))
                     (for-each (cut patch-shebang <> path) files)))
-                output-bindirs)))
-  #t)
+                output-bindirs))))
 
 (define* (strip #:key target outputs (strip-binaries? #t)
                 (strip-command (if target
@@ -425,7 +432,7 @@ makefiles."
                 (objcopy-command (if target
                                      (string-append target "-objcopy")
                                      "objcopy"))
-                (strip-flags '("--strip-debug"
+                (strip-flags '("--strip-unneeded"
                                "--enable-deterministic-archives"))
                 (strip-directories '("lib" "lib64" "libexec"
                                      "bin" "sbin"))
@@ -514,8 +521,7 @@ makefiles."
                                   (let ((sub (string-append dir "/" d)))
                                     (and (directory-exists? sub) sub)))
                                 strip-directories)))
-                 outputs)))
-  #t)
+                 outputs))))
 
 (define* (validate-runpath #:key
                            (validate-runpath? #t)
@@ -560,9 +566,7 @@ phase after stripping."
                               outputs)))
         (unless (every* validate dirs)
           (error "RUNPATH validation failed")))
-      (format (current-error-port) "skipping RUNPATH validation~%"))
-
-  #t)
+      (format (current-error-port) "skipping RUNPATH validation~%")))
 
 (define* (validate-documentation-location #:key outputs
                                           #:allow-other-keys)
@@ -582,8 +586,7 @@ and 'man/'.  This phase moves directories to the right place if needed."
 
   (match outputs
     (((names . directories) ...)
-     (for-each validate-output directories)))
-  #t)
+     (for-each validate-output directories))))
 
 (define* (reset-gzip-timestamps #:key outputs #:allow-other-keys)
   "Reset embedded timestamps in gzip files found in OUTPUTS."
@@ -599,8 +602,7 @@ and 'man/'.  This phase moves directories to the right place if needed."
 
   (match outputs
     (((names . directories) ...)
-     (for-each process-directory directories)))
-  #t)
+     (for-each process-directory directories))))
 
 (define* (compress-documentation #:key outputs
                                  (compress-documentation? #t)
@@ -616,7 +618,7 @@ DOCUMENTATION-COMPRESSOR-FLAGS."
     (let ((target (readlink link)))
       (delete-file link)
       (symlink (string-append target compressed-documentation-extension)
-               link)))
+               (string-append link compressed-documentation-extension))))
 
   (define (has-links? file)
     ;; Return #t if FILE has hard links.
@@ -679,8 +681,7 @@ DOCUMENTATION-COMPRESSOR-FLAGS."
       (match outputs
         (((names . directories) ...)
          (for-each maybe-compress directories)))
-      (format #t "not compressing documentation~%"))
-  #t)
+      (format #t "not compressing documentation~%")))
 
 (define* (delete-info-dir-file #:key outputs #:allow-other-keys)
   "Delete any 'share/info/dir' file from OUTPUTS."
@@ -689,8 +690,7 @@ DOCUMENTATION-COMPRESSOR-FLAGS."
            (let ((info-dir-file (string-append directory "/share/info/dir")))
              (when (file-exists? info-dir-file)
                (delete-file info-dir-file)))))
-            outputs)
-  #t)
+            outputs))
 
 
 (define* (patch-dot-desktop-files #:key outputs inputs #:allow-other-keys)
@@ -730,8 +730,74 @@ which cannot be found~%"
                          (("^TryExec=([^/[:blank:]\r\n]*)(.*)$" _ binary rest)
                           (string-append "TryExec="
                                          (which binary) rest)))))))))
-            outputs)
-  #t)
+            outputs))
+
+(define* (make-dynamic-linker-cache #:key outputs
+                                    (make-dynamic-linker-cache? #t)
+                                    #:allow-other-keys)
+  "Create a dynamic linker cache under 'etc/ld.so.cache' in each of the
+OUTPUTS.  This reduces application startup time by avoiding the 'stat' storm
+that traversing all the RUNPATH entries entails."
+  (define (make-cache-for-output directory)
+    (define bin-directories
+      (filter-map (lambda (sub-directory)
+                    (let ((directory (string-append directory "/"
+                                                    sub-directory)))
+                      (and (directory-exists? directory)
+                           directory)))
+                  '("bin" "sbin" "libexec")))
+
+    (define programs
+      ;; Programs that can benefit from the ld.so cache.
+      (append-map (lambda (directory)
+                    (if (directory-exists? directory)
+                        (find-files directory
+                                    (lambda (file stat)
+                                      (and (executable-file? file)
+                                           (elf-file? file))))
+                        '()))
+                  bin-directories))
+
+    (define library-path
+      ;; Directories containing libraries that PROGRAMS depend on,
+      ;; recursively.
+      (delete-duplicates
+       (append-map (lambda (program)
+                     (map dirname (file-needed/recursive program)))
+                   programs)))
+
+    (define cache-file
+      (string-append directory "/etc/ld.so.cache"))
+
+    (define ld.so.conf
+      (string-append (or (getenv "TMPDIR") "/tmp")
+                     "/ld.so.conf"))
+
+    (unless (null? library-path)
+      (mkdir-p (dirname cache-file))
+      (guard (c ((invoke-error? c)
+                 ;; Do not treat 'ldconfig' failure as an error.
+                 (format (current-error-port)
+                         "warning: 'ldconfig' failed:~%")
+                 (report-invoke-error c (current-error-port))))
+        ;; Create a config file to tell 'ldconfig' where to look for the
+        ;; libraries that PROGRAMS need.
+        (call-with-output-file ld.so.conf
+          (lambda (port)
+            (for-each (lambda (directory)
+                        (display directory port)
+                        (newline port))
+                      library-path)))
+
+        (invoke "ldconfig" "-f" ld.so.conf "-C" cache-file)
+        (format #t "created '~a' from ~a library search path entries~%"
+                cache-file (length library-path)))))
+
+  (if make-dynamic-linker-cache?
+      (match outputs
+        (((_ . directories) ...)
+         (for-each make-cache-for-output directories)))
+      (format #t "ld.so cache not built~%")))
 
 (define %license-file-regexp
   ;; Regexp matching license files.
@@ -796,8 +862,7 @@ which cannot be found~%"
                                                         package))
                     (map (cut string-append source "/" <>) files)))
         (format (current-error-port)
-                "failed to find license files~%"))
-    #t))
+                "failed to find license files~%"))))
 
 (define %standard-phases
   ;; Standard build phases, as a list of symbol/procedure pairs.
@@ -813,6 +878,7 @@ which cannot be found~%"
             validate-documentation-location
             delete-info-dir-file
             patch-dot-desktop-files
+            make-dynamic-linker-cache
             install-license-files
             reset-gzip-timestamps
             compress-documentation)))
@@ -840,26 +906,30 @@ in order.  Return #t if all the PHASES succeeded, #f otherwise."
              (exit 1)))
     ;; The trick is to #:allow-other-keys everywhere, so that each procedure in
     ;; PHASES can pick the keyword arguments it's interested in.
-    (every (match-lambda
-             ((name . proc)
-              (let ((start (current-time time-monotonic)))
-                (format #t "starting phase `~a'~%" name)
-                (let ((result (apply proc args))
-                      (end    (current-time time-monotonic)))
-                  (format #t "phase `~a' ~:[failed~;succeeded~] after ~,1f seconds~%"
-                          name result
-                          (elapsed-time end start))
+    (for-each (match-lambda
+                ((name . proc)
+                 (let ((start (current-time time-monotonic)))
+                   (define (end-of-phase success?)
+                     (let ((end (current-time time-monotonic)))
+                       (format #t "phase `~a' ~:[failed~;succeeded~] after ~,1f seconds~%"
+                               name success?
+                               (elapsed-time end start))
 
-                  ;; Issue a warning unless the result is #t.
-                  (unless (eqv? result #t)
-                    (format (current-error-port) "\
-## WARNING: phase `~a' returned `~s'.  Return values other than #t
-## are deprecated.  Please migrate this package so that its phase
-## procedures report errors by raising an exception, and otherwise
-## always return #t.~%"
-                            name result))
+                       ;; Dump the environment variables as a shell script,
+                       ;; for handy debugging.
+                       (system "export > $NIX_BUILD_TOP/environment-variables")))
 
-                  ;; Dump the environment variables as a shell script, for handy debugging.
-                  (system "export > $NIX_BUILD_TOP/environment-variables")
-                  result))))
-           phases)))
+                   (format #t "starting phase `~a'~%" name)
+                   (with-throw-handler #t
+                     (lambda ()
+                       (apply proc args)
+                       (end-of-phase #t))
+                     (lambda args
+                       ;; This handler executes before the stack is unwound.
+                       ;; The exception is automatically re-thrown from here,
+                       ;; and we should get a proper backtrace.
+                       (format (current-error-port)
+                               "error: in phase '~a': uncaught exception:
+~{~s ~}~%" name args)
+                       (end-of-phase #f))))))
+              phases)))

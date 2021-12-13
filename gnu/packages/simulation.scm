@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017, 2018, 2019, 2020, 2021 Paul Garlick <pgarlick@tourbillion-technology.com>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -100,11 +101,9 @@
        ("scotch" ,pt-scotch32)
        ("zlib" ,zlib)))
     (native-inputs
-     `(("bison" ,bison)))
+     (list bison))
     (propagated-inputs
-     `(("gzip" ,gzip)
-       ("gnuplot" ,gnuplot)
-       ("openmpi" ,openmpi)))
+     (list gzip gnuplot openmpi))
     (outputs '("debug"                  ;~60MB
                "out"))
     (arguments
@@ -256,12 +255,11 @@ problems for efficient solution on parallel systems.")
             "0lhqsq8ypdak0ahr2jnyvg07yrqp6wicjxi6k56zx24wp3qg60sc"))))
     (build-system python-build-system)
     (inputs
-     `(("openmpi" ,openmpi)
-       ("python-numpy" ,python-numpy)))
+     (list openmpi python-numpy))
     (native-inputs
-     `(("python-pytest-cov" ,python-pytest-cov)))
+     (list python-pytest-cov))
     (propagated-inputs
-     `(("python-mpi4py" ,python-mpi4py)))
+     (list python-mpi4py))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -270,16 +268,13 @@ problems for efficient solution on parallel systems.")
          (replace 'check
            (lambda _
              (setenv "HOME" "/tmp")
-             (setenv "PYTHONPATH"
-                     (string-append (getcwd) ":" (getenv "PYTHONPATH")))
              (with-directory-excursion "test"
                ;; Disable parallel tests to avoid race condition.  See
                ;; https://github.com/pytest-dev/pytest-cov/issues/237.
                (substitute* "runtests.sh"
                  (("for p in 1 4 8 16; do")
                   "for p in 1; do"))
-               (invoke "./runtests.sh"))
-             #t)))))
+               (invoke "./runtests.sh")))))))
     (home-page "https://bitbucket.org/fenics-project/dijitso/")
     (synopsis "Distributed just-in-time building of shared libraries")
     (description
@@ -307,19 +302,15 @@ the complexity of that interface.  Parallel support depends on the
             "10dz8x3lm68x2w3kkqcjask38h0zkhhak26jdbkppr8g9y8wny7p"))))
     (build-system python-build-system)
     (inputs
-     `(("python-numpy" ,python-numpy)))
+     (list python-numpy))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (setenv "PYTHONPATH"
-                     (string-append (getcwd) ":" (getenv "PYTHONPATH")))
-             (with-directory-excursion "test"
-               (invoke "py.test"))
-             #t)))))
+             (invoke "py.test" "test"))))))
     (home-page "https://bitbucket.org/fenics-project/ufl/")
     (synopsis "Unified language for form-compilers")
     (description "The Unified Form Language (UFL) is a domain specific
@@ -344,17 +335,14 @@ UFL is part of the FEniCS Project.")
             "13sc7lma3d2mh43an7i4kkdbbk4cmvxjk45wi43xnjd7qc38zg4b"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (propagated-inputs
-     `(("python-numpy" ,python-numpy)
-       ("python-sympy" ,python-sympy)))
+     (list python-numpy python-sympy))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (setenv "PYTHONPATH"
-                     (string-append (getcwd) ":" (getenv "PYTHONPATH")))
              (with-directory-excursion "test"
                ;; FIXME: three FIAT test modules are known to fail
                ;; with recent versions of pytest (>= 4).  These are
@@ -364,8 +352,7 @@ UFL is part of the FEniCS Project.")
                (invoke "py.test" "unit/"
                        "--ignore=unit/test_fiat.py"
                        "--ignore=unit/test_quadrature.py"
-                       "--ignore=unit/test_reference_element.py"))
-             #t)))))
+                       "--ignore=unit/test_reference_element.py")))))))
     (home-page "https://bitbucket.org/fenics-project/fiat/")
     (synopsis "Tabulation of finite element function spaces")
     (description
@@ -394,19 +381,15 @@ FIAT is part of the FEniCS Project.")
             "1f2a44ha65fg3a1prrbrsz4dgvibsv0j5c3pi2m52zi93bhwwgg9"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (propagated-inputs
-     `(("python-fenics-dijitso" ,python-fenics-dijitso)
-       ("python-fenics-fiat" ,python-fenics-fiat)
-       ("python-fenics-ufl" ,python-fenics-ufl)))
+     (list python-fenics-dijitso python-fenics-fiat python-fenics-ufl))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
              (setenv "HOME" (getcwd))
-             (setenv "PYTHONPATH"
-                     (string-append (getcwd) ":" (getenv "PYTHONPATH")))
              (with-directory-excursion "test"
                ;; FIXME: the tests in subdirectory
                ;; 'unit/ufc/finite_element' require the ffc_factory
@@ -631,8 +614,7 @@ user interface to the FEniCS core components and external libraries.")
              ;; Define paths to store locations.
              (setenv "PYBIND11_DIR" (assoc-ref %build-inputs "pybind11"))
              ;; Move to python sub-directory.
-             (chdir "python")
-             #t))
+             (chdir "python")))
          (add-after 'build 'mpi-setup
            ,%openmpi-setup)
          (add-before 'check 'pre-check
@@ -674,14 +656,8 @@ user interface to the FEniCS core components and external libraries.")
                  "d for d in demos if d[0].stem not in "
                  "excludeList]\n")))
              (setenv "HOME" (getcwd))
-             (setenv "PYTHONPATH"
-                     (string-append
-                      (getcwd) "/build/lib.linux-x86_64-"
-                      ,(version-major+minor (package-version python)) ":"
-                      (getenv "PYTHONPATH")))
              ;; Restrict OpenBLAS to MPI-only in preference to MPI+OpenMP.
-             (setenv "OPENBLAS_NUM_THREADS" "1")
-             #t))
+             (setenv "OPENBLAS_NUM_THREADS" "1")))
          (replace 'check
            (lambda _
              (with-directory-excursion "test"
@@ -693,8 +669,7 @@ user interface to the FEniCS core components and external libraries.")
                                        (min 3 (parallel-job-count)))
                        "python" "-B" "-m"
                        "pytest" "unit" "--ignore"
-                       "unit/nls/test_PETScSNES_solver.py"))
-             #t))
+                       "unit/nls/test_PETScSNES_solver.py"))))
          (add-after 'install 'install-demo-files
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((demos (string-append
@@ -708,8 +683,7 @@ user interface to the FEniCS core components and external libraries.")
                                (unless (equal? "." dir)
                                  (mkdir-p tgt-dir)
                                  (install-file file tgt-dir))))
-                           (find-files "." ".*\\.(py|gz|xdmf)$"))))
-             #t)))))
+                           (find-files "." ".*\\.(py|gz|xdmf)$")))))))))
     (home-page "https://fenicsproject.org/")
     (synopsis "High-level environment for solving differential equations")
     (description
@@ -745,7 +719,7 @@ FEniCS core components and external libraries.")
                  "16v08dx7h7n4wyddzbwimazwyj74ynis12mpjfkay4243npy44b8"))))
       (build-system gnu-build-system)
       (native-inputs
-       `(("inetutils" ,inetutils))) ; for 'hostname', used in the check phase
+       (list inetutils)) ; for 'hostname', used in the check phase
       (arguments
        `(#:phases
          (modify-phases %standard-phases
@@ -925,16 +899,14 @@ command-line utility for mesh optimisation.")
             #t))))
     (build-system python-build-system)
     (inputs
-     `(("fenics" ,fenics)
-       ("openmpi" ,openmpi)
-       ("pybind11" ,pybind11)))
+     (list fenics openmpi pybind11))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("python-coverage" ,python-coverage)
-       ("python-decorator" ,python-decorator)
-       ("python-flake8" ,python-flake8)
-       ("python-pkgconfig" ,python-pkgconfig)
-       ("python-pytest" ,python-pytest)))
+     (list pkg-config
+           python-coverage
+           python-decorator
+           python-flake8
+           python-pkgconfig
+           python-pytest))
     (propagated-inputs
      `(("scipy" ,python-scipy)))
     (arguments

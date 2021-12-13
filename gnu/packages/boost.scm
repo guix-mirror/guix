@@ -3,17 +3,19 @@
 ;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2015, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018, 2019, 2021 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2018, 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019, 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Jonathan Brielmaier <jonathan.brielmaier@web.de>
+;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2021 Greg Hogan <code@greghogan.com>
 ;;; Copyright © 2021 Franck Pérignon <franck.perignon@univ-grenoble-alpes.fr>
 ;;; Copyright © 2021 Greg Hogan <code@greghogan.com>
 ;;;
@@ -65,29 +67,22 @@
 (define-public boost
   (package
     (name "boost")
-    (version "1.72.0")
+    (version "1.77.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://boostorg.jfrog.io/artifactory/main/release/"
                                   version "/source/boost_"
                                   (version-with-underscores version) ".tar.bz2"))
-              (patches
-               (list (boost-patch
-                      ;; 1.72.0 was released with a faulty coroutine submodule:
-                      ;; <https://github.com/boostorg/coroutine/issues/46>.
-                      "0001-revert-cease-dependence-on-range.patch" version
-                      "1zcqxzh56m1s635wqwk15j3zcs2gmjvjy2f0hid7i78s4pgm0yfs")))
               (sha256
                (base32
-                "08h7cv61fd0lzb4z50xanfqn0pdgvizjrpd1kcdgj725pisb5jar"))))
+                "0m08hhk3l7zvzajyk39qlw566q3fhixayhc2j11328qf0gy8b7zw"))))
     (build-system gnu-build-system)
-    (inputs `(("icu4c" ,icu4c)
-              ("zlib" ,zlib)))
+    (inputs (list icu4c zlib))
     (native-inputs
      `(("perl" ,perl)
        ,@(if (%current-target-system)
              '()
-             `(("python" ,python-wrapper)))
+             `(("python" ,python-minimal-wrapper)))
        ("tcsh" ,tcsh)))
     (arguments
      `(#:imported-modules ((guix build python-build-system)
@@ -128,8 +123,7 @@
                    (out (assoc-ref outputs "out")))
                (substitute* '("libs/config/configure"
                               "libs/spirit/classic/phoenix/test/runtest.sh"
-                              "tools/build/src/engine/execunix.cpp"
-                              "tools/build/src/engine/Jambase")
+                              "tools/build/src/engine/execunix.cpp")
                  (("/bin/sh") (which "sh")))
 
                (setenv "SHELL" (which "sh"))
@@ -144,13 +138,9 @@
                      '())
 
                ;; Change an #ifdef __MACH__ that really targets macOS.
-               ;; TODO: Inline this on the next rebuild cycle.
-               ,@(if (hurd-target?)
-                     '((substitute* "boost/test/utils/timer.hpp"
-                         (("defined\\(__MACH__\\)")
-                          "(defined __MACH__ && !defined __GNU__)"))
-                       #t)
-                     '())
+               (substitute* "boost/test/utils/timer.hpp"
+                 (("defined\\(__MACH__\\)")
+                  "(defined __MACH__ && !defined __GNU__)"))
 
                (invoke "./bootstrap.sh"
                        (string-append "--prefix=" out)
@@ -192,8 +182,7 @@
                           (symlink libboost_pythonNN.so
                                    (string-append "libboost_python"
                                                   (string-take python-version 1)
-                                                  ".so")))
-                        #t))))))))
+                                                  ".so")))))))))))
 
     (home-page "https://www.boost.org")
     (synopsis "Peer-reviewed portable C++ source libraries")
@@ -226,9 +215,7 @@ across a broad spectrum of applications.")
        ("libcxxabi" ,libcxxabi-6)
        ("zlib" ,zlib)))
     (native-inputs
-     `(("clang" ,clang-6)
-       ("perl" ,perl)
-       ("tcsh" ,tcsh)))
+     (list clang-6 perl tcsh))
     (arguments
      `(#:tests? #f
        #:make-flags
@@ -247,8 +234,7 @@ across a broad spectrum of applications.")
              (let ((gcc (assoc-ref (or native-inputs inputs) "gcc")))
                (setenv "CPLUS_INCLUDE_PATH"
                        (string-join
-                        (cons (string-append (assoc-ref inputs "libcxx")
-                                             "/include/c++/v1")
+                        (cons (search-input-directory inputs "/include/c++/v1")
                               ;; Hide GCC's C++ headers so that they do not interfere with
                               ;; the Clang headers.
                               (delete (string-append gcc "/include/c++")
@@ -262,7 +248,7 @@ across a broad spectrum of applications.")
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((icu (assoc-ref inputs "icu4c"))
                    (out (assoc-ref outputs "out"))
-                   (sh  (string-append (assoc-ref inputs "bash") "/bin/sh")))
+                   (sh  (search-input-file inputs "/bin/sh")))
                (substitute* '("libs/config/configure"
                               "libs/spirit/classic/phoenix/test/runtest.sh"
                               "tools/build/src/engine/execunix.c"
@@ -287,6 +273,9 @@ across a broad spectrum of applications.")
          (replace 'install
            (lambda* (#:key make-flags #:allow-other-keys)
              (apply invoke "./b2" "install" make-flags))))))))
+
+(define-public boost-with-python3
+  (deprecated-package "boost-with-python3" boost))
 
 (define-public boost-with-python2
   (package/inherit boost
@@ -470,7 +459,7 @@ signals and slots system.")
                "03b8i43pw4m767mm0cnbi77x7qhpkzpi9b1f6dpp4cmyszmnsk8l"))))
     (build-system gnu-build-system)
     (propagated-inputs
-      `(("boost" ,boost))) ; inclusion of header files
+      (list boost)) ; inclusion of header files
     (home-page "https://gitlab.com/mdds/mdds")
     (synopsis "Multi-dimensional C++ data structures and indexing algorithms")
     (description "Mdds (multi-dimensional data structure) provides a

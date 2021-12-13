@@ -23,7 +23,8 @@
   #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module (guix packages)
-  #:use-module (guix derivations)
+  #:use-module (guix gexp)
+  #:use-module (guix monads)
   #:use-module (guix search-paths)
   #:use-module (guix build-system)
   #:use-module (guix build-system gnu)
@@ -81,13 +82,12 @@
          (build emacs-build)
          (arguments (strip-keyword-arguments private-keywords arguments)))))
 
-(define* (emacs-build store name inputs
+(define* (emacs-build name inputs
                       #:key source
                       (tests? #f)
                       (parallel-tests? #t)
                       (test-command ''("make" "check"))
-                      (phases '(@ (guix build emacs-build-system)
-                                  %standard-phases))
+                      (phases '%standard-phases)
                       (outputs '("out"))
                       (include (quote %default-include))
                       (exclude (quote %default-exclude))
@@ -100,43 +100,29 @@
                                  (guix build emacs-utils))))
   "Build SOURCE using EMACS, and with INPUTS."
   (define builder
-    `(begin
-       (use-modules ,@modules)
-       (emacs-build #:name ,name
-                    #:source ,(match (assoc-ref inputs "source")
-                                (((? derivation? source))
-                                 (derivation->output-path source))
-                                ((source)
-                                 source)
-                                (source
-                                 source))
-                    #:system ,system
-                    #:test-command ,test-command
-                    #:tests? ,tests?
-                    #:parallel-tests? ,parallel-tests?
-                    #:phases ,phases
-                    #:outputs %outputs
-                    #:include ,include
-                    #:exclude ,exclude
-                    #:search-paths ',(map search-path-specification->sexp
-                                          search-paths)
-                    #:inputs %build-inputs)))
+    (with-imported-modules imported-modules
+      #~(begin
+          (use-modules #$@(sexp->gexp modules))
+          (emacs-build #:name #$name
+                       #:source #+source
+                       #:system #$system
+                       #:test-command #$test-command
+                       #:tests? #$tests?
+                       #:parallel-tests? #$parallel-tests?
+                       #:phases #$phases
+                       #:outputs #$(outputs->gexp outputs)
+                       #:include #$include
+                       #:exclude #$exclude
+                       #:search-paths '#$(sexp->gexp
+                                          (map search-path-specification->sexp
+                                               search-paths))
+                       #:inputs #$(input-tuples->gexp inputs)))))
 
-  (define guile-for-build
-    (match guile
-      ((? package?)
-       (package-derivation store guile system #:graft? #f))
-      (#f                                         ; the default
-       (let* ((distro (resolve-interface '(gnu packages commencement)))
-              (guile  (module-ref distro 'guile-final)))
-         (package-derivation store guile system #:graft? #f)))))
-
-  (build-expression->derivation store name builder
-                                #:inputs inputs
-                                #:system system
-                                #:modules imported-modules
-                                #:outputs outputs
-                                #:guile-for-build guile-for-build))
+  (mlet %store-monad ((guile (package->derivation (or guile (default-guile))
+                                                  system #:graft? #f)))
+    (gexp->derivation name builder
+                      #:system system
+                      #:guile-for-build guile)))
 
 (define emacs-build-system
   (build-system

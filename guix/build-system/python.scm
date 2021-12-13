@@ -1,7 +1,8 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
+;;; Copyright © 2021 Lars-Dominik Braun <lars@6xq.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,9 +20,13 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix build-system python)
+  #:use-module ((gnu packages) #:select (search-auxiliary-file))
+  #:use-module (guix gexp)
   #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module (guix memoization)
+  #:use-module (guix gexp)
+  #:use-module (guix monads)
   #:use-module (guix packages)
   #:use-module (guix derivations)
   #:use-module (guix search-paths)
@@ -69,6 +74,10 @@ extension, such as '.tar.gz'."
   "Return the default Python 2 package."
   (let ((python (resolve-interface '(gnu packages python))))
     (module-ref python 'python-2)))
+
+(define sanity-check.py
+  ;; The script used to validate the installation of a Python package.
+  (search-auxiliary-file "python/sanity-check.py"))
 
 (define* (package-with-explicit-python python old-prefix new-prefix
                                        #:key variant-property)
@@ -140,7 +149,7 @@ pre-defined variants."
                 #:rest arguments)
   "Return a bag for NAME."
   (define private-keywords
-    '(#:source #:target #:python #:inputs #:native-inputs))
+    '(#:target #:python #:inputs #:native-inputs))
 
   (and (not target)                               ;XXX: no cross-compilation
        (bag
@@ -154,19 +163,19 @@ pre-defined variants."
                         ;; Keep the standard inputs of 'gnu-build-system'.
                         ,@(standard-packages)))
          (build-inputs `(("python" ,python)
+                         ("sanity-check.py" ,(local-file sanity-check.py))
                          ,@native-inputs))
          (outputs outputs)
          (build python-build)
          (arguments (strip-keyword-arguments private-keywords arguments)))))
 
-(define* (python-build store name inputs
-                       #:key
+(define* (python-build name inputs
+                       #:key source
                        (tests? #t)
                        (test-target "test")
                        (use-setuptools? #t)
                        (configure-flags ''())
-                       (phases '(@ (guix build python-build-system)
-                                   %standard-phases))
+                       (phases '%standard-phases)
                        (outputs '("out"))
                        (search-paths '())
                        (system (%current-system))
@@ -176,43 +185,35 @@ pre-defined variants."
                                   (guix build utils))))
   "Build SOURCE using PYTHON, and with INPUTS.  This assumes that SOURCE
 provides a 'setup.py' file as its build system."
-  (define builder
-    `(begin
-       (use-modules ,@modules)
-       (python-build #:name ,name
-                     #:source ,(match (assoc-ref inputs "source")
-                                 (((? derivation? source))
-                                  (derivation->output-path source))
-                                 ((source)
-                                  source)
-                                 (source
-                                  source))
-                     #:configure-flags ,configure-flags
-                     #:system ,system
-                     #:test-target ,test-target
-                     #:tests? ,tests?
-                     #:use-setuptools? ,use-setuptools?
-                     #:phases ,phases
-                     #:outputs %outputs
-                     #:search-paths ',(map search-path-specification->sexp
-                                           search-paths)
-                     #:inputs %build-inputs)))
+  (define build
+    (with-imported-modules imported-modules
+      #~(begin
+          (use-modules #$@(sexp->gexp modules))
 
-  (define guile-for-build
-    (match guile
-      ((? package?)
-       (package-derivation store guile system #:graft? #f))
-      (#f                                         ; the default
-       (let* ((distro (resolve-interface '(gnu packages commencement)))
-              (guile  (module-ref distro 'guile-final)))
-         (package-derivation store guile system #:graft? #f)))))
+          #$(with-build-variables inputs outputs
+              #~(python-build #:name #$name
+                              #:source #+source
+                              #:configure-flags #$configure-flags
+                              #:use-setuptools? #$use-setuptools?
+                              #:system #$system
+                              #:test-target #$test-target
+                              #:tests? #$tests?
+                              #:phases #$(if (pair? phases)
+                                             (sexp->gexp phases)
+                                             phases)
+                              #:outputs %outputs
+                              #:search-paths '#$(sexp->gexp
+                                                 (map search-path-specification->sexp
+                                                      search-paths))
+                              #:inputs %build-inputs)))))
 
-  (build-expression->derivation store name builder
-                                #:inputs inputs
-                                #:system system
-                                #:modules imported-modules
-                                #:outputs outputs
-                                #:guile-for-build guile-for-build))
+
+  (mlet %store-monad ((guile (package->derivation (or guile (default-guile))
+                                                  system #:graft? #f)))
+    (gexp->derivation name build
+                      #:system system
+                      #:target #f
+                      #:guile-for-build guile)))
 
 (define python-build-system
   (build-system

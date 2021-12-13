@@ -1,0 +1,35 @@
+Get wayland-session wrapper from environment.
+
+---
+ daemon/gdm-session.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/daemon/gdm-session.c b/daemon/gdm-session.c
+index 4e303e70..1deca4e9 100644
+--- a/daemon/gdm-session.c
++++ b/daemon/gdm-session.c
+@@ -2888,8 +2888,9 @@ gdm_session_start_session (GdmSession *self,
+                                                            allow_remote_connections? "--allow-remote-connections " : "",
+                                                            command);
+                         } else {
+-                                program = g_strdup_printf (LIBEXECDIR "/gdm-wayland-session %s\"%s\"",
++                                program = g_strdup_printf (LIBEXECDIR "/gdm-wayland-session %s\"%s %s\"",
+                                                            register_session ? "--register-session " : "",
++                                                           g_getenv ("GDM_WAYLAND_SESSION"),
+                                                            command);
+                         }
+                 } else if (run_xsession_script) {
+@@ -2942,8 +2942,9 @@
+                                                            register_session ? "--register-session " : "",
+                                                            self->selected_program);
+                         } else {
+-                                program = g_strdup_printf (LIBEXECDIR "/gdm-wayland-session %s\"dbus-run-session -- %s\"",
++                                program = g_strdup_printf (LIBEXECDIR "/gdm-wayland-session %s\"dbus-run-session -- %s %s\"",
+                                                            register_session ? "--register-session " : "",
++                                                           g_getenv ("GDM_WAYLAND_SESSION"),
+                                                            self->selected_program);
+                         }
+                 } else {
+--
+2.33.0
+

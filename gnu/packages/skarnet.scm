@@ -70,7 +70,7 @@ and file system operations.  It is used by all skarnet.org software.")
       (sha256
        (base32 "0msmzf5zwjcsgjlvvq28rd2i0fkdb2skmv8ii0ix8dhyckwwjmav"))))
     (build-system gnu-build-system)
-    (inputs `(("skalibs" ,skalibs)))
+    (inputs (list skalibs))
     (arguments
      '(#:configure-flags (list
                           (string-append "--with-lib="
@@ -112,8 +112,7 @@ complexity.")))
      (sha256
       (base32 "1a3lj0xfhn1w3a4ygqsxy8q4dr3n48hnwml4xzdpz3nrikhy8if5"))))
    (build-system gnu-build-system)
-   (inputs `(("skalibs" ,skalibs)
-             ("execline" ,execline)))
+   (inputs (list skalibs execline))
    (arguments
     `(#:configure-flags (list
                         (string-append "--with-lib="
@@ -157,7 +156,7 @@ functionality with a very small amount of code.")))
      (sha256
       (base32 "0nczzjprvp6wirzycgf5h32dlgx4r8grzkqhif27n3ii6f5g78yw"))))
     (build-system gnu-build-system)
-    (inputs `(("skalibs" ,skalibs)))
+    (inputs (list skalibs))
     (arguments
      '(#:configure-flags (list
                           (string-append "--with-lib="
@@ -186,10 +185,7 @@ as an alternative to the BIND, djbdns or other DNS clients.")))
      (sha256
       (base32 "1fn3g9gkwgmnxallhk82f5rly81pnkilj7n49g5fbfmaalsq96mh"))))
     (build-system gnu-build-system)
-    (inputs `(("skalibs" ,skalibs)
-              ("execline" ,execline)
-              ("s6" ,s6)
-              ("s6-dns" ,s6-dns)))
+    (inputs (list skalibs execline s6 s6-dns))
     (arguments
      '(#:configure-flags (list
                           (string-append "--with-lib="
@@ -229,9 +225,7 @@ clock synchronization.")))
      (sha256
       (base32 "1xyaplwzvqnb53mg59a7jklakzwsiqivp6qggsry3sbaw4hf3d5j"))))
     (build-system gnu-build-system)
-    (inputs `(("skalibs" ,skalibs)
-              ("execline" ,execline)
-              ("s6" ,s6)))
+    (inputs (list skalibs execline s6))
     (arguments
      '(#:configure-flags (list
                           (string-append "--with-lib="
@@ -271,7 +265,7 @@ environment.")))
      (sha256
       (base32 "132jj5qk8x40kw6lrrn7jiqhvqj9d2h6g6mhl8zma1sp37bg0i84"))))
     (build-system gnu-build-system)
-    (inputs `(("skalibs" ,skalibs)))
+    (inputs (list skalibs))
     (arguments
      '(#:configure-flags (list
                           (string-append "--with-lib="
@@ -304,9 +298,7 @@ systems and other constrained environments, but they work everywhere.")))
       (base32 "0grqk111d6aqym1c4l9j26fdqcgra1hvwb9vdgylrfbvn1c3hlpb"))))
     (build-system gnu-build-system)
     (inputs
-     `(("execline" ,execline)
-       ("s6" ,s6)
-       ("skalibs" ,skalibs)))
+     (list execline s6 skalibs))
     (arguments
      '(#:configure-flags
        (list
@@ -349,7 +341,7 @@ all the details.")))
      (sha256
       (base32 "0hr49nl0d7a6i5w8cfg43xzvzayb8kpqij9xg7bmw2fyvc2z338z"))))
     (build-system gnu-build-system)
-    (inputs `(("skalibs" ,skalibs)))
+    (inputs (list skalibs))
     (arguments
      '(#:configure-flags (list
                           (string-append "--with-lib="

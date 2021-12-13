@@ -3,6 +3,7 @@
 ;;; Copyright © 2017, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2021 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,6 +25,7 @@
   #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages glib)
@@ -47,7 +49,7 @@
                 "088yqq60wjx3jqjlhl12893p15gl9asjpavrbhh590qzpqndhp8m"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (arguments
      `(#:configure-flags
        (list "--disable-static")
@@ -63,8 +65,7 @@
                 (string-append "gnutls_priority_set_direct"
                                "(session, \"NORMAL:+ANON-DH\", NULL)"))))))))
     (inputs
-     `(("libsigc++" ,libsigc++)
-       ("gnutls" ,gnutls)))
+     (list libsigc++-2 gnutls))
     (home-page "https://gobby.github.io/")
     (synopsis "Network access framework for IPv4/IPv6")
     (description
@@ -88,11 +89,9 @@
      `(#:configure-flags
        (list "--disable-static")))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("libsigc++" ,libsigc++)
-       ("gnutls" ,gnutls)
-       ("libnet6" ,libnet6)))
+     (list libsigc++-2 gnutls libnet6))
     (home-page "https://gobby.github.io/")
     (synopsis "Library for building collaborative editors")
     (description
@@ -117,8 +116,7 @@ documents in one session.  Obby is used by the Gobby collaborative editor.")
                 "0w8q01lf6bcdz537b29m7rwlbc7k87b12vnpm1h6219ypvzqkgcc"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)))
+     (list pkg-config intltool))
     (inputs
      `(("libxml++-2" ,libxml++-2)
        ("gnutls" ,gnutls)
@@ -143,7 +141,7 @@ connect to a server running the old 0.4 protocol.")
 (define-public gobby
   (package
     (name "gobby")
-    (version "0.5.0")
+    (version "0.6.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://releases.0x539.de/gobby/gobby-"
@@ -151,16 +149,15 @@ connect to a server running the old 0.4 protocol.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "165x0r668ma5blziisvbr8qig3jw9hf7i6w8r7wwvz3wsac3bswc"))))
-    (build-system gnu-build-system)
+                "1p2wbnchxy2wdzk19p7bxfpbq5zawa0l500na57jp8jgk3qz7czx"))))
+    (build-system glib-or-gtk-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)))
+     (list pkg-config intltool itstool))
     (inputs
      `(("gnutls" ,gnutls)
        ("gsasl" ,gsasl)
-       ("gtkmm-2" ,gtkmm-2)
-       ("gtksourceview-2" ,gtksourceview-2)
+       ("gtkmm" ,gtkmm-3)
+       ("gtksourceview" ,gtksourceview-3)
        ("libinfinity" ,libinfinity)
        ("libxml++-2" ,libxml++-2)))
     (arguments
@@ -195,12 +192,9 @@ together over the internet in real-time.")
          "17i3g61hxz9pzl3ryd1yr15142r25m06jfzjrpdy7ic1b8vjjw3f"))))
     (build-system gnu-build-system)
     (inputs
-     `(("glib" ,glib)
-       ("gsasl" ,gsasl)
-       ("gtk+" ,gtk+)
-       ("libxml2" ,libxml2)))
+     (list glib gsasl gtk+ libxml2))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (arguments
      `(#:configure-flags (list "--disable-static"
                                "--with-inftextgtk"

@@ -48,15 +48,15 @@
               (("test_log_http") "disabled_test_log_http"))
             #t)))))
     (native-inputs
-     `(("python-mock" ,python-mock)))
+     (list python-mock))
     (propagated-inputs
-     `(("python-attrs" ,python-attrs)
-       ("python-autobahn" ,python-autobahn)
-       ("python-idna" ,python-idna)
-       ("python-service-identity" ,python-service-identity)
-       ("python-six" ,python-six)
-       ("python-treq" ,python-treq)
-       ("python-twisted" ,python-twisted)))
+     (list python-attrs
+           python-autobahn
+           python-idna
+           python-service-identity
+           python-six
+           python-treq
+           python-twisted))
     (home-page "https://github.com/warner/magic-wormhole-mailbox-server")
     (synopsis "Magic-Wormhole central mailbox server")
     (description "This package provides the main server that Magic-Wormhole
@@ -89,11 +89,9 @@ connection, or through a transit-relay.")
                          (find-files "docs/"))
                #t))))))
     (native-inputs
-     `(("python-mock" ,python-mock)
-       ("python-pyflakes" ,python-pyflakes)
-       ("python-tox" ,python-tox)))
+     (list python-mock python-pyflakes python-tox))
     (propagated-inputs
-     `(("python-twisted" ,python-twisted)))
+     (list python-twisted))
     (home-page
       "https://github.com/warner/magic-wormhole-transit-relay")
     (synopsis "Magic-Wormhole relay server")
@@ -128,22 +126,22 @@ together, allowing them to pretend they have a direct connection.")
                (install-file "docs/wormhole.1" man))
              #t)))))
     (native-inputs
-     `(("python-mock" ,python-mock)
-       ;; XXX These are required for the test suite but end up being referenced
-       ;; by the built package.
-       ;; https://bugs.gnu.org/25235
-       ("magic-wormhole-mailbox-server" ,magic-wormhole-mailbox-server)
-       ("magic-wormhole-transit-relay" ,magic-wormhole-transit-relay)))
+     (list python-mock
+           ;; XXX These are required for the test suite but end up being referenced
+           ;; by the built package.
+           ;; https://bugs.gnu.org/25235
+           magic-wormhole-mailbox-server
+           magic-wormhole-transit-relay))
     (propagated-inputs
-     `(("python-autobahn" ,python-autobahn)
-       ("python-click" ,python-click)
-       ("python-hkdf" ,python-hkdf)
-       ("python-humanize" ,python-humanize)
-       ("python-pynacl" ,python-pynacl)
-       ("python-spake2" ,python-spake2)
-       ("python-tqdm" ,python-tqdm)
-       ("python-twisted" ,python-twisted)
-       ("python-txtorcon" ,python-txtorcon)))
+     (list python-autobahn
+           python-click
+           python-hkdf
+           python-humanize
+           python-pynacl
+           python-spake2
+           python-tqdm
+           python-twisted
+           python-txtorcon))
     (home-page "https://github.com/warner/magic-wormhole")
     (synopsis "Securely transfer data between computers")
     (description "Magic-Wormhole is a library and a command-line tool named

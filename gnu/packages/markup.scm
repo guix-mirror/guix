@@ -93,8 +93,7 @@ processing library written in C.")
          (let ((source (assoc-ref %build-inputs "source"))
                (out    (assoc-ref %outputs "out"))
                (perlbd (string-append (assoc-ref %build-inputs "perl") "/bin"))
-               (unzip  (string-append (assoc-ref %build-inputs "unzip")
-                                      "/bin/unzip")))
+               (unzip  (search-input-file %build-inputs "/bin/unzip")))
            (mkdir-p out)
            (with-directory-excursion out
              (invoke unzip source)
@@ -106,8 +105,8 @@ processing library written in C.")
              (patch-shebang "bin/markdown" (list perlbd))
              (delete-file-recursively "Markdown_1.0.1"))
            #t))))
-    (native-inputs `(("unzip" ,unzip)))
-    (inputs `(("perl" ,perl)))
+    (native-inputs (list unzip))
+    (inputs (list perl))
     (home-page "http://daringfireball.net/projects/markdown")
     (synopsis "Text-to-HTML conversion tool")
     (description
@@ -140,7 +139,7 @@ convert it to structurally valid XHTML (or HTML).")
                        (string-append "PREFIX=" out)
                        (string-append "MANDIR=" out "/share/man"))))))))
     (native-inputs
-     `(("which" ,which)))
+     (list which))
     (home-page "https://kristaps.bsd.lv/lowdown/")
     (synopsis "Simple Markdown translator")
     (description "Lowdown is a Markdown translator producing HTML5,
@@ -185,7 +184,7 @@ roff documents in the ms and man formats, LaTeX, gemini, and terminal output.")
                        (string-append "--prefix=" out)
                        "--shared")))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (synopsis "Markdown processing library, written in C")
     (description
      "Discount is a markdown implementation, written in C.  It provides a
@@ -223,7 +222,7 @@ roff documents in the ms and man formats, LaTeX, gemini, and terminal output.")
                       "/lib")))
              #t)))))
     (inputs
-     `(("discount" ,discount)))
+     (list discount))
     (home-page
      "https://metacpan.org/release/Text-Markdown-Discount")
     (synopsis
@@ -263,7 +262,7 @@ implementation.
     (build-system cmake-build-system)
     (arguments
      '(#:test-target "test"))
-    (native-inputs `(("python" ,python)))
+    (native-inputs (list python))
     (synopsis "CommonMark Markdown reference implementation")
     (description "CommonMark is a strongly defined, highly compatible
 specification of Markdown.  cmark is the C reference implementation of

@@ -39,10 +39,9 @@
             "1qzpxjjf7ri1jzv71mvq5m9g8hfaj5yzwp30rwxlm6n2b24a6jpb"))))
     (build-system gnu-build-system)
     (propagated-inputs
-     `(("printproto" ,printproto)))
+     (list printproto))
     (inputs
-      `(("libxext" ,libxext)
-        ("libxt" ,libxt)))
+      (list libxext libxt))
     (home-page "http://lesstif.sourceforge.net/")
     (synopsis "Clone of the Motif toolkit for the X window system")
     (description "Clone of the Motif toolkit for the X window system.")

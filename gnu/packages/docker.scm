@@ -57,25 +57,22 @@
 (define-public python-docker
   (package
     (name "python-docker")
-    (version "3.7.3")
+    (version "5.0.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "docker" version))
        (sha256
         (base32
-         "0qmrcvpaz37p85hfddsd4yc8hgqlkzs4cz09q9wmy0pz5pwajqm0"))))
+         "1yr7w8vmdis01myx26pqx7wcyz2cy1mfs421alppq3lpc9ms45nr"))))
     (build-system python-build-system)
     ;; TODO: Tests require a running Docker daemon.
     (arguments '(#:tests? #f))
     (inputs
-     `(("python-requests" ,python-requests-2.20)
-       ("python-six" ,python-six)
-       ("python-urllib3" ,python-urllib3-1.24)))
+     (list python-requests python-six python-urllib3))
     (propagated-inputs
-     `(("python-docker-pycreds" ,python-docker-pycreds)
-       ("python-paramiko" ,python-paramiko)    ;adds SSH support
-       ("python-websocket-client" ,python-websocket-client)))
+     (list python-docker-pycreds python-paramiko ;adds SSH support
+           python-websocket-client))
     (home-page "https://github.com/docker/docker-py/")
     (synopsis "Python client for Docker")
     (description "Docker-Py is a Python client for the Docker container
@@ -95,7 +92,7 @@ management tool.")
          "1kjn64wx23jmr8dcc6g7bwlmrhfmxr77gh6iphqsl39sayfxdab9"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-six" ,python-six)))
+     (list python-six))
     (home-page "https://github.com/d11wtq/dockerpty")
     (synopsis "Python library to use the pseudo-TTY of a Docker container")
     (description "Docker PTY provides the functionality needed to operate the
@@ -106,29 +103,30 @@ client.")
 (define-public docker-compose
   (package
     (name "docker-compose")
-    (version "1.25.4")
+    (version "1.29.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "docker-compose" version))
        (sha256
         (base32
-         "1ww8ckpj3n5jdg63qvmiqx3gk0fsrnynnnqj17fppymbwjzf5fps"))))
+         "1dq9kfak61xx7chjrzmkvbw9mvj9008k7g8q7mwi4x133p9dk32c"))))
     (build-system python-build-system)
     ;; TODO: Tests require running Docker daemon.
     (arguments '(#:tests? #f))
     (inputs
-     `(("python-cached-property"
-        ,python-cached-property)
-       ("python-docker" ,python-docker)
-       ("python-dockerpty" ,python-dockerpty)
-       ("python-docopt" ,python-docopt)
-       ("python-jsonschema" ,python-jsonschema)
-       ("python-pyyaml" ,python-pyyaml)
-       ("python-requests" ,python-requests)
-       ("python-six" ,python-six)
-       ("python-texttable" ,python-texttable)
-       ("python-websocket-client" ,python-websocket-client)))
+     (list python-cached-property
+           python-distro
+           python-docker
+           python-dockerpty
+           python-docopt
+           python-dotenv
+           python-jsonschema
+           python-pyyaml
+           python-requests
+           python-six
+           python-texttable
+           python-websocket-client))
     (home-page "https://www.docker.com/")
     (synopsis "Multi-container orchestration for Docker")
     (description "Docker Compose is a tool for defining and running
@@ -160,11 +158,9 @@ created and all the services are started as specified in the configuration.")
                (("2.4.1") ,(package-version python-flake8)))
              #t)))))
     (native-inputs
-     `(("python-flake8" ,python-flake8)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)))
+     (list python-flake8 python-pytest python-pytest-cov))
     (propagated-inputs
-     `(("python-six" ,python-six)))
+     (list python-six))
     (home-page "https://github.com/shin-/dockerpy-creds")
     (synopsis
      "Python bindings for the Docker credentials store API")
@@ -232,14 +228,9 @@ Python without keeping their credentials in a Docker configuration file.")
                    (apply invoke "make" (string-append "DESTDIR=" out) "install"
                           ',make-flags)))))))))
     (inputs
-     `(("btrfs-progs" ,btrfs-progs)
-       ("libseccomp" ,libseccomp)
-       ("pigz" ,pigz)
-       ("runc" ,runc)
-       ("util-linux" ,util-linux)))
+     (list btrfs-progs libseccomp pigz runc util-linux))
     (native-inputs
-     `(("go" ,go)
-       ("pkg-config" ,pkg-config)))
+     (list go pkg-config))
     (synopsis "Docker container runtime")
     (description "This package provides the container daemon for Docker.
 It includes image transfer and storage, container execution and supervision,
@@ -593,10 +584,8 @@ built-in registry server of Docker.")
        ("xfsprogs" ,xfsprogs)
        ("xz" ,xz)))
     (native-inputs
-     `(("eudev" ,eudev)      ; TODO: Should be propagated by lvm2 (.pc -> .pc)
-       ("go" ,go)
-       ("gotestsum" ,gotestsum)
-       ("pkg-config" ,pkg-config)))
+     (list eudev ; TODO: Should be propagated by lvm2 (.pc -> .pc)
+           go gotestsum pkg-config))
     (synopsis "Docker container component library, and daemon")
     (description "This package provides a framework to assemble specialized
 container systems.  It includes components for orchestration, image
@@ -667,9 +656,7 @@ provisioning etc.")
                (install-file "build/docker" out-bin)
                #t))))))
     (native-inputs
-     `(("go" ,go)
-       ("libltdl" ,libltdl)
-       ("pkg-config" ,pkg-config)))
+     (list go libltdl pkg-config))
     (synopsis "Command line interface to Docker")
     (description "This package provides a command line interface to Docker.")
     (home-page "https://www.docker.com/")

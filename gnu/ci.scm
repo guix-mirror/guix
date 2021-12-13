@@ -69,7 +69,6 @@
   #:export (derivation->job
             image->job
 
-            %bootstrap-packages
             %core-packages
             %cross-targets
             channel-source->package
@@ -130,7 +129,7 @@ building the derivation."
 (define (package-cross-job store job-name package target system)
   "Return a job called TARGET.JOB-NAME that cross-builds PACKAGE for TARGET on
 SYSTEM."
-  (let ((name (string-append target "." job-name "." system)))
+  (let ((name (string-append target "." job-name)))
     (package-job store name package system
                  #:cross? #t
                  #:target target)))
@@ -139,9 +138,9 @@ SYSTEM."
   ;; Note: Don't put the '-final' package variants because (1) that's
   ;; implicit, and (2) they cannot be cross-built (due to the explicit input
   ;; chain.)
-  (list gcc-7 gcc-8 gcc-9 gcc-10 glibc binutils
+  (list gcc-8 gcc-9 gcc-10 gcc-11 glibc binutils
         gmp mpfr mpc coreutils findutils diffutils patch sed grep
-        gawk gnu-gettext hello guile-2.0 guile-2.2 zlib gzip xz guix
+        gawk gnu-gettext hello guile-2.2 guile-3.0 zlib gzip xz guix
         %bootstrap-binaries-tarball
         %binutils-bootstrap-tarball
         (%glibc-bootstrap-tarball)
@@ -149,13 +148,18 @@ SYSTEM."
         %guile-bootstrap-tarball
         %bootstrap-tarballs))
 
-(define %bootstrap-packages
-  ;; Return the list of bootstrap packages from the commencement module.
-  (filter package?
-          (module-map
-           (lambda (sym var)
-             (variable-ref var))
-           (resolve-module '(gnu packages commencement)))))
+(define (commencement-packages system)
+  "Return the list of bootstrap packages from the commencement module for
+SYSTEM."
+  ;; Only include packages supported on SYSTEM.  For example, the Mes
+  ;; bootstrap graph is currently not supported on ARM so it should be
+  ;; excluded.
+  (filter (lambda (obj)
+            (and (package? obj)
+                 (supported-package? obj system)))
+          (module-map (lambda (sym var)
+                        (variable-ref var))
+                      (resolve-module '(gnu packages commencement)))))
 
 (define (packages-to-cross-build target)
   "Return the list of packages to cross-build for TARGET."
@@ -297,20 +301,16 @@ otherwise use the IMAGE name."
 
 (define channel-build-system
   ;; Build system used to "convert" a channel instance to a package.
-  (let* ((build (lambda* (store name inputs
-                                #:key source commit system
-                                #:allow-other-keys)
-                  (run-with-store store
-                    ;; SOURCE can be a lowerable object such as <local-file>
-                    ;; or a file name.  Adjust accordingly.
-                    (mlet* %store-monad ((source (if (string? source)
-                                                     (return source)
-                                                     (lower-object source)))
-                                         (instance
-                                          -> (checkout->channel-instance
-                                              source #:commit commit)))
-                      (channel-instances->derivation (list instance)))
-                    #:system system)))
+  (let* ((build (lambda* (name inputs
+                               #:key source commit system
+                               #:allow-other-keys)
+                  (mlet* %store-monad ((source (if (string? source)
+                                                   (return source)
+                                                   (lower-object source)))
+                                       (instance
+                                        -> (checkout->channel-instance
+                                            source #:commit commit)))
+                    (channel-instances->derivation (list instance)))))
          (lower (lambda* (name #:key system source commit
                                #:allow-other-keys)
                   (bag
@@ -538,7 +538,7 @@ names."
            (map (lambda (package)
                   (package-job store (job-name package)
                                package system))
-                (append %bootstrap-packages %core-packages))
+                (append (commencement-packages system) %core-packages))
            (cross-jobs store system)))
          ('guix
           ;; Build Guix modules only.

@@ -79,9 +79,7 @@ generation of the system profile."
                           entries)))
              marionette))
 
-          (mkdir #$output)
-          (chdir #$output)
-
+          (test-runner-current (system-test-runner #$output))
           (test-begin "switch-to-system")
 
           (let ((generations-prior (system-generations marionette)))
@@ -112,8 +110,7 @@ generation of the system profile."
                                  "jakob")
                marionette)))
 
-          (test-end)
-          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          (test-end))))
 
   (gexp->derivation "switch-to-system" (test (switch-system-program os))))
 
@@ -153,9 +150,7 @@ Shepherd (PID 1) by unloading obsolete services and loading new services."
                 (map live-service-canonical-name (current-services)))
              marionette))
 
-          (mkdir #$output)
-          (chdir #$output)
-
+          (test-runner-current (system-test-runner #$output))
           (test-begin "upgrade-services")
 
           (let ((services-prior (running-services marionette)))
@@ -176,8 +171,7 @@ Shepherd (PID 1) by unloading obsolete services and loading new services."
             (test-assert "script stopped obsolete service"
               (not (memq 'dummy (running-services marionette)))))
 
-          (test-end)
-          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          (test-end))))
 
   (gexp->derivation
    "upgrade-services"
@@ -220,9 +214,7 @@ bootloader's configuration file."
                      (second (string-split (match:substring parameter) #\=)))
                    (list-matches "system=[^ ]*" grub-cfg))))
 
-          (mkdir #$output)
-          (chdir #$output)
-
+          (test-runner-current (system-test-runner #$output))
           (test-begin "install-bootloader")
 
           (test-assert "no prior menu entry for system generation"
@@ -236,8 +228,7 @@ bootloader's configuration file."
           (test-assert "menu entry created for system generation"
             (member #$os (generations-in-grub-cfg marionette)))
 
-          (test-end)
-          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          (test-end))))
 
   (let* ((bootloader ((compose bootloader-configuration-bootloader
                                operating-system-bootloader)

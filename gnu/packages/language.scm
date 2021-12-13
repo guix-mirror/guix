@@ -131,8 +131,7 @@
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (substitute* "configure.ac"
                (("/usr/share/anthy/anthy.dic")
-                (string-append (assoc-ref inputs "anthy")
-                               "/share/anthy/anthy.dic")))
+                (search-input-file inputs "/share/anthy/anthy.dic")))
              (substitute* "configure.ac"
                (("/usr/bin:\\$GTK3_LIBDIR/libgtk-3-0")
                 (string-append (assoc-ref inputs "gtk+:bin")
@@ -195,7 +194,7 @@
        ("xkbcommon" ,libxkbcommon)
        ("xklavier" ,libxklavier)))
     (propagated-inputs
-     `(("glib" ,glib)))
+     (list glib))
     (synopsis "Lightweight input method framework")
     (description "Nimf is a lightweight, fast and extensible input method
 framework.  This package provides a fork of the original nimf project, that
@@ -322,8 +321,7 @@ Random Cage Fighting Birds, Cool Music etc.")
        ("python" ,python-wrapper)
        ("texinfo" ,texinfo)))
     (inputs
-     `(("ncurses" ,ncurses)
-       ("sqlite" ,sqlite)))
+     (list ncurses sqlite))
     (synopsis "Chinese phonetic input method")
     (description "Chewing is an intelligent phonetic (Zhuyin/Bopomofo) input
 method, one of the most popular choices for Traditional Chinese users.")
@@ -411,7 +409,7 @@ Marburg.")
        ("makeinfo" ,texinfo)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("libxml2" ,libxml2)))
+     (list libxml2))
     (propagated-inputs
      `(("liblouis" ,liblouis)
        ("liblouis:bin" ,liblouis "bin")))
@@ -475,7 +473,7 @@ languages.")
          "015ximzdp42v824llwlg2pd77vd0d172lb4xs55q9f9zhqf6s5qx"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-lingua-en-words2nums" ,perl-lingua-en-words2nums)))
+     (list perl-lingua-en-words2nums))
     (home-page "https://metacpan.org/release/Lingua-EN-FindNumber")
     (synopsis "Locate (written) numbers in English text")
     (description "This module provides a regular expression for finding
@@ -496,7 +494,7 @@ manipulating such numbers.")
         (base32
          "0j8d1f1wvmgc11d71pc8xp8fv5a1nb2yfw1dgd19xhscn1klpvzw"))))
     (build-system perl-build-system)
-    (native-inputs `(("perl-module-build" ,perl-module-build)))
+    (native-inputs (list perl-module-build))
     (home-page "https://metacpan.org/release/Lingua-EN-Inflect")
     (synopsis "Convert singular to plural")
     (description "Lingua::EN::Inflect provides plural inflections,
@@ -520,7 +518,7 @@ provided.  Where appropriate, \"classical\" variants (for example: \"brother\"
          "1gxccynkaqav43ww43jp4rzkyr36x97jd03yb5f6yx0jhn1k7yv6"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-lingua-en-inflect" ,perl-lingua-en-inflect)))
+     (list perl-lingua-en-inflect))
     (home-page "https://metacpan.org/release/Lingua-EN-Inflect-Number")
     (synopsis "Force number of words to singular or plural")
     (description "This module extends the functionality of Lingua::EN::Inflect
@@ -542,13 +540,11 @@ converting a word to singular or plural.")
          "1a6y1l2pjim2242wcpgz066di4pbzfgsjjdl7vg5a5wzm48qj1am"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-nowarnings" ,perl-test-nowarnings)))
+     (list perl-test-nowarnings))
     (propagated-inputs
-     `(("perl-lingua-en-findnumber" ,perl-lingua-en-findnumber)
-       ("perl-lingua-en-inflect" ,perl-lingua-en-inflect)
-       ("perl-lingua-en-inflect-number" ,perl-lingua-en-inflect-number)
-       ("perl-lingua-en-number-isordinal" ,perl-lingua-en-number-isordinal)
-       ("perl-lingua-en-tagger" ,perl-lingua-en-tagger)))
+     (list perl-lingua-en-findnumber perl-lingua-en-inflect
+           perl-lingua-en-inflect-number perl-lingua-en-number-isordinal
+           perl-lingua-en-tagger))
     (home-page "https://metacpan.org/release/Lingua-EN-Inflect-Phrase")
     (synopsis "Inflect short English phrases")
     (description "This module attempts to pluralize or singularize short
@@ -569,10 +565,9 @@ English phrases.")
          "1mhqjvh2ad30gjab5b3a6mbr4aysyrscp4wp42yy5x6001a6km98"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-try-tiny" ,perl-try-tiny)
-       ("perl-test-fatal" ,perl-test-fatal)))
+     (list perl-try-tiny perl-test-fatal))
     (propagated-inputs
-     `(("perl-lingua-en-findnumber" ,perl-lingua-en-findnumber)))
+     (list perl-lingua-en-findnumber))
     (home-page "https://metacpan.org/release/Lingua-EN-Number-IsOrdinal")
     (synopsis "Detect if English number is ordinal or cardinal")
     (description "This module will tell you if a number, either in words or as
@@ -593,10 +588,8 @@ digits, is a cardinal or ordinal number.")
          "0nrnkvsf9f0a7lp82sanmy89ms2nqq1lvjqicvsagsvzp513bl5b"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-memoize-expirelru" ,perl-memoize-expirelru)
-       ("perl-lingua-stem" ,perl-lingua-stem)
-       ("perl-html-parser" ,perl-html-parser)
-       ("perl-html-tagset" ,perl-html-tagset)))
+     (list perl-memoize-expirelru perl-lingua-stem perl-html-parser
+           perl-html-tagset))
     (home-page "https://metacpan.org/release/Lingua-EN-Tagger")
     (synopsis "Part-of-speech tagger for English natural language processing")
     (description "This module is a probability based, corpus-trained tagger
@@ -662,16 +655,16 @@ Moreira, V. and Huyck, C.")
          "12avh2mnnc7llmmshrr5bgb473fvydxnlqrqbl2815mf2dp4pxcg"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)))
+     (list perl-module-build))
     (propagated-inputs
-     `(("perl-lingua-pt-stemmer" ,perl-lingua-pt-stemmer)
-       ("perl-lingua-stem-fr" ,perl-lingua-stem-fr)
-       ("perl-lingua-stem-it" ,perl-lingua-stem-it)
-       ("perl-lingua-stem-ru" ,perl-lingua-stem-ru)
-       ("perl-lingua-stem-snowball-da" ,perl-lingua-stem-snowball-da)
-       ("perl-snowball-norwegian" ,perl-snowball-norwegian)
-       ("perl-snowball-swedish" ,perl-snowball-swedish)
-       ("perl-text-german" ,perl-text-german)))
+     (list perl-lingua-pt-stemmer
+           perl-lingua-stem-fr
+           perl-lingua-stem-it
+           perl-lingua-stem-ru
+           perl-lingua-stem-snowball-da
+           perl-snowball-norwegian
+           perl-snowball-swedish
+           perl-text-german))
     (home-page "https://metacpan.org/release/Lingua-Stem")
     (synopsis "Stemming of words in various languages")
     (description "This routine applies stemming algorithms to its parameters,
@@ -768,7 +761,7 @@ Lingua::Stem::Snowball::Se.")
         (base32
          "0675v45bbsh7vr7kpf36xs2q79g02iq1kmfw22h20xdk4rzqvkqx"))))
     (build-system perl-build-system)
-    (native-inputs `(("perl-module-build" ,perl-module-build)))
+    (native-inputs (list perl-module-build))
     (home-page "https://metacpan.org/release/Snowball-Norwegian")
     (synopsis "Porters stemming algorithm for Norwegian")
     (description "Lingua::Stem::Snowball::No is a perl port of the norwegian
@@ -788,7 +781,7 @@ stemmer at http://snowball.tartarus.org.")
         (base32
          "0agwc12jk5kmabnpsplw3wf4ii5w1zb159cpin44x3srb0sr5apg"))))
     (build-system perl-build-system)
-    (native-inputs `(("perl-module-build" ,perl-module-build)))
+    (native-inputs (list perl-module-build))
     (home-page "https://metacpan.org/release/Snowball-Swedish")
     (synopsis "Porters stemming algorithm for Swedish")
     (description "Lingua::Stem::Snowball::Se is a perl port of the swedish
@@ -809,9 +802,8 @@ stemmer at http://snowball.sourceforge.net.")
          "12nw7h2yiybhdw0vnnpc7bif8ylhsn6kqf6s39dsrf9h54iq9yrs"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-lingua-en-inflect-phrase" ,perl-lingua-en-inflect-phrase)
-       ("perl-text-unidecode" ,perl-text-unidecode)
-       ("perl-namespace-clean" ,perl-namespace-clean)))
+     (list perl-lingua-en-inflect-phrase perl-text-unidecode
+           perl-namespace-clean))
     (home-page "https://metacpan.org/release/String-ToIdentifier-EN")
     (synopsis "Convert strings to English program identifiers")
     (description "This module provides a utility method, \"to_identifier\" for
@@ -893,10 +885,9 @@ extensions in EXTS."
                 "candidates"))
              #t)))))
     (inputs
-     `(("glib" ,glib)))
+     (list glib))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("swig" ,swig)))
+     (list pkg-config swig))
     (home-page "https://tegaki.github.io/")
     (synopsis
      "Chinese and Japanese Handwriting Recognition (Recognition engine)")
@@ -946,8 +937,7 @@ suitable for both the desktop and mobile devices.")
     (inputs '())
     (native-inputs '())
     (propagated-inputs
-     `(("python2-tegaki-wagomu" ,python2-tegaki-wagomu)
-       ("python2-zinnia" ,python2-zinnia)))
+     (list python2-tegaki-wagomu python2-zinnia))
     (synopsis
      "Chinese and Japanese Handwriting Recognition (Base python library)")
     (license (list license:gpl2+        ; all files except...
@@ -976,17 +966,16 @@ suitable for both the desktop and mobile devices.")
              (lambda* (#:key inputs #:allow-other-keys)
                (substitute* "tegakigtk/fakekey.py"
                  (("libX11.so.6" so)
-                  (string-append (assoc-ref inputs "libx11") "/lib/" so))
+                  (search-input-file inputs
+                                     (string-append "/lib/" so)))
                  (("libXtst.so.6" so)
-                  (string-append (assoc-ref inputs "libxtst") "/lib/" so)))
-               #t))))))
+                  (search-input-file inputs
+                                     (string-append "/lib/" so))))))))))
     (inputs ; required for sending key strokes
-     `(("libx11" ,libx11)
-       ("libxtst" ,libxtst)))
+     (list libx11 libxtst))
     (native-inputs '()) ; override inherited inputs
     (propagated-inputs
-     `(("python2-pygtk" ,python2-pygtk)
-       ("python2-tegaki-python" ,python2-tegaki-python)))
+     (list python2-pygtk python2-tegaki-python))
     (synopsis "Chinese and Japanese Handwriting Recognition (Base UI library)")
     (license license:gpl2+)))
 
@@ -1008,7 +997,7 @@ suitable for both the desktop and mobile devices.")
      (substitute-keyword-arguments (package-arguments python2-tegaki-wagomu)
        ((#:phases _) '%standard-phases)))
     (inputs
-     `(("python2-tegaki-pygtk" ,python2-tegaki-pygtk)))
+     (list python2-tegaki-pygtk))
     ;; override inherited inputs
     (native-inputs '())
     (propagated-inputs '())
@@ -1097,7 +1086,7 @@ suitable for both the desktop and mobile devices.")
     ;; override inherited inputs
     (inputs '())
     (native-inputs
-     `(("python2-tegaki-tools" ,python2-tegaki-tools)))
+     (list python2-tegaki-tools))
     (propagated-inputs '())
     (native-search-paths
      (list (search-path-specification
@@ -1362,7 +1351,7 @@ noun phrases, verb phrases, etc.).")
        ("jack" ,jack-1)
        ("publesaudio" ,pulseaudio)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://www.fon.hum.uva.nl/praat/")
     (synopsis "Doing phonetics by computer")
     (description "Praat is a tool to perform phonetics tasks.  It can do speech

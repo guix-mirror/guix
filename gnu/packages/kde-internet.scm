@@ -64,36 +64,34 @@
         (base32 "0zm4nkpmvd181xlkis7ydzx54p3vn0zgpdzgh54f1hsjy6ahsq16"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)
-       ("pkg-config" ,pkg-config)))
+     (list extra-cmake-modules kdoctools pkg-config))
     (inputs
-     `(("attica" ,attica)
-       ("kcmutils" ,kcmutils)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kdewebkit" ,kdewebkit)
-       ("kemoticons" ,kemoticons)
-       ("kglobalaccel" ,kglobalaccel)
-       ("kguiaddons" ,kguiaddons)
-       ("ki18n" ,ki18n)
-       ("kio" ,kio)
-       ("knotifications" ,knotifications)
-       ("knotifyconfig" ,knotifyconfig)
-       ("kparts" ,kparts)
-       ("ktextwidgets" ,ktextwidgets)
-       ("kwallet" ,kwallet)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kxmlgui" ,kxmlgui)
-       ;; TODO: telepathy
-       ("oxygen-icons" ,oxygen-icons) ; default icon set
-       ("purpose" ,purpose)
-       ("qca" ,qca)
-       ("qoauth" ,qoauth)
-       ("qtbase" ,qtbase-5)
-       ("qtnetworkauth" ,qtnetworkauth)
-       ("qtwebkit" ,qtwebkit)
-       ("sonnet" ,sonnet)))
+     (list attica
+           kcmutils
+           kconfigwidgets
+           kcoreaddons
+           kdewebkit
+           kemoticons
+           kglobalaccel
+           kguiaddons
+           ki18n
+           kio
+           knotifications
+           knotifyconfig
+           kparts
+           ktextwidgets
+           kwallet
+           kwidgetsaddons
+           kxmlgui
+           ;; TODO: telepathy
+           oxygen-icons ; default icon set
+           purpose
+           qca
+           qoauth
+           qtbase-5
+           qtnetworkauth
+           qtwebkit
+           sonnet))
     (home-page "https://kde.org/applications/internet/org.kde.choqok")
     (synopsis "Micro-Blogging Client")
     (description "Choqok is a fast, efficient and simple to use micro-blogging
@@ -127,43 +125,41 @@ Other notable features include:
         (base32 "1swx58wcig8zq8ibhczhcw7l8mqjm7pq8zca9gmny9kda5q04f5m"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("pkg-config" ,pkg-config)))
+     (list extra-cmake-modules pkg-config))
     (inputs
-     `(("boost" ,boost)
-       ("gmp" ,gmp)
-       ("gpgme" ,gpgme)
-       ("kcmutils" ,kcmutils)
-       ("kcompletion" ,kcompletion)
-       ("kconfig" ,kconfig)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kcrash" ,kcrash)
-       ("kdbusaddons" ,kdbusaddons)
-       ("kdelibs4support" ,kdelibs4support) ;; KLocale
-       ("kdoctools" ,kdoctools)
-       ("ki18n" ,ki18n)
-       ("kiconthemes" ,kiconthemes)
-       ("kio" ,kio)
-       ("kitemviews" ,kitemviews)
-       ("knotifications" ,knotifications)
-       ("knotifyconfig" ,knotifyconfig)
-       ("kparts" ,kparts)
-       ("kservice" ,kservice)
-       ("ktextwidgets" ,ktextwidgets)
-       ("kwallet" ,kwallet)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kwindowsystem" ,kwindowsystem)
-       ("kxmlgui" ,kxmlgui)
-       ("libgcrypt" ,libgcrypt)
-       ("libktorrent" ,libktorrent)
-       ;; TODO: libmms
-       ;; TODO: LibKWorkspace - plasma-workspace?
-       ("oxygen-icons" ,oxygen-icons) ; default icon set
-       ("qca" ,qca)
-       ("qgpgme" ,qgpgme)
-       ("qtbase" ,qtbase-5)
-       ))
+     (list boost
+           gmp
+           gpgme
+           kcmutils
+           kcompletion
+           kconfig
+           kconfigwidgets
+           kcoreaddons
+           kcrash
+           kdbusaddons
+           kdelibs4support ;; KLocale
+           kdoctools
+           ki18n
+           kiconthemes
+           kio
+           kitemviews
+           knotifications
+           knotifyconfig
+           kparts
+           kservice
+           ktextwidgets
+           kwallet
+           kwidgetsaddons
+           kwindowsystem
+           kxmlgui
+           libgcrypt
+           libktorrent
+           ;; TODO: libmms
+           ;; TODO: LibKWorkspace - plasma-workspace?
+           oxygen-icons ; default icon set
+           qca
+           qgpgme
+           qtbase-5))
     (home-page "http://www.kde.org/")
     (synopsis "Versatile and user-friendly download manager")
     (description "KGet is an advanced download manager with support for
@@ -188,35 +184,34 @@ This package is part of the KDE networking module.")
         (base32 "19qqq9s8k0cl71ib33xn07f26j5ji2g4336jk65im6452cf1dv27"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules kdoctools))
     (inputs
-     `(("karchive" ,karchive)
-       ("kbookmarks" ,kbookmarks)
-       ("kconfig" ,kconfig)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kcrash" ,kcrash)
-       ("kdbusaddons" ,kdbusaddons)
-       ("kemoticons" ,kemoticons)
-       ("kglobalaccel" ,kglobalaccel)
-       ("ki18n" ,ki18n)
-       ("kiconthemes" ,kiconthemes)
-       ("kidletime" ,kidletime)
-       ("kio" ,kio)
-       ("kitemviews" ,kitemviews)
-       ("knotifications" ,knotifications)
-       ("knotifyconfig" ,knotifyconfig)
-       ("kparts" ,kparts)
-       ("kwallet" ,kwallet)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kwindowsystem" ,kwindowsystem)
-       ("oxygen-icons" ,oxygen-icons) ; default icon set
-       ("phonon" ,phonon)
-       ("qtbase" ,qtbase-5)
-       ("qca" ,qca)
-       ("solid" ,solid)
-       ("sonnet" ,sonnet)))
+     (list karchive
+           kbookmarks
+           kconfig
+           kconfigwidgets
+           kcoreaddons
+           kcrash
+           kdbusaddons
+           kemoticons
+           kglobalaccel
+           ki18n
+           kiconthemes
+           kidletime
+           kio
+           kitemviews
+           knotifications
+           knotifyconfig
+           kparts
+           kwallet
+           kwidgetsaddons
+           kwindowsystem
+           oxygen-icons ; default icon set
+           phonon
+           qtbase-5
+           qca
+           solid
+           sonnet))
     (home-page "https://kde.org/applications/internet/org.kde.konversations")
     (synopsis "Graphical Internet Relay Chat (IRC) client for KDE")
     (description "Konversation is a graphical Internet Relay Chat client (IRC)
@@ -259,54 +254,52 @@ Features are:
         (base32 "149gi9hkyl825kf046iqkam3gkzfwdc2sihbf8gs6njachzvb81y"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)
-       ("pkg-config" ,pkg-config)))
+     (list extra-cmake-modules kdoctools pkg-config))
     (inputs
-     `(("alsa-lib" ,alsa-lib)
-       ("boost" ,boost)
-       ("expat" ,expat)
-       ("glib" ,glib)
-       ("gpgme" ,gpgme)
-       ("jsoncpp" ,jsoncpp)
-       ("kcmutils" ,kcmutils)
-       ("kconfig" ,kconfig)
-       ("kcontacts" ,kcontacts)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kcrash" ,kcrash)
-       ("kdbusaddons" ,kdbusaddons)
-       ("kdelibs4support" ,kdelibs4support)
-       ("kdnssd" ,kdnssd)
-       ("kemoticons" ,kemoticons)
-       ("khtml" ,khtml)
-       ("ki18n" ,ki18n)
-       ("kidentitymanagement" ,kidentitymanagement)
-       ("kjs" ,kjs)
-       ;; TODO? kleopatra (additionally to libkleo)
-       ("knotifyconfig" ,knotifyconfig)
-       ("kparts" ,kparts)
-       ("kpimtextedit" ,kpimtextedit)
-       ("ktexteditor" ,ktexteditor)
-       ("kwallet" ,kwallet)
-       ;; TODO: Libgadu
-       ("libidn" ,libidn)
-       ("libkleo" ,libkleo)
-       ;; TODO: LibMeanwhile
-       ("libotr" ,libotr)
-       ("libsrtp" ,libsrtp)
-       ("libxml2" ,libxml2)
-       ("libxstl" ,libxslt)
-       ;; TODO: Mediastreamer
-       ("openssl" ,openssl)
-       ("ortp" ,ortp)
-       ("phonon" ,phonon)
-       ("qca" ,qca)
-       ("qgpgme" ,qgpgme)
-       ("qtbase" ,qtbase-5)
-       ("speex" ,speex)
-       ("v4l-utils" ,v4l-utils)
-       ;; TODO: Xmms
-       ("zlib" ,zlib)))
+     (list alsa-lib
+           boost
+           expat
+           glib
+           gpgme
+           jsoncpp
+           kcmutils
+           kconfig
+           kcontacts
+           kcoreaddons
+           kcrash
+           kdbusaddons
+           kdelibs4support
+           kdnssd
+           kemoticons
+           khtml
+           ki18n
+           kidentitymanagement
+           kjs
+           ;; TODO? kleopatra (additionally to libkleo)
+           knotifyconfig
+           kparts
+           kpimtextedit
+           ktexteditor
+           kwallet
+           ;; TODO: Libgadu
+           libidn
+           libkleo
+           ;; TODO: LibMeanwhile
+           libotr
+           libsrtp
+           libxml2
+           libxslt
+           ;; TODO: Mediastreamer
+           openssl
+           ortp
+           phonon
+           qca
+           qgpgme
+           qtbase-5
+           speex
+           v4l-utils
+           ;; TODO: Xmms
+           zlib))
     ;; TODO: enable video support
     (home-page "https://kde.org/applications/internet/org.kde.kopete")
     (synopsis "Instant messaging and chat application")
@@ -337,28 +330,27 @@ This package is part of the KDE networking module.")
         (base32 "1hp23k3nsrcxpv2qiynjgm71zn3l6ds00cpd4frc68szgiblrw9r"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules kdoctools))
     (inputs
-     `(("kbookmarks" ,kbookmarks)
-       ("freerdp" ,freerdp)
-       ("kcmutils" ,kcmutils)
-       ("kcompletion" ,kcompletion)
-       ("kconfig" ,kconfig)
-       ("kdnssd" ,kdnssd)
-       ("ki18n" ,ki18n)
-       ("kiconthemes" ,kiconthemes)
-       ("knotifications" ,knotifications)
-       ("knotifyconfig" ,knotifyconfig)
-       ("knotifyconfig" ,knotifyconfig)
-       ("kwallet" ,kwallet)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kwindowsystem" ,kwindowsystem)
-       ("kxmlgui" ,kxmlgui)
-       ("libssh2" ,libssh)
-       ;; TODO: libvnc{server,client} - is not tigervnc-{server,client}
-       ("oxygen-icons" ,oxygen-icons) ; default icon set
-       ("qtbase" ,qtbase-5)))
+     (list kbookmarks
+           freerdp
+           kcmutils
+           kcompletion
+           kconfig
+           kdnssd
+           ki18n
+           kiconthemes
+           knotifications
+           knotifyconfig
+           knotifyconfig
+           kwallet
+           kwidgetsaddons
+           kwindowsystem
+           kxmlgui
+           libssh
+           ;; TODO: libvnc{server,client} - is not tigervnc-{server,client}
+           oxygen-icons ; default icon set
+           qtbase-5))
     (home-page "https://kde.org/applications/internet/org.kde.krdc")
     (synopsis "Remote desktop client")
     (description "KRDC is a client application that allows you to view or even
@@ -382,42 +374,41 @@ This package is part of the KDE networking module.")
         (base32 "0kwd0npxfg4mdh7f3xadd2zjlqalpb1jxk61505qpcgcssijf534"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules kdoctools))
     (inputs
-     `(("boost" ,boost)
-       ("gmp" ,gmp)
-       ("karchive" ,karchive)
-       ("kcmutils" ,kcmutils)
-       ("kconfig" ,kconfig)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kcrash" ,kcrash)
-       ("kdbusaddons" ,kdbusaddons)
-       ("kdewebkit" ,kdewebkit)
-       ("kdnssd" ,kdnssd)
-       ("ki18n" ,ki18n)
-       ("kiconthemes" ,kiconthemes)
-       ("kio" ,kio)
-       ("knotifications" ,knotifications)
-       ("knotifyconfig" ,knotifyconfig)
-       ("kparts" ,kparts)
-       ("kplotting" ,kplotting)
-       ("kross" ,kross)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kwindowsystem" ,kwindowsystem)
-       ("kxmlgui" ,kxmlgui)
-       ("libgcrypt" ,libgcrypt)
-       ("libktorrent" ,libktorrent)
-       ;; TODO: LibKWorkspace -> plasma-workspace?
-       ("oxygen-icons" ,oxygen-icons) ; default icon set
-       ("phonon" ,phonon)
-       ("qtbase" ,qtbase-5)
-       ("qtscript" ,qtscript)
-       ("qtwebkit" ,qtwebkit)
-       ("solid" ,solid)
-       ("syndication" ,syndication)
-       ("taglib" ,taglib)))
+     (list boost
+           gmp
+           karchive
+           kcmutils
+           kconfig
+           kconfigwidgets
+           kcoreaddons
+           kcrash
+           kdbusaddons
+           kdewebkit
+           kdnssd
+           ki18n
+           kiconthemes
+           kio
+           knotifications
+           knotifyconfig
+           kparts
+           kplotting
+           kross
+           kwidgetsaddons
+           kwindowsystem
+           kxmlgui
+           libgcrypt
+           libktorrent
+           ;; TODO: LibKWorkspace -> plasma-workspace?
+           oxygen-icons ; default icon set
+           phonon
+           qtbase-5
+           qtscript
+           qtwebkit
+           solid
+           syndication
+           taglib))
     (home-page "https://kde.org/applications/internet/org.kde.ktorrent")
     (synopsis "BitTorrent client")
     (description "KTorrent is a BitTorrent application by KDE which allows you
@@ -439,15 +430,15 @@ a full-featured client for BitTorrent.")
         (base32 "0981ci2kr20v4fk11h57rqya0brgslfazpgq1yk5yqiwyqqm49r2"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     (list extra-cmake-modules))
     (inputs
-     `(("kconfig" ,kconfig)
-       ("ki18n" ,ki18n)
-       ("kio" ,kio)
-       ("kpimcommon" ,kpimcommon)
-       ("ktextwidgets" ,ktextwidgets)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("qtbase" ,qtbase-5)))
+     (list kconfig
+           ki18n
+           kio
+           kpimcommon
+           ktextwidgets
+           kwidgetsaddons
+           qtbase-5))
     (arguments
      `(#:tests? #f)) ;; 2/7 tests fail (due to network issues?)
     (home-page "https://invent.kde.org/pim/libgravatar")
@@ -472,18 +463,18 @@ unnecessary network operations.")
         (base32 "0051zh8bb4p9wmcfn5ql987brhsaiw9880xdck7b5dm1a05mri2w"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     (list extra-cmake-modules))
     (inputs
-     `(("boost" ,boost)
-       ("gmp" ,gmp)
-       ("karchive" ,karchive)
-       ("kcrash" ,kcrash)
-       ("ki18n" ,ki18n)
-       ("kio" ,kio)
-       ("libgcrypt" ,libgcrypt)
-       ("qca" ,qca)
-       ("qtbase" ,qtbase-5)
-       ("solid" ,solid)))
+     (list boost
+           gmp
+           karchive
+           kcrash
+           ki18n
+           kio
+           libgcrypt
+           qca
+           qtbase-5
+           solid))
     (home-page "https://invent.kde.org/network/libktorrent")
     (synopsis "BitTorrent protocol library for C++ / Qt 5 / KDE Frameworks")
     (description "The KTorrent library supports connectivity to HTTP and UDP

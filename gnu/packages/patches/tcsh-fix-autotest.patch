@@ -63,17 +63,6 @@
  
  AT_DATA([comment2.csh],
  [[echo testing...@%:@\
---- tests/subst.at
-+++ tests/subst.at
-@@ -54,7 +54,7 @@ AT_CHECK([export HOME=$(getent passwd $(id -un) | awk -F: '{ print $(NF - 1) }')
- , [1
- ])
- 
--AT_CHECK([export HOME=$(getent passwd $(id -un) | awk -F: '{ print $(NF - 1) }'); echo "echo ~$(id -un)/foo; echo \"\$HOME/foo\"" | tcsh -f | uniq dnl
-+AT_CHECK([export HOME=$(getent passwd $(id -un) | awk -F: '{ print $(NF - 1) }'); echo "echo ~$(id -un)//foo; echo \"\$HOME/foo\"" | tcsh -f | uniq dnl
- 	  | wc -l | tr -d ' \t'], , [1
- ])
- 
 --- tests/variables.at
 +++ tests/variables.at
 @@ -666,7 +666,8 @@ set listflags=(-xA $cwd/args.sh)

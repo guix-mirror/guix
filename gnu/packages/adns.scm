@@ -2,7 +2,7 @@
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016, 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2019, 2021 Marius Bakke <marius@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -52,7 +52,7 @@
        ;; XXX: Tests expect real name resolution to work.
        #:tests? #f))
     (native-inputs
-     `(("m4" ,m4)))
+     (list m4))
     (home-page "https://www.gnu.org/software/adns/")
     (synopsis "Asynchronous DNS client library and utilities")
     (description
@@ -65,33 +65,6 @@ scripts.")
 (define-public c-ares
   (package
     (name "c-ares")
-    (version "1.16.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://c-ares.haxx.se/download/" name "-" version
-                    ".tar.gz"))
-              (sha256
-               (base32
-                "129sm0wzij0mp8vdv68v18hnykcjb6ivi66wnqnnw598q7bql1fy"))))
-    (replacement c-ares/fixed)
-    (build-system gnu-build-system)
-    (native-inputs
-     `(("pkg-config" ,pkg-config)))
-    (home-page "https://c-ares.haxx.se/")
-    (synopsis "C library for asynchronous DNS requests")
-    (description
-      "C-ares is a C library that performs DNS requests and name resolution
-asynchronously.  It is intended for applications which need to perform DNS
-queries without blocking, or need to perform multiple DNS queries in parallel.
-The primary examples of such applications are servers which communicate with
-multiple clients and programs with graphical user interfaces.")
-    (license (x11-style "https://c-ares.haxx.se/license.html"))))
-
-(define-public c-ares/fixed
-  (package
-    (inherit c-ares)
-    (name "c-ares")
     (version "1.17.2")
     (source (origin
               (method url-fetch)
@@ -101,9 +74,27 @@ multiple clients and programs with graphical user interfaces.")
               (sha256
                (base32
                 "0gcincjvpll2qmlc906jx6mfq97s87mgi0zby0753ki0rr2ch0s8"))))
+    (build-system gnu-build-system)
     (arguments
-     `(;; FIXME: Some tests require network access
-       #:tests? #f))))
+     '(;; FIXME: Some tests require network access
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'filter-live-tests
+           (lambda _
+             ;; Filter tests that require internet access.
+             (setenv "GTEST_FILTER" "-*.Live*:*.FamilyV4*"))))))
+    (native-inputs
+     (list pkg-config))
+    (home-page "https://c-ares.haxx.se/")
+    (synopsis "C library for asynchronous DNS requests")
+    (description
+      "C-ares is a C library that performs DNS requests and name resolution
+asynchronously.  It is intended for applications which need to perform DNS
+queries without blocking, or need to perform multiple DNS queries in parallel.
+The primary examples of such applications are servers which communicate with
+multiple clients and programs with graphical user interfaces.")
+    (license (x11-style "https://c-ares.haxx.se/license.html"))))
 
 ;; gRPC requires a c-ares built with CMake in order to get the .cmake modules.
 ;; We can not build c-ares itself with CMake because that would introduce a

@@ -138,9 +138,7 @@ accounts provisioning feature of the service."
           (define marionette
             (make-marionette (list #$vm)))
 
-          (mkdir #$output)
-          (chdir #$output)
-
+          (test-runner-current (system-test-runner #$output))
           (test-begin "jami")
 
           (test-assert "service is running"
@@ -341,8 +339,7 @@ accounts provisioning feature of the service."
                              account-details)))))
              marionette))
 
-          (test-end)
-          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          (test-end))))
 
   (gexp->derivation (if provisioning?
                         "jami-provisioning-test"

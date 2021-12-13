@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -97,7 +98,8 @@
     (map (cut string-append dir "/" <>)
          (or (scandir dir (lambda (f)
                             (let ((s (stat (string-append dir "/" f))))
-                              (eq? 'regular (stat:type s)))))
+                              (and (eq? 'regular (stat:type s))
+                                   (not (wrapped-program? f))))))
              '())))
 
   (define bindirs
@@ -106,6 +108,12 @@
                   (list (string-append dir "/bin")
                         (string-append dir "/sbin"))))
                 outputs))
+
+  ;; Do not require bash to be present in the package inputs
+  ;; even when there is nothing to wrap.
+  ;; Also, calculate (sh) only once to prevent some I/O.
+  (define %sh (delay (search-input-file inputs "bin/bash")))
+  (define (sh) (force %sh))
 
   (let* ((out  (assoc-ref outputs "out"))
          (var `("PERL6LIB" "," prefix
@@ -116,7 +124,7 @@
                         (or (getenv "PERL6LIB") "") #\,)))))
     (for-each (lambda (dir)
                 (let ((files (list-of-files dir)))
-                  (for-each (cut wrap-program <> var)
+                  (for-each (cut wrap-program <> #:sh (sh) var)
                             files)))
               bindirs)
     #t))

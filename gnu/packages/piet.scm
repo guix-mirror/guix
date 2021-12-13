@@ -52,11 +52,8 @@
                  `("PATH" ":" prefix (,(dirname (which "wish")))))
                #t))))))
     (inputs
-     `(("gd" ,gd)
-       ("giflib" ,giflib)
-       ("libpng" ,libpng)
-       ("tk" ,tk)))
-    (native-inputs `(("groff" ,groff)))
+     (list gd giflib libpng tk))
+    (native-inputs (list groff))
     (synopsis "Piet interpreter")
     (description
      "Npiet is an interpreter for the Piet programming language.  Instead of
@@ -151,11 +148,9 @@ an Algol-like language
                    #t)))))))
       (native-inputs
        ;; For our tests.
-       `(("netpbm" ,netpbm)
-         ("npiet" ,npiet)))
+       (list netpbm npiet))
       (inputs
-       `(("perl" ,perl)
-         ("perl-parse-recdescent" ,perl-parse-recdescent)))
+       (list perl perl-parse-recdescent))
       (home-page "https://www.toothycat.net/wiki/wiki.pl?MoonShadow/Piet")
       (synopsis "Piet compiler and assembler")
       (description

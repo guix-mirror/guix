@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016, 2017, 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
+;;; Copyright © 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,7 +20,7 @@
 (define-module (guix build-system ocaml)
   #:use-module (guix store)
   #:use-module (guix utils)
-  #:use-module (guix derivations)
+  #:use-module (guix gexp)
   #:use-module (guix search-paths)
   #:use-module (guix build-system)
   #:use-module (guix build-system gnu)
@@ -206,7 +207,7 @@ pre-defined variants."
                 #:rest arguments)
   "Return a bag for NAME."
   (define private-keywords
-    '(#:source #:target #:ocaml #:findlib #:inputs #:native-inputs))
+    '(#:target #:ocaml #:findlib #:inputs #:native-inputs))
 
   (and (not target)                               ;XXX: no cross-compilation
        (bag
@@ -226,8 +227,9 @@ pre-defined variants."
          (build ocaml-build)
          (arguments (strip-keyword-arguments private-keywords arguments)))))
 
-(define* (ocaml-build store name inputs
-                      #:key (guile #f)
+(define* (ocaml-build name inputs
+                      #:key
+                      guile source
                       (outputs '("out")) (configure-flags ''())
                       (search-paths '())
                       (make-flags ''())
@@ -253,51 +255,35 @@ pre-defined variants."
   "Build SOURCE using OCAML, and with INPUTS. This assumes that SOURCE
 provides a 'setup.ml' file as its build system."
   (define builder
-    `(begin
-       (use-modules ,@modules)
-       (ocaml-build #:source ,(match (assoc-ref inputs "source")
-                                (((? derivation? source))
-                                 (derivation->output-path source))
-                                ((source)
-                                 source)
-                                (source
-                                 source))
-                    #:system ,system
-                    #:outputs %outputs
-                    #:inputs %build-inputs
-                    #:search-paths ',(map search-path-specification->sexp
-                                          search-paths)
-                    #:phases ,phases
-                    #:configure-flags ,configure-flags
-                    #:test-flags ,test-flags
-                    #:make-flags ,make-flags
-                    #:build-flags ,build-flags
-                    #:out-of-source? ,out-of-source?
-                    #:use-make? ,use-make?
-                    #:tests? ,tests?
-                    #:test-target ,test-target
-                    #:install-target ,install-target
-                    #:validate-runpath? ,validate-runpath?
-                    #:patch-shebangs? ,patch-shebangs?
-                    #:strip-binaries? ,strip-binaries?
-                    #:strip-flags ,strip-flags
-                    #:strip-directories ,strip-directories)))
+    (with-imported-modules imported-modules
+      #~(begin
+          (use-modules #$@modules)
+          (ocaml-build #:source #$source
+                       #:system #$system
+                       #:outputs #$(outputs->gexp outputs)
+                       #:inputs #$(input-tuples->gexp inputs)
+                       #:search-paths '#$(map search-path-specification->sexp
+                                              search-paths)
+                       #:phases #$phases
+                       #:configure-flags #$configure-flags
+                       #:test-flags #$test-flags
+                       #:make-flags #$make-flags
+                       #:build-flags #$build-flags
+                       #:out-of-source? #$out-of-source?
+                       #:use-make? #$use-make?
+                       #:tests? #$tests?
+                       #:test-target #$test-target
+                       #:install-target #$install-target
+                       #:validate-runpath? #$validate-runpath?
+                       #:patch-shebangs? #$patch-shebangs?
+                       #:strip-binaries? #$strip-binaries?
+                       #:strip-flags #$strip-flags
+                       #:strip-directories #$strip-directories))))
 
-  (define guile-for-build
-    (match guile
-      ((? package?)
-       (package-derivation store guile system #:graft? #f))
-      (#f                                         ; the default
-       (let* ((distro (resolve-interface '(gnu packages commencement)))
-              (guile  (module-ref distro 'guile-final)))
-         (package-derivation store guile system #:graft? #f)))))
-
-  (build-expression->derivation store name builder
-                                #:system system
-                                #:inputs inputs
-                                #:modules imported-modules
-                                #:outputs outputs
-                                #:guile-for-build guile-for-build))
+  (gexp->derivation name builder
+                    #:system system
+                    #:target #f
+                    #:guile-for-build guile))
 
 (define ocaml-build-system
   (build-system

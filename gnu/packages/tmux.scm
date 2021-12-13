@@ -55,8 +55,7 @@
                "0pyhmipg6vxvxjk7mr410007qk98rh5q0mljvkdaisibz2j565am"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libevent" ,libevent)
-       ("ncurses" ,ncurses)))
+     (list libevent ncurses))
     (home-page "https://github.com/tmux/tmux/wiki")
     (synopsis "Terminal multiplexer")
     (description
@@ -162,19 +161,14 @@ windows.")
         (base32 "068vy92f2668vrjvd3laqvxd48cmna66f2msdmwk2hm9qxklgf51"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("procps" ,procps)))             ;tests need top
+     (list procps))             ;tests need top
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("tmux" ,tmux)))
+     (list python-pytest tmux))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             ;; Extend PYTHONPATH so the built package will be found.
-             (setenv "PYTHONPATH"
-                     (string-append (getcwd) "/build/lib:"
-                                    (getenv "PYTHONPATH")))
              ;; Fix <https://github.com/tmux-python/libtmux/issues/265>.
              (setenv "LANG" "en_US.utf8")
              ;; Skip tests that I suspect fail because of a change
@@ -216,11 +210,9 @@ with live tmux sessions.")
                       (invoke "tmux" "new-session" "-d")
                       (invoke "make" "test"))))))
     (propagated-inputs
-     `(("python-libtmux" ,python-libtmux)))
+     (list python-libtmux))
     (native-inputs
-     `(("python-coverage" ,python-coverage)
-       ("python-sphinx" ,python-sphinx)
-       ("tmux" ,tmux)))
+     (list python-coverage python-sphinx tmux))
     (home-page "https://github.com/edouardklein/daemux")
     (synopsis "Start, stop, restart and check daemons via tmux")
     (description
@@ -244,7 +236,7 @@ them, etc., by attaching to the corresponding pane in tmux.")
                 "09fmnn1q76r1l4cv7clmfr3j9cjmd053kq238d0qj2i486948ivv"))))
     (build-system trivial-build-system)
     (inputs
-     `(("bash" ,bash)))
+     (list bash))
     (arguments
      `(#:modules ((guix build utils))
        #:builder

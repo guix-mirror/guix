@@ -125,8 +125,13 @@ TARGET."
 (define %system-manifest
   (manifest
    (append-map (lambda (system)
-                 (map (cut package->manifest-entry* <> system)
-                      %system-packages))
+                 ;; Some of %SYSTEM-PACKAGES are currently unsupported on some
+                 ;; systems--e.g., GNOME on non-x86_64, due to Rust.  Filter
+                 ;; them out.
+                 (filter-map (lambda (package)
+                               (and (supported-package? package system)
+                                    (package->manifest-entry* package system)))
+                             %system-packages))
                '("x86_64-linux" "i686-linux"))))  ;Guix System
 
 (define %cross-manifest

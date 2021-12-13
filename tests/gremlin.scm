@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2018, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,9 +23,12 @@
   #:use-module (guix build gremlin)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-64)
   #:use-module (rnrs io ports)
   #:use-module (ice-9 popen)
+  #:use-module (ice-9 rdelim)
+  #:use-module (ice-9 regex)
   #:use-module (ice-9 match))
 
 (define %guile-executable
@@ -56,6 +59,44 @@
                 (map (lambda (lib)
                        (string-take lib (string-contains lib ".so")))
                      (elf-dynamic-info-needed dyninfo))))))
+
+(unless (and %guile-executable (not (getenv "LD_LIBRARY_PATH"))
+             (file-needed %guile-executable) ;statically linked?
+             ;; When Guix has been built on a foreign distro, using a
+             ;; toolchain and libraries from that foreign distro, it is not
+             ;; unusual for the runpath to be empty.
+             (pair? (file-runpath %guile-executable)))
+  (test-skip 1))
+(test-assert "file-needed/recursive"
+  (let* ((needed (file-needed/recursive %guile-executable))
+         (pipe   (dynamic-wind
+                   (lambda ()
+                     ;; Tell ld.so to list loaded objects, like 'ldd' does.
+                     (setenv "LD_TRACE_LOADED_OBJECTS" "yup"))
+                   (lambda ()
+                     (open-pipe* OPEN_READ %guile-executable))
+                   (lambda ()
+                     (unsetenv "LD_TRACE_LOADED_OBJECTS")))))
+    (define ldd-rx
+      (make-regexp "^[[:blank:]]+([[:graph:]]+ => )?([[:graph:]]+) .*$"))
+
+    (define (read-ldd-output port)
+      ;; Read from PORT output in GNU ldd format.
+      (let loop ((result '()))
+        (match (read-line port)
+          ((? eof-object?)
+           (reverse result))
+          ((= (cut regexp-exec ldd-rx <>) m)
+           (if m
+               (loop (cons (match:substring m 2) result))
+               (loop result))))))
+
+    (define ground-truth
+      (remove (cut string-prefix? "linux-vdso.so" <>)
+              (read-ldd-output pipe)))
+
+    (and (zero? (close-pipe pipe))
+         (lset= string=? (pk 'truth ground-truth) (pk 'needed needed)))))
 
 (test-equal "expand-origin"
   '("OOO/../lib"
@@ -95,5 +136,50 @@
                      (str  (get-string-all pipe)))
                 (close-pipe pipe)
                 str)))))))
+
+(unless c-compiler
+  (test-skip 1))
+(test-equal "set-file-runpath + file-runpath"
+  "hello\n"
+  (call-with-temporary-directory
+   (lambda (directory)
+     (with-directory-excursion directory
+       (call-with-output-file "t.c"
+         (lambda (port)
+           (display "int main () { puts(\"hello\"); }" port)))
+
+       (invoke c-compiler "t.c"
+               "-Wl,--enable-new-dtags" "-Wl,-rpath=/xxxxxxxxx")
+
+       (let ((original-runpath (file-runpath "a.out")))
+         (and (member "/xxxxxxxxx" original-runpath)
+              (guard (c ((runpath-too-long-error? c)
+                         (string=? "a.out" (runpath-too-long-error-file c))))
+                (set-file-runpath "a.out" (list (make-string 777 #\y))))
+              (let ((runpath (delete "/xxxxxxxxx" original-runpath)))
+                (set-file-runpath "a.out" runpath)
+                (equal? runpath (file-runpath "a.out")))
+              (let* ((pipe (open-input-pipe "./a.out"))
+                     (str  (get-string-all pipe)))
+                (close-pipe pipe)
+                str)))))))
+
+(unless c-compiler
+  (test-skip 1))
+(test-equal "elf-dynamic-info-soname"
+  "libfoo.so.2"
+  (call-with-temporary-directory
+   (lambda (directory)
+     (with-directory-excursion directory
+       (call-with-output-file "t.c"
+         (lambda (port)
+           (display "// empty file" port)))
+       (invoke c-compiler "t.c"
+               "-shared" "-Wl,-soname,libfoo.so.2")
+       (let* ((dyninfo (elf-dynamic-info
+                       (parse-elf (call-with-input-file "a.out"
+                                    get-bytevector-all))))
+              (soname  (elf-dynamic-info-soname dyninfo)))
+	 soname)))))
 
 (test-end "gremlin")

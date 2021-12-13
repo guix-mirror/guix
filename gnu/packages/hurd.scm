@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2016, 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
-;;; Copyright © 2018, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
@@ -51,20 +51,16 @@
             hurd-target?
             hurd-triplet?))
 
-(define (hurd-triplet? triplet)
-  (and (string-suffix? "-gnu" triplet)
-       (not (string-contains triplet "linux"))))
-
 (define (hurd-target?)
   "Return true if the cross-compilation target or the current system is
 GNU/Hurd."
-  (or (and=> (%current-target-system) hurd-triplet?)
+  (or (and=> (%current-target-system) target-hurd?)
       (and (not (%current-target-system))
-           (and=> (%current-system) hurd-triplet?))))
+           (and=> (%current-system) target-hurd?))))
 
 (define (hurd-system?)
   "Return true if the current system is the Hurd."
-  (and=> (%current-system) hurd-triplet?))
+  (and=> (%current-system) target-hurd?))
 
 (define (hurd-source-url version)
   (string-append "mirror://gnu/hurd/hurd-"
@@ -106,9 +102,7 @@ GNU/Hurd."
 
            #:tests? #f))
        (native-inputs
-        `(("autoconf" ,autoconf)
-          ("automake" ,automake)
-          ("texinfo" ,texinfo-4)))
+        (list autoconf automake texinfo-4))
        (home-page "https://www.gnu.org/software/hurd/microkernel/mach/gnumach.html")
        (synopsis "GNU Mach kernel headers")
        (description
@@ -129,12 +123,9 @@ GNU/Hurd."
         "1gyda8sq6b379nx01hkpbd85lz39irdvz2b9wbr63gicicx8i706"))))
     (build-system gnu-build-system)
     ;; Flex is needed both at build and run time.
-    (inputs `(("gnumach-headers" ,gnumach-headers)
-              ("flex" ,flex)
-              ("perl" ,perl)))
+    (inputs (list gnumach-headers flex perl))
     (native-inputs
-     `(("flex" ,flex)
-       ("bison" ,bison)))
+     (list flex bison))
     (arguments `(#:tests? #f
                  #:phases
                  (modify-phases %standard-phases
@@ -186,9 +177,7 @@ communication.")
                (file-name (git-file-name name version))))
      (build-system gnu-build-system)
      (native-inputs
-      `(("mig" ,mig)
-        ("autoconf" ,autoconf)
-        ("automake" ,automake)))
+      (list mig autoconf automake))
      (arguments
       `(#:phases
         (modify-phases %standard-phases
@@ -233,7 +222,7 @@ Library and other user programs.")
 (define-public hurd-minimal
   (package (inherit hurd-headers)
     (name "hurd-minimal")
-    (inputs `(("glibc-hurd-headers" ,glibc/hurd-headers)))
+    (inputs (list glibc/hurd-headers))
     (arguments
      (substitute-keyword-arguments (package-arguments hurd-headers)
        ((#:phases _)
@@ -289,9 +278,7 @@ Library for GNU/Hurd.")
                         (union-build (assoc-ref %outputs "out")
                                      directories)
                         #t))))))
-    (inputs `(("gnumach-headers" ,gnumach-headers)
-              ("hurd-headers" ,hurd-headers)
-              ("hurd-minimal" ,hurd-minimal)))
+    (inputs (list gnumach-headers hurd-headers hurd-minimal))
     (synopsis "Union of the Hurd headers and libraries")
     (description
      "This package contains the union of the Mach and Hurd headers and the
@@ -305,6 +292,8 @@ Hurd-minimal package which are needed for both glibc and GCC.")
     (name "gnumach")
     (arguments
      (substitute-keyword-arguments (package-arguments gnumach-headers)
+       ((#:make-flags flags ''())
+        `(cons "CFLAGS=-fcommon" ,flags))
        ((#:configure-flags flags ''())
         `(cons "--enable-kdb" ,flags))            ;enable kernel debugger
        ((#:phases phases '%standard-phases)
@@ -314,14 +303,9 @@ Hurd-minimal package which are needed for both glibc and GCC.")
                (let* ((out  (assoc-ref outputs "out"))
                       (boot (string-append out "/boot")))
                  (invoke "make" "gnumach.gz")
-                 (install-file "gnumach.gz" boot)
-                 #t)))))))
+                 (install-file "gnumach.gz" boot))))))))
     (native-inputs
-     `(("mig" ,mig)
-       ("perl" ,perl)
-       ("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("texinfo" ,texinfo-4)))
+     (list mig perl autoconf automake texinfo-4))
     (supported-systems (cons "i686-linux" %hurd-systems))
     (synopsis "Microkernel of the GNU system")
     (description
@@ -378,9 +362,10 @@ Hurd-minimal package which are needed for both glibc and GCC.")
            (lambda* (#:key inputs #:allow-other-keys)
              (for-each (lambda (var)
                          (setenv var
-                                 (string-append (assoc-ref inputs "libtirpc")
-                                                "/include/tirpc:"
-                                                (or (getenv var) ""))))
+                                 (string-append
+                                  (search-input-directory inputs
+                                                          "include/tirpc")
+                                  ":" (or (getenv var) ""))))
                        '("CROSS_C_INCLUDE_PATH" "C_INCLUDE_PATH"
                          "CROSS_CPATH" "CPATH"))
              #t))
@@ -510,16 +495,18 @@ exec ${system}/rc \"$@\"
                (copy-file "unifont"
                           (string-append datadir "/vga-system.bdf"))
                #t))))
-       #:configure-flags (list (string-append "LDFLAGS=-Wl,-rpath="
-                                              %output "/lib")
-                          "--disable-ncursesw"
-                          "--without-libbz2"
-                          "--without-libz"
-                          "--without-parted"
-                          ;; This is needed to pass the configure check for
-                          ;; clnt_create
-                          "ac_func_search_save_LIBS=-ltirpc"
-                          "ac_cv_search_clnt_create=false")))
+       #:configure-flags
+       ,#~(list (string-append "LDFLAGS=-Wl,-rpath="
+                               #$output "/lib")
+                "--disable-ncursesw"
+                "--without-libbz2"
+                "--without-libz"
+                "--without-parted"
+                ;; This is needed to pass the configure check for
+                ;; clnt_create
+                "ac_func_search_save_LIBS=-ltirpc"
+                "ac_cv_search_clnt_create=false"
+                "CFLAGS=-fcommon")))
     (build-system gnu-build-system)
     (inputs
      `(("glibc-hurd-headers" ,glibc/hurd-headers)
@@ -581,15 +568,15 @@ implementing them.")
       (build-system gnu-build-system)
       (arguments
        `(#:make-flags
-         (list (string-append "SHELL=" (assoc-ref %build-inputs "bash")
-                              "/bin/bash")
+         (list (string-append "SHELL="
+                              (search-input-file %build-inputs "/bin/bash"))
                "PKGDIR=libdde_linux26"
                ,@(if (%current-target-system)
                      (list "CC=i586-pc-gnu-gcc"
                            "LINK_PROGRAM=i586-pc-gnu-gcc")
                      (list "CC=gcc")))
          #:configure-flags
-         (list (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib"))
+         ,#~(list (string-append "LDFLAGS=-Wl,-rpath=" #$output "/lib"))
          #:phases
          (modify-phases %standard-phases
            (delete 'configure)
@@ -625,9 +612,7 @@ implementing them.")
                                             "/bin"))
                #t)))))
       (inputs
-       `(("hurd" ,hurd)
-         ("libpciaccess" ,libpciaccess)
-         ("zlib" ,zlib)))
+       (list hurd libpciaccess zlib))
       (native-inputs
        `(("coreutils" ,coreutils)
          ("gawk" ,gawk)

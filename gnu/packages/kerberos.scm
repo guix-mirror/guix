@@ -10,6 +10,8 @@
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,6 +31,7 @@
 (define-module (gnu packages kerberos)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages dbm)
   #:use-module (gnu packages perl)
@@ -41,19 +44,20 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages sqlite)
+  #:use-module (gnu packages tcl)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix gexp)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu))
 
 (define-public mit-krb5
   (package
     (name "mit-krb5")
-    (replacement mit-krb5-1.18.4)
-    (version "1.18")
+    (version "1.19.2")
     (source (origin
               (method url-fetch)
               (uri (list
@@ -63,15 +67,15 @@
                     (string-append "https://kerberos.org/dist/krb5/"
                                    (version-major+minor version)
                                    "/krb5-" version ".tar.gz")))
-              (patches (search-patches "mit-krb5-qualify-short-hostnames.patch"
-                                       "mit-krb5-hurd.patch"))
+              (patches (search-patches "mit-krb5-hurd.patch"))
               (sha256
                (base32
-                "121c5xsy3x0i4wdkrpw62yhvji6virbh6n30ypazkp0isws3k4bk"))))
+                "0snz1jm2w4dkk65zcz953jmmv9mqa30fanch2bk8r3rs9vp3yi8h"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("bison" ,bison)
-       ("perl" ,perl)))
+     (list bison perl tcl))                   ;required for some tests
+    (inputs
+     (list openssl))
     (arguments
      `(;; XXX: On 32-bit systems, 'kdb5_util' hangs on an fcntl/F_SETLKW call
        ;; while running the tests in 'src/tests'. Also disable tests when
@@ -95,20 +99,14 @@
        (modify-phases %standard-phases
          (add-after 'unpack 'enter-source-directory
            (lambda _
-             (chdir "src")
-             #t))
+             (chdir "src")))
          (add-before 'check 'pre-check
            (lambda* (#:key inputs native-inputs #:allow-other-keys)
              (let ((perl (assoc-ref (or native-inputs inputs) "perl")))
                (substitute* "plugins/kdb/db2/libdb2/test/run.test"
                  (("/bin/cat") (string-append perl "/bin/perl"))
                  (("D/bin/sh") (string-append "D" (which "sh")))
-                 (("bindir=/bin/.") (string-append "bindir=" perl "/bin"))))
-
-             ;; avoid service names since /etc/services is unavailable
-             (substitute* "tests/resolve/Makefile"
-               (("-p telnet") "-p 23"))
-             #t)))))
+                 (("bindir=/bin/.") (string-append "bindir=" perl "/bin")))))))))
     (synopsis "MIT Kerberos 5")
     (description
      "Massachusetts Institute of Technology implementation of Kerberos.
@@ -119,28 +117,6 @@ cryptography.")
                                    "See NOTICE in the distribution."))
     (home-page "https://web.mit.edu/kerberos/")
     (properties '((cpe-name . "kerberos")))))
-
-(define-public mit-krb5-1.18.4
-  ;; Hide the package to avoid displaying the confusing "1.1a" version in the
-  ;; user interface.
-  (hidden-package
-    (package
-      (inherit mit-krb5)
-      ; version 1.18.4
-      (version "1.1a")
-      (source (origin
-                (method url-fetch)
-                (uri (list
-                       (string-append "https://web.mit.edu/kerberos/dist/krb5/"
-                                      "1.18"
-                                      "/krb5-1.18.4.tar.gz")
-                       (string-append "https://kerberos.org/dist/krb5/"
-                                      "1.18"
-                                      "/krb5-1.18.4.tar.gz")))
-                (patches (search-patches "mit-krb5-hurd.patch"))
-                (sha256
-                  (base32
-                    "1j4zm5npv3yxrwrsdwlxias0ycj4qfxzgnz0h9zffla7b4pmw236")))))))
 
 (define-public shishi
   (package
@@ -171,14 +147,14 @@ cryptography.")
              (("^install-data-hook:")
               "install-data-hook:\nx:\n"))
             #t)))))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs (list pkg-config))
     (inputs
-     `(("gnutls" ,gnutls)
-       ("libidn" ,libidn)
-       ("linux-pam" ,linux-pam-1.2)
-       ("zlib" ,zlib)
-       ("libgcrypt" ,libgcrypt)
-       ("libtasn1" ,libtasn1)))
+     (list gnutls
+           libidn
+           linux-pam-1.2
+           zlib
+           libgcrypt
+           libtasn1))
     (home-page "https://www.gnu.org/software/shishi/")
     (synopsis "Implementation of the Kerberos 5 network security system")
     (description
@@ -208,34 +184,72 @@ After installation, the system administrator should generate keys using
                   (substitute* "configure"
                     (("User=.*$") "User=Guix\n")
                     (("Host=.*$") "Host=GNU")
-                    (("Date=.*$") "Date=2019\n"))
-                  #t))))
+                    (("Date=.*$") "Date=2019\n"))))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags (list
-                          ;; Avoid 7 MiB of .a files.
-                          "--disable-static"
+     `(#:configure-flags
+       ,#~(list
+           ;; Avoid 7 MiB of .a files.
+           "--disable-static"
 
-                          ;; Do not build libedit.
-                          (string-append
-                           "--with-readline-lib="
-                           (assoc-ref %build-inputs "readline") "/lib")
-                          (string-append
-                           "--with-readline-include="
-                           (assoc-ref %build-inputs "readline") "/include")
+           ;; Do not build libedit.
+           (string-append
+            "--with-readline-lib="
+            (assoc-ref %build-inputs "readline") "/lib")
+           (string-append
+            "--with-readline-include="
+            (assoc-ref %build-inputs "readline") "/include")
 
-                          ;; Do not build sqlite.
-                          (string-append
-                           "--with-sqlite3="
-                           (assoc-ref %build-inputs "sqlite")))
+           ;; Do not build sqlite.
+           (string-append
+            "--with-sqlite3="
+            (assoc-ref %build-inputs "sqlite"))
 
+           #$@(if (%current-target-system)
+                  ;; The configure script is too pessimistic.
+                  ;; Setting this also resolves a linking error.
+                  #~("ac_cv_func_getpwnam_r_posix=yes"
+                     ;; Allow 'slc' and 'asn1_compile' to be found.
+                     (string-append "--with-cross-tools="
+                                    #+(file-append this-package
+                                                   "/libexec/heimdal")))
+                  #~()))
        #:phases (modify-phases %standard-phases
                   (add-before 'configure 'pre-configure
-                    (lambda _
-                      (substitute* '("appl/afsutil/pagsh.c"
-                                     "tools/Makefile.in")
-                        (("/bin/sh") (which "sh")))
-                      #t))
+                    ;; TODO(core-updates): Unconditionally use the
+                    ;; %current-target-system branch.
+                    (,(if (%current-target-system)
+                          'lambda*
+                          'lambda)
+                     ,(if (%current-target-system)
+                          '(#:key inputs #:allow-other-keys)
+                          '_)
+                     ,@(if (%current-target-system)
+                           `((substitute* "configure"
+                               ;; The e2fsprogs input is included for libcom_err,
+                               ;; let's use it even if cross-compiling.
+                               (("test \"\\$\\{krb_cv_com_err\\}\" = \"yes\"")
+                                ":")
+                               ;; Our 'compile_et' is not in --with-cross-tools,
+                               ;; which confuses heimdal.
+                               (("ac_cv_prog_COMPILE_ET=\\$\\{with_cross_tools\\}compile_et")
+                                "ac_cv_PROG_COMPILE_ET=compile_et")))
+                           '())
+                     ,@(if (%current-target-system)
+                           '((substitute* '("appl/afsutil/pagsh.c" "appl/su/su.c")
+                               (("/bin/sh")
+                                (search-input-file inputs "bin/sh"))
+                               ;; Use the cross-compiled bash instead of the
+                               ;; native bash (XXX shouldn't _PATH_BSHELL point
+                               ;; to a cross-compiled bash?).
+                               (("_PATH_BSHELL")
+                                (string-append
+                                 "\"" (search-input-file inputs "bin/sh") "\"")))
+                             (substitute* '("tools/Makefile.in")
+                               (("/bin/sh") (which "sh"))))
+                           '((substitute* '("appl/afsutil/pagsh.c"
+                                            "tools/Makefile.in")
+                               (("/bin/sh") (which "sh")))))))
                   (add-before 'check 'pre-check
                     (lambda _
                       ;; For 'getxxyyy-test'.
@@ -245,17 +259,19 @@ After installation, the system administrator should generate keys using
                       ;; FIXME: figure out why 'kdc' tests fail.
                       (with-output-to-file "tests/db/have-db.in"
                         (lambda ()
-                          (format #t "#!~a~%exit 1~%" (which "sh"))))
-                      #t)))
+                          (format #t "#!~a~%exit 1~%" (which "sh")))))))
        ;; Tests fail when run in parallel.
        #:parallel-tests? #f))
-    (native-inputs `(("e2fsprogs" ,e2fsprogs)     ;for 'compile_et'
-                     ("texinfo" ,texinfo)
-                     ("unzip" ,unzip)))           ;for tests
-    (inputs `(("readline" ,readline)
-              ("bdb" ,bdb)
-              ("e2fsprogs" ,e2fsprogs)            ;for libcom_err
-              ("sqlite" ,sqlite)))
+    (native-inputs (list e2fsprogs ;for 'compile_et'
+                         texinfo
+                         unzip ;for tests
+                         perl))
+    (inputs (list readline
+                  bash-minimal
+                  bdb
+                  e2fsprogs ;for libcom_err
+                  mit-krb5
+                  sqlite))
     (home-page "http://www.h5l.org/")
     (synopsis "Kerberos 5 network authentication")
     (description

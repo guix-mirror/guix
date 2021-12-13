@@ -110,7 +110,7 @@
          "0wpn9ijlsmrpyiwg3drmgz4dms1i1i347adgqw37bkrh3vn6yq16"))))
     (build-system python-build-system)
     (inputs
-     `(("chmlib" ,chmlib)))
+     (list chmlib))
     (home-page "https://github.com/dottedmag/pychm")
     (synopsis "Handle CHM files")
     (description "This package provides a Python module for interacting
@@ -150,11 +150,11 @@ with Microsoft Compiled HTML (CHM) files")
                                  "calibre-remove-test-unrar.patch"))))
     (build-system python-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("qtbase" ,qtbase-5) ; for qmake
-       ("python-flake8" ,python-flake8)
-       ("python-pyqt-builder" ,python-pyqt-builder)
-       ("xdg-utils" ,xdg-utils)))
+     (list pkg-config
+           qtbase-5 ; for qmake
+           python-flake8
+           python-pyqt-builder
+           xdg-utils))
     (inputs
      `(("fontconfig" ,fontconfig)
        ("font-liberation" ,font-liberation)
@@ -329,7 +329,7 @@ sip-include-dirs = [\"" pyqt "/share/sip" "\"]")))
                   ;; rather than create ..calibre-real-real-s.  For more
                   ;; information see: https://issues.guix.gnu.org/43249.
                   (find-files "." (lambda (file stat)
-                                    (not (wrapper? file)))))))
+                                    (not (wrapped-program? file)))))))
              #t)))))
     (home-page "https://calibre-ebook.com/")
     (synopsis "E-book library management software")
@@ -368,10 +368,9 @@ e-books for convenient reading.")
      `(#:tests? #f)) ; No 'test' target
     (build-system cmake-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("libzip" ,libzip)
-       ("libxml2" ,libxml2)))
+     (list libzip libxml2))
     (home-page "http://ebook-tools.sourceforge.net")
     (synopsis "Tools and library for dealing with various ebook file formats")
     (description "This package provides command-line tools and a library for
@@ -408,7 +407,7 @@ accessing and converting various ebook file formats.")
            (lambda* (#:key make-flags #:allow-other-keys)
              (apply invoke (cons "qmake" make-flags)))))))
     (native-inputs
-     `(("qtbase" ,qtbase-5)))
+     (list qtbase-5))
     (home-page "https://alpinekobox.ddns.net/InkBox/inkbox/")
     (synopsis "EBook reader")
     (description "This package provides InkBox eBook reader.")
@@ -552,12 +551,12 @@ following formats:
                     (libmagic-path     (string-append
                                         (assoc-ref %build-inputs "file")
                                         "/lib"))
-                    (python-path     (getenv "PYTHONPATH")))
+                    (python-path     (getenv "GUIX_PYTHONPATH")))
                (wrap-program (string-append out "/bin/cozy")
                  `("LD_LIBRARY_PATH" ":" prefix (,libmagic-path))
                  `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))
                  `("GST_PLUGIN_SYSTEM_PATH" ":" prefix (,gst-plugin-path))
-                 `("PYTHONPATH" ":" prefix (,python-path ,pylib)))))))))
+                 `("GUIX_PYTHONPATH" ":" prefix (,python-path ,pylib)))))))))
     (native-inputs
      `(("desktop-file-utils" ,desktop-file-utils)
        ("gettext" ,gettext-minimal)
@@ -567,26 +566,26 @@ following formats:
        ("pkg-config" ,pkg-config)
        ("python" ,python-wrapper)))
     (inputs
-     `(("file" ,file)
-       ("granite" ,granite)
-       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("gst-libav" ,gst-libav)
-       ("gst-plugins-bad" ,gst-plugins-bad)
-       ("gst-plugins-good" ,gst-plugins-good)
-       ("gst-plugins-ugly" ,gst-plugins-ugly)
-       ("gtk+" ,gtk+)
-       ("libdazzle" ,libdazzle)
-       ("libgee" ,libgee)
-       ("libhandy" ,libhandy)
-       ("python-distro" ,python-distro)
-       ("python-gst" ,python-gst)
-       ("python-mutagen" ,python-mutagen)
-       ("python-packaging" ,python-packaging)
-       ("python-peewee" ,python-peewee)
-       ("python-pycairo" ,python-pycairo)
-       ("python-pygobject" ,python-pygobject)
-       ("python-pytz" ,python-pytz)
-       ("python-requests" ,python-requests)))
+     (list file
+           granite
+           gsettings-desktop-schemas
+           gst-libav
+           gst-plugins-bad
+           gst-plugins-good
+           gst-plugins-ugly
+           gtk+
+           libdazzle
+           libgee
+           libhandy
+           python-distro
+           python-gst
+           python-mutagen
+           python-packaging
+           python-peewee
+           python-pycairo
+           python-pygobject
+           python-pytz
+           python-requests))
     (home-page "https://cozy.geigi.de/")
     (synopsis "Modern audiobook player using GTK+")
     (description
@@ -625,10 +624,9 @@ Some of the current features:
                 "0b12ym7cn65wy268kbksyhakicwb053c8xfn76q2dawrvbras9dj"))))
     (build-system gnu-build-system)
     (inputs
-     `(("wxwidgets" ,wxwidgets)
-       ("chmlib" ,chmlib)))
+     (list wxwidgets chmlib))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://github.com/rzvncj/xCHM")
     (synopsis "CHM file viewer")
     (description "xCHM is a graphical CHM file viewer.  It is a frontend to
@@ -650,12 +648,9 @@ the CHM library CHMLIB.")
                 "0yps72cm609xn2k7alflkdhp9kgr1w7zzyxjygz0n1kqrdcplihh"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
+     (list autoconf automake libtool))
     (inputs
-     `(("zlib" ,zlib)
-       ("libxml2" ,libxml2)))
+     (list zlib libxml2))
     (home-page "https://github.com/bfabiszewski/libmobi/")
     (synopsis "C library for handling MOBI formats")
     (description "Libmobi is a C library for handling MOBI ebook

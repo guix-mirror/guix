@@ -52,8 +52,7 @@
     (native-inputs
      `(("makeinfo" ,texinfo)))
     (inputs
-     `(("ncurses" ,ncurses)
-       ("perl" ,perl)))
+     (list ncurses perl))
     (arguments
      `(#:configure-flags
        ;; By default, screen supports 16 colors, but we want 256 when
@@ -132,14 +131,13 @@ controlling terminal and attach to it later.")
          (add-after
           'install 'wrap-python-scripts
           (lambda* (#:key inputs outputs #:allow-other-keys)
-            (let* ((python (string-append (assoc-ref inputs "python")
-                                          "/bin/python"))
+            (let* ((python (search-input-file inputs "/bin/python"))
                    (out    (assoc-ref outputs "out"))
                    (config (string-append out "/bin/byobu-config"))
                    (select (string-append out "/bin/byobu-select-session")))
               (wrap-program config
                 `("BYOBU_PYTHON" = (,python))
-                `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH"))))
+                `("GUIX_PYTHONPATH" ":" prefix (,(getenv "GUIX_PYTHONPATH"))))
               (wrap-program select
                 `("BYOBU_PYTHON" = (,python)))
               #t))))))

@@ -2,6 +2,7 @@
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
+;;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
 ;;; Copyright © 2021 Alice Brenon <alice.brenon@ens-lyon.fr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -306,10 +307,8 @@ path to the repository."
           (map dependency->native-input depends)))
 
 (define (dependency-list->inputs lst)
-  (map
-   (lambda (dependency)
-     (list dependency (list 'unquote (string->symbol dependency))))
-   (ocaml-names->guix-names lst)))
+  (map string->symbol
+       (ocaml-names->guix-names lst)))
 
 (define* (opam-fetch name #:optional (repositories-specs '("opam")))
   (or (fold (lambda (repository others)
@@ -321,9 +320,9 @@ path to the repository."
             (filter-map get-opam-repository repositories-specs))
       (warning (G_ "opam: package '~a' not found~%") name)))
 
-(define* (opam->guix-package name #:key (repo '()) version)
-  "Import OPAM package NAME from REPOSITORIES (a list of names, URLs or local
-paths, always including OPAM's official repository).  Return a 'package' sexp
+(define* (opam->guix-package name #:key (repo 'opam) version)
+  "Import OPAM package NAME from REPOSITORY (a directory name) or, if
+REPOSITORY is #f, from the official OPAM repository.  Return a 'package' sexp
 or #f on failure."
   (and-let* ((with-opam (if (member "opam" repo) repo (cons "opam" repo)))
              (opam-file (opam-fetch name with-opam))
@@ -362,10 +361,10 @@ or #f on failure."
                                           'ocaml-build-system))
                        ,@(if (null? inputs)
                            '()
-                           `((propagated-inputs ,(list 'quasiquote inputs))))
+                           `((propagated-inputs (list ,@inputs))))
                        ,@(if (null? native-inputs)
                            '()
-                           `((native-inputs ,(list 'quasiquote native-inputs))))
+                           `((native-inputs (list ,@native-inputs))))
                        ,@(if (equal? name (guix-name->opam-name (ocaml-name->guix-name name)))
                            '()
                            `((properties

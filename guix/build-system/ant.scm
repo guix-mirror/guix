@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,7 +21,8 @@
   #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module (guix packages)
-  #:use-module (guix derivations)
+  #:use-module (guix gexp)
+  #:use-module (guix monads)
   #:use-module (guix search-paths)
   #:use-module (guix build-system)
   #:use-module (guix build-system gnu)
@@ -73,7 +75,7 @@
                 #:rest arguments)
   "Return a bag for NAME."
   (define private-keywords
-    '(#:source #:target #:jdk #:ant #:zip #:inputs #:native-inputs))
+    '(#:target #:jdk #:ant #:zip #:inputs #:native-inputs))
 
   (and (not target)                               ;XXX: no cross-compilation
        (bag
@@ -94,8 +96,9 @@
          (build ant-build)
          (arguments (strip-keyword-arguments private-keywords arguments)))))
 
-(define* (ant-build store name inputs
+(define* (ant-build name inputs
                     #:key
+                    source
                     (tests? #t)
                     (test-target "check")
                     (configure-flags ''())
@@ -107,8 +110,7 @@
                     (test-exclude (list "**/Abstract*.java"))
                     (source-dir "src")
                     (test-dir "src/test")
-                    (phases '(@ (guix build ant-build-system)
-                                %standard-phases))
+                    (phases '%standard-phases)
                     (outputs '("out"))
                     (search-paths '())
                     (system (%current-system))
@@ -119,49 +121,35 @@
                                (guix build utils))))
   "Build SOURCE with INPUTS."
   (define builder
-    `(begin
-       (use-modules ,@modules)
-       (ant-build #:name ,name
-                  #:source ,(match (assoc-ref inputs "source")
-                              (((? derivation? source))
-                               (derivation->output-path source))
-                              ((source)
-                               source)
-                              (source
-                               source))
-                  #:make-flags ,make-flags
-                  #:configure-flags ,configure-flags
-                  #:system ,system
-                  #:tests? ,tests?
-                  #:test-target ,test-target
-                  #:build-target ,build-target
-                  #:jar-name ,jar-name
-                  #:main-class ,main-class
-                  #:test-include (list ,@test-include)
-                  #:test-exclude (list ,@test-exclude)
-                  #:source-dir ,source-dir
-                  #:test-dir ,test-dir
-                  #:phases ,phases
-                  #:outputs %outputs
-                  #:search-paths ',(map search-path-specification->sexp
-                                        search-paths)
-                  #:inputs %build-inputs)))
+    (with-imported-modules imported-modules
+      #~(begin
+          (use-modules #$@(sexp->gexp modules))
+          (ant-build #:name #$name
+                     #:source #+source
+                     #:make-flags #$make-flags
+                     #:configure-flags #$configure-flags
+                     #:system #$system
+                     #:tests? #$tests?
+                     #:test-target #$test-target
+                     #:build-target #$build-target
+                     #:jar-name #$jar-name
+                     #:main-class #$main-class
+                     #:test-include (list #$@test-include)
+                     #:test-exclude (list #$@test-exclude)
+                     #:source-dir #$source-dir
+                     #:test-dir #$test-dir
+                     #:phases #$phases
+                     #:outputs #$(outputs->gexp outputs)
+                     #:search-paths '#$(sexp->gexp
+                                        (map search-path-specification->sexp
+                                             search-paths))
+                     #:inputs #$(input-tuples->gexp inputs)))))
 
-  (define guile-for-build
-    (match guile
-      ((? package?)
-       (package-derivation store guile system #:graft? #f))
-      (#f                               ; the default
-       (let* ((distro (resolve-interface '(gnu packages commencement)))
-              (guile  (module-ref distro 'guile-final)))
-         (package-derivation store guile system #:graft? #f)))))
-
-  (build-expression->derivation store name builder
-                                #:inputs inputs
-                                #:system system
-                                #:modules imported-modules
-                                #:outputs outputs
-                                #:guile-for-build guile-for-build))
+  (mlet %store-monad  ((guile (package->derivation (or guile (default-guile))
+                                                   system #:graft? #f)))
+    (gexp->derivation name builder
+                      #:system system
+                      #:guile-for-build guile)))
 
 (define ant-build-system
   (build-system

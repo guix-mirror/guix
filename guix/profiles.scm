@@ -7,7 +7,7 @@
 ;;; Copyright © 2016, 2018, 2019, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2017 Huang Ying <huang.ying.caritas@gmail.com>
-;;; Copyright © 2017 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2017, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Danny Milosavljevic <dannym@scratchpost.org>
@@ -1180,6 +1180,52 @@ MANIFEST.  Single-file bundles are required by programs such as Git and Lynx."
                     `((type . profile-hook)
                       (hook . emacs-subdirs))))
 
+(define (gdk-pixbuf-loaders-cache-file manifest)
+  "Return a derivation that produces a loaders cache file for every gdk-pixbuf
+loaders discovered in MANIFEST."
+  (define gdk-pixbuf                    ;lazy reference
+    (module-ref (resolve-interface '(gnu packages gtk)) 'gdk-pixbuf))
+
+  (mlet* %store-monad
+      ((gdk-pixbuf (manifest-lookup-package manifest "gdk-pixbuf"))
+       (librsvg (manifest-lookup-package manifest "librsvg"))
+       (gdk-pixbuf-bin -> (if (string? gdk-pixbuf)
+                              (string-append gdk-pixbuf "/bin")
+                              (file-append gdk-pixbuf "/bin"))))
+
+    (define build
+      (with-imported-modules (source-module-closure
+                              '((guix build glib-or-gtk-build-system)))
+        #~(begin
+            (use-modules (guix build glib-or-gtk-build-system))
+            (setenv "PATH" (string-append #$gdk-pixbuf-bin ":" (getenv "PATH")))
+
+            (generate-gdk-pixbuf-loaders-cache
+             ;; XXX: MANIFEST-LOOKUP-PACKAGE transitively searches through
+             ;; every input referenced by the manifest, while MANIFEST-INPUTS
+             ;; only retrieves the immediate inputs as well as their
+             ;; propagated inputs; to avoid causing an empty output derivation
+             ;; we must ensure that the inputs contain at least one
+             ;; loaders.cache file.  This is why we include gdk-pixbuf or
+             ;; librsvg when they are transitively found.
+             (list #$@(if gdk-pixbuf
+                          (list gdk-pixbuf)
+                          '())
+                   #$@(if librsvg
+                          (list librsvg)
+                          '())
+                   #$@(manifest-inputs manifest))
+             (list #$output)))))
+
+    (if gdk-pixbuf
+        (gexp->derivation "gdk-pixbuf-loaders-cache-file" build
+                          #:local-build? #t
+                          #:substitutable? #f
+                          #:properties
+                          '((type . profile-hook)
+                            (hook . gdk-pixbuf-loaders-cache-file)))
+        (return #f))))
+
 (define (glib-schemas manifest)
   "Return a derivation that unions all schemas from manifest entries and
 creates the Glib 'gschemas.compiled' file."
@@ -1799,10 +1845,10 @@ MANIFEST."
         ghc-package-cache-file
         ca-certificate-bundle
         emacs-subdirs
+        gdk-pixbuf-loaders-cache-file
         glib-schemas
         gtk-icon-themes
         gtk-im-modules
-        texlive-configuration
         xdg-desktop-database
         xdg-mime-database))
 

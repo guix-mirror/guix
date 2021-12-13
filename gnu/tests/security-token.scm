@@ -44,9 +44,7 @@
           (define marionette
             (make-marionette (list #$(virtual-machine os))))
 
-          (mkdir #$output)
-          (chdir #$output)
-
+          (test-runner-current (system-test-runner #$output))
           (test-begin "pcscd")
 
           (test-assert "pcscd is alive"
@@ -59,8 +57,7 @@
                        (current-services))))
              marionette))
 
-          (test-end)
-          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          (test-end))))
 
   (gexp->derivation "pcscd" test))
 

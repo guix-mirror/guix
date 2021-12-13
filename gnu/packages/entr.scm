@@ -59,16 +59,14 @@
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "entr.c"
                (("/bin/sh" command)
-                (string-append (assoc-ref inputs "bash") command))
+                (search-input-file inputs command))
                (("/bin/cat" command)
-                (string-append (assoc-ref inputs "coreutils") command))
+                (search-input-file inputs command))
                (("/usr(/bin/clear)" _ command)
-                (string-append (assoc-ref inputs "ncurses") command)))
+                (search-input-file inputs command)))
              #t)))))
     (inputs
-     `(("bash" ,bash)
-       ("coreutils" ,coreutils)
-       ("ncurses" ,ncurses)))
+     (list bash coreutils ncurses))
     (home-page "http://entrproject.org/")
     (synopsis "Run arbitrary commands when files change")
     (description

@@ -156,20 +156,20 @@ human.")
      `(("asciidoctor" ,ruby-asciidoctor)
        ("qttools" ,qttools)))
     (inputs
-     `(("argon2" ,argon2)
-       ("libgcrypt" ,libgcrypt)
-       ("libsodium" ,libsodium)         ; XC_BROWSER
-       ("libyubikey" ,libyubikey)       ; XC_YUBIKEY
-       ("libxi" ,libxi)
-       ("libxtst" ,libxtst)
-       ("qrencode" ,qrencode)
-       ("qtbase" ,qtbase-5)
-       ("qtsvg" ,qtsvg)
-       ("qtx11extras" ,qtx11extras)
-       ("quazip" ,quazip-0)             ; XC_KEESHARE
-       ("readline" ,readline)
-       ("yubikey-personalization" ,yubikey-personalization) ; XC_YUBIKEY
-       ("zlib" ,zlib)))
+     (list argon2
+           libgcrypt
+           libsodium ; XC_BROWSER
+           libyubikey ; XC_YUBIKEY
+           libxi
+           libxtst
+           qrencode
+           qtbase-5
+           qtsvg
+           qtx11extras
+           quazip-0 ; XC_KEESHARE
+           readline
+           yubikey-personalization ; XC_YUBIKEY
+           zlib))
     (home-page "https://www.keepassxc.org")
     (synopsis "Password manager")
     (description "KeePassXC is a password manager or safe which helps you to
@@ -259,13 +259,9 @@ platforms.")
                (invoke "autoconf")
                #t)))))
       (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)))
+       (list autoconf automake))
       (inputs
-       `(("libx11" ,libx11)
-         ("libxmu" ,libxmu)
-         ("libxt" ,libxt)
-         ("openssl" ,openssl)))
+       (list libx11 libxmu libxt openssl))
       (home-page "https://github.com/nsd20463/pwsafe")
       (synopsis "CLI password manager")
       (description
@@ -286,7 +282,7 @@ Counterpane's Passwordsafe.")
                 "1l2shrhvcwfzkar9qiwb75nhcqmx25iz55lzmz0c187nbjhqzi9p"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (arguments
      `(#:modules ((guix build gnu-build-system)
                     (guix build utils)
@@ -309,9 +305,7 @@ Counterpane's Passwordsafe.")
                  `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,ccachedir)))
                #t))))))
     (inputs
-     `(("guile" ,guile-2.2)
-       ("gnupg" ,gnupg)
-       ("xclip" ,xclip)))
+     (list guile-2.2 gnupg xclip))
     (synopsis "GnuPG-based secret manager")
     (description "Shroud is a simple secret manager with a command line
 interface.  The password database is stored as a Scheme s-expression and
@@ -339,12 +333,9 @@ applications, there is xclip integration." )
        (list (string-append "--docdir=" (assoc-ref %outputs "out")
                             "/share/doc",name "-" ,version))))
     (inputs
-     `(("argon2" ,argon2)
-       ("ncurses" ,ncurses)
-       ("openssl" ,openssl)))
+     (list argon2 ncurses openssl))
     (native-inputs
-     `(("cppunit" ,cppunit)
-       ("pkg-config" ,pkg-config)))
+     (list cppunit pkg-config))
     (synopsis "Yet Another Password Encryption Tool")
     (description "YAPET is a text based password manager using the Blowfish
 encryption algorithm.  Because of its small footprint and very few library
@@ -416,7 +407,7 @@ them out, at the source.")
     (native-inputs
      `(("python" ,python-wrapper)))
     (inputs
-     `(("cracklib" ,cracklib)))
+     (list cracklib))
     (synopsis "Password quality checker")
     (home-page "https://github.com/libpwquality/libpwquality")
     (description
@@ -460,24 +451,17 @@ random passwords that pass the checks.")
                #t)))
          (add-after 'install 'manpage
            (lambda* (#:key outputs #:allow-other-keys)
-             ;; Without this substitution, it fails with
-             ;; ImportError: No module named 'gpg'
-             (substitute* "Makefile"
-               (("PYTHONPATH=.") ""))
              (invoke "make" "assword.1")
              (install-file
               "assword.1"
               (string-append (assoc-ref outputs "out") "/share/man/man1")))))))
     (build-system python-build-system)
     (native-inputs
-     `(("txt2man" ,txt2man)))
+     (list txt2man))
     (inputs
-     `(("gtk+" ,gtk+)
-       ("python-xdo" ,python-xdo)
-       ("python-gpg" ,python-gpg)
-       ("python-pygobject" ,python-pygobject)))
+     (list gtk+ python-xdo python-gpg python-pygobject))
     (propagated-inputs
-     `(("xclip" ,xclip)))
+     (list xclip))
     (home-page "https://finestructure.net/assword/")
     (synopsis "Password manager")
     (description "assword is a simple password manager using GPG-wrapped
@@ -527,11 +511,11 @@ any X11 window.")
              (substitute* "contrib/dmenu/passmenu"
                (("dmenu=dmenu\n")
                 (string-append "dmenu="
-                               (assoc-ref inputs "dmenu") "/bin/dmenu\n"))
+                               (search-input-file inputs "/bin/dmenu")
+                               "\n"))
                (("xdotool=\"xdotool")
                 (string-append "xdotool=\""
-                               (assoc-ref inputs "xdotool") "/bin/xdotool")))
-             #t))
+                               (search-input-file inputs "/bin/xdotool"))))))
          (add-after 'install 'install-passmenu
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -617,13 +601,9 @@ through the pass command.")
              #t)))
        #:test-target "test"))
     (inputs
-     `(("oath-toolkit" ,oath-toolkit)))
+     (list oath-toolkit))
     (native-inputs
-     `(("password-store" ,password-store)
-       ("expect" ,expect)
-       ("git" ,git)
-       ("gnupg" ,gnupg)
-       ("which" ,which)))
+     (list password-store expect git gnupg which))
     (home-page "https://github.com/tadfisher/pass-otp")
     (synopsis "Pass extension for managing one-time-password (OTP) tokens")
     (description
@@ -700,10 +680,9 @@ key URIs using the standard otpauth:// scheme.")
              (setenv "QT_QPA_PLATFORM" "offscreen")
              #t)))))
     (native-inputs
-     `(("qttools" ,qttools)))
+     (list qttools))
     (inputs
-     `(("qtbase" ,qtbase-5)
-       ("qtsvg" ,qtsvg)))
+     (list qtbase-5 qtsvg))
     (home-page "https://qtpass.org")
     (synopsis "GUI for password manager password-store")
     (description
@@ -740,9 +719,7 @@ encryption.")
            (chmod script #o555)
            (install-file script (string-append out "/bin"))))))
     (propagated-inputs
-     `(("password-store" ,password-store)
-       ("rofi" ,rofi)
-       ("xdotool" ,xdotool)))
+     (list password-store rofi xdotool))
     (home-page "https://github.com/carnager/rofi-pass")
     (synopsis "Rofi frontend for password-store")
     (description "Rofi-pass provides a way to manipulate information stored
@@ -814,13 +791,11 @@ using password-store through rofi interface:
                    (,(string-append gnupg "/bin"))))
                #t))))))
     (native-inputs
-     `(("which" ,which)))
+     (list which))
     (inputs
-     `(("gnupg" ,gnupg)
-       ("go-github-com-mattn-go-zglob" ,go-github-com-mattn-go-zglob)
-       ("go-github-com-rifflock-lfshook" ,go-github-com-rifflock-lfshook)
-       ("go-github-com-sirupsen-logrus" ,go-github-com-sirupsen-logrus)
-       ("go-golang-org-x-sys" ,go-golang-org-x-sys)))
+     (list gnupg go-github-com-mattn-go-zglob
+           go-github-com-rifflock-lfshook go-github-com-sirupsen-logrus
+           go-golang-org-x-sys))
     (home-page "https://github.com/browserpass/browserpass-native")
     (synopsis "Browserpass native messaging host")
     (description "Browserpass is a browser extension for pass, a
@@ -897,11 +872,9 @@ winner of the 2015 Password Hashing Competition.")
              (setenv "HOME" (getcwd))
              (invoke "pytest"))))))
     (inputs
-     `(("python-pyxdg" ,python-pyxdg)
-       ("password-store" ,password-store)))
+     (list python-pyxdg password-store))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-pytest-mock" ,python-pytest-mock)))
+     (list python-pytest python-pytest-mock))
     (home-page "https://github.com/languitar/pass-git-helper")
     (synopsis "Git credential helper interfacing with pass")
     (description "pass-git-helper is a git credential helper which
@@ -926,7 +899,7 @@ between hosts and entries in the password store.")
            "0fvz3v41hnaiv1ggpxanfykyfjq79cwp9qcqqn63vic357w27lgm"))))
       (build-system gnu-build-system)
       (native-inputs
-       `(("perl" ,perl)))
+       (list perl))
       (inputs
        `(("gmp" ,gmp)
          ("libpcap" ,libpcap)
@@ -1030,8 +1003,7 @@ is the community-enhanced, \"jumbo\" version of John the Ripper.")
      ;; to Python 2, which works fine.
      `(#:python ,python-2))
     (propagated-inputs
-     `(("gnupg" ,gnupg)
-       ("pwgen" ,pwgen)))
+     (list gnupg pwgen))
     (home-page "http://www.digip.org/sala/")
     (synopsis "Encrypted plaintext password store")
     (description
@@ -1055,10 +1027,10 @@ by GnuPG's symmetrical encryption.")
     (inputs `(("gtk2" ,gtk+-2)
               ("gnupg" ,gnupg)
               ("libxml2" ,libxml2)))
-    (native-inputs `(("pkg-config" ,pkg-config)
-                     ("intltool" ,intltool)))
+    (native-inputs (list pkg-config intltool))
     (arguments
-     `(#:phases
+     `(#:configure-flags '("CFLAGS=-O2 -g -fcommon")
+       #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'pre-configure
            ;; The file po/POTFILES.in ends up missing for some reason in
@@ -1103,10 +1075,8 @@ to use a different password manager.")
           "1m067vvdlc85csbpkp8aw4s3ags7q8s3jszrr32kmj9qhk5c254f"))))
     (build-system python-build-system)
     (inputs
-     `(("python-beautifulsoup4" ,python-beautifulsoup4)
-       ("python-docopt" ,python-docopt)
-       ("python-html5lib" ,python-html5lib)
-       ("python-requests" ,python-requests)))
+     (list python-beautifulsoup4 python-docopt python-html5lib
+           python-requests))
     (home-page "https://github.com/ddevault/pass-rotate")
     (synopsis "Rotate password on online services")
     (description "pass-rotate is a command line utility and python library for
@@ -1128,7 +1098,7 @@ your online accounts makes it necessary.")
         (base32
          "104z63m7lqbb0sdrxhf9yi15l4a9zwf9m6zs9dbb3gf0nfxl1h9r"))))
     (native-inputs
-     `(("opencl-headers" ,opencl-headers)))
+     (list opencl-headers))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                      ;no tests
@@ -1158,9 +1128,9 @@ password cracking.")
        (sha256
         (base32 "0kq555kb338691qd7zjmi8vhq4km3apnsl2w63zh0igwzcjx6lx1"))))
     (native-inputs
-     `(("p7zip" ,p7zip)))
+     (list p7zip))
     (inputs
-     `(("perl" ,perl)))
+     (list perl))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ;no tests
@@ -1216,9 +1186,9 @@ group them into chains.")
         (base32 "0yawrlbbklhmvwr99wm7li3r0d5kxvpkwf33a12rji7z0ya5p340"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("lzip" ,lzip)))
+     (list lzip))
     (inputs
-     `(("cryptsetup" ,cryptsetup)))
+     (list cryptsetup))
     (synopsis "LUKS encrypted volume cracker")
     (description
      "This is a cracker for LUKS encrypted volumes.  It can be used either in
@@ -1244,13 +1214,9 @@ try every password contained in a file.")
           (base32 "0lspqyyxbk6h28yxnp7pd5aib161vrkzgasam5jpzn35n1jacx2j"))))
       (build-system gnu-build-system)
       (native-inputs
-       `(("pkg-config" ,pkg-config)
-         ("libxslt" ,libxslt)
-         ("libxml2" ,libxml2)
-         ("docbook-xsl" ,docbook-xsl)
-         ("docbook-xml" ,docbook-xml)))
+       (list pkg-config libxslt libxml2 docbook-xsl docbook-xml))
       (inputs
-       `(("openssl" ,openssl)))
+       (list openssl))
       (arguments
        `(#:phases
          (modify-phases %standard-phases
@@ -1299,7 +1265,7 @@ encryption algorithm if so desired.")
                   (string-append ":-" tomb "/bin/tomb"))))))
          (delete 'configure))))
     (inputs
-     `(("tomb" ,tomb)))
+     (list tomb))
     (home-page "https://github.com/roddhjav/pass-tomb")
     (synopsis "Pass extension keeping the tree of passwords encrypted")
     (description "Pass-tomb provides a convenient solution to put your

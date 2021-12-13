@@ -50,9 +50,9 @@
                (("/bin/sh") (which "sh")))
              #t)))))
     (native-inputs
-     `(("lzip" ,lzip)))
+     (list lzip))
     (inputs
-     `(("guile" ,guile-2.2)))
+     (list guile-2.2))
     (home-page "https://www.gnu.org/software/serveez/")
     (synopsis "Framework for implementing IP-based servers")
     (description

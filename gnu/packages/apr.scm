@@ -30,14 +30,14 @@
 (define-public apr
   (package
     (name "apr")
-    (version "1.6.5")
+    (version "1.7.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://apache/apr/apr-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "01d1n1ql66bxsjx0wyzazmkqdqdmr0is6a7lwyy5kzy4z7yajz56"))
+               "1spp6r2a3xcl5yajm9safhzyilsdzgagc2dadif8x6z9nbq4iqg2"))
              (patches
               (search-patches "apr-skip-getservbyname-test.patch"))
              (patch-flags '("-p0"))))
@@ -48,8 +48,7 @@
      ;; Thus, build sequentially.
      '(#:parallel-build? #f
        #:parallel-tests? #f))
-    (inputs `(("perl" ,perl)
-              ("libltdl" ,libltdl)))
+    (inputs (list perl libltdl))
     (home-page "http://apr.apache.org/")
     (synopsis "The Apache Portable Runtime Library")
     (description
@@ -75,9 +74,9 @@ around or take advantage of platform-specific deficiencies or features.")
                "0nq3s1yn13vplgl6qfm09f7n0wm08malff9s59bqf9nid9xjzqfk"))))
     (build-system gnu-build-system)
     (inputs
-     `(("apr" ,apr)))
+     (list apr))
     (propagated-inputs
-     `(("expat" ,expat)))
+     (list expat))
     (arguments
      '(#:phases
        (modify-phases %standard-phases

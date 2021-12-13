@@ -24,6 +24,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
+  #:use-module (guix gexp)
   #:use-module (gnu packages)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages base)
@@ -58,20 +59,19 @@
         (base32 "0qlnxxbayqhz25jbvzis27jw2zbw1pmacp8rv7v5wa7zfqn3kmyk"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules kdoctools))
     (inputs
-     `(("cdparanoia" ,cdparanoia)
-       ("flac" ,flac)
-       ("kcmutils" ,kcmutils)
-       ("kconfig" ,kconfig)
-       ("ki18n" ,ki18n)
-       ("kio" ,kio)
-       ("libkcddb" ,libkcddb)
-       ("libkcompactdisc" ,libkcompactdisc)
-       ("libvorbis" ,libvorbis)
-       ("phonon" ,phonon)
-       ("qtbase" ,qtbase-5)))
+     (list cdparanoia
+           flac
+           kcmutils
+           kconfig
+           ki18n
+           kio
+           libkcddb
+           libkcompactdisc
+           libvorbis
+           phonon
+           qtbase-5))
     (home-page "https://kde.org/applications/multimedia/org.kde.kio_audiocd")
     (synopsis "Transparent audio CD integration for applications using the KDE
 Platform")
@@ -98,27 +98,26 @@ This package is part of the KDE multimedia module.")
         (base32 "1sssg20a1vpwk816lp5jgwahilaswb9f3hgfqvc73il4g11ky1xj"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules kdoctools))
     (inputs
-     `(("kconfig" ,kconfig)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kcrash" ,kcrash)
-       ("kdbusaddons" ,kdbusaddons)
-       ("ki18n" ,ki18n)
-       ("kio" ,kio)
-       ("kjobwidgets" ,kjobwidgets)
-       ("knotifications" ,knotifications)
-       ("kparts" ,kparts)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kwindowsystem" ,kwindowsystem)
-       ("kxmlgui" ,kxmlgui)
-       ("oxygen-icons" ,oxygen-icons) ; default icon set
-       ("phonon" ,phonon)
-       ("phonon-backend-gstreamer" ,phonon-backend-gstreamer)
-       ("qtbase" ,qtbase-5)
-       ("solid" ,solid)))
+     (list kconfig
+           kconfigwidgets
+           kcoreaddons
+           kcrash
+           kdbusaddons
+           ki18n
+           kio
+           kjobwidgets
+           knotifications
+           kparts
+           kwidgetsaddons
+           kwindowsystem
+           kxmlgui
+           oxygen-icons ; default icon set
+           phonon
+           phonon-backend-gstreamer
+           qtbase-5
+           solid))
     (home-page "https://kde.org/applications/multimedia/org.kde.dragonplayer")
     (synopsis "Simple video player")
     (description "Dragon Player is a multimedia player where the focus is on
@@ -144,41 +143,38 @@ This package is part of the KDE multimedia module.")
         (base32 "02450lsnbd37fms1i2bb9qc9wir4vym6qqd9p5hr6a6s6qwfs6qf"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("pkg-config" ,pkg-config)
-       ("dbus" ,dbus)
-       ("kdoctools" ,kdoctools)
-       ("xorg-server" , xorg-server-for-tests)))
+     (list extra-cmake-modules pkg-config dbus kdoctools
+           xorg-server-for-tests))
     (inputs
-     `(("kconfig" ,kconfig)
-       ("baloo" ,baloo)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kcrash" ,kcrash)
-       ("kcmutils" ,kcmutils)
-       ("kdbusaddons" ,kdbusaddons)
-       ("kdeclarative" ,kdeclarative)
-       ("kfilemetadata" ,kfilemetadata)
-       ("ki18n" ,ki18n)
-       ("kio" ,kio)
-       ("kirigami" ,kirigami)
-       ("kmediaplayer" ,kmediaplayer)
-       ("kparts" ,kparts)
-       ("kpackage" ,kpackage)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kxmlgui" ,kxmlgui)
-       ("oxygen-icons" ,oxygen-icons) ; default icon set
-       ("phonon" ,phonon)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)
-       ("qtgraphicaleffects" ,qtgraphicaleffects) ; not listed as dependency
-       ("qtmultimedia" ,qtmultimedia)
-       ("qtquickcontrols" ,qtquickcontrols)
-       ("qtquickcontrols2" ,qtquickcontrols2)
-       ("qtsvg" ,qtsvg)
-       ("qtx11extras" ,qtx11extras)
-       ;; TODO: upnpqt https://gitlab.com/homeautomationqt/upnp-player-qt
-       ("vlc" ,vlc)))
+     (list kconfig
+           baloo
+           kconfigwidgets
+           kcoreaddons
+           kcrash
+           kcmutils
+           kdbusaddons
+           kdeclarative
+           kfilemetadata
+           ki18n
+           kio
+           kirigami
+           kmediaplayer
+           kparts
+           kpackage
+           kwidgetsaddons
+           kxmlgui
+           oxygen-icons ; default icon set
+           phonon
+           qtbase-5
+           qtdeclarative
+           qtgraphicaleffects ; not listed as dependency
+           qtmultimedia
+           qtquickcontrols
+           qtquickcontrols2
+           qtsvg
+           qtx11extras
+           ;; TODO: upnpqt https://gitlab.com/homeautomationqt/upnp-player-qt
+           vlc))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -186,8 +182,7 @@ This package is part of the KDE multimedia module.")
            (lambda* (#:key inputs #:allow-other-keys)
              ;; The test suite requires a running X server, setting
              ;; QT_QPA_PLATFORM=offscreen does not suffice.
-             (system (string-append (assoc-ref inputs "xorg-server")
-                                    "/bin/Xvfb :1 -screen 0 640x480x24 &"))
+             (system "Xvfb :1 -screen 0 640x480x24 &")
              (setenv "DISPLAY" ":1")
              #t))
          (replace 'check
@@ -219,14 +214,9 @@ its own database.  You can build and play your own playlist.")
         (base32 "17l50z33a1h5zkrrfkb261yi2hms66qj36l1mndq7mvs97y2ggmc"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("pkg-config" ,pkg-config)))
+     (list extra-cmake-modules pkg-config))
     (inputs
-     `(("ffmpeg" ,ffmpeg)
-       ("kconfig" ,kconfig)
-       ("ki18n" ,ki18n)
-       ("kio" ,kio)
-       ("qtbase" ,qtbase-5)))
+     (list ffmpeg kconfig ki18n kio qtbase-5))
     (home-page "https://kde.org/applications/multimedia/org.kde.ffmpegthumbs")
     (synopsis "Video thumbnail generator for KDE using ffmpeg")
     (description "
@@ -250,31 +240,31 @@ This package is part of the KDE multimedia module.")
         (base32 "06vsh7knyhcbcbf632jhldbqpzfkdyils2l8dbcdw5nj5hhgzzmr"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     (list extra-cmake-modules))
     (inputs
-     `(("kcoreaddons" ,kcoreaddons)
-       ("kcompletion" ,kcompletion)
-       ("kconfig" ,kconfig)
-       ("kcrash" ,kcrash)
-       ("kdbusaddons" ,kdbusaddons)
-       ("kdoctools" ,kdoctools)
-       ("kglobalaccel" ,kglobalaccel)
-       ("ki18n" ,ki18n)
-       ("kiconthemes" ,kiconthemes)
-       ("kjobwidgets" ,kjobwidgets)
-       ("kio" ,kio)
-       ("knotifications" ,knotifications)
-       ("ktextwidgets" ,ktextwidgets)
-       ("kwallet" ,kwallet)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kwindowsystem" ,kwindowsystem)
-       ("kxmlgui" ,kxmlgui)
-       ("oxygen-icons" ,oxygen-icons) ; default icon set
-       ("phonon" ,phonon)
-       ("phonon-backend-gstreamer" ,phonon-backend-gstreamer)
-       ("qtbase" ,qtbase-5)
-       ("qtsvg" ,qtsvg)
-       ("taglib" ,taglib)))
+     (list kcoreaddons
+           kcompletion
+           kconfig
+           kcrash
+           kdbusaddons
+           kdoctools
+           kglobalaccel
+           ki18n
+           kiconthemes
+           kjobwidgets
+           kio
+           knotifications
+           ktextwidgets
+           kwallet
+           kwidgetsaddons
+           kwindowsystem
+           kxmlgui
+           oxygen-icons ; default icon set
+           phonon
+           phonon-backend-gstreamer
+           qtbase-5
+           qtsvg
+           taglib))
     (home-page "https://kde.org/applications/multimedia/org.kde.juk")
     (synopsis "Music jukebox / music player")
     (description "JuK is a powerful music player capable of managing a large
@@ -308,11 +298,11 @@ This package is part of the KDE multimedia module.")
      `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'set-absolute-library-paths
-           (lambda _
+           (lambda* (#:key inputs #:allow-other-keys)
              ;; Set absolute paths for dlopened libraries. We can’t use k3b’s
              ;; runpath as they are loaded by the Qt library.
-             (let ((libcdio-paranoia (assoc-ref %build-inputs "libcdio-paranoia"))
-                   (libdvdcss (assoc-ref %build-inputs "libdvdcss")))
+             (let ((libcdio-paranoia (assoc-ref inputs "libcdio-paranoia"))
+                   (libdvdcss (assoc-ref inputs "libdvdcss")))
                (substitute* "libk3b/tools/k3bcdparanoialib.cpp"
                  (("\"(cdio_cdda|cdio_paranoia)\"" _ library)
                   (string-append "\"" libcdio-paranoia "/lib/" library "\"")))
@@ -321,60 +311,58 @@ This package is part of the KDE multimedia module.")
                   (string-append "\"" libdvdcss "/lib/" library "\""))))
              #t))
          (add-after 'qt-wrap 'wrap-path
-           (lambda _
+           (lambda* (#:key inputs outputs #:allow-other-keys)
              ;; Set paths to backend programs.
-             (wrap-program (string-append (assoc-ref %outputs "out") "/bin/k3b")
+             (wrap-program (string-append (assoc-ref outputs "out") "/bin/k3b")
                `("PATH" ":" prefix
                  ,(map (lambda (input)
-                         (string-append (assoc-ref %build-inputs input) "/bin"))
+                         (string-append (assoc-ref inputs input) "/bin"))
                        '("cdrdao" "dvd+rw-tools" "libburn" "sox"))))
              #t)))))
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("pkg-config" ,pkg-config)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules pkg-config kdoctools))
     (inputs
-     `(("cdrdao" ,cdrdao)
-       ("dvd+rw-tools" ,dvd+rw-tools)
-       ("ffmpeg" ,ffmpeg)
-       ("flac" ,flac)
-       ("karchive" ,karchive)
-       ("kcmutils" ,kcmutils)
-       ("kconfig" ,kconfig)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kfilemetadata" ,kfilemetadata)
-       ("ki18n" ,ki18n)
-       ("kiconthemes" ,kiconthemes)
-       ("kio" ,kio)
-       ("kjobwidgets" ,kjobwidgets)
-       ("knewstuff" ,knewstuff)
-       ("knotifications" ,knotifications)
-       ("knotifyconfig" ,knotifyconfig)
-       ("kservice" ,kservice)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kxmlgui" ,kxmlgui)
-       ("lame" ,lame)
-       ("libburn" ,libburn)
-       ("libcdio-paranoia" ,libcdio-paranoia)
-       ("libdvdcss" ,libdvdcss)
-       ("libdvdread" ,libdvdread)
-       ;; TODO: LibFuzzer
-       ("libiconv" ,libiconv)
-       ("libkcddb" ,libkcddb)
-       ("libmad" ,libmad)
-       ("libmpcdec" ,libmpcdec)
-       ;;("libmusicbrainz" ,libmusicbrainz) ; wants old version 2
-       ("libsamplerate" ,libsamplerate)
-       ("libsndfile" ,libsndfile)
-       ("libvorbis" ,libvorbis)
-       ("oxygen-icons" ,oxygen-icons) ; default icon set
-       ("qtbase" ,qtbase-5)
-       ("qtwebkit" ,qtwebkit)
-       ("shared-mime-info" ,shared-mime-info)
-       ("solid" ,solid)
-       ("sox" ,sox)
-       ("taglib" ,taglib)
-       ("zlib" ,zlib)))
+     (list cdrdao
+           dvd+rw-tools
+           ffmpeg
+           flac
+           karchive
+           kcmutils
+           kconfig
+           kcoreaddons
+           kfilemetadata
+           ki18n
+           kiconthemes
+           kio
+           kjobwidgets
+           knewstuff
+           knotifications
+           knotifyconfig
+           kservice
+           kwidgetsaddons
+           kxmlgui
+           lame
+           libburn
+           libcdio-paranoia
+           libdvdcss
+           libdvdread
+           ;; TODO: LibFuzzer
+           libiconv
+           libkcddb
+           libmad
+           libmpcdec
+           ;;("libmusicbrainz" ,libmusicbrainz) ; wants old version 2
+           libsamplerate
+           libsndfile
+           libvorbis
+           oxygen-icons ; default icon set
+           qtbase-5
+           qtwebkit
+           shared-mime-info
+           solid
+           sox
+           taglib
+           zlib))
     (home-page "https://kde.org/applications/multimedia/org.kde.k3b")
     (synopsis "Sophisticated CD/DVD burning application")
     (description "K3b is CD-writing software which intends to be feature-rich
@@ -400,25 +388,23 @@ available CD drives.")
         (base32 "10dnhr9v2jlki44i3gmjagky66ybixmv6f29z5imk9clgddrlyfr"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("pkg-config" ,pkg-config)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules pkg-config kdoctools))
     (inputs
-     `(("eudev" ,eudev)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kdbusaddons" ,kdbusaddons)
-       ("ki18n" ,ki18n)
-       ("kio" ,kio)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kwindowsystem" ,kwindowsystem)
-       ("kxmlgui" ,kxmlgui)
-       ("libxscrnsaver" ,libxscrnsaver)
-       ("oxygen-icons" ,oxygen-icons) ; default icon set
-       ("qtbase" ,qtbase-5)
-       ("qtx11extras" ,qtx11extras)
-       ("solid" ,solid)
-       ("v4l-utils" ,v4l-utils) ; libdvbv5
-       ("vlc" ,vlc)))
+     (list eudev
+           kcoreaddons
+           kdbusaddons
+           ki18n
+           kio
+           kwidgetsaddons
+           kwindowsystem
+           kxmlgui
+           libxscrnsaver
+           oxygen-icons ; default icon set
+           qtbase-5
+           qtx11extras
+           solid
+           v4l-utils ; libdvbv5
+           vlc))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -458,28 +444,28 @@ autoloading of subtitle files for use while playing video.")
        ("kdoctools" ,kdoctools)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("gstreamer" ,gstreamer)
-       ("gst-plugins-base" ,gst-plugins-base)
-       ("kconfig" ,kconfig)
-       ("ki18n" ,ki18n)
-       ("kio" ,kio)
-       ("kirigami" ,kirigami)
-       ("knotifications" ,knotifications)
-       ("kparts" ,kparts)
-       ("oxygen-icons" ,oxygen-icons) ; default icon set
-       ("purpose" ,purpose)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)
-       ("qtgraphicaleffects" ,qtgraphicaleffects)
-       ("qtquickcontrols" ,qtquickcontrols)
-       ("qtquickcontrols2" ,qtquickcontrols2) ; not listed as dependency
-       ("qtx11extras" ,qtx11extras)))
+     (list gstreamer
+           gst-plugins-base
+           kconfig
+           ki18n
+           kio
+           kirigami
+           knotifications
+           kparts
+           oxygen-icons ; default icon set
+           purpose
+           qtbase-5
+           qtdeclarative
+           qtgraphicaleffects
+           qtquickcontrols
+           qtquickcontrols2 ; not listed as dependency
+           qtx11extras))
     (arguments
-     `(#:tests? #f ; test program gets built, but is not found
-       #:configure-flags
-       (list (string-append "-DCMAKE_CXX_FLAGS=-I"
-                            (assoc-ref %build-inputs "gst-plugins-base")
-                            "/include/gstreamer-1.0"))))
+     (list #:tests? #f ; test program gets built, but is not found
+           #:configure-flags
+           #~(list (string-append "-DCMAKE_CXX_FLAGS=-I"
+                                  #$(this-package-input "gst-plugins-base")
+                                  "/include/gstreamer-1.0"))))
     (home-page "https://kde.org/applications/multimedia/org.kde.kamoso")
     (synopsis "Take pictures and videos out of your webcam")
     (description "Kamoso is a simple and friendly program to use your
@@ -500,31 +486,30 @@ camera.  Use it to take pictures and make videos to share.")
        (base32 "1na52ypp57wqrc6pl1khinx9i6fidv1k97nnxcy8zb4l7d5sh1nd"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("pkg-config" ,pkg-config)))
+     (list extra-cmake-modules pkg-config))
     (inputs
-     `(("alsa-lib" ,alsa-lib)
-       ("glib" ,glib)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcompletion" ,kcompletion)
-       ("kconfig" ,kconfig)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcrash" ,kcrash)
-       ("kdbusaddons" ,kdbusaddons)
-       ("kdoctools" ,kdoctools)
-       ("kglobalaccel" ,kglobalaccel)
-       ("ki18n" ,ki18n)
-       ("kiconthemes" ,kiconthemes)
-       ("knotifications" ,knotifications)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kwindowsystem" ,kwindowsystem)
-       ("kxmlgui" ,kxmlgui)
-       ("libcanberra" ,libcanberra)
-       ("oxygen-icons" ,oxygen-icons) ; default icon set
-       ("plasma-framework" ,plasma-framework)
-       ("pulseaudio" ,pulseaudio)
-       ("qtbase" ,qtbase-5)
-       ("solid" ,solid)))
+     (list alsa-lib
+           glib
+           kconfigwidgets
+           kcompletion
+           kconfig
+           kconfigwidgets
+           kcrash
+           kdbusaddons
+           kdoctools
+           kglobalaccel
+           ki18n
+           kiconthemes
+           knotifications
+           kwidgetsaddons
+           kwindowsystem
+           kxmlgui
+           libcanberra
+           oxygen-icons ; default icon set
+           plasma-framework
+           pulseaudio
+           qtbase-5
+           solid))
     (home-page "https://kde.org/applications/multimedia/org.kde.kmix")
     (synopsis "Volume control and mixer")
     (description "KMix is an audio device mixer, used to adjust volume, select
@@ -550,37 +535,36 @@ This package is part of the KDE multimedia module.")
                  "kmplayer-upstream_Fix-build-with-Qt-5.9.patch"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("pkg-config" ,pkg-config)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules pkg-config kdoctools))
     (inputs
-     `(("kconfig" ,kconfig)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kdelibs4support" ,kdelibs4support)
-       ("ki18n" ,ki18n)
-       ("kinit" ,kinit)
-       ("kio" ,kio)
-       ("kparts" ,kparts)
-       ("kmediaplayer" ,kmediaplayer)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("libxcb" ,libxcb) ;; FIXME: why does cmake not find XEVIE and XPRINT?
-       ("oxygen-icons" ,oxygen-icons) ; default icon set
-       ("phonon" ,phonon)
-       ("qtbase" ,qtbase-5)
-       ("cairo" ,cairo)
-       ("qtsvg" ,qtsvg)
-       ("qtx11extras" ,qtx11extras)
-       ("xcb-util" ,xcb-util)
-       ("xcb-util-cursor" ,xcb-util-cursor)
-       ("xcb-util-errors" ,xcb-util-errors)
-       ("xcb-util-image" ,xcb-util-image)
-       ("xcb-util-keysyms" ,xcb-util-keysyms)
-       ("xcb-util-wm" ,xcb-util-wm)))
+     (list kconfig
+           kcoreaddons
+           kdelibs4support
+           ki18n
+           kinit
+           kio
+           kparts
+           kmediaplayer
+           kwidgetsaddons
+           libxcb ;; FIXME: why does cmake not find XEVIE and XPRINT?
+           oxygen-icons ; default icon set
+           phonon
+           qtbase-5
+           cairo
+           qtsvg
+           qtx11extras
+           xcb-util
+           xcb-util-cursor
+           xcb-util-errors
+           xcb-util-image
+           xcb-util-keysyms
+           xcb-util-wm))
     (arguments
-     `(#:configure-flags
-       (list (string-append
-              "-DCMAKE_CXX_FLAGS=-I"
-              (assoc-ref %build-inputs "qtx11extras") "/include/qt5"))))
+     (list #:configure-flags
+           #~(list (string-append
+                    "-DCMAKE_CXX_FLAGS=-I"
+                    #$(this-package-input "qtx11extras")
+                    "/include/qt5"))))
     (home-page "https://kde.org/applications/multimedia/org.kde.kmplayer")
     (synopsis "Media player using mplayer/phonon as backend")
     (description "Kmplayer can play all the audio/video supported by
@@ -613,38 +597,35 @@ Some features:
         (base32 "0ysa873pc2gip95cxr8yv7ifd9qql5zg6h67i9n9q3iqa6v58iyw"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("librsvg" ,librsvg)
-       ("pkg-config" ,pkg-config)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules librsvg pkg-config kdoctools))
     (inputs
-     `(("also-lib" ,alsa-lib)
-       ("audiofile" ,audiofile)
-       ("flac" ,flac)
-       ("id3lib" ,id3lib)
-       ("karchive" ,karchive)
-       ("kcompletion" ,kcompletion)
-       ("kconfig" ,kconfig)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kcrash" ,kcrash)
-       ("kdbusaddons" ,kdbusaddons)
-       ("ki18n" ,ki18n)
-       ("kiconthemes" ,kiconthemes)
-       ("kio" ,kio)
-       ("kservice" ,kservice)
-       ("ktextwidgets" ,ktextwidgets)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kxmlgui" ,kxmlgui)
-       ("libmad" ,libmad)
-       ("libsamplerate" ,libsamplerate)
-       ("libvorbis" ,libvorbis)
-       ("opus" ,opus)
-       ("oxygen-icons" ,oxygen-icons) ; default icon set
-       ("pulseaudio" ,pulseaudio)
-       ("qtbase" ,qtbase-5)
-       ("qtmultimedia" ,qtmultimedia)
-       ("zlib" ,zlib)))
+     (list alsa-lib
+           audiofile
+           flac
+           id3lib
+           karchive
+           kcompletion
+           kconfig
+           kconfigwidgets
+           kcoreaddons
+           kcrash
+           kdbusaddons
+           ki18n
+           kiconthemes
+           kio
+           kservice
+           ktextwidgets
+           kwidgetsaddons
+           kxmlgui
+           libmad
+           libsamplerate
+           libvorbis
+           opus
+           oxygen-icons ; default icon set
+           pulseaudio
+           qtbase-5
+           qtmultimedia
+           zlib))
     (home-page "https://kde.org/applications/multimedia/org.kde.kwave")
     (synopsis "Sound editor for KDE")
     (description "Kwave is a sound editor designed for the KDE Desktop
@@ -690,16 +671,15 @@ Its features include:
         (base32 "1fwryaj8ldmsqhl5qxjda8by9i7xlb97r8p9rqzckw697hkfhs0h"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules kdoctools))
     (inputs
-     `(("kcodecs" ,kcodecs)
-       ("kconfig" ,kconfig)
-       ("ki18n" ,ki18n)
-       ("kio" ,kio)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("libmusicbrainz" ,libmusicbrainz)
-       ("qtbase" ,qtbase-5)))
+     (list kcodecs
+           kconfig
+           ki18n
+           kio
+           kwidgetsaddons
+           libmusicbrainz
+           qtbase-5))
     (arguments
      `(#:tests? #f)) ; Most tests require network
     (home-page "https://invent.kde.org/multimedia/libkcddb")
@@ -721,14 +701,14 @@ Its features include:
         (base32 "0iy4i0hxqsrnndd4iqkww7v1rqry7kvi5paxdw5qjfffwn8kcsbx"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     (list extra-cmake-modules))
     (inputs
-     `(("alsa-lib" ,alsa-lib)
-       ("kcoreaddons" ,kcoreaddons)
-       ("ki18n" ,ki18n)
-       ("phonon" ,phonon)
-       ("qtbase" ,qtbase-5)
-       ("solid" ,solid)))
+     (list alsa-lib
+           kcoreaddons
+           ki18n
+           phonon
+           qtbase-5
+           solid))
     (home-page "https://invent.kde.org/multimedia/libkcompactdisc")
     (synopsis "KDE library for playing & ripping CDs")
     (description "The KDE Compact Disc library provides an API for

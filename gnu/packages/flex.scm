@@ -55,9 +55,8 @@
        `(("bison" ,bison-for-tests))))
     ;; m4 is not present in PATH when cross-building
     (native-inputs
-     `(("help2man" ,help2man)
-       ("m4" ,m4)))
-    (propagated-inputs `(("m4" ,m4)))
+     (list help2man m4))
+    (propagated-inputs (list m4))
     (home-page "https://github.com/westes/flex")
     (synopsis "Fast lexical analyser generator")
     (description

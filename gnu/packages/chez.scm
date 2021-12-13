@@ -114,8 +114,10 @@
        ;; for docs
        ("stex" ,stex)
        ("xorg-rgb" ,xorg-rgb)
-       ("texlive" ,(texlive-union (list texlive-latex-oberdiek
-                                        texlive-generic-epsf)))
+       ("texlive" ,(texlive-updmap.cfg (list texlive-dvips-l3backend
+                                             texlive-epsf
+                                             texlive-fonts-ec
+                                             texlive-oberdiek)))
        ("ghostscript" ,ghostscript)
        ("netpbm" ,netpbm)))
     (native-search-paths
@@ -167,6 +169,7 @@
                ;; Some makefiles (for tests) don't seem to propagate CC
                ;; properly, so we take it out of their hands:
                (setenv "CC" ,(cc-for-target))
+               (setenv "HOME" "/tmp")
                (apply invoke
                       "./configure"
                       flags)
@@ -281,7 +284,7 @@ and 32-bit PowerPC architectures.")
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("chez-scheme" ,chez-scheme)))
+     (list chez-scheme))
     (arguments
      `(#:make-flags (let ((out (assoc-ref %outputs "out")))
                       (list (string-append "PREFIX=" out)
@@ -316,11 +319,10 @@ and 32-bit PowerPC architectures.")
       (native-inputs
        `(("chez-scheme" ,chez-scheme)
          ("ghostscript" ,ghostscript)
-         ("texlive" ,(texlive-union (list texlive-charter
-                                          texlive-latex-oberdiek
-                                          texlive-generic-epsf
+         ("texlive" ,(texlive-updmap.cfg (list texlive-oberdiek
+                                          texlive-epsf
                                           texlive-metapost
-                                          texlive-fonts-charter
+                                          texlive-charter
                                           texlive-pdftex
                                           texlive-context
                                           texlive-cm
@@ -334,12 +336,6 @@ and 32-bit PowerPC architectures.")
                       #:tests? #f        ; no tests
                       #:phases
                       (modify-phases %standard-phases
-                        (add-before 'build 'set-HOME
-                          (lambda _
-                            ;; FIXME: texlive-union does not find the built
-                            ;; metafonts, so it tries to generate them in HOME.
-                            (setenv "HOME" "/tmp")
-                            #t))
                         ;; This package has a custom "bootstrap" script that
                         ;; is meant to be run from the Makefile.
                         (delete 'bootstrap)
@@ -382,7 +378,7 @@ programming in Scheme.")
       (native-inputs
        `(("chez-scheme" ,chez-scheme)
          ("chez-web" ,chez-web)
-         ("texlive" ,(texlive-union (list texlive-pdftex)))))
+         ("texlive" ,(texlive-updmap.cfg (list texlive-pdftex)))))
       (arguments
        `(#:tests? #f              ; no tests
          #:phases
@@ -485,9 +481,9 @@ Chez Scheme.")
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (inputs
-     `(("chez-srfi" ,chez-srfi))) ; for tests
+     (list chez-srfi)) ; for tests
     (native-inputs
-     `(("chez-scheme" ,chez-scheme)))
+     (list chez-scheme))
     (arguments
      `(#:make-flags ,(chez-make-flags name version)
        #:test-target "test"
@@ -514,11 +510,11 @@ Chez Scheme.")
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (inputs
-     `(("chez-matchable" ,chez-matchable))) ; for tests
+     (list chez-matchable)) ; for tests
     (propagated-inputs
-     `(("chez-srfi" ,chez-srfi))) ; for irregex-utils
+     (list chez-srfi)) ; for irregex-utils
     (native-inputs
-     `(("chez-scheme" ,chez-scheme)))
+     (list chez-scheme))
     (arguments
      `(#:make-flags ,(chez-make-flags name version)
        #:test-target "test"
@@ -546,9 +542,9 @@ syntax, with various aliases for commonly used patterns.")
        (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
     (propagated-inputs
-     `(("chez-srfi" ,chez-srfi))) ; for irregex-utils
+     (list chez-srfi)) ; for irregex-utils
     (native-inputs
-     `(("chez-scheme" ,chez-scheme)))
+     (list chez-scheme))
     (arguments
      `(#:make-flags ,(chez-make-flags name version)
        #:test-target "chez-check"
@@ -586,9 +582,9 @@ strings.")
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (inputs
-     `(("chez-srfi" ,chez-srfi)))       ; for tests
+     (list chez-srfi))       ; for tests
     (native-inputs
-     `(("chez-scheme" ,chez-scheme)))
+     (list chez-scheme))
     (arguments
      `(#:make-flags ,(chez-make-flags name version)
        #:test-target "test"
@@ -616,12 +612,11 @@ required to port the program @code{Scmutils} to Chez Scheme.")
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (inputs
-     `(("chez-srfi" ,chez-srfi)))       ; for tests
+     (list chez-srfi))       ; for tests
     (native-inputs
-     `(("chez-scheme" ,chez-scheme)))
+     (list chez-scheme))
     (propagated-inputs
-     `(("chez-mit" ,chez-mit)
-       ("chez-srfi" ,chez-srfi)))
+     (list chez-mit chez-srfi))
     (arguments
      `(#:make-flags ,(chez-make-flags name version)
        #:tests? #f                      ; no test suite

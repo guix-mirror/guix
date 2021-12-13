@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2018, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,24 +19,16 @@
 (define-module (guix build-system trivial)
   #:use-module (guix store)
   #:use-module (guix utils)
-  #:use-module (guix derivations)
+  #:use-module (guix gexp)
+  #:use-module (guix monads)
   #:use-module (guix packages)
   #:use-module (guix build-system)
   #:use-module (ice-9 match)
   #:export (trivial-build-system))
 
-(define (guile-for-build store guile system)
-  (match guile
-    ((? package?)
-     (package-derivation store guile system #:graft? #f))
-    (#f                                         ; the default
-     (let* ((distro (resolve-interface '(gnu packages commencement)))
-            (guile  (module-ref distro 'guile-final)))
-       (package-derivation store guile system #:graft? #f)))))
-
 (define* (lower name
                 #:key source inputs native-inputs outputs system target
-                guile builder modules allowed-references)
+                guile builder (modules '()) allowed-references)
   "Return a bag for NAME."
   (bag
     (name name)
@@ -54,65 +46,50 @@
                  #:modules ,modules
                  #:allowed-references ,allowed-references))))
 
-(define* (trivial-build store name inputs
+(define* (trivial-build name inputs
                         #:key
-                        outputs guile system builder (modules '())
+                        outputs guile
+                        system builder (modules '())
                         search-paths allowed-references)
   "Run build expression BUILDER, an expression, for SYSTEM.  SOURCE is
 ignored."
-  (define canonicalize-reference
-    (match-lambda
-     ((? package? p)
-      (derivation->output-path (package-derivation store p system
-                                                   #:graft? #f)))
-     (((? package? p) output)
-      (derivation->output-path (package-derivation store p system
-                                                   #:graft? #f)
-                               output))
-     ((? string? output)
-      output)))
+  (mlet %store-monad ((guile (package->derivation (or guile (default-guile))
+                                                  system #:graft? #f))
+                      (builder -> (if (pair? builder)
+                                      (sexp->gexp builder)
+                                      builder)))
+    (gexp->derivation name (with-build-variables inputs outputs builder)
+                      #:system system
+                      #:target #f
+                      #:graft? #f
+                      #:modules modules
+                      #:allowed-references allowed-references
+                      #:guile-for-build guile)))
 
-  (build-expression->derivation store name builder
-                                #:inputs inputs
-                                #:system system
-                                #:outputs outputs
-                                #:modules modules
-                                #:allowed-references
-                                (and allowed-references
-                                     (map canonicalize-reference
-                                          allowed-references))
-                                #:guile-for-build
-                                (guile-for-build store guile system)))
-
-(define* (trivial-cross-build store name
+(define* (trivial-cross-build name
                               #:key
-                              target native-drvs target-drvs
+                              target
+                              source build-inputs target-inputs host-inputs
                               outputs guile system builder (modules '())
                               search-paths native-search-paths
                               allowed-references)
   "Run build expression BUILDER, an expression, for SYSTEM.  SOURCE is
 ignored."
-  (define canonicalize-reference
-    (match-lambda
-     ((? package? p)
-      (derivation->output-path (package-cross-derivation store p system)))
-     (((? package? p) output)
-      (derivation->output-path (package-cross-derivation store p system)
-                               output))
-     ((? string? output)
-      output)))
-
-  (build-expression->derivation store name builder
-                                #:inputs (append native-drvs target-drvs)
-                                #:system system
-                                #:outputs outputs
-                                #:modules modules
-                                #:allowed-references
-                                (and allowed-references
-                                     (map canonicalize-reference
-                                          allowed-references))
-                                #:guile-for-build
-                                (guile-for-build store guile system)))
+  (mlet %store-monad  ((guile (package->derivation (or guile (default-guile))
+                                                   system #:graft? #f))
+                       (builder -> (if (pair? builder)
+                                       (sexp->gexp builder)
+                                       builder)))
+    (gexp->derivation name (with-build-variables
+                               (append build-inputs target-inputs host-inputs)
+                               outputs
+                             builder)
+                      #:system system
+                      #:target target
+                      #:graft? #f
+                      #:modules modules
+                      #:allowed-references allowed-references
+                      #:guile-for-build guile)))
 
 (define trivial-build-system
   (build-system

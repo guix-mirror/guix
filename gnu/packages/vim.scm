@@ -112,8 +112,7 @@
            (lambda* (#:key inputs #:allow-other-keys)
              ;; One of the tests tests timezone-dependent functions.
              (setenv "TZDIR"
-                     (string-append (assoc-ref inputs "tzdata")
-                                    "/share/zoneinfo"))
+                     (search-input-directory inputs "share/zoneinfo"))
 
              ;; Make sure the TERM environment variable is set for the tests
              (setenv "TERM" "xterm")
@@ -157,10 +156,7 @@
                           (string-append vimdir "/vimrc"))
                #t))))))
     (inputs
-     `(("gawk" ,gawk)
-       ("ncurses" ,ncurses)
-       ("perl" ,perl)
-       ("tcsh" ,tcsh)))                 ; For runtime/tools/vim32
+     (list gawk ncurses perl tcsh))                 ; For runtime/tools/vim32
     (native-inputs
      `(("libtool" ,libtool)
        ("guix.vim" ,(search-auxiliary-file "guix.vim"))
@@ -248,9 +244,8 @@ with the editor vim.")))
                      (zero? (system (string-append xorg-server "/bin/Xvfb "
                                                     display " &")))))))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("xorg-server" ,xorg-server-for-tests)
-       ,@(package-native-inputs vim)))
+     (modify-inputs (package-native-inputs vim)
+       (prepend pkg-config xorg-server-for-tests)))
     (inputs
      `(("acl" ,acl)
        ("atk" ,atk)
@@ -775,8 +770,7 @@ refactor Vim in order to:
        (modify-phases %standard-phases
          (add-after 'configure 'reference-nvim
            (lambda* (#:key inputs #:allow-other-keys)
-             (let ((nvim (string-append (assoc-ref inputs "neovim")
-                                        "/bin/nvim")))
+             (let ((nvim (search-input-file inputs "/bin/nvim")))
                ;; This substitution should change one line, and replaces the default
                ;; value in the struct of options with an absolute store reference.
                (substitute* "../source/src/main.c"
@@ -785,11 +779,9 @@ refactor Vim in order to:
          (add-before 'build 'set-home
            (lambda _ (setenv "HOME" "/tmp"))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("efl" ,efl)
-       ("msgpack" ,msgpack)
-       ("neovim" ,neovim)))
+     (list efl msgpack neovim))
     (home-page "https://github.com/jeanguyomarch/eovim/")
     (synopsis "EFL GUI for Neovim")
     (description "Graphical Neovim interface based on the @acronym{EFL, Enlightenment
@@ -841,11 +833,9 @@ and support for fonts with ligatures.")
                 (delete-file-recursively (string-append vifm "/vim")))
               #t)))))
     (native-inputs
-     `(("groff" ,groff))) ; for the documentation
+     (list groff)) ; for the documentation
     (inputs
-     `(("libx11" ,libx11)
-       ("ncurses" ,ncurses)
-       ("perl" ,perl)))
+     (list libx11 ncurses perl))
     (home-page "https://vifm.info/")
     (synopsis "Flexible vi-like file manager using ncurses")
     (description "Vifm is a file manager providing a @command{vi}-like usage
@@ -890,8 +880,7 @@ With the package comes a plugin to use vifm as a vim file selector.")
                 "13qgwkqbx012j5spis1aw8rb120rw0zphgjy1j58irax8r6j1ikb"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-greenlet" ,python-greenlet)
-       ("python-msgpack" ,python-msgpack)))
+     (list python-greenlet python-msgpack))
     (arguments
      `(#:tests? #f))
     (home-page "https://github.com/neovim/pynvim")
@@ -1285,7 +1274,7 @@ additions:
                   (string-append all "\n"
                                  leader ctags "/bin/ctags']")))))))))
     (inputs
-     `(("universal-ctags" ,universal-ctags)))
+     (list universal-ctags))
     (home-page "https://github.com/preservim/tagbar")
     (synopsis "Vim plugin that displays tags in a window, ordered by scope")
     (description

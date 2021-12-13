@@ -4,11 +4,12 @@
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2013, 2015, 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
-;;; Copyright © 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2018, 2019, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -48,15 +49,14 @@
 (define-public lcms
   (package
    (name "lcms")
-   (version "2.9")
+   (version "2.12")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://sourceforge/lcms/lcms/" version
                                 "/lcms2-" version ".tar.gz"))
 
-            (patches (search-patches "lcms-CVE-2018-16435.patch"))
             (sha256 (base32
-                     "083xisy6z01zhm7p7rgk4bx9d6zlr8l20qkfv1g29ylnhgwzvij8"))))
+                     "1x8hzq8kw16lgjxmqpnqah1p3hrqqhjpcl1ymiah8434x22kjrhq"))))
    (build-system gnu-build-system)
    (arguments
     `(#:configure-flags '("--disable-static")))
@@ -69,7 +69,7 @@
 focus on accuracy and performance.  It uses the International Color
 Consortium standard (ICC), approved as ISO 15076-1.")
    (license license:x11)
-   (home-page "http://www.littlecms.com/")
+   (home-page "https://www.littlecms.com/")
    (properties '((cpe-name . "little_cms_color_engine")))))
 
 (define-public libpaper
@@ -88,7 +88,7 @@ Consortium standard (ICC), approved as ISO 15076-1.")
                      "0zhcx67afb6b5r936w5jmaydj3ks8zh83n9rm5sv3m3k8q8jib1q"))))
    (build-system gnu-build-system)
    (native-inputs
-    `(("automake" ,automake))) ; For up to date 'config.guess' and 'config.sub'.
+    (list automake)) ; For up to date 'config.guess' and 'config.sub'.
    (arguments
     `(#:configure-flags '("--disable-static")
       #:phases
@@ -124,7 +124,7 @@ paper size.")
             (sha256 (base32
                      "1r4ab1fvgganm02kmm70b2r1azwzbav2am41gbigpa2bb1wynlrq"))))
    (build-system gnu-build-system)
-   (inputs `(("perl" ,perl)))
+   (inputs (list perl))
    (arguments
     `(#:tests? #f ; none provided
       #:phases
@@ -159,7 +159,7 @@ printing, and psresize, for adjusting page sizes.")
 (define-public ghostscript
   (package
     (name "ghostscript")
-    (version "9.52")
+    (version "9.54.0")
     (source
       (origin
         (method url-fetch)
@@ -169,10 +169,8 @@ printing, and psresize, for adjusting page sizes.")
                             "/ghostscript-" version ".tar.xz"))
         (sha256
          (base32
-          "0z1w42y2jmcpl2m1l3z0sfii6zmvzcwcgzn6bydklia6ig7jli2p"))
-        (patches (search-patches "ghostscript-freetype-compat.patch"
-                                 "ghostscript-CVE-2020-15900.patch"
-                                 "ghostscript-no-header-creationdate.patch"
+          "0fvfvv6di5s6j4sy4gaw65klm23dby39bkdjxxq4w3v0vqyb9dy2"))
+        (patches (search-patches "ghostscript-no-header-creationdate.patch"
                                  "ghostscript-no-header-id.patch"
                                  "ghostscript-no-header-uuid.patch"))
         (modules '((guix build utils)))
@@ -206,7 +204,7 @@ printing, and psresize, for adjusting page sizes.")
              "--enable-dynamic"
              "--disable-compile-inits"
              (string-append "--with-fontpath="
-                            (assoc-ref %build-inputs "gs-fonts")
+                            (assoc-ref %build-inputs "font-ghostscript")
                             "/share/fonts/type1/ghostscript")
 
              ,@(if (%current-target-system)
@@ -268,7 +266,7 @@ printing, and psresize, for adjusting page sizes.")
     (native-inputs
      `(("perl" ,perl)
        ("pkg-config" ,pkg-config)       ;needed for freetype
-       ("python" ,python-wrapper)
+       ("python" ,python-minimal-wrapper)
        ("tcl" ,tcl)
 
        ;; When cross-compiling, some of the natively-built tools require all
@@ -280,7 +278,7 @@ printing, and psresize, for adjusting page sizes.")
     (inputs
      `(("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
-       ("gs-fonts" ,gs-fonts)
+       ("font-ghostscript" ,font-ghostscript)
        ("jbig2dec" ,jbig2dec)
        ("libjpeg" ,libjpeg-turbo)
        ("libpaper" ,libpaper)
@@ -316,9 +314,7 @@ output file formats and printers.")
    (source (package-source ghostscript))
    (build-system gnu-build-system)
    (native-inputs
-    `(("libtool"    ,libtool)
-      ("automake"   ,automake)
-      ("autoconf"   ,autoconf)))
+    (list libtool automake autoconf))
    (arguments
     `(#:phases
       (modify-phases %standard-phases
@@ -345,9 +341,9 @@ architecture.")
    (license license:expat)
    (home-page (package-home-page ghostscript))))
 
-(define-public gs-fonts
+(define-public font-ghostscript
   (package
-   (name "gs-fonts")
+   (name "font-ghostscript")
    (version "8.11")
    (source (origin
             (method url-fetch)
@@ -386,19 +382,23 @@ Ghostscript.  It currently includes the 35 standard PostScript fonts.")
    (license license:gpl2)
    (home-page "https://sourceforge.net/projects/gs-fonts/")))
 
+(define-public gs-fonts
+  (deprecated-package "gs-fonts" font-ghostscript))
+
 (define-public libspectre
   (package
    (name "libspectre")
-   (version "0.2.8")
+   (version "0.2.9")
    (source (origin
             (method url-fetch)
-            (uri (string-append "https://libspectre.freedesktop.org/releases/libspectre-"
-                                version ".tar.gz"))
-            (sha256 (base32
-                     "1a67iglsc3r05mzngyg9kb1gy8whq4fgsnyjwi7bqfw2i7rnl9b5"))))
+            (uri (string-append "https://libspectre.freedesktop.org/releases"
+                                "/libspectre-" version ".tar.gz"))
+            (sha256
+             (base32
+              "1vgvxp77d5d9chhx4i9cv9hifw4x10jgw6aw8l2v90dgnm99rbj9"))))
    (build-system gnu-build-system)
-   (inputs `(("ghostscript" ,ghostscript)))
-   (native-inputs `(("pkg-config" ,pkg-config)))
+   (inputs (list ghostscript))
+   (native-inputs (list pkg-config))
    (synopsis "Postscript rendering library")
    (description
     "libspectre is a small library for rendering Postscript documents.

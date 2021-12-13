@@ -44,8 +44,7 @@
                (base32
                 "1ygahl3r26r38ai8yyblq9nhf3v5i6n6r6672p5wf88wg5h9n0rz"))))
     (build-system trivial-build-system)
-    (native-inputs `(("tar" ,tar)
-                     ("bzip2" ,bzip2)))
+    (native-inputs (list tar bzip2))
     (arguments
      `(#:modules ((guix build utils))
        #:builder
@@ -87,10 +86,8 @@ file for use with USB_ModeSwitch.")
               (sha256
                (base32
                 "0d7s8p92r36danjd15y1zaznf6rbk17kxyg9367nabz56vhxk5ai"))))
-    (native-inputs `(("pkg-config" ,pkg-config)))
-    (inputs `(("libusb" ,libusb)
-              ("jimtcl" ,jimtcl)
-              ("usb-modeswitch-data" ,usb-modeswitch-data)))
+    (native-inputs (list pkg-config))
+    (inputs (list libusb jimtcl usb-modeswitch-data))
     (outputs '("out" "dispatcher"))
     (build-system gnu-build-system)
     (arguments

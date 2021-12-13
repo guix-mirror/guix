@@ -86,8 +86,7 @@
     (outputs '("out"
                "tk"))                             ; for the Tcl/Tk GUI
 
-    (inputs `(("tk" ,tk)
-              ("tcl" ,tcl)))
+    (inputs (list tk tcl))
     (home-page "https://wordnet.princeton.edu/")
     (synopsis "Lexical database for the English language")
     (description

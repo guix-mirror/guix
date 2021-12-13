@@ -40,7 +40,7 @@
     (build-system gnu-build-system)
     (home-page "https://re2c.org/")
     (native-inputs
-     `(("python" ,python)))             ; for the test driver
+     (list python))             ; for the test driver
     (synopsis "Lexer generator for C/C++")
     (description
      "@code{re2c} generates minimalistic hard-coded state machine (as opposed

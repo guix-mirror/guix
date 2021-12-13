@@ -1,6 +1,8 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2018 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -17,13 +19,14 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (test-packages)
+(define-module (tests packages)
   #:use-module (guix tests)
   #:use-module (guix store)
   #:use-module (guix monads)
   #:use-module (guix grafts)
-  #:use-module ((guix gexp) #:select (local-file local-file-file))
+  #:use-module (guix gexp)
   #:use-module (guix utils)
+  #:use-module ((guix build utils) #:select (tarball?))
   #:use-module ((guix diagnostics)
                 ;; Rename the 'location' binding to allow proper syntax
                 ;; matching when setting the 'location' field of a package.
@@ -32,6 +35,7 @@
                                   (else name))))
   #:use-module ((gcrypt hash) #:prefix gcrypt:)
   #:use-module (guix derivations)
+  #:use-module (guix download)
   #:use-module (guix packages)
   #:use-module (guix grafts)
   #:use-module (guix search-paths)
@@ -51,6 +55,7 @@
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages xml)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
@@ -133,7 +138,7 @@
   ;; inputs.  See <https://bugs.gnu.org/35872>.
   (let* ((dep (dummy-package "dep" (version "2")))
          (old (dummy-package "foo" (version "1")
-                             (propagated-inputs `(("dep" ,dep)))))
+                             (propagated-inputs (list dep))))
          (drv (package-derivation %store old))
          (tx  (mock ((gnu packages) find-best-packages-by-name
                      (const (list old)))
@@ -221,7 +226,7 @@
              (bar (dummy-package "bar" (version "0")
                                  (replacement old)))
              (new (dummy-package "foo" (version "1")
-                                 (inputs `(("bar" ,bar)))))
+                                 (inputs (list bar))))
              (tx  (mock ((gnu packages) find-best-packages-by-name
                          (const (list new)))
                         (transaction-upgrade-entry
@@ -282,13 +287,13 @@
 (test-assert "package-transitive-inputs"
   (let* ((a (dummy-package "a"))
          (b (dummy-package "b"
-              (propagated-inputs `(("a" ,a)))))
+              (propagated-inputs (list a))))
          (c (dummy-package "c"
-              (inputs `(("a" ,a)))))
+              (inputs (list a))))
          (d (dummy-package "d"
               (propagated-inputs `(("x" "something.drv")))))
          (e (dummy-package "e"
-              (inputs `(("b" ,b) ("c" ,c) ("d" ,d))))))
+              (inputs (list b c d)))))
     (and (null? (package-transitive-inputs a))
          (equal? `(("a" ,a)) (package-transitive-inputs b))
          (equal? `(("a" ,a)) (package-transitive-inputs c))
@@ -334,19 +339,19 @@
          (b (dummy-package "b"
               (build-system trivial-build-system)
               (supported-systems '("x" "y"))
-              (inputs `(("a" ,a)))))
+              (inputs (list a))))
          (c (dummy-package "c"
               (build-system trivial-build-system)
               (supported-systems '("y" "z"))
-              (inputs `(("b" ,b)))))
+              (inputs (list b))))
          (d (dummy-package "d"
               (build-system trivial-build-system)
               (supported-systems '("x" "y" "z"))
-              (inputs `(("b" ,b) ("c" ,c)))))
+              (inputs (list b c))))
          (e (dummy-package "e"
               (build-system trivial-build-system)
               (supported-systems '("x" "y" "z"))
-              (inputs `(("d" ,d))))))
+              (inputs (list d)))))
     (list (package-transitive-supported-systems a)
           (package-transitive-supported-systems b)
           (package-transitive-supported-systems c)
@@ -376,13 +381,13 @@
                      (build-system trivial-build-system))))))
     (let* ((a (dummy-package/no-implicit "a"))
            (b (dummy-package/no-implicit "b"
-                (propagated-inputs `(("a" ,a)))))
+                (propagated-inputs (list a))))
            (c (dummy-package/no-implicit "c"
-                (inputs `(("a" ,a)))))
+                (inputs (list a))))
            (d (dummy-package/no-implicit "d"
-                (native-inputs `(("b" ,b)))))
+                (native-inputs (list b))))
            (e (dummy-package/no-implicit "e"
-                (inputs `(("c" ,c) ("d" ,d))))))
+                (inputs (list c d)))))
       (lset= eq?
              (list a b c d e)
              (package-closure (list e))
@@ -405,12 +410,11 @@
        (u (dummy-origin))
        (i (dummy-origin))
        (a (dummy-package "a"))
-       (b (dummy-package "b"
-            (inputs `(("a" ,a) ("i" ,i)))))
+       (b (dummy-package "b" (inputs (list a i))))
        (c (package (inherit b) (source o)))
        (d (dummy-package "d"
             (build-system trivial-build-system)
-            (source u) (inputs `(("c" ,c))))))
+            (source u) (inputs (list c)))))
   (test-assert "package-direct-sources, no source"
     (null? (package-direct-sources a)))
   (test-equal "package-direct-sources, #f source"
@@ -478,7 +482,7 @@
               (supported-systems '("x86_64-linux"))))
          (p (dummy-package "foo"
               (build-system gnu-build-system)
-              (inputs `(("d" ,d)))
+              (inputs (list d))
               (supported-systems '("x86_64-linux" "armhf-linux")))))
     (and (supported-package? p "x86_64-linux")
          (not (supported-package? p "i686-linux"))
@@ -603,6 +607,11 @@
     (build-derivations %store (list drv))
     (call-with-input-file output get-string-all)))
 
+
+;;;
+;;; Source derivation with snippets.
+;;;
+
 (unless (network-reachable?) (test-skip 1))
 (test-equal "package-source-derivation, snippet"
   "OK"
@@ -658,10 +667,95 @@
     (and (build-derivations %store (list (pk 'snippet-drv drv)))
          (call-with-input-file out get-string-all))))
 
+;; Note: lzip is not part of bootstrap-coreutils&co, so is not included to
+;; avoid having to rebuild the world.
+(define compressors '(("gzip"  . "gz")
+                      ("xz"    . "xz")
+                      ("bzip2" . "bz2")
+                      (#f      . #f)))
+
+(for-each
+ (match-lambda
+   ((comp . ext)
+    (unless (network-reachable?) (test-skip 1))
+    (test-equal (string-append "origin->derivation, single file with snippet "
+                               "(compression: " (if comp comp "None") ")")
+      "2 + 2 = 4"
+      (let*-values
+          (((name) "maths")
+           ((compressed-name) (if comp
+                                  (string-append name "." ext)
+                                  name))
+           ((file hash) (test-file %store compressed-name "2 + 2 = 5"))
+           ;; Create an origin using the above computed file and its hash.
+           ((source) (origin
+                       (method url-fetch)
+                       (uri (string-append "file://" file))
+                       (file-name compressed-name)
+                       (patch-inputs `(("tar"   ,%bootstrap-coreutils&co)
+                                       ("xz"    ,%bootstrap-coreutils&co)
+                                       ("bzip2" ,%bootstrap-coreutils&co)
+                                       ("gzip"  ,%bootstrap-coreutils&co)))
+                       (patch-guile %bootstrap-guile)
+                       (modules '((guix build utils)))
+                       (snippet `(substitute* ,name
+                                   (("5") "4")))
+                       (hash (content-hash hash))))
+           ;; Build origin.
+           ((drv) (run-with-store %store (origin->derivation source)))
+           ((out) (derivation->output-path drv)))
+        ;; Decompress the resulting tar.xz and return its content.
+        (and (build-derivations %store (list drv))
+             (if (tarball? out)
+                 (let* ((bin #~(string-append #+%bootstrap-coreutils&co
+                                              "/bin"))
+                        (f (computed-file
+                            name
+                            (with-imported-modules '((guix build utils))
+                              #~(begin
+                                  (use-modules (guix build utils))
+                                  (setenv "PATH" #+bin)
+                                  (invoke "tar" "xvf" #+out)
+                                  (copy-file #+name #$output)))))
+                        (drv (run-with-store %store (lower-object f)))
+                        (_ (build-derivations %store (list drv))))
+                   (call-with-input-file (derivation->output-path drv)
+                     get-string-all))
+                 (call-with-input-file out get-string-all)))))))
+ compressors)
+
 (test-assert "return value"
   (let ((drv (package-derivation %store (dummy-package "p"))))
     (and (derivation? drv)
          (file-exists? (derivation-file-name drv)))))
+
+(test-assert "package-derivation, inputs deduplicated"
+  (let* ((dep (dummy-package "dep"))
+         (p0  (dummy-package "p" (inputs (list dep))))
+         (p1  (package (inherit p0)
+                       (inputs `(("dep" ,(package (inherit dep)))
+                                 ,@(package-inputs p0))))))
+    ;; Here P1 ends up with two non-eq? copies of DEP, under the same label.
+    ;; They should be deduplicated so that P0 and P1 lead to the same
+    ;; derivation rather than P1 ending up with duplicate entries in its
+    ;; '%build-inputs' variable.
+    (string=? (derivation-file-name (package-derivation %store p0))
+              (derivation-file-name (package-derivation %store p1)))))
+
+(test-assert "package-derivation, different system"
+  ;; Make sure the 'system' argument of 'package-derivation' is respected.
+  (let* ((system (if (string=? (%current-system) "x86_64-linux")
+                     "aarch64-linux"
+                     "x86_64-linux"))
+         (drv    (package-derivation %store (dummy-package "p")
+                                     system #:graft? #f)))
+    (define right-system?
+      (mlambdaq (drv)
+        (and (string=? (derivation-system drv) system)
+             (every (compose right-system? derivation-input-derivation)
+                    (derivation-inputs drv)))))
+
+    (right-system? drv)))
 
 (test-assert "package-output"
   (let* ((package  (dummy-package "p"))
@@ -690,7 +784,7 @@
 
 (let ((dummy (dummy-package "foo" (inputs `(("x" ,(current-module)))))))
   (test-equal "&package-input-error"
-    (list dummy (current-module))
+    (list dummy `("x" ,(current-module)))
     (guard (c ((package-input-error? c)
                (list (package-error-package c)
                      (package-error-invalid-input c))))
@@ -701,7 +795,7 @@
   (parameterize ((%graft? #f))
     (let* ((dep (dummy-package "dep"))
            (p   (dummy-package "p"
-                  (inputs `(("dep" ,dep "non-existent"))))))
+                  (inputs (list `(,dep "non-existent"))))))
       (guard (c ((derivation-missing-output-error? c)
                  (and (string=? (derivation-missing-output c) "non-existent")
                       (equal? (package-derivation %store dep)
@@ -802,21 +896,47 @@
       (build-derivations %store (list d))
       #f)))
 
+(test-assert "trivial with #:allowed-references + grafts"
+  (let* ((g (package
+              (inherit %bootstrap-guile)
+              (replacement (package
+                             (inherit %bootstrap-guile)
+                             (version "9.9")))))
+         (p (package
+              (inherit (dummy-package "trivial"))
+              (build-system trivial-build-system)
+              (inputs (list g))
+              (arguments
+               `(#:guile ,g
+                 #:allowed-references (,g)
+                 #:builder (mkdir %output)))))
+         (d0 (package-derivation %store p #:graft? #f))
+         (d1 (parameterize ((%graft? #t))
+               (package-derivation %store p #:graft? #t))))
+    ;; D1 should be equal to D2 because there's nothing to graft.  In
+    ;; particular, its #:disallowed-references should be lowered in the same
+    ;; way (ungrafted) whether or not #:graft? is true.
+    (string=? (derivation-file-name d1) (derivation-file-name d0))))
+
 (test-assert "search paths"
   (let* ((p (make-prompt-tag "return-search-paths"))
+         (t (make-parameter "guile-0"))
          (s (build-system
-             (name 'raw)
-             (description "Raw build system with direct store access")
-             (lower (lambda* (name #:key source inputs system target
-                                   #:allow-other-keys)
-                      (bag
-                        (name name)
-                        (system system) (target target)
-                        (build-inputs inputs)
-                        (build
-                         (lambda* (store name inputs
+              (name 'raw)
+              (description "Raw build system with direct store access")
+              (lower (lambda* (name #:key source inputs system target
+                                    #:allow-other-keys)
+                       (bag
+                         (name name)
+                         (system system) (target target)
+                         (build-inputs inputs)
+                         (build
+                          (lambda* (name inputs
                                          #:key outputs system search-paths)
-                           search-paths)))))))
+                            (if (string=? name (t))
+                                (abort-to-prompt p search-paths)
+                                (gexp->derivation name
+                                                  #~(mkdir #$output))))))))))
          (x (list (search-path-specification
                    (variable "GUILE_LOAD_PATH")
                    (files '("share/guile/site/2.0")))
@@ -841,8 +961,10 @@
                                (lambda (k search-paths)
                                  search-paths))))))
       (and (null? (collect (package-derivation %store a)))
-           (equal? x (collect (package-derivation %store b)))
-           (equal? x (collect (package-derivation %store c)))))))
+           (parameterize ((t "guile-foo-0"))
+             (equal? x (collect (package-derivation %store b))))
+           (parameterize ((t "guile-bar-0"))
+             (equal? x (collect (package-derivation %store c))))))))
 
 (test-assert "package-transitive-native-search-paths"
   (let* ((sp (lambda (name)
@@ -853,12 +975,12 @@
          (p1 (dummy-package "p1" (native-search-paths (sp "PATH1"))))
          (p2 (dummy-package "p2"
                (native-search-paths (sp "PATH2"))
-               (inputs `(("p0" ,p0)))
-               (propagated-inputs `(("p1" ,p1)))))
+               (inputs (list p0))
+               (propagated-inputs (list p1))))
          (p3 (dummy-package "p3"
                (native-search-paths (sp "PATH3"))
-               (native-inputs `(("p0" ,p0)))
-               (propagated-inputs `(("p2" ,p2))))))
+               (native-inputs (list p0))
+               (propagated-inputs (list p2)))))
     (lset= string=?
            '("PATH1" "PATH2" "PATH3")
            (map search-path-specification-variable
@@ -912,7 +1034,7 @@
          (dep*  (package (inherit dep) (replacement new)))
          (dummy (dummy-package "dummy"
                   (arguments '(#:implicit-inputs? #f))
-                  (inputs `(("dep" ,dep*))))))
+                  (inputs (list dep*)))))
     (equal? (package-grafts %store dummy)
             (list (graft
                     (origin (package-derivation %store dep))
@@ -944,11 +1066,11 @@
          (dep   (package (inherit new) (version "0.0")))
          (dep*  (package (inherit dep) (replacement new)))
          (prop  (dummy-package "propagated"
-                  (propagated-inputs `(("dep" ,dep*)))
+                  (propagated-inputs (list dep*))
                   (arguments '(#:implicit-inputs? #f))))
          (dummy (dummy-package "dummy"
                   (arguments '(#:implicit-inputs? #f))
-                  (inputs `(("prop" ,prop))))))
+                  (inputs (list prop)))))
     (equal? (package-grafts %store dummy)
             (list (graft
                     (origin (package-derivation %store dep))
@@ -961,16 +1083,16 @@
          (dep  (package (inherit new) (version "0") (replacement new)))
          (p1   (dummy-package "intermediate1"
                  (arguments '(#:implicit-inputs? #f))
-                 (inputs `(("dep" ,dep)))))
+                 (inputs (list dep))))
          (p2   (dummy-package "intermediate2"
                  (arguments '(#:implicit-inputs? #f))
                  ;; Here we copy DEP to have an equivalent package that is not
                  ;; 'eq?' to DEP.  This is similar to what happens with
                  ;; 'package-with-explicit-inputs' & co.
-                 (inputs `(("dep" ,(package (inherit dep)))))))
+                 (inputs (list (package (inherit dep))))))
          (p3   (dummy-package "final"
                  (arguments '(#:implicit-inputs? #f))
-                 (inputs `(("p1" ,p1) ("p2" ,p2))))))
+                 (inputs (list p1 p2)))))
     (equal? (package-grafts %store p3)
             (list (graft
                     (origin (package-derivation %store
@@ -988,8 +1110,7 @@
             (p0* (package (inherit p0) (version "1.1")))
             (p1  (dummy-package "p1"
                    (arguments '(#:implicit-inputs? #f))
-                   (inputs `(("p0" ,p0)
-                             ("p0:lib" ,p0 "lib"))))))
+                   (inputs (list p0 `(,p0 "lib"))))))
     (lset= equal? (pk (package-grafts %store p1))
            (list (graft
                    (origin (package-derivation %store p0))
@@ -1037,7 +1158,7 @@
                                #t)))))
          (p2r (dummy-package "P2"
                 (build-system trivial-build-system)
-                (inputs `(("p1" ,p1)))
+                (inputs (list p1))
                 (arguments
                  `(#:guile ,%bootstrap-guile
                    #:builder (let ((out (assoc-ref %outputs "out")))
@@ -1058,7 +1179,7 @@
                                #t)))))
          (p3  (dummy-package "p3"
                 (build-system trivial-build-system)
-                (inputs `(("p2" ,p2)))
+                (inputs (list p2))
                 (arguments
                  `(#:guile ,%bootstrap-guile
                    #:builder (let ((out (assoc-ref %outputs "out")))
@@ -1116,18 +1237,18 @@
                        (bag (name name) (system system) (target target)
                             (build-inputs native-inputs)
                             (host-inputs inputs)
-                            (build (lambda* (store name inputs
-                                                   #:key system target
-                                                   #:allow-other-keys)
-                                     (build-expression->derivation
-                                      store "foo" '(mkdir %output))))))))
+                            (build (lambda* (name inputs
+                                                  #:key system target
+                                                  #:allow-other-keys)
+                                     (gexp->derivation "foo"
+                                                       #~(mkdir #$output))))))))
          (bs    (build-system
                   (name 'build-system-without-cross-compilation)
                   (description "Does not support cross compilation.")
                   (lower lower)))
          (dep   (dummy-package "dep" (build-system bs)))
          (pkg   (dummy-package "example"
-                  (native-inputs `(("dep" ,dep)))))
+                  (native-inputs (list dep))))
          (do-not-build (lambda (continue store lst . _) lst)))
     (equal? (with-build-handler do-not-build
               (parameterize ((%current-target-system "powerpc64le-linux-gnu")
@@ -1154,9 +1275,9 @@
 (test-assert "package->bag, propagated inputs"
   (let* ((dep    (dummy-package "dep"))
          (prop   (dummy-package "prop"
-                   (propagated-inputs `(("dep" ,dep)))))
+                   (propagated-inputs (list dep))))
          (dummy  (dummy-package "dummy"
-                   (inputs `(("prop" ,prop)))))
+                   (inputs (list prop))))
          (inputs (bag-transitive-inputs (package->bag dummy #:graft? #f))))
     (match (assoc "dep" inputs)
       (("dep" package)
@@ -1169,7 +1290,7 @@
                                        `(("libxml2" ,libxml2))
                                        '()))))
          (pkg (dummy-package "foo"
-                (native-inputs `(("dep" ,dep)))))
+                (native-inputs (list dep))))
          (bag (package->bag pkg (%current-system) "i586-gnu")))
     (equal? (parameterize ((%current-system "x86_64-linux"))
               (bag-transitive-inputs bag))
@@ -1182,19 +1303,20 @@
                                        `(("libxml2" ,libxml2))
                                        '()))))
          (pkg (dummy-package "foo"
-                (native-inputs `(("dep" ,dep)))))
+                (native-inputs (list dep))))
          (bag (package->bag pkg (%current-system) "foo86-hurd")))
     (equal? (parameterize ((%current-target-system "foo64-gnu"))
               (bag-transitive-inputs bag))
             (parameterize ((%current-target-system #f))
               (bag-transitive-inputs bag)))))
 
-(test-assert "bag->derivation"
+(test-assertm "bag->derivation"
   (parameterize ((%graft? #f))
     (let ((bag (package->bag gnu-make))
           (drv (package-derivation %store gnu-make)))
       (parameterize ((%current-system "foox86-hurd")) ;should have no effect
-        (equal? drv (bag->derivation %store bag))))))
+        (mlet %store-monad ((bag-drv (bag->derivation bag)))
+          (return (equal? drv bag-drv)))))))
 
 (test-assert "bag->derivation, cross-compilation"
   (parameterize ((%graft? #f))
@@ -1203,7 +1325,8 @@
            (drv    (package-cross-derivation %store gnu-make target)))
       (parameterize ((%current-system "foox86-hurd") ;should have no effect
                      (%current-target-system "foo64-linux-gnu"))
-        (equal? drv (bag->derivation %store bag))))))
+        (mlet %store-monad ((bag-drv (bag->derivation bag)))
+          (return (equal? drv bag-drv)))))))
 
 (when (or (not (network-reachable?)) (shebang-too-long?))
   (test-skip 1))
@@ -1486,11 +1609,11 @@
                     (build-system trivial-build-system)))
          (glib    (dummy-package "glib"
                     (build-system trivial-build-system)
-                    (propagated-inputs `(("libffi" ,libffi)))))
+                    (propagated-inputs (list libffi))))
          (gobject (dummy-package "gobject-introspection"
                     (build-system trivial-build-system)
-                    (inputs `(("glib" ,glib)))
-                    (propagated-inputs `(("libffi" ,libffi)))))
+                    (inputs (list glib))
+                    (propagated-inputs (list libffi))))
          (rewrite (package-input-rewriting/spec
                    `(("glib" . ,identity)))))
     (and (= (length (package-transitive-inputs gobject))
@@ -1507,11 +1630,11 @@
                     (build-system trivial-build-system)))
          (glib    (dummy-package "glib"
                     (build-system trivial-build-system)
-                    (propagated-inputs `(("libffi" ,libffi)))))
+                    (propagated-inputs (list libffi))))
          (gobject (dummy-package "gobject-introspection"
                     (build-system trivial-build-system)
-                    (inputs `(("glib" ,glib)))
-                    (propagated-inputs `(("libffi" ,libffi)))))
+                    (inputs (list glib))
+                    (propagated-inputs (list libffi))))
          (rewrite (package-input-rewriting `((,glib . ,glib)))))
     (and (= (length (package-transitive-inputs gobject))
             (length (package-transitive-inputs (rewrite gobject))))
@@ -1788,6 +1911,39 @@
 (test-equal "specification->location"
   (package-location (specification->package "guile@2"))
   (specification->location "guile@2"))
+
+(test-eq "this-package-input, exists"
+  hello
+  (package-arguments
+   (dummy-package "a"
+     (inputs `(("hello" ,hello)))
+     (arguments (this-package-input "hello")))))
+
+(test-eq "this-package-input, exists in propagated-inputs"
+  hello
+  (package-arguments
+   (dummy-package "a"
+     (propagated-inputs `(("hello" ,hello)))
+     (arguments (this-package-input "hello")))))
+
+(test-eq "this-package-input, does not exist"
+  #f
+  (package-arguments
+   (dummy-package "a"
+     (arguments (this-package-input "hello")))))
+
+(test-eq "this-package-native-input, exists"
+  hello
+  (package-arguments
+   (dummy-package "a"
+     (native-inputs `(("hello" ,hello)))
+     (arguments (this-package-native-input "hello")))))
+
+(test-eq "this-package-native-input, does not exists"
+  #f
+  (package-arguments
+   (dummy-package "a"
+     (arguments (this-package-native-input "hello")))))
 
 (test-end "packages")
 

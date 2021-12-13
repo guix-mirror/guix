@@ -90,7 +90,7 @@ or right-to-left ordering as necessary.")
              #t)))
        #:tests? #f)) ; no tests
     (inputs
-     `(("fribidi" ,fribidi)))
+     (list fribidi))
     (home-page "https://tracker.debian.org/pkg/bidiv")
     (synopsis "BiDi viewer - command-line tool displaying logical Hebrew/Arabic")
     (description "bidiv is a simple utility for converting logical-Hebrew input

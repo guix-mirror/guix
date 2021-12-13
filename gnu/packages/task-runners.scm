@@ -45,7 +45,7 @@
         (base32 "17n11lqhywq4z62w2rakdq80v7mxf83rgln19vj4v4nxpwd2hjjw"))))
     (build-system go-build-system)
     (propagated-inputs
-     `(("go-github-com-tekwizely-go-parsing" ,go-github-com-tekwizely-go-parsing)))
+     (list go-github-com-tekwizely-go-parsing))
     (arguments
      `(#:import-path "github.com/tekwizely/run"))
     (synopsis "Easily manage and invoke small scripts and wrappers")

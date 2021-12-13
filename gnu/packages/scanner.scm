@@ -75,7 +75,7 @@
        ;; For scripts/pixma_gen_options.py.
        ("python" ,python-wrapper)))
     (inputs
-     `(("libusb" ,libusb)))
+     (list libusb))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -231,7 +231,7 @@ package contains the library and drivers.")))
                                         ,name "-" ,version)))
                (install-file "doc/README.txt" doc)))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
      `(("dbus" ,dbus)
        ("libconfuse" ,libconfuse)
@@ -315,7 +315,7 @@ provided the driver also exposes the buttons.")
                (rmdir (string-append out "/sbin"))
                #t))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
      `(("gtk+" ,gtk+-2)
        ("lcms" ,lcms)

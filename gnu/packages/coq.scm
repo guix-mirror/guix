@@ -78,11 +78,9 @@
             (separator #f))))
     (build-system dune-build-system)
     (inputs
-     `(("gmp" ,gmp)
-       ("ocaml-zarith" ,ocaml-zarith)))
+     (list gmp ocaml-zarith))
     (native-inputs
-     `(("ocaml-ounit2" ,ocaml-ounit2)
-       ("which" ,which)))
+     (list ocaml-ounit2 which))
     (arguments
      `(#:package "coq-core"
        #:test-target "."))
@@ -105,9 +103,7 @@ It is developed using Objective Caml and Camlp5.")
      `(#:package "coq-stdlib"
        #:test-target "."))
     (inputs
-     `(("coq-core" ,coq-core)
-       ("gmp" ,gmp)
-       ("ocaml-zarith" ,ocaml-zarith)))
+     (list coq-core gmp ocaml-zarith))
     (native-inputs '())))
 
 (define-public coq
@@ -118,8 +114,7 @@ It is developed using Objective Caml and Camlp5.")
      `(#:package "coq"
        #:test-target "."))
     (propagated-inputs
-     `(("coq-core" ,coq-core)
-       ("coq-stdlib" ,coq-stdlib)))
+     (list coq-core coq-stdlib))
     (native-inputs '())))
 
 (define-public coq-ide-server
@@ -130,9 +125,7 @@ It is developed using Objective Caml and Camlp5.")
      `(#:tests? #f
        #:package "coqide-server"))
     (inputs
-     `(("coq" ,coq)
-       ("gmp" ,gmp)
-       ("ocaml-zarith" ,ocaml-zarith)))))
+     (list coq gmp ocaml-zarith))))
 
 (define-public coq-ide
   (package
@@ -142,8 +135,7 @@ It is developed using Objective Caml and Camlp5.")
      `(#:tests? #f
        #:package "coqide"))
     (propagated-inputs
-     `(("coq" ,coq)
-       ("coq-ide-server" ,coq-ide-server)))
+     (list coq coq-ide-server))
     (inputs
      `(("lablgtk3" ,lablgtk3)))))
 
@@ -170,7 +162,7 @@ It is developed using Objective Caml and Camlp5.")
        `(("emacs" ,emacs-minimal)
          ("texinfo" ,texinfo)))
       (inputs
-       `(("perl" ,perl)))
+       (list perl))
       (arguments
        (let ((base-directory "/share/emacs/site-lisp/ProofGeneral"))
          `(#:tests? #f                  ; no check target
@@ -250,11 +242,7 @@ provers.")
          "0j7vq7ifqcdaj2x881aha2rl51l2p72y1cn7r2xya0fjgsssfigy"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("ocaml" ,ocaml)
-       ("which" ,which)
-       ("coq" ,coq)))
+     (list autoconf automake ocaml which coq))
     (arguments
      `(#:configure-flags
        (list (string-append "COQUSERCONTRIB=" (assoc-ref %outputs "out")
@@ -301,21 +289,18 @@ inside Coq.")
          "1ivh8xm1c8191rm4riamjzya2x6ls96qax5byir1fywf9hbxr1vg"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("ocaml" ,ocaml)
-       ("which" ,which)
-       ("coq" ,coq)
-       ("camlp5" ,camlp5)
-       ("bison" ,bison)
-       ("flex" ,flex)))
+     (list autoconf
+           automake
+           ocaml
+           which
+           coq
+           camlp5
+           bison
+           flex))
     (inputs
-     `(("gmp" ,gmp)
-       ("mpfr" ,mpfr)
-       ("ocaml-zarith" ,ocaml-zarith)
-       ("boost" ,boost)))
+     (list gmp mpfr ocaml-zarith boost))
     (propagated-inputs
-     `(("coq-flocq" ,coq-flocq)))
+     (list coq-flocq))
     (arguments
      `(#:configure-flags
        (list (string-append "COQUSERCONTRIB=" (assoc-ref %outputs "out")
@@ -361,9 +346,7 @@ assistant.")
         (base32 "0aj8hsdzzds5w0p1858s2b6k9zssjcxa6kgpi0q1nvaml4zfpkcc"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("ocaml" ,ocaml)
-       ("which" ,which)
-       ("coq" ,coq)))
+     (list ocaml which coq))
     (arguments
      `(#:tests? #f ; No tests.
        #:make-flags (list (string-append "COQLIBINSTALL="
@@ -401,11 +384,7 @@ part of the distribution.")
          "146s5y2xsc7wb43m1pq1n4p14hw99gqbzx0ic3a4naxq16v7cv4w"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("ocaml" ,ocaml)
-       ("which" ,which)
-       ("coq" ,coq)))
+     (list autoconf automake ocaml which coq))
     (propagated-inputs
      `(("mathcomp" ,coq-mathcomp)))
     (arguments
@@ -453,11 +432,9 @@ theorems between the two libraries.")
                 "0jsgdvj0ddhkls32krprp34r64y1rb5mwxl34fgaxk2k4664yq06"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("ocaml" ,ocaml)
-       ("coq" ,coq)))
+     (list ocaml coq))
     (inputs
-     `(("camlp5" ,camlp5)
-       ("ocaml-zarith" ,ocaml-zarith)))
+     (list camlp5 ocaml-zarith))
     (arguments
      `(#:tests? #f ; No test target.
        #:make-flags
@@ -488,11 +465,7 @@ provides BigN, BigZ, BigQ that used to be part of Coq standard library.")
          "0sr9psildc0sda07r2r47rfgyry49yklk38bg04yyvry5j5pryb6"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("ocaml" ,ocaml)
-       ("which" ,which)
-       ("coq" ,coq)))
+     (list autoconf automake ocaml which coq))
     (propagated-inputs
      `(("flocq" ,coq-flocq)
        ("bignums" ,coq-bignums)
@@ -549,7 +522,7 @@ Coq proof assistant.")
          (modify-phases %standard-phases
            (delete 'configure))))
       (native-inputs
-       `(("coq" ,coq)))
+       (list coq))
       (home-page "https://www.ps.uni-saarland.de/autosubst/")
       (synopsis "Coq library for parallel de Bruijn substitutions")
       (description "Formalizing syntactic theories with variable binders is
@@ -580,11 +553,9 @@ uses Ltac to synthesize the substitution operation.")
                 "19bj9nncd1r9g4273h5qx35gs3i4bw5z9bhjni24b413hyj55hkv"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("ocaml"  ,ocaml)
-       ("coq"    ,coq)
-       ("camlp5" ,camlp5)))
+     (list ocaml coq camlp5))
     (inputs
-     `(("ocaml-zarith" ,ocaml-zarith)))
+     (list ocaml-zarith))
     (arguments
      `(#:test-target "test-suite"
        #:make-flags (list (string-append "COQLIBINSTALL="
@@ -625,12 +596,9 @@ kernel.")
           "0ldrp86bfcjpzsb08p45sgs3aczjzr1gksy5dsf7pxapg05pc7ac"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("coq" ,coq)
-       ("ocaml" ,ocaml)
-       ("ocamlbuild" ,ocamlbuild)
-       ("ocaml-findlib" ,ocaml-findlib)))
+     (list coq ocaml ocamlbuild ocaml-findlib))
     (inputs
-     `(("ocaml-num" ,ocaml-num)))
+     (list ocaml-num))
     (arguments
      `(#:tests? #f                      ;included in Makefile
        #:make-flags (list (string-append "COQLIBINSTALL="
@@ -670,7 +638,7 @@ also provided in Coq, without associated proofs.")
                 "1l1w6srzydjg0h3f4krrfgvz455h56shyy2lbcnwdbzjkahibl7v"))))
     (build-system gnu-build-system)
     (inputs
-     `(("coq" ,coq)))
+     (list coq))
     (arguments
      `(#:tests? #f ; Tests are executed during build phase.
        #:make-flags (list (string-append "COQLIBINSTALL="

@@ -5,6 +5,7 @@
 ;;; Copyright © 2016, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,6 +28,7 @@
   #:use-module (gnu packages bdw-gc)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -40,7 +42,7 @@
 (define-public w3m
   (package
     (name "w3m")
-    (version "0.5.3+git20200502")
+    (version "0.5.3+git20210102")
     (source (origin
               (method git-fetch)
               ;; Debian's fork of w3m is the only one that is still maintained.
@@ -50,26 +52,27 @@
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0yyfhwcwy1dvdbirj6zqwk4gl8z9npfavs0k7ipcg5fd16vnx7mi"))))
+                "0amq1wfjp5mhqjmvrc0yhxjlx1335p78d7ap8iykfjn5h8yhmrg5"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f  ; no check target
        ;; Use $EDITOR instead of a hard-coded value.
-       #:configure-flags '("--with-editor=")
+       #:configure-flags (list "--with-editor="
+                               "--with-imagelib=imlib2")
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'fix-perl
            (lambda _ (substitute* '("scripts/w3mmail.cgi.in"
                                     "scripts/dirlist.cgi.in")
-                       (("@PERL@") (which "perl")))
-             #t)))))
+                       (("@PERL@") (which "perl"))))))))
     (inputs
-     `(("gdk-pixbuf" ,gdk-pixbuf)
-       ("libgc" ,libgc)
-       ("libx11" ,libx11)
-       ("ncurses" ,ncurses)
-       ("openssl" ,openssl)
-       ("zlib" ,zlib)))
+     (list gdk-pixbuf
+           imlib2
+           libgc
+           libx11
+           ncurses
+           openssl
+           zlib))
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("perl" ,perl)

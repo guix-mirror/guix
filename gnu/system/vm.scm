@@ -538,7 +538,7 @@ the operating system."
                      ;; Even as root in a VM, the initializer would fail due to
                      ;; lack of privileges if we use a root-directory that is on
                      ;; a file system that is shared with the host (e.g., /tmp).
-                     (root-directory "/guixsd-system-root"))
+                     (root-directory "/guix-system-root"))
                 (set-path-environment-variable "PATH" '("bin" "sbin") '(#+tar))
                 (mkdir root-directory)
                 (initialize root-directory)
@@ -708,8 +708,8 @@ with '-virtfs' options for the host file systems listed in SHARED-FS."
             '())
 
      "-no-reboot"
-     "-object" "rng-random,filename=/dev/urandom,id=guixsd-vm-rng"
-     "-device" "virtio-rng-pci,rng=guixsd-vm-rng"
+     "-object" "rng-random,filename=/dev/urandom,id=guix-vm-rng"
+     "-device" "virtio-rng-pci,rng=guix-vm-rng"
 
      #$@(map virtfs-option shared-fs)
      (format #f "-drive file=~a,if=virtio,cache=writeback,werror=report,readonly=on"
@@ -787,7 +787,7 @@ it is mostly useful when FULL-BOOT?  is true."
   virtual-machine?
   (operating-system virtual-machine-operating-system) ;<operating-system>
   (qemu             virtual-machine-qemu              ;<package>
-                    (default qemu))
+                    (default qemu-minimal))
   (graphic?         virtual-machine-graphic?      ;Boolean
                     (default #f))
   (memory-size      virtual-machine-memory-size   ;integer (MiB)

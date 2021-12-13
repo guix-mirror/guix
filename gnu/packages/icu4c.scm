@@ -1,13 +1,14 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2020 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,6 +30,7 @@
   #:use-module (gnu packages java)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
+  #:use-module (guix gexp)
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix utils)
@@ -39,7 +41,7 @@
 (define-public icu4c
   (package
    (name "icu4c")
-   (version "66.1")
+   (version "69.1")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -48,10 +50,8 @@
                   "/icu4c-"
                   (string-map (lambda (x) (if (char=? x #\.) #\_ x)) version)
                   "-src.tgz"))
-            (patch-flags '("-p2"))
-            (patches (search-patches "icu4c-CVE-2020-10531.patch"))
             (sha256
-             (base32 "0bharwzc9nzkbrcf405z2nb3h7q0711z450arz0mjmdrk8hg58sj"))))
+             (base32 "0icps0avkwy5df3wwc5kybxcg63hcgk4phdh9g244g0xrmx7pfjc"))))
    (build-system gnu-build-system)
    ;; When cross-compiling, this package needs a source directory of a
    ;; native-build of itself.
@@ -61,7 +61,7 @@
             `(("icu4c-build-root" ,icu4c-build-root))
             '())))
    (inputs
-    `(("perl" ,perl)))
+    (list perl))
    (arguments
     `(#:configure-flags
       (list
@@ -130,22 +130,6 @@ C/C++ part.")
                (base32
                 "09fng7a80xj8d5r1cgbgq8r47dsw5jsr6si9p2cj2ylhwgg974f7"))))))
 
-(define-public icu4c-69
-  (package
-    (inherit icu4c)
-    (version "69.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/unicode-org/icu/releases/download/release-"
-                    (string-map (lambda (x) (if (char=? x #\.) #\- x)) version)
-                    "/icu4c-"
-                    (string-map (lambda (x) (if (char=? x #\.) #\_ x)) version)
-                    "-src.tgz"))
-              (sha256
-               (base32
-                "0icps0avkwy5df3wwc5kybxcg63hcgk4phdh9g244g0xrmx7pfjc"))))))
-
 (define-public icu4c-build-root
   (package
     (inherit icu4c)
@@ -182,18 +166,19 @@ C/C++ part.")
     (build-system ant-build-system)
     (arguments
      `(#:make-flags
-       (list (string-append "-Djunit.core.jar="
-                            (car (find-files
-                                   (assoc-ref %build-inputs "java-junit")
-                                   ".*.jar$")))
-             (string-append "-Djunit.junitparams.jar="
-                            (car (find-files
-                                   (assoc-ref %build-inputs "java-junitparams")
-                                   ".*.jar$")))
-             (string-append "-Djunit.hamcrest.jar="
-                            (car (find-files
-                                   (assoc-ref %build-inputs "java-hamcrest-core")
-                                   ".*.jar$"))))
+       ,#~(list
+           (string-append "-Djunit.core.jar="
+                          (car (find-files
+                                #$(this-package-native-input "java-junit")
+                                ".*.jar$")))
+           (string-append "-Djunit.junitparams.jar="
+                          (car (find-files
+                                #$(this-package-native-input "java-junitparams")
+                                ".*.jar$")))
+           (string-append "-Djunit.hamcrest.jar="
+                          (car (find-files
+                                #$(this-package-native-input "java-hamcrest-core")
+                                ".*.jar$"))))
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'chdir
@@ -215,9 +200,7 @@ C/C++ part.")
                (install-file "icu4j.jar" share)
                #t))))))
     (native-inputs
-     `(("java-junit" ,java-junit)
-       ("java-junitparams" ,java-junitparams)
-       ("java-hamcrest-core" ,java-hamcrest-core)))
+     (list java-junit java-junitparams java-hamcrest-core))
     (home-page "http://site.icu-project.org/")
     (synopsis "International Components for Unicode")
     (description

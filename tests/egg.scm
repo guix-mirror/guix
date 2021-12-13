@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
+;;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -86,16 +87,9 @@
     ('build-system 'chicken-build-system)
     ('arguments ('quasiquote ('#:egg-name "foo")))
     ('native-inputs
-     ('quasiquote
-      (("chicken-test" ('unquote chicken-test))
-       ("chicken-srfi-1" ('unquote chicken-srfi-1))
-       ("chicken-begin-syntax" ('unquote chicken-begin-syntax)))))
-    ('inputs
-     ('quasiquote
-      (("libgit2" ('unquote libgit2)))))
-    ('propagated-inputs
-     ('quasiquote
-      (("chicken-datatype" ('unquote chicken-datatype)))))
+     ('list 'chicken-test 'chicken-srfi-1 'chicken-begin-syntax))
+    ('inputs ('list 'libgit2))
+    ('propagated-inputs ('list 'chicken-datatype))
     ('home-page "https://wiki.call-cc.org/egg/foo")
     ('synopsis "Example egg")
     ('description #f)
@@ -108,16 +102,9 @@
     ('source (? file-like? source))
     ('build-system 'chicken-build-system)
     ('arguments ('quasiquote ('#:egg-name "bar")))
-    ('native-inputs
-     ('quasiquote
-      (("chicken-test" ('unquote chicken-test))
-       ("chicken-begin-syntax" ('unquote chicken-begin-syntax)))))
-    ('inputs
-     ('quasiquote
-      (("libgit2" ('unquote libgit2)))))
-    ('propagated-inputs
-     ('quasiquote
-      (("chicken-datatype" ('unquote chicken-datatype)))))
+    ('native-inputs ('list 'chicken-test 'chicken-begin-syntax))
+    ('inputs ('list 'libgit2))
+    ('propagated-inputs ('list 'chicken-datatype))
     ('home-page "https://wiki.call-cc.org/egg/bar")
     ('synopsis "Example egg")
     ('description #f)

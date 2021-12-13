@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2019, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
@@ -26,7 +26,8 @@
   #:use-module (guix search-paths)
   #:use-module (guix store)
   #:use-module (guix utils)
-  #:use-module (guix derivations)
+  #:use-module (guix gexp)
+  #:use-module (guix monads)
   #:use-module (guix packages)
   #:use-module (guix build-system)
   #:use-module (guix build-system gnu)
@@ -71,8 +72,9 @@ to NAME and VERSION."
     (guix build json)
     ,@%cargo-utils-modules))
 
-(define* (cargo-build store name inputs
+(define* (cargo-build name inputs
                       #:key
+                      source
                       (tests? #t)
                       (test-target #f)
                       (vendor-dir "guix-vendor")
@@ -82,8 +84,7 @@ to NAME and VERSION."
                       (features ''())
                       (skip-build? #f)
                       (install-source? #t)
-                      (phases '(@ (guix build cargo-build-system)
-                                  %standard-phases))
+                      (phases '%standard-phases)
                       (outputs '("out"))
                       (search-paths '())
                       (system (%current-system))
@@ -94,47 +95,35 @@ to NAME and VERSION."
   "Build SOURCE using CARGO, and with INPUTS."
 
   (define builder
-    `(begin
-       (use-modules ,@modules)
-       (cargo-build #:name ,name
-                    #:source ,(match (assoc-ref inputs "source")
-                                (((? derivation? source))
-                                 (derivation->output-path source))
-                                ((source)
-                                 source)
-                                (source
-                                 source))
-                    #:system ,system
-                    #:test-target ,test-target
-                    #:vendor-dir ,vendor-dir
-                    #:cargo-build-flags ,cargo-build-flags
-                    #:cargo-test-flags ,cargo-test-flags
-                    #:cargo-package-flags ,cargo-package-flags
-                    #:features ,features
-                    #:skip-build? ,skip-build?
-                    #:install-source? ,install-source?
-                    #:tests? ,(and tests? (not skip-build?))
-                    #:phases ,phases
-                    #:outputs %outputs
-                    #:search-paths ',(map search-path-specification->sexp
-                                          search-paths)
-                    #:inputs %build-inputs)))
+    (with-imported-modules imported-modules
+      #~(begin
+          (use-modules #$@(sexp->gexp modules))
 
-  (define guile-for-build
-    (match guile
-      ((? package?)
-       (package-derivation store guile system #:graft? #f))
-      (#f                                         ; the default
-       (let* ((distro (resolve-interface '(gnu packages commencement)))
-              (guile  (module-ref distro 'guile-final)))
-         (package-derivation store guile system #:graft? #f)))))
+          (cargo-build #:name #$name
+                       #:source #+source
+                       #:system #$system
+                       #:test-target #$test-target
+                       #:vendor-dir #$vendor-dir
+                       #:cargo-build-flags #$(sexp->gexp cargo-build-flags)
+                       #:cargo-test-flags #$(sexp->gexp cargo-test-flags)
+                       #:cargo-package-flags #$(sexp->gexp cargo-package-flags)
+                       #:features #$(sexp->gexp features)
+                       #:skip-build? #$skip-build?
+                       #:install-source? #$install-source?
+                       #:tests? #$(and tests? (not skip-build?))
+                       #:phases #$(if (pair? phases)
+                                      (sexp->gexp phases)
+                                      phases)
+                       #:outputs #$(outputs->gexp outputs)
+                       #:inputs #$(input-tuples->gexp inputs)
+                       #:search-paths '#$(sexp->gexp
+                                          (map search-path-specification->sexp
+                                               search-paths))))))
 
-  (build-expression->derivation store name builder
-                                #:inputs inputs
-                                #:system system
-                                #:modules imported-modules
-                                #:outputs outputs
-                                #:guile-for-build guile-for-build))
+  (gexp->derivation name builder
+                    #:system system
+                    #:target #f
+                    #:guile-for-build guile))
 
 (define (package-cargo-inputs p)
   (apply
@@ -222,7 +211,7 @@ any dependent crates. This can be a benefits:
  - It avoids waiting for quadratic builds from source: cargo always builds
  dependencies within the current workspace. This is largely due to Rust not
  having a stable ABI and other resolutions that cargo applies. This means that
- if we have a depencency chain of X -> Y -> Z and we build each definition
+ if we have a dependency chain of X -> Y -> Z and we build each definition
  independently the following will happen:
   * Cargo will build and test crate Z
   * Cargo will build crate Z in Y's workspace, then build and test Y
@@ -253,7 +242,7 @@ any dependent crates. This can be a benefits:
   "Return a bag for NAME."
 
   (define private-keywords
-    '(#:source #:target #:rust #:inputs #:native-inputs #:outputs
+    '(#:target #:rust #:inputs #:native-inputs #:outputs
       #:cargo-inputs #:cargo-development-inputs))
 
   (and (not target) ;; TODO: support cross-compilation

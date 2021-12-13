@@ -61,9 +61,7 @@
           (define marionette
             (make-marionette (list #$vm)))
 
-          (mkdir #$output)
-          (chdir #$output)
-
+          (test-runner-current (system-test-runner #$output))
           (test-begin "memcached")
 
           ;; Wait for memcached to be up and running.
@@ -115,8 +113,7 @@
              '(file-exists? "/var/log/memcached")
              marionette))
 
-          (test-end)
-          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          (test-end))))
 
   (gexp->derivation "memcached-test" test))
 
@@ -179,9 +176,7 @@
           (define marionette
             (make-marionette (list #$vm)))
 
-          (mkdir #$output)
-          (chdir #$output)
-
+          (test-runner-current (system-test-runner #$output))
           (test-begin "postgresql")
 
           (test-assert "service running"
@@ -233,16 +228,14 @@
                 (let* ((port (open-pipe*
                               OPEN_READ
                               #$(file-append postgresql "/bin/psql")
-                              "-tAh" "/tmp"
-                              "-c" "SELECT 1 FROM pg_database WHERE
+                              "-tA" "-c" "SELECT 1 FROM pg_database WHERE
  datname='root'"))
                        (output (get-string-all port)))
                   (close-pipe port)
                   (string-contains output "1")))
              marionette))
 
-          (test-end)
-          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          (test-end))))
 
   (gexp->derivation "postgresql-test" test))
 
@@ -283,9 +276,7 @@
           (define marionette
             (make-marionette (list #$vm)))
 
-          (mkdir #$output)
-          (chdir #$output)
-
+          (test-runner-current (system-test-runner #$output))
           (test-begin "mysql")
 
           (test-assert "service running"
@@ -341,8 +332,7 @@
                   output))
              marionette))
 
-          (test-end)
-          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+          (test-end))))
 
   (gexp->derivation "mysql-test" test))
 

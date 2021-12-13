@@ -93,7 +93,7 @@
                 (assoc-ref outputs "out")))
              #t)))))
     (inputs
-     `(("perl" ,perl)))
+     (list perl))
     (synopsis "LaTeX documents to HTML")
     (description "LaTeX2HTML is a utility that converts LaTeX documents to web
 pages in HTML.")
@@ -160,13 +160,9 @@ release/xsl/current")
                                          "/xml/dtd/docbook/docbookx.dtd")))
                        #t)))))
     (native-inputs
-     `(("autoconf" ,autoconf)))
+     (list autoconf))
     (inputs
-     `(("python" ,python)
-       ("docbook-xml" ,docbook-xml)
-       ("docbook-xsl" ,docbook-xsl)
-       ("libxml2" ,libxml2)
-       ("libxslt" ,libxslt)))
+     (list python docbook-xml docbook-xsl libxml2 libxslt))
     (home-page "https://asciidoc.org/")
     (synopsis "Text-based document generation system")
     (description
@@ -185,8 +181,8 @@ markup) can be customized and extended by the user.")
 (define-public doxygen
   (package
     (name "doxygen")
-    (version "1.8.17")
-    (home-page "http://www.doxygen.nl/")
+    (version "1.9.1")
+    (home-page "https://www.doxygen.nl/")
     (source (origin
              (method url-fetch)
              (uri (list (string-append home-page "files/doxygen-"
@@ -196,15 +192,11 @@ markup) can be customized and extended by the user.")
                                        ".src.tar.gz")))
              (sha256
               (base32
-               "16dmv0gm1x8rvbm82fmjvi213q8fxqxinm75pcf595flya59ific"))
-             (patches (search-patches "doxygen-test.patch"
-                                      "doxygen-1.8.17-runtests.patch"))))
+               "1lcif1qi20gf04qyjrx7x367669g17vz2ilgi4cmamp1whdsxbk7"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("bison" ,bison)
-       ("flex" ,flex)
-       ("libxml2" ,libxml2)             ;provides xmllint for the tests
-       ("python" ,python)))             ;for creating the documentation
+     (list bison flex libxml2 ;provides xmllint for the tests
+           python))             ;for creating the documentation
     (inputs
      `(("bash" ,bash-minimal)))
     (arguments
@@ -218,6 +210,12 @@ markup) can be customized and extended by the user.")
              '())
        #:test-target "tests"
        #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'disable-bibtex-test
+                    (lambda _
+                      ;; Disable test that requires bibtex to avoid a
+                      ;; circular dependency.
+                      (for-each delete-file-recursively
+                                '("testing/012" "testing/012_cite.dox"))))
                   (add-before 'configure 'patch-sh
                               (lambda* (#:key inputs #:allow-other-keys)
                                 (substitute* "src/portable.cpp"
@@ -248,8 +246,7 @@ and to some extent D.")
                                        "doc++-segfault-fix.patch"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("flex" ,flex)
-       ("gettext" ,gettext-minimal)))
+     (list flex gettext-minimal))
     (home-page "http://docpp.sourceforge.net/")
     (synopsis "Documentation system for C, C++, IDL, and Java")
     (description
@@ -277,13 +274,11 @@ or Java class files.")
                             (assoc-ref %build-inputs "docbook-xml")
                             "/xml/dtd/docbook/catalog.xml"))))
     (inputs
-     `(("perl" ,perl)
-       ("libxml2" ,libxml2)
-       ("libxslt" ,libxslt)
-       ;; The configure script checks for either version 4.2 or 4.1.2.
-       ("docbook-xml" ,docbook-xml-4.2)))
+     (list perl libxml2 libxslt
+           ;; The configure script checks for either version 4.2 or 4.1.2.
+           docbook-xml-4.2))
     (native-inputs
-     `(("intltool" ,intltool)))
+     (list intltool))
     (home-page "http://scrollkeeper.sourceforge.net/")
     (synopsis "Open Documentation Cataloging Project")
     (description "ScrollKeeper is a cataloging system for documentation on open
@@ -325,8 +320,7 @@ local system.")
                    `("QTWEBENGINEPROCESS_PATH" = (,qt-process-path)))
                  #t))))))
       (native-inputs
-       `(("extra-cmake-modules" ,extra-cmake-modules)
-         ("pkg-config" ,pkg-config)))
+       (list extra-cmake-modules pkg-config))
       (inputs
        `(("libarchive" ,libarchive)
          ("sqlite" ,sqlite)

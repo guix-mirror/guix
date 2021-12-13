@@ -1,5 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021 Thiago Jung Bauermann <bauermann@kolabnow.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,46 +35,19 @@
 ;;
 ;; Code:
 
-(define (compile-with-latex format file)
-  (invoke format
+(define (compile-with-latex engine format file)
+  (invoke engine
           "-interaction=nonstopmode"
           "-output-directory=build"
-          (string-append "&" format)
+          (if format (string-append "&" format) "-ini")
           file))
 
-(define* (configure #:key inputs #:allow-other-keys)
-  (let* ((out       (string-append (getcwd) "/.texlive-union"))
-         (texmf.cnf (string-append out "/share/texmf-dist/web2c/texmf.cnf")))
-    ;; Build a modifiable union of all inputs (but exclude bash)
-    (match inputs
-      (((names . directories) ...)
-       (union-build out (filter directory-exists? directories)
-                    #:create-all-directories? #t
-                    #:log-port (%make-void-port "w"))))
-
-    ;; The configuration file "texmf.cnf" is provided by the
-    ;; "texlive-bin" package.  We take it and override only the
-    ;; setting for TEXMFROOT and TEXMF.  This file won't be consulted
-    ;; by default, though, so we still need to set TEXMFCNF.
-    (substitute* texmf.cnf
-      (("^TEXMFROOT = .*")
-       (string-append "TEXMFROOT = " out "/share\n"))
-      (("^TEXMF = .*")
-       "TEXMF = $TEXMFROOT/share/texmf-dist\n"))
-    (setenv "TEXMFCNF" (dirname texmf.cnf))
-    (setenv "TEXMF" (string-append out "/share/texmf-dist"))
-
-    ;; Don't truncate lines.
-    (setenv "error_line" "254") ; must be less than 255
-    (setenv "half_error_line" "238") ; must be less than error_line - 15
-    (setenv "max_print_line" "1000"))
+(define* (build #:key inputs build-targets tex-engine tex-format
+                #:allow-other-keys)
   (mkdir "build")
-  #t)
-
-(define* (build #:key inputs build-targets tex-format #:allow-other-keys)
-  (every (cut compile-with-latex tex-format <>)
-         (if build-targets build-targets
-             (scandir "." (cut string-suffix? ".ins" <>)))))
+  (for-each (cut compile-with-latex tex-engine tex-format <>)
+            (if build-targets build-targets
+                (scandir "." (cut string-suffix? ".ins" <>)))))
 
 (define* (install #:key outputs tex-directory #:allow-other-keys)
   (let* ((out (assoc-ref outputs "out"))
@@ -81,13 +56,12 @@
     (mkdir-p target)
     (for-each delete-file (find-files "." "\\.(log|aux)$"))
     (for-each (cut install-file <> target)
-              (find-files "build" ".*"))
-    #t))
+              (find-files "build" ".*"))))
 
 (define %standard-phases
   (modify-phases gnu:%standard-phases
     (delete 'bootstrap)
-    (replace 'configure configure)
+    (delete 'configure)
     (replace 'build build)
     (delete 'check)
     (replace 'install install)))

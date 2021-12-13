@@ -43,13 +43,9 @@
                 "0ikg95mgwfqh0bq4dzvkfmdiycacqvv27g91hl6adwk5y3gzl96g"))))
     (build-system gnu-build-system)
     (inputs
-     `(("glib" ,glib)
-       ("cairo" ,cairo)
-       ("gtk+" ,gtk+)
-       ("librsvg" ,librsvg)
-       ("libusb" ,libusb)))
+     (list glib cairo gtk+ librsvg libusb))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://www.gnu.org/software/inklingreader/")
     (synopsis "Wacom Inkling sketch format conversion and manipulation")
     (description

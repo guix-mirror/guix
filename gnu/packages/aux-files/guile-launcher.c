@@ -82,10 +82,13 @@ main (int argc, char **argv)
   unsetenv ("GUILE_LOAD_PATH");
   unsetenv ("GUILE_LOAD_COMPILED_PATH");
 
-  /* XXX: Do not let GMP allocate via libgc as this can lead to memory
-     corruption in GnuTLS/Nettle since Nettle also uses GMP:
+#if !SCM_ENABLE_MINI_GMP
+  /* XXX: On Guile < 3.0.6 and Guile built without its bundled mini-GMP, do
+     not let GMP allocate via libgc as this can lead to memory corruption in
+     GnuTLS/Nettle since Nettle also uses GMP:
      <https://issues.guix.gnu.org/46330>.  */
   scm_install_gmp_memory_functions = 0;
+#endif
 
   scm_boot_guile (argc, argv, inner_main, 0);
   return 0; /* never reached */

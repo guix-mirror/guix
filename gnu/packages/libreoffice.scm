@@ -6,7 +6,7 @@
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Andy Wingo <wingo@igalia.com>
-;;; Copyright © 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2018, 2019, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
@@ -100,11 +100,9 @@
          "17q84mhy4rb3masvjw24x549irdjmccnc8n04xh58v9l7hxn8v22"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("mdds" ,mdds)
-       ("python" ,python)
-       ("spdlog" ,spdlog)))
+     (list mdds python spdlog))
     (home-page "https://gitlab.com/ixion/ixion")
     (synopsis "General purpose formula parser and interpreter")
     (description "Ixion is a library for calculating the results of formula
@@ -129,12 +127,9 @@ their dependencies automatically upon calculation.")
     (arguments
      `(#:configure-flags '("--disable-static")))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("ixion" ,ixion)
-       ("mdds" ,mdds)
-       ("python" ,python)
-       ("zlib" ,zlib)))
+     (list ixion mdds python zlib))
     (home-page "https://gitlab.com/orcus/orcus")
     (synopsis "File import filter library for spreadsheet documents")
     (description "Orcus is a library that provides a collection of standalone
@@ -186,7 +181,7 @@ CSV, CSS and XML.")
                    "None)]\n")))
                #t))))))
     (inputs
-     `(("libreoffice" ,libreoffice)))
+     (list libreoffice))
     (home-page "http://dag.wiee.rs/home-made/unoconv/")
     (synopsis "Convert between any document format supported by LibreOffice")
     (description
@@ -215,13 +210,11 @@ All required fonts must be installed on the converting system.")
                "1cj76cz4mqcy2mgv9l5xlc95bypyk8zbq0ls9cswqrs2y0lhfgwk"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("cppunit" ,cppunit)
-       ("doxygen" ,doxygen)
-       ("pkg-config" ,pkg-config)))
+     (list cppunit doxygen pkg-config))
     (inputs
-     `(("zlib" ,zlib)))
+     (list zlib))
     (propagated-inputs                  ; Referenced by .la files
-     `(("boost" ,boost)))
+     (list boost))
     (arguments
      ;; avoid triggering configure errors by simple inclusion of boost headers
      `(#:configure-flags '("--disable-werror"
@@ -249,12 +242,11 @@ spreadsheets and presentations.")
     (arguments
      `(#:configure-flags '("--disable-werror")))
     (native-inputs
-     `(("doxygen" ,doxygen)
-       ("pkg-config" ,pkg-config)))
+     (list doxygen pkg-config))
     (propagated-inputs
-     `(("librevenge" ,librevenge))) ; in Requires field of .pkg
+     (list librevenge)) ; in Requires field of .pkg
     (inputs
-     `(("zlib" ,zlib)))
+     (list zlib))
     (home-page "http://libwpd.sourceforge.net/")
     (synopsis "Library for importing WordPerfect documents")
     (description "Libwpd is a C++ library designed to help process
@@ -272,20 +264,23 @@ into other word processors.")
         (uri (string-append "mirror://sourceforge/libebook/libe-book-"
                             version "/libe-book-" version ".tar.xz"))
         (sha256
-          (base32
-            "1yg1vws1wggzhjw672bpgh2x541g5i9wryf67g51m0r79zrqz3by"))))
+         (base32
+          "1yg1vws1wggzhjw672bpgh2x541g5i9wryf67g51m0r79zrqz3by"))
+        (modules '((guix build utils)))
+        (snippet
+         '(begin
+            ;; This can be removed with the next release.
+            ;; Needed for icu4c compatibility >= 68.0.
+            (substitute* "src/lib/EBOOKCharsetConverter.cpp"
+              (("TRUE, TRUE, &status")
+              "true, true, &status"))))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("cppunit" ,cppunit)
-       ("gperf" ,gperf)
-       ("pkg-config" ,pkg-config)))
+     (list cppunit gperf pkg-config))
     (propagated-inputs ; in Requires or Requires.private field of .pkg
-     `(("icu4c" ,icu4c)
-       ("liblangtag" ,liblangtag)
-       ("librevenge" ,librevenge)
-       ("libxml2" ,libxml2)))
+     (list icu4c liblangtag librevenge libxml2))
     (inputs
-      `(("boost" ,boost)))
+      (list boost))
     (arguments
      ;; avoid triggering configure errors by simple inclusion of boost headers
      `(#:configure-flags '("--disable-werror")))
@@ -313,13 +308,11 @@ ZVR (simple compressed text format).")
          "1b8mc9zzrqypj1v9zdy3ybc48pw0rfr06cyi7n6grvybjjwq9q03"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("cppunit" ,cppunit)
-       ("pkg-config" ,pkg-config)))
+     (list cppunit pkg-config))
     (inputs
-     `(("libxml2" ,libxml2)
-       ("boost" ,boost)))
+     (list libxml2 boost))
     (propagated-inputs         ; in Requires field of .pkg
-     `(("librevenge" ,librevenge)))
+     (list librevenge))
     (home-page "https://sourceforge.net/projects/libepubgen/")
     (synopsis "EPUB generator library for librevenge")
     (description "libepubgen is an EPUB generator for librevenge.  It supports
@@ -340,13 +333,11 @@ way--presentation and vector drawing interfaces.")
                "074x159immf139szkswv2zapnq75p7xk10dbha2p9193hgwggcwr"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("doxygen" ,doxygen)
-       ("pkg-config" ,pkg-config)))
+     (list doxygen pkg-config))
     (propagated-inputs
-     `(("libwpd" ,libwpd))) ; in Requires field of .pkg
+     (list libwpd)) ; in Requires field of .pkg
     (inputs
-     `(("perl" ,perl)
-       ("zlib" ,zlib)))
+     (list perl zlib))
     (home-page "http://libwpg.sourceforge.net/")
     (synopsis "Library and tools for the WordPerfect Graphics format")
     (description "The libwpg project provides a library and tools for
@@ -367,15 +358,11 @@ working with graphics in the WPG (WordPerfect Graphics) format.")
         "18h0a2gsfxvlv03nlcfvw9bzsflq5sin9agq6za103hr0ab8vcfp"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("cppunit" ,cppunit)
-       ("pkg-config" ,pkg-config)))
+     (list cppunit pkg-config))
     (propagated-inputs ; in Requires field of .pkg
-     `(("curl" ,curl)
-       ("libxml2" ,libxml2)))
+     (list curl libxml2))
     (inputs
-     `(("boost" ,boost)
-       ("cyrus-sasl" ,cyrus-sasl)
-       ("openssl" ,openssl)))
+     (list boost cyrus-sasl openssl))
     (arguments
      `(#:configure-flags
         (list
@@ -409,15 +396,11 @@ as Alfresco or Nuxeo.")
                "1vbfrmnvib3cym0yyyabnd8xpx4f7wp20vnn09s6dln347fajqz7"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("doxygen" ,doxygen)
-       ("gperf" ,gperf)
-       ("perl" ,perl)
-       ("pkg-config" ,pkg-config)))
+     (list doxygen gperf perl pkg-config))
     (propagated-inputs ; in Requires or Requires.private field of .pkg
-     `(("librevenge" ,librevenge)
-       ("libxml2" ,libxml2)))
+     (list librevenge libxml2))
     (inputs
-     `(("boost" ,boost)))
+     (list boost))
     (home-page "https://wiki.documentfoundation.org/DLP/Libraries/libabw")
     (synopsis "Library for parsing the AbiWord format")
     (description "Libabw is a library that parses the file format of
@@ -437,16 +420,11 @@ AbiWord documents.")
                "1m6dirmyhqwnrpv80z97x5k5hdh4kh8a8zlq3smbjrilc6fj8rjn"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("cppunit" ,cppunit)
-       ("doxygen" ,doxygen)
-       ("pkg-config" ,pkg-config)))
+     (list cppunit doxygen pkg-config))
     (propagated-inputs ; in Requires or Requires.private field of .pkg
-     `(("icu4c" ,icu4c)
-       ("lcms" ,lcms)
-       ("librevenge" ,librevenge)
-       ("zlib" ,zlib)))
+     (list icu4c lcms librevenge zlib))
     (inputs
-     `(("boost" ,boost)))
+     (list boost))
     (home-page "https://wiki.documentfoundation.org/DLP/Libraries/libcdr")
     (synopsis "Library for parsing the CorelDRAW format")
     (description "Libcdr is a library that parses the file format of
@@ -468,19 +446,11 @@ CorelDRAW documents of all versions.")
     (arguments
      `(#:configure-flags '("--with-mdds=1.5")))
     (native-inputs
-     `(("cppunit" ,cppunit)
-       ("doxygen" ,doxygen)
-       ("gperf" ,gperf)
-       ("pkg-config" ,pkg-config)))
+     (list cppunit doxygen gperf pkg-config))
     (propagated-inputs ; in Requires or Requires.private field of .pkg
-     `(("liblangtag" ,liblangtag)
-       ("librevenge" ,librevenge)
-       ("libxml2" ,libxml2)
-       ("zlib" ,zlib)))
+     (list liblangtag librevenge libxml2 zlib))
     (inputs
-     `(("boost" ,boost)
-       ("glm" ,glm)
-       ("mdds" ,mdds)))
+     (list boost glm mdds))
     (home-page "https://wiki.documentfoundation.org/DLP/Libraries/libetonyek")
     (synopsis "Library for parsing the Apple Keynote format")
     (description "Libetonyek is a library that parses the file format of
@@ -500,10 +470,9 @@ Apple Keynote documents.  It currently supports Keynote versions 2 to 5.")
          (base32 "1g9kwxx60q0hpwvs66ys1cb9qg54hfvbivadwli8sfpc085a44hz"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)))
+     (list libtool pkg-config))
     (inputs
-     `(("libxml2" ,libxml2)))
+     (list libxml2))
     (home-page "https://bitbucket.org/tagoh/liblangtag")
     (synopsis "Library to access tags for identifying languages")
     (description "Liblangtag implements an interface to work with tags
@@ -545,7 +514,8 @@ library primarily intended for language guessing.")
                "1b1lvqh68rwij1yvmxy02hsmh7i74ma5767mk8mg5nx6chajshhf"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (modify-phases %standard-phases
+     '(#:configure-flags '("--disable-werror")
+       #:phases (modify-phases %standard-phases
                   (add-before 'build 'adjust-for-ICU-65
                     (lambda _
                       ;; Fix build with ICU 65 and later.  Taken from this
@@ -556,17 +526,11 @@ library primarily intended for language guessing.")
                          (string-append all ";\n")))
                       #t)))))
     (native-inputs
-     `(("cppunit" ,cppunit)
-       ("doxygen" ,doxygen)
-       ("gperf" ,gperf)
-       ("perl" ,perl)
-       ("pkg-config" ,pkg-config)))
+     (list cppunit doxygen gperf perl pkg-config))
     (inputs
-     `(("icu4c" ,icu4c)
-       ("lcms" ,lcms)))
+     (list icu4c lcms))
     (propagated-inputs ; in Requires or Requires.private field of .pkg
-     `(("librevenge" ,librevenge)
-       ("zlib" ,zlib)))
+     (list librevenge zlib))
     (home-page "https://wiki.documentfoundation.org/DLP/Libraries/libfreehand")
     (synopsis "Library for parsing the FreeHand format")
     (description "Libfreehand is a library that parses the file format of
@@ -583,17 +547,22 @@ Aldus/Macromedia/Adobe FreeHand documents.")
       (uri (string-append "https://dev-www.libreoffice.org/src/" name "/"
                           name "-" version ".tar.xz"))
       (sha256 (base32
-               "1fhkn013gzg59f4z7rldpbi0nj7lgdqzxanspsqa6axvmahw2dpg"))))
+               "1fhkn013gzg59f4z7rldpbi0nj7lgdqzxanspsqa6axvmahw2dpg"))
+      (modules '((guix build utils)))
+      (snippet
+       '(begin
+          ;; This can be removed with the next release.
+          ;; https://gerrit.libreoffice.org/c/libmspub/+/73814
+          (substitute* "src/lib/MSPUBMetaData.h"
+            (("include <vector>" all)
+             (string-append all "\n#include <cstdint>")))))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("doxygen" ,doxygen)
-       ("pkg-config" ,pkg-config)))
+     (list doxygen pkg-config))
     (propagated-inputs ; in Requires or Requires.private field of .pkg
-     `(("icu4c" ,icu4c)
-       ("librevenge" ,librevenge)
-       ("zlib" ,zlib)))
+     (list icu4c librevenge zlib))
     (inputs
-     `(("boost" ,boost)))
+     (list boost))
     (home-page "https://wiki.documentfoundation.org/DLP/Libraries/libmspub")
     (synopsis "Library for parsing the Microsoft Publisher format")
     (description "Libmspub is a library that parses the file format of
@@ -638,13 +607,11 @@ Java.")
     (arguments
      `(#:configure-flags '("--disable-werror")))
     (native-inputs
-     `(("doxygen" ,doxygen)
-       ("pkg-config" ,pkg-config)))
+     (list doxygen pkg-config))
     (propagated-inputs ; in Requires field of .pkg
-     `(("librevenge" ,librevenge)))
+     (list librevenge))
     (inputs
-     `(("boost" ,boost)
-       ("zlib" ,zlib)))
+     (list boost zlib))
     (home-page "https://wiki.documentfoundation.org/DLP/Libraries/libpagemaker")
     (synopsis "Library for parsing the PageMaker format")
     (description "Libpagemaker is a library that parses the file format of
@@ -665,17 +632,11 @@ created by PageMaker version 6.x and 7.")
                "0k7adcbbf27l7n453cca1m6s9yj6qvb5j6bsg2db09ybf3w8vbwg"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("cppunit" ,cppunit)
-       ("doxygen" ,doxygen)
-       ("gperf" ,gperf)
-       ("perl" ,perl)
-       ("pkg-config" ,pkg-config)))
+     (list cppunit doxygen gperf perl pkg-config))
     (propagated-inputs ; in Requires or Requires.private field of .pkg
-     `(("icu4c" ,icu4c)
-       ("librevenge" ,librevenge)
-       ("libxml2" ,libxml2)))
+     (list icu4c librevenge libxml2))
     (inputs
-     `(("boost" ,boost)))
+     (list boost))
     (home-page "https://wiki.documentfoundation.org/DLP/Libraries/libvisio")
     (synopsis "Library for parsing the Microsoft Visio format")
     (description "Libvisio is a library that parses the file format of
@@ -695,14 +656,11 @@ Microsoft Visio documents of all versions.")
                "0986c5gw4vdfz7bcmpdfz07inba5wxsx4f6xvndknqj6zlkh082m"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("doxygen" ,doxygen)
-       ("pkg-config" ,pkg-config)))
+     (list doxygen pkg-config))
     (propagated-inputs ; in Requires field of .pkg
-     `(("librevenge" ,librevenge)))
+     (list librevenge))
     (inputs
-     `(("boost" ,boost)
-       ("libxml2" ,libxml2)
-       ("zlib" ,zlib)))
+     (list boost libxml2 zlib))
     (arguments
      ;; Avoid triggering configure errors by simple inclusion of Boost headers.
      `(#:configure-flags '("--disable-werror")))
@@ -727,13 +685,11 @@ text documents, vector drawings, presentations and spreadsheets.")
        (base32 "1bx5xnw8sk5h26x2z7hfac7hfbm68zqg0jilp15qr0pwxqsf4wmj"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("doxygen" ,doxygen)
-       ("pkg-config" ,pkg-config)))
+     (list doxygen pkg-config))
     (propagated-inputs                  ; in Requires field of .pc file
-     `(("librevenge" ,librevenge)))
+     (list librevenge))
     (inputs
-     `(("boost" ,boost)
-       ("zlib" ,zlib)))
+     (list boost zlib))
     (home-page "https://sourceforge.net/p/libmwaw/wiki/Home/")
     (synopsis "Import library for some old Macintosh text documents")
     (description "Libmwaw contains some import filters for old Macintosh
@@ -754,10 +710,9 @@ spreadsheet documents.")
                 "1ny8411273k2bq7mnpmcvri3rd46b2j67wfypqkp3y8nhanv0kzr"))))
     (build-system gnu-build-system)
     (inputs
-     `(("librevenge" ,librevenge)
-       ("zlib" ,zlib)))
+     (list librevenge zlib))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://github.com/fosnola/libstaroffice")
     (synopsis "Provides LibreOffice support for old StarOffice documents")
     (description "@code{libstaroffice} is an import filter for the document formats
@@ -777,13 +732,11 @@ from the old StarOffice (.sdc, .sdw, ...).")
                "1nsfacqp5sfkyayw7q0wp68lidksd1wjdix8qmsbf0vdl19gn6p2"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("doxygen" ,doxygen)
-       ("pkg-config" ,pkg-config)))
+     (list doxygen pkg-config))
     (propagated-inputs                  ; in Requires field of .pkg
-     `(("librevenge" ,librevenge)))
+     (list librevenge))
     (inputs
-     `(("boost" ,boost)
-       ("zlib" ,zlib)))
+     (list boost zlib))
     (home-page "http://libwps.sourceforge.net/")
     (synopsis "Import library for Microsoft Works text documents")
     (description "Libwps is a library for importing files in the Microsoft
@@ -806,15 +759,9 @@ Works word processor file format.")
     ;; A harmless 'sign-compare' error pops up on i686 so disable '-Werror'.
     '(#:configure-flags '("--disable-werror")))
    (inputs
-    `(("boost" ,boost)
-      ("icu4c" ,icu4c)
-      ("libpng" ,libpng)
-      ("librevenge" ,librevenge)
-      ("zlib" ,zlib)))
+    (list boost icu4c libpng librevenge zlib))
     (native-inputs
-     `(("cppunit" ,cppunit)
-       ("doxygen" ,doxygen)
-       ("pkg-config" ,pkg-config)))
+     (list cppunit doxygen pkg-config))
     (home-page "https://wiki.documentfoundation.org/DLP/Libraries/libzmf")
     (synopsis "Parses file format of Zoner Callisto/Draw documents")
     (description "Libzmf is a library that parses the file format of Zoner
@@ -838,11 +785,9 @@ Zoner Draw version 4 and 5.")
           "0qxlkd012r45ppd21kldbq9k5ac5nmxz290z6m2kch9l56v768k1"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
+     (list autoconf automake libtool))
     (inputs
-     `(("perl" ,perl)))
+     (list perl))
     (native-search-paths (list (search-path-specification
                                 (variable "DICPATH")
                                 (files '("share/hunspell")))))
@@ -871,7 +816,7 @@ word compounding or character encoding.")
                (base32
                 "139hfrn5p87sl8hqmgkf6sgvnxrk2mm8vd8xsm8sm98qjnwlg0f9"))))
     (build-system trivial-build-system)
-    (native-inputs `(("unzip" ,unzip)))
+    (native-inputs (list unzip))
     (arguments
      `(#:modules ((guix build utils))
        #:builder (begin
@@ -943,7 +888,7 @@ library.")
                 "14mzf8glxkp2775dcqisb1zv6r8ncm3bvzl46q352rwyl2dg1c59"))))
 
     (build-system trivial-build-system)
-    (native-inputs `(("unzip" ,unzip)))
+    (native-inputs (list unzip))
     (arguments
      `(#:modules ((guix build utils))
        #:builder (begin
@@ -955,8 +900,8 @@ library.")
                           (myspell  (string-append out "/share/myspell"))
                           (doc      (string-append out "/share/doc/"
                                                    ,name))
-                          (unzip (string-append (assoc-ref %build-inputs "unzip")
-                                                "/bin/unzip")))
+                          (unzip (search-input-file %build-inputs
+                                                    "/bin/unzip")))
                      (invoke unzip "-j" "-o" (assoc-ref %build-inputs "source"))
                      (invoke unzip "-j" "-o" "pl_PL.zip")
                      (for-each (cut install-file <> hunspell)
@@ -1002,9 +947,7 @@ library.")
                #t))))
        #:tests? #f))        ; no tests
     (native-inputs
-     `(("hunspell" ,hunspell)
-       ("ispell" ,ispell)
-       ("perl" ,perl)))
+     (list hunspell ispell perl))
     (synopsis "Hunspell dictionary for German (de_DE)")
     (description "This package provides a dictionary for the Hunspell
 spell-checking library.")
@@ -1025,7 +968,7 @@ spell-checking library.")
                "01ap9pr6zzzbp4ky0vy7i1983fwyqy27pl0ld55s30fdxka3ciih"))))
     (build-system gnu-build-system)
     (inputs
-     `(("perl" ,perl)))
+     (list perl))
     (home-page "http://hunspell.sourceforge.net/")
     (synopsis "Hyphenation library")
     (description "Hyphen is a hyphenation library using TeX hyphenation
@@ -1047,10 +990,9 @@ patterns, which are pre-processed by a perl script.")
                "0prh19wy1c74kmzkkavm9qslk99gz8h8wmjvwzjc6lf8v2az708y"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("hunspell" ,hunspell)
-       ("perl" ,perl)))
+     (list hunspell perl))
     (home-page "http://hunspell.sourceforge.net/")
     (synopsis "Thesaurus")
     (description "MyThes is a simple thesaurus that uses a structured text
@@ -1072,14 +1014,11 @@ and to return information on pronunciations, meanings and synonyms.")
                 "0p4lb84m05wqd8qr8ni9sp80ivlm83ffn0nxiv4m42hj22qvcdz1"))))
     (build-system gnu-build-system)
     (inputs
-     `(("boost" ,boost)
-       ("icu4c" ,icu4c)
-       ("zlib" ,zlib)))
+     (list boost icu4c zlib))
     (native-inputs
-     `(("cppunit" ,cppunit)
-       ("pkg-config" ,pkg-config)))
+     (list cppunit pkg-config))
     (propagated-inputs
-     `(("librevenge" ,librevenge))) ; mentioned in Requires field
+     (list librevenge)) ; mentioned in Requires field
     (home-page "https://www.libreoffice.org")
     (synopsis "Library and tools for the QuarkXPress file format")
     (description "libqxp is a library and a set of tools for reading and
@@ -1228,10 +1167,7 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
              (substitute* '("shell/source/unix/exec/shellexec.cxx"
                             "shell/source/unix/misc/senddoc.sh")
                (("/usr/bin/xdg-open")
-                (string-append (assoc-ref inputs "xdg-utils")
-                               "/bin/xdg-open")))
-
-             #t))
+                (search-input-file inputs "/bin/xdg-open")))))
          (add-after 'install 'reset-zip-timestamps
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))

@@ -22,6 +22,8 @@
 
 (define-module (gnu packages plotutils)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix gexp)
+  #:use-module ((guix utils) #:select (target-x86-32?))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -83,11 +85,28 @@
               (search-patches "plotutils-spline-test.patch"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags (list "--enable-libplotter")))
-    (inputs `(("libpng" ,libpng)
-              ("libx11" ,libx11)
-              ("libxt" ,libxt)
-              ("libxaw" ,libxaw)))
+     (list #:configure-flags
+           #~(list "--enable-libplotter"
+
+                   ;; On i686 some tests fail due to excess floating point
+                   ;; precision; work around it.  However, libplotter is C++
+                   ;; and thus unaffected by CFLAGS, but '-fexcess-precision'
+                   ;; is not implemented for C++ as of GCC 10.
+                   #$@(if (target-x86-32?)
+                          #~("CFLAGS=-g -O2 -fexcess-precision=standard")
+                          #~()))
+
+           #:phases
+           (if (target-x86-32?)
+               #~(modify-phases %standard-phases
+                   (add-before 'check 'skip-sloppy-test
+                     (lambda _
+                       ;; This test reveals a slight difference in the SVG
+                       ;; output due to floating point inequalities.  Skip it.
+                       (substitute* "test/plot2svg.test"
+                         (("^exit .*") "exit 77")))))
+               #~%standard-phases)))
+    (inputs (list libpng libx11 libxt libxaw))
     (home-page "https://www.gnu.org/software/plotutils/")
     (synopsis "Plotting utilities and library")
     (description
@@ -117,12 +136,9 @@ programs for plotting scientific data.")
                   "03049g7wnpyfi0r36ij4a46kc9l45jbanx02iklkjwav2n6jqnnk"))))
       (build-system gnu-build-system)
       (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("texinfo" ,texinfo)
-         ("pkg-config" ,pkg-config)))
-      (inputs `(("guile" ,guile-3.0)))
-      (propagated-inputs `(("guile-cairo" ,guile-cairo)))
+       (list autoconf automake texinfo pkg-config))
+      (inputs (list guile-3.0))
+      (propagated-inputs (list guile-cairo))
       (home-page "http://wingolog.org/projects/guile-charting/")
       (synopsis "Create charts and graphs in Guile")
       (description
@@ -134,8 +150,8 @@ using the Cairo drawing library.")
   (package
     (inherit guile-charting)
     (name "guile2.2-charting")
-    (inputs `(("guile" ,guile-2.2)))
-    (propagated-inputs `(("guile-cairo" ,guile2.2-cairo)))))
+    (inputs (list guile-2.2))
+    (propagated-inputs (list guile2.2-cairo))))
 
 (define-public ploticus
   (package
@@ -187,9 +203,7 @@ using the Cairo drawing library.")
                         (wrap-program (string-append bin "/pl")
                           `("PLOTICUS_PREFABS" ":" = (,dir)))))))))
     (inputs
-     `(("libpng" ,libpng)
-       ("libx11" ,libx11)
-       ("zlib" ,zlib)))
+     (list libpng libx11 zlib))
     (home-page "http://ploticus.sourceforge.net/")
     (synopsis "Command-line tool for producing plots and charts")
     (description
@@ -221,28 +235,36 @@ colors, styles, options and details.")
        ("perl" ,perl)
        ("texinfo" ,texinfo)             ;For generating documentation
        ;; For the manual and the tests.
-       ("texlive" ,(texlive-union (list texlive-amsfonts/patched
-                                        texlive-epsf
-                                        texlive-etoolbox
-                                        texlive-latex-base
-                                        texlive-latex-geometry
-                                        texlive-latex-graphics
-                                        texlive-latex-oberdiek ; for ifluatex
-                                        texlive-latex-parskip
-                                        texlive-tex-texinfo)))))
+       ("texlive" ,(texlive-updmap.cfg
+                    (list texlive-amsfonts
+                          texlive-dvips-l3backend
+                          texlive-epsf
+                          texlive-etoolbox
+                          texlive-fonts-ec
+                          texlive-generic-infwarerr
+                          texlive-generic-kvdefinekeys
+                          texlive-grfext
+                          texlive-latex-base
+                          texlive-latex-geometry
+                          texlive-latex-graphics
+                          texlive-latex-kvoptions
+                          texlive-latex-pdftexcmds
+                          texlive-oberdiek ;for ifluatex
+                          texlive-latex-parskip
+                          texlive-tex-texinfo)))))
     (inputs
-     `(("fftw" ,fftw)
-       ("freeglut" ,freeglut)
-       ("glew" ,glew)
-       ("glm" ,glm)
-       ("gsl" ,gsl)
-       ("libgc" ,libgc)
-       ("python" ,python)
-       ("python-cson" ,python-cson)
-       ("python-numpy" ,python-numpy)
-       ("python-pyqt" ,python-pyqt)
-       ("readline" ,readline)
-       ("zlib" ,zlib)))
+     (list fftw
+           freeglut
+           glew
+           glm
+           gsl
+           libgc
+           python
+           python-cson
+           python-numpy
+           python-pyqt
+           readline
+           zlib))
     (arguments
      `(#:modules ((guix build emacs-utils)
                   (guix build gnu-build-system)
@@ -303,9 +325,9 @@ colors, styles, options and details.")
            (lambda* (#:key inputs outputs #:allow-other-keys)
              ;; Make sure 'xasy' runs with the correct PYTHONPATH.
              (let* ((out (assoc-ref outputs "out"))
-                    (path (getenv "PYTHONPATH")))
+                    (path (getenv "GUIX_PYTHONPATH")))
                (wrap-program (string-append out "/share/asymptote/GUI/xasy.py")
-                 `("PYTHONPATH" ":" prefix (,path))))
+                 `("GUIX_PYTHONPATH" ":" prefix (,path))))
              #t)))))
     (home-page "http://asymptote.sourceforge.net")
     (synopsis "Script-based vector graphics language")

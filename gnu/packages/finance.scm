@@ -25,6 +25,7 @@
 ;;; Copyright © 2021 ZmnSCPxj jxPCSnmZ <ZmnSCPxj@protonmail.com>
 ;;; Copyright © 2021 François J <francois-oss@avalenn.eu>
 ;;; Copyright © 2021 Foo Chuan Wei <chuanwei.foo@hotmail.com>
+;;; Copyright © 2021 John Kehayias <john.kehayias@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -56,6 +57,7 @@
   #:use-module (guix build-system go)
   #:use-module (guix build-system qt)
   #:use-module (guix deprecation)
+  #:use-module (guix gexp)
   #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages aidc)
@@ -130,20 +132,20 @@
                 "17nvir1yc6mf4wr1fn4xsabw49cd5p9vig8wj77vv4anzi8zfij1"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)
-       ("python" ,python)               ; for the tests
-       ("util-linux" ,util-linux)       ; provides the hexdump command for tests
-       ("qttools" ,qttools)))
+     (list autoconf
+           automake
+           libtool
+           pkg-config
+           python ; for the tests
+           util-linux ; provides the hexdump command for tests
+           qttools))
     (inputs
-     `(("bdb" ,bdb-4.8)                 ; 4.8 required for compatibility
-       ("boost" ,boost)
-       ("libevent" ,libevent)
-       ("miniupnpc" ,miniupnpc)
-       ("openssl" ,openssl)
-       ("qtbase" ,qtbase-5)))
+     (list bdb-4.8 ; 4.8 required for compatibility
+           boost
+           libevent
+           miniupnpc
+           openssl
+           qtbase-5))
     (arguments
      `(#:configure-flags
        (list
@@ -228,32 +230,32 @@ line client and a client based on Qt.")
          "07fcfkmv4cy92njnf2qc7jh0naz96q962hxldcd7hk4k7ddv0mss"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-ansi-terminal" ,ghc-ansi-terminal)
-       ("ghc-base-compat-batteries" ,ghc-base-compat-batteries)
-       ("ghc-cmdargs" ,ghc-cmdargs)
-       ("ghc-data-default" ,ghc-data-default)
-       ("ghc-decimal" ,ghc-decimal)
-       ("ghc-diff" ,ghc-diff)
-       ("ghc-hashable" ,ghc-hashable)
-       ("ghc-hledger-lib" ,ghc-hledger-lib)
-       ("ghc-lucid" ,ghc-lucid)
-       ("ghc-math-functions" ,ghc-math-functions)
-       ("ghc-megaparsec" ,ghc-megaparsec)
-       ("ghc-old-time" ,ghc-old-time)
-       ("ghc-regex-tdfa" ,ghc-regex-tdfa)
-       ("ghc-safe" ,ghc-safe)
-       ("ghc-aeson" ,ghc-aeson)
-       ("ghc-extra" ,ghc-extra)
-       ("ghc-tasty" ,ghc-tasty)
-       ("ghc-timeit" ,ghc-timeit)
-       ("ghc-shakespeare" ,ghc-shakespeare)
-       ("ghc-split" ,ghc-split)
-       ("ghc-tabular" ,ghc-tabular)
-       ("ghc-temporary" ,ghc-temporary)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)
-       ("ghc-utf8-string" ,ghc-utf8-string)
-       ("ghc-utility-ht" ,ghc-utility-ht)
-       ("ghc-wizards" ,ghc-wizards)))
+     (list ghc-ansi-terminal
+           ghc-base-compat-batteries
+           ghc-cmdargs
+           ghc-data-default
+           ghc-decimal
+           ghc-diff
+           ghc-hashable
+           ghc-hledger-lib
+           ghc-lucid
+           ghc-math-functions
+           ghc-megaparsec
+           ghc-old-time
+           ghc-regex-tdfa
+           ghc-safe
+           ghc-aeson
+           ghc-extra
+           ghc-tasty
+           ghc-timeit
+           ghc-shakespeare
+           ghc-split
+           ghc-tabular
+           ghc-temporary
+           ghc-unordered-containers
+           ghc-utf8-string
+           ghc-utility-ht
+           ghc-wizards))
     (home-page "https://hledger.org")
     (synopsis "Command-line interface for the hledger accounting system")
     (description
@@ -281,12 +283,9 @@ Accounting.")
                 "14qhv79a2waqzmf6l571wklgwq8j1pkmjvzkj5vhh44nia8hfdh7"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)))
+     (list pkg-config intltool))
     (inputs
-     `(("gtk+" ,gtk+)
-       ("libofx" ,libofx)
-       ("libsoup" ,libsoup)))
+     (list gtk+ libofx libsoup))
     (home-page "http://homebank.free.fr/")
     (synopsis "Graphical personal accounting application")
     (description "HomeBank allows you to manage your personal accounts at
@@ -307,7 +306,14 @@ and dynamically with report tools based on filtering and graphical charts.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0x6jxwss3wwzbzlwmnwb8yzjk8f9wfawif4f1b74z2qg6hc4r7f6"))))
+        (base32 "0x6jxwss3wwzbzlwmnwb8yzjk8f9wfawif4f1b74z2qg6hc4r7f6"))
+       (snippet '(begin
+                   ;; Remove test that fails due to difference in
+                   ;; reported error message (missing leading "./" in the
+                   ;; file name); started some time after Guix commit
+                   ;; 727f05e1e285aa52f5a19ec923fdc2259859b4b1
+                   (delete-file "test/regress/BF3C1F82-2.test")
+                   #true))))
     (build-system cmake-build-system)
     (arguments
      `(#:modules (,@%cmake-build-system-modules
@@ -346,24 +352,22 @@ and dynamically with report tools based on filtering and graphical charts.")
            ;; One test fails if it can't set the timezone.
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "TZDIR"
-                     (string-append (assoc-ref inputs "tzdata")
-                                    "/share/zoneinfo"))
+                     (search-input-directory inputs
+                                             "share/zoneinfo"))
              ;; Skip failing test BaselineTest_cmd-org.
              ;; This is a known upstream issue. See
              ;; https://github.com/ledger/ledger/issues/550
              (setenv "ARGS" "-E BaselineTest_cmd-org")
              #t)))))
     (inputs
-     `(("boost" ,boost)
-       ("gmp" ,gmp)
-       ("libedit" ,libedit)
-       ("mpfr" ,mpfr)
-       ("python" ,python)
-       ("utfcpp" ,utfcpp)))
+     (list boost
+           gmp
+           libedit
+           mpfr
+           python
+           utfcpp))
     (native-inputs
-     `(("groff" ,groff)
-       ("texinfo" ,texinfo)
-       ("tzdata" ,tzdata-for-tests)))
+     (list groff texinfo tzdata-for-tests))
     (home-page "https://ledger-cli.org/")
     (synopsis "Command-line double-entry accounting program")
     (description
@@ -429,9 +433,9 @@ in ability, and easy to use.")
              (with-directory-excursion "../source/test"
                (invoke "make" "test-batch")))))))
     (inputs
-     `(("ledger" ,ledger)))
+     (list ledger))
     (native-inputs
-     `(("texinfo" ,texinfo)))
+     (list texinfo))
     (home-page "https://ledger-cli.org/")
     (synopsis "Command-line double-entry accounting program")
     (description
@@ -487,7 +491,7 @@ This package provides the Emacs mode.")
                                 "for search ")))
               #t)))))
     (inputs
-     `(("icecat" ,icecat)))
+     (list icecat))
     (home-page "https://stesie.github.io/geierlein/")
     (synopsis "Free Elster client, for sending Germany VAT declarations")
     (description
@@ -521,22 +525,22 @@ do so.")
            #t))))
     (build-system python-build-system)
     (inputs
-     `(("python-pyqt" ,python-pyqt)
-       ("python-qrcode" ,python-qrcode)
-       ("python-protobuf" ,python-protobuf)
-       ("python-aiohttp" ,python-aiohttp)
-       ("python-aiohttp-socks" ,python-aiohttp-socks)
-       ("python-aiorpcx" ,python-aiorpcx-0.18)
-       ("python-certifi" ,python-certifi)
-       ("python-bitstring" ,python-bitstring)
-       ("python-attrs" ,python-attrs)
-       ("python-cryptography" ,python-cryptography)
-       ("python-qdarkstyle" ,python-qdarkstyle)
-       ("python-dnspython" ,python-dnspython)
-       ("python-hidapi" ,python-hidapi)
-       ("python-ledgerblue" ,python-ledgerblue)
-       ("python-btchip-python" ,python-btchip-python)
-       ("libsecp256k1" ,libsecp256k1)))
+     (list python-pyqt
+           python-qrcode
+           python-protobuf
+           python-aiohttp
+           python-aiohttp-socks
+           python-aiorpcx-0.18
+           python-certifi
+           python-bitstring
+           python-attrs
+           python-cryptography
+           python-qdarkstyle
+           python-dnspython
+           python-hidapi
+           python-ledgerblue
+           python-btchip-python
+           libsecp256k1))
     (arguments
      `(#:tests? #f                      ; no tests
        #:phases
@@ -551,6 +555,14 @@ do so.")
                  (("sys\\.prefix")
                   (format #f "\"~a\"" out)))
                #t)))
+         (add-after 'unpack 'relax-dnspython-version-requirement
+           ;; The version requirement for dnspython>=2.0,<2.1 makes the
+           ;; sanity-check phase fail, but the application seems to be working
+           ;; fine with dnspython 2.1 (the version we have currently).
+           (lambda _
+             (substitute* "contrib/requirements/requirements.txt"
+               (("dnspython>=.*")
+                "dnspython"))))
          (add-after 'unpack 'use-libsecp256k1-input
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "electrum/ecc_fast.py"
@@ -597,6 +609,7 @@ other machines/servers.  Electrum does not download the Bitcoin blockchain.")
        ("python-pyaes" ,python-pyaes)
        ("python-pyqt" ,python-pyqt)
        ("python-pysocks" ,python-pysocks)
+       ("python-qdarkstyle" ,python-qdarkstyle)
        ("python-qrcode" ,python-qrcode)
        ("python-requests" ,python-requests)
        ("python-stem" ,python-stem)
@@ -623,6 +636,11 @@ other machines/servers.  Electrum does not download the Bitcoin blockchain.")
                 (string-append "library_paths = ('"
                                (assoc-ref inputs "libsecp256k1")
                                "/lib/libsecp256k1.so.0'")))))
+         (add-after 'unpack 'relax-requirements
+           (lambda _
+             (substitute* "contrib/requirements/requirements.txt"
+               (("qdarkstyle==2\\.6\\.8")
+                "qdarkstyle"))))
          (add-after 'install 'wrap-qt
            (lambda* (#:key outputs inputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
@@ -663,33 +681,38 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
             delete-file-recursively
             '("external/miniupnp" "external/rapidjson"
               "external/unbound"))
+           ;; TODO: Remove the following when upgrading to a newer tagged
+           ;; version as it will already contain the fix for Boost 1.76.
+           (substitute* "contrib/epee/include/storages/portable_storage.h"
+             (("#include \"int-util.h\"" all)
+              (string-append all "\n#include <boost/mpl/contains.hpp>")))
            #t))
        (sha256
         (base32 "1spsf7m3x4psp9s7mivr6x4886jnbq4i8ll2dl8bv5bsdhcd3pjm"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("doxygen" ,doxygen)
-       ("graphviz" ,graphviz)
-       ("pkg-config" ,pkg-config)
-       ("protobuf" ,protobuf)
-       ("python" ,python)
-       ("qttools" ,qttools)))
+     (list doxygen
+           graphviz
+           pkg-config
+           protobuf
+           python
+           qttools))
     (inputs
-     `(("boost" ,boost)
-       ("cppzmq" ,cppzmq)
-       ("expat" ,expat)
-       ("hidapi" ,hidapi)
-       ("libsodium" ,libsodium)
-       ("libunwind" ,libunwind)
-       ("libusb" ,libusb)
-       ("miniupnpc" ,miniupnpc)
-       ("openssl" ,openssl)
-       ("protobuf" ,protobuf)
-       ("rapidjson" ,rapidjson)
-       ("readline" ,readline)
-       ("unbound" ,unbound)
-       ("xz" ,xz)
-       ("zeromq" ,zeromq)))
+     (list boost
+           cppzmq
+           expat
+           hidapi
+           libsodium
+           libunwind
+           libusb
+           miniupnpc
+           openssl
+           protobuf
+           rapidjson
+           readline
+           unbound
+           xz
+           zeromq))
     (arguments
      `(#:out-of-source? #t
        #:configure-flags
@@ -792,10 +815,10 @@ the Monero command line client and daemon.")
     (arguments
      `(#:tests? #f ; No tests
        #:configure-flags
-       (list "-DARCH=default"
-             "-DENABLE_PASS_STRENGTH_METER=ON"
-             (string-append "-DReadline_ROOT_DIR="
-                            (assoc-ref %build-inputs "readline")))
+       ,#~(list "-DARCH=default"
+                "-DENABLE_PASS_STRENGTH_METER=ON"
+                (string-append "-DReadline_ROOT_DIR="
+                               #$(this-package-input "readline")))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'extract-monero-sources
@@ -803,9 +826,8 @@ the Monero command line client and daemon.")
            ;; to build the GUI.
            (lambda* (#:key inputs #:allow-other-keys)
              (mkdir-p "monero")
-             (invoke "tar" "-xv" "--strip-components=1"
-                     "-C" "monero"
-                     "-f" (assoc-ref inputs "monero-source"))))
+             (copy-recursively (assoc-ref inputs "monero-source")
+                               "monero")))
          (add-after 'extract-monero-sources 'fix-build
            (lambda _
              (substitute* "src/version.js.in"
@@ -825,8 +847,7 @@ the Monero command line client and daemon.")
            ;; The monerod program must be available so that monero-wallet-gui
            ;; can start a Monero daemon if necessary.
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (symlink (string-append (assoc-ref inputs "monero")
-                                     "/bin/monerod")
+             (symlink (search-input-file inputs "/bin/monerod")
                       (string-append (assoc-ref outputs "out")
                                      "/bin/monerod")))))))
     (home-page "https://web.getmonero.org/")
@@ -869,21 +890,19 @@ the Monero GUI client.")
              (add-installed-pythonpath inputs outputs)
              (invoke "py.test"))))))
     (propagated-inputs
-     `(("python-configargparse" ,python-configargparse)
-       ("python-daemon" ,python-daemon)
-       ("python-docutils" ,python-docutils)
-       ("python-ecdsa" ,python-ecdsa)
-       ("python-hidapi" ,python-hidapi)
-       ("python-mnemonic" ,python-mnemonic)
-       ("python-pymsgbox" ,python-pymsgbox)
-       ("python-pynacl" ,python-pynacl)
-       ("python-semver" ,python-semver)
-       ("python-unidecode" ,python-unidecode)
-       ("python-wheel" ,python-wheel)))
+     (list python-configargparse
+           python-daemon
+           python-docutils
+           python-ecdsa
+           python-hidapi
+           python-mnemonic
+           python-pymsgbox
+           python-pynacl
+           python-semver
+           python-unidecode
+           python-wheel))
     (native-inputs
-     `(("gnupg" ,gnupg)
-       ("python-mock" ,python-mock)
-       ("python-pytest" ,python-pytest)))
+     (list gnupg python-mock python-pytest))
     (home-page "https://github.com/romanz/trezor-agent")
     (synopsis "Use hardware wallets as SSH and GPG agent")
     (description
@@ -930,7 +949,7 @@ settings.")
           (base32 "1xi5qvj2rvi5almf9c89rl7hz1z4ms04d53pg818i4vpkmivavvw"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-pbkdf2" ,python-pbkdf2)))
+     (list python-pbkdf2))
     (home-page "https://github.com/trezor/python-mnemonic")
     (synopsis "Implementation of Bitcoin BIP-0039")
     (description "@code{mnemonic} is a library that provides an implementation
@@ -953,12 +972,12 @@ of Bitcoin BIP-0039.")
             "010mghaqh1cmz3a0ifc3f40mmyplilwlw7kpha2mzyrrff46p9gb"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-ecpy" ,python-ecpy)
-       ("python-future" ,python-future)
-       ("python-hidapi" ,python-hidapi)
-       ("python-pillow" ,python-pillow)
-       ("python-protobuf" ,python-protobuf)
-       ("python-pycrypto" ,python-pycrypto)))
+     (list python-ecpy
+           python-future
+           python-hidapi
+           python-pillow
+           python-protobuf
+           python-pycrypto))
     (home-page "https://github.com/LedgerHQ/blue-loader-python")
     (synopsis "Python library to communicate with Ledger Blue/Nano S")
     (description "@code{ledgerblue} is a Python library to communicate with
@@ -983,8 +1002,7 @@ Ledger Blue/Nano S.")
     (arguments
      `(#:tests? #f)) ; those require PyQt4
     (propagated-inputs
-      `(("python-ecdsa" ,python-ecdsa)
-        ("python-hidapi" ,python-hidapi)))
+      (list python-ecdsa python-hidapi))
     (home-page "https://github.com/LedgerHQ/btchip-python")
     (synopsis "Python library to communicate with Ledger Nano dongle")
     (description
@@ -1025,22 +1043,22 @@ Nano dongle.")
            (delete-file-recursively "./python")))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-attrs" ,python-attrs)
-       ("python-click" ,python-click)
-       ("python-construct" ,python-construct)
-       ("python-ecdsa" ,python-ecdsa)
-       ("python-libusb1" ,python-libusb1)
-       ("python-mnemonic" ,python-mnemonic)
-       ("python-requests" ,python-requests)
-       ("python-typing-extensions" ,python-typing-extensions)))
+     (list python-attrs
+           python-click
+           python-construct
+           python-ecdsa
+           python-libusb1
+           python-mnemonic
+           python-requests
+           python-typing-extensions))
     (native-inputs
      ;; For tests.
-     `(("protobuf" ,protobuf)
-       ("python-black" ,python-black)
-       ("python-protobuf" ,python-protobuf)
-       ("python-isort" ,python-isort)
-       ("python-pyqt" ,python-pyqt)
-       ("python-pytest" ,python-pytest)))
+     (list protobuf
+           python-black
+           python-protobuf
+           python-isort
+           python-pyqt
+           python-pytest))
     (home-page "https://github.com/trezor/python-trezor")
     (synopsis "Python library for communicating with TREZOR Hardware Wallet")
     (description "@code{trezor} is a Python library for communicating with
@@ -1068,11 +1086,8 @@ TREZOR Hardware Wallet.")
              (add-installed-pythonpath inputs outputs)
              (apply invoke "python" (find-files "tests/unit" "\\.py$")))))))
     (propagated-inputs
-     `(("python-ecdsa" ,python-ecdsa)
-       ("python-hidapi" ,python-hidapi)
-       ("python-libusb1" ,python-libusb1)
-       ("python-mnemonic" ,python-mnemonic)
-       ("python-protobuf" ,python-protobuf)))
+     (list python-ecdsa python-hidapi python-libusb1 python-mnemonic
+           python-protobuf))
     (home-page "https://github.com/keepkey/python-keepkey")
     (synopsis "Python library for communicating with KeepKey Hardware Wallet")
     (description "@code{keepkey} is a Python library for communicating with
@@ -1095,8 +1110,7 @@ the KeepKey Hardware Wallet.")
          "03zj602m2rln9yvr08dswy56vzkbldp8b074ixwzz525dafblr92"))))
     (build-system python-build-system)
     (inputs
-     `(("python-ledgerblue" ,python-ledgerblue)
-       ("python-trezor-agent" ,python-trezor-agent)))
+     (list python-ledgerblue python-trezor-agent))
     (home-page "https://github.com/romanz/trezor-agent")
     (synopsis "Ledger as hardware SSH/GPG agent")
     (description "This package allows using Ledger as hardware SSH/GPG agent.")
@@ -1158,10 +1172,9 @@ the KeepKey Hardware Wallet.")
                              (string-append out "/bin"))))))))
     (build-system python-build-system)
     (inputs
-     `(("python-trezor" ,python-trezor)
-       ("python-trezor-agent" ,python-trezor-agent)))
+     (list python-trezor python-trezor-agent))
     (native-inputs
-     `(("python-attrs" ,python-attrs)))
+     (list python-attrs))
     (home-page "https://github.com/romanz/trezor-agent")
     (synopsis "Using Trezor as hardware SSH/GPG agent")
     (description "This package allows using Trezor as a hardware SSH/GPG
@@ -1181,8 +1194,7 @@ agent.")
             "03779gvlx70i0nnry98i4pl1d92604ix5x6jgdfkrdgzqbh5vj27"))))
     (build-system python-build-system)
     (inputs
-     `(("python-keepkey" ,python-keepkey)
-       ("python-trezor-agent" ,python-trezor-agent)))
+     (list python-keepkey python-trezor-agent))
     (home-page "https://github.com/romanz/trezor-agent")
     (synopsis "KeepKey as hardware SSH/GPG agent")
     (description "This package allows using KeepKey as a hardware SSH/GPG
@@ -1206,7 +1218,7 @@ agent.")
                     (lambda _
                       (invoke "nosetests"))))))
     (native-inputs
-     `(("python-nose" ,python-nose)))
+     (list python-nose))
     (home-page "https://arthurdejong.org/python-stdnum/")
     (synopsis "Python module to handle standardized number and code formats")
     (description
@@ -1316,14 +1328,12 @@ Its features are:
     (arguments
      `(#:configure-flags (list "--without-ofx")))
     (propagated-inputs
-     `(("dconf" ,dconf)))
+     (list dconf))
     (native-inputs
-     `(("glib" ,glib "bin")             ; glib-compile-schemas
-       ("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)))
+     (list `(,glib "bin") ; glib-compile-schemas
+           pkg-config intltool))
     (inputs
-     `(("gtk+" ,gtk+)
-       ("libgsf" ,libgsf)))
+     (list gtk+ libgsf))
     (synopsis "Personal accounting application")
     (description "Grisbi is a personal accounting application written by
 French developers that is designed to follow French accounting rules.
@@ -1402,22 +1412,22 @@ Trezor wallet.")
                 "1amzwy3gpl8ai90dsy7g0z51qq8vxfzbf642wn4bfynb8jmw3kx5"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("python" ,python)               ; for the tests
-       ("util-linux" ,util-linux)       ; provides the hexdump command for tests
-       ("qttools" ,qttools)))
+     (list pkg-config
+           python ; for the tests
+           util-linux ; provides the hexdump command for tests
+           qttools))
     (inputs
-     `(("bdb" ,bdb-5.3)
-       ("boost" ,boost)
-       ("jemalloc" ,jemalloc)
-       ("libevent" ,libevent)
-       ("miniupnpc" ,miniupnpc)
-       ("openssl" ,openssl)
-       ("protobuf" ,protobuf)
-       ("qrencode" ,qrencode)
-       ("qtbase" ,qtbase-5)
-       ("zeromq" ,zeromq)
-       ("zlib" ,zlib)))
+     (list bdb-5.3
+           boost
+           jemalloc
+           libevent
+           miniupnpc
+           openssl
+           protobuf
+           qrencode
+           qtbase-5
+           zeromq
+           zlib))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -1475,12 +1485,12 @@ a client based on Qt.  This is a fork of Bitcoin Core.")
                             (assoc-ref %build-inputs "opensp")
                             "/include/OpenSP"))))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("gengetopt" ,gengetopt)
-       ("help2man" ,help2man)
-       ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf
+           automake
+           gengetopt
+           help2man
+           libtool
+           pkg-config))
     (inputs
      `(("curl" ,curl)
        ("libxml++-2" ,libxml++-2)
@@ -1513,24 +1523,24 @@ following three utilities are included with the library:
         (base32 "1cmrvh7azz0g89rsx6i8apd1li6r1lb3jrmbbf8fic1918lwv62m"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)
-       ("python" ,python) ; for the tests
-       ("util-linux" ,util-linux) ; provides the hexdump command for tests
-       ("qttools" ,qttools)))
+     (list autoconf
+           automake
+           libtool
+           pkg-config
+           python ; for the tests
+           util-linux ; provides the hexdump command for tests
+           qttools))
     (inputs
-     `(("bdb" ,bdb-4.8)
-       ("boost" ,boost)
-       ("libevent" ,libevent)
-       ("miniupnpc" ,miniupnpc)
-       ("openssl" ,openssl)
-       ("protobuf" ,protobuf)
-       ("qrencode" ,qrencode)
-       ("qtbase" ,qtbase-5)
-       ("zeromq" ,zeromq)
-       ("zlib" ,zlib)))
+     (list bdb-4.8
+           boost
+           libevent
+           miniupnpc
+           openssl
+           protobuf
+           qrencode
+           qtbase-5
+           zeromq
+           zlib))
     (arguments
      `(#:configure-flags
        (list
@@ -1606,12 +1616,9 @@ a Qt GUI.")
               (string-append "PREFIX=" %output)
               "features="))))))
     (native-inputs
-     `(("qttools" ,qttools)))
+     (list qttools))
     (inputs
-     `(("python" ,python)
-       ("qtbase" ,qtbase-5)
-       ("rocksdb" ,rocksdb)
-       ("zlib" ,zlib)))
+     (list python qtbase-5 rocksdb zlib))
     (home-page "https://gitlab.com/FloweeTheHub/fulcrum/")
     (synopsis "Fast and nimble SPV server for Bitcoin Cash")
     (description
@@ -1669,16 +1676,14 @@ like Flowee the Hub, which Fulcrum connects to over RPC.")
             (lambda _
               (invoke "make" "check" "-C" "testing"))))))
     (inputs
-     `(("boost" ,boost)
-       ("gmp" ,gmp)
-       ("libevent" ,libevent)
-       ("miniupnpc" ,miniupnpc)
-       ("openssl" ,openssl)
-       ("qtbase" ,qtbase-5)))
+     (list boost
+           gmp
+           libevent
+           miniupnpc
+           openssl
+           qtbase-5))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("qttools" ,qttools)
-       ("util-linux" ,util-linux)))       ; provides the hexdump command for tests
+     (list pkg-config qttools util-linux))       ; provides the hexdump command for tests
     (home-page "https://flowee.org")
     (synopsis "Flowee infrastructure tools and services")
     (description
@@ -1712,16 +1717,16 @@ that allows you to run services and through them access the Bitcoin Cash network
                (("'google-api-python-client',") ""))
              #t)))))
     (inputs
-     `(("python-beautifulsoup4" ,python-beautifulsoup4)
-       ("python-bottle" ,python-bottle)
-       ("python-chardet" ,python-chardet)
-       ("python-dateutil" ,python-dateutil)
-       ("python-lxml" ,python-lxml)
-       ("python-magic" ,python-magic)
-       ("python-ply" ,python-ply)
-       ("python-requests" ,python-requests)))
+     (list python-beautifulsoup4
+           python-bottle
+           python-chardet
+           python-dateutil
+           python-lxml
+           python-magic
+           python-ply
+           python-requests))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "http://furius.ca/beancount")
     (synopsis "Command-line double-entry accounting tool")
     (description
@@ -1773,41 +1778,41 @@ generate a variety of reports from them, and provides a web interface.")
        #:cabal-revision
        ("1" "1hnw10ibhbafbsfj5lzlxwjg4cjnqr5bb51n6mqbi30qqabgq78x")))
     (inputs
-     `(("ghc-aeson" ,ghc-aeson)
-       ("ghc-blaze-html" ,ghc-blaze-html)
-       ("ghc-blaze-markup" ,ghc-blaze-markup)
-       ("ghc-case-insensitive" ,ghc-case-insensitive)
-       ("ghc-clientsession" ,ghc-clientsession)
-       ("ghc-cmdargs" ,ghc-cmdargs)
-       ("ghc-conduit-extra" ,ghc-conduit-extra)
-       ("ghc-conduit" ,ghc-conduit)
-       ("ghc-data-default" ,ghc-data-default)
-       ("ghc-decimal" ,ghc-decimal)
-       ("ghc-extra" ,ghc-extra)
-       ("ghc-hjsmin" ,ghc-hjsmin)
-       ("ghc-hledger-lib" ,ghc-hledger-lib)
-       ("ghc-hspec" ,ghc-hspec)
-       ("ghc-http-client" ,ghc-http-client)
-       ("ghc-http-conduit" ,ghc-http-conduit)
-       ("ghc-http-types" ,ghc-http-types)
-       ("ghc-megaparsec" ,ghc-megaparsec)
-       ("ghc-network" ,ghc-network)
-       ("ghc-shakespeare" ,ghc-shakespeare)
-       ("ghc-unix-compat" ,ghc-unix-compat)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)
-       ("ghc-utf8-string" ,ghc-utf8-string)
-       ("ghc-wai-cors" ,ghc-wai-cors)
-       ("ghc-wai-extra" ,ghc-wai-extra)
-       ("ghc-wai" ,ghc-wai)
-       ("ghc-wai-handler-launch" ,ghc-wai-handler-launch)
-       ("ghc-warp" ,ghc-warp)
-       ("ghc-yaml" ,ghc-yaml)
-       ("ghc-yesod-core" ,ghc-yesod-core)
-       ("ghc-yesod-form" ,ghc-yesod-form)
-       ("ghc-yesod" ,ghc-yesod)
-       ("ghc-yesod-static" ,ghc-yesod-static)
-       ("ghc-yesod-test" ,ghc-yesod-test)
-       ("hledger" ,hledger)))
+     (list ghc-aeson
+           ghc-blaze-html
+           ghc-blaze-markup
+           ghc-case-insensitive
+           ghc-clientsession
+           ghc-cmdargs
+           ghc-conduit-extra
+           ghc-conduit
+           ghc-data-default
+           ghc-decimal
+           ghc-extra
+           ghc-hjsmin
+           ghc-hledger-lib
+           ghc-hspec
+           ghc-http-client
+           ghc-http-conduit
+           ghc-http-types
+           ghc-megaparsec
+           ghc-network
+           ghc-shakespeare
+           ghc-unix-compat
+           ghc-unordered-containers
+           ghc-utf8-string
+           ghc-wai-cors
+           ghc-wai-extra
+           ghc-wai
+           ghc-wai-handler-launch
+           ghc-warp
+           ghc-yaml
+           ghc-yesod-core
+           ghc-yesod-form
+           ghc-yesod
+           ghc-yesod-static
+           ghc-yesod-test
+           hledger))
     (home-page "https://hledger.org")
     (synopsis "Web-based user interface for the hledger accounting system")
     (description "This package provides a simple Web-based User
@@ -1830,14 +1835,10 @@ editing on the Web.")
         (base32 "1zd0pfiphnijh1l94swb3mjrpmjsn37z11mklamd7zw6h2d4zh4d"))))
     (build-system gnu-build-system)
     (inputs
-     `(("gsl" ,gsl)
-       ("gtk3" ,gtk+)
-       ("ncurses" ,ncurses)))
+     (list gsl gtk+ ncurses))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("texinfo" ,texinfo)
-       ("texlive" ,(texlive-union (list texlive-epsf
-                                        texlive-tex-texinfo)))))
+     (list pkg-config texinfo
+           (texlive-updmap.cfg (list texlive-epsf texlive-tex-texinfo))))
     (home-page "https://anthonybradford.github.io/optionmatrix/")
     (synopsis "Financial derivative calculator")
     (description
@@ -1859,13 +1860,11 @@ interactive controls.  This package provides a GTK+ graphical user interface
         (base32 "17sf222mq2vx924f15qlz5czkkq5vsnsjy9ibwkrk8lalr6g5lkl"))))
     (build-system python-build-system)
     (inputs
-     `(("ta-lib" ,ta-lib)))
+     (list ta-lib))
     (propagated-inputs
-     `(("python-numpy" ,python-numpy)))
+     (list python-numpy))
     (native-inputs
-     `(("python-cython" ,python-cython)
-       ("python-nose" ,python-nose)
-       ("python-pandas" ,python-pandas)))
+     (list python-cython python-nose python-pandas))
     (home-page "https://github.com/mrjbq7/ta-lib")
     (synopsis "Python wrapper for TA-Lib")
     (description

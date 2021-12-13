@@ -17,6 +17,9 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix build-system font)
+  #:use-module (guix gexp)
+  #:use-module (guix store)
+  #:use-module (guix monads)
   #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix derivations)
@@ -69,13 +72,12 @@
     (build font-build)
     (arguments (strip-keyword-arguments private-keywords arguments))))
 
-(define* (font-build store name inputs
+(define* (font-build name inputs
                      #:key source
                      (tests? #t)
                      (test-target "test")
                      (configure-flags ''())
-                     (phases '(@ (guix build font-build-system)
-                                 %standard-phases))
+                     (phases '%standard-phases)
                      (outputs '("out"))
                      (search-paths '())
                      (system (%current-system))
@@ -85,41 +87,32 @@
                                 (guix build utils))))
   "Build SOURCE with INPUTS."
   (define builder
-    `(begin
-       (use-modules ,@modules)
-       (font-build #:name ,name
-                   #:source ,(match (assoc-ref inputs "source")
-                               (((? derivation? source))
-                                (derivation->output-path source))
-                               ((source)
-                                source)
-                               (source
-                                source))
-                   #:configure-flags ,configure-flags
-                   #:system ,system
-                   #:test-target ,test-target
-                   #:tests? ,tests?
-                   #:phases ,phases
-                   #:outputs %outputs
-                   #:search-paths ',(map search-path-specification->sexp
-                                         search-paths)
-                   #:inputs %build-inputs)))
+    (with-imported-modules imported-modules
+      #~(begin
+          (use-modules #$@modules)
 
-  (define guile-for-build
-    (match guile
-      ((? package?)
-       (package-derivation store guile system #:graft? #f))
-      (#f                                         ; the default
-       (let* ((distro (resolve-interface '(gnu packages commencement)))
-              (guile  (module-ref distro 'guile-final)))
-         (package-derivation store guile system #:graft? #f)))))
+          #$(with-build-variables inputs outputs
+              #~(font-build #:name #$name
+                            #:source #+source
+                            #:configure-flags #$configure-flags
+                            #:system #$system
+                            #:test-target #$test-target
+                            #:tests? #$tests?
+                            #:phases #$(if (pair? phases)
+                                           (sexp->gexp phases)
+                                           phases)
+                            #:outputs %outputs
+                            #:search-paths '#$(sexp->gexp
+                                               (map search-path-specification->sexp
+                                                    search-paths))
+                            #:inputs %build-inputs)))))
 
-  (build-expression->derivation store name builder
-                                #:inputs inputs
-                                #:system system
-                                #:modules imported-modules
-                                #:outputs outputs
-                                #:guile-for-build guile-for-build))
+  (mlet %store-monad ((guile (package->derivation (or guile (default-guile))
+                                                  system #:graft? #f)))
+    (gexp->derivation name builder
+                      #:system system
+                      #:target #f
+                      #:guile-for-build guile)))
 
 (define font-build-system
   (build-system

@@ -5,6 +5,7 @@
 ;;; Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
@@ -27,6 +28,7 @@
   #:use-module (guix scripts)
   #:use-module (guix ui)
   #:use-module (guix gexp)
+  #:use-module ((guix build utils) #:select (%xz-parallel-args))
   #:use-module (guix utils)
   #:use-module (guix store)
   #:use-module ((guix status) #:select (with-status-verbosity))
@@ -79,29 +81,34 @@
   compressor?
   (name       compressor-name)      ;string (e.g., "gzip")
   (extension  compressor-extension) ;string (e.g., ".lz")
-  (command    compressor-command))  ;gexp (e.g., #~("/gnu/store/…/gzip" "-9n"))
+  (command    compressor-command))  ;gexp (e.g., #~(list "/gnu/store/…/gzip"
+                                    ;                    "-9n" ))
 
 (define %compressors
   ;; Available compression tools.
   (list (compressor "gzip"  ".gz"
-                    #~(#+(file-append gzip "/bin/gzip") "-9n"))
+                    #~(list #+(file-append gzip "/bin/gzip") "-9n"))
         (compressor "lzip"  ".lz"
-                    #~(#+(file-append lzip "/bin/lzip") "-9"))
+                    #~(list #+(file-append lzip "/bin/lzip") "-9"))
         (compressor "xz"    ".xz"
-                    #~(#+(file-append xz "/bin/xz") "-e"))
+                    #~(append (list #+(file-append xz "/bin/xz")
+                                    "-e")
+                              (%xz-parallel-args)))
         (compressor "bzip2" ".bz2"
-                    #~(#+(file-append bzip2 "/bin/bzip2") "-9"))
+                    #~(list #+(file-append bzip2 "/bin/bzip2") "-9"))
         (compressor "zstd" ".zst"
                     ;; The default level 3 compresses better than gzip in a
                     ;; fraction of the time, while the highest level 19
                     ;; (de)compresses more slowly and worse than xz.
-                    #~(#+(file-append zstd "/bin/zstd") "-3"))
+                    #~(list #+(file-append zstd "/bin/zstd") "-3"))
         (compressor "none" "" #f)))
 
 ;; This one is only for use in this module, so don't put it in %compressors.
 (define bootstrap-xz
   (compressor "bootstrap-xz" ".xz"
-              #~(#+(file-append %bootstrap-coreutils&co "/bin/xz") "-e")))
+              #~(append (list #+(file-append %bootstrap-coreutils&co "/bin/xz")
+                              "-e")
+                        (%xz-parallel-args))))
 
 (define (lookup-compressor name)
   "Return the compressor object called NAME.  Error out if it could not be
@@ -298,7 +305,7 @@ its source property."
           (apply invoke tar "-cvf" #$output "."
                  (tar-base-options
                   #:tar tar
-                  #:compressor '#+(and=> compressor compressor-command)))))))
+                  #:compressor #+(and=> compressor compressor-command)))))))
 
 (define* (self-contained-tarball name profile
                                  #:key target
@@ -574,11 +581,13 @@ the image."
                                ,@(source-module-closure
                                   `((guix docker)
                                     (guix build store-copy)
+                                    (guix build utils) ;for %xz-parallel-args
                                     (guix profiles)
                                     (guix search-paths))
                                   #:select? not-config?))
         #~(begin
             (use-modules (guix docker) (guix build store-copy)
+                         (guix build utils)
                          (guix profiles) (guix search-paths)
                          (srfi srfi-1) (srfi srfi-19)
                          (ice-9 match))
@@ -625,7 +634,7 @@ the image."
                                        #~(list (string-append #$profile "/"
                                                               #$entry-point)))
                                 #:extra-files directives
-                                #:compressor '#+(compressor-command compressor)
+                                #:compressor #+(compressor-command compressor)
                                 #:creation-time (make-time time-utc 0 1))))))
 
   (gexp->derivation (string-append name ".tar"
@@ -804,7 +813,7 @@ Section: misc
             (apply invoke tar
                    `(,@(tar-base-options
                         #:tar tar
-                        #:compressor '#+(and=> compressor compressor-command))
+                        #:compressor #+(and=> compressor compressor-command))
                      "-cvf" ,control-tarball-file-name
                      "control"
                      ,@(if postinst-file '("postinst") '())

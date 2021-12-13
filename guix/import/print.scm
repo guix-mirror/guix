@@ -32,6 +32,14 @@
   #:use-module (ice-9 match)
   #:export (package->code))
 
+(define (redundant-input-labels? inputs)
+  "Return #t if input labels in the INPUTS list are redundant."
+  (every (match-lambda
+           ((label (? package? package) . _)
+            (string=? label (package-name package)))
+           (_ #f))
+         inputs))
+
 (define (package->code package)
   "Return an S-expression representing the source code that produces PACKAGE
 when evaluated."
@@ -148,8 +156,24 @@ when evaluated."
       (obj
        obj)))
 
-  (define (package-lists->code lsts)
-    (list 'quasiquote (object->code lsts #t)))
+  (define (inputs->code inputs)
+    (if (redundant-input-labels? inputs)
+        `(list ,@(map (match-lambda    ;no need for input labels ("new style")
+                        ((_ package)
+                         (let* ((module (package-module-name package))
+                                (name   (variable-name package module)))
+                           (variable-reference module name)))
+                        ((_ package output)
+                         (let* ((module (package-module-name package))
+                                (name   (variable-name package module)))
+                           (list 'quasiquote
+                                 (list
+                                  (list 'unquote
+                                        (variable-reference module name))
+                                  output)))))
+                      inputs))
+        (list 'quasiquote                  ;preserve input labels (deprecated)
+              (object->code inputs #t))))
 
   (let ((name                (package-name package))
         (version             (package-version package))
@@ -192,13 +216,13 @@ when evaluated."
              (outs `((outputs (list ,@outs)))))
          ,@(match native-inputs
              (() '())
-             (pkgs `((native-inputs ,(package-lists->code pkgs)))))
+             (pkgs `((native-inputs ,(inputs->code pkgs)))))
          ,@(match inputs
              (() '())
-             (pkgs `((inputs ,(package-lists->code pkgs)))))
+             (pkgs `((inputs ,(inputs->code pkgs)))))
          ,@(match propagated-inputs
              (() '())
-             (pkgs `((propagated-inputs ,(package-lists->code pkgs)))))
+             (pkgs `((propagated-inputs ,(inputs->code pkgs)))))
          ,@(if (lset= string=? supported-systems %supported-systems)
                '()
                `((supported-systems (list ,@supported-systems))))

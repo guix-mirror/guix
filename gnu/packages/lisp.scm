@@ -5,7 +5,7 @@
 ;;; Copyright © 2016 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2016, 2017 Andy Patterson <ajpatter@uwaterloo.ca>
-;;; Copyright © 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2019–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Benjamin Slade <slade@jnanam.net>
@@ -48,6 +48,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix gexp)
   #:use-module (guix utils)
   #:use-module (guix build-system copy)
   #:use-module (guix build-system gnu)
@@ -67,20 +68,21 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages groff)
-  #:use-module (gnu packages m4)
-  #:use-module (gnu packages maths)
-  #:use-module (gnu packages multiprecision)
-  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages libffcall)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages libsigsegv)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages m4)
+  #:use-module (gnu packages maths)
+  #:use-module (gnu packages multiprecision)
+  #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages tex)
-  #:use-module (gnu packages tls)
   #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages xorg)
   #:use-module (ice-9 match))
@@ -129,33 +131,52 @@ Definition Facility.")
     (license license:expat)))
 
 (define-public gcl
-  (let ((commit "d3335e2b3deb63f930eb0328e9b05377744c9512")
-        (revision "2")) ;Guix package revision
+  (let ((commit "ff7ef981765cc0efdb4b1db27c292f5c11a72753")
+        (revision "3")) ;Guix package revision
     (package
       (name "gcl")
-      (version (string-append "2.6.12-" revision "."
-                              (string-take commit 7)))
+      (version (git-version "2.6.12" revision commit))
       (source
        (origin
          (method git-fetch)
          (uri (git-reference
                (url "https://git.savannah.gnu.org/r/gcl.git")
                (commit commit)))
-         (file-name (string-append "gcl-" version "-checkout"))
+         (file-name (git-file-name name version))
          (sha256
-          (base32 "05v86lhvsby05nzvcd3c4k0wljvgdgd0i6arzd2fx1yd67dl6fgj"))))
+          (base32 "0z64fxxcaial2i1s1hms8r095dm1ff3wd8ivwdx894a3yln9c0an"))))
       (build-system gnu-build-system)
       (arguments
        `(#:parallel-build? #f  ; The build system seems not to be thread safe.
          #:test-target "ansi-tests/test_results"
-         #:configure-flags '("--enable-ansi") ; required for use by the maxima package
-         #:make-flags (list
-                       (string-append "GCL_CC=" (assoc-ref %build-inputs "gcc")
-                                      "/bin/gcc")
-                       (string-append "CC=" (assoc-ref %build-inputs "gcc")
-                                      "/bin/gcc"))
+         #:configure-flags ,#~(list
+                               "--enable-ansi" ; required by the maxima package
+                               (string-append "CFLAGS=-I"
+                                              #$(this-package-input "libtirpc")
+                                              "/include/tirpc")
+                               (string-append "LDFLAGS=-L"
+                                              #$(this-package-input "libtirpc")
+                                              "/lib")
+                               "LIBS=-ltirpc")
+         #:make-flags ,#~(list
+                          (string-append "GCL_CC=" #$gcc "/bin/gcc")
+                          (string-append "CC="#$gcc "/bin/gcc"))
          #:phases
          (modify-phases %standard-phases
+           (add-after 'unpack 'realpath-workaround
+             ;; Calls to the realpath function can set errno even if the return
+             ;; value of the function indicates that there is no error, which
+             ;; make massert consider that there was an error.
+             (lambda _
+               (substitute* "gcl/o/main.c"
+                 (("massert\\(realpath\\(s,o\\)\\);" all)
+                  "massert((realpath(s, o) != NULL) && ((errno = 0) == 0));"))))
+           (add-after 'unpack 'fix-makefile
+             ;; The "final" target doesn't exist.
+             (lambda _
+               (substitute* "gcl/makefile"
+                 (("\\$\\(MAKE\\) -C \\$\\(PORTDIR\\) final")
+                  "$(MAKE) -C $(PORTDIR)"))))
            (add-before 'configure 'pre-conf
              (lambda* (#:key inputs #:allow-other-keys)
                (chdir "gcl")
@@ -210,11 +231,9 @@ Definition Facility.")
            ;; https://www.ma.utexas.edu/pipermail/maxima/2008/009769.html
            (delete 'strip))))
       (inputs
-       `(("gmp" ,gmp)
-         ("readline" ,readline)))
+       (list bash-minimal gmp libtirpc readline))
       (native-inputs
-       `(("m4" ,m4)
-         ("texinfo" ,texinfo)))
+       (list m4 texinfo))
       (home-page "https://www.gnu.org/software/gcl/")
       (synopsis "A Common Lisp implementation")
       (description "GCL is an implementation of the Common Lisp language.  It
@@ -239,9 +258,7 @@ interface to the Tk widget system.")
     (build-system gnu-build-system)
     ;; src/configure uses 'which' to confirm the existence of 'gzip'.
     (native-inputs
-     `(("cl-asdf" ,cl-asdf)
-       ("which" ,which)
-       ("texinfo" ,texinfo)))
+     (list cl-asdf which texinfo))
     ;; When ECL is embedded in a program that wants to use Common Lisp as an
     ;; extension language, libgmp, libatomic-ops, libgc and libffi must be
     ;; present when compiling the program because they are required by ECL's
@@ -249,10 +266,7 @@ interface to the Tk widget system.")
     ;; Therefore we put these libraries in 'propagated-inputs' instead
     ;; of 'inputs'.
     (propagated-inputs
-     `(("gmp" ,gmp)
-       ("libatomic-ops" ,libatomic-ops)
-       ("libgc" ,libgc)
-       ("libffi" ,libffi)))
+     (list gmp libatomic-ops libgc libffi))
     (arguments
      `(#:configure-flags '("--without-rt")
        ;; FIXME: As of version 20.4.24, we pass 17995 tests and fail 7.
@@ -342,11 +356,8 @@ supporting ASDF, Sockets, Gray streams, MOP, and other useful components.")
         (base32 "0k2dmgl0miz3767iks4p0mvp6xw0ysyxhjpklyh11j010rmh6hqb"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("cl-asdf" ,cl-asdf)))
-    (inputs `(("libffcall" ,libffcall)
-              ("ncurses" ,ncurses)
-              ("readline" ,readline)
-              ("libsigsegv" ,libsigsegv)))
+     (list cl-asdf))
+    (inputs (list libffcall ncurses readline libsigsegv))
     (arguments
      `(#:configure-flags '(,@(if (string-prefix? "armhf-linux"
                                                  (or (%current-system)
@@ -447,7 +458,7 @@ an interpreter, a compiler, a debugger, and much more.")
        ("ed" ,ed)
        ("inetutils" ,inetutils)         ;for hostname(1)
        ("texinfo" ,texinfo)
-       ("texlive" ,(texlive-union (list texlive-tex-texinfo)))
+       ("texlive" ,(texlive-updmap.cfg (list texlive-tex-texinfo)))
        ("which" ,which)
        ("zlib" ,zlib)))
     (arguments
@@ -519,10 +530,6 @@ an interpreter, a compiler, a debugger, and much more.")
                  (("\\(deftest grent\\.[12]" all)
                   (string-append "#+nil ;disabled by Guix\n" all))))
              #t))
-         ;; FIXME: the texlive-union insists on regenerating fonts.  It stores
-         ;; them in HOME, so it needs to be writeable.
-         (add-before 'build 'set-HOME
-           (lambda _ (setenv "HOME" "/tmp") #t))
          (replace 'build
            (lambda* (#:key outputs #:allow-other-keys)
              (setenv "CC" "gcc")
@@ -642,8 +649,7 @@ statistical profiler, a code coverage tool, and many other extensions.")
                 "0x4bjx6cxsjvxyagijhlvmc7jkyxifdvz5q5zvz37028va65243c")
                (_ "0ll017ajcfsyx8f7zsy4394y8xxvz40iz0gcsmznp0n3mf0xi67c"))))))))
     (native-inputs
-     `(("cl-asdf" ,cl-asdf)
-       ("m4" ,m4)))
+     (list cl-asdf m4))
     (arguments
      `(#:tests? #f                      ;no 'check' target
        #:modules ((ice-9 match)
@@ -772,7 +778,7 @@ interface.")
                                "X_EXTRA_LIBS=-lfontconfig"
                                "--with-x")
        #:tests? #f)) ; No make check.
-    (native-inputs `(("intltool" ,intltool)))
+    (native-inputs (list intltool))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("sdl" ,sdl)
@@ -838,9 +844,9 @@ libraries for Machine Learning, Neural Nets and statistical estimation.")
                  (install-file "mdli" bin)
                  #t))))))
       (native-inputs
-       `(("perl" ,perl)))
+       (list perl))
       (inputs
-       `(("libgc" ,libgc)))
+       (list libgc))
       (synopsis "Interpreter for the MIT Design Language (MDL)")
       (description "MDL (the MIT Design Language) is a descendant of Lisp.  It
 was originally developed in 1971 on the PDP-10 computer under the Incompatible
@@ -1108,8 +1114,7 @@ including a built-in database engine and a GUI system.")
        (inherit picolisp32)
        (name "picolisp")
        (native-inputs
-        `(("picolisp32" ,picolisp32)
-          ("which" ,which)))
+        (list picolisp32 which))
        (arguments
         (substitute-keyword-arguments (package-arguments picolisp32)
           ((#:system _ "") (%current-system))
@@ -1209,12 +1214,11 @@ assembler, PEG) is less than 1MB.")
        (modify-phases %standard-phases
          (add-before 'install 'fix-utils-path
            (lambda* (#:key inputs #:allow-other-keys)
-             (let* ((coreutils (string-append (assoc-ref inputs "coreutils") "/bin/"))
-                    (cat (string-append coreutils "cat"))
-                    (paste (string-append coreutils "paste"))
-                    (sort (string-append coreutils "sort"))
-                    (basename (string-append coreutils "basename"))
-                    (sed (string-append (assoc-ref inputs "sed") "/bin/sed")))
+             (let* ((cat (search-input-file inputs "/bin/cat"))
+                    (paste (search-input-file inputs "/bin/paste"))
+                    (sort (search-input-file inputs "/bin/sort"))
+                    (basename (search-input-file inputs "/bin/basename"))
+                    (sed (search-input-file inputs "/bin/sed")))
                (substitute* "lisp-repl-core-dumper"
                  (("\\$\\(basename") (string-append "$(" basename))
                  (("\\<cat\\>") cat)
@@ -1252,7 +1256,7 @@ and make for REPLs that start blazing fast.
         (base32 "020ipjfqa3l8skd97cj5kq837wgpj28ygfxnkv64cnjrlbnzh161"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("sbcl" ,sbcl)))
+     (list sbcl))
     (arguments
      `(#:tests? #f
        #:make-flags

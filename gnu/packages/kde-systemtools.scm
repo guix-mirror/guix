@@ -49,34 +49,31 @@
         (base32 "0xr5s0s40i2bsfjfapvpa7dxh9s4604cxirg97xcaacd6fdvhpds"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)
-       ("ruby" ,ruby)
-       ("ruby-test-unit" ,ruby-test-unit)))
+     (list extra-cmake-modules kdoctools ruby ruby-test-unit))
     (inputs
-     `(("baloo" ,baloo)
-       ("baloo-widgets" ,baloo-widgets)
-       ("kactivities" ,kactivities)
-       ("kbookmarks" ,kbookmarks)
-       ("kcmutils" ,kcmutils)
-       ("kcompletion" ,kcompletion)
-       ("kconfig" ,kconfig)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kcrash" ,kcrash)
-       ("kdbusaddons" ,kdbusaddons)
-       ("ki18n" ,ki18n)
-       ("kiconthemes" ,kiconthemes)
-       ("kinit" ,kinit)
-       ("kio" ,kio)
-       ("knewstuff" ,knewstuff)
-       ("knotifications" ,knotifications)
-       ("kparts" ,kparts)
-       ("ktextwidgets" ,ktextwidgets)
-       ("kwindowsystem" ,kwindowsystem)
-       ("oxygen-icons" ,oxygen-icons) ;; default icon set
-       ("phonon" ,phonon)
-       ("qtbase" ,qtbase-5)
-       ("solid" ,solid)))
+     (list baloo
+           baloo-widgets
+           kactivities
+           kbookmarks
+           kcmutils
+           kcompletion
+           kconfig
+           kcoreaddons
+           kcrash
+           kdbusaddons
+           ki18n
+           kiconthemes
+           kinit
+           kio
+           knewstuff
+           knotifications
+           kparts
+           ktextwidgets
+           kwindowsystem
+           oxygen-icons ;; default icon set
+           phonon
+           qtbase-5
+           solid))
     (arguments
      `(#:tests? #f)) ;; TODO: 4/15 tests fail even with offscreen
     (home-page "https://kde.org/applications/system/org.kde.dolphin")
@@ -108,15 +105,15 @@ The main features of Dolphin are:
         (base32 "12g44s6g7ma6avp15l45l42qyzbglswvahm2wji79zdls5vjnz7r"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     (list extra-cmake-modules))
     (inputs
-     `(("dolphin" ,dolphin)
-       ("ki18n" ,ki18n)
-       ("kio" ,kio)
-       ("ktexteditor" ,ktexteditor)
-       ("kxmlgui" ,kxmlgui)
-       ("oxygen-icons" ,oxygen-icons) ;; default icon set
-       ("qtbase" ,qtbase-5)))
+     (list dolphin
+           ki18n
+           kio
+           ktexteditor
+           kxmlgui
+           oxygen-icons ;; default icon set
+           qtbase-5))
     (home-page "http://www.kde.org/")
     (synopsis "VCS-Plugins for Dolphin")
     (description "This package contains plugins that offer integration in
@@ -136,28 +133,27 @@ Dolphin with the version control systems: Bzr, Git, Mercurial, Subversion.")
         (base32 "0wxzjragvjcfc7c4qja8wzpshhaywficj7f7wkmppzybcsxwn9qb"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules kdoctools))
     (inputs
-     `(("grantlee" ,grantlee)
-       ("karchive" ,karchive)
-       ("kbookmarks" ,kbookmarks)
-       ("kcodecs" ,kcodecs)
-       ("kconfig" ,kconfig)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kdbusaddons" ,kdbusaddons)
-       ("khtml" ,khtml)
-       ("ki18n" ,ki18n)
-       ("kinit" ,kinit)
-       ("kio" ,kio)
-       ("kjs" ,kjs)
-       ("kparts" ,kparts)
-       ("kservice" ,kservice)
-       ("kwindowsystem" ,kwindowsystem)
-       ("libxml2" ,libxml2)
-       ("oxygen-icons" ,oxygen-icons) ;; default icon set
-       ("qtbase" ,qtbase-5)
-       ("xapian" ,xapian)))
+     (list grantlee
+           karchive
+           kbookmarks
+           kcodecs
+           kconfig
+           kcoreaddons
+           kdbusaddons
+           khtml
+           ki18n
+           kinit
+           kio
+           kjs
+           kparts
+           kservice
+           kwindowsystem
+           libxml2
+           oxygen-icons ;; default icon set
+           qtbase-5
+           xapian))
     (arguments
      `(#:tests? #f)) ;; 1/1 test fails
     (home-page "https://kde.org/applications/system/org.kde.Help")
@@ -186,35 +182,34 @@ document meta data file.")
         (base32 "0ckr7bjkyaw0gr5kx569jfnhkhwmlk4lqk41ng61qwxlb4bsdbdm"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules kdoctools))
     (inputs
-     `(("kbookmarks" ,kbookmarks)
-       ("kcompletion" ,kcompletion)
-       ("kconfig" ,kconfig)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kcrash" ,kcrash)
-       ("kdbusaddons" ,kdbusaddons)
-       ("kguiaddons" ,kguiaddons)
-       ("ki18n" ,ki18n)
-       ("kiconthemes" ,kiconthemes)
-       ("kinit" ,kinit)
-       ("kio" ,kio)
-       ("knewstuff" ,knewstuff)
-       ("kglobalaccel" ,kglobalaccel)
-       ("knotifications" ,knotifications)
-       ("knotifyconfig" ,knotifyconfig)
-       ("kparts" ,kparts)
-       ("kpty" ,kpty)
-       ("kservice" ,kservice)
-       ("ktextwidgets" ,ktextwidgets)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kwindowsystem" ,kwindowsystem)
-       ("kxmlgui" ,kxmlgui)
-       ("oxygen-icons" ,oxygen-icons) ;; default icon set
-       ("qtbase" ,qtbase-5)
-       ("qtscript" ,qtscript)))
+     (list kbookmarks
+           kcompletion
+           kconfig
+           kconfigwidgets
+           kcoreaddons
+           kcrash
+           kdbusaddons
+           kguiaddons
+           ki18n
+           kiconthemes
+           kinit
+           kio
+           knewstuff
+           kglobalaccel
+           knotifications
+           knotifyconfig
+           kparts
+           kpty
+           kservice
+           ktextwidgets
+           kwidgetsaddons
+           kwindowsystem
+           kxmlgui
+           oxygen-icons ;; default icon set
+           qtbase-5
+           qtscript))
     (arguments
      `(#:tests? #f)) ;; TODO: 2/15 tests fail even with HOME, offscreen, SHELL, debus
     (home-page "http://www.kde.org/")
@@ -241,31 +236,29 @@ This package is part of the KDE base applications module.")
         (base32 "092ijn88jpmgk2zwz37vzf35jisl234mc3krc9jl7bd955akx51k"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("pkg-config" ,pkg-config)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules pkg-config kdoctools))
     (inputs
-     `(("kcompletion" ,kcompletion)
-       ("kconfig" ,kconfig)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kcrash" ,kcrash)
-       ("kdbusaddons" ,kdbusaddons)
-       ("kdnssd" ,kdnssd)
-       ("ki18n" ,ki18n)
-       ("knotifications" ,knotifications)
-       ("kwallet" ,kwallet)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kwindowsystem" ,kwindowsystem)
-       ("kxmlgui" ,kxmlgui)
-       ("libvnc" ,libvnc)
-       ("libxcb" ,libxcb)
-       ("libxtst" ,libxtst)
-       ("oxygen-icons" ,oxygen-icons) ;; default icon set
-       ("pipewire" ,pipewire)
-       ("qtbase" ,qtbase-5)
-       ("qtx11extras" ,qtx11extras)
-       ("xcb-util-image" ,xcb-util-image)
-       ("zlib" ,zlib)))
+     (list kcompletion
+           kconfig
+           kcoreaddons
+           kcrash
+           kdbusaddons
+           kdnssd
+           ki18n
+           knotifications
+           kwallet
+           kwidgetsaddons
+           kwindowsystem
+           kxmlgui
+           libvnc
+           libxcb
+           libxtst
+           oxygen-icons ;; default icon set
+           pipewire-0.3
+           qtbase-5
+           qtx11extras
+           xcb-util-image
+           zlib))
     (home-page "https://kde.org/applications/internet/org.kde.krfb")
     (synopsis "Desktop Sharing utility")
     (description "KDE Desktop Sharing is a server application that allows you
@@ -293,23 +286,22 @@ This package is part of the KDE networking module.")
         (base32 "1826h89ynvlxdwzyqil2d79cvynglww6fax7qp41wxasgarxhsni"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules kdoctools))
     (inputs
      ;; Not including Journald since this is not used in guix
-     `(("karchive" ,karchive)
-       ("kcompletion" ,kcompletion)
-       ("kconfig" ,kconfig)
-       ("kcoreaddons" ,kcoreaddons)
-       ("ki18n" ,ki18n)
-       ("kiconthemes" ,kiconthemes)
-       ("kio" ,kio)
-       ("kitemviews" ,kitemviews)
-       ("ktextwidgets" ,ktextwidgets)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kxmlgui" ,kxmlgui)
-       ("oxygen-icons" ,oxygen-icons) ;; default icon set
-       ("qtbase" ,qtbase-5)))
+     (list karchive
+           kcompletion
+           kconfig
+           kcoreaddons
+           ki18n
+           kiconthemes
+           kio
+           kitemviews
+           ktextwidgets
+           kwidgetsaddons
+           kxmlgui
+           oxygen-icons ;; default icon set
+           qtbase-5))
     (home-page "https://kde.org/applications/system/org.kde.ksystemlog")
     (synopsis "System log viewer")
     (description "This program is developed for being used by beginner users,
@@ -333,29 +325,29 @@ This package is part of the KDE administration module.")
                 "02pal9xx1wbpw7dimvs2aw1xnyjqlvbjlybkkfhf8x7c6m1r63aa"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     (list extra-cmake-modules))
     (inputs
-     `(("breeze-icons" ,breeze-icons)
-       ("karchive" ,karchive)
-       ("kconfig" ,kconfig)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kcrash" ,kcrash)
-       ("kdbusaddons" ,kdbusaddons)
-       ("kglobalaccel" ,kglobalaccel)
-       ("ki18n" ,ki18n)
-       ("kiconthemes" ,kiconthemes)
-       ("kio" ,kio)
-       ("knewstuff" ,knewstuff)
-       ("knotifications" ,knotifications)
-       ("knotifyconfig" ,knotifyconfig)
-       ("konsole" ,konsole)
-       ("kparts" ,kparts)
-       ("kwayland" ,kwayland)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kwindowsystem" ,kwindowsystem)
-       ("qtbase" ,qtbase-5)
-       ("qtsvg" ,qtsvg)
-       ("qtx11extras" ,qtx11extras)))
+     (list breeze-icons
+           karchive
+           kconfig
+           kcoreaddons
+           kcrash
+           kdbusaddons
+           kglobalaccel
+           ki18n
+           kiconthemes
+           kio
+           knewstuff
+           knotifications
+           knotifyconfig
+           konsole
+           kparts
+           kwayland
+           kwidgetsaddons
+           kwindowsystem
+           qtbase-5
+           qtsvg
+           qtx11extras))
     (home-page "https://www.kde.org/applications/system/yakuake/")
     (synopsis "Quad-style terminal emulator for KDE")
     (description "Yakuake is a drop-down terminal emulator based on KDE Konsole

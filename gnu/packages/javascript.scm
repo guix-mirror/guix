@@ -5,6 +5,7 @@
 ;;; Copyright © 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2021 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -80,14 +81,13 @@
          (use-modules (guix build utils))
          (chdir (assoc-ref %build-inputs "source"))
          (let ((target (string-append %output "/share/javascript/context-menu")))
-           (apply invoke (string-append (assoc-ref %build-inputs "esbuild")
-                                        "/bin/esbuild")
+           (apply invoke (search-input-file %build-inputs "/bin/esbuild")
                   "--bundle"
                   "--tsconfig=tsconfig.json"
                   (string-append "--outdir=" target)
                   (find-files "ts" "\\.ts$"))))))
     (native-inputs
-     `(("esbuild" ,esbuild)))
+     (list esbuild))
     (home-page "https://github.com/zorkow/context-menu")
     (synopsis "Generic context menu")
     (description "This package provides a reimplementation of the MathJax
@@ -209,8 +209,7 @@ be able to view it naturally and easily.")))
        (begin
          (use-modules (guix build utils))
          (chdir (assoc-ref %build-inputs "source"))
-         (let ((esbuild (string-append (assoc-ref %build-inputs "esbuild")
-                                       "/bin/esbuild"))
+         (let ((esbuild (search-input-file %build-inputs "/bin/esbuild"))
                (target (string-append %output "/share/javascript/commander")))
            (invoke esbuild
                    "--bundle"
@@ -220,7 +219,7 @@ be able to view it naturally and easily.")))
                    (string-append "--outfile=" target "/index.min.js")
                    "index.js")))))
     (native-inputs
-     `(("esbuild" ,esbuild)))
+     (list esbuild))
     (home-page "https://github.com/tj/commander.js")
     (synopsis "Library for node.js command-line interfaces")
     (description "Commander.js aims to be the complete solution for node.js
@@ -251,8 +250,7 @@ command-line interfaces.  ")
          (begin
            (use-modules (guix build utils))
            (chdir (assoc-ref %build-inputs "source"))
-           (let ((esbuild (string-append (assoc-ref %build-inputs "esbuild")
-                                         "/bin/esbuild"))
+           (let ((esbuild (search-input-file %build-inputs "/bin/esbuild"))
                  (target (string-append %output "/share/javascript/xmldom-sre")))
              (invoke esbuild
                      "--bundle"
@@ -261,7 +259,7 @@ command-line interfaces.  ")
                      (string-append "--outfile=" target "/dom-parser.min.js")
                      "dom-parser.js")))))
       (native-inputs
-       `(("esbuild" ,esbuild)))
+       (list esbuild))
       (home-page "https://github.com/zorkow/xmldom/")
       (synopsis "DOM parser and XML serializer")
       (description "This is a fork of the xmldom library.  It allows the use
@@ -430,7 +428,7 @@ detection.")
      `(#:javascript-files '("media/js/dataTables.bootstrap.js"
                             "media/js/jquery.dataTables.js")))
     (native-inputs
-     `(("unzip" ,unzip)))
+     (list unzip))
     (home-page "https://datatables.net")
     (synopsis "DataTables plug-in for jQuery")
     (description "DataTables is a table enhancing plug-in for the jQuery
@@ -580,7 +578,7 @@ external server.")
              (string-append "prefix=" (assoc-ref %outputs "out")))
        #:tests? #f))                    ; no tests
     (inputs
-     `(("readline" ,readline)))
+     (list readline))
     (home-page "https://mujs.com/")
     (synopsis "JavaScript interpreter written in C")
     (description "MuJS is a lightweight Javascript interpreter designed for
@@ -637,12 +635,31 @@ Javascript and a small built-in standard library with C library wrappers.")
                 "19szwxzvl2g65fw95ggvb8h0ma5bd9vvnnccn59hwnc4dida1x4n"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f                      ; No tests.
+     `(#:tests? #f                      ; No tests.
        #:make-flags (list "-f" "Makefile.sharedlibrary"
                           (string-append "INSTALL_PREFIX=" %output))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure))))
+         (delete 'configure)
+         ;; At least another major GNU/Linux distribution carries their own
+         ;; .pc file with this package.
+         (add-after 'install 'install-pkg-config
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (pkg-config-dir (string-append out "/lib/pkgconfig")))
+               (mkdir-p pkg-config-dir)
+               (with-output-to-file (string-append pkg-config-dir "/duktape.pc")
+                 (lambda _
+                   (format #t "prefix=~@*~a~@
+                               libdir=${prefix}/lib~@
+                               includedir=${prefix}/include~@
+
+                               Name: duktape~@
+                               Description: Embeddable Javascript engine~@
+                               Version: ~a~@
+                               Libs: -L${libdir} -lduktape~@
+                               Cflags: -I${includedir}~%"
+                           out ,version)))))))))
     (home-page "https://duktape.org/")
     (synopsis "Small embeddable Javascript engine")
     (description "Duktape is an embeddable Javascript engine, with a focus on

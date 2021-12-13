@@ -7,6 +7,7 @@
 ;;; Copyright © 2018, 2019, 2020, 2021 Peng Mei Yu <pengmeiyu@riseup.net>
 ;;; Copyright © 2020 kanichos <kanichos@yandex.ru>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
+;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
 ;;; Copyright © 2021 Songlin Jiang <hollowman@hollowman.ml>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -44,6 +45,7 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages datastructures)
   #:use-module (gnu packages dbm)
+  #:use-module (gnu packages docbook)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
@@ -51,19 +53,22 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages iso-codes)
   #:use-module (gnu packages logging)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages unicode)
-  #:use-module (gnu packages xorg))
+  #:use-module (gnu packages xorg)
+  #:use-module (gnu packages xdisorg))
 
 (define-public ibus
   (package
     (name "ibus")
-    (version "1.5.22")
+    (version "1.5.24")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/ibus/ibus/"
@@ -71,12 +76,14 @@
                                   version "/ibus-" version ".tar.gz"))
               (sha256
                (base32
-                "0jmy2w01phpmqnjnfnak7nvfna57mpgfnl87jwc4iai8ijjynw41"))))
+                "07s2ly75xv50bqg37mn37i9akqvcfd45k2mbplxrsqk3a2b3mwxb"))))
     (build-system glib-or-gtk-build-system)
+    (outputs '("out" "doc"))
     (arguments
-     `(#:tests? #f  ; tests fail because there's no connection to dbus
-       #:parallel-build? #f ; race condition discovered with emoji support
+     `(#:parallel-build? #f ; race condition discovered with emoji support
        #:configure-flags (list "--enable-python-library"
+                               "--enable-gtk-doc"
+                               "--enable-memconf"
                                (string-append
                                 "--with-unicode-emoji-dir="
                                 (assoc-ref %build-inputs "unicode-emoji")
@@ -91,6 +98,20 @@
                                "--enable-wayland")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'disable-failing-tests
+           (lambda _
+             ;; These tests require /etc/machine-id.
+             (with-directory-excursion "src/tests"
+               (substitute* '("ibus-share.c" "ibus-compose.c"
+                              "ibus-keypress.c")
+                 (("[ \t]*return g_test_run \\(\\);") "")))))
+         (add-after 'unpack 'patch-docbook-xml
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "docs/reference/ibus"
+               (substitute* "ibus-docs.sgml.in"
+                 (("http://www.oasis-open.org/docbook/xml/4.1.2/")
+                  (string-append (assoc-ref inputs "docbook-xml")
+                                 "/xml/dtd/docbook/"))))))
          (add-after 'unpack 'patch-python-target-directories
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((root (string-append (assoc-ref outputs "out")
@@ -101,13 +122,11 @@
                  (("(py2?overridesdir)=.*" _ var)
                   (string-append var "=" root "/gi/overrides/"))
                  (("(pkgpython2dir=).*" _ var)
-                  (string-append var root "/ibus"))))
-             #t))
+                  (string-append var root "/ibus"))))))
          (add-before 'configure 'disable-dconf-update
            (lambda _
              (substitute* "data/dconf/Makefile.in"
-               (("dconf update") "echo dconf update"))
-             #t))
+               (("dconf update") "echo dconf update"))))
          (add-after 'unpack 'delete-generated-files
            (lambda _
              (for-each (lambda (file)
@@ -115,53 +134,85 @@
                            (when (file-exists? c)
                              (format #t "deleting ~a\n" c)
                              (delete-file c))))
-                       (find-files "." "\\.vala"))
-             #t))
+                       (find-files "." "\\.vala"))))
          (add-after 'unpack 'fix-paths
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "src/ibusenginesimple.c"
                (("/usr/share/X11/locale")
-                (string-append (assoc-ref inputs "libx11")
-                               "/share/X11/locale")))
+                (search-input-directory inputs
+                                        "share/X11/locale")))
              (substitute* "ui/gtk3/xkblayout.vala"
                (("\"(setxkbmap|xmodmap)\"" _ prog)
-                (string-append "\"" (assoc-ref inputs prog) "/bin/" prog "\"")))
-             #t))
+                (string-append "\""
+                               (search-input-file inputs
+                                                  (string-append "bin/" prog))
+                               "\"")))))
+         (add-before 'check 'pre-check
+           (lambda _
+             ;; Tests write to $HOME.
+             (setenv "HOME" (getcwd))
+             ;; Tests look for $XDG_RUNTIME_DIR.
+             (setenv "XDG_RUNTIME_DIR" (getcwd))
+             ;; For missing '/etc/machine-id'.
+             (setenv "DBUS_FATAL_WARNINGS" "0")
+             ;; Tests require a running X server.
+             (system "Xvfb :1 +extension GLX &")
+             (setenv "DISPLAY" ":1")
+             ;; Tests require running iBus daemon.
+             (system "./bus/ibus-daemon --daemonize")))
+         (add-after 'install 'move-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (assoc-ref outputs "doc")))
+               (mkdir-p (string-append doc "/share"))
+               (rename-file
+                (string-append out "/share/gtk-doc")
+                (string-append doc "/share/gtk-doc")))))
          (add-after 'wrap-program 'wrap-with-additional-paths
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Make sure 'ibus-setup' runs with the correct PYTHONPATH and
              ;; GI_TYPELIB_PATH.
              (let ((out (assoc-ref outputs "out")))
                (wrap-program (string-append out "/bin/ibus-setup")
-                 `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH")))
+                 `("GUIX_PYTHONPATH" ":" prefix (,(getenv "GUIX_PYTHONPATH")))
                  `("GI_TYPELIB_PATH" ":" prefix
                    (,(getenv "GI_TYPELIB_PATH")
-                    ,(string-append out "/lib/girepository-1.0")))))
-             #t)))))
+                    ,(string-append out "/lib/girepository-1.0"))))))))))
     (inputs
      `(("dbus" ,dbus)
        ("dconf" ,dconf)
-       ("gconf" ,gconf)
+       ("glib" ,glib)
        ("gtk2" ,gtk+-2)
        ("gtk+" ,gtk+)
+       ("iso-codes" ,iso-codes)
        ("json-glib" ,json-glib)
        ("libnotify" ,libnotify)
        ("libx11" ,libx11)
+       ("libxkbcommon" ,libxkbcommon)
+       ("libxtst" ,libxtst)
+       ("pygobject" ,python-pygobject)
+       ("python" ,python)
+       ("python-dbus" ,python-dbus)
        ("setxkbmap" ,setxkbmap)
-       ("wayland" ,wayland)
-       ("xmodmap" ,xmodmap)
-       ("iso-codes" ,iso-codes)
-       ("pygobject2" ,python-pygobject)
-       ("python" ,python)))
-    (native-inputs
-     `(("glib" ,glib "bin") ; for glib-genmarshal
-       ("gettext" ,gettext-minimal)
-       ("gobject-introspection" ,gobject-introspection) ; for g-ir-compiler
        ("ucd" ,ucd)
-       ("unicode-emoji" ,unicode-emoji)
        ("unicode-cldr-common" ,unicode-cldr-common)
+       ("unicode-emoji" ,unicode-emoji)
+       ("wayland" ,wayland)
+       ("xmodmap" ,xmodmap)))
+    (native-inputs
+     `(("docbook-xml" ,docbook-xml-4.1.2)
+       ("glib" ,glib "bin")             ; for glib-genmarshal
+       ("gettext" ,gettext-minimal)
+       ("gnome-common" ,gnome-common)
+       ("gobject-introspection" ,gobject-introspection) ; for g-ir-compiler
+       ("gtk+:bin" ,gtk+ "bin")
+       ("gtk-doc" ,gtk-doc)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("python-wrapper" ,python-wrapper)
        ("vala" ,vala)
-       ("pkg-config" ,pkg-config)))
+       ("which" ,which)
+       ("xorg-server" ,xorg-server-for-tests)))
     (native-search-paths
      (list (search-path-specification
             (variable "IBUS_COMPONENT_PATH")
@@ -198,8 +249,8 @@ may also simplify input method development.")
              ;; PYTHONPATH and GI_TYPELIB_PATH.
              (let ((out (assoc-ref outputs "out")))
                (wrap-program (string-append out "/libexec/ibus-setup-libpinyin")
-                 `("PYTHONPATH" ":" =
-                   (,(getenv "PYTHONPATH")
+                 `("GUIX_PYTHONPATH" ":" prefix
+                   (,(getenv "GUIX_PYTHONPATH")
                     ,(string-append (assoc-ref inputs "ibus")
                                     "/lib/girepository-1.0")
                     ,(string-append (assoc-ref outputs "out")
@@ -220,9 +271,8 @@ may also simplify input method development.")
        ("pygobject2" ,python-pygobject)
        ("gtk+" ,gtk+)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)
-       ("glib" ,glib "bin")))
+     (list pkg-config intltool
+           `(,glib "bin")))
     (synopsis "Chinese pinyin and ZhuYin input methods for IBus")
     (description
      "This package includes a Chinese pinyin input method and a Chinese
@@ -244,10 +294,9 @@ ZhuYin (Bopomofo) input method based on libpinyin for IBus.")
                 "10h5mjgv4ibhispvr3s1k36a4aclx4dcvcc2knd4sg1xibw0dp4w"))))
     (build-system gnu-build-system)
     (inputs
-     `(("glib" ,glib)
-       ("bdb" ,bdb)))
+     (list glib bdb))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (synopsis "Library to handle Chinese pinyin")
     (description
      "The libpinyin C++ library provides algorithms needed for sentence-based
@@ -280,8 +329,8 @@ Chinese pinyin input methods.")
                (for-each
                 (lambda (prog)
                   (wrap-program (string-append out "/libexec/" prog)
-                    `("PYTHONPATH" ":" prefix
-                      (,(getenv "PYTHONPATH")))
+                    `("GUIX_PYTHONPATH" ":" prefix
+                      (,(getenv "GUIX_PYTHONPATH")))
                     `("GI_TYPELIB_PATH" ":" prefix
                       (,(getenv "GI_TYPELIB_PATH")
                        ,(string-append out "/lib/girepository-1.0")))))
@@ -293,11 +342,7 @@ Chinese pinyin input methods.")
        ("pkg-config" ,pkg-config)
        ("python" ,python)))
     (inputs
-     `(("anthy" ,anthy)
-       ("gtk+" ,gtk+)
-       ("ibus" ,ibus)
-       ("gobject-introspection" ,gobject-introspection)
-       ("python-pygobject" ,python-pygobject)))
+     (list anthy gtk+ ibus gobject-introspection python-pygobject))
     (synopsis "Anthy Japanese language input method for IBus")
     (description "IBus-Anthy is an engine for the input bus \"IBus\").  It
 adds the Anthy Japanese language input method to IBus.  Because most graphical
@@ -320,6 +365,7 @@ Japanese language input in most graphical applications.")
        (sha256
         (base32
          "0pqk0i3zcii3fx5laj9qzbgd58jvq6wn31j76w4zix2i4b1lqcqv"))
+       (patches (search-patches "librime-fix-build-with-gcc10.patch"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -338,17 +384,15 @@ Japanese language input in most graphical applications.")
                (("link_directories\\($\\{PROJECT_SOURCE_DIR\\}/thirdparty/lib\\)") ""))
              #t)))))
     (inputs
-     `(("boost" ,boost)
-       ("capnproto" ,capnproto)
-       ("glog" ,glog)
-       ("leveldb" ,leveldb)
-       ("marisa" ,marisa)
-       ("opencc" ,opencc)
-       ("yaml-cpp" ,yaml-cpp)))
+     (list boost
+           capnproto
+           glog
+           leveldb
+           marisa
+           opencc
+           yaml-cpp))
     (native-inputs
-     `(("googletest" ,googletest)
-       ("pkg-config" ,pkg-config)
-       ("xorgproto" ,xorgproto))) ; keysym.h
+     (list googletest pkg-config xorgproto)) ; keysym.h
     (home-page "https://rime.im/")
     (synopsis "The core library of Rime Input Method Engine")
     (description "@dfn{librime} is the core library of Rime Input Method
@@ -692,12 +736,12 @@ Method Engine.")
                 "DESTINATION \"${CMAKE_INSTALL_DATADIR}/rime-data\""))
              #t)))))
     (inputs
-     `(("gdk-pixbuf" ,gdk-pixbuf)
-       ("glib" ,glib)
-       ("ibus" ,ibus)
-       ("libnotify" ,libnotify)
-       ("librime" ,librime)
-       ("rime-data" ,rime-data)))
+     (list gdk-pixbuf
+           glib
+           ibus
+           libnotify
+           librime
+           rime-data))
     (native-inputs
      `(("cmake" ,cmake-minimal)
        ("pkg-config" ,pkg-config)))
@@ -752,7 +796,7 @@ hanja dictionary and small hangul character classification.")
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (wrap-program (string-append (assoc-ref outputs "out")
                                           "/libexec/ibus-setup-hangul")
-               `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH")))
+               `("GUIX_PYTHONPATH" ":" prefix (,(getenv "GUIX_PYTHONPATH")))
                `("LD_LIBRARY_PATH" ":" prefix
                  (,(string-append (assoc-ref inputs "libhangul") "/lib")))
                `("GI_TYPELIB_PATH" ":" prefix
@@ -763,12 +807,12 @@ hanja dictionary and small hangul character classification.")
        ("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin")))
     (inputs
-     `(("ibus" ,ibus)
-       ("glib" ,glib)
-       ("python-pygobject" ,python-pygobject)
-       ("gtk+" ,gtk+)
-       ("libhangul" ,libhangul)
-       ("python" ,python)))
+     (list ibus
+           glib
+           python-pygobject
+           gtk+
+           libhangul
+           python))
     (home-page "https://github.com/libhangul/ibus-hangul")
     (synopsis "Hangul engine for IBus")
     (description
@@ -793,8 +837,7 @@ hanja dictionary and small hangul character classification.")
     (arguments
      `(#:tests? #f)) ; No tests
     (propagated-inputs
-     `(("python-tinycss2" ,python-tinycss2)
-       ("python-pygobject" ,python-pygobject)))
+     (list python-tinycss2 python-pygobject))
     (native-inputs
      `(("gettext" ,gettext-minimal)))
     (home-page "https://github.com/openSUSE/IBus-Theme-Tools")

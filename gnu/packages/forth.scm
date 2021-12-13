@@ -49,7 +49,7 @@
                (install-file "gforth.el" emacs-sitedir)
                #t))))))
     (native-inputs
-     `(("m4" ,m4)))
+     (list m4))
     (synopsis "Forth interpreter")
     (description
      "Gforth is a fast and portable implementation of the ANSI Forth language.

@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2012, 2013, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2016, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
 ;;;
@@ -23,6 +23,7 @@
   #:use-module (guix licenses)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages hurd)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu))
@@ -30,18 +31,29 @@
 (define-public attr
   (package
     (name "attr")
-    (version "2.4.48")
+    (version "2.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/attr/attr-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1rr4adzwax4bzr2c00f06zcsljv5y6p9wymz1g89ww7cb2rp5bay"))))
+                "1y6sibbkrcjygv8naadnsg6xmsqwfh6cwrqk01l0v2i5kfacdqds"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         ,@(if (hurd-target?)
+               `((add-before 'configure 'skip-linux-syscalls
+                   (lambda _
+                     ;; Starting from 2.5.1, libattr includes Linux-specific
+                     ;; calls to syscall(2).  Comment them out for GNU/Hurd
+                     ;; and instead use the glibc-provided wrappers.
+                     (substitute* "Makefile.in"
+                       (("libattr/syscalls\\.c") "")
+                       (("\tlibattr/la-syscalls\\.lo") "")
+                       (("-Wl,[[:graph:]]+/libattr\\.lds") "")))))
+               '())
          (replace 'check
            (lambda* (#:key target #:allow-other-keys)
              ;; Use the right shell.
@@ -57,8 +69,7 @@
              ;; extended attributes, and we wish to allow Guix to be built
              ;; on such systems.
              (unless target
-               (system* "make" "tests" "-C" "test"))
-             #t)))))
+               (system* "make" "tests" "-C" "test")))))))
     (inputs
      ;; Perl is needed to run tests; remove it from cross builds.
      (if (%current-target-system)

@@ -1,6 +1,8 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Nicolò Balzarotti <nicolo@nixo.xyz>
+;;; Copyright © 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2021 Jean-Baptiste Volatier <jbv@pm.me>
+;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,7 +23,8 @@
   #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module (guix packages)
-  #:use-module (guix derivations)
+  #:use-module (guix gexp)
+  #:use-module (guix monads)
   #:use-module (guix search-paths)
   #:use-module (guix build-system)
   #:use-module (guix build-system gnu)
@@ -74,11 +77,11 @@
          (build julia-build)
          (arguments (strip-keyword-arguments private-keywords arguments)))))
 
-(define* (julia-build store name inputs
+(define* (julia-build name inputs
                       #:key source
                       (tests? #t)
-                      (phases '(@ (guix build julia-build-system)
-                                  %standard-phases))
+                      (parallel-tests? #t)
+                      (phases '%standard-phases)
                       (outputs '("out"))
                       (search-paths '())
                       (system (%current-system))
@@ -90,41 +93,28 @@
                                  (guix build utils))))
   "Build SOURCE using Julia, and with INPUTS."
   (define builder
-    `(begin
-       (use-modules ,@modules)
-       (julia-build #:name ,name
-                    #:source ,(match (assoc-ref inputs "source")
-                                (((? derivation? source))
-                                 (derivation->output-path source))
-                                ((source)
-                                 source)
-                                (source
-                                 source))
-                    #:system ,system
-                    #:tests? ,tests?
-                    #:phases ,phases
-                    #:outputs %outputs
-                    #:search-paths ',(map search-path-specification->sexp
-                                          search-paths)
-                    #:inputs %build-inputs
-                    #:julia-package-name ,julia-package-name
-                    #:julia-package-uuid ,julia-package-uuid)))
+    (with-imported-modules imported-modules
+      #~(begin
+          (use-modules #$@(sexp->gexp modules))
+          (julia-build #:name #$name
+                       #:source #+source
+                       #:system #$system
+                       #:tests? #$tests?
+                       #:parallel-tests? #$parallel-tests?
+                       #:phases #$phases
+                       #:outputs #$(outputs->gexp outputs)
+                       #:search-paths '#$(sexp->gexp
+                                          (map search-path-specification->sexp
+                                               search-paths))
+                       #:inputs #$(input-tuples->gexp inputs)
+                       #:julia-package-name #$julia-package-name
+                       #:julia-package-uuid #$julia-package-uuid))))
 
-  (define guile-for-build
-    (match guile
-      ((? package?)
-       (package-derivation store guile system #:graft? #f))
-      (#f                                         ; the default
-       (let* ((distro (resolve-interface '(gnu packages commencement)))
-              (guile  (module-ref distro 'guile-final)))
-         (package-derivation store guile system #:graft? #f)))))
-
-  (build-expression->derivation store name builder
-                                #:inputs inputs
-                                #:system system
-                                #:modules imported-modules
-                                #:outputs outputs
-                                #:guile-for-build guile-for-build))
+  (mlet %store-monad ((guile (package->derivation (or guile (default-guile))
+                                                  system #:graft? #f)))
+    (gexp->derivation name builder
+                      #:system system
+                      #:guile-for-build guile)))
 
 (define julia-build-system
   (build-system

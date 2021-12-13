@@ -1,0 +1,21 @@
+Fix building with glib 2.68:
+
+https://github.com/qtwebkit/qtwebkit/issues/1057
+
+Patch copied from upstream pull request:
+
+https://github.com/qtwebkit/qtwebkit/pull/1058/commits/5b698ba3faffd4e198a45be9fe74f53307395e4b
+
+diff -aurN qtwebkit-5.212.0-alpha4/Source/WTF/wtf/glib/GRefPtr.h qtwebkit-5.212.0-alpha4-mod/Source/WTF/wtf/glib/GRefPtr.h
+--- qtwebkit-5.212.0-alpha4/Source/WTF/wtf/glib/GRefPtr.h	2020-03-04 18:16:37.000000000 +0100
++++ qtwebkit-5.212.0-alpha4-mod/Source/WTF/wtf/glib/GRefPtr.h	2021-04-05 06:58:44.763328636 +0200
+@@ -29,9 +29,6 @@
+ #include <wtf/RefPtr.h>
+ #include <algorithm>
+ 
+-extern "C" void g_object_unref(gpointer);
+-extern "C" gpointer g_object_ref_sink(gpointer);
+-
+ namespace WTF {
+ 
+ enum GRefPtrAdoptType { GRefPtrAdopt };

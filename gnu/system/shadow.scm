@@ -3,6 +3,7 @@
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -164,7 +165,12 @@ XTerm*utf8: always
 XTerm*metaSendsEscape: true\n"))
         (gdbinit   (plain-file "gdbinit" "\
 # Tell GDB where to look for separate debugging files.
-set debug-file-directory ~/.guix-profile/lib/debug
+guile
+(use-modules (gdb))
+(execute (string-append \"set debug-file-directory \"
+                        (or (getenv \"GDB_DEBUG_FILE_DIRECTORY\")
+                            \"~/.guix-profile/lib/debug\")))
+end
 
 # Authorize extensions found in the store, such as the
 # pretty-printers of libstdc++.

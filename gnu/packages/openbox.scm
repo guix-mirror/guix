@@ -22,6 +22,7 @@
   #:use-module ((guix licenses) #:select (gpl2+))
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
@@ -47,19 +48,19 @@
                (base32
                 "0vg2y1qddsdxkjv806mzpvmkgzliab8ll4s7zm7ma5jnriamirxb"))))
     (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)))
-    (propagated-inputs `(("python2-pyxdg" ,python2-pyxdg)))
-    (inputs `(("imlib2" ,imlib2)
-              ("libxml2" ,libxml2)
-              ("librsvg" ,librsvg)
-              ("libsm" ,libsm)
-              ("libxcursor" ,libxcursor)
-              ("libxinerama" ,libxinerama)
-              ("libxml2" ,libxml2)
-              ("libxrandr" ,libxrandr)
-              ("libxft" ,libxft)
-              ("pango" ,pango)
-              ("python-2" ,python-2)))
+    (native-inputs (list pkg-config))
+    (propagated-inputs (list python2-pyxdg))
+    (inputs (list imlib2
+                  libxml2
+                  (librsvg-for-system)
+                  libsm
+                  libxcursor
+                  libxinerama
+                  libxml2
+                  libxrandr
+                  libxft
+                  pango
+                  python-2))
     (synopsis "Box style window manager")
     (description
      "Openbox is a highly configurable, next generation window manager with

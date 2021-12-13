@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2017, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2017, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
@@ -32,6 +32,7 @@
 ;;; Copyright © 2020 Léo Le Bouter <lle-bout@zaclys.net>
 ;;; Copyright © 2021 Antoine Côté <antoine.cote@posteo.net>
 ;;; Copyright © 2021 Vincent Legoll <vincent.legoll@gmail.com>
+;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Ahmad Jarara <git@ajarara.io>
 ;;;
@@ -168,10 +169,8 @@ in compression.")
                (delete-file (string-append out "/include/minizip/crypt.h"))
                #t))))))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
-    (propagated-inputs `(("zlib" ,zlib)))
+     (list autoconf automake libtool))
+    (propagated-inputs (list zlib))
     (home-page (package-home-page zlib))
     (synopsis "Zip Compression library")
     (description
@@ -192,7 +191,7 @@ the @code{zlib} source.")
               (base32
                "0iginbz2m15hcsa3x4y7v3mhk54gr1r7m3ghx0pg4n46vv2snmpi"))))
    (build-system gnu-build-system)
-   (inputs `(("zlib" ,zlib)))
+   (inputs (list zlib))
    (home-page "https://savannah.nongnu.org/projects/fastjar")
    (synopsis "Replacement for Sun's 'jar' utility")
    (description
@@ -220,11 +219,9 @@ the @code{zlib} source.")
    (build-system gnu-build-system)
    (arguments `(#:tests? #f)) ; no "check" target
    (native-inputs
-    `(("autoconf" ,autoconf)
-      ("automake" ,automake)
-      ("libtool" ,libtool)))
+    (list autoconf automake libtool))
    (inputs
-    `(("zlib" ,zlib)))
+    (list zlib))
    (synopsis "C library for manipulating POSIX tar files")
    (description
     "libtar is a C library for manipulating POSIX tar files.  It handles
@@ -465,7 +462,7 @@ compatible with bzip2 – both at file format and command line level.")
                "1rnvgcdixjzbrmcr1nv9b6ccrjfrhryaj7jwz28yxxv6lam3xlcg"))))
     (build-system gnu-build-system)
     (inputs
-     `(("bzip2" ,bzip2)))
+     (list bzip2))
     (arguments
      `(#:tests? #f                      ; no tests
        #:phases (modify-phases %standard-phases
@@ -485,7 +482,7 @@ compressed with pbzip2 can be decompressed with bzip2).")
 (define-public xz
   (package
    (name "xz")
-   (version "5.2.4")
+   (version "5.2.5")
    (source (origin
             (method url-fetch)
             (uri (list (string-append "http://tukaani.org/xz/xz-" version
@@ -494,7 +491,7 @@ compressed with pbzip2 can be decompressed with bzip2).")
                                       version ".tar.gz")))
             (sha256
              (base32
-              "0ibi2zsfaz6l756spjwc5rayf4ckgc9hwmy8qinppcyk4svz64mm"))))
+              "045s9agl3bpv3swlwydhgsqh7791957vmgw2plw8f1rks07r3x7n"))))
    (build-system gnu-build-system)
    (arguments
     `(#:phases
@@ -545,11 +542,11 @@ than gzip and 15 % smaller output than bzip2.")
        (modify-phases %standard-phases
          (add-before 'check 'set-up-test-environment
            (lambda* (#:key inputs #:allow-other-keys)
-             (setenv "TZDIR" (string-append (assoc-ref inputs "tzdata")
-                                            "/share/zoneinfo"))
-             #t)))))
+             (setenv "TZDIR"
+                     (search-input-directory inputs
+                                             "share/zoneinfo")))))))
     (native-inputs
-     `(("tzdata" ,tzdata-for-tests)))
+     (list tzdata-for-tests))
     (home-page "https://fragglet.github.com/lhasa/")
     (synopsis "LHA archive decompressor")
     (description "Lhasa is a replacement for the Unix LHA tool, for
@@ -599,7 +596,7 @@ format are designed to be portable across platforms.")
         (base32
          "0h9gb8q7y54m9mvy3jvsmxf21yx8fc3ylzh418hgbbv0i8mbcwky"))))
     (build-system gnu-build-system)
-    (inputs `(("lzo" ,lzo)))
+    (inputs (list lzo))
     (home-page "https://www.lzop.org/")
     (synopsis "Compress or expand files")
     (description
@@ -612,14 +609,14 @@ some compression ratio).")
 (define-public lzip
   (package
     (name "lzip")
-    (version "1.21")
+    (version "1.22")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://savannah/lzip/lzip-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "12qdcw5k1cx77brv9yxi1h4dzwibhfmdpigrj43nfk8nscwm12z4"))))
+               "0j59hx72258334rmkwn57ahr6s69nlrx0a5ip1jw2fbiwr12sd63"))))
     (build-system gnu-build-system)
     (home-page "https://www.nongnu.org/lzip/lzip.html")
     (synopsis "Lossless data compressor based on the LZMA algorithm")
@@ -695,7 +692,7 @@ decompressors when faced with corrupted input.")
              (string-append "extern " all)))))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("which" ,which)))
+     (list which))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -738,7 +735,7 @@ This package is mostly for compatibility and historical interest.")
                       (("/usr/local") (assoc-ref outputs "out")))
                     #t)))))
     (inputs
-     `(("zlib" ,zlib)))
+     (list zlib))
     (home-page "https://github.com/raboof/sfArkLib")
     (synopsis "Library for SoundFont decompression")
     (description
@@ -774,8 +771,7 @@ with the sfArk algorithm.")
                  (("/usr/local") (assoc-ref outputs "out")))
                #t)))))
       (inputs
-       `(("zlib" ,zlib)
-         ("sfarklib" ,sfarklib)))
+       (list zlib sfarklib))
       (home-page "https://github.com/raboof/sfarkxtc")
       (synopsis "Basic sfArk decompressor")
       (description "SfArk extractor converts SoundFonts in the compressed legacy
@@ -817,9 +813,8 @@ decompression of some loosely related file formats used by Microsoft.")
     (build-system gnu-build-system)
     (outputs (list "out" "static"))
     (native-inputs
-     `(;; For tests.
-       ("python" ,python)
-       ("valgrind" ,valgrind)))
+     (list ;; For tests.
+           python valgrind))
     (arguments
      `(;; Not designed for parallel testing.
        ;; See https://github.com/lz4/lz4/issues/957#issuecomment-737419821
@@ -935,10 +930,7 @@ This package allows you to create and extract such file systems.")
      `(#:configure-flags
        (list "--disable-static")))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf automake libtool pkg-config))
     (inputs
      `(("libselinux" ,libselinux)
 
@@ -1008,7 +1000,7 @@ byte-for-byte identical output.")
        #:make-flags
        (list ,(string-append "CC=" (cc-for-target)))
        #:test-target "tests"))
-    (inputs `(("zlib" ,zlib)))
+    (inputs (list zlib))
     (home-page "https://zlib.net/pigz/")
     (synopsis "Parallel implementation of gzip")
     (description
@@ -1033,8 +1025,7 @@ multiple processors and multiple cores when compressing data.")
                 "1ifxr18f2h75gkcrkx8033kwmwmrcgxshpaawyc2n4dzn1p2rqz5"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("libarchive" ,libarchive)))
+     (list pkg-config libarchive))
     (home-page "https://github.com/vasi/pixz")
     (synopsis "Parallel indexing implementation of LZMA")
     (description
@@ -1080,7 +1071,7 @@ tarballs.")
                (delete-file-recursively dir-name)
                #t))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
      `(("libmspack" ,libmspack)
        ("libmspack-source" ,(package-source libmspack))))
@@ -1105,17 +1096,15 @@ tarballs.")
         (base32 "18qkyg19r7fxzv93kar5n808n3582ygjmqwa7rnyg5y4b6hnwihl"))))
     (build-system meson-build-system)
     (native-inputs
-     `(("gobject-introspection" ,gobject-introspection)
-       ("help2man" ,help2man)
-       ("pkg-config" ,pkg-config)))
+     (list gobject-introspection help2man pkg-config))
     (inputs
-     `(("git" ,git)
-       ("glib" ,glib)
-       ("gnupg" ,gnupg)
-       ("gnutls" ,gnutls)
-       ("gpgme" ,gpgme)
-       ("json-glib" ,json-glib)
-       ("vala" ,vala)))
+     (list git
+           glib
+           gnupg
+           gnutls
+           gpgme
+           json-glib
+           vala))
     (home-page "https://github.com/hughsie/libjcat")
     (synopsis "Library for reading and writing Jcat files")
     (description
@@ -1145,8 +1134,7 @@ file.")
            #t))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)))
+     (list autoconf automake))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -1181,10 +1169,7 @@ human-readable output.")
              '())
        ("perl" ,perl)))
     (inputs
-     `(("bzip2" ,bzip2)
-       ("lz4" ,lz4)
-       ("lzo" ,lzo)
-       ("zlib" ,zlib)))
+     (list bzip2 lz4 lzo zlib))
     (home-page "http://ck.kolivas.org/apps/lrzip/")
     (synopsis "Large file compressor with a very high compression ratio")
     (description "lrzip is a compression utility that uses long-range
@@ -1223,11 +1208,12 @@ well as bzip2.")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'unpack-third_party-subprojects
-           (lambda* (#:key inputs #:allow-other-keys)
+           (lambda* (#:key native-inputs inputs #:allow-other-keys)
              (with-directory-excursion "third_party"
                (for-each (lambda (subproject)
                            (let* ((input (string-append subproject "-source"))
-                                  (source (assoc-ref inputs input)))
+                                  (source (assoc-ref (or native-inputs inputs)
+                                                     input)))
                              (with-directory-excursion subproject
                                ;; Take advantage of the coincidence that both
                                ;; use GIT-FETCH, which creates a directory.
@@ -1278,8 +1264,8 @@ for most inputs, but the resulting compressed files are anywhere from 20% to
              (let ((gcc (assoc-ref (or native-inputs inputs) "gcc")))
                (setenv "CPLUS_INCLUDE_PATH"
                        (string-join
-                        (cons* (string-append (assoc-ref inputs "libcxx+libcxxabi")
-                                              "/include/c++/v1")
+                        (cons* (search-input-directory inputs
+                                                       "/include/c++/v1")
                                ;; Hide GCC's C++ headers so that they do not interfere with
                                ;; the Clang headers.
                                (delete (string-append gcc "/include/c++")
@@ -1293,8 +1279,7 @@ for most inputs, but the resulting compressed files are anywhere from 20% to
     (native-inputs
      `(("clang" ,clang-toolchain-6)))
     (inputs
-     `(("libcxx+libcxxabi" ,libcxx+libcxxabi-6)
-       ("libcxxabi" ,libcxxabi-6)))))
+     (list libcxx+libcxxabi-6 libcxxabi-6))))
 
 (define-public p7zip
   (package
@@ -1320,7 +1305,10 @@ for most inputs, but the resulting compressed files are anywhere from 20% to
                              (find-files  "Utils/file_Codecs_Rar_so.py")))
                   (delete-file-recursively "CPP/7zip/Archive/Rar")
                   (delete-file-recursively "CPP/7zip/Compress/Rar")
-                  #t))
+                  ;; Fix FTBFS with gcc-10.
+                  (substitute* "CPP/Windows/ErrorMsg.cpp"
+                    (("switch\\(errorCode\\) \\{")
+                     "switch(static_cast<HRESULT>(errorCode)) {"))))
               (patches (search-patches "p7zip-CVE-2016-9296.patch"
                                        "p7zip-CVE-2017-17969.patch"
                                        "p7zip-remove-unused-code.patch"))))
@@ -1331,31 +1319,27 @@ for most inputs, but the resulting compressed files are anywhere from 20% to
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
-           (lambda* (#:key system outputs #:allow-other-keys)
-             (invoke "cp"
-                     (let ((system ,(or (%current-target-system)
-                                        (%current-system))))
-                       (cond
-                        ((string-prefix? "x86_64" system)
-                         "makefile.linux_amd64_asm")
-                        ((string-prefix? "i686" system)
-                         "makefile.linux_x86_asm_gcc_4.X")
-                        (else
-                         "makefile.linux_any_cpu_gcc_4.X")))
-                     "makefile.machine")))
-         (replace 'check
            (lambda _
-             (invoke "make" "test")
-             (invoke "make" "test_7z")
-             (invoke "make" "test_7zr"))))))
+             (copy-file
+               ,(cond ((target-x86-64?)
+                       "makefile.linux_amd64_asm")
+                      ((target-x86-32?)
+                       "makefile.linux_x86_asm_gcc_4.X")
+                      (else
+                        "makefile.linux_any_cpu_gcc_4.X"))
+               "makefile.machine")))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "make" "test")
+               (invoke "make" "test_7z")
+               (invoke "make" "test_7zr")))))))
     (native-inputs
-     (let ((system (or (%current-target-system)
-                       (%current-system))))
-       `(,@(cond ((string-prefix? "x86_64" system)
-                  `(("yasm" ,yasm)))
-                 ((string-prefix? "i686" system)
-                  `(("nasm" ,nasm)))
-                 (else '())))))
+      (cond ((target-x86-64?)
+             (list yasm))
+            ((target-x86-32?)
+             (list nasm))
+            (else '())))
     (home-page "http://p7zip.sourceforge.net/")
     (synopsis "Command-line file archiver with high compression ratio")
     (description "p7zip is a command-line port of 7-Zip, a file archiver that
@@ -1403,7 +1387,7 @@ handles the 7z format which features very high compression ratios.")
                (install-file "libgzstream.a" lib)
                (install-file "gzstream.h" include)
                #t))))))
-    (propagated-inputs `(("zlib" ,zlib)))
+    (propagated-inputs (list zlib))
     (home-page "http://www.cs.unc.edu/Research/compgeom/gzstream/")
     (synopsis "Compressed C++ iostream")
     (description "gzstream is a small library for providing zlib
@@ -1453,7 +1437,7 @@ functionality in a C++ iostream.")
         (string-append "PREFIX="
                        (assoc-ref %outputs "out")))))
     (native-inputs
-     `(("perl" ,perl)))                 ; for pod2man
+     (list perl))                 ; for pod2man
     (home-page "http://mattmahoney.net/dc/zpaq.html")
     (synopsis "Incremental journaling archiver")
     (description "ZPAQ is a command-line archiver for realistic situations with
@@ -1517,7 +1501,7 @@ or junctions, and always follows hard links.")
             (base32 "1k5cw6vnpja8yjlnhx5124xrw9i8s1l539hfdqqrqz3l5gn0bnyd"))
            (file-name "unshield-the-feeble-files-spanish.zip")))))
     (native-inputs
-     `(("unzip" ,unzip)))
+     (list unzip))
     (arguments
      `(#:out-of-source? #f
        #:phases
@@ -1565,15 +1549,14 @@ or junctions, and always follows hard links.")
 (define-public zstd
   (package
     (name "zstd")
-    (version "1.4.4")
+    (version "1.5.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/facebook/zstd/releases/download/"
                            "v" version "/zstd-" version ".tar.gz"))
        (sha256
-        (base32 "05ckxap00qvc0j51d3ci38150cxsw82w7s9zgd5fgzspnzmp1vsr"))))
-    (replacement zstd/fixed)
+        (base32 "150y541303vnvfhd8wkbih00lfvvm98rd12yijwlbkqzg3xgp52i"))))
     (build-system gnu-build-system)
     (outputs '("out"                    ;1.2MiB executables and documentation
                "lib"                    ;1.2MiB shared library and headers
@@ -1581,6 +1564,26 @@ or junctions, and always follows hard links.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'remove-bogus-check
+           (lambda _
+             ;; lib/Makefile falsely claims that no .pc file can be created.
+             (substitute* "lib/Makefile"
+               (("error configured .*dir ")
+                "true "))
+             #t))
+         (add-after 'unpack 'patch-command-file-names
+           ;; Don't require hard requirements to be in $PATH.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (our (lambda (name) (string-append out "/bin/" name))))
+               (substitute* "programs/zstdgrep"
+                 (("(:-)(grep)" _ prefix command)
+                  (string-append prefix (which command)))
+                 (("(:-)(zstdcat)" _ prefix command)
+                  (string-append prefix (our command))))
+               (substitute* "programs/zstdless"
+                 (("zstdcat" command)
+                  (our command))))))
          (delete 'configure)            ;no configure script
          (add-after 'install 'adjust-library-locations
            (lambda* (#:key outputs #:allow-other-keys)
@@ -1600,17 +1603,16 @@ or junctions, and always follows hard links.")
                ;; Make sure the pkg-config file refers to the right output.
                (substitute* (string-append shared-libs "/pkgconfig/libzstd.pc")
                  (("^prefix=.*")
-                  (string-append "prefix=" lib "\n")))
-
-               #t))))
+                  ;; Note: The .pc file expects a trailing slash for 'prefix'.
+                  (string-append "prefix=" lib "/\n")))))))
        #:make-flags
-       ;; TODO: Integrate in next rebuild cycle.
-       (list ,(if (%current-target-system)
-                (string-append "CC=" (cc-for-target))
-                "CC=gcc")
-             (string-append "PREFIX=" (assoc-ref %outputs "out"))
-             (string-append "LIBDIR=" (assoc-ref %outputs "lib") "/lib")
-             (string-append "INCLUDEDIR=" (assoc-ref %outputs "lib") "/include")
+       (list ,(string-append "CC=" (cc-for-target))
+             (string-append "prefix=" (assoc-ref %outputs "out"))
+             (string-append "libdir=" (assoc-ref %outputs "lib") "/lib")
+             (string-append "includedir=" (assoc-ref %outputs "lib") "/include")
+             ;; Auto-detection is over-engineered and buggy.
+             "PCLIBDIR=lib"
+             "PCINCDIR=include"
              ;; Skip auto-detection of, and creating a dependency on, the build
              ;; environment's ‘xz’ for what amounts to a dubious feature anyway.
              "HAVE_LZMA=0"
@@ -1632,17 +1634,6 @@ speed.")
                    license:expat         ; lib/dictBuilder/divsufsort.[ch]
                    license:public-domain ; zlibWrapper/examples/fitblk*
                    license:zlib))))      ; zlibWrapper/{gz*.c,gzguts.h}
-
-(define zstd/fixed
-  (package
-    (inherit zstd)
-    (source
-     (origin
-       (inherit (package-source zstd))
-       (patches
-        (search-patches
-         ;; From Ubuntu focal-security
-         "zstd-CVE-2021-24031_CVE-2021-24032.patch"))))))
 
 (define-public pzstd
   (package/inherit zstd
@@ -1702,7 +1693,7 @@ the actual decompression, the other input and output.")
         (base32
          "0sb3h3067pzf3a7mlxn1hikpcjrsvycjcnj9hl9b1c3ykcgvps7h"))))
     (build-system gnu-build-system)
-    (inputs `(("bzip2" ,bzip2)))
+    (inputs (list bzip2))
     (arguments
      `(#:tests? #f ; no test target
        #:make-flags (let ((out (assoc-ref %outputs "out")))
@@ -1756,8 +1747,32 @@ Compression ratios of 2:1 to 3:1 are common for text files.")
                                 "unzip-attribs-overflow.patch"
                                 "unzip-overflow-on-invalid-input.patch"
                                 "unzip-format-secure.patch"
-                                "unzip-overflow-long-fsize.patch"))))
-    (replacement unzip/fixed)
+                                "unzip-overflow-long-fsize.patch"
+
+                                ;; From Fedora
+                                "unzip-alt-iconv-utf8.patch"
+                                "unzip-alt-iconv-utf8-print.patch"
+                                "unzip-fix-recmatch.patch"
+                                "unzip-case-insensitive.patch"
+                                "unzip-close.patch"
+                                "unzip-COVSCAN-fix-unterminated-string.patch"
+                                "unzip-CVE-2016-9844.patch"
+                                "unzip-CVE-2018-1000035.patch"
+                                "unzip-CVE-2018-18384.patch"
+                                "unzip-exec-shield.patch"
+                                "unzip-manpage-fix.patch"
+                                "unzip-overflow.patch"
+                                "unzip-timestamp.patch"
+                                "unzip-valgrind.patch"
+                                "unzip-x-option.patch"
+                                ;; CVE-2019-13232
+                                "unzip-zipbomb-manpage.patch"
+                                "unzip-zipbomb-part1.patch"
+                                "unzip-zipbomb-part2.patch"
+                                "unzip-zipbomb-part3.patch"
+
+                                ;; https://github.com/madler/unzip/issues/2
+                                "unzip-32bit-zipbomb-fix.patch"))))
     (build-system gnu-build-system)
     ;; no inputs; bzip2 is not supported, since not compiled with BZ_NO_STDIO
     (arguments
@@ -1792,57 +1807,6 @@ subdirectories below it, all files from the specified zipfile.  UnZip
 recreates the stored directory structure by default.")
     (license (license:non-copyleft "file://LICENSE"
                                    "See LICENSE in the distribution."))))
-
-(define unzip/fixed
-  (package
-    (inherit unzip)
-    (version "6.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "mirror://sourceforge/infozip"
-                           "/UnZip%206.x%20%28latest%29/UnZip%206.0/unzip60.tar.gz"))
-       (sha256
-        (base32
-         "0dxx11knh3nk95p2gg2ak777dd11pr7jx5das2g49l262scrcv83"))
-       (patches (search-patches "unzip-CVE-2014-8139.patch"
-                                "unzip-CVE-2014-8140.patch"
-                                "unzip-CVE-2014-8141.patch"
-                                "unzip-CVE-2014-9636.patch"
-                                "unzip-CVE-2015-7696.patch"
-                                "unzip-CVE-2015-7697.patch"
-                                "unzip-allow-greater-hostver-values.patch"
-                                "unzip-initialize-symlink-flag.patch"
-                                "unzip-remove-build-date.patch"
-                                "unzip-attribs-overflow.patch"
-                                "unzip-overflow-on-invalid-input.patch"
-                                "unzip-format-secure.patch"
-                                "unzip-overflow-long-fsize.patch"
-
-                                ;; From Fedora
-                                "unzip-alt-iconv-utf8.patch"
-                                "unzip-alt-iconv-utf8-print.patch"
-                                "unzip-fix-recmatch.patch"
-                                "unzip-case-insensitive.patch"
-                                "unzip-close.patch"
-                                "unzip-COVSCAN-fix-unterminated-string.patch"
-                                "unzip-CVE-2016-9844.patch"
-                                "unzip-CVE-2018-1000035.patch"
-                                "unzip-CVE-2018-18384.patch"
-                                "unzip-exec-shield.patch"
-                                "unzip-manpage-fix.patch"
-                                "unzip-overflow.patch"
-                                "unzip-timestamp.patch"
-                                "unzip-valgrind.patch"
-                                "unzip-x-option.patch"
-                                ;; CVE-2019-13232
-                                "unzip-zipbomb-manpage.patch"
-                                "unzip-zipbomb-part1.patch"
-                                "unzip-zipbomb-part2.patch"
-                                "unzip-zipbomb-part3.patch"
-
-                                ;; https://github.com/madler/unzip/issues/2
-                                "unzip-32bit-zipbomb-fix.patch"))))))
 
 (define-public ziptime
   (let ((commit "2a5bc9dfbf7c6a80e5f7cb4dd05b4036741478bc")
@@ -1896,50 +1860,6 @@ timestamps in the file header with a fixed time (1 January 2008).
 (define-public zziplib
   (package
     (name "zziplib")
-    (version "0.13.69")
-    (home-page "https://github.com/gdraheim/zziplib")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference (url home-page)
-                                  (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (patches (search-patches "zziplib-CVE-2018-16548.patch"))
-              (sha256
-               (base32
-                "0fbk9k7ryas2wh2ykwkvm1pbi40i88rfvc3dydh9xyd7w2jcki92"))))
-    (replacement zziplib/fixed)
-    (build-system gnu-build-system)
-    (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (add-before 'check 'make-files-writable
-                    (lambda _
-                      (for-each make-file-writable
-                                (find-files "test" #:directories? #t))
-                      #t)))
-
-       ;; XXX: The default test target attempts to download external resources and
-       ;; fails without error: <https://github.com/gdraheim/zziplib/issues/53>.
-       ;; To prevent confusing log messages, just run a simple zip test that works.
-       #:test-target "check-readme"))
-    (inputs
-     `(("zlib" ,zlib)))
-    (native-inputs `(("perl" ,perl)     ; for the documentation
-                     ("pkg-config" ,pkg-config)
-                     ;; for the documentation; Python 3 not supported,
-                     ;; http://forums.gentoo.org/viewtopic-t-863161-start-0.html
-                     ("python" ,python-2)
-                     ("zip" ,zip))) ; to create test files
-    (synopsis "Library for accessing zip files")
-    (description
-     "ZZipLib is a library based on zlib for accessing zip files.")
-    ;; zziplib is dual licensed under LGPL2.0+ and MPL1.1.  Some example source
-    ;; files carry the Zlib license; see "docs/copying.html" for details.
-    (license (list license:lgpl2.0+ license:mpl1.1))))
-
-(define-public zziplib/fixed
-  (package
-    (inherit zziplib)
-    (name "zziplib")
     (version "0.13.72")
     (home-page "https://github.com/gdraheim/zziplib")
     (source (origin
@@ -1950,25 +1870,17 @@ timestamps in the file header with a fixed time (1 January 2008).
               (sha256
                (base32
                 "0i6bpa2b13z19alm6ig80364dnin1w28cvif18k6wkkb0w3dzp8y"))))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'install-compatibility-symlinks
-           (lambda* (#:key outputs #:allow-other-keys)
-             (with-directory-excursion
-               (string-append (assoc-ref outputs "out") "/lib")
-               (map (lambda (lib new-symlink)
-                      (symlink lib new-symlink))
-                    (list "libzzip.so.13" "libzzipfseeko.so.13"
-                          "libzzipmmapped.so.13" "libzzipwrap.so.13")
-                    (list "libzzip-0.so.13" "libzzipfseeko-0.so.13"
-                          "libzzipmmapped-0.so.13" "libzzipwrap-0.so.13")))
-             #t)))))
-    (native-inputs
-     `(("python" ,python)
-       ,@(alist-delete "python"
-                       (package-native-inputs zziplib))))
-    (build-system cmake-build-system)))
+    (build-system cmake-build-system)
+    (inputs
+     (list zlib))
+    (native-inputs (list perl ; for the documentation
+                         pkg-config python zip)) ; to create test files
+    (synopsis "Library for accessing zip files")
+    (description
+     "ZZipLib is a library based on zlib for accessing zip files.")
+    ;; zziplib is dual licensed under LGPL2.0+ and MPL1.1.  Some example source
+    ;; files carry the Zlib license; see "docs/copying.html" for details.
+    (license (list license:lgpl2.0+ license:mpl1.1))))
 
 (define-public libzip
   (package
@@ -1982,14 +1894,10 @@ timestamps in the file header with a fixed time (1 January 2008).
                (base32
                 "0zn9vaiwy2izj8cnm8i7c2mbdn38n328grqb8f07x55s4kd3nxph"))))
     (native-inputs
-     `(("perl" ,perl)
-       ("pkg-config" ,pkg-config)))
+     (list perl pkg-config))
     (inputs
-     `(("gnutls" ,gnutls)
-       ("liblzma" ,xz)
-       ("openssl" ,openssl)
-       ("zlib" ,zlib)
-       ("zstd:lib" ,zstd "lib")))
+     (list gnutls xz openssl zlib
+           `(,zstd "lib")))
     (build-system cmake-build-system)
     (home-page "https://libzip.org")
     (synopsis "C library for reading, creating, and modifying zip archives")
@@ -2023,8 +1931,7 @@ archive can be reverted.")
                                "/bin/file'")))
              #t)))))
     (inputs
-     `(("perl" ,perl)
-       ("file" ,file)))
+     (list perl file))
     (home-page "https://www.nongnu.org/atool/")
     (synopsis  "Universal tool to manage file archives of various types")
     (description "The main command is @command{aunpack} which extracts files
@@ -2128,7 +2035,7 @@ corrupted input.")
         (base32 "19zinpx7hssl6r3vilpvq2s7wha3545xan8b0vcvsxnyipdx3n0l"))))
     (build-system gnu-build-system)
     (inputs
-     `(("lzlib" ,lzlib)))
+     (list lzlib))
     (home-page "https://www.nongnu.org/lzip/plzip.html")
     (synopsis "Parallel lossless data compressor for the lzip format")
     (description
@@ -2160,10 +2067,8 @@ single-member files which can't be decompressed in parallel.")
    (build-system cmake-build-system)
    (arguments
     `(#:tests? #f))
-   (inputs `(("boost" ,boost)
-             ("libiconv" ,libiconv)
-             ("xz" ,xz)))
-   (native-inputs `(("pkg-config" ,pkg-config)))
+   (inputs (list boost libiconv xz))
+   (native-inputs (list pkg-config))
    (home-page "https://constexpr.org/innoextract/")
    (synopsis "Tool for extracting Inno Setup installers")
    (description "innoextract allows extracting Inno Setup installers under
@@ -2279,10 +2184,9 @@ decompression is a little bit slower.")
              (patches (search-patches "upx-CVE-2021-20285.patch"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("perl" ,perl)))
+     (list perl))
     (inputs
-     `(("ucl" ,ucl)
-       ("zlib" ,zlib)))
+     (list ucl zlib))
     (arguments
      `(#:make-flags
        (list "all")
@@ -2329,10 +2233,9 @@ download times, and other distribution and storage costs.")
     (arguments
      `(#:tests? #f))                    ;no test
     (native-inputs
-     `(("doxygen" ,doxygen)))
+     (list doxygen))
     (inputs
-     `(("qtbase" ,qtbase-5)
-       ("zlib" ,zlib)))
+     (list qtbase-5 zlib))
     (home-page "https://stachenov.github.io/quazip/index.html")
     (synopsis "Qt/C++ wrapper for Minizip")
     (description "QuaZIP is a simple C++ wrapper over Gilles Vollant's
@@ -2387,10 +2290,9 @@ reading from and writing to ZIP archives. ")
                          (string-append (assoc-ref inputs "zstd")
                                         "/bin/zstd"))))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("curl" ,curl)
-       ("zstd" ,zstd)))
+     (list curl zstd))
     (propagated-inputs
      `(("zstd:lib" ,zstd "lib")))       ;in Requires.private of zck.pc
     (home-page "https://github.com/zchunk/zchunk")
@@ -2447,7 +2349,7 @@ To download a zchunk file.
                    make-flags))))))
     (native-inputs
      ;; Needed to extract the source tarball and run the test suite.
-     `(("lzip" ,lzip)))
+     (list lzip))
     (home-page "https://www.nongnu.org/zutils/zutils.html")
     (synopsis "Utilities that transparently operate on compressed files")
     (description
@@ -2499,8 +2401,8 @@ at run time, and must be installed separately.")
                   (bin (string-append (assoc-ref %outputs "out") "/bin"))
                   (target (string-append bin "/" name))
                   (python (string-append (assoc-ref %build-inputs "python") "/bin"))
-                  (7z (string-append (assoc-ref %build-inputs "p7zip") "/bin/7z"))
-                  (unzip (string-append (assoc-ref %build-inputs "unzip") "/bin/unzip")))
+                  (7z (search-input-file %build-inputs "/bin/7z"))
+                  (unzip (search-input-file %build-inputs "/bin/unzip")))
              (setenv "PATH" (string-append (getenv "PATH") ":" python))
              (mkdir-p bin)
              (copy-file source target)
@@ -2558,13 +2460,10 @@ file compression algorithm.")
         (base32 "00adrjpxqlaccrwjf65w3vhxfswdj0as8aj263c6f9b85llypc5v"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
-     `(("gettext" ,gettext-minimal)
-       ("intltool" ,intltool)
-       ("libxslt" ,libxslt)
-       ("pkg-config" ,pkg-config)))
+     (list gettext-minimal intltool libxslt pkg-config))
     (inputs
-     `(("adwaita-icon-theme" ,adwaita-icon-theme) ; hard-coded theme
-       ("gtk+" ,gtk+)))
+     (list adwaita-icon-theme ; hard-coded theme
+           gtk+))
     (home-page "https://github.com/ib/xarchiver")
     (synopsis "Graphical front-end for archive operations")
     (description "Xarchiver is a front-end to various command line archiving
@@ -2702,7 +2601,7 @@ to their original, binary CD format.")
        (modify-phases %standard-phases
          (delete 'configure))))
     (inputs
-     `(("zlib" ,zlib)))
+     (list zlib))
     (home-page "https://github.com/ebiggers/libdeflate")
     (synopsis "Library for DEFLATE/zlib/gzip compression and decompression")
     (description "Libdeflate is a library for fast, whole-buffer DEFLATE-based
@@ -2729,9 +2628,9 @@ compression and decompression.  The supported formats are:
         (base32 "1x5dw03lcwfigcv97cg70gkbkfycjmv1012s9lwnl4izvl9235qg"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("lzip" ,lzip)))
+     (list lzip))
     (inputs
-     `(("lzlib" ,lzlib)))
+     (list lzlib))
     (home-page "https://www.nongnu.org/lzip/tarlz.html")
     (synopsis "Combination of the tar archiver and the lzip compressor")
     (description

@@ -62,26 +62,26 @@
        (patches (search-patches "gpodder-disable-updater.patch"))))
     (build-system python-build-system)
     (native-inputs
-     `(("intltool" ,intltool)
-       ("python-coverage" ,python-coverage)
-       ("python-minimock" ,python-minimock)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)
-       ("python-pytest-httpserver" ,python-pytest-httpserver)
-       ("which" ,which)))
+     (list intltool
+           python-coverage
+           python-minimock
+           python-pytest
+           python-pytest-cov
+           python-pytest-httpserver
+           which))
     (inputs
-     `(("bash-minimal" ,bash-minimal)
-       ("gtk+" ,gtk+)
-       ("python-pygobject" ,python-pygobject)
-       ("python-pycairo" ,python-pycairo)
-       ("python-requests" ,python-requests)
-       ("python-dbus" ,python-dbus)
-       ("python-html5lib" ,python-html5lib)
-       ("python-mutagen" ,python-mutagen)
-       ("python-mygpoclient" ,python-mygpoclient)
-       ("python-podcastparser" ,python-podcastparser)
-       ("youtube-dl" ,youtube-dl)
-       ("xdg-utils" ,xdg-utils)))
+     (list bash-minimal
+           gtk+
+           python-pygobject
+           python-pycairo
+           python-requests
+           python-dbus
+           python-html5lib
+           python-mutagen
+           python-mygpoclient
+           python-podcastparser
+           youtube-dl
+           xdg-utils))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
@@ -94,9 +94,6 @@
                #t)))
          (replace 'check
            (lambda* (#:key tests? #:allow-other-keys)
-             ; The `unittest' target overrides the PYTHONPATH variable.
-             (substitute* "makefile"
-               (("PYTHONPATH=src/") "PYTHONPATH=${PYTHONPATH}:src/"))
              (when tests?
                (invoke "make" "unittest"))))
          ;; 'msgmerge' introduces non-determinism by resetting the
@@ -147,7 +144,7 @@ locally for later listening.")
                                        "libmygpo-qt-missing-qt5-modules.patch"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
      `(("qt" ,qtbase-5)))
     (arguments
@@ -175,9 +172,7 @@ and track podcasts.")
          "1fi5x6k1mngr0iviw2s4n1f3y2x7pwqy5ivkcrjdprzvwr37f0mh"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-coverage" ,python-coverage)
-       ("python-minimock" ,python-minimock)
-       ("python-nose" ,python-nose)))
+     (list python-coverage python-minimock python-nose))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -203,7 +198,7 @@ downloading episode status changes.")
        (sha256
         (base32 "0m24r2qhck0win44xfhxajbppkss4ha6am0042s0xyq3408883m3"))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     (list python-pytest))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
@@ -233,15 +228,8 @@ in Python.")
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)
-       ("ronn-ng" ,ronn-ng)))
-    (inputs `(("curl" ,curl)
-              ("glib" ,glib)
-              ("id3lib" ,id3lib)
-              ("libxml2" ,libxml2)))
+     (list autoconf automake libtool pkg-config ronn-ng))
+    (inputs (list curl glib id3lib libxml2))
     (synopsis "Command line podcast downloader")
     (description
      "castget is a simple, command-line based RSS enclosure downloader.  It is

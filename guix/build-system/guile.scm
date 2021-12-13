@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2019, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,7 +20,8 @@
   #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module (guix packages)
-  #:use-module (guix derivations)
+  #:use-module (guix monads)
+  #:use-module (guix gexp)
   #:use-module (guix search-paths)
   #:use-module (guix build-system)
   #:use-module (guix build-system gnu)
@@ -75,7 +76,7 @@
   ;; denominator between Guile 2.0 and 2.2.
   ''("-Wunbound-variable" "-Warity-mismatch" "-Wformat"))
 
-(define* (guile-build store name inputs
+(define* (guile-build name inputs
                       #:key source
                       (guile #f)
                       (phases '%standard-phases)
@@ -91,47 +92,34 @@
                                  (guix build utils))))
   "Build SOURCE using Guile taken from the native inputs, and with INPUTS."
   (define builder
-    `(begin
-       (use-modules ,@modules)
-       (guile-build #:name ,name
-                    #:source ,(match (assoc-ref inputs "source")
-                                (((? derivation? source))
-                                 (derivation->output-path source))
-                                ((source)
-                                 source)
-                                (source
-                                 source))
-                    #:source-directory ,source-directory
-                    #:scheme-file-regexp ,scheme-file-regexp
-                    #:not-compiled-file-regexp ,not-compiled-file-regexp
-                    #:compile-flags ,compile-flags
-                    #:phases ,phases
-                    #:system ,system
-                    #:outputs %outputs
-                    #:search-paths ',(map search-path-specification->sexp
-                                          search-paths)
-                    #:inputs %build-inputs)))
+    (with-imported-modules imported-modules
+      #~(begin
+          (use-modules #$@modules)
 
-  (define guile-for-build
-    (match guile
-      ((? package?)
-       (package-derivation store guile system #:graft? #f))
-      (#f                                         ; the default
-       (let* ((distro (resolve-interface '(gnu packages commencement)))
-              (guile  (module-ref distro 'guile-final)))
-         (package-derivation store guile system #:graft? #f)))))
+          (guile-build #:name #$name
+                       #:source #+source
+                       #:source-directory #$source-directory
+                       #:scheme-file-regexp #$scheme-file-regexp
+                       #:not-compiled-file-regexp #$not-compiled-file-regexp
+                       #:compile-flags #$compile-flags
+                       #:phases #$phases
+                       #:system #$system
+                       #:outputs #$(outputs->gexp outputs)
+                       #:inputs #$(input-tuples->gexp inputs)
+                       #:search-paths '#$(map search-path-specification->sexp
+                                              search-paths)))))
 
-  (build-expression->derivation store name builder
-                                #:inputs inputs
-                                #:system system
-                                #:modules imported-modules
-                                #:outputs outputs
-                                #:guile-for-build guile-for-build))
+  (mlet %store-monad ((guile (package->derivation (or guile (default-guile))
+                                                  system #:graft? #f)))
+    (gexp->derivation name builder
+                      #:system system
+                      #:target #f
+                      #:guile-for-build guile)))
 
-(define* (guile-cross-build store name
+(define* (guile-cross-build name
                             #:key
                             (system (%current-system)) target
-                            native-drvs target-drvs
+                            build-inputs target-inputs host-inputs
                             (guile #f)
                             source
                             (outputs '("out"))
@@ -146,68 +134,42 @@
                             (modules '((guix build guile-build-system)
                                        (guix build utils))))
   (define builder
-    `(begin
-       (use-modules ,@modules)
+    (with-imported-modules imported-modules
+      #~(begin
+          (use-modules #$@modules)
 
-       (let ()
-         (define %build-host-inputs
-           ',(map (match-lambda
-                    ((name (? derivation? drv) sub ...)
-                     `(,name . ,(apply derivation->output-path drv sub)))
-                    ((name path)
-                     `(,name . ,path)))
-                  native-drvs))
+          (define %build-host-inputs
+            #+(input-tuples->gexp build-inputs))
 
-         (define %build-target-inputs
-           ',(map (match-lambda
-                    ((name (? derivation? drv) sub ...)
-                     `(,name . ,(apply derivation->output-path drv sub)))
-                    ((name (? package? pkg) sub ...)
-                     (let ((drv (package-cross-derivation store pkg
-                                                          target system)))
-                       `(,name . ,(apply derivation->output-path drv sub))))
-                    ((name path)
-                     `(,name . ,path)))
-                  target-drvs))
+          (define %build-target-inputs
+            (append #$(input-tuples->gexp host-inputs)
+                    #+(input-tuples->gexp target-inputs)))
 
-         (guile-build #:source ,(match (assoc-ref native-drvs "source")
-                                  (((? derivation? source))
-                                   (derivation->output-path source))
-                                  ((source)
-                                   source)
-                                  (source
-                                   source))
-                      #:system ,system
-                      #:target ,target
-                      #:outputs %outputs
-                      #:source-directory ,source-directory
-                      #:not-compiled-file-regexp ,not-compiled-file-regexp
-                      #:compile-flags ,compile-flags
-                      #:inputs %build-target-inputs
-                      #:native-inputs %build-host-inputs
-                      #:search-paths ',(map search-path-specification->sexp
-                                            search-paths)
-                      #:native-search-paths ',(map
-                                               search-path-specification->sexp
-                                               native-search-paths)
-                      #:phases ,phases))))
+          (define %outputs
+            #$(outputs->gexp outputs))
 
-  (define guile-for-build
-    (match guile
-      ((? package?)
-       (package-derivation store guile system #:graft? #f))
-      (#f                                         ; the default
-       (let* ((distro (resolve-interface '(gnu packages commencement)))
-              (guile  (module-ref distro 'guile-final)))
-         (package-derivation store guile system #:graft? #f)))))
+          (guile-build #:source #+source
+                       #:system #$system
+                       #:target #$target
+                       #:outputs %outputs
+                       #:source-directory #$source-directory
+                       #:not-compiled-file-regexp #$not-compiled-file-regexp
+                       #:compile-flags #$compile-flags
+                       #:inputs %build-target-inputs
+                       #:native-inputs %build-host-inputs
+                       #:search-paths '#$(map search-path-specification->sexp
+                                              search-paths)
+                       #:native-search-paths '#$(map
+                                                 search-path-specification->sexp
+                                                 native-search-paths)
+                       #:phases #$phases))))
 
-  (build-expression->derivation store name builder
-                                #:system system
-                                #:inputs (append native-drvs target-drvs)
-                                #:outputs outputs
-                                #:modules imported-modules
-                                #:substitutable? substitutable?
-                                #:guile-for-build guile-for-build))
+  (mlet %store-monad ((guile (package->derivation (or guile (default-guile))
+                                                  system #:graft? #f)))
+    (gexp->derivation name builder
+                      #:system system
+                      #:target target
+                      #:guile-for-build guile)))
 
 (define guile-build-system
   (build-system

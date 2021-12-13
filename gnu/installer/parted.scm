@@ -1418,9 +1418,11 @@ USER-PARTITIONS, or return nothing."
             (let* ((uuids (map (lambda (file)
                                  (uuid->string (read-partition-uuid file)))
                                swap-devices)))
-              `((swap-devices (list ,@(map (lambda (uuid)
-                                             `(uuid ,uuid))
-                                           uuids))))))
+              `((swap-devices
+                 (list ,@(map (lambda (uuid)
+                                `(swap-space
+                                  (target (uuid ,uuid))))
+                              uuids))))))
       ,@(if (null? encrypted-partitions)
             '()
             `((mapped-devices

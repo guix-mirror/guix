@@ -48,8 +48,7 @@
                          (("/usr/bin/env") (which "env")))
                        #t)))
                   #:parallel-tests? #f))
-    (native-inputs `(("perl" ,perl)
-                     ("python-cram" ,python-cram)))
+    (native-inputs (list perl python-cram))
     (synopsis "Management suite for dotfiles")
     (description "The rcm suite of tools is for managing dotfiles directories.  This is
 a directory containing all the @code{.*rc} files in your home directory

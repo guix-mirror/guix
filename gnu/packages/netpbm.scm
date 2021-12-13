@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -132,8 +132,7 @@
              (display (string-append "LDFLAGS += -Wl,-rpath=" %output "/lib") f)
              (close-port f))
 
-           (let ((rgb (string-append (assoc-ref inputs "xorg-rgb")
-                                     "/share/X11/rgb.txt")))
+           (let ((rgb (search-input-file inputs "/share/X11/rgb.txt")))
              (substitute* "config.mk"
                (("/usr/share/netpbm/rgb.txt") rgb))
 
@@ -143,8 +142,7 @@
                (("\"%s/gs\"")
                 "\"%s/gsc\"")
                (("/usr/bin/gs")
-                (string-append (assoc-ref inputs "ghostscript") "/bin/gsc"))))
-           #t))
+                (search-input-file inputs "/bin/gsc"))))))
        (add-before 'check 'setup-check
          (lambda _
            ;; install temporarily into /tmp/netpbm

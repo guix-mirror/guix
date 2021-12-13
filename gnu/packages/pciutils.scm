@@ -109,8 +109,7 @@
        ;; No test suite.
        #:tests? #f))
     (native-inputs
-     `(("which" ,which)
-       ("pkg-config" ,pkg-config)))
+     (list which pkg-config))
     (inputs
      `(,@(if (member (or (%current-target-system)
                          (%current-system))

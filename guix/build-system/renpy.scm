@@ -1,4 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
+;;; Copyright © 2021 Leo Prikler <leo.prikler@student.tugraz.at>
+;;; Copyright © 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2021 Liliana Marie Prikler <liliana.prikler@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -21,7 +23,8 @@
   #:use-module (guix utils)
   #:use-module (guix memoization)
   #:use-module (guix packages)
-  #:use-module (guix derivations)
+  #:use-module (guix gexp)
+  #:use-module (guix monads)
   #:use-module (guix search-paths)
   #:use-module (guix build-system)
   #:use-module (guix build-system gnu)
@@ -53,7 +56,7 @@
                 #:rest arguments)
   "Return a bag for NAME."
   (define private-keywords
-    '(#:source #:target #:renpy #:inputs #:native-inputs))
+    '(#:target #:renpy #:inputs #:native-inputs))
 
   (and (not target)                               ;XXX: no cross-compilation
        (bag
@@ -72,57 +75,43 @@
          (build renpy-build)
          (arguments (strip-keyword-arguments private-keywords arguments)))))
 
-(define* (renpy-build store name inputs
-                       #:key
-                       (phases '(@ (guix build renpy-build-system)
-                                   %standard-phases))
-                       (configure-flags ''())
-                       (outputs '("out"))
-                       (output "out")
-                       (game "game")
-                       (search-paths '())
-                       (system (%current-system))
-                       (guile #f)
-                       (imported-modules %renpy-build-system-modules)
-                       (modules '((guix build renpy-build-system)
-                                  (guix build utils))))
+(define* (renpy-build name inputs
+                      #:key
+                      source
+                      (phases '%standard-phases)
+                      (configure-flags ''())
+                      (outputs '("out"))
+                      (output "out")
+                      (game "game")
+                      (search-paths '())
+                      (system (%current-system))
+                      (guile #f)
+                      (imported-modules %renpy-build-system-modules)
+                      (modules '((guix build renpy-build-system)
+                                 (guix build utils))))
   "Build SOURCE using RENPY, and with INPUTS."
   (define builder
-    `(begin
-       (use-modules ,@modules)
-       (renpy-build #:name ,name
-                    #:source ,(match (assoc-ref inputs "source")
-                                (((? derivation? source))
-                                 (derivation->output-path source))
-                                ((source)
-                                 source)
-                                (source
-                                 source))
-                     #:configure-flags ,configure-flags
-                     #:system ,system
-                     #:phases ,phases
-                     #:outputs %outputs
-                     #:output ,output
-                     #:game ,game
-                     #:search-paths ',(map search-path-specification->sexp
-                                           search-paths)
-                     #:inputs %build-inputs)))
+    (with-imported-modules imported-modules
+      #~(begin
+          (use-modules #$@(sexp->gexp modules))
+          (renpy-build #:name #$name
+                       #:source #+source
+                       #:configure-flags #$configure-flags
+                       #:system #$system
+                       #:phases #$phases
+                       #:outputs #$(outputs->gexp outputs)
+                       #:output #$output
+                       #:game #$game
+                       #:search-paths '#$(sexp->gexp
+                                          (map search-path-specification->sexp
+                                               search-paths))
+                       #:inputs #$(input-tuples->gexp inputs)))))
 
-  (define guile-for-build
-    (match guile
-      ((? package?)
-       (package-derivation store guile system #:graft? #f))
-      (#f                                         ; the default
-       (let* ((distro (resolve-interface '(gnu packages commencement)))
-              (guile  (module-ref distro 'guile-final)))
-         (package-derivation store guile system #:graft? #f)))))
-
-  (build-expression->derivation store name builder
-                                #:inputs inputs
-                                #:system system
-                                #:modules imported-modules
-                                #:outputs outputs
-                                #:guile-for-build guile-for-build))
+  (mlet %store-monad ((guile (package->derivation (or guile (default-guile))
+                                                  system #:graft? #f)))
+    (gexp->derivation name builder
+                      #:system system
+                      #:guile-for-build guile)))
 
 (define renpy-build-system
   (build-system

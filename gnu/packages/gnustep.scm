@@ -54,7 +54,7 @@
     (arguments
      '(#:tests? #f)) ; no check target
     (native-inputs
-     `(("which" ,which)))
+     (list which))
     (home-page "http://gnustep.org")
     (synopsis "GNUstep make package")
     (description "The makefile package is a simple, powerful and extensible way
@@ -144,7 +144,7 @@ to easily create cross-compiled binaries.")
        ("libpng" ,libpng)
        ("libtiff" ,libtiff)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://windowmaker.org/")
     (description
      "Window Maker is an X11 window manager originally designed to provide
@@ -170,13 +170,9 @@ interface.  It is fast, feature rich, easy to configure, and easy to use.")
     (build-system gnu-build-system)
     (arguments '(#:tests? #f)) ; no "check" target
     (inputs
-     `(("glib" ,glib)
-       ("libx11" ,libx11)
-       ("libxext" ,libxext)
-       ("libxpm" ,libxpm)
-       ("upower" ,upower)))
+     (list glib libx11 libxext libxpm upower))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://www.dockapps.net/wmbattery")
     (synopsis "Display laptop battery info")
     (description
@@ -200,11 +196,9 @@ graph), and battery status (high - green, low - yellow, or critical - red).")
                 "01s37d8cfpncza1mlw13ar4rcwbrc1vgaj3ifhglmlcnzvvayg0n"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libx11" ,libx11)
-       ("libxext" ,libxext)
-       ("libxpm" ,libxpm)))
+     (list libx11 libxext libxpm))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "http://www.thregr.org/~wavexx/software/wmnd/")
     (synopsis "Network interface monitor")
     (description
@@ -226,11 +220,9 @@ other compatible window managers.")
                 "1334y0axnxydwv05d172f405iljrfakg4kcyg9kmn46v6ywv424g"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libx11" ,libx11)
-       ("libxext" ,libxext)
-       ("libxpm" ,libxpm)))
+     (list libx11 libxext libxpm))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://www.dockapps.net/wmcpuload")
     (synopsis "Monitor CPU usage")
     (description
@@ -255,14 +247,10 @@ on.")
                 "1lx276ba8r2yydhmwj1g586jdqg695ad89ng36fr3mb067gvb2rz"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libx11" ,libx11)
-       ("libxext" ,libxext)
-       ("libxpm" ,libxpm)))
+     (list libx11 libxext libxpm))
     ;; wmclock requires autoreconf to generate its configure script.
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf automake pkg-config))
     (home-page "https://www.dockapps.net/wmclock")
     (synopsis "Display the date and time")
     (description
@@ -286,10 +274,9 @@ display, and can run a user-specified program on mouse click.")
                (search-patches "wmfire-update-for-new-gdk-versions.patch"))))
     (build-system gnu-build-system)
     (inputs
-     `(("gtk+" ,gtk+-2)
-       ("libgtop" ,libgtop)))
+     (list gtk+-2 libgtop))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "http://www.improbability.net/")
     (synopsis "Display flames to represent resource usage")
     (description

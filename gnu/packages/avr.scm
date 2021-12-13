@@ -168,8 +168,7 @@ C++.")
        #:make-flags
        (list (string-append "PREFIX=" (assoc-ref %outputs "out")))))
     (native-inputs
-     `(("unzip" ,unzip)
-       ("xxd" ,xxd)))
+     (list unzip xxd))
     (home-page "https://github.com/ryansuchocki/microscheme/")
     (synopsis "Scheme subset for Atmel microcontrollers")
     (description

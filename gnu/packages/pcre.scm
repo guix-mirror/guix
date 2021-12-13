@@ -5,7 +5,7 @@
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2021 Jean-Baptiste Volatier <jbv@pm.me>
 ;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
@@ -30,6 +30,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages)
+  #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu))
@@ -37,28 +38,22 @@
 (define-public pcre
   (package
    (name "pcre")
-   (version "8.44")
+   (version "8.45")
    (source (origin
             (method url-fetch)
-            (uri (list
-                  (string-append "ftp://ftp.csx.cam.ac.uk"
-                                 "/pub/software/programming/pcre/"
-                                 "pcre-" version ".tar.bz2")
-                  (string-append "mirror://sourceforge/pcre/pcre/"
-                                 version "/pcre-" version ".tar.bz2")))
+            (uri (string-append "https://ftp.pcre.org/pub/pcre/pcre-"
+                                version ".tar.bz2"))
             (sha256
              (base32
-              "0v9nk51wh55pcbnf2jr36yarz8ayajn6d7ywiq2wagivn9c8c40r"))))
+              "1f7zichy6iimmkfrqdl575sdlm795cyc75szgg1vc2xvsbf6zbjd"))))
    (build-system gnu-build-system)
    (outputs '("out"           ;library & headers
               "bin"           ;depends on Readline (adds 20MiB to the closure)
               "doc"           ;1.8 MiB of HTML
               "static"))      ;1.8 MiB static libraries
-   (inputs `(("bzip2" ,bzip2)
-             ("readline" ,readline)
-             ("zlib" ,zlib)))
+   (inputs (list bzip2 readline zlib))
    (arguments
-    '(#:disallowed-references ("doc")
+    `(#:disallowed-references ("doc")
       #:configure-flags '("--enable-utf"
                           "--enable-pcregrep-libz"
                           "--enable-pcregrep-libbz2"
@@ -66,7 +61,10 @@
                           "--enable-unicode-properties"
                           "--enable-pcre16"
                           "--enable-pcre32"
-                          "--enable-jit")
+                          ;; pcretest fails on powerpc32.
+                          ,@(if (target-ppc32?)
+                              '()
+                              `("--enable-jit")))
       #:phases (modify-phases %standard-phases
                  (add-after 'install 'move-static-libs
                    (lambda* (#:key outputs #:allow-other-keys)
@@ -77,8 +75,7 @@
                                    (link lib (string-append static "/"
                                                             (basename lib)))
                                    (delete-file lib))
-                                 (find-files source "\\.a$"))
-                       #t))))))
+                                 (find-files source "\\.a$"))))))))
    (synopsis "Perl Compatible Regular Expressions")
    (description
     "The PCRE library is a set of functions that implement regular expression
@@ -91,18 +88,16 @@ POSIX regular expression API.")
 (define-public pcre2
   (package
     (name "pcre2")
-    (version "10.35")
+    (version "10.37")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/pcre/pcre2/"
                                   version "/pcre2-" version ".tar.bz2"))
               (sha256
                (base32
-                "04s6kmk9qdd4rjz477h547j4bx7hfz0yalpvrm381rqc5ghaijww"))))
+                "0w6jaswjmg3bc0wsw6msn5bvk66p90kf2asnnj9rhll0idpak5ad"))))
    (build-system gnu-build-system)
-   (inputs `(("bzip2" ,bzip2)
-             ("readline" ,readline)
-             ("zlib" ,zlib)))
+   (inputs (list bzip2 readline zlib))
    (arguments
     `(#:configure-flags '("--enable-unicode"
                           "--enable-pcre2grep-libz"
@@ -110,15 +105,17 @@ POSIX regular expression API.")
                           "--enable-pcre2test-libreadline"
                           "--enable-pcre2-16"
                           "--enable-pcre2-32"
-                          "--enable-jit"
+                          ;; pcre2_jit_test fails on powerpc32.
+                          ,@(if (target-ppc32?)
+                              '()
+                              `("--enable-jit"))
                           "--disable-static")
       #:phases
       (modify-phases %standard-phases
         (add-after 'unpack 'patch-paths
           (lambda _
             (substitute* "RunGrepTest"
-              (("/bin/echo") (which "echo")))
-            #t)))))
+              (("/bin/echo") (which "echo"))))))))
    (synopsis "Perl Compatible Regular Expressions")
    (description
     "The PCRE library is a set of functions that implement regular expression
@@ -127,16 +124,3 @@ own native API, as well as a set of wrapper functions that correspond to the
 POSIX regular expression API.")
    (license license:bsd-3)
    (home-page "https://www.pcre.org/")))
-
-(define-public pcre2-10.36
-  (package
-    (inherit pcre2)
-    (name "pcre2")
-    (version "10.36")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://sourceforge/pcre/pcre2/"
-                                  version "/pcre2-" version ".tar.bz2"))
-              (sha256
-               (base32
-                "0p3699msps07p40g9426lvxa3b41rg7k2fn7qxl2jm0kh4kkkvx9"))))))

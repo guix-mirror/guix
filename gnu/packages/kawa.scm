@@ -48,7 +48,7 @@
                  `("JAVA_HOME" ":" = (,(assoc-ref inputs "icedtea"))))
                #t))))))
     (inputs
-     `(("icedtea" ,icedtea-8 "jdk")))
+     (list `(,icedtea-8 "jdk")))
     (home-page "https://www.gnu.org/software/kawa/")
     (synopsis "Java framework and implementation of Scheme, Elisp, and more")
     (description

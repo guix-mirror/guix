@@ -41,7 +41,7 @@
       #:phases (modify-phases %standard-phases
                  (delete 'configure)
                  (delete 'check))))  ; no test suite
-   (inputs `(("ncurses" ,ncurses)))
+   (inputs (list ncurses))
    (synopsis "Tiling window management for the console")
    (description "dvtm brings the concept of tiling window management,
 popularized by X11-window managers like dwm, to the console.  As a console

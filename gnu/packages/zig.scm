@@ -44,11 +44,11 @@
          "zig-use-system-paths.patch"))))
     (build-system cmake-build-system)
     (inputs
-     `(("clang" ,clang-12) ; Clang propagates llvm.
-       ("lld" ,lld)))
+     (list clang-12 ; Clang propagates llvm.
+           lld))
     ;; Zig compiles fine with GCC, but also needs native LLVM libraries.
     (native-inputs
-     `(("llvm" ,llvm-12)))
+     (list llvm-12))
     (arguments
      `(#:configure-flags
        (list ,@(if (%current-target-system)

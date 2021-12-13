@@ -5,6 +5,7 @@
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2017, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Chris Marusich <cmmarusich@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -23,6 +24,8 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix packages)
+  #:use-module ((guix build utils) #:select (compressor tarball?
+                                                        strip-store-file-name))
   #:use-module (guix utils)
   #:use-module (guix records)
   #:use-module (guix store)
@@ -53,6 +56,7 @@
   #:re-export (%current-system
                %current-target-system
                search-path-specification)         ;for convenience
+  #:re-export-and-replace (delete)                ;used as syntactic keyword
   #:replace ((define-public* . define-public))
   #:export (content-hash
             content-hash?
@@ -107,6 +111,18 @@
             package-superseded
             deprecated-package
             package-field-location
+
+            this-package-input
+            this-package-native-input
+
+            lookup-package-input
+            lookup-package-native-input
+            lookup-package-propagated-input
+            lookup-package-direct-input
+
+            prepend                               ;syntactic keyword
+            replace                               ;syntactic keyword
+            modify-inputs
 
             package-direct-sources
             package-transitive-sources
@@ -277,8 +293,8 @@ as base32.  Otherwise, it must be a bytevector."
              (default '()) (delayed))
 
   (snippet   origin-snippet (default #f))         ; sexp or #f
-  (patch-flags  origin-patch-flags                ; list of strings
-                (default '("-p1")))
+  (patch-flags  origin-patch-flags                ; string-list gexp
+                (default %default-patch-flags))
 
   ;; Patching requires Guile, GNU Patch, and a few more.  These two fields are
   ;; used to specify these dependencies when needed.
@@ -326,6 +342,9 @@ specifications to 'hash'."
 
 (set-record-type-printer! <origin> print-origin)
 
+(define %default-patch-flags
+  #~("-p1"))
+
 (define (origin-actual-file-name origin)
   "Return the file name of ORIGIN, either its 'file-name' field or the file
 name of its URI."
@@ -372,7 +391,7 @@ from forcing GEXP-PROMISE."
   ;; This is the list of system types that are supported.  By default, we
   ;; expect all packages to build successfully here.
   '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux" "mips64el-linux" "i586-gnu"
-    "powerpc64le-linux"))
+    "powerpc64le-linux" "powerpc-linux"))
 
 (define %hurd-systems
   ;; The GNU/Hurd systems for which support is being developed.
@@ -383,7 +402,16 @@ from forcing GEXP-PROMISE."
   ;;
   ;; XXX: MIPS is unavailable in CI:
   ;; <https://lists.gnu.org/archive/html/guix-devel/2017-03/msg00790.html>.
-  (fold delete %supported-systems '("mips64el-linux")))
+  (fold delete %supported-systems '("mips64el-linux" "powerpc-linux")))
+
+(define-inlinable (sanitize-inputs inputs)
+  "Sanitize INPUTS by turning it into a list of name/package tuples if it's
+not already the case."
+  (cond ((null? inputs) inputs)
+        ((and (pair? (car inputs))
+              (string? (caar inputs)))
+         inputs)
+        (else (map add-input-label inputs))))
 
 (define-syntax current-location-vector
   (lambda (s)
@@ -495,11 +523,14 @@ Texinfo.  Otherwise, return the string."
              (default '()) (thunked))
 
   (inputs package-inputs                  ; input packages or derivations
-          (default '()) (thunked))
+          (default '()) (thunked)
+          (sanitize sanitize-inputs))
   (propagated-inputs package-propagated-inputs    ; same, but propagated
-                     (default '()) (thunked))
+                     (default '()) (thunked)
+                     (sanitize sanitize-inputs))
   (native-inputs package-native-inputs    ; native input packages/derivations
-                 (default '()) (thunked))
+                 (default '()) (thunked)
+                 (sanitize sanitize-inputs))
 
   (outputs package-outputs                ; list of strings
            (default '("out")))
@@ -533,6 +564,24 @@ Texinfo.  Otherwise, return the string."
   (definition-location package-definition-location-code
                        (default (current-definition-location))
                        (innate)))
+
+(define (add-input-label input)
+  "Add an input label to INPUT."
+  (match input
+    ((? package? package)
+     (list (package-name package) package))
+    (((? package? package) output)                ;XXX: ugly?
+     (list (package-name package) package output))
+    ((? gexp-input?)       ;XXX: misplaced because 'native?' field is ignored?
+     (let ((obj    (gexp-input-thing input))
+           (output (gexp-input-output input)))
+       `(,(if (package? obj)
+              (package-name obj)
+              "_")
+         ,obj
+         ,@(if (string=? output "out") '() (list output)))))
+    (x
+     `("_" ,x))))
 
 (set-record-type-printer! <package>
                           (lambda (package port)
@@ -590,6 +639,7 @@ it has in Guix."
 user interfaces, ignores."
   (package
     (inherit p)
+    (location (package-location p))
     (properties `((hidden? . #t)
                   ,@(package-properties p)))))
 
@@ -613,12 +663,6 @@ object."
 (define (package-field-location package field)
   "Return the source code location of the definition of FIELD for PACKAGE, or
 #f if it could not be determined."
-  (define (goto port line column)
-    (unless (and (= (port-column port) (- column 1))
-                 (= (port-line port) (- line 1)))
-      (unless (eof-object? (read-char port))
-        (goto port line column))))
-
   (match (package-location package)
     (($ <location> file line column)
      (match (search-path %load-path file)
@@ -628,7 +672,7 @@ object."
             ;; In general we want to keep relative file names for modules.
             (call-with-input-file file-found
               (lambda (port)
-                (goto port line column)
+                (go-to-location port line column)
                 (match (read port)
                   (('package inits ...)
                    (let ((field (assoc field inits)))
@@ -651,6 +695,18 @@ object."
         #f)))
     (_ #f)))
 
+(define-syntax-rule (this-package-input name)
+  "Return the input NAME of the package being defined--i.e., an input
+from the ‘inputs’ or ‘propagated-inputs’ field.  Native inputs are not
+considered.  If this input does not exist, return #f instead."
+  (or (lookup-package-input this-package name)
+      (lookup-package-propagated-input this-package name)))
+
+(define-syntax-rule (this-package-native-input name)
+  "Return the native package input NAME of the package being defined--i.e.,
+an input from the ‘native-inputs’ field.  If this native input does not
+exist, return #f instead."
+  (lookup-package-native-input this-package name))
 
 ;; Error conditions.
 
@@ -701,8 +757,12 @@ identifiers.  The result is inferred from the file names of patches."
   (let* ((canonical (module-ref (resolve-interface '(gnu packages base))
                                 'canonical-package))
          (ref       (lambda (module var)
-                      (canonical
-                       (module-ref (resolve-interface module) var)))))
+                      ;; Make sure 'canonical-package' is not influenced by
+                      ;; '%current-target-system' since we're going to use the
+                      ;; native package anyway.
+                      (parameterize ((%current-target-system #f))
+                        (canonical
+                         (module-ref (resolve-interface module) var))))))
     `(("tar"   ,(ref '(gnu packages base) 'tar))
       ("xz"    ,(ref '(gnu packages compression) 'xz))
       ("bzip2" ,(ref '(gnu packages compression) 'bzip2))
@@ -735,7 +795,7 @@ the build code of derivation."
                            #:key
                            inputs
                            (snippet #f)
-                           (flags '("-p1"))
+                           (flags %default-patch-flags)
                            (modules '())
                            (guile-for-build (%guile-for-build))
                            (system (%current-system)))
@@ -759,20 +819,7 @@ specifies modules in scope when evaluating SNIPPET."
           ((package) package)
           (#f        #f)))))
 
-  (define decompression-type
-    (cond ((string-suffix? "gz" source-file-name)  "gzip")
-          ((string-suffix? "Z" source-file-name)  "gzip")
-          ((string-suffix? "bz2" source-file-name) "bzip2")
-          ((string-suffix? "lz" source-file-name)  "lzip")
-          ((string-suffix? "zip" source-file-name) "unzip")
-          (else "xz")))
-
-  (define original-file-name
-    ;; Remove the store prefix plus the slash, hash, and hyphen.
-    (let* ((sans (string-drop source-file-name
-                              (+ (string-length (%store-prefix)) 1)))
-           (dash (string-index sans #\-)))
-      (string-drop sans (+ 1 dash))))
+  (define original-file-name (strip-store-file-name source-file-name))
 
   (define (numeric-extension? file-name)
     ;; Return true if FILE-NAME ends with digits.
@@ -785,11 +832,9 @@ specifies modules in scope when evaluating SNIPPET."
 
   (define (tarxz-name file-name)
     ;; Return a '.tar.xz' file name based on FILE-NAME.
-    (let ((base (cond ((numeric-extension? file-name)
-                       original-file-name)
-                      ((checkout? file-name)
-                       (string-drop-right file-name 9))
-                      (else (file-sans-extension file-name)))))
+    (let ((base (if (numeric-extension? file-name)
+                    original-file-name
+                    (file-sans-extension file-name))))
       (string-append base
                      (if (equal? (file-extension base) "tar")
                          ".xz"
@@ -798,22 +843,27 @@ specifies modules in scope when evaluating SNIPPET."
   (define instantiate-patch
     (match-lambda
       ((? string? patch)                          ;deprecated
-       (interned-file patch #:recursive? #t))
+       (local-file patch #:recursive? #t))
       ((? struct? patch)                          ;origin, local-file, etc.
-       (lower-object patch system))))
+       patch)))
 
-  (mlet %store-monad ((tar ->     (lookup-input "tar"))
-                      (xz ->      (lookup-input "xz"))
-                      (patch ->   (lookup-input "patch"))
-                      (locales -> (lookup-input "locales"))
-                      (decomp ->  (lookup-input decompression-type))
-                      (patches    (sequence %store-monad
-                                            (map instantiate-patch patches))))
+  (let ((tar     (lookup-input "tar"))
+        (gzip    (lookup-input "gzip"))
+        (bzip2   (lookup-input "bzip2"))
+        (lzip    (lookup-input "lzip"))
+        (xz      (lookup-input "xz"))
+        (patch   (lookup-input "patch"))
+        (locales (lookup-input "locales"))
+        (comp    (and=> (compressor source-file-name) lookup-input))
+        (patches (map instantiate-patch patches)))
     (define build
       (with-imported-modules '((guix build utils))
         #~(begin
             (use-modules (ice-9 ftw)
+                         (ice-9 match)
+                         (ice-9 regex)
                          (srfi srfi-1)
+                         (srfi srfi-26)
                          (guix build utils))
 
             ;; The --sort option was added to GNU tar in version 1.28, released
@@ -839,6 +889,29 @@ specifies modules in scope when evaluating SNIPPET."
                             (lambda (name)
                               (not (member name '("." "..")))))))
 
+            (define (repack directory output)
+              ;; Write to OUTPUT a compressed tarball containing DIRECTORY.
+              (unless tar-supports-sort?
+                (call-with-output-file ".file_list"
+                  (lambda (port)
+                    (for-each (lambda (name)
+                                (format port "~a~%" name))
+                              (find-files directory
+                                          #:directories? #t
+                                          #:fail-on-error? #t)))))
+
+              (apply invoke #+(file-append tar "/bin/tar")
+                     "cvfa" output
+                     ;; Avoid non-determinism in the archive.  Set the mtime
+                     ;; to 1 as is the case in the store (software like gzip
+                     ;; behaves differently when it stumbles upon mtime = 0).
+                     "--mtime=@1"
+                     "--owner=root:0" "--group=root:0"
+                     (if tar-supports-sort?
+                         `("--sort=name" ,directory)
+                         '("--no-recursion"
+                           "--files-from=.file_list"))))
+
             ;; Encoding/decoding errors shouldn't be silent.
             (fluid-set! %default-port-conversion-strategy 'error)
 
@@ -852,77 +925,71 @@ specifies modules in scope when evaluating SNIPPET."
                                              (package-version locales)))))
               (setlocale LC_ALL "en_US.utf8"))
 
-            (setenv "PATH" (string-append #+xz "/bin" ":"
-                                          #+decomp "/bin"))
+            (setenv "PATH"
+                    (string-append #+xz "/bin"
+                                   (if #+comp
+                                       (string-append ":" #+comp "/bin")
+                                       "")))
 
-            ;; SOURCE may be either a directory or a tarball.
-            (if (file-is-directory? #+source)
-                (let* ((store     (%store-directory))
-                       (len       (+ 1 (string-length store)))
-                       (base      (string-drop #+source len))
-                       (dash      (string-index base #\-))
-                       (directory (string-drop base (+ 1 dash))))
-                  (mkdir directory)
-                  (copy-recursively #+source directory))
-                #+(if (string=? decompression-type "unzip")
-                      #~(invoke "unzip" #+source)
-                      #~(invoke (string-append #+tar "/bin/tar")
-                                "xvf" #+source)))
+            (setenv "XZ_DEFAULTS" (string-join (%xz-parallel-args)))
 
-            (let ((directory (first-file ".")))
-              (format (current-error-port)
-                      "source is under '~a'~%" directory)
-              (chdir directory)
+            ;; SOURCE may be either a directory, a tarball or a simple file.
+            (let ((name (strip-store-file-name #+source))
+                  (command (and=> #+comp (cut string-append <> "/bin/"
+                                              (compressor #+source)))))
+              (if (file-is-directory? #+source)
+                  (copy-recursively #+source name)
+                  (cond
+                   ((tarball? #+source)
+                    (invoke (string-append #+tar "/bin/tar") "xvf" #+source))
+                   ((and=> (compressor #+source) (cut string= "unzip" <>))
+                    ;; Note: Referring to the store unzip here (#+unzip)
+                    ;; would introduce a cycle.
+                    (invoke "unzip" #+source))
+                   (else
+                    (copy-file #+source name)
+                    (when command
+                      (invoke command "--decompress" name))))))
 
-              (for-each apply-patch '#+patches)
+            (let* ((file (first-file "."))
+                   (directory (if (file-is-directory? file)
+                                  file
+                                  ".")))
+              (format (current-error-port) "source is at '~a'~%" file)
 
-              (let ((result #+(if snippet
-                                  #~(let ((module (make-fresh-user-module)))
-                                      (module-use-interfaces!
-                                       module
-                                       (map resolve-interface '#+modules))
-                                      ((@ (system base compile) compile)
-                                       '#+snippet
-                                       #:to 'value
-                                       #:opts %auto-compilation-options
-                                       #:env module))
-                                  #~#t)))
-                ;; Issue a warning unless the result is #t.
-                (unless (eqv? result #t)
-                  (format (current-error-port) "\
-## WARNING: the snippet returned `~s'.  Return values other than #t
-## are deprecated.  Please migrate this package so that its snippet
-## reports errors by raising an exception, and otherwise returns #t.~%"
-                          result))
-                (unless result
-                  (error "snippet returned false")))
+              (with-directory-excursion directory
 
-              (chdir "..")
+                (for-each apply-patch '#+patches)
 
-              (unless tar-supports-sort?
-                (call-with-output-file ".file_list"
-                  (lambda (port)
-                    (for-each (lambda (name)
-                                (format port "~a~%" name))
-                              (find-files directory
-                                          #:directories? #t
-                                          #:fail-on-error? #t)))))
-              (apply invoke
-                     (string-append #+tar "/bin/tar")
-                     "cvfa" #$output
-                     ;; Avoid non-determinism in the archive.  Set the mtime
-                     ;; to 1 as is the case in the store (software like gzip
-                     ;; behaves differently when it stumbles upon mtime = 0).
-                     "--mtime=@1"
-                     "--owner=root:0"
-                     "--group=root:0"
-                     (if tar-supports-sort?
-                         `("--sort=name"
-                           ,directory)
-                         '("--no-recursion"
-                           "--files-from=.file_list")))))))
+                #+(if snippet
+                      #~(let ((module (make-fresh-user-module)))
+                          (module-use-interfaces!
+                           module
+                           (map resolve-interface '#+modules))
+                          ((@ (system base compile) compile)
+                           '#+(if (pair? snippet)
+                                  (sexp->gexp snippet)
+                                  snippet)
+                           #:to 'value
+                           #:opts %auto-compilation-options
+                           #:env module))
+                      #~#t))
 
-    (let ((name (tarxz-name original-file-name)))
+              ;; If SOURCE is a directory (such as a checkout), return a
+              ;; directory.  Otherwise create a tarball.
+              (cond
+               ((file-is-directory? #+source)
+                (copy-recursively directory #$output
+                                  #:log (%make-void-port "w")))
+               ((or #+comp (tarball? #+source))
+                (repack directory #$output))
+               (else                    ;single uncompressed file
+                (copy-file file #$output)))))))
+
+    (let ((name (if (or (checkout? original-file-name)
+                        (not (compressor original-file-name)))
+                    original-file-name
+                    (tarxz-name original-file-name))))
       (gexp->derivation name build
                         #:graft? #f
                         #:system system
@@ -986,6 +1053,94 @@ preserved, and only duplicate propagated inputs are removed."
                  (vhash-consq package outputs seen))))
       ((input rest ...)
        (loop rest (cons input result) propagated first? seen)))))
+
+(define (lookup-input inputs name)
+  "Lookup NAME among INPUTS, an input list."
+  ;; Note: Currently INPUTS is assumed to be an input list that contains input
+  ;; labels.  In the future, input labels will be gone and this procedure will
+  ;; check package names.
+  (match (assoc-ref inputs name)
+    ((obj) obj)
+    ((obj _) obj)
+    (#f #f)))
+
+(define (lookup-package-input package name)
+  "Look up NAME among PACKAGE's inputs.  Return it if found, #f otherwise."
+  (lookup-input (package-inputs package) name))
+
+(define (lookup-package-native-input package name)
+  "Look up NAME among PACKAGE's native inputs.  Return it if found, #f
+otherwise."
+  (lookup-input (package-native-inputs package) name))
+
+(define (lookup-package-propagated-input package name)
+  "Look up NAME among PACKAGE's propagated inputs.  Return it if found, #f
+otherwise."
+  (lookup-input (package-propagated-inputs package) name))
+
+(define (lookup-package-direct-input package name)
+  "Look up NAME among PACKAGE's direct inputs.  Return it if found, #f
+otherwise."
+  (lookup-input (package-direct-inputs package) name))
+
+(define (replace-input name replacement inputs)
+  "Replace input NAME by REPLACEMENT within INPUTS."
+  (map (lambda (input)
+         (match input
+           (((? string? label) . _)
+            (if (string=? label name)
+                (match replacement        ;does REPLACEMENT specify an output?
+                  ((_ _) (cons label replacement))
+                  (_     (list label replacement)))
+                input))))
+       inputs))
+
+(define-syntax prepend
+  (lambda (s)
+    (syntax-violation 'prepend
+                      "'prepend' may only be used within 'modify-inputs'"
+                      s)))
+
+(define-syntax replace
+  (lambda (s)
+    (syntax-violation 'replace
+                      "'replace' may only be used within 'modify-inputs'"
+                      s)))
+
+(define-syntax modify-inputs
+  (syntax-rules (delete prepend append replace)
+    "Modify the given package inputs, as returned by 'package-inputs' & co.,
+according to the given clauses.  The example below removes the GMP and ACL
+inputs of Coreutils and adds libcap:
+
+  (modify-inputs (package-inputs coreutils)
+    (delete \"gmp\" \"acl\")
+    (append libcap))
+
+Other types of clauses include 'prepend' and 'replace'.
+
+The first argument must be a labeled input list; the result is also a labeled
+input list."
+    ;; Note: This macro hides the fact that INPUTS, as returned by
+    ;; 'package-inputs' & co., is actually an alist with labels.  Eventually,
+    ;; it will operate on list of inputs without labels.
+    ((_ inputs (delete name) clauses ...)
+     (modify-inputs (alist-delete name inputs)
+                    clauses ...))
+    ((_ inputs (delete names ...) clauses ...)
+     (modify-inputs (fold alist-delete inputs (list names ...))
+                    clauses ...))
+    ((_ inputs (prepend lst ...) clauses ...)
+     (modify-inputs (append (map add-input-label (list lst ...)) inputs)
+                    clauses ...))
+    ((_ inputs (append lst ...) clauses ...)
+     (modify-inputs (append inputs (map add-input-label (list lst ...)))
+                    clauses ...))
+    ((_ inputs (replace name replacement) clauses ...)
+     (modify-inputs (replace-input name replacement inputs)
+                    clauses ...))
+    ((_ inputs)
+     inputs)))
 
 (define (package-direct-sources package)
   "Return all source origins associated with PACKAGE; including origins in
@@ -1331,10 +1486,6 @@ matching package and returns a replacement for that package."
 ;;; Package derivations.
 ;;;
 
-(define %derivation-cache
-  ;; Package to derivation-path mapping.
-  (make-weak-key-hash-table 100))
-
 (define (cache! cache package system thunk)
   "Memoize in CACHE the return values of THUNK as the derivation of PACKAGE on
 SYSTEM."
@@ -1362,56 +1513,51 @@ Return the cached result when available."
             (#f (cache! cache package key thunk))
             (value value)))
          (#f
-          (cache! cache package key thunk)))))
-    ((_ package system body ...)
-     (cached (=> %derivation-cache) package system body ...))))
+          (cache! cache package key thunk)))))))
 
-(define* (expand-input store package input system #:optional cross-system)
-  "Expand INPUT, an input tuple, such that it contains only references to
-derivation paths or store paths.  PACKAGE is only used to provide contextual
-information in exceptions."
-  (define (intern file)
-    ;; Add FILE to the store.  Set the `recursive?' bit to #t, so that
-    ;; file permissions are preserved.
-    (add-to-store store (basename file) #t "sha256" file))
+(define* (expand-input package input system #:key target)
+  "Expand INPUT, an input tuple, to a name/<gexp-input> tuple.  PACKAGE is
+only used to provide contextual information in exceptions."
+  (with-monad %store-monad
+    (match input
+      ;; INPUT doesn't need to be lowered here because it'll be lowered down
+      ;; the road in the gexp that refers to it.  However, packages need to be
+      ;; special-cased to pass #:graft? #f (only the "tip" of the package
+      ;; graph needs to have #:graft? #t).  Lowering them here also allows
+      ;; 'bag->derivation' to delete non-eq? packages that lead to the same
+      ;; derivation.
+      (((? string? name) (? package? package))
+       (mlet %store-monad ((drv (if target
+                                    (package->cross-derivation package
+                                                               target system
+                                                               #:graft? #f)
+                                    (package->derivation package system
+                                                         #:graft? #f))))
+         (return (list name (gexp-input drv #:native? (not target))))))
+      (((? string? name) (? package? package) (? string? output))
+       (mlet %store-monad ((drv (if target
+                                    (package->cross-derivation package
+                                                               target system
+                                                               #:graft? #f)
+                                    (package->derivation package system
+                                                         #:graft? #f))))
+         (return (list name (gexp-input drv output #:native? (not target))))))
 
-  (define derivation
-    (if cross-system
-        (cut package-cross-derivation store <> cross-system system
-             #:graft? #f)
-        (cut package-derivation store <> system #:graft? #f)))
-
-  (match input
-    (((? string? name) (? package? package))
-     (list name (derivation package)))
-    (((? string? name) (? package? package)
-      (? string? sub-drv))
-     (list name (derivation package)
-           sub-drv))
-    (((? string? name)
-      (and (? string?) (? derivation-path?) drv))
-     (list name drv))
-    (((? string? name)
-      (and (? string?) (? file-exists? file)))
-     ;; Add FILE to the store.  When FILE is in the sub-directory of a
-     ;; store path, it needs to be added anyway, so it can be used as a
-     ;; source.
-     (list name (intern file)))
-    (((? string? name) (? struct? source))
-     ;; 'package-source-derivation' calls 'lower-object', which can throw
-     ;; '&gexp-input-error'.  However '&gexp-input-error' lacks source
-     ;; location info, so we catch and rethrow here (XXX: not optimal
-     ;; performance-wise).
-     (guard (c ((gexp-input-error? c)
-                (raise (condition
-                        (&package-input-error
-                         (package package)
-                         (input   (gexp-error-invalid-input c)))))))
-       (list name (package-source-derivation store source system))))
-    (x
-     (raise (condition (&package-input-error
-                        (package package)
-                        (input   x)))))))
+      (((? string? name) (? file-like? thing))
+       (return (list name (gexp-input thing #:native? (not target)))))
+      (((? string? name) (? file-like? thing) (? string? output))
+       (return (list name (gexp-input thing output #:native? (not target)))))
+      (((? string? name)
+        (and (? string?) (? file-exists? file)))
+       ;; Add FILE to the store.  When FILE is in the sub-directory of a
+       ;; store path, it needs to be added anyway, so it can be used as a
+       ;; source.
+       (return (list name (gexp-input (local-file file #:recursive? #t)
+                                      #:native? (not target)))))
+      (x
+       (raise (condition (&package-input-error
+                          (package package)
+                          (input   x))))))))
 
 (define %bag-cache
   ;; 'eq?' cache mapping packages to system+target+graft?-dependent bags.
@@ -1459,45 +1605,51 @@ and return it."
                                  (&package-error
                                   (package package))))))))))))
 
-(define %graft-cache
-  ;; 'eq?' cache mapping package objects to a graft corresponding to their
-  ;; replacement package.
-  (make-weak-key-hash-table 200))
+(define (input-graft system)
+  "Return a monadic procedure that, given a package with a graft, returns a
+graft, and #f otherwise."
+  (with-monad %store-monad
+    (match-lambda*
+      (((? package? package) output)
+       (let ((replacement (package-replacement package)))
+         (if replacement
+             ;; XXX: We should use a separate cache instead of abusing the
+             ;; object cache.
+             (mcached (mlet %store-monad ((orig (package->derivation package system
+                                                                     #:graft? #f))
+                                          (new  (package->derivation replacement system
+                                                                     #:graft? #t)))
+                        (return (graft
+                                  (origin orig)
+                                  (origin-output output)
+                                  (replacement new)
+                                  (replacement-output output))))
+                      package 'graft output system)
+             (return #f))))
+      (_
+       (return #f)))))
 
-(define (input-graft store system)
-  "Return a procedure that, given a package with a replacement and an output name,
-returns a graft, and #f otherwise."
-  (match-lambda*
-    (((? package? package) output)
-     (let ((replacement (package-replacement package)))
-       (and replacement
-            (cached (=> %graft-cache) package (cons output system)
-                    (let ((orig (package-derivation store package system
-                                                    #:graft? #f))
-                          (new  (package-derivation store replacement system
-                                                    #:graft? #t)))
-                      (graft
-                        (origin orig)
-                        (origin-output output)
-                        (replacement new)
-                        (replacement-output output)))))))))
-
-(define (input-cross-graft store target system)
+(define (input-cross-graft target system)
   "Same as 'input-graft', but for cross-compilation inputs."
-  (match-lambda*
-    (((? package? package) output)
-     (let ((replacement (package-replacement package)))
-       (and replacement
-            (let ((orig (package-cross-derivation store package target system
-                                                  #:graft? #f))
-                  (new  (package-cross-derivation store replacement
-                                                  target system
-                                                  #:graft? #t)))
-              (graft
-                (origin orig)
-                (origin-output output)
-                (replacement new)
-                (replacement-output output))))))))
+  (with-monad %store-monad
+    (match-lambda*
+      (((? package? package) output)
+       (let ((replacement (package-replacement package)))
+         (if replacement
+             (mlet %store-monad ((orig (package->cross-derivation package
+                                                                  target system
+                                                                  #:graft? #f))
+                                 (new  (package->cross-derivation replacement
+                                                                  target system
+                                                                  #:graft? #t)))
+               (return (graft
+                         (origin orig)
+                         (origin-output output)
+                         (replacement new)
+                         (replacement-output output))))
+             (return #f))))
+      (_
+       (return #f)))))
 
 (define* (fold-bag-dependencies proc seed bag
                                 #:key (native? #t))
@@ -1532,7 +1684,7 @@ dependencies; otherwise, restrict to target dependencies."
       ((head . tail)
        (loop tail result visited)))))
 
-(define* (bag-grafts store bag)
+(define* (bag-grafts bag)
   "Return the list of grafts potentially applicable to BAG.  Potentially
 applicable grafts are collected by looking at direct or indirect dependencies
 of BAG that have a 'replacement'.  Whether a graft is actually applicable
@@ -1541,158 +1693,199 @@ to (see 'graft-derivation'.)"
   (define system (bag-system bag))
   (define target (bag-target bag))
 
-  (define native-grafts
-    (let ((->graft (input-graft store system)))
-      (parameterize ((%current-system system)
-                     (%current-target-system #f))
-        (fold-bag-dependencies (lambda (package output grafts)
-                                 (match (->graft package output)
-                                   (#f    grafts)
-                                   (graft (cons graft grafts))))
-                               '()
-                               bag))))
-
-  (define target-grafts
-    (if target
-        (let ((->graft (input-cross-graft store target system)))
+  (mlet %store-monad
+      ((native-grafts
+        (let ((->graft (input-graft system)))
           (parameterize ((%current-system system)
-                         (%current-target-system target))
+                         (%current-target-system #f))
             (fold-bag-dependencies (lambda (package output grafts)
-                                     (match (->graft package output)
-                                       (#f    grafts)
-                                       (graft (cons graft grafts))))
-                                   '()
-                                   bag
-                                   #:native? #f)))
-        '()))
+                                     (mlet %store-monad ((grafts grafts))
+                                       (>>= (->graft package output)
+                                            (match-lambda
+                                              (#f    (return grafts))
+                                              (graft (return (cons graft grafts)))))))
+                                   (return '())
+                                   bag))))
 
-  ;; We can end up with several identical grafts if we stumble upon packages
-  ;; that are not 'eq?' but map to the same derivation (this can happen when
-  ;; using things like 'package-with-explicit-inputs'.)  Hence the
-  ;; 'delete-duplicates' call.
-  (delete-duplicates
-   (append native-grafts target-grafts)))
+       (target-grafts
+        (if target
+            (let ((->graft (input-cross-graft target system)))
+              (parameterize ((%current-system system)
+                             (%current-target-system target))
+                (fold-bag-dependencies
+                 (lambda (package output grafts)
+                   (mlet %store-monad ((grafts grafts))
+                     (>>= (->graft package output)
+                          (match-lambda
+                            (#f    (return grafts))
+                            (graft (return (cons graft grafts)))))))
+                 (return '())
+                 bag
+                 #:native? #f)))
+            (return '()))))
 
-(define* (package-grafts store package
-                         #:optional (system (%current-system))
-                         #:key target)
+    ;; We can end up with several identical grafts if we stumble upon packages
+    ;; that are not 'eq?' but map to the same derivation (this can happen when
+    ;; using things like 'package-with-explicit-inputs'.)  Hence the
+    ;; 'delete-duplicates' call.
+    (return (delete-duplicates
+             (append native-grafts target-grafts)))))
+
+(define* (package-grafts* package
+                          #:optional (system (%current-system))
+                          #:key target)
   "Return the list of grafts applicable to PACKAGE as built for SYSTEM and
 TARGET."
   (let* ((package (or (package-replacement package) package))
          (bag     (package->bag package system target)))
-    (bag-grafts store bag)))
+    (bag-grafts bag)))
 
-(define* (bag->derivation store bag
-                          #:optional context)
+(define package-grafts
+  (store-lower package-grafts*))
+
+(define-inlinable (derivation=? drv1 drv2)
+  "Return true if DRV1 and DRV2 are equal."
+  (or (eq? drv1 drv2)
+      (string=? (derivation-file-name drv1)
+                (derivation-file-name drv2))))
+
+(define (input=? input1 input2)
+  "Return true if INPUT1 and INPUT2 are equivalent."
+  (match input1
+    ((label1 obj1 . outputs1)
+     (match input2
+       ((label2 obj2 . outputs2)
+        (and (string=? label1 label2)
+             (equal? outputs1 outputs2)
+             (or (and (derivation? obj1) (derivation? obj2)
+                      (derivation=? obj1 obj2))
+                 (equal? obj1 obj2))))))))
+
+(define* (bag->derivation bag #:optional context)
   "Return the derivation to build BAG for SYSTEM.  Optionally, CONTEXT can be
 a package object describing the context in which the call occurs, for improved
 error reporting."
   (if (bag-target bag)
-      (bag->cross-derivation store bag)
-      (let* ((system     (bag-system bag))
-             (inputs     (bag-transitive-inputs bag))
-             (input-drvs (map (cut expand-input store context <> system)
-                              inputs))
-             (paths      (delete-duplicates
-                          (append-map (match-lambda
-                                       ((_ (? package? p) _ ...)
-                                        (package-native-search-paths
-                                         p))
-                                       (_ '()))
-                                      inputs))))
-
-        (apply (bag-build bag)
-               store (bag-name bag) input-drvs
+      (bag->cross-derivation bag)
+      (mlet* %store-monad ((system ->  (bag-system bag))
+                           (inputs ->  (bag-transitive-inputs bag))
+                           (input-drvs (mapm %store-monad
+                                             (cut expand-input context <> system)
+                                             inputs))
+                           (paths ->   (delete-duplicates
+                                        (append-map (match-lambda
+                                                      ((_ (? package? p) _ ...)
+                                                       (package-native-search-paths
+                                                        p))
+                                                      (_ '()))
+                                                    inputs))))
+        ;; It's possible that INPUTS contains packages that are not 'eq?' but
+        ;; that lead to the same derivation.  Delete those duplicates to avoid
+        ;; issues down the road, such as duplicate entries in '%build-inputs'.
+        (apply (bag-build bag) (bag-name bag)
+               (delete-duplicates input-drvs input=?)
                #:search-paths paths
                #:outputs (bag-outputs bag) #:system system
                (bag-arguments bag)))))
 
-(define* (bag->cross-derivation store bag
-                                #:optional context)
+(define* (bag->cross-derivation bag #:optional context)
   "Return the derivation to build BAG, which is actually a cross build.
 Optionally, CONTEXT can be a package object denoting the context of the call.
 This is an internal procedure."
-  (let* ((system      (bag-system bag))
-         (target      (bag-target bag))
-         (host        (bag-transitive-host-inputs bag))
-         (host-drvs   (map (cut expand-input store context <> system target)
-                           host))
-         (target*     (bag-transitive-target-inputs bag))
-         (target-drvs (map (cut expand-input store context <> system)
-                           target*))
-         (build       (bag-transitive-build-inputs bag))
-         (build-drvs  (map (cut expand-input store context <> system)
-                           build))
-         (all         (append build target* host))
-         (paths       (delete-duplicates
-                       (append-map (match-lambda
-                                    ((_ (? package? p) _ ...)
-                                     (package-search-paths p))
-                                    (_ '()))
-                                   all)))
-         (npaths      (delete-duplicates
-                       (append-map (match-lambda
-                                    ((_ (? package? p) _ ...)
-                                     (package-native-search-paths
-                                      p))
-                                    (_ '()))
-                                   all))))
+  (mlet* %store-monad ((system ->   (bag-system bag))
+                       (target ->   (bag-target bag))
+                       (host ->     (bag-transitive-host-inputs bag))
+                       (host-drvs   (mapm %store-monad
+                                          (cut expand-input context <>
+                                               system #:target target)
+                                          host))
+                       (target* ->  (bag-transitive-target-inputs bag))
+                       (target-drvs (mapm %store-monad
+                                          (cut expand-input context <> system)
+                                          target*))
+                       (build ->    (bag-transitive-build-inputs bag))
+                       (build-drvs  (mapm %store-monad
+                                          (cut expand-input context <> system)
+                                          build))
+                       (all ->      (append build target* host))
+                       (paths ->    (delete-duplicates
+                                     (append-map (match-lambda
+                                                   ((_ (? package? p) _ ...)
+                                                    (package-search-paths p))
+                                                   (_ '()))
+                                                 all)))
+                       (npaths ->   (delete-duplicates
+                                     (append-map (match-lambda
+                                                   ((_ (? package? p) _ ...)
+                                                    (package-native-search-paths
+                                                     p))
+                                                   (_ '()))
+                                                 all))))
 
-    (apply (bag-build bag)
-           store (bag-name bag)
-           #:native-drvs build-drvs
-           #:target-drvs (append host-drvs target-drvs)
+    (apply (bag-build bag) (bag-name bag)
+           #:build-inputs (delete-duplicates build-drvs input=?)
+           #:host-inputs (delete-duplicates host-drvs input=?)
+           #:target-inputs (delete-duplicates target-drvs input=?)
            #:search-paths paths
            #:native-search-paths npaths
            #:outputs (bag-outputs bag)
            #:system system #:target target
            (bag-arguments bag))))
 
-(define* (package-derivation store package
-                             #:optional (system (%current-system))
-                             #:key (graft? (%graft?)))
+(define bag->derivation*
+  (store-lower bag->derivation))
+
+(define graft-derivation*
+  (store-lift graft-derivation))
+
+(define* (package->derivation package
+                              #:optional (system (%current-system))
+                              #:key (graft? (%graft?)))
   "Return the <derivation> object of PACKAGE for SYSTEM."
 
   ;; Compute the derivation and cache the result.  Caching is important
   ;; because some derivations, such as the implicit inputs of the GNU build
   ;; system, will be queried many, many times in a row.
-  (cached package (cons system graft?)
-          (let* ((bag (package->bag package system #f #:graft? graft?))
-                 (drv (bag->derivation store bag package)))
-            (if graft?
-                (match (bag-grafts store bag)
-                  (()
-                   drv)
-                  (grafts
-                   (let ((guile (package-derivation store (guile-for-grafts)
-                                                    system #:graft? #f)))
-                     ;; TODO: As an optimization, we can simply graft the tip
-                     ;; of the derivation graph since 'graft-derivation'
-                     ;; recurses anyway.
-                     (graft-derivation store drv grafts
-                                       #:system system
-                                       #:guile guile))))
-                drv))))
+  (mcached (mlet* %store-monad ((bag -> (package->bag package system #f
+                                                      #:graft? graft?))
+                                (drv (bag->derivation bag package)))
+             (if graft?
+                 (>>= (bag-grafts bag)
+                      (match-lambda
+                        (()
+                         (return drv))
+                        (grafts
+                         (mlet %store-monad ((guile (package->derivation
+                                                     (guile-for-grafts)
+                                                     system #:graft? #f)))
+                           (graft-derivation* drv grafts
+                                              #:system system
+                                              #:guile guile)))))
+                 (return drv)))
+           package system #f graft?))
 
-(define* (package-cross-derivation store package target
-                                   #:optional (system (%current-system))
-                                   #:key (graft? (%graft?)))
+(define* (package->cross-derivation package target
+                                    #:optional (system (%current-system))
+                                    #:key (graft? (%graft?)))
   "Cross-build PACKAGE for TARGET (a GNU triplet) from host SYSTEM (a Guix
 system identifying string)."
-  (cached package (list system target graft?)
-          (let* ((bag (package->bag package system target #:graft? graft?))
-                 (drv (bag->derivation store bag package)))
-            (if graft?
-                (match (bag-grafts store bag)
-                  (()
-                   drv)
-                  (grafts
-                   (graft-derivation store drv grafts
-                                     #:system system
-                                     #:guile
-                                     (package-derivation store (guile-for-grafts)
-                                                         system #:graft? #f))))
-                drv))))
+  (mcached (mlet* %store-monad ((bag -> (package->bag package system target
+                                                      #:graft? graft?))
+                                (drv (bag->derivation bag package)))
+             (if graft?
+                 (>>= (bag-grafts bag)
+                      (match-lambda
+                        (()
+                         (return drv))
+                        (grafts
+                         (mlet %store-monad ((guile (package->derivation
+                                                     (guile-for-grafts)
+                                                     system #:graft? #f)))
+                           (graft-derivation* drv grafts
+                                              #:system system
+                                              #:guile guile)))))
+                 (return drv)))
+           package system target graft?))
 
 (define* (package-output store package
                          #:optional (output "out") (system (%current-system)))
@@ -1740,11 +1933,11 @@ unless you know what you are doing."
                   out)
               store))))
 
-(define package->derivation
-  (store-lift package-derivation))
+(define package-derivation
+  (store-lower package->derivation))
 
-(define package->cross-derivation
-  (store-lift package-cross-derivation))
+(define package-cross-derivation
+  (store-lower package->cross-derivation))
 
 (define-gexp-compiler (package-compiler (package <package>) system target)
   ;; Compile PACKAGE to a derivation for SYSTEM, optionally cross-compiled for
@@ -1764,7 +1957,7 @@ unless you know what you are doing."
              (content-hash-value hash)
              name #:system system))
     (($ <origin> uri method hash name (= force (patches ...)) snippet
-        (flags ...) inputs (modules ...) guile-for-build)
+                 flags inputs (modules ...) guile-for-build)
      ;; Patches and/or a snippet.
      (mlet %store-monad ((source (method uri
                                          (content-hash-algorithm hash)

@@ -33,6 +33,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
+  #:use-module (guix gexp)
   #:use-module (gnu packages)
   #:use-module (gnu packages acl)
   #:use-module (gnu packages admin)
@@ -167,11 +168,9 @@ common build settings used in software produced by the KDE community.")
     (native-inputs
      ;; TODO: Think about adding pulseaudio. Is it required for sound?
      ;; TODO: Add building the super experimental QML support
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("pkg-config" ,pkg-config)
-       ("qttools" ,qttools)))
+     (list extra-cmake-modules pkg-config qttools))
     (inputs
-     `(("qtbase" ,qtbase-5)))
+     (list qtbase-5))
     (arguments
      `(#:configure-flags
        '("-DCMAKE_CXX_FLAGS=-fPIC"
@@ -206,17 +205,15 @@ common build settings used in software produced by the KDE community.")
                 "1wk1ip2w7fkh65zk6rilj314dna0hgsv2xhjmpr5w08xa8sii1y5"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("pkg-config" ,pkg-config)
-       ("qttools" ,qttools)))
+     (list extra-cmake-modules pkg-config qttools))
     (inputs
-     `(("qtbase" ,qtbase-5)
-       ("phonon" ,phonon)
-       ("qtbase" ,qtbase-5)
-       ("qtx11extras" ,qtx11extras)
-       ("gstreamer" ,gstreamer)
-       ("gst-plugins-base" ,gst-plugins-base)
-       ("libxml2" ,libxml2)))
+     (list qtbase-5
+           phonon
+           qtbase-5
+           qtx11extras
+           gstreamer
+           gst-plugins-base
+           libxml2))
     (arguments
      `(#:configure-flags
        '( "-DPHONON_BUILD_PHONON4QT5=ON")))
@@ -256,9 +253,9 @@ Phonon-GStreamer is a backend based on the GStreamer multimedia library.")
              (substitute* "autotests/CMakeLists.txt"
                ((".*providertest.cpp") "")))))))
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     (list extra-cmake-modules))
     (inputs
-     `(("qtbase" ,qtbase-5)))
+     (list qtbase-5))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Open Collaboration Service client library")
     (description "Attica is a Qt library that implements the Open
@@ -288,18 +285,17 @@ http://freedesktop.org/wiki/Specifications/open-collaboration-services/")
                 "1kqhps4qyvqm0qmk7fb3w41bib898amipchf8csdzacw4bzpri9k"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("dbus" ,dbus)
-       ("extra-cmake-modules" ,extra-cmake-modules)))
+     (list dbus extra-cmake-modules))
     (inputs
      ;; TODO: qtdeclarative (yields one failing test)
-     `(("qtbase" ,qtbase-5)))
+     (list qtbase-5))
     (arguments
-     `(#:configure-flags
-       (list (string-append
-              "-DUDEV_RULES_INSTALL_DIR=" %output "/lib/udev/rules.d"))
-       ;; TODO: Make tests pass: DBUS_FATAL_WARNINGS=0 still yields 7/8 tests
-       ;; failing.  When running after install, tests hang.
-       #:tests? #f))
+     (list #:configure-flags
+           #~(list (string-append
+                    "-DUDEV_RULES_INSTALL_DIR=" #$output "/lib/udev/rules.d"))
+           ;; TODO: Make tests pass: DBUS_FATAL_WARNINGS=0 still yields 7/8 tests
+           ;; failing.  When running after install, tests hang.
+           #:tests? #f))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "QML wrapper for BlueZ")
     (description "bluez-qt is a Qt-style library for accessing the bluez
@@ -321,11 +317,9 @@ Bluetooth stack.  It is used by the KDE Bluetooth stack, BlueDevil.")
                 "0lqglrjgjb4ralgmr7lb9k7acmn8q4jm18s4p3gbgd9iswyqgsbm"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("fdupes" ,fdupes)
-       ("libxml2" ,libxml2)))
+     (list extra-cmake-modules fdupes libxml2))
     (inputs
-     `(("qtbase" ,qtbase-5)))
+     (list qtbase-5))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Default KDE Plasma 5 icon theme")
     (description "Breeze provides a freedesktop.org compatible icon theme.
@@ -352,17 +346,15 @@ It is the default icon theme for the KDE Plasma 5 desktop.")
     (arguments
      `(#:tests? #f)) ; has no test target
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     (list extra-cmake-modules))
     (propagated-inputs
      ;; kapidox is a python programm
      ;; TODO: check if doxygen has to be installed, the readme does not
      ;; mention it. The openSuse .rpm lists doxygen, graphviz, graphviz-gd,
      ;; and python-xml.
-     `(("python" ,python)
-       ("python-jinja2" ,python-jinja2)
-       ("python-pyyaml" ,python-pyyaml)))
+     (list python python-jinja2 python-pyyaml))
     (inputs
-     `(("qtbase" ,qtbase-5)))
+     (list qtbase-5))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "KDE Doxygen Tools")
     (description "This framework contains scripts and data for building API
@@ -392,12 +384,9 @@ documentation.")
                 "0z8asn357pdbv4g9g0x18p72wskca1qanxljyix7wzc5rsi63wzm"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     (list extra-cmake-modules))
     (inputs
-     `(("bzip2" ,bzip2)
-       ("qtbase" ,qtbase-5)
-       ("xz" ,xz)
-       ("zlib" ,zlib)))
+     (list bzip2 qtbase-5 xz zlib))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Qt 5 addon providing access to numerous types of archives")
     (description "KArchive provides classes for easy reading, creation and
@@ -426,12 +415,9 @@ GZip format, via a subclass of QIODevice.")
                 "1y1f8gc1g9yn9kgmn53f1zvkizasfs667dfin3fyci657r5qwpw2"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("perl" ,perl)
-       ("tzdata" ,tzdata-for-tests)))
+     (list extra-cmake-modules perl tzdata-for-tests))
     (inputs
-     `(("libical" ,libical)
-       ("qtbase" ,qtbase-5)))
+     (list libical qtbase-5))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -457,9 +443,8 @@ GZip format, via a subclass of QIODevice.")
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "TZ" "Europe/Prague")
              (setenv "TZDIR"
-                     (string-append (assoc-ref inputs "tzdata")
-                                    "/share/zoneinfo"))
-             #t)))))
+                     (search-input-directory inputs
+                                             "share/zoneinfo")))))))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Library for interfacing with calendars")
     (description "This library provides access to and handling of calendar
@@ -487,11 +472,9 @@ and the older vCalendar.")
                 "0y9n2a5n18pasdmrp0xb84hla9l27yj2x3k4p1c041sd9nkwixpk"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("gperf" ,gperf)
-       ("qttools" ,qttools)))
+     (list extra-cmake-modules gperf qttools))
     (inputs
-     `(("qtbase" ,qtbase-5)))
+     (list qtbase-5))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "String encoding and manipulating library")
     (description "KCodecs provide a collection of methods to manipulate
@@ -523,13 +506,10 @@ Internet).")
                 "1s3h4hfpw7c0894cifj66bj1yhx8g94ckvl71jm7qqsb5x5h6y9n"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("dbus" ,dbus)
-       ("extra-cmake-modules" ,extra-cmake-modules)
-       ("inetutils" ,inetutils)
-       ("qttools" ,qttools)
-       ("xorg-server" ,xorg-server-for-tests)))
+     (list dbus extra-cmake-modules inetutils qttools
+           xorg-server-for-tests))
     (inputs
-     `(("qtbase" ,qtbase-5)))
+     (list qtbase-5))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -588,13 +568,11 @@ propagate their changes to their respective configuration files.")
                 "10a7zys3limsawl7lk9ggymk3msk2bp0y8hp0jmsvk3l405pd1ps"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("qttools" ,qttools)
-       ("shared-mime-info" ,shared-mime-info)
-       ;; TODO: FAM: File alteration notification http://oss.sgi.com/projects/fam
-       ("xorg-server" ,xorg-server-for-tests))) ; for the tests
+     (list extra-cmake-modules qttools shared-mime-info
+           ;; TODO: FAM: File alteration notification http://oss.sgi.com/projects/fam
+           xorg-server-for-tests)) ; for the tests
     (inputs
-     `(("qtbase" ,qtbase-5)))
+     (list qtbase-5))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -646,13 +624,9 @@ many more.")
               (patches (search-patches "kdbusaddons-kinit-file-name.patch"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("dbus" ,dbus)
-       ("qttools" ,qttools)))
+     (list extra-cmake-modules dbus qttools))
     (inputs
-     `(("qtbase" ,qtbase-5)
-       ("qtx11extras" ,qtx11extras)
-       ("kinit" ,kinit-bootstrap))) ;; kinit-bootstrap: kinit package which does not depend on kdbusaddons.
+     (list qtbase-5 qtx11extras kinit-bootstrap)) ;; kinit-bootstrap: kinit package which does not depend on kdbusaddons.
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -690,11 +664,10 @@ as well as an API to create KDED modules.")
                 "0wadknnf472rqg2xnqzs5v23qzqfr336wj6d96yg2ayqm0chbppy"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("qttools" ,qttools)))
+     (list extra-cmake-modules qttools))
     (inputs
-     `(("avahi" ,avahi) ; alternativly dnssd could be used
-       ("qtbase" ,qtbase-5)))
+     (list avahi ; alternativly dnssd could be used
+           qtbase-5))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Network service discovery using Zeroconf")
     (description "KDNSSD is a library for handling the DNS-based Service
@@ -717,16 +690,14 @@ infrastructure.")
                 "1h6pgg89gvxl8gw7wmkabyqqrzad5pxyv5lsmn1fl4ir8lcc5q2l"))))
     (build-system cmake-build-system)
     (inputs
-     `(("qtbase" ,qtbase-5)
-       ("boost" ,boost)
-       ("graphviz" ,graphviz)
-       ("kiconthemes" ,kiconthemes)
-       ("kparts" ,kparts)
-       ("qtsvg" ,qtsvg)))
+     (list qtbase-5
+           boost
+           graphviz
+           kiconthemes
+           kparts
+           qtsvg))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)))
+     (list pkg-config extra-cmake-modules kdoctools))
     (home-page "https://apps.kde.org/en/kgraphviewer")
     (synopsis "Graphviz dot graph viewer for KDE")
     (description "KGraphViewer is a Graphviz DOT graph file viewer, aimed to
@@ -752,11 +723,9 @@ replace the other outdated Graphviz tools.")
     ;; python-sip, clang-python, libclang.  Requires python-2 in all cases for
     ;; clang-python.
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("pkg-config" ,pkg-config)))
+     (list extra-cmake-modules pkg-config))
     (inputs
-     `(("qtbase" ,qtbase-5)
-       ("qtx11extras" ,qtx11extras)))
+     (list qtbase-5 qtx11extras))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Utilities for graphical user interfaces")
     (description "The KDE GUI addons provide utilities for graphical user
@@ -787,11 +756,9 @@ interfaces in the areas of colors, fonts, text, images, keyboard input.")
                  (display "[testDefaultRegions]\n*\n")))
              #t)))))
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("qttools" ,qttools)))
+     (list extra-cmake-modules qttools))
     (inputs
-     `(("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)))
+     (list qtbase-5 qtdeclarative))
     (home-page "https://invent.kde.org/frameworks/kholidays")
     (synopsis "Library for regional holiday information")
     (description "This library provides a C++ API that determines holiday and
@@ -816,11 +783,9 @@ other special events for a geographical region.")
      `(("gettext" ,gettext-minimal)
        ("python" ,python)))
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     (list extra-cmake-modules))
     (inputs
-     `(("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)
-       ("qtscript" ,qtscript)))
+     (list qtbase-5 qtdeclarative qtscript))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -856,12 +821,10 @@ translation scripting.")
                 "0vbxs80a8kh2xbxclx8zwl7acynsasa7i0cs171fxr26d0dmmhm5"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("pkg-config" ,pkg-config)))
+     (list extra-cmake-modules pkg-config))
     (inputs
-     `(("libxscrnsaver" ,libxscrnsaver) ; X-Screensaver based poller, fallback mode
-       ("qtbase" ,qtbase-5)
-       ("qtx11extras" ,qtx11extras)))
+     (list libxscrnsaver ; X-Screensaver based poller, fallback mode
+           qtbase-5 qtx11extras))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Reporting of idle time of user and system")
     (description "KIdleTime is a singleton reporting information on idle time.
@@ -888,19 +851,18 @@ or user activity.")
     (properties `((upstream-name . "kirigami2")))
     (build-system cmake-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("qttools" ,qttools)))
+     (list extra-cmake-modules qttools))
     (inputs
-     `(("kwindowsystem" ,kwindowsystem)
-       ;; TODO: Find a way to activate this optional include without
-       ;; introducing a recursive dependency.
-       ;;("plasma-frameworks" ,plasma-framework) ;; Tier 3!
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)
-       ("qtquickcontrols2" ,qtquickcontrols2)
-       ("qtsvg" ,qtsvg)
-       ;; Run-time dependency
-       ("qtgraphicaleffects" ,qtgraphicaleffects)))
+     (list kwindowsystem
+           ;; TODO: Find a way to activate this optional include without
+           ;; introducing a recursive dependency.
+           ;;("plasma-frameworks" ,plasma-framework) ;; Tier 3!
+           qtbase-5
+           qtdeclarative
+           qtquickcontrols2
+           qtsvg
+           ;; Run-time dependency
+           qtgraphicaleffects))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "QtQuick components for mobile user interfaces")
     (description "Kirigami is a set of high level QtQuick components looking
@@ -923,10 +885,9 @@ of applications that follow the Kirigami Human Interface Guidelines.")
                 "0x7y5shg2pp490hvmkz81b8j01cha9j1001q34m7pnyf0n3zknzc"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     (list extra-cmake-modules))
     (inputs
-     `(("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)))
+     (list qtbase-5 qtdeclarative))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Set of item models extending the Qt model-view framework")
     (description "KItemModels provides the following models:
@@ -974,10 +935,9 @@ model to observers
                 "04vlmkvc3y5h7cpb6kdv9gha5axxkimhqh44mdg2ncyn4sas6j68"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("qttools" ,qttools)))
+     (list extra-cmake-modules qttools))
     (inputs
-     `(("qtbase" ,qtbase-5)))
+     (list qtbase-5))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Set of item views extending the Qt model-view framework")
     (description "KItemViews includes a set of views, which can be used with
@@ -1000,10 +960,9 @@ to flat and hierarchical lists.")
                 "1wj4n2a8iz9ml1y0012xkpsx3dfp5gl2dn80sifrzvkxjxrhwach"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("qttools" ,qttools)))
+     (list extra-cmake-modules qttools))
     (inputs
-     `(("qtbase" ,qtbase-5)))
+     (list qtbase-5))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Data plotting library")
     (description "KPlotWidget is a QWidget-derived class that provides a virtual
@@ -1028,13 +987,11 @@ pixel units.")
                 "12jn7lqsp86329spai7n1n8i65nwhxh8gp33wkq543h7w3i2a3jb"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("perl" ,perl)
-       ("qttools" ,qttools)
-       ;; Optional, for compile-time validation of syntax definition files:
-       ("qtxmlpatterns" ,qtxmlpatterns)))
+     (list extra-cmake-modules perl qttools
+           ;; Optional, for compile-time validation of syntax definition files:
+           qtxmlpatterns))
     (inputs
-     `(("qtbase" ,qtbase-5)))
+     (list qtbase-5))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -1077,13 +1034,9 @@ integration with a custom editor as well as a ready-to-use
                 "0hrpbfzixjpnfy9q5x66q1fff0p7n80rrs127zzdv68pyi6456ry"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("pkg-config" ,pkg-config)))
+     (list extra-cmake-modules pkg-config))
     (inputs
-     `(("qtbase" ,qtbase-5)
-       ("qtwayland" ,qtwayland)
-       ("wayland" ,wayland)
-       ("wayland-protocols" ,wayland-protocols)))
+     (list qtbase-5 qtwayland wayland wayland-protocols))
     (arguments
      `(#:tests? #f ; FIXME tests require weston to run
                    ; weston requires wayland flags in mesa
@@ -1118,11 +1071,9 @@ represented by a QPoint or a QSize.")
                 "03l37lh219np7pqfa56r2v7n5s5xg4rjq005qng4b5izd95ri56j"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("qttools" ,qttools)
-       ("xorg-server" ,xorg-server-for-tests)))
+     (list extra-cmake-modules qttools xorg-server-for-tests))
     (inputs
-     `(("qtbase" ,qtbase-5)))
+     (list qtbase-5))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -1155,12 +1106,12 @@ configuration pages, message boxes, and password requests.")
                 "0a68cj0bsl5a9sxfd969khznycrn9p6grp2b08hqacxqdknzs0wh"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("pkg-config" ,pkg-config)
-       ("dbus" ,dbus) ; for the tests
-       ("openbox" ,openbox) ; for the tests
-       ("qttools" ,qttools)
-       ("xorg-server" ,xorg-server-for-tests))) ; for the tests
+     (list extra-cmake-modules
+           pkg-config
+           dbus ; for the tests
+           openbox ; for the tests
+           qttools
+           xorg-server-for-tests)) ; for the tests
     (inputs
      `(("libxrender" ,libxrender)
        ("qtbase" ,qtbase-5)
@@ -1218,14 +1169,12 @@ lower level classes for interaction with the X Windowing System.")
                 "0ydq1l823jgp0yrrpqi1zdk5dsg65ydk1x082qwsa9a0vzs0np3x"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("dbus" ,dbus)
-       ("pkg-config" ,pkg-config)))
+     (list extra-cmake-modules dbus pkg-config))
     (propagated-inputs
      ;; Headers contain #include <ModemManager/ModemManager.h>
-     `(("modem-manager" ,modem-manager)))
+     (list modem-manager))
     (inputs
-     `(("qtbase" ,qtbase-5)))
+     (list qtbase-5))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -1256,15 +1205,13 @@ messages.")
                 "1h2kdw5vs7mn3n7bvqwm36a48ra9iap6384kanz14zjbankj04c1"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("dbus" ,dbus)
-       ("pkg-config" ,pkg-config)))
+     (list extra-cmake-modules dbus pkg-config))
     (propagated-inputs
      ;; Headers contain #include <NetworkManager.h> and
      ;;                 #include <libnm/NetworkManager.h>
-     `(("network-manager" ,network-manager)))
+     (list network-manager))
     (inputs
-     `(("qtbase" ,qtbase-5)))
+     (list qtbase-5))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -1295,10 +1242,9 @@ which are used in DBus communication.")
                 "1rjsnz0g7zyzgii26sk370adb6jcyvr2lm8qi23fvqimifngqm2c"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("fdupes" ,fdupes)))
+     (list extra-cmake-modules fdupes))
     (inputs
-     `(("qtbase" ,qtbase-5)))
+     (list qtbase-5))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Oxygen provides the standard icon theme for the KDE desktop")
     (description "Oxygen icon theme for the KDE desktop")
@@ -1319,11 +1265,9 @@ which are used in DBus communication.")
         (base32 "1qflivvb593d2npc218xkdn3w5zvl7x8v1b52ydnggsxzbgkqvb4"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     (list extra-cmake-modules))
     (inputs
-     `(("libdmtx" ,libdmtx)
-       ("qrencode" ,qrencode)
-       ("qtbase" ,qtbase-5))) ;; TODO: rethink: nix propagates this
+     (list libdmtx qrencode qtbase-5)) ;; TODO: rethink: nix propagates this
     (home-page "https://api.kde.org/frameworks/prison/html/index.html")
     (synopsis "Barcode generation abstraction layer")
     (description "Prison is a Qt-based barcode abstraction layer/library and
@@ -1343,13 +1287,9 @@ provides uniform access to generation of barcodes with data.")
                 "1i0ql68kxv9jxs24rsd3s7jhjid3f2fq56fj4wbp16zb4wd14099"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("pkg-config" ,pkg-config)))
+     (list extra-cmake-modules pkg-config))
     (inputs
-     `(("glib" ,glib)
-       ("pulseaudio" ,pulseaudio)
-       ("qtdeclarative" ,qtdeclarative)
-       ("qtbase" ,qtbase-5)))
+     (list glib pulseaudio qtdeclarative qtbase-5))
     (home-page "https://invent.kde.org/libraries/pulseaudio-qt/")
     (synopsis "Qt bindings for PulseAudio")
     (description
@@ -1376,17 +1316,16 @@ libpulse.")
                 "1n47cl082zqdw6ykil04rw6bws4fn1m8wfx4vxv1aqj9warbdks3"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("pkg-config" ,pkg-config)))
+     (list extra-cmake-modules pkg-config))
     (inputs
-     `(("kauth" ,kauth)
-       ("kconfigwidgets" ,kconfigwidgets) ; optional
-       ("kcoreaddons" ,kcoreaddons)
-       ("kiconthemes" ,kiconthemes) ; optional
-       ("kirigami" ,kirigami)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)
-       ("qtquickcontrols2" ,qtquickcontrols2)))
+     (list kauth
+           kconfigwidgets ; optional
+           kcoreaddons
+           kiconthemes ; optional
+           kirigami
+           qtbase-5
+           qtdeclarative
+           qtquickcontrols2))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "QtQuickControls2 style that integrates with the desktop")
     (description "This is a style for QtQuickControls2 which is using
@@ -1417,11 +1356,7 @@ feel.")
              (setenv "DBUS_FATAL_WARNINGS" "0")
              (invoke "dbus-launch" "ctest" "."))))))
     (native-inputs
-     `(("bison" ,bison)
-       ("dbus" ,dbus)
-       ("extra-cmake-modules" ,extra-cmake-modules)
-       ("flex" ,flex)
-       ("qttools" ,qttools)))
+     (list bison dbus extra-cmake-modules flex qttools))
     (inputs
      `(("qtbase" ,qtbase-5)
        ("qtdeclarative" ,qtdeclarative)
@@ -1449,13 +1384,11 @@ system.")
                 "0b88h5fw1n8zyrg0vq3lj2jbjjyh0mk64lj6ab3643kxzqxbn30w"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("pkg-config" ,pkg-config)
-       ("qttools" ,qttools)))
+     (list extra-cmake-modules pkg-config qttools))
     (inputs
-     `(("hunspell" ,hunspell)
-       ;; TODO: hspell (for Hebrew), Voikko (for Finish)
-       ("qtbase" ,qtbase-5)))
+     (list hunspell
+           ;; TODO: hspell (for Hebrew), Voikko (for Finish)
+           qtbase-5))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Multi-language spell checker")
     (description "Sonnet is a plugin-based spell checking library for Qt-based
@@ -1478,9 +1411,9 @@ ASpell and HUNSPELL.")
                 "0y1q0wy073lf11g4jrp4bdw4kpj4ibqfscsxj6zlh8ban9zlf389"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     (list extra-cmake-modules))
     (inputs
-     `(("qtbase" ,qtbase-5)))
+     (list qtbase-5))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Helper for multithreaded programming")
     (description "ThreadWeaver is a helper for multithreaded programming.  It
@@ -1508,26 +1441,26 @@ uses a job-based interface to queue tasks and execute them in an efficient way."
                 "1whsp0f87lrcn61s9rfhy0aj68hm6zgfa38mq6frlkcjksi0z1vn"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     (list extra-cmake-modules))
     (inputs
-     `(("boost" ,boost)
-       ("kauth" ,kauth)
-       ("kbookmarks" ,kbookmarks)
-       ("kcodecs" ,kcodecs)
-       ("kcompletion" ,kcompletion)
-       ("kconfig" ,kconfig)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kio" ,kio)
-       ("kitemviews" ,kitemviews)
-       ("kjobwidgets" ,kjobwidgets)
-       ("kservice" ,kservice)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kwindowsystem" ,kwindowsystem)
-       ("kxmlgui" ,kxmlgui)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)
-       ("solid" ,solid)))
+     (list boost
+           kauth
+           kbookmarks
+           kcodecs
+           kcompletion
+           kconfig
+           kconfigwidgets
+           kcoreaddons
+           kio
+           kitemviews
+           kjobwidgets
+           kservice
+           kwidgetsaddons
+           kwindowsystem
+           kxmlgui
+           qtbase-5
+           qtdeclarative
+           solid))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Core components for the KDE Activity concept")
     (description "KActivities provides the infrastructure needed to manage a
@@ -1553,13 +1486,9 @@ with other frameworks.")
                 "0nmdz7ra3hpg0air4lfkzilv7cwx3zxs29k7sh8l3i1fs3qpjwxm"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("dbus" ,dbus)
-       ("extra-cmake-modules" ,extra-cmake-modules)
-       ("qttools" ,qttools)))
+     (list dbus extra-cmake-modules qttools))
     (inputs
-     `(("kcoreaddons" ,kcoreaddons)
-       ("polkit-qt" ,polkit-qt)
-       ("qtbase" ,qtbase-5)))
+     (list kcoreaddons polkit-qt qtbase-5))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -1600,12 +1529,9 @@ utilities.")
                 "1pjgya8wi28jx63hcdi9v5f5487gzbkw2j1iganhd7bhcb8s7zpy"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("qttools" ,qttools)))
+     (list extra-cmake-modules qttools))
     (inputs
-     `(("kconfig" ,kconfig)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("qtbase" ,qtbase-5)))
+     (list kconfig kwidgetsaddons qtbase-5))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Powerful autocompletion framework and widgets")
     (description "This framework helps implement autocompletion in Qt-based
@@ -1628,16 +1554,12 @@ integrated it into your application's other widgets.")
                 "182ma11z3kqxq3cwy7kwprfqkb9bcmn44w7k9vixbid4pv5wa0lb"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("xorg-server" ,xorg-server))) ; for the tests
+     (list extra-cmake-modules xorg-server)) ; for the tests
     (inputs
-     `(("qtbase" ,qtbase-5)))
+     (list qtbase-5))
     (propagated-inputs
-     `(;; As required by KF5ContactsConfig.cmake.
-       ("kcodecs" ,kcodecs)
-       ("kconfig" ,kconfig)
-       ("kcoreaddons" ,kcoreaddons)
-       ("ki18n" ,ki18n)))
+     (list ;; As required by KF5ContactsConfig.cmake.
+           kcodecs kconfig kcoreaddons ki18n))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -1647,8 +1569,7 @@ integrated it into your application's other widgets.")
              ;; Xvfb doesn't have proper glx support and needs a pixeldepth
              ;; of 24 bit to avoid "libGL error: failed to load driver: swrast"
              ;;                    "Could not initialize GLX"
-             (system (string-append (assoc-ref inputs "xorg-server")
-                                    "/bin/Xvfb :1 -screen 0 640x480x24 &"))
+             (system "Xvfb :1 -screen 0 640x480x24 &")
              (setenv "DISPLAY" ":1")
              #t)))))
     (home-page "https://community.kde.org/Frameworks")
@@ -1674,12 +1595,9 @@ localized country name to ISO 3166-1 alpha 2 code mapping and vice verca.
                 "11sy9hrjpvybqi53qjrnncy9mzifrb3vqxi2d12ldjzqyqd8pirp"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     (list extra-cmake-modules))
     (inputs
-     `(("kcoreaddons" ,kcoreaddons)
-       ("kwindowsystem" ,kwindowsystem)
-       ("qtbase" ,qtbase-5)
-       ("qtx11extras" ,qtx11extras)))
+     (list kcoreaddons kwindowsystem qtbase-5 qtx11extras))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Graceful handling of application crashes")
     (description "KCrash provides support for intercepting and handling
@@ -1701,17 +1619,17 @@ application crashes.")
                 "0g0k83np2xaxk05spf14h5fvzy0n7kbcwx1sa9wjh570f6jx87am"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     (list extra-cmake-modules))
     (inputs
-     `(("docbook-xml" ,docbook-xml)
-       ("docbook-xsl" ,docbook-xsl)
-       ("karchive" ,karchive)
-       ("ki18n" ,ki18n)
-       ("libxml2" ,libxml2)
-       ("libxslt" ,libxslt)
-       ("perl" ,perl)
-       ("perl-uri" ,perl-uri)
-       ("qtbase" ,qtbase-5)))
+     (list docbook-xml
+           docbook-xsl
+           karchive
+           ki18n
+           libxml2
+           libxslt
+           perl
+           perl-uri
+           qtbase-5))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -1775,20 +1693,20 @@ from DocBook files.")
        ("pkg-config" ,pkg-config)
        ("python-2" ,python-2)))
     (inputs
-     `(("attr" ,attr)
-       ;; TODO: EPub http://sourceforge.net/projects/ebook-tools
-       ("karchive" ,karchive)
-       ("kcoreaddons" ,kcoreaddons)
-       ("ki18n" ,ki18n)
-       ("qtmultimedia" ,qtmultimedia)
-       ("qtbase" ,qtbase-5)
-       ;; Required run-time packages
-       ("catdoc" ,catdoc)
-       ;; Optional run-time packages
-       ("exiv2" ,exiv2)
-       ("ffmpeg" ,ffmpeg)
-       ("poppler-qt5" ,poppler-qt5)
-       ("taglib" ,taglib)))
+     (list attr
+           ;; TODO: EPub http://sourceforge.net/projects/ebook-tools
+           karchive
+           kcoreaddons
+           ki18n
+           qtmultimedia
+           qtbase-5
+           ;; Required run-time packages
+           catdoc
+           ;; Optional run-time packages
+           exiv2
+           ffmpeg
+           poppler-qt5
+           taglib))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Extract metadata from different fileformats")
     (description "KFileMetaData provides a simple library for extracting the
@@ -1812,12 +1730,11 @@ by applications to write metadata.")
                 "0pk4b725wapzdxv1mm6ddqcl6z8ffcpr32i5vrhrin8awi5gx13s"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("pkg-config" ,pkg-config)))
+     (list extra-cmake-modules pkg-config))
     (inputs
-     `(("karchive" ,karchive) ; for Krita and OpenRaster images
-       ("openexr" ,openexr-2) ; for OpenEXR high dynamic-range images
-       ("qtbase" ,qtbase-5)))
+     (list karchive ; for Krita and OpenRaster images
+           openexr-2 ; for OpenEXR high dynamic-range images
+           qtbase-5))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -1866,13 +1783,9 @@ formats.")
                 "13kdczzyyh17hf6vlhh4li5bn4yq5bab5xa8mm63r9rynxihgclf"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("qttools" ,qttools)))
+     (list extra-cmake-modules qttools))
     (inputs
-     `(("kcoreaddons" ,kcoreaddons)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("qtbase" ,qtbase-5)
-       ("qtx11extras" ,qtx11extras)))
+     (list kcoreaddons kwidgetsaddons qtbase-5 qtx11extras))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Widgets for showing progress of asynchronous jobs")
     (description "KJobWIdgets provides widgets for showing progress of
@@ -1894,20 +1807,18 @@ asynchronous jobs.")
                 "01bn23xw2n53h9nl99lm3cjnqs8s66bmwkzf6fkpg9rzkykizbyc"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("dbus" ,dbus)
-       ("qttools" ,qttools)))
+     (list extra-cmake-modules dbus qttools))
     (inputs
-     `(("kcodecs" ,kcodecs)
-       ("kconfig" ,kconfig)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kwindowsystem" ,kwindowsystem)
-       ("phonon" ,phonon)
-       ("qtbase" ,qtbase-5)
-       ("qtspeech" ,qtspeech)
-       ;; TODO: Think about adding dbusmenu-qt5 from
-       ;; https://launchpad.net/libdbusmenu-qt
-       ("qtx11extras" ,qtx11extras)))
+     (list kcodecs
+           kconfig
+           kcoreaddons
+           kwindowsystem
+           phonon
+           qtbase-5
+           qtspeech
+           ;; TODO: Think about adding dbusmenu-qt5 from
+           ;; https://launchpad.net/libdbusmenu-qt
+           qtx11extras))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -1944,14 +1855,14 @@ covers feedback and persistent events.")
                                        "kpackage-fix-KF5PackageMacros.cmake.patch"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     (list extra-cmake-modules))
     (inputs
-     `(("karchive" ,karchive)
-       ("kconfig" ,kconfig)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kdoctools" ,kdoctools)
-       ("ki18n" ,ki18n)
-       ("qtbase" ,qtbase-5)))
+     (list karchive
+           kconfig
+           kcoreaddons
+           kdoctools
+           ki18n
+           qtbase-5))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -2002,12 +1913,11 @@ were traditional plugins.")
                 "1hp6iilr2asf2269linfazjv4yjg7rsi8wydxx53yyr99r0bgmah"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     (list extra-cmake-modules))
     (inputs
-     `(("kcoreaddons" ,kcoreaddons)
-       ("ki18n" ,ki18n)
-       ;; TODO: utempter, for managing UTMP entries
-       ("qtbase" ,qtbase-5)))
+     (list kcoreaddons ki18n
+           ;; TODO: utempter, for managing UTMP entries
+           qtbase-5))
     (arguments
      `(#:tests? #f ; FIXME: 1/1 tests fail.
        #:phases
@@ -2049,10 +1959,9 @@ and communicating with them using a pty.")
              (substitute* "autotests/convertertest.cpp"
                (("const int numThreads = 2") "const int numThreads = 0")))))))
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     (list extra-cmake-modules))
     (inputs
-     `(("ki18n" ,ki18n)
-       ("qtbase" ,qtbase-5)))
+     (list ki18n qtbase-5))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Converting physical units")
     (description "KUnitConversion provides functions to convert values in
@@ -2076,10 +1985,9 @@ gallons).")
                 "1n3x8s1z4kd30xirfr07hi87vwhk4rilb5kslcjcgp5n9c0imcpv"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     (list extra-cmake-modules))
     (inputs
-     `(("kcodecs" ,kcodecs)
-       ("qtbase" ,qtbase-5)))
+     (list kcodecs qtbase-5))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "RSS/Atom parser library")
     (description "@code{syndication} supports RSS (0.9/1.0, 0.91..2.0) and
@@ -2109,29 +2017,27 @@ between feed formats.")
                 "1cf5pp9hn3pqypwyzh63ksasap3n7qz6n3y2xgb83ss3fra90pjf"))))
     (build-system cmake-build-system)
     (propagated-inputs
-     `(("kcoreaddons" ,kcoreaddons)
-       ("kfilemetadata" ,kfilemetadata)))
+     (list kcoreaddons kfilemetadata))
     (native-inputs
-     `(("dbus" ,dbus)
-       ("extra-cmake-modules" ,extra-cmake-modules)))
+     (list dbus extra-cmake-modules))
     (inputs
-     `(("kbookmarks" ,kbookmarks)
-       ("kcompletion" ,kcompletion)
-       ("kconfig" ,kconfig)
-       ("kcrash" ,kcrash)
-       ("kdbusaddons" ,kdbusaddons)
-       ("kidletime" ,kidletime)
-       ("kio" ,kio)
-       ("kitemviews" ,kitemviews)
-       ("ki18n" ,ki18n)
-       ("kjobwidgets" ,kjobwidgets)
-       ("kservice" ,kservice)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kxmlgui" ,kxmlgui)
-       ("lmdb" ,lmdb)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)
-       ("solid" ,solid)))
+     (list kbookmarks
+           kcompletion
+           kconfig
+           kcrash
+           kdbusaddons
+           kidletime
+           kio
+           kitemviews
+           ki18n
+           kjobwidgets
+           kservice
+           kwidgetsaddons
+           kxmlgui
+           lmdb
+           qtbase-5
+           qtdeclarative
+           solid))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -2183,13 +2089,9 @@ maintaining an index of the contents of your files.")
                 "1cnfdnxkw9hwbqdzdygp2vzwxqwqhxyipzwdcgar0clgnf7zi7wx"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     (list extra-cmake-modules))
     (inputs
-     `(("boost" ,boost)
-       ("kactivities" ,kactivities)
-       ("kconfig" ,kconfig)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)))
+     (list boost kactivities kconfig qtbase-5 qtdeclarative))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Access usage statistics collected by the activity manager")
     (description "The KActivitiesStats library provides a querying mechanism for
@@ -2213,19 +2115,18 @@ by which applications, and what documents have been linked to which activity.")
                 "1i5vcyvyc9whmflbcg2kc562ch93yscfic1c1n9z347g26jmgras"))))
     (build-system cmake-build-system)
     (propagated-inputs
-     `(("kwidgetsaddons" ,kwidgetsaddons)))
+     (list kwidgetsaddons))
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("qttools" ,qttools)))
+     (list extra-cmake-modules qttools))
     (inputs
-     `(("kauth" ,kauth)
-       ("kcodecs" ,kcodecs)
-       ("kconfig" ,kconfig)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kiconthemes" ,kiconthemes)
-       ("kxmlgui" ,kxmlgui)
-       ("qtbase" ,qtbase-5)))
+     (list kauth
+           kcodecs
+           kconfig
+           kconfigwidgets
+           kcoreaddons
+           kiconthemes
+           kxmlgui
+           qtbase-5))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -2256,10 +2157,9 @@ using the XBEL format.")
                 "08f4yr546brl1dppp0khvsw9ihmh9a7rp505913pdhi0sklaiimz"))))
     (build-system cmake-build-system)
     (propagated-inputs
-     `(("kconfigwidgets" ,kconfigwidgets)
-       ("kservice" ,kservice)))
+     (list kconfigwidgets kservice))
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     (list extra-cmake-modules))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -2275,20 +2175,20 @@ using the XBEL format.")
                 (string-append a " KCM plugin\" << mod.service()->library() << \":\"" c)))
              #t)))))
     (inputs
-     `(("kauth" ,kauth)
-       ("kcodecs" ,kcodecs)
-       ("kconfig" ,kconfig)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kdeclarative" ,kdeclarative)
-       ("kguiaddons" ,kguiaddons)
-       ("kiconthemes" ,kiconthemes)
-       ("kitemviews" ,kitemviews)
-       ("ki18n" ,ki18n)
-       ("kpackage" ,kpackage)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kxmlgui" ,kxmlgui)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)))
+     (list kauth
+           kcodecs
+           kconfig
+           kcoreaddons
+           kdeclarative
+           kguiaddons
+           kiconthemes
+           kitemviews
+           ki18n
+           kpackage
+           kwidgetsaddons
+           kxmlgui
+           qtbase-5
+           qtdeclarative))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Utilities for KDE System Settings modules")
     (description "KCMUtils provides various classes to work with KCModules.
@@ -2310,20 +2210,16 @@ KCModules can be created with the KConfigWidgets framework.")
                 "195dw7nyr3fp78y3vfnyjh0hwgwk46f80wdcm8dck5rkscl3v9xz"))))
     (build-system qt-build-system)
     (propagated-inputs
-     `(("kauth" ,kauth)
-       ("kcodecs" ,kcodecs)
-       ("kconfig" ,kconfig)
-       ("kwidgetsaddons" ,kwidgetsaddons)))
+     (list kauth kcodecs kconfig kwidgetsaddons))
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)))
+     (list extra-cmake-modules kdoctools))
     (inputs
-     `(("kcoreaddons" ,kcoreaddons)
-       ("kguiaddons" ,kguiaddons)
-       ("ki18n" ,ki18n)
-       ;; todo: PythonModuleGeneration
-       ("qtbase" ,qtbase-5)
-       ("qttools" ,qttools)))
+     (list kcoreaddons
+           kguiaddons
+           ki18n
+           ;; todo: PythonModuleGeneration
+           qtbase-5
+           qttools))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -2357,34 +2253,31 @@ their settings.")
                 "1vq9pkrb0zsphi2sfx7cyy1kb6pklzjkmqdf5202z8vydlkc4549"))))
     (build-system cmake-build-system)
     (propagated-inputs
-     `(("kconfig" ,kconfig)
-       ("kpackage" ,kpackage)))
+     (list kconfig kpackage))
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("pkg-config" ,pkg-config)
-       ("xorg-server" ,xorg-server-for-tests)))
+     (list extra-cmake-modules pkg-config xorg-server-for-tests))
     (inputs
-     `(("kauth" ,kauth)
-       ("kbookmarks" ,kbookmarks)
-       ("kcodecs" ,kcodecs)
-       ("kcompletion" ,kcompletion)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kglobalaccel" ,kglobalaccel)
-       ("kguiaddons" ,kguiaddons)
-       ("kiconthemes" ,kiconthemes)
-       ("kio" ,kio)
-       ("kitemviews" ,kitemviews)
-       ("ki18n" ,ki18n)
-       ("kjobwidgets" ,kjobwidgets)
-       ("kservice" ,kservice)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kwindowsystem" ,kwindowsystem)
-       ("kxmlgui" ,kxmlgui)
-       ("libepoxy" ,libepoxy)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)
-       ("solid" ,solid)))
+     (list kauth
+           kbookmarks
+           kcodecs
+           kcompletion
+           kconfigwidgets
+           kcoreaddons
+           kglobalaccel
+           kguiaddons
+           kiconthemes
+           kio
+           kitemviews
+           ki18n
+           kjobwidgets
+           kservice
+           kwidgetsaddons
+           kwindowsystem
+           kxmlgui
+           libepoxy
+           qtbase-5
+           qtdeclarative
+           solid))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -2392,8 +2285,7 @@ their settings.")
            (lambda* (#:key inputs #:allow-other-keys)
              ;; The test suite requires a running X server, setting
              ;; QT_QPA_PLATFORM=offscreen does not suffice.
-             (system (string-append (assoc-ref inputs "xorg-server")
-                                    "/bin/Xvfb :1 -screen 0 640x480x24 &"))
+             (system "Xvfb :1 -screen 0 640x480x24 &")
              (setenv "DISPLAY" ":1")
              #t)))))
     (home-page "https://community.kde.org/Frameworks")
@@ -2420,16 +2312,16 @@ that offer bindings to some of the Frameworks.")
                 "0zqd33vy4ny7g9as3bhd75qi1chz1nlqq133pgw8kjanvghwwnk9"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     (list extra-cmake-modules))
     (inputs
-     `(("kconfig" ,kconfig)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kcrash" ,kcrash)
-       ("kdbusaddons" ,kdbusaddons)
-       ("kdoctools" ,kdoctools)
-       ("kinit" ,kinit)
-       ("kservice" ,kservice)
-       ("qtbase" ,qtbase-5)))
+     (list kconfig
+           kcoreaddons
+           kcrash
+           kdbusaddons
+           kdoctools
+           kinit
+           kservice
+           qtbase-5))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Central daemon of KDE work spaces")
     (description "KDED stands for KDE Daemon.  KDED runs in the background and
@@ -2453,26 +2345,25 @@ started on demand.")
                 "0dr6gcag2yzx8fvxis4x403jrcisywds95cywmiyz3pb5727cak2"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("qttools" ,qttools)))
+     (list extra-cmake-modules qttools))
     (inputs
-     `(("kconfig" ,kconfig)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kdoctools" ,kdoctools)
-       ("qtbase" ,qtbase-5)
-       ;; optional:
-       ("kcompletion" ,kcompletion)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kiconthemes" ,kiconthemes)
-       ("kitemviews" ,kitemviews)
-       ("kio" ,kio)
-       ("kplotting" ,kplotting)
-       ("ktextwidgets" ,ktextwidgets)
-       ("kdewebkit" ,kdewebkit)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kxmlgui" ,kxmlgui)
-       ("qtwebkit" ,qtwebkit)
-       ("sonnet" ,sonnet)))
+     (list kconfig
+           kcoreaddons
+           kdoctools
+           qtbase-5
+           ;; optional:
+           kcompletion
+           kconfigwidgets
+           kiconthemes
+           kitemviews
+           kio
+           kplotting
+           ktextwidgets
+           kdewebkit
+           kwidgetsaddons
+           kxmlgui
+           qtwebkit
+           sonnet))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Integrating KDE frameworks widgets with Qt Designer")
     (description "This framework provides plugins for Qt Designer that allow it
@@ -2496,15 +2387,11 @@ ini-style description files.")
                 "17k29g7jwgqj5xdmr509438b9sq65zx8khdr4viybjf5xpi0cf5m"))))
     (build-system cmake-build-system)
     (propagated-inputs
-     `(("kpty" ,kpty)))
+     (list kpty))
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     (list extra-cmake-modules))
     (inputs
-     `(("kconfig" ,kconfig)
-       ("kcoreaddons" ,kcoreaddons)
-       ("ki18n" ,ki18n)
-       ("kservice" ,kservice)
-       ("qtbase" ,qtbase-5)))
+     (list kconfig kcoreaddons ki18n kservice qtbase-5))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "User interface for running shell commands with root privileges")
     (description "KDESU provides functionality for building GUI front ends for
@@ -2527,18 +2414,17 @@ with su and ssh respectively.")
                 "0y9ja3znkvzdbjfs91dwr4cmvl9fk97zpz2lkf0f9zhm2nw6q008"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("qttools" ,qttools)))
+     (list extra-cmake-modules qttools))
     (inputs
-     `(("kconfig" ,kconfig)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kio" ,kio)
-       ("kjobwidgets" ,kjobwidgets)
-       ("kparts" ,kparts)
-       ("kservice" ,kservice)
-       ("kwallet" ,kwallet)
-       ("qtbase" ,qtbase-5)
-       ("qtwebkit" ,qtwebkit)))
+     (list kconfig
+           kcoreaddons
+           kio
+           kjobwidgets
+           kparts
+           kservice
+           kwallet
+           qtbase-5
+           qtwebkit))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "KDE Integration for QtWebKit")
     (description "This library provides KDE integration of the HTML rendering
@@ -2560,14 +2446,11 @@ engine WebKit via QtWebKit.")
                 "11v1srn3nii4j7cn4f19qvdw96pczwxhanzxlg4a9gf8kmnp5gxr"))))
     (build-system cmake-build-system)
     (propagated-inputs
-     `(("kservice" ,kservice)))
+     (list kservice))
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     (list extra-cmake-modules))
     (inputs
-     `(("karchive" ,karchive)
-       ("kconfig" ,kconfig)
-       ("kcoreaddons" ,kcoreaddons)
-       ("qtbase" ,qtbase-5)))
+     (list karchive kconfig kcoreaddons qtbase-5))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -2600,20 +2483,18 @@ emoticons coming from different providers.")
                 "0hmqigc8myiwwh7m6y2cm4vn0d3kmrhia179hyb84vpvvn3lm93z"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("pkg-config" ,pkg-config)
-       ("qttools" ,qttools)))
+     (list extra-cmake-modules pkg-config qttools))
     (inputs
-     `(("kconfig" ,kconfig)
-       ("kcrash" ,kcrash)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kdbusaddons" ,kdbusaddons)
-       ("kservice" ,kservice)
-       ("kwindowsystem" ,kwindowsystem)
-       ("libxcb" ,libxcb)
-       ("qtbase" ,qtbase-5)
-       ("qtx11extras" ,qtx11extras)
-       ("xcb-util-keysyms" ,xcb-util-keysyms)))
+     (list kconfig
+           kcrash
+           kcoreaddons
+           kdbusaddons
+           kservice
+           kwindowsystem
+           libxcb
+           qtbase-5
+           qtx11extras
+           xcb-util-keysyms))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Global desktop keyboard shortcuts")
     (description "KGlobalAccel allows you to have global accelerators that are
@@ -2636,21 +2517,19 @@ window does not need focus for them to be activated.")
                 "09bqpf3drqyfc81vgab9bsh1wm5qbzdwqjlczhax38660nnvh0r9"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("qttools" ,qttools)
-       ("shared-mime-info" ,shared-mime-info)))
+     (list extra-cmake-modules qttools shared-mime-info))
     (inputs
-     `(("karchive" ,karchive)
-       ("kauth" ,kauth)
-       ("kcodecs" ,kcodecs)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kconfig" ,kconfig)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("ki18n" ,ki18n)
-       ("kitemviews" ,kitemviews)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("qtbase" ,qtbase-5)
-       ("qtsvg" ,qtsvg)))
+     (list karchive
+           kauth
+           kcodecs
+           kcoreaddons
+           kconfig
+           kconfigwidgets
+           ki18n
+           kitemviews
+           kwidgetsaddons
+           qtbase-5
+           qtsvg))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -2703,32 +2582,31 @@ in applications using the KDE Frameworks.")
             (variable "KDEINIT5_LIBRARY_PATH")
             (files '("lib/")))))
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("pkg-config" ,pkg-config)))
+     (list extra-cmake-modules pkg-config))
     (inputs
-     `(("kauth" ,kauth)
-       ("kbookmarks" ,kbookmarks)
-       ("kcodecs" ,kcodecs)
-       ("kcompletion" ,kcompletion)
-       ("kconfig" ,kconfig)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kcrash" ,kcrash)
-       ("kdbusaddons" ,kdbusaddons)
-       ("kdoctools" ,kdoctools)
-       ("kio" ,kio)
-       ("kitemviews" ,kitemviews)
-       ("ki18n" ,ki18n)
-       ("kjobwidgets" ,kjobwidgets)
-       ("kparts" ,kparts)
-       ("kservice" ,kservice)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kwindowsystem" ,kwindowsystem)
-       ("kxmlgui" ,kxmlgui)
-       ("libcap" ,libcap) ; to install start_kdeinit with CAP_SYS_RESOURCE
-       ("plasma-framework" ,plasma-framework)
-       ("qtbase" ,qtbase-5)
-       ("solid" ,solid)))
+     (list kauth
+           kbookmarks
+           kcodecs
+           kcompletion
+           kconfig
+           kconfigwidgets
+           kcoreaddons
+           kcrash
+           kdbusaddons
+           kdoctools
+           kio
+           kitemviews
+           ki18n
+           kjobwidgets
+           kparts
+           kservice
+           kwidgetsaddons
+           kwindowsystem
+           kxmlgui
+           libcap ; to install start_kdeinit with CAP_SYS_RESOURCE
+           plasma-framework
+           qtbase-5
+           solid))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Library to speed up start of applications on KDE workspaces")
     (description "Kdeinit is a process launcher similar to init used for booting
@@ -2755,20 +2633,18 @@ consumption.")
               (patches (search-patches "kio-search-smbd-on-PATH.patch"))))
     (build-system cmake-build-system)
     (propagated-inputs
-     `(("kbookmarks" ,kbookmarks)
-       ("kconfig" ,kconfig)
-       ("kcompletion" ,kcompletion)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kitemviews" ,kitemviews)
-       ("kjobwidgets" ,kjobwidgets)
-       ("kservice" ,kservice)
-       ("kwindowsystem" ,kwindowsystem)
-       ("kxmlgui" ,kxmlgui)
-       ("solid" ,solid)))
+     (list kbookmarks
+           kconfig
+           kcompletion
+           kcoreaddons
+           kitemviews
+           kjobwidgets
+           kservice
+           kwindowsystem
+           kxmlgui
+           solid))
     (native-inputs
-     `(("dbus" ,dbus)
-       ("qttools" ,qttools)
-       ("extra-cmake-modules" ,extra-cmake-modules)))
+     (list dbus qttools extra-cmake-modules))
     (inputs
      `(;; TODO:  LibACL , <ftp://oss.sgi.com/projects/xfs/cmd_tars>
        ("krb5" ,mit-krb5)
@@ -2848,31 +2724,29 @@ KIO enabled infrastructure.")
                 "1hpxj4nawh57w8l64gjplb5mk5fpxiffm4x49kg75m637rxy19fq"))))
     (build-system cmake-build-system)
     (propagated-inputs
-     `(("attica" ,attica)
-       ("kservice" ,kservice)
-       ("kxmlgui" ,kxmlgui)))
+     (list attica kservice kxmlgui))
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     (list extra-cmake-modules))
     (inputs
-     `(("karchive" ,karchive)
-       ("kauth" ,kauth)
-       ("kbookmarks" ,kbookmarks)
-       ("kcodecs" ,kcodecs)
-       ("kcompletion" ,kcompletion)
-       ("kconfig" ,kconfig)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kio" ,kio)
-       ("kitemviews" ,kitemviews)
-       ("ki18n" ,ki18n)
-       ("kiconthemes" ,kiconthemes)
-       ("kjobwidgets" ,kjobwidgets)
-       ("ktextwidgets" ,ktextwidgets)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)
-       ("solid" ,solid)
-       ("sonnet" ,sonnet)))
+     (list karchive
+           kauth
+           kbookmarks
+           kcodecs
+           kcompletion
+           kconfig
+           kconfigwidgets
+           kcoreaddons
+           kio
+           kitemviews
+           ki18n
+           kiconthemes
+           kjobwidgets
+           ktextwidgets
+           kwidgetsaddons
+           qtbase-5
+           qtdeclarative
+           solid
+           sonnet))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -2904,26 +2778,26 @@ specification.")
                 "1d483qrgyamwsqvcl70klv1g8744hn8z1h2j3qfydcvlwz8jy0gj"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     (list extra-cmake-modules))
     (inputs
-     `(("kauth" ,kauth)
-       ("kbookmarks" ,kbookmarks)
-       ("kcodecs" ,kcodecs)
-       ("kcompletion" ,kcompletion)
-       ("kconfig" ,kconfig)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kio" ,kio)
-       ("kitemviews" ,kitemviews)
-       ("ki18n" ,ki18n)
-       ("kjobwidgets" ,kjobwidgets)
-       ("knotifications" ,knotifications)
-       ("kservice" ,kservice)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kxmlgui" ,kxmlgui)
-       ("phonon" ,phonon)
-       ("qtbase" ,qtbase-5)
-       ("solid" ,solid)))
+     (list kauth
+           kbookmarks
+           kcodecs
+           kcompletion
+           kconfig
+           kconfigwidgets
+           kcoreaddons
+           kio
+           kitemviews
+           ki18n
+           kjobwidgets
+           knotifications
+           kservice
+           kwidgetsaddons
+           kxmlgui
+           phonon
+           qtbase-5
+           solid))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Configuration dialog for desktop notifications")
     (description "KNotifyConfig provides a configuration dialog for desktop
@@ -2956,29 +2830,26 @@ notifications which can be embedded in your application.")
                         (("partloadertest\\.cpp") ""))
                       #t)))))
     (propagated-inputs
-     `(("kio" ,kio)
-       ("ktextwidgets" ,ktextwidgets)
-       ("kxmlgui" ,kxmlgui)))
+     (list kio ktextwidgets kxmlgui))
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("shared-mime-info" ,shared-mime-info)))
+     (list extra-cmake-modules shared-mime-info))
     (inputs
-     `(("kauth" ,kauth)
-       ("kbookmarks" ,kbookmarks)
-       ("kcodecs" ,kcodecs)
-       ("kcompletion" ,kcompletion)
-       ("kconfig" ,kconfig)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kiconthemes" ,kiconthemes)
-       ("kitemviews" ,kitemviews)
-       ("ki18n" ,ki18n)
-       ("kjobwidgets" ,kjobwidgets)
-       ("kservice" ,kservice)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("qtbase" ,qtbase-5)
-       ("solid" ,solid)
-       ("sonnet" ,sonnet)))
+     (list kauth
+           kbookmarks
+           kcodecs
+           kcompletion
+           kconfig
+           kconfigwidgets
+           kcoreaddons
+           kiconthemes
+           kitemviews
+           ki18n
+           kjobwidgets
+           kservice
+           kwidgetsaddons
+           qtbase-5
+           solid
+           sonnet))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Plugin framework for user interface components")
     (description "This library implements the framework for KDE parts, which are
@@ -3000,16 +2871,16 @@ widgets with a user-interface defined in terms of actions.")
                 "1dhvly19pj9lx78g7mc89scibzmra1vhv4zz33222zidkbrf9ryl"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     (list extra-cmake-modules))
     (inputs
-     `(("kconfig" ,kconfig)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kitemviews" ,kitemviews)
-       ("ki18n" ,ki18n)
-       ("kservice" ,kservice)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)))
+     (list kconfig
+           kcoreaddons
+           kitemviews
+           ki18n
+           kservice
+           kwidgetsaddons
+           qtbase-5
+           qtdeclarative))
     (arguments
      `(#:tests? #f)) ; FIXME: 1/3 tests fail.
     (home-page "https://community.kde.org/Frameworks")
@@ -3036,45 +2907,44 @@ to easily extend the contacts collection.")
                 "0fhb26vi9z1mky79kq12qq4g4ghz3530cx84n5l3sdgkd6nfsyqf"))))
     (build-system cmake-build-system)
     (propagated-inputs
-     `(("plasma-framework" ,plasma-framework)))
+     (list plasma-framework))
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-
-       ;; For tests.
-       ("dbus" ,dbus)))
+     (list extra-cmake-modules
+           ;; For tests.
+           dbus))
     (inputs
-     `(("kauth" ,kauth)
-       ("kbookmarks" ,kbookmarks)
-       ("kcodecs" ,kcodecs)
-       ("kcompletion" ,kcompletion)
-       ("kconfig" ,kconfig)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kio" ,kio)
-       ("kitemviews" ,kitemviews)
-       ("ki18n" ,ki18n)
-       ("kjobwidgets" ,kjobwidgets)
-       ("kpackage" ,kpackage)
-       ("kservice" ,kservice)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kwindowsystem" ,kwindowsystem)
-       ("kxmlgui" ,kxmlgui)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)
-       ("solid" ,solid)
-       ("threadweaver" ,threadweaver)))
+     (list kauth
+           kbookmarks
+           kcodecs
+           kcompletion
+           kconfig
+           kconfigwidgets
+           kcoreaddons
+           kio
+           kitemviews
+           ki18n
+           kjobwidgets
+           kpackage
+           kservice
+           kwidgetsaddons
+           kwindowsystem
+           kxmlgui
+           qtbase-5
+           qtdeclarative
+           solid
+           threadweaver))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-paths-for-test
            ;; This test tries to access paths like /home, /usr/bin and /bin/ls
            ;; which don't exist in the build-container. Change to existing paths.
-           (lambda _
+           (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "autotests/runnercontexttest.cpp"
                (("/home\"") "/tmp\"") ;; single path-part
                (("//usr/bin\"") (string-append (getcwd) "\"")) ;; multiple path-parts
-               (("/bin/ls" path)
-                (string-append (assoc-ref %build-inputs "coreutils") path)))))
+               (("/bin/ls")
+                (search-input-file inputs "/bin/ls")))))
          (add-before 'check 'check-setup
            (lambda _
              (setenv "HOME" (getcwd))
@@ -3112,18 +2982,11 @@ typed.")
                 "0g49p5331f7dl46rvi43akmjm1jx70w9797j6d17jy7z9s9sqikw"))))
     (build-system cmake-build-system)
     (propagated-inputs
-     `(("kconfig" ,kconfig)
-       ("kcoreaddons" ,kcoreaddons)))
+     (list kconfig kcoreaddons))
     (native-inputs
-     `(("bison" ,bison)
-       ("extra-cmake-modules" ,extra-cmake-modules)
-       ("flex" ,flex)))
+     (list bison extra-cmake-modules flex))
     (inputs
-     `(("kcrash" ,kcrash)
-       ("kdbusaddons" ,kdbusaddons)
-       ("kdoctools" ,kdoctools)
-       ("ki18n" ,ki18n)
-       ("qtbase" ,qtbase-5)))
+     (list kcrash kdbusaddons kdoctools ki18n qtbase-5))
     (arguments
      `(#:tests? #f ; FIXME: 6/10 tests fail.
        #:phases
@@ -3171,39 +3034,38 @@ types or handled by application specific code.")
                 "0k10yj1ia1w1mznj4g5nvp65p226zcvgwxc85ycn2w8lbkknidf7"))))
     (build-system cmake-build-system)
     (propagated-inputs
-     `(("kparts" ,kparts)))
+     (list kparts))
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("pkg-config" ,pkg-config)))
+     (list extra-cmake-modules pkg-config))
     (inputs
-     `(;; TODO: editor-config
-       ("karchive" ,karchive)
-       ("kauth" ,kauth)
-       ("kbookmarks" ,kbookmarks)
-       ("kcodecs" ,kcodecs)
-       ("kcompletion" ,kcompletion)
-       ("kconfig" ,kconfig)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kguiaddons" ,kguiaddons)
-       ("kiconthemes" ,kiconthemes)
-       ("kio" ,kio)
-       ("kitemviews" ,kitemviews)
-       ("ki18n" ,ki18n)
-       ("kjobwidgets" ,kjobwidgets)
-       ("kservice" ,kservice)
-       ("ksyntaxhighlighting" ,ksyntaxhighlighting)
-       ("ktextwidgets" ,ktextwidgets)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kxmlgui" ,kxmlgui)
-       ("libgit2" ,libgit2)
-       ("perl" ,perl)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)
-       ("qtscript" ,qtscript)
-       ("qtxmlpatterns" ,qtxmlpatterns)
-       ("solid" ,solid)
-       ("sonnet" ,sonnet)))
+     (list ;; TODO: editor-config
+           karchive
+           kauth
+           kbookmarks
+           kcodecs
+           kcompletion
+           kconfig
+           kconfigwidgets
+           kcoreaddons
+           kguiaddons
+           kiconthemes
+           kio
+           kitemviews
+           ki18n
+           kjobwidgets
+           kservice
+           ksyntaxhighlighting
+           ktextwidgets
+           kwidgetsaddons
+           kxmlgui
+           libgit2
+           perl
+           qtbase-5
+           qtdeclarative
+           qtscript
+           qtxmlpatterns
+           solid
+           sonnet))
     (arguments
      `(#:tests? #f ; FIXME: 2/54 tests fail: Cannot find fontdirectory qtbase/lib/font
        #:phases
@@ -3252,24 +3114,22 @@ library.")
                 "1609rlwba674kr9whawk93vb1b14b5ly7wvir7kjyjp4j715f47w"))))
     (build-system qt-build-system)
     (propagated-inputs
-     `(("ki18n" ,ki18n)
-       ("sonnet" ,sonnet)))
+     (list ki18n sonnet))
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("qttools" ,qttools)))
+     (list extra-cmake-modules qttools))
     (inputs
-     `(("kauth" ,kauth)
-       ("kcodecs" ,kcodecs)
-       ("kcompletion" ,kcompletion)
-       ("kconfig" ,kconfig)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kiconthemes" ,kiconthemes)
-       ("kservice" ,kservice)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kwindowsystem" ,kwindowsystem)
-       ("qtbase" ,qtbase-5)
-       ("qtspeech" ,qtspeech)))
+     (list kauth
+           kcodecs
+           kcompletion
+           kconfig
+           kconfigwidgets
+           kcoreaddons
+           kiconthemes
+           kservice
+           kwidgetsaddons
+           kwindowsystem
+           qtbase-5
+           qtspeech))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Text editing widgets")
     (description "KTextWidgets provides widgets for displaying and editing text.
@@ -3292,26 +3152,26 @@ It supports rich text as well as plain text.")
                 "1ps6ywcirv7xcisvwfcpvk53wm7m8y5lrz4nhkm36rizrdglw19r"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     (list extra-cmake-modules))
     (inputs
-     `(("gpgme" ,gpgme)
-       ("kauth" ,kauth)
-       ("kcodecs" ,kcodecs)
-       ("kconfig" ,kconfig)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kdbusaddons" ,kdbusaddons)
-       ("kdoctools" ,kdoctools)
-       ("kiconthemes" ,kiconthemes)
-       ("ki18n" ,ki18n)
-       ("knotifications" ,knotifications)
-       ("kservice" ,kservice)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kwindowsystem" ,kwindowsystem)
-       ("libgcrypt" ,libgcrypt)
-       ("phonon" ,phonon)
-       ("qgpgme" ,qgpgme)
-       ("qtbase" ,qtbase-5)))
+     (list gpgme
+           kauth
+           kcodecs
+           kconfig
+           kconfigwidgets
+           kcoreaddons
+           kdbusaddons
+           kdoctools
+           kiconthemes
+           ki18n
+           knotifications
+           kservice
+           kwidgetsaddons
+           kwindowsystem
+           libgcrypt
+           phonon
+           qgpgme
+           qtbase-5))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Safe desktop-wide storage for passwords")
     (description "This framework contains an interface to KWallet, a safe
@@ -3334,25 +3194,23 @@ the passwords on KDE work spaces.")
                 "0cvzcq2dcz89c0ffhvfb820hfmqa87mfdbjvrqjwdysc9lr8zx8f"))))
     (build-system cmake-build-system)
     (propagated-inputs
-     `(("kconfig" ,kconfig)
-       ("kconfigwidgets" ,kconfigwidgets)))
+     (list kconfig kconfigwidgets))
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("qttools" ,qttools)))
+     (list extra-cmake-modules qttools))
     (inputs
-     `(("attica" ,attica)
-       ("kauth" ,kauth)
-       ("kcodecs" ,kcodecs)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kglobalaccel" ,kglobalaccel)
-       ("kiconthemes" ,kiconthemes)
-       ("kitemviews" ,kitemviews)
-       ("ki18n" ,ki18n)
-       ("ktextwidgets" ,ktextwidgets)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kwindowsystem" ,kwindowsystem)
-       ("qtbase" ,qtbase-5)
-       ("sonnet" ,sonnet)))
+     (list attica
+           kauth
+           kcodecs
+           kcoreaddons
+           kglobalaccel
+           kiconthemes
+           kitemviews
+           ki18n
+           ktextwidgets
+           kwidgetsaddons
+           kwindowsystem
+           qtbase-5
+           sonnet))
     (arguments
      `(#:tests? #f ; FIXME: 1/5 tests fail.
        #:phases
@@ -3387,25 +3245,25 @@ descriptions for integrating actions from plugins.")
                 "1cmfv2w9yfi8jhj5nawfz7kw8jbr1k5cr3n5xv3z59pg2vazsx8b"))))
     (build-system cmake-build-system)
     (propagated-inputs
-     `(("kio" ,kio)))
+     (list kio))
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     (list extra-cmake-modules))
     (inputs
-     `(("kauth" ,kauth)
-       ("kbookmarks" ,kbookmarks)
-       ("kcodecs" ,kcodecs)
-       ("kcompletion" ,kcompletion)
-       ("kconfig" ,kconfig)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kitemviews" ,kitemviews)
-       ("ki18n" ,ki18n)
-       ("kjobwidgets" ,kjobwidgets)
-       ("kservice" ,kservice)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kxmlgui" ,kxmlgui)
-       ("qtbase" ,qtbase-5)
-       ("solid" ,solid)))
+     (list kauth
+           kbookmarks
+           kcodecs
+           kcompletion
+           kconfig
+           kconfigwidgets
+           kcoreaddons
+           kitemviews
+           ki18n
+           kjobwidgets
+           kservice
+           kwidgetsaddons
+           kxmlgui
+           qtbase-5
+           solid))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "XML-RPC client")
     (description "This library contains simple XML-RPC Client support.  It is a
@@ -3431,11 +3289,9 @@ setUrl, setUserAgent and call.")
               (patches (search-patches "plasma-framework-fix-KF5PlasmaMacros.cmake.patch"))))
     (build-system cmake-build-system)
     (propagated-inputs
-     `(("kpackage" ,kpackage)
-       ("kservice" ,kservice)))
+     (list kpackage kservice))
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("pkg-config" ,pkg-config)))
+     (list extra-cmake-modules pkg-config))
     (inputs
      `(("kactivities" ,kactivities)
        ("karchive" ,karchive)
@@ -3501,17 +3357,17 @@ script engines.")
                 "1pxlx2hgj42zsisws8f486n8sg0vn5a5mhb85prifwkaw0rqzgah"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     (list extra-cmake-modules))
     (inputs
-     `(;;TODO: ("kaccounts" ,kaccounts)
-       ("kconfig" ,kconfig)
-       ("kcoreaddons" ,kcoreaddons)
-       ("knotifications" ,knotifications)
-       ("ki18n" ,ki18n)
-       ("kio" ,kio)
-       ("kirigami" ,kirigami)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)))
+     (list ;;TODO: ("kaccounts" ,kaccounts)
+           kconfig
+           kcoreaddons
+           knotifications
+           ki18n
+           kio
+           kirigami
+           qtbase-5
+           qtdeclarative))
     (arguments
      `(#:tests? #f  ;; seem to require network; don't find QTQuick components
        #:phases
@@ -3574,8 +3430,7 @@ need.")
                 "1lvccvhhkzdv1hw627kw3ds18gfq4bxdhlvh959piqxq5gh9d2n0"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("pkg-config" ,pkg-config)))
+     (list extra-cmake-modules pkg-config))
     ;; TODO: Optional packages not yet in Guix: packagekitqt5, AppStreamQt
     (inputs
      `(("kconfig" ,kconfig)
@@ -3631,54 +3486,54 @@ workspace.")
         (base32 "0imkibjlfc0jshdzr05fz5dy2xmfhvgsfan9b1r35spwsn5qkawx"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("dbus" ,dbus)
-       ("docbook-xml" ,docbook-xml-4.4) ; optional
-       ("extra-cmake-modules" ,extra-cmake-modules)
-       ("perl" ,perl)
-       ("perl-uri" ,perl-uri)
-       ("pkg-config" ,pkg-config)
-       ("shared-mime-info" ,shared-mime-info)
-       ("kjobwidgets" ,kjobwidgets) ;; required for running the tests
-       ("strace" ,strace)
-       ("tzdata" ,tzdata-for-tests)))
+     (list dbus
+           docbook-xml-4.4 ; optional
+           extra-cmake-modules
+           perl
+           perl-uri
+           pkg-config
+           shared-mime-info
+           kjobwidgets ;; required for running the tests
+           strace
+           tzdata-for-tests))
     (propagated-inputs
      ;; These are required to be installed along with this package, see
      ;; lib64/cmake/KF5KDELibs4Support/KF5KDELibs4SupportConfig.cmake
-     `(("karchive" ,karchive)
-       ("kauth" ,kauth)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kcrash" ,kcrash)
-       ("kdbusaddons" ,kdbusaddons)
-       ("kdesignerplugin" ,kdesignerplugin)
-       ("kdoctools" ,kdoctools)
-       ("kemoticons" ,kemoticons)
-       ("kguiaddons" ,kguiaddons)
-       ("kiconthemes" ,kiconthemes)
-       ("kinit" ,kinit)
-       ("kitemmodels" ,kitemmodels)
-       ("knotifications" ,knotifications)
-       ("kparts" ,kparts)
-       ("ktextwidgets" ,ktextwidgets)
-       ("kunitconversion" ,kunitconversion)
-       ("kwindowsystem" ,kwindowsystem)
-       ("qtbase" ,qtbase-5)))
+     (list karchive
+           kauth
+           kconfigwidgets
+           kcoreaddons
+           kcrash
+           kdbusaddons
+           kdesignerplugin
+           kdoctools
+           kemoticons
+           kguiaddons
+           kiconthemes
+           kinit
+           kitemmodels
+           knotifications
+           kparts
+           ktextwidgets
+           kunitconversion
+           kwindowsystem
+           qtbase-5))
     (inputs
-     `(("kcompletion" ,kcompletion)
-       ("kconfig" ,kconfig)
-       ("kded" ,kded)
-       ("kglobalaccel" ,kglobalaccel)
-       ("ki18n" ,ki18n)
-       ("kio" ,kio)
-       ("kservice" ,kservice)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kxmlgui" ,kxmlgui)
-       ("libsm" ,libsm)
-       ("networkmanager-qt" ,networkmanager-qt)
-       ("openssl" ,openssl)
-       ("qtsvg" ,qtsvg)
-       ("qttools" ,qttools)
-       ("qtx11extras" ,qtx11extras)))
+     (list kcompletion
+           kconfig
+           kded
+           kglobalaccel
+           ki18n
+           kio
+           kservice
+           kwidgetsaddons
+           kxmlgui
+           libsm
+           networkmanager-qt
+           openssl
+           qtsvg
+           qttools
+           qtx11extras))
     ;; FIXME: Use Guix ca-bundle.crt in etc/xdg/ksslcalist and
     ;; share/kf5/kssl/ca-bundle.crt
     ;; TODO: NixOS has nix-kde-include-dir.patch to change std-dir "include"
@@ -3697,8 +3552,8 @@ workspace.")
            (lambda* (#:key inputs tests? #:allow-other-keys)
              (setenv "HOME" (getcwd))
              (setenv "TZDIR"    ; KDateTimeTestsome needs TZDIR
-                     (string-append (assoc-ref inputs "tzdata")
-                                    "/share/zoneinfo"))
+                     (search-input-directory inputs
+                                             "share/zoneinfo"))
              ;; Make Qt render "offscreen", required for tests
              (setenv "QT_QPA_PLATFORM" "offscreen")
              ;; enable debug output
@@ -3747,32 +3602,31 @@ http://community.kde.org/Frameworks/Porting_Notes should help with this.")
         (base32 "1jh0g6xv57hyclnh54x0f72lby1gvlisan23y7mzlqf67aky52s5"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("perl" ,perl)))
+     (list extra-cmake-modules perl))
     (inputs
-     `(("giflib" ,giflib)
-       ("gperf" ,gperf)
-       ("karchive" ,karchive)
-       ("kcodecs" ,kcodecs)
-       ("kglobalaccel" ,kglobalaccel)
-       ("ki18n" ,ki18n)
-       ("kiconthemes" ,kiconthemes)
-       ("kio" ,kio)
-       ("kjs" ,kjs)
-       ("knotifications" ,knotifications)
-       ("kparts" ,kparts)
-       ("ktextwidgets" ,ktextwidgets)
-       ("kwallet" ,kwallet)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kwindowsystem" ,kwindowsystem)
-       ("kxmlgui" ,kxmlgui)
-       ("libjpeg" ,libjpeg-turbo)
-       ("libpng" ,libpng)
-       ("openssl" ,openssl)
-       ("phonon" ,phonon)
-       ("qtbase" ,qtbase-5)
-       ("qtx11extras" ,qtx11extras)
-       ("sonnet" ,sonnet)))
+     (list giflib
+           gperf
+           karchive
+           kcodecs
+           kglobalaccel
+           ki18n
+           kiconthemes
+           kio
+           kjs
+           knotifications
+           kparts
+           ktextwidgets
+           kwallet
+           kwidgetsaddons
+           kwindowsystem
+           kxmlgui
+           libjpeg-turbo
+           libpng
+           openssl
+           phonon
+           qtbase-5
+           qtx11extras
+           sonnet))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "KDE Frameworks 5 HTML widget and component")
     (description "KHTML is a web rendering engine, based on the KParts
@@ -3798,13 +3652,9 @@ technology and using KJS for JavaScript support.")
         (base32 "0s3n0pdz59p5v967zrxcas3lb94k5bv9vi8058fi0l20nwwlcgh5"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)
-       ("perl" ,perl)
-       ("pkg-config" ,pkg-config)))
+     (list extra-cmake-modules kdoctools perl pkg-config))
     (inputs
-     `(("pcre" ,pcre)
-       ("qtbase" ,qtbase-5)))
+     (list pcre qtbase-5))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "KDE Frameworks 5 support for Javascript scripting in Qt
 applications")
@@ -3831,14 +3681,9 @@ support.")
         (base32 "0976faazhxhhi1wpvpcs8hwb2knz0z7j44v3ay3hw73rq4p3bipm"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)
-       ("qttools" ,qttools)))
+     (list extra-cmake-modules kdoctools qttools))
     (inputs
-     `(("ki18n" ,ki18n)
-       ("kjs" ,kjs)
-       ("qtbase" ,qtbase-5)
-       ("qtsvg" ,qtsvg)))
+     (list ki18n kjs qtbase-5 qtsvg))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "KDE Frameworks 5 embedded Javascript engine for Qt")
     (description "KJSEmbed provides a method of binding Javascript objects to
@@ -3860,19 +3705,17 @@ QObjects, so you can script your applications.")
         (base32 "0lrm4y727nhwaivl37zpmnrwx048gfhyjw19m6q5z9p37lk43jja"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)
-       ("qttools" ,qttools)))
+     (list extra-cmake-modules kdoctools qttools))
     (inputs
-     `(("kcompletion" ,kcompletion)
-       ("kcoreaddons" ,kcoreaddons)
-       ("ki18n" ,ki18n)
-       ("kiconthemes" ,kiconthemes)
-       ("kio" ,kio)
-       ("kparts" ,kparts)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kxmlgui" ,kxmlgui)
-       ("qtbase" ,qtbase-5)))
+     (list kcompletion
+           kcoreaddons
+           ki18n
+           kiconthemes
+           kio
+           kparts
+           kwidgetsaddons
+           kxmlgui
+           qtbase-5))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "KDE Frameworks 5 plugin interface for media player features")
     (description "KMediaPlayer builds on the KParts framework to provide a
@@ -3898,19 +3741,17 @@ KParts instead.")
         (base32 "12b527l12rcf421p613ydbacilp9v9iy90ma35w21sdf9a15k675"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("kdoctools" ,kdoctools)
-       ("qttools" ,qttools)))
+     (list extra-cmake-modules kdoctools qttools))
     (inputs
-     `(("kcompletion" ,kcompletion)
-       ("kcoreaddons" ,kcoreaddons)
-       ("ki18n" ,ki18n)
-       ("kiconthemes" ,kiconthemes)
-       ("kparts" ,kparts)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kxmlgui" ,kxmlgui)
-       ("qtbase" ,qtbase-5)
-       ("qtscript" ,qtscript)))
+     (list kcompletion
+           kcoreaddons
+           ki18n
+           kiconthemes
+           kparts
+           kwidgetsaddons
+           kxmlgui
+           qtbase-5
+           qtscript))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "KDE Frameworks 5 solution for application scripting")
     (description "Kross is a scripting bridge for the KDE Development Platform

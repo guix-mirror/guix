@@ -90,10 +90,9 @@
                           '("config.sub")))
               #t)))))
     (inputs
-      `(("bdb" ,bdb)
-        ("ncurses" ,ncurses)))
+      (list bdb ncurses))
     (native-inputs
-     `(("automake" ,automake))) ;Up to date 'config.guess' and 'config.sub'.
+     (list automake)) ;Up to date 'config.guess' and 'config.sub'.
     (synopsis "The Berkeley Vi Editor")
     (description
       "Vi is the original screen based text editor for Unix systems.  It is

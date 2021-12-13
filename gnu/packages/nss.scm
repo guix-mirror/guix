@@ -3,8 +3,10 @@
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2021 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2020, 2021 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2020 Jonathan Brielmaier <jonathan.brielmaier@web.de>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,20 +25,22 @@
 
 (define-module (gnu packages nss)
   #:use-module (guix packages)
+  #:use-module (guix utils)
+  #:use-module (guix gexp)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages perl)
-  #:use-module (gnu packages sqlite)
-  #:use-module (ice-9 match))
+  #:use-module (gnu packages sqlite))
 
 (define-public nspr
   (package
     (name "nspr")
-    (version "4.29")
+    (version "4.31")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -44,17 +48,37 @@
                    version "/src/nspr-" version ".tar.gz"))
              (sha256
               (base32
-               "10i5x637x0jqmdi47grkzgn56fg6770naa3wrhr4dmsrh3dnna12"))))
+               "1j5b2m8cjlhnnv8sq34587avaagkqvh521w4f95miwgvsn3xlaap"))))
     (build-system gnu-build-system)
+    (inputs
+     ;; For 'compile-et.pl' and 'nspr-config'.
+     (list perl ;for 'compile-et.pl'
+           bash-minimal)) ;for 'nspr-config'
     (native-inputs
-     `(("perl" ,perl)))
+     (list perl))
     (arguments
-     `(#:tests? #f ; no check target
-       #:configure-flags (list "--disable-static"
-                               "--enable-64bit"
-                               (string-append "LDFLAGS=-Wl,-rpath="
-                                              (assoc-ref %outputs "out")
-                                              "/lib"))
+     `(;; Prevent the 'native' perl from sneaking into the closure.
+       ;; XXX it would be nice to do the same for 'bash-minimal',
+       ;; but using 'canonical-package' causes loops.
+       ,@(if (%current-target-system)
+             `(#:disallowed-references
+               (,(gexp-input (this-package-native-input "perl") #:native? #t)))
+             '())
+       #:tests? #f ; no check target
+       #:configure-flags
+       (list "--disable-static"
+             "--enable-64bit"
+             (string-append "LDFLAGS=-Wl,-rpath="
+                            (assoc-ref %outputs "out") "/lib")
+             ;; Mozilla deviates from Autotools conventions
+             ;; due to historical reasons.  Adjust to Mozilla conventions,
+             ;; otherwise the Makefile will try to use TARGET-gcc
+             ;; as a ‘native’ compiler.
+             ,@(if (%current-target-system)
+                   `(,(string-append "--host="
+                                     (nix-system->gnu-triplet (%current-system)))
+                     ,(string-append "--target=" (%current-target-system)))
+                   '()))
        ;; Use fixed timestamps for reproducibility.
        #:make-flags '("SH_DATE='1970-01-01 00:00:01'"
                       ;; This is epoch 1 in microseconds.
@@ -83,11 +107,12 @@ in the Mozilla clients.")
               (base32
                "0v3zds1id71j5a5si42a658fjz8nv2f6zp6w4gqrqmdr6ksz8sxv"))))))
 
+;;; Note: When updating, verify that the nss-certs package still builds fine
+;;; as it inherits its source from the nss package.
 (define-public nss
   (package
     (name "nss")
-    (version "3.59")
-    (replacement nss/fixed)
+    (version "3.71")
     (source (origin
               (method url-fetch)
               (uri (let ((version-with-underscores
@@ -98,22 +123,21 @@ in the Mozilla clients.")
                       "nss-" version ".tar.gz")))
               (sha256
                (base32
-                "096fs3z21r171q24ca3rq53p1389xmvqz1f2rpm7nlm8r9s82ag6"))
+                "0ly2l3dv6z5hlxs72h5x6796ni3x1bq60saavaf42ddgv4ax7b4r"))
               ;; Create nss.pc and nss-config.
               (patches (search-patches "nss-3.56-pkgconfig.patch"
+                                       "nss-getcwd-nonnull.patch"
                                        "nss-increase-test-timeout.patch"))
               (modules '((guix build utils)))
               (snippet
                '(begin
                   ;; Delete the bundled copy of these libraries.
                   (delete-file-recursively "nss/lib/zlib")
-                  (delete-file-recursively "nss/lib/sqlite")
-                  #t))))
+                  (delete-file-recursively "nss/lib/sqlite")))))
     (build-system gnu-build-system)
     (outputs '("out" "bin"))
     (arguments
-     `(#:parallel-build? #f ; not supported
-       #:make-flags
+     `(#:make-flags
        (let* ((out (assoc-ref %outputs "out"))
               (nspr (string-append (assoc-ref %build-inputs "nspr")))
               (rpath (string-append "-Wl,-rpath=" out "/lib/nss")))
@@ -133,27 +157,27 @@ in the Mozilla clients.")
        (modify-phases %standard-phases
          (replace 'configure
            (lambda _
-             (setenv "CC" "gcc")
+             (setenv "CC" ,(cc-for-target))
              ;; Tells NSS to build for the 64-bit ABI if we are 64-bit system.
-             ,@(match (%current-system)
-                 ((or "x86_64-linux" "aarch64-linux")
-                  `((setenv "USE_64" "1")))
-                 (_
-                  '()))
-             #t))
+             ,@(if (target-64bit?)
+                   `((setenv "USE_64" "1"))
+                   '())))
          (replace 'check
-           (lambda _
-             ;; Use 127.0.0.1 instead of $HOST.$DOMSUF as HOSTADDR for testing.
-             ;; The later requires a working DNS or /etc/hosts.
-             (setenv "DOMSUF" "localdomain")
-             (setenv "USE_IP" "TRUE")
-             (setenv "IP_ADDRESS" "127.0.0.1")
+           (lambda* (#:key tests? #:allow-other-keys)
+             (if tests?
+                 (begin
+                   ;; Use 127.0.0.1 instead of $HOST.$DOMSUF as HOSTADDR for
+                   ;; testing.  The latter requires a working DNS or /etc/hosts.
+                   (setenv "DOMSUF" "localdomain")
+                   (setenv "USE_IP" "TRUE")
+                   (setenv "IP_ADDRESS" "127.0.0.1")
 
-             ;; The "PayPalEE.cert" certificate expires every six months,
-             ;; leading to test failures:
-             ;; <https://bugzilla.mozilla.org/show_bug.cgi?id=609734>.  To
-             ;; work around that, set the time to roughly the release date.
-             (invoke "faketime" "2020-11-01" "./nss/tests/all.sh")))
+                   ;; The "PayPalEE.cert" certificate expires every six months,
+                   ;; leading to test failures:
+                   ;; <https://bugzilla.mozilla.org/show_bug.cgi?id=609734>.  To
+                   ;; work around that, set the time to roughly the release date.
+                   (invoke "faketime" "2021-09-30" "./nss/tests/all.sh"))
+                 (format #t "test suite not run~%"))))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -174,21 +198,19 @@ in the Mozilla clients.")
                ;; Install other files.
                (copy-recursively "dist/public/nss" inc)
                (copy-recursively (string-append obj "/bin") bin)
-               (copy-recursively (string-append obj "/lib") lib)
-               #t))))))
+               (copy-recursively (string-append obj "/lib") lib)))))))
     (inputs
-     `(("sqlite" ,sqlite)
-       ("zlib" ,zlib)))
-    (propagated-inputs `(("nspr" ,nspr))) ; required by nss.pc.
-    (native-inputs `(("perl" ,perl)
-                     ("libfaketime" ,libfaketime))) ;for tests
+     (list sqlite zlib))
+    (propagated-inputs
+     (list nspr))                 ;required by nss.pc.
+    (native-inputs
+     (list perl libfaketime))   ;for tests
 
     ;; The NSS test suite takes around 48 hours on Loongson 3A (MIPS) when
     ;; another build is happening concurrently on the same machine.
-    (properties '((timeout . 216000)))  ; 60 hours
+    (properties '((timeout . 216000)))  ;60 hours
 
-    (home-page
-     "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS")
+    (home-page "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS")
     (synopsis "Network Security Services")
     (description
      "Network Security Services (@dfn{NSS}) is a set of libraries designed to

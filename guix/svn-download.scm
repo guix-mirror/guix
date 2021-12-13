@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2019, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Sree Harsha Totakura <sreeharsha@totakura.in>
 ;;; Copyright © 2017, 2019, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;;
@@ -137,7 +137,7 @@ HASH-ALGO (a symbol).  Use NAME as the file name, or a generic name if #f."
                               #$(svn-multi-reference-recursive? ref)
                               #:user-name #$(svn-multi-reference-user-name ref)
                               #:password #$(svn-multi-reference-password ref)))
-                 '#$(svn-multi-reference-locations ref)))))
+                 '#$(sexp->gexp (svn-multi-reference-locations ref))))))
 
   (mlet %store-monad ((guile (package->derivation guile system)))
     (gexp->derivation (or name "svn-checkout") build

@@ -54,14 +54,14 @@
              (setenv "QT_QPA_PLATFORM" "offscreen")
              #t)))))
     (propagated-inputs
-     `(("python-anyqt" ,python-anyqt)
-       ("python-cachecontrol" ,python-cachecontrol)
-       ("python-commonmark" ,python-commonmark)
-       ("python-dictdiffer" ,python-dictdiffer)
-       ("python-docutils" ,python-docutils)
-       ("python-pyqt" ,python-pyqt)
-       ("python-qasync" ,python-qasync)
-       ("python-requests" ,python-requests)))
+     (list python-anyqt
+           python-cachecontrol
+           python-commonmark
+           python-dictdiffer
+           python-docutils
+           python-pyqt
+           python-qasync
+           python-requests))
     (home-page "https://github.com/biolab/orange-canvas-core")
     (synopsis "Core component of Orange Canvas")
     (description
@@ -93,11 +93,8 @@ data-mining application.")
              (setenv "QT_QPA_PLATFORM" "offscreen")
              #t)))))
     (propagated-inputs
-     `(("python-anyqt" ,python-anyqt)
-       ("python-matplotlib" ,python-matplotlib)
-       ("python-orange-canvas-core"
-        ,python-orange-canvas-core)
-       ("python-pyqtgraph" ,python-pyqtgraph)))
+     (list python-anyqt python-matplotlib python-orange-canvas-core
+           python-pyqtgraph))
     (home-page "https://github.com/biolab/orange-widget-base")
     (synopsis "Base Widget for Orange Canvas")
     (description
@@ -146,40 +143,38 @@ GUI based workflow.  It is primarily used in the Orange framework.")
                                          "/lib/qt5/plugins/")))))
              #t)))))
     (native-inputs
-     `(("python-cython" ,python-cython)))
+     (list python-cython))
     (inputs
-     `(("python-anyqt" ,python-anyqt)
-       ("python-baycomp" ,python-baycomp)
-       ("python-bottleneck" ,python-bottleneck)
-       ("python-chardet" ,python-chardet)
-       ("python-httpx" ,python-httpx)
-       ("python-joblib" ,python-joblib)
-       ("python-keyring" ,python-keyring)
-       ("python-keyrings.alt" ,python-keyrings.alt)
-       ("python-louvain" ,python-louvain)
-       ("python-matplotlib" ,python-matplotlib)
-       ("python-networkx" ,python-networkx)
-       ("python-numpy" ,python-numpy)
-       ("python-openpyxl" ,python-openpyxl)
-       ("python-opentsne" ,python-opentsne)
-       ("python-orange-canvas-core"
-        ,python-orange-canvas-core)
-       ("python-orange-widget-base"
-        ,python-orange-widget-base)
-       ("python-pandas" ,python-pandas)
-       ("python-pyqt" ,python-pyqt)
-       ("python-pyqtgraph" ,python-pyqtgraph)
-       ("python-pyqtwebengine" ,python-pyqtwebengine)
-       ("python-pyyaml" ,python-pyyaml)
-       ("python-requests" ,python-requests)
-       ("python-scikit-learn" ,python-scikit-learn)
-       ("python-scipy" ,python-scipy)
-       ("python-serverfiles" ,python-serverfiles)
-       ("python-xlrd" ,python-xlrd)
-       ("python-xlsxwriter" ,python-xlsxwriter)
-       ("qtbase" ,qtbase-5)
-       ("qtsvg" ,qtsvg)
-       ("xdg-utils" ,xdg-utils)))
+     (list python-anyqt
+           python-baycomp
+           python-bottleneck
+           python-chardet
+           python-httpx
+           python-joblib
+           python-keyring
+           python-keyrings.alt
+           python-louvain
+           python-matplotlib
+           python-networkx
+           python-numpy
+           python-openpyxl
+           python-opentsne
+           python-orange-canvas-core
+           python-orange-widget-base
+           python-pandas
+           python-pyqt
+           python-pyqtgraph
+           python-pyqtwebengine
+           python-pyyaml
+           python-requests
+           python-scikit-learn
+           python-scipy
+           python-serverfiles
+           python-xlrd
+           python-xlsxwriter
+           qtbase-5
+           qtsvg
+           xdg-utils))
     (home-page "https://orangedatamining.com/")
     (synopsis "Component-based data mining framework")
     (description
@@ -199,7 +194,7 @@ data analysis, data mining and data visualization.")
         (base32 "1qgbzgnaxj4wsp2rdas53qxsh0j7xpibq25w6lviwyaqwwrgq42y"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-requests" ,python-requests)))
+     (list python-requests))
     (home-page "https://github.com/biolab/serverfiles")
     (synopsis "Utility to access files on a HTTP server and store them locally")
     (description

@@ -156,9 +156,8 @@
                (("ON CACHE") "OFF CACHE"))
              (substitute* "src/gui/CMakeLists.txt"
                (("@kwidgetsaddons@")
-                (string-append (assoc-ref inputs "kwidgetsaddons")
-                               "/include/KF5/KWidgetsAddons/")))
-             #t))
+                (search-input-directory inputs
+                                        "/include/KF5/KWidgetsAddons/")))))
          (add-before 'check 'pre-check
            (lambda _
              ;; Tests write to $HOME.
@@ -180,33 +179,32 @@
        ("qttools" ,qttools)
        ("ruby" ,ruby)))
     (inputs
-     `(("appstream" ,appstream)
-       ("desktop-file-utils" ,desktop-file-utils)
-       ("glib" ,glib)
-       ("kconfig" ,kconfig)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kio" ,kio)
-       ("kjs" ,kjs)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("libcloudproviders" ,libcloudproviders)
-       ("libzip" ,libzip)
-       ("openssl" ,openssl)
-       ("python-nautilus" ,python-nautilus)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)
-       ("qtgraphicaleffects" ,qtgraphicaleffects)
-       ("qtkeychain" ,qtkeychain)
-       ("qtquickcontrols2" ,qtquickcontrols2)
-       ("qtsolutions" ,qtsolutions)
-       ("qtsvg" ,qtsvg)
-       ("qtwebchannel" ,qtwebchannel)
-       ("qtwebsockets" ,qtwebsockets)
-       ("qtwebkit" ,qtwebkit)
-       ("sqlite" ,sqlite)
-       ("xdg-utils" ,xdg-utils)
-       ("zlib" ,zlib)))
+     (list appstream
+           desktop-file-utils
+           glib
+           kconfig
+           kcoreaddons
+           kio
+           kjs
+           kwidgetsaddons
+           libcloudproviders
+           libzip
+           openssl
+           qtbase-5
+           qtdeclarative
+           qtgraphicaleffects
+           qtkeychain
+           qtquickcontrols2
+           qtsolutions
+           qtsvg
+           qtwebchannel
+           qtwebsockets
+           qtwebkit
+           sqlite
+           xdg-utils
+           zlib))
     (propagated-inputs
-     `(("qtwebengine" ,qtwebengine)))
+     (list qtwebengine))
     (synopsis "Desktop sync client for Nextcloud")
     (description "Nextcloud-Desktop is a tool to synchronize files from
 Nextcloud Server with your computer.")
@@ -237,9 +235,7 @@ Nextcloud Server with your computer.")
      `(#:tests? #f
        #:configure-flags '("--with-pcre")))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
+     (list autoconf automake libtool))
     (inputs
      `(("c-ares" ,c-ares)
        ("crypto++" ,crypto++)
@@ -287,13 +283,11 @@ distributions.")
                                           "/etc/bash_completion.d"))
              #t)))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ;; For documentation
-       ("asciidoc" ,asciidoc)))
+     (list pkg-config
+           ;; For documentation
+           asciidoc))
     (inputs
-     `(("curl" ,curl)
-       ("glib" ,glib)
-       ("openssl" ,openssl)))
+     (list curl glib openssl))
     (home-page "https://megatools.megous.com/")
     (synopsis "Command line client application for mega.nz")
     (description "Megatools is a collection of programs for accessing the mega.nz service
@@ -358,10 +352,7 @@ See also: megacmd, the official tool set by MEGA.")
        ("pkg-config" ,pkg-config)
        ("qtlinguist" ,qttools)))
     (inputs
-     `(("qtbase" ,qtbase-5)
-       ("qtkeychain" ,qtkeychain)
-       ("sqlite" ,sqlite)
-       ("zlib" ,zlib)))
+     (list qtbase-5 qtkeychain sqlite zlib))
     (home-page "https://owncloud.org")
     (synopsis "Folder synchronization with an ownCloud server")
     (description "The ownCloudSync system lets you always have your latest
@@ -403,8 +394,7 @@ silently and reliably flow across to every other.")
                #t))))
        #:tests? #f)) ; no test target
     (inputs
-     `(("qtbase" ,qtbase-5)
-       ("qtwebkit" ,qtwebkit)))
+     (list qtbase-5 qtwebkit))
     (home-page "https://github.com/sieren/QSyncthingTray")
     (synopsis "Traybar Application for Syncthing")
     (description
@@ -467,7 +457,7 @@ their folder.
                (install-file "../source/doc/manpage/lsyncd.1" man)
                #t))))))
     (native-inputs
-     `(("lua" ,lua-5.2)))
+     (list lua-5.2))
     (home-page "https://github.com/axkibe/lsyncd")
     (synopsis "Synchronize local directories with remote targets")
     (description "Lsyncd watches a local directory trees event monitor
@@ -496,10 +486,9 @@ and does not hamper local file system performance.")
           (base32 "16i1q8f0jmfd43rb8d70l2b383vr5ib4kh7iq3yd345q7xjz9c2j"))))
       (build-system copy-build-system)
       (inputs
-       `(("scsh" ,scsh)))
+       (list scsh))
       (propagated-inputs
-       `(("rsync" ,rsync)
-         ("unison" ,unison)))
+       (list rsync unison))
       (arguments
        `(#:install-plan '(("usync" "bin/usync"))
          #:phases (modify-phases %standard-phases
@@ -533,18 +522,16 @@ written in @command{scsh}.  It makes use of @command{unison} and
               (patches (search-patches "casync-renameat2-declaration.patch"))))
     (build-system meson-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("python-sphinx" ,python-sphinx)
-       ("rsync" ,rsync)))                         ;for tests
+     (list pkg-config python-sphinx rsync))                         ;for tests
     (inputs
-     `(("xz" ,xz)                                 ;for liblzma
-       ("zstd" ,zstd "lib")
-       ("curl" ,curl)
-       ("acl" ,acl)
-       ("libselinux" ,libselinux)
-       ("fuse" ,fuse)
-       ("openssl" ,openssl)
-       ("zlib" ,zlib)))
+     (list xz ;for liblzma
+           `(,zstd "lib")
+           curl
+           acl
+           libselinux
+           fuse
+           openssl
+           zlib))
     (synopsis "File synchronization and backup system")
     (description
      "casync is a @dfn{content-addressable data synchronizer} that can be used

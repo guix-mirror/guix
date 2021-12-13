@@ -1,0 +1,46 @@
+Taken from: https://groups.google.com/g/linux.debian.bugs.dist/c/mX4GpUJih4k.
+
+--- a/configure.ac
++++ b/configure.ac
+@@ -132,6 +132,16 @@ if test "$os_unix" = "yes"; then
+ 	AC_CHECK_FUNCS([getpeereid])
+ 	AC_CHECK_FUNCS([getpeerucred])
+ 	AC_CHECK_FUNCS([issetugid])
++	case "$host_os" in
++	kfreebsd*-gnu | gnu*)
++		have_getpeereid=no
++		AC_CHECK_LIB(bsd, getpeereid, have_getpeereid=yes)
++		if test "x$have_getpeereid" = "xyes"; then
++			AC_DEFINE([HAVE_GETPEEREID], [1], [have getpeereid])
++			AC_SEARCH_LIBS([getpeereid], [bsd])
++		fi
++	;;
++	esac
+ 
+ 	AC_CACHE_CHECK([for thread-local storage class],
+ 		[ac_cv_tls_keyword],
+
+--- a/common/unix-peer.c
++++ b/common/unix-peer.c
+@@ -47,6 +47,11 @@
+ #  include <ucred.h>
+ #endif
+ 
++#ifdef HAVE_GETPEEREID
++/* Declare getpeereid from /usr/include/bsd/unistd.h */
++extern int getpeereid(int s, uid_t *euid, gid_t *egid);
++#endif
++
+ /* Returns the unix domain socket peer information.
+  * Returns zero on success.
+  */
+@@ -73,7 +78,8 @@ p11_get_upeer_id (int cfd, uid_t *uid, u
+ 		*pid = cr.pid;
+ 
+ #elif defined(HAVE_GETPEEREID)
+-	/* *BSD/MacOSX */
++	/* *BSD/MacOSX/kFreeBSD/Hurd */
++
+ 	uid_t euid;
+ 	gid_t egid;
+ 

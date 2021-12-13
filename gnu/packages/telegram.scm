@@ -260,10 +260,7 @@ Telegram project, for its use in telegram desktop client.")
                    "libcrypto opus alsa libpulse"))
                 #t)))))
        (native-inputs
-        `(("autoconf" ,autoconf)
-          ("automake" ,automake)
-          ("libtool" ,libtool)
-          ("pkg-config" ,pkg-config)))))))
+        (list autoconf automake libtool pkg-config))))))
 
 (define-public telegram-desktop
   (package
@@ -562,7 +559,7 @@ Telegram project, for its use in telegram desktop client.")
        ("xxhash" ,xxhash)
        ("zlib" ,zlib)))
     (propagated-inputs
-     `(("dconf" ,dconf)))
+     (list dconf))
     (synopsis "Telegram Desktop")
     (description "Telegram desktop is the official desktop version of the
 Telegram instant messenger.")
@@ -682,15 +679,9 @@ formerly a part of telegram-cli, but now being maintained separately.")
                         ("libs" "lib/tgl"))
                       args))))))
       (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("libtool" ,libtool)
-         ("pkg-config" ,pkg-config)))
+       (list autoconf automake libtool pkg-config))
       (inputs
-       `(("libevent" ,libevent)
-         ("libgcrypt" ,libgcrypt)
-         ("tl-parser" ,tl-parser)
-         ("zlib" ,zlib)))
+       (list libevent libgcrypt tl-parser zlib))
       (synopsis "Telegram Library")
       (description "TGL is the telegram library for telegram-cli.")
       (home-page "https://github.com/vysheng/tgl")
@@ -766,23 +757,20 @@ formerly a part of telegram-cli, but now being maintained separately.")
                          #:exclude ("tg-server.pub")))
                       args))))))
       (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("libtool" ,libtool)
-         ("pkg-config" ,pkg-config)))
+       (list autoconf automake libtool pkg-config))
       (inputs
-       `(("jansson" ,jansson)
-         ("libconfig" ,libconfig)
-         ("libevent" ,libevent)
-         ("libgcrypt" ,libgcrypt)
-         ("lua" ,lua)
-         ("openssl" ,openssl)
-         ("perl" ,perl)
-         ("python" ,python)
-         ("readline" ,readline)
-         ("tgl" ,tgl)
-         ("tl-parser" ,tl-parser)
-         ("zlib" ,zlib)))
+       (list jansson
+             libconfig
+             libevent
+             libgcrypt
+             lua
+             openssl
+             perl
+             python
+             readline
+             tgl
+             tl-parser
+             zlib))
       (synopsis "Telegram Messenger CLI")
       (description "TG is the command-line interface for Telegram Messenger.")
       (home-page "https://github.com/vysheng/tg")

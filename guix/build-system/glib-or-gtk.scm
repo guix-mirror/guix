@@ -1,7 +1,8 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014 Federico Beffa <beffa@fbengineering.ch>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,15 +22,21 @@
 (define-module (guix build-system glib-or-gtk)
   #:use-module (guix store)
   #:use-module (guix utils)
+  #:use-module (guix gexp)
+  #:use-module (guix monads)
   #:use-module (guix derivations)
   #:use-module (guix search-paths)
+  #:use-module ((guix build glib-or-gtk-build-system)
+                #:select (%gdk-pixbuf-loaders-cache-file))
   #:use-module (guix build-system)
   #:use-module (guix build-system gnu)
   #:use-module (guix packages)
   #:use-module (ice-9 match)
   #:export (%glib-or-gtk-build-system-modules
             glib-or-gtk-build
-            glib-or-gtk-build-system))
+            glib-or-gtk-cross-build
+            glib-or-gtk-build-system)
+  #:re-export (%gdk-pixbuf-loaders-cache-file)) ;for convenience
 
 ;; Commentary:
 ;;
@@ -80,33 +87,45 @@
                 #:key source inputs native-inputs outputs system target
                 (glib (default-glib))
                 (implicit-inputs? #t)
+                (implicit-cross-inputs? #t)
                 (strip-binaries? #t)
                 #:allow-other-keys
                 #:rest arguments)
   "Return a bag for NAME."
   (define private-keywords
-    '(#:source #:target #:glib #:inputs #:native-inputs
-      #:outputs #:implicit-inputs?))
+    `(#:glib #:inputs #:native-inputs
+      #:outputs #:implicit-inputs? #:implicit-cross-inputs?
+      ,@(if target '() '(#:target))))
 
-  (and (not target)                               ;XXX: no cross-compilation
-       (bag
-         (name name)
-         (system system)
-         (host-inputs (if source
-                          `(("source" ,source))
-                          '()))
-         (build-inputs `(,@native-inputs
-                         ,@inputs
-                         ("glib:bin" ,glib "bin") ; to compile schemas
-                         ,@(if implicit-inputs?
-                               (standard-packages)
-                               '())))
-         (outputs outputs)
-         (build glib-or-gtk-build)
-         (arguments (strip-keyword-arguments private-keywords arguments)))))
+  (bag
+    (name name)
+    (system system) (target target)
+    (host-inputs `(,@(if source
+                         `(("source" ,source))
+                         '())
+                   ,@(if target
+                         inputs
+                         '())))
+    (build-inputs `(,@native-inputs
+                    ,@(if target '() inputs)
+                    ("glib:bin" ,glib "bin") ; to compile schemas
+                    ;; Keep standard inputs of gnu-build-system.
+                    ,@(if (and target implicit-cross-inputs?)
+                          (standard-cross-packages target 'host)
+                          '())
+                    ,@(if implicit-inputs?
+                          (standard-packages)
+                          '())))
+    ;; Keep standard inputs of 'gnu-build-system'.
+    (target-inputs (if (and target implicit-cross-inputs?)
+                       (standard-cross-packages target 'target)
+                       '()))
+    (outputs outputs)
+    (build (if target glib-or-gtk-cross-build glib-or-gtk-build))
+    (arguments (strip-keyword-arguments private-keywords arguments))))
 
-(define* (glib-or-gtk-build store name inputs
-                            #:key (guile #f)
+(define* (glib-or-gtk-build name inputs
+                            #:key guile source
                             (outputs '("out"))
                             (search-paths '())
                             (configure-flags ''())
@@ -132,70 +151,143 @@
                             allowed-references
                             disallowed-references)
   "Build SOURCE with INPUTS.  See GNU-BUILD for more details."
-  (define canonicalize-reference
-    (match-lambda
-     ((? package? p)
-      (derivation->output-path (package-derivation store p system)))
-     (((? package? p) output)
-      (derivation->output-path (package-derivation store p system)
-                               output))
-     ((? string? output)
-      output)))
+  (define build
+    (with-imported-modules imported-modules
+      #~(begin
+          (use-modules #$@(sexp->gexp modules))
 
+          #$(with-build-variables inputs outputs
+              #~(glib-or-gtk-build #:source #+source
+                                   #:system #$system
+                                   #:outputs %outputs
+                                   #:inputs %build-inputs
+                                   #:search-paths '#$(sexp->gexp
+                                                      (map search-path-specification->sexp
+                                                           search-paths))
+                                   #:phases #$(if (pair? phases)
+                                                  (sexp->gexp phases)
+                                                  phases)
+                                   #:glib-or-gtk-wrap-excluded-outputs
+                                   #$glib-or-gtk-wrap-excluded-outputs
+                                   #:configure-flags #$configure-flags
+                                   #:make-flags #$make-flags
+                                   #:out-of-source? #$out-of-source?
+                                   #:tests? #$tests?
+                                   #:test-target #$test-target
+                                   #:parallel-build? #$parallel-build?
+                                   #:parallel-tests? #$parallel-tests?
+                                   #:validate-runpath? #$validate-runpath?
+                                   #:patch-shebangs? #$patch-shebangs?
+                                   #:strip-binaries? #$strip-binaries?
+                                   #:strip-flags #$(sexp->gexp strip-flags)
+                                   #:strip-directories
+                                   #$(sexp->gexp strip-directories))))))
+
+
+  (mlet %store-monad ((guile (package->derivation (or guile (default-guile))
+                                                  system #:graft? #f)))
+    (gexp->derivation name build
+                      #:system system
+                      #:target #f
+                      #:graft? #f
+                      #:allowed-references allowed-references
+                      #:disallowed-references disallowed-references
+                      #:guile-for-build guile)))
+
+(define* (glib-or-gtk-cross-build name
+                                  #:key
+                                  target
+                                  build-inputs target-inputs host-inputs
+                                  guile source
+                                  (outputs '("out"))
+                                  (search-paths '())
+                                  (native-search-paths '())
+                                  (configure-flags ''())
+                                  ;; Disable icon theme cache generation.
+                                  (make-flags ''("gtk_update_icon_cache=true"))
+                                  (out-of-source? #f)
+                                  (tests? #f)
+                                  (test-target "check")
+                                  (parallel-build? #t)
+                                  (parallel-tests? #t)
+                                  (validate-runpath? #t)
+                                  (make-dynamic-linker-cache? #f)
+                                  (patch-shebangs? #t)
+                                  (strip-binaries? #t)
+                                  (strip-flags ''("--strip-debug"))
+                                  (strip-directories ''("lib" "lib64" "libexec"
+                                                        "bin" "sbin"))
+                                  (phases '(@ (guix build glib-or-gtk-build-system)
+                                              %standard-phases))
+                                  (glib-or-gtk-wrap-excluded-outputs ''())
+                                  (system (%current-system))
+                                  (build (nix-system->gnu-triplet system))
+                                  (imported-modules %glib-or-gtk-build-system-modules)
+                                  (modules %default-modules)
+                                  allowed-references
+                                  disallowed-references)
+  "Cross-build SOURCE with INPUTS.  See GNU-BUILD for more details."
   (define builder
-    `(begin
-       (use-modules ,@modules)
-       (glib-or-gtk-build #:source ,(match (assoc-ref inputs "source")
-                                      (((? derivation? source))
-                                       (derivation->output-path source))
-                                      ((source)
-                                       source)
-                                      (source
-                                       source))
-                          #:system ,system
-                          #:outputs %outputs
-                          #:inputs %build-inputs
-                          #:search-paths ',(map search-path-specification->sexp
-                                                search-paths)
-                          #:phases ,phases
-                          #:glib-or-gtk-wrap-excluded-outputs
-                           ,glib-or-gtk-wrap-excluded-outputs
-                          #:configure-flags ,configure-flags
-                          #:make-flags ,make-flags
-                          #:out-of-source? ,out-of-source?
-                          #:tests? ,tests?
-                          #:test-target ,test-target
-                          #:parallel-build? ,parallel-build?
-                          #:parallel-tests? ,parallel-tests?
-                          #:validate-runpath? ,validate-runpath?
-                          #:patch-shebangs? ,patch-shebangs?
-                          #:strip-binaries? ,strip-binaries?
-                          #:strip-flags ,strip-flags
-                          #:strip-directories ,strip-directories)))
+    #~(begin
+        (use-modules #$@(sexp->gexp modules))
 
-  (define guile-for-build
-    (match guile
-      ((? package?)
-       (package-derivation store guile system #:graft? #f))
-      (#f                                         ; the default
-       (let* ((distro (resolve-interface '(gnu packages commencement)))
-              (guile  (module-ref distro 'guile-final)))
-         (package-derivation store guile system #:graft? #f)))))
+        (define %build-host-inputs
+          #+(input-tuples->gexp build-inputs))
 
-  (build-expression->derivation store name builder
-                                #:system system
-                                #:inputs inputs
-                                #:modules imported-modules
-                                #:outputs outputs
-                                #:allowed-references
-                                (and allowed-references
-                                     (map canonicalize-reference
-                                          allowed-references))
-                                #:disallowed-references
-                                (and disallowed-references
-                                     (map canonicalize-reference
-                                          disallowed-references))
-                                #:guile-for-build guile-for-build))
+        (define %build-target-inputs
+          (append #$(input-tuples->gexp host-inputs)
+                  #+(input-tuples->gexp target-inputs)))
+
+        (define %build-inputs
+          (append %build-host-inputs %build-target-inputs))
+
+        (define %outputs
+          #$(outputs->gexp outputs))
+
+        (glib-or-gtk-build #:source #+source
+                           #:system #$system
+                           #:build #$build
+                           #:target #$target
+                           #:outputs %outputs
+                           #:inputs %build-target-inputs
+                           #:native-inputs %build-host-inputs
+                           #:search-paths '#$(sexp->gexp
+                                              (map search-path-specification->sexp
+                                                   search-paths))
+                           #:native-search-paths '#$(sexp->gexp
+                                                     (map search-path-specification->sexp
+                                                          native-search-paths))
+                           #:phases #$(if (pair? phases)
+                                          (sexp->gexp phases)
+                                          phases)
+                           #:glib-or-gtk-wrap-excluded-outputs
+                           #$glib-or-gtk-wrap-excluded-outputs
+                           #:configure-flags #$configure-flags
+                           #:make-flags #$make-flags
+                           #:out-of-source? #$out-of-source?
+                           #:tests? #$tests?
+                           #:test-target #$test-target
+                           #:parallel-build? #$parallel-build?
+                           #:parallel-tests? #$parallel-tests?
+                           #:validate-runpath? #$validate-runpath?
+                           #:make-dynamic-linker-cache? #$make-dynamic-linker-cache?
+                           #:patch-shebangs? #$patch-shebangs?
+                           #:strip-binaries? #$strip-binaries?
+                           #:strip-flags #$(sexp->gexp strip-flags)
+                           #:strip-directories
+                           #$(sexp->gexp strip-directories))))
+
+
+  (mlet %store-monad ((guile (package->derivation (or guile (default-guile))
+                                                  system #:graft? #f)))
+    (gexp->derivation name builder
+                      #:system system
+                      #:target target
+                      #:graft? #f
+                      #:modules imported-modules
+                      #:allowed-references allowed-references
+                      #:disallowed-references disallowed-references
+                      #:guile-for-build guile)))
 
 (define glib-or-gtk-build-system
   (build-system

@@ -1,11 +1,12 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2021 Andrew Whatson <whatson@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -34,11 +35,13 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages web-browsers)
   #:use-module (gnu packages xml)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module ((guix build utils) #:select (alist-replace))
+  #:use-module (guix build-system copy)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system python))
@@ -75,7 +78,7 @@
                 (string-append
                  "uri=\"file://" dtd "/")))
              #t)))))
-    (native-inputs `(("unzip" ,unzip)))
+    (native-inputs (list unzip))
     (home-page "https://docbook.org")
     (synopsis "DocBook XML DTDs for document authoring")
     (description
@@ -175,15 +178,17 @@ by no means limited to these applications.)  This package provides XML DTDs.")
 (define-public docbook-xsl
   (package
     (name "docbook-xsl")
-    (version "1.79.1")
+    (version "1.79.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/docbook/docbook-xsl/"
-                                  version "/docbook-xsl-" version ".tar.bz2"))
-              (patches (search-patches "docbook-xsl-nonrecursive-string-subst.patch"))
+              (uri (string-append "https://github.com/docbook/xslt10-stylesheets"
+                                  "/releases/download/release%2F" version
+                                  "/docbook-xsl-" version ".tar.bz2"))
+              (patches (search-patches "docbook-xsl-support-old-url.patch"
+                                       "docbook-xsl-nonrecursive-string-subst.patch"))
               (sha256
                (base32
-                "0s59lihif2fr7rznckxr2kfyrvkirv76r1zvidp9b5mj28p4apvj"))
+                "0wd33z41kdsybyx3ay21w6bdlmgpd9kyn3mr5y520lsf8km28r9i"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -191,8 +196,11 @@ by no means limited to these applications.)  This package provides XML DTDs.")
                   #t))))
     (build-system trivial-build-system)
     (arguments
-     `(#:builder (let ((name-version (string-append ,name "-" ,version)))
+     `(#:builder (begin
                    (use-modules (guix build utils))
+
+                   (define name-version
+                     (string-append ,name "-" ,version))
 
                    (let* ((bzip2  (assoc-ref %build-inputs "bzip2"))
                           (xz     (assoc-ref %build-inputs "xz"))
@@ -213,13 +221,67 @@ by no means limited to these applications.)  This package provides XML DTDs.")
                                        name-version "/")))
                      #t))
        #:modules ((guix build utils))))
-    (native-inputs `(("bzip2" ,bzip2)
-                     ("xz" ,xz)         ;needed for repacked tarballs
-                     ("tar" ,tar)))
+    (native-inputs (list bzip2 xz ;needed for repacked tarballs
+                         tar))
     (home-page "https://docbook.org")
     (synopsis "DocBook XSL style sheets for document authoring")
     (description
      "This package provides XSL style sheets for DocBook.")
+    (license (license:x11-style "" "See 'COPYING' file."))))
+
+(define-public docbook-xsl-ns
+  (package
+    (name "docbook-xsl-ns")
+    (version "1.79.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/docbook/"
+                                  name "/" version "/"
+                                  name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "170ggf5dgjar65kkn5n33kvjr3pdinpj66nnxfx8b2avw0k91jin"))))
+    (build-system copy-build-system)
+    (outputs '("out" "doc"))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; XXX: The copy-build-system doesn't seem to allow installing to a
+         ;; different output.
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (xml (string-append out "/xml/xsl/" ,name "-" ,version))
+                    (doc (string-append (assoc-ref %outputs "doc")
+                                        "/share/doc/" ,name "-" ,version))
+                    (select-rx (make-regexp
+                                "(\\.xml$|\\.xsl$|\\.dtd$|\\.ent$)")))
+               ;; Install catalog.
+               (install-file "catalog.xml" xml)
+               (install-file "VERSION.xsl" xml)
+               (substitute* (string-append xml "/catalog.xml")
+                 (("rewritePrefix=\"./")
+                  (string-append "rewritePrefix=\"file://" xml "/")))
+               ;; Install style sheets.
+               (for-each (lambda (dir)
+                           (for-each (lambda (f)
+                                       (install-file
+                                        f (string-append xml "/" (dirname f))))
+                                     (find-files dir select-rx)))
+                         '("assembly" "common" "eclipse" "epub" "epub3" "fo"
+                           "highlighting" "html" "htmlhelp" "javahelp" "lib"
+                           "manpages" "params" "profiling" "roundtrip"
+                           "template" "website"
+                           "xhtml" "xhtml-1_1" "xhtml5"))
+               ;; Install documentation.
+               (install-file "NEWS" doc)
+               (install-file "RELEASE-NOTES.html" doc)
+               (copy-recursively "slides" doc)
+               (copy-recursively "webhelp" doc)))))))
+    (home-page "https://docbook.org")
+    (synopsis "DocBook XSL namespaced style sheets for document authoring")
+    (description "This package provides the @emph{namespaced} XSL style sheets
+for DocBook.")
     (license (license:x11-style "" "See 'COPYING' file."))))
 
 (define-public docbook-dsssl
@@ -254,10 +316,9 @@ by no means limited to these applications.)  This package provides XML DTDs.")
            ;; The doc output contains 1.4 MiB of HTML documentation.
            (symlink docbook-dsssl-doc doc)))))
     (inputs
-     `(("docbook-dsssl-doc" ,docbook-dsssl-doc)))
+     (list docbook-dsssl-doc))
     (native-inputs
-     `(("bzip2" ,bzip2)
-       ("tar" ,tar)))
+     (list bzip2 tar))
     (home-page "https://docbook.org/")
     (synopsis "DSSSL style sheets for DocBook")
     (description "This package provides DSSSL style sheets for DocBook.")
@@ -335,9 +396,9 @@ by no means limited to these applications.)  This package provides XML DTDs.")
              (("(.*ISO 8879.*)\"iso-(.*)\\.gml\"" _ head name)
               (string-append head "\"" iso-entities-dir "/ISO" name "\"")))))))
     (native-inputs
-     `(("unzip" ,unzip)))
+     (list unzip))
     (inputs
-     `(("iso-8879-entities" ,iso-8879-entities)))
+     (list iso-8879-entities))
     (home-page "https://docbook.org")
     (synopsis "DocBook SGML style sheets for document authoring")
     (description "This package provides SGML style sheets for DocBook.")
@@ -399,42 +460,38 @@ the in DocBook SGML DTDs.")
     (build-system python-build-system)
     ;; TODO: Add xfig/transfig for fig2dev utility
     (inputs
-     `(("texlive" ,(texlive-union (list texlive-amsfonts/patched
+     `(("texlive" ,(texlive-updmap.cfg (list texlive-amsfonts
                                         texlive-latex-anysize
                                         texlive-latex-appendix
+                                        texlive-latex-bookmark
                                         texlive-latex-changebar
                                         texlive-latex-colortbl
-                                        texlive-latex-eepic
-                                        texlive-latex-eso-pic
                                         texlive-latex-fancybox
                                         texlive-latex-fancyhdr
                                         texlive-latex-fancyvrb
                                         texlive-latex-float
                                         texlive-latex-footmisc
-                                        texlive-latex-hyperref
+                                        texlive-hyperref
                                         texlive-latex-jknapltx
                                         texlive-latex-listings
                                         texlive-latex-multirow
-                                        texlive-latex-oberdiek
                                         texlive-latex-overpic
                                         texlive-latex-pdfpages
+                                        texlive-latex-refcount
                                         texlive-latex-subfigure
                                         texlive-latex-titlesec
-                                        texlive-latex-url
-                                        texlive-latex-wasysym
+                                        texlive-wasysym
 
-                                        texlive-fonts-ec
                                         texlive-fonts-rsfs
-                                        texlive-fonts-stmaryrd
+                                        texlive-stmaryrd
 
-                                        texlive-generic-ifxetex)))
+                                        texlive-generic-iftex)))
        ("imagemagick" ,imagemagick)     ;for convert
        ("inkscape" ,inkscape)           ;for svg conversion
        ("docbook" ,docbook-xml)
        ("libxslt" ,libxslt)))           ;for xsltproc
     (arguments
-     `(#:python ,python-2               ;'print' syntax
-       ;; Using setuptools causes an invalid "package_base" path in
+     `(;; Using setuptools causes an invalid "package_base" path in
        ;; out/bin/.dblatex-real due to a missing leading '/'.  This is caused
        ;; by dblatex's setup.py stripping the root path when creating the
        ;; script.  (dblatex's setup.py still uses distutils and thus has to
@@ -477,6 +534,91 @@ DB2LaTeX.")
    (package/inherit dblatex
      (inputs (alist-replace "imagemagick" `(,imagemagick/stable)
                             (package-inputs dblatex))))))
+
+(define-public docbook-utils
+  (package
+    (name "docbook-utils")
+    (version "0.6.14")
+    (source (origin
+              (method url-fetch)
+              ;; The original sources are not accessible anymore.
+              (uri (string-append "http://deb.debian.org/debian/pool/main/"
+                                  "d/docbook-utils/docbook-utils_"
+                                  version ".orig.tar.gz"))
+              (sha256
+               (base32
+                "1scj5vgw1xz872pq54a89blcxqqm11p90yzv8a9mqq57x27apyj8"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'patch-build-system
+                    (lambda _
+                      (substitute* (find-files "." "\\.in$")
+                        ;; Do not hard-code SGML_CATALOG_FILES.
+                        ((".*SGML_CATALOG_FILES=/etc/sgml/catalog.*") "")
+                        ;; Use OpenSP and OpenJade.
+                        (("\\bjade\\b")
+                         "openjade")
+                        (("\\bnsgmls\\b")
+                         "onsgmls"))
+                      #t))
+                  (add-after 'unpack 'patch-jw.in
+                    ;; Do not override the SGML_CATALOG_FILES environment
+                    ;; variable.
+                    (lambda _
+                      (substitute* "bin/jw.in"
+                        ((".*SGML_CATALOG_FILES=`find.*")
+                         "")
+                        (("SGML_CATALOG_FILES=`echo.*")
+                         ":\n")
+                        (("SGML_CATALOG_FILES=\"\"")
+                         ":")
+                        (("\\bwhich\\b")
+                         "command -v"))
+                      #t))
+                  (add-after 'unpack 'patch-txt-backend
+                    (lambda _
+                      ;; Locate lynx, links or w3m from the PATH, not from
+                      ;; /usr/bin.
+                      (substitute* "backends/txt"
+                        (("CONVERT=/usr/bin/")
+                         "CONVERT=")
+                        (("\\[ -x /usr/bin/([^ ]+) \\]" dummy command)
+                         (string-append "command -v " command " > /dev/null")))
+                      #t)))))
+    ;; Propagated for convenience.  All these tools are used at run time to
+    ;; provide the complete functionality of the docbook-utils commands.
+    (propagated-inputs
+     (list texlive-jadetex
+           docbook-sgml-3.1
+           docbook-dsssl
+           openjade
+           opensp
+           lynx
+           perl-sgmls))
+    (home-page "https://packages.debian.org/sid/docbook-utils")
+    (synopsis "DocBook converter to other formats")
+    (description "The docbook-utils package is a collection of utilities
+intended to ease the use of SGML and XML.
+@table @command
+@item jw
+Convert a SGML DocBook file to other formats such as Hyper Text Markup
+Language (HTML), Rich Text Format (RTF), PostScript (PS), man, Portable
+Document Format (PDF), TeX, Texinfo or plain text (txt).  It can be used
+more conveniently via the following wrappers:
+@itemx docbook2dvi Convert a SGML DocBook file to the DVI format.
+@itemx docbook2html Convert a SGML DocBook file to an HTML document.
+@itemx docbook2man Convert a SGML DocBook file a man page.
+@itemx docbook2pdf Convert a SGML DocBook file to a PDF document.
+@itemx docbook2ps Convert a SGML DocBook file to a PS document.
+@itemx docbook2rtf Convert a SGML DocBook file to a RTF document.
+@itemx docbook2tex Convert a SGML DocBook file to a TeX document.
+@itemx docbook2texi Convert a SGML DocBook file to a Texinfo document.
+@itemx docbook2txt Convert a SGML DocBook file to a plain text document.
+@item sgmldiff
+Detect the differences in markup between two SGML files.
+@end table")
+    (license license:gpl2+)))
 
 (define-public docbook2x
   (package

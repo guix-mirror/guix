@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2014, 2015, 2016, 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2014, 2015, 2016, 2017, 2019, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Carlos Sánchez de La Lama <csanchezdll@gmail.com>
@@ -47,6 +47,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
+  #:use-module (guix gexp)
   #:use-module (guix utils)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 regex))
@@ -79,6 +80,11 @@ where the OS part is overloaded to denote a specific ABI---into GCC
          ;;   libcilkrts/runtime/os-unix.c:388:2: error: #error "Unknown architecture"
          ;; Cilk has been removed from GCC 8 anyway.
          '("--disable-libcilkrts"))
+
+        ;; glibc needs the 128-bit long double type on these architectures.
+        ((or (string-prefix? "powerpc64le-" target)
+             (string-prefix? "powerpc-" target))
+         '("--with-long-double-128"))
 
         (else
          ;; TODO: Add `arm.*-gnueabi', etc.
@@ -165,16 +171,12 @@ where the OS part is overloaded to denote a specific ABI---into GCC
                   "lib"                    ;libgcc_s, libgomp, etc. (15+ MiB)
                   "debug"))                ;debug symbols of run-time libraries
 
-       (inputs `(("gmp" ,gmp)
-                 ("mpfr" ,mpfr)
-                 ("mpc" ,mpc)
-                 ("libelf" ,libelf)
-                 ("zlib" ,zlib)))
+       (inputs (list gmp mpfr mpc libelf zlib))
 
        ;; GCC < 5 is one of the few packages that doesn't ship .info files.
        ;; Newer texinfos fail to build the manual, so we use an older one.
-       (native-inputs `(("perl" ,perl)   ;for manpages
-                        ("texinfo" ,texinfo-5)))
+       (native-inputs (list perl ;for manpages
+                            texinfo-5))
 
        (arguments
         `(#:out-of-source? #t
@@ -275,13 +277,10 @@ where the OS part is overloaded to denote a specific ABI---into GCC
 ~a"
                                libc line))))
 
-                  ;; TODO: Make this unconditional in core-updates.
-                  ,@(if (target-powerpc?)
-                      `((when (file-exists? "gcc/config/rs6000")
-                          ;; Force powerpc libdir to be /lib and not /lib64
-                          (substitute* (find-files "gcc/config/rs6000")
-                            (("/lib64") "/lib"))))
-                      `())
+                  (when (file-exists? "gcc/config/rs6000")
+                    ;; Force powerpc libdir to be /lib and not /lib64
+                    (substitute* (find-files "gcc/config/rs6000")
+                      (("/lib64") "/lib")))
 
                   ;; Don't retain a dependency on the build-time sed.
                   (substitute* "fixincludes/fixincl.x"
@@ -330,8 +329,7 @@ where the OS part is overloaded to denote a specific ABI---into GCC
                   ;; but there's nothing useful to look for here.)
                   (substitute* "gcc/config.in"
                     (("PREFIX_INCLUDE_DIR")
-                     "PREFIX_INCLUDE_DIR_isnt_necessary_here"))
-                  #t)))
+                     "PREFIX_INCLUDE_DIR_isnt_necessary_here")))))
 
             (add-after 'configure 'post-configure
               (lambda _
@@ -339,8 +337,7 @@ where the OS part is overloaded to denote a specific ABI---into GCC
                 ;; build-time dependencies---e.g., `--with-ppl=/gnu/store/xxx'.
                 (substitute* "Makefile"
                   (("^TOPLEVEL_CONFIGURE_ARGUMENTS=(.*)$" _ rest)
-                   "TOPLEVEL_CONFIGURE_ARGUMENTS=\n"))
-                #t)))))
+                   "TOPLEVEL_CONFIGURE_ARGUMENTS=\n")))))))
 
        (native-search-paths
         ;; Use the language-specific variables rather than 'CPATH' because they
@@ -388,20 +385,17 @@ Go.  It also includes runtime support libraries for these languages.")
               ;; This is required for building with glibc-2.26.
               ;; https://gcc.gnu.org/bugzilla/show_bug.cgi?id=81712
               (snippet
-               '(begin
-                  (for-each
-                   (lambda (dir)
-                     (substitute* (string-append "libgcc/config/"
-                                                 dir "/linux-unwind.h")
-                       (("struct ucontext") "ucontext_t")))
-                   '("aarch64" "alpha" "bfin" "i386" "m68k"
-                     "pa" "sh" "tilepro" "xtensa"))
-                  #t))))
+               '(for-each
+                 (lambda (dir)
+                   (substitute* (string-append "libgcc/config/"
+                                               dir "/linux-unwind.h")
+                     (("struct ucontext") "ucontext_t")))
+                 '("aarch64" "alpha" "bfin" "i386" "m68k"
+                   "pa" "sh" "tilepro" "xtensa")))))
     (supported-systems %supported-systems)
     (inputs
-     `(("isl" ,isl-0.11)
-       ("cloog" ,cloog)
-       ,@(package-inputs gcc-4.7)))))
+     (modify-inputs (package-inputs gcc-4.7)
+       (prepend isl-0.11 cloog)))))
 
 (define-public gcc-4.9
   (package (inherit gcc-4.8)
@@ -424,18 +418,16 @@ Go.  It also includes runtime support libraries for these languages.")
               ;; This is required for building with glibc-2.26.
               ;; https://gcc.gnu.org/bugzilla/show_bug.cgi?id=81712
               (snippet
-               '(begin
-                  (for-each
-                   (lambda (dir)
-                     (substitute* (string-append "libgcc/config/"
-                                                 dir "/linux-unwind.h")
-                       (("struct ucontext") "ucontext_t")))
-                   '("aarch64" "alpha" "bfin" "i386" "m68k" "nios2"
-                     "pa" "sh" "tilepro" "xtensa"))
-                  #t))))
+               '(for-each
+                 (lambda (dir)
+                   (substitute* (string-append "libgcc/config/"
+                                               dir "/linux-unwind.h")
+                     (("struct ucontext") "ucontext_t")))
+                 '("aarch64" "alpha" "bfin" "i386" "m68k" "nios2"
+                   "pa" "sh" "tilepro" "xtensa")))))
     ;; Override inherited texinfo-5 with latest version.
-    (native-inputs `(("perl" ,perl)   ;for manpages
-                     ("texinfo" ,texinfo)))
+    (native-inputs (list perl ;for manpages
+                         texinfo))
     (arguments
      (if (%current-target-system)
          (package-arguments gcc-4.8)
@@ -460,8 +452,18 @@ Go.  It also includes runtime support libraries for these languages.")
                                           ":"))
                      (format #t
                              "environment variable `CPLUS_INCLUDE_PATH' changed to ~a~%"
-                             (getenv "CPLUS_INCLUDE_PATH"))
-                     #t))))))))))
+                             (getenv "CPLUS_INCLUDE_PATH"))))))))))))
+
+(define gcc-canadian-cross-objdump-snippet
+  ;; Fix 'libcc1/configure' error when cross-compiling GCC.  Without that,
+  ;; 'libcc1/configure' wrongfully determines that '-rdynamic' support is
+  ;; missing because $gcc_cv_objdump is empty:
+  ;;
+  ;;   https://gcc.gnu.org/bugzilla/show_bug.cgi?id=67590
+  ;;   http://cgit.openembedded.org/openembedded-core/commit/?id=f6e47aa9b12f9ab61530c40e0343f451699d9077
+  #~(substitute* "libcc1/configure"
+      (("\\$gcc_cv_objdump -T")
+       "$OBJDUMP_FOR_TARGET -T")))
 
 (define-public gcc-5
   ;; Note: GCC >= 5 ships with .info files but 'make install' fails to install
@@ -483,25 +485,15 @@ Go.  It also includes runtime support libraries for these languages.")
                                        "gcc-5-source-date-epoch-2.patch"
                                        "gcc-6-libsanitizer-mode-size.patch"
                                        "gcc-fix-texi2pod.patch"
-                                       "gcc-5-hurd.patch"))
+                                       "gcc-5-hurd.patch"
+                                       ;; See https://gcc.gnu.org/bugzilla/show_bug.cgi?id=86162
+                                       "gcc-5-fix-powerpc64le-build.patch"))
               (modules '((guix build utils)))
-              (snippet
-               ;; Fix 'libcc1/configure' error when cross-compiling GCC.
-               ;; Without that, 'libcc1/configure' wrongfully determines that
-               ;; '-rdynamic' support is missing because $gcc_cv_objdump is
-               ;; empty:
-               ;;
-               ;;   https://gcc.gnu.org/bugzilla/show_bug.cgi?id=67590
-               ;;   http://cgit.openembedded.org/openembedded-core/commit/?id=f6e47aa9b12f9ab61530c40e0343f451699d9077
-               '(begin
-                  (substitute* "libcc1/configure"
-                    (("\\$gcc_cv_objdump -T")
-                     "$OBJDUMP_FOR_TARGET -T"))
-                  #t))))
+              (snippet gcc-canadian-cross-objdump-snippet)))
     (inputs
-     `(;; GCC5 needs <isl/band.h> which is removed in later versions.
-       ("isl" ,isl-0.18)
-       ,@(package-inputs gcc-4.7)))))
+     (modify-inputs (package-inputs gcc-4.7)
+       (prepend ;; GCC5 needs <isl/band.h> which is removed in later versions.
+                isl-0.18)))))
 
 (define-public gcc-6
   (package
@@ -565,7 +557,9 @@ It also includes runtime support libraries for these languages.")))
                 "0l7d4m9jx124xsk6xardchgy2k5j5l2b15q322k31f0va4d8826k"))
               (patches (search-patches "gcc-8-strmov-store-file-names.patch"
                                        "gcc-5.0-libvtv-runpath.patch"
-                                       "gcc-8-sort-libtool-find-output.patch"))))))
+                                       "gcc-8-sort-libtool-find-output.patch"))
+              (modules '((guix build utils)))
+              (snippet gcc-canadian-cross-objdump-snippet)))))
 
 (define-public gcc-9
   (package
@@ -580,7 +574,9 @@ It also includes runtime support libraries for these languages.")))
               "13l3p6g2krilaawbapmn9zmmrh3zdwc36mfr3msxfy038hps6pf9"))
             (patches (search-patches "gcc-9-strmov-store-file-names.patch"
                                      "gcc-9-asan-fix-limits-include.patch"
-                                     "gcc-5.0-libvtv-runpath.patch"))))))
+                                     "gcc-5.0-libvtv-runpath.patch"))
+            (modules '((guix build utils)))
+            (snippet gcc-canadian-cross-objdump-snippet)))))
 
 (define-public gcc-10
   (package
@@ -594,7 +590,9 @@ It also includes runtime support libraries for these languages.")))
              (base32
               "0i6378ig6h397zkhd7m4ccwjx5alvzrf2hm27p1pzwjhlv0h9x34"))
             (patches (search-patches "gcc-9-strmov-store-file-names.patch"
-                                     "gcc-5.0-libvtv-runpath.patch"))))))
+                                     "gcc-5.0-libvtv-runpath.patch"))
+            (modules '((guix build utils)))
+            (snippet gcc-canadian-cross-objdump-snippet)))))
 
 (define-public gcc-11
   (package
@@ -608,11 +606,13 @@ It also includes runtime support libraries for these languages.")))
              (base32
               "12zs6vd2rapp42x154m479hg3h3lsafn3xhg06hp5hsldd9xr3nh"))
             (patches (search-patches "gcc-9-strmov-store-file-names.patch"
-                                     "gcc-5.0-libvtv-runpath.patch"))))))
+                                     "gcc-5.0-libvtv-runpath.patch"))
+            (modules '((guix build utils)))
+            (snippet gcc-canadian-cross-objdump-snippet)))))
 
 ;; Note: When changing the default gcc version, update
 ;;       the gcc-toolchain-* definitions.
-(define-public gcc gcc-7)
+(define-public gcc gcc-10)
 
 (define-public (make-libstdc++ gcc)
   "Return a libstdc++ package based on GCC.  The primary use case is when
@@ -623,25 +623,16 @@ using compilers other than GCC."
     (arguments
      `(#:out-of-source? #t
        #:phases
-       ;; TODO: Use the target-powerpc arm for everyone.
-        ,(if (target-powerpc?)
-           `(modify-phases %standard-phases
-              ;; Force rs6000 (i.e., powerpc) libdir to be /lib and not /lib64.
-              (add-before 'chdir 'fix-rs6000-libdir
-                (lambda _
-                  (when (file-exists? "gcc/config/rs6000")
-                    (substitute* (find-files "gcc/config/rs6000")
-                      (("/lib64") "/lib")))
-                  #t))
-              (add-before 'configure 'chdir
-                (lambda _
-                  (chdir "libstdc++-v3")
-                  #t)))
-           `(alist-cons-before 'configure 'chdir
-              (lambda _
-                (chdir "libstdc++-v3")
-                #t)
-              %standard-phases))
+       (modify-phases %standard-phases
+         ;; Force rs6000 (i.e., powerpc) libdir to be /lib and not /lib64.
+         (add-before 'chdir 'fix-rs6000-libdir
+           (lambda _
+             (when (file-exists? "gcc/config/rs6000")
+               (substitute* (find-files "gcc/config/rs6000")
+                 (("/lib64") "/lib")))))
+         (add-before 'configure 'chdir
+           (lambda _
+             (chdir "libstdc++-v3"))))
 
        #:configure-flags `("--disable-libstdcxx-pch"
                            ,(string-append "--with-gxx-include-dir="
@@ -692,16 +683,14 @@ using compilers other than GCC."
        (modify-phases %standard-phases
          (add-before 'configure 'chdir
            (lambda _
-             (chdir "libiberty")
-             #t))
+             (chdir "libiberty")))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out     (assoc-ref outputs "out"))
                     (lib     (string-append out "/lib/"))
                     (include (string-append out "/include/")))
                (install-file "libiberty.a" lib)
-               (install-file "../include/libiberty.h" include))
-             #t)))))
+               (install-file "../include/libiberty.h" include)))))))
     (inputs '())
     (outputs '("out"))
     (native-inputs '())
@@ -741,10 +730,10 @@ as the 'native-search-paths' field."
         `(modify-phases ,phases
            (add-after 'install 'remove-broken-or-conflicting-files
              (lambda* (#:key outputs #:allow-other-keys)
-               (for-each delete-file
-                         (find-files (string-append (assoc-ref outputs "out") "/bin")
-                                     ".*(c\\+\\+|cpp|g\\+\\+|gcov|gcc|gcc-.*)"))
-               #t))))))))
+               (for-each
+                delete-file
+                (find-files (string-append (assoc-ref outputs "out") "/bin")
+                            ".*(c\\+\\+|cpp|g\\+\\+|gcov|gcc|lto)(-.*)?$"))))))))))
 
 (define* (custom-gcc-gccgo gcc name languages
                            #:optional
@@ -796,12 +785,13 @@ as the 'native-search-paths' field."
 
 (define-public gfortran
   (hidden-package
-   (custom-gcc (package
-                 (inherit gcc)
-                 ;; XXX: Remove LIBSTDC++-HEADERS from the inputs just to
-                 ;; avoid a rebuild of all the GFORTRAN dependents.
-                 ;; TODO: Remove this hack on the next rebuild cycle.
-                 (inputs (alist-delete "libstdc++" (package-inputs gcc))))
+   (custom-gcc gcc
+               "gfortran" '("fortran")
+               %generic-search-paths)))
+
+(define-public gfortran-7
+  (hidden-package
+   (custom-gcc gcc-7
                "gfortran" '("fortran")
                %generic-search-paths)))
 
@@ -839,8 +829,7 @@ as the 'native-search-paths' field."
              (lambda* (#:key outputs #:allow-other-keys)
                (for-each delete-file
                          (find-files (string-append (assoc-ref outputs "out") "/bin")
-                                     ".*(c\\+\\+|cpp|g\\+\\+|gcov|gcc|gcc-.*)"))
-               #t))))))
+                                     ".*(c\\+\\+|cpp|g\\+\\+|gcov|gcc|gcc-.*)"))))))))
     (synopsis "GCC library generating machine code on-the-fly at runtime")
     (description
      "This package is part of the GNU Compiler Collection and provides an
@@ -946,7 +935,7 @@ provides the GNU compiler for the Go programming language."))
   (custom-gcc gcc-10 "gcc-objc" '("objc")
               %objc-search-paths))
 
-(define-public gcc-objc gcc-objc-7)
+(define-public gcc-objc gcc-objc-10)
 
 (define %objc++-search-paths
   (list (search-path-specification
@@ -988,7 +977,7 @@ provides the GNU compiler for the Go programming language."))
   (custom-gcc gcc-10 "gcc-objc++" '("obj-c++")
               %objc++-search-paths))
 
-(define-public gcc-objc++ gcc-objc++-7)
+(define-public gcc-objc++ gcc-objc++-10)
 
 (define (make-libstdc++-doc gcc)
   "Return a package with the libstdc++ documentation for GCC."
@@ -998,13 +987,13 @@ provides the GNU compiler for the Go programming language."))
     (version (package-version gcc))
     (synopsis "GNU libstdc++ documentation")
     (outputs '("out"))
-    (native-inputs `(("doxygen" ,doxygen)
-                     ("texinfo" ,texinfo)
-                     ("libxml2" ,libxml2)
-                     ("libxslt" ,libxslt)
-                     ("docbook-xml" ,docbook-xml)
-                     ("docbook-xsl" ,docbook-xsl)
-                     ("graphviz" ,graphviz))) ;for 'dot', invoked by 'doxygen'
+    (native-inputs (list doxygen
+                         texinfo
+                         libxml2
+                         libxslt
+                         docbook-xml
+                         docbook-xsl
+                         graphviz)) ;for 'dot', invoked by 'doxygen'
     (inputs '())
     (propagated-inputs '())
     (arguments
@@ -1013,8 +1002,7 @@ provides the GNU compiler for the Go programming language."))
        #:phases (modify-phases %standard-phases
                   (add-before 'configure 'chdir
                               (lambda _
-                                (chdir "libstdc++-v3")
-                                #t))
+                                (chdir "libstdc++-v3")))
                   (add-before 'configure 'set-xsl-directory
                               (lambda* (#:key inputs #:allow-other-keys)
                                 (let ((docbook (assoc-ref inputs "docbook-xsl")))
@@ -1023,8 +1011,7 @@ provides the GNU compiler for the Go programming language."))
                                     (("@XSL_STYLE_DIR@")
                                      (string-append
                                       docbook "/xml/xsl/"
-                                      (strip-store-file-name docbook))))
-                                  #t)))
+                                      (strip-store-file-name docbook)))))))
                   (replace 'build
                            (lambda _
                              ;; XXX: There's also a 'doc-info' target, but it
@@ -1051,7 +1038,7 @@ provides the GNU compiler for the Go programming language."))
 (define-public isl
   (package
     (name "isl")
-    (version "0.22.1")
+    (version "0.23")
     (source (origin
              (method url-fetch)
              (uri (list (string-append
@@ -1062,7 +1049,7 @@ provides the GNU compiler for the Go programming language."))
                                        name "-" version ".tar.bz2")))
              (sha256
               (base32
-               "1kf54jib0nind1pvakblnfhimmwzm0y1llz8470ag0di5vwqwrhs"))))
+               "0k91zck10zxs9sk3yrbb92y1j3w981w3fbwkfwd7kl779b0j52f5"))))
     (build-system gnu-build-system)
     (outputs '("out" "static"))
     (arguments
@@ -1081,9 +1068,8 @@ provides the GNU compiler for the Go programming language."))
                         ;; libtool looks for it in the usual locations.
                         (substitute* (string-append out "/lib/libisl.la")
                           (("^old_library=.*")
-                           "old_library=''\n"))
-                        #t))))))
-    (inputs `(("gmp" ,gmp)))
+                           "old_library=''\n"))))))))
+    (inputs (list gmp))
     (home-page "http://isl.gforge.inria.fr/")
     (synopsis
      "Manipulating sets and relations of integer points \
@@ -1149,8 +1135,7 @@ dependence analysis and bounds on piecewise step-polynomials.")
         "0a12rwfwp22zd0nlld0xyql11cj390rrq1prw35yjsw8wzfshjhw"))
       (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
-    (inputs `(("gmp" ,gmp)
-              ("isl" ,isl-0.11)))
+    (inputs (list gmp isl-0.11))
     (arguments '(#:configure-flags '("--with-isl=system")))
     (home-page "http://www.cloog.org/")
     (synopsis "Library to generate code for scanning Z-polyhedra")
@@ -1180,7 +1165,7 @@ effective code.")
                (base32
                 "1sfsj9256w18qzylgag2h5h377aq8in8929svblfnj9svfriqcys"))))
     (build-system gnu-build-system)
-    (native-inputs `(("texinfo" ,texinfo)))
+    (native-inputs (list texinfo))
     (arguments
      '(#:phases (modify-phases %standard-phases
                   (delete 'configure)
@@ -1208,8 +1193,7 @@ effective code.")
                                            (copy-file file
                                                       (string-append html "/"
                                                                      file)))
-                                         (find-files "." "\\.html$"))
-                               #t))))))
+                                         (find-files "." "\\.html$"))))))))
     (synopsis "Reference manual for the C programming language")
     (description
      "This is a reference manual for the C programming language, as

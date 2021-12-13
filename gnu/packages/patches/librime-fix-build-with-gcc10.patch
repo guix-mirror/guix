@@ -1,0 +1,41 @@
+From: Felix Gruber <felgru@posteo.net>
+Date: Mon, 6 Sep 2021 19:38:17 +0200
+Subject: [PATCH] Add missing <cmath> includes
+
+Fix a build failure with GCC 10 that manifests like this:
+
+------
+/tmp/guix-build-librime-1.7.3.drv-0/source/src/rime/gear/script_translator.cc: In member function ‘void rime::ScriptTranslation::PrepareCandidate()’:
+/tmp/guix-build-librime-1.7.3.drv-0/source/src/rime/gear/script_translator.cc:490:23: error: ‘exp’ was not declared in this scope
+  490 |     cand->set_quality(exp(entry->weight) +
+      |                       ^~~
+/tmp/guix-build-librime-1.7.3.drv-0/source/src/rime/gear/script_translator.cc:504:23: error: ‘exp’ was not declared in this scope
+  504 |     cand->set_quality(exp(entry->weight) +
+      |                       ^~~
+make[2]: *** [src/CMakeFiles/rime.dir/build.make:1241: src/CMakeFiles/rime.dir/rime/gear/script_translator.cc.o] Error 1
+------
+
+diff --git a/src/rime/gear/script_translator.cc b/src/rime/gear/script_translator.cc
+index 4a45f05..515c8db 100644
+--- a/src/rime/gear/script_translator.cc
++++ b/src/rime/gear/script_translator.cc
+@@ -7,6 +7,7 @@
+ // 2011-07-10 GONG Chen <chen.sst@gmail.com>
+ //
+ #include <algorithm>
++#include <cmath>
+ #include <stack>
+ #include <boost/algorithm/string/join.hpp>
+ #include <boost/range/adaptor/reversed.hpp>
+diff --git a/src/rime/gear/table_translator.cc b/src/rime/gear/table_translator.cc
+index 162ac02..dbea76a 100644
+--- a/src/rime/gear/table_translator.cc
++++ b/src/rime/gear/table_translator.cc
+@@ -4,6 +4,7 @@
+ //
+ // 2011-07-10 GONG Chen <chen.sst@gmail.com>
+ //
++#include <cmath>
+ #include <boost/algorithm/string.hpp>
+ #include <boost/range/adaptor/reversed.hpp>
+ #include <utf8.h>

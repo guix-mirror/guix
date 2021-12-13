@@ -4,14 +4,14 @@ https://salsa.debian.org/mingw-w64-team/binutils-mingw-w64.git
 
 Invoke the following in the aforementioned repo to see the original patch:
 
-  $ git show da63f6b:debian/patches/specify-timestamp.patch
+  $ git show faf7c64:debian/patches/specify-timestamp.patch
 
 Description: Allow the PE timestamp to be specified
 Author: Stephen Kitt <skitt@debian.org>
 
 --- a/bfd/peXXigen.c
 +++ b/bfd/peXXigen.c
-@@ -70,6 +70,9 @@
+@@ -77,6 +77,9 @@
  #include <wctype.h>
  #endif
  
@@ -21,20 +21,20 @@ Author: Stephen Kitt <skitt@debian.org>
  /* NOTE: it's strange to be including an architecture specific header
     in what's supposed to be general (to PE/PEI) code.  However, that's
     where the definitions are, and they don't vary per architecture
-@@ -879,10 +882,38 @@
+@@ -876,9 +879,36 @@
  
    /* Use a real timestamp by default, unless the no-insert-timestamp
       option was chosen.  */
--  if ((pe_data (abfd)->insert_timestamp))
+-  if ((pe_data (abfd)->timestamp) == -1)
 -    H_PUT_32 (abfd, time (0), filehdr_out->f_timdat);
 -  else
-+  if (pe_data (abfd)->insert_timestamp) {
++  if ((pe_data (abfd)->timestamp) == -1) {
 +    time_t now;
 +    char *source_date_epoch;
 +    unsigned long long epoch;
 +    char *endptr;
 +
-+    now = time(NULL);
++    now = time (NULL);
 +    source_date_epoch = getenv("SOURCE_DATE_EPOCH");
 +    if (source_date_epoch) {
 +      errno = 0;
@@ -57,30 +57,29 @@ Author: Stephen Kitt <skitt@debian.org>
 +      }
 +    }
 +    H_PUT_32 (abfd, now, filehdr_out->f_timdat);
-+  } else {
-     H_PUT_32 (abfd, 0, filehdr_out->f_timdat);
-+  }
++  } else
+     H_PUT_32 (abfd, pe_data (abfd)->timestamp, filehdr_out->f_timdat);
  
    PUT_FILEHDR_SYMPTR (abfd, filehdr_in->f_symptr,
- 		      filehdr_out->f_symptr);
 --- a/ld/pe-dll.c
 +++ b/ld/pe-dll.c
-@@ -26,6 +26,8 @@
- #include "filenames.h"
+@@ -27,6 +27,8 @@
  #include "safe-ctype.h"
+ #include "ctf-api.h"
  
 +#include <errno.h>
 +#include <limits.h>
  #include <time.h>
  
  #include "ld.h"
-@@ -1202,8 +1204,36 @@
+@@ -1218,9 +1220,36 @@
  
    memset (edata_d, 0, edata_sz);
  
--  if (pe_data (abfd)->insert_timestamp)
+-  if (pe_data (abfd)->timestamp == -1)
 -    H_PUT_32 (abfd, time (0), edata_d + 4);
-+  if (pe_data (abfd)->insert_timestamp) {
+-  else
++  if (pe_data (abfd)->timestamp == -1) {
 +    time_t now;
 +    char *source_date_epoch;
 +    unsigned long long epoch;
@@ -109,13 +108,13 @@ Author: Stephen Kitt <skitt@debian.org>
 +      }
 +    }
 +    H_PUT_32 (abfd, now, edata_d + 4);
-+  }
++  } else
+     H_PUT_32 (abfd, pe_data (abfd)->timestamp, edata_d + 4);
  
    if (pe_def_file->version_major != -1)
-     {
 --- a/ld/emultempl/pe.em
 +++ b/ld/emultempl/pe.em
-@@ -303,7 +303,7 @@
+@@ -304,7 +304,7 @@
       OPTION_USE_NUL_PREFIXED_IMPORT_TABLES},
      {"no-leading-underscore", no_argument, NULL, OPTION_NO_LEADING_UNDERSCORE},
      {"leading-underscore", no_argument, NULL, OPTION_LEADING_UNDERSCORE},
@@ -126,7 +125,7 @@ Author: Stephen Kitt <skitt@debian.org>
      /* getopt allows abbreviations, so we do this to stop it
 --- a/ld/emultempl/pep.em
 +++ b/ld/emultempl/pep.em
-@@ -321,7 +321,7 @@
+@@ -323,7 +323,7 @@
      {"no-bind", no_argument, NULL, OPTION_NO_BIND},
      {"wdmdriver", no_argument, NULL, OPTION_WDM_DRIVER},
      {"tsaware", no_argument, NULL, OPTION_TERMINAL_SERVER_AWARE},
@@ -134,4 +133,4 @@ Author: Stephen Kitt <skitt@debian.org>
 +    {"insert-timestamp", optional_argument, NULL, OPTION_INSERT_TIMESTAMP},
      {"no-insert-timestamp", no_argument, NULL, OPTION_NO_INSERT_TIMESTAMP},
      {"build-id", optional_argument, NULL, OPTION_BUILD_ID},
-     {NULL, no_argument, NULL, 0}
+     {"enable-reloc-section", no_argument, NULL, OPTION_ENABLE_RELOC_SECTION},

@@ -54,8 +54,7 @@
              #t))
          (add-after 'delete-extra-from-classpath 'patch-usr-bin-dot
            (lambda* (#:key inputs #:allow-other-keys)
-             (let ((dot (string-append (assoc-ref inputs "graphviz")
-                                       "/bin/dot")))
+             (let ((dot (search-input-file inputs "/bin/dot")))
                (substitute*
                    "src/net/sourceforge/plantuml/cucadiagram/dot/GraphvizLinux.java"
                  (("/usr/bin/dot") dot)))

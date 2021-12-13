@@ -5,6 +5,7 @@
 ;;; Copyright © 2016–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2021 David Larsson <david.larsson@selfhosted.xyz>
+;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -65,11 +66,9 @@
                 "03b7y0h3mf4jfq5y8zw6hv9v44z3n6i8hc1iswax96y3z7sc85y5"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("zlib" ,zlib)
-       ("readline" ,readline)
-       ("gnutls" ,gnutls)))
+     (list zlib readline gnutls))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -132,10 +131,11 @@ reliability in mind.")
                     (let ((out (assoc-ref outputs "out")))
                       (setenv "CONFIG_SHELL" (which "sh"))
                       (setenv "SHELL" (which "sh"))
+                      (setenv "CFLAGS" "-fcommon")
                       (invoke "./configure"
                               (string-append "--prefix=" out))))))
        #:tests? #f)) ;there are no tests
-    (inputs `(("ncurses" ,ncurses)))
+    (inputs (list ncurses))
     (home-page "https://www.ncftp.com/ncftp/")
     (synopsis "Command-line File Transfer Protocol (FTP) client")
     (description
@@ -161,9 +161,7 @@ FTP browser, as well as non-interactive commands such as @code{ncftpput} and
             "1ir761hjncr1bamaqcw9j7x57xi3s9jax3223bxwbq30a0vsw1pd"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("automake" ,automake)
-       ("autoconf" ,autoconf)
-       ("gettext" ,gettext-minimal)))
+     (list automake autoconf gettext-minimal))
     (home-page "http://weex.sourceforge.net/")
     (synopsis "Non-interactive client for FTP synchronization")
     (description
@@ -194,8 +192,7 @@ as required.")
        ("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("gnutls" ,gnutls)
-       ("nettle" ,nettle)))
+     (list gnutls nettle))
     (home-page "https://lib.filezilla-project.org")
     (synopsis "Cross-platform C++ library used by Filezilla client")
     (description
@@ -238,15 +235,15 @@ output.
        ("pkg-config" ,pkg-config)
        ("xdg-utils" ,xdg-utils)))
     (inputs
-     `(("dbus" ,dbus)
-       ("gnutls" ,gnutls)
-       ("gtk+" ,gtk+)
-       ("libfilezilla" ,libfilezilla)
-       ("libidn" ,libidn)
-       ("nettle" ,nettle)
-       ("pugixml" ,pugixml)
-       ("sqlite" ,sqlite)
-       ("wxwidgets" ,wxwidgets)))
+     (list dbus
+           gnutls
+           gtk+
+           libfilezilla
+           libidn
+           nettle
+           pugixml
+           sqlite
+           wxwidgets))
     (home-page "https://filezilla-project.org")
     (synopsis "Full-featured graphical FTP/FTPS/SFTP client")
     (description
@@ -297,9 +294,7 @@ directory comparison and more.")
                (("/usr") (assoc-ref outputs "out")))))
          (delete 'configure))))         ; no configure script
     (inputs
-     `(("libcap" ,libcap)
-       ("linux-pam" ,linux-pam)
-       ("openssl" ,openssl)))
+     (list libcap linux-pam openssl))
     (synopsis "Small FTP server with a focus on security")
     (description
      "The Very Secure File Transfer Protocol Daemon or @command{vsftpd} is a

@@ -1,13 +1,9 @@
 diff --git a/src/Intrinsic.c b/src/Intrinsic.c
-index c9624ec..addcdba 100644
 --- a/src/Intrinsic.c
 +++ b/src/Intrinsic.c
-@@ -1312,21 +1312,101 @@ static void FillInLangSubs(
-     } else (void) strcpy(*rest, string);
+@@ -1345,21 +1345,99 @@ FillInLangSubs(Substitution subs, XtPerDisplay pd)
  }
  
-+
-+
  /*
 - * default path used if environment variable XFILESEARCHPATH
 - * is not defined.  Also substitued for %D.
@@ -24,8 +20,9 @@ index c9624ec..addcdba 100644
 +   These values provide the default paths where Guix/GuixSD can expect
 +   to find resources for installed packages.
   */
--static const char *implementation_default_path(void)
-+static const char *guix_default_path(void)
+ static const char *
+-implementation_default_path(void)
++guix_default_path(void)
  {
 -#if defined(WIN32)
 -    static char xfilesearchpath[] = "";
@@ -115,7 +112,7 @@ index c9624ec..addcdba 100644
  }
  
  
-@@ -1354,7 +1434,7 @@ _XtString XtResolvePathname(
+@@ -1388,7 +1466,7 @@ XtResolvePathname(Display *dpy,
  {
      XtPerDisplay pd;
      static const char *defaultPath = NULL;

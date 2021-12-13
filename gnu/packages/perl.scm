@@ -13,7 +13,7 @@
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016, 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Raoul J.P. Bonnal <ilpuccio.febo@gmail.com>
-;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2018, 2020, 2021 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2017, 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
@@ -31,6 +31,7 @@
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;; Copyright © 2021 Raghav Gururajan <rg@raghavgururajan.name>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -91,18 +92,17 @@
   ;; Yeah, Perl...  It is required early in the bootstrap process by Linux.
   (package
     (name "perl")
-    (version "5.30.2")
+    (version "5.34.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://cpan/src/5.0/perl-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "128nfdxcvxfn5kq55qcfrx2851ys8hv794dcdxbyny8rm7w7vnv6"))
+               "16mywn5afpv1mczv9dlc1w84rbgjgrr0pyr4c0hhb2wnif0zq7jm"))
              (patches (search-patches
                        "perl-no-sys-dirs.patch"
                        "perl-autosplit-default-time.patch"
-                       "perl-deterministic-ordering.patch"
                        "perl-reproducible-build-date.patch"))))
     (build-system gnu-build-system)
     (arguments
@@ -124,44 +124,36 @@
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'setup-configure
-           (lambda _
+           (lambda* (#:key inputs #:allow-other-keys)
              ;; Use the right path for `pwd'.
-             ;; TODO: use coreutils from INPUTS instead of 'which'
-             ;; in next rebuild cycle, see fixup below.
              (substitute* "dist/PathTools/Cwd.pm"
-               (("/bin/pwd")
-                (which "pwd")))
+               (("'/bin/pwd'")
+                (string-append "'" (search-input-file inputs "bin/pwd") "'")))
 
              ;; Build in GNU89 mode to tolerate C++-style comment in libc's
              ;; <bits/string3.h>.
              (substitute* "cflags.SH"
                (("-std=c89")
-                "-std=gnu89"))
-             #t))
+                "-std=gnu89"))))
          ,@(if (%current-target-system)
                `((add-after 'unpack 'unpack-cross
                    (lambda* (#:key native-inputs inputs #:allow-other-keys)
                      (let ((cross-checkout
-                            (assoc-ref native-inputs "perl-cross"))
-                           (cross-patch
-                            (assoc-ref native-inputs "perl-cross-patch")))
+                            (assoc-ref native-inputs "perl-cross")))
                        (rename-file "Artistic" "Artistic.perl")
                        (rename-file "Copying" "Copying.perl")
-                       (copy-recursively cross-checkout ".")
-                       (format #t "Applying ~a\n" cross-patch)
-                       (invoke "patch" "-p1" "-i" cross-patch))
-                     (let ((bash (assoc-ref inputs "bash")))
+                       (copy-recursively cross-checkout "."))
+                     (let ((bash (search-input-file inputs "bin/bash")))
                        (substitute* '("Makefile.config.SH"
                                       "cnf/config.guess"
                                       "cnf/config.sub"
                                       "cnf/configure"
                                       "cnf/configure_misc.sh"
                                       "miniperl_top")
-                         (("! */bin/sh") (string-append "! " bash "/bin/bash"))
-                         ((" /bin/sh") (string-append bash "/bin/bash")))
+                         (("! */bin/sh") (string-append "! " bash))
+                         ((" /bin/sh") bash))
                        (substitute* '("ext/Errno/Errno_pm.PL")
-                         (("\\$cpp < errno.c") "$Config{cc} -E errno.c")))
-                       #t))
+                         (("\\$cpp < errno.c") "$Config{cc} -E errno.c")))))
                  (replace 'configure
                    (lambda* (#:key configure-flags outputs inputs #:allow-other-keys)
                      (let* ((out (assoc-ref outputs "out"))
@@ -177,22 +169,18 @@
                                        (lambda (x) (or (string-prefix? "-d" x)
                                                        (string-prefix? "-Dcc=" x))))
                                       configure-flags)))
-                            (bash (assoc-ref inputs "bash"))
-                            (coreutils (assoc-ref inputs "coreutils")))
+                            (bash (assoc-ref inputs "bash-minimal")))
                        (format (current-error-port)
-                               "running ./configure ~a\n" (string-join configure-flags))
+                               "running ./configure ~a\n"
+                               (string-join configure-flags))
                        (apply invoke (cons "./configure" configure-flags))
                        (substitute* "config.sh"
                          (((string-append store-directory "/[^/]*-bash-[^/]*"))
                           bash))
                        (substitute* '("config.h")
                          (("^#define SH_PATH .*")
-                          (string-append  "#define SH_PATH \"" bash "/bin/bash\"\n")))
-                       ;;TODO: fix this in setup-configure next rebuild cycle
-                       (substitute* "dist/PathTools/Cwd.pm"
-                         (((string-append store-directory "/[^/]*-coreutils-[^/]*"))
-                          coreutils))
-                       #t)))
+                          (string-append  "#define SH_PATH \""
+                                          bash "/bin/bash\"\n"))))))
                  (add-after 'build 'touch-non-built-files-for-install
                    (lambda _
                      ;; `make install' wants to install these although they do
@@ -206,8 +194,7 @@
                                  '("Pod-Usage/blib/script/pod2text"
                                    "Pod-Usage/blib/script/pod2usage"
                                    "Pod-Checker/blib/script/podchecker"
-                                   "Pod-Parser/blib/script/podselect")))
-                     #t)))
+                                   "Pod-Parser/blib/script/podselect"))))))
                `((replace 'configure
                    (lambda* (#:key configure-flags #:allow-other-keys)
                      (format #t "Perl configure flags: ~s~%" configure-flags)
@@ -238,13 +225,12 @@
                              (("libpth => .*$")
                               (string-append "libpth => '" libc
                                              "/lib',\n"))))
-                         config2)
-               #t))))))
+                         config2)))))))
     (inputs
-     (if (%current-target-system)
-         `(("bash" ,bash-minimal)
-           ("coreutils" ,coreutils))
-         '()))
+     (append (list coreutils-minimal)
+             (if (%current-target-system)
+                 (list bash-minimal)
+                 '())))
     (native-inputs
      (if (%current-target-system)
          `(("perl-cross"
@@ -252,11 +238,10 @@
                (method git-fetch)
                (uri (git-reference
                      (url "https://github.com/arsv/perl-cross")
-                     (commit "1.3.3")))
-               (file-name (git-file-name "perl-cross" "1.3.3"))
+                     (commit "1.3.6")))
+               (file-name (git-file-name "perl-cross" "1.3.6"))
                (sha256
-                (base32 "065qbl1x44maykaj8p8za0b6qxj74bz7fi2zsrlydir1mqb1js3d"))))
-           ("perl-cross-patch" ,@(search-patches "perl-cross.patch")))
+                (base32 "0k5vyj40czbkfl7r3dcwxpc7dvdlp2xliaav358bviq3dq9vq9bb")))))
          '()))
     (native-search-paths (list (search-path-specification
                                 (variable "PERL5LIB")
@@ -323,7 +308,7 @@ differences.")
         (base32
          "1syyqzy462501kn5ma9gl6xbmcahqcn4qpafhsmpz0nd0x2m4l63"))))
     (build-system perl-build-system)
-    (native-inputs `(("perl-module-build" ,perl-module-build)))
+    (native-inputs (list perl-module-build))
     (home-page "https://metacpan.org/release/aliased")
     (synopsis "Use shorter versions of class names")
     (description "The alias module loads the class you specify and exports
@@ -365,13 +350,13 @@ implicitly.")
                (("GetOptions\\( \"travis\" => \\\\\\$travis \\);") ""))
              #t)))))
     (native-inputs
-     `(("perl-archive-extract" ,perl-archive-extract)
-       ("perl-archive-zip" ,perl-archive-zip)
-       ("perl-capture-tiny" ,perl-capture-tiny)
-       ("perl-file-sharedir" ,perl-file-sharedir)
-       ("perl-file-which" ,perl-file-which)
-       ("perl-module-build" ,perl-module-build)
-       ("perl-text-patch" ,perl-text-patch)))
+     (list perl-archive-extract
+           perl-archive-zip
+           perl-capture-tiny
+           perl-file-sharedir
+           perl-file-which
+           perl-module-build
+           perl-text-patch))
     (inputs
      `(("freetype" ,freetype)
        ("fontconfig" ,fontconfig)
@@ -402,8 +387,7 @@ from source codes.")
                 "0dc55mpayrixwx8dwql0vj0jalg4rlb3k64rprc84bl0z8vkx9m8"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-mouse" ,perl-mouse)
-       ("perl-moose" ,perl-moose)))
+     (list perl-mouse perl-moose))
     (home-page "https://metacpan.org/release/Any-Moose")
     (synopsis "Transparently use Moose or Mouse modules")
     (description
@@ -428,7 +412,7 @@ variable ANY_MOOSE to be Moose or Mouse.")
          "03vvi3mk4833mx2c6dkm9zhvakf02mb2b7wz9pk9xc7c4mq04xqi"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-pod" ,perl-test-pod)))
+     (list perl-test-pod))
     (home-page "https://metacpan.org/release/AppConfig")
     (synopsis "Configuration files and command line parsing")
     (description "AppConfig is a bundle of Perl5 modules for reading
@@ -469,9 +453,9 @@ list manipulation routines.")
                 "0nq8wqy0gsnwhiw23wsp1dmgzzbf2q1asi85yd0d7cmg4haxsmib"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-canary-stability" ,perl-canary-stability)))
+     (list perl-canary-stability))
     (propagated-inputs
-     `(("perl-common-sense" ,perl-common-sense)))
+     (list perl-common-sense))
     (home-page "https://metacpan.org/release/Async-Interrupt")
     (synopsis "Allow C/XS libraries to interrupt perl asynchronously")
     (description
@@ -533,13 +517,9 @@ of general interest as follows:
         "0xzind7zr2prjq3zbs2j18snfpshd4xrd7igv4kp67xl0axr6fpl"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)
-       ("perl-test-pod" ,perl-test-pod)
-       ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
+     (list perl-module-build perl-test-pod perl-test-pod-coverage))
     (propagated-inputs
-     `(("perl-data-integer" ,perl-data-integer)
-       ("perl-digest-crc" ,perl-digest-crc)
-       ("perl-scalar-string" ,perl-scalar-string)))
+     (list perl-data-integer perl-digest-crc perl-scalar-string))
     (home-page "https://metacpan.org/release/Authen-DecHpwd")
     (synopsis "DEC VMS password hashing")
     (description "@code{Authen::DecHpwd} implements the
@@ -564,20 +544,18 @@ pure Perl backup version for systems that cannot handle XS.")
         "0qq4krap687rxf6xr31bg5nj5dqmm1frcm7fq249v1bxc4h4bnsm"))))
   (build-system perl-build-system)
   (native-inputs
-   `(("perl-module-build" ,perl-module-build)
-     ("perl-test-pod" ,perl-test-pod)
-     ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
+   (list perl-module-build perl-test-pod perl-test-pod-coverage))
   (propagated-inputs
-   `(("perl-authen-dechpwd" ,perl-authen-dechpwd)
-     ("perl-crypt-des" ,perl-crypt-des)
-     ("perl-crypt-eksblowfish" ,perl-crypt-eksblowfish)
-     ("perl-crypt-mysql" ,perl-crypt-mysql)
-     ("perl-crypt-passwdmd5" ,perl-crypt-passwdmd5)
-     ("perl-crypt-unixcrypt_xs" ,perl-crypt-unixcrypt_xs)
-     ("perl-data-entropy" ,perl-data-entropy)
-     ("perl-digest-md4" ,perl-digest-md4)
-     ("perl-module-runtime" ,perl-module-runtime)
-     ("perl-params-classify" ,perl-params-classify)))
+   (list perl-authen-dechpwd
+         perl-crypt-des
+         perl-crypt-eksblowfish
+         perl-crypt-mysql
+         perl-crypt-passwdmd5
+         perl-crypt-unixcrypt_xs
+         perl-data-entropy
+         perl-digest-md4
+         perl-module-runtime
+         perl-params-classify))
   (home-page "https://metacpan.org/release/Authen-Passphrase")
   (synopsis "Hashed passwords/passphrases as objects")
   (description "@code{Authen-Passphrase} is the base class for a
@@ -634,11 +612,9 @@ error when it would have happened.")
          "0zy1v746pzv3vvvpr3plpykz0vfhi940q9bfypzzhynq2qvm6d21"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-b-hooks-op-check" ,perl-b-hooks-op-check)
-       ("perl-extutils-depends" ,perl-extutils-depends)))
+     (list perl-b-hooks-op-check perl-extutils-depends))
     (propagated-inputs
-     `(("perl-b-hooks-op-check" ,perl-b-hooks-op-check)
-       ("perl-lexical-sealrequirehints" ,perl-lexical-sealrequirehints)))
+     (list perl-b-hooks-op-check perl-lexical-sealrequirehints))
     (home-page "https://metacpan.org/release/bareword-filehandles")
     (synopsis "Disables bareword filehandles")
     (description "This module disables bareword filehandles.")
@@ -701,10 +677,8 @@ limits like @code{getrlimit} and @code{setpriority}.")
          "1imcqxp23yc80a7p0h56sja9glbrh4qyhgzljqd4g9habpz3vah3"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-module-runtime" ,perl-module-runtime)
-       ("perl-module-implementation" ,perl-module-implementation)
-       ("perl-sub-exporter-progressive" ,perl-sub-exporter-progressive)
-       ("perl-variable-magic" ,perl-variable-magic)))
+     (list perl-module-runtime perl-module-implementation
+           perl-sub-exporter-progressive perl-variable-magic))
     (home-page "https://metacpan.org/release/B-Hooks-EndOfScope")
     (synopsis "Execute code after a scope finished compilation")
     (description "This module allows you to execute code when perl finished
@@ -726,7 +700,7 @@ compiling the surrounding scope.")
          "1kfdv25gn6yik8jrwik4ajp99gi44s6idcvyyrzhiycyynzd3df7"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-extutils-depends" ,perl-extutils-depends)))
+     (list perl-extutils-depends))
     (home-page "https://metacpan.org/release/B-Hooks-OP-Check")
     (synopsis "Wrap OP check callbacks")
     (description "This module allows you to wrap OP check callbacks.")
@@ -766,7 +740,7 @@ keywords: @code{@@Scalars, @@Arrays, @@Hashes, @@Filehandles, @@Symbols,
                 "1gl9ybm9hgia3ld5s11b7bv2p2hmx5rss5hxcfy6rmbzrjcnci01"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-install" ,perl-module-install)))
+     (list perl-module-install))
     ;; The optional input module Statistics::PointEstimation (from
     ;; Statistics-TTest) lists no license.
     (synopsis "Benchmarking with statistical confidence")
@@ -793,7 +767,7 @@ but don't want to go all out and profile your code.")
          "09m96p8c0ipgz42li2ywdgy0vxb57mb5nf59j9gw7yzc3xkslv9w"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-carp-clan" ,perl-carp-clan)))
+     (list perl-carp-clan))
     (home-page "https://metacpan.org/release/Bit-Vector")
     (synopsis "Bit vector library")
     (description "Bit::Vector is an efficient C library which allows you to
@@ -856,8 +830,7 @@ Agency.")
          "07l3zfv8hagv37i3clvj5a1zc2jarr5phg80c93ks35zaz6llx9i"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-business-isbn-data" ,perl-business-isbn-data)
-       ("perl-mojolicious" ,perl-mojolicious)))
+     (list perl-business-isbn-data perl-mojolicious))
     (home-page "https://metacpan.org/release/Business-ISBN")
     (synopsis "Work with International Standard Book Numbers")
     (description "This module provides tools to deal with International
@@ -896,7 +869,7 @@ Standard Serial Numbers.")
         (base32 "1cpcfyaz1fl6fnm076jx2jsphw147wj6aszj2yzqrgsncjhk2cja"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-tie-cycle" ,perl-tie-cycle)))
+     (list perl-tie-cycle))
     (home-page "https://metacpan.org/release/Business-ISMN")
     (synopsis "Work with International Standard Music Numbers")
     (description "This module provides tools to deal with International
@@ -916,9 +889,7 @@ Standard Music Numbers.")
                 "1s6i670dc3yb6ngvdk48y6szdk5n1f4icdcjv2vi1l2xp9fzviyj"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-digest-sha1" ,perl-digest-sha1)
-       ("perl-error" ,perl-error)
-       ("perl-ipc-sharelite" ,perl-ipc-sharelite)))
+     (list perl-digest-sha1 perl-error perl-ipc-sharelite))
     (home-page "https://metacpan.org/release/Cache-Cache")
     (synopsis "Cache interface for Perl")
     (description "The Cache modules are designed to assist a developer in
@@ -1030,7 +1001,7 @@ but it is a good educated guess.")
         (base32 "1wb6b0qjga7kvn4p8df6k4g1pl2yzaqiln1713xidh3i454i3alq"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-base" ,perl-test-base)))
+     (list perl-test-base))
     (home-page "https://metacpan.org/release/Carp-Always")
     (synopsis "Warns and dies noisily with stack backtraces/")
     (description "This module is meant as a debugging aid.  It can be used to
@@ -1070,9 +1041,9 @@ library assert.h.")
         (base32 "14x4m4dlj7pwq2r2fsmww3q3xb61cdgnrlmjh5mms3ikaln6rmmk"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-exception" ,perl-test-exception)))
+     (list perl-test-exception))
     (propagated-inputs
-     `(("perl-carp-assert" ,perl-carp-assert)))
+     (list perl-carp-assert))
     (home-page "https://metacpan.org/release/Carp-Assert-More")
     (synopsis "Convenience wrappers around Carp::Assert")
     (description "Carp::Assert::More is a set of handy assertion functions for
@@ -1092,7 +1063,7 @@ Perl.")
         (base32 "0237xx3rqa72sr4vdvws9r1m453h5f25bl85mdjmmk128kir4py7"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-exception" ,perl-test-exception)))
+     (list perl-test-exception))
     (home-page "https://metacpan.org/release/Carp-Clan")
     (synopsis "Report errors from a \"clan\" of modules")
     (description "This module allows errors from a clan (or family) of modules
@@ -1184,30 +1155,30 @@ the Carp.pm module doesn't help.")
                (install-file "bin/circos" bin)
                #t))))))
     (propagated-inputs
-     `(("perl" ,perl)
-       ("perl-carp" ,perl-carp)
-       ("perl-clone" ,perl-clone)
-       ("perl-config-general" ,perl-config-general)
-       ("perl-digest-md5" ,perl-digest-md5)
-       ("perl-file-temp" ,perl-file-temp)
-       ("perl-font-ttf" ,perl-font-ttf)
-       ("perl-gd" ,perl-gd)
-       ("perl-getopt-long" ,perl-getopt-long)
-       ("perl-list-allutils" ,perl-list-allutils)
-       ("perl-math-bezier" ,perl-math-bezier)
-       ("perl-math-round" ,perl-math-round)
-       ("perl-math-vecstat" ,perl-math-vecstat)
-       ("perl-memoize" ,perl-memoize)
-       ("perl-number-format" ,perl-number-format)
-       ("perl-params-validate" ,perl-params-validate)
-       ("perl-readonly" ,perl-readonly)
-       ("perl-regexp-common" ,perl-regexp-common)
-       ("perl-set-intspan" ,perl-set-intspan)
-       ("perl-statistics-basic" ,perl-statistics-basic)
-       ("perl-svg" ,perl-svg)
-       ("perl-text-balanced" ,perl-text-balanced)
-       ("perl-text-format" ,perl-text-format)
-       ("perl-time-hires" ,perl-time-hires)))
+     (list perl
+           perl-carp
+           perl-clone
+           perl-config-general
+           perl-digest-md5
+           perl-file-temp
+           perl-font-ttf
+           perl-gd
+           perl-getopt-long
+           perl-list-allutils
+           perl-math-bezier
+           perl-math-round
+           perl-math-vecstat
+           perl-memoize
+           perl-number-format
+           perl-params-validate
+           perl-readonly
+           perl-regexp-common
+           perl-set-intspan
+           perl-statistics-basic
+           perl-svg
+           perl-text-balanced
+           perl-text-format
+           perl-time-hires))
     (home-page "http://circos.ca/")
     (synopsis "Generation of circularly composited renditions")
     (description
@@ -1229,7 +1200,7 @@ composited renditions of genomic data and related annotations.")
          "07215zzr4ydf49832vn54i3gf2q5b97lydkv8j56wb2svvjs64mz"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-sub-name" ,perl-sub-name)))
+     (list perl-sub-name))
     (home-page "https://metacpan.org/release/Class-Accessor")
     (synopsis "Automated accessor generation")
     (description "This module automagically generates accessors/mutators for
@@ -1250,9 +1221,9 @@ your class.")
          "1lilrjy1s0q5hyr0888kf0ifxjyl2iyk4vxil4jsv0sgh39lkgx5"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)))
+     (list perl-module-build))
     (propagated-inputs
-     `(("perl-class-accessor" ,perl-class-accessor)))
+     (list perl-class-accessor))
     (home-page "https://metacpan.org/release/Class-Accessor-Chained")
     (synopsis "Faster, but less expandable, chained accessors")
     (description "A chained accessor is one that always returns the object
@@ -1274,12 +1245,9 @@ the same mk_accessors interface.")
         (base32 "1fy48hx56n5kdn1gz66awg465qf34r0n5jam64x7zxh9zhzb1m9m"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-install" ,perl-module-install)
-       ("perl-test-exception" ,perl-test-exception)))
+     (list perl-module-install perl-test-exception))
     (propagated-inputs
-     `(("perl-class-xsaccessor" ,perl-class-xsaccessor)
-       ("perl-module-runtime" ,perl-module-runtime)
-       ("perl-sub-name" ,perl-sub-name)))
+     (list perl-class-xsaccessor perl-module-runtime perl-sub-name))
     (home-page "https://metacpan.org/release/Class-Accessor-Grouped")
     (synopsis "Build groups of accessors")
     (description "This class lets you build groups of accessors that will call
@@ -1299,7 +1267,7 @@ different getters and setters.")
         (base32 "0gp3czp6y0jxx4448kz37f7gdxq4vw514bvc0l98rk4glvqkq1c4"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-algorithm-c3" ,perl-algorithm-c3)))
+     (list perl-algorithm-c3))
     (home-page "https://metacpan.org/release//Class-C3")
     (synopsis "Pragma to use the C3 method resolution order algorithm")
     (description "This is pragma to change Perl 5's standard method resolution
@@ -1320,12 +1288,9 @@ sophisticated C3 method resolution order.")
         (base32 "1xsbydmiskpa1qbmnf6n39cb83nlb432xgkad9kfhxnvm8jn4rw5"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)
-       ("perl-module-build-tiny" ,perl-module-build-tiny)
-       ("perl-test-exception" ,perl-test-exception)))
+     (list perl-module-build perl-module-build-tiny perl-test-exception))
     (propagated-inputs
-     `(("perl-list-moreutils" ,perl-list-moreutils)
-       ("perl-mro-compat" ,perl-mro-compat)))
+     (list perl-list-moreutils perl-mro-compat))
     (home-page "https://metacpan.org/release/Class-C3-Adopt-NEXT")
     (synopsis "Drop-in replacement for NEXT")
     (description "This module is intended as a drop-in replacement for NEXT,
@@ -1345,12 +1310,9 @@ supporting the same interface, but using Class::C3 to do the hard work.")
         (base32 "14wn1g45z3b5apqq7dcai5drk01hfyqydsd2m6hsxzhyvi3b2l9h"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-install" ,perl-module-install)
-       ("perl-test-exception" ,perl-test-exception)))
+     (list perl-module-install perl-test-exception))
     (propagated-inputs
-     `(("perl-class-c3" ,perl-class-c3)
-       ("perl-class-inspector" ,perl-class-inspector)
-       ("perl-mro-compat" ,perl-mro-compat)))
+     (list perl-class-c3 perl-class-inspector perl-mro-compat))
     (home-page "https://metacpan.org/release/Class-C3-Componentised")
     (synopsis "Load mix-ins or components to your C3-based class")
     (description "This module will inject base classes to your module using
@@ -1431,7 +1393,7 @@ to the calling program.")
         (base32
          "09ifd6v0c94vr20n9yr1dxgcp7hyscqq851szdip7y24bd26nlbc"))))
     (build-system perl-build-system)
-    (native-inputs `(("perl-module-build" ,perl-module-build)))
+    (native-inputs (list perl-module-build))
     (home-page "https://metacpan.org/release/Class-Factory-Util")
     (synopsis "Utility methods for factory classes")
     (description "This module exports methods useful for factory classes.")
@@ -1469,16 +1431,11 @@ loaded class.")
         (base32 "13sz4w8kwljhfcy7yjjgrgg5hv3wccr8n3iqarhyb5sjkdvzlj1a"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build-tiny" ,perl-module-build-tiny)
-       ("perl-test-fatal" ,perl-test-fatal)
-       ("perl-test-needs" ,perl-test-needs)
-       ("perl-test-without-module" ,perl-test-without-module)))
+     (list perl-module-build-tiny perl-test-fatal perl-test-needs
+           perl-test-without-module))
     (propagated-inputs
-     `(("perl-package-stash" ,perl-package-stash)
-       ("perl-data-optlist" ,perl-data-optlist)
-       ("perl-namespace-clean" ,perl-namespace-clean)
-       ("perl-module-runtime" ,perl-module-runtime)
-       ("perl-module-implementation" ,perl-module-implementation)))
+     (list perl-package-stash perl-data-optlist perl-namespace-clean
+           perl-module-runtime perl-module-implementation))
     (home-page "https://metacpan.org/release/Class-Load")
     (synopsis "Working (require \"Class::Name\") and more")
     (description "\"require EXPR\" only accepts Class/Name.pm style module
@@ -1500,10 +1457,8 @@ names, not Class::Name.  For that, this module provides \"load_class
          "1ldd4a306hjagm5v9j0gjg8y7km4v3q45bxxqmj2bzgb6vsjrhjv"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-fatal" ,perl-test-fatal)
-       ("perl-test-needs" ,perl-test-needs)
-       ("perl-test-without-module" ,perl-test-without-module)))
-    (inputs `(("perl-class-load" ,perl-class-load)))
+     (list perl-test-fatal perl-test-needs perl-test-without-module))
+    (inputs (list perl-class-load))
     (home-page "https://metacpan.org/release/Class-Load-XS")
     (synopsis "XS implementation of parts of Class::Load")
     (description "This module provides an XS implementation for portions of
@@ -1543,8 +1498,7 @@ write accessor methods for your objects that perform standard tasks.")
         (base32 "0qzx83mgd71hlc2m1kpw15dqsjzjq7b2cj3sdgg45a0q23vhfn5b"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-fatal" ,perl-test-fatal)
-       ("perl-test-needs" ,perl-test-needs)))
+     (list perl-test-fatal perl-test-needs))
     (home-page "https://metacpan.org/release/Class-Method-Modifiers")
     (synopsis "Moose-like method modifiers")
     (description "Class::Method::Modifiers provides three modifiers:
@@ -1569,11 +1523,9 @@ with a hook to easily call that original method.")
         "02vwzzqn1s24g525arbrjh9s9j0y1inp3wbr972gh51ri51zciw7"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)
-       ("perl-test-pod" ,perl-test-pod)
-       ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
+     (list perl-module-build perl-test-pod perl-test-pod-coverage))
     (propagated-inputs
-     `(("perl-params-classify" ,perl-params-classify)))
+     (list perl-params-classify))
     (home-page "https://metacpan.org/release/Class-Mix")
     (synopsis "Dynamic class mixing")
     (description "The @code{mix_class} function provided by this
@@ -1634,9 +1586,9 @@ uses no non-core modules for any recent Perl.")
         (base32 "0pqa98z3ij6a3v9wkmvc8b410kv30y0xxqf0i6if3lp4lx3rgqjj"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-requires" ,perl-test-requires)))
+     (list perl-test-requires))
     (propagated-inputs
-     `(("perl-class-inspector" ,perl-class-inspector)))
+     (list perl-class-inspector))
     (home-page "https://metacpan.org/release/Class-Unload")
     (synopsis "Unload a class")
     (description "Class:Unload unloads a given class by clearing out its
@@ -1700,11 +1652,9 @@ objects.")
          "0cin2bjn5z8xhm9v4j7pwlkx88jnvz8al0njdjwyvs6fb0glh8sn"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-clone" ,perl-clone)
-       ("perl-clone-pp" ,perl-clone-pp)
-       ("perl-test-without-module" ,perl-test-without-module)))
+     (list perl-clone perl-clone-pp perl-test-without-module))
     (propagated-inputs
-     `(("perl-module-runtime" ,perl-module-runtime)))
+     (list perl-module-runtime))
     (home-page "https://metacpan.org/release/Clone-Choose")
     (synopsis "Choose appropriate Perl @code{clone} utility")
     (description "This @code{Clone::Choose} module checks several different
@@ -1764,12 +1714,10 @@ as defined by two typical specimens of Perl coders.")
         (base32 "0qdypqd7mx96bwdjlv13fn6p96bs4w0yv94yv94xa7z5lqkdj4rg"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-extutils-pkgconfig" ,perl-extutils-pkgconfig)
-       ("perl-test-deep" ,perl-test-deep)
-       ("perl-test-exception" ,perl-test-exception)
-       ("perl-test-warn" ,perl-test-warn)))
+     (list perl-extutils-pkgconfig perl-test-deep perl-test-exception
+           perl-test-warn))
     (inputs
-     `(("libconfig" ,libconfig)))
+     (list libconfig))
     (home-page "https://metacpan.org/release/Conf-Libconfig")
     (synopsis "Perl extension for libconfig")
     (description
@@ -1814,7 +1762,7 @@ tabular data.")
          "0l31sg7dwh4dwwnql42hp7arkhcm15bhsgfg4i6xvbjzy9f2mnk8"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-module-pluggable" ,perl-module-pluggable)))
+     (list perl-module-pluggable))
     (home-page "https://metacpan.org/release/Config-Any")
     (synopsis "Load configuration from different file formats")
     (description "Config::Any provides a facility for Perl applications and
@@ -1835,8 +1783,7 @@ supports XML, YAML, JSON, Apache-style configuration, and Perl code.")
         (base32 "02dsz3inh5jwgaxmbcz8qxwgin8mkhm6vj9jyzfmm3dr5pnxcbnr"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-module-build" ,perl-module-build)
-       ("perl-io-stringy",perl-io-stringy)))
+     (list perl-module-build perl-io-stringy))
     (home-page "https://metacpan.org/pod/Config::IniFiles")
     (synopsis "Package for configuration files outside your Perl script")
     (description "This package provides a way to have readable configuration
@@ -1858,7 +1805,7 @@ can be grouped, and settings can be accessed from a tied hash.")
          "1qcwib4yaml5z2283qy5khjcydyibklsnk8zrk9wzdzc5wnv5r01"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-capture-tiny" ,perl-capture-tiny)))
+     (list perl-capture-tiny))
     (home-page "https://metacpan.org/release/Config-AutoConf")
     (synopsis "Module to implement some AutoConf macros in Perl")
     (description "Config::AutoConf is intended to provide the same
@@ -1904,10 +1851,9 @@ options.")
          "0kp57na9mk6yni693h2fwap6l1ndbcj97l4860r9vkzx2jw0fjk7"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-exception" ,perl-test-exception)))
+     (list perl-test-exception))
     (propagated-inputs
-     `(("perl-moo" ,perl-moo)
-       ("perl-moox-types-mooselike" ,perl-moox-types-mooselike)))
+     (list perl-moo perl-moox-types-mooselike))
     (home-page "https://metacpan.org/release/Config-GitLike")
     (synopsis "Parse Git style configuration files")
     (description
@@ -1929,9 +1875,7 @@ of the style used by the Git version control system.")
                 "0clphq6a17chvb663fvjnxqvyvh26g03x0fl4bg9vy4ibdnzg2v2"))))
     (build-system perl-build-system)
     (inputs
-     `(("perl-mixin-linewise" ,perl-mixin-linewise)
-       ("perl-perlio-utf8_strict" ,perl-perlio-utf8_strict)
-       ("perl-sub-exporter" ,perl-sub-exporter)))
+     (list perl-mixin-linewise perl-perlio-utf8_strict perl-sub-exporter))
     (home-page "https://metacpan.org/release/Config-INI")
     (synopsis "Simple .ini-file format reader and writer")
     (description "@code{Config::INI} is a module that facilates the reading
@@ -1952,11 +1896,10 @@ and writing of @code{.ini}-style configuration files.")
         (base32
          "1nwlldgrx86yn7y6a53cqgvzm2ircsvxg1addahlcy6510x9a1gq"))))
     (inputs
-     `(("perl-module-build-tiny" ,perl-module-build-tiny)
-       ("perl-test-fatal" ,perl-test-fatal)))
+     (list perl-module-build-tiny perl-test-fatal))
     ;; Needed for tests.
     (native-inputs
-     `(("perl-sub-exporter-progressive" ,perl-sub-exporter-progressive)))
+     (list perl-sub-exporter-progressive))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Const-Fast")
     (synopsis "Facility for creating read-only scalars, arrays, and hashes")
@@ -1978,8 +1921,7 @@ scalars, arrays, and hashes.")
          "07zxgmb11bn4zj3w9g1zwbb9iv4jyk5q7hc0nv59knvv5i64m489"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-exception" ,perl-test-exception)
-       ("perl-test-simple" ,perl-test-simple)))
+     (list perl-test-exception perl-test-simple))
     (home-page "https://metacpan.org/release/Context-Preserve")
     (synopsis "Preserve context during subroutine call")
     (description "This module runs code after a subroutine call, preserving
@@ -2003,8 +1945,7 @@ the caller.")
          "15v3489k179cx0fz3lix79ssjid0nhhpf6c33swpxga6pss92dai"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-file-slurp" ,perl-file-slurp)
-       ("perl-test-most" ,perl-test-most)))
+     (list perl-file-slurp perl-test-most))
     (home-page
      "https://metacpan.org/release/Convert-BinHex")
     (synopsis "Extract data from Macintosh BinHex files")
@@ -2071,8 +2012,8 @@ name and version from filenames.")
         (base32
          "07rmdbz1rbnb7w33vswn1wixlyh947sqr93xrvcph1hwzhmmg818"))))
     (build-system perl-build-system)
-    (native-inputs `(("perl-test-deep" ,perl-test-deep)))
-    (propagated-inputs `(("perl-cpan-meta" ,perl-cpan-meta)))
+    (native-inputs (list perl-test-deep))
+    (propagated-inputs (list perl-cpan-meta))
     (home-page "https://metacpan.org/release/CPAN-Meta-Check")
     (synopsis "Verify requirements in a CPAN::Meta object")
     (description "This module verifies if requirements described in a
@@ -2092,7 +2033,7 @@ CPAN::Meta object are present.")
         (base32 "0c07jfh6pq0f3hlhg0cqmznna7rlcflgrqv17mbkz9gnvg4x3szv"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-common-sense" ,perl-common-sense)))
+     (list perl-common-sense))
     (home-page "https://metacpan.org/release/Cpanel-JSON-XS")
     (synopsis "JSON::XS for Cpanel")
     (description "This module converts Perl data structures to JSON and vice
@@ -2114,7 +2055,7 @@ versa.")
         "0ig698lmpjz7fslnznxm0609lvlnvf4f3s370082nzycnqhxww3a"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-crypt-rijndael" ,perl-crypt-rijndael)))
+     (list perl-crypt-rijndael))
     (home-page "https://metacpan.org/release/Crypt-CBC")
     (synopsis "Encrypt Data with Cipher Block Chaining Mode")
     (description "@code{Crypt::CBC} is a Perl-only implementation of
@@ -2139,7 +2080,7 @@ are compatible with the encryption format used by SSLeay.")
         "1rypxlhpd1jc0c327aghgl9y6ls47drmpvn0a40b4k3vhfsypc9d"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-crypt-cbc" ,perl-crypt-cbc)))
+     (list perl-crypt-cbc))
     (home-page "https://metacpan.org/release/Crypt-DES")
     (synopsis "DES encryption module")
     (description "@code{Crypt::DES} is an XS-based implementation of
@@ -2163,11 +2104,9 @@ decrypt functions.")
         "0k01aw3qb2s4m1w4dqsc9cycyry1zg3wabdym4vp4421b1ni5irw"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)
-       ("perl-test-pod" ,perl-test-pod)
-       ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
+     (list perl-module-build perl-test-pod perl-test-pod-coverage))
     (propagated-inputs
-     `(("perl-class-mix" ,perl-class-mix)))
+     (list perl-class-mix))
     (home-page "https://metacpan.org/release/Crypt-Eksblowfish")
     (synopsis "The Eksblowfish block cipher")
     (description "Eksblowfish is a variant of the Blowfish cipher,
@@ -2197,10 +2136,9 @@ password hashing algorithm based on Eksblowfish.")
         "1qyx6ha13r0rh80ldv5wy2bq2pa74igwh8817xlapsfgxymdzswk"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)
-       ("perl-dbd-mysql" ,perl-dbd-mysql)))
+     (list perl-module-build perl-dbd-mysql))
     (propagated-inputs
-     `(("perl-digest-sha1" ,perl-digest-sha1)))
+     (list perl-digest-sha1))
     (home-page "https://metacpan.org/release/Crypt-MySQL")
     (synopsis "Emulate the MySQL PASSWORD() function")
     (description "@code{Crypt::MySQL} emulates the MySQL PASSWORD()
@@ -2224,7 +2162,7 @@ without the need for a real MySQL environment.")
         "0j0r74f18nk63phddzqbf7wqma2ci4p4bxvrwrxsy0aklbp6lzdp"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)))
+     (list perl-module-build))
     (home-page "https://metacpan.org/release/Crypt-PasswdMD5")
     (synopsis "Interoperable MD5-based crypt() functions")
     (description "@code{Crypt::PasswdMD5} provides various
@@ -2342,8 +2280,7 @@ used in @code{crypt} are also supplied separately.")
                 "0xwf4rmii55k3lp19mpbh00mbgby7rxdk2lk84148bjhp6i7rz3s"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)
-       ("perl-test-requires" ,perl-test-requires)))
+     (list perl-module-build perl-test-requires))
     (home-page "https://metacpan.org/release/Cwd-Guard")
     (synopsis "Temporarily change working directory")
     (description
@@ -2404,15 +2341,10 @@ bioinformatics data.")
          "12vgqdjbfqf2qfg21x22wg88xnwxfbw2ki3qzcb3nb0chwjj4axn"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-deep" ,perl-test-deep)
-       ("perl-test-output" ,perl-test-output)
-       ("perl-test-fatal" ,perl-test-fatal)))
+     (list perl-test-deep perl-test-output perl-test-fatal))
     (inputs
-     `(("perl-class-method-modifiers" ,perl-class-method-modifiers)
-       ("perl-list-moreutils" ,perl-list-moreutils)
-       ("perl-module-runtime" ,perl-module-runtime)
-       ("perl-role-tiny" ,perl-role-tiny)
-       ("perl-strictures" ,perl-strictures)))
+     (list perl-class-method-modifiers perl-list-moreutils
+           perl-module-runtime perl-role-tiny perl-strictures))
     (home-page "https://metacpan.org/release/Data-Perl")
     (synopsis "Base classes wrapping fundamental Perl data types")
     (description "Collection of classes that wrap fundamental data types that
@@ -2435,8 +2367,7 @@ input.")
         (base32 "1gg8rqbv3x6a1lrpabv6vnlab53zxmpwz2ygad9fcx4gygqj12l1"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-clone" ,perl-clone)
-       ("perl-file-find-rule" ,perl-file-find-rule)))
+     (list perl-clone perl-file-find-rule))
     (home-page "https://metacpan.org/release/Data-Compare")
     (synopsis "Compare Perl data structures")
     (description "This module compares arbitrary data structures to see if
@@ -2458,14 +2389,10 @@ they are copies of each other.")
         "1r176jjzir2zg5kidx85f7vzi6jsw7ci9vd4kvbr9183lfhw8496"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)
-       ("perl-test-pod" ,perl-test-pod)
-       ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
+     (list perl-module-build perl-test-pod perl-test-pod-coverage))
     (propagated-inputs
-     `(("perl-crypt-rijndael" ,perl-crypt-rijndael)
-       ("perl-data-float" ,perl-data-float)
-       ("perl-http-lite" ,perl-http-lite)
-       ("perl-params-classify" ,perl-params-classify)))
+     (list perl-crypt-rijndael perl-data-float perl-http-lite
+           perl-params-classify))
     (home-page "https://metacpan.org/release/Data-Entropy")
     (synopsis "Entropy (randomness) management")
     (description "@code{Data::Entropy} provides modules relating to
@@ -2496,9 +2423,7 @@ functions to shuffle arrays.")
         "0m53zxhx9sn49yqh7azlpyy9m65g54v8cd2ha98y77337gg7xdv3"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)
-       ("perl-test-pod" ,perl-test-pod)
-       ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
+     (list perl-module-build perl-test-pod perl-test-pod-coverage))
     (home-page "https://metacpan.org/release/Data-Integer")
     (synopsis "Details of the native integer data type")
     (description "This module is about the native integer numerical
@@ -2624,9 +2549,7 @@ indentation and newlines plus sub deparsing.")
         "12ji4yf3nc965rqqgfhr96w7irpm6n1g15nivfxvhc49hlym5cg2"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)
-       ("perl-test-pod" ,perl-test-pod)
-       ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
+     (list perl-module-build perl-test-pod perl-test-pod-coverage))
     (home-page "https://metacpan.org/release/Data-Float")
     (synopsis "Details of the floating point data type")
     (description "@code{Data::Float} is about the native floating
@@ -2652,8 +2575,7 @@ point values at a low level.")
          "1hzmgr2imdg1fc3hmwx0d56fhsdfyrgmgx7jb4jkyiv6575ifq9n"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-sub-install" ,perl-sub-install)
-       ("perl-params-util" ,perl-params-util)))
+     (list perl-sub-install perl-params-util))
     (home-page "https://metacpan.org/release/Data-OptList")
     (synopsis "Parse and validate simple name/value option pairs")
     (description
@@ -2673,10 +2595,9 @@ point values at a low level.")
         (base32 "12rxrr2b11qjk0c437cisw2kfqkafw1awcng09cv6yhzglb55yif"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)
-       ("perl-test-exception" ,perl-test-exception)))
+     (list perl-module-build perl-test-exception))
     (propagated-inputs
-     `(("perl-class-accessor-chained" ,perl-class-accessor-chained)))
+     (list perl-class-accessor-chained))
     (home-page "https://metacpan.org/release/Data-Page")
     (synopsis "Help when paging through sets of results")
     (description "When searching through large amounts of data, it is often
@@ -2701,17 +2622,12 @@ The maths behind this is unfortunately fiddly, hence this module.")
          "12vgqdjbfqf2qfg21x22wg88xnwxfbw2ki3qzcb3nb0chwjj4axn"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-deep" ,perl-test-deep)
-       ("perl-test-fatal" ,perl-test-fatal)
-       ("perl-test-output" ,perl-test-output)))
+     (list perl-test-deep perl-test-fatal perl-test-output))
     (inputs
-     `(("perl-class-method-modifiers"
-        ,perl-class-method-modifiers)
-       ("perl-module-runtime" ,perl-module-runtime)
-       ("perl-role-tiny" ,perl-role-tiny)
-       ("perl-strictures" ,perl-strictures)))
+     (list perl-class-method-modifiers perl-module-runtime perl-role-tiny
+           perl-strictures))
     (propagated-inputs
-     `(("perl-list-moreutils" ,perl-list-moreutils)))
+     (list perl-list-moreutils))
     (home-page
      "https://metacpan.org/release/Data-Perl")
     (synopsis "Base classes wrapping fundamental Perl data types")
@@ -2742,10 +2658,8 @@ The maths behind this is unfortunately fiddly, hence this module.")
          "0njjh8zp5afc4602jrnmg89icj7gfsil6i955ypcqxc2gl830sb0"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-clone-pp" ,perl-clone-pp)
-       ("perl-file-homedir" ,perl-file-homedir)
-       ("perl-package-stash" ,perl-package-stash)
-       ("perl-sort-naturally" ,perl-sort-naturally)))
+     (list perl-clone-pp perl-file-homedir perl-package-stash
+           perl-sort-naturally))
     (home-page "https://metacpan.org/release/Data-Printer")
     (synopsis "Colored pretty-print of Perl data structures and objects")
     (description "Display Perl variables and objects on screen, properly
@@ -2766,10 +2680,9 @@ formatted (to be inspected by a human).")
          "1gwyhjwg4lrnfsn8wb6r8msb4yh0y4wca4mz3z120xbnl9nycshx"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-exception" ,perl-test-exception)
-       ("perl-module-build" ,perl-module-build)))
+     (list perl-test-exception perl-module-build))
     (propagated-inputs
-     `(("perl-sub-uplevel" ,perl-sub-uplevel)))
+     (list perl-sub-uplevel))
     (home-page "https://metacpan.org/release/Data-Record")
     (synopsis "Conditionally split data into records")
     (description "This Perl module allows you to split data into records by
@@ -2795,10 +2708,9 @@ like split on newlines unless newlines are embedded in quotes.")
          "1pmlxca0a8sv2jjwvhwgqavq6iwys6kf457lby4anjp3f1dpx4yd"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-failwarnings" ,perl-test-failwarnings)))
+     (list perl-test-failwarnings))
     (propagated-inputs
-     `(("perl-mro-compat" ,perl-mro-compat)
-       ("perl-sub-exporter" ,perl-sub-exporter)))
+     (list perl-mro-compat perl-sub-exporter))
     (home-page "https://metacpan.org/release/Data-Section")
     (synopsis "Read multiple hunks of data out of your DATA section")
     (description "This package provides a Perl library to read multiple hunks
@@ -2818,7 +2730,7 @@ of data out of your DATA section.")
         (base32 "1jx9g5sxcw0i2zkm2z895k422i49kpx0idnnvvvs36lhvgzkac0b"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-requires" ,perl-test-requires)))
+     (list perl-test-requires))
     (home-page "https://metacpan.org/release/Data-Section-Simple")
     (synopsis "Read data from __DATA__")
     (description
@@ -2840,7 +2752,7 @@ section of the file.")
          "0ncf4l39ka23nb01jlm6rzxdb5pqbip01x0m38bnvf1gim825caa"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-io-string" ,perl-io-string)))
+     (list perl-io-string))
     (home-page "https://metacpan.org/release/Data-Stag")
     (synopsis "Structured tags datastructures")
     (description
@@ -2864,12 +2776,10 @@ Perl.")
          "05q9ygcv7r318j7daxz42rjr5b99j6whjmwjdih0axxrlqr89q06"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-requires" ,perl-test-requires)))
+     (list perl-test-requires))
     (propagated-inputs
-     `(("perl-moose" ,perl-moose)
-       ("perl-namespace-clean" ,perl-namespace-clean)
-       ("perl-path-class" ,perl-path-class)
-       ("perl-sub-exporter" ,perl-sub-exporter)))
+     (list perl-moose perl-namespace-clean perl-path-class
+           perl-sub-exporter))
     (home-page "https://metacpan.org/release/Data-Stream-Bulk")
     (synopsis "N at a time iteration API")
     (description "This module tries to find middle ground between one at a
@@ -2892,9 +2802,9 @@ necessary later on.")
         (base32 "15pgvmf7mf9fxsg2l4l88xwvs41218d0bvawhlk15sx06qqp0kwb"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-most" ,perl-test-most)))
+     (list perl-test-most))
     (propagated-inputs
-     `(("perl-file-homedir" ,perl-file-homedir)))
+     (list perl-file-homedir))
     (home-page "https://metacpan.org/release/Data-Tumbler")
     (synopsis "Dynamic generation of nested combinations of variants")
     (description "Data::Tumbler - Dynamic generation of nested combinations of
@@ -2915,13 +2825,10 @@ variants.")
          "0m7d1505af9z2hj5aw020grcmjjlvnkjpvjam457d7k5qfy4m8lf"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-requires" ,perl-test-requires)))
+     (list perl-test-requires))
     (propagated-inputs
-     `(("perl-class-load" ,perl-class-load)
-       ("perl-moose" ,perl-moose)
-       ("perl-namespace-clean" ,perl-namespace-clean)
-       ("perl-task-weaken" ,perl-task-weaken)
-       ("perl-tie-toobject" ,perl-tie-toobject)))
+     (list perl-class-load perl-moose perl-namespace-clean
+           perl-task-weaken perl-tie-toobject))
     (home-page "https://metacpan.org/release/Data-Visitor")
     (synopsis "Visitor style traversal of Perl data structures")
     (description "This module is a simple visitor implementation for Perl
@@ -2946,8 +2853,7 @@ structures, and all ref types (hashes, arrays, scalars, code, globs).")
          "1barz0jgdaan3jm7ciphs5n3ahwkl42imprs3y8c1dwpwyr3gqbw"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-bit-vector" ,perl-bit-vector)
-       ("perl-carp-clan" ,perl-carp-clan)))
+     (list perl-bit-vector perl-carp-clan))
     (home-page "https://metacpan.org/release/Date-Calc")
     (synopsis "Gregorian calendar date calculations")
     (description "This package consists of a Perl module for date calculations
@@ -2970,9 +2876,7 @@ applicable).")
          "1cssi9rmd31cgaafgp4m70jqbm1mgh3aphxsxz1dwdz8h283n6jz"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-bit-vector" ,perl-bit-vector)
-       ("perl-carp-clan" ,perl-carp-clan)
-       ("perl-date-calc" ,perl-date-calc)))
+     (list perl-bit-vector perl-carp-clan perl-date-calc))
     (home-page "https://metacpan.org/release/Date-Calc-XS")
     (synopsis "XS wrapper for Date::Calc")
     (description "Date::Calc::XS is an XS wrapper and C library plug-in for
@@ -3038,16 +2942,11 @@ hours, minutes, seconds, and time zones.")
         (base32 "1rxjagwmkdlmksz1cbxwx2ad51pv5q7dri2djqkz44q7j1nxlbmi"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-cpan-meta-check" ,perl-cpan-meta-check)
-       ("perl-module-build" ,perl-module-build)
-       ("perl-test-fatal" ,perl-test-fatal)
-       ("perl-test-warnings" ,perl-test-warnings)))
+     (list perl-cpan-meta-check perl-module-build perl-test-fatal
+           perl-test-warnings))
     (propagated-inputs
-     `(("perl-datetime-locale" ,perl-datetime-locale)
-       ("perl-datetime-timezone" ,perl-datetime-timezone)
-       ("perl-file-sharedir" ,perl-file-sharedir)
-       ("perl-params-validate" ,perl-params-validate)
-       ("perl-try-tiny" ,perl-try-tiny)))
+     (list perl-datetime-locale perl-datetime-timezone perl-file-sharedir
+           perl-params-validate perl-try-tiny))
     (home-page "https://metacpan.org/release/DateTime")
     (synopsis "Date and time object for Perl")
     (description "DateTime is a class for the representation of date/time
@@ -3069,7 +2968,7 @@ time before its creation (in 1582).")
     (build-system perl-build-system)
     ;; Only needed for tests
     (native-inputs
-     `(("perl-datetime" ,perl-datetime)))
+     (list perl-datetime))
     (home-page "https://metacpan.org/release/DateTime-Calendar-Julian")
     (synopsis "Dates in the Julian calendar")
     (description "This package is a companion module to @code{DateTime.pm}.
@@ -3092,11 +2991,9 @@ precise.")
          "0ih9pi6myg5i26hjpmpzqn58s0yljl2qxdd6gzpy9zda4hwirx4l"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)))
+     (list perl-module-build))
     (propagated-inputs
-     `(("perl-datetime" ,perl-datetime)
-       ("perl-params-validate" ,perl-params-validate)
-       ("perl-set-infinite" ,perl-set-infinite)))
+     (list perl-datetime perl-params-validate perl-set-infinite))
     (home-page "https://metacpan.org/release/DateTime-Set")
     (synopsis "DateTime set objects")
     (description "The DateTime::Set module provides a date/time sets
@@ -3119,8 +3016,7 @@ within a time range.")
          "1skmykxbrf98ldi72d5s1v6228gfdr5iy4y0gpl0xwswxy247njk"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-datetime" ,perl-datetime)
-       ("perl-datetime-event-recurrence" ,perl-datetime-event-recurrence)))
+     (list perl-datetime perl-datetime-event-recurrence))
     (home-page "https://metacpan.org/release/DateTime-Event-ICal")
     (synopsis "DateTime rfc2445 recurrences")
     (description "This module provides convenience methods that let you easily
@@ -3141,8 +3037,7 @@ create DateTime::Set objects for RFC 2445 style recurrences.")
          "19dms2vg9hvfx80p85m8gkn2ww0yxjrjn8qsr9k7f431lj4qfh7r"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-datetime" ,perl-datetime)
-       ("perl-datetime-set" ,perl-datetime-set)))
+     (list perl-datetime perl-datetime-set))
     (home-page "https://metacpan.org/release/DateTime-Event-Recurrence")
     (synopsis "DateTime::Set extension for basic recurrences")
     (description "This module provides convenience methods that let you easily
@@ -3165,10 +3060,8 @@ or \"every day\".  You can also create more complicated recurrences, such as
          "18qw5rn1qbji3iha8gmpgldbjv9gvn97j9d5cp57fb4r5frawgrq"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-class-factory-util" ,perl-class-factory-util)
-       ("perl-datetime" ,perl-datetime)
-       ("perl-datetime-format-strptime" ,perl-datetime-format-strptime)
-       ("perl-params-validate" ,perl-params-validate)))
+     (list perl-class-factory-util perl-datetime
+           perl-datetime-format-strptime perl-params-validate))
     (home-page "https://metacpan.org/release/DateTime-Format-Builder")
     (synopsis "Create DateTime parser classes and objects")
     (description "DateTime::Format::Builder creates DateTime parsers.  Many
@@ -3190,15 +3083,10 @@ to do this without writing reams of structural code.")
         (base32 "1vnq3a8bwhidcv3z9cvcmfiq2qa84hikr993ffr19fw7nbzbk9sh"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-exception" ,perl-test-exception)
-       ("perl-test-nowarnings" ,perl-test-nowarnings)
-       ("perl-test-mocktime" ,perl-test-mocktime)))
+     (list perl-test-exception perl-test-nowarnings perl-test-mocktime))
     (propagated-inputs
-     `(("perl-datetime" ,perl-datetime)
-       ("perl-datetime-format-builder" ,perl-datetime-format-builder)
-       ("perl-datetime-timezone" ,perl-datetime-timezone)
-       ("perl-list-moreutils" ,perl-list-moreutils)
-       ("perl-module-pluggable" ,perl-module-pluggable)))
+     (list perl-datetime perl-datetime-format-builder
+           perl-datetime-timezone perl-list-moreutils perl-module-pluggable))
     (home-page "https://metacpan.org/release/DateTime-Format-Flexible")
     (synopsis "Parse date and time strings")
     (description "DateTime::Format::Flexible attempts to take any string you
@@ -3219,13 +3107,10 @@ give it and parse it into a DateTime object.")
          "0cvwk7pigj7czsp81z35h7prxvylkrlk2l0kwvq0v72ykx9zc2cb"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)))
+     (list perl-module-build))
     (propagated-inputs
-     `(("perl-datetime" ,perl-datetime)
-       ("perl-datetime-event-ical" ,perl-datetime-event-ical)
-       ("perl-datetime-set" ,perl-datetime-set)
-       ("perl-datetime-timezone" ,perl-datetime-timezone)
-       ("perl-params-validate" ,perl-params-validate)))
+     (list perl-datetime perl-datetime-event-ical perl-datetime-set
+           perl-datetime-timezone perl-params-validate))
     (home-page "https://metacpan.org/release/DateTime-Format-ICal")
     (synopsis "Parse and format iCal datetime and duration strings")
     (description "This module understands the ICal date/time and duration
@@ -3248,13 +3133,10 @@ order to create the appropriate objects.")
         "1syccqd5jlwms8v78ksnf68xijzl97jky5vbwhnyhxi5gvgfx8xk"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)))
+     (list perl-module-build))
     (propagated-inputs
-     `(("perl-datetime" ,perl-datetime)
-       ("perl-datetime-format-builder" ,perl-datetime-format-builder)
-       ("perl-file-find-rule" ,perl-file-find-rule)
-       ("perl-test-distribution" ,perl-test-distribution)
-       ("perl-test-pod" ,perl-test-pod)))
+     (list perl-datetime perl-datetime-format-builder perl-file-find-rule
+           perl-test-distribution perl-test-pod))
     (home-page "https://metacpan.org/release/DateTime-Format-ISO8601")
     (synopsis "Parse ISO8601 date and time formats")
     (description "@code{DateTime::Format::ISO8601} is a DateTime
@@ -3274,18 +3156,16 @@ extension that parses almost all ISO8601 date and time formats.")
         (base32 "0mqjsjyfymzp7lx7czx17bsdshzsh6l8r6hcadv81zvga326zprw"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)
-       ("perl-module-util" ,perl-module-util)
-       ("perl-test-mocktime" ,perl-test-mocktime)))
+     (list perl-module-build perl-module-util perl-test-mocktime))
     (propagated-inputs
-     `(("perl-boolean" ,perl-boolean)
-       ("perl-clone" ,perl-clone)
-       ("perl-date-calc" ,perl-date-calc)
-       ("perl-date-calc-xs" ,perl-date-calc-xs)
-       ("perl-datetime" ,perl-datetime)
-       ("perl-datetime-timezone" ,perl-datetime-timezone)
-       ("perl-list-moreutils" ,perl-list-moreutils)
-       ("perl-params-validate" ,perl-params-validate)))
+     (list perl-boolean
+           perl-clone
+           perl-date-calc
+           perl-date-calc-xs
+           perl-datetime
+           perl-datetime-timezone
+           perl-list-moreutils
+           perl-params-validate))
     (home-page "https://metacpan.org/release/DateTime-Format-Natural")
     (synopsis "Machine-readable date/time with natural parsing")
     (description "DateTime::Format::Natural takes a string with a human
@@ -3306,13 +3186,13 @@ parsing logic.")
         (base32 "0jiy2yc9h9932ykb8x2l1j3ff8ms3p4426m947r5clygis1kr91g"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-datetime" ,perl-datetime)
-       ("perl-datetime-locale" ,perl-datetime-locale)
-       ("perl-datetime-timezone" ,perl-datetime-timezone)
-       ("perl-package-deprecationmanager" ,perl-package-deprecationmanager)
-       ("perl-params-validate" ,perl-params-validate)
-       ("perl-sub-name" ,perl-sub-name)
-       ("perl-test-warnings" ,perl-test-warnings)))
+     (list perl-datetime
+           perl-datetime-locale
+           perl-datetime-timezone
+           perl-package-deprecationmanager
+           perl-params-validate
+           perl-sub-name
+           perl-test-warnings))
     (home-page "https://metacpan.org/release/DateTime-Format-Strptime")
     (synopsis "Parse and format strp and strf time patterns")
     (description "This module implements most of `strptime(3)`, the POSIX
@@ -3335,18 +3215,17 @@ takes a string and a pattern and returns the `DateTime` object associated.")
          "05f0jchminv5g2nrvsx5v1ihc5919fzzhh4f82dxi5ns8bkq2nis"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-file-sharedir" ,perl-file-sharedir)
-       ("perl-ipc-system-simple" ,perl-ipc-system-simple)
-       ("perl-test-file-sharedir-dist" ,perl-test-file-sharedir-dist)
-       ("perl-test-warnings" ,perl-test-warnings)
-       ("perl-test-requires" ,perl-test-requires)
-       ("perl-namespace-autoclean" ,perl-namespace-autoclean)
-       ("perl-file-sharedir-install" ,perl-file-sharedir-install)
-       ("perl-cpan-meta-check" ,perl-cpan-meta-check)
-       ("perl-module-build" ,perl-module-build)))
+     (list perl-file-sharedir
+           perl-ipc-system-simple
+           perl-test-file-sharedir-dist
+           perl-test-warnings
+           perl-test-requires
+           perl-namespace-autoclean
+           perl-file-sharedir-install
+           perl-cpan-meta-check
+           perl-module-build))
     (propagated-inputs
-     `(("perl-list-moreutils" ,perl-list-moreutils)
-       ("perl-params-validationcompiler" ,perl-params-validationcompiler)))
+     (list perl-list-moreutils perl-params-validationcompiler))
     (home-page "https://metacpan.org/release/DateTime-Locale")
     (synopsis "Localization support for DateTime.pm")
     (description "The DateTime::Locale modules provide localization data for
@@ -3378,17 +3257,16 @@ the DateTime.pm class.")
                                "';")))
              #t)))))
     (native-inputs
-     `(("perl-test-fatal" ,perl-test-fatal)
-       ("perl-test-requires" ,perl-test-requires)))
+     (list perl-test-fatal perl-test-requires))
     (inputs
-     `(("tzdata" ,tzdata)))
+     (list tzdata))
     (propagated-inputs
-     `(("perl-class-singleton" ,perl-class-singleton)
-       ("perl-list-allutils" ,perl-list-allutils)
-       ("perl-module-runtime" ,perl-module-runtime)
-       ("perl-namespace-autoclean" ,perl-namespace-autoclean)
-       ("perl-params-validationcompiler" ,perl-params-validationcompiler)
-       ("perl-try-tiny" ,perl-try-tiny)))
+     (list perl-class-singleton
+           perl-list-allutils
+           perl-module-runtime
+           perl-namespace-autoclean
+           perl-params-validationcompiler
+           perl-try-tiny))
     (home-page "https://metacpan.org/release/DateTime-TimeZone")
     (synopsis "Time zone object for Perl")
     (description "This class is the base class for all time zone objects.  A
@@ -3413,13 +3291,11 @@ DateTime::TimeZone methods.")
          "0ybs9175h4s39x8a23ap129cgqwmy6w7psa86194jq5cww1d5rhp"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-most" ,perl-test-most)))
+     (list perl-test-most))
     (propagated-inputs
-     `(("perl-datetime" ,perl-datetime)
-       ("perl-datetime-format-flexible" ,perl-datetime-format-flexible)
-       ("perl-datetime-format-ical" ,perl-datetime-format-ical)
-       ("perl-datetime-format-natural" ,perl-datetime-format-natural)
-       ("perl-timedate" ,perl-timedate)))
+     (list perl-datetime perl-datetime-format-flexible
+           perl-datetime-format-ical perl-datetime-format-natural
+           perl-timedate))
     (home-page "https://metacpan.org/release/DateTimeX-Easy")
     (synopsis "Parse date/time strings")
     (description "DateTimeX::Easy uses a variety of DateTime::Format packages
@@ -3440,8 +3316,7 @@ edges (mainly concerning timezone detection and selection).")
                 "1c7wapbi9g9p2za52l3skhh31vg4da5kx2yfqzsqyf3p8iff7y4d"))))
     (build-system perl-build-system)
     (inputs
-     `(("perl-datetime" ,perl-datetime)
-       ("perl-params-validate" ,perl-params-validate)))
+     (list perl-datetime perl-params-validate))
     (home-page "https://metacpan.org/release/DateTime-Format-Mail")
     (synopsis "Convert between DateTime and RFC2822/822 formats")
     (description "RFCs 2822 and 822 specify date formats to be used by email.
@@ -3461,10 +3336,9 @@ This module parses and emits such dates.")
                 "0s32lb1k80p3b3sb7w234zgxnrmadrwbcg41lhaal7dz3dk2p839"))))
     (build-system perl-build-system)
     (inputs
-     `(("perl-datetime" ,perl-datetime)))
+     (list perl-datetime))
     (native-inputs
-     `(("perl-test-pod" ,perl-test-pod)
-       ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
+     (list perl-test-pod perl-test-pod-coverage))
     (home-page "https://metacpan.org/release/DateTime-Format-W3CDTF")
     (synopsis "Parse and format W3CDTF datetime strings")
     (description
@@ -3489,12 +3363,9 @@ the appropriate objects.")
         "1p0ij2k2i81zhl7064h9ghld1w5xy2zsbghkpdzm2hjryl5lwn2x"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)
-       ("perl-test-pod" ,perl-test-pod)
-       ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
+     (list perl-module-build perl-test-pod perl-test-pod-coverage))
     (propagated-inputs
-     `(("perl-b-hooks-op-check" ,perl-b-hooks-op-check)
-       ("perl-dynaloader-functions" ,perl-dynaloader-functions)))
+     (list perl-b-hooks-op-check perl-dynaloader-functions))
     (home-page "https://metacpan.org/release/Devel-CallChecker")
     (synopsis "Custom op checking attached to subroutines")
     (description "This module makes some new features of the Perl
@@ -3521,7 +3392,7 @@ functions available.")
          "1pxpimifzmnjnvf4icclx77myc15ahh0k56sj1djad1855mawwva"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-padwalker" ,perl-padwalker)))
+     (list perl-padwalker))
     (home-page "https://metacpan.org/release/Devel-Caller")
     (synopsis "Meatier version of caller")
     (description "Devel::Caller provides meatier version of caller.")
@@ -3540,7 +3411,7 @@ functions available.")
         (base32
          "1r735yzgvsxkj4m6ks34xva5m21cfzp9qiis2d4ivv99kjskszqm"))))
     (build-system perl-build-system)
-    (native-inputs `(("perl-module-build" ,perl-module-build)))
+    (native-inputs (list perl-module-build))
     (home-page "https://metacpan.org/release/Devel-CheckBin")
     (synopsis "Check that a command is available")
     (description "Devel::CheckBin is a perl module that checks whether a
@@ -3560,8 +3431,7 @@ particular command is available.")
         (base32 "15621qh5gaan1sgmk9y9svl70nm8viw17x5h1kf0zknkk8lmw77j"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-capture-tiny" ,perl-capture-tiny)
-       ("perl-mock-config" ,perl-mock-config)))
+     (list perl-capture-tiny perl-mock-config))
     (home-page "https://metacpan.org/release/Devel-CheckLib")
     (synopsis "Check that a library is available")
     (description
@@ -3584,7 +3454,7 @@ particular results.")
               "1db973a4dbyknjxq608hywil5ai6vplnayshqxrd7m5qnjbpd2vn"))))
   (build-system perl-build-system)
   (native-inputs
-   `(("perl-module-build-tiny" ,perl-module-build-tiny)))
+   (list perl-module-build-tiny))
   (home-page "https://metacpan.org/release/Devel-CheckCompiler")
   (synopsis "Check compiler availability")
   (description "@code{Devel::CheckCompiler} is a tiny module to check
@@ -3630,7 +3500,7 @@ based memory management, circular references will cause memory leaks.")
          "1aslj6myylsvzr0vpqry1cmmvzbmpbdcl4v9zrl18ccik7rabf1l"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-sub-exporter-progressive" ,perl-sub-exporter-progressive)))
+     (list perl-sub-exporter-progressive))
     (home-page "https://metacpan.org/release/Devel-GlobalDestruction")
     (synopsis "Provides equivalent of ${^GLOBAL_PHASE} eq 'DESTRUCT' for older perls")
     (description "Devel::GlobalDestruction provides a function returning the
@@ -3650,8 +3520,7 @@ equivalent of \"$@{^GLOBAL_PHASE@} eq 'DESTRUCT'\" for older perls.")
         (base32 "10jyv9nmv513hs75rls5yx2xn82513xnnhjir3dxiwgb1ykfyvvm"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-test-pod" ,perl-test-pod)
-       ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
+     (list perl-test-pod perl-test-pod-coverage))
     (home-page "https://metacpan.org/release/Devel-Hide")
     (synopsis "Forces the unavailability of specified Perl modules (for testing)")
     (description "Given a list of Perl modules/filenames, this module makes
@@ -3693,7 +3562,7 @@ allocating perl data and not releasing them again.")
          "0wpfpjqlrncslnmxa37494sfdy0901510kj2ds2k6q167vadj2jy"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-devel-caller" ,perl-devel-caller)))
+     (list perl-devel-caller))
     (home-page "https://metacpan.org/release/Devel-LexAlias")
     (synopsis "Alias lexical variables")
     (description "Devel::LexAlias provides the ability to alias a lexical
@@ -3714,11 +3583,9 @@ variable in a subroutines scope to one of your choosing.")
          "1rx6g8pyhi7lx6z130b7vlf8syzrq92w9ky8mpw4d6bwlkzy5zcb"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-fatal" ,perl-test-fatal)))
+     (list perl-test-fatal))
     (propagated-inputs
-     `(("perl-package-stash" ,perl-package-stash)
-       ("perl-sub-identify" ,perl-sub-identify)
-       ("perl-mro-compat" ,perl-mro-compat)))
+     (list perl-package-stash perl-sub-identify perl-mro-compat))
     (home-page "https://metacpan.org/release/Devel-OverloadInfo")
     (synopsis "Introspect overloaded operators")
     (description "Devel::OverloadInfo returns information about overloaded
@@ -3740,13 +3607,9 @@ hierarchy the overloads are declared and where the code implementing it is.")
          "0i1khiyi4h4h8vfwn7xip5c53z2hb2rk6407f3csvrdsiibvy53q"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build-tiny" ,perl-module-build-tiny)
-       ("perl-test-warn" ,perl-test-warn)
-       ("perl-test-simple" ,perl-test-simple)))
+     (list perl-module-build-tiny perl-test-warn perl-test-simple))
     (propagated-inputs
-     `(("perl-class-tiny" ,perl-class-tiny)
-       ("perl-sub-exporter" ,perl-sub-exporter)
-       ("perl-namespace-clean" ,perl-namespace-clean)))
+     (list perl-class-tiny perl-sub-exporter perl-namespace-clean))
     (home-page "https://metacpan.org/release/Devel-PartialDump")
     (synopsis "Partial dumping of data structures")
     (description "This module is a data dumper optimized for logging of
@@ -3787,7 +3650,7 @@ providing a simple interface to this data.")
          "0iri5nb2lb76qv5l9z0vjpfrq5j2fyclkd64kh020bvy37idp0v2"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-devel-stacktrace" ,perl-devel-stacktrace)))
+     (list perl-devel-stacktrace))
     (home-page "https://metacpan.org/release/Devel-StackTrace-AsHTML")
     (synopsis "Displays stack trace in HTML")
     (description "Devel::StackTrace::AsHTML adds as_html method to
@@ -3952,9 +3815,9 @@ SHA-1 message digest algorithm for use by Perl programs.")
                (base32
                 "1i7dr9jpdiy2nijl2p4q5zg2q2s9ckbj2hs4kmnnckf9hsb4p17a"))))
     (build-system perl-build-system)
-    (native-inputs `(("perl-test-fatal" ,perl-test-fatal)))
+    (native-inputs (list perl-test-fatal))
     (propagated-inputs
-     `(("perl-module-runtime" ,perl-module-runtime)))
+     (list perl-module-runtime))
     (home-page "https://metacpan.org/release/Dist-CheckConflicts")
     (synopsis "Declare version conflicts for your dist")
     (description "This module allows you to specify conflicting versions of
@@ -3976,9 +3839,7 @@ modules separately and deal with them after the module is done installing.")
         "10x13q920j9kid7vmbj6fiaz153042dy4mwdmpzrdrxw2ir39ciy"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)
-       ("perl-test-pod" ,perl-test-pod)
-       ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
+     (list perl-module-build perl-test-pod perl-test-pod-coverage))
     (home-page "https://metacpan.org/release/DynaLoader-Functions")
     (synopsis "Deconstructed dynamic C library loading")
     (description "This module provides a function-based interface to
@@ -4000,9 +3861,7 @@ the programmer to be mindfulof the space of platform variations.")
         (base32 "1a8rwcrxxhq81jcdvdwns05c65jwr5r6bxvby6vdcr3ny5m91my2"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-exporter" ,perl-exporter)
-       ("perl-storable" ,perl-storable)
-       ("perl-parent" ,perl-parent)))
+     (list perl-exporter perl-storable perl-parent))
     (home-page "https://metacpan.org/dist/Encode")
     (synopsis "Character encodings in Perl")
     (description "Encode module provides the interface between Perl strings and
@@ -4023,7 +3882,7 @@ the rest of the system.  Perl strings are sequences of characters.")
          "1wdv9ffgs4xyfh5dnh09dqkmmlbf5m1hxgdgb3qy6v6vlwx8jkc3"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)))
+     (list perl-module-build))
     (home-page "https://metacpan.org/release/Encode-Detect")
     (synopsis "Detect the encoding of data")
     (description "This package provides a class @code{Encode::Detect} to detect
@@ -4129,7 +3988,7 @@ separator.")
                (base32
                 "0q796nwwiarfc6pga97380c9z8xva5545632001qj75kb1g5rn1s"))))
     (build-system perl-build-system)
-    (native-inputs `(("perl-module-build" ,perl-module-build)))
+    (native-inputs (list perl-module-build))
     (home-page "https://metacpan.org/release/Error")
     (synopsis "OO-ish Error/Exception handling for Perl")
     (description "The Error package provides two interfaces.  Firstly Error
@@ -4152,10 +4011,9 @@ catch, or can simply be recorded.")
          "1bcc47r6zm3hfr6ccsrs72kgwxm3wkk07mgnpsaxi67cypr482ga"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-fatal" ,perl-test-fatal)
-       ("perl-test-requires" ,perl-test-requires)))
+     (list perl-test-fatal perl-test-requires))
     (propagated-inputs
-     `(("perl-devel-lexalias" ,perl-devel-lexalias)))
+     (list perl-devel-lexalias))
     (home-page "https://metacpan.org/release/Eval-Closure")
     (synopsis "Safely and cleanly create closures via string eval")
     (description "String eval is often used for dynamic code generation.  For
@@ -4196,8 +4054,7 @@ errors are rethrown automatically.")
                              ,(string-append out "/lib/perl5/site_perl"))))
                         #t))))))
     (propagated-inputs
-     `(("perl-moo" ,perl-moo)
-       ("perl-strictures" ,perl-strictures)))
+     (list perl-moo perl-strictures))
     (home-page "https://metacpan.org/release/Eval-WithLexicals")
     (synopsis "Lexical scope evaluation library for Perl")
     (description "The Eval::WithLexicals Perl library provides support for
@@ -4219,8 +4076,7 @@ command, which can be used as a minimal Perl read-eval-print loop (REPL).")
          "03gf4cdgrjnljgrlxkvbh2cahsyzn0zsh2zcli7b1lrqn7wgpwrk"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-devel-stacktrace" ,perl-devel-stacktrace)
-       ("perl-class-data-inheritable" ,perl-class-data-inheritable)))
+     (list perl-devel-stacktrace perl-class-data-inheritable))
     (home-page "https://metacpan.org/release/Exception-Class")
     (synopsis "Allows you to declare real exception classes in Perl")
     (description "Exception::Class allows you to declare exception hierarchies
@@ -4240,9 +4096,9 @@ in your modules in a \"Java-esque\" manner.")
         (base32 "1f25k5iaygiizlrkbbl6wxd647pwfmynykxalq6r9bbkysg8inza"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-pod" ,perl-test-pod)))
+     (list perl-test-pod))
     (propagated-inputs
-     `(("perl-carp" ,perl-carp)))
+     (list perl-carp))
     (home-page "https://metacpan.org/dist/Exporter")
     (synopsis "Default import method for modules")
     (description "Exporter implements an import method which allows a module to
@@ -4328,7 +4184,7 @@ maniread, maniskip, manicopy, maniadd.")
          "1v9lshfhm9ck4p0v77arj5f7haj1mmkqal62lgzzvcds6wq5www4"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-extutils-config" ,perl-extutils-config)))
+     (list perl-extutils-config))
     (home-page "https://metacpan.org/release/ExtUtils-InstallPaths")
     (synopsis "Build.PL install path logic made easy")
     (description "This module tries to make install path resolution as easy as
@@ -4371,10 +4227,9 @@ it ties together a family of modern toolchain modules.")
             "0q9ynigk600fv95xac6aslrg2k19m6qbzf5hqfsnall8113r3gqj"))))
     (build-system perl-build-system)
     (native-inputs
-      `(("perl-capture-tiny" ,perl-capture-tiny)
-        ("perl-module-build" ,perl-module-build)))
+      (list perl-capture-tiny perl-module-build))
     (propagated-inputs
-      `(("perl-capture-tiny" ,perl-capture-tiny)))
+      (list perl-capture-tiny))
     (home-page
       "https://metacpan.org/release/ExtUtils-CppGuess")
     (synopsis "Tool for guessing C++ compiler and flags")
@@ -4395,7 +4250,7 @@ is compatible with the C compiler used to build perl.")
                 "0b4ab9qmcihsfs2ajhn5qzg7nhazr68v3r0zvb7076smswd41mla"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-number-delta" ,perl-test-number-delta)))
+     (list perl-test-number-delta))
     (home-page "https://metacpan.org/release/ExtUtils-Depends")
     (synopsis "Easily build XS extensions that depend on XS extensions")
     (description
@@ -4438,7 +4293,7 @@ module building modules.")
          "1lmmfcjxvsvhn4f3v2lyylgr8dzcf5j7mnd1pkq3jc75dph724f5"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)))
+     (list perl-module-build))
     (home-page "https://metacpan.org/release/ExtUtils-LibBuilder")
     (synopsis "Tool to build C libraries")
     (description "Some Perl modules need to ship C libraries together with
@@ -4483,7 +4338,7 @@ handle Perl/XS typemap files, and their submodules.")
                 "0vhwh0731rhh1sswmvagq0myn754dnkab8sizh6d3n6pjpcwxsmv"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (home-page "https://metacpan.org/release/ExtUtils-PkgConfig")
     (synopsis "Simplistic interface to pkg-config")
     (description
@@ -4509,7 +4364,7 @@ It is really just boilerplate code that you would have written yourself.")
             "1phmha0ks95kvzl00r1kgnd5hvg7qb1q9jmzjmw01p5zgs1zbyix"))))
     (build-system perl-build-system)
     (native-inputs
-      `(("perl-module-build" ,perl-module-build)))
+      (list perl-module-build))
     (home-page
       "https://metacpan.org/release/ExtUtils-Typemaps-Default")
     (synopsis "Set of useful typemaps")
@@ -4533,9 +4388,7 @@ submodules of ExtUtils::Typemaps.")
             "1zx84f93lkymqz7qa4d63gzlnhnkxm5i3gvsrwkvvqr9cxjasxli"))))
     (build-system perl-build-system)
     (native-inputs
-      `(("perl-module-build" ,perl-module-build)
-        ("perl-test-base" ,perl-test-base)
-        ("perl-test-differences" ,perl-test-differences)))
+      (list perl-module-build perl-test-base perl-test-differences))
     (home-page
       "https://metacpan.org/release/ExtUtils-XSpp")
     (synopsis "XS for C++")
@@ -4557,17 +4410,15 @@ interface XS for C++; it is a thin layer over plain XS.")
          "090i265f73jlcl5rv250791vw32j9vvl4nd5abc7myg0klb8109w"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)
-       ("perl-test-exception" ,perl-test-exception)))
+     (list perl-module-build perl-test-exception))
     (propagated-inputs
-     `(("perl-class-load" ,perl-class-load)
-       ("perl-list-moreutils" ,perl-list-moreutils)
-       ("perl-module-pluggable" ,perl-module-pluggable)
-       ("perl-moose" ,perl-moose)
-       ("perl-moosex-params-validate" ,perl-moosex-params-validate)
-       ("perl-moosex-semiaffordanceaccessor"
-        ,perl-moosex-semiaffordanceaccessor)
-       ("perl-namespace-autoclean" ,perl-namespace-autoclean)))
+     (list perl-class-load
+           perl-list-moreutils
+           perl-module-pluggable
+           perl-moose
+           perl-moosex-params-validate
+           perl-moosex-semiaffordanceaccessor
+           perl-namespace-autoclean))
     (home-page "https://metacpan.org/release/File-ChangeNotify")
     (synopsis "Watch for changes to files")
     (description "This module provides a class to monitor a directory for
@@ -4588,9 +4439,7 @@ changes made to any file.")
          "1ihlhdbwaybyj3xqfxpx4ii0ypa41907b6zdh94rvr4wyqa5lh3b"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-file-homedir" ,perl-file-homedir)
-       ("perl-list-moreutils" ,perl-list-moreutils)
-       ("perl-test-without-module" ,perl-test-without-module)))
+     (list perl-file-homedir perl-list-moreutils perl-test-without-module))
     (home-page "https://metacpan.org/release/File-ConfigDir")
     (synopsis "Get directories of configuration files")
     (description "This module is a helper for installing, reading and finding
@@ -4633,8 +4482,7 @@ type.")
          "1znachnhmi1w5pdqx8dzgfa892jb7x8ivrdy4pzjj7zb6g61cvvy"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-text-glob" ,perl-text-glob)
-       ("perl-number-compare" ,perl-number-compare)))
+     (list perl-text-glob perl-number-compare))
     (home-page "https://metacpan.org/release/File-Find-Rule")
     (synopsis "Alternative interface to File::Find")
     (description "File::Find::Rule is a friendlier interface to File::Find.
@@ -4656,9 +4504,7 @@ directories.")
          "19iy8spzrvh71x33b5yi16wjw5jjvs12jvjj0f7f3370hqzl6j4s"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-file-find-rule" ,perl-file-find-rule)
-       ("perl-params-util" ,perl-params-util)
-       ("perl-parse-cpan-meta" ,perl-parse-cpan-meta)))
+     (list perl-file-find-rule perl-params-util perl-parse-cpan-meta))
     (home-page "https://metacpan.org/release/File-Find-Rule-Perl")
     (synopsis "Common rules for searching for Perl things")
     (description "File::Find::Rule::Perl provides methods for finding various
@@ -4703,7 +4549,7 @@ provide a quick dropin when such functionality is needed.")
          "1bciyzwv7gwsnaykqz0czj6mlbkkg4hg1s40s1q7j2p6nlmpxxj5"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-file-which" ,perl-file-which)))
+     (list perl-file-which))
     (arguments `(#:tests? #f))          ;Not appropriate for chroot
     (home-page "https://metacpan.org/release/File-HomeDir")
     (synopsis "Find your home and other directories on any platform")
@@ -4829,7 +4675,7 @@ the input record separator string on a per file basis.")
          "1n6h5w3sp2bs4cfrifdx2z15cfpb4r536179mx1a12xbmj1yrxl1"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)))
+     (list perl-module-build))
     (home-page "https://metacpan.org/release/File-Remove")
     (synopsis "Remove files and directories in Perl")
     (description "@code{File::Remove::remove} removes files and directories.
@@ -4851,9 +4697,9 @@ that.  It also accepts wildcards, * and ?, as arguments for file names.")
         (base32 "0a43rfb0a1fpxh4d2dayarkdxw4cx9a2krkk87zmcilcz7yhpnar"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-file-sharedir-install" ,perl-file-sharedir-install)))
+     (list perl-file-sharedir-install))
     (propagated-inputs
-     `(("perl-class-inspector" ,perl-class-inspector)))
+     (list perl-class-inspector))
     (home-page "https://metacpan.org/release/File-ShareDir")
     (synopsis "Locate per-dist and per-module shared files")
     (description "The intent of File::ShareDir is to provide a companion to
@@ -4896,7 +4742,7 @@ distributions.  It is a companion module to File::ShareDir.")
          "1yc0wlkav2l2wr36a53n4mnhsy2zv29z5nm14mygxgjwv7qgvgj5"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)))
+     (list perl-module-build))
     (home-page "https://metacpan.org/release/File-ShareDir-Install")
     (synopsis "Install shared files")
     (description "File::ShareDir::Install allows you to install read-only data
@@ -4939,9 +4785,9 @@ file names in a directory.")
          "0y5518ji60yfkx9ggjp309j6g8vfri4ka4zqlsys245i2sj2xysf"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-warnings" ,perl-test-warnings)))
+     (list perl-test-warnings))
     (propagated-inputs
-     `(("perl-perlio-utf8_strict" ,perl-perlio-utf8_strict)))
+     (list perl-perlio-utf8_strict))
     (home-page "https://metacpan.org/release/File-Slurper")
     (synopsis "Simple, sane and efficient module to slurp a file")
     (description "This module provides functions for fast and correct file
@@ -5019,7 +4865,7 @@ shell.")
                 "16v61rn0yimpv5kp6b20z2f1c93n5kpsyjvr0gq4w2dc43gfvc8w"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-install" ,perl-module-install)))
+     (list perl-module-install))
     (home-page "https://metacpan.org/release/File-Zglob")
     (synopsis "Extended Unix style glob functionality")
     (description "@code{File::Zglob} provides a traditional Unix @code{glob}
@@ -5041,7 +4887,7 @@ For instance, it supports the @code{**/*.pm} form.")
          "18jv96k1pf8wqf4vn2ahs7dv44lc9cyqj0bja9z17qici3dx7qxd"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-sharedfork" ,perl-test-sharedfork)))
+     (list perl-test-sharedfork))
     (home-page "https://metacpan.org/release/Filesys-Notify-Simple")
     (synopsis "Simple and dumb file system watcher")
     (description
@@ -5093,12 +4939,9 @@ single-letter approach, is provided but not enabled by default.")
          "1cpl240qxmh7jf85ai9sfkp3nzm99syya4jxidizp7aa83kvmqbh"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-cpan-meta-check" ,perl-cpan-meta-check)
-       ("perl-test-fatal" ,perl-test-fatal)
-       ("perl-test-warnings" ,perl-test-warnings)))
+     (list perl-cpan-meta-check perl-test-fatal perl-test-warnings))
     (propagated-inputs
-     `(("perl-params-validate" ,perl-params-validate)
-       ("perl-sub-exporter" ,perl-sub-exporter)))
+     (list perl-params-validate perl-sub-exporter))
     (home-page "https://metacpan.org/release/Getopt-Long-Descriptive")
     (synopsis "Getopt::Long, but simpler and more powerful")
     (description "Getopt::Long::Descriptive is yet another Getopt library.
@@ -5125,6 +4968,25 @@ usage (help) messages, data validation, and a few other useful features.")
 vaguely inspired by John Ousterhout's Tk_ParseArgv.")
     (home-page "https://metacpan.org/release/Getopt-Tabular")
     (license (package-license perl))))
+
+(define-public perl-gettext
+  (package
+    (name "perl-gettext")
+    (version "1.07")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/P/PV/PVANDRY"
+                                  "/gettext-" version ".tar.gz"))
+              (sha256
+               (base32
+                "05cwqjxxary11di03gg3fm6j9lbvg1dr2wpr311c1rwp8salg7ch"))))
+    (build-system perl-build-system)
+    (home-page "https://metacpan.org/release/gettext")
+    (synopsis "Perl bindings for POSIX i18n gettext functions")
+    (description
+     "Locale::gettext provides an object oriented interface to the
+internationalization functions provided by the C library.")
+    (license license:perl-license)))
 
 (define-public perl-graph
   (package
@@ -5194,8 +5056,7 @@ which are tied to the scope exit.")
                                     (getenv "PERL5LIB")))
              #t)))))
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)
-       ("perl-test-leaktrace" ,perl-test-leaktrace)))
+     (list perl-module-build perl-test-leaktrace))
     (home-page "https://metacpan.org/release/Hash-FieldHash")
     (synopsis "Lightweight field hash for inside-out objects")
     (description "@code{Hash::FieldHash} provides the field hash mechanism
@@ -5218,10 +5079,9 @@ relic support.")
     (build-system perl-build-system)
     (native-inputs
      ;; For tests only.
-     `(("perl-clone" ,perl-clone)
-       ("perl-clone-pp" ,perl-clone-pp)))
+     (list perl-clone perl-clone-pp))
     (propagated-inputs
-     `(("perl-clone-choose" ,perl-clone-choose)))
+     (list perl-clone-choose))
     (home-page "https://metacpan.org/release/Hash-Merge")
     (synopsis "Merge arbitrarily deep hashes into a single hash")
     (description "Hash::Merge merges two arbitrarily deep hashes into a single
@@ -5311,7 +5171,7 @@ variables.")
          "0rq5kz7c270q33jq6hnrv3xgkvajsc62ilqq7fs40av6zfipg7mx"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-module-runtime" ,perl-module-runtime)))
+     (list perl-module-runtime))
     (home-page "https://metacpan.org/release/Import-Into")
     (synopsis "Import packages into other packages")
     (description "Writing exporters is a pain.  Some use Exporter, some use
@@ -5376,7 +5236,7 @@ inc directory within a distribution and are used by Makefile.PL or Build.PL.")
        "0fhyspkg2ka7yz7kbq8a028hj0chfc7qqkl7n20dpc0is3i7s2ji"))))
    (build-system perl-build-system)
    (native-inputs
-    `(("perl-test-warn" ,perl-test-warn)))
+    (list perl-test-warn))
    (home-page "https://metacpan.org/release/Inline")
    (synopsis "Write Perl subroutines in other programming languages")
    (description "The @code{Inline} module allows you to put source code
@@ -5411,14 +5271,10 @@ for immediate access from Perl.")
                (("'\"make install\"'")
                 (string-append "'\"" make "/bin/make install\"'")))))))))
     (native-inputs
-     `(("perl-file-copy-recursive" ,perl-file-copy-recursive)
-       ("perl-file-sharedir-install" ,perl-file-sharedir-install)
-       ("perl-test-warn" ,perl-test-warn)
-       ("perl-yaml-libyaml" ,perl-yaml-libyaml)))
+     (list perl-file-copy-recursive perl-file-sharedir-install
+           perl-test-warn perl-yaml-libyaml))
     (propagated-inputs
-     `(("perl-inline" ,perl-inline)
-       ("perl-parse-recdescent" ,perl-parse-recdescent)
-       ("perl-pegex" ,perl-pegex)))
+     (list perl-inline perl-parse-recdescent perl-pegex))
     (home-page "https://metacpan.org/release/Inline-C")
     (synopsis "C Language Support for Inline")
     (description "The @code{Inline::C} module allows you to write Perl
@@ -5444,8 +5300,7 @@ It also goes a bit into Perl C internals.")
          "0nsd9knlbd7if2v6zwj4q978axq0w5hk8ymp61z14a821hjivqjl"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-file-mimeinfo" ,perl-file-mimeinfo)
-       ("perl-file-readbackwards" ,perl-file-readbackwards)))
+     (list perl-file-mimeinfo perl-file-readbackwards))
     (home-page "https://metacpan.org/release/IO-All")
     (synopsis "@code{IO::All} to Larry Wall!")
     (description "@code{IO::All} combines all of the best Perl IO modules into
@@ -5521,9 +5376,9 @@ and busy().")
                 (which "less")))
              #t)))))
     (propagated-inputs
-     `(("perl-file-which" ,perl-file-which)))
+     (list perl-file-which))
     (inputs
-     `(("less" ,less)))
+     (list less))
     (home-page "https://metacpan.org/release/IO-Pager")
     (synopsis "Select a pager and pipe text to it")
     (description
@@ -5621,7 +5476,7 @@ run interactively.  It also has an option to capture output/error buffers.")
         (base32 "0bvckcs1629ifqfb68xkapd4a74fd5qbg6z9qs8i6rx4z3nxfl1q"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-io-tty" ,perl-io-tty)))
+     (list perl-io-tty))
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (add-before
@@ -5719,7 +5574,7 @@ commands.")
          "0z32x2lijij28c9fhmzgxc41i9nw24fyvd2a8ajs5zw9b9sqhjj4"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-json-xs" ,perl-json-xs))) ;recommended
+     (list perl-json-xs)) ;recommended
     (home-page "https://metacpan.org/release/JSON")
     (synopsis "JSON encoder/decoder for Perl")
     (description "This module converts Perl data structures to JSON and vice
@@ -5740,12 +5595,10 @@ versa using either JSON::XS or JSON::PP.")
          "1hspg6khjb38syn59cysnapc1q77qgavfym3fqr6l2kiydf7ajdf"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-fatal" ,perl-test-fatal)
-       ("perl-test-requires" ,perl-test-requires)
-       ("perl-test-warnings" ,perl-test-warnings)
-       ("perl-test-without-module" ,perl-test-without-module)))
+     (list perl-test-fatal perl-test-requires perl-test-warnings
+           perl-test-without-module))
     (propagated-inputs
-     `(("perl-namespace-clean" ,perl-namespace-clean)))
+     (list perl-namespace-clean))
     (home-page "https://metacpan.org/release/JSON-Any")
     (synopsis "Wrapper for Perl JSON classes")
     (description
@@ -5769,9 +5622,9 @@ installed.")
          "1grg8saa318bs4x2wqnww7y0nra7azrzg35bk5pgvkwxzwbkpvjv"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-needs" ,perl-test-needs)))
+     (list perl-test-needs))
     (inputs
-     `(("perl-cpanel-json-xs" ,perl-cpanel-json-xs)))
+     (list perl-cpanel-json-xs))
     (home-page "https://metacpan.org/release/JSON-MaybeXS")
     (synopsis "Cpanel::JSON::XS with fallback")
     (description "This module first checks to see if either Cpanel::JSON::XS
@@ -5794,10 +5647,9 @@ either uses the first module it finds or throws an error.")
          "0118yrzagwlcfj5yldn3h23zzqs2rx282jlm068nf7fjlvy4m7s7"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-canary-stability" ,perl-canary-stability)))
+     (list perl-canary-stability))
     (propagated-inputs
-     `(("perl-common-sense" ,perl-common-sense)
-       ("perl-types-serialiser" ,perl-types-serialiser)))
+     (list perl-common-sense perl-types-serialiser))
     (home-page "https://metacpan.org/release/JSON-XS")
     (synopsis "JSON serialising/deserialising for Perl")
     (description "This module converts Perl data structures to JSON and vice
@@ -5820,7 +5672,7 @@ versa.")
          "0fh1arpr0hsj7skbn97yfvbk22pfcrpcvcfs15p5ss7g338qx4cy"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)))
+     (list perl-module-build))
     (home-page "https://metacpan.org/release/Lexical-SealRequireHints")
     (synopsis "Prevent leakage of lexical hints")
     (description
@@ -5840,12 +5692,12 @@ versa.")
         (base32 "0z6w3m6f3r29ljicdigsyvpa9w9j2m65l4gjxcw0wgwdll26ngxp"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-html-parser" ,perl-html-parser)
-       ("perl-lingua-en-sentence" ,perl-lingua-en-sentence)
-       ("perl-ppi" ,perl-ppi)
-       ("perl-template-toolkit" ,perl-template-toolkit)
-       ("perl-text-haml" ,perl-text-haml)
-       ("perl-yaml" ,perl-yaml)))
+     (list perl-html-parser
+           perl-lingua-en-sentence
+           perl-ppi
+           perl-template-toolkit
+           perl-text-haml
+           perl-yaml))
     (home-page "https://metacpan.org/release/Locale-Maketext-Lexicon")
     (synopsis "Use other catalog formats in Maketext")
     (description
@@ -5899,8 +5751,7 @@ logging mechanism.")
          "19f1drqnzr6g4xwjm6jk4iaa3zmiax8bzxqch04f4jr12bjd75qi"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-log-any" ,perl-log-any)
-       ("perl-log-log4perl" ,perl-log-log4perl)))
+     (list perl-log-any perl-log-log4perl))
     (home-page
      "https://metacpan.org/release/Log-Any-Adapter-Log4perl")
     (synopsis "Log::Any adapter for Log::Log4perl")
@@ -5946,7 +5797,7 @@ for dealing with messages.")
        "15nxi935nfrf8dkdrgvcrf2qlai4pbz03yj8sja0n9mcq2jd24ma"))))
    (build-system perl-build-system)
    (inputs
-    `(("perl-log-message" ,perl-log-message)))
+    (list perl-log-message))
    (home-page "https://metacpan.org/release/Log-Message-Simple")
    (synopsis "Simplified interface to @code{Log::Message}")
    (description "This package provides a simplified frontend to
@@ -5990,7 +5841,7 @@ widely popular (Java-based) Log4j logging package in pure Perl.")
                 "11ciiaq8vy186m7mzj8pcncwi8p9qp13wblvk427g1pnqjzlda0g"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-string-print" ,perl-string-print)))
+     (list perl-string-print))
     (home-page "https://metacpan.org/release/Log-Report-Optional")
     (synopsis "Log::Report in the lightest form")
     (description
@@ -6015,9 +5866,8 @@ version.")
                 "1jjx1ari3a7ixsyan91b6n7lmjq6dy5223k3x2ah18qbxvw4caap"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-devel-globaldestruction" ,perl-devel-globaldestruction)
-       ("perl-log-report-optional" ,perl-log-report-optional)
-       ("perl-string-print" ,perl-string-print)))
+     (list perl-devel-globaldestruction perl-log-report-optional
+           perl-string-print))
     (home-page "https://metacpan.org/release/Log-Report")
     (synopsis "Get messages to users and logs")
     (description
@@ -6047,7 +5897,7 @@ one: logging, exceptions, and translations.")
                                                (getenv "PERL5LIB")))
              #t)))))
     (propagated-inputs
-     `(("perl-file-sharedir" ,perl-file-sharedir)))
+     (list perl-file-sharedir))
     (home-page "https://metacpan.org/release/libintl-perl")
     (synopsis "High-level interface to Uniforum message translation")
     (description "This package is an internationalization library for Perl
@@ -6068,7 +5918,7 @@ implemented for example in GNU gettext.")
         (base32 "11hlg92khd2azbxndnffsj9lggbxb3lqfdbwc6asr1c9lxlqddms"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)))
+     (list perl-module-build))
     (home-page "https://metacpan.org/release/Lingua-EN-Sentence")
     (synopsis "Split text into sentences")
     (description
@@ -6112,7 +5962,7 @@ tables.  Where possible a reverse transliteration is supported.")
          "0crlxmaa4lsgdjm5p9ib8rdxiy70qj1s68za3q3v57v8ll6s4hfx"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-common-sense" ,perl-common-sense)))
+     (list perl-common-sense))
     (home-page "https://metacpan.org/release/Linux-Inotify2")
     (synopsis "Scalable file change notification")
     (description "This module implements an interface to the Linux 2.6.13 and
@@ -6133,10 +5983,9 @@ later Inotify file change notification system.")
          "1qmfpmly0pghc94k6ifnd1vwzlv8nks27qkqs6h4p7vcricn7zjc"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-warnings" ,perl-test-warnings)))
+     (list perl-test-warnings))
     (propagated-inputs
-     `(("perl-list-moreutils" ,perl-list-moreutils)
-       ("perl-scalar-list-utils" ,perl-scalar-list-utils)))
+     (list perl-list-moreutils perl-scalar-list-utils))
     (home-page "https://metacpan.org/release/List-AllUtils")
     (synopsis "Combination of List::Util and List::MoreUtils")
     (description "This module exports all of the functions that either
@@ -6159,7 +6008,7 @@ List::Util or List::MoreUtils defines, with preference to List::Util.")
          "0l451yqhx1hlm7f2c3bjsl3n8w6l1jngrxzyfm2d8d9iggv4zgzx"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-io-captureoutput" ,perl-io-captureoutput)))
+     (list perl-io-captureoutput))
     (home-page "https://metacpan.org/release/List-Compare")
     (synopsis "Compare elements of two or more lists")
     (description "@code{List::Compare} provides a module to perform
@@ -6190,11 +6039,9 @@ intersections, unions, unique elements, complements and many more.")
                                     (getenv "PERL5LIB")))
              #t)))))
     (native-inputs
-     `(("perl-config-autoconf" ,perl-config-autoconf)
-       ("perl-test-leaktrace" ,perl-test-leaktrace)))
+     (list perl-config-autoconf perl-test-leaktrace))
     (propagated-inputs
-     `(("perl-exporter-tiny" ,perl-exporter-tiny)
-       ("perl-list-moreutils-xs" ,perl-list-moreutils-xs)))
+     (list perl-exporter-tiny perl-list-moreutils-xs))
     (home-page "https://metacpan.org/release/List-MoreUtils")
     (synopsis "Provide the stuff missing in List::Util")
     (description "List::MoreUtils provides some trivial but commonly needed
@@ -6214,9 +6061,7 @@ functionality on lists which is not going to go into List::Util.")
         (base32 "0hmjkhmk1qlzbg8skq7g1zral07k1x0fk4w2fpcfr7hpgkaldkp8"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-config-autoconf" ,perl-config-autoconf)
-       ("perl-inc-latest" ,perl-inc-latest)
-       ("perl-test-leaktrace" ,perl-test-leaktrace)))
+     (list perl-config-autoconf perl-inc-latest perl-test-leaktrace))
     (home-page "https://metacpan.org/release/List-MoreUtils-XS")
     (synopsis "Provide the stuff missing in List::Util in XS")
     (description "@code{List::MoreUtils::XS} provides some trivial but
@@ -6239,11 +6084,9 @@ commonly needed functionality on lists which is not going to go into
         (base32 "1xw9dzg949997b10y6zgzrmhmk2ap274qivnk0wc1033x2fdk9za"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-leaktrace" ,perl-test-leaktrace)))
+     (list perl-test-leaktrace))
     (inputs
-     `(("perl-exporter-tiny" ,perl-exporter-tiny)
-       ("perl-module-implementation"
-        ,perl-module-implementation)))
+     (list perl-exporter-tiny perl-module-implementation))
     (home-page "https://metacpan.org/release/List-SomeUtils")
     (synopsis "Provide the stuff missing in List::Util")
     (description "@code{List::SomeUtils} provides some trivial but commonly
@@ -6272,7 +6115,7 @@ portions of this module couldn't be compiled on this machine.")
          "1js43bp2dnd8n2rv8clsv749166jnyqnc91k4wkkmw5n4rlbvnaa"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-timedate" ,perl-timedate)))
+     (list perl-timedate))
     (home-page
      "https://metacpan.org/release/MailTools")
     (synopsis "Bundle of ancient email modules")
@@ -6435,8 +6278,7 @@ the argument to the CACHESIZE parameter, will be cached.")
         (base32 "05v04kjaz2ya0zaj4m64gzxpfv4vgxhw5n5h12z373gbg9pkvxvp"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-exporter" ,perl-exporter)
-       ("perl-xsloader" ,perl-xsloader)))
+     (list perl-exporter perl-xsloader))
     (home-page "https://metacpan.org/dist/MIME-Base64")
     (synopsis "Encoding and decoding of base64 strings")
     (description "MIME::Base64 module provides functions to encode and decode
@@ -6482,11 +6324,11 @@ MIME messages on Internet.")
          "0wv9rzx5j1wjm01c3dg48qk9wlbm6iyf91j536idk09xj869ymv4"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-deep" ,perl-test-deep)))
+     (list perl-test-deep))
     (inputs
-     `(("perl-convert-binhex" ,perl-convert-binhex)))
+     (list perl-convert-binhex))
     (propagated-inputs
-     `(("perl-mailtools" ,perl-mailtools)))
+     (list perl-mailtools))
     (home-page
      "https://metacpan.org/release/MIME-tools")
     (synopsis "Tools to manipulate MIME messages")
@@ -6530,8 +6372,7 @@ knowledge of Apache.")
                 "1wmfr19w9y8qys7b32mnj1vmps7qwdahqas71a9p62ac8xw0dwkx"))))
     (build-system perl-build-system)
     (inputs
-     `(("perl-perlio-utf8_strict" ,perl-perlio-utf8_strict)
-       ("perl-sub-exporter" ,perl-sub-exporter)))
+     (list perl-perlio-utf8_strict perl-sub-exporter))
     (home-page "https://metacpan.org/release/Mixin-Linewise")
     (synopsis "Write your linewise code for handles; this does the rest")
     (description "It's boring to deal with opening files for IO, converting
@@ -6555,7 +6396,7 @@ file names are added for you.")
         (base32 "1064k29aavabxj8m20b65rxk7qa3mjmzgmrikvdrxasgx378676s"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)))
+     (list perl-module-build))
     (home-page
      "https://metacpan.org/release/Modern-Perl")
     (synopsis
@@ -6578,15 +6419,11 @@ multiple, by now, standard libraries in a Perl program.")
          "077ijxbvamybph4ymamy1i9q2993xb46vf1npxaybjz0mkv0yn3x"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-extutils-installpaths" ,perl-extutils-installpaths)
-       ("perl-extutils-config" ,perl-extutils-config)
-       ("perl-extutils-helpers" ,perl-extutils-helpers)
-       ("perl-test-harness" ,perl-test-harness)))
+     (list perl-extutils-installpaths perl-extutils-config
+           perl-extutils-helpers perl-test-harness))
     (propagated-inputs
-     `(("perl-extutils-installpaths" ,perl-extutils-installpaths)
-       ("perl-extutils-config" ,perl-extutils-config)
-       ("perl-extutils-helpers" ,perl-extutils-helpers)
-       ("perl-test-harness" ,perl-test-harness)))
+     (list perl-extutils-installpaths perl-extutils-config
+           perl-extutils-helpers perl-test-harness))
     (home-page "https://metacpan.org/release/Module-Build-Tiny")
     (synopsis "Tiny replacement for Module::Build")
     (description "Many Perl distributions use a Build.PL file instead of a
@@ -6613,11 +6450,9 @@ has less than 120, yet supports the features needed by most distributions.")
             "0d39fjg9c0n820bk3fb50vvlwhdny4hdl69xmlyzql5xzp4cicsk"))))
     (build-system perl-build-system)
     (native-inputs
-      `(("perl-module-build" ,perl-module-build)))
+      (list perl-module-build))
     (propagated-inputs
-      `(("perl-extutils-cppguess" ,perl-extutils-cppguess)
-        ("perl-extutils-xspp" ,perl-extutils-xspp)
-        ("perl-module-build" ,perl-module-build)))
+      (list perl-extutils-cppguess perl-extutils-xspp perl-module-build))
     (home-page
       "https://metacpan.org/release/Module-Build-WithXSpp")
     (synopsis
@@ -6640,12 +6475,10 @@ processes to make it easier to use for wrapping C++ using XS++
                 "1nrs0b6hmwl3sw3g50b9857qgp5cbbbpl716zwn30h9vwjj2yxhm"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-capture-tiny" ,perl-capture-tiny)
-       ("perl-cwd-guard" ,perl-cwd-guard)
-       ("perl-file-copy-recursive" ,perl-file-copy-recursive)
-       ("perl-module-build" ,perl-module-build)))
+     (list perl-capture-tiny perl-cwd-guard perl-file-copy-recursive
+           perl-module-build))
     (propagated-inputs
-     `(("perl-devel-checkcompiler" ,perl-devel-checkcompiler)))
+     (list perl-devel-checkcompiler))
     (home-page "https://metacpan.org/release/Module-Build-XSUtil")
     (synopsis "Module::Build class for building XS modules")
     (description
@@ -6706,11 +6539,9 @@ subcategories.")
          "0vfngw4dbryihqhi7g9ks360hyw8wnpy3hpkzyg0q4y2y091lpy1"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-fatal" ,perl-test-fatal)
-       ("perl-test-requires" ,perl-test-requires)))
+     (list perl-test-fatal perl-test-requires))
     (propagated-inputs
-     `(("perl-module-runtime" ,perl-module-runtime)
-       ("perl-try-tiny" ,perl-try-tiny)))
+     (list perl-module-runtime perl-try-tiny))
     (home-page "https://metacpan.org/release/Module-Implementation")
     (synopsis "Loads alternate underlying implementations for a module")
     (description "This module abstracts out the process of choosing one of
@@ -6734,19 +6565,19 @@ implementations.")
          "06q12cm97yh4p7qbm0a2p96996ii6ss59qy57z0f7f9svy6sflqs"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-yaml-tiny" ,perl-yaml-tiny)))
+     (list perl-yaml-tiny))
     (propagated-inputs
-     `(("perl-archive-zip" ,perl-archive-zip)
-       ("perl-file-homedir" ,perl-file-homedir)
-       ("perl-file-remove" ,perl-file-remove)
-       ("perl-json" ,perl-json)
-       ;; The LWP::Simple and LWP::UserAgent modules are recommended, but
-       ;; would cause a circular dependency with (gnu packages web), so we
-       ;; leave it out.  It may be resolved at runtime, however.
-       ;("perl-libwww-perl" ,perl-libwww-perl)
-       ("perl-module-scandeps" ,perl-module-scandeps)
-       ("perl-par-dist" ,perl-par-dist)
-       ("perl-yaml-tiny" ,perl-yaml-tiny)))
+     (list perl-archive-zip
+           perl-file-homedir
+           perl-file-remove
+           perl-json
+           ;; The LWP::Simple and LWP::UserAgent modules are recommended, but
+           ;; would cause a circular dependency with (gnu packages web), so we
+           ;; leave it out.  It may be resolved at runtime, however.
+           ;("perl-libwww-perl" ,perl-libwww-perl)
+           perl-module-scandeps
+           perl-par-dist
+           perl-yaml-tiny))
     ;; TODO: One test requires Test::More >= 0.99, another fails with unicode
     ;; character handling.
     (arguments `(#:tests? #f))
@@ -6773,10 +6604,9 @@ installation version 5.005 or newer.")
          "16skpm804a19gsgxzn1wba3lmvc7cx5q8ly4srpyd82yy47zi5d3"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-exception" ,perl-test-exception)
-       ("perl-test-warn" ,perl-test-warn)))
+     (list perl-test-exception perl-test-warn))
     (propagated-inputs
-     `(("perl-params-util" ,perl-params-util)))
+     (list perl-params-util))
     (home-page "https://metacpan.org/release/Module-Manifest")
     (synopsis "Parse and examine a Perl distribution @file{MANIFEST} file")
     (description
@@ -6821,7 +6651,7 @@ examine the contents, and perform some simple tasks.  It can also load the
         (base32
          "097hy2czwkxlppri32m599ph0xfvfsbf0a5y23a4fdc38v32wc38"))))
     (build-system perl-build-system)
-    (native-inputs `(("perl-module-build" ,perl-module-build)))
+    (native-inputs (list perl-module-build))
     (home-page "https://metacpan.org/release/Module-Runtime")
     (synopsis "Perl runtime module handling")
     (description "The functions exported by this module deal with runtime
@@ -6842,10 +6672,9 @@ handling of Perl modules, which are normally handled at compile time.")
          "0x9qfg4pq70v1rl9dfk775fmca7ia308m24vfy8zww4c0dsxqz3h"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)))
+     (list perl-module-build))
     (propagated-inputs
-     `(("perl-module-runtime" ,perl-module-runtime)
-       ("perl-dist-checkconflicts" ,perl-dist-checkconflicts)))
+     (list perl-module-runtime perl-dist-checkconflicts))
     (home-page "https://metacpan.org/release/Module-Runtime-Conflicts")
     (synopsis "Provide information on conflicts for Module::Runtime")
     (description "This module provides conflicts checking for Module::Runtime,
@@ -6867,7 +6696,7 @@ from Moose::Conflicts and moose-outdated.")
          "0j6r9r99x5p0i6fv06i44wpsvjxj32amjkiqf6pmqpj80jff2k7f"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-requires" ,perl-test-requires)))
+     (list perl-test-requires))
     (home-page "https://metacpan.org/release/Module-ScanDeps")
     (synopsis "Recursively scan Perl code for dependencies")
     (description "Module::ScanDeps is a module to recursively scan Perl
@@ -6888,7 +6717,7 @@ programs for dependencies.")
          "1ip2yg3x517gg8c48crhd52ba864vmyimvm0ibn4ci068mmcpyvc"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build))) ; >= 0.40
+     (list perl-module-build)) ; >= 0.40
     (home-page "https://metacpan.org/release/Module-Util")
     (synopsis "Module name tools and transformations")
     (description "This module provides a few useful functions for manipulating
@@ -6911,15 +6740,15 @@ module names to relative paths.")
          "0y9s6s9jjd519wgal6lwc9id4sadrvfn8gjb51dl602d0kk0l7n5"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-fatal" ,perl-test-fatal)))
+     (list perl-test-fatal))
     (propagated-inputs
-     `(("perl-class-method-modifiers" ,perl-class-method-modifiers)
-       ("perl-class-xsaccessor" ,perl-class-xsaccessor)
-       ("perl-devel-globaldestruction" ,perl-devel-globaldestruction)
-       ("perl-import-into" ,perl-import-into)
-       ("perl-module-runtime" ,perl-module-runtime)
-       ("perl-role-tiny" ,perl-role-tiny)
-       ("perl-strictures" ,perl-strictures)))
+     (list perl-class-method-modifiers
+           perl-class-xsaccessor
+           perl-devel-globaldestruction
+           perl-import-into
+           perl-module-runtime
+           perl-role-tiny
+           perl-strictures))
     (home-page "https://metacpan.org/release/Moo")
     (synopsis "Minimalist Object Orientation (with Moose compatibility)")
     (description "Moo is an extremely light-weight Object Orientation system.
@@ -6971,12 +6800,12 @@ Moose and is optimised for rapid startup.")
                 "05gma3q3l15igqrqi8ax8v5cmmvy7s939q3xzs45l1rc7sfx6yd6"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-cpan-meta-check" ,perl-cpan-meta-check)
-       ("perl-dist-checkconflicts" ,perl-dist-checkconflicts)
-       ("perl-test-cleannamespaces" ,perl-test-cleannamespaces)
-       ("perl-test-fatal" ,perl-test-fatal)
-       ("perl-test-requires" ,perl-test-requires)
-       ("perl-test-warnings" ,perl-test-warnings)))
+     (list perl-cpan-meta-check
+           perl-dist-checkconflicts
+           perl-test-cleannamespaces
+           perl-test-fatal
+           perl-test-requires
+           perl-test-warnings))
     ;; XXX::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     ;; # === Other Modules ===
     ;; #
@@ -7004,28 +6833,28 @@ Moose and is optimised for rapid startup.")
     ;; #     Test::Output                  any missing
     ;; #     URI                           any missing
     (propagated-inputs
-     `(("perl-class-load" ,perl-class-load)
-       ("perl-class-load-xs" ,perl-class-load-xs)
-       ("perl-data-optlist" ,perl-data-optlist)
-       ("perl-devel-globaldestruction" ,perl-devel-globaldestruction)
-       ("perl-devel-overloadinfo" ,perl-devel-overloadinfo)
-       ("perl-devel-partialdump" ,perl-devel-partialdump)
-       ("perl-devel-stacktrace" ,perl-devel-stacktrace)
-       ("perl-dist-checkconflicts" ,perl-dist-checkconflicts)
-       ("perl-eval-closure" ,perl-eval-closure)
-       ("perl-list-moreutils" ,perl-list-moreutils)
-       ("perl-module-runtime" ,perl-module-runtime)
-       ("perl-module-runtime-conflicts" ,perl-module-runtime-conflicts)
-       ("perl-mro-compat" ,perl-mro-compat)
-       ("perl-package-deprecationmanager" ,perl-package-deprecationmanager)
-       ("perl-package-stash" ,perl-package-stash)
-       ("perl-package-stash-xs" ,perl-package-stash-xs)
-       ("perl-params-util" ,perl-params-util)
-       ("perl-scalar-list-utils" ,perl-scalar-list-utils)
-       ("perl-sub-exporter" ,perl-sub-exporter)
-       ("perl-sub-name" ,perl-sub-name)
-       ("perl-task-weaken" ,perl-task-weaken)
-       ("perl-try-tiny" ,perl-try-tiny)))
+     (list perl-class-load
+           perl-class-load-xs
+           perl-data-optlist
+           perl-devel-globaldestruction
+           perl-devel-overloadinfo
+           perl-devel-partialdump
+           perl-devel-stacktrace
+           perl-dist-checkconflicts
+           perl-eval-closure
+           perl-list-moreutils
+           perl-module-runtime
+           perl-module-runtime-conflicts
+           perl-mro-compat
+           perl-package-deprecationmanager
+           perl-package-stash
+           perl-package-stash-xs
+           perl-params-util
+           perl-scalar-list-utils
+           perl-sub-exporter
+           perl-sub-name
+           perl-task-weaken
+           perl-try-tiny))
     (home-page "https://metacpan.org/release/Moose")
     (synopsis "Postmodern object system for Perl 5")
     (description
@@ -7052,10 +6881,9 @@ sentences.")
         (base32 "153r30nggcyyx7ai15dbnba2h5145f8jdsh6wj54298d3zpvgvl2"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-install" ,perl-module-install)
-       ("perl-test-exception" ,perl-test-exception)))
+     (list perl-module-install perl-test-exception))
     (propagated-inputs
-     `(("perl-moose" ,perl-moose)))
+     (list perl-moose))
     (home-page "https://metacpan.org/release/MooseX-Emulate-Class-Accessor-Fast")
     (synopsis "Emulate Class::Accessor::Fast behavior using Moose attributes")
     (description "This module attempts to emulate the behavior of
@@ -7077,20 +6905,18 @@ private methods are not.")
         (base32 "1j7b2jnf0blxr4czp3vfcnv1h5zj601mrfdm92g1wf5wn9dvxwv3"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)
-       ("perl-module-build-tiny" ,perl-module-build-tiny)
-       ("perl-path-tiny" ,perl-path-tiny)
-       ("perl-test-deep" ,perl-test-deep)
-       ("perl-test-fatal" ,perl-test-fatal)
-       ("perl-test-needs" ,perl-test-needs)
-       ("perl-test-requires" ,perl-test-requires)
-       ("perl-test-trap" ,perl-test-trap)
-       ("perl-test-warnings" ,perl-test-warnings)))
+     (list perl-module-build
+           perl-module-build-tiny
+           perl-path-tiny
+           perl-test-deep
+           perl-test-fatal
+           perl-test-needs
+           perl-test-requires
+           perl-test-trap
+           perl-test-warnings))
     (propagated-inputs
-     `(("perl-getopt-long-descriptive" ,perl-getopt-long-descriptive)
-       ("perl-moose" ,perl-moose)
-       ("perl-moosex-role-parameterized" ,perl-moosex-role-parameterized)
-       ("perl-namespace-autoclean" ,perl-namespace-autoclean)))
+     (list perl-getopt-long-descriptive perl-moose
+           perl-moosex-role-parameterized perl-namespace-autoclean))
     (home-page "https://metacpan.org/release/MooseX-Getopt")
     (synopsis "Moose role for processing command line options")
     (description "This is a Moose role which provides an alternate constructor
@@ -7111,8 +6937,7 @@ for creating objects using parameters passed in from the command line.")
          "1y3yxwcjjajm66pvca54cv9fax7a6dy36xqr92x7vzyhfqrw3v69"))))
     (build-system perl-build-system)
     (inputs
-     `(("perl-moose" ,perl-moose)
-       ("perl-namespace-autoclean" ,perl-namespace-autoclean)))
+     (list perl-moose perl-namespace-autoclean))
     (home-page "https://metacpan.org/release/MooseX-MarkAsMethods")
     (synopsis "Mark overload code symbols as methods")
     (description "MooseX::MarkAsMethods allows one to easily mark certain
@@ -7137,13 +6962,9 @@ overloads will \"just work\".")
          "1whd10w7bm3dwaj7gpgw40bci9vvb2zmxs4349ifji91hvinwqck"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build-tiny" ,perl-module-build-tiny)
-       ("perl-test-fatal" ,perl-test-fatal)
-       ("perl-test-requires" ,perl-test-requires)))
+     (list perl-module-build-tiny perl-test-fatal perl-test-requires))
     (propagated-inputs
-     `(("perl-moose" ,perl-moose)
-       ("perl-moosex-types" ,perl-moosex-types)
-       ("perl-namespace-autoclean" ,perl-namespace-autoclean)))
+     (list perl-moose perl-moosex-types perl-namespace-autoclean))
     (home-page "https://metacpan.org/release/MooseX-MethodAttributes")
     (synopsis "Code attribute introspection")
     (description "This module allows code attributes of methods to be
@@ -7164,13 +6985,10 @@ introspected using Moose meta method objects.")
           "0zdaiphc45s5xj0ax5mkijf5d8v6w6yccb3zplgj6f30y7n55gnb"))))
   (build-system perl-build-system)
   (native-inputs
-    `(("perl-moose" ,perl-moose)
-      ("perl-test-fatal" ,perl-test-fatal)))
+    (list perl-moose perl-test-fatal))
   (propagated-inputs
-    `(("perl-list-moreutils" ,perl-list-moreutils)
-      ("perl-module-runtime" ,perl-module-runtime)
-      ("perl-moose" ,perl-moose)
-      ("perl-try-tiny" ,perl-try-tiny)))
+    (list perl-list-moreutils perl-module-runtime perl-moose
+          perl-try-tiny))
   (home-page "https://metacpan.org/release/MooseX-NonMoose")
   (synopsis "Subclassing of non-Moose classes")
   (description "MooseX::NonMoose allows for easily subclassing non-Moose
@@ -7193,13 +7011,10 @@ BUILD methods are called.  It tries to be as non-intrusive as possible.")
         (base32 "1n9ry6gnskkp9ir6s7d5jirn3mh14ydgpmwqz6wcp6d9md358ac8"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-moose" ,perl-moose)
-       ("perl-test-fatal" ,perl-test-fatal)))
+     (list perl-moose perl-test-fatal))
     (propagated-inputs
-     `(("perl-devel-caller" ,perl-devel-caller)
-       ("perl-moose" ,perl-moose)
-       ("perl-params-validate" ,perl-params-validate)
-       ("perl-sub-exporter" ,perl-sub-exporter)))
+     (list perl-devel-caller perl-moose perl-params-validate
+           perl-sub-exporter))
     (home-page "https://metacpan.org/release/MooseX-Params-Validate")
     (synopsis "Extension of Params::Validate using Moose's types")
     (description "This module fills a gap in Moose by adding method parameter
@@ -7220,8 +7035,7 @@ validation to Moose.")
          "17vynkf6m5d039qkr4in1c9lflr8hnwp1fgzdwhj4q6jglipmnrh"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-moose" ,perl-moose)
-       ("perl-moosex-role-parameterized" ,perl-moosex-role-parameterized)))
+     (list perl-moose perl-moosex-role-parameterized))
     (home-page "https://metacpan.org/release/MooseX-RelatedClassRoles")
     (synopsis "Apply roles to a related Perl class")
     (description "This module applies roles to make a subclass instead of
@@ -7241,14 +7055,11 @@ manually setting up a subclass.")
         (base32 "0plx25n80mv9qwhix52z79md0qil616nbcryk2f4216kghpw2ij8"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-cpan-meta-check" ,perl-cpan-meta-check)
-       ("perl-module-build" ,perl-module-build)
-       ("perl-moosex-role-withoverloading" ,perl-moosex-role-withoverloading)
-       ("perl-test-fatal" ,perl-test-fatal)
-       ("perl-test-requires" ,perl-test-requires)))
+     (list perl-cpan-meta-check perl-module-build
+           perl-moosex-role-withoverloading perl-test-fatal
+           perl-test-requires))
     (propagated-inputs
-     `(("perl-moose" ,perl-moose)
-       ("perl-namespace-autoclean" ,perl-namespace-autoclean)))
+     (list perl-moose perl-namespace-autoclean))
     (home-page "https://metacpan.org/release/MooseX-Role-Parameterized")
     (synopsis "Moose roles with composition parameters")
     (description "Because Moose roles serve many different masters, they
@@ -7273,9 +7084,7 @@ Parameterized roles offer a solution to these (and other) kinds of problems.")
          "0rb8k0dp1a55bm2pr6r0vsi5msvjl1dslfidxp1gj80j7zbrbc4j"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-aliased" ,perl-aliased)
-       ("perl-moose" ,perl-moose)
-       ("perl-namespace-autoclean" ,perl-namespace-autoclean)))
+     (list perl-aliased perl-moose perl-namespace-autoclean))
     (home-page "https://metacpan.org/release/MooseX-Role-WithOverloading")
     (synopsis "Roles which support overloading")
     (description "MooseX::Role::WithOverloading allows you to write a
@@ -7298,7 +7107,7 @@ where plain Moose::Roles would lose the overloading.")
          "1mdil9ckgmgr78z59p8wfa35ixn5855ndzx14y01dvfxpiv5gf55"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-moose" ,perl-moose)))
+     (list perl-moose))
     (home-page "https://metacpan.org/release/MooseX-SemiAffordanceAccessor")
     (synopsis "Name your accessors foo() and set_foo()")
     (description "This module does not provide any methods.  Simply loading it
@@ -7321,11 +7130,9 @@ accessor, while set methods are prefixed with \"_set_\".")
          "0ccawja1kabgglrkdw5v82m1pbw189a0mnd33l43rs01d70p6ra8"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-moose" ,perl-moose)
-       ("perl-test-fatal" ,perl-test-fatal)))
+     (list perl-moose perl-test-fatal))
     (propagated-inputs
-     `(("perl-moose" ,perl-moose)
-       ("perl-namespace-autoclean" ,perl-namespace-autoclean)))
+     (list perl-moose perl-namespace-autoclean))
     (home-page "https://metacpan.org/release/MooseX-StrictConstructor")
     (synopsis "Strict object constructors for Moose")
     (description "Simply loading this module makes your constructors
@@ -7347,13 +7154,10 @@ that your class does not declare, then it calls Moose->throw_error().")
          "1jjqmcidy4kdgp5yffqqwxrsab62mbhbpvnzdy1rpwnb1savg5mb"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-moose" ,perl-moose)
-       ("perl-test-exception" ,perl-test-exception)))
+     (list perl-moose perl-test-exception))
     (propagated-inputs
-     `(("perl-class-load" ,perl-class-load)
-       ("perl-list-moreutils" ,perl-list-moreutils)
-       ("perl-moose" ,perl-moose)
-       ("perl-namespace-autoclean" ,perl-namespace-autoclean)))
+     (list perl-class-load perl-list-moreutils perl-moose
+           perl-namespace-autoclean))
     (home-page
      "https://metacpan.org/release/MooseX-Traits-Pluggable")
     (synopsis "Trait loading and resolution for Moose")
@@ -7375,13 +7179,9 @@ search for traits and some extra attributes.")
          "1iq90s1f0xbmr194q0mhnp9wxqxwwilkbdml040ibqbqvfiz87yh"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)
-       ("perl-test-fatal" ,perl-test-fatal)
-       ("perl-test-requires" ,perl-test-requires)))
+     (list perl-module-build perl-test-fatal perl-test-requires))
     (propagated-inputs
-     `(("perl-carp-clan" ,perl-carp-clan)
-       ("perl-moose" ,perl-moose)
-       ("perl-namespace-autoclean" ,perl-namespace-autoclean)))
+     (list perl-carp-clan perl-moose perl-namespace-autoclean))
     (home-page "https://metacpan.org/release/MooseX-Types")
     (synopsis "Organise your Moose types in libraries")
     (description "This package lets you declare types using short names, but
@@ -7403,17 +7203,15 @@ prevent name clashes between packages.")
          "1iir3mdvz892kbbs2q91vjxnhas7811m3d3872m7x8gn6rka57xq"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build-tiny" ,perl-module-build-tiny)
-       ("perl-moose" ,perl-moose)
-       ("perl-test-fatal" ,perl-test-fatal)
-       ("perl-test-simple" ,perl-test-simple)))
+     (list perl-module-build-tiny perl-moose perl-test-fatal
+           perl-test-simple))
     (propagated-inputs
-     `(("perl-datetime" ,perl-datetime)
-       ("perl-datetime-locale" ,perl-datetime-locale)
-       ("perl-datetime-timezone" ,perl-datetime-timezone)
-       ("perl-moose" ,perl-moose)
-       ("perl-moosex-types" ,perl-moosex-types)
-       ("perl-namespace-clean" ,perl-namespace-clean)))
+     (list perl-datetime
+           perl-datetime-locale
+           perl-datetime-timezone
+           perl-moose
+           perl-moosex-types
+           perl-namespace-clean))
     (home-page "https://metacpan.org/release/MooseX-Types-DateTime")
     (synopsis "DateTime related constraints and coercions for Moose")
     (description "This module packages several Moose::Util::TypeConstraints
@@ -7434,17 +7232,15 @@ with coercions, designed to work with the DateTime suite of objects.")
         (base32 "15ip1rgaana2p4vww355jb5jxyawim0k58gadkdqx20rfxckmfr1"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build-tiny" ,perl-module-build-tiny)
-       ("perl-test-fatal" ,perl-test-fatal)
-       ("perl-test-simple" ,perl-test-simple)))
+     (list perl-module-build-tiny perl-test-fatal perl-test-simple))
     (propagated-inputs
-     `(("perl-datetime" ,perl-datetime)
-       ("perl-datetimex-easy" ,perl-datetimex-easy)
-       ("perl-moose" ,perl-moose)
-       ("perl-moosex-types" ,perl-moosex-types)
-       ("perl-moosex-types-datetime" ,perl-moosex-types-datetime)
-       ("perl-namespace-clean" ,perl-namespace-clean)
-       ("perl-time-duration-parse" ,perl-time-duration-parse)))
+     (list perl-datetime
+           perl-datetimex-easy
+           perl-moose
+           perl-moosex-types
+           perl-moosex-types-datetime
+           perl-namespace-clean
+           perl-time-duration-parse))
     (home-page
      "https://metacpan.org/release/MooseX-Types-DateTime-MoreCoercions")
     (synopsis "Extensions to MooseX::Types::DateTime")
@@ -7466,15 +7262,10 @@ all coercions and constraints are inherited.")
         (base32 "1x1vb96hcrd96bzs73w0lb04jr0fvax1ams38qlzkp2kh9vx6dz0"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build-tiny" ,perl-module-build-tiny)
-       ("perl-namespace-clean" ,perl-namespace-clean)
-       ("perl-moose" ,perl-moose)
-       ("perl-test-fatal" ,perl-test-fatal)
-       ("perl-class-load" ,perl-class-load)))
+     (list perl-module-build-tiny perl-namespace-clean perl-moose
+           perl-test-fatal perl-class-load))
     (propagated-inputs
-     `(("perl-module-runtime" ,perl-module-runtime)
-       ("perl-moosex-types" ,perl-moosex-types)
-       ("perl-namespace-autoclean" ,perl-namespace-autoclean)))
+     (list perl-module-runtime perl-moosex-types perl-namespace-autoclean))
     (home-page "https://metacpan.org/release/MooseX-Types-LoadableClass")
     (synopsis "ClassName type constraints for Moose")
     (description "MooseX::Types::LoadableClass provides a ClassName type
@@ -7497,10 +7288,8 @@ constraint with coercion to load the class.")
          "1m9jvrqcidiabdih211byadwnnkygafq54r2ljnf1akqdrjimy9g"))))
     (build-system perl-build-system)
     (inputs
-     `(("perl-data-optlist" ,perl-data-optlist)
-       ("perl-import-into" ,perl-import-into)
-       ("perl-module-runtime" ,perl-module-runtime)
-       ("perl-moo" ,perl-moo)))
+     (list perl-data-optlist perl-import-into perl-module-runtime
+           perl-moo))
     (home-page "https://metacpan.org/release/MooX")
     (synopsis
      "Using Moo and MooX:: packages the most lazy way")
@@ -7520,15 +7309,14 @@ constraint with coercion to load the class.")
         (base32 "1xbhmq07v9z371ygkyghva9aryhc22kwbzn5qwkp72c0ma6z4gwl"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-capture-tiny" ,perl-capture-tiny)
-       ("perl-list-moreutils" ,perl-list-moreutils)))
+     (list perl-capture-tiny perl-list-moreutils))
     (propagated-inputs
-     `(("perl-module-pluggable" ,perl-module-pluggable)
-       ("perl-module-runtime" ,perl-module-runtime)
-       ("perl-moo" ,perl-moo)
-       ("perl-package-stash" ,perl-package-stash)
-       ("perl-params-util" ,perl-params-util)
-       ("perl-regexp-common" ,perl-regexp-common)))
+     (list perl-module-pluggable
+           perl-module-runtime
+           perl-moo
+           perl-package-stash
+           perl-params-util
+           perl-regexp-common))
     (home-page "https://metacpan.org/release/MooX-Cmd")
     (synopsis "Giving an easy Moo style way to make command organized CLI apps")
     (description "This package eases the writing of command line utilities,
@@ -7552,17 +7340,15 @@ most specific one) is instantiated.")
          "1zrpz4mzngnhaap6988is0w0aarilfj4kb1yc8hvfqna69lywac0"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-hash-merge" ,perl-hash-merge)
-       ("perl-json" ,perl-json)
-       ("perl-moox-cmd" ,perl-moox-cmd)))
+     (list perl-hash-merge perl-json perl-moox-cmd))
     (propagated-inputs
-     `(("perl-config-any" ,perl-config-any)
-       ("perl-file-configdir" ,perl-file-configdir)
-       ("perl-file-find-rule" ,perl-file-find-rule)
-       ("perl-hash-merge" ,perl-hash-merge)
-       ("perl-moo" ,perl-moo)
-       ("perl-moox-file-configdir" ,perl-moox-file-configdir)
-       ("perl-namespace-clean" ,perl-namespace-clean)))
+     (list perl-config-any
+           perl-file-configdir
+           perl-file-find-rule
+           perl-hash-merge
+           perl-moo
+           perl-moox-file-configdir
+           perl-namespace-clean))
     (home-page "https://metacpan.org/release/MooX-ConfigFromFile")
     (synopsis "Moo eXtension for initializing objects from config file")
     (description "This module is intended to easily load initialization values
@@ -7584,9 +7370,7 @@ building is done in @code{MooX::ConfigFromFile::Role}---using
         (base32 "1b033injzk9d8clgip67ps5j5bpkrnag28q89ddwhrgqx12i3m7q"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-file-configdir" ,perl-file-configdir)
-       ("perl-moo" ,perl-moo)
-       ("perl-namespace-clean" ,perl-namespace-clean)))
+     (list perl-file-configdir perl-moo perl-namespace-clean))
     (home-page "https://metacpan.org/release/MooX-File-ConfigDir")
     (synopsis "Moo eXtension for @code{File::ConfigDir}")
     (description "This module is a helper for easily finding configuration
@@ -7609,18 +7393,12 @@ installing configuration files or for finding any piece of settings.")
         (base32 "04kcyflg49rclxa1nm035c05jpyvhdacjyy1wklbgv4li3im6qvi"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-moox-types-mooselike"
-        ,perl-moox-types-mooselike)
-       ("perl-test-exception" ,perl-test-exception)
-       ("perl-test-fatal" ,perl-test-fatal)))
+     (list perl-moox-types-mooselike perl-test-exception perl-test-fatal))
     (inputs
-     `(("perl-class-method-modifiers"
-        ,perl-class-method-modifiers)
-       ("perl-module-runtime" ,perl-module-runtime)
-       ("perl-moo" ,perl-moo)
-       ("perl-role-tiny" ,perl-role-tiny)))
+     (list perl-class-method-modifiers perl-module-runtime perl-moo
+           perl-role-tiny))
     (propagated-inputs
-     `(("perl-data-perl" ,perl-data-perl)))
+     (list perl-data-perl))
     (home-page
      "https://metacpan.org/release/MooX-HandlesVia")
     (synopsis "NativeTrait-like behavior for Moo")
@@ -7644,14 +7422,11 @@ an external class to the given attribute.")
         (base32 "0kjy86rrpzfy6w5r9ykjq7njwdnvp7swd6r2k4gfrh3picz3kdhz"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-fatal" ,perl-test-fatal)
-       ("perl-test-requires" ,perl-test-requires)))
+     (list perl-test-fatal perl-test-requires))
     (inputs
-     `(("perl-moo" ,perl-moo)
-       ("perl-moox" ,perl-moox)
-       ("perl-moox-handlesvia" ,perl-moox-handlesvia)))
+     (list perl-moo perl-moox perl-moox-handlesvia))
     (propagated-inputs
-     `(("perl-type-tiny" ,perl-type-tiny)))
+     (list perl-type-tiny))
     (home-page "https://metacpan.org/release/MooX-late")
     (synopsis "Easily translate Moose code to Moo")
     (description
@@ -7681,34 +7456,34 @@ MooX::HandlesVia.
          "14kz51hybxx8vcm4wg36f0qa64aainw7i2sqmqxg20c3qvczyvj2"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-capture-tiny" ,perl-capture-tiny)
-       ("perl-import-into" ,perl-import-into)
-       ("perl-module-build" ,perl-module-build)
-       ("perl-moo" ,perl-moo)
-       ("perl-moose" ,perl-moose)
-       ("perl-moox-cmd" ,perl-moox-cmd)
-       ("perl-namespace-clean" ,perl-namespace-clean)
-       ("perl-role-tiny" ,perl-role-tiny)
-       ("perl-test-requires" ,perl-test-requires)
-       ("perl-test-trap" ,perl-test-trap)
-       ("perl-test-pod" ,perl-test-pod)
-       ("perl-try-tiny" ,perl-try-tiny)))
+     (list perl-capture-tiny
+           perl-import-into
+           perl-module-build
+           perl-moo
+           perl-moose
+           perl-moox-cmd
+           perl-namespace-clean
+           perl-role-tiny
+           perl-test-requires
+           perl-test-trap
+           perl-test-pod
+           perl-try-tiny))
     (propagated-inputs
-     `(("perl-config-any" ,perl-config-any)
-       ("perl-moox-configfromfile" ,perl-moox-configfromfile)
-       ("perl-data-record" ,perl-data-record)
-       ("perl-file-configdir" ,perl-file-configdir)
-       ("perl-file-find-rule" ,perl-file-find-rule)
-       ("perl-file-sharedir" ,perl-file-sharedir)
-       ("perl-getopt-long-descriptive" ,perl-getopt-long-descriptive)
-       ("perl-json-maybexs" ,perl-json-maybexs)
-       ("perl-libintl-perl" ,perl-libintl-perl)
-       ("perl-moox-configfromfile" ,perl-moox-configfromfile)
-       ("perl-moox-file-configdir" ,perl-moox-file-configdir)
-       ("perl-path-class" ,perl-path-class)
-       ("perl-regexp-common" ,perl-regexp-common)
-       ("perl-term-size-any" ,perl-term-size-any)
-       ("perl-unicode-linebreak" ,perl-unicode-linebreak)))
+     (list perl-config-any
+           perl-moox-configfromfile
+           perl-data-record
+           perl-file-configdir
+           perl-file-find-rule
+           perl-file-sharedir
+           perl-getopt-long-descriptive
+           perl-json-maybexs
+           perl-libintl-perl
+           perl-moox-configfromfile
+           perl-moox-file-configdir
+           perl-path-class
+           perl-regexp-common
+           perl-term-size-any
+           perl-unicode-linebreak))
     (home-page "https://metacpan.org/release/MooX-Options")
     (synopsis "Explicit Options eXtension for Object Class")
     (description "Create a command line tool with your Mo, Moo, Moose objects.
@@ -7734,11 +7509,9 @@ generate a command line tool.")
           "0vvjgz7xbfmf69yav7sxsxmvklqv835xvh7h47w0apxmlkm9fjgr"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-fatal" ,perl-test-fatal)))
+     (list perl-test-fatal))
     (propagated-inputs
-     `(("perl-class-method-modifiers" ,perl-class-method-modifiers)
-       ("perl-moo" ,perl-moo)
-       ("perl-strictures" ,perl-strictures)))
+     (list perl-class-method-modifiers perl-moo perl-strictures))
     (home-page "https://metacpan.org/release/MooX-StrictConstructor")
     (synopsis "Make Moo-based object constructors blow up on unknown attributes")
     (description
@@ -7760,11 +7533,9 @@ does not declare, then it dies.")
         (base32 "1d6jg9x3p7gm2r0xmbcag374a44gf5pcga2swvxhlhzakfm80dqx"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-moo" ,perl-moo)
-       ("perl-test-fatal" ,perl-test-fatal)))
+     (list perl-moo perl-test-fatal))
     (propagated-inputs
-     `(("perl-module-runtime" ,perl-module-runtime)
-       ("perl-strictures" ,perl-strictures)))
+     (list perl-module-runtime perl-strictures))
     (home-page "https://metacpan.org/release/MooX-Types-MooseLike")
     (synopsis "Moosish types and type builder")
     (description "MooX::Types::MooseLike provides a possibility to build your
@@ -7787,14 +7558,14 @@ fields in Moo-based classes.")
               "1vijm8wkyws1jhnqmx104585q3srw9z1crcpy1zlcfhm8qww53ff"))))
   (build-system perl-build-system)
   (native-inputs
-   `(("perl-module-build" ,perl-module-build)
-     ("perl-module-build-xsutil" ,perl-module-build-xsutil)
-     ("perl-test-exception" ,perl-test-exception)
-     ("perl-test-fatal" ,perl-test-fatal)
-     ("perl-test-leaktrace" ,perl-test-leaktrace)
-     ("perl-test-output" ,perl-test-output)
-     ("perl-test-requires" ,perl-test-requires)
-     ("perl-try-tiny" ,perl-try-tiny)))
+   (list perl-module-build
+         perl-module-build-xsutil
+         perl-test-exception
+         perl-test-fatal
+         perl-test-leaktrace
+         perl-test-output
+         perl-test-requires
+         perl-try-tiny))
   (home-page "https://github.com/gfx/p5-Mouse")
   (synopsis "Fast Moose-compatible object system for perl5")
   (description
@@ -7815,11 +7586,9 @@ subset of the functionality for reduced startup time.")
                 "0pnbchkxfz9fwa8sniyjqp0mz75b3k2fafq9r09znbbh51dbz9gq"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-any-moose" ,perl-any-moose)
-       ("perl-module-install" ,perl-module-install)
-       ("perl-test-fatal" ,perl-test-fatal)))
+     (list perl-any-moose perl-module-install perl-test-fatal))
     (propagated-inputs
-     `(("perl-mouse" ,perl-mouse)))
+     (list perl-mouse))
     (home-page "https://metacpan.org/release/MouseX-NativeTraits")
     (synopsis "Extend attribute interfaces for Mouse")
     (description
@@ -7864,11 +7633,9 @@ and libraries based on OpenSSL.")
          "0prchsg547ziysjl8ghiid6ph3m2xnwpsrwrjymibga7fhqi9sqj"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-b-hooks-op-check" ,perl-b-hooks-op-check)
-       ("perl-extutils-depends" ,perl-extutils-depends)))
+     (list perl-b-hooks-op-check perl-extutils-depends))
     (propagated-inputs
-     `(("perl-b-hooks-op-check" ,perl-b-hooks-op-check)
-       ("perl-lexical-sealrequirehints" ,perl-lexical-sealrequirehints)))
+     (list perl-b-hooks-op-check perl-lexical-sealrequirehints))
     (home-page "https://metacpan.org/release/multidimensional")
     (synopsis "Disable multidimensional array emulation")
     (description
@@ -7909,12 +7676,9 @@ Perl (back to 5.6.0).")
         (base32 "012qqs561xyyhm082znmzsl8lz4n299fa6p0v246za2l9bkdiss5"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)
-       ("perl-test-needs" ,perl-test-needs)))
+     (list perl-module-build perl-test-needs))
     (propagated-inputs
-     `(("perl-b-hooks-endofscope" ,perl-b-hooks-endofscope)
-       ("perl-namespace-clean" ,perl-namespace-clean)
-       ("perl-sub-identify" ,perl-sub-identify)))
+     (list perl-b-hooks-endofscope perl-namespace-clean perl-sub-identify))
     (home-page "https://metacpan.org/release/namespace-autoclean")
     (synopsis "Keep imports out of your namespace")
     (description "The namespace::autoclean pragma will remove all imported
@@ -7940,8 +7704,7 @@ anything that looks like a method.")
          "17dg64pd4bwi2ad3p8ykwys1zha7kg8a8ykvks7wfg8q7qyah44a"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-package-stash" ,perl-package-stash)
-       ("perl-b-hooks-endofscope" ,perl-b-hooks-endofscope)))
+     (list perl-package-stash perl-b-hooks-endofscope))
     (home-page "https://metacpan.org/release/namespace-clean")
     (synopsis "Keep imports and functions out of your namespace")
     (description "The namespace::clean pragma will remove all previously
@@ -8011,8 +7774,7 @@ system threads instead of Perl threads.")
         (base32 "1aiy7adirk3wpwlczd8sldi9k1dray0jrg1lbcrcw97zwcrkciam"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)
-       ("perl-test-nowarnings" ,perl-test-nowarnings)))
+     (list perl-module-build perl-test-nowarnings))
     (home-page "https://metacpan.org/release/Net-IDN-Encode")
     (synopsis "Internationalizing Domain Names in Applications (IDNA)")
     (description
@@ -8123,7 +7885,7 @@ number exists in a given range, and to be able to manipulate the range.")
         (base32 "12k90c19ly93ib1p6sm3k7sbnr2h5dbywkdmnff2ngm99p4m68c4"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-install" ,perl-module-install)))
+     (list perl-module-install))
     (home-page "https://metacpan.org/release/Object-Signature")
     (synopsis "Generate cryptographic signatures for objects")
     (description "Object::Signature is an abstract base class that you can
@@ -8169,9 +7931,7 @@ documents within a single file.")
           (base32
             "1q3lz168q081iwl9jg21fbzhp9la79gav9mv6nmh2jab83s2l3mj"))))
     (build-system perl-build-system)
-    (inputs `(("freeglut" ,freeglut)
-              ("libxi" ,libxi)
-              ("libxmu" ,libxmu)))
+    (inputs (list freeglut libxi libxmu))
     (arguments
      '(#:tests? #f ; test.pl fails with our empty glversion.txt, while
                    ; the package still seems to work on the examples
@@ -8226,8 +7986,7 @@ and FreeGLUT.")
          "1fj1fakkfklf2iwzsl64vfgshya3jgm6vhxiphw12wlac9g2il0m"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-sub-exporter" ,perl-sub-exporter)
-       ("perl-params-util" ,perl-params-util)))
+     (list perl-sub-exporter perl-params-util))
     (home-page "https://metacpan.org/release/Package-Anon")
     (synopsis "Anonymous packages")
     (description "This module allows for anonymous packages that are
@@ -8249,13 +8008,9 @@ instance, not by name.")
          "0jv8svfh1c1q4vxlkf8vjfbdq3n2sj3nx5llv1qrhp1b93d3lx0x"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-fatal" ,perl-test-fatal)
-       ("perl-test-requires" ,perl-test-requires)
-       ("perl-test-output" ,perl-test-output)))
+     (list perl-test-fatal perl-test-requires perl-test-output))
     (propagated-inputs
-     `(("perl-list-moreutils" ,perl-list-moreutils)
-       ("perl-params-util" ,perl-params-util)
-       ("perl-sub-install" ,perl-sub-install)))
+     (list perl-list-moreutils perl-params-util perl-sub-install))
     (arguments `(#:tests? #f))          ;XXX: Failing for some reason...
     (home-page "https://metacpan.org/release/Package-DeprecationManager")
     (synopsis "Manage deprecation warnings for your distribution")
@@ -8276,14 +8031,11 @@ one or more modules.")
         (base32 "0zrs4byhlpq5ybnl0fd3y6pfzair6i2dyvzn7f7a7pgj9n2fi3n5"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-dist-checkconflicts" ,perl-dist-checkconflicts)
-       ("perl-test-fatal" ,perl-test-fatal)
-       ("perl-test-requires" ,perl-test-requires)
-       ("perl-package-anon" ,perl-package-anon)))
+     (list perl-dist-checkconflicts perl-test-fatal perl-test-requires
+           perl-package-anon))
     (propagated-inputs
-     `(("perl-module-implementation" ,perl-module-implementation)
-       ("perl-dist-checkconflicts" ,perl-dist-checkconflicts)
-       ("perl-package-stash-xs" ,perl-package-stash-xs)))
+     (list perl-module-implementation perl-dist-checkconflicts
+           perl-package-stash-xs))
     (home-page "https://metacpan.org/release/Package-Stash")
     (synopsis "Routines for manipulating stashes")
     (description "Manipulating stashes (Perl's symbol tables) is occasionally
@@ -8304,9 +8056,7 @@ of that behind a simple API.")
         (base32 "1akqk10qxwk798qppajqbczwmhy4cs9g0lg961m3vq218slnnryk"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-fatal" ,perl-test-fatal)
-       ("perl-test-requires" ,perl-test-requires)
-       ("perl-package-anon" ,perl-package-anon)))
+     (list perl-test-fatal perl-test-requires perl-package-anon))
     (home-page "https://metacpan.org/release/Package-Stash-XS")
     (synopsis "Faster implementation of the Package::Stash API")
     (description "This is a backend for Package::Stash, which provides the
@@ -8351,7 +8101,7 @@ is particularly useful for debugging.")
          "0wm4wp6p3ah5z212jl12728z68nmxmfr0f03z1jpvdzffnc2xppi"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-warn" ,perl-test-warn)))
+     (list perl-test-warn))
     (home-page "https://metacpan.org/release/Parallel-ForkManager")
     (synopsis "Simple parallel processing fork manager")
     (description "@code{Parallel::ForkManager} is intended for use in
@@ -8374,11 +8124,9 @@ processes to be forked off should be limited.")
         "052r198xyrsv8wz21gijdigz2cgnidsa37nvyfzdiz4rv1fc33ir"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)
-       ("perl-test-pod" ,perl-test-pod)
-       ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
+     (list perl-module-build perl-test-pod perl-test-pod-coverage))
     (propagated-inputs
-     `(("perl-devel-callchecker" ,perl-devel-callchecker)))
+     (list perl-devel-callchecker))
     (home-page "https://metacpan.org/release/Params-Classify")
     (synopsis "Argument type classification")
     (description "This module provides various type-testing functions.
@@ -8428,11 +8176,9 @@ checking parameters easier.")
          "0cwpf8yxwyxbnwhf6rx4wnaq1q38j38i34a78a005shb8gxqv9j9"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)
-       ("perl-test-fatal" ,perl-test-fatal)
-       ("perl-test-requires" ,perl-test-requires)))
+     (list perl-module-build perl-test-fatal perl-test-requires))
     (propagated-inputs
-     `(("perl-module-implementation" ,perl-module-implementation)))
+     (list perl-module-implementation))
     (home-page "https://metacpan.org/release/Params-Validate")
     (synopsis "Validate method/function parameters")
     (description "The Params::Validate module allows you to validate method or
@@ -8453,14 +8199,10 @@ function call parameters to an arbitrary level of specificity.")
     (build-system perl-build-system)
     (native-inputs
      ;; For tests.
-     `(("perl-test-without-module" ,perl-test-without-module)
-       ("perl-test2-plugin-nowarnings" ,perl-test2-plugin-nowarnings)
-       ("perl-test2-suite" ,perl-test2-suite)
-       ("perl-type-tiny" ,perl-type-tiny)))
+     (list perl-test-without-module perl-test2-plugin-nowarnings
+           perl-test2-suite perl-type-tiny))
     (propagated-inputs
-     `(("perl-eval-closure" ,perl-eval-closure)
-       ("perl-exception-class" ,perl-exception-class)
-       ("perl-specio" ,perl-specio)))
+     (list perl-eval-closure perl-exception-class perl-specio))
     (home-page "https://github.com/houseabsolute/Params-ValidationCompiler")
     (synopsis "Build an optimized subroutine parameter validator")
     (description "This module creates a customized, highly efficient
@@ -8505,7 +8247,7 @@ distributions.")
         (base32
          "1kj8q8dmd8jci94w5arav59nkp0pkxrkliz4n8n6yf02hsa82iv5"))))
     (build-system perl-build-system)
-    (native-inputs `(("perl-module-build" ,perl-module-build)))
+    (native-inputs (list perl-module-build))
     (home-page "https://metacpan.org/release/Path-Class")
     (synopsis "Path specification manipulation")
     (description "Path::Class is a module for manipulation of file and
@@ -8536,7 +8278,7 @@ directory specifications in a cross-platform manner.")
                                "/bin/pwd'")))
              #t)))))
     (inputs
-     `(("coreutils" ,coreutils)))
+     (list coreutils))
     (home-page "https://metacpan.org/release/PathTools")
     (synopsis "Tools for working with directory and file names")
     (description "This package provides functions to work with directory and
@@ -8561,7 +8303,7 @@ file names.")
     ;;  `(("perl-test-failwarnings" ,perl-test-failwarnings)
     ;;    ("perl-test-mockrandom" ,perl-test-mockrandom)))
     (inputs
-     `(("perl-unicode-utf8" ,perl-unicode-utf8)))
+     (list perl-unicode-utf8))
     (home-page "https://metacpan.org/release/Path-Tiny")
     (synopsis "File path utility")
     (description "This module provides a small, fast utility for working
@@ -8582,10 +8324,9 @@ with file paths.")
                 "0nlks4p33d08h0fiv6aivinalf9f9zdkgkxqvvbbvdkvyh4z29a9"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-exception" ,perl-test-exception)
-       ("perl-test-memory-cycle" ,perl-test-memory-cycle)))
+     (list perl-test-exception perl-test-memory-cycle))
     (propagated-inputs
-     `(("perl-font-ttf" ,perl-font-ttf)))
+     (list perl-font-ttf))
     (home-page "https://metacpan.org/release/PDF-API2")
     (synopsis "Facilitates the creation and modification of PDF files")
     (description "This Perl module facilitates the creation and modification
@@ -8606,7 +8347,7 @@ of PDF files.")
                 "1jw1ri8nkm4ck73arbsld1y2qgj2b9ir01y8mzb3mjs6w0pkz8w3"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-exception" ,perl-test-exception)))
+     (list perl-test-exception))
     (home-page
      "https://metacpan.org/release/PerlIO-utf8_strict")
     (synopsis "Fast and correct UTF-8 IO")
@@ -8630,8 +8371,7 @@ for correctness.")
        "1zd0zm6vxapw6bds3ipymkbzam70p3j3rm48794qy11620r22dgx"))))
    (build-system perl-build-system)
    (native-inputs
-    `(("perl-file-sharedir-install" ,perl-file-sharedir-install)
-      ("perl-yaml-libyaml" ,perl-yaml-libyaml)))
+    (list perl-file-sharedir-install perl-yaml-libyaml))
    (home-page "https://metacpan.org/release/Pegex")
    (synopsis "Acmeist PEG Parser Framework")
    (description "Pegex is an Acmeist parser framework.  It allows you to easily
@@ -8656,12 +8396,37 @@ available.")
          "01xifj83dv492lxixijmg6va02rf3ydlxly0a9slmx22r6qa1drh"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-devel-symdump" ,perl-devel-symdump)))
+     (list perl-devel-symdump perl-pod-parser))
     (home-page "https://metacpan.org/release/Pod-Coverage")
     (synopsis "Check for comprehensive documentation of a module")
     (description "This module provides a mechanism for determining if the pod
 for a given module is comprehensive.")
     (license (package-license perl))))
+
+(define-public perl-pod-parser
+  (package
+    (name "perl-pod-parser")
+    (version "1.63")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/M/MA/MAREKR/Pod-Parser-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1k8clxxdjag56zm6cv38c3q81gj7xphfhh98l21jynwp55hvbq6v"))))
+    (build-system perl-build-system)
+    (home-page "https://metacpan.org/release/Pod-Parser")
+    (synopsis "Modules for parsing/translating POD format documents")
+    (description
+     "@code{Pod::Parser} is a base class for creating POD filters and
+translators.  It handles most of the effort involved with parsing the POD
+sections from an input stream, leaving subclasses free to be concerned only
+with performing the actual translation of text.
+
+@emph{NOTE}: This module is considered legacy.  New projects should prefer
+@code{Pod::Simple} instead.")
+    (license license:perl-license)))
 
 (define-public perl-pod-simple
   (package
@@ -8695,7 +8460,7 @@ used for writing documentation for Perl and for Perl modules.")
         (base32
          "04dcn2n4rfkj8p24vj2p17vvis40l87pf2vdqp0vqm5jg3fjnn16"))))
     (build-system perl-build-system)
-    (native-inputs `(("perl-module-build" ,perl-module-build)))
+    (native-inputs (list perl-module-build))
     (arguments `(#:tests? #f))          ; TODO: Timezone test failures
     (home-page "https://metacpan.org/release/POSIX-strftime-Compiler")
     (synopsis "GNU C library compatible strftime for loggers and servers")
@@ -8720,16 +8485,10 @@ applications.")
     (arguments
      `(#:tests? #f))                    ;FIXME: some tests fail
     (native-inputs
-     `(("perl-class-inspector" ,perl-class-inspector)
-       ("perl-test-deep" ,perl-test-deep)
-       ("perl-test-nowarnings" ,perl-test-nowarnings)
-       ("perl-test-object" ,perl-test-object)
-       ("perl-test-subcalls" ,perl-test-subcalls)))
+     (list perl-class-inspector perl-test-deep perl-test-nowarnings
+           perl-test-object perl-test-subcalls))
     (propagated-inputs
-     `(("perl-clone" ,perl-clone)
-       ("perl-io-string" ,perl-io-string)
-       ("perl-params-util" ,perl-params-util)
-       ("perl-task-weaken" ,perl-task-weaken)))
+     (list perl-clone perl-io-string perl-params-util perl-task-weaken))
     (home-page "https://metacpan.org/release/PPI")
     (synopsis "Parse, analyze and manipulate Perl (without Perl)")
     (description "The PPI module parses, analyzes and manipulates Perl
@@ -8775,7 +8534,7 @@ Module::Build project, but has been externalized here for general use.")
          (add-after 'unpack 'set-EDITOR
            (lambda _ (setenv "EDITOR" "echo") #t)))))
     (propagated-inputs
-     `(("perl-carp-assert" ,perl-carp-assert)))
+     (list perl-carp-assert))
     (home-page "https://metacpan.org/release/Proc-InvokeEditor")
     (synopsis "Interface to external editor from Perl")
     (description "This module provides the ability to supply some text to an
@@ -8795,7 +8554,7 @@ external text editor, have it edited by the user, and retrieve the results.")
         (base32
          "165zcf9lpijdpkx82za0g9rx8ckjnhipmcivdkyzshl8jmp1bl4v"))))
     (build-system perl-build-system)
-    (native-inputs `(("perl-module-build" ,perl-module-build)))
+    (native-inputs (list perl-module-build))
     (home-page "https://metacpan.org/release/Readonly")
     (synopsis "Create read-only scalars, arrays, hashes")
     (description "This module provides a facility for creating non-modifiable
@@ -8884,10 +8643,9 @@ and @code{deserialize_regexp}.")
          "0ak60hakn0ixmsiw403si0lf5pagq5r6wjgl7p0pr979nlcikfmd"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-namespace-autoclean" ,perl-namespace-autoclean)
-       ("perl-test-fatal" ,perl-test-fatal)))
+     (list perl-namespace-autoclean perl-test-fatal))
     (propagated-inputs
-     `(("perl-class-method-modifiers" ,perl-class-method-modifiers)))
+     (list perl-class-method-modifiers))
     (home-page "https://metacpan.org/release/Role-Tiny")
     (synopsis "Roles, as a slice of Moose")
     (description "Role::Tiny is a minimalist role composition tool.")
@@ -8940,9 +8698,7 @@ safely on things that may not be objects.")
         "0llbsqk7rsg9p7l1f4yk6iv7wij91gvavprsqhnb04w7nz4ifjpm"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)
-       ("perl-test-pod" ,perl-test-pod)
-       ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
+     (list perl-module-build perl-test-pod perl-test-pod-coverage))
     (home-page "https://metacpan.org/release/Scalar-String")
     (synopsis "String aspects of scalars")
     (description "@code{Scalar::String} is about the string part of
@@ -9012,7 +8768,7 @@ collector.")
       (base32 "0jf3vdmdgxx6a9xrfwnbbs9g37i1i6qhfg5qwln8x5i280701m3g"))))
    (build-system perl-build-system)
    (native-inputs
-    `(("perl-extutils-cppguess" ,perl-extutils-cppguess)))
+    (list perl-extutils-cppguess))
    (home-page "https://metacpan.org/release/Set-IntervalTree")
    (synopsis "Perform range-based lookups on sets of ranges")
    (description "This package provides an efficient mechanism to look up
@@ -9051,8 +8807,7 @@ optimized for sets that have long runs of consecutive integers.")
         (base32 "040q819l9x55j0hjhfvc153451syvjffw3d22gs398sd23mwzzsy"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-moose" ,perl-moose)
-       ("perl-test-leaktrace" ,perl-test-leaktrace)))
+     (list perl-moose perl-test-leaktrace))
     (home-page "https://metacpan.org/release/Set-Object")
     (synopsis "Unordered collections of Perl Objects")
     (description "Set::Object provides efficient sets, unordered collections
@@ -9134,13 +8889,13 @@ word-characters are compared lexically.")
          "1s5xd9awwrzc94ymimjkxqs6jq513wwlmwwarxaklvg2hk4lps0l"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-devel-stacktrace" ,perl-devel-stacktrace)
-       ("perl-eval-closure" ,perl-eval-closure)
-       ("perl-module-runtime" ,perl-module-runtime)
-       ("perl-mro-compat" ,perl-mro-compat)
-       ("perl-role-tiny" ,perl-role-tiny)
-       ("perl-test-fatal" ,perl-test-fatal)
-       ("perl-test-needs" ,perl-test-needs)))
+     (list perl-devel-stacktrace
+           perl-eval-closure
+           perl-module-runtime
+           perl-mro-compat
+           perl-role-tiny
+           perl-test-fatal
+           perl-test-needs))
     (home-page "https://metacpan.org/release/Specio")
     (synopsis "Classes for representing type constraints and coercion")
     (description "The Specio distribution provides classes for representing type
@@ -9209,7 +8964,7 @@ its return value is going to be immediately used.")
                 "0y4zf5qkpayp4kkg7lw9ydbbin1z99m6xvy02fgacjbfw4ai9zh9"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-want" ,perl-want)))
+     (list perl-want))
     (home-page "https://metacpan.org/release/Contextual-Return")
     (synopsis "Create context-sensitive return values")
     (description "This module provides a collection of named blocks that allow
@@ -9231,7 +8986,7 @@ which it is called.")
                 "1ywl398z42hz9w1k0waf1caa6agz8jzsjlf4rzs1lgpx2mbcwmb8"))))
     (build-system perl-build-system)
     (inputs
-     `(("perl-number-format" ,perl-number-format)))
+     (list perl-number-format))
     (home-page "https://metacpan.org/release/Statistics-Basic")
     (synopsis "Collection of very basic statistics modules")
     (description "This package provides basic statistics functions like
@@ -9252,12 +9007,10 @@ which it is called.")
                 "1i3bskwibp54c9a2wx8gzr3hyds6mmhr3d550g8j6893005v3bgq"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)))
+     (list perl-module-build))
     (propagated-inputs
-     `(("perl-contextual-return" ,perl-contextual-return)
-       ("perl-math-cephes" ,perl-math-cephes)
-       ("perl-math-matrixreal" ,perl-math-matrixreal)
-       ("perl-text-simpletable" ,perl-text-simpletable)))
+     (list perl-contextual-return perl-math-cephes perl-math-matrixreal
+           perl-text-simpletable))
     (home-page "https://metacpan.org/release/Statistics-PCA")
     (synopsis "Perl implementation of Principal Component Analysis")
     (description "This package provides the Statistics::PCA module, an
@@ -9277,7 +9030,7 @@ implementation of @dfn{Principal Component Analysis} (PCA).")
         (base32 "1nkln4fm4962b5jk1dp6lf635nnrj5a5pg1a5xmchvrfrc3asggw"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-xsloader" ,perl-xsloader)))
+     (list perl-xsloader))
     (home-page "https://metacpan.org/dist/Storable")
     (synopsis "Persistence for Perl data structures")
     (description "Storable brings persistence to your Perl data structures
@@ -9404,8 +9157,7 @@ removing double-quotes, and truncating to fit within a desired length.")
          "0mlwm0rirv46gj4h072q8gdync5zxxsxy8p028gdyrhczl942dc3"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-params-util" ,perl-params-util)
-       ("perl-sub-exporter" ,perl-sub-exporter)))
+     (list perl-params-util perl-sub-exporter))
     (home-page "https://metacpan.org/release/String-Formatter")
     (synopsis "Build your own sprintf-like functions")
     (description
@@ -9428,7 +9180,7 @@ fixed string interpolation, and simple width-matching.")
          "18nxl1vgkcx0r7ifkmbl9fp73f8ihiqhqqf3vq6sj5b3cgawrfsw"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-sub-exporter" ,perl-sub-exporter)))
+     (list perl-sub-exporter))
     (home-page "https://metacpan.org/release/String-RewritePrefix")
     (synopsis "Rewrite strings based on a set of known prefixes")
     (description "This module allows you to rewrite strings based on a set of
@@ -9470,7 +9222,7 @@ that they won't be changed.")
                 "1n9lc5dr66sg89hym47764fyfms7vrxrhwvdps2x8x8gxly7rsdl"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-unicode-linebreak" ,perl-unicode-linebreak)))
+     (list perl-unicode-linebreak))
     (home-page "https://metacpan.org/release/String-Print")
     (synopsis "String printing alternatives to printf")
     (description
@@ -9494,8 +9246,7 @@ a functional interface.")
          "03040vk227icdkb0hvxplck2y6rglj67s1rgf12z3465ss3lhci3"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-data-optlist" ,perl-data-optlist)
-       ("perl-params-util" ,perl-params-util)))
+     (list perl-data-optlist perl-params-util))
     (home-page "https://metacpan.org/release/Sub-Exporter")
     (synopsis "Sophisticated exporter for custom-built routines")
     (description
@@ -9516,7 +9267,7 @@ custom-built routines.")
         (base32
          "0mn0x8mkh36rrsr58s1pk4srwxh2hbwss7sv630imnk49navfdfm"))))
     (build-system perl-build-system)
-    (native-inputs `(("perl-sub-exporter" ,perl-sub-exporter)))
+    (native-inputs (list perl-sub-exporter))
     (home-page "https://metacpan.org/release/Sub-Exporter-Progressive")
     (synopsis "Only use Sub::Exporter if you need it")
     (description "Sub::Exporter is an incredibly powerful module, but with
@@ -9560,7 +9311,7 @@ references.")
           "1snhrmc6gpw2zjnj7zvvqj69mlw711bxah6kk4dg5vxxjvb5cc7a"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-importer" ,perl-importer)))
+     (list perl-importer))
     (home-page "https://metacpan.org/release/Sub-Info")
     (synopsis "Tool to inspect subroutines")
     (description "This package provides tools for inspecting subroutines
@@ -9603,7 +9354,7 @@ can see them.")
          "05viq8scqk29g964fsfvls2rhvlb8myz3jblwh5c2ivhw3gfjcmx"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-devel-checkbin" ,perl-devel-checkbin)))
+     (list perl-devel-checkbin))
     (home-page "https://metacpan.org/release/Sub-Name")
     (synopsis "(Re)name a sub")
     (description "Assigns a new name to referenced sub.  If package
@@ -9625,9 +9376,9 @@ return value is the sub.")
         (base32 "17fq4iskrisnqs96amrz493vxikwvqbj9s7014k6vyl84gs2lkkf"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-fatal" ,perl-test-fatal)))
+     (list perl-test-fatal))
     (propagated-inputs
-     `(("perl-sub-name" ,perl-sub-name)))
+     (list perl-sub-name))
     (home-page "https://metacpan.org/release/Sub-Quote")
     (synopsis "Efficient generation of subroutines via string eval")
     (description "Sub::Quote provides an efficient generation of subroutines
@@ -9667,9 +9418,9 @@ uplevel() are avoided.")
         (base32 "16nk2za9fwyg7mcifacr69qi075iz1yvy8r9jh3903kzdvkiwpb8"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)))
+     (list perl-module-build))
     (propagated-inputs
-     `(("perl-sub-identify" ,perl-sub-identify)))
+     (list perl-sub-identify))
     (home-page "https://metacpan.org/release/SUPER")
     (synopsis "Control superclass method dispatching")
     (description
@@ -9858,8 +9609,7 @@ error encouraging the user to seek support.")
          "1msxg3j1hx5wsc7vr81x5gs9gdbn4y0x6cvyj3pq4dgi1603dbvi"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-appconfig" ,perl-appconfig)
-       ("perl-test-leaktrace" ,perl-test-leaktrace)))
+     (list perl-appconfig perl-test-leaktrace))
     (home-page "https://metacpan.org/release/Template-Toolkit")
     (synopsis "Template processing system for Perl")
     (description "The Template Toolkit is a collection of modules which
@@ -9883,7 +9633,7 @@ documents: HTML, XML, POD, PostScript, LaTeX, and so on.")
          "1d3pbcx1kz73ncg8s8lx3ifwphz838qy0m40gdar7790cnrlqcdp"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-template-toolkit" ,perl-template-toolkit)))
+     (list perl-template-toolkit))
     (home-page "https://metacpan.org/release/Template-Timer")
     (synopsis "Profiling for Template Toolkit")
     (description "Template::Timer provides inline profiling of the template
@@ -9929,7 +9679,7 @@ future, or if you want the retain the familiarity of TT-style templates.")
         (base32 "0zgj329kfrwcyqn491v04x65yjydwfc4845a71f8hypdrj3vv0b2"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-warn" ,perl-test-warn)))
+     (list perl-test-warn))
     (home-page "https://metacpan.org/dist/Term-ANSIColor")
     (synopsis "Interface to the ANSI terminal escape sequences for color")
     (description "Term::ANSIColor provides constants and simple functions for
@@ -9954,7 +9704,7 @@ supported.")
          "02qx4ni1vqp9hvkw69hp5bxcf2ghjiw8sl34pqy5mlimsy3rdflm"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-install" ,perl-module-install)))
+     (list perl-module-install))
     (home-page "https://metacpan.org/release/Term-Encoding")
     (synopsis "Detect encoding of the current terminal")
     (description "Term::Encoding is a simple module to detect the encoding of
@@ -9975,11 +9725,9 @@ the current terminal expects in various ways.")
          "15pn42zf793dplpfnmawh7v7xc4qm38s1jhvn1agx4cafcn61q61"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-capture-tiny" ,perl-capture-tiny)
-       ("perl-test-exception" ,perl-test-exception)))
+     (list perl-capture-tiny perl-test-exception))
     (propagated-inputs
-     `(("perl-class-methodmaker" ,perl-class-methodmaker)
-       ("perl-term-readkey" ,perl-term-readkey)))
+     (list perl-class-methodmaker perl-term-readkey))
     (home-page "https://metacpan.org/release/Term-ProgressBar")
     (synopsis "Progress meter on a standard terminal")
     (description "Term::ProgressBar provides a simple progress bar on the
@@ -10001,9 +9749,7 @@ stuff has been done, and maybe an estimate at how long remains.")
          "19l4476iinwz19vh360k3rss38m9gmkg633i5v9jkg48yn954rr5"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-io-interactive" ,perl-io-interactive)
-       ("perl-term-progressbar" ,perl-term-progressbar)
-       ("perl-test-mockobject" ,perl-test-mockobject)))
+     (list perl-io-interactive perl-term-progressbar perl-test-mockobject))
     (home-page "https://metacpan.org/release/Term-ProgressBar-Quiet")
     (synopsis "Progress meter if run interactively")
     (description "Term::ProgressBar is a wonderful module for showing progress
@@ -10026,7 +9772,7 @@ a cron job) then it does not show the progress bar.")
          "19kr6l2aflwv9yph5xishkpag038qb8wd4mkzb0x1psvgp3b63d2"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-term-progressbar-quiet" ,perl-term-progressbar-quiet)))
+     (list perl-term-progressbar-quiet))
     (home-page "https://metacpan.org/release/Term-ProgressBar-Simple")
     (synopsis "Simple progress bars")
     (description "Term::ProgressBar::Simple tells you how much work has been
@@ -10069,8 +9815,7 @@ screen size, and retrieval/modification of the control characters.")
          "09b9mcmp09kdfh5jaqdr528yny8746hvn3f185aqd6rw06jgf24s"))))
     (build-system perl-build-system)
     (inputs
-     `(("readline" ,readline)
-       ("ncurses" ,ncurses)))
+     (list readline ncurses))
     (arguments
      `(#:tests? #f ; Tests fail without other Term::ReadLine interfaces present
        #:phases (modify-phases %standard-phases
@@ -10107,9 +9852,9 @@ compatible with Term::ReadLine.")
          "1lnynd8pwjp3g85bl4nav6yigg2lag3sx5da989j7a733bdmzyk4"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-devel-hide" ,perl-devel-hide)))
+     (list perl-devel-hide))
     (propagated-inputs
-     `(("perl-term-size-perl" ,perl-term-size-perl)))
+     (list perl-term-size-perl))
     (home-page "https://metacpan.org/release/Term-Size-Any")
     (synopsis "Retrieve terminal size")
     (description "This is a unified interface to retrieve terminal size.  It
@@ -10150,7 +9895,7 @@ Now in pure Perl, with the exception of a C probe run at build time.")
           "0gi4lyvs6n8y6hjwmflfpamfl65y7mb1g39zi0rx35nclj8xb370"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-importer" ,perl-importer)))
+     (list perl-importer))
     (home-page "https://metacpan.org/release/Term-Table")
     (synopsis "Format a header and rows into a table")
     (description "This module is able to generically format rows of data
@@ -10169,7 +9914,7 @@ into tables.")
        (sha256
         (base32 "1vry21jrh91l2pkajnrps83bnr1fn6zshbzi80mcrnggrn9iq776"))))
     (build-system perl-build-system)
-    (native-inputs `(("perl-module-build" ,perl-module-build)))
+    (native-inputs (list perl-module-build))
     (home-page "https://metacpan.org/release/Text-Aligner")
     (synopsis "Align text")
     (description "Text::Aligner exports a single function, align(), which is
@@ -10250,7 +9995,7 @@ and escapes.")
          "013g13prdghxvrp5754gyc7rmv1syyxrhs33yc5f0lrz3dxs1fp8"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-algorithm-diff" ,perl-algorithm-diff)))
+     (list perl-algorithm-diff))
     (home-page "https://metacpan.org/release/Text-Diff")
     (synopsis "Perform diffs on files and record sets")
     (description "Text::Diff provides a basic set of services akin to the GNU
@@ -10274,9 +10019,7 @@ generally slower on larger files.")
                 "0104z7jjv46kqh77rnx8kvmsbr5dy0s56xm01dckq4ly65br0hkx"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)
-       ("perl-test-pod" ,perl-test-pod)
-       ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
+     (list perl-module-build perl-test-pod perl-test-pod-coverage))
     (home-page "https://metacpan.org/release/Text-Format")
     (synopsis "Various subroutines to format text")
     (description "This package provides functions to format text in various
@@ -10297,7 +10040,7 @@ to tabs.")
         (base32
          "11sj62fynfgwrlgkv5a051cq6yn0pagxqjsz27dxx8phsd4wv706"))))
     (build-system perl-build-system)
-    (native-inputs `(("perl-module-build" ,perl-module-build)))
+    (native-inputs (list perl-module-build))
     (home-page "https://metacpan.org/release/Text-Glob")
     (synopsis "Match globbing patterns against text")
     (description "Text::Glob implements glob(3) style matching that can be
@@ -10318,10 +10061,9 @@ you want to do full file globbing use the File::Glob module instead.")
         (base32 "1siq8hgj7s8gwpf3n3h1is5v50rwi6av8lfb19khiyyqz0rp7a57"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build-tiny" ,perl-module-build-tiny)))
+     (list perl-module-build-tiny))
     (propagated-inputs
-     `(("perl-data-section-simple" ,perl-data-section-simple)
-       ("perl-uri" ,perl-uri)))
+     (list perl-data-section-simple perl-uri))
     (home-page "https://metacpan.org/release/Text-Haml")
     (synopsis "Haml Perl implementation")
     (description
@@ -10344,7 +10086,7 @@ you want to do full file globbing use the File::Glob module instead.")
          "129msa57jzxxi2x7z9hgzi48r48y65w77ycfk1w733zz2m8nr8y3"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)))
+     (list perl-module-build))
     (home-page
      "https://metacpan.org/release/Text-NeatTemplate")
     (synopsis "Fast, middleweight template engine")
@@ -10385,7 +10127,7 @@ tokens or array of arrays.")
         (base32 "1k1xbhxwn9fymqqwnam9pm7hr2p5ikq6dk578qw18gkap9hqxwga"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-text-diff" ,perl-text-diff)))
+     (list perl-text-diff))
     (home-page "https://metacpan.org/release/Text-Patch")
     (synopsis "Patches text with given patch")
     (description "Text::Patch combines source text with given
@@ -10445,9 +10187,9 @@ algorism to indicate multiplication by 1000.")
          "04kh5x5inq183rdg221wlqaaqi1ipyj588mxsslik6nhc14f17nd"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)))
+     (list perl-module-build))
     (propagated-inputs
-     `(("perl-text-aligner" ,perl-text-aligner)))
+     (list perl-text-aligner))
     (home-page "https://metacpan.org/release/Text-Table")
     (synopsis "Organize Data in Tables")
     (description "Text::Table renders plaintext tables.")
@@ -10487,8 +10229,7 @@ Text::Wrap will reformat lines into paragraphs.")
          "12zi08mwmlbfbnsialmppk75s6dkg765dvmay3wif3158plqp554"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-more-utf8" ,perl-test-more-utf8)
-       ("perl-test-warnings" ,perl-test-warnings)))
+     (list perl-test-more-utf8 perl-test-warnings))
     (home-page
      "https://metacpan.org/release/Text-Template")
     (synopsis
@@ -10553,11 +10294,9 @@ system.")
          "184gdcwxqwnkrx5md968v1ny70pq6blzpkihccm3bpdxnpgd11wr"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-devel-stacktrace" ,perl-devel-stacktrace)))
+     (list perl-devel-stacktrace))
     (propagated-inputs
-     `(("perl-devel-stacktrace" ,perl-devel-stacktrace)
-       ("perl-module-runtime" ,perl-module-runtime)
-       ("perl-moo" ,perl-moo)))
+     (list perl-devel-stacktrace perl-module-runtime perl-moo))
     (home-page "https://metacpan.org/release/Throwable")
     (synopsis "Role for classes that can be thrown")
     (description "Throwable is a role for classes that are meant to be thrown
@@ -10616,7 +10355,7 @@ again.  Once you get to the end of the list, you go back to the beginning.")
         (base32
           "0mmg9iyh42syal3z1p2pn9airq65yrkfs66cnqs9nz76jy60pfzs"))))
   (build-system perl-build-system)
-  (native-inputs `(("perl-module-build" ,perl-module-build)))
+  (native-inputs (list perl-module-build))
   (home-page "https://metacpan.org/release/Tie-IxHash")
   (synopsis "Ordered associative arrays for Perl")
   (description "This Perl module implements Perl hashes that preserve the
@@ -10687,7 +10426,7 @@ figure out what you're trying to do.")
          "1x1smn1kw383xc5h9wajxk9dlx92bgrbf7gk4abga57y6120s6m3"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-test-simple" ,perl-test-simple)))
+     (list perl-test-simple))
     (home-page "https://metacpan.org/release/Tie-ToObject")
     (synopsis "Tie to an existing Perl object")
     (description "This class provides a tie constructor that returns the
@@ -10708,9 +10447,7 @@ $object->TIEHASH are avoided.")
         (base32 "1f59z2svfydxgd1gzrb5k3hl6d432kzmskk7jhv2dyb5hyx0wd7y"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-install" ,perl-module-install)
-       ("perl-test-pod" ,perl-test-pod)
-       ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
+     (list perl-module-install perl-test-pod perl-test-pod-coverage))
     (home-page "https://metacpan.org/release/Time-Duration")
     (synopsis "English expression of durations")
     (description "This module provides functions for expressing durations in
@@ -10730,9 +10467,9 @@ rounded or exact terms.")
         (base32 "10g39bbrxkabbsfq4rv7f5b5x7h3jba08j4pg8gwr0b9iqx19n31"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-time-duration" ,perl-time-duration)))
+     (list perl-time-duration))
     (propagated-inputs
-     `(("perl-exporter-lite" ,perl-exporter-lite)))
+     (list perl-exporter-lite))
     (home-page "https://metacpan.org/release/Time-Duration-Parse")
     (synopsis "Parse time duration strings")
     (description "Time::Duration::Parse is a module to parse human readable
@@ -10834,9 +10571,9 @@ time values and formatting dates into ASCII strings.")
          "0bwqyg8z98m8cjw1qcm4wg502n225k33j2fp8ywxkgfjdd1zgllv"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)))
+     (list perl-module-build))
     (propagated-inputs
-     `(("perl-timedate" ,perl-timedate))) ;For Date::Parse
+     (list perl-timedate)) ;For Date::Parse
     (home-page "https://metacpan.org/release/Time-Mock")
     (synopsis "Shift and scale time")
     (description "This module allows you to speed up your sleep(), alarm(),
@@ -10856,10 +10593,9 @@ and time() calls.")
         (base32 "176j8zgsndfnxb5mxaiarnva3ghck1jxgxwkz77r9fr2sadpksdp"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)
-       ("perl-test-exception" ,perl-test-exception)))
+     (list perl-module-build perl-test-exception))
     (propagated-inputs
-     `(("perl-scalar-list-utils" ,perl-scalar-list-utils)))
+     (list perl-scalar-list-utils))
     (home-page "https://metacpan.org/release/Tree-Simple")
     (synopsis "Simple tree object")
     (description "This module in a fully object-oriented implementation of a
@@ -10879,10 +10615,9 @@ simple n-ary tree.")
         (base32 "19hdi00rw492m5r51b495gv5c64g91g98f8lm6sgym1cl7x3ixcw"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)
-       ("perl-test-exception" ,perl-test-exception)))
+     (list perl-module-build perl-test-exception))
     (propagated-inputs
-     `(("perl-tree-simple" ,perl-tree-simple)))
+     (list perl-tree-simple))
     (home-page "https://metacpan.org/release/Tree-Simple-VisitorFactory")
     (synopsis "Factory object for dispensing Visitor objects")
     (description "This module is a factory for dispensing
@@ -10922,11 +10657,9 @@ else.")
         (base32 "0d2ldn6pi8dj7shk4gkjm9bzqr7509fzkwjs7579pmgg6xkkynjf"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-fatal" ,perl-test-fatal)
-       ("perl-test-requires" ,perl-test-requires)))
+     (list perl-test-fatal perl-test-requires))
     (propagated-inputs
-     `(("perl-exporter-tiny" ,perl-exporter-tiny)
-       ("perl-hash-fieldhash" ,perl-hash-fieldhash)))
+     (list perl-exporter-tiny perl-hash-fieldhash))
     (home-page "https://metacpan.org/release/Type-Tie")
     (synopsis "Tie a variable to a type constraint")
     (description "This module exports a single function: @code{ttie}.  It ties
@@ -10949,17 +10682,17 @@ variable conform.")
         (base32 "0s11rlkkjjys8x6ihm5mrhzbbf341g5ckqbalph4g7l98kcy26yl"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-warnings" ,perl-test-warnings)))
+     (list perl-test-warnings))
     (propagated-inputs
-     `(("perl-devel-lexalias" ,perl-devel-lexalias)
-       ("perl-devel-stacktrace" ,perl-devel-stacktrace)
-       ("perl-exporter-tiny" ,perl-exporter-tiny)
-       ("perl-moo" ,perl-moo)
-       ("perl-moose" ,perl-moose)
-       ("perl-mouse" ,perl-mouse)
-       ("perl-ref-util-xs" ,perl-ref-util-xs)
-       ("perl-regexp-util" ,perl-regexp-util)
-       ("perl-type-tie" ,perl-type-tie)))
+     (list perl-devel-lexalias
+           perl-devel-stacktrace
+           perl-exporter-tiny
+           perl-moo
+           perl-moose
+           perl-mouse
+           perl-ref-util-xs
+           perl-regexp-util
+           perl-type-tie))
     (home-page "https://metacpan.org/release/Type-Tiny")
     (synopsis "Tiny, yet Moo(se)-compatible type constraint")
     (description "@code{Type::Tiny} is a small class for writing type
@@ -11002,10 +10735,8 @@ so other data validation frameworks might also consider using it.")
         (base32 "1072vwcbx2bldfg8xpxc9iqs3rzqd18yik60b432hsdwxpxcjgsr"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-file-pushd" ,perl-file-pushd)
-       ("perl-path-tiny" ,perl-path-tiny)
-       ("perl-type-tiny" ,perl-type-tiny)
-       ("perl-exporter-tiny" ,perl-exporter-tiny)))
+     (list perl-file-pushd perl-path-tiny perl-type-tiny
+           perl-exporter-tiny))
     (home-page "https://metacpan.org/release/Types-Path-Tiny")
     (synopsis "Types and coercions for Moose and Moo")
     (description "This module provides @code{Path::Tiny} types for Moose, Moo,
@@ -11028,7 +10759,7 @@ to ensure that files or directories exist.")
          "03bk0hm5ys8k7265dkap825ybn2zmzb1hl0kf1jdm8yq95w39lvs"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-common-sense" ,perl-common-sense)))
+     (list perl-common-sense))
     (home-page "https://metacpan.org/release/Types-Serialiser")
     (synopsis "Data types for common serialisation formats")
     (description "This module provides some extra datatypes that are used by
@@ -11085,7 +10816,7 @@ common serialisation formats such as JSON or CBOR.")
                                     (getenv "PERL5LIB")))
              #t)))))
     (propagated-inputs
-     `(("perl-unicode-normalize" ,perl-unicode-normalize)))
+     (list perl-unicode-normalize))
     (home-page "https://metacpan.org/release/Unicode-Collate")
     (synopsis "Unicode collation algorithm")
     (description "This package provides tools for sorting and comparing
@@ -11107,7 +10838,7 @@ Unicode data.")
                 "12iinva5gqc9g7qzxrvmh45n714z0ad9g7wq2dxwgp6drbj64rs8"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-mime-charset" ,perl-mime-charset)))
+     (list perl-mime-charset))
     (home-page "https://metacpan.org/release/Unicode-LineBreak")
     (synopsis "Unicode line breaking algorithm")
     (description
@@ -11132,10 +10863,8 @@ defined by Annex #11 is used to determine breaking positions.")
     ;; <https://rt.cpan.org/Public/Bug/Display.html?id=127007>.
     (arguments `(#:tests? ,(target-64bit?)))
     (native-inputs
-     `(("perl-test-fatal" ,perl-test-fatal)
-       ("perl-test-leaktrace" ,perl-test-leaktrace)
-       ("perl-variable-magic" ,perl-variable-magic)
-       ("perl-test-pod" ,perl-test-pod)))
+     (list perl-test-fatal perl-test-leaktrace perl-variable-magic
+           perl-test-pod))
     (home-page "https://metacpan.org/release/Unicode-UTF8")
     (synopsis "Encoding and decoding of UTF-8 encoding form")
     (description
@@ -11176,7 +10905,7 @@ UNIVERSAL::can() as a function, which it is not.")
          "0avzv9j32aab6l0rd63n92v0pgliz1p4yabxxjfq275hdh1mcsfi"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build-tiny" ,perl-module-build-tiny)))
+     (list perl-module-build-tiny))
     (home-page "https://metacpan.org/release/UNIVERSAL-isa")
     (synopsis "UNIVERSAL::isa() reimplementation")
     (description "This module attempts to recover from people calling
@@ -11266,10 +10995,8 @@ attribute names.")
         (base32 "0pyqr12jsqagna75fm2gijfzw06wy1hrh5chn9hwnmcfddda66g8"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-distribution" ,perl-test-distribution)
-       ("perl-text-pod" ,perl-test-pod)
-       ("perl-test-pod-coverage" ,perl-test-pod-coverage)
-       ("perl-test-portability-files" ,perl-test-portability-files)))
+     (list perl-test-distribution perl-test-pod perl-test-pod-coverage
+           perl-test-portability-files))
     (home-page "https://metacpan.org/dist/XSLoader")
     (synopsis "Dynamically load C libraries into Perl code")
     (description "XSLoader module defines a standard simplified interface to the
@@ -11290,9 +11017,7 @@ to implement cheap automatic dynamic loading of Perl modules.")
                 "0njyy4y0zax4zz55y82dlm9cly1pld1lcxb281s12bp9rrhf9j9x"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-extutils-depends" ,perl-extutils-depends)
-       ("perl-module-install" ,perl-module-install)
-       ("perl-test-fatal" ,perl-test-fatal)))
+     (list perl-extutils-depends perl-module-install perl-test-fatal))
     (home-page "https://metacpan.org/release/XS-Object-Magic")
     (synopsis "Opaque, extensible XS pointer backed objects using sv_magic")
     (description
@@ -11315,7 +11040,7 @@ neither visible nor modifiable from Perl space).")
         (base32 "1kbrfksjg4k4vmx1i337m5n69m00m0m5bgsh61c15bzzrgbacc2h"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-yaml" ,perl-test-yaml)))
+     (list perl-test-yaml))
     (home-page "https://metacpan.org/release/YAML")
     (synopsis "YAML for Perl")
     (description "The YAML.pm module implements a YAML Loader and Dumper based
@@ -11356,8 +11081,7 @@ best YAML support to date.")
          "0i3p4nz8ysrsrs6vlzc6gkjcfpcaf05xjc7lwbjkw7lg5shmycdw"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-json-maybexs" ,perl-json-maybexs)
-       ("perl-module-build-tiny" ,perl-module-build-tiny)))
+     (list perl-json-maybexs perl-module-build-tiny))
     (arguments
      `(#:tests? #f))                    ;requires Test::More >= 0.99
     (home-page "https://metacpan.org/release/YAML-Tiny")
@@ -11383,7 +11107,7 @@ and memory overhead.")
          "0dvfcn2xvj9r4ra5xqgasl847nsm1iy85w1kly41fkxm9im36hqr"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)))
+     (list perl-module-build))
     (home-page
      "https://metacpan.org/release/Parse-RecDescent")
     (synopsis "Generate recursive-descent parsers")
@@ -11431,9 +11155,8 @@ grammars to generate Perl object oriented parser modules.")
          "1mm3dfw3ffyzb2ikpqn9l6zyqrxijb4vyywmbx2l21ryqwp0zy74"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-cpan-meta-requirements" ,perl-cpan-meta-requirements)
-       ("perl-cpan-meta-yaml" ,perl-cpan-meta-yaml)
-       ("perl-parse-cpan-meta" ,perl-parse-cpan-meta)))
+     (list perl-cpan-meta-requirements perl-cpan-meta-yaml
+           perl-parse-cpan-meta))
     (home-page "https://metacpan.org/release/CPAN-Meta")
     (synopsis "Distribution metadata for a CPAN dist")
     (description "Software distributions released to the CPAN include a
@@ -11492,7 +11215,7 @@ MYMETA.yml.")
 (define-public perl-module-build
   (package
     (name "perl-module-build")
-    (version "0.4229")
+    (version "0.4231")
     (source
      (origin
        (method url-fetch)
@@ -11500,10 +11223,10 @@ MYMETA.yml.")
                            "Module-Build-" version ".tar.gz"))
        (sha256
         (base32
-         "064c03wxia7jz0i578awj4srykj0nnigm4p5r0dv0559rnk93r0z"))))
+         "05xpn8qg814y49vrih16zfr9iiwb7pmdf57ahjnc2h0p5illq3vy"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-cpan-meta" ,perl-cpan-meta)))
+     (list perl-cpan-meta))
     (home-page "https://metacpan.org/release/Module-Build")
     (synopsis "Build and install Perl modules")
     (description "@code{Module::Build} is a system for building, testing, and
@@ -11530,7 +11253,7 @@ system---most of the @code{Module::Build} code is pure-Perl.")
          "1mm3dfw3ffyzb2ikpqn9l6zyqrxijb4vyywmbx2l21ryqwp0zy74"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-cpan-meta-yaml" ,perl-cpan-meta-yaml)))
+     (list perl-cpan-meta-yaml))
     (home-page "https://metacpan.org/release/DAGOLDEN/Parse-CPAN-Meta-1.4422")
     (synopsis "Parse META.yml and META.json CPAN metadata files")
     (description "Parse::CPAN::Meta is a parser for META.json and META.yml
@@ -11570,24 +11293,27 @@ such that being individual extensions would be wasteful.")
         (base32 "1dagpmcpjnwvd4g6mmnc312rqpd4qcwx21rpi2j7084wz8mijai5"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-alien-sdl" ,perl-alien-sdl)
-       ("perl-capture-tiny" ,perl-capture-tiny)
-       ("perl-file-sharedir" ,perl-file-sharedir)
-       ("perl-module-build" ,perl-module-build)
-       ("perl-test-most" ,perl-test-most)
-       ("perl-tie-simple" ,perl-tie-simple)))
+     (list perl-alien-sdl
+           perl-capture-tiny
+           perl-file-sharedir
+           perl-module-build
+           perl-test-most
+           perl-tie-simple))
     (inputs
-     `(("freeglut" ,freeglut)
-       ("libjpeg" ,libjpeg-turbo)
-       ("libpng" ,libpng)
-       ("libsmpeg" ,libsmpeg)
-       ("libtiff" ,libtiff)
-       ("mesa" ,mesa)
-       ("sdl" ,(sdl-union
-                (list sdl sdl-gfx sdl-image sdl-mixer sdl-pango sdl-ttf)))))
+     (list freeglut
+           libjpeg-turbo
+           libpng
+           libsmpeg
+           libtiff
+           mesa
+           (sdl-union (list sdl
+                            sdl-gfx
+                            sdl-image
+                            sdl-mixer
+                            sdl-pango
+                            sdl-ttf))))
     (propagated-inputs
-     `(("perl-file-sharedir" ,perl-file-sharedir)
-       ("perl-tie-simple" ,perl-tie-simple)))
+     (list perl-file-sharedir perl-tie-simple))
     (home-page "https://metacpan.org/release/SDL")
     (synopsis "SDL bindings to Perl")
     (description
@@ -11621,7 +11347,7 @@ spirit of both the SDL and Perl.")
                             `("PERL5LIB" suffix (,site))))
                         #t))))))
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)))
+     (list perl-module-build))
     (home-page "https://metacpan.org/release/RAAB/SGMLSpm-1.1")
     (synopsis "Perl module for processing SGML parser output")
     (description "This package contains @code{SGMLS.pm}, a perl5 class library
@@ -11670,9 +11396,9 @@ be used.")
           "0gf13b76b824s73r5rp00v8xrd6dnb5yi5jjavfc394scqv6ldh4"))))
   (build-system perl-build-system)
   (native-inputs
-    `(("perl-module-build" ,perl-module-build)))
+    (list perl-module-build))
   (inputs
-    `(("perl-class-xsaccessor" ,perl-class-xsaccessor)))
+    (list perl-class-xsaccessor))
   (home-page
     "https://metacpan.org/release/File-Find-Object")
   (synopsis
@@ -11696,12 +11422,10 @@ File::Find replacement in Perl.")
         (base32 "0gjzfd5fz7mhr5abafxr7qic7nwhk7y9iv17as6l880973j952h3"))))
   (build-system perl-build-system)
   (native-inputs
-    `(("perl-module-build" ,perl-module-build)))
+    (list perl-module-build))
   (inputs
-    `(("perl-class-xsaccessor" ,perl-class-xsaccessor)
-      ("perl-file-find-object" ,perl-file-find-object)
-      ("perl-number-compare" ,perl-number-compare)
-      ("perl-text-glob" ,perl-text-glob)))
+    (list perl-class-xsaccessor perl-file-find-object perl-number-compare
+          perl-text-glob))
   (home-page
     "https://metacpan.org/release/File-Find-Object-Rule")
   (synopsis
@@ -11725,7 +11449,7 @@ interface to File::Find::Object.")
          "0x3a2xgzrka73lcmmwalq2mmpzxa7s6pm01ahxf677ksqsdc3jrf"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-text-glob" ,perl-text-glob)))
+     (list perl-text-glob))
     (home-page "https://metacpan.org/release/File-Finder")
     (synopsis "Wrapper for @code{File::Find} ala @code{find(1)}")
     (description
@@ -11756,7 +11480,7 @@ used as the head of many different sequences.")
                 "14y29ja3lsa3yw0ll20lj96f3zz5zydjqi1c5nh9wxar8927ssab"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-io-string" ,perl-io-string)))
+     (list perl-io-string))
     (home-page "https://metacpan.org/release/Font-TTF")
     (synopsis "TTF font support for Perl")
     (description "This package provides a Perl module for TrueType/OpenType
@@ -11790,12 +11514,10 @@ prop, vhea, vmtx and the reading and writing of all other table types.")
          ;; This is needed for tests
          (add-after 'unpack 'set-TZDIR
            (lambda* (#:key inputs #:allow-other-keys)
-             (setenv "TZDIR" (string-append (assoc-ref inputs "tzdata")
-                                            "/share/zoneinfo"))
-             #t)))))
+             (setenv "TZDIR"
+                     (search-input-directory inputs "share/zoneinfo")))))))
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)
-       ("tzdata" ,tzdata-for-tests)))
+     (list perl-module-build tzdata-for-tests))
     (home-page "https://metacpan.org/release/Time-ParseDate")
     (synopsis "Collection of Perl modules for time/date manipulation")
     (description "Provides several perl modules for date/time manipulation:
@@ -11824,7 +11546,7 @@ libtime-parsedate-perl_2015.103-2_copyright"))))
         (base32 "0c0yd999h0ikj88c9j95wa087m87i0qh7vja3715y2kd7vixkci2"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)))
+     (list perl-module-build))
     ;; Unless some other homepage is out there...
     (home-page "https://packages.debian.org/stretch/libtime-period-perl")
     (synopsis "Perl library for testing if a time() is in a specific period")
@@ -11850,14 +11572,10 @@ till 5pm\" and \"on the second Tuesday of the month\" and \"between 4pm and
         (base32 "19mik0r5v1cmxfxm0h4lwqyj0nmq6jgnvvq96hqcjgylpvc02x1z"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-file-pushd" ,perl-file-pushd)
-       ("perl-path-tiny" ,perl-path-tiny)
-       ("perl-test-deep" ,perl-test-deep)
-       ("perl-test-filename" ,perl-test-filename)))
+     (list perl-file-pushd perl-path-tiny perl-test-deep
+           perl-test-filename))
     (propagated-inputs
-     `(("perl-number-compare" ,perl-number-compare)
-       ("perl-text-glob" ,perl-text-glob)
-       ("perl-try-tiny" ,perl-try-tiny)))
+     (list perl-number-compare perl-text-glob perl-try-tiny))
     (home-page "https://metacpan.org/release/Path-Iterator-Rule")
     (synopsis "Iterative, recursive file finder")
     (description "Path::Iterator::Rule iterates over files and directories to
@@ -11952,7 +11670,7 @@ the National Archives and Records Administration (NARA).")
         (base32 "064igp2wxgsz4yb33v1r90i8clwjzs2xnpvw9niqlqrbzzrd4q1l"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-exception" ,perl-test-exception)))
+     (list perl-test-exception))
     (home-page "https://metacpan.org/release/Regexp-Pattern")
     (synopsis "Collection of regexp patterns")
     (description "Regexp::Pattern is a convention for organizing reusable
@@ -11974,10 +11692,9 @@ regexp patterns in modules.")
          "16qls1yqcmhxrcx9agsmaypxa1nirq4nvbyzbww9984589m44ql1"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-install" ,perl-module-install)
-       ("perl-test-deep" ,perl-test-deep)))
+     (list perl-module-install perl-test-deep))
     (propagated-inputs
-     `(("perl-class-accessor" ,perl-class-accessor)))
+     (list perl-class-accessor))
     (home-page "https://metacpan.org/release/Data-SExpression")
     (synopsis "Parse Lisp S-Expressions into Perl data structures")
     (description "Data::SExpression parses Lisp S-Expressions into Perl data

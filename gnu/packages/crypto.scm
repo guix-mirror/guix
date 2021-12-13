@@ -86,6 +86,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix gexp)
   #:use-module (guix build-system cargo)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system copy)
@@ -230,9 +231,9 @@ communication, encryption, decryption, signatures, etc.")
        (modify-phases %standard-phases
          (delete 'configure))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("libbsd" ,libbsd)))
+     (list libbsd))
     (synopsis "Create and verify cryptographic signatures")
     (description "The signify utility creates and verifies cryptographic
 signatures using the elliptic curve Ed25519.  This is a Linux port of the
@@ -291,7 +292,7 @@ OpenBSD tool of the same name.")
     (arguments
      '(#:import-path "github.com/jedisct1/go-minisign"))
     (propagated-inputs
-     `(("go-golang-org-x-crypto" ,go-golang-org-x-crypto)))
+     (list go-golang-org-x-crypto))
     (home-page "https://github.com/jedisct1/go-minisign")
     (synopsis "Minisign verification library for Golang")
     (description "A Golang library to verify Minisign signatures.")
@@ -326,10 +327,7 @@ OpenBSD tool of the same name.")
        ("googletest-source" ,(package-source googletest))
        ("perl" ,perl)))
     (inputs
-     `(("attr" ,attr)
-       ("fuse" ,fuse)
-       ("openssl" ,openssl)
-       ("tinyxml2" ,tinyxml2)))
+     (list attr fuse openssl tinyxml2))
     (arguments
      `(#:configure-flags (list "-DUSE_INTERNAL_TINYXML=OFF")
        #:phases
@@ -396,7 +394,7 @@ the wrong hands.")
                           "SHAREDIR=/share/keyutils")
        #:test-target "test"))
     (inputs
-     `(("mit-krb5" ,mit-krb5)))
+     (list mit-krb5))
     (home-page "https://people.redhat.com/dhowells/keyutils/")
     (synopsis "Linux key management utilities")
     (description
@@ -439,9 +437,9 @@ secure operations. ")
                (install-file "ssss.1.html" docdir)
                #t))))))
     (inputs
-     `(("gmp" ,gmp)))
+     (list gmp))
     (native-inputs
-     `(("xmltoman" ,xmltoman)))
+     (list xmltoman))
     (home-page "http://point-at-infinity.org/ssss/")
     (synopsis "Shamir's secret sharing scheme implementation")
     (description "@command{ssss-split} and @command{ssss-combine} are utilities that split
@@ -462,7 +460,7 @@ total number of shares generated.")
                (base32
                 "136nfnpaz29hngwwnzrmc858gpnvnb977gf4ldbpapw1h1k3r8mk"))))
     (build-system gnu-build-system)
-    (native-inputs `(("sudo" ,sudo)))   ;presence needed for 'check' phase
+    (native-inputs (list sudo))   ;presence needed for 'check' phase
     (inputs
      `(("zsh" ,zsh)
        ("gnupg" ,gnupg)
@@ -555,7 +553,7 @@ user's graphical desktop.")
               (install-file "FORMAT" doc)
               #t))))))
     (inputs
-     `(("openssl" ,openssl)))
+     (list openssl))
     (home-page "https://www.tarsnap.com/scrypt.html")
     (synopsis "Memory-hard encryption tool based on scrypt")
     (description "This package provides a simple password-based encryption
@@ -613,8 +611,7 @@ attacks than alternative functions such as @code{PBKDF2} or @code{bcrypt}.")
          "0yxqqcqvj51fn7b7j5xqhz65v74arzgainn66c6k7inijbmr1xws"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)
-       ("perl-test-nowarnings" ,perl-test-nowarnings)))
+     (list perl-module-build perl-test-nowarnings))
     (home-page "https://metacpan.org/release/Math-Random-ISAAC-XS")
     (synopsis "C implementation of the ISAAC PRNG algorithm")
     (description "ISAAC (Indirection, Shift, Accumulate, Add, and Count) is a
@@ -640,9 +637,9 @@ This package implements the same interface as @code{Math::Random::ISAAC}.")
          "0z1b3xbb3xz71h25fg6jgsccra7migq7s0vawx2rfzi0pwpz0wr7"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-nowarnings" ,perl-test-nowarnings)))
+     (list perl-test-nowarnings))
     (propagated-inputs
-     `(("perl-math-random-isaac-xs" ,perl-math-random-isaac-xs)))
+     (list perl-math-random-isaac-xs))
     (home-page "https://metacpan.org/release/Math-Random-ISAAC")
     (synopsis "Perl interface to the ISAAC PRNG algorithm")
     (description "ISAAC (Indirection, Shift, Accumulate, Add, and Count) is a
@@ -668,16 +665,15 @@ generator.")
         (base32 "1rpdds3sy5l1fhngnkrsgwsmwd54wpicx3i9ds69blcskwkcwkpc"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build-tiny" ,perl-module-build-tiny)
-       ("perl-test-fatal" ,perl-test-fatal)))
+     (list perl-module-build-tiny perl-test-fatal))
     (propagated-inputs
-     `(("perl-capture-tiny" ,perl-capture-tiny)
-       ("perl-module-find" ,perl-module-find)
-       ("perl-module-runtime" ,perl-module-runtime)
-       ("perl-moo" ,perl-moo)
-       ("perl-namespace-clean" ,perl-namespace-clean)
-       ("perl-sub-exporter" ,perl-sub-exporter)
-       ("perl-type-tiny" ,perl-type-tiny)))
+     (list perl-capture-tiny
+           perl-module-find
+           perl-module-runtime
+           perl-moo
+           perl-namespace-clean
+           perl-sub-exporter
+           perl-type-tiny))
     (home-page "https://metacpan.org/release/Crypt-Random-Source")
     (synopsis "Get weak or strong random data from pluggable sources")
     (description "This module provides implementations for a number of
@@ -698,15 +694,11 @@ byte-oriented sources of random data.")
          "0dgbf4ncll4kmgkyb9fsaxn0vf2smc9dmwqzgh3259zc2zla995z"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-list-moreutils" ,perl-list-moreutils)
-       ("perl-test-leaktrace" ,perl-test-leaktrace)
-       ("perl-test-sharedfork" ,perl-test-sharedfork)
-       ("perl-test-warn" ,perl-test-warn)))
+     (list perl-list-moreutils perl-test-leaktrace perl-test-sharedfork
+           perl-test-warn))
     (inputs
-     `(("perl-crypt-random-source" ,perl-crypt-random-source)
-       ("perl-math-random-isaac" ,perl-math-random-isaac)
-       ("perl-math-random-isaac-xs" ,perl-math-random-isaac-xs)
-       ("perl-moo" ,perl-moo)))
+     (list perl-crypt-random-source perl-math-random-isaac
+           perl-math-random-isaac-xs perl-moo))
     (home-page "https://metacpan.org/release/Math-Random-Secure")
     (synopsis "Cryptographically secure replacement for rand()")
     (description "This module is intended to provide a
@@ -795,7 +787,7 @@ data on your platform, so the seed itself will be as random as possible.
                      "Cflags: -I${includedir}\n"))
                    #t))))))))
     (native-inputs
-     `(("unzip" ,unzip)))
+     (list unzip))
     (home-page "https://cryptopp.com/")
     (synopsis "C++ class library of cryptographic schemes")
     (description "Crypto++ is a C++ class library of cryptographic schemes.")
@@ -878,7 +870,7 @@ SHA-1, SHA-2, and SHA-3, yet is at least as secure as SHA-3.")
 (define-public rhash
   (package
     (name "rhash")
-    (version "1.3.9")
+    (version "1.4.2")
     (source
      (origin
        (method url-fetch)
@@ -887,40 +879,40 @@ SHA-1, SHA-2, and SHA-3, yet is at least as secure as SHA-3.")
        (file-name (string-append "rhash-" version ".tar.gz"))
        (sha256
         (base32
-         "1xn9fqa6rlnhsbgami45g82dlw9i1skg2sri3ydiinwak5ph1ca2"))))
+         "0qpc1fq7gdxxl11zya1gqhl9628jjk3x60q9sna43w0yz7sh03b0"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags
-       (list (string-append "--prefix=" (assoc-ref %outputs "out"))
-             ,@(let ((target (%current-target-system)))
-                 (if target
-                     `((string-append "--target=" ,target)
-                       (string-append "--cc="
-                                      (assoc-ref %build-inputs "cross-gcc")
-                                      "/bin/" ,target "-gcc"))
-                     '())))
-       #:make-flags
-       ;; The binaries in /bin need some help finding librhash.so.0.
-       (list (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib"))
-       #:test-target "test"             ; ‘make check’ just checks the sources
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'configure
-           ;; ./configure is not GNU autotools' and doesn't gracefully handle
-           ;; unrecognized options, so we must call it manually.
-           (lambda* (#:key configure-flags #:allow-other-keys)
-             (apply invoke "./configure" configure-flags)))
-         (add-before 'check 'patch-/bin/sh
-           (lambda _
-             (substitute* "Makefile"
-               (("/bin/sh") (which "sh")))
-             #t))
-         (add-after 'install 'install-library-extras
-           (lambda* (#:key make-flags #:allow-other-keys)
-             (apply invoke
-                    "make" "-C" "librhash"
-                    "install-lib-headers" "install-so-link"
-                    make-flags))))))
+     (list #:configure-flags
+           #~(list (string-append "--prefix=" #$output)
+                   #$@(let ((target (%current-target-system)))
+                        (if target
+                            #~((string-append "--target=" #$target)
+                               (string-append "--cc="
+                                              (assoc-ref %build-inputs "cross-gcc")
+                                              "/bin/" #$target "-gcc"))
+                            #~())))
+           #:make-flags
+           ;; The binaries in /bin need some help finding librhash.so.0.
+           #~(list (string-append "LDFLAGS=-Wl,-rpath=" #$output "/lib"))
+           #:test-target "test"         ; ‘make check’ just checks the sources
+           #:phases
+           #~(modify-phases %standard-phases
+              (delete 'configure)
+              (add-before 'build 'configure
+                ;; ./configure is not GNU autotools' and doesn't gracefully handle
+                ;; unrecognized options, so we must call it manually.
+                (lambda* (#:key configure-flags #:allow-other-keys)
+                  (apply invoke "./configure" configure-flags)))
+              (add-before 'check 'patch-/bin/sh
+                (lambda _
+                  (substitute* "Makefile"
+                    (("/bin/sh") (which "sh")))))
+              (add-after 'install 'install-library-extras
+                (lambda* (#:key make-flags #:allow-other-keys)
+                  (apply invoke
+                         "make" "-C" "librhash"
+                         "install-lib-headers" "install-so-link"
+                         make-flags))))))
     (home-page "https://sourceforge.net/projects/rhash/")
     (synopsis "Utility for computing hash sums")
     (description "RHash is a console utility for calculation and verification
@@ -973,9 +965,7 @@ SHA256, SHA512, SHA3, AICH, ED2K, Tiger, DC++ TTH, BitTorrent BTIH, GOST R
      `(("python" ,python-wrapper)
        ("python-docutils" ,python-docutils)))
     (inputs
-     `(("sqlite" ,sqlite)
-       ("bzip2" ,bzip2)
-       ("zlib" ,zlib)))
+     (list sqlite bzip2 zlib))
     (synopsis "Cryptographic library in C++11")
     (description "Botan is a cryptography library, written in C++11, offering
 the tools necessary to implement a range of practical systems, such as TLS/DTLS,
@@ -1031,11 +1021,9 @@ security.")
                (string-append "--with-openssl="
                               (assoc-ref %build-inputs "openssl")))))
       (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("libtool" ,libtool)))
+       (list autoconf automake libtool))
       (inputs
-       `(("openssl" ,openssl)))
+       (list openssl))
       (home-page "https://github.com/vstakhov/asignify")
       (synopsis "Cryptographic authentication and encryption tool and library")
       (description "Asignify offers public cryptographic signatures and
@@ -1103,9 +1091,7 @@ trivial to build for local use.  Portability is emphasized over performance.")
                              "--enable-module-ecdh"
                              "--enable-shared")))
       (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("libtool" ,libtool)))
+       (list autoconf automake libtool))
       ;; WARNING: This package might need additional configure flags to run properly.
       ;; See https://github.com/archlinux/svntogit-community/blob/packages/libsecp256k1/trunk/PKGBUILD.
       (synopsis "C library for EC operations on curve secp256k1")
@@ -1143,9 +1129,7 @@ Features:
         (base32 "1rnif3iny6pz1r3g69bagzr342mm3x0v66b60csnmm1rg44bd5v1"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
+     (list autoconf automake libtool))
     (arguments
      '(#:configure-flags '("--enable-module-recovery"
                            "--enable-experimental"
@@ -1193,10 +1177,9 @@ Features:
                 "0npgr6y85gzwksy8jkwa4yzvqwjprwnplx3yiw3ayk4f0ldlhaxa"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("nettle" ,nettle)
-       ("libxml2" ,libxml2)))
+     (list nettle libxml2))
     (home-page "http://stoken.sf.net")
     (synopsis "Software Token for cryptographic authentication")
     (description
@@ -1243,8 +1226,7 @@ utility/testing functions.")
                (mkdir-p man1)
                #t))))))
     (inputs
-     `(("libsodium" ,libsodium)
-       ("openssl" ,openssl)))
+     (list libsodium openssl))
     (synopsis "High-performance command-line tool for stream encryption")
     (description "Hpenc is a command-line tool for performing authenticated
 encryption (AES-GCM and ChaCha20-Poly1305) of streaming data.  It does not
@@ -1271,9 +1253,9 @@ quickly by using all your CPU cores and hardware acceleration.")
      ; No test suite
      `(#:tests? #f))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     (list pkg-config))
     (inputs
-     `(("libsodium" ,libsodium)))
+     (list libsodium))
     (home-page "https://jedisct1.github.io/minisign")
     (synopsis "Tool to sign files and verify signatures")
     (description
@@ -1339,14 +1321,11 @@ API.")
              (when tests?
                (add-installed-pythonpath inputs outputs)
                (invoke "pytest")))))))
-    (inputs `(("libolm" ,libolm)))
+    (inputs (list libolm))
     (propagated-inputs
-     `(("python-cffi" ,python-cffi)
-       ("python-future" ,python-future)))
+     (list python-cffi python-future))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-pytest-benchmark" ,python-pytest-benchmark)
-       ("python-aspectlib" ,python-aspectlib)))
+     (list python-pytest python-pytest-benchmark python-aspectlib))
     (synopsis "Python bindings for libolm")
     (description "The libolm library implements the Double Ratchet
 cryptographic ratchet.  It is written in C and C++11, and exposed as a C
@@ -1386,7 +1365,7 @@ API.  This package contains its Python bindings.")))
                  (install-file "README.md" docdir)
                  #t))))))
       (inputs
-       `(("openssl" ,openssl)))
+       (list openssl))
       (synopsis "Tool for hash length extension attacks")
       (description "@command{hash_extender} is a utility for performing hash
 length extension attacks supporting MD4, MD5, RIPEMD-160, SHA-0, SHA-1,
@@ -1419,9 +1398,9 @@ SHA-256, SHA-512, and WHIRLPOOL hashes.")
                (install-file "mkp224o" bindir)
                #t))))))
     (native-inputs
-     `(("autoconf" ,autoconf)))
+     (list autoconf))
     (inputs
-     `(("libsodium" ,libsodium)))
+     (list libsodium))
     (synopsis "Tor hidden service v3 name generator")
     (description "@code{mkp224o} generates valid ed25519 (hidden service
 version 3) onion addresses.  It allows one to produce customized vanity .onion
@@ -1443,8 +1422,7 @@ addresses using a brute-force method.")
         (base32 "0bpz1hazbhfb6pqi68x55kq6a31bgh6vwij836slmi4jqiwvnh5a"))
        (file-name (git-file-name name version))))
     (inputs
-     `(("git" ,git)
-       ("openssl" ,openssl)))
+     (list git openssl))
     (build-system copy-build-system)
     (arguments
      `(#:install-plan
@@ -1523,11 +1501,7 @@ non-encrypted files.")
      `(("python" ,python-wrapper)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("boost" ,boost)
-       ("curl" ,curl)
-       ("fuse" ,fuse)
-       ("range-v3" ,range-v3)
-       ("spdlog" ,spdlog)))
+     (list boost curl fuse range-v3 spdlog))
     (home-page "https://www.cryfs.org/")
     (synopsis "Encrypted FUSE filesystem for the cloud")
     (description "CryFS encrypts your files, so you can safely store them anywhere.
