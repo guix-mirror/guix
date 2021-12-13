@@ -1,0 +1,35 @@
+Versioneer does not work in the Guix build container because:
+
+* VCS information is unavailable
+* the build directory does not have the supported "$name-$version" format
+* as of 0.21, versioneer has no way to override the discovered values
+
+This patch adds support for extracting version from the
+'/tmp/guix-build-foo-0.1.drv-0' style directories created by the daemon.
+
+diff --git a/src/from_parentdir.py b/src/from_parentdir.py
+index 69ada9a..e0fac8f 100644
+--- a/src/from_parentdir.py
++++ b/src/from_parentdir.py
+@@ -15,6 +15,21 @@ def versions_from_parentdir(parentdir_prefix, root, verbose):
+             return {"version": dirname[len(parentdir_prefix):],
+                     "full-revisionid": None,
+                     "dirty": False, "error": None, "date": None}
++        # Guix specific patch: try extracting the version from the build
++        # directory.
++        elif dirname.startswith("guix-build-"):
++            delimiter = dirname.rindex(".drv-")
++            name_and_version = dirname[11:delimiter]
++            if name_and_version.startswith(parentdir_prefix):
++                guix_version = name_and_version[len(parentdir_prefix):]
++            elif name_and_version.startswith("python-{}".format(parentdir_prefix)):
++                guix_version = name_and_version[(7 + len(parentdir_prefix)):]
++            else:
++                break
++            return {"version": guix_version,
++                    "full-revisionid": None,
++                    "dirty": False, "error": None, "date": None}
++
+         rootdirs.append(root)
+         root = os.path.dirname(root)  # up a level
+ 

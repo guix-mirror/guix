@@ -26014,7 +26014,8 @@ applications with variable CPU loads).")
        (uri (pypi-uri "versioneer" version))
        (sha256
         (base32
-         "084fglxafbzvf1vbkzfajvs9qwnvjwwn8pxql9nrlpyipv5xpwk4"))))
+         "084fglxafbzvf1vbkzfajvs9qwnvjwwn8pxql9nrlpyipv5xpwk4"))
+       (patches (search-patches "python-versioneer-guix-support.patch"))))
     (build-system python-build-system)
     (home-page
      "https://github.com/python-versioneer/python-versioneer")
