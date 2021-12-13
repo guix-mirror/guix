@@ -1668,6 +1668,41 @@ spent loading the full derfinder package when running the F-statistics
 calculation in parallel.")
     (license license:artistic2.0)))
 
+(define-public r-drimseq
+  (package
+    (name "r-drimseq")
+    (version "1.22.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "DRIMSeq" version))
+       (sha256
+        (base32 "0y2jb0hb633id038zmwnfny6h4ai77fdyy02f77vha1z8xg5nl02"))))
+    (properties `((upstream-name . "DRIMSeq")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-biocparallel" ,r-biocparallel)
+       ("r-edger" ,r-edger)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-iranges" ,r-iranges)
+       ("r-limma" ,r-limma)
+       ("r-mass" ,r-mass)
+       ("r-reshape2" ,r-reshape2)
+       ("r-s4vectors" ,r-s4vectors)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://bioconductor.org/packages/DRIMSeq")
+    (synopsis "Differential transcript usage and tuQTL analyses with Dirichlet-multinomial model in RNA-seq")
+    (description
+     "The package provides two frameworks.  One for the differential
+transcript usage analysis between different conditions and one for the tuQTL
+analysis.  Both are based on modeling the counts of genomic features (i.e.,
+transcripts) with the Dirichlet-multinomial distribution.  The package also
+makes available functions for visualization and exploration of the data and
+results.")
+    (license license:gpl3+)))
+
 (define-public r-bluster
   (package
    (name "r-bluster")
