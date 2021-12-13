@@ -273,10 +273,7 @@ meaning that audio is compressed in FLAC without any loss in quality.")
    (build-system gnu-build-system)
    (native-inputs (list doxygen bison pkg-config))
    ;; FIXME: Add optional input liboggz
-   (inputs `(("libogg" ,libogg)
-             ("libpng" ,libpng)
-             ("python" ,python-wrapper)
-             ("zlib" ,zlib)))
+   (inputs (list libogg libpng python-wrapper zlib))
    (synopsis "Karaoke and text codec for embedding in ogg")
    (description
     "Kate is an overlay codec, originally designed for karaoke and text,

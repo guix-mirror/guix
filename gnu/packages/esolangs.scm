@@ -77,7 +77,7 @@ identified by unique ID codes).")
     (inputs
      (list readline))
     (native-inputs
-     `(("python-2" ,python-2)))         ; for the tests
+     (list python-2))         ; for the tests
     (synopsis "LOLCODE interpreter written in C")
     (description
      "@code{lci} is a LOLCODE interpreter written in C and is designed to be

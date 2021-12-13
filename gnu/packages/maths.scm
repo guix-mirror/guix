@@ -225,7 +225,7 @@ Some of the features include:
                      "092412jzxy6wdvpk96pfj499hpmaww8xllavbvlqspfpr7ips9id"))))
    (build-system gnu-build-system)
    (inputs
-    `(("fortran" ,gfortran)))
+    (list gfortran))
    (synopsis "Visualizing and demonstrating convolution")
    (description
     "GNU C-Graph is a tool for demonstrating the theory of convolution.
@@ -847,9 +847,7 @@ halfspaces) or by their double description with both representations.")
     (native-inputs
      (list autoconf automake libtool pkg-config))
     (inputs
-     `(("eigen" ,eigen)
-       ("lapack" ,lapack)
-       ("fortran" ,gfortran)))
+     (list eigen lapack gfortran))
     (synopsis "Fortran subroutines for solving eigenvalue problems")
     (description
      "ARPACK-NG is a collection of Fortran77 subroutines designed to solve
@@ -1060,7 +1058,7 @@ plotting engine by third-party applications like Octave.")
        (sha256
         (base32 "11wqmd443b4nksdbzp1msdws3av948nmwq1xz80w6hka3ss2aigd"))))
     (native-inputs
-     `(("fortran" ,gfortran)))
+     (list gfortran))
     (build-system gnu-build-system)
     (synopsis "General Cartographic Transformation Package (GCTP)")
     (description

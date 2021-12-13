@@ -1335,12 +1335,12 @@ interface.  It is implemented as a frontend to @code{klick}.")
            libtool
            pkg-config))
     (inputs
-     `(("alsa-lib" ,alsa-lib)
-       ("fftw" ,fftw)
-       ("gtk+" ,gtk+)
-       ("jack" ,jack-2)
-       ("json-c" ,json-c)
-       ("pulseaudio" ,pulseaudio)))
+     (list alsa-lib
+           fftw
+           gtk+
+           jack-2
+           json-c
+           pulseaudio))
     (home-page "http://lingot.nongnu.org/")
     (synopsis "Accurate & configurable musical instrument tuner")
     (description
@@ -1852,8 +1852,7 @@ complete studio.")
       (inputs
        (list liblo gtkmm-3 alsa-lib libxml++-2))
       (native-inputs
-       `(("glib:bin" ,glib "bin")
-         ("pkg-config" ,pkg-config)))
+       (list `(,glib "bin") pkg-config))
       (home-page "https://github.com/onkelDead/tascam-gtk")
       (synopsis "GTK+ based application to control Tascam US-16x08 DSP mixer")
       (description "This is a mixer application to control the Tascam US-16x08
@@ -3136,8 +3135,7 @@ improves on support for JACK features, such as JACK MIDI.")
                 "1zs5yy124bymfyapsnljr6rv2lnn5inwchm0xnwiw44b2d39l8hn"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libuuid" ,util-linux "lib")
-       ("libsndfile" ,libsndfile)))
+     (list `(,util-linux "lib") libsndfile))
     (native-inputs
      (list pkg-config))
     (home-page "https://linuxsampler.org/libgig/")
@@ -3283,8 +3281,7 @@ you to switch between different audio setups with just two mouse clicks.")
     (native-inputs (list pkg-config))
     ;; TODO: See https://github.com/iyoko/cursynth/issues/4 which currently
     ;; prevents us from using pulseaudio
-    (inputs `(("ncurses" ,ncurses)
-              ("alsa" ,alsa-lib)))
+    (inputs (list ncurses alsa-lib))
     (home-page "https://www.gnu.org/software/cursynth/")
     (synopsis "Polyphonic and MIDI subtractive music synthesizer using curses")
     (description "GNU cursynth is a polyphonic synthesizer that runs
@@ -4057,26 +4054,26 @@ available memory.")
                 "026v977kwb0wbmlmf6mnik328plxg8wykfx9ryvqhirac0aq39pk"))))
     (build-system gnu-build-system)
     (inputs
-     `(("alsa-lib" ,alsa-lib)
-       ("curl" ,curl)
-       ("faad2" ,faad2)
-       ("ffmpeg" ,ffmpeg-3.4)
-       ("file" ,file)
-       ("jack" ,jack-1)
-       ("libid3tag" ,libid3tag)
-       ("libltdl" ,libltdl)
-       ("libmodplug" ,libmodplug)
-       ("libmpcdec" ,libmpcdec)
-       ("libmad" ,libmad)
-       ("libogg" ,libogg)
-       ("libvorbis" ,libvorbis)
-       ("ncurses" ,ncurses)
-       ("openssl" ,openssl)
-       ("sasl" ,cyrus-sasl)
-       ("speex" ,speex)
-       ("taglib" ,taglib)
-       ("wavpack" ,wavpack)
-       ("zlib" ,zlib)))
+     (list alsa-lib
+           curl
+           faad2
+           ffmpeg-3.4
+           file
+           jack-1
+           libid3tag
+           libltdl
+           libmodplug
+           libmpcdec
+           libmad
+           libogg
+           libvorbis
+           ncurses
+           openssl
+           cyrus-sasl
+           speex
+           taglib
+           wavpack
+           zlib))
     (native-inputs
      (list pkg-config))
     (synopsis "Console audio player designed to be powerful and easy to use")

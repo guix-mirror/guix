@@ -138,9 +138,7 @@
     (native-inputs
      (list luajit pkg-config))
     (inputs
-     `(("alsa" ,alsa-lib)
-       ("sdl" ,sdl)
-       ("sdl2" ,sdl2)))
+     (list alsa-lib sdl sdl2))
     (synopsis "Memory Mapped Machine")
     (description "MMM is a shared memory protocol for virtualising access to
 framebuffer graphics, audio output and input event.")

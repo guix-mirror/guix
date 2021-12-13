@@ -1489,11 +1489,8 @@ Microsoft cabinet (.@dfn{CAB}) files.")
     (native-inputs
      (list bison pkg-config))
     (inputs
-     `(("gcab" ,gcab)
-       ("glib" ,glib)
-       ("libgsf" ,libgsf)
-       ("libxml2" ,libxml2)
-       ("uuid" ,util-linux "lib")))
+     (list gcab glib libgsf libxml2
+           `(,util-linux "lib")))
     (home-page "https://wiki.gnome.org/msitools")
     (synopsis "Windows Installer file manipulation tool")
     (description

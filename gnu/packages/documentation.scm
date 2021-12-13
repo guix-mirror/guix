@@ -246,8 +246,7 @@ and to some extent D.")
                                        "doc++-segfault-fix.patch"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("flex" ,flex)
-       ("gettext" ,gettext-minimal)))
+     (list flex gettext-minimal))
     (home-page "http://docpp.sourceforge.net/")
     (synopsis "Documentation system for C, C++, IDL, and Java")
     (description

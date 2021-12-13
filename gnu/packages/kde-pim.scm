@@ -358,33 +358,33 @@ Akonadi PIM data server.  It uses Xapian for indexing and querying.")
     (native-inputs
      (list extra-cmake-modules))
     (inputs
-     `(("akonadi" ,akonadi)
-       ("akonadi-calendar" ,akonadi-calendar)
-       ("akonadi-contacts" ,akonadi-contacts)
-       ("akonadi-mime" ,akonadi-mime)
-       ("boost" ,boost)
-       ("kcalendarcore" ,kcalendarcore)
-       ("kcalendarsupport" ,kcalendarsupport)
-       ("kcalutils" ,kcalutils)
-       ("kcodecs" ,kcodecs)
-       ("kcontacts" ,kcontacts)
-       ("kdbusaddons" ,kdbusaddons)
-       ("kdepim-apps-libs" ,kdepim-apps-libs)
-       ("kdiagram" ,kdiagram)
-       ("keventviews" ,keventviews)
-       ("ki18n" ,ki18n)
-       ("kiconthemes" ,kiconthemes)
-       ("kidentitymanagement" ,kidentitymanagement)
-       ("kio" ,kio)
-       ("kitemmodels" ,kitemmodels)
-       ("kldap" ,kldap)
-       ("kmailtransport" ,kmailtransport)
-       ("kmime" ,kmime)
-       ("kpimtextedit" ,kpimtextedit)
-       ("ktextwidgets" ,ktextwidgets)
-       ("kwallat" ,kwallet)
-       ("libkdepim" ,libkdepim)
-       ("qtbase" ,qtbase-5)))
+     (list akonadi
+           akonadi-calendar
+           akonadi-contacts
+           akonadi-mime
+           boost
+           kcalendarcore
+           kcalendarsupport
+           kcalutils
+           kcodecs
+           kcontacts
+           kdbusaddons
+           kdepim-apps-libs
+           kdiagram
+           keventviews
+           ki18n
+           kiconthemes
+           kidentitymanagement
+           kio
+           kitemmodels
+           kldap
+           kmailtransport
+           kmime
+           kpimtextedit
+           ktextwidgets
+           kwallet
+           libkdepim
+           qtbase-5))
     (home-page "https://invent.kde.org/pim/incidenceeditor")
     (synopsis "KDE PIM library for editing incidences")
     (description "This library provides an incidence editor for KDE PIM.")

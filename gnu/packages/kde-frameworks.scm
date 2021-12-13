@@ -3604,29 +3604,29 @@ http://community.kde.org/Frameworks/Porting_Notes should help with this.")
     (native-inputs
      (list extra-cmake-modules perl))
     (inputs
-     `(("giflib" ,giflib)
-       ("gperf" ,gperf)
-       ("karchive" ,karchive)
-       ("kcodecs" ,kcodecs)
-       ("kglobalaccel" ,kglobalaccel)
-       ("ki18n" ,ki18n)
-       ("kiconthemes" ,kiconthemes)
-       ("kio" ,kio)
-       ("kjs" ,kjs)
-       ("knotifications" ,knotifications)
-       ("kparts" ,kparts)
-       ("ktextwidgets" ,ktextwidgets)
-       ("kwallet" ,kwallet)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kwindowsystem" ,kwindowsystem)
-       ("kxmlgui" ,kxmlgui)
-       ("libjpeg" ,libjpeg-turbo)
-       ("libpng" ,libpng)
-       ("openssl" ,openssl)
-       ("phonon" ,phonon)
-       ("qtbase" ,qtbase-5)
-       ("qtx11extras" ,qtx11extras)
-       ("sonnet" ,sonnet)))
+     (list giflib
+           gperf
+           karchive
+           kcodecs
+           kglobalaccel
+           ki18n
+           kiconthemes
+           kio
+           kjs
+           knotifications
+           kparts
+           ktextwidgets
+           kwallet
+           kwidgetsaddons
+           kwindowsystem
+           kxmlgui
+           libjpeg-turbo
+           libpng
+           openssl
+           phonon
+           qtbase-5
+           qtx11extras
+           sonnet))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "KDE Frameworks 5 HTML widget and component")
     (description "KHTML is a web rendering engine, based on the KParts

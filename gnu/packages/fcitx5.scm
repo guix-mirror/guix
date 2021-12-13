@@ -154,10 +154,7 @@ client.")
         (base32 "0f3raxzkq0nwdfpc9hxvg65vga09gznjjgy9dr6jlkamzx8zlyw9"))))
     (build-system cmake-build-system)
     (inputs
-     `(("fcitx5" ,fcitx5)
-       ("lua" ,lua)
-       ("gettext" ,gettext-minimal)
-       ("libpthread-stubs" ,libpthread-stubs)))
+     (list fcitx5 lua gettext-minimal libpthread-stubs))
     (native-inputs
      (list extra-cmake-modules))
     (home-page "https://github.com/fcitx/fcitx5-lua")

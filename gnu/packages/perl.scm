@@ -1875,9 +1875,7 @@ of the style used by the Git version control system.")
                 "0clphq6a17chvb663fvjnxqvyvh26g03x0fl4bg9vy4ibdnzg2v2"))))
     (build-system perl-build-system)
     (inputs
-     `(("perl-mixin-linewise" ,perl-mixin-linewise)
-       ("perl-perlio-utf8_strict" ,perl-perlio-utf8_strict)
-       ("perl-sub-exporter" ,perl-sub-exporter)))
+     (list perl-mixin-linewise perl-perlio-utf8_strict perl-sub-exporter))
     (home-page "https://metacpan.org/release/Config-INI")
     (synopsis "Simple .ini-file format reader and writer")
     (description "@code{Config::INI} is a module that facilates the reading
@@ -4789,7 +4787,7 @@ file names in a directory.")
     (native-inputs
      (list perl-test-warnings))
     (propagated-inputs
-     `(("perl-perlio-utf8_strict" ,perl-perlio-utf8_strict)))
+     (list perl-perlio-utf8_strict))
     (home-page "https://metacpan.org/release/File-Slurper")
     (synopsis "Simple, sane and efficient module to slurp a file")
     (description "This module provides functions for fast and correct file
@@ -6374,8 +6372,7 @@ knowledge of Apache.")
                 "1wmfr19w9y8qys7b32mnj1vmps7qwdahqas71a9p62ac8xw0dwkx"))))
     (build-system perl-build-system)
     (inputs
-     `(("perl-perlio-utf8_strict" ,perl-perlio-utf8_strict)
-       ("perl-sub-exporter" ,perl-sub-exporter)))
+     (list perl-perlio-utf8_strict perl-sub-exporter))
     (home-page "https://metacpan.org/release/Mixin-Linewise")
     (synopsis "Write your linewise code for handles; this does the rest")
     (description "It's boring to deal with opening files for IO, converting
@@ -10998,10 +10995,8 @@ attribute names.")
         (base32 "0pyqr12jsqagna75fm2gijfzw06wy1hrh5chn9hwnmcfddda66g8"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-distribution" ,perl-test-distribution)
-       ("perl-text-pod" ,perl-test-pod)
-       ("perl-test-pod-coverage" ,perl-test-pod-coverage)
-       ("perl-test-portability-files" ,perl-test-portability-files)))
+     (list perl-test-distribution perl-test-pod perl-test-pod-coverage
+           perl-test-portability-files))
     (home-page "https://metacpan.org/dist/XSLoader")
     (synopsis "Dynamically load C libraries into Perl code")
     (description "XSLoader module defines a standard simplified interface to the
@@ -11305,14 +11300,18 @@ such that being individual extensions would be wasteful.")
            perl-test-most
            perl-tie-simple))
     (inputs
-     `(("freeglut" ,freeglut)
-       ("libjpeg" ,libjpeg-turbo)
-       ("libpng" ,libpng)
-       ("libsmpeg" ,libsmpeg)
-       ("libtiff" ,libtiff)
-       ("mesa" ,mesa)
-       ("sdl" ,(sdl-union
-                (list sdl sdl-gfx sdl-image sdl-mixer sdl-pango sdl-ttf)))))
+     (list freeglut
+           libjpeg-turbo
+           libpng
+           libsmpeg
+           libtiff
+           mesa
+           (sdl-union (list sdl
+                            sdl-gfx
+                            sdl-image
+                            sdl-mixer
+                            sdl-pango
+                            sdl-ttf))))
     (propagated-inputs
      (list perl-file-sharedir perl-tie-simple))
     (home-page "https://metacpan.org/release/SDL")

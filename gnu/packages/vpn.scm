@@ -690,9 +690,7 @@ and probably others.")
                 "1qsfgpxg553s8rc9cyrc4k96z0pislxsdxb9wyhp8fdprkak2mw2"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("autotools" ,automake)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf automake pkg-config))
     (inputs
      (list openssl ppp))
     (home-page "https://github.com/adrienverge/openfortivpn")

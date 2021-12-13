@@ -849,12 +849,12 @@ maintain the Noto Fonts project.")
      (list check gcc-10 ;TODO: Remove when the default compiler is > GCC 7.
            pkg-config scdoc))
     (propagated-inputs
-     `(;; Required by fcft.pc.
-       ("fontconfig" ,fontconfig)
-       ("freetype" ,freetype)
-       ("harfbuzz" ,harfbuzz)
-       ("pixman" ,pixman)
-       ("tllist" ,tllist)))
+     (list ;; Required by fcft.pc.
+           fontconfig
+           freetype
+           harfbuzz
+           pixman
+           tllist))
     (synopsis "Font loading and glyph rasterization library")
     (description
      "@code{fcft} is a small font loading and glyph rasterization library
@@ -995,9 +995,7 @@ Unicode Charts.  It was developed for use with DejaVu Fonts project.")
         (base32 "1shcs5l27l7380dvacvhl8wrdq3lix0wnhzvfdh7vx2pkzjs3zk6"))))
     (build-system meson-build-system)
     (native-inputs
-     `(("gtk-doc" ,gtk-doc/stable)
-       ("pkg-config" ,pkg-config)
-       ("python" ,python-wrapper)))
+     (list gtk-doc/stable pkg-config python-wrapper))
     (inputs
      (list freetype fribidi harfbuzz))
     (home-page "https://github.com/HOST-Oman/libraqm")

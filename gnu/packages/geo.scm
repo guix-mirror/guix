@@ -1315,11 +1315,7 @@ OpenStreetMap data files.")
     (native-inputs
      (list gnome-common gtk-doc/stable pkg-config))
     (inputs
-     `(("cairo" ,cairo)
-       ("glib" ,glib)
-       ("gobject-introspection" ,gobject-introspection)
-       ("gtk+" ,gtk+)
-       ("libsoup" ,libsoup-minimal-2)))
+     (list cairo glib gobject-introspection gtk+ libsoup-minimal-2))
     (home-page "https://nzjrs.github.io/osm-gps-map/")
     (synopsis "GTK+ widget for displaying OpenStreetMap tiles")
     (description

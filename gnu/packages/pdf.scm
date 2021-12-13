@@ -873,11 +873,7 @@ SyncTeX support, and rudimentary support for annotations and forms.")
          "09i88v3wacmx7f96dmq0l3afpyv95lh6jrx16xzm0jd1szdrhn5j"))))
     (build-system gnu-build-system)
     (inputs
-     `(("gtk" ,gtk+-2)
-       ("pango" ,pango)
-       ("poppler" ,poppler)
-       ("glib" ,glib)
-       ("libgnomecanvas" ,libgnomecanvas)))
+     (list gtk+-2 pango poppler glib libgnomecanvas))
     (native-inputs
      (list pkg-config))
     (home-page "http://xournal.sourceforge.net/")
@@ -1092,9 +1088,8 @@ the PDF pages.")
         (base32 "17z0bn8kihiyqjd1m5jr80m7ry06l1qn0l8v918xg5gs7q2calcf"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-pikepdf" ,python-pikepdf)
-       ("python-pillow" ,python-pillow)
-       ("python-tkinter" ,python "tk")))
+     (list python-pikepdf python-pillow
+           `(,python "tk")))
     (home-page "https://gitlab.mister-muffin.de/josch/img2pdf")
     (synopsis "Convert images to PDF via direct JPEG inclusion")
     (description

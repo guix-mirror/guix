@@ -763,13 +763,13 @@ move windows, switch between desktops, etc.).")
     (native-inputs
      (list autoconf autoconf-archive automake pkg-config))
     (inputs
-     `(("giblib" ,giblib)
-       ("imlib2" ,imlib2)
-       ("libbsd" ,libbsd)
-       ("libx11" ,libx11)
-       ("libxcomposite" ,libxcomposite)
-       ("libxext" ,libxext)
-       ("libXfixes" ,libxfixes)))
+     (list giblib
+           imlib2
+           libbsd
+           libx11
+           libxcomposite
+           libxext
+           libxfixes))
     (home-page "https://github.com/resurrecting-open-source-projects/scrot")
     (synopsis "Command-line screen capture utility for X Window System")
     (description

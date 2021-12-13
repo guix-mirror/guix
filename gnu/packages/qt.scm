@@ -1977,7 +1977,7 @@ instances.")
           "1idaivamp1jvbbai9yzv471c62xbqxhaawccvskaizihkd0lq0jx"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python" ,python-wrapper)))
+     (list python-wrapper))
     (propagated-inputs
      (list python-toml python-packaging))
     (home-page "https://www.riverbankcomputing.com/software/sip/intro")

@@ -5927,15 +5927,13 @@ configuration language.")
                 "0qq5g6bbd1a1ml1wk8jj9z39a899jzqbf7aizr3pvyz0f4kz8mis"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-
-       ;; For bootstrapping.
-       ("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-
-       ;; For generating manuals.
-       ("rst2man" ,python-docutils)))
+     (list pkg-config
+           ;; For bootstrapping.
+           autoconf
+           automake
+           libtool
+           ;; For generating manuals.
+           python-docutils))
     (inputs
      (list python varnish))
     (synopsis "Collection of Varnish modules")
@@ -7981,9 +7979,7 @@ tools:
                  (base32
                   "1ffzia679axcsccx2fxjpxhb0i5xc42zxn446x6c1170w6v69qf6"))))
       (build-system cmake-build-system)
-      (native-inputs `(("gtest" ,googletest)
-                       ("doxygen" ,doxygen)
-                       ("graphviz" ,graphviz)))
+      (native-inputs (list googletest doxygen graphviz))
       (synopsis "Strictly RFC 3986 compliant URI parsing and handling library")
       (description "uriparser is a strictly RFC 3986 compliant URI parsing and
 handling library written in C89 (\"ANSI C\").  uriparser is fast and supports

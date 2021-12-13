@@ -1835,14 +1835,10 @@ editing on the Web.")
         (base32 "1zd0pfiphnijh1l94swb3mjrpmjsn37z11mklamd7zw6h2d4zh4d"))))
     (build-system gnu-build-system)
     (inputs
-     `(("gsl" ,gsl)
-       ("gtk3" ,gtk+)
-       ("ncurses" ,ncurses)))
+     (list gsl gtk+ ncurses))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("texinfo" ,texinfo)
-       ("texlive" ,(texlive-updmap.cfg (list texlive-epsf
-                                             texlive-tex-texinfo)))))
+     (list pkg-config texinfo
+           (texlive-updmap.cfg (list texlive-epsf texlive-tex-texinfo))))
     (home-page "https://anthonybradford.github.io/optionmatrix/")
     (synopsis "Financial derivative calculator")
     (description

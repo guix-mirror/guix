@@ -565,9 +565,7 @@ sensitivities for functions without the need to depend on ChainRules itself.")
         (base32 "1vlkyp72d514gyb4k3yhjl1g7f24ncmz61j56p4sdi9f76rk9fx9"))))
     (build-system julia-build-system)
     (propagated-inputs
-     `(("julia-chainrulescore" ,julia-chainrulescore)
-       ("julia-compat" ,julia-compat)
-       ("julia-finitedifference" ,julia-finitedifferences)))
+     (list julia-chainrulescore julia-compat julia-finitedifferences))
     (home-page "https://github.com/JuliaDiff/ChainRulesTestUtils.jl")
     (synopsis "Common utilities used by downstream automatic differentiation tools")
     (description "This package is designed to help in testing
@@ -1252,7 +1250,7 @@ valuable enough at this time.")
     (inputs
      ;; We don't want to propagate the bootstrap version.
      ;; Cycle with Documenter.jl in later versions.
-     `(("julia-documenter" ,julia-documenter-bootstrap)))
+     (list julia-documenter-bootstrap))
     (home-page "https://github.com/JuliaDocs/DocumenterMarkdown.jl")
     (synopsis "Documenter's Markdown")
     (description "This package enables the Markdown / MkDocs backend of

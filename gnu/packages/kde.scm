@@ -1099,8 +1099,7 @@ a variety of formats, including PDF, PostScript, DejaVu, and EPub.")
     (native-inputs
      (list extra-cmake-modules kdoctools))
     (inputs
-     `(("gettext" ,gettext-minimal)
-       ("qtbase" ,qtbase-5)))
+     (list gettext-minimal qtbase-5))
     (home-page "https://kde.org/applications/development")
     (synopsis "Tools for translating DocBook XML files with Gettext")
     (description "This is a collection of tools that facilitate translating

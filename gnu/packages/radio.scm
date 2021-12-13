@@ -874,10 +874,7 @@ using GNU Radio and the Qt GUI toolkit.")
         (base32 "0y43241s3p8qzn7x6x28v5v2bf934riznj14bb7m6k6vgd849qzl"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("gettext" ,gettext-minimal)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf automake gettext-minimal pkg-config))
     (inputs
      (list alsa-lib
            fltk

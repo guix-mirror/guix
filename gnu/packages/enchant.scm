@@ -58,12 +58,12 @@
         (base32 "0wbb6dwmzlsyy224y0liis0azgzwbjdvcyzc31pw1aw6vbp36na6"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("catch" ,catch-framework2)
-       ("git" ,git-minimal)
-       ("perl" ,perl)
-       ;;FIX-ME: Building with ronn fails.
-       ;;("ronn" ,ronn)
-       ("pkg-config" ,pkg-config)))
+     (list catch-framework2
+           git-minimal
+           perl
+           ;;FIX-ME: Building with ronn fails.
+           ;;("ronn" ,ronn)
+           pkg-config))
     (inputs
      (list boost))
     (propagated-inputs

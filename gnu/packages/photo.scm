@@ -188,7 +188,7 @@ cards and generate meaningful file and folder names.")
     (native-inputs
      (list pkg-config))
     (inputs
-     `(("libjpeg" ,libjpeg-turbo)))     ;for lossy DNGs and old Kodak cameras
+     (list libjpeg-turbo))     ;for lossy DNGs and old Kodak cameras
     (propagated-inputs
      (list lcms))                 ;for color profiles
     (home-page "https://www.libraw.org")
@@ -360,10 +360,7 @@ and a wide variety of other metadata.")
                 "12cv4886l1czfjwy7k6ipgf3zjksgwhdjzr2s9fdg33vqcv2hlrv"))))
     (build-system cmake-build-system)
     (inputs
-     `(("libjpeg" ,libjpeg-turbo)
-       ("libpng" ,libpng)
-       ("libtiff" ,libtiff)
-       ("zlib" ,zlib)))
+     (list libjpeg-turbo libpng libtiff zlib))
     (home-page "http://panotools.sourceforge.net/")
     (synopsis "Library for panoramic images")
     (description

@@ -2422,12 +2422,9 @@ in a fast and accurate way.")
          "1k8szlpm19rcwcxdny9qdm3gmaqq8akb4xlvrzyz8c2d679aak6l"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("ipython" ,python-ipython)
-       ("numpy" ,python-numpy)
-       ("pandas" ,python-pandas)
-       ("scipy" ,python-scipy)))
+     (list python-ipython python-numpy python-pandas python-scipy))
     (native-inputs
-     `(("nose" ,python-nose)))
+     (list python-nose))
     (home-page "https://github.com/interpretable-ml/iml")
     (synopsis "Interpretable Machine Learning (iML) package")
     (description "Interpretable ML (iML) is a set of data type objects,

@@ -166,14 +166,14 @@ contains the correct result for the test.")
          "0574hbqzxzyv6vsk5kzbf04kz58y0iy8x9ydcj4b8fpncgmgy63g"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-tagged" ,ghc-tagged)
-       ("ghc-regex-tdfa" ,ghc-regex-tdfa)
-       ("ghc-optparse-applicative" ,ghc-optparse-applicative)
-       ("ghc-unbounded-delays" ,ghc-unbounded-delays)
-       ("ghc-async" ,ghc-async)
-       ("ghc-ansi-terminal" ,ghc-ansi-terminal)
-       ("ghc-clock-bootstrap" ,ghc-clock-bootstrap)
-       ("ghc-wcwidth" ,ghc-wcwidth-bootstrap)))
+     (list ghc-tagged
+           ghc-regex-tdfa
+           ghc-optparse-applicative
+           ghc-unbounded-delays
+           ghc-async
+           ghc-ansi-terminal
+           ghc-clock-bootstrap
+           ghc-wcwidth-bootstrap))
     (home-page "http://documentup.com/feuerbach/tasty")
     (synopsis "Modern and extensible testing framework")
     (description "Tasty is a modern testing framework for Haskell.  It lets
@@ -490,8 +490,7 @@ use HUnit assertions as QuickCheck properties.")
          "1wrnrm9sq4s0bly0q58y80g4153q45iglqa34xsi2q3bd62nqyyq"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-random" ,ghc-random)
-       ("ghc-splitmix" ,ghc-splitmix-bootstrap)))
+     (list ghc-random ghc-splitmix-bootstrap))
     (home-page "https://github.com/nick8325/quickcheck")
     (synopsis "Automatic testing of Haskell programs")
     (description

@@ -256,50 +256,50 @@ Features are:
     (native-inputs
      (list extra-cmake-modules kdoctools pkg-config))
     (inputs
-     `(("alsa-lib" ,alsa-lib)
-       ("boost" ,boost)
-       ("expat" ,expat)
-       ("glib" ,glib)
-       ("gpgme" ,gpgme)
-       ("jsoncpp" ,jsoncpp)
-       ("kcmutils" ,kcmutils)
-       ("kconfig" ,kconfig)
-       ("kcontacts" ,kcontacts)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kcrash" ,kcrash)
-       ("kdbusaddons" ,kdbusaddons)
-       ("kdelibs4support" ,kdelibs4support)
-       ("kdnssd" ,kdnssd)
-       ("kemoticons" ,kemoticons)
-       ("khtml" ,khtml)
-       ("ki18n" ,ki18n)
-       ("kidentitymanagement" ,kidentitymanagement)
-       ("kjs" ,kjs)
-       ;; TODO? kleopatra (additionally to libkleo)
-       ("knotifyconfig" ,knotifyconfig)
-       ("kparts" ,kparts)
-       ("kpimtextedit" ,kpimtextedit)
-       ("ktexteditor" ,ktexteditor)
-       ("kwallet" ,kwallet)
-       ;; TODO: Libgadu
-       ("libidn" ,libidn)
-       ("libkleo" ,libkleo)
-       ;; TODO: LibMeanwhile
-       ("libotr" ,libotr)
-       ("libsrtp" ,libsrtp)
-       ("libxml2" ,libxml2)
-       ("libxstl" ,libxslt)
-       ;; TODO: Mediastreamer
-       ("openssl" ,openssl)
-       ("ortp" ,ortp)
-       ("phonon" ,phonon)
-       ("qca" ,qca)
-       ("qgpgme" ,qgpgme)
-       ("qtbase" ,qtbase-5)
-       ("speex" ,speex)
-       ("v4l-utils" ,v4l-utils)
-       ;; TODO: Xmms
-       ("zlib" ,zlib)))
+     (list alsa-lib
+           boost
+           expat
+           glib
+           gpgme
+           jsoncpp
+           kcmutils
+           kconfig
+           kcontacts
+           kcoreaddons
+           kcrash
+           kdbusaddons
+           kdelibs4support
+           kdnssd
+           kemoticons
+           khtml
+           ki18n
+           kidentitymanagement
+           kjs
+           ;; TODO? kleopatra (additionally to libkleo)
+           knotifyconfig
+           kparts
+           kpimtextedit
+           ktexteditor
+           kwallet
+           ;; TODO: Libgadu
+           libidn
+           libkleo
+           ;; TODO: LibMeanwhile
+           libotr
+           libsrtp
+           libxml2
+           libxslt
+           ;; TODO: Mediastreamer
+           openssl
+           ortp
+           phonon
+           qca
+           qgpgme
+           qtbase-5
+           speex
+           v4l-utils
+           ;; TODO: Xmms
+           zlib))
     ;; TODO: enable video support
     (home-page "https://kde.org/applications/internet/org.kde.kopete")
     (synopsis "Instant messaging and chat application")
@@ -332,25 +332,25 @@ This package is part of the KDE networking module.")
     (native-inputs
      (list extra-cmake-modules kdoctools))
     (inputs
-     `(("kbookmarks" ,kbookmarks)
-       ("freerdp" ,freerdp)
-       ("kcmutils" ,kcmutils)
-       ("kcompletion" ,kcompletion)
-       ("kconfig" ,kconfig)
-       ("kdnssd" ,kdnssd)
-       ("ki18n" ,ki18n)
-       ("kiconthemes" ,kiconthemes)
-       ("knotifications" ,knotifications)
-       ("knotifyconfig" ,knotifyconfig)
-       ("knotifyconfig" ,knotifyconfig)
-       ("kwallet" ,kwallet)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kwindowsystem" ,kwindowsystem)
-       ("kxmlgui" ,kxmlgui)
-       ("libssh2" ,libssh)
-       ;; TODO: libvnc{server,client} - is not tigervnc-{server,client}
-       ("oxygen-icons" ,oxygen-icons) ; default icon set
-       ("qtbase" ,qtbase-5)))
+     (list kbookmarks
+           freerdp
+           kcmutils
+           kcompletion
+           kconfig
+           kdnssd
+           ki18n
+           kiconthemes
+           knotifications
+           knotifyconfig
+           knotifyconfig
+           kwallet
+           kwidgetsaddons
+           kwindowsystem
+           kxmlgui
+           libssh
+           ;; TODO: libvnc{server,client} - is not tigervnc-{server,client}
+           oxygen-icons ; default icon set
+           qtbase-5))
     (home-page "https://kde.org/applications/internet/org.kde.krdc")
     (synopsis "Remote desktop client")
     (description "KRDC is a client application that allows you to view or even

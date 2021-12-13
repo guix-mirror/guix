@@ -5232,7 +5232,7 @@ across multiple CPU cores.")
     (build-system ruby-build-system)
     (native-inputs
      ;; TODO: Add ruby-minitest-proveit once available.
-     `(("hoe" ,ruby-hoe)))
+     (list ruby-hoe))
     (synopsis "ParseTree fork which includes generic S-exp processing tools")
     (description "The sexp_processor package is derived from ParseTree, but
 contrary to ParseTree, it includes all the generic S-exp processing tools.
@@ -5254,9 +5254,7 @@ Amongst the included tools are @code{Sexp}, @code{SexpProcessor} and
          "09qcdyjjw3p7g6cjm5m9swkms1xnv35ndiy7yw24cas16qrhha6c"))))
     (build-system ruby-build-system)
     (native-inputs
-     `(("hoe" ,ruby-hoe)
-       ("racc" ,ruby-racc)
-       ("unifdef" ,unifdef)))
+     (list ruby-hoe ruby-racc unifdef))
     (propagated-inputs
      (list ruby-sexp-processor))
     (home-page "https://github.com/seattlerb/ruby_parser/")

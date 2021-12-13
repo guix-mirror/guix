@@ -8670,8 +8670,8 @@ kernel side implementation.")
         (base32 "1ygaw69pfz2hfzw9cqzg9rfnjzrdbfkwsiinz6qs2h56dssjz0y9"))))
     (build-system gnu-build-system)
     (inputs
-     `(("lz4" ,lz4)
-       ("libuuid" ,util-linux "lib")))
+     (list lz4
+           `(,util-linux "lib")))
     (native-inputs
      (list autoconf automake libtool pkg-config))
     (home-page "https://git.kernel.org/pub/scm/linux/kernel/git/xiang/erofs-utils.git/")

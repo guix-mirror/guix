@@ -1344,11 +1344,7 @@ Scheme by using Guile’s foreign function interface.")
                   "1wx5h6wa9c0na8mrnr2nv1nzjvq68zyrly8yyp11dsskhaw4y33h"))))
       (build-system gnu-build-system)
       (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("emacs" ,emacs-minimal)
-         ("pkg-config" ,pkg-config)
-         ("texinfo" ,texinfo)))
+       (list autoconf automake emacs-minimal pkg-config texinfo))
       (inputs
        (list guile-3.0 gnutls guile-json-4))
       (home-page "https://framagit.org/prouby/guile-mastodon")
@@ -1881,13 +1877,13 @@ users and in some situations.")
                 "037md1sg7bgsa4478hz1dbsivsxzdnl5acadlrsh4ds2yxbsb5jp"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("gettext" ,gettext-minimal)
-       ("libtool" ,libtool)
-       ("texinfo" ,texinfo)
-       ("pkg-config" ,pkg-config)
-       ("which" ,which)))
+     (list autoconf
+           automake
+           gettext-minimal
+           libtool
+           texinfo
+           pkg-config
+           which))
     (inputs
      (list guile-3.0 eudev))
     (home-page "https://github.com/artyom-poptsov/guile-udev")
@@ -2144,8 +2140,7 @@ quotes. ")
                 (base32
                  "1fyjckmygkhq22lq8nqc86yl5zzbqd7a944dnz5c1f6vx92b9hiq"))))
     (build-system gnu-build-system)
-    (native-inputs `(("pkgconfig" ,pkg-config)
-                     ("gperf" ,gperf)))
+    (native-inputs (list pkg-config gperf))
     (inputs (list guile-3.0))
     (synopsis "Framework for building readers for GNU Guile")
     (description
@@ -2696,8 +2691,7 @@ The picture values can directly be displayed in Geiser.")
     (name "guile2.2-picture-language")
     (inputs (list guile-2.2))
     (propagated-inputs
-     `(("guile-cairo" ,guile2.2-cairo)
-       ("guile-rsvg" ,guile2.2-rsvg)))))
+     (list guile2.2-cairo guile2.2-rsvg))))
 
 (define-public guile-studio
   (let ((commit "dd0ad42e51feafebda7cc29afe7c8bc7a182a842")
@@ -3823,8 +3817,7 @@ as signed sessions, multipart message support, etc.")
     (inputs
      (list guile-2.2))
     (propagated-inputs
-     `(("guile-irregex" ,guile2.2-irregex)
-       ("guile-gcrypt" ,guile2.2-gcrypt)))))
+     (list guile2.2-irregex guile2.2-gcrypt))))
 
 (define-public guile-lens
   (let ((commit "14b15d07255f9d3f55d40a3b750d13c9ee3a154f")

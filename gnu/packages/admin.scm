@@ -206,13 +206,13 @@ simplicity in mind.")
     (native-inputs
      (list bison flex))
     (inputs
-     `(("libgcrypt" ,libgcrypt)
-       ("libgpg-error" ,libgpg-error)
-       ("libmhash" ,libmhash)
-       ("pcre:static" ,pcre "static")
-       ("pcre" ,pcre)
-       ("zlib:static" ,zlib "static")
-       ("zlib" ,zlib)))
+     (list libgcrypt
+           libgpg-error
+           libmhash
+           `(,pcre "static")
+           pcre
+           `(,zlib "static")
+           zlib))
     (synopsis "File and directory integrity checker")
     (description
      "AIDE (Advanced Intrusion Detection Environment) is a file and directory
@@ -645,9 +645,7 @@ console.")
     (inputs
      (list ncurses))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("python" ,python-minimal-wrapper)))     ; for scripts/MakeHeader.py
+     (list autoconf automake python-minimal-wrapper))     ; for scripts/MakeHeader.py
     (home-page "https://htop.dev")
     (synopsis "Interactive process viewer")
     (description
@@ -2303,14 +2301,14 @@ characters can be replaced as well, as can UTF-8 characters.")
                 "1zlh44w67py416hkvw6nrfmjickc2d43v51vcli5p374d5sw84ql"))))
     (build-system gnu-build-system)
     (inputs
-     `(("ntfs-3g" ,ntfs-3g)
-       ("util-linux" ,util-linux "lib")
-       ("openssl" ,openssl)
-       ;; FIXME: add reiserfs.
-       ("zlib" ,zlib)
-       ("e2fsprogs" ,e2fsprogs)
-       ("libjpeg" ,libjpeg-turbo)
-       ("ncurses" ,ncurses)))
+     (list ntfs-3g
+           `(,util-linux "lib")
+           openssl
+           ;; FIXME: add reiserfs.
+           zlib
+           e2fsprogs
+           libjpeg-turbo
+           ncurses))
     (home-page "https://www.cgsecurity.org/wiki/TestDisk")
     (synopsis "Data recovery tool")
     (description
@@ -3918,12 +3916,12 @@ late.")
                   #t))))
     (build-system gnu-build-system)
     (inputs
-     `(("mpi" ,openmpi)
-       ("munge" ,munge)
-       ("boost" ,boost)
-       ("libelf" ,libelf)
-       ("libgcrypt" ,libgcrypt)
-       ("libgpg-error" ,libgpg-error)))
+     (list openmpi
+           munge
+           boost
+           libelf
+           libgcrypt
+           libgpg-error))
     (synopsis "Infrastructue for large scale tool daemon launching")
     (description
      "LaunchMON is a software infrastructure that enables HPC run-time

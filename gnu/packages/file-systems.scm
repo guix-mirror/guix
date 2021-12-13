@@ -354,15 +354,15 @@ ones.")
     (native-inputs
      (list autoconf automake pkg-config))
     (inputs
-     `(("bzip2" ,bzip2)
-       ("e2fsprogs" ,e2fsprogs)
-       ("libgcrypt" ,libgcrypt)
-       ("lz4" ,lz4)
-       ("lzo" ,lzo)
-       ("util-linux" ,util-linux "lib")
-       ("xz" ,xz)
-       ("zlib" ,zlib)
-       ("zstd:lib" ,zstd "lib")))
+     (list bzip2
+           e2fsprogs
+           libgcrypt
+           lz4
+           lzo
+           `(,util-linux "lib")
+           xz
+           zlib
+           `(,zstd "lib")))
     (synopsis "File system back-up, deployment, and migration tool")
     (description
      "FSArchiver saves the contents of a file system to a compressed archive

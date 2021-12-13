@@ -103,9 +103,7 @@
         (base32 "0lsg791x6n95pxg6vif8qfc46nqcamhjq3g0dl5xqf6imy7n3acd"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
-     `(("clang" ,clang)
-       ("pkg-config" ,pkg-config)
-       ("python" ,python-wrapper)))
+     (list clang pkg-config python-wrapper))
     (inputs
      (list glib))
     (synopsis "Code checker for C")
@@ -435,7 +433,7 @@ a multi-paradigm automated test framework for C++ and Objective-C.")
                 "100r0kmra8jmra2hv92lzvwcmphpaiccwvq3lpdsa5b7hailhach"))))
     (build-system cmake-build-system)
     (inputs
-     `(("python" ,python-wrapper)))
+     (list python-wrapper))
     (synopsis "Automated test framework for C++ and Objective-C")
     (description "Catch2 stands for C++ Automated Test Cases in Headers and is
 a multi-paradigm automated test framework for C++ and Objective-C.")
@@ -1619,8 +1617,7 @@ testresources package instead.")
      (list python-pbr))
     (arguments '())
     (native-inputs
-     `(("python-fixtures" ,python-fixtures)
-       ("python-testtols" ,python-testtools)))
+     (list python-fixtures python-testtools))
     (description
      "Testresources is an extension to Python's unittest to allow declarative
 use of resources by test cases.")))
@@ -1638,12 +1635,10 @@ use of resources by test cases.")))
          "0j0ymmnc5nfxi1qzvy59j27viqca7l7xd0y9x29g7yr0h693j804"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-extras" ,python-extras)
-       ("python-testtools" ,python-testtools-bootstrap)))
+     (list python-extras python-testtools-bootstrap))
     (native-inputs
-     `(("python-fixtures" ,python-fixtures-bootstrap)
-       ("python-hypothesis" ,python-hypothesis)
-       ("python-testscenarios" ,python-testscenarios-bootstrap)))
+     (list python-fixtures-bootstrap python-hypothesis
+           python-testscenarios-bootstrap))
     (home-page "https://launchpad.net/subunit")
     (synopsis "Python implementation of the subunit protocol")
     (description
@@ -2108,9 +2103,7 @@ seamlessly into your existing Python unit testing work flow.")
          "02j101m5grjrbvrgjap17jsxd1hgawkylmyswcn33vf42mxh9zzr"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-hypothesis" ,python-hypothesis)
-       ("python-lark-parser" ,python-lark-parser)
-       ("python-libcst" ,python-libcst-minimal)))
+     (list python-hypothesis python-lark-parser python-libcst-minimal))
     (home-page "https://github.com/Zac-HD/hypothesmith")
     (synopsis "Strategies for generating Python programs")
     (description
@@ -2318,7 +2311,7 @@ recognize TestCases.")
          "0gf2dpahpl5igb7jh1sr9acj3z3gp7zahqdqb69nk6wx01c8kc1g"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://github.com/fschulze/pytest-warnings")
     (synopsis "Pytest plugin to list Python warnings in pytest report")
     (description
@@ -2347,7 +2340,7 @@ pytest report.")
          "038049nyjl7di59ycnxvc9nydivc5m8np3hqq84j2iirkccdbs5n"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://bitbucket.org/memedough/pytest-capturelog/overview")
     (synopsis "Pytest plugin to catch log messages")
     (description
@@ -2372,7 +2365,7 @@ pytest report.")
     (native-inputs
      (list unzip))
     (propagated-inputs
-     `(("pytest" ,python-pytest)))
+     (list python-pytest))
     (home-page "https://github.com/eisensheng/pytest-catchlog")
     (synopsis "Pytest plugin to catch log messages")
     (description

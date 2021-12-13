@@ -2131,8 +2131,7 @@ Markup Language.")
          "14h7nyfbl5vpfk0rbviy4ygdfx0yx5kncvg6jpbdb0dhwna0ssm6"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-zope-security" ,python-zope-security-bootstrap)
-       ("python-zope-testrunner" ,python-zope-testrunner)))
+     (list python-zope-security-bootstrap python-zope-testrunner))
     (propagated-inputs
      (list python-zope-interface))
     (home-page "https://pypi.org/project/zope.proxy/")
@@ -2224,12 +2223,12 @@ Zope3, which are are special objects that have a structural location.")
            python-zope-proxy
            python-zope-schema))
     (native-inputs
-     `(("python-btrees" ,python-btrees)
-       ("python-zope-component" ,python-zope-component-bootstrap)
-       ("python-zope-configuration" ,python-zope-configuration-bootstrap)
-       ("python-zope-location" ,python-zope-location-bootstrap)
-       ("python-zope-testing" ,python-zope-testing)
-       ("python-zope-testrunner" ,python-zope-testrunner)))
+     (list python-btrees
+           python-zope-component-bootstrap
+           python-zope-configuration-bootstrap
+           python-zope-location-bootstrap
+           python-zope-testing
+           python-zope-testrunner))
     (home-page "https://pypi.org/project/zope.security/")
     (synopsis "Zope security framework")
     (description "Zope.security provides a generic mechanism to implement
@@ -3015,9 +3014,7 @@ library.")
     (propagated-inputs
      (list python-gevent python-requests))
     (native-inputs
-     `(("python-nose" ,python-nose)
-       ("python-zope.interface" ,python-zope-interface)
-       ("python-zope.event" ,python-zope-event)))
+     (list python-nose python-zope-interface python-zope-event))
     (home-page "https://github.com/kennethreitz/grequests")
     (synopsis "Python library for asynchronous HTTP requests")
     (description "GRequests is a Python library that allows you to use

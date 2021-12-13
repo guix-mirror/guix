@@ -271,15 +271,15 @@ assembler, a C compiler and a linker.  The assembler uses Intel syntax
                   "0p6wklslkkp3s4aisj3w5a53bagqn5fy4m6088ppd4fcfxgqkrcd"))))
       (build-system gnu-build-system)
       (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("bison" ,bison)
-         ("flex" ,flex)
-         ("help2man" ,help2man)
-         ("gettext" ,gettext-minimal)
-         ("libtool" ,libtool)
-         ("makeinfo" ,texinfo)
-         ("pkg-config" ,pkg-config)))
+       (list autoconf
+             automake
+             bison
+             flex
+             help2man
+             gettext-minimal
+             libtool
+             texinfo
+             pkg-config))
       (home-page "https://www.gnu.org/software/libjit/")
       (synopsis "Just-In-Time compilation library")
       (description

@@ -508,30 +508,30 @@ remind you to take a break now and then.")
     (native-inputs
      (list extra-cmake-modules kdoctools))
     (inputs
-     `(("kauth" ,kauth)
-       ("kconfig" ,kconfig)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcompletion" ,kcompletion)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kcrash" ,kcrash)
-       ("kdbusaddons" ,kdbusaddons)
-       ("ki18n" ,ki18n)
-       ("kiconthemes" ,kiconthemes)
-       ("kio" ,kio)
-       ("kjobwidgets" ,kjobwidgets)
-       ("knotifications" ,knotifications)
-       ("knotifyconfig" ,knotifyconfig)
-       ("ktextwidgets" ,ktextwidgets)
-       ("kwallet" ,kwallet)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kwindowsystem" ,kwindowsystem)
-       ("kxmlgui" ,kxmlgui)
-       ("libsmbclient" ,samba)
-       ("oxygen-icons" ,oxygen-icons) ;; default icon set
-       ("plasma-framework" ,plasma-framework)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)
-       ("solid" ,solid)))
+     (list kauth
+           kconfig
+           kconfigwidgets
+           kcompletion
+           kcoreaddons
+           kcrash
+           kdbusaddons
+           ki18n
+           kiconthemes
+           kio
+           kjobwidgets
+           knotifications
+           knotifyconfig
+           ktextwidgets
+           kwallet
+           kwidgetsaddons
+           kwindowsystem
+           kxmlgui
+           samba
+           oxygen-icons ;; default icon set
+           plasma-framework
+           qtbase-5
+           qtdeclarative
+           solid))
     (home-page "https://kde.org/applications/utilities/org.kde.smb4k")
     (synopsis "Samba (SMB) share advanced browser")
     (description "Smb4K is an network neighborhood browser for the KDE

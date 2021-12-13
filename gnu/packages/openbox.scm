@@ -50,17 +50,17 @@
     (build-system gnu-build-system)
     (native-inputs (list pkg-config))
     (propagated-inputs (list python2-pyxdg))
-    (inputs `(("imlib2" ,imlib2)
-              ("libxml2" ,libxml2)
-              ("librsvg" ,(librsvg-for-system))
-              ("libsm" ,libsm)
-              ("libxcursor" ,libxcursor)
-              ("libxinerama" ,libxinerama)
-              ("libxml2" ,libxml2)
-              ("libxrandr" ,libxrandr)
-              ("libxft" ,libxft)
-              ("pango" ,pango)
-              ("python-2" ,python-2)))
+    (inputs (list imlib2
+                  libxml2
+                  (librsvg-for-system)
+                  libsm
+                  libxcursor
+                  libxinerama
+                  libxml2
+                  libxrandr
+                  libxft
+                  pango
+                  python-2))
     (synopsis "Box style window manager")
     (description
      "Openbox is a highly configurable, next generation window manager with

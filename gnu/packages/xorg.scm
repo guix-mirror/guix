@@ -6253,12 +6253,12 @@ Conventions Manual) and some of the @dfn{EWMH}
     (native-inputs
      (list pkg-config autoconf automake))
     (inputs
-     `(("libX11" ,libx11)
-       ("libXext" ,libxext)
-       ("libXcomposite" ,libxcomposite)
-       ("libXfixes" ,libxfixes)
-       ("libXdamage" ,libxdamage)
-       ("libXrender" ,libxrender)))
+     (list libx11
+           libxext
+           libxcomposite
+           libxfixes
+           libxdamage
+           libxrender))
     (synopsis "X Compositing manager using RENDER")
     (description "xcompmgr is a sample compositing manager for X servers
 supporting the XFIXES, DAMAGE, RENDER, and COMPOSITE extensions.  It enables

@@ -2814,7 +2814,7 @@ applications.  That is, compute distances and related measures for angular
         (base32
          "0wihj538wdnr71wdldym83qadb4kh68a6rkallwbh2f25r27b881"))))
     (build-system r-build-system)
-    (inputs `(("libjpeg" ,libjpeg-turbo)))
+    (inputs (list libjpeg-turbo))
     (home-page "https://www.rforge.net/jpeg/")
     (synopsis "Read and write JPEG images with R")
     (description "This package provides a way to read, write and display
@@ -4545,8 +4545,7 @@ dimensioned arrays.")
     (properties `((upstream-name . "RMySQL")))
     (build-system r-build-system)
     (inputs
-     `(("mariadb-dev" ,mariadb "dev")
-       ("zlib" ,zlib)))
+     (list `(,mariadb "dev") zlib))
     (propagated-inputs
      (list r-dbi))
     (home-page "https://github.com/r-dbi/RMySQL")
@@ -11389,7 +11388,7 @@ back to file after modifications.")
          "1snzn7nxy0rwz0bzjsg6k04c0n811dgn8gn9cmn2v78aj57ayjmi"))))
     (properties `((upstream-name . "gitcreds")))
     (build-system r-build-system)
-    (inputs `(("git" ,git-minimal)))
+    (inputs (list git-minimal))
     (native-inputs (list r-knitr))
     (home-page "https://github.com/r-lib/gitcreds")
     (synopsis "Query git credentials from R")
@@ -12612,9 +12611,7 @@ redundant complex conjugate when the input is real data.")
          "1zha6bzb1rmfl6n2xjkygs9wfi3ah9cjr7a6jzk4zqc5kvl58lak"))))
     (build-system r-build-system)
     (inputs
-     `(("libtiff" ,libtiff)
-       ("libjpeg" ,libjpeg-turbo)
-       ("zlib" ,zlib)))
+     (list libtiff libjpeg-turbo zlib))
     (native-inputs
      (list pkg-config))
     (home-page "https://www.rforge.net/tiff/")
@@ -19356,8 +19353,7 @@ both R code and compiled C/C++/FORTRAN code.")
     (propagated-inputs
      (list r-cpp11))
     (inputs
-     `(("fontconfig" ,fontconfig)
-       ("zlib" ,zlib)))
+     (list fontconfig zlib))
     (native-inputs
      (list pkg-config r-knitr))
     (home-page "https://github.com/r-lib/systemfonts")
@@ -22075,8 +22071,7 @@ currently limited to 8 bit greyscale images and 24, 32 bit (A)RGB images.")
     (properties `((upstream-name . "readbitmap")))
     (build-system r-build-system)
     (inputs
-     `(("libjpeg" ,libjpeg-turbo)
-       ("libpng" ,libpng)))
+     (list libjpeg-turbo libpng))
     (propagated-inputs
      (list r-bmp r-jpeg r-png r-tiff))
     (home-page "https://github.com/jefferis/readbitmap")
@@ -24795,8 +24790,7 @@ subpopulation type designs.")
     (properties `((upstream-name . "nbconvertR")))
     (build-system r-build-system)
     (inputs
-     `(("jupyter" ,python-nbconvert)
-       ("pandoc" ,pandoc)))
+     (list python-nbconvert pandoc))
     (home-page "https://cran.r-project.org/web/packages/nbconvertR/")
     (synopsis "Vignette engine wrapping Jupyter notebooks")
     (description
@@ -28692,11 +28686,7 @@ the font tool-set provided by the @code{systemfonts} package.")
     (properties `((upstream-name . "ragg")))
     (build-system r-build-system)
     (inputs
-     `(("freetype" ,freetype)
-       ("libjpeg" ,libjpeg-turbo)
-       ("libpng" ,libpng)
-       ("libtiff" ,libtiff)
-       ("zlib" ,zlib)))
+     (list freetype libjpeg-turbo libpng libtiff zlib))
     (propagated-inputs
      (list r-systemfonts r-textshaping))
     (native-inputs

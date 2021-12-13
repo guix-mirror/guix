@@ -200,10 +200,7 @@ for reading and writing.")
         (base32 "0nh12dr7gk4ki55lz95pkm4fpf7kazirra3zax9pab6v4qql4hlw"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("automake" ,automake)
-       ("autoreconf" ,autoconf)
-       ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)))
+     (list automake autoconf libtool pkg-config))
     (home-page "https://github.com/liberfa/erfa")
     (synopsis "Essential Routines for Fundamental Astronomy")
     (description
@@ -1224,10 +1221,9 @@ functions, so that they can be called with scalar or array inputs.")
         (base32 "0wxdqn92q1grv8k7xi7h88ac6wnznw4xh5bdlz1vz6za2dgsyj4m"))))
     (build-system python-build-system)
     (native-inputs
-     `(("cython" ,python-cython)
-       ("pytest" ,python-pytest)))
+     (list python-cython python-pytest))
     (inputs
-     `(("numpy" ,python-numpy)))
+     (list python-numpy))
     (home-page "https://github.com/kbarbary/sep")
     (synopsis "Astronomical source extraction and photometry library")
     (description

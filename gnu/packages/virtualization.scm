@@ -2195,20 +2195,16 @@ which is a hypervisor.")
                 "1h23a8nzdxjyvw44dwh903563n3b1z5skx8g0b1p1v5cif3iqpr5"))))
     (build-system meson-build-system)
     (inputs
-     `(("libsoup" ,libsoup-minimal-2)
-       ("libxml2" ,libxml2)
-       ("libxslt" ,libxslt)
-       ("json-glib" ,json-glib)
-       ("libarchive" ,libarchive)))
+     (list libsoup-minimal-2 libxml2 libxslt json-glib libarchive))
     (native-inputs
-     `(("perl" ,perl)
-       ("gobject-introspection" ,gobject-introspection)
-       ("gettext" ,gettext-minimal)
-       ("pkg-config" ,pkg-config)
-       ;; Tests
-       ("python" ,python)
-       ("pytest" ,python-pytest)
-       ("requests" ,python-requests)))
+     (list perl
+           gobject-introspection
+           gettext-minimal
+           pkg-config
+           ;; Tests
+           python
+           python-pytest
+           python-requests))
     (home-page "https://gitlab.com/libosinfo/osinfo-db-tools")
     (synopsis "Tools for managing the osinfo database")
     (description "This package contains a set of tools to assist

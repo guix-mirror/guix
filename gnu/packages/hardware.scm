@@ -669,8 +669,7 @@ as the Pinebook Pro.")
                 "008vvw504kh40br5v2xkqavnp9vpmjvf768faqzv1d00fd53ingn"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("xmllint" ,libxml2)))
+     (list pkg-config libxml2))
     (home-page "https://clusterlabs.github.io/libqb/")
     (synopsis "Library providing high performance logging, tracing, ipc, and poll")
     (description "Libqb is a library with the primary purpose of providing

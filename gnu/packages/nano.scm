@@ -39,8 +39,7 @@
        (base32 "0ds9qas1zxvvx8qbpjmh4yk4gdg3cgs3ly27krcp6a5vlk6vhzbm"))))
     (build-system gnu-build-system)
     (inputs
-     `(("gettext" ,gettext-minimal)
-       ("ncurses" ,ncurses)))
+     (list gettext-minimal ncurses))
     (home-page "https://www.nano-editor.org/")
     (synopsis "Small, user-friendly console text editor")
     (description

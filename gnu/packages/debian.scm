@@ -281,10 +281,7 @@ unpacking them into a directory which can eventually be chrooted into.")
                 "1sbdjcb44g2s1zxjf9kxrp9drf9mmh6b49a9z3k428gmc6zsci4r"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("gettext" ,gettext-minimal)
-       ("po4a" ,po4a)))
+     (list autoconf automake gettext-minimal po4a))
     (home-page "https://packages.debian.org/unstable/debianutils")
     (synopsis "Miscellaneous shell utilities")
     (description

@@ -599,33 +599,33 @@ Some features:
     (native-inputs
      (list extra-cmake-modules librsvg pkg-config kdoctools))
     (inputs
-     `(("also-lib" ,alsa-lib)
-       ("audiofile" ,audiofile)
-       ("flac" ,flac)
-       ("id3lib" ,id3lib)
-       ("karchive" ,karchive)
-       ("kcompletion" ,kcompletion)
-       ("kconfig" ,kconfig)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kcrash" ,kcrash)
-       ("kdbusaddons" ,kdbusaddons)
-       ("ki18n" ,ki18n)
-       ("kiconthemes" ,kiconthemes)
-       ("kio" ,kio)
-       ("kservice" ,kservice)
-       ("ktextwidgets" ,ktextwidgets)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kxmlgui" ,kxmlgui)
-       ("libmad" ,libmad)
-       ("libsamplerate" ,libsamplerate)
-       ("libvorbis" ,libvorbis)
-       ("opus" ,opus)
-       ("oxygen-icons" ,oxygen-icons) ; default icon set
-       ("pulseaudio" ,pulseaudio)
-       ("qtbase" ,qtbase-5)
-       ("qtmultimedia" ,qtmultimedia)
-       ("zlib" ,zlib)))
+     (list alsa-lib
+           audiofile
+           flac
+           id3lib
+           karchive
+           kcompletion
+           kconfig
+           kconfigwidgets
+           kcoreaddons
+           kcrash
+           kdbusaddons
+           ki18n
+           kiconthemes
+           kio
+           kservice
+           ktextwidgets
+           kwidgetsaddons
+           kxmlgui
+           libmad
+           libsamplerate
+           libvorbis
+           opus
+           oxygen-icons ; default icon set
+           pulseaudio
+           qtbase-5
+           qtmultimedia
+           zlib))
     (home-page "https://kde.org/applications/multimedia/org.kde.kwave")
     (synopsis "Sound editor for KDE")
     (description "Kwave is a sound editor designed for the KDE Desktop

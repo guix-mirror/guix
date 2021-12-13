@@ -1216,8 +1216,7 @@ all of them.  Currently supported window managers include:
          "0h52hj3ay8mfhwvmfxbxlfyq74hifdk8wxgxp7fr4iy6189hg7w7"))))
     (build-system gnu-build-system)
     (inputs
-     `(("python-2" ,python-2)
-       ("gtk+-2" ,gtk+-2)))
+     (list python-2 gtk+-2))
     (native-inputs
      (list python2-pygtk gtk-doc pkg-config))
     (synopsis "Library for registering global keyboard shortcuts")
@@ -1699,24 +1698,21 @@ display a clock or apply image manipulation techniques to the background image."
        (sha256
         (base32 "109a49f064ma5js2d7maribmfalswbmmhq2fraa7hfz5pf2jxs2w"))))
     (build-system meson-build-system)
-    (inputs `(("date" ,date)
-              ("fmt" ,fmt)
-              ("gtk-layer-shell" ,gtk-layer-shell)
-              ("gtkmm" ,gtkmm-3)
-              ("jsoncpp" ,jsoncpp)
-              ("libdbusmenu" ,libdbusmenu)
-              ("libinput" ,libinput)
-              ("libmpdclent" ,libmpdclient)
-              ("libnl" ,libnl)
-              ("libxml2" ,libxml2)
-              ("pulseaudio" ,pulseaudio)
-              ("spdlog" ,spdlog)
-              ("wayland" ,wayland)))
+    (inputs (list date
+                  fmt
+                  gtk-layer-shell
+                  gtkmm-3
+                  jsoncpp
+                  libdbusmenu
+                  libinput
+                  libmpdclient
+                  libnl
+                  libxml2
+                  pulseaudio
+                  spdlog
+                  wayland))
     (native-inputs
-     `(("glib:bin" ,glib "bin")
-       ("pkg-config" ,pkg-config)
-       ("scdoc" ,scdoc)
-       ("wayland-protocols" ,wayland-protocols)))
+     (list `(,glib "bin") pkg-config scdoc wayland-protocols))
     (home-page "https://github.com/Alexays/Waybar")
     (synopsis "Wayland bar for Sway and Wlroots based compositors")
     (description "Waybar is a highly customisable Wayland bar for Sway and

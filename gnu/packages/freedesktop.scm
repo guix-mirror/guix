@@ -1256,7 +1256,7 @@ formats.")
     (native-inputs
      (list pkg-config))
     (inputs
-     `(("udev" ,eudev)))
+     (list eudev))
     (home-page "http://0pointer.de/blog/projects/being-smart.html")
     (synopsis "ATA S.M.A.R.T. reading and parsing library")
     (description
@@ -1436,9 +1436,8 @@ these interfaces, based on the useradd, usermod and userdel commands.")
                 "16q550sy84izi5ic3sbbhjnnka2fwhj8vvdrirpn9xspbsgbc3sm"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("glib:bin" ,glib "bin") ; for glib-mkenums
-       ("pkg-config" ,pkg-config)
-       ("python" ,python-wrapper)))
+     (list `(,glib "bin") ; for glib-mkenums
+           pkg-config python-wrapper))
     (propagated-inputs
      (list glib)) ; required by mbim-glib.pc
     (inputs
@@ -1469,9 +1468,8 @@ which speak the Mobile Interface Broadband Model (MBIM) protocol.")
     (inputs
      (list libgudev))
     (native-inputs
-     `(("glib:bin" ,glib "bin") ; for glib-mkenums
-       ("pkg-config" ,pkg-config)
-       ("python" ,python-wrapper)))
+     (list `(,glib "bin") ; for glib-mkenums
+           pkg-config python-wrapper))
     (propagated-inputs
      (list glib)) ; required by qmi-glib.pc
     (synopsis "Library to communicate with QMI-powered modems")
@@ -1577,9 +1575,7 @@ different sorts of messages in different formats.")
     (native-inputs
      (list autoconf automake libtool pkg-config))
     (inputs
-     `(("xsltproc" ,libxslt)
-       ("python" ,python-2)
-       ("python-dbus" ,python2-dbus)))
+     (list libxslt python-2 python2-dbus))
     (propagated-inputs
      (list telepathy-glib))
     (home-page "https://telepathy.freedesktop.org/")
@@ -1604,14 +1600,10 @@ messaging clients such as Empathy, GNOME Shell or KDE Telepathy.")
         (base32 "00xxv38cfdirnfvgyd56m60j0nkmsv5fz6p2ydyzsychicxl6ssc"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("glib:bin" ,glib "bin") ; for glib-compile-schemas, etc.
-       ("pkg-config" ,pkg-config)))
+     (list `(,glib "bin") ; for glib-compile-schemas, etc.
+           pkg-config))
     (inputs
-     `(("dconf" ,dconf)
-       ("gtk-doc" ,gtk-doc)
-       ("libgnome-keyring" ,libgnome-keyring)
-       ("python" ,python-2)
-       ("xsltproc" ,libxslt)))
+     (list dconf gtk-doc libgnome-keyring python-2 libxslt))
     (propagated-inputs
      (list telepathy-glib))
     (home-page "https://telepathy.freedesktop.org/wiki/Components/Mission_Control/")

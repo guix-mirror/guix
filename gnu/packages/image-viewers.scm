@@ -373,8 +373,7 @@ collection.  Geeqie was initially based on GQview.")
                (base32
                 "0hi9v0rdx47nys0wvm9xasdrafa34r5kq6crb074a0ipwmc60iiq"))))
     (build-system gnu-build-system)
-    (inputs `(("gtk+" ,gtk+-2)
-              ("libjpeg" ,libjpeg-turbo)))
+    (inputs (list gtk+-2 libjpeg-turbo))
     (native-inputs (list intltool pkg-config))
     (synopsis "Simple and fast image viewer for X")
     (description "gpicview is a lightweight GTK+ 2.x based image viewer.
@@ -794,10 +793,7 @@ preloading.")
     (native-inputs
      (list pkg-config))
     (inputs
-     `(("freetype" ,freetype)
-       ("libjpeg" ,libjpeg-turbo)
-       ("glib" ,glib)
-       ("imagemagick" ,imagemagick)))
+     (list freetype libjpeg-turbo glib imagemagick))
     (synopsis "Convert images to ANSI/Unicode characters")
     (description
      "Chafa is a command-line utility that converts all kinds of images,

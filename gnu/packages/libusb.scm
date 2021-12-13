@@ -557,8 +557,7 @@ devices.")
         (base32 "1nr4z4b10vpbh3ss525r7spz4i43zim2ba5qzfl15dgdxshxxivb"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libusb" ,libusb)
-       ("udev" ,eudev)))
+     (list libusb eudev))
     (native-inputs
      (list autoconf automake libtool pkg-config))
     (home-page "https://github.com/libusb/hidapi")

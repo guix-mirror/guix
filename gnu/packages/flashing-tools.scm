@@ -152,9 +152,7 @@ brick your device.")
        (base32 "15m1w1qad3dj7r8n5ng1qqcaiyx1gyd6hnc3p2apgjllccdp77qg"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libelf" ,libelf)
-       ("libusb" ,libusb-compat)
-       ("libftdi" ,libftdi)))
+     (list libelf libusb-compat libftdi))
     (native-inputs
      (list bison flex))
     (home-page "https://www.nongnu.org/avrdude/")

@@ -335,8 +335,7 @@ a generic Scheme interaction mode for the GNU Emacs editor.")
          (file-name (git-file-name name version))))
       (build-system emacs-build-system)
       (propagated-inputs
-       `(("geiser" ,emacs-geiser)
-         ("auto-complete" ,emacs-auto-complete)))
+       (list emacs-geiser emacs-auto-complete))
       (synopsis "Auto-complete backend for geiser")
       (description
        "This package provides an auto-complete source for Scheme projects
@@ -868,10 +867,8 @@ rebasing, and other common Git operations.")
                (base32
                 "1v1y4fir1plz4kj0cvkcd29wibli4dw7vp4fmbxq4df76d8iy8yd"))))
     (build-system emacs-build-system)
-    (propagated-inputs `(("dash" ,emacs-dash)
-                         ("with-editor" ,emacs-with-editor)
-                         ("magit" ,emacs-magit)
-                         ("transient" ,emacs-transient)))
+    (propagated-inputs (list emacs-dash emacs-with-editor emacs-magit
+                             emacs-transient))
     (home-page "https://github.com/magit/magit-svn")
     (synopsis "Git-SVN extension to Magit")
     (description
@@ -927,8 +924,7 @@ process, passing on the arguments as command line arguments.")
         (base32 "1amr2c08mq1nnn6k66mgz4rzyni4np7gxm96g4qyla2cbfbachgk"))))
     (build-system emacs-build-system)
     (propagated-inputs
-     `(("magit" ,emacs-magit)
-       ("transient" ,emacs-transient)))
+     (list emacs-magit emacs-transient))
     (home-page "https://github.com/magit/magit-annex/")
     (synopsis "Git-annex support for Magit")
     (description
@@ -2252,7 +2248,7 @@ light user interface.")
          "0q80f0plch6k4lhs8c9qm3mfycfbp3kn5sjrk9zxgxwnn901y9mp"))))
     (build-system emacs-build-system)
     (propagated-inputs
-     `(("emms" ,emacs-emms)))
+     (list emacs-emms))
     (home-page "https://github.com/momomo5717/emms-mode-line-cycle")
     (synopsis "Display the EMMS mode line as a ticker")
     (description
@@ -3499,7 +3495,7 @@ restore the saved place.")
                 "0sszdl4kvqbihdh8d7mybpp0d8yw2p3gyiipjcxz9xhvvmw3ww4x"))))
     (build-system emacs-build-system)
     (propagated-inputs
-     `(("dash" ,emacs-dash)))
+     (list emacs-dash))
     (home-page "https://notabug.org/alezost/emacs-bui")
     (synopsis "Buffer interface library for Emacs")
     (description
@@ -3583,8 +3579,7 @@ management tasks from Emacs.  To begin with, run @code{M-x guix-about} or
                 "0i0bwbav5861j2y15j9nd5m9rdqg9q97zgcbld8pivr9nyxy63lz"))))
     (build-system emacs-build-system)
     (propagated-inputs
-     `(("bui" ,emacs-bui)
-       ("magit-popup" ,emacs-magit-popup)))
+     (list emacs-bui emacs-magit-popup))
     (home-page "https://notabug.org/alezost/emacs-build-farm")
     (synopsis "Emacs interface for Hydra and Cuirass build farms")
     (description
@@ -6351,9 +6346,7 @@ with Irony mode using Clang tooling.")
                (base32 "0qa5a8wzvzxwqql92ibc9s43k8sj3vwn7skz9hfr8av0skkhx996"))))
     (build-system emacs-build-system)
     (inputs
-     `(("irony-mode" ,emacs-irony-mode)
-       ("flycheck-mode" ,emacs-flycheck)
-       ("emacs-company" ,emacs-company)))
+     (list emacs-irony-mode emacs-flycheck emacs-company))
     (synopsis "Live syntax checking frontend for Flycheck using irony-mode")
     (description "This package provides a frontend for Flycheck that lets
 irony-mode do the syntax checking.")
@@ -6375,7 +6368,7 @@ irony-mode do the syntax checking.")
         (base32 "1l5qpr66v1l12fb50yh73grb2rr85xxmbj19mm33b5rdrq2bqmmd"))))
     (build-system emacs-build-system)
     (inputs
-     `(("irony-mode" ,emacs-irony-mode)))
+     (list emacs-irony-mode))
     (synopsis "Eldoc integration for irony-mode")
     (description "Irony-eldoc is an eldoc extension that shows documentation
 for the current function or variable in the minibuffer.")
@@ -14897,7 +14890,7 @@ additions:
         (base32 "090dqaqyjmkzrz4szjpk1iip0bdvb0frp4l79393f8ki8w7c16c1"))))
     (build-system emacs-build-system)
     (propagated-inputs
-     `(("emacs-dired-subtree" ,emacs-dired-hacks)))
+     (list emacs-dired-hacks))
     (synopsis "Sidebar for Emacs using Dired")
     (description
      "This package provides a sidebar for Emacs similar to @code{NeoTree}
@@ -19350,7 +19343,7 @@ Emacs.")
         (base32
          "07r5x256k1fjjxs1yfg41kc94nwvnjlk2vvknkra3j8v9p0j88m7"))))
     (propagated-inputs
-     `(("magit" ,emacs-magit)))
+     (list emacs-magit))
     (build-system emacs-build-system)
     (home-page "https://github.com/danielma/magit-org-todos.el")
     (synopsis "Get todo.org into Emacs Magit status")
@@ -21903,13 +21896,13 @@ buffers – other modes on the TODO list).
          "12ay02vk6bk77k33mhlqi41m03a77y80b15rj1dbh1n6jfrjwkfy"))))
     (build-system emacs-build-system)
     (propagated-inputs
-     `(("emacs-async" ,emacs-async)
-       ("emacs-dash" ,emacs-dash)
-       ("emacs-f" ,emacs-f)
-       ("emacs-hl-todo" ,emacs-hl-todo)
-       ("magit" ,emacs-magit)
-       ("emacs-pcre2el" ,emacs-pcre2el)
-       ("emacs-s" ,emacs-s)))
+     (list emacs-async
+           emacs-dash
+           emacs-f
+           emacs-hl-todo
+           emacs-magit
+           emacs-pcre2el
+           emacs-s))
     (home-page "https://github.com/alphapapa/magit-todos")
     (synopsis "Show source files' TODOs (and FIXMEs, etc) in Magit status buffer")
     (description "This package displays keyword entries from source code
@@ -22363,9 +22356,7 @@ themes comes with the package.")
          "1q8r95zfrh0vxna5ml2pq9b9f66clfqcl4d2qy2aizkvzyxg6skl"))))
     (build-system emacs-build-system)
     (propagated-inputs
-     `(("dash" ,emacs-dash)
-       ("powerline" ,emacs-powerline)
-       ("s" ,emacs-s)))
+     (list emacs-dash emacs-powerline emacs-s))
     (home-page "https://github.com/TheBB/spaceline")
     (synopsis "Powerline theme from Spacemacs")
     (description "Spaceline provides Spacemacs' mode-line theme.
@@ -22571,18 +22562,18 @@ Emacs.")
                   "1scfv1502yg7x4bsl253cpr6plml1j4d437vci2ggs764sh3rcqq"))))
       (build-system emacs-build-system)
       (propagated-inputs
-       `(("a" ,emacs-a)
-         ("anaphora" ,emacs-anaphora)
-         ("dash" ,emacs-dash)
-         ("esxml" ,emacs-esxml)
-         ("f" ,emacs-f)
-         ("frame-purpose" ,emacs-frame-purpose)
-         ("ht" ,emacs-ht)
-         ("ov" ,emacs-ov)
-         ("rainbow-identifiers" ,emacs-rainbow-identifiers)
-         ("request" ,emacs-request)
-         ("s" ,emacs-s)
-         ("tracking" ,emacs-tracking)))
+       (list emacs-a
+             emacs-anaphora
+             emacs-dash
+             emacs-esxml
+             emacs-f
+             emacs-frame-purpose
+             emacs-ht
+             emacs-ov
+             emacs-rainbow-identifiers
+             emacs-request
+             emacs-s
+             emacs-tracking))
       (home-page "https://github.com/jgkamat/matrix-client-el")
       (synopsis "Matrix client for Emacs")
       (description "@code{matrix-client} is a simple chat UI to Matrix.org
@@ -22751,7 +22742,7 @@ not have any relation with variables defined by @code{defvar},
               (file-name (git-file-name name version))))
     (build-system emacs-build-system)
     (inputs
-     `(("dash" ,emacs-dash)))
+     (list emacs-dash))
     (synopsis "Purpose-specific frames for Emacs")
     (description "@code{frame-purpose} makes it easy to open purpose-specific
 frames that only show certain buffers, e.g. by buffers’ major mode, their
@@ -23371,11 +23362,9 @@ convenient to edit foreign files.")
                 "0jgiawdnzjlrpx2j1y6djwbqncdpmyfd31q1qf1890049y8ppxnb"))))
     (build-system emacs-build-system)
     (native-inputs
-     `(("emacs-el-mock" ,emacs-el-mock)
-       ("ert-runner" ,emacs-ert-runner)))
+     (list emacs-el-mock emacs-ert-runner))
     (propagated-inputs
-     `(("emacs-f" ,emacs-f)
-       ("magit" ,emacs-magit)))
+     (list emacs-f emacs-magit))
     (home-page "https://github.com/canatella/repo-el")
     (synopsis "Emacs interface for the Google Repo tool")
     (description "This package provides integration of the Google Repo tool
@@ -25432,7 +25421,7 @@ C-f} to advance by #xa4 characters.
            "148a5xsnbsiddhf9cl7yxdk41lrv38h0pip91kcflw9d7l0dp7pr"))))
       (build-system emacs-build-system)
       (inputs
-       `(("helm" ,emacs-helm)))
+       (list emacs-helm))
       (synopsis "Search suggestions and article extracts from Wikipedia for Emacs")
       (description
        "This package provides an Emacs Helm interface for search suggestions
@@ -26205,8 +26194,7 @@ Helm and Ivy.")
            "1sqsm5sv311xfdk4f4rsnvprdf2v2vm7l1b3vqi7pc0g8adlnw1d"))))
       (build-system emacs-build-system)
       (propagated-inputs
-       `(("emms" ,emacs-emms)
-         ("emacs-org" ,emacs-org)))
+       (list emacs-emms emacs-org))
       (home-page "https://gitlab.com/jagrg/org-emms")
       (synopsis "Play multimedia files from org-mode")
       (description
@@ -26327,7 +26315,7 @@ keybindings for skipping from host section to host section.")
                 "1i3zmsn0w2k7p2hlzssibckm32kf05l56mkhg96x4sf06g3pwq1d"))))
     (build-system emacs-build-system)
     (propagated-inputs
-     `(("dash" ,emacs-dash)))
+     (list emacs-dash))
     (home-page "https://github.com/magit/ssh-agency")
     (synopsis "Manage @code{ssh-agent} from Emacs")
     (description
@@ -26755,8 +26743,7 @@ Google guidelines.")
         (base32 "1j2vfngq3512naaayv9kx0d1q2zg1xgs69l8afc7swg72h0l0imw"))))
     (build-system emacs-build-system)
     (propagated-inputs
-     `(("helm" ,emacs-helm)
-       ("fish-completion" ,emacs-fish-completion)))
+     (list emacs-helm emacs-fish-completion))
     (synopsis "Helm interface for Emacs fish-completion")
     (description "Helm Fish Completion is a Helm interface for Emacs
 fish-completion.  It can be used in both Eshell and M-x shell.")
@@ -26778,7 +26765,7 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
         (base32 "0n8qa549c5syvgqw1h2zrakjjbygddpxzaifaq5irscgdcajrads"))))
     (build-system emacs-build-system)
     (propagated-inputs
-     `(("helm" ,emacs-helm)))
+     (list emacs-helm))
     (synopsis "Helm action to switch directory in Emacs REPLs")
     (description "Helm \"Switch-to-REPL\" offers the
 @code{helm-switch-to-repl} action, a generalized and extensible version of
@@ -29030,8 +29017,7 @@ included with Emacs.")
           (base32 "1qi092mw2n08v6yr0j6hlpx0pnlcnhxjqbsrlw9pn4yin6zk91yp"))))
       (build-system emacs-build-system)
       (propagated-inputs
-       `(("dash" ,emacs-dash)
-         ("s" ,emacs-s)))
+       (list emacs-dash emacs-s))
       (home-page "https://github.com/plexus/html-to-hiccup")
       (synopsis "Turn HTML into Hiccup syntax")
       (description
@@ -29113,8 +29099,7 @@ faithfully.  See @url{https://github.com/then/promise}.
         (base32 "0aav9qdswnw7ynqlzn0sm34as5fj2d85syxgg8zjabzp6646ay29"))))
     (build-system emacs-build-system)
     (propagated-inputs
-     `(("promise" ,emacs-promise)
-       ("iter2" ,emacs-iter2)))
+     (list emacs-promise emacs-iter2))
     (home-page "https://github.com/chuntaro/emacs-async-await")
     (synopsis "Async/Await for Emacs")
     (description "This is a simple implementation of Async/Await inspired by
@@ -29138,8 +29123,7 @@ the TypeScript implementation.")
           (base32 "02a4j0yy7330kfr3rd3k2agdj01ii6989nki598anbamq6xvj5ql"))))
       (build-system emacs-build-system)
       (propagated-inputs
-       `(("async-await" ,emacs-async-await)
-         ("request" ,emacs-request)))
+       (list emacs-async-await emacs-request))
       (home-page "https://github.com/4hiziri/rocket-chat")
       (synopsis "Emacs Rocket.chat client")
       (description "This package provides an Emacs client for the Rocket.chat
@@ -29712,8 +29696,7 @@ Unlike Emacs' generic ASM mode, it understands NASM-specific syntax.")
                   "1q30cbqq0h1gfwlcbnx9s930li7w7a0y8sx2ivbvvyyc2j5gsk4j"))))
       (build-system emacs-build-system)
       (propagated-inputs
-       `(("emacs-async" ,emacs-async)
-         ("ht" ,emacs-ht)))
+       (list emacs-async emacs-ht))
       (synopsis "Testeable Emacs Lisp API that wraps around GNU Global")
       (description "This package provides a testeable Emacs Lisp API that
 wraps GNU Global calls and integration to editor using this API with

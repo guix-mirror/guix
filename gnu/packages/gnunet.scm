@@ -168,11 +168,7 @@ tool to extract metadata from a file and print the results.")
             (patches (search-patches "libmicrohttpd-0.9.73-test-ssl3.patch"))))
    (build-system gnu-build-system)
    (inputs
-    `(("curl" ,curl)
-      ("gnutls" ,gnutls/dane)
-      ("libgcrypt" ,libgcrypt)
-      ("openssl" ,openssl)
-      ("zlib" ,zlib)))
+    (list curl gnutls/dane libgcrypt openssl zlib))
    (synopsis "C library implementing an HTTP 1.1 server")
    (description
     "GNU libmicrohttpd is a small, embeddable HTTP server implemented as a

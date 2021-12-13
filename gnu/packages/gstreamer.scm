@@ -151,14 +151,14 @@ and for middleware components.")
     (native-inputs
      (list doxygen perl pkg-config))
     (inputs
-     `(("glu" ,glu)
-       ("libraw1394" ,libraw1394)
-       ("libusb" ,libusb)
-       ("libxv" ,libxv)
-       ("linux-headers" ,linux-libre-headers)
-       ("mesa" ,mesa)
-       ("sdl" ,sdl)
-       ("v4l" ,v4l-utils)))
+     (list glu
+           libraw1394
+           libusb
+           libxv
+           linux-libre-headers
+           mesa
+           sdl
+           v4l-utils))
     (synopsis "1394-Based Digital Camera Control Library")
     (description "LibDC1394 is a library that provides functionality to control
 any camera that conforms to the 1394-Based Digital Camera Specification written
@@ -338,14 +338,14 @@ applications that want audio visualisation and audio visualisation plugins.")
         (base32 "141jg70fim276i8k2kyypm84gy89i1k9mm4yf68mfwnybvjw1d6n"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("gettext" ,gettext-minimal)
-       ("gnome-common" ,gnome-common)
-       ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)
-       ("tcsh" ,tcsh)                      ; for the tests
-       ("which" ,which)))
+     (list autoconf
+           automake
+           gettext-minimal
+           gnome-common
+           libtool
+           pkg-config
+           tcsh ; for the tests
+           which))
     (inputs
      (list alsa-lib pcaudiolib tcp-wrappers))
     (propagated-inputs
@@ -984,10 +984,7 @@ think twice about shipping them.")
         (base32 "0j55jgk9sbhinfx2gsg21q609x6yzrixrn5xxlxd378fj6500bl2"))))
     (build-system meson-build-system)
     (native-inputs
-     `(("perl" ,perl)
-       ("pkg-config" ,pkg-config)
-       ("python" ,python-wrapper)
-       ("ruby" ,ruby)))
+     (list perl pkg-config python-wrapper ruby))
     (inputs
      (list ffmpeg))
     (propagated-inputs

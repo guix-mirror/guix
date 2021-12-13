@@ -163,12 +163,12 @@
         (base32 "10ndzkip8blgkw572n3dicl6mgjaa7kygwn3vls80liq92vf1sa9"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)
-       ("python" ,python-wrapper)
-       ("which" ,which)))
+     (list autoconf
+           automake
+           libtool
+           pkg-config
+           python-wrapper
+           which))
     (home-page "https://github.com/sctplab/usrsctp/")
     (synopsis "SCTP user-land implementation")
     (description "UsrSCTP is a portable SCTP userland stack.  SCTP is a message
@@ -190,8 +190,7 @@ runs on top of IP or UDP, and supports both v4 and v6 versions.")
         (base32 "0kmlqk04sgkshsll4r9w3k0rvrgz0gpk987618r50khwl484zss6"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("gettext" ,gettext-minimal)
-       ("pkg-config" ,pkg-config)))
+     (list gettext-minimal pkg-config))
     (inputs
      (list libressl))
     (home-page "https://github.com/axel-download-accelerator/axel")
@@ -496,7 +495,7 @@ performance across unpredictable networks, such as the Internet.")
     (native-inputs
      (list autoconf automake libtool pkg-config))
     (inputs
-     `(("linux-headers" ,linux-libre-headers)))
+     (list linux-libre-headers))
     (synopsis
      "@acronym{SCTP, Stream Control Transmission Protocol} helpers for Linux")
     (description
@@ -3488,10 +3487,7 @@ A very simple IM client working over the DHT.
     (inputs
      (list c-ares json-c libcap libyang readline))
     (native-inputs
-     `(("perl" ,perl)
-       ("pkg-config" ,pkg-config)
-       ("python" ,python-wrapper)
-       ("python-pytest" ,python-pytest)))
+     (list perl pkg-config python-wrapper python-pytest))
     (home-page "https://frrouting.org/")
     (synopsis "IP routing protocol suite")
     (description "FRRouting (FRR) is an IP routing protocol suite which includes

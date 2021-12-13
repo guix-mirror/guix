@@ -151,7 +151,7 @@ using the Cairo drawing library.")
     (inherit guile-charting)
     (name "guile2.2-charting")
     (inputs (list guile-2.2))
-    (propagated-inputs `(("guile-cairo" ,guile2.2-cairo)))))
+    (propagated-inputs (list guile2.2-cairo))))
 
 (define-public ploticus
   (package

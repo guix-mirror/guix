@@ -322,8 +322,7 @@ of tests run in a specific order.")
         (base32 "1y87agr324p6x5gvhziymxjlw54pyn4gqnd49papbl941djpkp5g"))))
   (build-system python-build-system)
   (native-inputs
-   `(("pytest" ,python-pytest)
-     ("setuptools-scm" ,python-setuptools-scm)))
+   (list python-pytest python-setuptools-scm))
   (home-page "https://www.astropy.org/")
   (synopsis
    "Pytest plugin adding diagnostic data to the header of the test output")

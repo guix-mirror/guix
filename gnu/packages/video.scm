@@ -433,24 +433,22 @@ as a joint effort between the BBC and Fluendo.")
         (search-patches "libquicktime-ffmpeg.patch"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("gettext" ,gettext-minimal)
-       ("doxygen" ,doxygen)
-       ("pkg-config" ,pkg-config)))
+     (list gettext-minimal doxygen pkg-config))
     (inputs
-     `(("alsa" ,alsa-lib)
-       ("ffmpeg" ,ffmpeg)
-       ("gtk+-2" ,gtk+-2)
-       ("lame" ,lame)
-       ("libdv" ,libdv)
-       ("libjpeg" ,libjpeg-turbo)
-       ("libpng" ,libpng)
-       ("libvorbis" ,libvorbis)
-       ("opengl" ,mesa)
-       ("schroedinger" ,schroedinger)
-       ("x11" ,libx11)
-       ("x264" ,libx264)
-       ("xaw" ,libxaw)
-       ("xv" ,libxv)))
+     (list alsa-lib
+           ffmpeg
+           gtk+-2
+           lame
+           libdv
+           libjpeg-turbo
+           libpng
+           libvorbis
+           mesa
+           schroedinger
+           libx11
+           libx264
+           libxaw
+           libxv))
     (synopsis "Quick Time Library")
     (description "The goal of this project is to enhance the quicktime4linux
 library.")
@@ -516,11 +514,7 @@ receiving MJPG streams.")
         (base32 "0kvhxr5hkabj9v7ah2rzkbirndfqdijd9hp8v52c1z6bxddf019w"))))
     (build-system gnu-build-system)
     (inputs
-     `(("gtk+-2" ,gtk+-2)
-       ("libdv" ,libdv)
-       ("libpng" ,libpng)
-       ("libquicktime" ,libquicktime)
-       ("sdl" ,sdl)))
+     (list gtk+-2 libdv libpng libquicktime sdl))
     (synopsis "Tools for handling MPEG")
     (description "Mjpeg tools is a suite of programs which support video capture,
 editing, playback, and compression to MPEG of MJPEG video.  Edit, play and

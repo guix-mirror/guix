@@ -214,11 +214,8 @@ the real span of the lattice.")
     (inputs
      (list fplll gmp mpfr pari-gp))
     (propagated-inputs
-     `(("cysignals" ,python-cysignals)
-       ("cython" ,python-cython)
-       ("flake8" ,python-flake8)
-       ("numpy" ,python-numpy)
-       ("pytest" ,python-pytest)))
+     (list python-cysignals python-cython python-flake8 python-numpy
+           python-pytest))
     (home-page "https://github.com/fplll/fpylll")
     (synopsis "Python interface for fplll")
     (description "fpylll is a Python wrapper for fplll.")

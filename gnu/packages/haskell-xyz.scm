@@ -11371,10 +11371,8 @@ semigroup.")
     (inherit ghc-semigroups)
     (name "ghc-semigroups-bootstrap")
     (inputs
-     `(("ghc-nats" ,ghc-nats-bootstrap)
-       ("ghc-tagged" ,ghc-tagged)
-       ("ghc-unordered-containers" ,ghc-unordered-containers-bootstrap)
-       ("ghc-hashable" ,ghc-hashable-bootstrap)))
+     (list ghc-nats-bootstrap ghc-tagged
+           ghc-unordered-containers-bootstrap ghc-hashable-bootstrap))
     (properties '((hidden? #t)))))
 
 (define-public ghc-serialise
@@ -11824,16 +11822,16 @@ mainstream languages.")
          "0das5n44dhlcv5i233iakx37d17kidqvhrvp6w9nd7hc015ry026"))))
     (build-system haskell-build-system)
     (native-inputs
-     `(("ghc-async" ,ghc-async)
-       ("ghc-base-compat-batteries" ,ghc-base-compat-batteries)
-       ("ghc-base-compat" ,ghc-base-compat)
-       ("ghc-hunit" ,ghc-hunit)
-       ("ghc-math-functions" ,ghc-math-functions)
-       ("ghc-random" ,ghc-random-bootstrap)
-       ("ghc-test-framework" ,ghc-test-framework)
-       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
-       ("ghc-tf-random" ,ghc-tf-random)
-       ("ghc-vector" ,ghc-vector)))
+     (list ghc-async
+           ghc-base-compat-batteries
+           ghc-base-compat
+           ghc-hunit
+           ghc-math-functions
+           ghc-random-bootstrap
+           ghc-test-framework
+           ghc-test-framework-hunit
+           ghc-tf-random
+           ghc-vector))
     (home-page "https://hackage.haskell.org/package/splitmix")
     (synopsis "Fast and splittable pseudorandom number generator")
     (description "This package provides a Pure Haskell implementation of the
@@ -14328,9 +14326,7 @@ widths to the Char type.")
     (inherit ghc-wcwidth)
     (name "ghc-wcwidth-bootstrap")
     (inputs
-     `(("ghc-setlocale" ,ghc-setlocale)
-       ("ghc-utf8-string" ,ghc-utf8-string)
-       ("ghc-attoparsec" ,ghc-attoparsec-bootstrap)))
+     (list ghc-setlocale ghc-utf8-string ghc-attoparsec-bootstrap))
     (properties '((hidden? #t)))))
 
 (define-public ghc-weigh

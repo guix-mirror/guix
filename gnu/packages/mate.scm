@@ -107,11 +107,11 @@ MATE applications.")
         (base32 "0fni41p3kraxwjnx9l5mdspng0zib1gfdxwlaiyq31mh4g79yjyj"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("yelp-tools" ,yelp-tools)
-       ("gettext" ,gettext-minimal)
-       ("glib" ,glib "bin") ; glib-gettextize
-       ("polkit" ,polkit))) ; for ITS rules
+     (list pkg-config
+           yelp-tools
+           gettext-minimal
+           `(,glib "bin") ; glib-gettextize
+           polkit)) ; for ITS rules
     (inputs
      (list gtk+
            glib
@@ -206,10 +206,8 @@ from Mint-X-F and Faenza-Fresh icon packs.")
         (base32 "051g2vq817g84yrqzf7hjcqr4xrghnw1rprjd6jf5mhhzmwcas6n"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)
-       ("gdk-pixbuf" ,gdk-pixbuf)       ; gdk-pixbuf+svg isn't needed
-       ("gtk" ,gtk+-2)))
+     (list pkg-config intltool gdk-pixbuf ; gdk-pixbuf+svg isn't needed
+           gtk+-2))
     (home-page "https://mate-desktop.org/")
     (synopsis
      "Official themes for the MATE desktop")
@@ -233,12 +231,12 @@ themes for both gtk+-2 and gtk+-3.")
         (base32 "1nd1dn8mm1z6x4r68a25q4vzys1a6fmbzc94ss1z1n1872pczs6i"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)
-       ("glib:bin" ,glib "bin")
-       ("gobject-introspection" ,gobject-introspection)
-       ("yelp-tools" ,yelp-tools)
-       ("gtk-doc" ,gtk-doc)))
+     (list pkg-config
+           intltool
+           `(,glib "bin")
+           gobject-introspection
+           yelp-tools
+           gtk-doc))
     (inputs
      (list gtk+ libxrandr iso-codes startup-notification))
     (propagated-inputs
@@ -387,24 +385,24 @@ configuration program to choose applications starting on login.")
     (native-inputs
      (list pkg-config intltool gobject-introspection))
     (inputs
-     `(("cairo" ,cairo)
-       ("dbus" ,dbus)
-       ("dbus-glib" ,dbus-glib)
-       ("dconf" ,dconf)
-       ("fontconfig" ,fontconfig)
-       ("gtk+" ,gtk+)
-       ("libcanberra" ,libcanberra)
-       ("libmatekbd" ,libmatekbd)
-       ("libmatemixer" ,libmatemixer)
-       ("libnotify" ,libnotify)
-       ("libx11" ,libx11)
-       ("libxext" ,libxext)
-       ("libxi" ,libxi)
-       ("libxklavier" ,libxklavier)
-       ("mate-desktop" ,mate-desktop)
-       ("nss" ,nss)
-       ("polkit" ,polkit)
-       ("startup-notification" ,startup-notification)))
+     (list cairo
+           dbus
+           dbus-glib
+           dconf
+           fontconfig
+           gtk+
+           libcanberra
+           libmatekbd
+           libmatemixer
+           libnotify
+           libx11
+           libxext
+           libxi
+           libxklavier
+           mate-desktop
+           nss
+           polkit
+           startup-notification))
     (home-page "https://mate-desktop.org/")
     (synopsis "Settings Daemon for MATE")
     (description
@@ -514,34 +512,34 @@ assorted menu related utility programs.")
         (base32 "0h70i4x3bk017pgv4zn280682wm58vwdjm7kni91ni8rmblnnvyp"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)
-       ("libxslt" ,libxslt)
-       ("yelp-tools" ,yelp-tools)
-       ("scrollkeeper" ,scrollkeeper)
-       ("gettext" ,gettext-minimal)
-       ("docbook-xml" ,docbook-xml)
-       ("gobject-introspection" ,gobject-introspection)))
+     (list pkg-config
+           intltool
+           libxslt
+           yelp-tools
+           scrollkeeper
+           gettext-minimal
+           docbook-xml
+           gobject-introspection))
     (inputs
-     `(("atk" ,atk)
-       ("dbus" ,dbus)
-       ("dbus-glib" ,dbus-glib)
-       ("glib" ,glib)
-       ("gucharmap" ,gucharmap)
-       ("gtk+" ,gtk+)
-       ("gtksourceview" ,gtksourceview-3)
-       ("libgtop" ,libgtop)
-       ("libmateweather" ,libmateweather)
-       ("libnotify" ,libnotify)
-       ("libx11" ,libx11)
-       ("libxml2" ,libxml2)
-       ("libwnck" ,libwnck)
-       ("mate-panel" ,mate-panel)
-       ("pango" ,pango)
-       ("polkit" ,polkit) ; either polkit or setuid
-       ("python" ,python-2)
-       ("upower" ,upower)
-       ("wireless-tools" ,wireless-tools)))
+     (list atk
+           dbus
+           dbus-glib
+           glib
+           gucharmap
+           gtk+
+           gtksourceview-3
+           libgtop
+           libmateweather
+           libnotify
+           libx11
+           libxml2
+           libwnck
+           mate-panel
+           pango
+           polkit ; either polkit or setuid
+           python-2
+           upower
+           wireless-tools))
     (propagated-inputs
      (list python-pygobject))
     (home-page "https://mate-desktop.org/")
@@ -586,10 +584,7 @@ Interactive Weather Information Network (IWIN).
         (base32 "118i4w2i2g3hfgbfn3hjzjkfq8vjj6049r7my3vna9js23b7ab92"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)
-       ("gettext" ,gettext-minimal)
-       ("gobject-introspection" ,gobject-introspection)))
+     (list pkg-config intltool gettext-minimal gobject-introspection))
     (inputs
      (list cairo
            gtk+
@@ -1064,10 +1059,7 @@ sessions, panels, menus, file management, and preferences.")
         (base32 "0imdimq5d5rjq8mkjcrsd683a2bn9acmhc0lmvyw71y0040inbaw"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
-     `(("gettext" ,gettext-minimal)
-       ("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)
-       ("yelp-tools" ,yelp-tools)))
+     (list gettext-minimal intltool pkg-config yelp-tools))
     (inputs
      (list atk
            glib
@@ -1117,9 +1109,7 @@ can be used as backgrounds in the MATE Desktop environment.")
          "1bmk9gq5gcqkvfppa7i1hqfph8sajc3xs189s4ha97g0ifwd98a8"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
-     `(("gettext" ,gettext-minimal)
-       ("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+     (list gettext-minimal intltool pkg-config))
     (inputs
      (list cairo
            glib
@@ -1228,15 +1218,15 @@ can be used as backgrounds in the MATE Desktop environment.")
          "1b16n1628gcsym5mph6lr9x5xm4rgkxsa8xwr2wlx8g2gw2775i1"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
-     `(("gettext" ,gettext-minimal)
-       ("gtk-doc" ,gtk-doc)
-       ("intltool" ,intltool)
-       ("libice" ,libice)
-       ("libsm" ,libsm)
-       ("pkg-config" ,pkg-config)
-       ("scrollkeeper" ,scrollkeeper)
-       ("xorgproto" ,xorgproto)
-       ("yelp-tools" ,yelp-tools)))
+     (list gettext-minimal
+           gtk-doc
+           intltool
+           libice
+           libsm
+           pkg-config
+           scrollkeeper
+           xorgproto
+           yelp-tools))
     (inputs
      (list atk
            cairo
@@ -1280,35 +1270,35 @@ can be used as backgrounds in the MATE Desktop environment.")
         (base32 "0dralsc0dvs0l38cysdhx6kiaiqlb8qi6g9xz2cm6mjqyq3d3f9f"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
-     `(("gettext" ,gettext-minimal)
-       ("gtk-doc" ,gtk-doc)
-       ("gobject-introspection" ,gobject-introspection)
-       ("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)
-       ("yelp-tools" ,yelp-tools)))
+     (list gettext-minimal
+           gtk-doc
+           gobject-introspection
+           intltool
+           pkg-config
+           yelp-tools))
     (inputs
-     `(("atk" ,atk)
-       ("cairo" ,cairo)
-       ("dconf" ,dconf)
-       ("dbus" ,dbus)
-       ("dbus-glib" ,dbus-glib)
-       ("exempi" ,exempi)
-       ("glib" ,glib)
-       ("gtk+" ,gtk+)
-       ("libcanberra" ,libcanberra)
-       ("libx11" ,libx11)
-       ("libxext" ,libxext)
-       ("libpeas" ,libpeas)
-       ("libxml2" ,libxml2)
-       ("libexif" ,libexif)
-       ("libjpeg" ,libjpeg-turbo)
-       ("librsvg" ,(librsvg-for-system))
-       ("lcms" ,lcms)
-       ("mate-desktop" ,mate-desktop)
-       ("pango" ,pango)
-       ("shared-mime-info" ,shared-mime-info)
-       ("startup-notification" ,startup-notification)
-       ("zlib" ,zlib)))
+     (list atk
+           cairo
+           dconf
+           dbus
+           dbus-glib
+           exempi
+           glib
+           gtk+
+           libcanberra
+           libx11
+           libxext
+           libpeas
+           libxml2
+           libexif
+           libjpeg-turbo
+           (librsvg-for-system)
+           lcms
+           mate-desktop
+           pango
+           shared-mime-info
+           startup-notification
+           zlib))
     (home-page "https://mate-desktop.org/")
     (synopsis "Eye of MATE")
     (description
@@ -1429,11 +1419,7 @@ can be used as backgrounds in the MATE Desktop environment.")
         (base32 "1i2r4lw6xsk972yp15g5hm8p8xx9pp6jmcvvzbdq80xyx3x898qz"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("gettext" ,gettext-minimal)
-       ("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)
-       ("yelp-tools" ,yelp-tools)))
+     (list autoconf gettext-minimal intltool pkg-config yelp-tools))
     (inputs
      (list cairo
            glib
@@ -1469,11 +1455,7 @@ MATE Desktop to monitor your system resources and usage.")
          "1450bqzlnvwy3xa98lj102j2cf7piqbxcd1cy2zp41rdl8ri3gvn"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
-     `(("gettext" ,gettext-minimal)
-       ("gtk-doc" ,gtk-doc)
-       ("intltool" ,intltool)
-       ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)))
+     (list gettext-minimal gtk-doc intltool libtool pkg-config))
     (inputs
      (list accountsservice
            glib

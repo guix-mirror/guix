@@ -161,9 +161,7 @@ FTP browser, as well as non-interactive commands such as @code{ncftpput} and
             "1ir761hjncr1bamaqcw9j7x57xi3s9jax3223bxwbq30a0vsw1pd"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("automake" ,automake)
-       ("autoconf" ,autoconf)
-       ("gettext" ,gettext-minimal)))
+     (list automake autoconf gettext-minimal))
     (home-page "http://weex.sourceforge.net/")
     (synopsis "Non-interactive client for FTP synchronization")
     (description

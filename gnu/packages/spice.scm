@@ -89,9 +89,7 @@ different (virtual) machine than the one to which the USB device is attached.")
                 "06kf0q4l52gzx5p63l8850hff8pmhp7xv1hk8zgx2apbw18y6jd5"))))
     (build-system gnu-build-system)
     (inputs
-      `(("libepoxy" ,libepoxy)
-        ("mesa" ,mesa)
-        ("udev" ,eudev)))
+      (list libepoxy mesa eudev))
     (native-inputs
       (list pkg-config))
     (synopsis "Virtual 3D GPU library")

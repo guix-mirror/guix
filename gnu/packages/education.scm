@@ -771,8 +771,8 @@ adjust the level of difficulty.")
           (base32 "0dz63m9p4ggzw0yb309qmgnl664qb5q268vaa3i9v0i8qsl66d78"))))
       (build-system gnu-build-system)
       (native-inputs
-       `(("gettext" ,gettext-minimal)   ; for msgfmt
-         ("pkg-config" ,pkg-config)))
+       (list gettext-minimal ; for msgfmt
+             pkg-config))
       (inputs
        (list libxml2 gtk+))
       (home-page "https://kanatest.sourceforge.io/")

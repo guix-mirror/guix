@@ -2147,8 +2147,8 @@ masters from remote CVS hosts.")
     (build-system gnu-build-system)
     (inputs (list perl))
     (native-inputs
-     `(("emacs" ,emacs-minimal)     ; for `ctags'
-       ("inetutils" ,inetutils)))   ; for `hostname', used in the tests
+     (list emacs-minimal ; for `ctags'
+           inetutils))   ; for `hostname', used in the tests
     (home-page "https://www.gnu.org/software/vc-dwim/")
     (synopsis "Version-control-agnostic ChangeLog diff and commit tool")
     (description

@@ -1001,21 +1001,21 @@ server, collect the answer, and finally decoding the XML to Perl.")
     (native-inputs
      (list perl-module-build perl-uri perl-class-data-inheritable))
     (propagated-inputs
-     `(("perl-class-errorhandler" ,perl-class-errorhandler)
-       ("perl-datetime" ,perl-datetime)
-       ("perl-datetime-format-flexible" ,perl-datetime-format-flexible)
-       ("perl-datetime-format-iso8601" ,perl-datetime-format-iso8601)
-       ("perl-datetime-format-mail" ,perl-datetime-format-mail)
-       ("perl-datetime-format-natural" ,perl-datetime-format-natural)
-       ("perl-datetime-format-w3cdtf" ,perl-datetime-format-w3cdtf)
-       ("perl-feed-find" ,perl-feed-find)
-       ("perl-html-parser" ,perl-html-parser)
-       ("perl-libwww-perl" ,perl-libwww)
-       ("perl-module-pluggable" ,perl-module-pluggable)
-       ("perl-uri-fetch" ,perl-uri-fetch)
-       ("perl-xml-atom" ,perl-xml-atom)
-       ("perl-xml-libxml" ,perl-xml-libxml)
-       ("perl-xml-rss" ,perl-xml-rss)))
+     (list perl-class-errorhandler
+           perl-datetime
+           perl-datetime-format-flexible
+           perl-datetime-format-iso8601
+           perl-datetime-format-mail
+           perl-datetime-format-natural
+           perl-datetime-format-w3cdtf
+           perl-feed-find
+           perl-html-parser
+           perl-libwww
+           perl-module-pluggable
+           perl-uri-fetch
+           perl-xml-atom
+           perl-xml-libxml
+           perl-xml-rss))
     (home-page "https://metacpan.org/release/XML-Feed")
     (synopsis "XML Syndication Feed Support")
     (description "@code{XML::Feed} is a syndication feed parser for both RSS and

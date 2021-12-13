@@ -1437,7 +1437,7 @@ convert, manipulate, filter and display a wide variety of image formats.")
                 "0p3fj89gkhd2ys5ci75cwb6p7rvb2pf52jd8c9d4g76qp846njnx"))))
     (build-system cmake-build-system)
     (inputs
-     `(("libjpeg" ,libjpeg-turbo)))
+     (list libjpeg-turbo))
     (synopsis "JPEG-2000 library")
     (description "The JasPer Project is an initiative to provide a reference
 implementation of the codec specified in the JPEG-2000 Part-1 standard (i.e.,
@@ -1947,9 +1947,7 @@ identical visual appearance.")
           "076frk3pa16s4r1b10zgy81vdlz0385zh3ykbnkaij25jn5aqc09"))))
     (build-system gnu-build-system)
     (inputs
-     `(("curl" ,curl)
-       ("libjpeg" ,libjpeg-turbo)
-       ("ncurses" ,ncurses)))
+     (list curl libjpeg-turbo ncurses))
     (home-page "https://csl.name/jp2a/")
     (synopsis "Convert JPEG images to ASCII")
     (description

@@ -43,11 +43,7 @@
         (base32 "17f16lkdv1c3amaz2hagiicih59ynpp4786k1m2qa1sw68xhswsc"))))
     (build-system gnu-build-system)
     (inputs
-      `(("glib" ,glib)
-        ("libgsf" ,libgsf)
-        ("libjpeg" ,libjpeg-turbo)
-        ("libpng" ,libpng)
-        ("zlib" ,zlib)))
+      (list glib libgsf libjpeg-turbo libpng zlib))
     (native-inputs
       (list `(,glib "bin") pkg-config))
     (synopsis "Microsoft Word conversion library and utilities")

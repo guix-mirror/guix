@@ -1295,16 +1295,14 @@ simple methods via GObject-Introspection.")
                 "03sj1h0c2l08xa8phw013fnxr4fgav7l2mkjhzf9xk3dykwxcj8p"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-
-       ;; For tests.
-       ("dbus" ,dbus)
-
-       ;; These are required to build the manual.
-       ("docbook-xml" ,docbook-xml-4.3)
-       ("docbook-xsl" ,docbook-xsl)
-       ("libxml2" ,libxml2)
-       ("xsltproc" ,libxslt)))
+     (list pkg-config
+           ;; For tests.
+           dbus
+           ;; These are required to build the manual.
+           docbook-xml-4.3
+           docbook-xsl
+           libxml2
+           libxslt))
     (inputs
      (list glib))
     (home-page "https://github.com/flatpak/xdg-dbus-proxy")

@@ -877,7 +877,7 @@ interacting with the low-level LibRaw C APIs.")
                 "1zmvmwgxyzvm83818skhn8b4wrci4kmnixaax8q3ia5cn7xrmj6v"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-tkinter" ,python "tk")))
+     (list `(,python "tk")))
     (home-page "https://github.com/robertlugg/easygui")
     (synopsis "GUI programming module for Python")
     (description "EasyGUI is a module for very simple, very easy GUI
@@ -2978,10 +2978,8 @@ software.")
         (base32 "10iqjzmya2h4sk765dlm1pbqypwlqyh8rw59a5m9i63d3klnz2mc"))))
   (build-system python-build-system)
   (native-inputs
-    `(("coverage" ,python-coverage)
-      ("pytest" ,python-pytest-astropy)
-      ("pytest-cov" ,python-pytest-cov)
-      ("setuptools-scm" ,python-setuptools-scm)))
+    (list python-coverage python-pytest-astropy python-pytest-cov
+          python-setuptools-scm))
   (home-page "https://github.com/astropy/astropy-helpers")
   (synopsis
    "Utilities for building and installing packages in the Astropy ecosystem")
@@ -9865,9 +9863,7 @@ plugin for flake8 to check PEP-8 naming conventions.")
          "07w3p1qm44hgxf3vvwz84kswpsx6s7kvaibzrsx5dzm0hli1i3fx"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-toml", python-toml)
-       ("python-pytest" ,python-pytest-bootstrap)
-       ("python-pytest-runner" ,python-pytest-runner)))
+     (list python-toml python-pytest-bootstrap python-pytest-runner))
     (home-page "https://github.com/PyCQA/mccabe")
     (synopsis "McCabe checker, plugin for flake8")
     (description "This package provides a Flake8 plug-in to compute the McCabe
@@ -17104,13 +17100,13 @@ multitouch applications.")
        (patches (search-patches "python-argcomplete-1.11.1-fish31.patch"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-coverage" ,python-coverage)
-       ("python-flake8" ,python-flake8)
-       ("python-pexpect" ,python-pexpect)
-       ("python-wheel" ,python-wheel)
-       ("tcsh" ,tcsh)
-       ("fish" ,fish)
-       ("bash-full" ,bash)))            ;full Bash for 'test_file_completion'
+     (list python-coverage
+           python-flake8
+           python-pexpect
+           python-wheel
+           tcsh
+           fish
+           bash))            ;full Bash for 'test_file_completion'
     (home-page "https://github.com/kislyuk/argcomplete")
     (synopsis "Shell tab completion for Python argparse")
     (description "argcomplete provides extensible command line tab completion
@@ -18139,7 +18135,7 @@ multitouch applications.")
         (base32
          "1priacxym85yjcf68hh38w55nqswaxp71ryjyfdk222kg9l85ln7"))))
     (native-inputs
-     `(("python-setuptools_scm" ,python-setuptools-scm)))
+     (list python-setuptools-scm))
     (build-system python-build-system)
     (home-page "https://github.com/jaraco/configparser/")
     (synopsis "Backport of configparser from python 3.5")
@@ -18333,7 +18329,7 @@ multitouch applications.")
           "1gm82jddm1lkazdi8lfsl1b3vi1z0252ng60mzjym8irnv94qfhy"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("six" ,python-six)))
+     (list python-six))
     (home-page "https://github.com/tkhyn/dirsync")
     (synopsis "Advanced directory tree synchronisation tool")
     (description "Advanced directory tree synchronisation tool.")
@@ -25072,18 +25068,18 @@ cryptographically signed ones).")
                 "1lk3qmy1hkaphk4n7ayfk0wl6m2yvd6r7qkam6yncqfzgkbc1phs"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-check-manifest" ,python-check-manifest)
-       ("python-coverage" ,python-coverage)
-       ("python-isort" ,python-isort)
-       ("python-mock" ,python-mock)
-       ("python-pydoctstyle" ,python-pydocstyle)
-       ("python-pytest-cache" ,python-pytest-cache)
-       ("python-pytest-cov" ,python-pytest-cov)
-       ("python-pytest-pep8" ,python-pytest-pep8)
-       ("python-pytest-runner" ,python-pytest-runner)
-       ("python-pytest" ,python-pytest)
-       ("python-setuptools-scm" ,python-setuptools-scm)
-       ("python-tox" ,python-tox)))
+     (list python-check-manifest
+           python-coverage
+           python-isort
+           python-mock
+           python-pydocstyle
+           python-pytest-cache
+           python-pytest-cov
+           python-pytest-pep8
+           python-pytest-runner
+           python-pytest
+           python-setuptools-scm
+           python-tox))
     (home-page "https://github.com/inveniosoftware/dictdiffer")
     (synopsis "Diff and patch Python dictionary objects")
     (description

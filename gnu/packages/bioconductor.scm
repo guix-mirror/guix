@@ -1510,14 +1510,14 @@ used visualizations.")
          "07vr27rv3z86ajd62c0ilvfgz9z35qsiwwi5pv4sygbhnnjwh3rc"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-ggplot2" ,r-ggplot2)
-       ("r-kernsmooth" ,r-kernsmooth)
-       ("r-matrixstats" ,r-matrixstats)
-       ("r-patchwork" ,r-patchwork)
-       ("r-pbapply" ,r-pbapply)
-       ("r-statmod" ,r-statmod)
-       ("r-survey" ,r-survey)
-       ("r-viridislite" ,r-kernsmooth)))
+     (list r-ggplot2
+           r-kernsmooth
+           r-matrixstats
+           r-patchwork
+           r-pbapply
+           r-statmod
+           r-survey
+           r-kernsmooth))
     (home-page "https://github.com/borishejblum/dearseq")
     (synopsis "DEA for RNA-seq data through a robust variance component test")
     (description
@@ -3578,30 +3578,30 @@ throughput genetic sequencing data sets using regression methods.")
     (native-inputs
      (list r-knitr))
     (propagated-inputs
-     `(("r-biocgenerics" ,r-biocgenerics)
-       ("r-biostrings" ,r-biostrings)
-       ("r-bsgenome" ,r-bsgenome)
-       ;; These two packages are suggested packages
-       ("r-bsgenome-hsapiens-1000g" ,r-bsgenome-hsapiens-1000genomes-hs37d5)
-       ("r-bsgenome-hsapiens-ucsc-hg19" ,r-bsgenome-hsapiens-ucsc-hg19)
-       ("r-cowplot" ,r-cowplot)
-       ("r-dplyr" ,r-dplyr)
-       ("r-genomeinfodb" ,r-genomeinfodb)
-       ("r-genomicranges" ,r-genomicranges)
-       ("r-ggalluvial" ,r-ggalluvial)
-       ("r-ggdendro" ,r-ggdendro)
-       ("r-ggplot2" ,r-ggplot2)
-       ("r-iranges" ,r-iranges)
-       ("r-magrittr" ,r-magrittr)
-       ("r-nmf" ,r-nmf)
-       ("r-pracma" ,r-pracma)
-       ("r-purrr" ,r-purrr)
-       ("r-rcolorbrewer" ,r-rcolorbrewer)
-       ("r-s4vectors" ,r-s4vectors)
-       ("r-stringr" ,r-stringr)
-       ("r-tibble" ,r-tibble)
-       ("r-tidyr" ,r-tidyr)
-       ("r-variantannotation" ,r-variantannotation)))
+     (list r-biocgenerics
+           r-biostrings
+           r-bsgenome
+           ;; These two packages are suggested packages
+           r-bsgenome-hsapiens-1000genomes-hs37d5
+           r-bsgenome-hsapiens-ucsc-hg19
+           r-cowplot
+           r-dplyr
+           r-genomeinfodb
+           r-genomicranges
+           r-ggalluvial
+           r-ggdendro
+           r-ggplot2
+           r-iranges
+           r-magrittr
+           r-nmf
+           r-pracma
+           r-purrr
+           r-rcolorbrewer
+           r-s4vectors
+           r-stringr
+           r-tibble
+           r-tidyr
+           r-variantannotation))
     (home-page "https://bioconductor.org/packages/MutationalPatterns/")
     (synopsis "Extract and visualize mutational patterns in genomic data")
     (description "This package provides an extensive toolset for the

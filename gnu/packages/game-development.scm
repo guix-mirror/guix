@@ -1098,10 +1098,7 @@ It offers the following features:
                 "08ddhywdy2qg17m592ng3yr0p1ih96irg8wg729g75hsxxq9ipks"))))
     (build-system gnu-build-system)
     (native-inputs (list pkg-config))
-    (inputs `(("fontconfig" ,fontconfig)
-              ("freeglute" ,freeglut)
-              ("fribidi" ,fribidi)
-              ("glew" ,glew)))
+    (inputs (list fontconfig freeglut fribidi glew))
     (home-page "http://quesoglc.sourceforge.net")
     (synopsis "Implementation of the OpenGL Character Renderer (GLC)")
     (description

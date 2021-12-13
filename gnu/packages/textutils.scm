@@ -417,7 +417,7 @@ input bits thoroughly but are not suitable for cryptography.")
         (base32 "0dc9fxcdmppbs9s06jvq61zbk552laxps0xyk098gj41697ihd96"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("gettext" ,gettext-minimal)))
+     (list gettext-minimal))
     (home-page "https://billposer.org/Software/a2b.html")
     (synopsis "Convert between ASCII, hexadecimal and binary representations")
     (description "The two programs are useful for generating test data, for

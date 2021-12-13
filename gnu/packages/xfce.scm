@@ -315,8 +315,7 @@ upstream occasionally.")
      (list pkg-config intltool))
     (propagated-inputs
      ;; exo-2.pc refers to all these.
-     `(("gtk+-3" ,gtk+)
-       ("libxfce4util" ,libxfce4util)))
+     (list gtk+ libxfce4util))
     (inputs
      (list libxfce4ui))
     (home-page "https://www.xfce.org/")
@@ -342,13 +341,10 @@ development.")
                 "07fjsgdjqxbcm84ga3cl495782k381k6mwksyrks3zf1l8klk4c4"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("glib:bin" ,glib "bin")
-       ("gobject-introspection" ,gobject-introspection)
-       ("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+     (list `(,glib "bin") gobject-introspection intltool pkg-config))
     (propagated-inputs
-     `(("gtk+-3" ,gtk+)                 ; required by garcon-gtk3-1.pc
-       ("libxfce4ui" ,libxfce4ui)))     ; required by garcon-gtk3-1.pc
+     (list gtk+ ; required by garcon-gtk3-1.pc
+           libxfce4ui))     ; required by garcon-gtk3-1.pc
     (home-page "https://www.xfce.org/")
     (synopsis "Implementation of the freedesktop.org menu specification")
     (description
@@ -372,23 +368,22 @@ merging features essential for loading menus modified with menu editors.")
                 "0rmga1l7da0pjrs6jlyq1nfn513r543v7cchshrif1341knpy2wv"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)
-       ("glib:bin" ,glib "bin")         ; need glib-genmarshal
-       ("dbus-glib" ,dbus-glib)))       ; need dbus-binding-tool
+     (list pkg-config intltool
+           `(,glib "bin") ; need glib-genmarshal
+           dbus-glib))       ; need dbus-binding-tool
     (propagated-inputs
      (list glib))                 ; required by tumbler-1.pc
     (inputs
-     `(("dbus" ,dbus)
-       ("gdk-pixbuf" ,gdk-pixbuf)
-       ("cairo" ,cairo) ;; Needed for pdf thumbnails (poppler-glibc.pc)
-       ("freetype" ,freetype)
-       ("libjpeg" ,libjpeg-turbo)
-       ("libgsf" ,libgsf)
-       ("poppler" ,poppler)
-       ;; FIXME Provide gstreamer and gstreamer-tag to get video thumbnails
-       ;; ("gstreamer" ,gstreamer)
-       ))
+     (list dbus
+           gdk-pixbuf
+           cairo ;; Needed for pdf thumbnails (poppler-glibc.pc)
+           freetype
+           libjpeg-turbo
+           libgsf
+           poppler
+           ;; FIXME Provide gstreamer and gstreamer-tag to get video thumbnails
+           ;; ("gstreamer" ,gstreamer)
+           ))
     (home-page "https://www.xfce.org/")
     (synopsis "D-Bus service for applications to request thumbnails")
     (description
@@ -1224,14 +1219,10 @@ of data to either CD/DVD/BD.")
               "196swmc4amab8xcwv4q9p8b43fzzi9xagg20gnyjvf5x7yssxj1k"))))
    (build-system gnu-build-system)
    (native-inputs
-    `(("pkg-config" ,pkg-config)
-      ("intltool" ,intltool)
-      ("glib:bin" ,glib "bin")))        ; glib-genmarshal
+    (list pkg-config intltool
+          `(,glib "bin")))        ; glib-genmarshal
    (inputs
-    `(("exo" ,exo)
-      ("libsoup" ,libsoup-minimal-2)
-      ("libxfce4ui" ,libxfce4ui)
-      ("xfce4-panel" ,xfce4-panel)))
+    (list exo libsoup-minimal-2 libxfce4ui xfce4-panel))
    (home-page "https://goodies.xfce.org/projects/applications/xfce4-screenshooter")
    (synopsis "Xfce's application to take screenshots")
    (description
@@ -1385,9 +1376,7 @@ watch your every step.")
     (native-inputs
      (list intltool pkg-config))
     (inputs
-     `(("gtk+-2" ,gtk+-2)
-       ("libxfce4ui" ,libxfce4ui)
-       ("xfce4-panel" ,xfce4-panel)))
+     (list gtk+-2 libxfce4ui xfce4-panel))
     (home-page
      "https://goodies.xfce.org/projects/panel-plugins/xfce4-equake-plugin")
     (synopsis "Earthquake monitor for the Xfce panel")
@@ -1514,9 +1503,7 @@ performance (bytes transferred per second).")
     (native-inputs
      (list intltool pkg-config))
     (inputs
-     `(("libxfce4ui" ,libxfce4ui)
-       ("xfce4-panel" ,xfce4-panel)
-       ("gtk+-2" ,gtk+-2)))
+     (list libxfce4ui xfce4-panel gtk+-2))
     (home-page
      "https://goodies.xfce.org/projects/panel-plugins/xfce4-embed-plugin")
     (synopsis "Embed arbitrary applications inside the Xfce panel")
@@ -1605,10 +1592,7 @@ button and a personalized tooltip.")
     (native-inputs
      (list intltool pkg-config))
     (inputs
-     `(("gtk+-2" ,gtk+-2)
-       ("libxfce4ui" ,libxfce4ui)
-       ("exo" ,exo)
-       ("xfce4-panel" ,xfce4-panel)))
+     (list gtk+-2 libxfce4ui exo xfce4-panel))
     (home-page
      "https://goodies.xfce.org/projects/panel-plugins/xfce4-mailwatch-plugin")
     (synopsis "Mail watch plugin for the Xfce panel")
@@ -1735,10 +1719,7 @@ interfaces of your choice in the panel.")
     (native-inputs
      (list intltool desktop-file-utils pkg-config))
     (inputs
-     `(("gtk+-2" ,gtk+-2)
-       ("exo" ,exo)
-       ("libxfce4ui" ,libxfce4ui)
-       ("xfce4-panel" ,xfce4-panel)))
+     (list gtk+-2 exo libxfce4ui xfce4-panel))
     (home-page
      "https://goodies.xfce.org/projects/panel-plugins/xfce4-places-plugin")
     (synopsis "Gnome-like Places menu for the Xfce panel")
@@ -1799,9 +1780,8 @@ favorite search engine or bug tracker right from the Xfce panel.")
                 "1d2n56g12dhnjznrq7xvr6d3brpp0lmm080xmgjb7ybc1yygpxrc"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)
-       ("glib:bin" ,glib "bin")))
+     (list intltool pkg-config
+           `(,glib "bin")))
     (inputs
      (list libxfce4ui libdbusmenu xfce4-panel))
     (home-page
@@ -1991,11 +1971,7 @@ lan interface (signal state, signal quality, network name (SSID)).")
     (native-inputs
      (list intltool pkg-config))
     (inputs
-     `(("gtk+" ,gtk+)
-       ("libsoup" ,libsoup-minimal-2)
-       ("libxfce4ui" ,libxfce4ui)
-       ("libxml2" ,libxml2)
-       ("xfce4-panel" ,xfce4-panel)))
+     (list gtk+ libsoup-minimal-2 libxfce4ui libxml2 xfce4-panel))
     (home-page
      "https://goodies.xfce.org/projects/panel-plugins/xfce4-weather-plugin")
     (synopsis "Show information about local weather in the Xfce panel")

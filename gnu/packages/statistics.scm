@@ -109,23 +109,23 @@
         "0lqrash677b09zxdlxp89z6k02y4i23mbqg83956dwl69wc53dan"))))
     (build-system gnu-build-system)
     (inputs
-     `(("cairo" ,cairo)
-       ("gettext" ,gettext-minimal)
-       ("gsl" ,gsl)
-       ("libxml2" ,libxml2)
-       ("pango" ,pango)
-       ("readline" ,readline)
-       ("gtk" ,gtk+)
-       ("gtksourceview" ,gtksourceview-3)
-       ("spread-sheet-widget" ,spread-sheet-widget)
-       ("zlib" ,zlib)))
+     (list cairo
+           gettext-minimal
+           gsl
+           libxml2
+           pango
+           readline
+           gtk+
+           gtksourceview-3
+           spread-sheet-widget
+           zlib))
     (native-inputs
-     `(("autoconf" ,autoconf)           ;for tests
-       ("glib" ,glib "bin")             ;for glib-genmarshal
-       ("perl" ,perl)
-       ("pkg-config" ,pkg-config)
-       ("python" ,python-2)             ;for tests
-       ("texinfo" ,texinfo)))
+     (list autoconf ;for tests
+           `(,glib "bin") ;for glib-genmarshal
+           perl
+           pkg-config
+           python-2 ;for tests
+           texinfo))
     (home-page "https://www.gnu.org/software/pspp/")
     (synopsis "Statistical analysis")
     (description
@@ -1226,9 +1226,7 @@ agnes cluster diagrams.")
     (native-inputs
      (list pkg-config))
     (inputs
-     `(("cairo" ,cairo)
-       ("freetype2" ,freetype)
-       ("zlib" ,zlib)))
+     (list cairo freetype zlib))
     (propagated-inputs
      (list r-rcpp r-systemfonts))
     (home-page "https://cran.r-project.org/web/packages/gdtools")

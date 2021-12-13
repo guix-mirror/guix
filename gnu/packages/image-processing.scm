@@ -106,13 +106,13 @@
         (base32 "13j5yf3p6qj3mr17d77r3kcqchf055hgvk1w15vmdr8f54mwcnb8"))))
     (build-system cmake-build-system)
     (inputs
-     `(("icu4c" ,icu4c)
-       ("libjpeg" ,libjpeg-turbo)
-       ("libpng" ,libpng)
-       ("libtiff" ,libtiff)
-       ("libxml2" ,libxml2)
-       ("openssl" ,openssl)
-       ("zlib" ,zlib)))
+     (list icu4c
+           libjpeg-turbo
+           libpng
+           libtiff
+           libxml2
+           openssl
+           zlib))
     (native-inputs
      (list doxygen))           ; for HTML documentation
     (home-page "https://dcmtk.org")
@@ -591,27 +591,27 @@ vision algorithms.  It can be used to do things like:
     (native-inputs
      (list gobject-introspection pkg-config))
     (inputs
-     `(("expat" ,expat)
-       ("fftw" ,fftw)
-       ("giflib" ,giflib)
-       ("glib" ,glib)
-       ("hdf5" ,hdf5)
-       ("imagemagick" ,imagemagick)
-       ("lcms" ,lcms)
-       ("libexif" ,libexif)
-       ("libgsf" ,libgsf)
-       ("libjpeg" ,libjpeg-turbo)
-       ("libpng" ,libpng)
-       ("librsvg" ,librsvg)
-       ("libtiff" ,libtiff)
-       ("libxml2" ,libxml2)
-       ("libwebp" ,libwebp)
-       ("matio" ,matio)
-       ("niftilib" ,niftilib)
-       ("openexr" ,openexr-2)
-       ("orc" ,orc)
-       ("pango" ,pango)
-       ("poppler" ,poppler)))
+     (list expat
+           fftw
+           giflib
+           glib
+           hdf5
+           imagemagick
+           lcms
+           libexif
+           libgsf
+           libjpeg-turbo
+           libpng
+           librsvg
+           libtiff
+           libxml2
+           libwebp
+           matio
+           niftilib
+           openexr-2
+           orc
+           pango
+           poppler))
     (home-page "https://libvips.github.io/libvips/")
     (synopsis "Multithreaded image processing system with low memory needs")
     (description
@@ -805,11 +805,7 @@ recalculates.")
            #t))))
     (build-system cmake-build-system)
     (inputs
-     `(("libgeotiff" ,libgeotiff)
-       ("libtiff" ,libtiff)
-       ("libjpeg" ,libjpeg-turbo)
-       ("libpng" ,libpng)
-       ("zlib" ,zlib)))
+     (list libgeotiff libtiff libjpeg-turbo libpng zlib))
     (home-page "https://github.com/vxl/vxl/")
     (synopsis "Collection of C++ libraries for computer vision")
     (description "VXL (the Vision-something-Libraries) is a collection of C++

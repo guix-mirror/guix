@@ -5265,10 +5265,8 @@ in strikes against the evil corporation.")
                 "0jk2w5b6s6nkzri585bbz16cif2fhqcnl5l1mq3rd98r9nil3hd1"))))
     (build-system gnu-build-system)
     (native-inputs (list pkg-config))
-    (inputs `(("gettext" ,gettext-minimal)
-              ("glu" ,glu)
-              ("quesoglc" ,quesoglc)
-              ("sdl-union" ,(sdl-union (list sdl sdl-image sdl-mixer)))))
+    (inputs (list gettext-minimal glu quesoglc
+                  (sdl-union (list sdl sdl-image sdl-mixer))))
     (home-page "http://chromium-bsu.sourceforge.net/")
     (synopsis "Fast-paced, arcade-style, top-scrolling space shooter")
     (description
@@ -7087,10 +7085,7 @@ making Yamagi Quake II one of the most solid Quake II implementations available.
         (base32 "12v00z3p0ymi8f3w4b4bgl4c76irawn3kmd147r0ap6s9ssx2q6m"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("gettext" ,gettext-minimal)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf automake gettext-minimal pkg-config))
     (inputs
      (list ncurses))
     (home-page "https://jubalh.github.io/nudoku/")
@@ -10190,21 +10185,21 @@ can be downloaded from @url{https://zero.sjeng.org/best-network}.")
     (native-inputs
      (list extra-cmake-modules kdoctools perl))
     (inputs
-     `(("kcompletion" ,kcompletion)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kcrash" ,kcrash)
-       ("kdbusaddons" ,kdbusaddons)
-       ("ki18n" ,ki18n)
-       ("kio" ,kio)
-       ("kwidgetsaddons" ,kwidgetsaddons)
-       ("kxmlgui" ,kxmlgui)
-       ("libkdegames" ,libkdegames)
-       ("python" ,python-wrapper)
-       ("qtbase" ,qtbase-5)
-       ("qtmultimedia" ,qtmultimedia)
-       ("qtdeclarative" ,qtdeclarative)
-       ("qtsvg" ,qtsvg)))
+     (list kcompletion
+           kconfigwidgets
+           kcoreaddons
+           kcrash
+           kdbusaddons
+           ki18n
+           kio
+           kwidgetsaddons
+           kxmlgui
+           libkdegames
+           python-wrapper
+           qtbase-5
+           qtmultimedia
+           qtdeclarative
+           qtsvg))
     (home-page "https://games.kde.org/")
     (synopsis "Stamp drawing toy")
     (description "KTuberling is a drawing toy intended for small children and
@@ -10983,16 +10978,16 @@ This package is part of the KDE games module.")
     (native-inputs
      (list extra-cmake-modules kdoctools))
     (inputs
-     `(("kcompletiom" ,kcompletion)
-       ("kconfig" ,kconfig)
-       ("kcoreaddons" ,kcoreaddons)
-       ("kcrash" ,kcrash)
-       ("kdbusaddons" ,kdbusaddons)
-       ("ki18n" ,ki18n)
-       ("kxmlgui" ,kxmlgui)
-       ("libkdegames" ,libkdegames)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)))
+     (list kcompletion
+           kconfig
+           kcoreaddons
+           kcrash
+           kdbusaddons
+           ki18n
+           kxmlgui
+           libkdegames
+           qtbase-5
+           qtdeclarative))
     (home-page "https://games.kde.org/")
     (synopsis "Arcade bombing game")
     (description "Bomber is a single player arcade game.
@@ -12005,8 +12000,7 @@ protect you.")
         (base32 "1y7v0jhp3apb619p7asikqr1dnwb2yxbh40wbx1ppmr5f03mq9ph"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("gettext" ,gettext-minimal)
-       ("pkg-config" ,pkg-config)))
+     (list gettext-minimal pkg-config))
     (inputs
      (list curl enet openal sdl2))
     (home-page "https://7kfans.com/")

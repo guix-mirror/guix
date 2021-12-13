@@ -50,12 +50,7 @@
                 "1bmcjl1x1rdh514q9z3hzyjmjmwwwkziipjpjsl301bwmiwrd8a8"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("makeinfo"   ,texinfo)
-       ("pkg-config" ,pkg-config)
-
-       ("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool"  ,libtool)))
+     (list texinfo pkg-config autoconf automake libtool))
     (inputs
      (list gdbm gmp libffi readline))
     (native-search-paths

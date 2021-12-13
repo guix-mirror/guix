@@ -1896,11 +1896,8 @@ timestamps in the file header with a fixed time (1 January 2008).
     (native-inputs
      (list perl pkg-config))
     (inputs
-     `(("gnutls" ,gnutls)
-       ("liblzma" ,xz)
-       ("openssl" ,openssl)
-       ("zlib" ,zlib)
-       ("zstd:lib" ,zstd "lib")))
+     (list gnutls xz openssl zlib
+           `(,zstd "lib")))
     (build-system cmake-build-system)
     (home-page "https://libzip.org")
     (synopsis "C library for reading, creating, and modifying zip archives")
@@ -2463,10 +2460,7 @@ file compression algorithm.")
         (base32 "00adrjpxqlaccrwjf65w3vhxfswdj0as8aj263c6f9b85llypc5v"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
-     `(("gettext" ,gettext-minimal)
-       ("intltool" ,intltool)
-       ("libxslt" ,libxslt)
-       ("pkg-config" ,pkg-config)))
+     (list gettext-minimal intltool libxslt pkg-config))
     (inputs
      (list adwaita-icon-theme ; hard-coded theme
            gtk+))

@@ -1328,8 +1328,7 @@ compilers that can directly deal with packages.")
                 "0gxjw1bhmjcjzri6x6psqrkbbyq678b69bqfl9i1zswp7cj2lryg"))))
     (build-system dune-build-system)
     (propagated-inputs
-     `(("lwt" ,ocaml-lwt)
-       ("ocaml-stdlib-shims" ,ocaml-stdlib-shims)))
+     (list ocaml-lwt ocaml-stdlib-shims))
     (home-page "https://github.com/gildor478/ounit")
     (synopsis "Unit testing framework for OCaml")
     (description "OUnit2 is a unit testing framework for OCaml.  It is similar
@@ -4397,8 +4396,7 @@ Dedukti files.")
                 (file-name (git-file-name name version))))
       (build-system emacs-build-system)
       (inputs
-       `(("dedukti-mode" ,emacs-dedukti-mode)
-         ("flycheck-mode" ,emacs-flycheck)))
+       (list emacs-dedukti-mode emacs-flycheck))
       (synopsis "Flycheck integration for the dedukti language")
       (description "This package provides a frontend for Flycheck to perform
 syntax checking on dedukti files.")

@@ -985,16 +985,16 @@ plugins are provided.")
                 "17x4hylgq4dn9qycsdacfxy64f5cv57n2qgkvsdp524gnqzw4az3"))))
     (build-system gnu-build-system)
     (inputs
-     `(("fluidsynth" ,fluidsynth)
-       ("expat" ,expat)
-       ("glib" ,glib)
-       ("gtk" ,gtk+-2)
-       ("cairo" ,cairo)
-       ("lash" ,lash)
-       ("jack" ,jack-1)
-       ("lv2" ,lv2)
-       ("ladspa" ,ladspa)
-       ("fftw" ,fftw)))
+     (list fluidsynth
+           expat
+           glib
+           gtk+-2
+           cairo
+           lash
+           jack-1
+           lv2
+           ladspa
+           fftw))
     (native-inputs
      (list pkg-config))
     (native-search-paths
@@ -1140,13 +1140,13 @@ synchronized with the server to play synced audio.")
                (base32
                 "1c98z2xxz9pgcb4dg99gz8qrylh5cnag0j18a52d88ifsy24isvq"))))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("gettext" ,gettext-minimal) ;for autopoint
-       ("libtool" ,libtool)
-       ("perl" ,perl)
-       ("pkg-config" ,pkg-config)
-       ("which" ,which)))
+     (list autoconf
+           automake
+           gettext-minimal ;for autopoint
+           libtool
+           perl
+           pkg-config
+           which))
     (inputs
      (list fftwf perl-xml-parser))
     (build-system gnu-build-system)
@@ -1315,10 +1315,7 @@ object library.")
         (base32 "1sr9knfhbm2m0wpkjq2l5n471vnl51wy4p6j4m95zqybimzb4s2j"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("bison" ,bison)
-       ("flex" ,flex)
-       ("gettext" ,gettext-minimal)
-       ("zlib" ,zlib)))
+     (list bison flex gettext-minimal zlib))
     (inputs
      (list alsa-lib
            boost
@@ -1994,21 +1991,21 @@ auto-wah.")
                   #t))))
     (build-system gnu-build-system)
     (inputs
-     `(("alsa-utils" ,alsa-utils)
-       ("fltk" ,fltk)
-       ("libx11" ,libx11)
-       ("libxext" ,libxext)
-       ("libxfixes" ,libxfixes)
-       ("libxft" ,libxft)
-       ("libxrender" ,libxrender)
-       ("libxpm" ,libxpm)
-       ("fontconfig" ,fontconfig)
-       ("freetype" ,freetype)
-       ("jack" ,jack-1)
-       ("alsa-lib" ,alsa-lib)
-       ("libsndfile" ,libsndfile)
-       ("libsamplerate" ,libsamplerate)
-       ("zlib" ,zlib)))
+     (list alsa-utils
+           fltk
+           libx11
+           libxext
+           libxfixes
+           libxft
+           libxrender
+           libxpm
+           fontconfig
+           freetype
+           jack-1
+           alsa-lib
+           libsndfile
+           libsamplerate
+           zlib))
     (home-page "http://rakarrack.sourceforge.net/")
     (synopsis "Audio effects processor")
     (description
@@ -3417,7 +3414,7 @@ stretching and pitch scaling of audio.  This package contains the library.")
         (base32 "1623kirmxhmvmhx7f8lbzk0f18w2hrhwlkzl8l4aa906lfqffdp2"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("catch" ,catch-framework2)))
+     (list catch-framework2))
     (inputs
      (list fftw))
     (home-page "https://mixxxdj.github.io/libkeyfinder/")

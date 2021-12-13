@@ -507,8 +507,7 @@ README.md for a detailed list of features.")
          "189z5p20hk0xv9vwvym293503j4pwl03xqk9hl7cl6dwgv0l7wkf"))))
     (build-system meson-build-system)
     (native-inputs
-     `(("gettext" ,gettext-minimal)
-       ("pkg-config" ,pkg-config)))
+     (list gettext-minimal pkg-config))
     (inputs
      (list gtkmm-3 pulseaudio))
     (home-page "https://freedesktop.org/software/pulseaudio/paprefs/")

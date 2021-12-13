@@ -686,12 +686,12 @@ like GNOME, Unity, Budgie, Pantheon, XFCE, Mate, etc.")
                 "154qawiga792iimkpk3a6q8f4gm4r158wmsagkbqqbhj33kxgxhg"))))
     (build-system meson-build-system)
     (native-inputs
-     `(("gtk+" ,gtk+)
-       ("glib:bin" ,glib "bin")         ; for "glib-compile-resources"
-       ("librsvg" ,librsvg)
-       ("pkg-config" ,pkg-config)
-       ("ruby-sass" ,ruby-sass)
-       ("sassc" ,sassc)))
+     (list gtk+
+           `(,glib "bin") ; for "glib-compile-resources"
+           librsvg
+           pkg-config
+           ruby-sass
+           sassc))
     (home-page "https://shimmerproject.org/")
     (synopsis "Grey GTK+ theme based on Bluebird")
     (description "Greybird is a grey derivative of the Bluebird theme by the

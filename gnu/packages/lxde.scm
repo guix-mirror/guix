@@ -501,7 +501,7 @@ menu spec-compliant desktop menus for LXDE.")
          "123f3yn4rp1w5b3n5aj3ad9snkxab29qkrs7bcvf5bx4cn57g3sf"))))
     (build-system gnu-build-system)
     (inputs
-     `(("gtk+-2" ,gtk+-2)))
+     (list gtk+-2))
     (native-inputs
      (list pkg-config intltool))
     (synopsis "Tool for mouse and keyboard configuration in LXDE")

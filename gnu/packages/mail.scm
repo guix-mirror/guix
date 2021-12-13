@@ -239,10 +239,7 @@ mail client.")
          "0dvm6acl32dv8bixx9z50gzwfp6kj4kxnn1j3dcwjlp7sasjp41s"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("automake" ,automake)
-       ("autoconf" ,autoconf)
-       ("gettext" ,gettext-minimal)
-       ("m4" ,m4)))                     ;for the test suite
+     (list automake autoconf gettext-minimal m4))                     ;for the test suite
     (inputs
      (list gdbm
            gnutls
@@ -1524,10 +1521,7 @@ and search library.")
     (native-inputs
      (list pandoc pkg-config))
     (inputs
-     `(("libcrypto" ,openssl)
-       ("notmuch" ,notmuch)
-       ("sqlite" ,sqlite)
-       ("xapian" ,xapian)))
+     (list openssl notmuch sqlite xapian))
     (home-page "http://www.muchsync.org/")
     (synopsis "Synchronize notmuch mail across machines")
     (description
@@ -4136,15 +4130,15 @@ IMAP, Atom feeds or HTML archives.")
     (native-inputs
      (list pkg-config))
     (inputs
-     `(("bogofilter" ,bogofilter)
-       ("compface" ,compface)
-       ("gnupg" ,gnupg-1)
-       ("gpgme" ,gpgme)
-       ("gtk+-2.0" ,gtk+-2)
-       ("gtkspell" ,gtkspell3)
-       ("libnsl" ,libnsl)
-       ("openldap" ,openldap)
-       ("openssl" ,openssl)))
+     (list bogofilter
+           compface
+           gnupg-1
+           gpgme
+           gtk+-2
+           gtkspell3
+           libnsl
+           openldap
+           openssl))
     (home-page "https://sylpheed.sraoss.jp/en/")
     (synopsis "Lightweight GTK+ email client")
     (description

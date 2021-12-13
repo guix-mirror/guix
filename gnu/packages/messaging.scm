@@ -1049,9 +1049,7 @@ many popular chat protocols.")
         (base32 "1i5s9rrgbyss9rszq6c6y53hwqyw1k86s40cpsfx5ccl9bprxdgl"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("gettext" ,gettext-minimal)
-       ("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+     (list gettext-minimal intltool pkg-config))
     (inputs
      (list glib
            gtk+-2
@@ -1135,7 +1133,7 @@ simultaneously and therefore appear under the same nickname on IRC.")
         (base32 "1s2phiipq7ks8vrd93p96dzd5wgmgg8q9h2rxsnh2gg7iy06gj9c"))))
     (build-system python-build-system)
     (native-inputs
-     `(("glib:bin" ,glib "bin")))
+     (list `(,glib "bin")))
     (inputs
      (list glib
            glib-networking

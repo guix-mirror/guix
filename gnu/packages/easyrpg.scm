@@ -54,8 +54,7 @@
      (list pkg-config))
     (propagated-inputs
      ;; Required by 'liblcf.pc'.
-     `(("expat" ,expat)
-       ("icu" ,icu4c)))
+     (list expat icu4c))
     (home-page "https://easyrpg.org/")
     (synopsis "Library to handle RPG Maker 2000 and 2003 game data")
     (description

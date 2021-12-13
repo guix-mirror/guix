@@ -185,14 +185,14 @@
                                "4store-fix-buildsystem.patch"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("perl" ,perl)
-       ("python" ,python-2)
-       ("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("gettext" ,gettext-minimal)
-       ("libtool" ,libtool)
-       ("pcre" ,pcre "bin")                       ;for 'pcre-config'
-       ("pkg-config" ,pkg-config)))
+     (list perl
+           python-2
+           autoconf
+           automake
+           gettext-minimal
+           libtool
+           `(,pcre "bin") ;for 'pcre-config'
+           pkg-config))
     (inputs
      (list glib
            rasqal
