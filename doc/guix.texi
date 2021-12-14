@@ -17078,7 +17078,7 @@ show below.
 Here is the simplest configuration, with only one network interface
 controller (NIC) and only IPv4 connectivity:
 
-@example
+@lisp
 ;; Static networking for one NIC, IPv4-only.
 (service static-networking-service-type
          (list (static-networking
@@ -17091,7 +17091,7 @@ controller (NIC) and only IPv4 connectivity:
                         (destination "default")
                         (gateway "10.0.2.2"))))
                 (name-servers '("10.0.2.3")))))
-@end example
+@end lisp
 
 The snippet above can be added to the @code{services} field of your
 operating system configuration (@pxref{Using the Configuration System}).
