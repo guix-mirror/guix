@@ -462,7 +462,7 @@ interface.")
 (define-public qutebrowser
   (package
     (name "qutebrowser")
-    (version "2.3.1")
+    (version "2.4.0")
     (source
      (origin
        (method url-fetch)
@@ -470,7 +470,7 @@ interface.")
                            "qutebrowser/releases/download/v" version "/"
                            "qutebrowser-" version ".tar.gz"))
        (sha256
-        (base32 "05n64mw9lzzxpxr7lhakbkm9ir3x8p0rwk6vbbg01aqg5iaanyj0"))))
+        (base32 "1v4jhlmgfm8v9sbf7i3xg1vjh6dy8y2gpckk0mizkazb2jxrmkgj"))))
     (build-system python-build-system)
     (native-inputs
      (list python-attrs)) ; for tests
@@ -500,8 +500,7 @@ interface.")
        (modify-phases %standard-phases
          (add-before 'check 'set-env-offscreen
            (lambda _
-             (setenv "QT_QPA_PLATFORM" "offscreen")
-             #t))
+             (setenv "QT_QPA_PLATFORM" "offscreen")))
          (add-after 'install 'install-more
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -522,8 +521,7 @@ interface.")
                (substitute* "misc/org.qutebrowser.qutebrowser.desktop"
                  (("Exec=qutebrowser")
                   (string-append "Exec=" out "/bin/qutebrowser")))
-               (install-file "misc/org.qutebrowser.qutebrowser.desktop" app)
-               #t)))
+               (install-file "misc/org.qutebrowser.qutebrowser.desktop" app))))
          (add-after 'wrap 'wrap-qt-process-path
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -532,8 +530,7 @@ interface.")
                                       (assoc-ref inputs "qtwebengine")
                                       "/lib/qt5/libexec/QtWebEngineProcess")))
                (wrap-program bin
-                 `("QTWEBENGINEPROCESS_PATH" = (,qt-process-path)))
-               #t))))))
+                 `("QTWEBENGINEPROCESS_PATH" = (,qt-process-path)))))))))
     (home-page "https://qutebrowser.org/")
     (synopsis "Minimal, keyboard-focused, vim-like web browser")
     (description "qutebrowser is a keyboard-focused browser with a minimal
