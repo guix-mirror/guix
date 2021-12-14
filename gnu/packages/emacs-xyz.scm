@@ -2060,25 +2060,25 @@ or unexpected behavior inside an elisp configuration file (typically
   (package
     (name "emacs-wget")
     (version "0.5.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://debian/pool/main/w/wget-el/wget-el_"
-                                  version ".orig.tar.gz"))
-              (sha256
-               (base32 "10byvyv9dk0ib55gfqm7bcpxmx2qbih1jd03gmihrppr2mn52nff"))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://debian/pool/main/w/wget-el/wget-el_"
+                           version ".orig.tar.gz"))
+       (sha256
+        (base32 "10byvyv9dk0ib55gfqm7bcpxmx2qbih1jd03gmihrppr2mn52nff"))))
     (build-system emacs-build-system)
     (inputs (list wget))
-    (native-inputs `(("emacs" ,emacs-minimal)))
+    (native-inputs
+     (list emacs-minimal))
     (arguments
-     `(#:tests? #f  ; no check target
+     `(#:tests? #f                      ;no check target
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-exec-paths
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((wget (assoc-ref inputs "wget")))
-               (emacs-substitute-variables "wget.el"
-                 ("wget-command" (string-append wget "/bin/wget"))))
-             #t)))))
+             (emacs-substitute-variables "wget.el"
+               ("wget-command" (search-input-file inputs "/bin/wget"))))))))
     (home-page "https://www.emacswiki.org/emacs/EmacsWget")
     (synopsis "Simple file downloader for Emacs based on wget")
     (description
