@@ -1343,9 +1343,9 @@ types are supported, as is encryption.")
     (license license:gpl3+)
     (home-page "https://www.gnu.org/software/recutils/")))
 
-(define-public emacs-recutils
+(define-public emacs-rec-mode
   (package
-    (name "emacs-recutils")
+    (name "emacs-rec-mode")
     (version "1.8.2")
     (source (origin
               (method url-fetch)
@@ -1372,6 +1372,9 @@ for working with GNU Recutils text-based, human-editable databases.  It
 supports editing, navigation, and querying of recutils database files
 including field and record folding.")
     (license license:gpl3+)))
+
+(define-public emacs-recutils
+  (deprecated-package "emacs-recutils" emacs-rec-mode))
 
 (define-public rocksdb
   (package
