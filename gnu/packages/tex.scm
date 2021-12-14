@@ -9731,8 +9731,7 @@ automatically translate more than a few words.")
               "texlive-latex-textpos"
               (list "doc/latex/textpos/"
                     "tex/latex/textpos/")
-              (base32
-               "1g208dx853xg7g72jggkh13934r49yypksvalm5pk6snh0s0k86c")
+              (base32 "0sqm3pr9jyf9sf432qawscbf50glj58acwcfzyk58ijic2g01hzl")
               #:trivial? #t))
     (build-system texlive-build-system)
     (home-page "https://ctan.org/pkg/textpos")
