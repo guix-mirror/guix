@@ -1425,6 +1425,25 @@ harmonized subsetting of rows (features) and columns (patients / samples)
 across the entire multi-'omics experiment.")
     (license license:artistic2.0)))
 
+(define-public r-tcgabiolinksgui-data
+  (package
+    (name "r-tcgabiolinksgui-data")
+    (version "1.14.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "TCGAbiolinksGUI.data" version 'experiment))
+       (sha256
+        (base32 "08zmlvycq3jz1zy0715x9f21nf3465c51k7w2jq12sfbap36pmjm"))))
+    (properties `((upstream-name . "TCGAbiolinksGUI.data")))
+    (build-system r-build-system)
+    (native-inputs (list r-knitr))
+    (home-page "https://github.com/BioinformaticsFMRP/TCGAbiolinksGUI.data")
+    (synopsis "Data for the TCGAbiolinksGUI package")
+    (description "This package provides supporting data for the
+TCGAbiolinksGUI package.")
+    (license license:gpl3)))
+
 
 ;;; Packages
 
