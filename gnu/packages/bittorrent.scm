@@ -570,9 +570,19 @@ features.")
                (("names='ngettext'") "names=['ngettext']"))
              #t))
          (add-after 'install 'wrap
-           (lambda* (#:key outputs #:allow-other-keys)
+           (lambda* (#:key native-inputs inputs outputs #:allow-other-keys)
              (let ((out               (assoc-ref outputs "out"))
-                   (gi-typelib-path   (getenv "GI_TYPELIB_PATH")))
+                   (gi-typelib-path
+                    (string-join (filter
+                                  (lambda (x) (not (string-prefix?
+                                                    (assoc-ref
+                                                     (or native-inputs inputs)
+                                                     "librsvg")
+                                                    x)))
+                                  (string-split
+                                   (getenv "GI_TYPELIB_PATH")
+                                   #\:))
+                                 ":")))
                (for-each
                 (lambda (program)
                   (wrap-program program
