@@ -172,7 +172,8 @@ commit hash and its date rather than a proper release tag."
                    (imported-modules %go-build-system-modules)
                    (modules '((guix build go-build-system)
                               (guix build union)
-                              (guix build utils))))
+                              (guix build utils)))
+                   (substitutable? #t))
   (define builder
     (with-imported-modules imported-modules
       #~(begin
@@ -182,6 +183,7 @@ commit hash and its date rather than a proper release tag."
                     #:system #$system
                     #:phases #$phases
                     #:outputs #$(outputs->gexp outputs)
+                    #:substitutable? #$substitutable?
                     #:goarch #$goarch
                     #:goos #$goos
                     #:search-paths '#$(sexp->gexp
@@ -222,7 +224,8 @@ commit hash and its date rather than a proper release tag."
                          (imported-modules %go-build-system-modules)
                          (modules '((guix build go-build-system)
                                     (guix build union)
-                                    (guix build utils))))
+                                    (guix build utils)))
+                         (substitutable? #t))
   "Cross-build NAME using GO, where TARGET is a GNU triplet and with INPUTS."
   (define builder
     #~(begin
