@@ -6999,8 +6999,16 @@ The @code{arguments} field specifies options for the build system
 @cindex quoting
 @findex '
 @findex quote
+@cindex backquote (quasiquote)
+@findex `
+@findex quasiquote
+@cindex comma (unquote)
+@findex ,
+@findex unquote
 What about these quote (@code{'}) characters?  They are Scheme syntax to
 introduce a literal list; @code{'} is synonymous with @code{quote}.
+Sometimes you'll also see @code{`} (a backquote, synonymous with
+@code{quasiquote}) and @code{,} (a comma, synonymous with @code{unquote}).
 @xref{Expression Syntax, quoting,, guile, GNU Guile Reference Manual},
 for details.  Here the value of the @code{arguments} field is a list of
 arguments passed to the build system down the road, as with @code{apply}
@@ -7018,20 +7026,6 @@ The @code{inputs} field specifies inputs to the build process---i.e.,
 build-time or run-time dependencies of the package.  Here, we add
 an input, a reference to the @code{gawk}
 variable; @code{gawk} is itself bound to a @code{<package>} object.
-
-@cindex backquote (quasiquote)
-@findex `
-@findex quasiquote
-@cindex comma (unquote)
-@findex ,
-@findex unquote
-@findex ,@@
-@findex unquote-splicing
-Again, @code{`} (a backquote, synonymous with @code{quasiquote}) allows
-us to introduce a literal list in the @code{inputs} field, while
-@code{,} (a comma, synonymous with @code{unquote}) allows us to insert a
-value in that list (@pxref{Expression Syntax, unquote,, guile, GNU Guile
-Reference Manual}).
 
 Note that GCC, Coreutils, Bash, and other essential tools do not need to
 be specified as inputs here.  Instead, @code{gnu-build-system} takes care
