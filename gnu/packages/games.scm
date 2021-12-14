@@ -8195,15 +8195,15 @@ GameController.")
 (define-public quadrapassel
   (package
     (name "quadrapassel")
-    (version "3.36.05")
+    (version "40.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/quadrapassel/"
-                                  (version-major+minor version) "/"
+                                  (version-major version) "/"
                                   "quadrapassel-" version ".tar.xz"))
               (sha256
                (base32
-                "04abxmimh5npw8rhz1sfi6wxilgc6i1wka9mlnfwp8v1p1cb00cv"))))
+                "02n0khwy38pykw4xqpnkym6xvj2sv8izfjbaxlik3iq7890j5n0b"))))
     (build-system meson-build-system)
     (arguments
      '(#:glib-or-gtk? #t
@@ -8213,8 +8213,7 @@ GameController.")
            ;; Don't create 'icon-theme.cache'.
            (lambda _
              (substitute* "build-aux/meson_post_install.py"
-               (("gtk-update-icon-cache") (which "true")))
-             #t)))))
+               (("gtk-update-icon-cache") (which "true"))))))))
     (native-inputs
      `(("desktop-file-utils" ,desktop-file-utils) ;for desktop-file-validate
        ("gettext" ,gettext-minimal)
