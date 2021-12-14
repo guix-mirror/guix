@@ -11294,7 +11294,8 @@ higher level porcelain stuff.")
                 "0npg4kqpwl992fgjd2cn3fh84aiwpdp9kd8z7rw2xaj2iazsm914"))))
     (build-system meson-build-system)
     (arguments
-     `(#:glib-or-gtk? #t
+     `(#:meson ,meson-0.59
+       #:glib-or-gtk? #t
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'disable-post-install-partially
@@ -11309,6 +11310,19 @@ higher level porcelain stuff.")
              (substitute* "tests/libgitg/test-commit.vala"
                (("/bin/bash") (which "bash")))
              #t))
+         ;; XXX: Remove upon next version bump
+         (add-after 'unpack 'harden
+           (lambda _
+             ;; See <https://gitlab.gnome.org/GNOME/gitg/-/issues/337>
+             (substitute* "libgitg/gitg-date.vala"
+               (("(val\|tzs) == null" all val)
+                (string-append val " == null || " val " == \"\""))
+               (("(val\|tzs) != null" all val)
+                (string-append val " != null && " val " != \"\"")))
+             ;; See <https://gitlab.gnome.org/GNOME/gitg/-/merge_requests/159>
+             (substitute* "gitg/gitg-action-support.vala"
+               (("stash_if_needed\\((.*), Gitg.Ref head" all other)
+                (string-append "stash_if_needed(" other ", Gitg.Ref? head")))))
          (add-after 'glib-or-gtk-wrap 'wrap-typelib
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((prog (string-append (assoc-ref outputs "out")
@@ -11328,7 +11342,7 @@ higher level porcelain stuff.")
            libgit2-glib
            libpeas
            libsecret
-           libsoup
+           libsoup-minimal-2
            libxml2))
     (native-inputs
      `(("glib:bin" ,glib "bin")
