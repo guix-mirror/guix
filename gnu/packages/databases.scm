@@ -141,6 +141,7 @@
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages terminals)
+  #:use-module (gnu packages texinfo)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
@@ -1344,23 +1345,33 @@ types are supported, as is encryption.")
 
 (define-public emacs-recutils
   (package
-    (inherit recutils)
     (name "emacs-recutils")
+    (version "1.8.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://elpa.gnu.org/packages/"
+                                  "rec-mode-" version ".tar"))
+              (sha256
+               (base32
+                "06mjj1la2v8zdhsflj3mwcp7qnkj7gxzm8wbk2pli1h8vnq2zvd0"))
+              (snippet '(begin (delete-file "rec-mode.info")))))
     (build-system emacs-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'change-directory
+         (add-before 'install 'make-info
            (lambda _
-             (chdir "etc")
-             #t)))))
-    (native-inputs '())
-    (inputs '())
+             (invoke "makeinfo" "--no-split"
+                     "-o" "rec-mode.info" "rec-mode.texi"))))))
+    (native-inputs
+     `(("texinfo" ,texinfo)))
+    (home-page "https://www.gnu.org/software/recutils/")
     (synopsis "Emacs mode for working with recutils database files")
     (description "This package provides an Emacs major mode @code{rec-mode}
 for working with GNU Recutils text-based, human-editable databases.  It
 supports editing, navigation, and querying of recutils database files
-including field and record folding.")))
+including field and record folding.")
+    (license license:gpl3+)))
 
 (define-public rocksdb
   (package
