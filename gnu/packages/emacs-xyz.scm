@@ -3507,26 +3507,21 @@ type, for example: packages, buffers, files, etc.")
            (add-after 'unpack 'expand-load-path
              (lambda _
                ((assoc-ref emacs:%standard-phases 'expand-load-path)
-                #:prepend-source? #f)
-               #t)))))
+                #:prepend-source? #f))))))
       (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("pkg-config" ,pkg-config)
-         ("texinfo" ,texinfo)
-         ("emacs" ,emacs-minimal)))
+       (list autoconf automake emacs-minimal pkg-config texinfo))
       (inputs
        `(("guile"
           ,@(assoc-ref (package-native-inputs guix) "guile"))
          ("guix" ,guix)))
       (propagated-inputs
-       `(("geiser" ,emacs-geiser)
-         ("geiser-guile" ,emacs-geiser-guile)
-         ("guile-gcrypt" ,guile-gcrypt)
-         ("dash" ,emacs-dash)
-         ("bui" ,emacs-bui)
-         ("edit-indirect" ,emacs-edit-indirect)
-         ("magit-popup" ,emacs-magit-popup)))
+       (list emacs-bui
+             emacs-dash
+             emacs-edit-indirect
+             emacs-geiser
+             emacs-geiser-guile
+             emacs-magit-popup
+             guile-gcrypt))
       (home-page "https://emacs-guix.gitlab.io/website/")
       (synopsis "Emacs interface for GNU Guix")
       (description
