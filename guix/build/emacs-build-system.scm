@@ -110,7 +110,7 @@ environment variable\n" source-directory))
 
 (define* (build #:key outputs inputs #:allow-other-keys)
   "Compile .el files."
-  (let* ((emacs (string-append (assoc-ref inputs "emacs") "/bin/emacs"))
+  (let* ((emacs (search-input-file inputs "/bin/emacs"))
          (out (assoc-ref outputs "out")))
     (setenv "SHELL" "sh")
     (parameterize ((%emacs emacs))
