@@ -4583,7 +4583,7 @@ by making punctuation characters active.")
                     "fonts/opentype/public/fira/"
                     "fonts/map/dvips/fira/"
                     "fonts/enc/dvips/fira/")
-              (base32 "0mxrwwf8i383vrs64lsyiwnai4cy305pkv1kgd4nrhmgi7pdc3ac")
+              (base32 "1v3688hziqz4jywfysiv19vsdzfkknrf83zfbi7lhiqpgkpsfsm2")
               #:trivial? #t))
     (build-system texlive-build-system)
     (home-page "https://ctan.org/fonts/fira")
