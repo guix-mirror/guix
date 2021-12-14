@@ -340,6 +340,7 @@ de transformation de paquet similaires.")))
  (entry (commit "db4681a4c17d282a661552f2f57e5c453d02e414")
         (title
          (en "@code{gdm-service-type} now supports Wayland")
+         (de "@code{gdm-service-type} bietet nun Unterstützung für Wayland")
          (fr "@code{gdm-service-type} prend maintenant en charge Wayland"))
         (body
          (en "@code{gdm-service-type} has been updated to support being launched
@@ -350,6 +351,15 @@ mode. See @command{info \"(guix) X Window\"} for more information.
 Wayland mode for GDM will soon become the default in Guix, so if your
 hardware doesn't support Wayland (Nvidia users are the most concerned here),
 please consider disabling it now.")
+         (de "@code{gdm-service-type} wurde um Unterstützung dafür
+aktualisiert, als Wayland-Client gestartet zu werden und Wayland-Sitzungen zu
+starten.  Der Boolesche Wert im Feld @code{wayland?} in
+@code{gdm-configuration} bestimmt, ob GDM im Wayland- oder X-Modus gestartet
+wird.  Siehe @command{info \"(guix.de) X Window\"} für weitere Informationen.
+
+Bald wird der Wayland-Modus für GDM die Vorgabeeinstellung in Guix werden,
+daher sollten Sie, wenn Ihre Hardware kein Wayland unterstützt (Nvidia-Nutzer
+betrifft dies am ehesten), ihn jetzt ausdrücklich abschalten.")
          (fr "@code{gdm-service-type} a été mis à jour et peut maintenant être
 lancé comme client Wayland, ainsi que lancer des sessions Wayland. Le champ
 booléen @code{wayland?} de @code{gdm-configuration} contrôle le mode dans lequel
