@@ -14918,6 +14918,61 @@ samples, with or without imputation, dropping of mostly-NA rows, age
 estimates, etc.")
     (license license:gpl3)))
 
+(define-public r-tcgabiolinks
+  (package
+    (name "r-tcgabiolinks")
+    (version "2.22.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "TCGAbiolinks" version))
+       (sha256
+        (base32 "0114pwbxg6mdhv94g556krl08ig7nwaafrryxbjha4hvn0xwy36l"))))
+    (properties `((upstream-name . "TCGAbiolinks")))
+    (build-system r-build-system)
+    (propagated-inputs
+     (list r-biomart
+           r-data-table
+           r-downloader
+           r-dplyr
+           r-genomicranges
+           r-ggplot2
+           r-httr
+           r-iranges
+           r-jsonlite
+           r-knitr
+           r-plyr
+           r-purrr
+           r-r-utils
+           r-readr
+           r-rvest
+           r-s4vectors
+           r-stringr
+           r-summarizedexperiment
+           r-tcgabiolinksgui-data
+           r-tibble
+           r-tidyr
+           r-xml
+           r-xml2))
+    (native-inputs (list r-knitr))
+    (home-page "https://github.com/BioinformaticsFMRP/TCGAbiolinks")
+    (synopsis "Integrative analysis with GDC data")
+    (description
+     "The aim of TCGAbiolinks is:
+
+@enumerate
+@item facilitate GDC open-access data retrieval;
+@item prepare the data using the appropriate pre-processing strategies;
+@item provide the means to carry out different standard analyses, and;
+@item to easily reproduce earlier research results.
+@end enumerate
+
+In more detail, the package provides multiple methods for analysis (e.g.,
+differential expression analysis, identifying differentially methylated
+regions) and methods for visualization (e.g., survival plots, volcano plots,
+starburst plots) in order to easily develop complete analysis pipelines.")
+    (license license:gpl3+)))
+
 (define-public r-tximeta
   (package
     (name "r-tximeta")
