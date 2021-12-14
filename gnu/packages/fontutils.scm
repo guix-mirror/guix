@@ -835,7 +835,7 @@ maintain the Noto Fonts project.")
 (define-public fcft
   (package
     (name "fcft")
-    (version "2.4.6")
+    (version "2.5.1")
     (home-page "https://codeberg.org/dnkl/fcft")
     (source (origin
               (method git-fetch)
@@ -843,11 +843,10 @@ maintain the Noto Fonts project.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0jh05wzrif7z1xf9jzs8bgf49lpj5zs55agj414bmmwdddk7my7j"))))
+                "0dn0ic2ddi5qz6nqscsn7nlih67ad8vpclppbqwas6xavdfq6va2"))))
     (build-system meson-build-system)
     (native-inputs
-     (list check gcc-10 ;TODO: Remove when the default compiler is > GCC 7.
-           pkg-config scdoc))
+     (list check pkg-config scdoc))
     (propagated-inputs
      (list ;; Required by fcft.pc.
            fontconfig
