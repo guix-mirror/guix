@@ -5200,7 +5200,7 @@ Rate} 3600x2250 bit/s vocoder used in various radio systems.")
 (define-public ableton-link
   (package
     (name "ableton-link")
-    (version "3.0.2")
+    (version "3.0.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -5209,7 +5209,7 @@ Rate} 3600x2250 bit/s vocoder used in various radio systems.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0262vm0v7hmqjhqx5xikh529p3c065p1yld6ymaiz74yq1dnnjir"))
+                "1wplqj11ww64gmw2kzlxpvfs3v04m2036f7k5ndm34zcv12b91fa"))
               (modules '((guix build utils)))
               (patches
                (search-patches "ableton-link-system-libraries-debian.patch"))
@@ -5221,8 +5221,7 @@ Rate} 3600x2250 bit/s vocoder used in various radio systems.")
                     (("root_dir,") "root_dir, os.pardir,"))
                   ;; Unbundle dependencies.
                   (delete-file-recursively "third_party")
-                  (delete-file-recursively "modules")
-                  #t))))
+                  (delete-file-recursively "modules")))))
     (build-system cmake-build-system)
     (native-inputs
      (list catch-framework
@@ -5247,16 +5246,12 @@ Rate} 3600x2250 bit/s vocoder used in various radio systems.")
          (replace 'check
            (lambda* (#:key inputs #:allow-other-keys)
              (let* ((python (search-input-file inputs "/bin/python3"))
-                    (run-tests (string-append "../ableton-link-"
-                                              ,version
-                                              "-checkout/ci/run-tests.py")))
+                    (run-tests "../source/ci/run-tests.py"))
                (invoke python run-tests "--target" "LinkCoreTest")
                (invoke python run-tests "--target" "LinkDiscoveryTest"))))
          (add-before 'install 'patch-cmake
            (lambda* (#:key inputs #:allow-other-keys)
-             (let* ((source (string-append "../ableton-link-"
-                                                ,version
-                                                "-checkout/")))
+             (let* ((source "../source/"))
                (substitute* (string-append source
                                            "cmake_include/AsioStandaloneConfig.cmake")
                  (((string-append "\\$\\{CMAKE_CURRENT_LIST_DIR\\}/\\.\\./"
@@ -5267,14 +5262,13 @@ Rate} 3600x2250 bit/s vocoder used in various radio systems.")
                  (("\\$\\{CMAKE_CURRENT_LIST_DIR\\}/include")
                   "${CMAKE_CURRENT_LIST_DIR}/../../../include")
                  (("\\$\\{CMAKE_CURRENT_LIST_DIR\\}/include/ableton/Link\\.hpp")
-                  "${CMAKE_CURRENT_LIST_DIR}/../../../include/ableton/Link.hpp"))
-               #t)))
+                  "${CMAKE_CURRENT_LIST_DIR}/../../../include/ableton/Link.hpp")))))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (bin (string-append out "/bin"))
                     (lib-cmake (string-append out "/lib/cmake/ableton-link"))
-                    (source (string-append "../ableton-link-" ,version "-checkout")))
+                    (source "../source"))
                (for-each (lambda (test-file)
                            (delete-file test-file))
                          '("bin/LinkDiscoveryTest" "bin/LinkCoreTest"))
@@ -5285,8 +5279,7 @@ Rate} 3600x2250 bit/s vocoder used in various radio systems.")
                              lib-cmake)
                (install-file (string-append source
                                             "/cmake_include/AsioStandaloneConfig.cmake")
-                             (string-append lib-cmake "/cmake_include"))
-               #t))))))
+                             (string-append lib-cmake "/cmake_include"))))))))
     (home-page "https://github.com/Ableton/link")
     (synopsis "Synchronize musical beat, tempo, and phase across multiple applications")
     (description
