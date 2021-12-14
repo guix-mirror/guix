@@ -546,6 +546,12 @@ supported; in particular, there is no ongoing work to ensure that this
 architecture still works.  Should someone decide they wish to revive this
 architecture then the code is still available.
 
+@item powerpc-linux (unsupported)
+big-endian 32-bit PowerPC processors, specifically the PowerPC G4 with
+AltiVec support, and Linux-Libre kernel.  This configuration is not
+fully supported and there is no ongoing work to ensure this architecture
+works.
+
 @item powerpc64le-linux
 little-endian 64-bit Power ISA processors, Linux-Libre kernel.  This
 includes POWER9 systems such as the
