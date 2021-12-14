@@ -873,6 +873,7 @@ in C/C++.")
 
                 (format #t "Packing IceCat source tarball...~%")
                 (force-output)
+                (setenv "XZ_DEFAULTS" (string-join (%xz-parallel-args)))
                 (invoke "tar" "cfa" #$output
                         ;; Avoid non-determinism in the archive.  We set the
                         ;; mtime of files in the archive to early 1980 because
@@ -883,9 +884,7 @@ in C/C++.")
                         "--owner=root:0"
                         "--group=root:0"
                         "--sort=name"
-                        icecat-dir)
-
-                #t))))))))
+                        icecat-dir)))))))))
 
 (define-public icecat
   (package
