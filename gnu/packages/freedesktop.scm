@@ -2395,13 +2395,12 @@ interfaces.")
          "-Dsd-bus-provider=libelogind")))
     (native-inputs
      (list cmake pkg-config))
-    (inputs
-     `(("elogind" ,elogind)
-       ("iniparser" ,iniparser)
-       ("pipewire" ,pipewire-0.3)
-       ("inih" ,libinih)
-       ("wayland" ,wayland)
-       ("wayland-protocols" ,wayland-protocols)))
+    (inputs (list elogind
+                  iniparser
+                  libinih
+                  pipewire-0.3
+                  wayland
+                  wayland-protocols))
     (home-page "https://github.com/emersion/xdg-desktop-portal-wlr")
     (synopsis "@code{xdg-desktop-portal} backend for wlroots")
     (description
