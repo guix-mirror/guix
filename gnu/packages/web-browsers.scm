@@ -731,6 +731,8 @@ is fully configurable and extensible in Common Lisp.")
 modern conveniences familiar from web browsers, such as smooth scrolling,
 inline image viewing, multiple tabs, visual themes, Unicode fonts, bookmarks,
 history, and page outlines.")
+    (properties
+     '((release-monitoring-url . "https://git.skyjake.fi/gemini/lagrange/releases")))
     (license license:bsd-2)))
 
 (define-public gmni
