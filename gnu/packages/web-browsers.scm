@@ -52,6 +52,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
@@ -474,7 +475,8 @@ interface.")
     (native-inputs
      (list python-attrs)) ; for tests
     (inputs
-     (list python-colorama
+     (list bash-minimal
+           python-colorama
            python-cssutils
            python-importlib-resources
            python-jinja2
