@@ -310,7 +310,7 @@ e.g. emacs-geiser-guile for Guile.")
     (inputs
      (list guile-3.0))
     (propagated-inputs
-     `(("geiser" ,emacs-geiser)))
+     (list emacs-geiser))
     (home-page "https://nongnu.org/geiser/")
     (synopsis "Guile Scheme support for Geiser")
     (description
@@ -360,7 +360,7 @@ using geiser.")
     (arguments
      `(#:include (cons "^geiser-gauche\\.scm$" %default-include)))
     (native-inputs
-     `(("geiser" ,emacs-geiser)))
+     (list emacs-geiser))
     (home-page "https://gitlab.com/emacs-geiser/gauche")
     (synopsis "Gauche Scheme support for Geiser")
     (description
@@ -403,7 +403,7 @@ a generic Scheme interaction mode for the GNU Emacs editor.")
     (inputs
      (list racket))
     (propagated-inputs
-     `(("geiser" ,emacs-geiser)))
+     (list emacs-geiser))
     (home-page "https://nongnu.org/geiser/")
     (synopsis "Racket support for Geiser")
     (description
@@ -765,9 +765,7 @@ on stdout instead of using a socket as the Emacsclient does.")
            (add-after 'emacs-build 'validate-compiled-autoloads
              (assoc-ref emacs:%standard-phases 'validate-compiled-autoloads)))))
       (native-inputs
-       `(("pkg-config" ,pkg-config)
-         ("emacs" ,emacs-no-x)
-         ("git" ,git-minimal)))
+       (list pkg-config emacs-no-x git-minimal))
       (inputs
        (list libgit2))
       (home-page "https://github.com/magit/libegit2")
@@ -1225,9 +1223,7 @@ organizing remote Go repository clones.")
     (native-inputs
      (list texinfo))
     (propagated-inputs
-     `(("dash" ,emacs-dash)
-       ("emacs-let-alist" ,emacs-let-alist)
-       ("treepy" ,emacs-treepy)))
+     (list emacs-dash emacs-let-alist emacs-treepy))
     (home-page "https://github.com/magit/ghub")
     (synopsis "Emacs client libraries for the APIs of various Git forges")
     (description
@@ -1408,10 +1404,7 @@ replacement.")
     (propagated-inputs
      (list emacs-dash))
     (native-inputs
-     `(("emacs" ,emacs-minimal)
-       ("emacs-el-search" ,emacs-el-search)
-       ("emacs-stream" ,emacs-stream)
-       ("texinfo" ,texinfo)))
+     (list emacs-minimal emacs-el-search emacs-stream texinfo))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list (string-append "EMACS="
@@ -1809,7 +1802,7 @@ skip set strings, which are arguments to @code{skip-chars-forward} and
            "0dkp7bcd7h2ds40wyszy11nmh7c2jxrwy04ayz7pbxh53ir7s2k0"))))
       (build-system emacs-build-system)
       (native-inputs
-       `(("ert-runner" ,emacs-ert-runner)))
+       (list emacs-ert-runner))
       (arguments
        `(#:tests? #t
          #:test-command '("ert-runner" "-l" "ample-regexps")))
@@ -1914,7 +1907,7 @@ optional minor mode which can apply this command automatically on save.")
        `(#:tests? #t
          #:test-command '("ert-runner")))
       (native-inputs
-       `(("ert-runner" ,emacs-ert-runner)))
+       (list emacs-ert-runner))
       (propagated-inputs
        (list emacs-dash emacs-f emacs-s))
       (home-page "https://github.com/emacsattic/relative-buffers")
@@ -1995,9 +1988,7 @@ or unexpected behavior inside an elisp configuration file (typically
                (base32
                 "0nvahdbjs12zg7zsk4gql02mvnv56cf1rwj2f5p42lwp3xvswiwp"))))
     (build-system gnu-build-system)
-    (native-inputs `(("autoconf" ,autoconf)
-                     ("texinfo" ,texinfo)
-                     ("emacs" ,emacs-minimal)))
+    (native-inputs (list autoconf texinfo emacs-minimal))
     (inputs (list w3m imagemagick))
     (arguments
      `(#:modules ((guix build gnu-build-system)
