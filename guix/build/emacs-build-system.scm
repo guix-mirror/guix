@@ -219,7 +219,7 @@ parallel. PARALLEL-TESTS? is ignored when using a non-make TEST-COMMAND."
 
 (define* (make-autoloads #:key outputs inputs #:allow-other-keys)
   "Generate the autoloads file."
-  (let* ((emacs (search-input-files inputs "/bin/emacs"))
+  (let* ((emacs (search-input-file inputs "/bin/emacs"))
          (out (assoc-ref outputs "out"))
          (elpa-name-ver (store-directory->elpa-name-version out))
          (elpa-name (package-name->name+version elpa-name-ver))
