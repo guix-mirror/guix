@@ -213,16 +213,17 @@
                ((".*'test-char':.*" all)
                 (string-append "# " all)))))
          (add-after 'patch-source-shebangs 'patch-embedded-shebangs
-           (lambda _
+           (lambda* (#:key native-inputs inputs #:allow-other-keys)
              ;; Ensure the executables created by these source files reference
              ;; /bin/sh from the store so they work inside the build container.
              (substitute* '("block/cloop.c" "migration/exec.c"
                             "net/tap.c" "tests/qtest/libqtest.c"
                             "tests/qtest/vhost-user-blk-test.c")
-               (("/bin/sh") (which "sh")))
+               (("/bin/sh") (search-input-file inputs "/bin/sh")))
              (substitute* "tests/qemu-iotests/testenv.py"
                (("#!/usr/bin/env python3")
-                (string-append "#!" (which "python3"))))))
+                (string-append "#!" (search-input-file (or native-inputs inputs)
+                                                       "/bin/python3"))))))
          (add-before 'configure 'fix-optionrom-makefile
            (lambda _
              ;; Work around the inability of the rules defined in this
@@ -304,50 +305,50 @@ exec smbd $@")))
                (mkdir-p qemu-doc)
                (rename-file (string-append out "/share/doc/qemu")
                             (string-append qemu-doc "/html"))))))))
-    (inputs                             ; TODO: Add optional inputs.
-     `(("alsa-lib" ,alsa-lib)
-       ("attr" ,attr)
-       ("glib" ,glib)
-       ("gtk+" ,gtk+)
-       ("libaio" ,libaio)
-       ("libattr" ,attr)
-       ("libcacard" ,libcacard)  ; smartcard support
-       ("libcap-ng" ,libcap-ng)  ; virtfs support requires libcap-ng & libattr
-       ("libdrm" ,libdrm)
-       ("libepoxy" ,libepoxy)
-       ("libjpeg" ,libjpeg-turbo)
-       ("libpng" ,libpng)
-       ("libseccomp" ,libseccomp)
-       ("libusb" ,libusb)               ;USB pass-through support
-       ("mesa" ,mesa)
-       ("ncurses" ,ncurses)
-       ;; ("pciutils" ,pciutils)
-       ("pixman" ,pixman)
-       ("pulseaudio" ,pulseaudio)
-       ("sdl2" ,sdl2)
-       ("spice" ,spice)
-       ("usbredir" ,usbredir)
-       ("util-linux" ,util-linux)
-       ("vde2" ,vde2)
-       ("virglrenderer" ,virglrenderer)
-       ("zlib" ,zlib)))
-    (native-inputs `(("gettext" ,gettext-minimal)
-                     ("glib:bin" ,glib "bin") ; gtester, etc.
-                     ("perl" ,perl)
-                     ("flex" ,flex)
-                     ("bison" ,bison)
-                     ("meson" ,meson)
-                     ("ninja" ,ninja)
-                     ("pkg-config" ,pkg-config)
-                     ("python-wrapper" ,python-wrapper)
-                     ("python-sphinx" ,python-sphinx)
-                     ("python-sphinx-rtd-theme" ,python-sphinx-rtd-theme)
-                     ("texinfo" ,texinfo)
-                     ;; The following static libraries are required to build
-                     ;; the static output of QEMU.
-                     ("glib:static" ,glib "static")
-                     ("pcre:static" ,pcre "static")
-                     ("zlib:static" ,zlib "static")))
+    (inputs
+     (list alsa-lib
+           bash-minimal
+           glib
+           gtk+
+           libaio
+           libcacard                    ;smartcard support
+           attr libcap-ng               ;VirtFS support
+           libdrm
+           libepoxy
+           libjpeg-turbo
+           libpng
+           libseccomp
+           libusb                       ;USB pass-through support
+           mesa
+           ncurses
+           ;; ("pciutils" ,pciutils)
+           pixman
+           pulseaudio
+           sdl2
+           spice
+           usbredir
+           util-linux
+           vde2
+           virglrenderer
+           zlib))
+    (native-inputs
+     (list gettext-minimal
+           `(,glib "bin")               ;gtester, etc.
+           perl
+           flex
+           bison
+           meson
+           ninja
+           pkg-config
+           python-wrapper
+           python-sphinx
+           python-sphinx-rtd-theme
+           texinfo
+           ;; The following static libraries are required to build
+           ;; the static output of QEMU.
+           `(,glib "static")
+           `(,pcre "static")
+           `(,zlib "static")))
     (home-page "https://www.qemu.org")
     (synopsis "Machine emulator and virtualizer")
     (description
