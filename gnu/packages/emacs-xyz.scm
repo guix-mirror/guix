@@ -2927,16 +2927,13 @@ overlay below or above the point.  Corfu can be considered the minimalistic
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-in-direnv
            (lambda* (#:key inputs #:allow-other-keys)
-             (let* ((direnv-path (assoc-ref inputs "direnv"))
-                    (direnv-bin (string-append
-                                 "\"" direnv-path "/bin/direnv\"")))
+             (let ((direnv (search-input-file inputs "/bin/direnv")))
                (substitute* "direnv.el"
-                 (("\"direnv\"") direnv-bin))))))))
+                 (("\"direnv\"") (string-append "\"" direnv "\"")))))))))
     (inputs
      (list direnv))
     (propagated-inputs
-     `(("dash" ,emacs-dash)
-       ("with-editor" ,emacs-with-editor)))
+     (list emacs-dash emacs-with-editor))
     (home-page "https://github.com/wbolster/emacs-direnv")
     (synopsis "Direnv integration for Emacs")
     (description
