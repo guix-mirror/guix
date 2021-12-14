@@ -4422,18 +4422,18 @@ keep pressing the key until it selects what you want.  There's also
     (package
       (name "emacs-explain-pause-mode")
       (version (git-version "0.1" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/lastquestion/explain-pause-mode")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "0frnfwqal9mrnrz6q4v7vcai26ahaw81894arff1yjw372pfgv7v"))))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/lastquestion/explain-pause-mode")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0frnfwqal9mrnrz6q4v7vcai26ahaw81894arff1yjw372pfgv7v"))))
       (build-system emacs-build-system)
       (native-inputs
-       `(("emacs" ,emacs-buttercup)))
+       (list emacs-buttercup))
       (arguments
        '(#:tests? #t
          ;; Don't run case-tests as they will fail to create sockets because
