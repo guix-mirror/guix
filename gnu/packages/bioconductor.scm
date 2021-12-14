@@ -12902,6 +12902,30 @@ scan putative TFBS from sequence/alignment, query JASPAR database and
 provides a wrapper of de novo motif discovery software.")
     (license license:gpl2)))
 
+(define-public r-maftools
+  (package
+    (name "r-maftools")
+    (version "2.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "maftools" version))
+       (sha256
+        (base32 "1s8w3xwwigz803l81bs9cb2dbvvw5r9z8jjcav1rmh9wm8909nfd"))))
+    (properties `((upstream-name . "maftools")))
+    (build-system r-build-system)
+    (propagated-inputs
+     (list r-data-table r-rcolorbrewer r-rhtslib r-survival r-zlibbioc))
+    (native-inputs (list r-knitr))
+    (home-page "https://github.com/PoisonAlien/maftools")
+    (synopsis "Summarize, analyze and visualize MAF files")
+    (description
+     "Analyze and visualize Mutation Annotation Format (MAF) files from large
+scale sequencing studies.  This package provides various functions to perform
+most commonly used analyses in cancer genomics and to create feature rich
+customizable visualzations with minimal effort.")
+    (license license:expat)))
+
 (define-public r-motifmatchr
   (package
     (name "r-motifmatchr")
