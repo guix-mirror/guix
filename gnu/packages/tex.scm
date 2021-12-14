@@ -9710,8 +9710,7 @@ LaTeX and plain TeX.")
               "texlive-translator"
               (list "doc/latex/translator/"
                     "tex/latex/translator/")
-              (base32
-               "1pac03qghaw9q98skfrgzgk4wnz04pgizw59c4k5ydphw1vpsvcz")
+              (base32 "13rxdqhvgwc5lz2wsw4jwsb92614wlxsa90rmzxyrc6xjz1jypnk")
               #:trivial? #t))
     (build-system texlive-build-system)
     (home-page "https://ctan.org/macros/latex/contrib/translator")
