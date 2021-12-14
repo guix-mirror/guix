@@ -811,8 +811,10 @@ to GitHub contributions calendar.")
              ,@(if (%current-target-system)
                    `((string-append
                       "-DPKG_CONFIG_EXECUTABLE="
-                      (assoc-ref %build-inputs "pkg-config")
-                      "/bin/" ,(%current-target-system) "-pkg-config"))
+                      (search-input-file
+                       %build-inputs
+                       (string-append "/bin/" ,(%current-target-system)
+                                      "-pkg-config"))))
                    '()))
        #:phases
        (modify-phases %standard-phases
