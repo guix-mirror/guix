@@ -2162,65 +2162,56 @@ light user interface.")
          (add-after 'unpack 'set-external-programs
            ;; Specify the absolute file names of the various programs
            ;; so that everything works out-of-the-box. (tinytag missing)
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((out     (assoc-ref outputs "out"))
-                   (emms-print-metadata (assoc-ref inputs "emms-print-metadata"))
-                   (flac    (assoc-ref inputs "flac"))
-                   (vorbis  (assoc-ref inputs "vorbis-tools"))
-                   (alsa    (assoc-ref inputs "alsa-utils"))
-                   (mpg321  (assoc-ref inputs "mpg321"))
-                   (mp3info (assoc-ref inputs "mp3info"))
-                   (mutagen (assoc-ref inputs "mutagen"))
-                   (exiftool (assoc-ref inputs "perl-image-exiftool"))
-                   (opus    (assoc-ref inputs "opus-tools")))
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((amixer (search-input-file inputs "/bin/amixer"))
+                   (emms-print-metadata
+                    (search-input-file inputs "/bin/emms-print-metadata"))
+                   (exiftool (search-input-file inputs "/bin/exiftool"))
+                   (metaflac (search-input-file inputs "/bin/metaflac"))
+                   (mp3info (search-input-file inputs "/bin/mp3info"))
+                   (mpg321 (search-input-file inputs "/bin/mpg321"))
+                   (mid3v2 (search-input-file inputs "/bin/mid3v2"))
+                   (ogg123 (search-input-file inputs "/bin/ogg123"))
+                   (ogginfo (search-input-file inputs "/bin/ogginfo"))
+                   (opusinfo (search-input-file inputs "/bin/opusinfo"))
+                   (vorbiscomment (search-input-file inputs "/bin/vorbiscomment")))
                (emacs-substitute-variables "emms-player-mpg321-remote.el"
                  ("emms-player-mpg321-remote-command"
                   (string-append mpg321 "/bin/mpg321")))
                (substitute* "emms-player-simple.el"
-                 (("\"ogg123\"")
-                  (string-append "\"" vorbis "/bin/ogg123\"")))
+                 (("\"ogg123\"") (string-append "\"" ogg123 "\"")))
                (substitute* "emms-player-simple.el"
-                 (("\"mpg321\"")
-                  (string-append "\"" mpg321 "/bin/mpg321\"")))
+                 (("\"mpg321\"") (string-append "\"" mpg321 "\"")))
                (emacs-substitute-variables "emms-info-ogginfo.el"
-                 ("emms-info-ogginfo-program-name"
-                  (string-append vorbis "/bin/ogginfo")))
+                 ("emms-info-ogginfo-program-name" ogginfo))
                (emacs-substitute-variables "emms-info-opusinfo.el"
-                 ("emms-info-opusinfo-program-name"
-                  (string-append opus "/bin/opusinfo")))
+                 ("emms-info-opusinfo-program-name" opusinfo))
                (emacs-substitute-variables "emms-info-libtag.el"
-                 ("emms-info-libtag-program-name"
-                  (string-append emms-print-metadata "/bin/emms-print-metadata")))
+                 ("emms-info-libtag-program-name" emms-print-metadata))
                (emacs-substitute-variables "emms-info-mp3info.el"
-                 ("emms-info-mp3info-program-name"
-                  (string-append mp3info "/bin/mp3info")))
+                 ("emms-info-mp3info-program-name" mp3info))
                (emacs-substitute-variables "emms-info-metaflac.el"
-                 ("emms-info-metaflac-program-name"
-                  (string-append flac "/bin/metaflac")))
+                 ("emms-info-metaflac-program-name" metaflac))
                (emacs-substitute-variables "emms-source-file.el"
                  ("emms-source-file-gnu-find" (which "find")))
                (substitute* "emms-volume-amixer.el"
-                 (("\"amixer\"")
-                  (string-append "\"" alsa "/bin/amixer\"")))
+                 (("\"amixer\"") (string-append "\"" amixer "\"")))
                (substitute* "emms-tag-editor.el"
-                 (("\"mid3v2\"")
-                  (string-append "\"" mutagen "/bin/mid3v2\""))
+                 (("\"mid3v2\"") (string-append "\"" mid3v2 "\""))
                  (("\"vorbiscomment\"")
-                  (string-append "\"" vorbis "/bin/vorbiscomment\"")))
+                  (string-append "\"" vorbiscomment "\"")))
                (substitute* "emms-info-exiftool.el"
-                 (("\"exiftool\"")
-                  (string-append "\"" exiftool "/bin/exiftool\"")))
-               #t))))))
+                 (("\"exiftool\"") (string-append "\"" exiftool "\"")))))))))
     (inputs
-     `(("emms-print-metadata" ,emacs-emms-print-metadata)
-       ("alsa-utils" ,alsa-utils)
-       ("flac" ,flac)                   ;for metaflac
-       ("vorbis-tools" ,vorbis-tools)
-       ("mpg321" ,mpg321)
-       ("mp3info" ,mp3info)
-       ("mutagen" ,python-mutagen)
-       ("perl-image-exiftool" ,perl-image-exiftool)
-       ("opus-tools" ,opus-tools)))))
+     (list emacs-emms-print-metadata
+           alsa-utils
+           flac                         ;for metaflac
+           vorbis-tools
+           mpg321
+           mp3info
+           python-mutagen
+           perl-image-exiftool
+           opus-tools))))
 
 (define-public emacs-emms-mode-line-cycle
   (package
