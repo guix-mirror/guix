@@ -362,7 +362,8 @@ concerné·es), merci de le désactiver dès maintenant.")))
 
  (entry (commit "f23803af2018a148fb088f2516d79c20d6bf95f0")
         (title
-         (en "Input labels can now be omitted in package definitions"))
+         (en "Input labels can now be omitted in package definitions")
+         (de "Eingaben in Paketdefinitionen brauchen keine Bezeichnungen mehr"))
         (body
          (en "If you have written package definitions before, you may know
 that package inputs required a bit of boilerplate: each input needs to have an
@@ -383,7 +384,32 @@ another package in build-side code.  Additionally, the new
 replacing, adding inputs.
 
 To ease transition to the ``new style'', a new @command{guix style} command is
-provided.  Run @command{info \"(guix) Invoking guix style\"} for more info.")))
+provided.  Run @command{info \"(guix) Invoking guix style\"} for more info.")
+         (de "Wenn Sie bereits Paketdefinitionen verfasst haben,
+erinnern Sie sich vielleicht, dass Sie für Paketeingaben manches
+doppelt schreiben mussten: Jede Eingabe wird assoziiert mit einer
+Bezeichnung (als Zeichenkette), auf die Sie sich in
+„erstellungsseitigem Code“ beziehen können.
+
+Diese Eingabebezeichnungen sind @emph{nicht} mehr nötig.  Sie können
+jetzt solchen Code schreiben:
+
+@lisp
+(package
+  ;; …
+  (inputs (list libunistring libffi libgc)))
+@end lisp
+
+Achten Sie auf das gegenüber früher vereinfachte @code{inputs}-Feld.
+Wenn nötig können Sie in erstellungsseitigem Code G-Ausdrücke (gexps)
+benutzen, um andere Pakete zu referenzieren.  Des Weiteren erleichtert
+das Makro @code{modify-inputs} geläufige Operationen auf Eingaben —
+das Löschen, Ersetzen, Hinzufügen von Eingaben.
+
+Um den Übergang zum „neuen Stil“ zu erleichtern, steht ein neuer
+Befehl @command{guix style} zur Verfügung.  Führen Sie @command{info
+\"(guix) Invoking guix style\"} aus, um mehr Informationen zu
+erhalten.")))
 
  (entry (commit "82daab42811a2e3c7684ebdf12af75ff0fa67b99")
         (title
