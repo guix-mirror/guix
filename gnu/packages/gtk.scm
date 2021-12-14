@@ -1941,9 +1941,9 @@ printing and other features typical of a source code editor.")
        ("libglade" ,libglade)
        ("glib"   ,glib)))
     (propagated-inputs
-     (list python2-pycairo ;loaded at runtime
-           python2-pygobject-2 ;referenced in pc file
-           gtk+-2))
+     `(("python-pycairo"   ,python2-pycairo)     ;loaded at runtime
+       ("python-pygobject" ,python2-pygobject-2) ;referenced in pc file
+       ("gtk+"             ,gtk+-2)))
     (arguments
      `(#:tests? #f
        #:phases (modify-phases %standard-phases
