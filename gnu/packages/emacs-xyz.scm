@@ -1300,19 +1300,18 @@ for editing Racket's Scribble documentation syntax in Emacs.")
         (base32 "0q2pb3w8s833fjhkzicciw2php4lsnismad1dnwgp2lcway757ra"))))
     (build-system gnu-build-system)
     (arguments
-     (list
-      #:modules '((guix build gnu-build-system)
+     `(#:modules ((guix build gnu-build-system)
                   ((guix build emacs-build-system) #:prefix emacs:)
                   (guix build utils))
-      #:imported-modules `(,@%gnu-build-system-modules
+       #:imported-modules (,@%gnu-build-system-modules
                            (guix build emacs-build-system)
                            (guix build emacs-utils))
-      #:configure-flags #~(list (string-append "--with-lispdir="
-                                               (emacs:elpa-directory #$output)))
-      #:phases
-      (modify-phases %standard-phases
-        (add-after 'unpack 'expand-load-path
-          (assoc-ref emacs:%standard-phases 'expand-load-path)))))
+       #:configure-flags (list (string-append "--with-lispdir="
+                                              (emacs:elpa-directory %output)))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'expand-load-path
+           (assoc-ref emacs:%standard-phases 'expand-load-path)))))
     (native-inputs
      (list autoconf automake texinfo perl emacs-minimal))
     (propagated-inputs
@@ -2685,19 +2684,18 @@ a set of simplified face specifications and a user-supplied color palette")
     (native-inputs
      (list emacs-minimal))
     (arguments
-     (list
-      #:configure-flags
-      #~(list (string-append "--with-howmdir=" (emacs:elpa-directory #$output)))
-      #:modules '((guix build gnu-build-system)
+     `(#:configure-flags
+       (list (string-append "--with-howmdir=" (emacs:elpa-directory %output)))
+       #:modules ((guix build gnu-build-system)
                   ((guix build emacs-build-system) #:prefix emacs:)
                   (guix build utils))
-      #:imported-modules `(,@%gnu-build-system-modules
+       #:imported-modules (,@%gnu-build-system-modules
                            (guix build emacs-build-system)
                            (guix build emacs-utils))
-      #:phases
-      (modify-phases %standard-phases
-        (add-after 'install 'make-autoloads
-          (assoc-ref emacs:%standard-phases 'make-autoloads)))))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'make-autoloads
+           (assoc-ref emacs:%standard-phases 'make-autoloads)))))
     (home-page "https://howm.osdn.jp/")
     (synopsis "Note-taking tool for Emacs")
     (description "Howm is a note-taking tool for Emacs.  Like
@@ -12269,7 +12267,7 @@ characters.")
                          (delete-file file)))
                      (find-files "." "\\.el"))))))
     (propagated-inputs
-     (list emacs-emacs org-scel))
+     (list emacs-org emacs-scel))
     (synopsis "Org Babel support for SuperCollider")
     (description "This package adds support for evaluating @code{sclang}
 Org mode source blocks.  It is extracted from the @code{emacs-org-contrib}
