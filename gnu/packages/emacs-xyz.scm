@@ -2534,15 +2534,15 @@ links.")
   (package
     (name "emacs-ag")
     (version "0.48")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/Wilfred/ag.el")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1p918y24vcn2pdliaymd210xp9fvhd4a1srqbv2lfiqrh59yjidx"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Wilfred/ag.el")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1p918y24vcn2pdliaymd210xp9fvhd4a1srqbv2lfiqrh59yjidx"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
@@ -2555,15 +2555,13 @@ links.")
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out  (assoc-ref outputs "out"))
                     (info (string-append out "/share/info")))
-               (install-file "docs/_build/texinfo/agel.info" info)
-               #t))))))
+               (install-file "docs/_build/texinfo/agel.info" info)))))))
     (native-inputs
      (list python-sphinx texinfo))
     (propagated-inputs
-     `(("dash" ,emacs-dash)
-       ("s" ,emacs-s)
-       ;; We need to use 'ag' as the executable on remote systems.
-       ("the-silver-searcher" ,the-silver-searcher)))
+     (list emacs-dash
+           emacs-s
+           the-silver-searcher))        ;'ag' executable
     (home-page "https://github.com/Wilfred/ag.el")
     (synopsis "Front-end for ag (the-silver-searcher) for Emacs")
     (description "This package provides the ability to use the silver
