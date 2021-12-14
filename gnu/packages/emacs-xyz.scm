@@ -2621,14 +2621,14 @@ as a library for other Emacs packages.")
                 (search-input-file inputs "/bin/gs")))
              (substitute* "preview.el"
                (("\"dvipng ")
-                (string-append "\"" (assoc-ref inputs "texlive")
-                               "/bin/dvipng "))
+                (let ((dvipng (search-input-file inputs "/bin/dvipng")))
+                  (string-append "\"" dvipng " ")))
                (("\"dvips ")
-                (string-append "\"" (assoc-ref inputs "texlive")
-                               "/bin/dvips "))
+                (let ((dvips (search-input-file inputs "/bin/dvips")))
+                  (string-append "\"" dvips " ")))
                (("\"pdf2dsc ")
-                (string-append "\"" (assoc-ref inputs "ghostscript")
-                               "/bin/pdf2dsc ")))))
+                (let ((pdf2dsc (search-input-file inputs "/bin/pdf2dsc")))
+                  (string-append "\"" pdf2dsc " "))))))
          (add-after 'install 'install-doc
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -2638,13 +2638,12 @@ as a library for other Emacs packages.")
                  (setenv "HOME" (getenv  "TMPDIR")) ; for mktextfm
                  (invoke "pdftex" "tex-ref")
                  (install-file "tex-ref.pdf"
-                               (string-append etc-dir "/refcards")))
-               #t))))))
+                               (string-append etc-dir "/refcards")))))))))
     (native-inputs
      (list perl))
     (inputs
-     `(("ghostscript" ,ghostscript)
-       ("texlive" ,(texlive-updmap.cfg (list texlive-amsfonts)))))
+     (list ghostscript
+           (texlive-updmap.cfg (list texlive-amsfonts))))
     (home-page "https://www.gnu.org/software/auctex/")
     (synopsis "Integrated environment for TeX")
     (description
