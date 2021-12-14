@@ -3364,14 +3364,14 @@ during idle time, while Emacs is doing nothing else.")
          (modify-phases %standard-phases
            ;; Build server side using 'gnu-build-system'.
            (add-after 'unpack 'enter-server-dir
-             (lambda _ (chdir "server") #t))
+             (lambda _ (chdir "server")))
            (add-after 'enter-server-dir 'autogen
              (lambda _
                (invoke "bash" "autogen.sh")))
 
            ;; Build emacs side using 'emacs-build-system'.
            (add-after 'compress-documentation 'enter-lisp-dir
-             (lambda _ (chdir "../lisp") #t))
+             (lambda _ (chdir "../lisp")))
            (add-after 'enter-lisp-dir 'emacs-patch-variables
              (lambda* (#:key outputs #:allow-other-keys)
                (for-each make-file-writable (find-files "."))
@@ -3394,14 +3394,11 @@ during idle time, while Emacs is doing nothing else.")
            (add-after 'emacs-install 'emacs-make-autoloads
              (assoc-ref emacs:%standard-phases 'make-autoloads)))))
       (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("pkg-config" ,pkg-config)
-         ("emacs" ,emacs-minimal)))
+       (list autoconf automake emacs-minimal pkg-config))
       (inputs
-       (list poppler cairo glib libpng zlib))
+       (list cairo glib libpng poppler zlib))
       (propagated-inputs
-       `(("tablist" ,emacs-tablist)))
+       (list emacs-tablist))
       (home-page "https://github.com/politza/pdf-tools")
       (synopsis "Emacs support library for PDF files")
       (description
