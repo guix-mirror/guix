@@ -8131,15 +8131,14 @@ of Linux application development.")
        (modify-phases %standard-phases
          ;; Skip shrink-runpath, otherwise validate-runpath fails.
          (delete 'shrink-runpath))))
-    (inputs
-     (append (package-inputs pipewire)
-             `(("avahi" ,avahi)
-               ("bluez" ,bluez)
-               ("jack" ,jack-2)
-               ("ldacbt" ,ldacbt)
-               ("pulseaudio" ,pulseaudio)
-               ("vulkan-loader" ,vulkan-loader)
-               ("vulkan-headers" ,vulkan-headers))))))
+    (inputs (modify-inputs (package-inputs pipewire)
+              (prepend avahi
+                       bluez
+                       jack-2
+                       ldacbt
+                       pulseaudio
+                       vulkan-loader
+                       vulkan-headers)))))
 
 (define-public ell
   (package
