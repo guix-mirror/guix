@@ -8215,13 +8215,13 @@ GameController.")
              (substitute* "build-aux/meson_post_install.py"
                (("gtk-update-icon-cache") (which "true"))))))))
     (native-inputs
-     `(("desktop-file-utils" ,desktop-file-utils) ;for desktop-file-validate
-       ("gettext" ,gettext-minimal)
-       ("glib" ,glib "bin")             ;for glib-compile-resources
-       ("itstool" ,itstool)
-       ("libxml2" ,libxml2)             ;for xmllint
-       ("pkg-config" ,pkg-config)
-       ("vala" ,vala)))
+     (list desktop-file-utils           ; for desktop-file-validate
+           gettext-minimal
+           (list glib "bin")            ; for glib-compile-resources
+           itstool
+           libxml2                      ; for xmllint
+           pkg-config
+           vala))
     (inputs
      (list clutter
            clutter-gtk
