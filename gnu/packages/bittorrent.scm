@@ -13,6 +13,7 @@
 ;;; Copyright © 2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2021 Justin Veilleux <terramorpha@cock.li>
 ;;; Copyright © 2021 Marius Bakke <marius@gnu.org>
+;;; Copyright © 2021 Josselin Poiret <josselin.poiret@protonmail.ch>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -533,7 +534,6 @@ features.")
     (build-system python-build-system)
     (propagated-inputs
      `(("gtk+" ,gtk+)
-       ("librsvg" ,librsvg)
        ("libtorrent" ,libtorrent-rasterbar)
        ("python-pycairo" ,python-pycairo)
        ("python-chardet" ,python-chardet)
@@ -550,7 +550,10 @@ features.")
        ("python-twisted" ,python-twisted)
        ("python-zope-interface" ,python-zope-interface)))
     (native-inputs
-     (list intltool python-wheel))
+     (list intltool python-wheel
+           (if (string-prefix? "x86_64-" (%current-system))
+               librsvg-bootstrap
+               librsvg-2.40)))
     ;; TODO: Enable tests.
     ;; After "pytest-twisted" is packaged, HOME is set, and an X server is
     ;; started, some of the tests still fail.  There are likely some tests
