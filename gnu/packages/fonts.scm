@@ -2201,7 +2201,7 @@ suitable for a wide range of uses.")
 (define-public font-cozette
   (package
     (name "font-cozette")
-    (version "1.9.3")
+    (version "1.13.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2210,11 +2210,18 @@ suitable for a wide range of uses.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0mb5ns6705piwgjw1g10czsakhyc1jnvxh342ixw8m5f1gf4595n"))))
+                "178i812n4sfsvid7jhnm683jlxqmrv4ck6qbb4nwyllhwg3gyq60"))))
     (build-system font-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'dont-depend-on-git
+           (lambda _
+             (substitute* "build.py"
+               ;; Merely importing this module requires a git repository.
+               ;; We don't use get_changelog, so just disable the import.
+               (("from cozette_builder\\.changeloggen import get_changelog")
+                ""))))
          (add-before 'install 'build
            (lambda _
              (invoke "python3" "build.py" "fonts"))))))
