@@ -272,7 +272,9 @@ Internet and from a wide variety of machine architectures.")
                 "spice-vdagent-" version ".tar.bz2"))
               (sha256
                (base32
-                "0n8jlc1pv6mkry161y656b1nk9hhhminjq6nymzmmyjl7k95ymzx"))))
+                "0n8jlc1pv6mkry161y656b1nk9hhhminjq6nymzmmyjl7k95ymzx"))
+              (patches
+               (search-patches "spice-vdagent-glib-2.68.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags

@@ -1,0 +1,112 @@
+From 8348ef3c6121247e2b8be0641bbf3df3d55d9bff Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Marc-Andr=C3=A9=20Lureau?= <marcandre.lureau@redhat.com>
+Date: Tue, 4 May 2021 13:20:47 +0400
+Subject: [PATCH] Fix g_memdup deprecation warning with glib >= 2.68
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Related to:
+https://bugzilla.redhat.com/show_bug.cgi?id=1943059
+
+Signed-off-by: Marc-André Lureau <marcandre.lureau@redhat.com>
+---
+ configure.ac            | 4 ++++
+ src/vdagent/vdagent.c   | 4 ++--
+ src/vdagent/x11-randr.c | 2 +-
+ src/vdagentd/vdagentd.c | 8 ++++----
+ 4 files changed, 11 insertions(+), 7 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index 7b2a99c..3de9b9b 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -124,6 +124,10 @@ PKG_CHECK_MODULES(ALSA, [alsa >= 1.0.22])
+ PKG_CHECK_MODULES([DBUS], [dbus-1])
+ PKG_CHECK_MODULES([DRM], [libdrm])
+ 
++PKG_CHECK_MODULES([GLIB], [glib-2.0 >= 2.68], [], [
++    AC_DEFINE(g_memdup2, g_memdup, [GLib2 < 2.68 compatibility])
++])
++
+ if test "$with_session_info" = "auto" || test "$with_session_info" = "systemd"; then
+     PKG_CHECK_MODULES([LIBSYSTEMD_LOGIN],
+                       [libsystemd >= 209],
+diff --git a/src/vdagent/vdagent.c b/src/vdagent/vdagent.c
+index 0c69907..fd08522 100644
+--- a/src/vdagent/vdagent.c
++++ b/src/vdagent/vdagent.c
+@@ -228,7 +228,7 @@ static void daemon_read_complete(UdscsConnection *conn,
+         break;
+     case VDAGENTD_AUDIO_VOLUME_SYNC: {
+         VDAgentAudioVolumeSync *avs = (VDAgentAudioVolumeSync *)data;
+-        uint16_t *volume = g_memdup(avs->volume, sizeof(uint16_t) * avs->nchannels);
++        uint16_t *volume = g_memdup2(avs->volume, sizeof(uint16_t) * avs->nchannels);
+ 
+         if (avs->is_playback) {
+             vdagent_audio_playback_sync(avs->mute, avs->nchannels, volume);
+@@ -414,7 +414,7 @@ int main(int argc, char *argv[])
+     GOptionContext *context;
+     GError *error = NULL;
+     VDAgent *agent;
+-    char **orig_argv = g_memdup(argv, sizeof(char*) * (argc+1));
++    char **orig_argv = g_memdup2(argv, sizeof(char*) * (argc+1));
+     orig_argv[argc] = NULL; /* To avoid clang analyzer false-positive */
+ 
+     context = g_option_context_new(NULL);
+diff --git a/src/vdagent/x11-randr.c b/src/vdagent/x11-randr.c
+index 27404a1..037aded 100644
+--- a/src/vdagent/x11-randr.c
++++ b/src/vdagent/x11-randr.c
+@@ -982,7 +982,7 @@ void vdagent_x11_set_monitor_config(struct vdagent_x11 *x11,
+                    fullscreen it will keep sending the failing config. */
+                 g_free(x11->randr.failed_conf);
+                 x11->randr.failed_conf =
+-                    g_memdup(mon_config, config_size(mon_config->num_of_monitors));
++                    g_memdup2(mon_config, config_size(mon_config->num_of_monitors));
+                 return;
+             }
+         }
+diff --git a/src/vdagentd/vdagentd.c b/src/vdagentd/vdagentd.c
+index 78378aa..3e59331 100644
+--- a/src/vdagentd/vdagentd.c
++++ b/src/vdagentd/vdagentd.c
+@@ -216,7 +216,7 @@ static void do_client_monitors(VirtioPort *vport, int port_nr,
+     vdagentd_write_xorg_conf(new_monitors);
+ 
+     g_free(mon_config);
+-    mon_config = g_memdup(new_monitors, size);
++    mon_config = g_memdup2(new_monitors, size);
+ 
+     /* Send monitor config to currently active agent */
+     if (active_session_conn)
+@@ -249,7 +249,7 @@ static void do_client_capabilities(VirtioPort *vport,
+ {
+     capabilities_size = VD_AGENT_CAPS_SIZE_FROM_MSG_SIZE(message_header->size);
+     g_free(capabilities);
+-    capabilities = g_memdup(caps->caps, capabilities_size * sizeof(uint32_t));
++    capabilities = g_memdup2(caps->caps, capabilities_size * sizeof(uint32_t));
+ 
+     if (caps->request) {
+         /* Report the previous client has disconnected. */
+@@ -647,7 +647,7 @@ static void virtio_port_read_complete(
+     case VD_AGENT_GRAPHICS_DEVICE_INFO: {
+         // store device info for re-sending when a session agent reconnects
+         g_free(device_info);
+-        device_info = g_memdup(data, message_header->size);
++        device_info = g_memdup2(data, message_header->size);
+         device_info_size = message_header->size;
+         forward_data_to_session_agent(VDAGENTD_GRAPHICS_DEVICE_INFO, data, message_header->size);
+         break;
+@@ -1090,7 +1090,7 @@ static void do_agent_xorg_resolution(UdscsConnection             *conn,
+     }
+ 
+     g_free(agent_data->screen_info);
+-    agent_data->screen_info = g_memdup(data, header->size);
++    agent_data->screen_info = g_memdup2(data, header->size);
+     agent_data->width  = header->arg1;
+     agent_data->height = header->arg2;
+     agent_data->screen_count = n;
+-- 
+GitLab
+
