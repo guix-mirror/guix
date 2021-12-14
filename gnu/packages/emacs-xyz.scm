@@ -2690,7 +2690,7 @@ a set of simplified face specifications and a user-supplied color palette")
         (base32 "11k0dzwyn7ly34g0zcd6i0i8qwyv9di8m6fx805axrxykxb0qan2"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("emacs" ,emacs-minimal)))
+     (list emacs-minimal))
     (arguments
      `(#:configure-flags
        (list (string-append "--with-howmdir=" (emacs:elpa-directory %output)))
