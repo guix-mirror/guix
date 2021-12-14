@@ -2378,7 +2378,7 @@ interfaces.")
 (define-public xdg-desktop-portal-wlr
   (package
     (name "xdg-desktop-portal-wlr")
-    (version "0.4.0")
+    (version "0.5.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2387,7 +2387,7 @@ interfaces.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "13fbzh8bjnhk4xs8j9bpc01q3hy27zpbf0gkk1fnh3hm5pnyfyiv"))))
+                "1ipg35gv8ja39ijwbyi96qlyq2y1fjdggl40s38rv68bsya8zry1"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
