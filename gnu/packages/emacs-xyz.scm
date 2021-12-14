@@ -1300,20 +1300,21 @@ for editing Racket's Scribble documentation syntax in Emacs.")
         (base32 "0q2pb3w8s833fjhkzicciw2php4lsnismad1dnwgp2lcway757ra"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:modules ((guix build gnu-build-system)
+     (list
+      #:modules '((guix build gnu-build-system)
                   ((guix build emacs-build-system) #:prefix emacs:)
                   (guix build utils))
-       #:imported-modules (,@%gnu-build-system-modules
+      #:imported-modules `(,@%gnu-build-system-modules
                            (guix build emacs-build-system)
                            (guix build emacs-utils))
-       #:configure-flags (list (string-append "--with-lispdir="
-                                              (emacs:elpa-directory %output)))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'expand-load-path
-           (assoc-ref emacs:%standard-phases 'expand-load-path)))))
+      #:configure-flags #~(list (string-append "--with-lispdir="
+                                               (emacs:elpa-directory #$output)))
+      #:phases
+      (modify-phases %standard-phases
+        (add-after 'unpack 'expand-load-path
+          (assoc-ref emacs:%standard-phases 'expand-load-path)))))
     (native-inputs
-    (list autoconf automake texinfo perl emacs-minimal))
+     (list autoconf automake texinfo perl emacs-minimal))
     (propagated-inputs
      (list emacs-bui
            emacs-dash
@@ -1977,80 +1978,71 @@ or unexpected behavior inside an elisp configuration file (typically
   (package
     (name "emacs-w3m")
     (version "2018-11-11")
-    (source (origin
-              (method cvs-fetch)
-              (uri (cvs-reference
-                    (root-directory
-                     ":pserver:anonymous@cvs.namazu.org:/storage/cvsroot")
-                    (module "emacs-w3m")
-                    (revision version)))
-              (file-name (string-append name "-" version "-checkout"))
-              (sha256
-               (base32
-                "0nvahdbjs12zg7zsk4gql02mvnv56cf1rwj2f5p42lwp3xvswiwp"))))
+    (source
+     (origin
+       (method cvs-fetch)
+       (uri (cvs-reference
+             (root-directory
+              ":pserver:anonymous@cvs.namazu.org:/storage/cvsroot")
+             (module "emacs-w3m")
+             (revision version)))
+       (file-name (string-append name "-" version "-checkout"))
+       (sha256
+        (base32 "0nvahdbjs12zg7zsk4gql02mvnv56cf1rwj2f5p42lwp3xvswiwp"))))
     (build-system gnu-build-system)
     (native-inputs (list autoconf texinfo emacs-minimal))
     (inputs (list w3m imagemagick))
     (arguments
-     `(#:modules ((guix build gnu-build-system)
+     (list
+      #:modules '((guix build gnu-build-system)
                   ((guix build emacs-build-system) #:prefix emacs:)
                   (guix build utils)
                   (guix build emacs-utils))
-       #:imported-modules (,@%gnu-build-system-modules
+      #:imported-modules `(,@%gnu-build-system-modules
                            (guix build emacs-build-system)
                            (guix build emacs-utils))
-       #:configure-flags
-       (let ((out (assoc-ref %outputs "out")))
-         (list (string-append "--with-lispdir="
-                              (emacs:elpa-directory out))
-               (string-append "--with-icondir="
-                              out "/share/images/emacs-w3m")
-               ;; Leave .el files uncompressed, otherwise GC can't
-               ;; identify run-time dependencies.  See
-               ;; <http://lists.gnu.org/archive/html/guix-devel/2015-12/msg00208.html>
-               "--without-compress-install"))
-       #:tests? #f                              ; no check target
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'autoconf
-           (lambda _
-             (invoke "autoconf")))
-         (add-before 'configure 'support-emacs!
-           (lambda _
-             ;; For some reason 'AC_PATH_EMACS' thinks that 'Emacs 26' is
-             ;; unsupported.
-             (substitute* "configure"
-               (("EMACS_FLAVOR=unsupported")
-                "EMACS_FLAVOR=emacs"))
-             #t))
-         (add-before 'build 'patch-exec-paths
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out"))
-                   (w3m (assoc-ref inputs "w3m"))
-                   (imagemagick (assoc-ref inputs "imagemagick"))
-                   (coreutils (assoc-ref inputs "coreutils")))
-               (make-file-writable "w3m.el")
-               (emacs-substitute-variables "w3m.el"
-                 ("w3m-command" (string-append w3m "/bin/w3m"))
-                 ("w3m-touch-command"
-                  (string-append coreutils "/bin/touch"))
-                 ("w3m-icon-directory"
-                  (string-append out "/share/images/emacs-w3m")))
-               (make-file-writable "w3m-image.el")
-               (emacs-substitute-variables "w3m-image.el"
-                 ("w3m-imagick-convert-program"
-                  (string-append imagemagick "/bin/convert"))
-                 ("w3m-imagick-identify-program"
-                  (string-append imagemagick "/bin/identify")))
-               #t)))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (invoke "make" "install" "install-icons")
-             (with-directory-excursion
-                 (emacs:elpa-directory (assoc-ref outputs "out"))
-               (for-each delete-file '("ChangeLog" "ChangeLog.1"))
-               (symlink "w3m-load.el" "w3m-autoloads.el")
-               #t))))))
+      #:configure-flags
+      #~(list (string-append "--with-lispdir=" (emacs:elpa-directory #$output))
+              (string-append "--with-icondir="
+                             #$output "/share/images/emacs-w3m")
+              ;; Leave .el files uncompressed, otherwise GC can't
+              ;; identify run-time dependencies.  See
+              ;; <http://lists.gnu.org/archive/html/guix-devel/2015-12/msg00208.html>
+              "--without-compress-install")
+      #:tests? #f                       ; no check target
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'autoconf
+            (lambda _
+              (invoke "autoconf")))
+          (add-before 'configure 'support-emacs!
+            (lambda _
+              ;; For some reason 'AC_PATH_EMACS' thinks that 'Emacs 26' is
+              ;; unsupported.
+              (substitute* "configure"
+                (("EMACS_FLAVOR=unsupported") "EMACS_FLAVOR=emacs"))))
+          (add-before 'build 'patch-exec-paths
+            (lambda* (#:key inputs outputs #:allow-other-keys)
+              (let ((out (assoc-ref outputs "out")))
+                (make-file-writable "w3m.el")
+                (emacs-substitute-variables "w3m.el"
+                  ("w3m-command" (search-input-file inputs "/bin/w3m"))
+                  ("w3m-touch-command" (search-input-file inputs "/bin/touch"))
+                  ("w3m-icon-directory"
+                   (string-append out "/share/images/emacs-w3m")))
+                (make-file-writable "w3m-image.el")
+                (emacs-substitute-variables "w3m-image.el"
+                  ("w3m-imagick-convert-program"
+                   (search-input-file inputs "/bin/convert"))
+                  ("w3m-imagick-identify-program"
+                   (search-input-file inputs "/bin/identify"))))))
+          (replace 'install
+            (lambda* (#:key outputs #:allow-other-keys)
+              (invoke "make" "install" "install-icons")
+              (with-directory-excursion
+                  (emacs:elpa-directory (assoc-ref outputs "out"))
+                (for-each delete-file '("ChangeLog" "ChangeLog.1"))
+                (symlink "w3m-load.el" "w3m-autoloads.el")))))))
     (home-page "http://emacs-w3m.namazu.org/")
     (synopsis "Simple Web browser for Emacs based on w3m")
     (description
@@ -2693,18 +2685,19 @@ a set of simplified face specifications and a user-supplied color palette")
     (native-inputs
      (list emacs-minimal))
     (arguments
-     `(#:configure-flags
-       (list (string-append "--with-howmdir=" (emacs:elpa-directory %output)))
-       #:modules ((guix build gnu-build-system)
+     (list
+      #:configure-flags
+      #~(list (string-append "--with-howmdir=" (emacs:elpa-directory #$output)))
+      #:modules '((guix build gnu-build-system)
                   ((guix build emacs-build-system) #:prefix emacs:)
                   (guix build utils))
-       #:imported-modules (,@%gnu-build-system-modules
+      #:imported-modules `(,@%gnu-build-system-modules
                            (guix build emacs-build-system)
                            (guix build emacs-utils))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'make-autoloads
-           (assoc-ref emacs:%standard-phases 'make-autoloads)))))
+      #:phases
+      (modify-phases %standard-phases
+        (add-after 'install 'make-autoloads
+          (assoc-ref emacs:%standard-phases 'make-autoloads)))))
     (home-page "https://howm.osdn.jp/")
     (synopsis "Note-taking tool for Emacs")
     (description "Howm is a note-taking tool for Emacs.  Like
@@ -3494,21 +3487,22 @@ type, for example: packages, buffers, files, etc.")
                   "00xdxadbi9fxpfp60zah9190rcz3w08vl1blbhmaiy7c1hd2gi39"))))
       (build-system gnu-build-system)
       (arguments
-       `(#:modules ((guix build gnu-build-system)
+       (list
+        #:modules '((guix build gnu-build-system)
                     ((guix build emacs-build-system) #:prefix emacs:)
                     (guix build utils))
-         #:imported-modules (,@%gnu-build-system-modules
+        #:imported-modules `(,@%gnu-build-system-modules
                              (guix build emacs-build-system)
                              (guix build emacs-utils))
-         #:configure-flags
-         (list (string-append "--with-lispdir="
-                              (emacs:elpa-directory (assoc-ref %outputs "out"))))
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'expand-load-path
-             (lambda _
-               ((assoc-ref emacs:%standard-phases 'expand-load-path)
-                #:prepend-source? #f))))))
+        #:configure-flags
+        #~(list (string-append "--with-lispdir="
+                               (emacs:elpa-directory #$output)))
+        #:phases
+        #~(modify-phases %standard-phases
+            (add-after 'unpack 'expand-load-path
+              (lambda _
+                ((assoc-ref emacs:%standard-phases 'expand-load-path)
+                 #:prepend-source? #f))))))
       (native-inputs
        (list autoconf automake emacs-minimal pkg-config texinfo))
       (inputs
@@ -6011,15 +6005,15 @@ framework for Emacs Lisp to be used with @code{ert}.")
     (name "emacs-deferred")
     (version "0.5.1")
     (home-page "https://github.com/kiwanami/emacs-deferred")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url home-page)
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "0xy9zb6wwkgwhcxdnslqk52bq3z24chgk6prqi4ks0qcf2bwyh5h"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0xy9zb6wwkgwhcxdnslqk52bq3z24chgk6prqi4ks0qcf2bwyh5h"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
@@ -6028,19 +6022,15 @@ framework for Emacs Lisp to be used with @code{ert}.")
            ;; Setting the SHELL environment variable is required for the tests
            ;; to find sh.
            (lambda _
-             (setenv "SHELL" (which "sh"))
-             #t))
+             (setenv "SHELL" (which "sh"))))
          (add-before 'check 'fix-makefile
            (lambda _
              (substitute* "Makefile"
-               (("\\$\\(CASK\\) exec ") ""))
-             #t)))
+               (("\\$\\(CASK\\) exec ") "")))))
        #:tests? #t
        #:test-command '("make" "test")))
     (native-inputs
-     `(("emacs-ert-expectations" ,emacs-ert-expectations)
-       ("emacs-undercover" ,emacs-undercover)
-       ("ert-runner" ,emacs-ert-runner)))
+     (list emacs-ert-expectations emacs-ert-runner emacs-undercover))
     (synopsis "Simple asynchronous functions for Emacs Lisp")
     (description
      "The @code{deferred.el} library provides support for asynchronous tasks.
@@ -6223,26 +6213,26 @@ languages.")
     (name "emacs-irony-mode")
     (version "1.5.0")
     (home-page "https://github.com/Sarcasm/irony-mode")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url (string-append home-page ".git"))
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1ilvfqn7hzrjjy2zrv08dbdnmgksdgsmrdcvx05s8704430ag0pb"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url (string-append home-page ".git"))
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1ilvfqn7hzrjjy2zrv08dbdnmgksdgsmrdcvx05s8704430ag0pb"))))
     (build-system emacs-build-system)
-    (inputs `(("server" ,emacs-irony-mode-server)))
-    (arguments `(#:phases
-                 (modify-phases %standard-phases
-                   (add-after 'unpack 'configure
-                        (lambda* (#:key inputs #:allow-other-keys)
-                          (chmod "irony.el" #o644)
-                          (emacs-substitute-variables "irony.el"
-                            ("irony-server-install-prefix"
-                             (assoc-ref inputs "server")))
-                          #t)))))
+    (arguments
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'configure
+            (lambda _
+              (chmod "irony.el" #o644)
+              (emacs-substitute-variables "irony.el"
+                ("irony-server-install-prefix" #$emacs-irony-mode-server)))))))
+    (inputs (list emacs-irony-mode-server))
     (synopsis "C/C++/ObjC Code completion and syntax checks for Emacs")
     (description "Irony-mode provides Clang-assisted syntax checking and
 completion for C, C++, and ObjC in GNU Emacs.  Using @code{libclang} it can
@@ -6253,10 +6243,9 @@ described on the homepage.")
     (license license:gpl3+)))
 
 (define-public emacs-irony-mode-server
-  (package (inherit emacs-irony-mode)
+  (package
+    (inherit emacs-irony-mode)
     (name "emacs-irony-mode-server")
-    (inputs
-     (list clang))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -6265,7 +6254,9 @@ described on the homepage.")
              (let ((out (assoc-ref outputs "out")))
                (invoke "cmake"
                        "server"
-                       (string-append "-DCMAKE_INSTALL_PREFIX=" out)) #t))))))
+                       (string-append "-DCMAKE_INSTALL_PREFIX=" out))))))))
+    (inputs
+     (list clang))
     (build-system cmake-build-system)
     (synopsis "Server for the Emacs @dfn{irony mode}")))
 
@@ -6791,31 +6782,33 @@ to a key in your preferred mode.")
            "0jvmzs1lsjyndqshhii2y4mnr3wghai26i3p75453zrpxpg0zvvw"))))
       (build-system emacs-build-system)
       (arguments
-       `(#:modules ((guix build emacs-build-system)
+       (list
+        #:modules '((guix build emacs-build-system)
                     ((guix build cmake-build-system) #:prefix cmake:)
                     (guix build utils))
-         #:imported-modules (,@%emacs-build-system-modules
+        #:imported-modules `(,@%emacs-build-system-modules
                              (guix build cmake-build-system))
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'configure
-             (lambda* (#:key outputs #:allow-other-keys)
-               (substitute* "el/CMakeLists.txt"
-                 (("share/emacs/site-lisp/SuperCollider")
-                  (elpa-directory (assoc-ref outputs "out"))))
-               ((assoc-ref cmake:%standard-phases 'configure)
-                #:outputs outputs
-                #:configure-flags '("-DSC_EL_BYTECOMPILE=OFF"))))
-           (add-after 'expand-load-path 'add-el-dir-to-emacs-load-path
-             (lambda _
-               (setenv "EMACSLOADPATH"
-                       (string-append (getcwd) "/el:" (getenv "EMACSLOADPATH")))
-               #t))
-           (replace 'install (assoc-ref cmake:%standard-phases 'install)))))
+        #:phases
+        #~(modify-phases %standard-phases
+            (add-after 'unpack 'configure
+              (lambda _
+                (substitute* "el/CMakeLists.txt"
+                  (("share/emacs/site-lisp/SuperCollider")
+                   (elpa-directory #$output)))
+                ((assoc-ref cmake:%standard-phases 'configure)
+                 #:outputs outputs
+                 #:configure-flags '("-DSC_EL_BYTECOMPILE=OFF"))))
+            (add-after 'expand-load-path 'add-el-dir-to-emacs-load-path
+              (lambda _
+                (setenv "EMACSLOADPATH"
+                        (string-append (getcwd)
+                                       "/el:"
+                                       (getenv "EMACSLOADPATH")))))
+            (replace 'install (assoc-ref cmake:%standard-phases 'install)))))
       (inputs
        (list supercollider))
       (native-inputs
-       `(("cmake" ,cmake-minimal)))
+       (list cmake-minimal))
       (home-page "https://github.com/supercollider/scel")
       (synopsis "SuperCollider Emacs interface")
       (description "@code{emacs-scel} is an Emacs interface to SuperCollider.
@@ -10075,11 +10068,6 @@ and RSS, with a user interface inspired by notmuch.")
          (sha256
           (base32 "0a2ibka82xq1dhy2z7rd2y9zhcj8rna8357881yz49wf55ccgm53"))))
       (build-system emacs-build-system)
-      (propagated-inputs
-       (list emacs-elfeed emacs-org emacs-dash emacs-s))
-      (native-inputs
-       `(("ert-runner" ,emacs-ert-runner)
-         ("emacs-xtest" ,emacs-xtest)))
       (arguments
        `(#:tests? #t
          #:test-command '("ert-runner" "-L" "org-mode/lisp")
@@ -10087,8 +10075,11 @@ and RSS, with a user interface inspired by notmuch.")
          (modify-phases %standard-phases
            (add-before 'check 'chmod
              (lambda _
-               (chmod "test/fixture-mark-feed-ignore.org" #o644)
-               #t)))))
+               (chmod "test/fixture-mark-feed-ignore.org" #o644))))))
+      (propagated-inputs
+       (list emacs-elfeed emacs-org emacs-dash emacs-s))
+      (native-inputs
+       (list emacs-ert-runner emacs-xtest))
       (home-page "https://github.com/remyhonig/elfeed-org")
       (synopsis "Configure Elfeed with an Org-mode file")
       (description
@@ -10236,21 +10227,21 @@ customizable 256 color support to @code{term} and @code{ansi-term}.")
   (package
     (name "emacs-mocker")
     (version "0.5.0")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/sigma/mocker.el")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1dc514cqbfmg33sb3j90s5jmw6jnm3wzvs0zhw3maz13bp7w6z48"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/sigma/mocker.el")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1dc514cqbfmg33sb3j90s5jmw6jnm3wzvs0zhw3maz13bp7w6z48"))))
     (build-system emacs-build-system)
     (arguments
      `(#:tests? #t
        #:test-command '("ert-runner")))
     (native-inputs
-     `(("ert-runner" ,emacs-ert-runner)))
+     (list emacs-ert-runner))
     (propagated-inputs
      (list emacs-el-x))
     (home-page "https://github.com/sigma/mocker.el")
@@ -10264,26 +10255,25 @@ maximizes flexibility (at the expense of conciseness).")
   (package
     (name "emacs-find-file-in-project")
     (version "6.1.2")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/technomancy/find-file-in-project")
-
-                    ;; The "6.1.2" tag was modified in place, initially
-                    ;; pointing to 756f616f77f3829de07821480e229c587c1afec0
-                    ;; and then change to the subsequent commit,
-                    ;; 52274e6001545bdf45c6477ba21bfaa8eca04755.
-                    (commit "756f616f77f3829de07821480e229c587c1afec0")))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "00i62qspgmpg45gfzyq722wnni3yfmrkvlva8kmxdv5id919x1sc"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/technomancy/find-file-in-project")
+             ;; The "6.1.2" tag was modified in place, initially pointing to
+             ;; 756f616f77f3829de07821480e229c587c1afec0 and then change to
+             ;; the subsequent commit,
+             ;; 52274e6001545bdf45c6477ba21bfaa8eca04755.
+             (commit "756f616f77f3829de07821480e229c587c1afec0")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "00i62qspgmpg45gfzyq722wnni3yfmrkvlva8kmxdv5id919x1sc"))))
     (build-system emacs-build-system)
     (arguments
      `(#:tests? #t
        #:test-command '("ert-runner" "tests")))
     (native-inputs
-     `(("ert-runner" ,emacs-ert-runner)))
+     (list emacs-ert-runner))
     (home-page "https://github.com/technomancy/find-file-in-project")
     (synopsis "File/directory finder for Emacs")
     (description "@code{find-file-in-project} finds files or
@@ -10296,15 +10286,15 @@ functions to assist in reviewing changes on files.")
   (package
     (name "emacs-pyvenv")
     (version "1.21")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/jorgenschaefer/pyvenv")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "055sgk8zf4wb5nqsf3qasf5gg861zlb1831733f1qcrd2ij5gzxx"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jorgenschaefer/pyvenv")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "055sgk8zf4wb5nqsf3qasf5gg861zlb1831733f1qcrd2ij5gzxx"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
@@ -10315,8 +10305,7 @@ functions to assist in reviewing changes on files.")
        #:tests? #t
        #:test-command '("ert-runner")))
     (native-inputs
-     `(("ert-runner" ,emacs-ert-runner)
-       ("emacs-mocker" ,emacs-mocker)))
+     (list emacs-ert-runner emacs-mocker))
     (home-page "https://github.com/jorgenschaefer/pyvenv")
     (synopsis "Python virtual environment interface for Emacs")
     (description "pyvenv.el is a minor mode to support using Python virtual
@@ -10416,9 +10405,9 @@ indentation guides in Emacs:
                (with-directory-excursion "test"
                  (for-each delete-file
                            (append (find-files "." "elpy-refactor")
-                                   (find-files "." "elpy-multiedit")
-                                   (find-files "." "elpy-pdb")
-                                   (find-files "." "elpy-promise"))))))
+                               (find-files "." "elpy-multiedit")
+                             (find-files "." "elpy-pdb")
+                             (find-files "." "elpy-promise"))))))
            ;; The default environment of the RPC uses Virtualenv to install
            ;; Python dependencies from PyPI.  We don't want/need this in Guix.
            (add-before 'check 'do-not-use-virtualenv
@@ -10444,27 +10433,27 @@ indentation guides in Emacs:
          #:tests? #t
          #:test-command '("ert-runner")))
       (propagated-inputs
-       `(("emacs-company" ,emacs-company)
-         ("emacs-find-file-in-project" ,emacs-find-file-in-project)
-         ("emacs-highlight-indentation" ,emacs-highlight-indentation)
-         ("emacs-yasnippet" ,emacs-yasnippet)
-         ("pyvenv" ,emacs-pyvenv)
-         ("s" ,emacs-s)
-         ;; The following are recommended Python dependencies that make Elpy
-         ;; much more useful.  Installing these avoids Elpy prompting to install them
-         ;; from PyPI using pip.
-         ("python-autopep8" ,python-autopep8)
-         ("python-black" ,python-black)
-         ("python-flake8" ,python-flake8)
-         ("python-jedi" ,python-jedi)
-         ("python-yapf" ,python-yapf)))
+       (list emacs-company
+             emacs-find-file-in-project
+             emacs-highlight-indentation
+             emacs-yasnippet
+             emacs-pyvenv
+             emacs-s
+             ;; The following are recommended Python dependencies that make
+             ;; Elpy much more useful.  Installing these avoids Elpy prompting
+             ;; to install them from PyPI using pip.
+             python-autopep8
+             python-black
+             python-flake8
+             python-jedi
+             python-yapf))
       (native-inputs
-       `(("ert-runner" ,emacs-ert-runner)
-         ("emacs-f" ,emacs-f)
-         ("python" ,python-wrapper)
-         ;; For documentation.
-         ("python-sphinx" ,python-sphinx)
-         ("texinfo" ,texinfo)))
+       (list emacs-ert-runner
+             emacs-f
+             python-wrapper
+             ;; For documentation.
+             python-sphinx
+             texinfo))
       (home-page "https://github.com/jorgenschaefer/elpy")
       (synopsis "Python development environment for Emacs")
       (description "Elpy brings powerful Python editing to Emacs.  It combines
@@ -12185,9 +12174,9 @@ programming and reproducible research.")
            (lambda _
              (chdir "lisp"))))))
     (propagated-inputs
-     `(("arduino-mode" ,emacs-arduino-mode) ;XXX: remove after 0.4+ release.
-       ("cider" ,emacs-cider)
-       ("org" ,emacs-org)))
+     (list emacs-arduino-mode ;XXX: remove after 0.4+ release.
+           emacs-cider
+           emacs-org))
     (home-page "https://git.sr.ht/~bzg/org-contrib")
     (synopsis "Unmaintained add-ons for Org mode")
     (description
@@ -12270,18 +12259,17 @@ characters.")
     (inherit emacs-org-contrib)
     (name "emacs-ob-sclang")
     (source
-     (origin (inherit (package-source emacs-org-contrib))
-             (modules '((guix build utils)))
-             (snippet
-              '(begin
-                 (for-each (lambda (file)
-                             (unless (equal? file "./ob-sclang.el")
-                               (delete-file file)))
-                           (find-files "." "\\.el"))
-                 #t))))
+     (origin
+       (inherit (package-source emacs-org-contrib))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (for-each (lambda (file)
+                       (unless (equal? file "./ob-sclang.el")
+                         (delete-file file)))
+                     (find-files "." "\\.el"))))))
     (propagated-inputs
-     `(("org" ,emacs-org)
-       ("scel" ,emacs-scel)))
+     (list emacs-emacs org-scel))
     (synopsis "Org Babel support for SuperCollider")
     (description "This package adds support for evaluating @code{sclang}
 Org mode source blocks.  It is extracted from the @code{emacs-org-contrib}
@@ -13256,57 +13244,52 @@ highlights quasi-quoted expressions.")
         (base32 "0lasj4ggsh93ingf46n16wxfx5zzxvr1igikbmdqlz3i99j331gs"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:make-flags (list (string-append "prefix="
-                                         (assoc-ref %outputs "out")))
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'configure
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (setenv "SHELL" (which "sh"))
-             ;; Ensure the tclespeak.so binary is found in the correct location
-             ;; by adding the path to the Tclx library to the Tcl $auto_path
-             ;; variable.
-             (with-fluids ((%default-port-encoding "ISO-8859-1"))
-               (substitute* "servers/espeak"
-                 (("package require Tclx")
-                  (string-append "set auto_path [linsert $auto_path 0 "
-                                 (assoc-ref inputs "tclx")
-                                 "/lib]\n"
-                                 "package require Tclx"))))
-             ;; Configure Emacspeak according to etc/install.org.
-             (invoke "make" "config")))
-         (add-after 'build 'build-espeak
-           (lambda _
-             (invoke "make" "espeak")))
-         (replace 'install
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (bin (string-append out "/bin"))
-                    (lisp (string-append out "/share/emacs/site-lisp/emacspeak"))
-                    (info (string-append out "/share/info"))
-                    (emacs (search-input-file inputs "/bin/emacs")))
-               ;; According to etc/install.org, the Emacspeak directory should
-               ;; be copied to its installation destination.
-               (for-each
-                (lambda (file)
-                  (copy-recursively file (string-append lisp "/" file)))
-                '("etc" "info" "js" "lisp" "media" "servers" "sounds"
-                  "stumpwm" "xsl"))
-               ;; Make sure emacspeak is loaded from the correct directory.
-               (substitute* "run"
-                 (("\\./lisp/emacspeak-setup.el")
-                  (string-append lisp "/lisp/emacspeak-setup.el")))
-               ;; Install the convenient startup script.
-               (mkdir-p bin)
-               (copy-file "run" (string-append bin "/emacspeak")))
-             #t)))
-       #:tests? #f))                    ; no check target
+     (list
+      #:make-flags #~(list (string-append "prefix=" #$output))
+      #:phases
+      #~(modify-phases %standard-phases
+          (replace 'configure
+            (lambda* (#:key inputs outputs #:allow-other-keys)
+              (setenv "SHELL" (which "sh"))
+              ;; Ensure the tclespeak.so binary is found in the correct location
+              ;; by adding the path to the Tclx library to the Tcl $auto_path
+              ;; variable.
+              (with-fluids ((%default-port-encoding "ISO-8859-1"))
+                (substitute* "servers/espeak"
+                  (("package require Tclx")
+                   (string-append "set auto_path [linsert $auto_path 0 "
+                                  #$tclx
+                                  "/lib]\n"
+                                  "package require Tclx"))))
+              ;; Configure Emacspeak according to etc/install.org.
+              (invoke "make" "config")))
+          (add-after 'build 'build-espeak
+            (lambda _
+              (invoke "make" "espeak")))
+          (replace 'install
+            (lambda* (#:key inputs outputs #:allow-other-keys)
+              (let* ((out (assoc-ref outputs "out"))
+                     (bin (string-append out "/bin"))
+                     (lisp (string-append out "/share/emacs/site-lisp/emacspeak"))
+                     (info (string-append out "/share/info"))
+                     (emacs (search-input-file inputs "/bin/emacs")))
+                ;; According to etc/install.org, the Emacspeak directory should
+                ;; be copied to its installation destination.
+                (for-each
+                 (lambda (file)
+                   (copy-recursively file (string-append lisp "/" file)))
+                 '("etc" "info" "js" "lisp" "media" "servers" "sounds"
+                   "stumpwm" "xsl"))
+                ;; Make sure emacspeak is loaded from the correct directory.
+                (substitute* "run"
+                  (("\\./lisp/emacspeak-setup.el")
+                   (string-append lisp "/lisp/emacspeak-setup.el")))
+                ;; Install the convenient startup script.
+                (mkdir-p bin)
+                (copy-file "run" (string-append bin "/emacspeak"))))))
+      #:tests? #f))                     ; no check target
     (inputs
-     `(("emacs" ,emacs)
-       ("espeak" ,espeak-ng)
-       ("perl" ,perl)
-       ("tcl" ,tcl)
-       ("tclx" ,tclx)))
+     (list emacs espeak-ng perl tcl tclx))
     (home-page "http://emacspeak.sourceforge.net")
     (synopsis "Audio desktop interface for Emacs")
     (description
@@ -14564,12 +14547,6 @@ running a customisable handler command (@code{ignore} by default). ")
         (base32 "0qp4n2k6s69jj4gwwimkpadjv245y54wk3bxb1x96f034gkp81vs"))
        (patches (search-patches "emacs-json-reformat-fix-tests.patch"))))
     (build-system emacs-build-system)
-    (propagated-inputs
-     (list emacs-undercover))
-    (native-inputs
-     `(("emacs-dash" ,emacs-dash)
-       ("emacs-shut-up" ,emacs-shut-up)
-       ("ert-runner" ,emacs-ert-runner)))
     (arguments
      `(#:tests? #t
        #:test-command '("ert-runner")
@@ -14577,8 +14554,7 @@ running a customisable handler command (@code{ignore} by default). ")
        (modify-phases %standard-phases
          (add-before 'check 'make-tests-writable
            (lambda _
-             (for-each make-file-writable (find-files "test"))
-             #t))
+             (for-each make-file-writable (find-files "test"))))
          (add-before 'check 'delete-json-objects-order-test
            (lambda _
              (emacs-batch-edit-file "test/json-reformat-test.el"
@@ -14587,8 +14563,11 @@ running a customisable handler command (@code{ignore} by default). ")
                                "ert-deftest json-reformat-test:json-reformat-region")
                               (beginning-of-line)
                               (kill-sexp))
-                       (basic-save-buffer)))
-             #t)))))
+                       (basic-save-buffer))))))))
+    (native-inputs
+     (list emacs-dash emacs-ert-runner emacs-shut-up))
+    (propagated-inputs
+     (list emacs-undercover))
     (home-page "https://github.com/gongo/json-reformat")
     (synopsis "Reformatting tool for JSON")
     (description "@code{json-reformat} provides a reformatting tool for
@@ -14914,21 +14893,21 @@ of commands is displayed in a handy popup.")
   (package
     (name "emacs-ws-butler")
     (version "0.6")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/lewang/ws-butler")
-                    (commit "323b651dd70ee40a25accc940b8f80c3a3185205")))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1a4b0lsmwq84qfx51c5xy4fryhb1ysld4fhgw2vr37izf53379sb"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/lewang/ws-butler")
+             (commit "323b651dd70ee40a25accc940b8f80c3a3185205")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1a4b0lsmwq84qfx51c5xy4fryhb1ysld4fhgw2vr37izf53379sb"))))
     (build-system emacs-build-system)
-    (native-inputs
-     `(("ert-runner" ,emacs-ert-runner)))
     (arguments
      `(#:tests? #t
        #:test-command '("ert-runner" "tests")))
+    (native-inputs
+     (list emacs-ert-runner))
     (home-page "https://github.com/lewang/ws-butler")
     (synopsis "Trim spaces from end of lines")
     (description
@@ -15346,13 +15325,13 @@ the latest versions of Idris 1.")
        (sha256
         (base32 "0bx4ns0jb0sqrjk1nsspvl3mhz3n12925azf7brlwb1vcgnji09v"))))
     (build-system emacs-build-system)
-    (propagated-inputs
-     (list emacs-f emacs-s))
-    (native-inputs
-     `(("ert-runner" ,emacs-ert-runner)))
     (arguments
      `(#:tests? #t
        #:test-command '("ert-runner")))
+    (native-inputs
+     (list emacs-ert-runner))
+    (propagated-inputs
+     (list emacs-f emacs-s))
     (home-page "https://github.com/rmuslimov/browse-at-remote")
     (synopsis "Open github/gitlab/bitbucket/stash page from Emacs")
     (description
@@ -16391,8 +16370,6 @@ Features:
        (sha256
         (base32 "0lkisi1s7sn12nx8zh58qmsxwnk1rjwryj18wcbr148xqz3swg57"))))
     (build-system trivial-build-system)
-    (inputs
-     (list bash perl))
     (arguments
      `(#:modules
        ((guix build utils))
@@ -16412,8 +16389,9 @@ Features:
          ;; Install.
          (for-each (lambda (file)
                      (install-file file (string-append %output "/bin")))
-                   '("epipe" "epipe.pl"))
-         #t)))
+                   '("epipe" "epipe.pl")))))
+    (inputs
+     (list bash perl))
     (home-page "https://github.com/cute-jumper/epipe")
     (synopsis "Pipe to the @code{emacsclient}")
     (description "@code{epipe} provides an utility to use your editor in
@@ -16904,15 +16882,15 @@ object has been freed.")
   (package
     (name "emacs-emacsql")
     (version "3.0.0")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/skeeto/emacsql")
-                    (commit (string-append version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1c84gxr1majqj4b59wgdy3lzm3ap66w9qsrnkx8hdbk9895ak81g"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/skeeto/emacsql")
+             (commit (string-append version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1c84gxr1majqj4b59wgdy3lzm3ap66w9qsrnkx8hdbk9895ak81g"))))
     (build-system emacs-build-system)
     (arguments
      `(#:modules ((guix build emacs-build-system)
@@ -16924,8 +16902,7 @@ object has been freed.")
          (add-before 'install 'patch-elisp-shell-shebangs
            (lambda _
              (substitute* (find-files "." "\\.el")
-               (("/bin/sh") (which "sh")))
-             #t))
+               (("/bin/sh") (which "sh")))))
          (add-after 'patch-elisp-shell-shebangs 'setenv-shell
            (lambda _
              (setenv "SHELL" "sh")))
@@ -16936,9 +16913,7 @@ object has been freed.")
            ;; This build phase installs emacs-emacsql binary.
            (lambda* (#:key outputs #:allow-other-keys)
              (install-file "sqlite/emacsql-sqlite"
-                           (string-append (assoc-ref outputs "out")
-                                          "/bin"))
-             #t))
+                           (string-append (assoc-ref outputs "out") "/bin"))))
          (add-after 'install-emacsql-sqlite 'patch-emacsql-sqlite.el
            ;; This build phase removes interactive prompts
            ;; and makes sure Emacs look for binaries in the right places.
@@ -16954,10 +16929,7 @@ object has been freed.")
                   (string-append (assoc-ref outputs "out")
                                  "/bin/emacsql-sqlite")))))))))
     (inputs
-     `(("emacs-minimal" ,emacs-minimal)
-       ("mariadb" ,mariadb "lib")
-       ("mariadb-dev" ,mariadb "dev")
-       ("postgresql" ,postgresql)))
+     (list emacs-minimal `(,mariadb "dev") `(,mariadb "lib") postgresql))
     (propagated-inputs
      (list emacs-finalize emacs-pg))
     (home-page "https://github.com/skeeto/emacsql")
@@ -16972,22 +16944,16 @@ object @code{nil} corresponds 1:1 with @code{NULL} in the database.")
   (package
     (name "emacs-emacsql-sqlite3")
     (version "1.0.2")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/cireu/emacsql-sqlite3")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1jzvvsvi8jm2ws3y49nmpmwd3zlvf8j83rl2vwizd1aplwwdnmd6"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/cireu/emacsql-sqlite3")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1jzvvsvi8jm2ws3y49nmpmwd3zlvf8j83rl2vwizd1aplwwdnmd6"))))
     (build-system emacs-build-system)
-    (native-inputs
-     `(("ert-runner" ,emacs-ert-runner)))
-    (inputs
-     (list sqlite))
-    (propagated-inputs
-     (list emacs-emacsql))
     (arguments
      `(#:tests? #t
        #:test-command '("emacs" "-Q" "--batch" "-L" "."
@@ -16999,8 +16965,13 @@ object @code{nil} corresponds 1:1 with @code{NULL} in the database.")
            (lambda _
              (substitute* "emacsql-sqlite3.el"
                (("\\(executable-find \"sqlite3\"\\)")
-                (string-append "\"" (which "sqlite3") "\"")))
-             #t)))))
+                (string-append "\"" (which "sqlite3") "\""))))))))
+    (native-inputs
+     (list emacs-ert-runner))
+    (inputs
+     (list sqlite))
+    (propagated-inputs
+     (list emacs-emacsql))
     (home-page "https://github.com/cireu/emacsql-sqlite3")
     (synopsis "EmacSQL backend for SQLite")
     (description "This is yet another EmacSQL backend for SQLite which uses
@@ -17269,15 +17240,15 @@ as well as functions for navigating between these headings.")
   (package
     (name "emacs-org-super-agenda")
     (version "1.2")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/alphapapa/org-super-agenda")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "10l9h2n09cql4ih7nc0ma3ghdsq9l5v9xlj1lg7kq67icdwjlsvy"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/alphapapa/org-super-agenda")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "10l9h2n09cql4ih7nc0ma3ghdsq9l5v9xlj1lg7kq67icdwjlsvy"))))
     (build-system emacs-build-system)
     (arguments
      `(#:tests? #t
@@ -17294,13 +17265,11 @@ as well as functions for navigating between these headings.")
              ;; https://github.com/alphapapa/org-super-agenda/issues/183).
              (substitute* "test/test.el"
                ((".*org-super-agenda-test--:auto-(map|tags).*" all)
-                (string-append all "  (skip-unless nil)\n")))
-             #t)))))
+                (string-append all "  (skip-unless nil)\n"))))))))
     (native-inputs
-     `(("emacs-f" ,emacs-f)
-       ("getopt" ,util-linux)))
+     (list emacs-f util-linux))
     (propagated-inputs
-     (list emacs-org emacs-dash emacs-ts emacs-ht emacs-s))
+     (list emacs-dash emacs-ht emacs-org emacs-s emacs-ts))
     (home-page "https://github.com/alphapapa/org-super-agenda")
     (synopsis "Supercharged Org agenda")
     (description "This package allows items in the Org agenda to be grouped
@@ -20221,7 +20190,7 @@ through the symbol: @command{this-fn}.")
         (base32 "18d2ll5wlll6pm909hiw8w9ijdbrjvy86q6ljzx8yyrjphgn0y1y"))))
     (build-system emacs-build-system)
     (arguments
-     `(#:tests? #f ; FIXME: Tests freeze when run.
+     `(#:tests? #f                      ; FIXME: Tests freeze when run.
        #:test-command '("ert-runner")
        #:phases
        (modify-phases %standard-phases
@@ -20229,13 +20198,9 @@ through the symbol: @command{this-fn}.")
            (lambda _
              ;; Setting the SHELL environment variable is required for the
              ;; tests to find sh.
-             (setenv "SHELL" (which "sh"))
-             #t)))))
+             (setenv "SHELL" (which "sh")))))))
     (native-inputs
-     `(("emacs-el-mock" ,emacs-el-mock)
-       ("emacs-noflet" ,emacs-noflet)
-       ("emacs-undercover" ,emacs-undercover)
-       ("ert-runner" ,emacs-ert-runner)))
+     (list emacs-el-mock emacs-ert-runner emacs-noflet emacs-undercover))
     (propagated-inputs
      (list emacs-f emacs-popup))
     (home-page "https://github.com/jacktasia/dumb-jump")
@@ -21975,24 +21940,22 @@ can be queued at any time.")
        (sha256
         (base32 "010arhvibyw50lqhsr8bm0vj3pzry1h1vgcvxnmyryirk3dv40jl"))))
     (build-system emacs-build-system)
-    (inputs
-     (list youtube-dl))
-    (propagated-inputs
-     `(("async" ,emacs-async)
-       ("transient" ,emacs-transient)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'configure
            (lambda* (#:key inputs #:allow-other-keys)
-             (let ((youtube-dl (assoc-ref inputs "youtube-dl")))
-               ;; .el is read-only in git.
-               (make-file-writable "ytdl.el")
-               ;; Specify the absolute file names of the various programs so
-               ;; that everything works out-of-the-box.
-               (emacs-substitute-variables "ytdl.el"
-                 ("ytdl-command" (string-append youtube-dl "/bin/youtube-dl")))
-               #t))))))
+             ;; .el is read-only in git.
+             (make-file-writable "ytdl.el")
+             ;; Specify the absolute file names of the various programs so
+             ;; that everything works out-of-the-box.
+             (emacs-substitute-variables "ytdl.el"
+               ("ytdl-command"
+                (search-input-file inputs "/bin/youtube-dl"))))))))
+    (inputs
+     (list youtube-dl))
+    (propagated-inputs
+     (list emacs-async emacs-transient))
     (home-page "https://gitlab.com/tuedachu/ytdl")
     (synopsis "Emacs interface for youtube-dl")
     (description
@@ -22211,8 +22174,7 @@ files are easily readable and they work nicely with version control systems.")
        #:exclude '("^test/")
        #:tests? #f))
     (propagated-inputs
-     `(("f" ,emacs-f)
-       ("memoize" ,emacs-memoize)))
+     (list emacs-f emacs-memoize))
     (home-page "https://github.com/domtronn/all-the-icons.el")
     (synopsis "Collect icon fonts and propertize them within Emacs")
     (description
@@ -22712,23 +22674,20 @@ other frame parameters.")
 
 (define-public emacs-arduino-mode
   (let ((commit "23ae47c9f28f559e70b790b471f20310e163a39b")
-        (revision "1")) ;no release yet
+        (revision "1"))                 ;no release yet
     (package
       (name "emacs-arduino-mode")
       (version (git-version "0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/stardiviner/arduino-mode")
-                      (commit commit)))
-                (sha256
-                 (base32
-                  "08vnbz9gpah1l93fzfd87aawrhcnh2v1kyfxgsn88pdwg8awz8rx"))
-                (file-name (git-file-name name version))))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/stardiviner/arduino-mode")
+               (commit commit)))
+         (sha256
+          (base32 "08vnbz9gpah1l93fzfd87aawrhcnh2v1kyfxgsn88pdwg8awz8rx"))
+         (file-name (git-file-name name version))))
       (build-system emacs-build-system)
-      (inputs
-       `(("spinner" ,emacs-spinner)
-         ("flycheck" ,emacs-flycheck)))
       (arguments
        `(#:phases
          (modify-phases %standard-phases
@@ -22739,8 +22698,9 @@ other frame parameters.")
              (lambda _
                (substitute* "ede-arduino.el"
                  (("defmethod") "cl-defmethod")
-                 (("defgeneric") "cl-defgeneric"))
-               #t)))))
+                 (("defgeneric") "cl-defgeneric")))))))
+      (inputs
+       (list emacs-flycheck emacs-spinner))
       (synopsis "Emacs major mode for editing Arduino sketches")
       (description "Emacs major mode for editing Arduino sketches.")
       (home-page "https://github.com/stardiviner/arduino-mode")
@@ -23155,16 +23115,14 @@ stored playlists.")
                  ("(require 'vterm-module nil t)"
                   `(module-load
                     ,(string-append (assoc-ref outputs "out")
-                                    "/lib/vterm-module.so"))))
-               #t))
+                                    "/lib/vterm-module.so"))))))
            (add-after 'build 'configure
              ;; Run cmake.
              (lambda* (#:key outputs #:allow-other-keys)
                ((assoc-ref cmake:%standard-phases 'configure)
                 #:outputs outputs
                 #:out-of-source? #f
-                #:configure-flags '("-DUSE_SYSTEM_LIBVTERM=ON"))
-               #t))
+                #:configure-flags '("-DUSE_SYSTEM_LIBVTERM=ON"))))
            (add-after 'configure 'make
              ;; Run make.
              (lambda* (#:key (make-flags '()) outputs #:allow-other-keys)
@@ -23173,13 +23131,10 @@ stored playlists.")
                ;; Move the file into /lib.
                (install-file
                 "vterm-module.so"
-                (string-append (assoc-ref outputs "out") "/lib"))
-               #t)))
+                (string-append (assoc-ref outputs "out") "/lib")))))
          #:tests? #f))
       (native-inputs
-       `(("cmake" ,cmake-minimal)
-         ("libtool" ,libtool)
-         ("libvterm" ,libvterm)))
+       (list cmake-minimal libtool libvterm))
       (home-page "https://github.com/akermu/emacs-libvterm")
       (synopsis "Emacs libvterm integration")
       (description "This package implements a bridge to @code{libvterm} to
@@ -24091,7 +24046,7 @@ as Emacs Lisp.")
     (native-inputs
      (list texinfo))
     (propagated-inputs
-     `(("dash" ,emacs-dash)))
+     (list emacs-dash))
     (home-page "https://magit.vc/manual/transient")
     (synopsis "Transient commands in Emacs")
     (description "Taking inspiration from prefix keys and prefix arguments
@@ -24115,18 +24070,6 @@ commands (a prefix and a suffix) we prefer to call it just a \"transient\".")
         (sha256
          (base32 "15zm5azgl8gyd91i40a00ih4s2iwg1r8007n2gcfnmi6m4b7s0ak"))))
      (build-system emacs-build-system)
-     (native-inputs
-      (list texinfo))
-     (propagated-inputs
-      `(("emacs-closql" ,emacs-closql)
-        ("emacs-dash" ,emacs-dash)
-        ("emacs-emacsql-sqlite" ,emacs-emacsql)
-        ("emacs-ghub" ,emacs-ghub)
-        ("emacs-let-alist" ,emacs-let-alist)
-        ("emacs-magit" ,emacs-magit)
-        ("emacs-markdown-mode" ,emacs-markdown-mode)
-        ("emacs-transient" ,emacs-transient)
-        ("emacs-yaml" ,emacs-yaml)))
      (arguments
       `(#:tests? #f                     ;no tests
         #:phases
@@ -24140,6 +24083,18 @@ commands (a prefix and a suffix) we prefer to call it just a \"transient\".")
           (add-after 'build-info-manual 'chdir-lisp
             (lambda _
               (chdir "lisp"))))))
+     (native-inputs
+      (list texinfo))
+     (propagated-inputs
+      (list emacs-closql
+            emacs-dash
+            emacs-emacsql
+            emacs-ghub
+            emacs-let-alist
+            emacs-magit
+            emacs-markdown-mode
+            emacs-transient
+            emacs-yaml))
      (home-page "https://github.com/magit/forge/")
      (synopsis "Access Git forges from Magit")
      (description "Work with Git forges, such as Github and Gitlab, from the
@@ -26673,12 +26628,11 @@ such as:
              (lambda _
                (substitute* "flycheck-google-cpplint.el"
                  (("\"cpplint.py\"")
-                  (string-append "\"" (which "cpplint") "\"")))
-               #t)))))
+                  (string-append "\"" (which "cpplint") "\""))))))))
       (inputs
        (list cpplint))
       (propagated-inputs
-       `(("flycheck-mode" ,emacs-flycheck)))
+       (list emacs-flycheck))
       (synopsis "Google C++ checker for Flycheck")
       (description "This package provides a interface for @code{cpplint} over
 Flycheck plugin.  @code{cpplint} is a static code checker for C++, following
@@ -26752,27 +26706,27 @@ other @code{helm-type-file} sources such as @code{helm-locate}.")
                           "emacs-telega-test-env.patch"))))
       (build-system gnu-build-system)
       (arguments
-       `(#:make-flags
-         (list (string-append "CC=" ,(cc-for-target))
-               (string-append "INSTALL_PREFIX="
-                              (assoc-ref %outputs "out") "/bin"))
-         #:phases
-         (modify-phases %standard-phases
-           (add-before 'configure 'enter-subdirectory
-             (lambda _ (chdir "server")))
-           (replace 'configure
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let ((out (assoc-ref outputs "out")))
-                 (substitute* "run_tests.py"
-                   (("^(TELEGA_SERVER = ).*$" _all prefix)
-                    (string-append prefix
-                                   "\"" out "/bin/telega-server\"\n"))))))
-           (delete 'check)
-           (add-after 'install 'check
-             (assoc-ref %standard-phases 'check))
-           (add-before 'install-license-files 'leave-subdirectory
-             (lambda _ (chdir ".."))))
-         #:test-target "test"))
+       (list
+        #:make-flags
+        #~(list (string-append "CC=" ,(cc-for-target))
+                (string-append "INSTALL_PREFIX=" #$output "/bin"))
+        #:phases
+        #~(modify-phases %standard-phases
+            (add-before 'configure 'enter-subdirectory
+              (lambda _ (chdir "server")))
+            (replace 'configure
+              (lambda* (#:key outputs #:allow-other-keys)
+                (let ((out (assoc-ref outputs "out")))
+                  (substitute* "run_tests.py"
+                    (("^(TELEGA_SERVER = ).*$" _all prefix)
+                     (string-append prefix
+                                    "\"" out "/bin/telega-server\"\n"))))))
+            (delete 'check)
+            (add-after 'install 'check
+              (assoc-ref %standard-phases 'check))
+            (add-before 'install-license-files 'leave-subdirectory
+              (lambda _ (chdir ".."))))
+        #:test-target "test"))
       (inputs
        (list tdlib libappindicator))
       (native-inputs
@@ -29168,8 +29122,6 @@ syntax highlighting and UI components.")
          (sha256
           (base32 "0g0y7q62667j0p32md1h6zb2cap9fga9qgdg7138xwjqnk0328v7"))))
       (build-system emacs-build-system)
-      (propagated-inputs
-       `(("janet-mode" ,emacs-janet-mode)))
       (arguments
        `(#:phases
          (modify-phases %standard-phases
@@ -29177,8 +29129,9 @@ syntax highlighting and UI components.")
              (lambda _
                (make-file-writable "inf-janet.el")
                (emacs-substitute-variables "inf-janet.el"
-                 ("inf-janet-program" "janet"))
-               #t)))))
+                 ("inf-janet-program" "janet")))))))
+      (propagated-inputs
+       (list emacs-janet-mode))
       (home-page "https://github.com/velkyel/inf-janet")
       (synopsis "Run an external Janet process in an Emacs buffer")
       (description
@@ -29366,8 +29319,7 @@ and preferred services can easily be configured.")
       (native-inputs
        (list emacs-ecukes emacs-espuds emacs-undercover openjdk9))
       (propagated-inputs
-       `(("emacs-origami" ,emacs-origami-el)
-         ("emacs-s" ,emacs-s)))
+       (list emacs-origami-el emacs-s))
       (synopsis "Major mode for viewing and managing Java keystores")
       (description
        "This package provides an Elisp wrapper around the Java
