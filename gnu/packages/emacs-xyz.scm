@@ -127,6 +127,7 @@
   #:use-module (guix cvs-download)
   #:use-module (guix download)
   #:use-module (guix bzr-download)
+  #:use-module (guix gexp)
   #:use-module (guix git-download)
   #:use-module (guix hg-download)
   #:use-module (guix build-system gnu)
@@ -5816,49 +5817,40 @@ completion of relevant keywords.")
                (url "lp:dvc")
                (revision revision)))
          (sha256
-          (base32
-           "03pqn493w70wcpgaxvqnfgynxghw114l9pyiv3r414d84vzhan6h"))
+          (base32 "03pqn493w70wcpgaxvqnfgynxghw114l9pyiv3r414d84vzhan6h"))
          (file-name (string-append name "-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
-       `(#:modules ((guix build gnu-build-system)
+       (list
+        #:modules `((guix build gnu-build-system)
                     ((guix build emacs-build-system) #:prefix emacs:)
                     (guix build utils))
-         #:imported-modules (,@%gnu-build-system-modules
+        #:imported-modules `(,@%gnu-build-system-modules
                              (guix build emacs-build-system)
                              (guix build emacs-utils))
-         #:configure-flags
-         (list (string-append "--with-lispdir="
-                              (emacs:elpa-directory (assoc-ref %outputs "out"))))
-         #:tests? #f                    ;no test suite
-         #:phases
-         (modify-phases %standard-phases
-           (add-before 'build 'set-home
-             ;; Something in dvc-bookmarks.el attempts to write config files in
-             ;; $HOME during the autoload generation.
-             (lambda _ (setenv "HOME" (getenv "TMPDIR")) #t))
-           (add-before 'build 'fix-texinfo
-             ;; See https://bugs.launchpad.net/dvc/+bug/1264383.
-             (lambda _
-               (substitute* "texinfo/dvc-intro.texinfo"
-                 (("@itemx update ``to''")
-                  "@item update ``to''")
-                 (("@itemx brief")
-                  "@item brief")
-                 (("@itemx full")
-                  "@item full")
-                 (("@itemx drop")
-                  "@item drop")
-                 (("@itemx left file")
-                  "@item left file"))
-               #t)))))
+        #:configure-flags
+        #~(list (string-append "--with-lispdir="
+                               (emacs:elpa-directory #$output)))
+        #:tests? #f                     ;no test suite
+        #:phases
+        #~(modify-phases %standard-phases
+            (add-before 'build 'set-home
+              ;; Something in dvc-bookmarks.el attempts to write config files
+              ;; in $HOME during the autoload generation.
+              (lambda _ (setenv "HOME" (getenv "TMPDIR"))))
+            (add-before 'build 'fix-texinfo
+              ;; See https://bugs.launchpad.net/dvc/+bug/1264383.
+              (lambda _
+                (substitute* "texinfo/dvc-intro.texinfo"
+                  (("@itemx update ``to''") "@item update ``to''")
+                  (("@itemx brief") "@item brief")
+                  (("@itemx full") "@item full")
+                  (("@itemx drop") "@item drop")
+                  (("@itemx left file") "@item left file")))))))
       (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)         ;for aclocal
-         ("emacs" ,emacs-minimal)
-         ("texinfo" ,texinfo)))
+       (list autoconf automake emacs-minimal texinfo))
       (home-page "http://xsteve.at/prg/emacs_dvc/index.html")
-      (synopsis "Emacs front-end for various distributed version control systems.")
+      (synopsis "Emacs front-end for various distributed version control systems")
       (description "DVC is a legacy Emacs front-end for a number of
 distributed version control systems.  It currently supports GNU Arch, GNU
 Bazaar, git, Mercurial, and Monotone.  It also provides some integration with
