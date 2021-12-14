@@ -539,7 +539,7 @@ way for you to give it a try is by setting up an instance of
 (@pxref{transparent-emulation-qemu, @code{hurd-vm-service-type}}).
 @xref{Contributing}, on how to help!
 
-@item mips64el-linux (deprecated)
+@item mips64el-linux (unsupported)
 little-endian 64-bit MIPS processors, specifically the Loongson series,
 n32 ABI, and Linux-Libre kernel.  This configuration is no longer fully
 supported; in particular, there is no ongoing work to ensure that this
