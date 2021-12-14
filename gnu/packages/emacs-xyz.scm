@@ -2138,10 +2138,9 @@ incrementally confined in Isearch manner.")
                (install-file "src/emms-print-metadata"
                              (string-append out "/bin"))
                (install-file "emms-print-metadata.1"
-                             (string-append out "/share/man/man1"))
-               #t))))))
+                             (string-append out "/share/man/man1"))))))))
     (inputs
-     `(("taglib" ,taglib)))
+     (list taglib))
     (home-page "https://www.gnu.org/software/emms/")
     (synopsis "The Emacs Multimedia System")
     (description
