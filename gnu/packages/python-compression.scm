@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017, 2019, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
@@ -93,6 +93,35 @@ were a single file.")
     (description "This package provides an implementation of the Branch / Call /
 Jump conversion filter by CFFI for Python.")
     (license license:lgpl2.1+)))
+
+(define-public python-isal
+  (package
+    (name "python-isal")
+    (version "0.11.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "isal" version))
+       (sha256
+        (base32 "1bxj7r24p974pqfgym485s90ydhzji9q7zyfg3sf8fycm9ya01wd"))
+       ;; Remove bundles isa-l source code
+       (modules '((guix build utils)))
+       (snippet
+        '(delete-file-recursively "src/isal/isa-l"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'use-dynamic-linking
+           (lambda _ (setenv "PYTHON_ISAL_LINK_DYNAMIC" "1"))))))
+    (inputs (list isa-l))
+    (native-inputs (list python-cython))
+    (home-page "https://github.com/pycompression/python-isal")
+    (synopsis "Python bindings for the ISA-L compression library")
+    (description
+     "This package aims to provide faster zlib and gzip compatible compression
+and decompression by implementing Python bindings for the ISA-L library.")
+    (license license:expat)))
 
 (define-public python-ppmd-cffi
   (package
