@@ -335,7 +335,7 @@ other apt sources typically provided by open source developers.")
 (define-public dpkg
   (package
     (name "dpkg")
-    (version "1.20.9")
+    (version "1.21.0")
     (source
       (origin
         (method git-fetch)
@@ -344,8 +344,7 @@ other apt sources typically provided by open source developers.")
                (commit version)))
         (file-name (git-file-name name version))
         (sha256
-         (base32
-          "16wlb8hwbdvxar187bjd4pzdzj95g3l2ryi2khqqmwbyca4sjm1n"))))
+         (base32 "0g33cyd0qbyfdrphcw8m8ikj2hxqpjbyxbhvnp751515c8hgc4rx"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -354,8 +353,7 @@ other apt sources typically provided by open source developers.")
            (lambda _
              (patch-shebang "get-version")
              (with-output-to-file ".dist-version"
-               (lambda () (display ,version)))
-             #t))
+               (lambda () (display ,version)))))
          (add-after 'unpack 'set-perl-libdir
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out  (assoc-ref outputs "out"))
@@ -363,8 +361,7 @@ other apt sources typically provided by open source developers.")
                (setenv "PERL_LIBDIR"
                        (string-append out
                                       "/lib/perl5/site_perl/"
-                                      ,(package-version perl)))
-               #t))))))
+                                      ,(package-version perl)))))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
