@@ -25,6 +25,8 @@
   #:use-module (gnu services)
   #:use-module (guix records)
   #:use-module (guix diagnostics)
+  #:use-module (guix gexp)
+  #:use-module (guix store)
 
   #:export (home-environment
             home-environment?
@@ -104,3 +106,11 @@ of HOME-PROVENANCE-SERVICE-TYPE to its services."
     (inherit he)
     (services (cons (service home-provenance-service-type config-file)
                     (home-environment-user-services he)))))
+
+(define-gexp-compiler (home-environment-compiler (he <home-environment>)
+                                                 system target)
+  ((store-lift
+    (lambda (store)
+      (run-with-store store (home-environment-derivation he)
+                      #:system system
+                      #:target target)))))
