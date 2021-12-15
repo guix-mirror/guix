@@ -21,6 +21,7 @@
 ;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
 ;;; Copyright © 2021 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2021 Nikolay Korotkiy <sikmir@disroot.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1114,6 +1115,35 @@ programming environment using the actor model for concurrent, distributed
 computation.")
     (home-page "https://www.actor-framework.org/")
     (license license:bsd-3)))
+
+(define-public clipper
+  (package
+    (name "clipper")
+    (version "6.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/polyclipping"
+                           "/clipper_ver" version ".zip"))
+       (sha256
+        (base32 "09q6jc5k7p9y5d75qr2na5d1gm0wly5cjnffh127r04l47c20hx1"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f                      ;no check target
+       #:phases (modify-phases %standard-phases
+                  (replace 'unpack
+                    (lambda* (#:key source #:allow-other-keys)
+                      (and (invoke "unzip" source)
+                           (chdir "cpp")))))))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (home-page "https://sourceforge.net/projects/polyclipping")
+    (synopsis "A polygon and line clipping and offsetting library")
+    (description
+     "The Clipper library performs line & polygon clipping - intersection,
+union, difference & exclusive-or, and line & polygon offsetting.
+The library is based on Vatti's clipping algorithm.")
+    (license license:boost1.0)))
 
 (define-public pcg-cpp
   (let ((commit "ffd522e7188bef30a00c74dc7eb9de5faff90092")
