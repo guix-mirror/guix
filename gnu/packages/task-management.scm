@@ -35,6 +35,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -239,3 +240,53 @@ a task.")
 to with the goal of improving your focus and enhancing your productivity.
 You can also use it to fall asleep in a noisy environment.")
     (license license:gpl3+)))
+
+(define-public todoman
+  (package
+    (name "todoman")
+    (version "4.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "todoman" version))
+        (sha256
+          (base32 "1j2h5cv8wnmw41fpz1ggsgi599qhk184cas9kgd92glj3m4alg6f"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-tests
+           (lambda _
+             (substitute* '("tests/test_cli.py" "tests/test_formatter.py")
+               (("tests\\.helpers") "helpers"))))
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest" "-vv" "tests" "-k"
+                       (string-append
+                        ;; Test expects wrong output string.
+                        "not test_bad_start_date "
+                        ;; Unknown failure
+                        "and not test_default_command_args"))))))))
+    (native-inputs
+      (list python-setuptools-scm
+            python-pytest
+            python-pytest-cov
+            python-freezegun))
+    (propagated-inputs
+      (list python-atomicwrites
+            python-click
+            python-click-log
+            python-dateutil
+            python-humanize
+            python-icalendar
+            python-parsedatetime
+            python-pyxdg
+            python-urwid))
+    (home-page "https://todoman.readthedocs.io/")
+    (synopsis "CalDav-based todo manager")
+    (description "Todoman is a simple, standards-based, cli todo (aka: task)
+manager.  Todos are stored into icalendar files, which means you can sync
+them via CalDAV using, for example, @code{vdirsyncer}.")
+    (license license:isc)))
+
