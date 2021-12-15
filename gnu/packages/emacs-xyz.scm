@@ -1409,7 +1409,7 @@ replacement.")
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list (string-append "EMACS="
-                                         (assoc-ref %build-inputs "emacs")
+                                         (assoc-ref %build-inputs "emacs-minimal")
                                          "/bin/emacs"))
        #:modules ((ice-9 match)
                   (srfi srfi-26)
