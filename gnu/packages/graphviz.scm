@@ -11,6 +11,7 @@
 ;;; Copyright © 2020 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2021 Bonface Munyoki Kilyungi <me@bonfacemunyoki.com>
 ;;; Copyright © 2021 Giacomo Leidi <goodoldpaul@autistici.org>
+;;; Copyright © 2021 Justin Veilleux <terramorpha@cock.li>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -346,12 +347,14 @@ Graphviz and LaTeX.")
                     (assoc-ref inputs "gtk+") "/lib/girepository-1.0"
                     ":" (assoc-ref inputs "pango") "/lib/girepository-1.0"
                     ":" (assoc-ref inputs "gdk-pixbuf") "/lib/girepository-1.0"
-                    ":" (assoc-ref inputs "atk") "/lib/girepository-1.0")))
+                    ":" (assoc-ref inputs "atk") "/lib/girepository-1.0"
+                    ":" (assoc-ref inputs "harfbuzz") "/lib/girepository-1.0")))
                `("PATH" ":" prefix
                  (,(dirname (search-input-file inputs "bin/dot"))))))))))
     (inputs
      (list atk
            librsvg
+           harfbuzz
            graphviz
            gtk+
            python-pycairo
