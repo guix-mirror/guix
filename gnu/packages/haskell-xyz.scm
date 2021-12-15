@@ -7493,7 +7493,7 @@ efficient memo functions using tries.")
          "10q7gl9yavcln58sxdxzih7ff0ixxq5hpd87icvxw97yqf1p6hmm"))))
     (build-system haskell-build-system)
     (home-page
-     "https://github.com/aelve/microlens")
+     "https://github.com/monadfix/microlens")
     (synopsis "Provides a tiny lens Haskell library with no dependencies")
     (description "This Haskell package provides a lens library, just like
 @code{ghc-lens}, but smaller.  It provides essential lenses and
