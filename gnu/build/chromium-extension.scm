@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
+;;; Copyright © 2020, 2021 Marius Bakke <marius@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -127,66 +127,47 @@ format."
                             "--outder")
                  #:local-build? #t))
 
-(define (chromium-json->profile-object json signing-key)
-  "Return a derivation that installs JSON to the directory searched by
-Chromium, using a file name (aka extension ID) derived from SIGNING-KEY."
-  (define der (signing-key->public-der signing-key))
-
+(define (file-sha256sum file)
   (with-extensions (list guile-gcrypt)
-    (with-imported-modules '((guix build utils))
-      (computed-file
-       "chromium-extension"
-       #~(begin
-           (use-modules (guix build utils)
-                        (gcrypt base16)
-                        (gcrypt hash))
-           (define (base16-string->chromium-base16 str)
-             ;; Translate STR, a hexadecimal string, to a Chromium-style
-             ;; representation using the letters a-p (where a=0, p=15).
-             (define s1 "0123456789abcdef")
-             (define s2 "abcdefghijklmnop")
-             (let loop ((chars (string->list str))
-                        (converted '()))
-               (if (null? chars)
-                   (list->string (reverse converted))
-                   (loop (cdr chars)
-                         (cons (string-ref s2 (string-index s1 (car chars)))
-                               converted)))))
+    #~(begin
+        (use-modules (gcrypt base16) (gcrypt hash))
+        (bytevector->base16-string (file-sha256 #$file)))))
 
-           (let* ((checksum (bytevector->base16-string (file-sha256 #$der)))
-                  (file-name (base16-string->chromium-base16
-                              (string-take checksum 32)))
-                  (extension-directory (string-append #$output
-                                                      "/share/chromium/extensions")))
-             (mkdir-p extension-directory)
-             (symlink #$json (string-append extension-directory "/"
-                                            file-name ".json"))))
-       #:local-build? #t))))
-
-(define* (make-chromium-extension p #:optional (output "out"))
-  "Create a Chromium extension from package P and return a package that,
-when installed, will make the extension contained in P available as a
-Chromium browser extension.  OUTPUT specifies which output of P to use."
-  (let* ((pname (package-name p))
-         (version (package-version p))
-         (signing-key (make-signing-key pname)))
+(define* (make-chromium-extension pkg #:optional (pkg-output "out"))
+  "Create a Chromium extension from package PKG and return a package that,
+when installed, will make the extension contained in PKG available as a
+Chromium browser extension.  PKG-OUTPUT specifies which output of PKG to use."
+  (let* ((name (package-name pkg))
+         (version (package-version pkg))
+         (private-key (make-signing-key name))
+         (public-key (signing-key->public-der private-key))
+         (checksum (file-sha256sum public-key))
+         (crx (make-crx private-key pkg pkg-output))
+         (json (crx->chromium-json crx version)))
     (package
-      (inherit p)
-      (name (string-append pname "-chromium"))
+      (inherit pkg)
+      (name (string-append name "-chromium"))
       (source #f)
-      (build-system trivial-build-system)
       (native-inputs '())
-      (inputs
-       `(("extension" ,(chromium-json->profile-object
-                        (crx->chromium-json (make-crx signing-key p output)
-                                            version)
-                        signing-key))))
+      (inputs '())
       (propagated-inputs '())
       (outputs '("out"))
+      (build-system trivial-build-system)
       (arguments
-       '(#:modules ((guix build utils))
-         #:builder
-         (begin
-           (use-modules (guix build utils))
-           (copy-recursively (assoc-ref %build-inputs "extension")
-                             (assoc-ref %outputs "out"))))))))
+       (list #:modules '((guix build utils))
+             #:builder
+             #~(begin
+                 (use-modules (guix build utils))
+                 (define (base16-char->chromium-base16 char)
+                   ;; Translate CHAR, a hexadecimal character, to a Chromium-style
+                   ;; representation using the letters a-p (where a=0, p=15).
+                   (string-ref "abcdefghijklmnop"
+                               (string-index "0123456789abcdef" char)))
+                 (let ((file-name (string-map base16-char->chromium-base16
+                                              (string-take #$checksum 32)))
+                       (extension-directory
+                        (string-append #$output
+                                       "/share/chromium/extensions")))
+                   (mkdir-p extension-directory)
+                   (symlink #$json (string-append extension-directory "/"
+                                                  file-name ".json")))))))))
