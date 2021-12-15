@@ -5928,14 +5928,14 @@ as a Python package.")
 (define-public python-sanic
   (package
     (name "python-sanic")
-    (version "20.12.2")
+    (version "20.12.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "sanic" version))
        (sha256
         (base32
-         "1c02gdp1j18xny9jd33fp0w57qqi7g66zwmaykv2dhcks96f5mxr"))))
+         "0axfc151s7nrykzypzciyvkxxrs5ayx8kxv4r620hjb9w3jjhfnp"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -5952,7 +5952,9 @@ as a Python package.")
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (add-installed-pythonpath inputs outputs)
              (invoke "pytest" "-vv" "./tests" "-k"
-                     "not test_zero_downtime and not test_gunicorn_worker"))))))
+                     (string-append "not test_zero_downtime "
+                                    "and not test_gunicorn_worker "
+                                    "and not test_logo_")))))))
     (propagated-inputs
      (list python-aiofiles
            python-httptools
