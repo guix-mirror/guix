@@ -173,21 +173,22 @@
     (with-imported-modules imported-modules
       #~(begin
           (use-modules #$@(sexp->gexp modules))
-          (linux-module-build #:name #$name
-                              #:source #+source
-                              #:source-directory #$source-directory
-                              #:search-paths '#$(sexp->gexp
-                                                 (map search-path-specification->sexp
-                                                      search-paths))
-                              #:phases #$phases
-                              #:system #$system
-                              #:target #$target
-                              #:arch #$(system->arch (or target system))
-                              #:tests? #$tests?
-                              #:outputs #$(outputs->gexp outputs)
-                              #:make-flags #$make-flags
-                              #:parallel-build? #$parallel-build?
-                              #:inputs #$(input-tuples->gexp inputs)))))
+          #$(with-build-variables inputs outputs
+              #~(linux-module-build #:name #$name
+                                    #:source #+source
+                                    #:source-directory #$source-directory
+                                    #:search-paths '#$(sexp->gexp
+                                                       (map search-path-specification->sexp
+                                                            search-paths))
+                                    #:phases #$phases
+                                    #:system #$system
+                                    #:target #$target
+                                    #:arch #$(system->arch (or target system))
+                                    #:tests? #$tests?
+                                    #:outputs #$(outputs->gexp outputs)
+                                    #:make-flags #$make-flags
+                                    #:parallel-build? #$parallel-build?
+                                    #:inputs #$(input-tuples->gexp inputs))))))
 
   (mlet %store-monad ((guile (package->derivation (or guile (default-guile))
                                                   system #:graft? #f)))
