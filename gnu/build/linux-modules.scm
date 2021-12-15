@@ -354,11 +354,13 @@ appears in BLACK-LIST are not loaded."
              (close-fdes fd)
              #t)
            (lambda args
-             ;; If this module was already loaded and we're in modprobe style, ignore
-             ;; the error.
              (when fd (close-fdes fd))
-             (or (and recursive? (= EEXIST (system-error-errno args)))
-                 (apply throw args)))))))
+             (let ((errno (system-error-errno args)))
+               (or (and recursive?      ; we're operating in ‘modprobe’ style
+                        (member errno
+                                (list EEXIST    ; already loaded
+                                      EINVAL))) ; unsupported by hardware
+                   (apply throw args))))))))
 
 (define (load-linux-modules-from-directory modules directory)
   "Load MODULES and their dependencies from DIRECTORY, a directory containing
