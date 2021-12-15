@@ -375,6 +375,9 @@
           (search-patch "ungoogled-chromium-extension-search-path.patch")))
         (local-file
          (assume-valid-file-name
+          (search-patch "ungoogled-chromium-RUNPATH.patch")))
+        (local-file
+         (assume-valid-file-name
           (search-patch "ungoogled-chromium-ffmpeg-compat.patch")))
         (local-file
          (assume-valid-file-name
@@ -483,8 +486,6 @@
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f
-       ;; FIXME: Chromiums RUNPATH lacks entries for some libraries.
-       #:validate-runpath? #f
        #:modules ((guix build gnu-build-system)
                   (guix build utils)
                   (srfi srfi-26))

@@ -1,0 +1,22 @@
+Use RUNPATH instead of RPATH so that end users can override the library
+search path (and the 'validate-runpath' phase can do its work).
+
+diff --git a/build/config/gcc/BUILD.gn b/build/config/gcc/BUILD.gn
+--- a/build/config/gcc/BUILD.gn
++++ b/build/config/gcc/BUILD.gn
+@@ -99,7 +99,14 @@ config("executable_config") {
+     ]
+   }
+ 
+-  if (!is_android && current_os != "aix") {
++  if (is_linux) {
++    ldflags += [
++      # Set DT_RUNPATH instead of DT_RPATH which is important because the
++      # former can be overridden at runtime, and Guix has support for
++      # verifying that nothing is missing.
++      "-Wl,--enable-new-dtags",
++    ]
++  } else if (!is_android && current_os != "aix") {
+     ldflags += [
+       # TODO(GYP): Do we need a check on the binutils version here?
+       #
