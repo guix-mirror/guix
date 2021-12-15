@@ -1739,9 +1739,9 @@ Python.")
            ;; SOURCE_DATE_EPOCH is respected, which we set to some time in
            ;; 1980.
            (lambda _ (setenv "SOURCE_DATE_EPOCH" "315532800") #t))
-         ;; See https://github.com/tensorflow/tensorflow/issues/20517#issuecomment-406373913
-         (add-after 'unpack 'python3.7-compatibility
+         (add-after 'unpack 'python3.9-compatibility
            (lambda _
+             ;; See https://github.com/tensorflow/tensorflow/issues/20517#issuecomment-406373913
              (substitute* '("tensorflow/python/eager/pywrap_tfe_src.cc"
                             "tensorflow/python/lib/core/ndarray_tensor.cc"
                             "tensorflow/python/lib/core/py_func.cc")
@@ -1759,8 +1759,16 @@ Python.")
              ;; https://github.com/tensorflow/tensorflow/issues/34197
              (substitute* (find-files "tensorflow/python" ".*\\.cc$")
                (("(nullptr,)(\\ +/. tp_print)" _ _ tp_print)
-                (string-append "NULL,   " tp_print)))))
-         (add-after 'python3.7-compatibility 'chdir
+                (string-append "NULL,   " tp_print)))
+
+             ;; Fix the build with numpy >= 1.19.
+             ;; Suggested in https://github.com/tensorflow/tensorflow/issues/41086#issuecomment-656833081
+             (substitute* "tensorflow/python/lib/core/bfloat16.cc"
+               (("void BinaryUFunc\\(char\\*\\* args, npy_intp\\* dimensions, npy_intp\\* steps,")
+                "void BinaryUFunc(char** args, npy_intp const* dimensions, npy_intp const* steps,")
+               (("void CompareUFunc\\(char\\*\\* args, npy_intp\\* dimensions, npy_intp\\* steps,")
+                "void CompareUFunc(char** args, npy_intp const* dimensions, npy_intp const* steps,"))))
+         (add-after 'python3.9-compatibility 'chdir
            (lambda _ (chdir "tensorflow/contrib/cmake")))
          (add-after 'chdir 'disable-downloads
            (lambda* (#:key inputs #:allow-other-keys)
