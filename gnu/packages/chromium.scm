@@ -669,6 +669,10 @@
                  (("libudev\\.so\\.1")
                   (string-append udev "/lib/libudev.so.1")))
 
+               (substitute* "third_party/dawn/src/dawn_native/vulkan/BackendVk.cpp"
+                 (("libvulkan\\.so\\.1")
+                  (search-input-file inputs "/lib/libvulkan.so.1")))
+
                (substitute*
                    '("ui/ozone/platform/x11/gl_ozone_glx.cc"
                      "ui/ozone/common/egl_util.cc"
@@ -765,6 +769,10 @@
                                       "chrome_200_percent.pak"
                                       "resources.pak"
                                       "v8_context_snapshot.bin"
+
+                                      ;; Swiftshader ICD.
+                                      "libvk_swiftshader.so"
+                                      "vk_swiftshader_icd.json"
 
                                       ;; Chromium ships its own libGL
                                       ;; implementation called ANGLE.
@@ -894,6 +902,7 @@
        ("udev" ,eudev)
        ("valgrind" ,valgrind)
        ("vulkan-headers" ,vulkan-headers)
+       ("vulkan-loader" ,vulkan-loader)
        ("wayland" ,wayland)
        ("xdg-utils" ,xdg-utils)))
     (native-search-paths
