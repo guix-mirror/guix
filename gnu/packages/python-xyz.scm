@@ -1810,7 +1810,7 @@ Python 3 support.")
 @code{setup.cfg}.")
     (license license:asl2.0)))
 
-;; The setuptools provided by Python 3.7.4 is too new for Tensorflow.
+;; The setuptools provided by Python 3.9 is too new for Tensorflow.
 (define-public python-setuptools-for-tensorflow
   (hidden-package
    (package
@@ -1821,7 +1821,21 @@ Python 3 support.")
                (uri (pypi-uri "setuptools" version ".zip"))
                (sha256
                 (base32
-                 "1mzdhvfhnv4lggxa8rjl0dzqxvfx377gg5sqs57v89wrp09lwj65")))))))
+                 "1mzdhvfhnv4lggxa8rjl0dzqxvfx377gg5sqs57v89wrp09lwj65"))))
+     (arguments
+      `(#:tests? #f                     ; tests require vendored resources
+        #:phases
+        (modify-phases %standard-phases
+          (add-after 'unpack 'compatibility-fixes
+            (lambda _
+              ;; Python 3.9 no longer has HTMLParser
+              (substitute* "setuptools/py33compat.py"
+                (("html_parser.HTMLParser\\(\\).unescape")
+                 "html.unescape"))
+              ;; This needs distutils.msvc9compiler
+              (delete-file "setuptools/tests/test_msvc.py"))))))
+     (native-inputs
+      (list python-pytest python-mock python-six)))))
 
 (define-public python-uniseg
   (package
