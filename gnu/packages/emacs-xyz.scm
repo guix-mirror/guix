@@ -26384,7 +26384,7 @@ computing environment.")
     (license license:gpl3+)))
 
 (define-public emacs-punpun-theme
-  (let ((commit "2f78125609277b2478abdebd8f9d5ee10a823b65")
+  (let ((commit "7026684cd568cb691af3ced5de14c375fe6f5a1a")
         (revision "0"))
     (package
       (name "emacs-punpun-theme")
@@ -26393,14 +26393,14 @@ computing environment.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/wasamasa/punpun-theme")
+               (url "https://depp.brause.cc/punpun-theme")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1sgxrj3igzq86h3whfymxf4qzv9kpvcrlhbvjmnp7fwrplys0n7d"))))
+           "1nwvlp93l5lj259mchd1a2glq3jxd0h1vazsbjqfi07hsg86xjp0"))))
       (build-system emacs-build-system)
-      (home-page "https://github.com/wasamasa/punpun-theme")
+      (home-page "https://depp.brause.cc/punpun-theme")
       (synopsis "Bleak Emacs theme")
       (description
        "A bleak theme.  Uses shades of gray and the occasional splash of
