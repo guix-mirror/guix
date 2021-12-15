@@ -18,6 +18,7 @@
 ;;; Copyright © 2021 Greg Hogan <code@greghogan.com>
 ;;; Copyright © 2021 Franck Pérignon <franck.perignon@univ-grenoble-alpes.fr>
 ;;; Copyright © 2021 Greg Hogan <code@greghogan.com>
+;;; Copyright © 2021 Aleksandr Vityazev <avityazev@posteo.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -406,7 +407,7 @@ Boost.Thread.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "13i5j43nggb46i6qpaf7gk53i7zp7pimphl7sydyfqz2m9yx5cdy"))))
+                "1prhj98jgvkj2m3ia5lcgxnl1a4h13cyzqd55skjn983rivi6090"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
