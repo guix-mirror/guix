@@ -7632,6 +7632,7 @@ high-speed networking devices.")
                     (lambda* (#:key inputs outputs #:allow-other-keys)
                       (let* ((out (assoc-ref outputs "out")))
                         (setenv "CC" "gcc")
+                        (setenv "CFLAGS" "-Wno-format-truncation")
                         (invoke "make")
                         #t)))
                   (replace 'install
