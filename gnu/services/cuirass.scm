@@ -58,7 +58,7 @@
 ;;;; Code:
 
 (define %cuirass-default-database
-  "dbname=cuirass host=/tmp")
+  "dbname=cuirass")
 
 (define-record-type* <cuirass-remote-server-configuration>
   cuirass-remote-server-configuration make-cuirass-remote-server-configuration
