@@ -11544,18 +11544,19 @@ environment.")
 (define-public polari
   (package
     (name "polari")
-    (version "3.36.3")
+    (version "40.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/polari/"
-                                  (version-major+minor version)
+                                  (version-major version)
                                   "/polari-" version ".tar.xz"))
               (sha256
                (base32
-                "0fpmrvhd40yay051bzn4x3gsrzdv42nav0pm5ps0np8wk1z689jg"))))
+                "001h9gppn79gnj7dl61jl9gas5wmbjdx0v8xwsx7v4xsv2hwz91g"))))
     (build-system meson-build-system)
     (arguments
-     `(#:glib-or-gtk? #t
+     `(#:meson ,meson-0.59
+       #:glib-or-gtk? #t
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'skip-gtk-update-icon-cache
@@ -11574,10 +11575,10 @@ environment.")
      (list glib
            gsettings-desktop-schemas
            gspell
-           gtk+
+           gtk
            gjs
            libsecret
-           libsoup
+           libsoup-minimal-2
            telepathy-glib
            telepathy-logger))
     (native-inputs
