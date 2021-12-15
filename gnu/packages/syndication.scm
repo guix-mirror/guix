@@ -370,15 +370,15 @@ file system, and many more features.")
                  `("GUIX_PYTHONPATH" ":" prefix (,python-path))))
              #t)))))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("gettext" ,gettext-minimal)
-       ("glib:bin" ,glib "bin")
-       ("gobject-introspection" ,gobject-introspection)
-       ("intltool" ,intltool)
-       ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)
-       ("which" ,which)))
+     (list autoconf
+           automake
+           gettext-minimal
+           `(,glib "bin")
+           gobject-introspection
+           intltool
+           libtool
+           pkg-config
+           which))
     (inputs
      (list glib
            glib-networking
