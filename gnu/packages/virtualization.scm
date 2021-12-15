@@ -1538,7 +1538,7 @@ domains, their live performance and resource utilization statistics.")
                                                "/bin/asciidoc"))
              (string-append "PYTHON=python3")
              (string-append "XMLTO="
-                            (search-input-file %build-input
+                            (search-input-file %build-inputs
                                                "/bin/xmlto")))
        #:phases
        (modify-phases %standard-phases
