@@ -2070,6 +2070,28 @@ annotated RCS file describes the revision and date in which each line was
 added to the file, and the author of each line.")
     (license license:gpl2+)))
 
+(define-public rcshist
+  (package
+    (name "rcshist")
+    (version "1.04-20190106")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "https://invisible-mirror.net/archives/rcshist/rcshist-"
+                   version ".tgz"))
+             (sha256
+              (base32
+               "01ab3xwgm934lxr8bm758am3vxwx4hxx7cc9prbgqj5nh30vdg1n"))))
+    (build-system gnu-build-system)
+    (home-page "https://invisible-island.net/rcshist/rcshist.html")
+    (synopsis "Display RCS change history")
+    (description
+     "The @code{rcshist} utility displays the complete revision history of a
+set of RCS files including log messages and patches.  It can also display the
+patch associated with a particular revision of an RCS file.")
+    (license (list license:bsd-2
+                   license:bsd-3))))  ; bsd_queue.h
+
 (define-public cvs
   (package
     (name "cvs")
