@@ -36966,10 +36966,10 @@ init process (PID 1), but almost all other information described in
 This is the service type that extensions target when they want to create
 shepherd services (@pxref{Service Types and Services}, for an example).
 Each extension must pass a list of @code{<shepherd-service>}.  Its
-value must be a @code{shepherd-configuration}, as described below.
+value must be a @code{home-shepherd-configuration}, as described below.
 @end defvr
 
-@deftp {Data Type} shepherd-configuration
+@deftp {Data Type} home-shepherd-configuration
 This data type represents the Shepherd's configuration.
 
 @table @code
