@@ -8707,14 +8707,38 @@ properties, screen resolution, and other GNOME parameters.")
              (let ((out              (assoc-ref outputs "out"))
                    (gi-typelib-path  (getenv "GI_TYPELIB_PATH"))
                    (python-path      (getenv "GUIX_PYTHONPATH")))
-               (wrap-program (string-append out "/bin/gnome-shell")
-                 `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path)))
+               (for-each
+                (lambda (prog)
+                  (wrap-program (string-append out "/bin/" prog)
+                    `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))))
+                '("gnome-shell" "gnome-extensions-app"))
+               (substitute* (string-append out "/share/gnome-shell/"
+                                           "org.gnome.Shell.Extensions")
+                 (("imports\\.package\\.start" all)
+                  (string-append "'" gi-typelib-path "'.split(':').forEach("
+                                 "path => imports.gi.GIRepository.Repository."
+                                 "prepend_search_path(path));\n"
+                                 all)))
                (for-each
                 (lambda (prog)
                   (wrap-program (string-append out "/bin/" prog)
                     `("GUIX_PYTHONPATH"      ":" prefix (,python-path))
                     `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))))
-                '("gnome-shell-extension-tool" "gnome-shell-perf-tool")))))
+                '("gnome-shell-perf-tool")))))
+         (add-after 'install 'rewire
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (for-each
+              (lambda (tool)
+                (call-with-output-file (string-append
+                                        (assoc-ref outputs "out")
+                                        "/bin/" tool)
+                  (lambda (port)
+                    (format port "#!~a
+printf '~a is deprecated.  Use the \"gnome-extensions\" CLI or \
+\"gnome-extensions-app\" instead.\\n'"
+                            (search-input-file inputs "bin/bash")
+                            tool))))
+              '("gnome-shell-extension-tool" "gnome-shell-extension-prefs"))))
          (replace 'glib-or-gtk-wrap
            (let ((wrap (assoc-ref %standard-phases 'glib-or-gtk-wrap)))
              (lambda* (#:key inputs outputs #:allow-other-keys #:rest rest)
