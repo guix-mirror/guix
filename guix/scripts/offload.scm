@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014-2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Julien Lepiller <julien@lepiller.eu>
@@ -584,7 +584,8 @@ If TIMEOUT is #f, simply evaluate EXP..."
                (lambda ()
                  ;; Offload DRV to MACHINE.
                  (display "# accept\n")
-                 (let ((inputs  (string-tokenize (read-line)))
+                 (let ((drv     (read-derivation-from-file drv))
+                       (inputs  (string-tokenize (read-line)))
                        (outputs (string-tokenize (read-line))))
                    ;; Even if BUILD-TIMEOUT is honored by MACHINE, there can
                    ;; be issues with the connection or deadlocks that could
@@ -803,8 +804,7 @@ machine."
                       (with-error-handling
                        (process-request (equal? (match:substring match 1) "1")
                                         (match:substring match 2) ; system
-                                        (read-derivation-from-file
-                                         (match:substring match 3))
+                                        (match:substring match 3)
                                         (string-tokenize
                                          (match:substring match 4) not-coma)
                                         #:print-build-trace? print-build-trace?
