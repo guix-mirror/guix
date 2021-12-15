@@ -21,6 +21,7 @@
 ;;; Copyright © 2021 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2021 Mathieu Othacehe <othacehe@gnu.org>
 ;;; Copyright © 2021 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2021 Justin Veilleux <terramorpha@cock.li>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -66,10 +67,12 @@
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages nss)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages perl-web)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages samba)
   #:use-module (gnu packages serialization)
@@ -1330,3 +1333,47 @@ some tools, or create fancy graphs showing you where your bytes are.
 Duc comes with console utilities, ncurses and X11 user interfaces and a CGI
 wrapper for disk usage querying and visualisation.")
     (license license:lgpl3+)))
+
+(define-public qdirstat
+  (package
+    (name "qdirstat")
+    (version "1.8")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/shundhammer/qdirstat")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "079rmy3j0442y5gjh6la6w1j6jaw83wklamrf19yxi20zsm99xs7"))))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (system* "qmake"
+                      (string-append "INSTALL_PREFIX="
+                                     (assoc-ref outputs "out")))))
+         (add-after 'install 'wrap
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (wrap-program (string-append
+                            (assoc-ref outputs "out")
+                            "/bin/qdirstat-cache-writer")
+               `("PERL5LIB" ":" prefix
+                 (,(string-append
+                    (assoc-ref inputs "perl-uri-escape")
+                    "/lib/perl5/site_perl")))))))))
+    (build-system gnu-build-system)
+    (inputs
+     (list bash-minimal
+           perl
+           perl-uri-escape
+           qtbase-5
+           zlib))
+    (synopsis "Storage utilisation visualization tool")
+    (description
+     "QDirStat is a graphical application to show where your disk space has
+gone and to help you to clean it up.")
+    (home-page "https://github.com/shundhammer/qdirstat")
+    (license license:gpl2)))
