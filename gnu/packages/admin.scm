@@ -2675,7 +2675,7 @@ provides the following commands:
      ;; variable in the tests/cpan.scm test.
      (list (search-path-specification
             (variable "PYTHONPATH")
-            (files (list "lib/python3.8/site-packages")))))
+            (files (list "lib/python3.9/site-packages")))))
     (home-page "https://www.ansible.com/")
     (synopsis "Radically simple IT automation")
     (description "Ansible aims to be a radically simple IT automation system.
