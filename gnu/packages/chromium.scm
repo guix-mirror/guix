@@ -378,6 +378,9 @@
           (search-patch "ungoogled-chromium-RUNPATH.patch")))
         (local-file
          (assume-valid-file-name
+          (search-patch "ungoogled-chromium-accelerated-video-decode.patch")))
+        (local-file
+         (assume-valid-file-name
           (search-patch "ungoogled-chromium-ffmpeg-compat.patch")))
         (local-file
          (assume-valid-file-name

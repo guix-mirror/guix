@@ -1,0 +1,18 @@
+Upstream Chromium no longer supports hardware accelerated video decoding
+on GNU/Linux, yet it still works fine on many systems.  This patch "unexpires"
+the support.
+
+Taken from Arch Linux:
+https://github.com/archlinux/svntogit-packages/blob/packages/chromium/trunk/unexpire-accelerated-video-decode-flag.patch
+
+--- a/chrome/browser/flag-metadata.json
++++ b/chrome/browser/flag-metadata.json
+@@ -1285,7 +1285,7 @@
+   {
+     "name": "enable-accelerated-video-decode",
+     "owners": [ "media-dev@chromium.org" ],
+-    "expiry_milestone": 93
++    "expiry_milestone": 99
+   },
+   {
+     "name": "enable-accessibility-live-caption",
