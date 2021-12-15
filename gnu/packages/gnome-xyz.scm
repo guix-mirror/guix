@@ -359,7 +359,7 @@ easier to keep track of applications running in the background.")
 (define-public gnome-shell-extension-dash-to-dock
   (package
     (name "gnome-shell-extension-dash-to-dock")
-    (version "67")
+    (version "71")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -368,7 +368,7 @@ easier to keep track of applications running in the background.")
                                            version))))
               (sha256
                (base32
-                "1746xm0iyvyzj6m3pvjx11smh9w1s7naz426ki0dlr5l7jh3mpy5"))
+                "12b6ljzs5071zs0kcf5yj4jfhq10b1gnldv0hmbksnqzz5g719wf"))
               (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
@@ -383,7 +383,8 @@ easier to keep track of applications running in the background.")
     (native-inputs
      `(("glib:bin" ,glib "bin")
        ("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("sassc" ,sassc)))
     (propagated-inputs
      (list glib))
     (synopsis "Transforms GNOME's dash into a dock")
