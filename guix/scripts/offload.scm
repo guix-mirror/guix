@@ -20,21 +20,26 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix scripts offload)
-  #:use-module (ssh key)
-  #:use-module (ssh auth)
-  #:use-module (ssh session)
-  #:use-module (ssh channel)
-  #:use-module (ssh popen)
-  #:use-module (ssh version)
+  #:autoload   (ssh key) (private-key-from-file
+                          public-key-from-file)
+  #:autoload   (ssh auth) (userauth-public-key!)
+  #:autoload   (ssh session) (make-session
+                              connect! get-error
+                              disconnect! session-set!)
+  #:autoload   (ssh version) (zlib-support?)
   #:use-module (guix config)
   #:use-module (guix records)
-  #:use-module (guix ssh)
+  #:autoload   (guix ssh) (authenticate-server*
+                           connect-to-remote-daemon
+                           send-files retrieve-files retrieve-files*
+                           remote-inferior report-guile-error)
   #:use-module (guix store)
-  #:use-module (guix inferior)
-  #:use-module (guix derivations)
-  #:use-module ((guix serialization)
-                #:select (nar-error? nar-error-file))
-  #:use-module (guix nar)
+  #:autoload   (guix inferior) (inferior-eval close-inferior inferior?)
+  #:autoload   (guix derivations) (read-derivation-from-file
+                                   derivation-file-name
+                                   build-derivations)
+  #:autoload   (guix serialization) (nar-error? nar-error-file)
+  #:autoload   (guix nar) (restore-file-set)
   #:use-module ((guix utils) #:select (%current-system))
   #:use-module ((guix build syscalls)
                 #:select (fcntl-flock set-thread-name))
@@ -47,12 +52,10 @@
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
-  #:use-module (ice-9 popen)
   #:use-module (ice-9 rdelim)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 format)
-  #:use-module (ice-9 binary-ports)
   #:export (build-machine
             build-machine?
             build-machine-name
@@ -560,6 +563,15 @@ expired."
 If TIMEOUT is #f, simply evaluate EXP..."
   (call-with-timeout timeout drv (lambda () exp ...)))
 
+(define (check-ssh-zlib-support)
+  "Warn once if libssh lacks zlib support."
+  ;; We rely on protocol-level compression from libssh to optimize large data
+  ;; transfers.  Warn if it's missing.
+  (unless (zlib-support?)
+    (warning (G_ "Guile-SSH lacks zlib support"))
+    (warning (G_ "data transfers will *not* be compressed!")))
+  (set! check-ssh-zlib-support (const #t)))
+
 (define* (process-request wants-local? system drv features
                           #:key
                           print-build-trace? (max-silent-time 3600)
@@ -584,6 +596,7 @@ If TIMEOUT is #f, simply evaluate EXP..."
                (lambda ()
                  ;; Offload DRV to MACHINE.
                  (display "# accept\n")
+                 (check-ssh-zlib-support)
                  (let ((drv     (read-derivation-from-file drv))
                        (inputs  (string-tokenize (read-line)))
                        (outputs (string-tokenize (read-line))))
@@ -782,12 +795,6 @@ machine."
   ;; seed file, and fails if it's owned by someone else.
   (and=> (passwd:dir (getpw (getuid)))
          (cut setenv "HOME" <>))
-
-  ;; We rely on protocol-level compression from libssh to optimize large data
-  ;; transfers.  Warn if it's missing.
-  (unless (zlib-support?)
-    (warning (G_ "Guile-SSH lacks zlib support"))
-    (warning (G_ "data transfers will *not* be compressed!")))
 
   (match args
     ((system max-silent-time print-build-trace? build-timeout)
