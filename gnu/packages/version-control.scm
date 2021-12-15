@@ -2032,10 +2032,12 @@ projects, from individuals to large-scale enterprise operations.")
                  (modify-phases %standard-phases
                    (add-after 'install 'install-rcsfreeze
                      (lambda* (#:key outputs #:allow-other-keys)
-                       (chmod "src/rcsfreeze" #o755)
-                       (install-file
-                         "src/rcsfreeze"
-                         (string-append (assoc-ref outputs "out") "/bin")))))))
+                       (let* ((out (assoc-ref outputs "out"))
+                              (bin (string-append out "/bin"))
+                              (man1 (string-append out "/share/man/man1")))
+                         (chmod "src/rcsfreeze" #o755)
+                         (install-file "src/rcsfreeze" bin)
+                         (install-file "man/rcsfreeze.1" man1)))))))
     (native-inputs (list ed))
     (home-page "https://www.gnu.org/software/rcs/")
     (synopsis "Per-file local revision control system")
