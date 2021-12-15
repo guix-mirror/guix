@@ -2075,6 +2075,41 @@ single-member files which can't be decompressed in parallel.")
 non-Windows systems without running the actual installer using wine.")
    (license license:zlib)))
 
+(define-public isa-l
+  (package
+   (name "isa-l")
+   (version "2.30.0")
+   (source
+    (origin
+     (method git-fetch)
+     (uri (git-reference
+           (url "https://github.com/intel/isa-l")
+           ;; Corresponds to tag v2.30.0
+           (commit "2df39cf5f1b9ccaa2973f6ef273857e4dc46f0cf")))
+     (file-name (git-file-name name version))
+     (sha256
+      (base32 "06ymkrf3hkkd94i59ahm79545rk709y8rd0v2l86w38z6is942q0"))))
+   (build-system gnu-build-system)
+   (native-inputs (list autoconf automake libtool nasm))
+   (home-page "https://github.com/intel/isa-l")
+   (synopsis "Intelligent storage acceleration library")
+   (description "ISA-L is a collection of optimized low-level functions
+targeting storage applications.  ISA-L includes:
+
+@itemize
+@item Erasure codes: fast block Reed-Solomon type erasure codes for any
+  encode/decode matrix;
+@item CRC: fast implementations of cyclic redundancy check.  Six different
+  polynomials supported: iscsi32, ieee32, t10dif, ecma64, iso64, jones64;
+@item Raid: calculate and operate on XOR and P+Q parity found in common RAID
+  implementations;
+@item Compression: fast deflate-compatible data compression;
+@item De-compression: fast inflate-compatible data compression;
+@item igzip: command line application like gzip, accelerated with ISA-L.
+@end itemize
+")
+   (license license:bsd-3)))
+
 (define-public brotli
   (package
     (name "brotli")
