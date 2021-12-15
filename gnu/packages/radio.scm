@@ -822,16 +822,16 @@ satellites.")
 (define-public gqrx
   (package
     (name "gqrx")
-    (version "2.14.6")
+    (version "2.15")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/csete/gqrx")
+             (url "https://github.com/gqrx-sdr/gqrx")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0gz875fbg0ffdi7icm0hqg0dz33hdfszi70b7cax1fcgq5fr1j8c"))))
+        (base32 "1a81wrsl3bj2g3dyd21mka45sfhygbncpkp29ggfvrzffvj1axlv"))))
     (build-system qt-build-system)
     (native-inputs
      (list pkg-config))
