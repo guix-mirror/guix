@@ -8334,7 +8334,7 @@ without using the configuration machinery.")
     ;; search paths.
     (native-search-paths
      (list (search-path-specification
-            (variable "JUPYTER_CONFIG_DIR")
+            (variable "JUPYTER_CONFIG_PATH")
             (files '("etc/jupyter")))
            (search-path-specification
             (variable "JUPYTER_PATH")
@@ -11962,8 +11962,6 @@ time.")
              (when tests?
                ;; Some tests invoke the installed nbconvert binary.
                (add-installed-pythonpath inputs outputs)
-               ;; Tries to write to this path.
-               (unsetenv "JUPYTER_CONFIG_DIR")
                ;; Tests depend on templates installed to output.
                (setenv "JUPYTER_PATH"
                        (string-append
@@ -12082,6 +12080,8 @@ convert an @code{.ipynb} notebook file into various static formats including:
              (delete-file-recursively "notebook/tests/selenium")
              (when tests?
                (add-installed-pythonpath inputs outputs)
+               ;; Interferes with test expectations.
+               (unsetenv "JUPYTER_CONFIG_PATH")
                ;; Some tests do not expect all files to be installed in the
                ;; same directory, but JUPYTER_PATH contains multiple entries.
                (unsetenv "JUPYTER_PATH")
