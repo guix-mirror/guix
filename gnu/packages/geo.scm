@@ -17,6 +17,7 @@
 ;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;; Copyright © 2021 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2021 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2021 Nikolay Korotkiy <sikmir@disroot.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -62,6 +63,8 @@
   #:use-module (gnu packages build-tools)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages cpp)
+  #:use-module (gnu packages cups)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages datastructures)
@@ -2040,6 +2043,46 @@ track your position right from your laptop.")
                    license:lgpl3+
                    license:sgifreeb2.0
                    license:zlib))))
+
+(define-public openorienteering-mapper
+  (package
+    (name "openorienteering-mapper")
+    (version "0.9.5")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/OpenOrienteering/mapper")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "11b578h8f3q9yvphbjhqmy2w1cfc9skslzawypqmc3k44v24aj0s"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f
+       #:configure-flags
+       (list
+        "-DLICENSING_PROVIDER:BOOL=OFF"
+        "-DMapper_MANUAL_QTHELP:BOOL=OFF")))
+    (inputs
+     `(("clipper" ,clipper)
+       ("cups" ,cups)
+       ("gdal" ,gdal)
+       ("proj" ,proj)
+       ("qtbase" ,qtbase-5)
+       ("qtimageformats" ,qtimageformats)
+       ("qtlocation" ,qtlocation)
+       ("qtsensors" ,qtsensors)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("doxygen" ,doxygen)
+       ("qttools" ,qttools)))
+    (home-page "https://www.openorienteering.org/apps/mapper/")
+    (synopsis "OpenOrienteering Mapper (OOM)")
+    (description
+     "OpenOrienteering Mapper is a software for creating maps for the
+orienteering sport.")
+    (license license:gpl3+)))
 
 (define-public grass
   (let* ((version "7.8.5")
