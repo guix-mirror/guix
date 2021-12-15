@@ -537,7 +537,7 @@ currently focused application in the top panel of the GNOME shell.")
 (define-public gnome-shell-extension-dash-to-panel
   (package
     (name "gnome-shell-extension-dash-to-panel")
-    (version "38")
+    (version "45")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -545,7 +545,7 @@ currently focused application in the top panel of the GNOME shell.")
                     (commit (string-append "v" version))))
               (sha256
                (base32
-                "1kvybb49l1vf0fvh8d0c6xkwnry8m330scamf5x40y63d4i213j1"))
+                "05bfd3b1g9zd86pl1rpgfqsmip271lasyfj8phpqf1gdds5yz6f6"))
               (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
