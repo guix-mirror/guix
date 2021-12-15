@@ -389,7 +389,7 @@ file system, and many more features.")
            libnotify
            libpeas
            libsecret
-           libsoup
+           libsoup-minimal-2
            libxml2
            libxslt
            pango
@@ -397,7 +397,7 @@ file system, and many more features.")
            python-pycairo
            python-pygobject
            sqlite
-           webkitgtk))
+           webkitgtk-with-libsoup2))
     (home-page "https://lzone.de/liferea/")
     (synopsis "News reader for GTK/GNOME")
     (description "Liferea is a desktop feed reader/news aggregator that
