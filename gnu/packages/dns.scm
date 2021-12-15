@@ -368,7 +368,7 @@ and BOOTP/TFTP for network booting of diskless machines.")
     ;; When updating, check whether isc-dhcp's bundled copy should be as well.
     ;; The BIND release notes are available here:
     ;; https://www.isc.org/bind/
-    (version "9.16.23")
+    (version "9.16.24")
     (source
      (origin
        (method url-fetch)
@@ -376,7 +376,7 @@ and BOOTP/TFTP for network booting of diskless machines.")
              "https://ftp.isc.org/isc/bind9/" version
              "/bind-" version ".tar.xz"))
        (sha256
-        (base32 "0g0pxzhzcz6nzkiab4cs9sgbjdzqgy44aa477v7akdlwm8kmxnyy"))
+        (base32 "01w5n1injvq6azhplyd4vqczila6i9mj051zz62248yn9drz70jm"))
        (patches
         (search-patches "bind-re-add-attr-constructor-priority.patch"))))
     (build-system gnu-build-system)
