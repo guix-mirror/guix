@@ -1265,8 +1265,8 @@ format.")
     (license license:agpl3+)))
 
 (define-public guile-email-latest
-  (let ((commit "ca0520a33c9042a68691d85c6849f88412ca8357")
-        (revision "1"))
+  (let ((commit "ea60bb902d3677d5c653851c7aa6afbbf710140e")
+        (revision "2"))
     (package
       (inherit guile-email)
       (name "guile-email-latest")
@@ -1280,7 +1280,7 @@ format.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1l5mikalawq83786rnb9zky908ncsd5dna9vyz6bx6kc2frrl7xv"))))
+           "1g4rn7ai3nfxmpppc8qbpv8b18wnsld29y5xa58cv9b8pf3pbwnj"))))
       (native-inputs
        (list pkg-config autoconf automake texinfo)))))
 
