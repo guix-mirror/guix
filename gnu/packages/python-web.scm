@@ -3335,6 +3335,13 @@ pretty printer and a tree visitor.")
          (base32
           "05b9lzx5yc3wgml2bcq50lq35h66m8zpj6dc9advcb5z3acsbaay"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-imports
+           (lambda _
+             (substitute* "flask_restful/__init__.py"
+               (("flask\\.helpers") "flask.scaffold")))))))
     (propagated-inputs
       (list python-aniso8601 python-flask python-pycrypto python-pytz))
     (native-inputs
