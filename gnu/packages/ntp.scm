@@ -45,14 +45,14 @@
 (define-public chrony
   (package
     (name "chrony")
-    (version "4.1")
+    (version "4.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.tuxfamily.org/chrony/"
                            "chrony-" version ".tar.gz"))
        (sha256
-        (base32 "0k0nf5qqzl01106lkmwc32n6a1fxagalpbci38iccyilz79z4xpd"))))
+        (base32 "16nv90h73c99adh2bdrvlws1lhjsqfp6pfpnlprxd3ijbk8rygr7"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((srfi srfi-26)
@@ -69,16 +69,14 @@
            ;; time would result in nonsense file names in man pages.
            (lambda _
              (substitute* "Makefile.in"
-               (("mkdir -p \\$\\(DESTDIR\\)\\$\\(CHRONYVARDIR\\)") ":"))
-             #t))
+               (("mkdir -p \\$\\(DESTDIR\\)\\$\\(CHRONYVARDIR\\)") ":"))))
          (add-after 'install 'install-more-documentation
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (doc (string-append out "/share/doc/" ,name "-" ,version)))
                (for-each (cut install-file <> doc)
                          (list "README" "FAQ"))
-               (copy-recursively "examples" (string-append doc "/examples"))
-               #t))))))
+               (copy-recursively "examples" (string-append doc "/examples"))))))))
     (native-inputs
      (list pkg-config))
     (inputs
