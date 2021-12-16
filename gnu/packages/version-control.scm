@@ -3254,6 +3254,52 @@ makes a directory under a specific root directory (by default @file{~/ghq})
 using the remote repository URL's host and path.")
     (license license:expat)))
 
+(define-public tkrev
+  (package
+    (name "tkrev")
+    (version "9.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://sourceforge/tkcvs/tkrev_" version ".tar.gz"))
+       (sha256
+        (base32 "0bpfbhkngzmwy476mfc69mkd94l0m2wxznrn0qzd81s450yxjw2q"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (invoke "wish" "doinstall.tcl" "-nox" out)
+               (install-file "contrib/tkdirdiff" bin))))
+         (add-after 'install 'wrap-programs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (for-each
+               (lambda (file)
+                 (wrap-program (string-append (assoc-ref outputs "out")
+                                              "/bin/" file)
+                   `("PATH" ":" prefix (,(dirname (which "wish"))))))
+               '("tkdiff"
+                 "tkdirdiff"
+                 "tkrev")))))
+       #:tests? #f))
+    (inputs
+     (list tk))
+    (home-page "https://tkcvs.sourceforge.io")
+    (synopsis "Graphical interface to CVS, Subversion, Git, and RCS")
+    (description
+     "TkRev (formerly TkCVS) is a Tcl/Tk-based graphical interface to the CVS,
+Subversion and Git configuration management systems.  It will also help with
+RCS.  It shows the status of the files in the current working directory, and
+has tools for tagging, merging, checking in/out, and other user operations.
+TkDiff is included for browsing and merging your changes.")
+    (license license:gpl2+)))
+
 (define-public git-filter-repo
   (package
     (name "git-filter-repo")
