@@ -4055,13 +4055,17 @@ logging and tracing of the execution.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'check 'disable-tests
+         (add-before 'check 'adjust-tests
            (lambda _
+             ;; Drop use of testtools.helpers.safe_hasattr which has
+             ;; been removed in favor of hasattr.
+             (substitute* "test/test_metadata.py"
+               (("testtools\\.helpers\\.safe_hasattr")
+                "hasattr"))
              ;; FIXME: Determine why test fails
              (substitute* "test/test_daemon.py"
                (("test_detaches_process_context")
-                "skip_test_detaches_process_context"))
-             #t)))))
+                "skip_test_detaches_process_context")))))))
     (propagated-inputs
      (list python-lockfile))
     (native-inputs
