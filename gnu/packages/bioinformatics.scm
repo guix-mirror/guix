@@ -11450,8 +11450,7 @@ contigs alone.")
     (propagated-inputs
      (list zlib))
     (native-inputs
-     (list gcc-10 ;Code has C++17 requirements
-           pkg-config))
+     (list pkg-config))
     (home-page "https://gitlab.com/german.tischler/libmaus2")
     (synopsis "Collection of data structures and algorithms useful for bioinformatics")
     (description "libmaus2 is a collection of data structures and
@@ -11494,8 +11493,7 @@ and many lower level support classes.
     (inputs
      (list libmaus2 xerces-c))
     (native-inputs
-     (list gcc-10 ;Code has C++17 requirements
-           pkg-config))
+     (list pkg-config))
     (home-page "https://gitlab.com/german.tischler/biobambam2")
     (synopsis "Tools for processing BAM files")
     (description "This package contains some tools for processing BAM files

@@ -44,7 +44,6 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages build-tools)
-  #:use-module (gnu packages gcc)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages libevent)
@@ -1127,8 +1126,7 @@ shell command executions.")
             "-Denable_manpages=false"
             "-Dversion_suffix=-guix1")))
    (native-inputs
-    (list gcc-10 ; gcc-7 is too old for our C++17 needs
-          luajit-lua52-openresty
+    (list luajit-lua52-openresty
           pkg-config
           re2c
           xxd))

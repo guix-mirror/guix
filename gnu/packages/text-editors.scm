@@ -56,7 +56,6 @@
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
-  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
@@ -192,8 +191,7 @@ based command language.")
          (add-before 'build 'chdir
            (lambda _ (chdir "src") #t)))))
     (native-inputs
-     (list gcc-10 ; See https://github.com/mawww/kakoune/issues/4318
-           asciidoc pkg-config ruby))
+     (list asciidoc pkg-config ruby))
     (synopsis "Vim-inspired code editor")
     (description
      "Kakoune is a code editor heavily inspired by Vim, as such most of its
@@ -932,8 +930,7 @@ Octave.  TeXmacs is completely extensible via Guile.")
                (for-each (lambda (f) (install-file f include))
                          (find-files "include/" "."))))))))
     (native-inputs
-     `(("gcc" ,gcc-9)                   ;Code has C++17 requirements
-       ("pkg-config" ,pkg-config)
+     `(("pkg-config" ,pkg-config)
        ("python" ,python-wrapper)))
     (inputs
      (list gtk+))

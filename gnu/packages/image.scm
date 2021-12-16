@@ -63,7 +63,6 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
-  #:use-module (gnu packages gcc)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gimp)
   #:use-module (gnu packages gl)
@@ -2053,7 +2052,7 @@ losslessly translates between SNG and PNG.")
         (base32 "0jy2iigarskwfhskyladbb6l92x1fb3i3vz4bvcks0za4w5hfxk5"))))
     (build-system meson-build-system)
     (native-inputs
-     (list cmake doctest gcc-8))
+     (list cmake doctest))
     (home-page "https://github.com/Nheko-Reborn/blurhash")
     (synopsis "C++ blurhash encoder/decoder")
     (description "Simple encoder and decoder for blurhashes.  Contains a

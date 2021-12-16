@@ -33,7 +33,6 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages freedesktop)
-  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
@@ -188,7 +187,6 @@ as required.")
        (list "--disable-static")))
     (native-inputs
      `(("cppunit" ,cppunit)
-       ("gcc" ,gcc-8)                   ; XXX remove when it's the default
        ("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
     (inputs

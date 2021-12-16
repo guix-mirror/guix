@@ -70,7 +70,6 @@
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages fribidi)
   #:use-module (gnu packages dbm)
-  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
@@ -1025,8 +1024,7 @@ the creation of animations, tiled graphics, texture atlases, and more.")
        ;; Tests are unmaintained
        #:tests? #f))
     (native-inputs
-     `(("gcc@10" ,gcc-10)               ; Requires 8.5 or higher
-       ("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)))
     (inputs
      `(("curl" ,curl)
        ("freetype" ,freetype)
@@ -1622,8 +1620,6 @@ games.")
     (inputs
      `(("gifsicle" ,gifsicle)
        ("sdl2" ,(sdl-union (list sdl2 sdl2-image)))))
-    (native-inputs
-     (list gcc-10))                  ; for std::filesystem
     (home-page "https://github.com/kitao/pyxel")
     (synopsis "Retro game engine for Python")
     (description "Pyxel is a game engine inspired by retro gaming consoles.

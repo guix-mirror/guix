@@ -114,7 +114,6 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages game-development)
-  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
@@ -4789,9 +4788,7 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
     (arguments
      `(#:configure-flags '("--enable-shared")))
     (native-inputs
-     (list pkg-config
-           ;; Fails with default gcc (#include <filesystem> not found).
-           gcc-9))
+     (list pkg-config))
     (inputs
      `(("jack" ,jack-2)
        ("lv2" ,lv2)
@@ -6087,9 +6084,7 @@ ZaMultiComp, ZaMultiCompX2 and ZamSynth.")
            redkite
            rapidjson))
     (native-inputs
-     (list lv2
-           ;; Fails with default gcc (#include <filesystem> not found).
-           gcc-9 pkg-config sord))
+     (list lv2 pkg-config sord))
     (synopsis "Percussion synthesizer")
     (description "Geonkick is a synthesizer that can synthesize elements
 of percussion such as kicks, snares, hit-hats, shakers, claps and sticks.

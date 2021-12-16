@@ -29,7 +29,6 @@
   #:use-module (gnu packages datastructures)
   #:use-module (gnu packages enchant)
   #:use-module (gnu packages freedesktop)
-  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
@@ -129,8 +128,7 @@ client.")
        ("xcb-util-wm" ,xcb-util-wm)
        ("xkeyboard-config" ,xkeyboard-config)))
     (native-inputs
-     (list gcc-9 ; for #include <charconv>
-           extra-cmake-modules pkg-config))
+     (list extra-cmake-modules pkg-config))
     (native-search-paths
      (list (search-path-specification
             (variable "FCITX_ADDON_DIRS")
@@ -177,8 +175,7 @@ client.")
     (inputs
      (list fcitx5 boost))
     (native-inputs
-     (list gcc-9 ;for #include <filesystem> and ld support
-           extra-cmake-modules python))             ;needed to run test
+     (list extra-cmake-modules python))             ;needed to run test
     (home-page "https://github.com/fcitx/libime")
     (synopsis "Library for implementing generic input methods")
     (description "Libime is a library for implementing various input method
@@ -363,7 +360,7 @@ including input methods previous bundled inside Fcitx 4:
        ("gettext" ,gettext-minimal)
        ("iso-codes" ,iso-codes)))
     (native-inputs
-     (list gcc-9 extra-cmake-modules pkg-config))
+     (list extra-cmake-modules pkg-config))
     (home-page "https://github.com/fcitx/fcitx5-configtool")
     (synopsis "Graphical configuration tool for Fcitx 5")
     (description "Fcitx5-configtool is a graphical configuration tool

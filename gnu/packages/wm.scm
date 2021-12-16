@@ -93,7 +93,6 @@
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages fribidi)
   #:use-module (gnu packages gawk)
-  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gperf)
@@ -1011,7 +1010,6 @@ experience.")
      (list pkg-config
            wayland-protocols
            tllist
-           gcc-10 ;TODO: Remove when the default compiler is > GCC 7.
            scdoc))
     (inputs
      (list wlroots wayland fcft dbus libpng))

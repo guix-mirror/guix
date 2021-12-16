@@ -1035,8 +1035,6 @@ provides a number of utilities to make coding with expected cleaner.")
                (base32
                 "1x47radgsifgz3vn2561mlvf4cq46ii33cpyqf01znm56iirwq89"))))
     (build-system cmake-build-system)
-    (native-inputs
-     (list gcc-9))
     (synopsis "C++17 header only library for compile time reflection of enums")
     (description "Magic Enum offers static reflection of enums, with
 conversions to and from strings, iteration and related functionality.")

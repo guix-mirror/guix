@@ -29,7 +29,6 @@
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages freedesktop)
-  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
@@ -439,7 +438,6 @@
     (native-inputs
      (list autoconf
            automake
-           gcc-8 ;charconv requires GCC 8.1+
            libtool
            perl ;to generate manpages with pod2man
            pkg-config

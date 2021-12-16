@@ -4436,7 +4436,6 @@ Transport Tycoon Deluxe.")
      `(("opengfx" ,openttd-opengfx)
        ("openmsx" ,openttd-openmsx)
        ("opensfx" ,openttd-opensfx)
-       ("gcc" ,gcc-9)                   ; for #include <charconv>
        ,@(package-native-inputs openttd-engine)))))
 
 (define openrct2-title-sequences
@@ -12404,8 +12403,6 @@ available.")
       (arguments
        `(#:tests? #f                              ; no tests
          #:build-type "Release"))
-      (native-inputs
-       (list gcc-11))                    ; need C++20-compatible compiler
       (inputs
        (list sfml))
       (home-page "https://github.com/sandsmark/Schiffbruch/")

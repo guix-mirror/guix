@@ -2004,8 +2004,7 @@ various hardware.")
         (base32 "1xwbz6yyca6wmzad5ykxw6i0r8jzc7i3jbzq7mhp8caiymd6knw3"))))
     (build-system cmake-build-system)
     (native-inputs
-     (list gcc-10 ; A GCC more recent than version 7 is required.
-           pkg-config))
+     (list pkg-config))
     (inputs
      `(("airspyhf" ,airspyhf)
        ("alsa-lib" ,alsa-lib)

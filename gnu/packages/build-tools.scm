@@ -44,7 +44,6 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cpp)
-  #:use-module (gnu packages gcc)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages logging)
   #:use-module (gnu packages lua)
@@ -137,7 +136,6 @@ makes a few sacrifices to acquire fast full and incremental build times.")
        ("spdlog" ,spdlog)))
     (native-inputs
      `(("abseil-cpp" ,abseil-cpp)
-       ("gcc-9" ,gcc-9) ; for <filesystem>, #44896
        ("googletest" ,googletest)
        ("openssl" ,openssl)
        ("pkg-config" ,pkg-config)

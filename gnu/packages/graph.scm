@@ -35,7 +35,6 @@
   #:use-module (guix build-system r)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
-  #:use-module (gnu packages gcc)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages bioconductor)
   #:use-module (gnu packages bioinformatics)
@@ -554,8 +553,7 @@ transformed into common image formats for display or printing.")
                                      "python"))))
                             "/site-packages/"))))
     (native-inputs
-     `(("gcc-10" ,gcc-10)
-       ("ncurses" ,ncurses)
+     `(("ncurses" ,ncurses)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("boost" ,boost)

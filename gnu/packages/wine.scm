@@ -43,7 +43,6 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages image)
-  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
@@ -608,10 +607,7 @@ version)")
                                (string-append (assoc-ref %build-inputs "source")
                                               "/build-wine32.txt"))))
     (native-inputs
-     ;; Since 1.5 dxvk needs gcc-8.1.  See
-     ;; https://github.com/doitsujin/dxvk/issues/1292#issuecomment-567067373.
-     `(("gcc" ,gcc-9)
-       ("glslang" ,glslang)))
+     `(("glslang" ,glslang)))
     (inputs
      `(("wine" ,wine-staging)))
     (synopsis "Vulkan-based D3D9, D3D10 and D3D11 implementation for Wine")
