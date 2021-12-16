@@ -13064,6 +13064,38 @@ factors for each cell, along with the usual metadata for genes and
 libraries.")
     (license license:gpl3)))
 
+(define-public r-singler
+  (package
+    (name "r-singler")
+    (version "1.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "SingleR" version))
+       (sha256
+        (base32 "19lsn3cpghkhfbx4jqgbwwrnacrl7vj3r91ymd1gk02c9pn5dmci"))))
+    (properties `((upstream-name . "SingleR")))
+    (build-system r-build-system)
+    (propagated-inputs
+     (list r-beachmat
+           r-biocneighbors
+           r-biocparallel
+           r-biocsingular
+           r-delayedarray
+           r-delayedmatrixstats
+           r-matrix
+           r-rcpp
+           r-s4vectors
+           r-summarizedexperiment))
+    (native-inputs (list r-knitr))
+    (home-page "https://github.com/LTLA/SingleR")
+    (synopsis "Reference-based single-cell RNA-seq annotation")
+    (description
+     "This package performs unbiased cell type recognition from single-cell
+RNA sequencing data, by leveraging reference transcriptomic datasets of pure
+cell types to infer the cell of origin of each single cell independently.")
+    (license license:gpl3)))
+
 (define-public r-scuttle
   (package
     (name "r-scuttle")
