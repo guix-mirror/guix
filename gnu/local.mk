@@ -309,6 +309,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/inklingreader.scm		\
   %D%/packages/inkscape.scm			\
   %D%/packages/installers.scm			\
+  %D%/packages/instrumentation.scm		\
   %D%/packages/ipfs.scm			\
   %D%/packages/irc.scm  			\
   %D%/packages/irods.scm  			\
