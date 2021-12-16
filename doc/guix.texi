@@ -35039,15 +35039,6 @@ QEMU monitor and the VM.
 @cindex System images, creation in various formats
 @cindex Creating system images in various formats
 @item image
-@itemx docker-image
-Return a virtual machine, disk image, or Docker image of the operating
-system declared in @var{file} that stands alone.  By default,
-@command{guix system} estimates the size of the image needed to store
-the system, but you can use the @option{--image-size} option to specify
-a value.  Docker images are built to contain exactly what they need, so
-the @option{--image-size} option is ignored in the case of
-@code{docker-image}.
-
 @cindex image, creating disk images
 The @code{image} command can produce various image types.  The
 image type can be selected using the @option{--image-type} option.  It
@@ -35093,11 +35084,11 @@ uses the SeaBIOS BIOS by default, expecting a bootloader to be installed
 in the Master Boot Record (MBR).
 
 @cindex docker-image, creating docker images
-When using @code{docker-image}, a Docker image is produced.  Guix builds
-the image from scratch, not from a pre-existing Docker base image.  As a
-result, it contains @emph{exactly} what you define in the operating
-system configuration file.  You can then load the image and launch a
-Docker container using commands like the following:
+When using the @code{docker} image type, a Docker image is produced.
+Guix builds the image from scratch, not from a pre-existing Docker base
+image.  As a result, it contains @emph{exactly} what you define in the
+operating system configuration file.  You can then load the image and
+launch a Docker container using commands like the following:
 
 @example
 image_id="$(docker load < guix-system-docker-image.tar.gz)"

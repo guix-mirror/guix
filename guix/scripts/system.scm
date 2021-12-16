@@ -713,16 +713,14 @@ checking this by themselves in their 'check' procedure."
                                                   image-size
                                                   (* 70 (expt 2 20)))
                                               #:mappings mappings))
-      ((image disk-image vm-image)
+      ((image disk-image vm-image docker-image)
        (when (eq? action 'disk-image)
          (warning (G_ "'disk-image' is deprecated: use 'image' instead~%")))
        (when (eq? action 'vm-image)
          (warning (G_ "'vm-image' is deprecated: use 'image' instead~%")))
-       (lower-object (system-image image)))
-      ((docker-image)
-       (system-docker-image os
-                            #:memory-size 1024
-                            #:shared-network? container-shared-network?)))))
+       (when (eq? action 'docker-image)
+         (warning (G_ "'docker-image' is deprecated: use 'image' instead~%")))
+       (lower-object (system-image image))))))
 
 (define (maybe-suggest-running-guix-pull)
   "Suggest running 'guix pull' if this has never been done before."
@@ -1214,11 +1212,14 @@ resulting from command-line parsing."
          (label       (assoc-ref opts 'label))
          (image-type  (lookup-image-type-by-name
                        (assoc-ref opts 'image-type)))
-         (image       (let* ((image-type (if (eq? action 'vm-image)
-                                            qcow2-image-type
-                                            image-type))
+         (image       (let* ((image-type (case action
+                                           ((vm-image) qcow2-image-type)
+                                           ((docker-image) docker-image-type)
+                                           (else image-type)))
                             (image-size (assoc-ref opts 'image-size))
                             (volatile?  (assoc-ref opts 'volatile-root?))
+                            (shared-network?
+                               (assoc-ref opts 'container-shared-network?))
                             (base-image (if (operating-system? obj)
                                             (os->image obj
                                                        #:type image-type)
@@ -1228,7 +1229,8 @@ resulting from command-line parsing."
                                       (image-with-label base-image label)
                                       base-image))
                          (size image-size)
-                         (volatile-root? volatile?))))
+                         (volatile-root? volatile?)
+                         (shared-network? shared-network?))))
          (os          (image-operating-system image))
          (target-file (match args
                         ((first second) second)
