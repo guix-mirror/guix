@@ -631,7 +631,7 @@ console.")
 (define-public htop
   (package
     (name "htop")
-    (version "3.1.1")
+    (version "3.1.2")
     (source
      (origin
        (method git-fetch)
@@ -639,7 +639,7 @@ console.")
              (url "https://github.com/htop-dev/htop")
              (commit version)))
        (sha256
-        (base32 "19xnqnavpxbyix2gp1p3lbhlaawx0gdklx3aq4x4ylrxml2nwyi6"))
+        (base32 "024qhrlmqgwmn6bwb5yiff9bhhdabryiphzx8y654k8r8vqi59j4"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (inputs
