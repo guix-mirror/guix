@@ -689,6 +689,7 @@ checking this by themselves in their 'check' procedure."
 (define* (system-derivation-for-action image action
                                        #:key
                                        full-boot?
+                                       volatile?
                                        (graphic? #t)
                                        container-shared-network?
                                        mappings)
@@ -707,6 +708,7 @@ checking this by themselves in their 'check' procedure."
       ((vm)
        (system-qemu-image/shared-store-script os
                                               #:full-boot? full-boot?
+                                              #:volatile? volatile?
                                               #:graphic? graphic?
                                               #:disk-image-size
                                               (if full-boot?
@@ -772,6 +774,7 @@ and TARGET arguments."
                          dry-run? derivations-only?
                          use-substitutes? target
                          full-boot?
+                         volatile?
                          (graphic? #t)
                          container-shared-network?
                          (mappings '())
@@ -826,6 +829,7 @@ static checks."
   (mlet* %store-monad
       ((sys       (system-derivation-for-action image action
                                                 #:full-boot? full-boot?
+                                                #:volatile? volatile?
                                                 #:graphic? graphic?
                                                 #:container-shared-network? container-shared-network?
                                                 #:mappings mappings))
@@ -1277,6 +1281,7 @@ resulting from command-line parsing."
                                #:validate-reconfigure
                                (assoc-ref opts 'validate-reconfigure)
                                #:full-boot? (assoc-ref opts 'full-boot?)
+                               #:volatile? (assoc-ref opts 'volatile-root?)
                                #:graphic? (not (assoc-ref opts 'no-graphic?))
                                #:container-shared-network?
                                (assoc-ref opts 'container-shared-network?)
