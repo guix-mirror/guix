@@ -601,7 +601,10 @@ language.")
                       "parport" "aice" "cmsis-dap" "dummy" "jtag_vpi"
                       "remote-bitbang" "rlink" "stlink" "ti-icdi" "ulink"
                       "usbprog" "vsllink" "usb-blaster-2" "usb_blaster"
-                      "presto" "openjtag")))
+                      "presto" "openjtag" "rshim" "ft232r" "xds110"
+                      "cmsis-dap-v2" "nulink" "kitprog" "jtag_dpi"
+                      "bcm2835gpio" "imx_gpio" "ep93xx" "at91rm9200"
+                      "sysfsgpio" "xlnx-pcie-xvc")))
        #:phases
        (modify-phases %standard-phases
          (replace 'bootstrap
