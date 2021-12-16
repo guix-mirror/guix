@@ -19,8 +19,6 @@
 (define-module (gnu build chromium-extension)
   #:use-module (guix gexp)
   #:use-module (guix packages)
-  #:use-module (gnu packages base)
-  #:use-module (gnu packages check)
   #:use-module (gnu packages chromium)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages tls)
@@ -77,20 +75,17 @@ in PACKAGE-OUTPUT of PACKAGE.  The extension will be signed with SIGNING-KEY."
          (use-modules (guix build utils))
          (let ((chromium #$(file-append ungoogled-chromium "/bin/chromium"))
                (xvfb #$(file-append xorg-server "/bin/Xvfb"))
-               (packdir "/tmp/extension"))
-           (mkdir-p (dirname packdir))
-           (copy-recursively (ungexp package package-output) packdir)
+               (packdir (string-append (getcwd) "/extension")))
+           (mkdir packdir)
+           (copy-recursively (ungexp package package-output) packdir
+                             ;; Ensure consistent file modification times.
+                             #:keep-mtime? #t)
            (system (string-append xvfb " :1 &"))
            (setenv "DISPLAY" ":1")
            (sleep 2)                    ;give Xorg some time to initialize...
            ;; Chromium stores the current time in the .crx Zip archive.
            ;; Use a fixed timestamp for deterministic behavior.
-           ;; FIXME (core-updates): faketime is missing an absolute reference
-           ;; to 'date', hence the need to set PATH.
-           (setenv "PATH" #$(file-append coreutils "/bin"))
-           (invoke #$(file-append libfaketime "/bin/faketime")
-                   "2000-01-01 00:00:00"
-                   chromium
+           (invoke chromium
                    "--user-data-dir=/tmp/signing-profile"
                    (string-append "--pack-extension=" packdir)
                    (string-append "--pack-extension-key=" #$signing-key))
