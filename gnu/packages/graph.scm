@@ -557,7 +557,7 @@ transformed into common image formats for display or printing.")
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("boost" ,boost)
-       ("cairomm" ,cairomm)
+       ("cairomm" ,cairomm-1.14)
        ("cgal" ,cgal)
        ("expat" ,expat)
        ("gmp" ,gmp)
