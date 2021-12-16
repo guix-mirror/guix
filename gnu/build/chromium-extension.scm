@@ -68,9 +68,9 @@ in PACKAGE-OUTPUT of PACKAGE.  The extension will be signed with SIGNING-KEY."
   (define name (package-name package))
   (define version (package-version package))
 
-  (with-imported-modules '((guix build utils))
-    (computed-file
-     (string-append name "-" version ".crx")
+  (computed-file
+   (string-append name "-" version ".crx")
+   (with-imported-modules '((guix build utils))
      #~(begin
          ;; This is not great.  We pull Xorg and Chromium just to Zip and
          ;; sign an extension.  This should be implemented with something
@@ -95,10 +95,10 @@ in PACKAGE-OUTPUT of PACKAGE.  The extension will be signed with SIGNING-KEY."
                    "--user-data-dir=/tmp/signing-profile"
                    (string-append "--pack-extension=" packdir)
                    (string-append "--pack-extension-key=" #$signing-key))
-           (copy-file (string-append packdir ".crx") #$output)))
-     #:local-build? #t)))
+           (copy-file (string-append packdir ".crx") #$output))))
+   #:local-build? #t))
 
-(define* (crx->chromium-json crx version)
+(define (crx->chromium-json crx version)
   "Return a derivation that creates a Chromium JSON settings file for the
 extension given as CRX.  VERSION is used to signify the CRX version, and
 must match the version listed in the extension manifest.json."
