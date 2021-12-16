@@ -1379,8 +1379,7 @@ bootstrapping purposes.")
                ;; included.  It is provided by the libc instead.
                (substitute* '("configure"
                               "openjdk.src/jdk/src/solaris/native/sun/nio/fs/LinuxNativeDispatcher.c")
-                 (("attr/xattr.h") "sys/xattr.h"))
-               #t))
+                 (("attr/xattr.h") "sys/xattr.h"))))
            (add-after 'unpack 'fix-openjdk
              (lambda _
                (substitute* "openjdk.src/jdk/make/common/Defs-linux.gmk"
@@ -1412,8 +1411,7 @@ bootstrapping purposes.")
                                  "/include/X11/extensions"
                                  " -I" (assoc-ref inputs "libxinerama")
                                  "/include/X11/extensions"))
-                 (("\\$\\(wildcard /usr/include/X11/extensions\\)\\)") ""))
-               #t))
+                 (("\\$\\(wildcard /usr/include/X11/extensions\\)\\)") ""))))
            (add-after 'unpack 'patch-paths
              (lambda _
                ;; buildtree.make generates shell scripts, so we need to replace
@@ -1497,8 +1495,7 @@ bootstrapping purposes.")
                    (("AZ=AZM;2005-12-31-20-00-00;AZN") "AZ=AZN")
                    (("MZ=MZM;2006-06-30-22-00-00;MZN") "MZ=MZN")
                    (("RO=ROL;2005-06-30-21-00-00;RON") "RO=RON")
-                   (("TR=TRL;2004-12-31-22-00-00;TRY") "TR=TRY")))
-               #t))
+                   (("TR=TRL;2004-12-31-22-00-00;TRY") "TR=TRY")))))
            (add-before 'configure 'set-additional-paths
              (lambda* (#:key inputs #:allow-other-keys)
                (substitute* "openjdk.src/jdk/make/common/shared/Sanity.gmk"
@@ -1526,13 +1523,11 @@ bootstrapping purposes.")
                                       "/include"))
                (setenv "ALT_FREETYPE_LIB_PATH"
                        (string-append (assoc-ref inputs "freetype")
-                                      "/lib"))
-               #t))
+                                      "/lib"))))
            (add-before 'build 'disable-os-version-check
-           ;; allow build on linux major version change
-           (lambda _
-             (setenv "DISABLE_HOTSPOT_OS_VERSION_CHECK" "ok")
-             #t))
+             ;; allow build on linux major version change
+             (lambda _
+               (setenv "DISABLE_HOTSPOT_OS_VERSION_CHECK" "ok")))
            (add-before 'check 'fix-test-framework
              (lambda _
                ;; Fix PATH in test environment
@@ -1544,8 +1539,7 @@ bootstrapping purposes.")
                (substitute* "openjdk.src/hotspot/test/test_env.sh"
                  (("/bin/rm") (which "rm"))
                  (("/bin/cp") (which "cp"))
-                 (("/bin/mv") (which "mv")))
-               #t))
+                 (("/bin/mv") (which "mv")))))
            (add-before 'check 'fix-hotspot-tests
              (lambda _
                (with-directory-excursion "openjdk.src/hotspot/test/"
@@ -1558,8 +1552,7 @@ bootstrapping purposes.")
                                 "runtime/7110720/Test7110720.sh")
                    (("/bin/rm") (which "rm"))
                    (("/bin/cp") (which "cp"))
-                   (("/bin/mv") (which "mv"))))
-               #t))
+                   (("/bin/mv") (which "mv"))))))
            (add-before 'check 'fix-jdk-tests
              (lambda _
                (with-directory-excursion "openjdk.src/jdk/test/"
@@ -1615,8 +1608,7 @@ bootstrapping purposes.")
                  (substitute* "java/rmi/activation/CommandEnvironment/SetChildEnv.java"
                    (("/bin/chmod") (which "chmod")))
                  (substitute* "java/util/zip/ZipFile/Assortment.java"
-                   (("/bin/sh") (which "sh"))))
-               #t))
+                   (("/bin/sh") (which "sh"))))))
            (replace 'check
              (lambda* (#:key tests? #:allow-other-keys)
                ;; The "make check-*" targets always return zero, so we need to
@@ -1649,8 +1641,7 @@ bootstrapping purposes.")
                      (jdk (assoc-ref outputs "jdk")))
                  (copy-recursively "openjdk.build/docs" doc)
                  (copy-recursively "openjdk.build/j2re-image" jre)
-                 (copy-recursively "openjdk.build/j2sdk-image" jdk))
-               #t))
+                 (copy-recursively "openjdk.build/j2sdk-image" jdk))))
            ;; Some of the libraries in the lib/amd64 folder link to libjvm.so.
            ;; But that shared object is located in the server/ folder, so it
            ;; cannot be found.  This phase creates a symbolic link in the
@@ -1683,8 +1674,7 @@ bootstrapping purposes.")
                                                       (string-drop-right
                                                         (%current-system) 6)))))))
                  (symlink (string-append lib-path "/server/libjvm.so")
-                          (string-append lib-path "/libjvm.so")))
-               #t))
+                          (string-append lib-path "/libjvm.so")))))
            ;; By default IcedTea only generates an empty keystore.  In order to
            ;; be able to use certificates in Java programs we need to generate a
            ;; keystore from a set of certificates.  For convenience we use the
@@ -1753,8 +1743,7 @@ bootstrapping purposes.")
                                               "/lib/security"))
                  (install-file keystore
                                (string-append (assoc-ref outputs "jdk")
-                                              "/jre/lib/security"))
-                 #t))))))
+                                              "/jre/lib/security"))))))))
       (native-inputs
        `(("openjdk-src"
           ,(drop "openjdk"
