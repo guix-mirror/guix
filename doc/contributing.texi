@@ -243,6 +243,24 @@ local source tree; it simply updates the @file{~/.config/guix/current}
 symlink (@pxref{Invoking guix pull}).  Run @command{git pull} instead if
 you want to upgrade your local source tree.
 
+Sometimes, especially if you have recently updated your repository,
+running @command{./pre-inst-env} will print a message similar to the
+following example:
+
+@example
+;;; note: source file /home/user/projects/guix/guix/progress.scm
+;;;       newer than compiled /home/user/projects/guix/guix/progress.go
+@end example
+
+This is only a note and you can safely ignore it.  You can get rid of
+the message by running @command{make -j4}.  Until you do, Guile will run
+slightly slower because it will interpret the code instead of using
+prepared Guile object (@file{.go}) files.
+
+You can run @command{make} automatically as you work using
+@command{watchexec} from the @code{watchexec} package.  For example,
+to build again each time you update a package file, you can run
+@samp{watchexec -w gnu/packages make -j4}.
 
 @node The Perfect Setup
 @section The Perfect Setup
