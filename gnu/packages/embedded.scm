@@ -606,6 +606,9 @@ language.")
        (modify-phases %standard-phases
          (replace 'bootstrap
            (lambda _
+             ;; Make build reproducible.
+             (substitute* "src/Makefile.am"
+               (("-DPKGBLDDATE=") "-DDISABLED_PKGBLDDATE="))
              (patch-shebang "bootstrap")
              (invoke "./bootstrap" "nosubmodule")))
          (add-after 'autoreconf 'change-udev-group
