@@ -424,7 +424,9 @@ a simple interface that makes it easy to organize and browse feeds.")
              (setenv "HOME" (getcwd))
              (setenv "TERM" "linux")
              (setenv "TERMINFO"
-                     (search-input-directory inputs "share/terminfo")))))
+                     (search-input-directory inputs "share/terminfo"))))
+         ;; Loading this as a library requires a controlling terminal, etc.
+         (delete 'sanity-check))
        #:tests? #f)) ; tests fail: _curses.error: nocbreak() returned ERR
     (propagated-inputs
      (list python-beautifulsoup4 python-decorator python-kitchen
