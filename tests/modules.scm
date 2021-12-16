@@ -39,10 +39,10 @@
          (live-module-closure '((gnu build install)))
          (source-module-closure '((gnu build install)))))
 
-(test-assert "closure of (gnu build vm)"
+(test-assert "closure of (gnu build image)"
   (lset= equal?
-         (live-module-closure '((gnu build vm)))
-         (source-module-closure '((gnu build vm)))))
+         (live-module-closure '((gnu build image)))
+         (source-module-closure '((gnu build image)))))
 
 (test-equal "&missing-dependency-error"
   '(something that does not exist)

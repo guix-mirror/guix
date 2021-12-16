@@ -24,6 +24,7 @@
   #:use-module (rnrs io ports)
   #:use-module (ice-9 match)
   #:use-module (ice-9 popen)
+  #:use-module (ice-9 regex)
   #:export (marionette?
             make-marionette
             marionette-eval
@@ -36,7 +37,8 @@
             %qwerty-us-keystrokes
             marionette-type
 
-            system-test-runner))
+            system-test-runner
+            qemu-command))
 
 ;;; Commentary:
 ;;;
@@ -425,5 +427,15 @@ LOG-DIRECTORY is specified, create log file within it."
 
           (exit success?))))
     runner))
+
+(define* (qemu-command #:optional (system %host-type))
+  "Return the default name of the QEMU command for SYSTEM."
+  (let ((cpu (substring system 0
+                        (string-index system #\-))))
+    (string-append "qemu-system-"
+                   (cond
+                    ((string-match "^i[3456]86$" cpu) "i386")
+                    ((string-match "armhf" cpu) "arm")
+                    (else cpu)))))
 
 ;;; marionette.scm ends here

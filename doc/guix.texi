@@ -10174,11 +10174,11 @@ headers, which comes in handy in this case:
 
 (with-imported-modules (source-module-closure
                          '((guix build utils)
-                           (gnu build vm)))
+                           (gnu build image)))
   (gexp->derivation "something-with-vms"
                     #~(begin
                         (use-modules (guix build utils)
-                                     (gnu build vm))
+                                     (gnu build image))
                         @dots{})))
 @end lisp
 

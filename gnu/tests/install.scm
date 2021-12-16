@@ -31,7 +31,7 @@
   #:use-module (gnu system image)
   #:use-module (gnu system install)
   #:use-module (gnu system vm)
-  #:use-module ((gnu build vm) #:select (qemu-command))
+  #:use-module ((gnu build marionette) #:select (qemu-command))
   #:use-module (gnu packages admin)
   #:use-module (gnu packages bootloaders)
   #:use-module (gnu packages commencement)       ;for 'guile-final'
