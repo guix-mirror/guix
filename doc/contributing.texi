@@ -157,6 +157,18 @@ You are advised to run @command{make authenticate} after every
 changes to the repository.
 @end quotation
 
+After updating the repository, @command{make} might fail with an error
+similar to the following example:
+
+@example
+error: failed to load 'gnu/packages/dunst.scm':
+ice-9/eval.scm:293:34: In procedure abi-check: #<record-type <origin>>: record ABI mismatch; recompilation needed
+@end example
+
+This means that one of the record types that Guix defines (in this
+example, the @code{origin} record) has changed, and all of guix needs
+to be recompiled to take that change into account.  To do so, run
+@command{make clean-go} followed by @command{make}.
 
 @node Running Guix Before It Is Installed
 @section Running Guix Before It Is Installed
