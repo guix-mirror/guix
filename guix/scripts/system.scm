@@ -710,10 +710,7 @@ checking this by themselves in their 'check' procedure."
                                               #:full-boot? full-boot?
                                               #:volatile? volatile?
                                               #:graphic? graphic?
-                                              #:disk-image-size
-                                              (if full-boot?
-                                                  image-size
-                                                  (* 70 (expt 2 20)))
+                                              #:disk-image-size image-size
                                               #:mappings mappings))
       ((image disk-image vm-image docker-image)
        (when (eq? action 'disk-image)
