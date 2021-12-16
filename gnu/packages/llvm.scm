@@ -155,7 +155,9 @@ compiler.  In LLVM this library is called \"compiler-rt\".")
     (supported-systems (delete "mips64el-linux" %supported-systems))))
 
 (define* (clang-from-llvm llvm clang-runtime hash
-                          #:key (patches '()) tools-extra)
+                          #:key (patches '()) tools-extra
+                          (properties
+                           (clang-properties (package-version llvm))))
   "Produce Clang with dependencies on LLVM and CLANG-RUNTIME, and applying the
 given PATCHES.  When TOOLS-EXTRA is given, it must point to the
 'clang-tools-extra' tarball, which contains code for 'clang-tidy', 'pp-trace',
@@ -426,9 +428,75 @@ given PATCHES.  When TOOLS-EXTRA is given, it must point to the
 Objective-C++ programming languages.  It uses LLVM as its back end.  The Clang
 project includes the Clang front end, the Clang static analyzer, and several
 code analysis tools.")
+    (properties properties)
     (license (if (version>=? version "9.0")
                  license:asl2.0         ;with LLVM exceptions
                  license:ncsa))))
+
+(define (clang-properties version)
+  "Return package properties for Clang VERSION."
+  `((compiler-cpu-architectures
+     ("x86_64"
+      ;; This list was obtained by running:
+      ;;
+      ;;   guix shell clang -- llc -march=x86-64 -mattr=help
+      ;;
+      ;; filtered from uninteresting entries such as "i686" and "pentium".
+      ,@(if (version>=? version "10.0")           ;TODO: refine
+            '("atom"
+              "barcelona"
+              "bdver1"
+              "bdver2"
+              "bdver3"
+              "bdver4"
+              "bonnell"
+              "broadwell"
+              "btver1"
+              "btver2"
+              "c3"
+              "c3-2"
+              "cannonlake"
+              "cascadelake"
+              "cooperlake"
+              "core-avx-i"
+              "core-avx2"
+              "core2"
+              "corei7"
+              "corei7-avx"
+              "generic"
+              "geode"
+              "goldmont"
+              "goldmont-plus"
+              "haswell"
+              "icelake-client"
+              "icelake-server"
+              "ivybridge"
+              "k8"
+              "k8-sse3"
+              "knl"
+              "knm"
+              "lakemont"
+              "nehalem"
+              "nocona"
+              "opteron"
+              "opteron-sse3"
+              "sandybridge"
+              "silvermont"
+              "skx"
+              "skylake"
+              "skylake-avx512"
+              "slm"
+              "tigerlake"
+              "tremont"
+              "westmere"
+              "x86-64"
+              "x86-64-v2"
+              "x86-64-v3"
+              "x86-64-v4"
+              "znver1"
+              "znver2"
+              "znver3")
+            '())))))
 
 (define (make-clang-toolchain clang)
   (package
@@ -471,6 +539,7 @@ code analysis tools.")
     (search-paths (package-search-paths clang))
 
     (license (package-license clang))
+    (properties (package-properties clang))  ;for 'compiler-cpu-architectures'
     (home-page "https://clang.llvm.org")
     (synopsis "Complete Clang toolchain for C/C++ development")
     (description "This package provides a complete Clang toolchain for C/C++
