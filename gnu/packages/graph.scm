@@ -540,30 +540,26 @@ transformed into common image formats for display or printing.")
                 "0v58in4rwk9fhjarjw6xfxpx5zz2z13sy3yvd14b5kr0884yw6sz"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags
+     `(#:imported-modules (,@%gnu-build-system-modules
+                           (guix build python-build-system))
+       #:modules (,@%gnu-build-system-modules
+                  ((guix build python-build-system) #:select (site-packages)))
+       #:configure-flags
        (list (string-append "--with-boost="
                             (assoc-ref %build-inputs "boost"))
              (string-append "--with-python-module-path="
-                            (assoc-ref %outputs "out")
-                            "/lib/python"
-                            ,(version-major+minor
-                              (package-version
-                               (car (assoc-ref
-                                     (package-inputs this-package)
-                                     "python"))))
-                            "/site-packages/"))))
+                            (site-packages %build-inputs %outputs)))))
     (native-inputs
-     `(("ncurses" ,ncurses)
-       ("pkg-config" ,pkg-config)))
+     (list ncurses pkg-config))
     (inputs
-     `(("boost" ,boost)
-       ("cairomm" ,cairomm-1.14)
-       ("cgal" ,cgal)
-       ("expat" ,expat)
-       ("gmp" ,gmp)
-       ("gtk+" ,gtk+)
-       ("python" ,python-wrapper)
-       ("sparsehash" ,sparsehash)))
+     (list boost
+           cairomm-1.14
+           cgal
+           expat
+           gmp
+           gtk+
+           python-wrapper
+           sparsehash))
     (propagated-inputs
      (list python-matplotlib python-numpy python-pycairo python-scipy))
     (synopsis "Manipulate and analyze graphs with Python efficiently")
