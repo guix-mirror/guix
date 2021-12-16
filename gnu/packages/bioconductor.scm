@@ -1146,6 +1146,35 @@ from Illumina 450k methylation arrays.")
 biscuiteer.")
     (license license:gpl3)))
 
+(define-public r-celldex
+  (package
+    (name "r-celldex")
+    (version "1.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "celldex" version 'experiment))
+       (sha256
+        (base32 "04w60fx3s3wlirmr65nsz6d7ig48j9fzimdr8kbdqv1g80ivdcq1"))))
+    (properties `((upstream-name . "celldex")))
+    (build-system r-build-system)
+    (propagated-inputs
+     (list r-annotationdbi
+           r-annotationhub
+           r-delayedarray
+           r-delayedmatrixstats
+           r-experimenthub
+           r-s4vectors
+           r-summarizedexperiment))
+    (native-inputs (list r-knitr))
+    (home-page "https://github.com/LTLA/celldex")
+    (synopsis "Reference index for cell types")
+    (description
+     "This package provides a collection of reference expression datasets with
+curated cell type labels, for use in procedures like automated annotation of
+single-cell data or deconvolution of bulk RNA-seq.")
+    (license license:gpl3)))
+
 (define-public r-chromstardata
   (package
     (name "r-chromstardata")
