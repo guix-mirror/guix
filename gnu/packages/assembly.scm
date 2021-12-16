@@ -181,14 +181,14 @@ speed on x86, NEON on ARM, etc.).")
 (define-public fasm
   (package
     (name "fasm")
-    (version "1.73.27")
+    (version "1.73.28")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://flatassembler.net/fasm-"
                            version ".tgz"))
        (sha256
-        (base32 "1cghiks49ql77b9l4mwrnlk76kai0fm0z22j71kbdlxngwvlh0b8"))))
+        (base32 "14ljh0ngdaqlwzsr0l70k09r2d520lqpgswl388p84gxhnsfplcy"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests exist
@@ -207,8 +207,7 @@ speed on x86, NEON on ARM, etc.).")
          (replace 'install
            (lambda _
              (let ((out (assoc-ref %outputs "out")))
-               (install-file "fasm" (string-append out "/bin")))
-             #t)))))
+               (install-file "fasm" (string-append out "/bin"))))))))
     (supported-systems '("x86_64-linux" "i686-linux"))
     (synopsis "Assembler for x86 processors")
     (description
