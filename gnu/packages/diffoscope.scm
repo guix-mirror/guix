@@ -34,6 +34,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cpio)
   #:use-module (gnu packages dbm)
+  #:use-module (gnu packages file)      ;for 'file-next'
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gnome)
@@ -184,6 +185,11 @@
                      ("dtc" ,dtc)
                      ("e2fsprogs" ,e2fsprogs)
                      ("ffmpeg" ,ffmpeg)
+
+                     ;; XXX: Must be the same version as python-magic uses;
+                     ;; remove when 'file' is updated.
+                     ("file" ,file-next)
+
                      ("fpc" ,fpc)
                      ("gettext" ,gettext-minimal)
                      ("ghostscript" ,ghostscript)

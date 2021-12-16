@@ -1673,6 +1673,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-pyflakes-test-location.patch	\
   %D%/packages/patches/python-flint-includes.patch		\
   %D%/packages/patches/python-libxml2-utf8.patch		\
+  %D%/packages/patches/python-magic-python-bytecode.patch	\
   %D%/packages/patches/python-matplotlib-run-under-wayland-gtk3.patch	\
   %D%/packages/patches/python-memcached-syntax-warnings.patch	\
   %D%/packages/patches/python-mox3-python3.6-compat.patch	\

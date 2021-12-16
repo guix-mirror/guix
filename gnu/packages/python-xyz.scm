@@ -14614,6 +14614,7 @@ syntax highlighting, markdown and more to the terminal.")
        (method git-fetch)
        (uri (git-reference (url home-page) (commit version)))
        (file-name (git-file-name name version))
+       (patches (search-patches "python-magic-python-bytecode.patch"))
        (sha256
         (base32
          "17jalhjbfd600lzfz296m0nvgp6c7vx1mgz82jbzn8hgdzknf4w0"))))
@@ -14628,10 +14629,10 @@ syntax highlighting, markdown and more to the terminal.")
                   ;; python-magic to fail.
                   (add-before 'build 'hard-code-path-to-libmagic
                     (lambda* (#:key inputs #:allow-other-keys)
-                      (let ((file (assoc-ref inputs "file")))
+                      (let ((magic (search-input-file inputs "/lib/libmagic.so")))
                         (substitute* "magic/loader.py"
                           (("find_library\\('magic'\\)")
-                           (string-append "'" file "/lib/libmagic.so'"))))))
+                           (string-append "'" magic "'"))))))
                   (replace 'check
                     (lambda* (#:key tests? #:allow-other-keys)
                       ;; The test suite mandates this variable.
@@ -14645,7 +14646,9 @@ syntax highlighting, markdown and more to the terminal.")
      (list which))
     (inputs
      ;; python-magic needs to be able to find libmagic.so.
-     (list file))
+     ;; Use a newer version because 5.39 returns bogus for some archives
+     ;; (notably Chromium .crx extensions), which breaks e.g. 'diffoscope'.
+     (list file-next))
     (synopsis "File type identification using libmagic")
     (description
      "This module uses ctypes to access the libmagic file type
