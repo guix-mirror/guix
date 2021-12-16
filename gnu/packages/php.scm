@@ -343,7 +343,10 @@
                          ;; Renicing a process fails in the build environment.
                          "ext/standard/tests/general_functions/proc_nice_basic.phpt"
                          ;; Can fail on fast machines?
-                         "Zend/tests/bug74093.phpt"))
+                         "Zend/tests/bug74093.phpt"
+
+                         ;; Unknown reason <https://issues.guix.gnu.org/52513>.
+                         "ext/openssl/tests/openssl_x509_checkpurpose_basic.phpt"))
 
              ;; Accomodate two extra openssl errors flanking the expected one:
              ;; random number generator:RAND_{load,write}_file:Cannot open file
