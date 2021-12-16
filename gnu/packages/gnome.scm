@@ -12403,11 +12403,11 @@ integrated profiler via Sysprof, debugging support, and more.")
            python-unidecode
            webkitgtk-with-libsoup2))
     (native-inputs
-     `(("desktop-file-utils" ,desktop-file-utils)
-       ("gettext" ,gettext-minimal)
-       ("glib:bin" ,glib "bin")
-       ("gobject-introspection" ,gobject-introspection)
-       ("pkg-config" ,pkg-config)))
+     (list desktop-file-utils
+           gettext-minimal
+           `(,glib "bin")
+           gobject-introspection
+           pkg-config))
     (home-page "https://gitlab.com/valos/Komikku")
     (synopsis "Manga reader for GNOME")
     (description "Komikku is an online/offline manga reader for GNOME,
