@@ -107,11 +107,11 @@ in the Mozilla clients.")
               (base32
                "0v3zds1id71j5a5si42a658fjz8nv2f6zp6w4gqrqmdr6ksz8sxv"))))))
 
-;;; Note: When updating, verify that the nss-certs package still builds fine
-;;; as it inherits its source from the nss package.
 (define-public nss
   (package
     (name "nss")
+    ;; Also update and test the nss-certs package, which duplicates version and
+    ;; source to avoid a top-level variable reference & module cycle.
     (version "3.71")
     (source (origin
               (method url-fetch)

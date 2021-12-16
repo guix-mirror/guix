@@ -33,7 +33,6 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
-  #:use-module (gnu packages nss)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages python)
   #:use-module (gnu packages perl)
@@ -128,8 +127,31 @@ that was originally contributed to Debian.")
 (define-public nss-certs
   (package
     (name "nss-certs")
-    (version (package-version nss))
-    (source (package-source nss))
+    ;; XXX We used to refer to the nss package here, but that eventually caused
+    ;; module cycles.  The below is a quick copy-paste job that must be kept in
+    ;; sync manually.  Surely there's a better way…?
+    (version "3.71")
+    (source (origin
+              (method url-fetch)
+              (uri (let ((version-with-underscores
+                          (string-join (string-split version #\.) "_")))
+                     (string-append
+                      "https://ftp.mozilla.org/pub/mozilla.org/security/nss/"
+                      "releases/NSS_" version-with-underscores "_RTM/src/"
+                      "nss-" version ".tar.gz")))
+              (sha256
+               (base32
+                "0ly2l3dv6z5hlxs72h5x6796ni3x1bq60saavaf42ddgv4ax7b4r"))
+              ;; Create nss.pc and nss-config.
+              (patches (search-patches "nss-3.56-pkgconfig.patch"
+                                       "nss-getcwd-nonnull.patch"
+                                       "nss-increase-test-timeout.patch"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Delete the bundled copy of these libraries.
+                  (delete-file-recursively "nss/lib/zlib")
+                  (delete-file-recursively "nss/lib/sqlite")))))
     (build-system gnu-build-system)
     (outputs '("out"))
     (native-inputs
