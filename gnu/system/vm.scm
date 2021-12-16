@@ -51,6 +51,8 @@
 
   #:use-module (gnu bootloader)
   #:use-module (gnu bootloader grub)
+  #:use-module (gnu image)
+  #:use-module (gnu system image)
   #:use-module (gnu system linux-container)
   #:use-module (gnu system linux-initrd)
   #:use-module (gnu bootloader)
@@ -60,7 +62,7 @@
   #:use-module (gnu services base)
   #:use-module (gnu system uuid)
 
-  #:use-module (srfi srfi-1)
+  #:use-module ((srfi srfi-1) #:hide (partition))
   #:use-module (srfi srfi-26)
   #:use-module (rnrs bytevectors)
   #:use-module (ice-9 match)
@@ -592,7 +594,8 @@ the operating system."
        (check? #f)
        (create-mount-point? #t)))))
 
-(define* (virtualized-operating-system os mappings #:optional (full-boot? #f))
+(define* (virtualized-operating-system os mappings
+                                       #:key (full-boot? #f) volatile?)
   "Return an operating system based on OS suitable for use in a virtualized
 environment with the store shared with the host.  MAPPINGS is a list of
 <file-system-mapping> to realize in the virtualized OS."
@@ -635,7 +638,7 @@ environment with the store shared with the host.  MAPPINGS is a list of
     (initrd (lambda (file-systems . rest)
               (apply (operating-system-initrd os)
                      file-systems
-                     #:volatile-root? #t
+                     #:volatile-root? volatile?
                      rest)))
 
     ;; Disable swap.
@@ -692,7 +695,8 @@ bootloader refers to: OS kernel, initrd, bootloader data, etc."
               #:register-closures? #f
               #:copy-inputs? full-boot?))
 
-(define* (common-qemu-options image shared-fs)
+(define* (common-qemu-options image shared-fs
+                              #:key rw-image?)
   "Return the a string-value gexp with the common QEMU options to boot IMAGE,
 with '-virtfs' options for the host file systems listed in SHARED-FS."
 
@@ -712,8 +716,10 @@ with '-virtfs' options for the host file systems listed in SHARED-FS."
      "-device" "virtio-rng-pci,rng=guix-vm-rng"
 
      #$@(map virtfs-option shared-fs)
-     (format #f "-drive file=~a,if=virtio,cache=writeback,werror=report,readonly=on"
-             #$image)))
+     #$@(if rw-image?
+            #~((format #f "-drive file=~a,if=virtio" #$image))
+            #~((format #f "-drive file=~a,if=virtio,cache=writeback,werror=report,readonly=on"
+                       #$image)))))
 
 (define* (system-qemu-image/shared-store-script os
                                                 #:key
@@ -721,7 +727,8 @@ with '-virtfs' options for the host file systems listed in SHARED-FS."
                                                 (target (%current-target-system))
                                                 (qemu qemu)
                                                 (graphic? #t)
-                                                (memory-size 256)
+                                                (volatile? #t)
+                                                (memory-size 2048)
                                                 (mappings '())
                                                 full-boot?
                                                 (disk-image-size
@@ -736,19 +743,30 @@ MAPPINGS is a list of <file-system-mapping> specifying mapping of host file
 systems into the guest.
 
 When FULL-BOOT? is true, the returned script runs everything starting from the
-bootloader; otherwise it directly starts the operating system kernel.  The
-DISK-IMAGE-SIZE parameter specifies the size in bytes of the root disk image;
-it is mostly useful when FULL-BOOT?  is true."
-  (mlet* %store-monad ((os ->  (virtualized-operating-system os mappings full-boot?))
-                       (image  (system-qemu-image/shared-store
-                                os
-                                #:system system
-                                #:target target
+bootloader; otherwise it directly starts the operating system kernel.  When
+VOLATILE? is true, an overlay is created on top of a read-only
+storage. Otherwise the storage is made persistent.  The DISK-IMAGE-SIZE
+parameter specifies the size in bytes of the root disk image; it is mostly
+useful when FULL-BOOT?  is true."
+  (mlet* %store-monad ((os ->  (virtualized-operating-system
+                                os mappings
                                 #:full-boot? full-boot?
-                                #:disk-image-size disk-image-size)))
+                                #:volatile? volatile?))
+                       (base-image -> (system-image
+                                       (image
+                                        (inherit
+                                         (raw-with-offset-disk-image))
+                                        (operating-system os)
+                                        (size disk-image-size)
+                                        (shared-store?
+                                         (and (not full-boot?) volatile?))
+                                        (volatile-root? volatile?)))))
     (define kernel-arguments
       #~(list #$@(if graphic? #~() #~("console=ttyS0"))
               #+@(operating-system-kernel-arguments os "/dev/vda1")))
+
+    (define rw-image
+      #~(format #f "/tmp/.~a-rw" (basename #$base-image)))
 
     (define qemu-exec
       #~(list #+(file-append qemu "/bin/"
@@ -761,17 +779,25 @@ it is mostly useful when FULL-BOOT?  is true."
                         "-initrd" #$(file-append os "/initrd")
                         (format #f "-append ~s"
                                 (string-join #$kernel-arguments " "))))
-              #$@(common-qemu-options image
+              #$@(common-qemu-options (if volatile? base-image rw-image)
                                       (map file-system-mapping-source
-                                           (cons %store-mapping mappings)))
+                                           (cons %store-mapping mappings))
+                                      #:rw-image? (not volatile?))
               "-m " (number->string #$memory-size)
               #$@options))
 
     (define builder
       #~(call-with-output-file #$output
           (lambda (port)
-            (format port "#!~a~% exec ~a \"$@\"~%"
-                    #+(file-append bash "/bin/sh")
+            (format port "#!~a~%"
+                    #+(file-append bash "/bin/sh"))
+            (when (not #$volatile?)
+              (format port "~a~%"
+                      #$(program-file "copy-image"
+                                      #~(unless (file-exists? #$rw-image)
+                                          (copy-file #$base-image #$rw-image)
+                                          (chmod #$rw-image #o640)))))
+            (format port "exec ~a \"$@\"~%"
                     (string-join #$qemu-exec " "))
             (chmod port #o555))))
 
@@ -788,6 +814,8 @@ it is mostly useful when FULL-BOOT?  is true."
   (operating-system virtual-machine-operating-system) ;<operating-system>
   (qemu             virtual-machine-qemu              ;<package>
                     (default qemu-minimal))
+  (volatile?        virtual-machine-volatile?    ;Boolean
+                    (default #t))
   (graphic?         virtual-machine-graphic?      ;Boolean
                     (default #f))
   (memory-size      virtual-machine-memory-size   ;integer (MiB)
@@ -821,17 +849,19 @@ FORWARDINGS is a list of host-port/guest-port pairs."
 (define-gexp-compiler (virtual-machine-compiler (vm <virtual-machine>)
                                                 system target)
   (match vm
-    (($ <virtual-machine> os qemu graphic? memory-size disk-image-size ())
+    (($ <virtual-machine> os qemu volatile? graphic? memory-size
+                          disk-image-size ())
      (system-qemu-image/shared-store-script os
                                             #:system system
                                             #:target target
                                             #:qemu qemu
                                             #:graphic? graphic?
+                                            #:volatile? volatile?
                                             #:memory-size memory-size
                                             #:disk-image-size
                                             disk-image-size))
-    (($ <virtual-machine> os qemu graphic? memory-size disk-image-size
-                          forwardings)
+    (($ <virtual-machine> os qemu volatile? graphic? memory-size
+                          disk-image-size forwardings)
      (let ((options
             `("-nic" ,(string-append
                        "user,model=virtio-net-pci,"
@@ -841,6 +871,7 @@ FORWARDINGS is a list of host-port/guest-port pairs."
                                               #:target target
                                               #:qemu qemu
                                               #:graphic? graphic?
+                                              #:volatile? volatile?
                                               #:memory-size memory-size
                                               #:disk-image-size
                                               disk-image-size
