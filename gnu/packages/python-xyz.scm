@@ -14637,7 +14637,9 @@ syntax highlighting, markdown and more to the terminal.")
                       ;; The test suite mandates this variable.
                       (setenv "LC_ALL" "en_US.UTF-8")
                       (if tests?
-                          (invoke "python" "./test/test.py")
+                          (with-directory-excursion "test"
+                            (invoke "python" "./test.py")
+                            (invoke "python" "./libmagic_test.py"))
                           (format #t "test suite not run~%")))))))
     (native-inputs
      (list which))
