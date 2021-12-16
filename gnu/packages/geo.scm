@@ -1167,7 +1167,7 @@ to create databases that are optimized for rendering/tile/map-services.")
 (define-public libosmium
   (package
     (name "libosmium")
-    (version "2.17.1")
+    (version "2.17.2")
     (source
      (origin
        (method git-fetch)
@@ -1176,7 +1176,7 @@ to create databases that are optimized for rendering/tile/map-services.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0xw71lrw4q4sdm51rl0zg87ywxfkxbw9h52zqim0z0xl5qh5q8xf"))))
+        (base32 "0xgwicnzlyr8pcpgx528xrzh7g6rjfd7f80bi30478fnp8mq8rzr"))))
     (build-system cmake-build-system)
     (propagated-inputs
      (list boost
@@ -1184,6 +1184,7 @@ to create databases that are optimized for rendering/tile/map-services.")
            expat
            gdal
            geos
+           lz4
            proj
            protozero
            sparsehash
