@@ -164,7 +164,7 @@ generate such a compilation database.")
         (base32 "1cvm10gh7gb0rjcfgbssrw13ha24qmagifgkr53kk39r9693ylq5"))))
     (build-system gnu-build-system)
     (inputs
-     `(("bash" ,bash-minimal)))
+     (list bash-minimal))
     (native-inputs
      (list coreutils))
     (arguments
