@@ -233,7 +233,6 @@ result documents that can be read by tools such as Jenkins or Bamboo.")
              (when tests?
                (substitute* "tox.ini"
                  (("AWS_ACCESS_KEY_ID") "PYTHONPATH"))
-               (setenv "PYTHONPATH" (string-append ".:" (getenv "PYTHONPATH")))
                ;; These tests require network access.
                (delete-file "tests/unit/test_stubs.py")
                (invoke "pytest" "tests/unit")))))))
