@@ -1618,30 +1618,29 @@ bootstrapping purposes.")
                    (("/bin/sh") (which "sh"))))
                #t))
            (replace 'check
-             (lambda _
+             (lambda* (#:key tests? #:allow-other-keys)
                ;; The "make check-*" targets always return zero, so we need to
                ;; check for errors in the associated log files to determine
                ;; whether any tests have failed.
-               (use-modules (ice-9 rdelim))
-               (let* ((error-pattern (make-regexp "^(Error|FAILED):.*"))
-                      (checker (lambda (port)
-                                 (let loop ()
-                                   (let ((line (read-line port)))
-                                     (cond
-                                      ((eof-object? line) #t)
-                                      ((regexp-exec error-pattern line)
-                                       (error "test failed"))
-                                      (else (loop)))))))
-                      (run-test (lambda (test)
-                                  (invoke "make" test)
-                                  (call-with-input-file
-                                      (string-append "test/" test ".log")
-                                    checker))))
-                 (when #f                 ; skip tests
+               (when tests?
+                 (use-modules (ice-9 rdelim))
+                 (let* ((error-pattern (make-regexp "^(Error|FAILED):.*"))
+                        (checker (lambda (port)
+                                   (let loop ()
+                                     (let ((line (read-line port)))
+                                       (cond
+                                        ((eof-object? line) #t)
+                                        ((regexp-exec error-pattern line)
+                                         (error "test failed"))
+                                        (else (loop)))))))
+                        (run-test (lambda (test)
+                                    (invoke "make" test)
+                                    (call-with-input-file
+                                        (string-append "test/" test ".log")
+                                      checker))))
                    (run-test "check-hotspot")
                    (run-test "check-langtools")
-                   (run-test "check-jdk"))
-                 #t)))
+                   (run-test "check-jdk")))))
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
                (let ((doc (string-append (assoc-ref outputs "doc")
