@@ -17,9 +17,6 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu build chromium-extension)
-  #:use-module (gcrypt base16)
-  #:use-module ((gcrypt hash) #:prefix hash:)
-  #:use-module (ice-9 iconv)
   #:use-module (guix gexp)
   #:use-module (guix packages)
   #:use-module (gnu packages base)
@@ -39,28 +36,30 @@
 
 (define (make-signing-key seed)
   "Return a derivation for a deterministic PKCS #8 private key using SEED."
+  (computed-file
+   (string-append seed "-signing-key.pem")
+   (with-extensions (list guile-gcrypt)
+     #~(begin
+         (use-modules (gcrypt base16) (gcrypt hash) (ice-9 iconv))
+         (let* ((sha256sum (bytevector->base16-string
+                            (sha256 (string->bytevector #$seed "UTF-8"))))
+                ;; certtool.c wants a 56 byte seed for a 2048 bit key.
+                (key-size 2048)
+                (normalized-seed (string-take sha256sum 56)))
 
-  (define sha256sum
-    (bytevector->base16-string (hash:sha256 (string->bytevector seed "UTF-8"))))
-
-  ;; certtool.c wants a 56 byte seed for a 2048 bit key.
-  (define size 2048)
-  (define normalized-seed (string-take sha256sum 56))
-
-  (computed-file (string-append seed "-signing-key.pem")
-                 #~(system* #$(file-append gnutls "/bin/certtool")
-                            "--generate-privkey"
-                            "--key-type=rsa"
-                            "--pkcs8"
-                            ;; Use the provable FIPS-PUB186-4 algorithm for
-                            ;; deterministic results.
-                            "--provable"
-                            "--password="
-                            "--no-text"
-                            (string-append "--bits=" #$(number->string size))
-                            (string-append "--seed=" #$normalized-seed)
-                            "--outfile" #$output)
-                 #:local-build? #t))
+           (system* #$(file-append gnutls "/bin/certtool")
+                    "--generate-privkey"
+                    "--key-type=rsa"
+                    "--pkcs8"
+                    ;; Use the provable FIPS-PUB186-4 algorithm for
+                    ;; deterministic results.
+                    "--provable"
+                    "--password="
+                    "--no-text"
+                    (string-append "--bits=" (number->string key-size))
+                    (string-append "--seed=" normalized-seed)
+                    "--outfile" #$output))))
+   #:local-build? #t))
 
 (define* (make-crx signing-key package #:optional (package-output "out"))
   "Create a signed \".crx\" file from the unpacked Chromium extension residing
