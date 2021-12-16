@@ -514,9 +514,9 @@ doing practical, real world data analysis in Python.")
              python2-pytest
              python2-pytest-mock)))))
 
-(define-public python-pyflow
+(define-public python2-pyflow
   (package
-    (name "python-pyflow")
+    (name "python2-pyflow")
     (version "1.1.20")
     (source (origin
               (method url-fetch)
@@ -528,7 +528,10 @@ doing practical, real world data analysis in Python.")
                 "1bvfvviw58cndyn862qnv9nj3d9cd3a0dm4vc4sd9vwq8a6z1riv"))))
     (build-system python-build-system)
     (arguments
-     `(#:tests? #f)) ; There is no test suite.
+     `(#:tests? #f ; There is no test suite.
+       ;; There is no official Python 3-compatible version and upstream is
+       ;; dead. See https://github.com/Illumina/pyflow/issues/20.
+       #:python ,python-2))
     (home-page "https://illumina.github.io/pyflow/")
     (synopsis "Tool to manage tasks in a task dependency graph")
     (description "This package is a Python module to manage tasks in the
