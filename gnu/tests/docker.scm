@@ -18,9 +18,11 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu tests docker)
+  #:use-module (gnu image)
   #:use-module (gnu tests)
   #:use-module (gnu system)
   #:use-module (gnu system file-systems)
+  #:use-module (gnu system image)
   #:use-module (gnu system vm)
   #:use-module (gnu services)
   #:use-module (gnu services dbus)
@@ -35,7 +37,7 @@
   #:use-module (guix monads)
   #:use-module (guix packages)
   #:use-module (guix profiles)
-  #:use-module (guix scripts pack)
+  #:use-module ((guix scripts pack) #:prefix pack:)
   #:use-module (guix store)
   #:use-module (guix tests)
   #:use-module (guix build-system trivial)
@@ -56,15 +58,18 @@
 inside %DOCKER-OS."
   (define os
     (marionette-operating-system
-     %docker-os
+     (operating-system-with-gc-roots
+      %docker-os
+      (list docker-tarball))
      #:imported-modules '((gnu services herd)
                           (guix combinators))))
 
   (define vm
     (virtual-machine
      (operating-system os)
-     (memory-size 700)
-     (disk-image-size (* 1500 (expt 2 20)))
+     (volatile? #f)
+     (memory-size 1024)
+     (disk-image-size (* 3000 (expt 2 20)))
      (port-forwardings '())))
 
   (define test
@@ -173,11 +178,12 @@ standard output device and then enters a new line.")
                                            guest-script-package))
                                     #:hooks '()
                                     #:locales? #f))
-       (tarball (docker-image "docker-pack" profile
-                              #:symlinks '(("/bin/Guile" -> "bin/guile")
-                                           ("aa.scm" -> "a.scm"))
-                              #:entry-point "bin/guile"
-                              #:localstatedir? #t)))
+       (tarball (pack:docker-image
+                 "docker-pack" profile
+                 #:symlinks '(("/bin/Guile" -> "bin/guile")
+                              ("aa.scm" -> "a.scm"))
+                 #:entry-point "bin/guile"
+                 #:localstatedir? #t)))
     (run-docker-test tarball)))
 
 (define %test-docker
@@ -192,19 +198,18 @@ standard output device and then enters a new line.")
 inside %DOCKER-OS."
   (define os
     (marionette-operating-system
-     %docker-os
+     (operating-system-with-gc-roots
+      %docker-os
+      (list tarball))
      #:imported-modules '((gnu services herd)
                           (guix combinators))))
 
   (define vm
     (virtual-machine
      (operating-system os)
-     ;; FIXME: Because we're using the volatile-root setup where the root file
-     ;; system is a tmpfs overlaid over a small root file system, 'docker
-     ;; load' must be able to store the whole image into memory, hence the
-     ;; huge memory requirements.  We should avoid the volatile-root setup
-     ;; instead.
-     (memory-size 4500)
+     (volatile? #f)
+     (disk-image-size (* 5000 (expt 2 20)))
+     (memory-size 2048)
      (port-forwardings '())))
 
   (define test
@@ -293,10 +298,12 @@ inside %DOCKER-OS."
    (description "Run a system image as produced by @command{guix system
 docker-image} inside Docker.")
    (value (with-monad %store-monad
-            (>>= (system-docker-image (operating-system
-                                        (inherit (simple-operating-system))
-                                        ;; Use locales for a single libc to
-                                        ;; reduce space requirements.
-                                        (locale-libcs (list glibc)))
-                                      #:memory-size 1024)
+            (>>= (lower-object
+                  (system-image (os->image
+                                 (operating-system
+                                   (inherit (simple-operating-system))
+                                   ;; Use locales for a single libc to
+                                   ;; reduce space requirements.
+                                   (locale-libcs (list glibc)))
+                                 #:type docker-image-type)))
                  run-docker-system-test)))))
