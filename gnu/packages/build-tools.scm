@@ -154,14 +154,14 @@ generate such a compilation database.")
 (define-public bmake
   (package
     (name "bmake")
-    (version "20210206")
+    (version "20211207")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "http://www.crufty.net/ftp/pub/sjg/bmake-" version ".tar.gz"))
        (sha256
-        (base32 "07n9avzdg6gifrzyddnyzada5s5rzklvbqfpv5drljpxcgpqpvwg"))))
+        (base32 "1cvm10gh7gb0rjcfgbssrw13ha24qmagifgkr53kk39r9693ylq5"))))
     (build-system gnu-build-system)
     (inputs
      `(("bash" ,bash-minimal)))
@@ -180,8 +180,7 @@ generate such a compilation database.")
            (lambda _
              (substitute* "unit-tests/Makefile"
                (("cmd-interrupt") "")
-               (("varmod-localtime") ""))
-             #t)))
+               (("varmod-localtime") "")))))
        #:configure-flags
        (list
         (string-append
