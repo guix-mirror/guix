@@ -3768,6 +3768,7 @@ COREUTILS-FINAL vs. COREUTILS, etc."
        (append (package-search-paths gcc)
                (package-search-paths libc)))
 
+      (properties (package-properties gcc))  ;for 'compiler-cpu-architectures'
       (license (package-license gcc))
       (synopsis "Complete GCC tool chain for C/C++ development")
       (description

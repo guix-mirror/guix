@@ -525,6 +525,27 @@ Go.  It also includes runtime support libraries for these languages.")
 
        ,@(package-inputs gcc-4.7)))))
 
+(define %gcc-7.5-x86_64-micro-architectures
+  ;; Suitable '-march' values for GCC 7.5 (info "(gcc) x86 Options").
+  '("core2" "nehalem" "westmere" "sandybridge" "ivybridge"
+    "haswell" "broadwell" "skylake" "bonnell" "silvermont"
+    "knl" "skylake-avx512"
+
+    "k8" "k8-sse3" "barcelona"
+    "bdver1" "bdver2" "bdver3" "bdver4"
+    "znver1"
+    "btver1" "btver2" "geode"))
+
+(define %gcc-10-x86_64-micro-architectures
+  ;; Suitable '-march' values for GCC 10.
+  (append %gcc-7.5-x86_64-micro-architectures
+      '("goldmont" "goldmont-plus" "tremont"
+        "knm" "cannonlake" "icelake-client" "icelake-server"
+        "cascadelake" "cooperlake" "tigerlake"
+
+        "znver2" "znver3")))
+
+
 (define-public gcc-7
   (package
     (inherit gcc-6)
@@ -542,7 +563,10 @@ Go.  It also includes runtime support libraries for these languages.")
     (description
      "GCC is the GNU Compiler Collection.  It provides compiler front-ends
 for several languages, including C, C++, Objective-C, Fortran, Ada, and Go.
-It also includes runtime support libraries for these languages.")))
+It also includes runtime support libraries for these languages.")
+    (properties
+     `((compiler-cpu-architectures
+        ("x86_64" ,@%gcc-7.5-x86_64-micro-architectures))))))
 
 (define-public gcc-8
   (package
@@ -592,7 +616,10 @@ It also includes runtime support libraries for these languages.")))
             (patches (search-patches "gcc-9-strmov-store-file-names.patch"
                                      "gcc-5.0-libvtv-runpath.patch"))
             (modules '((guix build utils)))
-            (snippet gcc-canadian-cross-objdump-snippet)))))
+            (snippet gcc-canadian-cross-objdump-snippet)))
+   (properties
+    `((compiler-cpu-architectures
+       ("x86_64" ,@%gcc-10-x86_64-micro-architectures))))))
 
 (define-public gcc-11
   (package
