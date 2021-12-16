@@ -166,6 +166,7 @@ produced by #:references-graphs.  Pass WAL-MODE? to call-with-database."
                                     bootcfg-location
                                     bootloader-package
                                     bootloader-installer
+                                    (copy-closures? #t)
                                     (deduplicate? #t)
                                     references-graphs
                                     (register-closures? #t)
@@ -176,30 +177,50 @@ produced by #:references-graphs.  Pass WAL-MODE? to call-with-database."
   "Initialize the given ROOT directory. Use BOOTCFG and BOOTCFG-LOCATION to
 install the bootloader configuration.
 
-If REGISTER-CLOSURES? is true, register REFERENCES-GRAPHS in the store.  If
+If COPY-CLOSURES? is true, copy all of REFERENCES-GRAPHS to the partition.  If
+REGISTER-CLOSURES? is true, register REFERENCES-GRAPHS in the store.  If
 DEDUPLICATE? is true, then also deduplicate files common to CLOSURES and the
 rest of the store when registering the closures.  SYSTEM-DIRECTORY is the name
 of the directory of the 'system' derivation.  Pass WAL-MODE? to
 register-closure."
+  (define root-store
+    (string-append root (%store-directory)))
+
+  (define tmp-store ".tmp-store")
+
   (populate-root-file-system system-directory root)
-  (populate-store references-graphs root
-                  #:deduplicate? deduplicate?)
+
+  (when copy-closures?
+    (populate-store references-graphs root
+                    #:deduplicate? deduplicate?))
 
   ;; Populate /dev.
   (when make-device-nodes
     (make-device-nodes root))
 
   (when register-closures?
+    (unless copy-closures?
+      ;; XXX: 'register-closure' wants to palpate the things it registers, so
+      ;; create a symlink to the store.
+      (rename-file root-store tmp-store)
+      (symlink (%store-directory) root-store))
+
     (for-each (lambda (closure)
                 (register-closure root closure
                                   #:wal-mode? wal-mode?))
-              references-graphs))
+              references-graphs)
 
-  (when bootloader-installer
-    (display "installing bootloader...\n")
-    (bootloader-installer bootloader-package #f root))
-  (when bootcfg
-    (install-boot-config bootcfg bootcfg-location root)))
+    (unless copy-closures?
+      (delete-file root-store)
+      (rename-file tmp-store root-store)))
+
+  ;; There's no point installing a bootloader if we do not populate the store.
+  (when copy-closures?
+    (when bootloader-installer
+      (display "installing bootloader...\n")
+      (bootloader-installer bootloader-package #f root))
+    (when bootcfg
+      (install-boot-config bootcfg bootcfg-location root))))
 
 (define* (make-iso9660-image xorriso grub-mkrescue-environment
                              grub bootcfg system-directory root target
