@@ -7812,14 +7812,14 @@ JavaMail API.")
 (define-public java-log4j-api
   (package
     (name "java-log4j-api")
-    (version "2.15.0")
+    (version "2.16.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://apache/logging/log4j/" version
                                   "/apache-log4j-" version "-src.tar.gz"))
               (sha256
                (base32
-                "0h4ndw096h9cql0kyi1zd0ymp8hqxc1jdgdxkn0kxf8vd9b4dx14"))))
+                "1943lsqf3rywh11h6g5apyqm25am42cvrxpfc8sb9k8aqhlfvl0a"))))
     (build-system ant-build-system)
     (arguments
      `(#:tests? #f ; tests require unpackaged software
