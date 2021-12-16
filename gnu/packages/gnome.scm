@@ -12401,7 +12401,7 @@ integrated profiler via Sysprof, debugging support, and more.")
            python-pygobject
            python-requests
            python-unidecode
-           webkitgtk))
+           webkitgtk-with-libsoup2))
     (native-inputs
      `(("desktop-file-utils" ,desktop-file-utils)
        ("gettext" ,gettext-minimal)
