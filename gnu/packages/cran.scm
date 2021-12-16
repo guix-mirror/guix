@@ -2199,6 +2199,27 @@ extensive prebuilt widgets make it possible to build beautiful,
 responsive, and powerful applications with minimal effort.")
     (license license:artistic2.0)))
 
+(define-public r-shinyhelper
+  (package
+    (name "r-shinyhelper")
+    (version "0.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "shinyhelper" version))
+       (sha256
+        (base32 "1c4hvf19j3yyh8r12nx85ldkxs89g98q74csnqs5ml5l79a65vgp"))))
+    (properties `((upstream-name . "shinyhelper")))
+    (build-system r-build-system)
+    (propagated-inputs (list r-markdown r-shiny))
+    (home-page "https://cran.r-project.org/package=shinyhelper")
+    (synopsis "Easily add Markdown help files to shiny app elements")
+    (description
+     "This package creates a lightweight way to add markdown helpfiles to
+Shiny apps, using modal dialog boxes, with no need to observe each help button
+separately.")
+    (license license:gpl3)))
+
 ;; This package includes minified JavaScript files.  When upgrading please
 ;; check that there are no new minified JavaScript files.
 (define-public r-shinytree
