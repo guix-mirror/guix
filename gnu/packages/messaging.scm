@@ -1137,7 +1137,7 @@ simultaneously and therefore appear under the same nickname on IRC.")
     (inputs
      (list glib
            glib-networking
-           libsoup
+           libsoup-minimal-2
            python-gssapi
            python-idna
            python-precis-i18n
