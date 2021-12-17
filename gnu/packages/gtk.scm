@@ -188,10 +188,7 @@ tools have full access to view and control running applications.")
        ("pkg-config" ,pkg-config)
        ("python" ,python-wrapper)))
     (inputs
-     ;; TODO(core-updates): make this unconditional
-     `(,@(if (%current-target-system)
-             `(("bash-minimal" ,bash-minimal)) ; for glib-or-gtk-wrap
-             '())
+     `(("bash-minimal" ,bash-minimal)
        ("drm" ,libdrm)
        ("ghostscript" ,ghostscript)
        ("libspectre" ,libspectre)
