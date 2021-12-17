@@ -3920,6 +3920,26 @@ for British English and Australian text, and default (\"american\") patterns
 for Canadian and USA text.")
     (license license:lppl1.3+)))
 
+(define-public texlive-generic-babel-french
+  (package
+    (name "texlive-generic-babel-french")
+    (version (number->string %texlive-revision))
+    (source
+     (origin
+       (method svn-fetch)
+       (uri (texlive-ref "generic" "babel-french"))
+       (file-name (string-append name "-" version "-checkout"))
+       (sha256
+        (base32 "0ww8bkbccacdyp2y3p2m1y49zxx5pyh7dyyyyfmlzfm6w9rz0g1g"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "generic/babel-french"))
+    (home-page "https://www.ctan.org/pkg/babel-french")
+    (synopsis "Babel support for French")
+    (description
+     "This package provides support for the French language for the
+babel multilingual system.")
+    (license license:lppl1.3+)))
+
 (define-public texlive-generic-babel-german
   (package
     (name "texlive-generic-babel-german")
