@@ -27666,8 +27666,34 @@ library.")
 library.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-libsqlite3-sys-0.23
+  (package
+    (name "rust-libsqlite3-sys")
+    (version "0.23.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "libsqlite3-sys" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1wm91qnsz729vfl3n1rhaq2ip2v4zzxbsawb975vlh4v8h68bmdb"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bindgen" ,rust-bindgen-0.59)
+        ("rust-cc" ,rust-cc-1)
+        ("rust-openssl-sys" ,rust-openssl-sys-0.9)
+        ("rust-pkg-config" ,rust-pkg-config-0.3)
+        ("rust-vcpkg" ,rust-vcpkg-0.2))))
+    (home-page "https://github.com/rusqlite/rusqlite")
+    (synopsis "Native bindings to the libsqlite3 library")
+    (description "Native bindings to the libsqlite3 library")
+    (license license:expat)))
+
 (define-public rust-libsqlite3-sys-0.22
   (package
+    (inherit rust-libsqlite3-sys-0.23)
     (name "rust-libsqlite3-sys")
     (version "0.22.2")
     (source
@@ -27677,7 +27703,6 @@ library.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "17gqc2mwih81j3ds479gl5zmsxqzzrcrj3yyv62vh34bgy8n82r9"))))
-    (build-system cargo-build-system)
     (inputs
      (list sqlite))
     (arguments
@@ -27687,11 +27712,7 @@ library.")
        (("rust-bindgen" ,rust-bindgen-0.58)
         ("rust-cc" ,rust-cc-1)
         ("rust-pkg-config" ,rust-pkg-config-0.3)
-        ("rust-vcpkg" ,rust-vcpkg-0.2))))
-    (home-page "https://github.com/rusqlite/rusqlite")
-    (synopsis "Native bindings to the libsqlite3 library")
-    (description "Native bindings to the libsqlite3 library")
-    (license license:expat)))
+        ("rust-vcpkg" ,rust-vcpkg-0.2))))))
 
 (define-public rust-libsqlite3-sys-0.20
   (package
