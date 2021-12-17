@@ -780,6 +780,97 @@ machine.")))
     (native-inputs
      (list guile-3.0 ecj-bootstrap jamvm classpath-devel))))
 
+;; We jump ahead by patching the sources of ECJ 4.2.1 so that our bootstrap
+;; JDK can build it.  ECJ 4 allows us to skip the build of the first version
+;; of icedtea and build icedtea 2.x directly.
+(define-public ecj4-bootstrap
+  (package
+    (name "ecj-bootstrap")
+    (version "4.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.eclipse.org/eclipse/"
+                                  "downloads/drops4/R-" version
+                                  "-201209141800/ecjsrc-" version ".jar"))
+              (sha256
+               (base32
+                "1x281p87m14zylvinkiz6gc23ss7pzlx419qjbql11jriwav4qfj"))))
+    ;; It would be so much easier if we could use the ant-build-system, but we
+    ;; cannot as we don't have ant at this point.  We use ecj for
+    ;; bootstrapping the JDK.
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; there are no tests
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'unpack
+           (lambda* (#:key source #:allow-other-keys)
+             (mkdir "src")
+             (with-directory-excursion "src"
+               (invoke "gjar" "-xf" source))
+             (chdir "src")))
+         (replace 'configure
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "CLASSPATH"
+                     (string-join
+                      (cons (search-input-file inputs "/lib/rt.jar")
+                            (find-files (string-append
+                                         (assoc-ref inputs "ant-bootstrap")
+                                         "/lib")
+                                        "\\.jar$"))
+                      ":"))
+             ;; This directive is not supported by our simple bootstrap JDK.
+             (substitute* (find-files "." "\\.java$")
+               (("@Override") ""))))
+         (replace 'build
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; We can't compile these yet, but we don't need them at this
+             ;; point anyway.
+             (delete-file "org/eclipse/jdt/core/JDTCompilerAdapter.java")
+             (delete-file-recursively "org/eclipse/jdt/internal/antadapter")
+
+             ;; Create a simple manifest to make ecj executable.
+             (mkdir-p "META-INF")
+             (with-output-to-file "META-INF/MANIFESTS.MF"
+               (lambda _
+                 (display "Manifest-Version: 1.0
+Main-Class: org.eclipse.jdt.internal.compiler.batch.Main\n")))
+
+             ;; Compile it all!
+             (apply invoke "javac"
+                    (find-files "." "\\.java$"))
+
+             ;; Pack it all up!  We don't use "jar" here, because
+             ;; it doesn't produce reproducible zip archives.
+             ;; XXX: copied from (gnu build install)
+             (for-each (lambda (file)
+                         (let ((s (lstat file)))
+                           (unless (eq? (stat:type s) 'symlink)
+                             (utime file  0 0 0 0))))
+                       (find-files "." #:directories? #t))
+
+             ;; It is important that the manifest appears first.
+             (apply invoke "zip" "-0" "-X" "ecj-bootstrap.jar"
+                    "META-INF/MANIFESTS.MF"
+                    (delete "./META-INF/MANIFESTS.MF"
+                            (find-files "." ".*" #:directories? #t)))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((share (string-append (assoc-ref outputs "out")
+                                         "/share/java/")))
+               (mkdir-p share)
+               (install-file "ecj-bootstrap.jar" share)))))))
+    (native-inputs
+     (list ant-bootstrap classpath-devel ecj-javac-wrapper-final jamvm
+           unzip zip))
+    (home-page "https://eclipse.org")
+    (synopsis "Eclipse Java development tools core batch compiler")
+    (description "This package provides the Eclipse Java core batch compiler
+for bootstrapping purposes.  The @dfn{Eclipse compiler for Java} (ecj) is a
+requirement for all GNU Classpath releases after version 0.93.  This version
+supports sufficient parts of Java 7 to build Icedtea 2.x.")
+    (license license:epl1.0)))
+
 ;; The bootstrap JDK consisting of jamvm, classpath-devel,
 ;; ecj-javac-wrapper-final cannot build Icedtea 2.x directly, because it's
 ;; written in Java 7.  It can, however, build the unmaintained Icedtea 1.x,
