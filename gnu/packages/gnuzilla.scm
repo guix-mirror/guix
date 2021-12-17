@@ -369,10 +369,7 @@ in C/C++.")
      `(#:tests? #f ; FIXME: all tests pass, but then the check phase fails anyway.
        #:test-target "check-jstests"
        #:configure-flags
-       ;; TODO(core-updates): unconditionally use 'quasiquote
-       ,#~(#$(if (%current-target-system)
-                 #~quasiquote
-                 #~quote)
+       ,#~(quasiquote
            ("--enable-ctypes"
             "--enable-optimize"
             "--enable-pie"
