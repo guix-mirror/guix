@@ -56,6 +56,7 @@
 ;;; Copyright © 2021 Petr Hodina <phodina@protonmail.com>
 ;;; Copyright © 2021 Robin Templeton <robin@terpri.org>
 ;;; Copyright © 2021 Aleksandr Vityazev <avityazev@posteo.org>
+;;; Copyright © 2021 Pradana Aumars <paumars@courrier.dev>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -5458,3 +5459,44 @@ information) NALUs (Network Abstraction Layer Unit) for inclusion into an h.264
 elementary stream are provided.")
     (home-page "https://github.com/szatmary/libcaption")
     (license license:expat)))
+
+(define-public video-contact-sheet
+  (package
+   (name "video-contact-sheet")
+   (version "1.13.4")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "http://p.outlyer.net/vcs/files/vcs-" version
+				".tar.gz"))
+            (sha256
+             (base32
+              "0jsl93r0rnybjcipqbww5hwsr9ln6kz1qnf32qfxdvhfw52n27fw"))))
+   (build-system gnu-build-system)
+   (arguments
+     (list
+       #:make-flags
+       #~(list (string-append "prefix=" #$output))
+       #:phases
+       '(modify-phases %standard-phases
+          (delete 'configure)
+          (delete 'build)
+          (delete 'check)
+          (add-after 'install 'wrap-program
+            (lambda* (#:key inputs outputs #:allow-other-keys)
+              (let ((vcs (string-append (assoc-ref outputs "out") "/bin/vcs"))
+                    (ffmpeg (assoc-ref inputs "ffmpeg"))
+                    (imagemagick (assoc-ref inputs "imagemagick")))
+                (wrap-program vcs
+                  `("PATH" ":" prefix
+                    ,(map (lambda (dir)
+                            (string-append dir "/bin"))
+                          (list ffmpeg imagemagick))))))))))
+   (inputs
+     (list bash-minimal ffmpeg imagemagick))
+   (synopsis "Bash script to create contact sheets (preview images) from videos")
+   (description "This is a bash script meant to create video contact sheets
+(previews) of videos.  Any video supported by mplayer and ffmpeg can be used.  A
+note of warning: Unlike most similar tools it, by default, makes screenshots the
+same size as the video, see the manual for details on how to change this.")
+   (home-page "http://p.outlyer.net/vcs/")
+   (license license:lgpl2.1+)))
