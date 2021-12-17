@@ -1177,7 +1177,7 @@ that support this feature).")
 (define-public memkind
   (package
     (name "memkind")
-    (version "1.11.0")
+    (version "1.12.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1185,8 +1185,7 @@ that support this feature).")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
-               (base32
-                "0w5hws12l167mbr4n6a6fl0mhf8mci61fsn55lh2cxz33f7q8n2x"))))
+               (base32 "1s52vl2jlrdc8nxnvf993x9mcag56qxcaniiijhmsv42a26hvjk4"))))
     (build-system gnu-build-system)
     (inputs
      (list ;; memkind patched jemalloc to add je_arenalookupx,
@@ -1209,8 +1208,7 @@ that support this feature).")
                 (("/bin/sh") (which "sh")))
                (invoke "autoconf")
                (substitute* "configure"
-                (("/bin/sh") (which "sh"))))
-             #t)))))
+                (("/bin/sh") (which "sh")))))))))
     (home-page "https://github.com/memkind/memkind")
     (synopsis "Heap manager with memory kinds (for NUMA)")
     (description "This package provides a user-extensible heap manager
