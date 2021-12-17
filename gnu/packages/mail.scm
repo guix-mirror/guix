@@ -1653,8 +1653,7 @@ compresses it.")
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "src/procmime.c"
                (("/usr/share/mime/globs")
-                (search-input-directory inputs
-                                        "/share/mime/globs"))))))))
+                (search-input-file inputs "/share/mime/globs"))))))))
     (native-inputs
      (list bison
            ;;("docbook-utils" ,docbook-utils)
