@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2020 Ryan Prior <rprior@protonmail.com>
+;;; Copyright © 2020, 2021 Ryan Prior <rprior@protonmail.com>
 ;;; Copyright © 2020 Ekaitz Zarraga <ekaitz@elenq.tech>
 ;;; Copyright © 2021 Jorge Gomez <jgart@dismail.de>
 ;;;
@@ -86,14 +86,14 @@
 (define-public visidata
   (package
     (name "visidata")
-    (version "2.5")
+    (version "2.8")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "visidata" version))
        (sha256
         (base32
-         "19fbjr9j91pcazcz0bqx3qrasmr8xdsb13haf5lfbpyxj23f7f1j"))))
+         "1jfhrk0xvzzqfzs0khbig2dc94718qki8zys1f1a9553vjncvmi6"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -103,13 +103,13 @@
              (when tests? (invoke "pytest"))
              #t)))))
     (inputs
-     `(("dateutil" ,python-dateutil)
-       ("requests" ,python-requests)
-       ("lxml" ,python-lxml)
-       ("openpyxl" ,python-openpyxl)
-       ("xlrd" ,python-xlrd)))
+     (list python-dateutil
+           python-requests
+           python-lxml
+           python-openpyxl
+           python-xlrd))
     (native-inputs
-     `(("pytest" ,python-pytest)))
+     (list python-pytest))
     (synopsis "Terminal spreadsheet multitool for discovering and arranging data")
     (description
      "VisiData is an interactive multitool for tabular data.  It combines the
