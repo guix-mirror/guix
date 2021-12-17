@@ -12,7 +12,7 @@
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
-;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2021 Ivan Gankevich <i.gankevich@spbu.ru>
 ;;; Copyright © 2021 John Kehayias <john.kehayias@protonmail.com>
@@ -227,7 +227,7 @@ also known as DXTn or DXTC) for Mesa.")
 (define-public mesa
   (package
     (name "mesa")
-    (version "21.2.5")
+    (version "21.3.2")
     (source
       (origin
         (method url-fetch)
@@ -239,7 +239,7 @@ also known as DXTn or DXTC) for Mesa.")
                                   version "/mesa-" version ".tar.xz")))
         (sha256
          (base32
-          "1fxcdf4qs4vmyjcns7jv62w4jy3gr383ar5b7mr77nb0nxgmhjcf"))
+          "1g96y59bw10ml8h4jl259g41jdmf5ww3jbwqpz1sprq7hgxvmrz2"))
         (patches
          (search-patches "mesa-skip-tests.patch"))))
     (build-system meson-build-system)
@@ -352,6 +352,12 @@ also known as DXTn or DXTC) for Mesa.")
        (modify-phases %standard-phases
          (add-after 'unpack 'disable-failing-test
            (lambda _
+             ;; Disable the intel vulkan (anv_state_pool) tests, as they may
+             ;; fail in a nondeterministic fashion (see:
+             ;; https://gitlab.freedesktop.org/mesa/mesa/-/issues/5446).
+             (substitute* "src/intel/vulkan/meson.build"
+               (("if with_tests")
+                "if false"))
              ,@(match (%current-system)
                  ("powerpc64le-linux"
                   ;; Disable some of the llvmpipe tests.
