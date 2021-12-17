@@ -467,8 +467,7 @@ be used when cross-compiling."
            (lambda _
              (substitute* "tools/g-ir-tool-template.in"
                (("#!@PYTHON_CMD@")
-                (string-append "#!" (which "python3"))))
-             #t))
+                (string-append "#!" (which "python3"))))))
          #$@(if (%current-target-system)
                ;; Meson gives python extensions an incorrect name, see
                ;; <https://github.com/mesonbuild/meson/issues/7049>.
@@ -482,12 +481,8 @@ be used when cross-compiling."
     (native-inputs
      `(("glib" ,glib "bin")
        ("pkg-config" ,pkg-config)
-       ;; TODO(core-updates): Unconditionally place "flex" and "bison"
-       ;; in 'native-inputs'.
-       ,@(if (%current-target-system)
-             `(("bison" ,bison)
-               ("flex" ,flex))
-             '())))
+       ("bison" ,bison)
+       ("flex" ,flex)))
     (inputs
      `(,@(if (%current-target-system)
              `(("python" ,python))
