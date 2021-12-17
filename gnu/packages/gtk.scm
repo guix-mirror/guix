@@ -28,6 +28,7 @@
 ;;; Copyright © 2021 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2021 Simon Streit <simon@netpanic.org>
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
+;;; Copyright © 2021 Wamm K. D. <jaft.r@outlook.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -52,6 +53,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module ((guix build utils) #:select (alist-replace))
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system meson)
@@ -2453,6 +2455,40 @@ does not deal with windowing system surfaces, drawing, scene graphs, or input.")
 viewing and manipulating 2 dimensional tabular data in a manner similar to many
 popular spread sheet programs.")
     (license license:gpl3+)))
+
+(define-public pnmixer
+  (package
+    (name "pnmixer")
+    (version "0.7.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/nicklan/pnmixer/")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0416pa933ddf4b7ph9zxhk5jppkk7ppcq1aqph6xsrfnka4yb148"))))
+    (build-system cmake-build-system)
+    (arguments `(#:tests? #f))          ;no check target
+    (native-inputs
+     (list gettext-minimal pkg-config))
+    (inputs
+     (list alsa-lib glib gtk+ libnotify libx11))
+    (home-page "https://github.com/nicklan/pnmixer/")
+    (synopsis "Simple mixer application designed to run in system tray")
+    (description
+     "PNMixer is a simple mixer application designed to run in system tray.
+It integrates nicely into desktop environments that don't have a panel that
+supports applets and therefore can't run a mixer applet.  In particular, it's
+been used quite a lot with fbpanel and tint2 but should run fine in any system
+tray.
+
+PNMixer is designed to work on systems that use ALSA for sound management.
+Any other sound driver like OSS or FFADO are, currently, not supported.  There
+is no official PulseAudio support, at the moment, but it seems that PNMixer
+behaves quite well anyway when PA is running.")
+    (license license:gpl3)))
 
 (define-public volumeicon
   (package
