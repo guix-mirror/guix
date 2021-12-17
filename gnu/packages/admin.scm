@@ -3015,13 +3015,13 @@ platform-specific methods.")
   (package
     (name "audit")
     (home-page "https://people.redhat.com/sgrubb/audit/")
-    (version "3.0.4")
+    (version "3.0.6")
     (source (origin
               (method url-fetch)
               (uri (string-append home-page "audit-" version ".tar.gz"))
               (sha256
                (base32
-                "1xlcvc2g7qrbnin5pw0bacalva5ldjw97yi6nr17g0yjp4jyhnlc"))))
+                "0pnc9wzslks9p6kxw0llp1n8h8yg0frcxl3x84fl0hisa5vlvr63"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list "--with-python=no"
