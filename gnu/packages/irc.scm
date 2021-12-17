@@ -212,11 +212,11 @@ SILC and ICB protocols via plugins.")
            lua-5.1
            perl
            python
+           ruby
            tcl))
     (arguments
      `(#:configure-flags
        (list "-DENABLE_PHP=OFF"
-             "-DENABLE_RUBY=OFF"
              "-DENABLE_TESTS=ON")       ; ‘make test’ fails otherwise
        ;; Tests hang indefinitely on non-Intel platforms.
        #:tests? ,(if (any (cute string-prefix? <> (or (%current-target-system)
