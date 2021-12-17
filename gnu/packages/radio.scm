@@ -2123,19 +2123,19 @@ software-defined radio receivers.")
 (define-public wfview
   (package
     (name "wfview")
-    (version "1.0")
+    (version "1.2d")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://gitlab.com/eliggett/wfview")
-             (commit (string-append "v" version))))
+             (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "16a9afm0nkqx4pzwfxisspybimhqdyr3yjpr7ac7wgpp3520ikzi"))))
+        (base32 "1kpkwxhcacgmprbr8xz840rj9a22513vxrh2q7d3js5i1dva8j2z"))))
     (build-system qt-build-system)
     (inputs
-     (list qcustomplot qtbase-5 qtmultimedia qtserialport))
+     (list opus qcustomplot qtbase-5 qtmultimedia qtserialport))
     (arguments
      `(#:tests? #f  ; No test suite.
        #:phases
@@ -2149,23 +2149,12 @@ software-defined radio receivers.")
                (("/usr/share")
                 (string-append (assoc-ref outputs "out") "/share")))))
          (replace 'configure
-           (lambda _
+           (lambda* (#:key outputs #:allow-other-keys)
              (mkdir-p "build")
              (chdir "build")
-             (invoke "qmake" "../wfview.pro")))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out")))
-               (install-file "wfview"
-                             (string-append out "/bin"))
-               (install-file "wfview.png"
-                             (string-append out "/share/pixmaps"))
-               (install-file "wfview.desktop"
-                             (string-append out "/share/applications"))
-               (let ((dir (string-append
-                           out "/share/wfview/stylesheets/qdarkstyle")))
-                 (mkdir-p dir)
-                 (copy-recursively "qdarkstyle" dir))))))))
+             (invoke "qmake"
+                     (string-append "PREFIX=" (assoc-ref outputs "out"))
+                     "../wfview.pro"))))))
     (home-page "https://wfview.org/")
     (synopsis "Software to control Icom radios")
     (description
