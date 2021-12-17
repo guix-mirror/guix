@@ -1576,8 +1576,7 @@ new Date();"))
                                       "warning: failed to substitute: ~a~%"
                                       file))))
                         (find-files "openjdk.src/jdk/src/solaris/native"
-                                    "\\.c|\\.h"))
-                       #t)))
+                                    "\\.c|\\.h")))))
                  (replace 'fix-openjdk
                    (lambda _
                      (substitute*
@@ -1597,8 +1596,7 @@ new Date();"))
                        ;; Install the nss.cfg file to JRE to enable SSL/TLS
                        ;; support via NSS.
                        (copy-file (string-append jdk "/jre/lib/security/nss.cfg")
-                                  (string-append jre "/lib/security/nss.cfg"))
-                       #t)))
+                                  (string-append jre "/lib/security/nss.cfg")))))
                  (add-after 'install 'strip-jar-timestamps
                    (assoc-ref ant:%standard-phases 'strip-jar-timestamps)))))))
       (native-inputs
