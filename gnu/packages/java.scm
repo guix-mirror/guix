@@ -115,9 +115,9 @@
 ;; much more support for Java 1.6 than the latest release, but we need to
 ;; build 0.99 first to get a working version of javah.  ECJ, the development
 ;; version of GNU Classpath, and the latest version of JamVM make up the
-;; second stage JDK with which we can build the OpenJDK with the Icedtea 1.x
-;; build framework.  We then build the more recent JDKs Icedtea 2.x and
-;; Icedtea 3.x.
+;; second stage JDK with which we can build the OpenJDK with the Icedtea 2.x
+;; build framework.  We then build the more recent JDK Icedtea 3.x, and all
+;; other versions of OpenJDK.
 
 (define-public libantlr3c
   (package
@@ -1320,9 +1320,6 @@ bootstrapping purposes.")
          ;; gremlin) doesn't support it yet, so skip this phase.
          #:validate-runpath? #f
 
-         ;; Apparently, the C locale is needed for some of the tests.
-         #:locale "C"
-
          #:modules ((guix build utils)
                     (guix build gnu-build-system)
                     (ice-9 match)
@@ -1343,9 +1340,17 @@ bootstrapping purposes.")
            "--disable-downloading"
            "--disable-tests"        ;they are run in the check phase instead
            "--with-openjdk-src-dir=./openjdk.src"
+           ,(string-append "--with-ecj="
+                           (assoc-ref %build-inputs "ecj4-javac-wrapper")
+                           "/bin/javac")
            ,(string-append "--with-jdk-home="
-                           (assoc-ref %build-inputs "jdk")))
-
+                           (assoc-ref %build-inputs "classpath"))
+           ,(string-append "--with-java="
+                           (assoc-ref %build-inputs "jamvm")
+                           "/bin/jamvm")
+           ,(string-append "--with-jar="
+                           (assoc-ref %build-inputs "classpath")
+                           "/bin/gjar"))
          #:phases
          (modify-phases %standard-phases
            (replace 'unpack
@@ -1369,8 +1374,20 @@ bootstrapping purposes.")
                              (filter (cut string-suffix? "-drop" <>)
                                      (map (match-lambda
                                             ((name . _) name))
-                                          inputs))))
-                 #t)))
+                                          inputs)))))))
+           (add-after 'unpack 'use-classpath
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((tools  (search-input-file inputs "/share/classpath/tools.zip"))
+                     (rt.jar (search-input-file inputs "/lib/rt.jar")))
+                 ;; GNU Classpath does not provide rt.jar, but jamvm provides
+                 ;; Classpath's glibj.zip as rt.jar, so we just use that.
+                 (substitute* "Makefile.in"
+                   (("\\$\\(SYSTEM_JDK_DIR\\)/jre/lib/rt.jar") rt.jar))
+                 ;; Make sure we can find all classes.
+                 (setenv "CLASSPATH"
+                         (string-append rt.jar ":" tools))
+                 (setenv "JAVACFLAGS"
+                         (string-append "-cp " rt.jar ":" tools)))))
            (add-after 'unpack 'patch-bitrot
              (lambda _
                (substitute* '("patches/boot/revert-6973616.patch"
@@ -1779,10 +1796,14 @@ bootstrapping purposes.")
                        "icedtea-7-hotspot-aarch64-use-c++98.patch"))))
          ("ant" ,ant-bootstrap)
          ("attr" ,attr)
+         ("classpath" ,classpath-devel)
          ("coreutils" ,coreutils)
          ("diffutils" ,diffutils)       ;for tests
+         ("ecj4-javac-wrapper" ,ecj4-javac-wrapper)
+         ("fastjar" ,fastjar) ;only for the configure phase; we actually use gjar
          ("gawk" ,gawk)
          ("grep" ,grep)
+         ("jamvm" ,jamvm-with-ecj4)
          ("libtool" ,libtool)
          ("pkg-config" ,pkg-config)
          ("wget" ,wget)
@@ -1790,12 +1811,10 @@ bootstrapping purposes.")
          ("cpio" ,cpio)
          ("zip" ,zip)
          ("unzip" ,unzip)
-         ("fastjar" ,fastjar)
          ("libxslt" ,libxslt)           ;for xsltproc
          ("nss-certs" ,nss-certs)
          ("perl" ,perl)
-         ("procps" ,procps) ;for "free", even though I'm not sure we should use it
-         ("jdk" ,icedtea-6 "jdk")))
+         ("procps" ,procps)))  ;for "free", even though I'm not sure we should use it
       (inputs
        (list alsa-lib
              cups
@@ -1900,6 +1919,7 @@ IcedTea build harness.")
                  (delete 'set-additional-paths)
                  (delete 'patch-patches)
                  (delete 'patch-bitrot)
+                 (delete 'use-classpath)
                  ;; Prevent the keytool from recording the current time when
                  ;; adding certificates at build time.
                  (add-after 'unpack 'patch-keystore
@@ -2003,8 +2023,9 @@ new Date();"))
           ,(drop "shenandoah"
                  "0k33anxdzw1icn072wynfmmdjhsv50hay0j1sfkfxny12rb3vgdy"))
          ,@(fold alist-delete (package-native-inputs icedtea-7)
-                 '("jdk" "openjdk-src" "corba-drop" "jaxp-drop" "jaxws-drop"
-                   "jdk-drop" "langtools-drop" "hotspot-drop")))))))
+                 '("openjdk-src" "corba-drop" "jaxp-drop" "jaxws-drop"
+                   "jdk-drop" "langtools-drop" "hotspot-drop"
+                   "classpath" "ecj4-javac-wrapper" "jamvm" "fastjar")))))))
 
 (define-public openjdk9
   (package
