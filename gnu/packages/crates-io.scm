@@ -47632,15 +47632,14 @@ rules are rather complex.  This crate implements the whole grammar." )
 (define-public rust-serde-1
   (package
     (name "rust-serde")
-    (version "1.0.123")
+    (version "1.0.130")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "serde" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "1bk9733mgiv5sg8yb19y8mc85fb2aaqp1k02v10alavj688idmcj"))))
+        (base32 "04y9s1mxcxakg9bhfdiff9w4zzprk6m6dazcpmpi8nfg6zg0cbgi"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -48031,15 +48030,14 @@ TOML/JSON/MessagePack strings and serializable values.")
 (define-public rust-serde-derive-1
   (package
     (name "rust-serde-derive")
-    (version "1.0.123")
+    (version "1.0.130")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "serde-derive" version))
-        (file-name (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "0ccg4m7ww6mfs5vjdbdifri2kf1wyd4difjnqnraph2gssaw54ck"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "serde-derive" version))
+       (file-name (string-append name "-" version ".crate"))
+       (sha256
+        (base32 "12shxhi47db54i4j44ic2nl299x5p89ngna0w3m6854nn4d1mg6p"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
@@ -48050,9 +48048,9 @@ TOML/JSON/MessagePack strings and serializable values.")
        (("rust-serde" ,rust-serde-1))))
     (home-page "https://serde.rs")
     (synopsis
-      "Macros 1.1 implementation of #[derive(Serialize, Deserialize)]")
+     "Macros 1.1 implementation of #[derive(Serialize, Deserialize)]")
     (description
-      "Macros 1.1 implementation of #[derive(Serialize, Deserialize)]")
+     "Macros 1.1 implementation of #[derive(Serialize, Deserialize)]")
     (license (list license:expat license:asl2.0))))
 
 (define-public rust-serde-derive-0.9
