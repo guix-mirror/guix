@@ -20,6 +20,7 @@
 ;;; Copyright © 2020 Fredrik Salomonsson <plattfot@posteo.net>
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;; Copyright © 2021 Nikita Domnitskii <nikita@domnitskii.me>
+;;; Copyright © 2021 Aleksandr Vityazev <avityazev@posteo.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -968,7 +969,7 @@ with @code{rofi-pass} a good front end for @code{password-store}.")
 (define-public pinentry-bemenu
   (package
     (name "pinentry-bemenu")
-    (version "0.7.0")
+    (version "0.7.1")
     (source
      (origin
        (method git-fetch)
@@ -977,7 +978,7 @@ with @code{rofi-pass} a good front end for @code{password-store}.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1faxaydhc9lr97b2r3sylcy320bn54g4a5p727y3227mz3gg1mn1"))))
+        (base32 "09nw49pyfs65m35a40kpzh6h0mf5yyjzmzq3jxp660885m0b29g8"))))
     (build-system meson-build-system)
     (native-inputs
      (list pkg-config))
