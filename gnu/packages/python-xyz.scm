@@ -22571,14 +22571,14 @@ multi-language pre-commit hooks.")
 (define-public python-precis-i18n
   (package
     (name "python-precis-i18n")
-    (version "1.0.0")
+    (version "1.0.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "precis_i18n" version))
        (sha256
         (base32
-         "0gjhvwd8aifx94rl1ag08vlmndyx2q3fkyqb0c4i46x3p2bc2yi2"))))
+         "1qfb78zpx565vqkg0xhx75pna9sc35m370vpcz82982c8ix3ypyz"))))
     (build-system python-build-system)
     (home-page "https://github.com/byllyfish/precis_i18n")
     (synopsis "Implementation of the PRECIS framework")
