@@ -566,7 +566,7 @@ requirement for all GNU Classpath releases after version 0.93.")
                               (main args)))))))
            (chmod target #o755)))))
     (native-inputs
-     `(("guile" ,guile-2.2)
+     `(("guile" ,guile-3.0)
        ("ecj-bootstrap" ,ecj-bootstrap)
        ("jamvm" ,jamvm-1-bootstrap)
        ("classpath" ,classpath-bootstrap)))
