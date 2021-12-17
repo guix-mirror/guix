@@ -3024,7 +3024,7 @@ for historians.")
 (define-public diff-so-fancy
   (package
     (name "diff-so-fancy")
-    (version "1.4.2")
+    (version "1.4.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3033,7 +3033,7 @@ for historians.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0q0byg2bpibl3lbn4zibwcfxzlx2x5krajxmpwgizf32qjp5lh6n"))))
+                "11vkq5njjlvjipic7db44ga875n61drszw1qrdzwxmmfmnz425zz"))))
     (inputs
      (list perl ncurses))
     (build-system copy-build-system)
@@ -3045,8 +3045,7 @@ for historians.")
              (let ((lib (string-append (assoc-ref outputs "out") "/lib")))
                (substitute* "diff-so-fancy"
                  (("use lib.*$")
-                  (string-append "use lib '" lib "';\n")))
-               #t)))
+                  (string-append "use lib '" lib "';\n"))))))
          (add-after 'install 'symlink-executable
            (lambda* (#:key outputs inputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
@@ -3054,8 +3053,7 @@ for historians.")
                    (perl (assoc-ref inputs "perl")))
                (wrap-program (string-append out "/bin/diff-so-fancy")
                  `("PATH" ":" prefix (,(string-append ncurses "/bin")
-                                      ,(string-append perl "/bin"))))
-               #t))))
+                                      ,(string-append perl "/bin"))))))))
        #:install-plan
        '(("lib" "lib")
          ("diff-so-fancy" "bin/"))))
