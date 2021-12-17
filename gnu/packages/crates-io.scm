@@ -35247,7 +35247,7 @@ normally prevent moving a type that has been borrowed from.")
 (define-public rust-packed-simd-2-0.3
   (package
     (name "rust-packed-simd-2")
-    (version "0.3.4")
+    (version "0.3.6")
     (source
      (origin
        (method url-fetch)
@@ -35255,19 +35255,19 @@ normally prevent moving a type that has been borrowed from.")
        (file-name
         (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "05wsm2yxxpwww6a74hi8l80qszisfar5d7whf2pd87wn5x4y0y1j"))
+        (base32 "1i8hmhsyzqsas2rhxg088mcwvzljrqhvf8lfz8b1dj6g2rkw1h3i"))
        (modules '((guix build utils)))
        (snippet
         '(begin
            ;; Unpin the dependencies.
            (substitute* "Cargo.toml"
-             (("=0.2.52") "^0.2.52")
-             (("=0.3.2") "^0.3.2"))
+             (("=0.2.73") "^0.2.73")
+             (("=0.3.23") "^0.3.23"))
            #t))))
     (build-system cargo-build-system)
     (arguments
      `(#:tests? #f  ; error[E0432]: unresolved import `packed_simd`
+       #:skip-build? #t
        #:cargo-inputs
        (("rust-cfg-if" ,rust-cfg-if-0.1)
         ("rust-core-arch" ,rust-core-arch-0.1)
