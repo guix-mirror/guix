@@ -195,9 +195,11 @@ SILC and ICB protocols via plugins.")
                (base32
                 "1pyb1yaw61cbdg1g4cc22px1wsh8wm0gsx1yzp684idyz25apzna"))))
     (build-system cmake-build-system)
+    (outputs '("out" "doc"))
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)
+       ("ruby-asciidoctor" ,ruby-asciidoctor)
        ;; For tests.
        ("cpputest" ,cpputest)))
     (inputs
@@ -217,7 +219,19 @@ SILC and ICB protocols via plugins.")
     (arguments
      `(#:configure-flags
        (list "-DENABLE_PHP=OFF"
+             "-DENABLE_MAN=ON"
+             "-DENABLE_DOC=ON"
              "-DENABLE_TESTS=ON")       ; ‘make test’ fails otherwise
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'move-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                   (doc (assoc-ref outputs "doc"))
+                   (from (string-append out "/share/doc/weechat"))
+                   (to (string-append doc "/share/doc/weechat")))
+               (mkdir-p (string-append doc "/share/doc"))
+               (rename-file from to)))))
        ;; Tests hang indefinitely on non-Intel platforms.
        #:tests? ,(if (any (cute string-prefix? <> (or (%current-target-system)
                                                       (%current-system)))
