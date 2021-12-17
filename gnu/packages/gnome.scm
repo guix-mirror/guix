@@ -11570,7 +11570,7 @@ environment.")
              (let ((out (assoc-ref outputs "out")))
                (substitute* (string-append out "/share/applications/"
                                            "org.gnome.Polari.desktop")
-                 (("Exec=.*") "Exec=" out "/bin/polari")))))
+                 (("Exec=.*") (string-append "Exec=" out "/bin/polari"))))))
          (add-after 'glib-or-gtk-wrap 'wrap-typelib
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((prog (string-append (assoc-ref outputs "out")
