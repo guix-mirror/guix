@@ -11758,18 +11758,27 @@ legacy alias for @var{type} sets to @code{nar}.
 @itemx -S
 Compute the hash on @var{file} using @var{type} serialization.
 
-Supported types: @code{none}, @code{nar} and @code{git}.
+@var{type} may be one of the following:
 
-When using @code{nar}, the hash is computed on an archive containing
+@table @code
+@item none
+This is the default: it computes the hash of a file's contents.
+
+@item nar
+Compute the hash of a ``normalized archive'' (or ``nar'') containing
 @var{file}, including its children if it is a directory.  Some of the
 metadata of @var{file} is part of the archive; for instance, when
 @var{file} is a regular file, the hash is different depending on whether
 @var{file} is executable or not.  Metadata such as time stamps has no
-impact on the hash (@pxref{Invoking guix archive}).
+impact on the hash (@pxref{Invoking guix archive}, for more info on the
+nar format).
 @c FIXME: Replace xref above with xref to an ``Archive'' section when
 @c it exists.
 
-Using @code{git} serializes the file or directory as a Git tree.
+@item git
+Compute the has of the file or directory as a Git ``tree'', following
+the same method as the Git version control system.
+@end table
 
 @item --exclude-vcs
 @itemx -x
