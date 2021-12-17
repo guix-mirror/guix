@@ -64711,6 +64711,68 @@ configuration file and/or environment variables.")
         ("rust-serde-value" ,rust-serde-value-0.6)
         ("rust-tint" ,rust-tint-1))))))
 
+(define-public rust-windows-0.9
+  (package
+    (name "rust-windows")
+    (version "0.9.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "windows" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0zy9jmhkhmsng7l9qiznxpdh5ns303s875p5kf6a5q9ym0rka7rn"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-const-sha1" ,rust-const-sha1-0.2)
+        ("rust-windows-gen" ,rust-windows-gen-0.9)
+        ("rust-windows-macros" ,rust-windows-macros-0.9))))
+    (home-page "https://github.com/microsoft/windows-rs")
+    (synopsis "Rust for Windows")
+    (description "Rust for Windows")
+    (license (list license:expat license:asl2.0))))
+
+(define-public rust-windows-gen-0.9
+  (package
+    (name "rust-windows-gen")
+    (version "0.9.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "windows_gen" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0lh492px26rrna0harikyy4p7nk520pw2lv0dczp4n2xa6y4s5al"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t #:cargo-inputs (("rust-syn" ,rust-syn-1))))
+    (home-page "https://github.com/microsoft/windows-rs")
+    (synopsis "Code gen support for the windows crate")
+    (description "Code gen support for the windows crate")
+    (license (list license:expat license:asl2.0))))
+
+(define-public rust-windows-macros-0.9
+  (package
+    (name "rust-windows-macros")
+    (version "0.9.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "windows_macros" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0xivsg3lf023hs83xiab2k40fmrl11nbihcdrdkc8pc4ab398xqg"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-syn" ,rust-syn-1) ("rust-windows-gen" ,rust-windows-gen-0.9))))
+    (home-page "https://github.com/microsoft/windows-rs")
+    (synopsis "Macros for the windows crate")
+    (description "Macros for the windows crate")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-xmltree-0.10
   (package
     (name "rust-xmltree")
