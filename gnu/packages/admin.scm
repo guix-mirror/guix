@@ -3030,11 +3030,11 @@ platform-specific methods.")
      (list openldap gnutls cyrus-sasl))
     (synopsis "User-space component to the Linux auditing system")
     (description
-     "auditd is the user-space component to the Linux auditing system, which
-allows logging of system calls made by user-land processes.  It's responsible
-for writing audit records to the disk.  Viewing the logs is done with the
-@code{ausearch} or @code{aureport} utilities.  Configuring the audit rules is
-done with the @code{auditctl} utility.")
+     "This is the user-space component to the Linux auditing system, which
+allows logging of system calls made by user-land processes.  @command{auditd} is
+responsible for writing audit records to the disk.  Viewing the logs is done
+with the @code{ausearch} or @code{aureport} utilities.  Configuring the audit
+rules is done with the @code{auditctl} utility.")
     (license license:gpl2+)))
 
 (define-public nmap
