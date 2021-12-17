@@ -85,6 +85,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages kerberos)
+  #:use-module (gnu packages security-token)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages texinfo)
@@ -1330,9 +1331,10 @@ bootstrapping purposes.")
                     (srfi srfi-26))
 
          #:configure-flags
-         ;; TODO: package pcsc and sctp, and add to inputs
-         `("--disable-system-pcsc"
-           "--disable-system-sctp"
+         ;; TODO: package sctp and add to inputs
+         `("--disable-system-sctp"
+           "--enable-system-pcsc"
+           "--enable-system-lcms"
            "--enable-bootstrap"
            "--enable-nss"
            "--without-rhino"
@@ -1794,25 +1796,26 @@ bootstrapping purposes.")
          ("procps" ,procps) ;for "free", even though I'm not sure we should use it
          ("jdk" ,icedtea-6 "jdk")))
       (inputs
-       `(("alsa-lib" ,alsa-lib)
-         ("cups" ,cups)
-         ("libx11" ,libx11)
-         ("libxcomposite" ,libxcomposite)
-         ("libxt" ,libxt)
-         ("libxtst" ,libxtst)
-         ("libxi" ,libxi)
-         ("libxinerama" ,libxinerama)
-         ("libxrender" ,libxrender)
-         ("libjpeg" ,libjpeg-turbo)
-         ("libpng" ,libpng)
-         ("mit-krb5" ,mit-krb5)
-         ("nss" ,nss)
-         ("giflib" ,giflib)
-         ("fontconfig" ,fontconfig)
-         ("freetype" ,freetype)
-         ("lcms" ,lcms)
-         ("zlib" ,zlib)
-         ("gtk" ,gtk+-2)))
+       (list alsa-lib
+             cups
+             fontconfig
+             freetype
+             giflib
+             gtk+-2
+             lcms
+             libjpeg-turbo
+             libpng
+             libx11
+             libxcomposite
+             libxi
+             libxinerama
+             libxrender
+             libxt
+             libxtst
+             mit-krb5
+             nss
+             pcsc-lite
+             zlib))
       (home-page "http://icedtea.classpath.org")
       (synopsis "Java development kit")
       (description
