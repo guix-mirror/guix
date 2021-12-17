@@ -247,7 +247,7 @@ cards.")
        #:install-source? #f
        #:cargo-inputs
        (("rust-backtrace" ,rust-backtrace-0.3)
-        ("rust-bitflags" ,rust-bitflags-1.3)
+        ("rust-bitflags" ,rust-bitflags-1)
         ("rust-chrono" ,rust-chrono-0.4)
         ("rust-clap" ,rust-clap-2)
         ("rust-curl-sys" ,rust-curl-sys-0.4)
