@@ -253,7 +253,7 @@ that client code uses to construct the grammar directly in Python code.")
 (define-public python-packaging-bootstrap
   (package
     (name "python-packaging-bootstrap")
-    (version "20.0")
+    (version "21.3")
     (source
      (origin
        (method url-fetch)
@@ -263,7 +263,7 @@ that client code uses to construct the grammar directly in Python code.")
        (patches (search-patches "python-packaging-test-arch.patch"))
        (sha256
         (base32
-         "1y2ip3a4ykkpgnwgn85j6hkspcl0cg3mzms97f40mk57vwqq67gy"))))
+         "1sygirdrqgv4f1ckh9nhpcw1yfidrh3qjl86wq8vk6nq4wlw8iyx"))))
     (build-system python-build-system)
     (arguments `(#:tests? #f))         ;disabled to avoid extra dependencies
     (propagated-inputs
@@ -280,7 +280,19 @@ information.")
     (license (list license:asl2.0 license:bsd-2))))
 
 (define-public python2-packaging-bootstrap
-  (package-with-python2 python-packaging-bootstrap))
+  (let ((base (package-with-python2 python-packaging-bootstrap)))
+    (package/inherit base
+      (version "20.0")                  ;last version with Python 2 support
+      (source
+       (origin
+         (method url-fetch)
+         (uri (pypi-uri "packaging" version))
+         ;; XXX: The URL in the patch file is wrong, it should be
+         ;; <https://github.com/pypa/packaging/pull/256>.
+         (patches (search-patches "python-packaging-test-arch.patch"))
+         (sha256
+          (base32
+           "1y2ip3a4ykkpgnwgn85j6hkspcl0cg3mzms97f40mk57vwqq67gy")))))))
 
 ;;; The name 'python-pypa-build' is chosen rather than 'python-build' to avoid
 ;;; a name clash with python-build from (guix build-system python).
