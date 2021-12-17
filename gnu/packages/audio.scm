@@ -35,6 +35,7 @@
 ;;; Copyright © 2020, 2021 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2021 jgart <jgart@dismail.de>
+;;; Copyright © 2021 Aleksandr Vityazev <avityazev@posteo.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2910,7 +2911,7 @@ background file post-processing.")
 (define-public supercollider
   (package
     (name "supercollider")
-    (version "3.11.2")
+    (version "3.12.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2921,7 +2922,7 @@ background file post-processing.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1gi7nrmjmbnjndqkmhfrkk0jchrzvnhl3f6gp6n5wgdd4mxbgxgw"))
+                "0id522338a464j1slcspajwc7klypbc9qpigw5mqjhrw970wij5z"))
               (modules '((guix build utils)
                          (ice-9 ftw)))
               (snippet
@@ -2949,12 +2950,13 @@ link REQUIRED)"))
      '("out"   ;core language
        "ide")) ;qt ide
     (arguments
-     `(#:configure-flags '("-DSYSTEM_BOOST=on" "-DSYSTEM_YAMLCPP=on"
-                           "-DSC_QT=ON" "-DCMAKE_BUILD_TYPE=Release"
+     `(#:configure-flags '("-DSYSTEM_BOOST=ON"
+                           "-DSYSTEM_YAMLCPP=ON"
+                           "-DSC_QT=ON"
+                           "-DCMAKE_BUILD_TYPE=Release"
                            "-DFORTIFY=ON"
-                           ;"-DLIBSCSYNTH=ON"   ; TODO: Re-enable?
-                           "-DSC_EL=off") ;scel is packaged individually as
-                                          ;emacs-scel
+                           ;; "-DLIBSCSYNTH=ON"   ; TODO: Re-enable?
+                           "-DSC_EL=OFF") ;scel is packaged individually as emacs-scel
        #:phases
        (modify-phases %standard-phases
          ;; HOME must be defined otherwise supercollider throws a "ERROR:
@@ -2992,24 +2994,23 @@ link REQUIRED)"))
                #t))))))
     (native-inputs
      (list ableton-link pkg-config qttools xorg-server-for-tests))
-    (inputs
-     `(("jack" ,jack-1)
-       ("libsndfile" ,libsndfile)
-       ("fftw" ,fftw)
-       ("libxt" ,libxt)
-       ("readline" ,readline)           ;readline support for sclang's CLI
-       ("alsa" ,alsa-lib)               ;for sclang's MIDI interface
-       ("eudev" ,eudev)                 ;for user interactions with devices
-       ("avahi" ,avahi)                 ;zeroconf service discovery support
-       ("icu4c" ,icu4c)
-       ("boost" ,boost)
-       ("boost-sync" ,boost-sync)
-       ("yaml-cpp" ,yaml-cpp)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)
-       ("qtsvg" ,qtsvg)
-       ("qtwebchannel" ,qtwebchannel)
-       ("qtwebsockets" ,qtwebsockets)))
+    (inputs (list jack-1
+                  libsndfile
+                  fftw
+                  libxt
+                  readline              ;readline support for sclang's CLI
+                  alsa-lib              ;for sclang's MIDI interface
+                  eudev                 ;for user interactions with devices
+                  avahi                 ;zeroconf service discovery support
+                  icu4c
+                  boost
+                  boost-sync
+                  yaml-cpp
+                  qtbase-5
+                  qtdeclarative
+                  qtsvg
+                  qtwebchannel
+                  qtwebsockets))
     (propagated-inputs                  ;to get native-search-path
      (list qtwebengine))
     (home-page "https://github.com/supercollider/supercollider")
