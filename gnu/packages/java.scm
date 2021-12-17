@@ -544,10 +544,7 @@ requirement for all GNU Classpath releases after version 0.93.")
                         (define (main args)
                           (let ((classpath (getenv "CLASSPATH")))
                             (setenv "CLASSPATH"
-                                    (string-join (list ,ecj
-                                                       ,(string-append (assoc-ref %build-inputs "jamvm")
-                                                                       "/lib/rt.jar")
-                                                       (or classpath ""))
+                                    (string-join (list ,ecj (or classpath ""))
                                                  ":")))
                           (receive (vm-args other-args)
                               ;; Separate VM arguments from arguments to ECJ.
