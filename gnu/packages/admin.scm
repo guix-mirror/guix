@@ -3027,9 +3027,7 @@ platform-specific methods.")
      `(#:configure-flags (list "--with-python=no"
                                "--disable-static")))
     (inputs
-     `(("openldap" ,openldap)
-       ("gnutls" ,gnutls)
-       ("sasl" ,cyrus-sasl)))
+     (list openldap gnutls cyrus-sasl))
     (synopsis "User-space component to the Linux auditing system")
     (description
      "auditd is the user-space component to the Linux auditing system, which
