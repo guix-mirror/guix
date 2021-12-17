@@ -62052,7 +62052,7 @@ wasm-bindgen.")
 (define-public rust-wasm-bindgen-futures-0.4
   (package
     (name "rust-wasm-bindgen-futures")
-    (version "0.4.19")
+    (version "0.4.28")
     (source
      (origin
        (method url-fetch)
@@ -62060,18 +62060,19 @@ wasm-bindgen.")
        (file-name
         (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "0d8fg2k4a4xyv28japgld7qzy2zyrnvh582pjkp88id8hmh7bs8z"))))
+        (base32 "0fax7x0iysa64iqmzq0lri8llw8v0f8acz1iq6b4qahzrcipb3cf"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs
-       (("rust-cfg-if" ,rust-cfg-if-1)
-        ("rust-js-sys" ,rust-js-sys-0.3)
-        ("rust-wasm-bindgen" ,rust-wasm-bindgen-0.2)
-        ("rust-web-sys" ,rust-web-sys-0.3))
-       #:cargo-development-inputs
-       (("rust-futures-channel-preview" ,rust-futures-channel-preview-0.3)
-        ("rust-wasm-bindgen-test" ,rust-wasm-bindgen-test-0.3))))
+      `(#:cargo-inputs
+        (("rust-cfg-if" ,rust-cfg-if-1)
+         ("rust-futures-core" ,rust-futures-core-0.3)
+         ("rust-js-sys" ,rust-js-sys-0.3)
+         ("rust-wasm-bindgen" ,rust-wasm-bindgen-0.2)
+         ("rust-web-sys" ,rust-web-sys-0.3))
+        #:cargo-development-inputs
+        (("rust-futures-channel-preview" ,rust-futures-channel-preview-0.3)
+         ("rust-futures-lite" ,rust-futures-lite-1)
+         ("rust-wasm-bindgen-test" ,rust-wasm-bindgen-test-0.3))))
     (home-page "https://rustwasm.github.io/wasm-bindgen/")
     (synopsis
      "Bridging the gap between Rust Futures and JavaScript Promises")
