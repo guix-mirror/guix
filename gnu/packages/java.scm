@@ -1482,16 +1482,14 @@ IcedTea build harness.")
                   "09yqzn8rpccs7cyv89hhy5zlznpgqw5x3jz0w1ccp0cz1vgs8l5w"))
                 (modules '((guix build utils)))
                 (snippet
-                 '(begin
-                    (substitute* '("configure"
-                                   "acinclude.m4")
-                      ;; Do not embed build time
-                      (("(DIST_ID=\"Custom build).*$" _ prefix)
-                       (string-append prefix "\"\n"))
-                      ;; Do not leak information about the build host
-                      (("DIST_NAME=\"\\$build_os\"")
-                       "DIST_NAME=\"guix\""))
-                    #t))))
+                 '(substitute* '("configure"
+                                 "acinclude.m4")
+                    ;; Do not embed build time
+                    (("(DIST_ID=\"Custom build).*$" _ prefix)
+                     (string-append prefix "\"\n"))
+                    ;; Do not leak information about the build host
+                    (("DIST_NAME=\"\\$build_os\"")
+                     "DIST_NAME=\"guix\"")))))
       (arguments
        `(#:imported-modules
          ((guix build ant-build-system)
