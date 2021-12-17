@@ -877,6 +877,13 @@ supports sufficient parts of Java 7 to build Icedtea 2.x.")
     (native-inputs
      (list guile-3.0 ecj4-bootstrap jamvm classpath-devel))))
 
+(define jamvm-with-ecj4
+  (package
+    (inherit jamvm)
+    (inputs
+     (modify-inputs (package-inputs jamvm)
+       (replace "ecj-javac-wrapper" ecj4-javac-wrapper)))))
+
 ;; The bootstrap JDK consisting of jamvm, classpath-devel,
 ;; ecj-javac-wrapper-final cannot build Icedtea 2.x directly, because it's
 ;; written in Java 7.  It can, however, build the unmaintained Icedtea 1.x,
