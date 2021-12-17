@@ -465,6 +465,8 @@ datetime type.")
 (define-public datefudge
   (package
     (name "datefudge")
+    ;; XXX When updating this package, make sure to do something about the
+    ;; archive.org backup URI.
     (version "1.23")
     (source (origin
               ;; Source code is available from
@@ -472,9 +474,17 @@ datetime type.")
               ;; for bootstrapping reasons, we do not rely on 'git-fetch' here
               ;; (since Git -> GnuTLS -> datefudge).
               (method url-fetch)
-              (uri (string-append
-                    "mirror://debian/pool/main/d/datefudge/datefudge_"
-                    version ".tar.xz"))
+              (uri (list
+                     ;; For some reason this tarball was removed from Debian's
+                     ;; servers. Remove this archive.org URL when updating
+                     ;; datefudge, or add the new tarball to archive.org and
+                     ;; update the URL.
+                     (string-append
+                       "https://archive.org/download/datefudge_" version
+                       ".tar_202112/" "datefudge_" version ".tar.xz")
+                     (string-append
+                      "mirror://debian/pool/main/d/datefudge/datefudge_"
+                      version ".tar.xz")))
               (sha256
                (base32
                 "0ifnlb0mc8qc2kb5042pbz0ns6rwcb7201di8wyrsphl0yhnhxiv"))
