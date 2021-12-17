@@ -3921,10 +3921,7 @@ devices that can inject events directly into the input subsystem.")
     (native-inputs
      (list pkg-config))
     (inputs
-     `(("boost" ,boost)
-       ("libevdev" ,libevdev)
-       ("libudev" ,eudev)
-       ("yaml-cpp" ,yaml-cpp)))
+     (list boost libevdev eudev yaml-cpp))
     (arguments
      `(#:tests? #f))                    ; no test suite
     (synopsis "Utilities for operating on input events of evdev devices")
