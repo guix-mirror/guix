@@ -112,6 +112,7 @@
 ;;; Copyright © 2021 Sébastien Lerique <sl@eauchat.org>
 ;;; Copyright © 2021 Raphaël Mélotte <raphael.melotte@mind.be>
 ;;; Copyright © 2021 ZmnSCPxj <ZmnSCPxj@protonmail.com>
+;;; Copyright © 2021 Filip Lajszczak <filip@lajszczak.dev>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -12507,6 +12508,54 @@ programmatically with command-line parsers like @code{getopt} and
 
 (define-public python2-docopt
   (package-with-python2 python-docopt))
+
+(define-public python-pythonanywhere
+  (package
+    (name "python-pythonanywhere")
+    (version "0.9.10")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/pythonanywhere/helper_scripts")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+          (base32
+           "0vzzc1g8pl7cb9yvm3n1j5zlzxf0jd423rzspc2kvpb8yhvydklx"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'change-home
+           (lambda _
+             (setenv "HOME" "/tmp")))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               ;; Exclude tests marked as slowtest that assume running
+               ;; inside Git repository on system with virtualenvwrapper
+               ;; installed.
+               (invoke "pytest" "-m" "not slowtest")))))))
+    (native-inputs
+      (list python-pytest
+            python-psutil
+            python-responses
+            python-pytest-mock))
+    (propagated-inputs
+      (list python-dateutil
+            python-docopt
+            python-packaging
+            python-requests
+            python-schema
+            python-tabulate
+            python-typer))
+    (home-page "https://github.com/pythonanywhere/helper_scripts/")
+    (synopsis "PythonAnywhere helper tools for users")
+    (description "PythonAnywhere provides a command-line interface and an
+application programming interface that allows managing Web apps and scheduled
+tasks.  It includes single-command deployment for the Django Girls tutorial.")
+    (license license:expat)))
 
 (define-public python-pythondialog
   (package
