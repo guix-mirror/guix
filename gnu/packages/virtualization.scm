@@ -1018,7 +1018,7 @@ Debian or a derivative using @command{debootstrap}.")
      `(("libsoup" ,libsoup-minimal-2)
        ("libxml2" ,libxml2)
        ("libxslt" ,libxslt)
-       ("osinfo-db" ,osinfo-db-next)))
+       ("osinfo-db" ,osinfo-db)))
     (native-inputs
      `(("glib" ,glib "bin")  ; glib-mkenums, etc.
        ("gobject-introspection" ,gobject-introspection)
@@ -2215,14 +2215,14 @@ administrators and developers in managing the database.")
 (define-public osinfo-db
   (package
     (name "osinfo-db")
-    (version "20210903")
+    (version "20211216")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://releases.pagure.org/libosinfo/osinfo-db-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0d08ffvwdzwr16gv7pz2r7brds5gciirz8ixs97s5ly03grd7rrh"))))
+                "10hhpciqk4lzsj66zkdvghd1i5zh6hg1fn9as4qhwcr1wnqfgv09"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -2245,19 +2245,6 @@ administrators and developers in managing the database.")
 libosinfo library.  It provides information about guest operating systems for
 use with virtualization provisioning tools")
     (license license:lgpl2.0+)))
-
-;; XXX: Support for guix-1.3 has been added upstream but no release were
-;; created. Remove it when a new osinfo-db release is out.
-(define-public osinfo-db-next
-  (package
-    (inherit osinfo-db)
-    (version "20211127")
-    (source (origin
-              (method url-fetch)
-              (uri "https://othacehe.org/files/osinfo-db-20211127.tar.xz")
-              (sha256
-               (base32
-                "0kvgdsvpm51a6vqs4k6zmdbc5vvj8mnsgm4pa7h79d9gg244gb3s"))))))
 
 (define-public python-transient
   (package
