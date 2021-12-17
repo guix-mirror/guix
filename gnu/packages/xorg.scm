@@ -3210,7 +3210,9 @@ UniChrome Pro and Chrome9 integrated graphics processors.")
                 "xf86-video-qxl-" version ".tar.bz2"))
               (sha256
                (base32
-                "14jc24znnahhmz4kqalafmllsg8awlz0y6gpgdpk5ih38ph851mi"))))
+                "14jc24znnahhmz4kqalafmllsg8awlz0y6gpgdpk5ih38ph851mi"))
+              (patches (search-patches
+                        "xf86-video-qxl-fix-build.patch"))))
     (build-system gnu-build-system)
     (inputs
       (list libxfont2 spice-protocol xorg-server xorgproto))
