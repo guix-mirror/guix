@@ -31,6 +31,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system python)
+  #:use-module (guix deprecation)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
@@ -457,7 +458,7 @@ your code.")
            (lambda _
              (invoke "python" "runtests.py"))))))
     (native-inputs
-     (list python-django python-djangorestframework
+     (list python-django python-django-rest-framework
            python-django-crispy-forms python-mock))
     (home-page "https://django-filter.readthedocs.io/en/latest/")
     (synopsis "Reusable Django application to filter querysets dynamically")
@@ -1011,9 +1012,9 @@ Django projects, which allows association of a number of tags with any
 @code{Model} instance and makes retrieval of tags simple.")
     (license license:bsd-3)))
 
-(define-public python-djangorestframework
+(define-public python-django-rest-framework
   (package
-    (name "python-djangorestframework")
+    (name "python-django-rest-framework")
     (version "3.13.1")
     (source
      (origin
@@ -1046,6 +1047,9 @@ Django projects, which allows association of a number of tags with any
      "The Django REST framework is for building Web APIs with Django.  It
 provides features like a Web-browsable API and authentication policies.")
     (license license:bsd-2)))
+
+(define-public python-djangorestframework
+  (deprecated-package "python-djangorestframework" python-django-rest-framework))
 
 (define-public python-django-sekizai
   (package

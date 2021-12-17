@@ -460,7 +460,7 @@ if __name__ == \"__main__\":
            python-psycopg2
            python-mysqlclient
            python-django-filter
-           python-djangorestframework
+           python-django-rest-framework
            python-django-debug-toolbar))
     (synopsis "Web based patch tracking system")
     (description
