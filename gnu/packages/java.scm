@@ -1683,6 +1683,7 @@ bootstrapping purposes.")
            ;; certificates from the nss-certs package.
            (add-after 'install 'install-keystore
              (lambda* (#:key inputs outputs #:allow-other-keys)
+               (use-modules (ice-9 rdelim))
                (let* ((keystore  "cacerts")
                       (certs-dir (search-input-directory inputs
                                                          "etc/ssl/certs"))
