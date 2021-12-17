@@ -25644,6 +25644,24 @@ bottlenecks encountered in highly concurrent code by avoiding shared writes
 and locking in the core framework.")
     (license license:expat)))
 
+(define-public rust-is-debug-1
+  (package
+    (name "rust-is-debug")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "is_debug" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "12bwspph88wgmzcyl8dg3s28gph41r9shfq8yzaj564xj7lril86"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/baoyachi/rust_is_debug")
+    (synopsis "get build model is debug")
+    (description "get build model is debug")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-is-executable-1
   (package
     (name "rust-is-executable")
