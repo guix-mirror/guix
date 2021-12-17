@@ -1901,7 +1901,6 @@ IcedTea build harness.")
               `(let ((jdk (assoc-ref %build-inputs "jdk")))
                  `("CFLAGS=-fcommon"
                    "CXXFLAGS=-fcommon"
-                   ;;"--disable-bootstrap"
                    "--enable-bootstrap"
                    "--enable-nss"
                    ,(string-append "--with-parallel-jobs="
