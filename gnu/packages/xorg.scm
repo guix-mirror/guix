@@ -49,6 +49,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages xorg)
+  #:use-module (guix gexp)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -152,31 +153,29 @@
        (base32 "00m7l90ws72k1qm101sd2rx92ckd50cszyng5d4dd77jncbf9lmq"))))
     (build-system gnu-build-system)
     (native-inputs
-      (list pkg-config))
+     (list pkg-config))
     (inputs
-      `(("xorg-cf-files" ,xorg-cf-files)
-        ("xorgproto" ,xorgproto)))
+     (list xorg-cf-files xorgproto))
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'install-data
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((cf-files (assoc-ref inputs "xorg-cf-files"))
-                   (out (assoc-ref outputs "out"))
-                   (unpack (assoc-ref %standard-phases 'unpack))
-                   (patch-source-shebangs
-                    (assoc-ref %standard-phases 'patch-source-shebangs)))
-               (mkdir "xorg-cf-files")
-               (with-directory-excursion "xorg-cf-files"
-                 (apply unpack (list #:source cf-files))
-                 (apply patch-source-shebangs (list #:source cf-files))
-                 (substitute* '("mingw.cf" "Imake.tmpl" "nto.cf" "os2.cf"
-                                "linux.cf" "Amoeba.cf" "cygwin.cf")
-                   (("/bin/sh") (which "bash")))
-                 (invoke "./configure"
-                         (string-append "SHELL=" (which "bash"))
-                         (string-append "--prefix=" out))
-                 (invoke "make" "install"))))))))
+     (list #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'install 'install-data
+                 (lambda* (#:key inputs outputs #:allow-other-keys)
+                   (let ((out (assoc-ref outputs "out"))
+                         (unpack (assoc-ref %standard-phases 'unpack))
+                         (patch-source-shebangs
+                          (assoc-ref %standard-phases 'patch-source-shebangs)))
+                     (mkdir "xorg-cf-files")
+                     (with-directory-excursion "xorg-cf-files"
+                       (unpack #:source #$xorg-cf-files)
+                       (patch-source-shebangs #:source #$xorg-cf-files)
+                       (substitute* '("mingw.cf" "Imake.tmpl" "nto.cf" "os2.cf"
+                                      "linux.cf" "Amoeba.cf" "cygwin.cf")
+                         (("/bin/sh") (which "bash")))
+                       (invoke "./configure"
+                               (string-append "SHELL=" (which "bash"))
+                               (string-append "--prefix=" out))
+                       (invoke "make" "install"))))))))
     (home-page "https://www.x.org/")
     (synopsis "Source code configuration and build system")
     (description
