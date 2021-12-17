@@ -5532,18 +5532,18 @@ Wayland.")
 (define-public libx11
   (package
     (name "libx11")
-    (version "1.7.2")
+    (version "1.7.3.1")
     (source
-      (origin
-        (method url-fetch)
-        (uri (string-append "mirror://xorg/individual/lib/libX11-"
-                            version ".tar.bz2"))
-        (sha256
-          (base32
-            "0v7aj8q3rlchdyfwdna7n7vgpyzyir391dlv5rwy9fxagbikbyhw"))))
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://xorg.freedesktop.org/archive/"
+                           "/individual/lib/libX11-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1289nvs52q9fnp7zl30bdpbvqggnjjb39vy0zll511zvcrr43z9g"))))
     (build-system gnu-build-system)
     (outputs '("out"
-               "doc"))                            ;8 MiB of man pages + XML
+               "doc"))                  ;8 MiB of man pages + XML
     (arguments
      `(#:configure-flags
        (list (string-append "--mandir="
@@ -5552,9 +5552,9 @@ Wayland.")
              "--disable-static"
              ,@(malloc0-flags))))
     (propagated-inputs
-      (list xorgproto libxcb))
+     (list xorgproto libxcb))
     (inputs
-      (list xtrans))
+     (list xtrans))
     (native-inputs
      (list pkg-config xorgproto))
     (home-page "https://www.x.org/wiki/")
