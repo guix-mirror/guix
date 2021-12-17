@@ -1068,7 +1068,7 @@ users.")
   (package
     (inherit hamlib)
     (name "wsjtx-hamlib")
-    (version "2.3.1")
+    (version "2.5.2")
     (source
      (origin
        (method git-fetch)
@@ -1077,7 +1077,7 @@ users.")
              (commit (string-append "wsjtx-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0m4yzjcqs7a1w4lghyyckpkiy96jxdjijddxarqr3a37cl2rz23j"))))
+        (base32 "1bgf7bz2280739a7ip7lvpns0i7x6svryxfmsp32cff2dr146lz3"))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -1150,7 +1150,7 @@ instances over the network, and general QSO and DXpedition logging.")
 (define-public wsjtx
   (package
     (name "wsjtx")
-    (version "2.3.1")
+    (version "2.5.2")
     (source
      (origin
        (method git-fetch)
@@ -1159,7 +1159,7 @@ instances over the network, and general QSO and DXpedition logging.")
              (commit (string-append "wsjtx-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0mdr4l7zii08615yn7z91spnvnqm5i9390bra9lz3aqyxrsiim91"))))
+        (base32 "01346f2x3jc0gbzdi7ihzr9rxibnbzn31ix0879qfavrv8l31k1s"))))
     (build-system qt-build-system)
     (native-inputs
      (list asciidoc gfortran pkg-config qttools ruby-asciidoctor))
@@ -1173,20 +1173,7 @@ instances over the network, and general QSO and DXpedition logging.")
        ("qtmultimedia" ,qtmultimedia)
        ("qtserialport" ,qtserialport)))
     (arguments
-     `(#:tests? #f ; No test suite
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'work-around-runtime-bug
-           (lambda _
-             ;; Some of the programs in this package fail to find symbols
-             ;; in libm at runtime. Adding libm manually at the end of the
-             ;; library lists when linking the programs seems to help.
-             ;; TODO: find exactly what is wrong in the way the programs
-             ;; are built.
-             (substitute* "CMakeLists.txt"
-               (("target_link_libraries \\((.*)\\)" all libs)
-                (string-append "target_link_libraries (" libs " m)")))
-             #t)))))
+     `(#:tests? #f)) ; No test suite
     (synopsis "Weak-signal ham radio communication program")
     (description
      "WSJT-X implements communication protocols or modes called FT4, FT8,
