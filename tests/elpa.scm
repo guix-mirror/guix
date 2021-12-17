@@ -2,6 +2,7 @@
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
+;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,6 +21,7 @@
 
 (define-module (test-elpa)
   #:use-module (guix import elpa)
+  #:use-module (guix tests)
   #:use-module (guix tests http)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-64)
@@ -70,6 +72,16 @@
 
 (test-assert "elpa->guix-package test 1"
   (eval-test-with-elpa "auctex"))
+
+(test-equal "guix-package->elpa-name: without 'upstream-name' property"
+  "auctex"
+  (guix-package->elpa-name (dummy-package "emacs-auctex")))
+
+(test-equal "guix-package->elpa-name: with 'upstream-name' property"
+  "project"
+  (guix-package->elpa-name
+   (dummy-package "emacs-fake-name"
+     (properties '((upstream-name . "project"))))))
 
 (test-end "elpa")
 

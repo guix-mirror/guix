@@ -46,6 +46,7 @@
   #:use-module (guix packages)
   #:use-module ((guix utils) #:select (call-with-temporary-output-file))
   #:export (elpa->guix-package
+            guix-package->elpa-name
             %elpa-updater
             elpa-recursive-import))
 
@@ -412,13 +413,17 @@ type '<elpa-package>'."
 ;;; Updates.
 ;;;
 
+(define (guix-package->elpa-name package)
+  "Given a Guix package, PACKAGE, return the upstream name on ELPA."
+  (or (and=> (package-properties package)
+             (cut assq-ref <> 'upstream-name))
+      (if (string-prefix? "emacs-" (package-name package))
+          (string-drop (package-name package) 6)
+          (package-name package))))
+
 (define (latest-release package)
   "Return an <upstream-release> for the latest release of PACKAGE."
-  (define name
-    (if (string-prefix? "emacs-" (package-name package))
-        (string-drop (package-name package) 6)
-        (package-name package)))
-
+  (define name (guix-package->elpa-name package))
   (define repo 'gnu)
 
   (match (elpa-package-info name repo)
