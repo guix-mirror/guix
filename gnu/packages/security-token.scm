@@ -278,7 +278,7 @@ website for more information about Yubico and the YubiKey.")
 (define-public opensc
   (package
     (name "opensc")
-    (version "0.21.0")
+    (version "0.22.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -286,7 +286,7 @@ website for more information about Yubico and the YubiKey.")
                     version "/opensc-" version ".tar.gz"))
               (sha256
                (base32
-                "0pijycjwpll9zn83dazgsh8n9ywq0z1ragjsd1sqv3abrcfvpyrb"))))
+                "11ki9j2b07w5gi2b1r39d71320s7rhfzcpaqpqra7gjy353m6kld"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -302,8 +302,7 @@ website for more information about Yubico and the YubiKey.")
                (substitute* "configure"
                  (("DEFAULT_PCSC_PROVIDER=\"libpcsclite\\.so\\.1\"")
                   (string-append
-                   "DEFAULT_PCSC_PROVIDER=\"" libpcsclite "\"")))
-               #t))))))
+                   "DEFAULT_PCSC_PROVIDER=\"" libpcsclite "\"")))))))))
     (inputs
      (list readline openssl pcsc-lite ccid))
     (native-inputs
