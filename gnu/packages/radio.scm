@@ -1321,7 +1321,7 @@ gain and standing wave ratio.")
 (define-public dump1090
   (package
     (name "dump1090")
-    (version "5.0")
+    (version "6.1")
     (source
      (origin
        (method git-fetch)
@@ -1330,7 +1330,7 @@ gain and standing wave ratio.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1fckfcgypmplzl1lidd04jxiabczlfx9mv21d6rbsfknghsjpn03"))))
+        (base32 "13ssp2c3s18rszpmm3rpvicqvgvfiirsjf294m6r1sf3ji7ygd9q"))))
     (build-system gnu-build-system)
     (native-inputs
      (list pkg-config))
@@ -1348,8 +1348,7 @@ gain and standing wave ratio.")
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((bin (string-append (assoc-ref outputs "out") "/bin/")))
                (install-file "dump1090" bin)
-               (install-file "view1090" bin)
-               #t))))))
+               (install-file "view1090" bin)))))))
     (synopsis "Mode S decoder for rtl-sdr devices")
     (description
      "Dump1090 is a Mode S decoder specifically designed for rtl-sdr devices.
