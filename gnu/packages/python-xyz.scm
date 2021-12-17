@@ -15253,7 +15253,24 @@ development version of CPython that are not available in older releases.")
     ;; Many tests connect to the network or are otherwise flawed.
     ;; https://github.com/PythonCharmers/python-future/issues/210
     (arguments
-     `(#:tests? #f))
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'sanity-check
+           (let ((sanity-check (assoc-ref %standard-phases 'sanity-check)))
+             (lambda* (#:key inputs outputs #:allow-other-keys #:rest args)
+               (let* ((files (find-files (site-packages inputs outputs)
+                                         "top_level\\.txt"))
+                      (backups (map (lambda (f) (string-append f ".bak"))
+                                    files)))
+                 (for-each copy-file files backups)
+                 (substitute* files
+                   ;; Nobody be usin' winreg on Guix
+                   ;; Also, don't force users to have tkinter when they don't
+                   ;; need it
+                   (("(winreg|tkinter)") ""))
+                 (apply sanity-check args)
+                 (for-each rename-file backups files))))))))
     (home-page "https://python-future.org")
     (synopsis "Single-source support for Python 3 and 2")
     (description
