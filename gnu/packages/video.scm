@@ -5493,10 +5493,11 @@ elementary stream are provided.")
                           (list ffmpeg imagemagick))))))))))
    (inputs
      (list bash-minimal ffmpeg imagemagick))
-   (synopsis "Bash script to create contact sheets (preview images) from videos")
-   (description "This is a bash script meant to create video contact sheets
-(previews) of videos.  Any video supported by mplayer and ffmpeg can be used.  A
-note of warning: Unlike most similar tools it, by default, makes screenshots the
-same size as the video, see the manual for details on how to change this.")
+   (synopsis "Create contact sheets (preview images) from videos")
+   (description "@acronym{VCS, Video Contact Sheet} is a Bash script meant to
+create video contact sheets (previews) of videos.  Any video supported by
+MPlayer and FFmpeg can be used.  A note of warning: Unlike most similar tools
+VCS, by default, makes screenshots the same size as the video, see the manual
+for details on how to change this.")
    (home-page "http://p.outlyer.net/vcs/")
    (license license:lgpl2.1+)))
