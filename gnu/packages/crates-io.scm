@@ -55868,8 +55868,28 @@ in Rust.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-time-macros-0.2
+  (package
+    (name "rust-time-macros")
+    (version "0.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "time-macros" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1mj7pv8y9j2csrh1l8aabras36pgysbnfy18330srh4g8sihrsr5"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/time-rs/time")
+    (synopsis "Procedural macros for the time crate")
+    (description "This package provides procedural macros for the time
+crate.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-time-macros-0.1
   (package
+    (inherit rust-time-macros-0.2)
     (name "rust-time-macros")
     (version "0.1.0")
     (source
@@ -55880,16 +55900,10 @@ in Rust.")
        (sha256
         (base32
          "0bdbxjgbxb81xgy08h5dh4qvwy95sy9x8g1y31g11g4my3lvdscs"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-proc-macro-hack" ,rust-proc-macro-hack-0.5)
-        ("rust-time-macros-impl" ,rust-time-macros-impl-0.1))))
-    (home-page "https://github.com/time-rs/time")
-    (synopsis "Procedural macros for the time crate")
-    (description "This package provides procedural macros for the time
-crate.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-time-macros-impl" ,rust-time-macros-impl-0.1))))))
 
 (define-public rust-time-macros-impl-0.1
   (package
