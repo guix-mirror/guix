@@ -1413,18 +1413,18 @@ bootstrapping purposes.")
                                  "/include/X11/extensions"))
                  (("\\$\\(wildcard /usr/include/X11/extensions\\)\\)") ""))))
            (add-after 'unpack 'patch-paths
-             (lambda _
+             (lambda* (#:key inputs #:allow-other-keys)
                ;; buildtree.make generates shell scripts, so we need to replace
                ;; the generated shebang
                (substitute* '("openjdk.src/hotspot/make/linux/makefiles/buildtree.make")
                  (("/bin/sh") (which "bash")))
 
                (let ((corebin (string-append
-                               (assoc-ref %build-inputs "coreutils") "/bin/"))
+                               (assoc-ref inputs "coreutils") "/bin/"))
                      (binbin  (string-append
-                               (assoc-ref %build-inputs "binutils") "/bin/"))
+                               (assoc-ref inputs "binutils") "/bin/"))
                      (grepbin (string-append
-                               (assoc-ref %build-inputs "grep") "/bin/")))
+                               (assoc-ref inputs "grep") "/bin/")))
                  (substitute* '("openjdk.src/jdk/make/common/shared/Defs-linux.gmk"
                                 "openjdk.src/corba/make/common/shared/Defs-linux.gmk")
                    (("UNIXCOMMAND_PATH  = /bin/")
@@ -1435,7 +1435,7 @@ bootstrapping purposes.")
                     (string-append "DEVTOOLS_PATH = " corebin))
                    (("COMPILER_PATH *= */usr/bin/")
                     (string-append "COMPILER_PATH = "
-                                   (assoc-ref %build-inputs "gcc") "/bin/"))
+                                   (assoc-ref inputs "gcc") "/bin/"))
                    (("DEF_OBJCOPY *=.*objcopy")
                     (string-append "DEF_OBJCOPY = " (which "objcopy"))))
 
@@ -1443,7 +1443,7 @@ bootstrapping purposes.")
                  (substitute* "openjdk.src/jdk/make/common/shared/Sanity.gmk"
                    (("ALSA_INCLUDE=/usr/include/alsa/version.h")
                     (string-append "ALSA_INCLUDE="
-                                   (assoc-ref %build-inputs "alsa-lib")
+                                   (assoc-ref inputs "alsa-lib")
                                    "/include/alsa/version.h")))
 
                  ;; fix hard-coded utility paths
