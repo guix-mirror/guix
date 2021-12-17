@@ -213,6 +213,7 @@ DeuTex has functions such as merging wads, etc.")
        (uri (string-append "https://binaries.openttd.org/extra/"
                            name "/" version "/" name "-" version
                            "-source.tar.xz"))
+       (patches (search-patches "grfcodec-gcc-compat.patch"))
        (sha256
         (base32 "08admgnpqcsifpicbm56apgv360fxapqpbbsp10qyk8i22w1ivsk"))))
     (build-system gnu-build-system)
@@ -238,8 +239,7 @@ DeuTex has functions such as merging wads, etc.")
                              "readme" "readme.rpn"))
                  (for-each (lambda (file)
                              (install-file file man))
-                           (find-files "." "\\.1"))))
-             #t)))))
+                           (find-files "." "\\.1")))))))))
     (inputs
      (list boost libpng zlib))
     (synopsis "GRF development tools")
