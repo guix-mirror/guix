@@ -37,7 +37,7 @@
 (define-public agda
   (package
     (name "agda")
-    (version "2.6.2")
+    (version "2.6.2.1")
     (source
      (origin
        (method url-fetch)
@@ -45,8 +45,7 @@
              "https://hackage.haskell.org/package/Agda/Agda-"
              version ".tar.gz"))
        (sha256
-        (base32
-         "159hznnsxg7hlp80r1wqizyd7gwgnq0j13cm4d27cns0ganslb07"))))
+        (base32 "03dw7jfqr3ffik6avigm525djqh2gn5c3qwnb2h6298zkr9lch9w"))))
     (build-system haskell-build-system)
     (inputs
      (list ghc-aeson
@@ -81,15 +80,13 @@
          ;; This allows us to call the 'agda' binary before installing.
          (add-after 'unpack 'set-ld-library-path
            (lambda _
-             (setenv "LD_LIBRARY_PATH" (string-append (getcwd) "/dist/build"))
-             #t))
+             (setenv "LD_LIBRARY_PATH" (string-append (getcwd) "/dist/build"))))
          (add-after 'compile 'agda-compile
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (agda-compiler (string-append out "/bin/agda")))
                (for-each (cut invoke agda-compiler <>)
-                         (find-files (string-append out "/share") "\\.agda$"))
-               #t))))))
+                         (find-files (string-append out "/share") "\\.agda$"))))))))
     (home-page "https://wiki.portal.chalmers.se/agda/")
     (synopsis
      "Dependently typed functional programming language and proof assistant")
