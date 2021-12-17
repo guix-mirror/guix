@@ -11589,11 +11589,11 @@ environment.")
            telepathy-glib
            telepathy-logger))
     (native-inputs
-     `(("glib:bin" ,glib "bin")
-       ("gobject-introspection" ,gobject-introspection)
-       ("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)
-       ("yelp-tools" ,yelp-tools)))
+     (list `(,glib "bin")
+           gobject-introspection
+           intltool
+           pkg-config
+           yelp-tools))
     (propagated-inputs
      (list telepathy-idle telepathy-mission-control))
     (synopsis "Simple IRC Client")
