@@ -8716,25 +8716,19 @@ is a non-standard variant of UTF-8 that is used internally by some systems
 that need to represent UTF-16 data as 8-bit characters.")
     (license (list license:asl2.0 license:expat))))
 
-(define-public rust-cexpr-0.4
+(define-public rust-cexpr-0.6
   (package
     (name "rust-cexpr")
-    (version "0.4.0")
+    (version "0.6.0")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "cexpr" version))
-        (file-name
-         (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "09qd1k1mrhcqfhqmsz4y1bya9gcs29si7y3w96pqkgid4y2dpbpl"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "cexpr" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0rl77bwhs5p979ih4r0202cn5jrfsrbgrksp40lkfz5vk1x3ib3g"))))
     (build-system cargo-build-system)
-    (arguments
-     `(#:cargo-inputs
-       (("rust-nom" ,rust-nom-5))
-       #:cargo-development-inputs
-       (("rust-clang-sys" ,rust-clang-sys-0.28))))
+    (arguments `(#:skip-build? #t #:cargo-inputs (("rust-nom" ,rust-nom-7))))
     (inputs
      (list clang))
     (home-page "https://github.com/jethrogb/rust-cexpr")
@@ -8742,6 +8736,26 @@ that need to represent UTF-16 data as 8-bit characters.")
     (description
      "This package provides a C expression parser and evaluator.")
     (license (list license:asl2.0 license:expat))))
+
+(define-public rust-cexpr-0.4
+  (package
+    (inherit rust-cexpr-0.6)
+    (name "rust-cexpr")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "cexpr" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "09qd1k1mrhcqfhqmsz4y1bya9gcs29si7y3w96pqkgid4y2dpbpl"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-nom" ,rust-nom-5))
+       #:cargo-development-inputs
+       (("rust-clang-sys" ,rust-clang-sys-0.28))))))
 
 (define-public rust-cexpr-0.3
   (package
