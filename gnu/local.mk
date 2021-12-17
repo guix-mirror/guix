@@ -1082,6 +1082,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gcc-boot-2.95.3.patch			\
   %D%/packages/patches/gcc-boot-4.6.4.patch			\
   %D%/packages/patches/gcc-cross-environment-variables.patch	\
+  %D%/packages/patches/gcc-cross-gxx-include-dir.patch          \
   %D%/packages/patches/gcc-fix-texi2pod.patch			\
   %D%/packages/patches/gcc-4.8-libsanitizer-fix.patch		\
   %D%/packages/patches/gcc-4.9-libsanitizer-fix.patch		\
@@ -1114,6 +1115,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gcc-8-strmov-store-file-names.patch	\
   %D%/packages/patches/gcc-9-asan-fix-limits-include.patch	\
   %D%/packages/patches/gcc-9-strmov-store-file-names.patch	\
+  %D%/packages/patches/gcc-10-cross-environment-variables.patch \
   %D%/packages/patches/gd-fix-tests-on-i686.patch		\
   %D%/packages/patches/gd-brect-bounds.patch			\
   %D%/packages/patches/gd-Revert-fix-303-gdlib.pc.patch		\
@@ -1180,6 +1182,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gnome-online-miners-tracker-3.patch	\
   %D%/packages/patches/gnome-screenshot-meson-0.60.patch	\
   %D%/packages/patches/gnome-settings-daemon-gc.patch		\
+  %D%/packages/patches/gnome-session-support-elogind.patch      \
   %D%/packages/patches/gnome-tweaks-search-paths.patch		\
   %D%/packages/patches/gnupg-default-pinentry.patch		\
   %D%/packages/patches/gnupg-1-build-with-gcc10.patch		\
@@ -1263,6 +1266,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/icecat-use-system-graphite2+harfbuzz.patch	\
   %D%/packages/patches/icecat-use-system-media-libs.patch	\
   %D%/packages/patches/icedtea-6-extend-hotspot-aarch64-support.patch	\
+  %D%/packages/patches/icedtea-7-hotspot-aarch64-use-c++98.patch\
   %D%/packages/patches/id3lib-CVE-2007-4460.patch			\
   %D%/packages/patches/id3lib-UTF16-writing-bug.patch			\
   %D%/packages/patches/idris-disable-test.patch			\
@@ -1315,6 +1319,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libffi-float128-powerpc64le.patch	\
   %D%/packages/patches/librime-fix-build-with-gcc10.patch	\
   %D%/packages/patches/libvirt-add-install-prefix.patch	\
+  %D%/packages/patches/libvirt-create-machine-cgroup.patch      \
   %D%/packages/patches/libziparchive-add-includes.patch		\
   %D%/packages/patches/localed-xorg-keyboard.patch		\
   %D%/packages/patches/kdiagram-Fix-missing-link-libraries.patch \
@@ -1548,6 +1553,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/opencv-rgbd-aarch64-test-fix.patch	\
   %D%/packages/patches/openfoam-4.1-cleanup.patch			\
   %D%/packages/patches/openjdk-10-idlj-reproducibility.patch	\
+  %D%/packages/patches/openjdk-14-builtins.patch                \
   %D%/packages/patches/openmpi-mtl-priorities.patch		\
   %D%/packages/patches/openssh-hurd.patch			\
   %D%/packages/patches/openresolv-restartcmd-guix.patch	\
@@ -1659,6 +1665,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-aionotify-0.2.0-py3.8.patch	\
   %D%/packages/patches/python-argcomplete-1.11.1-fish31.patch	\
   %D%/packages/patches/python-axolotl-AES-fix.patch		\
+  %D%/packages/patches/python-babel-fix-parse-future-test.patch \
   %D%/packages/patches/python-cross-compile.patch		\
   %D%/packages/patches/python2-larch-coverage-4.0a6-compatibility.patch \
   %D%/packages/patches/python-configobj-setuptools.patch	\
@@ -1760,6 +1767,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/rust-nettle-sys-disable-vendor.patch	 \
   %D%/packages/patches/rust-openssl-sys-no-vendor.patch	\
   %D%/packages/patches/rust-shell2batch-lint-fix.patch		\
+  %D%/packages/patches/rust-wl-clipboard-rs-newer-wl.patch      \
   %D%/packages/patches/sbc-fix-build-non-x86.patch		\
   %D%/packages/patches/sbcl-aserve-add-HTML-5-elements.patch	\
   %D%/packages/patches/sbcl-aserve-fix-rfe12668.patch	\
@@ -1796,6 +1804,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/spice-vdagent-glib-2.68.patch		\
   %D%/packages/patches/sssd-fix-samba.patch			\
   %D%/packages/patches/sssd-system-directories.patch		\
+  %D%/packages/patches/streamlink-update-test.patch             \
   %D%/packages/patches/steghide-fixes.patch			\
   %D%/packages/patches/suitesparse-mongoose-cmake.patch		\
   %D%/packages/patches/superlu-dist-awpm-grid.patch		\
