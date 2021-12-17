@@ -765,11 +765,9 @@ machine.")))
                (search-patches "jamvm-2.0.0-disable-branch-patching.patch"
                                "jamvm-2.0.0-opcode-guard.patch"
                                "jamvm-2.0.0-aarch64-support.patch"))
+              ;; Remove precompiled software.
               (snippet
-               '(begin
-                  ;; Remove precompiled software.
-                  (delete-file "src/classlib/gnuclasspath/lib/classes.zip")
-                  #t))))
+               '(delete-file "src/classlib/gnuclasspath/lib/classes.zip"))))
     (build-system gnu-build-system)
     (arguments
      (substitute-keyword-arguments (package-arguments jamvm-1-bootstrap)
