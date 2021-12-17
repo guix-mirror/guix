@@ -17236,20 +17236,21 @@ convert enum to u8 slice ref.")
     (description "Enumflags2 implements the classic bitflags datastructure.")
     (license (list license:expat license:asl2.0))))
 
-(define-public rust-env-logger-0.8
+(define-public rust-env-logger-0.9
   (package
     (name "rust-env-logger")
-    (version "0.8.3")
+    (version "0.9.0")
     (source
      (origin
        (method url-fetch)
-       (uri (crate-uri "env-logger" version))
+       (uri (crate-uri "env_logger" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0gwx1pvbv99fj9wpicknyv4p2vj997xpva8ac5dg03m35q0jlf8p"))))
+        (base32 "1hzr53r0wga51j0w5zid69ylbfizg4qdbq0vqdj6rvki94sg0b0b"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs
+     `(#:skip-build? #t
+       #:cargo-inputs
        (("rust-atty" ,rust-atty-0.2)
         ("rust-humantime" ,rust-humantime-2)
         ("rust-log" ,rust-log-0.4)
@@ -17261,6 +17262,26 @@ convert enum to u8 slice ref.")
      "This package provides a logging implementation for @code{log} which
 is configured via an environment variable.")
     (license (list license:expat license:asl2.0))))
+
+(define-public rust-env-logger-0.8
+  (package
+    (inherit rust-env-logger-0.9)
+    (name "rust-env-logger")
+    (version "0.8.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "env-logger" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0gwx1pvbv99fj9wpicknyv4p2vj997xpva8ac5dg03m35q0jlf8p"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-atty" ,rust-atty-0.2)
+        ("rust-humantime" ,rust-humantime-2)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-regex" ,rust-regex-1)
+        ("rust-termcolor" ,rust-termcolor-1))))))
 
 (define-public rust-env-logger-0.7
   (package
