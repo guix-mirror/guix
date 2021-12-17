@@ -104,46 +104,46 @@
                       `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path)))))
                 '("remmina" "remmina-file-wrapper"))))))))
     (native-inputs
-     `(("gettext" ,gettext-minimal)
-       ("glib:bin" ,glib "bin")
-       ("gobject-introspection" ,gobject-introspection)
-       ("gtk+:bin" ,gtk+ "bin")
-       ("intl" ,intltool)
-       ("pkg-config" ,pkg-config)))
+     (list gettext-minimal
+           `(,glib "bin")
+           gobject-introspection
+           `(,gtk+ "bin")
+           intltool
+           pkg-config))
     (inputs
-     `(("app-indicator" ,libappindicator)
-       ("atk" ,atk)
-       ("avahi" ,avahi)
-       ("cairo" ,cairo)
-       ("cups" ,cups)
-       ("ffmpeg" ,ffmpeg)
-       ("freerdp" ,freerdp)             ; for rdp plugin
-       ("gcrypt" ,libgcrypt)
-       ("librsvg" ,librsvg)
-       ("glib" ,glib)
-       ("gnome-keyring" ,gnome-keyring)
-       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("gtk+" ,gtk+)
-       ("harfbuzz" ,harfbuzz)
-       ("json-glib" ,json-glib)
-       ("libsecret" ,libsecret)         ; for secret plugin
-       ("libsoup" ,libsoup-minimal-2)
-       ("libssh" ,libssh)               ; for ssh plugin
-       ("libvnc" ,libvnc)               ; for vnc plugin
-       ("openssl" ,openssl)
-       ("pango" ,pango)
-       ("pcre2" ,pcre2)                 ; for exec plugin
-       ("shared-mime-info" ,shared-mime-info)
-       ("sodium" ,libsodium)
-       ("spice-client-gtk" ,spice-gtk)  ; for spice plugin
-       ("telepathy" ,telepathy-glib)
-       ("vte" ,vte)                     ; for st plugin
-       ("wayland" ,wayland)
-       ("webkitgtk" ,webkitgtk)         ; for www plugin
-       ("x11" ,libx11)
-       ("xext" ,libxext)                ; for xdmcp plugin
-       ("xdg-utils" ,xdg-utils)
-       ("xkbfile" ,libxkbfile)))        ; for nx plugin
+     (list libappindicator
+           atk
+           avahi
+           cairo
+           cups
+           ffmpeg
+           freerdp                      ; for rdp plugin
+           libgcrypt
+           librsvg
+           glib
+           gnome-keyring
+           gsettings-desktop-schemas
+           gtk+
+           harfbuzz
+           json-glib
+           libsecret                    ; for secret plugin
+           libsoup-minimal-2
+           libssh                       ; for ssh plugin
+           libvnc                       ; for vnc plugin
+           openssl
+           pango
+           pcre2                        ; for exec plugin
+           shared-mime-info
+           libsodium
+           spice-gtk                    ; for spice plugin
+           telepathy-glib
+           vte                          ; for st plugin
+           wayland
+           webkitgtk                    ; for www plugin
+           libx11
+           libxext                      ; for xdmcp plugin
+           xdg-utils
+           libxkbfile))                 ; for nx plugin
     (propagated-inputs
      (list dconf))
     (home-page "https://remmina.org/")
