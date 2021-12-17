@@ -524,7 +524,8 @@ change.  GNU make offers many powerful extensions over the standard utility.")
                                "binutils-2.37-file-descriptor-leak.patch"))))
    (build-system gnu-build-system)
    (arguments
-    `(#:configure-flags '(;; Add `-static-libgcc' to not retain a dependency
+    `(#:out-of-source? #t   ;recommended in the README
+      #:configure-flags '(;; Add `-static-libgcc' to not retain a dependency
                           ;; on GCC when bootstrapping.
                           "LDFLAGS=-static-libgcc"
 
@@ -543,7 +544,13 @@ change.  GNU make offers many powerful extensions over the standard utility.")
 
                           ;; Make sure 'ar' and 'ranlib' produce archives in a
                           ;; deterministic fashion.
-                          "--enable-deterministic-archives")))
+                          "--enable-deterministic-archives"
+
+                          "--enable-64-bit-bfd"
+                          "--enable-compressed-debug-sections=all"
+                          "--enable-lto"
+                          "--enable-separate-code"
+                          "--enable-threads")))
 
    (synopsis "Binary utilities: bfd gas gprof ld")
    (description
@@ -555,23 +562,6 @@ the strings in a binary file, and utilities for working with archives.  The
 included.")
    (license gpl3+)
    (home-page "https://www.gnu.org/software/binutils/")))
-
-;;; TODO: Merge into binutils on the next world rebuild.
-(define-public binutils-next
-  (package/inherit binutils
-    (name "binutils-next")
-    (version "2.37")
-    (arguments
-     (substitute-keyword-arguments (package-arguments binutils)
-       ((#:out-of-source? _ #f)         ;recommended in the README
-        #t)
-       ((#:configure-flags flags)
-        `(cons* "--enable-64-bit-bfd"
-                "--enable-compressed-debug-sections=all"
-                "--enable-lto"
-                "--enable-separate-code"
-                "--enable-threads"
-                ,flags))))))
 
 ;; FIXME: ath9k-firmware-htc-binutils.patch do not apply on 2.34 because of a
 ;; big refactoring of xtensa-modules.c (commit 567607c11fbf7105 upstream).
@@ -594,7 +584,7 @@ included.")
    (properties '())))
 
 (define-public binutils-gold
-  (package/inherit binutils-next
+  (package/inherit binutils
     (name "binutils-gold")
     (arguments
      (substitute-keyword-arguments (package-arguments binutils)
