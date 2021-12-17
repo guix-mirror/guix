@@ -9,6 +9,7 @@
 ;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
+;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -39,6 +40,7 @@
   #:use-module (guix store)
   #:use-module (guix download)
   #:use-module (guix sets)
+  #:use-module (guix ui)
   #:use-module (gnu packages)
   #:use-module (ice-9 match)
   #:use-module (ice-9 rdelim)
@@ -234,9 +236,10 @@ to in the (guix licenses) module, or #f if there is no such known license."
 with dashes."
   (string-join (string-split (string-downcase str) #\_) "-"))
 
-(define (beautify-description description)
-  "Improve the package DESCRIPTION by turning a beginning sentence fragment
-into a proper sentence and by using two spaces between sentences."
+(define* (beautify-description description #:optional (length 80))
+  "Improve the package DESCRIPTION by turning a beginning sentence fragment into
+a proper sentence and by using two spaces between sentences, and wrap lines at
+LENGTH characters."
   (let ((cleaned (cond
                   ((string-prefix? "A " description)
                    (string-append "This package provides a"
@@ -251,8 +254,9 @@ into a proper sentence and by using two spaces between sentences."
                                              (string-length "Functions"))))
                   (else description))))
     ;; Use double spacing between sentences
-    (regexp-substitute/global #f "\\. \\b"
-                              cleaned 'pre ".  " 'post)))
+    (fill-paragraph (regexp-substitute/global #f "\\. \\b"
+                                          cleaned 'pre ".  " 'post)
+                length)))
 
 (define* (package-names->package-inputs names #:optional (output #f))
   "Given a list of PACKAGE-NAMES or (PACKAGE-NAME VERSION) pairs, and an
