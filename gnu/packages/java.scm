@@ -778,7 +778,7 @@ machine.")))
 (define ecj-javac-wrapper-final
   (package (inherit ecj-javac-wrapper)
     (native-inputs
-     `(("guile" ,guile-2.2)
+     `(("guile" ,guile-3.0)
        ("ecj-bootstrap" ,ecj-bootstrap)
        ("jamvm" ,jamvm)
        ("classpath" ,classpath-devel)))))
