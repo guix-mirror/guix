@@ -1206,8 +1206,7 @@ connection alive.")
                  (("^RELEASETYPE=.*")
                   (format #f "RELEASETYPE=~a\n" ,bind-release-type))
                  (("^RELEASEVER=.*")
-                  (format #f "RELEASEVER=~a\n" ,bind-release-version)))
-               #t))
+                  (format #f "RELEASEVER=~a\n" ,bind-release-version)))))
            ,@(if (%current-target-system)
                  '((add-before 'configure 'fix-bind-cross-compilation
                      (lambda _
@@ -1216,8 +1215,7 @@ connection alive.")
                           "--host=$host_alias"))
                        ;; BIND needs a native compiler because the DHCP
                        ;; build system uses the built 'gen' executable.
-                       (setenv "BUILD_CC" "gcc")
-                       #t)))
+                       (setenv "BUILD_CC" "gcc"))))
                  '())
            (add-after 'configure 'post-configure
              (lambda* (#:key outputs #:allow-other-keys)
@@ -1255,11 +1253,7 @@ connection alive.")
                            "--owner=root:0"
                            "--group=root:0")))))
            (add-after 'install 'post-install
-             ;; TODO(core-updates): native-inputs isn't required anymore.
-             (lambda* (#:key ,@(if (%current-target-system)
-                                   '(native-inputs)
-                                   '())
-                       inputs outputs #:allow-other-keys)
+             (lambda* (#:key inputs outputs #:allow-other-keys)
                ;; Install the dhclient script for GNU/Linux and make sure
                ;; if finds all the programs it needs.
                (let* ((out       (assoc-ref outputs "out"))
@@ -1282,31 +1276,13 @@ connection alive.")
                      ,(map (lambda (dir)
                              (string-append dir "/bin:"
                                             dir "/sbin"))
-                           (list inetutils net-tools coreutils sed))))
-                 ;; TODO(core-updates): should not be required anymore,
-                 ;; once <https://issues.guix.gnu.org/49290> has been merged.
-                 ,@(if (%current-target-system)
-                       '((for-each
-                          (lambda (file)
-                            (substitute* file
-                              (((assoc-ref native-inputs "bash"))
-                               (assoc-ref inputs "bash"))))
-                          (list (string-append libexec
-                                               "/dhclient-script")
-                                (string-append libexec
-                                               "/.dhclient-script-real"))))
-                       '())
-                 #t))))))
+                           (list inetutils net-tools coreutils sed))))))))))
 
       (native-inputs
        (list perl file))
 
       (inputs `(("inetutils" ,inetutils)
-                ;; TODO(core-updates): simply make this unconditional
-                ,@(if (%current-target-system)
-                      ;; for wrap-program
-                      `(("bash" ,(canonical-package bash-minimal)))
-                      '())
+                ("bash" ,(canonical-package bash-minimal)) ;for wrap-program
                 ,@(if (hurd-target?) '()
                       `(("net-tools" ,net-tools)
                         ("iproute" ,iproute)))
