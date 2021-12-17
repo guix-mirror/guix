@@ -1272,42 +1272,19 @@ operators.")
 (define-public xnec2c
   (package
     (name "xnec2c")
-    (version "4.1.1")
+    (version "4.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://www.5b4az.org/pkg/nec2/xnec2c/xnec2c-"
                            version ".tar.bz2"))
        (sha256
-        (base32 "1myvlkfybb2ha8l0h96ca3iz206zzy9z5iizm0sbab2zzp78n1r9"))))
+        (base32 "0jprahww6jvwq616lkq80sac166ffy0fp83gr5kvjc9k4pcls00n"))))
     (build-system gnu-build-system)
     (native-inputs
      (list pkg-config))
     (inputs
      (list gtk+))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-makefile
-           (lambda* (#:key outputs #:allow-other-keys)
-             (substitute* '("Makefile.am" "Makefile.in")
-               ;; The DESTDIR variable does not get replaced the prefix
-               ;; in the final Makefile, so let's do here.
-               (("\\$\\(DESTDIR\\)/usr")
-                (assoc-ref outputs "out")))
-             #t))
-         (add-after 'fix-makefile 'fix-paths
-           (lambda* (#:key outputs #:allow-other-keys)
-             ;; Increase the max length of the path to the glade file,
-             ;; so that the '/gnu/store/...' path can fit in.
-             (substitute* '("src/shared.c" "src/shared.h")
-               (("char xnec2c_glade\\[64\\];")
-                "char xnec2c_glade[256];"))
-             ;; Fix hard coded references to '/usr/...'.
-             (substitute* '("src/geom_edit.c" "src/main.c")
-               (("\"/usr")
-                (string-append "\"" (assoc-ref outputs "out"))))
-             #t)))))
     (synopsis "Antenna modeling software")
     (description
      "Xnec2c is a GTK3-based graphical version of nec2c, a translation to the
