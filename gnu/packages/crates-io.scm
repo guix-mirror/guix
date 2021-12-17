@@ -64426,8 +64426,39 @@ pointers:
 ")
     (license license:expat)))
 
+(define-public rust-ptree-0.4
+  (package
+    (name "rust-ptree")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "ptree" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0w72k0svlj8ihbf7m7ivay7rpv38xz9ad5a06isyqsiiddwq1pm0"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-ansi-term" ,rust-ansi-term-0.12)
+        ("rust-atty" ,rust-atty-0.2)
+        ("rust-config" ,rust-config-0.11)
+        ("rust-directories" ,rust-directories-4)
+        ("rust-petgraph" ,rust-petgraph-0.6)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-value" ,rust-serde-value-0.7)
+        ("rust-tint" ,rust-tint-1))))
+    (home-page "https://gitlab.com/Noughmad/ptree")
+    (synopsis "Pretty-print tree-like structures")
+    (description
+     "The @code{ptree} crate supports output formatting due to a user-provided
+configuration file and/or environment variables.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-ptree-0.3
   (package
+    (inherit rust-ptree-0.4)
     (name "rust-ptree")
     (version "0.3.1")
     (source
@@ -64437,7 +64468,6 @@ pointers:
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "1bp6r88hcw0ygmdfdf1gwsj6krcah2qhwp3kw284wvni080l1zcm"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -64448,13 +64478,7 @@ pointers:
         ("rust-petgraph" ,rust-petgraph-0.5)
         ("rust-serde" ,rust-serde-1)
         ("rust-serde-value" ,rust-serde-value-0.6)
-        ("rust-tint" ,rust-tint-1))))
-    (home-page "https://gitlab.com/Noughmad/ptree")
-    (synopsis "Pretty-print tree-like structures")
-    (description
-     "The @code{ptree} crate supports output formatting due to a user-provided
-configuration file and/or environment variables.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-tint" ,rust-tint-1))))))
 
 (define-public rust-xmltree-0.10
   (package
