@@ -261,7 +261,24 @@
                 (find-files (search-input-directory outputs "lib/node_modules")
                             (lambda (file stat)
                               (executable-file? file))
-                            #:stat lstat))))))))
+                            #:stat lstat)))))
+         (add-after 'install 'install-npmrc
+           ;; Note: programs like node-gyp only receive these values if
+           ;; they are started via `npm` or `npx`.
+           ;; See: https://github.com/nodejs/node-gyp#npm-configuration
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out")))
+               (with-output-to-file
+                   ;; Use the config file "primarily for distribution
+                   ;; maintainers" rather than "{prefix}/etc/npmrc",
+                   ;; especially because node-build-system uses --prefix
+                   ;; to install things to their store paths:
+                   (string-append out "/lib/node_modules/npm/npmrc")
+                 (lambda ()
+                   ;; Tell npm (mostly node-gyp) where to find our
+                   ;; installed headers so it doesn't try to
+                   ;; download them from the internet:
+                   (format #t "nodedir=~a\n" out)))))))))
     (native-inputs
      `(;; Runtime dependencies for binaries used as a bootstrap.
        ("c-ares" ,c-ares)
@@ -822,4 +839,5 @@ source files.")
         `(cons* "--shared" "--without-npm" ,flags))
        ((#:phases phases '%standard-phases)
         `(modify-phases ,phases
+           (delete 'install-npmrc)
            (delete 'patch-nested-shebangs)))))))
