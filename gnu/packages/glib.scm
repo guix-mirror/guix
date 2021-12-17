@@ -995,7 +995,7 @@ libraries.  Examples include gtk+, webkit, libsoup and many more.")
 (define telepathy-glib
   (package
     (name "telepathy-glib")
-    (version "0.24.1")
+    (version "0.24.2")
     (source
      (origin
       (method url-fetch)
@@ -1005,19 +1005,7 @@ libraries.  Examples include gtk+, webkit, libsoup and many more.")
          "telepathy-glib-" version ".tar.gz"))
        (sha256
         (base32
-         "1symyzbjmxvksn2ifdkk50lafjm2llf2sbmky062gq2pz3cg23cy"))
-       (patches
-        (list
-         (search-patch "telepathy-glib-channel-memory-leak.patch")
-         ;; Don't use the same test name for multiple tests.
-         ;; <https://bugs.freedesktop.org/show_bug.cgi?id=92245>
-         (origin
-           (method url-fetch)
-           (uri "https://bugs.freedesktop.org/attachment.cgi?id=118608")
-           (file-name (string-append "telepathy-glib-duplicate-tests.patch"))
-           (sha256
-            (base32
-             "0z261fwrszxb28ccg3hsg9rizig4s84zvwmx6y31a4pyv7bvs5w3")))))))
+         "1w3kja8j3gz2apal79bi3hq44xk5g78aphrqbw983l6df7bp98xh"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--enable-vala-bindings")
