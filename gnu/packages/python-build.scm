@@ -138,13 +138,13 @@ Python file, so it can be easily copied into your project.")
 (define-public python-tomli
   (package
     (name "python-tomli")
-    (version "1.2.2")
+    (version "2.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "tomli" version))
        (sha256
-        (base32 "1vjg44narb7hdiazdmbv8bfv7pi6phnq7nxm6aphx0iqxcah1kn6"))))
+        (base32 "1q8lrh9ypa6zpgbc5f7z23p7phzblp4vpxdrpfr1wajhb17w74n2"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f                      ;disabled to avoid extra dependencies
