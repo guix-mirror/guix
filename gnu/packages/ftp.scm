@@ -186,9 +186,7 @@ as required.")
      `(#:configure-flags
        (list "--disable-static")))
     (native-inputs
-     `(("cppunit" ,cppunit)
-       ("gettext" ,gettext-minimal)
-       ("pkg-config" ,pkg-config)))
+     (list cppunit gettext-minimal pkg-config))
     (inputs
      (list gnutls nettle))
     (home-page "https://lib.filezilla-project.org")
