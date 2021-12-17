@@ -2912,43 +2912,43 @@ background file post-processing.")
   (package
     (name "supercollider")
     (version "3.12.1")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/supercollider/supercollider")
-                    (commit (string-append "Version-" version))
-                    ;; for nova-simd, nova-tt, hidapi, TLSF, oscpack
-                    (recursive? #t)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "0id522338a464j1slcspajwc7klypbc9qpigw5mqjhrw970wij5z"))
-              (modules '((guix build utils)
-                         (ice-9 ftw)))
-              (snippet
-               ;; The build system doesn't allow us to unbundle the following
-               ;; libraries.  hidapi is also heavily patched and upstream not
-               ;; actively maintained.
-               '(let ((keep-dirs '("nova-simd" "nova-tt" "hidapi"
-                                   "TLSF-2.4.6" "oscpack_1_1_0" "." "..")))
-                  (with-directory-excursion "./external_libraries"
-                    (for-each
-                     delete-file-recursively
-                     (scandir "."
-                              (lambda (x)
-                                (and (eq? (stat:type (stat x)) 'directory)
-                                     (not (member (basename x) keep-dirs)))))))
-                  ;; To find the Guix provided ableton-link library.
-                  (substitute* "lang/CMakeLists.txt"
-                    (("include\\(\\.\\./external_libraries/link/\
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/supercollider/supercollider")
+             (commit (string-append "Version-" version))
+             ;; for nova-simd, nova-tt, hidapi, TLSF, oscpack
+             (recursive? #t)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0id522338a464j1slcspajwc7klypbc9qpigw5mqjhrw970wij5z"))
+       (modules '((guix build utils)
+                  (ice-9 ftw)))
+       (snippet
+        ;; The build system doesn't allow us to unbundle the following
+        ;; libraries.  hidapi is also heavily patched and upstream not
+        ;; actively maintained.
+        '(let ((keep-dirs '("nova-simd" "nova-tt" "hidapi"
+                            "TLSF-2.4.6" "oscpack_1_1_0" "." "..")))
+           (with-directory-excursion "./external_libraries"
+             (for-each
+              delete-file-recursively
+              (scandir "."
+                       (lambda (x)
+                         (and (eq? (stat:type (stat x)) 'directory)
+                              (not (member (basename x) keep-dirs)))))))
+           ;; To find the Guix provided ableton-link library.
+           (substitute* "lang/CMakeLists.txt"
+             (("include\\(\\.\\./external_libraries/link/\
 AbletonLinkConfig\\.cmake\\)")
-                     "find_package(AbletonLink NAMES AbletonLink ableton-link \
-link REQUIRED)"))
-                  #t))))
+              "find_package(AbletonLink NAMES AbletonLink ableton-link \
+link REQUIRED)"))))))
     (build-system cmake-build-system)
     (outputs
-     '("out"   ;core language
-       "ide")) ;qt ide
+     '("out"                            ;core language
+       "ide"))                          ;qt ide
     (arguments
      `(#:configure-flags '("-DSYSTEM_BOOST=ON"
                            "-DSYSTEM_YAMLCPP=ON"
@@ -2964,8 +2964,7 @@ link REQUIRED)"))
          ;; The graphical tests also hang without it.
          (add-after 'unpack 'set-home-directory
            (lambda _
-             (setenv "HOME" (getcwd))
-             #t))
+             (setenv "HOME" (getcwd))))
          (add-after 'unpack 'patch-scclass-dir
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -2976,13 +2975,11 @@ link REQUIRED)"))
                  (((string-append
                     "SC_Filesystem::instance\\(\\)\\.getDirectory"
                     "\\(DirName::Resource\\) / CLASS_LIB_DIR_NAME"))
-                  (string-append "Path(\"" scclass-dir "\")")))
-               #t)))
+                  (string-append "Path(\"" scclass-dir "\")"))))))
          (add-before 'build 'prepare-x
            (lambda _
              (system "Xvfb &")
-             (setenv "DISPLAY" ":0")
-             #t))
+             (setenv "DISPLAY" ":0")))
          (add-before 'install 'install-ide
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -2990,8 +2987,7 @@ link REQUIRED)"))
                     (scide "editors/sc-ide/scide"))
                (install-file scide
                              (string-append ide "/bin"))
-               (delete-file scide)
-               #t))))))
+               (delete-file scide)))))))
     (native-inputs
      (list ableton-link pkg-config qttools xorg-server-for-tests))
     (inputs (list jack-1
