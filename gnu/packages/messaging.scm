@@ -1190,6 +1190,10 @@ of xmpppy.")
              ;; For missing '/etc/machine-id'.
              (setenv "DBUS_FATAL_WARNINGS" "0")
              (invoke "dbus-launch" "python" "./setup.py" "test")))
+         ;; Loading gajim_remote require running session bus,
+         ;; which in-turn requires running elogind for XDG_RUNTIME_DIR;
+         ;; neither of which are possible inside build environment.
+         (delete 'sanity-check)
          (add-after 'install 'glib-or-gtk-compile-schemas
            (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-compile-schemas))
          (add-after 'install 'glib-or-gtk-wrap
@@ -1224,7 +1228,7 @@ of xmpppy.")
           ;; FIXME: Cannot use this expression as it would
           ;; introduce a circular dependency at the top level.
           ;; (version-major+minor (package-version python))
-          "3.8"
+          "3.9"
           "/site-packages"))))))
     (native-inputs
      `(("gettext" ,gettext-minimal)
