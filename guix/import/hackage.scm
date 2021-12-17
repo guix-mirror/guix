@@ -33,7 +33,7 @@
   #:use-module ((guix utils) #:select (package-name->name+version
                                        canonical-newline-port))
   #:use-module (guix http-client)
-  #:use-module ((guix import utils) #:select (factorize-uri recursive-import))
+  #:use-module (guix import utils)
   #:use-module (guix import cabal)
   #:use-module (guix store)
   #:use-module (gcrypt hash)
@@ -315,7 +315,7 @@ the hash of the Cabal file."
         ,@(maybe-arguments)
         (home-page ,(cabal-package-home-page cabal))
         (synopsis ,(cabal-package-synopsis cabal))
-        (description ,(cabal-package-description cabal))
+        (description ,(beautify-description (cabal-package-description cabal)))
         (license ,(string->license (cabal-package-license cabal))))
      (append hackage-dependencies hackage-native-dependencies))))
 

@@ -471,7 +471,7 @@ VERSION, SOURCE-URL, HOME-PAGE, SYNOPSIS, DESCRIPTION, and LICENSE."
                    ,@(maybe-inputs native-inputs 'native-inputs)
                    (home-page ,home-page)
                    (synopsis ,synopsis)
-                   (description ,description)
+                   (description ,(beautify-description description))
                    (license ,(license->symbol license)))
                 upstream-dependencies))))))))
 

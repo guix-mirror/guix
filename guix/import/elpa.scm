@@ -388,7 +388,7 @@ type '<elpa-package>'."
             '())
       (home-page ,(elpa-package-home-page pkg))
       (synopsis ,(elpa-package-synopsis pkg))
-      (description ,(elpa-package-description pkg))
+      (description ,(beautify-description (elpa-package-description pkg)))
       (license ,license))
    dependencies-names))
 

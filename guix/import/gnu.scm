@@ -100,7 +100,8 @@ download policy (see 'download-tarball' for details.)"
                         (file-sha256 tarball))))))
           (build-system gnu-build-system)
           (synopsis ,(gnu-package-doc-summary package))
-          (description ,(gnu-package-doc-description package))
+          (description ,(beautify-description
+                         (gnu-package-doc-description package)))
           (home-page ,(match (gnu-package-doc-urls package)
                         ((head . tail) (qualified-url head))))
           (license find-by-yourself!)))

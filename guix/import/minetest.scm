@@ -322,7 +322,7 @@ MEDIA-LICENSE and LICENSE."
      ,@(maybe-propagated-inputs (map contentdb->package-name inputs))
      (home-page ,home-page)
      (synopsis ,(delete-cr synopsis))
-     (description ,(delete-cr description))
+     (description ,(beautify-description (delete-cr description)))
      (license ,(if (eq? media-license license)
                    license
                    `(list ,media-license ,license)))
