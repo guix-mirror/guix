@@ -47,16 +47,16 @@
   #:use-module (gnu packages time)
   #:use-module (gnu packages xml))
 
-(define-public python-django
+(define-public python-django-4.0
   (package
     (name "python-django")
-    (version "3.2.10")
+    (version "4.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "Django" version))
               (sha256
                (base32
-                "1i6my7qrivj0ag9dq22lg0lq6maxapbdqrwy6v1cs2mlnhc8hkh7"))))
+                "0xgf2d8j54kicaz8f6ailzlgcvq5zs6wgn74gqivka0rm16s3a6m"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -110,7 +110,6 @@
            python-tblib))
     (propagated-inputs
      (list python-asgiref
-           python-pytz
            python-sqlparse
            ;; Optional dependencies.
            python-argon2-cffi
@@ -128,9 +127,24 @@ to the @dfn{don't repeat yourself} (DRY) principle.")
     (license license:bsd-3)
     (properties `((cpe-name . "django")))))
 
+(define-public python-django-3.2
+  (package
+    (inherit python-django-4.0)
+    (version "3.2.10")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "Django" version))
+              (sha256
+               (base32
+                "1i6my7qrivj0ag9dq22lg0lq6maxapbdqrwy6v1cs2mlnhc8hkh7"))))
+    (propagated-inputs
+     (modify-inputs (package-propagated-inputs python-django-4.0)
+       ;; Django 4.0 deprecated pytz in favor of Pythons built-in zoneinfo.
+       (append python-pytz)))))
+
 (define-public python-django-2.2
   (package
-    (inherit python-django)
+    (inherit python-django-3.2)
     (version "2.2.25")
     (source (origin
               (method url-fetch)
@@ -139,9 +153,12 @@ to the @dfn{don't repeat yourself} (DRY) principle.")
                (base32
                 "171ll8m1wp684z1r0lz93l377jc6jyq63q5p7sqx8iqk6ypmxrmi"))))
     (native-inputs
-     (modify-inputs (package-native-inputs python-django)
+     (modify-inputs (package-native-inputs python-django-3.2)
        (prepend ;; 2.2 requires Selenium for the test suite.
                 python-selenium)))))
+
+;; Use 3.2 LTS as the default until packages gain support for 4.x.
+(define-public python-django python-django-3.2)
 
 (define-public python-django-extensions
   (package
