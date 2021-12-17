@@ -2921,12 +2921,7 @@ configuration (iptunnel, ipmaddr).")
                           (substitute* "Make.Rules"
                             (("LDFLAGS \\?= #-g")
                              (string-append "LDFLAGS ?= -Wl,-rpath="
-                                            ;; TODO(core-updates): Use #$output
-                                            ;; unconditionally.
-                                            #$(if (%current-target-system)
-                                                  #~#$output
-                                                  '%output)
-                                            "/lib"))))))
+                                            #$output "/lib"))))))
                  #:test-target "test"
                  #:make-flags
                  (list "lib=lib"
