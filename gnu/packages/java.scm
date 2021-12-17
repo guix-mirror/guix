@@ -871,6 +871,12 @@ requirement for all GNU Classpath releases after version 0.93.  This version
 supports sufficient parts of Java 7 to build Icedtea 2.x.")
     (license license:epl1.0)))
 
+(define ecj4-javac-wrapper
+  (package
+    (inherit ecj-javac-wrapper)
+    (native-inputs
+     (list guile-3.0 ecj4-bootstrap jamvm classpath-devel))))
+
 ;; The bootstrap JDK consisting of jamvm, classpath-devel,
 ;; ecj-javac-wrapper-final cannot build Icedtea 2.x directly, because it's
 ;; written in Java 7.  It can, however, build the unmaintained Icedtea 1.x,
