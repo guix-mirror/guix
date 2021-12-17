@@ -43,22 +43,21 @@
     (version "0.8")
     (home-page "https://avahi.org")
     (source (origin
-             (method url-fetch)
-             (uri (string-append home-page "/download/avahi-"
-                                 version ".tar.gz"))
-             (sha256
-              (base32
-               "1npdixwxxn3s9q1f365x9n9rc5xgfz39hxf23faqvlrklgbhj0q6"))
-             (patches (search-patches "avahi-localstatedir.patch"))
-             (modules '((guix build utils)))
-             (snippet
-              '(begin
-                 ;; Fix version constraint in the avahi-libevent pkg-config file.
-                 ;; This can be removed for Avahi versions > 0.8.
-                 (substitute* "avahi-libevent.pc.in"
-                   (("libevent-2\\.1\\.5")
-                    "libevent >= 2.1.5"))
-                 #t))))
+              (method url-fetch)
+              (uri (string-append home-page "/download/avahi-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1npdixwxxn3s9q1f365x9n9rc5xgfz39hxf23faqvlrklgbhj0q6"))
+              (patches (search-patches "avahi-localstatedir.patch"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Fix version constraint in the avahi-libevent pkg-config file.
+                  ;; This can be removed for Avahi versions > 0.8.
+                  (substitute* "avahi-libevent.pc.in"
+                    (("libevent-2\\.1\\.5")
+                     "libevent >= 2.1.5"))))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--with-distro=none"
@@ -75,26 +74,20 @@
                            ,@(if (%current-target-system)
                                  '("ac_cv_prog_have_pkg_config=yes")
                                  '()))
-       ;; TODO(core-updates): Make this unconditional.
-       ,@(if (%current-target-system)
-             `(#:modules ((srfi srfi-26)
-                          (guix build utils)
-                          (guix build gnu-build-system))
-               #:phases
-               ,#~(modify-phases %standard-phases
-                    (add-after 'patch-shebangs 'patch-more-shebangs
-                      (lambda* (#:key inputs #:allow-other-keys)
-                        (define path
-                          `(,(dirname (search-input-file inputs "bin/sh"))))
-                        (for-each
-                         (cut patch-shebang <> path)
-                         (find-files (string-append #$output "/etc/avahi")))))))
-             '())))
+       #:modules ((srfi srfi-26)
+                  (guix build utils)
+                  (guix build gnu-build-system))
+       #:phases
+       ,#~(modify-phases %standard-phases
+            (add-after 'patch-shebangs 'patch-more-shebangs
+              (lambda* (#:key inputs #:allow-other-keys)
+                (define path
+                  `(,(dirname (search-input-file inputs "bin/sh"))))
+                (for-each
+                 (cut patch-shebang <> path)
+                 (find-files (string-append #$output "/etc/avahi"))))))))
     (inputs
-     ;; TODO(core-updates): Make this input unconditional.
-     `(,@(if (%current-target-system)
-             `(("bash-minimal" ,bash-minimal))
-             '())
+     `(("bash-minimal" ,bash-minimal)
        ("dbus" ,dbus)
        ("expat" ,expat)
        ("gdbm" ,gdbm)
