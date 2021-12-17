@@ -5241,11 +5241,12 @@ Rate} 3600x2250 bit/s vocoder used in various radio systems.")
        #:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let* ((python (search-input-file inputs "/bin/python3"))
-                    (run-tests "../source/ci/run-tests.py"))
-               (invoke python run-tests "--target" "LinkCoreTest")
-               (invoke python run-tests "--target" "LinkDiscoveryTest"))))
+           (lambda* (#:key inputs tests? #:allow-other-keys)
+             (when tests?
+               (let* ((python (search-input-file inputs "/bin/python3"))
+                      (run-tests "../source/ci/run-tests.py"))
+                 (invoke python run-tests "--target" "LinkCoreTest")
+                 (invoke python run-tests "--target" "LinkDiscoveryTest")))))
          (add-before 'install 'patch-cmake
            (lambda* (#:key inputs #:allow-other-keys)
              (let* ((source "../source/"))
