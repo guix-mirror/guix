@@ -25775,15 +25775,14 @@ and functions.")
 (define-public rust-itoa-0.4
   (package
     (name "rust-itoa")
-    (version "0.4.5")
+    (version "0.4.8")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "itoa" version))
-        (file-name (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "13nxqrfnh83a7x5rw4wq2ilp8nxvwy74dxzysdg59dbxqk0agdxq"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "itoa" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1m1dairwyx8kfxi7ab3b5jc71z1vigh9w4shnhiajji9avzr26dp"))))
     (build-system cargo-build-system)
     (home-page "https://github.com/dtolnay/itoa")
     (synopsis "Fast functions for printing integer primitives")
