@@ -778,10 +778,7 @@ machine.")))
 (define ecj-javac-wrapper-final
   (package (inherit ecj-javac-wrapper)
     (native-inputs
-     `(("guile" ,guile-3.0)
-       ("ecj-bootstrap" ,ecj-bootstrap)
-       ("jamvm" ,jamvm)
-       ("classpath" ,classpath-devel)))))
+     (list guile-3.0 ecj-bootstrap jamvm classpath-devel))))
 
 ;; The bootstrap JDK consisting of jamvm, classpath-devel,
 ;; ecj-javac-wrapper-final cannot build Icedtea 2.x directly, because it's
