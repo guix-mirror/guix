@@ -1321,9 +1321,8 @@ developed mainly for Ren'py.")
              ;; named "setup.py".
              (with-directory-excursion "module"
                (apply (assoc-ref %standard-phases 'build) args))
-             ;; the above causes renpy.__init__ to be compiled but does not
-             ;; compile anything else, hence we do that here
-             (delete-file "renpy/__init__.pyc")
+             ;; The above only builds the cython modules, but nothing else,
+             ;; so we do that here.
              (invoke "python" "-m" "compileall" "renpy")
              #t))
          (replace 'install
