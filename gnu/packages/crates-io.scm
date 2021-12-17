@@ -10859,6 +10859,25 @@ generation.")
 @code{rust-const-random}.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-const-sha1-0.2
+  (package
+    (name "rust-const-sha1")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "const-sha1" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "179cgi2m3wj5g80j49pggs95xalc6y1ivvbrv4m82alc3r2vcn7v"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/rylev/const-sha1")
+    (synopsis "sha1 implementation for use in const contexts")
+    (description
+     "This package provides a sha1 implementation for use in const contexts.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-constant-time-eq-0.1
   (package
     (name "rust-constant-time-eq")
