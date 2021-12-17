@@ -364,9 +364,9 @@ across a broad spectrum of applications.")
     (properties '((hidden? . #t)))))
 
 (define-public boost-sync
-  (let ((commit "c72891d9b90e2ceb466ec859f640cd012b2d8709")
+  (let ((commit "e690de2d30e2f1649ff500c9a6f3539814994b1c")
         (version "1.55")
-        (revision "1"))
+        (revision "2"))
     (package
       (name "boost-sync")
       (version (git-version version revision commit))
@@ -378,7 +378,7 @@ across a broad spectrum of applications.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "197mp5z048vz5kv1m4v3jm447l2gqsyv0rbfz11dz0ns343ihbyx"))))
+                  "0473hb15affjq2804xa99ikk4y1gzi46rygd9zhncl28ib7mnn26"))))
       (build-system trivial-build-system)
       (arguments
        `(#:modules ((guix build utils))
