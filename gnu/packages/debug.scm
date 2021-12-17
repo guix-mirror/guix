@@ -8,6 +8,7 @@
 ;;; Copyright © 2020, 2021 Morgan Smith <Morgan.J.Smith@outlook.com>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
+;;; Copyright © 2021 Foo Chuan Wei <chuanwei.foo@hotmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -61,6 +62,7 @@
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages serialization)
+  #:use-module (gnu packages texinfo)
   #:use-module (gnu packages virtualization)
   #:use-module (gnu packages xdisorg)
   #:use-module (ice-9 match)
@@ -745,6 +747,31 @@ smaller than that of other tools such as Valgrind, and it aims to be easier to
 use than similar tools like @command{mtrace}.")
     (license license:gpl2+)))
 
+(define-public cgdb
+  (package
+    (name "cgdb")
+    (version "0.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://cgdb.me/files/cgdb-" version ".tar.gz"))
+       (sha256
+        (base32 "1671gpz5gx5j0zga8xy2x7h33vqh3nij93lbb6dbb366ivjknwmv"))))
+    (build-system gnu-build-system)
+    (inputs
+     (list ncurses readline))
+    (native-inputs
+     (list flex texinfo))
+    (home-page "https://cgdb.github.io")
+    (synopsis "Console front-end to the GNU debugger")
+    (description
+     "@code{cgdb} is a lightweight curses (terminal-based) interface to the
+GNU Debugger (GDB).  In addition to the standard gdb console, cgdb provides
+a split screen view that displays the source code as it executes.  The
+keyboard interface is modeled after vim, so vim users should feel at home
+using cgdb.")
+    (license license:gpl2+)))
+
 (define-public mspdebug
   ;; Last official release was 24 July 2017
   (let ((commit "4c4d94e43bc4a18ecf82070ff81cd38dd5641e3b")
@@ -762,10 +789,10 @@ use than similar tools like @command{mtrace}.")
                  (base32 "1lgw1dsc1aglyja610ichadvgs5b0df3wlarinczb0ykf431gjln"))))
       (build-system gnu-build-system)
       (arguments
-       `(#:tests? #f                         ; no test suite
+       `(#:tests? #f                    ; no test suite
          #:phases
          (modify-phases %standard-phases
-           (delete 'configure))              ; no configure script
+           (delete 'configure))         ; no configure script
          #:make-flags
          (list (string-append "CC=" ,(cc-for-target))
                "INSTALL=install"
