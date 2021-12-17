@@ -45,7 +45,7 @@
 (define-public syncthing
   (package
     (name "syncthing")
-    (version "1.18.4")
+    (version "1.18.5")
     ; XXX After the go-build-system can use "Go modules", stop using bundled
     ; dependencies for Syncthing.
     (source (origin
@@ -55,7 +55,7 @@
                                   "/syncthing-source-v" version ".tar.gz"))
               (sha256
                (base32
-                "00kw1j2qi5ylbycv43n5177r3a3651qxhds927x6cz0a2b7qac8n"))))
+                "07yzhc8ilwv9r9cpqdzd1i1mcgi4875xbz9k4dfm5rkazvav8kf6"))))
     (build-system go-build-system)
     ;; The primary Syncthing executable goes to "out", while the auxiliary
     ;; server programs and utility tools go to "utils".  This reduces the size
