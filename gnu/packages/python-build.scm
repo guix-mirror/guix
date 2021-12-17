@@ -199,13 +199,13 @@ Python file, so it can be easily copied into your project.")
 (define-public python-pyparsing
   (package
     (name "python-pyparsing")
-    (version "2.4.7")
+    (version "3.0.6")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pyparsing" version))
        (sha256
-        (base32 "1hgc8qrbq1ymxbwfbjghv01fm3fbpjwpjwi0bcailxxzhf3yq0y2"))))
+        (base32 "109b9r802wb472hgmxclljprh5cid0w3p6mk9alba7pg2c0frgfr"))))
     (build-system python-build-system)
     (outputs '("out" "doc"))
     (arguments
@@ -234,8 +234,10 @@ Python file, so it can be easily copied into your project.")
 executing simple grammars, vs. the traditional lex/yacc approach, or the use
 of regular expressions.  The pyparsing module provides a library of classes
 that client code uses to construct the grammar directly in Python code.")
-    (license license:expat)))
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-pyparsing))))))
 
+;;; This is the last release compatible with Python 2.
 (define-public python-pyparsing-2.4.7
   (package
     (inherit python-pyparsing)
@@ -248,7 +250,7 @@ that client code uses to construct the grammar directly in Python code.")
         (base32 "1hgc8qrbq1ymxbwfbjghv01fm3fbpjwpjwi0bcailxxzhf3yq0y2"))))))
 
 (define-public python2-pyparsing
-  (package-with-python2 python-pyparsing))
+  (package-with-python2 (strip-python2-variant python-pyparsing-2.4.7)))
 
 (define-public python-packaging-bootstrap
   (package
@@ -258,9 +260,6 @@ that client code uses to construct the grammar directly in Python code.")
      (origin
        (method url-fetch)
        (uri (pypi-uri "packaging" version))
-       ;; XXX: The URL in the patch file is wrong, it should be
-       ;; <https://github.com/pypa/packaging/pull/256>.
-       (patches (search-patches "python-packaging-test-arch.patch"))
        (sha256
         (base32
          "1sygirdrqgv4f1ckh9nhpcw1yfidrh3qjl86wq8vk6nq4wlw8iyx"))))
