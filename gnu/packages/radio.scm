@@ -1224,19 +1224,7 @@ weak-signal conditions.")
                (("DESTINATION /usr/share")
                 (string-append "DESTINATION "
                                (assoc-ref outputs "out")
-                               "/share")))
-             #t))
-         (add-after 'fix-paths 'work-around-runtime-bug
-           (lambda _
-             ;; Some of the programs in this package fail to find symbols
-             ;; in libm at runtime. Adding libm manually at the end of the
-             ;; library lists when linking the programs seems to help.
-             ;; TODO: find exactly what is wrong in the way the programs
-             ;; are built.
-             (substitute* "CMakeLists.txt"
-               (("target_link_libraries \\((.*)\\)" all libs)
-                (string-append "target_link_libraries (" libs " m)")))
-             #t))
+                               "/share")))))
          (add-after 'unpack 'fix-hamlib
            (lambda _
              (substitute* "CMake/Modules/Findhamlib.cmake"
@@ -1246,8 +1234,7 @@ weak-signal conditions.")
   set (ENV{PKG_CONFIG_PATH} \"${__pc_path}\")"))
              (substitute* "HamlibTransceiver.hpp"
                (("#ifdef JS8_USE_LEGACY_HAMLIB")
-                "#if 1"))
-             #t)))))
+                "#if 1")))))))
     (synopsis "Weak-signal ham radio communication program")
     (description
      "JS8Call is a software using the JS8 digital mode (a derivative of the FT8
