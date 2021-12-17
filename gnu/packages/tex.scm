@@ -7513,6 +7513,41 @@ It also ensures compatibility with the @code{media9} and @code{animate} packages
 @end itemize\n")
     (license license:lppl1.3c+)))
 
+(define-public texlive-latex-numprint
+  (package
+    (name "texlive-latex-numprint")
+    (version (number->string %texlive-revision))
+    (source
+     (origin
+       (method svn-fetch)
+       (uri (texlive-ref "latex" "numprint"))
+       (file-name (string-append name "-" version "-checkout"))
+       (sha256
+        (base32 "00xyvdfvypfj2wj7wf2qrxpc34wwd0dkdv3bqvb86ydhlpn1jg76"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/numprint"))
+    (home-page "https://www.ctan.org/pkg/numprint")
+    (synopsis "Print numbers with separators and exponent if necessary")
+    (description
+     "The package numprint prints numbers with a separator every three
+digits and converts numbers given as 12345.6e789 to 12\\,345,6\\cdot
+10^{789}.  Numbers are printed in the current mode (text or math) in
+order to use the correct font.
+
+Many things, including the decimal sign, the thousand separator, as
+well as the product sign can be changed by the user, e.g., to reach
+12,345.6\\times 10^{789}.
+
+If an optional argument is given it is printed upright as unit.
+Numbers can be rounded to a given number of digits.  The package
+supports an automatic, language-dependent change of the number format.
+
+Tabular alignment using the tabular, array, tabularx, and longtable
+environments (similar to the dcolumn and rccol packages) is supported
+using all features of numprint.  Additional text can be added before
+and after the formatted number.")
+    (license license:lppl)))
+
 (define-public texlive-latex-needspace
   (package
     (name "texlive-latex-needspace")
