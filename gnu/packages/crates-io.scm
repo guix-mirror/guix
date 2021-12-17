@@ -58861,8 +58861,39 @@ be used directly.  See @code{rust-trackable} for more information.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-trash-2
+  (package
+    (name "rust-trash")
+    (version "2.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "trash" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1g3wjnr5qvgvvi144mlgf0mh80dybmy9zv2xyswpm55p5p5vdsyk"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-chrono" ,rust-chrono-0.4)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-objc" ,rust-objc-0.2)
+        ("rust-scopeguard" ,rust-scopeguard-1)
+        ("rust-url" ,rust-url-2)
+        ("rust-windows" ,rust-windows-0.9)
+        ("rust-windows" ,rust-windows-0.9))))
+    (home-page "https://github.com/ArturKovacs/trash-rs")
+    (synopsis "Library for moving files and folders to the recycle bin")
+    (description
+     "This package provides a library for moving files and folders to the
+recycle bin.")
+    (license license:expat)))
+
 (define-public rust-trash-1
   (package
+    (inherit rust-trash-2)
     (name "rust-trash")
     (version "1.3.0")
     (source
@@ -58872,17 +58903,10 @@ be used directly.  See @code{rust-trackable} for more information.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "04nmmh6pnlsdpgz24bwnjpyqcs66414w1sip9whlx0aln6prdpwh"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-winapi" ,rust-winapi-0.3))))
-    (home-page "https://github.com/ArturKovacs/trash-rs")
-    (synopsis "Library for moving files and folders to the recycle bin")
-    (description
-     "This package provides a library for moving files and folders to the
-recycle bin.")
-    (license license:expat)))
+       (("rust-winapi" ,rust-winapi-0.3))))))
 
 (define-public rust-tree-magic-0.2
   (package
