@@ -353,8 +353,7 @@ tests.")
         (base32 "0vnf0pk516fwwh41v96c29l2i7h1pnwhivlkbf53kkx1q35g7lb3"))))
     (build-system meson-build-system)
     (arguments
-     `(#:meson ,meson-0.59
-       #:glib-or-gtk? #t
+     `(#:glib-or-gtk? #t
        #:phases
        (modify-phases %standard-phases
          ;; AppInfo not available inside build environment.
@@ -1378,8 +1377,7 @@ message bus.")
         (base32 "16wwd633jak9ajyr1f1h047rmd09fhf3kzjz6g5xjsz0lwcj8azz"))))
     (build-system meson-build-system)
     (arguments
-     `(#:meson ,meson-0.59 ;see https://github.com/mesonbuild/meson/issues/6470
-       #:tests? #f ; XXX: tests require DocBook 4.1.2
+     `(#:tests? #f ; XXX: tests require DocBook 4.1.2
        #:configure-flags
        '("--localstatedir=/var"
          "-Dsystemdsystemunitdir=/tmp/empty"

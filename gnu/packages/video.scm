@@ -4387,9 +4387,6 @@ tools for styling them, including a built-in real-time video preview.")
        ("pkg-config" ,pkg-config)))
      (arguments
       `(#:glib-or-gtk? #t
-        ;; Pitivi is not yet compatible with Meson 0.60:
-        ;; https://gitlab.gnome.org/GNOME/pitivi/-/issues/2593
-        #:meson ,meson-0.59
         #:phases
         (modify-phases %standard-phases
           (add-after 'glib-or-gtk-wrap 'wrap-other-dependencies

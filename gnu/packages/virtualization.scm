@@ -1347,8 +1347,6 @@ to integrate other virtualization mechanisms if needed.")
                (base32
                 "1gdcvqz88qkp402zra9csc6391f2xki1270x683n6ixakl3gf8w4"))))
     (build-system meson-build-system)
-    (arguments
-     `(#:meson ,meson-0.59))          ;KeyError: 'install_dir' with meson 0.60
     (inputs
      (list openssl cyrus-sasl lvm2 ; for libdevmapper
            libyajl))

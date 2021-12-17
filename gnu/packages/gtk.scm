@@ -1809,12 +1809,6 @@ tutorial.")
                        name "-" version ".tar.xz"))
        (sha256
         (base32 "1ri2msp3cmzi6r65ghwb8gfavfaxv0axpwi3q60nm7v8hvg36qw5"))))
-    (arguments
-     (substitute-keyword-arguments (package-arguments gtkmm)
-       ;; Use meson 0.59 to workaround a new issue with meson 0.60 (see:
-       ;; https://github.com/mesonbuild/meson/issues/9350#issuecomment-953799600).
-       ((#:meson _ #f)
-        meson-0.59)))
     (propagated-inputs
      `(("atkmm-2.28" ,atkmm-2.28)
        ("cairomm-1.14" ,cairomm-1.14)
