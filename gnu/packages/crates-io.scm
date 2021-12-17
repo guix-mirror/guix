@@ -44156,8 +44156,45 @@ please consider using @code{async-std} or @code{tokio}.")
      "This package provides a Tokio-based asynchronous runtime.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-rusqlite-0.26
+  (package
+    (name "rust-rusqlite")
+    (version "0.26.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rusqlite" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "19sh4nnw1i7a6wacqllz20qpqpdj96jsg3dzaq61cwmd3ywv10la"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-byteorder" ,rust-byteorder-1)
+        ("rust-chrono" ,rust-chrono-0.4)
+        ("rust-csv" ,rust-csv-1)
+        ("rust-fallible-iterator" ,rust-fallible-iterator-0.2)
+        ("rust-fallible-streaming-iterator"
+         ,rust-fallible-streaming-iterator-0.1)
+        ("rust-hashlink" ,rust-hashlink-0.7)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-libsqlite3-sys" ,rust-libsqlite3-sys-0.23)
+        ("rust-memchr" ,rust-memchr-2)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-smallvec" ,rust-smallvec-1)
+        ("rust-time" ,rust-time-0.3)
+        ("rust-url" ,rust-url-2)
+        ("rust-uuid" ,rust-uuid-0.8))))
+    (home-page "https://github.com/rusqlite/rusqlite")
+    (synopsis "Wrapper for SQLite")
+    (description "This crate provides a wrapper for SQLite.")
+    (license license:expat)))
+
 (define-public rust-rusqlite-0.25
   (package
+    (inherit rust-rusqlite-0.26)
     (name "rust-rusqlite")
     (version "0.25.3")
     (source
@@ -44167,7 +44204,6 @@ please consider using @code{async-std} or @code{tokio}.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "1csfxb0jff78gzakva3bwgmm5g0dk90pnalc4krrdbzsr1kwzbap"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -44185,11 +44221,7 @@ please consider using @code{async-std} or @code{tokio}.")
         ("rust-smallvec" ,rust-smallvec-1)
         ("rust-time" ,rust-time-0.2)
         ("rust-url" ,rust-url-2)
-        ("rust-uuid" ,rust-uuid-0.8))))
-    (home-page "https://github.com/rusqlite/rusqlite")
-    (synopsis "Wrapper for SQLite")
-    (description "This crate provides a wrapper for SQLite.")
-    (license license:expat)))
+        ("rust-uuid" ,rust-uuid-0.8))))))
 
 (define-public rust-rusqlite-0.24
   (package
