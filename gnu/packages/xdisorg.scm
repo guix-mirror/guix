@@ -265,7 +265,7 @@ used to further tweak the behaviour of the different profiles.")
 (define-public bemenu
   (package
     (name "bemenu")
-    (version "0.6.3")
+    (version "0.6.4")
     (source
      (origin
        (method git-fetch)
@@ -274,7 +274,7 @@ used to further tweak the behaviour of the different profiles.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "03q26n796bjgz9q5pjx396rw5kyrdpn52dqi4v2bglnh7dy0r0jk"))))
+        (base32 "18vplvnymgc6576sdh84lm5rlwyb9d038plqpjs638hzskf4q577"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f
@@ -285,7 +285,7 @@ used to further tweak the behaviour of the different profiles.")
                           (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure))))
+         (delete 'configure))))         ; no configure script
     (inputs
      `(("cairo" ,cairo)
        ("libx11" ,libx11)
