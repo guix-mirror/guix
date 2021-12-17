@@ -1450,14 +1450,14 @@ NanoVNA vector network analyzers.")
 (define-public qsstv
   (package
     (name "qsstv")
-    (version "9.4.4")
+    (version "9.5.8")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://users.telenet.be/on4qz/qsstv/downloads/"
                            "qsstv_" version ".tar.gz"))
        (sha256
-        (base32 "0f9hx6sy418cb23fadll298pqbc5l2lxsdivi4vgqbkvx7sw58zi"))))
+        (base32 "0s3sivc0xan6amibdiwfnknrl3248wzgy98w6gyxikl0qsjpygy0"))))
     (build-system qt-build-system)
     (native-inputs
      (list pkg-config))
@@ -1474,16 +1474,10 @@ NanoVNA vector network analyzers.")
      `(#:tests? #f  ; No test suite.
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'fix-newer-hamlib-support
-           (lambda _
-             (substitute* "qsstv/rig/rigcontrol.cpp"
-               (("FILPATHLEN")
-                "HAMLIB_FILPATHLEN"))))
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
              (invoke "qmake"
-                     (string-append "PREFIX=" (assoc-ref outputs "out")))
-             #t)))))
+                     (string-append "PREFIX=" (assoc-ref outputs "out"))))))))
     (home-page "http://users.telenet.be/on4qz/qsstv/")
     (synopsis "Program for receiving and transmitting SSTV and HAMDRM")
     (description
