@@ -350,13 +350,13 @@ compatible build front-ends to build Poetry managed projects.")
 (define-public python-flit-core
   (package
     (name "python-flit-core")
-    (version "3.4.0")
+    (version "3.5.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "flit" version))
        (sha256
-        (base32 "10vjqnybvjdqdbmyc0asbhhvq51yjnnj00645yiq9849gnr8h0ir"))))
+        (base32 "04152qj46sqbnlrj7ch9p7svjrrlpzbk0qr39g2yr0s4f5vp6frf"))))
     (build-system python-build-system)
     (propagated-inputs
      (list python-toml))
