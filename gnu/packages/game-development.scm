@@ -1273,13 +1273,13 @@ developed mainly for Ren'py.")
 (define-public python2-renpy
   (package
     (name "python2-renpy")
-    (version "7.4.10")
+    (version "7.4.11")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.renpy.org/dl/" version
                            "/renpy-" version "-source.tar.bz2"))
-       (sha256 (base32 "1yngs2kh1l8micg28mcp9580qsvgq3aa8bkhv2xqfkg9qqrbr8y4"))
+       (sha256 (base32 "0zkhg2sd2hglm9dkansf4h8sq7lm7iqslzl763ambp4kyfdvd07q"))
        (modules '((guix build utils)))
        (patches
         (search-patches
