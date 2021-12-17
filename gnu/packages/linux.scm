@@ -3906,7 +3906,7 @@ devices that can inject events directly into the input subsystem.")
 (define-public interception-tools
   (package
     (name "interception-tools")
-    (version "0.6.7")
+    (version "0.6.8")
     (home-page "https://gitlab.com/interception/linux/tools")
     (source (origin
               (method git-fetch)
@@ -3916,7 +3916,7 @@ devices that can inject events directly into the input subsystem.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0wcmppa7092b33wb8vc782day5phf90pc25cn1x7rk0rlw565z36"))))
+                "1sbidym6ld4c8cx2ww5i54zsv8v0kygv15zq1yimz44v4my605wf"))))
     (build-system cmake-build-system)
     (native-inputs
      (list pkg-config))
@@ -3926,7 +3926,7 @@ devices that can inject events directly into the input subsystem.")
        ("libudev" ,eudev)
        ("yaml-cpp" ,yaml-cpp)))
     (arguments
-     `(#:tests? #f)) ; no test suite
+     `(#:tests? #f))                    ; no test suite
     (synopsis "Utilities for operating on input events of evdev devices")
     (description
      "Interception Tools provides a composable infrastructure on top of
