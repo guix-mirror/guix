@@ -1045,14 +1045,14 @@ synthesis, and on-the-fly re-configuration.")
 (define-public knot-resolver
   (package
     (name "knot-resolver")
-    (version "5.4.2")
+    (version "5.4.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://secure.nic.cz/files/knot-resolver/"
                                   "knot-resolver-" version ".tar.xz"))
               (sha256
                (base32
-                "12x5cd09rv530pak5f2smxcfq2zdqg0g5qxsd5k0alm7f6aj2spa"))))
+                "01m5s2kllr0apkg0bcfagzvijyfbivby03d1pjv3c0qrjgmjk1s8"))))
     (build-system meson-build-system)
     (outputs '("out" "doc"))
     (arguments
@@ -1064,8 +1064,7 @@ synthesis, and on-the-fly re-configuration.")
              ;;  Disable the default managed root TA, since we don't have
              ;;  write access to the keyfile and its directory in store.
              (substitute* "daemon/lua/sandbox.lua.in"
-               (("^trust_anchors\\.add_file.*") ""))
-             #t))
+               (("^trust_anchors\\.add_file.*") ""))))
          (add-after 'build 'build-doc
            (lambda _
              (invoke "ninja" "doc")))
@@ -1096,8 +1095,7 @@ synthesis, and on-the-fly re-configuration.")
                                  (string-append p "/lib/lua/5.1/?.so"))))
                (wrap-program (string-append out "/sbin/kresd")
                  `("LUA_PATH" ";" prefix ,(map lua-path lua-*))
-                 `("LUA_CPATH" ";" prefix ,(map lua-cpath lua-*)))
-               #t))))))
+                 `("LUA_CPATH" ";" prefix ,(map lua-cpath lua-*)))))))))
     (native-inputs
      (list cmocka ; for unit tests
            doxygen
