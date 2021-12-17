@@ -41118,14 +41118,14 @@ learnt from TrieMap and Sequence Trie.")
 (define-public rust-rand-0.8
   (package
     (name "rust-rand")
-    (version "0.8.3")
+    (version "0.8.4")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "rand" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0zldxfx4gi551n2fna4zz9ab22zsnzw1mj5hzi5nfs24dgkfgy8f"))))
+        (base32 "1n5wska2fbfj4dsfz8mc0pd0dgjlrb6c9anpk5mwym345rip6x9f"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
