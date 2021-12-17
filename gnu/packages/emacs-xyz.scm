@@ -26702,7 +26702,7 @@ other @code{helm-type-file} sources such as @code{helm-locate}.")
       (arguments
        (list
         #:make-flags
-        #~(list (string-append "CC=" ,(cc-for-target))
+        #~(list (string-append "CC=" #$(cc-for-target))
                 (string-append "INSTALL_PREFIX=" #$output "/bin"))
         #:phases
         #~(modify-phases %standard-phases
