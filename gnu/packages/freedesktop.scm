@@ -1589,7 +1589,7 @@ messaging clients such as Empathy, GNOME Shell or KDE Telepathy.")
 (define-public telepathy-mission-control
   (package
     (name "telepathy-mission-control")
-    (version "5.16.5")
+    (version "5.16.6")
     (source
      (origin
        (method url-fetch)
@@ -1597,7 +1597,7 @@ messaging clients such as Empathy, GNOME Shell or KDE Telepathy.")
                            "telepathy-mission-control/"
                            "telepathy-mission-control-" version ".tar.gz"))
        (sha256
-        (base32 "00xxv38cfdirnfvgyd56m60j0nkmsv5fz6p2ydyzsychicxl6ssc"))))
+        (base32 "0ibs575pfr0wmhfcw6ln6iz7gw2y45l3bah11rksf6g9jlwsxy1d"))))
     (build-system gnu-build-system)
     (native-inputs
      (list `(,glib "bin") ; for glib-compile-schemas, etc.
