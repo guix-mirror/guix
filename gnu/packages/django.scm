@@ -1014,7 +1014,7 @@ Django projects, which allows association of a number of tags with any
 (define-public python-djangorestframework
   (package
     (name "python-djangorestframework")
-    (version "3.12.4")
+    (version "3.13.1")
     (source
      (origin
        (method git-fetch)
@@ -1024,26 +1024,22 @@ Django projects, which allows association of a number of tags with any
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "16n17dw35wqv47m8k8fixn0yywrvd6v4r573yr4nx6lbbiyi2cqn"))))
+         "11wfb156yin6mlgcdzfmi267jsq1cld131mxgd13aqsrj06zlray"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda* (#:key tests? #:allow-other-keys)
-             ;; Add a fix from the master branch for compatibility with Django
-             ;; 3.2: https://github.com/encode/django-rest-framework/pull/7911
-             ;; Remove for versions > 3.12.4.
-             (substitute* "tests/test_fields.py"
-               (("class MockTimezone:")
-                "class MockTimezone(pytz.BaseTzInfo):"))
+           (lambda* (#:key tests? inputs #:allow-other-keys)
              (if tests?
-                 (invoke "python" "runtests.py" "--nolint")
+                 (begin
+                   (setenv "TZDIR" (search-input-directory inputs "share/zoneinfo"))
+                   (invoke "python" "runtests.py"))
                  (format #t "test suite not run~%")))))))
     (native-inputs
-     (list python-pytest python-pytest-django))
+     (list python-pytest python-pytest-django tzdata-for-tests))
     (propagated-inputs
-     (list python-django))
+     (list python-django python-pytz))
     (home-page "https://www.django-rest-framework.org")
     (synopsis "Toolkit for building Web APIs with Django")
     (description
