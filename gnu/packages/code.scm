@@ -269,7 +269,7 @@ COCOMO model or user-provided parameters.")
 (define-public cloc
   (package
     (name "cloc")
-    (version "1.90")
+    (version "1.92")
     (source
      (origin
        (method git-fetch)
@@ -278,7 +278,7 @@ COCOMO model or user-provided parameters.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0ic9q6qqw5f1wafp9lpmhr0miasbdb9zr59c0jlymnzffdmnliyc"))))
+        (base32 "1hy1hskiw02b7xaxn2qz0v7znj14l49w1anx20z6rkcps7212l5l"))))
     (build-system gnu-build-system)
     (inputs
      (list coreutils
@@ -299,15 +299,13 @@ COCOMO model or user-provided parameters.")
                                 (string-append "INSTALL="
                                                (assoc-ref inputs "coreutils")
                                                "/bin/install")
-                                "install")
-                        #t)))
+                                "install"))))
                   (add-after 'install 'wrap-program
                     (lambda* (#:key inputs outputs #:allow-other-keys)
                       (let ((out (assoc-ref outputs "out")))
                         (wrap-program (string-append out "/bin/cloc")
                           `("PERL5LIB" ":" =
-                            ,(string-split (getenv "PERL5LIB") #\:)))
-                        #t))))
+                            ,(string-split (getenv "PERL5LIB") #\:)))))))
        #:out-of-source? #t
        ;; Tests require some other packages.
        #:tests? #f))
