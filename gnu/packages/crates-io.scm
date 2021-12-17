@@ -15498,7 +15498,7 @@ other data.")
 (define-public rust-dirs-sys-0.3
   (package
     (name "rust-dirs-sys")
-    (version "0.3.5")
+    (version "0.3.6")
     (source
      (origin
        (method url-fetch)
@@ -15506,14 +15506,12 @@ other data.")
        (file-name
         (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "0ym5843xack45b1yjahrh3q2f72shnwf1dd2jncf9qsxf3sxg4wf"))))
+        (base32 "102pbpcrfhvhfyfnyvmvvwpl6mfvynh170f6ima6fyinxls6bn03"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-cfg-if" ,rust-cfg-if-0.1)
-        ("rust-libc" ,rust-libc-0.2)
-        ("rust-redox-users" ,rust-redox-users-0.3)
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-redox-users" ,rust-redox-users-0.4)
         ("rust-winapi" ,rust-winapi-0.3))))
     (inputs
      (list rust-cfg-if-0.1 rust-libc-0.2 rust-redox-users-0.3
