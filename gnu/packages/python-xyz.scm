@@ -10788,32 +10788,6 @@ reading and writing MessagePack data.")
     (home-page "https://pypi.org/project/msgpack/")
     (license license:asl2.0)))
 
-;; This msgpack library's name changed from "python-msgpack" to "msgpack" with
-;; release 0.5. Some packages like borg still call it by the old name for now.
-;; <https://bugs.gnu.org/30662>
-(define-public python-msgpack-transitional
-  (package
-    (inherit python-msgpack)
-    (name "python-msgpack-transitional")
-    (version "0.5.6")
-    (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "msgpack" version))
-              (sha256
-               (base32
-                "1hz2dba1nvvn52afg34liijsm7kn65cmn06dl0xbwld6bb4cis0f"))))
-    (arguments
-     (substitute-keyword-arguments (package-arguments python-msgpack)
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (add-after 'unpack 'configure-transitional
-             (lambda _
-               ;; Keep using the old name.
-               (substitute* "setup.py"
-                 (("TRANSITIONAL = False")
-                   "TRANSITIONAL = 1"))
-               #t))))))))
-
 (define-public python-netaddr
   (package
     (name "python-netaddr")
@@ -15918,29 +15892,25 @@ database, file, dict stores.  Cachy supports python versions 2.7+ and 3.2+.")
 (define-public poetry
   (package
     (name "poetry")
-    (version "1.1.11")
-    ;; Poetry can only be built from source with Poetry.
+    (version "1.1.12")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "poetry" version))
        (sha256
         (base32
-         "17pnf2j4adlm9fhyg5jkkvs8bzcigb6nj72vr0687fxybzsj4zbx"))))
+         "0rr54mvcfcv9cv6vw2122y28xvd2pwqpv2x8c8j5ayz3gwsy4rjw"))))
     (build-system python-build-system)
     (arguments
-     `(#:tests? #f ;; Pypi does not have tests.
+     `(#:tests? #f                      ;PyPI does not have tests
        #:phases
        (modify-phases %standard-phases
          (add-before 'build 'patch-setup-py
            (lambda _
              (substitute* "setup.py"
-               ;; Allow newer versions of python-keyring.
+               ;; Relax some of the requirements.
                (("(keyring>=21.2.0),<22.0.0" _ keyring) keyring)
-               ;; TODO: remove after the next release cycle,
-               ;; when packaging has been updated.
-               (("packaging>=20.4,<21.0") "packaging>=20.0,<21.0"))
-             #t)))))
+               (("(packaging>=20.4),<21.0" _ packaging) packaging)))))))
     (propagated-inputs
      (list python-cachecontrol
            python-cachy
@@ -15948,14 +15918,14 @@ database, file, dict stores.  Cachy supports python versions 2.7+ and 3.2+.")
            python-clikit
            python-html5lib
            python-keyring
-           python-msgpack-transitional
+           python-msgpack
            python-packaging
            python-pexpect
            python-pip
            python-pkginfo
            python-poetry-core
            python-requests
-           python-requests-toolbelt-0.9.1
+           python-requests-toolbelt
            python-shellingham
            python-tomlkit
            python-virtualenv))
