@@ -105,6 +105,11 @@
        ;; Run only the CI tests.  The default test target requires additional
        ;; add-ons from NPM that are not distributed with the source.
        #:test-target "test-ci-js"
+       #:modules
+       ((guix build gnu-build-system)
+        (guix build utils)
+        (srfi srfi-1)
+        (ice-9 match))
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'patch-hardcoded-program-references
@@ -240,21 +245,23 @@
                             (search-input-file inpts "/bin/python"))))
                       "configure"
                       flags))))
-         (add-after 'patch-shebangs 'patch-npm-shebang
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((bindir (string-append (assoc-ref outputs "out")
-                                           "/bin"))
-                    (npm    (string-append bindir "/npm"))
-                    (target (readlink npm)))
-               (with-directory-excursion bindir
-                 (patch-shebang target (list bindir))))))
-         (add-after 'install 'patch-node-shebang
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((bindir (string-append (assoc-ref outputs "out")
-                                           "/bin"))
-                    (npx    (readlink (string-append bindir "/npx"))))
-               (with-directory-excursion bindir
-                 (patch-shebang npx (list bindir)))))))))
+         (add-after 'patch-shebangs 'patch-nested-shebangs
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Based on the implementation of patch-shebangs
+             ;; from (guix build gnu-build-system).
+             (let ((path (append-map (match-lambda
+                                       ((_ . dir)
+                                        (list (string-append dir "/bin")
+                                              (string-append dir "/sbin")
+                                              (string-append dir "/libexec"))))
+                                     (append outputs inputs))))
+               (for-each
+                (lambda (file)
+                  (patch-shebang file path))
+                (find-files (search-input-directory outputs "lib/node_modules")
+                            (lambda (file stat)
+                              (executable-file? file))
+                            #:stat lstat))))))))
     (native-inputs
      `(;; Runtime dependencies for binaries used as a bootstrap.
        ("c-ares" ,c-ares)
@@ -283,6 +290,7 @@
            libuv
            `(,nghttp2 "lib")
            openssl
+           python-wrapper ;; for node-gyp (supports python3)
            zlib))
     (synopsis "Evented I/O for V8 JavaScript")
     (description "Node.js is a platform built on Chrome's JavaScript runtime
@@ -802,6 +810,7 @@ source files.")
            brotli
            `(,nghttp2 "lib")
            openssl
+           python-wrapper ;; for node-gyp (supports python3)
            zlib))))
 
 (define-public libnode
@@ -813,5 +822,4 @@ source files.")
         `(cons* "--shared" "--without-npm" ,flags))
        ((#:phases phases '%standard-phases)
         `(modify-phases ,phases
-           (delete 'patch-npm-shebang)
-           (delete 'patch-node-shebang)))))))
+           (delete 'patch-nested-shebangs)))))))
