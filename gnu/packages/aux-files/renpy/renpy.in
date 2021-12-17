@@ -1,0 +1,48 @@
+#! @PYTHON@
+# -*- mode: python -*-
+
+from __future__ import print_function
+
+import os
+import sys
+import warnings
+
+def path_to_common(renpy_base):
+    return renpy_base + "/common"
+
+def path_to_saves(gamedir, save_directory=None):
+    import renpy
+
+    if save_directory is None:
+        save_directory = renpy.config.save_directory
+        save_directory = renpy.exports.fsencode(save_directory)
+
+    if not save_directory:
+        return gamedir + "/saves"
+
+    return os.path.join(os.path.expanduser("~/.renpy"), save_directory)
+
+def main():
+    try:
+        import renpy.bootstrap
+        import renpy.arguments
+    except ImportError:
+        print("""Could not import renpy.bootstrap.
+Please ensure you decompressed Ren'py correctly, preserving the directory
+structure.""", file=sys.stderr)
+        raise
+
+    args = renpy.arguments.bootstrap()
+    if not args.basedir:
+        print("""This Ren'py requires a basedir to launch.
+The basedir is the directory, in which .rpy source files or compiled .rpyc files
+live -- usually the 'game' subdirectory of a game packaged by Ren'py.
+
+If you want the Ren'py launcher, use \"renpy-launcher\" instead.""",
+              file=sys.stderr)
+        sys.exit()
+
+    renpy.bootstrap.bootstrap("@RENPY_BASE@")
+
+if __name__ == "__main__":
+    main()

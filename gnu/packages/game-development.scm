@@ -1448,70 +1448,17 @@ are only used to bootstrap it.")
              ;;     `-- Super Awesome Game.sh
              (let* ((out (assoc-ref outputs "out"))
                     (bin/renpy (string-append out "/bin/renpy")))
-               (mkdir-p (string-append out "/bin"))
                (copy-recursively "renpy/common"
                                  (string-append out "/share/renpy/common"))
                (copy-recursively "gui"
                                  (string-append out "/share/renpy/gui"))
 
-               (call-with-output-file bin/renpy
-                 (lambda (port)
-                   (format port "#!~a/bin/python2~%"
-                           (assoc-ref inputs "python2"))
-                   (format port "
-from __future__ import print_function
-
-import os
-import sys
-import warnings
-
-def path_to_common(renpy_base):
-    return renpy_base + \"/common\"
-
-def path_to_saves(gamedir, save_directory=None):
-    import renpy  # @UnresolvedImport
-
-    if save_directory is None:
-        save_directory = renpy.config.save_directory
-        save_directory = renpy.exports.fsencode(save_directory)
-
-    if not save_directory:
-        return gamedir + \"/saves\"
-
-    return os.path.expanduser(\"~~/.renpy/\" + save_directory)
-
-def path_to_renpy_base():
-    return \"~a\"
-
-def main():
-    renpy_base = path_to_renpy_base()
-    try:
-        import renpy.bootstrap
-        import renpy.arguments
-    except ImportError:
-        print(\"\"\"Could not import renpy.bootstrap.
-Please ensure you decompressed Ren'Py correctly, preserving the directory
-structure.\"\"\", file=sys.stderr)
-        raise
-
-    args = renpy.arguments.bootstrap()
-    if not args.basedir:
-        print(\"\"\"This Ren'py requires a basedir to launch.
-The basedir is the directory, in which .rpy files live -- usually the 'game'
-subdirectory of a game packaged by Ren'py.
-
-If you want the Ren'py launcher, use renpy-launcher instead.\"\"\",
-              file=sys.stderr)
-        sys.exit()
-
-    renpy.bootstrap.bootstrap(renpy_base)
-
-if __name__ == \"__main__\":
-    main()
-"
-                           (string-append out "/share/renpy"))))
-               (chmod bin/renpy #o755)
-               #t)))
+               (mkdir-p (string-append out "/bin"))
+               (copy-file (assoc-ref inputs "renpy.in") bin/renpy)
+               (substitute* bin/renpy
+                 (("@PYTHON@") (search-input-file inputs "bin/python2"))
+                 (("@RENPY_BASE@") (string-append out "/share/renpy")))
+               (chmod bin/renpy #o755))))
 
          (add-after 'install 'install-games
            (lambda* (#:key outputs #:allow-other-keys)
@@ -1565,7 +1512,8 @@ if __name__ == \"__main__\":
                                     inputs))))))))
                #t))))))
     (inputs
-     `(("python2-renpy" ,python2-renpy)
+     `(("renpy.in" ,(search-auxiliary-file "renpy/renpy.in"))
+       ("python2-renpy" ,python2-renpy)
        ("python2-tkinter" ,python-2 "tk")
        ("python2" ,python-2) ; for ‘fix-commands’ and ‘wrap’
        ("xdg-utils" ,xdg-utils)))

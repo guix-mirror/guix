@@ -405,6 +405,7 @@ AUX_FILES =						\
   gnu/packages/aux-files/pack-audit.c			\
   gnu/packages/aux-files/python/sanity-check.py		\
   gnu/packages/aux-files/python/sitecustomize.py	\
+  gnu/packages/aux-files/renpy/renpy.in	\
   gnu/packages/aux-files/run-in-namespace.c
 
 # Templates, examples.
