@@ -27085,15 +27085,14 @@ nor a system allocator.")
 (define-public rust-libc-0.2
   (package
     (name "rust-libc")
-    (version "0.2.101")
+    (version "0.2.109")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "libc" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "08dsmvn397ph8gnj552k12gmpp2rk6p60jyliqnfvr8vhwv07c1w"))))
+        (base32 "00csj3xfm5y09n1jlza3a5gqq66hf27lh0qkhi14h61pwkf092pr"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
