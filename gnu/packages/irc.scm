@@ -166,6 +166,7 @@ irssi, but graphical.")
                (setenv "CONFIG_SHELL" (which "bash"))
                (invoke "./configure"
                        (string-append "--prefix=" out)
+                       (string-append "--enable-true-color")
                        (string-append "--with-proxy")
                        (string-append "--with-socks")
                        (string-append "--with-bot")))))
@@ -173,7 +174,7 @@ irssi, but graphical.")
            (lambda _
              (setenv "HOME" (getcwd)))))))
     (inputs
-     (list glib ncurses openssl perl))
+     (list glib ncurses openssl perl utf8proc))
     (native-inputs
      (list pkg-config))
     (home-page "https://irssi.org/")
