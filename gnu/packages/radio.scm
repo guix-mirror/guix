@@ -1683,14 +1683,14 @@ Compatible hardware/software:
 (define-public dream
   (package
     (name "dream")
-    (version "2.1.1")
+    (version "2.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/drm/dream/" version
-                           "/dream-" version "-svn808.tar.gz"))
+                           "/dream_" version ".orig.tar.gz"))
        (sha256
-        (base32 "01dv6gvljz64zrjbr08mybr9aicvpq2c6qskww46lngdjyhk8xs1"))))
+        (base32 "0mpg341b0vnm6ym0cag9zri9w6kw012rv68zdmmi2hlvq7iiw8gp"))))
     (build-system qt-build-system)
     (native-inputs
      (list pkg-config))
