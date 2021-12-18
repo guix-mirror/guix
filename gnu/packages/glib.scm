@@ -760,8 +760,7 @@ by GDBus included in Glib.")
     (outputs '("out" "doc"))
     (arguments
      `(#:configure-flags
-       (list
-        "-Dbuild-documentation=true")
+       (list "-Dbuild-documentation=true")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'disable-failing-tests
@@ -772,8 +771,7 @@ by GDBus included in Glib.")
                (("[ \t]*.*giomm_simple.*$") "")
                ;; This test does a DNS lookup, and then expects to be able
                ;; to open a TLS session; just skip it.
-               (("[ \t]*.*giomm_tls_client.*$") ""))
-             #t))
+               (("[ \t]*.*giomm_tls_client.*$") ""))))
          (add-after 'install 'move-doc
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -781,8 +779,7 @@ by GDBus included in Glib.")
                (mkdir-p (string-append doc "/share"))
                (rename-file
                 (string-append out "/share/doc")
-                (string-append doc "/share/doc"))
-               #t))))))
+                (string-append doc "/share/doc"))))))))
     (native-inputs
      `(("dot" ,graphviz)
        ("doxygen" ,doxygen)
