@@ -163,64 +163,6 @@ defined in The Java Language Specification into the bytecoded instruction set
 and binary format defined in The Java Virtual Machine Specification.")
     (license license:ibmpl1.0)))
 
-(define-public drip
-  ;; Last release is from 2014, with a few important commits afterwards.
-  (let ((commit "a4bd00df0199e78243847f06cc04ecaea31f8f08"))
-    (package
-      (name "drip")
-      (version (git-version "0.2.4" "1" commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/ninjudd/drip")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "0wzmjwfyldr3jn49517xd8yn7dgdk8h88qkga3kjyg1zc375ylg2"))))
-      (build-system gnu-build-system)
-      (native-inputs
-       `(("jdk" ,icedtea "jdk")))
-      (arguments
-       `(#:tests? #f                    ; No tests.
-         #:phases
-         (modify-phases %standard-phases
-           (delete 'configure)
-           (add-before 'install 'fix-wrapper
-             (lambda* (#:key inputs #:allow-other-keys)
-               (let ((jps (search-input-file inputs "/bin/jps")))
-                 (substitute* "bin/drip"
-                   (("jps") jps)
-                   (("brew update && brew upgrade drip") "guix pull && guix install drip")
-                   ;; No need to make:
-                   (("\\(cd -- \"\\$drip_dir\" && make -s\\) \\|\\| exit 1") "")
-                   ;; No need to include source:
-                   (("\\[\\[ -r \\$drip_dir/src/org/flatland/drip/Main\\.java \\]\\]")
-                    "true"))
-                 #t)))
-           (replace 'install
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out"))
-                      (bin (string-append out "/bin"))
-                      (share (string-append out "/share/drip")))
-                 (mkdir-p bin)
-                 (for-each
-                  (lambda (file)
-                    (install-file (string-append "bin/" file) bin))
-                  '("drip" "drip_daemon" "drip_proxy"))
-                 (install-file "drip.jar" share)
-                 (substitute* (string-append bin "/drip")
-                   (("drip_dir=\\$bin_dir/..")
-                    (string-append "drip_dir=" share)))
-                 #t))))))
-      (home-page "https://github.com/ninjudd/drip")
-      (synopsis "Faster Java Virtual Machine launching")
-      (description "Drip is a launcher for the Java Virtual Machine that
-provides much faster startup times than the @command{java} command.  The @command{drip}
-script is intended to be a drop-in replacement for the @command{java} command,
-only faster.")
-      (license license:epl1.0))))
-
 ;; This is the last version of GNU Classpath that can be built without ECJ.
 (define classpath-bootstrap
   (package
@@ -2477,6 +2419,64 @@ new Date();"))
     (inputs
      (modify-inputs (package-inputs ant/java8)
        (prepend java-junit)))))
+
+(define-public drip
+  ;; Last release is from 2014, with a few important commits afterwards.
+  (let ((commit "a4bd00df0199e78243847f06cc04ecaea31f8f08"))
+    (package
+      (name "drip")
+      (version (git-version "0.2.4" "1" commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/ninjudd/drip")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0wzmjwfyldr3jn49517xd8yn7dgdk8h88qkga3kjyg1zc375ylg2"))))
+      (build-system gnu-build-system)
+      (native-inputs
+       `(("jdk" ,icedtea "jdk")))
+      (arguments
+       `(#:tests? #f                    ; No tests.
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (add-before 'install 'fix-wrapper
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((jps (search-input-file inputs "/bin/jps")))
+                 (substitute* "bin/drip"
+                   (("jps") jps)
+                   (("brew update && brew upgrade drip") "guix pull && guix install drip")
+                   ;; No need to make:
+                   (("\\(cd -- \"\\$drip_dir\" && make -s\\) \\|\\| exit 1") "")
+                   ;; No need to include source:
+                   (("\\[\\[ -r \\$drip_dir/src/org/flatland/drip/Main\\.java \\]\\]")
+                    "true"))
+                 #t)))
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin (string-append out "/bin"))
+                      (share (string-append out "/share/drip")))
+                 (mkdir-p bin)
+                 (for-each
+                  (lambda (file)
+                    (install-file (string-append "bin/" file) bin))
+                  '("drip" "drip_daemon" "drip_proxy"))
+                 (install-file "drip.jar" share)
+                 (substitute* (string-append bin "/drip")
+                   (("drip_dir=\\$bin_dir/..")
+                    (string-append "drip_dir=" share)))
+                 #t))))))
+      (home-page "https://github.com/ninjudd/drip")
+      (synopsis "Faster Java Virtual Machine launching")
+      (description "Drip is a launcher for the Java Virtual Machine that
+provides much faster startup times than the @command{java} command.  The @command{drip}
+script is intended to be a drop-in replacement for the @command{java} command,
+only faster.")
+      (license license:epl1.0))))
 
 (define-public java-openjfx-build
   (package
