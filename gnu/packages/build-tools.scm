@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Corentin Bocquillon <corentin@nybble.fr>
-;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;; Copyright © 2018 Tomáš Čech <sleep_walker@gnu.org>
 ;;; Copyright © 2018, 2020 Marius Bakke <mbakke@fastmail.com>
@@ -102,25 +102,27 @@ makes a few sacrifices to acquire fast full and incremental build times.")
 (define-public bear
   (package
     (name "bear")
-    (version "3.0.16")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/rizsotto/Bear")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (patches (search-patches
-                        "bear-disable-preinstall-tests.patch"))
-              (sha256
-               (base32
-                "01giv11nhjp4pvw8ssf8bxf503pabwnwnvfzmrxyxixnairwmykg"))))
+    (version "3.0.17")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rizsotto/Bear")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0klbk99qphibrp2944w8gn6x1dwwgrbm7f2bh530wjp5h3bpkr45"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'disable-TEST_BEFORE_INSTALL
+                    (lambda _
+                      (substitute* "CMakeLists.txt"
+                        ;; Delete the matching line—and comment out the next.
+                        ((".*TEST_(BEFORE_INSTALL|COMMAND).*") "#"))))
                   (add-before 'check 'set-build-environment
                     (lambda _
-                      (setenv "CC" "gcc")
-                      #t))
+                      (setenv "CC" "gcc")))
                   ;; TODO: Test Configuration is Incomplete
                   (replace 'check
                     (lambda _
