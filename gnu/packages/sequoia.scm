@@ -249,6 +249,38 @@ defaults).
 This Guix package is built to use the nettle cryptographic library.")
     (license license:lgpl2.0+)))
 
+(define-public rust-sequoia-openpgp-0.9
+  (package
+    (inherit rust-sequoia-openpgp-1)
+    (name "rust-sequoia-openpgp")
+    (version "0.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "sequoia-openpgp" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "007h2pi7lcph5jf5bxjydm7hjwjai33yk6dic3cxknki22lxlkfw"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-base64" ,rust-base64-0.9)
+        ("rust-buffered-reader" ,rust-buffered-reader-0.9)
+        ("rust-bzip2" ,rust-bzip2-0.3)
+        ("rust-failure" ,rust-failure-0.1)
+        ("rust-flate2" ,rust-flate2-1)
+        ("rust-idna" ,rust-idna-0.1)
+        ("rust-lalrpop" ,rust-lalrpop-0.17)
+        ("rust-lalrpop-util" ,rust-lalrpop-util-0.17)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-memsec" ,rust-memsec-0.5)
+        ("rust-nettle" ,rust-nettle-5)
+        ("rust-quickcheck" ,rust-quickcheck-0.8)
+        ("rust-rand" ,rust-rand-0.6)
+        ("rust-sequoia-rfc2822" ,rust-sequoia-rfc2822-0.9)
+        ("rust-time" ,rust-time-0.1))))))
+
 (define-public sequoia-sq
   (package
     (name "sequoia-sq")
