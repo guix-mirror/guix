@@ -506,64 +506,62 @@ requirement for all GNU Classpath releases after version 0.93.")
     (arguments
      `(#:modules ((guix build utils))
        #:builder
-       (begin
-         (use-modules (guix build utils))
-         (let* ((bin    (string-append (assoc-ref %outputs "out") "/bin"))
-                (target (string-append bin "/javac"))
-                (guile  (string-append (assoc-ref %build-inputs "guile")
-                                       "/bin/guile"))
-                (ecj    (string-append (assoc-ref %build-inputs "ecj-bootstrap")
-                                       "/share/java/ecj-bootstrap.jar"))
-                (java   (string-append (assoc-ref %build-inputs "jamvm")
-                                       "/bin/jamvm"))
-                (bootcp (let ((jvmlib (string-append (assoc-ref %build-inputs "classpath")
-                                                     "/share/classpath")))
-                          (string-append jvmlib "/glibj.zip:"
-                                         jvmlib "/tools.zip"))))
-           (mkdir-p bin)
-           (with-output-to-file target
-             (lambda _
-               (format #t "#!~a --no-auto-compile\n!#\n" guile)
-               (write
-                `(begin (use-modules (ice-9 match)
-                                     (ice-9 receive)
-                                     (ice-9 hash-table)
-                                     (srfi srfi-1)
-                                     (srfi srfi-26))
-                        (define defaults
-                          '(("-bootclasspath" ,bootcp)
-                            ("-source" "1.5")
-                            ("-target" "1.5")
-                            ("-cp"     ".")))
-                        (define (main args)
-                          (let ((classpath (getenv "CLASSPATH")))
-                            (setenv "CLASSPATH"
-                                    (string-join (list ,ecj (or classpath ""))
-                                                 ":")))
-                          (receive (vm-args other-args)
-                              ;; Separate VM arguments from arguments to ECJ.
-                              (partition (cut string-prefix? "-J" <>)
-                                         (fold (lambda (default acc)
-                                                 (if (member (first default) acc)
-                                                     acc (append default acc)))
-                                               args defaults))
-                            (apply system* ,java
-                                   (append
-                                    ;; Remove "-J" prefix
-                                    (map (cut string-drop <> 2) vm-args)
-                                    '("org.eclipse.jdt.internal.compiler.batch.Main")
-                                    (cons "-nowarn" other-args)))))
-                        ;; Entry point
-                        (let ((args (cdr (command-line))))
-                          (if (null? args)
-                              (format (current-error-port) "javac: no arguments given!\n")
-                              (main args)))))))
-           (chmod target #o755)))))
+       ,#~(begin
+            (use-modules (guix build utils))
+            (let* ((bin    (string-append #$output "/bin"))
+                   (target (string-append bin "/javac"))
+                   (guile  (string-append (assoc-ref %build-inputs "guile")
+                                          "/bin/guile"))
+                   (ecj    (string-append #$(this-package-native-input "ecj-bootstrap")
+                                          "/share/java/ecj-bootstrap.jar"))
+                   (java   (string-append #$(this-package-native-input "jamvm")
+                                          "/bin/jamvm"))
+                   (bootcp (let ((jvmlib (string-append
+                                          #$(this-package-native-input "classpath")
+                                          "/share/classpath")))
+                             (string-append jvmlib "/glibj.zip:"
+                                            jvmlib "/tools.zip"))))
+              (mkdir-p bin)
+              (with-output-to-file target
+                (lambda _
+                  (format #t "#!~a --no-auto-compile\n!#\n" guile)
+                  (write
+                   `(begin (use-modules (ice-9 match)
+                                        (ice-9 receive)
+                                        (ice-9 hash-table)
+                                        (srfi srfi-1)
+                                        (srfi srfi-26))
+                           (define defaults
+                             '(("-bootclasspath" ,bootcp)
+                               ("-source" "1.5")
+                               ("-target" "1.5")
+                               ("-cp"     ".")))
+                           (define (main args)
+                             (let ((classpath (getenv "CLASSPATH")))
+                               (setenv "CLASSPATH"
+                                       (string-join (list ,ecj (or classpath ""))
+                                                    ":")))
+                             (receive (vm-args other-args)
+                                 ;; Separate VM arguments from arguments to ECJ.
+                                 (partition (cut string-prefix? "-J" <>)
+                                            (fold (lambda (default acc)
+                                                    (if (member (first default) acc)
+                                                        acc (append default acc)))
+                                                  args defaults))
+                               (apply system* ,java
+                                      (append
+                                          ;; Remove "-J" prefix
+                                          (map (cut string-drop <> 2) vm-args)
+                                          '("org.eclipse.jdt.internal.compiler.batch.Main")
+                                        (cons "-nowarn" other-args)))))
+                           ;; Entry point
+                           (let ((args (cdr (command-line))))
+                             (if (null? args)
+                                 (format (current-error-port) "javac: no arguments given!\n")
+                                 (main args)))))))
+              (chmod target #o755)))))
     (native-inputs
-     `(("guile" ,guile-3.0)
-       ("ecj-bootstrap" ,ecj-bootstrap)
-       ("jamvm" ,jamvm-1-bootstrap)
-       ("classpath" ,classpath-bootstrap)))
+     (list guile-3.0 ecj-bootstrap jamvm-1-bootstrap classpath-bootstrap))
     (description "This package provides a wrapper around the @dfn{Eclipse
 compiler for Java} (ecj) with a command line interface that is compatible with
 the standard javac executable.")))
