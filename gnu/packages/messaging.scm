@@ -138,6 +138,7 @@
   #:use-module (guix build-system qt)
   #:use-module (guix build-system trivial)
   #:use-module (guix download)
+  #:use-module (guix gexp)
   #:use-module (guix git-download)
   #:use-module (guix hg-download)
   #:use-module ((guix licenses) #:prefix license:)
@@ -1702,30 +1703,30 @@ instant messenger with audio and video chat capabilities.")
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system cmake-build-system)
     (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-reproducibility-issues
-           (lambda _
-             (substitute* "src/main.cpp"
-               (("__DATE__") "\"\"")
-               (("__TIME__") "\"\"")
-               (("TIMESTAMP") "\"\""))
-             #t))
-         (add-after 'unpack 'disable-network-tests
-           (lambda _
-             ;; These tests require network access.
-             (substitute* "cmake/Testing.cmake"
-               (("auto_test\\(core core\\)") "# auto_test(core core)")
-               (("auto_test\\(net bsu\\)") "# auto_test(net bsu)"))
-             #t))
-         ;; Ensure that icons are found at runtime.
-         (add-after 'install 'wrap-executable
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (wrap-program (string-append out "/bin/qtox")
-                 `("QT_PLUGIN_PATH" prefix
-                   ,(list (string-append (assoc-ref inputs "qtsvg")
-                                         "/lib/qt5/plugins/"))))))))))
+     (list #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'unpack 'fix-reproducibility-issues
+                 (lambda _
+                   (substitute* "src/main.cpp"
+                     (("__DATE__") "\"\"")
+                     (("__TIME__") "\"\"")
+                     (("TIMESTAMP") "\"\""))))
+               (add-after 'unpack 'disable-network-tests
+                 (lambda _
+                   ;; These tests require network access.
+                   (substitute* "cmake/Testing.cmake"
+                     (("auto_test\\(core core\\)") "# auto_test(core core)")
+                     (("auto_test\\(net bsu\\)") "# auto_test(net bsu)"))))
+               ;; Ensure that icons are found at runtime.
+               (add-after 'install 'wrap-executable
+                 (lambda* (#:key inputs outputs #:allow-other-keys)
+                   (let ((out (assoc-ref outputs "out")))
+                     (wrap-program (string-append out "/bin/qtox")
+                       `("QT_PLUGIN_PATH" prefix
+                         ,(list (search-input-directory
+                                 inputs "lib/qt5/plugins/"))))))))))
+    (native-inputs
+     (list pkg-config qttools))
     (inputs
      (list ffmpeg
            filteraudio
@@ -1743,9 +1744,6 @@ instant messenger with audio and video chat capabilities.")
            qtbase-5
            qtsvg
            sqlcipher))
-    (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("qmake" ,qttools)))
     (home-page "https://qtox.github.io/")
     (synopsis "Tox chat client using Qt")
     (description "qTox is a Tox client that follows the Tox design
