@@ -253,10 +253,7 @@ only faster.")
          (add-after 'install 'install-data
            (lambda _ (invoke "make" "install-data"))))))
     (native-inputs
-     `(("jikes" ,jikes)
-       ("fastjar" ,fastjar)
-       ("libltdl" ,libltdl)
-       ("pkg-config" ,pkg-config)))
+     (list jikes fastjar libltdl pkg-config))
     (home-page "https://www.gnu.org/software/classpath/")
     (synopsis "Essential libraries for Java")
     (description "GNU Classpath is a project to create core class libraries
