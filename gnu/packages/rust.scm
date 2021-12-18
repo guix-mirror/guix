@@ -122,7 +122,7 @@
 ;;; to be used in source form.  The latest support for bootstrapping from
 ;;; 1.39.0 is not yet released so use the latest commit (see:
 ;;; https://github.com/thepowersgang/mrustc/issues/185).
-(define %mrustc-commit "474bec9cfd7862a20e7288cecd7fcf5e18648b9a")
+(define %mrustc-commit "c7066542f8e93d320323749216bf3c82aecb67c2")
 (define %mrustc-source
   (let* ((version "0.9")
          (commit %mrustc-commit)
@@ -136,7 +136,7 @@
       (file-name (git-file-name name (git-version version revision commit)))
       (sha256
        (base32
-        "1zacz5qia0r457mv74wvrvznnv4az5g2w9j8ji9ssy727wljhvz7")))))
+        "0zv1x6601s5fnnkcdlqkc4bknisqz569qb0iyb9rjsmaf1kh0na3")))))
 
 ;;; Rust 1.39 is special in that it is built with mrustc, which shortens the
 ;;; bootstrap path.
