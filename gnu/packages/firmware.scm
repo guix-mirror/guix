@@ -281,7 +281,7 @@ for platform-specific firmwares executing in M-mode.")
 (define-public seabios
   (package
     (name "seabios")
-    (version "1.14.0")
+    (version "1.15.0")
     (source
      (origin
        (method git-fetch)
@@ -290,25 +290,22 @@ for platform-specific firmwares executing in M-mode.")
              (commit (string-append "rel-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0jp4rxsv9jdzvx4gjvkybj6g1yjg8pkd2wys4sdh6c029npp6y8p"))))
+        (base32 "0gnsfmbgcvihsap8sz8c2n3qs439q44i3pwrms2nv3xcnf1sclj9"))))
     (build-system gnu-build-system)
-    (native-inputs
-     `(("python" ,python-wrapper)))
+    (native-inputs (list python-wrapper))
     (arguments
      `(#:tests? #f                      ; no check target
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
            (lambda _
-             (setenv "CC" "gcc")
-             #t))
+             (setenv "CC" "gcc")))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (fmw (string-append out "/share/firmware")))
                (mkdir-p fmw)
-               (copy-file "out/bios.bin" (string-append fmw "/bios.bin"))
-               #t))))))
+               (copy-file "out/bios.bin" (string-append fmw "/bios.bin"))))))))
     (home-page "https://www.seabios.org/SeaBIOS")
     (synopsis "x86 BIOS implementation")
     (description "SeaBIOS is an implementation of a 16bit x86 BIOS.  SeaBIOS
