@@ -4820,9 +4820,20 @@ transitions, and effects and then export your film to many common formats.")
         (base32 "1l27dqiyi3af0v155w62ib9xcmqyjj2yzs83aqhcrz5pb3i3j18r"))))
     (build-system qt-build-system)
     (arguments
-     `(#:tests? #f ;there are no tests
+     `(#:tests? #f                      ;there are no tests
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-executable-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Shotcut expects ffmpeg and melt executables in the shotcut
+             ;; directory.  Use full store paths.
+             (let* ((ffmpeg (assoc-ref inputs "ffmpeg"))
+                    (mlt (assoc-ref inputs "mlt")))
+               (substitute* "src/jobs/ffmpegjob.cpp"
+                 (("\"ffmpeg\"") (string-append "\"" ffmpeg "/bin/ffmpeg\"")))
+               (substitute* "src/jobs/meltjob.cpp"
+                 (("\"melt\"") (string-append "\"" mlt "/bin/melt\""))
+                 (("\"melt-7\"") (string-append "\"" mlt "/bin/melt-7\""))))))
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out")))
