@@ -83,10 +83,8 @@ in PACKAGE-OUTPUT of PACKAGE.  The extension will be signed with SIGNING-KEY."
            (system (string-append xvfb " :1 &"))
            (setenv "DISPLAY" ":1")
            (sleep 2)                    ;give Xorg some time to initialize...
-           ;; Chromium stores the current time in the .crx Zip archive.
-           ;; Use a fixed timestamp for deterministic behavior.
            (invoke chromium
-                   "--user-data-dir=/tmp/signing-profile"
+                   "--user-data-dir=chromium-profile"
                    (string-append "--pack-extension=" packdir)
                    (string-append "--pack-extension-key=" #$signing-key))
            (copy-file (string-append packdir ".crx") #$output))))
