@@ -39,37 +39,6 @@
 (define-public rsync
   (package
    (name "rsync")
-   (version "3.1.3")
-   (source (origin
-            (method url-fetch)
-            (uri (string-append "https://rsync.samba.org/ftp/rsync/src/rsync-"
-                                version ".tar.gz"))
-            (sha256
-             (base32
-              "1h0011dj6jgqpgribir4anljjv7bbrdcs8g91pbsmzf5zr75bk2m"))))
-   (build-system gnu-build-system)
-   (arguments
-    `(#:configure-flags
-      ;; The bundled copies are preferred by default.
-      (list "--without-included-zlib"
-            "--without-included-popt")))
-   (native-inputs
-    (list perl))
-   (inputs
-    (list acl popt zlib))
-   (synopsis "Remote (and local) file copying tool")
-   (description
-    "Rsync is a fast and versatile file copying tool.  It can copy locally,
-to/from another host over any remote shell, or to/from a remote rsync daemon.
-Its delta-transfer algorithm reduces the amount of data sent over the network
-by sending only the differences between the source files and the existing
-files in the destination.")
-   (license license:gpl3+)
-   (home-page "https://rsync.samba.org/")))
-
-(define-public rsync-next
-  (package
-   (name "rsync")
    (version "3.2.3")
    (source (origin
             (method url-fetch)
@@ -89,12 +58,12 @@ files in the destination.")
    (native-inputs
     (list perl))
    (inputs
-    `(("acl" ,acl)
-      ("lz4" ,lz4)
-      ("popt" ,popt)
-      ("xxhash" ,xxhash)
-      ("zlib" ,zlib)
-      ("zstd:lib" ,zstd "lib")))
+    (list acl
+          lz4
+          popt
+          xxhash
+          zlib
+          `(,zstd "lib")))
    (synopsis "Remote (and local) file copying tool")
    (description
     "Rsync is a fast and versatile file copying tool.  It can copy locally,
