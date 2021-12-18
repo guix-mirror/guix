@@ -392,7 +392,8 @@ the wrong hands.")
                           "INCLUDEDIR=/include"
                           "LIBDIR=/lib"
                           "MANDIR=/share/man"
-                          "SHAREDIR=/share/keyutils")
+                          "SHAREDIR=/share/keyutils"
+                          "NO_ARLIB=1") ; omit static libraries
        #:test-target "test"))
     (inputs
      (list mit-krb5))
