@@ -6526,7 +6526,7 @@ This package contains the basic DUNE grid classes.")
 (define-public dune-istl
   (package
     (name "dune-istl")
-    (version "2.7.0")
+    (version "2.7.1")
     (source
      (origin
        (method url-fetch)
@@ -6534,8 +6534,7 @@ This package contains the basic DUNE grid classes.")
                            version "/dune-istl-" version ".tar.gz"))
        (sha256
         (base32
-         "0gl3wgz5rs6sb4m83440ny45sbx7z7lnbi3gx6r9nm3rvy5j33f9"))
-       (patches (search-patches "dune-istl-2.7-fix-non-mpi-tests.patch"))))
+         "1cy69s1266hvnh8blznlvvkrf8i2g640rc3mf7kp872wgvdz4nb9"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -6553,8 +6552,12 @@ This package contains the basic DUNE grid classes.")
                         ":"))
                #t)))
          (add-after 'build 'build-tests
-           (lambda* (#:key make-flags #:allow-other-keys)
-             (apply invoke "make" "build_tests" make-flags))))))
+           (lambda* (#:key make-flags parallel-build? #:allow-other-keys)
+             (apply invoke "make" "build_tests"
+                    `(,@(if parallel-build?
+                            `("-j" ,(number->string (parallel-job-count)))
+                            '())
+                      ,@make-flags)))))))
     (inputs
      (list dune-common
            ;; Optional
