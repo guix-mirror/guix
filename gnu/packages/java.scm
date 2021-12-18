@@ -119,31 +119,6 @@
 ;; build framework.  We then build the more recent JDK Icedtea 3.x, and all
 ;; other versions of OpenJDK.
 
-(define-public libantlr3c
-  (package
-    (name "libantlr3c")
-    (version "3.4")
-    (source
-     (origin
-       (method url-fetch)
-       (uri
-        (string-append "https://www.antlr3.org/download/C/"
-                       name "-" version ".tar.gz"))
-       (sha256
-        (base32 "0lpbnb4dq4azmsvlhp6khq1gy42kyqyjv8gww74g5lm2y6blm4fa"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:configure-flags (list "--enable-debuginfo"
-                               "--disable-static"
-                               ,@(if (target-64bit?)
-                                  `("--enable-64bit")
-                                  '()))))
-    (synopsis "ANTLR C Library")
-    (description "LIBANTLR3C provides run-time C libraries for ANTLR3 (ANother
-Tool for Language Recognition v3).")
-    (home-page "https://www.antlr3.org/")
-    (license license:bsd-3)))
-
 (define jikes
   (package
     (name "jikes")
@@ -2419,6 +2394,31 @@ new Date();"))
     (inputs
      (modify-inputs (package-inputs ant/java8)
        (prepend java-junit)))))
+
+(define-public libantlr3c
+  (package
+    (name "libantlr3c")
+    (version "3.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://www.antlr3.org/download/C/"
+                       name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0lpbnb4dq4azmsvlhp6khq1gy42kyqyjv8gww74g5lm2y6blm4fa"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags (list "--enable-debuginfo"
+                               "--disable-static"
+                               ,@(if (target-64bit?)
+                                  `("--enable-64bit")
+                                  '()))))
+    (synopsis "ANTLR C Library")
+    (description "LIBANTLR3C provides run-time C libraries for ANTLR3 (ANother
+Tool for Language Recognition v3).")
+    (home-page "https://www.antlr3.org/")
+    (license license:bsd-3)))
 
 (define-public drip
   ;; Last release is from 2014, with a few important commits afterwards.
