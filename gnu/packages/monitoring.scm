@@ -544,7 +544,7 @@ devices.")
 (define-public fswatch
   (package
     (name "fswatch")
-    (version "1.15.0")
+    (version "1.16.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -553,7 +553,7 @@ devices.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1yz65jsbgdx4cmy16x24wz5di352lvyi7fp6jm90bhgl1vpzxlsx"))))
+                "1zsvc8arza2ypnnmv4m0qfpnldmy1zh10q6wss05ibmanslfj2ql"))))
     (build-system gnu-build-system)
     (native-inputs
      (list autoconf automake gettext-minimal libtool))
