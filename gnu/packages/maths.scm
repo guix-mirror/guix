@@ -6699,43 +6699,50 @@ cubes.")
       (license license:gpl2+))))
 
 (define-public dune-subgrid
-  (package
-    (name "dune-subgrid")
-    (version "2.7.0-git-2103a363")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-         (url "https://git.imp.fu-berlin.de/agnumpde/dune-subgrid")
-         (commit "2103a363f32e8d7b60e66eee7ddecf969f6cf762")))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32
-          "1wsjlypd3835c3arqjkw836cxx5q67zy447wa65q634lf6f6v9ia"))))
-    (build-system cmake-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'build 'build-tests
-           (lambda* (#:key make-flags #:allow-other-keys)
-             (apply invoke "make" "build_tests" make-flags))))))
-    (inputs
-     (list dune-common
-           dune-geometry
-           dune-grid
-           ;; Optional
-           metis
-           openblas
-           gmp))
-    (native-inputs
-     (list gfortran pkg-config))
-    (home-page "http://numerik.mi.fu-berlin.de/dune-subgrid/index.php")
-    (synopsis "Distributed and Unified Numerics Environment")
-    (description "The dune-subgrid module marks elements of
+  ;; This was the last commit on the releases/2.7 branch as of 2021-12-17.
+  ;; Unfortunately the dune-subgrid repository contains no release tags.
+  (let ((commit "45d1ee9f3f711e209695deee97912f4954f7f280"))
+    (package
+      (name "dune-subgrid")
+      (version (git-version "2.7.1" "0" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+           (url "https://git.imp.fu-berlin.de/agnumpde/dune-subgrid")
+           (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+            "0xjf7865wil7kzym608kv3nc3ff3m3nlqich4k9wjyvy3lz6panh"))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'build 'build-tests
+             (lambda* (#:key make-flags parallel-build? #:allow-other-keys)
+               (apply invoke "make" "build_tests"
+                      `(,@(if parallel-build?
+                              `("-j" ,(number->string (parallel-job-count)))
+                              '())
+                        ,@make-flags)))))))
+      (inputs
+       (list dune-common
+             dune-geometry
+             dune-grid
+             ;; Optional
+             metis
+             openblas
+             gmp))
+      (native-inputs
+       (list gfortran pkg-config))
+      (home-page "http://numerik.mi.fu-berlin.de/dune-subgrid/index.php")
+      (synopsis "Distributed and Unified Numerics Environment")
+      (description "The dune-subgrid module marks elements of
 another hierarchical dune grid.  The set of marked elements can then be
 accessed as a hierarchical dune grid in its own right.  Dune-Subgrid
 provides the full grid interface including adaptive mesh refinement.")
-    (license license:gpl2+)))
+      (license license:gpl2+))))
 
 (define-public dune-typetree
   (package
