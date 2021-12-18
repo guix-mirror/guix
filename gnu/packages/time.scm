@@ -514,6 +514,39 @@ modifies the @code{time}, @code{gettimeofday} and @code{clock_gettime} system
 calls.")
     (license gpl2)))
 
+(define-public tz
+  (package
+    (name "tz")
+    (version "0.6.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/oz/tz")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1nbl13xd95np89sbx8fn0jqrh1iy17hsy70kq31hmcvyns8dljhg"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:go ,go-1.17
+       #:import-path "github.com/oz/tz"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key import-path tests? #:allow-other-keys)
+             (when tests?
+               (invoke "go" "test" "-cover" import-path)))))))
+    (inputs
+     `(("github.com/charmbracelet/bubbletea" ,go-github-com-charmbracelet-bubbletea)
+       ("github.com/muesli/termenv" ,go-github-com-muesli-termenv)))
+    (home-page "https://github.com/oz/tz")
+    (synopsis "TUI time zone helper")
+    (description
+"@command{tz} helps you schedule things across time zones.  It is an interactive
+TUI program that displays time across a few time zones of your choosing.")
+    (license gpl3+)))
+
 (define-public countdown
   (package
     (name "countdown")
