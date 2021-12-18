@@ -6747,7 +6747,7 @@ provides the full grid interface including adaptive mesh refinement.")
 (define-public dune-typetree
   (package
     (name "dune-typetree")
-    (version "2.7.0")
+    (version "2.7.1")
     (source
      (origin
        (method git-fetch)
@@ -6757,14 +6757,18 @@ provides the full grid interface including adaptive mesh refinement.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1rhv25yg0q1hw50c8wlfqhgwrjl4mh62zq9v14ilwgzbfgxmpiy7"))))
+         "1kx9k8i7pdw6l6ny6nq85v5p1nd6yxldzaj8k3nizaz3q1j407pv"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (add-after 'build 'build-tests
-           (lambda* (#:key make-flags #:allow-other-keys)
-             (apply invoke "make" "build_tests" make-flags))))))
+           (lambda* (#:key make-flags parallel-build? #:allow-other-keys)
+             (apply invoke "make" "build_tests"
+                    `(,@(if parallel-build?
+                            `("-j" ,(number->string (parallel-job-count)))
+                            '())
+                      ,@make-flags)))))))
     (inputs
      (list dune-common
            ;; Optional
