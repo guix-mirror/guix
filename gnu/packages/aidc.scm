@@ -102,6 +102,9 @@
                (base32
                 "1indapql5fjz0bysyc88cmc54y8phqrbi7c76p71fgjp45jcyzp8"))))
     (build-system gnu-build-system)
+    (arguments
+      ;; Fix build with GCC 10.
+     '(#:configure-flags '("CFLAGS=-fcommon")))
     (synopsis "Convert text strings to printed bars in various standards")
     (description "GNU Barcode is a flexible tool to produce printed barcodes
 from text strings.  It supports a variety of encoding standards and sizing
