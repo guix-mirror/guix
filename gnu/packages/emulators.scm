@@ -705,7 +705,7 @@ The following systems are supported:
 (define-public mgba
   (package
     (name "mgba")
-    (version "0.9.2")
+    (version "0.9.3")
     (source
      (origin
        (method git-fetch)
@@ -714,7 +714,7 @@ The following systems are supported:
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "16kngkzf08jflqxwbgafb47091vqqb9pbhazg9cd94cy81ahz3q3"))
+        (base32 "1bg4ax5gjkr6d4cpzsgzv3bpa3i2c2b1ckwrjklqiy835b5ni6yi"))
        (modules '((guix build utils)))
        (snippet
         ;; Make sure we don't use the bundled software.
