@@ -621,10 +621,6 @@ the freedesktop.org XDG Base Directory specification.")
              ;; existing in the build environment.
              (invoke "sed" "/src\\/test\\/test-user-util.c/,+2s/^/#/g"
                      "-i" "src/test/meson.build")
-             ;; ;; FIXME: This one times out for unknown reasons.
-             ;; (invoke "sed"
-             ;;         "/src\\/libelogind\\/sd-event\\/test-event.c/,+2s/^/#/g"
-             ;;         "-i" "src/test/meson.build")
              ;; This test tries to copy some bytes from /usr/lib/os-release,
              ;; which does not exist in the build container.  Choose something
              ;; more likely to be available.
