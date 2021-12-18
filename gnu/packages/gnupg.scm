@@ -1029,14 +1029,14 @@ them to transform your existing public key into a secret key.")
 (define-public pgpdump
   (package
     (name "pgpdump")
-    (version "0.33")
+    (version "0.34")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.mew.org/~kazu/proj/pgpdump/pgpdump-"
                            version ".tar.gz"))
        (sha256
-        (base32 "1j001jra2m89n6cys3n0hs574bipjdzfxhzpnd4jfyv95mqwl7n4"))))
+        (base32 "080ayqqxb13ngpg6zvaipszwnjadafw3ni7w7gg189cmh3lab7cq"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no make check
