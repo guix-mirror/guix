@@ -365,21 +365,22 @@ the wrong hands.")
 (define-public keyutils
   (package
     (name "keyutils")
-    (version "1.6.1")
+    (version "1.6.3")
     (source
      (origin
-       (method url-fetch)
-       (uri
-        (string-append "https://people.redhat.com/dhowells/keyutils/keyutils-"
-                       version ".tar.bz2"))
+       (method git-fetch)
+       (uri (git-reference
+             (url (string-append "https://git.kernel.org/pub/scm/linux/kernel/"
+                                 "git/dhowells/keyutils.git"))
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "1kk4pmyflgplkgxn2bzpc069ph9c9jdd9ikcsyd5pnaimqi5gcf8"))
+        (base32 "1095g1p5038m91wf2dxnagngpvww7ilcj8fhyviid3srvxr675i7"))
        (modules '((guix build utils)))
        ;; Create relative symbolic links instead of absolute ones to /lib/*.
        (snippet '(begin
                    (substitute* "Makefile" (("\\$\\(LNS\\) \\$\\(LIBDIR\\)/")
-                                            "$(LNS) "))
-                   #t))))
+                                            "$(LNS) "))))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
