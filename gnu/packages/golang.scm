@@ -7221,6 +7221,14 @@ io.Writers helping you to transform blocks of text.")
      `(#:import-path "github.com/muesli/reflow/padding"
        #:unpack-path "github.com/muesli/reflow"))))
 
+(define-public go-github-com-muesli-reflow-truncate
+  (package
+    (inherit go-github-com-muesli-reflow-wordwrap)
+    (name "go-github-com-muesli-reflow-truncate")
+    (arguments
+     `(#:import-path "github.com/muesli/reflow/truncate"
+       #:unpack-path "github.com/muesli/reflow"))))
+
 (define-public go-github-com-muesli-termenv
   (package
     (name "go-github-com-muesli-termenv")
