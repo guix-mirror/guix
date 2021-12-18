@@ -1242,12 +1242,13 @@ quickly by using all your CPU cores and hardware acceleration.")
     (version "0.9")
     (source
      (origin
-       (method url-fetch)
-       (uri
-        (string-append "https://github.com/jedisct1/minisign/releases/download/"
-                       version "/minisign-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jedisct1/minisign")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "1h9cfvvm6lqq33b2wdar1x3w4k7zyrscavllyb0l5dmcdabq60r2"))))
+        (base32 "0qx3hnkwx6ij0hgp5vc74x36qfc4h5wgzr70fqqhmv3zb8q9f2vn"))))
     (build-system cmake-build-system)
     (arguments
      ; No test suite
