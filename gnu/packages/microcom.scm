@@ -29,7 +29,7 @@
 (define-public microcom
   (package
     (name "microcom")
-    (version "2017.03.0")
+    (version "2019.01.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -37,7 +37,7 @@
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
-               (base32 "060q42lf1bx403smxm97cz8r4ksq942mq5z708vavy6syv3fkap4"))))
+               (base32 "0rf4qdkbhknrrqn4rpb737l0km8yn5f498zapks4akf6yjh5aq8y"))))
     (build-system gnu-build-system)
     (inputs (list readline))
     (native-inputs (list automake autoconf))
