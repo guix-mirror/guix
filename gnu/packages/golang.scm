@@ -7175,7 +7175,7 @@ transforms one JSON document into another through a JMESPath expression.")
 (define-public go-github-com-muesli-reflow-wordwrap
   (package
     (name "go-github-com-muesli-reflow-wordwrap")
-    (version "0.1.0")
+    (version "0.3.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -7184,7 +7184,7 @@ transforms one JSON document into another through a JMESPath expression.")
               (file-name (git-file-name "go-github-com-muesli-reflow" version))
               (sha256
                (base32
-                "1vhynm2n1az13fn03lp0gi28p9mznq1mblglh8f2rb9y1vkd2dqr"))))
+                "09zcz2cqdwgj1ilya5pqwndryk6lansn87x63fcm8j1xn74vd2ry"))))
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/muesli/reflow/wordwrap"
