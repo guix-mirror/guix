@@ -805,16 +805,15 @@ hostname.")
 (define-public shadow
   (package
     (name "shadow")
-    (version "4.8.1")
+    (version "4.9")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://github.com/shadow-maint/shadow/releases/"
-                    "download/" version "/shadow-" version ".tar.xz"))
-              (patches (search-patches "shadow-hurd-pctrl.patch"))
+                    "download/v" version "/shadow-" version ".tar.xz"))
               (sha256
                (base32
-                "0qmfq50sdhz6xilgxvinblll8j2iqfl7hwk45bq744y4plq4dbd3"))))
+                "0i4iijbshnwnsrskxzrh18xgmzff0hdpsnnkmyc2gdn1x4n1zv7y"))))
     (build-system gnu-build-system)
     (arguments
      `(;; Assume System V `setpgrp (void)', which is the default on GNU
@@ -825,9 +824,16 @@ hostname.")
              '("--with-libpam"))
           "shadow_cv_logdir=/var/log"
           "ac_cv_func_setpgrp_void=yes")
-
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-linking-to-pam
+           (lambda _
+             ;; There's a build system problem in 4.9 that causes link
+             ;; failures with the pam libraries (see:
+             ;; https://github.com/shadow-maint/shadow/issues/407).
+             (substitute* "libsubid/Makefile.in"
+               (("\\$\\(LIBTCB\\)" all)
+                (string-append all " $(LIBPAM)")))))
          ,@(if (%current-target-system)
                '((add-before 'configure 'set-runtime-shell
                    (lambda* (#:key inputs #:allow-other-keys)
@@ -848,8 +854,7 @@ hostname.")
                                          "libc"))))
                (substitute* "lib/nscd.c"
                  (("/usr/sbin/nscd")
-                  (string-append libc "/sbin/nscd")))
-               #t)))
+                  (string-append libc "/sbin/nscd"))))))
          (add-after 'install 'remove-groups
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Remove `groups', which is already provided by Coreutils.
@@ -857,9 +862,7 @@ hostname.")
                     (bin (string-append out "/bin"))
                     (man (string-append out "/share/man")))
                (delete-file (string-append bin "/groups"))
-               (for-each delete-file (find-files man "^groups\\."))
-               #t))))))
-
+               (for-each delete-file (find-files man "^groups\\."))))))))
     (inputs
      `(,@(if (hurd-target?)
            '()
