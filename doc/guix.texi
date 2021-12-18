@@ -383,6 +383,7 @@ Defining Services
 * Service Types and Services::  Types and services.
 * Service Reference::           API reference.
 * Shepherd Services::           A particular type of service.
+* Complex Configurations::      Defining bindings for complex configurations.
 
 Installing Debugging Files
 
@@ -35690,6 +35691,7 @@ them in the first place?  And what is a service anyway?
 * Service Types and Services::  Types and services.
 * Service Reference::           API reference.
 * Shepherd Services::           A particular type of service.
+* Complex Configurations::      Defining bindings for complex configurations.
 @end menu
 
 @node Service Composition
@@ -36422,6 +36424,376 @@ system:
 @defvr {Scheme Variable} %shepherd-root-service
 This service represents PID@tie{}1.
 @end defvr
+
+@node Complex Configurations
+@subsection Complex Configurations
+@cindex complex configurations
+Some programs might have rather complex configuration files or formats,
+and to make it easier to create Scheme bindings for these configuration
+files, you can use the utilities defined in the @code{(gnu services
+configuration)} module.
+
+The main utility is the @code{define-configuration} macro, which you
+will use to define a Scheme record type (@pxref{Record Overview,,,
+guile, GNU Guile Reference Manual}).  The Scheme record will be
+serialized to a configuration file by using @dfn{serializers}, which are
+procedures that take some kind of Scheme value and returns a
+G-expression (@pxref{G-Expressions}), which should, once serialized to
+the disk, return a string.  More details are listed below.
+
+@deffn {Scheme Syntax} define-configuration @var{name} @var{clause1} @
+@var{clause2} ...
+Create a record type named @code{@var{name}} that contains the
+fields found in the clauses.
+
+A clause can have one of the following forms:
+
+@example
+(@var{field-name}
+ (@var{type} @var{default-value})
+ @var{documentation})
+ 
+(@var{field-name}
+ (@var{type} @var{default-value})
+ @var{documentation}
+ @var{serializer})
+
+(@var{field-name}
+ (@var{type})
+ @var{documentation})
+
+(@var{field-name}
+ (@var{type})
+ @var{documentation}
+ @var{serializer})
+@end example
+
+@var{field-name} is an identifier that denotes the name of the field in
+the generated record.
+
+@var{type} is the type of the value corresponding to @var{field-name};
+since Guile is untyped, a predicate
+procedure---@code{@var{type}?}---will be called on the value
+corresponding to the field to ensure that the value is of the correct
+type.  This means that if say, @var{type} is @code{package}, then a
+procedure named @code{package?} will be applied on the value to make
+sure that it is indeed a @code{<package>} object.
+
+@var{default-value} is the default value corresponding to the field; if
+none is specified, the user is forced to provide a value when creating
+an object of the record type.
+
+@c XXX: Should these be full sentences or are they allow to be very
+@c short like package synopses?
+@var{documentation} is a string formatted with Texinfo syntax which
+should provide a description of what setting this field does.
+
+@var{serializer} is the name of a procedure which takes two arguments,
+the first is the name of the field, and the second is the value
+corresponding to the field.  The procedure should return a string or
+G-expression (@pxref{G-Expressions}) that represents the content that
+will be serialized to the configuration file.  If none is specified, a
+procedure of the name @code{serialize-@var{type}} will be used.
+
+A simple serializer procedure could look like this:
+
+@lisp
+(define (serialize-boolean field-name value)
+  (let ((value (if value "true" "false")))
+    #~(string-append #$field-name #$value)))
+@end lisp  
+
+In some cases multiple different configuration records might be defined
+in the same file, but their serializers for the same type might have to
+be different, because they have different configuration formats.  For
+example, the @code{serialize-boolean} procedure for the Getmail service
+would have to be different for the one for the Transmission service.  To
+make it easier to deal with this situation, one can specify a serializer
+prefix by using the @code{prefix} literal in the
+@code{define-configuration} form.  This means that one doesn't have to
+manually specify a custom @var{serializer} for every field.
+
+@lisp
+(define (foo-serialize-string field-name value)
+  @dots{})
+
+(define (bar-serialize-string field-name value)
+  @dots{})
+  
+(define-configuration foo-configuration
+  (label
+   (string)
+   "The name of label.")
+  (prefix foo-))
+
+(define-configuration bar-configuration
+  (ip-address
+   (string)
+   "The IPv4 address for this device.")
+  (prefix bar-))
+@end lisp
+
+However, in some cases you might not want to serialize any of the values
+of the record, to do this, you can use the @code{no-serialization}
+literal.  There is also the @code{define-configuration/no-serialization}
+macro which is a shorthand of this.
+
+@lisp
+;; Nothing will be serialized to disk.
+(define-configuration foo-configuration
+  (field
+   (string "test")
+   "Some documentation.")
+  (no-serialization))
+
+;; The same thing as above.
+(define-configuration/no-serialization bar-configuration
+  (field
+   (string "test")
+   "Some documentation."))
+@end lisp   
+@end deffn
+
+@deffn {Scheme Syntax} define-maybe @var{type}
+Sometimes a field should not be serialized if the user doesn’t specify a
+value.  To achieve this, you can use the @code{define-maybe} macro to
+define a ``maybe type''; if the value of a maybe type is set to the
+@code{disabled}, it will not be serialized.
+
+When defining a ``maybe type'', the corresponding serializer for the
+regular type will be used by default.  For example, a field of type
+@code{maybe-string} will be serialized using the @code{serialize-string}
+procedure by default, you can of course change this by specifying a
+custom serializer procedure.  Likewise, the type of the value would have
+to be a string, unless it is set to the @code{disabled} symbol.
+
+@lisp
+(define-maybe string)
+
+(define (serialize-string field-name value)
+  @dots{})
+
+(define-configuration baz-configuration
+  (name
+   ;; Nothing will be serialized by default.  If set to a string, the
+   ;; `serialize-string' procedure will be used to serialize the string.
+   (maybe-string 'disabled)
+   "The name of this module."))
+@end lisp
+
+Like with @code{define-configuration}, one can set a prefix for the
+serializer name by using the @code{prefix} literal.
+
+@lisp
+(define-maybe integer
+  (prefix baz-))
+
+(define (baz-serialize-interger field-name value)
+  @dots{})
+@end lisp
+
+There is also the @code{no-serialization} literal, which when set means
+that no serializer will be defined for the ``maybe type'', regardless of
+its value is @code{disabled} or not.
+@code{define-maybe/no-serialization} is a shorthand for specifying the
+@code{no-serialization} literal.
+
+@lisp
+(define-maybe/no-serialization symbol)
+
+(define-configuration/no-serialization test-configuration
+  (mode
+   (maybe-symbol 'disabled)
+   "Docstring."))
+@end lisp
+@end deffn
+
+@deffn {Scheme Procedure} serialize-configuration @var{configuration} @
+@var{fields}
+Return a G-expression that contains the values corresponding to the
+@var{fields} of @var{configuration}, a record that has been generated by
+@code{define-configuration}.  The G-expression can then be serialized to
+disk by using something like @code{mixed-text-file}.
+@end deffn
+
+@deffn {Scheme Procedure} validate-configuration @var{configuration}
+@var{fields}
+Type-check @var{fields}, a list of field names of @var{configuration}, a
+configuration record created by @code{define-configuration}.
+@end deffn
+
+@deffn {Scheme Procedure} empty-serializer @var{field-name} @var{value}
+A serializer that just returns an empty string.  The
+@code{serialize-package} procedure is an alias for this.
+@end deffn
+
+Once you have defined a configuration record, you will most likely also
+want to document it so that other people know to use it.  To help with
+that, there are two procedures, both of which are documented below.
+
+@deffn {Scheme Procedure} generate-documentation @var{documentation} @
+@var{documentation-name}
+Generate a Texinfo fragment from the docstrings in @var{documentation},
+a list of @code{(@var{label} @var{fields} @var{sub-documentation} ...)}.
+@var{label} should be a symbol and should be the name of the
+configuration record.  @var{fields} should be a list of all the fields
+available for the configuration record.
+
+@var{sub-documentation} is a @code{(@var{field-name}
+@var{configuration-name})} tuple.  @var{field-name} is the name of the
+field which takes another configuration record as its value, and
+@var{configuration-name} is the name of that configuration record.
+
+@var{sub-documentation} is only needed if there are nested configuration
+records.  For example, the @code{getmail-configuration} record
+(@pxref{Mail Services}) accepts a @code{getmail-configuration-file}
+record in one of its @code{rcfile} field, therefore documentation for
+@code{getmail-configuration-file} is nested in
+@code{getmail-configuration}.
+
+@lisp
+(generate-documentation
+  `((getmail-configuration ,getmail-configuration-fields
+     (rcfile getmail-configuration-file))
+    @dots{})
+  'getmail-configuration)
+@end lisp
+
+@var{documentation-name} should be a symbol and should be the name of
+the configuration record.
+
+@end deffn
+
+@deffn {Scheme Procedure} configuration->documentation
+@var{configuration-symbol}
+Take @var{configuration-symbol}, the symbol corresponding to the name
+used when defining a configuration record with
+@code{define-configuration}, and print the Texinfo documentation of its
+fields.  This is useful if there aren’t any nested configuration records
+since it only prints the documentation for the top-level fields.
+@end deffn
+
+As of right now, there is no automated way to generate documentation for
+configuration records and put them in the manual.  Instead, every
+time you make a change to the docstrings of a configuration record, you
+have to manually call @code{generate-documentation} or
+@code{configuration->documentation}, and paste the output into the
+@file{doc/guix.texi} file.
+
+@c TODO: Actually test this
+Below is an example of a record type created using
+@code{define-configuration} and friends.
+
+@lisp
+(use-modules (gnu services)
+             (guix gexp)
+             (gnu services configuration)
+             (srfi srfi-26)
+             (srfi srfi-1))
+
+;; Turn field names, which are Scheme symbols into strings
+(define (uglify-field-name field-name)
+  (let ((str (symbol->string field-name)))
+    ;; field? -> is-field
+    (if (string-suffix? "?" str)
+        (string-append "is-" (string-drop-right str 1))
+        str)))
+
+(define (serialize-string field-name value)
+  #~(string-append #$(uglify-field-name field-name) " = " #$value "\n"))
+
+(define (serialize-integer field-name value)
+  (serialize-string field-name (number->string value)))
+
+(define (serialize-boolean field-name value)
+  (serialize-string field-name (if value "true" "false")))
+
+(define (serialize-contact-name field-name value)
+  #~(string-append "\n[" #$value "]\n"))
+
+(define (list-of-contact-configurations? lst)
+  (every contact-configuration? lst))
+
+(define (serialize-list-of-contact-configurations field-name value)
+  #~(string-append #$@@(map (cut serialize-configuration <>
+                                contact-configuration-fields)
+                           value)))
+
+(define (serialize-contacts-list-configuration configuration)
+  (mixed-text-file
+   "contactrc"
+   #~(string-append "[Owner]\n"
+                    #$(serialize-configuration
+                       configuration contacts-list-configuration-fields))))
+
+(define-maybe integer)
+(define-maybe string)
+
+(define-configuration contact-configuration
+  (name
+   (string)
+   "The name of the contact."
+   serialize-contact-name)
+  (phone-number
+   (maybe-integer 'disabled)
+   "The person's phone number.")
+  (email
+   (maybe-string 'disabled)
+   "The person's email address.")
+  (married?
+   (boolean)
+   "Whether the person is married."))
+
+(define-configuration contacts-list-configuration
+  (name
+   (string)
+   "The name of the owner of this contact list.")
+  (email
+   (string)
+   "The owner's email address.")
+  (contacts
+   (list-of-contact-configurations '())
+   "A list of @@code@{contact-configuation@} records which contain
+information about all your contacts."))
+@end lisp
+
+A contacts list configuration could then be created like this:
+
+@lisp
+(define my-contacts
+  (contacts-list-configuration
+   (name "Alice")
+   (email "alice@@example.org")
+   (contacts
+    (list (contact-configuration
+           (name "Bob")
+           (phone-number 1234)
+           (email "bob@@gnu.org")
+           (married? #f))
+          (contact-configuration
+           (name "Charlie")
+           (phone-number 0000)
+           (married? #t))))))
+@end lisp
+
+After serializing the configuration to disk, the resulting file would
+look like this:
+
+@example
+[owner]
+name = Alice
+email = alice@@example.org
+
+[Bob]
+phone-number = 1234
+email = bob@@gnu.org
+is-married = false
+
+[Charlie]
+phone-number = 0
+is-married = true
+@end example
+
 
 @node Home Configuration
 @chapter Home Configuration
