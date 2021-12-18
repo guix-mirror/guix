@@ -2903,37 +2903,33 @@ configuration (iptunnel, ipmaddr).")
 (define-public libcap
   (package
     (name "libcap")
-    (version "2.51")
+    (version "2.62")
     (source (origin
-             (method url-fetch)
-             (uri (string-append
-                   "mirror://kernel.org/linux/libs/security/linux-privs/"
-                   "libcap2/libcap-" version ".tar.xz"))
-             (sha256
-              (base32
-               "1ych13qc1mvzv8iscbims5b317vxcmy5ffpmfy98zk7bgamz62b6"))))
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kernel.org/linux/libs/security/linux-privs/"
+                    "libcap2/libcap-" version ".tar.xz"))
+              (sha256
+               (base32
+                "18l3pngsbaahdjzz01rmzrjgcqny4zld685fkq96mq5yr6m5n30r"))))
     (build-system gnu-build-system)
-    (arguments `(#:phases
-                 ,#~(modify-phases %standard-phases
-                      (replace 'configure
-                        ;; Add $libdir to the RUNPATH of executables.
-                        (lambda _
-                          (substitute* "Make.Rules"
-                            (("LDFLAGS \\?= #-g")
-                             (string-append "LDFLAGS ?= -Wl,-rpath="
-                                            #$output "/lib"))))))
-                 #:test-target "test"
-                 #:make-flags
-                 (list "lib=lib"
-                       (string-append "prefix=" (assoc-ref %outputs "out"))
-                       "RAISE_SETFCAP=no"
-                       ;; Tell the makefile to use TARGET-gcc and friends
-                       ;; when cross-compiling.
-                       ,@(if (%current-target-system)
-                             `(,(string-append "CROSS_COMPILE="
-                                               (%current-target-system) "-")
-                               "BUILD_CC=gcc")
-                             '()))))
+    (arguments
+     (list #:phases
+           #~(modify-phases %standard-phases
+               (delete 'configure))
+           #:test-target "test"
+           #:make-flags
+           #~(list "lib=lib"
+                   (string-append "prefix=" #$output)
+                   (string-append "LDFLAGS=-Wl,-rpath=" #$output "/lib")
+                   "RAISE_SETFCAP=no"
+                   ;; Tell the makefile to use TARGET-gcc and friends
+                   ;; when cross-compiling.
+                   #$@(if (%current-target-system)
+                          `((list (string-append "CROSS_COMPILE="
+                                                 ,(%current-target-system) "-")
+                                  "BUILD_CC=gcc"))
+                          '()))))
     (native-inputs (list perl))
     (supported-systems (delete "i586-gnu" %supported-systems))
     (home-page "https://sites.google.com/site/fullycapable/")
