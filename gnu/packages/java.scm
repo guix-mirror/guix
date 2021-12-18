@@ -716,8 +716,7 @@ machine.")))
            (add-after 'unpack 'remove-unsupported-annotations
              (lambda _
                (substitute* (find-files "java" "\\.java$")
-                 (("@Override") ""))
-               #t))
+                 (("@Override") ""))))
            (add-after 'install 'install-data
              (lambda _ (invoke "make" "install-data"))))))
       (native-inputs
