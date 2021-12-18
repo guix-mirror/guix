@@ -35,8 +35,9 @@
 (define-module (gnu services base)
   #:use-module (guix store)
   #:use-module (guix deprecation)
-  #:autoload   (guix diagnostics) (warning)
+  #:autoload   (guix diagnostics) (warning &fix-hint)
   #:autoload   (guix i18n) (G_)
+  #:use-module (guix combinators)
   #:use-module (gnu services)
   #:use-module (gnu services admin)
   #:use-module (gnu services shepherd)
@@ -72,6 +73,8 @@
   #:use-module (guix i18n)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
   #:re-export (user-processes-service-type        ;backwards compatibility
@@ -2388,6 +2391,26 @@ Linux @dfn{kernel mode setting} (KMS).")))
   "Return true if STR denotes an IPv6 address."
   (false-if-exception (->bool (inet-pton AF_INET6 str))))
 
+(define-compile-time-procedure (assert-valid-address (address string?))
+  "Ensure ADDRESS has a valid netmask."
+  (unless (or (cidr->netmask address)
+              (and=> (false-if-exception (inet-pton AF_INET address))
+                     (cut = INADDR_LOOPBACK <>))
+              (and=> (false-if-exception (inet-pton AF_INET6 address))
+                     (cut = 1 <>)))
+    (raise
+     (make-compound-condition
+      (formatted-message (G_ "address '~a' lacks a network mask")
+                         address)
+      (condition (&error-location
+                  (location
+                   (source-properties->location procedure-call-location))))
+      (condition (&fix-hint
+                  (hint (format #f (G_ "\
+Write, say, @samp{\"~a/24\"} for a 24-bit network mask.")
+                                address)))))))
+  address)
+
 (define-record-type* <static-networking>
   static-networking make-static-networking
   static-networking?
@@ -2405,7 +2428,8 @@ Linux @dfn{kernel mode setting} (KMS).")))
   network-address make-network-address
   network-address?
   (device    network-address-device)              ;string--e.g., "en01"
-  (value     network-address-value)               ;string--CIDR notation
+  (value     network-address-value                ;string--CIDR notation
+             (sanitize assert-valid-address))
   (ipv6?     network-address-ipv6?                ;Boolean
              (thunked)
              (default
