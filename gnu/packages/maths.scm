@@ -6440,7 +6440,7 @@ This package contains the basic DUNE geometry classes.")
 (define-public dune-uggrid
   (package
     (name "dune-uggrid")
-    (version "2.7.0")
+    (version "2.7.1")
     (source
      (origin
        (method git-fetch)
@@ -6450,14 +6450,18 @@ This package contains the basic DUNE geometry classes.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "192miqgmfj6jwk969gydzpbv9ki7jg5nky3ydnrwa2nq29b5xkh0"))))
+         "11qz52g9d5k96fqik2lyi80xryw174rnny074pj70ardl6zzz83p"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (add-after 'build 'build-tests
-           (lambda* (#:key make-flags #:allow-other-keys)
-             (apply invoke "make" "build_tests" make-flags))))))
+           (lambda* (#:key make-flags parallel-build? #:allow-other-keys)
+             (apply invoke "make" "build_tests"
+                    `(,@(if parallel-build?
+                            `("-j" ,(number->string (parallel-job-count)))
+                            '())
+                      ,@make-flags)))))))
     (inputs
      (list dune-common))
     (native-inputs
