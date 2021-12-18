@@ -392,6 +392,14 @@ doing it."
                              (G_ "would be edited~%")))
                      str)))
 
+(define (absolute-location loc)
+  "Replace the file name in LOC by an absolute location."
+  (location (if (string-prefix? "/" (location-file loc))
+                (location-file loc)
+                (search-path %load-path (location-file loc)))
+            (location-line loc)
+            (location-column loc)))
+
 (define* (simplify-package-inputs package
                                   #:key (policy 'silent)
                                   (edit-expression edit-expression))
@@ -413,7 +421,7 @@ PACKAGE."
                     #f)
                    (location
                     (edit-expression
-                     (location->source-properties location)
+                     (location->source-properties (absolute-location location))
                      (lambda (str)
                        (define matches?
                          (match policy
