@@ -575,12 +575,14 @@ characters, ASCII whitespace characters, other ASCII characters and non-ASCII.")
              (setenv "RUSTC_BOOTSTRAP" "1")))
          (add-after 'unpack 'fix-resources-path
            (lambda* (#:key outputs #:allow-other-keys)
-             (let ((resources (string-append %output "/share")))
+             (let* ((out (assoc-ref outputs "out"))
+                    (share (string-append out "/share")))
                (substitute* "src/util.rs"
-                 (("/usr/share/i3status-rust") resources)))))
+                 (("/usr/share/i3status-rust") share)))))
          (add-after 'install 'install-resources
            (lambda* (#:key outputs #:allow-other-keys)
-             (copy-recursively "files" (string-append %output "/share"))))
+             (let ((out (assoc-ref outputs "out")))
+               (copy-recursively "files" (string-append out "/share")))))
          (add-after 'install 'wrap-i3status
            (lambda* (#:key outputs inputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
