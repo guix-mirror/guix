@@ -5504,7 +5504,7 @@ golang's database/sql package.")
 (define-public go-golang-org-colorful
   (package
     (name "go-golang-org-colorful")
-    (version "1.0.2")
+    (version "1.2.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -5513,7 +5513,7 @@ golang's database/sql package.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0fig06880bvk1l92j4127v4x9sar4ds7ga8959gxxghb2w70b7l2"))))
+                "08c3fkf27r16izjjd4w94xd1z7w1r4mdalbl53ms2ka2j465s3qs"))))
     (build-system go-build-system)
     (arguments
      '(#:import-path "github.com/lucasb-eyer/go-colorful"))
