@@ -235,6 +235,7 @@ error.  Additionally, iRRAM uses the concept of multi-valued functions.")
      (list gfortran))
     (arguments
      `(#:configure-flags `("--disable-enable_fma" ;weird :/
+                           "--disable-static"
                            "--enable-shared"
                            ,,@(if (string-prefix? "aarch64"
                                                   (or (%current-target-system)
