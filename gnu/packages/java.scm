@@ -703,18 +703,11 @@ machine.")))
            (add-after 'install 'install-data
              (lambda _ (invoke "make" "install-data"))))))
       (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("libtool" ,libtool)
-         ("gettext" ,gettext-minimal)
-         ("texinfo" ,texinfo)
-         ("classpath-jamvm-wrappers" ,classpath-jamvm-wrappers) ; for javah
-         ("ecj-bootstrap" ,ecj-bootstrap)
-         ("ecj-javac-wrapper" ,ecj-javac-wrapper)
-         ("fastjar" ,fastjar)
-         ("jamvm" ,jamvm-1-bootstrap)
-         ("libltdl" ,libltdl)
-         ("pkg-config" ,pkg-config))))))
+       (list autoconf automake libltdl libtool gettext-minimal texinfo
+             pkg-config
+             classpath-jamvm-wrappers  ;for javah
+             ecj-bootstrap ecj-javac-wrapper fastjar
+             jamvm-1-bootstrap)))))
 
 (define jamvm
   (package (inherit jamvm-1-bootstrap)
