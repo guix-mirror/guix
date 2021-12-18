@@ -814,7 +814,7 @@ useful for C++.")
         (base32 "11m37sbx0i18cl17d0fkq0bik4bbzlb5n8kcl651jhci5ipci3sh"))))
      (propagated-inputs
       (modify-inputs (package-propagated-inputs glibmm)
-        (prepend libsigc++-2)))))
+        (replace "libsigc++" libsigc++-2)))))
 
 (define-public python2-pygobject-2
   (package
