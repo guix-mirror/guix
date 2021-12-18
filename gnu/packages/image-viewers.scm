@@ -828,6 +828,11 @@ displayed in a terminal.")
                (substitute* (string-append bin "/imv")
                  (("imv-")
                   (string-append bin "/imv-")))))))))
+    (native-inputs
+     (list asciidoc
+           cmocka
+           git-minimal                  ; why build need it?
+           pkg-config))
     (inputs
      (list freeimage
            glu
@@ -840,12 +845,6 @@ displayed in a terminal.")
            libxkbcommon
            pango
            wayland))
-    (native-inputs
-     `(("asciidoc" ,asciidoc)
-       ("cmocka" ,cmocka)
-       ;; why build need it?
-       ("git" ,git-minimal)
-       ("pkg-config" ,pkg-config)))
     (synopsis "Image viewer for tiling window managers")
     (description "@code{imv} is a command line image viewer intended for use
 with tiling window managers.  Features include:
