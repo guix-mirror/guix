@@ -209,9 +209,10 @@ player daemon.")
                 "0klkjaq6n05cmgcwiawjm6d3rn6mrncy72s3x0abjjnx177pfzqp"))))
     (build-system meson-build-system)
     (inputs (list boost pcre libmpdclient ncurses))
-    (native-inputs `(("gettext" ,gettext-minimal) ; for xgettext
-                     ("pkg-config" ,pkg-config)
-                     ("python-sphinx" ,python-sphinx)))
+    (native-inputs
+     (list gettext-minimal              ; for xgettext
+           pkg-config
+           python-sphinx))
     (synopsis "Curses Music Player Daemon client")
     (description "ncmpc is a fully featured MPD client, which runs in a
 terminal using ncurses.")
