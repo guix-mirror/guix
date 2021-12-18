@@ -592,13 +592,10 @@ the standard javac executable.")))
          (add-after 'install 'install-data
            (lambda _ (invoke "make" "install-data"))))))
     (native-inputs
-     `(("ecj-bootstrap" ,ecj-bootstrap)
-       ("ecj-javac-wrapper" ,ecj-javac-wrapper)
-       ("fastjar" ,fastjar)
-       ("jamvm" ,jamvm-1-bootstrap)
-       ("classpath" ,classpath-bootstrap)
-       ("libltdl" ,libltdl)
-       ("pkg-config" ,pkg-config)))))
+     (list classpath-bootstrap
+           ecj-bootstrap ecj-javac-wrapper
+           fastjar jamvm-1-bootstrap
+           libltdl pkg-config))))
 
 ;; We need this because classpath-bootstrap does not provide all of the tools
 ;; we need to build classpath-devel.
