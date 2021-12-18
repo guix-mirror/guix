@@ -415,8 +415,7 @@ JNI.")
              (for-each repack-archive
                     (find-files
                      (string-append (assoc-ref %outputs "out") "/lib")
-                     "\\.jar$"))
-             #t))
+                     "\\.jar$"))))
          (delete 'install))))
     (native-inputs
      `(("jikes" ,jikes)
