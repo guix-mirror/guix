@@ -622,45 +622,42 @@ the standard javac executable.")))
     (source #f)
     (build-system trivial-build-system)
     (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
-         (let* ((bash      (assoc-ref %build-inputs "bash"))
-                (jamvm     (assoc-ref %build-inputs "jamvm"))
-                (classpath (assoc-ref %build-inputs "classpath"))
-                (bin       (string-append (assoc-ref %outputs "out")
-                                          "/bin/")))
-           (mkdir-p bin)
-           (for-each (lambda (tool)
-                       (with-output-to-file (string-append bin tool)
-                         (lambda _
-                           ,@(if (string-prefix? "armhf" (or (%current-system)
-                                                             (%current-target-system)))
-                                 `((format #t "#!~a/bin/sh
+     (list
+      #:modules '((guix build utils))
+      #:builder
+      #~(begin
+          (use-modules (guix build utils))
+          (let ((bash      #$(this-package-native-input "bash-minimal"))
+                (jamvm     #$(this-package-native-input "jamvm"))
+                (classpath #$(this-package-native-input "classpath"))
+                (bin       (string-append #$output "/bin/")))
+            (mkdir-p bin)
+            (for-each (lambda (tool)
+                        (with-output-to-file (string-append bin tool)
+                          (lambda _
+                            #$@(if (string-prefix? "armhf" (or (%current-system)
+                                                               (%current-target-system)))
+                                   `((format #t "#!~a/bin/sh
 ~a/bin/jamvm -Xnocompact -classpath ~a/share/classpath/tools.zip \
 gnu.classpath.tools.~a.~a $@"
-                                   bash jamvm classpath tool
-                                   (if (string=? "native2ascii" tool)
-                                       "Native2ASCII" "Main")))
-                                 `((format #t "#!~a/bin/sh
+                                             bash jamvm classpath tool
+                                             (if (string=? "native2ascii" tool)
+                                                 "Native2ASCII" "Main")))
+                                   `((format #t "#!~a/bin/sh
 ~a/bin/jamvm -Xnocompact -Xnoinlining -classpath ~a/share/classpath/tools.zip \
 gnu.classpath.tools.~a.~a $@"
-                                   bash jamvm classpath tool
-                                   (if (string=? "native2ascii" tool)
-                                       "Native2ASCII" "Main"))))))
-                       (chmod (string-append bin tool) #o755))
-                     (list "javah"
-                           "rmic"
-                           "rmid"
-                           "orbd"
-                           "rmiregistry"
-                           "native2ascii"))
-           #t))))
+                                             bash jamvm classpath tool
+                                             (if (string=? "native2ascii" tool)
+                                                 "Native2ASCII" "Main"))))))
+                        (chmod (string-append bin tool) #o755))
+                      (list "javah"
+                            "rmic"
+                            "rmid"
+                            "orbd"
+                            "rmiregistry"
+                            "native2ascii"))))))
     (native-inputs
-     `(("bash" ,bash)
-       ("jamvm" ,jamvm-1-bootstrap)
-       ("classpath" ,classpath-0.99)))
+     (list bash-minimal jamvm-1-bootstrap classpath-0.99))
     (inputs '())
     (synopsis "Executables from GNU Classpath")
     (description "This package provides wrappers around the tools provided by
