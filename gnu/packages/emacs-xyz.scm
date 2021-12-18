@@ -17245,7 +17245,7 @@ as well as functions for navigating between these headings.")
         (base32 "10l9h2n09cql4ih7nc0ma3ghdsq9l5v9xlj1lg7kq67icdwjlsvy"))))
     (build-system emacs-build-system)
     (arguments
-     `(#:tests? #t
+     `(#:tests? #f                  ;FIXNE: Tests try to read "~/org/test.org"
        #:test-command '("test/run" "--debug")
        #:phases
        (modify-phases %standard-phases
