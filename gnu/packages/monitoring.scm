@@ -27,6 +27,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages monitoring)
+  #:use-module (guix gexp)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -557,6 +558,9 @@ devices.")
     (build-system gnu-build-system)
     (native-inputs
      (list autoconf automake gettext-minimal libtool))
+    (arguments
+     (list #:configure-flags
+           #~(list "--disable-static")))
     (synopsis "File system monitor")
     (description "This package provides a file system monitor.")
     (home-page "https://github.com/emcrisostomo/fswatch")
