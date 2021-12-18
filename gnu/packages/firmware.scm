@@ -6,7 +6,7 @@
 ;;; Copyright © 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Vagrant Cascadian <vagrant@debian.org>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
-;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2020, 2021 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2021 Petr Hodina <phodina@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -295,10 +295,17 @@ for platform-specific firmwares executing in M-mode.")
     (native-inputs (list python-wrapper))
     (arguments
      `(#:tests? #f                      ; no check target
+       #:make-flags '("EXTRAVERSION=-guix") ;upstream wants distros to set this
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
            (lambda _
+             ;; Create the ".version" file that is present in release tarballs.
+             ;; Otherwise this will be regarded as an "unclean" build, and the
+             ;; build system ends up encoding the build date in the binaries.
+             (call-with-output-file ".version"
+               (lambda (port)
+                 (format port ,(package-version this-package))))
              (setenv "CC" "gcc")))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
