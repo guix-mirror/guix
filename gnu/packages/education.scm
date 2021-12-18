@@ -140,7 +140,7 @@ of categories with some of the activities available in that category.
 (define-public gcompris-qt
   (package
     (name "gcompris-qt")
-    (version "1.1")
+    (version "2.0")
     (source
      (origin
        (method url-fetch)
@@ -148,7 +148,7 @@ of categories with some of the activities available in that category.
              "https://gcompris.net/download/qt/src/gcompris-qt-"
              version ".tar.xz"))
        (sha256
-        (base32 "1bpjwrv83rhikbycpyfpf6dbqr0xfq6amgdpqfgfph6nzr3zka7h"))))
+        (base32 "1ix8wf0mpcwg0bd0fbx594ywhf0r0g0xhkbnjpm2ags8ixh4ddcs"))))
     (build-system qt-build-system)
     (arguments
      `(#:phases
@@ -159,28 +159,27 @@ of categories with some of the activities available in that category.
              (system "Xvfb :1 &")
              (setenv "DISPLAY" ":1")
              ;; The test suite wants to write to /homeless-shelter
-             (setenv "HOME" (getcwd))
-             #t)))
+             (setenv "HOME" (getcwd)))))
        #:configure-flags (list "-DQML_BOX2D_MODULE=disabled"
                                "-DBUILD_TESTING=TRUE")))
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("gettext" ,gettext-minimal)
-       ("kdoctools" ,kdoctools)
-       ("perl" ,perl)
-       ("qttools" ,qttools)
-       ("xorg-server" ,xorg-server-for-tests)))
+     (list extra-cmake-modules
+           gettext-minimal
+           kdoctools
+           perl
+           qttools
+           xorg-server-for-tests))
     (inputs
-     `(("openssl" ,openssl)
-       ("python" ,python-wrapper)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)
-       ("qtgraphicaleffects" ,qtgraphicaleffects)
-       ("qtmultimedia" ,qtmultimedia)
-       ("qtquickcontrols" ,qtquickcontrols)
-       ("qtsensors" ,qtsensors)
-       ("qtsvg" ,qtsvg)
-       ("qtxmlpatterns" ,qtxmlpatterns)))
+     (list openssl
+           python-wrapper
+           qtbase-5
+           qtdeclarative
+           qtgraphicaleffects
+           qtmultimedia
+           qtquickcontrols
+           qtsensors
+           qtsvg
+           qtxmlpatterns))
     (home-page "https://gcompris.net/index-en.html")
     (synopsis "Educational games for small children")
     (description
@@ -196,9 +195,9 @@ Currently available boards include:
 @item recognize letters after hearing their names
 @item reading practice
 @item small games (memory games, jigsaw puzzles, ...)
-@end enumerate\n")
+@end enumerate")
     (license (list license:silofl1.1    ; bundled fonts
-                   license:gpl3+))))
+                   license:agpl3+))))
 
 (define-public gotypist
   (let ((revision "0")
