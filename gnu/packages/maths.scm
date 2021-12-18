@@ -6643,53 +6643,60 @@ assemble global function spaces on finite-element grids.")
     (license license:gpl2)))
 
 (define-public dune-alugrid
-  (package
-    (name "dune-alugrid")
-    (version "2.7.0-git-81d35682")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://gitlab.dune-project.org/extensions/dune-alugrid.git")
-             (commit "81d356827c84454b971937db02c02b90bbcd7fe5")))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32
-         "0z54lwfp53prcrs94k8gwh047l9z642jll3l56xlyfr69z0b2zz1"))))
-    (build-system cmake-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'patch-include
-           (lambda _
-             (substitute* "dune/alugrid/test/test-alugrid.cc"
-               (("doc/grids/gridfactory/testgrids")
-                "doc/dune-grid/grids/gridfactory/testgrids"))
-             #t))
-         (add-after 'build 'build-tests
-           (lambda* (#:key inputs make-flags #:allow-other-keys)
-             (setenv "CPLUS_INCLUDE_PATH"
-                     (string-append (assoc-ref inputs "dune-grid") "/share"))
-             (apply invoke "make" "build_tests" make-flags))))))
-    (inputs
-     (list dune-common
-           dune-geometry
-           dune-grid
-           ;; Optional
-           metis
-           openblas
-           python
-           superlu
-           gmp
-           zlib))
-    (native-inputs
-     (list gfortran pkg-config))
-    (home-page "https://dune-project.org/")
-    (synopsis "Distributed and Unified Numerics Environment")
-    (description "ALUGrid is an adaptive, loadbalancing, unstructured
+  ;; This was the last commit on the releases/2.7 branch as of 2021-12-17,
+  ;; unfortunately there was no tag for any 2.7 release.
+  (let ((commit "51bde29a2dfa7cfac4fb73d40ffd42b9c1eb1d3d"))
+    (package
+      (name "dune-alugrid")
+      (version (git-version "2.7.1" "0" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://gitlab.dune-project.org/extensions/dune-alugrid.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0z16wg6llzxs7vjg2yilg31vwnkz8k050j6bspg3blbym0razy15"))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'patch-include
+             (lambda _
+               (substitute* "dune/alugrid/test/test-alugrid.cc"
+                 (("doc/grids/gridfactory/testgrids")
+                  "doc/dune-grid/grids/gridfactory/testgrids"))
+               #t))
+           (add-after 'build 'build-tests
+             (lambda* (#:key make-flags parallel-build? #:allow-other-keys)
+               (setenv "CPLUS_INCLUDE_PATH"
+                       (string-append (assoc-ref inputs "dune-grid") "/share"))
+               (apply invoke "make" "build_tests"
+                      `(,@(if parallel-build?
+                              `("-j" ,(number->string (parallel-job-count)))
+                              '())
+                        ,@make-flags)))))))
+      (inputs
+       (list dune-common
+             dune-geometry
+             dune-grid
+             ;; Optional
+             metis
+             openblas
+             python
+             superlu
+             gmp
+             zlib))
+      (native-inputs
+       (list gfortran pkg-config))
+      (home-page "https://dune-project.org/")
+      (synopsis "Distributed and Unified Numerics Environment")
+      (description "ALUGrid is an adaptive, loadbalancing, unstructured
 implementation of the DUNE grid interface supporting either simplices or
 cubes.")
-    (license license:gpl2+)))
+      (license license:gpl2+))))
 
 (define-public dune-subgrid
   (package
