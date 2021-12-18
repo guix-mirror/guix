@@ -36,7 +36,7 @@ Author: Ricardo Wurmus
 Maintainer: Guix Schmeeks <guix@gnu.org>
 URL: http://gnu.org/s/my-example
 Description: This is a long description
-spanning multiple lines: and it could confuse the parser that
+spanning multiple lines: and it could confuse the parser that this line is very long or perhaps the fact that
 there is a colon : on the lines.
   And: this line continues the description.
 biocViews: 0
@@ -123,9 +123,10 @@ Date/Publication: 2015-07-14 14:15:16
          ('home-page "http://gnu.org/s/my-example")
          ('synopsis "Example package")
          ('description
-          "This is a long description spanning multiple lines: \
-and it could confuse the parser that there is a colon : on the \
-lines.  And: this line continues the description.")
+          "\
+This is a long description spanning multiple lines: and it could confuse the
+parser that this line is very long or perhaps the fact that there is a colon :
+on the lines.  And: this line continues the description.")
          ('license 'gpl3+))
        #t)
       (x
