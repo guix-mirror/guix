@@ -420,9 +420,17 @@ server and embedded PowerPC, and S390 guests.")
            (delete 'install-user-static)))))
 
     ;; Remove dependencies on optional libraries, notably GUI libraries.
-    (native-inputs (modify-inputs (package-native-inputs qemu)
-                     (delete "gettext" "glib:static" "pcre:static"
-                             "zlib:static")))
+    (native-inputs (filter (lambda (input)
+                             (match input
+                               ;; Work around the fact that modify-inputs can not
+                               ;; delete specific outputs; i.e. here we should keep
+                               ;; `(,glib "bin"), but not `(,glib "static").
+                               ((label package output)
+                                (if (string=? "static" output)
+                                    #f #t))
+                               (_ input)))
+                        (modify-inputs (package-native-inputs qemu)
+                          (delete "gettext-minimal"))))
     (inputs (modify-inputs (package-inputs qemu)
               (delete "libusb"
                       "mesa"
