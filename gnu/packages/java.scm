@@ -411,10 +411,7 @@ JNI.")
                      "\\.jar$"))))
          (delete 'install))))
     (native-inputs
-     `(("jikes" ,jikes)
-       ("jamvm" ,jamvm-1-bootstrap)
-       ("unzip" ,unzip)
-       ("zip" ,zip)))
+     (list jikes jamvm-1-bootstrap unzip zip))
     (home-page "https://ant.apache.org")
     (synopsis "Build tool for Java")
     (description
