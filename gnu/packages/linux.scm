@@ -3770,7 +3770,7 @@ to the in-kernel OOM killer.")
   ;; The post-systemd fork, maintained by Gentoo.
   (package
     (name "eudev")
-    (version "3.2.9")
+    (version "3.2.11")
     (source (origin
               (method git-fetch)
               (uri (git-reference (url "https://github.com/gentoo/eudev")
@@ -3778,36 +3778,19 @@ to the in-kernel OOM killer.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1g9z3d33m0i3hmbhm0wxpvkzf6ac7xj1drwcfrhzlfhhi63sg9h7"))
+                "0dzaqwjnl55f69ird57wb6skahc6l7zs1slsrzqqfhww33icp6av"))
               (patches (search-patches "eudev-rules-directory.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'make-source-writable
-           (lambda _
-             ;; XXX: Git checkouts are read-only, but this package needs to
-             ;; modify some of its files.
-             (for-each make-file-writable (find-files "."))
-             #t))
          (add-before 'bootstrap 'patch-file-names
            (lambda* (#:key inputs native-inputs #:allow-other-keys)
             (substitute* "man/make.sh"
               (("/usr/bin/xsltproc")
                (string-append (assoc-ref
                                (or native-inputs inputs) "xsltproc")
-                               "/bin/xsltproc")))
-            #t))
-         (add-before 'configure 'patch-bindir-in-btrfs-rules
-           (lambda* (#:key outputs #:allow-other-keys)
-             ;; The "@bindir@" substitution incorrectly expands to a literal
-             ;; "${exec_prefix}" (see <https://bugs.gnu.org/39926>).  Work
-             ;; around it.
-             (let ((out (assoc-ref outputs "out")))
-               (substitute* "rules/64-btrfs.rules.in"
-                 (("@bindir@")
-                  (string-append out "/bin")))
-               #t)))
+                               "/bin/xsltproc")))))
          (add-after 'install 'move-static-library
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -3821,8 +3804,7 @@ to the in-kernel OOM killer.")
                ;; such that Libtool looks for it in the usual places.
                (substitute* (string-append out "/lib/libudev.la")
                  (("old_library=.*")
-                  "old_library=''\n"))
-               #t)))
+                  "old_library=''\n")))))
          (add-after 'install 'build-hwdb
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Build OUT/etc/udev/hwdb.bin.  This allows 'lsusb' and
