@@ -279,15 +279,19 @@ compatible to GNU Pth.")
 (define-public gnupg
   (package
     (name "gnupg")
-    (version "2.2.30")
+    ;; Note: The 2.2.X releases are Long Term Support (LTS), so stick to it
+    ;; for our stable 'gnupg'.
+    ;; Note2: 2.2.33 currently suffers from regressions, so do not update to it
+    ;; (see: https://dev.gnupg.org/T5742).
+    (version "2.2.32")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
+              (uri (string-append "ftp://ftp.gnupg.org/gcrypt/gnupg/gnupg-" version
                                   ".tar.bz2"))
               (patches (search-patches "gnupg-default-pinentry.patch"))
               (sha256
                (base32
-                "1111ry31gaxv76miqsy6l0kwxwlx8sz0jk41jhyrjwx649p6sqyc"))))
+                "0506gv54z10c96z5821z9p0ksibk1pfilsmag39ffqrcz0sinmxj"))))
     (build-system gnu-build-system)
     (native-inputs
      (list pkg-config))
@@ -347,21 +351,6 @@ libskba (working with X.509 certificates and CMS data).")
     (properties '((ftp-server . "ftp.gnupg.org")
                   (ftp-directory . "/gcrypt/gnupg")))))
 
-;; This package fixes <https://issues.guix.gnu.org/52483>, "GnuPG 2.2.30 cannot
-;; do symmetric encryption"
-(define-public gnupg-2.2.32
-  (package
-    (inherit gnupg)
-    (version "2.2.32")
-    (source (origin
-              (inherit (package-source gnupg))
-              (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
-                                  ".tar.bz2"))
-              (patches (search-patches "gnupg-default-pinentry.patch"))
-              (sha256
-               (base32
-                "0506gv54z10c96z5821z9p0ksibk1pfilsmag39ffqrcz0sinmxj"))))))
-
 (define-public gnupg-1
   (package (inherit gnupg)
     (version "1.4.23")
@@ -382,8 +371,7 @@ libskba (working with X.509 certificates and CMS data).")
          (add-after 'unpack 'patch-check-sh
            (lambda _
              (substitute* "checks/Makefile.in"
-               (("/bin/sh") (which "sh")))
-             #t)))))))
+               (("/bin/sh") (which "sh"))))))))))
 
 (define-public gpgme
   (package
@@ -433,14 +421,9 @@ and every application benefits from this.")
                         "lang/cpp/src/libgpgmepp.la")
                (symlink (string-append gpgme "/lib/libgpgme.la")
                         "src/libgpgme.la"))
-             (chdir "lang/qt")
-             #t)))))
+             (chdir "lang/qt"))))))
     (native-inputs
-     ;; Use GnuPG 2.2.32.  With 2.2.30, 'testSymmetricEncryptDecrypt' in
-     ;; t-encrypt.cpp fails because 'gpg' wrongfully ask for a passphrase do
-     ;; decrypt the cypher text.
      (modify-inputs (package-native-inputs gpgme)
-       (replace "gnupg" gnupg-2.2.32)
        (prepend pkg-config)))
     (inputs
      (modify-inputs (package-inputs gpgme)
