@@ -8845,6 +8845,45 @@ averages.")
 string.")
     (license license:expat)))
 
+
+(define-public go-github-com-charmbracelet-bubbletea
+  (package
+    (name "go-github-com-charmbracelet-bubbletea")
+    (version "0.13.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/charmbracelet/bubbletea")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1105cggi5fwqx69m0vrhgwx6kaw82w4ahn58sj0a81603c4yvrk0"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/charmbracelet/bubbletea"))
+    (propagated-inputs
+     `(("github.com/mattn/go-isatty" ,go-github-com-mattn-go-isatty)
+       ("github.com/muesli/termenv" ,go-github-com-muesli-termenv)
+       ("github.com/mattn/go-runewidth" ,go-github.com-mattn-go-runewidth)
+       ("go-github-com-muesli-reflow-indent" ,go-github-com-muesli-reflow-indent)
+       ("go-github-com-muesli-reflow-ansi" ,go-github-com-muesli-reflow-ansi)
+       ("go-golang-org-colorful" ,go-golang-org-colorful)
+       ("github.com/containerd/console" ,go-github-com-containerd-console)
+       ("go-github-com-muesli-reflow-truncate" ,go-github-com-muesli-reflow-truncate)
+       ("go-golang-org-x-crypto" ,go-golang-org-x-crypto)
+       ("go-golang-org-x-sys" ,go-golang-org-x-sys)
+       ("go-golang-org-x-term" ,go-golang-org-x-term)
+       ("github.com/mattn/go-isatty" ,go-github-com-mattn-go-isatty)))
+    (home-page "https://github.com/charmbracelet/bubbletea")
+    (synopsis "Powerful little TUI framework")
+    (description
+     "Bubble Tea is a Go framework based on The Elm Architecture.  It is
+well-suited for simple and complex terminal applications, either inline,
+full-window, or a mix of both.")
+    (license license:asl2.0)))
+
 (define-public go-github-com-arceliar-ironwood
   (package
     (name "go-github-com-arceliar-ironwood")
