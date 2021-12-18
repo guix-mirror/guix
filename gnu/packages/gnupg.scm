@@ -75,6 +75,7 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages xdisorg)
+  #:use-module (guix gexp)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
@@ -1039,10 +1040,9 @@ them to transform your existing public key into a secret key.")
         (base32 "080ayqqxb13ngpg6zvaipszwnjadafw3ni7w7gg189cmh3lab7cq"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; no make check
-       #:configure-flags (list "--prefix=/")
-       #:make-flags (list ,(string-append "CC=" (cc-for-target))
-                          (string-append "DESTDIR=" (assoc-ref %outputs "out")))))
+     (list #:tests? #f                  ; no make check
+           #:make-flags
+           #~(list (string-append "CC=" #$(cc-for-target)))))
     (inputs
      (list zlib))
     (home-page "https://www.mew.org/~kazu/proj/pgpdump/en/")
