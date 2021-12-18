@@ -465,8 +465,7 @@ build process and its dependencies, whereas Make uses Makefile format.")
                                          (assoc-ref inputs "ant-bootstrap")
                                          "/lib")
                                         "\\.jar$"))
-                      ":"))
-             #t))
+                      ":"))))
          (replace 'build
            (lambda* (#:key inputs #:allow-other-keys)
              ;; The unpack phase enters the "org" directory by mistake.
