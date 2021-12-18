@@ -299,11 +299,7 @@ language.")
                  (lambda _ (invoke "autoreconf" "-vif"))))
             '%standard-phases)))
     (inputs
-     `(("classpath" ,classpath-bootstrap)
-       ("jikes" ,jikes)
-       ("libffi" ,libffi)
-       ("zip" ,zip)
-       ("zlib" ,zlib)))
+     (list classpath-bootstrap jikes libffi zip zlib))
     (native-inputs
      (if (string-prefix? "aarch64" (or (%current-system)
                                        (%current-target-system)))
