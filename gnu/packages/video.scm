@@ -4846,18 +4846,19 @@ transitions, and effects and then export your film to many common formats.")
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (frei0r (assoc-ref inputs "frei0r-plugins"))
-                    (ffmpeg (assoc-ref inputs "ffmpeg"))
                     (jack (assoc-ref inputs "jack"))
+                    (ladspa (assoc-ref inputs "ladspa"))
+                    (mlt (assoc-ref inputs "mlt"))
                     (sdl2 (assoc-ref inputs "sdl2")))
                (wrap-program (string-append out "/bin/shotcut")
-                 `("PATH" ":" prefix
-                   ,(list (string-append ffmpeg "/bin")))
+                 `("FREI0R_PATH" ":" =
+                   (,(string-append frei0r "/lib/frei0r-1")))
+                 `("LADSPA_PATH" ":" =
+                   (,(string-append ladspa "/lib/ladspa")))
                  `("LD_LIBRARY_PATH" ":" prefix
                    ,(list (string-append jack "/lib" ":" sdl2 "/lib")))
-                 `("FREI0R_PATH" ":" =
-                   (,(string-append frei0r "/lib/frei0r-1/")))
-                 `("MLT_PREFIX" ":" =
-                   (,(assoc-ref inputs "mlt"))))))))))
+                 `("PATH" ":" prefix
+                   ,(list (string-append mlt "/bin"))))))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("python-wrapper" ,python-wrapper)
