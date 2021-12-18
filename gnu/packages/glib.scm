@@ -212,12 +212,11 @@ shared NFS home directories.")
                    `(,(this-package-native-input "python")
                      ,(this-package-native-input "python-wrapper")))
               '()))
-       #:configure-flags (list "--default-library=both"
-                               "-Dman=false"
-                               "-Dselinux=disabled"
-                               (string-append "--bindir="
-                                              (assoc-ref %outputs "bin")
-                                              "/bin"))
+       #:configure-flags ,#~(list "--default-library=both"
+                                  "-Dman=false"
+                                  "-Dselinux=disabled"
+                                  (string-append "--bindir="
+                                                 #$output:bin "/bin"))
        #:phases
        (modify-phases %standard-phases
          ;; Needed to pass the test phase on slower ARM and i686 machines.
@@ -365,8 +364,8 @@ functions for strings and common data structures.")
     (arguments
      (substitute-keyword-arguments (package-arguments glib)
        ((#:configure-flags flags ''())
-        `(cons "-Dgtk_doc=true"
-               (delete "-Dman=false" ,flags)))
+        #~(cons "-Dgtk_doc=true"
+                (delete "-Dman=false" #$flags)))
        ((#:phases phases)
         `(modify-phases ,phases
            (add-after 'unpack 'patch-docbook-xml
