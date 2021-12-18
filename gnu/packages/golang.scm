@@ -7232,7 +7232,7 @@ io.Writers helping you to transform blocks of text.")
 (define-public go-github-com-muesli-termenv
   (package
     (name "go-github-com-muesli-termenv")
-    (version "0.7.0")
+    (version "0.8.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -7241,7 +7241,7 @@ io.Writers helping you to transform blocks of text.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "09fwrdhy7c9qlf70h97f5inh6xvkfq1vi8fwx9q7bwmjjbiykk8m"))))
+                "0m24ljq1nq7z933fcvg99fw0fhxj9rb5ll4rlay7z2f2p59mrbdp"))))
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/muesli/termenv"))
