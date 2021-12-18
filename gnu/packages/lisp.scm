@@ -158,9 +158,9 @@ Definition Facility.")
                                               #$(this-package-input "libtirpc")
                                               "/lib")
                                "LIBS=-ltirpc")
-         #:make-flags ,#~(list
-                          (string-append "GCL_CC=" #$gcc "/bin/gcc")
-                          (string-append "CC="#$gcc "/bin/gcc"))
+         #:make-flags ,#~(let ((gcc (search-input-file %build-inputs "/bin/gcc")))
+                           (list (string-append "GCL_CC=" gcc)
+                                 (string-append "CC=" gcc)))
          #:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'realpath-workaround
