@@ -3,6 +3,7 @@
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2021 Timotej Lazar <timotej.lazar@araneo.si>
+;;; Copyright © 2021 Remco van 't Veer <remco@remworks.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -150,7 +151,8 @@ fundamental object types for C.")
                (base32
                 "1h6hwibaf3xa2w6qpzjiiywmfj6zkgbz4r2isf3gd0xm6vq7n6if"))
               (patches (search-patches "sssd-fix-samba.patch"
-                                       "sssd-system-directories.patch"))))
+                                       "sssd-system-directories.patch"
+                                       "sssd-collision-with-external-nss-symbol.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
