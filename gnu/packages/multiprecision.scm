@@ -222,14 +222,14 @@ error.  Additionally, iRRAM uses the concept of multi-valued functions.")
 (define-public qd
   (package
     (name "qd")
-    (version "2.3.22")
+    (version "2.3.23")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://crd-legacy.lbl.gov/~dhbailey/mpdist/qd-"
                            version ".tar.gz"))
        (sha256
-        (base32 "1lq609rsp6zpg7zda75lyxzzk1fabzp4jn88j7xfk84mdgjgzh9h"))))
+        (base32 "09pfd77rmy370hy7qdqw84z21y9zpl3fcwzf93rhiv0kwhfg9smk"))))
     (build-system gnu-build-system)
     (native-inputs
      (list gfortran))
