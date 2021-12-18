@@ -476,11 +476,7 @@ Main-Class: org.eclipse.jdt.internal.compiler.batch.Main\n")))
                (mkdir-p share)
                (install-file "ecj-bootstrap.jar" share)))))))
     (native-inputs
-     `(("ant-bootstrap" ,ant-bootstrap)
-       ("unzip" ,unzip)
-       ("jikes" ,jikes)
-       ("jamvm" ,jamvm-1-bootstrap)
-       ("fastjar" ,fastjar)))
+     (list ant-bootstrap unzip jikes jamvm-1-bootstrap fastjar))
     (home-page "https://eclipse.org")
     (synopsis "Eclipse Java development tools core batch compiler")
     (description "This package provides the Eclipse Java core batch compiler
