@@ -90,7 +90,7 @@
      (module #~(string-append #$pam-mount "/lib/security/pam_mount.so"))))
   (list (lambda (pam)
           (if (member (pam-service-name pam)
-                      '("login" "su" "slim" "gdm-password"))
+                      '("login" "su" "slim" "gdm-password" "sddm"))
               (pam-service
                (inherit pam)
                (auth (append (pam-service-auth pam)
