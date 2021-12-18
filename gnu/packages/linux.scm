@@ -1815,7 +1815,7 @@ providing the system administrator with some help in common tasks.")
 (define-public util-linux
   (package
     (name "util-linux")
-    (version "2.37.1")
+    (version "2.37.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/utils/"
@@ -1823,7 +1823,7 @@ providing the system administrator with some help in common tasks.")
                                   "util-linux-" version ".tar.xz"))
               (sha256
                (base32
-                "0xkb7vw2040zi4m0sbhs5qn5l8nrq4xsf4sdxf3cy9mpachd8jwf"))
+                "1ng9517c37mdp858425a4zyybma7dh7jrpd6z1z61yz7mb0n81va"))
               (patches (search-patches "util-linux-tests.patch"))
               (modules '((guix build utils)))
               (snippet
