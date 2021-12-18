@@ -281,11 +281,9 @@ language.")
               (sha256
                (base32
                 "06lhi03l3b0h48pc7x58bk9my2nrcf1flpmglvys3wyad6yraf36"))
+              ;; Remove precompiled software.
               (snippet
-               '(begin
-                  ;; Remove precompiled software.
-                  (delete-file "lib/classes.zip")
-                  #t))))
+               '(delete-file "lib/classes.zip"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
