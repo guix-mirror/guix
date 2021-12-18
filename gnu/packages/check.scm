@@ -845,6 +845,7 @@ available via the @code{unittest.mock} module.")
          ("python2-funcsigs" ,python2-funcsigs)
          ,@(package-propagated-inputs base))))))
 
+;;; This package is unmaintained (see the note at the top of doc/index.rst).
 (define-public python-nose
   (package
     (name "python-nose")
@@ -858,15 +859,26 @@ available via the @code{unittest.mock} module.")
             "164a43k7k2wsqqk1s6vavcdamvss4mz0vd6pwzv2h9n8rgwzxgzi"))))
     (build-system python-build-system)
     (arguments
-     '(#:tests? #f)) ; FIXME: test suite fails
+     '(#:tests? #f
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'invoke-2to3
+                    (lambda _
+                      (invoke "2to3" "-w" "."))))))
     (home-page "http://readthedocs.org/docs/nose/")
     (synopsis "Python testing library")
     (description
      "Nose extends the unittest library to make testing easier.")
-    (license license:lgpl2.0+)))
+    (license license:lgpl2.0+)
+    (properties `((python2-variant . ,(delay python2-nose))))))
 
 (define-public python2-nose
-  (package-with-python2 python-nose))
+  (let ((base (package-with-python2
+               (strip-python2-variant python-nose))))
+    (package/inherit base
+      (arguments (substitute-keyword-arguments (package-arguments base)
+                   ((#:phases phases)
+                    `(modify-phases ,phases
+                       (delete 'invoke-2to3))))))))
 
 (define-public python-nose2
   (package
