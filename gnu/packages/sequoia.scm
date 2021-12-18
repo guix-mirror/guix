@@ -281,6 +281,34 @@ This Guix package is built to use the nettle cryptographic library.")
         ("rust-sequoia-rfc2822" ,rust-sequoia-rfc2822-0.9)
         ("rust-time" ,rust-time-0.1))))))
 
+(define-public rust-sequoia-rfc2822-0.9
+  (package
+    (name "rust-sequoia-rfc2822")
+    (version "0.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "sequoia-rfc2822" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1aj34i6862718m162rqfv69fkmvdw063s6ws7hbp42n73gb08p5c"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-failure" ,rust-failure-0.1)
+        ("rust-lalrpop" ,rust-lalrpop-0.17)
+        ("rust-lalrpop-util" ,rust-lalrpop-util-0.17))))
+    (home-page "https://sequoia-pgp.org/")
+    (synopsis "RFC 2822 name-addr parser")
+    (description "Currently, this crate only recognizes the RFC 2822 name-addr
+and addr-spec productions, i.e., things of the form: @code{Name (Comment)
+<email@@example.org>} and @code{email@@example.org}
+
+Although the above appear simple to parse, RFC 2822's whitespace and comment
+rules are rather complex.  This crate implements the whole grammar." )
+    (license license:gpl3)))
+
 (define-public sequoia-sq
   (package
     (name "sequoia-sq")
