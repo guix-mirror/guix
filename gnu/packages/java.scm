@@ -359,7 +359,7 @@ JNI.")
              (setenv "JAVAC" (search-input-file inputs "/bin/jikes"))
              (setenv "CLASSPATH" (search-input-file inputs "/lib/rt.jar"))))
          (replace 'build
-           (lambda* (#:key inputs #:allow-other-keys)
+           (lambda* (#:key inputs outputs #:allow-other-keys)
              ;; Ant complains if this file doesn't exist.
              (setenv "HOME" "/tmp")
              (with-output-to-file "/tmp/.ant.properties"
@@ -386,7 +386,7 @@ JNI.")
                (("depends=\"jars,test-jar\"") "depends=\"jars\""))
              (invoke "bash" "bootstrap.sh"
                      (string-append "-Ddist.dir="
-                                    (assoc-ref %outputs "out")))))
+                                    (assoc-ref outputs "out")))))
          (add-after 'build 'strip-jar-timestamps ;based on ant-build-system
            (lambda* (#:key outputs #:allow-other-keys)
              (define (repack-archive jar)
