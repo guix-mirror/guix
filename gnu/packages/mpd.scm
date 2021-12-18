@@ -197,7 +197,7 @@ player daemon.")
 (define-public ncmpc
   (package
     (name "ncmpc")
-    (version "0.45")
+    (version "0.46")
     (source (origin
               (method url-fetch)
               (uri
@@ -206,14 +206,8 @@ player daemon.")
                               "/ncmpc-" version ".tar.xz"))
               (sha256
                (base32
-                "11gpy6kd7xr8x7f7gwdwfryxyc58cd135ds28gnz40p08xj49zqp"))))
+                "0klkjaq6n05cmgcwiawjm6d3rn6mrncy72s3x0abjjnx177pfzqp"))))
     (build-system meson-build-system)
-    (arguments
-     `(#:configure-flags
-       ;; Otherwise, they are installed incorrectly, in
-       ;; '$out/share/man/man/man1'.
-       (list (string-append "-Dmandir=" (assoc-ref %outputs "out")
-                            "/share"))))
     (inputs (list boost pcre libmpdclient ncurses))
     (native-inputs `(("gettext" ,gettext-minimal) ; for xgettext
                      ("pkg-config" ,pkg-config)
