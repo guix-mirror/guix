@@ -97,6 +97,7 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages image-processing)
   #:use-module (gnu packages imagemagick)
+  #:use-module (gnu packages kde-frameworks)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)               ;FIXME: for pcb
@@ -715,6 +716,43 @@ ready for production.")
     ;; Documentation and parts are released under CC-BY-SA 3.0; source code is
     ;; released under GPLv3+.
     (license (list license:gpl3+ license:cc-by-sa3.0))))
+
+(define-public qelectrotech
+  (package
+    (name "qelectrotech")
+    (version "0.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://git.tuxfamily.org/qet/qet.git/"
+                           "snapshot/qet-" version ".tar.gz"))
+       (sha256
+        (base32 "0w70fqwhqqzga1kfp34v8z1xf9988nvvi3d5gwl2sg429p9mpsk2"))))
+    (build-system qt-build-system)
+    (arguments
+     ;; XXX: tests are built for the CMake build option but it seems to be
+     ;; broken in 0.8.0.
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               ;; Patch hardcoded path before running qmake.
+               (substitute* "qelectrotech.pro" (("\\/usr\\/local") out))
+               (invoke "qmake")))))))
+    (native-inputs
+     (list pkg-config qttools))
+    (inputs
+     (list kcoreaddons kwidgetsaddons qtbase-5 qtsvg sqlite))
+    (home-page "https://qelectrotech.org/")
+    (synopsis "CAD/CAE editor focusing on schematics drawing features")
+    (description "QElectroTech, or QET in short, is a desktop application to
+create diagrams and schematics.  The software is primarily intended to create
+electrical documentation but it can also be used to draw any kinds of diagrams,
+such as those made in pneumatics, hydraulics, process industries, electronics,
+and others.")
+    (license license:gpl2+)))
 
 (define-public gerbv
   (package
