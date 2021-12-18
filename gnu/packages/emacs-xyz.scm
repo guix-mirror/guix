@@ -415,7 +415,7 @@ a generic Scheme interaction mode for the GNU Emacs editor.")
 (define-public emacs-geiser-chez
   (package
     (name "emacs-geiser-chez")
-    (version "0.16")
+    (version "0.17")
     (source
      (origin
        (method git-fetch)
@@ -424,8 +424,7 @@ a generic Scheme interaction mode for the GNU Emacs editor.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0cc1z5z5cpvxa5f3n8kvms0wxlybzcg4l1bh3rwv1l1sb0lk1xzx"))))
+        (base32 "03fc9ahb0pmznkcnxzgpni4clj1zgky6vaqkc94nf8b8swniwkm9"))))
     (build-system emacs-build-system)
     (arguments
      '(#:include (cons "^src/" %default-include)
