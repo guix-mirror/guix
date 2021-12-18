@@ -6840,44 +6840,47 @@ implemented as callable objects, and bases of finite element spaces.")
     (license (list license:lgpl3+ license:gpl2))))
 
 (define-public dune-pdelab
-  (package
-    (name "dune-pdelab")
-    (version "2.7.0-git-476fe437")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://gitlab.dune-project.org/pdelab/dune-pdelab")
-             (commit "476fe43763fa6f459c5e4658e2a2b4b5582db834")))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32
-         "0cs36piqzn6rq0j2ih3ab3q3q9yg199wk72k5qi86pkzh7i7fdn1"))))
-    (build-system cmake-build-system)
-    (arguments '(#:tests? #f)) ; XXX: the tests cannot be compiled
-    (inputs
-     (list dune-common
-           dune-istl
-           dune-localfunctions
-           dune-geometry
-           dune-grid
-           dune-typetree
-           dune-functions
-           ;; Optional
-           openblas
-           eigen
-           metis
-           python
-           superlu
-           gmp))
-    (native-inputs
-     (list gfortran pkg-config))
-    (home-page "https://dune-project.org/")
-    (synopsis "Differential equations solver toolbox")
-    (description "PDELab is a partial differential equations solver toolbox
+  ;; This was the last commit on the releases/2.7 branch as of 2021-12-17,
+  ;; unfortunately there was no tag for any 2.7 release.
+  (let ((commit "09aef74d95661d18a7789d2f517ae77797eec738"))
+    (package
+      (name "dune-pdelab")
+      (version (git-version "2.7.1" "0" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://gitlab.dune-project.org/pdelab/dune-pdelab")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0nv69ayr4gln9m1s94z9zkrxqi8nzar3z6awnvgqz595nmjf82ac"))))
+      (build-system cmake-build-system)
+      (arguments '(#:tests? #f)) ; XXX: the tests cannot be compiled
+      (inputs
+       (list dune-common
+             dune-istl
+             dune-localfunctions
+             dune-geometry
+             dune-grid
+             dune-typetree
+             dune-functions
+             ;; Optional
+             openblas
+             eigen
+             metis
+             python
+             superlu
+             gmp))
+      (native-inputs
+       (list gfortran pkg-config))
+      (home-page "https://dune-project.org/")
+      (synopsis "Differential equations solver toolbox")
+      (description "PDELab is a partial differential equations solver toolbox
 built on top of DUNE, the Distributed and Unified Numerics Environment.")
-    ;; Either GPL version 2 with "runtime exception" or LGPLv3+.
-    (license (list license:lgpl3+ license:gpl2))))
+      ;; Either GPL version 2 with "runtime exception" or LGPLv3+.
+      (license (list license:lgpl3+ license:gpl2)))))
 
 (define add-openmpi-to-dune-package
   (let ((dune-package?
