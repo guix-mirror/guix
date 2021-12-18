@@ -6362,7 +6362,7 @@ linear algebra primitives specifically targeting graph analytics.")
 (define-public dune-common
   (package
     (name "dune-common")
-    (version "2.7.0")
+    (version "2.7.1")
     (source
      (origin
        (method url-fetch)
@@ -6370,14 +6370,18 @@ linear algebra primitives specifically targeting graph analytics.")
                            version "/dune-common-" version ".tar.gz"))
        (sha256
         (base32
-         "140q1zh44cr5yrjwg4b5ga803rkqv55vk30l2cqm29aklj1wb0rw"))))
+         "0sidwdkyrrqjkqhpvrlc991pzi5xzlvxk91s2n7qk3widwy7fch2"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (add-after 'build 'build-tests
-           (lambda* (#:key make-flags #:allow-other-keys)
-             (apply invoke "make" "build_tests" make-flags))))))
+           (lambda* (#:key make-flags parallel-build? #:allow-other-keys)
+             (apply invoke "make" "build_tests"
+                    `(,@(if parallel-build?
+                            `("-j" ,(number->string (parallel-job-count)))
+                            '())
+                      ,@make-flags)))))))
     (inputs
      (list gmp metis openblas python superlu))
     (native-inputs
