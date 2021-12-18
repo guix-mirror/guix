@@ -149,78 +149,81 @@
                   acl ;for getfacl
                   colordiff
                   xxd))
-    (native-inputs `(("help2man" ,help2man)
-                     ;; Below are modules used for tests.
-                     ("binwalk" ,binwalk)
-                     ("python-pytest" ,python-pytest)
-                     ("python-chardet" ,python-chardet)
-                     ("python-black" ,python-black)
-                     ("python-h5py" ,python-h5py)
-                     ("python-pypdf2" ,python-pypdf2)
-                     ("python-progressbar33" ,python-progressbar33)
-                     ;; The test suite skips tests when these are missing.
-                     ,@(match (%current-system)
-                         ;; ghc is only available on x86 currently.
-                         ((or "x86_64-linux" "i686-linux")
-                          `(("ghc" ,ghc)))
-                         (_
-                          `()))
-                     ,@(match (%current-system)
-                         ;; openjdk and dependent packages are only
-                         ;; available on x86_64 currently.
-                         ((or "x86_64-linux")
-                          `(("enjarify" ,enjarify)
-                            ;; no unversioned openjdk available
-                            ("openjdk:jdk" ,openjdk12 "jdk")))
-                         (_
-                          `()))
-                     ("abootimg" ,abootimg)
-                     ("bdb" ,bdb)
-                     ("binutils" ,binutils)
-                     ("bzip2" ,bzip2)
-                     ("cdrtools" ,cdrtools)
-                     ("colord" ,colord)
-                     ("cpio" ,cpio)
-                     ("docx2txt" ,docx2txt)
-                     ("dtc" ,dtc)
-                     ("e2fsprogs" ,e2fsprogs)
-                     ("ffmpeg" ,ffmpeg)
+    (native-inputs
+     (append
+       (list help2man
 
-                     ;; XXX: Must be the same version as python-magic uses;
-                     ;; remove when 'file' is updated.
-                     ("file" ,file-next)
+             ;; Below are packages used for tests.
+             binwalk
+             python-pytest
+             python-chardet
+             python-black
+             python-h5py
+             python-pypdf2
+             python-progressbar33
 
-                     ("fpc" ,fpc)
-                     ("gettext" ,gettext-minimal)
-                     ("ghostscript" ,ghostscript)
-                     ("giflib:bin" ,giflib "bin")
-                     ("gnumeric" ,gnumeric)
-                     ("gnupg" ,gnupg)
-                     ("hdf5" ,hdf5)
-                     ("imagemagick" ,imagemagick)
-                     ("libarchive" ,libarchive)
-                     ("llvm" ,llvm)
-                     ("lz4" ,lz4)
-                     ("mono" ,mono)
-                     ("ocaml" ,ocaml)
-                     ("odt2txt" ,odt2txt)
-                     ("openssh" ,openssh)
-                     ("openssl" ,openssl)
-                     ("pgpdump" ,pgpdump)
-                     ("poppler" ,poppler)
-                     ("python-jsbeautifier" ,python-jsbeautifier)
-                     ("r-minimal" ,r-minimal)
-                     ("rpm" ,rpm)
-                     ("sng" ,sng)
-                     ("sqlite" ,sqlite)
-                     ("squashfs-tools" ,squashfs-tools)
-                     ("tcpdump" ,tcpdump)
-                     ("unzip" ,unzip)
-                     ("wabt" ,wabt)
-                     ("xxd" ,xxd)
-                     ("xz" ,xz)
-                     ("zip" ,zip)
-                     ("zstd" ,zstd)))
+             abootimg
+             bdb
+             binutils
+             bzip2
+             cdrtools
+             colord
+             cpio
+             docx2txt
+             dtc
+             e2fsprogs
+             ffmpeg
+
+             ;; XXX: Must be the same version as python-magic uses;
+             ;; remove when 'file' is updated.
+             file-next
+
+             fpc
+             gettext-minimal
+             ghostscript
+             `(,giflib "bin")
+             gnumeric
+             gnupg
+             hdf5
+             imagemagick
+             libarchive
+             llvm
+             lz4
+             mono
+             ocaml
+             odt2txt
+             openssh
+             openssl
+             pgpdump
+             poppler
+             python-jsbeautifier
+             r-minimal
+             rpm
+             sng
+             sqlite
+             squashfs-tools
+             tcpdump
+             unzip
+             wabt
+             xxd
+             xz
+             zip
+             zstd)
+
+       ;; Also for tests.  The test suite skips tests when these are missing.
+       (match (%current-system)
+         ;; ghc is only available on x86 currently.
+         ((or "x86_64-linux" "i686-linux")
+          (list ghc))
+         (_ '()))
+       (match (%current-system)
+         ;; openjdk and dependent packages are only
+         ;; available on x86_64 currently.
+         ((or "x86_64-linux")
+          (list enjarify)
+          ;; No unversioned openjdk available.
+          (list `(,openjdk12 "jdk")))
+         (_ '()))))
     (home-page "https://diffoscope.org/")
     (synopsis "Compare files, archives, and directories in depth")
     (description
