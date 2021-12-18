@@ -543,14 +543,15 @@ Update package definitions to the latest style.\n"))
                        edit-expression/dry-run
                        edit-expression))
          (policy   (assoc-ref opts 'input-simplification-policy)))
-    (for-each (lambda (package)
-                (simplify-package-inputs package #:policy policy
-                                         #:edit-expression edit))
-              ;; Sort package by source code location so that we start editing
-              ;; files from the bottom and going upward.  That way, the
-              ;; 'location' field of <package> records is not invalidated as
-              ;; we modify files.
-              (sort (if (null? packages)
-                        (fold-packages cons '() #:select? (const #t))
-                        packages)
-                    (negate package-location<?)))))
+    (with-error-handling
+      (for-each (lambda (package)
+                  (simplify-package-inputs package #:policy policy
+                                           #:edit-expression edit))
+                ;; Sort package by source code location so that we start editing
+                ;; files from the bottom and going upward.  That way, the
+                ;; 'location' field of <package> records is not invalidated as
+                ;; we modify files.
+                (sort (if (null? packages)
+                          (fold-packages cons '() #:select? (const #t))
+                          packages)
+                      (negate package-location<?))))))
