@@ -830,8 +830,6 @@ displayed in a terminal.")
                   (string-append bin "/imv-")))))))))
     (native-inputs
      (list asciidoc
-           cmocka
-           git-minimal                  ; why build need it?
            pkg-config))
     (inputs
      (list freeimage
