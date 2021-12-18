@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012-2017, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
@@ -24,7 +24,9 @@
   #:export (fold2
             fold-tree
             fold-tree-leaves
-            compile-time-value))
+            compile-time-value
+            procedure-call-location
+            define-compile-time-procedure))
 
 ;;; Commentary:
 ;;;
@@ -99,5 +101,49 @@ evaluate to a simple datum."
                          (syntax-case s ()
                            (_ #`'#,(datum->syntax s val)))))))
        v))))
+
+(define-syntax-parameter procedure-call-location
+  (lambda (s)
+    (syntax-violation 'procedure-call-location
+                      "'procedure-call-location' may only be used \
+within 'define-compile-time-procedure'"
+                      s)))
+
+(define-syntax-rule (define-compile-time-procedure (proc (arg pred) ...)
+                      body ...)
+  "Define PROC as a macro such that, if every actual argument in a \"call\"
+matches PRED, then BODY is evaluated at macro-expansion time.  BODY must
+return a single value in a type that has read syntax--e.g., numbers, strings,
+lists, etc.
+
+BODY can refer to 'procedure-call-location', which is bound to a source
+property alist corresponding to the call site.
+
+This macro is meant to be used primarily for small procedures that validate or
+process its arguments in a way that may be equally well performed at
+macro-expansion time."
+  (define-syntax proc
+    (lambda (s)
+      (define loc
+        #`(identifier-syntax
+           '#,(datum->syntax #'s (syntax-source s))))
+
+      (syntax-case s ()
+        ((_ arg ...)
+         (and (pred (syntax->datum #'arg)) ...)
+         (let ((arg (syntax->datum #'arg)) ...)
+           (syntax-parameterize ((procedure-call-location
+                                  (identifier-syntax (syntax-source s))))
+             body ...)))
+        ((_ actual (... ...))
+         #`((lambda (arg ...)
+              (syntax-parameterize ((procedure-call-location #,loc))
+                body ...))
+            actual (... ...)))
+        (id
+         (identifier? #'id)
+         #`(lambda (arg ...)
+             (syntax-parameterize ((procedure-call-location #,loc))
+               body ...)))))))
 
 ;;; combinators.scm ends here
