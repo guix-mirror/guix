@@ -450,10 +450,7 @@ build process and its dependencies, whereas Make uses Makefile format.")
     ;; bootstrapping the JDK.
     (build-system gnu-build-system)
     (arguments
-     `(#:modules ((guix build gnu-build-system)
-                  (guix build utils)
-                  (srfi srfi-1))
-       #:tests? #f ; there are no tests
+     `(#:tests? #f ; there are no tests
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
