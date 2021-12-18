@@ -81,14 +81,14 @@
     ;; NOTE - python-3 is set here for generating the bindings.  Users need to
     ;; install python-3 in their profile in order to use these bindings.
     (native-inputs
-     `(("asciidoc" ,asciidoc)
-       ("bison" ,bison)
-       ("flex" ,flex)
-       ("pkg-config" ,pkg-config)
-       ("python-3" ,python-3)
-       ("python-sphinx" ,python-sphinx)
-       ("swig", swig)
-       ("xmltoman" ,xmltoman)))
+     (list asciidoc
+           bison
+           flex
+           pkg-config
+           python-3
+           python-sphinx
+           swig
+           xmltoman))
     (home-page "https://babeltrace.org/")
     (synopsis "Trace manipulation toolkit")
     (description "Babeltrace 2 is a framework for viewing, converting,
@@ -213,18 +213,18 @@ to ring buffers shared with a consumer daemon.")
     (propagated-inputs
      (list kmod module-init-tools))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("perl" ,perl)
-       ("libpfm4" ,libpfm4)
-       ("python-3" ,python-3)
-       ("swig" ,swig)
-       ("procps" ,procps)
-       ("which" ,which)
-       ("flex" ,flex)
-       ("bison" ,bison)
-       ("asciidoc" ,asciidoc)
-       ("libxml2" ,libxml2)
-       ("lttng-ust" ,lttng-ust)))
+     (list pkg-config
+           perl
+           libpfm4
+           python-3
+           swig
+           procps
+           which
+           flex
+           bison
+           asciidoc
+           libxml2
+           lttng-ust))
     (home-page "https://lttng.org/")
     (synopsis "LTTng userspace tracer libraries")
     (description "The lttng-tools project provides a session
