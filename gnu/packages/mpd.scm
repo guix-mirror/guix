@@ -30,6 +30,7 @@
 (define-module (gnu packages mpd)
   #:use-module (gnu packages)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix gexp)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -174,7 +175,7 @@ protocol.")
 (define-public mpd-mpc
   (package
     (name "mpd-mpc")
-    (version "0.33")
+    (version "0.34")
     (source (origin
               (method url-fetch)
               (uri
@@ -183,8 +184,19 @@ protocol.")
                               "/mpc-" version ".tar.xz"))
               (sha256
                (base32
-                "15hjpzqs83v1zx49x8nkpwy9hpl1jxd55z1w50vm82gm32zcqh2g"))))
+                "086sdx88zvgbv4j9kw4qlrsw1n621d6j6403pcid045wahv3y7k9"))))
     (build-system meson-build-system)
+    (arguments
+     (list #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'unpack 'remove-bogus-rsync-requirement
+                 ;; Meson thinks a maintainer ‘upload to musicpd.org’ task
+                 ;; merits a hard dependency on rsync.  Convince it otherwise.
+                 ;; Don't use ‘true’ so that the build will fail if it is ever
+                 ;; actually invoked.
+                 (lambda _
+                   (substitute* "doc/meson.build"
+                     (("rsync") "ls")))))))
     (inputs (list libmpdclient))
     (native-inputs
      (list pkg-config python-sphinx))
