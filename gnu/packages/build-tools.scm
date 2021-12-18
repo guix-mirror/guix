@@ -123,10 +123,11 @@ makes a few sacrifices to acquire fast full and incremental build times.")
                   (add-before 'check 'set-build-environment
                     (lambda _
                       (setenv "CC" "gcc")))
-                  ;; TODO: Test Configuration is Incomplete
                   (replace 'check
-                    (lambda _
-                      (invoke "ctest"))))))
+                    ;; TODO: Test configuration is incomplete.
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (when tests?
+                        (invoke "ctest")))))))
     (inputs
      `(("c-ares" ,c-ares)
        ("fmt" ,fmt)
