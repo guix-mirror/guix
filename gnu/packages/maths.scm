@@ -6789,7 +6789,7 @@ operating on statically typed trees of objects.")
 (define-public dune-functions
   (package
     (name "dune-functions")
-    (version "2.7.0")
+    (version "2.7.1")
     (source
      (origin
        (method git-fetch)
@@ -6799,7 +6799,7 @@ operating on statically typed trees of objects.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1na4gcih0kin37ksj2xj07ds04v7zx53pjdhm1hzy55jjfqdjk8h"))))
+         "04dhr4asnl38bf1gp8hrk31maav33m7q71lhl2n5yk1q1x6i77nw"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -6811,8 +6811,12 @@ operating on statically typed trees of objects.")
                      "--exclude-regex gridviewfunctionspacebasistest")
             #t))
          (add-after 'build 'build-tests
-           (lambda* (#:key make-flags #:allow-other-keys)
-             (apply invoke "make" "build_tests" make-flags))))))
+           (lambda* (#:key make-flags parallel-build? #:allow-other-keys)
+             (apply invoke "make" "build_tests"
+                    `(,@(if parallel-build?
+                            `("-j" ,(number->string (parallel-job-count)))
+                            '())
+                      ,@make-flags)))))))
     (inputs
      (list dune-common
            dune-istl
