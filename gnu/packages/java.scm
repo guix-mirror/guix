@@ -4377,7 +4377,7 @@ provides the Maven plugin generating the component metadata.")))
 (define-public java-plexus-cipher
   (package
     (name "java-plexus-cipher")
-    (version "1.7")
+    (version "2.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4386,8 +4386,49 @@ provides the Maven plugin generating the component metadata.")))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0m638nzlxbmnbcj5cwdpgs326ab584yv0k803zlx37r6iqwvf6b0"))))
+                "01fipdsm090n8j4207fl8kbxznkgkmkkgyazf53hm1nwn6na5aai"))))
     (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "plexus-cipher.jar"
+       #:source-dir "src/main/java"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'generate-javax.inject.Named
+           (lambda _
+             (mkdir-p "build/classes/META-INF/sisu")
+             (with-output-to-file "build/classes/META-INF/sisu/javax.inject.Named"
+               (lambda _
+                 (display
+                   "org.sonatype.plexus.components.cipher.DefaultPlexusCipher\n")))
+             #t))
+         (replace 'install (install-from-pom "pom.xml")))))
+    (inputs
+     `(("java-cdi-api" ,java-cdi-api)
+       ("java-javax-inject" ,java-javax-inject)))
+    (propagated-inputs
+     `(("java-sonatype-spice-parent-pom" ,java-sonatype-spice-parent-pom-15)
+       ("java-eclipse-sisu-inject" ,java-eclipse-sisu-inject)))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (home-page "https://github.com/sonatype/plexus-cipher")
+    (synopsis "Encryption/decryption Component")
+    (description "Plexus-cipher contains a component to deal with encryption
+and decryption.")
+    (license license:asl2.0)))
+
+(define-public java-plexus-cipher-1.7
+  (package
+    (inherit java-plexus-cipher)
+    (version "1.7")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/codehaus-plexus/plexus-cipher")
+                     (commit (string-append "plexus-cipher-" version))))
+              (file-name (git-file-name "java-plexus-cipher" version))
+              (sha256
+               (base32
+                "0m638nzlxbmnbcj5cwdpgs326ab584yv0k803zlx37r6iqwvf6b0"))))
     (arguments
      `(#:jar-name "plexus-cipher.jar"
        #:source-dir "src/main/java"
@@ -4409,17 +4450,8 @@ provides the Maven plugin generating the component metadata.")))
                (("provided") "test"))
              #t))
          (replace 'install (install-from-pom "pom.xml")))))
-    (inputs
-     (list java-cdi-api java-javax-inject))
     (propagated-inputs
-     (list java-sonatype-spice-parent-pom-15))
-    (native-inputs
-     (list java-junit))
-    (home-page "https://github.com/sonatype/plexus-cipher")
-    (synopsis "Encryption/decryption Component")
-    (description "Plexus-cipher contains a component to deal with encryption
-and decryption.")
-    (license license:asl2.0)))
+     (list java-sonatype-spice-parent-pom-15))))
 
 (define-public java-plexus-java
   (package
@@ -4766,7 +4798,7 @@ function utilities.")
              #t))
          (replace 'install (install-from-pom "pom.xml")))))
     (propagated-inputs
-     (list java-plexus-utils java-plexus-cipher
+     (list java-plexus-utils java-plexus-cipher-1.7
            java-sonatype-spice-parent-pom-12))
     (native-inputs
      `(("java-modello-core" ,java-modello-core)
