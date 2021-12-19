@@ -6625,7 +6625,7 @@ DAV, and others.")
                    "-Dvapi=false")
                  '()))))
     (native-inputs
-     (list gobject-introspection pkg-config vala))
+     (list gobject-introspection pkg-config python vala))
     (propagated-inputs
      ;; Both of these are required by gusb.pc.
      (list glib libusb))
