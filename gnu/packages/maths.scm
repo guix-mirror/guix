@@ -79,6 +79,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system ocaml)
   #:use-module (guix build-system python)
   #:use-module (guix build-system ruby)
@@ -4869,10 +4870,9 @@ Failure to do so will result in a library with poor performance.")
        (file-name (git-file-name name version))
        (sha256
         (base32 "0zgckh56vcdar3a4n51r84wrizyd2ssqal4nsvxd4qdjm0rvb4h0"))))
-    (build-system cmake-build-system)
+    (build-system meson-build-system)
     (arguments
-     `(#:configure-flags
-       (list "-DCGLM_USE_TEST=ON")))
+     `(#:configure-flags '("-Dbuild_tests=true")))
     (home-page "https://github.com/recp/cglm")
     (synopsis "Mathematics C library for graphics programming")
     (description
