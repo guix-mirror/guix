@@ -1781,6 +1781,7 @@ library.")
        ("mm-common" ,mm-common)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
+       ("python" ,python)
        ("xsltproc" ,libxslt)
        ("xorg-server" ,xorg-server-for-tests)))
     (propagated-inputs
