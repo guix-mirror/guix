@@ -28435,3 +28435,58 @@ to:
     (description
      "This package provides a port of the serialize and unserialize functions of PHP for Python")
     (license license:bsd-3)))
+
+(define-public nikola
+  (package
+    (name "nikola")
+    (version "8.1.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "Nikola" version))
+        (sha256
+          (base32 "1vspzvi4039zgjc93bspqjb384r6c9ksvmidbp8csws2pdbc7sh5"))))
+    (build-system python-build-system)
+    (propagated-inputs
+      (list python-babel
+            python-blinker
+            python-dateutil
+            python-docutils
+            python-doit
+            python-jinja2        ;; for themes
+            python-lxml
+            python-mako
+            python-markdown
+            python-natsort
+            python-notebook      ;; for ipynb
+            python-phpserialize  ;; for wordpress import
+            python-piexif
+            python-pillow
+            python-pygments
+            python-pyrss2gen
+            python-requests
+            python-ruamel.yaml   ;; for YAML metadata
+            python-unidecode
+            python-yapsy))
+    (native-inputs
+      (list python-coverage
+            python-flake8
+            python-freezegun
+            python-pytest
+            python-pytest-cov))
+    (arguments
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (replace 'check
+            (lambda* (#:key tests? #:allow-other-keys)
+              (when tests?
+                ;;(add-installed-pythonpath inputs outputs)
+                (invoke "pytest" "tests" "--no-cov"
+                        "-k" "not test_compiling_markdown[hilite]")))))))
+    (home-page "https://getnikola.com/")
+    (synopsis "Modular, fast and simple static website and blog generator")
+    (description "Nikola generates static websites and blogs.  Out of the box,
+it supports reStructuredText, Markdown, IPython (Jupyter) Notebooks and HTML,
+and has plugins for many other formats.")
+    (license license:expat)))
