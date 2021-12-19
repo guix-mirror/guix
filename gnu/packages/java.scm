@@ -3949,8 +3949,7 @@ provides much easier and readable parametrised tests for JUnit.")
 (define-public java-plexus-utils
   (package
     (name "java-plexus-utils")
-    ;; sisu-build-api needs this version, later versions don't work
-    (version "3.2.1")
+    (version "3.3.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3959,7 +3958,7 @@ provides much easier and readable parametrised tests for JUnit.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1w169glixyk94jbczj8jzg897lsab46jihiaa3dhw0p06g35va8b"))))
+                "0d0fq21rzjy0j55kcp8w9k1rbq9rwr0r7cc8239p9jbz54vihp0g"))))
     (build-system ant-build-system)
     ;; FIXME: The default build.xml does not include a target to install
     ;; javadoc files.
@@ -4010,10 +4009,11 @@ Plexus framework to ease working with strings, files, command lines, XML and
 more.")
     (license license:asl2.0)))
 
-(define-public java-plexus-utils-3.3.0
+(define-public java-plexus-utils-3.2.1
   (package
     (inherit java-plexus-utils)
-    (version "3.3.0")
+    ;; sisu-build-api needs this version, later versions don't work
+    (version "3.2.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4022,7 +4022,7 @@ more.")
               (file-name (git-file-name "java-plexus-utils" version))
               (sha256
                (base32
-                "0d0fq21rzjy0j55kcp8w9k1rbq9rwr0r7cc8239p9jbz54vihp0g"))))))
+                "1w169glixyk94jbczj8jzg897lsab46jihiaa3dhw0p06g35va8b"))))))
 
 (define-public java-plexus-interpolation
   (package
@@ -4185,7 +4185,7 @@ implementation.")
              #t))
          (replace 'install (install-from-pom "pom.xml")))))
     (propagated-inputs
-     (list java-plexus-utils-3.3.0 java-commons-io plexus-parent-pom-5.1))
+     (list java-plexus-utils java-commons-io plexus-parent-pom-5.1))
     (inputs
      (list java-jsr305))
     (native-inputs
@@ -4241,7 +4241,7 @@ reusing it in maven.")
              #t))
          (replace 'install (install-from-pom "pom.xml")))))
     (propagated-inputs
-     (list java-plexus-utils-3.3.0 java-plexus-io java-iq80-snappy
+     (list java-plexus-utils java-plexus-io java-iq80-snappy
            java-commons-compress plexus-parent-pom-6.1))
     (inputs
      `(("java-jsr305" ,java-jsr305)
@@ -4870,7 +4870,7 @@ which behaves as if all files were just created.</description>\n
          (replace 'install
            (install-from-pom "pom.xml")))))
     (inputs
-     (list java-plexus-utils java-plexus-container-default))
+     (list java-plexus-utils-3.2.1 java-plexus-container-default))
     (home-page "https://github.com/sonatype/sisu-build-api/")
     (synopsis "Base build API for maven")
     (description "This package contains the base build API for maven and

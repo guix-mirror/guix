@@ -3004,7 +3004,7 @@ build are stored.  By default, it is located within the user's home directory
     (propagated-inputs
      (list maven-3.0-core
            maven-shared-utils
-           java-plexus-utils
+           java-plexus-utils-3.2.1
            java-plexus-interpolation
            java-sisu-build-api
            maven-parent-pom-30))
