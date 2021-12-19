@@ -269,6 +269,23 @@ without modification.")
                    (delete-file-recursively (string-append out "/share"))
                    #t))))))))))
 
+(define-public bash-with-syslog
+  (package
+    (inherit bash)
+    (name "bash-with-syslog")
+    (arguments
+     (substitute-keyword-arguments (package-arguments bash)
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'enable-syslogging
+             (lambda _
+               (substitute* "config-top.h"
+                 (("/\\* #define SYSLOG_HISTORY \\*/")
+                  "#define SYSLOG_HISTORY"))))))))
+    (description
+     "Bash is the shell, or command-line interpreter, of the GNU system.  This
+variant logs the history to syslog.")))
+
 (define-public bash-completion
   (package
     (name "bash-completion")
