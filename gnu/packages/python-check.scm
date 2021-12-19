@@ -1330,6 +1330,28 @@ fixtures for testing Tornado (version 5.0 or newer) apps and easy handling of
 plain (undecoratored) native coroutine tests.")
     (license license:expat)))
 
+(define-public python-pytest-celery
+  (package
+    (name "python-pytest-celery")
+    (version "0.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-celery" version))
+       (sha256
+        (base32 "01pli108qqiiyrn8qsqqabcpazrzj27r7cji9wgglsk76by61l6g"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f ; no tests and circular dependency on python-celery
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'sanity-check)))) ; checks for celery
+    (home-page "https://github.com/graingert/pytest-celery")
+    (synopsis "Shim pytest plugin to enable @code{celery.contrib.pytest}")
+    (description
+     "This package provides a shim Pytest plugin to enable a Celery marker.")
+    (license license:bsd-3)))
+
 (define-public python-pytest-env
   (package
     (name "python-pytest-env")
