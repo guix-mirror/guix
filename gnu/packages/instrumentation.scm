@@ -32,6 +32,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages tbb)
@@ -39,6 +40,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix download)
+  #:use-module (guix gexp)
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages))
@@ -57,19 +59,23 @@
     (build-system gnu-build-system)
 
     (arguments
-     `(;; FIXME - When Python's bindings are enabled, tests do not pass.
-       #:configure-flags '("--enable-debug-info"
-                           "--enable-man-pages"
-                           "--disable-python-bindings"
-                           "--disable-python-plugins")
-                         #:phases
-                         (modify-phases %standard-phases
-                           ;; These are recommended in the project's README for a development
-                           ;; build configuration.
-                           (add-before 'configure 'set-environment-variables
-                             (lambda _
-                               (setenv "BABELTRACE_DEV_MODE" "1")
-                               (setenv "BABELTRACE_MINIMAL_LOG_LEVEL" "TRACE"))))))
+     `(#:tests? #f  ; FIXME - When Python's bindings are enabled, tests do not
+                    ; pass.
+       #:make-flags
+       ,#~(list (string-append "LDFLAGS=-Wl,-rpath=" #$output "/lib"))
+       #:configure-flags
+       '("--enable-debug-info"
+         "--enable-man-pages"
+         "--enable-python-bindings"
+         "--enable-python-plugins")
+       #:phases
+       (modify-phases %standard-phases
+         ;; These are recommended in the project's README for a development
+         ;; build configuration.
+         (add-before 'configure 'set-environment-variables
+           (lambda _
+             (setenv "BABELTRACE_DEV_MODE" "1")
+             (setenv "BABELTRACE_MINIMAL_LOG_LEVEL" "TRACE"))))))
     (inputs
      (list glib))
     ;; NOTE - elfutils is used for the LTTng debug information filter
