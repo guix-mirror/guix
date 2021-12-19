@@ -710,7 +710,23 @@ is fully configurable and extensible in Common Lisp.")
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #false                  ;no tests
-       #:configure-flags (list "-DTFDN_ENABLE_SSE41=OFF")))
+       #:configure-flags (list "-DTFDN_ENABLE_SSE41=OFF")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-build-error
+           (lambda _
+             ;; XXX: Remove in next release.  Applied upstream.  See
+             ;; <https://git.skyjake.fi/gemini/lagrange/commit/b710eee5a92166ceb87932fe53b226be64b4d259>.
+             (substitute* "src/ui/text.c"
+               (("width <= 1") "width && width <= 1")
+               (("colorId") "fgColorId"))
+             (substitute* "src/ui/text_simple.c"
+               (("colorId") "fgColorId")
+               (("const iColor clr =") "iColor clr;")
+               (("ansiForeground_Color\\((.+)\\);" _ params)
+                (string-append "ansiColors_Color("
+                               params
+                               ", none_ColorId, &clr, NULL);"))))))))
     (native-inputs
      (list pkg-config zip))
     (inputs
