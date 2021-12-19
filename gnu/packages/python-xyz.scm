@@ -3831,14 +3831,13 @@ provides Python-specific tags that represent an arbitrary Python object.")
 (define-public python-vine
   (package
     (name "python-vine")
-    (version "1.1.4")
+    (version "5.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "vine" version))
        (sha256
-        (base32
-         "0wkskb2hb494v9gixqnf4bl972p4ibcmxdykzpwjlfa5picns4aj"))))
+        (base32 "0zk3pm0g7s4qfn0gk28lfmsyplvisaxi6826cgpq5njkm4j1cfvx"))))
     (build-system python-build-system)
     (native-inputs
      (list python-pytest python-case))
@@ -13935,22 +13934,20 @@ and provides a uniform API regardless of which JSON implementation is used.")
 (define-public python-amqp
   (package
     (name "python-amqp")
-    (version "2.3.2")
+    (version "5.0.7")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "amqp" version))
        (sha256
-        (base32
-         "1sv600dgqwpimr6i1g59y9hpn50mc236gdqkr7zin13kvlpx0g87"))))
+        (base32 "0p9alyinl24z699w4gpd8wvn90sm2il1p0gfwdhbpinksy7vfmyp"))))
     (build-system python-build-system)
-    (native-inputs
-     (list python-case python-pytest-sugar python-mock))
+    (arguments
+     `(#:tests? #f)) ; not compatible with pytest>=6 as of 5.0.7
     (propagated-inputs
      (list python-vine))
     (home-page "https://github.com/celery/py-amqp")
-    (synopsis
-     "Low-level AMQP client for Python (fork of amqplib)")
+    (synopsis "Low-level AMQP client for Python (fork of amqplib)")
     (description
      "This is a fork of amqplib which was originally written by Barry Pederson.
 It is maintained by the Celery project, and used by kombu as a pure python
@@ -13996,20 +13993,25 @@ applications.")
 (define-public python-kombu
   (package
     (name "python-kombu")
-    (version "4.2.2")
+    (version "5.2.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "kombu" version))
        (sha256
-        (base32
-         "15k8f7mzqr049sg9vi48m19vjykviafk3f0p5xzgw9by0x0kyxjj"))))
+        (base32 "0256915q3z4pjrkqxw16a31np3p25dxnk1mq2zv0hs4izdihfp8g"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'delete-transport-tests
+           (lambda _ ; this tests message passing to many different databases
+             (delete-file-recursively "t/unit/transport"))))))
     (native-inputs
-     (list python-mock python-case python-pyro4 python-pytest-sugar
+     (list python-case python-mock python-pyro4 python-pytest-sugar
            python-pytz))
     (propagated-inputs
-     (list python-anyjson python-amqp python-redis))
+     (list python-amqp python-cached-property python-vine))
     (home-page "https://kombu.readthedocs.io")
     (synopsis "Message passing library for Python")
     (description "The aim of Kombu is to make messaging in Python as easy as
@@ -14077,14 +14079,13 @@ Python 2.4 and 2.5, and will draw its fixes/improvements from python-trunk.")
 (define-public python-celery
   (package
     (name "python-celery")
-    (version "4.2.1")
+    (version "5.1.2") ; newer versions require python-click>=8
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "celery" version))
        (sha256
-        (base32
-         "0y66rz7z8dfcgs3s0qxmdddlaq57bzbgxgfz896nbp14grkv9nkp"))))
+        (base32 "1c6lw31i3v81fyj4yn37lbvv70xdgb389iccirzyjr992vlkv6ld"))))
     (build-system python-build-system)
     (arguments
      '(;; TODO The tests fail with Python 3.7
@@ -14101,7 +14102,16 @@ Python 2.4 and 2.5, and will draw its fixes/improvements from python-trunk.")
     (native-inputs
      (list python-case python-pytest))
     (propagated-inputs
-     (list python-pytz python-billiard python-kombu))
+     (list python-billiard
+           python-boto3
+           python-click
+           python-click-didyoumean
+           python-click-plugins
+           python-click-repl
+           python-cryptography
+           python-kombu
+           python-pytz
+           python-vine))
     (home-page "https://celeryproject.org")
     (synopsis "Distributed Task Queue")
     (description "Celery is an asynchronous task queue/job queue based on
