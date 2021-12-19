@@ -1630,6 +1630,7 @@ library.")
        ("mm-common" ,mm-common)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
+       ("python" ,python)
        ("xsltproc" ,libxslt)))
     (propagated-inputs
      (list cairo cairomm glibmm pango))
