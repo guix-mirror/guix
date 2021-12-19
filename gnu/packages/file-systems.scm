@@ -507,6 +507,7 @@ performance and other characteristics.")
                   ((".*\\$\\(INSTALL\\).* lib.*") ""))))))))
      (inputs
       `(("eudev:static" ,eudev "static")
+        ("keyutils:static" ,keyutils "static")
         ("libscrypt:static" ,libscrypt "static")
         ("lz4:static" ,lz4 "static")
         ("util-linux:static" ,util-linux "static") ; lib{blkid,uuid}

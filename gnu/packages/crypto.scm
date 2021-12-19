@@ -385,16 +385,26 @@ the wrong hands.")
     (arguments
      (list #:make-flags
            #~(list (string-append "CC=" #$(cc-for-target))
+                   ;; "NO_ARLIB=1" would cleanly disable static libraries.
                    "RPATH=-Wl,-rpath,$(DESTDIR)$(LIBDIR)"
                    (string-append "DESTDIR=" #$output)
                    "INCLUDEDIR=/include"
                    "LIBDIR=/lib"
                    "MANDIR=/share/man"
-                   "SHAREDIR=/share/keyutils"
-                   "NO_ARLIB=1")        ; omit static libraries
+                   "SHAREDIR=/share/keyutils")
            #:phases
            #~(modify-phases %standard-phases
-               (delete 'configure))     ; no configure script
+               (delete 'configure)      ; no configure script
+               (add-after 'install 'install:static
+                 (lambda _
+                   (with-directory-excursion #$output
+                     (for-each (lambda (file)
+                                 (let ((target (string-append #$output:static
+                                                              "/" file)))
+                                   (format #t "~a -> ~a\n" file target)
+                                   (mkdir-p (dirname target))
+                                   (rename-file file target)))
+                               (find-files "lib" "\\.a$"))))))
            #:test-target "test"))
     (inputs
      (list mit-krb5))
