@@ -478,7 +478,6 @@ interface.")
      (list bash-minimal
            python-colorama
            python-cssutils
-           python-importlib-resources
            python-jinja2
            python-markupsafe
            python-pygments
