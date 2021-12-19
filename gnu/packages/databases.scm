@@ -1068,16 +1068,16 @@ developed in C/C++ to MariaDB and MySQL databases.")
 (define-public galera
   (package
     (name "galera")
-    (version "26.4.7")
+    (version "26.4.10")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (commit "bac8171266cb982fe013ce496d78085438c6f23e")
                     (url "https://github.com/codership/galera")
+                    (commit (string-append "release_" version))
                     (recursive? #t)))
               (file-name (git-file-name name version))
               (sha256
-               (base32 "0h7s670pcasq8wzprhyxqfca2cghi62b8xz2kikb2a86wd453qil"))))
+               (base32 "1n6zhzwj713ixyqvcjn4ldlq0y9fxqgvmqv3cj3h4207v9lwlxxz"))))
     (build-system cmake-build-system)
     (inputs
      (list check boost openssl))
