@@ -428,6 +428,11 @@ other projects as their parent pom.")
 tool.  This package contains the Maven parent POM.")
       (license license:asl2.0))))
 
+(define-public maven-parent-pom-34
+  (make-maven-parent-pom
+    "34" "1vkmrfwva76k6maf1ljbja5ga4kzav4xc73ymbaf42xaiaknglbc"
+    apache-parent-pom-23))
+
 (define-public maven-parent-pom-33
   (make-maven-parent-pom
     "33" "1b0z2gsvpccgcssys9jbdfwlwq8b5imdwr508f87ssdbfs29lh65"
