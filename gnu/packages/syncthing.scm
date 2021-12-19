@@ -187,7 +187,6 @@ Protocol.")
        (list gtk+
              libappindicator
              libnotify
-             librsvg
              python-bcrypt
              python-dateutil
              python-pycairo
