@@ -1109,14 +1109,14 @@ backup.")
 (define-public disarchive
   (package
     (name "disarchive")
-    (version "0.3.0")
+    (version "0.4.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://files.ngyro.com/disarchive/"
                                   "disarchive-" version ".tar.gz"))
               (sha256
                (base32
-                "0jgc53rrbas8i4z13l2ii99cpav1ma73spsjg70ygihf0635r3dh"))))
+                "1pql8cspsxyx8cpw3xyhirnisv6rb4vj5mxr1d7w9la72q740n8s"))))
     (build-system gnu-build-system)
     (native-inputs
      (list autoconf
@@ -1124,11 +1124,12 @@ backup.")
            pkg-config
            guile-3.0 ;for cross-compilation
            guile-gcrypt
+           guile-lzma
            guile-quickcheck))
     (inputs
      (list guile-3.0 zlib))
     (propagated-inputs
-     (list guile-gcrypt))
+     (list guile-gcrypt guile-lzma))
     (home-page "https://ngyro.com/software/disarchive.html")
     (synopsis "Software archive disassembler")
     (description "Disarchive can disassemble software archives into data

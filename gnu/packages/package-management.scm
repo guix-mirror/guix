@@ -328,10 +328,11 @@ $(prefix)/etc/openrc\n")))
                                (ssh    (assoc-ref inputs "guile-ssh"))
                                (gnutls (assoc-ref inputs "gnutls"))
                                (disarchive (assoc-ref inputs "disarchive"))
+                               (lzma (assoc-ref inputs "guile-lzma"))
                                (locales (assoc-ref inputs "glibc-utf8-locales"))
                                (deps   (list gcrypt json sqlite gnutls git
                                              bs ssh zlib lzlib zstd guile-lib
-                                             disarchive))
+                                             disarchive lzma))
                                (deps*  (if avahi (cons avahi deps) deps))
                                (effective
                                 (read-line
@@ -434,6 +435,7 @@ $(prefix)/etc/openrc\n")))
          ("bootstrap/xz" ,(bootstrap-executable "xz" (%current-system)))
 
          ("disarchive" ,disarchive)               ;for 'guix perform-download'
+         ("guile-lzma" ,guile-lzma)               ;for Disarchive
 
          ("glibc-utf8-locales" ,glibc-utf8-locales)))
       (propagated-inputs
