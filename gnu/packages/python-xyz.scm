@@ -13952,18 +13952,7 @@ and provides a uniform API regardless of which JSON implementation is used.")
      "This is a fork of amqplib which was originally written by Barry Pederson.
 It is maintained by the Celery project, and used by kombu as a pure python
 alternative when librabbitmq is not available.")
-    (license license:lgpl2.1+)
-    (properties `((python2-variant . ,(delay python2-amqp))))))
-
-(define-public python2-amqp
-  (let ((amqp (package-with-python2
-               (strip-python2-variant python-amqp))))
-    (package/inherit amqp
-      (arguments `(;; Tries to run coverage tests with nose-cover3, which seems
-                   ;; unmaintained.  Weirdly, does not do this on the python 3
-                   ;; version?
-                   #:tests? #f
-                   ,@(package-arguments amqp))))))
+    (license license:lgpl2.1+)))
 
 (define-public python-txamqp
   (package
