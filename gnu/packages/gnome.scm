@@ -4604,6 +4604,7 @@ and RDP protocols.")
        ("glib:bin" ,glib "bin")
        ("gtk-doc" ,gtk-doc/stable)
        ("pkg-config" ,pkg-config)
+       ("python" ,python)
        ("vala" ,vala)))
     (arguments
      `(#:glib-or-gtk? #t
