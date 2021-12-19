@@ -149,6 +149,7 @@
   #:use-module (gnu packages web)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xml)
+  #:use-module (guix gexp)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -463,7 +464,7 @@ database later.")
 (define-public leveldb
   (package
     (name "leveldb")
-    (version "1.22")
+    (version "1.23")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -472,10 +473,25 @@ database later.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0qrnhiyq7r4wa1a4wi82zgns35smj94mcjsc7kfs1k6ia9ys79z7"))))
+                "1chxkhb6ajdmj4p8535k4472fbmqvcismll6aapkarsr45yrvgs4"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:configure-flags '("-DBUILD_SHARED_LIBS=ON" "-DLEVELDB_BUILD_TESTS=ON")))
+     (list #:configure-flags
+           #~(list "-DBUILD_SHARED_LIBS=ON"
+                   "-DLEVELDB_BUILD_TESTS=ON"
+
+                   ;; Don't install(!) the third_party test frameworks below.
+                   "-DINSTALL_GTEST=OFF"
+                   "-DBENCHMARK_ENABLE_INSTALL=OFF")
+           #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'unpack 'unpack-third_party-sources
+                 ;; These are only for testing, so copying source is fine.
+                 (lambda _
+                   (copy-recursively #$(package-source googletest)
+                                     "third_party/googletest")
+                   (copy-recursively #$(package-source googlebenchmark)
+                                     "third_party/benchmark"))))))
     (inputs
      (list snappy))
     (home-page "https://github.com/google/leveldb")
