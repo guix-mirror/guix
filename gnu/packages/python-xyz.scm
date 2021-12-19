@@ -14132,16 +14132,7 @@ supports scheduling as well.  The execution units, called tasks, are executed
 concurrently on a single or more worker servers using multiprocessing,
 Eventlet, or gevent.  Tasks can execute asynchronously (in the background) or
 synchronously (wait until ready).")
-    (license license:bsd-3)
-    (properties `((python2-variant . ,(delay python2-celery))))))
-
-(define-public python2-celery
-  (let ((celery (package-with-python2
-                 (strip-python2-variant python-celery))))
-    (package/inherit celery
-      (native-inputs `(("python2-unittest2" ,python2-unittest2)
-                       ("python2-mock" ,python2-mock)
-                       ,@(package-native-inputs celery))))))
+    (license license:bsd-3)))
 
 (define-public python-translitcodec
   (package
