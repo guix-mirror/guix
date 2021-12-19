@@ -1395,7 +1395,7 @@ including field and record folding.")
 (define-public rocksdb
   (package
     (name "rocksdb")
-    (version "6.25.3")
+    (version "6.26.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1404,7 +1404,7 @@ including field and record folding.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "14150kd7hk8jjwpm28bf3a0agrhyapbq9lgnl00l385vfb73wnzl"))
+                "0mylma106w93kxhj89g9y1ccdq7m9m94wrmv5nyr17yc1zsk87sg"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -1412,70 +1412,33 @@ including field and record folding.")
                   (delete-file "build_tools/gnu_parallel")
                   (substitute* "Makefile"
                     (("build_tools/gnu_parallel") "parallel"))))))
-    (build-system gnu-build-system)
+    (build-system cmake-build-system)
     (arguments
-     `(#:make-flags (list (string-append "CC=" ,(cc-for-target))
-                          (string-append "PREFIX=" (assoc-ref %outputs "out"))
-                          ;; Ceph requires that RTTI is enabled.
-                          "USE_RTTI=1"
-                          ;; Don't pass '-march=native' to the compiler.
-                          "PORTABLE=1"
-                          ;; Use a deterministic date stamp.
-                          "build_date=1970-01-01"
+     `(#:configure-flags
+       (list "-DROCKSDB_BUILD_SHARED=1"
+             ;; Ceph requires that RTTI is enabled.
+             "-DUSE_RTTI=1"
+             ;; Prevent the build from passing '-march=native' to the compiler.
+             "-DPORTABLE=1")
 
-                          ;; Running the full test suite takes hours and require
-                          ;; a lot of disk space.  Instead we only run a subset
-                          ;; that exercises platform-specific functionality.
-                          "ROCKSDBTESTS_PLATFORM_DEPENDENT=only")
-       #:test-target "check_some"
-       ;; Many tests fail on 32-bit platforms. There are multiple reports about
-       ;; this upstream, but it's not going to be supported any time soon.
-       #:tests? ,(if (%current-target-system)
-                     #f
-                     (let ((system (%current-system)))
-                       (or (string-prefix? "x86_64-linux" system)
-                           (string-prefix? "aarch64-linux" system))))
+       ;; Many tests fail on 32-bit platforms. There are multiple
+       ;; reports about this upstream, but it's not going to be
+       ;; supported any time soon.  What's worse: Release builds don't
+       ;; include tests, and overriding the build system to build
+       ;; tests anyway fails with missing TEST_ symbols.
+       #:tests? #false
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-Makefile
+         (add-after 'unpack 'patch-CMakeLists.txt
            (lambda _
-             (substitute* "Makefile"
-               ;; Don't depend on the static library when installing.
-               (("install: install-static")
-                "install:")
-               (("#!/bin/sh") (string-append "#!" (which "sh"))))))
-         (delete 'configure)
-         ;; The default target is only needed for tests and built on demand.
-         (delete 'build)
-         (add-before 'check 'mount-tmp
-           ;; Use the provided workspace directory for test files.
-           ;; Otherwise, /tmp is used which is a mount namespace on /gnu/store.
-           ;; This speeds up the build when the host /tmp is a proper tmpfs or
-           ;; other fast filesystem, as opposed to /gnu which may be a HDD.
+             (substitute* "CMakeLists.txt"
+               ;; build reproducibly
+               (("set\\(BUILD_DATE \"\\$\\{TS\\}\"")
+                "set(BUILD_DATE \"1970-01-01\""))))
+         (add-after 'unpack 'build-generically
            (lambda _
-             (let ((test-dir (string-append (getcwd) "/../test")))
-               (mkdir test-dir)
-               (setenv "TEST_TMPDIR" (canonicalize-path test-dir)))))
-         (add-before 'check 'disable-failing-tests
-           (lambda _
-             (substitute* "Makefile"
-               ;; These tests reliably fail due to "Too many open files".
-               (("^[[:blank:]]+env_test[[:blank:]]+\\\\") "\\")
-               (("^[[:blank:]]+persistent_cache_test[[:blank:]]+\\\\") "\\"))))
-         (add-after 'check 'clean
-           (lambda _
-             ;; Otherwise stale objects from the tests would interfere.
-             (invoke "make" "clean")))
-         (add-after 'clean 'build
-           ;; The default build target is a debug build for tests. The
-           ;; install target depends on the "shared_lib" release target
-           ;; so we build it here for clarity.
-           (lambda* (#:key (make-flags '()) parallel-build? #:allow-other-keys)
-             (apply invoke "make" "shared_lib"
-                    `(,@(if parallel-build?
-                            `("-j" ,(number->string (parallel-job-count)))
-                            '())
-                      ,@make-flags)))))))
+             (substitute* "CMakeLists.txt"
+               (("if\\(HAVE_SSE42\\)") "if(FALSE)")))))))
     (native-inputs
      (list parallel perl procps python which))
     (inputs
