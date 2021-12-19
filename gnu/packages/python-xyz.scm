@@ -14020,19 +14020,7 @@ and also provide proven and tested solutions to common messaging problems.
 AMQP is the Advanced Message Queuing Protocol, an open standard protocol for
 message orientation, queuing, routing, reliability and security, for which the
 RabbitMQ messaging server is the most popular implementation.")
-    (license license:bsd-3)
-    (properties `((python2-variant . ,(delay python2-kombu))))))
-
-(define-public python2-kombu
-  (let ((kombu (package-with-python2
-                (strip-python2-variant python-kombu))))
-    (package/inherit kombu
-      (arguments `(;; FIXME: 'TestTransport.test_del_sync' fails on python2.
-                   ;; It works fine on the python3 variant.
-                   #:tests? #f
-                   ,@(package-arguments kombu)))
-      (native-inputs `(("python2-unittest2" ,python2-unittest2)
-                ,@(package-native-inputs kombu))))))
+    (license license:bsd-3)))
 
 (define-public python-billiard
   (package
