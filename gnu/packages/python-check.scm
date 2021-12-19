@@ -716,6 +716,33 @@ in Pytest.")
  settings.")
     (license license:expat)))
 
+(define-public python-pytest-subtests
+  (package
+    (name "python-pytest-subtests")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-subtests" version))
+       (sha256
+        (base32 "087i03nmkmfnrpc7mmizvr40ijnjw4lfxc22rnk8jk6s1szy9lav"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "python" "-m" "pytest")))))))
+    (native-inputs
+     (list python-pytest python-setuptools-scm))
+    (home-page "https://github.com/pytest-dev/pytest-subtests")
+    (synopsis "Unittest subTest() support and subtests fixture")
+    (description "This Pytest plugin provides unittest @code{subTest()}
+support and @code{subtests} fixture.")
+    (license license:expat)))
+
 (define-public python-pytest-vcr
   ;; This commit fixes integration with pytest-5
   (let ((commit "4d6c7b3e379a6a7cba0b8f9d20b704dc976e9f05")
