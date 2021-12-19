@@ -7599,15 +7599,18 @@ HTTrack is fully configurable, and has an integrated help system.")
      (origin
        (method url-fetch)
        (uri (pypi-uri "buku" version))
-       (file-name (git-file-name name version))
        (sha256
         (base32 "1n4d1mkjyvzdxbyq067p1p9skb3iwx0msd86nzr224dlqrfh9675"))))
     (build-system python-build-system)
     (arguments
-     `(#:tests? #f))                    ;FIXME: many tests need network access
+     `(#:tests? #f                     ; FIXME: many tests need network access
+       #:phases
+       (modify-phases %standard-phases
+         ;; XXX: missing inputs, e.g. python-flask-admin
+         (delete 'sanity-check))))
     (inputs
      (list python-beautifulsoup4 python-certifi python-cryptography
-           python-html5lib python-urllib3))
+           python-flask python-html5lib python-urllib3))
     (home-page "https://github.com/jarun/buku")
     (synopsis "Bookmark manager")
     (description
