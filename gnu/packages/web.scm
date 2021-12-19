@@ -1537,7 +1537,15 @@ high performance.")
     (build-system gnu-build-system)
     (arguments
      ;; Parallel builds don't reliably succeed.
-     `(#:parallel-build? #f))
+     `(#:parallel-build? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-sphinx-error
+           ;; XXX: Remove in next version: fix applied upstream.  See
+           ;; <https://github.com/tatsuhiro-t/wslay/commit/43fda1207ea5977043630500e0c8e77b98b35320>.
+           (lambda _
+             (substitute* "doc/sphinx/conf.py.in"
+               (("add_stylesheet") "add_css_file")))))))
     (native-inputs
      (list autoconf
            automake
