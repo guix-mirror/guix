@@ -8,7 +8,7 @@
 ;;; Copyright © 2019 Jan Wielkiewicz <tona_kosmicznego_smiecia@interia.pl>
 ;;; Copyright © 2020, 2021 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;; Copyright © 2020 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2020 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
@@ -509,6 +509,28 @@ code analysis and supports cross references, hierarchies, completion and
 syntax highlighting.  @code{ccls} is derived from @code{cquery} which is not
 maintained anymore.")
     (license license:asl2.0)))
+
+(define-public concurrentqueue
+  (package
+    (name "concurrentqueue")
+    (version "1.0.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/cameron314/concurrentqueue/")
+             (commit "3747268264d0fa113e981658a99ceeae4dad05b7")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1n5v7n27llzg7khg1jvi35jrcf9v6adw8gaic9ndxn65dp723ssy"))))
+    (build-system cmake-build-system)
+    (arguments '(#:tests? #false)) ;no check target
+    (home-page "https://github.com/cameron314/concurrentqueue/")
+    (synopsis "Multi-producer, multi-consumer lock-free concurrent queue for C++11")
+    (description
+     "This package provides a fast multi-producer, multi-consumer lock-free
+concurrent queue for C++11.")
+    (license license:bsd-2)))
 
 (define-public spscqueue
   (package
