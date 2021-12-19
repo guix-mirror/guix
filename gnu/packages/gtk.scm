@@ -1685,8 +1685,7 @@ library.")
                (mkdir-p (string-append doc "/share"))
                (rename-file
                 (string-append out "/share/doc")
-                (string-append doc "/share/doc"))
-               #t))))))
+                (string-append doc "/share/doc"))))))))
     (native-inputs
      `(("dot" ,graphviz)
        ("doxygen" ,doxygen)
@@ -1694,6 +1693,7 @@ library.")
        ("mm-common" ,mm-common)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
+       ("python" ,python)
        ("xsltproc" ,libxslt)))
     (propagated-inputs
      (list glibmm atk))
