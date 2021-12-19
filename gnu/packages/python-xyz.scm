@@ -28380,3 +28380,37 @@ The main purpose is to depend only on Python's standard libraries and to
 implement only the basic functionalities needed to detect, load and keep track
 of several plugins.")
     (license license:bsd-3)))
+
+(define-public python-doit
+  (package
+    (name "python-doit")
+    (version "0.34.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "doit" version))
+        (sha256
+          (base32 "0bf0m9n0hyjvjpv051zd26725j8jr23gyvc37v3kkadwbh8dxwcf"))))
+    (build-system python-build-system)
+    (propagated-inputs
+      (list python-cloudpickle python-pyinotify))
+    (native-inputs
+      (list python-pytest))
+    (home-page "https://pydoit.org")
+    (synopsis "Automation tool to execute any kind of task in a build-tools
+fashion")
+    (description "doit is an automation tool that brings the power of
+build-tools to execute any kind of task.
+
+A task describes some computation to be done (actions), and contains some
+extra meta-data.  The actions can be external programs or Python functions.  A
+single task may define more than one action.doit uses the task’s meta-data
+to:
+
+@itemize
+@item cache task results
+@item correct execution order
+@item parallel execution
+@item powerful dependency system
+@end itemize")
+    (license license:expat)))
