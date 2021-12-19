@@ -208,7 +208,7 @@ api-agnostic."
     (map json->build (vector->list queue))))
 
 (define* (latest-builds url #:optional (limit %query-limit)
-                        #:key evaluation system job status)
+                        #:key evaluation system job jobset status)
   "Return the latest builds performed by the CI server at URL.  If EVALUATION
 is an integer, restrict to builds of EVALUATION.  If SYSTEM is true (a system
 string such as \"x86_64-linux\"), restrict to builds for SYSTEM."
@@ -218,6 +218,7 @@ string such as \"x86_64-linux\"), restrict to builds for SYSTEM."
                  `("evaluation" ,evaluation)
                  `("system" ,system)
                  `("job" ,job)
+                 `("jobset" ,jobset)
                  `("status" ,status))))
     ;; Note: Hydra does not provide a "derivation" field for entries in
     ;; 'latestbuilds', but Cuirass does.
@@ -286,6 +287,7 @@ definitions at URL.  Return false if no commit were found."
   (let* ((job-name (string-append "guix." (%current-system)))
          (build (match (latest-builds url 1
                                       #:job job-name
+                                      #:jobset "guix"
                                       #:status 0) ;success
                   ((build) build)
                   (_ #f)))
