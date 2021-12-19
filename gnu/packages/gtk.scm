@@ -1723,7 +1723,7 @@ library.")
         (base32 "1b8vycqzr3lfvk2l73f4kk74hj48081zbh9r1r2ilr3h8xh7cs0i"))))
     (propagated-inputs
      (modify-inputs (package-propagated-inputs atkmm)
-       (prepend glibmm-2.64)))))
+       (replace "glibmm" glibmm-2.64)))))
 
 (define-public gtkmm
   (package
