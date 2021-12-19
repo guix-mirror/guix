@@ -76,6 +76,7 @@
   #:use-module (gnu packages code)
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages cpp)
   #:use-module (gnu packages cpio)
   #:use-module (gnu packages cran)
   #:use-module (gnu packages crates-io)
@@ -7103,23 +7104,49 @@ of these reads to align data quickly through a hash-based indexing scheme.")
 (define-public sortmerna
   (package
     (name "sortmerna")
-    (version "2.1b")
+    (version "4.3.4")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/biocore/sortmerna")
-             (commit version)))
+             (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0j3mbz4n25738yijmjbr5r4fyvkgm8v5vn3sshyfvmyqf5q9byqf"))))
-    (build-system gnu-build-system)
+         "0f8jfc8vsq6llhbb92p9yv7nbp566yqwfcmq3g2hw0n7d8hyl3a8"))))
+    (build-system cmake-build-system)
     (outputs '("out"      ;for binaries
                "db"))     ;for sequence databases
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
+     (list
+      #:tests? #false ;unclear how to run them
+      #:configure-flags
+      #~(list "-DWITH_TESTS=ON"
+              "-DCMAKE_CXX_FLAGS=-pthread"
+              "-DZLIB_STATIC=OFF"
+              "-DROCKSDB_STATIC=OFF"
+              "-DPORTABLE=OFF" ;do not use static linking
+              (string-append "-DROCKSDB_HOME="
+                             #$(this-package-input "rocksdb"))
+              (string-append "-DRAPIDJSON_HOME="
+                             #$(this-package-input "rapidjson"))
+              (string-append "-DRapidJson_DIR="
+                             #$(this-package-input "rapidjson")
+                             "/lib/cmake/RapidJSON")
+              (string-append "-DRapidJSON_INCLUDE_DIR="
+                             #$(this-package-input "rapidjson")
+                             "/include"))
+      #:phases
+      '(modify-phases %standard-phases
+         (add-after 'unpack 'find-concurrentqueue-headers
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Ensure that headers can be found
+             (setenv "CPLUS_INCLUDE_PATH"
+                     (string-append (search-input-directory
+                                     inputs "/include/concurrentqueue")
+                                    ":"
+                                    (or (getenv "CPLUS_INCLUDE_PATH") "")))))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out   (assoc-ref outputs "out"))
@@ -7127,14 +7154,16 @@ of these reads to align data quickly through a hash-based indexing scheme.")
                     (db    (assoc-ref outputs "db"))
                     (share
                      (string-append db "/share/sortmerna/rRNA_databases")))
-               (install-file "sortmerna" bin)
-               (install-file "indexdb_rna" bin)
+               (install-file "src/sortmerna" bin)
                (for-each (lambda (file)
                            (install-file file share))
-                         (find-files "rRNA_databases" ".*fasta"))
-               #t))))))
+                         (find-files "../source/data/rRNA_databases" ".*fasta"))))))))
     (inputs
-     (list zlib))
+     (list concurrentqueue
+           gflags ; because of rocksdb
+           rapidjson rocksdb zlib))
+    (native-inputs
+     (list pkg-config))
     (home-page "https://bioinfo.lifl.fr/RNA/sortmerna/")
     (synopsis "Biological sequence analysis tool for NGS reads")
     (description
