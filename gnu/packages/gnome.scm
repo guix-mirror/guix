@@ -9819,12 +9819,12 @@ fit the GNOME desktop.")
              (substitute* "build-aux/meson/post-install.py"
                (("gtk-update-icon-cache") "true")))))))
     (native-inputs
-     `(("glib:bin" ,glib "bin")
-       ("gobject-introspection" ,gobject-introspection)
-       ("intltool" ,intltool)
-       ("itstool" ,itstool)
-       ("pkg-config" ,pkg-config)
-       ("xmllint" ,libxml2)))
+     (list `(,glib "bin")
+           gobject-introspection
+           intltool
+           itstool
+           pkg-config
+           libxml2))
     (inputs
      (list gsettings-desktop-schemas gtk+))
     (home-page "https://wiki.gnome.org/Apps/Dictionary")
