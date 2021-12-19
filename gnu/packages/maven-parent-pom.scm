@@ -88,7 +88,8 @@
   (make-apache-parent-pom
     "23" "05c8i741f0m4311q264zvq0lc6srsyz2x95ga4d7qfd89swkzg9d"))
 
-(define (make-apache-commons-parent-pom version hash parent)
+(define* (make-apache-commons-parent-pom version hash parent
+                                         #:key (tag-prefix "commons-parent-"))
   (hidden-package
     (package
       (name "apache-commons-parent-pom")
@@ -97,7 +98,7 @@
                 (method git-fetch)
                 (uri (git-reference
                        (url "https://github.com/apache/commons-parent")
-                       (commit (string-append "commons-parent-" version))))
+                       (commit (string-append tag-prefix version))))
                 (file-name (git-file-name name version))
                 (sha256 (base32 hash))))
       (build-system ant-build-system)
@@ -137,6 +138,12 @@
   (make-apache-commons-parent-pom
     "50" "0ki8px35dan51ashblpw6rdl27c2fq62slazhslhq3lr4fwlpvxs"
     apache-parent-pom-21))
+
+(define-public apache-commons-parent-pom-52
+  (make-apache-commons-parent-pom
+    "52" "0fb6id9cs9944fjlirjc07bf234bwi96i642px09m9nrfj338n5d"
+    apache-parent-pom-23
+    #:tag-prefix "rel/commons-parent-"))
 
 (define-public java-weld-parent-pom
   (hidden-package
