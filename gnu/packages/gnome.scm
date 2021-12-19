@@ -2661,25 +2661,24 @@ on the GNOME Desktop with a single simple application.")
          "1v9jagk679m01nji0acirynxinziv036618c7xc49l4nwmr9ja3p"))))
     (build-system meson-build-system)
     (arguments
-     '(#:phases (modify-phases %standard-phases
+     `(#:phases (modify-phases %standard-phases
                   (add-after 'unpack 'patch-schemas
                     (lambda* (#:key inputs #:allow-other-keys)
-                      (let ((theme (assoc-ref inputs "gnome-backgrounds")))
-                        (substitute* (find-files "schemas"
-                                                 "\\.gschema\\.xml\\.in$")
-                          ;; Provide the correct file name of the default
-                          ;; GNOME background, 'adwaita-timed.xml'.
-                          (("@datadir@/backgrounds/gnome")
-                           (string-append theme "/share/backgrounds/gnome"))
-                          ;; Do not reference fonts, that may not exist.
-                          (("'Source Code Pro 10'") "'Monospace 11'"))))))))
-    (inputs
-     (list glib gnome-backgrounds))
-    (native-inputs
-     `(("gettext" ,gettext-minimal)
-       ("glib" ,glib "bin")             ; glib-compile-schemas, etc.
-       ("gobject-introspection" ,gobject-introspection)
-       ("pkg-config" ,pkg-config)))
+                      (substitute* (find-files "schemas"
+                                               "\\.gschema\\.xml\\.in$")
+                        ;; Provide the correct file name of the default
+                        ;; GNOME background, 'adwaita-timed.xml'.
+                        (("@datadir@/backgrounds/gnome")
+                         (search-input-directory inputs
+                                                 "/share/backgrounds/gnome"))
+                        ;; Do not reference fonts, that may not exist.
+                        (("'Source Code Pro 10'") "'Monospace 11'")))))))
+    (inputs (list glib gnome-backgrounds))
+    (native-inputs (list gettext-minimal
+                         `(,glib "bin") ;glib-compile-schemas, etc.
+                         gobject-introspection
+                         pkg-config
+                         python))  ;for build-aux/meson/post-install.py
     (home-page "https://launchpad.net/gsettings-desktop-schemas")
     (synopsis "GNOME settings for various desktop components")
     (description "Gsettings-desktop-schemas contains a collection of GSettings
