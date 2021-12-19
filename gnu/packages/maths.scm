@@ -4859,7 +4859,7 @@ Failure to do so will result in a library with poor performance.")
 (define-public cglm
   (package
     (name "cglm")
-    (version "0.8.2")
+    (version "0.8.4")
     (source
      (origin
        (method git-fetch)
@@ -4868,7 +4868,7 @@ Failure to do so will result in a library with poor performance.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1lcfl9ph4bnl3hckpx4hzwh8r4llnw94ik75igc5qy38wk468gmk"))))
+        (base32 "0zgckh56vcdar3a4n51r84wrizyd2ssqal4nsvxd4qdjm0rvb4h0"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
