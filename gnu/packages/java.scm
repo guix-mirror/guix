@@ -7668,7 +7668,7 @@ This is a part of the Apache Commons Project.")
     (native-inputs
      (list java-commons-lang3 java-junit))
     (propagated-inputs
-      (list apache-commons-parent-pom-50))
+      (list apache-commons-parent-pom-52))
     (home-page "https://commons.apache.org/codec/")
     (synopsis "Common encoders and decoders such as Base64, Hex, Phonetic and URLs")
     (description "The codec package contains simple encoder and decoders for
