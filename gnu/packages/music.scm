@@ -61,6 +61,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages music)
+  #:use-module (guix gexp)
   #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -6791,21 +6792,22 @@ midi devices to JACK midi devices.")
                (base32 "1wsfw713rhi2gg5xc04cx5i31hlw0l3wdflj3r1y8w45bdk6ag1z"))
               (file-name (git-file-name name version))))
     (arguments
-     `(#:test-target "check"
+     (list
+       #:test-target "check"
        #:phases
-       (modify-phases %standard-phases
+       #~(modify-phases %standard-phases
          ;; This package does not use the perl-build-system, so we have to
          ;; manually set up the Perl environment used by the test suite.
          (add-before 'check 'setup-perl-environment
            (lambda* (#:key inputs #:allow-other-keys)
              (let* ((perl-list-moreutils-lib
-                      (string-append (assoc-ref inputs "perl-list-moreutils")
+                      (string-append #$(this-package-native-input "perl-list-moreutils")
                                      "/lib/perl5/site_perl/"
-                                     ,(package-version perl)))
+                                     #$(package-version perl)))
                     (perl-exporter-tiny-lib
-                      (string-append (assoc-ref inputs "perl-exporter-tiny")
+                      (string-append #$(this-package-native-input "perl-exporter-tiny")
                                      "/lib/perl5/site_perl/"
-                                     ,(package-version perl))))
+                                     #$(package-version perl))))
                (setenv "PERL5LIB" (string-append perl-list-moreutils-lib ":"
                                                  perl-exporter-tiny-lib))))))))
     (build-system cmake-build-system)
