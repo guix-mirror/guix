@@ -28319,3 +28319,25 @@ keyboard-friendly package.")
      "This package auto-generates API documentation from Python projects
 already existing modules and objects docstrings.")
     (license license:agpl3+)))
+
+(define-public python-piexif
+  (package
+    (name "python-piexif")
+    (version "1.1.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "piexif" version ".zip"))
+        (sha256
+         (base32 "06sz58q4mrw472p8fbnq7wsj8zpi5js5r8phm2hiwfmz0v33bjw3"))
+        (patches
+         (search-patches "python-piexif-fix-tests-with-pillow-7.2.patch"))))
+    (build-system python-build-system)
+    (native-inputs
+     (list unzip python-pillow))
+    (home-page "https://github.com/hMatoba/Piexif")
+    (synopsis "Simplify exif manipulations with Python")
+    (description "Piexif simplifies interacting with EXIF data in
+Python.  It includes the tools necessary for extracting, creating,
+manipulating, converting and writing EXIF data to JPEG, WebP and TIFF files.")
+    (license license:expat)))

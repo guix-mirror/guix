@@ -1688,6 +1688,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-pdoc3-tests.patch			\
   %D%/packages/patches/python-peachpy-determinism.patch	\
   %D%/packages/patches/python-pep8-stdlib-tokenize-compat.patch \
+  %D%/packages/patches/python-piexif-fix-tests-with-pillow-7.2.patch	\
   %D%/packages/patches/python-pyfakefs-remove-bad-test.patch	\
   %D%/packages/patches/python-pyflakes-test-location.patch	\
   %D%/packages/patches/python-flint-includes.patch		\
