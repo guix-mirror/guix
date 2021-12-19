@@ -1033,7 +1033,7 @@ fullscreen) or other display servers.")
     (inputs
      (list wayland))
     (native-inputs
-     (list pkg-config))
+     (list pkg-config python))
     (synopsis "Wayland protocols")
     (description "Wayland-Protocols contains Wayland protocols that add
 functionality not available in the Wayland core protocol.  Such protocols either
