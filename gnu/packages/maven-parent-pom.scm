@@ -391,6 +391,10 @@ other projects as their parent pom.")
   (make-plexus-parent-pom
     "6.1" "1pisca0fxpgbhf4xdgw5mn86622pg3mc5b8760kf9mk2awazshlj"))
 
+(define-public plexus-parent-pom-8
+  (make-plexus-parent-pom
+    "8" "0ybwdzawa58qg9ag39rxyin24lk9sjcaih6n2yfldfzsbkq6gnww"))
+
 (define (make-maven-parent-pom version hash parent)
   (hidden-package
     (package
