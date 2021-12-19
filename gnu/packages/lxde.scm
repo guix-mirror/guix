@@ -566,14 +566,14 @@ in LXDE.")
 (define-public lxpanel
   (package
     (name "lxpanel")
-    (version "0.10.0")
+    (version "0.10.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://downloads.sourceforge.net/lxde/"
                            "lxpanel-" version ".tar.xz"))
        (sha256
-        (base32 "0zis3b815p375s6mymhf5sn1a0c1xv0ixxzb0mh3fqhrby6cqy26"))))
+        (base32 "1s0y8jjkw6qz0r8l90618b8xly0c8g906kah7b162sz3sxbqyc8y"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
