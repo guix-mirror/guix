@@ -461,6 +461,7 @@ a simple interface that makes it easy to organize and browse feeds.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (delete 'sanity-check)         ; Tries to read environment variables.
          (replace 'check
            (lambda* (#:key tests? inputs outputs #:allow-other-keys)
              (add-installed-pythonpath inputs outputs)
