@@ -8907,6 +8907,7 @@ easy, safe, and automatic.")
        ("intltool" ,intltool)
        ("dbus" ,dbus)
        ("pkg-config" ,pkg-config)
+       ("python" ,python)
        ("vala" ,vala)))
     (inputs
      `(("dbus" ,dbus)
