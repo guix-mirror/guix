@@ -383,18 +383,19 @@ the wrong hands.")
                                             "$(LNS) "))))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (delete 'configure))          ; no configure script
-       #:make-flags (list ,(string-append "CC=" (cc-for-target))
-                          "RPATH=-Wl,-rpath,$(DESTDIR)$(LIBDIR)"
-                          (string-append "DESTDIR="
-                                         (assoc-ref %outputs "out"))
-                          "INCLUDEDIR=/include"
-                          "LIBDIR=/lib"
-                          "MANDIR=/share/man"
-                          "SHAREDIR=/share/keyutils"
-                          "NO_ARLIB=1") ; omit static libraries
-       #:test-target "test"))
+     (list #:make-flags
+           #~(list (string-append "CC=" #$(cc-for-target))
+                   "RPATH=-Wl,-rpath,$(DESTDIR)$(LIBDIR)"
+                   (string-append "DESTDIR=" #$output)
+                   "INCLUDEDIR=/include"
+                   "LIBDIR=/lib"
+                   "MANDIR=/share/man"
+                   "SHAREDIR=/share/keyutils"
+                   "NO_ARLIB=1")        ; omit static libraries
+           #:phases
+           #~(modify-phases %standard-phases
+               (delete 'configure))     ; no configure script
+           #:test-target "test"))
     (inputs
      (list mit-krb5))
     (home-page "https://people.redhat.com/dhowells/keyutils/")
