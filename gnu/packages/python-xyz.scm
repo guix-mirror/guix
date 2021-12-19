@@ -14042,16 +14042,7 @@ RabbitMQ messaging server is the most popular implementation.")
 multiprocessing package itself is a renamed and updated version of R Oudkerk's
 pyprocessing package.  This standalone variant is intended to be compatible with
 Python 2.4 and 2.5, and will draw its fixes/improvements from python-trunk.")
-    (license license:bsd-3)
-    (properties `((python2-variant . ,(delay python2-billiard))))))
-
-(define-public python2-billiard
-  (let ((billiard (package-with-python2
-                   (strip-python2-variant python-billiard))))
-    (package/inherit billiard
-      (native-inputs `(("python2-unittest2" ,python2-unittest2)
-                       ("python2-mock" ,python2-mock)
-                       ,@(package-native-inputs billiard))))))
+    (license license:bsd-3)))
 
 (define-public python-celery
   (package
