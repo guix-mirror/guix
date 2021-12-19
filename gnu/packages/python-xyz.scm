@@ -14035,20 +14035,29 @@ RabbitMQ messaging server is the most popular implementation.")
 (define-public python-billiard
   (package
     (name "python-billiard")
-    (version "3.5.0.5")
+    (version "3.6.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "billiard" version))
        (sha256
-        (base32
-         "03msmapj3s5zgqk87d646mafz7a01h5bm2wijalgpi0s80ks5na2"))))
+        (base32 "0ismj2p8c66ykpss94rs0bfra5agxxmljz8r3gaq79r8valfb799"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-win-files
+           (lambda _
+             (for-each delete-file-recursively
+                       ;; test_multiprocessing seem to be written in Python2.
+                       '("t/integration/tests/test_multiprocessing.py"
+                         "t/unit/test_win32.py"
+                         "billiard/popen_spawn_win32.py"
+                         "billiard/_win.py")))))))
     (native-inputs
-     (list python-case python-pytest))
+     (list python-case python-psutil python-pytest))
     (home-page "https://github.com/celery/billiard")
-    (synopsis
-     "Python multiprocessing fork with improvements and bugfixes")
+    (synopsis "Python multiprocessing fork with improvements and bugfixes")
     (description
      "Billiard is a fork of the Python 2.7 multiprocessing package.  The
 multiprocessing package itself is a renamed and updated version of R Oudkerk's
