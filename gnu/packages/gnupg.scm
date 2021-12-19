@@ -576,14 +576,14 @@ decrypt messages using the OpenPGP format by making use of GPGME.")
 (define-public python-gnupg
   (package
     (name "python-gnupg")
-    (version "0.4.7")
+    (version "0.4.8")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-gnupg" version))
        (sha256
         (base32
-         "1isazrg2h126xg3vvk4wrhx8k8yfsg5sxybvfa99phj235mzaq90"))))
+         "1mq7hljy3bjkxdvh3qx2bv4y0b66l9pmc6i06ys75y7dbjpf2kdn"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -598,8 +598,7 @@ decrypt messages using the OpenPGP format by making use of GPGME.")
                (setenv "USERNAME" "guixbuilder")
                ;; The doctests are extremely slow and sometimes time out,
                ;; so we disable them.
-               (invoke "python"
-                       "test_gnupg.py" "--no-doctests")))))))
+               (invoke "python" "test_gnupg.py" "--no-doctests")))))))
     (native-inputs
      (list gnupg))
     (home-page "https://pythonhosted.org/python-gnupg/index.html")
@@ -608,9 +607,6 @@ decrypt messages using the OpenPGP format by making use of GPGME.")
       "This module allows easy access to GnuPG’s key management, encryption
 and signature functionality from Python programs.")
     (license license:bsd-3)))
-
-(define-public python2-gnupg
-  (package-with-python2 python-gnupg))
 
 (define-public perl-gnupg-interface
   (package
