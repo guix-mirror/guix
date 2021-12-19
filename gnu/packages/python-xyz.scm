@@ -7401,6 +7401,27 @@ in an image.  It then applies the colors system-wide and on-the-fly in all of
 your favourite programs.")
     (license license:expat)))
 
+(define-public python-click-didyoumean
+  (package
+    (name "python-click-didyoumean")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "click-didyoumean" version))
+       (sha256
+        (base32 "0dc0xrmqbw0idpx843ahzzvivmvx3fcfsm3k54lnssyra7cg117i"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))              ; no tests in PyPI and no setup.py in github
+    (propagated-inputs
+     (list python-click))
+    (home-page "https://github.com/timofurrer/click-didyoumean")
+    (synopsis "Git-like did-you-mean feature in Click")
+    (description
+     "This plugin enables git-like did-you-mean feature in Click.")
+    (license license:expat)))
+
 (define-public python-pywinrm
   (package
     (name "python-pywinrm")
