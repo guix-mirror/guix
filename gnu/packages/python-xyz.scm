@@ -28358,3 +28358,25 @@ manipulating, converting and writing EXIF data to JPEG, WebP and TIFF files.")
     (description "PyRSS2Gen is the interface to generate RSS 2.0 feeds.
 PyRSS2Gen builds the feed up by using a XML generator.")
     (license license:bsd-3)))
+
+(define-public python-yapsy
+  (package
+    (name "python-yapsy")
+    (version "1.12.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "Yapsy" version))
+        (sha256
+          (base32 "12rznbnswfw0w7qfbvmmffr9r317gl1rqg36nijwzsklkjgks4fq"))))
+    (build-system python-build-system)
+    (home-page "http://yapsy.sourceforge.net")
+    (synopsis "Simple plugin system for Python applications")
+    (description "Yapsy, or Yet Another Plugin SYstem, is a small library
+implementing the core mechanisms needed to build a plugin system into a wider
+application.
+
+The main purpose is to depend only on Python's standard libraries and to
+implement only the basic functionalities needed to detect, load and keep track
+of several plugins.")
+    (license license:bsd-3)))
