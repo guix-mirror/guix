@@ -32,6 +32,7 @@
 
 (define-module (gnu packages shellutils)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix gexp)
   #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -616,3 +617,56 @@ set of programs designed to make renaming of files faster and less cumbersome.
 The file renaming utilities consists of five programs: @command{qmv},
 @command{qcp}, @command{imv}, @command{icp}, and @command{deurlname}.")
     (license license:gpl3+)))
+
+(define-public grc
+  (package
+    (name "grc")
+    (version "1.13")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/garabik/grc")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1h0h88h484a9796hai0wasi1xmjxxhpyxgixn6fgdyc5h69gv8nl"))))
+    (build-system gnu-build-system)
+    (inputs
+     (list python))
+    (arguments
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (delete 'configure)
+          (replace 'build
+            (lambda _
+              (substitute* "grc"
+                (("conffilenames = \\[.*\\]")
+                 (string-append
+                  "conffilenames = ["
+                  "os.environ.get('GUIX_ENVIRONMENT', '" #$output "') "
+                  "+ '/etc/grc.conf']")))
+              (substitute* "grcat"
+                (("conffilepath \\+= \\['/usr/.*\\]")
+                 (string-append
+                  "conffilepath += ["
+                  "os.environ.get('GUIX_ENVIRONMENT', '" #$output "') "
+                  "+ '/share/grc/']"))))) ;; trailing slash!
+          (delete 'check)
+          (replace 'install
+            (lambda _
+              (invoke "sh" "install.sh" #$output #$output))))))
+    (home-page "http://kassiopeia.juls.savba.sk/~garabik/software/grc.html")
+    (synopsis "Generic colouriser for everything")
+    (description "@code{grc} can be used to colourise logfiles, output of
+shell commands, arbitrary text, etc.  Many shell commands are supported out of
+the box.
+
+You might want to add these lines you your @code{~/.bashrc}:
+@example
+GRC_ALIASES=true
+source ${GUIX_ENVIRONMENT:-$HOME/.guix-profile}/etc/profile.d/grc.sh
+@end example
+")
+    (license license:gpl2)))
