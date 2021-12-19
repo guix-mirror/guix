@@ -4243,6 +4243,37 @@ via commands such as @command{rst2man}, as well as supporting Python code.")
 format.")
     (license license:unlicense)))
 
+(define-public python-click-repl
+  (package
+    (name "python-click-repl")
+    (version "0.2.0")
+    (source
+     (origin
+       (method git-fetch)               ; no tests in PyPI release
+       (uri (git-reference
+             (url "https://github.com/click-contrib/click-repl")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "16ybsnwlj2jlqcfxflky8jz7i3nhrd3f6mvkpgs95618l8lx994i"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "python" "-m" "pytest")))))))
+    (native-inputs
+     (list python-pytest))
+    (propagated-inputs
+     (list python-click python-prompt-toolkit python-six))
+    (home-page "https://github.com/untitaker/click-repl")
+    (synopsis "REPL plugin for Click")
+    (description "This package provides a REPL plugin for Click.")
+    (license license:expat)))
+
 (define-public python-doc8
   (package
     (name "python-doc8")
