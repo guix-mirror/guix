@@ -940,7 +940,7 @@ CD data, and more.  It's mostly compatible with @code{cdrtools}.")
 (define-public libmirage
   (package
     (name "libmirage")
-    (version "3.2.5")
+    (version "3.2.6")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -948,7 +948,7 @@ CD data, and more.  It's mostly compatible with @code{cdrtools}.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "0f8i2ha44rykkk3ac2q8zsw3y1zckw6qnf6zvkyrj3qqbzhrf3fm"))))
+                "19pjdmxhzl8y3brhg8fsv99b6jg4lfnl8jvcjgm4jmqrr684czr5"))))
     (build-system cmake-build-system)
     (native-inputs
      (list pkg-config intltool))
