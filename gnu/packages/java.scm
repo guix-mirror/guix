@@ -13036,7 +13036,7 @@ and reporting) project dependencies.  It is characterized by the following:
 (define-public java-eclipse-sisu-inject
   (package
     (name "java-eclipse-sisu-inject")
-    (version "0.3.4")
+    (version "0.3.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -13045,7 +13045,7 @@ and reporting) project dependencies.  It is characterized by the following:
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "16044sizdb0rjbhlfbmcnpds5y7by7dyn9b0c11606aikqi8k3x6"))))
+                "1yh434b8pi8cwmpk825fbvbnkkk2cwd4gxxjaygg8i9j0q3l9zp3"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "eclipse-sisu-inject.jar"
