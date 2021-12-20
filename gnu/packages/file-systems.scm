@@ -505,15 +505,14 @@ performance and other characteristics.")
                    (string-append prefix suffix "\n"))
                   ;; …as does installing a now non-existent file.
                   ((".*\\$\\(INSTALL\\).* lib.*") ""))))))))
-     (inputs
-      `(("eudev:static" ,eudev "static")
-        ("keyutils:static" ,keyutils "static")
-        ("libscrypt:static" ,libscrypt "static")
-        ("lz4:static" ,lz4 "static")
-        ("util-linux:static" ,util-linux "static") ; lib{blkid,uuid}
-        ("zlib" ,zlib "static")
-        ("zstd:static" ,zstd "static")
-        ,@(package-inputs bcachefs-tools)))))
+    (inputs (modify-inputs (package-inputs bcachefs-tools)
+              (prepend `(,eudev "static")
+                       `(,keyutils "static")
+                       `(,libscrypt "static")
+                       `(,lz4 "static")
+                       `(,util-linux "static")
+                       `(,zlib "static")
+                       `(,zstd "static"))))))
 
 (define-public bcachefs/static
   (package
