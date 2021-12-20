@@ -399,8 +399,7 @@ integrates with various databases on GUI toolkits such as Qt and Tk.")
                   ;; Some jars found:
                   (for-each delete-file
                             '("modules/java/test/pure_test/lib/junit-4.11.jar"
-                              "samples/java/sbt/sbt/sbt-launch.jar"))
-                  #t))))
+                              "samples/java/sbt/sbt/sbt-launch.jar"))))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
