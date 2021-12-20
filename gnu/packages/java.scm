@@ -4733,17 +4733,15 @@ function utilities.")
 (define-public java-plexus-sec-dispatcher
   (package
     (name "java-plexus-sec-dispatcher")
-    (version "1.4") ;; Newest release listed at the Maven Central Repository.
+    (version "2.0")
     (source (origin
-              ;; This project doesn't tag releases or publish tarballs, so we take
-              ;; the "prepare release plexus-sec-dispatcher-1.4" git commit.
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/sonatype/plexus-sec-dispatcher/")
-                     (commit "7db8f880486e192a1c5ea9544e01e756c3d49d0f")))
+                     (url "https://github.com/codehaus-plexus/plexus-sec-dispatcher")
+                     (commit (string-append "plexus-sec-dispatcher-" version))))
               (sha256
                (base32
-                "1ng4yliy4cqpjr4fxxjbpwyk1wkch5f8vblm1kvwf328s4gibszs"))
+                "0665zcyxkv2knydxgv2dn64zvy1dx9j9af12ds9s64qmzd1rk6pk"))
               (file-name (git-file-name name version))))
     (arguments
      `(#:jar-name "plexus-sec-dispatcher.jar"
@@ -4762,6 +4760,61 @@ function utilities.")
                (modello-single-mode file "1.0.0" "xpp3-reader")
                (modello-single-mode file "1.0.0" "xpp3-writer"))
              #t))
+         (add-before 'build 'generate-javax.inject.Named
+           (lambda _
+             (mkdir-p "build/classes/META-INF/sisu")
+             (with-output-to-file "build/classes/META-INF/sisu/javax.inject.Named"
+               (lambda _
+                 (display
+                   "org.sonatype.plexus.components.sec.dispatcher.DefaultSecDispatcher\n")))
+             #t))
+         (add-before 'check 'fix-paths
+           (lambda _
+             (copy-recursively "src/test/resources" "target")
+             #t))
+         (replace 'install (install-from-pom "pom.xml")))))
+    (propagated-inputs
+     (list java-plexus-utils java-plexus-cipher plexus-parent-pom-8))
+    (native-inputs
+     (list java-javax-inject
+           java-modello-core
+           ;; for modello
+           java-plexus-container-default
+           java-plexus-classworlds
+           java-plexus-utils
+           java-guava
+           java-geronimo-xbean-reflect
+           ;; modello plugins
+           java-modello-plugins-java
+           java-modello-plugins-xml
+           java-modello-plugins-xpp3
+           ;; for tests
+           java-junit))
+    (build-system ant-build-system)
+    (home-page "https://github.com/sonatype/plexus-sec-dispatcher")
+    (synopsis "Plexus Security Dispatcher Component")
+    (description "This package is the Plexus Security Dispatcher Component.
+This component decrypts a string passed to it.")
+    (license license:asl2.0)))
+
+(define-public java-plexus-sec-dispatcher-1.4
+  (package
+    (inherit java-plexus-sec-dispatcher)
+    (version "1.4")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/codehaus-plexus/plexus-sec-dispatcher")
+                     (commit (string-append "sec-dispatcher-" version))))
+              (sha256
+               (base32
+                "1ng4yliy4cqpjr4fxxjbpwyk1wkch5f8vblm1kvwf328s4gibszs"))
+              (file-name (git-file-name "java-plexus-sec-dispatcher" version))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments java-plexus-sec-dispatcher)
+      ((#:phases phases)
+       `(modify-phases ,phases
+         (delete 'generate-javax.inject.Named)
          (add-before 'build 'generate-components.xml
            (lambda _
              (mkdir-p "build/classes/META-INF/plexus")
@@ -4790,37 +4843,10 @@ function utilities.")
       </configuration>\n
     </component>\n
   </components>\n
-</component-set>\n")))
-             #t))
-         (add-before 'check 'fix-paths
-           (lambda _
-             (copy-recursively "src/test/resources" "target")
-             #t))
-         (replace 'install (install-from-pom "pom.xml")))))
+</component-set>\n")))))))))
     (propagated-inputs
      (list java-plexus-utils java-plexus-cipher-1.7
-           java-sonatype-spice-parent-pom-12))
-    (native-inputs
-     `(("java-modello-core" ,java-modello-core)
-       ;; for modello:
-       ("java-plexus-container-default" ,java-plexus-container-default)
-       ("java-plexus-classworlds" ,java-plexus-classworlds)
-       ("java-plexus-utils" ,java-plexus-utils)
-       ("java-guava" ,java-guava)
-       ("java-geronimo-xbean-reflect" ,java-geronimo-xbean-reflect)
-       ("java-plexus-build-api" ,java-plexus-build-api)
-       ;; modello plugins:
-       ("java-modellop-plugins-java" ,java-modello-plugins-java)
-       ("java-modellop-plugins-xml" ,java-modello-plugins-xml)
-       ("java-modellop-plugins-xpp3" ,java-modello-plugins-xpp3)
-       ;; for tests
-       ("java-junit" ,java-junit)))
-    (build-system ant-build-system)
-    (home-page "https://github.com/sonatype/plexus-sec-dispatcher")
-    (synopsis "Plexus Security Dispatcher Component")
-    (description "This package is the Plexus Security Dispatcher Component.
-This component decrypts a string passed to it.")
-    (license license:asl2.0)))
+           java-sonatype-spice-parent-pom-12))))
 
 (define-public java-plexus-cli
   (package

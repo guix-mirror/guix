@@ -1294,7 +1294,7 @@ simply plain java objects.")))
     (propagated-inputs
      (list java-plexus-utils
            java-plexus-interpolation
-           java-plexus-sec-dispatcher
+           java-plexus-sec-dispatcher-1.4
            maven-builder-support
            maven-settings
            maven-pom))
@@ -1983,7 +1983,7 @@ logging support.")))
        ("java-qdox" ,java-qdox)
        ;; tests
        ("java-plexus-cipher" ,java-plexus-cipher)
-       ("java-plexus-sec-dispatcher" ,java-plexus-sec-dispatcher)
+       ("java-plexus-sec-dispatcher" ,java-plexus-sec-dispatcher-1.4)
        ("java-jsr250" ,java-jsr250)
        ("java-cdi-api" ,java-cdi-api)
        ("java-junit" ,java-junit)
@@ -2443,7 +2443,7 @@ reporting or the build process.")))
            java-plexus-classworlds
            java-plexus-component-annotations
            java-plexus-container-default
-           java-plexus-sec-dispatcher
+           java-plexus-sec-dispatcher-1.4
            maven-3.0-pom))))
 
 (define-public maven-3.0-compat
