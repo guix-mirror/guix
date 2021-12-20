@@ -910,7 +910,7 @@ Please, @emph{do not} use something called ``eat my data'' in such cases!
 
 However, it does not make sense to accept this performance hit if the data is
 unimportant and you can afford to lose all of it in the event of a crash, for
-example when running a software test suite.  Adding @code{}libeatmydata.so} to
+example when running a software test suite.  Adding @file{libeatmydata.so} to
 the @env{LD_PRELOAD} environment of such tasks will override all C library data
 synchronisation functions with custom @i{no-op} ones that do nothing and
 immediately return success.
