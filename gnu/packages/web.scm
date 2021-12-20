@@ -254,14 +254,14 @@
 (define-public httpd
   (package
     (name "httpd")
-    (version "2.4.51")
+    (version "2.4.52")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://apache/httpd/httpd-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "1x1qp10pfh33x1b56liwsjl0jamjm5lkk7j3lj87c1ygzs0ivq10"))))
+               "1jgmfbazc2n9dnl7axhahwppyq25bvbvwx0lqplq76by97fgf9q1"))))
     (build-system gnu-build-system)
     (native-inputs (list `(,pcre "bin")))       ;for 'pcre-config'
     (inputs (list apr apr-util openssl perl)) ; needed to run bin/apxs
