@@ -4094,7 +4094,7 @@ components.")
 (define java-plexus-container-default-bootstrap
   (package
     (name "java-plexus-container-default-bootstrap")
-    (version "1.7.1")
+    (version "2.1.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4103,7 +4103,7 @@ components.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1316hrp5vqfv0aw7miq2fp0wwy833h66h502h29vnh5sxj27x228"))))
+                "0r9yq67c1hvi1pz5wmx6x6hk5fmavp8a7yal3j5hkaad757firn1"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "container-default.jar"
@@ -4350,7 +4350,82 @@ from source tags and class annotations.")))
            (lambda _
              (copy-recursively "src/main/resources"
                                "build/classes/")
-             #t)))))
+             #t))
+         (add-before 'build 'reinstate-cli
+           ;; The CLI was removed in 2.1.0, but we still need it to build some
+           ;; maven dependencies, and some parts of maven itself. We can't use
+           ;; the maven plugin for that yet.
+           (lambda _
+             (with-output-to-file "src/main/java/org/codehaus/plexus/metadata/PlexusMetadataGeneratorCli.java"
+               (lambda _
+                 ;; Copied from a previous version of this package.
+                 (display "package org.codehaus.plexus.metadata;
+
+import java.io.File;
+import java.util.Arrays;
+import java.util.Collections;
+
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.OptionBuilder;
+import org.apache.commons.cli.Options;
+import org.codehaus.plexus.PlexusContainer;
+import org.codehaus.plexus.tools.cli.AbstractCli;
+
+public class PlexusMetadataGeneratorCli
+    extends AbstractCli
+{
+    public static final char SOURCE_DIRECTORY = 's';
+    public static final char SOURCE_ENCODING = 'e';
+    public static final char CLASSES_DIRECTORY = 'c';
+    public static final char OUTPUT_FILE = 'o';
+    public static final char DESCRIPTORS_DIRECTORY = 'm';
+
+    public static void main( String[] args )
+        throws Exception
+    {
+        new PlexusMetadataGeneratorCli().execute( args );
+    }
+
+    @Override
+    public String getPomPropertiesPath()
+    {
+        return \"META-INF/maven/org.codehaus.plexus/plexus-metadata-generator/pom.properties\";
+    }
+
+    @Override
+    @SuppressWarnings(\"static-access\")
+    public Options buildCliOptions( Options options )
+    {
+        options.addOption( OptionBuilder.withLongOpt( \"source\" ).hasArg().withDescription( \"Source directory.\" ).create( SOURCE_DIRECTORY ) );
+        options.addOption( OptionBuilder.withLongOpt( \"encoding\" ).hasArg().withDescription( \"Source file encoding.\" ).create( SOURCE_ENCODING ) );
+        options.addOption( OptionBuilder.withLongOpt( \"classes\" ).hasArg().withDescription( \"Classes directory.\" ).create( CLASSES_DIRECTORY ) );
+        options.addOption( OptionBuilder.withLongOpt( \"output\" ).hasArg().withDescription( \"Output directory.\" ).create( OUTPUT_FILE ) );
+        options.addOption( OptionBuilder.withLongOpt( \"descriptors\" ).hasArg().withDescription( \"Descriptors directory.\" ).create( DESCRIPTORS_DIRECTORY ) );
+        return options;
+    }
+
+    public void invokePlexusComponent( CommandLine cli, PlexusContainer plexus )
+        throws Exception
+    {
+        MetadataGenerator metadataGenerator = plexus.lookup( MetadataGenerator.class );
+
+        MetadataGenerationRequest request = new MetadataGenerationRequest();
+        request.classesDirectory = new File( cli.getOptionValue( CLASSES_DIRECTORY ) );
+        request.classpath = Collections.emptyList();
+        request.sourceDirectories = Arrays.asList( new String[]{ new File( cli.getOptionValue( SOURCE_DIRECTORY ) ).getAbsolutePath() } );
+        request.sourceEncoding = cli.getOptionValue( SOURCE_ENCODING );
+        request.useContextClassLoader = true;
+        request.outputFile = new File( cli.getOptionValue( OUTPUT_FILE ) );
+        request.componentDescriptorDirectory = new File( cli.getOptionValue( DESCRIPTORS_DIRECTORY ) );
+
+        metadataGenerator.generateDescriptor( request );
+    }
+}")))))
+         (add-before 'check 'fix-test-location
+           (lambda _
+             (substitute* '("src/test/java/org/codehaus/plexus/metadata/DefaultComponentDescriptorWriterTest.java"
+                            "src/test/java/org/codehaus/plexus/metadata/merge/ComponentsXmlMergerTest.java")
+               (("target") "build")))))))
     (propagated-inputs
      `(("java-plexus-container-default" ,java-plexus-container-default)
        ("java-plexu-component-annotations" ,java-plexus-component-annotations)
@@ -4364,7 +4439,104 @@ from source tags and class annotations.")))
        ("java-commons-cli" ,java-commons-cli)
        ("java-qdox" ,java-qdox)
        ("java-jdom2" ,java-jdom2)
-       ("java-asm" ,java-asm)))
+       ("java-asm-8" ,java-asm-8)))
+    (native-inputs
+     (list java-junit java-guava java-geronimo-xbean-reflect))
+    (synopsis "Inversion-of-control container for Maven")
+    (description "The Plexus project provides a full software stack for creating
+and executing software projects.  Based on the Plexus container, the
+applications can utilise component-oriented programming to build modular,
+reusable components that can easily be assembled and reused.  This package
+provides the Maven plugin generating the component metadata.")))
+
+(define-public java-plexus-container-default-1.7
+  (package
+    (inherit java-plexus-container-default)
+    (version "1.7.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/codehaus-plexus/plexus-containers")
+                     (commit (string-append "plexus-containers-" version))))
+              (file-name (git-file-name "java-plexus-container-default" version))
+              (sha256
+               (base32
+                "1316hrp5vqfv0aw7miq2fp0wwy833h66h502h29vnh5sxj27x228"))))))
+
+(define java-plexus-containers-parent-pom-1.7
+  (package
+    (inherit java-plexus-container-default-1.7)
+    (name "java-plexus-containers-parent-pom")
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (replace 'install
+           (install-pom-file "pom.xml")))))
+    (propagated-inputs
+     `(("plexus-parent-pom" ,plexus-parent-pom-4.0)))))
+
+(define-public java-plexus-component-annotations-1.7
+  (package
+    (inherit java-plexus-container-default-1.7)
+    (name "java-plexus-component-annotations")
+    (arguments
+     `(#:jar-name "plexus-component-annotations.jar"
+       #:source-dir "plexus-component-annotations/src/main/java"
+       #:tests? #f; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (install-from-pom "plexus-component-annotations/pom.xml")))))
+    (propagated-inputs
+     `(("java-plexus-containers-parent-pom-1.7" ,java-plexus-containers-parent-pom-1.7)))
+    (inputs '())
+    (native-inputs '())
+    (synopsis "Plexus descriptors generator")
+    (description "This package is a Maven plugin to generate Plexus descriptors
+from source tags and class annotations.")))
+
+(define-public java-plexus-component-metadata-1.7
+  (package
+    (inherit java-plexus-container-default-1.7)
+    (name "java-plexus-component-metadata")
+    (arguments
+     `(#:jar-name "plexus-component-metadata.jar"
+       #:source-dir "src/main/java"
+       #:test-dir "src/test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir
+           (lambda _
+             (chdir "plexus-component-metadata")
+             #t))
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively "src/main/resources"
+                               "build/classes/")
+             #t))
+         (add-before 'check 'fix-test-location
+           (lambda _
+             (substitute* '("src/test/java/org/codehaus/plexus/metadata/DefaultComponentDescriptorWriterTest.java"
+                            "src/test/java/org/codehaus/plexus/metadata/merge/ComponentsXmlMergerTest.java")
+               (("target") "build")))))))
+    (propagated-inputs
+     (list java-plexus-container-default-1.7
+           java-plexus-component-annotations-1.7
+           java-plexus-utils
+           java-plexus-cli
+           java-plexus-cli
+           java-plexus-classworlds
+           maven-plugin-api
+           maven-plugin-annotations
+           maven-core-bootstrap
+           maven-model
+           java-commons-cli
+           java-qdox
+           java-jdom2
+           java-asm))
     (native-inputs
      (list java-junit java-guava java-geronimo-xbean-reflect))
     (synopsis "Inversion-of-control container for Maven")
@@ -4497,9 +4669,9 @@ and decryption.")
      (list java-asm java-qdox-2-M9 java-javax-inject
            plexus-parent-pom-4.0))
     (inputs
-     (list java-plexus-component-annotations))
+     (list java-plexus-component-annotations-1.7))
     (native-inputs
-     (list java-plexus-component-metadata java-junit))
+     (list java-plexus-component-metadata-1.7 java-junit))
     (home-page "https://codehaus-plexus.github.io/plexus-languages/plexus-java")
     (synopsis "Shared language features for Java")
     (description "This package contains shared language features of the Java
@@ -4616,9 +4788,9 @@ compilers.")
            (install-from-pom "plexus-compiler-manager/pom.xml")))))
     (propagated-inputs
      (list java-plexus-compiler-api java-plexus-compiler-pom
-           java-plexus-container-default))
+           java-plexus-container-default-1.7))
     (native-inputs
-     (list unzip java-plexus-component-metadata))
+     (list unzip java-plexus-component-metadata-1.7))
     (synopsis "Compiler management for Plexus Compiler component")
     (description "Plexus Compiler is a Plexus component to use different
 compilers through a uniform API.  This component chooses the compiler
