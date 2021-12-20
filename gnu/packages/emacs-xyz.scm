@@ -236,7 +236,7 @@
 (define-public emacs-geiser
   (package
     (name "emacs-geiser")
-    (version "0.19")
+    (version "0.20")
     (source
      (origin
        (method git-fetch)
@@ -245,7 +245,7 @@
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1pfdax2wsfyjz4ddfqh54n3lbxhqpg97grj7kgi641lbhppnq02g"))))
+        (base32 "0k9y2kx81ci8d2klpw0xbygw973mawa3id3wq3l92lk9yqvy6jgp"))))
     (build-system emacs-build-system)
     (arguments
      '(#:phases
@@ -265,6 +265,8 @@
                        "-o" "geiser.info" "geiser.texi")))))))
     (native-inputs
      (list texinfo))
+    (propagated-inputs
+     (list emacs-transient))
     (home-page "https://nongnu.org/geiser/")
     (synopsis "Collection of Emacs modes for Scheme hacking")
     (description
