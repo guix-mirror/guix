@@ -13096,7 +13096,7 @@ OSGi Service Registry is a goal of this project.")
 (define-public java-eclipse-sisu-plexus
   (package
     (name "java-eclipse-sisu-plexus")
-    (version "0.3.4")
+    (version "0.3.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -13105,7 +13105,7 @@ OSGi Service Registry is a goal of this project.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "17mjlajnsqnk07cc58h1qpxrif85yb2m2y0pyba48yjjgikk8r9f"))
+                "0lm5h0dmh41ffcwd32qnk3a87d360am36yq7168ikkyqa8jxkx28"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -13158,7 +13158,8 @@ OSGi Service Registry is a goal of this project.")
          (replace 'install
            (install-from-pom "org.eclipse.sisu.plexus/pom.xml")))))
     (propagated-inputs
-     (list java-plexus-classworlds
+     (list java-jsr250
+           java-plexus-classworlds
            java-plexus-utils
            java-plexus-component-annotations
            java-cdi-api
