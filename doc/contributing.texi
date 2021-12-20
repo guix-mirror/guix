@@ -695,7 +695,7 @@ package typically include a @file{snippets} directory, which could be
 copied to the installation directory using:
 
 @lisp
-#:include (cons "^snippets/" %default-include))
+#:include (cons "^snippets/" %default-include)
 @end lisp
 
 When encountering problems, it is wise to check for the presence of the
