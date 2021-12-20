@@ -7234,7 +7234,10 @@ configuration program to choose applications starting on login.")
                     (("☭") ""))))))
     (build-system meson-build-system)
     (arguments
-     '(#:configure-flags '("-Dinstalled_tests=false")
+     ;; Use meson-0.59, otherwise we'd get "ERROR: "install_dir" must be
+     ;; specified when installing a target".
+     `(#:meson ,meson-0.59
+       #:configure-flags '("-Dinstalled_tests=false")
        #:phases
        (modify-phases %standard-phases
          (add-before 'check 'pre-check
