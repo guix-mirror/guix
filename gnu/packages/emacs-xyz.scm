@@ -20598,15 +20598,14 @@ using XML-RPC methods fairly transparent to the Lisp code.")
 (define-public emacs-xpm
   (package
     (name "emacs-xpm")
-    (version "1.0.4")
+    (version "1.0.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/xpm-"
                            version ".tar"))
        (sha256
-        (base32
-         "075miyashh9cm3b0gk6ngld3rm8bfgnh4qxnhxmmvjgzf6a64grh"))))
+        (base32 "13p6s6b2v7h4bnwdkkrd1qz84jd7g2s18w0czhpxv6hvj9sqf5hx"))))
     (build-system emacs-build-system)
     (home-page "https://elpa.gnu.org/packages/xpm.html")
     (synopsis "XPM image editing mode for Emacs")
