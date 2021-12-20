@@ -74,22 +74,20 @@
                 "ceph-rocksdb-compat.patch"))
               (modules '((guix build utils)))
               (snippet
-               '(begin
-                  (for-each delete-file-recursively
-                            '(;; TODO: Unbundle these:
-                              ;"src/isa-l"
-                              ;"src/lua"
-                              ;"src/xxHash"
-                              ;"src/zstd"
-                              ;"src/civetweb"
-                              "src/c-ares"
-                              "src/fmt"
-                              "src/googletest"
-                              "src/rapidjson"
-                              "src/spdk"
-                              "src/rocksdb"
-                              "src/boost"))
-                  #t))))
+               '(for-each delete-file-recursively
+                          '(;; TODO: Unbundle these:
+                            ;;"src/isa-l"
+                            ;;"src/lua"
+                            ;;"src/xxHash"
+                            ;;"src/zstd"
+                            ;;"src/civetweb"
+                            "src/c-ares"
+                            "src/fmt"
+                            "src/googletest"
+                            "src/rapidjson"
+                            "src/spdk"
+                            "src/rocksdb"
+                            "src/boost")))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
