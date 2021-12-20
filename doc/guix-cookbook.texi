@@ -1222,10 +1222,7 @@ $ guix import cran --recursive walrus
             "1nk2glcvy4hyksl5ipq2mz8jy4fss90hx6cq98m3w96kzjni6jjj"))))
     (build-system r-build-system)
     (propagated-inputs
-      `(("r-ggplot2" ,r-ggplot2)
-        ("r-jmvcore" ,r-jmvcore)
-        ("r-r6" ,r-r6)
-        ("r-wrs2" ,r-wrs2)))
+      (list r-ggplot2 r-jmvcore r-r6 r-wrs2))
     (home-page "https://github.com/jamovi/walrus")
     (synopsis "Robust Statistical Methods")
     (description
@@ -1284,8 +1281,7 @@ noticed that a significant number of them have a @code{inherit} field:
               (sha256
                (base32
                 "17fpahgh5dyckgz7rwqvzgnhx53cx9kr2xw0szprc6bnqy977fi8"))))
-    (native-inputs
-     `(("gtk-encode-symbolic-svg" ,gtk+ "bin")))))
+    (native-inputs (list `(,gtk+ "bin")))))
 @end lisp
 
 All unspecified fields are inherited from the parent package.  This is very
