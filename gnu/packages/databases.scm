@@ -485,6 +485,12 @@ database later.")
                    "-DBENCHMARK_ENABLE_INSTALL=OFF")
            #:phases
            #~(modify-phases %standard-phases
+               ;; Ceph uses leveldb and depends on RTTI.
+               (add-after 'unpack 'allow-RTTI
+                 (lambda _
+                   (substitute* "CMakeLists.txt"
+                     (("set\\(CMAKE_CXX_FLAGS \"\\$\\{CMAKE_CXX_FLAGS\\} -fno-rtti\"\\)")
+                      ""))))
                (add-after 'unpack 'unpack-third_party-sources
                  ;; These are only for testing, so copying source is fine.
                  (lambda _
