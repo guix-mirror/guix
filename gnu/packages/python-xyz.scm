@@ -11022,11 +11022,16 @@ printing of sub-tables by specifying a row range.")
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (add-installed-pythonpath inputs outputs)
-             (invoke "pytest" "-vv" "-k"
-                     ;; Tries to open an outgoing connection.
-                     "not test_ssl_outgoing"))))))
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest" "-vv" "-k"
+                       (string-append
+                        ;; Tries to open an outgoing connection.
+                        "not test_ssl_outgoing "
+                        ;; This test fails since Python 3.9.9 (see:
+                        ;; https://github.com/dabeaz/curio/issues/347).
+                        "and not test_timeout"))))))))
     (native-inputs
      (list python-pytest))
     (home-page "https://github.com/dabeaz/curio")
