@@ -582,6 +582,21 @@ ease usage of the repository system.")))
     (description "This package contains the service provider interface (SPI)
 for repository system implementations and repository connectors.")))
 
+(define-public java-sonatype-aether-test-util-1.13
+  (package
+    (inherit java-sonatype-aether-api-1.13)
+    (name "java-sonatype-aether-test-util")
+    (arguments
+     `(#:jar-name "java-sonatype-aether-test-util.jar"
+       #:source-dir "aether-test-util/src/main/java"
+       #:test-dir "aether-test-util/src/test"))
+    (inputs
+     `(("java-sonatype-aether-api" ,java-sonatype-aether-api-1.13)
+       ("java-sonatype-aether-spi" ,java-sonatype-aether-spi-1.13)))
+    (synopsis "Utility classes for testing the maven repository system")
+    (description "This package contains a collection of utility classes to
+ease testing of the repository system.")))
+
 ;; Again, this old version is required by some maven plugins
 (define-public java-eclipse-aether-api
   (package
