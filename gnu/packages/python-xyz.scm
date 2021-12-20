@@ -10635,13 +10635,13 @@ third-party code.")
 (define-public python-msgpack
   (package
     (name "python-msgpack")
-    (version "1.0.0")
+    (version "1.0.3")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "msgpack" version))
               (sha256
                (base32
-                "1h5mxh84rcw04dvxy1qbfn2hisavfqgilh9k09rgyjhd936dad4m"))))
+                "07m84yisf8m6gr68ip9v6vzxax7kqbn8qxg7ir18clk1jgxwgzai"))))
     (build-system python-build-system)
     (arguments
      `(#:modules ((guix build utils)
@@ -10688,9 +10688,6 @@ reading and writing MessagePack data.")
                  (("TRANSITIONAL = False")
                    "TRANSITIONAL = 1"))
                #t))))))))
-
-(define-public python2-msgpack
-  (package-with-python2 python-msgpack))
 
 (define-public python-netaddr
   (package
