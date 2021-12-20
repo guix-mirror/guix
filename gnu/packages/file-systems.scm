@@ -837,14 +837,14 @@ All of this is accomplished without a centralized metadata server.")
 (define-public libeatmydata
   (package
     (name "libeatmydata")
-    (version "129")
+    (version "130")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.flamingspork.com/projects/libeatmydata/"
                            "libeatmydata-" version ".tar.gz"))
        (sha256
-        (base32 "1qycv1cvy6fr3v5rxilnsqxllwyfbqlcairlh31x2dnjsx28jnqf"))))
+        (base32 "1h212l2s0g3pv6q96d94dk7kpp9qzyxqydrrcgyp7zqjwvbiqws8"))))
     (build-system gnu-build-system)
     (arguments
      ;; All tests pass---but only if the host kernel allows PTRACE_TRACEME.
@@ -886,9 +886,9 @@ All of this is accomplished without a centralized metadata server.")
            (method url-fetch)
            (uri (string-append "https://deb.debian.org/debian/pool/main/"
                                "libe/libeatmydata/libeatmydata_" version
-                               "-1.debian.tar.xz"))
+                               "-2.debian.tar.xz"))
            (sha256
-            (base32 "0q6kx1bf870jj52a2vm5p5xlrr89g2zs8wyhlpn80pys9p28nikx"))))
+            (base32 "1sg9g1nv3wl9ymzz33ig4ns563npkbxj67a64m7p34cc813jl95w"))))
        ;; For the test suite.
        ("strace" ,strace)
        ("which" ,which)))
