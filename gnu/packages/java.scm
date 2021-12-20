@@ -6241,14 +6241,14 @@ bottlenecks move away from the database in an effectively cached system.")
     (name "java-jsr250")
     (version "1.3")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://repo1.maven.org/maven2/"
-                                  "javax/annotation/javax.annotation-api/"
-                                  version "/javax.annotation-api-"
-                                  version "-sources.jar"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/javaee/javax.annotation")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "08clh8n4n9wfglf75qsqfjs6yf79f7x6hqx38cn856pksszv50kz"))))
+                "1g22a9d75g01s9yxgdig0ss7i30j4ysnnp08gn4krn0wly4lpqq0"))))
     (build-system ant-build-system)
     (arguments
      `(#:tests? #f ; no tests included
@@ -6256,11 +6256,9 @@ bottlenecks move away from the database in an effectively cached system.")
        #:jar-name "jsr250.jar"
        #:phases
        (modify-phases %standard-phases
-         (add-before 'install 'create-pom
-           (generate-pom.xml "pom.xml" "javax.annotation" "jsr250-api" ,version
-                             #:name "jsr250"))
          (replace 'install
            (install-from-pom "pom.xml")))))
+    (propagated-inputs (list java-jvnet-parent-pom-3))
     (home-page "https://jcp.org/en/jsr/detail?id=250")
     (synopsis "Security-related annotations")
     (description "This package provides annotations for security.  It provides

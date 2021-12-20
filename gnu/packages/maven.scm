@@ -1740,6 +1740,10 @@ artifactId=maven-core" ,(package-version maven-core-bootstrap))))
                (("srcdir=\"maven-embedder/src/test\"")
                 "srcdir=\"maven-embedder/src/test/java\""))
              #t))
+         (add-before 'install 'fix-pom
+           (lambda _
+             (substitute* "maven-embedder/pom.xml"
+               (("jsr250-api") "javax.annotation-api"))))
          (replace 'install
            (install-from-pom "maven-embedder/pom.xml")))))
     (propagated-inputs
