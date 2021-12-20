@@ -457,21 +457,20 @@ from a mounted file system.")
              python
              python-docutils))
       (inputs
-       `(("eudev" ,eudev)
-         ("keyutils" ,keyutils)
-         ("libaio" ,libaio)
-         ("libscrypt" ,libscrypt)
-         ("libsodium" ,libsodium)
-         ("liburcu" ,liburcu)
-         ("util-linux:lib" ,util-linux "lib") ; lib{blkid,uuid}
-         ("lz4" ,lz4)
-         ("zlib" ,zlib)
-         ("zstd:lib" ,zstd "lib")
-
-         ;; Only for mount.bcachefs.sh.
-         ("coreutils" ,coreutils-minimal)
-         ("gawk" ,gawk)
-         ("util-linux" ,util-linux)))
+       (list eudev
+             keyutils
+             libaio
+             libscrypt
+             libsodium
+             liburcu
+             `(,util-linux "lib")
+             lz4
+             zlib
+             `(,zstd "lib")
+             ;; Only for mount.bcachefs.sh.
+             coreutils-minimal
+             gawk
+             util-linux))
       (home-page "https://bcachefs.org/")
       (synopsis "Tools to create and manage bcachefs file systems")
       (description
