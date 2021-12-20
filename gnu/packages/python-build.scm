@@ -163,7 +163,7 @@ Python file, so it can be easily copied into your project.")
                (invoke "pip" "--no-cache-dir" "--no-input"
                        "install" "--no-deps" "--prefix" out whl)))))))
     (native-inputs
-     `(("python-flit-core" ,python-flit-core)
+     `(("python-flit-core-bootstrap" ,python-flit-core-bootstrap)
        ("python-pypa-build" ,python-pypa-build)
        ("python-six", python-six-bootstrap)))
     (home-page "https://github.com/hukkin/tomli")
@@ -347,9 +347,10 @@ a light weight, fully compliant, self-contained package allowing PEP 517
 compatible build front-ends to build Poetry managed projects.")
     (license license:expat)))
 
-(define-public python-flit-core
+;;; This package exists to bootstrap python-tomli.
+(define-public python-flit-core-bootstrap
   (package
-    (name "python-flit-core")
+    (name "python-flit-core-bootstrap")
     (version "3.5.1")
     (source
      (origin
@@ -387,3 +388,10 @@ compatible build front-ends to build Poetry managed projects.")
 backend for packages using Flit.  The only public interface is the API
 specified by PEP 517, @code{flit_core.buildapi}.")
     (license license:bsd-3)))
+
+(define-public python-flit-core
+  (package/inherit python-flit-core-bootstrap
+    (name "python-flit-core")
+    (propagated-inputs
+     (modify-inputs (package-propagated-inputs python-flit-core-bootstrap)
+       (replace "python-toml" python-tomli)))))
