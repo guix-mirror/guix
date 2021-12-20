@@ -27,6 +27,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages file-systems)
+  #:use-module (guix gexp)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -420,34 +421,30 @@ from a mounted file system.")
           (base32 "1ixb1fk58yjk8alpcf9a7h0fnkvpbsjxd766iz9h7qa6r1r77a6c"))))
       (build-system gnu-build-system)
       (arguments
-       `(#:make-flags
-         (list ,(string-append "VERSION=" version) ; bogus vX.Y-nogit otherwise
-               (string-append "PREFIX=" (assoc-ref %outputs "out"))
-               "INITRAMFS_DIR=$(PREFIX)/share/initramfs-tools"
-               ,(string-append "CC=" (cc-for-target))
-               ,(string-append "PKG_CONFIG=" (pkg-config-for-target))
-               "PYTEST=pytest")
-         #:phases
-         (modify-phases %standard-phases
-           (delete 'configure)          ; no configure script
-           (add-after 'install 'promote-mount.bcachefs.sh
-             ;; XXX The (optional) mount.bcachefs helper requires rust:cargo.
-             ;; This alternative shell script does the job well enough for now.
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (let ((out (assoc-ref outputs "out")))
-               (with-directory-excursion (string-append out "/sbin")
-                 (rename-file "mount.bcachefs.sh" "mount.bcachefs")
-                 ;; WRAP-SCRIPT causes bogus ‘Insufficient arguments’ errors.
-                 (wrap-program "mount.bcachefs"
-                   `("PATH" ":" prefix
-                     ,(cons (string-append out "/sbin")
-                            (map (lambda (input)
-                                     (string-append (assoc-ref inputs input)
-                                                    "/bin"))
-                                   (list "coreutils"
-                                         "gawk"
-                                         "util-linux"))))))))))
-         #:tests? #f))                  ; XXX 6 valgrind tests fail
+       (list #:make-flags
+             #~(list (string-append "VERSION=" #$version) ; ‘v…-nogit’ otherwise
+                     (string-append "PREFIX=" #$output)
+                     "INITRAMFS_DIR=$(PREFIX)/share/initramfs-tools"
+                     (string-append "CC=" #$(cc-for-target))
+                     (string-append "PKG_CONFIG=" #$(pkg-config-for-target))
+                     "PYTEST=pytest")
+             #:phases
+             #~(modify-phases %standard-phases
+                 (delete 'configure)    ; no configure script
+                 (add-after 'install 'promote-mount.bcachefs.sh
+                   ;; XXX The (optional) ‘mount.bcachefs’ requires rust:cargo.
+                   ;; This shell alternative does the job well enough for now.
+                   (lambda _
+                     (with-directory-excursion (string-append #$output "/sbin")
+                       (rename-file "mount.bcachefs.sh" "mount.bcachefs")
+                       ;; WRAP-SCRIPT causes bogus ‘Insufficient arguments’ errors.
+                       (wrap-program "mount.bcachefs"
+                         `("PATH" ":" prefix
+                           ,(list (string-append #$output            "/sbin")
+                                  (string-append #$coreutils-minimal "/bin")
+                                  (string-append #$gawk              "/bin")
+                                  (string-append #$util-linux        "/bin"))))))))
+             #:tests? #f))                  ; XXX 6 valgrind tests fail
       (native-inputs
        (list pkg-config
              ;; For tests.
