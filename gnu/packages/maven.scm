@@ -2731,7 +2731,7 @@ Maven project dependencies.")
 (define-public maven-dependency-tree
   (package
     (name "maven-dependency-tree")
-    (version "3.0.1")
+    (version "3.1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://apache/maven/shared/"
@@ -2739,20 +2739,21 @@ Maven project dependencies.")
                                   "-source-release.zip"))
               (sha256
                (base32
-                "0mxfslxvcmjs13jl30zhcg672j970dzn6ihh79w9ajh6sfqmlds2"))))
+                "1vhcd3lmbyy8q61c37sqgbllqj4ypkxm344l6pb05mkchlyk5dy5"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "maven-dependency-tree.jar"
        #:source-dir "src/main/java"
+       #:tests? #f; no tests
        #:phases
        (modify-phases %standard-phases
          (replace 'install
            (install-from-pom "pom.xml")))))
     (propagated-inputs
      (list maven-3.0-core java-plexus-component-annotations
-           maven-parent-pom-30))
+           maven-parent-pom-34))
     (inputs
-     (list java-sonatype-aether-api java-sonatype-aether-util
+     (list java-sonatype-aether-api-1.13 java-sonatype-aether-util-1.13
            java-eclipse-aether-api java-eclipse-aether-util))
     (native-inputs
      (list unzip java-junit))
