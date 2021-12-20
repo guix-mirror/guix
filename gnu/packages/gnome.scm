@@ -12103,7 +12103,7 @@ provided there is a DBus service present:
 (define-public parlatype
   (package
     (name "parlatype")
-    (version "3.0")
+    (version "3.1")
     (source
      (origin
        (method git-fetch)
@@ -12112,7 +12112,7 @@ provided there is a DBus service present:
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0mvzagkg9kq2ji6mffi37mdjxmlj3wa65d4lcayij9hsmjlklnzs"))))
+        (base32 "0cqrzbkyksfsm57riirmjkwf2nf2dgl1xpps1wvqxpij475qcb9b"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -12135,12 +12135,12 @@ provided there is a DBus service present:
                (wrap-program (string-append out "/bin/parlatype")
                  `("GST_PLUGIN_SYSTEM_PATH" ":" = (,gst-plugin-path)))))))))
     (native-inputs
-     `(("appstream-glib" ,appstream-glib)
-       ("desktop-file-utils" ,desktop-file-utils) ;for desktop-file-validate
-       ("gettext" ,gettext-minimal)
-       ("glib" ,glib "bin")             ;for glib-compile-resources
-       ("pkg-config" ,pkg-config)
-       ("yelp-tools" ,yelp-tools)))
+     (list appstream-glib
+           desktop-file-utils           ;for desktop-file-validate
+           gettext-minimal
+           `(,glib "bin")               ;for glib-compile-resources
+           pkg-config
+           yelp-tools))
     (inputs
      (list gst-plugins-base
            gst-plugins-good
