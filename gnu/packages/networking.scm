@@ -179,7 +179,7 @@ runs on top of IP or UDP, and supports both v4 and v6 versions.")
 (define-public axel
   (package
     (name "axel")
-    (version "2.17.10")
+    (version "2.17.11")
     (source
      (origin
        (method url-fetch)
@@ -187,7 +187,7 @@ runs on top of IP or UDP, and supports both v4 and v6 versions.")
                            "releases/download/v" version "/"
                            "axel-" version ".tar.xz"))
        (sha256
-        (base32 "0kmlqk04sgkshsll4r9w3k0rvrgz0gpk987618r50khwl484zss6"))))
+        (base32 "1yfcsi0zv07bvhj8klgna3y1ycc4jhaija1b3rzzv0i4d4c2q2sq"))))
     (build-system gnu-build-system)
     (native-inputs
      (list gettext-minimal pkg-config))
