@@ -4012,7 +4012,7 @@ more.")
 (define-public java-plexus-utils-3.2.1
   (package
     (inherit java-plexus-utils)
-    ;; sisu-build-api needs this version, later versions don't work
+    ;; plexus-build-api needs this version, later versions don't work
     (version "3.2.1")
     (source (origin
               (method git-fetch)
@@ -4776,7 +4776,7 @@ function utilities.")
        ("java-plexus-utils" ,java-plexus-utils)
        ("java-guava" ,java-guava)
        ("java-geronimo-xbean-reflect" ,java-geronimo-xbean-reflect)
-       ("java-sisu-build-api" ,java-sisu-build-api)
+       ("java-plexus-build-api" ,java-plexus-build-api)
        ;; modello plugins:
        ("java-modellop-plugins-java" ,java-modello-plugins-java)
        ("java-modellop-plugins-xml" ,java-modello-plugins-xml)
@@ -4820,14 +4820,14 @@ This component decrypts a string passed to it.")
 Plexus components.")
     (license license:asl2.0)))
 
-(define-public java-sisu-build-api
+(define-public java-plexus-build-api
   (package
-    (name "java-sisu-build-api")
+    (name "java-plexus-build-api")
     (version "0.0.7")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/sonatype/sisu-build-api")
+                     (url "https://github.com/codehaus-plexus/plexus-build-api")
                      (commit (string-append "plexus-build-api-" version))))
               (file-name (git-file-name name version))
               (sha256
@@ -4835,7 +4835,7 @@ Plexus components.")
                 "1d5w6c58gkx30d51v7qwv1xrhc0ly76848gihmgshj19yf6yhca0"))))
     (build-system ant-build-system)
     (arguments
-     `(#:jar-name "sisu-build-api.jar"
+     `(#:jar-name "plexus-build-api.jar"
        #:source-dir "src/main/java"
        #:jdk ,icedtea-8
        #:tests? #f; FIXME: how to run the tests?
@@ -4871,7 +4871,7 @@ which behaves as if all files were just created.</description>\n
            (install-from-pom "pom.xml")))))
     (inputs
      (list java-plexus-utils-3.2.1 java-plexus-container-default))
-    (home-page "https://github.com/sonatype/sisu-build-api/")
+    (home-page "https://github.com/codehaus-plexus/plexus-build-api/")
     (synopsis "Base build API for maven")
     (description "This package contains the base build API for maven and
 a default implementation of it.  This API is about scanning files in a
@@ -4915,7 +4915,7 @@ project and determining what files need to be rebuilt.")
              #t)))))
     (propagated-inputs
      (list java-plexus-utils java-plexus-container-default
-           java-sisu-build-api))
+           java-plexus-build-api))
     (native-inputs
      (list java-junit java-plexus-classworlds java-geronimo-xbean-reflect
            java-guava))

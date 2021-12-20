@@ -1185,7 +1185,7 @@ and compares versions:")))
            java-plexus-classworlds
            java-guava
            java-geronimo-xbean-reflect
-           java-sisu-build-api
+           java-plexus-build-api
            ;; modello plugins:
            java-modello-plugins-java
            java-modello-plugins-xml
@@ -1263,7 +1263,7 @@ setting, toolchains)")))
            java-plexus-utils
            java-guava
            java-geronimo-xbean-reflect
-           java-sisu-build-api
+           java-plexus-build-api
            ;; modello plugins:
            java-modello-plugins-java
            java-modello-plugins-xml
@@ -1399,7 +1399,7 @@ inheritance, interpolation, @dots{}")))
        ("java-plexus-classworlds" ,java-plexus-classworlds)
        ("java-guava" ,java-guava)
        ("java-geronimo-xbean-reflect" ,java-geronimo-xbean-reflect)
-       ("java-sisu-build-api" ,java-sisu-build-api)
+       ("java-plexus-build-api" ,java-plexus-build-api)
        ;; modello plugins:
        ("java-modello-plugins-java" ,java-modello-plugins-java)
        ("java-modello-plugins-xml" ,java-modello-plugins-xml)
@@ -1484,7 +1484,7 @@ so really just plain objects.")))
        ("classworlds" ,java-plexus-classworlds)
        ("guava" ,java-guava)
        ("xbean" ,java-geronimo-xbean-reflect)
-       ("build-api" ,java-sisu-build-api)
+       ("build-api" ,java-plexus-build-api)
        ;; modello plugins:
        ("java" ,java-modello-plugins-java)
        ("xml" ,java-modello-plugins-xml)
@@ -1588,7 +1588,7 @@ generally generated from plugin sources using maven-plugin-plugin.")))
          ("java-asm" ,java-asm)
          ("java-plexus-classworlds" ,java-plexus-classworlds)
          ("java-geronimo-xbean-reflect" ,java-geronimo-xbean-reflect)
-         ("java-sisu-build-api" ,java-sisu-build-api)
+         ("java-plexus-build-api" ,java-plexus-build-api)
          ("java-modello-plugins-java" ,java-modello-plugins-java)
          ("java-modello-plugins-xml" ,java-modello-plugins-xml)
          ("java-modello-plugins-xpp3" ,java-modello-plugins-xpp3)
@@ -1774,7 +1774,7 @@ artifactId=maven-core" ,(package-version maven-core-bootstrap))))
     (native-inputs
      `(("java-modello-core" ,java-modello-core)
        ("java-geronimo-xbean-reflect" ,java-geronimo-xbean-reflect)
-       ("java-sisu-build-api" ,java-sisu-build-api)
+       ("java-plexus-build-api" ,java-plexus-build-api)
        ("java-eclipse-sisu-plexus" ,java-eclipse-sisu-plexus)
        ("java-eclipse-sisu-inject" ,java-eclipse-sisu-inject)
        ("java-cglib" ,java-cglib)
@@ -1963,7 +1963,7 @@ logging support.")))
        ("java-plexus-component-annotations" ,java-plexus-component-annotations)
        ("java-plexus-classworlds" ,java-plexus-classworlds)
        ("java-geronimo-xbean-reflect" ,java-geronimo-xbean-reflect)
-       ("java-sisu-build-api" ,java-sisu-build-api)
+       ("java-plexus-build-api" ,java-plexus-build-api)
        ("java-eclipse-sisu-plexus" ,java-eclipse-sisu-plexus)
        ("java-exclispe-sisu-inject" ,java-eclipse-sisu-inject)
        ("java-javax-inject" ,java-javax-inject)
@@ -2967,7 +2967,7 @@ build are stored.  By default, it is located within the user's home directory
      `(#:jar-name "maven-filtering.jar"
        #:source-dir "src/main/java"
        #:test-dir "src/test"
-       ;; this test comes from sisu-build-api, not this package
+       ;; this test comes from plexus-build-api, not this package
        #:test-exclude (list "**/IncrementalResourceFilteringTest.java"
                             "**/Abstract*.java")
        #:phases
@@ -2987,7 +2987,7 @@ build are stored.  By default, it is located within the user's home directory
              #t))
          (add-before 'check 'decompress-tests
            (lambda* (#:key inputs #:allow-other-keys)
-             (let* ((build-api-source (assoc-ref inputs "java-sisu-build-api-origin"))
+             (let* ((build-api-source (assoc-ref inputs "java-plexus-build-api-origin"))
                     (classes (string-append build-api-source "/src/test/java")))
                (copy-recursively classes "src/test/"))
              #t))
@@ -3006,7 +3006,7 @@ build are stored.  By default, it is located within the user's home directory
            maven-shared-utils
            java-plexus-utils-3.2.1
            java-plexus-interpolation
-           java-sisu-build-api
+           java-plexus-build-api
            maven-parent-pom-30))
     (inputs
      (list java-jsr305))
@@ -3017,7 +3017,7 @@ build are stored.  By default, it is located within the user's home directory
        ("java-mockito" ,java-mockito-1)
        ("java-objenesis" ,java-objenesis)
        ("java-plexus-component-metadata" ,java-plexus-component-metadata)
-       ("java-sisu-build-api-origin" ,(package-source java-sisu-build-api))))
+       ("java-plexus-build-api-origin" ,(package-source java-plexus-build-api))))
     (home-page "https://maven.apache.org/shared/maven-filtering")
     (synopsis "Shared component for all plugins that needs to filter resources")
     (description "This component provides an API to filter resources in Maven
