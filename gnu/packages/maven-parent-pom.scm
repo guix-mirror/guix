@@ -586,3 +586,32 @@ components.")
               (sha256
                (base32
                 "0cqa072fz55j5xyvixqv8vbd7jsbhb1cd14bzjvm0hbv2wpd9npf"))))))
+
+(define-public java-jvnet-parent-pom-3
+  (hidden-package
+    (package
+      (name "java-jvnet-parent-pom-3")
+      (version "3")
+      (source (origin
+                (method url-fetch)
+                (uri (string-append "https://repo1.maven.org/maven2/net/java/"
+                                    "jvnet-parent/" version "/jvnet-parent-"
+                                    version ".pom"))
+                (sha256
+                 (base32
+                  "0nj7958drckwf634cw9gmwgmdi302bya7bas16bbzp9rzag7ix9h"))))
+      (build-system ant-build-system)
+      (arguments
+       (list
+         #:tests? #f
+         #:phases
+         #~(modify-phases %standard-phases
+             (delete 'unpack)
+             (delete 'configure)
+             (delete 'build)
+             (replace 'install
+               (install-pom-file #$(package-source this-package))))))
+      (home-page "https://mvnrepository.com/artifact/net.java/jvnet-parent")
+      (synopsis "java.net parent pom")
+      (description "This package contains the java.net parent pom file.")
+      (license license:asl2.0))))
