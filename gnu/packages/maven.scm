@@ -2682,7 +2682,7 @@ Maven project dependencies.")
 (define-public maven-common-artifact-filters
   (package
     (name "maven-common-artifact-filters")
-    (version "3.1.0")
+    (version "3.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://apache/maven/shared/"
@@ -2690,7 +2690,7 @@ Maven project dependencies.")
                                   "-source-release.zip"))
               (sha256
                (base32
-                "1cl1qk4r0gp62bjzfm7lml9raz1my2kd4yf0ci0lnfsn0h5qivnb"))))
+                "1mr92s4zz6gf028wiskjg8rd1znxzdnmskg42ac55ifg9v1p1884"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "maven-common-artifact-filters.jar"
@@ -2698,14 +2698,12 @@ Maven project dependencies.")
        #:tests? #f; require maven-plugin-testing-harness, which requires maven 3.2.
        #:phases
        (modify-phases %standard-phases
-         (add-before 'build 'remove-sisu
+         (add-before 'build 'fix-aether
            (lambda _
-             ;; Replace sisu with an existing dependency, to prevent a failure
-             ;; when rewritting dependency versions
              (substitute* "pom.xml"
-               (("sisu-inject-plexus") "maven-plugin-api")
-               (("org.sonatype.sisu") "org.apache.maven"))
-             #t))
+               (("eclipse.aether") "sonatype.aether"))
+             (substitute* "src/main/java/org/apache/maven/shared/artifact/filter/collection/ArtifactTransitivityFilter.java"
+               (("eclipse") "sonatype"))))
          (replace 'install
            (install-from-pom "pom.xml")))))
     (propagated-inputs
@@ -2715,6 +2713,7 @@ Maven project dependencies.")
            maven-3.0-plugin-api
            maven-shared-utils
            maven-parent-pom-33
+           java-eclipse-sisu-plexus
            java-sonatype-aether-api
            java-sonatype-aether-util))
     (inputs
@@ -2726,6 +2725,29 @@ Maven project dependencies.")
     (description "This package provides a tree-based API for resolution of
 Maven project dependencies.")
     (license license:asl2.0)))
+
+(define-public maven-common-artifact-filters-3.1.0
+  (package
+    (inherit maven-common-artifact-filters)
+    (version "3.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://apache/maven/shared/"
+                                  "maven-common-artifact-filters-" version
+                                  "-source-release.zip"))
+              (sha256
+               (base32
+                "1cl1qk4r0gp62bjzfm7lml9raz1my2kd4yf0ci0lnfsn0h5qivnb"))))
+    (arguments
+      (substitute-keyword-arguments (package-arguments maven-common-artifact-filters)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (delete 'fix-aether)
+           (add-before 'build 'remove-sisu
+             (lambda _
+               (substitute* "pom.xml"
+                 (("sisu-inject-plexus") "maven-plugin-api")
+                 (("org.sonatype.sisu") "org.apache.maven"))))))))))
 
 (define-public maven-enforcer-api
   (package
@@ -2878,7 +2900,7 @@ Maven project dependencies.")
      (list java-commons-codec
            maven-3.0-artifact
            maven-3.0-core
-           maven-common-artifact-filters
+           maven-common-artifact-filters-3.1.0
            java-plexus-component-annotations
            java-plexus-utils
            java-slf4j-api
