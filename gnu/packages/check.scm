@@ -2255,7 +2255,7 @@ statements in the module it tests.")
 (define-public python-pylint
   (package
     (name "python-pylint")
-    (version "2.9.6")
+    (version "2.12.2")
     (source
      (origin
        (method git-fetch)
@@ -2264,15 +2264,31 @@ statements in the module it tests.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "15yw69v1cj6zkndk60c2g0dgl0khh8bfm1lrwhjffpdjfc7nkc9a"))))
+        (base32 "0spmy7j1vvh55shzgma80q61y0d1cj45dcgslb4g5w3y602miq5i"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               ;; The unused but collected 'primer'-related test files require
+               ;; the extraneous 'git' Python module; remove them.
+               (delete-file "tests/primer/test_primer_external.py")
+               (delete-file "tests/testutils/test_package_to_lint.py")
+               (setenv "HOME" "/tmp")
+               (invoke "pytest" "-k" "test_functional")))))))
     (native-inputs
-     (list python-pytest python-pytest-benchmark python-pytest-runner))
+     (list python-pytest))
     (propagated-inputs
-     (list python-astroid python-isort python-mccabe python-toml))
+     (list python-astroid
+           python-isort
+           python-mccabe
+           python-platformdirs
+           python-toml
+           python-typing-extensions))
     (home-page "https://github.com/PyCQA/pylint")
-    (synopsis "Python source code analyzer which looks for coding standard
-errors")
+    (synopsis "Advanced Python code static checker")
     (description "Pylint is a Python source code analyzer which looks
 for programming errors, helps enforcing a coding standard and sniffs
 for some code smells (as defined in Martin Fowler's Refactoring book).
