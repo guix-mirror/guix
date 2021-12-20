@@ -565,6 +565,23 @@ ease usage of the repository system.")))
     (description "This package contains the API for the maven repository system.")
     (license license:asl2.0)))
 
+(define-public java-sonatype-aether-spi-1.13
+  (package
+    (inherit java-sonatype-aether-api-1.13)
+    (name "java-sonatype-aether-spi")
+    (arguments
+     `(#:jar-name "aether-spi.jar"
+       #:source-dir "aether-spi/src/main/java"
+       #:tests? #f; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install (install-from-pom "aether-spi/pom.xml")))))
+    (propagated-inputs
+     `(("java-sonatype-aether-api" ,java-sonatype-aether-api-1.13)))
+    (synopsis "Maven repository system SPI")
+    (description "This package contains the service provider interface (SPI)
+for repository system implementations and repository connectors.")))
+
 ;; Again, this old version is required by some maven plugins
 (define-public java-eclipse-aether-api
   (package
