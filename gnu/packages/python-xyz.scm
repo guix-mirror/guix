@@ -18096,7 +18096,7 @@ multitouch applications.")
 (define-public python-astroid
   (package
     (name "python-astroid")
-    (version "2.6.6")
+    (version "2.9.0")
     (source
      (origin
        (method git-fetch)
@@ -18105,12 +18105,12 @@ multitouch applications.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1amzf996inwmh4r3mlpzmch60xs6lrg86vppfnwl1y0l8r0y7zxh"))))
+        (base32 "19iiys4233cicpm48fd7lrkm31kk47qiv44wvk952rqbcn4rd2dh"))))
     (build-system python-build-system)
     (propagated-inputs
      (list python-lazy-object-proxy python-wrapt))
     (native-inputs
-     (list python-pytest python-pytest-runner))
+     (list python-pytest python-pytest-runner python-typing-extensions))
     (home-page "https://github.com/PyCQA/astroid")
     (synopsis "Common base representation of python source code for pylint and
      other projects")
@@ -18123,43 +18123,7 @@ multitouch applications.")
      additional methods and attributes for different usages.  They include some
      support for static inference and local name scopes.  Furthermore, astroid
      builds partial trees by inspecting living objects.")
-    (license license:lgpl2.1+)
-    (properties `((python2-variant . ,(delay python2-astroid))))))
-
-(define-public python2-astroid
-  (let ((base (package-with-python2
-               (strip-python2-variant python-astroid))))
-    (package (inherit base)
-    ;; Version 2.x removes python2 support.
-    (version "1.6.5")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "astroid" version))
-       (sha256
-        (base32
-         "0fir4b67sm7shcacah9n61pvq313m523jb4q80sycrh3p8nmi6zw"))))
-    (arguments
-     `(#:python ,python-2
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'remove-spurious-test
-           (lambda _
-             ;; https://github.com/PyCQA/astroid/issues/276
-             (delete-file "astroid/tests/unittest_brain.py")))
-         (replace 'check
-           (lambda* (#:key tests? #:allow-other-keys)
-             (when tests?
-               (invoke "python" "-m" "unittest" "discover"
-                       "-p" "unittest*.py")))))))
-    (native-inputs `())
-    (propagated-inputs
-     (list python2-backports-functools-lru-cache
-           python2-enum34
-           python2-lazy-object-proxy
-           python2-singledispatch
-           python2-six
-           python2-wrapt)))))
+    (license license:lgpl2.1+)))
 
 (define-public python-isbnlib
   (package
