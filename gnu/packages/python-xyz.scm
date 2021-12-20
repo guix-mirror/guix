@@ -4966,14 +4966,14 @@ Server (PLS).")
 (define-public python-lsp-server
   (package
     (name "python-lsp-server")
-    (version "1.3.1")
+    (version "1.3.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-lsp-server" version))
        (sha256
         (base32
-         "15075a5irjxh55wcdf25hllz9c42byxc4770cmwgb480k1dm8scq"))))
+         "0h6wxzmm6qjfwkkn3mnzn1fpmcp23fpbk74bi8p540q1nzccqj0v"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -5010,7 +5010,7 @@ Server (PLS).")
            python-pytest
            python-pytest-cov
            python-versioneer))
-    (home-page "https://github.com/palantir/python-language-server")
+    (home-page "https://github.com/python-lsp/python-lsp-server")
     (synopsis "Python implementation of the Language Server Protocol")
     (description
 "The Python Language Server @command{pylsp} is an implementation of the
