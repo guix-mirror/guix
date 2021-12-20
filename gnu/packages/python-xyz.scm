@@ -20895,17 +20895,41 @@ and other tools.")
 (define-public python-typing-extensions
   (package
     (name "python-typing-extensions")
-    (version "3.7.4.3")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "typing_extensions" version))
-       (sha256
-        (base32
-         "0356ljrrplm917dqgpn8wjkw6j3mpp916gwxas7jhc3xc4xhgm4r"))))
+    (version "4.0.1")
+    (source (origin
+              ;; The test script is missing from the PyPI archive.
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/python/typing")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0a35fh5wk9s538x0w3dz95y0avnhd2srzyv9s1a372711n8hdl4p"))))
     (build-system python-build-system)
-    (home-page
-     "https://github.com/python/typing/blob/master/typing_extensions/README.rst")
+    (arguments
+     (list
+      #:tests? #f       ;requires Python's test module, not available in Guix
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'enter-source-directory
+            (lambda _
+              (chdir "typing_extensions")))
+          ;; XXX: PEP 517 manual build copied from python-isort.
+          (replace 'build
+            (lambda _
+              (invoke "python" "-m" "build" "--wheel" "--no-isolation" ".")))
+          (replace 'check
+            (lambda* (#:key tests? #:allow-other-keys)
+              (when tests?
+                (invoke "python" "src/test_typing_extensions.py"))))
+          (replace 'install
+            (lambda _
+              (let ((whl (car (find-files "dist" "\\.whl$"))))
+                (invoke "pip" "--no-cache-dir" "--no-input"
+                        "install" "--no-deps" "--prefix" #$output whl)))))))
+    (native-inputs (list python-pypa-build python-flit-core))
+    (home-page "https://github.com/python/typing/typing_extensions")
     (synopsis "Experimental type hints for Python")
     (description
      "The typing_extensions module contains additional @code{typing} hints not
