@@ -287,6 +287,19 @@ SOURCE has a 'meson.build' file."
       #~(begin
           (use-modules #$@(sexp->gexp modules))
 
+          (define %build-host-inputs
+            #+(input-tuples->gexp build-inputs))
+
+          (define %build-target-inputs
+            (append #$(input-tuples->gexp host-inputs)
+                    #+(input-tuples->gexp target-inputs)))
+
+          (define %build-inputs
+            (append %build-host-inputs %build-target-inputs))
+
+          (define %outputs
+            #$(outputs->gexp outputs))
+
           (define build-phases
             #$(let ((phases (if (pair? phases) (sexp->gexp phases) phases)))
                 (if glib-or-gtk?
