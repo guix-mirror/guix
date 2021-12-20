@@ -3222,6 +3222,7 @@ current/manpages/docbook.xsl")
        ("docbook-xml" ,docbook-xml-4.2)
        ("docbook-xsl" ,docbook-xsl)
        ("glib:bin" ,glib "bin")
+       ("python" ,python)
        ("python-pygobject" ,python-pygobject)
        ("gobject-introspection" ,gobject-introspection)
 
