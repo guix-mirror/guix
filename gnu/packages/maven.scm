@@ -2945,7 +2945,7 @@ Maven project dependencies.")
 (define-public maven-artifact-transfer
   (package
     (name "maven-artifact-transfer")
-    (version "0.12.0")
+    (version "0.13.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://apache/maven/shared/"
@@ -2953,7 +2953,7 @@ Maven project dependencies.")
                                   "-source-release.zip"))
               (sha256
                (base32
-                "0mkdjr3wnvaxqaq68sy7h4mqlq3xgwwp5s2anj5vbxfy4bsc1ivj"))))
+                "0xl7lkksljacrhmvwf924zb6h0h5zw9494jaz9cz4hll0lrhlpz6"))))
     (build-system ant-build-system)
     (arguments
      `(#:tests? #f; require mockito 2
