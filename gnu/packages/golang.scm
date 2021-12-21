@@ -685,6 +685,29 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                   (string-append net-base "/etc/services")))
                (substitute* "src/time/zoneinfo_unix.go"
                  (("/usr/share/zoneinfo/") tzdata-path)))))
+         ;; Keep this synchronized with the package inputs.
+         ,@(if (target-arm?)
+             '((add-after 'unpack 'patch-gcc:lib
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   (let* ((gcclib (string-append (assoc-ref inputs "gcc:lib") "/lib")))
+                     ;; Add libgcc to runpath
+                     (substitute* "src/cmd/link/internal/ld/lib.go"
+                       (("!rpath.set") "true"))
+                     (substitute* "src/cmd/go/internal/work/gccgo.go"
+                       (("cgoldflags := \\[\\]string\\{\\}")
+                        (string-append "cgoldflags := []string{"
+                                       "\"-Wl,-rpath=" gcclib "\""
+                                       "}"))
+                       (("\"-lgcc_s\", ")
+                        (string-append
+                         "\"-Wl,-rpath=" gcclib "\", \"-lgcc_s\", ")))
+                     (substitute* "src/cmd/go/internal/work/gc.go"
+                       (("ldflags = setextld\\(ldflags, compiler\\)")
+                        (string-append
+                         "ldflags = setextld(ldflags, compiler)\n"
+                         "ldflags = append(ldflags, \"-r\")\n"
+                         "ldflags = append(ldflags, \"" gcclib "\")\n")))))))
+             '())
          (add-after 'patch-source 'disable-failing-tests
            (lambda _
              ;; Disable failing tests: these tests attempt to access
@@ -796,7 +819,9 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                   (install-file file (string-append out "/share/doc/go")))
                 '("AUTHORS" "CONTRIBUTORS" "CONTRIBUTING.md" "PATENTS"
                   "README.md" "SECURITY.md"))))))))
-    (inputs (alist-delete "gcc:lib" (package-inputs go-1.16)))
+    (inputs (if (not (target-arm?))
+              (alist-delete "gcc:lib" (package-inputs go-1.16))
+              (package-inputs go-1.16)))
     (native-inputs
      (if (not (member (%current-system) (package-supported-systems go-1.4)))
        ;; gccgo-10.4, 11.3 and lower has a bug which causes bootstrapping
