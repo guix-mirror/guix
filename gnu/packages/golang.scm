@@ -798,11 +798,11 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                   "README.md" "SECURITY.md"))))))))
     (inputs (alist-delete "gcc:lib" (package-inputs go-1.16)))
     (native-inputs
-     `(,@(if (not (member (%current-system) (package-supported-systems go-1.4)))
-           ;; gccgo-10.4, 11.3 and lower has a bug which causes bootstrapping
-           ;; to fail. Use go-1.16 until we have a newer version available.
-           (alist-replace "go" (list go-1.16) (package-native-inputs go-1.16))
-           (package-native-inputs go-1.16))))))
+     (if (not (member (%current-system) (package-supported-systems go-1.4)))
+       ;; gccgo-10.4, 11.3 and lower has a bug which causes bootstrapping
+       ;; to fail. Use go-1.16 until we have a newer version available.
+       (alist-replace "go" (list go-1.16) (package-native-inputs go-1.16))
+       (package-native-inputs go-1.16)))))
 
 (define-public go go-1.14)
 
