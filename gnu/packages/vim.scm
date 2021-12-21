@@ -1115,6 +1115,36 @@ quotes, XML tags, and more.  The plugin provides mappings to easily delete,
 change and add such surroundings in pairs.")
     (license license:vim)))
 
+(define-public vim-gnupg
+  (package
+    (name "vim-gnupg")
+    (version "2.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/jamessan/vim-gnupg/releases/"
+                           "download/v" version
+                           "/vim-gnupg-v" version ".tar.gz"))
+       (sha256
+        (base32 "02w8lgyyh7wgxysvmmcf9ja5c06vrbyh3alzvv97x8cfhrp0skn7"))))
+    (build-system copy-build-system)
+    (arguments
+     '(#:install-plan
+       '(("autoload" "share/vim/vimfiles/")
+         ("doc" "share/vim/vimfiles/")
+         ("plugin" "share/vim/vimfiles/"))))
+    (home-page "https://www.vim.org/scripts/script.php?script_id=3645")
+    (synopsis "Vim plugin for transparent editing of gpg encrypted files")
+    (description
+     "This script implements transparent editing of gpg encrypted files.  The
+filename must have a @code{.gpg}, @code{.pgp} or @code{.asc} suffix.  When
+opening such a file the content is decrypted, and the content will be encrypted
+to all recipients before it is written.  This script turns off viminfo,
+swapfile, and undofile when editing encrypted files to increase security.")
+    (properties
+     '((release-monitoring-url . "https://github.com/jamessan/vim-gnupg/releases")))
+    (license license:gpl2+)))
+
 (define-public vim-ctrlp
   (package
     (name "vim-ctrlp")
