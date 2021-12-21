@@ -480,8 +480,8 @@
   #t
   (with-fresh-gnupg-setup (list %ed25519-public-key-file
                                 %ed25519-secret-key-file
-                                %ed25519bis-public-key-file
-                                %ed25519bis-secret-key-file)
+                                %ed25519-2-public-key-file
+                                %ed25519-2-secret-key-file)
     (with-temporary-git-repository directory
         `((add ".guix-channel"
                ,(object->string
@@ -507,7 +507,7 @@
                          (commit-id-string commit1)
                          (openpgp-public-key-fingerprint
                           (read-openpgp-packet
-                           %ed25519bis-public-key-file)))) ;different key
+                           %ed25519-2-public-key-file)))) ;different key
                (channel (channel (name 'example)
                                  (url (string-append "file://" directory))
                                  (introduction intro))))
@@ -519,7 +519,7 @@
                                    (oid->string (commit-id commit1))
                                    (key-fingerprint %ed25519-public-key-file)
                                    (key-fingerprint
-                                    %ed25519bis-public-key-file))))))
+                                    %ed25519-2-public-key-file))))))
             (authenticate-channel channel directory
                                   (commit-id-string commit2)
                                   #:keyring-reference-prefix "")
@@ -530,8 +530,8 @@
   #t
   (with-fresh-gnupg-setup (list %ed25519-public-key-file
                                 %ed25519-secret-key-file
-                                %ed25519bis-public-key-file
-                                %ed25519bis-secret-key-file)
+                                %ed25519-2-public-key-file
+                                %ed25519-2-secret-key-file)
     (with-temporary-git-repository directory
         `((add ".guix-channel"
                ,(object->string
@@ -552,12 +552,12 @@
                   (signer ,(key-fingerprint %ed25519-public-key-file)))
           (add "c.txt" "C")
           (commit "third commit"
-                  (signer ,(key-fingerprint %ed25519bis-public-key-file)))
+                  (signer ,(key-fingerprint %ed25519-2-public-key-file)))
           (branch "channel-keyring")
           (checkout "channel-keyring")
           (add "signer.key" ,(call-with-input-file %ed25519-public-key-file
                                get-string-all))
-          (add "other.key" ,(call-with-input-file %ed25519bis-public-key-file
+          (add "other.key" ,(call-with-input-file %ed25519-2-public-key-file
                               get-string-all))
           (commit "keyring commit")
           (checkout "master"))
@@ -588,7 +588,7 @@
                                  (unauthorized-commit-error-signing-key c))
                                 (openpgp-public-key-fingerprint
                                  (read-openpgp-packet
-                                  %ed25519bis-public-key-file))))))
+                                  %ed25519-2-public-key-file))))))
                  (authenticate-channel channel directory
                                        (commit-id-string commit3)
                                        #:keyring-reference-prefix "")

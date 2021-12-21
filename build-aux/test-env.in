@@ -73,9 +73,9 @@ then
 	# Copy the keys so that the secret key has the right permissions (the
 	# daemon errors out when this is not the case.)
 	mkdir -p "$GUIX_CONFIGURATION_DIRECTORY"
-	cp "@abs_top_srcdir@/tests/signing-key.sec"	\
-	    "@abs_top_srcdir@/tests/signing-key.pub"	\
-	    "$GUIX_CONFIGURATION_DIRECTORY"
+	cp "@abs_top_srcdir@/tests/keys/signing-key.sec"	\
+	   "@abs_top_srcdir@/tests/keys/signing-key.pub"	\
+	   "$GUIX_CONFIGURATION_DIRECTORY"
 	chmod 400 "$GUIX_CONFIGURATION_DIRECTORY/signing-key.sec"
     fi
 

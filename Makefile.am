@@ -653,16 +653,18 @@ EXTRA_DIST +=						\
   build-aux/update-guix-package.scm			\
   build-aux/update-NEWS.scm				\
   tests/test.drv					\
-  tests/signing-key.pub					\
-  tests/signing-key.sec					\
   tests/cve-sample.json					\
-  tests/civodul.key					\
-  tests/rsa.key						\
-  tests/dsa.key						\
-  tests/ed25519.key					\
-  tests/ed25519.sec					\
-  tests/ed25519bis.key					\
-  tests/ed25519bis.sec					\
+  tests/keys/signing-key.pub				\
+  tests/keys/signing-key.sec				\
+  tests/keys/civodul.pub				\
+  tests/keys/rsa.pub					\
+  tests/keys/dsa.pub					\
+  tests/keys/ed25519.pub				\
+  tests/keys/ed25519.sec				\
+  tests/keys/ed25519-2.pub				\
+  tests/keys/ed25519-2.sec				\
+  tests/keys/ed25519-3.pub				\
+  tests/keys/ed25519-3.sec				\
   build-aux/config.rpath				\
   bootstrap						\
   doc/build.scm						\

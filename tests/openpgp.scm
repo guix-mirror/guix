@@ -59,18 +59,22 @@ vBSFjNSiVHsuAA==
 (define %civodul-fingerprint
   "3CE4 6455 8A84 FDC6 9DB4  0CFB 090B 1199 3D9A EBB5")
 
-(define %civodul-key-id #x090B11993D9AEBB5)       ;civodul.key
+(define %civodul-key-id #x090B11993D9AEBB5)       ;civodul.pub
 
-;; Test keys.  They were generated in a container along these lines:
-;;    guix environment -CP --ad-hoc gnupg pinentry
-;; then, within the container:
-;;    mkdir ~/.gnupg
-;;    echo pinentry-program ~/.guix-profile/bin/pinentry-tty > ~/.gnupg/gpg-agent.conf
-;;    gpg --quick-gen-key '<ludo+test-rsa@chbouib.org>' rsa
-;; or similar.
-(define %rsa-key-id      #xAE25DA2A70DEED59)      ;rsa.key
-(define %dsa-key-id      #x587918047BE8BD2C)      ;dsa.key
-(define %ed25519-key-id  #x771F49CBFAAE072D)      ;ed25519.key
+#|
+Test keys in ./tests/keys.  They were generated in a container along these lines:
+  guix environment -CP --ad-hoc gnupg pinentry coreutils
+then, within the container:
+  mkdir ~/.gnupg && chmod -R og-rwx ~/.gnupg
+  gpg --batch --passphrase '' --quick-gen-key '<example@example.com>' ed25519
+  gpg --armor --export example@example.com
+  gpg --armor --export-secret-key example@example.com
+  # echo pinentry-program ~/.guix-profile/bin/pinentry-curses > ~/.gnupg/gpg-agent.conf
+or similar.
+|#
+(define %rsa-key-id      #xAE25DA2A70DEED59)      ;rsa.pub
+(define %dsa-key-id      #x587918047BE8BD2C)      ;dsa.pub
+(define %ed25519-key-id  #x771F49CBFAAE072D)      ;ed25519.pub
 
 (define %rsa-key-fingerprint
   (base16-string->bytevector
@@ -168,7 +172,7 @@ Pz7oopeN72xgggYUNT37ezqN3MeCqw0=
   (not (port-ascii-armored? (open-bytevector-input-port %binary-sample))))
 
 (test-assert "get-openpgp-keyring"
-  (let* ((key (search-path %load-path "tests/civodul.key"))
+  (let* ((key (search-path %load-path "tests/keys/civodul.pub"))
          (keyring (get-openpgp-keyring
                    (open-bytevector-input-port
                     (call-with-input-file key read-radix-64)))))
@@ -228,8 +232,10 @@ Pz7oopeN72xgggYUNT37ezqN3MeCqw0=
                          (verify-openpgp-signature signature keyring
                                                    (open-input-string "Hello!\n"))))
              (list status (openpgp-public-key-id key)))))
-       (list "tests/rsa.key" "tests/dsa.key"
-             "tests/ed25519.key" "tests/ed25519.key" "tests/ed25519.key")
+       (list "tests/keys/rsa.pub" "tests/keys/dsa.pub"
+             "tests/keys/ed25519.pub"
+             "tests/keys/ed25519.pub"
+             "tests/keys/ed25519.pub")
        (list %hello-signature/rsa %hello-signature/dsa
              %hello-signature/ed25519/sha256
              %hello-signature/ed25519/sha512
@@ -248,9 +254,9 @@ Pz7oopeN72xgggYUNT37ezqN3MeCqw0=
                              (call-with-input-file key read-radix-64))
                             keyring)))
                        %empty-keyring
-                       '("tests/rsa.key" "tests/dsa.key"
-                         "tests/ed25519.key" "tests/ed25519.key"
-                         "tests/ed25519.key"))))
+                       '("tests/keys/rsa.pub" "tests/keys/dsa.pub"
+                         "tests/keys/ed25519.pub" "tests/keys/ed25519.pub"
+                         "tests/keys/ed25519.pub"))))
     (map (lambda (signature)
            (let ((signature (string->openpgp-packet signature)))
              (let-values (((status key)

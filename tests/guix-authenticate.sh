@@ -28,7 +28,7 @@ rm -f "$sig" "$hash"
 
 trap 'rm -f "$sig" "$hash"' EXIT
 
-key="$abs_top_srcdir/tests/signing-key.sec"
+key="$abs_top_srcdir/tests/keys/signing-key.sec"
 key_len="`echo -n $key | wc -c`"
 
 # A hexadecimal string as long as a sha256 hash.
@@ -67,7 +67,7 @@ test "$code" -ne 0
 # encoded independently of the current locale: <https://bugs.gnu.org/43421>.
 hash="636166e9636166e9636166e9636166e9636166e9636166e9636166e9636166e9"
 latin1_cafe="caf$(printf '\351')"
-echo "sign 21:tests/signing-key.sec 64:$hash" | guix authenticate \
+echo "sign 26:tests/keys/signing-key.sec 64:$hash" | guix authenticate \
     | LC_ALL=C grep "hash sha256 \"$latin1_cafe"
 
 # Test for <http://bugs.gnu.org/17312>: make sure 'guix authenticate' produces

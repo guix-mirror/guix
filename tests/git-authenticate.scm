@@ -161,14 +161,14 @@
 (test-assert "signed commits, .guix-authorizations, unauthorized merge"
   (with-fresh-gnupg-setup (list %ed25519-public-key-file
                                 %ed25519-secret-key-file
-                                %ed25519bis-public-key-file
-                                %ed25519bis-secret-key-file)
+                                %ed25519-2-public-key-file
+                                %ed25519-2-secret-key-file)
     (with-temporary-git-repository directory
         `((add "signer1.key"
                ,(call-with-input-file %ed25519-public-key-file
                   get-string-all))
           (add "signer2.key"
-               ,(call-with-input-file %ed25519bis-public-key-file
+               ,(call-with-input-file %ed25519-2-public-key-file
                   get-string-all))
           (add ".guix-authorizations"
                ,(object->string
@@ -184,7 +184,7 @@
           (checkout "devel")
           (add "devel/1.txt" "1")
           (commit "first devel commit"
-                  (signer ,(key-fingerprint %ed25519bis-public-key-file)))
+                  (signer ,(key-fingerprint %ed25519-2-public-key-file)))
           (checkout "master")
           (add "b.txt" "B")
           (commit "second commit"
@@ -203,7 +203,7 @@
                   (openpgp-public-key-fingerprint
                    (unauthorized-commit-error-signing-key c))
                   (openpgp-public-key-fingerprint
-                   (read-openpgp-packet %ed25519bis-public-key-file)))))
+                   (read-openpgp-packet %ed25519-2-public-key-file)))))
 
           (and (authenticate-commits repository (list master1 master2)
                                      #:keyring-reference "master")
@@ -230,14 +230,14 @@
 (test-assert "signed commits, .guix-authorizations, authorized merge"
   (with-fresh-gnupg-setup (list %ed25519-public-key-file
                                 %ed25519-secret-key-file
-                                %ed25519bis-public-key-file
-                                %ed25519bis-secret-key-file)
+                                %ed25519-2-public-key-file
+                                %ed25519-2-secret-key-file)
     (with-temporary-git-repository directory
         `((add "signer1.key"
                ,(call-with-input-file %ed25519-public-key-file
                   get-string-all))
           (add "signer2.key"
-               ,(call-with-input-file %ed25519bis-public-key-file
+               ,(call-with-input-file %ed25519-2-public-key-file
                   get-string-all))
           (add ".guix-authorizations"
                ,(object->string
@@ -258,12 +258,12 @@
                                       %ed25519-public-key-file)
                                     (name "Alice"))
                                    (,(key-fingerprint
-                                      %ed25519bis-public-key-file))))))
+                                      %ed25519-2-public-key-file))))))
           (commit "first devel commit"
                   (signer ,(key-fingerprint %ed25519-public-key-file)))
           (add "devel/2.txt" "2")
           (commit "second devel commit"
-                  (signer ,(key-fingerprint %ed25519bis-public-key-file)))
+                  (signer ,(key-fingerprint %ed25519-2-public-key-file)))
           (checkout "master")
           (add "b.txt" "B")
           (commit "second commit"
@@ -273,7 +273,7 @@
           ;; After the merge, the second signer is authorized.
           (add "c.txt" "C")
           (commit "third commit"
-                  (signer ,(key-fingerprint %ed25519bis-public-key-file))))
+                  (signer ,(key-fingerprint %ed25519-2-public-key-file))))
       (with-repository directory repository
         (let ((master1 (find-commit repository "first commit"))
               (master2 (find-commit repository "second commit"))
@@ -328,4 +328,3 @@
                  'failed)))))))
 
 (test-end "git-authenticate")
-
