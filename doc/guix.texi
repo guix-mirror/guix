@@ -18059,7 +18059,17 @@ The value for this service type is a
 @command{rsync-configuration} record as in this example:
 
 @lisp
-(service rsync-service-type)
+;; Export two directories over rsync.  By default rsync listens on
+;; all the network interfaces.
+(service rsync-service-type
+         (rsync-configuration
+           (modules (list (rsync-module
+                            (name "music")
+                            (file-name "/srv/zik")
+                            (read-only? #f))
+                          (rsync-module
+                            (name "movies")
+                            (file-name "/home/charlie/movies"))))))
 @end lisp
 
 See below for details about @code{rsync-configuration}.
@@ -18090,34 +18100,55 @@ Name of the file where @command{rsync} writes its lock file.
 @item @code{log-file} (default: @code{"/var/log/rsyncd.log"})
 Name of the file where @command{rsync} writes its log file.
 
-@item @code{use-chroot?} (default: @var{#t})
-Whether to use chroot for @command{rsync} shared directory.
-
-@item @code{share-path} (default: @file{/srv/rsync})
-Location of the @command{rsync} shared directory.
-
-@item @code{share-comment} (default: @code{"Rsync share"})
-Comment of the @command{rsync} shared directory.
-
-@item @code{read-only?} (default: @var{#f})
-Read-write permissions to shared directory.
-
-@item @code{timeout} (default: @code{300})
-I/O timeout in seconds.
-
-@item @code{user} (default: @var{"root"})
+@item @code{user} (default: @code{"root"})
 Owner of the @code{rsync} process.
 
-@item @code{group} (default: @var{"root"})
+@item @code{group} (default: @code{"root"})
 Group of the @code{rsync} process.
 
-@item @code{uid} (default: @var{"rsyncd"})
+@item @code{uid} (default: @code{"rsyncd"})
 User name or user ID that file transfers to and from that module should take
 place as when the daemon was run as @code{root}.
 
-@item @code{gid} (default: @var{"rsyncd"})
+@item @code{gid} (default: @code{"rsyncd"})
 Group name or group ID that will be used when accessing the module.
 
+@item @code{modules} (default: @code{%default-modules})
+List of ``modules''---i.e., directories exported over rsync.  Each
+element must be a @code{rsync-module} record, as described below.
+@end table
+@end deftp
+
+@deftp {Data Type} rsync-module
+This is the data type for rsync ``modules''.  A module is a directory
+exported over the rsync protocol.  The available fields are as follows:
+
+@table @asis
+@item @code{name}
+The module name.  This is the name that shows up in URLs.  For example,
+if the module is called @code{music}, the corresponding URL will be
+@code{rsync://host.example.org/music}.
+
+@item @code{file-name}
+Name of the directory being exported.
+
+@item @code{comment} (default: @code{""})
+Comment associated with the module.  Client user interfaces may display
+it when they obtain the list of available modules.
+
+@item @code{read-only?} (default: @code{#t})
+Whether or not client will be able to upload files.  If this is false,
+the uploads will be authorized if permissions on the daemon side permit
+it.
+
+@item @code{chroot?} (default: @code{#t})
+When this is true, the rsync daemon changes root to the module's
+directory before starting file transfers with the client.  This improves
+security, but requires rsync to run as root.
+
+@item @code{timeout} (default: @code{300})
+Idle time in seconds after which the daemon closes a connection with the
+client.
 @end table
 @end deftp
 
