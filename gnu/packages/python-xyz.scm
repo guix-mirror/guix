@@ -10503,6 +10503,31 @@ add functionality and customization to your projects with their own plugins.")
 (define-public python2-straight-plugin
   (package-with-python2 python-straight-plugin))
 
+(define-public python-pysendfile
+  (package
+    (name "python-pysendfile")
+    (version "2.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pysendfile" version))
+       (sha256
+        (base32 "05qf0m32isflln1zjgxlpw0wf469lj86vdwwqyizp1h94x5l22ji"))))
+    (build-system python-build-system)
+    (arguments
+     (list
+      #:phases #~(modify-phases %standard-phases
+                   (replace 'check
+                     (lambda* (#:key tests? #:allow-other-keys)
+                       (when tests?
+                         (setenv "HOME" "/tmp")
+                         (invoke "make" "test")))))))
+    (home-page "https://github.com/giampaolo/pysendfile")
+    (synopsis "Python interface to sendfile(2)")
+    (description "The @{pysendfile} Python library provides an interface to
+the @code{sendfile(2)} system call.")
+    (license license:expat)))
+
 (define-public python-fonttools
   (package
     (name "python-fonttools")
