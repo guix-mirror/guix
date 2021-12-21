@@ -5111,7 +5111,7 @@ project and determining what files need to be rebuilt.")
 (define-public java-modello-core
   (package
     (name "java-modello-core")
-    (version "1.9.1")
+    (version "1.11")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -5120,7 +5120,7 @@ project and determining what files need to be rebuilt.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1di6ni42aqllpdvkpyfcw70352vr2i8wf6hd5nhd9kmqjb5dj5j4"))))
+                "18885sim7z9j3wy19i9083y9kc8l9xxl2px823a96q4rnqj5z8s2"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "modello-core.jar"
