@@ -85,6 +85,7 @@
   #:use-module (gnu packages lisp-check)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages mp3)
+  #:use-module (gnu packages mpi)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages pkg-config)
@@ -8103,57 +8104,58 @@ sacrificing much in the way of power.")
   (sbcl-package->ecl-package sbcl-external-program))
 
 (define-public sbcl-cl-ana
-  (let ((commit "fa7cee4c50aa1c859652813049ba0da7c18a0df9")
-        (revision "1"))
+  (let ((commit "848185eed1ed65bab3a124870c122f761ce0d87e")
+        (revision "2"))
     (package
-     (name "sbcl-cl-ana")
-     (version (git-version "0.0.0" revision commit))
-     (source
-      (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/ghollisjr/cl-ana")
-             (commit commit)))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "0mr47l57m276dbpap7irr4fcnk5fgknhf6mgv4043s8h73amk5qh"))))
-     (build-system asdf-build-system/sbcl)
-     (native-inputs
-      (list sbcl-cl-fad))
-     (inputs
-      `(("alexandria" ,sbcl-alexandria)
-        ("antik" ,sbcl-antik)
-        ("cffi" ,sbcl-cffi)
-        ("cl-csv" ,sbcl-cl-csv)
-        ("closer-mop" ,sbcl-closer-mop)
-        ("external-program" ,sbcl-external-program)
-        ("gsl" ,gsl)
-        ("gsll" ,sbcl-gsll)
-        ("hdf5" ,hdf5-parallel-openmpi)
-        ("iterate" ,sbcl-iterate)
-        ("libffi" ,libffi)
-        ("split-sequence" ,sbcl-split-sequence)))
-     (arguments
-      `(#:phases
-        (modify-phases %standard-phases
-          (add-after 'unpack 'fix-paths
-            (lambda* (#:key inputs #:allow-other-keys)
-              (substitute* "hdf-cffi/hdf-cffi.lisp"
-                (("/usr/lib/i386-linux-gnu/hdf5/serial/libhdf5.so")
-                 (search-input-file inputs "/lib/libhdf5.so")))
-              (substitute* "gsl-cffi/gsl-cffi.lisp"
-                (("define-foreign-library gsl-cffi" all)
-                 (string-append all " (:unix "
-                                (assoc-ref inputs "gsl")
-                                "/lib/libgsl.so)")))
-              #t)))))
-     (synopsis "Common Lisp data analysis library")
-     (description
-      "CL-ANA is a data analysis library in Common Lisp providing tabular and
+      (name "sbcl-cl-ana")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/ghollisjr/cl-ana")
+               (commit commit)))
+         (file-name (git-file-name "cl-ana" version))
+         (sha256
+          (base32 "026agqsxq3pg2k9jmy2wysil2z0yn5rykzzhr8rqxsspdwz51z1y"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       (list openmpi ;; for hdf-cffi
+             pkg-config
+             sbcl-cl-fad))
+      (inputs
+       (list gsl
+             hdf5-parallel-openmpi
+             libffi
+             sbcl-antik
+             sbcl-cffi
+             sbcl-cl-csv
+             sbcl-closer-mop
+             sbcl-external-program
+             sbcl-gsll
+             sbcl-iterate
+             sbcl-alexandria
+             sbcl-split-sequence))
+      (propagated-inputs
+       (list gnuplot)) ;; for gnuplot-interface
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "hdf-cffi/src/library.lisp"
+                 (("libhdf5.so")
+                  (search-input-file inputs "/lib/libhdf5.so")))
+               (substitute* "gsl-cffi/gsl-cffi.lisp"
+                 (("libgsl.so")
+                  (search-input-file inputs "/lib/libgsl.so"))))))))
+      (synopsis "Common Lisp data analysis library")
+      (description
+       "CL-ANA is a data analysis library in Common Lisp providing tabular and
 binned data analysis along with nonlinear least squares fitting and
 visualization.")
-     (home-page "https://github.com/ghollisjr/cl-ana")
-     (license license:gpl3))))
+      (home-page "https://github.com/ghollisjr/cl-ana")
+      (license license:gpl3))))
 
 (define-public cl-ana
   (sbcl-package->cl-source-package sbcl-cl-ana))
