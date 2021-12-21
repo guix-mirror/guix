@@ -33637,6 +33637,78 @@ Extra command line options for @code{guix-data-service-process-jobs}.
 @end table
 @end deftp
 
+@subsubheading Nar Herder
+The @uref{https://git.cbaines.net/guix/nar-herder/about/,Nar Herder} is
+a utility for managing a collection of nars.
+
+@defvar {Scheme Variable} nar-herder-type
+Service type for the Guix Data Service.  Its value must be a
+@code{nar-herder-configuration} object.  The service optionally
+extends the getmail service, as the guix-commits mailing list is used to
+find out about changes in the Guix git repository.
+@end defvar
+
+@deftp {Data Type} nar-herder-configuration
+Data type representing the configuration of the Guix Data Service.
+
+@table @asis
+@item @code{package} (default: @code{nar-herder})
+The Nar Herder package to use.
+
+@item @code{user} (default: @code{"nar-herder"})
+The system user to run the service as.
+
+@item @code{group} (default: @code{"nar-herder"})
+The system group to run the service as.
+
+@item @code{port} (default: @code{8734})
+The port to bind the server to.
+
+@item @code{host} (default: @code{"127.0.0.1"})
+The host to bind the server to.
+
+@item @code{mirror} (default: @code{#f})
+Optional URL of the other Nar Herder instance which should be mirrored.
+This means that this Nar Herder instance will download it's database,
+and keep it up to date.
+
+@item @code{database} (default: @code{"/var/lib/nar-herder/nar_herder.db"})
+Location for the database.  If this Nar Herder instance is mirroring
+another, the database will be downloaded if it doesn't exist.  If this
+Nar Herder instance isn't mirroring another, an empty database will be
+created.
+
+@item @code{database-dump} (default: @code{"/var/lib/nar-herder/nar_herder_dump.db"})
+Location of the database dump.  This is created and regularly updated by
+taking a copy of the database.  This is the version of the database that
+is available to download.
+
+@item @code{storage} (default: @code{#f})
+Optional location in which to store nars.
+
+@item @code{storage-limit} (default: @code{"none"})
+Limit in bytes for the nars stored in the storage location.  This can
+also be set to ``none'' so that there is no limit.
+
+When the storage location exceeds this size, nars are removed according
+to the nar removal criteria.
+
+@item @code{storage-nar-removal-criteria} (default: @code{'()})
+Criteria used to remove nars from the storage location.  These are used
+in conjunction with the storage limit.
+
+When the storage location exceeds the storage limit size, nars will be
+checked against the nar removal criteria and if any of the criteria
+match, they will be removed.  This will continue until the storage
+location is below the storage limit size.
+
+Each criteria is specified by a string, then an equals sign, then
+another string. Currently, only one criteria is supported, checking if a
+nar is stored on another Nar Herder instance.
+
+@end table
+@end deftp
+
 @node Linux Services
 @subsection Linux Services
 

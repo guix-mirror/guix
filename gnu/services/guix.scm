@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2019 Christopher Baines <mail@cbaines.net>
+;;; Copyright © 2019, 2020, 2021, 2022 Christopher Baines <mail@cbaines.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -107,7 +107,22 @@
             guix-data-service-getmail-idle-mailboxes
             guix-data-service-commits-getmail-retriever-configuration
 
-            guix-data-service-type))
+            guix-data-service-type
+
+            nar-herder-service-type
+            nar-herder-configuration
+            nar-herder-configuration?
+            nar-herder-configuration-package
+            nar-herder-configuration-user
+            nar-herder-configuration-group
+            nar-herder-configuration-mirror
+            nar-herder-configuration-database
+            nar-herder-configuration-database-dump
+            nar-herder-configuration-host
+            nar-herder-configuration-port
+            nar-herder-configuration-storage
+            nar-herder-configuration-storage-limit
+            nar-herder-configuration-storage-nar-removal-criteria))
 
 ;;;; Commentary:
 ;;;
@@ -728,3 +743,133 @@ ca-certificates.crt file in the system profile."
      (guix-data-service-configuration))
    (description
     "Run an instance of the Guix Data Service.")))
+
+
+;;;
+;;; Nar Herder
+;;;
+
+(define-record-type* <nar-herder-configuration>
+  nar-herder-configuration make-nar-herder-configuration
+  nar-herder-configuration?
+  (package       nar-herder-configuration-package
+                 (default nar-herder))
+  (user          nar-herder-configuration-user
+                 (default "nar-herder"))
+  (group         nar-herder-configuration-group
+                 (default "nar-herder"))
+  (mirror        nar-herder-configuration-mirror
+                 (default #f))
+  (database      nar-herder-configuration-database
+                 (default "/var/lib/nar-herder/nar_herder.db"))
+  (database-dump nar-herder-configuration-database-dump
+                 (default "/var/lib/nar-herder/nar_herder_dump.db"))
+  (host          nar-herder-configuration-host
+                 (default "127.0.0.1"))
+  (port          nar-herder-configuration-port
+                 (default 8734))
+  (storage       nar-herder-configuration-storage
+                 (default #f))
+  (storage-limit nar-herder-configuration-storage-limit
+                 (default "none"))
+  (storage-nar-removal-criteria
+   nar-herder-configuration-storage-nar-removal-criteria
+   (default '())))
+
+(define (nar-herder-shepherd-services config)
+  (match-record config <nar-herder-configuration>
+    (package user group
+             mirror
+             database database-dump
+             host port
+             storage storage-limit storage-nar-removal-criteria)
+
+    (unless (or mirror storage)
+      (error "nar-herder: mirror or storage must be set"))
+
+    (list
+     (shepherd-service
+      (documentation "Nar Herder")
+      (provision '(nar-herder))
+      (requirement '(networking))
+      (start #~(make-forkexec-constructor
+                (list #$(file-append package
+                                     "/bin/nar-herder")
+                      "run-server"
+                      "--pid-file=/var/run/nar-herder/pid"
+                      #$(string-append "--port=" (number->string port))
+                      #$(string-append "--host=" host)
+                      #$@(if mirror
+                             (list (string-append "--mirror=" mirror))
+                             '())
+                      #$(string-append "--database=" database)
+                      #$(string-append "--database-dump=" database-dump)
+                      #$@(if storage
+                             (list (string-append "--storage=" storage))
+                             '())
+                      #$(string-append "--storage-limit="
+                                       (if (number? storage-limit)
+                                           (number->string storage-limit)
+                                           storage-limit))
+                      #$@(map (lambda (criteria)
+                                (string-append
+                                 "--storage-nar-removal-criteria="
+                                 (match criteria
+                                   ((k . v) (simple-format #f "~A=~A" k v))
+                                   (str str))))
+                              storage-nar-removal-criteria))
+                #:user #$user
+                #:group #$group
+                #:pid-file "/var/run/nar-herder/pid"
+                #:environment-variables
+                `(,(string-append
+                    "GUIX_LOCPATH=" #$glibc-utf8-locales "/lib/locale")
+                  "LC_ALL=en_US.utf8")
+                #:log-file "/var/log/nar-herder/server.log"))
+      (stop #~(make-kill-destructor))))))
+
+(define (nar-herder-activation config)
+  #~(begin
+      (use-modules (guix build utils))
+
+      (define %user
+        (getpw #$(nar-herder-configuration-user
+                  config)))
+
+      (chmod "/var/lib/nar-herder" #o755)
+
+      (mkdir-p "/var/log/nar-herder")
+
+      ;; Allow writing the PID file
+      (mkdir-p "/var/run/nar-herder")
+      (chown "/var/run/nar-herder"
+             (passwd:uid %user)
+             (passwd:gid %user))))
+
+(define (nar-herder-account config)
+  (match-record config <nar-herder-configuration>
+    (user group)
+    (list (user-group
+           (name group)
+           (system? #t))
+          (user-account
+           (name user)
+           (group group)
+           (system? #t)
+           (comment "Nar Herder user")
+           (home-directory "/var/lib/nar-herder")
+           (shell (file-append shadow "/sbin/nologin"))))))
+
+(define nar-herder-service-type
+  (service-type
+   (name 'nar-herder)
+   (extensions
+    (list
+     (service-extension shepherd-root-service-type
+                        nar-herder-shepherd-services)
+     (service-extension activation-service-type
+                        nar-herder-activation)
+     (service-extension account-service-type
+                        nar-herder-account)))
+   (description
+    "Run a Nar Herder server.")))
