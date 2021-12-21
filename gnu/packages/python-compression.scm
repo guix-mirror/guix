@@ -28,6 +28,7 @@
   #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix gexp)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
@@ -415,6 +416,38 @@ wrapper.  It provides a backport of the @code{Path} object.")
        ,@(package-arguments python2-zipp)))
     (native-inputs
      `(("python-setuptools-scm" ,python2-setuptools-scm))))))
+
+(define-public python-zopfli
+  (package
+    (name "python-zopfli")
+    (version "0.1.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "zopfli" version ".zip"))
+       (sha256
+        (base32 "0yqdwvlpbvhhri0qmzag076ddi0sv43qjlk17l0siylfib03rpkq"))))
+    (build-system python-build-system)
+    (arguments
+     (list
+      #:phases #~(modify-phases %standard-phases
+                   (add-after 'unpack 'use-system-zopfli
+                     (lambda _
+                       (setenv "USE_SYSTEM_ZOPFLI" "1")))
+                   (add-before 'build 'set-version
+                     (lambda _
+                       (setenv "SETUPTOOLS_SCM_PRETEND_VERSION" #$version)))
+                   (replace 'check
+                     (lambda* (#:key tests? #:allow-other-keys)
+                       (when tests?
+                         (invoke "python" "tests/tests.py" "-v")))))))
+    (native-inputs (list unzip python-setuptools-scm))
+    (inputs (list zopfli))
+    (home-page "https://github.com/fonttools/py-zopfli")
+    (synopsis "Python bindings for Zopfli")
+    (description "@code{pyzopfli} is a straight forward wrapper around the
+@code{ZlibCompress} method of the the @code{zopfli} library.")
+    (license license:asl2.0)))
 
 (define-public python-zstandard
   (package
