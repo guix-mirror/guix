@@ -823,7 +823,7 @@ of Pandas
 (define-public python-pingouin
   (package
     (name "python-pingouin")
-    (version "0.5.0")
+    (version "0.3.12")
     (source
      ;; The PyPI tarball does not contain the tests.
      (origin
@@ -834,7 +834,7 @@ of Pandas
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "01aaq023q4bymffrc2wm56af87da32wcvy5d5156i4g7qgvh346r"))))
+         "1ap29x54kdr19vi8qxj9g6cz2r1q4f0z7dcf6g77zwav7hf7r61a"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
