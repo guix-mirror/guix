@@ -350,7 +350,10 @@ acceleration in mind, leveraging common 3D graphics APIs for best performance.")
     (description
      "WebKitGTK+ is a full-featured port of the WebKit rendering engine,
 suitable for projects requiring any kind of web integration, from hybrid
-HTML/CSS applications to full-fledged web browsers.")
+HTML/CSS applications to full-fledged web browsers.  WebKitGTK+ video playing
+capabilities can be extended through the use of GStreamer plugins (not
+propagated by default) such as @code{gst-plugins-good} and
+@code{gst-plugins-bad}.")
     ;; WebKit's JavaScriptCore and WebCore components are available under
     ;; the GNU LGPL, while the rest is available under a BSD-style license.
     (license (list license:lgpl2.0
