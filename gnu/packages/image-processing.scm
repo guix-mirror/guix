@@ -498,15 +498,19 @@ integrates with various databases on GUI toolkits such as Qt and Tk.")
                                "../opencv-extra")
              (copy-recursively (assoc-ref inputs "opencv-contrib")
                                "../opencv-contrib")))
-       (add-before 'check 'start-xserver
-         (lambda* (#:key inputs #:allow-other-keys)
-           (let ((xorg-server (assoc-ref inputs "xorg-server"))
-                 (disp ":1"))
-             (setenv "HOME" (getcwd))
-             (setenv "DISPLAY" disp)
-             ;; There must be a running X server and make check doesn't start one.
-             ;; Therefore we must do it.
-             (zero? (system (format #f "~a/bin/Xvfb ~a &" xorg-server disp)))))))))
+         (add-after 'build 'do-not-install-3rdparty-file
+           (lambda _
+             (substitute* "cmake_install.cmake"
+               (("file\\(INSTALL .*source/3rdparty/include/opencl/LICENSE.txt.*") "\n"))))
+         (add-before 'check 'start-xserver
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((xorg-server (assoc-ref inputs "xorg-server"))
+                   (disp ":1"))
+               (setenv "HOME" (getcwd))
+               (setenv "DISPLAY" disp)
+               ;; There must be a running X server and make check doesn't start one.
+               ;; Therefore we must do it.
+               (zero? (system (format #f "~a/bin/Xvfb ~a &" xorg-server disp)))))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("xorg-server" ,xorg-server-for-tests) ; For running the tests
