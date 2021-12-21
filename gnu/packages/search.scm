@@ -8,6 +8,7 @@
 ;;; Copyright © 2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2021 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2021 Alexandr Vityazev <avityazev@posteo.org>
+;;; Copyright © 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,6 +38,7 @@
   #:use-module (guix build-system meson)
   #:use-module (gnu packages)
   #:use-module (gnu packages aspell)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages check)
@@ -44,7 +46,11 @@
   #:use-module (gnu packages ebook)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gawk)
+  #:use-module (gnu packages gettext)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages groff)
+  #:use-module (gnu packages gtk)
+  #:use-module (gnu packages icu4c)
   #:use-module (gnu packages less)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages pcre)
@@ -289,6 +295,37 @@ words in close proximity to each other.  It handles context gracefully,
 accounting for new lines and paragraph changes.  It also has robust support
 for parsing HTML files.")
     (license gpl3+)))
+
+(define-public fsearch
+  (package
+    (name "fsearch")
+    (version "0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/cboxdoerfer/fsearch")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1qscnrds5q6a6hcfx3apr9cvph7airvbivhgv82qci5dc8rm2jhz"))))
+    (build-system meson-build-system)
+    (native-inputs
+     (list autoconf
+           automake
+           gettext-minimal
+           `(,glib "bin")               ;for glib-compile-resources
+           intltool
+           libtool
+           pkg-config))
+    (inputs
+     (list gtk+ icu4c pcre))
+    (home-page "https://github.com/cboxdoerfer/fsearch")
+    (synopsis "Fast file search utility")
+    (description
+     "FSearch is a fast file search utility, inspired by Everything
+Search Engine.  It is written in C and based on GTK3.")
+    (license gpl2+)))
 
 (define-public recoll
   (package
