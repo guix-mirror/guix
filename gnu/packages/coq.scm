@@ -52,7 +52,7 @@
 (define-public coq-core
   (package
     (name "coq-core")
-    (version "8.14.0")
+    (version "8.14.1")
     (source
      (origin
        (method git-fetch)
@@ -62,7 +62,7 @@
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0iachapmdwvwwlvkrb2yxhqqrgzs70zyr1c9v1jdb1awx3bp68hf"))
+         "0q634fmrh5ivpxy7ammdiqdh9xp72ji2726vcz1bd55ln0d08z40"))
        (patches (search-patches "coq-fix-envvars.patch"))))
     (native-search-paths
      (list (search-path-specification
