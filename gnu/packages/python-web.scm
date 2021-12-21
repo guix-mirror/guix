@@ -3153,7 +3153,7 @@ provide an easy-to-use Python interface for building OAuth1 and OAuth2 clients."
 (define-public python-cachecontrol
   (package
     (name "python-cachecontrol")
-    (version "0.12.5")
+    (version "0.12.10")
     (source
      (origin
        (method git-fetch)
@@ -3164,7 +3164,7 @@ provide an easy-to-use Python interface for building OAuth1 and OAuth2 clients."
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "03lgc65sl04n0cgzmmgg99bk83f9i6k8yrmcd4hpl46q1pymn0kz"))))
+         "0fviacb13h72l5c77p35lgr6kvlidfdb9xsicg3v6lblmp9cn2ws"))))
     (build-system python-build-system)
     (arguments
      ;; Versions > 0.11.6 depend on CherryPy for testing.
