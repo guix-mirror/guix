@@ -2570,6 +2570,7 @@ to CONFIG."
                                                 #$(network-address-ipv6? address))
                                       ;; FIXME: loopback?
                                       (link-set #$(network-address-device address)
+                                                #:multicast-on #t
                                                 #:up #t)))
                                 addresses)
                         #$@(map (match-lambda
