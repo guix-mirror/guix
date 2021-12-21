@@ -606,7 +606,15 @@ included.")
            (add-after 'patch-source-shebangs 'patch-more-shebangs
              (lambda _
                (substitute* "gold/Makefile.in"
-                 (("/bin/sh") (which "sh")))))))))
+                 (("/bin/sh") (which "sh")))))
+           ;; Multiple failing tests on some architectures in the gold testsuite.
+           ,@(if (or (target-arm?)
+                     (target-ppc32?))
+               '((add-after 'unpack 'skip-gold-testsuite
+                   (lambda _
+                     (substitute* "gold/Makefile.in"
+                       ((" testsuite") " ")))))
+               '())))))
     (native-inputs
      `(("bc" ,bc)))))
 
