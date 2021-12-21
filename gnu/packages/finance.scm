@@ -1821,6 +1821,32 @@ local, single-user UI, or as a multi-user UI for viewing, adding, and
 editing on the Web.")
     (license license:gpl3)))
 
+(define-public quantlib
+  (package
+    (name "quantlib")
+    (version "1.24")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/lballabio/QuantLib/releases/download/QuantLib-v"
+             version "/QuantLib-" version ".tar.gz"))
+       (sha256
+        (base32 "1rxjhkc32a8z0g5gmh0iw5nx0fr31cjsrfgq7c8g6nib003kgnnx"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       ,#~(list "--disable-static"
+                (string-append "--prefix=" #$output))))
+    (inputs (list boost))
+    (home-page "https://www.quantlib.org")
+    (synopsis "Library for quantitative finance")
+    (description
+     "The QuantLib project is aimed at providing a comprehensive software
+framework for quantitative finance.  QuantLib is a library for modeling,
+trading, and risk management in real-life.")
+    (license license:bsd-2)))
+
 (define-public optionmatrix
   (package
     (name "optionmatrix")
