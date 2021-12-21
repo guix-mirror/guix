@@ -10528,6 +10528,66 @@ add functionality and customization to your projects with their own plugins.")
 the @code{sendfile(2)} system call.")
     (license license:expat)))
 
+(define-public python-pyftpdlib
+  (package
+    (name "python-pyftpdlib")
+    (version "1.5.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pyftpdlib" version))
+       (sha256
+        (base32 "0pnv2byzmzg84q5nmmhn1xafvfil85qa5y52bj455br93zc5b9px"))))
+    (build-system python-build-system)
+    (arguments
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (replace 'check
+            (lambda* (#:key tests? #:allow-other-keys)
+              (when tests?
+                (invoke
+                 "pytest"
+                 ;; Deselect failing tests.
+                 "-k" (string-append
+                       ;; Using Pytest instead of the Makefile causes the
+                       ;; command line tests to fail on unknown Pytest
+                       ;; arguments.
+                       "not TestCommandLineParser "
+                       ;; https://github.com/giampaolo/pyftpdlib/issues/478
+                       "and not test_use_gmt_times "
+                       ;; https://github.com/giampaolo/pyftpdlib/issues/550
+                       "and not test_masquerade_address "
+                       ;; https://github.com/giampaolo/pyftpdlib/issues/500
+                       "and not test_rest_on_stor "
+                       "and not test_stor_ascii"))))))))
+    (native-inputs (list python-psutil python-pytest))
+    (propagated-inputs (list python-pyopenssl python-pysendfile))
+    (home-page "https://github.com/giampaolo/pyftpdlib/")
+    (synopsis "Asynchronous and scalable Python FTP server library")
+    (description "The Python FTP server library provides a high-level
+interface to write efficient, scalable and asynchronous FTP servers with
+Python.  It is the most complete @url{http://www.faqs.org/rfcs/rfc959.html,
+RFC-959} FTP server implementation available for Python, and has the following
+traits:
+@itemize
+@item
+It is lightweight, fast and scalable.
+@item
+It uses the @code{sendfile(2)} system call for uploads.
+@item
+It uses @code{epoll}, @code{kqueue} and @code{select} to handle concurrency
+asynchronously.
+@item
+It supports FTPS (@url{http://tools.ietf.org/html/rfc4217, RFC-4217}),
+IPv6 (RFC-2428), Unicode file names (@url{http://tools.ietf.org/html/rfc2640,
+RFC-2640}) and MLSD/MLST commands (RFC-3659).
+@item
+It has a flexible system of @samp{authorizers} able to manage both
+@samp{virtual} and @samp{real} users.
+@end itemize")
+    (license license:expat)))
+
 (define-public python-fonttools
   (package
     (name "python-fonttools")
