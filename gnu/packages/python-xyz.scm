@@ -10588,6 +10588,38 @@ It has a flexible system of @samp{authorizers} able to manage both
 @end itemize")
     (license license:expat)))
 
+(define-public python-fs
+  (package
+    (name "python-fs")
+    (version "2.4.14")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "fs" version))
+       (sha256
+        (base32 "0v5kqzi0vd8ar4j4qf5440nzwa9dcagpxb3q6k0cln4cqlmxqmcm"))))
+    (build-system python-build-system)
+    (arguments
+     (list
+      #:phases #~(modify-phases %standard-phases
+                   (replace 'check
+                     (lambda* (#:key tests? #:allow-other-keys)
+                       (when tests?
+                         (setenv "HOME" "/tmp")
+                         (invoke "pytest" "-m" "not slow")))))))
+    (propagated-inputs
+     (list python-appdirs python-pytz python-typing python-six))
+    (native-inputs
+     (list python-mock python-parameterized python-pyftpdlib python-pytest))
+    (home-page "https://github.com/PyFilesystem/pyfilesystem2/")
+    (synopsis "File system abstraction layer for Python")
+    (description "PyFilesystem's @code{FS} object is a file system abstraction
+sharing similarities with Python's own @code{file} object for single files.
+It allows opening all the files under a given directory recursively, as a
+single @code{FS} object.  This enables, for example, counting the combined
+number of lines in the contained files easily.")
+    (license license:expat)))
+
 (define-public python-fonttools
   (package
     (name "python-fonttools")
