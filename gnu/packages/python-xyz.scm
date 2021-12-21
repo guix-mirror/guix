@@ -6215,17 +6215,19 @@ comparison.
 (define-public python-matplotlib
   (package
     (name "python-matplotlib")
-    (version "3.4.3")
+    (version "3.5.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "matplotlib" version))
        (sha256
-        (base32 "06032j0ccjxldx4z9kf97qps2g36mfgvy1nap3b9n75kzmnm4kzw"))))
+        (base32 "076f8qi265x8jy89c03r3vv5h4is4ir5mawwrrrpp96314783sdj"))))
     (build-system python-build-system)
-    (propagated-inputs ; the following packages are all needed at run time
+    (propagated-inputs     ; the following packages are all needed at run time
      `(("python-cycler" ,python-cycler)
+       ("python-fonttools" ,python-fonttools)
        ("python-kiwisolver" ,python-kiwisolver)
+       ("python-packaging" ,python-packaging)
        ("python-pyparsing" ,python-pyparsing)
        ("python-pygobject" ,python-pygobject)
        ("python-certifi" ,python-certifi)
@@ -6236,6 +6238,7 @@ comparison.
        ("python-pillow" ,python-pillow)
        ("python-pytz" ,python-pytz)
        ("python-six" ,python-six)
+       ("python-wxpython" ,python-wxpython)
        ;; From version 1.4.0 'matplotlib' makes use of 'cairocffi' instead of
        ;; 'pycairo'. However, 'pygobject' makes use of a 'pycairo' 'context'
        ;; object. For this reason we need to import both libraries.
@@ -6248,101 +6251,87 @@ comparison.
            qhull
            cairo
            glib
-           ;; FIXME: Add backends when available.
-           ;("python-wxpython" ,python-wxpython)
            tcl
            tk))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("python-pytest" ,python-pytest)
-       ("python-mock" ,python-mock)
-       ("python-wheel" ,python-wheel)
-       ("unzip" ,unzip)
-       ("jquery-ui"
-        ,(origin
-           (method url-fetch)
-           (uri "https://jqueryui.com/resources/download/jquery-ui-1.12.1.zip")
-           (sha256
-            (base32
-             "0kb21xf38diqgxcdi1z3s9ssq36pldvyqxy56hn6pcva6rs3c8zq"))))))
+       ("python-pytest-timeout" ,python-pytest-timeout)
+       ("python-pytest-xdist" ,python-pytest-xdist)
+       ("python-setuptools-scm" ,python-setuptools-scm)
+       ("python-setuptools-scm-git-archive" ,python-setuptools-scm-git-archive)))
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         ;; XXX We disable all image comparison tests because we're using a
-         ;; newer version of FreeType than matplotlib expects.  This leads to
-         ;; minor differences throughout the tests.
-         (add-after 'unpack 'fix-and-disable-failing-tests
-           (lambda _
-             (substitute* (append (find-files "lib/matplotlib/tests/"
-                                              "test_.*\\.py$")
-                                  (find-files "lib/mpl_toolkits/tests"
-                                              "test_.*\\.py$"))
-               (("^from matplotlib" match)
-                (string-append "import pytest\n" match))
-               (("( *)@([^_]+_)*(image_comparison|check_figures_equal)" match
-                 indent)
-                (string-append indent
-                               "@pytest.mark.skip(reason=\"unknown minor image differences\")\n"
-                               match)))
-             (substitute* "lib/matplotlib/tests/test_animation.py"
-               (("/bin/sh") (which "sh")))
-             (for-each delete-file
-                       ;; test_normal_axes, test_get_tightbbox_polar
-                       '("lib/matplotlib/tests/test_axes.py"
-                         "lib/matplotlib/tests/test_polar.py"
-                         ;; We don't use the webagg backend and this test
-                         ;; forces it.
-                         "lib/matplotlib/tests/test_backend_webagg.py"
-                         ;; test_outward_ticks
-                         "lib/matplotlib/tests/test_tightlayout.py"
-                         ;; test_hidden_axes fails with minor extent
-                         ;; differences, possibly due to the use of a
-                         ;; different version of FreeType.
-                         "lib/matplotlib/tests/test_constrainedlayout.py"
-                         ;; Fontconfig returns no fonts.
-                         "lib/matplotlib/tests/test_font_manager.py"))
-             #t))
-         (add-before 'install 'install-jquery-ui
-           (lambda* (#:key outputs inputs #:allow-other-keys)
-             (let* ((python-version (python-version
-                                      (assoc-ref inputs "python")))
-                    (dir
-                     (string-append (assoc-ref outputs "out")
-                                    "/lib/python" python-version
-                                    "/site-packages"
-                                    "/matplotlib/backends/web_backend/")))
-               (mkdir-p dir)
-               (invoke "unzip"
-                       (assoc-ref inputs "jquery-ui")
-                       "-d" dir))
-             #t))
-         (replace 'check
-           (lambda* (#:key outputs inputs #:allow-other-keys)
-             (add-installed-pythonpath inputs outputs)
-             (invoke "python" "tests.py" "-v"
-                     "-m" "not network and not webagg")))
-         (add-before 'build 'configure-environment
-           (lambda* (#:key outputs inputs #:allow-other-keys)
-             (let ((cairo (assoc-ref inputs "cairo")))
-               ;; Setting this directory in the 'basedirlist' of 'setup.cfg'
-               ;; has not effect.
-               (setenv "LD_LIBRARY_PATH" (string-append cairo "/lib"))
-               (setenv "HOME" (getcwd))
-               ;; Fix rounding errors when using the x87 FPU.
-               (when (string-prefix? "i686" ,(%current-system))
-                 (setenv "CFLAGS" "-ffloat-store"))
-               (call-with-output-file "setup.cfg"
-                 (lambda (port)
-                   (format port "[libs]~%
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-before 'build 'pretend-version
+            ;; The version string is usually derived via setuptools-scm, but
+            ;; without the git metadata available, the version string is set to
+            ;; '0.0.0'.
+            (lambda _
+              (setenv "SETUPTOOLS_SCM_PRETEND_VERSION" #$version)))
+          (add-after 'unpack 'fix-and-disable-failing-tests
+            ;; XXX: Disable all image comparison tests because we're using a
+            ;; newer version of FreeType than matplotlib expects.  This leads
+            ;; to minor differences throughout the tests.
+            (lambda _
+              (substitute* (append (find-files "lib/matplotlib/tests/"
+                                               "test_.*\\.py$")
+                               (find-files "lib/mpl_toolkits/tests"
+                                           "test_.*\\.py$"))
+                (("^from matplotlib" match)
+                 (string-append "import pytest\n" match))
+                (("( *)@([^_]+_)*(image_comparison|check_figures_equal)" match
+                  indent)
+                 (string-append indent "@pytest.mark.skip(\
+reason=\"unknown minor image differences\")\n" match)))
+              (substitute* "lib/matplotlib/tests/test_animation.py"
+                (("/bin/sh") (which "sh")))
+              (for-each delete-file
+                        ;; test_normal_axes, test_get_tightbbox_polar
+                        '("lib/matplotlib/tests/test_axes.py"
+                          "lib/matplotlib/tests/test_polar.py"
+                          ;; We don't use the webagg backend and this test
+                          ;; forces it.
+                          "lib/matplotlib/tests/test_backend_webagg.py"
+                          ;; test_outward_ticks
+                          "lib/matplotlib/tests/test_tightlayout.py"
+                          ;; test_hidden_axes fails with minor extent
+                          ;; differences, possibly due to the use of a
+                          ;; different version of FreeType.
+                          "lib/matplotlib/tests/test_constrainedlayout.py"
+                          ;; Fontconfig returns no fonts.
+                          "lib/matplotlib/tests/test_font_manager.py"))))
+          (add-before 'build 'configure-environment
+            (lambda* (#:key inputs #:allow-other-keys)
+              ;; Fix rounding errors when using the x87 FPU.
+              (when (string-prefix? "i686" #$(%current-system))
+                (setenv "CFLAGS" "-ffloat-store"))
+              (call-with-output-file "mplsetup.cfg"
+                (lambda (port)
+                  (format port "\
+[libs]
 system_freetype = true
 system_qhull = true
-[directories]~%
-basedirlist = ~a,~a~%
-[packages]~%
-tests = True~%"
-                        (assoc-ref inputs "tcl")
-                        (assoc-ref inputs "tk")))))
-             #t)))))
+
+[rc_options]
+backend=Agg
+
+[directories]
+basedirlist = ~a,~a
+
+[packages]
+tests = True~%" (assoc-ref inputs "tcl") (assoc-ref inputs "tk"))))))
+          (replace 'check
+            (lambda* (#:key tests? #:allow-other-keys)
+              (when tests?
+                ;; Step out of the source directory to avoid interference.
+                (with-directory-excursion "/tmp"
+                  ;; Run the installed tests, which is what we want since not
+                  ;; everything gets built in the source directory.
+                  (invoke "pytest"
+                          "-n" (number->string (parallel-job-count))
+                          "-m" "not network" "--pyargs" "matplotlib"))))))))
     (home-page "https://matplotlib.org/")
     (synopsis "2D plotting library for Python")
     (description
