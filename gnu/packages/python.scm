@@ -780,6 +780,7 @@ ease from the desktop to a microcontroller or embedded system.")
      `(#:tests? #f                     ;FIXME: 43 out of 364 tests are failing
        #:modules ((ice-9 ftw) (ice-9 match)
                   (guix build utils) (guix build gnu-build-system))
+       #:disallowed-references (,nss-certs)
        #:phases (modify-phases %standard-phases
                   (delete 'configure)
                   (add-after 'unpack 'patch-source
