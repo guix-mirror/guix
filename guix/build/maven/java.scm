@@ -31,11 +31,14 @@
                                         (? (and (ignore "static") (* WS)))
                                         package-name
                                         (* WS) (ignore ";")))
-(define-peg-pattern comment all (and (? (and annotation-pat (* WS))) (ignore "/*")
-                                     comment-part))
+(define-peg-pattern comment all (or                                            
+                                  (and (? (and annotation-pat (* WS))) (ignore "/*")
+                                       comment-part)                           
+                                  (and (ignore "//") (* (or "\t" (range #\  #\xffff)))
+                                       (or (ignore "\n") (ignore "\r")) (* WS))))
 (define-peg-pattern comment-part body (or (ignore (and (* "*") "/"))
                                           (and (* "*") (+ comment-chr) comment-part)))
-(define-peg-pattern comment-chr body (or "\t" "\n" (range #\ #\)) (range #\+ #\xffff)))
+(define-peg-pattern comment-chr body (or "\t" "\n" "\r" (range #\  #\)) (range #\+ #\xffff)))
 (define-peg-pattern inline-comment none (and (ignore "//") (* inline-comment-chr)
                                             (ignore "\n")))
 (define-peg-pattern inline-comment-chr body (range #\ #\xffff))
