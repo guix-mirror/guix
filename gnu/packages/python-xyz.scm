@@ -10620,28 +10620,53 @@ single @code{FS} object.  This enables, for example, counting the combined
 number of lines in the contained files easily.")
     (license license:expat)))
 
+;;; Tests are left out in the main package to avoid cycles.
 (define-public python-fonttools
-  (package
-    (name "python-fonttools")
-    (version "4.6.0")
-    (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "fonttools" version ".zip"))
-              (sha256
-               (base32
-                "1mq9kdzhcsp96bhv7smnrpdg1s4z5wh70bsl99c0jmcrahqdisqq"))))
-    (build-system python-build-system)
-    (native-inputs
-     (list unzip python-pytest python-pytest-runner))
-    (home-page "https://github.com/fonttools/fonttools")
-    (synopsis "Tools to manipulate font files")
-    (description
-     "FontTools/TTX is a library to manipulate font files from Python.  It
+  (hidden-package
+   (package
+     (name "python-fonttools")
+     (version "4.28.5")
+     (source (origin
+               (method url-fetch)
+               (uri (pypi-uri "fonttools" version ".zip"))
+               (sha256
+                (base32
+                 "1jhl5n3rfqq7fznvsh6r80n7ylap1a7ppq1040y8cflhyz80ap2l"))))
+     (build-system python-build-system)
+     (native-inputs
+      (list unzip))
+     (arguments '(#:tests? #f))
+     (home-page "https://github.com/fonttools/fonttools")
+     (synopsis "Tools to manipulate font files")
+     (description
+      "FontTools/TTX is a library to manipulate font files from Python.  It
 supports reading and writing of TrueType/OpenType fonts, reading and writing
 of AFM files, reading (and partially writing) of PS Type 1 fonts.  The package
 also contains a tool called “TTX” which converts TrueType/OpenType fonts to and
 from an XML-based format.")
-    (license license:expat)))
+     (license license:expat)
+     (properties `((python2-variant . ,(delay python2-fonttools)))))))
+
+(define-public python-fonttools-with-tests
+  (package/inherit python-fonttools
+    (arguments
+     (substitute-keyword-arguments (package-arguments python-fonttools)
+       ((#:tests? _ #f)
+        #t)
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           (replace 'check
+             (lambda* (#:key tests? #:allow-other-keys)
+               (when tests?
+                 (invoke "pytest"))))))))
+    (native-inputs
+     (modify-inputs (package-inputs python-fonttools)
+       (append python-pytest            ;FIXME: indentation is broken
+           python-brotli
+         python-fs
+         python-scipy
+         python-zopfli)))
+    (properties (alist-delete 'hidden? (package-properties python-fonttools)))))
 
 ;; Fonttools 4.x dropped support for Python 2, so stick with 3.x here.
 (define-public python2-fonttools
