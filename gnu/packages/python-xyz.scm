@@ -26960,7 +26960,7 @@ supports x86_64 instructions up to AVX-512 and SHA.")
       (build-system python-build-system)
       (home-page "https://github.com/hsoft/sgmllib")
       (synopsis "Python 3 port of sgmllib")
-      (description "This packages provides an unmaintained port of sgmllib to
+      (description "This package provides an unmaintained port of sgmllib to
 Python 3.  It is used to parse text files formatted in @acronym{SGML,Standard
 Generalized Mark-up Language}.")
       (license license:bsd-3))))
