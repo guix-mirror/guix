@@ -687,7 +687,7 @@ other HTTP libraries.")
      '(#:tests? #f))
     (propagated-inputs
      (list python-colorama python-pygments python-requests
-           python-requests-toolbelt-0.9.1))
+           python-requests-toolbelt))
     (home-page "https://httpie.io")
     (synopsis "cURL-like tool for humans")
     (description
@@ -2597,30 +2597,6 @@ portions of your testing code.")
 (define-public python-requests-toolbelt
   (package
     (name "python-requests-toolbelt")
-    (version "0.8.0")
-    (source (origin
-             (method url-fetch)
-             (uri (pypi-uri "requests-toolbelt" version))
-             (sha256
-              (base32
-               "1dc7l42i4080r8i4m9fj51jx367lqkai170vrv7wd93gdj9k39gn"))))
-    (build-system python-build-system)
-    (native-inputs
-     (list python-betamax python-mock python-pytest))
-    (propagated-inputs
-     (list python-requests))
-    (synopsis "Extensions to python-requests")
-    (description "This is a toolbelt of useful classes and functions to be used
-with python-requests.")
-    (home-page "https://github.com/sigmavirus24/requests-toolbelt")
-    (license license:asl2.0)))
-
-(define-public python2-requests-toolbelt
-  (package-with-python2 python-requests-toolbelt))
-
-(define-public python-requests-toolbelt-0.9.1
-  (package
-    (inherit python-requests-toolbelt)
     (version "0.9.1")
     (source (origin
              (method url-fetch)
@@ -2628,9 +2604,25 @@ with python-requests.")
              (sha256
               (base32
                "1h3gm88dcjbd7gm229a7x5qkkhnsqsjz0m0l2xyavm2ab3a8k04n"))))
+    (build-system python-build-system)
     (arguments
-     `(;; FIXME: Some tests require network access.
-       #:tests? #f))))
+     '(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'delete-problematic-tests
+                    (lambda _
+                      ;; Fails because of expired certificate.
+                      (delete-file "tests/test_x509_adapter.py")
+                      ;; Fails due to networking (socket.gaierror: [Errno -2]
+                      ;; Name or service not known).
+                      (delete-file "tests/test_multipart_encoder.py"))))))
+    (native-inputs
+     (list python-betamax python-mock python-pytest))
+    (propagated-inputs
+     (list python-requests))
+    (synopsis "Extensions to python-requests")
+    (description "This is a toolbelt of useful classes and functions to be used
+with python-requests.")
+    (home-page "https://github.com/requests/toolbelt/")
+    (license license:asl2.0)))
 
 (define-public python-requests-ftp
   (package
@@ -5865,7 +5857,7 @@ Encoding for HTTP.")
      (list python-js2py
            python-polling2
            python-requests
-           python-requests-toolbelt-0.9.1
+           python-requests-toolbelt
            python-responses
            python-pyparsing-2.4.7))
     (native-inputs
