@@ -4903,6 +4903,28 @@ useful *BSD sys/queue.h and sys/tree.h API's")
     (home-page "https://troglobit.com/projects/libite/")
     (license license:expat)))
 
+(define-public libuev
+  (package
+    (name "libuev")
+    (version "2.4.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/troglobit/libuev")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0ih82lxfdcq179kknzdl5c8vi1l0n5j7yh68y8f6kwsrm457paf7"))))
+    (build-system gnu-build-system)
+    (native-inputs (list autoconf automake libtool))
+    (synopsis "Lightweight event loop library for epoll family APIs")
+    (description "This package provides small event loop that wraps the
+epoll family of APIs.")
+    (home-page "https://troglobit.com/projects/libuev/")
+    (license license:expat)))
+
 (define-public libraw1394
   (package
     (name "libraw1394")
