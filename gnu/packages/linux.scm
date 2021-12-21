@@ -59,6 +59,7 @@
 ;;; Copyright © 2021 Josselin Poiret <josselin.poiret@protonmail.ch>
 ;;; Copyright © 2021 Olivier Dion <olivier.dion@polymtl.ca>
 ;;; Copyright © 2021 Solene Rapenne <solene@perso.pw>
+;;; Copyright © 2021 Petr Hodina <phodina@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4864,6 +4865,43 @@ also contains the libsysfs library.")
 information, and set the CPU frequency if supported, using the cpufreq
 capabilities of the Linux kernel.")
     (license license:gpl2)))
+
+(define-public libite
+  (package
+    (name "libite")
+    (version "2.5.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/troglobit/libite")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "14i0q0nxns6g4zh86zdqy97dwljkqdr5l85ammljzccsrijg9m8v"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-tests
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; replace paths to the executables
+             (substitute* "test/which.c"
+               (("/usr/bin/which")
+                (search-input-file inputs "/bin/which"))
+               (("ls\"")
+                (string-append
+                 (search-input-file inputs "/bin/ls") "\"")))
+             ;; create pidfile in /tmp instead of /var
+             (substitute* "test/pidfile.c" (("/var/tmp") "/tmp")))))))
+    (native-inputs (list autoconf automake libtool which))
+    (synopsis "Missing pieces in GNU libc")
+    (description "This package provides many of the missing pieces in GNU libc.
+Most notably the string functions: strlcpy(3), strlcat(3) and the highly
+useful *BSD sys/queue.h and sys/tree.h API's")
+    (home-page "https://troglobit.com/projects/libite/")
+    (license license:expat)))
 
 (define-public libraw1394
   (package
