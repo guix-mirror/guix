@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -104,6 +105,35 @@ PORT."
                     (read-line port))))
              marionette))
 
+          (test-equal "Test file not copied to read-only share"
+            10                                  ;see "EXIT VALUES" in rsync(1)
+            (marionette-eval
+             '(status:exit-val
+               (system* "rsync" "/tmp/input"
+                        (string-append "rsync://localhost:"
+                                       (number->string #$rsync-port)
+                                       "/read-only/input")))
+             marionette))
+
+          (test-equal "Test file correctly received from read-only share"
+            "\"Hi!\" from the read-only share."
+            (marionette-eval
+             '(begin
+                (use-modules (ice-9 rdelim))
+
+                (call-with-output-file "/srv/read-only/the-file"
+                  (lambda (port)
+                    (display "\"Hi!\" from the read-only share." port)))
+
+                (zero?
+                 (system* "rsync"
+                          (string-append "rsync://localhost:"
+                                         (number->string #$rsync-port)
+                                         "/read-only/the-file")
+                          "/tmp/output"))
+                (call-with-input-file "/tmp/output" read-line))
+             marionette))
+
           (test-end))))
 
   (gexp->derivation "rsync-test" test))
@@ -113,7 +143,15 @@ PORT."
   (let ((base-os
          (simple-operating-system
           (service dhcp-client-service-type)
-          (service rsync-service-type))))
+          (service rsync-service-type
+                   (rsync-configuration
+                    (modules (list (rsync-module
+                                    (name "read-only")
+                                    (file-name "/srv/read-only"))
+                                   (rsync-module
+                                    (name "files")
+                                    (file-name "/srv/read-write")
+                                    (read-only? #f)))))))))
     (operating-system
       (inherit base-os)
       (packages (cons* rsync
