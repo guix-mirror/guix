@@ -141,6 +141,7 @@
   #:use-module (gnu packages slang)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages textutils)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages valgrind)
   #:use-module (gnu packages video)
@@ -4122,6 +4123,29 @@ mapper.  Kernel components are part of Linux-libre.")
 dm-thin, dm-cache and dm-era device-mapper targets.")
     (home-page "https://github.com/jthornber/thin-provisioning-tools")
     (license license:gpl3+)))
+
+(define-public watchdogd
+  (package
+    (name "watchdogd")
+    (version "3.5")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/troglobit/watchdogd")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "05f7igavzimfgbh39fflbkmpya12r854n03dkyimwashcqwchx8f"))))
+    (build-system gnu-build-system)
+    (native-inputs (list autoconf automake libtool pkg-config))
+    (inputs (list libconfuse libite libuev))
+    (synopsis "Advanced system & process supervisor for Linux")
+    (description "This package provides an advanced monitor of critical system
+resources, supervises the heartbeat of processes, records deadline
+transgressions, and initiates a controlled reset if needed")
+    (home-page "https://troglobit.com/projects/watchdogd/")
+    (license license:isc)))
 
 (define-public wireless-tools
   (package
