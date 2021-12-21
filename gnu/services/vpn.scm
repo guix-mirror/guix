@@ -8,6 +8,7 @@
 ;;; Copyright © 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2021 Raghav Gururajan <rg@raghavgururajan.name>
 ;;; Copyright © 2021 jgart <jgart@dismail.de>
+;;; Copyright © 2021 Nathan Dehnel <ncdehnel@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -67,6 +68,7 @@
             wireguard-configuration-interface
             wireguard-configuration-addresses
             wireguard-configuration-port
+            wireguard-configuration-dns
             wireguard-configuration-private-key
             wireguard-configuration-peers
 
@@ -715,7 +717,9 @@ strongSwan.")))
   (private-key        wireguard-configuration-private-key ;string
                       (default "/etc/wireguard/private.key"))
   (peers              wireguard-configuration-peers ;list of <wiregard-peer>
-                      (default '())))
+                      (default '()))
+  (dns                wireguard-configuration-dns ;list of strings
+                      (default #f)))
 
 (define (wireguard-configuration-file config)
   (define (peer->config peer)
@@ -739,7 +743,7 @@ AllowedIPs = ~a
                   "\n"))))
 
   (match-record config <wireguard-configuration>
-    (wireguard interface addresses port private-key peers)
+    (wireguard interface addresses port private-key peers dns)
     (let* ((config-file (string-append interface ".conf"))
            (peers (map peer->config peers))
            (config
@@ -755,12 +759,17 @@ AllowedIPs = ~a
 Address = ~a
 PostUp = ~a set %i private-key ~a
 ~a
+~a
 ~{~a~^~%~}"
                                #$(string-join addresses ",")
                                #$(file-append wireguard "/bin/wg")
                                #$private-key
                                #$(if port
                                      (format #f "ListenPort = ~a" port)
+                                     "")
+                               #$(if dns
+                                     (format #f "DNS = ~a"
+                                             (string-join dns ","))
                                      "")
                                (list #$@peers)))))))))
       (file-append config "/" config-file))))
