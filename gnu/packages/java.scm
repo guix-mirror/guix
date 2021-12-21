@@ -10746,11 +10746,6 @@ annotations.")
        #:make-flags (list "-DDATE" "(no date for reproducibility)")
        #:phases
        (modify-phases %standard-phases
-         (add-before 'install 'fix-pom
-           (lambda _
-             (substitute* "pom.xml"
-               (("org.apache-extras.beanshell") "org.beanshell"))
-             #t))
          (replace 'install
            (install-from-pom "pom.xml")))))
     (inputs

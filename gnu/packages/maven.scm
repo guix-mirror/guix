@@ -2836,16 +2836,14 @@ Maven project dependencies.")
 (define-public maven-enforcer-api
   (package
     (name "maven-enforcer-api")
-    (version "3.0.0-M3")
+    (version "3.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://apache/maven/enforcer/"
                                   "enforcer-" version "-source-release.zip"))
               (sha256
                (base32
-                "014cwj0dqa69nnlzcin8pk9wsjmmg71vsbcpb16cibcjpm6h9wjg"))
-              (patches
-                (search-patches "maven-enforcer-api-fix-old-dependencies.patch"))))
+                "1479yp58jv788xc1jc2sbdxpajlbvwlk60639vd2h4s8r6x7naqh"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "maven-enforcer-api.jar"
@@ -2879,12 +2877,13 @@ Maven project dependencies.")
          (add-before 'install 'fix-pom-versions
            (lambda _
              (substitute* "pom.xml"
-               (("3.8.1") ,(package-version java-commons-lang3))
-               (("1.4.1") ,(package-version maven-resolver-util))
-               (("1.12") ,(package-version java-commons-codec))
-               (("<version>2.2</version>")
-                ,(string-append "<version>" (package-version maven-dependency-tree)
-                                "</version>")))))
+               (("<maven.version>.*</maven.version>")
+                ,(string-append "<maven.version>" (package-version maven)
+                                "</maven.version>"))
+               (("2.11.0") ,(package-version java-commons-io))
+               (("3.12.0") ,(package-version java-commons-lang3))
+               (("1.6.1") ,(package-version maven-resolver-util))
+               (("1.15") ,(package-version java-commons-codec)))))
          (replace 'install
            (install-pom-file "pom.xml")))))
     (propagated-inputs
