@@ -810,14 +810,14 @@ replacement with improvements.")
 (define-public maven-wagon-provider-api
   (package
     (name "maven-wagon-provider-api")
-    (version "3.3.4")
+    (version "3.4.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.apache.org/dist/maven/wagon/"
                                   "wagon-" version "-source-release.zip"))
               (sha256
                (base32
-                "1iq9bilgfklzbxwwhzi3f19mkbaaf9dh9f83h3yz5gbmvypask9a"))))
+                "1rnviw0yr4g5902fb8pkd1gyvci4bz7hndjvhkqmnkj7ay0y6mf0"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "maven-wagon-provider-api.jar"
@@ -934,7 +934,6 @@ classes used in multiple maven-wagon components.")))
        ("java-commons-cli" ,java-commons-cli)
        ("java-qdox" ,java-qdox)
        ("java-jdom2" ,java-jdom2)
-       ("java-asm" ,java-asm)
        ("java-geronimo-xbean-reflect" ,java-geronimo-xbean-reflect)
        ,@(package-native-inputs maven-wagon-provider-api)))
     (synopsis "Wagon provider that gets and puts artifacts using the file system")
@@ -1022,7 +1021,6 @@ Test Compatibility Kit.")))
        ("java-commons-cli" ,java-commons-cli)
        ("java-qdox" ,java-qdox)
        ("java-jdom2" ,java-jdom2)
-       ("java-asm" ,java-asm)
        ("java-geronimo-xbean-reflect" ,java-geronimo-xbean-reflect)
        ,@(package-native-inputs maven-wagon-provider-api)))
     (synopsis "Shared Library for wagon providers supporting HTTP")
@@ -1095,7 +1093,6 @@ wagon providers supporting HTTP.")))
        ("java-commons-cli" ,java-commons-cli)
        ("java-qdox" ,java-qdox)
        ("java-jdom2" ,java-jdom2)
-       ("java-asm" ,java-asm)
        ("java-geronimo-xbean-reflect" ,java-geronimo-xbean-reflect)
        ("java-javaee-servletapi" ,java-javaee-servletapi)
        ("java-eclipse-jetty-util-9.2" ,java-eclipse-jetty-util-9.2)
