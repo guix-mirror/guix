@@ -101,3 +101,48 @@
        "crun is a fast and low-memory footprint Open Container Initiative (OCI)
 Container Runtime fully written in C.")
       (license license:gpl2+))))
+
+(define-public conmon
+  (package
+    (name "conmon")
+    (version "2.0.30")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/containers/conmon")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32 "1sxpbm01g4xak4kqwvk45gmzr6n9bjzlfp1j85wyz8rj2hg2x4rm"))
+       (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags (list ,(string-append "CC=" (cc-for-target))
+                          (string-append "PREFIX=" %output))
+       ;; XXX: uses `go get` to download 50 packages, runs a ginkgo test suite
+       ;; then tries to download busybox and use a systemd logging library
+       ;; see also https://github.com/containers/conmon/blob/main/nix/derivation.nix
+       #:tests? #f
+       #:test-target "test"
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure)
+                  (add-after 'unpack 'set-env
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      ;; when running go, things fail because
+                      ;; HOME=/homeless-shelter.
+                      (setenv "HOME" "/tmp"))))))
+    (inputs
+     (list crun
+           glib
+           libseccomp))
+    (native-inputs
+     (list git
+           go
+           pkg-config))
+    (home-page "https://github.com/containers/conmon")
+    (synopsis "Monitoring tool for Open Container Initiative (OCI) runtime")
+    (description
+     "Conmon is a monitoring program and communication tool between a container
+manager (like Podman or CRI-O) and an Open Container Initiative (OCI)
+runtime (like runc or crun) for a single container.")
+    (license license:asl2.0)))
