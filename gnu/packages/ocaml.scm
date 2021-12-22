@@ -2551,14 +2551,14 @@ message report is decoupled from logging and is handled by a reporter.")
 (define-public ocaml-fpath
   (package
     (name "ocaml-fpath")
-    (version "0.7.2")
+    (version "0.7.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://erratique.ch/software/fpath/releases/"
                                   "fpath-" version ".tbz"))
               (sha256
                 (base32
-                  "1hr05d8bpqmqcfdavn4rjk9rxr7v2zl84866f5knjifrm60sxqic"))))
+                  "03z7mj0sqdz465rc4drj1gr88l9q3nfs374yssvdjdyhjbqqzc0j"))))
     (build-system ocaml-build-system)
     (arguments
      `(#:tests? #f
