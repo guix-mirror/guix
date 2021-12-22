@@ -2,7 +2,7 @@
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014 Kevin Lemonnier <lemonnierk@ulrar.net>
 ;;; Copyright © 2015, 2017 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Nikita <nikita@n0.is>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017–2021 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -200,7 +200,10 @@ SILC and ICB protocols via plugins.")
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)
-       ("ruby-asciidoctor" ,ruby-asciidoctor)
+       ,@(if (or (target-x86-64?)
+                 (target-x86-32?))
+           `(("ruby-asciidoctor" ,ruby-asciidoctor))
+           '())
        ;; For tests.
        ("cpputest" ,cpputest)))
     (inputs
@@ -220,19 +223,25 @@ SILC and ICB protocols via plugins.")
     (arguments
      `(#:configure-flags
        (list "-DENABLE_PHP=OFF"
-             "-DENABLE_MAN=ON"
-             "-DENABLE_DOC=ON"
+             ,@(if (or (target-x86-64?)
+                       (target-x86-32?))
+                 '("-DENABLE_MAN=ON"
+                   "-DENABLE_DOC=ON")
+                '())
              "-DENABLE_TESTS=ON")       ; ‘make test’ fails otherwise
        #:phases
        (modify-phases %standard-phases
-         (add-after 'install 'move-doc
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                   (doc (assoc-ref outputs "doc"))
-                   (from (string-append out "/share/doc/weechat"))
-                   (to (string-append doc "/share/doc/weechat")))
-               (mkdir-p (string-append doc "/share/doc"))
-               (rename-file from to)))))
+         ,@(if (or (target-x86-64?)
+                   (target-x86-32?))
+             '((add-after 'install 'move-doc
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (let* ((out (assoc-ref outputs "out"))
+                         (doc (assoc-ref outputs "doc"))
+                         (from (string-append out "/share/doc/weechat"))
+                         (to (string-append doc "/share/doc/weechat")))
+                     (mkdir-p (string-append doc "/share/doc"))
+                     (rename-file from to)))))
+             '()))
        ;; Tests hang indefinitely on non-Intel platforms.
        #:tests? ,(if (any (cute string-prefix? <> (or (%current-target-system)
                                                       (%current-system)))
