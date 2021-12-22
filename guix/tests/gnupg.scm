@@ -35,6 +35,7 @@
 
             read-openpgp-packet
             key-fingerprint
+            key-fingerprint-vector
             key-id))
 
 (define gpg-command
@@ -82,7 +83,10 @@ process is terminated afterwards."
    (open-bytevector-input-port
     (call-with-input-file file read-radix-64))))
 
+(define key-fingerprint-vector
+  (compose openpgp-public-key-fingerprint
+           read-openpgp-packet))
+
 (define key-fingerprint
   (compose openpgp-format-fingerprint
-           openpgp-public-key-fingerprint
-           read-openpgp-packet))
+           key-fingerprint-vector))
