@@ -202,14 +202,9 @@ protocol.")
                          (package-version python))
                        "/site-packages"))))
     (native-inputs
-     (list doxygen
-           perl
-           perl-devel-checklib
-           pkg-config
-           python-wrapper
-           swig))
+     (list doxygen perl perl-devel-checklib pkg-config swig))
     (inputs
-     (list libpcap nss-certs openssl))
+     (list libpcap nss-certs openssl python-wrapper))
     (synopsis "DNS library that facilitates DNS tool programming")
     (description "LDNS aims to simplify DNS programming, it supports recent
 RFCs like the DNSSEC documents, and allows developers to easily create
