@@ -811,7 +811,7 @@ passphrases.")
 (define-public ndctl
   (package
     (name "ndctl")
-    (version "71.1")
+    (version "72")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -820,7 +820,7 @@ passphrases.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1vi61bm9wyawklswh9mj9zdp28ar7r97qckwnhgiyila73fb3jx2"))))
+                "1m9kmzqqy395p2zmcaspw2q5ailagi1xy47hkvjp3lfp48zcrpbi"))))
     (build-system gnu-build-system)
     (native-inputs
      (list asciidoc
@@ -835,7 +835,11 @@ passphrases.")
            ;; Required for offline docbook generation.
            which))
     (inputs
-     (list eudev json-c keyutils kmod
+     (list eudev
+           iniparser
+           json-c
+           keyutils
+           kmod
            `(,util-linux "lib")))
     (arguments
      `(#:configure-flags
@@ -843,13 +847,16 @@ passphrases.")
              "--without-systemd")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-include
+           (lambda _
+             (substitute* "util/parse-configs.c"
+               (("iniparser/") ""))))
          (add-after 'unpack 'patch-FHS-file-names
            (lambda _
              (substitute* "git-version-gen"
                (("/bin/sh") (which "sh")))
              (substitute* "git-version"
-               (("/bin/bash") (which "bash")))
-             #t)))
+               (("/bin/bash") (which "bash"))))))
        #:make-flags
        (let ((out (assoc-ref %outputs "out")))
          (list (string-append "BASH_COMPLETION_DIR=" out
