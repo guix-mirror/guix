@@ -93,6 +93,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system scons)
   #:use-module (guix download)
+  #:use-module (guix gexp)
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
@@ -822,6 +823,25 @@ passphrases.")
                (base32
                 "1m9kmzqqy395p2zmcaspw2q5ailagi1xy47hkvjp3lfp48zcrpbi"))))
     (build-system gnu-build-system)
+    (arguments
+     (list #:configure-flags
+           #~(list "--disable-asciidoctor" ; use docbook-xsl instead
+                   "--without-systemd")
+           #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'unpack 'fix-include
+                 (lambda _
+                   (substitute* "util/parse-configs.c"
+                     (("iniparser/") ""))))
+               (add-after 'unpack 'patch-FHS-file-names
+                 (lambda _
+                   (substitute* "git-version-gen"
+                     (("/bin/sh") (which "sh")))
+                   (substitute* "git-version"
+                     (("/bin/bash") (which "bash"))))))
+           #:make-flags
+           #~(list (string-append "BASH_COMPLETION_DIR=" #$output
+                                  "/share/bash-completion/completions"))))
     (native-inputs
      (list asciidoc
            automake
@@ -841,26 +861,6 @@ passphrases.")
            keyutils
            kmod
            `(,util-linux "lib")))
-    (arguments
-     `(#:configure-flags
-       (list "--disable-asciidoctor"    ; use docbook-xsl instead
-             "--without-systemd")
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-include
-           (lambda _
-             (substitute* "util/parse-configs.c"
-               (("iniparser/") ""))))
-         (add-after 'unpack 'patch-FHS-file-names
-           (lambda _
-             (substitute* "git-version-gen"
-               (("/bin/sh") (which "sh")))
-             (substitute* "git-version"
-               (("/bin/bash") (which "bash"))))))
-       #:make-flags
-       (let ((out (assoc-ref %outputs "out")))
-         (list (string-append "BASH_COMPLETION_DIR=" out
-                              "/share/bash-completion/completions")))))
     (home-page "https://github.com/pmem/ndctl")
     (synopsis "Manage the non-volatile memory device sub-system in the Linux kernel")
     (description
