@@ -1228,8 +1228,8 @@ environments.")
     (license (list license:gpl3+ license:agpl3+ license:silofl1.1))))
 
 (define-public guix-build-coordinator
-  (let ((commit "6b6218d86d406206f4bb4cac7123955ec17e4b82")
-        (revision "41"))
+  (let ((commit "9f5b8b7fbc4dc57481b191e705fc15d6bec1ebed")
+        (revision "42"))
     (package
       (name "guix-build-coordinator")
       (version (git-version "0" revision commit))
@@ -1240,7 +1240,7 @@ environments.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "0pnj9vi6v5rhjxchz24xhk5qcq0z51yw20bdgybv5hcw1wi05r2m"))
+                  "0i9gjak2l1i1y2al2yc6hhm1sjd218cyprl6c8bss9bkq7hcikrc"))
                 (file-name (string-append name "-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -1317,41 +1317,41 @@ environments.")
                #t))
            (delete 'strip))))             ; As the .go files aren't compatible
       (native-inputs
-       `(("pkg-config" ,pkg-config)
-         ("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("gnutls" ,gnutls)
+       (list pkg-config
+             autoconf
+             automake
+             gnutls
 
-         ;; Guile libraries are needed here for cross-compilation.
-         ("guile-json" ,guile-json-4)
-         ("guile-gcrypt" ,guile-gcrypt)
-         ("guix" ,guix)
-         ("guile-prometheus" ,guile-prometheus)
-         ("guile-fibers" ,guile-fibers)
-         ("guile-lib" ,guile-lib)
-         ("guile" ,@(assoc-ref (package-native-inputs guix) "guile"))))
+             ;; Guile libraries are needed here for cross-compilation.
+             guile-json-4
+             guile-gcrypt
+             guix
+             guile-prometheus
+             guile-fibers
+             guile-lib
+             (first (assoc-ref (package-native-inputs guix) "guile"))))
       (inputs
-       `(("guile" ,@(assoc-ref (package-native-inputs guix) "guile"))
-         ,@(if (%current-target-system)
-               `(("bash" ,bash-minimal))
-               '())
-         ("sqlite" ,sqlite)
-         ,@(if (hurd-target?)
-               '()
-               `(("sqitch" ,sqitch)))))
+       (append
+        (list (first (assoc-ref (package-native-inputs guix) "guile"))
+              sqlite
+              bash-minimal)
+        (if (hurd-target?)
+            '()
+            (list sqitch))))
       (propagated-inputs
-       `(,@(if (hurd-target?)
-               '()
-               `(("guile-fibers" ,guile-fibers)))
-         ("guile-prometheus" ,guile-prometheus)
-         ("guile-gcrypt" ,guile-gcrypt)
-         ("guile-json" ,guile-json-4)
-         ("guile-lib" ,guile-lib)
-         ("guile-lzlib" ,guile-lzlib)
-         ("guile-zlib" ,guile-zlib)
-         ("guile-sqlite3" ,guile-sqlite3)
-         ("guix" ,guix)
-         ("gnutls" ,gnutls)))
+       (append
+        (list guile-prometheus
+              guile-gcrypt
+              guile-json-4
+              guile-lib
+              guile-lzlib
+              guile-zlib
+              guile-sqlite3
+              guix
+              gnutls)
+        (if (hurd-target?)
+            '()
+            (list guile-fibers))))
       (home-page "https://git.cbaines.net/guix/build-coordinator/")
       (synopsis "Tool to help build derivations")
       (description
