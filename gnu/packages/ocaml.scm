@@ -1836,31 +1836,32 @@ functions to the next and/or previous version.")
          "16x8sxc4ygxrr1868qpzfqyrvjf3hfxvjzmxmf6ibgglq7ixa2nq"))))
     (properties '((upstream-name . "ocaml-migrate-parsetree")))))
 
-(define-public ocaml-ppx-tools-versioned
-  (package
-    (name "ocaml-ppx-tools-versioned")
-    (version "5.4.0")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                     (url "https://github.com/ocaml-ppx/ppx_tools_versioned")
-                     (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "07lnj4yzwvwyh5fhpp1dxrys4ddih15jhgqjn59pmgxinbnddi66"))))
-    (build-system dune-build-system)
-    (arguments
-     `(#:test-target "."
-       #:package "ppx_tools_versioned"))
-    (propagated-inputs
-     `(("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree-1)))
-    (properties `((upstream-name . "ppx_tools_versioned")))
-    (home-page "https://github.com/let-def/ppx_tools_versioned")
-    (synopsis "Variant of ppx_tools")
-    (description "This package is a variant of ppx_tools based on
+(define-public ocaml4.07-ppx-tools-versioned
+  (package-with-ocaml4.07
+    (package
+      (name "ocaml-ppx-tools-versioned")
+      (version "5.4.0")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/ocaml-ppx/ppx_tools_versioned")
+                       (commit version)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "07lnj4yzwvwyh5fhpp1dxrys4ddih15jhgqjn59pmgxinbnddi66"))))
+      (build-system dune-build-system)
+      (arguments
+       `(#:test-target "."
+         #:package "ppx_tools_versioned"))
+      (propagated-inputs
+       (list ocaml-migrate-parsetree))
+      (properties `((upstream-name . "ppx_tools_versioned")))
+      (home-page "https://github.com/let-def/ppx_tools_versioned")
+      (synopsis "Variant of ppx_tools")
+      (description "This package is a variant of ppx_tools based on
 ocaml-migrate-parsetree")
-    (license license:expat)))
+      (license license:expat))))
 
 (define-public ocaml-bitstring
   (package
@@ -1913,7 +1914,7 @@ powerful.")
                  (base32
                   "15jjk2pq1vx311gl49s5ag6x5y0654x35w75z07g7kr2q334hqps"))))
       (propagated-inputs
-       `(("ocaml-ppx-tools-versioned" ,ocaml-ppx-tools-versioned)))
+       `(("ocaml-ppx-tools-versioned" ,ocaml4.07-ppx-tools-versioned)))
       (properties '()))))
  
 (define-public ocaml-result
@@ -2751,7 +2752,7 @@ and consumable.")
                 (base32
                  "05f6qa8x3vhpdz1fcnpqk37fpnyyq13icqsk2gww5idjnh6kng26"))))
      (propagated-inputs
-      `(("ocaml-ppx-tools-versioned" ,ocaml-ppx-tools-versioned)
+      `(("ocaml-ppx-tools-versioned" ,ocaml4.07-ppx-tools-versioned)
         ,@(package-propagated-inputs ocaml-sedlex)))
      (properties '()))))
 
@@ -6728,7 +6729,7 @@ then run the Bisect_ppx report tool on the generated visitation files.")
            "1njs8xc108rrpx5am5zhhcn6vjva7rsphm8034qp5lgyvnhfgh7q"))))
       (propagated-inputs
        `(("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
-         ("ocaml-ppx-tools-versioned" ,ocaml-ppx-tools-versioned)
+         ("ocaml-ppx-tools-versioned" ,ocaml4.07-ppx-tools-versioned)
          ,@(package-propagated-inputs ocaml-bisect-ppx)))
       (native-inputs
        `(("ocaml-ounit2" ,ocaml-ounit2)))
