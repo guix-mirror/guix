@@ -171,3 +171,44 @@ runtime (like runc or crun) for a single container.")
      "libslirp is a user-mode networking library used by virtual machines,
 containers or various tools.")
     (license license:bsd-3)))
+
+(define-public slirp4netns
+  (package
+    (name "slirp4netns")
+    (version "1.1.12")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rootless-containers/slirp4netns")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32 "03llv4dlf7qqxwz4zdyk926g4bigfj2gb50glm70ciflpvzs8081"))
+       (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ; XXX: open("/dev/net/tun"): No such file or directory
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'fix-hardcoded-paths
+                    (lambda _
+                      (substitute* (find-files "tests" "\\.sh")
+                        (("ping") "/run/setuid-programs/ping")))))))
+    (inputs
+     (list glib
+           libcap
+           libseccomp
+           libslirp))
+    (native-inputs
+     (list automake
+           autoconf
+           iproute ; iproute, jq, nmap (ncat) and util-linux are for tests
+           jq
+           nmap
+           pkg-config
+           util-linux))
+    (home-page "https://github.com/rootless-containers/slirp4netns")
+    (synopsis "User-mode networking for unprivileged network namespaces")
+    (description
+     "slirp4netns provides user-mode networking (\"slirp\") for unprivileged
+network namespaces.")
+    (license license:gpl2+)))
