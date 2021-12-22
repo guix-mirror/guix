@@ -212,3 +212,51 @@ containers or various tools.")
      "slirp4netns provides user-mode networking (\"slirp\") for unprivileged
 network namespaces.")
     (license license:gpl2+)))
+
+(define-public cni-plugins
+  (package
+    (name "cni-plugins")
+    (version "1.0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/containernetworking/plugins")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32 "1j91in0mg4nblpdccyq63ncbnn2pc2zzjp1fh3jy0bsndllgv0nc"))
+       (file-name (git-file-name name version))))
+    (build-system go-build-system)
+    (arguments
+     `(#:unpack-path "github.com/containernetworking/plugins"
+       #:tests? #f ; XXX: see stat /var/run below
+       #:phases (modify-phases %standard-phases
+                  (replace 'build
+                    (lambda _
+                      (with-directory-excursion
+                          "src/github.com/containernetworking/plugins"
+                        (invoke "./build_linux.sh"))))
+                  (replace 'check
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      ; only pkg/ns tests run without root
+                      (when tests?
+                        (with-directory-excursion
+                            "src/github.com/containernetworking/plugins/pkg/ns"
+                          (invoke "stat" "/var/run") ; XXX: test tries to stat this directory
+                          (invoke "unshare" "-rmn" "go" "test")))))
+                  (add-before 'check 'set-test-environment
+                    (lambda _
+                      (setenv "XDG_RUNTIME_DIR" "/tmp/cni-rootless")))
+                  (replace 'install
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (copy-recursively
+                       "src/github.com/containernetworking/plugins/bin"
+                       (string-append (assoc-ref outputs "out") "/bin")))))))
+    (native-inputs
+     (list util-linux))
+    (home-page "https://github.com/containernetworking/plugins")
+    (synopsis "Container Network Interface (CNI) network plugins")
+    (description
+     "This package provides Container Network Interface (CNI) plugins to
+configure network interfaces in Linux containers.")
+    (license license:asl2.0)))
