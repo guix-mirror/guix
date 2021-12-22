@@ -304,7 +304,7 @@
                             '())
                      "--foreground"
                      #$@(if rpcstatd-port
-                            '("--port" (number->string rpcstatd-port))
+                            #~("--port" #$(number->string rpcstatd-port))
                             '()))
                #:pid-file "/var/run/rpc.statd.pid"))
            (stop #~(make-kill-destructor)))
@@ -320,7 +320,7 @@
                             '("--debug" "all")
                             '())
                      #$@(if rpcmountd-port
-                            '("--port" (number->string rpcmountd-port))
+                            #~("--port" #$(number->string rpcmountd-port))
                             '()))))
            (stop #~(make-kill-destructor)))
           (shepherd-service
