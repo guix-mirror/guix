@@ -182,10 +182,10 @@ OCaml and can effectively bootstrap OCaml 4.07.
 This package produces a native @command{ocamlc} and a bytecode @command{ocamllex}.")
       (license license:expat))))
 
-(define-public ocaml-4.11
+(define-public ocaml-4.13
   (package
     (name "ocaml")
-    (version "4.11.1")
+    (version "4.13.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -194,7 +194,7 @@ This package produces a native @command{ocamlc} and a bytecode @command{ocamllex
                     "/ocaml-" version ".tar.xz"))
               (sha256
                (base32
-                "0k4521c0p10c5ams6vjv5qkkjhmpkb0bfn04llcz46ah0f3r2jpa"))))
+                "1s7xwqidpjwfhnpfma4nb93gxfr7g9jfn03s1j03iyavmpgph7ck"))))
     (build-system gnu-build-system)
     (native-search-paths
      (list (search-path-specification
@@ -209,6 +209,53 @@ This package produces a native @command{ocamlc} and a bytecode @command{ocamllex
     (inputs
      (list libx11 libiberty ;needed for objdump support
            zlib))                       ;also needed for objdump support
+    (arguments
+     `(#:configure-flags '("--enable-ocamltest")
+       #:test-target "tests"
+       #:make-flags '("world.opt")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-/bin/sh-references
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((sh (search-input-file inputs "/bin/sh"))
+                    (quoted-sh (string-append "\"" sh "\"")))
+               (with-fluids ((%default-port-encoding #f))
+                 (for-each
+                  (lambda (file)
+                    (substitute* file
+                      (("\"/bin/sh\"")
+                       (begin
+                         (format (current-error-port) "\
+patch-/bin/sh-references: ~a: changing `\"/bin/sh\"' to `~a'~%"
+                                 file quoted-sh)
+                         quoted-sh))))
+                  (find-files "." "\\.ml$")))))))))
+    (home-page "https://ocaml.org/")
+    (synopsis "The OCaml programming language")
+    (description
+     "OCaml is a general purpose industrial-strength programming language with
+an emphasis on expressiveness and safety.  Developed for more than 20 years at
+Inria it benefits from one of the most advanced type systems and supports
+functional, imperative and object-oriented styles of programming.")
+    ;; The compiler is distributed under qpl1.0 with a change to choice of
+    ;; law: the license is governed by the laws of France.  The library is
+    ;; distributed under lgpl2.0.
+    (license (list license:qpl license:lgpl2.0))))
+
+(define-public ocaml-4.09
+  (package
+    (inherit ocaml-4.13)
+    (version "4.09.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://caml.inria.fr/pub/distrib/ocaml-"
+                    (version-major+minor version)
+                    "/ocaml-" version ".tar.xz"))
+              (patches (search-patches "ocaml-4.09-multiple-definitions.patch"))
+              (sha256
+               (base32
+                "1v3z5ar326f3hzvpfljg4xj8b9lmbrl53fn57yih1bkbx3gr3yzj"))))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -226,8 +273,7 @@ This package produces a native @command{ocamlc} and a bytecode @command{ocamllex
 patch-/bin/sh-references: ~a: changing `\"/bin/sh\"' to `~a'~%"
                                  file quoted-sh)
                          quoted-sh))))
-                  (find-files "." "\\.ml$"))
-                 #t))))
+                  (find-files "." "\\.ml$"))))))
          (replace 'build
            (lambda _
              (invoke "make" "-j" (number->string (parallel-job-count))
@@ -235,33 +281,7 @@ patch-/bin/sh-references: ~a: changing `\"/bin/sh\"' to `~a'~%"
          (replace 'check
            (lambda _
              (with-directory-excursion "testsuite"
-               (invoke "make" "all")))))))
-    (home-page "https://ocaml.org/")
-    (synopsis "The OCaml programming language")
-    (description
-     "OCaml is a general purpose industrial-strength programming language with
-an emphasis on expressiveness and safety.  Developed for more than 20 years at
-Inria it benefits from one of the most advanced type systems and supports
-functional, imperative and object-oriented styles of programming.")
-    ;; The compiler is distributed under qpl1.0 with a change to choice of
-    ;; law: the license is governed by the laws of France.  The library is
-    ;; distributed under lgpl2.0.
-    (license (list license:qpl license:lgpl2.0))))
-
-(define-public ocaml-4.09
-  (package
-    (inherit ocaml-4.11)
-    (version "4.09.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "http://caml.inria.fr/pub/distrib/ocaml-"
-                    (version-major+minor version)
-                    "/ocaml-" version ".tar.xz"))
-              (patches (search-patches "ocaml-4.09-multiple-definitions.patch"))
-              (sha256
-               (base32
-                "1v3z5ar326f3hzvpfljg4xj8b9lmbrl53fn57yih1bkbx3gr3yzj"))))))
+               (invoke "make" "all")))))))))
 
 ;; This package is a bootstrap package for ocaml-4.07. It builds from camlboot,
 ;; using the upstream sources for ocaml 4.07. It installs a bytecode ocamllex
@@ -440,7 +460,7 @@ depend: $(STDLIB_MLIS) $(STDLIB_DEPS)"))
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)))))
 
-(define-public ocaml ocaml-4.11)
+(define-public ocaml ocaml-4.13)
 
 (define-public ocamlbuild
   (package
@@ -4737,7 +4757,7 @@ format}.  @code{craml} is released as a single binary (called @code{craml}).")
 (define-public ocaml-dot-merlin-reader
   (package
     (name "ocaml-dot-merlin-reader")
-    (version "4.3.1-411")
+    (version "4.4-413")
     (source
      (origin
        (method git-fetch)
@@ -4747,7 +4767,7 @@ format}.  @code{craml} is released as a single binary (called @code{craml}).")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1nwgc9nyy80dc9cgkskyfwv9c785yjyg39s005d4wiagj4fy68v8"))))
+         "0wijg1vh2q6yr46vkv34vvksligd0ajl4hv7m6qbz3ywqr8akg23"))))
     (build-system dune-build-system)
     (arguments '(#:package "dot-merlin-reader"
                  #:tests? #f))          ; no tests
@@ -7619,7 +7639,7 @@ libraries.")
 (define-public js-of-ocaml
   (package
     (name "js-of-ocaml")
-    (version "3.9.1")
+    (version "3.11.0")
     (source
      (origin
        (method git-fetch)
@@ -7628,9 +7648,20 @@ libraries.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "00hdjaj94j3nc6f6wbbpx59h4yc79siphs34i1hry11r56paaqyk"))))
+        (base32 "1x5f1ph9wgx0mgyibssssnrcwp69ihw66gzhsnz9h79czgzyjpp2"))))
     (build-system dune-build-system)
-    (arguments `(#:test-target "."))
+    (arguments
+     `(#:test-target "."
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'fix-failing-test
+           (lambda _
+             ;; Formating difference
+             (with-output-to-file "compiler/tests-jsoo/bin/error2.expected"
+               (lambda _
+                 (format #t
+                         "Fatal error: exception Match_failure(\
+\"compiler/tests-jsoo/bin/error2.ml\", 11, 2)\n\n"))))))))
     (propagated-inputs
      (list ocaml-ppxlib
            ocaml-uchar
