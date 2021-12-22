@@ -9,7 +9,7 @@
 ;;; Copyright © 2017 Frederick M. Muriithi <fredmanglis@gmail.com>
 ;;; Copyright © 2017 Christine Lemmer-Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
-;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2019, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2019 Alexandros Theodotou <alex@zrythm.org>
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
@@ -919,7 +919,7 @@ automated way to document command-line programs.  It scans
      (list python-beautifulsoup4))
     (native-inputs
      (list python-beautifulsoup4
-           python-docutils
+           python-docutils-0.15
            python-jupyter-sphinx
            python-numpy
            python-numpydoc
@@ -929,9 +929,7 @@ automated way to document command-line programs.  It scans
            python-pytest-regressions
            python-recommonmark
            python-sphinx
-           python-xarray
-           python-docutils
-           python-sphinx))
+           python-xarray))
     (home-page "https://github.com/pydata/pydata-sphinx-theme")
     (synopsis "Bootstrap-based Sphinx theme")
     (description
