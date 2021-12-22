@@ -213,21 +213,21 @@ provided, as well as a framework to add new color models and data types.")
 (define-public gegl
   (package
     (name "gegl")
-    (version "0.4.32")
-    (source (origin
-              (method url-fetch)
-              (uri (list (string-append "https://download.gimp.org/pub/gegl/"
-                                        (string-take version 3)
-                                        "/gegl-" version ".tar.xz")
-                         (string-append "https://ftp.gtk.org/pub/gegl/"
-                                        (version-major+minor version)
-                                        "/gegl-" version ".tar.xz")
-                         (string-append "ftp://ftp.gtk.org/pub/gegl/"
-                                        (version-major+minor version)
-                                        "/gegl-" version ".tar.xz")))
-              (sha256
-               (base32
-                "18cg566lplw7y7dn5v05pal24vxbfiic6097a40gnxdgkxmkr3k6"))))
+    (version "0.4.34")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (list (string-append "https://download.gimp.org/pub/gegl/"
+                                 (string-take version 3)
+                                 "/gegl-" version ".tar.xz")
+                  (string-append "https://ftp.gtk.org/pub/gegl/"
+                                 (version-major+minor version)
+                                 "/gegl-" version ".tar.xz")
+                  (string-append "ftp://ftp.gtk.org/pub/gegl/"
+                                 (version-major+minor version)
+                                 "/gegl-" version ".tar.xz")))
+       (sha256
+        (base32 "1amazk6g9dk76rxwaqa81j87ql5vgz539n6xk88wccdllnyg0qzg"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
@@ -269,7 +269,7 @@ provided, as well as a framework to add new color models and data types.")
        ("poppler" ,poppler)
        ("sdl2" ,sdl2)))
     (native-inputs
-     (list `(,glib "bin") ; for gtester
+     (list `(,glib "bin")               ; for gtester
            gobject-introspection
            intltool
            pkg-config
