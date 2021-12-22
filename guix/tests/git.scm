@@ -26,6 +26,7 @@
   #:use-module (ice-9 control)
   #:export (git-command
             with-temporary-git-repository
+            with-git-repository
             find-commit))
 
 (define git-command
@@ -59,8 +60,9 @@ Return DIRECTORY on success."
         (apply invoke (git-command) "-C" directory
                command args)))))
 
-  (mkdir-p directory)
-  (git "init")
+  (unless (directory-exists? (string-append directory "/.git"))
+    (mkdir-p directory)
+    (git "init"))
 
   (let loop ((directives directives))
     (match directives
@@ -78,6 +80,9 @@ Return DIRECTORY on success."
                       port)))
          (git "add" file)
          (loop rest)))
+      ((('add file-name-and-content) rest ...)
+       (loop (cons `(add ,file-name-and-content ,file-name-and-content)
+                   rest)))
       ((('remove file) rest ...)
        (git "rm" "-f" file)
        (loop rest))
@@ -99,12 +104,18 @@ Return DIRECTORY on success."
       ((('checkout branch) rest ...)
        (git "checkout" branch)
        (loop rest))
+      ((('checkout branch 'orphan) rest ...)
+       (git "checkout" "--orphan" branch)
+       (loop rest))
       ((('merge branch message) rest ...)
        (git "merge" branch "-m" message)
        (loop rest))
       ((('merge branch message ('signer fingerprint)) rest ...)
        (git "merge" branch "-m" message
             (string-append "--gpg-sign=" fingerprint))
+       (loop rest))
+      ((('reset to) rest ...)
+       (git "reset" "--hard" to)
        (loop rest)))))
 
 (define (call-with-temporary-git-repository directives proc)
@@ -120,6 +131,14 @@ per DIRECTIVES."
   (call-with-temporary-git-repository directives
                                       (lambda (directory)
                                         exp ...)))
+
+(define-syntax-rule (with-git-repository directory
+                                         directives exp ...)
+  "Evaluate EXP in a context where DIRECTORY is (further) populated as
+per DIRECTIVES."
+  (begin
+    (populate-git-repository directory directives)
+    exp ...))
 
 (define (find-commit repository message)
   "Return the commit in REPOSITORY whose message includes MESSAGE, a string."
