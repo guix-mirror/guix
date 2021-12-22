@@ -152,7 +152,7 @@ C/C++ part.")
 (define-public java-icu4j
   (package
     (name "java-icu4j")
-    (version "66.1")
+    (version "70.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -162,7 +162,7 @@ C/C++ part.")
                     (string-map (lambda (x) (if (char=? x #\.) #\_ x)) version)
                     ".tgz"))
               (sha256
-               (base32 "1ahdyz9209lwl7knb2l3gmnkkby221p0vpgx70fj4j02rdzgvw0d"))))
+               (base32 "0qrs75iyzn19kf54q55jn8wf6xjlpkrihdwqpxm39jdh2hz4cgvj"))))
     (build-system ant-build-system)
     (arguments
      `(#:make-flags
@@ -183,22 +183,19 @@ C/C++ part.")
        (modify-phases %standard-phases
          (add-before 'configure 'chdir
            (lambda _
-             (chdir "..")
-             #t))
+             (chdir "..")))
          (add-before 'build 'remove-ivy
            (lambda _
              ;; This target wants to download ivy and use it to download
              ;; junit.
              (substitute* "build.xml"
-               (("depends=\"test-init-junit-dependency\"") ""))
-             #t))
+               (("depends=\"test-init-junit-dependency\"") ""))))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((share (string-append (assoc-ref outputs "out")
                                          "/share/java/")))
                (mkdir-p share)
-               (install-file "icu4j.jar" share)
-               #t))))))
+               (install-file "icu4j.jar" share)))))))
     (native-inputs
      (list java-junit java-junitparams java-hamcrest-core))
     (home-page "http://site.icu-project.org/")
