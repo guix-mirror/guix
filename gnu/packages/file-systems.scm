@@ -484,16 +484,16 @@ performance and other characteristics.")
       (license license:gpl2+))))
 
 (define-public bcachefs-tools/static
-   (package
-     (inherit bcachefs-tools)
-     (name "bcachefs-tools-static")
-     (arguments
-      (substitute-keyword-arguments (package-arguments bcachefs-tools)
-        ((#:make-flags make-flags)
-         `(append ,make-flags
-                  (list "LDFLAGS=-static")))
-        ((#:phases phases)
-         `(modify-phases ,phases
+  (package
+    (inherit bcachefs-tools)
+    (name "bcachefs-tools-static")
+    (arguments
+     (substitute-keyword-arguments (package-arguments bcachefs-tools)
+       ((#:make-flags make-flags)
+        #~(append #$make-flags
+              (list "LDFLAGS=-static")))
+       ((#:phases phases)
+        #~(modify-phases #$phases
             (add-after 'unpack 'skip-shared-library
               (lambda _
                 (substitute* "Makefile"
