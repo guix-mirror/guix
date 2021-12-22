@@ -64,6 +64,7 @@
       ("guile-gcrypt"  (ref '(gnu packages gnupg) 'guile-gcrypt))
       ("gnutls"     (ref '(gnu packages tls) 'gnutls))
       ("disarchive" (ref '(gnu packages backup) 'disarchive))
+      ("guile-lzma" (ref '(gnu packages guile) 'guile-lzma))
       ("gzip"       (ref '(gnu packages compression) 'gzip))
       ("bzip2"      (ref '(gnu packages compression) 'bzip2))
       ("xz"         (ref '(gnu packages compression) 'xz))
@@ -789,6 +790,9 @@ itself."
   (define disarchive
     (specification->package "disarchive"))
 
+  (define guile-lzma
+    (specification->package "guile-lzma"))
+
   (define dependencies
     (append-map transitive-package-dependencies
                 (list guile-gcrypt gnutls guile-git guile-avahi
@@ -1009,7 +1013,9 @@ itself."
                 (command  (guix-command modules
                                         #:source source
                                         #:dependencies
-                                        (cons disarchive dependencies)
+                                        (cons* disarchive
+                                               guile-lzma
+                                               dependencies)
                                         #:guile guile-for-build
                                         #:guile-version guile-version)))
            (whole-package name modules dependencies
