@@ -157,6 +157,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/configuration-management.scm	\
   %D%/packages/conky.scm			\
   %D%/packages/connman.scm			\
+  %D%/packages/containers.scm			\
   %D%/packages/convmv.scm			\
   %D%/packages/cook.scm				\
   %D%/packages/coq.scm				\
