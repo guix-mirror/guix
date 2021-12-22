@@ -146,3 +146,28 @@ Container Runtime fully written in C.")
 manager (like Podman or CRI-O) and an Open Container Initiative (OCI)
 runtime (like runc or crun) for a single container.")
     (license license:asl2.0)))
+
+(define-public libslirp
+  (package
+    (name "libslirp")
+    (version "4.6.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.freedesktop.org/slirp/libslirp")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32 "1b4cn51xvzbrxd63g6w1033prvbxfxsnsn1l0fa5i311xv28vkh0"))
+       (file-name (git-file-name name version))))
+    (build-system meson-build-system)
+    (inputs
+     (list glib))
+    (native-inputs
+     (list pkg-config))
+    (home-page "https://gitlab.freedesktop.org/slirp/libslirp")
+    (synopsis "User-mode networking library")
+    (description
+     "libslirp is a user-mode networking library used by virtual machines,
+containers or various tools.")
+    (license license:bsd-3)))
