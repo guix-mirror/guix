@@ -56,7 +56,6 @@
   #:re-export (%current-system
                %current-target-system
                search-path-specification)         ;for convenience
-  #:re-export-and-replace (delete)                ;used as syntactic keyword
   #:replace ((define-public* . define-public))
   #:export (content-hash
             content-hash?
@@ -180,6 +179,11 @@
             package->derivation
             package->cross-derivation
             origin->derivation))
+
+;; The 'source-module-closure' procedure ca. 1.2.0 did not recognize
+;; #:re-export-and-replace: <https://issues.guix.gnu.org/52694>.
+;; Work around it.
+(module-re-export! (current-module) '(delete) #:replace? #t)
 
 ;;; Commentary:
 ;;;
