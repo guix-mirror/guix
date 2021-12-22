@@ -241,12 +241,7 @@ SILC and ICB protocols via plugins.")
                          (to (string-append doc "/share/doc/weechat")))
                      (mkdir-p (string-append doc "/share/doc"))
                      (rename-file from to)))))
-             '()))
-       ;; Tests hang indefinitely on non-Intel platforms.
-       #:tests? ,(if (any (cute string-prefix? <> (or (%current-target-system)
-                                                      (%current-system)))
-                          '("i686" "x86_64"))
-                   '#t '#f)))
+             '()))))
     (synopsis "Extensible chat client")
     (description "WeeChat (Wee Enhanced Environment for Chat) is an
 @dfn{Internet Relay Chat} (IRC) client, which is designed to be light and fast.
