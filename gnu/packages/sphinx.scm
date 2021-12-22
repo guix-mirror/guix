@@ -956,7 +956,6 @@ automated way to document command-line programs.  It scans
            python-numpy
            python-numpydoc
            python-pandas
-           python-plotly
            python-pytest
            python-pytest-regressions
            python-recommonmark

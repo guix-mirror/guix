@@ -66,13 +66,13 @@
 (define-public python-scipy
   (package
     (name "python-scipy")
-    (version "1.6.0")
+    (version "1.7.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "scipy" version))
        (sha256
-        (base32 "0rh5b1rwdcvvagld8vpxnpaibszy1skpx39a0fwzd5gx5pwcjvfb"))))
+        (base32 "1gxsnw6viz2j3sm8ak2a8l7fcn4b2zm3kzfm8w57xxyyrzx7an5b"))))
     (build-system python-build-system)
     (propagated-inputs
      (list python-numpy python-matplotlib python-pyparsing))
@@ -80,8 +80,10 @@
      (list openblas pybind11))
     (native-inputs
      (list python-cython
+           python-pydata-sphinx-theme
            python-pytest
            python-sphinx
+           python-sphinx-panels
            python-numpydoc
            gfortran
            perl
@@ -90,11 +92,13 @@
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'disable-pythran
+           (lambda _
+             (setenv "SCIPY_USE_PYTHRAN" "0")))
          (add-before 'build 'change-home-dir
            (lambda _
              ;; Change from /homeless-shelter to /tmp for write permission.
-             (setenv "HOME" "/tmp")
-             #t))
+             (setenv "HOME" "/tmp")))
          (add-after 'unpack 'disable-broken-tests
            (lambda _
              (substitute* "scipy/sparse/linalg/dsolve/tests/test_linsolve.py"
@@ -105,8 +109,7 @@
              (substitute* "scipy/sparse/linalg/eigen/arpack/tests/test_arpack.py"
                (("^def test_parallel_threads\\(\\):" m)
                 (string-append "@pytest.mark.skip(reason=\"Disabled by Guix\")\n"
-                               m)))
-             #t))
+                               m)))))
          (add-before 'build 'configure-openblas
            (lambda* (#:key inputs #:allow-other-keys)
              (call-with-output-file "site.cfg"
@@ -124,8 +127,7 @@ atlas_libs = openblas
 "
                          (assoc-ref inputs "openblas")
                          (assoc-ref inputs "openblas")
-                         (assoc-ref inputs "openblas"))))
-             #t))
+                         (assoc-ref inputs "openblas"))))))
          (add-after 'install 'install-doc
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((data (string-append (assoc-ref outputs "doc") "/share"))
@@ -151,8 +153,7 @@ atlas_libs = openblas
                                (let* ((dir (dirname file))
                                       (tgt-dir (string-append html "/" dir)))
                                  (install-file file html)))
-                             (find-files "." ".*")))))
-             #t))
+                             (find-files ".")))))))
          ;; Tests can only be run after the library has been installed and not
          ;; within the source directory.
          (delete 'check)
