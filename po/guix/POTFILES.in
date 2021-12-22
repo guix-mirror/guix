@@ -5,6 +5,8 @@ gnu/packages.scm
 gnu/services.scm
 gnu/system.scm
 gnu/services/shepherd.scm
+gnu/home/services.scm
+gnu/home/services/symlink-manager.scm
 gnu/system/file-systems.scm
 gnu/system/image.scm
 gnu/system/linux-container.scm

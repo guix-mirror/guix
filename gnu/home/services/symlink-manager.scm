@@ -41,7 +41,9 @@
        (use-modules (ice-9 ftw)
                     (ice-9 curried-definitions)
                     (ice-9 match)
-                    (srfi srfi-1))
+                    (srfi srfi-1)
+                    (guix i18n))
+       #$%initialize-gettext
        (define ((simplify-file-tree parent) file)
          "Convert the result produced by `file-system-tree' to less
 verbose and more suitable for further processing format.
@@ -139,20 +141,21 @@ appear only after all nested items already listed."
               (backup-file
                (lambda (path)
                  (mkdir-p backup-dir)
-                 (format #t "Backing up ~a..." (get-target-path path))
+                 (format #t (G_ "Backing up ~a...") (get-target-path path))
                  (mkdir-p (dirname (get-backup-path path)))
                  (rename-file (get-target-path path) (get-backup-path path))
-                 (display " done\n")))
+                 (display (G_ " done\n"))))
 
               (cleanup-symlinks
                (lambda ()
                  (let ((to-delete ((file-tree-traverse #f) old-tree)))
                    (display
-                    "Cleaning up symlinks from previous home-environment.\n\n")
+                    (G_
+                    "Cleaning up symlinks from previous home-environment.\n\n"))
                    (map
                     (match-lambda
                       (('dir . ".")
-                       (display "Cleanup finished.\n\n"))
+                       (display (G_ "Cleanup finished.\n\n")))
 
                       (('dir . path)
                        (if (and
@@ -160,12 +163,13 @@ appear only after all nested items already listed."
                             (directory? (get-target-path path))
                             (empty-directory? (get-target-path path)))
                            (begin
-                             (format #t "Removing ~a..."
+                             (format #t (G_ "Removing ~a...")
                                      (get-target-path path))
                              (rmdir (get-target-path path))
-                             (display " done\n"))
+                             (display (G_ " done\n")))
                            (format
-                            #t "Skipping ~a (not an empty directory)... done\n"
+                            #t
+                            (G_ "Skipping ~a (not an empty directory)... done\n")
                             (get-target-path path))))
 
                       (('file . path)
@@ -175,12 +179,12 @@ appear only after all nested items already listed."
                          ;; up later during create-symlinks phase.
                          (if (symlink-to-store? (get-target-path path))
                              (begin
-                               (format #t "Removing ~a..." (get-target-path path))
+                               (format #t (G_ "Removing ~a...") (get-target-path path))
                                (delete-file (get-target-path path))
-                               (display " done\n"))
+                               (display (G_ " done\n")))
                              (format
                               #t
-                              "Skipping ~a (not a symlink to store)... done\n"
+                              (G_ "Skipping ~a (not a symlink to store)... done\n")
                               (get-target-path path))))))
                     to-delete))))
 
@@ -191,9 +195,9 @@ appear only after all nested items already listed."
                     (match-lambda
                       (('dir . ".")
                        (display
-                        "New symlinks to home-environment will be created soon.\n")
+                        (G_ "New symlinks to home-environment will be created soon.\n"))
                        (format
-                        #t "All conflicting files will go to ~a.\n\n" backup-dir))
+                        #t (G_ "All conflicting files will go to ~a.\n\n") backup-dir))
 
                       (('dir . path)
                        (let ((target-path (get-target-path path)))
@@ -203,20 +207,20 @@ appear only after all nested items already listed."
 
                          (if (file-exists? target-path)
                              (format
-                              #t "Skipping   ~a (directory already exists)... done\n"
+                              #t (G_ "Skipping   ~a (directory already exists)... done\n")
                               target-path)
                              (begin
-                               (format #t "Creating   ~a..." target-path)
+                               (format #t (G_ "Creating   ~a...") target-path)
                                (mkdir target-path)
-                               (display " done\n")))))
+                               (display (G_ " done\n"))))))
 
                       (('file . path)
                        (when (file-exists? (get-target-path path))
                          (backup-file path))
-                       (format #t "Symlinking ~a -> ~a..."
+                       (format #t (G_ "Symlinking ~a -> ~a...")
                                (get-target-path path) (get-source-path path))
                        (symlink (get-source-path path) (get-target-path path))
-                       (display " done\n")))
+                       (display (G_ " done\n"))))
                     to-create)))))
 
          (when old-tree
@@ -227,7 +231,7 @@ appear only after all nested items already listed."
          (symlink new-home new-he-path)
          (rename-file new-he-path he-path)
 
-         (display " done\nFinished updating symlinks.\n\n")))))
+         (display (G_" done\nFinished updating symlinks.\n\n"))))))
 
 
 (define (update-symlinks-gexp _)

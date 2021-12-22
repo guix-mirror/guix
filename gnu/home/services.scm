@@ -19,6 +19,7 @@
 
 (define-module (gnu home services)
   #:use-module (gnu services)
+  #:use-module ((gnu packages package-management) #:select (guix))
   #:use-module (guix channels)
   #:use-module (guix monads)
   #:use-module (guix store)
@@ -28,7 +29,7 @@
   #:use-module (guix ui)
   #:use-module (guix discovery)
   #:use-module (guix diagnostics)
-
+  #:use-module (guix i18n)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match)
 
@@ -41,7 +42,9 @@
             home-run-on-change-service-type
             home-provenance-service-type
 
-            fold-home-service-types)
+            fold-home-service-types
+
+            %initialize-gettext)
 
   #:re-export (service
                service-type
@@ -274,25 +277,38 @@ directory containing FILES."
                 (description "Configuration files for programs that
 will be put in @file{~/.guix-home/files}.")))
 
+(define %initialize-gettext
+  #~(begin
+      (bindtextdomain %gettext-domain
+                      (string-append #$guix "/share/locale"))
+      (textdomain %gettext-domain)
+      (setlocale LC_ALL "")))
+
 (define (compute-on-first-login-script _ gexps)
   (program-file
    "on-first-login"
-   #~(let* ((xdg-runtime-dir (or (getenv "XDG_RUNTIME_DIR")
-                                 (format #f "/run/user/~a" (getuid))))
-            (flag-file-path (string-append
-                             xdg-runtime-dir "/on-first-login-executed"))
-            (touch (lambda (file-name)
-                     (call-with-output-file file-name (const #t)))))
-       ;; XDG_RUNTIME_DIR dissapears on logout, that means such trick
-       ;; allows to launch on-first-login script on first login only
-       ;; after complete logout/reboot.
-       (if (file-exists? xdg-runtime-dir)
-           (unless (file-exists? flag-file-path)
-             (begin #$@gexps (touch flag-file-path)))
-           (display "XDG_RUNTIME_DIR doesn't exists, on-first-login script
+   #~(begin
+       (use-modules (guix i18n))
+       #$%initialize-gettext
+
+       (let* ((xdg-runtime-dir (or (getenv "XDG_RUNTIME_DIR")
+                                   (format #f "/run/user/~a" (getuid))))
+              (flag-file-path (string-append
+                               xdg-runtime-dir "/on-first-login-executed"))
+              (touch (lambda (file-name)
+                       (call-with-output-file file-name (const #t)))))
+         ;; XDG_RUNTIME_DIR dissapears on logout, that means such trick
+         ;; allows to launch on-first-login script on first login only
+         ;; after complete logout/reboot.
+         (if (file-exists? xdg-runtime-dir)
+             (unless (file-exists? flag-file-path)
+               (begin #$@gexps (touch flag-file-path)))
+             ;; TRANSLATORS: 'on-first-login' is the name of a service and
+             ;; shouldn't be translated
+             (display (G_ "XDG_RUNTIME_DIR doesn't exists, on-first-login script
 won't execute anything.  You can check if xdg runtime directory exists,
 XDG_RUNTIME_DIR variable is set to appropriate value and manually execute the
-script by running '$HOME/.guix-home/on-first-login'")))))
+script by running '$HOME/.guix-home/on-first-login'")))))))
 
 (define (on-first-login-script-entry on-first-login)
   "Return, as a monadic value, an entry for the on-first-login script
@@ -385,6 +401,10 @@ with one gexp, but many times, and all gexps must be idempotent.")))
 
 (define (compute-on-change-gexp eval-gexps? pattern-gexp-tuples)
   #~(begin
+      (use-modules (guix i18n))
+
+      #$%initialize-gettext
+
       (define (equal-regulars? file1 file2)
         "Check if FILE1 and FILE2 are bit for bit identical."
         (let* ((cmp-binary #$(file-append
@@ -449,21 +469,23 @@ with one gexp, but many times, and all gexps must be idempotent.")))
                               "/gnu/store/non-existing-generation")
                           "/" (car x)))
                   (file2 (string-append (getenv "GUIX_NEW_HOME") "/" (car x)))
-                  (_ (format #t "Comparing ~a and\n~10t~a..." file1 file2))
+                  (_ (format #t (G_ "Comparing ~a and\n~10t~a...") file1 file2))
                   (any-changes? (something-changed? file1 file2))
-                  (_ (format #t " done (~a)\n"
+                  (_ (format #t (G_ " done (~a)\n")
                              (if any-changes? "changed" "same"))))
              (if any-changes? (cadr x) "")))
          '#$pattern-gexp-tuples))
 
       (if #$eval-gexps?
           (begin
-            (display "Evaling on-change gexps.\n\n")
+            ;;; TRANSLATORS: 'on-change' is the name of a service type, it
+            ;;; probably shouldn't be translated.
+            (display (G_ "Evaluating on-change gexps.\n\n"))
             (for-each primitive-eval expressions-to-eval)
-            (display "On-change gexps evaluation finished.\n\n"))
+            (display (G_ "On-change gexps evaluation finished.\n\n")))
           (display "\
-On-change gexps won't be evaluated, disabled by service
-configuration.\n"))))
+On-change gexps won't be evaluated; evaluation has been disabled in the
+service configuration"))))
 
 (define home-run-on-change-service-type
   (service-type (name 'home-run-on-change)
