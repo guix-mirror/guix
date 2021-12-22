@@ -203,7 +203,6 @@ protocol.")
                        "/site-packages"))))
     (native-inputs
      `(("doxygen" ,doxygen)
-       ("ksh" ,oksh)
        ("perl" ,perl)
        ("perl-devel-checklib" ,perl-devel-checklib)
        ("pkg-config" ,pkg-config)
