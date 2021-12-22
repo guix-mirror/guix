@@ -1810,31 +1810,32 @@ module of this library is parameterised by the type of S-expressions.")
     (propagated-inputs
      (list ocaml-ppx-derivers ocamlbuild ocaml-result))
     (properties `((upstream-name . "ocaml-migrate-parsetree")
-                  ;; OCaml 4.07 packages require version 1.*
-                  (ocaml4.07-variant . ,(delay (package-with-ocaml4.07 ocaml-migrate-parsetree-1)))))
+                  (ocaml4.07-variant . ,(delay ocaml4.07-migrate-parsetree))))
     (synopsis "OCaml parsetree converter")
     (description "This library converts between parsetrees of different OCaml
 versions.  For each version, there is a snapshot of the parsetree and conversion
 functions to the next and/or previous version.")
     (license license:lgpl2.1+)))
 
-(define-public ocaml-migrate-parsetree-1
-  (package
-    (inherit ocaml-migrate-parsetree)
-    (name "ocaml-migrate-parsetree-1")
-    (version "1.8.0")
-    (home-page "https://github.com/ocaml-ppx/ocaml-migrate-parsetree")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url home-page)
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32
-         "16x8sxc4ygxrr1868qpzfqyrvjf3hfxvjzmxmf6ibgglq7ixa2nq"))))
-    (properties '((upstream-name . "ocaml-migrate-parsetree")))))
+;; OCaml 4.07 packages require version 1.*
+(define-public ocaml4.07-migrate-parsetree
+  (package-with-ocaml4.07
+    (package
+      (inherit ocaml-migrate-parsetree)
+      (name "ocaml-migrate-parsetree")
+      (version "1.8.0")
+      (home-page "https://github.com/ocaml-ppx/ocaml-migrate-parsetree")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit (string-append "v" version))))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "16x8sxc4ygxrr1868qpzfqyrvjf3hfxvjzmxmf6ibgglq7ixa2nq"))))
+      (properties '((upstream-name . "ocaml-migrate-parsetree"))))))
 
 (define-public ocaml4.07-ppx-tools-versioned
   (package-with-ocaml4.07
