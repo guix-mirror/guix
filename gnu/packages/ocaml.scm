@@ -882,19 +882,17 @@ Git-friendly development workflow.")
 (define-public camlp5
   (package
     (name "camlp5")
-    (version "7.13")
+    (version "8.00.02")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/camlp5/camlp5")
-             (commit (string-append "rel" (string-delete #\. version)))))
+             (commit (string-append "rel" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1d9spy3f5ahixm8nxxk086kpslzva669a5scn49am0s7vx4i71kp"))))
+        (base32 "03qm99h2380x0y69sppg10yz1mwx7smkscia7pa175wmilifx8vy"))))
     (build-system gnu-build-system)
-    (inputs
-     (list ocaml))
     (arguments
      `(#:tests? #f  ; XXX TODO figure out how to run the tests
        #:phases
@@ -924,6 +922,10 @@ Git-friendly development workflow.")
              (install-file "etc/META" (string-append (assoc-ref outputs "out")
                                                      "/lib/ocaml/camlp5/"))
              #t)))))
+    (inputs
+     (list ocaml))
+    (native-inputs
+     (list perl))
     (home-page "https://camlp5.github.io/")
     (synopsis "Pre-processor Pretty Printer for OCaml")
     (description
