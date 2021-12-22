@@ -260,3 +260,83 @@ network namespaces.")
      "This package provides Container Network Interface (CNI) plugins to
 configure network interfaces in Linux containers.")
     (license license:asl2.0)))
+
+;; For podman to work, the user needs to run
+;; `sudo mount -t cgroup2 none /sys/fs/cgroup`
+
+(define-public podman
+  (package
+    (name "podman")
+    (version "3.4.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/containers/podman")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32 "1q09qsl1wwiiy5njvb97n1j5f5jin4ckmzj5xbdfs28czb2kx3g5"))
+       (file-name (git-file-name name version))))
+
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags (list ,(string-append "CC=" (cc-for-target))
+                          (string-append "PREFIX=" %output))
+       #:tests? #f ; /sys/fs/cgroup not set up in guix sandbox
+       #:test-target "test"
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure)
+                  (add-after 'unpack 'set-env
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      ;; when running go, things fail because
+                      ;; HOME=/homeless-shelter.
+                      (setenv "HOME" "/tmp")))
+                  (replace 'check
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (when tests?
+                        ;; (invoke "strace" "-f" "bin/podman" "version")
+                        (invoke "make" "localsystem")
+                        (invoke "make" "remotesystem"))))
+                  (add-after 'unpack 'fix-hardcoded-paths
+                    (lambda _
+                      (substitute* (find-files "libpod" "\\.go")
+                        (("exec.LookPath[(][\"]slirp4netns[\"][)]")
+                         (string-append "exec.LookPath(\""
+                                        (which "slirp4netns") "\")")))
+                      (substitute* "hack/install_catatonit.sh"
+                        (("CATATONIT_PATH=\"[^\"]+\"")
+                         (string-append "CATATONIT_PATH=" (which "true"))))
+                      (substitute* "vendor/github.com/containers/common/pkg/config/config_linux.go"
+                        (("/usr/local/libexec/podman")
+                         (string-append (assoc-ref %outputs "out") "/bin")))
+                      (substitute* "vendor/github.com/containers/common/pkg/config/default.go"
+                        (("/usr/libexec/podman/conmon") (which "conmon"))
+                        (("/usr/local/libexec/cni")
+                         (string-append (assoc-ref %build-inputs "cni-plugins")
+                                        "/bin"))
+                        (("/usr/bin/crun") (which "crun"))))))))
+    (inputs
+     (list btrfs-progs
+           cni-plugins
+           conmon
+           crun
+           gpgme
+           go-github-com-go-md2man
+           iptables
+           libassuan
+           libseccomp
+           libselinux
+           slirp4netns))
+    (native-inputs
+     (list bats
+           git
+           go
+           ; strace ; XXX debug
+           pkg-config))
+    (home-page "https://podman.io")
+    (synopsis "Manage containers, images, pods, and their volumes")
+    (description
+     "Podman (the POD MANager) is a tool for managing containers and images,
+volumes mounted into those containers, and pods made from groups of
+containers.")
+    (license license:asl2.0)))
