@@ -9026,27 +9026,17 @@ the GObject Introspection bindings to libnotify for non-GTK applications.")
 (define-public python-beautifulsoup4
   (package
     (name "python-beautifulsoup4")
-    (version "4.9.3")
+    (version "4.10.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "beautifulsoup4" version))
        (sha256
         (base32
-         "09gbd49mwz86k572r1231x2rdp82p42zlnw0bz9b9mfi58r9wwl4"))))
+         "14c8z4gh9bi38agx9ls8ym5rscc02pc6f6hmliaqk08xa8yd4fn2"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         ;; The Python 2 source is the definitive source of beautifulsoup4. We
-         ;; must use this conversion script when building with Python 3. The
-         ;; conversion script also runs the tests.
-         ;; For more information, see the file 'convert-py3k' in the source
-         ;; distribution.
-         (replace 'check
-           (lambda _ (invoke "./convert-py3k"))))))
     (propagated-inputs
-     (list python-soupsieve))
+     (list python-soupsieve python-html5lib python-lxml))
     (home-page
      "https://www.crummy.com/software/BeautifulSoup/bs4/")
     (synopsis
@@ -9063,8 +9053,16 @@ converts incoming documents to Unicode and outgoing documents to UTF-8.")
 (define-public python2-beautifulsoup4
   (let ((base (package-with-python2
                (strip-python2-variant python-beautifulsoup4))))
-   (package/inherit base
-     (arguments `(#:python ,python-2)))))
+    (package/inherit base
+      (version "4.9.3")                 ;last version to support Python 2
+      (source
+       (origin
+         (method url-fetch)
+         (uri (pypi-uri "beautifulsoup4" version))
+         (sha256
+          (base32
+           "09gbd49mwz86k572r1231x2rdp82p42zlnw0bz9b9mfi58r9wwl4"))))
+      (arguments `(#:python ,python-2)))))
 
 (define-public python-soupsieve
   (package
