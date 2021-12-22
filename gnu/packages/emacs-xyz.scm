@@ -13879,14 +13879,14 @@ methods from a given list.")
 (define-public emacs-posframe
   (package
     (name "emacs-posframe")
-    (version "1.1.2")
+    (version "1.1.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/"
                            "posframe-" version ".tar"))
        (sha256
-        (base32 "0vrv46v7qwmax5m1i6b7lwdh789dfr18ggxjl4bk05qn7waway6j"))))
+        (base32 "12710a6lnkmngh8hy853q1haplphbamcpci8fyln0x9bahgbfamq"))))
     (build-system emacs-build-system)
     ;; emacs-minimal does not include the function font-info.
     (arguments
@@ -14199,7 +14199,7 @@ on mouse-control.")
 (define-public emacs-gnugo
   (package
     (name "emacs-gnugo")
-    (version "3.1.1")
+    (version "3.1.2")
     (source
      (origin
        (method url-fetch)
@@ -14207,7 +14207,7 @@ on mouse-control.")
                            version ".tar"))
        (sha256
         (base32
-         "035rgiz42q042h41l4cvf0hr8igy2vyn3s1hsl2pgh2dq2jjylv6"))))
+         "138gzdyi8scqimvs49da66j8f5a43bhgpasn1bxzdj2zffwlwp6g"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
