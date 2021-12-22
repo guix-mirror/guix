@@ -202,12 +202,12 @@ protocol.")
                          (package-version python))
                        "/site-packages"))))
     (native-inputs
-     `(("doxygen" ,doxygen)
-       ("perl" ,perl)
-       ("perl-devel-checklib" ,perl-devel-checklib)
-       ("pkg-config" ,pkg-config)
-       ("python" ,python-wrapper)
-       ("swig" ,swig)))
+     (list doxygen
+           perl
+           perl-devel-checklib
+           pkg-config
+           python-wrapper
+           swig))
     (inputs
      (list libpcap nss-certs openssl))
     (synopsis "DNS library that facilitates DNS tool programming")
