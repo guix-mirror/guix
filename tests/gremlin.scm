@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2018, 2020, 2022 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2022 Chris Marusich <cmmarusich@gmail.com>
+;;; Copyright © 2022 Pierre Langlois <pierre.langlois@gmx.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,9 +21,11 @@
 (define-module (test-gremlin)
   #:use-module (guix elf)
   #:use-module (guix tests)
-  #:use-module ((guix utils) #:select (call-with-temporary-directory))
+  #:use-module ((guix utils) #:select (call-with-temporary-directory
+                                       target-aarch64?))
   #:use-module (guix build utils)
   #:use-module (guix build gremlin)
+  #:use-module (gnu packages bootstrap)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
@@ -99,7 +102,12 @@
                 (or (string-prefix? "linux-vdso.so" entry)
                     (string-prefix? "linux-vdso32.so" entry) ;32-bit powerpc
                     (string-prefix? "linux-vdso64.so" entry) ;64-bit powerpc
-                    (string-prefix? "linux-gate.so" entry))) ;i386
+                    (string-prefix? "linux-gate.so" entry)   ;i386
+                    ;; FIXME: ELF files on aarch64 do not always include a
+                    ;; NEEDED entry for the dynamic linker, and it is unclear
+                    ;; if that is OK.  See: https://issues.guix.gnu.org/52943
+                    (and (target-aarch64?)
+                         (string-contains entry (glibc-dynamic-linker)))))
               (read-ldd-output pipe)))
 
     (and (zero? (close-pipe pipe))
