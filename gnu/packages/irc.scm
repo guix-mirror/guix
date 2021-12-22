@@ -198,7 +198,7 @@ SILC and ICB protocols via plugins.")
     (build-system cmake-build-system)
     (outputs '("out" "doc"))
     (native-inputs
-     `(("gettext" ,gettext-minimal)
+     `(("gettext-minimal" ,gettext-minimal)
        ("pkg-config" ,pkg-config)
        ,@(if (or (target-x86-64?)
                  (target-x86-32?))
@@ -210,7 +210,7 @@ SILC and ICB protocols via plugins.")
      (list aspell
            curl
            gnutls
-           `(,libgcrypt "out")
+           libgcrypt
            ncurses
            zlib
            ;; Scripting language plug-ins.
@@ -250,7 +250,7 @@ Qt, Android, and Emacs.
 
 Everything in WeeChat can be done with the keyboard, though it also supports
 using a mouse.  It is customizable and extensible with plugins and scripts.")
-    (home-page "https://www.weechat.org/")
+    (home-page "https://weechat.org/")
     (license license:gpl3)))
 
 (define-public srain
