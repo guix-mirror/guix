@@ -286,7 +286,7 @@ buffers.")
 (define-public gimp
   (package
     (name "gimp")
-    (version "2.10.28")
+    (version "2.10.30")
     (source
      (origin
        (method url-fetch)
@@ -294,7 +294,7 @@ buffers.")
                            (version-major+minor version)
                            "/gimp-" version ".tar.bz2"))
        (sha256
-        (base32 "09l80zxcnydbpm3nn64qw48klnvp0mgbaamazqkg1d8szwnc4kag"))))
+        (base32 "1p375gaw2daip6aiv1icrlpws5m1my5kalxkxrvl4zgdfsm5v0c8"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"))                            ; 9 MiB of gtk-doc HTML
