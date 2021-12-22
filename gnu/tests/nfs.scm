@@ -33,6 +33,7 @@
   #:use-module (gnu services base)
   #:use-module (gnu services nfs)
   #:use-module (gnu services networking)
+  #:use-module (gnu packages admin)
   #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages nfs)
   #:use-module (guix gexp)
@@ -40,7 +41,7 @@
   #:use-module (guix monads)
   #:export (%test-nfs
             %test-nfs-server
-            %test-nfs-root-fs))
+            %test-nfs-full))
 
 (define %base-os
   (operating-system
@@ -259,41 +260,63 @@ directories can be mounted.")
    (value (run-nfs-server-test))))
 
 
-(define (run-nfs-root-fs-test)
+(define (run-nfs-full-test)
   "Run a test of an OS mounting its root file system via NFS."
   (define nfs-root-server-os
-    (marionette-operating-system
-     (operating-system
-       (inherit %nfs-os)
-       (services
-         (modify-services (operating-system-user-services %nfs-os)
-           (nfs-service-type config =>
-            (nfs-configuration
-             (debug '(nfs nfsd mountd))
-             ;;; Note: Adding the following line causes Guix to hang.
-             ;(rpcmountd-port 20001)
-             ;;; Note: Adding the following line causes Guix to hang.
-             ;(rpcstatd-port 20002) ; FIXME: Set broadcast port AND listening port.
-             (nfsd-port 2049)
-             (nfs-versions '("4.2"))
-             (exports '(("/export"
-                         "*(rw,insecure,no_subtree_check,crossmnt,fsid=root,no_root_squash,insecure,async)"))))))))
-     #:requirements '(nscd)
-     #:imported-modules '((gnu services herd)
-                          (guix combinators))))
+    (let ((os (simple-operating-system)))
+      (marionette-operating-system
+       (operating-system
+         (inherit os)
+         (services
+          (cons*
+           (service static-networking-service-type
+                    (list
+                     (static-networking
+                      (addresses (list (network-address
+                                        (device "ens5")
+                                        (value "10.0.2.15/24")))))))
+           (simple-service 'export activation-service-type
+                           #~(begin
+                               (mkdir-p "/export")
+                               (chmod "/export" #o777)))
+           (service nfs-service-type
+                    (nfs-configuration
+                     (nfsd-port 2049)
+                     (nfs-versions '("4.2"))
+                     (exports '(("/export"
+                                 "*(rw,insecure,no_subtree_check,\
+crossmnt,fsid=root,no_root_squash,insecure,async)")))))
+           (modify-services (operating-system-user-services os)
+             (syslog-service-type config
+                                  =>
+                                  (syslog-configuration
+                                   (inherit config)
+                                   (config-file
+                                    (plain-file
+                                     "syslog.conf"
+                                     "*.* /dev/console\n"))))))))
+       #:requirements '(nscd)
+       #:imported-modules '((gnu services herd)
+                            (guix combinators)))))
 
   (define nfs-root-client-os
     (marionette-operating-system
-     (operating-system
-       (inherit (simple-operating-system (service dhcp-client-service-type)))
-       (kernel-arguments '("ip=dhcp"))
-       (file-systems (cons
-                      (file-system
-                        (type "nfs")
-                        (mount-point "/")
-                        (device ":/export")
-                        (options "addr=127.0.0.1,vers=4.2"))
-                     %base-file-systems)))
+     (simple-operating-system
+      (service static-networking-service-type
+               (list
+                (static-networking
+                 (addresses
+                  (list (network-address
+                         (device "ens5")
+                         (value "10.0.2.16/24")))))))
+      (service nfs-service-type
+               (nfs-configuration
+                (nfsd-port 2049)
+                (nfs-versions '("4.2"))))
+      (simple-service 'export activation-service-type
+                      #~(begin
+                          (mkdir-p "/export")
+                          (chmod "/export" #o777))))
      #:requirements '(nscd)
      #:imported-modules '((gnu services herd)
                           (guix combinators))))
@@ -308,84 +331,56 @@ directories can be mounted.")
           (test-begin "start-nfs-boot-test")
 
           ;;; Start up NFS server host.
-
           (mkdir "/tmp/server")
           (define server-marionette
-            (make-marionette (list #$(virtual-machine
-                                      nfs-root-server-os
-                                      ;(operating-system nfs-root-server-os)
-                                      ;(port-forwardings '( ; (111 . 111)
-                                      ;                    (2049 . 2049)
-                                      ;                    (20001 . 20001)
-                                      ;                    (20002 . 20002)))
-))
-                             #:socket-directory "/tmp/server"))
-
-          (marionette-eval
-           '(begin
-              (use-modules (gnu services herd))
-              (current-output-port
-               (open-file "/dev/console" "w0"))
-              ;; FIXME: Instead statfs "/" and "/export" and wait until they
-              ;; are different file systems.  But Guile doesn't seem to have
-              ;; statfs.
-              (sleep 5)
-              (chmod "/export" #o777)
-              (symlink "/gnu" "/export/gnu")
-              (start-service 'nscd)
-              (start-service 'networking)
-              (start-service 'nfs))
-           server-marionette)
+            (make-marionette
+             (cons* #$(virtual-machine
+                       (operating-system nfs-root-server-os)
+                       (volatile? #f))
+                    '("-device" "e1000,netdev=n1,mac=52:54:00:12:34:56"
+                      "-netdev" "socket,id=n1,listen=:1234"))
+             #:socket-directory "/tmp/server"))
 
           ;;; Wait for the NFS services to be up and running.
-
           (test-assert "nfs services are running"
-           (wait-for-file "/var/run/rpc.statd.pid" server-marionette))
+            (wait-for-file "/var/run/rpc.statd.pid" server-marionette))
 
           (test-assert "NFS port is ready"
             (wait-for-tcp-port 2049 server-marionette))
 
-          (test-assert "NFS statd port is ready"
-            (wait-for-tcp-port 20002 server-marionette))
-
-          (test-assert "NFS mountd port is ready"
-            (wait-for-tcp-port 20001 server-marionette))
-
-          ;;; FIXME: (test-assert "NFS portmapper port is ready"
-          ;;; FIXME:  (wait-for-tcp-port 111 server-marionette))
-
           ;;; Start up NFS client host.
-
+          (mkdir "/tmp/client")
           (define client-marionette
-            (make-marionette (list #$(virtual-machine
-                                      nfs-root-client-os
-                                      ;(port-forwardings '((111 . 111)
-                                      ;                    (2049 . 2049)
-                                      ;                    (20001 . 20001)
-                                      ;                    (20002 . 20002)))
-                                                          ))))
+            (make-marionette
+             (cons* #$(virtual-machine
+                       (operating-system nfs-root-client-os)
+                       (volatile? #f))
+                    '("-device" "e1000,netdev=n2,mac=52:54:00:12:34:57"
+                      "-netdev" "socket,id=n2,connect=127.0.0.1:1234"))
+             #:socket-directory "/tmp/client"))
+
+          (test-assert "NFS port is ready"
+            (wait-for-tcp-port 2049 client-marionette))
 
           (marionette-eval
            '(begin
-              (use-modules (gnu services herd))
               (use-modules (rnrs io ports))
-
               (current-output-port
                (open-file "/dev/console" "w0"))
-              (let ((content (call-with-input-file "/proc/mounts" get-string-all)))
-                (call-with-output-file "/mounts.new"
-                  (lambda (port)
-                    (display content port))))
-              (chmod "/mounts.new" #o777)
-              (rename-file "/mounts.new" "/mounts"))
+              (and
+               (system* (string-append #$nfs-utils "/sbin/mount.nfs")
+                        "10.0.2.15:/export" "/export" "-v")
+               (let ((content (call-with-input-file "/proc/mounts"
+                                get-string-all)))
+                 (call-with-output-file "/export/mounts"
+                   (lambda (port)
+                     (display content port))))))
            client-marionette)
 
-          (test-assert "nfs-root-client booted")
-
           ;;; Check whether NFS client host communicated with NFS server host.
-
           (test-assert "nfs client deposited file"
-           (wait-for-file "/export/mounts" server-marionette))
+            (wait-for-file "/export/mounts" server-marionette))
+
           (marionette-eval
            '(begin
               (current-output-port
@@ -395,11 +390,11 @@ directories can be mounted.")
 
           (test-end))))
 
-  (gexp->derivation "nfs-root-fs-test" test))
+  (gexp->derivation "nfs-full-test" test))
 
-(define %test-nfs-root-fs
+(define %test-nfs-full
   (system-test
-   (name "nfs-root-fs")
+   (name "nfs-full")
    (description "Test that an NFS server can be started and the exported
-directory can be used as root file system.")
-   (value (run-nfs-root-fs-test))))
+directory can be used by another machine.")
+   (value (run-nfs-full-test))))
