@@ -368,3 +368,31 @@ concise, powerful tests.")
      "The @code{tools.cli} library provides Clojure programmers with tools to
 work with command-line arguments.")
     (license license:epl1.0)))
+
+(define-public clojure-tools-gitlibs
+  (package
+    (name "clojure-tools-gitlibs")
+    (version "2.4.172")
+    (home-page "https://github.com/clojure/tools.gitlibs")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "19d83wigmigy66f5i61a3ishg7zrlv8jngj8m9brsh9v38a0fwdr"))))
+    (build-system clojure-build-system)
+    (arguments
+     '(#:source-dirs '("src/main/clojure")
+       #:test-dirs '("src/test/clojure")
+       #:doc-dirs '()
+       ;; Tests attempt to clone git repositories from the internet.
+       #:tests? #f))
+    (synopsis "Retrieve, cache, and programatically access git libraries")
+    (description "To access git dependencies (for example, via
+@code{tools.deps}), one must download git directories and working trees as
+indicated by git SHAs.  This library provides this functionality and also
+keeps a cache of git directories and working trees that can be reused.")
+    (license license:epl1.0)))
