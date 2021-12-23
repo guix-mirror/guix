@@ -81,8 +81,7 @@
                 #:allow-other-keys
                 #:rest arguments)
   "Return a bag for NAME."
-  (let ((private-keywords '(#:source #:target
-                            #:inputs #:native-inputs
+  (let ((private-keywords '(#:target #:inputs #:native-inputs
                             #:clojure #:jdk #:zip)))
 
     (if target
