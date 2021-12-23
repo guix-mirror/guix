@@ -7824,6 +7824,7 @@ time.")
      `(#:jar-name "slf4j-simple.jar"
        #:source-dir "slf4j-simple/src/main"
        #:test-dir "slf4j-simple/src/test"
+       #:test-exclude (list "**/*SimpleLoggerMultithreadedInitializationTest.java")
        #:phases
        (modify-phases %standard-phases
          ;; The tests need some test classes from slf4j-api
