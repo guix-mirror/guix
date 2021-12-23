@@ -216,84 +216,67 @@ C it should be a lot faster than Perl.")
     (build-system glib-or-gtk-build-system)
     (outputs '("out" "gui" "nm"))
     (arguments
-     `(#:test-target "test"
-       #:configure-flags
-       (list
-        (string-append "--with-ssl="
-                       (assoc-ref %build-inputs "openssl"))
-        "--with-hooks=networkmanager"
-        (string-append "--with-networkmanager-dispatch="
-                       (assoc-ref %outputs "nm")
-                       "/etc/NetworkManager/dispatcher.d")
-        (string-append "--with-xdg-autostart="
-                       (assoc-ref %outputs "gui")
-                       "/etc/xdg/autostart")
-        (string-append "--with-uidir="
-                       (assoc-ref %outputs "gui")
-                       "/share/dnssec-trigger")
-        (string-append "--with-python="
-                       (assoc-ref %build-inputs "python")
-                       "/bin/python")
-        (string-append "--with-unbound-control="
-                       (assoc-ref %build-inputs "unbound")
-                       "/sbin/unbound-control")
-        "--with-forward-zones-support")
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'patch-configure
-           (lambda _
-             (substitute* "configure"
-               (("appindicator-0.1")
-                "appindicator3-0.1"))
-             #t))
-         (add-before 'configure 'patch-makefile
-           (lambda _
-             (substitute* "Makefile.in"
-               (("/usr")
-                "$(prefix)")
-               (("/etc")
-                "$(prefix)/etc")
-               ((".*gtk-update-icon-cache.*")
-                ""))
-             #t))
-         (add-after 'install 'remove-systemd
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out")))
-               (delete-file-recursively
-                (string-append out "/lib/systemd"))
-               #t)))
-         (add-after 'remove-systemd 'move-gui
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (gui (assoc-ref outputs "gui")))
-               (mkdir-p (string-append gui "/bin"))
-               (mkdir-p (string-append gui "/share"))
-               (rename-file
-                (string-append out "/bin")
-                (string-append gui "/bin"))
-               (rename-file
-                (string-append out "/share/icons")
-                (string-append gui "/share/icons"))
-               #t)))
-         (add-after 'move-gui 'move-nm
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (nm (assoc-ref outputs "nm")))
-               (mkdir-p (string-append nm "/libexec"))
-               (rename-file
-                (string-append out "/libexec")
-                (string-append nm "/libexec"))
-               #t))))))
+     (list #:test-target "test"
+           #:configure-flags
+           #~(list
+              (string-append "--with-ssl=" #$(this-package-input "openssl"))
+              "--with-hooks=networkmanager"
+              (string-append "--with-networkmanager-dispatch="
+                             #$output:nm
+                             "/etc/NetworkManager/dispatcher.d")
+              (string-append "--with-xdg-autostart="
+                             #$output:gui
+                             "/etc/xdg/autostart")
+              (string-append "--with-uidir="
+                             #$output:gui
+                             "/share/dnssec-trigger")
+              (string-append "--with-python="
+                             #$(this-package-native-input "python-wrapper")
+                             "/bin/python")
+              (string-append "--with-unbound-control="
+                             #$(this-package-input "unbound")
+                             "/sbin/unbound-control")
+              "--with-forward-zones-support")
+           #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'unpack 'patch-configure
+                 (lambda _
+                   (substitute* "configure"
+                     (("appindicator-0.1")
+                      "appindicator3-0.1"))))
+               (add-before 'configure 'patch-makefile
+                 (lambda _
+                   (substitute* "Makefile.in"
+                     (("/usr")
+                      "$(prefix)")
+                     (("/etc")
+                      "$(prefix)/etc")
+                     ((".*gtk-update-icon-cache.*")
+                      ""))))
+               (add-after 'install 'remove-systemd
+                 (lambda _
+                   (delete-file-recursively
+                    (string-append #$output "/lib/systemd"))))
+               (add-after 'remove-systemd 'move-gui
+                 (lambda _
+                   (mkdir-p (string-append #$output:gui "/bin"))
+                   (mkdir-p (string-append #$output:gui "/share"))
+                   (rename-file
+                    (string-append #$output     "/bin")
+                    (string-append #$output:gui "/bin"))
+                   (rename-file
+                    (string-append #$output     "/share/icons")
+                    (string-append #$output:gui "/share/icons"))))
+               (add-after 'move-gui 'move-nm
+                 (lambda _
+                   (mkdir-p (string-append #$output:nm "/libexec"))
+                   (rename-file
+                    (string-append #$output    "/libexec")
+                    (string-append #$output:nm "/libexec")))))))
     (native-inputs
-     `(("cmocka" ,cmocka)
-       ("pkg-config" ,pkg-config)
-       ("python" ,python-wrapper)))
+     (list cmocka pkg-config python-wrapper))
     (inputs
-     `(("gtk+-2" ,gtk+-2)
-       ("ldns" ,ldns)
-       ("libappindicator" ,libappindicator)
-       ("openssl" ,openssl)
-       ("unbound" ,unbound)))
+     (list gtk+-2 ldns libappindicator openssl unbound))
     (synopsis "DNSSEC protection for the DNS traffic")
     (description "DNSSEC-Trigger enables your computer to use DNSSEC protection
 for the DNS traffic.  It relies on the Unbound DNS resolver running locally on
