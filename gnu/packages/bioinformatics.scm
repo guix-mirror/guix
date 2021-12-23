@@ -6144,6 +6144,44 @@ to the user's query of interest.")
 (define-public samtools
   (package
     (name "samtools")
+    (version "1.14")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "mirror://sourceforge/samtools/samtools/"
+                       version "/samtools-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "0x3xdda78ac5vx66b3jdsv9sfhyz4npl4znl1zbaf3lbm6xdlhck"))
+       (modules '((guix build utils)))
+       (snippet '(begin
+                   ;; Delete bundled htslib.
+                   (delete-file-recursively "htslib-1.14")))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags (list "--with-ncurses")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-tests
+           (lambda _
+             (substitute* "test/test.pl"
+               ;; The test script calls out to /bin/bash
+               (("/bin/bash") (which "bash"))))))))
+    (native-inputs (list pkg-config))
+    (inputs
+     (list htslib ncurses perl python zlib))
+    (home-page "http://samtools.sourceforge.net")
+    (synopsis "Utilities to efficiently manipulate nucleotide sequence alignments")
+    (description
+     "Samtools implements various utilities for post-processing nucleotide
+sequence alignments in the SAM, BAM, and CRAM formats, including indexing,
+variant calling (in conjunction with bcftools), and a simple alignment
+viewer.")
+    (license license:expat)))
+
+(define-public samtools-1.12
+  (package/inherit samtools
     (version "1.12")
     (source
      (origin
@@ -6157,47 +6195,31 @@ to the user's query of interest.")
        (modules '((guix build utils)))
        (snippet '(begin
                    ;; Delete bundled htslib.
-                   (delete-file-recursively "htslib-1.12")
-                   #t))))
-    (build-system gnu-build-system)
+                   (delete-file-recursively "htslib-1.12")))))
     (arguments
-     `(#:modules ((ice-9 ftw)
-                  (ice-9 regex)
-                  (guix build gnu-build-system)
-                  (guix build utils))
-       #:configure-flags (list "--with-ncurses")
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'patch-tests
-           (lambda _
-             (substitute* "test/test.pl"
-               ;; The test script calls out to /bin/bash
-               (("/bin/bash") (which "bash")))
-             #t))
-         (add-after 'install 'install-library
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((lib (string-append (assoc-ref outputs "out") "/lib")))
-               (install-file "libbam.a" lib)
-               #t)))
-         (add-after 'install 'install-headers
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((include (string-append (assoc-ref outputs "out")
-                                           "/include/samtools/")))
-               (for-each (lambda (file)
-                           (install-file file include))
-                         (scandir "." (lambda (name) (string-match "\\.h$" name))))
-               #t))))))
+     (substitute-keyword-arguments (package-arguments samtools)
+       ((#:modules _ #f)
+        '((ice-9 ftw)
+          (ice-9 regex)
+          (guix build gnu-build-system)
+          (guix build utils)))
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'install 'install-library
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((lib (string-append (assoc-ref outputs "out") "/lib")))
+                 (install-file "libbam.a" lib))))
+           (add-after 'install 'install-headers
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((include (string-append (assoc-ref outputs "out")
+                                             "/include/samtools/")))
+                 (for-each (lambda (file)
+                             (install-file file include))
+                           (scandir "." (lambda (name)
+                                          (string-match "\\.h$" name)))))))))))
     (native-inputs (list pkg-config))
     (inputs
-     (list htslib ncurses perl python zlib))
-    (home-page "http://samtools.sourceforge.net")
-    (synopsis "Utilities to efficiently manipulate nucleotide sequence alignments")
-    (description
-     "Samtools implements various utilities for post-processing nucleotide
-sequence alignments in the SAM, BAM, and CRAM formats, including indexing,
-variant calling (in conjunction with bcftools), and a simple alignment
-viewer.")
-    (license license:expat)))
+     (list htslib-1.12 ncurses perl python zlib))))
 
 (define-public samtools-1.10
   (package (inherit samtools)
