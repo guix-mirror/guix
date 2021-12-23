@@ -295,6 +295,33 @@ tree.
       (home-page "https://github.com/Engelberg/instaparse")
       (license license:epl1.0))))
 
+(define-public clojure-test-check
+  (package
+    (name "clojure-test-check")
+    (version "1.1.1")
+    (home-page "https://github.com/clojure/test.check")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "09jvlibnxhjv0l57y0sa7yy5in67gq4sssag77hv2d980mwdnls6"))))
+    (build-system clojure-build-system)
+    (arguments
+     '(#:source-dirs '("src/main/clojure")
+       #:test-dirs '("src/test/clojure")
+       #:doc-dirs '()))
+    (synopsis "QuickCheck for Clojure")
+    (description "@code{test.check} is a Clojure property-based testing tool
+inspired by QuickCheck.  The core idea of @code{test.check} is that instead of
+enumerating expected input and output for unit tests, you write properties
+about your function that should hold true for all inputs.  This lets you write
+concise, powerful tests.")
+    (license license:epl1.0)))
+
 (define-public clojure-tools-macro
   (package
     (name "clojure-tools-macro")
