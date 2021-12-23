@@ -807,101 +807,105 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
            ((? string? config)
             `(("kconfig" ,config))))))
     (arguments
-     `(#:modules ((guix build gnu-build-system)
-                  (guix build utils)
-                  (srfi srfi-1)
-                  (srfi srfi-26)
-                  (ice-9 ftw)
-                  (ice-9 match))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'patch-/bin/pwd
-           (lambda _
-             (substitute* (find-files "." "^Makefile(\\.include)?$")
-               (("/bin/pwd") "pwd"))))
-         (replace 'configure
-           (lambda* (#:key inputs native-inputs target #:allow-other-keys)
-             ;; Avoid introducing timestamps.
-             (setenv "KCONFIG_NOTIMESTAMP" "1")
-             (setenv "KBUILD_BUILD_TIMESTAMP" (getenv "SOURCE_DATE_EPOCH"))
+     (list #:modules '((guix build gnu-build-system)
+                       (guix build utils)
+                       (srfi srfi-1)
+                       (srfi srfi-26)
+                       (ice-9 ftw)
+                       (ice-9 match))
+           #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'unpack 'patch-/bin/pwd
+                 (lambda _
+                   (substitute* (find-files "." "^Makefile(\\.include)?$")
+                     (("/bin/pwd") "pwd"))))
+               (replace 'configure
+                 (lambda* (#:key inputs target #:allow-other-keys)
+                   ;; Avoid introducing timestamps.
+                   (setenv "KCONFIG_NOTIMESTAMP" "1")
+                   (setenv "KBUILD_BUILD_TIMESTAMP"
+                           (getenv "SOURCE_DATE_EPOCH"))
 
-             ;; Other variables useful for reproducibility.
-             (setenv "KBUILD_BUILD_USER" "guix")
-             (setenv "KBUILD_BUILD_HOST" "guix")
+                   ;; Other variables useful for reproducibility.
+                   (setenv "KBUILD_BUILD_USER" "guix")
+                   (setenv "KBUILD_BUILD_HOST" "guix")
 
-             ;; Set ARCH and CROSS_COMPILE.
-             (let ((arch ,(system->linux-architecture
-                           (or (%current-target-system)
-                               (%current-system)))))
-               (setenv "ARCH" arch)
-               (format #t "`ARCH' set to `~a'~%" (getenv "ARCH"))
+                   ;; Set ARCH and CROSS_COMPILE.
+                   (let ((arch #$(system->linux-architecture
+                                  (or (%current-target-system)
+                                      (%current-system)))))
+                     (setenv "ARCH" arch)
+                     (format #t "`ARCH' set to `~a'~%" (getenv "ARCH"))
 
-               (when target
-                 (setenv "CROSS_COMPILE" (string-append target "-"))
-                 (format #t "`CROSS_COMPILE' set to `~a'~%"
-                         (getenv "CROSS_COMPILE"))))
+                     (when target
+                       (setenv "CROSS_COMPILE" (string-append target "-"))
+                       (format #t "`CROSS_COMPILE' set to `~a'~%"
+                               (getenv "CROSS_COMPILE"))))
 
-             (setenv "EXTRAVERSION" ,(and extra-version
-                                          (string-append "-" extra-version)))
+                   (setenv "EXTRAVERSION"
+                           #$(and extra-version
+                                  (string-append "-" extra-version)))
 
-             (let ((build  (assoc-ref %standard-phases 'build))
-                   (config (assoc-ref (or native-inputs inputs) "kconfig")))
+                   (let ((build  (assoc-ref %standard-phases 'build))
+                         (config (assoc-ref inputs "kconfig")))
 
-               ;; Use a custom kernel configuration file or a default
-               ;; configuration file.
-               (if config
-                   (begin
-                     (copy-file config ".config")
-                     (chmod ".config" #o666))
-                   (invoke "make" ,defconfig))
+                     ;; Use a custom kernel configuration file or a default
+                     ;; configuration file.
+                     (if config
+                         (begin
+                           (copy-file config ".config")
+                           (chmod ".config" #o666))
+                         (invoke "make" #$defconfig))
 
-               ;; Appending works even when the option wasn't in the
-               ;; file.  The last one prevails if duplicated.
-               (let ((port (open-file ".config" "a"))
-                     (extra-configuration ,(config->string extra-options)))
-                 (display extra-configuration port)
-                 (close-port port))
+                     ;; Appending works even when the option wasn't in the
+                     ;; file.  The last one prevails if duplicated.
+                     (let ((port (open-file ".config" "a"))
+                           (extra-configuration #$(config->string extra-options)))
+                       (display extra-configuration port)
+                       (close-port port))
 
-               (invoke "make" "oldconfig"))))
-         (replace 'install
-           (lambda* (#:key inputs native-inputs outputs #:allow-other-keys)
-             (let* ((out    (assoc-ref outputs "out"))
-                    (moddir (string-append out "/lib/modules"))
-                    (dtbdir (string-append out "/lib/dtbs")))
-               ;; Install kernel image, kernel configuration and link map.
-               (for-each (lambda (file) (install-file file out))
-                         (find-files "." "^(\\.config|bzImage|zImage|Image|vmlinuz|System\\.map|Module\\.symvers)$"))
-               ;; Install device tree files
-               (unless (null? (find-files "." "\\.dtb$"))
-                 (mkdir-p dtbdir)
-                 (invoke "make" (string-append "INSTALL_DTBS_PATH=" dtbdir)
-                         "dtbs_install"))
-               ;; Install kernel modules
-               (mkdir-p moddir)
-               (invoke "make"
-                       ;; Disable depmod because the Guix system's module directory
-                       ;; is an union of potentially multiple packages.  It is not
-                       ;; possible to use depmod to usefully calculate a dependency
-                       ;; graph while building only one of those packages.
-                       "DEPMOD=true"
-                       (string-append "MODULE_DIR=" moddir)
-                       (string-append "INSTALL_PATH=" out)
-                       (string-append "INSTALL_MOD_PATH=" out)
-                       "INSTALL_MOD_STRIP=1"
-                       "modules_install")
-               (let* ((versions (filter (lambda (name)
-                                          (not (string-prefix? "." name)))
-                                        (scandir moddir)))
-                      (version (match versions
-                                ((x) x))))
-                 ;; There are symlinks to the build and source directory,
-                 ;; both of which will point to target /tmp/guix-build*
-                 ;; and thus not be useful in a profile.  Delete the symlinks.
-                 (false-if-file-not-found
-                  (delete-file (string-append moddir "/" version "/build")))
-                 (false-if-file-not-found
-                  (delete-file (string-append moddir "/" version "/source"))))))))
-       #:tests? #f))
+                     (invoke "make" "oldconfig"))))
+               (replace 'install
+                 (lambda* (#:key inputs native-inputs #:allow-other-keys)
+                   (let ((moddir (string-append #$output "/lib/modules"))
+                         (dtbdir (string-append #$output "/lib/dtbs")))
+                     ;; Install kernel image, kernel configuration and link map.
+                     (for-each (lambda (file) (install-file file #$output))
+                               (find-files "." "^(\\.config|bzImage|zImage|Image|vmlinuz|System\\.map|Module\\.symvers)$"))
+                     ;; Install device tree files
+                     (unless (null? (find-files "." "\\.dtb$"))
+                       (mkdir-p dtbdir)
+                       (invoke "make" (string-append "INSTALL_DTBS_PATH=" dtbdir)
+                               "dtbs_install"))
+                     ;; Install kernel modules
+                     (mkdir-p moddir)
+                     (invoke "make"
+                             ;; Disable depmod because the Guix system's
+                             ;; module directory is an union of potentially
+                             ;; multiple packages.  It is not possible to use
+                             ;; depmod to usefully calculate a dependency
+                             ;; graph while building only one of them.
+                             "DEPMOD=true"
+                             (string-append "MODULE_DIR=" moddir)
+                             (string-append "INSTALL_PATH=" #$output)
+                             (string-append "INSTALL_MOD_PATH=" #$output)
+                             "INSTALL_MOD_STRIP=1"
+                             "modules_install")
+                     (let* ((versions (filter (lambda (name)
+                                                (not (string-prefix? "." name)))
+                                              (scandir moddir)))
+                            (version (match versions
+                                       ((x) x))))
+                       ;; There are symlinks to the build and source directory.
+                       ;; Both will point to target /tmp/guix-build* and thus
+                       ;; not be useful in a profile.  Delete the symlinks.
+                       (false-if-file-not-found
+                        (delete-file
+                         (string-append moddir "/" version "/build")))
+                       (false-if-file-not-found
+                        (delete-file
+                         (string-append moddir "/" version "/source"))))))))
+           #:tests? #f))
     (home-page "https://www.gnu.org/software/linux-libre/")
     (synopsis "100% free redistribution of a cleaned Linux kernel")
     (description
