@@ -11328,13 +11328,11 @@ application components to create, send, receive, and read messages.")
          (add-before 'configure 'move-version.java
            (lambda _
              (copy-file "mail/src/main/resources/javax/mail/Version.java"
-                        "mail/src/main/java/javax/mail/Version.java")
-             #t))
+                        "mail/src/main/java/javax/mail/Version.java")))
          (add-before 'build 'copy-resources
            (lambda _
              (copy-recursively "mail/src/main/resources/META-INF"
-                               "build/classes/META-INF")
-             #t)))))
+                               "build/classes/META-INF"))))))
     (native-inputs
      `(("junit" ,java-junit)
        ("hamcrest" ,java-hamcrest-core)))
