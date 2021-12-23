@@ -473,15 +473,15 @@ expression library, that is used in Krita.")
 (define-public krita
   (package
     (name "krita")
-    (version "4.4.8")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "mirror://kde/stable/krita/" version
-                    "/krita-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1y0d8gnxfdg5nfwk8dgx8fc2bwskvnys049napb1a9fr25bqmimw"))))
+    (version "5.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://kde/stable/krita/" version "/krita-" version
+             ".tar.gz"))
+       (sha256
+        (base32 "0mycxrqp944kp5bhlv8c1x1ikn9av1q7dhzl32jd6gxbphyq7mc4"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f
