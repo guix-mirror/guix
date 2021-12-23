@@ -1007,7 +1007,7 @@ graphics.")
 (define-public openexr
   (package
     (name "openexr")
-    (version "3.1.2")
+    (version "3.1.3")
     (source
      (origin
        (method git-fetch)
@@ -1016,7 +1016,7 @@ graphics.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0vyclrrikphwkkpyjg8kzh3qzflzk3d6xsidgqllgfdgllr9wmgv"))))
+        (base32 "0c9vla0kbsbbhkk42jlbf94nzfb1anqh7dy9b0b3nna1qr6v4bh6"))))
     (build-system cmake-build-system)
     (arguments
      '(#:phases
