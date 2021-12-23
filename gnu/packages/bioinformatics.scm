@@ -373,7 +373,7 @@ single executable called @code{bam}.")
 (define-public bcftools
   (package
     (name "bcftools")
-    (version "1.12")
+    (version "1.14")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/samtools/bcftools/"
@@ -381,12 +381,11 @@ single executable called @code{bam}.")
                                   version "/bcftools-" version ".tar.bz2"))
               (sha256
                (base32
-                "1x94l1hy2pi3lbz0sxlbw0g6q5z5apcrhrlcwda94ns9n4r6a3ks"))
+                "1jqrma16fx8kpvb3c0462dg0asvmiv5yi8myqmc5ddgwi6p8ivxp"))
               (modules '((guix build utils)))
               (snippet '(begin
                           ;; Delete bundled htslib.
-                          (delete-file-recursively "htslib-1.12")
-                          #t))))
+                          (delete-file-recursively "htslib-1.14")))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -397,8 +396,7 @@ single executable called @code{bam}.")
          (add-before 'check 'patch-tests
            (lambda _
              (substitute* "test/test.pl"
-               (("/bin/bash") (which "bash")))
-             #t)))))
+               (("/bin/bash") (which "bash"))))))))
     (native-inputs
      (list htslib perl))
     (inputs
@@ -412,9 +410,25 @@ transparently with both VCFs and BCFs, both uncompressed and BGZF-compressed.")
     ;; The sources are dual MIT/GPL, but becomes GPL-only when USE_GPL=1.
     (license (list license:gpl3+ license:expat))))
 
+(define-public bcftools-1.12
+  (package/inherit bcftools
+    (version "1.12")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/samtools/bcftools/"
+                                  "releases/download/"
+                                  version "/bcftools-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1x94l1hy2pi3lbz0sxlbw0g6q5z5apcrhrlcwda94ns9n4r6a3ks"))
+              (modules '((guix build utils)))
+              (snippet '(begin
+                          ;; Delete bundled htslib.
+                          (delete-file-recursively "htslib-1.12")))))
+    (native-inputs (list htslib-1.12 perl))))
+
 (define-public bcftools-1.10
-  (package (inherit bcftools)
-    (name "bcftools")
+  (package/inherit bcftools
     (version "1.10")
     (source (origin
               (method url-fetch)
@@ -427,11 +441,8 @@ transparently with both VCFs and BCFs, both uncompressed and BGZF-compressed.")
               (modules '((guix build utils)))
               (snippet '(begin
                           ;; Delete bundled htslib.
-                          (delete-file-recursively "htslib-1.10")
-                          #t))))
-    (build-system gnu-build-system)
-    (native-inputs
-     (list htslib-1.10 perl))))
+                          (delete-file-recursively "htslib-1.10")))))
+    (native-inputs (list htslib-1.10 perl))))
 
 (define-public bedops
   (package
