@@ -23,7 +23,7 @@
   #:use-module (guix utils)
   #:use-module (guix build utils)
   #:use-module (ice-9 match)
-  #:use-module (ice-9 control)
+  #:use-module ((ice-9 control) #:select (let/ec))
   #:export (git-command
             with-temporary-git-repository
             with-git-repository
