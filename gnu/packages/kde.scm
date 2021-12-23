@@ -47,6 +47,7 @@
   #:use-module (gnu packages audio)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages code)
   #:use-module (gnu packages cpp)
   #:use-module (gnu packages compression)
@@ -441,6 +442,32 @@ supports stock charts, box charts, and whisker charts.  @code{KGantt} provides
 a module for implementing ODF Gantt charts, which are bar charts that
 illustrate project schedules.")
     (license license:gpl2+)))
+
+(define-public kseexpr
+  (package
+    (name "kseexpr")
+    (version "4.0.4.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://invent.kde.org/graphics/kseexpr")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "088q3kkv2wq426w000iq14wy3a45rrnn0bmsdks6caz4vq04ccay"))))
+    (build-system qt-build-system)
+    (arguments
+     `(#:configure-flags (list "-DBUILD_TESTS=ON"))) ; disabled by default
+    (native-inputs
+     (list bison doxygen extra-cmake-modules flex googletest))
+    (inputs
+     (list ki18n libpng qtbase-5))
+    (home-page "https://invent.kde.org/graphics/kseexpr")
+    (synopsis "Embeddable expression evaluation engine")
+    (description "This package contains the fork of Disney Animation's SeExpr
+expression library, that is used in Krita.")
+    (license license:gpl3+)))
 
 (define-public krita
   (package
