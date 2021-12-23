@@ -11392,14 +11392,14 @@ protocol-independent framework to build mail and messaging applications.")
 (define-public java-kafka-clients
   (package
     (name "java-kafka-clients")
-    (version "1.0.0")
+    (version "1.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://apache/kafka/" version "/kafka-"
                                   version "-src.tgz"))
               (sha256
                (base32
-                "1yxmnsmliwm7671q5yy9bl4jdqyyn00n26cggz9brwczx80w1vfq"))))
+                "1jn62q7z383nwhzv4ippsddf98sa1gnkszjjncj4ii3r8rzgw566"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "java-kafka-clients.jar"
