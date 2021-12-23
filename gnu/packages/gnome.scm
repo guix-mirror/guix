@@ -1855,7 +1855,7 @@ either on a local, or remote machine via a number of methods.")
 (define-public gnome-commander
   (package
     (name "gnome-commander")
-    (version "1.12.2")
+    (version "1.12.3.1")
     (source
      (origin
        (method url-fetch)
@@ -1863,7 +1863,7 @@ either on a local, or remote machine via a number of methods.")
                            (version-major+minor version)  "/"
                            "gnome-commander-" version ".tar.xz"))
        (sha256
-        (base32 "0f7l2pkyh3r1qk4hhavl7387l3bq5my3snpdppiavcpnji28dpa5"))))
+        (base32 "0fhmfxh6kbchggvpbin7d4g4fq5vc49y0w48wdkyxln5dswidss2"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      (list desktop-file-utils
