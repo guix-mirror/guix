@@ -4920,10 +4920,10 @@ capabilities of the Linux kernel.")
              ;; create pidfile in /tmp instead of /var
              (substitute* "test/pidfile.c" (("/var/tmp") "/tmp")))))))
     (native-inputs (list autoconf automake libtool which))
-    (synopsis "Missing pieces in GNU libc")
-    (description "This package provides many of the missing pieces in GNU libc.
-Most notably the string functions: strlcpy(3), strlcat(3) and the highly
-useful *BSD sys/queue.h and sys/tree.h API's")
+    (synopsis "Library providing missing pieces in GNU libc")
+    (description "This package provides many of the missing pieces in GNU
+libc.  Most notably the string functions: strlcpy(3), strlcat(3) and the *BSD
+sys/queue.h and sys/tree.h API's.")
     (home-page "https://troglobit.com/projects/libite/")
     (license license:expat)))
 
