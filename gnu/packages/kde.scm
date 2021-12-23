@@ -66,6 +66,7 @@
   #:use-module (gnu packages gps)
   #:use-module (gnu packages graphics)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages image-processing)
   #:use-module (gnu packages kde-frameworks)
   #:use-module (gnu packages kde-pim)
   #:use-module (gnu packages kde-plasma)
@@ -517,6 +518,7 @@ expression library, that is used in Krita.")
      (list boost
            exiv2
            fftw
+           giflib
            gsl
            ilmbase
            karchive
@@ -529,20 +531,27 @@ expression library, that is used in Krita.")
            kiconthemes
            kio
            kitemviews
+           kseexpr
            kwidgetsaddons
            kwindowsystem
            kxmlgui
            lcms
            libjpeg-turbo
+           libheif
            libpng
            libraw-0.18
            libtiff
            libx11
            libxcb
            libxi
+           opencolorio
            openexr-2
+           openjpeg
            perl
            poppler-qt5
+           python
+           python-pyqt
+           python-sip
            qtbase-5
            qtdeclarative
            qtmultimedia
