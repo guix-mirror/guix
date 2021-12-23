@@ -5013,34 +5013,34 @@ studio.")
              (system "Xvfb &")
              (setenv "DISPLAY" ":0"))))))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("cunit" ,cunit)
-       ("gettext" ,gettext-minimal)
-       ("gobject-introspection" ,gobject-introspection)
-       ("gtk-doc" ,gtk-doc)
-       ("libtool" ,libtool)
-       ("libxslt" ,libxslt)
-       ("pkg-config" ,pkg-config)
-       ("xorg-server" ,xorg-server-for-tests)))
+     (list autoconf
+           automake
+           cunit
+           gettext-minimal
+           gobject-introspection
+           gtk-doc
+           libtool
+           libxslt
+           pkg-config
+           xorg-server-for-tests))
     (inputs
-     `(("alsa-lib" ,alsa-lib)
-       ("dssi" ,dssi)
-       ("fftw" ,fftw)
-       ("gst-plugins-base" ,gst-plugins-base)
-       ("gstreamer" ,gstreamer)
-       ("gtk+" ,gtk+)
-       ("jack" ,jack-1)
-       ("ladspa" ,ladspa)
-       ("libinstpatch" ,libinstpatch)
-       ("libsamplerate" ,libsamplerate)
-       ("libsndfile" ,libsndfile)
-       ("libsoup" ,libsoup)
-       ("libuuid" ,util-linux "lib")
-       ("libxml2" ,libxml2)
-       ("lv2" ,lv2)
-       ("pulseaudio" ,pulseaudio)
-       ("webkitgtk" ,webkitgtk)))
+     (list alsa-lib
+           dssi
+           fftw
+           gst-plugins-base
+           gstreamer
+           gtk+
+           jack-1
+           ladspa
+           libinstpatch
+           libsamplerate
+           libsndfile
+           libsoup-minimal-2
+           libxml2
+           lv2
+           pulseaudio
+           `(,util-linux "lib")
+           webkitgtk-with-libsoup2))
     (home-page "https://nongnu.org/gsequencer/")
     (synopsis "Advanced Gtk+ Sequencer")
     (description
