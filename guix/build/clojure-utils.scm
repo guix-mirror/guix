@@ -135,7 +135,7 @@ all libraries found under the source directories."
 (define-with-docs %aot-exclude
   "A default list of symbols deciding what not to compile.
 See the doc string of '%aot-include' for more details."
-  '())
+  '(data-readers))
 
 (define-with-docs %tests?
   "Enable tests by default."
