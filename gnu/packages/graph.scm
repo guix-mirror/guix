@@ -88,28 +88,54 @@ distributions in empirical data.  SIAM Review 51, 661-703 (2009)}).")
 (define-public igraph
   (package
     (name "igraph")
-    (version "0.8.4")
+    (version "0.9.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/igraph/igraph/releases/"
                            "download/" version "/igraph-" version ".tar.gz"))
+       (modules '((guix build utils)))
+       (snippet '(begin
+                   ;; Fully unbundle igraph (see:
+                   ;; https://github.com/igraph/igraph/issues/1897).
+                   (delete-file-recursively "vendor")
+                   (substitute* "CMakeLists.txt"
+                     (("add_subdirectory\\(vendor\\).*")
+                      ""))
+                   (substitute* "src/CMakeLists.txt"
+                     ;; Remove bundling related variables.
+                     ((".*_IS_VENDORED.*") "")
+                     ;; Remove link/install directives to bundled plfit.
+                     (("plfit") "")
+                     ;; Patch in support to find plfit from the system.
+                     (("# Link igraph statically to some.*" all)
+                      (string-append "\
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(PLFIT REQUIRED libplfit IMPORTED_TARGET)
+target_link_libraries(igraph PUBLIC PkgConfig::PLFIT)\n"
+                                     all)))
+                   (substitute* (find-files "." "(\\.h|\\.c)$")
+                     ;; Adjust includes for the newer plfit used.
+                     (("plfit/error.h")
+                      "plfit/plfit_error.h")
+                     ;; And the newer SuiteSparse.
+                     (("cs/cs.h")
+                      "cs.h"))))
        (sha256
-        (base32 "127q6q40kbmvd62yhbz6dlfk370qiq98s1iscyagpgbpjwb4xvyf"))))
-    (build-system gnu-build-system)
+        (base32 "0ym1jnj6rqrrjad0dk7jsrm9351zdd0654brbn38gqp1j9wgdqy4"))))
+    (build-system cmake-build-system)
     (arguments
-     `(#:configure-flags
-       (list "--disable-static"
-             "--with-external-glpk"
-             "--with-external-blas"
-             "--with-external-lapack")))
+     '(#:configure-flags (list "-DBUILD_SHARED_LIBS=ON")))
+    (native-inputs (list pkg-config))
     (inputs
-     (list gmp
+     (list arpack-ng
+           gmp
            glpk
            libxml2
            lapack
            openblas
-           zlib))
+           plfit
+           suitesparse))
     (home-page "https://igraph.org")
     (synopsis "Network analysis and visualization")
     (description
