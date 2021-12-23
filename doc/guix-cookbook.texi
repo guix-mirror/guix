@@ -1430,37 +1430,34 @@ The @code{linux-libre} kernel package definition is actually a procedure which
 creates a package.
 
 @lisp
-(define* (make-linux-libre version hash supported-systems
-                           #:key
-                           ;; A function that takes an arch and a variant.
-                           ;; See kernel-config for an example.
-                           (extra-version #false)
-                           (configuration-file #false)
-                           (defconfig "defconfig")
-                           (extra-options %default-extra-linux-options)
-                           (patches (list %boot-logo-patch)))
+(define* (make-linux-libre* version gnu-revision source supported-systems
+                            #:key
+                            (extra-version #f)
+                            ;; A function that takes an arch and a variant.
+                            ;; See kernel-config for an example.
+                            (configuration-file #f)
+                            (defconfig "defconfig")
+                            (extra-options %default-extra-linux-options))
   ...)
 @end lisp
 
-The current @code{linux-libre} package is for the 5.1.x series, and is
+The current @code{linux-libre} package is for the 5.15.x series, and is
 declared like this:
 
 @lisp
-(define-public linux-libre
-  (make-linux-libre %linux-libre-version
-                    %linux-libre-hash
-                    '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux")
-                    #:patches %linux-libre-5.1-patches
-                    #:configuration-file kernel-config))
+(define-public linux-libre-5.15
+  (make-linux-libre* linux-libre-5.15-version
+                     linux-libre-5.15-gnu-revision
+                     linux-libre-5.15-source
+                     '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux" "riscv64-linux")
+                     #:configuration-file kernel-config))
 @end lisp
 
 Any keys which are not assigned values inherit their default value from the
 @code{make-linux-libre} definition.  When comparing the two snippets above,
-you may notice that the code comment in the first doesn't actually refer to
-the @code{#:extra-version} keyword; it is actually for
-@code{#:configuration-file}.  Because of this, it is not actually easy to
-include a custom kernel configuration from the definition, but don't worry,
-there are other ways to work with what we do have.
+notice the code comment that refers to @code{#:configuration-file}.  Because of
+this, it is not actually easy to include a custom kernel configuration from the
+definition, but don't worry, there are other ways to work with what we do have.
 
 There are two ways to create a kernel with a custom kernel configuration.  The
 first is to provide a standard @file{.config} file during the build process by
@@ -1560,14 +1557,15 @@ custom kernel:
           (@@@@ (gnu packages linux) %default-extra-linux-options)))
 
 (define-public linux-libre-macbook41
-  ;; XXX: Access the internal 'make-linux-libre' procedure, which is
+  ;; XXX: Access the internal 'make-linux-libre*' procedure, which is
   ;; private and unexported, and is liable to change in the future.
-  ((@@@@ (gnu packages linux) make-linux-libre) (@@@@ (gnu packages linux) %linux-libre-version)
-                      (@@@@ (gnu packages linux) %linux-libre-hash)
-                      '("x86_64-linux")
-                      #:extra-version "macbook41"
-                      #:patches (@@@@ (gnu packages linux) %linux-libre-5.1-patches)
-                      #:extra-options %macbook41-config-options))
+  ((@@@@ (gnu packages linux) make-linux-libre*)
+   (@@@@ (gnu packages linux) linux-libre-version)
+   (@@@@ (gnu packages linux) linux-libre-gnu-revision)
+   (@@@@ (gnu packages linux) linux-libre-source)
+   '("x86_64-linux")
+   #:extra-version "macbook41"
+   #:extra-options %macbook41-config-options))
 @end lisp
 
 In the above example @code{%file-systems} is a collection of flags enabling
