@@ -1626,17 +1626,16 @@ visualize your public Git repositories on a web interface.")
 (define-public pre-commit
   (package
     (name "pre-commit")
-    (version "2.15.0")
+    (version "2.16.0")
     (source
      (origin
-       ;; No tests in the PyPI tarball.
-       (method git-fetch)
+       (method git-fetch)               ; no tests in PyPI release
        (uri (git-reference
              (url "https://github.com/pre-commit/pre-commit")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0hyynhg52qq8rd37cwk2gl1jjy7hpqh74zl2lg89kkdhhx0xfiaj"))))
+        (base32 "1sf9mqpiv3pgzi6aar7xfna9v7n63lgm7d7b24fhni0jxn56384b"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
