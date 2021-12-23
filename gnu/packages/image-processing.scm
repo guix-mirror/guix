@@ -658,12 +658,13 @@ due to its architecture which automatically parallelises the image workflows.")
      (list curl
            fftw
            graphicsmagick
+           imath
            libjpeg-turbo
            libpng
            libtiff
            libx11
-           ;;("opencv" ,opencv) ;OpenCV is currently broken in the CI
-           openexr-2
+           ;;opencv ;OpenCV is currently broken in the CI
+           openexr
            zlib))
     (home-page "https://gmic.eu/")
     (synopsis "Full-featured framework for digital image processing")
