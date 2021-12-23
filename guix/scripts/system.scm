@@ -57,6 +57,7 @@
   #:use-module (guix build utils)
   #:use-module (guix progress)
   #:use-module ((guix build syscalls) #:select (terminal-columns))
+  #:use-module (gnu build image)
   #:use-module (gnu build install)
   #:autoload   (gnu build file-systems)
                  (find-partition-by-label find-partition-by-uuid)
