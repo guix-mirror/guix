@@ -121,23 +121,7 @@
            (add-after 'install-license-files 'install-doc
              (cut install-doc #:doc-dirs '("doc/clojure/") <...>))
            (add-after 'install-doc 'install-javadoc
-             (install-javadoc "target/javadoc/"))
-           (add-after 'install 'make-wrapper
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out"))
-                      (wrapper (string-append out "/bin/clojure")))
-                 (mkdir-p (string-append out "/bin"))
-                 (with-output-to-file wrapper
-                   (lambda _
-                     (display
-                      (string-append
-                       "#!"
-                       (which "sh")
-                       "\n\n"
-                       (assoc-ref inputs "jre") "/bin/java -jar "
-                       out "/share/java/clojure.jar \"$@\"\n"))))
-                 (chmod wrapper #o555))
-               #t)))))
+             (install-javadoc "target/javadoc/")))))
       (native-inputs libraries)
       (home-page "https://clojure.org/")
       (synopsis "Lisp dialect running on the JVM")
