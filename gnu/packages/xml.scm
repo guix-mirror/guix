@@ -1553,11 +1553,14 @@ Excel(TM) since version 2007.")
     (arguments
      `(#:build-target "build"
        #:test-target "test"
-       ;; This test sometimes fails with an out of memory exception
-       #:test-exclude (list "**/NoAnnotationsRequiredTest.java")
        #:phases
        (modify-phases %standard-phases
-         (replace 'install (install-jars "jar")))))
+         (replace 'install (install-jars "jar"))
+         (add-before 'check 'disable-failing-test
+           (lambda _
+             ;; This test sometimes fails with an out of memory exception
+             (delete-file
+              "test/src/org/simpleframework/xml/core/NoAnnotationsRequiredTest.java"))))))
     (native-inputs
      (list unzip))
     (home-page "http://simple.sourceforge.net/")
