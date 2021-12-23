@@ -11412,6 +11412,8 @@ protocol-independent framework to build mail and messaging applications.")
          "**/IntegrationTest.java"
          ;; Requires network
          "**/ClientUtilsTest.java"
+         ;; "protocol is disabled or cipher suites are inappropriate"
+         "**/SslTransportLayerTest.java"
          ;; End with errors that seem related to our powermock
          "**/KafkaProducerTest.java"
          "**/BufferPoolTest.java"
