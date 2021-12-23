@@ -189,7 +189,9 @@ bootloader's configuration file."
      #:imported-modules '((gnu services herd)
                           (guix combinators))))
 
-  (define vm (virtual-machine os))
+  (define vm (virtual-machine
+              (operating-system os)
+              (volatile? #f)))
 
   (define (test script)
     (with-imported-modules '((gnu build marionette))
