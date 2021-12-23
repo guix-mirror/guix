@@ -272,6 +272,37 @@ All operations work on either byte arrays or Input/OutputStreams.  Performance
 is on par with Java implementations, e.g., Apache commons-codec.")
     (license license:epl1.0)))
 
+(define-public clojure-data-xml
+  (package
+    (name "clojure-data-xml")
+    (version "0.2.0-alpha6")
+    (home-page "https://github.com/clojure/data.xml")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "data.xml-" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "08vglcapq7sd9zhw8dw1y7dcdks7f21w1pw9p05i475i3bw4cf94"))))
+    (build-system clojure-build-system)
+    (arguments
+     '(#:source-dirs '("src/main/clojure")
+       #:test-dirs '("src/test/clojure")
+       #:doc-dirs '()))
+    (propagated-inputs (list clojure-data-codec))
+    (synopsis "Clojure library for reading and writing XML data")
+    (description "@code{data.xml} is a Clojure library for reading and writing
+XML data. @code{data.xml} has the following features:
+
+Parses XML documents into Clojure data structures
+Emits XML from Clojure data structures
+No additional dependencies if using JDK >= 1.6
+Uses StAX internally
+lazy - should allow parsing and emitting of large XML documents")
+    (license license:epl1.0)))
+
 (define-public clojure-instaparse
   (let ((commit "dcfffad5b065e750f0f5835f017cdd8188b8ca2e")
         (version "1.4.9")) ; upstream forget to tag this release
