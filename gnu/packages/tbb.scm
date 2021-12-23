@@ -89,7 +89,8 @@ tasks, synchronization primitives, atomic operations, and more.")
     (arguments
      `(#:test-target "test"
        #:make-flags (list (string-append "LDFLAGS=-Wl,-rpath="
-                                         (assoc-ref %outputs "out") "/lib"))
+                                         (assoc-ref %outputs "out") "/lib")
+                          "CFLAGS=-fuse-ld=gold")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fail-on-test-errors
@@ -121,6 +122,13 @@ tasks, synchronization primitives, atomic operations, and more.")
                (copy-recursively "doc" doc)
                (copy-recursively "examples" examples)
                (copy-recursively "include" include)))))))
+    (native-inputs
+     ;; XXX: For some reason, since commit "gnu: binutils: Absorb
+     ;; binutils-next", the build of just this version of TBB crashes during
+     ;; tests.  Workaround it by linking the binaries with ld.gold.
+     (list (module-ref (resolve-interface
+                        '(gnu packages commencement))
+                       'ld-gold-wrapper)))
     (home-page "https://www.threadingbuildingblocks.org")
     (synopsis "C++ library for parallel programming")
     (description
