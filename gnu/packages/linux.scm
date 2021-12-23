@@ -4143,7 +4143,7 @@ dm-thin, dm-cache and dm-era device-mapper targets.")
     (synopsis "Advanced system & process supervisor for Linux")
     (description "This package provides an advanced monitor of critical system
 resources, supervises the heartbeat of processes, records deadline
-transgressions, and initiates a controlled reset if needed")
+transgressions, and initiates a controlled reset if needed.")
     (home-page "https://troglobit.com/projects/watchdogd/")
     (license license:isc)))
 
