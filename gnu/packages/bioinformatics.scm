@@ -2327,7 +2327,7 @@ has several key features:
 (define-public python-pysam
   (package
     (name "python-pysam")
-    (version "0.16.0.1")
+    (version "0.18.0")
     (source (origin
               (method git-fetch)
               ;; Test data is missing on PyPi.
@@ -2337,11 +2337,10 @@ has several key features:
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "168bwwm8c2k22m7paip8q0yajyl7xdxgnik0bgjl7rhqg0majz0f"))
+                "042ca27r6634xg2ixgvq1079cp714wmm6ml7bwc1snn0wxxzywfg"))
               (modules '((guix build utils)))
               (snippet '(begin
-                          ;; Drop bundled htslib. TODO: Also remove samtools
-                          ;; and bcftools.
+                          ;; FIXME: Unbundle samtools and bcftools.
                           (delete-file-recursively "htslib")))))
     (build-system python-build-system)
     (arguments
@@ -2358,35 +2357,24 @@ has several key features:
              (setenv "CFLAGS" "-D_CURSES_LIB=1")))
          (replace 'check
            (lambda* (#:key tests? #:allow-other-keys)
-             ;; FIXME: These tests fail with "AttributeError: 'array.array'
-             ;; object has no attribute 'tostring'".
-             (delete-file "tests/AlignmentFile_test.py")
              (when tests?
                ;; Step out of source dir so python does not import from CWD.
                (with-directory-excursion "tests"
                  (setenv "HOME" "/tmp")
                  (invoke "make" "-C" "pysam_data")
                  (invoke "make" "-C" "cbcf_data")
-                 (invoke "pytest" "-k"
-                         (string-append
-                           ;; requires network access.
-                           "not FileHTTP"
-                           ;; bug in test suite with samtools update
-                           ;; https://github.com/pysam-developers/pysam/issues/961
-                           " and not TestHeaderBAM"
-                           " and not TestHeaderCRAM"
-                           " and not test_text_processing")))))))))
+                 ;; The FileHTTP test requires network access.
+                 (invoke "pytest" "-k" "not FileHTTP"))))))))
     (propagated-inputs
-     (list htslib-1.10))    ; Included from installed header files.
+     (list htslib))                    ; Included from installed header files.
     (inputs
      (list ncurses curl zlib))
     (native-inputs
      (list python-cython
            python-pytest
            ;; Dependencies below are are for tests only.
-           samtools-1.10
-           bcftools-1.10
-           python-nose))
+           samtools
+           bcftools))
     (home-page "https://github.com/pysam-developers/pysam")
     (synopsis "Python bindings to the SAMtools C API")
     (description
