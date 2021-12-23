@@ -4786,7 +4786,7 @@ performance.")
 (define-public htslib
   (package
     (name "htslib")
-    (version "1.12")
+    (version "1.14")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -4794,7 +4794,7 @@ performance.")
                     version "/htslib-" version ".tar.bz2"))
               (sha256
                (base32
-                "1jplnvizgr0fyyvvmkfmnsywrrpqhid3760vw15bllz98qdi9012"))))
+                "0pwk8yhhvb85mi1d2qhwsb4samc3rmbcrq7b1s0jz0glaa7in8pd"))))
     (build-system gnu-build-system)
     ;; Let htslib translate "gs://" and "s3://" to regular https links with
     ;; "--enable-gcs" and "--enable-s3". For these options to work, we also
@@ -4820,9 +4820,20 @@ data.  It also provides the @command{bgzip}, @command{htsfile}, and
     ;; the rest is released under the Expat license
     (license (list license:expat license:bsd-3))))
 
+(define-public htslib-1.12
+  (package/inherit htslib
+    (version "1.12")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/samtools/htslib/releases/download/"
+                    version "/htslib-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1jplnvizgr0fyyvvmkfmnsywrrpqhid3760vw15bllz98qdi9012"))))))
+
 (define-public htslib-1.10
-  (package (inherit htslib)
-    (name "htslib")
+  (package/inherit htslib
     (version "1.10")
     (source (origin
               (method url-fetch)
@@ -4834,8 +4845,7 @@ data.  It also provides the @command{bgzip}, @command{htsfile}, and
                 "0wm9ay7qgypj3mwx9zl1mrpnr36298b1aj5vx69l4k7bzbclvr3s"))))))
 
 (define-public htslib-1.9
-  (package (inherit htslib)
-    (name "htslib")
+  (package/inherit htslib
     (version "1.9")
     (source (origin
               (method url-fetch)
@@ -4848,8 +4858,7 @@ data.  It also provides the @command{bgzip}, @command{htsfile}, and
 
 ;; This package should be removed once no packages rely upon it.
 (define htslib-1.3
-  (package
-    (inherit htslib)
+  (package/inherit htslib
     (version "1.3.1")
     (source (origin
               (method url-fetch)
@@ -4861,8 +4870,7 @@ data.  It also provides the @command{bgzip}, @command{htsfile}, and
                 "1rja282fwdc25ql6izkhdyh8ppw8x2fs0w0js78zgkmqjlikmma9"))))))
 
 (define htslib-for-samtools-1.2
-  (package
-    (inherit htslib)
+  (package/inherit htslib
     (version "1.2.1")
     (source (origin
               (method url-fetch)
