@@ -353,6 +353,62 @@ Maven Wagon, for use in Maven.")))
     (synopsis "Transport implementation for Maven")
     (description "This package contains a transport implementation based on
 files, for use in Maven.")))
+
+(define-public maven-resolver-transport-http
+  (package
+    (inherit maven-resolver-api)
+    (name "maven-resolver-transport-http")
+    (arguments
+     `(#:jar-name "maven-resolver-transport-http.jar"
+       #:source-dir "maven-resolver-transport-http/src/main/java"
+       #:test-dir "maven-resolver-transport-http/src/test"
+       #:jdk ,icedtea-8
+       ;; Tests all fail because
+       ;; org.eclipse.aether.transport.http.SslSocketFactory is not available.
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'generate-sisu
+           (lambda _
+             (mkdir-p "build/classes/META-INF/sisu")
+             (with-output-to-file "build/classes/META-INF/sisu/javax.inject.Named"
+               (lambda _
+                 (display "org.eclipse.aether.transport.http.HttpTransporterFactory\n"))))))))
+    (inputs
+     (list java-eclipse-sisu-inject
+           java-eclipse-sisu-plexus
+           java-javax-inject
+           java-plexus-classworlds
+           java-plexus-component-annotations
+           java-plexus-utils
+           java-slf4j-api
+           maven-resolver-api
+           maven-resolver-spi
+           maven-resolver-util
+           maven-wagon-provider-api))
+    (propagated-inputs
+     (list java-httpcomponents-httpclient
+           java-httpcomponents-httpcore))
+    (native-inputs
+     (list java-aopalliance
+           java-asm
+           java-cglib
+           java-eclipse-aether-api
+           java-eclipse-jetty-http
+           java-eclipse-jetty-io
+           java-eclipse-jetty-server
+           java-eclipse-jetty-servlet
+           java-eclipse-jetty-util
+           java-guava
+           java-guice
+           java-hamcrest-core
+           java-javaee-servletapi
+           java-junit
+           maven-resolver-test-util))
+    (synopsis "Transport implementation for Maven")
+    (description "This package contains a transport implementation based on
+HTTP, for use in Maven.")))
+
 ;; aether is the parent project that was forked into maven-resolver.  It used
 ;; to be used with older versions of Maven, and is still required for some
 ;; plugins and their dependencies.  This version is required for the plugins,
