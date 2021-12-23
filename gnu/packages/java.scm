@@ -11422,20 +11422,20 @@ protocol-independent framework to build mail and messaging applications.")
     (inputs
      (list java-slf4j-api java-lz4))
     (native-inputs
-     `(("junit" ,java-junit)
-       ("hamcrest" ,java-hamcrest-all)
-       ("objenesis" ,java-objenesis)
-       ("asm" ,java-asm)
-       ("cglib" ,java-cglib)
-       ("javassist" ,java-jboss-javassist)
-       ("snappy" ,java-snappy)
-       ("easymock" ,java-easymock)
-       ("powermock" ,java-powermock-core)
-       ("powermock-easymock" ,java-powermock-api-easymock)
-       ("powermock-junit4-common" ,java-powermock-modules-junit4-common)
-       ("powermock-junit4" ,java-powermock-modules-junit4)
-       ("powermock-support" ,java-powermock-api-support)
-       ("java-bouncycastle" ,java-bouncycastle)))
+     (list java-asm
+           java-bouncycastle
+           java-cglib
+           java-easymock
+           java-hamcrest-all
+           java-jboss-javassist
+           java-junit
+           java-objenesis
+           java-powermock-api-easymock
+           java-powermock-api-support
+           java-powermock-core
+           java-powermock-modules-junit4
+           java-powermock-modules-junit4-common
+           java-snappy))
     (home-page "https://kafka.apache.org")
     (synopsis "Distributed streaming platform")
     (description "Kafka is a distributed streaming platform, which means:
