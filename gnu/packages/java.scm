@@ -11316,6 +11316,8 @@ application components to create, send, receive, and read messages.")
              "**/DurationFilterTest.java"
              "**/MailHandlerTest.java"
              "**/GetLocalAddressTest.java"
+             ;; SSLHandshakeException: No appropriate protocol
+             "**/WriteTimeoutSocketTest.java"
              ;; FIXME: both end with:
              ;; java.lang.ClassNotFoundException:
              ;; javax.mail.internet.MimeMultipartParseTest
