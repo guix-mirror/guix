@@ -44,6 +44,7 @@
   #:use-module (guix base32)
   #:use-module (guix upstream)
   #:use-module (guix packages)
+  #:use-module (guix memoization)
   #:use-module ((guix utils) #:select (call-with-temporary-output-file))
   #:export (elpa->guix-package
             guix-package->elpa-name
@@ -424,7 +425,7 @@ type '<elpa-package>'."
 (define (latest-release package)
   "Return an <upstream-release> for the latest release of PACKAGE."
   (define name (guix-package->elpa-name package))
-  (define repo 'gnu)
+  (define repo (elpa-repository package))
 
   (match (elpa-package-info name repo)
     (#f
@@ -443,11 +444,20 @@ type '<elpa-package>'."
         (urls (list url))
         (signature-urls (list (string-append url ".sig"))))))))
 
-(define package-from-gnu.org?
-  (url-predicate (lambda (url)
-                   (let ((uri (string->uri url)))
-                     (and uri
-                          (string=? (uri-host uri) "elpa.gnu.org"))))))
+(define elpa-repository
+  (memoize
+   (url-predicate (lambda (url)
+                    (let ((uri (string->uri url)))
+                      (and uri
+                           (cond
+                            ((string=? (uri-host uri) "elpa.gnu.org")
+                             'gnu)
+                            ((string=? (uri-host uri) "elpa.nongnu.org")
+                             'nongnu)
+                            (else #f))))))))
+
+(define (package-from-elpa-repository? package)
+  (member (elpa-repository package) '(gnu nongnu)))
 
 (define %elpa-updater
   ;; The ELPA updater.  We restrict it to packages hosted on elpa.gnu.org
@@ -455,7 +465,7 @@ type '<elpa-package>'."
   (upstream-updater
    (name 'elpa)
    (description "Updater for ELPA packages")
-   (pred package-from-gnu.org?)
+   (pred package-from-elpa-repository?)
    (latest latest-release)))
 
 (define elpa-guix-name (cut guix-name "emacs-" <>))
