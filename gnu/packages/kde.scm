@@ -61,6 +61,7 @@
   #:use-module (gnu packages geo)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
+  #:use-module (gnu packages gimp)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gps)
@@ -485,11 +486,7 @@ expression library, that is used in Krita.")
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f
-       #:configure-flags
-       (list "-DBUILD_TESTING=OFF"
-             (string-append "-DCMAKE_CXX_FLAGS=-I"
-                            (assoc-ref %build-inputs "openexr")
-                            "/include/OpenEXR"))
+       #:configure-flags (list "-DBUILD_TESTING=OFF")
        #:phases
        (modify-phases %standard-phases
          ;; Ensure that icons are found at runtime.
@@ -520,7 +517,7 @@ expression library, that is used in Krita.")
            fftw
            giflib
            gsl
-           ilmbase
+           imath
            karchive
            kcompletion
            kconfig
@@ -538,14 +535,16 @@ expression library, that is used in Krita.")
            lcms
            libjpeg-turbo
            libheif
+           libmypaint
            libpng
            libraw-0.18
            libtiff
+           libwebp
            libx11
            libxcb
            libxi
            opencolorio
-           openexr-2
+           openexr
            openjpeg
            perl
            poppler-qt5
