@@ -1033,14 +1033,14 @@ Shapely capabilities
 (define-public postgis
   (package
     (name "postgis")
-    (version "3.1.2")
+    (version "3.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.osgeo.org/postgis/source/postgis-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0ch7gry8a1i9114mlhklxryn7ja3flsz6pxj9r5p09k92xh3gp9c"))))
+                "1zbwa15rsvr05rmcidk21q3amndd0q4df4psp3zhqz4lqraf3fbs"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f
@@ -1057,16 +1057,16 @@ Shapely capabilities
                (("\\$\\(DESTDIR\\)\\$\\(PGSQL_BINDIR\\)")
                 (string-append (assoc-ref outputs "out") "/bin"))))))))
     (inputs
-     `(("gdal" ,gdal)
-       ("geos" ,geos)
-       ("giflib" ,giflib)
-       ("json-c" ,json-c)
-       ("libjpeg" ,libjpeg-turbo)
-       ("libxml2" ,libxml2)
-       ("pcre" ,pcre)
-       ("postgresql" ,postgresql)
-       ("protobuf-c" ,protobuf-c)
-       ("proj" ,proj)))
+     (list gdal
+           geos
+           giflib
+           json-c
+           libjpeg-turbo
+           libxml2
+           pcre
+           postgresql
+           protobuf-c
+           proj))
     (native-inputs
      (list perl pkg-config))
     (home-page "https://postgis.net")
