@@ -11334,8 +11334,7 @@ application components to create, send, receive, and read messages.")
              (copy-recursively "mail/src/main/resources/META-INF"
                                "build/classes/META-INF"))))))
     (native-inputs
-     `(("junit" ,java-junit)
-       ("hamcrest" ,java-hamcrest-core)))
+     (list java-junit java-hamcrest-core))
     (home-page "https://javaee.github.io/javamail/")
     (synopsis "Mail-related functionality in Java")
     (description "The JavaMail API provides a platform-independent and
