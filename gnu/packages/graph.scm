@@ -27,6 +27,7 @@
 
 (define-module (gnu packages graph)
   #:use-module (guix download)
+  #:use-module (guix gexp)
   #:use-module (guix git-download)
   #:use-module (guix packages)
   #:use-module (guix utils)
@@ -146,36 +147,46 @@ more.")
     (license license:gpl2+)))
 
 (define-public python-igraph
-  (package (inherit igraph)
+  (package/inherit igraph
     (name "python-igraph")
-    (version "0.8.2")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "python-igraph" version))
-       (sha256
-        (base32 "0wkxrs28qdvnrz7d4jzcf2bh6v2yqzx3wyfziihfgsi2gn6n60a6"))))
+    (version "0.9.8")
+    (source (origin
+              (method git-fetch)
+              ;; The PyPI archive lacks tests.
+              (uri (git-reference
+                    (url "https://github.com/igraph/python-igraph")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0nwwfqvj4gp91b9j67zq4l58srr4r8qfqh90ygx17zyrybkx7ns6"))))
     (build-system python-build-system)
     (arguments
-     '(#:configure-flags
-       (list "--use-pkg-config")
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'build
-           (lambda _
-             (invoke "python" "./setup.py" "build" "--use-pkg-config")))
-         (delete 'check)
-         (add-after 'install 'check
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (add-installed-pythonpath inputs outputs)
-             (invoke "pytest" "-v"))))))
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'specify-libigraph-location
+            (lambda _
+              (let ((igraph #$(this-package-input "igraph")))
+                (substitute* "setup.py"
+                  (("(LIBIGRAPH_FALLBACK_INCLUDE_DIRS = ).*" _ var)
+                   (string-append
+                    var (format #f "[~s]~%" (string-append igraph
+                                                           "/include/igraph"))))
+                  (("(LIBIGRAPH_FALLBACK_LIBRARY_DIRS = ).*" _ var)
+                   (string-append
+                    var (format #f "[~s]~%" (string-append igraph "/lib"))))))))
+          (replace 'check
+            (lambda* (#:key tests? #:allow-other-keys)
+              (when tests?
+                (invoke "pytest" "-v")))))))
     (inputs
      (list igraph))
     (propagated-inputs
      (list python-texttable))
     (native-inputs
-     (list pkg-config python-pytest))
-    (home-page "https://pypi.org/project/python-igraph/")
+     (list python-pytest))
+    (home-page "https://igraph.org/python/")
     (synopsis "Python bindings for the igraph network analysis library")))
 
 (define-public r-rbiofabric
