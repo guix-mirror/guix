@@ -106,7 +106,7 @@ PORT."
              marionette))
 
           (test-equal "Test file not copied to read-only share"
-            10                                  ;see "EXIT VALUES" in rsync(1)
+            1                                  ;see "EXIT VALUES" in rsync(1)
             (marionette-eval
              '(status:exit-val
                (system* "rsync" "/tmp/input"
