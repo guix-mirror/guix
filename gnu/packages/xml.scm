@@ -1553,6 +1553,8 @@ Excel(TM) since version 2007.")
     (arguments
      `(#:build-target "build"
        #:test-target "test"
+       ;; This test sometimes fails with an out of memory exception
+       #:test-exclude (list "**/NoAnnotationsRequiredTest.java")
        #:phases
        (modify-phases %standard-phases
          (replace 'install (install-jars "jar")))))
