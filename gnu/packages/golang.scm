@@ -8688,9 +8688,6 @@ zero round-trip encryption, and other advanced features.")
 non-cryptographic hash algorithm, working at speeds close to RAM limits.")
     (license license:asl2.0)))
 
-(define-public go-github-com-aswinkarthik-csvdiff
-  (deprecated-package "go-github-com-aswinkarthik-csvdiff" csvdiff))
-
 (define-public go-gopkg-in-djherbis-times-v1
   (package
     (name "go-gopkg-in-djherbis-times-v1")

@@ -1382,3 +1382,6 @@ line.  @code{csvdiff} supports
 JSON for post-processing
 @end itemize")
     (license license:expat)))
+
+(define-public go-github-com-aswinkarthik-csvdiff
+  (deprecated-package "go-github-com-aswinkarthik-csvdiff" csvdiff))
