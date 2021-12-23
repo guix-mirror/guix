@@ -243,6 +243,35 @@ It supports Clojure 1.5.1 and later as well as ClojureScript.")
       (home-page "https://github.com/clojure/core.match")
       (license license:epl1.0))))
 
+(define-public clojure-data-codec
+  (package
+    (name "clojure-data-codec")
+    (version "0.1.1")
+    (home-page "https://github.com/clojure/data.codec")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "data.codec-" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "192df1dmbwvf1x837mi731n9x94bdypaz18va45plzgdsh4xx6dr"))))
+    (build-system clojure-build-system)
+    (arguments
+     '(#:source-dirs '("src/main/clojure")
+       #:test-dirs '("src/test/clojure")
+       #:doc-dirs '()))
+    (native-inputs (list java-commons-codec
+                         clojure-test-check))
+    (synopsis "Native codec implementations for Clojure")
+    (description "Native codec implementations for Clojure.  Currently only
+base64 has been implemented.  Implements the standard base64 encoding
+character set, but does not yet support automatic fixed line-length encoding.
+All operations work on either byte arrays or Input/OutputStreams.  Performance
+is on par with Java implementations, e.g., Apache commons-codec.")
+    (license license:epl1.0)))
+
 (define-public clojure-instaparse
   (let ((commit "dcfffad5b065e750f0f5835f017cdd8188b8ca2e")
         (version "1.4.9")) ; upstream forget to tag this release
