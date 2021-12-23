@@ -235,8 +235,6 @@ provided.")
     (build-system gnu-build-system)
     (propagated-inputs
      (list libgpg-error))
-    (native-inputs
-     (list libgpg-error))
     (arguments
      `(#:configure-flags
        (list ,@(if (%current-target-system)
