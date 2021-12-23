@@ -142,13 +142,17 @@
 ;; Instead, please push one commit that rolls back Guix to before the mistake,
 ;; and then another that points to the first one. That way, the faulty commit
 ;; won't appear on the linked list.
+;;
+;; If you are updating this package because it fails to build, you need to
+;; actually update it *twice*, as the installer is pointing to the N-1 guix
+;; package revision.
 (define-public guix
   ;; Latest version of Guix, which may or may not correspond to a release.
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
   (let ((version "1.3.0")
-        (commit "10ceb3e84654e024f14a4b048e7d68492ed9dc7c")
-        (revision 16))
+        (commit "2a49ddb513476cd45ebca618ffb0b9e381c1e497")
+        (revision 17))
     (package
       (name "guix")
 
@@ -164,7 +168,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "13gdj1fdjx4i0ylijv3qz5q0mmf4wbdhayifxrhzh2ng9idqhd0j"))
+                  "069gn3j2ar642f42b1l37g901i9n75s0q43abb8mavw9hlc23gqv"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
