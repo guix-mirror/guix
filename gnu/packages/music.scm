@@ -4994,16 +4994,16 @@ studio.")
 (define-public gsequencer
   (package
     (name "gsequencer")
-    (version "3.10.18")
+    (version "3.14.5")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://git.savannah.gnu.org/git/gsequencer.git/")
+             (url "https://git.savannah.gnu.org/git/gsequencer")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "126kbvdkxy82mmkl19qhp9k6iz5xclar06chbj7lf580x96c899c"))))
+        (base32 "18pfv4w30nng1p0vgmrnkfm38522iq1x1bj8iz4qfiffiv56dsnz"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:phases
