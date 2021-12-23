@@ -79,6 +79,7 @@
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages)
+  #:use-module (guix gexp)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -157,50 +158,38 @@ protocol.")
     (build-system gnu-build-system)
     (outputs '("out" "drill" "examples" "pyldns"))
     (arguments
-     `( ;; Tests require Tpkg.
-       ;; https://tpkg.github.io/
-       #:tests? #f
-       #:configure-flags
-       (list
-        "--disable-static"
-        "--enable-gost-anyway"
-        "--enable-rrtype-ninfo"
-        "--enable-rrtype-rkey"
-        "--enable-rrtype-ta"
-        "--enable-rrtype-avc"
-        "--enable-rrtype-doa"
-        "--enable-rrtype-amtrelay"
-        "--with-drill"
-        "--with-examples"
-        "--with-pyldns"
-        ;; Perl module DNS::LDNS not available.
-        ;; https://github.com/erikoest/DNS-LDNS.git
-        ;; "--with-p5-dns-ldns"
-        (string-append "--with-ssl="
-                       (assoc-ref %build-inputs "openssl"))
-        (string-append "--with-ca-path="
-                       (assoc-ref %build-inputs "nss-certs")
-                       "/etc/ssl/certs"))
-       #:make-flags
-       (list
-        (string-append "drillbindir="
-                       (assoc-ref %outputs "drill")
-                       "/bin")
-        (string-append "drillmandir="
-                       (assoc-ref %outputs "drill")
-                       "/share/man")
-        (string-append "examplesbindir="
-                       (assoc-ref %outputs "examples")
-                       "/bin")
-        (string-append "examplesmandir="
-                       (assoc-ref %outputs "examples")
-                       "/share/man")
-        (string-append "python_site="
-                       (assoc-ref %outputs "pyldns")
-                       "/lib/python"
-                       ,(version-major+minor
-                         (package-version python))
-                       "/site-packages"))))
+     (list
+      #:tests? #f                     ; tests require <https://tpkg.github.io>
+      #:configure-flags
+      #~(list
+         "--disable-static"
+         "--enable-gost-anyway"
+         "--enable-rrtype-ninfo"
+         "--enable-rrtype-rkey"
+         "--enable-rrtype-ta"
+         "--enable-rrtype-avc"
+         "--enable-rrtype-doa"
+         "--enable-rrtype-amtrelay"
+         "--with-drill"
+         "--with-examples"
+         "--with-pyldns"
+         ;; Perl module DNS::LDNS not available.
+         ;; https://github.com/erikoest/DNS-LDNS.git
+         ;; "--with-p5-dns-ldns"
+         (string-append "--with-ssl=" #$(this-package-input "openssl"))
+         (string-append "--with-ca-path=" #$(this-package-input "nss-certs")
+                        "/etc/ssl/certs"))
+      #:make-flags
+      #~(list
+         (string-append "drillbindir=" #$output:drill "/bin")
+         (string-append "drillmandir=" #$output:drill "/share/man")
+         (string-append "examplesbindir=" #$output:examples "/bin")
+         (string-append "examplesmandir=" #$output:examples "/share/man")
+         (string-append "python_site=" #$output:pyldns "/lib/python"
+                        #$(version-major+minor (package-version
+                                                (this-package-input
+                                                 "python-wrapper")))
+                        "/site-packages"))))
     (native-inputs
      (list doxygen perl perl-devel-checklib pkg-config swig))
     (inputs
