@@ -531,12 +531,12 @@ patcher application.")))
                                               "share/axoloti/firmware")))
                  (mkdir-p target)
                  (install-file (string-append old-firmware
-                                              "flasher/flasher_build/flasher.bin")
+                                              "/flasher/flasher_build/flasher.bin")
                                target)
                  ;; TODO: the old file differs from the file that is included
                  ;; in this repository as the old firmware.
                  (install-file (string-append old-firmware
-                                              "build/axoloti.bin")
+                                              "/build/axoloti.bin")
                                target))
 
                ;; We do this to ensure that this package retains references to
