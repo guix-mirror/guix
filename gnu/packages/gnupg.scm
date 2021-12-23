@@ -347,21 +347,17 @@ libskba (working with X.509 certificates and CMS data).")
     (properties '((ftp-server . "ftp.gnupg.org")
                   (ftp-directory . "/gcrypt/gnupg")))))
 
+;; This package fixes <https://issues.guix.gnu.org/52483>, "GnuPG 2.2.30 cannot
+;; do symmetric encryption"
 (define-public gnupg-2.2.32
   (package
     (inherit gnupg)
     (version "2.2.32")
-
-    ;; Hide this version because packages like 'emacs-pinentry' propagate the
-    ;; default GnuPG and "guix install gnupg emacs-pinentry" would fail with a
-    ;; collision error.
-    (properties `((hidden? . #t)
-                  ,@(package-properties gnupg)))
-
     (source (origin
               (inherit (package-source gnupg))
               (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
                                   ".tar.bz2"))
+              (patches (search-patches "gnupg-default-pinentry.patch"))
               (sha256
                (base32
                 "0506gv54z10c96z5821z9p0ksibk1pfilsmag39ffqrcz0sinmxj"))))))
