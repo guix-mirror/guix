@@ -483,25 +483,10 @@ expression library, that is used in Krita.")
              ".tar.gz"))
        (sha256
         (base32 "0mycxrqp944kp5bhlv8c1x1ikn9av1q7dhzl32jd6gxbphyq7mc4"))))
-    (build-system cmake-build-system)
+    (build-system qt-build-system)
     (arguments
      `(#:tests? #f
-       #:configure-flags (list "-DBUILD_TESTING=OFF")
-       #:phases
-       (modify-phases %standard-phases
-         ;; Ensure that icons are found at runtime.
-         ;; This works around <https://bugs.gnu.org/22138>.
-         (add-after 'install 'wrap-executable
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out"))
-                   (qt '("qtbase" "qtsvg")))
-               (wrap-program (string-append out "/bin/krita")
-                 `("QT_PLUGIN_PATH" ":" prefix
-                   ,(map (lambda (label)
-                           (string-append (assoc-ref inputs label)
-                                          "/lib/qt5/plugins/"))
-                         qt)))
-               #t))))))
+       #:configure-flags (list "-DBUILD_TESTING=OFF")))
     (native-inputs
      (list curl
            eigen
