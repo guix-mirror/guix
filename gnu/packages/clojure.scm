@@ -23,6 +23,7 @@
 (define-module (gnu packages clojure)
   #:use-module (gnu packages)
   #:use-module (gnu packages java)
+  #:use-module (gnu packages maven)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -427,6 +428,68 @@ concise, powerful tests.")
     (description
      "The @code{tools.cli} library provides Clojure programmers with tools to
 work with command-line arguments.")
+    (license license:epl1.0)))
+
+(define-public clojure-tools-deps-alpha
+  (package
+    (name "clojure-tools-deps-alpha")
+    (version "0.12.1104")
+    (home-page "https://github.com/clojure/tools.deps.alpha")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "174m83n5m3arai2vbg434zjibbsr3r4pp7lz3adja8lxq7g21r80"))))
+    (build-system clojure-build-system)
+    (arguments
+     `(#:source-dirs '("src/main/clojure" "src/main/resources")
+       #:test-dirs '("src/test/clojure")
+       #:doc-dirs '()
+       ;; FIXME: Could not initialize class org.eclipse.aether.transport.http.SslSocketFactory
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         ;; FIXME: Currently, the S3 transporter depends on ClojureScript,
+         ;; which is very difficult to package due to dependencies on Java
+         ;; libraries with non-standard build systems. Instead of actually
+         ;; packaging these libraries, we just remove the S3 transporter that
+         ;; depends on them.
+         (add-after 'unpack 'remove-s3-transporter
+           (lambda _
+             (for-each delete-file
+                       (list
+                        (string-append
+                         "src/main/clojure/clojure/"
+                         "tools/deps/alpha/util/s3_aws_client.clj")
+                        (string-append
+                         "src/main/clojure/clojure/"
+                         "tools/deps/alpha/util/s3_transporter.clj")
+                        (string-append
+                         "src/test/clojure/clojure/"
+                         "tools/deps/alpha/util/test_s3_transporter.clj")))
+             (substitute*
+                 "src/main/clojure/clojure/tools/deps/alpha/util/maven.clj"
+               (("clojure.tools.deps.alpha.util.s3-transporter")
+                "")))))))
+    (propagated-inputs (list maven-resolver-api
+                             maven-resolver-spi
+                             maven-resolver-impl
+                             maven-resolver-util
+                             maven-resolver-connector-basic
+                             maven-resolver-provider
+                             maven-core
+                             maven-resolver-transport-http
+                             maven-resolver-transport-file
+                             clojure-tools-gitlibs
+                             clojure-tools-cli
+                             clojure-data-xml))
+    (synopsis "Clojure library supporting clojure-tools")
+    (description "This package provides a functional API for transitive
+dependency graph expansion and the creation of classpaths.")
     (license license:epl1.0)))
 
 (define-public clojure-tools-gitlibs
