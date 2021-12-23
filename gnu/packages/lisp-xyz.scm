@@ -1728,7 +1728,7 @@ In addition to regular Packrat / Parsing Grammar / TDPL features ESRAP supports:
 (define-public sbcl-split-sequence
   (package
     (name "sbcl-split-sequence")
-    (version "2.0.0")
+    (version "2.0.1")
     (source
      (origin
        (method git-fetch)
@@ -1737,7 +1737,7 @@ In addition to regular Packrat / Parsing Grammar / TDPL features ESRAP supports:
              (commit (string-append "v" version))))
        (sha256
         (base32
-         "0jcpnx21hkfwqj5fvp7kc6pn1qcz9hk7g2s5x8h0349x1j2irln0"))
+         "172k7iv775kwism6304p6z7mqpjvipl57nq1bgvmbk445943fmhq"))
        (file-name (git-file-name "split-sequence" version))))
     (build-system asdf-build-system/sbcl)
     (native-inputs
