@@ -179,7 +179,7 @@ shared NFS home directories.")
 (define glib
   (package
     (name "glib")
-    (version "2.70.0")
+    (version "2.70.2")
     (source
      (origin
        (method url-fetch)
@@ -188,7 +188,7 @@ shared NFS home directories.")
                        name "/" (string-take version 4) "/"
                        name "-" version ".tar.xz"))
        (sha256
-        (base32 "0hh7hk02fkm1bn48k4z8f3kgv9qbni5z22gizd567fn527w7s390"))
+        (base32 "0vw08p4jllavp9qmlqg1yl1zanmy53yid46wipas6gfdhnf4al85"))
        (patches
         (search-patches "glib-appinfo-watch.patch"
                         "glib-skip-failing-test.patch"))
