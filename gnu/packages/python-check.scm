@@ -387,6 +387,8 @@ astropy related packages.")
      ;; Tests require python-astropy, which itself requires this package.
      ;; Disable tests to avoid the circular dependency problem.
      '(#:tests? #f))
+    (native-inputs
+     (list python-pytest)) ; for sanity-check
     (propagated-inputs
      (list python-numpy python-six))
     (home-page "https://github.com/astropy/pytest-arraydiff")
