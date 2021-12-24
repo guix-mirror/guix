@@ -521,7 +521,8 @@ change.  GNU make offers many powerful extensions over the standard utility.")
       (sha256
        (base32 "1m3b2rdfv1dmdpd0bzg1hy7i8a2qng53szc6livyi3nh6101mz37"))
       (patches (search-patches "binutils-loongson-workaround.patch"
-                               "binutils-2.37-file-descriptor-leak.patch"))))
+                               "binutils-2.37-file-descriptor-leak.patch"
+                               "binutils-CVE-2021-45078.patch"))))
    (build-system gnu-build-system)
    (arguments
     `(#:out-of-source? #t   ;recommended in the README
