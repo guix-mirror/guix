@@ -352,7 +352,7 @@ FILE-SYSTEMS."
     "dm-crypt" "xts" "serpent_generic" "wp512" ;for encrypted root partitions
     "nls_iso8859-1"                            ;for `mkfs.fat`, et.al
     ,@(if (string-match "^(x86_64|i[3-6]86)-" system)
-          '("framebuffer_coreboot" "simplefb" ;for display during early boot
+          '("framebuffer_coreboot"       ;for display during early (Core)boot
             "pata_acpi" "pata_atiixp"    ;for ATA controllers
             "isci")                      ;for SAS controllers like Intel C602
           '())
