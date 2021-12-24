@@ -13,6 +13,7 @@
 ;;; Copyright © 2019 Timothy Sample <samplet@ngyro.com>
 ;;; Copyright © 2020 John Soo <jsoo1@asu.edu>
 ;;; Copyright © 2020 Carlo Holl <carloholl@gmail.com>
+;;; Copyright © 2021 John Kehayias <john.kehayias@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,6 +33,7 @@
 (define-module (gnu packages haskell-check)
   #:use-module (gnu packages)
   #:use-module (gnu packages haskell-crypto)
+  #:use-module (gnu packages haskell-web)
   #:use-module (gnu packages haskell-xyz)
   #:use-module (guix build-system haskell)
   #:use-module (guix download)
@@ -1055,6 +1057,50 @@ regular development cycle and regressions caught early.
 See the documentation in \"Test.Inspection\" or the project webpage for more
 examples and more information.")
     (license license:expat)))
+
+(define-public ghc-quickcheck-classes
+  (package
+    (name "ghc-quickcheck-classes")
+    (version "0.6.5.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "https://hackage.haskell.org/package/quickcheck-classes/quickcheck-classes-"
+               version
+               ".tar.gz"))
+        (sha256
+          (base32 "19iw15mvb7gws3ljdxqwsbb4pmfc0sfflf8szgmrhiqr3k82mqv2"))))
+    (build-system haskell-build-system)
+    (inputs
+      (list ghc-quickcheck
+            ghc-primitive
+            ghc-primitive-addr
+            ghc-quickcheck-classes-base
+            ghc-aeson
+            ghc-semigroupoids
+            ghc-semirings
+            ghc-vector))
+    (native-inputs
+      (list ghc-base-orphans
+            ghc-tagged
+            ghc-base-orphans
+            ghc-tagged
+            ghc-tasty
+            ghc-tasty-quickcheck))
+    (home-page "https://github.com/andrewthad/quickcheck-classes#readme")
+    (synopsis "QuickCheck common typeclasses")
+    (description
+      "This library provides QuickCheck properties to ensure that typeclass
+instances adhere to the set of laws that they are supposed to.  There are
+other libraries that do similar things, such as @code{genvalidity-hspec} and
+@code{checkers}.  This library differs from other solutions by not introducing
+any new typeclasses that the user needs to learn.  /Note:/ on GHC < 8.5, this
+library uses the higher-kinded typeclasses (@code{Data.Functor.Classes.Show1},
+@code{Data.Functor.Classes.Eq1}, @code{Data.Functor.Classes.Ord1}, etc.), but
+on GHC >= 8.5, it uses @code{-XQuantifiedConstraints} to express these
+constraints more cleanly.")
+    (license license:bsd-3)))
 
 (define-public ghc-quickcheck-classes-base
   (package
