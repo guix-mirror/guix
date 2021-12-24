@@ -402,13 +402,13 @@ are too large to conveniently hard-code them in the tests.")
 (define-public python-pytest-doctestplus
   (package
     (name "python-pytest-doctestplus")
-    (version "0.7.0")
+    (version "0.11.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pytest-doctestplus" version))
        (sha256
-        (base32 "1ai9kvd7xbq2jg2h8gmkb8lqzyrxvdh4zg3vxndg149iwd1hyi7d"))))
+        (base32 "0j1lvlj3ps975q9hmg8i6rpqm0313j3r18bc3l8mz6khb7vav4zk"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -417,9 +417,16 @@ are too large to conveniently hard-code them in the tests.")
            (lambda* (#:key inputs outputs #:allow-other-keys)
              ;; Make the installed plugin discoverable by Pytest.
              (add-installed-pythonpath inputs outputs)
-             (invoke "pytest" "-vv"))))))
+             (invoke "python" "-m" "pytest" "-k"
+                     (string-append ; skip tests that require remote data
+                      "not test_remote_data_url"
+                      " and not test_remote_data_float_cmp"
+                      " and not test_remote_data_ignore_whitespace"
+                      " and not test_remote_data_ellipsis"
+                      " and not test_remote_data_requires"
+                      " and not test_remote_data_ignore_warnings")))))))
     (native-inputs
-     (list python-pytest))
+     (list python-pytest python-setuptools-scm))
     (home-page "https://github.com/astropy/pytest-doctestplus")
     (synopsis "Pytest plugin with advanced doctest features")
     (description
