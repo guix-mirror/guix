@@ -188,7 +188,7 @@ for reading and writing.")
 (define-public erfa
   (package
     (name "erfa")
-    (version "1.7.3")
+    (version "2.0.0")
     (source
      (origin
        (method git-fetch)
@@ -197,7 +197,7 @@ for reading and writing.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0nh12dr7gk4ki55lz95pkm4fpf7kazirra3zax9pab6v4qql4hlw"))))
+        (base32 "0s9dpj0jdkqcg552f00jhd722czji4pffabmpys5pgi6djckq4f4"))))
     (build-system gnu-build-system)
     (native-inputs
      (list automake autoconf libtool pkg-config))
@@ -1170,13 +1170,13 @@ JPL ephemerides use to predict raw (x,y,z) planetary positions.")
 (define-public python-pyerfa
   (package
     (name "python-pyerfa")
-    (version "1.7.3")
+    (version "2.0.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pyerfa" version))
        (sha256
-        (base32 "1jqqrxvrgly4r0br5f6dsy8nab2xmhz915vp6md5f31ysr2sdwvc"))
+        (base32 "0c6y1rm51kj8ahbr1vwbswck3ix77dc3zhc2fkg6w7iczrzn7m1g"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -1189,14 +1189,11 @@ JPL ephemerides use to predict raw (x,y,z) planetary positions.")
        (modify-phases %standard-phases
          (add-before 'build 'use-system-liberfa
            (lambda _
-             (setenv "PYERFA_USE_SYSTEM_LIBERFA" "1")
-             #t)))))
+             (setenv "PYERFA_USE_SYSTEM_LIBERFA" "1"))))))
     (native-inputs
-     `(("pytest-doctestplus" ,python-pytest-doctestplus)
-       ("python-pytest" ,python-pytest)
-       ("python-setuptools-scm" ,python-setuptools-scm)))
+     (list python-pytest-doctestplus python-pytest python-setuptools-scm))
     (inputs
-     `(("liberfa" ,erfa)))
+     (list erfa))
     (propagated-inputs
      (list python-numpy))
     (home-page "https://github.com/liberfa/pyerfa")
