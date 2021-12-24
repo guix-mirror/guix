@@ -1423,14 +1423,14 @@ result back.")
 (define-public python-pytest-timeout
   (package
     (name "python-pytest-timeout")
-    (version "1.4.2")
+    (version "2.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pytest-timeout" version))
        (sha256
         (base32
-         "0xnsigs0kmpq1za0d4i522sp3f71x5bgpdh3ski0rs74yqy13cr0"))))
+         "04l1cd2qyp3fbccw95a8nqg682r647v7yil8807dgs7xv9a8pyg6"))))
     (build-system python-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
