@@ -264,7 +264,7 @@ files and generates build instructions for the Ninja build system.")
 (define-public meson
   (package
     (name "meson")
-    (version "0.60.2")
+    (version "0.60.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/mesonbuild/meson/"
@@ -272,7 +272,7 @@ files and generates build instructions for the Ninja build system.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "08g9ag8cbrki5srggawsm96f3fggaj0wmmpryi9826xzcn2rdrk4"))
+                "13mrrizg4vl6n5k7fz6amyafnn3i097dcarr552qc0ca6nlmzjl7"))
               (patches (search-patches
                         "meson-allow-dirs-outside-of-prefix.patch"))))
     (build-system python-build-system)
