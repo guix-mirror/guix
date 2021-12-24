@@ -29,6 +29,7 @@
 ;;; Copyright © 2020 Carlo Holl <carloholl@gmail.com>
 ;;; Copyright © 2020 Christine Lemmer-Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2021 Alice BRENON <alice.brenon@ens-lyon.fr>
+;;; Copyright © 2021 John Kehayias <john.kehayias@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -9942,6 +9943,28 @@ Show instance.")
     (synopsis "Primitive memory-related operations")
     (description
      "This package provides various primitive memory-related operations.")
+    (license license:bsd-3)))
+
+(define-public ghc-primitive-addr
+  (package
+    (name "ghc-primitive-addr")
+    (version "0.1.0.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "https://hackage.haskell.org/package/primitive-addr/primitive-addr-"
+               version
+               ".tar.gz"))
+        (sha256
+          (base32 "06r1p56wm8rbjxnlaqbmc3rbsj1rsv5scwnh80lsn0xw56jc70a2"))))
+    (build-system haskell-build-system)
+    (inputs (list ghc-primitive))
+    (home-page "https://github.com/haskell-primitive/primitive-addr")
+    (synopsis "Addresses to unmanaged memory")
+    (description
+     "This library provides the @code{Data.Primitive.Addr} module that was a part
+of the @code{primitive} library before @code{primitive-0.7.0.0}.")
     (license license:bsd-3)))
 
 (define-public ghc-process-extras
