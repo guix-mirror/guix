@@ -55,7 +55,8 @@
                 #:select (alsa-utils crda eudev e2fsprogs fuse gpm kbd lvm2 rng-tools))
   #:use-module (gnu packages bash)
   #:use-module ((gnu packages base)
-                #:select (coreutils glibc glibc-utf8-locales))
+                #:select (coreutils glibc glibc-utf8-locales tar))
+  #:use-module ((gnu packages compression) #:select (gzip))
   #:autoload   (gnu packages guile-xyz) (guile-netlink)
   #:autoload   (gnu packages hurd) (hurd)
   #:use-module (gnu packages package-management)
@@ -1709,7 +1710,14 @@ proxy of 'guix-daemon'...~%")
                                  (string-append "GUIX_LOCPATH="
                                                 #$glibc-utf8-locales
                                                 "/lib/locale")
-                                 "LC_ALL=en_US.utf8")
+                                 "LC_ALL=en_US.utf8"
+                                 ;; Make 'tar' and 'gzip' available so
+                                 ;; that 'guix perform-download' can use
+                                 ;; them when downloading from Software
+                                 ;; Heritage via '(guix swh)'.
+                                 (string-append "PATH="
+                                                #$(file-append tar "/bin") ":"
+                                                #$(file-append gzip "/bin")))
                            (if proxy
                                (list (string-append "http_proxy=" proxy)
                                      (string-append "https_proxy=" proxy))
