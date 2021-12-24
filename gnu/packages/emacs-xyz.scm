@@ -27070,6 +27070,26 @@ REPL appropriate to the current major mode.")
      "Rime is an Emacs input method built upon Rime input method engine.")
     (license license:gpl3+)))
 
+(define-public emacs-bison-mode
+  (package
+    (name "emacs-bison-mode")
+    (version "0.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "https://elpa.nongnu.org/nongnu/bison-mode-"
+               version ".tar"))
+        (sha256
+          (base32 "19n9kz1ycjpxngd3clzr8lzrnnw19l8sfvlx1yqn35hk7017z7ab"))))
+    (build-system emacs-build-system)
+    (home-page "https://elpa.nongnu.org/nongnu/bison-mode.html")
+    (synopsis "Major mode for editing Bison, Yacc, and Lex files")
+    (description
+     "This Emacs package provides a major mode for editing Bison, Yacc, and
+Lex files.")
+    (license license:gpl2+)))
+
 (define-public emacs-blackout
   (let ((commit "4bac44671fca4c98d96aa94c79946bf4d4baf0ee")
         (revision "1"))
