@@ -747,7 +747,7 @@ by GDBus included in Glib.")
 (define glibmm
   (package
     (name "glibmm")
-    (version "2.68.0")
+    (version "2.70.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/glibmm/"
@@ -755,7 +755,7 @@ by GDBus included in Glib.")
                                   "/glibmm-" version ".tar.xz"))
               (sha256
                (base32
-                "0xgkyhb2876mcyyib5rk3ya9aingyj68h02nl22yvkhx35rqbwy1"))))
+                "085mzpphz71sh5wh71ppikwnxsgn4pk3s4bzz6ingj6wxn5gs240"))))
     (build-system meson-build-system)
     (outputs '("out" "doc"))
     (arguments
@@ -781,14 +781,14 @@ by GDBus included in Glib.")
                 (string-append out "/share/doc")
                 (string-append doc "/share/doc"))))))))
     (native-inputs
-     `(("dot" ,graphviz)
-       ("doxygen" ,doxygen)
-       ("glib:bin" ,glib "bin")
-       ("m4" ,m4)
-       ("mm-common" ,mm-common)
-       ("perl" ,perl)
-       ("pkg-config" ,pkg-config)
-       ("xsltproc" ,libxslt)))
+     (list graphviz
+           doxygen
+           `(,glib "bin")
+           m4
+           mm-common
+           perl
+           pkg-config
+           libxslt))
     (propagated-inputs
      (list libsigc++ glib))
     (home-page "https://gtkmm.org/")
