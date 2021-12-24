@@ -6787,7 +6787,7 @@ to a key in your preferred mode.")
         #:phases
         #~(modify-phases %standard-phases
             (add-after 'unpack 'configure
-              (lambda _
+              (lambda* (#:key outputs #:allow-other-keys)
                 (substitute* "el/CMakeLists.txt"
                   (("share/emacs/site-lisp/SuperCollider")
                    (elpa-directory #$output)))
