@@ -11398,6 +11398,40 @@ semigroup.")
            ghc-unordered-containers-bootstrap ghc-hashable-bootstrap))
     (properties '((hidden? #t)))))
 
+(define-public ghc-semirings
+  (package
+    (name "ghc-semirings")
+    (version "0.6")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "https://hackage.haskell.org/package/semirings/semirings-"
+               version
+               ".tar.gz"))
+        (sha256
+          (base32 "16q535bvjl7395sqkx6zlw48y4fzr7irp44pcp7w9irpn4cncdcr"))))
+    (build-system haskell-build-system)
+    (inputs
+      (list ghc-base-compat-batteries ghc-hashable ghc-unordered-containers))
+    (arguments
+      `(#:cabal-revision
+        ("1" "1c06yhfa053sv3rfz0d72a33l5qb0xmj1b3hy2z7pzxrcay6g1yc")))
+    (home-page "https://github.com/chessai/semirings")
+    (synopsis "Two monoids as one, in holy haskimony")
+    (description
+     "Haskellers are usually familiar with monoids and semigroups.  A monoid has an
+appending operation @code{<>} (or @code{mappend}), and an identity element,
+@code{mempty}.  A semigroup has an appending @code{<>} operation, but does not
+require a @code{mempty} element.  A Semiring has two appending operations,
+@code{plus} and @code{times}, and two respective identity elements,
+@code{zero} and @code{one}.  More formally, a Semiring R is a set equipped
+with two binary relations @code{+} and @code{*}, such that: (R,+) is a
+commutative monoid with identity element 0, (R,*) is a monoid with identity
+element 1, (*) left and right distributes over addition, and . multiplication
+by @code{0} annihilates R.")
+    (license license:bsd-3)))
+
 (define-public ghc-serialise
   (package
     (name "ghc-serialise")
