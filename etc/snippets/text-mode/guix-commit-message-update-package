@@ -8,7 +8,7 @@ gnu: ${1:`(with-temp-buffer
            (magit-git-wash #'magit-diff-wash-diffs
              "diff" "--staged")
            (goto-char (point-min))
-           (when (re-search-forward "(define-public \\(\\S-+\\)" nil 'noerror)
+           (when (re-search-forward "^[ ]*(define-public \\(\\S-+\\)" nil 'noerror)
              (match-string-no-properties 1)))`}: Update to ${2:`(with-temp-buffer
     (magit-git-wash #'magit-diff-wash-diffs
       "diff" "--staged")
