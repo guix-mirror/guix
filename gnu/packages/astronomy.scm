@@ -612,13 +612,13 @@ accurately in real time at any rate desired.")
 (define-public python-astropy
   (package
     (name "python-astropy")
-    (version "4.3.1")
+    (version "5.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "astropy" version))
        (sha256
-        (base32 "0lfd6n7v7kas4wvacddnwgccax3ks908735dzilg7dsf7ci52f9d"))
+        (base32 "09rr9z2kn5qw34fqpwxgcwsn9m5aw6f0dd0pm232aa8k3qakw83h"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -690,7 +690,12 @@ accurately in real time at any rate desired.")
     (inputs
      (list cfitsio expat))
     (propagated-inputs
-     (list python-configobj python-numpy python-ply python-pyerfa))
+     (list python-configobj
+           python-numpy
+           python-packaging
+           python-ply
+           python-pyerfa
+           python-pyyaml))
     (home-page "https://www.astropy.org/")
     (synopsis "Core package for Astronomy in Python")
     (description
