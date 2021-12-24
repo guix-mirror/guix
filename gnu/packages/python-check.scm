@@ -414,17 +414,18 @@ are too large to conveniently hard-code them in the tests.")
      '(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda* (#:key inputs outputs #:allow-other-keys)
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
              ;; Make the installed plugin discoverable by Pytest.
-             (add-installed-pythonpath inputs outputs)
-             (invoke "python" "-m" "pytest" "-k"
-                     (string-append ; skip tests that require remote data
-                      "not test_remote_data_url"
-                      " and not test_remote_data_float_cmp"
-                      " and not test_remote_data_ignore_whitespace"
-                      " and not test_remote_data_ellipsis"
-                      " and not test_remote_data_requires"
-                      " and not test_remote_data_ignore_warnings")))))))
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "python" "-m" "pytest" "-k"
+                       (string-append   ; skip tests that require remote data
+                        "not test_remote_data_url"
+                        " and not test_remote_data_float_cmp"
+                        " and not test_remote_data_ignore_whitespace"
+                        " and not test_remote_data_ellipsis"
+                        " and not test_remote_data_requires"
+                        " and not test_remote_data_ignore_warnings"))))))))
     (native-inputs
      (list python-pytest python-setuptools-scm))
     (home-page "https://github.com/astropy/pytest-doctestplus")
