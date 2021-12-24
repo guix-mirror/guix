@@ -8,6 +8,7 @@
 ;;; Copyright © 2020 Pierre Langlois <pierre.langlos@gmx.com>
 ;;; Copyright © 2021 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2021 Alexandre Hannud Abdo <abdo@member.fsf.org>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -59,6 +60,30 @@
   #:use-module (gnu packages swig)
   #:use-module (gnu packages time)
   #:use-module (gnu packages xml))
+
+(define-public plfit
+  (package
+    (name "plfit")
+    (version "0.9.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/ntamas/plfit")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "03x5jbvg8vwr92682swy58ljxrhqwmga1xzd0cpfbfmda41gm2fb"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags (list "-DBUILD_SHARED_LIBS=ON")))
+    (home-page "https://github.com/ntamas/plfit")
+    (synopsis "Tool for fitting power-law distributions to empirical data")
+    (description "The @command{plfit} command fits power-law distributions to
+empirical (discrete or continuous) data, according to the method of Clauset,
+Shalizi and Newman (@cite{Clauset A, Shalizi CR and Newman MEJ: Power-law
+distributions in empirical data.  SIAM Review 51, 661-703 (2009)}).")
+    (license license:gpl2+)))
 
 (define-public igraph
   (package
