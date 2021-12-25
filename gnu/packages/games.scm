@@ -3767,6 +3767,8 @@ Widgets, and allows users to create more.")
                      (chdir #$(string-append "../" (package-name this-package)
                                              "-" (package-version this-package)))
                      (invoke "python3" "run_tests.py" "-a")))))))
+    (native-inputs
+     (list python swig xorg-server-for-tests))
     (inputs
      (list sdl2
            sdl2-image
@@ -3780,10 +3782,6 @@ Widgets, and allows users to create more.")
            fifechan
            swig
            python))
-    (native-inputs
-     `(("python" ,python)
-       ("swig" ,swig)
-       ("xvfb" ,xorg-server)))
     (propagated-inputs
      (list python-future))
     (home-page "https://www.fifengine.net/")
