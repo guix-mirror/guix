@@ -776,6 +776,10 @@ safety and thread safety guarantees.")
   (rust-bootstrapped-package
    rust-1.54 "1.55.0" "07l28f7grdmi65naq71pbmvdd61hwcpi40ry7kp7dy7m233rldxj"))
 
+(define-public rust-1.56
+  (rust-bootstrapped-package
+   rust-1.55 "1.56.1" "04cmqx7nn63hzz7z27b2b0dj2qx18rck9ifvip43s6dampx8v2f3"))
+
 ;;; Note: Only the latest versions of Rust are supported and tested.  The
 ;;; intermediate rusts are built for bootstrapping purposes and should not
 ;;; be relied upon.  This is to ease maintenance and reduce the time
