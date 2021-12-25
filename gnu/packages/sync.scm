@@ -71,7 +71,7 @@
 (define-public nextcloud-client
   (package
     (name "nextcloud-client")
-    (version "3.1.3")
+    (version "3.2.0")
     (source
      (origin
        (method git-fetch)
@@ -82,7 +82,7 @@
        (file-name
         (git-file-name name version))
        (sha256
-        (base32 "15ymk3gvfmgwzmqbhlw7jjy9y65ib3391h1dlmpll65iaj2miajk"))
+        (base32 "137h65sn4ixspbblvn0r2ngg8234yk582bppkkr87c3krfp21gx4"))
        (modules '((guix build utils)
                   (ice-9 ftw)
                   (srfi srfi-1)))
