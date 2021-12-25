@@ -2428,6 +2428,33 @@ remote-desktop @code{xdg-desktop-portal} interfaces for wlroots based
 compositors.")
     (license license:expat)))
 
+(define-public poweralertd
+  (package
+    (name "poweralertd")
+    (version "0.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://git.sr.ht/~kennylevinsen/poweralertd")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "19rw9q4pcqw56nmzjfglfikzx5wwjl4n08awwdhg0jy1k0bm3dvp"))))
+    (build-system meson-build-system)
+    (arguments
+     '(#:configure-flags '("-Dman-pages=enabled")))
+    (native-inputs
+     (list scdoc pkg-config bash-minimal))
+    (inputs
+     (list elogind))
+    (home-page "https://sr.ht/~kennylevinsen/poweralertd")
+    (synopsis "Power alert daemon")
+    (description "poweralertd is a daemon that watches for UPower events and
+notifies the user using any notification daemon implementing
+@code{org.freedesktop.Notifications}.")
+    (license license:gpl3+)))
+
 (define-public waypipe
   (package
     (name "waypipe")
