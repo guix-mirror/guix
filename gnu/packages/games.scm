@@ -3726,19 +3726,14 @@ Widgets, and allows users to create more.")
               (uri (string-append "https://codeload.github.com/fifengine/"
                                   "fifengine/tar.gz/" version))
               (file-name (string-append name "-" version ".tar.gz"))
-              (patches (search-patches "fifengine-swig-compat.patch"))
+              (patches (search-patches "fifengine-swig-compat.patch"
+                                       "fifengine-boost-compat.patch"))
               (sha256
                (base32
                 "1y4grw25cq5iqlg05rnbyxw1njl11ypidnlsm3qy4sm3xxdvb0p8"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f            ; TODO The test running fails to run some tests.
-       #:imported-modules ,(cons '(guix build python-build-system)
-                                 %cmake-build-system-modules)
-       #:modules ((guix build cmake-build-system)
-                  ((guix build python-build-system) #:select (guix-pythonpath))
-                  (guix build utils)
-                  (srfi srfi-1))
        #:configure-flags
        (list
         (string-append "-DOPENALSOFT_INCLUDE_DIR="
@@ -3764,9 +3759,8 @@ Widgets, and allows users to create more.")
          ;; python modules.
          (delete 'check)
          (add-after 'install 'check
-           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+           (lambda* (#:key tests? #:allow-other-keys)
              (when tests?
-               (add-installed-pythonpath inputs outputs)
                ;; The tests require an X server.
                (system "Xvfb :1 &")
                (setenv "DISPLAY" ":1")

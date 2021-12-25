@@ -1,0 +1,17 @@
+Fix build with newer Boost.
+
+Taken from upstream:
+
+  https://github.com/fifengine/fifengine/commit/8072f18a9bf4e75c3e1b197b6ccda11e82954460
+
+diff --git a/engine/core/vfs/zip/zipnode.cpp b/engine/core/vfs/zip/zipnode.cpp
+--- a/engine/core/vfs/zip/zipnode.cpp
++++ b/engine/core/vfs/zip/zipnode.cpp
+@@ -28,6 +28,7 @@
+ #include "vfs/fife_boost_filesystem.h"
+ 
+ #include "zipnode.h"
++#include <algorithm>
+ 
+ namespace {
+     /** helper function to find a value in a ZipNodeContainer
