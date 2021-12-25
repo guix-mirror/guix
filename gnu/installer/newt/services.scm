@@ -68,18 +68,16 @@ system.")
         (condition
          (&installer-step-abort)))))))
 
-(define (run-other-services-cbt-page)
-  "Run a page allowing the user to select other services."
+(define (run-printing-services-cbt-page)
+  "Run a page allowing the user to select document services such as CUPS."
   (let ((items (filter (lambda (service)
-                         (not (member (system-service-type service)
-                                      '(desktop
-                                        network-management
-                                        networking))))
+                         (eq? 'document
+                              (system-service-type service)))
                        %system-services)))
     (run-checkbox-tree-page
-     #:info-text (G_ "You can now select other services to run on your \
+     #:info-text (G_ "You can now select the CUPS printing service to run on your \
 system.")
-     #:title (G_ "Other services")
+     #:title (G_ "Printing and document services")
      #:items items
      #:selection (map system-service-recommended? items)
      #:item->text (compose G_ system-service-name)
@@ -123,4 +121,4 @@ client may be enough for a server.")
             (if (null? desktop)
                 (list (run-network-management-page))
                 '())
-            (run-other-services-cbt-page))))
+            (run-printing-services-cbt-page))))

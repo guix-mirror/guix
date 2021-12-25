@@ -243,7 +243,7 @@ ROOT-PASSWORD, and USERS."
      (null? desktop-environments)
      (find choose-network-management-tool? services))
 
-    ((checkbox-list (title "Other services") (text _)
+    ((checkbox-list (title "Printing and document services") (text _)
                     (items ,services))
      (filter choose-other-service? services))))
 
