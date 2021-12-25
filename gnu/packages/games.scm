@@ -3733,41 +3733,40 @@ Widgets, and allows users to create more.")
                 "1y4grw25cq5iqlg05rnbyxw1njl11ypidnlsm3qy4sm3xxdvb0p8"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f            ; TODO The test running fails to run some tests.
-       #:configure-flags
-       (list
-        (string-append "-DOPENALSOFT_INCLUDE_DIR="
-                       (assoc-ref %build-inputs "openal")
-                       "/include/AL")
-        (string-append "-DPYTHON_SITE_PACKAGES="
-                       (assoc-ref %outputs "out")
-                       "/lib/python"
-                       ,(version-major+minor (package-version python))
-                       "/site-packages"))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'patch-run_tests.py
-           (lambda _
-             ;; Patch the test runner to exit with a status of 1 if any test
-             ;; fails, to allow detecting failures.
-             (substitute* "run_tests.py"
-               (("ERROR\\. One or more tests failed!'\\)")
-                "ERROR. One or more tests failed!')
-\t\texit(1)"))
-             #t))
-         ;; Run tests after installation so that we can make use of the built
-         ;; python modules.
-         (delete 'check)
-         (add-after 'install 'check
-           (lambda* (#:key tests? #:allow-other-keys)
-             (when tests?
-               ;; The tests require an X server.
-               (system "Xvfb :1 &")
-               (setenv "DISPLAY" ":1")
-               (setenv "XDG_RUNTIME_DIR" "/tmp")
-               ;; Run tests
-               (chdir ,(string-append "../" name "-" version))
-               (invoke "python3" "run_tests.py" "-a")))))))
+     (list #:tests? #f         ;TODO The test running fails to run some tests.
+           #:configure-flags
+           #~(list
+              (string-append "-DOPENALSOFT_INCLUDE_DIR="
+                             (search-input-directory %build-inputs "include/AL"))
+              (string-append "-DPYTHON_SITE_PACKAGES="
+                             #$output "/lib/python"
+                             #$(version-major+minor
+                                (package-version (this-package-input "python")))
+                             "/site-packages"))
+           #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'unpack 'patch-run_tests.py
+                 (lambda _
+                   ;; Patch the test runner to exit with a status of 1 if any test
+                   ;; fails, to allow detecting failures.
+                   (substitute* "run_tests.py"
+                     (("ERROR\\. One or more tests failed!'\\)")
+                      "ERROR. One or more tests failed!')
+\t\texit(1)"))))
+               ;; Run tests after installation so that we can make use of the built
+               ;; python modules.
+               (delete 'check)
+               (add-after 'install 'check
+                 (lambda* (#:key tests? #:allow-other-keys)
+                   (when tests?
+                     ;; The tests require an X server.
+                     (system "Xvfb :1 &")
+                     (setenv "DISPLAY" ":1")
+                     (setenv "XDG_RUNTIME_DIR" "/tmp")
+                     ;; Run tests
+                     (chdir #$(string-append "../" (package-name this-package)
+                                             "-" (package-version this-package)))
+                     (invoke "python3" "run_tests.py" "-a")))))))
     (inputs
      (list sdl2
            sdl2-image
