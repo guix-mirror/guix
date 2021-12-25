@@ -426,11 +426,10 @@ server and embedded PowerPC, and S390 guests.")
                                ;; delete specific outputs; i.e. here we should keep
                                ;; `(,glib "bin"), but not `(,glib "static").
                                ((label package output)
-                                (if (string=? "static" output)
-                                    #f #t))
+                                (not (string=? "static" output)))
                                (_ input)))
-                        (modify-inputs (package-native-inputs qemu)
-                          (delete "gettext-minimal"))))
+                           (modify-inputs (package-native-inputs qemu)
+                             (delete "gettext-minimal"))))
     (inputs (modify-inputs (package-inputs qemu)
               (delete "libusb"
                       "mesa"
