@@ -12,6 +12,7 @@
 ;;; Copyright © 2020 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2020 Matthew James Kraai <kraai@ftbfs.org>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021 (unmatched parenthesis <paren@disroot.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -770,6 +771,10 @@ safety and thread safety guarantees.")
       (native-inputs (cons* `("gdb" ,gdb)
                             `("procps" ,procps)
                             (package-native-inputs base-rust))))))
+
+(define-public rust-1.55
+  (rust-bootstrapped-package
+   rust-1.54 "1.55.0" "07l28f7grdmi65naq71pbmvdd61hwcpi40ry7kp7dy7m233rldxj"))
 
 ;;; Note: Only the latest versions of Rust are supported and tested.  The
 ;;; intermediate rusts are built for bootstrapping purposes and should not
