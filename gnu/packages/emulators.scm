@@ -1492,14 +1492,14 @@ multi-system game/emulator system.")
 (define-public scummvm
   (package
     (name "scummvm")
-    (version "2.5.0")
+    (version "2.5.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://downloads.scummvm.org/frs/scummvm/" version
                            "/scummvm-" version ".tar.xz"))
        (sha256
-        (base32 "08ynw1cmld41p4bwrw84gb1nv229va70i91qiqsjr3c2jnqy8zml"))))
+        (base32 "00az0dm85kh8rq0yqj74x0c5zrq4ybvwvnilijzl8qa5whwdpn4z"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                                 ;require "git"
@@ -1509,9 +1509,9 @@ multi-system game/emulator system.")
          (replace 'configure
            ;; configure does not work followed by both "SHELL=..." and
            ;; "CONFIG_SHELL=..."; set environment variables instead
-           (lambda* (#:key outputs configure-flags #:allow-other-keys)
+           (lambda* (#:key inputs outputs configure-flags #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
-                    (bash (which "bash"))
+                    (bash (search-input-file inputs "/bin/bash"))
                     (flags `(,(string-append "--prefix=" out)
                              ,@configure-flags)))
                (setenv "SHELL" bash)
@@ -1520,24 +1520,24 @@ multi-system game/emulator system.")
     (native-inputs
      (list nasm pkg-config))
     (inputs
-     `(("alsa-lib" ,alsa-lib)
-       ("faad2" ,faad2)
-       ("fluidsynth" ,fluidsynth)
-       ("freetype" ,freetype)
-       ("fribidi" ,fribidi)
-       ("glew" ,glew)
-       ("giflib" ,giflib)
-       ("liba52" ,liba52)
-       ("libflac" ,flac)
-       ("libjpeg-turbo" ,libjpeg-turbo)
-       ("libmad" ,libmad)
-       ("libmpeg2" ,libmpeg2)
-       ("libogg" ,libogg)
-       ("libpng" ,libpng)
-       ("libtheora" ,libtheora)
-       ("libvorbis" ,libvorbis)
-       ("sdl2" ,(sdl-union (list sdl2 sdl2-net)))
-       ("zlib" ,zlib)))
+     (list alsa-lib
+           faad2
+           fluidsynth
+           freetype
+           fribidi
+           glew
+           giflib
+           liba52
+           flac
+           libjpeg-turbo
+           libmad
+           libmpeg2
+           libogg
+           libpng
+           libtheora
+           libvorbis
+           (sdl-union (list sdl2 sdl2-net))
+           zlib))
     (home-page "https://www.scummvm.org/")
     (synopsis "Engine for several graphical adventure games")
     (description "ScummVM is a program which allows you to run certain
