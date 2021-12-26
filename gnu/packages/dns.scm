@@ -40,7 +40,6 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
-  #:use-module (gnu packages certs)
   #:use-module (gnu packages check)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
@@ -177,8 +176,7 @@ protocol.")
          ;; https://github.com/erikoest/DNS-LDNS.git
          ;; "--with-p5-dns-ldns"
          (string-append "--with-ssl=" #$(this-package-input "openssl"))
-         (string-append "--with-ca-path=" #$(this-package-input "nss-certs")
-                        "/etc/ssl/certs"))
+         (string-append "--with-ca-path=/etc/ssl/certs"))
       #:make-flags
       #~(list
          (string-append "drillbindir=" #$output:drill "/bin")
@@ -193,7 +191,7 @@ protocol.")
     (native-inputs
      (list doxygen perl perl-devel-checklib pkg-config swig))
     (inputs
-     (list libpcap nss-certs openssl python-wrapper))
+     (list libpcap openssl python-wrapper))
     (synopsis "DNS library that facilitates DNS tool programming")
     (description "LDNS aims to simplify DNS programming, it supports recent
 RFCs like the DNSSEC documents, and allows developers to easily create
