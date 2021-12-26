@@ -11930,8 +11930,7 @@ GTK+.  It integrates well with the GNOME desktop environment.")
          (add-after 'unpack 'patch-meson
            (lambda _
              (substitute* "build-aux/meson_post_install.py"
-               (("gtk-update-icon-cache") "true"))
-             #t))
+               (("gtk-update-icon-cache") "true"))))
          (add-after 'glib-or-gtk-wrap 'python-and-gi-wrap
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((prog (string-append (assoc-ref outputs "out")
@@ -11939,7 +11938,8 @@ GTK+.  It integrates well with the GNOME desktop environment.")
                    (pylib (string-append (assoc-ref outputs "out")
                                          "/lib/python"
                                          ,(version-major+minor
-                                           (package-version python))
+                                           (package-version
+                                            (this-package-input "python")))
                                          "/site-packages")))
                (wrap-program prog
                  `("PYTHONPATH" = (,(getenv "GUIX_PYTHONPATH") ,pylib))
@@ -11954,6 +11954,7 @@ GTK+.  It integrates well with the GNOME desktop environment.")
            gtk+
            libhandy
            pandoc
+           python
            python-chardet
            python-levenshtein
            python-regex
