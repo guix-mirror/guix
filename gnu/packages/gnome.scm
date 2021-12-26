@@ -10719,23 +10719,22 @@ apply fancy special effects and lets you share the fun with others.")
         (base32 "1xh64bbg10gnfzlck5jvqy2zk6hbk9cyqgv85xc9kbdvs8n4lhgh"))))
     (build-system meson-build-system)
     (arguments
-     `(#:glib-or-gtk? #t
-       #:meson ,meson-0.59
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'glib-or-gtk-wrap 'python-and-gi-wrap
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((prog (string-append (assoc-ref outputs "out")
-                                        "/bin/gnome-passwordsafe"))
-                   (pylib (string-append (assoc-ref outputs "out")
-                                         "/lib/python"
-                                         ,(version-major+minor
-                                           (package-version python))
-                                         "/site-packages")))
-               (wrap-program prog
-                 `("GUIX_PYTHONPATH" = (,(getenv "GUIX_PYTHONPATH") ,pylib))
-                 `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH"))))
-               #t))))))
+     (list #:glib-or-gtk? #t
+           #:meson meson-0.59
+           #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'glib-or-gtk-wrap 'python-and-gi-wrap
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (let ((prog (string-append #$output
+                                              "/bin/gnome-passwordsafe"))
+                         (pylib (string-append
+                                 #$output "/lib/python"
+                                 #$(version-major+minor
+                                    (package-version (this-package-input "python")))
+                                 "/site-packages")))
+                     (wrap-program prog
+                       `("GUIX_PYTHONPATH" = (,(getenv "GUIX_PYTHONPATH") ,pylib))
+                       `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH"))))))))))
     (native-inputs
      (list desktop-file-utils
            gettext-minimal
@@ -10749,6 +10748,7 @@ apply fancy special effects and lets you share the fun with others.")
            gtk+
            libhandy
            libpwquality
+           python
            python-pygobject
            python-pykeepass))
     (home-page "https://gitlab.gnome.org/World/PasswordSafe")
