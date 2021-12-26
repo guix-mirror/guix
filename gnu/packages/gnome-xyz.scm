@@ -897,14 +897,14 @@ variants.")
              (substitute* "build-aux/meson/postinstall.py"
                (("update-desktop-database") "true")))))))
     (inputs
-     `(("gtk3" ,gtk+)
-       ("gettext" ,gettext-minimal)
-       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("libgee" ,libgee)
-       ("libhandy" ,libhandy)
-       ("libsoup" ,libsoup-minimal-2)
-       ("json-glib" ,json-glib)
-       ("vala" ,vala)))
+     (list gtk+
+           gettext-minimal
+           gsettings-desktop-schemas
+           libgee
+           libhandy
+           libsoup-minimal-2
+           json-glib
+           vala))
     (native-inputs
      (list pkg-config
            `(,glib "bin"))) ; for 'glib-compile-resources'
