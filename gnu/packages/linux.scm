@@ -1484,23 +1484,23 @@ graphics card on Optimus laptops.")
         (base32 "1lww3mnqhxqzj0qbxzbwbq93v9zw49myp7p9ib873a5izbq8nadi"))))
     (build-system linux-module-build-system)
     (arguments
-     `(#:tests? #f                               ; no tests
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'build
-           (lambda args
-             (for-each
-              (lambda (module)
-                (with-directory-excursion module
-                  (apply (assoc-ref %standard-phases 'build) args)))
-              '("ddcci" "ddcci-backlight"))))
-         (replace 'install
-           (lambda args
-             (for-each
-              (lambda (module)
-                (with-directory-excursion module
-                  (apply (assoc-ref %standard-phases 'install) args)))
-              '("ddcci" "ddcci-backlight")))))))
+     (list #:tests? #f                  ; no tests
+           #:phases
+           #~(modify-phases %standard-phases
+               (replace 'build
+                 (lambda args
+                   (for-each
+                    (lambda (module)
+                      (with-directory-excursion module
+                        (apply (assoc-ref %standard-phases 'build) args)))
+                    '("ddcci" "ddcci-backlight"))))
+               (replace 'install
+                 (lambda args
+                   (for-each
+                    (lambda (module)
+                      (with-directory-excursion module
+                        (apply (assoc-ref %standard-phases 'install) args)))
+                    '("ddcci" "ddcci-backlight")))))))
     (home-page "https://gitlab.com/ddcci-driver-linux/ddcci-driver-linux")
     (synopsis "Pair of Linux kernel drivers for DDC/CI monitors")
     (description "This package provides two Linux kernel drivers, ddcci and
