@@ -1476,7 +1476,7 @@ protocol.")
 (define-public gammastep
   (package
     (name "gammastep")
-    (version "2.0.7")
+    (version "2.0.8")
     (source
      (origin
        (method git-fetch)
@@ -1485,7 +1485,7 @@ protocol.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "11j54rdd3cgngdhjwyapwjbrdm8cii4i7g4zdvfykvmb1w4zdk7g"))))
+        (base32 "071f3iqdbblb3awnx48j19kspk6l2g3658za80i2mf4gacgq9fm1"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -1500,24 +1500,24 @@ protocol.")
                `("GI_TYPELIB_PATH" ":" prefix
                  (,(getenv "GI_TYPELIB_PATH")))))))))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("gettext" ,gettext-minimal)
-       ("intltool" ,intltool)
-       ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)))
+     (list autoconf
+           automake
+           gettext-minimal
+           intltool
+           libtool
+           pkg-config))
     (inputs
-     `(("glib" ,glib)
-       ("gtk" ,gtk+)
-       ("libappindicator" ,libappindicator)
-       ("libdrm" ,libdrm)
-       ("libX11" ,libx11)
-       ("libxxf86vm" ,libxxf86vm)
-       ("libxcb" ,libxcb)
-       ("python" ,python)
-       ("python-pygobject" ,python-pygobject)
-       ("python-pyxdg" ,python-pyxdg)
-       ("wayland" ,wayland)))
+     (list glib
+           gtk+
+           libappindicator
+           libdrm
+           libx11
+           libxxf86vm
+           libxcb
+           python
+           python-pygobject
+           python-pyxdg
+           wayland))
     (home-page "https://gitlab.com/chinstrap/gammastep")
     (synopsis "Adjust the color temperature of your screen")
     (description
