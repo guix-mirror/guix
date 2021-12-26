@@ -1432,7 +1432,7 @@ RTL8812AU, RTL8821AU, and RTL8814AU chips.")
         (base32 "1dkprnnya0i8121p7ip4g8cww99drk7fzbwcxx65x02jqk0siibj"))))
     (build-system linux-module-build-system)
     (arguments
-     `(#:tests? #f))                    ; no test suite
+     (list #:tests? #f))                ; no test suite
     (home-page "https://cdemu.sourceforge.io/")
     (synopsis "Linux kernel module that emulates SCSI devices")
     (description
