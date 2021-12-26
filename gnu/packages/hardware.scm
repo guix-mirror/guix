@@ -8,6 +8,7 @@
 ;;; Copyright © 2021 Petr Hodina <phodina@protonmail.com>
 ;;; Copyright © 2021 Raghav Gururajan <rg@raghavgururajan.name>
 ;;; Copyright © 2021 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2021 John Kehayias <john.kehayias@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -315,6 +316,30 @@ to it, and help you submit that information to the h-node project along with
 whether the hardware works with a fully free operating system or not.")
       (home-page "https://savannah.nongnu.org/projects/h-client/")
       (license license:gpl3+))))
+
+(define-public headsetcontrol
+  (package
+    (name "headsetcontrol")
+    (version "2.6")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Sapd/HeadsetControl")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0a7zimzi71416pmn6z0l1dn1c2x8p702hkd0k6da9rsznff85a88"))))
+    (build-system cmake-build-system)
+    (inputs
+     (list hidapi))
+    (home-page "https://github.com/Sapd/HeadsetControl")
+    (synopsis "Sidetone and Battery status for USB headsets")
+    (description
+     "Headsetcontrol is a tool to control certain aspects of USB-connected
+headsets.  Currently, support is provided for adjusting sidetone, getting
+battery state, controlling LEDs, and setting the inactive time.")
+    (license license:gpl3+)))
 
 (define-public i7z
   (let ((revision "0")
