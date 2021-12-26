@@ -14079,7 +14079,7 @@ Python 2.4 and 2.5, and will draw its fixes/improvements from python-trunk.")
 (define-public python-celery
   (package
     (name "python-celery")
-    (version "5.1.2") ; newer versions require python-click>=8
+    (version "5.1.2")                  ;newer versions require python-click>=8
     (source
      (origin
        (method url-fetch)
@@ -14088,19 +14088,31 @@ Python 2.4 and 2.5, and will draw its fixes/improvements from python-trunk.")
         (base32 "1c6lw31i3v81fyj4yn37lbvv70xdgb389iccirzyjr992vlkv6ld"))))
     (build-system python-build-system)
     (arguments
-     '(;; TODO The tests fail with Python 3.7
-       ;; https://github.com/celery/celery/issues/4849
-       #:tests? #f
+     '(#:tests? #f
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-requirements
+         (add-after 'unpack 'delete-integration-tests
            (lambda _
-             (substitute* "requirements/test.txt"
-               (("pytest>=3\\.0,<3\\.3")
-                "pytest>=3.0"))
-             #t)))))
+             (delete-file-recursively "t/integration"))) ;hangs tests
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "python" "-m" "pytest" "t" "-k"
+                       (string-append   ; AssertionErrors
+                        "not test_check_privileges_no_fchown"
+                        " and not test_all_reqs_enabled_in_tests"))))))))
     (native-inputs
-     (list python-case python-pytest))
+     (list python-case
+           python-flaky
+           python-iniconfig
+           python-moto
+           python-msgpack
+           python-pytest
+           python-pytest-celery
+           python-pytest-subtests
+           python-pytest-timeout
+           python-toml))
     (propagated-inputs
      (list python-billiard
            python-boto3
