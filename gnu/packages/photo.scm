@@ -770,7 +770,8 @@ a complete panorama and stitch any series of overlapping pictures.")
              "-DPROC_TARGET_NUMBER=1"
              ;; These flags are recommended by upstream for distributed packages.
              ;; See the file 'RELEASE_NOTES.txt' in the source distribution.
-             "-O3"
+             "-DCMAKE_CXX_FLAGS=-O3 -fPIC"
+             "-DCMAKE_C_FLAGS=-O3 -fPIC"
              "-DCACHE_NAME_SUFFIX=\"\"")))
     (native-inputs
      (list pkg-config))
