@@ -1154,34 +1154,6 @@ service processes for your tests with pytest.")
 new fixtures, new methods and new comparison objects.")
     (license license:expat)))
 
-(define-public python-pytest-rerunfailures
-  (package
-    (name "python-pytest-rerunfailures")
-    (version "10.2")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "pytest-rerunfailures" version))
-       (sha256
-        (base32 "15v68kggjvkflbqr0vz8gp5yp3pcsk0rz05bpg2l4xp0a6nin7ly"))))
-    (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
-             (when tests?
-               (add-installed-pythonpath inputs outputs)
-               (invoke "python" "-m" "pytest"
-                       "test_pytest_rerunfailures.py")))))))
-    (native-inputs
-     (list python-pytest))
-    (home-page "https://github.com/pytest-dev/pytest-rerunfailures")
-    (synopsis "Pytest plugin to re-run tests to eliminate flaky failures")
-    (description "This package provides a Pytest plugin to re-run tests to
-eliminate flaky failures.")
-    (license license:mpl2.0)))
-
 (define-public python-pytest-aiohttp
   (package
     (name "python-pytest-aiohttp")
