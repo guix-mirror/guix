@@ -265,7 +265,7 @@ contents and more.")
 (define-public rage
   (package
     (name "rage")
-    (version "0.3.1")
+    (version "0.4.0")
     (source (origin
               (method url-fetch)
               (uri
@@ -274,14 +274,14 @@ contents and more.")
                 version ".tar.xz"))
               (sha256
                (base32
-                "04fdk23bbgvni212zrfy4ndg7vmshbsjgicrhckdvhay87pk9i75"))))
+                "03yal7ajh57x2jhmygc6msf3gzvqkpmzkqzj6dnam5sim8cq9rbw"))))
     (build-system meson-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'set-home-directory
            ;; FATAL: Cannot create run dir '/homeless-shelter/.run' - errno=2
-           (lambda _ (setenv "HOME" "/tmp") #t)))))
+           (lambda _ (setenv "HOME" "/tmp"))))))
     (native-inputs
      (list pkg-config))
     (inputs
