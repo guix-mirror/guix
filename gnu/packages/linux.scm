@@ -1461,8 +1461,7 @@ emulate optical devices such as DVD and CD-ROM drives.")
                   "1pgldnza7mzd0flrxg4q69dwbq1fhl58m5c62ary5drb0xyf3lqb"))))
       (build-system linux-module-build-system)
       (arguments
-       ;; No tests.
-       `(#:tests? #f))
+       (list #:tests? #f))              ; no test suite
       (home-page "https://github.com/Bumblebee-Project/bbswitch")
       (synopsis "Kernel module that disables discrete Nvidia graphics cards")
       (description "The bbswitch module provides a way to toggle the Nvidia
