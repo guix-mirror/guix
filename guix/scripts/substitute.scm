@@ -237,7 +237,7 @@ was found."
 ;;;
 
 (define (show-help)
-  (display (G_ "Usage: guix substitute [OPTION]...
+  (display (G_ "Usage: guix substitute OPTION [ARGUMENT]...
 Internal tool to substitute a pre-built binary to a local build.\n"))
   (display (G_ "
       --query            report on the availability of substitutes for the
