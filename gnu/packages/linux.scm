@@ -1197,25 +1197,25 @@ It has been modified to remove all non-free binary blobs.")
         (base32 "1s7h9y3adyfhw7cjldlfmid79lrwz3vqlvziw9nwd6x5qdj4w9vp"))))
     (build-system linux-module-build-system)
     (arguments
-     `(#:tests? #f                      ; no tests
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'install 'patch-shebangs-harder
-           ;; The (only) shebangs in examples/ don't justify a reference.
-           ;; However, do substitute a more portable one than the original.
-           (lambda _
-             (substitute* (find-files "examples" ".")
-               (("^(#! *)/[^ ]*/" _ shebang)
-                (string-append shebang "/usr/bin/env ")))))
-         (add-after 'install 'install-documentation
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (doc (string-append out "/share/doc/" ,name "-" ,version)))
-               (for-each (lambda (file)
-                           (let ((target (string-append doc "/" file)))
-                             (mkdir-p (dirname target))
-                             (copy-recursively file target)))
-                         (list "README.md" "examples"))))))))
+     (list #:tests? #f                  ; no tests
+           #:phases
+           #~(modify-phases %standard-phases
+               (add-before 'install 'patch-shebangs-harder
+                 ;; The (only) shebangs in examples/ don't justify a reference.
+                 ;; However, do substitute a slightly more portable one.
+                 (lambda _
+                   (substitute* (find-files "examples" ".")
+                     (("^(#! *)/[^ ]*/" _ shebang)
+                      (string-append shebang "/usr/bin/env ")))))
+               (add-after 'install 'install-documentation
+                 (lambda _
+                   (let* ((doc (string-append #$output "/share/doc/"
+                                              #$name "-" #$version)))
+                     (for-each (lambda (file)
+                                 (let ((target (string-append doc "/" file)))
+                                   (mkdir-p (dirname target))
+                                   (copy-recursively file target)))
+                               (list "README.md" "examples"))))))))
     (home-page "https://github.com/nix-community/acpi_call")
     (synopsis "Linux kernel module to perform ACPI method calls")
     (description
