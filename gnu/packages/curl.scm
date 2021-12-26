@@ -40,11 +40,15 @@
   #:use-module (guix build-system copy)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
+  #:use-module (guix build-system meson)
   #:use-module (gnu packages)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages golang)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages kerberos)
+  #:use-module (gnu packages logging)
+  #:use-module (gnu packages libevent)
   #:use-module (gnu packages libidn)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -332,4 +336,28 @@ more!")
     (description
      "Provided a set of HTTP request headers, h2c outputs how to invoke
 curl to obtain exactly that HTTP request.")
+    (license license:expat)))
+
+(define-public coeurl
+  (package
+    (name "coeurl")
+    (version "0.1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://nheko.im/nheko-reborn/coeurl")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32
+         "0sqciagagyc0qv90g0qw8fkyvy4l8h7nbaz04chiz9gnv89hg28p"))))
+    (build-system meson-build-system)
+    (native-inputs
+     (list doctest pkg-config))
+    (inputs
+     (list curl libevent spdlog))
+    (home-page "https://nheko.im/nheko-reborn/coeurl")
+    (synopsis "Simple async wrapper around CURL for C++")
+    (description "Coeurl is a simple library to do HTTP requests
+asynchronously via cURL in C++.")
     (license license:expat)))
