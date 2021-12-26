@@ -1471,16 +1471,14 @@ graphics card on Optimus laptops.")
 (define-public ddcci-driver-linux
   (package
     (name "ddcci-driver-linux")
-    ;; Use an as-yet unmerged commit to fix the build with Linux-Libre 5.15:
-    ;; https://gitlab.com/ddcci-driver-linux/ddcci-driver-linux/-/merge_requests/8
-    (version "0.4.1-0.bf9d798")
+    (version "0.4.2")
     (source
      (origin
        (method git-fetch)
        (uri
         (git-reference
          (url "https://gitlab.com/ddcci-driver-linux/ddcci-driver-linux.git")
-         (commit "bf9d79852cbd0aa5c2e288ce51b8280f74a1f5d2")))
+         (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
         (base32 "1lww3mnqhxqzj0qbxzbwbq93v9zw49myp7p9ib873a5izbq8nadi"))))
