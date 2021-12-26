@@ -38,7 +38,7 @@
 ;;; Copyright © 2021 Leo Le Bouter <lle-bout@zaclys.net>
 ;;; Copyright © 2021 Zelphir Kaltstahl <zelphirkaltstahl@posteo.de>
 ;;; Copyright © 2021 Oleg Pykhalov <go.wigust@gmail.com>
-;;; Copyright © 2021 Artyom V. Poptsov <poptsov.artyom@gmail.com>
+;;; Copyright © 2021, 2022 Artyom V. Poptsov <poptsov.artyom@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1865,7 +1865,7 @@ users and in some situations.")
 (define-public guile-udev
   (package
     (name "guile-udev")
-    (version "0.2.0")
+    (version "0.2.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1874,7 +1874,7 @@ users and in some situations.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "037md1sg7bgsa4478hz1dbsivsxzdnl5acadlrsh4ds2yxbsb5jp"))))
+                "0xvh4wscxmiqm8lnmfyh5cjzn89kv2wslkfvqvcjhinzpnpbg91x"))))
     (build-system gnu-build-system)
     (native-inputs
      (list autoconf
