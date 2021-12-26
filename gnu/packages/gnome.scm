@@ -10737,12 +10737,12 @@ apply fancy special effects and lets you share the fun with others.")
                  `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH"))))
                #t))))))
     (native-inputs
-     `(("desktop-file-utils" ,desktop-file-utils)
-       ("gettext" ,gettext-minimal)
-       ("glib:bin" ,glib "bin")
-       ("gobject-introspection" ,gobject-introspection)
-       ("gtk+:bin" ,gtk+ "bin")
-       ("pkg-config" ,pkg-config)))
+     (list desktop-file-utils
+           gettext-minimal
+           `(,glib "bin")
+           gobject-introspection
+           `(,gtk+ "bin")
+           pkg-config))
     (inputs
      (list glib
            gsettings-desktop-schemas
