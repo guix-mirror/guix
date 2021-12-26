@@ -70,6 +70,7 @@
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages graphics)
@@ -2402,7 +2403,7 @@ This package provides the Python bindings.")))
 (define-public qtkeychain
   (package
     (name "qtkeychain")
-    (version "0.9.1")
+    (version "0.13.2")
     (source
       (origin
         (method git-fetch)
@@ -2412,12 +2413,12 @@ This package provides the Python bindings.")))
         (file-name (git-file-name name version))
         (sha256
          (base32
-          "0h4wgngn2yl35hapbjs24amkjfbzsvnna4ixfhn87snjnq5lmjbc"))))
+          "1zk6r2vc1q48qs7mw2h47bpgrfbb9r7lf9cwq4sb1a4nls87zznk"))))
     (build-system cmake-build-system)
     (native-inputs
      (list pkg-config qttools))
     (inputs
-     (list qtbase-5))
+     (list libsecret qtbase-5))
     (arguments
      `(#:tests? #f ; No tests included
        #:phases
