@@ -1332,7 +1332,7 @@ This package provides the @command{corefreqd} data collection daemon, the
         (base32 "1qnbfj60i8nn2ahgj2zp5ixd79bb0wl1ld36x3igws2f3c0f5pfi"))))
     (build-system linux-module-build-system)
     (arguments
-     `(#:tests? #f))                    ; no test suite
+     (list #:tests? #f))                ; no test suite
     (home-page "https://source.puri.sm/nicole.faerber/librem-ec-acpi-dkms")
     (synopsis "Linux kernel module to control the Librem Embedded Controller")
     (description
