@@ -208,6 +208,7 @@ output in multiple windows in a terminal.")
     (arguments
      '(#:configure-flags
        (list "-DSPDLOG_BUILD_BENCH=OFF"
+             "-DSPDLOG_BUILD_SHARED=ON"
              "-DSPDLOG_BUILD_TESTS=ON")))
     (home-page "https://github.com/gabime/spdlog")
     (synopsis "Fast C++ logging library")
