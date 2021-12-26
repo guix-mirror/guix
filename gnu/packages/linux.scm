@@ -1564,12 +1564,12 @@ application by hooking GStreamer into the loopback device.")
                (copy-recursively "hid-xpadneo/etc-udev-rules.d"
                                  (string-append out "/lib/udev/rules.d"))))))))
     (home-page "https://atar-axis.github.io/xpadneo/")
-    (synopsis "Xbox One Wireless Controller driver")
+    (synopsis "Xbox One Wireless Controller driver for the kernel Linux")
     (description
      "This package provides a driver for the XBox One S Wireless controller
-and some newer models when connected via bluetooth.  In addition to the kernel
-module provided itself, it also contains a modprobe configuration and udev
-rules, which need to be installed separately.")
+and some newer models when connected via Bluetooth.  In addition to the included
+Linux kernel module, it also contains a modprobe configuration and udev rules,
+which need to be installed separately.")
     (license license:gpl3+)))
 
 
