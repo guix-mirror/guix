@@ -10720,6 +10720,7 @@ apply fancy special effects and lets you share the fun with others.")
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
+       #:meson ,meson-0.59
        #:phases
        (modify-phases %standard-phases
          (add-after 'glib-or-gtk-wrap 'python-and-gi-wrap
