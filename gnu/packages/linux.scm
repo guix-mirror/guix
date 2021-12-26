@@ -1402,12 +1402,12 @@ network adapters.")
           (base32 "1g2zga7jqzp4azwqpgxxx3lg07ijaaqw3zqnaa3i2brycwlnf8l9"))
          (modules '((guix build utils)))
          (snippet
-          '(begin
-             ;; Remove bundled tarballs, APKs, word lists, speadsheets,
-             ;; and other unnecessary unlicenced things.
-             (for-each delete-file-recursively (list "android"
-                                                     "docs"
-                                                     "tools"))))))
+          #~(begin
+              ;; Remove bundled tarballs, APKs, word lists, speadsheets,
+              ;; and other unnecessary unlicenced things.
+              (for-each delete-file-recursively (list "android"
+                                                      "docs"
+                                                      "tools"))))))
       (supported-systems '("x86_64-linux" "i686-linux"))
       (home-page "https://github.com/aircrack-ng/rtl8812au")
       (synopsis "Linux driver for Realtek USB wireless network adapters")
