@@ -70,7 +70,7 @@
 (define-public efl
   (package
     (name "efl")
-    (version "1.25.1")
+    (version "1.26.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -78,10 +78,10 @@
                     version ".tar.xz"))
               (sha256
                (base32
-                "0svybbrvpf6q955y6fclxh3md64z0dgmh0x54x2j60503hhs071m"))))
+                "0k10mwpdjn57r2kflbzpybhvwl25yqqa2i2fhx0qazyjbzjbrad4"))))
     (build-system meson-build-system)
     (native-inputs
-     `(("check" ,check-0.14)
+     `(("check" ,check)
        ("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
     (inputs
@@ -150,11 +150,11 @@
          "-Dmount-path=/run/setuid-programs/mount"
          "-Dunmount-path=/run/setuid-programs/umount"
          "-Dnetwork-backend=connman"
-         ;; Add 'rsvg' to the default list (json and avif) of disabled loaders
+         ;; Add 'rsvg' to the default list (json, avif, heif) of disabled loaders
          ;; unless librsvg is available.
          ,,@(if (target-x86-64?)
                 '()
-                (list "-Devas-loaders-disabler=json,avif,rsvg"))
+                (list "-Devas-loaders-disabler=json,avif,heif,rsvg"))
          ;; For Wayland.
          "-Dwl=true"
          "-Ddrm=true")
@@ -180,8 +180,7 @@
                   (string-append sndfile lib libsnd)))
                (substitute* "src/lib/elput/elput_logind.c"
                  (("libelogind.so.0" libelogind)
-                  (string-append elogind "/lib/" libelogind)))
-               #t)))
+                  (string-append elogind "/lib/" libelogind))))))
          (add-after 'unpack 'fix-install-paths
            (lambda _
              (substitute* "dbus-services/meson.build"
@@ -190,11 +189,10 @@
              (substitute* "src/tests/elementary/meson.build"
                (("dir_data") "meson.source_root(), 'test-output'"))
              (substitute* "data/eo/meson.build"
-               (("'usr', 'lib'") "'./' + dir_lib"))
-             #t))
+               (("'usr', 'lib'") "'./' + dir_lib"))))
          (add-after 'unpack 'set-home-directory
            ;; FATAL: Cannot create run dir '/homeless-shelter/.run' - errno=2
-           (lambda _ (setenv "HOME" "/tmp") #t)))))
+           (lambda _ (setenv "HOME" "/tmp"))))))
     (home-page "https://www.enlightenment.org/about-efl")
     (synopsis "Enlightenment Foundation Libraries")
     (description
