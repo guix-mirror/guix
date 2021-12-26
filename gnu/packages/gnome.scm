@@ -11964,10 +11964,10 @@ GTK+.  It integrates well with the GNOME desktop environment.")
            python-pypandoc
            webkitgtk))
     (native-inputs
-     `(("gettext" ,gettext-minimal)
-       ("glib:bin" ,glib "bin")
-       ("pkg-config" ,pkg-config)
-       ("sassc" ,sassc)))
+     (list gettext-minimal
+           `(,glib "bin")
+           pkg-config
+           sassc))
     (home-page "https://gitlab.gnome.org/somas/apostrophe")
     (synopsis "Markdown editor written in Python with GTK+")
     (description "Apostrophe is a GTK+ based distraction-free Markdown editor.
