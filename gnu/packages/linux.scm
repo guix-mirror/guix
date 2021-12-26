@@ -1555,19 +1555,19 @@ application by hooking GStreamer into the loopback device.")
                 "0xr0zx134s56h4ij6c3fh8ki0h58h61minbfxcl3sgpgxkh14ism"))))
     (build-system linux-module-build-system)
     (arguments
-     `(#:tests? #f ; no `check' target
-       #:source-directory "hid-xpadneo/src"
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'post-install
-           (lambda* (#:key outputs #:allow-other-keys #:rest args)
-             (let ((out (assoc-ref outputs "out")))
-               (copy-recursively "hid-xpadneo/etc-modprobe.d"
-                                 (string-append out "/etc/modprobe.d"))
-               ;; udev-service-type takes its rules from /lib rather than
-               ;; /etc, so copy it there instead
-               (copy-recursively "hid-xpadneo/etc-udev-rules.d"
-                                 (string-append out "/lib/udev/rules.d"))))))))
+     (list #:tests? #f                  ; no `check' target
+           #:source-directory "hid-xpadneo/src"
+           #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'install 'post-install
+                 (lambda _
+                   (copy-recursively "hid-xpadneo/etc-modprobe.d"
+                                     (string-append #$output "/etc/modprobe.d"))
+                   ;; udev-service-type takes its rules from /lib rather than
+                   ;; /etc, so copy it there instead
+                   (copy-recursively "hid-xpadneo/etc-udev-rules.d"
+                                     (string-append #$output
+                                                    "/lib/udev/rules.d")))))))
     (home-page "https://atar-axis.github.io/xpadneo/")
     (synopsis "Xbox One Wireless Controller driver for the kernel Linux")
     (description
