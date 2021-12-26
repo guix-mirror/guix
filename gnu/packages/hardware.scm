@@ -77,7 +77,7 @@
 (define-public hwinfo
   (package
     (name "hwinfo")
-    (version "21.78")
+    (version "21.80")
     (home-page "https://github.com/openSUSE/hwinfo")
     (source
      (origin
@@ -88,7 +88,7 @@
          (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0v3smzdplh0cdvl19dw3in8gfmkhb2fgkfl60aqhn9qlbjf3p0mr"))
+        (base32 "07058vjqdcd3la8y4b92f7fvcqxvmw1p0q4lg5kcn85pvbbg52ag"))
        (modules
         '((guix build utils)))
        (snippet
