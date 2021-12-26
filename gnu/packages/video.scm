@@ -36,7 +36,7 @@
 ;;; Copyright © 2019 Riku Viitanen <riku.viitanen@protonmail.com>
 ;;; Copyright © 2020, 2021 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 Josh Holland <josh@inv.alid.pw>
-;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2020, 2021 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020, 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2020 Alex McGrath <amk@amk.ie>
@@ -4849,10 +4849,11 @@ transitions, and effects and then export your film to many common formats.")
                    (,(assoc-ref inputs "mlt"))))))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("python" ,python-wrapper)
+       ("python-wrapper" ,python-wrapper)
        ("qttools" ,qttools)))
     (inputs
-     (list ffmpeg
+     (list bash-minimal
+           ffmpeg
            frei0r-plugins
            jack-1
            ladspa
