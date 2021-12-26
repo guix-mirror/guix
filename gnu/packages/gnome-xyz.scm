@@ -902,7 +902,7 @@ variants.")
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("libgee" ,libgee)
        ("libhandy" ,libhandy)
-       ("libsoup" ,libsoup)
+       ("libsoup" ,libsoup-minimal-2)
        ("json-glib" ,json-glib)
        ("vala" ,vala)))
     (native-inputs
