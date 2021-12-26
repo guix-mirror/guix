@@ -11924,6 +11924,7 @@ GTK+.  It integrates well with the GNOME desktop environment.")
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
+       #:meson ,meson-0.59              ;fails with 0.60
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-meson
