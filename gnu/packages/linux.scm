@@ -1361,22 +1361,23 @@ and the notification, WiFi, and Bluetooth LED.")
            "18ma8a8h1l90dss0k6al7q6plwr57jc9g67p22g9917k1jfbhm97"))))
       (build-system linux-module-build-system)
       (arguments
-       `(#:make-flags
-         (list (string-append "CC=" ,(cc-for-target))
-               (string-append "KSRC="
-                              (assoc-ref %build-inputs "linux-module-builder")
-                              "/lib/modules/build"))
-         #:phases
-         (modify-phases %standard-phases
-           (replace 'build
-             (lambda* (#:key (make-flags '()) (parallel-build? #t)
-                       #:allow-other-keys)
-               (apply invoke "make"
-                      `(,@(if parallel-build?
-                              `("-j" ,(number->string (parallel-job-count)))
-                              '())
-                        ,@make-flags)))))
-         #:tests? #f))                  ; no test suite
+       (list #:make-flags
+             #~(list (string-append "CC=" #$(cc-for-target))
+                     (string-append "KSRC="
+                                    (assoc-ref %build-inputs
+                                               "linux-module-builder")
+                                    "/lib/modules/build"))
+             #:phases
+             #~(modify-phases %standard-phases
+                 (replace 'build
+                   (lambda* (#:key (make-flags '()) (parallel-build? #t)
+                                   #:allow-other-keys)
+                     (apply invoke "make"
+                            `(,@(if parallel-build?
+                                    `("-j" ,(number->string (parallel-job-count)))
+                                    '())
+                              ,@make-flags)))))
+             #:tests? #f))                  ; no test suite
       (home-page "https://github.com/tomaspinho/rtl8821ce")
       (synopsis "Linux driver for Realtek RTL8821CE wireless network adapters")
       (description "This is Realtek's RTL8821CE Linux driver for wireless
