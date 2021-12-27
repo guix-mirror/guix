@@ -7526,6 +7526,7 @@ to display dialog boxes from the commandline and shell scripts.")
        ("adwaita-icon-theme" ,adwaita-icon-theme)
        ("libxcursor" ,libxcursor)       ;for XCURSOR_PATH
        ("pipewire" ,pipewire-0.3)
+       ("python" ,python)
        ("python-dbus" ,python-dbus)
        ("python-dbusmock" ,python-dbusmock)
        ("tini" ,tini)))                 ;acting as init (zombie reaper)
