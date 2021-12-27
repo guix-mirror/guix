@@ -46,6 +46,7 @@
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages golang)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages java)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages pcre)
@@ -192,6 +193,17 @@ use their packages mostly unmodified in our Android NDK build system.")
     (sha256
      (base32
       checksum))))
+
+(define (android-platform-development version)
+  (origin
+    (method git-fetch)
+    (uri (git-reference
+          (url "https://android.googlesource.com/platform/development")
+          (commit (string-append "android-" version))))
+    (file-name (string-append "android-platform-development-"
+                              version "-checkout"))
+    (sha256
+     (base32 "0s92961yycg8wsga40i7fvbfmf1a5i6j2gk64j2jiy7s0hfd4rc3"))))
 
 (define (android-platform-frameworks-native version)
   (origin
@@ -813,6 +825,59 @@ platform/frameworks/native.")
 compression technique developed in collaboration with Ericsson Research in
 early 2005.  libETC1 provides the encoding and decoding of ETC1 compression
 algorithm.")
+    (license license:asl2.0)))
+
+(define-public etc1tool
+  (package
+    (name "etc1tool")
+    (version (android-platform-version))
+    (source (android-platform-development version))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'create-Makefile
+           (lambda _
+             ;; No useful makefile is shipped, so we create one.
+             (with-output-to-file "Makefile"
+               (lambda _
+                 (display
+                  (string-append
+                   "NAME = etc1tool\n"
+                   "SOURCES = tools/etc1tool/etc1tool.cpp\n"
+                   "CPPFLAGS += -Iinclude\n"
+                   "LDFLAGS += -lpng -lETC1\n"
+                   "$(NAME): $(SOURCES)\n"
+                   "	$(CXX) $^ -o $@ $(CXXFLAGS) $(CPPFLAGS) $(LDFLAGS)\n"
+                   "build: $(NAME)"))
+                 #t))))
+         (add-before 'build 'fix-typos-in-help
+           (lambda _
+             (substitute* "tools/etc1tool/etc1tool.cpp"
+               ((" apropriate ") " appropriate "))
+             #t))
+         ;; TODO: Add man-page from Debian
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (install-file "etc1tool" bin)))))))
+    (inputs
+     `(("libetc1" ,libetc1)
+       ("libpng" ,libpng)))
+    (home-page "https://developer.android.com/studio/command-line/etc1tool.html")
+    (synopsis "Encode and decode PNG images to resp. from the ETC1 compression
+standard.")
+    (description
+     "@command{etc1} is a command line utility that lets you encode PNG images
+to the ETC1 compression standard and decode ETC1 compressed images back to
+PNG.  This tool is part of the Android SDK for working with media files for
+game apps.
+
+The standard for the ETC1 texture format can be found at
+@uref{http://www.khronos.org/registry/gles/extensions/OES/OES_compressed_ETC1_RGB8_texture.txt}.")
     (license license:asl2.0)))
 
 (define-public git-repo
