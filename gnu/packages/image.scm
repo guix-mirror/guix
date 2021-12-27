@@ -57,6 +57,7 @@
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages cmake)
+  #:use-module (gnu packages cpp)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages documentation)
@@ -2226,6 +2227,58 @@ by AOM, including with alpha.")
      "@code{libheif} is an ISO/IEC 23008-12:2017 HEIF and AVIF (AV1 Image File
 Format) file format decoder and encoder.")
     (license license:lgpl3+)))
+
+(define-public libjxl
+  (package
+    (name "libjxl")
+    (version "0.6.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/libjxl/libjxl")
+             (commit (string-append "v" version))
+             (recursive? #t)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "17pvc5zgm9az5hfg2p80325f42w3dqspyb03iakrwg9x4n3vjckx"))
+       (modules '((guix build utils)))
+       (snippet
+        ;; Delete the bundles that will not be used.  libjxl bundles LCMS
+        ;; which is in Guix but there is no option to use the system package.
+        ;; This option will be introduced after version 0.6.1 and then we
+        ;; probably won't need to download the submodules.
+        '(begin
+           (for-each (lambda (directory)
+                       (delete-file-recursively
+                        (string-append "third_party/" directory)))
+                     '("brotli" "googletest" "highway"))))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "-DJPEGXL_FORCE_SYSTEM_GTEST=true"
+             "-DJPEGXL_FORCE_SYSTEM_BROTLI=true"
+             ;; "-DJPEGXL_FORCE_SYSTEM_LCMS2=true" ; next version after 0.6.1
+             "-DJPEGXL_FORCE_SYSTEM_HWY=true")))
+    (native-inputs
+     (list asciidoc doxygen googletest pkg-config python))
+    (inputs
+     (list freeglut
+           giflib
+           google-brotli
+           google-highway
+           imath
+           ;; lcms ; next version after 0.6.1
+           libavif
+           libjpeg-turbo
+           libpng
+           libwebp
+           openexr))
+    (home-page "https://github.com/libjxl/libjxl")
+    (synopsis "JPEG XL image format reference implementation")
+    (description "This package contains a reference implementation of JPEG XL
+(encoder and decoder).")
+    (license license:bsd-3)))
 
 (define-public mtpaint
   (package
