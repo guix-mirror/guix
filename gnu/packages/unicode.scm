@@ -49,6 +49,20 @@ files listing Unicode character properties and related data.  It also includes
 test data for conformance to several important Unicode algorithms.")
     (license unicode)))
 
+(define-public ucd-next
+  (package
+    (inherit ucd)
+    (name "ucd-next")
+    (version "14.0.0")
+    (source
+     (origin
+       (method url-fetch/zipbomb)
+       (uri (string-append "https://www.unicode.org/Public/zipped/" version
+                           "/UCD.zip"))
+       (sha256
+        (base32
+         "001nq9w52ijma0vps40xwy2q6ylpyf1393lzb128ibypnmv54fh3"))))))
+
 (define (unicode-emoji-file name version hash)
   (origin
     (method url-fetch)
