@@ -31381,8 +31381,36 @@ checking.")
       "Chaining APIs for both self -> Self and &mut self methods.")
     (license license:expat)))
 
+(define-public rust-mp4-0.9
+  (package
+    (name "rust-mp4")
+    (version "0.9.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "mp4" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "12rwsjj5fn5h198ih0ig08vz34rfjlnf8rw3d0i5jwbaay88f1kq"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-byteorder" ,rust-byteorder-1)
+        ("rust-bytes" ,rust-bytes-1)
+        ("rust-num-rational" ,rust-num-rational-0.4)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-thiserror" ,rust-thiserror-1))
+       #:cargo-development-inputs
+       (("rust-criterion" ,rust-criterion-0.3))))
+    (home-page "https://github.com/alfg/mp4-rust")
+    (synopsis "MP4 reader and writer library in Rust")
+    (description "mp4 is a Rust library to read and write ISO-MP4 files.")
+    (license license:expat)))
+
 (define-public rust-mp4-0.8
   (package
+    (inherit rust-mp4-0.9)
     (name "rust-mp4")
     (version "0.8.3")
     (source
@@ -31392,7 +31420,6 @@ checking.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "14zh9dh6hwzmbchl7yh8wv84r0fniq1jcbz9x2hqq699h6l1issi"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -31401,11 +31428,7 @@ checking.")
         ("rust-num-rational" ,rust-num-rational-0.3)
         ("rust-serde" ,rust-serde-1)
         ("rust-serde-json" ,rust-serde-json-1)
-        ("rust-thiserror" ,rust-thiserror-1))))
-    (home-page "https://github.com/alfg/mp4-rust")
-    (synopsis "MP4 reader and writer library in Rust")
-    (description "mp4 is a Rust library to read and write ISO-MP4 files.")
-    (license license:expat)))
+        ("rust-thiserror" ,rust-thiserror-1))))))
 
 (define-public rust-mp4parse-0.11
   (package
