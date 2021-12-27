@@ -4681,8 +4681,28 @@ trace (backtrace) at runtime in a Rust program.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-bare-metal-1
+  (package
+    (name "rust-bare-metal")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "bare-metal" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "00wn61b219nkfcwggim5pj7mcyn1gkq8zqaq4gjlb0rri9d8zzpq"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/rust-embedded/bare-metal")
+    (synopsis "Abstractions common to bare metal systems")
+    (description "This package provides abstractions common to bare metal
+systems.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-bare-metal-0.2
   (package
+    (inherit rust-bare-metal-1)
     (name "rust-bare-metal")
     (version "0.2.5")
     (source
@@ -4692,16 +4712,10 @@ trace (backtrace) at runtime in a Rust program.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "1cy5pbb92fznnri72y6drfpjxj4qdmd62f0rrlgy70dxlppn9ssx"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-rustc-version" ,rust-rustc-version-0.2))))
-    (home-page "https://github.com/rust-embedded/bare-metal")
-    (synopsis "Abstractions common to bare metal systems")
-    (description "This package provides abstractions common to bare metal
-systems.")
-    (license (list license:expat license:asl2.0))))
+       (("rust-rustc-version" ,rust-rustc-version-0.2))))))
 
 (define-public rust-barrel-0.6
   (package
