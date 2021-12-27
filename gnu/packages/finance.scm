@@ -285,7 +285,7 @@ Accounting.")
     (native-inputs
      (list pkg-config intltool))
     (inputs
-     (list gtk+ libofx libsoup))
+     (list gtk+ libofx libsoup-minimal-2))
     (home-page "http://homebank.free.fr/")
     (synopsis "Graphical personal accounting application")
     (description "HomeBank allows you to manage your personal accounts at
