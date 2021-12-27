@@ -82,6 +82,7 @@
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages node)
+  #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-build)
@@ -773,6 +774,40 @@ Swartz.")
 - JSON Web Signature (JWS), JSON Web Encryption (JWE), JSON Web Key (JWK), and
 JSON Web Algorithms (JWA) - collectively can be used to encrypt and/or sign
 content using a variety of algorithms.")
+    (license license:expat)))
+
+(define-public python-pyscss
+  (package
+    (name "python-pyscss")
+    (version "1.3.7")
+    (source
+     (origin
+       (method git-fetch)               ; no tests in PyPI release
+       (uri (git-reference
+             (url "https://github.com/Kronuz/pyScss")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0701hziiiw67blafgpmjhzspmrss8mfvif7fw0rs8fikddwwc9g6"))))
+    (build-system python-build-system)
+    (arguments
+     ;; XXX: error in test collection, possible incompatibility with Pytest 6.
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "python" "-m" "pytest" "--pyargs" "scss")))))))
+    (native-inputs
+     (list python-pytest python-pytest-cov))
+    (inputs
+     (list pcre))
+    (home-page "https://github.com/Kronuz/pyScss")
+    (synopsis "Scss compiler for Python")
+    (description "@code{pyScss} is a compiler for Sass, a superset language of
+CSS3 that adds programming capabilities and some other syntactic sugar.")
     (license license:expat)))
 
 (define-public python-jsonpickle
