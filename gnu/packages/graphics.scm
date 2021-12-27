@@ -936,6 +936,30 @@ applications, full-screen applications, and embedded platforms without standard
 operating system features.")
     (license license:expat)))           ; some examples/ use the zlib licence
 
+(define-public alembic
+  (package
+    (name "alembic")
+    (version "1.8.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/alembic/alembic")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0glfx3cm7r8zn3cn7j4x4ch1ab6igfis0i2lcy23jc56q87r8yj2"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags (list "-DUSE_HDF5=ON")))
+    (inputs
+     (list hdf5 imath zlib))
+    (home-page "http://www.alembic.io/")
+    (synopsis "Framework for storing and sharing scene data")
+    (description "Alembic is a computer graphics interchange framework.  It
+distills complex, animated scenes into a set of baked geometric results.")
+    (license license:bsd-3)))
+
 (define-public ogre
   (package
     (name "ogre")
