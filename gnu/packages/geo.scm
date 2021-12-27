@@ -517,7 +517,13 @@ fully fledged Spatial SQL capabilities.")
          "050apzdn0isxpsblys1shrl9ccli5vd32kgswlgx1imrbwpg915k"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:configure-flags '("-DUSE_EXTERNAL_GTEST=ON")))
+     `(#:configure-flags '("-DUSE_EXTERNAL_GTEST=ON")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-version
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("MAJOR 7 MINOR 2 PATCH 0") "MAJOR 7 MINOR 2 PATCH 1")))))))
     (inputs
      (list curl libjpeg-turbo libtiff sqlite))
     (native-inputs
