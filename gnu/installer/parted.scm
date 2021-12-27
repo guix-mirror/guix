@@ -81,7 +81,7 @@
 
             with-delay-device-in-use?
             force-device-sync
-            non-install-devices
+            eligible-devices
             partition-user-type
             user-fs-type-name
             partition-filesystem-user-type
@@ -356,11 +356,26 @@ fail. See rereadpt function in wipefs.c of util-linux for an explanation."
              (and=> (uuid root)
                     find-partition-by-uuid)))))
 
-(define (non-install-devices)
-  "Return all the available devices, except the install device."
+;; Minimal installation device size.
+(define %min-device-size
+  (* 2 GIBIBYTE-SIZE)) ;2GiB
+
+(define (eligible-devices)
+  "Return all the available devices except the install device and the devices
+which are smaller than %MIN-DEVICE-SIZE."
 
   (define the-installer-root-partition-path
     (installer-root-partition-path))
+
+  (define (small-device? device)
+    (let ((length (device-length device))
+          (sector-size (device-sector-size device)))
+      (and (< (* length sector-size) %min-device-size)
+           (syslog "~a is not eligible because it is smaller than ~a.~%"
+                   (device-path device)
+                   (unit-format-custom-byte device
+                                            %min-device-size
+                                            UNIT-GIGABYTE)))))
 
   ;; Read partition table of device and compare each path to the one
   ;; we're booting from to determine if it is the installation
@@ -368,16 +383,22 @@ fail. See rereadpt function in wipefs.c of util-linux for an explanation."
   (define (installation-device? device)
     ;; When using CDROM based installation, the root partition path may be the
     ;; device path.
-    (or (string=? the-installer-root-partition-path
-                  (device-path device))
-        (let ((disk (disk-new device)))
-          (and disk
-               (any (lambda (partition)
-                      (string=? the-installer-root-partition-path
-                                (partition-get-path partition)))
-                    (disk-partitions disk))))))
+    (and (or (string=? the-installer-root-partition-path
+                       (device-path device))
+             (let ((disk (disk-new device)))
+               (and disk
+                    (any (lambda (partition)
+                           (string=? the-installer-root-partition-path
+                                     (partition-get-path partition)))
+                         (disk-partitions disk)))))
+         (syslog "~a is not eligible because it is the installation device.~%"
+                 (device-path device))))
 
-  (remove installation-device? (devices)))
+  (remove
+   (lambda (device)
+     (or (installation-device? device)
+         (small-device? device)))
+   (devices)))
 
 
 ;;
