@@ -1818,7 +1818,7 @@ using the dataset of topographical information collected by
 (define-public qmapshack
   (package
     (name "qmapshack")
-    (version "1.15.2")
+    (version "1.16.1")
     (source
      (origin
        (method git-fetch)
@@ -1827,7 +1827,7 @@ using the dataset of topographical information collected by
              (commit (string-append "V_" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1l1j2axf94pdqwirwwhwy3y6k8v1aix78ifqbv6j8sv131h2j7y7"))))
+        (base32 "184fqmsfzr3b333ssizjk6gvv7mncmygq8dj5r7rsvs5md26z2ys"))))
     (build-system qt-build-system)
     (native-inputs
      (list pkg-config qttools))
@@ -1840,7 +1840,7 @@ using the dataset of topographical information collected by
            qtlocation
            qtwebchannel
            qtwebengine
-           quazip-0
+           quazip
            routino
            sqlite ; See wrap phase
            zlib))
@@ -1855,12 +1855,7 @@ using the dataset of topographical information collected by
                 (string-append all "\nfind_package(Qt5Positioning REQUIRED)")))
              (substitute* "cmake/Modules/FindROUTINO.cmake"
                (("/usr/local")
-                (assoc-ref inputs "routino")))
-             ;; The following fixes are included as patches in the sources
-             ;; of QMapShack, but they are not applied by default, for
-             ;; some reason...
-             (invoke "patch" "-p1" "-i" "FindPROJ4.patch")
-             (invoke "patch" "-p1" "-i" "FindQuaZip5.patch"))))))
+                (assoc-ref inputs "routino"))))))))
     (synopsis "GPS mapping application")
     (description
      "QMapShack can be used to plan your next outdoor trip or to visualize and
