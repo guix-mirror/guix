@@ -11309,6 +11309,35 @@ signature of a file or buffer.")
 provides a collection of cache libraries in the same API interface.")
     (license license:bsd-3)))
 
+(define-public python-pylru
+  (package
+    (name "python-pylru")
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pylru" version))
+       (sha256
+        (base32 "15yj46307sw703vjfkgnr04dqvaicmfcj0hc6yrciildp55r6bs9"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "python" "test.py")))))))
+    (home-page "https://github.com/jlhutch/pylru")
+    (synopsis "Least recently used (LRU) cache implementation")
+    (description
+     "Pylru implements a true LRU cache along with several support classes.
+Pylru provides a cache class with a simple dict interface.  It also provides
+classes to wrap any object that has a dict interface with a cache.  Both
+write-through and write-back semantics are supported.  Pylru also provides
+classes to wrap functions in a similar way, including a function decorator.")
+    (license license:gpl2+)))
+
 (define-public python-legacy-api-wrap
   (package
     (name "python-legacy-api-wrap")
