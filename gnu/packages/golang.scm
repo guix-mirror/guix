@@ -62,6 +62,7 @@
   #:use-module (gnu packages admin)
   #:use-module (gnu packages base)
   #:use-module ((gnu packages bootstrap) #:select (glibc-dynamic-linker))
+  #:use-module (gnu packages check)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
@@ -9014,5 +9015,30 @@ pcredential store, Pass, Secret Service, KDE Wallet, Encrypted File.")
     (description
      "The official AWS SDK for the Go programming language.")
     (home-page "https://github.com/aws/aws-sdk-go")
+    (license license:asl2.0)))
+
+(define-public go-gopkg-in-ini
+  (package
+    (name "go-gopkg-in-ini")
+    (version "1.62.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://gopkg.in/ini.v1")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1dm9ydqyflasp5li22kb0w73s6kp2swii8naqfhnz64v171gmm5v"))))
+    (build-system go-build-system)
+    (native-inputs
+     (list go-github.com-smartystreets-goconvey))
+    (arguments
+     '(#:import-path "gopkg.in/ini.v1"
+       #:phases %standard-phases))
+    (synopsis "INI file read and write functionality in Go")
+    (description
+     "This package provides INI file read and write functionality in Go.")
+    (home-page "https://gopkg.in/ini.v1")
     (license license:asl2.0)))
 
