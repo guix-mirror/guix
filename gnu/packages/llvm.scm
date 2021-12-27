@@ -486,17 +486,17 @@ output), and Binutils.")
               ("libc-debug" ,glibc "debug")
               ("libc-static" ,glibc "static")))))
 
-(define-public llvm-12
+(define-public llvm-13
   (package
     (name "llvm")
-    (version "12.0.1")
+    (version "13.0.0")
     (source
      (origin
       (method url-fetch)
       (uri (llvm-uri "llvm" version))
       (sha256
        (base32
-        "1pzx9zrmd7r3481sbhwvkms68fwhffpp4mmz45dgrkjpyl2q96kx"))))
+        "081h2vw757j5xjg2441539j2vhfzzihrgxwza5pq5sj3hrq133a0"))))
     (build-system cmake-build-system)
     (outputs '("out" "opt-viewer"))
     (native-inputs
@@ -506,6 +506,97 @@ output), and Binutils.")
      (list libffi))
     (propagated-inputs
      (list zlib))                 ;to use output from llvm-config
+    (arguments
+     ;; TODO(core-updates): Unconditionally use quasiquote
+     `(#:configure-flags
+       ,#~(#$(if (%current-target-system)
+                 #~quasiquote
+                 #~quote)
+           ;; These options are required for cross-compiling LLVM according to
+           ;; https://llvm.org/docs/HowToCrossCompileLLVM.html.
+           (#$@(if (%current-target-system)
+                   #~(,(string-append "-DLLVM_TABLEGEN="
+                                      #+(file-append this-package
+                                                     "/bin/llvm-tblgen"))
+                      #$(string-append "-DLLVM_DEFAULT_TARGET_TRIPLE="
+                                       (%current-target-system))
+                      #$(string-append "-DLLVM_TARGET_ARCH="
+                                       (system->llvm-target))
+                      #$(string-append "-DLLVM_TARGETS_TO_BUILD="
+                                       (system->llvm-target)))
+                   #~())
+            "-DCMAKE_SKIP_BUILD_RPATH=FALSE"
+            "-DCMAKE_BUILD_WITH_INSTALL_RPATH=FALSE"
+            "-DBUILD_SHARED_LIBS:BOOL=TRUE"
+            "-DLLVM_ENABLE_FFI:BOOL=TRUE"
+            "-DLLVM_REQUIRES_RTTI=1" ; For some third-party utilities
+            "-DLLVM_INSTALL_UTILS=ON")) ; Needed for rustc.
+       ;; Don't use '-g' during the build, to save space.
+       #:build-type "Release"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-opt-viewer
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (opt-viewer-out (assoc-ref outputs "opt-viewer"))
+                    (opt-viewer-share-dir (string-append opt-viewer-out "/share"))
+                    (opt-viewer-dir (string-append opt-viewer-share-dir "/opt-viewer")))
+               (mkdir-p opt-viewer-share-dir)
+               (rename-file (string-append out "/share/opt-viewer")
+                            opt-viewer-dir)))))))
+    (home-page "https://www.llvm.org")
+    (synopsis "Optimizing compiler infrastructure")
+    (description
+     "LLVM is a compiler infrastructure designed for compile-time, link-time,
+runtime, and idle-time optimization of programs from arbitrary programming
+languages.  It currently supports compilation of C and C++ programs, using
+front-ends derived from GCC 4.0.1.  A new front-end for the C family of
+languages is in development.  The compiler infrastructure includes mirror sets
+of programming tools as well as libraries with equivalent functionality.")
+    (license license:asl2.0)))
+
+(define-public clang-runtime-13
+  (clang-runtime-from-llvm
+   llvm-13
+   "0gyvfhnypfmlf7hdgkiz2wh2lgk4nz26aqf361msjs3qdkbh4djc"))
+
+(define-public clang-13
+  (let ((template
+         (clang-from-llvm llvm-13 clang-runtime-13
+                          "0zp1p6syii5iajm8v2c207s80arv00yz5ckfwimn5dng0sxiqqax"
+                          #:patches '("clang-13.0-libc-search-path.patch")
+                          #:tools-extra
+                          (origin
+                            (method url-fetch)
+                            (uri (llvm-uri "clang-tools-extra"
+                                           (package-version llvm-13)))
+                            (sha256
+                             (base32
+                              "1mgalgdgxlxi08yxw7k6yh4iia1bpjmjgn7mrpqas8lbl9h612s2"))))))
+    (package
+      (inherit template)
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:phases phases '%standard-phases)
+          `(modify-phases ,phases
+             ;; This fails because the target to
+             ;; lib/clang/13.0.0/share/cfi_blacklist.txt is not found.
+             (delete 'validate-runpath))))))))
+
+(define-public clang-toolchain-13
+  (make-clang-toolchain clang-13))
+
+(define-public llvm-12
+  (package
+    (inherit llvm-13)
+    (version "12.0.1")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (llvm-uri "llvm" version))
+      (sha256
+       (base32
+        "1pzx9zrmd7r3481sbhwvkms68fwhffpp4mmz45dgrkjpyl2q96kx"))))
     (arguments
      ;; TODO(core-updates): Unconditionally use quasiquote
      `(#:configure-flags
@@ -553,17 +644,7 @@ output), and Binutils.")
                (mkdir-p opt-viewer-share-dir)
                (rename-file (string-append out "/share/opt-viewer")
                             opt-viewer-dir))
-             #t)))))
-    (home-page "https://www.llvm.org")
-    (synopsis "Optimizing compiler infrastructure")
-    (description
-     "LLVM is a compiler infrastructure designed for compile-time, link-time,
-runtime, and idle-time optimization of programs from arbitrary programming
-languages.  It currently supports compilation of C and C++ programs, using
-front-ends derived from GCC 4.0.1.  A new front-end for the C family of
-languages is in development.  The compiler infrastructure includes mirror sets
-of programming tools as well as libraries with equivalent functionality.")
-    (license license:asl2.0)))  ;with LLVM exceptions, see LICENSE.txt
+             #t)))))))
 
 (define-public clang-runtime-12
   (clang-runtime-from-llvm
