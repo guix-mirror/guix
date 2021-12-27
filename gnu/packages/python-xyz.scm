@@ -7197,6 +7197,27 @@ buffer transformation, compression, and decompression functions for use in the
 tifffile, czifile, and other scientific image input/output modules.")
     (license license:bsd-3)))
 
+(define-public python-executing
+  (package
+    (name "python-executing")
+    (version "0.8.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "executing" version))
+       (sha256
+        (base32 "08q0xh9fd8k41sqpp23q6fb9bf7yj4y2q6sv30pj36vvk8pg8fy2"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))                    ; TODO: tests require python-asttokens
+    (native-inputs
+     (list python-setuptools-scm python-toml))
+    (home-page "https://github.com/alexmojaki/executing")
+    (synopsis "Get information about what a Python frame is currently doing")
+    (description "This package lets you get information about what a frame is
+currently doing, particularly the AST node being executed.")
+    (license license:expat)))
+
 (define-public python-roifile
   (package
     (name "python-roifile")
