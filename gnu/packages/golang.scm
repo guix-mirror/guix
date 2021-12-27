@@ -8895,3 +8895,31 @@ be useful for other network applications.")
 encrypting JSON Web Tokens (JWT).  It relies only on the standard library.")
     (home-page "https://github.com/dvsekhvalnov/jose2go")
     (license license:expat)))
+
+(define-public go-github-com-go-libsecret
+  (let ((commit "a6f4afe4910cad8688db3e0e9b9ac92ad22d54e1")
+        (revision "0"))
+    (package
+      (name "go-github-com-go-libsecret")
+      (version "5.0.1")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/gsterjov/go-libsecret")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "09zaiadnll83vs22ib89agg7anj0blw5fywvmckxllsgif6ak6v7"))))
+      (build-system go-build-system)
+      (native-inputs
+       (list go-github-com-godbus-dbus))
+      (arguments
+       '(#:import-path "github.com/gsterjov/go-libsecret"
+         #:phases %standard-phases))
+      (synopsis "Manage secrets via the \"Secret Service\" DBus API")
+      (description
+       "This native Go library manages secrets via the freedesktop.org
+\"Secret Service\" DBus interface.")
+      (home-page "https://github.com/gsterjov/go-libsecret")
+      (license license:expat))))
