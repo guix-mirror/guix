@@ -5526,6 +5526,7 @@ service via the system message bus.")
      `(("glib:bin" ,glib "bin") ; for glib-mkenums
        ("gobject-introspection" ,gobject-introspection)
        ("pkg-config" ,pkg-config)
+       ("python" ,python)
        ("vala" ,vala)
        ("intltool" ,intltool)
        ("python-pygobject" ,python-pygobject)))
