@@ -35,6 +35,7 @@
 
 (define-module (gnu packages machine-learning)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix gexp)
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (guix download)
@@ -61,10 +62,16 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages dejagnu)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages gettext)
+  #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages gstreamer)
+  #:use-module (gnu packages guile)
+  #:use-module (gnu packages haskell-xyz)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages image-processing)
+  #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages llvm)
@@ -77,6 +84,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages protobuf)
+  #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-build)
   #:use-module (gnu packages python-check)
@@ -90,6 +98,7 @@
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages video)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
@@ -280,6 +289,84 @@ additional Python bindings implementing a wide range of types of @dfn{Hidden
 Markov Models} (HMM) and algorithms: discrete, continuous emissions, basic
 training, HMM clustering, HMM mixtures.")
       (license license:lgpl2.0+))))
+
+(define-public guile-aiscm
+  (package
+    (name "guile-aiscm")
+    (version "0.23.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/wedesoft/aiscm")
+                    (commit "c78b91edb7c17c6fbf3b294452f44e91d75e3c67")))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "09rdbcr8dinzijyx9h940ann91yjlbg0fangx365llhvy354n840"))))
+    (build-system gnu-build-system)
+    (arguments
+     (list
+      #:make-flags
+      #~(list (string-append "GUILE_CACHE=" #$output "/lib/guile/3.0/site-ccache")
+              (string-append "GUILE_EXT=" #$output "/lib/guile/3.0/extensions")
+              (string-append "GUILE_SITE=" #$output "/share/guile/site/3.0"))
+      #:phases
+      '(modify-phases %standard-phases
+         (add-after 'unpack 'use-llvm-config
+           (lambda _
+             (substitute* "m4/ax_llvmc.m4"
+               (("llvm-config-13") "llvm-config")
+               ;; For some reason this library is not on the link list.
+               (("(LLVM_LIBS=\"\\$\\(\\$ac_llvm_config_path --libs \\$1\\))\"" _ m)
+                (string-append m " -lLLVMMCJIT\"")))
+
+             ;; Because of this message:
+             ;; symbol lookup error: ./.libs/libguile-aiscm-core.so: undefined symbol: LLVMInitializeX86TargetInfo
+             ;; This probably needs to differ when building on architectures
+             ;; other than x86_64p
+             (substitute* "aiscm/Makefile.am"
+               (("LLVM_LIBS\\)") "LLVM_LIBS) \
+-lLLVMX86AsmParser -lLLVMX86CodeGen -lLLVMX86Desc -lLLVMX86Info"))))
+         ;; Use Clang instead of GCC.
+         (add-before 'configure 'prepare-build-environment
+           (lambda _
+             (setenv "AR" "llvm-ar")
+             (setenv "NM" "llvm-nm")
+             (setenv "CC" "clang")
+             (setenv "CXX" "clang++"))))))
+    (inputs
+     (list ffmpeg
+           freeglut
+           guile-3.0
+           imagemagick
+           libjpeg-turbo
+           libomp
+           libxi
+           libxmu
+           libxpm
+           libxt
+           libxv
+           mesa
+           mjpegtools
+           opencv        ;this is ignored at the moment
+           pandoc
+           protobuf
+           pulseaudio
+           tensorflow))  ;this is ignored at the moment
+    (native-inputs
+     (list clang-13
+           llvm-13
+           pkg-config
+           autoconf
+           automake
+           gettext-minimal
+           libtool
+           which))
+    (home-page "https://wedesoft.github.io/aiscm/")
+    (synopsis "Guile extension for numerical arrays and tensors")
+    (description "AIscm is a Guile extension for numerical arrays and tensors.
+Performance is achieved by using the LLVM JIT compiler.")
+    (license license:gpl3+)))
 
 (define-public mcl
   (package
