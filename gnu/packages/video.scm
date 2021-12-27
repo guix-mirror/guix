@@ -504,18 +504,20 @@ receiving MJPG streams.")
 (define-public mjpegtools
   (package
     (name "mjpegtools")
-    (version "2.1.0")
+    (version "2.2.1")
     (source
      (origin
        (method url-fetch)
        (uri
-        (string-append "https://sourceforge.net/projects/" name "/files/"
+        (string-append "https://sourceforge.net/projects/mjpeg/files/"
                        name "/" version "/" name "-" version ".tar.gz"))
        (sha256
-        (base32 "0kvhxr5hkabj9v7ah2rzkbirndfqdijd9hp8v52c1z6bxddf019w"))))
+        (base32 "16pl22ra3x2mkp8p3awslhlhj46b1nq9g89301gb0q4rgmnm705i"))))
     (build-system gnu-build-system)
     (inputs
-     (list gtk+-2 libdv libpng libquicktime sdl))
+     (list gtk+-2 libdv libjpeg-turbo libpng libquicktime sdl))
+    (native-inputs
+     (list pkg-config))
     (synopsis "Tools for handling MPEG")
     (description "Mjpeg tools is a suite of programs which support video capture,
 editing, playback, and compression to MPEG of MJPEG video.  Edit, play and
