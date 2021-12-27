@@ -4498,11 +4498,8 @@ editors, IDEs, etc.")
                (base32
                 "0rnm5c6m3abbm81jsfdas0y80z299ny54gr4syn4bfrms3s4g19l"))))
     (build-system meson-build-system)
-    (native-inputs
-     (modify-inputs (package-native-inputs vte)
-       (prepend gtk-doc/stable)))
     (arguments
-     `(#:configure-flags '("-Ddocs=true")))
+     (list #:configure-flags #~(list "-Ddocs=false")))
   (synopsis "Enhanced VTE terminal widget")
   (description
    "VTE is a library (libvte) implementing a terminal emulator widget for
