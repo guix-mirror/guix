@@ -32043,6 +32043,23 @@ implementation.")
     (description "This package provides a minimal non-blocking I/O layer.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-nb-0.1
+  (package
+    (inherit rust-nb-1)
+    (name "rust-nb")
+    (version "0.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "nb" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0vyh31pbwrg21f8hz1ipb9i20qwnfwx47gz92i9frdhk0pd327c0"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs (("rust-nb" ,rust-nb-1))))))
+
 (define-public rust-nb-connect-1
   (package
     (name "rust-nb-connect")
