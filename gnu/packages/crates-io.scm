@@ -23323,8 +23323,40 @@ their key-value pairs in a user controllable order.")
        (("rust-bytes" ,rust-bytes-0.4)
         ("rust-http" ,rust-http-0.1))))))
 
+(define-public rust-heapless-0.7
+  (package
+    (name "rust-heapless")
+    (version "0.7.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "heapless" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0lnrbzf1cpxg3n5s00lyi1gal2ajkqzsrw11arrc6rbn35j6qivy"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-atomic-polyfill" ,rust-atomic-polyfill-0.1)
+        ("rust-defmt" ,rust-defmt-0.3)
+        ("rust-hash32" ,rust-hash32-0.2)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-spin" ,rust-spin-0.9)
+        ("rust-stable-deref-trait" ,rust-stable-deref-trait-1)
+        ("rust-ufmt-write" ,rust-ufmt-write-0.1))
+       #:cargo-development-inputs
+       (("rust-scoped-threadpool" ,rust-scoped-threadpool-0.1)
+        ("rust-ufmt" ,rust-ufmt-0.1))))
+    (home-page "https://github.com/japaric/heapless")
+    (synopsis "@code{statice} friendly data structures")
+    (description "This package provides @code{static} friendly data structures
+that don't require dynamic memory allocation.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-heapless-0.6
   (package
+    (inherit rust-heapless-0.7)
     (name "rust-heapless")
     (version "0.6.1")
     (source
@@ -23334,7 +23366,6 @@ their key-value pairs in a user controllable order.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "08il083hcffis6km4is24kf2j0cnqs0bzz2b196l495zkk9d8jv3"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -23343,12 +23374,7 @@ their key-value pairs in a user controllable order.")
         ("rust-hash32" ,rust-hash32-0.1)
         ("rust-serde" ,rust-serde-1)
         ("rust-stable-deref-trait" ,rust-stable-deref-trait-1)
-        ("rust-ufmt-write" ,rust-ufmt-write-0.1))))
-    (home-page "https://github.com/japaric/heapless")
-    (synopsis "@code{statice} friendly data structures")
-    (description "This package provides @code{static} friendly data structures
-that don't require dynamic memory allocation.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-ufmt-write" ,rust-ufmt-write-0.1))))))
 
 (define-public rust-heapless-0.5
   (package
