@@ -1027,6 +1027,28 @@ between a web browser and web server.")
 (define-public python2-sockjs-tornado
   (package-with-python2 python-sockjs-tornado))
 
+(define-public python-flask-assets
+  (package
+    (name "python-flask-assets")
+    (version "2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "Flask-Assets" version))
+       (sha256
+        (base32 "1hmqldxc7zciksmcl35jx0wbyrrxc7vk2a57mmmd8i07whsymz8x"))))
+    (build-system python-build-system)
+    (arguments
+     ;; Tests require python-flask-script which is incompatible with Flask2.
+     `(#:tests? #f))
+    (propagated-inputs
+     (list python-flask python-webassets))
+    (home-page "https://github.com/miracle2k/flask-assets")
+    (synopsis "Asset management for Flask")
+    (description "This package integrates @code{webassets} with Flask, adding
+support for merging, minifying and compiling CSS and Javascript files.")
+    (license license:bsd-2)))
+
 (define-public python-flask-babel
   (package
     (name "python-flask-babel")
