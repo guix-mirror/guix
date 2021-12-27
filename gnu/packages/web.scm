@@ -54,6 +54,7 @@
 ;;; Copyright © 2021 Jack Hill <jackhill@jackhill.us>
 ;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2021 Denis 'GNUtoo' Carikli <GNUtoo@cyberdimension.org>
+;;; Copyright © 2021 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4621,20 +4622,24 @@ their web site.")
        (method url-fetch)
        (uri (pypi-uri "feedparser" version ".tar.gz"))
        (sha256
-        (base32
-         "0qcnkyjjfj5gg5rhd1j4zzlqx5h34bma18zwgj68q95b0l543q2w"))))
+        (base32 "0qcnkyjjfj5gg5rhd1j4zzlqx5h34bma18zwgj68q95b0l543q2w"))))
     (build-system python-build-system)
     (propagated-inputs
      (list python-sgmllib3k))
     (arguments
-     '(#:tests? #f))
-    (home-page
-     "https://github.com/kurtmckee/feedparser")
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "python" "tests/runtests.py")))))))
+    (home-page "https://github.com/kurtmckee/feedparser")
     (synopsis "Parse feeds in Python")
     (description
      "Universal feed parser which handles RSS 0.9x, RSS 1.0, RSS 2.0,
 CDF, Atom 0.3, and Atom 1.0 feeds.")
-    (license (list license:bsd-2 ; source code
+    (license (list license:bsd-2           ; source code
                    license:freebsd-doc)))) ; documentation
 
 (define-public python2-feedparser
