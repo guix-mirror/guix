@@ -64,8 +64,10 @@
   #:use-module ((gnu packages bootstrap) #:select (glibc-dynamic-linker))
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnupg)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages mp3)
+  #:use-module (gnu packages password-utils)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -8923,3 +8925,43 @@ encrypting JSON Web Tokens (JWT).  It relies only on the standard library.")
 \"Secret Service\" DBus interface.")
       (home-page "https://github.com/gsterjov/go-libsecret")
       (license license:expat))))
+
+(define-public go-github-com-99designs-go-keyring
+  (package
+    (name "go-github-com-99designs-go-keyring")
+    (version "1.1.6")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/99designs/keyring")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "08rcdqpxaa9n348q10fw40q4gxpjajkyrighykk71i7mxzwkcgwn"))))
+    (build-system go-build-system)
+    (native-inputs
+     (list go-golang-org-x-crypto
+           go-golang-org-x-sys
+           go-github-com-percent
+           go-github-com-mitchellh-go-homedir
+           go-github-com-dvsekhvalnov-jose2go
+           go-github-com-godbus-dbus
+           go-github-com-go-libsecret
+           password-store
+           gnupg))
+    (arguments
+     '(#:import-path "github.com/99designs/keyring"
+       #:tests? #f))                              ;XXX: tests require Vagrant
+    (synopsis "Go library providing a uniform interface for various secure
+credential stores")
+    (description
+     "Keyring provides utility functions for and a common interface to a range
+of secure credential storage services.  Originally developed as part of AWS
+Vault, a command line tool for securely managing AWS access from developer
+workstations.
+
+Currently Keyring supports the following backends: macOS/OSX Keychain, Windows
+pcredential store, Pass, Secret Service, KDE Wallet, Encrypted File.")
+    (home-page "https://github.com/99designs/keyring")
+    (license license:expat)))
