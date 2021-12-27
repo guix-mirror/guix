@@ -5962,6 +5962,25 @@ types.")
      `(#:cargo-development-inputs
        (("rust-rand" ,rust-rand-0.3))))))
 
+(define-public rust-bitfield-0.13
+  (package
+    (name "rust-bitfield")
+    (version "0.13.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "bitfield" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "06g7jb5r2b856vnhx76081fg90jvmy61kjqcfjysgmd5hclvvbs6"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/dzamlo/rust-bitfield")
+    (synopsis "Macros to generate bitfield-like struct")
+    (description
+     "This crate provides macros to generate bitfield-like struct.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-bitflags-1
   (package
     (name "rust-bitflags")
