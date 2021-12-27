@@ -61762,6 +61762,25 @@ a part of rav1e.")
     (description "This package provides anonymous structured values.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-vcell-0.1
+  (package
+    (name "rust-vcell")
+    (version "0.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "vcell" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "00n0ss2z3rh0ihig6d4w7xp72g58f7g1m6s5v4h3nc6jacdrqhvp"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/japaric/vcell")
+    (synopsis "Cell with volatile read / write operations")
+    (description "This package provides a Cell structure with volatile read /
+write operations.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-vcpkg-0.2
   (package
     (name "rust-vcpkg")
