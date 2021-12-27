@@ -9888,6 +9888,23 @@ entire set of Emoji codes as defined by the Unicode Consortium is supported in
 addition to a bunch of aliases.")
     (license license:bsd-3)))
 
+(define-public python-sarge
+  (package
+    (name "python-sarge")
+    (version "0.1.7.post1") ; post release only to correct errors in metadata
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "sarge" version))
+       (sha256
+        (base32 "0g9a53mfnp96877n1yq2jdk1mcv3xm0d93iisvgcn2prdsp45zv4"))))
+    (build-system python-build-system)
+    (home-page "https://docs.red-dove.com/sarge/")
+    (synopsis "Subprocess wrapper with command pipeline functionality")
+    (description "@code{sarge} is a wrapper for subprocess which provides
+command pipeline functionality.")
+    (license license:bsd-3)))
+
 (define-public python-pep8
   ;; This package has been renamed to ‘pycodestyle’ and is no longer updated.
   ;; Its last release (1.7.1) adds only a scary warning to this effect, breaking
