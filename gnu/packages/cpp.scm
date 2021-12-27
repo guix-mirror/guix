@@ -10,7 +10,7 @@
 ;;; Copyright © 2020 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
-;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020, 2021 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Alexandros Theodotou <alex@zrythm.org>
@@ -299,6 +299,30 @@ batches of numbers with the same arithmetic operators as for single values.
 It also provides accelerated implementation of common mathematical functions
 operating on batches.")
     (license license:bsd-3)))
+
+(define-public google-highway
+  (package
+    (name "google-highway")
+    (version "0.15.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/google/highway")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1yjwgnrpd9m99x2nqf6ld28zc6y9nlsxqg128bxxmja1gg4g4qdz"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags (list "-DHWY_SYSTEM_GTEST=on")))
+    (native-inputs
+     (list googletest))
+    (home-page "https://github.com/google/highway")
+    (synopsis "SIMD library with runtime dispatch")
+    (description "Highway is a performance-portable, length-agnostic C++
+library for SIMD (Single Instruction, Multiple Data) with runtime dispatch.")
+    (license license:asl2.0)))
 
 (define-public chaiscript
   (package
