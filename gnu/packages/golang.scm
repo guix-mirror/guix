@@ -8899,6 +8899,78 @@ encrypting JSON Web Tokens (JWT).  It relies only on the standard library.")
     (home-page "https://github.com/dvsekhvalnov/jose2go")
     (license license:expat)))
 
+(define-public aws-vault
+  (package
+    (name "aws-vault")
+    (version "6.3.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/99designs/aws-vault")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "02zw0kl77yr56mw1fbvr51c4mz2265c9al2nzvnqqzdx5aha7nf8"))))
+    (build-system go-build-system)
+    (native-inputs
+     (list go-github-com-99designs-go-keyring
+           go-github-com-androiddnsfix
+           go-github-com-percent
+           go-github-com-jmespath-go-jmespath
+           go-github-com-aws-aws-sdk-go
+           go-github-com-dvsekhvalnov-jose2go
+           go-github-com-godbus-dbus
+           go-github-com-go-libsecret
+           go-github-com-mitchellh-go-homedir
+           go-golang-org-x-crypto
+           go-golang-org-x-sys
+           go-gopkg-in-ini
+           go-github-com-skratchdot-open-golang
+           go-github-com-kingpin
+           go-github-com-alecthomas-template
+           go-github-com-alecthomas-units))
+    (arguments
+     `(#:import-path "github.com/99designs/aws-vault"
+       #:install-source? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'patch-version
+           (lambda _
+             (substitute* "src/github.com/99designs/aws-vault/main.go"
+               (("var Version = \"dev\"")
+                (string-append "var Version = \"v" ,version "\"")))))
+         (add-after 'build 'contrib
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (zsh-site-dir (string-append out "/share/zsh/site-functions"))
+                    (bash-completion-dir
+                     (string-append out "/share/bash-completion/completions"))
+                    (fish-completion-dir
+                     (string-append out "/share/fish/completions")))
+               (for-each mkdir-p
+                         `(,zsh-site-dir ,bash-completion-dir ,fish-completion-dir))
+               (with-directory-excursion
+                   "src/github.com/99designs/aws-vault/contrib/completions"
+                 (copy-file "zsh/aws-vault.zsh"
+                            (string-append zsh-site-dir "/_aws-vault"))
+                 (copy-file "bash/aws-vault.bash"
+                            (string-append bash-completion-dir "/aws-vault"))
+                 (copy-file "fish/aws-vault.fish"
+                            (string-append fish-completion-dir "/aws-vault.fish")))))))))
+    (synopsis
+     "Vault for securely storing and accessing AWS credentials")
+    (description
+     "AWS Vault is a tool to securely store and access @acronym{Amazon Web
+Services,AWS} credentials.
+
+AWS Vault stores IAM credentials in your operating system's secure keystore and
+then generates temporary credentials from those to expose to your shell and
+applications.  It's designed to be complementary to the AWS CLI tools, and is
+aware of your profiles and configuration in ~/.aws/config.")
+    (home-page "https://github.com/99designs/aws-vault")
+    (license license:expat)))
+
 (define-public go-github-com-go-libsecret
   (let ((commit "a6f4afe4910cad8688db3e0e9b9ac92ad22d54e1")
         (revision "0"))
