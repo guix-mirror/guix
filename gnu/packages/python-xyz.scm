@@ -769,21 +769,24 @@ implementation for the Telegram Bot API.")
 (define-public python-colorlog
   (package
     (name "python-colorlog")
-    (version "4.1.0")
-    (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "colorlog" version))
-              (sha256
-               (base32
-                "1lpk8zmfv8vz090h5d0hzb4n39wgasxdd3x3bpn3v1x1n9dfzaih"))))
+    (version "6.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "colorlog" version))
+       (sha256
+        (base32 "1s7x0v872h8aks8xp01wmv6hzisxqjrh1svbbcycir0980h76krl"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "python" "-m" "pytest")))))))
     (native-inputs
      (list python-pytest))
-    (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (replace 'check
-                    (lambda _
-                      (invoke "pytest" "-p" "no:logging"))))))
     (home-page "https://github.com/borntyping/python-colorlog")
     (synopsis "Log formatting with colors for python")
     (description "The @code{colorlog.ColoredFormatter} is a formatter for use
