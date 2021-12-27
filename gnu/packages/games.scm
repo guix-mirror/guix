@@ -196,6 +196,7 @@
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages unicode)
   #:use-module (gnu packages upnp)
   #:use-module (gnu packages video)
   #:use-module (gnu packages vulkan)
@@ -7902,7 +7903,7 @@ ncurses for text display.")
 (define-public naev
   (package
     (name "naev")
-    (version "0.8.2")
+    (version "0.9.0")
     (source
      (origin
        (method git-fetch)
@@ -7911,28 +7912,40 @@ ncurses for text display.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "02rk2fv2nhx5xsi0cariisamab3dpncwps4q3i3ki0y27xpwxzfx"))))
+        (base32 "0m4bny6wcxmqavi8sf87yjg4mamhyixzz4gb9m97xwkn6ga5669b"))))
     (build-system meson-build-system)
     (arguments
      ;; XXX: Do not add debugging symbols, which cause the build to fail.
      `(#:configure-flags (list "--buildtype=release")
-       #:tests? #f))          ;sole test fails with a missing "/dev/dri" error
+       #:tests? #f          ;sole test fails with a missing "/dev/dri" error
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'copy-artwork
+           (lambda* (#:key inputs #:allow-other-keys)
+             (copy-recursively (assoc-ref inputs "naev-artwork")
+                               "artwork")))
+         (add-before 'configure 'find-msgfmt
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "utils/build/gen_gettext_stats.py"
+               (("msgfmt")
+                (search-input-file inputs "/bin/msgfmt"))))))))
     (native-inputs
-     `(("gettext" ,gettext-minimal)
-       ("pkg-config" ,pkg-config)))
+     (list gettext-minimal naev-artwork pkg-config))
     (inputs
-     `(("freetype" ,freetype)
-       ("glpk" ,glpk)
-       ("libpng" ,libpng)
-       ("libvorbis" ,libvorbis)
-       ("libwebp" ,libwebp)
-       ("libxml2" ,libxml2)
-       ("luajit" ,luajit)
-       ("openal" ,openal)
-       ("openblas" ,openblas)
-       ("physfs" ,physfs)
-       ("sdl" ,(sdl-union (list sdl2 sdl2-image sdl2-mixer)))
-       ("suitesparse" ,suitesparse)))
+     (list freetype
+           glpk
+           libpng
+           libunibreak
+           libvorbis
+           libwebp
+           libxml2
+           luajit
+           openal
+           openblas
+           physfs
+           python-pyyaml
+           (sdl-union (list sdl2 sdl2-image sdl2-mixer))
+           suitesparse))
     (home-page "https://naev.org/")
     (synopsis "Game about space exploration, trade and combat")
     (description
@@ -7949,14 +7962,7 @@ of lore accompanying everything from planets to equipment.")
                    license:expat        ;edtaa3func.c
                    license:bsd-2        ;distance_field.c
                    license:bsd-3        ;perlin.c
-                   ;; Assets.
-                   license:silofl1.1
-                   license:gpl2+
-                   license:cc0
-                   license:cc-by3.0
-                   license:cc-by-sa3.0
-                   license:cc-by4.0
-                   license:cc-by-sa4.0))))
+                   ))))
 
 (define-public naev-artwork
   (let ((version "0.9.0")
