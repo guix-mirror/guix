@@ -7958,6 +7958,34 @@ of lore accompanying everything from planets to equipment.")
                    license:cc-by4.0
                    license:cc-by-sa4.0))))
 
+(define-public naev-artwork
+  (let ((version "0.9.0")
+        (commit "7f38a772ef2618f199ea68ecbd9f5c97e357fe36"))
+    (package
+      (name "naev-artwork")
+      (version (git-version version "0" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/naev/naev-artwork-production")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1g3dk3372k6g7k9andkip0vk146kwy43x98xwzzqdry1pa5m56v0"))))
+      (build-system copy-build-system)
+    (home-page "https://naev.org/")
+    (synopsis "Game about space exploration, trade and combat — data files")
+    (description
+     "This package contains graphics and sound files for Naev.")
+    (license (list license:silofl1.1
+                   license:gpl2+
+                   license:cc0
+                   license:cc-by3.0
+                   license:cc-by-sa3.0
+                   license:cc-by4.0
+                   license:cc-by-sa4.0)))))
+
 (define-public frotz-dumb-terminal
   (package
     (name "frotz-dumb-terminal")
