@@ -908,14 +908,14 @@ compression library.")
 (define-public guile-lzma
   (package
     (name "guile-lzma")
-    (version "0.1.0")
+    (version "0.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://files.ngyro.com/guile-lzma/guile-lzma-"
                            version ".tar.gz"))
        (sha256
-        (base32 "1f7pd3frckpwsi5p0bln4wf8xy41x0szlpy273phjdmjacw69hzb"))))
+        (base32 "0pnfzk92p9y5ymjq6rq619b9fy0dflv56jwg00wlvvbjssb6i1ib"))))
     (build-system gnu-build-system)
     (native-inputs
      (list autoconf automake guile-3.0 guile-bytestructures pkg-config))
