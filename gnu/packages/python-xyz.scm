@@ -23424,34 +23424,40 @@ enumeration library in Python.")
 (define-public python-zeroconf
   (package
     (name "python-zeroconf")
-    (version "0.28.8")
+    (version "0.38.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (pypi-uri "zeroconf" version))
+       (method git-fetch)               ; no tests in PyPI release
+       (uri (git-reference
+             (url "https://github.com/jstasiak/python-zeroconf")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0narq8haa3b375vfblbyil77n8bw0wxqnanl91pl0wwwm884mqjb"))))
+        (base32 "1p1a0ywlg5sq0ilcphmz9h4kayscz0q1lyfk57j7mwxyx4gl9cpi"))))
     (build-system python-build-system)
-    (native-inputs
-     (list python-nose))
-    (propagated-inputs
-     (list python-ifaddr))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _ ;; Networking isn't available for these tests.
-             (invoke "nosetests" "-v"
-                     "--exclude" "test_integration_with_listener_ipv6"
-                     "--exclude" "test_launch_and_close_v6_only"
-                     "--exclude" "test_launch_and_close_v4_v6"
-                     "--exclude" "test_launch_and_close"))))))
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "python" "-m" "pytest" "-k"
+                       (string-append
+                        ;; Networking isn't available for these tests.
+                        "not test_integration_with_listener_ipv6"
+                        " and not test_launch_and_close_v4_v6"
+                        " and not test_launch_and_close_context_manager"
+                        " and not test_launch_and_close"
+                        " and not test_close_multiple_times"))))))))
+    (native-inputs
+     (list python-pytest))
+    (propagated-inputs
+     (list python-ifaddr))
     (home-page "https://github.com/jstasiak/python-zeroconf")
     (synopsis "Pure Python mDNS service discovery")
-    (description
-     "Pure Python multicast DNS (mDNS) service discovery library (Bonjour/Avahi
-compatible).")
+    (description "Pure Python multicast DNS (mDNS) service discovery library
+(Bonjour/Avahi compatible).")
     (license license:lgpl2.1+)))
 
 (define-public python2-zeroconf
