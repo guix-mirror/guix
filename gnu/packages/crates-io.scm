@@ -62062,6 +62062,27 @@ version numbers.")
      "The uninhabited void type for use in statically impossible cases.")
     (license license:expat)))
 
+(define-public rust-volatile-register-0.2
+  (package
+    (name "rust-volatile-register")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "volatile-register" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1dh8x7z1ywjzyziz3jyjj39imp37s05c46whf2pkyablkngz3s4y"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs (("rust-vcell" ,rust-vcell-0.1))))
+    (home-page "https://github.com/japaric/volatile-register")
+    (synopsis "Volatile access to memory mapped hardware registers")
+    (description "This package provides volatile access to memory mapped
+hardware registers.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-vswhom-0.1
   (package
     (name "rust-vswhom")
