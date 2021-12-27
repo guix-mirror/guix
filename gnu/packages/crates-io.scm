@@ -22733,8 +22733,30 @@ the template engine that renders the official Rust website")
 already-hashed or hash-like data.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-hash32-0.2
+  (package
+    (name "rust-hash32")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "hash32" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0rrbv5pc5b1vax6j6hk7zvlrpw0h6aybshxy9vbpgsrgfrc5zhxh"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-byteorder" ,rust-byteorder-1))))
+    (home-page "https://github.com/japaric/hash32")
+    (synopsis "32-bit hashing machinery")
+    (description "This package provides 32-bit hashing machinery.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-hash32-0.1
   (package
+    (inherit rust-hash32-0.2)
     (name "rust-hash32")
     (version "0.1.1")
     (source
@@ -22743,18 +22765,12 @@ already-hashed or hash-like data.")
        (uri (crate-uri "hash32" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "1k7lv7hsbzv14pz90cxay6v7avh6d6kcrra0rsc45b33dvw1l16l"))))
-    (build-system cargo-build-system)
+        (base32 "1k7lv7hsbzv14pz90cxay6v7avh6d6kcrra0rsc45b33dvw1l16l"))))
     (arguments
      `(#:cargo-inputs
        (("rust-byteorder" ,rust-byteorder-1))
        #:cargo-development-inputs
-       (("rust-hash32-derive" ,rust-hash32-derive-0.1))))
-    (home-page "https://github.com/japaric/hash32")
-    (synopsis "32-bit hashing machinery")
-    (description "This package provides 32-bit hashing machinery.")
-    (license (list license:expat license:asl2.0))))
+       (("rust-hash32-derive" ,rust-hash32-derive-0.1))))))
 
 (define-public rust-hash32-derive-0.1
   (package
