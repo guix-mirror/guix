@@ -32025,6 +32025,24 @@ implementation.")
      "This package provides a crate to perform natural ordering for Rust.")
     (license license:expat)))
 
+(define-public rust-nb-1
+  (package
+    (name "rust-nb")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "nb" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1blc9143cqh3cn2imr050qczbnfrfdl10xxnfdggamlybnn3fv2l"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/rust-embedded/nb")
+    (synopsis "Minimal non-blocking I/O layer")
+    (description "This package provides a minimal non-blocking I/O layer.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-nb-connect-1
   (package
     (name "rust-nb-connect")
