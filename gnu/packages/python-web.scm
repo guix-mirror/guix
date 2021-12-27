@@ -2413,18 +2413,27 @@ verification of the SSL peer.")
 (define-public python-websocket-client
   (package
     (name "python-websocket-client")
-    (version "0.54.0")
+    (version "0.59.0")                  ; tests hang on newer versions
     (source
      (origin
        (method url-fetch)
-       (uri (pypi-uri "websocket_client" version))
+       (uri (pypi-uri "websocket-client" version))
        (sha256
-        (base32
-         "0j88zmikaypf38lvpkf4aaxrjp9j07dmy5ghj7kli0fv3p4n45g5"))))
+        (base32 "0p0cz2mdissq7iw1n7jrmsfir0jfmgs1dvnpnrx477ffx9hbsxnk"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'skip-network-test
+           (lambda _
+             ;; This test requires networking.
+             (substitute* "websocket/tests/test_http.py"
+               (("def testConnect") "def _testConnect")))))))
+    (native-inputs
+     (list python-pysocks))
     (propagated-inputs
      (list python-six))
-    (home-page "https://github.com/liris/websocket-client")
+    (home-page "https://github.com/websocket-client/websocket-client")
     (synopsis "WebSocket client for Python")
     (description "The Websocket-client module provides the low level APIs for
 WebSocket usage in Python programs.")
