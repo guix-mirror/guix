@@ -9905,6 +9905,33 @@ addition to a bunch of aliases.")
 command pipeline functionality.")
     (license license:bsd-3)))
 
+(define-public python-zipstream-new
+  (package
+    (name "python-zipstream-new")
+    (version "1.1.8")
+    (source
+     (origin
+       (method git-fetch)               ; no tests in PyPI release
+       (uri (git-reference
+             (url "https://github.com/arjan-s/python-zipstream")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "14vhgg8mcjqi8cpzrw8qzbij2fr2a63l2a8fhil21k2r8vzv92cv"))))
+    (build-system python-build-system)
+    (native-inputs
+     (list python-nose))
+    (home-page "https://github.com/arjan-s/python-zipstream")
+    (synopsis "Zipfile generator that takes input files as well as streams")
+    (description "@code{zipstream.py} is a zip archive generator based on
+@code{zipfile.py}.  It was created to generate a zip file generator for
+streaming.  This is beneficial for when you want to provide a downloadable
+archive of a large collection of regular files, which would be infeasible
+to generate the archive prior to downloading or of a very large file that
+you do not want to store entirely on disk or on memory.")
+    ;; No copyright headers in the source.  The LICENSE file indicates GPL3.
+    (license license:gpl3)))
+
 (define-public python-pep8
   ;; This package has been renamed to ‘pycodestyle’ and is no longer updated.
   ;; Its last release (1.7.1) adds only a scary warning to this effect, breaking
