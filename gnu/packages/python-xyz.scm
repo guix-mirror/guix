@@ -19952,14 +19952,13 @@ design and layout.")
 (define-public python-pkginfo
   (package
     (name "python-pkginfo")
-    (version "1.7.0")
+    (version "1.8.2")
     (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "pkginfo" version))
-        (sha256
-          (base32
-            "1d1xn1xmfvz0jr3pj8irdwnwby3r13g0r2gwklr1q5y68p5p16h2"))))
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pkginfo" version))
+       (sha256
+        (base32 "1zrbn2gblb1q1rx0jlbd0vc9h1dm1bj0760p40ff5qjhcw5hsbjl"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -19968,14 +19967,13 @@ design and layout.")
            (lambda _
              (substitute* "pkginfo/tests/test_installed.py"
                (("test_ctor_w_package_no_PKG_INFO")
-                "_test_ctor_w_package_no_PKG_INFO"))
-             #t)))))
-    (home-page
-      "https://code.launchpad.net/~tseaver/pkginfo/trunk")
-    (synopsis
-      "Query metadatdata from sdists, bdists, and installed packages")
+                "_test_ctor_w_package_no_PKG_INFO")))))))
+    (native-inputs
+     (list python-wheel))
+    (home-page "https://code.launchpad.net/~tseaver/pkginfo/trunk")
+    (synopsis "Query metadatdata from sdists, bdists, and installed packages")
     (description
-      "API to query the distutils metadata written in @file{PKG-INFO} inside a
+     "API to query the distutils metadata written in @file{PKG-INFO} inside a
 source distriubtion (an sdist) or a binary distribution (e.g., created by
 running bdist_egg).  It can also query the EGG-INFO directory of an installed
 distribution, and the *.egg-info stored in a \"development checkout\" (e.g,
