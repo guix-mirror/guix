@@ -43545,6 +43545,52 @@ functionality as retain but gives mutable borrow to the predicate.")
         ;; build dependencies
         ("rust-cc" ,rust-cc-1))))))
 
+(define-public rust-riscv-0.7
+  (package
+    (name "rust-riscv")
+    (version "0.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "riscv" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1fla10m2qkcf7zqw91rrribpdaavkv6qbbzjz9q2n09igbfwq1v9"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bare-metal" ,rust-bare-metal-1)
+        ("rust-bit-field" ,rust-bit-field-0.10)
+        ("rust-riscv-target" ,rust-riscv-target-0.1))))
+    (home-page "https://github.com/rust-embedded/riscv")
+    (synopsis "Low level access to RISC-V processors")
+    (description "This crate provides low level access to RISC-V processors.")
+    (license license:isc)))
+
+(define-public rust-riscv-target-0.1
+  (package
+    (name "rust-riscv-target")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "riscv-target" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "08pj6f1sbddd6idjn8c1wv121bzikw9qvzhcl9icz822va697al8"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-regex" ,rust-regex-1))))
+    (home-page "https://github.com/ilya-epifanov/riscv-target")
+    (synopsis "RISC-V target string manipulation utilities")
+    (description "This package provides RISC-V target string manipulation
+utilities.")
+    (license license:isc)))
+
 (define-public rust-rle-decode-fast-1
   (package
     (name "rust-rle-decode-fast")
