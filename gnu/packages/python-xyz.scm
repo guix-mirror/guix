@@ -9953,6 +9953,69 @@ you do not want to store entirely on disk or on memory.")
     ;; No copyright headers in the source.  The LICENSE file indicates GPL3.
     (license license:gpl3)))
 
+(define-public python-sentry-sdk
+  (package
+    (name "python-sentry-sdk")
+    (version "1.5.1")
+    (source
+     (origin
+       (method git-fetch)               ; no tests in PyPI release
+       (uri (git-reference
+             (url "https://github.com/getsentry/sentry-python")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "128bm136l5zprr3sqqb8j3d6k5i1fhz853mzvh3w8g0w1dw763mx"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "python" "-m" "pytest" "-k"
+                       (string-append
+                        ;; This test requires extra dependencies.
+                        "not test_auto_enabling_integrations"
+                        "_catches_import_error"
+                        ;; Tests below run pip command.
+                        " and not test_unhandled_exception"
+                        " and not test_timeout_error"
+                        " and not test_performance_no_error"
+                        " and not test_performance_error"
+                        " and not test_traces_sampler_gets_correct"
+                        "_values_in_sampling_context"
+                        " and not test_handled_exception"
+                        ;; Tests below require network.
+                        " and not test_crumb_capture"
+                        " and not test_crumb_capture"
+                        " and not test_crumb_capture_hint"
+                        " and not test_httplib_misuse"
+                        ;; Fails with IndexError.
+                        " and not test_session_mode_defaults_to"
+                        "_request_mode_in_wsgi_handler"))))))))
+    (native-inputs
+     (list python-django
+           python-executing
+           python-gevent
+           python-jsonschema
+           python-mock
+           python-pyrsistent
+           python-pytest
+           python-pytest-cov
+           python-pytest-django
+           python-pytest-forked
+           python-pytest-localserver
+           python-werkzeug))
+    (propagated-inputs
+     (list python-certifi python-urllib3))
+    (home-page "https://github.com/getsentry/sentry-python")
+    (synopsis "Python SDK for Sentry")
+    (description "This package provides a Python SDK for the Sentry
+application monitoring and error tracking software.")
+    (license license:bsd-2)))
+
 (define-public python-pep8
   ;; This package has been renamed to ‘pycodestyle’ and is no longer updated.
   ;; Its last release (1.7.1) adds only a scary warning to this effect, breaking
