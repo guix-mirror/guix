@@ -11984,6 +11984,30 @@ criterion.")
         ("rust-num-complex" ,rust-num-complex-0.2)
         ("rust-rand" ,rust-rand-0.4))))))
 
+(define-public rust-critical-section-0.2
+  (package
+    (name "rust-critical-section")
+    (version "0.2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "critical-section" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0w1xl04q3qn3c67wnbiz6d5dsaqgdimyyxwpcydsvvgnlsjr3q81"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bare-metal" ,rust-bare-metal-1)
+        ("rust-cfg-if" ,rust-cfg-if-1)
+        ("rust-cortex-m" ,rust-cortex-m-0.7)
+        ("rust-riscv" ,rust-riscv-0.7))))
+    (home-page "https://github.com/embassy-rs/critical-section")
+    (synopsis "Critical section abstraction")
+    (description "This package provides a critical section abstraction.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-crossbeam-0.8
   (package
     (name "rust-crossbeam")
