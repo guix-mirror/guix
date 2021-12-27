@@ -8965,3 +8965,29 @@ Currently Keyring supports the following backends: macOS/OSX Keychain, Windows
 pcredential store, Pass, Secret Service, KDE Wallet, Encrypted File.")
     (home-page "https://github.com/99designs/keyring")
     (license license:expat)))
+
+(define-public go-github-com-androiddnsfix
+  (let ((commit "ff02804463540c36e3a148dcf4b009d003cf2a31")
+        (revision "0"))
+    (package
+      (name "go-github-com-androiddnsfix")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/mtibben/androiddnsfix")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1pcbjs793kd0yg3dcp79agfxm7xm3sldx2r7v66ipzpcq0j2npi2"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/mtibben/androiddnsfix"
+         #:phases %standard-phases))
+      (synopsis "Hack to get around the issues building on android")
+      (description
+       "Hack around the issues in https://github.com/golang/go/issues/8877.")
+      (home-page "https://github.com/mtibben/androiddnsfix")
+      (license license:expat))))
+
