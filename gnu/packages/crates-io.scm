@@ -13119,6 +13119,31 @@ reallocations.")
        #:cargo-development-inputs
        (("rust-regex" ,rust-regex-0.1))))))
 
+(define-public rust-cortex-m-0.7
+  (package
+    (name "rust-cortex-m")
+    (version "0.7.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "cortex-m" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1cw3nyip3s81r6qaa3azrb0654jxw465j5fm126fqja48bpikj9a"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bare-metal" ,rust-bare-metal-0.2)
+        ("rust-bitfield" ,rust-bitfield-0.13)
+        ("rust-embedded-hal" ,rust-embedded-hal-0.2)
+        ("rust-volatile-register" ,rust-volatile-register-0.2))))
+    (home-page "https://github.com/rust-embedded/cortex-m")
+    (synopsis "Low level access to Cortex-M processors")
+    (description "This package provides low level access to Cortex-M
+processors.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-csv-core-0.1
   (package
     (name "rust-csv-core")
