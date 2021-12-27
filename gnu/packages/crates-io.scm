@@ -14370,6 +14370,74 @@ written in rust.")
          (base32
           "17giv0n0n1r64z0dahfvkjy3ys517jxyhs8sd9lmgvcljpjyryxa"))))))
 
+(define-public rust-defmt-0.3
+  (package
+    (name "rust-defmt")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "defmt" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "181l5wv6sihrjwjvk97wznmg2iaz3w1ljsx2dfzjssmhsbs5vyv2"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-defmt-macros" ,rust-defmt-macros-0.3))))
+    (home-page "https://knurling.ferrous-systems.com/")
+    (synopsis "Logging framework for resource-constrained devices")
+    (description
+     "This package provides an efficient logging framework that targets
+resource-constrained devices, like micro-controllers.")
+    (license (list license:expat license:asl2.0))))
+
+(define-public rust-defmt-macros-0.3
+  (package
+    (name "rust-defmt-macros")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "defmt-macros" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0rx25gp12c6j3krwjjsknigd803ycz1rpxh5jhr6ny51cfvrd0q9"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-defmt-parser" ,rust-defmt-parser-0.3)
+        ("rust-proc-macro-error" ,rust-proc-macro-error-1)
+        ("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1))))
+    (home-page "https://github.com/knurling-rs/defmt")
+    (synopsis "Macros for rust-defmt")
+    (description "This package provides macros for rust-defmt crate")
+    (license (list license:expat license:asl2.0))))
+
+(define-public rust-defmt-parser-0.3
+  (package
+    (name "rust-defmt-parser")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "defmt-parser" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1is90zrcifdky4rpra450779c3jf3bc2xwcqbj9fy6m5w48f074d"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/knurling-rs/defmt")
+    (synopsis "Parsing library for defmt format strings")
+    (description "This package is a parsing library for defmt format
+strings.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-delta-e-0.2
   (package
     (name "rust-delta-e")
