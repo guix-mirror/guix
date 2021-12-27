@@ -51242,25 +51242,41 @@ track of where each new file and line starts.")
      "An RSpec inspired minimal testing framework for Rust.")
     (license license:expat)))
 
-(define-public rust-spin-0.5
+(define-public rust-spin-0.9
   (package
     (name "rust-spin")
-    (version "0.5.2")
+    (version "0.9.2")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "spin" version))
-        (file-name (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "0b84m6dbzrwf2kxylnw82d3dr8w06av7rfkr8s85fb5f43rwyqvf"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "spin" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1rch0my17z66fam7hbynvrcs6jk63b08jv4s04mhdksv1jz584ji"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-lock-api" ,rust-lock-api-0.4))))
     (home-page "https://github.com/mvdnes/spin-rs")
     (synopsis "Synchronization primitives based on spinning")
     (description "This crate provides synchronization primitives based on
 spinning.  They may contain data, are usable without @code{std},and static
 initializers are available.")
     (license license:expat)))
+
+(define-public rust-spin-0.5
+  (package
+    (inherit rust-spin-0.9)
+    (name "rust-spin")
+    (version "0.5.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "spin" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0b84m6dbzrwf2kxylnw82d3dr8w06av7rfkr8s85fb5f43rwyqvf"))))))
 
 (define-public rust-spin-0.4
   (package
