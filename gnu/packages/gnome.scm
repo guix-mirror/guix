@@ -9168,6 +9168,7 @@ files.")
     (native-inputs
      `(("intltool" ,intltool)
        ("pkg-config" ,pkg-config)
+       ("python" ,python)
        ("desktop-file-utils" ,desktop-file-utils) ; for update-desktop-database
        ("gtk+-bin" ,gtk+ "bin") ; for gtk-update-icon-cache
        ("itstool" ,itstool)
