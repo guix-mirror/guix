@@ -8846,3 +8846,26 @@ written to test improvements to / replace the routing logic in
 @url{https://github.com/yggdrasil-network/yggdrasil-go,Yggdrasil}, but it may
 be useful for other network applications.")
     (license license:mpl2.0)))
+
+(define-public go-github-com-percent
+  (package
+    (name "go-github-com-percent")
+    (version "0.2.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/mtibben/percent")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1iqivw8pigj259rj5yifibbvic70f9hb7k24a4sa967s4fj6agb6"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/mtibben/percent"
+       #:phases %standard-phases))
+    (synopsis "Package percent escapes strings using percent-encoding")
+    (description
+     "Package percent escapes strings using percent-encoding.")
+    (home-page "https://github.com/mtibben/percent")
+    (license license:expat)))
