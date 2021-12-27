@@ -776,6 +776,35 @@ support and @code{subtests} fixture.")
        "Plugin for managing VCR.py cassettes.")
       (license license:expat))))
 
+(define-public python-pytest-doctest-custom
+  (package
+    (name "python-pytest-doctest-custom")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-doctest-custom" version))
+       (sha256
+        (base32 "0kxkdd6q9c3h31kc88lbyfll4c45b0zjd24cbr4c083fcvcy7lip"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "python" "test_pytest_doctest_custom.py")))))))
+    (native-inputs
+     (list python-pytest))
+    (home-page "https://github.com/danilobellini/pytest-doctest-custom")
+    (synopsis
+     "Pytest plugin to customize string representations of doctest results")
+    (description "This package provides a Pytest plugin for customizing string
+representations of doctest results.  It can change the display hook used by
+doctest to render the object representations.")
+    (license license:expat)))
+
 (define-public python-pytest-checkdocs
   (package
     (name "python-pytest-checkdocs")
