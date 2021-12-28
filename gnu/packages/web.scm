@@ -6490,6 +6490,92 @@ Rust with GTK.  It currently supports the Gemini, Gopher and Finger
 protocols.")
     (license license:expat)))
 
+(define-public clearsilver
+  (package
+    (name "clearsilver")
+    (version "0.11.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/blong42/clearsilver/")
+             (commit "fbe4926ba9a756163fd1539ff6eee3522cf1f5d8")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "02ad43gmqwy7wmh71mh5pk6gl1lax76sjnf42sknj0ijdga170kl"))))
+    (build-system gnu-build-system)
+    (arguments
+     (list
+      #:tests? #false ;there is not test target and tests are run during build
+      #:configure-flags
+      '(list "--disable-java" "--disable-python")
+      #:phases
+      '(modify-phases %standard-phases
+         (add-after 'unpack 'prepare-streamhtmlparser
+           (lambda* (#:key inputs #:allow-other-keys)
+             (copy-recursively (assoc-ref inputs "streamhtmlparser")
+                               (string-append (getcwd) "/streamhtmlparser"))
+             (for-each make-file-writable
+                       (find-files "streamhtmlparser" "."
+                                   #:directories? #t))))
+         (add-after 'unpack 'pre-bootstrap
+           (lambda _
+             ;; We don't need the Java stuff
+             (substitute* "configure.in"
+               (("AC_JNI_INCLUDE_DIR") ""))
+
+             ;; This script will call /bin/sh, so it's easier to just
+             ;; bootstrap manually.
+             (delete-file "autogen.sh")
+             (substitute* "rules.mk.in"
+               (("@PTHREAD_LIBS@") "-lpthread")
+               (("@PTHREAD_CFLAGS@") "")
+               (("@PTHREAD_CC@") "gcc"))
+
+             ;; The GNU variadic macros actually work, whereas the C99
+             ;; implementation fails to build.
+             (substitute* "util/neo_misc.h"
+               (("#define USE_C99_VARARG_MACROS") "#define USE_GNUC_VARARG_MACROS"))
+
+             (setenv "CFLAGS" "-fPIC")
+
+             ;; This directory is created some time during the build, but the
+             ;; early libtool processes assume the directory exists.  When
+             ;; they are run first they copy the libraries themselves to the
+             ;; file "libs" instead of moving them into the directory.
+             (mkdir-p "libs")))
+         (add-after 'build 'build-documentation
+           (lambda _ (invoke "make" "man")))
+         (add-after 'install 'install-streamhtmlparser
+           (lambda* (#:key make-flags parallel-build? #:allow-other-keys)
+             (with-directory-excursion "streamhtmlparser"
+               (apply invoke "make" "-j" (if parallel-build?
+                                             (number->string (parallel-job-count))
+                                             "1")
+                      "install" make-flags)))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("python" ,python-2)
+       ("streamhtmlparser"
+        ,(let ((commit "551109ac02a31957a0e776416774c7b515b4b7c7"))
+           (origin
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/google/streamhtmlparser/")
+                   (commit commit)))
+             (file-name (git-file-name "streamhtmlparser" commit))
+             (sha256
+              (base32
+               "0bmrdakk930q3m8fmq0xcy7n7cdvlk1xma4z9204919hvb1gk9md")))))))
+    (home-page "https://github.com/blong42/clearsilver")
+    (synopsis "CGI kit and HTML templating system")
+    (description
+     "This package includes Clearsilver, the CGI kit and HTML templating
+system.")
+    (license license:bsd-3)))
+
 (define-public python-py-ubjson
   (package
     (name "python-py-ubjson")
