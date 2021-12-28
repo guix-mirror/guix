@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2021 Taiju HIGASHI <higashi@taiju.info>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,6 +25,7 @@
   #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (gnu packages)
   #:use-module (gnu packages check)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
@@ -79,15 +81,21 @@ Features include:
     (name "tootle")
     (version "1.0")
     (source
-      (origin
-        (method git-fetch)
-        (uri (git-reference
-               (url "https://github.com/bleakgrey/tootle")
-               (commit version)))
-        (file-name (git-file-name name version))
-        (sha256
-         (base32
-          "1nm57239mhdq462an6bnhdlijpijxmjs9mqbyirwxwa048d3n4rm"))))
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/bleakgrey/tootle")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1nm57239mhdq462an6bnhdlijpijxmjs9mqbyirwxwa048d3n4rm"))
+       (patches
+        (search-patches
+         ;; https://github.com/bleakgrey/tootle/pull/339
+         "tootle-glib-object-naming.patch"
+         ;; https://github.com/bleakgrey/tootle/pull/322
+         "tootle-reason-phrase.patch"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -125,7 +133,7 @@ Features include:
            json-glib
            libgee
            libhandy
-           libsoup
+           libsoup-minimal-2
            vala
            xdg-utils))
     (home-page "https://github.com/bleakgrey/tootle")
