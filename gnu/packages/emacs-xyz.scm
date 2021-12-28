@@ -25062,26 +25062,28 @@ all of your projects, then override or add variables on a per-project basis.")
     (license license:gpl3)))
 
 (define-public emacs-el-patch
-  (package
-    (name "emacs-el-patch")
-    (version "2.2.3")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/raxod502/el-patch")
-             (commit version)))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32
-         "18djslz177q6q33y82zmg2v6n9236a76kiqfvxdk4vbqzjbq82f7"))))
-    (build-system emacs-build-system)
-    (home-page "https://github.com/raxod502/el-patch")
-    (synopsis "Future-proof your Emacs customizations")
-    (description "This package allows for an alternate definition of an Elisp
+  (let ((commit "8ab8fb3315ec9d3fd758929409ddf3151f464e80")
+        (revision "0"))
+    (package
+      (name "emacs-el-patch")
+      (version (git-version "2.2.3" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/raxod502/el-patch")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "197sxp4sscs0xlp67gbf5zh9ga521qvm9n7klpwljm1kf0jmm4vz"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/raxod502/el-patch")
+      (synopsis "Future-proof your Emacs customizations")
+      (description "This package allows for an alternate definition of an Elisp
 function to be specified and for any differences from the original definition
 to be examined using Ediff.")
-    (license license:expat)))
+      (license license:expat))))
 
 (define-public emacs-info-plus
   (let ((commit "29811edf7a71764ac343631facc00268d9483146")
