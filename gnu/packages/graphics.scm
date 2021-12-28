@@ -96,6 +96,7 @@
   #:use-module (gnu packages qt)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages sdl)
+  #:use-module (gnu packages serialization)
   #:use-module (gnu packages stb)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages tbb)
@@ -1918,6 +1919,38 @@ Some feature highlights:
 @item Automatic port forwarding with UPnP
 @end itemize\n")
       (license license:gpl3+))))
+
+(define-public openxr
+  (package
+    (name "openxr")
+    (version "1.0.20")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/KhronosGroup/OpenXR-SDK")
+             (commit (string-append "release-" version))))
+       (file-name (git-file-name name version))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Delete bundled jsoncpp.
+           (delete-file-recursively "src/external/jsoncpp")))
+       (sha256
+        (base32 "1jd7jjxlrdi8kjnmn3sad7dgb4h48dbxryfb9snf0kifn47bi20m"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f))                    ; there are no tests
+    (native-inputs
+     (list pkg-config python shaderc vulkan-headers))
+    (inputs
+     (list jsoncpp mesa vulkan-loader wayland))
+    (home-page "https://www.khronos.org/openxr/")
+    (synopsis "Generated headers and sources for OpenXR loader")
+    (description "This package contains OpenXR headers, as well as source code
+and build scripts for the OpenXR loader.")
+    ;; Dual licensed.  Either license applies.
+    (license (list license:asl2.0 license:expat))))
 
 (define-public monado
   (package
