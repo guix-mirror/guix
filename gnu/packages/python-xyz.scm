@@ -24005,25 +24005,17 @@ scripts to load entry points more quickly.")
 (define-public python-funcparserlib
   (package
     (name "python-funcparserlib")
-    (version "0.3.6")
+    (version "1.0.0a0")                 ; last stable release was in 2013
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "funcparserlib" version))
        (sha256
-        (base32
-         "07f9cgjr3h4j2m67fhwapn8fja87vazl58zsj4yppf9y3an2x6dp"))))
-    (native-inputs
-     (list python-tox))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (lambda _
-             (invoke "tox"))))))
+        (base32 "0ama5w5lswxlp3l4qfqq3zlg7i6qkw45jfl1f7p8w1vnj8m47yz6"))))
     (build-system python-build-system)
-    (home-page
-     "https://github.com/vlasovskikh/funcparserlib")
+    (arguments
+     `(#:tests? #f))              ; no tests in PyPI and no setup.py in GitHub
+    (home-page "https://github.com/vlasovskikh/funcparserlib")
     (synopsis
      "Recursive descent parsing library based on functional combinators")
     (description
