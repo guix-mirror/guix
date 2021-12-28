@@ -224,9 +224,12 @@ configurable through a graphical wizard.")
               (files '("share/terminfo")))))
     (home-page "https://github.com/thestinger/termite/")
     (synopsis "Keyboard-centric, VTE-based terminal")
-    (description "Termite is a minimal terminal emulator designed for use with
-tiling window managers.  It is a modal application, similar to Vim, with an
-insert mode and command mode where keybindings have different functions.")
+    (description "Termite is a minimal terminal emulator.  It is no longer
+maintained as the author considers it obsoleted by Alacritty.
+
+It was designed for use with tiling window managers.  It is a modal
+application, similar to Vim, with an insert mode and command mode where
+keybindings have different functions.")
 
     ;; Files under util/ are under the Expat license; the rest is LGPLv2+.
     (license license:lgpl2.0+)))
