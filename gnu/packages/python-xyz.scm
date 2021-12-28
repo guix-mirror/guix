@@ -11027,6 +11027,7 @@ Unicode-aware.  It is not intended as an end-user tool.")
 (define-public python2-xlrd
   (package-with-python2 python-xlrd))
 
+;;; Note: this package is unmaintained since 2018 (archived on GitHub).
 (define-public python-xlwt
   (package
     (name "python-xlwt")
