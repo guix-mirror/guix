@@ -30,6 +30,8 @@
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
   #:use-module (ice-9 match)
+  #:use-module (web client)
+  #:use-module (web response)
   #:use-module (newt)
   #:export (run-network-page))
 
@@ -119,8 +121,23 @@ network devices were found. Do you want to continue anyway?"))
 (define (wait-service-online)
   "Display a newt scale until connman detects an Internet access. Do
 FULL-VALUE tentatives, spaced by 1 second."
+  (define (ci-available?)
+    (dynamic-wind
+      (lambda ()
+        (sigaction SIGALRM
+          (lambda _ #f))
+        (alarm 3))
+      (lambda ()
+        (false-if-exception
+         (= (response-code
+             (http-request "https://ci.guix.gnu.org"))
+            200)))
+      (lambda ()
+        (alarm 0))))
+
   (define (online?)
-    (or (connman-online?)
+    (or (and (connman-online?)
+             (ci-available?))
         (file-exists? "/tmp/installer-assume-online")))
 
   (let* ((full-value 5))
@@ -137,7 +154,7 @@ FULL-VALUE tentatives, spaced by 1 second."
     (unless (online?)
       (run-error-page
        (G_ "The selected network does not provide access to the \
-Internet, please try again.")
+Internet and the Guix substitute server, please try again.")
        (G_ "Connection error"))
       (raise
        (condition

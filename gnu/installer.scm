@@ -44,6 +44,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages package-management)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages xorg)
   #:use-module (gnu system locale)
   #:use-module (ice-9 match)
@@ -351,7 +352,7 @@ selected keymap."
     ;; packages …), etc. modules.
     (with-extensions (list guile-gcrypt guile-newt
                            guile-parted guile-bytestructures
-                           guile-json-3 guile-git guix)
+                           guile-json-3 guile-git guix gnutls)
       (with-imported-modules `(,@(source-module-closure
                                   `(,@modules
                                     (gnu services herd)
