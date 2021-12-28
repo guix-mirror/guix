@@ -352,11 +352,8 @@ training, HMM clustering, HMM mixtures.")
            libxv
            mesa
            mjpegtools
-           opencv        ;this is ignored at the moment
            pandoc
-           protobuf
-           pulseaudio
-           tensorflow))  ;this is ignored at the moment
+           pulseaudio))
     (native-inputs
      (list clang-13
            llvm-13
