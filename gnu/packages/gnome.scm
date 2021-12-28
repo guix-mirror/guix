@@ -10130,7 +10130,8 @@ handling the startup notification side.")
        ("gtk+:bin" ,gtk+ "bin") ; for gtk-update-icon-cache
        ("itstool" ,itstool)
        ("vala" ,vala)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("python" ,python)))
     (inputs
      `(("glib" ,glib)
        ("gtksourceview" ,gtksourceview)
