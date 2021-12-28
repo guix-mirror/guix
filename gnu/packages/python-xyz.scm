@@ -2374,7 +2374,7 @@ of @code{xmlfile}.")
 (define-public python-openpyxl
   (package
     (name "python-openpyxl")
-    (version "3.0.5")
+    (version "3.0.9")
     (source
      (origin
        ;; We use the upstream repository, as the tests are not included in the
@@ -2385,7 +2385,7 @@ of @code{xmlfile}.")
              (changeset version)))
        (file-name (string-append name "-" version "-checkout"))
        (sha256
-        (base32 "0s6fgwwkcfz1bnrp5gjd4g2lcbl4a76147ylkrmkbabi2nf4xlli"))))
+        (base32 "1p8xvc2gjw6zyzbd7qdvc3x178sm00ymrbyh9539l4fpzgxh0j9c"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
