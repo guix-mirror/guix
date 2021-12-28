@@ -296,7 +296,7 @@ Libraries with some extra bells and whistles.")
 (define-public enlightenment
   (package
     (name "enlightenment")
-    (version "0.24.2")
+    (version "0.25.0")
     (source (origin
               (method url-fetch)
               (uri
@@ -304,21 +304,16 @@ Libraries with some extra bells and whistles.")
                               "enlightenment/enlightenment-" version ".tar.xz"))
               (sha256
                (base32
-                "1wfz0rwwsx7c1mkswn4hc9xw1i6bsdirhxiycf7ha2vcipqy465y"))
+                "01nzyvjy06043m01fdb1309xx3wxxg0s3hj9g9di7jjsxp774vkx"))
               (patches (search-patches "enlightenment-fix-setuid-path.patch"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
-       (let ((efl (assoc-ref %build-inputs "efl")))
-         (list "-Dsystemd=false"
-               "-Dpackagekit=false"
-               "-Dwl=true"
-               (string-append "-Dedje-cc=" efl "/bin/edje_cc")
-               (string-append "-Deldbus-codegen=" efl "/bin/eldbus-codegen")
-               (string-append "-Deet=" efl "/bin/eet")))
+       (list "-Dsystemd=false"
+             "-Dpackagekit=false"
+             "-Dwl=true")
        #:phases
        (modify-phases %standard-phases
-         (delete 'bootstrap) ; We don't want to run the autogen script.
          (add-before 'configure 'set-system-actions
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "HOME" "/tmp")
@@ -356,8 +351,7 @@ Libraries with some extra bells and whistles.")
                  (("/bin/umount") "/run/setuid-programs/umount")
                  (("/usr/bin/eject") "/run/current-system/profile/bin/eject"))
                (substitute* "src/bin/system/e_system_power.c"
-                 (("systemctl") "loginctl"))
-               #t))))))
+                 (("systemctl") "loginctl"))))))))
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
@@ -368,10 +362,11 @@ Libraries with some extra bells and whistles.")
        ("dbus" ,dbus)
        ("freetype" ,freetype)
        ("libdrm" ,libdrm)
+       ("libexif" ,libexif)
        ("libxcb" ,libxcb)
        ("libxext" ,libxext)
        ("linux-pam" ,linux-pam)
-       ("puleseaudio" ,pulseaudio)
+       ("pulseaudio" ,pulseaudio)
        ("setxkbmap" ,setxkbmap)
        ("xcb-util-keysyms" ,xcb-util-keysyms)
        ("xkeyboard-config" ,xkeyboard-config)
