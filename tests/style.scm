@@ -21,6 +21,7 @@
   #:use-module (guix scripts style)
   #:use-module ((guix utils) #:select (call-with-temporary-directory))
   #:use-module ((guix build utils) #:select (substitute*))
+  #:use-module (guix gexp)                        ;for the reader extension
   #:use-module (guix diagnostics)
   #:use-module (gnu packages acl)
   #:use-module (gnu packages multiprecision)
@@ -110,6 +111,17 @@
                                              file))
       (lambda (port)
         (read-lines port line count)))))
+
+(define-syntax-rule (test-pretty-print str args ...)
+  "Test equality after a round-trip where STR is passed to
+'read-with-comments' and the resulting sexp is then passed to
+'pretty-print-with-comments'."
+  (test-equal str
+    (call-with-output-string
+      (lambda (port)
+        (let ((exp (call-with-input-string str
+                     read-with-comments)))
+         (pretty-print-with-comments port exp args ...))))))
 
 
 (test-begin "style")
@@ -357,6 +369,89 @@
       (load file)
       (list (package-inputs (@ (my-packages) my-coreutils))
             (read-package-field (@ (my-packages) my-coreutils) 'inputs 4)))))
+
+(test-pretty-print "(list 1 2 3 4)")
+(test-pretty-print "(list 1
+                          2
+                          3
+                          4)"
+                   #:long-list 3
+                   #:indent 20)
+(test-pretty-print "\
+(list abc
+      def)"
+                   #:max-width 11)
+(test-pretty-print "\
+(#:foo
+ #:bar)"
+                   #:max-width 10)
+
+(test-pretty-print "\
+(#:first 1
+ #:second 2
+ #:third 3)")
+
+(test-pretty-print "\
+((x
+  1)
+ (y
+  2)
+ (z
+  3))"
+                   #:max-width 3)
+
+(test-pretty-print "\
+(let ((x 1)
+      (y 2)
+      (z 3)
+      (p 4))
+  (+ x y))"
+                   #:max-width 11)
+
+(test-pretty-print "\
+(lambda (x y)
+  ;; This is a procedure.
+  (let ((z (+ x y)))
+    (* z z)))")
+
+(test-pretty-print "\
+#~(string-append #$coreutils \"/bin/uname\")")
+
+(test-pretty-print "\
+(package
+  (inherit coreutils)
+  (version \"42\"))")
+
+(test-pretty-print "\
+(modify-phases %standard-phases
+  (add-after 'unpack 'post-unpack
+    (lambda _
+      #t))
+  (add-before 'check 'pre-check
+    (lambda* (#:key inputs #:allow-other-keys)
+      do things ...)))")
+
+(test-pretty-print "\
+(#:phases (modify-phases sdfsdf
+            (add-before 'x 'y
+              (lambda _
+                xyz))))")
+
+(test-pretty-print "\
+(description \"abcdefghijkl
+mnopqrstuvwxyz.\")"
+                   #:max-width 30)
+
+(test-pretty-print "\
+(description
+ \"abcdefghijkl
+mnopqrstuvwxyz.\")"
+                   #:max-width 12)
+
+(test-pretty-print "\
+(description
+ \"abcdefghijklmnopqrstuvwxyz\")"
+                   #:max-width 33)
 
 (test-end)
 

@@ -40,11 +40,15 @@
   #:use-module (ice-9 control)
   #:use-module (ice-9 match)
   #:use-module (ice-9 rdelim)
+  #:use-module (ice-9 vlist)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-37)
-  #:export (guix-style))
+  #:export (pretty-print-with-comments
+            read-with-comments
+
+            guix-style))
 
 
 ;;;
@@ -109,15 +113,136 @@
 ;;; Comment-preserving pretty-printer.
 ;;;
 
+(define-syntax vhashq
+  (syntax-rules ()
+    ((_) vlist-null)
+    ((_ (key value) rest ...)
+     (vhash-consq key value (vhashq rest ...)))))
+
+(define %special-forms
+  ;; Forms that are indented specially.  The number is meant to be understood
+  ;; like Emacs' 'scheme-indent-function' symbol property.
+  (vhashq
+   ('begin 1)
+   ('lambda 2)
+   ('lambda* 2)
+   ('match-lambda 1)
+   ('match-lambda* 2)
+   ('define 2)
+   ('define* 2)
+   ('define-public 2)
+   ('define*-public 2)
+   ('define-syntax 2)
+   ('define-syntax-rule 2)
+   ('define-module 2)
+   ('define-gexp-compiler 2)
+   ('let 2)
+   ('let* 2)
+   ('letrec 2)
+   ('letrec* 2)
+   ('match 2)
+   ('when 2)
+   ('unless 2)
+   ('package 1)
+   ('origin 1)
+   ('operating-system 1)
+   ('modify-inputs 2)
+   ('modify-phases 2)
+   ('add-after 3)
+   ('add-before 3)
+   ;; ('replace 2)
+   ('substitute* 2)
+   ('substitute-keyword-arguments 2)
+   ('call-with-input-file 2)
+   ('call-with-output-file 2)
+   ('with-output-to-file 2)
+   ('with-input-from-file 2)))
+
+(define (special-form? symbol)
+  (vhash-assq symbol %special-forms))
+
+(define (escaped-string str)
+  "Return STR with backslashes and double quotes escaped.  Everything else, in
+particular newlines, is left as is."
+  (list->string
+   `(#\"
+     ,@(string-fold-right (lambda (chr lst)
+                            (match chr
+                              (#\" (cons* #\\ #\" lst))
+                              (#\\ (cons* #\\ #\\ lst))
+                              (_   (cons chr lst))))
+                          '()
+                          str)
+     #\")))
+
+(define (string-width str)
+  "Return the \"width\" of STR--i.e., the width of the longest line of STR."
+  (apply max (map string-length (string-split str #\newline))))
+
 (define* (pretty-print-with-comments port obj
                                      #:key
                                      (indent 0)
                                      (max-width 78)
                                      (long-list 5))
+  "Pretty-print OBJ to PORT, attempting to at most MAX-WIDTH character columns
+and assuming the current column is INDENT.  Comments present in OBJ are
+included in the output.
+
+Lists longer than LONG-LIST are written as one element per line."
   (let loop ((indent indent)
              (column indent)
              (delimited? #t)                  ;true if comes after a delimiter
              (obj obj))
+    (define (print-sequence indent column lst delimited?)
+      (define long?
+        (> (length lst) long-list))
+
+      (let print ((lst lst)
+                  (first? #t)
+                  (delimited? delimited?)
+                  (column column))
+        (match lst
+          (()
+           column)
+          ((item . tail)
+           (define newline?
+             ;; Insert a newline if ITEM is itself a list, or if TAIL is long,
+             ;; but only if ITEM is not the first item.  Also insert a newline
+             ;; before a keyword.
+             (and (or (pair? item) long?
+                      (and (keyword? item)
+                           (not (eq? item #:allow-other-keys))))
+                  (not first?) (not delimited?)
+                  (not (comment? item))))
+
+           (when newline?
+             (newline port)
+             (display (make-string indent #\space) port))
+           (let ((column (if newline? indent column)))
+             (print tail #f
+                    (comment? item)
+                    (loop indent column
+                          (or newline? delimited?)
+                          item)))))))
+
+    (define (sequence-would-protrude? indent lst)
+      ;; Return true if elements of LST written at INDENT would protrude
+      ;; beyond MAX-WIDTH.  This is implemented as a cheap test with false
+      ;; negatives to avoid actually rendering all of LST.
+      (find (match-lambda
+              ((? string? str)
+               (>= (+ (string-width str) 2 indent) max-width))
+              ((? symbol? symbol)
+               (>= (+ (string-width (symbol->string symbol)) indent)
+                   max-width))
+              ((? boolean?)
+               (>= (+ 2 indent) max-width))
+              (()
+               (>= (+ 2 indent) max-width))
+              (_                                  ;don't know
+               #f))
+            lst))
+
     (match obj
       ((? comment? comment)
        (if (comment-margin? comment)
@@ -145,57 +270,104 @@
        (unless delimited? (display " " port))
        (display "," port)
        (loop indent (+ column (if delimited? 1 2)) #t lst))
-      (('modify-inputs inputs clauses ...)
-       ;; Special-case 'modify-inputs' to have one clause per line and custom
-       ;; indentation.
-       (let ((head "(modify-inputs "))
+      (('unquote-splicing lst)
+       (unless delimited? (display " " port))
+       (display ",@" port)
+       (loop indent (+ column (if delimited? 2 3)) #t lst))
+      (('gexp lst)
+       (unless delimited? (display " " port))
+       (display "#~" port)
+       (loop indent (+ column (if delimited? 2 3)) #t lst))
+      (('ungexp obj)
+       (unless delimited? (display " " port))
+       (display "#$" port)
+       (loop indent (+ column (if delimited? 2 3)) #t obj))
+      (('ungexp-native obj)
+       (unless delimited? (display " " port))
+       (display "#+" port)
+       (loop indent (+ column (if delimited? 2 3)) #t obj))
+      (('ungexp-splicing lst)
+       (unless delimited? (display " " port))
+       (display "#$@" port)
+       (loop indent (+ column (if delimited? 3 4)) #t lst))
+      (('ungexp-native-splicing lst)
+       (unless delimited? (display " " port))
+       (display "#+@" port)
+       (loop indent (+ column (if delimited? 3 4)) #t lst))
+      (((? special-form? head) arguments ...)
+       ;; Special-case 'let', 'lambda', 'modify-inputs', etc. so the second
+       ;; and following arguments are less indented.
+       (let* ((lead  (- (cdr (vhash-assq head %special-forms)) 1))
+              (head  (symbol->string head))
+              (total (length arguments)))
+         (unless delimited? (display " " port))
+         (display "(" port)
          (display head port)
-         (loop (+ indent 4)
-               (+ column (string-length head))
-               #t
-               inputs)
-         (let* ((indent (+ indent 2))
-                (column (fold (lambda (clause column)
-                                (newline port)
-                                (display (make-string indent #\space)
-                                         port)
-                                (loop indent indent #t clause))
-                              indent
-                              clauses)))
+         (unless (zero? lead)
+           (display " " port))
+
+         ;; Print the first LEAD arguments.
+         (let* ((indent (+ column 2
+                                  (if delimited? 0 1)))
+                (column (+ column 1
+                                  (if (zero? lead) 0 1)
+                                  (if delimited? 0 1)
+                                  (string-length head)))
+                (initial-indent column))
+           (define new-column
+             (let inner ((n lead)
+                         (arguments (take arguments (min lead total)))
+                         (column column))
+               (if (zero? n)
+                   (begin
+                     (newline port)
+                     (display (make-string indent #\space) port)
+                     indent)
+                   (match arguments
+                     (() column)
+                     ((head . tail)
+                      (inner (- n 1) tail
+                             (loop initial-indent
+                                   column
+                                   (= n lead)
+                                   head)))))))
+
+           ;; Print the remaining arguments.
+           (let ((column (print-sequence
+                          indent new-column
+                          (drop arguments (min lead total))
+                          #t)))
+             (display ")" port)
+             (+ column 1)))))
+      ((head tail ...)
+       (let* ((overflow? (>= column max-width))
+              (column    (if overflow?
+                             (+ indent 1)
+                             (+ column (if delimited? 1 2)))))
+         (if overflow?
+             (begin
+               (newline port)
+               (display (make-string indent #\space) port))
+             (unless delimited? (display " " port)))
+         (display "(" port)
+         (let* ((new-column (loop column column #t head))
+                (indent (if (or (>= new-column max-width)
+                                (not (symbol? head))
+                                (sequence-would-protrude?
+                                 (+ new-column 1) tail))
+                            column
+                            (+ new-column 1))))
+           (define column
+             (print-sequence indent new-column tail #f))
            (display ")" port)
            (+ column 1))))
-      ((head tail ...)
-       (unless delimited? (display " " port))
-       (display "(" port)
-       (let* ((new-column (loop indent (+ 1 column) #t head))
-              (indent (+ indent (- new-column column)))
-              (long?  (> (length tail) long-list)))
-         (define column
-           (fold2 (lambda (item column first?)
-                    (define newline?
-                      ;; Insert a newline if ITEM is itself a list, or if TAIL
-                      ;; is long, but only if ITEM is not the first item.
-                      (and (or (pair? item) long?)
-                           (not first?) (not (comment? item))))
-
-                    (when newline?
-                      (newline port)
-                      (display (make-string indent #\space) port))
-                    (let ((column (if newline? indent column)))
-                      (values (loop indent
-                                    column
-                                    (= column indent)
-                                    item)
-                              (comment? item))))
-                  (+ 1 new-column)
-                  #t                              ;first
-                  tail))
-         (display ")" port)
-         (+ column 1)))
       (_
-       (let* ((str (object->string obj))
-              (len (string-length str)))
-         (if (> (+ column 1 len) max-width)
+       (let* ((str (if (string? obj)
+                       (escaped-string obj)
+                       (object->string obj)))
+              (len (string-width str)))
+         (if (and (> (+ column 1 len) max-width)
+                  (not delimited?))
              (begin
                (newline port)
                (display (make-string indent #\space) port)
@@ -204,7 +376,7 @@
              (begin
                (unless delimited? (display " " port))
                (display str port)
-               (+ column (if delimited? 1 2) len))))))))
+               (+ column (if delimited? 0 1) len))))))))
 
 (define (object->string* obj indent)
   (call-with-output-string
