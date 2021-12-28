@@ -13022,12 +13022,13 @@ with a new public API, and RPython support.")
      '(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _
-             (invoke "python" "-m" "pytest" "-k"
-                     (string-append     ; skip some failed tests
-                      "not test_bin_hy_sys_executable"
-                      " and not test_bin_hy_circular_macro_require"
-                      " and not test_macro_from_module")))))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "python" "-m" "pytest" "-k"
+                       (string-append   ; skip some failed tests
+                        "not test_bin_hy_sys_executable"
+                        " and not test_bin_hy_circular_macro_require"
+                        " and not test_macro_from_module"))))))))
     (native-inputs
      (list python-pytest))
     (propagated-inputs
