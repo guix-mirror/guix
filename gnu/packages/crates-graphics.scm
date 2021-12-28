@@ -570,44 +570,24 @@ types.")
 and iOS.")
     (license license:expat)))
 
-(define-public rust-dav1d-0.6
-  (package
-    (name "rust-dav1d")
-    (version "0.6.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (crate-uri "dav1d" version))
-       (file-name (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32 "0pn6r1a9qfrpg2xwc7ci2iddvnzxb17ddca0bwymgi839cxc2chl"))))
-    (build-system cargo-build-system)
-    (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
-       (("rust-dav1d-sys" ,rust-dav1d-sys-0.3))))
-    (home-page "https://github.com/rust-av/dav1d-rs")
-    (synopsis "libdav1d bindings in Rust")
-    (description "This package provides libdav1d bindings in Rust.")
-    (license license:expat)))
-
 (define-public rust-dav1d-sys-0.3
   (package
     (name "rust-dav1d-sys")
-    (version "0.3.4")
+    (version "0.3.2")
     (source
-     (origin
-       (method url-fetch)
-       (uri (crate-uri "dav1d-sys" version))
-       (file-name
-        (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32 "020lla2l703iy69gbksq18snj2b1sp7vmjf39qqykd4242d4msr5"))))
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "dav1d-sys" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1jdxhnlxcml6jd67lx78ifzkn1xm18zfk4li7vjdh3fa61i073kx"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-bindgen" ,rust-bindgen-0.58)
-        ("rust-metadeps" ,rust-system-deps-3))))
+       (("rust-bindgen" ,rust-bindgen-0.54)
+        ("rust-metadeps" ,rust-metadeps-1))))
     (native-inputs
      (list pkg-config))
     (inputs
@@ -615,28 +595,6 @@ and iOS.")
     (home-page "https://github.com/rust-av/dav1d-rs")
     (synopsis "FFI bindings to dav1d")
     (description "This package provides FFI bindings to dav1d.")
-    (license license:expat)))
-
-(define-public rust-dcv-color-primitives-0.1
-  (package
-    (name "rust-dcv-color-primitives")
-    (version "0.1.16")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (crate-uri "dcv-color-primitives" version))
-       (file-name (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32 "0yrm1qipdmadynhjgz1bvdh42ph9azvwg8v43c8ywr8vlx9qvaq2"))))
-    (build-system cargo-build-system)
-    (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
-       (("rust-wasm-bindgen" ,rust-wasm-bindgen-0.2))))
-    (home-page "https://github.com/aws/dcv-color-primitives")
-    (synopsis "Rust library to perform image color model conversion")
-    (description "This package is a Rust library to perform image color model
-conversion.")
     (license license:expat)))
 
 (define-public rust-euclid-0.20
@@ -817,14 +775,14 @@ EUI-64, also known as MAC-48 media access control addresses.")
 (define-public rust-gif-0.11
   (package
     (name "rust-gif")
-    (version "0.11.3")
+    (version "0.11.1")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "gif" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0nsfd5qvp69z8kn17ziiq8zv4mclfycyxppf5k9fm2h8g1z1i9y3"))))
+        (base32 "1i4n9fwg3zrp07pi5zsgyza2gl8lqnap6fj6875lfy121xbbmvq2"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -1256,14 +1214,14 @@ PATH.")
 (define-public rust-image-0.23
   (package
     (name "rust-image")
-    (version "0.23.14")
+    (version "0.23.12")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "image" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "18gn2f7xp30pf9aqka877knlq308khxqiwjvsccvzaa4f9zcpzr4"))))
+        (base32 "1dg9z5sbc389spp7pm23n2b1k0gdd8hjdb8hhsp3k3npx9vl1q3w"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -1405,7 +1363,7 @@ pixel buffers with width, height and stride.")
 (define-public rust-jpeg-decoder-0.1
   (package
     (name "rust-jpeg-decoder")
-    (version "0.1.22")
+    (version "0.1.18")
     (source
      (origin
        (method url-fetch)
@@ -1413,7 +1371,8 @@ pixel buffers with width, height and stride.")
        (file-name
         (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1wnh0bmmswpgwhgmlizz545x8334nlbmkq8imy9k224ri3am7792"))))
+        (base32
+         "0lc428qgffh2a1agkq0p26mvf9rjaiswpywy5883j99mqypg0mh2"))))
     (build-system cargo-build-system)
     (arguments
      `(#:tests? #f      ; Some test files missing.
