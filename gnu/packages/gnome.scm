@@ -7137,6 +7137,7 @@ share them with others via social networking and more.")
            intltool
            itstool
            pkg-config
+           python
            `(,gtk+ "bin") ; gtk-update-icon-cache
            `(,glib "bin")))
     ;; TODO: Add libnautilus.
