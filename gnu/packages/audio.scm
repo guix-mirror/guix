@@ -1724,7 +1724,7 @@ follower.")
 (define-public fluidsynth
   (package
     (name "fluidsynth")
-    (version "2.1.8")
+    (version "2.2.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1733,7 +1733,7 @@ follower.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0r944ndn138ak9s3ivgd1wgkwkh6zp7jjnxd30hryczc6kbhkpmr"))))
+                "1061rdj69503spkd8vmfl3fqvyg4l41k5xcc4gw7niy31hnpnjmn"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f                      ; no check target
@@ -1744,18 +1744,19 @@ follower.")
              ;; Install libraries to /lib, not /lib64.
              (substitute* "CMakeLists.txt"
                (("LIB_SUFFIX \\$\\{_init_lib_suffix\\}")
-                "LIB_SUFFIX \"\""))
-             #t)))))
+                "LIB_SUFFIX \"\"")))))))
     (inputs
-     (list libsndfile
-           alsa-lib
-           jack-1
-           ladspa
-           lash
-           readline
-           glib))
+     (list ladspa))
     (native-inputs
      (list pkg-config))
+    (propagated-inputs
+     ;; In Libs.private of fluidsynth.pc.
+     (list alsa-lib
+           glib
+           jack-1
+           lash
+           libsndfile
+           readline))
     (home-page "https://www.fluidsynth.org/")
     (synopsis "SoundFont synthesizer")
     (description
