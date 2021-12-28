@@ -570,44 +570,24 @@ types.")
 and iOS.")
     (license license:expat)))
 
-(define-public rust-dav1d-0.6
-  (package
-    (name "rust-dav1d")
-    (version "0.6.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (crate-uri "dav1d" version))
-       (file-name (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32 "0pn6r1a9qfrpg2xwc7ci2iddvnzxb17ddca0bwymgi839cxc2chl"))))
-    (build-system cargo-build-system)
-    (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
-       (("rust-dav1d-sys" ,rust-dav1d-sys-0.3))))
-    (home-page "https://github.com/rust-av/dav1d-rs")
-    (synopsis "libdav1d bindings in Rust")
-    (description "This package provides libdav1d bindings in Rust.")
-    (license license:expat)))
-
 (define-public rust-dav1d-sys-0.3
   (package
     (name "rust-dav1d-sys")
-    (version "0.3.4")
+    (version "0.3.2")
     (source
-     (origin
-       (method url-fetch)
-       (uri (crate-uri "dav1d-sys" version))
-       (file-name
-        (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32 "020lla2l703iy69gbksq18snj2b1sp7vmjf39qqykd4242d4msr5"))))
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "dav1d-sys" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1jdxhnlxcml6jd67lx78ifzkn1xm18zfk4li7vjdh3fa61i073kx"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-bindgen" ,rust-bindgen-0.58)
-        ("rust-metadeps" ,rust-system-deps-3))))
+       (("rust-bindgen" ,rust-bindgen-0.54)
+        ("rust-metadeps" ,rust-metadeps-1))))
     (native-inputs
      (list pkg-config))
     (inputs
