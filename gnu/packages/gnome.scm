@@ -10765,16 +10765,16 @@ apply fancy special effects and lets you share the fun with others.")
 (define-public passwordsafe
   (package
     (name "passwordsafe")
-    (version "5.0")
+    (version "5.1")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://gitlab.gnome.org/World/PasswordSafe")
+             (url "https://gitlab.gnome.org/World/secrets")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1xh64bbg10gnfzlck5jvqy2zk6hbk9cyqgv85xc9kbdvs8n4lhgh"))))
+        (base32 "0kd43j6i017wdsqj6d5gnxhfv4ijnh3xahlw7md2gh51i8p682j6"))))
     (build-system meson-build-system)
     (arguments
      (list #:glib-or-gtk? #t
