@@ -4582,13 +4582,22 @@ in various CSS modules.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'disable-linters
+           ;; Their check fails; none of our business.
+           (lambda _
+             (substitute* '("setup.py" "pyproject.toml")
+               (("'pytest-flake8',") "")
+               (("'pytest-isort',") "")
+               (("--flake8") "")
+               (("--isort") ""))))
          (replace 'check
-           (lambda _ (invoke "pytest"))))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (lambda _ (invoke "pytest"))))))))
     (propagated-inputs
      (list python-tinycss2))
     (native-inputs
-     (list python-pytest-cov python-pytest-flake8 python-pytest-isort
-           python-pytest-runner))
+     (list python-pytest-cov python-pytest-runner))
     (home-page "https://cssselect2.readthedocs.io/")
     (synopsis "CSS selectors for Python ElementTree")
     (description "@code{cssselect2} is a straightforward implementation of
