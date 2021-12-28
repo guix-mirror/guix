@@ -312,6 +312,10 @@ training, HMM clustering, HMM mixtures.")
               (string-append "GUILE_SITE=" #$output "/share/guile/site/3.0"))
       #:phases
       '(modify-phases %standard-phases
+         (add-after 'unpack 'build-reproducibly
+           (lambda _
+             (substitute* "doc/Makefile.am"
+               (("\\$\\(DATE\\)") "1970-01-01"))))
          (add-after 'unpack 'use-llvm-config
            (lambda _
              (substitute* "m4/ax_llvmc.m4"
