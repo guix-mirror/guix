@@ -1766,7 +1766,9 @@ Python.")
        (file-name (string-append "tensorflow-" version "-checkout"))
        (sha256
         (base32
-         "0a9kwha395g3wgxfwln5j8vn9nkspmd75xldrlqdq540w996g8xa"))))
+         "0a9kwha395g3wgxfwln5j8vn9nkspmd75xldrlqdq540w996g8xa"))
+       (patches
+        (search-patches "tensorflow-c-api-fix.patch"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; no "check" target
@@ -1949,7 +1951,7 @@ set(eigen_INCLUDE_DIRS ${CMAKE_CURRENT_BINARY_DIR}/external/eigen_archive "
              ;; This directory is a dependency of many targets.
              (mkdir-p "protobuf")))
          (add-after 'configure 'unpack-third-party-sources
-           (lambda* (#:key inputs #:allow-other-keys)
+           (lambda* (#:key inputs outputs #:allow-other-keys)
              ;; This is needed to configure bundled packages properly.
              (setenv "CONFIG_SHELL" (which "bash"))
              (for-each
@@ -1987,7 +1989,11 @@ set(eigen_INCLUDE_DIRS ${CMAKE_CURRENT_BINARY_DIR}/external/eigen_archive "
                     "re2"))
 
              (rename-file "../build/cub/src/cub/cub-1.8.0/"
-                          "../build/cub/src/cub/cub/")))
+                          "../build/cub/src/cub/cub/")
+
+             (setenv "LDFLAGS"
+                     (string-append "-Wl,-rpath="
+                                    (assoc-ref outputs "out") "/lib"))))
          (add-after 'unpack 'fix-python-build
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (mkdir-p "protobuf-src")
@@ -2023,11 +2029,21 @@ set(eigen_INCLUDE_DIRS ${CMAKE_CURRENT_BINARY_DIR}/external/eigen_archive "
 COMPILE_FLAGS ${target_compile_flags} \
 INSTALL_RPATH_USE_LINK_PATH TRUE \
 INSTALL_RPATH " (assoc-ref outputs "out") "/lib)\n")))))
-         (add-after 'build 'build-pip-package
+         (add-after 'unpack 'patch-cmake-file-to-install-c-headers
+           (lambda _
+             (substitute* "tensorflow/contrib/cmake/tf_c.cmake"
+               (("if\\(tensorflow_BUILD_PYTHON_BINDINGS" m)
+                (string-append
+                 "install(DIRECTORY ${tensorflow_source_dir}/tensorflow/c/ \
+DESTINATION include/tensorflow/c FILES_MATCHING PATTERN \"*.h\")\n" m)))))
+         (add-after 'build 'build-c-bindings
            (lambda* (#:key outputs parallel-build? #:allow-other-keys)
-             (setenv "LDFLAGS"
-                     (string-append "-Wl,-rpath="
-                                    (assoc-ref outputs "out") "/lib"))
+             (invoke "make" "-j" (if parallel-build?
+                                     (number->string (parallel-job-count))
+                                     "1")
+                     "tf_c")))
+         (add-after 'install 'build-pip-package
+           (lambda* (#:key outputs parallel-build? #:allow-other-keys)
              (invoke "make" "-j" (if parallel-build?
                                      (number->string (parallel-job-count))
                                      "1")

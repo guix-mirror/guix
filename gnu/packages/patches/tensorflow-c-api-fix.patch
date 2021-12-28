@@ -1,0 +1,312 @@
+From eb61daae91432be0b07bb2f6854887bedfa6fc95 Mon Sep 17 00:00:00 2001
+From: Asim Shankar <ashankar@google.com>
+Date: Tue, 26 Jun 2018 00:57:33 -0700
+Subject: [PATCH] [C API]: Bugfix for TF_AddGradients.
+
+TF_AddGradients could create nodes in the graph with names that conflicted with
+other nodes in the graph. This would most clearly happen if TF_AddGradients()
+was called twice on the same graph, and could also happen if there were other
+nodes in the graph that happened to have "gradients" as a prefix of their name.
+
+Fix that.
+
+The added test in c_api_test.cc would fail in the call to TF_SessionRun() with
+  Node 'gradients/OnesLike' is not unique
+without the changes to c_api.cc and c_api_internal.h
+
+While at it, also fixed a possible name collision bug when using the C++ API
+to constructor graphs (using Scope).
+
+Thanks @karllessard for pointing this out.
+
+PiperOrigin-RevId: 202087996
+---
+ tensorflow/c/c_api.cc                    | 13 ++++-
+ tensorflow/c/c_api_test.cc               | 65 ++++++++++++++++++++++--
+ tensorflow/c/c_test_util.cc              |  7 +++
+ tensorflow/c/c_test_util.h               |  3 ++
+ tensorflow/cc/framework/scope.cc         | 30 ++++++++---
+ tensorflow/cc/framework/scope_internal.h |  3 +-
+ tensorflow/cc/framework/scope_test.cc    | 10 ++++
+ 7 files changed, 116 insertions(+), 15 deletions(-)
+
+diff --git a/tensorflow/c/c_api.cc b/tensorflow/c/c_api.cc
+index 09a03639d6fa3..37c8302e08bc3 100644
+--- a/tensorflow/c/c_api.cc
++++ b/tensorflow/c/c_api.cc
+@@ -2414,7 +2414,18 @@ void TF_AddGradients(TF_Graph* g, TF_Output* y, int ny, TF_Output* x, int nx,
+     for (int i = first_new_node_id; i < g->graph.num_node_ids(); ++i) {
+       Node* n = g->graph.FindNodeId(i);
+       if (n == nullptr) continue;
+-      g->name_map[n->name()] = n;
++      // We have a convoluted scheme here: Using the C++ graph construction API
++      // to add potentially many nodes to the graph without running the checks
++      // (such as uniqueness of the names of nodes) we run with other functions
++      // that add a node to the graph (like TF_FinishOperation).
++      if (!g->name_map.insert(std::make_pair(n->name(), n)).second) {
++        status->status = tensorflow::errors::Internal(
++            "BUG: The API allowed construction of a graph with duplicate node "
++            "names (",
++            n->name(),
++            "). This is a bug. Please file an issue at "
++            "https://github.com/tensorflow/tensorflow/issues.");
++      }
+     }
+   }
+ 
+diff --git a/tensorflow/c/c_api_test.cc b/tensorflow/c/c_api_test.cc
+index 577f10c5e69ea..bc04b53fbb7fa 100644
+--- a/tensorflow/c/c_api_test.cc
++++ b/tensorflow/c/c_api_test.cc
+@@ -1160,7 +1160,7 @@ TEST(CAPI, GetOpDef) {
+ }
+ 
+ void StringVectorToArrays(const std::vector<string>& v,
+-                          std::unique_ptr<const void* []>* ptrs,
++                          std::unique_ptr<const void*[]>* ptrs,
+                           std::unique_ptr<size_t[]>* lens) {
+   ptrs->reset(new const void*[v.size()]);
+   lens->reset(new size_t[v.size()]);
+@@ -1196,7 +1196,7 @@ class CApiColocationTest : public ::testing::Test {
+ 
+   void SetViaStringList(TF_OperationDescription* desc,
+                         const std::vector<string>& list) {
+-    std::unique_ptr<const void* []> list_ptrs;
++    std::unique_ptr<const void*[]> list_ptrs;
+     std::unique_ptr<size_t[]> list_lens;
+     StringVectorToArrays(list, &list_ptrs, &list_lens);
+     TF_SetAttrStringList(desc, tensorflow::kColocationAttrName, list_ptrs.get(),
+@@ -1700,6 +1700,61 @@ TEST_F(CApiGradientsTest, OpWithNoGradientRegistered_NoGradInputs) {
+   TestGradientsError(false);
+ }
+ 
++void ScalarFloatFromTensor(const TF_Tensor* t, float* f) {
++  ASSERT_TRUE(t != nullptr);
++  ASSERT_EQ(TF_FLOAT, TF_TensorType(t));
++  ASSERT_EQ(0, TF_NumDims(t));
++  ASSERT_EQ(4, TF_TensorByteSize(t));
++  float* p = static_cast<float*>(TF_TensorData(t));
++  *f = *p;
++}
++
++TEST_F(CApiGradientsTest, MultipleCallsToAddGradients) {
++  const float X = 3.0f, Y = 7.0f;
++  TF_Operation* x = Placeholder(graph_, s_, "x", TF_FLOAT);
++  TF_Operation* y = Placeholder(graph_, s_, "y", TF_FLOAT);
++  TF_Operation* xy = Mul(x, y, graph_, s_, "xy");
++  TF_Output dxy_dx, dxy_dy;
++
++  TF_Output outputs[1] = {{xy, 0}};
++  TF_Output inputs[1] = {{x, 0}};
++  TF_AddGradients(graph_, outputs, 1, inputs, 1, nullptr, s_, &dxy_dx);
++  ASSERT_EQ(TF_OK, TF_GetCode(s_)) << TF_Message(s_);
++
++  inputs[0] = {y, 0};
++  TF_AddGradients(graph_, outputs, 1, inputs, 1, nullptr, s_, &dxy_dy);
++  ASSERT_EQ(TF_OK, TF_GetCode(s_)) << TF_Message(s_);
++
++  TF_SessionOptions* opts = TF_NewSessionOptions();
++  TF_Session* sess = TF_NewSession(graph_, opts, s_);
++  TF_DeleteSessionOptions(opts);
++  ASSERT_EQ(TF_OK, TF_GetCode(s_)) << TF_Message(s_);
++
++  TF_Output feeds[] = {{x, 0}, {y, 0}};
++  TF_Tensor* feedValues[] = {FloatTensor(X), FloatTensor(Y)};
++  TF_Output fetches[] = {dxy_dx, dxy_dy};
++  TF_Tensor* fetchValues[] = {nullptr, nullptr};
++
++  TF_SessionRun(sess, nullptr /* run_options */, feeds, feedValues, 2, fetches,
++                fetchValues, 2, nullptr /* target_opers */, 0,
++                nullptr /* run_metadata */, s_);
++  TF_DeleteTensor(feedValues[0]);
++  TF_DeleteTensor(feedValues[1]);
++  ASSERT_EQ(TF_OK, TF_GetCode(s_)) << TF_Message(s_);
++  TF_DeleteSession(sess, s_);
++  ASSERT_EQ(TF_OK, TF_GetCode(s_)) << TF_Message(s_);
++
++  float dxy_dxValue = 0.0f, dxy_dyValue = 0.0f;
++  ScalarFloatFromTensor(fetchValues[0], &dxy_dxValue);
++  EXPECT_EQ(Y, dxy_dxValue);
++
++  ScalarFloatFromTensor(fetchValues[1], &dxy_dyValue);
++  EXPECT_EQ(X, dxy_dyValue);
++
++  TF_DeleteTensor(fetchValues[0]);
++  TF_DeleteTensor(fetchValues[1]);
++}
++
+ // REGISTER_OP for CApiAttributesTest test cases.
+ // Registers two ops, each with a single attribute called 'v'.
+ // The attribute in one op will have a type 'type', the other
+@@ -1784,7 +1839,7 @@ TEST_F(CApiAttributesTest, String) {
+ 
+ TEST_F(CApiAttributesTest, StringList) {
+   std::vector<string> list = {"bugs", "bunny", "duck"};
+-  std::unique_ptr<const void* []> list_ptrs;
++  std::unique_ptr<const void*[]> list_ptrs;
+   std::unique_ptr<size_t[]> list_lens;
+   StringVectorToArrays(list, &list_ptrs, &list_lens);
+   int list_total_size = 0;
+@@ -1800,7 +1855,7 @@ TEST_F(CApiAttributesTest, StringList) {
+   ASSERT_EQ(TF_OK, TF_GetCode(s_)) << TF_Message(s_);
+ 
+   EXPECT_TF_META("v", list.size(), TF_ATTR_STRING, list_total_size);
+-  std::unique_ptr<void* []> values(new void*[list.size()]);
++  std::unique_ptr<void*[]> values(new void*[list.size()]);
+   std::unique_ptr<size_t[]> lens(new size_t[list.size()]);
+   std::unique_ptr<char[]> storage(new char[list_total_size]);
+   TF_OperationGetAttrStringList(oper, "v", values.get(), lens.get(),
+@@ -2025,7 +2080,7 @@ TEST_F(CApiAttributesTest, TensorShapeProtoList) {
+   tensorflow::PartialTensorShape(pts2).AsProto(&proto);
+   proto.SerializeToString(&bytes2);
+ 
+-  std::unique_ptr<const void* []> list_ptrs;
++  std::unique_ptr<const void*[]> list_ptrs;
+   std::unique_ptr<size_t[]> list_lens;
+   const std::vector<string> list = {bytes1, bytes2};
+   StringVectorToArrays(list, &list_ptrs, &list_lens);
+diff --git a/tensorflow/c/c_test_util.cc b/tensorflow/c/c_test_util.cc
+index f3b28c1708129..24eb6c069b213 100644
+--- a/tensorflow/c/c_test_util.cc
++++ b/tensorflow/c/c_test_util.cc
+@@ -216,6 +216,13 @@ TF_Operation* Min(TF_Operation* l, TF_Operation* r, TF_Graph* graph,
+   return MinWithDevice(l, r, graph, /*op_device=*/"", s, name);
+ }
+ 
++TF_Operation* Mul(TF_Operation* l, TF_Operation* r, TF_Graph* graph,
++                  TF_Status* s, const char* name) {
++  TF_Operation* op;
++  BinaryOpHelper("Mul", l, r, graph, s, name, &op, "", true);
++  return op;
++}
++
+ TF_Operation* Add(TF_Output l, TF_Output r, TF_Graph* graph, TF_Status* s,
+                   const char* name) {
+   TF_OperationDescription* desc = TF_NewOperation(graph, "AddN", name);
+diff --git a/tensorflow/c/c_test_util.h b/tensorflow/c/c_test_util.h
+index c16aba666ee69..38313d647ca93 100644
+--- a/tensorflow/c/c_test_util.h
++++ b/tensorflow/c/c_test_util.h
+@@ -80,6 +80,9 @@ TF_Operation* Add(TF_Output l, TF_Output r, TF_Graph* graph, TF_Status* s,
+ TF_Operation* Min(TF_Operation* l, TF_Operation* r, TF_Graph* graph,
+                   TF_Status* s, const char* name = "min");
+ 
++TF_Operation* Mul(TF_Operation* l, TF_Operation* r, TF_Graph* graph,
++                  TF_Status* s, const char* name = "mul");
++
+ // If `op_device` is non-empty, set the created op on that device.
+ TF_Operation* MinWithDevice(TF_Operation* l, TF_Operation* r, TF_Graph* graph,
+                             const string& op_device, TF_Status* s,
+diff --git a/tensorflow/cc/framework/scope.cc b/tensorflow/cc/framework/scope.cc
+index 62a889181e787..8c886f31711eb 100644
+--- a/tensorflow/cc/framework/scope.cc
++++ b/tensorflow/cc/framework/scope.cc
+@@ -37,6 +37,11 @@ Scope& Scope::operator=(const Scope& other) {
+   return *this;
+ }
+ 
++namespace {
++const char kScopeSeparator[] = "/";
++const char kSuffixSeparator[] = "_";
++}  // namespace
++
+ Scope::Impl::Impl(Graph* graph, Status* status, NameMap* name_map,
+                   ShapeRefiner* refiner, bool disable_shape_inference)
+     : graph_(graph),
+@@ -308,19 +313,23 @@ string Scope::Impl::GetUniqueName(const string& prefix,
+     return prefix;
+   }
+   auto entry = name_map_->find(prefix);
+-  string unique_name = prefix;
+   if (entry == name_map_->end()) {
+     name_map_->insert({prefix, 0});
+-  } else {
+-    unique_name = strings::StrCat(unique_name, "_", ++entry->second);
++    return prefix;
+   }
++  string unique_name;
++  do {
++    unique_name = strings::StrCat(prefix, kSuffixSeparator, ++entry->second);
++  } while (name_map_->find(unique_name) != name_map_->end());
++  name_map_->insert({unique_name, 0});
+   return unique_name;
+ }
+ 
+ string Scope::Impl::GetNameForOp(const string& default_name) const {
+   const string unique_name =
+       GetUniqueName(default_name, true /* check_single_use */);
+-  const string sep = name_.empty() || unique_name.empty() ? "" : "/";
++  const string sep =
++      name_.empty() || unique_name.empty() ? "" : kScopeSeparator;
+   return strings::StrCat(name_, sep, unique_name);
+ }
+ 
+@@ -345,7 +354,8 @@ Scope Scope::NewSubScope(const string& child_scope_name) const {
+   }
+   const string unique_name =
+       impl()->GetUniqueName(child_scope_name, false /* check_single_use */);
+-  const string sep = impl()->name_.empty() || unique_name.empty() ? "" : "/";
++  const string sep =
++      impl()->name_.empty() || unique_name.empty() ? "" : kScopeSeparator;
+   return Scope(new Impl(*this, Impl::Tags::ScopeName(),
+                         strings::StrCat(impl()->name_, sep, unique_name),
+                         false /* copy_names */));
+@@ -412,7 +422,7 @@ CompositeOpScopes Scope::GetCompositeOpScopes(
+   if (!impl()->single_use_scope()) {
+     Scope child = NewSubScope(impl()->op_name_.empty() ? composite_op_name
+                                                        : impl()->op_name_);
+-    const string child_op_sep = impl()->name_.empty() ? "" : "_";
++    const string child_op_sep = impl()->name_.empty() ? "" : kSuffixSeparator;
+     const string child_name =
+         strings::StrCat(impl()->name_, child_op_sep, child.impl()->name_);
+     return {child,
+@@ -435,7 +445,13 @@ class InternalScope {
+   static Scope NewScope(Graph* graph, Status* status, ShapeRefiner* refiner) {
+     Scope::Impl::NameMap* name_map = new Scope::Impl::NameMap;
+     for (const Node* node : graph->nodes()) {
+-      (*name_map)[node->name()] = 0;
++      const string& name = node->name();
++      (*name_map)[name] = 0;
++      // Add all name prefixes ('/' separated).
++      size_t idx = -1;
++      while ((idx = name.find(kScopeSeparator, idx + 1)) != string::npos) {
++        (*name_map)[name.substr(0, idx)] = 0;
++      }
+     }
+     // We provide null destructors for these shared ptrs (except for name_map)
+     // since the caller owns them and doesn't want the scope to destroy them.
+diff --git a/tensorflow/cc/framework/scope_internal.h b/tensorflow/cc/framework/scope_internal.h
+index 8efcfed20d0b8..58adaef2e942a 100644
+--- a/tensorflow/cc/framework/scope_internal.h
++++ b/tensorflow/cc/framework/scope_internal.h
+@@ -34,8 +34,7 @@ class Scope::Impl {
+   // name that has not been used so far in a scope will get no suffix. Later
+   // uses of the same name will get suffixes _1, _2, _3, etc. Multiple scopes
+   // can share the same NameMap. For instance, a new scope created using
+-  // WithControlDependencies() should would share the same NameMap with the
+-  // parent.
++  // WithControlDependencies() would share the same NameMap with the parent.
+   typedef std::unordered_map<string, int> NameMap;
+ 
+   Impl(const std::shared_ptr<Graph>& graph,
+diff --git a/tensorflow/cc/framework/scope_test.cc b/tensorflow/cc/framework/scope_test.cc
+index 9eca9d3face34..b40b345eb8423 100644
+--- a/tensorflow/cc/framework/scope_test.cc
++++ b/tensorflow/cc/framework/scope_test.cc
+@@ -26,6 +26,16 @@ TEST(ScopeTest, BasicNames) {
+   EXPECT_EQ(root.GetUniqueNameForOp("mul"), "mul");
+ }
+ 
++TEST(ScopeTest, OpAndScopeNameCollision) {
++  Scope root = Scope::NewRootScope();
++  EXPECT_EQ(root.GetUniqueNameForOp("foo"), "foo");
++  EXPECT_EQ(root.GetUniqueNameForOp("foo"), "foo_1");
++  EXPECT_EQ(root.GetUniqueNameForOp("foo_1"), "foo_1_1");
++  EXPECT_EQ(root.GetUniqueNameForOp("foo_2"), "foo_2");
++  EXPECT_EQ(root.GetUniqueNameForOp("foo"), "foo_3");
++  EXPECT_EQ(root.GetUniqueNameForOp("foo_2"), "foo_2_1");
++}
++
+ TEST(ScopeTest, HierarchicalNames) {
+   Scope root = Scope::NewRootScope();
+   Scope child = root.NewSubScope("child");
