@@ -9239,14 +9239,14 @@ can add your own files to the collection.")
            ;; Don't create 'icon-theme.cache'.
            (lambda _
              (substitute* "build-aux/postinstall.py"
-               (("gtk-update-icon-cache") "true"))
-             #t)))))
+               (("gtk-update-icon-cache") "true")))))))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-compile-schemas, etc.
        ("desktop-file-utils" ,desktop-file-utils) ; for update-desktop-database
        ("intltool" ,intltool)
        ("appstream-glib" ,appstream-glib)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("python" ,python)))
     (inputs
      (list gtk+ libcanberra libhandy libx11 libxext))
     (home-page "https://gitlab.gnome.org/GNOME/gnome-screenshot")
