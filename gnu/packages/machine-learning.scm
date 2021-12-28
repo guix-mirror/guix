@@ -54,6 +54,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages bdw-gc)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cmake)
@@ -368,6 +369,70 @@ training, HMM clustering, HMM mixtures.")
     (description "AIscm is a Guile extension for numerical arrays and tensors.
 Performance is achieved by using the LLVM JIT compiler.")
     (license license:gpl3+)))
+
+(define-public guile-aiscm-next
+  (let ((commit "b17ed538c303badc419a7c358d91f266d2a8c354")
+        (revision "1"))
+    (package
+      (inherit guile-aiscm)
+      (name "guile-aiscm-next")
+      (version (git-version "0.23.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/wedesoft/aiscm")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0px7r7lfskbp1prdrfrcvrsc4wjrk3ahkigsw4pqvny6zs7jnvc0"))))
+      (arguments
+       (substitute-keyword-arguments (package-arguments guile-aiscm)
+         ((#:configure-flags flags '())
+          #~(list (string-append "OPENCV_CFLAGS=-I" #$(this-package-input "opencv")
+                                 "/include/opencv4")
+                  (let ((modules
+                         (list "aruco" "barcode" "bgsegm" "bioinspired"
+                               "calib3d" "ccalib" "core" "datasets" "dnn"
+                               "dnn_objdetect" "dnn_superres" "dpm" "face"
+                               "features2d" "flann" "freetype" "fuzzy" "hdf"
+                               "hfs" "highgui" "img_hash" "imgcodecs" "imgproc"
+                               "intensity_transform" "line_descriptor" "mcc"
+                               "ml" "objdetect" "optflow" "phase_unwrapping"
+                               "photo" "plot" "quality" "rapid" "reg" "rgbd"
+                               "saliency" "shape" "stereo" "stitching"
+                               "structured_light" "superres" "surface_matching"
+                               "text" "tracking" "video" "videoio" "videostab"
+                               "wechat_qrcode" "ximgproc" "xobjdetect" "xphoto")))
+                    (format #false "OPENCV_LIBS=~{-lopencv_~a~^ ~}" modules))))
+         ((#:phases phases '%standard-phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'find-clearsilver
+               (lambda* (#:key inputs #:allow-other-keys)
+                 (substitute* "configure.ac"
+                   (("/usr/local/include/ClearSilver")
+                    (string-append (assoc-ref inputs "clearsilver")
+                                   "/include/ClearSilver")))
+                 (substitute* "aiscm/Makefile.am"
+                   (("-lneo_utl" m)
+                    (string-append m " -lstreamhtmlparser")))
+                 (setenv "C_INCLUDE_PATH"
+                         (string-append (assoc-ref inputs "clearsilver")
+                                        "/include/ClearSilver:"
+                                        (or (getenv "C_INCLUDE_PATH") "")))))
+             ;; This test fails because our version of tensorflow is too old
+             ;; to provide tf-string-length.
+             (add-after 'unpack 'disable-broken-test
+               (lambda _
+                 (substitute* "tests/test_tensorflow.scm"
+                   (("\\(test-eqv \"determine string length" m)
+                    (string-append "#;" m)))))))))
+      (inputs
+       (modify-inputs (package-inputs guile-aiscm)
+         (append clearsilver opencv tensorflow libgc)))
+      (native-inputs
+       (modify-inputs (package-native-inputs guile-aiscm)
+         (append protobuf-c))))))
 
 (define-public mcl
   (package
