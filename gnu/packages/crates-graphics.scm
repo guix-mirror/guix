@@ -570,6 +570,27 @@ types.")
 and iOS.")
     (license license:expat)))
 
+(define-public rust-dav1d-0.6
+  (package
+    (name "rust-dav1d")
+    (version "0.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "dav1d" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0pn6r1a9qfrpg2xwc7ci2iddvnzxb17ddca0bwymgi839cxc2chl"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-dav1d-sys" ,rust-dav1d-sys-0.3))))
+    (home-page "https://github.com/rust-av/dav1d-rs")
+    (synopsis "libdav1d bindings in Rust")
+    (description "This package provides libdav1d bindings in Rust.")
+    (license license:expat)))
+
 (define-public rust-dav1d-sys-0.3
   (package
     (name "rust-dav1d-sys")
