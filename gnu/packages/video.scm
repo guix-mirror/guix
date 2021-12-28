@@ -5178,6 +5178,34 @@ result in several formats:
     (home-page "https://www.gen2vdr.de/wirbel/w_scan/index2.html")
     (license license:gpl2+)))
 
+;;; XXX: This crate is used only for rav1e and can be removed once the latter
+;;; is updated.  See <https://issues.guix.gnu.org/52837>.
+(define rust-dav1d-sys-0.3.2
+  (package
+    (name "rust-dav1d-sys")
+    (version "0.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "dav1d-sys" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1jdxhnlxcml6jd67lx78ifzkn1xm18zfk4li7vjdh3fa61i073kx"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bindgen" ,rust-bindgen-0.54)
+        ("rust-metadeps" ,rust-metadeps-1))))
+    (native-inputs
+     (list pkg-config))
+    (inputs
+     (list dav1d clang llvm))
+    (home-page "https://github.com/rust-av/dav1d-rs")
+    (synopsis "FFI bindings to dav1d")
+    (description "This package provides FFI bindings to dav1d.")
+    (license license:expat)))
+
 (define-public rav1e
   (package
     (name "rav1e")
@@ -5206,7 +5234,7 @@ result in several formats:
         ("rust-clap" ,rust-clap-2)
         ("rust-console" ,rust-console-0.14)
         ("rust-crossbeam" ,rust-crossbeam-0.8)
-        ("rust-dav1d-sys" ,rust-dav1d-sys-0.3)
+        ("rust-dav1d-sys" ,rust-dav1d-sys-0.3.2)
         ("rust-fern" ,rust-fern-0.6)
         ("rust-image" ,rust-image-0.23)
         ("rust-interpolate-name" ,rust-interpolate-name-0.2)
