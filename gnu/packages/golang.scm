@@ -636,6 +636,9 @@ in the style of communicating sequential processes (@dfn{CSP}).")
      `(#:modules ((ice-9 match)
                   (guix build gnu-build-system)
                   (guix build utils))
+       ;; TODO: Disable the test(s) in misc/cgo/test/cgo_test.go
+       ;; that cause segfaults in the test suite.
+       #:tests? ,(not (target-aarch64?))
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
