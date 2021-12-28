@@ -13,7 +13,7 @@
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Gabriel Hondet <gabrielhondet@gmail.com>
 ;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
-;;; Copyright © 2018, 2019 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2018, 2019, 2021 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2019 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2019, 2021 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019, 2020 Brett Gilio <brettg@gnu.org>
@@ -673,6 +673,7 @@ embedded kernel situations.")
                            (srfi srfi-26)
                            (ice-9 rdelim)
                            (ice-9 regex)))
+                (patches (search-patches "cool-retro-term-wctype.patch"))
                 (snippet
                  '(let* ((fonts '(;"1971-ibm-3278"     ; BSD 3-clause
                                   "1977-apple2"        ; Non-Free

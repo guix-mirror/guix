@@ -1,0 +1,13 @@
+Submitted upstream at https://github.com/Swordfish90/cool-retro-term/issues/692
+
+--- a/qmltermwidget/lib/TerminalCharacterDecoder.cpp	1969-12-31 18:00:01.000000000 -0600
++++ b/qmltermwidget/lib/TerminalCharacterDecoder.cpp	2021-12-27 22:07:04.452256118 -0600
+@@ -19,6 +19,8 @@
+     02110-1301  USA.
+ */
+ 
++#include <cwctype>
++
+ // Own
+ #include "TerminalCharacterDecoder.h"
+ 
