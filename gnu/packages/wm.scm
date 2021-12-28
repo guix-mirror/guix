@@ -1166,14 +1166,14 @@ dynamic and extensible using the Lua programming language.")
 (define-public menumaker
   (package
     (name "menumaker")
-    (version "0.99.13")
+    (version "0.99.14")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/menumaker/"
                            "menumaker-" version ".tar.gz"))
        (sha256
-        (base32 "0hbn8bid43725njqcfklvan3n4hwpfx8nq8xkkdwkmpd37kfq594"))))
+        (base32 "0nnnc1awvhq5pplvclap3ha61g9209bca6zqgpsm1f53fq75vs8i"))))
     (build-system gnu-build-system)
     (inputs
      (list python))
