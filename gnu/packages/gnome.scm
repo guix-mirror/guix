@@ -6674,6 +6674,7 @@ USB transfers with your high-level application or system daemon.")
            itstool
            `(,glib "bin")               ; glib-compile-schemas, etc.
            pkg-config
+           python
            vala
            libxml2))
     (inputs
