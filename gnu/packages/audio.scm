@@ -1765,22 +1765,6 @@ device.  It is the software analogue of a MIDI synthesizer.  FluidSynth can
 also play midifiles using a Soundfont.")
     (license license:lgpl2.1+)))
 
-;; gzdoom@3.3.0 and lmms@1.1.3 requires this version.  Remove once no longer
-;; needed.
-(define-public fluidsynth-1
-  (package
-    (inherit fluidsynth)
-    (version "1.1.11")
-    (source (origin
-              (inherit (package-source fluidsynth))
-              (uri (git-reference
-                    (url "https://github.com/FluidSynth/fluidsynth")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name "fluidsynth" version))
-              (sha256
-               (base32
-                "0n75jq3xgq46hfmjkaaxz3gic77shs4fzajq40c8gk043i84xbdh"))))))
-
 (define-public faad2
   (package
     (name "faad2")
