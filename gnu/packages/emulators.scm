@@ -36,6 +36,7 @@
 (define-module (gnu packages emulators)
   #:use-module (ice-9 match)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix gexp)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -394,7 +395,7 @@ older games.")
   ;; This is not a patch staging area for DOSBox, but an unaffiliated fork.
   (package
     (name "dosbox-staging")
-    (version "0.77.1")
+    (version "0.78.0")
     (source
      (origin
        (method git-fetch)
@@ -403,13 +404,23 @@ older games.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "07jwmmm1bhfxavlhl854cj8l5iy5hqx5hpwkkjbcwqg7yh9jfs2x"))))
+        (base32 "1zwrfc0mdqh3f2xj91iny8awcghdh6ql445ic70g5yzr1i303pgg"))))
     (build-system meson-build-system)
     (arguments
-     `(#:configure-flags
-       ;; These both try to git clone subprojects.
-       (list "-Dunit_tests=disabled"     ; gtest
-             "-Duse_mt32emu=false")))    ; mt32emu
+     (list #:configure-flags
+           #~(list
+              ;; These both try to git clone subprojects.
+              "-Dunit_tests=disabled"   ; gtest
+              "-Duse_mt32emu=false"
+              ;; Not packaged.
+              "-Duse_slirp=false")
+           #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'unpack 'fix-includes
+                 (lambda _
+                   (substitute* (find-files "." "\\.(cpp|h)")
+                     (("^(#include <)(SDL[_.])" _ include file)
+                      (string-append include "SDL2/" file))))))))
     (native-inputs
      (list pkg-config))
     (inputs
