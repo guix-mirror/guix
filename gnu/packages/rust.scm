@@ -623,14 +623,29 @@ safety and thread safety guarantees.")
 (define rust-1.54
   (let ((base-rust
          (rust-bootstrapped-package
-          rust-1.53 "1.54.0"
-          "0xk9dhfff16caambmwij67zgshd8v9djw6ha0fnnanlv7rii31dc")))
-    (package
-      (inherit base-rust)
+          rust-1.53
+          "1.54.0" "0xk9dhfff16caambmwij67zgshd8v9djw6ha0fnnanlv7rii31dc")))
+    (package/inherit base-rust
       (source
        (origin
          (inherit (package-source base-rust))
-         (snippet '(delete-file-recursively "src/llvm-project"))))
+         (snippet '(delete-file-recursively "src/llvm-project")))))))
+
+(define rust-1.55
+  (rust-bootstrapped-package
+   rust-1.54 "1.55.0" "07l28f7grdmi65naq71pbmvdd61hwcpi40ry7kp7dy7m233rldxj"))
+
+(define rust-1.56
+  (rust-bootstrapped-package
+   rust-1.55 "1.56.1" "04cmqx7nn63hzz7z27b2b0dj2qx18rck9ifvip43s6dampx8v2f3"))
+
+(define rust-1.57
+  (let ((base-rust
+         (rust-bootstrapped-package
+          rust-1.56 "1.57.0"
+          "06jw8ka2p3kls8p0gd4p0chhhb1ia1mlvj96zn78n7qvp71zjiim")))
+    (package
+      (inherit base-rust)
       (outputs (cons "rustfmt" (package-outputs base-rust)))
       (arguments
        (substitute-keyword-arguments (package-arguments base-rust)
@@ -772,20 +787,8 @@ safety and thread safety guarantees.")
                             `("procps" ,procps)
                             (package-native-inputs base-rust))))))
 
-(define-public rust-1.55
-  (rust-bootstrapped-package
-   rust-1.54 "1.55.0" "07l28f7grdmi65naq71pbmvdd61hwcpi40ry7kp7dy7m233rldxj"))
-
-(define-public rust-1.56
-  (rust-bootstrapped-package
-   rust-1.55 "1.56.1" "04cmqx7nn63hzz7z27b2b0dj2qx18rck9ifvip43s6dampx8v2f3"))
-
-(define-public rust-1.57
-  (rust-bootstrapped-package
-   rust-1.56 "1.57.0" "06jw8ka2p3kls8p0gd4p0chhhb1ia1mlvj96zn78n7qvp71zjiim"))
-
 ;;; Note: Only the latest versions of Rust are supported and tested.  The
 ;;; intermediate rusts are built for bootstrapping purposes and should not
 ;;; be relied upon.  This is to ease maintenance and reduce the time
 ;;; required to build the full Rust bootstrap chain.
-(define-public rust rust-1.54)
+(define-public rust rust-1.57)
