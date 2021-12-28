@@ -79,6 +79,7 @@
   #:use-module (gnu packages kde-frameworks)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages llvm)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages mp3)
@@ -569,6 +570,72 @@ processing tools: normals and tangent space generation, triangulation, vertex
 cache locality optimization, removal of degenerate primitives and duplicate
 vertices, sorting by primitive type, merging of redundant materials and many
 more.")
+    (license license:bsd-3)))
+
+(define-public openshadinglanguage
+  (package
+    (name "openshadinglanguage")
+    (version "1.11.16.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/AcademySoftwareFoundation/OpenShadingLanguage")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0x0lc163vl2b57l75bf5zxlr6vm2y1f1izlxdnrw3vsapv3r9k9g"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags (list "-DUSE_PARTIO=OFF") ; TODO: not packaged
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'set-paths 'add-ilmbase-include-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; OpenEXR 2 propagates ilmbase, but its include files do not
+             ;; appear in the C_INCLUDE_PATH.
+             (let ((headers (string-append
+                             (assoc-ref inputs "ilmbase")
+                             "/include/OpenEXR")))
+               (setenv "C_INCLUDE_PATH"
+                       (string-append headers ":"
+                                      (or (getenv "C_INCLUDE_PATH") "")))
+               (setenv "CPLUS_INCLUDE_PATH"
+                       (string-append headers ":"
+                                      (or (getenv "CPLUS_INCLUDE_PATH") ""))))))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "ctest" "--exclude-regex"
+                       (string-join
+                        (list
+                         "osl-imageio"       ; OIIO not compiled with freetype
+                         "osl-imageio.opt"   ; OIIO not compiled with freetype
+                         "texture-udim"      ; file does not exist
+                         "texture-udim.opt"  ; file does not exist
+                         "example-deformer"  ; could not find OSLConfig
+                         "python-oslquery")  ; no module oslquery
+                        "|"))))))))
+    (native-inputs
+     (list bison
+           clang
+           flex
+           llvm
+           pybind11
+           python-wrapper))
+    (inputs
+     (list boost
+           imath
+           openexr-2
+           openimageio
+           pugixml
+           qtbase-5
+           zlib))
+    (home-page "https://github.com/AcademySoftwareFoundation/OpenShadingLanguage")
+    (synopsis "Shading language for production GI renderers")
+    (description "Open Shading Language (OSL) is a language for programmable
+shading in advanced renderers and other applications, ideal for describing
+materials, lights, displacement, and pattern generation.")
     (license license:bsd-3)))
 
 (define-public cgal
