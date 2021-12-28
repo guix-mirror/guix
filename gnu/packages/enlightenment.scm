@@ -516,23 +516,23 @@ and in creating applications based on the Enlightenment Foundation Library suite
 (define-public ephoto
   (package
     (name "ephoto")
-    (version "1.5")
+    (version "1.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.enlightenment.org/rel/"
                            "apps/ephoto/ephoto-" version ".tar.xz"))
        (sha256
-        (base32 "1q7v9abjp9jrs08xc7pqaac64yzax24dk1snjb9rciarzzh3mlzy"))))
-    (build-system gnu-build-system)
+        (base32 "1lvhcs4ba8h3z78nyycbww8mj4cscb8k200dcc3cdy8vrvrp7g1n"))))
+    (build-system meson-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'set-home-directory
            ;; FATAL: Cannot create run dir '/homeless-shelter/.run' - errno=2
-           (lambda _ (setenv "HOME" "/tmp") #t)))))
+           (lambda _ (setenv "HOME" "/tmp"))))))
     (native-inputs
-     (list check pkg-config))
+     (list pkg-config))
     (inputs
      (list efl))
     (home-page "https://smhouston.us/projects/ephoto/")
