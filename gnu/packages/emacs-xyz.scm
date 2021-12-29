@@ -17671,6 +17671,11 @@ automatically fetched from well-curated sources, and formatted as BibTeX.")
        (sha256
         (base32 "15jhpl2j4rm97cvvqzlfzxarvxvcsg64raz068psrsd2y7y2zh4c"))))
     (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'set-home
+           (lambda _ (setenv "HOME" "/tmp"))))))
     (propagated-inputs
      (list emacs-auctex emacs-org emacs-parsebib emacs-s))
     (home-page "https://github.com/bdarcus/citar")
