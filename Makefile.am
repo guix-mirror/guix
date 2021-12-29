@@ -963,7 +963,7 @@ release: dist-with-updated-version all
             --system=$$system --fallback						\
 	    gnu/system/install.scm` ;							\
 	  if [ ! -f "$$image" ] ; then							\
-	    echo "failed to produced Guix installation image for $$system" >&2 ;	\
+	    echo "failed to produce Guix installation image for $$system" >&2 ;	\
 	    exit 1 ;									\
 	  fi ;										\
 	  cp "$$image" "$(releasedir)/$(GUIX_SYSTEM_IMAGE_BASE).$$system.iso.tmp" ;	\
@@ -978,7 +978,7 @@ release: dist-with-updated-version all
 	    --system=$$system --fallback						\
 	    gnu/system/examples/vm-image.tmpl` ;					\
 	  if [ ! -f "$$image" ] ; then							\
-	    echo "failed to produced Guix VM image for $$system" >&2 ;			\
+	    echo "failed to produce Guix VM image for $$system" >&2 ;			\
 	    exit 1 ;									\
 	  fi ;										\
 	  cp "$$image" "$(releasedir)/$(GUIX_SYSTEM_VM_IMAGE_BASE).$$system.qcow2";	\
