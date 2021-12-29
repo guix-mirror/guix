@@ -14957,6 +14957,11 @@ when browsing files with Dired.")
        (sha256
         (base32 "1w0lyz71dq8x28ira4hig1b70bqn1dr53w3k5dgch9szcf6xa86y"))))
     (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'set-home
+           (lambda _ (setenv "HOME" "/tmp"))))))
     (propagated-inputs
      (list emacs-auctex emacs-org))
     (home-page "https://github.com/et2010/org-edit-latex")
