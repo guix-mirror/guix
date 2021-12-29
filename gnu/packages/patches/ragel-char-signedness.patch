@@ -1,0 +1,42 @@
+From 2e638fccd81e96ce09841adc4b295b5ce694ea73 Mon Sep 17 00:00:00 2001
+From: Adrian Thurston <thurston@colm.net>
+Date: Sat, 6 Nov 2021 12:20:05 -0700
+Subject: [PATCH] C char type: decide signedness of char based on CHAR_MIN
+
+Previously had char fixed to signed char, this is not useful on ARM as it does
+not align with the host type. Instead, decide at runtime (or probably compile
+time) if char is signed or not.
+---
+ ragel/common.cpp | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/ragel/common.cpp b/ragel/common.cpp
+index 8e9f8ed0..55875c06 100644
+--- a/ragel/common.cpp
++++ b/ragel/common.cpp
+@@ -27,14 +27,14 @@
+ 
+ HostType hostTypesC[] =
+ {
+-	{ "char",     0,       "char",    true,   true,  false,  CHAR_MIN,  CHAR_MAX,   0, 0,              sizeof(char) },
+-	{ "unsigned", "char",  "uchar",   false,  true,  false,  0, 0,                  0,     UCHAR_MAX,  sizeof(unsigned char) },
+-	{ "short",    0,       "short",   true,   true,  false,  SHRT_MIN,  SHRT_MAX,   0, 0,              sizeof(short) },
+-	{ "unsigned", "short", "ushort",  false,  true,  false,  0, 0,                  0,     USHRT_MAX,  sizeof(unsigned short) },
+-	{ "int",      0,       "int",     true,   true,  false,  INT_MIN,   INT_MAX,    0, 0,              sizeof(int) },
+-	{ "unsigned", "int",   "uint",    false,  true,  false,  0, 0,                  0,     UINT_MAX,   sizeof(unsigned int) },
+-	{ "long",     0,       "long",    true,   true,  false,  LONG_MIN,  LONG_MAX,   0, 0,              sizeof(long) },
+-	{ "unsigned", "long",  "ulong",   false,  true,  false,  0, 0,                  0,     ULONG_MAX,  sizeof(unsigned long) }
++	{ "char",     0,       "char",    (CHAR_MIN != 0), true,  false,  SCHAR_MIN, SCHAR_MAX,  0, UCHAR_MAX, sizeof(char) },
++	{ "unsigned", "char",  "uchar",   false,           true,  false,  0, 0,                  0, UCHAR_MAX, sizeof(unsigned char) },
++	{ "short",    0,       "short",   true,            true,  false,  SHRT_MIN,  SHRT_MAX,   0, 0,         sizeof(short) },
++	{ "unsigned", "short", "ushort",  false,           true,  false,  0, 0,                  0, USHRT_MAX, sizeof(unsigned short) },
++	{ "int",      0,       "int",     true,            true,  false,  INT_MIN,   INT_MAX,    0, 0,         sizeof(int) },
++	{ "unsigned", "int",   "uint",    false,           true,  false,  0, 0,                  0, UINT_MAX,  sizeof(unsigned int) },
++	{ "long",     0,       "long",    true,            true,  false,  LONG_MIN,  LONG_MAX,   0, 0,         sizeof(long) },
++	{ "unsigned", "long",  "ulong",   false,           true,  false,  0, 0,                  0, ULONG_MAX, sizeof(unsigned long) }
+ };
+ 
+ #define S8BIT_MIN  -128
+-- 
+2.33.1
+
