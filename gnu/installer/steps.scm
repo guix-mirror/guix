@@ -52,7 +52,13 @@
             %installer-configuration-file
             %installer-target-dir
             format-configuration
-            configuration->file))
+            configuration->file
+
+            %current-result))
+
+;; Hash table storing the step results. Use it only for logging and debug
+;; purposes.
+(define %current-result (make-hash-table))
 
 ;; This condition may be raised to abort the current step.
 (define-condition-type &installer-step-abort &condition
@@ -183,6 +189,7 @@ return the accumalated result so far."
          (let* ((id (installer-step-id step))
                 (compute (installer-step-compute step))
                 (res (compute result done-steps)))
+           (hash-set! %current-result id res)
            (run (alist-cons id res result)
                 #:todo-steps rest-steps
                 #:done-steps (append done-steps (list step))))))))

@@ -33,6 +33,7 @@
   #:use-module (gnu packages admin)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages connman)
   #:use-module (gnu packages cryptsetup)
   #:use-module (gnu packages disk)
@@ -336,6 +337,8 @@ selected keymap."
                        guix ;guix system init call
                        util-linux ;mkwap
                        shadow
+                       tar ;dump
+                       gzip ;dump
                        coreutils)))
         (with-output-to-port (%make-void-port "w")
           (lambda ()
@@ -352,7 +355,8 @@ selected keymap."
     ;; packages …), etc. modules.
     (with-extensions (list guile-gcrypt guile-newt
                            guile-parted guile-bytestructures
-                           guile-json-3 guile-git guix gnutls)
+                           guile-json-3 guile-git guile-webutils
+                           guix gnutls)
       (with-imported-modules `(,@(source-module-closure
                                   `(,@modules
                                     (gnu services herd)
@@ -363,6 +367,7 @@ selected keymap."
             (use-modules (gnu installer record)
                          (gnu installer keymap)
                          (gnu installer steps)
+                         (gnu installer dump)
                          (gnu installer final)
                          (gnu installer hostname)
                          (gnu installer locale)
@@ -432,15 +437,22 @@ selected keymap."
                 (lambda (key . args)
                   (syslog "crashing due to uncaught exception: ~s ~s~%"
                           key args)
-                  (let ((error-file "/tmp/last-installer-error"))
+                  (let ((error-file "/tmp/last-installer-error")
+                        (dump-archive "/tmp/dump.tgz"))
                     (call-with-output-file error-file
                       (lambda (port)
                         (display-backtrace (make-stack #t) port)
                         (print-exception port
                                          (stack-ref (make-stack #t) 1)
                                          key args)))
-                    ((installer-exit-error current-installer)
-                     error-file key args))
+                    (make-dump dump-archive
+                               #:result %current-result
+                               #:backtrace error-file)
+                    (let ((report
+                           ((installer-dump-page current-installer)
+                            dump-archive)))
+                      ((installer-exit-error current-installer)
+                       error-file report key args)))
                   (primitive-exit 1)))
 
               ((installer-exit current-installer)))))))

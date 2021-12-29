@@ -758,6 +758,7 @@ GNU_SYSTEM_MODULES =				\
 INSTALLER_MODULES =                             \
   %D%/installer.scm      			\
   %D%/installer/connman.scm			\
+  %D%/installer/dump.scm			\
   %D%/installer/final.scm			\
   %D%/installer/hostname.scm			\
   %D%/installer/keymap.scm			\
@@ -774,6 +775,7 @@ INSTALLER_MODULES =                             \
   %D%/installer/user.scm			\
   %D%/installer/utils.scm			\
 						\
+  %D%/installer/newt/dump.scm			\
   %D%/installer/newt/ethernet.scm		\
   %D%/installer/newt/final.scm  		\
   %D%/installer/newt/parameters.scm		\

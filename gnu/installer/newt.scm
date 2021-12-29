@@ -19,6 +19,7 @@
 (define-module (gnu installer newt)
   #:use-module (gnu installer record)
   #:use-module (gnu installer utils)
+  #:use-module (gnu installer newt dump)
   #:use-module (gnu installer newt ethernet)
   #:use-module (gnu installer newt final)
   #:use-module (gnu installer newt parameters)
@@ -55,16 +56,19 @@
   (newt-finish)
   (clear-screen))
 
-(define (exit-error file key args)
+(define (exit-error file report key args)
   (newt-set-color COLORSET-ROOT "white" "red")
   (let ((width (nearest-exact-integer
                 (* (screen-columns) 0.8)))
         (height (nearest-exact-integer
-                 (* (screen-rows) 0.7))))
+                 (* (screen-rows) 0.7)))
+        (report (if report
+                    (format #f ". It has been uploaded as ~a" report)
+                    "")))
     (run-file-textbox-page
      #:info-text (format #f (G_ "The installer has encountered an unexpected \
-problem. The backtrace is displayed below. Please report it by email to \
-<~a>.") %guix-bug-report-address)
+problem. The backtrace is displayed below~a. Please report it by email to \
+<~a>.") report %guix-bug-report-address)
      #:title (G_ "Unexpected problem")
      #:file file
      #:exit-button? #f
@@ -123,6 +127,9 @@ problem. The backtrace is displayed below. Please report it by email to \
 (define (parameters-page keyboard-layout-selection)
   (run-parameters-page keyboard-layout-selection))
 
+(define (dump-page steps)
+  (run-dump-page steps))
+
 (define newt-installer
   (installer
    (name 'newt)
@@ -142,4 +149,5 @@ problem. The backtrace is displayed below. Please report it by email to \
    (services-page services-page)
    (welcome-page welcome-page)
    (parameters-menu parameters-menu)
-   (parameters-page parameters-page)))
+   (parameters-page parameters-page)
+   (dump-page dump-page)))

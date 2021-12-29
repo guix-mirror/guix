@@ -41,7 +41,8 @@
             installer-services-page
             installer-welcome-page
             installer-parameters-menu
-            installer-parameters-page))
+            installer-parameters-page
+            installer-dump-page))
 
 
 ;;;
@@ -91,4 +92,6 @@
   ;; procedure (menu-proc) -> void
   (parameters-menu installer-parameters-menu)
   ;; procedure (keyboard-layout-selection) -> void
-  (parameters-page installer-parameters-page))
+  (parameters-page installer-parameters-page)
+  ;; procedure (dump) -> void
+  (dump-page installer-dump-page))
