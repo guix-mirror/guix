@@ -12269,10 +12269,11 @@ characters.")
        (modules '((guix build utils)))
        (snippet
         '(begin
-           (for-each (lambda (file)
-                       (unless (equal? file "./ob-sclang.el")
-                         (delete-file file)))
-                     (find-files "." "\\.el"))))))
+           (with-directory-excursion "lisp"
+             (for-each (lambda (file)
+                         (unless (equal? file "./ob-sclang.el")
+                           (delete-file file)))
+                       (find-files "." "\\.el$")))))))
     (propagated-inputs
      (list emacs-org emacs-scel))
     (synopsis "Org Babel support for SuperCollider")
