@@ -23466,21 +23466,21 @@ heap.")
 total runtime size of an object on the heap")
     (license license:mpl2.0)))
 
-(define-public rust-heck-0.3
+(define-public rust-heck-0.4
   (package
     (name "rust-heck")
-    (version "0.3.2")
+    (version "0.4.0")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "heck" version))
-        (file-name (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "1b56s2c1ymdd0qmy31bw0ndhm31hcdamnhg3npp7ssrmc1ag9jw7"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "heck" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1ygphsnfwl2xpa211vbqkz1db6ri1kvkg8p8sqybi37wclg7fh15"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
+     `(#:skip-build?
+       #t
        #:cargo-inputs
        (("rust-unicode-segmentation" ,rust-unicode-segmentation-1))))
     (home-page "https://github.com/withoutboats/heck")
@@ -23491,6 +23491,24 @@ CamelCase and snake_case.  It is intended to be unicode aware, internally
 consistent, and reasonably well performing.")
     (license (list license:asl2.0
                    license:expat))))
+
+(define-public rust-heck-0.3
+  (package
+    (inherit rust-heck-0.4)
+    (name "rust-heck")
+    (version "0.3.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "heck" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1b56s2c1ymdd0qmy31bw0ndhm31hcdamnhg3npp7ssrmc1ag9jw7"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-unicode-segmentation" ,rust-unicode-segmentation-1))))))
 
 (define-public rust-hermit-abi-0.1
   (package
