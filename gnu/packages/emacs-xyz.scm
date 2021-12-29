@@ -8090,10 +8090,10 @@ them easier to distinguish from other, less important buffers.")
 (define-public emacs-embark
   ;; XXX: Upstream did not tag last release.  Commit hash below matches
   ;; version bump.
-  (let ((commit "bc3e4654329563ab28a96003610634c3a5e5a484"))
+  (let ((commit "5ebe2dfd91868ec525ea34ffd45941c5e9ce5358"))
     (package
       (name "emacs-embark")
-      (version "0.13")
+      (version "0.14")
       (source
        (origin
          (method git-fetch)
@@ -8101,7 +8101,7 @@ them easier to distinguish from other, less important buffers.")
                (url "https://github.com/oantolin/embark")
                (commit commit)))
          (sha256
-          (base32 "1x6m6gc32z7kv9nkr8mwhi9mimbwhd37qyxpwj33hml9ygi8s7r6"))
+          (base32 "07siy3kxx06nklsw0aysfy0ijssqbql4v43vs60kwvzs875w4d2s"))
          (file-name (git-file-name name version))))
       (build-system emacs-build-system)
       (propagated-inputs
