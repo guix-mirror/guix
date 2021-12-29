@@ -9740,7 +9740,7 @@ to all the other commands, too.")
 (define-public emacs-js2-mode
   (package
     (name "emacs-js2-mode")
-    (version "20201220")
+    (version "20211229")
     (source
      (origin
        (method git-fetch)
@@ -9749,7 +9749,7 @@ to all the other commands, too.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "00jy917cgp5xzfgs4m0spzlbqk8mg63layin8nxmn2647rfjnik4"))))
+        (base32 "1wcz3xji7viqxa5is81jd7in7x1fya6rzybm8qj9rwgdc8camvyb"))))
     (build-system emacs-build-system)
     (arguments
      `(#:tests? #t
