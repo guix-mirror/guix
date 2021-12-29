@@ -18382,12 +18382,39 @@ your Emacs.")
 within Emacs.")
       (license license:gpl3+))))
 
+(define-public emacs-svg-lib
+  ;; XXX: Upstream does not tag releases.  The commit hash below corresponds
+  ;; to the version bump.
+  (let ((commit "072a6e3243b3ad79453e86f9ff2e8fe2204f239b"))
+    (package
+      (name "emacs-svg-lib")
+      (version "0.2.4")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/rougier/svg-lib")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "048g4m3gvvxh5mfzimmq8d8vg6ah2hwi56mq2f7zvh1v0inb060a"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/rougier/svg-lib")
+      (synopsis "Emacs SVG library for creating tags, icons and bars")
+      (description
+       "This is a small Emacs library to create and display various
+SVG objects, namely tags, progress bars, progress pies and icons.
+Each object is guaranteed to fit nicely in a text buffer ensuring
+width is an integer multiple of character width.")
+      (license license:gpl3+))))
+
 (define-public emacs-svg-tag-mode
-  (let ((commit "87489d28450559078aa15b4a435143a297508e48")
-        (revision "1"))
+  ;; XXX: Upstream does not tag releases.  The commit hash below corresponds
+  ;; to the version bump.
+  (let ((commit "3b07983614bee0195534e7a8a6dcfab757da4f0b"))
     (package
       (name "emacs-svg-tag-mode")
-      (version (git-version "0.1" revision commit))
+      (version "0.3.2")
       (source
        (origin
          (method git-fetch)
@@ -18396,8 +18423,10 @@ within Emacs.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "0gyhmv60dx0zxx4bmhzsd7q5vfnkpfwlj6539bn272fwcr7zncp8"))))
+          (base32 "0nc0y2dn67gy9cly3yamskfd9dd028xbask8gjxql934bq0ads2i"))))
       (build-system emacs-build-system)
+      (propagated-inputs
+       (list emacs-svg-lib))
       (home-page "https://github.com/rougier/svg-tag-mode")
       (synopsis "Replace keywords with SVG tags")
       (description "This package provides a minor mode that replaces keywords
