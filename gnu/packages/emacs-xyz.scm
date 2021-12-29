@@ -5506,18 +5506,23 @@ an easy way to bind keys under a configurable prefix key.")
   (package
     (name "emacs-evil-tex")
     (version "1.0.2")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/iyefrat/evil-tex")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1wrx8ihimn1sx3vzzfppcwv0yfh3x95jrkxqvzj0ykckipm3zk0b"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/iyefrat/evil-tex")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1wrx8ihimn1sx3vzzfppcwv0yfh3x95jrkxqvzj0ykckipm3zk0b"))))
     (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'set-home
+           (lambda _ (setenv "HOME" "/tmp"))))))
     (propagated-inputs
-     (list emacs-evil emacs-auctex))
+     (list emacs-auctex emacs-evil))
     (home-page "https://github.com/iyefrat/evil-tex")
     (synopsis "Evil oriented additions for editing LaTeX")
     (description "This package is a toolbox for LaTeX editing with Evil.  It
