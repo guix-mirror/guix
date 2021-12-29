@@ -6816,19 +6816,24 @@ SuperCollider is a platform for audio synthesis and algorithmic composition.")
         (revision "1"))
     (package
       (name "emacs-company-auctex")
-      (version (git-version "0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/alexeyr/company-auctex")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "10qn7frn5wcmrlci3v6iliqzj7r9dls87h9zp3xkgrgn4bqprfp8"))))
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/alexeyr/company-auctex")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "10qn7frn5wcmrlci3v6iliqzj7r9dls87h9zp3xkgrgn4bqprfp8"))))
       (build-system emacs-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-before 'build 'set-home
+             (lambda _ (setenv "HOME" "/tmp"))))))
       (propagated-inputs
-       (list emacs-yasnippet emacs-auctex emacs-company))
+       (list emacs-auctex emacs-company emacs-yasnippet))
       (home-page "https://github.com/alexeyr/company-auctex/")
       (synopsis "Completion for @code{AUCTeX}")
       (description
