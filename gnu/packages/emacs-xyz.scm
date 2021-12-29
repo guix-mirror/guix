@@ -11453,7 +11453,7 @@ Lua programming language}.")
 (define-public emacs-ebuild-mode
   (package
     (name "emacs-ebuild-mode")
-    (version "1.53")
+    (version "1.54")
     (source
      (origin
        (method url-fetch)
@@ -11462,7 +11462,7 @@ Lua programming language}.")
              "ebuild-mode-" version ".tar.xz"))
        (file-name (string-append name "-" version ".tar.xz"))
        (sha256
-        (base32 "1l740qp71df9ids0c49kvp942rk8k1rfkg1hyv7ysfns5shk7b9l"))))
+        (base32 "0a4j3lriphv7f11qzjxynxv9jn5vj68qdgwklpviaqvisvcgvmnh"))))
     (build-system emacs-build-system)
     (arguments
      '(#:phases
@@ -11472,8 +11472,7 @@ Lua programming language}.")
              (invoke "make" "ebuild-mode.info")
              (install-file "ebuild-mode.info"
                            (string-append (assoc-ref outputs "out")
-                                          "/share/info"))
-             #t)))))
+                                          "/share/info")))))))
     (native-inputs
      (list texinfo))
     (home-page "https://devmanual.gentoo.org")
