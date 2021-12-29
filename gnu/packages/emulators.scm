@@ -1710,7 +1710,7 @@ This is a part of the TiLP project.")
 (define-public mame
   (package
     (name "mame")
-    (version "0.238")
+    (version "0.239")
     (source
      (origin
        (method git-fetch)
@@ -1719,7 +1719,7 @@ This is a part of the TiLP project.")
              (commit (apply string-append "mame" (string-split version #\.)))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "188h9a4lla0gimbss1bfvlidsm0l8smhqrhplv973k8j2jgf74fb"))
+        (base32 "02by0pq0j8pi5dllk90g94nbszynp9wqg75bl5x8bqrc7h80a0dq"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove bundled libraries.
@@ -1731,21 +1731,20 @@ This is a part of the TiLP project.")
                          "SDL2-override" "sqlite3" "utf8proc" "zlib")))))))
     (build-system gnu-build-system)
     (arguments
-     `(#:make-flags
-       (cons*
-        ;; A 'strict-overflow' error pops up on i686 so disable '-Werror'.
-        "NOWERROR=1"
-        (string-append "QT_HOME=" (assoc-ref %build-inputs "qtbase"))
-        (string-append "SDL_INI_PATH="
-                       (assoc-ref %outputs "out")
-                       "/share/mame/ini")
-        (map (lambda (lib)
-               (string-append "USE_SYSTEM_LIB_" (string-upcase lib) "=1"))
-             '("asio" "expat" "flac" "glm" "jpeg" "lua" "portaudio" "portmidi"
-               "pugixml" "rapidjson" "sqlite3" "utf8proc" "zlib")))
-       #:tests? #f                      ;no test in regular release
-       #:phases
-       (modify-phases %standard-phases
+     (list
+      #:make-flags
+      #~(cons*
+         ;; A 'strict-overflow' error pops up on i686 so disable '-Werror'.
+         "NOWERROR=1"
+         (string-append "QT_HOME=" #$(this-package-input "qtbase-5"))
+         (string-append "SDL_INI_PATH=" #$output "/share/mame/ini")
+         (map (lambda (lib)
+                (string-append "USE_SYSTEM_LIB_" (string-upcase lib) "=1"))
+              '("asio" "expat" "flac" "glm" "jpeg" "lua" "portaudio" "portmidi"
+                "pugixml" "rapidjson" "sqlite3" "utf8proc" "zlib")))
+      #:tests? #f                       ;no test in regular release
+      #:phases
+      `(modify-phases %standard-phases
          (delete 'configure)
          (add-after 'build 'build-documentation
            (lambda _ (invoke "make" "-C" "docs" "man" "info")))
@@ -1853,32 +1852,32 @@ This is a part of the TiLP project.")
                            Keywords=Game;Emulator;Arcade;~%"
                            executable)))))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("sphinx" ,python-sphinx)
-       ("sphinxcontrib-svg2pdfconverter" ,python-sphinxcontrib-svg2pdfconverter)
-       ("texinfo" ,texinfo)))
+     (list pkg-config
+           python-sphinx
+           python-sphinxcontrib-svg2pdfconverter
+           texinfo))
     (inputs
-     `(("alsa-lib" ,alsa-lib)
-       ("asio" ,asio)
-       ("expat" ,expat)
-       ("flac" ,flac)
-       ("fontconfig" ,fontconfig)
-       ("glm" ,glm)
-       ("libjpeg" ,libjpeg-turbo)
-       ("libxi" ,libxi)
-       ("libxinerama" ,libxinerama)
-       ("lua" ,lua)
-       ("portaudio" ,portaudio)
-       ("portmidi" ,portmidi)
-       ("pugixml" ,pugixml)
-       ("pulseaudio" ,pulseaudio)
-       ("python-wrapper" ,python-wrapper)
-       ("qtbase" ,qtbase-5)
-       ("rapidjson" ,rapidjson)
-       ("sdl" ,(sdl-union (list sdl2 sdl2-ttf)))
-       ("sqlite" ,sqlite)
-       ("utf8proc" ,utf8proc)
-       ("zlib" ,zlib)))
+     (list alsa-lib
+           asio
+           expat
+           flac
+           fontconfig
+           glm
+           libjpeg-turbo
+           libxi
+           libxinerama
+           lua
+           portaudio
+           portmidi
+           pugixml
+           pulseaudio
+           python-wrapper
+           qtbase-5
+           rapidjson
+           (sdl-union (list sdl2 sdl2-ttf))
+           sqlite
+           utf8proc
+           zlib))
     (home-page "https://www.mamedev.org")
     (synopsis "Multi-purpose emulation framework")
     (description "MAME's purpose is to preserve decades of software
