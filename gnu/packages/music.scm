@@ -4795,7 +4795,7 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
      `(("jack" ,jack-2)
        ("lv2" ,lv2)
        ("readline" ,readline)
-       ("libsndfile" ,libsndfile/fixed)))
+       ("libsndfile" ,libsndfile)))
     (home-page "https://github.com/swesterfeld/liquidsfz")
     (synopsis "Sampler library")
     (description "The main goal of liquidsfz is to provide an SFZ sampler

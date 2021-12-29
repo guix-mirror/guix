@@ -658,7 +658,7 @@ address of one of the participants.")
     (inputs
      (list avahi
            boost
-           libsndfile/fixed
+           libsndfile
            libxi
            mesa ; avoid bundled
            openssl

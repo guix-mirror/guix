@@ -121,14 +121,6 @@ SPARC.  Hopefully the design of the library will also make it easy to extend
 for reading and writing new sound file formats.")
     (license l:gpl2+)))
 
-;; Remove this on core-updates
-(define-public libsndfile/fixed
-  (package
-    (inherit libsndfile)
-    (inputs '())
-    (propagated-inputs
-     (list libvorbis libogg flac opus))))
-
 (define-public libsamplerate
   (package
     (name "libsamplerate")                     ; aka. Secret Rabbit Code (SRC)
