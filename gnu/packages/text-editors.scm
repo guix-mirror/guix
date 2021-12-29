@@ -901,17 +901,19 @@ Octave.  TeXmacs is completely extensible via Guile.")
 (define-public scintilla
   (package
     (name "scintilla")
-    (version "5.1.4")
+    (version "5.1.5")
     (source
      (origin
        (method url-fetch)
        (uri (let ((v (apply string-append (string-split version #\.))))
               (string-append "https://www.scintilla.org/scintilla" v ".tgz")))
        (sha256
-        (base32 "0rd3scfs3dwaj85ds8yrcp1r8z0lifi7qv2464k6n1c995amr0nw"))))
+        (base32 "0mwyhjvmvxyip9z169bgpkz4k9la802z438m8bb0f4gyqfbif999"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:make-flags (list "GTK3=1" "CC=gcc" "-Cgtk")
+     `(#:make-flags (list "GTK3=1"
+                          ,(string-append "CC=" (cc-for-target))
+                          "-Cgtk")
        #:tests? #f                      ;require un-packaged Pyside
        #:phases
        (modify-phases %standard-phases
@@ -927,8 +929,7 @@ Octave.  TeXmacs is completely extensible via Guile.")
                (for-each (lambda (f) (install-file f include))
                          (find-files "include/" "."))))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("python" ,python-wrapper)))
+     (list pkg-config python-wrapper))
     (inputs
      (list gtk+))
     (home-page "https://www.scintilla.org/")
