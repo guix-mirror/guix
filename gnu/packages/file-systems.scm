@@ -515,27 +515,25 @@ performance and other characteristics.")
   (package
     (name "bcachefs-static")
     (version (package-version bcachefs-tools))
-    (build-system trivial-build-system)
     (source #f)
-    (inputs
-     `(("bcachefs-tools" ,bcachefs-tools/static)))
+    (build-system trivial-build-system)
     (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils)
-                      (ice-9 ftw)
-                      (srfi srfi-26))
-         (let* ((bcachefs-tools (assoc-ref %build-inputs "bcachefs-tools"))
-                (out (assoc-ref %outputs "out")))
-           (mkdir-p out)
-           (with-directory-excursion out
-             (install-file (string-append bcachefs-tools
-                                          "/sbin/bcachefs")
-                           "sbin")
-             (remove-store-references "sbin/bcachefs")
-             (invoke "sbin/bcachefs" "version") ; test suite
-             #t)))))
+     (list #:modules '((guix build utils))
+           #:builder
+           #~(begin
+               (use-modules (guix build utils)
+                            (ice-9 ftw)
+                            (srfi srfi-26))
+               (mkdir-p #$output)
+               (with-directory-excursion #$output
+                 (install-file (string-append #$(this-package-input
+                                                 "bcachefs-tools-static")
+                                              "/sbin/bcachefs")
+                               "sbin")
+                 (remove-store-references "sbin/bcachefs")
+                 (invoke "sbin/bcachefs" "version"))))) ; test suite
+    (inputs
+     (list bcachefs-tools/static))
     (home-page (package-home-page bcachefs-tools))
     (synopsis "Statically-linked bcachefs command from bcachefs-tools")
     (description "This package provides the statically-linked @command{bcachefs}
