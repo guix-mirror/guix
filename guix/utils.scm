@@ -668,7 +668,7 @@ a character other than '@'."
   "Is the architecture of TARGET a variant of Intel's 32-bit architecture
 (IA32)?"
   ;; Intel also has a 16-bit architecture in the iN86 series, i286
-  ;; (see, e.g. https://en.wikipedia.org/wiki/Intel/808286) so this
+  ;; (see, e.g., https://en.wikipedia.org/wiki/Intel_80286) so this
   ;; procedure is not named target-x86?.
   (or (string-prefix? "i386-" target)
       (string-prefix? "i486-" target)
