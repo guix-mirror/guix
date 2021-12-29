@@ -25061,28 +25061,31 @@ all of your projects, then override or add variables on a per-project basis.")
     (license license:gpl3)))
 
 (define-public emacs-el-patch
-  (let ((commit "8ab8fb3315ec9d3fd758929409ddf3151f464e80")
-        (revision "0"))
-    (package
-      (name "emacs-el-patch")
-      (version (git-version "2.2.3" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/raxod502/el-patch")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "197sxp4sscs0xlp67gbf5zh9ga521qvm9n7klpwljm1kf0jmm4vz"))))
-      (build-system emacs-build-system)
-      (home-page "https://github.com/raxod502/el-patch")
-      (synopsis "Future-proof your Emacs customizations")
-      (description "This package allows for an alternate definition of an Elisp
+  (package
+    (name "emacs-el-patch")
+    (version "2.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/raxod502/el-patch")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0vankik1dh2yd554h59s5vlzanwx8sx9j31kr15830m3hfgikygz"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; XXX: The `validate-compiled-autoloads' phase fails with "Symbol’s
+         ;; value as variable is void: el-patch-deftype".
+         (delete 'validate-compiled-autoloads))))
+    (home-page "https://github.com/raxod502/el-patch")
+    (synopsis "Future-proof your Emacs customizations")
+    (description "This package allows for an alternate definition of an Elisp
 function to be specified and for any differences from the original definition
 to be examined using Ediff.")
-      (license license:expat))))
+    (license license:expat)))
 
 (define-public emacs-info-plus
   (let ((commit "29811edf7a71764ac343631facc00268d9483146")
