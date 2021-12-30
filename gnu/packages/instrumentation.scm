@@ -156,14 +156,14 @@ with a handful of C++ libraries.")
 (define-public lttng-ust
   (package
     (name "lttng-ust")
-    (version "2.13.0")
+    (version "2.13.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://lttng.org/files/lttng-ust/"
                                   "lttng-ust-" version ".tar.bz2"))
               (sha256
                (base32
-                "0l0p6y2zrd9hgd015dhafjmpcj7waz762n6wf5ws1xlwcwrwkr2l"))))
+                "1p7d94r275yvby6zqfxaswdl1q46zxbc8x5rkhnjxrp1d41byrsn"))))
     (build-system gnu-build-system)
     (inputs
      (list liburcu numactl))
