@@ -1230,7 +1230,7 @@ personal identity and company identification codes,
 international standard numbers (ISBN, IBAN, EAN, etc.)
 and various other formats.
 The module also includes implementations of the Verhoeff,
-Luhn and family of ISO/IEC 7064 check digit algorithms. ")
+Luhn and family of ISO/IEC 7064 check digit algorithms.")
     (license license:lgpl2.1+)))
 
 (define-public python2-stdnum
