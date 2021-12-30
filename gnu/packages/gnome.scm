@@ -8938,7 +8938,7 @@ found by Tracker.  This means that GNOME Music doesn't need to maintain a
 database of its own.
 
 If you need to go beyond simple searches, Tracker is also a linked data
-endpoint and it understands SPARQL. ")
+endpoint and it understands SPARQL.")
     ;; https://gitlab.gnome.org/GNOME/tracker/-/blob/master/COPYING:
     ;; src/libtracker-*/* and src/tracker-extract/* are covered by lgpl2.1+,
     ;; libstemmer is bsd-3 and the rest is gpl2+.
