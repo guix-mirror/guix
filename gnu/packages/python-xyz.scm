@@ -1166,7 +1166,7 @@ by @code{binstar}, @code{binstar-build}, and @code{chalmers}.")
 - tools to build and work with gettext message catalogs
 - a Python interface to the CLDR (Common Locale Data Repository), providing
 access to various locale display names, localized number and date formatting,
-etc. ")
+etc.")
     (license license:bsd-3)))
 
 (define-public python2-babel
