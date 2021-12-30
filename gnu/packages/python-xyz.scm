@@ -22493,7 +22493,7 @@ consists of two components: dynamic task scheduling optimized for computation,
 and large data collections like parallel arrays, dataframes, and lists that
 extend common interfaces like NumPy, Pandas, or Python iterators to
 larger-than-memory or distributed environments.  These parallel collections
-run on top of the dynamic task schedulers. ")
+run on top of the dynamic task schedulers.")
     (license license:bsd-3)))
 
 (define-public python-ilinkedlist
