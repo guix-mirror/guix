@@ -6372,7 +6372,7 @@ data serialization format.")
     (home-page "https://github.com/mattn/go-zglob")
     (synopsis "Glob library that descends into other directories")
     (description " A glob library that implements descending into other
-directories.  It is optimized for filewalking. ")
+directories.  It is optimized for filewalking.")
     (license license:expat)))
 
 (define-public go-github-com-mattn-go-sqlite3
