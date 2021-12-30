@@ -23690,7 +23690,7 @@ and implementation of treeview controls using treemacs as a tree renderer.")
     (propagated-inputs
      (list emacs-bui emacs-lsp-mode emacs-posframe emacs-lsp-treemacs))
     (home-page "https://emacs-lsp.github.io/dap-mode")
-    (synopsis "Emacs client/library for Debug Adapter Protocol ")
+    (synopsis "Emacs client/library for Debug Adapter Protocol")
     (description
      "Dap mode is an Emacs client/library for Debug Adapter
 Protocol (DAP), a wire protocol for communication between client and
