@@ -204,7 +204,7 @@ lines.")
     (description "Plotly's Python graphing library makes interactive,
 publication-quality graphs online.  Examples of how to make line plots, scatter
 plots, area charts, bar charts, error bars, box plots, histograms, heatmaps,
-subplots, multiple-axes, polar charts, and bubble charts. ")
+subplots, multiple-axes, polar charts, and bubble charts.")
     (license license:expat)))
 
 (define-public python-plotly-2.4.1
