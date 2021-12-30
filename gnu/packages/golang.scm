@@ -7541,7 +7541,7 @@ can manipulate a @file{ssh_config} file from a program.")
     (description "Package agent implements the ssh-agent protocol, and
 provides both a client and a server.  The client can talk to a standard
 ssh-agent that uses UNIX sockets, and one could implement an alternative
-ssh-agent process using the sample server. ")
+ssh-agent process using the sample server.")
     (license license:asl2.0)))
 
 (define-public go-github-com-alcortesm-tgz
