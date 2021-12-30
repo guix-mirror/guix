@@ -5465,7 +5465,7 @@ be registered via an entrypoint.")
     (description
      "This plugin for @code{python-plaster} adds support for PasteDeploy
 syntax, it provides a plaster @code{Loader} object that can parse ini files
-according to the standard set by PasteDeploy ")
+according to the standard set by PasteDeploy")
     (license license:expat)))
 
 (define-public python-hupper
