@@ -9348,7 +9348,7 @@ LY1 encoding.")
       (synopsis "Control sectional headers")
       (description "This is a LaTeX2ε package to help change the style of any or
 all of LaTeX's sectional headers in the article, book, or report classes.
-Examples include the addition of rules above or below a section title. ")
+Examples include the addition of rules above or below a section title.")
       (license license:lppl1.2+))))
 
 (define-public texlive-morefloats
