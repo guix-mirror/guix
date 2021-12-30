@@ -20011,7 +20011,7 @@ Emacs minor mode to escape sequences in code.")
     (home-page "https://github.com/rakanalh/emacs-dashboard")
     (synopsis "Startup screen extracted from Spacemacs")
     (description "This package provides an extensible Emacs dashboard, with
-sections for bookmarks, projectil projects, org-agenda and more. ")
+sections for bookmarks, projectil projects, org-agenda and more.")
     (license license:gpl3+)))
 
 (define-public emacs-slime-company
