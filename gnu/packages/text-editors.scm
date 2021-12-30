@@ -423,7 +423,7 @@ systems.")
     (description "Leafpad is a GTK+ text editor that emphasizes simplicity.  As
 development focuses on keeping weight down to a minimum, only the most essential
 features are implemented in the editor.  Leafpad is simple to use, is easily
-compiled, requires few libraries, and starts up quickly. ")
+compiled, requires few libraries, and starts up quickly.")
     (license license:gpl2+)))
 
 (define-public l3afpad
