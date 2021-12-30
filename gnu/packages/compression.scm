@@ -2282,7 +2282,7 @@ API, and that means that you can also use QTextStream, QDataStream or
 whatever you would like to use on your zipped files.
 
 QuaZIP provides complete abstraction of the ZIP/UNZIP API, for both
-reading from and writing to ZIP archives. ")
+reading from and writing to ZIP archives.")
     ;; Project is distributed under LGPL, but "quazip/z*" "quazip/unzip.*" are
     ;; distributed under zlib terms.
     (license (list license:lgpl2.1+ license:zlib))))
