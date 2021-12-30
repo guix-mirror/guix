@@ -611,7 +611,7 @@ Database.  Accompanying these source data are generic TeX loader files
 allowing this data to be used as part of TeX runs, in particular in building
 format files.  Currently there are two loader files: one for general character
 set up and one for initializing XeTeX character classes as has been carried
-out to date by @code{unicode-letters.tex}. ")
+out to date by @code{unicode-letters.tex}.")
     (license license:lppl1.3c+)))
 
 (define-deprecated-package texlive-generic-unicode-data texlive-unicode-data)
