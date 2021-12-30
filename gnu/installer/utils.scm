@@ -74,9 +74,9 @@ number. If no percentage is found, return #f"
     (and result
          (string->number (match:substring result 1)))))
 
-(define* (run-command command #:key locale)
-  "Run COMMAND, a list of strings, in the given LOCALE.  Return true if
-COMMAND exited successfully, #f otherwise."
+(define* (run-command command)
+  "Run COMMAND, a list of strings.  Return true if COMMAND exited
+successfully, #f otherwise."
   (define env (environ))
 
   (define (pause)
@@ -89,18 +89,6 @@ COMMAND exited successfully, #f otherwise."
        (read-line port))))
 
   (setenv "PATH" "/run/current-system/profile/bin")
-
-  (when locale
-    (let ((supported? (false-if-exception
-                       (setlocale LC_ALL locale))))
-      ;; If LOCALE is not supported, then set LANGUAGE, which might at
-      ;; least give us translated messages.
-      (if supported?
-          (setenv "LC_ALL" locale)
-          (setenv "LANGUAGE"
-                  (string-take locale
-                               (or (string-index locale #\_)
-                                   (string-length locale)))))))
 
   (guard (c ((invoke-error? c)
              (newline)

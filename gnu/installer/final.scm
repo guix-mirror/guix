@@ -191,9 +191,8 @@ or #f.  Return #t on success and #f on failure."
                          (lambda ()
                            (with-error-to-file "/dev/console"
                              (lambda ()
-                               (run-command install-command
-                                            #:locale locale)))))
-                       (run-command install-command #:locale locale))))
+                               (run-command install-command)))))
+                       (run-command install-command))))
            (lambda ()
              ;; Restart guix-daemon so that it does no keep the MNT namespace
              ;; alive.
