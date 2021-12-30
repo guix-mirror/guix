@@ -5366,11 +5366,9 @@ writing C extensions for Python as easy as Python itself.")
                     ""))
                  #t)))))))))
 
-;; NOTE: when upgrading numpy please make sure that python-pandas and
-;; python-scipy still build, as these three packages are often used together.
 (define-public python-numpy-next
   (package
-    (name "python-numpy")
+    (name "python-numpy-next")
     (version "1.21.3")
     (source
      (origin
@@ -5440,6 +5438,7 @@ capabilities.")
                 (strip-python2-variant python-numpy-next))))
     (package
       (inherit numpy)
+      (name "python-numpy")
       (version "1.16.5")
       (source (origin
                 (method url-fetch)
@@ -5466,6 +5465,7 @@ capabilities.")
 (define-public python-numpy-1.20
   (package
     (inherit python-numpy-next)
+    (name "python-numpy")
     (version "1.20.3")
     (source (origin
               (method url-fetch)
@@ -5481,6 +5481,8 @@ capabilities.")
      (substitute-keyword-arguments (package-arguments python-numpy-next)
        ((#:tests? _ #t) #f)))))
 
+;; NOTE: when upgrading numpy please make sure that python-pandas and
+;; python-scipy still build, as these three packages are often used together.
 (define-public python-numpy python-numpy-1.20)
 
 ;; NOTE: NumPy 1.8 is packaged only for Python 2 because it is of
