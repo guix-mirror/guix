@@ -10840,7 +10840,7 @@ mp3, Ogg Vorbis and FLAC")
     (description
      "SoundConverter supports converting between many audio formats including
 Opus, Ogg Vorbis, FLAC and more.  It supports parallel conversion, and
-configurable file renaming. ")
+configurable file renaming.")
     (license license:gpl3)))
 
 (define-public workrave
