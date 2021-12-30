@@ -3186,7 +3186,7 @@ visualization, matrix manipulation.")
 (define-public prusa-slicer
   (package
     (name "prusa-slicer")
-    (version "2.3.3")
+    (version "2.4.0")
     (source
      (origin
        (method git-fetch)
@@ -3195,7 +3195,7 @@ visualization, matrix manipulation.")
          (url "https://github.com/prusa3d/PrusaSlicer")
          (commit (string-append "version_" version))))
        (file-name (git-file-name name version))
-       (sha256 (base32 "0w0synqi3iz9aigsgv6x1c6sg123fasbx19h4w3ic1l48r8qmpwm"))
+       (sha256 (base32 "1mb7v0khrmsgy3inmh4mjn709jlhx422kvbnrhsqziph2wwak9bz"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -3230,30 +3230,30 @@ visualization, matrix manipulation.")
     (native-inputs
      (list pkg-config))
     (inputs
-     `(("boost" ,boost)
-       ("cereal" ,cereal)
-       ("cgal" ,cgal)
-       ("curl" ,curl)
-       ("dbus" ,dbus)
-       ("eigen" ,eigen)
-       ("expat" ,expat)
-       ("glew" ,glew)
-       ("glib" ,glib)
-       ("gmp" ,gmp)
-       ("gtk" ,gtk+)
-       ("hidapi" ,hidapi)
-       ("ilmbase" ,ilmbase)
-       ("libigl" ,libigl)
-       ("libpng" ,libpng)
-       ("mesa" ,mesa)
-       ("mpfr" ,mpfr)
-       ("nlopt" ,nlopt)
-       ("openvdb" ,openvdb)
-       ("pango" ,pango)
-       ("tbb" ,tbb)
-       ("udev" ,eudev)
-       ("wxwidgets" ,wxwidgets)
-       ("zlib" ,zlib)))
+     (list boost
+           cereal
+           cgal
+           curl
+           dbus
+           eigen
+           expat
+           glew
+           glib
+           gmp
+           gtk+
+           hidapi
+           ilmbase
+           libigl
+           libpng
+           mesa
+           mpfr
+           nlopt
+           openvdb
+           pango
+           tbb
+           eudev
+           wxwidgets
+           zlib))
     (home-page "https://www.prusa3d.com/prusaslicer/")
     (synopsis "G-code generator for 3D printers (RepRap, Makerbot, Ultimaker etc.)")
     (description "PrusaSlicer takes 3D models (STL, OBJ, AMF) and converts them into
