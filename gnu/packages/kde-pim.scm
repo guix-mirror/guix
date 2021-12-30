@@ -943,7 +943,7 @@ easier to do so.")
     (synopsis "Library for accessing LDAP")
     (description " This is a library for accessing LDAP with a convenient Qt
 style C++ API.  LDAP (Lightweight Directory Access Protocol) is an application
-protocol for querying and modifying directory services running over TCP/IP. ")
+protocol for querying and modifying directory services running over TCP/IP.")
     (license license:lgpl2.0+)))
 
 (define-public kleopatra
