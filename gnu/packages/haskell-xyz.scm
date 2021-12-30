@@ -2329,7 +2329,7 @@ concurrent threads.  Can be used for progress displays etc.")
     (native-inputs
      (list ghc-quickcheck ghc-hspec ghc-safe ghc-split))
     (home-page "https://github.com/snoyberg/conduit")
-    (synopsis "Streaming data library ")
+    (synopsis "Streaming data library")
     (description
      "The conduit package is a solution to the streaming data problem,
 allowing for production, transformation, and consumption of streams of data
