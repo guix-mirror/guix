@@ -13992,7 +13992,7 @@ and lambdas.")
      (list emacs-dash emacs-el2org emacs-ht emacs-mustache
            emacs-simple-httpd))
     (home-page "https://github.com/tumashu/org2web")
-    (synopsis "Static site generator based on org-mode ")
+    (synopsis "Static site generator based on org-mode")
     (description "Org2web is a static site generator based on org-mode,
 which code derived from Kelvin H's org-page.")
     (license license:gpl2+)))
