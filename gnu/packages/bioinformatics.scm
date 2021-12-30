@@ -14704,7 +14704,7 @@ usually ignored by other methods or only used for filtering.")
     (home-page "https://andersen-lab.github.io/ivar/html/")
     (synopsis "Tools for amplicon-based sequencing")
     (description "iVar is a computational package that contains functions
-broadly useful for viral amplicon-based sequencing. ")
+broadly useful for viral amplicon-based sequencing.")
     (license license:gpl3+)))
 
 (define-public python-pyliftover
