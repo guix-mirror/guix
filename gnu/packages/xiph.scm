@@ -435,7 +435,7 @@ windows systems.")
      (list pkg-config))
     (propagated-inputs
      (list opus))
-    (synopsis "Library for encoding Opus audio files and streams ")
+    (synopsis "Library for encoding Opus audio files and streams")
     (description "The libopusenc libraries provide a high-level API for
 encoding Opus files and streams.")
     (home-page "https://www.opus-codec.org/")
