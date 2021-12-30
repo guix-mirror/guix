@@ -15355,7 +15355,7 @@ browser.")
     (native-inputs
      `(("cmake" ,cmake-minimal)))
     (home-page "https://github.com/nanoporetech/pyspoa")
-    (synopsis "Python bindings for the SIMD partial order alignment library ")
+    (synopsis "Python bindings for the SIMD partial order alignment library")
     (description
      "This package provides Python bindings for spoa, a C++ implementation of
 the @dfn{partial order alignment} (POA) algorithm (as described in
