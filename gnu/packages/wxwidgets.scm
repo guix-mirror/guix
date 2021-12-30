@@ -26,6 +26,7 @@
 
 (define-module (gnu packages wxwidgets)
   #:use-module (guix packages)
+  #:use-module (guix gexp)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix l:)
@@ -33,6 +34,7 @@
   #:use-module (guix build-system python)
   #:use-module (guix utils)
   #:use-module (gnu packages)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages freedesktop)
@@ -162,7 +164,7 @@ and many other languages.")
 ;; This can be removed when wxWidgets is updated to the next stable version.
 (define-public wxwidgets-3.1
   (package (inherit wxwidgets)
-           (version "3.1.0")
+           (version "3.1.5")
            (source
             (origin
               (method git-fetch)
@@ -172,13 +174,32 @@ and many other languages.")
               (file-name (git-file-name "wxwidgets" version))
               (sha256
                (base32
-                "14kl1rsngm70v3mbyv1mal15iz2b18k97avjx8jn7s81znha1c7f"))))
+                "0j998nzqmycafignclxmahgqm5kgs1fiqbsiyvzm7bnpnafi333y"))))
            (inputs (modify-inputs (package-inputs wxwidgets)
-                     (prepend gstreamer gst-plugins-base)))
+                     (prepend catch-framework gstreamer gst-plugins-base)))
            (arguments
             (substitute-keyword-arguments (package-arguments wxwidgets)
               ((#:configure-flags flags)
-               `(cons "--enable-mediactrl" ,flags))))))
+               '(list "--with-regex" "--with-libmspack" "--with-sdl"
+                      "--enable-mediactrl" "--enable-webviewwebkit"))
+              ((#:phases phases)
+               `(modify-phases ,phases
+                  (add-after 'unpack 'add-catch
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (install-file
+                       (search-input-file inputs "include/catch.hpp")
+                       "3rdparty/catch/include/")))
+                  (replace 'configure
+                    (lambda* (#:key configure-flags inputs native-inputs outputs
+                         #:allow-other-keys)
+                      (let ((sh (search-input-file (or native-inputs inputs)
+                                                   "bin/sh")))
+                        (apply invoke "./configure"
+                               (string-append "SHELL=" sh)
+                               (string-append "CONFIG_SHELL=" sh)
+                               (string-append "--prefix="
+                                              (assoc-ref outputs "out"))
+                               configure-flags))))))))))
 
 (define-public wxwidgets-gtk2-3.1
   (package/inherit wxwidgets-3.1
