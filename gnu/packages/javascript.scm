@@ -343,7 +343,7 @@ be able to view it naturally and easily.")))
     (home-page "https://github.com/tj/commander.js")
     (synopsis "Library for node.js command-line interfaces")
     (description "Commander.js aims to be the complete solution for node.js
-command-line interfaces.  ")
+command-line interfaces.")
     (license license:expat)))
 
 (define-public js-xmldom-sre
