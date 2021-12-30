@@ -13311,7 +13311,7 @@ includes a command line tool and an analysis pipeline.")
            star
            zlib))
     (home-page "https://github.com/suhrig/arriba")
-    (synopsis "Gene fusion detection from RNA-Seq data ")
+    (synopsis "Gene fusion detection from RNA-Seq data")
     (description
      "Arriba is a command-line tool for the detection of gene fusions from
 RNA-Seq data.  It was developed for the use in a clinical research setting.
