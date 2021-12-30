@@ -14674,7 +14674,7 @@ genomes known to contain a given k-mer.")
     (native-inputs
      (list autoconf automake which))
     (home-page "https://csb5.github.io/lofreq/")
-    (synopsis "Sensitive variant calling from sequencing data ")
+    (synopsis "Sensitive variant calling from sequencing data")
     (description "LoFreq is a fast and sensitive variant-caller for inferring
 SNVs and indels from next-generation sequencing data.  It makes full use of
 base-call qualities and other sources of errors inherent in
