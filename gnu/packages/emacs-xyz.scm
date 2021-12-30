@@ -8355,7 +8355,7 @@ bindings @code{M-p} and @code{M-p} for navigation.  When
 @code{highlight-symbol-on-navigation-p} is set, highlighting is triggered
 regardless of @code{highlight-symbol-idle-delay}.
 
-@code{highlight-symbol-query-replace} can be used to replace the symbol. ")
+@code{highlight-symbol-query-replace} can be used to replace the symbol.")
       (license license:gpl2+))))
 
 (define-public emacs-symbol-overlay
