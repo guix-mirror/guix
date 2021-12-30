@@ -9917,7 +9917,7 @@ subsequence} (LCS) using a dynamic programming algorithm.")
     (description
      "This package provides useful functions to deal with the
 @code{haven_labelled} and @code{haven_labelled_spss} classes introduced by the
-haven package. ")
+haven package.")
     (license license:gpl3)))
 
 (define-public r-ggformula
