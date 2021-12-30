@@ -132,6 +132,7 @@
 
             CLONE_CHILD_CLEARTID
             CLONE_CHILD_SETTID
+            CLONE_NEWCGROUP
             CLONE_NEWNS
             CLONE_NEWUTS
             CLONE_NEWIPC
@@ -1025,6 +1026,7 @@ caller lacks root privileges."
 ;; Linux clone flags, from linux/sched.h
 (define CLONE_CHILD_CLEARTID #x00200000)
 (define CLONE_CHILD_SETTID   #x01000000)
+(define CLONE_NEWCGROUP      #x02000000)
 (define CLONE_NEWNS          #x00020000)
 (define CLONE_NEWUTS         #x04000000)
 (define CLONE_NEWIPC         #x08000000)

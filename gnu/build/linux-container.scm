@@ -52,7 +52,7 @@ exists."
   (file-exists? "/proc/self/setgroups"))
 
 (define %namespaces
-  '(mnt pid ipc uts user net))
+  '(cgroup mnt pid ipc uts user net))
 
 (define (call-with-clean-exit thunk)
   "Apply THUNK, but exit with a status code of 1 if it fails."
@@ -210,6 +210,7 @@ corresponds to the symbols in NAMESPACES."
   ;; Use the same flags as fork(3) in addition to the namespace flags.
   (apply logior SIGCHLD
          (map (match-lambda
+               ('cgroup  CLONE_NEWCGROUP)
                ('mnt  CLONE_NEWNS)
                ('uts  CLONE_NEWUTS)
                ('ipc  CLONE_NEWIPC)
