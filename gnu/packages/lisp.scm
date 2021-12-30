@@ -1278,5 +1278,5 @@ and make for REPLs that start blazing fast.
     (synopsis "Makes easy to build application executables with SBCL")
     (description
      "Buildapp is an application for SBCL or CCL that configures and saves an
-executable Common Lisp image.  It is similar to cl-launch and hu.dwim.build. ")
+executable Common Lisp image.  It is similar to cl-launch and hu.dwim.build.")
     (license license:bsd-2)))
