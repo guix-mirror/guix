@@ -196,7 +196,7 @@ another location, similar to @command{mount --bind}.  It can be used for:
 @item Sharing a directory with a list of users (or groups).
 @item Modifying permission bits using rules with chmod-like syntax.
 @item Changing the permissions with which files are created.
-@end itemize ")
+@end itemize")
     (license license:gpl2+)))
 
 (define-public cachefilesd-inotify
