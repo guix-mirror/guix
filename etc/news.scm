@@ -25,7 +25,7 @@
 (channel-news
  (version 0)
 
- (entry (commit "1eb40a6dc4917f5a2e915f8b31b750dba3d378c6")
+ (entry (commit "ea2fd313d52dc62593b478acf5c3e7ea052c45de")
         (title
          (en "@samp{integer expected from stream}?  Update your Guix daemon")
          (nl "@samp{integer expected from stream}?  Werk je Guix daemon bij"))
