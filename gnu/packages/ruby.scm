@@ -7080,7 +7080,7 @@ they match.")
                       #t)))))
     (native-inputs
      (list ragel ruby-regexp-property-values ruby-rspec))
-    (synopsis "A regular expression parser library for Ruby ")
+    (synopsis "Regular expression parser library for Ruby")
     (description "A Ruby gem for tokenizing, parsing, and transforming regular
 expressions.  It comprises the following components:
 @itemize
