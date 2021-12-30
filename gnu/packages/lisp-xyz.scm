@@ -13702,7 +13702,7 @@ for debugging and profiling real world applications.")
 statistical data for it.  On SBCL this includes the data from @code{time}, for
 all other implementations just the @code{real-time} and @code{run-time} data.
 However, you can extend the system by adding your own @code{metrics} to it, or
-even by adding additional statistical @code{compute}ations. ")
+even by adding additional statistical @code{compute}ations.")
       (license license:zlib))))
 
 (define-public cl-trivial-benchmark
