@@ -3488,7 +3488,7 @@ A very simple IM client working over the DHT.
     (home-page "https://frrouting.org/")
     (synopsis "IP routing protocol suite")
     (description "FRRouting (FRR) is an IP routing protocol suite which includes
-protocol daemons for BGP, IS-IS, LDP, OSPF, PIM, and RIP. ")
+protocol daemons for BGP, IS-IS, LDP, OSPF, PIM, and RIP.")
     (license license:gpl2+)))
 
 (define-public bird
