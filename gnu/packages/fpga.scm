@@ -423,7 +423,7 @@ constructed by a Python program.")
     (home-page "http://www.myhdl.org/")
     (synopsis "Python as a Hardware Description Language")
     (description "This package provides a library to turn Python into
-a hardware description and verification language. ")
+a hardware description and verification language.")
     (license license:lgpl2.1+)))
 
 (define-public nvc
