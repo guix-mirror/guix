@@ -1369,7 +1369,7 @@ from Yesod.")
     (description "This Haskell package provides a set of basic form inputs such
 as text, number, time, checkbox, select, textarea, etc through the
 @code{Yesod.Form.Fields} module.  Also, there is @code{Yesod.Form.Nic} module
-providing richtext field using Nic editor. ")
+providing richtext field using Nic editor.")
     (license license:expat)))
 
 (define-public ghc-yesod
