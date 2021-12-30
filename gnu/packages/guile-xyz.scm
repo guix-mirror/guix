@@ -2125,7 +2125,7 @@ understand, extend, and port to host languages other than Scheme.")
       (synopsis "Guile reader extension for `raw strings'")
       (description "This package provides A Guile reader extension for `raw
 strings', it lets you write verbatim strings without having to escape double
-quotes. ")
+quotes.")
       (license license:public-domain))))
 
 (define-public guile-reader
