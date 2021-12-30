@@ -15389,7 +15389,7 @@ information.")
     (synopsis "Standard spec's for @code{GenValidity} instances")
     (description
      "This haskell library provides validity and validity-based testing for
-@code{ghc-hspec}. ")
+@code{ghc-hspec}.")
     (license license:expat)))
 
 (define-public ghc-boot-th
