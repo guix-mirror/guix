@@ -23701,22 +23701,21 @@ Debug server.")
 (define-public emacs-pfuture
   (package
     (name "emacs-pfuture")
-    (version "1.9")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/Alexander-Miller/pfuture")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1chpin5277vbl2xvsl04pzzk7a9dbcvclibm2496gz6yvd19pwsf"))))
+    (version "1.10.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Alexander-Miller/pfuture")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0cks18fwir8h9b35ryz2yr5rligv1da2iqkqz0fcb5dx2a4fxwjj"))))
     (build-system emacs-build-system)
-    (home-page
-     "https://github.com/Alexander-Miller/pfuture")
+    (home-page "https://github.com/Alexander-Miller/pfuture")
     (synopsis "Simple wrapper around asynchronous processes for Emacs")
     (description "This package provides a simple wrapper around asynchronous
-processes for Emacs")
+processes for Emacs.")
     (license license:gpl3+)))
 
 (define-public emacs-treemacs
