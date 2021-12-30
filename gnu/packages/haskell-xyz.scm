@@ -11289,7 +11289,7 @@ a memory chunk that will be auto-scrubbed after it run out of scope.")
     (home-page
      "https://github.com/isomorphism/these")
     (synopsis
-     "Align and Zip type-classes from the common Semialign ancestor ")
+     "Align and Zip type-classes from the common Semialign ancestor")
     (description
      "The major use of @code{These} of this is provided by the
 @code{align} member of @code{Semialign} class, representing a
