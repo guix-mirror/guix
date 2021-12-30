@@ -25,6 +25,20 @@
 (channel-news
  (version 0)
 
+ (entry (commit "1eb40a6dc4917f5a2e915f8b31b750dba3d378c6")
+        (title
+         (en "@samp{integer expected from stream}?  Update your Guix daemon")
+         (nl "@samp{integer expected from stream}?  Werk je Guix daemon bij"))
+        (body
+         (en "We recently fixed a bug where substitution would fail with
+@samp{error: integer expected from stream}.  Be sure to update your system's
+Guix package that provides the @command{guix-daemon} if you haven't done so
+recently.  Run @command{info \"(guix) Upgrading Guix\"} for instructions.")
+         (nl "Onlangs herstelden we een fout waarbij substitutie mislukt met
+een @samp{error: integer expected from stream}.  Werk zeker je systeemwijde
+Guix-pakket bij, dat de @command{guix-daemon} levert, als dat nog niet is
+gebeurd.  Voer @command{info \"(guix) Upgrading Guix\"} uit voor meer uitleg.")))
+
  (entry (commit "223f1b1eb3707f1d3ef91200dd616ee6c8b77db0")
         (title
          (en "Improved static networking support on Guix System")
