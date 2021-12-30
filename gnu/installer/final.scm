@@ -105,36 +105,6 @@ USERS."
   (write-passwd password (string-append etc "/passwd"))
   (write-shadow shadow (string-append etc "/shadow")))
 
-(define* (kill-cow-users cow-path #:key (spare '("udevd")))
-  "Kill all processes that have references to the given COW-PATH in their
-'maps' file.  The process whose names are in SPARE list are spared."
-  (define %not-nul
-    (char-set-complement (char-set #\nul)))
-
-  (let ((pids
-         (filter-map (lambda (pid)
-                       (false-if-exception
-                        (call-with-input-file
-                            (string-append "/proc/" pid "/maps")
-                          (lambda (port)
-                            (and (string-contains (get-string-all port)
-                                                  cow-path)
-                                 (string->number pid))))))
-                     (scandir "/proc" string->number))))
-    (for-each (lambda (pid)
-                ;; cmdline does not always exist.
-                (false-if-exception
-                 (call-with-input-file
-                     (string-append "/proc/" (number->string pid) "/cmdline")
-                   (lambda (port)
-                     (match (string-tokenize (read-string port) %not-nul)
-                       ((argv0 _ ...)
-                        (unless (member (basename argv0) spare)
-                          (syslog "Killing process ~a (~a)~%" pid argv0)
-                          (kill pid SIGKILL)))
-                       (_ #f))))))
-              pids)))
-
 (define (call-with-mnt-container thunk)
   "This is a variant of call-with-container. Run THUNK in a new container
 process, within a separate MNT namespace. The container is not jailed so that
