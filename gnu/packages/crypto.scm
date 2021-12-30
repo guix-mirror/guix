@@ -414,7 +414,7 @@ the wrong hands.")
      "Keyutils is a set of utilities for managing the key retention facility in
 the Linux kernel, which can be used by file systems, block devices, and more to
 gain and retain the authorization and encryption keys required to perform
-secure operations. ")
+secure operations.")
     (license (list license:lgpl2.1+             ; the files keyutils.*
                    license:gpl2+))))            ; the rest
 
