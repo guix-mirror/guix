@@ -11855,6 +11855,27 @@ drafts 04, 06 and 07.")
 Jupyter Notebook format and Python APIs for working with notebooks.")
     (license license:bsd-3)))
 
+(define-public python-nb-clean
+  (package
+    (name "python-nb-clean")
+    (version "2.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "nb-clean" version))
+        (sha256
+          (base32 "01qvk9n7rx15dhc23m8bj9bw5wdyxh6y18c5fm8hllmrd3ndsx14"))))
+    (build-system python-build-system)
+    (propagated-inputs (list python-nbformat))
+    (home-page "https://github.com/srstevenson/nb-clean")
+    (synopsis "Clean Jupyter notebooks for versioning")
+    (description "This package cleans Jupyter notebooks of cell execution
+counts, metadata, outputs, and empty cells, preparing them for committing to
+version control.  It provides a Git filter to automatically clean notebooks
+before they're staged, and can also be used with other version control
+systems, as a command line tool, and as a Python library.")
+    (license license:isc)))
+
 (define-public python-bleach
   (package
     (name "python-bleach")
