@@ -8241,7 +8241,7 @@ package, such as @command{natbib} as well).")
     (description "This package provides a copy of the Charter Type-1 fonts
 which Bitstream contributed to the X consortium, renamed for use with TeX.
 Support for use with LaTeX is available in @code{freenfss}, part of
-@command{psnfss}. ")
+@command{psnfss}.")
     (license (license:non-copyleft
               "http://mirrors.ctan.org/fonts/charter/readme.charter"))))
 
