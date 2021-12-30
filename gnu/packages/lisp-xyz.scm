@@ -10578,7 +10578,7 @@ accompaniment to the standard ANSI facilities.")
        `(#:asd-systems '("xembed")))
       (inputs
        (list sbcl-clx))
-      (synopsis "CL(x) xembed protocol implementation ")
+      (synopsis "CL(x) xembed protocol implementation")
       (description "CL(x) xembed protocol implementation")
       ;; MIT License
       (license license:expat))))
