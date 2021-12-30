@@ -11245,7 +11245,7 @@ xref, etc.) are still available, but with better integration.")
       (synopsis "Quicklisp support for SLY")
       (description
        "@command{sly-quicklisp} is an external contrib for SLY that provides a
-sly-quickload command that prompts the user for a package to install. ")
+sly-quickload command that prompts the user for a package to install.")
       (license license:gpl3+))))
 
 (define-public emacs-sly-asdf
