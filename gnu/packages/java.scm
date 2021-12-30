@@ -10853,7 +10853,7 @@ configuration and string construction.")
     (native-inputs
      (list java-junit java-hamcrest-core javacc-4))
     (home-page "https://commons.apache.org/proper/commons-jexl/")
-    (synopsis "Java Expression Language ")
+    (synopsis "Java Expression Language")
     (description "JEXL is a library intended to facilitate the implementation
 of dynamic and scripting features in applications and frameworks written in
 Java.  JEXL implements an Expression Language based on some extensions to the
