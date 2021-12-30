@@ -11959,7 +11959,7 @@ overview article about COP which also contains some ContextL examples:
       (home-page "http://dwim.hu/project/hu.dwim.common-lisp")
       (synopsis "Redefine some standard Common Lisp names")
       (description "This library is a redefinition of the standard Common Lisp
-package that includes a number of renames and shadows. ")
+package that includes a number of renames and shadows.")
       (license license:public-domain))))
 
 (define-public cl-hu.dwim.common-lisp
