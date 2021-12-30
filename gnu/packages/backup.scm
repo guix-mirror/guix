@@ -877,7 +877,7 @@ NTFS volumes using @code{ntfs-3g}, preserving NTFS-specific attributes.")
     (description
      "With dirvish you can maintain a set of complete images of your
 file systems with unattended creation and expiration.  A dirvish backup vault
-is like a time machine for your data. ")
+is like a time machine for your data.")
     (license (license:fsf-free "file://COPYING"
                                "Open Software License 2.0"))))
 
