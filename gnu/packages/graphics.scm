@@ -409,14 +409,14 @@ typically encountered in feature film production.")
 (define-public blender
   (package
     (name "blender")
-    (version "2.93.6")
+    (version "3.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.blender.org/source/"
                                   "blender-" version ".tar.xz"))
               (sha256
                (base32
-                "19i84bh8jiamf38fj9p24q8w8fhg3hhl49940dh74h4flyfyqfg7"))))
+                "1jzirg60c2lhln78a7phbsk2ssvcdqxqb3awp895m0pqrlmz7w2h"))))
     (build-system cmake-build-system)
     (arguments
       (let ((python-version (version-major+minor (package-version python))))
@@ -498,8 +498,9 @@ typically encountered in feature film production.")
        ("python" ,python)
        ("python-numpy" ,python-numpy)
        ("openvdb" ,openvdb)
-       ("tbb" ,tbb-2020)
+       ("tbb" ,tbb)
        ("zlib" ,zlib)
+       ("zstd" ,zstd "lib")
        ("embree" ,embree)))
     (home-page "https://blender.org/")
     (synopsis "3D graphics creation suite")
