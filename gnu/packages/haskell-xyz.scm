@@ -14215,7 +14215,7 @@ It provides the composable @code{Builder} abstraction, which has instances of th
 
 You would first use the @code{Builder} abstraction to specify the structure of
 the vector; then you can execute the builder to actually produce the
-vector. ")
+vector.")
     (license license:expat)))
 
 (define-public ghc-vector-th-unbox
