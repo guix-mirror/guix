@@ -1276,7 +1276,7 @@ A plugin for the Xfce panel is also available.")
     (synopsis "Screensaver for the Xfce desktop")
     (description
      "Xfce Screensaver is a screen saver and locker that aims to have simple,
- sane, secure defaults and be well integrated with the Xfce desktop. ")
+ sane, secure defaults and be well integrated with the Xfce desktop.")
     (license gpl2+)))
 
 (define-public xfce4-volumed-pulse
