@@ -14535,7 +14535,7 @@ running tests easier.")
     (description
      "Provides @code{disable-mouse-mode} and @code{global-disable-mouse-mode},
 pair of minor modes which suppress all mouse events by intercepting them and
-running a customisable handler command (@code{ignore} by default). ")
+running a customisable handler command (@code{ignore} by default).")
     (license license:gpl3+)))
 
 (define-public emacs-json-reformat
