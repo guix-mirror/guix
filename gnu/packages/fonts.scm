@@ -1591,7 +1591,7 @@ emphasis while still being readable.")
 (define-public font-openmoji
   (package
     (name "font-openmoji")
-    (version "12.4.0")
+    (version "13.1.0")
     (source
      (origin
        (method url-fetch/zipbomb)
@@ -1601,7 +1601,7 @@ emphasis while still being readable.")
                        "/openmoji-font.zip"))
        (sha256
         (base32
-         "0wvvg5vnc950h8v23wfgjyi7rv89mgm5hqq6viqv0bxcc3azglxb"))))
+         "0xmy3hr38v03f1riwxmxdibb7iwj0qz288inqaha3pwq7pj7ln45"))))
     (build-system font-build-system)
     (native-inputs
      (list unzip))
