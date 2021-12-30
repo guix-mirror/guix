@@ -19781,7 +19781,7 @@ decrease the number at point.")
     (synopsis "Syntax highlighting of known Elisp symbols")
     (description "Minor mode providing syntax highlighting of known Emacs Lisp
 symbols.  Currently the code distinguishes Lisp functions, built-in functions,
-macros, faces and variables.  To enable call @code{highlight-defined-mode}. ")
+macros, faces and variables.  To enable call @code{highlight-defined-mode}.")
     (license license:gpl3+)))
 
 (define-public emacs-parinfer-mode
