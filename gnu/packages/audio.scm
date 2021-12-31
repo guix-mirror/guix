@@ -1250,10 +1250,8 @@ formats used to store information about DJ record libraries.")
                                "tao-fix-parser-types.patch"))
               (modules '((guix build utils)))
               (snippet
-               '(begin
-                  (substitute* "configure"
-                    (("SHELL=/bin/sh") ""))
-                  #t))))
+               '(substitute* "configure"
+                  (("SHELL=/bin/sh") "")))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("TAO_RELEASE=-beta")
@@ -1269,8 +1267,7 @@ formats used to store information about DJ record libraries.")
                 (string-append (which "sed") " -f $distdir/"))
                (("distdir=.*")
                 (string-append "distdir="
-                               (assoc-ref outputs "out") "/share/tao")))
-             #t))
+                               (assoc-ref outputs "out") "/share/tao")))))
          (add-after 'install 'install-extra-files
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -1281,8 +1278,7 @@ formats used to store information about DJ record libraries.")
                (install-file "user-scripts/error.parse" share)
                (copy-recursively "examples" (string-append share "examples"))
                (for-each (lambda (file) (install-file file inc))
-                         (find-files "include" "\\.h"))
-               #t))))))
+                         (find-files "include" "\\.h"))))))))
     (inputs
      (list audiofile
            libxi
