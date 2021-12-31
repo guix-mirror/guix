@@ -1484,14 +1484,14 @@ of the same name.")
 (define-public wireshark
   (package
     (name "wireshark")
-    (version "3.6.0")
+    (version "3.6.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.wireshark.org/download/src/wireshark-"
                            version ".tar.xz"))
        (sha256
-        (base32 "01nzzqig1z7ix4xb7ycs7wq3qqwq3ipdwp7rznynzmmibgyggj4w"))))
+        (base32 "0f2sjbbwmmz9zr8vphxy0panfji5vv8vazm688mqxy3bzflfsd04"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -1518,37 +1518,36 @@ of the same name.")
        ;; For now, we disable this phase.
        #:validate-runpath? #f))
     (inputs
-     `(("c-ares" ,c-ares)
-       ("glib" ,glib)
-       ("gnutls" ,gnutls)
-       ("brotli" ,brotli)
-       ("libcap" ,libcap)
-       ("libgcrypt" ,libgcrypt)
-       ("libnl" ,libnl)
-       ("libpcap" ,libpcap)
-       ("libssh" ,libssh)
-       ("libxml2" ,libxml2)
-       ("lz4" ,lz4)
-       ("lua" ,lua-5.2)                 ;Lua 5.3 unsupported
-       ("krb5" ,mit-krb5)
-       ("nghttp2:lib" ,nghttp2 "lib")
-       ("minizip" ,minizip)
-       ("qtbase" ,qtbase-5)
-       ("qtmultimedia" ,qtmultimedia)
-       ("qtsvg" ,qtsvg)
-       ("sbc" ,sbc)
-       ("snappy" ,snappy)
-       ("zlib" ,zlib)
-       ("zstd:lib" ,zstd "lib")))
+     (list c-ares
+           glib
+           gnutls
+           brotli
+           libcap
+           libnl
+           libpcap
+           libssh
+           libxml2
+           lz4
+           lua-5.2                      ;Lua 5.3 unsupported
+           mit-krb5
+           `(,nghttp2 "lib")
+           minizip
+           qtbase-5
+           qtmultimedia
+           qtsvg
+           sbc
+           snappy
+           zlib
+           `(,zstd "lib")))
     (native-inputs
-     `(("bison" ,bison)
-       ("doxygen" ,doxygen)
-       ("flex" ,flex)
-       ("gettext" ,gettext-minimal)
-       ("perl" ,perl)
-       ("pkg-config" ,pkg-config)
-       ("python" ,python-wrapper)
-       ("qttools" ,qttools)))
+     (list bison
+           doxygen
+           flex
+           gettext-minimal
+           perl
+           pkg-config
+           python-wrapper
+           qttools))
     (synopsis "Network traffic analyzer")
     (description "Wireshark is a network protocol analyzer, or @dfn{packet
 sniffer}, that lets you capture and interactively browse the contents of
