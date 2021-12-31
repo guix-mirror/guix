@@ -533,9 +533,6 @@ expression library, that is used in Krita.")
            openjpeg
            perl
            poppler-qt5
-           python
-           python-pyqt
-           python-sip
            qtbase-5
            qtdeclarative
            qtmultimedia
