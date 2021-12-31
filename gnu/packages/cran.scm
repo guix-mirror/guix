@@ -28286,6 +28286,37 @@ helper functions for functional programming, for printing, to work with
 package also supersedes the package @code{BBmisc}.")
     (license license:lgpl3)))
 
+(define-public r-mlr3pipelines
+  (package
+    (name "r-mlr3pipelines")
+    (version "0.3.2")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "mlr3pipelines" version))
+              (sha256
+               (base32
+                "1x738b312mcvb0dif88sv4nlh3y6i47q0wagc5ggyh1hnqjiz71y"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     (list r-backports
+           r-checkmate
+           r-data-table
+           r-digest
+           r-lgr
+           r-mlr3
+           r-mlr3misc
+           r-paradox
+           r-r6
+           r-withr))
+    (home-page "https://mlr3pipelines.mlr-org.com/")
+    (synopsis "Preprocessing Operators and Pipelines for @code{mlr3}")
+    (description "@code{mlr3pipelines} enriches @code{mlr3} with a diverse
+set of pipelining operators (PipeOps) that can be composed into graphs.
+Operations exist for data preprocessing, model fitting, and ensemble learning.
+Graphs can themselves be treated as @code{mlr3} Learners and can therefore be
+resampled, benchmarked, and tuned.")
+    (license license:lgpl3)))
+
 (define-public r-paradox
   (package
     (name "r-paradox")
