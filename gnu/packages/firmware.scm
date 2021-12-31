@@ -223,7 +223,7 @@ broadband modem as found, for example, on PinePhone.")
 (define* (make-opensbi-package platform name #:optional (arch "riscv64"))
   (package
     (name name)
-    (version "0.8")
+    (version "1.0")
     (source
      (origin
        (method git-fetch)
@@ -232,7 +232,7 @@ broadband modem as found, for example, on PinePhone.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1y9z0b6q6wpw7mgy31wml4djc6m8ydm71a9f1asnks4ragc7m98b"))))
+        (base32 "0srqkhd9b1mq4qkqk31dlrzy4mhljr49bzjxm0saylsbwhgxq31s"))))
     (build-system gnu-build-system)
     (native-inputs
      `(,@(if (and (not (string-prefix? "riscv64" (%current-system)))
@@ -272,11 +272,8 @@ for platform-specific firmwares executing in M-mode.")
                    ;; platform/ariane-fpga/* is gpl2.
                    license:gpl2))))
 
-(define-public opensbi-qemu-generic
-  (make-opensbi-package "generic" "opensbi-qemu-generic"))
-
-(define-public opensbi-sifive-fu540
-  (make-opensbi-package "sifive/fu540" "opensbi-sifive-fu540"))
+(define-public opensbi-generic
+  (make-opensbi-package "generic" "opensbi-generic"))
 
 (define-public seabios
   (package
