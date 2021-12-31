@@ -1299,6 +1299,37 @@ playing instruments and a C++ API for those who would like to use it as an
 object library.")
     (license license:gpl2+)))
 
+(define-public tao-synth
+  (let ((commit "f3aedd81efbc775574e591081b57ae1c08427064")
+        (revision "1"))
+    (package
+      (name "tao-synth")
+      (version (git-version "0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/lucasw/tao_synth")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1jds2l3cb96b02jxd7lmrjjl9s7mylnrvg6fpw0j8c141bk8vyg3"))))
+      (build-system cmake-build-system)
+      (arguments (list #:tests? #false))  ;there are no tests
+      (inputs
+       (list glfw freeglut))
+      (native-inputs
+       (list gcc-7))
+      (home-page "https://github.com/lucasw/tao_synth")
+      (synopsis "Sound synthesis with physical models")
+      (description "Tao is a software package for sound synthesis using physical
+models.  It provides a virtual acoustic material constructed from masses and
+springs which can be used as the basis for building quite complex virtual
+musical instruments.  Tao comes with a synthesis language for creating and
+playing instruments and a C++ API for those who would like to use it as an
+object library.")
+      (license license:lgpl2.0+))))
+
 (define-public csound
   (package
     (name "csound")
