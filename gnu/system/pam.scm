@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013-2017, 2019-2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -285,7 +285,7 @@ authenticate to run COMMAND."
           ;; These programs are setuid-root.
           (map (cut unix-pam-service <>
                     #:allow-empty-passwords? allow-empty-passwords?)
-               '("passwd" "sudo"))
+               '("passwd" "chfn" "sudo"))
           ;; This is setuid-root, as well.  Allow root to run "su" without
           ;; authenticating.
           (list (unix-pam-service "su"

@@ -15387,6 +15387,11 @@ account is created.
 @item @code{comment} (default: @code{""})
 A comment about the account, such as the account owner's full name.
 
+Note that, for non-system accounts, users are free to change their real
+name as it appears in @file{/etc/passwd} using the @command{chfn}
+command.  When they do, their choice prevails over the system
+administrator's choice; reconfiguring does @emph{not} change their name.
+
 @item @code{home-directory}
 This is the name of the home directory for the account.
 

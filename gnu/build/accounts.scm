@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -490,7 +490,11 @@ new UIDs."
                                (uid id)
                                (directory directory)
                                (gid (if (number? group) group (group-id group)))
-                               (real-name (if previous
+
+                               ;; Users might change their name to something
+                               ;; other than what the sysadmin chose, with
+                               ;; 'chfn'.  Thus consider it "stateful".
+                               (real-name (if (and previous (not system?))
                                               (password-entry-real-name previous)
                                               real-name))
 

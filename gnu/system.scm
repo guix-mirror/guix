@@ -913,7 +913,12 @@ the /etc directory."
                         "/run/current-system/profile/sbin\n"
                         "ENV_SUPATH  /run/setuid-programs:"
                         "/run/current-system/profile/bin:"
-                        "/run/current-system/profile/sbin\n")))
+                        "/run/current-system/profile/sbin\n"
+
+                        "\n"
+                        "# Allow 'chfn' to change the full name,\n"
+                        "# room number, and so on.\n"
+                        "CHFN_RESTRICT   frwh\n")))
 
          (hurd       (operating-system-hurd os))
          (issue      (plain-file "issue" (operating-system-issue os)))
@@ -1158,6 +1163,7 @@ deprecated; use 'setuid-program' instead~%"))
   (let ((shadow (@ (gnu packages admin) shadow)))
     (map file-like->setuid-program
          (list (file-append shadow "/bin/passwd")
+               (file-append shadow "/bin/chfn")
                (file-append shadow "/bin/sg")
                (file-append shadow "/bin/su")
                (file-append shadow "/bin/newgrp")
