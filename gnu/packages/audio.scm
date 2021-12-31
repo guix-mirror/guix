@@ -1284,15 +1284,15 @@ formats used to store information about DJ record libraries.")
                          (find-files "include" "\\.h"))
                #t))))))
     (inputs
-     `(("audiofile" ,audiofile)
-       ("libxi" ,libxi)
-       ("libxmu" ,libxmu)
-       ("mesa" ,mesa)
-       ("glut" ,freeglut)
-       ("flex" ,flex)
-       ("bison" ,bison)
-       ("sed" ,sed)
-       ("grep" ,grep)))
+     (list audiofile
+           libxi
+           libxmu
+           mesa
+           freeglut
+           flex
+           bison
+           sed
+           grep))
     (home-page "http://taopm.sourceforge.net/")
     (synopsis "Sound Synthesis with Physical Models")
     (description "Tao is a software package for sound synthesis using physical
