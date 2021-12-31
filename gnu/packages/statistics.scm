@@ -1175,7 +1175,7 @@ using just two functions: melt and dcast (or acast).")
     (native-inputs
      (list r-knitr))
     (home-page "https://ggplot2.tidyverse.org")
-    (synopsis "An implementation of the grammar of graphics")
+    (synopsis "Implementation of the grammar of graphics")
     (description
      "Ggplot2 is an implementation of the grammar of graphics in R.  It
 combines the advantages of both base and lattice graphics: conditioning and

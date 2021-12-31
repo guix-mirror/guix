@@ -42895,7 +42895,7 @@ reference counting.")
     (home-page
       "https://github.com/pistondevelopers/read_color")
     (synopsis
-      "A simple library for reading hex colors")
+      "Simple library for reading hex colors")
     (description
       "This package provides a simple library for reading hex colors")
     (license (list license:expat license:asl2.0))))
@@ -65650,7 +65650,7 @@ variant of this library is available separately as @code{im}.")
     (home-page
       "https://github.com/storyfeet/clap_conf")
     (synopsis
-      "A library to unify commandline arguments with config files and environment variables. And make it easier for users to tell your program how to behave across the three main input sources")
+      "Library to unify commandline arguments with config files and environment variables. And make it easier for users to tell your program how to behave across the three main input sources")
     (description
       "This package provides a library to unify commandline arguments with config files and environment variables.  And make it easier for users to tell your program how to behave across the three main input sources")
     (license license:expat)))

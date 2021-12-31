@@ -3740,7 +3740,7 @@ backtrace portably.")
         (base32 "0phh5n3clhl9ji8jaxrajidn22d3f0aq87mlbfkkxlnx2pnw694k"))))
      (build-system asdf-build-system/sbcl)
      (home-page "https://github.com/jdz/rfc2388/")
-     (synopsis "An implementation of RFC 2388 in Common Lisp")
+     (synopsis "Implementation of RFC 2388 in Common Lisp")
      (description
       "This package contains an implementation of RFC 2388, which is used to
 process form data posted with HTTP POST method using enctype

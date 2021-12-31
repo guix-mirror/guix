@@ -1628,7 +1628,7 @@ nicely with Piston libraries.")
     (home-page
       "https://github.com/PistonDevelopers/graphics_api_version")
     (synopsis
-      "A library for storing graphics API versions")
+      "Library for storing graphics API versions")
     (description
       "This package provides a library for storing graphics API versions")
     (license license:expat)))
