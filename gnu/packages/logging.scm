@@ -220,7 +220,7 @@ library.")
 (define-public rsyslog
   (package
     (name "rsyslog")
-    (version "8.2004.0")
+    (version "8.2112.0")
     (source
      (origin
        (method git-fetch)
@@ -230,7 +230,7 @@ library.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0h40vvrjbxkvxy1sjqjwlyjfndj81llrisp7hkqm5j4mcl4pbzb3"))))
+         "0bp124w2qv8hix5i0p04d8yvsipy18dhqm7zw8i6cwdgnhdadq96"))))
     (build-system gnu-build-system)
     (arguments
      (list
