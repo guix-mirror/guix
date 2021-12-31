@@ -4818,3 +4818,33 @@ with a FSM is being built (for example, from a Makefile.)")
 @url{https://en.wikipedia.org/wiki/INI_file, INI format}.  This library
 provides API for reading and writing INI data.")
     (license license:gpl3)))
+
+(define-public guile-schemetran
+  (let ((commit "3f5e15273ee88ba60ad8caf2de6302ad2bab582b")
+        (revision "1"))
+    (package
+      (name "guile-schemetran")
+      (version (git-version "0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://gitlab.com/codetk/schemetran")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1r4nq7wmy854hvbkcc23sidn4kq3p7r4p15y5czwvd52p9djff3m"))))
+      (build-system guile-build-system)
+      (arguments
+       (list #:not-compiled-file-regexp "/doc/.*\\.scm$"
+             #:source-directory "src"))
+      (inputs
+       (list guile-3.0))
+      (home-page "https://gitlab.com/codetk/schemetran")
+      (synopsis "Write Fortran in Scheme")
+      (description
+       "Fortran is great in expressing operations on multi-dimensional arrays
+of numbers.  Scheme is great at expressing your coding thoughts.  This project
+is an attempt to combine both into something useful.")
+      (license license:asl2.0))))
