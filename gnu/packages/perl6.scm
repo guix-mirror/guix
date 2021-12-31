@@ -298,7 +298,7 @@ have profiling information collected when the grammar is used.")
     (build-system rakudo-build-system)
     (arguments '(#:with-zef? #f))
     (home-page "https://github.com/moritz/json")
-    (synopsis "A minimal JSON (de)serializer")
+    (synopsis "minimal JSON (de)serializer")
     (description "This module is a simple Perl 6 module for serializing and
 deserializing JSON.")
     (license license:artistic2.0)))

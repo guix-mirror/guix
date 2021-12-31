@@ -946,7 +946,7 @@ algorithms.")
     (native-inputs
      `(("r-knitr" ,r-knitr)))
     (home-page "https://cran.r-project.org/web/packages/magrittr/index.html")
-    (synopsis "A forward-pipe operator for R")
+    (synopsis "forward-pipe operator for R")
     (description
      "Magrittr provides a mechanism for chaining commands with a new
 forward-pipe operator, %>%.  This operator will forward a value, or the result

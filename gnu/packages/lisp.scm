@@ -235,7 +235,7 @@ Definition Facility.")
       (native-inputs
        (list m4 texinfo))
       (home-page "https://www.gnu.org/software/gcl/")
-      (synopsis "A Common Lisp implementation")
+      (synopsis "Common Lisp implementation")
       (description "GCL is an implementation of the Common Lisp language.  It
 features the ability to compile to native object code and to load native
 object code modules directly into its lisp core.  It also features a
@@ -407,7 +407,7 @@ supporting ASDF, Sockets, Gray streams, MOP, and other useful components.")
             (variable "XDG_CONFIG_DIRS")
             (files '("etc")))))
     (home-page "https://clisp.sourceforge.io/")
-    (synopsis "A Common Lisp implementation")
+    (synopsis "Common Lisp implementation")
     (description
      "GNU CLISP is an implementation of ANSI Common Lisp.  Common Lisp is a
 high-level, object-oriented functional programming language.  CLISP includes

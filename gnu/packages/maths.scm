@@ -273,7 +273,7 @@ interactive dialogs to guide them.")
     (arguments
      '(#:configure-flags '("--with-hdf4" "--with-hdf5" "--enable-python"
                            "LIBS= -lz -lpcre -lexpat")))
-    (synopsis "A common interface to various earth observation data formats")
+    (synopsis "common interface to various earth observation data formats")
     (description
      "The Common Data Access toolbox (CODA) provides a set of interfaces for
 reading remote sensing data from earth observation data files.  It consists of

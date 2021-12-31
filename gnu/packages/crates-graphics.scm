@@ -1671,7 +1671,7 @@ nicely with Piston libraries.")
     (arguments `(#:skip-build? #t))
     (home-page
       "https://github.com/pistondevelopers/texture")
-    (synopsis "A generic library for textures")
+    (synopsis "generic library for textures")
     (description
       "This package provides a generic library for textures")
     (license license:expat)))

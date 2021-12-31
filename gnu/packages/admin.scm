@@ -3895,7 +3895,7 @@ application, collecting the information received.")
        ("python-nose" ,python-nose)))
     (arguments
      `(#:test-target "test"))
-    (synopsis "A single tool that combines @command{cat} & @command{rm}")
+    (synopsis "single tool that combines @command{cat} & @command{rm}")
     (description
      "hungrycat prints the contents of a file to standard output, while
 simultaneously freeing the disk space it occupied.  It is useful if you need

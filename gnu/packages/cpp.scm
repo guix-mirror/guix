@@ -1182,7 +1182,7 @@ computation.")
     (native-inputs
      `(("unzip" ,unzip)))
     (home-page "https://sourceforge.net/projects/polyclipping")
-    (synopsis "A polygon and line clipping and offsetting library")
+    (synopsis "polygon and line clipping and offsetting library")
     (description
      "The Clipper library performs line & polygon clipping - intersection,
 union, difference & exclusive-or, and line & polygon offsetting.

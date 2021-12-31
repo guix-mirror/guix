@@ -879,7 +879,7 @@ a server/client mode.")
     (inputs
      (list libxft vte))
     (home-page "https://launchpad.net/sakura")
-    (synopsis "A simple but powerful libvte-based terminal emulator")
+    (synopsis "simple but powerful libvte-based terminal emulator")
     (description "@code{Sakura} is a terminal emulator based on GTK+ and VTE.
 It's a terminal emulator with few dependencies, so you don't need a full GNOME
 desktop installed to have a decent terminal emulator.")

@@ -704,7 +704,7 @@ OpenGL graphics API.")
      ;; epoxy.pc: 'Requires.private: gl egl'
      (list mesa))
     (home-page "https://github.com/anholt/libepoxy/")
-    (synopsis "A library for handling OpenGL function pointer management")
+    (synopsis "library for handling OpenGL function pointer management")
     (description
      "A library for handling OpenGL function pointer management.")
     (license license:x11)))

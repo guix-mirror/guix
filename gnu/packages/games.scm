@@ -2345,7 +2345,7 @@ exec -a \"~a\" ~a \"$@\"\n"
     (inputs
      (list python-pygame python-tmx))
     (home-page "https://rogueboxadventures.tuxfamily.org")
-    (synopsis "A classical roguelike/sandbox game")
+    (synopsis "classical roguelike/sandbox game")
     (description
      "RogueBox Adventures is a graphical roguelike with strong influences
 from sandbox games like Minecraft or Terraria.  The main idea of RogueBox

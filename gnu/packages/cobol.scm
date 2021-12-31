@@ -71,7 +71,7 @@
      (list bdb gmp json-c libxml2 ncurses))
     (build-system gnu-build-system)
     (home-page "https://www.gnu.org/software/gnucobol/")
-    (synopsis "A modern COBOL compiler")
+    (synopsis "modern COBOL compiler")
     (description "GnuCOBOL is a free, modern COBOL compiler.  GnuCOBOL
 implements a substantial part of the COBOL 85, COBOL 2002 and COBOL 2014
 standards and X/Open COBOL, as well as many extensions included in other

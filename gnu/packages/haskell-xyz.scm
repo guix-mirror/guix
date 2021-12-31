@@ -1692,7 +1692,7 @@ command-line utility for working with CBOR data.")
            ghc-vector
            ghc-cborg))
     (home-page "https://github.com/well-typed/cborg")
-    (synopsis "A library for encoding JSON as CBOR")
+    (synopsis "library for encoding JSON as CBOR")
     (description
      "This package implements the bijection between JSON and CBOR
 defined in the CBOR specification, RFC 7049.")
@@ -10855,7 +10855,7 @@ better for some purposes.")
     (native-inputs
      (list ghc-hspec ghc-quickcheck hspec-discover))
     (home-page "https://github.com/commercialhaskell/rio#readme")
-    (synopsis "A standard library for Haskell")
+    (synopsis "standard library for Haskell")
     (description "This package works as a prelude replacement for Haskell,
 providing more functionality and types out of the box than the standard
 prelude (such as common data types like @code{ByteString} and
