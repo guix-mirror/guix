@@ -1403,110 +1403,63 @@ with that of libgomp, the GNU Offloading and Multi Processing Library.")
                (setenv "LDFLAGS" (string-append "-Wl,-rpath="
                                                 llvm "/lib"))))))))
     (inputs
-     (list (let* ((patches-commit
-                                 "a4a19e8af2c5ef9b9901f20193e4be070726da97") (
-                                                                          patch-uri (
-                                                                                lambda (
-                                                                                  name)
-                                                                                  (
-                                                                                  string-append
-                                                                                               "https://raw.githubusercontent.com/numba/"
-                                                                                               "llvmlite/"
-                                                                                               patches-commit
-                                                                                               "/conda-recipes/"
-                                                                                               name)))
-                                                                          (
-                                                                          patch-origin (
-                                                                                      lambda (
-                                                                                           name
-                                                                                             hash)
-                                                                                           (
-                                                                                           origin (
-                                                                                                 method
-                                                                                                      url-fetch)
-                                                                                                 (
-                                                                                                 uri (
-                                                                                                    patch-uri
-                                                                                                            name))
-                                                                                                 (
-                                                                                                 sha256 (
-                                                                                                       base32
-                                                                                                            hash)))))
-                                                                          (
-                                                                          arch-independent-patches (
-                                                                                                  list (
-                                                                                                     patch-origin
-                                                                                                               "partial-testing.patch"
-                                                                                                               "0g3nkci87knvmn7piqhmh4bcc65ff8r921cvfcibyiv65klv3syg")
-                                                                                                     (
-                                                                                                     patch-origin
-                                                                                                                 "0001-Revert-Limit-size-of-non-GlobalValue-name.patch"
-                                                                                                                 "0n4k7za0smx6qwdipsh6x5lm7bfvzzb3p9r8q1zq1dqi4na21295"))))
-                 (package (inherit llvm-11)
-                          (source (origin (inherit (package-source
-                                                                   llvm-11))
-                                          (patches (if (string=?
-                                                                 "aarch64-linux"
-                                                                 (
-                                                                 %current-system))
-                                                       `(,(patch-origin
-                                                                     "intel-D47188-svml-VF_LLVM9.patch"
-                                                                     "0gnnlfxr8p1a7ls93hzcpfqpa8r0icypfwj8l9cmkslq5sz8p64r") (
-                                                                                                                           unquote-splicing
-                                                                                                                                         arch-independent-patches)
-                                                                                                                           (
-                                                                                                                           unquote-splicing (
-                                                                                                                                           origin-patches (
-                                                                                                                                                        package-source
-                                                                                                                                                                    llvm-11))))
-                                                       `(,(patch-origin
-                                                                     "intel-D47188-svml-VF.patch"
-                                                                     "0gnnlfxr8p1a7ls93hzcpfqpa8r0icypfwj8l9cmkslq5sz8p64r") ,(
-                                                                                                                           patch-origin
-                                                                                                                                   "expect-fastmath-entrypoints-in-add-TLI-mappings.ll.patch"
-                                                                                                                                   "0jxhjkkwwi1cy898l2n57l73ckpw0v73lqnrifp7r1mwpsh624nv")
-                                                                                                                           (
-                                                                                                                           unquote-splicing
-                                                                                                                                           arch-independent-patches)
-                                                                                                                           (
-                                                                                                                           unquote-splicing (
-                                                                                                                                           origin-patches (
-                                                                                                                                                        package-source
-                                                                                                                                                                    llvm-11))))))))
-                          (arguments (substitute-keyword-arguments (
-                                                                   package-arguments
-                                                                                  llvm-11)
-                                                                   ((#:phases
-                                                                             phases) `(
-                                                                                    modify-phases ,
-                                                                                              phases
-                                                                                              (
-                                                                                              add-after '
-                                                                                                       unpack
-                                                                                                       '
-                                                                                                       patch-round-two
-                                                                                                       ;; We have to do the patching in two rounds because we can't
-                                                                                                       ;; pass '-p1' and '-p2' in the source field.
-                                                                                                       (
-                                                                                                       lambda* (
-                                                                                                              #:key
-                                                                                                                  inputs
-                                                                                                                  #:allow-other-keys)
-                                                                                                              (
-                                                                                                              invoke
-                                                                                                                    "patch"
-                                                                                                                    (
-                                                                                                                    assoc-ref
-                                                                                                                             inputs
-                                                                                                                             "llvm_11_consecutive_registers")
-                                                                                                                    "-p2")))))))
-                          (native-inputs `(("llvm_11_consecutive_registers" ,(
-                                                                          patch-origin
-                                                                               "llvm_11_consecutive_registers.patch"
-                                                                               "04msd34dnpr3lpss0pam3mckwnvzrab266z6sml1hya0akv0m3f3")) (
-                                                                                                                                    unquote-splicing (
-                                                                                                                                                package-native-inputs
-                                                                                                                                                                llvm-11))))))))
+     (list
+      (let* ((patches-commit
+              "a4a19e8af2c5ef9b9901f20193e4be070726da97")
+             (patch-uri (lambda (name)
+                          (string-append
+                           "https://raw.githubusercontent.com/numba/"
+                           "llvmlite/"
+                           patches-commit
+                           "/conda-recipes/"
+                           name)))
+             (patch-origin (lambda (name hash)
+                             (origin (method url-fetch)
+                                     (uri (patch-uri name))
+                                     (sha256 (base32 hash)))))
+             (arch-independent-patches
+              (list (patch-origin
+                     "partial-testing.patch"
+                     "0g3nkci87knvmn7piqhmh4bcc65ff8r921cvfcibyiv65klv3syg")
+                    (patch-origin
+                     "0001-Revert-Limit-size-of-non-GlobalValue-name.patch"
+                     "0n4k7za0smx6qwdipsh6x5lm7bfvzzb3p9r8q1zq1dqi4na21295"))))
+        (package
+          (inherit llvm-11)
+          (source
+           (origin
+             (inherit (package-source llvm-11))
+             (patches (if (string=? "aarch64-linux" (%current-system))
+                          `(,(patch-origin
+                              "intel-D47188-svml-VF_LLVM9.patch"
+                              "0gnnlfxr8p1a7ls93hzcpfqpa8r0icypfwj8l9cmkslq5sz8p64r")
+                            ,@arch-independent-patches
+                            ,@(origin-patches (package-source llvm-11)))
+                          `(,(patch-origin
+                              "intel-D47188-svml-VF.patch"
+                              "0gnnlfxr8p1a7ls93hzcpfqpa8r0icypfwj8l9cmkslq5sz8p64r")
+                            ,(patch-origin
+                              "expect-fastmath-entrypoints-in-add-TLI-mappings.ll.patch"
+                              "0jxhjkkwwi1cy898l2n57l73ckpw0v73lqnrifp7r1mwpsh624nv")
+                            ,@arch-independent-patches
+                            ,@(origin-patches (package-source llvm-11)))))))
+          (arguments
+           (substitute-keyword-arguments (package-arguments llvm-11)
+             ((#:phases phases)
+              `(modify-phases ,phases
+                 (add-after 'unpack 'patch-round-two
+                   ;; We have to do the patching in two rounds because we can't
+                   ;; pass '-p1' and '-p2' in the source field.
+                   (lambda* (#:key inputs #:allow-other-keys)
+                     (invoke "patch"
+                             (assoc-ref inputs "llvm_11_consecutive_registers")
+                             "-p2")))))))
+          (native-inputs
+           `(("llvm_11_consecutive_registers"
+              ,(patch-origin
+                "llvm_11_consecutive_registers.patch"
+                "04msd34dnpr3lpss0pam3mckwnvzrab266z6sml1hya0akv0m3f3"))
+             ,@(package-native-inputs llvm-11)))))))
     (home-page "https://llvmlite.pydata.org")
     (synopsis "Wrapper around basic LLVM functionality")
     (description
