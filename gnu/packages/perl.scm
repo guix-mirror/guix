@@ -11617,6 +11617,8 @@ arduous to type for one-liners.")
         (base32
          "1njgr2zly9nrwvfrjhgk9dqq48as1pmbb2rs4bh3irvla75v7azg"))))
     (build-system perl-build-system)
+    (propagated-inputs
+     (list perl-pod-parser))
     (home-page "https://metacpan.org/release/Pod-Constants")
     (synopsis "Include constants from POD")
     (description "This module allows you to specify those constants that
