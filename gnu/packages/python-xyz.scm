@@ -19160,13 +19160,13 @@ multitouch applications.")
 (define-public python-validators
   (package
     (name "python-validators")
-    (version "0.14.2")
+    (version "0.18.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "validators" version))
               (sha256
                (base32
-                "024m15j33szd0v8k5l4ccish6n0b4knq81gmb4fq25ynwyyyd4mi"))))
+                "19lypf7hm7p203ay3v8zmckc5rv6889zkfdm16nki1972f99mk9p"))))
     (build-system python-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
