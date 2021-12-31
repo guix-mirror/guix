@@ -691,14 +691,14 @@ pyproj, Rtree, and Shapely.")
 (define-public python-geopandas
   (package
     (name "python-geopandas")
-    (version "0.9.0")
+    (version "0.10.2")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "geopandas" version))
         (sha256
           (base32
-            "02k389zyyjv51gd09c92vlr83sv46awdq0066jgh5i24vjs2m5v3"))))
+            "1nvim2i47ap1zdwy6kxydskf1cir5g4ij8124wvmrqij0zklggzg"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
