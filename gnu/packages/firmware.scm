@@ -228,7 +228,7 @@ broadband modem as found, for example, on PinePhone.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/riscv/opensbi")
+             (url "https://github.com/riscv-software-src/opensbi")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -262,7 +262,7 @@ broadband modem as found, for example, on PinePhone.")
                    (install-file file out))
                  bin))
              #t)))))
-    (home-page "https://github.com/riscv/opensbi")
+    (home-page "https://github.com/riscv-software-src/opensbi")
     (synopsis "RISC-V Open Source Supervisor Binary Interface")
     (description "A reference implementation of the RISC-V SBI specifications
 for platform-specific firmwares executing in M-mode.")
