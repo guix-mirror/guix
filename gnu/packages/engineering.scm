@@ -2472,6 +2472,7 @@ comments.")))
            python-gitpython
            python-matplotlib
            python-pivy
+           python-ply
            python-pyside-2
            python-pyyaml
            python-shiboken-2
