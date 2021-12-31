@@ -2549,7 +2549,7 @@ files.")
            (lambda _
              (substitute* "requirements.txt" (("==") ">=")))))))
     (home-page "https://github.com/NFJones/audio-to-midi")
-    (synopsis "Convert audio to multichannel MIDI.")
+    (synopsis "Convert audio to multichannel MIDI")
     (description "@command{audio-to-midi} converts audio files to multichannel
 MIDI files.  It accomplishes this by performing FFTs on all channels of the
 audio data at user-specified time steps.  It then separates the resulting

@@ -217,7 +217,7 @@ use their packages mostly unmodified in our Android NDK build system.")
                  "../include/android" (string-append out "/include/android")))
              #t)))))
     (home-page "https://developer.android.com/")
-    (synopsis "Logging library from the Android platform.")
+    (synopsis "Logging library from the Android platform")
     (description "@code{liblog} represents an interface to the volatile Android
 Logging system for NDK (Native) applications and libraries and contain
 interfaces for either writing or reading logs.  The log buffers are divided up
@@ -819,7 +819,7 @@ to be passed to the @code{udev} service.")
     (native-inputs
      `(("pytest" ,python-pytest)))
     (home-page "https://code.google.com/p/git-repo/")
-    (synopsis "Helps to manage many Git repositories.")
+    (synopsis "Helps to manage many Git repositories")
     (description "Repo is a tool built on top of Git.  Repo helps manage many
 Git repositories, does the uploads to revision control systems, and automates
 parts of the development workflow.  Repo is not meant to replace Git, only to

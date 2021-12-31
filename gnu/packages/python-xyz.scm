@@ -6903,7 +6903,7 @@ services for your Python modules and applications.")
          "1kjxh4gr651hpqkjfv89cfzr40hyvf3vjlda7mifiail83j7j07m"))))
     (build-system python-build-system)
     (home-page "https://www.decalage.info/python/olefileio")
-    (synopsis "Read and write Microsoft OLE2 files.")
+    (synopsis "Read and write Microsoft OLE2 files")
     (description
      "@code{olefile} can parse, read and write Microsoft OLE2 files (Structured
 Storage or Compound Document, Microsoft Office).  It is an improved version of
@@ -20696,7 +20696,7 @@ Features:
          "1yjvbz7rvrz31zjyax1cgy3xhf4wb3j18jwnj4bnl77ca4gliyiw"))))
     (build-system python-build-system)
     (home-page "https://github.com/asottile/tokenize-rt")
-    (synopsis "Wrapper around the stdlib tokenize which roundtrips.")
+    (synopsis "Wrapper around the stdlib tokenize which roundtrips")
     (description
      "This Python library is a wrapper around @code{tokenize} from the Python
 standard library.  It provides two additional tokens @code{ESCAPED_NL} and
@@ -23130,7 +23130,7 @@ access the system cron automatically and simply using a direct API.")
             "074anvhyjgsv2iby2ql1ixfvjgmhnvcwjbdz8gk70xzkzcm1fx5q"))))
     (build-system python-build-system)
     (home-page "https://www.joachim-bauch.de/projects/pylzma/")
-    (synopsis "Python bindings for the LZMA library by Igor Pavlov.")
+    (synopsis "Python bindings for the LZMA library by Igor Pavlov")
     (description "This package provides Python bindings for the LZMA library
 by Igor Pavlov.")
     (license license:lgpl2.1+)))

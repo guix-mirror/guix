@@ -1280,7 +1280,7 @@ until time is up.")
                   "1s5ccw1a5ack01wd94ywfcrar9j98agchwdh30q7iyxr0d2z4sii"))))
       (build-system emacs-build-system)
       (home-page "https://github.com/emacs-pe/scribble-mode")
-      (synopsis "Emacs mode for editing the Scribble documentation syntax.")
+      (synopsis "Emacs mode for editing the Scribble documentation syntax")
       (description
        "This package provides basic syntax highlighting and editing support
 for editing Racket's Scribble documentation syntax in Emacs.")
@@ -27399,7 +27399,7 @@ on removable volumes in Linux.")
       (build-system emacs-build-system)
       (propagated-inputs
        (list emacs-async))
-      (synopsis "Persistent save of @code{elisp} objects.")
+      (synopsis "Persistent save of @code{elisp} objects")
       (description "This package provides minor modes for saving Emacs session
 data, including buffers, window configuration, variables, and more.")
       (home-page "https://github.com/thierryvolpiatto/psession")

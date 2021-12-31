@@ -11644,7 +11644,7 @@ lookup in %INC or by assuming it is $0 if the caller is @code{main}
     (build-system perl-build-system)
     (home-page
      "https://metacpan.org/release/Text-Soundex")
-    (synopsis "Implementation of the soundex algorithm.")
+    (synopsis "Implementation of the soundex algorithm")
     (description "Soundex is a phonetic algorithm for indexing names by sound,
 as pronounced in English.  The goal is for names with the same pronunciation to
 be encoded to the same representation so that they can be matched despite

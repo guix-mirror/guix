@@ -845,7 +845,7 @@ Test Compatibility Kit.")))
        ("java-asm" ,java-asm)
        ("java-geronimo-xbean-reflect" ,java-geronimo-xbean-reflect)
        ,@(package-native-inputs maven-wagon-provider-api)))
-    (synopsis "Shared Library for wagon providers supporting HTTP.")
+    (synopsis "Shared Library for wagon providers supporting HTTP")
     (description "Maven Wagon is a transport abstraction that is used in Maven's
 artifact and repository handling code.  It uses providers, that are tools to
 manage artifacts and deployment.  This package contains a shared library for
@@ -3565,7 +3565,7 @@ MOJO.")))
      (list maven-surefire-common maven-core))
     (native-inputs
      (list maven-plugin-annotations unzip))
-    (synopsis "SureFire Maven plugin that runs tests.")
+    (synopsis "SureFire Maven plugin that runs tests")
     (description "The Surefire Plugin is used during the test phase of the
 build lifecycle to execute the unit tests of an application.  It generates
 reports in two different file formats, plain text and xml.")))

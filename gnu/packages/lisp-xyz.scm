@@ -4132,7 +4132,7 @@ PROPER-LIST, ASSOCIATION-LIST, PROPERTY-LIST and TUPLE.")
       (inputs
        (list sbcl-alexandria))
       (home-page "https://github.com/m2ym/cl-annot")
-      (synopsis "Python-like Annotation Syntax for Common Lisp.")
+      (synopsis "Python-like Annotation Syntax for Common Lisp")
       (description
        "@code{cl-annot} is an general annotation library for Common Lisp.")
       (license license:llgpl))))
@@ -12118,7 +12118,7 @@ carrys on from the end of the body.")
          ;;   Component ENVY-ASD::ENVY-TEST not found, required by #<SYSTEM "envy">
          ;; like xsubseq.  Why?
          #:tests? #f))
-      (synopsis "Common Lisp configuration switcher inspired by Perl's Config::ENV.")
+      (synopsis "Common Lisp configuration switcher inspired by Perl's Config::ENV")
       (description "Envy is a configuration manager for various applications.
 Envy uses an environment variable to determine a configuration to use.  This
 can separate configuration system from an implementation.")

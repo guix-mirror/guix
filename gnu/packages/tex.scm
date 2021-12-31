@@ -587,7 +587,7 @@ executables.  It is maintained as a part of TeX Live.")))
                "1pxbqbia0727vg01xv8451szm55z2w8sb0vv3kf4iqx5ibb6m0d2")
               #:trivial? #t))
     (home-page "https://www.ctan.org/texlive")
-    (synopsis "Utility to strip documentation from TeX files.")
+    (synopsis "Utility to strip documentation from TeX files")
     (description "This package provides the docstrip utility to strip
 documentation from TeX files.  It is part of the LaTeX base.")
     (license license:lppl1.3+)))

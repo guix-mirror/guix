@@ -5399,7 +5399,7 @@ format in Go.")
      '(#:import-path "github.com/kylelemons/godebug/diff"
        #:unpack-path "github.com/kylelemons/godebug"))
     (home-page "https://github.com/kylelemons/godebug")
-    (synopsis "Pretty printer for Go values.")
+    (synopsis "Pretty printer for Go values")
     (description
      "This package will pretty print a compact representation of a Go data
 structure.  It can also produce a much more verbose, one-item-per-line

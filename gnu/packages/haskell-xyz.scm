@@ -4528,7 +4528,7 @@ definition of @code{Monad}.")
            ghc-shelly
            ghc-temporary))
     (home-page "https://github.com/haskell-fswatch/hfsnotify")
-    (synopsis "Cross platform library for file change notification.")
+    (synopsis "Cross platform library for file change notification")
     (description "Cross platform library for file creation, modification, and
 deletion notification. This library builds upon existing libraries for platform
 specific Windows, Mac, and Linux file system event notification.")
@@ -6941,7 +6941,7 @@ compiler versions.")
     (inputs
      (list ghc-conduit ghc-resourcet libyaml+static))
     (home-page "https://github.com/snoyberg/yaml#readme")
-    (synopsis "Low-level, streaming YAML interface.")
+    (synopsis "Low-level, streaming YAML interface")
     (description "This package provides a Haskell wrapper over the
 LibYAML C library.")
     (license license:bsd-3)))
@@ -8768,7 +8768,7 @@ to other formats.")
     (native-inputs
      (list ghc-hunit))
     (home-page "https://github.com/jgm/emojis#readme")
-    (synopsis "Conversion between emoji characters and their names.")
+    (synopsis "Conversion between emoji characters and their names")
     (description
      "This package provides functions for converting emoji names to emoji
 characters and vice versa.
@@ -10638,7 +10638,7 @@ Haskell library @code{regex-base}.")
      (list ghc-regex-base))
     (native-inputs (list ghc-utf8-string))
     (home-page "https://github.com/haskell-hvr/regex-tdfa")
-    (synopsis "POSIX extended regular expressions in Haskell.")
+    (synopsis "POSIX extended regular expressions in Haskell")
     (description
      "Regex-tdfa is a pure Haskell regular expression library implementing POSIX
 extended regular expressions.  It is a \"tagged\" DFA regex engine. It is
@@ -12893,7 +12893,7 @@ datatypes.")
     (inputs
      (list ghc-th-lift ghc-vector ghc-quickcheck))
     (home-page "https://github.com/bennofs/th-lift-instances/")
-    (synopsis "Lift instances for template-haskell for common data types.")
+    (synopsis "Lift instances for template-haskell for common data types")
     (description "Most data types in the Haskell platform do not have Lift
 instances.  This package provides orphan instances for @code{containers},
 @code{text}, @code{bytestring} and @code{vector}.")
@@ -15309,7 +15309,7 @@ footnotes, math, and more.")
     (inputs
      (list ghc-commonmark ghc-commonmark-extensions ghc-pandoc-types))
     (home-page "https://github.com/jgm/commonmark-hs")
-    (synopsis "Bridge between Commonmark and Pandoc AST.")
+    (synopsis "Bridge between Commonmark and Pandoc AST")
     (description
      "This library provides typeclasses for rendering @code{ghc-commonmark} to
 Pandoc types.")

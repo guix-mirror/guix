@@ -10197,7 +10197,7 @@ API services.")
     (propagated-inputs
      (list python-biothings-client))
     (home-page "https://github.com/biothings/mygene.py")
-    (synopsis "Python Client for MyGene.Info services.")
+    (synopsis "Python Client for MyGene.Info services")
     (description "MyGene.Info provides simple-to-use REST web services
 to query/retrieve gene annotation data.  It's designed with simplicity
 and performance emphasized.  Mygene is a Python wrapper to access
@@ -11871,7 +11871,7 @@ implementation differs in these ways:
        ("python-pytest" ,python-pytest)
        ("python-setuptools-scm" ,python-setuptools-scm)))
     (home-page "https://github.com/theislab/scanpy")
-    (synopsis "Single-Cell Analysis in Python.")
+    (synopsis "Single-Cell Analysis in Python")
     (description "Scanpy is a scalable toolkit for analyzing single-cell gene
 expression data.  It includes preprocessing, visualization, clustering,
 pseudotime and trajectory inference and differential expression testing.  The
@@ -15176,7 +15176,7 @@ parser for Python.")
    (inputs
     (list python-configparser python-pysam python-pyvcf))
    (home-page "https://github.com/mroosmalen/nanosv")
-   (synopsis "Structural variation detection tool for Oxford Nanopore data.")
+   (synopsis "Structural variation detection tool for Oxford Nanopore data")
    (description "NanoSV is a software package that can be used to identify
 structural genomic variations in long-read sequencing data, such as data
 produced by Oxford Nanopore Technologies’ MinION, GridION or PromethION

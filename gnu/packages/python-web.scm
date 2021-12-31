@@ -4000,7 +4000,7 @@ addon modules.")
         (base32 "0b6s50vc4iad97b6bb3xnyrgajb3nj6n6jbr5p54a4vapky3zmx9"))))
     (build-system python-build-system)
     (home-page "https://bottlepy.org/")
-    (synopsis "WSGI framework for small web-applications.")
+    (synopsis "WSGI framework for small web-applications")
     (description "@code{python-bottle} is a WSGI framework for small web-applications.")
     (license license:expat)))
 

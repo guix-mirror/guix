@@ -418,7 +418,7 @@ software.  GNU Mailutils provides the following commands:
              go-github-com-emersion-go-imap-idle
              go-github-com-emersion-go-sasl go-github-com-sirupsen-logrus
              go-golang-org-x-text))
-      (synopsis "Execute scripts on IMAP mailbox changes.")
+      (synopsis "Execute scripts on IMAP mailbox changes")
       (description
        "Script to execute scripts on IMAP mailbox changes (new/deleted/updated
 messages) using IDLE.  Implemented in Go.")

@@ -636,7 +636,7 @@ systems.  Output format is completely customizable.")
     (inputs
      (list eudev parted))
     (home-page "http://oss.digirati.com.br/f3/")
-    (synopsis "Test real capacity of flash memory cards and such.")
+    (synopsis "Test real capacity of flash memory cards and such")
     (description "F3 (Fight Flash Fraud or Fight Fake Flash) tests the full
 capacity of a flash card (flash drive, flash disk, pendrive).  F3 writes to
 the card and then checks if can read it.  It will assure you haven't been sold

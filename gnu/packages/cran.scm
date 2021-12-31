@@ -7030,7 +7030,7 @@ It also includes interpolation functions.")
     (build-system r-build-system)
     (propagated-inputs (list r-proto))
     (home-page "https://code.google.com/archive/p/gsubfn/")
-    (synopsis "Utilities for strings and function arguments.")
+    (synopsis "Utilities for strings and function arguments")
     (description
      "This package provides @code{gsubfn} which is like @code{gsub} but can
 take a replacement function or certain other objects instead of the

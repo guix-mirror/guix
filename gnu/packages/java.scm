@@ -6067,7 +6067,7 @@ these scripting language engines.")
     (native-inputs
      (list java-junit))
     (home-page "https://commons.apache.org/jxpath/")
-    (synopsis "Simple interpreter of an expression language called XPath.")
+    (synopsis "Simple interpreter of an expression language called XPath")
     (description "The org.apache.commons.jxpath package defines a simple
 interpreter of an expression language called XPath.  JXPath applies XPath
 expressions to graphs of objects of all kinds: JavaBeans, Maps, Servlet
@@ -12235,7 +12235,7 @@ the DOM level 3 load/save API's are in use.")
                           (find-files "build" "^jakarta-regexp-.*\\.jar$"))
                 #t))))))
     (home-page "https://attic.apache.org/projects/jakarta-regexp.html")
-    (synopsis "Regular expression parser generator for Java.")
+    (synopsis "Regular expression parser generator for Java")
     (description "@code{jakarta-regexp} is an old regular expression parser
 generator for Java.")
     (license license:asl2.0)))

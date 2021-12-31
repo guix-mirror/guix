@@ -1438,7 +1438,7 @@ analysing code quality.")
     (propagated-inputs
      (list python-requests))
     (home-page "https://github.com/patrys/httmock")
-    (synopsis "Mocking library for requests.")
+    (synopsis "Mocking library for requests")
     (description "This package provides a library for replying fake data to
 Python software under test, when they make an HTTP query.")
     (license license:asl2.0)))
