@@ -4203,7 +4203,7 @@ PROPER-LIST, ASSOCIATION-LIST, PROPERTY-LIST and TUPLE.")
                  (("in-package :cl-utilities)" all)
                   "in-package :cl-utilities)\n\n#+sbcl\n(require :sb-rotate-byte)")))))))
       (home-page "http://common-lisp.net/project/cl-utilities")
-      (synopsis "collection of semi-standard utilities")
+      (synopsis "Collection of semi-standard utilities")
       (description
        "On Cliki.net <http://www.cliki.net/Common%20Lisp%20Utilities>, there
 is a collection of Common Lisp Utilities, things that everybody writes since

@@ -27348,7 +27348,7 @@ Braintree Gateway.  Braintree is a US-based payments service provider.")
         (base32 "0pqdmpxbr8iq22b4css2gz5z6s01ddpzyj25x27kgbs2lp0f5phs"))))
     (build-system python-build-system)
     (home-page "https://github.com/tylerbakke/MarkupPy")
-    (synopsis "pythonic HTML/XML generator")
+    (synopsis "Pythonic HTML/XML generator")
     (description "This Python module attempts to make it easier to generate
 HTML/XML from a Python program in an intuitive, lightweight, customizable and
 pythonic way.")
@@ -27436,7 +27436,7 @@ spreadsheet), CSV, TSV, XLS, XLSX (Microsoft Excel spreadsheet), and YAML.")
         (base32 "10nf4hdwldqgdmh4g613vx55sbsw1x1yzpvs3crwlggbp75fjjfi"))))
     (build-system python-build-system)
     (home-page "https://coda.b2ck.com/")
-    (synopsis "module to parse Belgian CODA files")
+    (synopsis "Module to parse Belgian CODA files")
     (description "This package provides a module to parse Coded statement of
 account (CODA) files as defined be the Belgian Febelfin bank standard.")
     (license license:bsd-3)))

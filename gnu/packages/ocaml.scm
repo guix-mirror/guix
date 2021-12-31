@@ -5842,7 +5842,7 @@ ocaml values.")
         ("ocaml-ppxlib" ,(package-with-ocaml4.07 ocaml-ppxlib))))
     (properties `((upstream-name . "ppx_sexp_message")))
     (home-page "https://github.com/janestreet/ppx_sexp_message")
-    (synopsis "ppx rewriter for easy construction of s-expressions")
+    (synopsis "Ppx rewriter for easy construction of s-expressions")
     (description "Ppx_sexp_message aims to ease the creation of s-expressions
 in OCaml.  This is mainly motivated by writing error and debugging messages,
 where one needs to construct a s-expression based on various element of the
