@@ -3004,18 +3004,16 @@ list of components.  This module takes care of that for you.")
              (setenv "DISPLAY" ":1")
              #t)))))
     (native-inputs
-     `(("gettext" ,gettext-minimal)
-       ("glib:bin" ,glib "bin") ; for glib-compile-resources
-       ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)
-       ("xorg-server" ,xorg-server)))
+     (list gettext-minimal
+           `(,glib "bin") ; for glib-compile-resources
+           libtool pkg-config xorg-server))
     (propagated-inputs
-     `(("glib" ,glib)
-       ("gobject-introspection" ,gobject-introspection)
-       ("gssettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("gtk+" ,gtk+)
-       ("guile-lib" ,guile-lib)
-       ("webkitgtk" ,webkitgtk)))
+     (list glib
+           gobject-introspection
+           gsettings-desktop-schemas
+           gtk+
+           guile-lib
+           webkitgtk))
     (inputs (list guile-3.0))
     (home-page "https://github.com/spk121/guile-gi")
     (synopsis "GObject bindings for Guile")
