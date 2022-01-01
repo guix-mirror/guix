@@ -55,6 +55,7 @@
 ;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;; Copyright © 2021 jgart <jgart@dismail.de>
 ;;; Copyright © 2021 Foo Chuan Wei <chuanwei.foo@hotmail.com>
+;;; Copyright © 2022 Zhu Zihao <all_but_last@163.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -132,6 +133,7 @@
   #:use-module (gnu packages python-science)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages rdf)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages regex)
@@ -164,6 +166,7 @@
   #:use-module (guix build-system meson)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system qt)
   #:use-module (guix build-system ruby)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system scons)
@@ -4319,3 +4322,36 @@ a handy text editor with language recognition, and visualize SELECT results in
 a Gtk.Grid Widget.")
     (home-page "https://github.com/Alecaddd/sequeler")
     (license license:gpl2+)))
+
+(define-public sqlitebrowser
+  (package
+    (name "sqlitebrowser")
+    (version "3.12.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/sqlitebrowser/sqlitebrowser")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32 "1ljqzcx388mmni8lv9jz5r58alhsjrrqi4nzjnbfki94rn4ray6z"))
+       (file-name (git-file-name name version))))
+    (build-system qt-build-system)
+    (arguments
+     (list #:tests? #f                  ; no tests
+           #:configure-flags
+           ;; TODO: Unbundle QHexEdit, QScintilla.
+           #~(list "-DFORCE_INTERNAL_QCUSTOMPLOT=OFF")))
+    (inputs
+     (list qcustomplot
+           qtbase-5
+           sqlite))
+    (native-inputs (list qttools))
+    (home-page "https://sqlitebrowser.org/")
+    (synopsis "Database browser for SQLite")
+    (description "Sqlitebrowser is a high quaility, visual, open source tool to
+create design, and edit database file compatible with SQLite.")
+    (license
+     ;; dual license
+     (list license:gpl3+
+           license:mpl2.0))))
