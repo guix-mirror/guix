@@ -19628,14 +19628,14 @@ ignoring formatting changes.")
 (define-public python-pydub
   (package
     (name "python-pydub")
-    (version "0.24.1")
+    (version "0.25.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pydub" version))
        (sha256
         (base32
-         "0sfwfq7yjv4bl3yqbmizszscafvwf4zr40hzbsy7rclvzyznh333"))))
+         "03ykn2kp6qglsrzqi5h79z5cp3kl9mknasv0d6jv5jj9k77362lq"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
