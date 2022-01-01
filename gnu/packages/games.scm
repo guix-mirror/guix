@@ -61,7 +61,7 @@
 ;;; Copyright © 2021 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2021 Greg Hogan <code@greghogan.com>
 ;;; Copyright © 2021 David Pflug <david@pflug.io>
-;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
+;;; Copyright © 2021, 2022 Felix Gruber <felgru@posteo.net>
 ;;; Copyright © 2021 Solene Rapenne <solene@perso.pw>
 ;;; Copyright © 2021 Noisytoot <noisytoot@disroot.org>
 ;;; Copyright © 2021 Petr Hodina <phodina@protonmail.com>
@@ -5135,7 +5135,8 @@ tactics.")
        (patches
         ;; Use system Minizip.  Patch is provided by Debian, and discussed
         ;; upstream at <https://github.com/widelands/widelands/issues/399>.
-        (search-patches "widelands-system-wide_minizip.patch"))))
+        (search-patches "widelands-system-wide_minizip.patch"
+                        "widelands-add-missing-map-include.patch"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags

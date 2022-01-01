@@ -1,0 +1,28 @@
+From 316eaea209754368a57f445ea4dd016ecf8eded6 Mon Sep 17 00:00:00 2001
+From: matthiakl <t-m.42@mailpost.spdns.org>
+Date: Sat, 14 Aug 2021 19:24:08 +0200
+Subject: [PATCH] Added missing direct incude (#5025)
+
+---
+This patch is from
+https://github.com/widelands/widelands/pull/5025
+which has been merged after the release of Widelands 1.0.
+
+ src/network/bufferedconnection.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/network/bufferedconnection.h b/src/network/bufferedconnection.h
+index fe974b9e..7e1ecf87 100644
+--- a/src/network/bufferedconnection.h
++++ b/src/network/bufferedconnection.h
+@@ -20,6 +20,7 @@
+ #ifndef WL_NETWORK_BUFFEREDCONNECTION_H
+ #define WL_NETWORK_BUFFEREDCONNECTION_H
+ 
++#include <map>
+ #include <memory>
+ #include <mutex>
+ #include <thread>
+-- 
+2.30.2
+
