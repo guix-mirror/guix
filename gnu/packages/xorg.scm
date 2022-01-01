@@ -32,6 +32,7 @@
 ;;; Copyright © 2021 Matthew James Kraai <kraai@ftbfs.org>
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;; Copyright © 2021 qblade <qblade@protonmail.com>
+;;; Copyright © 2021 Lu Hui <luhux76@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -6467,7 +6468,8 @@ X11 servers, Windows, or macOS.")
        (list "--with-anthy-utf8"
              (string-append "--with-lispdir=" %output "/share/emacs")
              ;; Set proper runpath
-             (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib"))
+             (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib")
+             "CFLAGS=-O2 -g -fcommon")
        #:phases
        (modify-phases %standard-phases
          ;; Set path of uim-el-agent and uim-el-helper-agent executables
