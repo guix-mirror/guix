@@ -24,6 +24,7 @@
 ;;; Copyright © 2021 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2021 Petr Hodina <phodina@protonmail.com>
 ;;; Copyright © 2021 Raghav Gururajan <rg@raghavgururajan.name>
+;;; Copyright © 2022 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -70,6 +71,7 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
@@ -88,6 +90,7 @@
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages m4)
+  #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages nettle)
   #:use-module (gnu packages networking)
@@ -1647,70 +1650,91 @@ Machine Protocol.")
     (license license:gpl3+)))
 
 (define-public looking-glass-client
-  (let ((commit "182c4752d57690da7f99d5e788de9b8baea33895"))
-    (package
-     (name "looking-glass-client")
-     (version (string-append "a12-" (string-take commit 7)))
-     (source
-      (origin
+  (package
+    (name "looking-glass-client")
+    (version "B5")
+    (source
+     (origin
        (method git-fetch)
-       (uri (git-reference (url "https://github.com/gnif/LookingGlass")
-                           (commit commit)))
+       (uri (git-reference
+             (url "https://github.com/gnif/LookingGlass")
+             (commit version)
+             (recursive? #t)))
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "02bq46ndmzq9cihazzn7xq1x7q5nzm7iw4l9lqzihxcxp9famkhw"))
-       (modules '((guix build utils)))
-       (snippet
-        '(begin
-           ;; Do not create binaries optimized for the CPU of the build machine,
-           ;; for reproducibility and compatibility.  TODO: in the next version
-           ;; of looking glass, this is exposed as a CMake configure option.
-           (substitute* "client/CMakeLists.txt"
-             (("-march=native")
-              ""))
-           #t))))
-     (build-system cmake-build-system)
-     (inputs `(("fontconfig" ,fontconfig)
-               ("glu" ,glu)
-               ("mesa" ,mesa)
-               ("openssl" ,openssl)
-               ("sdl2" ,sdl2)
-               ("sdl2-ttf" ,sdl2-ttf)
-               ("spice-protocol" ,spice-protocol)
-               ("wayland" ,wayland)))
-     (native-inputs (list libconfig nettle pkg-config))
-     (arguments
-      `(#:tests? #f ;; No tests are available.
-        #:make-flags '("CC=gcc")
-        #:phases (modify-phases %standard-phases
-                   (add-before 'configure 'chdir-to-client
-                     (lambda* (#:key outputs #:allow-other-keys)
-                       (chdir "client")
-                       #t))
-                   (add-after 'chdir-to-client 'add-missing-include
-                     (lambda _
-                       ;; Mimic upstream commit b9797529893, required since the
-                       ;; update to Mesa 19.2.
-                       (substitute* "renderers/egl/shader.h"
-                         (("#include <stdbool\\.h>")
-                          "#include <stdbool.h>\n#include <stddef.h>"))
-                       #t))
-                   (replace 'install
-                     (lambda* (#:key outputs #:allow-other-keys)
-                       (install-file "looking-glass-client"
-                                     (string-append (assoc-ref outputs "out")
-                                                    "/bin"))
-                       #t)))))
-     (home-page "https://looking-glass.hostfission.com")
-     (synopsis "KVM Frame Relay (KVMFR) implementation")
-     (description "Looking Glass allows the use of a KVM (Kernel-based Virtual
+         "09mn544x5hg1z31l92ksk7fi7yj9r8xdk0dcl9fk56ivcr452ylm"))))
+    (build-system cmake-build-system)
+    (inputs
+     (list bash-minimal
+           fontconfig
+           freetype
+           glu
+           gmp
+           libglvnd
+           libiberty
+           libx11
+           libxcursor
+           libxfixes
+           libxi
+           libxinerama
+           libxkbcommon
+           libxpresent
+           libxrandr
+           libxscrnsaver
+           mesa
+           openssl
+           sdl2
+           sdl2-ttf
+           spice-protocol
+           wayland
+           wayland-protocols
+           `(,zlib "static")))
+    (native-inputs (list libconfig nettle pkg-config))
+    (arguments
+     `(#:tests? #f ;; No tests are available.
+       #:make-flags '("CC=gcc")
+       #:phases (modify-phases %standard-phases
+                  (add-before 'configure 'chdir-to-client
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (chdir "client")
+                      #t))
+                  (replace 'install
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (install-file "looking-glass-client"
+                                    (string-append (assoc-ref outputs "out")
+                                                   "/bin"))
+                      #t))
+                  (add-after 'install 'wrapper
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      (wrap-program
+                          (string-append (assoc-ref outputs "out")
+                                         "/bin/looking-glass-client")
+                        `("LD_LIBRARY_PATH" ":" prefix
+                          ,(map (lambda (name)
+                                  (let ((input (assoc-ref inputs name)))
+                                    (string-append input "/lib")))
+                                '("gmp"
+                                  "libxi"
+                                  "nettle"
+                                  "mesa"
+                                  "wayland"
+                                  "fontconfig-minimal"
+                                  "freetype"
+                                  "libx11"
+                                  "libxfixes"
+                                  "libxscrnsaver"
+                                  "libxinerama"))))
+                      #t)))))
+    (home-page "https://looking-glass.io/")
+    (synopsis "KVM Frame Relay (KVMFR) implementation")
+    (description "Looking Glass allows the use of a KVM (Kernel-based Virtual
 Machine) configured for VGA PCI Pass-through without an attached physical
-monitor, keyboard or mouse.  It displays the VM's rendered contents on your main
-monitor/GPU.")
-     ;; This package requires SSE instructions.
-     (supported-systems '("i686-linux" "x86_64-linux"))
-     (license license:gpl2+))))
+monitor, keyboard or mouse.  It displays the VM's rendered contents on your
+main monitor/GPU.")
+    ;; This package requires SSE instructions.
+    (supported-systems '("i686-linux" "x86_64-linux"))
+    (license license:gpl2+)))
 
 (define-public runc
   (package
