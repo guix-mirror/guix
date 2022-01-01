@@ -1523,6 +1523,7 @@ of the same name.")
            gnutls
            brotli
            libcap
+           libgcrypt
            libnl
            libpcap
            libssh
