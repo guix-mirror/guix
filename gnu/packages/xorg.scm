@@ -16,7 +16,7 @@
 ;;; Copyright © 2017, 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
-;;; Copyright © 2018, 2020 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2018, 2020, 2022 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Benjamin Slade <slade@jnanam.net>
 ;;; Copyright © 2019 nee <nee@cock.li>
 ;;; Copyright © 2019 Yoshinori Arai <kumagusu08@gmail.com>
@@ -6000,6 +6000,27 @@ user-friendly mechanism to start the X server.")
     (description
      "Xaw is the X 3D Athena Widget Set based on the X Toolkit
 Intrinsics (Xt) Library.")
+    (license license:x11)))
+
+(define-public libxpresent
+  (package
+    (name "libxpresent")
+    (version "1.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri "mirror://xorg/individual/lib/libXpresent-1.0.0.tar.bz2")
+              (sha256
+               (base32
+                "12kvvar3ihf6sw49h6ywfdiwmb8i1gh8wasg1zhzp6hs2hay06n1"))))
+    (inputs
+     (list libx11 xorgproto libxext libxfixes libxrandr))
+    (native-inputs
+     (list pkg-config))
+    (build-system gnu-build-system)
+    (home-page "https://gitlab.freedesktop.org/xorg/lib/libxpresent")
+    (synopsis "Xlib-compatible API for the Present extension")
+    (description "This package provides a Xlib-based library for the X Present
+Extension.")
     (license license:x11)))
 
 (define-public xclock
