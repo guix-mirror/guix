@@ -12,7 +12,7 @@
 ;;; Copyright © 2015 Fabian Harfert <fhmgufs@web.de>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016, 2018, 2020, 2021 Kei Kebreau <kkebreau@posteo.net>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016-2022 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017, 2018, 2019, 2020, 2021 Paul Garlick <pgarlick@tourbillion-technology.com>
@@ -579,6 +579,10 @@ and C++.  It includes a wide range of mathematical routines, with over 1000
 functions in total.  Subject areas covered by the library include:
 differential equations, linear algebra, Fast Fourier Transforms and random
 numbers.")
+
+    ;; Linear algebra routines should benefit from SIMD optimizations.
+    (properties `((tunable? . #t)))
+
     (license license:gpl3+)))
 
 ;; TODO: Merge back into the gsl package as a separate output.
