@@ -5962,8 +5962,8 @@ Magic, Egypt, Indians, Norsemen, Persian or Romans.")
     (license license:gpl2+)))
 
 (define-public freegish
-  (let ((commit "8795cd7adc95957883f2d3465eb9036a774667a7")
-        (revision "1"))
+  (let ((commit "21977ee5fc2008231b35160df00efe954c508b16")
+        (revision "2"))
     (package
       (name "freegish")
       (version (string-append "0-" revision "." (string-take commit 9)))
@@ -5975,7 +5975,7 @@ Magic, Egypt, Indians, Norsemen, Persian or Romans.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1p1zf5qqagmcpi1db2bs02cnalpy3qiymp6yzan7k1bhmv859gsx"))
+                  "1qh0gcnbyxyzmb13jifwba4xrzj94m4w9whdvl0gnds6ricmwply"))
                 (modules '((guix build utils)))
                 ;; The audio files in the "music" directory are licensed under
                 ;; CC-BY-NC, so we delete them.
