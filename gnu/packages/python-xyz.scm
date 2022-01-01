@@ -28414,3 +28414,24 @@ to:
 @item powerful dependency system
 @end itemize")
     (license license:expat)))
+
+(define-public python-phpserialize
+  (package
+    (name "python-phpserialize")
+    (version "1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "phpserialize" version))
+       (sha256
+        (base32 "19qgkb9z4zjbjxlpwh2w6pxkz2j3iymnydi69jl0jg905lqjsrxz"))))
+    (build-system python-build-system)
+    (arguments
+     (list
+      ;; tests missing in pypi archive, anhow they are quite simple and not worth any hassle
+      #:tests? #f))
+    (home-page "http://github.com/mitsuhiko/phpserialize")
+    (synopsis "Python port of the serialize and unserialize functions of PHP")
+    (description
+     "This package provides a port of the serialize and unserialize functions of PHP for Python")
+    (license license:bsd-3)))
