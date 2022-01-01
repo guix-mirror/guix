@@ -1,6 +1,6 @@
 ;; GNU Guix news, for use by 'guix pull'.
 ;;
-;; Copyright © 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
+;; Copyright © 2019-2022 Ludovic Courtès <ludo@gnu.org>
 ;; Copyright © 2019–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;; Copyright © 2019, 2020 Miguel Ángel Arruga Vivas <rosen644835@gmail.com>
 ;; Copyright © 2019, 2020 Konrad Hinsen <konrad.hinsen@fastmail.net>
@@ -24,6 +24,45 @@
 
 (channel-news
  (version 0)
+
+ (entry (commit "d090e9c37d693f5a0f381482c17fb03462cb6a48")
+        (title
+         (en "New @option{--tune} option for CPU micro-architecture tuning")
+         (fr "Nouvelle option @option{--tune} pour optimiser pour une
+micro-architecture"))
+        (body
+         (en "The new @option{--tune} package transformation option instructs
+Guix to tune relevant packages for the micro-architecture of the host CPU.
+This lets the compiler use single-instruction/multiple-data (SIMD)
+instructions beyond the baseline instruction set architecture (ISA), which can
+noticeably improve performance in some cases such as linear algebra code.
+
+As an example, here is how you would install the GNU Astronomy Utilities
+against an optimized variant of the GNU Scientific Library (GSL):
+
+@example
+guix install gnuastro --tune
+@end example
+
+Run @command{info \"(guix) Package Transformation Options\"} for more
+information.")
+         (fr "La nouvelle option de transformation de paquets @option{--tune}
+demande à Guix d'optimiser les paquets pour lesquels c'est pertinent pour la
+micro-architecture du processeur hôte.  Cela permet au compilateur d'utiliser
+des instructions vectorielles (SIMD) en plus des instructions de base de
+l'architecture, ce qui peut sensiblement améliorer les performance dans
+certains cas tels que pour du code d'algèbre linéaire.
+
+Par exemple, voici comment installer les Utilitaires d'astronomie GNU de
+manière à ce qu'ils utilisent une variante optimisée de la Bibliothèque
+scientifique GNU (GSL) :
+
+@example
+guix install gnuastro --tune
+@end example
+
+Lancer @command{info \"(guix.fr) Options de transformation de paquets\"} pour
+plus d'informations.")))
 
  (entry (commit "ea2fd313d52dc62593b478acf5c3e7ea052c45de")
         (title
