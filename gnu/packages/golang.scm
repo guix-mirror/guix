@@ -9058,9 +9058,11 @@ pcredential store, Pass, Secret Service, KDE Wallet, Encrypted File.")
       (arguments
        '(#:import-path "github.com/mtibben/androiddnsfix"
          #:phases %standard-phases))
-      (synopsis "Hack to get around the issues building on android")
+      (synopsis "Work around lack of @file{/etc/resolv.conf} on Android")
       (description
-       "Hack around the issues in https://github.com/golang/go/issues/8877.")
+       "This package allows Go applications to work around lack of
+@file{/etc/resolv.conf} on Android, as described in
+@url{https://github.com/golang/go/issues/8877}.")
       (home-page "https://github.com/mtibben/androiddnsfix")
       (license license:expat))))
 
