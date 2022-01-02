@@ -1560,6 +1560,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/openmpi-mtl-priorities.patch		\
   %D%/packages/patches/openssh-hurd.patch			\
   %D%/packages/patches/openresolv-restartcmd-guix.patch	\
+  %D%/packages/patches/openrgb-unbundle-hueplusplus.patch	\
   %D%/packages/patches/opensles-add-license-file.patch			\
   %D%/packages/patches/openssl-runpath.patch			\
   %D%/packages/patches/openssl-1.1-c-rehash-in.patch		\

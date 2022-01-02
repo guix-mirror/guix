@@ -65,6 +65,7 @@
   #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
   #:use-module (guix download)
+  #:use-module (guix gexp)
   #:use-module (guix git-download)
   #:use-module (guix svn-download)
   #:use-module ((guix licenses) #:prefix license:)
@@ -649,6 +650,78 @@ be dangerous and may void your CPU or system board's warranty.")
     (description "OpenHMD aims to provide an API and drivers for immersive
 technology, such as head mounted displays with built in head tracking.")
     (license license:boost1.0)))
+
+(define-public openrgb
+  (package
+    (name "openrgb")
+    (version "0.7")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/CalcProgrammer1/OpenRGB")
+             (commit (string-append "release_" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0xhfaz0b74nfnh7il2cz5c0338xlzay00g6hc2h3lsncarj8d5n7"))
+       (patches
+        (search-patches "openrgb-unbundle-hueplusplus.patch"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Delete the bundled hueplusplus and json libraries.
+           (delete-file-recursively "dependencies/hueplusplus-1.0.0")
+           (delete-file-recursively "dependencies/json")))))
+    (build-system cmake-build-system)
+    (arguments
+     (list
+       #:tests? #f ; doesn't have tests
+       #:make-flags
+       #~(list (string-append "INSTALL_ROOT=" #$output ))
+       #:phases
+       #~(modify-phases %standard-phases
+           (add-after 'unpack 'unbundle
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "OpenRGB.pro"
+                 (("dependencies/hueplusplus-1.0.0/include/hueplusplus")
+                  (string-append #$(this-package-input "hueplusplus")
+                                 "/include/hueplusplus"))
+                 (("dependencies/json")
+                  (string-append #$(this-package-input "json-modern-cxx")
+                                 "/include/nlohmann")))))
+           ;; Call qmake instead of configure to create a Makefile.
+           (replace 'configure
+             (lambda _ (invoke "qmake" "PREFIX=/" "OpenRGB.pro"))))))
+    (inputs
+     (list hidapi
+           hueplusplus
+           json-modern-cxx
+           libusb
+           mbedtls-apache
+           qtbase-5))
+    (native-inputs
+     (list pkg-config))
+    (synopsis "RGB lighting control")
+    (description
+     "OpenRGB is lighting control that doesn't depend on manufacturer software.
+ASUS, ASRock, Corsair, G.Skill, Gigabyte, HyperX, MSI, Razer, ThermalTake, and more
+supported.
+
+Features:
+
+@itemize
+@item Set colors and select effect modes for a wide variety of RGB hardware
+@item Save and load profiles
+@item Control lighting from third party software using the OpenRGB SDK
+@item Command line interface
+@item Connect multiple instances of OpenRGB to synchronize lighting across multiple PCs
+@item Can operate standalone or in a client/headless server configuration
+@item View device information
+@item No official/manufacturer software required
+@item Graphical view of device LEDs makes creating custom patterns easy
+@end itemize")
+    (home-page "https://openrgb.org/")
+    (license license:gpl2))) ; Included libccmmk is lgpl3+, CRC is bsd-3
 
 (define-public wavemon
   (package

@@ -1,0 +1,58 @@
+Remove references to hueplusplus in order to unbundle and use the input package.
+
+diff --git a/OpenRGB.pro b/OpenRGB.pro
+index 61758892..8702d998 100644
+--- a/OpenRGB.pro
++++ b/OpenRGB.pro
+@@ -493,35 +493,6 @@ SOURCES +=
+     dependencies/Swatches/swatches.cpp                                                          \
+     dependencies/dmiinfo.cpp                                                                    \
+     dependencies/ColorWheel/ColorWheel.cpp                                                      \
+-    dependencies/hueplusplus-1.0.0/src/Action.cpp                                               \
+-    dependencies/hueplusplus-1.0.0/src/APICache.cpp                                             \
+-    dependencies/hueplusplus-1.0.0/src/BaseDevice.cpp                                           \
+-    dependencies/hueplusplus-1.0.0/src/BaseHttpHandler.cpp                                      \
+-    dependencies/hueplusplus-1.0.0/src/Bridge.cpp                                               \
+-    dependencies/hueplusplus-1.0.0/src/BridgeConfig.cpp                                         \
+-    dependencies/hueplusplus-1.0.0/src/CLIPSensors.cpp                                          \
+-    dependencies/hueplusplus-1.0.0/src/ColorUnits.cpp                                           \
+-    dependencies/hueplusplus-1.0.0/src/EntertainmentMode.cpp                                    \
+-    dependencies/hueplusplus-1.0.0/src/ExtendedColorHueStrategy.cpp                             \
+-    dependencies/hueplusplus-1.0.0/src/ExtendedColorTemperatureStrategy.cpp                     \
+-    dependencies/hueplusplus-1.0.0/src/Group.cpp                                                \
+-    dependencies/hueplusplus-1.0.0/src/HueCommandAPI.cpp                                        \
+-    dependencies/hueplusplus-1.0.0/src/HueDeviceTypes.cpp                                       \
+-    dependencies/hueplusplus-1.0.0/src/HueException.cpp                                         \
+-    dependencies/hueplusplus-1.0.0/src/Light.cpp                                                \
+-    dependencies/hueplusplus-1.0.0/src/ModelPictures.cpp                                        \
+-    dependencies/hueplusplus-1.0.0/src/NewDeviceList.cpp                                        \
+-    dependencies/hueplusplus-1.0.0/src/Scene.cpp                                                \
+-    dependencies/hueplusplus-1.0.0/src/Schedule.cpp                                             \
+-    dependencies/hueplusplus-1.0.0/src/Sensor.cpp                                               \
+-    dependencies/hueplusplus-1.0.0/src/SimpleBrightnessStrategy.cpp                             \
+-    dependencies/hueplusplus-1.0.0/src/SimpleColorHueStrategy.cpp                               \
+-    dependencies/hueplusplus-1.0.0/src/SimpleColorTemperatureStrategy.cpp                       \
+-    dependencies/hueplusplus-1.0.0/src/StateTransaction.cpp                                     \
+-    dependencies/hueplusplus-1.0.0/src/TimePattern.cpp                                          \
+-    dependencies/hueplusplus-1.0.0/src/UPnP.cpp                                                 \
+-    dependencies/hueplusplus-1.0.0/src/Utils.cpp                                                \
+-    dependencies/hueplusplus-1.0.0/src/ZLLSensors.cpp                                           \
+     dependencies/libe131/src/e131.c                                                             \
+     dependencies/libcmmk/src/libcmmk.c                                                          \
+     main.cpp                                                                                    \
+@@ -1188,6 +1159,7 @@ unix:!macx {
+     -lmbedx509                                                                                  \
+     -lmbedtls                                                                                   \
+     -lmbedcrypto                                                                                \
++    -lhueplusplusshared                                                                         \
+ 
+     COMPILER_VERSION = $$system($$QMAKE_CXX " -dumpversion")
+     if (!versionAtLeast(COMPILER_VERSION, "9")) {
+@@ -1218,7 +1190,6 @@ unix:!macx {
+     }
+ 
+     SOURCES +=                                                                                  \
+-    dependencies/hueplusplus-1.0.0/src/LinHttpHandler.cpp                                       \
+     i2c_smbus/i2c_smbus_linux.cpp                                                               \
+     serial_port/find_usb_serial_port_linux.cpp                                                  \
+     AutoStart/AutoStart-Linux.cpp                                                               \
