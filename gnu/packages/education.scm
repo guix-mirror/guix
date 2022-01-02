@@ -96,6 +96,8 @@
        ;; of Gstreamer.
        (list "--enable-sdlmixer"
              "LDFLAGS=-lgmodule-2.0")
+       #:make-flags
+       (list "CFLAGS=-fcommon")
        #:phases
        (modify-phases %standard-phases
          (add-after 'set-paths 'set-sdl-paths
