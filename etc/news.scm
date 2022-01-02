@@ -5,7 +5,7 @@
 ;; Copyright © 2019, 2020 Miguel Ángel Arruga Vivas <rosen644835@gmail.com>
 ;; Copyright © 2019, 2020 Konrad Hinsen <konrad.hinsen@fastmail.net>
 ;; Copyright © 2019, 2020, 2021 Julien Lepiller <julien@lepiller.eu>
-;; Copyright © 2019, 2020, 2021 Florian Pelz <pelzflorian@pelzflorian.de>
+;; Copyright © 2019–2022 Florian Pelz <pelzflorian@pelzflorian.de>
 ;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;; Copyright © 2020, 2021 Mathieu Othacehe <m.othacehe@gmail.com>
 ;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
@@ -67,12 +67,19 @@ plus d'informations.")))
  (entry (commit "ea2fd313d52dc62593b478acf5c3e7ea052c45de")
         (title
          (en "@samp{integer expected from stream}?  Update your Guix daemon")
+         (de "@samp{integer expected from stream}? Aktualisieren Sie Ihren Guix-Daemon")
          (nl "@samp{integer expected from stream}?  Werk je Guix daemon bij"))
         (body
          (en "We recently fixed a bug where substitution would fail with
 @samp{error: integer expected from stream}.  Be sure to update your system's
 Guix package that provides the @command{guix-daemon} if you haven't done so
 recently.  Run @command{info \"(guix) Upgrading Guix\"} for instructions.")
+         (de "Unlängst haben wir einen Fehler behoben, dass die Substitution
+mit der Fehlermeldung @samp{error: integer expected from stream}
+fehlschlägt. Bitte aktualisieren Sie daher Ihr systemweites Guix-Paket, das
+@command{guix-daemon} zur Verfügung stellt, wenn es noch nicht geschehen
+ist. Führen Sie @command{info \"(guix.de) Aktualisieren von Guix\"} aus für
+genaue Anweisungen.")
          (nl "Onlangs herstelden we een fout waarbij substitutie mislukt met
 een @samp{error: integer expected from stream}.  Werk zeker je systeemwijde
 Guix-pakket bij, dat de @command{guix-daemon} levert, als dat nog niet is
