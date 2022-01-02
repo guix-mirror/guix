@@ -674,7 +674,7 @@ configuration files, such as @file{.gitattributes}, @file{.gitignore}, and
 (define-public emacs-with-editor
   (package
     (name "emacs-with-editor")
-    (version "3.0.5")
+    (version "3.1.0")
     (source
      (origin
        (method git-fetch)
@@ -683,15 +683,20 @@ configuration files, such as @file{.gitattributes}, @file{.gitignore}, and
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1pynm4ng4rki2b2ka5dz01p66ygghk69mldsfbxs81d52jqfnx8f"))))
+        (base32 "0m4ckp2ljnkws0bhg1wxlhqdln8kq33qg00qmhhik8ihh02sywnl"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-before 'install 'enter-lisp-directory
+           (lambda _
+             (chdir "lisp")))
          (add-before 'install 'make-info
            (lambda _
-             (invoke "makeinfo" "--no-split"
-                     "-o" "with-editor.info" "with-editor.texi"))))))
+             (with-directory-excursion "../docs"
+               (invoke "makeinfo" "--no-split"
+                       "-o" "with-editor.info" "with-editor.texi")
+               (install-file "with-editor.info" "../lisp")))))))
     (native-inputs
      (list texinfo))
     (propagated-inputs
