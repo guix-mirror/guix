@@ -13,7 +13,7 @@
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2019, 2020 Adrian Malacoda <malacoda@monarch-pass.net>
-;;; Copyright © 2020, 2021 Jonathan Brielmaier <jonathan.brielmaier@web.de>
+;;; Copyright © 2020, 2021, 2022 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2021 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
@@ -1327,11 +1327,11 @@ standards of the IceCat project.")
        (cpe-version . ,(first (string-split version #\-)))))))
 
 ;; Update this together with icecat!
-(define %icedove-build-id "20211207000000") ;must be of the form YYYYMMDDhhmmss
+(define %icedove-build-id "20211217000000") ;must be of the form YYYYMMDDhhmmss
 (define-public icedove
   (package
     (name "icedove")
-    (version "91.4.0")
+    (version "91.4.1")
     (source icecat-source)
     (properties
      `((cpe-name . "thunderbird_esr")))
@@ -1612,7 +1612,7 @@ standards of the IceCat project.")
         ;; in the Thunderbird release tarball.  We don't use the release
         ;; tarball because it duplicates the Icecat sources and only adds the
         ;; "comm" directory, which is provided by this repository.
-        ,(let ((changeset "ab6dfcf3a37bf53aac1a9d632d45ee51047050bb"))
+        ,(let ((changeset "11529576c3a7d89514771d1e0f5fa116eef29b81"))
            (origin
              (method hg-fetch)
              (uri (hg-reference
@@ -1621,7 +1621,7 @@ standards of the IceCat project.")
              (file-name (string-append "thunderbird-" version "-checkout"))
              (sha256
               (base32
-               "00zj1k3c8p66ylf9n7xp42y6kiv3h6hf8ba7bk6f8wj3hh0r2hrd")))))
+               "0009pwaamwy8f1fnm3vpmkkklg6wi1rpnzg7a9mjqv3m8srdy2a3")))))
        ("cargo" ,rust "cargo")
        ("clang" ,clang)
        ("llvm" ,llvm)
