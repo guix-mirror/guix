@@ -8924,7 +8924,7 @@ encrypting JSON Web Tokens (JWT).  It relies only on the standard library.")
            go-github-com-aws-aws-sdk-go
            go-github-com-dvsekhvalnov-jose2go
            go-github-com-godbus-dbus
-           go-github-com-go-libsecret
+           go-github-com-gsterjov-go-libsecret
            go-github-com-mitchellh-go-homedir
            go-golang-org-x-crypto
            go-golang-org-x-sys
@@ -8974,11 +8974,11 @@ aware of your profiles and configuration in ~/.aws/config.")
     (home-page "https://github.com/99designs/aws-vault")
     (license license:expat)))
 
-(define-public go-github-com-go-libsecret
+(define-public go-github-com-gsterjov-go-libsecret
   (let ((commit "a6f4afe4910cad8688db3e0e9b9ac92ad22d54e1")
         (revision "0"))
     (package
-      (name "go-github-com-go-libsecret")
+      (name "go-github-com-gsterjov-go-libsecret")
       (version "5.0.1")
       (source (origin
                 (method git-fetch)
@@ -9002,6 +9002,9 @@ aware of your profiles and configuration in ~/.aws/config.")
       (home-page "https://github.com/gsterjov/go-libsecret")
       (license license:expat))))
 
+(define-public go-github-com-go-libsecret
+  (deprecated-package "go-github-com-go-libsecret" go-github-com-gsterjov-go-libsecret))
+
 (define-public go-github-com-99designs-go-keyring
   (package
     (name "go-github-com-99designs-go-keyring")
@@ -9023,7 +9026,7 @@ aware of your profiles and configuration in ~/.aws/config.")
            go-github-com-mitchellh-go-homedir
            go-github-com-dvsekhvalnov-jose2go
            go-github-com-godbus-dbus
-           go-github-com-go-libsecret
+           go-github-com-gsterjov-go-libsecret
            password-store
            gnupg))
     (arguments
