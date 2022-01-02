@@ -2824,8 +2824,7 @@ Lock key.")
                  (for-each (lambda (f) (install-file f doc))
                            (cons* "../UNLICENSE"
                                   "../WTFPL"
-                                  (find-files "." "\\.md$")))))
-             #t)))))
+                                  (find-files "." "\\.md$"))))))))))
     (propagated-inputs
      (list emacs-dash emacs-s emacs-spark emacs-ts))
     (home-page "https://github.com/contrapunctus-1/chronometrist")
