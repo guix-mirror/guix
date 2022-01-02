@@ -5595,3 +5595,28 @@ Audio CD source and extracts a 24-bit high resolution WAV file.  It handles
 both DST and DSD streams.")
    (home-page "https://tari.in/www/software/libodiosacd/")
    (license license:gpl3+)))
+
+(define-public odio-sacd
+  (package
+   (name "odio-sacd")
+   (version "21.1.9")
+   (source (origin
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/tari01/odio-sacd")
+                   (commit version)))
+             (file-name (git-file-name name version))
+             (sha256
+              (base32
+               "0314srqk0r4qv292qiaply619l2fw04nkdwvqhj3q1dqzv41g4qk"))))
+   (inputs (list libodiosacd))
+   ;; Build system and arguments for libodiosacd are identical.
+   (build-system (package-build-system libodiosacd))
+   (arguments (package-arguments libodiosacd))
+   (synopsis "Rip Super Audio CDs (SACD)")
+   (description
+    "Odio SACD is a command-line application which takes a Super Audio CD
+source and extracts a 24-bit high resolution WAV file.  It handles both DST
+and DSD streams.")
+   (home-page "https://tari.in/www/software/odio-sacd/")
+   (license license:gpl3+)))
