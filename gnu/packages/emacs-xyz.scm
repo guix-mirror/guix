@@ -8262,10 +8262,10 @@ and present results either as single emails or full trees.")
 (define-public emacs-marginalia
   ;; Upstream did not tag latest release.  The commit below matches version
   ;; bump.
-  (let ((commit "2dbad0b166d6dc76862697bb25b95d34c1703acc"))
+  (let ((commit "9229d88ae4757f3439e81f51799758c009838cb4"))
     (package
       (name "emacs-marginalia")
-      (version "0.10")
+      (version "0.11")
       (source
        (origin
          (method git-fetch)
@@ -8274,7 +8274,7 @@ and present results either as single emails or full trees.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "0xb0w7fxbmwbq2mdhs7xrf8z6x6qmkq68p1fv08wb4ksvphyvz5h"))))
+          (base32 "0gaqybj52skqcmxcx6k3zmw6lznzlr1fjvlaraic9m6n85xkvzki"))))
       (build-system emacs-build-system)
       (home-page "https://github.com/minad/marginalia")
       (synopsis "Marginalia in the minibuffer completions")
