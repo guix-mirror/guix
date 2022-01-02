@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021, 2022 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Matthew Jordan <matthewjordandevops@yandex.com>
 ;;; Copyright © 2016 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2016, 2019, 2021 Ludovic Courtès <ludo@gnu.org>
@@ -7108,10 +7108,13 @@ transforms one JSON document into another through a JMESPath expression.")
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/chris-ramon/douceur"))
-    (native-inputs
-     (list go-github-com-aymerick-douceur go-github-com-puerkitobio-goquery
-           go-github-com-andybalholm-cascadia go-golang-org-x-net
+    (propagated-inputs
+     (list go-github-com-aymerick-douceur
            go-github-com-gorilla-css))
+    (native-inputs
+     (list go-github-com-puerkitobio-goquery
+           go-github-com-andybalholm-cascadia
+           go-golang-org-x-net))
     (home-page "https://github.com/chris-ramon/douceur/")
     (synopsis "CSS parser and inliner")
     (description "This package provides a CSS parser and inliner.")
