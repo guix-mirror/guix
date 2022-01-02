@@ -42,7 +42,7 @@
 ;;; Copyright © 2019 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2019, 2020 Jesse Gibbons <jgibbons2357+guix@gmail.com>
 ;;; Copyright © 2019 Dan Frumin <dfrumin@cs.ru.nl>
-;;; Copyright © 2019, 2020, 2021 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2019, 2020, 2021, 2022 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019, 2020 Timotej Lazar <timotej.lazar@araneo.si>
 ;;; Copyright © 2019 Josh Holland <josh@inv.alid.pw>
 ;;; Copyright © 2019 Pkill -9 <pkill9@runbox.com>
@@ -6617,12 +6617,12 @@ fight against their plot and save his fellow rabbits from slavery.")
            wxwidgets
            zlib))
     (native-inputs
-     `(("boost" ,boost)
-       ("cmake" ,cmake-minimal)
-       ("cxxtest" ,cxxtest)
-       ("mesa" ,mesa)
-       ("pkg-config" ,pkg-config)
-       ("python-2" ,python-2)))
+     (list boost
+           cmake-minimal
+           cxxtest
+           mesa
+           pkg-config
+           python-2))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags '("config=release" "verbose=1" "-C" "build/workspaces/gcc")
@@ -6638,6 +6638,18 @@ fight against their plot and save his fellow rabbits from slavery.")
                 (string-append "\"" (assoc-ref inputs "cxxtest")
                                "/bin/cxxtestgen"
                                "\"")))))
+         (add-after 'unpack 'fix-mozjs-compatibility
+           ;; 0ad only builds fine with a specific version of mozjs
+           ;; (version 78.6 for 0ad-0.0.25).
+           ;; Here we change the error in case of version mismatch to a warning,
+           ;; and add some minor compatibility fixes.
+           (lambda _
+             (substitute* "source/scriptinterface/ScriptTypes.h"
+               (("#error Your compiler is trying to use")
+                "#warning Your compiler is trying to use"))
+             (substitute* "source/scriptinterface/ScriptContext.cpp"
+               (("JS::PrepareZoneForGC\\(")
+                "JS::PrepareZoneForGC(m_cx, "))))
          (replace 'configure
            (lambda* (#:key inputs outputs tests? #:allow-other-keys)
              (let* ((jobs (number->string (parallel-job-count)))
