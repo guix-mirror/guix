@@ -28880,7 +28880,7 @@ displayed for sharing.")
 (define-public emacs-orglink
   (package
     (name "emacs-orglink")
-    (version "1.1.6")
+    (version "1.2.0")
     (source
      (origin
        (method git-fetch)
@@ -28889,7 +28889,7 @@ displayed for sharing.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0ipy1p2cr5i0465hchqazmgn9jrgwzbyrb3prfgkl7z2m1gd7fcg"))))
+        (base32 "1619ly90vh2lla5rbw87a4n0rfal3wpbf7005jjiyv2ay88nc7l9"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/tarsius/orglink")
     (synopsis "Use Org mode links in other modes")
