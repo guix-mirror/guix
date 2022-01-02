@@ -8918,7 +8918,7 @@ encrypting JSON Web Tokens (JWT).  It relies only on the standard library.")
     (build-system go-build-system)
     (native-inputs
      (list go-github-com-99designs-go-keyring
-           go-github-com-androiddnsfix
+           go-github-com-mtibben-androiddnsfix
            go-github-com-mtibben-percent
            go-github-com-jmespath-go-jmespath
            go-github-com-aws-aws-sdk-go
@@ -9045,11 +9045,11 @@ pcredential store, Pass, Secret Service, KDE Wallet, Encrypted File.")
     (home-page "https://github.com/99designs/keyring")
     (license license:expat)))
 
-(define-public go-github-com-androiddnsfix
+(define-public go-github-com-mtibben-androiddnsfix
   (let ((commit "ff02804463540c36e3a148dcf4b009d003cf2a31")
         (revision "0"))
     (package
-      (name "go-github-com-androiddnsfix")
+      (name "go-github-com-mtibben-androiddnsfix")
       (version (git-version "0.0.0" revision commit))
       (source (origin
                 (method git-fetch)
@@ -9071,6 +9071,9 @@ pcredential store, Pass, Secret Service, KDE Wallet, Encrypted File.")
 @url{https://github.com/golang/go/issues/8877}.")
       (home-page "https://github.com/mtibben/androiddnsfix")
       (license license:expat))))
+
+(define-public go-github-com-androiddnsfix
+  (deprecated-package "go-github-com-androiddnsfix" go-github-com-mtibben-androiddnsfix))
 
 (define-public go-github-com-aws-aws-sdk-go
   (package
