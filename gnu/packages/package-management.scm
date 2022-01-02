@@ -1366,6 +1366,100 @@ potentially many machines, and with doing something with the results and
 outputs of those builds.")
       (license license:gpl3+))))
 
+(define-public guix-build-coordinator/agent-only
+  (package
+    (inherit guix-build-coordinator)
+    (name "guix-build-coordinator-agent-only")
+    (arguments
+     `(#:modules (((guix build guile-build-system)
+                   #:select (target-guile-effective-version))
+                  ,@%gnu-build-system-modules)
+       #:imported-modules ((guix build guile-build-system)
+                           ,@%gnu-build-system-modules)
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'set-GUILE_AUTO_COMPILE
+           (lambda _
+             ;; To avoid warnings relating to 'guild'.
+             (setenv "GUILE_AUTO_COMPILE" "0")
+             #t))
+         (add-after 'install 'wrap-executable
+           (lambda* (#:key inputs outputs target #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (guile (assoc-ref inputs "guile"))
+                    (version (target-guile-effective-version))
+                    (scm (string-append out "/share/guile/site/" version))
+                    (go  (string-append out "/lib/guile/" version "/site-ccache")))
+               (for-each
+                (lambda (file)
+                  (simple-format (current-error-port) "wrapping: ~A\n" file)
+                  (let ((guile-inputs (list
+                                       "guile-json"
+                                       "guile-gcrypt"
+                                       "guix"
+                                       "guile-prometheus"
+                                       "guile-lib"
+                                       "guile-lzlib"
+                                       "guile-zlib"
+                                       "guile-sqlite3"
+                                       "gnutls")))
+                    (wrap-program file
+                      `("PATH" ":" prefix (,bin))
+                      `("GUILE_LOAD_PATH" ":" prefix
+                        (,scm ,(string-join
+                                (map (lambda (input)
+                                       (simple-format
+                                        #f "~A/share/guile/site/~A"
+                                        (assoc-ref inputs input)
+                                        version))
+                                     guile-inputs)
+                                ":")))
+                      `("GUILE_LOAD_COMPILED_PATH" ":" prefix
+                        (,go ,(string-join
+                               (map (lambda (input)
+                                      (simple-format
+                                       #f "~A/lib/guile/~A/site-ccache"
+                                       (assoc-ref inputs input)
+                                       version))
+                                    guile-inputs)
+                               ":"))))))
+                (find-files bin)))
+             #t))
+         (delete 'strip))))             ; As the .go files aren't compatible
+    (native-inputs
+     (list pkg-config
+           autoconf
+           automake
+           gnutls
+
+           ;; Guile libraries are needed here for cross-compilation.
+           guile-json-4
+           guile-gcrypt
+           guix
+           guile-prometheus
+           guile-lib
+           (first (assoc-ref (package-native-inputs guix) "guile"))))
+    (inputs
+     (list (first (assoc-ref (package-native-inputs guix) "guile"))
+           bash-minimal))
+    (propagated-inputs
+     (append
+         (list guile-prometheus
+               guile-gcrypt
+               guile-json-4
+               guile-lib
+               guile-lzlib
+               guile-zlib
+               guix
+               gnutls)))
+    (description
+     "The Guix Build Coordinator helps with performing lots of builds across
+potentially many machines, and with doing something with the results and
+outputs of those builds.
+
+This package just includes the agent component.")))
+
 (define-public guix-jupyter
   (package
     (name "guix-jupyter")
