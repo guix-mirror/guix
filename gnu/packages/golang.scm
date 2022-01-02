@@ -9080,7 +9080,7 @@ pcredential store, Pass, Secret Service, KDE Wallet, Encrypted File.")
                (base32
                 "169mkkw1cff1px6326krwvfpfj07sb4y5rbn003gi4bk176h6ry9"))))
     (build-system go-build-system)
-    (native-inputs
+    (propagated-inputs
      (list go-github-com-jmespath-go-jmespath))
     (arguments
      '(#:import-path "github.com/aws/aws-sdk-go"
