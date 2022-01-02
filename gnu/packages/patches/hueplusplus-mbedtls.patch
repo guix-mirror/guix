@@ -1,0 +1,20 @@
+Remove references to bundled mbedtls library to use the one from inputs.
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 1e27d21..f0eb1a5 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -85,13 +85,6 @@ endif()
+ 
+ set(USE_STATIC_MBEDTLS_LIBRARY ON)
+ set(USE_SHARED_MBEDTLS_LIBRARY OFF)
+-add_subdirectory("lib/mbedtls" EXCLUDE_FROM_ALL)
+-
+-# Compile the mbedtls library as a static with position independent code,
+-# because we need it for both a shared and static library
+-set_property(TARGET mbedtls PROPERTY POSITION_INDEPENDENT_CODE ON)
+-set_property(TARGET mbedcrypto PROPERTY POSITION_INDEPENDENT_CODE ON)
+-set_property(TARGET mbedx509 PROPERTY POSITION_INDEPENDENT_CODE ON)
+ 
+ add_subdirectory(src)
+ 

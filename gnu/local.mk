@@ -1260,6 +1260,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/helm-fix-gcc-9-build.patch		\
   %D%/packages/patches/http-parser-CVE-2020-8287.patch		\
   %D%/packages/patches/hubbub-sort-entities.patch		\
+  %D%/packages/patches/hueplusplus-mbedtls.patch		\
   %D%/packages/patches/hurd-cross.patch				\
   %D%/packages/patches/hurd-xattr.patch				\
   %D%/packages/patches/hydra-disable-darcs-test.patch		\

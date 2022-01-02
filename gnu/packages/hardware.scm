@@ -8,7 +8,7 @@
 ;;; Copyright © 2021 Petr Hodina <phodina@protonmail.com>
 ;;; Copyright © 2021 Raghav Gururajan <rg@raghavgururajan.name>
 ;;; Copyright © 2021 Vinicius Monego <monego@posteo.net>
-;;; Copyright © 2021 John Kehayias <john.kehayias@protonmail.com>
+;;; Copyright © 2021, 2022 John Kehayias <john.kehayias@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -340,6 +340,42 @@ whether the hardware works with a fully free operating system or not.")
 headsets.  Currently, support is provided for adjusting sidetone, getting
 battery state, controlling LEDs, and setting the inactive time.")
     (license license:gpl3+)))
+
+(define-public hueplusplus
+  (package
+    (name "hueplusplus")
+    (version "1.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/enwi/hueplusplus")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1jy8m2a0h0kf0aw8jbniz069q9j7cx67b1zlv2vz1ymq921qk0pm"))
+       (patches
+        (search-patches "hueplusplus-mbedtls.patch"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f)) ;; Tests require Google's gtest and gmock
+    (inputs
+     (list mbedtls-apache))
+    (synopsis "C++ library to control Philips Hue lights")
+    (description "Hueplusplus is a library for controlling Philips Hue lights.
+Features:
+
+@itemize
+@item find bridges with SSDP or set an ip manually
+@item all common light functions (brightness, color, temperature)
+@item extended @code{alert()} functions, which alert in a specific
+color (good for notifications)
+@item supports sensors, rules, groups, scenes and schedules
+@item streaming with entertainment mode
+@item documented with doxygen
+@end itemize")
+    (home-page "https://github.com/enwi/hueplusplus")
+    (license license:lgpl3+)))
 
 (define-public i7z
   (let ((revision "0")
