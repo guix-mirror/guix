@@ -485,6 +485,31 @@ mnopqrstuvwxyz.\")"
    '(#:phases %standard-phases
      #:tests? #f)))")
 
+(test-equal "pretty-print-with-comments, canonicalize-comment"
+  "\
+(list abc
+      ;; Not a margin comment.
+      ;; Ditto.
+      ;;
+      ;; There's a blank line above.
+      def ;margin comment
+      ghi)"
+  (let ((sexp (call-with-input-string
+                  "\
+(list abc
+  ;Not a margin comment.
+  ;;;  Ditto.
+  ;;;;;
+  ; There's a blank line above.
+  def  ;; margin comment
+  ghi)"
+                read-with-comments)))
+    (call-with-output-string
+      (lambda (port)
+        (pretty-print-with-comments port sexp
+                                    #:format-comment
+                                    canonicalize-comment)))))
+
 (test-end)
 
 ;; Local Variables:

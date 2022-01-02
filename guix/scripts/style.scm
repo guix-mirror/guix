@@ -47,6 +47,7 @@
   #:use-module (srfi srfi-37)
   #:export (pretty-print-with-comments
             read-with-comments
+            canonicalize-comment
 
             guix-style))
 
@@ -227,8 +228,23 @@ particular newlines, is left as is."
   "Return the \"width\" of STR--i.e., the width of the longest line of STR."
   (apply max (map string-length (string-split str #\newline))))
 
+(define (canonicalize-comment c)
+  "Canonicalize comment C, ensuring it has the \"right\" number of leading
+semicolons."
+  (let ((line (string-trim-both
+               (string-trim (comment->string c) (char-set #\;)))))
+    (comment (string-append
+              (if (comment-margin? c)
+                  ";"
+                  (if (string-null? line)
+                      ";;"                        ;no trailing space
+                      ";; "))
+              line "\n")
+             (comment-margin? c))))
+
 (define* (pretty-print-with-comments port obj
                                      #:key
+                                     (format-comment identity)
                                      (indent 0)
                                      (max-width 78)
                                      (long-list 5))
@@ -236,7 +252,9 @@ particular newlines, is left as is."
 and assuming the current column is INDENT.  Comments present in OBJ are
 included in the output.
 
-Lists longer than LONG-LIST are written as one element per line."
+Lists longer than LONG-LIST are written as one element per line.  Comments are
+passed through FORMAT-COMMENT before being emitted; a useful value for
+FORMAT-COMMENT is 'canonicalize-comment'."
   (let loop ((indent indent)
              (column indent)
              (delimited? #t)                  ;true if comes after a delimiter
@@ -301,14 +319,16 @@ Lists longer than LONG-LIST are written as one element per line."
        (if (comment-margin? comment)
            (begin
              (display " " port)
-             (display (comment->string comment) port))
+             (display (comment->string (format-comment comment))
+                      port))
            (begin
              ;; When already at the beginning of a line, for example because
              ;; COMMENT follows a margin comment, no need to emit a newline.
              (unless (= column indent)
                (newline port)
                (display (make-string indent #\space) port))
-             (display (comment->string comment) port)))
+             (display (comment->string (format-comment comment))
+                      port)))
        (display (make-string indent #\space) port)
        indent)
       (('quote lst)
@@ -443,11 +463,12 @@ Lists longer than LONG-LIST are written as one element per line."
                (display str port)
                (+ column (if delimited? 0 1) len))))))))
 
-(define (object->string* obj indent)
+(define (object->string* obj indent . args)
   (call-with-output-string
     (lambda (port)
-      (pretty-print-with-comments port obj
-                                  #:indent indent))))
+      (apply pretty-print-with-comments port obj
+             #:indent indent
+             args))))
 
 
 ;;;
@@ -701,13 +722,15 @@ PACKAGE."
            (package-full-name package)))
 
   (edit-expression
-   (location->source-properties (package-definition-location package))
+   (location->source-properties
+    (absolute-location (package-definition-location package)))
    (lambda (str)
      (let ((exp (call-with-input-string str
                   read-with-comments)))
        (object->string* exp
                         (location-column
-                         (package-definition-location package)))))))
+                         (package-definition-location package))
+                        #:format-comment canonicalize-comment)))))
 
 (define (package-location<? p1 p2)
   "Return true if P1's location is \"before\" P2's."
