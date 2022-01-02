@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
+;;; Copyright © 2022 Arjan Adriaanse <arjan@adriaan.se>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -52,7 +53,8 @@
 (define gcc
   (manifest-entry
     (name "gcc")
-    (version "10.3.0")
+    (version "")
+    (output "lib")
     (item "/gnu/store/...")))
 
 ;; Helpers for checking and generating home environments.
@@ -101,8 +103,8 @@ corresponding file."
      ('gnu 'services))
     ('home-environment
      ('packages
-      ('map 'specification->package
-            ('list "guile@2.0.9" "gcc" "glibc@2.19")))
+      ('map ('compose 'list 'specification->package+output)
+            ('list "guile@2.0.9" "gcc:lib" "glibc@2.19")))
      ('services
       ('list)))))
 
@@ -118,7 +120,7 @@ corresponding file."
     ('home-environment
      ('packages
       ('list (transform ('specification->package "guile@2.0.9"))
-             ('specification->package "gcc")
+             ('list ('specification->package "gcc") "lib")
              ('specification->package "glibc@2.19")))
      ('services ('list)))))
 
@@ -130,7 +132,7 @@ corresponding file."
      ('gnu 'services))
     ('home-environment
      ('packages
-      ('map 'specification->package
+      ('map ('compose 'list 'specification->package+output)
             ('list)))
      ('services
       ('list)))))
@@ -145,7 +147,7 @@ corresponding file."
      ('gnu 'home 'services 'shells))
     ('home-environment
      ('packages
-      ('map 'specification->package
+      ('map ('compose 'list 'specification->package+output)
             ('list)))
      ('services
       ('list ('service

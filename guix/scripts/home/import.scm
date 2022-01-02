@@ -2,6 +2,7 @@
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;; Copyright © 2021 Andrew Tropin <andrew@trop.in>
 ;;; Copyright © 2021 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2022 Arjan Adriaanse <arjan@adriaan.se>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -164,7 +165,8 @@ user's files to CONFIGURATION-DIRECTORY; the generated sexp refers to them."
                         ,@(delete-duplicates (concatenate modules)))
 
            (home-environment
-            (packages (map specification->package ,packages))
+            (packages (map (compose list specification->package+output)
+                           ,packages))
             (services (list ,@services)))))))))
 
 (define* (import-manifest
