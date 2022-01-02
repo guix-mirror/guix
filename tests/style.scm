@@ -78,7 +78,8 @@
         (string-append directory "/my-packages.scm"))
 
       ;; Run as a separate process to make sure FILE is reloaded.
-      (system* "guix" "style" "-L" directory "my-coreutils")
+      (system* "guix" "style" "-L" directory "-S" "inputs"
+               "my-coreutils")
       (system* "cat" file)
 
       (load file)
@@ -237,6 +238,7 @@
         (string-append directory "/my-packages.scm"))
 
       (system* "guix" "style" "-L" directory "my-coreutils"
+               "-S" "inputs"
                "--input-simplification=safe")
 
       (load file)
@@ -258,6 +260,7 @@
         (string-append directory "/my-packages.scm"))
 
       (system* "guix" "style" "-L" directory "my-coreutils"
+               "-S" "inputs"
                "--input-simplification=safe")
 
       (load file)
@@ -284,7 +287,8 @@
                         " ;another one\n")))
       (system* "cat" file)
 
-      (system* "guix" "style" "-L" directory "my-coreutils")
+      (system* "guix" "style" "-L" directory "-S" "inputs"
+               "my-coreutils")
 
       (load file)
       (list (package-inputs (@ (my-packages) my-coreutils))
@@ -317,7 +321,8 @@
                         " ;margin comment\n")))
       (system* "cat" file)
 
-      (system* "guix" "style" "-L" directory "my-coreutils")
+      (system* "guix" "style" "-L" directory "-S" "inputs"
+               "my-coreutils")
 
       (load file)
       (list (package-inputs (@ (my-packages) my-coreutils))
@@ -338,7 +343,8 @@
         ((",gmp\\)(.*)$" _ rest)
          (string-append ",gmp)\n   ;; line comment!\n" rest)))
 
-      (system* "guix" "style" "-L" directory "my-coreutils")
+      (system* "guix" "style" "-L" directory "-S" "inputs"
+               "my-coreutils")
 
       (load file)
       (list (package-inputs (@ (my-packages) my-coreutils))
@@ -364,7 +370,8 @@
         ((",acl\\)(.*)$" _ rest)
          (string-append ",acl) ;another one\n" rest)))
 
-      (system* "guix" "style" "-L" directory "my-coreutils")
+      (system* "guix" "style" "-L" directory "-S" "inputs"
+               "my-coreutils")
 
       (load file)
       (list (package-inputs (@ (my-packages) my-coreutils))

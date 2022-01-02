@@ -686,6 +686,29 @@ PACKAGE."
             (list package-inputs package-native-inputs
                   package-propagated-inputs)))
 
+
+;;;
+;;; Formatting package definitions.
+;;;
+
+(define* (format-package-definition package
+                                    #:key policy
+                                    (edit-expression edit-expression))
+  "Reformat the definition of PACKAGE."
+  (unless (package-definition-location package)
+    (leave (package-location package)
+           (G_ "no definition location for package ~a~%")
+           (package-full-name package)))
+
+  (edit-expression
+   (location->source-properties (package-definition-location package))
+   (lambda (str)
+     (let ((exp (call-with-input-string str
+                  read-with-comments)))
+       (object->string* exp
+                        (location-column
+                         (package-definition-location package)))))))
+
 (define (package-location<? p1 p2)
   "Return true if P1's location is \"before\" P2's."
   (let ((loc1 (package-location p1))
@@ -712,6 +735,15 @@ PACKAGE."
         (option '(#\e "expression") #t #f
                 (lambda (opt name arg result)
                   (alist-cons 'expression arg result)))
+        (option '(#\S "styling") #t #f
+                (lambda (opt name arg result)
+                  (alist-cons 'styling-procedure
+                              (match arg
+                                ("inputs" simplify-package-inputs)
+                                ("format" format-package-definition)
+                                (_ (leave (G_ "~a: unknown styling~%")
+                                          arg)))
+                              result)))
         (option '("input-simplification") #t #f
                 (lambda (opt name arg result)
                   (let ((symbol (string->symbol arg)))
@@ -733,6 +765,9 @@ PACKAGE."
   (display (G_ "Usage: guix style [OPTION]... [PACKAGE]...
 Update package definitions to the latest style.\n"))
   (display (G_ "
+  -S, --styling=RULE     apply RULE, a styling rule"))
+  (newline)
+  (display (G_ "
   -n, --dry-run          display files that would be edited but do nothing"))
   (display (G_ "
   -L, --load-path=DIR    prepend DIR to the package module search path"))
@@ -752,7 +787,8 @@ Update package definitions to the latest style.\n"))
 
 (define %default-options
   ;; Alist of default option values.
-  '((input-simplification-policy . silent)))
+  `((input-simplification-policy . silent)
+    (styling-procedure . ,format-package-definition)))
 
 
 ;;;
@@ -779,11 +815,12 @@ Update package definitions to the latest style.\n"))
          (edit     (if (assoc-ref opts 'dry-run?)
                        edit-expression/dry-run
                        edit-expression))
+         (style    (assoc-ref opts 'styling-procedure))
          (policy   (assoc-ref opts 'input-simplification-policy)))
     (with-error-handling
       (for-each (lambda (package)
-                  (simplify-package-inputs package #:policy policy
-                                           #:edit-expression edit))
+                  (style package #:policy policy
+                         #:edit-expression edit))
                 ;; Sort package by source code location so that we start editing
                 ;; files from the bottom and going upward.  That way, the
                 ;; 'location' field of <package> records is not invalidated as

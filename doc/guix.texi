@@ -12785,8 +12785,16 @@ otherwise.
 
 The @command{guix style} command helps packagers style their package
 definitions according to the latest fashionable trends.  The command
-currently focuses on one aspect: the style of package inputs.  It may
-eventually be extended to handle other stylistic matters.
+currently provides the providing styling rules:
+
+@itemize
+@item
+formatting package definitions according to the project's conventions
+(@pxref{Formatting Code});
+
+@item
+rewriting package inputs to the ``new style'', as explained below.
+@end itemize
 
 The way package inputs are written is going through a transition
 (@pxref{package Reference}, for more on package inputs).  Until version
@@ -12817,7 +12825,7 @@ Package Variants}, for more info on @code{modify-inputs}).
 
 In the vast majority of cases, this is a purely mechanical change on the
 surface syntax that does not even incur a package rebuild.  Running
-@command{guix style} can do that for you, whether you're working on
+@command{guix style -S inputs} can do that for you, whether you're working on
 packages in Guix proper or in an external channel.
 
 The general syntax is:
@@ -12827,14 +12835,47 @@ guix style [@var{options}] @var{package}@dots{}
 @end example
 
 This causes @command{guix style} to analyze and rewrite the definition
-of @var{package}@dots{}.  It does so in a conservative way: preserving
-comments and bailing out if it cannot make sense of the code that
-appears in an inputs field.  The available options are listed below.
+of @var{package}@dots{} or, when @var{package} is omitted, of @emph{all}
+the packages.  The @option{--styling} or @option{-S} option allows you
+to select the style rule, the default rule being @code{format}---see
+below.
+
+The available options are listed below.
 
 @table @code
 @item --dry-run
 @itemx -n
 Show source file locations that would be edited but do not modify them.
+
+@item --styling=@var{rule}
+@itemx -S @var{rule}
+Apply @var{rule}, one of the following styling rules:
+
+@table @code
+@item format
+Format the given package definition(s)---this is the default styling
+rule.  For example, a packager running Guix on a checkout
+(@pxref{Running Guix Before It Is Installed}) might want to reformat the
+definition of the Coreutils package like so:
+
+@example
+./pre-inst-env guix style coreutils
+@end example
+
+@item inputs
+Rewrite package inputs to the ``new style'', as described above.  This
+is how you would rewrite inputs of package @code{whatnot} in your own
+channel:
+
+@example
+guix style -L ~/my/channel -S inputs whatnot
+@end example
+
+Rewriting is done in a conservative way: preserving comments and bailing
+out if it cannot make sense of the code that appears in an inputs field.
+The @option{--input-simplification} option described below provides
+fine-grain control over when inputs should be simplified.
+@end table
 
 @item --load-path=@var{directory}
 @itemx -L @var{directory}
@@ -12854,9 +12895,10 @@ guix style -e '(@@ (gnu packages gcc) gcc-5)'
 styles the @code{gcc-5} package definition.
 
 @item --input-simplification=@var{policy}
-Specify the package input simplification policy for cases where an input
-label does not match the corresponding package name.  @var{policy} may
-be one of the following:
+When using the @code{inputs} styling rule, with @samp{-S inputs}, this
+option specifies the package input simplification policy for cases where
+an input label does not match the corresponding package name.
+@var{policy} may be one of the following:
 
 @table @code
 @item silent

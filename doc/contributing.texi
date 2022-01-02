@@ -959,17 +959,11 @@ If you do not use Emacs, please make sure to let your editor knows these
 rules.  To automatically indent a package definition, you can also run:
 
 @example
-./etc/indent-code.el gnu/packages/@var{file}.scm @var{package}
+./pre-inst-env guix style @var{package}
 @end example
 
 @noindent
-This automatically indents the definition of @var{package} in
-@file{gnu/packages/@var{file}.scm} by running Emacs in batch mode.  To
-indent a whole file, omit the second argument:
-
-@example
-./etc/indent-code.el gnu/services/@var{file}.scm
-@end example
+@xref{Invoking guix style}, for more information.
 
 @cindex Vim, Scheme code editing
 If you are editing code with Vim, we recommend that you run @code{:set
@@ -1037,6 +1031,10 @@ package.  @xref{Synopses and Descriptions}, for some guidelines.
 Run @code{guix lint @var{package}}, where @var{package} is the
 name of the new or modified package, and fix any errors it reports
 (@pxref{Invoking guix lint}).
+
+@item
+Run @code{guix style @var{package}} to format the new package definition
+according to the project's conventions (@pxref{Invoking guix style}).
 
 @item
 Make sure the package builds on your platform, using @code{guix build
@@ -1175,8 +1173,8 @@ Examples of unrelated changes include the addition of several packages,
 or a package update along with fixes to that package.
 
 @item
-Please follow our code formatting rules, possibly running the
-@command{etc/indent-code.el} script to do that automatically for you
+Please follow our code formatting rules, possibly running
+@command{guix style} script to do that automatically for you
 (@pxref{Formatting Code}).
 
 @item
