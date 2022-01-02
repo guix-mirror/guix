@@ -8850,9 +8850,9 @@ written to test improvements to / replace the routing logic in
 be useful for other network applications.")
     (license license:mpl2.0)))
 
-(define-public go-github-com-percent
+(define-public go-github-com-mtibben-percent
   (package
-    (name "go-github-com-percent")
+    (name "go-github-com-mtibben-percent")
     (version "0.2.1")
     (source (origin
               (method git-fetch)
@@ -8872,6 +8872,9 @@ be useful for other network applications.")
      "Package percent escapes strings using percent-encoding.")
     (home-page "https://github.com/mtibben/percent")
     (license license:expat)))
+
+(define-public go-github-com-percent
+  (deprecated-package "go-github-com-percent" go-github-com-mtibben-percent))
 
 (define-public go-github-com-dvsekhvalnov-jose2go
   (package
@@ -8916,7 +8919,7 @@ encrypting JSON Web Tokens (JWT).  It relies only on the standard library.")
     (native-inputs
      (list go-github-com-99designs-go-keyring
            go-github-com-androiddnsfix
-           go-github-com-percent
+           go-github-com-mtibben-percent
            go-github-com-jmespath-go-jmespath
            go-github-com-aws-aws-sdk-go
            go-github-com-dvsekhvalnov-jose2go
@@ -9016,7 +9019,7 @@ aware of your profiles and configuration in ~/.aws/config.")
     (native-inputs
      (list go-golang-org-x-crypto
            go-golang-org-x-sys
-           go-github-com-percent
+           go-github-com-mtibben-percent
            go-github-com-mitchellh-go-homedir
            go-github-com-dvsekhvalnov-jose2go
            go-github-com-godbus-dbus
