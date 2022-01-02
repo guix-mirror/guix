@@ -249,11 +249,7 @@ The GNU project hosts a similar collection of filters, the GNU talkfilters.")
                 (string-append prefix "bin")))
              #t)))))
     (inputs
-     `(("gtk+" ,gtk+)
-       ("libx11" ,libx11)
-       ("libxpm" ,libxpm)
-       ("libxt" ,libxt)
-       ("libxxml2" ,libxml2)))
+     (list gtk+ libx11 libxpm libxt libxml2))
     (native-inputs
      (list pkg-config))
     (home-page "https://www.ratrabbit.nl/ratrabbit/xsnow/index.html")
