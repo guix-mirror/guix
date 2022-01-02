@@ -8930,7 +8930,7 @@ encrypting JSON Web Tokens (JWT).  It relies only on the standard library.")
            go-golang-org-x-sys
            go-gopkg-in-ini
            go-github-com-skratchdot-open-golang
-           go-github-com-kingpin
+           go-github-com-alecthomas-kingpin
            go-github-com-alecthomas-template
            go-github-com-alecthomas-units))
     (arguments
@@ -9151,9 +9151,9 @@ GNU/Linux, this is a proxy for the @command{xdg-open} command.")
       (home-page "https://github.com/skratchdot/open-golang")
       (license license:expat))))
 
-(define-public go-github-com-kingpin
+(define-public go-github-com-alecthomas-kingpin
   (package
-    (name "go-github-com-kingpin")
+    (name "go-github-com-alecthomas-kingpin")
     (version "2.2.6")
     (source (origin
               (method git-fetch)
@@ -9176,6 +9176,9 @@ GNU/Linux, this is a proxy for the @command{xdg-open} command.")
      "Go library provides utilities for building command line interfaces.")
     (home-page "https://github.com/alecthomas/kingpin")
     (license license:expat)))
+
+(define-public go-github-com-kingpin
+  (deprecated-package "go-github-com-kingpin" go-github-com-alecthomas-kingpin))
 
 (define-public go-github-com-alecthomas-template
   (let ((commit "a0175ee3bccc567396460bf5acd36800cb10c49c")
