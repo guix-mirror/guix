@@ -36,6 +36,7 @@
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2021 jgart <jgart@dismail.de>
 ;;; Copyright © 2021 Aleksandr Vityazev <avityazev@posteo.org>
+;;; Copyright © 2022 Arjan Adriaanse <arjan@adriaan.se>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -5560,3 +5561,37 @@ systems.")
      "MDA-LV2 is an LV2 port of the MDA plugins.  It includes effects and a few
 instrument plugins.")
     (license license:gpl3+)))
+
+(define-public libodiosacd
+  (package
+   (name "libodiosacd")
+   (version "21.8.30")
+   (source (origin
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/tari01/libodiosacd")
+                   (commit version)))
+             (file-name (git-file-name name version))
+             (sha256
+              (base32
+               "0iamf7wksbql0qfigdv5ahaax53ms2yligdav8dw6x0ay88x4lhi"))))
+   (build-system gnu-build-system)
+   (arguments
+    `(#:tests? #f ; no check target
+      #:phases
+      (modify-phases %standard-phases
+        (add-after 'unpack 'patch-makefile
+          (lambda _
+            (substitute* "Makefile"
+              (("\\$\\(DESTDIR\\)/usr")
+                "\\$(DESTDIR)"))))
+        (delete 'configure)) ; no configure script
+      #:make-flags
+      (list (string-append "DESTDIR=" %output))))
+   (synopsis "Library for decoding Super Audio CDs (SACD)")
+   (description
+    "The Odio SACD shared library is a decoding engine which takes a Super
+Audio CD source and extracts a 24-bit high resolution WAV file.  It handles
+both DST and DSD streams.")
+   (home-page "https://tari.in/www/software/libodiosacd/")
+   (license license:gpl3+)))
