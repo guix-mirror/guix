@@ -14,9 +14,6 @@
    (name "apteryx"))
   ("7F73 0343 F2F0 9F3C 77BF  79D3 2E25 EE8B 6180 2BB3"
    (name "arunisaac"))
-  (;; primary: "3B12 9196 AE30 0C3C 0E90  A26F A715 5567 3271 9948"
-   "9A2B 401E D001 0650 1584  BAAC 8BC4 F447 6E8A 8E00"
-   (name "atheia"))
   (;; primary: "BE62 7373 8E61 6D6D 1B3A  08E8 A21A 0202 4881 6103"
    "39B3 3C8D 9448 0D2D DCC2  A498 8B44 A0CD C7B9 56F2"
    (name "bandali"))
