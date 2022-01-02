@@ -28,6 +28,7 @@
  (entry (commit "d090e9c37d693f5a0f381482c17fb03462cb6a48")
         (title
          (en "New @option{--tune} option for CPU micro-architecture tuning")
+         (de "Neue Option @option{--tune} ermöglicht mikroarchitekturspezifische Optimierungen")
          (fr "Nouvelle option @option{--tune} pour optimiser pour une
 micro-architecture"))
         (body
@@ -46,6 +47,22 @@ guix install gnuastro --tune
 
 Run @command{info \"(guix) Package Transformation Options\"} for more
 information.")
+         (de "Die neue Paketumwandlungsoption @option{--tune} lässt Guix die
+betroffenen Pakete an die im Prozessor dieses Rechners benutzte
+Mikroarchitektur anpassen.  Dadurch kann der Compiler Befehle für
+Single-Instruction/Multiple-Data (SIMD) einsetzen, die über den gemeinsamen
+Befehlssatz hinausgehen. Das kann in manchen Fällen die Leistung beträchtlich
+steigern, etwa für Berechnungen der linearen Algebra.
+
+Zum Beispiel würden Sie so die GNU-Astronomieprogramme unter Nutzung einer
+optimierten Variante der GNU Scientific Library (GSL) installieren:
+
+@example
+guix install gnuastro --tune
+@end example
+
+Führen Sie für mehr Informationen @command{info \"(guix.de)
+Paketumwandlungsoptionen\"} aus.")
          (fr "La nouvelle option de transformation de paquets @option{--tune}
 demande à Guix d'optimiser les paquets pour lesquels c'est pertinent pour la
 micro-architecture du processeur hôte.  Cela permet au compilateur d'utiliser
