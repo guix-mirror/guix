@@ -228,15 +228,15 @@ The GNU project hosts a similar collection of filters, the GNU talkfilters.")
 (define-public xsnow
   (package
     (name "xsnow")
-    (version "2.0.22")
+    (version "3.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
-             "https://www.ratrabbit.nl/ratrabbit/system/files/xsnow/xsnow-"
+             "https://www.ratrabbit.nl/downloads/xsnow/xsnow-"
              version ".tar.gz"))
        (sha256
-        (base32 "1880643fal6l7bskqbm4zfbr2s719698mkx4pchrxkjpb240sj0z"))))
+        (base32 "17pxc955jgkjan8ax0lw3b3sibw7aikc7p9qbxsp0w7g7jkxf666"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -256,7 +256,7 @@ The GNU project hosts a similar collection of filters, the GNU talkfilters.")
        ("libxxml2" ,libxml2)))
     (native-inputs
      (list pkg-config))
-    (home-page "https://www.ratrabbit.nl/ratrabbit/content/xsnow/introduction")
+    (home-page "https://www.ratrabbit.nl/ratrabbit/xsnow/index.html")
     (synopsis "Let it snow on the desktop")
     (description "@code{Xsnow} animates snowfall and Santa with reindeer on
 the desktop background.  Additional customizable effects include wind, stars
