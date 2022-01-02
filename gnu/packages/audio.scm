@@ -725,7 +725,7 @@ engineers, musicians, soundtrack editors and composers.")
 (define-public audacity
   (package
     (name "audacity")
-    (version "2.4.2")
+    (version "3.1.3")
     (source
      (origin
        (method git-fetch)
@@ -735,9 +735,7 @@ engineers, musicians, soundtrack editors and composers.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0lklcvqkxrr2gkb9gh3422iadzl2rv9v0a8s76rwq43lj2im7546"))
-       (patches (search-patches "audacity-build-with-system-portaudio.patch"
-                                "audacity-add-include.patch"))
+         "1689q9apbjf9nnda62shb8j7hm4hxd47mhk4l5h3c728mjjkilmi"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove bundled libraries.
@@ -745,13 +743,10 @@ engineers, musicians, soundtrack editors and composers.")
            (for-each
             (lambda (dir)
               (delete-file-recursively (string-append "lib-src/" dir)))
-            '("expat" "ffmpeg" "lame" "libflac" "libid3tag" "libmad" "libogg"
-              "libsndfile" "libsoxr" "libvamp" "libvorbis" "lv2"
-              "portmidi" "soundtouch" "twolame"
+            '("libsoxr" "libvamp" "lv2" "soundtouch" "sqlite" "twolame"
               ;; FIXME: these libraries have not been packaged yet:
               ;; "libnyquist"
               ;; "libscorealign"
-              ;; "libwidgetextra"
               ;; "portburn"
               ;; "portsmf"
               ;; "portmixer"
@@ -763,26 +758,30 @@ engineers, musicians, soundtrack editors and composers.")
            #t))))
     (build-system cmake-build-system)
     (inputs
-     (list wxwidgets
+     (list wxwidgets-3.1
            gtk+
            alsa-lib
            jack-1
            expat
            ffmpeg
            lame
+           linux-libre-headers
            flac
            libid3tag
+           libjpeg-turbo
            libmad
            ;;("libsbsms" ,libsbsms)         ;bundled version is modified
            libsndfile
            soundtouch
            soxr ;replaces libsamplerate
+           sqlite
            twolame
            vamp
            libvorbis
            lv2
            lilv ;for lv2
            suil ;for lv2
+           portaudio
            portmidi))
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -795,10 +794,12 @@ engineers, musicians, soundtrack editors and composers.")
     (arguments
      `(#:configure-flags
        (list
-        ;; Loading FFmpeg dynamically is problematic.
-        "-Daudacity_use_ffmpeg=linked"
-        "-Daudacity_use_lame=system"
-        "-Daudacity_use_portsmf=system")
+        "-Daudacity_conan_enabled=off"
+        "-Daudacity_lib_preference=system"
+        ;; TODO: enable this flag once we've packaged all dependencies
+        ;; "-Daudacity_obey_system_dependencies=on"
+        ;; disable crash reports, updates, ..., anything that phones home
+        "-Daudacity_has_networking=off")
        #:imported-modules ((guix build glib-or-gtk-build-system)
                            ,@%cmake-build-system-modules)
        #:modules
@@ -807,27 +808,42 @@ engineers, musicians, soundtrack editors and composers.")
         ((guix build glib-or-gtk-build-system) #:prefix glib-or-gtk:))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-cmake-rpath
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "CMakeLists.txt"
+               (("\\$ORIGIN/\\.\\./\\$\\{_PKGLIB\\}")
+                (string-append (assoc-ref outputs "out") "/lib/audacity"))
+               (("CMAKE_BUILD_WITH_INSTALL_RPATH [A-Z]*")
+                "CMAKE_BUILD_WITH_INSTALL_RPATH TRUE")
+               (("CMAKE_INSTALL_RPATH_USE_LINK_PATH [A-Z]*")
+                "CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE"))
+             (substitute* "src/CMakeLists.txt"
+               (("-Wl,--disable-new-dtags") "-Wl,--enable-new-dtags"))))
          (add-after 'unpack 'comment-out-revision-ident
            (lambda _
+             (substitute* "src/CMakeLists.txt"
+               (("file\\( TOUCH \".*RevisionIdent\\.h\" \\)" directive)
+                (string-append "# " directive)))
              (substitute* "src/AboutDialog.cpp"
                (("(.*RevisionIdent\\.h.*)" include-line)
                 (string-append "// " include-line)))))
          (add-after 'unpack 'use-upstream-headers
            (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* '("src/NoteTrack.cpp"
-                            "src/AudioIO.cpp"
-                            "src/AudioIO.h"
-                            "src/AudioIOBase.cpp")
-               (("../lib-src/portmidi/pm_common/portmidi.h") "portmidi.h")
-               (("../lib-src/portmidi/porttime/porttime.h") "porttime.h"))
-             (substitute* "src/prefs/MidiIOPrefs.cpp"
-               (("../../lib-src/portmidi/pm_common/portmidi.h") "portmidi.h"))))
+             (substitute* '("libraries/lib-files/FileNames.cpp")
+               (("\"/usr/include/linux/magic.h\"") "<linux/magic.h>"))))
          (add-after 'wrap-program 'glib-or-gtk-wrap
            (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-wrap)))
-         ;; The test suite is not "well exercised" according to the developers,
-         ;; and fails with various errors.  See
-         ;; <http://sourceforge.net/p/audacity/mailman/message/33524292/>.
-         #:tests? #f))
+       ;; The test suite is not "well exercised" according to the developers,
+       ;; and fails with various errors.  See
+       ;; <http://sourceforge.net/p/audacity/mailman/message/33524292/>.
+       #:tests? #f))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "AUDACITY_MODULES_PATH")
+            (files '("lib/audacity/modules")))
+           (search-path-specification
+            (variable "AUDACITY_PATH")
+            (files '("share/audacity")))))
     (home-page "https://www.audacityteam.org/")
     (synopsis "Software for recording and editing sounds")
     (description
