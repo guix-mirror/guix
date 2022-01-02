@@ -7261,7 +7261,7 @@ which produce colorized output using github.com/fatih/color.")
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/olekukonko/tablewriter"))
-    (native-inputs
+    (propagated-inputs
      (list go-github.com-mattn-go-runewidth))
     (home-page "https://github.com/olekukonko/tablewriter/")
     (synopsis "Generate ASCII table")
