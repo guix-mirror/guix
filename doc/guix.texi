@@ -33067,7 +33067,7 @@ Service type for a Guix Build Coordinator agent.  Its value must be a
 Data type representing the configuration a Guix Build Coordinator agent.
 
 @table @asis
-@item @code{package} (default: @code{guix-build-coordinator-agent-only})
+@item @code{package} (default: @code{guix-build-coordinator/agent-only})
 The Guix Build Coordinator package to use.
 
 @item @code{user} (default: @code{"guix-build-coordinator-agent"})

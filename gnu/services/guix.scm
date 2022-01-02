@@ -146,7 +146,7 @@
   make-guix-build-coordinator-agent-configuration
   guix-build-coordinator-agent-configuration?
   (package             guix-build-coordinator-agent-configuration-package
-                       (default guix-build-coordinator-agent-only))
+                       (default guix-build-coordinator/agent-only))
   (user                guix-build-coordinator-agent-configuration-user
                        (default "guix-build-coordinator-agent"))
   (coordinator         guix-build-coordinator-agent-configuration-coordinator
