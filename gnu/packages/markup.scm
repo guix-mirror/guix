@@ -37,11 +37,13 @@
   #:use-module (guix build-system python)
   #:use-module (guix utils)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages web))
 
 (define-public hoedown
@@ -236,6 +238,29 @@ implementation.
   my $html = markdown($text)
 @end example")
     (license license:perl-license)))
+
+(define-public python-markdownify
+  (package
+    (name "python-markdownify")
+    (version "0.10.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "markdownify" version))
+       (sha256
+        (base32
+         "0msvrsgq9jigbgg7r7iq7ql5bgslmbxd8sq0nmpbxrjwqypgs7w2"))))
+    (build-system python-build-system)
+    (native-inputs
+     (list python-pytest))
+    (propagated-inputs
+     (list python-flake8 python-beautifulsoup4 python-six))
+    (home-page
+     "https://github.com/matthewwithanm/python-markdownify")
+    (synopsis "Converts HTML to Markdown")
+    (description "This package provides @code{markdownify} a Python library to
+convert HTML to Markdown.")
+    (license license:expat)))
 
 (define-public cmark
   (package
