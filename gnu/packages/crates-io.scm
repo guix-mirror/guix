@@ -4461,29 +4461,31 @@ iteratively in Rust.")
 in Rust.")
     (license (list license:asl2.0 license:expat))))
 
-(define-public rust-av-metrics-0.6
+(define-public rust-av-metrics-0.7
   (package
     (name "rust-av-metrics")
-    (version "0.6.2")
+    (version "0.7.2")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "av-metrics" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1g4k2q3226246jad3jl8pny7aphq8i03x4qyilzj4zgp27350hsz"))))
+        (base32 "1y1q61lhahljxh1l2brp8v795qf6g7gr4h4vdmq43g5z5pq2dw50"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-crossbeam" ,rust-crossbeam-0.8)
         ("rust-itertools" ,rust-itertools-0.10)
-        ("rust-lab" ,rust-lab-0.8)
+        ("rust-lab" ,rust-lab-0.11)
         ("rust-num-traits" ,rust-num-traits-0.2)
         ("rust-rayon" ,rust-rayon-1)
         ("rust-serde" ,rust-serde-1)
         ("rust-thiserror" ,rust-thiserror-1)
-        ("rust-v-frame" ,rust-v-frame-0.2))))
+        ("rust-v-frame" ,rust-v-frame-0.2))
+       #:cargo-development-inputs
+       (("rust-criterion" ,rust-criterion-0.3)
+        ("rust-y4m" ,rust-y4m-0.7))))
     (home-page "https://github.com/rust-av/av-metrics")
     (synopsis "Collection of algorithms for measuring audio/video metrics")
     (description
@@ -27152,10 +27154,10 @@ currently supports parsing (fully conformant parser), formatting and comparing
 language tags.")
     (license license:expat)))
 
-(define-public rust-lab-0.8
+(define-public rust-lab-0.11
   (package
     (name "rust-lab")
-    (version "0.8.1")
+    (version "0.11.0")
     (source
       (origin
         (method url-fetch)
@@ -27164,15 +27166,15 @@ language tags.")
          (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "1ysnbviwi35mq6xyz9c59mpgigyfp4s4y2mispxzrms4vk83bx15"))))
+          "13ymsn5cwl5i9pmp5mfmbap7q688dcp9a17q82crkvb784yifdmz"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-development-inputs
-       (("rust-approx" ,rust-approx-0.3)
+       (("rust-approx" ,rust-approx-0.5)
         ("rust-criterion" ,rust-criterion-0.3)
         ("rust-lazy-static" ,rust-lazy-static-1)
-        ("rust-pretty-assertions" ,rust-pretty-assertions-0.6)
-        ("rust-rand" ,rust-rand-0.5))))
+        ("rust-pretty-assertions" ,rust-pretty-assertions-0.7)
+        ("rust-rand" ,rust-rand-0.8))))
     (home-page "https://github.com/TooManyBees/lab")
     (synopsis "Convert RGB to CIE-LAB for Rust")
     (description
@@ -27182,7 +27184,7 @@ space, and comparing differences in color.")
 
 (define-public rust-lab-0.7
   (package
-    (inherit rust-lab-0.8)
+    (inherit rust-lab-0.11)
     (name "rust-lab")
     (version "0.7.2")
     (source
@@ -27204,18 +27206,18 @@ space, and comparing differences in color.")
 
 (define-public rust-lab-0.4
   (package
-    (inherit rust-lab-0.8)
+    (inherit rust-lab-0.7)
     (name "rust-lab")
     (version "0.4.4")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "lab" version))
-        (file-name
-         (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "0h4ig5bvzmwlzd74zj7b4sh7kzi3c6mjjnw7yjz8ijxvr4mrcr1s"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "lab" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0h4ig5bvzmwlzd74zj7b4sh7kzi3c6mjjnw7yjz8ijxvr4mrcr1s"))))
     (arguments
      `(#:cargo-development-inputs
        (("rust-rand" ,rust-rand-0.3))))))
