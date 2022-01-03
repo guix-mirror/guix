@@ -868,22 +868,34 @@ rules.")
   gnome-desktop-configuration?
   (gnome gnome-package (default gnome)))
 
-(define (gnome-polkit-settings config)
-  "Return the list of GNOME dependencies that provide polkit actions and
-rules."
+(define (gnome-packages config packages)
+  "Return the list of GNOME dependencies from CONFIG which names are part of
+the given PACKAGES list."
   (let ((gnome (gnome-package config)))
     (map (lambda (name)
            ((package-direct-input-selector name) gnome))
-         '("gnome-settings-daemon"
-           "gnome-control-center"
-           "gnome-system-monitor"
-           "gvfs"))))
+         packages)))
+
+(define (gnome-udev-rules config)
+  "Return the list of GNOME dependencies that provide udev rules."
+  (gnome-packages config '("gnome-settings-daemon")))
+
+(define (gnome-polkit-settings config)
+  "Return the list of GNOME dependencies that provide polkit actions and
+rules."
+  (gnome-packages config
+                  '("gnome-settings-daemon"
+                    "gnome-control-center"
+                    "gnome-system-monitor"
+                    "gvfs")))
 
 (define gnome-desktop-service-type
   (service-type
    (name 'gnome-desktop)
    (extensions
-    (list (service-extension polkit-service-type
+    (list (service-extension udev-service-type
+                             gnome-udev-rules)
+          (service-extension polkit-service-type
                              gnome-polkit-settings)
           (service-extension profile-service-type
                              (compose list
