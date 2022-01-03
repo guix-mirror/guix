@@ -2837,3 +2837,54 @@ fully dynamic omnidirectional shadows, global illumination, HDR lighting,
 deferred shading, morphological / temporal / multisample anti-aliasing, and
 much more.")
       (license license:zlib))))
+
+(define-public recastnavigation
+  ;; We follow master since there hasn't been a release since 1.5.1 in 2016.
+  (let ((commit "c5cbd53024c8a9d8d097a4371215e3342d2fdc87")
+        (revision "1"))
+    (package
+      (name "recastnavigation")
+      (version (git-version "1.5.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/recastnavigation/recastnavigation")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "034bm47gc3r285w1pnvkhmm74zz99d204b1r865gisaiq4qfbza0"))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:configure-flags (list "-DBUILD_SHARED_LIBS=ON"
+                                 "-DRECASTNAVIGATION_DEMO=OFF"
+                                 "-DRECASTNAVIGATION_TESTS=ON"
+                                 "-DRECASTNAVIGATION_EXAMPLES=OFF")))
+      (synopsis "Navigation system for games")
+      (description "Recast is state of the art navigation mesh
+construction toolset for games.
+
+@itemize
+@item It is automatic, which means that you can throw any level geometry
+      at it and you will get robust mesh out.
+@item It is fast which means swift turnaround times for level designers.
+@item It is open source so it comes with full source and you can
+      customize it to your heart's content.
+@end itemize
+
+The Recast process starts with constructing a voxel mold from a level
+geometry and then casting a navigation mesh over it.  The process
+consists of three steps, building the voxel mold, partitioning the mold
+into simple regions, peeling off the regions as simple polygons.
+
+Recast is accompanied with Detour, path-finding and spatial reasoning
+toolkit.  You can use any navigation mesh with Detour, but of course the
+data generated with Recast fits perfectly.
+
+Detour offers simple static navigation mesh which is suitable for many
+simple cases, as well as tiled navigation mesh which allows you to plug
+in and out pieces of the mesh.  The tiled mesh allows you to create
+systems where you stream new navigation data in and out as the player
+progresses the level, or you may regenerate tiles as the world changes.")
+      (home-page "https://github.com/recastnavigation/recastnavigation")
+      (license license:zlib))))
