@@ -192,10 +192,10 @@ text or blue underlined text, on ANSI terminals.")
          "1xif1bh938qpfc3d0f9xgidibpm65xix11w9gszwqnia00q7rb13"))))
     (arguments `())))
 
-(define-public rust-aom-sys-0.2
+(define-public rust-aom-sys-0.3
   (package
     (name "rust-aom-sys")
-    (version "0.2.1")
+    (version "0.3.0")
     (source
       (origin
         (method url-fetch)
@@ -204,7 +204,7 @@ text or blue underlined text, on ANSI terminals.")
           (string-append name "-" version ".tar.gz"))
         (sha256
           (base32
-            "03a0xhaafjn0hlpcf9ba73hv557m0jqnmj9wl57wzrcnka96zvgj"))))
+            "0dhikfl7l5nacspajbllbhhysad3vl845cpfplqgm5mf67nmx9w8"))))
     (build-system cargo-build-system)
     (arguments
       `(#:cargo-inputs
@@ -218,30 +218,6 @@ text or blue underlined text, on ANSI terminals.")
     (synopsis "FFI bindings to aom")
     (description "This package provides FFI bindings to aom.")
     (license license:expat)))
-
-(define-public rust-aom-sys-0.1
-  (package
-    (inherit rust-aom-sys-0.2)
-    (name "rust-aom-sys")
-    (version "0.1.4")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "aom-sys" version))
-        (file-name
-         (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "1bqcpkycv1d67r6jcl9npfbw6rkl829rdq9w6vlpb0rjqxp0xzsn"))))
-    (build-system cargo-build-system)
-    (arguments
-     `(#:cargo-inputs
-       (("rust-bindgen" ,rust-bindgen-0.53)
-        ("rust-metadeps" ,rust-metadeps-1))))
-    (native-inputs
-     (list pkg-config))
-    (inputs
-     (list libaom clang llvm))))
 
 (define-public rust-ascii-canvas-2
   (package
