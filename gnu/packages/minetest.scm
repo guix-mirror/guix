@@ -618,15 +618,15 @@ for general colour handling.")
     (name "minetest-unified-inventory")
     ;; Upstream doesn't keep version numbers, so use the release title
     ;; on ContentDB instead.
-    (version "2021-03-25-1")
+    (version "2021-12-26")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/minetest-mods/unified_inventory")
-             (commit "c044f5e3b08f0c68ab028d757b2fa63d9a1b0370")))
+             (commit "d6688872c84417d2f61d6f5e607aea39d78920aa")))
        (sha256
-        (base32 "198g945gzbfl0kps46gwjw0c601l3b3wvn4c7dw8manskri1jr4g"))
+        (base32 "1rlw96s2yyxdbz0h9byayyx9nsbqdr4ric91w0k3dkjr71aj8a3b"))
        (file-name (git-file-name name version))))
     (build-system minetest-mod-build-system)
     (home-page (minetest-topic 12767))
