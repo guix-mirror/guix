@@ -2372,14 +2372,14 @@ you can press @samp{C-M-n} to input multiple email addresses.")
 (define-public emacs-bluetooth
   (package
     (name "emacs-bluetooth")
-    (version "0.2")
+    (version "0.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/"
-                           "bluetooth-" version ".el"))
+                           "bluetooth-" version ".tar"))
        (sha256
-        (base32 "1dq04p6ms0zx4awlypp4crkz7dzal4xg8ac7p8fqacz196rczssp"))))
+        (base32 "1q27hk4j7k0q9vqgn9nq7q0vhn9jdqbygs7d9lv5gwfhdzdnl4az"))))
     (build-system emacs-build-system)
     (inputs
      (list bluez dbus))
