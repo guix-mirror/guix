@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2022 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,14 +27,14 @@
 (define-public rush
   (package
     (name "rush")
-    (version "2.1")
+    (version "2.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/rush/rush-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "17i4mggr3rnfz0xbhqvd86jqva40c535fhlwkb2l4hjcbpg8blcf"))))
+               "1kcqilbcvxsh89196ryh3p9zh4b266517q9681mjmckvj5v57plm"))))
     (build-system gnu-build-system)
     (home-page "https://www.gnu.org/software/rush/")
     (synopsis "Restricted user (login) shell")
