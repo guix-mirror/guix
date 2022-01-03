@@ -17018,7 +17018,7 @@ add any additional instance slots.")
 (define-public emacs-epkg
   (package
     (name "emacs-epkg")
-    (version "3.3.1")
+    (version "3.3.2")
     (source
      (origin
        (method git-fetch)
@@ -17027,9 +17027,31 @@ add any additional instance slots.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0z9sz9ydfjzhawh4qip41h3vid1lslaf0h14hkjz9kx8fkrzib8a"))))
+        (base32 "18kjp0f5ch4mpd6yrd83p73pw7ykp2lv5686is8vcvyyys53jrf1"))))
     (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'make-info
+           ;; Documentation is located in "docs/".
+           (lambda* (#:key outputs #:allow-other-keys)
+             (with-directory-excursion "docs"
+               (invoke "makeinfo" "-o" "epkg.info" "epkg.texi")
+               (let ((info (string-append (assoc-ref outputs "out")
+                                          "/share/info")))
+                 (install-file "epkg.info" info)))))
+         (add-after 'make-info 'move-to-lisp-directory
+           ;; Source code is located in "lisp/".
+           (lambda _
+             (chdir "lisp")))
+         (add-after 'expand-load-path 'add-el-dir-to-emacs-load-path
+           (lambda _
+             (setenv "EMACSLOADPATH"
+                     (string-append (getcwd)
+                                    "/lisp:"
+                                    (getenv "EMACSLOADPATH"))))))))
+    (native-inputs
+     (list texinfo))
     (propagated-inputs
      (list emacs-closql emacs-dash))
     (home-page "https://emacsmirror.net")
