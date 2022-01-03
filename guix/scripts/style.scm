@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2021 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2021-2022 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -163,6 +163,19 @@
    ('with-output-to-file 2)
    ('with-input-from-file 2)))
 
+(define %newline-forms
+  ;; List heads that must be followed by a newline.  The second argument is
+  ;; the context in which they must appear.  This is similar to a special form
+  ;; of 1, except that indent is 1 instead of 2 columns.
+  (vhashq
+   ('arguments '(package))
+   ('sha256 '(origin source package))
+   ('base32 '(sha256 origin))
+   ('git-reference '(uri origin source))
+   ('search-paths '(package))
+   ('native-search-paths '(package))
+   ('search-path-specification '())))
+
 (define (prefix? candidate lst)
   "Return true if CANDIDATE is a prefix of LST."
   (let loop ((candidate candidate)
@@ -187,6 +200,14 @@ surrounding SYMBOL."
             ((prefix . level)
              (and (prefix? prefix context) (- level 1))))
           alist))))
+
+(define (newline-form? symbol context)
+  "Return true if parenthesized expressions starting with SYMBOL must be
+followed by a newline."
+  (match (vhash-assq symbol %newline-forms)
+    (#f #f)
+    ((_ . prefix)
+     (prefix? prefix context))))
 
 (define (escaped-string str)
   "Return STR with backslashes and double quotes escaped.  Everything else, in
@@ -377,6 +398,7 @@ Lists longer than LONG-LIST are written as one element per line."
               (column    (if overflow?
                              (+ indent 1)
                              (+ column (if delimited? 1 2))))
+              (newline?  (newline-form? head context))
               (context   (cons head context)))
          (if overflow?
              (begin
@@ -384,17 +406,26 @@ Lists longer than LONG-LIST are written as one element per line."
                (display (make-string indent #\space) port))
              (unless delimited? (display " " port)))
          (display "(" port)
+
          (let* ((new-column (loop column column #t context head))
                 (indent (if (or (>= new-column max-width)
                                 (not (symbol? head))
                                 (sequence-would-protrude?
-                                 (+ new-column 1) tail))
+                                 (+ new-column 1) tail)
+                                newline?)
                             column
                             (+ new-column 1))))
-           (define column
-             (print-sequence context indent new-column tail #f))
-           (display ")" port)
-           (+ column 1))))
+           (when newline?
+             ;; Insert a newline right after HEAD.
+             (newline port)
+             (display (make-string indent #\space) port))
+
+           (let ((column
+                  (print-sequence context indent
+                                  (if newline? indent new-column)
+                                  tail newline?)))
+             (display ")" port)
+             (+ column 1)))))
       (_
        (let* ((str (if (string? obj)
                        (escaped-string obj)

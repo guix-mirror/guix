@@ -465,6 +465,19 @@ mnopqrstuvwxyz.\")"
   ;; Regular indentation for 'replace' here.
   (replace \"gmp\" gmp))")
 
+(test-pretty-print "\
+(package
+  ;; Here 'sha256', 'base32', and 'arguments' must be
+  ;; immediately followed by a newline.
+  (source (origin
+            (method url-fetch)
+            (sha256
+             (base32
+              \"not a real base32 string\"))))
+  (arguments
+   '(#:phases %standard-phases
+     #:tests? #f)))")
+
 (test-end)
 
 ;; Local Variables:
