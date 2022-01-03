@@ -7625,8 +7625,22 @@ or replace package inputs.
 
 @deffn {Scheme Syntax} modify-inputs @var{inputs} @var{clauses}
 Modify the given package inputs, as returned by @code{package-inputs} & co.,
-according to the given clauses.  The example below removes the GMP and ACL
-inputs of Coreutils and adds libcap to the back of the input list:
+according to the given clauses.  Each clause must have one of the
+following forms:
+
+@table @code
+@item (delete @var{name}@dots{})
+Delete from the inputs packages with the given @var{name}s (strings).
+
+@item (append @var{package}@dots{})
+Add @var{package}s to the end of the input list.
+
+@item (prepend @var{package}@dots{})
+Add @var{package}s to the front of the input list.
+@end table
+
+The example below removes the GMP and ACL inputs of Coreutils and adds
+libcap to the back of the input list:
 
 @lisp
 (modify-inputs (package-inputs coreutils)
