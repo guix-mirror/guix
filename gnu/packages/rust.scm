@@ -733,11 +733,6 @@ safety and thread safety guarantees.")
                                 ((file) file))
                    (("fn ctrl_c_kills_everyone")
                     "#[ignore]\nfn ctrl_c_kills_everyone"))))
-             (add-after 'configure 'enable-docs
-               (lambda _
-                 (substitute* "config.toml"
-                   (("docs = false")
-                    "docs = true"))))
              (add-after 'configure 'add-gdb-to-config
                (lambda* (#:key inputs #:allow-other-keys)
                  (let ((gdb (assoc-ref inputs "gdb")))
