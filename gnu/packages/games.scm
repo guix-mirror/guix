@@ -30,7 +30,7 @@
 ;;; Copyright © 2017, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2017, 2018, 2019, 2020, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2017–2022 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 okapi <okapi@firemail.cc>
 ;;; Copyright © 2018 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2018 Madalin Ionel-Patrascu <madalinionel.patrascu@mdc-berlin.de>
@@ -7916,34 +7916,21 @@ ncurses for text display.")
 (define-public naev
   (package
     (name "naev")
-    (version "0.9.0")
+    (version "0.9.1")
     (source
      (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/naev/naev")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
+       (method url-fetch)
+       (uri (string-append "https://github.com/naev/naev/releases/download/v"
+                           version "/naev-" version "-source.tar.xz"))
        (sha256
-        (base32 "0m4bny6wcxmqavi8sf87yjg4mamhyixzz4gb9m97xwkn6ga5669b"))))
+        (base32 "1v7ibl0xdr8a93c73mbbg1lnsc1a67nsg1waqb8fsdw6yrs39508"))))
     (build-system meson-build-system)
     (arguments
      ;; XXX: Do not add debugging symbols, which cause the build to fail.
      `(#:configure-flags (list "--buildtype=release")
-       #:tests? #f          ;sole test fails with a missing "/dev/dri" error
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'copy-artwork
-           (lambda* (#:key inputs #:allow-other-keys)
-             (copy-recursively (assoc-ref inputs "naev-artwork")
-                               "artwork")))
-         (add-before 'configure 'find-msgfmt
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "utils/build/gen_gettext_stats.py"
-               (("msgfmt")
-                (search-input-file inputs "/bin/msgfmt"))))))))
+       #:tests? #f))          ;sole test fails with a missing "/dev/dri" error
     (native-inputs
-     (list gettext-minimal naev-artwork pkg-config))
+     (list gettext-minimal pkg-config))
     (inputs
      (list freetype
            glpk
@@ -7976,34 +7963,6 @@ of lore accompanying everything from planets to equipment.")
                    license:bsd-2        ;distance_field.c
                    license:bsd-3        ;perlin.c
                    ))))
-
-(define-public naev-artwork
-  (let ((version "0.9.0")
-        (commit "7f38a772ef2618f199ea68ecbd9f5c97e357fe36"))
-    (package
-      (name "naev-artwork")
-      (version (git-version version "0" commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/naev/naev-artwork-production")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "1g3dk3372k6g7k9andkip0vk146kwy43x98xwzzqdry1pa5m56v0"))))
-      (build-system copy-build-system)
-    (home-page "https://naev.org/")
-    (synopsis "Game about space exploration, trade and combat — data files")
-    (description
-     "This package contains graphics and sound files for Naev.")
-    (license (list license:silofl1.1
-                   license:gpl2+
-                   license:cc0
-                   license:cc-by3.0
-                   license:cc-by-sa3.0
-                   license:cc-by4.0
-                   license:cc-by-sa4.0)))))
 
 (define-public frotz-dumb-terminal
   (package
