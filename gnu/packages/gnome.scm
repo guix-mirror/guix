@@ -5577,8 +5577,7 @@ services for numerous locations.")
        #:glib-or-gtk? #t
        #:configure-flags
        (list (string-append "-Dudev_dir="
-                            (assoc-ref %outputs "out")
-                            "/lib/udev/rules.d/")
+                            (assoc-ref %outputs "out") "/lib/udev")
              "-Dsystemd=false"
              ;; Otherwise, the RUNPATH will lack the final path component.
              (string-append "-Dc_link_args=-Wl,-rpath="
