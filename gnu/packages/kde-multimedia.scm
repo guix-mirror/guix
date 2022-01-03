@@ -2,6 +2,7 @@
 ;;; Copyright © 2017, 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2020 Timotej Lazar <timotej.lazar@araneo.si>
 ;;; Copyright © 2021 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2022 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,6 +22,7 @@
 (define-module (gnu packages kde-multimedia)
   #:use-module (guix build-system qt)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
@@ -30,6 +32,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cdrom)
+  #:use-module (gnu packages docbook)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages gnome)
@@ -40,10 +43,13 @@
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages music)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages readline)
   #:use-module (gnu packages video)
   #:use-module (gnu packages xiph)
+  #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg))
 
 (define-public audiocd-kio
@@ -280,6 +286,64 @@ Some of JuK's features include:
 @end itemize
 
 This package is part of the KDE multimedia module.")
+    (license license:gpl2+)))
+
+(define-public kid3
+  (package
+    (name "kid3")
+    (version "3.9.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://invent.kde.org/multimedia/kid3.git/")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "02r3cnwr05mcxjawzip3jl1lfijvzfbbafq3saipjjjp4kiq9bk4"))))
+    (build-system qt-build-system)
+    (arguments
+     (list
+      #:configure-flags
+      #~(list (string-append "-DDOCBOOK_XSL_DIR="
+                             #$(this-package-native-input "docbook-xsl")))
+      #:phases
+      `(modify-phases %standard-phases
+         ;; FIXME: Documentation build scripts use unix pipes, which will fail
+         ;; in the build environment.
+         (add-after 'unpack 'skip-docs
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("add_subdirectory\\(doc\\)") "")))))))
+    (native-inputs
+     (list docbook-xsl
+           extra-cmake-modules
+           ffmpeg
+           kdoctools
+           libxslt
+           python-wrapper
+           qttools))
+    (inputs
+     (list chromaprint
+           flac
+           id3lib
+           kconfig
+           kconfigwidgets
+           kcoreaddons
+           kio
+           kwidgetsaddons
+           kxmlgui
+           libvorbis
+           qtbase-5
+           qtdeclarative
+           qtmultimedia
+           readline
+           taglib
+           zlib))
+    (home-page "https://kid3.kde.org/")
+    (synopsis "Audio tag editor")
+    (description "Kid3 is an audio tag editor for KDE that supports a large
+variety of formats.")
     (license license:gpl2+)))
 
 (define-public k3b
