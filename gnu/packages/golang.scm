@@ -2861,10 +2861,21 @@ Go.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0pcdvakxgddaiwcdj73ra4da05a3q4cgwbpm2w75ycq4kzv8ij8k"))))
+         "0pcdvakxgddaiwcdj73ra4da05a3q4cgwbpm2w75ycq4kzv8ij8k"))
+        (modules '((guix build utils)))
+        (snippet
+         '(begin
+            (delete-file-recursively "vendor")))))
     (build-system go-build-system)
     (arguments
      '(#:import-path "github.com/stretchr/objx"))
+    (propagated-inputs
+     (list go-github-com-davecgh-go-spew
+           go-github-com-pmezard-go-difflib))
+    (inputs
+     (list go-github-com-stretchr-testify-bootstrap))
+    (native-inputs
+     (list go-gopkg-in-yaml-v2))
     (home-page "https://github.com/stretchr/objx")
     (synopsis "Go package for dealing with maps, slices, JSON and other data")
     (description "This package provides a Go library for dealing with maps,
@@ -2906,6 +2917,16 @@ Features include:
 @item Testing suite interfaces and functions.
 @end itemize")
     (license license:expat)))
+
+(define go-github-com-stretchr-testify-bootstrap
+  (package
+    (inherit go-github-com-stretchr-testify)
+    (arguments
+     '(#:import-path "github.com/stretchr/testify"
+       #:tests? #f
+       #:phases (modify-phases %standard-phases
+                  (delete 'build))))
+    (propagated-inputs '())))
 
 (define-public go-github-com-tevino-abool
   (let ((commit
