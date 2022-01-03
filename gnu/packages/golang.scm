@@ -32,6 +32,7 @@
 ;;; Copyright © 2021 Bonface Munyoki Kilyungi <me@bonfacemunyoki.com>
 ;;; Copyright © 2021 Chadwain Holness <chadwainholness@gmail.com>
 ;;; Copyright © 2021 Philip McGrath <philip@philipmcgrath.com>
+;;; Copyright © 2021 Lu Hui <luhux76@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -9266,3 +9267,33 @@ newlines until a non-newline.")
        "This library provides unit multipliers and functions for Go.")
       (home-page "https://github.com/alecthomas/units")
       (license license:expat))))
+
+(define-public go-github-com-dreamacro-go-shadowsocks2
+  (package
+    (name "go-github-com-dreamacro-go-shadowsocks2")
+    (version "0.1.7")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Dreamacro/go-shadowsocks2")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0sjr3r77fav6q0ii6dnp4px9gaz7cq861a0yxppvb6a58420bx3h"))))
+    (build-system go-build-system)
+    (arguments '(#:import-path "github.com/Dreamacro/go-shadowsocks2"))
+    (propagated-inputs (list go-golang-org-x-crypto))
+    (home-page "https://github.com/Dreamacro/go-shadowsocks2")
+    (synopsis "Shadowsocks implementation in Go")
+    (description
+     "This package is @code{shadowsocks} implementation in Go
+
+Features:
+@itemize
+@item SOCKS5 proxy
+@item Support for Netfilter TCP redirect (IPv6 should work but not tested)
+@item UDP tunneling (e.g. relay DNS packets)
+@item TCP tunneling (e.g. benchmark with iperf3)
+@end itemize")
+    (license license:asl2.0)))
