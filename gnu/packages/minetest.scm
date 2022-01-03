@@ -389,15 +389,15 @@ closely as the engine allows.")
     (name "minetest-mobs")
     ;; Upstream does not tag release, so use the ContentDB release
     ;; title instead.
-    (version "2021-07-22")
+    (version "2021-12-12")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://notabug.org/TenPlus1/mobs_redo")
-             (commit "9f46182bb4b1a390f9a140bc2b443f3cda702332")))
+             (commit "6a4a02f3fbf1038c69e72aaafa52a1e7d6106da8")))
        (sha256
-        (base32 "026kqjis4lipgskjivb3jh9ris3iz80vy2q1jvgxhxmfghjjzp4j"))
+        (base32 "0vgv7jpm9v3dwq4l9jxdd5z14yq164w8kin1d05jfv3ck4hwlwvr"))
        (file-name (git-file-name name version))))
     (build-system minetest-mod-build-system)
     (home-page (minetest-topic 9917))
