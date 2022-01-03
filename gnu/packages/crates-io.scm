@@ -3277,7 +3277,7 @@ objects are the same.")
 (define-public rust-assert-matches-1
   (package
     (name "rust-assert-matches")
-    (version "1.3.0")
+    (version "1.5.0")
     (source
      (origin
        (method url-fetch)
@@ -3286,7 +3286,7 @@ objects are the same.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1rar61v00gz2aniid0mylxcr4q98s6l77c3hvbszmg57kj10msvx"))))
+         "1a9b3p9vy0msylyr2022sk5flid37ini1dxji5l3vwxsvw4xcd4v"))))
     (build-system cargo-build-system)
     (home-page "https://github.com/murarth/assert_matches")
     (synopsis "Asserts that a value matches a pattern")
