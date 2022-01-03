@@ -34077,22 +34077,23 @@ should be setuid root.
 The @code{setuid-programs} field of an @code{operating-system}
 declaration contains a list of @code{<setuid-program>} denoting the
 names of programs to have a setuid or setgid bit set (@pxref{Using the
-Configuration System}).  For instance, the @command{passwd} program,
-which is part of the Shadow package, with a setuid root can be
+Configuration System}).  For instance, the @command{nmtui} program,
+which is part of the NetworkManager package, with a setuid root can be
 designated like this:
 
 @example
 (setuid-program
-  (program (file-append shadow "/bin/passwd")))
+  (program (file-append network-manager "/bin/nmtui")))
 @end example
 
-And then it can be added to your operating system declaration by
-appending it to @code{%setuid-programs} like this:
+And then, to make @code{nmtui} setuid on your system, add the previous
+example to your operating system declaration by appending it to
+@code{%setuid-programs} like this:
 
 @example
 (setuid-programs
   (append (list (setuid-program
-                  (program (file-append swaylock "/bin/swaylock"))))
+                  (program (file-append network-manager "/bin/nmtui"))))
                 %setuid-programs))
 @end example
 
