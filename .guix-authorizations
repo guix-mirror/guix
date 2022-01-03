@@ -91,8 +91,6 @@
    (name "pgarlick"))
   ("CD2D 5EAA A98C CB37 DA91  D6B0 5F58 1664 7F8B E551"
    (name "raghavgururajan"))
-  ("74D6 A930 F44B 9B84 9EA5  5606 C166 AA49 5F7F 189C"
-   (name "reepca"))
   ("BCA6 89B6 3655 3801 C3C6  2150 197A 5888 235F ACAC"
    (name "rekado"))
   (;; From commit cc51c03ff867d4633505354819c6d88af88bf919 (March 2020).
