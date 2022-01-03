@@ -717,7 +717,7 @@ memory, disks, network and processes.  It's a Python port and continuation of
 (define-public pies
   (package
     (name "pies")
-    (version "1.6")
+    (version "1.7")
     (source
      (origin
        (method url-fetch)
@@ -725,7 +725,7 @@ memory, disks, network and processes.  It's a Python port and continuation of
                            version ".tar.bz2"))
        (sha256
         (base32
-         "0ad5bg1czwmr4qw33aszxzc6ll99a9lfs32lyfb1wl5x9s1cc7az"))))
+         "0ajcah2y6n55qc0ckspcx0hfpm1yb2xa1apcyij7mclic4q2y330"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
@@ -736,8 +736,7 @@ memory, disks, network and processes.  It's a Python port and continuation of
                       (let ((bash (assoc-ref inputs "bash")))
                         (substitute* '("src/progman.c" "src/comp.c")
                           (("\"/bin/sh\"")
-                           (string-append "\"" bash "/bin/sh\"")))
-                        #t))))))
+                           (string-append "\"" bash "/bin/sh\"")))))))))
     (home-page "https://www.gnu.org.ua/software/pies/")
     (synopsis "Program invocation and execution supervisor")
     (description
