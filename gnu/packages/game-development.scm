@@ -144,6 +144,11 @@
                                "-DBUILD_CPU_DEMOS=OFF"
                                "-DBUILD_OPENGL3_DEMOS=OFF"
                                "-DBUILD_BULLET2_DEMOS=OFF"
+                               ;; openmw 0.47.0 requires bullet to be built with
+                               ;; double precision.
+                               ;; See <https://issues.guix.gnu.org/52953> for
+                               ;; more information.
+                               "-DUSE_DOUBLE_PRECISION=ON"
                                ;; Extras/BulletRoboticsGUI needs files from
                                ;; ThirdPartyLibs
                                "-DBUILD_BULLET_ROBOTICS_GUI_EXTRA=OFF"
