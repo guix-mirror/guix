@@ -12,7 +12,7 @@
 ;;; Copyright © 2020 André Batista <nandre@riseup.net>
 ;;; Copyright © 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2020 Antoine Côté <antoine.cote@posteo.net>
-;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021, 2022 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 aecepoglu <aecepoglu@fastmail.fm>
 ;;; Copyright © 2021 Zheng Junjie <873216071@qq.com>
 ;;; Copyright © 2021 Alexandru-Sergiu Marton <brown121407@posteo.ro>
@@ -54429,7 +54429,7 @@ processors, disks, components and networks.")
         (base32 "19ig3hxgyq9d7qy8cwpl74l75ay2w0y0a4rginqb68h7hygjc328"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
+     `(#:tests? #f                      ;source is missing some test files
        #:cargo-inputs
        (("rust-anyhow" ,rust-anyhow-1)
         ("rust-cfg-expr" ,rust-cfg-expr-0.8)
@@ -54440,13 +54440,17 @@ processors, disks, components and networks.")
         ("rust-strum-macros" ,rust-strum-macros-0.21)
         ("rust-thiserror" ,rust-thiserror-1)
         ("rust-toml" ,rust-toml-0.5)
-        ("rust-version-compare" ,rust-version-compare-0.0))))
+        ("rust-version-compare" ,rust-version-compare-0.0))
+       #:cargo-development-inputs
+       (("rust-assert-matches" ,rust-assert-matches-1)
+        ("rust-itertools" ,rust-itertools-0.10)
+        ("rust-lazy-static" ,rust-lazy-static-1))))
     (home-page "https://github.com/gdesmott/system-deps")
     (synopsis "Define system dependencies in @file{Cargo.toml}")
-    (description
-     "This crate lets you write system dependencies in @file{Cargo.toml}
-metadata, rather than programmatically in @file{build.rs}.  This makes those
-dependencies declarative, so other tools can read them as well.")
+    (description "This crate lets you write system dependencies in
+@file{Cargo.toml} metadata, rather than programmatically in @file{build.rs}.
+This makes those dependencies declarative, so other tools can read them as
+well.")
     (license (list license:expat license:asl2.0))))
 
 (define-public rust-system-deps-1
