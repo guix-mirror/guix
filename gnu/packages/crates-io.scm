@@ -10318,6 +10318,24 @@ diagnostics easy and relatively painless for everyone!")
     (description "This package provides colorful panic backtraces.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-concolor-query
+  (package
+    (name "rust-concolor-query")
+    (version "0.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "concolor-query" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1isbqpyiwblp0rglnaqzai5hav23095s82mwgi09v3xcck4rq5dd"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/rust-cli/concolor")
+    (synopsis "Rust library to query low level terminal capabilities")
+    (description "@code{concolor-query} can be used to query a terminal
+capabilities, for example to find out about its colored console abilities.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-color-quant-1
   (package
     (name "rust-color-quant")
