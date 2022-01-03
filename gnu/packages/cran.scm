@@ -22513,6 +22513,29 @@ They are based on clustering, the statistical concept of data depth,
 statistical shape analysis and archetypal analysis.")
     (license license:gpl2+)))
 
+(define-public r-anndata
+  (package
+    (name "r-anndata")
+    (version "0.7.5.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "anndata" version))
+       (sha256
+        (base32 "115v7gdilayd18hd519vzkixp2s6rvvrd1inc1i6amn7d0spy8r1"))))
+    (properties `((upstream-name . "anndata")))
+    (build-system r-build-system)
+    (propagated-inputs (list r-assertthat r-matrix r-r6 r-reticulate))
+    (native-inputs (list r-knitr))
+    (home-page "https://anndata.dynverse.org")
+    (synopsis "Anndata for R")
+    (description
+     "This package provides a reticulate wrapper for the Python package
+@code{anndata}.  It provides a scalable way of keeping track of data and
+learned annotations.  It is used to read from and write to the h5ad file
+format.")
+    (license license:expat)))
+
 (define-public r-adamethods
   (package
     (name "r-adamethods")
