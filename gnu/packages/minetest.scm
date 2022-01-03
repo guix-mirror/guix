@@ -212,15 +212,15 @@ as swords and tools made of different materials.  It also adds copper rails.")
   (package
     (name "minetest-basic-materials")
     ;; Upstream uses dates as version numbers.
-    (version "2021-01-30")
+    (version "2021-12-26")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://gitlab.com/VanessaE/basic_materials.git")
-             (commit "e72665b2ed98d7be115779a32d35e6d9ffa231bd")))
+             (url "https://github.com/mt-mods/basic_materials")
+             (commit "0893974b054a2191b5e2d5447ee4fc73f9c35f6a")))
        (sha256
-        (base32 "0v6l3lrjgshy4sccjhfhmfxc3gk0cdy73qb02i9wd2vw506v5asx"))
+        (base32 "0p4nnfsjv7284zmgr781zkyjbp049wp1jy1l7n585zzj181ns57p"))
        (file-name (git-file-name name version))))
     (build-system minetest-mod-build-system)
     (propagated-inputs
