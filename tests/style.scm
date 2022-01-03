@@ -453,6 +453,18 @@ mnopqrstuvwxyz.\")"
  \"abcdefghijklmnopqrstuvwxyz\")"
                    #:max-width 33)
 
+(test-pretty-print "\
+(modify-phases %standard-phases
+  (replace 'build
+    ;; Nicely indented in 'modify-phases' context.
+    (lambda _
+      #t)))")
+
+(test-pretty-print "\
+(modify-inputs inputs
+  ;; Regular indentation for 'replace' here.
+  (replace \"gmp\" gmp))")
+
 (test-end)
 
 ;; Local Variables:

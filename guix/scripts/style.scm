@@ -114,14 +114,19 @@
 ;;;
 
 (define-syntax vhashq
-  (syntax-rules ()
+  (syntax-rules (quote)
     ((_) vlist-null)
+    ((_ (key (quote (lst ...))) rest ...)
+     (vhash-consq key '(lst ...) (vhashq rest ...)))
     ((_ (key value) rest ...)
-     (vhash-consq key value (vhashq rest ...)))))
+     (vhash-consq key '((() . value)) (vhashq rest ...)))))
 
 (define %special-forms
   ;; Forms that are indented specially.  The number is meant to be understood
-  ;; like Emacs' 'scheme-indent-function' symbol property.
+  ;; like Emacs' 'scheme-indent-function' symbol property.  When given an
+  ;; alist instead of a number, the alist gives "context" in which the symbol
+  ;; is a special form; for instance, context (modify-phases) means that the
+  ;; symbol must appear within a (modify-phases ...) expression.
   (vhashq
    ('begin 1)
    ('lambda 2)
@@ -148,9 +153,9 @@
    ('operating-system 1)
    ('modify-inputs 2)
    ('modify-phases 2)
-   ('add-after 3)
-   ('add-before 3)
-   ;; ('replace 2)
+   ('add-after '(((modify-phases) . 3)))
+   ('add-before '(((modify-phases) . 3)))
+   ('replace '(((modify-phases) . 2)))         ;different from 'modify-inputs'
    ('substitute* 2)
    ('substitute-keyword-arguments 2)
    ('call-with-input-file 2)
@@ -158,8 +163,30 @@
    ('with-output-to-file 2)
    ('with-input-from-file 2)))
 
-(define (special-form? symbol)
-  (vhash-assq symbol %special-forms))
+(define (prefix? candidate lst)
+  "Return true if CANDIDATE is a prefix of LST."
+  (let loop ((candidate candidate)
+             (lst lst))
+    (match candidate
+      (() #t)
+      ((head1 . rest1)
+       (match lst
+         (() #f)
+         ((head2 . rest2)
+          (and (equal? head1 head2)
+               (loop rest1 rest2))))))))
+
+(define (special-form-lead symbol context)
+  "If SYMBOL is a special form in the given CONTEXT, return its number of
+arguments; otherwise return #f.  CONTEXT is a stack of symbols lexically
+surrounding SYMBOL."
+  (match (vhash-assq symbol %special-forms)
+    (#f #f)
+    ((_ . alist)
+     (any (match-lambda
+            ((prefix . level)
+             (and (prefix? prefix context) (- level 1))))
+          alist))))
 
 (define (escaped-string str)
   "Return STR with backslashes and double quotes escaped.  Everything else, in
@@ -192,8 +219,9 @@ Lists longer than LONG-LIST are written as one element per line."
   (let loop ((indent indent)
              (column indent)
              (delimited? #t)                  ;true if comes after a delimiter
+             (context '())                    ;list of "parent" symbols
              (obj obj))
-    (define (print-sequence indent column lst delimited?)
+    (define (print-sequence context indent column lst delimited?)
       (define long?
         (> (length lst) long-list))
 
@@ -223,6 +251,7 @@ Lists longer than LONG-LIST are written as one element per line."
                     (comment? item)
                     (loop indent column
                           (or newline? delimited?)
+                          context
                           item)))))))
 
     (define (sequence-would-protrude? indent lst)
@@ -243,6 +272,9 @@ Lists longer than LONG-LIST are written as one element per line."
                #f))
             lst))
 
+    (define (special-form? head)
+      (special-form-lead head context))
+
     (match obj
       ((? comment? comment)
        (if (comment-margin? comment)
@@ -261,45 +293,46 @@ Lists longer than LONG-LIST are written as one element per line."
       (('quote lst)
        (unless delimited? (display " " port))
        (display "'" port)
-       (loop indent (+ column (if delimited? 1 2)) #t lst))
+       (loop indent (+ column (if delimited? 1 2)) #t context lst))
       (('quasiquote lst)
        (unless delimited? (display " " port))
        (display "`" port)
-       (loop indent (+ column (if delimited? 1 2)) #t lst))
+       (loop indent (+ column (if delimited? 1 2)) #t context lst))
       (('unquote lst)
        (unless delimited? (display " " port))
        (display "," port)
-       (loop indent (+ column (if delimited? 1 2)) #t lst))
+       (loop indent (+ column (if delimited? 1 2)) #t context lst))
       (('unquote-splicing lst)
        (unless delimited? (display " " port))
        (display ",@" port)
-       (loop indent (+ column (if delimited? 2 3)) #t lst))
+       (loop indent (+ column (if delimited? 2 3)) #t context lst))
       (('gexp lst)
        (unless delimited? (display " " port))
        (display "#~" port)
-       (loop indent (+ column (if delimited? 2 3)) #t lst))
+       (loop indent (+ column (if delimited? 2 3)) #t context lst))
       (('ungexp obj)
        (unless delimited? (display " " port))
        (display "#$" port)
-       (loop indent (+ column (if delimited? 2 3)) #t obj))
+       (loop indent (+ column (if delimited? 2 3)) #t context obj))
       (('ungexp-native obj)
        (unless delimited? (display " " port))
        (display "#+" port)
-       (loop indent (+ column (if delimited? 2 3)) #t obj))
+       (loop indent (+ column (if delimited? 2 3)) #t context obj))
       (('ungexp-splicing lst)
        (unless delimited? (display " " port))
        (display "#$@" port)
-       (loop indent (+ column (if delimited? 3 4)) #t lst))
+       (loop indent (+ column (if delimited? 3 4)) #t context lst))
       (('ungexp-native-splicing lst)
        (unless delimited? (display " " port))
        (display "#+@" port)
-       (loop indent (+ column (if delimited? 3 4)) #t lst))
+       (loop indent (+ column (if delimited? 3 4)) #t context lst))
       (((? special-form? head) arguments ...)
        ;; Special-case 'let', 'lambda', 'modify-inputs', etc. so the second
        ;; and following arguments are less indented.
-       (let* ((lead  (- (cdr (vhash-assq head %special-forms)) 1))
-              (head  (symbol->string head))
-              (total (length arguments)))
+       (let* ((lead    (special-form-lead head context))
+              (context (cons head context))
+              (head    (symbol->string head))
+              (total   (length arguments)))
          (unless delimited? (display " " port))
          (display "(" port)
          (display head port)
@@ -327,14 +360,14 @@ Lists longer than LONG-LIST are written as one element per line."
                      (() column)
                      ((head . tail)
                       (inner (- n 1) tail
-                             (loop initial-indent
-                                   column
+                             (loop initial-indent column
                                    (= n lead)
+                                   context
                                    head)))))))
 
            ;; Print the remaining arguments.
            (let ((column (print-sequence
-                          indent new-column
+                          context indent new-column
                           (drop arguments (min lead total))
                           #t)))
              (display ")" port)
@@ -343,14 +376,15 @@ Lists longer than LONG-LIST are written as one element per line."
        (let* ((overflow? (>= column max-width))
               (column    (if overflow?
                              (+ indent 1)
-                             (+ column (if delimited? 1 2)))))
+                             (+ column (if delimited? 1 2))))
+              (context   (cons head context)))
          (if overflow?
              (begin
                (newline port)
                (display (make-string indent #\space) port))
              (unless delimited? (display " " port)))
          (display "(" port)
-         (let* ((new-column (loop column column #t head))
+         (let* ((new-column (loop column column #t context head))
                 (indent (if (or (>= new-column max-width)
                                 (not (symbol? head))
                                 (sequence-would-protrude?
@@ -358,7 +392,7 @@ Lists longer than LONG-LIST are written as one element per line."
                             column
                             (+ new-column 1))))
            (define column
-             (print-sequence indent new-column tail #f))
+             (print-sequence context indent new-column tail #f))
            (display ")" port)
            (+ column 1))))
       (_
