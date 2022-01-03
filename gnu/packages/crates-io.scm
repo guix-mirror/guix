@@ -10336,6 +10336,36 @@ diagnostics easy and relatively painless for everyone!")
 capabilities, for example to find out about its colored console abilities.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-concolor-control
+  (package
+    (name "rust-concolor-control")
+    (version "0.0.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "concolor-control" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1nplakbdb9sbd3h62d9zkan0xm1w0c7cbl3rk0iqgn405yf1213i"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f          ;see https://github.com/rust-cli/concolor/issues/4
+       #:cargo-inputs
+       (("rust-atty" ,rust-atty-0.2)
+        ("rust-bitflags" ,rust-bitflags-1)
+        ("rust-concolor-query" ,rust-concolor-query))))
+    (home-page "https://github.com/rust-cli/concolor")
+    (synopsis "Rust library for managing terminal styling")
+    (description "@code{concolor-control} is a terminal styling library that
+can be used to:
+@itemize
+@item Detect interactive @samp{stdout} or @samp{stderr}
+@item Detect terminal capabilities via @samp{TERM}
+@item Support @url{https://bixense.com/clicolors/, CLICOLOR} and
+@url{https://no-color.org/, NO_COLOR}.
+@end itemize")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-color-quant-1
   (package
     (name "rust-color-quant")
