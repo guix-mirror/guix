@@ -418,15 +418,15 @@ add some mobs, a mod like e.g. @code{mobs_animal} provided by the
     (name "minetest-mobs-animal")
     ;; Upstream does not use version numbers, so use the release title
     ;; from ContentDB instead;
-    (version "2021-07-24")
+    (version "2021-11-14")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://notabug.org/TenPlus1/mobs_animal")
-             (commit "c2fa3e300c79c7dd80b6fe91a8b5082bb6b3d934")))
+             (commit "3e15456bce7779aa0dc09a8890f7b5180c1ac771")))
        (sha256
-        (base32 "1j719f079ia9vjxrmjrcj8s6jvaz5kgs1r4dh66z8ql6s70kx7vh"))
+        (base32 "08686mj3jh8fsziqp878jpaj5267s4n6i86dr1gnxyxbsrjraqpn"))
        (file-name (git-file-name name version))))
     (build-system minetest-mod-build-system)
     (propagated-inputs
