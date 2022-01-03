@@ -54609,6 +54609,30 @@ processors, disks, components and networks.")
     (description "Send log messages to syslog.")
     (license license:expat)))
 
+(define-public rust-cfg-expr-0.8
+  (package
+    (name "rust-cfg-expr")
+    (version "0.8.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "cfg-expr" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "03lgv8psc2qrr93hxgdfmfwbj1crpzghxd7qh6w2nz0l4qryh4ml"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-smallvec" ,rust-smallvec-1)
+        ("rust-target-lexicon" ,rust-target-lexicon-0.12))
+       #:cargo-development-inputs
+       (("rust-difference" ,rust-difference-2))))
+    (home-page "https://github.com/EmbarkStudios/cfg-expr")
+    (synopsis "Parser and evaluator for Rust @samp{cfg} expressions")
+    (description "This package provides a parser and evaluator for Rust
+@samp{cfg} expressions.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-system-deps-3
   (package
     (name "rust-system-deps")
