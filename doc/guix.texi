@@ -1250,9 +1250,10 @@ The @file{/etc/guix/machines.scm} file typically looks like this:
         (systems (list "aarch64-linux"))
         (host-key "ssh-rsa AAAAB3Nza@dots{}")
         (user "alice")
-        (private-key
-         (string-append (getenv "HOME")
-                        "/.ssh/identity-for-guix"))))
+
+        ;; Remember 'guix offload' is spawned by
+        ;; 'guix-daemon' as root.
+        (private-key "/root/.ssh/identity-for-guix")))
 @end lisp
 
 @noindent
