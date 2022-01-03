@@ -9858,7 +9858,7 @@ indentation and filling of comments and C preprocessor fontification.")
 (define-public emacs-tide
   (package
     (name "emacs-tide")
-    (version "4.2.3")
+    (version "4.5.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -9867,10 +9867,10 @@ indentation and filling of comments and C preprocessor fontification.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1fj2fghiycnzds2zxfxgj1d9mdzsvs9rvl9bwy2f1vwawqk1m48w"))))
+                "0zrapfxdarakp3kwp73c2ymjx51fsnfk6azi2y1wb2kgsdxl2yim"))))
     (build-system emacs-build-system)
     (propagated-inputs
-     (list emacs-dash emacs-s emacs-flycheck emacs-typescript-mode))
+     (list emacs-dash emacs-flycheck emacs-s emacs-typescript-mode))
     (home-page "https://github.com/ananthakumaran/tide")
     (synopsis "Typescript IDE for Emacs")
     (description
