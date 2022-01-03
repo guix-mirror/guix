@@ -6039,10 +6039,17 @@ can be used to build a client and/or a server.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1zc0zlilf03h121f9jqq3ar0hfm7706547zysxp2qxbm920pz7h0"))))
+                "1zc0zlilf03h121f9jqq3ar0hfm7706547zysxp2qxbm920pz7h0"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (delete-file-recursively "vendor")))))
     (build-system go-build-system)
     (arguments
      '(#:import-path "github.com/fatih/color"))
+    (propagated-inputs
+     (list go-github-com-mattn-go-colorable
+           go-github-com-mattn-go-isatty))
     (synopsis "Print colored text in Go")
     (description "This package provides an ANSI color package to output
 colorized or SGR defined output to the standard output.")
