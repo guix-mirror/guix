@@ -379,6 +379,10 @@ AUX_FILES =						\
   gnu/packages/aux-files/chromium/master-preferences.json		\
   gnu/packages/aux-files/emacs/guix-emacs.el		\
   gnu/packages/aux-files/guix.vim			\
+  gnu/packages/aux-files/linux-libre/5.16-arm.conf	\
+  gnu/packages/aux-files/linux-libre/5.16-arm64.conf	\
+  gnu/packages/aux-files/linux-libre/5.16-i686.conf	\
+  gnu/packages/aux-files/linux-libre/5.16-x86_64.conf	\
   gnu/packages/aux-files/linux-libre/5.15-arm.conf	\
   gnu/packages/aux-files/linux-libre/5.15-arm64.conf	\
   gnu/packages/aux-files/linux-libre/5.15-i686.conf	\

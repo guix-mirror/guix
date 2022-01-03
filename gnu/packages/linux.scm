@@ -19,7 +19,7 @@
 ;;; Copyright © 2016, 2018 Rene Saavedra <pacoon@protonmail.com>
 ;;; Copyright © 2016 Carlos Sánchez de La Lama <csanchezdll@gmail.com>
 ;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
-;;; Copyright © 2017, 2018, 2020, 2021 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2017, 2018, 2020, 2021, 2022 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 José Miguel Sánchez García <jmi2k@openmailbox.com>
 ;;; Copyright © 2017 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2017, 2019, 2021 Mathieu Othacehe <othacehe@gnu.org>
@@ -357,7 +357,20 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 ;; The current "stable" kernels. That is, the most recently released major
 ;; versions that are still supported upstream.
 
-;; Currently, no stable kernels are packaged.
+(define-public linux-libre-5.16-version "5.16.2")
+(define-public linux-libre-5.16-gnu-revision "gnu")
+(define deblob-scripts-5.16
+  (linux-libre-deblob-scripts
+   linux-libre-5.16-version
+   linux-libre-5.16-gnu-revision
+   (base32 "0c9c8zd85p84r8k4xhys8xw15pds71v0ca2b6hm1pr4f6lpzck0g")
+   (base32 "0c5ld3ii3ixnr27sp59mbh40340jlmxaxk7z1xbl4v94mnzmwz3x")))
+(define-public linux-libre-5.16-pristine-source
+  (let ((version linux-libre-5.16-version)
+        (hash (base32 "0i1vcv2zi80ixmgjdcq6yk8qhwaqlbbmmrq0prxk41339lx87zh9")))
+   (make-linux-libre-source version
+                            (%upstream-linux-source version hash)
+                            deblob-scripts-5.16)))
 
 ;; The "longterm" kernels — the older releases with long-term upstream support.
 ;; Here are the support timelines:
@@ -495,6 +508,11 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
     (patches (append (origin-patches source)
                      patches))))
 
+(define-public linux-libre-5.16-source
+  (source-with-patches linux-libre-5.16-pristine-source
+                       (list %boot-logo-patch
+                             %linux-libre-arm-export-__sync_icache_dcache-patch)))
+
 (define-public linux-libre-5.15-source
   (source-with-patches linux-libre-5.15-pristine-source
                        (list %boot-logo-patch
@@ -606,6 +624,11 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
     (synopsis "GNU Linux-Libre kernel headers")
     (description "Headers of the Linux-Libre kernel.")
     (license license:gpl2)))
+
+(define-public linux-libre-headers-5.16
+  (make-linux-libre-headers* linux-libre-5.16-version
+                             linux-libre-5.16-gnu-revision
+                             linux-libre-5.16-source))
 
 (define-public linux-libre-headers-5.15
   (make-linux-libre-headers* linux-libre-5.15-version
@@ -918,6 +941,13 @@ It has been modified to remove all non-free binary blobs.")
 ;;;
 ;;; Generic kernel packages.
 ;;;
+
+(define-public linux-libre-5.16
+  (make-linux-libre* linux-libre-5.16-version
+                     linux-libre-5.16-gnu-revision
+                     linux-libre-5.16-source
+                     '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux" "riscv64-linux")
+                     #:configuration-file kernel-config))
 
 (define-public linux-libre-5.15
   (make-linux-libre* linux-libre-5.15-version
