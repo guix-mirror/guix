@@ -299,15 +299,15 @@ special items, intending to make an interesting adventure.")
     (name "minetest-homedecor-modpack")
     ;; Upstream doesn't tag releases, so use the release title from
     ;; ContentDB as version.
-    (version "2021-03-27-1")
+    (version "2021-12-26")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://gitlab.com/VanessaE/homedecor_modpack")
-             (commit "9ffe2b7d691133e1a067546574fbe7364fd02f32")))
+             (url "https://github.com/mt-mods/homedecor_modpack")
+             (commit "a8fceb249d63f081855cfba1fbd6e2aa86365224")))
        (sha256
-        (base32 "1lfajqvc2adf9hqskghky4arccqzpjw4i9a01hv4qcckvivm04ag"))
+        (base32 "1lqcycgkykd86853jjr50m1qv2as2dlqf52gbds4mhiafslnp9mi"))
        (file-name (git-file-name name version))))
     (build-system minetest-mod-build-system)
     (propagated-inputs
