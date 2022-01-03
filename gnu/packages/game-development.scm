@@ -25,6 +25,7 @@
 ;;; Copyright © 2020-2021 James Smith <jsubuntuxp@disroot.org>
 ;;; Copyright © 2021 Ekaitz Zarraga <ekaitz@elenq.tech>
 ;;; Copyright © 2021 Andy Tai <atai@atai.org>
+;;; Copyright © 2022 Felix Gruber <felgru@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1772,7 +1773,7 @@ of use.")
 (define-public openmw
   (package
     (name "openmw")
-    (version "0.46.0")
+    (version "0.47.0")
     (source
      (origin
        (method git-fetch)
@@ -1782,24 +1783,27 @@ of use.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0rm32zsmxvr6b0jjihfj543skhicbw5kg6shjx312clhlm035w2x"))))
+         "19mcbnjl4279qalb97msf965bjax48mx1r1qczyvwhn28h6n3bsy"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; No test target
        #:configure-flags
-       (list "-DDESIRED_QT_VERSION=5")))
+       (list "-DDESIRED_QT_VERSION=5"
+             "-DOPENMW_USE_SYSTEM_RECASTNAVIGATION=ON")))
     (native-inputs
      (list boost doxygen pkg-config))
     (inputs
-     `(("bullet" ,bullet)
-       ("ffmpeg" ,ffmpeg)
-       ("libxt" ,libxt)
-       ("mygui" ,mygui-gl)              ; OpenMW does not need Ogre.
-       ("openal" ,openal)
-       ("openscenegraph" ,openmw-openscenegraph)
-       ("qtbase" ,qtbase-5)
-       ("sdl" ,sdl2)
-       ("unshield" ,unshield)))
+     (list bullet
+           ffmpeg
+           libxt
+           lz4
+           mygui-gl              ; OpenMW does not need Ogre.
+           openal
+           openmw-openscenegraph
+           qtbase-5
+           recastnavigation
+           sdl2
+           unshield))
     (synopsis "Re-implementation of the RPG Morrowind engine")
     (description
      "OpenMW is a game engine which reimplements and extends the one that runs
