@@ -46152,8 +46152,33 @@ require unstable language features.")
      "small helper to generate version information for git packages")
     (license (list license:expat license:asl2.0))))
 
-(define-public rust-rustc-version-0.3
+(define-public rust-rustc-version-0.4
   (package
+    (name "rust-rustc-version")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rustc_version" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0rpk9rcdk405xhbmgclsh4pai0svn49x35aggl4nhbkd4a2zb85z"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-semver" ,rust-semver-1))
+       #:cargo-development-inputs
+       (("rust-doc-comment" ,rust-doc-comment-0.3))))
+    (home-page "https://github.com/djc/rustc-version-rs")
+    (synopsis "Library for querying the version of an installed rustc compiler")
+    (description
+     "This package provides a library for querying the version of an installed
+rustc compiler.")
+    (license (list license:expat license:asl2.0))))
+
+(define-public rust-rustc-version-0.3
+  (package/inherit rust-rustc-version-0.4
     (name "rust-rustc-version")
     (version "0.3.3")
     (source
@@ -46163,17 +46188,10 @@ require unstable language features.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "1vjmw7xcdri0spsf24mkpwpph853wrbqppihhw061i2igh4f5pzh"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-semver" ,rust-semver-0.11))))
-    (home-page "https://github.com/djc/rustc-version-rs")
-    (synopsis "Library for querying the version of an installed rustc compiler")
-    (description
-     "This package provides a library for querying the version of an installed
-rustc compiler.")
-    (license (list license:expat license:asl2.0))))
+       (("rust-semver" ,rust-semver-0.11))))))
 
 (define-public rust-rustc-version-0.2
   (package
