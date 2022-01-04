@@ -4357,6 +4357,29 @@ a loadable module.")
 @code{libsass} library to compile scss and sass files to css.")
     (license license:expat)))
 
+(define-public julia-scanbyte
+  (package
+    (name "julia-scanbyte")
+    (version "0.3")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/jakobnissen/ScanByte.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0dqqa3d7c87358144pji6ik8xlki2hj0hkvjs72j5aypfms8rwn3"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     (list julia-simd))
+    (home-page "https://github.com/jakobnissen/ScanByte.jl")
+    (synopsis "Find the first occurrence of set of bytes in a chunk of memory")
+    (description "This package finds the first occurrence of a byte or set of
+bytes in a chunk of memory.  Think of it like a much faster version of
+@code{findfirst} that only iterates over bytes in memory.")
+    (license license:expat)))
+
 (define-public julia-scratch
   (package
     (name "julia-scratch")
