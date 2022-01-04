@@ -31,7 +31,7 @@
 (define-public moreutils
   (package
     (name "moreutils")
-    (version "0.66")
+    (version "0.67")
     (source
      (origin
        (method url-fetch)
@@ -39,7 +39,7 @@
              "https://git.joeyh.name/index.cgi/moreutils.git/snapshot/"
              name "-" version ".tar.gz"))
        (sha256
-        (base32 "0k91dvqy3jb070bkmhkdxhi05fr7hqlwpv1nrx329wmgi80rw1yw"))))
+        (base32 "045d2dfvsd4sxxr2i2qvkpgvi912qj9vc4gpc8fb4hr9q912z1q3"))))
     (build-system gnu-build-system)
     ;; For building the manual pages.
     (native-inputs
