@@ -1310,9 +1310,11 @@ valuable enough at this time.")
     (inputs
      ;; We don't want to propagate the bootstrap version.
      ;; Cycle with Documenter.jl in later versions.
-     `(("julia-documenter" ,julia-documenter-bootstrap)))
+     (list julia-documenter-bootstrap))
     (propagated-inputs
-     (list julia-docstringextensions julia-gumbo julia-sass))
+     (list julia-docstringextensions
+           julia-gumbo
+           julia-sass))
     (native-inputs
      (list julia-example))
     (home-page "https://github.com/JuliaDocs/DocumenterTools.jl")
