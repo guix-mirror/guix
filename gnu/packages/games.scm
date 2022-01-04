@@ -7579,44 +7579,44 @@ original.")
         (base32 "1ppzgnffgdcmq6fq4gmdq2ig10ip2bnfgklkb3i8nc6bdxm7pb89"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:test-target "check"
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-build-env
-           (lambda* (#:key inputs #:allow-other-keys)
-             (use-modules (guix build utils))
-             (let* ((cmake-rules (assoc-ref inputs "cmake-rules")))
-               (copy-file cmake-rules
-                          (string-append "fortune-mod/cmake/"
-                                         (strip-store-file-name cmake-rules)))
-               (chdir "fortune-mod")
-               ;; TODO: Valgrind tests fail for some reason.
-               ;; Similar issue: https://github.com/shlomif/fortune-mod/issues/21 (?)
-               (delete-file "tests/t/valgrind.t")
-               #t)))
-         (add-after 'install 'fix-install-directory
-           (lambda* (#:key outputs #:allow-other-keys)
-             ;; Move binary from "games/" to "bin/" and remove the latter.  This
-             ;; is easier than patching CMakeLists.txt since the tests hard-code
-             ;; the location as well.
-             (let* ((out   (assoc-ref outputs "out"))
-                    (bin   (string-append out "/bin"))
-                    (games (string-append out "/games")))
-               (rename-file (string-append games "/fortune")
-                            (string-append bin "/fortune"))
-               (rmdir games)
-               #t))))))
+     (list #:test-target "check"
+           #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'unpack 'enter-build-directory
+                 (lambda _
+                   (chdir "fortune-mod")))
+               (add-after 'enter-build-directory 'copy-cmake-modules
+                 (lambda _
+                   (copy-file #$shlomif-cmake-modules
+                              (string-append "cmake/"
+                                             (strip-store-file-name
+                                              #$shlomif-cmake-modules)))))
+               (add-after 'enter-build-directory 'delete-failing-test
+                 (lambda _
+                   ;; TODO: Valgrind tests fail for some reason.
+                   ;; Similar issue: https://github.com/shlomif/fortune-mod/issues/21 (?)
+                   (delete-file "tests/t/valgrind.t")))
+               (add-after 'install 'fix-install-directory
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   ;; Move binary from "games/" to "bin/" and remove the latter.  This
+                   ;; is easier than patching CMakeLists.txt since the tests hard-code
+                   ;; the location as well.
+                   (let* ((out   (assoc-ref outputs "out"))
+                          (bin   (string-append out "/bin"))
+                          (games (string-append out "/games")))
+                     (rename-file (string-append games "/fortune")
+                                  (string-append bin "/fortune"))
+                     (rmdir games)))))))
     (inputs (list recode))
     (native-inputs
-     `(("perl" ,perl)
-       ;; The following is only needed for tests.
-       ("perl-file-find-object" ,perl-file-find-object)
-       ("perl-test-differences" ,perl-test-differences)
-       ("perl-class-xsaccessor" ,perl-class-xsaccessor)
-       ("perl-io-all" ,perl-io-all)
-       ("perl-test-runvalgrind" ,perl-test-runvalgrind)
-       ("cmake-rules" ,shlomif-cmake-modules)
-       ("rinutils" ,rinutils)))
+     (list perl
+           ;; The following are only needed for tests.
+           perl-file-find-object
+           perl-test-differences
+           perl-class-xsaccessor
+           perl-io-all
+           perl-test-runvalgrind
+           rinutils))
     (home-page "https://www.shlomifish.org/open-source/projects/fortune-mod/")
     (synopsis "The Fortune Cookie program from BSD games")
     (description "Fortune is a command-line utility which displays a random
