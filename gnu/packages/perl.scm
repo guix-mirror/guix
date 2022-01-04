@@ -52,6 +52,7 @@
   #:use-module (srfi srfi-1)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
+  #:use-module (guix gexp)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -76,11 +77,13 @@
   #:use-module (gnu packages perl-maths)
   #:use-module (gnu packages perl-web)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages video)
   #:use-module (gnu packages web)
+  #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg))
 
 ;;;
@@ -397,6 +400,54 @@ unless Moose is already loaded, or explicitly requested by the end-user.  End
 users can force the decision of which backend to use by setting the environment
 variable ANY_MOOSE to be Moose or Mouse.")
     (license (package-license perl))))
+
+(define-public perl-app-xml-docbook-builder
+  (package
+    (name "perl-app-xml-docbook-builder")
+    (version "0.1003")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/S/SH/SHLOMIF/"
+                           "App-XML-DocBook-Builder-" version ".tar.gz"))
+       (sha256
+        (base32 "12423lk4r7m5pkm1dvk1ci6s1d6rsnnl4chnavckpmja18jyay3j"))))
+    (build-system perl-build-system)
+    (arguments
+     (list #:phases
+           #~(modify-phases %standard-phases
+             (add-after 'unpack 'refer-to-xsltproc
+               (lambda* (#:key inputs #:allow-other-keys)
+                 (substitute* (list "lib/App/XML/DocBook/Docmake.pm"
+                                    "t/01-use.t")
+                   (("\"xsltproc\"")
+                    (format #f "\"~a\""
+                            (search-input-file inputs "bin/xsltproc")))))))))
+    (native-inputs
+     (list perl-module-build python))
+    (inputs
+     (list libxslt))
+    (propagated-inputs
+     (list perl-class-xsaccessor perl-test-trap))
+    (native-search-paths
+     ;; xsltproc's search paths, to avoid propagating libxslt.
+     (list (search-path-specification
+            (variable "XML_CATALOG_FILES")
+            (separator " ")
+            (files '("xml"))
+            (file-pattern "^catalog\\.xml$")
+            (file-type 'regular))))
+    (home-page "https://www.shlomifish.org/open-source/projects/docmake/")
+    (synopsis "Translate DocBook/XML documentation into other file formats")
+    (description
+     "This package provides the @command{docmake} command-line tool, and the
+@code{App::XML::DocBook::Docmake} and @code{App::XML::DocBook::Builder} Perl
+modules.
+
+It translates DocBook/XML mark-up into various other documentation formats such
+as XHTML, RTF, PDF, and XSL-FO, using the more low-level tools.  It aims to be a
+replacement for @command{xmlto}.")
+    (license license:expat)))
 
 (define-public perl-appconfig
   (package
