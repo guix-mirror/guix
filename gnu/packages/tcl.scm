@@ -96,7 +96,7 @@
 (define-public itcl
   (package
     (name "itcl")
-    (version "4.2.0")
+    (version "4.2.2")
     (source
      (origin
        (method url-fetch)
@@ -105,7 +105,7 @@
              version "/itcl" version ".tar.gz"))
        (file-name (string-append "incrtcl-" version ".tar.gz"))
        (sha256
-        (base32 "0w28v0zaraxcq1s9pa6cihqqwqvvwfgz275lks7w4gl7hxjxmasw"))))
+        (base32 "0v0m1s3rlsbg7p366i6m5zcvnmixnch87jmczidjanqvmw76fk5c"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
