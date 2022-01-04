@@ -37,7 +37,7 @@
 ;;; Copyright © 2017 Frederick M. Muriithi <fredmanglis@gmail.com>
 ;;; Copyright © 2017, 2018 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2017 Ben Sturmfels <ben@sturm.com.au>
-;;; Copyright © 2017, 2018, 2019, 2021 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2017, 2018, 2019, 2021, 2022 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 José Miguel Sánchez García <jmi2k@openmailbox.org>
 ;;; Copyright © 2017, 2020, 2021 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017, 2018, 2019 Kei Kebreau <kkebreau@posteo.net>
@@ -27916,3 +27916,26 @@ keyboard-friendly package.")
     (description
      "This package provides a Python interface to iw wireless tools.")
     (license license:gpl2)))
+
+(define-public python-pdoc3
+  (package
+    (name "python-pdoc3")
+    (version "0.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pdoc3" version))
+       (sha256
+        (base32 "1dz4hw10ngidzg9cjvflc8nlrwrjbb3ijhmaw4w6f039p6yff8jz"))
+       (patches
+        (search-patches "python-pdoc3-tests.patch"))))
+    (build-system python-build-system)
+    (native-inputs
+     (list python-setuptools-git python-setuptools-scm))
+    (propagated-inputs (list python-mako python-markdown))
+    (home-page "https://pdoc3.github.io/pdoc/")
+    (synopsis "Auto-generate API documentation for Python projects")
+    (description
+     "This package auto-generates API documentation from Python projects
+already existing modules and objects docstrings.")
+    (license license:agpl3+)))
