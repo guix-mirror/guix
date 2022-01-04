@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2016, 2017 Ben Woodcroft <donttrustben@gmail.com>
@@ -31599,6 +31599,27 @@ standardized botanical data including occurrence, trait, plot and taxonomic
 data.  This package provides functions that query the BIEN database by
 constructing and executing optimized SQL queries.")
     (license license:expat)))
+
+(define-public r-varhandle
+  (package
+    (name "r-varhandle")
+    (version "2.0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "varhandle" version))
+       (sha256
+        (base32 "1l42d0s6fbjjc9l28a2m3myxkrx2c0p0b9yj8wjjjgilw19yc3lv"))))
+    (properties `((upstream-name . "varhandle")))
+    (build-system r-build-system)
+    (home-page "https://bitbucket.org/mehrad_mahmoudian/varhandle")
+    (synopsis "Functions for robust variable handling")
+    (description
+     "This package contains some functions to help users (especially data
+explorers) to make more sense of their variables and take the most out of
+variables and hardware resources.  Functions in this package are supposed to
+be efficient and easy to use.")
+    (license license:gpl2+)))
 
 (define-public r-ggh4x
   (package
