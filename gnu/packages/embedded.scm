@@ -1372,7 +1372,7 @@ STC89, STC90, STC10, STC11, STC12, STC15 and STC8 series.")
 (define-public stlink
   (package
     (name "stlink")
-    (version "1.5.1")
+    (version "1.7.0")
     (source
      (origin
        (method git-fetch)
@@ -1382,7 +1382,7 @@ STC89, STC90, STC10, STC11, STC12, STC15 and STC8 series.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1d5gxiqpsm8fc105cxlp27af9fk339fap5h6nay21x5a7n61jgyc"))))
+         "03xypffpbp4imrczbxmq69vgkr7mbp0ps9dk815br5wwlz6vgygl"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ;no tests
@@ -1402,7 +1402,7 @@ STM32VL discovery kits) and ST-LINK/V2 (on STM32L discovery and later kits).
 Two different transport layers are used: ST-LINK/V1 uses SCSI passthru
 commands over USB, and ST-LINK/V2 and ST-LINK/V2-1 (seen on Nucleo boards) use
 raw USB commands.")
-    (home-page "https://github.com/texane/stlink")
+    (home-page "https://github.com/stlink-org/stlink")
     ;; The flashloaders/stm32l0x.s and flashloaders/stm32lx.s source files are
     ;; licensed under the GPLv2+.
     (license (list license:bsd-3 license:gpl2+))))
