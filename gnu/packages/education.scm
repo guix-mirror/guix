@@ -4,7 +4,7 @@
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2018, 2019, 2020, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2018–2022 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Robert Smith <robertsmith@posteo.net>
 ;;; Copyright © 2020 Guy Fleury Iteriteka <gfleury@disroot.org>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
@@ -313,7 +313,7 @@ easy.")
 (define-public snap
   (package
     (name "snap")
-    (version "6.9.0")
+    (version "7.0.3")
     (source
      (origin
        (method git-fetch)
@@ -322,7 +322,7 @@ easy.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1wppz57lrrribrfnaiv6jrrf703w7i6ja0dnz8yx8naxhbsglwyf"))))
+        (base32 "0wqncxqin9g4y15i82qscz0v2fc1br68m6dx47jn4h4kjkmwxccb"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
