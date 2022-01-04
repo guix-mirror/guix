@@ -6,7 +6,7 @@
 ;;; Copyright © 2016, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021, 2022 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017, 2020, 2021 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -254,19 +254,17 @@ files from LOCATIONS with expected checksum HASH.  CODE is not currently in use.
        (modules '((guix build utils)
                   (ice-9 ftw)))
        (snippet
-        '(begin
-           (with-directory-excursion "libs"
-             (let ((preserved-directories '("." ".." "lua53" "luajit" "pplib" "xpdf")))
-               ;; Delete bundled software, except Lua which cannot easily be
-               ;; used as an external dependency, pplib and xpdf which aren't
-               ;; supported as system libraries (see m4/kpse-xpdf-flags.m4).
-               (for-each delete-file-recursively
-                         (scandir "."
-                                  (lambda (file)
-                                    (and (not (member file preserved-directories))
-                                         (eq? 'directory (stat:type (stat file)))))))))
-           ;; TODO: Unbundle stuff in texk/dvisvgm/dvisvgm-src/libs too.
-           #t))))
+        ;; TODO: Unbundle stuff in texk/dvisvgm/dvisvgm-src/libs too.
+        '(with-directory-excursion "libs"
+           (let ((preserved-directories '("." ".." "lua53" "luajit" "pplib" "xpdf")))
+             ;; Delete bundled software, except Lua which cannot easily be
+             ;; used as an external dependency, pplib and xpdf which aren't
+             ;; supported as system libraries (see m4/kpse-xpdf-flags.m4).
+             (for-each delete-file-recursively
+                       (scandir "."
+                                (lambda (file)
+                                  (and (not (member file preserved-directories))
+                                       (eq? 'directory (stat:type (stat file))))))))))))
     (build-system gnu-build-system)
     (inputs
      `(("texlive-extra-src" ,texlive-extra-src)
@@ -368,24 +366,21 @@ files from LOCATIONS with expected checksum HASH.  CODE is not currently in use.
                (("gswin32c") "gs"))
              (substitute* "texk/texlive/linked_scripts/epstopdf/epstopdf.pl"
                (("\"gs\"")
-                (string-append "\"" (assoc-ref inputs "ghostscript") "/bin/gs\"")))
-             #t))
+                (string-append "\"" (assoc-ref inputs "ghostscript") "/bin/gs\"")))))
          (add-after 'unpack 'patch-dvisvgm-build-files
            (lambda _
              ;; XXX: Ghostscript is detected, but HAVE_LIBGS is never set, so
              ;; the appropriate linker flags are not added.
              (substitute* "texk/dvisvgm/configure"
                (("^have_libgs=yes" all)
-                (string-append all "\nHAVE_LIBGS=1")))
-             #t))
+                (string-append all "\nHAVE_LIBGS=1")))))
          (add-after 'unpack 'disable-failing-test
            (lambda _
              ;; FIXME: This test fails on 32-bit architectures since Glibc 2.28:
              ;; <https://bugzilla.redhat.com/show_bug.cgi?id=1631847>.
              (substitute* "texk/web2c/omegafonts/check.test"
                (("^\\./omfonts -ofm2opl \\$srcdir/tests/check tests/xcheck \\|\\| exit 1")
-                "./omfonts -ofm2opl $srcdir/tests/check tests/xcheck || exit 77"))
-             #t))
+                "./omfonts -ofm2opl $srcdir/tests/check tests/xcheck || exit 77"))))
          ,@(if (target-ppc32?)
              ;; Some mendex tests fail on some architectures.
              `((add-after 'unpack 'skip-mendex-tests
@@ -430,9 +425,7 @@ files from LOCATIONS with expected checksum HASH.  CODE is not currently in use.
                                                      iso-8859-1-encoded-scripts))
 
                (with-fluids ((%default-port-encoding "ISO-8859-1"))
-                 (substitute-commands iso-8859-1-encoded-scripts))
-
-               #t)))
+                 (substitute-commands iso-8859-1-encoded-scripts)))))
          (add-after 'check 'customize-texmf.cnf
            ;; The default texmf.cnf is provided by this package, texlive-bin.
            ;; Every variable of interest is set relatively to the GUIX_TEXMF
@@ -457,8 +450,7 @@ files from LOCATIONS with expected checksum HASH.  CODE is not currently in use.
                  ;; Don't truncate lines.
                  (("^error_line = .*$") "error_line = 254\n")
                  (("^half_error_line = .*$") "half_error_line = 238\n")
-                 (("^max_print_line = .*$") "max_print_line = 1000\n")))
-             #t))
+                 (("^max_print_line = .*$") "max_print_line = 1000\n")))))
          (add-after 'install 'post-install
            (lambda* (#:key inputs outputs #:allow-other-keys #:rest args)
              (let* ((out (assoc-ref outputs "out"))
