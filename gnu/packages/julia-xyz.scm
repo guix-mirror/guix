@@ -2807,6 +2807,31 @@ encourage type-piracy for the reason that only one interval package can
 unambiguously define the @code{..} and @code{±} operators.")
     (license license:expat)))
 
+(define-public julia-intervaltrees
+  ;; Last upstream release on May 2020 and this last release does not contain
+  ;; the file Project.toml.
+  (let ((commit "e37edab61568d08141a3e9c25ec55caac21e5aa5")
+        (revision "1"))
+    (package
+      (name "julia-intervaltrees")
+      (version (git-version "1.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/BioJulia/IntervalTrees.jl")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "01x48a5zrx0833s1kjhf0ml4x9xz8xja4ymran770akmf6968yl9"))))
+      (build-system julia-build-system)
+      (home-page "https://github.com/BioJulia/IntervalTrees.jl")
+      (synopsis "Interval Trees for Julia")
+      (description "This package provides an implementation of an associative
+container mapping @code{(K,V)} pairs via the type @code{IntervalTree{K, V}}.
+The type @code{K} may be any ordered type.")
+      (license license:expat))))
+
 (define-public julia-invertedindices
   (package
     (name "julia-invertedindices")
