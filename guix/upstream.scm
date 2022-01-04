@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
-;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2019, 2022 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -117,16 +117,22 @@ S-expression PACKAGE-SEXP."
              (match expr
                ((path *** ('inputs
                            ('quasiquote ((label ('unquote sym)) ...)))) label)
+               ((path *** ('inputs
+                           ('list sym ...))) (map symbol->string sym))
                (_ '())))
             (new-native
              (match expr
                ((path *** ('native-inputs
                            ('quasiquote ((label ('unquote sym)) ...)))) label)
+               ((path *** ('native-inputs
+                           ('list sym ...))) (map symbol->string sym))
                (_ '())))
             (new-propagated
              (match expr
                ((path *** ('propagated-inputs
                            ('quasiquote ((label ('unquote sym)) ...)))) label)
+               ((path *** ('propagated-inputs
+                           ('list sym ...))) (map symbol->string sym))
                (_ '())))
             (current-regular
              (map input->name (package-inputs package)))
