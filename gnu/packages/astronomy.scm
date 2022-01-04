@@ -57,6 +57,7 @@
   #:use-module (gnu packages python-science)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages time)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages video)
   #:use-module (gnu packages wxwidgets)
@@ -703,6 +704,36 @@ accurately in real time at any rate desired.")
 much of the core functionality and some common tools needed for performing
 astronomy and astrophysics.")
     (license license:bsd-3)))
+
+(define-public python-astral
+  (package
+    (name "python-astral")
+    (version "2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "astral" version))
+       (sha256
+        (base32 "1gkggdibccmdy9glymw3kbrkzm6svvsg0lk56hhy92y4smkrj7g4"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "python" "-m" "pytest")))))))
+    (native-inputs
+     (list python-freezegun python-setuptools-scm))
+    (propagated-inputs
+     (list python-dataclasses python-pytest python-pytz))
+    (home-page "https://github.com/sffjunkie/astral")
+    (synopsis "Calculations for the position of the sun and moon")
+    (description "Astral is a Python module that calculates times for various
+positions of the sun: dawn, sunrise, solar noon, sunset, dusk, solar
+elevation, solar azimuth, rahukaalam, and the phases of the moon.")
+    (license license:asl2.0)))
 
 (define-public libnova
   (package
