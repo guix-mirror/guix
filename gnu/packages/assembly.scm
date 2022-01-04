@@ -181,14 +181,14 @@ speed on x86, NEON on ARM, etc.).")
 (define-public fasm
   (package
     (name "fasm")
-    (version "1.73.28")
+    (version "1.73.29")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://flatassembler.net/fasm-"
                            version ".tgz"))
        (sha256
-        (base32 "14ljh0ngdaqlwzsr0l70k09r2d520lqpgswl388p84gxhnsfplcy"))))
+        (base32 "0ar1k1504cmwi49y6g254rkzayll0kn90vjd4zj09xv86kcg8a33"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests exist
