@@ -2414,17 +2414,16 @@ special variant of additive synthesis.")
         (base32 "0xqcm3ggaj004gfmlsds2x6q8dxlz1akz6dbwkynv9vvdnizm91r"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'patch-file-names
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "src/GUI/editor_pane.c"
-               (("/usr/bin/unzip")
-                (string-append (assoc-ref inputs "unzip") "/bin/unzip")))
-             (substitute* "src/GUI/MainMenu.cpp"
-               (("/usr/bin/which")
-                (string-append (assoc-ref inputs "which") "/bin/which")))
-             #t)))))
+     (list #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'unpack 'patch-file-names
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   (substitute* "src/GUI/editor_pane.c"
+                     (("/usr/bin/unzip")
+                      (search-input-file inputs "bin/unzip")))
+                   (substitute* "src/GUI/MainMenu.cpp"
+                     (("/usr/bin/which")
+                      (search-input-file inputs "bin/which"))))))))
     (inputs
      (list alsa-lib
            gtk+-2
