@@ -166,7 +166,9 @@ provides functions to run a few automatable checks for Julia packages.")
      ;; Disable as stopgap.
      `(#:tests? ,(not (target-x86-32?))))
     (propagated-inputs
-     (list julia-ifelse julia-requires julia-static))
+     (list julia-ifelse
+           julia-requires
+           julia-static))
     (native-inputs
      (list julia-aqua
            julia-bandedmatrices
@@ -248,9 +250,12 @@ axis (dimension).")
          (base32 "03kzan1lm4fxfhzv1xjg3ysf6y7nagcc61vfz15kvdrp1dqxlynk"))))
     (build-system julia-build-system)
     (propagated-inputs
-     (list julia-rangearrays julia-intervalsets julia-itertools))
+     (list julia-rangearrays
+           julia-intervalsets
+           julia-itertools))
     (native-inputs
-     (list julia-offsetarrays julia-unitful))
+     (list julia-offsetarrays
+           julia-unitful))
     (home-page "http://juliaarrays.github.io/AxisArrays.jl/latest/")
     (synopsis "Arrays where each dimension can have a named axis with values")
     (description "This package for the Julia language provides an array type
@@ -276,7 +281,8 @@ axes, allowing column names or interval selections.")
          (base32 "0rlfj9gr9ss621v5kw5b06206yaak21s2vq9vk7r8a7p2ylncism"))))
     (build-system julia-build-system)
     (propagated-inputs
-     (list julia-arraylayouts julia-fillarrays))
+     (list julia-arraylayouts
+           julia-fillarrays))
     (native-inputs
      (list julia-genericlinearalgebra))
     (home-page "https://github.com/JuliaMatrices/BandedMatrices.jl")
@@ -318,7 +324,8 @@ the entries on the bands.")
                      (("@test @ballocated\\(Ref\\(1\\)\\)")
                       "@test_broken @ballocated(Ref(1))"))))))
            '(%standard-phases))))
-    (propagated-inputs (list julia-json))
+    (propagated-inputs
+     (list julia-json))
     (home-page "https://github.com/JuliaCI/BenchmarkTools.jl")
     (synopsis "Benchmarking framework for the Julia language")
     (description "@code{BenchmarkTools.jl} makes performance tracking of Julia
@@ -350,9 +357,12 @@ benchmarks as well as comparing benchmark results.")
                    (substitute* "test/test_blockarrays.jl"
                      (("Int64") "Int32")))))))))
     (propagated-inputs
-     (list julia-arraylayouts julia-fillarrays))
+     (list julia-arraylayouts
+           julia-fillarrays))
     (native-inputs
-     (list julia-lazyarrays julia-offsetarrays julia-staticarrays))
+     (list julia-lazyarrays
+           julia-offsetarrays
+           julia-staticarrays))
     (home-page "https://github.com/JuliaArrays/BlockArrays.jl")
     (synopsis "BlockArrays for Julia")
     (description "A block array is a partition of an array into blocks or
@@ -383,8 +393,11 @@ access to the full matrix to use in in for example a linear solver.")
          (base32 "10n1r6kmmv2wa307jfg9y2m6p16j8hngjp3fjavpbdy1r5haasm9"))))
     (build-system julia-build-system)
     (propagated-inputs
-     (list julia-arraylayouts julia-bandedmatrices julia-blockarrays
-           julia-fillarrays julia-matrixfactorizations))
+     (list julia-arraylayouts
+           julia-bandedmatrices
+           julia-blockarrays
+           julia-fillarrays
+           julia-matrixfactorizations))
     (home-page "https://github.com/JuliaMatrices/BlockBandedMatrices.jl")
     (synopsis "Block-banded matrices and banded-block-banded matrices")
     (description "This package supports representing block-banded and
@@ -437,7 +450,8 @@ structures.")
      '(#:tests? #f
        #:julia-package-name "BufferedStreams"
        #:julia-package-uuid "e1450e63-4bb3-523b-b2a4-4ffa8c0fd77d"))
-    (propagated-inputs (list julia-compat))
+    (propagated-inputs
+     (list julia-compat))
     (home-page "https://github.com/BioJulia/BufferedStreams.jl")
     (synopsis "Fast composable IO streams")
     (description "@code{BufferedStreams.jl} provides buffering for IO
@@ -514,10 +528,14 @@ variables, both with unordered (nominal variables) and ordered categories
         (base32 "0if93pd3b3scg2x3gmk1cbwjk0ax1n792vy8c38y3xl7jpd5cb70"))))
     (build-system julia-build-system)
     (inputs                             ;required for test
-     (list julia-chainrulestestutils julia-finitedifferences julia-nanmath
+     (list julia-chainrulestestutils
+           julia-finitedifferences
+           julia-nanmath
            julia-specialfunctions))
     (propagated-inputs
-     (list julia-chainrulescore julia-compat julia-reexport
+     (list julia-chainrulescore
+           julia-compat
+           julia-reexport
            julia-requires))
     (home-page "https://github.com/JuliaDiff/ChainRules.jl")
     (synopsis "Common utilities for automatic differentiation")
@@ -541,7 +559,8 @@ execute forward-, reverse-, and mixed-mode primitives.")
         (base32 "1866xv30h1bi7f2m993nljzf58wwmv8zlgn6ffn9j3wckch1nfpb"))))
     (build-system julia-build-system)
     (inputs                             ;required for tests
-     (list julia-benchmarktools julia-staticarrays))
+     (list julia-benchmarktools
+           julia-staticarrays))
     (propagated-inputs
      (list julia-compat))
     (home-page "https://github.com/JuliaDiff/ChainRulesCore.jl")
@@ -565,7 +584,9 @@ sensitivities for functions without the need to depend on ChainRules itself.")
         (base32 "1vlkyp72d514gyb4k3yhjl1g7f24ncmz61j56p4sdi9f76rk9fx9"))))
     (build-system julia-build-system)
     (propagated-inputs
-     (list julia-chainrulescore julia-compat julia-finitedifferences))
+     (list julia-chainrulescore
+           julia-compat
+           julia-finitedifferences))
     (home-page "https://github.com/JuliaDiff/ChainRulesTestUtils.jl")
     (synopsis "Common utilities used by downstream automatic differentiation tools")
     (description "This package is designed to help in testing
@@ -604,7 +625,8 @@ dependencies, while keeping @code{ChainRulesCore.jl} as light-weight as possible
                          (find-files out "\\.gz$"))
                #t))))))
     (propagated-inputs
-     (list julia-zlib-jll julia-transcodingstreams))
+     (list julia-transcodingstreams
+           julia-zlib-jll))
     (home-page "https://github.com/JuliaIO/CodecZlib.jl")
     (synopsis "Zlib codecs for @code{TranscodingStreams.jl}")
     (description "This package provides zlib codecs for
@@ -626,7 +648,9 @@ dependencies, while keeping @code{ChainRulesCore.jl} as light-weight as possible
         (base32 "0kx3hq7rf8p5zx6ly9k5j90zijmc7yrwmy96cgkl2ibdfbnhmya3"))))
     (build-system julia-build-system)
     (propagated-inputs
-     (list julia-colortypes julia-fixedpointnumbers julia-reexport))
+     (list julia-colortypes
+           julia-fixedpointnumbers
+           julia-reexport))
     (home-page "https://github.com/JuliaGraphics/Colors.jl")
     (synopsis "Tools for dealing with color")
     (description "This package provides a wide array of functions for dealing
@@ -650,7 +674,9 @@ color scales for graphics.")
          (base32 "0kpjhmqd5cj8dh8bmh9b5g6bscyp7h23hzpr2s93pnrp57q1wvhq"))))
     (build-system julia-build-system)
     (propagated-inputs
-     (list julia-colors julia-colortypes julia-fixedpointnumbers
+     (list julia-colors
+           julia-colortypes
+           julia-fixedpointnumbers
            julia-staticarrays))
     (home-page "https://github.com/JuliaGraphics/ColorSchemes.jl")
     (synopsis "Colorschemes, colormaps, gradients, and palettes")
@@ -698,7 +724,9 @@ with.")
          (base32 "02gk7f5g5wjxdasbjf8bvv1m7clksh7mw1xmygjdirjz1q0d6dwi"))))
     (build-system julia-build-system)
     (propagated-inputs
-     (list julia-colortypes julia-specialfunctions julia-tensorcore))
+     (list julia-colortypes
+           julia-specialfunctions
+           julia-tensorcore))
     (native-inputs
      (list julia-colors))
     (home-page "https://github.com/JuliaGraphics/ColorVectorSpace.jl")
@@ -810,7 +838,9 @@ way.")
                    (substitute* "test/runtests.jl"
                      (("Int64") "Int32")))))))))
     (propagated-inputs
-     (list julia-crayons julia-expronicon julia-orderedcollections))
+     (list julia-crayons
+           julia-expronicon
+           julia-orderedcollections))
     (home-page "https://configurations.rogerluo.dev/stable/")
     (synopsis "Tools for options and configurations in Julia")
     (description "@code{Configurations.jl} provides a macro @code{@@option} to
@@ -855,7 +885,9 @@ for construction of objects.")
     (propagated-inputs
      (list julia-staticarrays))
     (native-inputs
-    (list julia-documenter julia-forwarddiff julia-unitful))
+    (list julia-documenter
+          julia-forwarddiff
+          julia-unitful))
     (home-page "https://github.com/JuliaGeometry/CoordinateTransformations.jl")
     (synopsis "Coordinate transformations in Julia")
     (description "@code{CoordinateTransformations} is a Julia package to manage
@@ -985,7 +1017,8 @@ Julia from R or Python.")
        (sha256
         (base32 "0hdqp8ipsqdw5bqqkdvz4j6n67x80sj5azr9vzyxwjfsgkfbnk2l"))))
     (propagated-inputs
-     (list julia-compat julia-orderedcollections))
+     (list julia-compat
+           julia-orderedcollections))
     (build-system julia-build-system)
     (arguments
      `(#:phases
@@ -1136,7 +1169,8 @@ dictionaries in Julia, for improved productivity and performance.")
     (propagated-inputs
      (list julia-statsapi))
     (native-inputs
-     (list julia-offsetarrays julia-unitful))
+     (list julia-offsetarrays
+           julia-unitful))
     (home-page "https://github.com/JuliaStats/Distances.jl")
     (synopsis "Julia package for evaluating distances (metrics) between vectors")
     (description "A Julia package for evaluating distances(metrics) between
@@ -1300,9 +1334,9 @@ generation with @code{Documenter.jl}.")
        (file-name (git-file-name name version))
        (sha256
         (base32 "1w6p3yxajvclax5b9g7cr2jmbc7lvr5nk4gq0aljxdycdq1d2y3v"))))
+    (build-system julia-build-system)
     (propagated-inputs
      (list julia-staticarrays))
-    (build-system julia-build-system)
     (home-page "https://github.com/JuliaDiff/DiffResults.jl")
     (synopsis "In-place differentiation methods of primal values at multi-order")
     (description "This package provides the @code{DiffResult} type, which can
@@ -1322,9 +1356,10 @@ be passed to in-place differentiation methods instead of an output buffer.")
        (file-name (git-file-name name version))
        (sha256
         (base32 "0cwjvj4gma7924fm3yas0nf0jlnwwx4v7fi79ii3s290lkdldzfl"))))
-    (propagated-inputs
-     (list julia-nanmath julia-specialfunctions))
     (build-system julia-build-system)
+    (propagated-inputs
+     (list julia-nanmath
+           julia-specialfunctions))
     (home-page "https://github.com/JuliaDiff/DiffRules.jl")
     (synopsis "Primitive differentiation rules")
     (description "This package provides primitive differentiation rules that
@@ -1376,7 +1411,9 @@ stressing the robustness of differentiation tools.")
                ;; Seems to not play nicely with SpecialFunctions
                ((".*isempty.*") "")))))))
     (propagated-inputs
-     (list julia-calculus julia-nanmath julia-specialfunctions))
+     (list julia-calculus
+           julia-nanmath
+           julia-specialfunctions))
     (home-page "https://github.com/JuliaDiff/DualNumbers.jl")
     (synopsis "Represent dual numbers and for perform dual algebra")
     (description "The @code{DualNumbers} Julia package defines the @code{Dual}
@@ -1506,7 +1543,8 @@ performant tooling without requiring additional package dependencies.")
          (base32 "1ldxbp0kq3ip67x7sp82dz56aq4p5i0chspbgx2zgskr6jcbjj1b"))))
     (build-system julia-build-system)
     (propagated-inputs
-     (list julia-ffmpeg-jll julia-x264-jll))
+     (list julia-ffmpeg-jll
+           julia-x264-jll))
     (home-page "https://github.com/JuliaIO/FFMPEG.jl")
     (synopsis "Julia Package for ffmpeg")
     (description "This package is made to be included into packages that just
@@ -1552,7 +1590,9 @@ need the ffmpeg binaries + executables, and don't want the overhead of
     (propagated-inputs
      (list julia-requires))
     (native-inputs
-     (list julia-colortypes julia-filepathsbase julia-http))
+     (list julia-colortypes
+           julia-filepathsbase
+           julia-http))
     (home-page "https://github.com/JuliaIO/FileIO.jl")
     (synopsis "Main Package for IO, loading all different kind of files")
     (description "@code{FileIO} aims to provide a common framework for detecting
@@ -1632,9 +1672,12 @@ following types: @code{Eye}, @code{Fill}, @code{Ones}, @code{Zeros},
              (setenv "GROUP" "Core")
              #t)))))
     (propagated-inputs
-     (list julia-arrayinterface julia-requires julia-staticarrays))
+     (list julia-arrayinterface
+           julia-requires
+           julia-staticarrays))
     (native-inputs
-     (list julia-bandedmatrices julia-blockbandedmatrices
+     (list julia-bandedmatrices
+           julia-blockbandedmatrices
            julia-safetestsets))
     (home-page "https://github.com/JuliaDiff/FiniteDiff.jl")
     (synopsis "Calculations of gradients, Jacobians, and Hessians")
@@ -1672,7 +1715,9 @@ types and sparsity.")
     (inputs
      (list julia-benchmarktools))
     (propagated-inputs
-     (list julia-chainrulescore julia-richardson julia-staticarrays))
+     (list julia-chainrulescore
+           julia-richardson
+           julia-staticarrays))
     (home-page "https://github.com/JuliaDiff/FiniteDifferences.jl")
     (synopsis "Estimates derivatives with finite differences")
     (description "This package calculates approximate derivatives numerically
@@ -1702,7 +1747,8 @@ using finite difference.")
                ;; A deprecation warning is not thrown
                (("@test_logs.*:warn" all) (string-append "# " all)))
              #t)))))
-    (propagated-inputs (list julia-compat))
+    (propagated-inputs
+     (list julia-compat))
     (home-page "https://github.com/JuliaMath/FixedPointNumbers.jl")
     (synopsis "Fixed point types for Julia")
     (description "@code{FixedPointNumbers.jl} implements fixed-point number
@@ -1755,7 +1801,8 @@ c-style numerical formatting.")
      ;; Disable as stopgap.
      `(#:tests? ,(not (target-x86-32?))))
     (inputs                             ;required for tests
-     (list julia-calculus julia-difftests))
+     (list julia-calculus
+           julia-difftests))
     (propagated-inputs
      (list julia-commonsubexpressions
            julia-diffresults
@@ -1953,7 +2000,9 @@ matrices the Schur form is often more useful.")
                    (substitute* "test/runtests.jl"
                      (("Int64") "Int32")))))))))
     (propagated-inputs
-     (list julia-itertools julia-staticarrays julia-structarrays
+     (list julia-itertools
+           julia-staticarrays
+           julia-structarrays
            julia-tables))
     (native-inputs
      (list julia-offsetarrays))
@@ -2003,7 +2052,8 @@ visualisation applications.")
          (base32 "10h1s09v7qkvrjr6l678zamb1p248n8jv4rrwkf8g7d2bpfz9amn"))))
     (build-system julia-build-system)
     (propagated-inputs
-     (list julia-colors julia-nanmath))
+     (list julia-colors
+           julia-nanmath))
     (home-page "https://github.com/JuliaGraphics/Graphics.jl")
     (synopsis "Base graphics in Julia")
     (description "@code{Graphics.jl} is an abstraction layer for graphical
@@ -2025,7 +2075,8 @@ operations in Julia.")
         (base32 "1g22dv3v7caakspv3pdahnqn937fzzsg9y87rj72hid9g8lxl1gm"))))
     (build-system julia-build-system)
     (propagated-inputs
-     (list julia-abstracttrees julia-gumbo-jll))
+     (list julia-abstracttrees
+           julia-gumbo-jll))
     (home-page "https://github.com/JuliaWeb/Gumbo.jl")
     (synopsis "Julia wrapper around Google's gumbo C library for parsing HTML")
     (description "@code{Gumbo.jl} is a Julia wrapper around Google's gumbo
@@ -2077,10 +2128,13 @@ library for parsing HTML.")
                 (string-append all "return\n")))
              #t)))))
     (propagated-inputs
-     (list julia-inifile julia-mbedtls julia-uris))
+     (list julia-inifile
+           julia-mbedtls
+           julia-uris))
     ;; required for tests
     (inputs
-     (list julia-json julia-bufferedstreams))
+     (list julia-json
+           julia-bufferedstreams))
     (home-page "https://juliaweb.github.io/HTTP.jl/")
     (synopsis "HTTP support for Julia")
     (description "@code{HTTP.jl} is a Julia library for HTTP Messages,
@@ -2148,7 +2202,9 @@ conditional ifelse.  It is similar to @code{Core.ifelse} but it is extendable.")
          (base32 "15zqxani1jjh8849s7rdps6b6prqdwv8yxx893y536vkpk7i07qd"))))
     (build-system julia-build-system)
     (propagated-inputs
-     (list julia-axisarrays julia-imagecore julia-reexport
+     (list julia-axisarrays
+           julia-imagecore
+           julia-reexport
            julia-simpletraits))
     (native-inputs
      (list julia-unitful))
@@ -2176,7 +2232,8 @@ such arrays easy via traits.")
     (arguments
      `(#:tests? #f))    ; Cycle with ImageMagick.jl.
     (propagated-inputs
-     (list julia-imagecore julia-reexport))
+     (list julia-imagecore
+           julia-reexport))
     ;(native-inputs
     ; `(("julia-imagemagick" ,julia-imagemagick)
     ;   ("julia-offsetarrays" ,julia-offsetarrays)
@@ -2248,7 +2305,10 @@ of packages designed to support image processing and computer vision.")
     (arguments
      `(#:tests? #f))    ; Cycle with ReferenceTests.jl.
     (propagated-inputs
-     (list julia-crayons julia-imagebase julia-imagecore julia-requires))
+     (list julia-crayons
+           julia-imagebase
+           julia-imagecore
+           julia-requires))
     ;(native-inputs
     ; `(("julia-coordinatetransformations" ,julia-coordinatetransformations)
     ;   ("julia-imagemagick" ,julia-imagemagick)
@@ -2294,7 +2354,9 @@ be downscaled to fit into the size of your active terminal session.")
                (("test (B == map)" _ test) (string-append "test_nowarn " test)))
              #t)))))
     (propagated-inputs
-     (list julia-fileio julia-imagecore julia-imagemagick-jll))
+     (list julia-fileio
+           julia-imagecore
+           julia-imagemagick-jll))
     (native-inputs
      (list julia-colors
            julia-colorvectorspace
@@ -2325,10 +2387,14 @@ It was split off from @code{Images.jl} to make image I/O more modular.")
          (base32 "0iv154ms370xgcr56bwsjl13iwmy671cbxjl9ld5yfj85pclcwi1"))))
     (build-system julia-build-system)
     (propagated-inputs
-     (list julia-axisarrays julia-imageaxes julia-imagecore
+     (list julia-axisarrays
+           julia-imageaxes
+           julia-imagecore
            julia-indirectarrays))
     (native-inputs
-     (list julia-offsetarrays julia-simpletraits julia-unitful))
+     (list julia-offsetarrays
+           julia-simpletraits
+           julia-unitful))
     (home-page "https://github.com/JuliaImages/ImageMetadata.jl")
     (synopsis "Julia package for images having metadata")
     (description "@code{ImageMetadata} is a simple package providing utilities
@@ -2355,8 +2421,11 @@ information about the detector used to acquire the image.")
     (arguments
      `(#:tests? #f))    ; cycle with ImageMagick.jl.
     (propagated-inputs
-     (list julia-fileio julia-imagebase julia-imagecore
-           julia-offsetarrays julia-stackviews))
+     (list julia-fileio
+           julia-imagebase
+           julia-imagecore
+           julia-offsetarrays
+           julia-stackviews))
     ;(native-inputs
     ; `(("julia-imagedistances" ,julia-imagedistances)
     ;   ("julia-imagemagick" ,julia-imagemagick)
@@ -2442,7 +2511,9 @@ out of dictionaries, tuples, etc, extending this ability beyond
          (base32 "0l0jq0jnr9z3k431ni82xycq7mqapgxrbrx4yyk6lycvi41ipm4s"))))
     (build-system julia-build-system)
     (native-inputs
-     (list julia-colors julia-fixedpointnumbers julia-mappedarrays))
+     (list julia-colors
+           julia-fixedpointnumbers
+           julia-mappedarrays))
     (home-page "https://github.com/JuliaArrays/IndirectArrays.jl")
     (synopsis "Julia implementation of indexed arrays")
     (description "An @code{IndirectArray} is one that encodes data using a
@@ -2534,7 +2605,9 @@ interfaces with @file{.ini} files.")
            julia-staticarrays
            julia-woodburymatrices))
     (native-inputs
-     (list julia-dualnumbers julia-forwarddiff julia-offsetarrays
+     (list julia-dualnumbers
+           julia-forwarddiff
+           julia-offsetarrays
            julia-unitful julia-zygote))
     (home-page "https://github.com/JuliaMath/Interpolations.jl")
     (synopsis "Continuous interpolation of discrete datasets")
@@ -2727,7 +2800,9 @@ extensions to the iterator interface.")
         (base32 "1f9k613kbknmp4fgjxvjaw4d5sfbx8a5hmcszmp1w9rqfqngjx9m"))))
     (build-system julia-build-system)
     (propagated-inputs
-     (list julia-datastructures julia-fixedpointnumbers julia-parsers
+     (list julia-datastructures
+           julia-fixedpointnumbers
+           julia-parsers
            julia-offsetarrays))
     (home-page "https://github.com/JuliaIO/JSON.jl")
     (synopsis "JSON parsing and printing library for Julia")
@@ -2750,7 +2825,8 @@ and printing JSON documents.")
          (base32 "11z5maz7v50wd99id8z7838higza0cllh2amkdkrlskbri3v2f17"))))
     (build-system julia-build-system)
     (propagated-inputs
-     (list julia-parsers julia-structtypes))
+     (list julia-parsers
+           julia-structtypes))
     (home-page "https://github.com/quinnj/JSON3.jl")
     (synopsis "JSON package for Julia")
     (description "This package provides another JSON package for Julia, with a
@@ -2803,8 +2879,11 @@ equations in string literals in the Julia language.")
                    (substitute* "test/multests.jl"
                      (("Int64") "Int32")))))))))
     (propagated-inputs
-     (list julia-arraylayouts julia-fillarrays julia-macrotools
-           julia-matrixfactorizations julia-staticarrays))
+     (list julia-arraylayouts
+           julia-fillarrays
+           julia-macrotools
+           julia-matrixfactorizations
+           julia-staticarrays))
     (native-inputs
      (list julia-tracker))
     (home-page "https://github.com/JuliaArrays/LazyArrays.jl")
@@ -2887,7 +2966,9 @@ that let you do deep transformations of code.")
     (propagated-inputs
      (list julia-fixedpointnumbers))
     (native-inputs
-     (list julia-colortypes julia-fixedpointnumbers julia-offsetarrays))
+     (list julia-colortypes
+           julia-fixedpointnumbers
+           julia-offsetarrays))
     (home-page "https://github.com/JuliaArrays/MappedArrays.jl")
     (synopsis "Lazy in-place transformations of arrays")
     (description "This package implements \"lazy\" in-place elementwise
@@ -2956,7 +3037,8 @@ may include other factorizations such as the LQ factorization.")
              (substitute* "test/runtests.jl"
                (("testhost =") "return #"))
              #t)))))
-    (propagated-inputs (list julia-mbedtls-jll))
+    (propagated-inputs
+     (list julia-mbedtls-jll))
     (home-page "https://github.com/JuliaLang/MbedTLS.jl")
     (synopsis "Apache's mbed TLS library wrapper")
     (description "@code{MbedTLS.jl} provides a wrapper around the @code{mbed
@@ -2978,9 +3060,13 @@ TLS} and cryptography C library for Julia.")
          (base32 "05p3f0gr4sv4maq8cix5fi8ldq0zagswqsd43xn6fhy046f936mz"))))
     (build-system julia-build-system)
     (propagated-inputs
-     (list julia-calculus julia-recipesbase julia-requires))
+     (list julia-calculus
+           julia-recipesbase
+           julia-requires))
     (native-inputs
-     (list julia-quadgk julia-specialfunctions julia-unitful))
+     (list julia-quadgk
+           julia-specialfunctions
+           julia-unitful))
     (home-page "https://juliaphysics.github.io/Measurements.jl/stable/")
     (synopsis "Error propagation calculator and library")
     (description "@code{Measurements.jl} is an error propagation calculator and
@@ -3121,7 +3207,8 @@ programming infrastructures, and metaprogramming facilities.")
          (base32 "1cg2is83bjmrchmmxcgx57k8c9b9vlamrw38v4fdhbb6d4six5cg"))))
     (build-system julia-build-system)
     (propagated-inputs
-     (list julia-compat julia-exprtools))
+     (list julia-compat
+           julia-exprtools))
     (home-page "https://github.com/invenia/Mocking.jl")
     (synopsis "Overload Julia function calls")
     (description "The purpose of this package is to allow Julia function calls
@@ -3145,7 +3232,9 @@ to be temporarily overloaded for the purpose of testing.")
     (arguments
      `(#:tests? #f))    ; Cycle with ImageCore.jl
     (propagated-inputs
-     (list julia-mappedarrays julia-paddedviews julia-stackviews))
+     (list julia-mappedarrays
+           julia-paddedviews
+           julia-stackviews))
     ;(native-inputs
     ; `(("julia-colorvectorspace" ,julia-colorvectorspace)
     ;   ("julia-imagecore" ,julia-imagecore)))
@@ -3255,9 +3344,12 @@ still being completely generic
          (base32 "0n8qh5a2ghjx1j70zxn0hmh8gzpa46kmjg8di879y9974bfk0f98"))))
     (build-system julia-build-system)
     (propagated-inputs
-     (list julia-diffresults julia-finitediff julia-forwarddiff))
+     (list julia-diffresults
+           julia-finitediff
+           julia-forwarddiff))
     (native-inputs
-     (list julia-optimtestproblems julia-recursivearraytools))
+     (list julia-optimtestproblems
+           julia-recursivearraytools))
     (home-page "https://github.com/JuliaNLSolvers/NLSolversBase.jl")
     (synopsis "Optimization and equation solver software in JuliaNLSolvers")
     (description "This package aims at establishing common ground for Optim.jl,
@@ -3290,9 +3382,13 @@ interface to interact with these types.")
                (("&& CUDA\\.functional\\(\\)") ""))
              (setenv "NNLIB_TEST_CUDA" "false"))))))
     (propagated-inputs
-     (list julia-adapt julia-chainrulescore julia-requires))
+     (list julia-adapt
+           julia-chainrulescore
+           julia-requires))
     (native-inputs
-     (list julia-chainrulestestutils julia-stablerngs julia-zygote))
+     (list julia-chainrulestestutils
+           julia-stablerngs
+           julia-zygote))
     (home-page "https://github.com/FluxML/NNlib.jl")
     (synopsis "Neural Network primitives with multiple backends")
     (description "This package will provide a library of functions useful for
@@ -3412,7 +3508,8 @@ Multiple arrays may be \"promoted\" to have common indices using the
          (base32 "0b8lawi7kcws4axfsdf023gyxca15irl648ciyi1kw3wghz3pfi2"))))
     (build-system julia-build-system)
     (propagated-inputs
-     (list julia-orderedcollections julia-unpack))
+     (list julia-orderedcollections
+           julia-unpack))
     (home-page "https://github.com/mauro3/Parameters.jl")
     (synopsis "Numerical-model parameter helpers")
     (description "This package contains types with default field values, keyword
@@ -3480,7 +3577,8 @@ actual computation.")
          (base32 "1fd27w9z1vhz0d1bzrs5vcavpb5r5jviyh27d9c4ka37phz4xvmh"))))
     (build-system julia-build-system)
     (propagated-inputs
-     (list julia-plotutils julia-requires))
+     (list julia-plotutils
+           julia-requires))
     (home-page "https://github.com/JuliaPlots/PlotThemes.jl")
     (synopsis "Themes for the Julia plotting package Plots.jl")
     (description
@@ -3502,7 +3600,9 @@ actual computation.")
          (base32 "12aw5gkkcfhpczv2w510k65w1j0hjnh825ihimi223v8plsi5105"))))
     (build-system julia-build-system)
     (propagated-inputs
-     (list julia-colors julia-colorschemes julia-reexport))
+     (list julia-colors
+           julia-colorschemes
+           julia-reexport))
     (native-inputs
      (list julia-stablerngs))
     (home-page "https://github.com/JuliaPlots/PlotUtils.jl")
@@ -3548,7 +3648,8 @@ purposes of compression when there are few unique elements.")
          (base32 "1wxy6ak7f3hvibcgc8q88cgkf9zvi649mmjy1zlkx1qk80hgvz23"))))
     (build-system julia-build-system)
     (native-inputs
-     (list julia-forwarddiff julia-reversediff))
+     (list julia-forwarddiff
+           julia-reversediff))
     (home-page "https://github.com/timholy/PositiveFactorizations.jl")
     (synopsis "Positive-definite \"approximations\" to matrices")
     (description "@code{PositiveFactorizations} is a package for computing a
@@ -3607,7 +3708,10 @@ everything from run time algorithm choice to code generation at compile time.")
                ((".*colors\\.jl.*") ""))
              #t)))))
     (propagated-inputs
-     (list julia-crayons julia-formatting julia-reexport julia-tables))
+     (list julia-crayons
+           julia-formatting
+           julia-reexport
+           julia-tables))
     (home-page "https://github.com/ronisbr/PrettyTables.jl")
     (synopsis "Print data in formatted tables")
     (description "This package has the purpose to print data in matrices in a
@@ -3674,7 +3778,8 @@ human-readable format.")
              (setenv "JULIA_PKGEVAL" "true")
              #t)))))
     (propagated-inputs
-     (list julia-macrotools julia-versionparsing))
+     (list julia-macrotools
+           julia-versionparsing))
     (inputs
      (list python))
     (native-inputs
@@ -3817,7 +3922,8 @@ extension of complex numbers.")
          (base32 "06zm4cbn3x49lbpgshhdfvvmgz066qkc8q0d57igm5p8bcp6js22"))))
     (build-system julia-build-system)
     (propagated-inputs
-     (list julia-datastructures julia-iteratorinterfaceextensions
+     (list julia-datastructures
+           julia-iteratorinterfaceextensions
            julia-tableshowutils))
     (home-page "https://github.com/queryverse/QueryOperators.jl")
     (synopsis "Query operators for Julia")
@@ -3907,7 +4013,9 @@ more complex visualizations.")
     (arguments
      `(#:tests? #f))    ; Cycle with Plots.jl.
     (propagated-inputs
-     (list julia-nanmath julia-plotutils julia-recipesbase))
+     (list julia-nanmath
+           julia-plotutils
+           julia-recipesbase))
     (home-page "http://juliaplots.org/RecipesPipeline.jl/dev/")
     (synopsis "Utilities for processing recipes")
     (description "This package was factored out of @code{Plots.jl} to allow any
@@ -3990,7 +4098,10 @@ recursive arrays like arrays of arrays.")
     (arguments
      `(#:tests? #f))    ; Cycle with ImageCore.jl through ImageMagick.jl.
     (propagated-inputs
-     (list julia-deepdiffs julia-distances julia-fileio julia-imagecore
+     (list julia-deepdiffs
+           julia-distances
+           julia-fileio
+           julia-imagecore
            julia-imageinterminal))
     ;(native-inputs
     ; `(("julia-csvfiles" ,julia-csvfiles)
@@ -4066,7 +4177,8 @@ can be avoided.")
            julia-specialfunctions
            julia-staticarrays))
     (native-inputs
-     (list julia-difftests julia-fillarrays))
+     (list julia-difftests
+           julia-fillarrays))
     (home-page "https://github.com/JuliaDiff/ReverseDiff.jl")
     (synopsis "Reverse Mode Automatic Differentiation for Julia")
     (description "@code{ReverseDiff.jl} is a fast and compile-able tape-based
@@ -4122,7 +4234,9 @@ other power series in @code{h}.")
       (propagated-inputs
        (list julia-staticarrays))
       (native-inputs
-       (list julia-benchmarktools julia-forwarddiff julia-unitful))
+       (list julia-benchmarktools
+             julia-forwarddiff
+             julia-unitful))
       (home-page "https://github.com/JuliaGeometry/Rotations.jl")
       (synopsis "Julia implementations for different rotation parameterisations")
       (description "This package implements various 3D rotation parameterizations
@@ -4323,7 +4437,8 @@ timsort and radixsort.")
     (inputs
      (list julia-chainrulestestutils))
     (propagated-inputs
-     (list julia-chainrulescore julia-logexpfunctions
+     (list julia-chainrulescore
+           julia-logexpfunctions
            julia-openspecfun-jll))
     (home-page "https://github.com/JuliaMath/SpecialFunctions.jl")
     (synopsis "Special mathematical functions")
@@ -4348,7 +4463,8 @@ polygamma functions.")
          (base32 "1qzaqvk57b0s5krzn8bxkzmr5kz6hi9dm3jbf2sl7z4vznsgbn9x"))))
     (build-system julia-build-system)
     (propagated-inputs
-     (list julia-dictionaries julia-indexing))
+     (list julia-dictionaries
+           julia-indexing))
     (home-page "https://github.com/JuliaData/SplitApplyCombine.jl")
     (synopsis "Split-apply-combine strategies for Julia")
     (description "@code{SplitApplyCombine.jl} provides high-level, generic tools
@@ -4406,7 +4522,8 @@ some performance improvements).")
     (propagated-inputs
      (list julia-offsetarrays))
     (native-inputs
-    (list julia-aqua julia-documenter))
+    (list julia-aqua
+          julia-documenter))
     (home-page "https://github.com/JuliaArrays/StackViews.jl")
     (synopsis "No more catcat")
     (description "StackViews provides only one array type: @code{StackView}.
@@ -4506,8 +4623,11 @@ dependency on it.")
          (base32 "02y4pm5yvg713a2pn970bbcfkrn2h133rxbxk1da18svhqw3czhi"))))
     (build-system julia-build-system)
     (propagated-inputs
-     (list julia-dataapi julia-datastructures julia-missings
-           julia-sortingalgorithms julia-statsapi))
+     (list julia-dataapi
+           julia-datastructures
+           julia-missings
+           julia-sortingalgorithms
+           julia-statsapi))
     (native-inputs
      (list julia-stablerngs))
     (home-page "https://github.com/JuliaStats/StatsBase.jl")
@@ -4567,10 +4687,15 @@ applied to any distance.")
                                   "test/runtests.jl")
                      (("Int64") "Int32")))))))))
     (propagated-inputs
-     (list julia-dataapi julia-staticarrays julia-tables))
+     (list julia-dataapi
+           julia-staticarrays
+           julia-tables))
     (native-inputs
-     (list julia-documenter julia-offsetarrays julia-pooledarrays
-           julia-typedtables julia-weakrefstrings))
+     (list julia-documenter
+           julia-offsetarrays
+           julia-pooledarrays
+           julia-typedtables
+           julia-weakrefstrings))
     (home-page "https://github.com/JuliaArrays/StructArrays.jl")
     (synopsis "Efficient implementation of struct arrays in Julia")
     (description "This package introduces the type @code{StructArray} which is
@@ -4659,10 +4784,13 @@ the @code{Pluto.jl} tabular data import functionality.")
          (base32 "1sqqagzqvav8b1rv5ywwbgy9ixvlmipq95fkwfwn0m8769i8jwzb"))))
     (build-system julia-build-system)
     (propagated-inputs
-     (list julia-dataapi julia-datavalueinterfaces
-           julia-iteratorinterfaceextensions julia-tabletraits))
+     (list julia-dataapi
+           julia-datavalueinterfaces
+           julia-iteratorinterfaceextensions
+           julia-tabletraits))
     (native-inputs
-     (list julia-datavalues julia-queryoperators))
+     (list julia-datavalues
+           julia-queryoperators))
     (home-page "https://github.com/JuliaData/Tables.jl")
     (synopsis "Interface for tables in Julia")
     (description "The @code{Tables.jl} package provides simple, yet powerful
@@ -4687,7 +4815,8 @@ interface functions for working with all kinds tabular data.")
            (base32 "0gp3hpj3jvzfhkp9r345vfic2j2n2s60729wv38hwn75csp74cg5"))))
       (build-system julia-build-system)
       (propagated-inputs
-       (list julia-datavalues julia-json))
+       (list julia-datavalues
+             julia-json))
       (home-page "https://github.com/queryverse/TableShowUtils.jl")
       (synopsis "Implement show for TableTraits.jl types")
       (description "This package provides some common helper functions that make
@@ -4756,8 +4885,11 @@ dimensions}.")
     (arguments
      `(#:tests? #f))    ; cycle with ImageMagick.jl
     (propagated-inputs
-     (list julia-axisarrays julia-colortypes julia-fileio
-           julia-offsetarrays julia-stringdistances))
+     (list julia-axisarrays
+           julia-colortypes
+           julia-fileio
+           julia-offsetarrays
+           julia-stringdistances))
     ;(native-inputs
     ; `(("julia-colors" ,julia-colors)
     ;   ("julia-fixedpointnumbers" ,julia-fixedpointnumbers)
@@ -4848,7 +4980,9 @@ which are:
          (base32 "0nk6zhqvl2r8yhjdhb59kxq0srd3vy4ysg4d8rszj9a43dnn3w3i"))))
     (build-system julia-build-system)
     (propagated-inputs
-     (list julia-adapt julia-splitapplycombine julia-tables))
+     (list julia-adapt
+           julia-splitapplycombine
+           julia-tables))
     (home-page "https://github.com/JuliaData/TypedTables.jl")
     (synopsis "Column-based storage for data analysis in Julia")
     (description "@code{TypedTables.jl} provides two column-based storage
@@ -4976,7 +5110,8 @@ useful in order to support @code{VersionNumber} comparisons applied to
          (base32 "14h1vdnc3rx87w6v2rr59lgb4kai2hd1wzqpxhmzsi8karg2z219"))))
     (build-system julia-build-system)
     (propagated-inputs
-     (list julia-dataapi julia-parsers))
+     (list julia-dataapi
+           julia-parsers))
     (home-page "https://github.com/JuliaData/WeakRefStrings.jl")
     (synopsis "Efficient string representation and transfer in Julia")
     (description "This package provides a minimal String type for Julia that
