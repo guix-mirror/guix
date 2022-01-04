@@ -2589,48 +2589,65 @@ UCY (Omega Unicode Cyrillic), LCY, LWN (OT2), and koi8-r.")
       (license license:lppl))))
 
 (define-public texlive-kpathsea
-  (package
-    (inherit (simple-texlive-package
-              "texlive-kpathsea"
-              (list "/web2c/amiga-pl.tcx"
-                    "/web2c/cp1250cs.tcx"
-                    "/web2c/cp1250pl.tcx"
-                    "/web2c/cp1250t1.tcx"
-                    "/web2c/cp227.tcx"
-                    "/web2c/cp852-cs.tcx"
-                    "/web2c/cp852-pl.tcx"
-                    "/web2c/cp8bit.tcx"
-                    "/web2c/empty.tcx"
-                    "/web2c/fmtutil.cnf"
-                    "/web2c/il1-t1.tcx"
-                    "/web2c/il2-cs.tcx"
-                    "/web2c/il2-pl.tcx"
-                    "/web2c/il2-t1.tcx"
-                    "/web2c/kam-cs.tcx"
-                    "/web2c/kam-t1.tcx"
-                    "/web2c/macce-pl.tcx"
-                    "/web2c/macce-t1.tcx"
-                    "/web2c/maz-pl.tcx"
-                    "/web2c/mktex.cnf"
-                    "/web2c/mktex.opt"
-                    "/web2c/mktexdir"
-                    "/web2c/mktexdir.opt"
-                    "/web2c/mktexnam"
-                    "/web2c/mktexnam.opt"
-                    "/web2c/mktexupd"
-                    "/web2c/natural.tcx"
-                    "/web2c/tcvn-t5.tcx"
-                    "/web2c/viscii-t5.tcx")
-              (base32
-               "00q2nny7lw7jxyln6ch4h0alygbrzk8yynliyc291m53kds1h0mr")
-              #:trivial? #t))
-    (home-page "https://www.tug.org/texlive/")
-    (synopsis "Files related to the path searching library for TeX")
-    (description "Kpathsea is a library and utility programs which provide
+  (let ((template (simple-texlive-package
+                   "texlive-kpathsea"
+                   (list "/web2c/amiga-pl.tcx"
+                         "/web2c/cp1250cs.tcx"
+                         "/web2c/cp1250pl.tcx"
+                         "/web2c/cp1250t1.tcx"
+                         "/web2c/cp227.tcx"
+                         "/web2c/cp852-cs.tcx"
+                         "/web2c/cp852-pl.tcx"
+                         "/web2c/cp8bit.tcx"
+                         "/web2c/empty.tcx"
+                         "/web2c/fmtutil.cnf"
+                         "/web2c/il1-t1.tcx"
+                         "/web2c/il2-cs.tcx"
+                         "/web2c/il2-pl.tcx"
+                         "/web2c/il2-t1.tcx"
+                         "/web2c/kam-cs.tcx"
+                         "/web2c/kam-t1.tcx"
+                         "/web2c/macce-pl.tcx"
+                         "/web2c/macce-t1.tcx"
+                         "/web2c/maz-pl.tcx"
+                         "/web2c/mktex.cnf"
+                         "/web2c/mktex.opt"
+                         "/web2c/mktexdir"
+                         "/web2c/mktexdir.opt"
+                         "/web2c/mktexnam"
+                         "/web2c/mktexnam.opt"
+                         "/web2c/mktexupd"
+                         "/web2c/natural.tcx"
+                         "/web2c/tcvn-t5.tcx"
+                         "/web2c/viscii-t5.tcx")
+                   (base32
+                    "00q2nny7lw7jxyln6ch4h0alygbrzk8yynliyc291m53kds1h0mr")
+                   #:trivial? #t)))
+    (package
+      (inherit template)
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:phases phases '%standard-phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'patch-references
+               (lambda* (#:key inputs #:allow-other-keys)
+                 (let ((dirs (map dirname (list (which "sed")
+                                                (which "awk")))))
+                   (substitute* '("web2c/mktexdir"
+                                  "web2c/mktexnam"
+                                  "web2c/mktexupd")
+                     (("^version=" m)
+                      (format #false "PATH=\"~{~a:~}$PATH\"; export PATH~%~a"
+                              dirs m))))))))))
+      (inputs
+       (list sed gawk))
+      (home-page "https://www.tug.org/texlive/")
+      (synopsis "Files related to the path searching library for TeX")
+      (description "Kpathsea is a library and utility programs which provide
 path searching facilities for TeX file types, including the self-locating
 feature required for movable installations, layered on top of a general search
 mechanism.  This package provides supporting files.")
-    (license license:lgpl3+)))
+      (license license:lgpl3+))))
 
 (define-public texlive-latexconfig
   (package
