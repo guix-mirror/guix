@@ -2462,13 +2462,13 @@ QMatrixClient project.")
 (define-public hangups
   (package
     (name "hangups")
-    (version "0.4.15")
+    (version "0.4.16")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "hangups" version))
        (sha256
-        (base32 "1fa58m6zgvsawp2h1maj82wn6lpdllhbficmcjm78n5bg1hv7f4m"))))
+        (base32 "11szzszwfszc28xvlsh0bahxy3cgibzsirbfjh5m8vj60lzipqm3"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -2489,7 +2489,7 @@ QMatrixClient project.")
            python-async-timeout
            python-configargparse
            python-mechanicalsoup
-           python-protobuf-3.6
+           python-protobuf
            python-readlike
            python-reparser
            python-requests
