@@ -4508,7 +4508,7 @@ entries, providing commands to add, remove, comment, and search.")
 (define-public nmrpflash
   (package
     (name "nmrpflash")
-    (version "0.9.15")
+    (version "0.9.16")
     (source
      (origin
        (method git-fetch)
@@ -4517,7 +4517,7 @@ entries, providing commands to add, remove, comment, and search.")
          (url "https://github.com/jclehner/nmrpflash")
          (commit (string-append "v" version))))
        (sha256
-        (base32 "0ssfls1sfh8w748qsnkfgndlpw395100x2yynzbk5jd56scxvp20"))
+        (base32 "0gp66l3a2wznjnlc2ljs8g38mfrf1b9a0qcfxqg2bczmfxnrsynj"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (native-inputs
@@ -4534,8 +4534,7 @@ entries, providing commands to add, remove, comment, and search.")
          (delete 'configure)
          (add-before 'install 'prepare-install
            (lambda* (#:key outputs #:allow-other-keys)
-             (mkdir-p (string-append (assoc-ref outputs "out") "/bin"))
-             #t)))))
+             (mkdir-p (string-append (assoc-ref outputs "out") "/bin")))))))
     (home-page "https://github.com/jclehner/nmrpflash")
     (synopsis "Netgear unbrick utility")
     (description "This package provides a utility to flash a new firmware
