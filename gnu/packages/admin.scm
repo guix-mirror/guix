@@ -2379,37 +2379,33 @@ features of ls(1), find(1), stat(1) and du(1).")
 (define-public direvent
   (package
     (name "direvent")
-    (version "5.2")
+    (version "5.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/direvent/direvent-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0m9vi01b1km0cpknflyzsjnknbava0s1n6393b2bpjwyvb6j5613"))
-              (modules '((guix build utils)))
-              (snippet
-               #~(begin
-                   (substitute* "tests/testsuite"
-                     (("#![[:blank:]]?/bin/sh")
-                      "#!$SHELL"))))))
+                "15y4jk5vlcd003bvf42c6z9zd4gz4pwqpwaapqmyk7x4gnksh1cl"))))
     (build-system gnu-build-system)
     (arguments
      (list #:phases
            #~(modify-phases %standard-phases
-               (add-before 'build 'patch-/bin/sh
+               (add-before 'build 'substitute-file-names
                  (lambda* (#:key inputs #:allow-other-keys)
                    ;; Use the right shell when executing the watcher and
                    ;; user-provided shell commands.
                    (let ((bash (assoc-ref inputs "bash")))
                      (substitute* '("src/direvent.c" "src/progman.c")
                        (("\"/bin/sh\"")
-                        (string-append "\"" bash "/bin/sh\"")))
+                        (string-append "\"" bash "/bin/sh\""))))
 
-                     ;; Adjust the 'shell.at' test accordingly.
-                     (substitute* "tests/testsuite"
-                       (("SHELL=/bin/sh")
-                        (string-append "SHELL=" bash "/bin/sh")))))))))
+                   ;; Adjust the test suite similarly.
+                   (substitute* "tests/testsuite"
+                     (("(SHELL=|#![[:space:]]*)/bin/sh" _ prefix)
+                      (string-append prefix (which "sh")))
+                     (("/bin/kill")
+                      (which "kill"))))))))
     (home-page "https://www.gnu.org.ua/software/direvent/")
     (synopsis "Daemon to monitor directories for events such as file removal")
     (description
