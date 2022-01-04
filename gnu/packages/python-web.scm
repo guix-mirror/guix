@@ -39,7 +39,7 @@
 ;;; Copyright © 2020 Edouard Klein <edk@beaver-labs.com>
 ;;; Copyright © 2020, 2021, 2022 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Konrad Hinsen <konrad.hinsen@fastmail.net>
-;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
+;;; Copyright © 2020, 2022 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2021 Ekaitz Zarraga <ekaitz@elenq.tech>
 ;;; Copyright © 2021 Greg Hogan <code@greghogan.com>
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
@@ -6270,4 +6270,37 @@ purely formal level.
 
 Full documentation may be found at
 @uref{https://mwparserfromhell.readthedocs.io, ReadTheDocs}")
+    (license license:expat)))
+
+(define-public python-tweepy
+  (package
+    (name "python-tweepy")
+    (version "4.4.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/tweepy/tweepy")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0jl3j20iqvzqqw5q5ldval5wrc2pdx94zff3b6b87j51yjx3qjhr"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "python" "-m" "unittest" "discover" "tests")))))))
+    (propagated-inputs
+     (list python-aiohttp python-requests python-requests-oauthlib))
+    (native-inputs
+     (list python-vcrpy))
+    (home-page "https://www.tweepy.org/")
+    (synopsis "Twitter library for Python")
+    (description "This package provides @code{Tweepy}, an easy-to-use Python
+library for accessing the Twitter API.")
     (license license:expat)))
