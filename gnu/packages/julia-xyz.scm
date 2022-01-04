@@ -211,6 +211,34 @@ appropriate BLAS or optimised Julia linear algebra routines.  This supports a
 much wider class of matrix types than Julia's in-built @code{StridedArray}.")
     (license license:expat)))
 
+(define-public julia-automa
+  (package
+    (name "julia-automa")
+    (version "0.8.2")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/BioJulia/Automa.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0hmwvk3qw54p7f63a2dnzlmvkynfs62x9n8x952bcmczp35csgq0"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     (list julia-scanbyte
+           julia-transcodingstreams))
+    (home-page "https://github.com/BioJulia/Automa.jl")
+    (synopsis "Validation, parsing, and tokenizing based on state machine compiler")
+    (description "This package compiles regular expressions into Julia code,
+which is then compiled into low-level machine code by the Julia compiler.  The
+package is designed to generate very efficient code to scan large text data,
+which is often much faster than handcrafted code.  @code{Automa.jl} can insert
+arbitrary Julia code that will be executed in state transitions.  This makes
+it possible, for example, to extract substrings that match a part of a regular
+expression.")
+    (license license:expat)))
+
 (define-public julia-axisalgorithms
   (package
     (name "julia-axisalgorithms")
