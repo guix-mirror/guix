@@ -7530,15 +7530,16 @@ original.")
                                              (strip-store-file-name
                                               #$shlomif-cmake-modules)))))
                (replace 'check
-                 (lambda _
-                   (with-directory-excursion "../source"
-                     (setenv "FCS_TEST_BUILD" "1")
-                     (setenv "RINUTILS_TEST_BUILD" "1")
-                     ;; TODO: Run tests after setting RINUTILS_TEST_TIDY to `1',
-                     ;; which requires tidy-all.
-                     ;; (setenv "RINUTILS_TEST_TIDY" "1")
-                     (invoke "perl"
-                             "CI-testing/continuous-integration-testing.pl")))))))
+                 (lambda* (#:key tests? #:allow-other-keys)
+                   (when tests?
+                     (with-directory-excursion "../source"
+                       (setenv "FCS_TEST_BUILD" "1")
+                       (setenv "RINUTILS_TEST_BUILD" "1")
+                       ;; TODO: Run tests after setting RINUTILS_TEST_TIDY to `1',
+                       ;; which requires tidy-all.
+                       ;; (setenv "RINUTILS_TEST_TIDY" "1")
+                       (invoke "perl"
+                               "CI-testing/continuous-integration-testing.pl"))))))))
     (native-inputs
      (list perl
            ;; The following are needed only for tests.
