@@ -1227,9 +1227,8 @@ valuable enough at this time.")
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "src/Deps.jl"
                (("pip install")
-                (string-append (assoc-ref inputs "python")
-                               "/bin/pip install")))
-             #t))
+                (string-append (search-input-file inputs "bin/pip")
+                               " install")))))
          (add-after 'link-depot 'remove-javascript-downloads
            (lambda _
              (substitute* "src/Writers/HTMLWriter.jl"
@@ -1237,17 +1236,18 @@ valuable enough at this time.")
              ;; Removing the javascript downloads causes these tests fail.
              (substitute* "test/examples/tests.jl"
                ((".*Main\\.examples_html_doc.*") "")
-               ((".*Main\\.examples_html_mathjax3_doc.*") ""))
-             #t)))))
+               ((".*Main\\.examples_html_mathjax3_doc.*") "")))))))
     (propagated-inputs
-     (list julia-ansicoloredprinters julia-docstringextensions
-           julia-iocapture julia-json))
+     (list julia-ansicoloredprinters
+           julia-docstringextensions
+           julia-iocapture
+           julia-json))
     (inputs
-     `(("python" ,python-wrapper)))
+     (list python-wrapper))
     (native-inputs
-     `(("git" ,git-minimal)
-       ("julia-documentermarkdown" ,julia-documentermarkdown)
-       ("julia-documentertools" ,julia-documentertools)))
+     (list git-minimal
+           julia-documentermarkdown
+           julia-documentertools))
     (home-page "https://juliadocs.github.io/Documenter.jl")
     (synopsis "Documentation generator for Julia")
     (description "This package provides a documentation generator for Julia.")
