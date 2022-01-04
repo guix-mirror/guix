@@ -333,6 +333,32 @@ code easy by supplying a framework for writing and running groups of
 benchmarks as well as comparing benchmark results.")
     (license license:expat)))
 
+(define-public julia-biogenerics
+  ;; No upstream release
+  (let ((commit "a75abaf459250e2b5e22b4d9adf25fd36d2acab6")
+        (revision "1"))
+    (package
+      (name "julia-biogenerics")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/BioJulia/BioGenerics.jl")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "17d222vi9nssjwr5l349fss7jnglnjimp1z62kmfmxa4fsn8lk8l"))))
+      (build-system julia-build-system)
+      (inputs
+       (list julia-transcodingstreams))
+      (home-page "https://github.com/BioJulia/BioGenerics.jl")
+      (synopsis "Generic methods used by BioJulia packages")
+      (description "This package provides generic methods and modules used in
+many of the other BioJulia packages.  This package defines IO, exceptions, and
+other types or methods used by other BioJulia packages.")
+      (license license:expat))))
+
 (define-public julia-blockarrays
   (package
     (name "julia-blockarrays")
