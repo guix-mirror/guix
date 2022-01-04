@@ -76,6 +76,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix gexp)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
@@ -2387,30 +2388,28 @@ features of ls(1), find(1), stat(1) and du(1).")
                (base32
                 "0m9vi01b1km0cpknflyzsjnknbava0s1n6393b2bpjwyvb6j5613"))
               (modules '((guix build utils)))
-              (snippet '(begin
-                          (substitute* "tests/testsuite"
-                            (("#![[:blank:]]?/bin/sh")
-                             "#!$SHELL"))
-                          #t))))
+              (snippet
+               #~(begin
+                   (substitute* "tests/testsuite"
+                     (("#![[:blank:]]?/bin/sh")
+                      "#!$SHELL"))))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (add-before 'build 'patch-/bin/sh
-           (lambda* (#:key inputs #:allow-other-keys)
-             ;; Use the right shell when executing the watcher and
-             ;; user-provided shell commands.
-             (let ((bash (assoc-ref inputs "bash")))
-               (substitute* '("src/direvent.c" "src/progman.c")
-                 (("\"/bin/sh\"")
-                  (string-append "\"" bash "/bin/sh\"")))
+     (list #:phases
+           #~(modify-phases %standard-phases
+               (add-before 'build 'patch-/bin/sh
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   ;; Use the right shell when executing the watcher and
+                   ;; user-provided shell commands.
+                   (let ((bash (assoc-ref inputs "bash")))
+                     (substitute* '("src/direvent.c" "src/progman.c")
+                       (("\"/bin/sh\"")
+                        (string-append "\"" bash "/bin/sh\"")))
 
-               ;; Adjust the 'shell.at' test accordingly.
-               (substitute* "tests/testsuite"
-                 (("SHELL=/bin/sh")
-                  (string-append "SHELL=" bash "/bin/sh")))
-
-               #t))))))
+                     ;; Adjust the 'shell.at' test accordingly.
+                     (substitute* "tests/testsuite"
+                       (("SHELL=/bin/sh")
+                        (string-append "SHELL=" bash "/bin/sh")))))))))
     (home-page "https://www.gnu.org.ua/software/direvent/")
     (synopsis "Daemon to monitor directories for events such as file removal")
     (description
