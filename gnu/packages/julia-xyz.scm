@@ -5341,6 +5341,31 @@ for floating-point roundoff errors, so be prepared for a certain amount of
 inaccuracy in the result.")
     (license license:expat)))
 
+(define-public julia-yaml
+  (package
+    (name "julia-yaml")
+    (version "0.4.7")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/JuliaData/YAML.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "00k8456ffldbf75k2q5yxim7cgz3p0pbshsvmpm1331g8qy6liin"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     (list julia-stringencodings))
+    (native-inputs
+     (list julia-datastructures
+           julia-orderedcollections))
+    (home-page "https://github.com/JuliaData/YAML.jl")
+    (synopsis "Parses YAML documents into native Julia types")
+    (description "This package parses YAML documents into native Julia types
+and dumps them back into YAML documents.")
+    (license license:expat)))
+
 (define-public julia-zipfile
   (package
     (name "julia-zipfile")
