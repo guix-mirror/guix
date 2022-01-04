@@ -8292,7 +8292,7 @@ tools for managing PipeWire.")
 (define-public ell
   (package
     (name "ell")
-    (version "0.41")
+    (version "0.46")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -8301,7 +8301,7 @@ tools for managing PipeWire.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "14scs8vqpcf2810gvabsplg9yzh9y4sz47407bjy6vd604z3w8ah"))))
+                "15hwqicmll23cbrj13h3wd4lgrby416ap7l6w0434jsza4s4yv82"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
