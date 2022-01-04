@@ -4,7 +4,7 @@
 ;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015, 2016 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2015, 2016, 2017, 2018, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2020, 2021, 2022 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2017, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2015 Jeff Mickey <j@codemac.net>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
@@ -2710,3 +2710,31 @@ negotiation.  These design goals make it different from earlier binary
 serializations such as ASN.1 and MessagePack.")
     (license license:expat)
     (home-page "https://github.com/PJK/libcbor")))
+
+(define-public fcrackzip
+  (package
+    (name "fcrackzip")
+    (version "1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://oldhome.schmorp.de/marc/data/"
+                                  "fcrackzip-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0l1qsk949vnz18k4vjf3ppq8p497966x4c7f2yx18x8pk35whn2a"))))
+    (build-system gnu-build-system)
+    (arguments
+     (list
+      #:phases
+      '(modify-phases %standard-phases
+         (add-after 'unpack 'fix-reference-to-unzip
+           (lambda _
+             (substitute* "main.c"
+               (("\"unzip")
+                (string-append "\"" (which "unzip")))))))))
+    (inputs
+     (list perl unzip))
+    (home-page "http://oldhome.schmorp.de/marc/fcrackzip.html")
+    (synopsis "Zip password cracker")
+    (description "Fcrackzip is a Zip file password cracker.")
+    (license license:gpl2+)))
