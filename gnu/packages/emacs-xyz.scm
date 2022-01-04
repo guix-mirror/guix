@@ -11579,31 +11579,28 @@ being deleted, changed, yanked, or pasted when using evil commands")
       (license license:gpl3+))))
 
 (define-public emacs-goto-chg
-  (let ((commit "2af612153bc9f5bed135d25abe62f46ddaa9027f")
-        (version "1.7.3")
-        (revision "2"))
-    (package
-      (name "emacs-goto-chg")
-      (version (git-version version revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/emacs-evil/goto-chg")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "1awmvihqgw6kspx192bcp9xp56xqbma90wlhxfxmidx3bvxghwpv"))))
-      (build-system emacs-build-system)
-      (home-page "https://github.com/emacs-evil/goto-chg")
-      (synopsis "Go to the last change in the Emacs buffer")
-      (description
-       "This package provides @code{M-x goto-last-change} command that goes to
+  (package
+    (name "emacs-goto-chg")
+    (version "1.7.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/emacs-evil/goto-chg")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0d677rzdh2n0a93s09bgf6icly7m7vgiacyfpahyj2rfhbn4yrxs"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/emacs-evil/goto-chg")
+    (synopsis "Go to the last change in the Emacs buffer")
+    (description
+     "This package provides @code{M-x goto-last-change} command that goes to
 the point of the most recent edit in the current Emacs buffer.  When repeated,
 go to the second most recent edit, etc.  Negative argument, @kbd{C-u -}, is
 used for reverse direction.")
-      (license license:gpl2+))))
+    (license license:gpl2+)))
 
 (define-public emacs-janpath-evil-numbers
   (let ((commit "d988041c1fe6e941dc8d591390750b237f71f524")
