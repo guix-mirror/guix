@@ -1210,62 +1210,59 @@ pictures, sounds, or video.")
      ;; dependent on Quicklisp, main build target is `pgloader-standalone' which
      ;; does not require Quicklisp workarounds. There is no `install' target
      ;; configured in Makefile.
-     `(#:tests? #f
-       #:strip-binaries? #f
-       #:make-flags
-       (list "pgloader-standalone" "BUILDAPP_SBCL=buildapp")
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (add-after 'unpack 'set-home
-           (lambda _
-             (setenv "HOME" "/tmp")
-             #t))
-         (add-after 'unpack 'patch-Makefile
-           (lambda _
-             (substitute* "Makefile"
-               (("--sbcl.*") "--sbcl $(CL) --asdf-path . \\\n"))
-             #t))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
-               (mkdir-p bin)
-               (install-file "build/bin/pgloader"  bin))
-             #t)))))
+     (list #:tests? #f
+           #:strip-binaries? #f
+           #:make-flags
+           #~(list "pgloader-standalone" "BUILDAPP_SBCL=buildapp")
+           #:phases
+           #~(modify-phases %standard-phases
+               (delete 'configure)
+               (add-after 'unpack 'set-home
+                 (lambda _
+                   (setenv "HOME" "/tmp")))
+               (add-after 'unpack 'patch-Makefile
+                 (lambda _
+                   (substitute* "Makefile"
+                     (("--sbcl.*") "--sbcl $(CL) --asdf-path . \\\n"))))
+               (replace 'install
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (let ((bin (string-append #$output "/bin")))
+                     (mkdir-p bin)
+                     (install-file "build/bin/pgloader"  bin)))))))
     (native-inputs
      (list buildapp sbcl))
     (inputs
-     `(("alexandria" ,sbcl-alexandria)
-       ("cl-abnf" ,sbcl-cl-abnf)
-       ("cl-base64" ,sbcl-cl-base64)
-       ("cl-csv" ,sbcl-cl-csv)
-       ("cl-fad" ,sbcl-cl-fad)
-       ("cl-log" ,sbcl-cl-log)
-       ("cl-markdown" ,sbcl-cl-markdown)
-       ("cl-mustache" ,sbcl-cl-mustache)
-       ("cl-ppcre" ,sbcl-cl-ppcre)
-       ("cl-sqlite" ,sbcl-cl-sqlite)
-       ("closer-mop" ,sbcl-closer-mop)
-       ("command-line-arguments" ,sbcl-command-line-arguments)
-       ("db3" ,sbcl-db3)
-       ("drakma" ,sbcl-drakma)
-       ("esrap" ,sbcl-esrap)
-       ("flexi-streams" ,sbcl-flexi-streams)
-       ("ixf" ,sbcl-ixf)
-       ("local-time" ,sbcl-local-time)
-       ("lparallel" ,sbcl-lparallel)
-       ("metabang-bind" ,sbcl-metabang-bind)
-       ("mssql" ,sbcl-mssql)
-       ("postmodern" ,sbcl-postmodern)
-       ("py-configparser" ,sbcl-py-configparser)
-       ("qmynd" ,sbcl-qmynd)
-       ("quri" ,sbcl-quri)
-       ("split-sequence" ,sbcl-split-sequence)
-       ("trivial-backtrace" ,sbcl-trivial-backtrace)
-       ("usocket" ,sbcl-usocket)
-       ("uuid" ,sbcl-uuid)
-       ("yason" ,sbcl-yason)
-       ("zs3" ,sbcl-zs3)))
+     (list sbcl-alexandria
+           sbcl-cl-abnf
+           sbcl-cl-base64
+           sbcl-cl-csv
+           sbcl-cl-fad
+           sbcl-cl-log
+           sbcl-cl-markdown
+           sbcl-cl-mustache
+           sbcl-cl-ppcre
+           sbcl-cl-sqlite
+           sbcl-closer-mop
+           sbcl-command-line-arguments
+           sbcl-db3
+           sbcl-drakma
+           sbcl-esrap
+           sbcl-flexi-streams
+           sbcl-ixf
+           sbcl-local-time
+           sbcl-lparallel
+           sbcl-metabang-bind
+           sbcl-mssql
+           sbcl-postmodern
+           sbcl-py-configparser
+           sbcl-qmynd
+           sbcl-quri
+           sbcl-split-sequence
+           sbcl-trivial-backtrace
+           sbcl-usocket
+           sbcl-uuid
+           sbcl-yason
+           sbcl-zs3))
     (home-page "https://pgloader.io/")
     (synopsis "Tool to migrate data to PostgreSQL")
     (description
