@@ -498,6 +498,14 @@ files from LOCATIONS with expected checksum HASH.  CODE is not currently in use.
                                   source "/texlive-scripts/source/")
                                  scripts)
 
+               ;; Patch them.
+               (let ((dirs (map dirname (list (which "sed") (which "awk")))))
+                 (with-directory-excursion scripts
+                   (substitute* '("mktexpk" "mktexmf" "mktexlsr")
+                     (("^version=" m)
+                      (format #false "PATH=\"~{~a:~}$PATH\"; export PATH~%~a"
+                              dirs m)))))
+
                ;; Make sure that fmtutil can find its Perl modules.
                (substitute* (string-append scripts "/fmtutil.pl")
                  (("\\$TEXMFROOT/")
