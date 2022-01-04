@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2022 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,9 +19,11 @@
 
 (define-module (gnu packages direct-connect)
   #:use-module (guix build-system scons)
+  #:use-module (guix gexp)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (gnu packages)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gettext)
@@ -42,8 +45,19 @@
              "https://launchpad.net/linuxdcpp/1.1/1.1.0/+download/linuxdcpp-"
              version ".tar.bz2"))
        (sha256
-        (base32
-         "12i92hirmwryl1qy0n3jfrpziwzb82f61xca9jcjwyilx502f0b6"))))
+        (base32 "12i92hirmwryl1qy0n3jfrpziwzb82f61xca9jcjwyilx502f0b6"))
+       (patches (search-patches "linuxdcpp-openssl-1.1.patch"))
+       (modules '((guix build utils)))
+       (snippet
+        #~(begin
+            (substitute* "SConstruct"
+              ;; This compares single char[]acters in the version string, and
+              ;; broke when GCC went into double digits.
+              (("conf.CheckCXXVersion\\([^\\)]*\\)")
+               "True")
+              ;; Not all valid C++98 code is valid C++14 (and higher) code.
+              (("'-D_REENTRANT'" match)
+               (string-append match ", '-std=gnu++98'")))))))
     (build-system scons-build-system)
     (arguments
      `(#:scons ,scons-python2
