@@ -3521,7 +3521,7 @@ powerful route filtering syntax and an easy-to-use configuration interface.")
 (define-public iwd
   (package
     (name "iwd")
-    (version "1.15")
+    (version "1.20")
     (source (origin
               ;; FIXME: We're using the bootstrapped sources because
               ;; otherwise using an external ell library is impossible.
@@ -3531,7 +3531,7 @@ powerful route filtering syntax and an easy-to-use configuration interface.")
                                   "/wireless/iwd-" version ".tar.xz"))
               (sha256
                (base32
-                "0ngng9a9ra5w0mp2813yy2ihfibyx10ns6v5icdcp99db608xax7"))))
+                "03q5scahyg86h4bdxqxm32shyssgpmfp5b3183j01ig7mg6f4lbx"))))
     (build-system gnu-build-system)
     (inputs
      (list dbus ell readline))
