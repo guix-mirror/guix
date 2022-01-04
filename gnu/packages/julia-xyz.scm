@@ -5213,17 +5213,17 @@ Zygote, without depending on Zygote itself.")
     (arguments
      `(#:tests? #f))                    ;require CUDA, not packaged yet
     (propagated-inputs
-     `(("julia-abstractffs" ,julia-abstractffts)
-       ("julia-chainrules" ,julia-chainrules)
-       ("julia-diffrules" ,julia-diffrules)
-       ("julia-fillarrays" ,julia-fillarrays)
-       ("julia-forwarddiff" ,julia-forwarddiff)
-       ("julia-irtools" ,julia-irtools)
-       ("julia-macrotools" ,julia-macrotools)
-       ("julia-nanmath" ,julia-nanmath)
-       ("julia-requires" ,julia-requires)
-       ("julia-specialfunctions" ,julia-specialfunctions)
-       ("julia-zygote-rules" ,julia-zygoterules)))
+     (list julia-abstractffts
+           julia-chainrules
+           julia-diffrules
+           julia-fillarrays
+           julia-forwarddiff
+           julia-irtools
+           julia-macrotools
+           julia-nanmath
+           julia-requires
+           julia-specialfunctions
+           julia-zygoterules))
     (home-page "https://fluxml.ai/Zygote.jl")
     (synopsis "Automatic differentiation in Julia")
     (description "Zygote provides source-to-source automatic
