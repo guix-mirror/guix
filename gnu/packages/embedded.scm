@@ -1377,7 +1377,7 @@ STC89, STC90, STC10, STC11, STC12, STC15 and STC8 series.")
      (origin
        (method git-fetch)
        (uri (git-reference
-              (url "https://github.com/texane/stlink")
+              (url "https://github.com/stlink-org/stlink")
               (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
