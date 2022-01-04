@@ -69,7 +69,7 @@
       ((directory) #t)
       (else #f)))
   (if directory?
-      (git-hash-directory file algorithm)
+      (git-hash-directory file algorithm #:select? select?)
       (git-hash-file file algorithm)))
 
 

@@ -53,6 +53,7 @@ mkdir "$tmpdir/subdir"
 
 test `guix hash -S nar "$tmpdir"` = 10k1lw41wyrjf9mxydi0is5nkpynlsvgslinics4ppir13g7d74p
 test `guix hash -S nar "$tmpdir" -H sha512` = 301ra58c2vahczzxiyfin41mpyb0ljh4dh9zn3ijvwviaw1j40sfzw5skh9x945da88n3785ggifzig7acd6k72h0mpsc20m1f66m9n
+test `guix hash -S git "$tmpdir"` = 1m9yxz99g7askm88h6hzyv4g2bfv57rp5wvwp3iq5ypsplq1xkkk
 test `guix hash -S git "$tmpdir" -H sha512` = 158b10d1bsdk4pm8ym9cg9ckfak1b0cgpw7365cl6s341ir380mh2f4ylicyh8khyrfnwq5cn9766d7m8fbfwwl94ndkv456v6a8knr
 
 # Deprecated --recursive option
@@ -76,7 +77,7 @@ test `guix hash -S git $tmpdir` = 0ghlpca9xaswa1ay1g55dknwd9q899mi3ahfr43pq083v8
 
 # ...but remains the same when using `-x'
 test `guix hash -S nar $tmpdir -x` = 10k1lw41wyrjf9mxydi0is5nkpynlsvgslinics4ppir13g7d74p
-test `guix hash -S git $tmpdir -x` = 0ghlpca9xaswa1ay1g55dknwd9q899mi3ahfr43pq083v8wisjc7
+test `guix hash -S git $tmpdir -x` = 1m9yxz99g7askm88h6hzyv4g2bfv57rp5wvwp3iq5ypsplq1xkkk
 
 # Without '-r', this should fail.
 ! guix hash "$tmpdir"
