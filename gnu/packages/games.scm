@@ -7519,16 +7519,35 @@ original.")
               (sha256
                (base32
                 "1fpxyg86ggv0h7j8aarjjxrvwlj7jycd3bw066c0dwkq2fszxsf2"))))
+    (build-system cmake-build-system)
+    (arguments
+     (list #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'unpack 'copy-cmake-modules
+                 (lambda _
+                   (copy-file #$shlomif-cmake-modules
+                              (string-append "cmake/"
+                                             (strip-store-file-name
+                                              #$shlomif-cmake-modules)))))
+               (replace 'check
+                 (lambda _
+                   (with-directory-excursion "../source"
+                     (setenv "FCS_TEST_BUILD" "1")
+                     (setenv "RINUTILS_TEST_BUILD" "1")
+                     ;; TODO: Run tests after setting RINUTILS_TEST_TIDY to `1',
+                     ;; which requires tidy-all.
+                     ;; (setenv "RINUTILS_TEST_TIDY" "1")
+                     (invoke "perl"
+                             "CI-testing/continuous-integration-testing.pl")))))))
     (native-inputs
-     `(("perl" ,perl)
-       ;; The following is only needed for tests.
-       ("perl-file-find-object" ,perl-file-find-object)
-       ("perl-test-differences" ,perl-test-differences)
-       ("perl-class-xsaccessor" ,perl-class-xsaccessor)
-       ("perl-io-all" ,perl-io-all)
-       ("perl-test-runvalgrind" ,perl-test-runvalgrind)
-       ("cmake-rules" ,shlomif-cmake-modules)
-       ("pkg-config" ,pkg-config)))
+     (list perl
+           ;; The following are needed only for tests.
+           perl-class-xsaccessor
+           perl-file-find-object
+           perl-io-all
+           perl-test-differences
+           perl-test-runvalgrind
+           pkg-config))
     (inputs
      (list cmocka
            perl-env-path
@@ -7540,27 +7559,6 @@ original.")
            perl-text-glob
            perl-number-compare
            perl-moo))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-build-env
-           (lambda* (#:key inputs #:allow-other-keys)
-             (use-modules (guix build utils))
-             (let* ((cmake-rules (assoc-ref inputs "cmake-rules")))
-               (copy-file cmake-rules
-                          (string-append "cmake/"
-                                         (strip-store-file-name cmake-rules)))
-               #t)))
-         (replace 'check
-           (lambda _
-             (with-directory-excursion "../source"
-               (setenv "FCS_TEST_BUILD" "1")
-               (setenv "RINUTILS_TEST_BUILD" "1")
-               ;; TODO: Run tests after setting RINUTILS_TEST_TIDY to `1',
-               ;; which requires tidy-all.
-               ;; (setenv "RINUTILS_TEST_TIDY" "1")
-               (invoke "perl" "CI-testing/continuous-integration-testing.pl")))))))
-    (build-system cmake-build-system)
     (home-page "https://www.shlomifish.org/open-source/projects/")
     (synopsis "C11 / gnu11 utilities C library")
     (description "This package provides C11 / gnu11 utilities C library")
