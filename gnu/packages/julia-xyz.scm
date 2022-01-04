@@ -5026,6 +5026,27 @@ which are:
 @end itemize")
     (license license:expat)))
 
+(define-public julia-twiddle
+  (package
+    (name "julia-twiddle")
+    (version "1.1.2")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/SabrinaJaye/Twiddle.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1c2gdv7sy4n1d8687w2q0yzwmwmanf4p6mvzvkz5gm4baxyzmbh2"))))
+    (build-system julia-build-system)
+    (home-page "https://ben-ward.science/Twiddle.jl/stable")
+    (synopsis "Ready to use bit-twiddling tricks")
+    (description "This package provides a collection of useful bit-twiddling
+tricks, ready to use as functions, with detailed documentation and example
+real-world use cases.")
+    (license license:expat)))
+
 (define-public julia-typedtables
   (package
     (name "julia-typedtables")
