@@ -7567,7 +7567,7 @@ original.")
 (define-public fortune-mod
   (package
     (name "fortune-mod")
-    (version "2.28.0")
+    (version "3.12.0")
     (source
      (origin
        (method git-fetch)
@@ -7576,7 +7576,7 @@ original.")
              (commit (string-append "fortune-mod-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1ppzgnffgdcmq6fq4gmdq2ig10ip2bnfgklkb3i8nc6bdxm7pb89"))))
+        (base32 "1iq3bxrw8758jqvfqaasd7w1zm0g28g9n25qccnzvr98997h6r2n"))))
     (build-system cmake-build-system)
     (arguments
      (list #:test-target "check"
@@ -7585,6 +7585,11 @@ original.")
                (add-after 'unpack 'enter-build-directory
                  (lambda _
                    (chdir "fortune-mod")))
+               (add-after 'enter-build-directory 'symlink-rinutils
+                 (lambda _
+                   (mkdir-p "rinutils")
+                   (symlink #$(this-package-native-input "rinutils")
+                            "rinutils/rinutils")))
                (add-after 'enter-build-directory 'copy-cmake-modules
                  (lambda _
                    (copy-file #$shlomif-cmake-modules
@@ -7593,14 +7598,16 @@ original.")
                                               #$shlomif-cmake-modules)))))
                (add-after 'enter-build-directory 'delete-failing-test
                  (lambda _
-                   ;; TODO: Valgrind tests fail for some reason.
-                   ;; Similar issue: https://github.com/shlomif/fortune-mod/issues/21 (?)
-                   (delete-file "tests/t/valgrind.t")))
+                   ;; TODO: Valgrind tests fail for some reason.  Similar issue?
+                   ;; https://github.com/shlomif/fortune-mod/issues/21
+                   (delete-file "tests/data/valgrind.t")
+                   (with-output-to-file "tests/scripts/split-valgrind.pl"
+                     (const #t))))
                (add-after 'install 'fix-install-directory
                  (lambda* (#:key outputs #:allow-other-keys)
-                   ;; Move binary from "games/" to "bin/" and remove the latter.  This
-                   ;; is easier than patching CMakeLists.txt since the tests hard-code
-                   ;; the location as well.
+                   ;; Move binary from "games/" to "bin/" and remove the
+                   ;; latter.  This is easier than patching CMakeLists.txt
+                   ;; since the tests hard-code the location as well.
                    (let* ((out   (assoc-ref outputs "out"))
                           (bin   (string-append out "/bin"))
                           (games (string-append out "/games")))
@@ -7610,6 +7617,10 @@ original.")
     (inputs (list recode))
     (native-inputs
      (list perl
+           ;; For generating the documentation.
+           docbook-xml-5
+           docbook-xsl
+           perl-app-xml-docbook-builder
            ;; The following are only needed for tests.
            perl-file-find-object
            perl-test-differences
