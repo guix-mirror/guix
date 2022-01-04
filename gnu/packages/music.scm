@@ -2403,7 +2403,7 @@ special variant of additive synthesis.")
 (define-public amsynth
   (package
     (name "amsynth")
-    (version "1.12.2")
+    (version "1.12.3")
     (source
      (origin
        (method url-fetch)
@@ -2411,8 +2411,7 @@ special variant of additive synthesis.")
                            "download/release-" version
                            "/amsynth-" version ".tar.gz"))
        (sha256
-        (base32
-         "0lhp7fymm2fids02y43cy422jzmdiraszll1mk3gzlbfwg33ds1i"))))
+        (base32 "0xqcm3ggaj004gfmlsds2x6q8dxlz1akz6dbwkynv9vvdnizm91r"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
