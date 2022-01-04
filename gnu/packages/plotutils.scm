@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2016, 2017, 2019, 2020, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2016–2022 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
@@ -31,6 +31,7 @@
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages bdw-gc)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages image)
@@ -39,6 +40,7 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages maths)
+  #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -47,6 +49,7 @@
   #:use-module (gnu packages qt)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tex)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages))
 
@@ -265,41 +268,47 @@ colors, styles, options and details.")
 (define-public asymptote
   (package
     (name "asymptote")
-    (version "2.70")
+    (version "2.74")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/asymptote/"
                            version "/asymptote-" version ".src.tgz"))
        (sha256
-        (base32 "0gqcm0m916kjzyfswlplhyyvmqhg9hsishmbg4pyjcwchlx93k7m"))))
+        (base32 "1fmkxgxaxgngbc079sdrba00rdkq7v076pl43zd03br9j1d8m3nl"))))
     (build-system gnu-build-system)
     ;; Note: The 'asy' binary retains a reference to docdir for use with its
     ;; "help" command in interactive mode, so adding a "doc" output is not
     ;; currently useful.
     (native-inputs
-     `(("emacs" ,emacs-minimal)
-       ("gs" ,ghostscript)              ;For tests
-       ("perl" ,perl)
-       ("texinfo" ,texinfo)             ;For generating documentation
-       ;; For the manual and the tests.
-       ("texlive" ,(texlive-updmap.cfg
-                    (list texlive-amsfonts
-                          texlive-dvips-l3backend
-                          texlive-epsf
-                          texlive-etoolbox
-                          texlive-fonts-ec
-                          texlive-generic-infwarerr
-                          texlive-generic-kvdefinekeys
-                          texlive-grfext
-                          texlive-latex-base
-                          texlive-latex-geometry
-                          texlive-latex-graphics
-                          texlive-latex-kvoptions
-                          texlive-latex-pdftexcmds
-                          texlive-oberdiek ;for ifluatex
-                          texlive-latex-parskip
-                          texlive-tex-texinfo)))))
+     (list autoconf
+           automake
+           boost
+           emacs-minimal
+           ghostscript                  ;for tests
+           perl
+           rapidjson
+           texinfo                      ;for generating documentation
+           (texlive-updmap.cfg
+            (list texlive-amsfonts
+                  texlive-dvips-l3backend
+                  texlive-epsf
+                  texlive-etoolbox
+                  texlive-fonts-ec
+                  texlive-generic-infwarerr
+                  texlive-generic-kvdefinekeys
+                  texlive-grfext
+                  texlive-hyperref
+                  texlive-latex-base
+                  texlive-latex-geometry
+                  texlive-latex-graphics
+                  texlive-latex-kvoptions
+                  texlive-latex-media9
+                  texlive-latex-ocgx2
+                  texlive-latex-pdftexcmds
+                  texlive-oberdiek      ;for ifluatex
+                  texlive-latex-parskip
+                  texlive-tex-texinfo))))
     (inputs
      (list fftw
            freeglut
@@ -307,6 +316,7 @@ colors, styles, options and details.")
            glm
            gsl
            libgc
+           libtirpc
            python
            python-cson
            python-numpy
@@ -314,29 +324,42 @@ colors, styles, options and details.")
            readline
            zlib))
     (arguments
-     `(#:modules ((guix build emacs-utils)
+     (list
+      #:modules '((guix build emacs-utils)
                   (guix build gnu-build-system)
                   (guix build utils)
                   (srfi srfi-26))
-       #:imported-modules (,@%gnu-build-system-modules
+      #:imported-modules `(,@%gnu-build-system-modules
                            (guix build emacs-utils))
-       #:configure-flags
-       (list (string-append "--enable-gc=" (assoc-ref %build-inputs "libgc"))
-             (string-append "--with-latex="
-                            (assoc-ref %outputs "out")
-                            "/share/texmf/tex/latex")
-             (string-append "--with-context="
-                            (assoc-ref %outputs "out")
-                            "/share/texmf/tex/context/third"))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-build
-           ;; XXX: Build process complains about missing "config.h"
-           ;; and "primitives.h" files.
+      #:configure-flags
+      #~(list (string-append "--enable-gc=" #$(this-package-input "libgc"))
+              (string-append "--with-latex=" #$output "/share/texmf/tex/latex")
+              (string-append "--with-context="
+                             #$output
+                             "/share/texmf/tex/context/third"))
+      #:phases
+      `(modify-phases %standard-phases
+         (add-after 'unpack 'locate-tirpc
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* (list "configure.ac")
+               (("/usr/include/tirpc")
+                (search-input-directory inputs "include/tirpc")))))
+         (add-after 'unpack 'fix-includes
            (lambda _
              (substitute* (find-files "." "\\.in$")
                (("#include <primitives.h>") "#include \"primitives.h\""))
-             (invoke "touch" "prc/config.h")))
+             (substitute* (find-files "prc" "\\.h$")
+               (("#include \"config.h\"") "#include \"../config.h\""))
+             (substitute* "prc/oPRCFile.h"
+               (("#include \"xstream.h\"") "#include \"../xstream.h\""))
+             (substitute* "v3dfile.h"
+               (("#include <prc/oPRCFile.h>") "#include \"prc/oPRCFile.h\""))
+             (substitute* "LspCpp/LibLsp/lsp/ParentProcessWatcher.cpp"
+               (("#include <boost/process.hpp>" all)
+                (string-append "#include <algorithm>\n" all)))))
+         (replace 'bootstrap
+           (lambda _
+             (invoke "autoreconf" "-vfi")))
          (add-after 'unpack 'move-info-location
            ;; Build process installs info file in the unusual
            ;; "%out/share/info/asymptote/" location.  Move it to
@@ -345,21 +368,18 @@ colors, styles, options and details.")
              (substitute* "doc/png/Makefile.in"
                (("(\\$\\(infodir\\))/asymptote" _ infodir) infodir))
              (substitute* "doc/asymptote.texi"
-               (("asymptote/asymptote") "asymptote"))
-             #t))
+               (("asymptote/asymptote") "asymptote"))))
          (add-before 'build 'patch-pdf-viewer
            (lambda _
              ;; Default to a free pdf viewer.
              (substitute* "settings.cc"
                (("defaultPDFViewer=\"acroread\"")
-                "defaultPDFViewer=\"gv\""))
-             #t))
+                "defaultPDFViewer=\"gv\""))))
          (add-before 'check 'set-HOME
            ;; Some tests require write access to $HOME, otherwise leading to
            ;; "failed to create directory /homeless-shelter/.asy" error.
            (lambda _
-             (setenv "HOME" "/tmp")
-             #t))
+             (setenv "HOME" "/tmp")))
          (add-after 'install 'install-Emacs-data
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Install related Emacs libraries into an appropriate location.
@@ -367,16 +387,14 @@ colors, styles, options and details.")
                     (lisp-dir (string-append out "/share/emacs/site-lisp")))
                (for-each (cut install-file <> lisp-dir)
                          (find-files "." "\\.el$"))
-               (emacs-generate-autoloads ,name lisp-dir))
-             #t))
+               (emacs-generate-autoloads ,name lisp-dir))))
          (add-after 'install-Emacs-data 'wrap-python-script
            (lambda* (#:key inputs outputs #:allow-other-keys)
              ;; Make sure 'xasy' runs with the correct PYTHONPATH.
              (let* ((out (assoc-ref outputs "out"))
                     (path (getenv "GUIX_PYTHONPATH")))
                (wrap-program (string-append out "/share/asymptote/GUI/xasy.py")
-                 `("GUIX_PYTHONPATH" ":" prefix (,path))))
-             #t)))))
+                 `("GUIX_PYTHONPATH" ":" prefix (,path)))))))))
     (home-page "http://asymptote.sourceforge.net")
     (synopsis "Script-based vector graphics language")
     (description
