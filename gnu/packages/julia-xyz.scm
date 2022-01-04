@@ -2503,6 +2503,39 @@ inline presentation of greyscale or color images.")
 rotation, and other spatial transformations of arrays.")
     (license license:expat)))
 
+(define-public julia-indexablebitvectors
+  (package
+    (name "julia-indexablebitvectors")
+    (version "1.0.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/BioJulia/IndexableBitVectors.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1khaycydwa31sxwvrrvvlylpzdb77kkxfmb8cax3i22ix0c2nmlc"))))
+    (build-system julia-build-system)
+    ;; Package without Project.toml
+    (arguments
+     '(#:julia-package-name "IndexableBitVectors"
+       #:julia-package-uuid "1cb3b9ac-1ffd-5777-9e6b-a3d42300664d"))
+    (home-page "https://github.com/BioJulia/IndexableBitVectors.jl")
+    (synopsis "Bit vectors operations with extremely fast speed")
+    (description "This package exports following operations over bit vectors
+with extremely fast speed while keeping extra memory usage small:
+@itemize
+@item @code{getindex(bv::IndexableBitVectors, i::Integer)}: @code{i}-th
+element of @code{bv}
+@item @code{rank(b::Bool, bv::AbstractIndexableBitVector, i::Integer)}: the
+number of occurrences of bit @code{b} in @code{bv[1:i]}
+@item @code{select(b::Bool, bv::AbstractIndexableBitVector, i::Integer)}: the
+index of i-th occurrence of @code{b} in @code{bv}.
+@end itemize
+and other shortcuts or types.")
+    (license license:expat)))
+
 (define-public julia-indexing
   (package
     (name "julia-indexing")
