@@ -7499,11 +7499,12 @@ original.")
 (define shlomif-cmake-modules
   (origin
     (method url-fetch)
-    (uri (string-append "https://bitbucket.org/shlomif/shlomif-cmake-modules/"
-                        "raw/c505713d7a7cda608f97f01577e5868a711b883e/"
-                        "shlomif-cmake-modules/Shlomif_Common.cmake"))
+    (uri (string-append
+          "https://raw.githubusercontent.com/shlomif/shlomif-cmake-modules/"
+          "89f05caf86078f783873975525230cf4fecede8a"
+          "/shlomif-cmake-modules/Shlomif_Common.cmake"))
     (sha256
-     (base32 "0kx9s1qqhhzprp1w3b67xmsns0n0v506bg5hgrshxaxpy6lqiwb2"))))
+     (base32 "05xdikw5ln0yh8p5chsmd8qnndmxg5b5vjlfpdqrjcb1ncqzywkc"))))
 
 (define-public rinutils
   (package
