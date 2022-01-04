@@ -387,6 +387,37 @@ many of the other BioJulia packages.  This package defines IO, exceptions, and
 other types or methods used by other BioJulia packages.")
       (license license:expat))))
 
+(define-public julia-biosequences
+  (package
+    (name "julia-biosequences")
+    (version "2.0.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/BioJulia/BioSequences.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0ns6zk0zvnsf4hlsys9ck2xrn20qck0b0aghh484vc6n458zq2gw"))))
+    (build-system julia-build-system)
+    (propagated-inputs
+     (list julia-biogenerics
+           julia-biosymbols
+           julia-combinatorics
+           julia-indexablebitvectors
+           julia-stablerngs
+           julia-twiddle))
+    (native-inputs
+     (list julia-statsbase
+           julia-yaml))
+    (home-page "https://biojulia.net/BioSequences.jl/stable/")
+    (synopsis "Data types and methods for common operations with biological sequences")
+    (description "This package provides Data types and methods for common
+operations with biological sequences, including DNA, RNA, and amino acid
+sequences.")
+    (license license:expat)))
+
 (define-public julia-biosymbols
   (package
     (name "julia-biosymbols")
