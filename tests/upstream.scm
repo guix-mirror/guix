@@ -142,4 +142,72 @@
                     '("hello" "sed" "tar" "grep"))))
       (else (pk else #false)))))
 
+(define test-new-package
+  (package
+    (inherit test-package)
+    (inputs
+     (list hello))
+    (native-inputs
+     (list sed tar))
+    (propagated-inputs
+     (list grep))))
+
+(define test-new-package-sexp
+  '(package
+    (name "test")
+    (version "2.10")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/hello/hello-" version
+                                  ".tar.gz"))
+              (sha256
+               (base32
+                "0ssi1wpaf7plaswqqjwigppsg5fyh99vdlb9kzl7c9lng89ndq1i"))))
+    (build-system gnu-build-system)
+    (inputs
+     (list hello))
+    (native-inputs
+     (list sed tar))
+    (propagated-inputs
+     (list grep))
+    (home-page "http://localhost")
+    (synopsis "test")
+    (description "test")
+    (license license:gpl3+)))
+
+(test-assert "changed-inputs returns changes to plain input list"
+  (let ((changes (changed-inputs
+                  (package
+                    (inherit test-new-package)
+                    (inputs (list hello sed)))
+                  test-new-package-sexp)))
+    (match changes
+      ;; Exactly one change
+      (((? upstream-input-change? item))
+       (and (equal? (upstream-input-change-type item)
+                    'regular)
+            (equal? (upstream-input-change-action item)
+                    'remove)
+            (string=? (upstream-input-change-name item)
+                      "sed")))
+      (else (pk else #false)))))
+
+(test-assert "changed-inputs returns changes to all plain input lists"
+  (let ((changes (changed-inputs
+                  (package
+                    (inherit test-new-package)
+                    (inputs '())
+                    (native-inputs '())
+                    (propagated-inputs '()))
+                  test-new-package-sexp)))
+    (match changes
+      (((? upstream-input-change? items) ...)
+       (and (equal? (map upstream-input-change-type items)
+                    '(regular native native propagated))
+            (equal? (map upstream-input-change-action items)
+                    '(add add add add))
+            (equal? (map upstream-input-change-name items)
+                    '("hello" "sed" "tar" "grep"))))
+      (else (pk else #false)))))
+
 (test-end)
