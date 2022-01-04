@@ -71,7 +71,7 @@ Copyright @copyright{} 2019 Kyle Andrews@*
 Copyright @copyright{} 2019 Alex Griffin@*
 Copyright @copyright{} 2019, 2020, 2021 Guillaume Le Vaillant@*
 Copyright @copyright{} 2020 Liliana Marie Prikler@*
-Copyright @copyright{} 2019, 2020, 2021 Simon Tournier@*
+Copyright @copyright{} 2019, 2020, 2021, 2022 Simon Tournier@*
 Copyright @copyright{} 2020 Wiktor Żelazny@*
 Copyright @copyright{} 2020 Damien Cassou@*
 Copyright @copyright{} 2020 Jakub Kądziołka@*
@@ -8363,9 +8363,10 @@ julia} packages, which essentially is similar to running @samp{julia -e
 @env{JULIA_LOAD_PATH} contains the paths to all Julia package inputs.
 Tests are run by calling @code{/test/runtests.jl}.
 
-The Julia package name is read from the file @file{Project.toml}.  This
-value can be overridden by passing the argument @code{#:julia-package-name}
-(which must be correctly capitalized).
+The Julia package name and uuid is read from the file
+@file{Project.toml}.  These values can be overridden by passing the
+argument @code{#:julia-package-name} (which must be correctly
+capitalized) or @code{#:julia-package-uuid}.
 
 Julia packages usually manage their binary dependencies via
 @code{JLLWrappers.jl}, a Julia package that creates a module (named
@@ -8393,12 +8394,10 @@ MbedTLS package:
               (find-files "src/wrappers/" "\\.jl$"))))
 @end lisp
 
-Some older packages that aren't using @file{Package.toml} yet, will require
-this file to be created, too.  The function @code{julia-create-package-toml}
-helps creating the file.  You need to pass the outputs and the source of the
-package, its name (the same as the @code{file-name} parameter), the package
-uuid, the package version, and a list of dependencies specified by their name
-and their uuid.
+Some older packages that aren't using @file{Project.toml} yet, will
+require this file to be created, too.  It is internally done if the
+arguments @code{#:julia-package-name} and @code{#:julia-package-uuid}
+are provided.
 @end defvr
 
 @defvr {Scheme Variable} maven-build-system

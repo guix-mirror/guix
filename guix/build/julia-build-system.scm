@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019, 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;; Copyright © 2021 Jean-Baptiste Volatier <jbv@pm.me>
-;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
+;;; Copyright © 2021, 2022 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,8 +27,8 @@
   #:use-module (ice-9 regex)
   #:use-module (ice-9 rdelim)
   #:use-module (ice-9 popen)
+  #:use-module (srfi srfi-1)
   #:export (%standard-phases
-            julia-create-package-toml
             julia-build))
 
 ;; Commentary:
@@ -138,6 +138,8 @@ Project.toml)."
 (define* (link-depot #:key source inputs outputs
                      julia-package-name julia-package-uuid  #:allow-other-keys)
   (let* ((out (assoc-ref outputs "out"))
+         (name+version (strip-store-file-name out))
+         (version (last (string-split name+version #\-)))
          (package-name (or
                         julia-package-name
                         (project.toml->name "Project.toml")))
@@ -148,6 +150,14 @@ Project.toml)."
 println(Base.version_slug(Base.UUID(\"~a\"),
                           Base.SHA1(Pkg.GitTools.tree_hash(\".\"))))" uuid)))
          (slug (string-trim-right (get-string-all pipe))))
+    ;; Few packages do not have the regular Project.toml file, then when they
+    ;; are propagated, dependencies do not find them and an raise error.
+    (unless (file-exists? "Project.toml")
+        (julia-create-package-toml (getcwd)
+                                   julia-package-name julia-package-uuid
+                                   version
+                                   #:file "Project.toml"))
+
     ;; When installing a package, julia looks first at in the JULIA_DEPOT_PATH
     ;; for a path like packages/PACKAGE/XXXX
     ;; Where XXXX is a slug encoding the package UUID and SHA1 of the files
@@ -157,17 +167,16 @@ println(Base.version_slug(Base.UUID(\"~a\"),
     (symlink package-dir (string-append out "/share/julia/packages/"
                                         package-name "/" slug))))
 
-(define (julia-create-package-toml outputs source
-                                   name uuid version
-                                   deps)
-  "Some packages are not using the new Package.toml dependency specifications.
-Write this file manually, so that Julia can find its dependencies."
+(define* (julia-create-package-toml location
+                                    name uuid version
+                                    #:optional
+                                    (deps '())
+                                    #:key
+                                    (file "Project.toml"))
+  "Some packages are not using the new Project.toml dependency specifications.
+Write this FILE manually, so that Julia can find its dependencies."
   (let ((f (open-file
-            (string-append
-             (assoc-ref outputs "out")
-             %package-path
-             (string-append
-              name "/Project.toml"))
+            (string-append location "/" file)
             "w")))
     (display (string-append
               "
