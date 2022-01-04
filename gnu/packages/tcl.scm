@@ -5,7 +5,7 @@
 ;;; Copyright © 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2022 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
@@ -25,6 +25,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages tcl)
+  #:use-module (guix gexp)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -108,30 +109,26 @@
         (base32 "0v0m1s3rlsbg7p366i6m5zcvnmixnch87jmczidjanqvmw76fk5c"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags
-       (list
-        (string-append
-         "--exec-prefix=" (assoc-ref %outputs "out"))
-        (string-append
-         "--with-tclinclude=" (assoc-ref %build-inputs "tcl") "/include")
-        (string-append
-         "--with-tcl=" (assoc-ref %build-inputs "tcl") "/lib"))
-       #:test-target "test"
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'cleanup-bin-and-lib
-           (lambda* (#:key outputs #:allow-other-keys)
-             ;; NOTE: (Sharlatan-20210213T204336+0000): libraries appearer in
-             ;; "out/lib/itcl{{version}}" and there are no binaries, some extra
-             ;; rename and remove spells are to be applied.
-             (let ((out (assoc-ref outputs "out")))
-               (rmdir
-                (string-append out "/bin"))
-               (rename-file
-                (string-append out "/lib/itcl" ,version) (string-append out "/libtmp"))
-               (rename-file
-                (string-append out "/libtmp") (string-append out "/lib")))
-             #t)))))
+     (list #:configure-flags
+           #~(list
+              (string-append "--exec-prefix=" #$output)
+              (string-append "--with-tclinclude="
+                             (assoc-ref %build-inputs "tcl") "/include")
+              (string-append "--with-tcl="
+                             (assoc-ref %build-inputs "tcl") "/lib"))
+           #:test-target "test"
+           #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'install 'clean-up-bin-and-lib
+                 (lambda _
+                   ;; NOTE: (Sharlatan-20210213T204336+0000): libraries appearer in
+                   ;; "out/lib/itcl{{version}}" and there are no binaries, some extra
+                   ;; rename and remove spells are to be applied.
+                   (rmdir (string-append #$output "/bin"))
+                   (rename-file (string-append #$output "/lib/itcl" #$version)
+                                (string-append #$output "/libtmp"))
+                   (rename-file (string-append #$output "/libtmp")
+                                (string-append #$output "/lib")))))))
     (native-inputs
      (list tcl))
     (inputs
