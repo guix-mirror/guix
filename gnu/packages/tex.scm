@@ -426,6 +426,15 @@ files from LOCATIONS with expected checksum HASH.  CODE is not currently in use.
 
                (with-fluids ((%default-port-encoding "ISO-8859-1"))
                  (substitute-commands iso-8859-1-encoded-scripts)))))
+         ;; When ST_NLINK_TRICK is set, kpathsea attempts to avoid work when
+         ;; searching files by assuming that a directory with exactly two
+         ;; links has no subdirectories.  This assumption does not hold in our
+         ;; case, so some directories with symlinked subdirectories would not
+         ;; be traversed.
+         (add-after 'patch-scripts 'patch-directory-traversal
+           (lambda _
+             (substitute* "texk/kpathsea/config.h"
+               (("#define ST_NLINK_TRICK") ""))))
          (add-after 'check 'customize-texmf.cnf
            ;; The default texmf.cnf is provided by this package, texlive-bin.
            ;; Every variable of interest is set relatively to the GUIX_TEXMF
