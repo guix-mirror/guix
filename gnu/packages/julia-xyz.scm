@@ -387,6 +387,37 @@ many of the other BioJulia packages.  This package defines IO, exceptions, and
 other types or methods used by other BioJulia packages.")
       (license license:expat))))
 
+(define-public julia-biosymbols
+  (package
+    (name "julia-biosymbols")
+    ;; Older release for compatibility with julia-biosequences.
+    (version "4.0.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/BioJulia/BioSymbols.jl")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1222rwdndi777lai8a6dwrh35i5rgmj75kcrhn8si72sxgz0syjm"))))
+    (build-system julia-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'adjust-tests
+           (lambda _
+             (substitute* "test/runtests.jl"
+               (("\\@testset \\\"Range.*" all)
+                (string-append all " return\n"))))))))
+    (propagated-inputs
+     (list julia-automa))
+    (home-page "https://github.com/BioJulia/BioSymbols.jl")
+    (synopsis "Primitive types for nucleic acids and amino acids")
+    (description "This package defines the primitive types for nucleic acids
+and amino acids that are used ny otherBioJulia packages.")
+    (license license:expat)))
+
 (define-public julia-blockarrays
   (package
     (name "julia-blockarrays")
