@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2020, 2021 Nicolò Balzarotti <nicolo@nixo.xyz>
-;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
+;;; Copyright © 2021, 2022 Simon Tournier <zimon.toutoune@gmail.com>
 ;;; Copyright © 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2021 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2021 jgart <jgart@dismail.de>
@@ -4404,6 +4404,31 @@ files that the user must interact with through a file browser.")
     (description "@code{Showoff} provides an interface for consistently
 formatting an array of n things, e.g. numbers, dates, unitful values.  It's used
 in @code{Gadfly}, @code{Plots} and @code{Makie} to label axes and keys.")
+    (license license:expat)))
+
+(define-public julia-simd
+  (package
+    (name "julia-simd")
+    (version "3.3.1")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/eschnett/SIMD.jl")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1jiic2hcl9l6zh6jgqzbd3ik2girmgvni4bq65kdci5l12k9la68"))))
+    (build-system julia-build-system)
+    (home-page "https://github.com/eschnett/SIMD.jl")
+    (synopsis "Explicit SIMD vectorization")
+    (description "This package allows programmers to explicitly SIMD-vectorize
+their Julia code.  By exposing SIMD vector types and corresponding operations,
+the programmer can explicitly vectorize their code.  While this does not
+guarantee that the generated machine code is efficient, it relieves the
+compiler from determining whether it is legal to vectorize the code, deciding
+whether it is beneficial to do so, and rearranging the code to synthesize
+vector instructions.")
     (license license:expat)))
 
 (define-public julia-simpletraits
