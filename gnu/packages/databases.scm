@@ -1194,7 +1194,7 @@ pictures, sounds, or video.")
 (define-public pgloader
   (package
     (name "pgloader")
-    (version "3.6.2")
+    (version "3.6.3")
     (source
      (origin
        (method git-fetch)
@@ -1202,7 +1202,7 @@ pictures, sounds, or video.")
              (url "https://github.com/dimitri/pgloader")
              (commit (string-append "v" version))))
        (sha256
-        (base32 "06i1jd2za3ih5caj2b4vzlzags5j65vv8dfdbz0ggdrp40wfd5lh"))
+        (base32 "147dcf0rmi94p95dvifx8qy7602fvs041dv9wlg3q31ly13agwb5"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
