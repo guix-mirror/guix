@@ -28136,6 +28136,39 @@ estimation in measurement error models: The R package decon.
 Journal of Statistical Software, 39(10), 1-24.")
     (license license:gpl3+)))
 
+(define-public r-densestbayes
+  (package
+    (name "r-densestbayes")
+    (version "1.0-2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "densEstBayes" version))
+       (sha256
+        (base32 "16fb7vkic9q5p8s4f0f215zmb36fcizqr4r2vm9dxxj9rasrg2f3"))))
+    (properties `((upstream-name . "densEstBayes")))
+    (build-system r-build-system)
+    (propagated-inputs
+     (list r-bh
+           r-mass
+           r-nlme
+           r-rcpp
+           r-rcpparmadillo
+           r-rcppeigen
+           r-rcppparallel
+           r-rstan
+           r-rstantools
+           r-stanheaders))
+    (home-page "https://cran.r-project.org/package=densEstBayes")
+    (synopsis "Density estimation via Bayesian inference engines")
+    (description
+     "Bayesian density estimates for univariate continuous random samples are
+provided using the Bayesian inference engine paradigm.  The engine options
+are: Hamiltonian Monte Carlo, the no U-turn sampler, semiparametric mean field
+variational Bayes and slice sampling.  The methodology is described in Wand
+and Yu (2020), arXiv:2009.06182.")
+    (license license:gpl2+)))
+
 (define-public r-locpol
   (package
     (name "r-locpol")
