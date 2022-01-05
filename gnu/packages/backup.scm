@@ -398,15 +398,15 @@ list and implement the backup strategy.")
         (base32 "1jpg97my0akh2ayzy0nm4yqiv4gcx79rgyrkzd19yyv3iy719vcw"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags
-       (list "--enable-valgrind"
-             "--with-blkid")
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'bootstrap 'set-version
-           (lambda _
-             (setenv "VERSION" ,version)
-             (patch-shebang "autover.sh"))))))
+     (list #:configure-flags
+           #~(list "--enable-valgrind"
+                   "--with-blkid")
+           #:phases
+           #~(modify-phases %standard-phases
+               (add-before 'bootstrap 'set-version
+                 (lambda _
+                   (setenv "VERSION" #$version)
+                   (patch-shebang "autover.sh"))))))
     (native-inputs
      (list automake autoconf
            ;; For the tests.
