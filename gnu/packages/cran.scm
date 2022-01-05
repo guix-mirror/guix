@@ -484,19 +484,17 @@ degree elevation and curve fitting.")
              (substitute* "configure"
                (("^PKG_LIBS=.*")
                 (string-append "PKG_LIBS="
-                               (assoc-ref inputs "node")
+                               (assoc-ref inputs "libnode")
                                "/lib/libnode.so.64\n")))
              (setenv "INCLUDE_DIR"
                      (string-append
-                      (assoc-ref inputs "node")
+                      (assoc-ref inputs "libnode")
                       "/include/node"))
              (setenv "LIB_DIR"
                      (string-append
-                      (assoc-ref inputs "node") "/lib"))
-             #t)))))
+                      (assoc-ref inputs "libnode") "/lib")))))))
     (inputs
-     `(("node" ,libnode)
-       ("zlib" ,zlib)))
+     (list libnode zlib))
     (propagated-inputs
      (list r-curl r-jsonlite r-rcpp))
     (native-inputs
