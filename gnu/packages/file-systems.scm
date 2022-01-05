@@ -1146,7 +1146,7 @@ with the included @command{xfstests-check} helper.")
 (define-public zfs
   (package
     (name "zfs")
-    (version "2.1.1")
+    (version "2.1.2")
     (outputs '("out" "module" "src"))
     (source
       (origin
@@ -1155,7 +1155,7 @@ with the included @command{xfstests-check} helper.")
                               "/download/zfs-" version
                               "/zfs-" version ".tar.gz"))
           (sha256
-           (base32 "1zsc0zkz5cci6pxc0kwzn3xg72qv2fq65phb768y5dgk1784hkxx"))))
+           (base32 "1rxrr329y6zgkcqv0gah8bgi9ih6pqaay7mnk4xqlrhzgb8z3315"))))
     (build-system linux-module-build-system)
     (arguments
      `(;; The ZFS kernel module should not be downloaded since the license
