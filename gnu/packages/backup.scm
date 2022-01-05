@@ -38,6 +38,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages backup)
+  #:use-module (guix gexp)
   #:use-module (guix packages)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix git-download)
@@ -1152,23 +1153,23 @@ compression parameters used by Gzip.")
         (base32 "0pvqlj17vp81i7saxqh5hsaxqz29ldrjd7bcssh4g1h0ikmnaf2r"))))
     (build-system python-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'configure
-           (lambda* (#:key inputs #:allow-other-keys)
-             ;; Set absolute store path to borg.
-             (substitute* "borgmatic/commands/borgmatic.py"
-               (("location\\.get\\('local_path', 'borg'\\)")
-                (string-append "location.get('local_path', '"
-                               (assoc-ref inputs "borg") "/bin/borg"
-                               "')")))))
-         (replace 'check
-           (lambda* (#:key tests? inputs outputs #:allow-other-keys)
-             (when tests?
-               ;; Tests require the installed executable.
-               (setenv "PATH" (string-append (assoc-ref outputs "out") "/bin"
-                                             ":" (getenv "PATH")))
-               (invoke "pytest")))))))
+     (list #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'unpack 'configure
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   ;; Set absolute store path to borg.
+                   (substitute* "borgmatic/commands/borgmatic.py"
+                     (("location\\.get\\('local_path', 'borg'\\)")
+                      (string-append "location.get('local_path', '"
+                                     (search-input-file inputs "bin/borg")
+                                     "')")))))
+               (replace 'check
+                 (lambda* (#:key tests? #:allow-other-keys)
+                   (when tests?
+                     ;; Tests require the installed executable.
+                     (setenv "PATH" (string-append #$output "/bin"
+                                                   ":" (getenv "PATH")))
+                     (invoke "pytest")))))))
     (inputs
      (list borg python-colorama python-jsonschema python-requests
            python-ruamel.yaml))
