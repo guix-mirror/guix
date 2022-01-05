@@ -28441,7 +28441,7 @@ personal wiki.")
 (define-public emacs-org-roam-bibtex
   (package
     (name "emacs-org-roam-bibtex")
-    (version "0.6.1")
+    (version "0.6.2")
     (source
      (origin
        (method git-fetch)
@@ -28450,7 +28450,7 @@ personal wiki.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1d09y923d9n5v7m201myba85m4064s2hdy3pgzssy70mjncg3m1g"))))
+        (base32 "00zclyh600865ys7pqiryp3k5li9h20bypvfp2bzqi3588hn9n4i"))))
     (build-system emacs-build-system)
     (propagated-inputs
      (list emacs-helm-bibtex emacs-org-ref emacs-org-roam))
