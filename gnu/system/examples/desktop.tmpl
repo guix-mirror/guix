@@ -2,8 +2,8 @@
 ;; for a "desktop" setup with GNOME and Xfce where the
 ;; root partition is encrypted with LUKS, and a swap file.
 
-(use-modules (gnu) (gnu system nss))
-(use-service-modules desktop xorg)
+(use-modules (gnu) (gnu system nss) (guix utils))
+(use-service-modules desktop sddm xorg)
 (use-package-modules certs gnome)
 
 (operating-system
@@ -74,12 +74,25 @@
   ;; by clicking the gear.  Use the "desktop" services, which
   ;; include the X11 log-in service, networking with
   ;; NetworkManager, and more.
-  (services (append (list (service gnome-desktop-service-type)
-                          (service xfce-desktop-service-type)
-                          (set-xorg-configuration
-                           (xorg-configuration
-                            (keyboard-layout keyboard-layout))))
-                    %desktop-services))
+  (services (if (target-x86-64?)
+                (append (list (service gnome-desktop-service-type)
+                              (service xfce-desktop-service-type)
+                              (set-xorg-configuration
+                               (xorg-configuration
+                                (keyboard-layout keyboard-layout))))
+                        %desktop-services)
+
+                ;; FIXME: Since GDM depends on Rust (gdm -> gnome-shell -> gjs
+                ;; -> mozjs -> rust) and Rust is currently unavailable on
+                ;; non-x86_64 platforms, we use SDDM and Mate here instead of
+                ;; GNOME and GDM.
+                (append (list (service mate-desktop-service-type)
+                              (service xfce-desktop-service-type)
+                              (set-xorg-configuration
+                               (xorg-configuration
+                                (keyboard-layout keyboard-layout))
+                               sddm-service-type))
+                        %desktop-services)))
 
   ;; Allow resolution of '.local' host names with mDNS.
   (name-service-switch %mdns-host-lookup-nss))
