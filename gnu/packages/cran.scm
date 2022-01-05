@@ -30190,14 +30190,14 @@ the @code{raster} package that is suitable for extracting raster values using
 (define-public r-stringfish
   (package
     (name "r-stringfish")
-    (version "0.15.4")
+    (version "0.15.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "stringfish" version))
        (sha256
         (base32
-         "1n67y9vgv8vb8qd091d1wm5sgbalcm2avh2fz0hd3mmglpkr83wf"))))
+         "0ac17wl0fcpmipbvhhg5nyccg055671fnlxvnjd5l3kilx313wlx"))))
     (properties `((upstream-name . "stringfish")))
     (build-system r-build-system)
     (propagated-inputs
