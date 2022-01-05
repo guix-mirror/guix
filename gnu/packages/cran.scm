@@ -26052,14 +26052,14 @@ which may also be useful for other purposes.")
 (define-public r-spatstat-sparse
   (package
     (name "r-spatstat-sparse")
-    (version "2.0-0")
+    (version "2.1-0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "spatstat.sparse" version))
        (sha256
         (base32
-         "1iqrpazb88s4w208adf2qgm4ajwz3kwqck65k9g5l28zw9jcxyr7"))))
+         "148fxbxss569w73xaqpzwpz9rfjdgznh2ngf06gvm33631222680"))))
     (properties
      `((upstream-name . "spatstat.sparse")))
     (build-system r-build-system)
