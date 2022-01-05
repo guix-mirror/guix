@@ -466,14 +466,14 @@ degree elevation and curve fitting.")
 (define-public r-v8
   (package
     (name "r-v8")
-    (version "3.6.0")
+    (version "4.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "V8" version))
        (sha256
         (base32
-         "0xqk4rcv255r2wll2jpzf9ix8j6hbhw0vbhg2g9i6z2apyc9i5m3"))))
+         "1j5vknhq12kfzda46y7nwiqdzqipzgympqzjq9d8ckr6f6v4qshl"))))
     (properties `((upstream-name . "V8")))
     (build-system r-build-system)
     (arguments
