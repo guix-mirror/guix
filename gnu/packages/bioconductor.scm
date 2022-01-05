@@ -11320,14 +11320,14 @@ motifs, and others.")
 (define-public r-activedriverwgs
   (package
     (name "r-activedriverwgs")
-    (version "1.1.1")
+    (version "1.1.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ActiveDriverWGS" version))
        (sha256
         (base32
-         "06mvakdc8d2pn91p0sr4ixc561s4ia5h1cvd1p7pqd6s50dy4say"))))
+         "13b5yazgv9kckcp6gck183mh1m0q8lc5ixagmcy9s8kv2wz7wq45"))))
     (properties
      `((upstream-name . "ActiveDriverWGS")))
     (build-system r-build-system)
@@ -11335,6 +11335,9 @@ motifs, and others.")
      (list r-biostrings
            r-bsgenome
            r-bsgenome-hsapiens-ucsc-hg19
+           r-bsgenome-hsapiens-ucsc-hg38
+           r-bsgenome-mmusculus-ucsc-mm9
+           r-bsgenome-mmusculus-ucsc-mm10
            r-genomeinfodb
            r-genomicranges
            r-iranges
