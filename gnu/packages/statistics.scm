@@ -3630,14 +3630,14 @@ flexible than the orphaned \"base64\" package.")
 (define-public r-irlba
   (package
     (name "r-irlba")
-    (version "2.3.3")
+    (version "2.3.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "irlba" version))
        (sha256
         (base32
-         "1h7mzrqdjc41814cf6c93sbyl7nxwvsf3x8apl9rhmydgdlk7qkf"))))
+         "1fcv4vazg2sbsda8qqjjsjn2wagcp2bsahvznwm443j66q6qrz16"))))
     (build-system r-build-system)
     (propagated-inputs
      (list r-matrix))
