@@ -6,6 +6,7 @@
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2022 John Kehayias <john.kehayias@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -171,6 +172,14 @@ Protocol.")
                  (substitute* "syncthing_gtk/configuration.py"
                    (("/usr/bin/syncthing") (string-append syncthing
                                                           "/bin/syncthing"))))))
+           (add-after 'unpack 'fix-autostart-path
+             ;; Change the autostart .desktop file 'Exec' command so it finds
+             ;; the Python wrapper of 'syncthing-gtk', rather than the unwrapped
+             ;; '.syncthing-gtk-real'.
+             (lambda _
+               (substitute* "syncthing_gtk/tools.py"
+                 (("return executable")
+                   "return \"syncthing-gtk\""))))
            (add-after 'unpack 'remove-windows.py
              (lambda _
                ;; A Windows-specific module that fails to load with
