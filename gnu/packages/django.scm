@@ -152,7 +152,7 @@ to the @dfn{don't repeat yourself} (DRY) principle.")
               (uri (pypi-uri "Django" version))
               (sha256
                (base32
-                "00yih371rzh0rpknayj764cfa860nsh1n9ybwyiqwf0jbm4p2k58"))))
+                "13siv3bcb2yrpzzsq2k0f1yc70ya8jkmaa5kc8x29ijjglk3g9fz"))))
     (native-inputs
      (modify-inputs (package-native-inputs python-django-3.2)
        (prepend ;; 2.2 requires Selenium for the test suite.
