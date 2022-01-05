@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Vicente Vera Parra <vicentemvp@gmail.com>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016, 2017, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
@@ -2387,8 +2387,17 @@ collation, and NAMESPACE files.")
         (base32
          "0na3yficxg0hjql9pvz96f66yh4g5k2hfwcricb705z7f2pk5f23"))))
     (build-system r-build-system)
+    (arguments
+     (list
+      #:phases
+      '(modify-phases %standard-phases
+         (add-after 'unpack 'do-not-use-versioned-linking
+           (lambda _
+             (substitute* "configure"
+               (("PKG_LIBS=\"\\$\\{PKG_LIBS_VERSIONED\\}\"")
+                "PKG_LIBS=\"${PKG_LIBS}\"")))))))
     (inputs
-     (list libressl))
+     (list openssl))
     (native-inputs
      (list pkg-config r-knitr))
     (propagated-inputs
