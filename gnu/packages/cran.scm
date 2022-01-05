@@ -24268,14 +24268,14 @@ techniques to average Bayesian predictive distributions.")
 (define-public r-rstan
   (package
     (name "r-rstan")
-    (version "2.21.2")
+    (version "2.21.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rstan" version))
        (sha256
         (base32
-         "0jh58qfrksd2j9w2zy4bajryivgp36m3xdb9mjrjqbk1ib9h83p3"))))
+         "1ccjdwh0xspna2c0m5p8as8y2b0lnhdyk9hfd3jh58j6n8fbzg3n"))))
     (properties `((upstream-name . "rstan")))
     (build-system r-build-system)
     (arguments
@@ -24300,9 +24300,7 @@ techniques to average Bayesian predictive distributions.")
            r-rcpp
            r-rcppeigen
            r-rcppparallel
-           r-stanheaders
-           r-v8
-           r-withr))
+           r-stanheaders))
     (home-page "https://discourse.mc-stan.org/")
     (synopsis "R interface to Stan")
     (description
