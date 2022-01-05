@@ -5,6 +5,7 @@
 ;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
 ;;; Copyright © 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
+;;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,10 +38,10 @@
   #:use-module (guix import utils)
   #:use-module (guix http-client)
   #:use-module (guix git)
+  #:use-module (guix hash)
   #:use-module ((guix serialization) #:select (write-file))
   #:use-module (guix store)
   #:use-module (guix ui)
-  #:use-module (gcrypt hash)
   #:use-module (guix base32)
   #:use-module (guix upstream)
   #:use-module (guix packages)
@@ -230,27 +231,6 @@ keywords to values."
     (close-port port)
     (data->recipe (cons ':name data))))
 
-;; XXX adapted from (guix scripts hash)
-(define (file-hash file select? recursive?)
-  ;; Compute the hash of FILE.
-  (if recursive?
-      (let-values (((port get-hash) (open-sha256-port)))
-        (write-file file port #:select? select?)
-        (force-output port)
-        (get-hash))
-      (call-with-input-file file port-sha256)))
-
-;; XXX taken from (guix scripts hash)
-(define (vcs-file? file stat)
-  (case (stat:type stat)
-    ((directory)
-     (member (basename file) '(".bzr" ".git" ".hg" ".svn" "CVS")))
-    ((regular)
-     ;; Git sub-modules have a '.git' file that is a regular text file.
-     (string=? (basename file) ".git"))
-    (else
-     #f)))
-
 (define (git-repository->origin recipe url)
   "Fetch origin details from the Git repository at URL for the provided MELPA
 RECIPE."
@@ -272,7 +252,7 @@ RECIPE."
        (sha256
         (base32
          ,(bytevector->nix-base32-string
-           (file-hash directory (negate vcs-file?) #t)))))))
+           (file-hash* directory #:recursive? #true)))))))
 
 (define* (melpa-recipe->origin recipe)
   "Fetch origin details from the MELPA recipe and associated repository for
@@ -381,7 +361,8 @@ type '<elpa-package>'."
                         (sha256
                          (base32
                           ,(if tarball
-                               (bytevector->nix-base32-string (file-sha256 tarball))
+                               (bytevector->nix-base32-string
+                                (file-hash* tarball #:recursive? #false))
                                "failed to download package")))))))
       (build-system emacs-build-system)
       ,@(maybe-inputs 'propagated-inputs dependencies)

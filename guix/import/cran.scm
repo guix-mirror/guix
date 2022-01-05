@@ -3,6 +3,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
+;;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,10 +36,9 @@
   #:use-module (guix memoization)
   #:use-module (guix http-client)
   #:use-module (guix diagnostics)
+  #:use-module (guix hash)
   #:use-module (guix i18n)
-  #:use-module (gcrypt hash)
   #:use-module (guix store)
-  #:use-module ((guix serialization) #:select (write-file))
   #:use-module (guix base32)
   #:use-module ((guix download) #:select (download-to-store))
   #:use-module (guix import utils)
@@ -195,17 +195,6 @@ bioconductor package NAME, or #F if the package is unknown."
                  (string=? (assoc-ref meta "Package") name))
                (bioconductor-packages-list type))
          (cut assoc-ref <> "Version")))
-
-;; XXX taken from (guix scripts hash)
-(define (vcs-file? file stat)
-  (case (stat:type stat)
-    ((directory)
-     (member (basename file) '(".bzr" ".git" ".hg" ".svn" "CVS")))
-    ((regular)
-     ;; Git sub-modules have a '.git' file that is a regular text file.
-     (string=? (basename file) ".git"))
-    (else
-     #f)))
 
 ;; Little helper to download URLs only once.
 (define download
@@ -464,16 +453,6 @@ reference the pkg-config tool."
 (define (needs-knitr? meta)
   (member "knitr" (listify meta "VignetteBuilder")))
 
-;; XXX adapted from (guix scripts hash)
-(define (file-hash file select? recursive?)
-  ;; Compute the hash of FILE.
-  (if recursive?
-      (let-values (((port get-hash) (open-sha256-port)))
-        (write-file file port #:select? select?)
-        (force-output port)
-        (get-hash))
-      (call-with-input-file file port-sha256)))
-
 (define (description->package repository meta)
   "Return the `package' s-expression for an R package published on REPOSITORY
 from the alist META, which was derived from the R package's DESCRIPTION file."
@@ -571,12 +550,7 @@ from the alist META, which was derived from the R package's DESCRIPTION file."
                         (sha256
                          (base32
                           ,(bytevector->nix-base32-string
-                            (case repository
-                              ((git)
-                               (file-hash source (negate vcs-file?) #t))
-                              ((hg)
-                               (file-hash source (negate vcs-file?) #t))
-                              (else (file-sha256 source))))))))
+                            (file-hash* source #:recursive? (or git? hg?)))))))
               ,@(if (not (and git? hg?
                               (equal? (string-append "r-" name)
                                       (cran-guix-name name))))

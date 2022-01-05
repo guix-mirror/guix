@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
+;;; Copyright © 2021, 2022 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -39,6 +39,7 @@
   #:use-module (guix base32)
   #:use-module (guix git)
   #:use-module ((guix git-download) #:prefix download:)
+  #:use-module (guix hash)
   #:use-module (guix store)
   #:export (%default-sort-key
             %contentdb-api
@@ -286,14 +287,6 @@ results.  The return value is a list of <package-keys> records."
   (with-store store
     (latest-repository-commit store url #:ref ref)))
 
-;; XXX adapted from (guix scripts hash)
-(define (file-hash file)
-  "Compute the hash of FILE."
-  (let-values (((port get-hash) (open-sha256-port)))
-    (write-file file port)
-    (force-output port)
-    (get-hash)))
-
 (define (make-minetest-sexp author/name version repository commit
                             inputs home-page synopsis
                             description media-license license)
@@ -314,9 +307,13 @@ MEDIA-LICENSE and LICENSE."
            ;; The git commit is not always available.
            ,(and commit
                  (bytevector->nix-base32-string
-                  (file-hash
+                  (file-hash*
                    (download-git-repository repository
-                                            `(commit . ,commit)))))))
+                                            `(commit . ,commit))
+                   ;; 'download-git-repository' already filtered out the '.git'
+                   ;; directory.
+                   #:select? (const #true)
+                   #:recursive? #true)))))
          (file-name (git-file-name name version))))
      (build-system minetest-mod-build-system)
      ,@(maybe-propagated-inputs (map contentdb->package-name inputs))
