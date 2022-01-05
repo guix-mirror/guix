@@ -1,9 +1,8 @@
-diff -ur a/CMakeLists.txt b/CMakeLists.txt
---- a/CMakeLists.txt	2019-05-24 17:58:19.693090158 -0400
-+++ b/CMakeLists.txt	2019-05-24 17:57:43.349473252 -0400
-@@ -375,44 +375,15 @@
- 
- include(ConfigureChecks)
+--- a/CMakeLists.txt	2022-01-05 18:51:17.828392874 +0100
++++ b/CMakeLists.txt	2022-01-05 18:54:50.826717830 +0100
+@@ -487,48 +487,15 @@
+   include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/ppc)
+ endif()
  
 -
 -## Also build external/squirrel
@@ -15,6 +14,9 @@ diff -ur a/CMakeLists.txt b/CMakeLists.txt
  set(SQUIRREL_PREFIX ${CMAKE_BINARY_DIR}/squirrel/ex)
 -ExternalProject_Add(squirrel
 -  SOURCE_DIR "${CMAKE_SOURCE_DIR}/external/squirrel/"
+-  BUILD_BYPRODUCTS
+-  "${SQUIRREL_PREFIX}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}sqstdlib_static${CMAKE_STATIC_LIBRARY_SUFFIX}"
+-  "${SQUIRREL_PREFIX}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}squirrel_static${CMAKE_STATIC_LIBRARY_SUFFIX}"
 -  CMAKE_ARGS
 -  -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
 -  -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
@@ -22,7 +24,8 @@ diff -ur a/CMakeLists.txt b/CMakeLists.txt
 -  -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
 -  -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
 -  -DCMAKE_INSTALL_PREFIX=${SQUIRREL_PREFIX}
--  -DINSTALL_INC_DIR=include)
+-  -DINSTALL_INC_DIR=include
+-  -DCMAKE_POSITION_INDEPENDENT_CODE=ON)
 -
 -if(WIN32)
 -  add_library(squirrel_lib SHARED IMPORTED)

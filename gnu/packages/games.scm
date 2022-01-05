@@ -5442,7 +5442,7 @@ with the \"Stamp\" tool within Tux Paint.")
 (define-public supertux
   (package
    (name "supertux")
-   (version "0.6.2")
+   (version "0.6.3")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://github.com/SuperTux/supertux/"
@@ -5451,7 +5451,7 @@ with the \"Stamp\" tool within Tux Paint.")
             (file-name (string-append name "-" version ".tar.gz"))
             (sha256
              (base32
-              "167m3z4m8n76dvbv42m1fnvabpbpsxvr28zk9641916jl9pfba96"))
+              "1xkr3ka2sxp5s0spp84iv294i29s1vxqzazb6kmjc0n415h0x57p"))
             (patches
              (search-patches "supertux-unbundle-squirrel.patch"))))
    (arguments
@@ -5471,18 +5471,19 @@ with the \"Stamp\" tool within Tux Paint.")
                  (string-append "${SQUIRREL_PREFIX}/include/squirrel"))))
             #t)))))
    (build-system cmake-build-system)
-   (inputs (list sdl2
+   (inputs (list boost
+                 curl
+                 freetype
+                 glew
+                 glm
+                 libogg
+                 libvorbis
+                 mesa
+                 openal
+                 physfs
+                 sdl2
                  sdl2-image
                  sdl2-mixer
-                 openal
-                 mesa
-                 glew
-                 libvorbis
-                 libogg
-                 physfs
-                 curl
-                 boost
-                 freetype
                  squirrel))
    (native-inputs
     (list pkg-config))
