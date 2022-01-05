@@ -1557,13 +1557,13 @@ understand the language at a deeper level.")
 (define-public r-memoise
   (package
     (name "r-memoise")
-    (version "2.0.0")
+    (version "2.0.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "memoise" version))
               (sha256
                (base32
-                "1bzcv7pmls3bx2w5ccv1pm20wycbfqba1v76k0fjgmjsm6hy76pz"))))
+                "1srdzv2bp0splislrabmf1sfbqfi3hn189nq7kxhgjn8k3p38l7q"))))
     (build-system r-build-system)
     (propagated-inputs
      (list r-cachem r-rlang))
