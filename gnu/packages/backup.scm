@@ -749,14 +749,14 @@ to not fully trusted targets.  Borg is a fork of Attic.")
 (define-public wimlib
   (package
     (name "wimlib")
-    (version "1.13.4")
+    (version "1.13.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://wimlib.net/downloads/"
                                   "wimlib-" version ".tar.gz"))
               (sha256
                (base32
-                "04ny5s5z05gk6davbwkjkraan781k2xzw6kjwp75h6ncv45dv1sb"))))
+                "08z3xxm5hq1n4wmyhgz14p1cv0w2lx610vn8nhfwpds4n7lwkz1j"))))
     (build-system gnu-build-system)
     (native-inputs
      (list pkg-config))
