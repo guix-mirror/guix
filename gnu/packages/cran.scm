@@ -5144,14 +5144,14 @@ analysis of multiply imputed data sets.")
 (define-public r-mice
   (package
     (name "r-mice")
-    (version "3.13.0")
+    (version "3.14.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "mice" version))
        (sha256
         (base32
-         "11cpyqlilakan2pwjzacb9jjlazazsqdngy237nnrj8j6mky822i"))))
+         "01fnfrr7adp29s5kic95r9q0rdznkz2pjmziyimnrqzyicyvfyzq"))))
     (build-system r-build-system)
     (propagated-inputs
      (list r-broom
@@ -5161,7 +5161,8 @@ analysis of multiply imputed data sets.")
            r-lattice
            r-rcpp
            r-rlang
-           r-tidyr))
+           r-tidyr
+           r-withr))
     (home-page "https://cran.r-project.org/web/packages/mice/")
     (synopsis "Multivariate imputation by chained equations")
     (description
