@@ -5022,7 +5022,7 @@ MPEG-2 and audio over Linux IEEE 1394.")
 (define-public mdadm
   (package
     (name "mdadm")
-    (version "4.1")
+    (version "4.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -5030,7 +5030,7 @@ MPEG-2 and audio over Linux IEEE 1394.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "0jjgjgqijpdp7ijh8slzzjjw690kydb1jjadf0x5ilq85628hxmb"))))
+                "07ghmibmbnkdy91ng87zdllzicm299l20dhs9m5bfjw6f1b22726"))))
     (build-system gnu-build-system)
     (inputs
      `(("udev" ,eudev)))
@@ -5052,15 +5052,13 @@ MPEG-2 and audio over Linux IEEE 1394.")
                                          "coreutils")))
                (substitute* "udev-md-raid-arrays.rules"
                  (("/usr/bin/(readlink|basename)" all program)
-                  (string-append coreutils "/bin/" program))))
-             #t))
+                  (string-append coreutils "/bin/" program))))))
          (add-before 'build 'remove-W-error
            (lambda _
              ;; We cannot build with -Werror on i686 due to a
              ;; 'sign-compare' warning in util.c.
              (substitute* "Makefile"
-               (("-Werror") ""))
-             #t))
+               (("-Werror") ""))))
          (delete 'configure))
        ;;tests must be done as root
        #:tests? #f))
