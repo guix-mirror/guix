@@ -8,6 +8,7 @@
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2020 Simon Tournier <zimon.toutoune@gmail.com>
+;;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,7 +27,6 @@
 
 (define-module (guix scripts refresh)
   #:use-module (guix ui)
-  #:use-module (gcrypt hash)
   #:use-module (guix scripts)
   #:use-module ((guix scripts build) #:select (%standard-build-options))
   #:use-module (guix store)
@@ -38,6 +38,7 @@
   #:use-module (guix scripts graph)
   #:use-module (guix monads)
   #:use-module (guix gnupg)
+  #:use-module (guix hash)
   #:use-module (gnu packages)
   #:use-module ((gnu packages commencement) #:select (%final-inputs))
   #:use-module (ice-9 match)
@@ -314,14 +315,14 @@ KEY-DOWNLOAD specifies a download policy for missing OpenPGP keys; allowed
 values: 'interactive' (default), 'always', and 'never'.  When WARN? is true,
 warn about packages that have no matching updater."
   (if (lookup-updater package updaters)
-      (let-values (((version tarball source)
+      (let-values (((version output source)
                     (package-update store package updaters
                                     #:key-download key-download))
                    ((loc)
                     (or (package-field-location package 'version)
                         (package-location package))))
         (when version
-          (if (and=> tarball file-exists?)
+          (if (and=> output file-exists?)
               (begin
                 (info loc
                       (G_ "~a: updating from version ~a to version ~a...~%")
@@ -363,8 +364,7 @@ warn about packages that have no matching updater."
                       (info loc (G_ "~a: consider removing this propagated input: ~a~%")
                             name change-name))))
                  (upstream-source-input-changes source))
-                (let ((hash (call-with-input-file tarball
-                              port-sha256)))
+                (let ((hash (file-hash* output)))
                   (update-package-source package source hash)))
               (warning (G_ "~a: version ~a could not be \
 downloaded and authenticated; not updating~%")
