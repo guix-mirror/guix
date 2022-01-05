@@ -11014,6 +11014,27 @@ analyzes presented in the book \"Multiple Comparisons Using R\" (Bretz,
 Hothorn, Westfall, 2010, CRC Press).")
     (license license:gpl2)))
 
+(define-public r-multcompview
+  (package
+    (name "r-multcompview")
+    (version "0.1-8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "multcompView" version))
+       (sha256
+        (base32 "1rfq9wvvrghq0542ff40wy8vdmsyd8spzz6ihcywcvxdfa8m6g8j"))))
+    (properties `((upstream-name . "multcompView")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/package=multcompView")
+    (synopsis "Visualizations of paired comparisons")
+    (description
+     "Convert a logical vector or a vector of p-values or a correlation,
+difference, or distance matrix into a display identifying the pairs for which
+the differences were not significantly different.")
+    ;; Any version of the GPL.
+    (license license:gpl3+)))
+
 (define-public r-emmeans
   (package
     (name "r-emmeans")
