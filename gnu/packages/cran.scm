@@ -26966,14 +26966,14 @@ object sizes.")
 (define-public r-yardstick
   (package
     (name "r-yardstick")
-    (version "0.0.8")
+    (version "0.0.9")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "yardstick" version))
        (sha256
         (base32
-         "13b0lyj2k0r568mwlyz9yvp9156rzlj4jqnjazaffh9vwqh4whir"))))
+         "00hv4gk1ba4dab8i3dcq7lim4bll7l572rgc8km9x4ja8by95j8h"))))
     (properties `((upstream-name . "yardstick")))
     (build-system r-build-system)
     (propagated-inputs
