@@ -24,6 +24,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages rdf)
+  #:use-module (guix gexp)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix git-download)
@@ -124,7 +125,7 @@ Java Lucene text search engine API to C++.")
 (define-public lucene++
   (package
     (name "lucene++")
-    (version "3.0.7")
+    (version "3.0.8")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -133,19 +134,35 @@ Java Lucene text search engine API to C++.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "06b37fly6l27zc6kbm93f6khfsv61w792j8xihfagpcm9cfz2zi1"))))
+                "12v7r62f7pqh5h210pb74sfx6h70lj4pgfpva8ya2d55fn0qxrr2"))
+              (modules '((guix build utils)))
+              (snippet
+               #~(begin
+                   (substitute* (list "src/config/core/CMakeLists.txt"
+                                      "src/config/contrib/CMakeLists.txt")
+                     (("include/pkgconfig")
+                      "lib/pkgconfig")
+                     (("include/cmake")
+                      "share/cmake/lucene++"))))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
-       ;; CXX_FLAGS suggested in a closed issue on github:
-       ;; https://github.com/luceneplusplus/LucenePlusPlus/issues/100
-       (list "-Wno-dev" "-DCMAKE_CXX_FLAGS=-DBOOST_VARIANT_USE_RELAXED_GET_BY_DEFAULT"
-             ;; Install in lib64 break rpath
-             "-DCMAKE_INSTALL_LIBDIR:PATH=lib")))
+       (list (string-append "-DLIB_DESTINATION:PATH="
+                            (assoc-ref %outputs "out") "/lib")
+             "-DINSTALL_GTEST:BOOL=OFF")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           ;; XXX Tests are built unconditionally during the 'build phase.
+           ;; There's no ‘test’ target.  README.md suggests running this.
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "src/test/lucene++-tester"
+                       "--test_dir=../source/src/test/testfiles")))))))
     (native-inputs
      (list pkg-config))
     (inputs
-     (list boost))
+     (list boost zlib))
     (home-page "https://github.com/luceneplusplus/LucenePlusPlus")
     (synopsis "Text search engine")
     (description "Lucene++ is an up to date C++ port of the popular Java
