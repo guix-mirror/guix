@@ -399,8 +399,10 @@ list and implement the backup strategy.")
     (build-system gnu-build-system)
     (arguments
      (list #:configure-flags
-           #~(list "--enable-valgrind"
-                   "--with-blkid")
+           ;; XXX --enable-valgrind fails with ‘A must-be-redirected function
+           ;; whose name matches the pattern: strlen in an object with soname
+           ;; matching: ld-linux-x86-64.so.2 was not found […]’; used to work.
+           #~(list "--with-blkid")
            #:phases
            #~(modify-phases %standard-phases
                (add-before 'bootstrap 'set-version
@@ -408,9 +410,7 @@ list and implement the backup strategy.")
                    (setenv "VERSION" #$version)
                    (patch-shebang "autover.sh"))))))
     (native-inputs
-     (list automake autoconf
-           ;; For the tests.
-           valgrind))
+     (list automake autoconf))
     (inputs
      (list `(,util-linux "lib"))) ; libblkid
     (home-page "https://www.snapraid.it/")
