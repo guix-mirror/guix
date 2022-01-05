@@ -1773,8 +1773,7 @@ const char *_ca_bundle = getenv(\"CURL_CA_BUNDLE\");
 if(_ca_bundle != NULL) { curl_easy_setopt(handle, CURLOPT_CAINFO, _ca_bundle); }
 " m))))))))
     (inputs
-     `(("libcurl" ,curl)
-       ("zlib" ,zlib)))
+     (list curl zlib))
     (native-inputs
      (list pkg-config r-knitr))
     (home-page "https://github.com/jeroenooms/curl")
