@@ -18218,14 +18218,14 @@ on, for a performance vs accuracy trade-off.")
 (define-public r-rsparse
   (package
     (name "r-rsparse")
-    (version "0.4.0")
+    (version "0.5.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rsparse" version))
        (sha256
         (base32
-         "1blg59gsidh0sn6yy761pisz2phml0hzgqc24s5s8q9q903rddr9"))))
+         "0d05h47j29zipyxbkv9cwzv2dzj894z6hh9dqfhwswwjbv6ciwpq"))))
     (properties `((upstream-name . "rsparse")))
     (build-system r-build-system)
     (propagated-inputs
@@ -18233,6 +18233,7 @@ on, for a performance vs accuracy trade-off.")
            r-float
            r-lgr
            r-matrix
+           r-matrixextra
            r-rcpp
            r-rcpparmadillo
            r-rhpcblasctl))
