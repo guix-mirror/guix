@@ -19731,6 +19731,35 @@ from 1-D, 2-D and 3-D partial differential equations that have been converted
 to ODEs by numerical differencing.")
     (license license:gpl2+)))
 
+(define-public r-pmcmrplus
+  (package
+    (name "r-pmcmrplus")
+    (version "1.9.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "PMCMRplus" version))
+       (sha256
+        (base32 "00sgk4c7vpmbfifrsbqd5gh7hwdpm8kymlpnnrdzlhvkymhbmfkn"))))
+    (properties `((upstream-name . "PMCMRplus")))
+    (build-system r-build-system)
+    (inputs (list gmp))
+    (propagated-inputs
+     (list r-bwstest
+           r-gmp
+           r-ksamples
+           r-mass
+           r-multcompview
+           r-mvtnorm
+           r-rmpfr
+           r-suppdists))
+    (native-inputs (list gfortran r-knitr))
+    (home-page "https://cran.r-project.org/package=PMCMRplus")
+    (synopsis "Calculate pairwise multiple comparisons of mean rank sums extended")
+    (description
+     "This package provides multiple pairwise tests.")
+    (license license:gpl3+)))
+
 (define-public r-pracma
   (package
     (name "r-pracma")
