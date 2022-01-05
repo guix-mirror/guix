@@ -6641,13 +6641,13 @@ extreme-value distribution.")
 (define-public r-gld
   (package
     (name "r-gld")
-    (version "2.6.2")
+    (version "2.6.4")
     (source
       (origin
         (method url-fetch)
         (uri (cran-uri "gld" version))
         (sha256
-          (base32 "1wrw7i5bq7rb2ahadm57y9fmr697r7lp9ln7ajcd592b0nn60n4i"))))
+          (base32 "08rkv7g6ci969vh9fbyg3lrpfmjhbiwzdhcjs9j6s9bf3gpdmdhd"))))
     (properties `((upstream-name . "gld")))
     (build-system r-build-system)
     (propagated-inputs (list r-e1071 r-lmom))
