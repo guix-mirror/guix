@@ -114,14 +114,14 @@
 (define-public r-brio
   (package
     (name "r-brio")
-    (version "1.1.2")
+    (version "1.1.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "brio" version))
        (sha256
         (base32
-         "1vviykwx1z71yhk1xl87riaygj8sq0sj7ixyig1irqsi66aydpa2"))))
+         "1inwzvlf6zj6gi47gd0byzqv02qajb3l475z8pjvx2b1hm0r1a7a"))))
     (properties `((upstream-name . "brio")))
     (build-system r-build-system)
     (home-page "https://github.com/r-lib/brio")
