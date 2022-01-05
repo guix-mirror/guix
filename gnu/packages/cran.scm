@@ -25351,14 +25351,14 @@ inference diagnostics.
 (define-public r-brms
   (package
     (name "r-brms")
-    (version "2.16.1")
+    (version "2.16.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "brms" version))
        (sha256
         (base32
-         "1i0vkkfziac29vncw4igja5m7a6rhw9rqwifrw3y47q6zgczp7kl"))))
+         "1q93z4cf3iy4rs6pgvph6z7hc8q05iwif76hcg8p4kr6nl82nc38"))))
     (properties `((upstream-name . "brms")))
     (build-system r-build-system)
     (propagated-inputs
@@ -25377,7 +25377,6 @@ inference diagnostics.
            r-nleqslv
            r-nlme
            r-posterior
-           r-projpred
            r-rcpp
            r-rstan
            r-rstantools
