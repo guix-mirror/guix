@@ -15157,17 +15157,17 @@ transformation, respectively.")
 (define-public r-shinyjs
   (package
     (name "r-shinyjs")
-    (version "2.0.0")
+    (version "2.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "shinyjs" version))
        (sha256
         (base32
-         "1zzq356dvd8ciajy6r5n4ybgx9xk7ydwv25j86xlcsqznkxdkkf2"))))
+         "1id9gsrkr28xl80a8794in17rxmmz06zqvd5hlns7mqz3fzhrhky"))))
     (build-system r-build-system)
     (propagated-inputs
-     (list r-digest r-htmltools r-jsonlite r-shiny))
+     (list r-digest r-jsonlite r-shiny))
     (native-inputs
      (list r-knitr))
     (home-page "https://deanattali.com/shinyjs")
