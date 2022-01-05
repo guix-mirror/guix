@@ -4396,13 +4396,13 @@ available in a vignette.")
 (define-public r-progressr
   (package
     (name "r-progressr")
-    (version "0.9.0")
+    (version "0.10.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "progressr" version))
        (sha256
-        (base32 "03sk5cv8cywahlszjkd8pfqmhbj6cv0j54d3lassa7h44f20zryg"))))
+        (base32 "1p5s35rzh28n2id2lipgyqmh3wzib66m7x0pz9028y8cql8xr5ac"))))
     (properties `((upstream-name . "progressr")))
     (build-system r-build-system)
     (propagated-inputs
