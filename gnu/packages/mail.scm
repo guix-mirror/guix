@@ -62,6 +62,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages mail)
+  #:use-module (guix gexp)
   #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
@@ -3789,17 +3790,19 @@ killed threads.")
        (sha256
         (base32 "1sl5rdgalswxya61vhkf28r0fb4b3pq77qgzhhsfagmpvgbx0d2x"))))
     (arguments
-     `(#:configure-flags '("--with-gtk3" "--with-gtkspell" "--with-gnutls"
-                           "--enable-libnotify" "--enable-manual"
-                           "--enable-gkr")
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'patch-gpg2
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "pan/usenet-utils/gpg.cc"
-               (("\"gpg2\"") (string-append "\""
-                                            (assoc-ref inputs "gnupg")
-                                            "/bin/gpg\""))))))))
+     (list #:configure-flags
+           #~(list "--with-gtk3" "--with-gtkspell" "--with-gnutls"
+                   "--enable-libnotify" "--enable-manual"
+                   "--enable-gkr")
+           #:phases
+           #~(modify-phases %standard-phases
+               (add-before 'configure 'patch-gpg2
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   (substitute* "pan/usenet-utils/gpg.cc"
+                     (("\"gpg2\"")
+                      (string-append "\""
+                                     (search-input-file inputs "/bin/gpg")
+                                     "\""))))))))
     (inputs
      (list gmime
            gnupg
