@@ -15838,14 +15838,14 @@ additional utilities for genomic regions processing.")
 (define-public r-sets
   (package
     (name "r-sets")
-    (version "1.0-19")
+    (version "1.0-20")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sets" version))
        (sha256
         (base32
-         "18185rm458nlifzrp73fjrjvksmm5dvn5ygs949kdzdln1myb4xf"))))
+         "1mkmqi3n1lh01k47yvkr0dlf4imqdi6d6bglx9bvrjmg816p4jr3"))))
     (properties `((upstream-name . "sets")))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/sets")
