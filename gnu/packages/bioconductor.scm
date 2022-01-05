@@ -5224,14 +5224,14 @@ signal in the input, that lead to spurious peaks during peak calling.")
 (define-public r-diffbind
   (package
     (name "r-diffbind")
-    (version "3.4.0")
+    (version "3.4.3")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "DiffBind" version))
        (sha256
         (base32
-         "15p4jd9k520va6kzizkgsl4a18kh5r8i50qfdkv7xazsfhvxjm3i"))))
+         "1bz03ls7pkb09p6nkz7gfnhjlh06mgbp3j98ppnzibiar3cjrnfj"))))
     (properties `((upstream-name . "DiffBind")))
     (build-system r-build-system)
     (propagated-inputs
