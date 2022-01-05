@@ -28888,31 +28888,31 @@ in output to the equivalent HTML.")
 (define-public r-pkgdown
   (package
     (name "r-pkgdown")
-    (version "1.6.1")
+    (version "2.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "pkgdown" version))
        (sha256
         (base32
-         "1k31biyvxkv3xjc1yy3nzb9wfza3vbx97fv17nly5a6vlv7zqbs4"))))
+         "154pcj6ggr3g1pdlvnyzh2xssiz7vb88pclzwc0wcck5kyrwnvmp"))))
     (properties `((upstream-name . "pkgdown")))
     (build-system r-build-system)
     (inputs (list pandoc))
     (propagated-inputs
-     (list r-callr
+     (list r-bslib
+           r-callr
            r-crayon
            r-desc
            r-digest
            r-downlit
            r-fs
            r-httr
+           r-jsonlite
            r-magrittr
            r-memoise
-           r-openssl
            r-purrr
            r-ragg
-           r-rematch2
            r-rlang
            r-rmarkdown
            r-tibble
