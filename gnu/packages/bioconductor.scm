@@ -8752,14 +8752,14 @@ decomposition algorithms.")
 (define-public r-yapsa
   (package
     (name "r-yapsa")
-    (version "1.19.0")
+    (version "1.20.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "YAPSA" version))
        (sha256
         (base32
-         "0fgcbskz96p5815nywsnqv2gzn7g93m438hpd5rpg85srg4wrpdj"))))
+         "08r05fzpraggbxv15lx0b68kjlkysp0rcdlm6n9avzmlsdqplb2h"))))
     (properties `((upstream-name . "YAPSA")))
     (build-system r-build-system)
     (propagated-inputs
@@ -8781,7 +8781,7 @@ decomposition algorithms.")
            r-keggrest
            r-limsolve
            r-magrittr
-           r-pmcmr
+           r-pmcmrplus
            r-pracma
            r-reshape2
            r-somaticsignatures
