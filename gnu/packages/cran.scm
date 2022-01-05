@@ -20290,14 +20290,14 @@ regression models.")
 (define-public r-abtest
   (package
     (name "r-abtest")
-    (version "0.2.2")
+    (version "1.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "abtest" version))
        (sha256
         (base32
-         "1ak0m4jd1grriwg4pn3aqf1468qma6rjn5kqjh8izx7zl29jd07v"))))
+         "0jz2ry5364p8h8xlk5a5sycn8xlpxd1iasfg99bcr4jqzd92jfqg"))))
     (properties `((upstream-name . "abtest")))
     (build-system r-build-system)
     (propagated-inputs
