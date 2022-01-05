@@ -28014,14 +28014,14 @@ distributed as independent packages.")
 (define-public r-phangorn
   (package
     (name "r-phangorn")
-    (version "2.8.0")
+    (version "2.8.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "phangorn" version))
        (sha256
         (base32
-         "1pg5lfc5m4ccphswbfbihj91ppmqhf4084kbjlmfsrqxylsyy8ch"))))
+         "0xfwi7adl1pcfcwk72fj7lkwfm0wiip96ij7m4252xr9mq818ivd"))))
     (build-system r-build-system)
     (propagated-inputs
      (list r-ape
