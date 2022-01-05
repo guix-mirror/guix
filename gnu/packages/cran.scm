@@ -4488,18 +4488,20 @@ the Kaplan-Meier and Aalen-Johansen methods.")
 (define-public r-dimred
   (package
     (name "r-dimred")
-    (version "0.2.3")
+    (version "0.2.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "dimRed" version))
        (sha256
         (base32
-         "110d6y83ib1nfpxzmvkvb3fn3brskwkdbsk4dqrdrswrd4znxrg6"))))
+         "1534axd5gcwma3nbglrn0l2an53n3yyya30fqkgb4d8l124ygb7j"))))
     (properties `((upstream-name . "dimRed")))
     (build-system r-build-system)
     (propagated-inputs
      (list r-drr r-magrittr))
+    (native-inputs
+     (list r-knitr))
     (home-page "https://github.com/gdkrmr/dimRed")
     (synopsis "Framework for dimensionality reduction")
     (description
