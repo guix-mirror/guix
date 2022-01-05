@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016-2022 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2021 Marius Bakke <marius@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -56,6 +56,7 @@
             tuned-package
 
             show-transformation-options-help
+            transformation-option-key?
             %transformation-options))
 
 ;;; Commentary:
@@ -795,6 +796,12 @@ are replaced by their latest upstream version."
          ((k . proc)
           (and (eq? k key) proc)))
        %transformations))
+
+(define (transformation-option-key? key)
+  "Return true if KEY is an option key (as returned while parsing options with
+%TRANSFORMATION-OPTIONS) corresponding to a package transformation option.
+For example, (transformation-option-key? 'with-input) => #t."
+  (->bool (transformation-procedure key)))
 
 
 ;;;

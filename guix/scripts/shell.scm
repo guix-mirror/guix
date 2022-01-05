@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2021 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2021-2022 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,7 +21,8 @@
   #:use-module ((guix diagnostics) #:select (location))
   #:use-module (guix scripts environment)
   #:autoload   (guix scripts build) (show-build-options-help)
-  #:autoload   (guix transformations) (show-transformation-options-help)
+  #:autoload   (guix transformations) (transformation-option-key?
+                                       show-transformation-options-help)
   #:use-module (guix scripts)
   #:use-module (guix packages)
   #:use-module (guix profiles)
@@ -40,6 +41,7 @@
   #:use-module ((guix build utils) #:select (mkdir-p))
   #:use-module (guix cache)
   #:use-module ((ice-9 ftw) #:select (scandir))
+  #:autoload   (gnu packages) (cache-is-authoritative?)
   #:export (guix-shell))
 
 (define (show-help)
@@ -201,51 +203,35 @@ a hash-prefixed comment, or a blank line."
     (const #f)))
 
 (define (options-with-caching opts)
-  "If OPTS contains exactly one 'load' or one 'manifest' key, automatically
-add a 'profile' key (when a profile for that file is already in cache) or a
-'gc-root' key (to add the profile to cache)."
-  (define (single-file-for-caching opts)
-    (let loop ((opts opts)
-               (file #f))
-      (match opts
-        (() file)
-        ((('package . _) . _) #f)
-        ((('load . ('package candidate)) . rest)
-         (and (not file) (loop rest candidate)))
-        ((('manifest . candidate) . rest)
-         (and (not file) (loop rest candidate)))
-        ((('expression . _) . _) #f)
-        ((_ . rest) (loop rest file)))))
-
-  ;; Check whether there's a single 'load' or 'manifest' option.  When that is
-  ;; the case, arrange to automatically cache the resulting profile.
-  (match (single-file-for-caching opts)
-    (#f opts)
-    (file
-     (let* ((root (profile-cached-gc-root file))
-            (stat (and root (false-if-exception (lstat root)))))
-       (if (and (not (assoc-ref opts 'rebuild-cache?))
-                stat
-                (<= (stat:mtime ((@ (guile) stat) file))
-                    (stat:mtime stat)))
-           (let ((now (current-time)))
-             ;; Update the atime on ROOT to reflect usage.
-             (utime root
-                    now (stat:mtime stat) 0 (stat:mtimensec stat)
-                    AT_SYMLINK_NOFOLLOW)
-             (alist-cons 'profile root
-                         (remove (match-lambda
-                                   (('load . _) #t)
-                                   (('manifest . _) #t)
-                                   (_ #f))
-                                 opts)))          ;load right away
-           (if (and root (not (assq-ref opts 'gc-root)))
-               (begin
-                 (if stat
-                     (delete-file root)
-                     (mkdir-p (dirname root)))
-                 (alist-cons 'gc-root root opts))
-               opts))))))
+  "If OPTS contains only options that allow us to compute a cache key,
+automatically add a 'profile' key (when a profile for that file is already in
+cache) or a 'gc-root' key (to add the profile to cache)."
+  ;; Attempt to compute a file name for use as the cached profile GC root.
+  (let* ((root timestamp (profile-cached-gc-root opts))
+         (stat (and root (false-if-exception (lstat root)))))
+    (if (and (not (assoc-ref opts 'rebuild-cache?))
+             stat
+             (<= timestamp (stat:mtime stat)))
+        (let ((now (current-time)))
+          ;; Update the atime on ROOT to reflect usage.
+          (utime root
+                 now (stat:mtime stat) 0 (stat:mtimensec stat)
+                 AT_SYMLINK_NOFOLLOW)
+          (alist-cons 'profile root
+                      (remove (match-lambda
+                                (('load . _) #t)
+                                (('manifest . _) #t)
+                                (('package . _) #t)
+                                (('ad-hoc-package . _) #t)
+                                (_ #f))
+                              opts)))             ;load right away
+        (if (and root (not (assq-ref opts 'gc-root)))
+            (begin
+              (if stat
+                  (delete-file root)
+                  (mkdir-p (dirname root)))
+              (alist-cons 'gc-root root opts))
+            opts))))
 
 (define (auto-detect-manifest opts)
   "If OPTS do not specify packages or a manifest, load a \"guix.scm\" or
@@ -308,28 +294,87 @@ echo ~a >> ~a
   (make-parameter (string-append (cache-directory #:ensure? #f)
                                  "/profiles")))
 
-(define (profile-cache-key file)
+(define (profile-cache-primary-key)
+  "Return the \"primary key\" used when computing keys for the profile cache.
+Return #f if no such key can be obtained and caching cannot be
+performed--e.g., because the package cache is not authoritative."
+  (and (cache-is-authoritative?)
+       (match (current-channels)
+         (()
+          #f)
+         (((= channel-commit commits) ...)
+          (string-join commits)))))
+
+(define (profile-file-cache-key file system)
   "Return the cache key for the profile corresponding to FILE, a 'guix.scm' or
 'manifest.scm' file, or #f if we lack channel information."
-  (match (current-channels)
-    (() #f)
-    (((= channel-commit commits) ...)
+  (match (profile-cache-primary-key)
+    (#f #f)
+    (primary-key
      (let ((stat (stat file)))
        (bytevector->base32-string
         ;; Since FILE is not canonicalized, only include the device/inode
         ;; numbers.  XXX: In some rare cases involving Btrfs and NFS, this can
         ;; be insufficient: <https://lwn.net/Articles/866582/>.
         (sha256 (string->utf8
-                 (string-append (string-join commits) ":"
+                 (string-append primary-key ":" system ":"
                                 (number->string (stat:dev stat)) ":"
                                 (number->string (stat:ino stat))))))))))
 
-(define (profile-cached-gc-root file)
-  "Return the cached GC root for FILE, a 'guix.scm' or 'manifest.scm' file, or
-#f if we lack information to cache it."
-  (match (profile-cache-key file)
-    (#f  #f)
-    (key (string-append (%profile-cache-directory) "/" key))))
+(define (profile-spec-cache-key specs system)
+  "Return the cache key corresponding to SPECS built for SYSTEM, where SPECS
+is a list of package specs.  Return #f if caching is not possible."
+  (match (profile-cache-primary-key)
+    (#f #f)
+    (primary-key
+     (bytevector->base32-string
+      (sha256 (string->utf8
+               (string-append primary-key ":" system ":"
+                              (object->string specs))))))))
+
+(define (profile-cached-gc-root opts)
+  "Return two values: the file name of a GC root for use as a profile cache
+for the options in OPTS, and a timestamp which, if greater than the GC root's
+mtime, indicates that the GC root is stale.  If OPTS do not permit caching,
+return #f and #f."
+  (define (key->file key)
+    (string-append (%profile-cache-directory) "/" key))
+
+  (let loop ((opts opts)
+             (system (%current-system))
+             (file #f)
+             (specs '()))
+    (match opts
+      (()
+       (if file
+           (values (and=> (profile-file-cache-key file system) key->file)
+                   (stat:mtime (stat file)))
+           (values (and=> (profile-spec-cache-key specs system) key->file)
+                   0)))
+      (((and spec ('package . _)) . rest)
+       (if (not file)
+           (loop rest system file (cons spec specs))
+           (values #f #f)))
+      ((('load . ('package candidate)) . rest)
+       (if (and (not file) (null? specs))
+           (loop rest system candidate specs)
+           (values #f #f)))
+      ((('manifest . candidate) . rest)
+       (if (and (not file) (null? specs))
+           (loop rest system candidate specs)
+           (values #f #f)))
+      ((('expression . _) . _)
+       ;; Arbitrary expressions might be non-deterministic or otherwise depend
+       ;; on external state so do not cache when they're used.
+       (values #f #f))
+      ((((? transformation-option-key?) . _) . _)
+       ;; Transformation options are potentially "non-deterministic", or at
+       ;; least depending on external state (with-source, with-commit, etc.),
+       ;; so do not cache anything when they're used.
+       (values #f #f))
+      ((('system . system) . rest)
+       (loop rest system file specs))
+      ((_ . rest) (loop rest system file specs)))))
 
 
 ;;;

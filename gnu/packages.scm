@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012-2020, 2022 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016, 2017 Alex Kost <alezost@gmail.com>
@@ -51,6 +51,7 @@
             %auxiliary-files-path
             %package-module-path
             %default-package-module-path
+            cache-is-authoritative?
 
             fold-packages
             fold-available-packages

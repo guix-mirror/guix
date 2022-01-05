@@ -5806,17 +5806,6 @@ This is similar to the same-named option in @command{guix package}
 (@pxref{profile-manifest, @option{--manifest}}) and uses the same
 manifest files.
 
-@item --rebuild-cache
-When using @option{--manifest}, @option{--file}, or when invoked without
-arguments, @command{guix shell} caches the environment so that
-subsequent uses are instantaneous.  The cache is invalidated anytime the
-file is modified.
-
-The @option{--rebuild-cache} forces the cached environment to be
-refreshed even if the file has not changed.  This is useful if the
-@command{guix.scm} or @command{manifest.scm} has external dependencies,
-or if its behavior depends, say, on environment variables.
-
 @item --pure
 Unset existing environment variables when building the new environment, except
 those specified with @option{--preserve} (see below).  This has the effect of
@@ -5932,6 +5921,21 @@ directory:
 guix shell --container --expose=$HOME=/exchange guile -- guile
 @end example
 
+@item --rebuild-cache
+@cindex caching, of profiles
+@cindex caching, in @command{guix shell}
+In most cases, @command{guix shell} caches the environment so that
+subsequent uses are instantaneous.  Least-recently used cache entries
+are periodically removed.  The cache is also invalidated, when using
+@option{--file} or @option{--manifest}, anytime the corresponding file
+is modified.
+
+The @option{--rebuild-cache} forces the cached environment to be
+refreshed.  This is useful when using @option{--file} or
+@option{--manifest} and the @command{guix.scm} or @command{manifest.scm}
+file has external dependencies, or if its behavior depends, say, on
+environment variables.
+
 @item --root=@var{file}
 @itemx -r @var{file}
 @cindex persistent environment
@@ -5942,11 +5946,20 @@ register it as a garbage collector root.
 This is useful if you want to protect your environment from garbage
 collection, to make it ``persistent''.
 
-When this option is omitted, the environment is protected from garbage
-collection only for the duration of the @command{guix shell}
-session.  This means that next time you recreate the same environment,
-you could have to rebuild or re-download packages.  @xref{Invoking guix
-gc}, for more on GC roots.
+When this option is omitted, @command{guix shell} caches profiles so
+that subsequent uses of the same environment are instantaneous---this is
+comparable to using @option{--root} except that @command{guix shell}
+takes care of periodically removing the least-recently used garbage
+collector roots.
+
+In some cases, @command{guix shell} does not cache profiles---e.g., if
+transformation options such as @option{--with-latest} are used.  In
+those cases, the environment is protected from garbage collection only
+for the duration of the @command{guix shell} session.  This means that
+next time you recreate the same environment, you could have to rebuild
+or re-download packages.
+
+@xref{Invoking guix gc}, for more on GC roots.
 @end table
 
 @command{guix shell} also supports all of the common build options that
