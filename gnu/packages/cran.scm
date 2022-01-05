@@ -23465,6 +23465,50 @@ additional functions that are comparable to APL functions which are useful for
 actuarial models such as pension mathematics.")
     (license license:gpl2+)))
 
+(define-public r-matrixextra
+  (package
+    (name "r-matrixextra")
+    (version "0.1.9-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "MatrixExtra" version))
+       (sha256
+        (base32 "098apgqlncgxspa8mi4bx2nk5fbk3880whqiwkvydsfsqrbv1sj0"))))
+    (properties `((upstream-name . "MatrixExtra")))
+    (build-system r-build-system)
+    (propagated-inputs
+     (list r-float r-matrix r-rcpp r-rhpcblasctl))
+    (native-inputs
+     (list r-knitr))
+    (home-page "https://github.com/david-cortes/MatrixExtra")
+    (synopsis "Extra methods for sparse matrices")
+    (description
+     "This package extends sparse matrix and vector classes from the Matrix
+package by providing:
+
+@enumerate
+@item Methods and operators that work natively on CSR formats (compressed
+  sparse row, a.k.a. @code{RsparseMatrix}) such as slicing/sub-setting,
+  assignment, @code{rbind()}, mathematical operators for CSR and COO such as
+  addition or @code{sqrt()}, and methods such as @code{diag()};
+@item Multi-threaded matrix multiplication and cross-product for many
+  @code{<sparse, dense>} types, including the @code{float32} type from
+  @code{float};
+@item Coercion methods between pairs of classes which are not present in
+  @code{Matrix}, such as from @code{dgCMatrix} to @code{ngRMatrix}, as well as
+  convenience conversion functions;
+@item Utility functions for sparse matrices such as sorting the indices or
+  removing zero-valued entries;
+@item Fast transposes that work by outputting in the opposite storage format;
+@item Faster replacements for many @code{Matrix} methods for all sparse types,
+  such as slicing and elementwise multiplication.
+@item Convenience functions for sparse objects, such as @code{mapSparse} or a
+  shorter @code{show} method.
+@end enumerate
+")
+    (license license:gpl2+)))
+
 (define-public r-sem
   (package
     (name "r-sem")
