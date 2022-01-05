@@ -27504,14 +27504,14 @@ model-related packages.")
 (define-public r-conflicted
   (package
     (name "r-conflicted")
-    (version "1.0.4")
+    (version "1.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "conflicted" version))
        (sha256
         (base32
-         "0xp04cdvmp3b1phazhmjqn0vmax1b2218xsb5854ffv43m7qvrra"))))
+         "1qg9ar114r98wm0pnf65mss4v2ksq3924rlpm13mqp4s3p6j9yi4"))))
     (properties `((upstream-name . "conflicted")))
     (build-system r-build-system)
     (propagated-inputs
