@@ -4766,6 +4766,39 @@ provided as a matrix which can be used as an offset for different expression
 of gene-level counts.")
     (license license:gpl2+)))
 
+;; This is a CRAN package, but it depends on a Bioconductor package.
+(define-public r-valr
+  (package
+    (name "r-valr")
+    (version "0.6.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "valr" version))
+       (sha256
+        (base32
+         "0dd41irvibh6rwi52bw4zg4m7wpyihlp1kdkb8fdji3csw2fiz4k"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     (list r-broom
+           r-dplyr
+           r-ggplot2
+           r-rcpp
+           r-readr
+           r-rlang
+           r-rtracklayer ;bioconductor package
+           r-stringr
+           r-tibble))
+    (native-inputs
+     (list r-knitr))
+    (home-page "https://github.com/rnabioco/valr")
+    (synopsis "Genome interval arithmetic in R")
+    (description
+     "This package enables you to read and manipulate genome intervals and
+signals.  It provides functionality similar to command-line tool suites within
+R, enabling interactive analysis and visualization of genome-scale data.")
+    (license license:expat)))
+
 (define-public r-variantannotation
   (package
     (name "r-variantannotation")

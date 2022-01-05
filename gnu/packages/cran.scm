@@ -15677,37 +15677,6 @@ can also be used to join clusters obtained from affinity propagation.  Various
 plotting functions are available for analyzing clustering results.")
     (license license:gpl2+)))
 
-(define-public r-valr
-  (package
-    (name "r-valr")
-    (version "0.6.3")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "valr" version))
-       (sha256
-        (base32
-         "1lzdlw0mw06rymyjzwf4i8rx1z6zxpwxxqfsc9ggqlnhq6bfhy93"))))
-    (build-system r-build-system)
-    (propagated-inputs
-     (list r-broom
-           r-dplyr
-           r-ggplot2
-           r-rcpp
-           r-readr
-           r-rlang
-           r-stringr
-           r-tibble))
-    (native-inputs
-     (list r-knitr))
-    (home-page "https://github.com/rnabioco/valr")
-    (synopsis "Genome interval arithmetic in R")
-    (description
-     "This package enables you to read and manipulate genome intervals and
-signals.  It provides functionality similar to command-line tool suites within
-R, enabling interactive analysis and visualization of genome-scale data.")
-    (license license:expat)))
-
 (define-public r-rematch2
   (package
     (name "r-rematch2")
