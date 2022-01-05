@@ -463,6 +463,29 @@ The package provides functions for point generation, arc length estimation,
 degree elevation and curve fitting.")
     (license license:gpl2+)))
 
+(define-public r-bwstest
+  (package
+    (name "r-bwstest")
+    (version "0.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "BWStest" version))
+       (sha256
+        (base32 "02amzlfprmw5pyis0dg0kg0x8xqh50a4vfdcxxmklrzik3b1vzzs"))))
+    (properties `((upstream-name . "BWStest")))
+    (build-system r-build-system)
+    (propagated-inputs (list r-memoise r-rcpp))
+    (home-page "https://github.com/shabbychef/BWStest")
+    (synopsis "Baumgartner Weiss Schindler Test of equal distributions")
+    (description
+     "This package performs the Baumgartner-Weiss-Schindler two-sample test of
+equal probability distributions (doi:10.2307/2533862).  It also performs
+similar rank-based tests for equal probability distributions due to Neuhauser
+(doi:10.1080/10485250108832874) and Murakami
+(doi:10.1080/00949655.2010.551516).")
+    (license license:lgpl3)))
+
 (define-public r-v8
   (package
     (name "r-v8")
