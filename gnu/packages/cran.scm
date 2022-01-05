@@ -25868,14 +25868,14 @@ coefficients are constructed using multiplier bootstrap.")
 (define-public r-fastshap
   (package
     (name "r-fastshap")
-    (version "0.0.5")
+    (version "0.0.7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "fastshap" version))
        (sha256
         (base32
-         "08f25ib5mry6h8lvj0g3clc9kfl5g2wdd8x8bw455wwmbcm6x5vg"))))
+         "0gxch67i3bj6m8nb94m5hswq058w6n1q9war4dy2qnimlv7cmhdv"))))
     (properties `((upstream-name . "fastshap")))
     (build-system r-build-system)
     (propagated-inputs
