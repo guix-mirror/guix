@@ -30164,14 +30164,14 @@ Apache2.")
 (define-public r-exactextractr
   (package
     (name "r-exactextractr")
-    (version "0.7.1")
+    (version "0.7.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "exactextractr" version))
        (sha256
         (base32
-         "1gc1p9pgazhblk8jgykxxjpblylbaq5r9hdlw3ilz5g45yjjwcnc"))))
+         "0n39dqgsfzybi9yvnpnfdyypl8c9fml80jq0wxssik2n47mvbcif"))))
     (properties `((upstream-name . "exactextractr")))
     (build-system r-build-system)
     (inputs (list geos))
