@@ -16166,18 +16166,16 @@ tessellation.")
 (define-public r-wk
   (package
     (name "r-wk")
-    (version "0.5.0")
+    (version "0.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "wk" version))
        (sha256
         (base32
-         "0fj2wzswv3dfninsyw9irf52fc2d0lag5b822x841vdfpvh01mbi"))))
+         "1xga4rrqsr190g55by39az4nimnn06bf5b6mcjgwqvba0lvjhb5g"))))
     (properties `((upstream-name . "wk")))
     (build-system r-build-system)
-    (propagated-inputs
-     (list r-cpp11))
     (home-page "https://paleolimbot.github.io/wk/")
     (synopsis "Lightweight well-known geometry parsing")
     (description
