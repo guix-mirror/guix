@@ -16343,16 +16343,16 @@ also provided to illustrate various methods.")
 (define-public r-pegas
   (package
     (name "r-pegas")
-    (version "1.0-1")
+    (version "1.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "pegas" version))
        (sha256
-        (base32 "0ykx84p7c8cad5d1mj8cm1d5cz2paacdjx4ll4qzmq827lcyycz1"))))
+        (base32 "0ngd0laqbs139ji9hm9kwsm9rm56agw2yyfcplxgqva936l93fl7"))))
     (build-system r-build-system)
     (propagated-inputs
-     (list r-adegenet r-ape))
+     (list r-ape))
     (home-page "http://ape-package.ird.fr/pegas.html")
     (synopsis "Population and evolutionary genetics analysis system")
     (description
