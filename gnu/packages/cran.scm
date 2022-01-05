@@ -11489,14 +11489,14 @@ terminals that do not support Unicode.")
 (define-public r-credentials
   (package
     (name "r-credentials")
-    (version "1.3.1")
+    (version "1.3.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "credentials" version))
        (sha256
         (base32
-         "0q3s1bibwvw1p541k8a5cjx4dj1iabl4crg61fgjxkniclxag5c7"))))
+         "1f18j3zrq8c9kah57xwahmmljsjg5qphlgamvx507ynvpq8pryig"))))
     (properties `((upstream-name . "credentials")))
     (build-system r-build-system)
     (arguments
