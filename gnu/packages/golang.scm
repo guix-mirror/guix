@@ -7164,9 +7164,9 @@ transforms one JSON document into another through a JMESPath expression.")
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/microcosm-cc/bluemonday"))
-    (native-inputs
-     (list go-github-com-chris-ramon-douceur go-github-com-aymerick-douceur
-           go-github-com-gorilla-css go-golang-org-x-net))
+    (propagated-inputs
+     (list go-github-com-chris-ramon-douceur
+           go-golang-org-x-net))
     (home-page "https://github.com/microcosm-cc/bluemonday/")
     (synopsis "HTML sanitizer")
     (description "@code{bluemonday} is a HTML sanitizer implemented in Go.")
