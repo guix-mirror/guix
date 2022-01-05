@@ -3780,14 +3780,14 @@ killed threads.")
 (define-public pan
   (package
     (name "pan")
-    (version "0.147")
+    (version "0.149")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://pan.rebelbase.com/download/releases/"
                            version "/source/" name "-" version ".tar.bz2"))
        (sha256
-        (base32 "0960siaf0r6m18kv0d8aqpf36x2xbsfcvk07kswlany7jbxrhylr"))))
+        (base32 "1sl5rdgalswxya61vhkf28r0fb4b3pq77qgzhhsfagmpvgbx0d2x"))))
     (arguments
      `(#:configure-flags '("--with-gtk3" "--with-gtkspell" "--with-gnutls"
                            "--enable-libnotify" "--enable-manual"
@@ -3799,10 +3799,9 @@ killed threads.")
              (substitute* "pan/usenet-utils/gpg.cc"
                (("\"gpg2\"") (string-append "\""
                                             (assoc-ref inputs "gnupg")
-                                            "/bin/gpg\"")))
-             #t)))))
+                                            "/bin/gpg\""))))))))
     (inputs
-     (list gmime-2.6
+     (list gmime
            gnupg
            gnutls
            gtk+
