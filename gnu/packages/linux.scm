@@ -5032,36 +5032,36 @@ MPEG-2 and audio over Linux IEEE 1394.")
                (base32
                 "07ghmibmbnkdy91ng87zdllzicm299l20dhs9m5bfjw6f1b22726"))))
     (build-system gnu-build-system)
-    (inputs
-     `(("udev" ,eudev)))
     (arguments
-     `(#:make-flags (let ((out (assoc-ref %outputs "out")))
-                      (list ,(string-append "CC=" (cc-for-target))
-                            "INSTALL=install"
-                            "CHECK_RUN_DIR=0"
-                            ;; TODO: tell it where to find 'sendmail'
-                            ;; (string-append "MAILCMD=" <???> "/sbin/sendmail")
-                            (string-append "BINDIR=" out "/sbin")
-                            (string-append "MANDIR=" out "/share/man")
-                            (string-append "UDEVDIR=" out "/lib/udev")))
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'build 'patch-program-paths
-           (lambda* (#:key native-inputs inputs #:allow-other-keys)
-             (let ((coreutils (assoc-ref (or native-inputs inputs)
-                                         "coreutils")))
-               (substitute* "udev-md-raid-arrays.rules"
-                 (("/usr/bin/(readlink|basename)" all program)
-                  (string-append coreutils "/bin/" program))))))
-         (add-before 'build 'remove-W-error
-           (lambda _
-             ;; We cannot build with -Werror on i686 due to a
-             ;; 'sign-compare' warning in util.c.
-             (substitute* "Makefile"
-               (("-Werror") ""))))
-         (delete 'configure))
-       ;;tests must be done as root
-       #:tests? #f))
+     (list #:make-flags
+           #~(list (string-append "CC=" #$(cc-for-target))
+                   "INSTALL=install"
+                   "CHECK_RUN_DIR=0"
+                   ;; TODO: tell it where to find 'sendmail'
+                   ;; (string-append "MAILCMD=" <???> "/sbin/sendmail")
+                   (string-append "BINDIR="  #$output "/sbin")
+                   (string-append "MANDIR="  #$output "/share/man")
+                   (string-append "UDEVDIR=" #$output "/lib/udev"))
+           #:phases
+           #~(modify-phases %standard-phases
+               (add-before 'build 'patch-program-paths
+                 (lambda* (#:key native-inputs inputs #:allow-other-keys)
+                   (let ((coreutils (assoc-ref (or native-inputs inputs)
+                                               "coreutils")))
+                     (substitute* "udev-md-raid-arrays.rules"
+                       (("/usr/bin/(readlink|basename)" all program)
+                        (string-append coreutils "/bin/" program))))))
+               (add-before 'build 'remove-W-error
+                 (lambda _
+                   ;; We cannot build with -Werror on i686 due to a
+                   ;; 'sign-compare' warning in util.c.
+                   (substitute* "Makefile"
+                     (("-Werror") ""))))
+               (delete 'configure))
+           ;; Tests must be run as root.
+           #:tests? #f))
+    (inputs
+     (list eudev))
     (supported-systems (delete "i586-gnu" %supported-systems))
     (home-page "http://neil.brown.name/blog/mdadm")
     (synopsis "Tool for managing Linux Software RAID arrays")
