@@ -2160,14 +2160,14 @@ limited to R.")
 (define-public r-backports
   (package
     (name "r-backports")
-    (version "1.3.0")
+    (version "1.4.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "backports" version))
        (sha256
         (base32
-         "0bc14x4gyw4gnvm4hrvg5cmmrq449kfza3l14wdgp642ra8iw8sg"))))
+         "0x144hij0rzhrxdq3k5ph8fk7pdgl1avjca25j4mlpmhzdckqp44"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/backports")
     (synopsis "Reimplementations of functions introduced since R 3.0.0")
