@@ -10,7 +10,7 @@
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 nikita <nikita@n0.is>
 ;;; Copyright © 2017 Rodger Fox <thylakoid@openmailbox.org>
-;;; Copyright © 2017, 2018, 2019, 2020, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2017–2022 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2017, 2018, 2019, 2021 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017–2021 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -4878,8 +4878,7 @@ includes LV2 plugins and a JACK standalone client.")
                      '("thirdparty/freetype"
                        "thirdparty/openssl"
                        "thirdparty/portmidi"
-                       "thirdparty/qt-google-analytics"))
-           #t))))
+                       "thirdparty/qt-google-analytics"))))))
     (build-system qt-build-system)
     (arguments
      `(#:configure-flags
@@ -4898,24 +4897,24 @@ includes LV2 plugins and a JACK standalone client.")
        ;; So we simply skip them.
        #:tests? #f))
     (inputs
-     `(("alsa-lib" ,alsa-lib)
-       ("freetype" ,freetype)
-       ("gtk+-bin" ,gtk+ "bin")         ;for gtk-update-icon-cache
-       ("jack" ,jack-1)
-       ("lame" ,lame)
-       ("libogg" ,libogg)
-       ("libsndfile" ,libsndfile)
-       ("libvorbis" ,libvorbis)
-       ("portaudio" ,portaudio)
-       ("portmidi" ,portmidi)
-       ("pulseaudio" ,pulseaudio)
-       ("qtbase" ,qtbase-5)
-       ("qtdeclarative" ,qtdeclarative)
-       ("qtgraphicaleffects" ,qtgraphicaleffects)
-       ("qtquickcontrols2" ,qtquickcontrols2)
-       ("qtscript" ,qtscript)
-       ("qtsvg" ,qtsvg)
-       ("qtxmlpatterns" ,qtxmlpatterns)))
+     (list alsa-lib
+           freetype
+           `(,gtk+ "bin")               ;for gtk-update-icon-cache
+           jack-1
+           lame
+           libogg
+           libsndfile
+           libvorbis
+           portaudio
+           portmidi
+           pulseaudio
+           qtbase-5
+           qtdeclarative
+           qtgraphicaleffects
+           qtquickcontrols2
+           qtscript
+           qtsvg
+           qtxmlpatterns))
     (native-inputs
      (list pkg-config qttools))
     (synopsis "Music composition and notation software")
