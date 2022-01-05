@@ -123,10 +123,9 @@ Features include:
                       (string-append (assoc-ref outputs "out") "/bin/tootle"))
              #t)))))
     (native-inputs
-     `(("gettext" ,gettext-minimal)
-       ("glib:bin" ,glib "bin")     ; for glib-compile-resources
-       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("pkg-config" ,pkg-config)))
+     (list gettext-minimal
+           `(,glib "bin") ; for glib-compile-resources
+           gsettings-desktop-schemas pkg-config))
     (inputs
      (list glib-networking
            gtk+
