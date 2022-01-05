@@ -27491,33 +27491,31 @@ or simply disable the mode-line in buffers where it is not very useful.")
     (license license:expat)))
 
 (define-public emacs-helm-cider
-  ;; No new release since March 2018.
-  (let ((commit "9363cc537f06233345aa3af5cd46aa5681ad607b"))
-    (package
-      (name "emacs-helm-cider")
-      (version (git-version "0.4.0" "1" commit))
-      (home-page "https://github.com/clojure-emacs/helm-cider")
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url home-page)
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "0vfn4smqba1vsshz48ggkj8gs94la0sxb1sq4shrb41qj2x3dci7"))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       (list emacs-helm emacs-cider))
-      (synopsis "Helm interface to Clojure's CIDER")
-      (description "Helm-CIDER adds Helm interfaces to
+  (package
+    (name "emacs-helm-cider")
+    (version "0.5.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/clojure-emacs/helm-cider")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0jjjy68pmmsx0biawyi5581cqh2b4zb0q8f5vs49ihpzn6zc04vk"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     (list emacs-helm emacs-cider))
+    (home-page "https://github.com/clojure-emacs/helm-cider")
+    (synopsis "Helm interface to Clojure's CIDER")
+    (description "Helm-CIDER adds Helm interfaces to
 @command{cider-apropos}, @command{cider-apropos-documentation},
 @command{cider-browse-ns} (namespaces).
 
 It also provides original Helm commands: @command{helm-cider-spec},
 @command{helm-cider-spec-ns}, @command{helm-cider-repl-history},
 @command{helm-cider-cheatsheet}.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-edn
   ;; No release since February 2016
