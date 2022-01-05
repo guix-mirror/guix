@@ -146,19 +146,19 @@ Java Lucene text search engine API to C++.")
                       "share/cmake/lucene++"))))))
     (build-system cmake-build-system)
     (arguments
-     `(#:configure-flags
-       (list (string-append "-DLIB_DESTINATION:PATH="
-                            (assoc-ref %outputs "out") "/lib")
-             "-DINSTALL_GTEST:BOOL=OFF")
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           ;; XXX Tests are built unconditionally during the 'build phase.
-           ;; There's no ‘test’ target.  README.md suggests running this.
-           (lambda* (#:key tests? #:allow-other-keys)
-             (when tests?
-               (invoke "src/test/lucene++-tester"
-                       "--test_dir=../source/src/test/testfiles")))))))
+     (list #:configure-flags
+           #~(list (string-append "-DLIB_DESTINATION:PATH="
+                                  #$output "/lib")
+                   "-DINSTALL_GTEST:BOOL=OFF")
+           #:phases
+           #~(modify-phases %standard-phases
+               (replace 'check
+                 ;; XXX Tests are built unconditionally during the 'build phase.
+                 ;; There's no ‘test’ target.  README.md suggests running this.
+                 (lambda* (#:key tests? #:allow-other-keys)
+                   (when tests?
+                     (invoke "src/test/lucene++-tester"
+                             "--test_dir=../source/src/test/testfiles")))))))
     (native-inputs
      (list pkg-config))
     (inputs
