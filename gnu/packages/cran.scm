@@ -3023,14 +3023,14 @@ colors are provided.")
 (define-public r-glue
   (package
     (name "r-glue")
-    (version "1.5.0")
+    (version "1.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "glue" version))
        (sha256
         (base32
-         "1wjar579m46j1jnch34h7976sc1qbj6hzdyz5jm16nz1iw6z47jv"))))
+         "0f23dgnc7rv81vhmdhmiwk666mqwb602hxzai1hssyn4y9zg7gkp"))))
     (build-system r-build-system)
     ;; knitr depends on glue, so we can't add knitr here to build the
     ;; vignettes.
