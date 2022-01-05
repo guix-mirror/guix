@@ -7398,14 +7398,14 @@ additional external tools on any platform.")
 (define-public r-openxlsx
   (package
     (name "r-openxlsx")
-    (version "4.2.4")
+    (version "4.2.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "openxlsx" version))
        (sha256
         (base32
-         "0vn8ifxb7ccip6b1ijf5lpa6c0n5y5ll8fbabybsb8nfc0y1nmxg"))))
+         "0695b265g7jwiqk5c3vmmfkvagx82bkpwhvqzhqaqmmn34l6vl35"))))
     (build-system r-build-system)
     (propagated-inputs
      (list r-rcpp r-stringi r-zip))
