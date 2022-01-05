@@ -20,7 +20,7 @@ Removes references to bundled libuv.
  
  # To avoid spurious warnings from `R CMD check --as-cran`, about compiler
  # warning flags like -Werror.
-@@ -43,35 +43,5 @@
+@@ -43,49 +43,5 @@
  # PKG_CPPFLAGS += -D_GLIBCXX_ASSERTIONS
  
  
@@ -32,10 +32,18 @@ Removes references to bundled libuv.
 -libuv/m4/lt~obsolete.m4: libuv/m4/lt_obsolete.m4
 -	cp -p -f libuv/m4/lt_obsolete.m4 libuv/m4/lt~obsolete.m4
 -
--# Run ./configure. We need to touch various autotools-related files to avoid
--# it trying to run autotools programs again. We also need to make sure
--# configure is executable, because on some platforms, calling unzip() in R
--# does not preserve the executable bit.
+-# Run ./configure to create the Makefile.
+-#
+-# On systems that do _not_ have automake installed, we need to make sure that
+-# configure does not try to run automake, because it will fail. To do that, we
+-# we need to touch various autotools-related files so it doesn't try to run
+-# autotools programs again. We also need to make sure configure is executable,
+-# because on some platforms, calling unzip() in R does not preserve the
+-# executable bit.
+-#
+-# If the system does have automake, then we'll run autogen.sh before configure,
+-# as per the official build instructions for libuv. autogen.sh will in turn run
+-# aclocal, autoconf, and automake.
 -#
 -# It's VERY IMPORTANT that mtime(aclocal.m4) <= mtime(configure), and also
 -# mtime(aclocal.m4) <= mtime(Makefile.in). On some platforms, passing multiple
@@ -45,11 +53,17 @@ Removes references to bundled libuv.
 -# use "-r aclocal.m4" to ensure that all three files are guaranteed to have
 -# precisely the same timestamp value.
 -libuv/Makefile: libuv/m4/lt~obsolete.m4
--	(cd libuv \
--		&& touch aclocal.m4 \
--		&& touch -r aclocal.m4 configure Makefile.in \
--		&& chmod +x configure \
--		&& CC="$(CC)" CFLAGS="$(CFLAGS) $(CPICFLAGS) $(C_VISIBILITY)" AR="$(AR)" RANLIB="$(RANLIB)" LDFLAGS="$(LDFLAGS)" ./configure $(CONFIGURE_FLAGS))
+-	cd libuv; \
+-	if ! command -v automake >/dev/null 2>&1 ; then \
+-		echo "automake not found. Touching files so configure will not try to run automake."; \
+-		touch aclocal.m4; \
+-		touch -r aclocal.m4 configure Makefile.in; \
+-	else \
+-		echo "automake found. Running autogen.sh."; \
+-		sh autogen.sh; \
+-	fi; \
+-	chmod +x configure; \
+-	CC="$(CC)" CFLAGS="$(CFLAGS) $(CPICFLAGS) $(C_VISIBILITY)" AR="$(AR)" RANLIB="$(RANLIB)" LDFLAGS="$(LDFLAGS)" ./configure $(CONFIGURE_FLAGS)
 -
 -libuv/.libs/libuv.a: libuv/Makefile
 -	$(MAKE) --directory=libuv \
