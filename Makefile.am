@@ -100,6 +100,7 @@ MODULES =					\
   guix/extracting-download.scm			\
   guix/git-download.scm				\
   guix/hg-download.scm				\
+  guix/hash.scm					\
   guix/swh.scm					\
   guix/monads.scm				\
   guix/monad-repl.scm				\
