@@ -105,8 +105,7 @@ Features include:
            ;; Don't create 'icon-theme.cache'.
            (lambda _
              (substitute* "meson/post_install.py"
-               (("gtk-update-icon-cache") "true"))
-             #t))
+               (("gtk-update-icon-cache") "true"))))
          (add-after 'unpack 'patch-source
            (lambda _
              (substitute* "src/Dialogs/NewAccount.vala"
@@ -115,13 +114,12 @@ Features include:
              (substitute* "src/Build.vala"
                (("(os_name = ).*" _ first) (string-append first "\"GNU\";\n"))
                (("(os_ver = ).*" _ first) (string-append first "\"Guix\";\n"))
-               (("GLib.Environment.get_os_info.*") "\"unknown\";\n"))
-             #t))
+               (("GLib.Environment.get_os_info.*") "\"unknown\";\n"))))
          (add-after 'install 'symlink-package
            (lambda* (#:key outputs #:allow-other-keys)
              (symlink "com.github.bleakgrey.tootle"
-                      (string-append (assoc-ref outputs "out") "/bin/tootle"))
-             #t)))))
+                      (string-append (assoc-ref outputs "out")
+                                     "/bin/tootle")))))))
     (native-inputs
      (list gettext-minimal
            `(,glib "bin") ; for glib-compile-resources
