@@ -11604,14 +11604,14 @@ Rcpp, RStudio projects, and more.")
 (define-public r-sessioninfo
   (package
     (name "r-sessioninfo")
-    (version "1.2.1")
+    (version "1.2.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sessioninfo" version))
        (sha256
         (base32
-         "0w3vhp652524348a4cfyvvs8z9xpxkcznw8x406nvkwfh0gdyka2"))))
+         "1jy7n37qnrb4fgzmn8s8yf7kv29yw27x8zklwf8qdb2kgj2q6qpm"))))
     (build-system r-build-system)
     (propagated-inputs
      (list r-cli))
