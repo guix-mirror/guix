@@ -10787,16 +10787,16 @@ estimation problem.")
 (define-public r-abundant
   (package
     (name "r-abundant")
-    (version "1.1")
+    (version "1.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "abundant" version))
        (sha256
-        (base32 "1m76qdmqvwpgm0sihazi2dna7cgsz9rljal18vgffb5wamwmg9k7"))))
+        (base32 "15m3ngj5aipjg961yy5kvdg9xlfcpliw30dq6gchzxabhnfzcipd"))))
     (build-system r-build-system)
     (propagated-inputs
-     (list r-quic))
+     (list r-glasso))
     (home-page "https://cran.r-project.org/web/packages/abundant/")
     (synopsis "Abundant regression and high-dimensional principal fitted components")
     (description
