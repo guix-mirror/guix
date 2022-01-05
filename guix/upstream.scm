@@ -2,6 +2,8 @@
 ;;; Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2019, 2022 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
+;;; Copyright © 2021, 2022 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,12 +26,15 @@
   #:use-module (guix discovery)
   #:use-module ((guix download)
                 #:select (download-to-store url-fetch))
+  #:use-module (guix git-download)
   #:use-module (guix gnupg)
   #:use-module (guix packages)
   #:use-module (guix diagnostics)
   #:use-module (guix ui)
   #:use-module (guix base32)
   #:use-module (guix gexp)
+  #:autoload   (guix git) (latest-repository-commit git-reference->git-checkout)
+  #:use-module (guix hash)
   #:use-module (guix store)
   #:use-module ((guix derivations) #:select (built-derivations derivation->output-path))
   #:autoload   (gcrypt hash) (port-sha256)
@@ -93,7 +98,7 @@
   upstream-source?
   (package        upstream-source-package)        ;string
   (version        upstream-source-version)        ;string
-  (urls           upstream-source-urls)           ;list of strings
+  (urls           upstream-source-urls)           ;list of strings|git-reference
   (signature-urls upstream-source-signature-urls  ;#f | list of strings
                   (default #f))
   (input-changes  upstream-source-input-changes
@@ -363,10 +368,9 @@ values: 'interactive' (default), 'always', and 'never'."
                         data url)
                #f)))))))
 
-(define-gexp-compiler (upstream-source-compiler (source <upstream-source>)
-                                                system target)
-  "Download SOURCE from its first URL and lower it as a fixed-output
-derivation that would fetch it."
+(define (upstream-source-compiler/url-fetch source system)
+  "Lower SOURCE, an <upstream-source> pointing to a tarball, as a
+fixed-output derivation that would fetch it, and verify its authenticity."
   (mlet* %store-monad ((url -> (first (upstream-source-urls source)))
                        (signature
                         -> (and=> (upstream-source-signature-urls source)
@@ -383,6 +387,30 @@ derivation that would fetch it."
     (let ((hash (call-with-input-file tarball port-sha256)))
       (url-fetch url 'sha256 hash (store-path-package-name tarball)
                  #:system system))))
+
+(define (upstream-source-compiler/git-fetch source system)
+  "Lower SOURCE, an <upstream-source> using git, as a fixed-output
+derivation that would fetch it."
+  (mlet* %store-monad ((reference -> (upstream-source-urls source))
+                       (checkout
+                        (lower-object
+                         (git-reference->git-checkout reference)
+                         system)))
+    ;; Like in 'upstream-source-compiler/url-fetch', return a fixed-output
+    ;; derivation instead of CHECKOUT.
+    (git-fetch reference 'sha256
+               (file-hash* checkout #:recursive? #true #:select? (const #true))
+               (git-file-name (upstream-source-package source)
+                              (upstream-source-version source))
+               #:system system)))
+
+(define-gexp-compiler (upstream-source-compiler (source <upstream-source>)
+                                                system target)
+  "Download SOURCE, lower it as a fixed-output derivation that would fetch it,
+and verify its authenticity if possible."
+  (if (git-reference? (upstream-source-urls source))
+      (upstream-source-compiler/git-fetch source system)
+      (upstream-source-compiler/url-fetch source system)))
 
 (define (find2 pred lst1 lst2)
   "Like 'find', but operate on items from both LST1 and LST2.  Return two
@@ -436,9 +464,24 @@ SOURCE, an <upstream-source>."
                                         #:key-download key-download)))
          (values version tarball source))))))
 
+(define* (package-update/git-fetch store package source #:key key-download)
+  "Return the version, checkout, and SOURCE, to update PACKAGE to
+SOURCE, an <upstream-source>."
+  ;; TODO: it would be nice to authenticate commits, e.g. with
+  ;; "guix git authenticate" or a list of permitted signing keys.
+  (define ref (upstream-source-urls source)) ; a <git-reference>
+  (values (upstream-source-version source)
+          (latest-repository-commit
+           store
+           (git-reference-url ref)
+           #:ref `(tag-or-commit . ,(git-reference-commit ref))
+           #:recursive? (git-reference-recursive? ref))
+          source))
+
 (define %method-updates
   ;; Mapping of origin methods to source update procedures.
-  `((,url-fetch . ,package-update/url-fetch)))
+  `((,url-fetch . ,package-update/url-fetch)
+    (,git-fetch . ,package-update/git-fetch)))
 
 (define* (package-update store package
                          #:optional (updaters (force %updaters))
@@ -498,9 +541,22 @@ new version string if an update was made, and #f otherwise."
                              (origin-hash (package-source package))))
                (old-url     (match (origin-uri (package-source package))
                               ((? string? url) url)
+                              ((? git-reference? ref)
+                               (git-reference-url ref))
                               (_ #f)))
                (new-url     (match (upstream-source-urls source)
-                              ((first _ ...) first)))
+                              ((first _ ...) first)
+                              ((? git-reference? ref)
+                               (git-reference-url ref))
+                              (_ #f)))
+               (old-commit  (match (origin-uri (package-source package))
+                              ((? git-reference? ref)
+                               (git-reference-commit ref))
+                              (_ #f)))
+               (new-commit  (match (upstream-source-urls source)
+                              ((? git-reference? ref)
+                               (git-reference-commit ref))
+                              (_ #f)))
                (file        (and=> (location-file loc)
                                    (cut search-path %load-path <>))))
           (if file
@@ -514,6 +570,9 @@ new version string if an update was made, and #f otherwise."
                                            'filename file))
                     (replacements `((,old-version . ,version)
                                     (,old-hash . ,hash)
+                                    ,@(if (and old-commit new-commit)
+                                          `((,old-commit . ,new-commit))
+                                          '())
                                     ,@(if (and old-url new-url)
                                           `((,(dirname old-url) .
                                              ,(dirname new-url)))

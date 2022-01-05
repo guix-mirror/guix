@@ -504,9 +504,9 @@ or #false if the latest release couldn't be determined."
        (upstream-source
         (package (package:package-name pkg))
         (version (release-version release))
-        (urls (list (download:git-reference
-                     (url (package-repository contentdb-package))
-                     (commit (release-commit release))))))))
+        (urls (download:git-reference
+               (url (package-repository contentdb-package))
+               (commit (release-commit release)))))))
 
 (define %minetest-updater
   (upstream-updater

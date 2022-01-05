@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
+;;; Copyright © 2022 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,6 +35,7 @@
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
+  #:use-module (srfi srfi-71)
   #:export (%generic-git-updater
 
             ;; For tests.
@@ -172,21 +174,21 @@ repository at URL."
          (values version tag)))))))
 
 (define (latest-git-tag-version package)
-  "Given a PACKAGE, return the latest version of it, or #f if the latest version
-could not be determined."
+  "Given a PACKAGE, return the latest version of it and the corresponding git
+tag, or #false and #false if the latest version could not be determined."
   (guard (c ((or (git-no-tags-error? c) (git-no-valid-tags-error? c))
              (warning (or (package-field-location package 'source)
                           (package-location package))
                       (G_ "~a for ~a~%")
                       (condition-message c)
                       (package-name package))
-             #f)
+             (values #f #f))
             ((eq? (exception-kind c) 'git-error)
              (warning (or (package-field-location package 'source)
                           (package-location package))
                       (G_ "failed to fetch Git repository for ~a~%")
                       (package-name package))
-             #f))
+             (values #f #f)))
     (let* ((source (package-source package))
            (url (git-reference-url (origin-uri source)))
            (property (cute assq-ref (package-properties package) <>)))
@@ -208,14 +210,16 @@ could not be determined."
   "Return an <upstream-source> for the latest release of PACKAGE."
   (let* ((name (package-name package))
          (old-version (package-version package))
-         (url (git-reference-url (origin-uri (package-source package))))
-         (new-version (latest-git-tag-version package)))
-
-    (and new-version
+         (old-reference (origin-uri (package-source package)))
+         (new-version new-version-tag (latest-git-tag-version package)))
+    (and new-version new-version-tag
          (upstream-source
           (package name)
           (version new-version)
-          (urls (list url))))))
+          (urls (git-reference
+                 (url (git-reference-url old-reference))
+                 (commit new-version-tag)
+                 (recursive? (git-reference-recursive? old-reference))))))))
 
 (define %generic-git-updater
   (upstream-updater

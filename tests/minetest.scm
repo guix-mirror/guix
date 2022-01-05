@@ -387,10 +387,9 @@ during a dynamic extent where that package is available on ContentDB."
 
 ;; Update detection
 (define (upstream-source->sexp upstream-source)
-  (define urls (upstream-source-urls upstream-source))
-  (unless (= 1 (length urls))
-    (error "only a single URL is expected"))
-  (define url (first urls))
+  (define url (upstream-source-urls upstream-source))
+  (unless (git-reference? url)
+    (error "a <git-reference> is expected"))
   `(,(upstream-source-package upstream-source)
     ,(upstream-source-version upstream-source)
     ,(git-reference-url url)

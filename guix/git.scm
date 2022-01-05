@@ -3,6 +3,7 @@
 ;;; Copyright © 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2021 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2021 Marius Bakke <marius@gnu.org>
+;;; Copyright © 2022 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,6 +34,8 @@
   #:use-module (guix utils)
   #:use-module (guix records)
   #:use-module (guix gexp)
+  #:autoload   (guix git-download)
+  (git-reference-url git-reference-commit git-reference-recursive?)
   #:use-module (guix sets)
   #:use-module ((guix diagnostics) #:select (leave warning))
   #:use-module (guix progress)
@@ -65,7 +68,9 @@
             git-checkout-url
             git-checkout-branch
             git-checkout-commit
-            git-checkout-recursive?))
+            git-checkout-recursive?
+
+            git-reference->git-checkout))
 
 (define %repository-cache-directory
   (make-parameter (string-append (cache-directory #:ensure? #f)
@@ -671,6 +676,13 @@ is true, limit to only refs/tags."
   (branch  git-checkout-branch (default #f))
   (commit  git-checkout-commit (default #f))      ;#f | tag | commit
   (recursive? git-checkout-recursive? (default #f)))
+
+(define (git-reference->git-checkout reference)
+  "Convert the <git-reference> REFERENCE to an equivalent <git-checkout>."
+  (git-checkout
+   (url (git-reference-url reference))
+   (commit (git-reference-commit reference))
+   (recursive? (git-reference-recursive? reference))))
 
 (define* (latest-repository-commit* url #:key ref recursive? log-port)
   ;; Monadic variant of 'latest-repository-commit'.
