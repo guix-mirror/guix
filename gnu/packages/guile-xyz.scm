@@ -17,7 +17,7 @@
 ;;; Copyright © 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2017, 2018, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
-;;; Copyright © 2018, 2019, 2020, 2021 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2018, 2019, 2020, 2021, 2022 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2019 swedebugia <swedebugia@riseup.net>
@@ -4843,3 +4843,30 @@ provides API for reading and writing INI data.")
 of numbers.  Scheme is great at expressing your coding thoughts.  This project
 is an attempt to combine both into something useful.")
       (license license:asl2.0))))
+
+(define-public guile-kolam
+  (package
+    (name "guile-kolam")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://kolam.systemreboot.net/releases/kolam-"
+                           version ".tar.lz"))
+       (sha256
+        (base32
+         "083r3n3wvzysa9jhlwjj1xppdm6ja56rkizr6hvj4q1806v8n6mn"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags '("GUILE_AUTO_COMPILE=0"))) ; to prevent guild warnings
+    (native-inputs
+     (list guile-3.0 lzip))
+    (propagated-inputs
+     (list guile-json-4))
+    (home-page "https://kolam.systemreboot.net")
+    (synopsis "GraphQL implementation for Scheme")
+    (description "@code{guile-kolam} is a GraphQL implementation for Scheme.  kolam
+features a parser to parse and serialize GraphQL documents, a type system to
+create GraphQL schemas, an execution engine to execute GraphQL queries, and a
+HTTP handler to implement a HTTP GraphQL endpoint.")
+    (license license:agpl3+)))
