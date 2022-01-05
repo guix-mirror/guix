@@ -15097,14 +15097,14 @@ starburst plots) in order to easily develop complete analysis pipelines.")
 (define-public r-tximeta
   (package
     (name "r-tximeta")
-    (version "1.12.3")
+    (version "1.12.4")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "tximeta" version))
        (sha256
         (base32
-         "15l1jvfis7xzxwwnlqs8xpaf212v1lx513np2dc4l4h7rqhclm2v"))))
+         "1lm2r64d6sdfzvxcabgs0214cdc5dl9pfx562acjcxz5mb101g9g"))))
     (properties `((upstream-name . "tximeta")))
     (build-system r-build-system)
     (propagated-inputs
