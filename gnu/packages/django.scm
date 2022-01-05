@@ -131,13 +131,13 @@ to the @dfn{don't repeat yourself} (DRY) principle.")
 (define-public python-django-3.2
   (package
     (inherit python-django-4.0)
-    (version "3.2.10")
+    (version "3.2.11")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "Django" version))
               (sha256
                (base32
-                "1i6my7qrivj0ag9dq22lg0lq6maxapbdqrwy6v1cs2mlnhc8hkh7"))))
+                "0xbyl9fh9lk5hiwpw46s6hz98gs0fixrpq3myj5hh6vbbnz4mjb9"))))
     (propagated-inputs
      (modify-inputs (package-propagated-inputs python-django-4.0)
        ;; Django 4.0 deprecated pytz in favor of Pythons built-in zoneinfo.
