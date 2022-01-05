@@ -11502,8 +11502,7 @@ terminals that do not support Unicode.")
          (add-after 'unpack 'setenv-HOME
            (lambda _
              ;; This is necessary because git looks for $HOME/.gitconfig
-             (setenv "HOME" "/tmp")
-             #t)))))
+             (setenv "HOME" "/tmp"))))))
     (inputs
      `(("git" ,git-minimal)))
     (propagated-inputs
