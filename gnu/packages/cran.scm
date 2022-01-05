@@ -18140,14 +18140,14 @@ library.")
 (define-public r-rex
   (package
     (name "r-rex")
-    (version "1.2.0")
+    (version "1.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rex" version))
        (sha256
         (base32
-         "0m7bq8db3m5dhf01rw7xc7xy1ciq3m7dfgsl80p8cy4h8vqr3d06"))))
+         "1mmzlc3j7xa0rbjxa369f4sr0iw3gq58g8fmjjxbsjvfq14ychmg"))))
     (build-system r-build-system)
     (propagated-inputs
      (list r-lazyeval))
