@@ -10870,6 +10870,11 @@ reading and writing MessagePack data.")
                (substitute* "setup.py"
                  (("TRANSITIONAL = False")
                    "TRANSITIONAL = 1"))
+               ;; This old version is not compatible with Python 3.9
+               (substitute* '("test/test_buffer.py" "test/test_extension.py")
+                 ((".tostring\\(") ".tobytes("))
+               (substitute* '("test/test_buffer.py" "test/test_extension.py")
+                 ((".fromstring\\(") ".frombytes("))
                #t))))))))
 
 (define-public python2-msgpack
