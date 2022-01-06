@@ -6,6 +6,7 @@
 ;;; Copyright © 2018, 2022 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2022 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -270,7 +271,7 @@ to docs.openstack.org and developer.openstack.org.")
     (propagated-inputs
      (list python-stestr))
     (native-inputs
-     (list python-pbr python-testtools python-babel))
+     (list python-pbr python-testtools python-babel python-testrepository))
     (home-page "https://www.openstack.org/")
     (synopsis "Testr wrapper to provide functionality for OpenStack projects")
     (description
