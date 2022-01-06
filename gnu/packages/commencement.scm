@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012-2022 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015, 2017 Mark H Weaver <mhw@netris.org>
@@ -3768,7 +3768,10 @@ COREUTILS-FINAL vs. COREUTILS, etc."
        (append (package-search-paths gcc)
                (package-search-paths libc)))
 
-      (properties (package-properties gcc))  ;for 'compiler-cpu-architectures'
+      ;; Copy the 'compiler-cpu-architectures' property and other things that
+      ;; may be useful, but not the 'hidden?' property.
+      (properties (alist-delete 'hidden? (package-properties gcc)))
+
       (license (package-license gcc))
       (synopsis "Complete GCC tool chain for C/C++ development")
       (description
