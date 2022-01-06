@@ -13706,6 +13706,7 @@ using Imenu, and Compilation mode support for MSBuild, devenv and xbuild.")
          (uri (git-reference
                (url "https://github.com/rrthomas/vala-mode")
                (commit commit)))
+         (file-name (git-file-name name version))
          (sha256
           (base32 "0g5pdq757z9d8rk489n5ilhqipdc4i4sfkjwwrxyvgjlapjc04c0"))))
       (build-system emacs-build-system)
