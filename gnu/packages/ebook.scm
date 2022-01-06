@@ -613,7 +613,7 @@ Some of the current features:
 (define-public xchm
   (package
     (name "xchm")
-    (version "1.32")
+    (version "1.33")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/rzvncj/xCHM"
@@ -621,7 +621,7 @@ Some of the current features:
                                   version "/xchm-" version ".tar.gz"))
               (sha256
                (base32
-                "0b12ym7cn65wy268kbksyhakicwb053c8xfn76q2dawrvbras9dj"))))
+                "0an09shap2wj9gzj5fsw5sc2i6paq3kc3mc52fnwg2bb2dan5qxk"))))
     (build-system gnu-build-system)
     (inputs
      (list wxwidgets chmlib))
