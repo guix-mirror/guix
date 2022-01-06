@@ -206,7 +206,7 @@ removable devices or support for multimedia.")
 (define-public terminology
   (package
     (name "terminology")
-    (version "1.11.0")
+    (version "1.12.1")
     (source (origin
               (method url-fetch)
               (uri
@@ -214,15 +214,14 @@ removable devices or support for multimedia.")
                               "terminology/terminology-" version ".tar.xz"))
               (sha256
                (base32
-                "0bbav27p1xni7kidgf3vn42bwsfrzds301k3f7c8dg7v5yyq9n2g"))
+                "1aasddf2343qj798b5s8qwif3lxj4pyjax6fa9sfi6if9icdkkpq"))
               (modules '((guix build utils)))
               ;; Remove the bundled fonts.
               (snippet
                '(begin
                   (delete-file-recursively "data/fonts")
                   (substitute* "data/meson.build"
-                    (("subdir\\('fonts'\\)") ""))
-                  #t))))
+                    (("subdir\\('fonts'\\)") ""))))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
@@ -234,7 +233,7 @@ removable devices or support for multimedia.")
        (modify-phases %standard-phases
          (add-after 'unpack 'set-home-directory
            ;; FATAL: Cannot create run dir '/homeless-shelter/.run' - errno=2
-           (lambda _ (setenv "HOME" "/tmp") #t))
+           (lambda _ (setenv "HOME" "/tmp")))
          (replace 'check
            (lambda _
              (with-directory-excursion
@@ -245,8 +244,7 @@ removable devices or support for multimedia.")
            (lambda* (#:key outputs #:allow-other-keys)
              ;; This file is not meant to be installed.
              (delete-file (string-append (assoc-ref outputs "out")
-                                         "/bin/tytest"))
-             #t)))))
+                                         "/bin/tytest")))))))
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("perl" ,perl)
