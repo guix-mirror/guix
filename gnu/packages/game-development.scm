@@ -1928,7 +1928,7 @@ games.")
              ;; Mesa can find libudev.so.0 through LD_LIBRARY_PATH.
              ;; also append ld path for pulseaudio and alsa-lib
              (let* ((out (assoc-ref outputs "out"))
-                    (udev_path (string-append (assoc-ref inputs "udev") "/lib"))
+                    (udev_path (string-append (assoc-ref inputs "eudev") "/lib"))
                     (pulseaudio_path (string-append (assoc-ref inputs "pulseaudio") "/lib"))
                     (alas_lib_path (string-append (assoc-ref inputs "alsa-lib") "/lib")))
                (wrap-program (string-append out "/bin/godot")
@@ -1948,30 +1948,32 @@ games.")
                          `(,(string-append icons "/256x256/apps/godot.png")
                            ,(string-append icons "/scalable/apps/godot.svg")))))))))
     (outputs '("out" "headless"))
-    (native-inputs (list pkg-config))
-    (inputs `(("alsa-lib" ,alsa-lib)
-              ("bullet" ,bullet)
-              ("freetype" ,freetype)
-              ("glew" ,glew)
-              ("glu" ,glu)
-              ("libtheora" ,libtheora)
-              ("libvorbis" ,libvorbis)
-              ("libvpx" ,libvpx)
-              ("libwebp" ,libwebp)
-              ("libx11" ,libx11)
-              ("libxcursor" ,libxcursor)
-              ("libxi" ,libxi)
-              ("libxinerama" ,libxinerama)
-              ("libxrandr" ,libxrandr)
-              ("mbedtls" ,mbedtls-apache)
-              ("mesa" ,mesa)
-              ("opusfile" ,opusfile)
-              ("pcre2" ,pcre2)
-              ("pulseaudio" ,pulseaudio)
-              ("udev" ,eudev) ;FIXME: required by mesa
-              ("wslay" ,wslay)
-              ("zenity" ,zenity)
-              ("zstd" ,zstd "lib")))
+    (native-inputs
+     (list pkg-config))
+    (inputs
+     (list alsa-lib
+           bullet
+           freetype
+           glew
+           glu
+           libtheora
+           libvorbis
+           libvpx
+           libwebp
+           libx11
+           libxcursor
+           libxi
+           libxinerama
+           libxrandr
+           mbedtls-apache
+           mesa
+           opusfile
+           pcre2
+           pulseaudio
+           eudev                        ; FIXME: required by mesa
+           wslay
+           zenity
+           `(,zstd "lib")))
     (home-page "https://godotengine.org/")
     (synopsis "Advanced 2D and 3D game engine")
     (description
