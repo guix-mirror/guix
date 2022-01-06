@@ -231,7 +231,8 @@ XML-RPC over SCGI.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1fqspp2ckafplahgba54xmx0sjidx1pdzyjaqjhz0ivh98dkx2n5"))))
+         "1fqspp2ckafplahgba54xmx0sjidx1pdzyjaqjhz0ivh98dkx2n5"))
+       (patches (search-patches "tremc-fix-decodestring.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no test suite
