@@ -665,7 +665,7 @@ provisioning etc.")
 (define-public cqfd
   (package
     (name "cqfd")
-    (version "5.2.1")
+    (version "5.3.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -674,7 +674,7 @@ provisioning etc.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1zqgznfl7slfrddfpy2pfmablbvyf7296d3b3vcprilqb93cc7li"))))
+                "0gy4kjy6v52acfk6ffbg5sp02k6176khhkms7zlwmywq8591bpww"))))
     (build-system gnu-build-system)
     (arguments
      ;; The test suite requires a docker daemon and connectivity.
