@@ -578,8 +578,8 @@ directories.
            (lambda _
              (setenv "HOME" (getcwd)))))))
     (native-inputs
-     `(("gettext" ,gettext-minimal)
-       ("pkg-config" ,pkg-config)))
+     (list gettext-minimal
+           pkg-config))
     (inputs
      (list efl))
     (home-page "https://www.enlightenment.org")
