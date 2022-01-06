@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013-2022 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015, 2016, 2020 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
@@ -2393,11 +2393,7 @@ Linux @dfn{kernel mode setting} (KMS).")))
 
 (define-compile-time-procedure (assert-valid-address (address string?))
   "Ensure ADDRESS has a valid netmask."
-  (unless (or (cidr->netmask address)
-              (and=> (false-if-exception (inet-pton AF_INET address))
-                     (cut = INADDR_LOOPBACK <>))
-              (and=> (false-if-exception (inet-pton AF_INET6 address))
-                     (cut = 1 <>)))
+  (unless (cidr->netmask address)
     (raise
      (make-compound-condition
       (formatted-message (G_ "address '~a' lacks a network mask")
@@ -2741,7 +2737,7 @@ to handle."
   (static-networking
    (addresses (list (network-address
                      (device "lo")
-                     (value "127.0.0.1"))))
+                     (value "127.0.0.1/8"))))
    (requirement '())
    (provision '(loopback))))
 
