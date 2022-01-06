@@ -245,7 +245,7 @@ with '-virtfs' options for the host file systems listed in SHARED-FS."
                                                 (qemu qemu)
                                                 (graphic? #t)
                                                 (volatile? #t)
-                                                (memory-size 2048)
+                                                (memory-size 512)
                                                 (mappings '())
                                                 full-boot?
                                                 (disk-image-size
