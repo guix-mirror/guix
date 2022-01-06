@@ -2260,6 +2260,74 @@ the classes of bugs which only or more frequently manifest themselves when the
 system is under heavy load.")
     (license license:gpl2+)))
 
+(define-public stress-ng
+  (package
+    (name "stress-ng")
+    (version "0.13.10")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ColinIanKing/stress-ng")
+             (commit (string-append "V" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1z9vjn2131iv3pwrh04z6r5ygi1qgad5bi3jhghcvc3v1b4k5ran"))))
+    (build-system gnu-build-system)
+    (arguments
+     (list #:make-flags
+           #~(list (string-append "CC=" #$(cc-for-target))
+                   (string-append "BINDIR=" #$output "/bin")
+                   ;; XXX Really: MAN1DIR, or man pages won't be found.
+                   (string-append "MANDIR=" #$output "/share/man/man1")
+                   (string-append "JOBDIR=" #$output
+                                  "/share/stress-ng/example-jobs")
+                   (string-append "BASHDIR=" #$output
+                                  "/share/bash-completion/completions"))
+           #:test-target "lite-test"
+           #:phases
+           #~(modify-phases %standard-phases
+               (delete 'configure)      ; no configure script
+               (add-after 'check 'check-a-little-harder
+                 ;; XXX Guix supports only one #:test-target.  Run more tests.
+                 (lambda* (#:key tests? #:allow-other-keys #:rest args)
+                   (when tests?
+                     (substitute* "debian/tests/fast-test-all"
+                       (("EXCLUDE=\"" exclude=)
+                        (string-append exclude=
+                                       ;; Fails if host kernel denies ptracing.
+                                       "ptrace ")))
+                     (apply (assoc-ref %standard-phases 'check)
+                            `(,@args #:test-target "fast-test-all"))))))))
+    (inputs
+     (list keyutils
+           kmod
+           libaio
+           libbsd
+           libcap
+           libgcrypt
+           zlib))
+    (home-page "https://github.com/ColinIanKing/stress-ng")
+    (synopsis "Load and stress-test a computer system in various ways")
+    (description
+     "stress-ng stress-tests a computer system by exercising both physical
+subsystems as operating system kernel interfaces.  It can stress the CPU, cache,
+disk, memory, socket and pipe I/O, scheduling, and much more, in various
+selectable ways.  This can trip hardware issues such as thermal overruns as well
+as operating system bugs that occur only when a system is being thrashed hard.
+
+You can also measure test throughput rates, which can be useful to observe
+performance changes across different operating system releases or types of
+hardware.  However, stress-ng is not a benchmark.  Use it with caution: some of
+the tests can make poorly designed hardware run dangerously hot or make the
+whole system lock up.
+
+Compared to its inspiration, @command{stress}, @command{stress-ng} offers many
+additional options such as the number of bogo operations to run, execution
+metrics, verification of memory and computational operations, and considerably
+more stress mechanisms.")
+    (license license:gpl2+)))
+
 (define-public detox
   (package
     (name "detox")
