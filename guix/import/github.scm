@@ -4,6 +4,7 @@
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2022 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,6 +26,7 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-71)
   #:use-module (guix utils)
   #:use-module (guix i18n)
   #:use-module (guix diagnostics)
@@ -181,12 +183,15 @@ empty list."
         (x x)))))
 
 (define (latest-released-version url package-name)
-  "Return a string of the newest released version name given a string URL like
+  "Return the newest released version and its tag given a string URL like
 'https://github.com/arq5x/bedtools2/archive/v2.24.0.tar.gz' and the name of
-the package e.g. 'bedtools2'.  Return #f if there is no releases"
+the package e.g. 'bedtools2'.  Return #f (two values) if there are no
+releases."
   (define (pre-release? x)
     (assoc-ref x "prerelease"))
 
+  ;; This procedure returns (version . tag) pair, or #f
+  ;; if RELEASE doesn't seyem to correspond to a version.
   (define (release->version release)
     (let ((tag (or (assoc-ref release "tag_name") ;a "release"
                    (assoc-ref release "name")))   ;a tag
@@ -197,22 +202,22 @@ the package e.g. 'bedtools2'.  Return #f if there is no releases"
        ((and (< name-length (string-length tag))
              (string=? (string-append package-name "-")
                        (substring tag 0 (+ name-length 1))))
-        (substring tag (+ name-length 1)))
+        (cons (substring tag (+ name-length 1)) tag))
        ;; some tags start with a "v" e.g. "v0.25.0"
        ;; or with the word "version" e.g. "version.2.1"
        ;; where some are just the version number
        ((string-prefix? "version" tag)
-        (if (char-set-contains? char-set:digit (string-ref tag 7))
-            (substring tag 7)
-            (substring tag 8)))
+        (cons (if (char-set-contains? char-set:digit (string-ref tag 7))
+                  (substring tag 7)
+                  (substring tag 8)) tag))
        ((string-prefix? "v" tag)
-        (substring tag 1))
+        (cons (substring tag 1) tag))
        ;; Finally, reject tags that don't start with a digit:
        ;; they may not represent a release.
        ((and (not (string-null? tag))
              (char-set-contains? char-set:digit
                                  (string-ref tag 0)))
-        tag)
+        (cons tag tag))
        (else #f))))
 
   (let* ((json (and=> (fetch-releases-or-tags url)
@@ -229,14 +234,14 @@ https://github.com/settings/tokens"))
                                  (match (remove pre-release? json)
                                    (() json) ; keep everything
                                    (releases releases)))
-                     version>?)
-          ((latest-release . _) latest-release)
-          (() #f)))))
+                     (lambda (x y) (version>? (car x) (car y))))
+          (((latest-version . tag) . _) (values latest-version tag))
+          (() (values #f #f))))))
 
 (define (latest-release pkg)
   "Return an <upstream-source> for the latest release of PKG."
-  (define (origin-github-uri origin)
-    (match (origin-uri origin)
+  (define (github-uri uri)
+    (match uri
       ((? string? url)
        url)                                       ;surely a github.com URL
       ((? download:git-reference? ref)
@@ -244,14 +249,20 @@ https://github.com/settings/tokens"))
       ((urls ...)
        (find (cut string-contains <> "github.com") urls))))
 
-  (let* ((source-uri (origin-github-uri (package-source pkg)))
+  (let* ((original-uri (origin-uri (package-source pkg)))
+         (source-uri (github-uri original-uri))
          (name (package-name pkg))
-         (newest-version (latest-released-version source-uri name)))
+         (newest-version version-tag
+                         (latest-released-version source-uri name)))
     (if newest-version
         (upstream-source
          (package name)
          (version newest-version)
-         (urls (list (updated-github-url pkg newest-version))))
+         (urls (if (download:git-reference? original-uri)
+                   (download:git-reference
+                    (inherit original-uri)
+                    (commit version-tag))
+                   (list (updated-github-url pkg newest-version)))))
         #f))) ; On GitHub but no proper releases
 
 (define %github-updater
