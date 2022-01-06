@@ -5078,7 +5078,9 @@ arrays when needed.")
     (arguments
      (substitute-keyword-arguments (package-arguments mdadm)
        ((#:make-flags flags)
-        #~(cons "LDFLAGS = -static" #$flags))
+        #~(cons* "LDFLAGS = -static"
+                 "CXFLAGS = -DNO_LIBUDEV"
+                 #$flags))
        ((#:phases phases)
         #~(modify-phases #$phases
             (add-after 'install 'remove-cruft
