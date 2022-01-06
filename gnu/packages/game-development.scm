@@ -1816,7 +1816,7 @@ games.")
 (define-public godot
   (package
     (name "godot")
-    (version "3.4")
+    (version "3.4.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1825,7 +1825,7 @@ games.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0y542zla6msgxf31rd0349d9j3ya7f3njnwmmrh8lmzfgxx86qbx"))
+                "1bm9yl995chvx6jwkdia12yjrgwcpzb1r9bmj606q8z264aw2ma5"))
               (modules '((guix build utils)
                          (ice-9 ftw)
                          (srfi srfi-1)))
@@ -1863,8 +1863,7 @@ games.")
                       (for-each delete-file-recursively
                                 (lset-difference string=?
                                                  (scandir ".")
-                                                 (cons* "." ".." preserved-files)))))
-                  #t))))
+                                                 (cons* "." ".." preserved-files)))))))))
     (build-system scons-build-system)
     (arguments
      `(#:scons ,scons-python2
@@ -1898,8 +1897,7 @@ games.")
                (("env_base = Environment\\(tools=custom_tools\\)")
                 (string-append
                  "env_base = Environment(tools=custom_tools)\n"
-                 "env_base = Environment(ENV=os.environ)")))
-             #t))
+                 "env_base = Environment(ENV=os.environ)")))))
          ;; Build headless tools, used for packaging games without depending on X.
          (add-after 'build 'build-headless
            (lambda* (#:key scons-flags #:allow-other-keys)
@@ -1922,8 +1920,7 @@ games.")
                  (install-file "godot_server" (string-append headless "/bin")))
                ;; Tell the editor where to find zenity for OS.alert().
                (wrap-program (string-append out "/bin/godot")
-                 `("PATH" ":" prefix (,(string-append zenity "/bin")))))
-             #t))
+                 `("PATH" ":" prefix (,(string-append zenity "/bin")))))))
          (add-after 'install 'wrap
            (lambda* (#:key inputs outputs #:allow-other-keys)
              ;; FIXME: Mesa tries to dlopen libudev.so.0 and fails.  Pending a
@@ -1935,8 +1932,7 @@ games.")
                     (pulseaudio_path (string-append (assoc-ref inputs "pulseaudio") "/lib"))
                     (alas_lib_path (string-append (assoc-ref inputs "alsa-lib") "/lib")))
                (wrap-program (string-append out "/bin/godot")
-                 `("LD_LIBRARY_PATH" ":" prefix (,udev_path ,pulseaudio_path ,alas_lib_path))))
-             #t))
+                 `("LD_LIBRARY_PATH" ":" prefix (,udev_path ,pulseaudio_path ,alas_lib_path))))))
          (add-after 'install 'install-godot-desktop
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -1950,8 +1946,7 @@ games.")
                            (copy-file icon dest))
                          '("icon.png" "icon.svg")
                          `(,(string-append icons "/256x256/apps/godot.png")
-                           ,(string-append icons "/scalable/apps/godot.svg"))))
-             #t)))))
+                           ,(string-append icons "/scalable/apps/godot.svg")))))))))
     (outputs '("out" "headless"))
     (native-inputs (list pkg-config))
     (inputs `(("alsa-lib" ,alsa-lib)
