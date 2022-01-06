@@ -6831,6 +6831,7 @@ several functions from the R igraph package.")
                 (uri (git-reference
                       (url "https://github.com/pneuvial/sanssouci.git")
                       (commit commit)))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
                   "13ycdd790qw64qy2zdvcrpj3fc8as628rsly32438d3rifnlc5sk"))))
