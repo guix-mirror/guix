@@ -19,6 +19,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages digest)
+  #:use-module (guix gexp)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -79,24 +80,24 @@ Zig, V, and Nim programming language standard libraries.")
         (base32 "1h6080lvcr5mpbvy4fhb4i7wvhpy72nrixk3djmpai4hxq41hsnr"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:make-flags
-       (list ,(string-append "CC=" (cc-for-target))
-             ,(match (or (%current-target-system)
-                         (%current-system))
-                ;; Detect vector instruction set at run time.
-                ((or "i686-linux" "x86_64-linux") "DISPATCH=1")
-                (_ "DISPATCH=0"))
-             "XXH_FORCE_MEMORY_ACCESS=1" ; improved performance with GCC
-             (string-append "prefix=" (assoc-ref %outputs "out")))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-man-page-links
-           ;; https://github.com/Cyan4973/xxHash/issues/647
-           (lambda _
-             (substitute* "Makefile"
-               (("ln -sf \\$\\(MAN\\)")
-                "ln -sf xxhsum.1"))))
-         (delete 'configure))))         ; no configure script
+     (list #:make-flags
+           #~(list #$(string-append "CC=" (cc-for-target))
+                   #$(match (or (%current-target-system)
+                                (%current-system))
+                       ;; Detect vector instruction set at run time.
+                       ((or "i686-linux" "x86_64-linux") "DISPATCH=1")
+                       (_ "DISPATCH=0"))
+                   "XXH_FORCE_MEMORY_ACCESS=1" ; improved performance with GCC
+                   (string-append "prefix=" (assoc-ref %outputs "out")))
+           #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'unpack 'fix-man-page-links
+                 ;; https://github.com/Cyan4973/xxHash/issues/647
+                 (lambda _
+                   (substitute* "Makefile"
+                     (("ln -sf \\$\\(MAN\\)")
+                      "ln -sf xxhsum.1"))))
+               (delete 'configure))))         ; no configure script
     (home-page "https://cyan4973.github.io/xxHash/")
     (synopsis "Extremely fast hash algorithm")
     (description
