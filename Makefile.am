@@ -483,6 +483,7 @@ SCM_TESTS =					\
   tests/hackage.scm				\
   tests/home-import.scm				\
   tests/import-git.scm				\
+  tests/import-github.scm			\
   tests/import-utils.scm			\
   tests/inferior.scm				\
   tests/lint.scm				\

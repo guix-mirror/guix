@@ -39,7 +39,10 @@
   #:use-module (guix upstream)
   #:use-module (guix http-client)
   #:use-module (web uri)
-  #:export (%github-updater))
+  #:export (%github-api %github-updater))
+
+;; For tests.
+(define %github-api (make-parameter "https://api.github.com"))
 
 (define (find-extension url)
   "Return the extension of the archive e.g. '.tar.gz' given a URL, or
@@ -150,11 +153,11 @@ tags show up in the \"Releases\" tab of the web UI.  For instance,
 'https://api.github.com/repos/aconchillo/guile-json/releases' returns the
 empty list."
   (define release-url
-    (string-append "https://api.github.com/repos/"
+    (string-append (%github-api) "/repos/"
                    (github-user-slash-repository url)
                    "/releases"))
   (define tag-url
-    (string-append "https://api.github.com/repos/"
+    (string-append (%github-api) "/repos/"
                    (github-user-slash-repository url)
                    "/tags"))
 
