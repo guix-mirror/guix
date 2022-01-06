@@ -5825,6 +5825,7 @@ Encoding for HTTP.")
              (url "https://github.com/VeNoMouS/cloudscraper")
              ;; Corresponds to 1.2.58
              (commit "f3a3d067ea8b5238e9a0948aed0c3fa0d9c29b96")))
+       (file-name (git-file-name name version))
        (sha256
         (base32 "18fbp086imabjxly04rrchbf6n6m05bpd150zxbw7z2w3mjnpsqd"))
        (modules '((guix build utils)))
