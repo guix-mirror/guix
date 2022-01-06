@@ -23553,16 +23553,15 @@ existing Hunspell hyphenation dictionaries.")
 (define-public python-intelhex
   (package
     (name "python-intelhex")
-    (version "2.2.1")
+    (version "2.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "intelhex" version))
        (sha256
         (base32
-         "0ckqjbxd8gwcg98gfzpn4vq1qxzfvq3rdbrr1hikj1nmw08qb780"))))
+         "14q04p6qs47ab9w55232ylrdn4wm9rswz36s6x999x0rlxhp6aw9"))))
     (build-system python-build-system)
-    (arguments '(#:tests? #f))          ;issue with version
     (home-page "https://pypi.org/project/IntelHex/")
     (synopsis "Python library for Intel HEX files manipulations")
     (description "The Intel HEX file format is widely used in microprocessors
