@@ -925,7 +925,7 @@ Emacs).")
 (define-public kicad
   (package
     (name "kicad")
-    (version "5.1.10")
+    (version "5.1.12")
     (source
      (origin
        (method git-fetch)
@@ -933,7 +933,7 @@ Emacs).")
              (url "https://gitlab.com/kicad/code/kicad.git")
              (commit version)))
        (sha256
-        (base32 "10ix560bqy0lprnik1bprxw9ix4g8w2ipvyikx551ak9ryvgwjcc"))
+        (base32 "0kgikchqxds3mp71nkg307mr4c1dgv8akbmksz4w9x8jg4i1mfqq"))
        (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (arguments
@@ -941,9 +941,12 @@ Emacs).")
        #:tests? #f                      ; no tests
        #:build-type "Release"
        #:configure-flags
-       (list "-DKICAD_SCRIPTING_PYTHON3=ON"
-             "-DKICAD_SCRIPTING_WXPYTHON_PHOENIX=ON"
-             "-DCMAKE_BUILD_WITH_INSTALL_RPATH=TRUE")
+       ,#~(list
+           "-DKICAD_SCRIPTING_PYTHON3=ON"
+           "-DKICAD_SCRIPTING_WXPYTHON_PHOENIX=ON"
+           "-DCMAKE_BUILD_WITH_INSTALL_RPATH=TRUE"
+           (string-append "-DOCC_INCLUDE_DIR="
+                          #$(this-package-input "opencascade-occt") "/include/opencascade"))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-ngspice-detection
@@ -1019,7 +1022,7 @@ Emacs).")
        ("libngspice" ,libngspice)
        ("libsm" ,libsm)
        ("mesa" ,mesa)
-       ("opencascade-oce" ,opencascade-oce)
+       ("opencascade-occt" ,opencascade-occt)
        ("openssl" ,openssl)
        ("python" ,python-wrapper)
        ("wxwidgets" ,wxwidgets)
@@ -1071,7 +1074,7 @@ translations for KiCad.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "005ljkb7liayvyj4vxd5ncrknfbhnk6xvyjk43qz810hrp1fv0hk"))))
+                "026cz4zm903i75yhdvzha2nsnk4c0w07q3gd3xw3jmsmn18imgm3"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags (list "-DBUILD_FORMATS=html")
@@ -1105,7 +1108,7 @@ translations for KiCad.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0n25rq32jwyigfw26faqraillwv6zbi2ywy26dkz5zqlf5xp56ad"))))
+                "1zdajim409570xzis53kmrbdcf7000v2vmc90f49h214lrx2zhr2"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))                    ; no tests exist
