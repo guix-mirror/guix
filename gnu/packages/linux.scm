@@ -5078,20 +5078,19 @@ arrays when needed.")
     (arguments
      (substitute-keyword-arguments (package-arguments mdadm)
        ((#:make-flags flags)
-        `(cons "LDFLAGS = -static" ,flags))
+        #~(cons "LDFLAGS = -static" #$flags))
        ((#:phases phases)
-        `(modify-phases ,phases
-           (add-after 'install 'remove-cruft
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let* ((out         (assoc-ref outputs "out"))
-                      (precious?   (lambda (file)
-                                     (member file '("." ".." "sbin"))))
-                      (directories (scandir out (negate precious?))))
-                 (with-directory-excursion out
-                   (for-each delete-file-recursively directories)
-                   (remove-store-references "sbin/mdadm")
-                   (delete-file "sbin/mdmon")
-                   #t))))))
+        #~(modify-phases #$phases
+            (add-after 'install 'remove-cruft
+              (lambda* (#:key outputs #:allow-other-keys)
+                (let* ((out         (assoc-ref outputs "out"))
+                       (precious?   (lambda (file)
+                                      (member file '("." ".." "sbin"))))
+                       (directories (scandir out (negate precious?))))
+                  (with-directory-excursion out
+                    (for-each delete-file-recursively directories)
+                    (remove-store-references "sbin/mdadm")
+                    (delete-file "sbin/mdmon")))))))
        ((#:modules modules %gnu-build-system-modules)
         `((ice-9 ftw) ,@modules))
        ((#:strip-flags _ '())
