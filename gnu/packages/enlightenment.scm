@@ -246,9 +246,9 @@ removable devices or support for multimedia.")
              (delete-file (string-append (assoc-ref outputs "out")
                                          "/bin/tytest")))))))
     (native-inputs
-     `(("gettext" ,gettext-minimal)
-       ("perl" ,perl)
-       ("pkg-config" ,pkg-config)))
+     (list gettext-minimal
+           perl
+           pkg-config))
     (inputs
      (list efl))
     (home-page "https://www.enlightenment.org/about-terminology")
