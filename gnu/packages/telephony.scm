@@ -107,6 +107,7 @@
        (uri (git-reference
              (url "https://git.kernel.org/pub/scm/network/ofono/phonesim")
              (commit "a7c844d45b047b2dae5b0877816c346fce4c47b9")))
+       (file-name (git-file-name name version))
        (sha256
         (base32 "0rc1c2vr03dmi1dr3skj57v77ga9c22g29xs1qiphqms4isby9cq"))))
     (build-system gnu-build-system)
