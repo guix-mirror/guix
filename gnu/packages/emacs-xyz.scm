@@ -71,7 +71,7 @@
 ;;; Copyright © 2020 Alberto Eleuterio Flores Guerrero <barbanegra+guix@posteo.mx>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 pinoaffe <pinoaffe@airmail.cc>
-;;; Copyright © 2020, 2021 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020, 2021, 2022 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Ryan Desfosses <rdes@protonmail.com>
 ;;; Copyright © 2020 Marcin Karpezo <sirmacik@wioo.waw.pl>
 ;;; Copyright © 2020 Fredrik Salomonsson <plattfot@gmail.com>
@@ -14014,6 +14014,28 @@ and lambdas.")
     (description "Org2web is a static site generator based on org-mode,
 which code derived from Kelvin H's org-page.")
     (license license:gpl2+)))
+
+(define-public emacs-meow
+  (package
+    (name "emacs-meow")
+    (version "1.2.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/meow-edit/meow")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "048y1sgsl7amcsq8pxw9m2fws1zcjwbsqs1lnsz30dx6qasdmjf1"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/meow-edit/meow")
+    (synopsis "Yet another modal editing on Emacs")
+    (description "Meow is yet another modal editing mode for Emacs.  It aims
+to blend modal editing into Emacs with minimum interface with its original
+key-bindings, avoiding most if not all the hassle introduced by key-binding
+conflicts.")
+    (license license:gpl3+)))
 
 (define-public emacs-xelb
   (package
