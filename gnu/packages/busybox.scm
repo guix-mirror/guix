@@ -19,6 +19,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages busybox)
+  #:use-module (guix gexp)
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -133,35 +134,32 @@ any small or embedded system.")
                 "0jq3368jps6jg717ikzhlc6whml3k2s9xy69zpj4i0r35c5ck622"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'set-environment-variables
-           (lambda _
-             (setenv "CC" ,(cc-for-target))
-             (setenv "HOSTCC" (which "gcc"))))
-         (replace 'configure
-           (lambda _ (invoke "make" "defconfig")))
-         (add-before 'check 'fix-or-skip-broken-tests
-           (lambda _
-             ;; Some tests expects $USER to magically be the current user name.
-             (setenv "USER" (passwd:name (getpwnam (geteuid))))
-             ;; All these expect directories to be exactly 4K.  They aren't!
-             (delete-file "tests/du.test")
-             ;; Delete tests that expect a root or 0 user to exist.
-             (substitute* "tests/id.test"
-               (("^testing .*[ \\(]root.*") ""))
-             ))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (invoke "make"
-                       (string-append "PREFIX=" out)
-                       "install"))))
-         (add-after 'install 'remove-usr-directory
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (delete-file-recursively (string-append out "/usr"))))))
-       #:test-target "tests"))
+     (list #:phases
+           #~(modify-phases %standard-phases
+               (add-before 'configure 'set-environment-variables
+                 (lambda _
+                   (setenv "CC" #$(cc-for-target))
+                   (setenv "HOSTCC" (which "gcc"))))
+               (replace 'configure
+                 (lambda _ (invoke "make" "defconfig")))
+               (add-before 'check 'fix-or-skip-broken-tests
+                 (lambda _
+                   ;; Some tests expect $USER to magically be the current user.
+                   (setenv "USER" (passwd:name (getpwnam (geteuid))))
+                   ;; This expects directories to be exactly 4K.  They aren't!
+                   (delete-file "tests/du.test")
+                   ;; Delete tests that expect a root or 0 user to exist.
+                   (substitute* "tests/id.test"
+                     (("^testing .*[ \\(]root.*") ""))))
+               (replace 'install
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (invoke "make"
+                           (string-append "PREFIX=" #$output)
+                           "install")))
+               (add-after 'install 'remove-usr-directory
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (delete-file-recursively (string-append #$output "/usr")))))
+           #:test-target "tests"))
     (native-inputs (list bc))
     (synopsis "Many common UNIX utilities in a single executable")
     (description "ToyBox combines tiny versions of many common UNIX utilities
