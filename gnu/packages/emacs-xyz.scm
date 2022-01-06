@@ -105,6 +105,7 @@
 ;;; Copyright © 2021 Simon South <simon@simonsouth.net>
 ;;; Copyright © 2021 la snesne <lasnesne@lagunposprasihopre.org>
 ;;; Copyright © 2021 Brian Kubisiak <brian@kubisiak.com>
+;;; Copyright © 2021, 2022 Taiju HIGASHI <higashi@taiju.info>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -7952,6 +7953,26 @@ orange and red as accent colors.")
 a LaTeX file, which compiles into a nice CV.  In the same spirit, the Org file
 may export to Markdown so that it can be used for a web based CV.")
       (license license:gpl3+))))
+
+(define-public emacs-ox-gfm
+  (package
+    (name "emacs-ox-gfm")
+    (version "1.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/larstvei/ox-gfm")
+                    (commit (string-append "v" version))))
+              (sha256
+               (base32
+                "0drdypmgxk3238hmkqw9s3cw9wv94cyfqar5ar0bv0k69s92pxj8"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/larstvei/ox-gfm")
+    (synopsis "Github Flavored Markdown Back-End for Org Export Engine")
+    (description "This package is a small exporter based on the Markdown
+exporter already existing in Org mode.  It supports the Github flavored
+markdown features.")
+    (license license:gpl3+)))
 
 (define-public emacs-2048-game
   (package
