@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012-2022 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014, 2016, 2018 David Thompson <davet@gnu.org>
 ;;; Copyright © 2014, 2017, 2018 Mark H Weaver <mhw@netris.org>
@@ -409,9 +409,9 @@ without requiring the source code to be rewritten.")
                                                 ;  when heavily loaded)
 
 (define-public guile-next
-  (let ((version "3.0.5")
+  (let ((version "3.0.7")
         (revision "0")
-        (commit "91547abf54d5e0795afda2781259ab8923eb527b"))
+        (commit "d70c1dbebf9ac0fd45af4578c23983ec4a7da535"))
     (package
       (inherit guile-3.0)
       (name "guile-next")
@@ -425,7 +425,7 @@ without requiring the source code to be rewritten.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "09i1c77h2shygylfk0av31jsc1my6zjl230b2cx6vyl58q8c0cqy"))))
+                  "05rsk9lh5kchbav3lwfwgvgybrykqqjmkkc6689fhb3mjr5m3dqj"))))
       (arguments
        (substitute-keyword-arguments (package-arguments guile-3.0)
          ((#:phases phases '%standard-phases)
