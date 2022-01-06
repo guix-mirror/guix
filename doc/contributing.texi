@@ -1416,9 +1416,14 @@ what your usertag means.
 @cindex commit access, for developers
 Everyone can contribute to Guix without having commit access
 (@pxref{Submitting Patches}).  However, for frequent contributors,
-having write access to the repository can be convenient.  Commit access
-should not be thought of as a ``badge of honor'' but rather as a
-responsibility a contributor is willing to take to help the project.
+having write access to the repository can be convenient.  As a rule of
+thumb, a contributor should have accumulated fifty (50) reviewed commits
+to be considered as a committer and have sustained their activity in the
+project for at least 6 months.  This ensures enough interactions with
+the contributor, which is essential for mentoring and assessing whether
+they are ready to become a committer.  Commit access should not be
+thought of as a ``badge of honor'' but rather as a responsibility a
+contributor is willing to take to help the project.
 
 The following sections explain how to get commit access, how to be ready
 to push commits, and the policies and community expectations for commits
