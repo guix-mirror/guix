@@ -3226,10 +3226,10 @@ the Turtle syntax.")
     (arguments
      `(#:tests? #f))                    ;no check target
     (inputs
-     `(("lv2" ,lv2)
-       ("gtk+" ,gtk+-2)
-       ("gtk+" ,gtk+)
-       ("qt" ,qtbase-5)))
+     (list lv2
+           gtk+-2
+           gtk+
+           qtbase-5))
     (native-inputs
      (list pkg-config))
     (home-page "https://drobilla.net/software/suil/")
