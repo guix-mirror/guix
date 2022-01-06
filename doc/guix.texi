@@ -9201,7 +9201,7 @@ the corresponding positional regexp sub-expression.  For example:
   (("hello")
    "good morning\n")
   (("foo([a-z]+)bar(.*)$" all letters end)
-   (string-append "baz" letter end)))
+   (string-append "baz" letters end)))
 @end lisp
 
 Here, anytime a line of @var{file} contains @code{hello}, it is replaced
