@@ -16035,7 +16035,8 @@ database, file, dict stores.  Cachy supports python versions 2.7+ and 3.2+.")
      (list python-cachecontrol
            python-cachy
            python-cleo
-           python-clikit
+           python-crashtest
+           python-entrypoints
            python-html5lib
            python-keyring
            python-msgpack
