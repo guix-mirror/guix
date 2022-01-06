@@ -286,7 +286,7 @@ deploy the home environment described by these files.\n")
     ((describe)
      (match (generation-number %guix-home)
        (0
-        (error (G_ "no home environment generation, nothing to describe~%")))
+        (leave (G_ "no home environment generation, nothing to describe~%")))
        (generation
         (display-home-environment-generation generation))))
     ((list-generations)

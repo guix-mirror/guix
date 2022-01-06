@@ -1321,7 +1321,7 @@ argument list and OPTS is the option alist."
     ((describe)
      (match (generation-number %system-profile)
        (0
-        (error (G_ "no system generation, nothing to describe~%")))
+        (leave (G_ "no system generation, nothing to describe~%")))
        (generation
         (display-system-generation generation))))
     ((search)
