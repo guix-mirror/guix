@@ -5221,14 +5221,13 @@ interested parties to subscribe to events, or \"signals\".")
 (define-public pelican
   (package
     (name "pelican")
-    (version "4.7.0")
+    (version "4.7.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pelican" version))
        (sha256
-        (base32
-         "0g1sbzlz5mfc70gwgnj3lz4kf4psdjl96n6ywklv8z817m1khxdd"))))
+        (base32 "1sfckd3fhgnj305002fi3fdhkynric1ck7a5i8qany7k3vdsbasv"))))
     (build-system python-build-system)
     (inputs
      (list python-blinker
