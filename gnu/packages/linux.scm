@@ -6758,14 +6758,14 @@ running boot option, and more.")
 (define-public sysstat
   (package
     (name "sysstat")
-    (version "12.4.3")
+    (version "12.4.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://pagesperso-orange.fr/sebastien.godard/"
                            "sysstat-" version ".tar.xz"))
        (sha256
-        (base32 "1z8bdyj92q0capbrdscwzb51bqh54ng15gpvmjmvrb2syhqj8hxf"))))
+        (base32 "091xjip7l52dxal8dsfh5chksr4g9gclnssw3hjjxy84kr3yf4lm"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no test suite.
@@ -6782,8 +6782,7 @@ running boot option, and more.")
            (lambda _
              (substitute* "Makefile"
                (("mkdir -p \\$\\(DESTDIR\\)\\$\\(SA_DIR\\)")
-                ""))
-             #t)))))
+                "")))))))
     (home-page "http://sebastien.godard.pagesperso-orange.fr/")
     (synopsis "Performance monitoring tools for Linux")
     (description "The sysstat utilities are a collection of performance
