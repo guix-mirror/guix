@@ -319,7 +319,7 @@ triangulations.")
 (define-public python-cvxopt
   (package
     (name "python-cvxopt")
-    (version "1.2.3")
+    (version "1.2.7")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -328,7 +328,7 @@ triangulations.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1kiy2m62xgs2d5id6dnnwy4vap85cd70p7pgkb9nh23qf9xnak7b"))))
+                "114z34wwx1bsv4q6xj9p5q99dffgnj9s4i4arx10g191xq9q8i5y"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
