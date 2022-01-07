@@ -12561,7 +12561,7 @@ disassembly of the DOS version, extended with new features.")
 (define-public fheroes2
   (package
     (name "fheroes2")
-    (version "0.9.10")
+    (version "0.9.11")
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
@@ -12581,7 +12581,7 @@ disassembly of the DOS version, extended with new features.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0zz8k1ygw4kwnv403q60v2hdfzk13p89jjgmpfbylhxchjvwaxgh"))))
+        (base32 "1m8649srzg3j2b1hs4x2y8fib6hn7v0afv4c7bjnfk4bhpi4cqd7"))))
     (home-page "https://ihhub.github.io/fheroes2/")
     (synopsis "Turn-based strategy game engine")
     (description "@code{fheroes2} is an implementation of Heroes of Might and
