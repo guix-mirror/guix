@@ -47407,6 +47407,29 @@ quickly convert floating point numbers to decimal strings.")
      "This package provides a procedural macros for the salsa crate.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-salsa20-0.9
+  (package
+    (name "rust-salsa20")
+    (version "0.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "salsa20" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "11i646kpgimimqiq8hyi0b7ngp588f7nl9xsc317d9kdcxgvn3qc"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cipher" ,rust-cipher-0.3)
+        ("rust-zeroize" ,rust-zeroize-1))))
+    (home-page "https://github.com/RustCrypto/stream-ciphers")
+    (synopsis "Salsa20 Stream Cipher")
+    (description "Salsa20 is a collection of stream cipher algorithms written
+in pure Rust.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-salsa-0.17
   (package
     (name "rust-salsa")
