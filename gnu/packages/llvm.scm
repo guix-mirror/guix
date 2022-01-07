@@ -364,26 +364,28 @@ given PATCHES.  When TOOLS-EXTRA is given, it must point to the
                                 #t))))
                         '())
                   ,@(if (version>? version "3.8")
-                        `((add-after 'install 'symlink-cfi_blacklist
+                        `((add-after 'install 'symlink-cfi_ignorelist
                             (lambda* (#:key inputs outputs #:allow-other-keys)
                               (let* ((out (assoc-ref outputs "out"))
                                      (lib-share (string-append out "/lib/clang/"
                                                                ,version "/share"))
                                      (compiler-rt (assoc-ref inputs "clang-runtime"))
+                                     (file-name ,(if (version>=? version "13")
+                                                     "cfi_ignorelist.txt"
+                                                     "cfi_blacklist.txt"))
                                      ;; The location varies between Clang versions.
-                                     (cfi-blacklist
+                                     (cfi-ignorelist
                                       (cond
                                        ((file-exists?
-                                         (string-append compiler-rt "/cfi_blacklist.txt"))
-                                        (string-append compiler-rt "/cfi_blacklist.txt"))
+                                         (string-append compiler-rt "/" file-name))
+                                        (string-append compiler-rt "/" file-name))
                                        (else (string-append compiler-rt
-                                                            "/share/cfi_blacklist.txt")))))
+                                                            "/share/" file-name)))))
                                 (mkdir-p lib-share)
-                                ;; Symlink cfi_blacklist.txt to where Clang expects
+                                ;; Symlink the ignorelist to where Clang expects
                                 ;; to find it.
-                                (symlink cfi-blacklist
-                                         (string-append lib-share "/cfi_blacklist.txt"))
-                                #t))))
+                                (symlink cfi-ignorelist
+                                         (string-append lib-share "/" file-name))))))
                         '())
                   (add-after 'install 'install-clean-up-/share/clang
                     (lambda* (#:key outputs #:allow-other-keys)
@@ -630,27 +632,17 @@ of programming tools as well as libraries with equivalent functionality.")
    "0gyvfhnypfmlf7hdgkiz2wh2lgk4nz26aqf361msjs3qdkbh4djc"))
 
 (define-public clang-13
-  (let ((template
-         (clang-from-llvm llvm-13 clang-runtime-13
-                          "0zp1p6syii5iajm8v2c207s80arv00yz5ckfwimn5dng0sxiqqax"
-                          #:patches '("clang-13.0-libc-search-path.patch")
-                          #:tools-extra
-                          (origin
-                            (method url-fetch)
-                            (uri (llvm-uri "clang-tools-extra"
-                                           (package-version llvm-13)))
-                            (sha256
-                             (base32
-                              "1mgalgdgxlxi08yxw7k6yh4iia1bpjmjgn7mrpqas8lbl9h612s2"))))))
-    (package
-      (inherit template)
-      (arguments
-       (substitute-keyword-arguments (package-arguments template)
-         ((#:phases phases '%standard-phases)
-          `(modify-phases ,phases
-             ;; This fails because the target to
-             ;; lib/clang/13.0.0/share/cfi_blacklist.txt is not found.
-             (delete 'validate-runpath))))))))
+  (clang-from-llvm llvm-13 clang-runtime-13
+                   "0zp1p6syii5iajm8v2c207s80arv00yz5ckfwimn5dng0sxiqqax"
+                   #:patches '("clang-13.0-libc-search-path.patch")
+                   #:tools-extra
+                   (origin
+                     (method url-fetch)
+                     (uri (llvm-uri "clang-tools-extra"
+                                    (package-version llvm-13)))
+                     (sha256
+                      (base32
+                       "1mgalgdgxlxi08yxw7k6yh4iia1bpjmjgn7mrpqas8lbl9h612s2")))))
 
 (define-public clang-toolchain-13
   (make-clang-toolchain clang-13))
