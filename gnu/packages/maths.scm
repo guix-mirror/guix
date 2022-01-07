@@ -2437,7 +2437,7 @@ satisfiability checking (SAT).")
 (define-public ceres
   (package
     (name "ceres-solver")
-    (version "1.14.0")
+    (version "2.0.0")
     (home-page "http://ceres-solver.org/")
     (source (origin
               (method url-fetch)
@@ -2445,7 +2445,7 @@ satisfiability checking (SAT).")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "13lfxy8x58w8vprr0nkbzziaijlh0vvqshgahvcgw0mrqdgh0i27"))))
+                "00vng9vnmdb1qga01m0why90m0041w7bn6kxa2h4m26aflfqla8h"))))
     (build-system cmake-build-system)
     (arguments
      ;; TODO: Build HTML user documentation and install separately.
@@ -2464,11 +2464,11 @@ satisfiability checking (SAT).")
     (propagated-inputs
      (list glog))                           ;for #include <glog/glog.h>
     (inputs
-     `(("eigen" ,eigen)
-       ("blas" ,openblas)
-       ("lapack" ,lapack)
-       ("suitesparse" ,suitesparse)
-       ("gflags" ,gflags)))
+     (list eigen
+           openblas
+           lapack
+           suitesparse
+           gflags))
     (synopsis "C++ library for solving large optimization problems")
     (description
      "Ceres Solver is a C++ library for modeling and solving large,
@@ -2506,21 +2506,24 @@ can solve two kinds of problems:
                                                   "pkg-config" "eigen3"
                                                   "--cflags"))))
 
-                        (define (compile-file file)
-                          (let ((source (string-append file ".cc")))
-                            (format #t "building '~a'...~%" file)
-                            (apply invoke "c++" "-fopenmp" "-O2" "-g" "-DNDEBUG"
-                                   source "-lceres" "-lbenchmark" "-lglog"
-                                   "-pthread"
-                                   "-o" (string-append bin "/" file)
-                                   "-I" ".." flags)))
+                        (define (compile-file top-dir)
+                          (lambda (file)
+                            (let ((source (string-append file ".cc")))
+                              (format #t "building '~a'...~%" file)
+                              (apply invoke "c++" "-fopenmp" "-O2" "-g" "-DNDEBUG"
+                                     source "-lceres" "-lbenchmark" "-lglog"
+                                     "-pthread"
+                                     "-o" (string-append bin "/" file)
+                                     "-I" top-dir flags))))
 
                         (mkdir-p bin)
                         (with-directory-excursion "internal/ceres"
-                          (for-each compile-file
-                                    '("small_blas_gemm_benchmark"
-                                      "small_blas_gemv_benchmark"
-                                      "autodiff_cost_function_benchmark"))))))
+                          (for-each (compile-file "..")
+                                    '("schur_eliminator_benchmark"
+                                      "small_blas_gemm_benchmark"
+                                      "small_blas_gemv_benchmark"))
+                          (with-directory-excursion "autodiff_benchmarks"
+                            ((compile-file "../..") "autodiff_benchmarks"))))))
                   (delete 'check)
                   (delete 'install))))
     (inputs (modify-inputs (package-inputs ceres)
