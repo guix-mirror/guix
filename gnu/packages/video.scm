@@ -2332,14 +2332,14 @@ To load this plugin, specify the following option when starting mpv:
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2021.06.06")
+    (version "2021.12.17")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://youtube-dl.org/downloads/latest/"
                                   "youtube-dl-" version ".tar.gz"))
               (sha256
                (base32
-                "1hqan9h55x9gfdakw554vic68w9gpvhblchwxlw265zxp56hxjrw"))
+                "1prm84ci1n1kjzhikhrsbxbgziw6br822psjnijm2ibqnz49jfwz"))
               (snippet
                '(begin
                   ;; Delete the pre-generated files, except for the man page
@@ -2349,8 +2349,7 @@ To load this plugin, specify the following option when starting mpv:
                                           ;;"youtube-dl.1"
                                           "youtube-dl.bash-completion"
                                           "youtube-dl.fish"
-                                          "youtube-dl.zsh"))
-                  #t))))
+                                          "youtube-dl.zsh"))))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -2369,8 +2368,7 @@ To load this plugin, specify the following option when starting mpv:
                       ;; Continue respecting the --ffmpeg-location argument.
                       (substitute* "youtube_dl/postprocessor/ffmpeg.py"
                         (("\\.get\\('ffmpeg_location'\\)" match)
-                         (format #f "~a or '~a'" match (which "ffmpeg"))))
-                      #t))
+                         (format #f "~a or '~a'" match (which "ffmpeg"))))))
                   (add-before 'build 'build-generated-files
                     (lambda _
                       ;; Avoid the make targets that require pandoc.
@@ -2393,8 +2391,7 @@ To load this plugin, specify the following option when starting mpv:
                           (("'etc/")
                            (string-append "'" prefix "/etc/"))
                           (("'share/")
-                           (string-append "'" prefix "/share/")))
-                        #t)))
+                           (string-append "'" prefix "/share/"))))))
                   (add-after 'install 'install-completion
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let* ((out (assoc-ref outputs "out"))
@@ -2402,8 +2399,7 @@ To load this plugin, specify the following option when starting mpv:
                                                  "/share/zsh/site-functions")))
                         (mkdir-p zsh)
                         (copy-file "youtube-dl.zsh"
-                                   (string-append zsh "/_youtube-dl"))
-                        #t))))))
+                                   (string-append zsh "/_youtube-dl"))))))))
     (native-inputs
      (list zip))
     (inputs
