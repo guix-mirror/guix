@@ -3081,18 +3081,14 @@ configuration and monitoring interfaces.")
     (native-inputs (list pkg-config))
     (inputs (list libnl))
     (arguments
-     `(#:make-flags
-       (let* ((target ,(%current-target-system))
-              (pkg-config (if target
-                              (string-append target "-pkg-config")
-                              "pkg-config")))
-         (list
-          ,(string-append "CC=" (cc-for-target))
-          (string-append "PKG_CONFIG="
-                         (assoc-ref %build-inputs "pkg-config")
-                         "/bin/" pkg-config)
-          (string-append "PREFIX=" (assoc-ref %outputs "out"))))
-       #:phases (modify-phases %standard-phases (delete 'configure))))
+     (list #:make-flags
+           #~(list
+            (string-append "CC=" #$(cc-for-target))
+            (string-append "PKG_CONFIG=" #$(pkg-config-for-target))
+            (string-append "PREFIX=" (assoc-ref %outputs "out")))
+           #:phases
+           #~(modify-phases %standard-phases
+               (delete 'configure))))   ; no configure script
     (home-page "https://wireless.wiki.kernel.org/")
     (synopsis "Tool for configuring wireless devices")
     (description
