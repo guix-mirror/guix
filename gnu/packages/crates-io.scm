@@ -13029,19 +13029,48 @@ common cryptographic algorithms.")
     (description "Helper macros for Rusticata")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-crypto-bigint-0.2
+  (package
+    (name "rust-crypto-bigint")
+    (version "0.2.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "crypto-bigint" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "00qckh65nzb7s7vd60wylw6alxf9g37xh31lirb1qw0l8fxx6fzq"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-generic-array" ,rust-generic-array-0.14)
+        ("rust-rand-core" ,rust-rand-core-0.6)
+        ("rust-rlp" ,rust-rlp-0.5)
+        ("rust-subtle" ,rust-subtle-2)
+        ("rust-zeroize" ,rust-zeroize-1))))
+    (home-page "https://github.com/RustCrypto/crypto-bigint")
+    (synopsis "Big integer library designed for use in cryptography")
+    (description
+     "This crate is a pure Rust implementation of a big integer library which
+has been designed from the ground-up for use in cryptographic applications.
+Provides constant-time, no_std-friendly implementations of modern formulas
+using const generics.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-crypto-mac-0.11
   (package
     (name "rust-crypto-mac")
     (version "0.11.0")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "crypto-mac" version))
-        (file-name
-         (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "0ghh3qmjf7hv580zqdk4yrbg99v57jx773zb7lzi7j4hj24bdyi5"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "crypto-mac" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0ghh3qmjf7hv580zqdk4yrbg99v57jx773zb7lzi7j4hj24bdyi5"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
