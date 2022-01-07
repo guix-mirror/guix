@@ -267,14 +267,14 @@ from digital cameras.")
 (define-public gphoto2
   (package
     (name "gphoto2")
-    (version "2.5.27")
+    (version "2.5.28")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/gphoto/gphoto/" version
                                   "/gphoto2-" version ".tar.bz2"))
               (sha256
                (base32
-                "0f4d3q381jnnkcqkb2dj1k709skp65qihl5xm80zandvl69lw19h"))))
+                "0xbki37q9ja34igidr2vj0ps1lp7sfz4xpsmh8h9x89dy76qsr1a"))))
     (build-system gnu-build-system)
     (native-inputs
      (list pkg-config))
@@ -287,13 +287,10 @@ from digital cameras.")
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* (find-files "tests/data" "\\.param$")
                (("/usr/bin/env")
-                (which "env")))
-             #t)))
-
+                (which "env"))))))
        ;; FIXME: There is 1 test failure, most likely related to the build
        ;; environment.
        #:tests? #f))
-
     (home-page "http://www.gphoto.org/")
     (synopsis "Command-line tools to access digital cameras")
     (description
