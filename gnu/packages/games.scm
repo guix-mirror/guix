@@ -12568,11 +12568,11 @@ disassembly of the DOS version, extended with new features.")
        #:make-flags '("FHEROES2_STRICT_COMPILATION=1"
                       "RELEASE=1")))
     (native-inputs
-     `(("gettext" ,gettext-minimal)))
+     (list gettext-minimal))
     (inputs
-     `(("libpng" ,libpng)
-       ("sdl" ,(sdl-union (list sdl2 sdl2-image sdl2-mixer sdl2-ttf)))
-       ("zlib" ,zlib)))
+     (list libpng
+           (sdl-union (list sdl2 sdl2-image sdl2-mixer sdl2-ttf))
+           zlib))
     (source
      (origin
        (method git-fetch)
