@@ -13077,6 +13077,29 @@ Provides constant-time, no_std-friendly implementations of modern formulas
 using const generics.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-crypto-common-0.1
+  (package
+    (name "rust-crypto-common")
+    (version "0.1.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "crypto-common" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "1l4q4ync13i056vjc775v0za8qh987da7yvrjj25q909cd9nngb8"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:skip-build?
+        #t
+        #:cargo-inputs
+        (("rust-generic-array" ,rust-generic-array-0.14)
+         ("rust-rand-core" ,rust-rand-core-0.6))))
+    (home-page "https://github.com/RustCrypto/traits")
+    (synopsis "Common cryptographic traits")
+    (description "Common cryptographic traits")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-crypto-mac-0.11
   (package
     (name "rust-crypto-mac")
