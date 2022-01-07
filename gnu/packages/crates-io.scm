@@ -14931,6 +14931,34 @@ algorithm which serves to quantify the difference between two colors.")
     (description "Demo of proc-macro-hack.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-der-derive-0.4
+  (package
+    (name "rust-der-derive")
+    (version "0.4.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "der_derive" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "0snv85yfy9iln05qsgbhwr1159gd0jfrgzj5dkrnricdc0y3pvca"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:skip-build?
+        #t                              ; FIXME
+        #:cargo-inputs
+        (("rust-proc-macro2" ,rust-proc-macro2-1)
+         ("rust-quote" ,rust-quote-1)
+         ("rust-syn" ,rust-syn-1)
+         ("rust-synstructure" ,rust-synstructure-0.12))))
+    (home-page "https://github.com/RustCrypto/formats/tree/master/der/derive")
+    (synopsis
+      "Custom derive support for the `der` crate's `Choice` and `Sequence` traits")
+    (description
+      "This package provides a custom derive support for the `der` crate's
+`Choice` and `Sequence` traits.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-derivative-2
   (package
     (name "rust-derivative")
