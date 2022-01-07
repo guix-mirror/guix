@@ -6323,7 +6323,8 @@ basic eye-candy effects.")
                            version ".tar.gz"))
        (sha256
         (base32 "0nky9j07zq8d5ifx568dima7a0jgs8kwhcqbg8p6gsxlgq5zdw96"))
-       (patches (search-patches "xpra-4.2-systemd-run.patch"))))
+       (patches (search-patches "xpra-4.2-systemd-run.patch"
+                                "xpra-4.2-install_libs.patch"))))
     (build-system python-build-system)
     ;; see also http://xpra.org/trac/wiki/Dependencies
     (inputs `(("bash-minimal" ,bash-minimal)    ; for wrap-program
@@ -6374,8 +6375,12 @@ basic eye-candy effects.")
                                         ; they seem to require python2.
        #:phases
        (modify-phases %standard-phases
-         ;; built by 'install phase
-         (delete 'build)
+         ;; Must pass the same flags as 'install, otherwise enabled modules may
+         ;; not be built.
+         (replace 'build
+           (lambda* (#:key configure-flags #:allow-other-keys)
+             (apply invoke (append (list "python" "setup.py" "build")
+                                   configure-flags))))
          (add-before 'install 'fix-paths
            (lambda* (#:key inputs outputs #:allow-other-keys)
              ;; Fix binary paths.
