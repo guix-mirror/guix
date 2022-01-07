@@ -5,7 +5,7 @@
 ;;; Copyright © 2016 Dennis Mungai <dmngaie@gmail.com>
 ;;; Copyright © 2016, 2018, 2019, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018–2022 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
@@ -1095,13 +1095,13 @@ of programming tools as well as libraries with equivalent functionality.")
 (define-public libunwind-headers
   (package
     (name "libunwind-headers")
-    (version "12.0.1")
+    (version "13.0.0")
     (source (origin
               (method url-fetch)
               (uri (llvm-uri "libunwind" version))
               (sha256
                (base32
-                "192ww6n81lj2mb9pj4043z79jp3cf58a9c2qrxjwm5c3a64n1shb"))))
+                "1qb5ickp7qims5q7sxacj3fwq1kklvnl94k3v9hpl5qn284iky1n"))))
     (build-system cmake-build-system)
     (arguments
      '(#:phases (modify-phases (map (lambda (phase)
