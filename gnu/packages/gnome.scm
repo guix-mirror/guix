@@ -5440,7 +5440,7 @@ faster results and to avoid unnecessary server load.")
 (define-public upower
   (package
     (name "upower")
-    (version "0.99.12")
+    (version "0.99.13")
     (source
      (origin
        (method git-fetch)
@@ -5452,7 +5452,7 @@ faster results and to avoid unnecessary server load.")
                                                 version)))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "00q63yc8vp5cq05vhpwq3qglapdm8hg0lrqkzdwkphk30qzb6hv6"))
+        (base32 "0khwg6jpq81dcylkpi7cn75bjzif0q9qscwvirrk41krma23iddj"))
        (patches (search-patches "upower-builddir.patch"))
        (modules '((guix build utils)))
        (snippet
@@ -5465,8 +5465,7 @@ faster results and to avoid unnecessary server load.")
            ;; location.
            (substitute* "src/Makefile.am"
              (("^dbusconfdir =.*$")
-              "dbusconfdir = $(sysconfdir)/dbus-1/system.d\n"))
-           #t))))
+              "dbusconfdir = $(sysconfdir)/dbus-1/system.d\n"))))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:phases
@@ -5475,8 +5474,7 @@ faster results and to avoid unnecessary server load.")
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((umockdev (string-append (assoc-ref inputs "umockdev")
                                             "/lib")))
-               (setenv "LD_LIBRARY_PATH" umockdev))
-             #t)))
+               (setenv "LD_LIBRARY_PATH" umockdev)))))
        #:configure-flags (list "--localstatedir=/var"
                                (string-append "--with-udevrulesdir="
                                               (assoc-ref %outputs "out")
@@ -5494,6 +5492,7 @@ faster results and to avoid unnecessary server load.")
            ;; For tests.
            python-dbus
            python-dbusmock
+           python-packaging
            python-pygobject
            umockdev
            ;; For man pages.
