@@ -357,9 +357,6 @@ extensive standard library and on the strengths of Python as a high-level
 programming language.")
     (license license:gpl3+)))
 
-(define-public python2-cvxopt
-  (package-with-python2 python-cvxopt))
-
 (define-public units
   (package
    (name "units")
