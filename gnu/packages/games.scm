@@ -12562,6 +12562,15 @@ disassembly of the DOS version, extended with new features.")
   (package
     (name "fheroes2")
     (version "0.9.11")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ihhub/fheroes2")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1m8649srzg3j2b1hs4x2y8fib6hn7v0afv4c7bjnfk4bhpi4cqd7"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
@@ -12573,15 +12582,6 @@ disassembly of the DOS version, extended with new features.")
      (list libpng
            (sdl-union (list sdl2 sdl2-image sdl2-mixer sdl2-ttf))
            zlib))
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/ihhub/fheroes2")
-             (commit version)))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "1m8649srzg3j2b1hs4x2y8fib6hn7v0afv4c7bjnfk4bhpi4cqd7"))))
     (home-page "https://ihhub.github.io/fheroes2/")
     (synopsis "Turn-based strategy game engine")
     (description "@code{fheroes2} is an implementation of Heroes of Might and
