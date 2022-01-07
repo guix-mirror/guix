@@ -3,6 +3,7 @@
 ;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020, 2021 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2021 Tanguy Le Carrour <tanguy@bioneland.org>
+;;; Copyright © 2022 Felix Gruber <felgru@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -167,13 +168,13 @@ belonging to various licenses.")
 (define-public reuse
   (package
     (name "reuse")
-    (version "0.13.0")
+    (version "0.14.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "reuse" version))
        (sha256
-        (base32 "00gqpw124lz6kf3gi6m2i1bnxp3k5n3id0bgqff0bj08jga7pj49"))))
+        (base32 "1q84qv982y67inqb67iy3r6z7339593w7zdaaxswjqxfrd1by7bp"))))
     (build-system python-build-system)
     (native-inputs
      (list python-pytest python-setuptools-scm))
