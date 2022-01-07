@@ -37725,18 +37725,44 @@ procedural macros for rust-peg.  To use rust-peg, see the peg package.")
 runtime support for rust-peg grammars.  To use rust-peg, see the peg crate.")
     (license license:expat)))
 
+(define-public rust-pem-rfc7468-0.2
+  (package
+    (name "rust-pem-rfc7468")
+    (version "0.2.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "pem-rfc7468" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1m1c9jypydzabg4yscplmvff7pdcc8gg4cqg081hnlf03hxkmsc4"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs (("rust-base64ct" ,rust-base64ct-1))))
+    (home-page "https://github.com/RustCrypto/formats/tree/master/pem-rfc7468")
+    (synopsis
+     "PEM Encoding implementing a subset of Privacy-Enhanced Mail encoding")
+    (description
+     "This packages provides PEM Encoding (RFC 7468) for PKIX, PKCS, and CMS
+Structures, implementing a strict subset of the original Privacy-Enhanced Mail
+encoding intended specifically for use with cryptographic keys, certificates,
+and other messages.  It provides a no_std-friendly, constant-time
+implementation suitable for use with cryptographic private keys.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-percent-encoding-2
   (package
     (name "rust-percent-encoding")
     (version "2.1.0")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "percent-encoding" version))
-        (file-name (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "0bp3zrsk3kr47fbpipyczidbbx4g54lzxdm77ni1i3qws10mdzfl"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "percent-encoding" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0bp3zrsk3kr47fbpipyczidbbx4g54lzxdm77ni1i3qws10mdzfl"))))
     (build-system cargo-build-system)
     (home-page "https://github.com/servo/rust-url/")
     (synopsis "Percent encoding and decoding")
