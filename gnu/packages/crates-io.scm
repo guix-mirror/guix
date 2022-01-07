@@ -11943,8 +11943,29 @@ intrinsics.")
        (("rust-clap" ,rust-clap-2)
         ("rust-diff" ,rust-diff-0.1))))))
 
+(define-public rust-cpufeatures-0.2
+  (package
+    (name "rust-cpufeatures")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "cpufeatures" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0sgllzsvs8hinylaiigmd9c908gd8wclxnqz8dinpxbdyql981cm"))))
+    (build-system cargo-build-system)
+    (arguments `(#:cargo-inputs (("rust-libc" ,rust-libc-0.2))))
+    (home-page "https://github.com/RustCrypto/utils")
+    (synopsis "Alternative to the @code{is_x86_feature_detected!} macro")
+    (description
+     "Cpufeatures is a lightweight and efficient no-std compatible alternative
+to the @code{is_x86_feature_detected!} macro.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-cpufeatures-0.1
   (package
+    (inherit rust-cpufeatures-0.2)
     (name "rust-cpufeatures")
     (version "0.1.4")
     (source
@@ -11953,18 +11974,7 @@ intrinsics.")
        (uri (crate-uri "cpufeatures" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1j0i97325c2grndsfgnm3lqk0xbyvdl2dbgn8i5dd9yhnmycc07d"))))
-    (build-system cargo-build-system)
-    (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
-       (("rust-libc" ,rust-libc-0.2))))
-    (home-page "https://github.com/RustCrypto/utils")
-    (synopsis "Alternative to the @code{is_x86_feature_detected!} macro")
-    (description
-     "Cpufeatures is a lightweight and efficient no-std compatible alternative
-to the @code{is_x86_feature_detected!} macro.")
-    (license (list license:expat license:asl2.0))))
+        (base32 "1j0i97325c2grndsfgnm3lqk0xbyvdl2dbgn8i5dd9yhnmycc07d"))))))
 
 (define-public rust-cpuid-bool-0.1
   (package
