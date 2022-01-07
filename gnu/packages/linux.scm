@@ -6525,7 +6525,7 @@ the default @code{nsswitch} and the experimental @code{umich_ldap}.")
 (define-public mcelog
   (package
     (name "mcelog")
-    (version "179")
+    (version "180")
     (source
      (origin
        (method git-fetch)
@@ -6534,7 +6534,7 @@ the default @code{nsswitch} and the experimental @code{umich_ldap}.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0fz9j0p8jyp4m09wshl8cdhdvrdidf29bjp9hgwvv6xvg8lma06g"))
+        (base32 "1xy1082c67yd48idg5vwvrw7yx74gn6jj2d9c67d0rh6yji091ki"))
        (modules '((guix build utils)))
        (snippet
         `(begin
@@ -6553,6 +6553,8 @@ the default @code{nsswitch} and the experimental @code{umich_ldap}.")
                             "etcprefix=$(DOCDIR)/examples"))
        ;; The tests will only run as root on certain supported CPU models.
        #:tests? #f))
+    (native-inputs
+     (list python-wrapper))             ; to generate example mcelog.conf
     (supported-systems (list "i686-linux" "x86_64-linux"))
     (home-page "https://mcelog.org/")
     (synopsis "Machine check monitor for x86 Linux systems")
