@@ -1203,16 +1203,15 @@ misuse of libraries outside of the store.")
     (native-inputs
      (list pkg-config swig))
     (inputs
-     `(("clang" ,clang-12)
-       ("llvm" ,llvm-12)
-
-       ;; Optional (but recommended) inputs.
-       ("curses" ,ncurses)
-       ("editline" ,libedit)
-       ("liblzma" ,xz)
-       ("libxml2" ,libxml2)
-       ("lua" ,lua)
-       ("python" ,python)))
+     (list clang-12
+           llvm-12
+           ;; Optional (but recommended) inputs.
+           ncurses
+           libedit
+           xz
+           libxml2
+           lua
+           python))
     (home-page "https://lldb.llvm.org/")
     (synopsis "Low level debugger")
     (description
