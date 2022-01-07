@@ -8784,15 +8784,15 @@ where the player draws runes in real time to effect the desired spell.")
                                 (search-input-directory inputs "/include/SDL2")
                                 ":" (or (getenv "CPATH") ""))))))))
     (inputs
-     `(("sdl2-union" ,(sdl-union (list sdl2 sdl2-image sdl2-mixer sdl2-ttf)))
-       ("zlib" ,zlib)))
+     (list (sdl-union (list sdl2 sdl2-image sdl2-mixer sdl2-ttf))
+           zlib))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("gnu-gettext" ,gettext-minimal)
-       ("libtool" ,libtool)
-       ("which" ,which)))
+     (list pkg-config
+           autoconf
+           automake
+           gettext-minimal
+           libtool
+           which))
     (synopsis "2d action platformer game")
     (description "The Legend of Edgar is a 2D platform game with a persistent world.
 When Edgar's father fails to return home after venturing out one dark and stormy night,
