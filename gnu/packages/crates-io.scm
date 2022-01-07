@@ -1262,8 +1262,35 @@ with Associated Data (AEAD) algorithms.")
        (("rust-generic-array" ,rust-generic-array-0.12)
         ("rust-heapless" ,rust-heapless-0.5))))))
 
+(define-public rust-aes-0.7
+  (package
+    (name "rust-aes")
+    (version "0.7.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "aes" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1f0sdx2fsa8w3l7xzsyi9ry3shvnnsgc0znh50if9fm95vslg2wy"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if-1)
+        ("rust-cipher" ,rust-cipher-0.3)
+        ("rust-cpufeatures" ,rust-cpufeatures-0.2)
+        ("rust-ctr" ,rust-ctr-0.8)
+        ("rust-opaque-debug" ,rust-opaque-debug-0.3))))
+    (home-page "https://github.com/RustCrypto/block-ciphers")
+    (synopsis "Facade for AES (Rijndael) block ciphers implementations")
+    (description "This package provides a facade for AES (Rijndael) block
+ciphers implementations.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-aes-0.6
   (package
+    (inherit rust-aes-0.7)
     (name "rust-aes")
     (version "0.6.0")
     (source
@@ -1273,19 +1300,13 @@ with Associated Data (AEAD) algorithms.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "0q85mw70mgr4glza9y9lrs9nxfa1cdcqzfk6wx0smb3623pr2hw8"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-aes-soft" ,rust-aes-soft-0.6)
         ("rust-aesni" ,rust-aesni-0.10)
         ("rust-cipher" ,rust-cipher-0.2))
        #:cargo-development-inputs
-       (("rust-cipher" ,rust-cipher-0.2))))
-    (home-page "https://github.com/RustCrypto/block-ciphers")
-    (synopsis "Facade for AES (Rijndael) block ciphers implementations")
-    (description "This package provides a facade for AES (Rijndael) block
-ciphers implementations.")
-    (license (list license:expat license:asl2.0))))
+       (("rust-cipher" ,rust-cipher-0.2))))))
 
 (define-public rust-aes-0.4
   (package
