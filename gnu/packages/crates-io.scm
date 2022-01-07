@@ -6551,10 +6551,10 @@ storage.")
 extension of blocks.")
     (license license:expat)))
 
-(define-public rust-block-buffer-0.9
+(define-public rust-block-buffer-0.10
   (package
     (name "rust-block-buffer")
-    (version "0.9.0")
+    (version "0.10.0")
     (source
       (origin
         (method url-fetch)
@@ -6563,17 +6563,36 @@ extension of blocks.")
          (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "1r4pf90s7d7lj1wdjhlnqa26vvbm6pnc33z138lxpnp9srpi2lj1"))))
+          "15cbh9jbcfcbbi863dlmamjka2f8l55ld915vr0b0xlf0l16mlzi"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs
-       (("rust-block-padding" ,rust-block-padding-0.2)
-        ("rust-generic-array" ,rust-generic-array-0.14))))
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-generic-array" ,rust-generic-array-0.14))))
     (home-page "https://github.com/RustCrypto/utils")
     (synopsis "Fixed size buffer for block processing of data")
     (description
      "Fixed size buffer for block processing of data.")
     (license (list license:expat license:asl2.0))))
+
+(define-public rust-block-buffer-0.9
+  (package
+    (inherit rust-block-buffer-0.10)
+    (name "rust-block-buffer")
+    (version "0.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "block-buffer" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1r4pf90s7d7lj1wdjhlnqa26vvbm6pnc33z138lxpnp9srpi2lj1"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-block-padding" ,rust-block-padding-0.2)
+        ("rust-generic-array" ,rust-generic-array-0.14))))))
 
 (define-public rust-block-buffer-0.8
   (package
