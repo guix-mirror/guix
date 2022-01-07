@@ -6779,8 +6779,32 @@ algorithms.  This package is deprecated.  Please use block-cipher instead.")
      `(#:cargo-inputs
        (("rust-generic-array" ,rust-generic-array-0.8))))))
 
+(define-public rust-block-modes-0.8
+  (package
+    (name "rust-block-modes")
+    (version "0.8.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "block-modes" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "13id7rw1lhi83i701za8w5is3a8qkf4vfigqw3f8jp8mxldkvc1c"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-block-padding" ,rust-block-padding-0.2)
+        ("rust-cipher" ,rust-cipher-0.3))))
+    (home-page "https://github.com/RustCrypto/block-ciphers")
+    (synopsis "Block cipher modes of operation")
+    (description "This package provides a collection of block ciphers
+and block modes.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-block-modes-0.7
   (package
+    (inherit rust-block-modes-0.8)
     (name "rust-block-modes")
     (version "0.7.0")
     (source
@@ -6791,19 +6815,13 @@ algorithms.  This package is deprecated.  Please use block-cipher instead.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "1w3jc3n7k4xq98b9mfina4wwpg1fq1s3b0mm5whqialb7q3yi82p"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-block-padding" ,rust-block-padding-0.2)
         ("rust-cipher" ,rust-cipher-0.2))
        #:cargo-development-inputs
        (("rust-aes" ,rust-aes-0.6)
-        ("rust-hex-literal" ,rust-hex-literal-0.2))))
-    (home-page "https://github.com/RustCrypto/block-ciphers")
-    (synopsis "Block cipher modes of operation")
-    (description "This package provides a collection of block ciphers
-and block modes.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-hex-literal" ,rust-hex-literal-0.2))))))
 
 (define-public rust-block-padding-0.2
   (package
