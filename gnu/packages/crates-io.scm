@@ -11157,6 +11157,27 @@ the browser's console.")
 const functions with conditional compilations.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-const-oid-0.6
+  (package
+    (name "rust-const-oid")
+    (version "0.6.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "const-oid" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "12vv7csqqjj0x1l5mf51lgqiw76k5c3mb1yzfhfcqysks2j2lvwx"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/RustCrypto/formats/tree/master/const-oid")
+    (synopsis "Implementation of the ISO/IEC Object Identifier (OID)")
+    (description
+     "This packages is a const-friendly implementation of the ISO/IEC Object
+Identifier (OID) standard as defined in ITU X.660, with support for BER/DER
+encoding/decoding as well as heapless no_std (i.e., embedded) support.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-const-random-0.1
   (package
     (name "rust-const-random")
