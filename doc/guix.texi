@@ -37202,9 +37202,9 @@ redundant executions of the script if multiple login shells are spawned.
 
 It can be extended with a gexp.  However, to autostart an application,
 users @emph{should not} use this service, in most cases it's better to extend
-@code{home-shpeherd-service-type} with a Shepherd service
+@code{home-shepherd-service-type} with a Shepherd service
 (@pxref{Shepherd Services}), or extend the shell's startup file with
-required command using the appropriate service type.
+the required command using the appropriate service type.
 @end defvr
 
 @defvr {Scheme Variable} home-activation-service-type
