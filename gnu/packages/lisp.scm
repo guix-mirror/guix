@@ -926,14 +926,6 @@ the HTML documentation of TXR.")
        (sha256
         (base32 "1kp64h3ls8mddvrlaqqylrb3brckfrqvkk8049xn15mimfggg0xv"))))
     (build-system gnu-build-system)
-    (native-inputs
-     ;; Required to build the documentation.
-     `(("ghostscript" ,ghostscript)
-       ("groff" ,groff)
-       ("man2html" ,man-for-txr)))
-    (inputs
-     `(("bash" ,bash-minimal)
-       ("libffi" ,libffi)))
     (arguments
      `(#:configure-flags
        (list ,(string-append "cc=" (cc-for-target))
@@ -989,6 +981,14 @@ the HTML documentation of TXR.")
                (for-each (lambda (f) (install-file f doc))
                          '("txr-manpage.html" "txr-manpage.pdf")))
              #t)))))
+    (native-inputs
+     ;; Required to build the documentation.
+     (list ghostscript
+           groff
+           man-for-txr))
+    (inputs
+     (list bash-minimal
+           libffi))
     (synopsis "General-purpose, multi-paradigm programming language")
     (description
      "TXR is a general-purpose, multi-paradigm programming language.  It
