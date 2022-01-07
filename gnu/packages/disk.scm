@@ -833,6 +833,11 @@ passphrases.")
                  (lambda _
                    (substitute* "util/parse-configs.c"
                      (("iniparser/") ""))))
+               (add-after 'unpack 'fix-version
+                 ;; Our VERSION's always better than the build's poor guess.
+                 (lambda _
+                   (with-output-to-file "version"
+                     (lambda _ (display #$version)))))
                (add-after 'unpack 'patch-FHS-file-names
                  (lambda _
                    (substitute* "git-version-gen"
