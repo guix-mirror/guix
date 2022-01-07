@@ -38812,6 +38812,39 @@ Cryptography Standards (PKCS) #1: RSA Cryptography Specifications Version 2.2
 (RFC 8017)")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-pkcs5-0.3
+  (package
+    (name "rust-pkcs5")
+    (version "0.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "pkcs5" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1m3xrrwwbn9883bylgjzssfh3w1lbl7fhkb3ndz721rf27pca8sl"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-aes" ,rust-aes-0.7)
+        ("rust-block-modes" ,rust-block-modes-0.8)
+        ("rust-der" ,rust-der-0.4)
+        ("rust-des" ,rust-des-0.7)
+        ("rust-hmac" ,rust-hmac-0.11)
+        ("rust-pbkdf2" ,rust-pbkdf2-0.9)
+        ("rust-scrypt" ,rust-scrypt-0.8)
+        ("rust-sha-1" ,rust-sha-1-0.9)
+        ("rust-sha2" ,rust-sha2-0.9)
+        ("rust-spki" ,rust-spki-0.4))))
+    (home-page "https://github.com/RustCrypto/formats/tree/master/pkcs5")
+    (synopsis "Implementation of Public-Key Cryptography Standards (PKCS) #5")
+    (description
+     "This package is a pure Rust implementation of Public-Key Cryptography
+Standards (PKCS) #5: Password-Based Cryptography Specification Version
+2.1 (RFC 8018).")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-pkg-config-0.3
   (package
     (name "rust-pkg-config")
