@@ -336,7 +336,7 @@
                   (string-append "ungoogled-chromium-" category "-" name))))
     (sha256 (base32 hash))))
 
-(define %chromium-version "96.0.4664.110")
+(define %chromium-version "97.0.4692.71")
 (define %ungoogled-revision (string-append %chromium-version "-1"))
 (define %arch-revision "db2157b84924ce84201a8245e68a02f7d55f6491")
 (define %debian-revision "debian/90.0.4430.85-1")
@@ -367,7 +367,7 @@
     (file-name (git-file-name "ungoogled-chromium" %ungoogled-revision))
     (sha256
      (base32
-      "098mfcd1lr2hhlic0i1l5gxsq71axvqnn4gayr4r9j6nbj9byf4h"))))
+      "0a1172kj93lg3ip4im1s5s7bdm2q41w4m6ylyxc92w29rbhbxjxp"))))
 
 (define %guix-patches
   (list (local-file
@@ -382,6 +382,9 @@
         (local-file
          (assume-valid-file-name
           (search-patch "ungoogled-chromium-ffmpeg-compat.patch")))
+        (local-file
+         (assume-valid-file-name
+          (search-patch "ungoogled-chromium-system-ffmpeg.patch")))
         (local-file
          (assume-valid-file-name
           (search-patch "ungoogled-chromium-system-nspr.patch")))))
@@ -483,7 +486,7 @@
                                   %chromium-version ".tar.xz"))
               (sha256
                (base32
-                "1s3ilq0ik36qgqp7l88gfd1yx97zscn8yr2kprsrjfp9q8lrva9n"))
+                "0z7ximvm4a78kxyp4j0i2jzklxazpw6jcqi9jkaf8bvq9ga8kqca"))
               (modules '((guix build utils)))
               (snippet (force ungoogled-chromium-snippet))))
     (build-system gnu-build-system)

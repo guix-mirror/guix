@@ -1,0 +1,18 @@
+Alias the av_stream_get_first_dts definition added by Chromium in
+their bundled fork.
+
+Taken from Arch Linux:
+
+  https://github.com/archlinux/svntogit-packages/blob/38fd5d2f2e0ade932aa7a80b7dea26215fc41854/trunk/unbundle-ffmpeg-av_stream_get_first_dts.patch
+
+diff --git a/build/linux/unbundle/ffmpeg.gn b/build/linux/unbundle/ffmpeg.gn
+--- a/build/linux/unbundle/ffmpeg.gn
++++ b/build/linux/unbundle/ffmpeg.gn
+@@ -12,6 +12,7 @@ pkg_config("system_ffmpeg") {
+     "libavformat",
+     "libavutil",
+   ]
++  defines = [ "av_stream_get_first_dts(stream)=stream->first_dts" ]
+ }
+ 
+ buildflag_header("ffmpeg_features") {
