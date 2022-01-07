@@ -11,6 +11,7 @@
 ;;; Copyright © 2021 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2021 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2021 Josselin Poiret <josselin.poiret@protonmail.ch>
+;;; Copyright © 2022 Chris Marusich <cmmarusich@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,6 +29,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu services xorg)
+  #:autoload   (gnu services sddm) (sddm-service-type)
   #:use-module (gnu artwork)
   #:use-module (gnu services)
   #:use-module (gnu services shepherd)
@@ -1040,10 +1042,17 @@ the GNOME desktop environment.")
                    "Run the GNOME Desktop Manager (GDM), a program that allows
 you to log in in a graphical session, whether or not you use GNOME."))))
 
+;; Since GDM depends on Rust (gdm -> gnome-shell -> gjs -> mozjs -> rust)
+;; and Rust is currently unavailable on non-x86_64 platforms, default to
+;; SDDM there (FIXME).
 (define* (set-xorg-configuration config
                                  #:optional
                                  (login-manager-service-type
-                                  gdm-service-type))
+                                  (let ((system (or (%current-target-system)
+                                                    (%current-system))))
+                                    (if (string-prefix? "x86_64" system)
+                                        gdm-service-type
+                                        sddm-service-type))))
   "Tell the log-in manager (of type @var{login-manager-service-type}) to use
 @var{config}, an <xorg-configuration> record."
   (simple-service 'set-xorg-configuration
