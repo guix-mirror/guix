@@ -15908,29 +15908,52 @@ where applicable.  Also supports derive via `diffus-derive`.")
 any data structure.  Supports derive on structs and enums.")
     (license license:asl2.0)))
 
-(define-public rust-digest-0.9
+(define-public rust-digest-0.10
   (package
     (name "rust-digest")
-    (version "0.9.0")
+    (version "0.10.1")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "digest" version))
-        (file-name
-         (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "0rmhvk33rgvd6ll71z8sng91a52rw14p0drjn1da0mqa138n1pfk"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "digest" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "16wpqnwlzx0lbnwccwikns7dq8fblcc6kma2l7xz8anlh5hdd5xn"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs
-       (("rust-blobby" ,rust-blobby-0.1)
-        ("rust-generic-array" ,rust-generic-array-0.14))))
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-blobby" ,rust-blobby-0.3)
+        ("rust-block-buffer" ,rust-block-buffer-0.10)
+        ("rust-crypto-common" ,rust-crypto-common-0.1)
+        ("rust-generic-array" ,rust-generic-array-0.14)
+        ("rust-subtle" ,rust-subtle-2))))
     (home-page "https://github.com/RustCrypto/traits")
     (synopsis "Traits for cryptographic hash functions")
     (description
      "Traits for cryptographic hash functions.")
     (license (list license:expat license:asl2.0))))
+
+(define-public rust-digest-0.9
+  (package
+    (inherit rust-digest-0.10)
+    (name "rust-digest")
+    (version "0.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "digest" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0rmhvk33rgvd6ll71z8sng91a52rw14p0drjn1da0mqa138n1pfk"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-blobby" ,rust-blobby-0.1)
+        ("rust-generic-array" ,rust-generic-array-0.14))))))
 
 (define-public rust-digest-0.8
   (package
