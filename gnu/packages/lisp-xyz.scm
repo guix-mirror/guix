@@ -20181,3 +20181,42 @@ APL.")
 
 (define-public ecl-april
   (sbcl-package->ecl-package sbcl-april))
+
+(define-public sbcl-cl-gopher
+  (let ((commit "29fbe52e3f377e24e8bde77b00789a1e32a75b90")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-gopher")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/knusbaum/cl-gopher")
+               (commit commit)))
+         (file-name (git-file-name "cl-gopher" version))
+         (sha256
+          (base32 "1dilgbnbgbrn7wglv8n03kpgc94l43mgv9y0akg7h5mwn8ii5p6m"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       (list sbcl-bordeaux-threads
+             sbcl-drakma
+             sbcl-flexi-streams
+             sbcl-quri
+             sbcl-split-sequence
+             sbcl-usocket))
+      (home-page "https://github.com/knusbaum/cl-gopher")
+      (synopsis "Gopher protocol library in Common Lisp")
+      (description
+       "@code{cl-gopher} is a Common Lisp library for interacting with the
+Gopher protocol.
+
+It is suitable for building both clients and servers, and provides a sample
+client.")
+      (license license:bsd-2))))
+
+(define-public cl-gopher
+  (sbcl-package->cl-source-package sbcl-cl-gopher))
+
+(define-public ecl-cl-gopher
+  (sbcl-package->ecl-package sbcl-cl-gopher))
