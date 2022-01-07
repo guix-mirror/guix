@@ -25003,7 +25003,7 @@ represent file sizes in a human-readable format.")
 (define-public rust-humantime-2
   (package
     (name "rust-humantime")
-    (version "2.0.1")
+    (version "2.1.0")
     (source
      (origin
        (method url-fetch)
@@ -25012,7 +25012,7 @@ represent file sizes in a human-readable format.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0yivhqyi8xik2j6sd3q45ybakjx8jsx5632dx9xjn0birh4dj6iw"))))
+         "1r55pfkkf5v0ji1x6izrjwdq9v6sc7bv99xj6srywcar37xmnfls"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-development-inputs
