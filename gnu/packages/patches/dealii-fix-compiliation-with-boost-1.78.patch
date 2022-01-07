@@ -1,0 +1,40 @@
+From cbef761731627cece2a6f0276b87dacabbdc8a72 Mon Sep 17 00:00:00 2001
+From: David Wells <drwells@email.unc.edu>
+Date: Tue, 4 Jan 2022 12:46:30 -0500
+Subject: [PATCH] Fix compilation with boost 1.78.
+
+I bisected (fortunately Boost.Geometry a header-only library so adding the
+include directory sufficed) and
+https://github.com/boostorg/geometry/commit/6eb9e238bcb37e26dc31d16acf826784a2ba30f4
+is where this problem starts for us. See also
+https://github.com/boostorg/geometry/issues/792 - the easiest fix for all such
+issues is to just include the project header `boost/geometry/geometry.hpp`.
+
+In this particular case, if you look at the commit which causes grid_tools.cc
+fails to compile, its because we were relying on some implicit includes. In
+particular, we need the distance header to find the distance between points and
+boxes, but that was previously included in another file.
+
+This patch has been adapted from
+e0e76835519d122fd12b5858e16d08641a641c6a to apply to dealii 9.3.2.
+
+See https://github.com/dealii/dealii/pull/13165.
+---
+ include/deal.II/numerics/rtree.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/include/deal.II/numerics/rtree.h b/include/deal.II/numerics/rtree.h
+index 1b9d04dacd..1e1bfd2932 100644
+--- a/include/deal.II/numerics/rtree.h
++++ b/include/deal.II/numerics/rtree.h
+@@ -26,6 +26,7 @@
+ #include <deal.II/boost_adaptors/segment.h>
+ 
+ DEAL_II_DISABLE_EXTRA_DIAGNOSTICS
++#include <boost/geometry/algorithms/distance.hpp>
+ #include <boost/geometry/index/rtree.hpp>
+ #include <boost/geometry/strategies/strategies.hpp>
+ DEAL_II_ENABLE_EXTRA_DIAGNOSTICS
+-- 
+2.30.2
+

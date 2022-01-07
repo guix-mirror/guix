@@ -34,7 +34,7 @@
 ;;; Copyright © 2019 Steve Sprang <scs@stevesprang.com>
 ;;; Copyright © 2019 Robert Smith <robertsmith@posteo.net>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
-;;; Copyright © 2020, 2021 Felix Gruber <felgru@posteo.net>
+;;; Copyright © 2020–2022 Felix Gruber <felgru@posteo.net>
 ;;; Copyright © 2020 R Veera Kumar <vkor@vkten.in>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
@@ -5268,14 +5268,16 @@ A unique design feature of Trilinos is its focus on packages.")
 (define-public dealii
   (package
     (name "dealii")
-    (version "9.3.1")
+    (version "9.3.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/dealii/dealii/releases/"
                            "download/v" version "/dealii-" version ".tar.gz"))
        (sha256
-        (base32 "1f0sqvlxvl0myqcn0q6xrn1vnp5pgx143lai4a4jkh1dmdv4cbx6"))
+        (base32 "1s0kawnljg24jj6nibwrif5gxdgg2daqfylhqqpl1lvmzmmxfhak"))
+       (patches (search-patches "dealii-fix-compiliation-with-boost-1.78.patch"
+                                "dealii-fix-sundials.patch"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -5286,16 +5288,14 @@ A unique design feature of Trilinos is its focus on packages.")
     (outputs '("out" "doc"))
     (native-inputs
      ;; Required to build the documentation.
-     `(("dot" ,graphviz)
-       ("doxygen" ,doxygen)
-       ("perl" ,perl)))
+      (list graphviz doxygen perl))
     (inputs
-     `(("arpack" ,arpack-ng)
-       ("blas" ,openblas)
-       ("gfortran" ,gfortran)
-       ("lapack" ,lapack)
-       ("muparser" ,muparser)
-       ("zlib" ,zlib)))
+      (list arpack-ng
+            openblas
+            gfortran
+            lapack
+            muparser
+            zlib))
     (propagated-inputs
      ;; Some scripts are installed into share/deal.II/scripts that require
      ;; perl and python, but they are not executable (and some are missing the

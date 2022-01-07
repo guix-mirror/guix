@@ -1,0 +1,60 @@
+From af73f368f7f9d4a00df075d1a9f50fc495f8e87a Mon Sep 17 00:00:00 2001
+From: Timo Heister <timo.heister@gmail.com>
+Date: Sat, 25 Dec 2021 12:30:45 -0500
+Subject: [PATCH] fix sundials compilation
+
+---
+ include/deal.II/sundials/n_vector.templates.h | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
+
+diff --git a/include/deal.II/sundials/n_vector.templates.h b/include/deal.II/sundials/n_vector.templates.h
+index 2b49e3efc9..746f63a03b 100644
+--- a/include/deal.II/sundials/n_vector.templates.h
++++ b/include/deal.II/sundials/n_vector.templates.h
+@@ -253,13 +253,13 @@ namespace SUNDIALS
+       template <
+         typename VectorType,
+         typename std::enable_if_t<!IsBlockVector<VectorType>::value, int> = 0>
+-      MPI_Comm
++      const MPI_Comm &
+       get_communicator(N_Vector v);
+ 
+       template <
+         typename VectorType,
+         typename std::enable_if_t<IsBlockVector<VectorType>::value, int> = 0>
+-      MPI_Comm
++      const MPI_Comm &
+       get_communicator(N_Vector v);
+ 
+       /**
+@@ -481,7 +481,7 @@ SUNDIALS::internal::NVectorOperations::destroy(N_Vector v)
+ 
+ template <typename VectorType,
+           std::enable_if_t<IsBlockVector<VectorType>::value, int>>
+-MPI_Comm
++const MPI_Comm &
+ SUNDIALS::internal::NVectorOperations::get_communicator(N_Vector v)
+ {
+   return unwrap_nvector_const<VectorType>(v)->block(0).get_mpi_communicator();
+@@ -491,7 +491,7 @@ SUNDIALS::internal::NVectorOperations::get_communicator(N_Vector v)
+ 
+ template <typename VectorType,
+           std::enable_if_t<!IsBlockVector<VectorType>::value, int>>
+-MPI_Comm
++const MPI_Comm &
+ SUNDIALS::internal::NVectorOperations::get_communicator(N_Vector v)
+ {
+   return unwrap_nvector_const<VectorType>(v)->get_mpi_communicator();
+@@ -519,7 +519,8 @@ SUNDIALS::internal::NVectorOperations::get_communicator_as_void_ptr(N_Vector v)
+   (void)v;
+   return nullptr;
+ #  else
+-  return get_communicator<VectorType>(v);
++  // We need to cast away const here, as SUNDIALS demands a pure `void *`.
++  return &(const_cast<MPI_Comm &>(get_communicator<VectorType>(v)));
+ #  endif
+ }
+ 
+-- 
+2.30.2
+
