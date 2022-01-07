@@ -59120,6 +59120,31 @@ serializing Rust structures.")
 performance, interoperability, and flexibility.")
     (license license:expat)))
 
+(define-public rust-totp-lite-1
+  (package
+    (name "rust-totp-lite")
+    (version "1.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "totp-lite" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "12ql4pi9q7sf5651588wia2l5h4mil3kv9jrrkib5gvlpvl0k05i"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-digest" ,rust-digest-0.9)
+        ("rust-hmac" ,rust-hmac-0.11)
+        ("rust-sha-1" ,rust-sha-1-0.9)
+        ("rust-sha2" ,rust-sha2-0.9))))
+    (home-page "https://github.com/fosskers/totp-lite")
+    (synopsis "Simple, correct TOTP library")
+    (description "Rust-totp-lite provides a simple, correct time-based
+One-Time Password library.")
+    (license license:expat)))
+
 (define-public rust-tower-0.4
   (package
     (name "rust-tower")
