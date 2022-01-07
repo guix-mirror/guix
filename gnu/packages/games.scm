@@ -7175,7 +7175,7 @@ elements to achieve a simple goal in the most complex way possible.")
            glew
            glu
            libpng
-           libsigc++
+           libsigc++-2
            libvorbis
            lua-5.2                      ;not compatible with 5.3
            mesa
