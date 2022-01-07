@@ -1122,20 +1122,20 @@ of programming tools as well as libraries with equivalent functionality.")
 (define-public lld
   (package
     (name "lld")
-    (version "12.0.1")
+    (version "13.0.0")
     (source (origin
               (method url-fetch)
               (uri (llvm-uri "lld" version))
               (sha256
                (base32
-                "0qg3fgc7wj34hdkqn21y03zcmsdd01szhhm1hfki63iifrm3y2v9"))))
+                "11lkwv4jy35z2f3zcpv7hbbk9v9gpavfvxlif8265zv4rl5r1l90"))))
     (build-system cmake-build-system)
     (native-inputs
      ;; Note: check <https://bugs.llvm.org/show_bug.cgi?id=49228> to see
      ;; whether this is still necessary.
      (list libunwind-headers))
     (inputs
-     (list llvm-12))
+     (list llvm-13))
     (arguments
      `(#:build-type "Release"
        ;; TODO: Tests require the lit tool, which isn't installed by the LLVM
