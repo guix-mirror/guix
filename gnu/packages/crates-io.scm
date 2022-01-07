@@ -14931,6 +14931,35 @@ algorithm which serves to quantify the difference between two colors.")
     (description "Demo of proc-macro-hack.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-der-0.4
+  (package
+    (name "rust-der")
+    (version "0.4.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "der" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1x4k0jln8va1657cghl40l6p7hyvr1ixz71v9cd6imwmgp51rdvr"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build?
+       #t                               ; FIXME
+       #:cargo-inputs
+       (("rust-const-oid" ,rust-const-oid-0.6)
+        ("rust-crypto-bigint" ,rust-crypto-bigint-0.2)
+        ("rust-der-derive" ,rust-der-derive-0.4))))
+    (home-page "https://github.com/RustCrypto/formats/tree/master/der")
+    (synopsis
+     "Implementation of the Distinguished Encoding Rules (DER)")
+    (description
+     "This package provides a pure Rust embedded-friendly implementation of
+the Distinguished Encoding Rules (DER) for Abstract Syntax Notation One
+(ASN.1) as described in ITU X.690 with full support for heapless no_std
+targets")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-der-derive-0.4
   (package
     (name "rust-der-derive")
