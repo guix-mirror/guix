@@ -915,7 +915,7 @@ the HTML documentation of TXR.")
 (define-public txr
   (package
     (name "txr")
-    (version "270")
+    (version "273")
     (source
      (origin
        (method git-fetch)
@@ -924,7 +924,7 @@ the HTML documentation of TXR.")
              (commit (string-append "txr-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1kp64h3ls8mddvrlaqqylrb3brckfrqvkk8049xn15mimfggg0xv"))))
+        (base32 "1m4akw64458qcrfbqv71z9y8q9dszj26d7jfqblcn6nn8akx2jyb"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -939,8 +939,7 @@ the HTML documentation of TXR.")
                (("INSTALL(,.*LICENSE,.*)\\$\\(datadir\\)" _ match)
                 (string-append "INSTALL" match
                                (assoc-ref outputs "out")
-                               "/share/doc/" ,name "-" ,version)))
-             #t))
+                               "/share/doc/" ,name "-" ,version)))))
          (delete 'install-license-files)
          (add-after 'unpack 'inhibit-doc-syms-generation
            (lambda _
@@ -950,8 +949,7 @@ the HTML documentation of TXR.")
                ;; each release (and is already compiled to stdlib/doc-syms.tlo
                ;; when genman.txr is run).
                (("^@\\(output \"stdlib/doc-syms\\.tl\"\\).*" line)
-                (string-append "@(do (exit))\n" line)))
-             #t))
+                (string-append "@(do (exit))\n" line)))))
          (add-after 'unpack 'fix-paths
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "stream.c"
@@ -967,20 +965,17 @@ the HTML documentation of TXR.")
            ;; autotools arguments like CONFIG_SHELL.
            (lambda* (#:key configure-flags #:allow-other-keys)
              (setenv "txr_shell" (which "bash"))
-             (apply invoke "./configure" configure-flags)
-             #t))
+             (apply invoke "./configure" configure-flags)))
          (add-after 'build 'build-doc
            (lambda _
              (setenv "GS_GENERATE_UUIDS" "0")
-             (invoke "make" "txr-manpage.html" "txr-manpage.pdf")
-             #t))
+             (invoke "make" "txr-manpage.html" "txr-manpage.pdf")))
          (add-after 'install 'install-doc
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((doc (string-append (assoc-ref outputs "out")
                                        "/share/doc/" ,name "-" ,version)))
                (for-each (lambda (f) (install-file f doc))
-                         '("txr-manpage.html" "txr-manpage.pdf")))
-             #t)))))
+                         '("txr-manpage.html" "txr-manpage.pdf"))))))))
     (native-inputs
      ;; Required to build the documentation.
      (list ghostscript
