@@ -8264,7 +8264,7 @@ of Linux application development.")
   (package
     (inherit pipewire)
     (name "pipewire")
-    (version "0.3.41")
+    (version "0.3.43")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -8273,7 +8273,7 @@ of Linux application development.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "05ksl2nbn00gvdmnmffa8q8r3z29ip75554d36xchsrhqq4sxdcm"))))
+                "0gp2h0sidapcqmnifl0iipdmbzb18bdh8zdi7pfywr9gsksh0cxy"))))
     (arguments
      '(#:configure-flags
        (list (string-append "-Dudevrulesdir=" (assoc-ref %outputs "out")
