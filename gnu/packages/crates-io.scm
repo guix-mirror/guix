@@ -50064,8 +50064,32 @@ functionality and without weak references.")
                ((", path =.*}") "}"))
              #t)))))))
 
+(define-public rust-sha1-asm-0.5
+  (package
+    (name "rust-sha1-asm")
+    (version "0.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "sha1-asm" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1b7ab7f4n87pqdmbl1a5jrc2axf27pvbndsz9qiwwgxw01qlygan"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-cc" ,rust-cc-1))))
+    (home-page "https://github.com/RustCrypto/asm-hashes")
+    (synopsis "Assembly implementation of SHA-1 compression function")
+    (description
+     "Assembly implementation of SHA-1 compression function.")
+    (license license:expat)))
+
 (define-public rust-sha1-asm-0.4
   (package
+    (inherit rust-sha1-asm-0.5)
     (name "rust-sha1-asm")
     (version "0.4.3")
     (source
@@ -50076,16 +50100,7 @@ functionality and without weak references.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1i1i8viy6y30mv9v5hwhg9w6b722qkyh9c6n8bn4d27jpv14pg0s"))))
-    (build-system cargo-build-system)
-    (arguments
-     `(#:cargo-inputs
-       (("rust-cc" ,rust-cc-1))))
-    (home-page "https://github.com/RustCrypto/asm-hashes")
-    (synopsis "Assembly implementation of SHA-1 compression function")
-    (description
-     "Assembly implementation of SHA-1 compression function.")
-    (license license:expat)))
+         "1i1i8viy6y30mv9v5hwhg9w6b722qkyh9c6n8bn4d27jpv14pg0s"))))))
 
 (define-public rust-sha1collisiondetection-0.2
   (package
