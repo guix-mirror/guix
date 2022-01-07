@@ -4966,18 +4966,41 @@ c6e7d37.  However, this package works only up to 128 bytes.")
        (("rust-byteorder" ,rust-byteorder-1)
         ("rust-safemem" ,rust-safemem-0.2))))))
 
+(define-public rust-base64ct-1
+  (package
+    (name "rust-base64ct")
+    (version "1.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "base64ct" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0p4was874qc90q2chm2i14m9mn8zmxjis8vaxihd6a2x4aqxkd76"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/RustCrypto/formats/tree/master/base64ct")
+    (synopsis "Implementation of Base64 (RFC 4648)")
+    (description
+     "This package is a pure Rust implementation of Base64 (RFC 4648) which
+avoids any usages of data-dependent branches/LUTs and thereby provides
+portable \"best effort\" constant-time operation and embedded-friendly no_std
+support.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-base-x-0.2
   (package
     (name "rust-base-x")
     (version "0.2.6")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "base-x" version))
-        (file-name (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "1hfy0wv7j5ynd73yk1vyr32pqa77rp15lkrc54f8ky9c6hcbc80v"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "base-x" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1hfy0wv7j5ynd73yk1vyr32pqa77rp15lkrc54f8ky9c6hcbc80v"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
