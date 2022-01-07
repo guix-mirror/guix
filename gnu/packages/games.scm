@@ -7169,17 +7169,17 @@ elements to achieve a simple goal in the most complex way possible.")
     (native-inputs
      (list pkg-config))
     (inputs
-     `(("assimp" ,assimp)
-       ("curl" ,curl)
-       ("freetype" ,freetype)
-       ("glew" ,glew)
-       ("glu" ,glu)
-       ("libpng" ,libpng)
-       ("libsigc++" ,libsigc++)
-       ("libvorbis" ,libvorbis)
-       ("lua" ,lua-5.2)                 ;not compatible with 5.3
-       ("mesa" ,mesa)
-       ("sdl" ,(sdl-union (list sdl2 sdl2-image)))))
+     (list assimp
+           curl
+           freetype
+           glew
+           glu
+           libpng
+           libsigc++
+           libvorbis
+           lua-5.2                      ;not compatible with 5.3
+           mesa
+           (sdl-union (list sdl2 sdl2-image))))
     (arguments
      `(#:tests? #f                      ;tests are broken
        #:configure-flags (list "-DUSE_SYSTEM_LIBLUA:BOOL=YES"
