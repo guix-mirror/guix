@@ -46049,6 +46049,25 @@ It is automatically published using the compiler repository at
      "This package provides a speedy, non-cryptographic hash used in rustc.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-rustc-hex-2
+  (package
+    (name "rust-rustc-hex")
+    (version "2.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rustc-hex" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1mkjy2vbn5kzg67wgngwddlk4snmd8mkjkql2dzrzzfh6ajzcx9y"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t))
+    (home-page "https://github.com/debris/rustc-hex")
+    (synopsis "Rustc-serialize compatible hex conversion traits")
+    (description "This package provides rustc-serialize compatible hex
+conversion traits.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-rustc-rayon-0.3
   (package
     (name "rust-rustc-rayon")
