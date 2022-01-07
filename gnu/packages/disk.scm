@@ -812,7 +812,7 @@ passphrases.")
 (define-public ndctl
   (package
     (name "ndctl")
-    (version "72")
+    (version "72.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -821,7 +821,7 @@ passphrases.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1m9kmzqqy395p2zmcaspw2q5ailagi1xy47hkvjp3lfp48zcrpbi"))))
+                "1lvrhlad5n43bal053ihgbwr1k4ka2kscrjwr9rs5xnf2vy7204v"))))
     (build-system gnu-build-system)
     (arguments
      (list #:configure-flags
@@ -829,10 +829,6 @@ passphrases.")
                    "--without-systemd")
            #:phases
            #~(modify-phases %standard-phases
-               (add-after 'unpack 'fix-include
-                 (lambda _
-                   (substitute* "util/parse-configs.c"
-                     (("iniparser/") ""))))
                (add-after 'unpack 'fix-version
                  ;; Our VERSION's always better than the build's poor guess.
                  (lambda _
