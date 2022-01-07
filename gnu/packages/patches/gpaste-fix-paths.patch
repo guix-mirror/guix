@@ -1,0 +1,24 @@
+This is copied from NixOS, which is under MIT licence.
+https://github.com/NixOS/nixpkgs/blob/master/pkgs/desktops/gnome/misc/gpaste/
+--- a/src/gnome-shell/extension.js
++++ b/src/gnome-shell/extension.js
+@@ -6,6 +6,8 @@
+ 
+ const Config = imports.misc.config;
+ 
++imports.gi.GIRepository.Repository.prepend_search_path('@typelibPath@');
++
+ imports.gi.versions.Clutter = Config.LIBMUTTER_API_VERSION;
+ imports.gi.versions.GLib = '2.0';
+ imports.gi.versions.GPaste = '1.0';
+--- a/src/gnome-shell/prefs.js
++++ b/src/gnome-shell/prefs.js
+@@ -6,6 +6,8 @@
+ 
+ const Gettext = imports.gettext;
+ 
++imports.gi.GIRepository.Repository.prepend_search_path('@typelibPath@');
++
+ //const { GPaste } = imports.gi;
+ 
+ const ExtensionUtils = imports.misc.extensionUtils;

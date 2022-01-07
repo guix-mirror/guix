@@ -14,6 +14,7 @@
 ;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2021 Songlin Jiang <hollowman@hollowman.ml>
 ;;; Copyright © 2021 Justin Veilleux <terramorpha@cock.li>
+;;; Copyright © 2021 Attila Lendvai <attila@lendvai.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,13 +36,16 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system copy)
   #:use-module (guix build-system meson)
+  #:use-module (guix gexp)
   #:use-module (guix git-download)
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (gnu packages)
   #:use-module (gnu packages acl)
   #:use-module (gnu packages attr)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages backup)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages build-tools)
@@ -685,6 +689,58 @@ It uses ES6 syntax and claims to be more actively maintained than others.")
 scrollable tiling of windows and per monitor workspaces.  It's inspired by paper
 notebooks and tiling window managers.")
     (license license:gpl3)))
+
+(define-public gpaste
+  (package
+    (name "gpaste")
+    (version "3.42.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/Keruspe/GPaste")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1k5qvgzwl357k72qfim5zfas2a0n6j24jnlm1v472l7h6gb6lssm"))
+              (patches
+               (search-patches "gpaste-fix-paths.patch"))))
+    (build-system meson-build-system)
+    (native-inputs
+     (list autoconf automake gettext-minimal gobject-introspection
+           (list glib "bin")            ; for glib-compile-resources
+           libtool pkg-config vala))
+    (inputs
+     (list appstream-glib libarchive gjs mutter graphene))
+    (arguments
+     (list #:meson meson-0.59      ;positional arguments error with meson 0.60
+           #:glib-or-gtk? #true
+           #:configure-flags
+           #~(list
+              (string-append "-Dcontrol-center-keybindings-dir="
+                             #$output "/share/gnome-control-center/keybindings")
+              (string-append "-Ddbus-services-dir="
+                             #$output "/share/dbus-1/services")
+              (string-append "-Dsystemd-user-unit-dir="
+                             #$output "/etc/systemd/user"))
+           #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'unpack 'fix-introspection-install-dir
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (let ((out (assoc-ref outputs "out")))
+                     (substitute* '("src/gnome-shell/extension.js"
+                                    "src/gnome-shell/prefs.js")
+                       (("@typelibPath@")
+                        (string-append out "/lib/girepository-1.0/")))))))))
+    (home-page "https://github.com/Keruspe/GPaste")
+    (synopsis "Clipboard management system for GNOME Shell")
+    (description "GPaste is a clipboard manager, a tool which allows you to
+keep a trace of what you’re copying and pasting.  Is is really useful when
+you go through tons of documentation and you want to keep around a bunch of
+functions you might want to use, for example.  The clipboard manager will
+store an history of everything you do, so that you can get back to older
+copies you now want to paste.")
+    (license license:bsd-2)))
 
 (define-public arc-theme
   (package
