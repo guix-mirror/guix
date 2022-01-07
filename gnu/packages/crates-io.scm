@@ -52281,6 +52281,28 @@ and spirv-std-macros.")
 SPIR-V.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-spki-0.4
+  (package
+    (name "rust-spki")
+    (version "0.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "spki" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0ckgkcg6db5y94dqhmyikgn8yrsah6pyf4j197hv1c51bp0s00aw"))))
+    (build-system cargo-build-system)
+    (arguments `(#:skip-build? #t #:cargo-inputs (("rust-der" ,rust-der-0.4))))
+    (home-page "https://github.com/RustCrypto/formats/tree/master/spki")
+    (synopsis
+     "X.509 Subject Public Key Info (RFC5280) describing public keys ")
+    (description
+     "This package provides X.509 Subject Public Key Info (RFC5280)
+describing public keys as well as their associated AlgorithmIdentifiers (i.e.
+OIDs)")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-spmc-0.3
   (package
     (name "rust-spmc")
