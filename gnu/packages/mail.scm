@@ -3860,13 +3860,13 @@ servers.  The 4rev1 and 4 versions of IMAP are supported.")
 (define-public urlscan
   (package
     (name "urlscan")
-    (version "0.9.7")
+    (version "0.9.8")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "urlscan" version))
         (sha256
-         (base32 "0sqaplcrz0lj40x20s2mv3gkzsmawpi9h2kx0rmk342k5240il81"))))
+         (base32 "1imrg2r9cshfvdwkdkm9y4i58qzkgnnwkswmh3kgy38m334mlcyf"))))
     (build-system python-build-system)
     (propagated-inputs
      (list python-urwid))
