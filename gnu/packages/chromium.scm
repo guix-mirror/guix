@@ -343,13 +343,7 @@
 
 (define %arch-patches
   (list (arch-patch "chromium-94-ffmpeg-roll.patch"
-                    "1kiskdjr9v3d491sq0wdjxliflh2vq5700gbygcixayj8gkvdb2n")
-        (arch-patch "replace-blacklist-with-ignorelist.patch"
-                    "0ddvbyks7s8nijmg2nmirpwdv08dqx0z99sb6c1d4vlckfilnd6k")
-        (arch-patch "add-a-TODO-about-a-missing-pnacl-flag.patch"
-                    "0mf4zn94ckd3vxzw441wka7ak4aajq1x33h4dqd78blgacba4gfm")
-        (arch-patch "use-ffile-compilation-dir.patch"
-                    "0vk0vyxr55c716vkn4y4yhhrxb4zng4ni2y6fsz30pxbiz6i044j")))
+                    "1kiskdjr9v3d491sq0wdjxliflh2vq5700gbygcixayj8gkvdb2n")))
 
 (define %debian-patches
   (list (debian-patch "fixes/nomerge.patch"
@@ -506,8 +500,8 @@
              ;; a developer build.
              "is_official_build=true"
              "clang_use_chrome_plugins=false"
-             "is_cfi=false"             ;requires Clang 13
-             "use_thin_lto=false"       ;XXX ICE with Clang+LLD 12.0.1
+             "is_cfi=false"             ;requires ThinLTO
+             "use_thin_lto=false"       ;XXX lld segfaults
              "chrome_pgo_phase=0"
              "use_sysroot=false"
              "goma_dir=\"\""
@@ -835,7 +829,7 @@
                   '("24" "48" "64" "128" "256")))))))))
     (native-inputs
      `(("bison" ,bison)
-       ("clang" ,clang-12)
+       ("clang" ,clang-13)
        ("gn" ,gn)
        ("gperf" ,gperf)
        ("ld-wrapper" ,lld-as-ld-wrapper)
