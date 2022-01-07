@@ -6685,22 +6685,22 @@ USB transfers with your high-level application or system daemon.")
     (arguments
      `(#:meson ,meson-0.59         ;positional arguments error with meson 0.60
        #:glib-or-gtk? #t))
-    (inputs
-     `(("gtk" ,gtk+)
-       ("zlib" ,zlib)
-       ("cairo" ,cairo)
-       ("colord" ,colord)
-       ("gdk-pixbuf" ,gdk-pixbuf)
-       ("gusb" ,gusb)
-       ("libhandy" ,libhandy)
-       ("libsane" ,sane-backends)))
     (native-inputs
-     `(("gettext" ,gettext-minimal)
-       ("itstool" ,itstool)
-       ("glib" ,glib "bin")             ; glib-compile-schemas, etc.
-       ("pkg-config" ,pkg-config)
-       ("vala" ,vala)
-       ("xmllint" ,libxml2)))
+     (list gettext-minimal
+           itstool
+           `(,glib "bin")               ; glib-compile-schemas, etc.
+           pkg-config
+           vala
+           libxml2))
+    (inputs
+     (list gtk+
+           zlib
+           cairo
+           colord
+           gdk-pixbuf
+           gusb
+           libhandy
+           sane-backends))
     (home-page "https://gitlab.gnome.org/GNOME/simple-scan")
     (synopsis "Document and image scanner")
     (description
