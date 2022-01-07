@@ -45220,6 +45220,39 @@ wildcard segments")
       "This package provides a library for generic lossless syntax trees.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-rsa-0.5
+  (package
+    (name "rust-rsa")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rsa" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "039676a4mj0875phdi7vc0bd37hv84dh0dql6fmk8dl2w81jcp70"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-byteorder" ,rust-byteorder-1)
+        ("rust-digest" ,rust-digest-0.9)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-num-bigint-dig" ,rust-num-bigint-dig-0.7)
+        ("rust-num-integer" ,rust-num-integer-0.1)
+        ("rust-num-iter" ,rust-num-iter-0.1)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-pkcs1" ,rust-pkcs1-0.2)
+        ("rust-pkcs8" ,rust-pkcs8-0.7)
+        ("rust-rand" ,rust-rand-0.8)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-subtle" ,rust-subtle-2)
+        ("rust-zeroize" ,rust-zeroize-1))))
+    (home-page "https://github.com/RustCrypto/RSA")
+    (synopsis "Pure Rust RSA implementation")
+    (description "This package provides a pure Rust RSA implementation.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-rspec-1
   (package
     (name "rust-rspec")
