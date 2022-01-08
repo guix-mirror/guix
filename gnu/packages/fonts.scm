@@ -2390,3 +2390,37 @@ small optical sizes already exist, Cormorant aims for the sparsely
 populated niche of display-size counterparts that exploit the high
 resolution of contemporary screens and print media to the fullest.")
     (license license:silofl1.1)))
+
+(define-public font-bravura
+  (package
+    (name "font-bravura")
+    (version "1.393")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/steinbergmedia/bravura")
+             ;; Should be:
+             ;;   (string-append "bravura-" version)
+             ;; but missing tag for 1.393. Requested upstream at:
+             ;; https://github.com/steinbergmedia/bravura/issues/61
+             (commit "3df1714e6f9d522a8d2b6ee6888fa3e68e71199d")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1d0a2z1gl0kzfnd5z0nv2gd226qwll13kis2xrhx213w6r849180"))))
+    (build-system font-build-system)
+    (home-page "https://www.smufl.org/fonts/")
+    (synopsis
+     "OpenType music font and SMuFL reference implementation")
+    (description
+     "Bravura is an OpenType music font and the reference implementation for
+the W3C Standard Music Font Layout (SMuFL).  Bravura draws on the heritage of
+the finest European music engraving of the 19th and early 20th centuries, with
+a bolder and more substantial look than most other music fonts: thin strokes
+are slightly thicker than in other fonts, improving the overall ``blackness''
+of the font and its legibility when read at a distance.
+
+In addition to Bravura itself, which is for use with music notation
+software (such as MuseScore), the family includes a Bravura Text variant
+optimized for using musical symbols inline with regular text.")
+    (license license:silofl1.1)))
