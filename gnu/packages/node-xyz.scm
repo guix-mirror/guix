@@ -955,3 +955,45 @@ both @file{stderr} and to a timestamped file.")
 milliseconds.  A number supplied as integer or string is returned as-is, while
 a string consisting of a number and a time unit is converted to milliseconds.")
     (license license:expat)))
+
+(define-public node-debug
+  (package
+    (name "node-debug")
+    (version "4.3.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/debug-js/debug")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0ji0dmdl2xkgxqxvd6xjy7k3mmknmhvqjgc40vyly9ka1mpf20vb"))))
+    (inputs
+     (list node-ms))
+    (build-system node-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'patch-dependencies 'delete-dependencies
+           (lambda args
+             (delete-dependencies `("brfs"
+                                    "browserify"
+                                    "coveralls"
+                                    "istanbul"
+                                    "karma"
+                                    "karma-browserify"
+                                    "karma-chrome-launcher"
+                                    "karma-mocha"
+                                    "mocha"
+                                    "mocha-lcov-reporter"
+                                    "xo"
+                                    "supports-color")))))
+       #:tests? #f))
+    (home-page "https://github.com/debug-js/debug")
+    (synopsis "Debugging utility for Node.js")
+    (description "The @code{debug} module exposes a function, which if called
+with a module name as argument provides a function that writes debug output to
+@code{console.error} under that module name.  This output can be controlled in
+a more fine-grained manner by binding the @env{DEBUG} variable.")
+    (license license:expat)))
