@@ -183,10 +183,17 @@ a flexible and convenient way.")
                         (string-append "--with-xz=" xz "/bin/xz")
                         (string-append "--with-col=" util "/bin/col")
                         ;; The default systemd directories ignore --prefix.
+                        ;; XXX TODO: Replace with simply #$OUTPUT on staging.
                         (string-append "--with-systemdsystemunitdir="
-                                       %output "/lib/systemd/system")
+                                       #$(if (%current-target-system)
+                                             #~#$output
+                                             #~%output)
+                                       "/lib/systemd/system")
                         (string-append "--with-systemdtmpfilesdir="
-                                       %output "/lib/tmpfiles.d"))
+                                       #$(if (%current-target-system)
+                                             #~#$output
+                                             #~%output)
+                                       "/lib/tmpfiles.d"))
                    (map (lambda (prog)
                           (string-append "--with-" prog "=" groff-minimal
                                          "/bin/" prog))
