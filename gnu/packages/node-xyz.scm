@@ -320,8 +320,9 @@ function with browser support.")
      '(#:tests? #f ; FIXME: Tests depend on node-tap
        #:phases
        (modify-phases %standard-phases
-         ;; The only dependency to check for is tap, which we don't have.
-         (delete 'configure))))
+         (add-after 'patch-dependencies 'delete-dependencies
+           (lambda args
+             (delete-dependencies '("tap")))))))
     (home-page "https://github.com/npm/wrappy")
     (synopsis "Callback wrapping utility")
     (description "@code{wrappy} is a utility for Node.js to wrap callbacks.")
