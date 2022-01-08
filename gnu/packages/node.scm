@@ -411,7 +411,9 @@ formats to milliseconds.")
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure))))
+         (add-after 'patch-dependencies 'delete-dependencies
+           (lambda args
+             (delete-dependencies `("chai" "mocha")))))))
     (home-page "https://github.com/darkskyapp/binary-search#readme")
     (properties '((hidden? . #t)))
     (synopsis "Tiny binary search function with comparators")
