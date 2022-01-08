@@ -375,12 +375,12 @@ if desired.")
                 "0q3y34rbnlc55jcakmdxkicwazyvyph9r6gaf6hi8k7wj2nfwfli"))))
     (build-system node-build-system)
     (arguments
-     '(#:tests? #f                      ; FIXME: tests depend on node-istanbul
-       #:phases
+     '(#:phases
        (modify-phases %standard-phases
-         ;; The default configure phase fails due to various packages
-         ;; being missing, as we don't have them packaged yet.
-         (delete 'configure))))
+         (add-after 'patch-dependencies 'delete-dependencies
+           (lambda args
+             (delete-dependencies `("istanbul" "vows")))))
+       #:tests? #f))
     (home-page "https://github.com/fent/irc-colors.js")
     (synopsis "Node.js module providing color and formatting for IRC")
     (description "@code{node-irc-colors} is a Node.js module that
