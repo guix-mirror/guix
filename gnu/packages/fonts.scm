@@ -1136,7 +1136,13 @@ It includes regular, medium, and bold weights.")
     (synopsis "Multilingual extension of the Fira Sans font family")
     (description "FiraGO is a multilingual extension of the Fira Sans font
 family.  Based on the Fira Sans 4.3 glyph set, FiraGO adds support for the
-Arabic, Devanagari, Georgian, Hebrew and Thai scripts.")
+Arabic, Devanagari, Georgian, Hebrew and Thai scripts.
+
+Note that FiraGO does not include corresponding source.")
+    ;; See:
+    ;;   - https://github.com/bBoxType/FiraGO/issues/42
+    ;;   - https://github.com/bBoxType/FiraSans/issues/4#issuecomment-699882058
+    ;; For further discussion, see comments on font-fira-sans.
     (license license:silofl1.1)))
 
 (define-public font-fira-code
