@@ -1563,12 +1563,11 @@ setup(name=\"clang\", packages=[\"clang\"])\n")))))
        (modify-phases %standard-phases
          (add-after 'unpack 'configure
            (lambda* (#:key inputs #:allow-other-keys)
-             (let ((clang (assoc-ref inputs "clang")))
+             (let ((clang-format (search-input-file inputs "/bin/clang-format")))
                (copy-file "tools/clang-format/clang-format.el" "clang-format.el")
                (emacs-substitute-variables "clang-format.el"
                  ("clang-format-executable"
-                  (string-append clang "/bin/clang-format"))))
-             #t)))))
+                  clang-format))))))))
     (synopsis "Format code using clang-format")
     (description "This package filters code through @code{clang-format}
 to fix its formatting.  @code{clang-format} is a tool that formats
