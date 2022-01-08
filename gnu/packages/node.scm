@@ -506,7 +506,14 @@ Node.js and web browsers.")
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
+         (add-after 'patch-dependencies 'delete-dependencies
+           (lambda _
+             (delete-dependencies `("@types/mocha"
+                                    "@types/node"
+                                    "mocha"
+                                    "ts-node"
+                                    "tslint"
+                                    "typescript"))))
          (replace 'build
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((esbuild (search-input-file inputs "/bin/esbuild")))
