@@ -1053,3 +1053,26 @@ recommended high-level interface.
 Parsers are used to take raw binary data and transform them into usable
 messages.  This package provides @code{Delimiter}, a parser that emits data
 each time a specified byte sequence is received.")))
+
+(define-public node-serialport-parser-readline
+  (package
+    (inherit node-serialport-binding-abstract)
+    (name "node-serialport-parser-readline")
+    (version "9.2.4")
+    (inputs
+     (list node-serialport-parser-delimiter))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda args
+             (chdir "packages/parser-readline"))))
+       #:tests? #f))
+    (synopsis "Node SerialPort parser to split data on newlines")
+    (description "Node SerialPort is a modular suite of Node.js packages for
+accessing serial ports.  The Guix package @code{node-serialport} provides the
+recommended high-level interface.
+
+Parsers are used to take raw binary data and transform them into usable
+messages.  This package provides @code{Readline}, a parser that emits data
+after a (configurable) newline delimiter is received.")))
