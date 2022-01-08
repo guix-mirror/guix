@@ -8,7 +8,7 @@ This reverts commit 0340df46ec5897636dd071bc8b5c4272cfa7d7be.  It works
 around an irrelevant operating system and breaks compilation on Guix:
 
 mem.c:873: fatal error: RUNTIME_CHECK(((pthread_mutex_lock(((&contextslock))) == 0) ? 0 : 34) == 0) failed
-/gnu/store/pwcp239kjf7lnj5i4lkdzcfcxwcfyk72-bash-minimal-5.0.16/bin/bash: line 1: 13768 Aborted                 ./${fuzzer}
+/gnu/store/…-bash-minimal-5.0.16/bin/bash: line 1: 13768 Aborted                 ./${fuzzer}
 
 Let's simply revert it for now---there are securities at stake!
 ---
