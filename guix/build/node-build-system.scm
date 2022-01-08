@@ -2,7 +2,8 @@
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016, 2020 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2019, 2021 Timothy Sample <samplet@ngyro.com>
-;;; Copyright © 2021 Philip McGrath <philip@philipmcgrath.com>
+;;; Copyright © 2021, 2022 Philip McGrath <philip@philipmcgrath.com>
+;;; Copyright © 2022 Liliana Marie Prikler <liliana.prikler@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,14 +27,104 @@
   #:use-module (ice-9 ftw)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-71)
   #:export (%standard-phases
+            with-atomic-json-file-replacement
             node-build))
 
-;; Commentary:
-;;
-;; Builder-side code of the standard Node/NPM package install procedure.
-;;
-;; Code:
+(define (with-atomic-json-file-replacement file proc)
+  "Like 'with-atomic-file-replacement', but PROC is called with a single
+argument---the result of parsing FILE's contents as json---and should a value
+to be written as json to the replacement FILE."
+  (with-atomic-file-replacement file
+    (lambda (in out)
+      (write-json (proc (read-json in)) out))))
+
+(define* (assoc-ref* alist key #:optional default)
+  "Like assoc-ref, but return DEFAULT instead of #f if no value exists."
+  (match (assoc key alist)
+    (#f default)
+    ((_ . value) value)))
+
+(define* (jsobject-ref obj key #:optional default)
+  (match obj
+    (('@ . alist) (assoc-ref* alist key default))))
+
+(define* (alist-pop alist key #:optional (= equal?))
+  "Return two values, the first pair in ALIST with key KEY, and the other
+elements.  Equality calls are made as (= KEY ALISTCAR)."
+  (define (found? pair)
+    (= key (car pair)))
+
+  (let ((before after (break found? alist)))
+    (if (pair? after)
+        (values (car after) (append before (cdr after)))
+        (values #f before))))
+
+(define* (alist-update alist key proc #:optional default (= equal?))
+  "Return an association list like ALIST, but with KEY mapped to the result of
+PROC applied to the first value found under the comparison (= KEY ALISTCAR).
+If no such value exists, use DEFAULT instead.
+Unlike acons, this removes the previous association of KEY (assuming it is
+unique), but the result may still share storage with ALIST."
+  (let ((pair rest (alist-pop alist key =)))
+    (acons key
+           (proc (if (pair? pair)
+                     (cdr pair)
+                     default))
+           rest)))
+
+(define (jsobject-update* js . updates)
+  "Return a json object like JS, but with all UPDATES applied.  Each update is
+a list (KEY PROC [DEFAULT]), so that KEY is mapped to the result of PROC
+applied to the value to which KEY is mapped in JS.  If no such mapping exists,
+PROC is instead applied to DEFAULT, or to '#f' is no DEFAULT is specified.
+The update takes place from left to right, so later UPDATERs will receive the
+values returned by earlier UPDATERs for the same KEY."
+  (match js
+    (('@ . alist)
+     (let loop ((alist alist)
+                (updates updates))
+       (match updates
+         (() (cons '@ alist))
+         (((key proc) . updates)
+          (loop (alist-update alist key proc #f equal?) updates))
+         (((key proc default) . updates)
+          (loop (alist-update alist key proc default equal?) updates)))))))
+
+(define (jsobject-union combine seed . objects)
+  "Merge OBJECTS into SEED by applying (COMBINE KEY VAL0 VAL), where VAL0
+is the value found in the (possibly updated) SEED and VAL is the new value
+found in one of the OBJECTS."
+  (match seed
+    (('@ . aseed)
+     (match objects
+       (() seed)
+       ((('@ . alists) ...)
+        (cons
+         '@
+         (fold (lambda (alist aseed)
+                 (if (null? aseed) alist
+                     (fold
+                      (match-lambda*
+                        (((k . v) aseed)
+                         (let ((pair tail (alist-pop alist k)))
+                           (match pair
+                             (#f (acons k v aseed))
+                             ((_ . v0) (acons k (combine k v0 v) aseed))))))
+                      aseed
+                      alist)))
+               aseed
+               alists)))))))
+
+;; Possibly useful helper functions:
+;; (define (newest key val0 val) val)
+;; (define (unkeyed->keyed proc) (lambda (_key val0 val) (proc val0 val)))
+
+
+;;;
+;;; Phases.
+;;;
 
 (define (set-home . _)
   (with-directory-excursion ".."
@@ -50,7 +141,7 @@
 (define (module-name module)
   (let* ((package.json (string-append module "/package.json"))
          (package-meta (call-with-input-file package.json read-json)))
-    (assoc-ref package-meta "name")))
+    (jsobject-ref package-meta "name")))
 
 (define (index-modules input-paths)
   (define (list-modules directory)
@@ -74,27 +165,26 @@
 
   (define index (index-modules (map cdr inputs)))
 
-  (define (resolve-dependencies package-meta meta-key)
-    (fold (lambda (key+value acc)
-            (match key+value
-              ('@ acc)
-              ((key . value) (acons key (hash-ref index key value) acc))))
-          '()
-          (or (assoc-ref package-meta meta-key) '())))
+  (define resolve-dependencies
+    (match-lambda
+      (('@ . alist)
+       (cons '@ (map (match-lambda
+                       ((key . value)
+                        (cons key (hash-ref index key value))))
+                     alist)))))
 
-  (with-atomic-file-replacement "package.json"
-    (lambda (in out)
-      (let ((package-meta (read-json in)))
-        (assoc-set! package-meta "dependencies"
-                    (append
-                     '(@)
-                     (resolve-dependencies package-meta "dependencies")
-                     (resolve-dependencies package-meta "peerDependencies")))
-        (assoc-set! package-meta "devDependencies"
-                    (append
-                     '(@)
-                     (resolve-dependencies package-meta "devDependencies")))
-        (write-json package-meta out))))
+  (with-atomic-json-file-replacement "package.json"
+    (lambda (pkg-meta)
+      (jsobject-update*
+       pkg-meta
+       `("devDependencies" ,resolve-dependencies (@))
+       `("dependencies" ,(lambda (deps)
+                           (resolve-dependencies
+                            (jsobject-union
+                             (lambda (k a b) b)
+                             (jsobject-ref pkg-meta "peerDependencies" '(@))
+                             deps)))
+         (@)))))
   #t)
 
 (define* (delete-lockfiles #:key inputs #:allow-other-keys)
@@ -115,9 +205,7 @@ exist."
 
 (define* (build #:key inputs #:allow-other-keys)
   (let ((package-meta (call-with-input-file "package.json" read-json)))
-    (if (and=> (assoc-ref package-meta "scripts")
-               (lambda (scripts)
-                 (assoc-ref scripts "build")))
+    (if (jsobject-ref (jsobject-ref package-meta "scripts" '(@)) "build" #f)
         (let ((npm (string-append (assoc-ref inputs "node") "/bin/npm")))
           (invoke npm "run" "build"))
         (format #t "there is no build script to run~%"))
