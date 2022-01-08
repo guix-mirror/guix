@@ -606,7 +606,7 @@ Extensible File Allocation Table} file systems.  Included are
                             "httpfs2-ssl"
                             "httpfs2-ssl-mt"))))))
            #:make-flags
-           #~(list "CC=gcc")
+           #~(list (string-append "CC=" #$(cc-for-target)))
            #:parallel-build? #f         ; can result in missing man pages
            #:tests? #f))                ; no tests
     (home-page "https://sourceforge.net/projects/httpfs/")
