@@ -1152,3 +1152,26 @@ recommended high-level interface.
 Parsers are used to take raw binary data and transform them into usable
 messages.  This package provides @code{Regex}, a parser that uses a regular
 expression to split the incoming text.")))
+
+(define-public node-serialport-parser-ready
+  (package
+    (inherit node-serialport-binding-abstract)
+    (name "node-serialport-parser-ready")
+    (version "9.2.4")
+    (inputs `())
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda args
+             (chdir "packages/parser-ready"))))
+       #:tests? #f))
+    (synopsis "Node SerialPort parser to wait for specified byte sequence")
+    (description "Node SerialPort is a modular suite of Node.js packages for
+accessing serial ports.  The Guix package @code{node-serialport} provides the
+recommended high-level interface.
+
+Parsers are used to take raw binary data and transform them into usable
+messages.  This package provides @code{Ready}, a parser that waits for a
+specified sequence of ``ready'' bytes before emitting a ready event and
+emitting data events.")))
