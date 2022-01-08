@@ -4151,42 +4151,40 @@ transgressions, and initiates a controlled reset if needed.")
   (package
     (name "wireless-tools")
     (version "30.pre9")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "http://www.hpl.hp.com/personal/Jean_Tourrilhes/Linux/wireless_tools."
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "0qscyd44jmhs4k32ggp107hlym1pcyjzihiai48xs7xzib4wbndb"))
-              (snippet
-               '(begin
-                  ;; Remove the older header files that are not free software.
-                  (for-each (lambda (n)
-                              (delete-file (format #f "wireless.~a.h" n)))
-                            '(10 11 12 13 14 15 16 17 18 19 20))
-                  #t))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.hpl.hp.com/personal/Jean_Tourrilhes/"
+                           "Linux/wireless_tools." version ".tar.gz"))
+       (sha256
+        (base32 "0qscyd44jmhs4k32ggp107hlym1pcyjzihiai48xs7xzib4wbndb"))
+       (snippet
+        #~(begin
+            ;; Remove the older header files that are not free software.
+            (for-each (lambda (n)
+                        (delete-file (format #f "wireless.~a.h" n)))
+                      '(10 11 12 13 14 15 16 17 18 19 20))))))
     (build-system gnu-build-system)
     (arguments
-     `(#:make-flags
-       (list (string-append "PREFIX=" %output)
-             (string-append "INSTALL_MAN=" %output "/share/man")
-             (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib")
-             "BUILD_STATIC=")
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'configure
-           (lambda* (#:key target #:allow-other-keys)
-             (when ,(%current-target-system)
-               ;; Cross-compilation: use the cross tools.
-               (substitute* (find-files "." "Makefile")
-                 (("CC = .*$")
-                  (string-append "CC = " target "-gcc\n"))
-                 (("AR = .*$")
-                  (string-append "AR = " target "-ar\n"))
-                 (("RANLIB = .*$")
-                  (string-append "RANLIB = " target "-ranlib\n"))))
-             #t)))
-       #:tests? #f))
+     (list #:make-flags
+           #~(list (string-append "PREFIX=" #$output)
+                   (string-append "INSTALL_MAN=" #$output "/share/man")
+                   (string-append "LDFLAGS=-Wl,-rpath=" #$output "/lib")
+                   "BUILD_STATIC=")
+           #:phases
+           #~(modify-phases %standard-phases
+               (replace 'configure
+                 (lambda* (#:key target #:allow-other-keys)
+                   (when target
+                     ;; Cross-compilation: use the cross tools.
+                     (substitute* (find-files "." "Makefile")
+                       (("CC = .*$")
+                        (string-append "CC = " target "-gcc\n"))
+                       (("AR = .*$")
+                        (string-append "AR = " target "-ar\n"))
+                       (("RANLIB = .*$")
+                        (string-append "RANLIB = " target "-ranlib\n")))))))
+           #:tests? #f))
     (synopsis "Tools for manipulating Linux Wireless Extensions")
     (description "Wireless Tools are used to manipulate the now-deprecated
 Linux Wireless Extensions; consider using @code{iw} instead.  The Wireless
