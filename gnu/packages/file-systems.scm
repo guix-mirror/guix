@@ -586,30 +586,29 @@ Extensible File Allocation Table} file systems.  Included are
     (inputs
      (list fuse gnutls))
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (delete 'configure)            ; no configure script
-         (replace 'install
-           ;; There's no ‘install’ target. Install all variants manually.
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (bin (string-append out "/bin"))
-                    (man1 (string-append out "/share/man/man1")))
-               (mkdir-p bin)
-               (mkdir-p man1)
-               (for-each
-                (lambda (variant)
-                  (let ((man1-page (string-append variant ".1")))
-                    (install-file variant bin)
-                    (install-file man1-page man1)))
-                (list "httpfs2"
-                      "httpfs2-mt"
-                      "httpfs2-ssl"
-                      "httpfs2-ssl-mt")))
-             #t)))
-       #:make-flags (list "CC=gcc")
-       #:parallel-build? #f             ; can result in missing man pages
-       #:tests? #f))                    ; no tests
+     (list #:phases
+           #~(modify-phases %standard-phases
+               (delete 'configure)      ; no configure script
+               (replace 'install
+                 ;; There's no ‘install’ target. Install all variants manually.
+                 (lambda _
+                   (let* ((bin (string-append #$output "/bin"))
+                          (man1 (string-append #$output "/share/man/man1")))
+                     (mkdir-p bin)
+                     (mkdir-p man1)
+                     (for-each
+                      (lambda (variant)
+                        (let ((man1-page (string-append variant ".1")))
+                          (install-file variant bin)
+                          (install-file man1-page man1)))
+                      (list "httpfs2"
+                            "httpfs2-mt"
+                            "httpfs2-ssl"
+                            "httpfs2-ssl-mt"))))))
+           #:make-flags
+           #~(list "CC=gcc")
+           #:parallel-build? #f         ; can result in missing man pages
+           #:tests? #f))                ; no tests
     (home-page "https://sourceforge.net/projects/httpfs/")
     (synopsis "Mount remote files over HTTP")
     (description "httpfs2 is a @code{fuse} file system for mounting any
