@@ -560,3 +560,42 @@ such as rainbows.")
     (description "@code{node-irc} is an IRC client library for Node.js.
 It has functions for joining, parting, talking, and many other IRC commands.")
     (license license:gpl3+)))
+
+(define-public node-nan
+  (package
+    (name "node-nan")
+    (version "2.15.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/nodejs/nan")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "18xslh9va5ld872scrp5y4251ax9s3c6qh0lnl1200lpzbsxy7yd"))))
+    (build-system node-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'patch-dependencies 'delete-dependencies
+           (lambda args
+             (delete-dependencies
+              '("bindings"
+                "commander"
+                "glob"
+                "request"
+                "node-gyp" ;; would be needed for tests
+                "tap"
+                "xtend")))))
+       ;; tests need tap and other dependencies
+       #:tests? #f))
+    (inputs
+     (list node-readable-stream))
+    (home-page "https://github.com/nodejs/nan")
+    (synopsis "Native Abstractions for Node.js")
+    (description "Native Abstractions for Node.js (``NaN'') provides a header
+file filled with macros and utilities for making add-on development for Node.js
+easier across versions.  The goal is to provide all logic necessary to develop
+native Node.js addons without having to inspect @code{NODE_MODULE_VERSION}.")
+    (license license:expat)))
