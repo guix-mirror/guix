@@ -1548,6 +1548,9 @@ setup(name=\"clang\", packages=[\"clang\"])\n")))))
 (define-public python-clang-12
   (clang-python-bindings clang-12))
 
+(define-public python-clang-13
+  (clang-python-bindings clang-13))
+
 (define-public emacs-clang-format
   (package
     (inherit clang)
