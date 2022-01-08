@@ -1532,10 +1532,10 @@ setup(name=\"clang\", packages=[\"clang\"])\n")))))
                   (add-before 'build 'set-libclang-file-name
                     (lambda* (#:key inputs #:allow-other-keys)
                       ;; Record the absolute file name of libclang.so.
-                      (let ((clang (assoc-ref inputs "clang")))
+                      (let ((libclang (search-input-file inputs
+                                                         "/lib/libclang.so")))
                         (substitute* "clang/cindex.py"
-                          (("libclang\\.so")
-                           (string-append clang "/lib/libclang.so")))))))))
+                          (("libclang\\.so") libclang))))))))
     (inputs (list clang))
     (synopsis "Python bindings to libclang")))
 
