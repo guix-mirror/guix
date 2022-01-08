@@ -1130,3 +1130,25 @@ This package provides the @code{Binding} class, which uses a native addon to
 talk to the underlying system.  You never have to use @code{Binding} objects
 directly.  There is also a @code{MockBinding} available (but not yet packaged
 for Guix) to assist with testing.")))
+
+(define-public node-serialport-parser-regex
+  (package
+    (inherit node-serialport-binding-abstract)
+    (name "node-serialport-parser-regex")
+    (version "9.2.4")
+    (inputs `())
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda args
+             (chdir "packages/parser-regex"))))
+       #:tests? #f))
+    (synopsis "Node SerialPort parser to split data on a regular expression")
+    (description "Node SerialPort is a modular suite of Node.js packages for
+accessing serial ports.  The Guix package @code{node-serialport} provides the
+recommended high-level interface.
+
+Parsers are used to take raw binary data and transform them into usable
+messages.  This package provides @code{Regex}, a parser that uses a regular
+expression to split the incoming text.")))
