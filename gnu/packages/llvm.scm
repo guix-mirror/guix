@@ -1586,12 +1586,11 @@ C/C++/Obj-C code according to a set of style options, see
        (modify-phases %standard-phases
          (add-after 'unpack 'configure
            (lambda* (#:key inputs #:allow-other-keys)
-             (let ((clang (assoc-ref inputs "clang")))
+             (let ((clang-rename (search-input-file inputs "/bin/clang-rename")))
                (copy-file "tools/clang-rename/clang-rename.el" "clang-rename.el")
                (emacs-substitute-variables "clang-rename.el"
                  ("clang-rename-binary"
-                  (string-append clang "/bin/clang-rename"))))
-             #t)))))
+                  clang-rename))))))))
     (synopsis "Rename every occurrence of a symbol using clang-rename")
     (description "This package renames every occurrence of a symbol at point
 using @code{clang-rename}.")))
