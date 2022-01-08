@@ -1242,3 +1242,31 @@ recommended high-level interface.
 Parsers are used to take raw binary data and transform them into usable
 messages.  This package provides @code{ByteLength}, a parser that emits data
 as a buffer every time a specified number of bytes are received.")))
+
+(define-public node-serialport-stream
+  (package
+    (inherit node-serialport-binding-abstract)
+    (name "node-serialport-stream")
+    (version "9.2.4")
+    (inputs
+     (list node-debug))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'patch-dependencies 'delete-dependencies
+           (lambda args
+             (delete-dependencies `(;; devDependencies
+                                    "@serialport/binding-mock"))))
+         (add-after 'unpack 'chdir
+           (lambda args
+             (chdir "packages/stream"))))
+       #:tests? #f))
+    (synopsis "Node.js stream interface for Node SerialPort")
+    (description "Node SerialPort is a modular suite of Node.js packages for
+accessing serial ports.  The Guix package @code{node-serialport} provides the
+recommended high-level interface.
+
+This package provides an interface for using Node SerialPort bindings via the
+Node.js Stream API.  The stream is a duplex stream, allowing for reading and
+writing.  It has additional methods for managing the SerialPort
+connection.")))
