@@ -11602,7 +11602,7 @@ being deleted, changed, yanked, or pasted when using evil commands")
 (define-public emacs-goto-chg
   (package
     (name "emacs-goto-chg")
-    (version "1.7.4")
+    (version "1.7.5")
     (source
      (origin
        (method git-fetch)
@@ -11612,7 +11612,7 @@ being deleted, changed, yanked, or pasted when using evil commands")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0d677rzdh2n0a93s09bgf6icly7m7vgiacyfpahyj2rfhbn4yrxs"))))
+         "0rgdzhan4n5bd78wvivacqkp0g7jvnwzgh0571p2m4yra09a36mv"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/emacs-evil/goto-chg")
     (synopsis "Go to the last change in the Emacs buffer")
