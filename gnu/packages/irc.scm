@@ -282,7 +282,7 @@ using a mouse.  It is customizable and extensible with plugins and scripts.")
            gtk+
            libconfig
            libsecret
-           libsoup
+           libsoup-minimal-2
            openssl))
     (home-page "https://srain.im")
     (synopsis "Modern IRC client written in GTK")
