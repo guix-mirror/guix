@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2018, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2022 Chris Marusich <cmmarusich@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,6 +19,7 @@
 
 (define-module (test-gremlin)
   #:use-module (guix elf)
+  #:use-module (guix tests)
   #:use-module ((guix utils) #:select (call-with-temporary-directory))
   #:use-module (guix build utils)
   #:use-module (guix build gremlin)
@@ -90,13 +92,17 @@
            (if m
                (loop (cons (match:substring m 2) result))
                (loop result))))))
-
     (define ground-truth
-      (remove (cut string-prefix? "linux-vdso.so" <>)
+      (remove (lambda (entry)
+                (or (string-prefix? "linux-vdso.so" entry)
+                    (string-prefix? "linux-vdso64.so" entry)))
               (read-ldd-output pipe)))
 
     (and (zero? (close-pipe pipe))
-         (lset= string=? (pk 'truth ground-truth) (pk 'needed needed)))))
+         ;; It's OK if file-needed/recursive returns multiple entries that are
+         ;; different strings referring to the same file.  This appears to be a
+         ;; benign edge case.  See: https://issues.guix.gnu.org/52940
+         (lset= file=? (pk 'truth ground-truth) (pk 'needed needed)))))
 
 (test-equal "expand-origin"
   '("OOO/../lib"
