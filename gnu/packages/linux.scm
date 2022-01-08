@@ -6956,15 +6956,13 @@ interface in sysfs, which can be accomplished with the included udev rules.")
                (setenv "TLP_SHCPL"
                        (string-append out "/share/bash-completion/completions"))
                (setenv "TLP_MAN" (string-append out "/share/man"))
-               (setenv "TLP_META" (string-append out "/share/metainfo"))
-               #t)))
+               (setenv "TLP_META" (string-append out "/share/metainfo")))))
          (add-before 'install 'fix-installation
            (lambda _
              ;; Stop the Makefile from trying to create system directories.
              (substitute* "Makefile"
                (("\\[ -f \\$\\(_CONFUSR\\) \\]") "#")
-               (("install -d -m 755 \\$\\(_VAR\\)") "#"))
-             #t))
+               (("install -d -m 755 \\$\\(_VAR\\)") "#"))))
          (replace 'install
            (lambda _ (invoke "make" "install-tlp" "install-man-tlp")))
          (add-after 'install 'wrap
@@ -7000,8 +6998,7 @@ interface in sysfs, which can be accomplished with the included udev rules.")
                                                "pciutils"
                                                "rfkill"
                                                "wireless-tools"))))))
-                         bin-files)
-               #t))))))
+                         bin-files)))))))
     (home-page "https://linrunner.de/en/tlp/tlp.html")
     (synopsis "Power management tool for Linux")
     (description "TLP is a power management tool for Linux.  It comes with
