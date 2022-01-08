@@ -2,6 +2,8 @@
 ;;; Copyright © 2016 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2019 Timothy Sample <samplet@ngyro.com>
 ;;; Copyright © 2021 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2021 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2021 Philip McGrath <philip@philipmcgrath.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -61,10 +63,15 @@
                               `(("source" ,source))
                               '())
                         ,@inputs
-
                         ;; Keep the standard inputs of 'gnu-build-system'.
                         ,@(standard-packages)))
          (build-inputs `(("node" ,node)
+                         ;; Many packages with native addons need
+                         ;; libuv headers. The libuv version must
+                         ;; be exactly the same as for the node
+                         ;; package we are adding implicitly,
+                         ;; so we take care of adding libuv, too.
+                         ("libuv" ,@(assoc-ref (package-inputs node) "libuv"))
                          ,@native-inputs))
          (outputs outputs)
          (build node-build)
