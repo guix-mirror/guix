@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2021 Philip McGrath <philip@philipmcgrath.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,11 +22,14 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system node)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages node-xyz)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages xml))
 
@@ -85,3 +89,63 @@ PC controllers.  It allows developers to create applications that manipulate
 and respond to devices on a Z-Wave network, without requiring in-depth
 knowledge of the Z-Wave protocol.")
     (license license:lgpl3+)))
+
+(define-public node-openzwave-shared
+  (package
+    (name "node-openzwave-shared")
+    (version "1.7.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/OpenZWave/node-openzwave-shared")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1bqqy12dzqj05j9wsh50dmn84dddmhz0gjzvd3y20z4hpy1v8rsc"))))
+    (inputs
+     (list open-zwave node-nan))
+    (native-inputs
+     (list which python pkg-config))
+    (build-system node-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'build
+           ;; For some reason, `npm install` doesn't build
+           ;; the addon automatically, so we do it explicitly here.
+           ;; We go through `npx` so the npmrc file sets the
+           ;; configuration up properly.
+           (lambda* (#:key native-inputs inputs #:allow-other-keys)
+             (invoke (search-input-file (or native-inputs inputs) "/bin/npx")
+                     "--call"
+                     (string-append
+                      (search-input-file
+                       (or native-inputs inputs)
+                       "/lib/node_modules/npm/bin/node-gyp-bin/node-gyp")
+                      " rebuild")))))))
+    (home-page "https://github.com/OpenZWave/node-openzwave-shared")
+    (synopsis "Node.js bindings for OpenZWave")
+    (description
+     "With the @code{node-openzwave-shared} package, you can easily control
+and manage your Z-Wave devices (lights, dimmers, blinds, you name it) from
+within Node.js applications.  This library also supports secure
+devices (e.g. door locks) that require encryption.  All widely used Node.js
+versions are supported with the help of @code{node-nan}.
+
+This library is currently able to:
+@itemize @bullet
+@item
+scan a Z-Wave network and report on connected devices;
+@item
+write values to Z-Wave nodes;
+@item
+monitor the network for changes;
+@item
+heal nodes and/or the network; and
+@item
+perform management tasks: add or remove nodes, replace failed nodes,
+manage their group associations, etc.
+@end itemize")
+    (license license:isc)))
