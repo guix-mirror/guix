@@ -1031,3 +1031,25 @@ This package provides the @code{AbstractBinding} class, the base for all Node
 SerialPort bindings.  You wouldn't use this class directly, but instead extend
 it to make a new binding for a different platform or underling technology.")
     (license license:expat)))
+
+(define-public node-serialport-parser-delimiter
+  (package
+    (inherit node-serialport-binding-abstract)
+    (name "node-serialport-parser-delimiter")
+    (version "9.2.4")
+    (inputs `())
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda args
+             (chdir "packages/parser-delimiter"))))
+       #:tests? #f))
+    (synopsis "Node SerialPort parser to split data on a delimiter")
+    (description "Node SerialPort is a modular suite of Node.js packages for
+accessing serial ports.  The Guix package @code{node-serialport} provides the
+recommended high-level interface.
+
+Parsers are used to take raw binary data and transform them into usable
+messages.  This package provides @code{Delimiter}, a parser that emits data
+each time a specified byte sequence is received.")))
