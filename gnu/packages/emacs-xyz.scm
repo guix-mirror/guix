@@ -14553,6 +14553,30 @@ running tests easier.")
     (description "This package provides a simple testing library for Emacs.")
     (license license:gpl3+)))
 
+(define-public emacs-org-transclusion
+  (package
+    (name "emacs-org-transclusion")
+    (version "1.1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/nobiot/org-transclusion")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0qvc8f4i44d8mgkzfi9yld664cmapkbmjv4bf0l8va417ck5sm92"))))
+    (build-system emacs-build-system)
+    (home-page "https://nobiot.github.io/org-transclusion/")
+    (synopsis "Enable transclusion with Org Mode")
+    (description "Org-transclusion lets you insert a copy of text content via
+a file link or ID link within an Org file.  It lets you have the same content
+present in different buffers at the same time without copy-and-pasting it.
+Edit the source of the content, and you can refresh the transcluded copies to
+the up-to-date state.  Org-transclusion keeps your files clear of the
+transcluded copies, leaving only the links to the original content.")
+    (license license:gpl3+)))
+
 (define-public emacs-disable-mouse
   (package
     (name "emacs-disable-mouse")
