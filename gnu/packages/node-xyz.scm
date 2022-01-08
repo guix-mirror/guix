@@ -172,7 +172,7 @@ user-land JavaScript.")
     (arguments '(#:tests? #f)) ; No tests.
     (home-page "http://www.enchantedage.com/node-mersenne")
     (synopsis "Node.js module for generating Mersenne Twister random numbers")
-    (description "Thix package provides a node.js port of the Mersenne Twister
+    (description "This package provides a node.js port of the Mersenne Twister
 random number generator.")
     (license license:bsd-3)))
 
