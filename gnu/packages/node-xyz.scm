@@ -684,3 +684,132 @@ It is important to remember that @emph{other} Node.js interfaces such as
 @code{libuv} (included in a project via @code{#include <uv.h>}) are not
 ABI-stable across Node.js major versions.")
     (license license:expat)))
+
+(define-public node-sqlite3
+  (package
+    (name "node-sqlite3")
+    (version "5.0.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mapbox/node-sqlite3")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0sbbzzli282nxyfha10zx0k5m8hdp0sf3ipl59khjb7wm449j86h"))
+       (snippet
+        (with-imported-modules '((guix build utils))
+          #~(begin
+              (use-modules (guix build utils))
+              ;; unbundle sqlite
+              (for-each delete-file-recursively
+                        (find-files "deps"
+                                    (lambda (pth stat)
+                                      (gzip-file? pth)))))))))
+    (inputs
+     (list node-addon-api python sqlite))
+    (build-system node-build-system)
+    (arguments
+     `(#:modules
+       ((guix build node-build-system)
+        (srfi srfi-1)
+        (ice-9 match)
+        (guix build utils))
+       #:tests? #f ; FIXME: tests depend on node-mocha
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'patch-dependencies 'delete-dependencies
+           (lambda args
+             (delete-dependencies
+              `(;; Normally, this is "built" using @mapbox/node-pre-gyp,
+                ;; which publishes or downloads pre-built binaries or
+                ;; falls back to building from source.  Here, we patch out
+                ;; all of that and just build directly.  It might be
+                ;; better to patch a version of @mapbox/node-pre-gyp that
+                ;; always builds from source, as Debian does, but there
+                ;; are a number of dependencies that need to be packaged
+                ;; or removed.
+                "@mapbox/node-pre-gyp"
+                "node-pre-gyp" ;; deprecated name still used in some places
+                "aws-sdk"
+                "@mapbox/cloudfriend"
+                ;; Confusingly, this is only a dependency because of
+                ;; @mapbox/node-pre-gyp: with that removed,
+                ;; npm will use its own copy:
+                "node-gyp"
+                ;; These we'd like, we just don't have them yet:
+                "eslint"
+                "mocha"))))
+         (add-before 'configure 'npm-config-sqlite
+           ;; We need this step even if we do replace @mapbox/node-pre-gyp
+           ;; because the package expects to build its bundled sqlite
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "npm_config_sqlite" (assoc-ref inputs "sqlite"))))
+         (add-after 'install 'patch-binding-path
+           ;; We replace a file that dynamic searches for the addon using
+           ;; node-pre-gyp (which we don't have) with a version that
+           ;; simply uses the path to the addon we built directly.
+           ;; The exact path is supposed to depend on things like the
+           ;; architecture and napi_build_version, so, to avoid having
+           ;; hard-code the details accurately, we do this after the addon
+           ;; has been built so we can just find where it ended up.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (with-directory-excursion
+                 (search-input-directory outputs
+                                         "lib/node_modules/sqlite3/lib")
+               (match (find-files "binding" "\\.node$")
+                 ((rel-path)
+                  (with-atomic-file-replacement "sqlite3-binding.js"
+                    (lambda (in out)
+                      (format out "var binding = require('./~a');\n" rel-path)
+                      (display "module.exports = exports = binding;\n"
+                               out))))))))
+         (add-after 'patch-dependencies 'avoid-node-pre-gyp
+           (lambda args
+             ;; We need to patch .npmignore before the 'repack phase
+             ;; so that the built addon is installed with in the package.
+             ;; (Upstream assumes node-pre-gyp will download a pre-built
+             ;; version when this package is installed.)
+             (substitute* ".npmignore"
+               (("lib/binding")
+                "#lib/binding # <- patched for Guix"))
+             (with-atomic-json-file-replacement "package.json"
+               (match-lambda
+                 (('@ . pkg-meta-alist)
+                  (match (assoc-ref pkg-meta-alist "binary")
+                    (('@ . binary-alist)
+                     ;; When it builds from source, node-pre-gyp supplies
+                     ;; module_name and module_path based on the entries under
+                     ;; "binary" from "package.json", so this package's
+                     ;; "binding.gyp" doesn't define them. Thus, we also need
+                     ;; to supply them. The GYP_DEFINES environment variable
+                     ;; turns out to be the easiest way to make sure they are
+                     ;; propagated from npm to node-gyp to gyp.
+                     (setenv "GYP_DEFINES"
+                             (string-append
+                              "module_name="
+                              (assoc-ref binary-alist "module_name")
+                              " "
+                              "module_path="
+                              (assoc-ref binary-alist "module_path")))))
+                  ;; We need to remove the install script from "package.json",
+                  ;; as it would try to use node-pre-gyp and would block the
+                  ;; automatic building performed by `npm install`.
+                  (cons '@ (map (match-lambda
+                                  (("scripts" @ . scripts-alist)
+                                   `("scripts" @ ,@(filter (match-lambda
+                                                             (("install" . _)
+                                                              #f)
+                                                             (_
+                                                              #t))
+                                                           scripts-alist)))
+                                  (other
+                                   other))
+                                pkg-meta-alist))))))))))
+    (home-page "https://github.com/mapbox/node-sqlite3")
+    (synopsis "Node.js bindings for SQLite3")
+    (description
+     "@code{node-sqlite3} provides a set of a Node.js bindings for interacting
+with SQLite3 databases.")
+     (license license:bsd-3)))
