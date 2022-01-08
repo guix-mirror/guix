@@ -1109,21 +1109,13 @@ The package @code{font-fira-mono} provides a corresponding monospace cut.")
 
 (define-public font-fira-mono
   (package
+    (inherit font-fira-sans)
     (name "font-fira-mono")
     (version "3.206")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://carrois.com/downloads/fira_mono_3_2/"
-                                  "FiraMonoFonts"
-                                  (string-replace-substring version "." "")
-                                  ".zip"))
-              (sha256
-               (base32
-                "1z65x0dw5dq6rs6p9wyfrir50rlh95vgzsxr8jcd40nqazw4jhpi"))))
-    (build-system font-build-system)
-    (home-page "https://mozilla.github.io/Fira/")
-    (synopsis "Mozilla's monospace font")
-    (description "This is the typeface used by Mozilla in Firefox OS.")
+    (synopsis "Monospace cut of Fira Sans")
+    (description
+     "Fira Mono is a monospace cut of Fira Sans (see @code{font-fira-sans}).
+It includes regular, medium, and bold weights.")
     (license license:silofl1.1)))
 
 (define-public font-fira-go
