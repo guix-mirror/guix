@@ -440,7 +440,19 @@ formats to milliseconds.")
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure))))
+         (add-after 'patch-dependencies 'delete-dependencies
+           (lambda args
+             (delete-dependencies `("brfs"
+                                    "browserify"
+                                    "coveralls"
+                                    "istanbul"
+                                    "karma"
+                                    "karma-browserify"
+                                    "karma-chrome-launcher"
+                                    "karma-mocha"
+                                    "mocha"
+                                    "mocha-lcov-reporter"
+                                    "xo")))))))
     (inputs (list node-ms-bootstrap))
     (home-page "https://github.com/visionmedia/debug#readme")
     (properties '((hidden? . #t)))
