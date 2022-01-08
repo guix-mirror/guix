@@ -11,7 +11,7 @@
 ;;; Copyright © 2016, 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Raymond Nicholson <rain1@openmailbox.org>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
-;;; Copyright © 2016, 2018, 2019, 2020, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2016, 2018–2022 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016, 2018, 2019, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
@@ -6888,7 +6888,7 @@ interface in sysfs, which can be accomplished with the included udev rules.")
 (define-public tlp
   (package
     (name "tlp")
-    (version "1.4.0")
+    (version "1.5.0")
     (source
      (origin
        (method git-fetch)
@@ -6897,7 +6897,7 @@ interface in sysfs, which can be accomplished with the included udev rules.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0bnsz9bw9rj1apl80jwz39zj5mnlps3jbckihvl8bbdbrbhj6p06"))))
+        (base32 "0cssclk2brhwvn9dm7h5snm2svwy0c8cfr4z2cgkdkac2pfaaxw4"))))
     (native-inputs
      (list shellcheck))
     (inputs
