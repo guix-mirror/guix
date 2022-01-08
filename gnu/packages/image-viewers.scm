@@ -10,7 +10,7 @@
 ;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
-;;; Copyright © 2019, 2020 Guy Fleury Iteriteka <gfleury@disroot.org>
+;;; Copyright © 2019, 2020, 2022 Guy Fleury Iteriteka <gfleury@disroot.org>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2020 Peng Mei Yu <pengmeiyu@riseup.net>
 ;;; Copyright © 2020 R Veera Kumar <vkor@vkten.in>
@@ -781,14 +781,14 @@ preloading.")
 (define-public chafa
   (package
     (name "chafa")
-    (version "1.4.1")
+    (version "1.8.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hpjansson.org/chafa/releases/chafa-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "18rb82bfqj1sj2g4irazx4lwq9q4b4k7my1r0q714vf9yhs41ls6"))))
+                "0sr86bnrqcf6wxigrgsglv4fc79g5djmki20ih4hg8kbhcnnbzr1"))))
     (build-system gnu-build-system)
     (native-inputs
      (list pkg-config))
