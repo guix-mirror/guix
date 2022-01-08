@@ -1220,3 +1220,25 @@ Parsers are used to take raw binary data and transform them into usable
 messages.  This package provides @code{CCTalk}, which emits packets for the
 ccTalk protocol (an open standard for currency detectors) as they are
 received.")))
+
+(define-public node-serialport-parser-byte-length
+  (package
+    (inherit node-serialport-binding-abstract)
+    (name "node-serialport-parser-byte-length")
+    (version "9.2.4")
+    (inputs `())
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda args
+             (chdir "packages/parser-byte-length"))))
+       #:tests? #f))
+    (synopsis "Node SerialPort parser for fixed-length buffers")
+    (description "Node SerialPort is a modular suite of Node.js packages for
+accessing serial ports.  The Guix package @code{node-serialport} provides the
+recommended high-level interface.
+
+Parsers are used to take raw binary data and transform them into usable
+messages.  This package provides @code{ByteLength}, a parser that emits data
+as a buffer every time a specified number of bytes are received.")))
