@@ -377,7 +377,13 @@ devices.")
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure))))
+         (add-after 'patch-dependencies 'delete-dependencies
+           (lambda args
+             (delete-dependencies '("eslint"
+                                    "expect.js"
+                                    "husky"
+                                    "lint-staged"
+                                    "mocha")))))))
     (home-page "https://github.com/zeit/ms#readme")
     (properties '((hidden? . #t)))
     (synopsis "Tiny millisecond conversion utility")
