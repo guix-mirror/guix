@@ -5224,17 +5224,22 @@ Linux Device Mapper multipathing driver:
                 "14mlqdapjqq1dhpkdgy5z83mvsaz36fcxca7a4z6hinmr7r6415b"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:make-flags
-       (let ((target ,(%current-target-system)))
-         (list (string-append "prefix=" %output)
-               (string-append
-                "CC=" (if target
-                          (string-append (assoc-ref %build-inputs "cross-gcc")
-                                         "/bin/" target "-gcc")
-                          "gcc"))))
-       #:test-target "partcheck" ; need root for a full 'check'
-       #:phases
-       (modify-phases %standard-phases (delete 'configure)))) ; no configure script
+     (list #:make-flags
+           #~(let ((target #$(%current-target-system)))
+               ;; XXX TODO: Replace with simply #$OUTPUT on core-updates.
+               (list (string-append "prefix=" #$(if (%current-target-system)
+                                                    #~#$output
+                                                    #~%output))
+                     (string-append
+                      "CC=" (if target
+                                (string-append (assoc-ref %build-inputs
+                                                          "cross-gcc")
+                                               "/bin/" target "-gcc")
+                                "gcc"))))
+           #:test-target "partcheck"    ; need root for a full 'check'
+           #:phases
+           #~(modify-phases %standard-phases
+               (delete 'configure)))) ; no configure script
     (home-page "https://pagure.io/libaio")
     (synopsis "Linux-native asynchronous I/O access library")
     (description
