@@ -4,7 +4,7 @@
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015, 2016, 2020 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2017–2021 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017–2022 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
@@ -27,6 +27,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages man)
+  #:use-module (guix gexp)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix git-download)
   #:use-module (guix download)
@@ -134,70 +135,71 @@ a flexible and convenient way.")
                 "0mk7n7yn6scy785jhg1j14b3q9l0cgvpry49r0ldjsnizbnrjv5n"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'patch-source-shebangs 'patch-test-shebangs
-           (lambda* (#:key outputs #:allow-other-keys)
-             ;; Patch shebangs in test scripts.
-             (let ((out (assoc-ref outputs "out")))
-               (for-each (lambda (file)
-                           (substitute* file
-                             (("#! /bin/sh")
-                              (string-append "#!" (which "sh")))))
-                         (remove file-is-directory?
-                                 (find-files "src/tests" ".*")))
-               #t)))
-         (add-after 'unpack 'patch-absolute-paths
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "src/man.c"
-               (("\"iconv\"")
-                (string-append "\"" (which "iconv") "\"")))
-             ;; Embed an absolute reference to "preconv", otherwise it
-             ;; falls back to searching in PATH and ultimately fails
-             ;; to render unicode data (see <https://bugs.gnu.org/30785>).
-             (substitute* "lib/encodings.c"
-               (("groff_preconv = NULL")
-                (string-append "groff_preconv = \""
-                               (assoc-ref inputs "groff-minimal")
-                               "/bin/preconv\"")))
-             #t)))
-       #:configure-flags
-       (let ((groff (assoc-ref %build-inputs "groff"))
-             (groff-minimal (assoc-ref %build-inputs "groff-minimal"))
-             (less  (assoc-ref %build-inputs "less"))
-             (gzip  (assoc-ref %build-inputs "gzip"))
-             (bzip2 (assoc-ref %build-inputs "bzip2"))
-             (xz    (assoc-ref %build-inputs "xz"))
-             (util  (assoc-ref %build-inputs "util-linux")))
-         ;; Invoke groff, less, gzip, bzip2, and xz directly from the store.
-         (append (list ;; Disable setuid man user.
-                       "--disable-setuid"
-                       ;; Don't constrain ownership of system-wide cache files.
-                       ;; Otherwise creating the manpage database fails with
-                       ;; man-db > 2.7.5.
-                       "--disable-cache-owner"
-                       (string-append "--with-pager=" less "/bin/less")
-                       (string-append "--with-gzip=" gzip "/bin/gzip")
-                       (string-append "--with-bzip2=" bzip2 "/bin/gzip")
-                       (string-append "--with-xz=" xz "/bin/xz")
-                       (string-append "--with-col=" util "/bin/col")
-                       ;; The default systemd directories ignore --prefix.
-                       (string-append "--with-systemdsystemunitdir="
-                                      %output "/lib/systemd/system")
-                       (string-append "--with-systemdtmpfilesdir="
-                                      %output "/lib/tmpfiles.d"))
-                 (map (lambda (prog)
-                        (string-append "--with-" prog "=" groff-minimal
-                                       "/bin/" prog))
-                      '("nroff" "eqn" "neqn" "tbl" "refer" "pic"))))
+     (list #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'patch-source-shebangs 'patch-test-shebangs
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   ;; Patch shebangs in test scripts.
+                   (let ((out (assoc-ref outputs "out")))
+                     (for-each (lambda (file)
+                                 (substitute* file
+                                   (("#! /bin/sh")
+                                    (string-append "#!" (which "sh")))))
+                               (remove file-is-directory?
+                                       (find-files "src/tests" ".*")))
+                     #t)))
+               (add-after 'unpack 'patch-absolute-paths
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   (substitute* "src/man.c"
+                     (("\"iconv\"")
+                      (string-append "\"" (which "iconv") "\"")))
+                   ;; Embed an absolute reference to "preconv", otherwise it
+                   ;; falls back to searching in PATH and ultimately fails
+                   ;; to render unicode data (see <https://bugs.gnu.org/30785>).
+                   (substitute* "lib/encodings.c"
+                     (("groff_preconv = NULL")
+                      (string-append "groff_preconv = \""
+                                     (assoc-ref inputs "groff-minimal")
+                                     "/bin/preconv\"")))
+                   #t)))
+           #:configure-flags
+           #~(let ((groff (assoc-ref %build-inputs "groff"))
+                   (groff-minimal (assoc-ref %build-inputs "groff-minimal"))
+                   (less  (assoc-ref %build-inputs "less"))
+                   (gzip  (assoc-ref %build-inputs "gzip"))
+                   (bzip2 (assoc-ref %build-inputs "bzip2"))
+                   (xz    (assoc-ref %build-inputs "xz"))
+                   (util  (assoc-ref %build-inputs "util-linux")))
+               ;; Invoke groff, less, gzip, bzip2, & xz directly from the store.
+               (append (list ;; Disable setuid man user.
+                        "--disable-setuid"
+                        ;; Don't constrain ownership of system-wide cache files.
+                        ;; Otherwise creating the manpage database fails with
+                        ;; man-db > 2.7.5.
+                        "--disable-cache-owner"
+                        (string-append "--with-pager=" less "/bin/less")
+                        (string-append "--with-gzip=" gzip "/bin/gzip")
+                        (string-append "--with-bzip2=" bzip2 "/bin/gzip")
+                        (string-append "--with-xz=" xz "/bin/xz")
+                        (string-append "--with-col=" util "/bin/col")
+                        ;; The default systemd directories ignore --prefix.
+                        (string-append "--with-systemdsystemunitdir="
+                                       %output "/lib/systemd/system")
+                        (string-append "--with-systemdtmpfilesdir="
+                                       %output "/lib/tmpfiles.d"))
+                   (map (lambda (prog)
+                          (string-append "--with-" prog "=" groff-minimal
+                                         "/bin/" prog))
+                        '("nroff" "eqn" "neqn" "tbl" "refer" "pic"))))
 
-       ;; At run time we should refer to GROFF-MINIMAL, not GROFF (the latter
-       ;; pulls in Perl.)
-       #:disallowed-references (,groff)
+           ;; At run time we should refer to GROFF-MINIMAL, not GROFF (the latter
+           ;; pulls in Perl.)
+           #:disallowed-references
+           (list groff)
 
-       #:modules ((guix build gnu-build-system)
-                  (guix build utils)
-                  (srfi srfi-1))))
+           #:modules '((guix build gnu-build-system)
+                       (guix build utils)
+                       (srfi srfi-1))))
     (native-inputs
      (list pkg-config flex groff))   ;needed at build time (troff, grops, soelim, etc.)
     (inputs
