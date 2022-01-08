@@ -59,6 +59,7 @@
   #:use-module (guix derivations)
   #:use-module (guix records)
   #:use-module (guix deprecation)
+  #:use-module (guix utils)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-26)
@@ -1048,11 +1049,9 @@ you to log in in a graphical session, whether or not you use GNOME."))))
 (define* (set-xorg-configuration config
                                  #:optional
                                  (login-manager-service-type
-                                  (let ((system (or (%current-target-system)
-                                                    (%current-system))))
-                                    (if (string-prefix? "x86_64" system)
-                                        gdm-service-type
-                                        sddm-service-type))))
+                                  (if (target-x86-64?)
+                                      gdm-service-type
+                                      sddm-service-type)))
   "Tell the log-in manager (of type @var{login-manager-service-type}) to use
 @var{config}, an <xorg-configuration> record."
   (simple-service 'set-xorg-configuration
