@@ -10,7 +10,7 @@
 ;;; Copyright © 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
-;;; Copyright © 2021 Philip McGrath <philip@philipmcgrath.com>
+;;; Copyright © 2021, 2022 Philip McGrath <philip@philipmcgrath.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -346,7 +346,9 @@ devices.")
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure))))
+         (add-after 'patch-dependencies 'delete-dependencies
+           (lambda args
+             (delete-dependencies '("tap")))))))
     (home-page "https://github.com/npm/node-semver")
     (properties '((hidden? . #t)))
     (synopsis "Parses semantic versions strings")
