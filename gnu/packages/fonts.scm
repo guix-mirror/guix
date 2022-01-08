@@ -1142,24 +1142,29 @@ Arabic, Devanagari, Georgian, Hebrew and Thai scripts.")
 (define-public font-fira-code
   (package
     (name "font-fira-code")
-    (version "5.2")
+    (version "6.2")
     (source
      (origin
+       ;; changing to git-fetch would require building from source
        (method url-fetch/zipbomb)
        (uri (string-append "https://github.com/tonsky/FiraCode/releases/"
                            "download/" version
                            "/Fira_Code_v" version ".zip"))
        (sha256
-        (base32 "1zayrb6k0gd7xdvx7yx44dpip767q0bzhqwf4j6nf8nx02z746jj"))))
+        (base32 "0y9y7snyrr30z75kxz2zgh6q6hizcbzsf41xv6gxh97bm1dr2j89"))))
     (build-system font-build-system)
-    (home-page "https://mozilla.github.io/Fira/")
+    ;; This font began as an independent derived work of Fira Mono.
+    ;; It was never affiliated with Mozilla.
+    ;; See comments on font-fira-sans for further discussion.
+    (home-page "https://github.com/tonsky/FiraCode")
     (synopsis "Monospaced font with programming ligatures")
     (description
-     "Fira Code is an extension of the Fira Mono font containing a set of ligatures
-for common programming multi-character combinations.  This is just a font rendering
-feature: underlying code remains ASCII-compatible.  This helps to read and understand
-code faster.  For some frequent sequences like .. or //, ligatures allow us to
-correct spacing.")
+     "Fira Code is a monospace font by Nikita Prokopov featuring ligatures for
+common programming multi-character combinations.  It began as an extension of
+Fira Mono.  The ligatures are just a font rendering feature: underlying code
+remains ASCII-compatible.  They are designed to help people to read and
+understand code faster.  For some frequent sequences like @code{..} or
+@code{//}, ligatures are used to simulate proportional spacing.")
     (license license:silofl1.1)))
 
 (define-public font-awesome
