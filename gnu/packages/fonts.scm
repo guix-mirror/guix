@@ -2360,3 +2360,33 @@ road signage typefaces, adapted for on-screen display and user interfaces.
 Overpass includes proportional and monospace variants.")
     (license (list license:silofl1.1
                    license:lgpl2.1))))
+
+(define-public font-cormorant
+  (package
+    (name "font-cormorant")
+    (version "3.609")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/CatharsisFonts/Cormorant")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0fjp2xk4bjx8i6jamkyjq2fdr7324fh41pbn634iwnhdvvawvbav"))))
+    (build-system font-build-system)
+    (home-page "https://github.com/CatharsisFonts/Cormorant")
+    (synopsis
+     "Extravagant display serif typeface in the spirit of Garamond")
+    (description
+     "Cormorant is an extravagant display serif typeface inspired by
+the Garamond heritage.  The design goal of Cormorant was to distill
+the aesthetic essence of Garamond, unfetter it from the limitations of
+metal printing, and allow it to bloom into its natural refined form at
+high definition.  Cormorant is characterized by scandalously small
+counters, razor-sharp serifs, dangerously smooth curves, and
+flamboyantly tall accents.  While many implementations of Garamond at
+small optical sizes already exist, Cormorant aims for the sparsely
+populated niche of display-size counterparts that exploit the high
+resolution of contemporary screens and print media to the fullest.")
+    (license license:silofl1.1)))
