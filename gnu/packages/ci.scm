@@ -207,7 +207,7 @@ intended as a replacement for Hydra.")
 (define-public laminar
   (package
     (name "laminar")
-    (version "1.0")
+    (version "1.1")
     (source
      (origin (method url-fetch)
              (uri (string-append "https://github.com/ohwgiles/laminar/archive/"
@@ -216,7 +216,7 @@ intended as a replacement for Hydra.")
              (file-name (string-append name "-" version ".tar.gz"))
              (sha256
               (base32
-               "11m6h3rdmj2rsmsryy7r40gqccj4gg1cnqwy6blscs87gx4s423g"))))
+               "1lzfmfjygmbdr2n1q49kwwffw8frz5y6iczhdz5skwmzwg0chbsf"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; TODO Can't build tests
@@ -293,10 +293,10 @@ intended as a replacement for Hydra.")
        ("ansi_up.js"
         ,(origin (method url-fetch)
                  (uri (string-append "https://raw.githubusercontent.com/"
-                                     "drudru/ansi_up/v1.3.0/ansi_up.js"))
+                                     "drudru/ansi_up/v4.0.4/ansi_up.js"))
                  (sha256
                   (base32
-                   "1993dywxqi2ylnxybwk7m0s0bg2bq7kfllpyr0s8ck6chd0p8i6r"))))
+                   "1dx8wn38ds8d01kkih26fx1yrisg3kpz61qynjr4zil03ap0hrlr"))))
        ("Chart.js"
         ,(origin (method url-fetch)
                  (uri (string-append "https://github.com/chartjs/Chart.js/"
