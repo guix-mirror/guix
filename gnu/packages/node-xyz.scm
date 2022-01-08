@@ -922,3 +922,36 @@ code modules and getting stack traces when things go wrong.  If a
 @code{SIGSEGV} signal is raised, the module will print a native stack trace to
 both @file{stderr} and to a timestamped file.")
     (license license:bsd-3)))
+
+(define-public node-ms
+  (package
+    (name "node-ms")
+    (version "2.1.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/vercel/ms")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1l74kmmwffmzdz38lli0v5mdb9p9jmsjxpb48ncknqw2n74cgf08"))))
+    (build-system node-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'patch-dependencies 'delete-dependencies
+           (lambda args
+             (delete-dependencies `("eslint"
+                                    "expect.js"
+                                    "husky"
+                                    "lint-staged"
+                                    "mocha"
+                                    "prettier")))))
+       #:tests? #f))
+    (home-page "https://github.com/vercel/ms")
+    (synopsis "Convert time to milliseconds")
+    (description "Use this package to easily convert various time formats to
+milliseconds.  A number supplied as integer or string is returned as-is, while
+a string consisting of a number and a time unit is converted to milliseconds.")
+    (license license:expat)))
