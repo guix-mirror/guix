@@ -22,6 +22,9 @@
 
 (define-module (gnu packages node-xyz)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (gnu packages sqlite)
+  #:use-module (gnu packages python)
+  #:use-module (guix gexp)
   #:use-module (guix packages)
   #:use-module (guix git-download)
   #:use-module (guix build-system node))
@@ -598,4 +601,86 @@ It has functions for joining, parting, talking, and many other IRC commands.")
 file filled with macros and utilities for making add-on development for Node.js
 easier across versions.  The goal is to provide all logic necessary to develop
 native Node.js addons without having to inspect @code{NODE_MODULE_VERSION}.")
+    (license license:expat)))
+
+(define-public node-addon-api
+  (package
+    (name "node-addon-api")
+    (version "4.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/nodejs/node-addon-api")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1bhvfi2m9nxfz418s619914vmidcnrzbjv6l9nid476c3zlpazch"))))
+    (inputs
+     (list python node-safe-buffer))
+    (build-system node-build-system)
+    (arguments
+     `(#:modules
+       ((guix build node-build-system)
+        (srfi srfi-1)
+        (ice-9 match)
+        (guix build utils))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'patch-dependencies 'delete-dependencies
+           (lambda args
+             (delete-dependencies
+              `("benchmark"
+                "bindings"
+                "clang-format"
+                "eslint"
+                "eslint-config-semistandard"
+                "eslint-config-standard"
+                "eslint-plugin-import"
+                "eslint-plugin-node"
+                "eslint-plugin-promise"
+                "fs-extra"
+                "path"
+                "pre-commit"))))
+         (add-after 'unpack 'skip-js-tests
+           ;; We can't run the js-based tests,
+           ;; but we can still do the C++ parts
+           (lambda args
+             (define new-test-script
+               "echo stopping after pretest on Guix")
+             (with-atomic-json-file-replacement "package.json"
+               (match-lambda
+                 (('@ . pkg-meta-alist)
+                  (cons
+                   '@
+                   (map (match-lambda
+                          (("scripts" '@ . scripts-alist)
+                           `("scripts" @ ,@(map (match-lambda
+                                                  (("test" . _)
+                                                   (cons "test"
+                                                         new-test-script))
+                                                  (other
+                                                   other))
+                                                scripts-alist)))
+                          (other
+                           other))
+                        pkg-meta-alist))))))))))
+    (home-page "https://github.com/nodejs/node-addon-api")
+    (synopsis "Node.js API (Node-API) header-only C++ wrappers")
+    (description "This module contains header-only C++ wrapper classes which
+simplify the use of the C based Node-API provided by Node.js when using C++.
+It provides a C++ object model and exception handling semantics with low
+overhead.
+
+Node-API is an ABI stable C interface provided by Node.js for building native
+addons.  It is intended to insulate native addons from changes in the
+underlying JavaScript engine and allow modules compiled for one version to run
+on later versions of Node.js without recompilation.  The @code{node-addon-api}
+module, which is not part of Node.js, preserves the benefits of the Node-API
+as it consists only of inline code that depends only on the stable API
+provided by Node-API.
+
+It is important to remember that @emph{other} Node.js interfaces such as
+@code{libuv} (included in a project via @code{#include <uv.h>}) are not
+ABI-stable across Node.js major versions.")
     (license license:expat)))
