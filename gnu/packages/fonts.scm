@@ -42,6 +42,7 @@
 ;;; Copyright © 2021 Sergiu Ivanov <sivanov@colimite.fr>
 ;;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
 ;;; Copyright © 2021 Paul A. Patience <paul@apatience.com>
+;;; Copyright © 2022 Philip McGrath <philip@philipmcgrath.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1039,6 +1040,73 @@ work well in user interface (UI) environments.")
 Sans Pro family.")
     (license license:silofl1.1)))
 
+(define-public font-fira-sans
+  ;; Fira Sans v4.203 (which corresponds to Fira Mono v3.206) is the final
+  ;; version to include UFO sources. It is the same version packaged by other
+  ;; notable distributors, including Google Fonts. Note that the "reserved
+  ;; font name" was removed by the copyright holders.
+  ;;
+  ;; The upstream release includes a "Fira Code" which "is Fira Mono 3.206
+  ;; with less Line Space (1.0) – does not include programming ligatures". We
+  ;; do not package that: our 'font-fira-code' package (like e.g. Debian's
+  ;; "fonts-firacode") is the much better known Fira Code font by Nikita
+  ;; Prokopov, which is an older, independent adaptation of Fira Mono. For the
+  ;; historical relationship between them, see:
+  ;; https://github.com/mozilla/Fira/issues/218
+  ;;
+  ;; For a lengthy discussion of the available sources and versions,
+  ;; see: https://github.com/LiberalArtist/FiraSans/
+  ;;
+  ;; See also:
+  ;;   - https://github.com/mozilla/Fira/pull/219
+  ;;   - https://github.com/bBoxType/FiraSans/issues/4#issuecomment-695833327
+  (package
+    (name "font-fira-sans")
+    (version "4.203")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/bBoxType/FiraSans")
+                     (commit "a606927401bcc3951587339fee53aa882856b51b")))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1r9kb7v9jg83nnxwkl6gx9ix1rng3ksr7v33qrm46qb4fhwsyc2n"))))
+    (build-system font-build-system)
+    (arguments
+     `(#:modules
+       ((ice-9 match)
+        (ice-9 regex)
+        (guix build utils)
+        (guix build font-build-system))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda* (#:key outputs #:allow-other-keys)
+             (define-values (pkg-name _version)
+               (package-name->name+version
+                (strip-store-file-name (assoc-ref outputs "out"))))
+             (define variant
+               (string-capitalize
+                (match:substring (string-match "fira-([a-z]+)" pkg-name) 1)))
+             (match (find-files "." (format #f "^Fira_~a_[0-9]" variant)
+                                #:directories? #t)
+               ((dir)
+                (chdir dir))))))))
+    ;; While the repository has moved,
+    ;; this specimen still works well as the home-page:
+    (home-page "https://mozilla.github.io/Fira/")
+    (synopsis
+     "Humanist sans-serif with numerous weights emphasizing legibility")
+    (description "Fira Sans is a humanist sans-serif typeface with an emphasis
+on legibility, commissioned by Mozilla from Erik Spiekermann and Ralph du
+Carrois.  The large family includes 2,709 glyphs in normal, condensed, and
+compressed cuts at 11 weights (plus 6 experimental weights), each with
+corresponding italics.
+
+The package @code{font-fira-mono} provides a corresponding monospace cut.")
+    (license license:silofl1.1)))
+
 (define-public font-fira-mono
   (package
     (name "font-fira-mono")
@@ -1055,25 +1123,6 @@ Sans Pro family.")
     (build-system font-build-system)
     (home-page "https://mozilla.github.io/Fira/")
     (synopsis "Mozilla's monospace font")
-    (description "This is the typeface used by Mozilla in Firefox OS.")
-    (license license:silofl1.1)))
-
-(define-public font-fira-sans
-  (package
-    (name "font-fira-sans")
-    (version "4.202")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                     (url "https://github.com/mozilla/Fira")
-                     (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "116j26gdj5g1r124b4669372f7490vfjqw7apiwp2ggl0am5xd0w"))))
-    (build-system font-build-system)
-    (home-page "https://mozilla.github.io/Fira/")
-    (synopsis "Mozilla's Fira Sans Font")
     (description "This is the typeface used by Mozilla in Firefox OS.")
     (license license:silofl1.1)))
 
