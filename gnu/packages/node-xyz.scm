@@ -288,11 +288,13 @@ function with browser support.")
                 "06biknqb05r9xsmcflm3ygh50pjvdk84x6r79w43kmck4fn3qn5p"))))
     (build-system node-build-system)
     (arguments
-     '(#:tests? #f ; FIXME: Tests depend on node-tap
-       #:phases
+     '(#:phases
        (modify-phases %standard-phases
-         ;; The only dependency to check for is tap, which we don't have.
-         (delete 'configure))))
+         (add-after 'patch-dependencies 'delete-dependencies
+           (lambda args
+             (delete-dependencies '("tap")))))
+       ;; FIXME: Tests depend on node-tap
+       #:tests? #f))
     (home-page "https://github.com/npm/node-semver")
     (synopsis "Parses semantic versions strings")
     (description
