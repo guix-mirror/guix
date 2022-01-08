@@ -28563,7 +28563,7 @@ comments or emails.")
 (define-public emacs-trashed
   (package
     (name "emacs-trashed")
-    (version "2.1.2")
+    (version "2.1.3")
     (source
      (origin
        (method git-fetch)
@@ -28572,7 +28572,7 @@ comments or emails.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0lfza55nbb62nmr27cwpcz2ad1vm95piq4nfd8zvkwqbn6klwmm6"))))
+        (base32 "08v7g2zgrad0r0n4pla8j3i2aql46byq82jr712cvxhydd5gnzf9"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/shingo256/trashed/")
     (synopsis "View and edit system trash can in Emacs")
