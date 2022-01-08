@@ -25,11 +25,13 @@
   #:use-module (guix build utils)
   #:use-module (guix build json)
   #:use-module (ice-9 ftw)
+  #:use-module (ice-9 regex)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-71)
   #:export (%standard-phases
             with-atomic-json-file-replacement
+            delete-dependencies
             node-build))
 
 (define (with-atomic-json-file-replacement file proc)
@@ -186,6 +188,27 @@ found in one of the OBJECTS."
                              deps)))
          (@)))))
   #t)
+
+(define (delete-dependencies absent)
+  "Rewrite 'package.json' to allow the build to proceed without packages
+listed in ABSENT, a list of strings naming npm packages.
+
+To prevent the deleted dependencies from being reintroduced, use this function
+only after the 'patch-dependencies' phase."
+  (define delete-from-jsobject
+    (match-lambda
+      (('@ . alist)
+       (cons '@ (filter (match-lambda
+                          ((k . _)
+                           (not (member k absent))))
+                        alist)))))
+
+  (with-atomic-json-file-replacement "package.json"
+    (lambda (pkg-meta)
+      (jsobject-update*
+       pkg-meta
+       `("devDependencies" ,delete-from-jsobject (@))
+       `("dependencies" ,delete-from-jsobject (@))))))
 
 (define* (delete-lockfiles #:key inputs #:allow-other-keys)
   "Delete 'package-lock.json', 'yarn.lock', and 'npm-shrinkwrap.json', if they
