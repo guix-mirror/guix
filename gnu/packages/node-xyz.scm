@@ -1270,3 +1270,36 @@ This package provides an interface for using Node SerialPort bindings via the
 Node.js Stream API.  The stream is a duplex stream, allowing for reading and
 writing.  It has additional methods for managing the SerialPort
 connection.")))
+
+(define-public node-serialport
+  (package
+    (inherit node-serialport-binding-abstract)
+    (name "node-serialport")
+    (version "9.2.7")
+    (inputs
+     (list node-serialport-bindings
+           node-serialport-parser-delimiter
+           node-serialport-parser-readline
+           node-serialport-parser-regex
+           node-serialport-parser-ready
+           node-serialport-parser-inter-byte-timeout
+           node-serialport-parser-cctalk
+           node-serialport-parser-byte-length
+           node-serialport-stream
+           node-debug))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'patch-dependencies 'delete-dependencies
+           (lambda args
+             (delete-dependencies `("@serialport/binding-mock"))
+             ))
+         (add-after 'unpack 'chdir
+           (lambda args
+             (chdir "packages/serialport"))))
+       #:tests? #f))
+    (synopsis "Node.js package to access serial ports")
+    (description "Node SerialPort is a modular suite of Node.js packages for
+accessing serial ports.  This package is the recommended entry point for most
+projects.  It combines a high-level Node.js stream interface with a useful
+default set of parsers and bindings.")))
