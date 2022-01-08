@@ -1197,3 +1197,26 @@ recommended high-level interface.
 Parsers are used to take raw binary data and transform them into usable
 messages.  This package provides @code{InterByteTimeout}, a parser that emits
 data if there is a pause between packets for the specified amount of time.")))
+
+(define-public node-serialport-parser-cctalk
+  (package
+    (inherit node-serialport-binding-abstract)
+    (name "node-serialport-parser-cctalk")
+    (version "9.2.4")
+    (inputs `())
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda args
+             (chdir "packages/parser-cctalk"))))
+       #:tests? #f))
+    (synopsis "Node SerialPort parser for the ccTalk protocol")
+    (description "Node SerialPort is a modular suite of Node.js packages for
+accessing serial ports.  The Guix package @code{node-serialport} provides the
+recommended high-level interface.
+
+Parsers are used to take raw binary data and transform them into usable
+messages.  This package provides @code{CCTalk}, which emits packets for the
+ccTalk protocol (an open standard for currency detectors) as they are
+received.")))
