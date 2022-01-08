@@ -2,6 +2,7 @@
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016, 2020 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2019, 2021 Timothy Sample <samplet@ngyro.com>
+;;; Copyright © 2021 Philip McGrath <philip@philipmcgrath.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -96,6 +97,17 @@
         (write-json package-meta out))))
   #t)
 
+(define* (delete-lockfiles #:key inputs #:allow-other-keys)
+  "Delete 'package-lock.json', 'yarn.lock', and 'npm-shrinkwrap.json', if they
+exist."
+  (for-each (lambda (pth)
+              (when (file-exists? pth)
+                (delete-file pth)))
+            '("package-lock.json"
+              "yarn.lock"
+              "npm-shrinkwrap.json"))
+  #t)
+
 (define* (configure #:key outputs inputs #:allow-other-keys)
   (let ((npm (string-append (assoc-ref inputs "node") "/bin/npm")))
     (invoke npm "--offline" "--ignore-scripts" "install")
@@ -146,6 +158,7 @@
   (modify-phases gnu:%standard-phases
     (add-after 'unpack 'set-home set-home)
     (add-before 'configure 'patch-dependencies patch-dependencies)
+    (add-after 'patch-dependencies 'delete-lockfiles delete-lockfiles)
     (replace 'configure configure)
     (replace 'build build)
     (replace 'check check)
