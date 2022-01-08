@@ -1242,32 +1242,29 @@ handful of functions that are not resource-specific.")
     (license license:gpl3+)))
 
 (define-public emacs-typit
-  ;; Last release is from 2017.
-  (let ((commit "fa125bf43757737fbcf91958b76c38b440d54b4c")
-        (revision "2"))
-    (package
-      (name "emacs-typit")
-      (version (git-version "0.2.1" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/mrkkrp/typit")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "1l0qb8gjgsmjjdvxlma7g6fn2z6rj246p2kczrikq8ajg1xh61sr"))))
-      (build-system emacs-build-system)
-      (arguments
-        '(#:include (cons "^dict/" %default-include)))
-      (propagated-inputs
-       (list emacs-f emacs-mmt))
-      (home-page "https://github.com/mrkkrp/typit")
-      (synopsis "Typing game for Emacs with two difficulties")
-      (description "Emacs Typit is a typing game for Emacs.  Words that are
+  (package
+    (name "emacs-typit")
+    (version "0.2.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mrkkrp/typit")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "15m4nfsig8w9hykqy9mzd014pqx4fj9yykiw273bwm384lf3dq6y"))))
+    (build-system emacs-build-system)
+    (arguments
+     '(#:include (cons "^dict/" %default-include)))
+    (propagated-inputs
+     (list emacs-f emacs-mmt))
+    (home-page "https://github.com/mrkkrp/typit")
+    (synopsis "Typing game for Emacs with two difficulties")
+    (description "Emacs Typit is a typing game for Emacs.  Words that are
 picked randomly from the most frequent words in language you're practicing,
 until time is up.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-scribble-mode
   (let ((commit "217945d54de5e4bb207033f2116baa28f5c5ecf2")
