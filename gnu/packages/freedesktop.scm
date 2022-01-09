@@ -103,6 +103,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages rdesktop)
   #:use-module (gnu packages rsync)
   #:use-module (gnu packages samba)
@@ -2219,7 +2220,7 @@ fallback to generic Systray support if none of those are available.")
 (define-public libportal
   (package
     (name "libportal")
-    (version "0.4")
+    (version "0.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2228,30 +2229,27 @@ fallback to generic Systray support if none of those are available.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1jh6wd96y4i218zbmmqw12zir8p88nm8dlsa3yx3lsqxd5c1krky"))))
+                "0i4v0wjyiryg7jq9hp9iaplqyhwj1cqy5891s4jfldcdzvcwxwx0"))))
     (build-system meson-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'move-doc
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out"))
-                   (doc (assoc-ref outputs "doc"))
-                   (html "/share/gtk-doc"))
-               (copy-recursively (string-append out html)
-                                 (string-append doc html))
-               (delete-file-recursively (string-append out html))
-               #t))))))
+     `(#:configure-flags
+       (list "-Dbackends=gtk4,qt5"
+             "-Ddocs=false")))          ; requires unpackaged gi-docgen
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("gtk-doc" ,gtk-doc/stable)
        ("docbook-xsl" ,docbook-xsl)
        ("docbook-xml" ,docbook-xml)
+       ("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
        ("libxml2" ,libxml2)
-       ("glib:bin" ,glib "bin")))
+       ("vala" ,vala)))
+    (inputs
+     (list gtk
+           gtk+
+           qtbase-5
+           qtx11extras))
     (propagated-inputs
      (list glib))
-    (outputs '("out" "doc"))
     (home-page "https://github.com/flatpak/libportal")
     (synopsis "Flatpak portal library")
     (description
