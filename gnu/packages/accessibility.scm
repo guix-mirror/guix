@@ -78,14 +78,9 @@
         "--disable-static"
         "--enable-fake")))
     (native-inputs
-     `(("latex2html" ,latex2html)
-       ("pkg-config" ,pkg-config)
-       ("python" ,python-wrapper)
-       ("swig" ,swig)))
+     (list latex2html pkg-config python-wrapper swig))
     (inputs
-     `(("glib" ,glib)
-       ("gtk+" ,gtk+-2)
-       ("libusb" ,libusb-compat)))
+     (list glib gtk+-2 libusb-compat))
     (synopsis "Portable Braille Library")
     (description "Libbraille is a library to easily access Braille displays and
 terminals.")
@@ -156,46 +151,46 @@ terminals.")
                                "/lib'], "
                                "extra_compile_args = "))))))))
     (native-inputs
-     `(("clisp" ,clisp)
-       ("cython" ,python-cython)
-       ("doxygen" ,doxygen)
-       ("gettext" ,gettext-minimal)
-       ("java" ,icedtea "jdk")
-       ;; ("linuxdoc" ,linuxdoc-tools)
-       ("ocaml" ,ocaml)
-       ("ocamlfind" ,ocaml-findlib)
-       ("pkg-config" ,pkg-config)
-       ("python" ,python-wrapper)
-       ("tcl" ,tcl)))
+     (list clisp
+           python-cython
+           doxygen
+           gettext-minimal
+           `(,icedtea "jdk")
+           ;; ("linuxdoc" ,linuxdoc-tools)
+           ocaml
+           ocaml-findlib
+           pkg-config
+           python-wrapper
+           tcl))
     (inputs
-     `(("alsa" ,alsa-lib)
-       ("atspi2" ,at-spi2-core)
-       ("bluez" ,bluez)
-       ("dbus" ,dbus)
-       ("espeak" ,espeak)
-       ("espeak-ng" ,espeak-ng)
-       ("expat" ,expat)
-       ("festival" ,festival)
-       ("flite" ,flite)
-       ("glib" ,glib)
-       ("gpm" ,gpm)
-       ("iconv" ,libiconv)
-       ("icu" ,icu4c)
-       ("libbraille" ,libbraille)
-       ("libpcre2" ,pcre2)
-       ("louis" ,liblouis)
-       ("ncurses" ,ncurses)
-       ("polkit" ,polkit)
-       ("speech-dispatcher" ,speech-dispatcher)
-       ("util-linux" ,util-linux)
-       ("util-linux:lib" ,util-linux "lib")
-       ("x11" ,libx11)
-       ("xaw" ,libxaw)
-       ("xaw3d" ,libxaw3d)
-       ("xext" ,libxext)
-       ("xfixes" ,libxfixes)
-       ("xt" ,libxt)
-       ("xtst" ,libxtst)))
+     (list alsa-lib
+           at-spi2-core
+           bluez
+           dbus
+           espeak
+           espeak-ng
+           expat
+           festival
+           flite
+           glib
+           gpm
+           libiconv
+           icu4c
+           libbraille
+           pcre2
+           liblouis
+           ncurses
+           polkit
+           speech-dispatcher
+           util-linux
+           `(,util-linux "lib")
+           libx11
+           libxaw
+           libxaw3d
+           libxext
+           libxfixes
+           libxt
+           libxtst))
     (synopsis "Braille TTY")
     (description "BRLTTY is a background process (daemon) which provides access
 to the Linux/Unix console (when in text mode) for a blind person using a
@@ -313,7 +308,7 @@ devices have vendorId:productId = 0c45:7403 or 0c45:7404.")
        (modify-phases %standard-phases
          (delete 'configure))))
     (inputs
-     `(("libX11" ,libx11)))
+     (list libx11))
     (home-page "https://gitlab.com/amiloradovsky/magnify")
     (synopsis "Tiny screen magnifier for X11")
     (description
