@@ -8,7 +8,7 @@
 ;;; Copyright © 2016, 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 Nikita <nikita@n0.is>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
-;;; Copyright © 2016–2021 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016–2022 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 okapi <okapi@firemail.cc>
 ;;; Copyright © 2018, 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
@@ -136,6 +136,7 @@
   #:use-module (guix build-system waf)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix gexp)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
@@ -5130,20 +5131,20 @@ edited, converted, compressed and saved.")
          (base32 "1gcznkyybywbgdi2fhx27i8sckhy6ahvxax72b213g1lr5aaw7bq"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; no tests
-       #:make-flags
-       (list (string-append "CC=" ,(cc-for-target)))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'omit-static-library
-           (lambda _
-             (substitute* "src/Makefile"
-               ((".*cp \\$\\(ARTIFACT_SLIB\\).*") "") ; don't install it
-               ((" \\$\\(ARTIFACT_SLIB\\)") ""))))    ; don't build it
-         (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
-             (invoke "make" "config"
-                     (string-append "PREFIX=" (assoc-ref outputs "out"))))))))
+     (list #:tests? #f                  ; no tests
+           #:make-flags
+           #~(list (string-append "CC=" #$(cc-for-target)))
+           #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'unpack 'omit-static-library
+                 (lambda _
+                   (substitute* "src/Makefile"
+                     ((".*cp \\$\\(ARTIFACT_SLIB\\).*") "") ; don't install it
+                     ((" \\$\\(ARTIFACT_SLIB\\)") ""))))    ; don't build it
+               (replace 'configure
+                 (lambda _
+                   (invoke "make" "config"
+                           (string-append "PREFIX=" #$output)))))))
     (home-page "https://github.com/sadko4u/lsp-dsp-lib")
     (synopsis "Digital signal processing library")
     (description "The LSP DSP library provides a set of functions that perform
