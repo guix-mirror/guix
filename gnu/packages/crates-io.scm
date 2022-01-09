@@ -9778,7 +9778,7 @@ Command Line Argument Parser.")
   (package
     (inherit rust-clap-3)
     (name "rust-clap")
-    (version "2.33.3")
+    (version "2.34.0")
     (source
      (origin
        (method url-fetch)
@@ -9786,10 +9786,10 @@ Command Line Argument Parser.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "00i065a58987k1sbzqmlz721rw521zcg08jmsh40gi3khp3qmr9p"))))
+         "071q5d8jfwbazi6zhik9xwpacx5i6kb2vkzy060vhf0c3120aqd0"))))
     (arguments
      `(#:cargo-inputs
-       (("rust-ansi-term" ,rust-ansi-term-0.11)
+       (("rust-ansi-term" ,rust-ansi-term-0.12)
         ("rust-atty" ,rust-atty-0.2)
         ("rust-bitflags" ,rust-bitflags-1)
         ("rust-clippy" ,rust-clippy-0.0)
