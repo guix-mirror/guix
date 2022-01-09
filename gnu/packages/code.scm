@@ -130,14 +130,14 @@ highlighting your own code that seemed comprehensible when you wrote it.")
 (define-public global                             ; a global variable
   (package
     (name "global")
-    (version "6.6.7")
+    (version "6.6.8")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/global/global-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0g4aslm2zajq605py11s4rs1wdnzcqhkh7bc2xl5az42adzzg839"))))
+               "1kaphc3gml89p8dpdgh2is8hj46wj05689kxj0bmh5q759rxk4vg"))))
     (build-system gnu-build-system)
     (inputs
       `(("bash" ,bash-minimal)                    ; for wrap-program
@@ -199,8 +199,7 @@ highlighting your own code that seemed comprehensible when you wrote it.")
               (rename-file (string-append data "/gtags.vim")
                            (string-append vim "/gtags.vim"))
               (rename-file (string-append data "/gtags-cscope.vim")
-                           (string-append vim "/gtags-cscope.vim"))
-              #t))))))
+                           (string-append vim "/gtags-cscope.vim"))))))))
     (home-page "https://www.gnu.org/software/global/")
     (synopsis "Cross-environment source code tag system")
     (description
