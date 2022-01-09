@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Ivan Petkov <ivanppetkov@gmail.com>
 ;;; Copyright © 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2019, 2020, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2019–2022 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2019–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019, 2020 John Soo <jsoo1@asu.edu>
@@ -4959,6 +4959,63 @@ c6e7d37.  However, this package works only up to 128 bytes.")
     (synopsis "Encode/decode any base")
     (description "This library provides for encoding and decoding any base.")
     (license license:expat)))
+
+(define-public rust-bat-0.18
+  (package
+    (name "bat")
+    (version "0.18.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "bat" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0qlk032dd6zxda1v7clah33nafxygaw3x7f73ajwlvk956nrn1js"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-ansi-colours" ,rust-ansi-colours-1)
+        ("rust-ansi-term" ,rust-ansi-term-0.12)
+        ("rust-atty" ,rust-atty-0.2)
+        ("rust-bugreport" ,rust-bugreport-0.4)
+        ("rust-clap" ,rust-clap-2)
+        ("rust-clircle" ,rust-clircle-0.3)
+        ("rust-console" ,rust-console-0.14)
+        ("rust-content-inspector" ,rust-content-inspector-0.2)
+        ("rust-dirs-next" ,rust-dirs-next-2)
+        ("rust-encoding" ,rust-encoding-0.2)
+        ("rust-error-chain" ,rust-error-chain-0.12)
+        ("rust-git2" ,rust-git2-0.13)
+        ("rust-globset" ,rust-globset-0.4)
+        ("rust-grep-cli" ,rust-grep-cli-0.1)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-path-abs" ,rust-path-abs-0.5)
+        ("rust-semver" ,rust-semver-0.11)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-yaml" ,rust-serde-yaml-0.8)
+        ("rust-shell-words" ,rust-shell-words-1)
+        ("rust-syntect" ,rust-syntect-4)
+        ("rust-unicode-width" ,rust-unicode-width-0.1)
+        ("rust-wild" ,rust-wild-2))
+       #:cargo-development-inputs
+       (("rust-assert-cmd" ,rust-assert-cmd-1)
+        ("rust-nix" ,rust-nix-0.21)
+        ("rust-predicates" ,rust-predicates-1)
+        ("rust-serial-test" ,rust-serial-test-0.5)
+        ("rust-tempfile" ,rust-tempfile-3)
+        ("rust-wait-timeout" ,rust-wait-timeout-0.2))))
+    (native-inputs
+     (list pkg-config))
+    (inputs
+     (list libgit2 zlib))
+    (home-page "https://github.com/sharkdp/bat")
+    (synopsis "@command{cat} clone with syntax highlighting and git integration")
+    (description
+     "@command{bat} is a drop-in @command{cat} replacement featuring syntax
+highlighting for a large number of languages, git integration, and automatic
+paging.")
+    (license (list license:expat license:asl2.0))))
 
 (define-public rust-battery-0.7
   (package

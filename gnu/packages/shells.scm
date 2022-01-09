@@ -17,7 +17,7 @@
 ;;; Copyright © 2020 Ryan Prior <rprior@protonmail.com>
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
-;;; Copyright © 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2021, 2022 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -1747,7 +1747,7 @@ Nushell.")
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("bat" ,bat)
+       (("rust-bat" ,rust-bat-0.18)
         ("rust-nu-data" ,rust-nu-data-0.42)
         ("rust-nu-errors" ,rust-nu-errors-0.42)
         ("rust-nu-plugin" ,rust-nu-plugin-0.42)
