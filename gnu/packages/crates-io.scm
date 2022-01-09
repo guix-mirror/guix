@@ -3122,8 +3122,39 @@ standard library.")
     (description "This package helps testing CLI Applications.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-assert-cmd-2
+  (package
+    (name "rust-assert-cmd")
+    (version "2.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "assert_cmd" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1qhzr8p3iv8rpa6xqg247ad198rhxhljx23b17qpx2w381wxr5p9"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bstr" ,rust-bstr-0.2)
+        ("rust-concolor-control" ,rust-concolor-control-0.0.7)
+        ("rust-doc-comment" ,rust-doc-comment-0.3)
+        ("rust-predicates" ,rust-predicates-2)
+        ("rust-predicates-core" ,rust-predicates-core-1)
+        ("rust-predicates-tree" ,rust-predicates-tree-1)
+        ("rust-wait-timeout" ,rust-wait-timeout-0.2)
+        ("rust-yansi" ,rust-yansi-0.5))))
+    (home-page "https://github.com/assert-rs/assert_cmd")
+    (synopsis "Test CLI Applications")
+    (description "@code{assert_cmd} aims to simplify the process for doing
+integration testing of CLIs, including finding your crate's binary to test and
+assertions on the result of your program's run.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-assert-cmd-1
   (package
+    (inherit rust-assert-cmd-2)
     (name "rust-assert-cmd")
     (version "1.0.7")
     (source
@@ -3135,7 +3166,6 @@ standard library.")
        (sha256
         (base32
          "0pz938z0wipy2czmp5aym6agfsgkpzd9rhbjqg3s9p84s0dq681x"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-bstr" ,rust-bstr-0.2)
@@ -3145,11 +3175,7 @@ standard library.")
         ("rust-predicates-tree" ,rust-predicates-tree-1)
         ("rust-wait-timeout" ,rust-wait-timeout-0.2))
        #:cargo-development-inputs
-       (("rust-escargot" ,rust-escargot-0.5))))
-    (home-page "https://github.com/assert-rs/assert_cmd")
-    (synopsis "Test CLI Applications")
-    (description "Test CLI Applications.")
-    (license (list license:expat license:asl2.0))))
+       (("rust-escargot" ,rust-escargot-0.5))))))
 
 (define-public rust-assert-cmd-0.9
   (package
