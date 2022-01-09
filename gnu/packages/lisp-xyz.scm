@@ -16055,8 +16055,8 @@ application fail and be unable to do so using its standard UI.")
       (home-page "https://shirakumo.github.io/glsl-toolkit/")
       (synopsis "Parser for OpenGL Shader Language source files")
       (description
-       "This package provides a Common Lisp system collecting tools written to
-allow to wrangle OpenGL Shader Language (GLSL) source files.")
+       "This package provides Common Lisp system collecting tools written to
+wrangle OpenGL Shader Language (GLSL) source files.")
       (license license:zlib))))
 
 (define-public ecl-glsl-toolkit
