@@ -54134,7 +54134,7 @@ a syntax tree of Rust source code.")
 (define-public rust-syntect-4
   (package
     (name "rust-syntect")
-    (version "4.5.0")
+    (version "4.6.0")
     (source
      (origin
        (method url-fetch)
@@ -54142,14 +54142,14 @@ a syntax tree of Rust source code.")
        (file-name
         (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1r9ij3qmq4cs83jwpk1043sai1dwdghb8lwkm34rs12d7frc5yib"))))
+        (base32 "0cd0rbi5r83p9pqph0gyj3vgr18ihh54amv9dvh0pvl0prdq284b"))))
     (build-system cargo-build-system)
     (arguments
      `(#:tests? #f                      ;missing files
        #:cargo-inputs
        (("rust-bincode" ,rust-bincode-1)
         ("rust-bitflags" ,rust-bitflags-1)
-        ("rust-fancy-regex" ,rust-fancy-regex-0.3)
+        ("rust-fancy-regex" ,rust-fancy-regex-0.7)
         ("rust-flate2" ,rust-flate2-1)
         ("rust-fnv" ,rust-fnv-1)
         ("rust-lazy-static" ,rust-lazy-static-1)
@@ -54165,7 +54165,9 @@ a syntax tree of Rust source code.")
        #:cargo-development-inputs
        (("rust-criterion" ,rust-criterion-0.3)
         ("rust-getopts" ,rust-getopts-0.2)
-        ("rust-pretty-assertions" ,rust-pretty-assertions-0.6))))
+        ("rust-pretty-assertions" ,rust-pretty-assertions-0.6)
+        ("rust-rayon" ,rust-rayon-1)
+        ("rust-regex" ,rust-regex-1))))
     (home-page "https://github.com/trishume/syntect")
     (synopsis "Library for syntax highlighting and code intelligence")
     (description
