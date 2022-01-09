@@ -631,13 +631,6 @@
                (("include \"third_party/lcms/include/lcms2\\.h\"")
                 "include \"lcms2.h\""))
 
-             ;; Chromium bundles a pre-release of Harfbuzz 3.0 and uses an
-             ;; experimental API that was removed in 3.0.  Adjust to use
-             ;; the updated API (taken from <https://crrev.com/c/3076563>).
-             (substitute* "components/paint_preview/common/subset_font.cc"
-               (("hb_subset_input_no_subset_tables_set\\(input\\.get\\(\\)\\)")
-                "hb_subset_input_set(input.get(), HB_SUBSET_SETS_NO_SUBSET_TABLE_TAG)"))
-
              (substitute*
                  "third_party/breakpad/breakpad/src/common/linux/libcurl_wrapper.h"
                (("include \"third_party/curl")
