@@ -14494,7 +14494,7 @@ your operating system declaration:
     (mingetty-service-type config =>
                            (mingetty-configuration
                             (inherit config)
-                            ;; Automatially log in as "guest".
+                            ;; Automatically log in as "guest".
                             (auto-login "guest")))))
 
 (operating-system
@@ -37122,7 +37122,7 @@ Service}; declare daemons by extending @ref{Shepherd Home Service}; add
 commands, which will be invoked on by the Bash by extending
 @ref{Shells Home Services, @code{home-bash-service-type}}.
 
-A good way to discover avaliable home services is using the
+A good way to discover available home services is using the
 @command{guix home search} command (@pxref{Invoking guix home}).  After
 the required home services are found, include its module with the
 @code{use-modules} form (@pxref{use-modules,, Using Guile Modules,
@@ -37210,7 +37210,7 @@ The service of this type will be instantiated by every home environment
 automatically, there is no need to define it, but you may want to extend
 it with a list of packages if you want to install additional packages
 into your profile.  Other services, which need to make some programs
-avaliable to the user will also extend this service type.
+available to the user will also extend this service type.
 
 The extension value is just a list of packages:
 
@@ -37292,8 +37292,8 @@ Available @code{home-shell-profile-configuration} fields are:
 @code{home-environment}, DO NOT create this service manually, it can
 only be extended.  @code{profile} is a list of file-like objects, which
 will go to @file{~/.profile}.  By default @file{~/.profile} contains the
-initialization code, which have to be evaluated by login shell to make
-home-environment's profile avaliable to the user, but other commands can
+initialization code which must be evaluated by the login shell to make
+home-environment's profile available to the user, but other commands can
 be added to the file if it is really necessary.  In most cases shell's
 configuration files are preferred places for user's customizations.
 Extend home-shell-profile service only if you really know what you do.
