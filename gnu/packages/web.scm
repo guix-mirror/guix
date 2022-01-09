@@ -5793,20 +5793,21 @@ tools like SSH (Secure Shell) to reach the outside world.")
 (define-public stunnel
   (package
   (name "stunnel")
-  (version "5.60")
+  (version "5.61")
   (source
     (origin
       (method url-fetch)
       (uri (string-append "https://www.stunnel.org/downloads/stunnel-"
                           version ".tar.gz"))
       (sha256
-       (base32 "0zbqiydyz9dvfg3axh18a42v6j3xvnwjbd03kgm1z1i12mdpcpf4"))))
+       (base32 "0yjx07r5wc987s4z0wm37381fa3az2s4mrhyjxypx3rd92k0rsli"))))
   (build-system gnu-build-system)
   (native-inputs
    ;; For tests.
    `(("iproute" ,iproute)
      ("netcat" ,netcat)
-     ("procps" ,procps)))
+     ("procps" ,procps)
+     ("python" ,python)))
   (inputs (list openssl))
   (arguments
    `(#:configure-flags
@@ -5821,13 +5822,6 @@ tools like SSH (Secure Shell) to reach the outside world.")
                               "tools/Makefile.in")
              (("/doc/stunnel")
               (string-append "/doc/" ,name "-" ,version)))))
-       (add-before 'check 'patch-tests
-         (lambda _
-           (substitute* "tests/make_test"
-             (("/bin/sh ")
-              (string-append (which "sh") " ")))
-           ;; This test requires networking.
-           (delete-file "tests/recipes/055_socket_closed")))
        (add-after 'install 'prune-documentation
          (lambda* (#:key outputs #:allow-other-keys)
            (let* ((out (assoc-ref outputs "out"))
