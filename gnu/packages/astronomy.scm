@@ -857,6 +857,45 @@ of astronomical sources.")
 Virtual observatory (VO) using Python.")
     (license license:bsd-3)))
 
+(define-public python-regions
+  (package
+    (name "python-regions")
+    (version "0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "regions" version))
+       (sha256
+        (base32 "1bjrcjchbw3xw1a26d5g198lh7vxpp9m5sal58r7f8mmr1d8g2dc"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:test-target "pytest"
+       #:phases
+       (modify-phases %standard-phases
+         ;; This doctest requires online data.
+         (add-after 'unpack 'delete-doctest
+           (lambda _ (delete-file "docs/masks.rst")))
+         ;; This file is opened in both install and check phases.
+         (add-before 'install 'writable-compiler
+           (lambda _ (make-file-writable "regions/_compiler.c")))
+         (add-before 'check 'writable-compiler
+           (lambda _ (make-file-writable "regions/_compiler.c")))
+         (add-before 'check 'writable-home
+           (lambda _  (setenv "HOME" (getcwd)))))))
+    (propagated-inputs
+     (list python-astropy python-numpy))
+    (native-inputs
+     (list python-cython
+           python-extension-helpers
+           python-pytest-arraydiff
+           python-pytest-astropy
+           python-pytest-runner
+           python-setuptools-scm))
+    (home-page "https://github.com/astropy/regions")
+    (synopsis "Package for region handling")
+    (description "Regions is an Astropy package for region handling.")
+    (license license:bsd-3)))
+
 (define-public python-astral
   (package
     (name "python-astral")
