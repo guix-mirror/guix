@@ -789,6 +789,40 @@ astronomy and astrophysics.")
 to access online Astronomical data.  Each web service has its own sub-package.")
     (license license:bsd-3)))
 
+(define-public python-photutils
+  (package
+    (name "python-photutils")
+    (version "1.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "photutils" version))
+       (sha256
+        (base32 "1a8djakaya6w5iv9237gkcz39brqzgrfs2wqrl0izi1s85cfdymn"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:test-target "pytest"
+       #:phases
+       (modify-phases %standard-phases
+         ;; This file is opened in both install and check phases.
+         (add-before 'install 'writable-compiler
+           (lambda _ (make-file-writable "photutils/_compiler.c")))
+         (add-before 'check 'writable-compiler
+           (lambda _ (make-file-writable "photutils/_compiler.c"))))))
+    (propagated-inputs
+     (list python-astropy python-numpy))
+    (native-inputs
+     (list python-cython
+           python-extension-helpers
+           python-pytest-astropy
+           python-pytest-runner
+           python-setuptools-scm))
+    (home-page "https://github.com/astropy/photutils")
+    (synopsis "Source detection and photometry")
+    (description "Photutils is an Astropy package for detection and photometry
+of astronomical sources.")
+    (license license:bsd-3)))
+
 (define-public python-pyvo
   (package
     (name "python-pyvo")
