@@ -10701,6 +10701,30 @@ harness.")
         ("rust-rustc-serialize" ,rust-rustc-serialize-0.3)
         ("rust-tempdir" ,rust-tempdir-0.3))))))
 
+(define-public rust-concolor-control-0.0.7
+  (package
+    (name "rust-concolor-control")
+    (version "0.0.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "concolor-control" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1nplakbdb9sbd3h62d9zkan0xm1w0c7cbl3rk0iqgn405yf1213i"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-atty" ,rust-atty-0.2)
+        ("rust-bitflags" ,rust-bitflags-1)
+        ("rust-concolor-query" ,rust-concolor-query-0.0.4))))
+    (home-page "https://github.com/rust-cli/concolor")
+    (synopsis "Control console coloring across all dependencies")
+    (description "This crate provides control console coloring across all
+dependencies.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-concolor-query-0.0.4
   (package
     (name "rust-concolor-query")
