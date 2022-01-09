@@ -812,8 +812,8 @@ It has a nice, simple s-expression based syntax.")
     (inputs (list guile-2.2))))
 
 (define-public guile-squee
-  (let ((commit "c1497a216e881cfde39d6aa7c73d0bf6b497c89b")
-        (revision "2"))
+  (let ((commit "a151fd006fa819945ca1d4749b173854269b9f70")
+        (revision "3"))
     (package
       (name "guile-squee")
       (version (string-append "0-" revision "." (string-take commit 7)))
@@ -825,7 +825,7 @@ It has a nice, simple s-expression based syntax.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1alskrplnyl1n5wb39drn72cwplp47a8cpdd1n9cdnw3jhk5p12p"))))
+                  "1jps14z8653ah2kr367iayzyi3ql2s55l77xrafz7gk3mzcvgrrg"))))
       (build-system guile-build-system)
       (arguments
        '(#:phases
@@ -836,9 +836,8 @@ It has a nice, simple s-expression based syntax.")
                  (("dynamic-link \"libpq\"")
                   (string-append
                    "dynamic-link \""
-                   (assoc-ref inputs "postgresql") "/lib/libpq.so"
-                   "\"")))
-               #t)))))
+                   (search-input-file inputs "/lib/libpq.so")
+                   "\""))))))))
       (inputs
        (list postgresql))
       (native-inputs
