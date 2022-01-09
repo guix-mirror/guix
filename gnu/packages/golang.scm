@@ -2874,8 +2874,6 @@ Go.")
            go-github-com-pmezard-go-difflib))
     (inputs
      (list go-github-com-stretchr-testify-bootstrap))
-    (native-inputs
-     (list go-gopkg-in-yaml-v2))
     (home-page "https://github.com/stretchr/objx")
     (synopsis "Go package for dealing with maps, slices, JSON and other data")
     (description "This package provides a Go library for dealing with maps,
@@ -2885,7 +2883,7 @@ slices, JSON and other data.")
 (define-public go-github-com-stretchr-testify
   (package
     (name "go-github-com-stretchr-testify")
-    (version "1.5.1")
+    (version "1.7.0")
     (source
      (origin
        (method git-fetch)
@@ -2895,7 +2893,7 @@ slices, JSON and other data.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "09r89m1wy4cjv2nps1ykp00qjpi0531r07q3s34hr7m6njk4srkl"))))
+         "0ixgjsvafr3513pz3r6pmgk074s2dxkll0dadvl25gkf30rkmh10"))))
     (build-system go-build-system)
     (arguments
      '(#:import-path "github.com/stretchr/testify"))
@@ -2903,7 +2901,7 @@ slices, JSON and other data.")
      `(("github.com/davecgh/go-spew" ,go-github-com-davecgh-go-spew)
        ("github.com/pmezard/go-difflib" ,go-github-com-pmezard-go-difflib)
        ("github.com/stretchr/objx" ,go-github-com-stretchr-objx)
-       ("gopkg.in/yaml.v2" ,go-gopkg-in-yaml-v2)))
+       ("gopkg.in/yaml.v3" ,go-gopkg-in-yaml-v3)))
     (home-page "https://github.com/stretchr/testify")
     (synopsis "Go helper library for tests and invariant checking")
     (description "This package provide many tools for testifying that your
@@ -2926,7 +2924,8 @@ Features include:
        #:tests? #f
        #:phases (modify-phases %standard-phases
                   (delete 'build))))
-    (propagated-inputs '())))
+    (propagated-inputs
+     (list go-gopkg-in-yaml-v3))))
 
 (define-public go-github-com-tevino-abool
   (let ((commit
