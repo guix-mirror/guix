@@ -114,14 +114,12 @@
              (lambda* (#:key inputs #:allow-other-keys)
                (let ((pg (assoc-ref inputs "ephemeralpg"))
                      (path (getenv "PATH")))
-                 (setenv "PATH" (string-append pg "/bin:" path))
-                 #t)))
+                 (setenv "PATH" (string-append pg "/bin:" path)))))
            ;; Disable the remote tests that require a Guix daemon connection.
            (add-before 'check 'disable-remote-tests
              (lambda _
                (substitute* "Makefile.am"
-                 (("tests/remote.scm") ""))
-               #t))
+                 (("tests/remote.scm") ""))))
            (add-after 'install 'wrap-program
              (lambda* (#:key inputs outputs #:allow-other-keys)
                ;; Wrap the 'cuirass' command to refer to the right modules.
@@ -165,8 +163,7 @@
                  (wrap-program (string-append out "/bin/cuirass")
                    `("PATH" ":" prefix (,(string-append out "/bin")))
                    `("GUILE_LOAD_PATH" ":" prefix (,mods))
-                   `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,objs)))
-                 #t))))))
+                   `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,objs)))))))))
       (inputs
        (list guile-3.0-latest
              guile-avahi
