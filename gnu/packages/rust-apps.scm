@@ -6,7 +6,7 @@
 ;;; Copyright © 2020 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2020 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2020 Gabriel Arazas <foo.dogsquared@gmail.com>
-;;; Copyright © 2020, 2021 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2020–2022 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.ccom>
 ;;; Copyright © 2021 Zheng Junjie <873216071@qq.com>
@@ -103,44 +103,49 @@ low-end hardware and serving many concurrent requests.")
 (define-public bat
   (package
     (name "bat")
-    (version "0.18.3")
+    (version "0.19.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "bat" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0qlk032dd6zxda1v7clah33nafxygaw3x7f73ajwlvk956nrn1js"))))
+        (base32 "0bvlgh2yf6f1ski86hd13lda4cr51wyyg1ycsxwjpn0dbb0a8wqq"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-ansi-colours" ,rust-ansi-colours-1)
         ("rust-ansi-term" ,rust-ansi-term-0.12)
         ("rust-atty" ,rust-atty-0.2)
+        ("rust-bincode" ,rust-bincode-1)
         ("rust-bugreport" ,rust-bugreport-0.4)
         ("rust-clap" ,rust-clap-2)
+        ("rust-clap" ,rust-clap-2)
         ("rust-clircle" ,rust-clircle-0.3)
-        ("rust-console" ,rust-console-0.14)
+        ("rust-console" ,rust-console-0.15)
         ("rust-content-inspector" ,rust-content-inspector-0.2)
         ("rust-dirs-next" ,rust-dirs-next-2)
         ("rust-encoding" ,rust-encoding-0.2)
-        ("rust-error-chain" ,rust-error-chain-0.12)
+        ("rust-flate2" ,rust-flate2-1)
         ("rust-git2" ,rust-git2-0.13)
         ("rust-globset" ,rust-globset-0.4)
         ("rust-grep-cli" ,rust-grep-cli-0.1)
-        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-once-cell" ,rust-once-cell-1)
         ("rust-path-abs" ,rust-path-abs-0.5)
-        ("rust-semver" ,rust-semver-0.11)
+        ("rust-regex" ,rust-regex-1)
+        ("rust-semver" ,rust-semver-1)
         ("rust-serde" ,rust-serde-1)
         ("rust-serde-yaml" ,rust-serde-yaml-0.8)
         ("rust-shell-words" ,rust-shell-words-1)
         ("rust-syntect" ,rust-syntect-4)
+        ("rust-thiserror" ,rust-thiserror-1)
         ("rust-unicode-width" ,rust-unicode-width-0.1)
+        ("rust-walkdir" ,rust-walkdir-2)
         ("rust-wild" ,rust-wild-2))
        #:cargo-development-inputs
-       (("rust-assert-cmd" ,rust-assert-cmd-1)
-        ("rust-nix" ,rust-nix-0.21)
-        ("rust-predicates" ,rust-predicates-1)
+       (("rust-assert-cmd" ,rust-assert-cmd-2)
+        ("rust-nix" ,rust-nix-0.23)
+        ("rust-predicates" ,rust-predicates-2)
         ("rust-serial-test" ,rust-serial-test-0.5)
         ("rust-tempfile" ,rust-tempfile-3)
         ("rust-wait-timeout" ,rust-wait-timeout-0.2))))
