@@ -1139,6 +1139,19 @@ of programming tools as well as libraries with equivalent functionality.")
 components which highly leverage existing libraries in the larger LLVM Project.")
     (license license:asl2.0))) ; With LLVM exception
 
+(define-public lld-12
+  (package
+    (inherit lld)
+    (version "12.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (llvm-uri "lld" version))
+              (sha256
+               (base32
+                "0qg3fgc7wj34hdkqn21y03zcmsdd01szhhm1hfki63iifrm3y2v9"))))
+    (inputs (modify-inputs (package-inputs lld)
+              (replace "llvm" llvm-12)))))
+
 (define* (make-lld-wrapper lld #:key lld-as-ld?)
   "Return a LLD wrapper.  When LLD-AS-LD? is true, create a 'ld' symlink that
 points to 'lld'."

@@ -45,7 +45,7 @@
     (build-system cmake-build-system)
     (inputs
      (list clang-12 ; Clang propagates llvm.
-           lld))
+           lld-12))
     ;; Zig compiles fine with GCC, but also needs native LLVM libraries.
     (native-inputs
      (list llvm-12))
