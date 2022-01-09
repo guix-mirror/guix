@@ -89,8 +89,6 @@
     (arguments
      `(#:test-target "test"
        #:parallel-tests? #f
-       ;; Fix test_signals.vim. https://github.com/vim/vim/issues/7402
-       #:make-flags (list "CFLAGS=-D_REENTRANT")
        #:phases
        (modify-phases %standard-phases
          (add-after 'configure 'patch-absolute-paths
@@ -225,7 +223,7 @@ with the editor vim.")))
            ((#:make-flags flags)
             `(append
               (list "LDFLAGS=-lexpat")
-              (delete "CFLAGS=-D_REENTRANT" ,flags)))
+              ,flags))
            ((#:phases phases)
             `(modify-phases ,phases
                (add-before 'check 'start-xserver
