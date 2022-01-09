@@ -54,24 +54,6 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu))
 
-(define-public guile-squee-dev
-  (let ((commit "e0614273ad4067af82f508db51c8a100131151ea")
-        (revision "3"))
-    (package
-      (inherit guile-squee)
-      (name "guile-squee")
-      (version (string-append "0-" revision "." (string-take commit 7)))
-      (home-page "https://notabug.org/mothacehe/guile-squee.git")
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url home-page)
-                      (commit commit)))
-                (sha256
-                 (base32
-                  "1jps14z8653ah2kr367iayzyi3ql2s55l77xrafz7gk3mzcvgrrg"))
-                (file-name (string-append name "-" version "-checkout")))))))
-
 (define-public cuirass
   (let ((commit "95c29ab9abcd67ebeeee386ff043a7c52680526e")
         (revision "9"))
@@ -171,7 +153,7 @@
              guile-gcrypt
              guile-json-4
              guile-simple-zmq
-             guile-squee-dev
+             guile-squee
              guile-git
              guile-zlib
              guile-mastodon
