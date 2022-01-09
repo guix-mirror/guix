@@ -87,37 +87,38 @@ that are not yet in Guix"))
     (parse-command-line args %options (list %default-options)
                         #:build-options? #f))
 
-  (let* ((opts (parse-options))
-         (args (filter-map (match-lambda
-                             (('argument . value)
-                              value)
-                             (_ #f))
-                           (reverse opts)))
-         ;; Append the full version to the package symbol name when using
-         ;; pinned versions.
-         (package->definition* (if (assoc-ref opts 'pin-versions?)
-                                   (cut package->definition <> 'full)
-                                   package->definition)))
-    (match args
-      ((spec)                         ;e.g., github.com/golang/protobuf@v1.3.1
-       (receive (name version)
-           (package-name->name+version spec)
-         (let ((arguments (list name
-                                #:goproxy (assoc-ref opts 'goproxy)
-                                #:version version
-                                #:pin-versions?
-                                (assoc-ref opts 'pin-versions?))))
-           (if (assoc-ref opts 'recursive)
-               ;; Recursive import.
-               (map package->definition*
-                    (apply go-module-recursive-import arguments))
-               ;; Single import.
-               (let ((sexp (apply go-module->guix-package* arguments)))
-                 (unless sexp
-                   (leave (G_ "failed to download meta-data for module '~a'.~%")
-                          name))
-                 (package->definition* sexp))))))
-      (()
-       (leave (G_ "too few arguments~%")))
-      ((many ...)
-       (leave (G_ "too many arguments~%"))))))
+  (with-error-handling
+    (let* ((opts (parse-options))
+           (args (filter-map (match-lambda
+                               (('argument . value)
+                                value)
+                               (_ #f))
+                             (reverse opts)))
+           ;; Append the full version to the package symbol name when using
+           ;; pinned versions.
+           (package->definition* (if (assoc-ref opts 'pin-versions?)
+                                     (cut package->definition <> 'full)
+                                     package->definition)))
+      (match args
+        ((spec)                       ;e.g., github.com/golang/protobuf@v1.3.1
+         (receive (name version)
+             (package-name->name+version spec)
+           (let ((arguments (list name
+                                  #:goproxy (assoc-ref opts 'goproxy)
+                                  #:version version
+                                  #:pin-versions?
+                                  (assoc-ref opts 'pin-versions?))))
+             (if (assoc-ref opts 'recursive)
+                 ;; Recursive import.
+                 (map package->definition*
+                      (apply go-module-recursive-import arguments))
+                 ;; Single import.
+                 (let ((sexp (apply go-module->guix-package* arguments)))
+                   (unless sexp
+                     (leave (G_ "failed to download meta-data for module '~a'.~%")
+                            name))
+                   (package->definition* sexp))))))
+        (()
+         (leave (G_ "too few arguments~%")))
+        ((many ...)
+         (leave (G_ "too many arguments~%")))))))
