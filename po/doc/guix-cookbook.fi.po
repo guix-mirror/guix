@@ -1,56 +1,54 @@
 # SOME DESCRIPTIVE TITLE
-# Copyright (C) 2021 the authors of Guix (msgids) and the following authors (msgstr)
+# Copyright (C) YEAR the authors of Guix (msgids) and the following authors (msgstr)
 # This file is distributed under the same license as the guix manual package.
-# Liu Tao <lyuutau@outlook.com>, 2021.
+# Jan Kuparinen <copper_fin@hotmail.com>, 2021, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: guix manual checkout\n"
 "Report-Msgid-Bugs-To: bug-guix@gnu.org\n"
 "POT-Creation-Date: 2021-12-31 15:18+0000\n"
-"PO-Revision-Date: 2021-06-15 17:05+0000\n"
-"Last-Translator: Liu Tao <lyuutau@outlook.com>\n"
-"Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/projects/guix/documentation-cookbook/zh_Hans/>\n"
-"Language: zh_Hans\n"
+"PO-Revision-Date: 2022-01-02 18:16+0000\n"
+"Last-Translator: Jan Kuparinen <copper_fin@hotmail.com>\n"
+"Language-Team: Finnish <https://translate.fedoraproject.org/projects/guix/documentation-cookbook/fi/>\n"
+"Language: fi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.6.2\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.10.1\n"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:7
 msgid "@documentencoding UTF-8"
-msgstr "@documentencoding UTF-8"
+msgstr ""
 
 #. type: top
 #: guix-git/doc/guix-cookbook.texi:7 guix-git/doc/guix-cookbook.texi:36
 #: guix-git/doc/guix-cookbook.texi:50
 #, no-wrap
 msgid "GNU Guix Cookbook"
-msgstr "GNU Guix 烹饪手册"
+msgstr ""
 
 #. type: copying
 #: guix-git/doc/guix-cookbook.texi:21
-#, fuzzy
-#| msgid "Copyright @copyright{} 2019 Ricardo Wurmus@* Copyright @copyright{} 2019 Efraim Flashner@* Copyright @copyright{} 2019 Pierre Neidhardt@* Copyright @copyright{} 2020 Oleg Pykhalov@* Copyright @copyright{} 2020 Matthew Brooks@* Copyright @copyright{} 2020 Marcin Karpezo@* Copyright @copyright{} 2020 Brice Waegeneire@* Copyright @copyright{} 2020 André Batista@* Copyright @copyright{} 2020 Christopher Lemmer Webber"
 msgid "Copyright @copyright{} 2019 Ricardo Wurmus@* Copyright @copyright{} 2019 Efraim Flashner@* Copyright @copyright{} 2019 Pierre Neidhardt@* Copyright @copyright{} 2020 Oleg Pykhalov@* Copyright @copyright{} 2020 Matthew Brooks@* Copyright @copyright{} 2020 Marcin Karpezo@* Copyright @copyright{} 2020 Brice Waegeneire@* Copyright @copyright{} 2020 André Batista@* Copyright @copyright{} 2020 Christine Lemmer-Webber@* Copyright @copyright{} 2021 Joshua Branson@*"
-msgstr "Copyright @copyright{} 2019 Ricardo Wurmus@* Copyright @copyright{} 2019 Efraim Flashner@* Copyright @copyright{} 2019 Pierre Neidhardt@* Copyright @copyright{} 2020 Oleg Pykhalov@* Copyright @copyright{} 2020 Matthew Brooks@* Copyright @copyright{} 2020 Marcin Karpezo@* Copyright @copyright{} 2020 Brice Waegeneire@* Copyright @copyright{} 2020 André Batista@* Copyright @copyright{} 2020 Christopher Lemmer Webber"
+msgstr ""
 
 #. type: copying
 #: guix-git/doc/guix-cookbook.texi:28
 msgid "Permission is granted to copy, distribute and/or modify this document under the terms of the GNU Free Documentation License, Version 1.3 or any later version published by the Free Software Foundation; with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A copy of the license is included in the section entitled ``GNU Free Documentation License''."
-msgstr "Permission is granted to copy, distribute and/or modify this document under the terms of the GNU Free Documentation License, Version 1.3 or any later version published by the Free Software Foundation; with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A copy of the license is included in the section entitled ``GNU Free Documentation License''."
+msgstr ""
 
 #. type: dircategory
 #: guix-git/doc/guix-cookbook.texi:30
 #, no-wrap
 msgid "System administration"
-msgstr "系统管理"
+msgstr "Järjestelmän hallinta"
 
 #. type: menuentry
 #: guix-git/doc/guix-cookbook.texi:33
 msgid "Guix cookbook: (guix-cookbook)"
-msgstr "Guix 烹饪手册：(guix-cookbook)"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix-cookbook.texi:33
@@ -67,7 +65,7 @@ msgstr ""
 #: guix-git/doc/guix-cookbook.texi:38
 #, no-wrap
 msgid "The GNU Guix Developers"
-msgstr "GNU Guix 开发者"
+msgstr ""
 
 #. type: node
 #: guix-git/doc/guix-cookbook.texi:49
@@ -102,24 +100,24 @@ msgstr ""
 #: guix-git/doc/guix-cookbook.texi:305 guix-git/doc/guix-cookbook.texi:306
 #, no-wrap
 msgid "Packaging"
-msgstr "打包"
+msgstr "Paketointi"
 
 #. type: menuentry
 #: guix-git/doc/guix-cookbook.texi:73
 msgid "Packaging tutorials"
-msgstr "打包教程"
+msgstr ""
 
 #. type: chapter
 #: guix-git/doc/guix-cookbook.texi:73 guix-git/doc/guix-cookbook.texi:90
 #: guix-git/doc/guix-cookbook.texi:1340 guix-git/doc/guix-cookbook.texi:1341
 #, no-wrap
 msgid "System Configuration"
-msgstr "系统配置"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix-cookbook.texi:73
 msgid "Customizing the GNU System"
-msgstr "定制 GNU 系统"
+msgstr ""
 
 #. type: chapter
 #: guix-git/doc/guix-cookbook.texi:73 guix-git/doc/guix-cookbook.texi:2436
@@ -138,7 +136,7 @@ msgstr ""
 #: guix-git/doc/guix-cookbook.texi:2835
 #, no-wrap
 msgid "Environment management"
-msgstr "环境管理"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix-cookbook.texi:73
@@ -150,7 +148,7 @@ msgstr ""
 #: guix-git/doc/guix-cookbook.texi:2959
 #, no-wrap
 msgid "Acknowledgments"
-msgstr ""
+msgstr "Kiitokset"
 
 #. type: menuentry
 #: guix-git/doc/guix-cookbook.texi:77
@@ -515,7 +513,7 @@ msgstr ""
 #: guix-git/doc/guix-cookbook.texi:308
 #, no-wrap
 msgid "packaging"
-msgstr ""
+msgstr "paketointi"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:314
@@ -618,7 +616,7 @@ msgstr ""
 #: guix-git/doc/guix-cookbook.texi:401
 #, no-wrap
 msgid "source"
-msgstr ""
+msgstr "lähde"
 
 #. type: table
 #: guix-git/doc/guix-cookbook.texi:404
@@ -684,7 +682,7 @@ msgstr ""
 #: guix-git/doc/guix-cookbook.texi:430
 #, no-wrap
 msgid "description"
-msgstr ""
+msgstr "kuvaus"
 
 #. type: table
 #: guix-git/doc/guix-cookbook.texi:433
@@ -706,7 +704,7 @@ msgstr ""
 #: guix-git/doc/guix-cookbook.texi:437
 #, no-wrap
 msgid "license"
-msgstr ""
+msgstr "lisenssi"
 
 #. type: table
 #: guix-git/doc/guix-cookbook.texi:440
@@ -1361,7 +1359,7 @@ msgstr ""
 #: guix-git/doc/guix-cookbook.texi:887
 #, no-wrap
 msgid "Inputs"
-msgstr ""
+msgstr "Sisääntulot"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:890
@@ -1383,7 +1381,7 @@ msgstr ""
 #: guix-git/doc/guix-cookbook.texi:895
 #, no-wrap
 msgid "inputs"
-msgstr ""
+msgstr "sisääntulot"
 
 #. type: table
 #: guix-git/doc/guix-cookbook.texi:898
@@ -1425,7 +1423,7 @@ msgstr ""
 #: guix-git/doc/guix-cookbook.texi:922 guix-git/doc/guix-cookbook.texi:1892
 #, no-wrap
 msgid "Note"
-msgstr ""
+msgstr "Huomautus"
 
 #. type: quotation
 #: guix-git/doc/guix-cookbook.texi:925
@@ -1452,7 +1450,7 @@ msgstr ""
 #: guix-git/doc/guix-cookbook.texi:940
 #, no-wrap
 msgid "Outputs"
-msgstr ""
+msgstr "Ulostulot"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:944
@@ -1964,7 +1962,7 @@ msgstr ""
 #: guix-git/doc/guix-cookbook.texi:1247 guix-git/doc/guix-cookbook.texi:1248
 #, no-wrap
 msgid "Automatic update"
-msgstr ""
+msgstr "Automaattiset päivitykset"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:1252
@@ -2074,7 +2072,7 @@ msgstr ""
 #: guix-git/doc/guix-cookbook.texi:1325 guix-git/doc/guix-cookbook.texi:1326
 #, no-wrap
 msgid "References"
-msgstr ""
+msgstr "Viitteet"
 
 #. type: itemize
 #: guix-git/doc/guix-cookbook.texi:1331
@@ -3538,7 +3536,7 @@ msgstr ""
 #: guix-git/doc/guix-cookbook.texi:2322
 #, no-wrap
 msgid "Warning"
-msgstr ""
+msgstr "Varoitus"
 
 #. type: quotation
 #: guix-git/doc/guix-cookbook.texi:2328
@@ -3796,7 +3794,7 @@ msgstr ""
 #. type: itemize
 #: guix-git/doc/guix-cookbook.texi:2524
 msgid "Games."
-msgstr ""
+msgstr "Pelit."
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2527
@@ -4007,7 +4005,7 @@ msgstr ""
 #: guix-git/doc/guix-cookbook.texi:2660 guix-git/doc/guix-cookbook.texi:2661
 #, no-wrap
 msgid "Required packages"
-msgstr ""
+msgstr "Vaadittavat paketit"
 
 #. type: Plain text
 #: guix-git/doc/guix-cookbook.texi:2666

@@ -1,28 +1,28 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2021 the authors of Guix (msgids) and the following authors (msgstr)
+# Copyright (C) YEAR the authors of Guix (msgids) and the following authors (msgstr)
 # This file is distributed under the same license as the GNU guix package.
-# la snesne <lasnesne@lagunposprasihopre.org>, 2021.
-# simmon <simmon@nplob.com>, 2021.
+# Nikolay Korotkiy <sikmir@disroot.org>, 2021.
+# Jan Kuparinen <copper_fin@hotmail.com>, 2021.
 #: guix/diagnostics.scm:157
 msgid ""
 msgstr ""
 "Project-Id-Version: GNU guix\n"
 "Report-Msgid-Bugs-To: bug-guix@gnu.org\n"
 "POT-Creation-Date: 2022-01-08 15:18+0000\n"
-"PO-Revision-Date: 2021-11-21 02:16+0000\n"
-"Last-Translator: simmon <simmon@nplob.com>\n"
-"Language-Team: Korean <https://translate.fedoraproject.org/projects/guix/guix/ko/>\n"
-"Language: ko\n"
+"PO-Revision-Date: 2021-12-23 17:16+0000\n"
+"Last-Translator: Jan Kuparinen <copper_fin@hotmail.com>\n"
+"Language-Team: Finnish <https://translate.fedoraproject.org/projects/guix/guix/fi/>\n"
+"Language: fi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.9\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.10.1\n"
 
 #: gnu.scm:81
 #, scheme-format
 msgid "module ~a not found"
-msgstr "모듈 ~a를 찾을 수 없음"
+msgstr ""
 
 #: gnu.scm:99
 msgid ""
@@ -31,15 +31,11 @@ msgid ""
 "If you get the line @code{location: gnu/packages/bar.scm:174:2},\n"
 "add @code{bar} to the @code{use-package-modules} form."
 msgstr ""
-"@command{guix package --show=foo | grep location} 를 입력하여\n"
-"꾸러미(package) @code{foo}의 위치를 찾아 볼 수 있습니다.\n"
-"@code{location: gnu/packages/bar.scm:174:2} 와 같은 줄이 나오면,\n"
-"@code{bar}를 @code{use-package-modules}의 형태로 추가하세요."
 
 #: gnu.scm:107
 #, scheme-format
 msgid "Try adding @code{(use-package-modules ~a)}."
-msgstr "@code{(use-package-modules ~a)}를 추가해 보세요."
+msgstr ""
 
 #: gnu.scm:122
 #, scheme-format
@@ -53,42 +49,42 @@ msgstr ""
 #: gnu.scm:131
 #, scheme-format
 msgid "Try adding @code{(use-service-modules ~a)}."
-msgstr "@code{(use-service-modules ~a)}를 추가해 주세요."
+msgstr ""
 
 #: gnu/packages.scm:96
 #, scheme-format
 msgid "~a: patch not found"
-msgstr "~a: 패치를 찾지 못함"
+msgstr ""
 
 #: gnu/packages.scm:480 gnu/packages.scm:521
 #, scheme-format
 msgid "ambiguous package specification `~a'~%"
-msgstr "모호한 꾸러미(package) 사양 `~a'~%"
+msgstr ""
 
 #: gnu/packages.scm:481 gnu/packages.scm:522
 #, scheme-format
 msgid "choosing ~a@~a from ~a~%"
-msgstr "선택하기 ~a@~a from ~a~%"
+msgstr ""
 
 #: gnu/packages.scm:486 guix/scripts/package.scm:216
 #, scheme-format
 msgid "package '~a' has been superseded by '~a'~%"
-msgstr "꾸러미(package) '~a'는'~a'~%에 의해 대체되었습니다"
+msgstr ""
 
 #: gnu/packages.scm:493 gnu/packages.scm:510
 #, scheme-format
 msgid "~A: package not found for version ~a~%"
-msgstr "~A: 버전 ~a~%에 대한 꾸러미를 찾지 못함"
+msgstr ""
 
 #: gnu/packages.scm:494 gnu/packages.scm:511
 #, scheme-format
 msgid "~A: unknown package~%"
-msgstr "~A: 알려지지 않은 꾸러미(package)~%"
+msgstr "~A: tuntematon paketti~%"
 
 #: gnu/packages.scm:550
 #, scheme-format
 msgid "package `~a' lacks output `~a'~%"
-msgstr "꾸러미(package) `~a'에는 출력 `~a'~%가 없습니다"
+msgstr ""
 
 #: gnu/services.scm:266
 #, scheme-format
@@ -463,6 +459,7 @@ msgstr ""
 msgid "invalid file system mount flag:~{ ~s~}~%"
 msgid_plural "invalid file system mount flags:~{ ~s~}~%"
 msgstr[0] ""
+msgstr[1] ""
 
 #: gnu/system/file-systems.scm:715
 msgid "The store is on a Btrfs subvolume, but the subvolume name is unknown."
@@ -573,7 +570,7 @@ msgstr ""
 
 #: guix/import/cpan.scm:359
 msgid "Updater for CPAN packages"
-msgstr "CPAN 꾸러미를 위한 업데이터"
+msgstr ""
 
 #: guix/import/cran.scm:176
 #, scheme-format
@@ -596,13 +593,11 @@ msgstr ""
 
 #: guix/import/cran.scm:725
 msgid "Updater for CRAN packages"
-msgstr "CRAN 꾸러미를 위한 업데이터"
+msgstr ""
 
 #: guix/import/cran.scm:732
-#, fuzzy
-#| msgid "Updater for X.org packages"
 msgid "Updater for Bioconductor packages"
-msgstr "X.org 꾸러미를 위한 업데이터"
+msgstr ""
 
 #: guix/import/elpa.scm:103
 #, scheme-format
@@ -621,7 +616,7 @@ msgstr ""
 
 #: guix/import/elpa.scm:448
 msgid "Updater for ELPA packages"
-msgstr "ELPA 꾸러미를 위한 업데이터"
+msgstr ""
 
 #: guix/import/github.scm:170
 #, scheme-format
@@ -630,7 +625,7 @@ msgstr ""
 
 #: guix/import/github.scm:260
 msgid "Updater for GitHub packages"
-msgstr "깃허브(GitHub) 꾸러미를 위한 업데이터"
+msgstr ""
 
 #: guix/import/git.scm:70
 msgid "no valid tags found"
@@ -657,7 +652,7 @@ msgstr ""
 #: guix/import/gnu.scm:118
 #, scheme-format
 msgid "no GNU package found for ~a"
-msgstr "~a를 위한 GNU 꾸러미를 찾지 못함"
+msgstr ""
 
 #: guix/import/gnu.scm:126
 #, scheme-format
@@ -760,10 +755,8 @@ msgid "no release of ~a on ContentDB~%"
 msgstr ""
 
 #: guix/import/minetest.scm:514
-#, fuzzy
-#| msgid "Updater for GitHub packages"
 msgid "Updater for Minetest packages on ContentDB"
-msgstr "깃허브(GitHub) 꾸러미를 위한 업데이터"
+msgstr ""
 
 #: guix/import/opam.scm:144
 #, scheme-format
@@ -773,11 +766,11 @@ msgstr ""
 #: guix/import/opam.scm:321
 #, scheme-format
 msgid "opam: package '~a' not found~%"
-msgstr "opam: 꾸러미 ~a는 ~%를 찾을 수 없음"
+msgstr ""
 
 #: guix/import/opam.scm:427
 msgid "Updater for OPAM packages"
-msgstr "OPAM 꾸러미를 위한 업데이터"
+msgstr ""
 
 #: guix/import/pypi.scm:230
 msgid "Could not extract requirement name in spec:"
@@ -810,48 +803,48 @@ msgstr ""
 
 #: guix/import/pypi.scm:554
 msgid "Updater for PyPI packages"
-msgstr "PyPI 꾸러미를 위한 업데이터"
+msgstr ""
 
 #: gnu/installer.scm:214
 msgid "Locale"
-msgstr "지역"
+msgstr "Maa-asetus"
 
 #: gnu/installer.scm:230 gnu/installer/newt/timezone.scm:58
 msgid "Timezone"
-msgstr "시간대"
+msgstr "Aikavyöhyke"
 
 #: gnu/installer.scm:247
 msgid "Keyboard mapping selection"
-msgstr "키보드 맵핑 선택"
+msgstr ""
 
 #: gnu/installer.scm:256 gnu/installer/newt/hostname.scm:26
 msgid "Hostname"
-msgstr "호스트 이름"
+msgstr "Koneen nimi"
 
 #: gnu/installer.scm:265
 msgid "Network selection"
-msgstr "네트워크 선택"
+msgstr "Verkon valinta"
 
 #: gnu/installer.scm:272
 msgid "Substitute server discovery"
-msgstr "대체 서버 검색"
+msgstr ""
 
 #: gnu/installer.scm:279 gnu/installer/newt/user.scm:68
 #: gnu/installer/newt/user.scm:205
 msgid "User creation"
-msgstr "사용자 생성"
+msgstr "Käyttäjän luominen"
 
 #: gnu/installer.scm:287
 msgid "Services"
-msgstr "서비스"
+msgstr "Palvelut"
 
 #: gnu/installer.scm:298
 msgid "Partitioning"
-msgstr "구획설정"
+msgstr "Osiointi"
 
 #: gnu/installer.scm:305 gnu/installer/newt/final.scm:53
 msgid "Configuration file"
-msgstr "설정 파일"
+msgstr "Asetustiedosto"
 
 #: gnu/installer/connman.scm:196
 msgid "Could not determine the state of connman."
@@ -872,7 +865,7 @@ msgstr ""
 
 #: gnu/installer/newt.scm:68
 msgid "Unexpected problem"
-msgstr "예상치 못한 문제"
+msgstr ""
 
 #: gnu/installer/newt/ethernet.scm:66
 msgid "No ethernet service available, please try again."
@@ -902,7 +895,7 @@ msgstr ""
 #: gnu/installer/newt/timezone.scm:63 gnu/installer/newt/user.scm:204
 #: gnu/installer/newt/wifi.scm:206
 msgid "Exit"
-msgstr "종료"
+msgstr "Lopeta"
 
 #: gnu/installer/newt/final.scm:46
 #, scheme-format
@@ -911,12 +904,12 @@ msgstr ""
 
 #: gnu/installer/newt/final.scm:70
 msgid "Installation complete"
-msgstr "설치 완료"
+msgstr "Asennus valmistui"
 
 #: gnu/installer/newt/final.scm:71 gnu/installer/newt/parameters.scm:45
 #: gnu/installer/newt/welcome.scm:145
 msgid "Reboot"
-msgstr "다시 시작"
+msgstr "Käynnistä uudelleen"
 
 #: gnu/installer/newt/final.scm:72
 msgid "Congratulations!  Installation is now complete.  You may remove the device containing the installation image and press the button to reboot."
@@ -924,11 +917,11 @@ msgstr ""
 
 #: gnu/installer/newt/final.scm:86
 msgid "Installation failed"
-msgstr "설치에 실패했습니다"
+msgstr "Asennus epäonnistui"
 
 #: gnu/installer/newt/final.scm:87
 msgid "Resume"
-msgstr "다시 시작"
+msgstr "Jatka"
 
 #: gnu/installer/newt/final.scm:88
 msgid "Restart the installer"
@@ -944,7 +937,7 @@ msgstr ""
 
 #: gnu/installer/newt/parameters.scm:33
 msgid "HTTP proxy configuration"
-msgstr "HTTP 프락시 구성"
+msgstr ""
 
 #: gnu/installer/newt/parameters.scm:43
 msgid "Change keyboard layout"
@@ -967,11 +960,11 @@ msgstr ""
 #: gnu/installer/newt/locale.scm:94 gnu/installer/newt/partition.scm:595
 #: gnu/installer/newt/timezone.scm:64
 msgid "Back"
-msgstr "돌아가기"
+msgstr "Takaisin"
 
 #: gnu/installer/newt/hostname.scm:25
 msgid "Please enter the system hostname."
-msgstr "시스템 호스트명을 입력해주세요."
+msgstr ""
 
 #: gnu/installer/newt/keymap.scm:38
 msgid "Layout"
@@ -988,7 +981,7 @@ msgstr ""
 #: gnu/installer/newt/keymap.scm:55 gnu/installer/newt/network.scm:62
 #: gnu/installer/newt/page.scm:308
 msgid "Continue"
-msgstr "진행"
+msgstr "Jatka"
 
 #: gnu/installer/newt/keymap.scm:67
 msgid "Variant"
@@ -1000,7 +993,7 @@ msgstr ""
 
 #: gnu/installer/newt/locale.scm:36
 msgid "Locale language"
-msgstr "지역(로케일) 언어"
+msgstr ""
 
 #: gnu/installer/newt/locale.scm:37
 msgid "Choose the language to use for the installation process and for the installed system."
@@ -1085,7 +1078,7 @@ msgstr ""
 
 #: gnu/installer/newt/network.scm:141 gnu/installer/newt/wifi.scm:108
 msgid "Connection error"
-msgstr "연결 오류"
+msgstr "Yhteysvirhe"
 
 #: gnu/installer/newt/page.scm:198
 #, scheme-format
@@ -1094,11 +1087,11 @@ msgstr ""
 
 #: gnu/installer/newt/page.scm:199
 msgid "Connection in progress"
-msgstr "연결 진행 중"
+msgstr ""
 
 #: gnu/installer/newt/page.scm:218 gnu/installer/newt/user.scm:60
 msgid "Show"
-msgstr "보기"
+msgstr "Näytä"
 
 #: gnu/installer/newt/page.scm:225 gnu/installer/newt/page.scm:672
 #: gnu/installer/newt/page.scm:757 gnu/installer/newt/partition.scm:458
@@ -1106,7 +1099,7 @@ msgstr "보기"
 #: gnu/installer/newt/partition.scm:699 gnu/installer/newt/user.scm:66
 #: gnu/installer/newt/user.scm:203
 msgid "OK"
-msgstr "확인"
+msgstr "OK"
 
 #: gnu/installer/newt/page.scm:251
 msgid "Please enter a non empty input."
@@ -1114,11 +1107,11 @@ msgstr ""
 
 #: gnu/installer/newt/page.scm:252 gnu/installer/newt/user.scm:123
 msgid "Empty input"
-msgstr "공백 입력"
+msgstr ""
 
 #: gnu/installer/newt/page.scm:760
 msgid "Edit"
-msgstr "편집"
+msgstr "Muokkaa"
 
 #: gnu/installer/newt/partition.scm:47
 msgid "Everything is one partition"
@@ -1134,7 +1127,7 @@ msgstr ""
 
 #: gnu/installer/newt/partition.scm:51
 msgid "Partition scheme"
-msgstr "파티션 계획"
+msgstr ""
 
 #. TRANSLATORS: The ~{ and ~} format specifiers are used to iterate the list
 #. of device names of the user partitions that will be formatted.
@@ -1157,11 +1150,11 @@ msgstr ""
 
 #: gnu/installer/newt/partition.scm:86
 msgid "Please select a disk."
-msgstr "디스크를 선택해주세요."
+msgstr "Valitse levyasema."
 
 #: gnu/installer/newt/partition.scm:87
 msgid "Disk"
-msgstr "디스크"
+msgstr "Levy"
 
 #: gnu/installer/newt/partition.scm:102
 msgid "Select a new partition table type. Be careful, all data on the disk will be lost."
@@ -1169,7 +1162,7 @@ msgstr ""
 
 #: gnu/installer/newt/partition.scm:104
 msgid "Partition table"
-msgstr "구획설정 테이블"
+msgstr "Osiotaulukko"
 
 #: gnu/installer/newt/partition.scm:121
 msgid "Please select a partition type."
@@ -1177,7 +1170,7 @@ msgstr ""
 
 #: gnu/installer/newt/partition.scm:122
 msgid "Partition type"
-msgstr "파티션 유형"
+msgstr "Osion tyyppi"
 
 #: gnu/installer/newt/partition.scm:132
 msgid "Please select the file-system type for this partition."
@@ -1185,7 +1178,7 @@ msgstr ""
 
 #: gnu/installer/newt/partition.scm:133
 msgid "File-system type"
-msgstr "파일 시스템 유형"
+msgstr "Tiedostojärjestelmän tyyppi"
 
 #: gnu/installer/newt/partition.scm:150
 msgid "Primary partitions count exceeded."
@@ -1194,15 +1187,15 @@ msgstr ""
 #: gnu/installer/newt/partition.scm:151 gnu/installer/newt/partition.scm:156
 #: gnu/installer/newt/partition.scm:161
 msgid "Creation error"
-msgstr "생성 오류"
+msgstr ""
 
 #: gnu/installer/newt/partition.scm:155
 msgid "Extended partition creation error."
-msgstr "확장 파티션 생성 오류."
+msgstr ""
 
 #: gnu/installer/newt/partition.scm:160
 msgid "Logical partition creation error."
-msgstr "논리 파티션 생성 오류."
+msgstr ""
 
 #: gnu/installer/newt/partition.scm:174
 #, scheme-format
@@ -1211,7 +1204,7 @@ msgstr ""
 
 #: gnu/installer/newt/partition.scm:176 gnu/installer/newt/wifi.scm:92
 msgid "Password required"
-msgstr "비밀번호가 필요합니다"
+msgstr ""
 
 #: gnu/installer/newt/partition.scm:181
 #, scheme-format
@@ -1228,7 +1221,7 @@ msgstr ""
 
 #: gnu/installer/newt/partition.scm:196 gnu/installer/newt/user.scm:169
 msgid "Password error"
-msgstr "비밀번호 오류"
+msgstr ""
 
 #: gnu/installer/newt/partition.scm:282
 msgid "Please enter the partition gpt name."
@@ -1296,7 +1289,7 @@ msgstr ""
 
 #: gnu/installer/newt/partition.scm:453
 msgid "Partition edit"
-msgstr "파티션 편집"
+msgstr ""
 
 #: gnu/installer/newt/partition.scm:634
 #, scheme-format
@@ -1305,15 +1298,15 @@ msgstr ""
 
 #: gnu/installer/newt/partition.scm:636
 msgid "Delete disk"
-msgstr "디스크 삭제"
+msgstr ""
 
 #: gnu/installer/newt/partition.scm:651
 msgid "You cannot delete a free space area."
-msgstr "빈 공간 영역은 지울 수 없습니다."
+msgstr ""
 
 #: gnu/installer/newt/partition.scm:652 gnu/installer/newt/partition.scm:659
 msgid "Delete partition"
-msgstr "파티션 삭제"
+msgstr ""
 
 #: gnu/installer/newt/partition.scm:657
 #, scheme-format
@@ -1367,7 +1360,7 @@ msgstr ""
 
 #: gnu/installer/newt/partition.scm:757
 msgid "Manual"
-msgstr "수동"
+msgstr "Käsikirja"
 
 #: gnu/installer/newt/partition.scm:759
 msgid "Please select a partitioning method."
@@ -1383,7 +1376,7 @@ msgstr ""
 
 #: gnu/installer/newt/services.scm:42
 msgid "Desktop environment"
-msgstr "데스크탑 환경"
+msgstr "Työpöytäympäristö"
 
 #: gnu/installer/newt/services.scm:59
 msgid "You can now select networking services to run on your system."
@@ -1391,7 +1384,7 @@ msgstr ""
 
 #: gnu/installer/newt/services.scm:61
 msgid "Network service"
-msgstr ""
+msgstr "Verkkopalvelut"
 
 #: gnu/installer/newt/services.scm:79
 msgid "You can now select the CUPS printing service to run on your system."
@@ -1405,7 +1398,7 @@ msgstr ""
 #, fuzzy
 #| msgid "Other services"
 msgid "Console services"
-msgstr "기타 서비스"
+msgstr "Muut palvelut"
 
 #: gnu/installer/newt/services.scm:101
 msgid "Select miscellaneous services to run on your non-graphical system."
@@ -1413,7 +1406,7 @@ msgstr ""
 
 #: gnu/installer/newt/services.scm:115
 msgid "Network management"
-msgstr "네트워크 관리"
+msgstr ""
 
 #: gnu/installer/newt/services.scm:118
 msgid ""
@@ -1424,15 +1417,15 @@ msgstr ""
 
 #: gnu/installer/newt/substitutes.scm:31
 msgid "Substitute server discovery."
-msgstr "대체 서버 검색."
+msgstr ""
 
 #: gnu/installer/newt/substitutes.scm:32
 msgid "Enable"
-msgstr "활성화"
+msgstr "Ota käyttöön"
 
 #: gnu/installer/newt/substitutes.scm:32
 msgid "Disable"
-msgstr "비활성화"
+msgstr "Poista käytöstä"
 
 #: gnu/installer/newt/substitutes.scm:33
 msgid ""
@@ -1447,7 +1440,7 @@ msgstr ""
 
 #: gnu/installer/newt/user.scm:45
 msgid "Name"
-msgstr "이름"
+msgstr "Nimi"
 
 #: gnu/installer/newt/user.scm:47
 msgid "Real name"
@@ -1455,11 +1448,11 @@ msgstr ""
 
 #: gnu/installer/newt/user.scm:49
 msgid "Home directory"
-msgstr "홈 디렉토리"
+msgstr "Kotihakemisto"
 
 #: gnu/installer/newt/user.scm:51
 msgid "Password"
-msgstr "비밀번호"
+msgstr "Salasana"
 
 #: gnu/installer/newt/user.scm:122
 msgid "Empty inputs are not allowed."
@@ -1485,11 +1478,11 @@ msgstr ""
 
 #: gnu/installer/newt/user.scm:194
 msgid "Add"
-msgstr "추가"
+msgstr "Lisää"
 
 #: gnu/installer/newt/user.scm:195
 msgid "Delete"
-msgstr "삭제"
+msgstr "Poista"
 
 #: gnu/installer/newt/user.scm:255
 msgid "Please create at least one user."
@@ -1568,7 +1561,7 @@ msgstr ""
 
 #: gnu/installer/parted.scm:433 gnu/installer/parted.scm:470
 msgid "Free space"
-msgstr "여유공간"
+msgstr "Vapaa tila"
 
 #: gnu/installer/parted.scm:559
 #, scheme-format
@@ -1577,7 +1570,7 @@ msgstr ""
 
 #: gnu/installer/parted.scm:560 gnu/installer/parted.scm:606
 msgid "None"
-msgstr "없음"
+msgstr "Ei mitään"
 
 #: gnu/installer/parted.scm:565
 #, scheme-format
@@ -1797,7 +1790,7 @@ msgstr ""
 #: guix/scripts.scm:137
 #, scheme-format
 msgid "invalid argument: ~a~%"
-msgstr "잘못된 인수: ~a~%"
+msgstr "virheellinen argumentti: ~a~%"
 
 #: guix/scripts.scm:166 guix/scripts/import/minetest.scm:92
 #, scheme-format
@@ -1815,6 +1808,7 @@ msgstr ""
 msgid "Your Guix installation is ~a day old.\n"
 msgid_plural "Your Guix installation is ~a days old.\n"
 msgstr[0] ""
+msgstr[1] ""
 
 #: guix/scripts.scm:259
 #, scheme-format
@@ -2175,11 +2169,11 @@ msgstr ""
 #. "~a" is a placeholder for that phrase.
 #: guix/diagnostics.scm:156
 msgid "warning: "
-msgstr "경고: "
+msgstr "varoitus: "
 
 #: guix/diagnostics.scm:158
 msgid "error: "
-msgstr "오류: "
+msgstr "virhe: "
 
 #: guix/diagnostics.scm:258
 msgid "<unknown location>"
@@ -2281,7 +2275,7 @@ msgstr ""
 
 #: guix/lint.scm:311
 msgid "description should not be empty"
-msgstr ""
+msgstr "Kuvaus ei saa olla tyhjä"
 
 #: guix/lint.scm:322
 msgid "Texinfo markup in description is invalid"
@@ -2597,7 +2591,7 @@ msgstr ""
 
 #: guix/lint.scm:1624
 msgid "unsupported source type"
-msgstr ""
+msgstr "lähdetyyppi ei tuettu"
 
 #: guix/lint.scm:1633
 msgid "while connecting to Software Heritage"
@@ -2879,9 +2873,6 @@ msgid ""
 "  -i, --install PACKAGE ...\n"
 "                         install PACKAGEs"
 msgstr ""
-"\n"
-"  -i, --install PACKAGE ...\n"
-"                         install PACKAGEs"
 
 #: guix/scripts/package.scm:442
 msgid ""
@@ -3054,7 +3045,7 @@ msgstr ""
 #: guix/scripts/package.scm:1060
 #, scheme-format
 msgid "nothing to do~%"
-msgstr "처리가 필요하지 않습니다~%"
+msgstr "Ei mitään tehtävää~%"
 
 #: guix/scripts/install.scm:31
 msgid ""
@@ -3431,7 +3422,7 @@ msgstr ""
 #: guix/scripts/import/stackage.scm:130 guix/scripts/import/texlive.scm:88
 #, scheme-format
 msgid "too few arguments~%"
-msgstr ""
+msgstr "Liian vähän argumentteja~%"
 
 #: guix/scripts/import/minetest.scm:117 guix/scripts/import/cran.scm:122
 #: guix/scripts/import/elpa.scm:112 guix/scripts/import/cpan.scm:89
@@ -3443,7 +3434,7 @@ msgstr ""
 #: guix/scripts/import/texlive.scm:90
 #, scheme-format
 msgid "too many arguments~%"
-msgstr "인수~%가 너무 많음"
+msgstr "Liian monta argumenttia~%"
 
 #: guix/scripts/import/cran.scm:45
 msgid ""
@@ -3602,12 +3593,14 @@ msgstr ""
 msgid "  ~a new channel:~%"
 msgid_plural "  ~a new channels:~%"
 msgstr[0] ""
+msgstr[1] ""
 
 #: guix/scripts/pull.scm:362
 #, scheme-format
 msgid "  ~a channel removed:~%"
 msgid_plural "  ~a channels removed:~%"
 msgstr[0] ""
+msgstr[1] ""
 
 #: guix/scripts/pull.scm:438
 msgid "Run @command{guix pull --news} to read all the news."
@@ -3634,11 +3627,13 @@ msgstr ""
 msgid "  ~h new package: ~a~%"
 msgid_plural "  ~h new packages: ~a~%"
 msgstr[0] ""
+msgstr[1] ""
 
 #: guix/scripts/pull.scm:622
 msgid "  ~h package upgraded: ~a~%"
 msgid_plural "  ~h packages upgraded: ~a~%"
 msgstr[0] ""
+msgstr[1] ""
 
 #: guix/scripts/pull.scm:711
 #, scheme-format
@@ -3657,6 +3652,7 @@ msgstr ""
 msgid "Building from this channel:~%"
 msgid_plural "Building from these channels:~%"
 msgstr[0] ""
+msgstr[1] ""
 
 #: guix/scripts/substitute.scm:87
 #, scheme-format
@@ -3751,7 +3747,7 @@ msgstr ""
 #: guix/scripts/authenticate.scm:86
 #, scheme-format
 msgid "invalid signature: ~a"
-msgstr ""
+msgstr "virheellinen allekirjoitus: ~a"
 
 #: guix/scripts/authenticate.scm:89
 #, scheme-format
@@ -4248,7 +4244,7 @@ msgstr ""
 
 #: guix/scripts/system/search.scm:93 guix/ui.scm:1541 guix/ui.scm:1559
 msgid "unknown"
-msgstr "알 수 없음"
+msgstr "tuntematon"
 
 #: guix/scripts/lint.scm:58
 #, scheme-format
@@ -4464,11 +4460,11 @@ msgstr ""
 
 #: guix/scripts/size.scm:93
 msgid "store item"
-msgstr "저장소 개체"
+msgstr ""
 
 #: guix/scripts/size.scm:93
 msgid "total"
-msgstr "합계"
+msgstr "yhteensä"
 
 #: guix/scripts/size.scm:93
 msgid "self"
@@ -4668,6 +4664,7 @@ msgstr ""
 msgid "  differing file:~%"
 msgid_plural "  differing files:~%"
 msgstr[0] ""
+msgstr[1] ""
 
 #: guix/scripts/challenge.scm:377
 #, scheme-format
@@ -5066,7 +5063,7 @@ msgstr ""
 
 #: guix/scripts/weather.scm:304
 msgid "unknown system"
-msgstr "알 수 없는 시스템"
+msgstr ""
 
 #: guix/scripts/weather.scm:319
 msgid ""
@@ -5118,12 +5115,14 @@ msgstr ""
 msgid "The following ~a package is missing from '~a' for '~a':~%"
 msgid_plural "The following ~a packages are missing from '~a' for '~a':~%"
 msgstr[0] ""
+msgstr[1] ""
 
 #: guix/scripts/weather.scm:496
 #, scheme-format
 msgid "~a package is missing from '~a' for '~a':~%"
 msgid_plural "~a packages are missing from '~a' for '~a', among which:~%"
 msgstr[0] ""
+msgstr[1] ""
 
 #: guix/scripts/describe.scm:53 guix/scripts/processes.scm:291
 msgid "The available formats are:\n"
@@ -5239,6 +5238,7 @@ msgstr ""
 msgid "The following ~d machine will be deployed:~%"
 msgid_plural "The following ~d machines will be deployed:~%"
 msgstr[0] ""
+msgstr[1] ""
 
 #: guix/scripts/deploy.scm:122
 #, scheme-format
@@ -5275,10 +5275,11 @@ msgstr ""
 msgid "importing module~{ ~a~} from the host~%"
 msgid_plural "importing modules~{ ~a~} from the host~%"
 msgstr[0] ""
+msgstr[1] ""
 
 #: guix/gnu-maintenance.scm:831
 msgid "Updater for GNU packages"
-msgstr "OPAM 꾸러미를 위한 업데이터"
+msgstr ""
 
 #: guix/gnu-maintenance.scm:840
 msgid "Updater for GNU packages only available via FTP"
@@ -5294,7 +5295,7 @@ msgstr ""
 
 #: guix/gnu-maintenance.scm:863
 msgid "Updater for X.org packages"
-msgstr "X.org 꾸러미를 위한 업데이터"
+msgstr ""
 
 #: guix/gnu-maintenance.scm:870
 msgid "Updater for packages hosted on kernel.org"
@@ -5390,10 +5391,9 @@ msgid "compiler ~a does not support micro-architecture ~a"
 msgstr ""
 
 #: guix/transformations.scm:581
-#, fuzzy, scheme-format
-#| msgid "choosing ~a@~a from ~a~%"
+#, scheme-format
 msgid "tuning ~a for CPU ~a~%"
-msgstr "선택하기 ~a@~a from ~a~%"
+msgstr ""
 
 #: guix/transformations.scm:721
 #, scheme-format
@@ -5831,6 +5831,7 @@ msgstr ""
 msgid "~:[The following derivation would be built:~%~{   ~a~%~}~;~]"
 msgid_plural "~:[The following derivations would be built:~%~{   ~a~%~}~;~]"
 msgstr[0] ""
+msgstr[1] ""
 
 #. TRANSLATORS: "MB" is for "megabyte"; it should be
 #. translated to the corresponding abbreviation.
@@ -5843,18 +5844,21 @@ msgstr ""
 msgid "~:[The following file would be downloaded:~%~{   ~a~%~}~;~]"
 msgid_plural "~:[The following files would be downloaded:~%~{   ~a~%~}~;~]"
 msgstr[0] ""
+msgstr[1] ""
 
 #: guix/ui.scm:1057
 #, scheme-format
 msgid "~:[The following graft would be made:~%~{   ~a~%~}~;~]"
 msgid_plural "~:[The following grafts would be made:~%~{   ~a~%~}~;~]"
 msgstr[0] ""
+msgstr[1] ""
 
 #: guix/ui.scm:1062
 #, scheme-format
 msgid "~:[The following profile hook would be built:~%~{   ~a~%~}~;~]"
 msgid_plural "~:[The following profile hooks would be built:~%~{   ~a~%~}~;~]"
 msgstr[0] ""
+msgstr[1] ""
 
 #. TRANSLATORS: "MB" is for "megabyte"; it should be
 #. translated to the corresponding abbreviation.
@@ -5866,12 +5870,14 @@ msgstr ""
 msgid "~:[~h item would be downloaded~%~;~]"
 msgid_plural "~:[~h items would be downloaded~%~;~]"
 msgstr[0] ""
+msgstr[1] ""
 
 #: guix/ui.scm:1086
 #, scheme-format
 msgid "~:[The following derivation will be built:~%~{   ~a~%~}~;~]"
 msgid_plural "~:[The following derivations will be built:~%~{   ~a~%~}~;~]"
 msgstr[0] ""
+msgstr[1] ""
 
 #. TRANSLATORS: "MB" is for "megabyte"; it should be
 #. translated to the corresponding abbreviation.
@@ -5884,18 +5890,21 @@ msgstr ""
 msgid "~:[The following file will be downloaded:~%~{   ~a~%~}~;~]"
 msgid_plural "~:[The following files will be downloaded:~%~{   ~a~%~}~;~]"
 msgstr[0] ""
+msgstr[1] ""
 
 #: guix/ui.scm:1108
 #, scheme-format
 msgid "~:[The following graft will be made:~%~{   ~a~%~}~;~]"
 msgid_plural "~:[The following grafts will be made:~%~{   ~a~%~}~;~]"
 msgstr[0] ""
+msgstr[1] ""
 
 #: guix/ui.scm:1113
 #, scheme-format
 msgid "~:[The following profile hook will be built:~%~{   ~a~%~}~;~]"
 msgid_plural "~:[The following profile hooks will be built:~%~{   ~a~%~}~;~]"
 msgstr[0] ""
+msgstr[1] ""
 
 #. TRANSLATORS: "MB" is for "megabyte"; it should be
 #. translated to the corresponding abbreviation.
@@ -5907,6 +5916,7 @@ msgstr ""
 msgid "~:[~h item will be downloaded~%~;~]"
 msgid_plural "~:[~h items will be downloaded~%~;~]"
 msgstr[0] ""
+msgstr[1] ""
 
 #: guix/ui.scm:1248
 msgid "(dependencies or package changed)"
@@ -5917,48 +5927,56 @@ msgstr ""
 msgid "The following package would be removed:~%~{~a~%~}~%"
 msgid_plural "The following packages would be removed:~%~{~a~%~}~%"
 msgstr[0] ""
+msgstr[1] ""
 
 #: guix/ui.scm:1272
 #, scheme-format
 msgid "The following package will be removed:~%~{~a~%~}~%"
 msgid_plural "The following packages will be removed:~%~{~a~%~}~%"
 msgstr[0] ""
+msgstr[1] ""
 
 #: guix/ui.scm:1285
 #, scheme-format
 msgid "The following package would be downgraded:~%~{~a~%~}~%"
 msgid_plural "The following packages would be downgraded:~%~{~a~%~}~%"
 msgstr[0] ""
+msgstr[1] ""
 
 #: guix/ui.scm:1290
 #, scheme-format
 msgid "The following package will be downgraded:~%~{~a~%~}~%"
 msgid_plural "The following packages will be downgraded:~%~{~a~%~}~%"
 msgstr[0] ""
+msgstr[1] ""
 
 #: guix/ui.scm:1303
 #, scheme-format
 msgid "The following package would be upgraded:~%~{~a~%~}~%"
 msgid_plural "The following packages would be upgraded:~%~{~a~%~}~%"
 msgstr[0] ""
+msgstr[1] ""
 
 #: guix/ui.scm:1308
 #, scheme-format
 msgid "The following package will be upgraded:~%~{~a~%~}~%"
 msgid_plural "The following packages will be upgraded:~%~{~a~%~}~%"
 msgstr[0] ""
+msgstr[1] ""
 
 #: guix/ui.scm:1319
 #, scheme-format
 msgid "The following package would be installed:~%~{~a~%~}~%"
 msgid_plural "The following packages would be installed:~%~{~a~%~}~%"
 msgstr[0] ""
+msgstr[1] ""
 
 #: guix/ui.scm:1324
 #, scheme-format
 msgid "The following package will be installed:~%~{~a~%~}~%"
 msgid_plural "The following packages will be installed:~%~{~a~%~}~%"
 msgstr[0] ""
+msgstr[1] ""
 
 #: guix/ui.scm:1442
 #, scheme-format
@@ -6129,12 +6147,14 @@ msgstr ""
 msgid "applying ~a graft for ~a ..."
 msgid_plural "applying ~a grafts for ~a ..."
 msgstr[0] ""
+msgstr[1] ""
 
 #: guix/status.scm:491
 #, scheme-format
 msgid "building profile with ~a package..."
 msgid_plural "building profile with ~a packages..."
 msgstr[0] ""
+msgstr[1] ""
 
 #: guix/status.scm:500
 #, scheme-format
@@ -6156,6 +6176,7 @@ msgstr ""
 msgid "The following build is still in progress:~%~{  ~a~%~}~%"
 msgid_plural "The following builds are still in progress:~%~{  ~a~%~}~%"
 msgstr[0] ""
+msgstr[1] ""
 
 #: guix/status.scm:520
 #, scheme-format
@@ -6227,7 +6248,7 @@ msgstr ""
 
 #: guix/nar.scm:182
 msgid "invalid signature"
-msgstr ""
+msgstr "virheellinen allekirjoitus"
 
 #: guix/nar.scm:186
 msgid "invalid hash"
@@ -6436,6 +6457,7 @@ msgstr ""
 msgid "sending ~a store item (~h MiB) to '~a'...~%"
 msgid_plural "sending ~a store items (~h MiB) to '~a'...~%"
 msgstr[0] ""
+msgstr[1] ""
 
 #: guix/ssh.scm:556
 msgid "unknown error while sending files over SSH"
@@ -6451,6 +6473,7 @@ msgstr ""
 msgid "no such item on remote host '~A':~{ ~a~}"
 msgid_plural "no such items on remote host '~A':~{ ~a~}"
 msgstr[0] ""
+msgstr[1] ""
 
 #: guix/ssh.scm:609
 #, scheme-format
@@ -6467,6 +6490,7 @@ msgstr ""
 msgid "retrieving ~a store item from '~a'...~%"
 msgid_plural "retrieving ~a store items from '~a'...~%"
 msgstr[0] ""
+msgstr[1] ""
 
 #: guix/ssh.scm:655
 #, scheme-format
@@ -6537,7 +6561,7 @@ msgstr ""
 #: guix/substitutes.scm:144
 #, scheme-format
 msgid "~a: host not found: ~a~%"
-msgstr "~a: 호스트를 찾지 못함: ~a~%"
+msgstr ""
 
 #: guix/substitutes.scm:150
 #, scheme-format
@@ -6862,16 +6886,14 @@ msgid "variable '~a' is missing from shell environment~%"
 msgstr ""
 
 #: guix/scripts/environment.scm:496
-#, fuzzy, scheme-format
-#| msgid "package '~a' has been superseded by '~a'~%"
+#, scheme-format
 msgid "variable '~a' has unexpected suffix '~a'~%"
-msgstr "꾸러미(package) '~a'는'~a'~%에 의해 대체되었습니다"
+msgstr ""
 
 #: guix/scripts/environment.scm:502
-#, fuzzy, scheme-format
-#| msgid "package '~a' has been superseded by '~a'~%"
+#, scheme-format
 msgid "variable '~a' is clobbered: '~a'~%"
-msgstr "꾸러미(package) '~a'는'~a'~%에 의해 대체되었습니다"
+msgstr ""
 
 #: guix/scripts/environment.scm:509
 #, scheme-format
@@ -6941,7 +6963,7 @@ msgstr ""
 #: guix/scripts/environment.scm:587
 #, scheme-format
 msgid "~a: command not found~%"
-msgstr "~a: 명령을 찾지 못함~%"
+msgstr ""
 
 #: guix/scripts/environment.scm:794
 #, scheme-format
@@ -7588,7 +7610,7 @@ msgstr ""
 #: guix/scripts/refresh.scm:281
 #, scheme-format
 msgid "Available updaters:~%"
-msgstr "사용 가능한 업데이트:~%"
+msgstr "Saatavilla olevat päivitykset:~%"
 
 #. TRANSLATORS: The parenthetical expression here is rendered
 #. like "(42% coverage)" and denotes the fraction of packages
@@ -7673,6 +7695,7 @@ msgstr ""
 msgid "No dependents other than itself: ~{~a~}~%"
 msgid_plural "No dependents other than themselves: ~{~a~^ ~}~%"
 msgstr[0] ""
+msgstr[1] ""
 
 #: guix/scripts/refresh.scm:455
 #, scheme-format
@@ -7684,6 +7707,7 @@ msgstr ""
 msgid "Building the following ~d package would ensure ~d dependent packages are rebuilt: ~{~a~^ ~}~%"
 msgid_plural "Building the following ~d packages would ensure ~d dependent packages are rebuilt: ~{~a~^ ~}~%"
 msgstr[0] ""
+msgstr[1] ""
 
 #: guix/scripts/refresh.scm:483
 #, scheme-format
@@ -7783,10 +7807,9 @@ msgid ""
 msgstr ""
 
 #: guix/scripts/shell.scm:199
-#, fuzzy, scheme-format
-#| msgid "invalid argument: ~a~%"
+#, scheme-format
 msgid "ignoring invalid file name: '~a'~%"
-msgstr "잘못된 인수: ~a~%"
+msgstr ""
 
 #: guix/scripts/shell.scm:280
 #, scheme-format
@@ -7896,7 +7919,7 @@ msgstr ""
 
 #: nix/nix-daemon/guix-daemon.cc:96
 msgid "SYSTEM"
-msgstr "시스템"
+msgstr "JÄRJESTELMÄ"
 
 #: nix/nix-daemon/guix-daemon.cc:97
 msgid "assume SYSTEM as the current system type"
@@ -7932,7 +7955,7 @@ msgstr ""
 
 #: nix/nix-daemon/guix-daemon.cc:109
 msgid "DIR"
-msgstr "디렉토리"
+msgstr "HAKEMISTO"
 
 #: nix/nix-daemon/guix-daemon.cc:110
 msgid "add DIR to the build chroot"

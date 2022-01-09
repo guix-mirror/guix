@@ -1,21 +1,21 @@
 # SOME DESCRIPTIVE TITLE
-# Copyright (C) 2021 the authors of Guix (msgids) and the following authors (msgstr)
+# Copyright (C) YEAR the authors of Guix (msgids) and the following authors (msgstr)
 # This file is distributed under the same license as the guix manual package.
-# simmon <simmon@nplob.com>, 2021.
+# Jan Kuparinen <copper_fin@hotmail.com>, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: guix manual checkout\n"
 "Report-Msgid-Bugs-To: bug-guix@gnu.org\n"
 "POT-Creation-Date: 2021-12-21 15:18+0000\n"
-"PO-Revision-Date: 2021-12-19 16:16+0000\n"
-"Last-Translator: simmon <simmon@nplob.com>\n"
-"Language-Team: Korean <https://translate.fedoraproject.org/projects/guix/documentation-manual/ko/>\n"
-"Language: ko\n"
+"PO-Revision-Date: 2021-12-25 14:16+0000\n"
+"Last-Translator: Jan Kuparinen <copper_fin@hotmail.com>\n"
+"Language-Team: Finnish <https://translate.fedoraproject.org/projects/guix/documentation-manual/fi/>\n"
+"Language: fi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.10\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.10.1\n"
 
 #. #-#-#-#-#  contributing.pot (guix manual checkout)  #-#-#-#-#
 #. type: chapter
@@ -25,29 +25,29 @@ msgstr ""
 #: guix-git/doc/guix.texi:182
 #, no-wrap
 msgid "Contributing"
-msgstr "공헌"
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/contributing.texi:9
 msgid "This project is a cooperative effort, and we need your help to make it grow! Please get in touch with us on @email{guix-devel@@gnu.org} and @code{#guix} on the Libera Chat IRC network.  We welcome ideas, bug reports, patches, and anything that may be helpful to the project.  We particularly welcome help on packaging (@pxref{Packaging Guidelines})."
-msgstr "이 프로젝트는 협력적인 노력이며, 우리는 성장을 위해 여러분의 도움이 필요합니다! 리베라 대화 IRC 네트워크에 있는 @email {guix-devel @@ gnu.org}과 @code {#guix}로 문의해 주세요. 우리는 생각, 문제에 대한 보고, 패치, 프로젝트에 도움이 될만한 어떠한 것도 환영합니다. 우리는 특히 꾸러미 구성에 대한 도움을 환영합니다 (@pxref{Packaging Guidelines})."
+msgstr ""
 
 #. type: cindex
 #: guix-git/doc/contributing.texi:10
 #, no-wrap
 msgid "code of conduct, of contributors"
-msgstr "행동 강령, 공헌자"
+msgstr ""
 
 #. type: cindex
 #: guix-git/doc/contributing.texi:11
 #, no-wrap
 msgid "contributor covenant"
-msgstr "공헌 동의"
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/contributing.texi:17
 msgid "We want to provide a warm, friendly, and harassment-free environment, so that anyone can contribute to the best of their abilities.  To this end our project uses a ``Contributor Covenant'', which was adapted from @url{https://contributor-covenant.org/}.  You can find a local version in the @file{CODE-OF-CONDUCT} file in the source tree."
-msgstr "우리는 따뜻하고, 친절하며, 그리고 괴롭힘 없는 환경, 누구나 자신의 능력을 최대한 발휘 할 수 있도록 그런 환경을 제공하고 싶습니다. 이를 위하여 우리의 프로젝트 사용자는 @url {https://contributor-covenant.org/}에서 채택된``기여자 동의 ''을 사용합니다. 소스 트리에 있는 @file {CODE-OF-CONDUCT} 파일 안에서 로컬 버전를 찾을 수 있습니다."
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/contributing.texi:21
@@ -59,79 +59,79 @@ msgstr ""
 #: guix-git/doc/contributing.texi:36
 #, no-wrap
 msgid "Building from Git"
-msgstr "깃에서 구성"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/contributing.texi:33
 msgid "The latest and greatest."
-msgstr "최신 및 가장 위대한."
+msgstr ""
 
 #. type: section
 #: guix-git/doc/contributing.texi:33 guix-git/doc/contributing.texi:161
 #: guix-git/doc/contributing.texi:162
 #, no-wrap
 msgid "Running Guix Before It Is Installed"
-msgstr "설치하기 전에 Guix 동작하기"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/contributing.texi:33
 msgid "Hacker tricks."
-msgstr "해커 장난."
+msgstr ""
 
 #. type: section
 #: guix-git/doc/contributing.texi:33 guix-git/doc/contributing.texi:235
 #: guix-git/doc/contributing.texi:236
 #, no-wrap
 msgid "The Perfect Setup"
-msgstr "완벽한 구성"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/contributing.texi:33
 msgid "The right tools."
-msgstr "올바른 도구."
+msgstr ""
 
 #. type: section
 #: guix-git/doc/contributing.texi:33 guix-git/doc/contributing.texi:326
 #: guix-git/doc/contributing.texi:327
 #, no-wrap
 msgid "Packaging Guidelines"
-msgstr "꾸러미 안내"
+msgstr "Paketoinnin ohjenuoria"
 
 #. type: menuentry
 #: guix-git/doc/contributing.texi:33
 msgid "Growing the distribution."
-msgstr "배포 성장."
+msgstr ""
 
 #. type: section
 #: guix-git/doc/contributing.texi:33 guix-git/doc/contributing.texi:890
 #: guix-git/doc/contributing.texi:891
 #, no-wrap
 msgid "Coding Style"
-msgstr "코딩 형태"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/contributing.texi:33
 msgid "Hygiene of the contributor."
-msgstr "기여자의 위생."
+msgstr ""
 
 #. type: section
 #: guix-git/doc/contributing.texi:33 guix-git/doc/contributing.texi:989
 #: guix-git/doc/contributing.texi:990
 #, no-wrap
 msgid "Submitting Patches"
-msgstr "패치 제출"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/contributing.texi:33
 msgid "Share your work."
-msgstr "일을 공유하다."
+msgstr ""
 
 #. type: section
 #: guix-git/doc/contributing.texi:33 guix-git/doc/contributing.texi:1270
 #: guix-git/doc/contributing.texi:1271
 #, no-wrap
 msgid "Tracking Bugs and Patches"
-msgstr "결점 추적과 패치"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/contributing.texi:33
@@ -143,31 +143,31 @@ msgstr ""
 #: guix-git/doc/contributing.texi:1386
 #, no-wrap
 msgid "Commit Access"
-msgstr "접근 허용"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/contributing.texi:33
 msgid "Pushing to the official repository."
-msgstr "공식적인 저장소로 밀어넣기."
+msgstr ""
 
 #. type: section
 #: guix-git/doc/contributing.texi:33 guix-git/doc/contributing.texi:1611
 #: guix-git/doc/contributing.texi:1612
 #, no-wrap
 msgid "Updating the Guix Package"
-msgstr "Guix 꾸러미 최신화하기"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/contributing.texi:33
 msgid "Updating the Guix package definition."
-msgstr "Guix 꾸러미 확인 최신화하기."
+msgstr ""
 
 #. type: section
 #: guix-git/doc/contributing.texi:33 guix-git/doc/contributing.texi:1652
 #: guix-git/doc/contributing.texi:1653
 #, no-wrap
 msgid "Translating Guix"
-msgstr "Guix 변역하기"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/contributing.texi:33
@@ -177,19 +177,19 @@ msgstr ""
 #. type: Plain text
 #: guix-git/doc/contributing.texi:40
 msgid "If you want to hack Guix itself, it is recommended to use the latest version from the Git repository:"
-msgstr "Guix 자체로 해킹을 원하면, 깃 저장소에서 최신판을 사용하길 권합니다:"
+msgstr ""
 
 #. type: example
 #: guix-git/doc/contributing.texi:43
 #, no-wrap
 msgid "git clone https://git.savannah.gnu.org/git/guix.git\n"
-msgstr "git clone https://git.savannah.gnu.org/git/guix.git\n"
+msgstr ""
 
 #. type: cindex
 #: guix-git/doc/contributing.texi:45
 #, no-wrap
 msgid "authentication, of a Guix checkout"
-msgstr "Guix 점검하기 인증"
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/contributing.texi:50
@@ -204,9 +204,6 @@ msgid ""
 "guix git authenticate 9edb3f66fd807b096b48283debdcddccfea34bad \\\n"
 "  \"BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA\"\n"
 msgstr ""
-"git fetch origin keyring:keyring\n"
-"guix git authenticate 9edb3f66fd807b096b48283debdcddccfea34bad \\\n"
-" \"BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA\"\n"
 
 #. type: Plain text
 #: guix-git/doc/contributing.texi:62
@@ -225,17 +222,14 @@ msgstr ""
 
 #. type: example
 #: guix-git/doc/contributing.texi:77
-#, fuzzy, no-wrap
-#| msgid "guix environment guix --pure\n"
+#, no-wrap
 msgid "guix shell -D guix --pure\n"
-msgstr "guix 환경 guix --pure\n"
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/contributing.texi:80
-#, fuzzy
-#| msgid "@xref{Invoking guix environment}, for more information on that command."
 msgid "@xref{Invoking guix shell}, for more information on that command."
-msgstr "@xref{Invoking guix environment}, 그 명령에서 보다 상세한 정보를 위하여."
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/contributing.texi:84
@@ -246,37 +240,37 @@ msgstr ""
 #: guix-git/doc/contributing.texi:86
 #, no-wrap
 msgid "@url{https://gnu.org/software/autoconf/, GNU Autoconf};"
-msgstr "@url{https://gnu.org/software/autoconf/, GNU Autoconf};"
+msgstr ""
 
 #. type: item
 #: guix-git/doc/contributing.texi:87
 #, no-wrap
 msgid "@url{https://gnu.org/software/automake/, GNU Automake};"
-msgstr "@url{https://gnu.org/software/automake/, GNU Automake};"
+msgstr ""
 
 #. type: item
 #: guix-git/doc/contributing.texi:88
 #, no-wrap
 msgid "@url{https://gnu.org/software/gettext/, GNU Gettext};"
-msgstr "@url{https://gnu.org/software/gettext/, GNU Gettext};"
+msgstr ""
 
 #. type: item
 #: guix-git/doc/contributing.texi:89
 #, no-wrap
 msgid "@url{https://gnu.org/software/texinfo/, GNU Texinfo};"
-msgstr "@url{https://gnu.org/software/texinfo/, GNU Texinfo};"
+msgstr ""
 
 #. type: item
 #: guix-git/doc/contributing.texi:90
 #, no-wrap
 msgid "@url{https://www.graphviz.org/, Graphviz};"
-msgstr "@url{https://www.graphviz.org/, Graphviz};"
+msgstr ""
 
 #. type: item
 #: guix-git/doc/contributing.texi:91
 #, no-wrap
 msgid "@url{https://www.gnu.org/software/help2man/, GNU Help2man (optional)}."
-msgstr "@url{https://www.gnu.org/software/help2man/, GNU Help2man (optional)}."
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/contributing.texi:96
@@ -309,12 +303,12 @@ msgstr ""
 #: guix-git/doc/contributing.texi:118
 #, no-wrap
 msgid "export ACLOCAL_PATH=/usr/share/aclocal\n"
-msgstr "export ACLOCAL_PATH=/usr/share/aclocal\n"
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/contributing.texi:122
 msgid "@xref{Macro Search Path,,, automake, The GNU Automake Manual}, for more information."
-msgstr "@xref{Macro Search Path,,, automake, The GNU Automake Manual}, 보다 상세한 정보를 위하여."
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/contributing.texi:129
@@ -335,7 +329,7 @@ msgstr ""
 #: guix-git/doc/contributing.texi:140
 #, no-wrap
 msgid "make authenticate\n"
-msgstr "인증을 만들다\n"
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/contributing.texi:143
@@ -351,7 +345,7 @@ msgstr ""
 #: guix-git/doc/contributing.texi:152
 #, no-wrap
 msgid "make authenticate GUIX_GIT_KEYRING=myremote/keyring\n"
-msgstr "GUIX_GIT_KEYRING=myremote/keyring 인증을 만들다\n"
+msgstr ""
 
 #. type: quotation
 #: guix-git/doc/contributing.texi:154 guix-git/doc/contributing.texi:1463
@@ -380,12 +374,12 @@ msgstr "GUIX_GIT_KEYRING=myremote/keyring 인증을 만들다\n"
 #: guix-git/doc/guix.texi:37143 guix-git/doc/guix.texi:37564
 #, no-wrap
 msgid "Note"
-msgstr "알림"
+msgstr "Huomautus"
 
 #. type: quotation
 #: guix-git/doc/contributing.texi:158
 msgid "You are advised to run @command{make authenticate} after every @command{git pull} invocation.  This ensures you keep receiving valid changes to the repository."
-msgstr "@command{make authenticate} after every @command{git pull} 기도을 실행하기 위해 조언합니다. 이는 저장소에 유효한 변화를 수신는 것을 유지하게 합니다."
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/contributing.texi:168
@@ -401,7 +395,7 @@ msgstr ""
 #: guix-git/doc/contributing.texi:182
 #, no-wrap
 msgid "$ ./pre-inst-env guix build hello\n"
-msgstr "$ ./pre-inst-env guix build hello\n"
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/contributing.texi:186
@@ -415,26 +409,24 @@ msgid ""
 "$ ./pre-inst-env guile -c '(use-modules (guix utils)) (pk (%current-system))'\n"
 "\n"
 msgstr ""
-"$ ./pre-inst-env guile -c '(use-modules (guix utils)) (pk (%current-system))'\n"
-"\n"
 
 #. type: example
 #: guix-git/doc/contributing.texi:191
 #, no-wrap
 msgid ";;; (\"x86_64-linux\")\n"
-msgstr ";;; (\"x86_64-linux\")\n"
+msgstr ""
 
 #. type: cindex
 #: guix-git/doc/contributing.texi:194
 #, no-wrap
 msgid "REPL"
-msgstr "REPL"
+msgstr ""
 
 #. type: cindex
 #: guix-git/doc/contributing.texi:195
 #, no-wrap
 msgid "read-eval-print loop"
-msgstr "read-eval-print loop"
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/contributing.texi:198
@@ -459,19 +451,6 @@ msgid ""
 "scheme@@(guile-user)> (length snakes)\n"
 "$1 = 361\n"
 msgstr ""
-"$ ./pre-inst-env guile\n"
-"scheme@@(guile-user)> ,use(guix)\n"
-"scheme@@(guile-user)> ,use(gnu)\n"
-"scheme@@(guile-user)> (define snakes\n"
-" (fold-packages\n"
-" (lambda (package lst)\n"
-" (if (string-prefix? \"python\"\n"
-" (package-name package))\n"
-" cons package lst)\n"
-" lst))\n"
-" '()))\n"
-"scheme@@(guile-user)> (length snakes)\n"
-"$1 = 361\n"
 
 #. type: Plain text
 #: guix-git/doc/contributing.texi:221
@@ -482,7 +461,7 @@ msgstr ""
 #: guix-git/doc/contributing.texi:224
 #, no-wrap
 msgid "$ sudo -E ./pre-inst-env guix-daemon --build-users-group=guixbuild\n"
-msgstr "$ sudo -E ./pre-inst-env guix-daemon --build-users-group=guixbuild\n"
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/contributing.texi:228
@@ -501,10 +480,9 @@ msgstr ""
 
 #. type: example
 #: guix-git/doc/contributing.texi:246
-#, fuzzy, no-wrap
-#| msgid "guix package -i emacs guile emacs-geiser\n"
+#, no-wrap
 msgid "guix package -i emacs guile emacs-geiser emacs-geiser-guile\n"
-msgstr "guix package -i emacs guile emacs-geiser\n"
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/contributing.texi:255
@@ -519,9 +497,6 @@ msgid ""
 "(with-eval-after-load 'geiser-guile\n"
 "  (add-to-list 'geiser-guile-load-path \"~/src/guix\"))\n"
 msgstr ""
-";; @r{Assuming the Guix checkout is in ~/src/guix.}\n"
-"(with-eval-after-load 'geiser-guile\n"
-" (add-to-list 'geiser-guile-load-path \"~/src/guix\"))\n"
 
 #. type: Plain text
 #: guix-git/doc/contributing.texi:268
@@ -532,19 +507,19 @@ msgstr ""
 #: guix-git/doc/contributing.texi:269
 #, no-wrap
 msgid "code snippets"
-msgstr "코드 조각"
+msgstr ""
 
 #. type: cindex
 #: guix-git/doc/contributing.texi:270
 #, no-wrap
 msgid "templates"
-msgstr "템플리트"
+msgstr "mallipohjia"
 
 #. type: cindex
 #: guix-git/doc/contributing.texi:271
 #, no-wrap
 msgid "reducing boilerplate"
-msgstr "상용구 줄이기"
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/contributing.texi:278
@@ -559,9 +534,6 @@ msgid ""
 "(with-eval-after-load 'yasnippet\n"
 "  (add-to-list 'yas-snippet-dirs \"~/src/guix/etc/snippets\"))\n"
 msgstr ""
-";; @r{Assuming the Guix checkout is in ~/src/guix.}\n"
-"(with-eval-after-load 'yasnippet\n"
-" (add-to-list 'yas-snippet-dirs \"~/src/guix/etc/snippets\"))\n"
 
 #. type: Plain text
 #: guix-git/doc/contributing.texi:291
@@ -577,19 +549,19 @@ msgstr ""
 #: guix-git/doc/contributing.texi:298
 #, no-wrap
 msgid "insert or update copyright"
-msgstr "저작권 삽입 또는 최신화"
+msgstr ""
 
 #. type: code{#1}
 #: guix-git/doc/contributing.texi:299
 #, no-wrap
 msgid "M-x guix-copyright"
-msgstr "M-x guix-copyright"
+msgstr ""
 
 #. type: code{#1}
 #: guix-git/doc/contributing.texi:300
 #, no-wrap
 msgid "M-x copyright-update"
-msgstr "M-x copyright-update"
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/contributing.texi:304
@@ -605,10 +577,6 @@ msgid ""
 ";; @r{Assuming the Guix checkout is in ~/src/guix.}\n"
 "(load-file \"~/src/guix/etc/copyright.el\")\n"
 msgstr ""
-"(setq user-full-name \"Alice Doe\")\n"
-"(setq user-mail-address \"alice@@mail.org\")\n"
-";; @r{Assuming the Guix checkout is in ~/src/guix.}\n"
-"(load-file \"~/src/guix/etc/copyright.el\")\n"
 
 #. type: Plain text
 #: guix-git/doc/contributing.texi:313
@@ -627,8 +595,6 @@ msgid ""
 "(setq copyright-names-regexp\n"
 "      (format \"%s <%s>\" user-full-name user-mail-address))\n"
 msgstr ""
-"(setq copyright-names-regexp\n"
-" (format \"%s <%s>\" user-full-name user-mail-address))\n"
 
 #. type: Plain text
 #: guix-git/doc/contributing.texi:325
@@ -639,7 +605,7 @@ msgstr ""
 #: guix-git/doc/contributing.texi:329
 #, no-wrap
 msgid "packages, creating"
-msgstr "꾸러미, 생성"
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/contributing.texi:333
@@ -665,7 +631,7 @@ msgstr ""
 #: guix-git/doc/contributing.texi:359
 #, no-wrap
 msgid "./pre-inst-env guix build gnew --keep-failed\n"
-msgstr "./pre-inst-env guix build gnew --keep-failed\n"
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/contributing.texi:365
@@ -681,7 +647,7 @@ msgstr ""
 #: guix-git/doc/contributing.texi:373
 #, no-wrap
 msgid "./pre-inst-env guile -c '(use-modules (gnu packages gnew))'\n"
-msgstr "./pre-inst-env guile -c '(use-modules (gnu packages gnew))'\n"
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/contributing.texi:380
@@ -692,7 +658,7 @@ msgstr ""
 #: guix-git/doc/contributing.texi:381
 #, no-wrap
 msgid "substituter"
-msgstr "대체자"
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/contributing.texi:388
@@ -704,7 +670,7 @@ msgstr ""
 #: guix-git/doc/contributing.texi:405
 #, no-wrap
 msgid "Software Freedom"
-msgstr "소프트웨어 자유"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/contributing.texi:402
@@ -716,36 +682,36 @@ msgstr ""
 #: guix-git/doc/contributing.texi:433
 #, no-wrap
 msgid "Package Naming"
-msgstr "꾸러미 이름 붙이기"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/contributing.texi:402
 msgid "What's in a name?"
-msgstr "이름에 무엇이 있습니까?"
+msgstr ""
 
 #. type: subsection
 #: guix-git/doc/contributing.texi:402 guix-git/doc/contributing.texi:465
 #: guix-git/doc/contributing.texi:466
 #, no-wrap
 msgid "Version Numbers"
-msgstr "버전 수"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/contributing.texi:402
 msgid "When the name is not enough."
-msgstr "이름이 충분하지 않을 때."
+msgstr ""
 
 #. type: subsection
 #: guix-git/doc/contributing.texi:402 guix-git/doc/contributing.texi:572
 #: guix-git/doc/contributing.texi:573
 #, no-wrap
 msgid "Synopses and Descriptions"
-msgstr "개요 및 설명"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/contributing.texi:402
 msgid "Helping users find the right package."
-msgstr "사용자는 올바른 꾸러미 찾기를 도와줍니다."
+msgstr ""
 
 #. type: subsection
 #: guix-git/doc/contributing.texi:402 guix-git/doc/contributing.texi:651
@@ -757,38 +723,38 @@ msgstr ""
 #. type: menuentry
 #: guix-git/doc/contributing.texi:402
 msgid "Whether to use a snippet, or a build phase."
-msgstr "단편적인 또는 구성 단계 사용 여부."
+msgstr ""
 
 #. type: subsection
 #: guix-git/doc/contributing.texi:402 guix-git/doc/contributing.texi:666
 #: guix-git/doc/contributing.texi:667 guix-git/doc/guix.texi:1995
 #, no-wrap
 msgid "Emacs Packages"
-msgstr "이맥스 꾸러미"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/contributing.texi:402
 msgid "Your Elisp fix."
-msgstr "Elisp 수정."
+msgstr ""
 
 #. type: subsection
 #: guix-git/doc/contributing.texi:402 guix-git/doc/contributing.texi:706
 #: guix-git/doc/contributing.texi:707
 #, no-wrap
 msgid "Python Modules"
-msgstr "파이썬 모듈"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/contributing.texi:402
 msgid "A touch of British comedy."
-msgstr "영국 희극의 촉진."
+msgstr ""
 
 #. type: subsection
 #: guix-git/doc/contributing.texi:402 guix-git/doc/contributing.texi:782
 #: guix-git/doc/contributing.texi:783
 #, no-wrap
 msgid "Perl Modules"
-msgstr "펄 모듈"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/contributing.texi:402
@@ -800,42 +766,42 @@ msgstr ""
 #: guix-git/doc/contributing.texi:799
 #, no-wrap
 msgid "Java Packages"
-msgstr "자바 꾸러미"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/contributing.texi:402
 msgid "Coffee break."
-msgstr "휴식."
+msgstr ""
 
 #. type: subsection
 #: guix-git/doc/contributing.texi:402 guix-git/doc/contributing.texi:818
 #: guix-git/doc/contributing.texi:819
 #, no-wrap
 msgid "Rust Crates"
-msgstr "녹 상자"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/contributing.texi:402
 msgid "Beware of oxidation."
-msgstr "산화에 주의하세요."
+msgstr ""
 
 #. type: subsection
 #: guix-git/doc/contributing.texi:402 guix-git/doc/contributing.texi:852
 #: guix-git/doc/contributing.texi:853
 #, no-wrap
 msgid "Fonts"
-msgstr "글꼴"
+msgstr "Fontit"
 
 #. type: menuentry
 #: guix-git/doc/contributing.texi:402
 msgid "Fond of fonts."
-msgstr "폰트를 찾았습니다."
+msgstr ""
 
 #. type: cindex
 #: guix-git/doc/contributing.texi:408
 #, no-wrap
 msgid "free software"
-msgstr "자유 소프트웨어"
+msgstr "vapaa ohjelmisto"
 
 #. type: Plain text
 #: guix-git/doc/contributing.texi:416
@@ -856,7 +822,7 @@ msgstr ""
 #: guix-git/doc/contributing.texi:435
 #, no-wrap
 msgid "package name"
-msgstr "꾸러미 이름"
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/contributing.texi:443
@@ -887,7 +853,7 @@ msgstr ""
 #: guix-git/doc/contributing.texi:468
 #, no-wrap
 msgid "package version"
-msgstr "꾸러미 버전"
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/contributing.texi:477
@@ -919,16 +885,6 @@ msgid ""
 "    (version \"2.24.20\")\n"
 "    ...))\n"
 msgstr ""
-"(define-public gtk+\n"
-" (package\n"
-" (name \"gtk+\")\n"
-" (version \"3.9.12\")\n"
-" ...))\n"
-"(define-public gtk+-2\n"
-" (package\n"
-" (name \"gtk+\")\n"
-" (version \"2.24.20\")\n"
-" ...))\n"
 
 #. type: Plain text
 #: guix-git/doc/contributing.texi:496
@@ -945,17 +901,12 @@ msgid ""
 "    (version \"3.8.2\")\n"
 "    ...))\n"
 msgstr ""
-"(define-public gtk+-3.8\n"
-" (package\n"
-" (name \"gtk+\")\n"
-" (version \"3.8.2\")\n"
-" ...))\n"
 
 #. type: cindex
 #: guix-git/doc/contributing.texi:506
 #, no-wrap
 msgid "version number, for VCS snapshots"
-msgstr "VCS 스크린샷을 위한 버전 번호"
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/contributing.texi:512
@@ -979,13 +930,6 @@ msgid ""
 "  |\n"
 "latest upstream version\n"
 msgstr ""
-"2.0.11-3.cabba9e\n"
-" ^ ^ ^\n"
-" | | `-- upstream commit ID\n"
-" | |\n"
-" | `--- Guix package revision\n"
-" |\n"
-"latest upstream version\n"
 
 #. type: Plain text
 #: guix-git/doc/contributing.texi:539
@@ -1011,20 +955,6 @@ msgid ""
 "      ;; @dots{}\n"
 "      )))\n"
 msgstr ""
-"(define my-package\n"
-" (let ((commit \"c3f29bc928d5900971f65965feaae59e1272a3f7\")\n"
-" (revision \"1\")) ;Guix package revision\n"
-" (package\n"
-" (version (git-version \"0.9\" revision commit))\n"
-" (source (origin\n"
-" (method git-fetch)\n"
-" (uri (git-reference\n"
-" (url \"git://example.org/my-package.git\")\n"
-" (commit commit)))\n"
-" (sha256 (base32 \"1mbikn@dots{}\"))\n"
-" (file-name (git-file-name name version))))\n"
-" ;; @dots{}\n"
-" )))\n"
 
 #. type: deffn
 #: guix-git/doc/contributing.texi:558
@@ -1060,13 +990,13 @@ msgstr ""
 #: guix-git/doc/contributing.texi:575
 #, no-wrap
 msgid "package description"
-msgstr "꾸러미 설명"
+msgstr ""
 
 #. type: cindex
 #: guix-git/doc/contributing.texi:576
 #, no-wrap
 msgid "package synopsis"
-msgstr "꾸러미 개요"
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/contributing.texi:583
@@ -1118,10 +1048,6 @@ msgid ""
 "  (synopsis \"This is translatable\")\n"
 "  (description (string-append \"This is \" \"*not*\" \" translatable.\")))\n"
 msgstr ""
-"(package\n"
-" ;; @dots{}\n"
-" (synopsis \"This is translatable\")\n"
-" (description (string-append \"This is \" \"*not*\" \" translatable.\")))\n"
 
 #. type: Plain text
 #: guix-git/doc/contributing.texi:644
@@ -1152,13 +1078,13 @@ msgstr ""
 #: guix-git/doc/contributing.texi:669
 #, no-wrap
 msgid "emacs, packaging"
-msgstr "emacs, 포장(packaging)"
+msgstr ""
 
 #. type: cindex
 #: guix-git/doc/contributing.texi:670
 #, no-wrap
 msgid "elisp, packaging"
-msgstr "elisp, 포장(packaging)"
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/contributing.texi:682
@@ -1177,10 +1103,9 @@ msgstr ""
 
 #. type: lisp
 #: guix-git/doc/contributing.texi:699
-#, fuzzy, no-wrap
-#| msgid "#:include (cons \"^snippets/\" %default-include))\n"
+#, no-wrap
 msgid "#:include (cons \"^snippets/\" %default-include)\n"
-msgstr "#:include (cons \"^snippets/\" %default-include))\n"
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/contributing.texi:705
@@ -1191,7 +1116,7 @@ msgstr ""
 #: guix-git/doc/contributing.texi:709
 #, no-wrap
 msgid "python"
-msgstr "파이썬"
+msgstr "Python"
 
 #. type: Plain text
 #: guix-git/doc/contributing.texi:715
@@ -1212,13 +1137,13 @@ msgstr ""
 #: guix-git/doc/contributing.texi:729
 #, no-wrap
 msgid "Specifying Dependencies"
-msgstr "종속성 지정"
+msgstr ""
 
 #. type: cindex
 #: guix-git/doc/contributing.texi:730
 #, no-wrap
 msgid "inputs, for Python packages"
-msgstr "파이썬 꾸러미를 위한 입력"
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/contributing.texi:735
@@ -1264,7 +1189,7 @@ msgstr ""
 #: guix-git/doc/contributing.texi:785
 #, no-wrap
 msgid "perl"
-msgstr "펄(perl)"
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/contributing.texi:796
@@ -1275,7 +1200,7 @@ msgstr ""
 #: guix-git/doc/contributing.texi:801
 #, no-wrap
 msgid "java"
-msgstr "자바(java)"
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/contributing.texi:804
@@ -1327,7 +1252,7 @@ msgstr ""
 #: guix-git/doc/contributing.texi:855 guix-git/doc/guix.texi:1930
 #, no-wrap
 msgid "fonts"
-msgstr "글꼴"
+msgstr "fontit"
 
 #. type: Plain text
 #: guix-git/doc/contributing.texi:861
@@ -1364,7 +1289,7 @@ msgstr ""
 #: guix-git/doc/contributing.texi:905
 #, no-wrap
 msgid "Programming Paradigm"
-msgstr "프로그래밍 패러다임"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/contributing.texi:902
@@ -1376,7 +1301,7 @@ msgstr ""
 #: guix-git/doc/contributing.texi:912
 #, no-wrap
 msgid "Modules"
-msgstr "모듈"
+msgstr "Moduulit"
 
 #. type: menuentry
 #: guix-git/doc/contributing.texi:902
@@ -1388,24 +1313,24 @@ msgstr ""
 #: guix-git/doc/contributing.texi:923
 #, no-wrap
 msgid "Data Types and Pattern Matching"
-msgstr "자료 유형과 유형 일치(pattern matching)"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/contributing.texi:902
 msgid "Implementing data structures."
-msgstr "자료 구조 구현."
+msgstr ""
 
 #. type: subsection
 #: guix-git/doc/contributing.texi:902 guix-git/doc/contributing.texi:937
 #: guix-git/doc/contributing.texi:938
 #, no-wrap
 msgid "Formatting Code"
-msgstr "형식화(formatting) 코드"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/contributing.texi:902
 msgid "Writing conventions."
-msgstr "쓰기 규칙."
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/contributing.texi:910
@@ -1442,7 +1367,7 @@ msgstr ""
 #: guix-git/doc/contributing.texi:941
 #, no-wrap
 msgid "coding style"
-msgstr "코딩 유형"
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/contributing.texi:948
@@ -1486,7 +1411,7 @@ msgstr ""
 #: guix-git/doc/contributing.texi:972
 #, no-wrap
 msgid "./etc/indent-code.el gnu/services/@var{file}.scm\n"
-msgstr "./etc/indent-code.el gnu/services/@var{file}.scm\n"
+msgstr ""
 
 #. type: cindex
 #: guix-git/doc/contributing.texi:974
@@ -1559,7 +1484,7 @@ msgstr ""
 #. type: enumerate
 #: guix-git/doc/contributing.texi:1040
 msgid "Run @code{guix lint @var{package}}, where @var{package} is the name of the new or modified package, and fix any errors it reports (@pxref{Invoking guix lint})."
-msgstr "Run @code{guix lint @var{package}}, where @var{package} is the name of the new or modified package, and fix any errors it reports (@pxref{Invoking guix lint})."
+msgstr ""
 
 #. type: enumerate
 #: guix-git/doc/contributing.texi:1044
@@ -1573,19 +1498,12 @@ msgstr ""
 
 #. type: lisp
 #: guix-git/doc/contributing.texi:1057
-#, fuzzy, no-wrap
-#| msgid ""
-#| "(service qemu-binfmt-service-type\n"
-#| " (qemu-binfmt-configuration\n"
-#| "   (platforms (lookup-qemu-platforms \"arm\" \"aarch64\"))\n"
+#, no-wrap
 msgid ""
 "(service qemu-binfmt-service-type\n"
 " (qemu-binfmt-configuration\n"
 "   (platforms (lookup-qemu-platforms \"arm\" \"aarch64\"))))\n"
 msgstr ""
-"(service qemu-binfmt-service-type\n"
-"(qemu-binfmt-configuration\n"
-"(platforms (lookup-qemu-platforms \"arm\" \"aarch64\"))\n"
 
 #. type: enumerate
 #: guix-git/doc/contributing.texi:1060
@@ -1652,18 +1570,18 @@ msgstr ""
 #: guix-git/doc/contributing.texi:1105
 #, no-wrap
 msgid "300 dependent packages or less"
-msgstr "300 종속 꾸러미 이하"
+msgstr ""
 
 #. type: table
 #: guix-git/doc/contributing.texi:1107
 msgid "@code{master} branch (non-disruptive changes)."
-msgstr "@code{master} branch (non-disruptive changes)."
+msgstr ""
 
 #. type: item
 #: guix-git/doc/contributing.texi:1108
 #, no-wrap
 msgid "between 300 and 1,800 dependent packages"
-msgstr "300과 1,800 사이에서 종속 꾸러미"
+msgstr ""
 
 #. type: table
 #: guix-git/doc/contributing.texi:1114
@@ -1717,7 +1635,7 @@ msgstr ""
 #: guix-git/doc/contributing.texi:1149
 #, no-wrap
 msgid "guix build --rounds=2 my-package\n"
-msgstr "guix build --rounds=2 my-package\n"
+msgstr ""
 
 #. type: enumerate
 #: guix-git/doc/contributing.texi:1153
@@ -1768,7 +1686,7 @@ msgstr ""
 #: guix-git/doc/contributing.texi:1198
 #, no-wrap
 msgid "guix pull --url=/path/to/your/checkout --profile=/tmp/guix.master\n"
-msgstr "guix pull --url=/path/to/your/checkout --profile=/tmp/guix.master\n"
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/contributing.texi:1211
@@ -1789,19 +1707,19 @@ msgstr ""
 #: guix-git/doc/contributing.texi:1220 guix-git/doc/contributing.texi:1221
 #, no-wrap
 msgid "Configuring Git"
-msgstr "Git 구성하기"
+msgstr "Konfiguroidaan Gittiä"
 
 #. type: cindex
 #: guix-git/doc/contributing.texi:1222
 #, no-wrap
 msgid "git configuration"
-msgstr "git 구성"
+msgstr "git-määritykset"
 
 #. type: code{#1}
 #: guix-git/doc/contributing.texi:1224 guix-git/doc/contributing.texi:1259
 #, no-wrap
 msgid "git send-email"
-msgstr "깃 전송-전자우편"
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/contributing.texi:1232
@@ -1841,13 +1759,13 @@ msgstr ""
 #: guix-git/doc/contributing.texi:1256 guix-git/doc/contributing.texi:1258
 #, no-wrap
 msgid "Sending a Patch Series"
-msgstr "패치 시리즈 보내기"
+msgstr ""
 
 #. type: cindex
 #: guix-git/doc/contributing.texi:1258
 #, no-wrap
 msgid "patch series"
-msgstr "패치 시리즈"
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/contributing.texi:1269
@@ -1874,10 +1792,9 @@ msgstr ""
 #. type: subsection
 #: guix-git/doc/contributing.texi:1280 guix-git/doc/contributing.texi:1296
 #: guix-git/doc/contributing.texi:1297
-#, fuzzy, no-wrap
-#| msgid "Debbugs, issue tracking system"
+#, no-wrap
 msgid "Debbugs User Interfaces"
-msgstr "디버그, 사건 추적 시스템"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/contributing.texi:1280
@@ -1887,10 +1804,9 @@ msgstr ""
 #. type: subsection
 #: guix-git/doc/contributing.texi:1280 guix-git/doc/contributing.texi:1336
 #: guix-git/doc/contributing.texi:1337
-#, fuzzy, no-wrap
-#| msgid "Debbugs, issue tracking system"
+#, no-wrap
 msgid "Debbugs Usertags"
-msgstr "디버그, 사건 추적 시스템"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/contributing.texi:1280
@@ -1901,7 +1817,7 @@ msgstr ""
 #: guix-git/doc/contributing.texi:1285
 #, no-wrap
 msgid "bug reports, tracking"
-msgstr "결점 보고, 추적"
+msgstr ""
 
 #. type: cindex
 #: guix-git/doc/contributing.texi:1286
@@ -1913,13 +1829,13 @@ msgstr ""
 #: guix-git/doc/contributing.texi:1287
 #, no-wrap
 msgid "issue tracking"
-msgstr "사건 추적하기"
+msgstr ""
 
 #. type: cindex
 #: guix-git/doc/contributing.texi:1288
 #, no-wrap
 msgid "Debbugs, issue tracking system"
-msgstr "디버그, 사건 추적 시스템"
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/contributing.texi:1295
@@ -1939,7 +1855,7 @@ msgstr ""
 #. type: itemize
 #: guix-git/doc/contributing.texi:1312
 msgid "@url{https://bugs.gnu.org/guix} lists bug reports;"
-msgstr "@url{https://bugs.gnu.org/guix} 결점 보고 목록;"
+msgstr ""
 
 #. type: itemize
 #: guix-git/doc/contributing.texi:1314
@@ -1971,7 +1887,7 @@ msgstr ""
 #: guix-git/doc/contributing.texi:1331
 #, no-wrap
 msgid "@kbd{C-u} @kbd{M-x} debbugs-gnu @kbd{RET} @kbd{RET} guix-patches @kbd{RET} n y\n"
-msgstr "@kbd{C-u} @kbd{M-x} debbugs-gnu @kbd{RET} @kbd{RET} guix-patches @kbd{RET} n y\n"
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/contributing.texi:1335
@@ -1986,10 +1902,9 @@ msgstr ""
 
 #. type: cindex
 #: guix-git/doc/contributing.texi:1340
-#, fuzzy, no-wrap
-#| msgid "Debbugs, issue tracking system"
+#, no-wrap
 msgid "Debbugs usertags"
-msgstr "디버그, 사건 추적 시스템"
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/contributing.texi:1346
@@ -2060,10 +1975,9 @@ msgstr ""
 
 #. type: subsection
 #: guix-git/doc/contributing.texi:1399
-#, fuzzy, no-wrap
-#| msgid "Commit Access"
+#, no-wrap
 msgid "Applying for Commit Access"
-msgstr "접근 허용"
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/contributing.texi:1403
@@ -2163,16 +2077,11 @@ msgstr ""
 
 #. type: example
 #: guix-git/doc/contributing.texi:1484
-#, fuzzy, no-wrap
-#| msgid ""
-#| "git config commit.gpgsign true\n"
-#| "git config user.signingkey CABBA6EA1DC0FF33\n"
+#, no-wrap
 msgid ""
 "# Substitute the fingerprint of your public PGP key.\n"
 "git config user.signingkey CABBA6EA1DC0FF33\n"
 msgstr ""
-"git config commit.gpgsign true\n"
-"git config user.signingkey CABBA6EA1DC0FF33\n"
 
 #. type: Plain text
 #: guix-git/doc/contributing.texi:1489
@@ -2183,14 +2092,13 @@ msgstr ""
 #: guix-git/doc/contributing.texi:1492
 #, no-wrap
 msgid "cp etc/git/pre-push .git/hooks/pre-push\n"
-msgstr "cp etc/git/pre-push .git/hooks/pre-push\n"
+msgstr ""
 
 #. type: subsection
 #: guix-git/doc/contributing.texi:1494
-#, fuzzy, no-wrap
-#| msgid "Commit Access"
+#, no-wrap
 msgid "Commit Policy"
-msgstr "접근 허용"
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/contributing.texi:1499
@@ -2221,7 +2129,7 @@ msgstr ""
 #: guix-git/doc/contributing.texi:1525
 #, no-wrap
 msgid "make check-channel-news\n"
-msgstr "make check-channel-news\n"
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/contributing.texi:1531
@@ -2335,7 +2243,7 @@ msgstr ""
 #: guix-git/doc/contributing.texi:1623
 #, no-wrap
 msgid "make update-guix-package\n"
-msgstr "make update-guix-package\n"
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/contributing.texi:1630
@@ -2351,7 +2259,7 @@ msgstr ""
 #: guix-git/doc/contributing.texi:1637
 #, no-wrap
 msgid "./pre-inst-env guix build guix\n"
-msgstr "./pre-inst-env guix build guix\n"
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/contributing.texi:1642
@@ -2367,7 +2275,7 @@ msgstr ""
 #: guix-git/doc/contributing.texi:1648
 #, no-wrap
 msgid "translation"
-msgstr "번역"
+msgstr "käännös"
 
 #. type: cindex
 #: guix-git/doc/contributing.texi:1649
@@ -2379,7 +2287,7 @@ msgstr ""
 #: guix-git/doc/contributing.texi:1650
 #, no-wrap
 msgid "i18n"
-msgstr ""
+msgstr "i18n"
 
 #. type: cindex
 #: guix-git/doc/contributing.texi:1651
@@ -2527,7 +2435,7 @@ msgstr ""
 #: guix-git/doc/contributing.texi:1757 guix-git/doc/guix.texi:2988
 #, no-wrap
 msgid "packages"
-msgstr "꾸러미"
+msgstr "paketit"
 
 #. type: table
 #: guix-git/doc/contributing.texi:1762
@@ -2607,7 +2515,7 @@ msgstr ""
 #: guix-git/doc/contributing.texi:1817
 #, no-wrap
 msgid "website"
-msgstr "웹사이트"
+msgstr "verkkosivu"
 
 #. type: table
 #: guix-git/doc/contributing.texi:1824
@@ -2689,7 +2597,7 @@ msgstr ""
 #. type: itemize
 #: guix-git/doc/contributing.texi:1860
 msgid "translated."
-msgstr "번역됨."
+msgstr ""
 
 #. type: subsubheading
 #: guix-git/doc/contributing.texi:1862
@@ -2764,25 +2672,24 @@ msgstr ""
 #. type: Plain text
 #: guix-git/doc/guix.texi:7
 msgid "@documentencoding UTF-8"
-msgstr "@documentencoding UTF-8"
+msgstr ""
 
 #. type: title
 #: guix-git/doc/guix.texi:7 guix-git/doc/guix.texi:131
 #, no-wrap
 msgid "GNU Guix Reference Manual"
-msgstr "GNU Gix 참조 설명"
+msgstr ""
 
 #. type: include
 #: guix-git/doc/guix.texi:10
 #, no-wrap
 msgid "version.texi"
-msgstr "version-ko.texi"
+msgstr "version-fi.texi"
 
 #. type: copying
 #: guix-git/doc/guix.texi:103
-#, fuzzy
 msgid "Copyright @copyright{} 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès@* Copyright @copyright{} 2013, 2014, 2016 Andreas Enge@* Copyright @copyright{} 2013 Nikita Karetnikov@* Copyright @copyright{} 2014, 2015, 2016 Alex Kost@* Copyright @copyright{} 2015, 2016 Mathieu Lirzin@* Copyright @copyright{} 2014 Pierre-Antoine Rault@* Copyright @copyright{} 2015 Taylan Ulrich Bayırlı/Kammer@* Copyright @copyright{} 2015, 2016, 2017, 2019, 2020, 2021 Leo Famulari@* Copyright @copyright{} 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ricardo Wurmus@* Copyright @copyright{} 2016 Ben Woodcroft@* Copyright @copyright{} 2016, 2017, 2018, 2021 Chris Marusich@* Copyright @copyright{} 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner@* Copyright @copyright{} 2016 John Darrington@* Copyright @copyright{} 2016, 2017 Nikita Gillmann@* Copyright @copyright{} 2016, 2017, 2018, 2019, 2020 Jan Nieuwenhuizen@* Copyright @copyright{} 2016, 2017, 2018, 2019, 2020, 2021 Julien Lepiller@* Copyright @copyright{} 2016 Alex ter Weele@* Copyright @copyright{} 2016, 2017, 2018, 2019, 2020, 2021 Christopher Baines@* Copyright @copyright{} 2017, 2018, 2019 Clément Lassieur@* Copyright @copyright{} 2017, 2018, 2020, 2021 Mathieu Othacehe@* Copyright @copyright{} 2017 Federico Beffa@* Copyright @copyright{} 2017, 2018 Carlo Zancanaro@* Copyright @copyright{} 2017 Thomas Danckaert@* Copyright @copyright{} 2017 humanitiesNerd@* Copyright @copyright{} 2017, 2021 Christine Lemmer-Webber@* Copyright @copyright{} 2017, 2018, 2019, 2020, 2021 Marius Bakke@* Copyright @copyright{} 2017, 2019, 2020 Hartmut Goebel@* Copyright @copyright{} 2017, 2019, 2020, 2021 Maxim Cournoyer@* Copyright @copyright{} 2017–2022 Tobias Geerinckx-Rice@* Copyright @copyright{} 2017 George Clemmer@* Copyright @copyright{} 2017 Andy Wingo@* Copyright @copyright{} 2017, 2018, 2019, 2020 Arun Isaac@* Copyright @copyright{} 2017 nee@* Copyright @copyright{} 2018 Rutger Helling@* Copyright @copyright{} 2018, 2021 Oleg Pykhalov@* Copyright @copyright{} 2018 Mike Gerwitz@* Copyright @copyright{} 2018 Pierre-Antoine Rouby@* Copyright @copyright{} 2018, 2019 Gábor Boskovits@* Copyright @copyright{} 2018, 2019, 2020 Florian Pelz@* Copyright @copyright{} 2018 Laura Lazzati@* Copyright @copyright{} 2018 Alex Vong@* Copyright @copyright{} 2019 Josh Holland@* Copyright @copyright{} 2019, 2020 Diego Nicola Barbato@* Copyright @copyright{} 2019 Ivan Petkov@* Copyright @copyright{} 2019 Jakob L. Kreuze@* Copyright @copyright{} 2019 Kyle Andrews@* Copyright @copyright{} 2019 Alex Griffin@* Copyright @copyright{} 2019, 2020, 2021 Guillaume Le Vaillant@* Copyright @copyright{} 2020 Liliana Marie Prikler@* Copyright @copyright{} 2019, 2020, 2021 Simon Tournier@* Copyright @copyright{} 2020 Wiktor Żelazny@* Copyright @copyright{} 2020 Damien Cassou@* Copyright @copyright{} 2020 Jakub Kądziołka@* Copyright @copyright{} 2020 Jack Hill@* Copyright @copyright{} 2020 Naga Malleswari@* Copyright @copyright{} 2020, 2021 Brice Waegeneire@* Copyright @copyright{} 2020 R Veera Kumar@* Copyright @copyright{} 2020, 2021 Pierre Langlois@* Copyright @copyright{} 2020 pinoaffe@* Copyright @copyright{} 2020 André Batista@* Copyright @copyright{} 2020, 2021 Alexandru-Sergiu Marton@* Copyright @copyright{} 2020 raingloom@* Copyright @copyright{} 2020 Daniel Brooks@* Copyright @copyright{} 2020 John Soo@* Copyright @copyright{} 2020 Jonathan Brielmaier@* Copyright @copyright{} 2020 Edgar Vincent@* Copyright @copyright{} 2021 Maxime Devos@* Copyright @copyright{} 2021 B. Wilson@* Copyright @copyright{} 2021 Xinglu Chen@* Copyright @copyright{} 2021 Raghav Gururajan@* Copyright @copyright{} 2021 Domagoj Stolfa@* Copyright @copyright{} 2021 Hui Lu@* Copyright @copyright{} 2021 pukkamustard@* Copyright @copyright{} 2021 Alice Brenon@* Copyright @copyright{} 2021 Josselin Poiret@* Copyright @copyright{} 2021 Andrew Tropin@* Copyright @copyright{} 2021 Sarah Morgensen@* Copyright @copyright{} 2021 Josselin Poiret@*"
-msgstr "Copyright @copyright{} 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès@* Copyright @copyright{} 2013, 2014, 2016 Andreas Enge@* Copyright @copyright{} 2013 Nikita Karetnikov@* Copyright @copyright{} 2014, 2015, 2016 Alex Kost@* Copyright @copyright{} 2015, 2016 Mathieu Lirzin@* Copyright @copyright{} 2014 Pierre-Antoine Rault@* Copyright @copyright{} 2015 Taylan Ulrich Bayırlı/Kammer@* Copyright @copyright{} 2015, 2016, 2017, 2019, 2020, 2021 Leo Famulari@* Copyright @copyright{} 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus@* Copyright @copyright{} 2016 Ben Woodcroft@* Copyright @copyright{} 2016, 2017, 2018 Chris Marusich@* Copyright @copyright{} 2016, 2017, 2018, 2019, 2020 Efraim Flashner@* Copyright @copyright{} 2016 John Darrington@* Copyright @copyright{} 2016, 2017 Nikita Gillmann@* Copyright @copyright{} 2016, 2017, 2018, 2019, 2020 Jan Nieuwenhuizen@* Copyright @copyright{} 2016, 2017, 2018, 2019, 2020 Julien Lepiller@* Copyright @copyright{} 2016 Alex ter Weele@* Copyright @copyright{} 2016, 2017, 2018, 2019 Christopher Baines@* Copyright @copyright{} 2017, 2018, 2019 Clément Lassieur@* Copyright @copyright{} 2017, 2018, 2020, 2021 Mathieu Othacehe@* Copyright @copyright{} 2017 Federico Beffa@* Copyright @copyright{} 2017, 2018 Carlo Zancanaro@* Copyright @copyright{} 2017 Thomas Danckaert@* Copyright @copyright{} 2017 humanitiesNerd@* Copyright @copyright{} 2017, 2021 Christopher Lemmer Webber@* Copyright @copyright{} 2017, 2018, 2019, 2020 Marius Bakke@* Copyright @copyright{} 2017, 2019, 2020 Hartmut Goebel@* Copyright @copyright{} 2017, 2019, 2020, 2021 Maxim Cournoyer@* Copyright @copyright{} 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice@* Copyright @copyright{} 2017 George Clemmer@* Copyright @copyright{} 2017 Andy Wingo@* Copyright @copyright{} 2017, 2018, 2019, 2020 Arun Isaac@* Copyright @copyright{} 2017 nee@* Copyright @copyright{} 2018 Rutger Helling@* Copyright @copyright{} 2018, 2021 Oleg Pykhalov@* Copyright @copyright{} 2018 Mike Gerwitz@* Copyright @copyright{} 2018 Pierre-Antoine Rouby@* Copyright @copyright{} 2018, 2019 Gábor Boskovits@* Copyright @copyright{} 2018, 2019, 2020 Florian Pelz@* Copyright @copyright{} 2018 Laura Lazzati@* Copyright @copyright{} 2018 Alex Vong@* Copyright @copyright{} 2019 Josh Holland@* Copyright @copyright{} 2019, 2020 Diego Nicola Barbato@* Copyright @copyright{} 2019 Ivan Petkov@* Copyright @copyright{} 2019 Jakob L. Kreuze@* Copyright @copyright{} 2019 Kyle Andrews@* Copyright @copyright{} 2019 Alex Griffin@* Copyright @copyright{} 2019, 2020 Guillaume Le Vaillant@* Copyright @copyright{} 2020 Leo Prikler@* Copyright @copyright{} 2019, 2020 Simon Tournier@* Copyright @copyright{} 2020 Wiktor Żelazny@* Copyright @copyright{} 2020 Damien Cassou@* Copyright @copyright{} 2020 Jakub Kądziołka@* Copyright @copyright{} 2020 Jack Hill@* Copyright @copyright{} 2020 Naga Malleswari@* Copyright @copyright{} 2020 Brice Waegeneire@* Copyright @copyright{} 2020 R Veera Kumar@* Copyright @copyright{} 2020 Pierre Langlois@* Copyright @copyright{} 2020 pinoaffe@* Copyright @copyright{} 2020 André Batista@* Copyright @copyright{} 2020, 2021 Alexandru-Sergiu Marton@* Copy"
+msgstr ""
 
 #. type: copying
 #: guix-git/doc/guix.texi:110
@@ -2793,7 +2700,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:112
 #, no-wrap
 msgid "System administration"
-msgstr "시스템 관리"
+msgstr "Järjestelmän hallinta"
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:120
@@ -2813,17 +2720,17 @@ msgstr ""
 #. type: menuentry
 #: guix-git/doc/guix.texi:120
 msgid "Installing, removing, and upgrading packages."
-msgstr "설치하기, 제거하기, 그리고 향상된 꾸러미."
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:120
 msgid "guix gc: (guix)Invoking guix gc"
-msgstr "guix gc: (guix) guix gc 호출하기"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:120
 msgid "Reclaiming unused disk space."
-msgstr "사용하지 않는 디스크 공간 재지정."
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:120
@@ -2833,22 +2740,22 @@ msgstr ""
 #. type: menuentry
 #: guix-git/doc/guix.texi:120
 msgid "Update the list of available packages."
-msgstr "사용 할 수 있는 꾸러미 목록 최신화."
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:120
 msgid "guix system: (guix)Invoking guix system"
-msgstr "guix system: (guix)guix system 호출"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:120
 msgid "Manage the operating system configuration."
-msgstr "운영체제 설정 관리."
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:120
 msgid "guix deploy: (guix)Invoking guix deploy"
-msgstr "guix 배포: (guix)guix 배포 호출"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:120
@@ -2859,51 +2766,47 @@ msgstr ""
 #: guix-git/doc/guix.texi:122
 #, no-wrap
 msgid "Software development"
-msgstr "소프트웨어 개발"
+msgstr "Ohjelmistokehitys"
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:128
-#, fuzzy
-#| msgid "guix system: (guix)Invoking guix system"
 msgid "guix shell: (guix)Invoking guix shell"
-msgstr "guix system: (guix)guix system 호출"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:128
-#, fuzzy
-#| msgid "Building development environments with Guix."
 msgid "Creating software environments."
-msgstr "guix로 개발 환경 구성하기."
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:128
 msgid "guix environment: (guix)Invoking guix environment"
-msgstr "guix 환경: (guix)guix 환경 호출"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:128
 msgid "Building development environments with Guix."
-msgstr "guix로 개발 환경 구성하기."
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:128
 msgid "guix build: (guix)Invoking guix build"
-msgstr "guix 구성: (guix)guix 구성 호출"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:128
 msgid "Building packages."
-msgstr "꾸러미 구성."
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:128
 msgid "guix pack: (guix)Invoking guix pack"
-msgstr "guix 포장(pack): (guix)guix 포장 호중"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:128
 msgid "Creating binary bundles."
-msgstr "바이너리 번들 생성."
+msgstr ""
 
 #. type: subtitle
 #: guix-git/doc/guix.texi:132
@@ -2915,24 +2818,24 @@ msgstr ""
 #: guix-git/doc/guix.texi:133
 #, no-wrap
 msgid "The GNU Guix Developers"
-msgstr "GNU Guix 개발자"
+msgstr ""
 
 #. type: titlepage
 #: guix-git/doc/guix.texi:139
 msgid "Edition @value{EDITION} @* @value{UPDATED} @*"
-msgstr "배포판 @value{EDITION} @* @value{UPDATED} @*"
+msgstr ""
 
 #. type: node
 #: guix-git/doc/guix.texi:146
 #, no-wrap
 msgid "Top"
-msgstr "Top"
+msgstr ""
 
 #. type: top
 #: guix-git/doc/guix.texi:147
 #, no-wrap
 msgid "GNU Guix"
-msgstr "GNU Guix"
+msgstr "GNU Guix"
 
 #. type: Plain text
 #: guix-git/doc/guix.texi:151
@@ -2949,154 +2852,151 @@ msgstr ""
 #: guix-git/doc/guix.texi:402 guix-git/doc/guix.texi:403
 #, no-wrap
 msgid "Introduction"
-msgstr "안내"
+msgstr "Johdanto"
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:182
 msgid "What is Guix about?"
-msgstr "Guix는 무엇인가요?"
+msgstr ""
 
 #. type: chapter
 #: guix-git/doc/guix.texi:182 guix-git/doc/guix.texi:197
 #: guix-git/doc/guix.texi:589 guix-git/doc/guix.texi:590
 #, no-wrap
 msgid "Installation"
-msgstr "설치"
+msgstr "Asennus"
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:182
 msgid "Installing Guix."
-msgstr "Guix 설치하기."
+msgstr ""
 
 #. type: chapter
 #: guix-git/doc/guix.texi:182 guix-git/doc/guix.texi:213
 #: guix-git/doc/guix.texi:2049 guix-git/doc/guix.texi:2050
 #, no-wrap
 msgid "System Installation"
-msgstr "시스템 설치"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:182
 msgid "Installing the whole operating system."
-msgstr "전체 운영체제 설치하기."
+msgstr ""
 
 #. type: chapter
 #: guix-git/doc/guix.texi:182 guix-git/doc/guix.texi:2777
 #: guix-git/doc/guix.texi:2778
 #, no-wrap
 msgid "Getting Started"
-msgstr "시작하기"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:182
 msgid "Your first steps."
-msgstr "당신의 첫 번째 단계."
+msgstr ""
 
 #. type: chapter
 #: guix-git/doc/guix.texi:182 guix-git/doc/guix.texi:230
 #: guix-git/doc/guix.texi:2985 guix-git/doc/guix.texi:2986
 #, no-wrap
 msgid "Package Management"
-msgstr "꾸러미 관리"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:182
 msgid "Package installation, upgrade, etc."
-msgstr "꾸러미 설치, 향상, 기타."
+msgstr ""
 
 #. type: chapter
 #: guix-git/doc/guix.texi:182 guix-git/doc/guix.texi:253
 #: guix-git/doc/guix.texi:5053 guix-git/doc/guix.texi:5054
 #, no-wrap
 msgid "Channels"
-msgstr "채널"
+msgstr "Kanavat"
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:182
 msgid "Customizing the package collection."
-msgstr "꾸러미 사용자 정의 모음."
+msgstr ""
 
 #. type: chapter
 #: guix-git/doc/guix.texi:182 guix-git/doc/guix.texi:267
 #: guix-git/doc/guix.texi:5581 guix-git/doc/guix.texi:5582
 #, no-wrap
 msgid "Development"
-msgstr "개발"
+msgstr "Kehitys"
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:182
 msgid "Guix-aided software development."
-msgstr "Guix-지원 소프트웨어 개발."
+msgstr ""
 
 #. type: chapter
 #: guix-git/doc/guix.texi:182 guix-git/doc/guix.texi:275
 #: guix-git/doc/guix.texi:6799 guix-git/doc/guix.texi:6800
 #, no-wrap
 msgid "Programming Interface"
-msgstr "프로그래밍 연결장치"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:182
 msgid "Using Guix in Scheme."
-msgstr "계획적으로 Guix 사용하기."
+msgstr ""
 
 #. type: chapter
 #: guix-git/doc/guix.texi:182 guix-git/doc/guix.texi:294
 #: guix-git/doc/guix.texi:10774 guix-git/doc/guix.texi:10775
 #, no-wrap
 msgid "Utilities"
-msgstr "유틸리티"
+msgstr "Apuohjelmat"
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:182
 msgid "Package management commands."
-msgstr "꾸러미 관리 명령."
+msgstr ""
 
 #. type: chapter
 #: guix-git/doc/guix.texi:182 guix-git/doc/guix.texi:320
 #: guix-git/doc/guix.texi:14278 guix-git/doc/guix.texi:14279
 #, no-wrap
 msgid "System Configuration"
-msgstr "시스템 설정"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:182
 msgid "Configuring the operating system."
-msgstr "운영 체제 설정하기."
+msgstr ""
 
 #. type: chapter
 #: guix-git/doc/guix.texi:182 guix-git/doc/guix.texi:36881
 #: guix-git/doc/guix.texi:36882
-#, fuzzy, no-wrap
-#| msgid "System Configuration"
+#, no-wrap
 msgid "Home Configuration"
-msgstr "시스템 설정"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:182
-#, fuzzy
-#| msgid "Configuring the operating system."
 msgid "Configuring the home environment."
-msgstr "운영 체제 설정하기."
+msgstr ""
 
 #. type: chapter
 #: guix-git/doc/guix.texi:182 guix-git/doc/guix.texi:37721
 #: guix-git/doc/guix.texi:37722
 #, no-wrap
 msgid "Documentation"
-msgstr "문서"
+msgstr "Dokumentaatio"
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:182
 msgid "Browsing software user manuals."
-msgstr "소프트웨어 사용자 설명서 검색하기."
+msgstr ""
 
 #. type: chapter
 #: guix-git/doc/guix.texi:182 guix-git/doc/guix.texi:389
 #: guix-git/doc/guix.texi:37787 guix-git/doc/guix.texi:37788
 #, no-wrap
 msgid "Installing Debugging Files"
-msgstr "디버깅 파일 설치하기"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:182
@@ -3108,7 +3008,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:37943
 #, no-wrap
 msgid "Security Updates"
-msgstr "보안 최신화"
+msgstr "Tietoturvapäivitykset"
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:182
@@ -3141,120 +3041,120 @@ msgstr ""
 #. type: menuentry
 #: guix-git/doc/guix.texi:182
 msgid "Your help needed!"
-msgstr "당신의 도움이 필요합니다!"
+msgstr ""
 
 #. type: chapter
 #: guix-git/doc/guix.texi:187 guix-git/doc/guix.texi:38397
 #: guix-git/doc/guix.texi:38398
 #, no-wrap
 msgid "Acknowledgments"
-msgstr "감사의 말"
+msgstr "Kiitokset"
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:187
 msgid "Thanks!"
-msgstr "감사합니다!"
+msgstr ""
 
 #. type: appendix
 #: guix-git/doc/guix.texi:187 guix-git/doc/guix.texi:38419
 #: guix-git/doc/guix.texi:38420
 #, no-wrap
 msgid "GNU Free Documentation License"
-msgstr "GNU 자유 문서 저작권"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:187
 msgid "The license of this manual."
-msgstr "이 설명서의 저작권."
+msgstr ""
 
 #. type: unnumbered
 #: guix-git/doc/guix.texi:187 guix-git/doc/guix.texi:38425
 #: guix-git/doc/guix.texi:38426
 #, no-wrap
 msgid "Concept Index"
-msgstr "개념 색인"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:187
 msgid "Concepts."
-msgstr "개념."
+msgstr ""
 
 #. type: unnumbered
 #: guix-git/doc/guix.texi:187 guix-git/doc/guix.texi:38429
 #: guix-git/doc/guix.texi:38430
 #, no-wrap
 msgid "Programming Index"
-msgstr "프로그래밍 색인"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:187
 msgid "Data types, functions, and variables."
-msgstr "자료유형, 기능, 그리고 변수."
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:190
 msgid "--- The Detailed Node Listing ---"
-msgstr "--- 상세한 노드 목록 ---"
+msgstr ""
 
 #. type: section
 #: guix-git/doc/guix.texi:195 guix-git/doc/guix.texi:429
 #: guix-git/doc/guix.texi:431 guix-git/doc/guix.texi:432
 #, no-wrap
 msgid "Managing Software the Guix Way"
-msgstr "Guix 방식으로 소프트웨어 관리하기"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:195 guix-git/doc/guix.texi:429
 msgid "What's special."
-msgstr "특별한 것."
+msgstr ""
 
 #. type: section
 #: guix-git/doc/guix.texi:195 guix-git/doc/guix.texi:429
 #: guix-git/doc/guix.texi:486 guix-git/doc/guix.texi:487
 #, no-wrap
 msgid "GNU Distribution"
-msgstr "GNU 배포"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:195 guix-git/doc/guix.texi:429
 msgid "The packages and tools."
-msgstr "꾸러미와 도구."
+msgstr ""
 
 #. type: section
 #: guix-git/doc/guix.texi:205 guix-git/doc/guix.texi:629
 #: guix-git/doc/guix.texi:631 guix-git/doc/guix.texi:632
 #, no-wrap
 msgid "Binary Installation"
-msgstr "바이너리 설치"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:205 guix-git/doc/guix.texi:629
 msgid "Getting Guix running in no time!"
-msgstr "Guix 바로 실행하기!"
+msgstr ""
 
 #. type: section
 #: guix-git/doc/guix.texi:205 guix-git/doc/guix.texi:629
 #: guix-git/doc/guix.texi:871 guix-git/doc/guix.texi:872
 #, no-wrap
 msgid "Requirements"
-msgstr "요구사항"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:205 guix-git/doc/guix.texi:629
 msgid "Software needed to build and run Guix."
-msgstr "Guix를 구성하고 실행하는데 필요한 소프트웨어."
+msgstr ""
 
 #. type: section
 #: guix-git/doc/guix.texi:205 guix-git/doc/guix.texi:629
 #: guix-git/doc/guix.texi:957 guix-git/doc/guix.texi:958
 #, no-wrap
 msgid "Running the Test Suite"
-msgstr "시험용 제품군 실행하기"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:205 guix-git/doc/guix.texi:629
 msgid "Testing Guix."
-msgstr "Guix 시험하기."
+msgstr ""
 
 #. type: section
 #: guix-git/doc/guix.texi:205 guix-git/doc/guix.texi:207
@@ -3262,55 +3162,55 @@ msgstr "Guix 시험하기."
 #: guix-git/doc/guix.texi:1055
 #, no-wrap
 msgid "Setting Up the Daemon"
-msgstr "데몬 구성하기"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:205 guix-git/doc/guix.texi:629
 msgid "Preparing the build daemon's environment."
-msgstr "구성 데몬의 환경 준비하기."
+msgstr ""
 
 #. type: node
 #: guix-git/doc/guix.texi:205 guix-git/doc/guix.texi:629
 #: guix-git/doc/guix.texi:1525
 #, no-wrap
 msgid "Invoking guix-daemon"
-msgstr "guix-데몬 호출하기"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:205 guix-git/doc/guix.texi:629
 msgid "Running the build daemon."
-msgstr "구성 데몬 실행하기."
+msgstr ""
 
 #. type: section
 #: guix-git/doc/guix.texi:205 guix-git/doc/guix.texi:629
 #: guix-git/doc/guix.texi:1827 guix-git/doc/guix.texi:1828
 #, no-wrap
 msgid "Application Setup"
-msgstr "응용프로그램 설정"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:205 guix-git/doc/guix.texi:629
 msgid "Application-specific setup."
-msgstr "응용프로그램-지정 설정."
+msgstr ""
 
 #. type: section
 #: guix-git/doc/guix.texi:205 guix-git/doc/guix.texi:629
 #: guix-git/doc/guix.texi:2012 guix-git/doc/guix.texi:2013
 #, no-wrap
 msgid "Upgrading Guix"
-msgstr "Guix 향상하기"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:205 guix-git/doc/guix.texi:629
 msgid "Upgrading Guix and its build daemon."
-msgstr "Guix 향상과 데몬 구성하기."
+msgstr ""
 
 #. type: subsection
 #: guix-git/doc/guix.texi:211 guix-git/doc/guix.texi:1074
 #: guix-git/doc/guix.texi:1076 guix-git/doc/guix.texi:1077
 #, no-wrap
 msgid "Build Environment Setup"
-msgstr "구성(build) 환경 설정"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:211 guix-git/doc/guix.texi:1074
@@ -3334,12 +3234,12 @@ msgstr ""
 #: guix-git/doc/guix.texi:1434 guix-git/doc/guix.texi:1435
 #, no-wrap
 msgid "SELinux Support"
-msgstr "SELinux 지원"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:211 guix-git/doc/guix.texi:1074
 msgid "Using an SELinux policy for the daemon."
-msgstr "데몬을 위해 SELinux 정책 사용하기."
+msgstr ""
 
 #. type: section
 #: guix-git/doc/guix.texi:223 guix-git/doc/guix.texi:1470
@@ -3347,60 +3247,60 @@ msgstr "데몬을 위해 SELinux 정책 사용하기."
 #: guix-git/doc/guix.texi:2086
 #, no-wrap
 msgid "Limitations"
-msgstr "제한"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:223 guix-git/doc/guix.texi:2083
 msgid "What you can expect."
-msgstr "당신이 기대하는 것."
+msgstr ""
 
 #. type: section
 #: guix-git/doc/guix.texi:223 guix-git/doc/guix.texi:2083
 #: guix-git/doc/guix.texi:2111 guix-git/doc/guix.texi:2112
 #, no-wrap
 msgid "Hardware Considerations"
-msgstr "하드웨어 고려하기"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:223 guix-git/doc/guix.texi:2083
 msgid "Supported hardware."
-msgstr "지원 하드웨어."
+msgstr ""
 
 #. type: section
 #: guix-git/doc/guix.texi:223 guix-git/doc/guix.texi:2083
 #: guix-git/doc/guix.texi:2146 guix-git/doc/guix.texi:2147
 #, no-wrap
 msgid "USB Stick and DVD Installation"
-msgstr "USB 저장장치와 DVD 설치"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:223 guix-git/doc/guix.texi:2083
 msgid "Preparing the installation medium."
-msgstr "설치 매체 준비하기."
+msgstr ""
 
 #. type: section
 #: guix-git/doc/guix.texi:223 guix-git/doc/guix.texi:2083
 #: guix-git/doc/guix.texi:2227 guix-git/doc/guix.texi:2228
 #, no-wrap
 msgid "Preparing for Installation"
-msgstr "설치를 위한 준비"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:223 guix-git/doc/guix.texi:2083
 msgid "Networking, partitioning, etc."
-msgstr "네트워킹(Networking), 구획화(partitioning), 기타."
+msgstr ""
 
 #. type: section
 #: guix-git/doc/guix.texi:223 guix-git/doc/guix.texi:2083
 #: guix-git/doc/guix.texi:2250 guix-git/doc/guix.texi:2251
 #, no-wrap
 msgid "Guided Graphical Installation"
-msgstr "안내된 그리팩 설치"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:223 guix-git/doc/guix.texi:2083
 msgid "Easy graphical installation."
-msgstr "손쉬운 그래픽 설치."
+msgstr ""
 
 #. type: section
 #: guix-git/doc/guix.texi:223 guix-git/doc/guix.texi:225
@@ -3408,79 +3308,79 @@ msgstr "손쉬운 그래픽 설치."
 #: guix-git/doc/guix.texi:2282
 #, no-wrap
 msgid "Manual Installation"
-msgstr "수동 설치"
+msgstr "Manuaalinen asennus"
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:223 guix-git/doc/guix.texi:2083
 msgid "Manual installation for wizards."
-msgstr "마법사를 위한 수동 설치."
+msgstr ""
 
 #. type: section
 #: guix-git/doc/guix.texi:223 guix-git/doc/guix.texi:2083
 #: guix-git/doc/guix.texi:2660 guix-git/doc/guix.texi:2661
 #, no-wrap
 msgid "After System Installation"
-msgstr "시스템 설치 이후에"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:223 guix-git/doc/guix.texi:2083
 msgid "When installation succeeded."
-msgstr "설치가 성공했을 때에."
+msgstr ""
 
 #. type: node
 #: guix-git/doc/guix.texi:223 guix-git/doc/guix.texi:2083
 #: guix-git/doc/guix.texi:2694
 #, no-wrap
 msgid "Installing Guix in a VM"
-msgstr "VM에서 Guix 설치하기"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:223 guix-git/doc/guix.texi:2083
 msgid "Guix System playground."
-msgstr "Guix 시스템 놀이터."
+msgstr ""
 
 #. type: section
 #: guix-git/doc/guix.texi:223 guix-git/doc/guix.texi:2083
 #: guix-git/doc/guix.texi:2745 guix-git/doc/guix.texi:2746
 #, no-wrap
 msgid "Building the Installation Image"
-msgstr "설치 이미지 구성하기"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:223 guix-git/doc/guix.texi:2083
 msgid "How this comes to be."
-msgstr "이 것이 어떻게 되는가."
+msgstr ""
 
 #. type: node
 #: guix-git/doc/guix.texi:228 guix-git/doc/guix.texi:2299
 #: guix-git/doc/guix.texi:2301
 #, no-wrap
 msgid "Keyboard Layout and Networking and Partitioning"
-msgstr "키보드 배열과 네트워킹과 구획화"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:228 guix-git/doc/guix.texi:2299
 msgid "Initial setup."
-msgstr "초기 설정."
+msgstr "Alkumääritykset."
 
 #. type: subsection
 #: guix-git/doc/guix.texi:228 guix-git/doc/guix.texi:2299
 #: guix-git/doc/guix.texi:2571 guix-git/doc/guix.texi:2572
 #, no-wrap
 msgid "Proceeding with the Installation"
-msgstr "설치 진행"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:228 guix-git/doc/guix.texi:2299
 msgid "Installing."
-msgstr "설치 중."
+msgstr "Asennetaan."
 
 #. type: section
 #: guix-git/doc/guix.texi:241 guix-git/doc/guix.texi:3017
 #: guix-git/doc/guix.texi:3019 guix-git/doc/guix.texi:3020
 #, no-wrap
 msgid "Features"
-msgstr "기능"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:241 guix-git/doc/guix.texi:3017
@@ -3815,17 +3715,14 @@ msgstr ""
 #. type: node
 #: guix-git/doc/guix.texi:273 guix-git/doc/guix.texi:5601
 #: guix-git/doc/guix.texi:5603
-#, fuzzy, no-wrap
-#| msgid "Invoking guix-daemon"
+#, no-wrap
 msgid "Invoking guix shell"
-msgstr "guix-데몬 호출하기"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:273 guix-git/doc/guix.texi:5601
-#, fuzzy
-#| msgid "Building development environments with Guix."
 msgid "Spawning one-off software environments."
-msgstr "guix로 개발 환경 구성하기."
+msgstr ""
 
 #. type: node
 #: guix-git/doc/guix.texi:273 guix-git/doc/guix.texi:5601
@@ -4108,17 +4005,14 @@ msgstr ""
 #. type: node
 #: guix-git/doc/guix.texi:311 guix-git/doc/guix.texi:10799
 #: guix-git/doc/guix.texi:12784
-#, fuzzy, no-wrap
-#| msgid "Invoking guix-daemon"
+#, no-wrap
 msgid "Invoking guix style"
-msgstr "guix-데몬 호출하기"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:311 guix-git/doc/guix.texi:10799
-#, fuzzy
-#| msgid "Updating the Guix package definition."
 msgid "Styling package definitions."
-msgstr "Guix 꾸러미 확인 최신화하기."
+msgstr ""
 
 #. type: node
 #: guix-git/doc/guix.texi:311 guix-git/doc/guix.texi:10799
@@ -4311,7 +4205,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:14798 guix-git/doc/guix.texi:14799
 #, no-wrap
 msgid "File Systems"
-msgstr "파일 시스템"
+msgstr "Tiedostojärjestelmät"
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:339 guix-git/doc/guix.texi:14322
@@ -4335,7 +4229,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:15300 guix-git/doc/guix.texi:15301
 #, no-wrap
 msgid "Swap Space"
-msgstr "스왑 공간"
+msgstr "Sivutuksen tila"
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:339 guix-git/doc/guix.texi:14322
@@ -4360,7 +4254,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:15582
 #, no-wrap
 msgid "Keyboard Layout"
-msgstr "키보드 배열"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:339 guix-git/doc/guix.texi:14322
@@ -4373,7 +4267,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:15728
 #, no-wrap
 msgid "Locales"
-msgstr "지역설정"
+msgstr "Sijainnit"
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:339 guix-git/doc/guix.texi:14322
@@ -4386,12 +4280,12 @@ msgstr ""
 #: guix-git/doc/guix.texi:15868
 #, no-wrap
 msgid "Services"
-msgstr "서비스"
+msgstr "Palvelut"
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:339 guix-git/doc/guix.texi:14322
 msgid "Specifying system services."
-msgstr "시스템 서비스 지정하기."
+msgstr ""
 
 #. type: section
 #: guix-git/doc/guix.texi:339 guix-git/doc/guix.texi:14322
@@ -4506,25 +4400,20 @@ msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:341
-#, fuzzy
-#| msgid "System Configuration"
 msgid "Home Environment Configuration"
-msgstr "시스템 설정"
+msgstr ""
 
 #. type: node
 #: guix-git/doc/guix.texi:343 guix-git/doc/guix.texi:36944
 #: guix-git/doc/guix.texi:37478
-#, fuzzy, no-wrap
-#| msgid "Invoking guix-daemon"
+#, no-wrap
 msgid "Invoking guix home"
-msgstr "guix-데몬 호출하기"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:343
-#, fuzzy
-#| msgid "Manage the operating system configuration."
 msgid "Instantiating a home environment configuration."
-msgstr "운영체제 설정 관리."
+msgstr ""
 
 #. type: subsection
 #: guix-git/doc/guix.texi:379 guix-git/doc/guix.texi:15951
@@ -4565,10 +4454,9 @@ msgstr ""
 #. type: subsection
 #: guix-git/doc/guix.texi:379 guix-git/doc/guix.texi:15951
 #: guix-git/doc/guix.texi:17143 guix-git/doc/guix.texi:17144
-#, fuzzy, no-wrap
-#| msgid "Networking"
+#, no-wrap
 msgid "Networking Setup"
-msgstr "네트워킹"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:379 guix-git/doc/guix.texi:15951
@@ -4580,7 +4468,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:17561 guix-git/doc/guix.texi:17562
 #, no-wrap
 msgid "Networking Services"
-msgstr "네트워크 서비스"
+msgstr "Verkkopalvelut"
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:379 guix-git/doc/guix.texi:15951
@@ -4688,12 +4576,12 @@ msgstr ""
 #: guix-git/doc/guix.texi:23765 guix-git/doc/guix.texi:23766
 #, no-wrap
 msgid "Telephony Services"
-msgstr "전화(voip와 같은 전화) 서비스"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:379 guix-git/doc/guix.texi:15951
 msgid "Telephony services."
-msgstr "전화(전화또는 voip와 같은), 서비스."
+msgstr ""
 
 #. type: subsection
 #: guix-git/doc/guix.texi:379 guix-git/doc/guix.texi:15951
@@ -4741,7 +4629,7 @@ msgstr ""
 #. type: menuentry
 #: guix-git/doc/guix.texi:379 guix-git/doc/guix.texi:15951
 msgid "Web servers."
-msgstr "웹 서버."
+msgstr ""
 
 #. type: subsection
 #: guix-git/doc/guix.texi:379 guix-git/doc/guix.texi:15951
@@ -4784,7 +4672,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:28758 guix-git/doc/guix.texi:28759
 #, no-wrap
 msgid "Network File System"
-msgstr "네트워크 파일 시스템"
+msgstr "Verkkotiedostojärjestelmä"
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:379 guix-git/doc/guix.texi:15951
@@ -4856,7 +4744,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:32897 guix-git/doc/guix.texi:32898
 #, no-wrap
 msgid "Game Services"
-msgstr "게임 서비스"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:379 guix-git/doc/guix.texi:15951
@@ -4921,7 +4809,7 @@ msgstr ""
 #. type: menuentry
 #: guix-git/doc/guix.texi:379 guix-git/doc/guix.texi:15951
 msgid "Other services."
-msgstr "다른 장치."
+msgstr "Muut palvelut."
 
 #. type: subsection
 #: guix-git/doc/guix.texi:387 guix-git/doc/guix.texi:35778
@@ -4974,17 +4862,14 @@ msgstr ""
 #. type: subsection
 #: guix-git/doc/guix.texi:387 guix-git/doc/guix.texi:35778
 #: guix-git/doc/guix.texi:36511 guix-git/doc/guix.texi:36512
-#, fuzzy, no-wrap
-#| msgid "System Configuration"
+#, no-wrap
 msgid "Complex Configurations"
-msgstr "시스템 설정"
+msgstr "Moniosaiset asetukset"
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:387 guix-git/doc/guix.texi:35778
-#, fuzzy
-#| msgid "Manage the operating system configuration."
 msgid "Defining bindings for complex configurations."
-msgstr "운영체제 설정 관리."
+msgstr ""
 
 #. type: section
 #: guix-git/doc/guix.texi:392 guix-git/doc/guix.texi:37804
@@ -5038,7 +4923,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:405
 #, no-wrap
 msgid "purpose"
-msgstr "목적"
+msgstr "tarkoitus"
 
 #. type: Plain text
 #: guix-git/doc/guix.texi:413
@@ -5072,7 +4957,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:434
 #, no-wrap
 msgid "user interfaces"
-msgstr ""
+msgstr "käyttöliittymät"
 
 #. type: Plain text
 #: guix-git/doc/guix.texi:440
@@ -5111,7 +4996,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:456
 #, no-wrap
 msgid "functional package management"
-msgstr "기능적인 꾸러미 관리"
+msgstr ""
 
 #. type: cindex
 #: guix-git/doc/guix.texi:457
@@ -5288,7 +5173,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:606 guix-git/doc/guix.texi:1830
 #, no-wrap
 msgid "foreign distro"
-msgstr "외부 배포판"
+msgstr ""
 
 #. type: cindex
 #: guix-git/doc/guix.texi:607
@@ -5664,10 +5549,9 @@ msgstr ""
 
 #. type: item
 #: guix-git/doc/guix.texi:886
-#, fuzzy, no-wrap
-#| msgid "@url{https://gnu.org/software/gettext/, GNU Gettext};"
+#, no-wrap
 msgid "@url{https://gnu.org/software/guile/, GNU Guile}, version 3.0.x;"
-msgstr "@url{https://gnu.org/software/gettext/, GNU Gettext};"
+msgstr ""
 
 #. type: item
 #: guix-git/doc/guix.texi:887
@@ -5715,10 +5599,8 @@ msgstr ""
 
 #. type: itemize
 #: guix-git/doc/guix.texi:903
-#, fuzzy
-#| msgid "@url{https://gnu.org/software/gettext/, GNU Gettext};"
 msgid "@uref{https://gitlab.com/guile-git/guile-git, Guile-Git}, version 0.5.0 or later;"
-msgstr "@url{https://gnu.org/software/gettext/, GNU Gettext};"
+msgstr ""
 
 #. type: item
 #: guix-git/doc/guix.texi:903
@@ -5931,7 +5813,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:1057
 #, no-wrap
 msgid "daemon"
-msgstr "데몬"
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/guix.texi:1065
@@ -6185,7 +6067,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:36095 guix-git/doc/guix.texi:36422
 #, no-wrap
 msgid "name"
-msgstr "이름"
+msgstr ""
 
 #. type: table
 #: guix-git/doc/guix.texi:1281
@@ -6196,7 +6078,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:1282
 #, no-wrap
 msgid "systems"
-msgstr "시스템"
+msgstr "järjestelmät"
 
 #. type: table
 #: guix-git/doc/guix.texi:1285
@@ -6207,7 +6089,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:1286 guix-git/doc/guix.texi:17945
 #, no-wrap
 msgid "user"
-msgstr "사용자"
+msgstr "käyttäjä"
 
 #. type: table
 #: guix-git/doc/guix.texi:1290
@@ -6934,7 +6816,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:1726 guix-git/doc/guix.texi:4326
 #, no-wrap
 msgid "deduplication"
-msgstr "중복"
+msgstr "päällekkäisyyksien poisto"
 
 #. type: table
 #: guix-git/doc/guix.texi:1728
@@ -7365,7 +7247,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:1997
 #, no-wrap
 msgid "emacs"
-msgstr "이맥스"
+msgstr "Emacs"
 
 #. type: Plain text
 #: guix-git/doc/guix.texi:2003
@@ -7717,7 +7599,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:2310 guix-git/doc/guix.texi:15584
 #, no-wrap
 msgid "keyboard layout"
-msgstr "키보드 배열"
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/guix.texi:2314
@@ -7739,7 +7621,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:2323
 #, no-wrap
 msgid "Networking"
-msgstr "네트워킹"
+msgstr "Verkko"
 
 #. type: Plain text
 #: guix-git/doc/guix.texi:2326
@@ -7801,7 +7683,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:2361 guix-git/doc/guix.texi:17484
 #, no-wrap
 msgid "wireless"
-msgstr "무선"
+msgstr "langaton"
 
 #. type: cindex
 #: guix-git/doc/guix.texi:2362 guix-git/doc/guix.texi:17485
@@ -8046,7 +7928,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:21013 guix-git/doc/guix.texi:21020
 #, no-wrap
 msgid "Warning"
-msgstr "경고"
+msgstr "Varoitus"
 
 #. type: quotation
 #: guix-git/doc/guix.texi:2517
@@ -8399,7 +8281,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:3168
 #, no-wrap
 msgid "profile"
-msgstr "프로파일"
+msgstr "profiili"
 
 #. type: Plain text
 #: guix-git/doc/guix.texi:2812
@@ -8590,7 +8472,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:2957
 #, no-wrap
 msgid "Resources"
-msgstr ""
+msgstr "Resurssit"
 
 #. type: quotation
 #: guix-git/doc/guix.texi:2960
@@ -8667,7 +8549,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:3047 guix-git/doc/guix.texi:3130
 #, no-wrap
 msgid "transactions"
-msgstr "연결"
+msgstr "transaktiot"
 
 #. type: Plain text
 #: guix-git/doc/guix.texi:3054
@@ -9894,7 +9776,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:3797
 #, no-wrap
 msgid "security"
-msgstr "보안"
+msgstr "turvallisuus"
 
 #. type: cindex
 #: guix-git/doc/guix.texi:3799
@@ -10187,7 +10069,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:4079
 #, no-wrap
 msgid "outputs"
-msgstr ""
+msgstr "ulostulot"
 
 #. type: Plain text
 #: guix-git/doc/guix.texi:4089
@@ -10210,7 +10092,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:36425
 #, no-wrap
 msgid "documentation"
-msgstr "문서"
+msgstr "dokumentaatio"
 
 #. type: Plain text
 #: guix-git/doc/guix.texi:4104
@@ -10249,7 +10131,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:4132
 #, no-wrap
 msgid "disk space"
-msgstr "디스크 공간"
+msgstr "levytila"
 
 #. type: Plain text
 #: guix-git/doc/guix.texi:4138
@@ -10466,7 +10348,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:4255
 #, no-wrap
 msgid "--references"
-msgstr "--references"
+msgstr "--viitteet"
 
 #. type: itemx
 #: guix-git/doc/guix.texi:4256
@@ -11460,7 +11342,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:4838 guix-git/doc/guix.texi:5056
 #, no-wrap
 msgid "channels"
-msgstr "채널"
+msgstr "kanavat"
 
 #. type: table
 #: guix-git/doc/guix.texi:4842
@@ -11520,7 +11402,7 @@ msgstr ""
 #. type: table
 #: guix-git/doc/guix.texi:4861
 msgid "Display information about @var{profile}."
-msgstr "@var{profile}에 대해 정보를 표시합니다."
+msgstr ""
 
 #. type: section
 #: guix-git/doc/guix.texi:4864
@@ -11538,7 +11420,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:4867
 #, no-wrap
 msgid "archive"
-msgstr "보관소"
+msgstr "arkisto"
 
 #. type: Plain text
 #: guix-git/doc/guix.texi:4873
@@ -12412,7 +12294,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:5584
 #, no-wrap
 msgid "software development"
-msgstr "소프트웨어 개발"
+msgstr "ohjelmistokehitys"
 
 #. type: Plain text
 #: guix-git/doc/guix.texi:5588
@@ -12426,10 +12308,9 @@ msgstr ""
 
 #. type: section
 #: guix-git/doc/guix.texi:5604
-#, fuzzy, no-wrap
-#| msgid "Invoking guix-daemon"
+#, no-wrap
 msgid "Invoking @command{guix shell}"
-msgstr "guix-데몬 호출하기"
+msgstr ""
 
 #. type: cindex
 #: guix-git/doc/guix.texi:5606
@@ -12507,7 +12388,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:5658
 #, no-wrap
 msgid "guix shell\n"
-msgstr "guix 쉘\n"
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/guix.texi:5662
@@ -12604,10 +12485,9 @@ msgstr ""
 
 #. type: item
 #: guix-git/doc/guix.texi:5739
-#, fuzzy, no-wrap
-#| msgid "Development"
+#, no-wrap
 msgid "--development"
-msgstr "개발"
+msgstr ""
 
 #. type: table
 #: guix-git/doc/guix.texi:5746
@@ -12665,7 +12545,7 @@ msgstr ""
 #. type: table
 #: guix-git/doc/guix.texi:5766 guix-git/doc/guix.texi:6141
 msgid "Running:"
-msgstr "실행중:"
+msgstr "Käynnissä:"
 
 #. type: example
 #: guix-git/doc/guix.texi:5769
@@ -12804,7 +12684,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:5850 guix-git/doc/guix.texi:6233
 #, no-wrap
 msgid "--container"
-msgstr "--container"
+msgstr "--kontti"
 
 #. type: itemx
 #: guix-git/doc/guix.texi:5851 guix-git/doc/guix.texi:6234
@@ -12818,7 +12698,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:35211
 #, no-wrap
 msgid "container"
-msgstr "켄테이너"
+msgstr "kontti"
 
 #. type: table
 #: guix-git/doc/guix.texi:5858 guix-git/doc/guix.texi:6241
@@ -13114,7 +12994,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:6086
 #, no-wrap
 msgid "certificates"
-msgstr "인증서"
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/guix.texi:6093
@@ -13320,10 +13200,9 @@ msgstr ""
 
 #. type: example
 #: guix-git/doc/guix.texi:6375
-#, fuzzy, no-wrap
-#| msgid "guix package -i emacs guile emacs-geiser\n"
+#, no-wrap
 msgid "guix pack -S /opt/gnu/bin=bin guile emacs emacs-geiser\n"
-msgstr "guix package -i emacs guile emacs-geiser\n"
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/guix.texi:6379
@@ -13395,10 +13274,9 @@ msgstr ""
 
 #. type: example
 #: guix-git/doc/guix.texi:6419
-#, fuzzy, no-wrap
-#| msgid "guix package -i emacs guile emacs-geiser\n"
+#, no-wrap
 msgid "guix pack -f squashfs bash guile emacs emacs-geiser\n"
-msgstr "guix package -i emacs guile emacs-geiser\n"
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/guix.texi:6427
@@ -13435,7 +13313,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:6442
 #, no-wrap
 msgid "docker"
-msgstr ""
+msgstr "Docker"
 
 #. type: table
 #: guix-git/doc/guix.texi:6448
@@ -13471,10 +13349,9 @@ msgstr ""
 
 #. type: item
 #: guix-git/doc/guix.texi:6469
-#, fuzzy, no-wrap
-#| msgid "debug"
+#, no-wrap
 msgid "deb"
-msgstr "디버그"
+msgstr ""
 
 #. type: table
 #: guix-git/doc/guix.texi:6477
@@ -13562,7 +13439,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:6548 guix-git/doc/guix.texi:17371
 #, no-wrap
 msgid "default"
-msgstr "기본"
+msgstr "oletus"
 
 #. type: table
 #: guix-git/doc/guix.texi:6551
@@ -13573,7 +13450,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:6552
 #, no-wrap
 msgid "performance"
-msgstr "성능"
+msgstr "suorituskyky"
 
 #. type: table
 #: guix-git/doc/guix.texi:6555
@@ -14132,7 +14009,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:6977
 #, no-wrap
 msgid "patches"
-msgstr "패치"
+msgstr "paikkauksia"
 
 #. type: itemize
 #: guix-git/doc/guix.texi:6981
@@ -14253,7 +14130,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:7053
 #, no-wrap
 msgid "GUIX_PACKAGE_PATH"
-msgstr "GUIX_PACKAGE_PATH"
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/guix.texi:7057
@@ -14343,7 +14220,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:7116
 #, no-wrap
 msgid "version"
-msgstr "버전"
+msgstr "versio"
 
 #. type: table
 #: guix-git/doc/guix.texi:7119
@@ -14355,7 +14232,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:15181 guix-git/doc/guix.texi:15790
 #, no-wrap
 msgid "source"
-msgstr "소스"
+msgstr "lähde"
 
 #. type: table
 #: guix-git/doc/guix.texi:7127
@@ -14366,7 +14243,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:7128
 #, no-wrap
 msgid "build-system"
-msgstr "구성-시스템"
+msgstr ""
 
 #. type: table
 #: guix-git/doc/guix.texi:7131
@@ -14531,7 +14408,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:7221 guix-git/doc/guix.texi:12892
 #, no-wrap
 msgid "synopsis"
-msgstr "개요"
+msgstr ""
 
 #. type: table
 #: guix-git/doc/guix.texi:7223
@@ -14543,7 +14420,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:35959 guix-git/doc/guix.texi:36119
 #, no-wrap
 msgid "description"
-msgstr "설명"
+msgstr "kuvaus"
 
 #. type: table
 #: guix-git/doc/guix.texi:7226
@@ -14554,7 +14431,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:7227
 #, no-wrap
 msgid "license"
-msgstr "저작권"
+msgstr "lisenssi"
 
 #. type: cindex
 #: guix-git/doc/guix.texi:7228
@@ -14571,7 +14448,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:7232 guix-git/doc/guix.texi:12901
 #, no-wrap
 msgid "home-page"
-msgstr "홈페이지"
+msgstr ""
 
 #. type: table
 #: guix-git/doc/guix.texi:7234
@@ -14704,17 +14581,15 @@ msgstr ""
 
 #. type: cindex
 #: guix-git/doc/guix.texi:7292
-#, fuzzy, no-wrap
-#| msgid "inputs, for Python packages"
+#, no-wrap
 msgid "development inputs, of a package"
-msgstr "파이썬 꾸러미를 위한 입력"
+msgstr ""
 
 #. type: cindex
 #: guix-git/doc/guix.texi:7293
-#, fuzzy, no-wrap
-#| msgid "inputs, for Python packages"
+#, no-wrap
 msgid "implicit inputs, of a package"
-msgstr "파이썬 꾸러미를 위한 입력"
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/guix.texi:7298
@@ -14842,7 +14717,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:7376 guix-git/doc/guix.texi:26552
 #, no-wrap
 msgid "uri"
-msgstr "uri"
+msgstr ""
 
 #. type: table
 #: guix-git/doc/guix.texi:7381
@@ -14859,7 +14734,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:7383
 #, no-wrap
 msgid "method"
-msgstr "방식"
+msgstr "menetelmä"
 
 #. type: table
 #: guix-git/doc/guix.texi:7390
@@ -14875,7 +14750,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:7395
 #, no-wrap
 msgid "sha256"
-msgstr "sha256"
+msgstr ""
 
 #. type: table
 #: guix-git/doc/guix.texi:7399
@@ -15076,7 +14951,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:7510 guix-git/doc/guix.texi:24186
 #, no-wrap
 msgid "url"
-msgstr "url"
+msgstr ""
 
 #. type: table
 #: guix-git/doc/guix.texi:7512
@@ -15087,7 +14962,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:7513
 #, no-wrap
 msgid "commit"
-msgstr "수행"
+msgstr "kommitointi"
 
 #. type: table
 #: guix-git/doc/guix.texi:7518
@@ -15642,9 +15517,9 @@ msgstr ""
 
 #. type: item
 #: guix-git/doc/guix.texi:7886
-#, fuzzy, no-wrap
+#, no-wrap
 msgid "#:configure-flags"
-msgstr "설정"
+msgstr ""
 
 #. type: table
 #: guix-git/doc/guix.texi:7889
@@ -15691,9 +15566,9 @@ msgstr ""
 
 #. type: item
 #: guix-git/doc/guix.texi:7908
-#, fuzzy, no-wrap
+#, no-wrap
 msgid "#:test-target"
-msgstr "대상"
+msgstr ""
 
 #. type: table
 #: guix-git/doc/guix.texi:7911
@@ -15743,7 +15618,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:7935
 #, no-wrap
 msgid "#:substitutable?"
-msgstr "#:대체할 수 있는?"
+msgstr ""
 
 #. type: table
 #: guix-git/doc/guix.texi:7939
@@ -15752,15 +15627,15 @@ msgstr ""
 
 #. type: item
 #: guix-git/doc/guix.texi:7940
-#, fuzzy, no-wrap
+#, no-wrap
 msgid "#:allowed-references"
-msgstr "--references"
+msgstr ""
 
 #. type: itemx
 #: guix-git/doc/guix.texi:7941
-#, fuzzy, no-wrap
+#, no-wrap
 msgid "#:disallowed-references"
-msgstr "--references"
+msgstr ""
 
 #. type: table
 #: guix-git/doc/guix.texi:7946
@@ -16087,7 +15962,7 @@ msgstr ""
 #. type: defvr
 #: guix-git/doc/guix.texi:8162
 msgid "Examples:"
-msgstr "예:"
+msgstr "Esimerkkejä:"
 
 #. type: item
 #: guix-git/doc/guix.texi:8164
@@ -16202,7 +16077,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:8826 guix-git/doc/guix.texi:8902
 #, no-wrap
 msgid "install"
-msgstr "설치"
+msgstr "asenna"
 
 #. type: table
 #: guix-git/doc/guix.texi:8219
@@ -16850,7 +16725,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:8886
 #, no-wrap
 msgid "configure"
-msgstr "설정"
+msgstr "muokkaa asetuksia"
 
 #. type: table
 #: guix-git/doc/guix.texi:8772
@@ -17320,7 +17195,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:9114
 #, no-wrap
 msgid "File Types"
-msgstr "파일 유형"
+msgstr "Tiedostotyyppejä"
 
 #. type: Plain text
 #: guix-git/doc/guix.texi:9117
@@ -17781,13 +17656,13 @@ msgstr ""
 #: guix-git/doc/guix.texi:9414 guix-git/doc/guix.texi:26183
 #, no-wrap
 msgid "file"
-msgstr "파일"
+msgstr "tiedosto"
 
 #. type: itemx
 #: guix-git/doc/guix.texi:9415
 #, no-wrap
 msgid "unix"
-msgstr "유닉스"
+msgstr ""
 
 #. type: table
 #: guix-git/doc/guix.texi:9419
@@ -18024,7 +17899,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:9571 guix-git/doc/guix.texi:13341
 #, no-wrap
 msgid "references"
-msgstr "환경설정"
+msgstr "viitteet"
 
 #. type: cindex
 #: guix-git/doc/guix.texi:9572
@@ -19759,7 +19634,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:10742
 #, no-wrap
 msgid "machine"
-msgstr "장비"
+msgstr "kone"
 
 #. type: table
 #: guix-git/doc/guix.texi:10745
@@ -20143,14 +20018,13 @@ msgstr ""
 #, fuzzy, no-wrap
 #| msgid "performance"
 msgid "performance, tuning code"
-msgstr "성능"
+msgstr "suorituskyky"
 
 #. type: cindex
 #: guix-git/doc/guix.texi:11034
-#, fuzzy, no-wrap
-#| msgid "inputs, for Python packages"
+#, no-wrap
 msgid "optimization, of package code"
-msgstr "파이썬 꾸러미를 위한 입력"
+msgstr ""
 
 #. type: cindex
 #: guix-git/doc/guix.texi:11035
@@ -20169,14 +20043,13 @@ msgstr ""
 #, fuzzy, no-wrap
 #| msgid "packages"
 msgid "tunable packages"
-msgstr "꾸러미"
+msgstr "paketit"
 
 #. type: cindex
 #: guix-git/doc/guix.texi:11038
-#, fuzzy, no-wrap
-#| msgid "package version"
+#, no-wrap
 msgid "package multi-versioning"
-msgstr "꾸러미 버전"
+msgstr ""
 
 #. type: item
 #: guix-git/doc/guix.texi:11039
@@ -20791,7 +20664,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:11471 guix-git/doc/guix.texi:13252
 #, no-wrap
 msgid "package"
-msgstr "꾸러미"
+msgstr "paketti"
 
 #. type: table
 #: guix-git/doc/guix.texi:11474
@@ -20802,7 +20675,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:11475 guix-git/doc/guix.texi:19682
 #, no-wrap
 msgid "all"
-msgstr "전체"
+msgstr "kaikki"
 
 #. type: table
 #: guix-git/doc/guix.texi:11478
@@ -21346,7 +21219,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:17405 guix-git/doc/guix.texi:19679
 #, no-wrap
 msgid "none"
-msgstr "없음"
+msgstr "ei mitään"
 
 #. type: table
 #: guix-git/doc/guix.texi:11843
@@ -21581,10 +21454,9 @@ msgstr ""
 
 #. type: cindex
 #: guix-git/doc/guix.texi:11989
-#, fuzzy, no-wrap
-#| msgid "contents"
+#, no-wrap
 msgid "ContentDB"
-msgstr "내용"
+msgstr ""
 
 #. type: table
 #: guix-git/doc/guix.texi:11998
@@ -22142,9 +22014,9 @@ msgstr ""
 
 #. type: item
 #: guix-git/doc/guix.texi:12369
-#, fuzzy, no-wrap
+#, no-wrap
 msgid "--pin-versions"
-msgstr "버전"
+msgstr ""
 
 #. type: table
 #: guix-git/doc/guix.texi:12377
@@ -22241,12 +22113,6 @@ msgid ""
 "gnu/packages/multiprecision.scm:40:12: 6.1.2 is already the latest version of gmp\n"
 "@dots{}\n"
 msgstr ""
-"$ guix refresh --recursive coreutils\n"
-"gnu/packages/acl.scm:40:13: acl would be upgraded from 2.2.53 to 2.3.1\n"
-"gnu/packages/m4.scm:30:12: 1.4.18 is already the latest version of m4\n"
-"gnu/packages/xml.scm:68:2: warning: no updater for expat\n"
-"gnu/packages/multiprecision.scm:40:12: 6.1.2 is already the latest version of gmp\n"
-"@dots{}\n"
 
 #. type: Plain text
 #: guix-git/doc/guix.texi:12467
@@ -22263,11 +22129,6 @@ msgid ""
 "    ;; @dots{}\n"
 "    (properties '((upstream-name . \"NetworkManager\")))))\n"
 msgstr ""
-"(define-public network-manager\n"
-"  (package\n"
-"    (name \"network-manager\")\n"
-"    ;; @dots{}\n"
-"    (properties '((upstream-name . \"NetworkManager\")))))\n"
 
 #. type: Plain text
 #: guix-git/doc/guix.texi:12483
@@ -22304,7 +22165,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:12507
 #, no-wrap
 msgid "--update"
-msgstr ""
+msgstr "--päivitä"
 
 #. type: itemx
 #: guix-git/doc/guix.texi:12508
@@ -22380,7 +22241,7 @@ msgstr ""
 #. type: table
 #: guix-git/doc/guix.texi:12548
 msgid "the updater for GNU packages;"
-msgstr "GNU 꾸러미를 위한 업데이터;"
+msgstr ""
 
 #. type: item
 #: guix-git/doc/guix.texi:12548
@@ -22395,9 +22256,9 @@ msgstr ""
 
 #. type: item
 #: guix-git/doc/guix.texi:12550
-#, fuzzy, no-wrap
+#, no-wrap
 msgid "sourceforge"
-msgstr "소스"
+msgstr ""
 
 #. type: table
 #: guix-git/doc/guix.texi:12552
@@ -22408,40 +22269,40 @@ msgstr ""
 #: guix-git/doc/guix.texi:12552
 #, no-wrap
 msgid "gnome"
-msgstr "그놈(Gnome)"
+msgstr ""
 
 #. type: table
 #: guix-git/doc/guix.texi:12554
 msgid "the updater for GNOME packages;"
-msgstr "그놈(Gnome) 꾸러미를 위한 업데이터;"
+msgstr ""
 
 #. type: item
 #: guix-git/doc/guix.texi:12554
 #, no-wrap
 msgid "kde"
-msgstr "kde"
+msgstr ""
 
 #. type: table
 #: guix-git/doc/guix.texi:12556
 msgid "the updater for KDE packages;"
-msgstr "KDE 꾸러미를 위한 업데이터;"
+msgstr ""
 
 #. type: item
 #: guix-git/doc/guix.texi:12556
 #, no-wrap
 msgid "xorg"
-msgstr "xorg"
+msgstr ""
 
 #. type: table
 #: guix-git/doc/guix.texi:12558
 msgid "the updater for X.org packages;"
-msgstr "X.org 꾸러미를 위한 업데이터;"
+msgstr ""
 
 #. type: item
 #: guix-git/doc/guix.texi:12558
 #, no-wrap
 msgid "kernel.org"
-msgstr "kernel.org"
+msgstr ""
 
 #. type: table
 #: guix-git/doc/guix.texi:12560
@@ -22613,21 +22474,18 @@ msgid ""
 "gnu/packages/statistics.scm:819:13: r-testthat would be upgraded from 0.10.0 to 0.11.0\n"
 "gnu/packages/emacs.scm:856:13: emacs-auctex would be upgraded from 11.88.6 to 11.88.9\n"
 msgstr ""
-"$ guix refresh --type=elpa,cran\n"
-"gnu/packages/statistics.scm:819:13: r-testthat would be upgraded from 0.10.0 to 0.11.0\n"
-"gnu/packages/emacs.scm:856:13: emacs-auctex would be upgraded from 11.88.6 to 11.88.9\n"
 
 #. type: item
 #: guix-git/doc/guix.texi:12632
 #, no-wrap
 msgid "--list-updaters"
-msgstr "--list-updaters"
+msgstr ""
 
 #. type: itemx
 #: guix-git/doc/guix.texi:12633
 #, no-wrap
 msgid "-L"
-msgstr "-L"
+msgstr ""
 
 #. type: table
 #: guix-git/doc/guix.texi:12635
@@ -22805,7 +22663,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:22249
 #, no-wrap
 msgid "always"
-msgstr "항상"
+msgstr "aina"
 
 #. type: table
 #: guix-git/doc/guix.texi:12751
@@ -22816,7 +22674,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:12752 guix-git/doc/guix.texi:22251
 #, no-wrap
 msgid "never"
-msgstr "하지 않기"
+msgstr "ei koskaan"
 
 #. type: table
 #: guix-git/doc/guix.texi:12754
@@ -22852,10 +22710,9 @@ msgstr ""
 
 #. type: section
 #: guix-git/doc/guix.texi:12785
-#, fuzzy, no-wrap
-#| msgid "Invoking guix-daemon"
+#, no-wrap
 msgid "Invoking @command{guix style}"
-msgstr "guix-데몬 호출하기"
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/guix.texi:12791
@@ -22932,10 +22789,8 @@ msgstr ""
 
 #. type: table
 #: guix-git/doc/guix.texi:12856
-#, fuzzy
-#| msgid "Updating the Guix package definition."
 msgid "styles the @code{gcc-5} package definition."
-msgstr "Guix 꾸러미 확인 최신화하기."
+msgstr ""
 
 #. type: item
 #: guix-git/doc/guix.texi:12857
@@ -23394,7 +23249,7 @@ msgstr ""
 #. type: Plain text
 #: guix-git/doc/guix.texi:13157
 msgid "The available options are:"
-msgstr "사용 가능한 선택(옵션)은 다음과 같습니다:"
+msgstr ""
 
 #. type: table
 #: guix-git/doc/guix.texi:13163
@@ -23668,7 +23523,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:13327
 #, no-wrap
 msgid "module"
-msgstr "모듈"
+msgstr "moduuli"
 
 #. type: table
 #: guix-git/doc/guix.texi:13331
@@ -24495,7 +24350,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:13911
 #, no-wrap
 msgid "command"
-msgstr "명령"
+msgstr "komento"
 
 #. type: table
 #: guix-git/doc/guix.texi:13914
@@ -25060,7 +24915,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:14333 guix-git/doc/guix.texi:35553
 #, no-wrap
 msgid "operating-system"
-msgstr "운영 체제"
+msgstr "käyttöjärjestelmä"
 
 #. type: include
 #: guix-git/doc/guix.texi:14335
@@ -25082,7 +24937,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:14348
 #, no-wrap
 msgid "Bootloader"
-msgstr "부트로더"
+msgstr ""
 
 #. type: cindex
 #: guix-git/doc/guix.texi:14350
@@ -25197,14 +25052,14 @@ msgstr ""
 #: guix-git/doc/guix.texi:14415
 #, no-wrap
 msgid "System Services"
-msgstr "시스템 서비스"
+msgstr "Järjestelmäpalvelut"
 
 #. type: cindex
 #: guix-git/doc/guix.texi:14417 guix-git/doc/guix.texi:34307
 #: guix-git/doc/guix.texi:35783
 #, no-wrap
 msgid "services"
-msgstr "서비스"
+msgstr "palvelut"
 
 #. type: vindex
 #: guix-git/doc/guix.texi:14418
@@ -25485,7 +25340,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:34558
 #, no-wrap
 msgid "bootloader"
-msgstr "부트로더"
+msgstr ""
 
 #. type: table
 #: guix-git/doc/guix.texi:14615
@@ -25496,7 +25351,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:14616 guix-git/doc/guix.texi:34732
 #, no-wrap
 msgid "label"
-msgstr "이름표"
+msgstr "nimiö"
 
 #. type: table
 #: guix-git/doc/guix.texi:14619
@@ -25536,7 +25391,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:34467
 #, no-wrap
 msgid "initrd"
-msgstr "initrd"
+msgstr ""
 
 #. type: cindex
 #: guix-git/doc/guix.texi:14641 guix-git/doc/guix.texi:34345
@@ -25571,7 +25426,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:14651
 #, no-wrap
 msgid "firmware"
-msgstr "펌웨어"
+msgstr "laiteohjelmisto"
 
 #. type: table
 #: guix-git/doc/guix.texi:14653
@@ -25626,7 +25481,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:14672
 #, no-wrap
 msgid "file-systems"
-msgstr "파일 시스템"
+msgstr "tiedostojärjestelmät"
 
 #. type: table
 #: guix-git/doc/guix.texi:14674
@@ -25738,7 +25593,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:14719
 #, no-wrap
 msgid "timezone"
-msgstr ""
+msgstr "aikavyöhyke"
 
 #. type: table
 #: guix-git/doc/guix.texi:14721
@@ -25953,7 +25808,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:17317
 #, no-wrap
 msgid "type"
-msgstr "유형"
+msgstr "tyyppi"
 
 #. type: table
 #: guix-git/doc/guix.texi:14824
@@ -25964,7 +25819,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:14825
 #, no-wrap
 msgid "mount-point"
-msgstr "적재점"
+msgstr "liitospiste"
 
 #. type: table
 #: guix-git/doc/guix.texi:14827
@@ -25975,7 +25830,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:14828 guix-git/doc/guix.texi:17267
 #, no-wrap
 msgid "device"
-msgstr "장치"
+msgstr "laite"
 
 #. type: table
 #: guix-git/doc/guix.texi:14838
@@ -26483,7 +26338,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:15187 guix-git/doc/guix.texi:15342
 #, no-wrap
 msgid "target"
-msgstr "대상"
+msgstr "kohde"
 
 #. type: table
 #: guix-git/doc/guix.texi:15196
@@ -26494,7 +26349,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:15197 guix-git/doc/guix.texi:34634
 #, no-wrap
 msgid "targets"
-msgstr "대상"
+msgstr "kohteet"
 
 #. type: table
 #: guix-git/doc/guix.texi:15200
@@ -26653,7 +26508,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:15302
 #, no-wrap
 msgid "swap space"
-msgstr "스왑 공간"
+msgstr "sivutuksen tila"
 
 #. type: Plain text
 #: guix-git/doc/guix.texi:15312
@@ -26682,9 +26537,9 @@ msgstr ""
 
 #. type: deftp
 #: guix-git/doc/guix.texi:15337
-#, fuzzy, no-wrap
+#, no-wrap
 msgid "{Data Type} swap-space"
-msgstr "설정"
+msgstr ""
 
 #. type: deftp
 #: guix-git/doc/guix.texi:15340
@@ -26771,13 +26626,13 @@ msgstr ""
 #: guix-git/doc/guix.texi:15403
 #, no-wrap
 msgid "users"
-msgstr "사용자"
+msgstr "käyttäjät"
 
 #. type: cindex
 #: guix-git/doc/guix.texi:15404
 #, no-wrap
 msgid "accounts"
-msgstr "계정"
+msgstr "käyttäjätilit"
 
 #. type: cindex
 #: guix-git/doc/guix.texi:15405
@@ -26846,13 +26701,13 @@ msgstr ""
 #: guix-git/doc/guix.texi:15449 guix-git/doc/guix.texi:34298
 #, no-wrap
 msgid "group"
-msgstr "그룹"
+msgstr "ryhmä"
 
 #. type: cindex
 #: guix-git/doc/guix.texi:15450 guix-git/doc/guix.texi:15534
 #, no-wrap
 msgid "groups"
-msgstr "그룹"
+msgstr "ryhmät"
 
 #. type: table
 #: guix-git/doc/guix.texi:15453
@@ -26901,7 +26756,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:15471
 #, no-wrap
 msgid "home-directory"
-msgstr "홈 디렉토리"
+msgstr "kotihakemisto"
 
 #. type: table
 #: guix-git/doc/guix.texi:15473
@@ -27325,7 +27180,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:15730
 #, no-wrap
 msgid "locale"
-msgstr "지역"
+msgstr "sijainti"
 
 #. type: Plain text
 #: guix-git/doc/guix.texi:15737
@@ -27509,7 +27364,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:15870
 #, no-wrap
 msgid "system services"
-msgstr "시스템 서비스"
+msgstr "järjestelmäpalvelut"
 
 #. type: Plain text
 #: guix-git/doc/guix.texi:15876
@@ -28453,7 +28308,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:16355
 #, no-wrap
 msgid "statistics"
-msgstr "통계"
+msgstr ""
 
 #. type: table
 #: guix-git/doc/guix.texi:16358
@@ -28656,7 +28511,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:16449 guix-git/doc/guix.texi:17035
 #, no-wrap
 msgid "logging"
-msgstr "로그중"
+msgstr "kirjoittaa logia"
 
 #. type: deftp
 #: guix-git/doc/guix.texi:16450
@@ -29138,7 +28993,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:16717
 #, no-wrap
 msgid "mouse"
-msgstr "마우스"
+msgstr "hiiri"
 
 #. type: cindex
 #: guix-git/doc/guix.texi:16718
@@ -29391,7 +29246,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:16835
 #, no-wrap
 msgid "priority"
-msgstr "우선 순위"
+msgstr "prioriteetti"
 
 #. type: cindex
 #: guix-git/doc/guix.texi:16836
@@ -29571,10 +29426,9 @@ msgstr ""
 
 #. type: quotation
 #: guix-git/doc/guix.texi:16942
-#, fuzzy, no-wrap
-#| msgid "Top"
+#, no-wrap
 msgid "Tip"
-msgstr "Top"
+msgstr ""
 
 #. type: quotation
 #: guix-git/doc/guix.texi:16948
@@ -29882,7 +29736,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:17120
 #, no-wrap
 msgid "files"
-msgstr "파일"
+msgstr "tiedostot"
 
 #. type: table
 #: guix-git/doc/guix.texi:17122
@@ -30001,15 +29855,14 @@ msgstr ""
 
 #. type: deftp
 #: guix-git/doc/guix.texi:17199
-#, fuzzy, no-wrap
+#, no-wrap
 msgid "{Data Type} static-networking"
-msgstr "설정"
+msgstr ""
 
 #. type: deftp
 #: guix-git/doc/guix.texi:17201
-#, fuzzy
 msgid "This is the data type representing a static network configuration."
-msgstr "운영체제 설정 관리."
+msgstr ""
 
 #. type: deftp
 #: guix-git/doc/guix.texi:17205
@@ -30066,7 +29919,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:17243
 #, no-wrap
 msgid "addresses"
-msgstr "주소"
+msgstr "osoitteet"
 
 #. type: itemx
 #: guix-git/doc/guix.texi:17244
@@ -30120,9 +29973,9 @@ msgstr ""
 
 #. type: deftp
 #: guix-git/doc/guix.texi:17262
-#, fuzzy, no-wrap
+#, no-wrap
 msgid "{Data Type} network-address"
-msgstr "설정"
+msgstr ""
 
 #. type: deftp
 #: guix-git/doc/guix.texi:17265
@@ -30138,7 +29991,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:17271
 #, no-wrap
 msgid "value"
-msgstr "값"
+msgstr "arvo"
 
 #. type: table
 #: guix-git/doc/guix.texi:17275
@@ -30163,9 +30016,9 @@ msgstr ""
 
 #. type: deftp
 #: guix-git/doc/guix.texi:17286
-#, fuzzy, no-wrap
+#, no-wrap
 msgid "{Data Type} network-route"
-msgstr "설정"
+msgstr ""
 
 #. type: deftp
 #: guix-git/doc/guix.texi:17288
@@ -30176,7 +30029,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:17290
 #, no-wrap
 msgid "destination"
-msgstr "대상"
+msgstr "kohde"
 
 #. type: table
 #: guix-git/doc/guix.texi:17293
@@ -30229,9 +30082,9 @@ msgstr ""
 
 #. type: deftp
 #: guix-git/doc/guix.texi:17309
-#, fuzzy, no-wrap
+#, no-wrap
 msgid "{Data Type} network-link"
-msgstr "설정"
+msgstr ""
 
 #. type: deftp
 #: guix-git/doc/guix.texi:17312
@@ -30284,10 +30137,9 @@ msgstr ""
 
 #. type: cindex
 #: guix-git/doc/guix.texi:17333
-#, fuzzy, no-wrap
-#| msgid "Networking"
+#, no-wrap
 msgid "QEMU, networking"
-msgstr "네트워킹"
+msgstr ""
 
 #. type: defvr
 #: guix-git/doc/guix.texi:17334
@@ -30321,7 +30173,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:17347
 #, no-wrap
 msgid "NetworkManager"
-msgstr "네트워크매니저"
+msgstr "NetworkManager"
 
 #. type: defvr
 #: guix-git/doc/guix.texi:17349
@@ -30616,7 +30468,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:17486
 #, no-wrap
 msgid "network management"
-msgstr "네트워크 관리"
+msgstr ""
 
 #. type: deffn
 #: guix-git/doc/guix.texi:17487
@@ -31240,7 +31092,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:17799
 #, no-wrap
 msgid "address"
-msgstr "주소"
+msgstr "osoite"
 
 #. type: table
 #: guix-git/doc/guix.texi:17801
@@ -31252,7 +31104,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:33794
 #, no-wrap
 msgid "options"
-msgstr "선택"
+msgstr "vaihtoehdot"
 
 #. type: table
 #: guix-git/doc/guix.texi:17807
@@ -31534,7 +31386,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:17940
 #, no-wrap
 msgid "protocol"
-msgstr "통신규약"
+msgstr "protokolla"
 
 #. type: table
 #: guix-git/doc/guix.texi:17942
@@ -31613,9 +31465,9 @@ msgstr ""
 
 #. type: deftp
 #: guix-git/doc/guix.texi:17987
-#, fuzzy, no-wrap
+#, no-wrap
 msgid "{Data Type} opendht-configuration"
-msgstr "설정"
+msgstr ""
 
 #. type: deftp
 #: guix-git/doc/guix.texi:17989
@@ -31635,9 +31487,8 @@ msgstr ""
 
 #. type: deftypevr
 #: guix-git/doc/guix.texi:17997
-#, fuzzy
 msgid "The @code{opendht} package to use."
-msgstr "꾸러미와 도구."
+msgstr ""
 
 #. type: deftypevr
 #: guix-git/doc/guix.texi:18000
@@ -32111,9 +31962,9 @@ msgstr ""
 
 #. type: deftp
 #: guix-git/doc/guix.texi:18204
-#, fuzzy, no-wrap
+#, no-wrap
 msgid "{Data Type} rsync-module"
-msgstr "설정"
+msgstr ""
 
 #. type: deftp
 #: guix-git/doc/guix.texi:18207
@@ -32127,10 +31978,9 @@ msgstr ""
 
 #. type: code{#1}
 #: guix-git/doc/guix.texi:18214
-#, fuzzy, no-wrap
-#| msgid "name"
+#, no-wrap
 msgid "file-name"
-msgstr "이름"
+msgstr ""
 
 #. type: table
 #: guix-git/doc/guix.texi:18216
@@ -33620,15 +33470,14 @@ msgstr ""
 
 #. type: deftp
 #: guix-git/doc/guix.texi:18953
-#, fuzzy, no-wrap
+#, no-wrap
 msgid "{Data Type} ipfs-configuration"
-msgstr "설정"
+msgstr ""
 
 #. type: deftp
 #: guix-git/doc/guix.texi:18955
-#, fuzzy
 msgid "Data type representing the configuration of IPFS."
-msgstr "운영체제 설정 관리."
+msgstr ""
 
 #. type: item
 #: guix-git/doc/guix.texi:18957
@@ -33967,7 +33816,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:19162
 #, no-wrap
 msgid "X Window System"
-msgstr "X 윈도우 시스템"
+msgstr "X-ikkunointijärjestelmä"
 
 #. type: cindex
 #: guix-git/doc/guix.texi:19163 guix-git/doc/guix.texi:19436
@@ -34001,7 +33850,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:19175
 #, no-wrap
 msgid "window manager"
-msgstr "윈도우 관리자"
+msgstr "Ikkunahallitsija"
 
 #. type: Plain text
 #: guix-git/doc/guix.texi:19180
@@ -34031,10 +33880,9 @@ msgstr ""
 
 #. type: cindex
 #: guix-git/doc/guix.texi:19193
-#, fuzzy, no-wrap
-#| msgid "service type"
+#, no-wrap
 msgid "session types"
-msgstr "서비스 유형"
+msgstr ""
 
 #. type: defvr
 #: guix-git/doc/guix.texi:19201
@@ -35125,7 +34973,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:19685
 #, no-wrap
 msgid "browse"
-msgstr "검색"
+msgstr "selaa"
 
 #. type: table
 #: guix-git/doc/guix.texi:19688
@@ -35136,7 +34984,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:19689
 #, no-wrap
 msgid "config"
-msgstr "설정파일"
+msgstr ""
 
 #. type: table
 #: guix-git/doc/guix.texi:19691
@@ -35147,7 +34995,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:19692
 #, no-wrap
 msgid "listen"
-msgstr "경청하다"
+msgstr "kuuntele"
 
 #. type: table
 #: guix-git/doc/guix.texi:19695
@@ -35158,7 +35006,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:19696
 #, no-wrap
 msgid "log"
-msgstr "로그"
+msgstr "kirjaa"
 
 #. type: table
 #: guix-git/doc/guix.texi:19698
@@ -35169,7 +35017,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:19699
 #, no-wrap
 msgid "permissions"
-msgstr "권한"
+msgstr "käyttöoikeudet"
 
 #. type: table
 #: guix-git/doc/guix.texi:19702
@@ -36212,7 +36060,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:20183 guix-git/doc/guix.texi:22140
 #, no-wrap
 msgid "%p"
-msgstr "%p"
+msgstr ""
 
 #. type: table
 #: guix-git/doc/guix.texi:20185
@@ -36223,7 +36071,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:20186 guix-git/doc/guix.texi:22163
 #, no-wrap
 msgid "%u"
-msgstr "%u"
+msgstr ""
 
 #. type: table
 #: guix-git/doc/guix.texi:20188
@@ -36918,7 +36766,7 @@ msgstr ""
 #. type: code{#1}
 #: guix-git/doc/guix.texi:20634
 msgid "poweroff"
-msgstr "전원 끄기"
+msgstr ""
 
 #. type: item
 #: guix-git/doc/guix.texi:20634
@@ -36929,7 +36777,7 @@ msgstr ""
 #. type: code{#1}
 #: guix-git/doc/guix.texi:20636 guix-git/doc/guix.texi:20640
 msgid "suspend"
-msgstr "절전"
+msgstr ""
 
 #. type: item
 #: guix-git/doc/guix.texi:20636
@@ -36958,7 +36806,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:20642 guix-git/doc/guix.texi:20644
 #: guix-git/doc/guix.texi:20656
 msgid "ignore"
-msgstr "무시"
+msgstr "ohita"
 
 #. type: item
 #: guix-git/doc/guix.texi:20642
@@ -37307,7 +37155,7 @@ msgstr ""
 #. type: code{#1}
 #: guix-git/doc/guix.texi:20773
 msgid "'power-off"
-msgstr "'전원 끄기"
+msgstr ""
 
 #. type: code{#1}
 #: guix-git/doc/guix.texi:20776
@@ -38461,7 +38309,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:21407
 #, no-wrap
 msgid "email"
-msgstr "전자우편"
+msgstr "sähköposti"
 
 #. type: Plain text
 #: guix-git/doc/guix.texi:21412
@@ -39697,18 +39545,18 @@ msgstr ""
 #: guix-git/doc/guix.texi:22136 guix-git/doc/guix.texi:22679
 #, no-wrap
 msgid "%s"
-msgstr ""
+msgstr "%s"
 
 #. type: table
 #: guix-git/doc/guix.texi:22138
 msgid "Subject"
-msgstr "제목"
+msgstr "Otsikko"
 
 #. type: item
 #: guix-git/doc/guix.texi:22138
 #, no-wrap
 msgid "%f"
-msgstr "%f"
+msgstr ""
 
 #. type: table
 #: guix-git/doc/guix.texi:22140
@@ -39760,7 +39608,7 @@ msgstr ""
 #. type: table
 #: guix-git/doc/guix.texi:22165
 msgid "username"
-msgstr "사용자 이름"
+msgstr "käyttäjänimi"
 
 #. type: item
 #: guix-git/doc/guix.texi:22165 guix-git/doc/guix.texi:22675
@@ -39793,7 +39641,7 @@ msgstr ""
 #. type: table
 #: guix-git/doc/guix.texi:22171
 msgid "home director"
-msgstr "홈 디렉토리"
+msgstr "kotihakemisto"
 
 #. type: deftypevr
 #: guix-git/doc/guix.texi:22174
@@ -40678,7 +40526,7 @@ msgstr ""
 #. type: table
 #: guix-git/doc/guix.texi:22679
 msgid "reason"
-msgstr "이유"
+msgstr "syy"
 
 #. type: table
 #: guix-git/doc/guix.texi:22681
@@ -40694,7 +40542,7 @@ msgstr ""
 #. type: table
 #: guix-git/doc/guix.texi:22683
 msgid "recipient"
-msgstr "받는 사람"
+msgstr "vastaanottaja"
 
 #. type: deftypevr
 #: guix-git/doc/guix.texi:22685
@@ -41002,7 +40850,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:22850
 #, no-wrap
 msgid "Exim Service"
-msgstr "수출입 서비스"
+msgstr "Exim palvelu"
 
 #. type: cindex
 #: guix-git/doc/guix.texi:22852
@@ -41977,7 +41825,7 @@ msgstr ""
 #. type: deftypevr
 #: guix-git/doc/guix.texi:23415
 msgid "Path to your private key file."
-msgstr "자신의 개인 키 파일 경로."
+msgstr ""
 
 #. type: deftypevr
 #: guix-git/doc/guix.texi:23417
@@ -42494,7 +42342,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:23692
 #, no-wrap
 msgid "IRC gateway"
-msgstr "IRC 게이트웨이"
+msgstr "IRC -yhdyskäytävä"
 
 #. type: Plain text
 #: guix-git/doc/guix.texi:23695
@@ -42659,7 +42507,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:23768
 #, no-wrap
 msgid "telephony, services"
-msgstr "전화(전화또는 voip와 같은), 서비스"
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/guix.texi:23772
@@ -42674,10 +42522,9 @@ msgstr ""
 
 #. type: cindex
 #: guix-git/doc/guix.texi:23775
-#, fuzzy, no-wrap
-#| msgid "system service"
+#, no-wrap
 msgid "jami, service"
-msgstr "시스템 서비스"
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/guix.texi:23781
@@ -42860,9 +42707,9 @@ msgstr ""
 
 #. type: deftp
 #: guix-git/doc/guix.texi:23910
-#, fuzzy, no-wrap
+#, no-wrap
 msgid "{Data Type} jami-configuration"
-msgstr "설정"
+msgstr ""
 
 #. type: deftp
 #: guix-git/doc/guix.texi:23912
@@ -42877,9 +42724,8 @@ msgstr ""
 
 #. type: table
 #: guix-git/doc/guix.texi:23916
-#, fuzzy
 msgid "The Jami daemon package to use."
-msgstr "꾸러미와 도구."
+msgstr ""
 
 #. type: item
 #: guix-git/doc/guix.texi:23917
@@ -42949,9 +42795,9 @@ msgstr ""
 
 #. type: deftp
 #: guix-git/doc/guix.texi:23943
-#, fuzzy, no-wrap
+#, no-wrap
 msgid "{Data Type} jami-account"
-msgstr "설정"
+msgstr ""
 
 #. type: deftp
 #: guix-git/doc/guix.texi:23945
@@ -43517,7 +43363,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:34304
 #, no-wrap
 msgid "password"
-msgstr "비밀번호"
+msgstr "salasana"
 
 #. type: table
 #: guix-git/doc/guix.texi:24185
@@ -44945,7 +44791,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:25132
 #, no-wrap
 msgid "interface"
-msgstr "연결장치"
+msgstr "liitäntä"
 
 #. type: table
 #: guix-git/doc/guix.texi:25134
@@ -46806,7 +46652,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:26296
 #, no-wrap
 msgid "contents"
-msgstr "내용"
+msgstr "sisältö"
 
 #. type: table
 #: guix-git/doc/guix.texi:26299
@@ -47222,7 +47068,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:26536
 #, no-wrap
 msgid "servers"
-msgstr "서버"
+msgstr "palvelimet"
 
 #. type: table
 #: guix-git/doc/guix.texi:26543
@@ -47540,7 +47386,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:26718
 #, no-wrap
 msgid "domain"
-msgstr "도메인"
+msgstr "toimialue"
 
 #. type: table
 #: guix-git/doc/guix.texi:26721
@@ -50879,7 +50725,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:28254
 #, no-wrap
 msgid "Bitmask"
-msgstr "Bitmask"
+msgstr ""
 
 #. type: defvr
 #: guix-git/doc/guix.texi:28256
@@ -51203,7 +51049,7 @@ msgstr ""
 #. type: deftypevr
 #: guix-git/doc/guix.texi:28422
 msgid "Server name."
-msgstr "서버 이름."
+msgstr "Palvelimen nimi."
 
 #. type: deftypevr
 #: guix-git/doc/guix.texi:28424
@@ -51497,7 +51343,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:28644
 #, no-wrap
 msgid "strongSwan"
-msgstr "strongSwan"
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/guix.texi:28648
@@ -51527,15 +51373,14 @@ msgstr ""
 
 #. type: deftp
 #: guix-git/doc/guix.texi:28663
-#, fuzzy, no-wrap
+#, no-wrap
 msgid "{Data Type} strongswan-configuration"
-msgstr "설정"
+msgstr ""
 
 #. type: deftp
 #: guix-git/doc/guix.texi:28665
-#, fuzzy
 msgid "Data type representing the configuration of the StrongSwan service."
-msgstr "운영체제 설정 관리."
+msgstr ""
 
 #. type: code{#1}
 #: guix-git/doc/guix.texi:28667
@@ -51722,7 +51567,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:29174 guix-git/doc/guix.texi:34305
 #, no-wrap
 msgid "public-key"
-msgstr "공개 키"
+msgstr "julkinen avain"
 
 #. type: table
 #: guix-git/doc/guix.texi:28744
@@ -52489,9 +52334,9 @@ msgstr ""
 
 #. type: item
 #: guix-git/doc/guix.texi:29086
-#, fuzzy, no-wrap
+#, no-wrap
 msgid "Using the local Guix daemon."
-msgstr "구성 데몬 실행하기."
+msgstr ""
 
 #. type: itemize
 #: guix-git/doc/guix.texi:29090
@@ -52708,9 +52553,8 @@ msgstr ""
 
 #. type: deftp
 #: guix-git/doc/guix.texi:29206
-#, fuzzy
 msgid "Data type representing the configuration of Laminar."
-msgstr "운영체제 설정 관리."
+msgstr ""
 
 #. type: item
 #: guix-git/doc/guix.texi:29208
@@ -52720,9 +52564,8 @@ msgstr ""
 
 #. type: table
 #: guix-git/doc/guix.texi:29210
-#, fuzzy
 msgid "The Laminar package to use."
-msgstr "꾸러미와 도구."
+msgstr ""
 
 #. type: item
 #: guix-git/doc/guix.texi:29211
@@ -54568,7 +54411,7 @@ msgstr ""
 #. type: deftypevr
 #: guix-git/doc/guix.texi:30269 guix-git/doc/guix.texi:30493
 msgid "Logging filters."
-msgstr "로깅 필터:"
+msgstr ""
 
 #. type: deftypevr
 #: guix-git/doc/guix.texi:30272
@@ -54633,7 +54476,7 @@ msgstr ""
 #. type: deftypevr
 #: guix-git/doc/guix.texi:30315 guix-git/doc/guix.texi:30538
 msgid "Logging outputs."
-msgstr "로깅 출력."
+msgstr ""
 
 #. type: deftypevr
 #: guix-git/doc/guix.texi:30318
@@ -55038,9 +54881,6 @@ msgid ""
 "         (qemu-binfmt-configuration\n"
 "           (platforms (lookup-qemu-platforms \"arm\"))))\n"
 msgstr ""
-"(service qemu-binfmt-service-type\n"
-"(qemu-binfmt-configuration\n"
-"(platforms (lookup-qemu-platforms \"arm\"))\n"
 
 #. type: table
 #: guix-git/doc/guix.texi:30652
@@ -55157,15 +54997,14 @@ msgstr ""
 
 #. type: deftp
 #: guix-git/doc/guix.texi:30717
-#, fuzzy, no-wrap
+#, no-wrap
 msgid "{Data Type} qemu-guest-agent-configuration"
-msgstr "설정"
+msgstr ""
 
 #. type: deftp
 #: guix-git/doc/guix.texi:30719
-#, fuzzy
 msgid "Configuration for the @code{qemu-guest-agent} service."
-msgstr "운영체제 설정 관리."
+msgstr ""
 
 #. type: item
 #: guix-git/doc/guix.texi:30721 guix-git/doc/guix.texi:30803
@@ -55256,7 +55095,7 @@ msgstr ""
 #. type: defvr
 #: guix-git/doc/guix.texi:30781
 msgid "For example:"
-msgstr "예를 들면:"
+msgstr "Esimerkiksi:"
 
 #. type: lisp
 #: guix-git/doc/guix.texi:30787
@@ -55780,7 +55619,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:31077
 #, no-wrap
 msgid "extension"
-msgstr "확장"
+msgstr "laajennus"
 
 #. type: table
 #: guix-git/doc/guix.texi:31080
@@ -55818,7 +55657,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:31095
 #, no-wrap
 msgid "configuration"
-msgstr "설정"
+msgstr "asetukset"
 
 #. type: table
 #: guix-git/doc/guix.texi:31097
@@ -56323,9 +56162,8 @@ msgstr ""
 
 #. type: deftp
 #: guix-git/doc/guix.texi:31341
-#, fuzzy
 msgid "This is the configuration for the @code{ganeti-luxid} service."
-msgstr "운영체제 설정 관리."
+msgstr ""
 
 #. type: table
 #: guix-git/doc/guix.texi:31350
@@ -56843,13 +56681,13 @@ msgstr ""
 #: guix-git/doc/guix.texi:31707
 #, no-wrap
 msgid "Cgit Service"
-msgstr "Cgit 서비스"
+msgstr "Cgit palvelu"
 
 #. type: cindex
 #: guix-git/doc/guix.texi:31709
 #, no-wrap
 msgid "Cgit service"
-msgstr ""
+msgstr "Cgit palvelu"
 
 #. type: cindex
 #: guix-git/doc/guix.texi:31710
@@ -58471,17 +58309,15 @@ msgstr ""
 
 #. type: subsubheading
 #: guix-git/doc/guix.texi:32766
-#, fuzzy, no-wrap
-#| msgid "Cgit Service"
+#, no-wrap
 msgid "Gitile Service"
-msgstr "Cgit 서비스"
+msgstr ""
 
 #. type: cindex
 #: guix-git/doc/guix.texi:32768
-#, fuzzy, no-wrap
-#| msgid "system service"
+#, no-wrap
 msgid "Gitile service"
-msgstr "시스템 서비스"
+msgstr ""
 
 #. type: cindex
 #: guix-git/doc/guix.texi:32769
@@ -58583,15 +58419,14 @@ msgstr ""
 
 #. type: deftp
 #: guix-git/doc/guix.texi:32851
-#, fuzzy, no-wrap
+#, no-wrap
 msgid "{Data Type} gitile-configuration"
-msgstr "설정"
+msgstr ""
 
 #. type: deftp
 #: guix-git/doc/guix.texi:32853
-#, fuzzy
 msgid "Data type representing the configuration for @code{gitile-service-type}."
-msgstr "운영체제 설정 관리."
+msgstr ""
 
 #. type: item
 #: guix-git/doc/guix.texi:32855
@@ -58601,9 +58436,8 @@ msgstr ""
 
 #. type: table
 #: guix-git/doc/guix.texi:32857
-#, fuzzy
 msgid "Gitile package to use."
-msgstr "꾸러미와 도구."
+msgstr ""
 
 #. type: table
 #: guix-git/doc/guix.texi:32860
@@ -58629,10 +58463,8 @@ msgstr ""
 
 #. type: table
 #: guix-git/doc/guix.texi:32866
-#, fuzzy
-#| msgid "The license of this manual."
 msgid "The location of the database."
-msgstr "이 설명서의 저작권."
+msgstr ""
 
 #. type: item
 #: guix-git/doc/guix.texi:32867
@@ -58809,7 +58641,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:32947
 #, no-wrap
 msgid "rules"
-msgstr "규칙"
+msgstr "säännöt"
 
 #. type: table
 #: guix-git/doc/guix.texi:32950
@@ -59082,7 +58914,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:33094
 #, no-wrap
 msgid "authentication"
-msgstr "인증"
+msgstr "tunnistautuminen"
 
 #. type: table
 #: guix-git/doc/guix.texi:33097
@@ -59218,7 +59050,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:33168
 #, no-wrap
 msgid "token"
-msgstr "토큰"
+msgstr ""
 
 #. type: table
 #: guix-git/doc/guix.texi:33171
@@ -59696,10 +59528,9 @@ msgstr ""
 
 #. type: subsubheading
 #: guix-git/doc/guix.texi:33394
-#, fuzzy, no-wrap
-#| msgid "System Services"
+#, no-wrap
 msgid "Rasdaemon Service"
-msgstr "시스템 서비스"
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/guix.texi:33399
@@ -59730,10 +59561,8 @@ msgstr ""
 
 #. type: itemize
 #: guix-git/doc/guix.texi:33410
-#, fuzzy
-#| msgid "default"
 msgid "faults"
-msgstr "기본"
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/guix.texi:33414
@@ -59831,15 +59660,14 @@ msgstr ""
 
 #. type: deftp
 #: guix-git/doc/guix.texi:33459
-#, fuzzy, no-wrap
+#, no-wrap
 msgid "{Data Type} rasdaemon-configuration"
-msgstr "설정"
+msgstr ""
 
 #. type: deftp
 #: guix-git/doc/guix.texi:33461
-#, fuzzy
 msgid "The data type representing the configuration of @command{rasdaemon}."
-msgstr "운영체제 설정 관리."
+msgstr ""
 
 #. type: item
 #: guix-git/doc/guix.texi:33463
@@ -60032,7 +59860,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:33562
 #, no-wrap
 msgid "fingerprint"
-msgstr "지문"
+msgstr "sormenjälki"
 
 #. type: subsubheading
 #: guix-git/doc/guix.texi:33563
@@ -60386,7 +60214,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:33721
 #, no-wrap
 msgid "dictionary"
-msgstr "사전"
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/guix.texi:33723
@@ -60594,7 +60422,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:33823
 #, no-wrap
 msgid "Docker"
-msgstr ""
+msgstr "Docker"
 
 #. type: subsubheading
 #: guix-git/doc/guix.texi:33824
@@ -60756,7 +60584,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:33888
 #, no-wrap
 msgid "Audit"
-msgstr "감사"
+msgstr "Auditointi"
 
 #. type: subsubheading
 #: guix-git/doc/guix.texi:33889
@@ -60813,7 +60641,7 @@ msgstr ""
 #. type: enumerate
 #: guix-git/doc/guix.texi:33914
 msgid "Network access"
-msgstr ""
+msgstr "Verkkopääsy"
 
 #. type: defvr
 #: guix-git/doc/guix.texi:33925
@@ -61122,9 +60950,9 @@ msgstr ""
 
 #. type: deftp
 #: guix-git/doc/guix.texi:34100
-#, fuzzy, no-wrap
+#, no-wrap
 msgid "{Data Type} setuid-program"
-msgstr "설정"
+msgstr ""
 
 #. type: deftp
 #: guix-git/doc/guix.texi:34102
@@ -61150,10 +60978,8 @@ msgstr ""
 
 #. type: table
 #: guix-git/doc/guix.texi:34109
-#, fuzzy
-#| msgid "Whether to use a snippet, or a build phase."
 msgid "Whether to set user setuid bit."
-msgstr "단편적인 또는 구성 단계 사용 여부."
+msgstr ""
 
 #. type: item
 #: guix-git/doc/guix.texi:34110
@@ -61455,7 +61281,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:34300
 #, no-wrap
 msgid "hosts"
-msgstr "호스트"
+msgstr "isännät"
 
 #. type: itemx
 #: guix-git/doc/guix.texi:34301
@@ -61467,13 +61293,13 @@ msgstr ""
 #: guix-git/doc/guix.texi:34302
 #, no-wrap
 msgid "netgroup"
-msgstr "넷그룹"
+msgstr "verkkoryhmä"
 
 #. type: itemx
 #: guix-git/doc/guix.texi:34303
 #, no-wrap
 msgid "networks"
-msgstr "네트워크"
+msgstr "verkot"
 
 #. type: itemx
 #: guix-git/doc/guix.texi:34306
@@ -61769,7 +61595,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:34540
 #, no-wrap
 msgid "boot loader"
-msgstr "부트로더"
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/guix.texi:34547
@@ -62186,7 +62012,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:34798 guix-git/doc/guix.texi:34857
 #, no-wrap
 msgid "resolution"
-msgstr "해상도"
+msgstr "resoluutio"
 
 #. type: Plain text
 #: guix-git/doc/guix.texi:34802
@@ -62274,7 +62100,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:34851 guix-git/doc/guix.texi:37496
 #, no-wrap
 msgid "search"
-msgstr "검색"
+msgstr "haku"
 
 #. type: table
 #: guix-git/doc/guix.texi:34854
@@ -62345,7 +62171,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:34897 guix-git/doc/guix.texi:37555
 #, no-wrap
 msgid "reconfigure"
-msgstr ""
+msgstr "muokkaa asetuksia"
 
 #. type: table
 #: guix-git/doc/guix.texi:34902
@@ -62571,7 +62397,7 @@ msgstr "vm"
 #: guix-git/doc/guix.texi:35067 guix-git/doc/guix.texi:35634
 #, no-wrap
 msgid "virtual machine"
-msgstr "가상 장비"
+msgstr "virtuaalikone"
 
 #. type: cindex
 #: guix-git/doc/guix.texi:35068
@@ -62675,7 +62501,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:35133
 #, no-wrap
 msgid "image"
-msgstr "이미지"
+msgstr "levykuva"
 
 #. type: cindex
 #: guix-git/doc/guix.texi:35134
@@ -62973,7 +62799,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:35353
 #, no-wrap
 msgid "debug"
-msgstr "디버그"
+msgstr "virheenjäljitys"
 
 #. type: table
 #: guix-git/doc/guix.texi:35359
@@ -63248,7 +63074,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:35556
 #, no-wrap
 msgid "environment"
-msgstr "환경"
+msgstr "ympäristö"
 
 #. type: table
 #: guix-git/doc/guix.texi:35558
@@ -63292,7 +63118,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:35575
 #, no-wrap
 msgid "system"
-msgstr "시스템"
+msgstr "järjestelmä"
 
 #. type: table
 #: guix-git/doc/guix.texi:35578
@@ -63374,7 +63200,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:35616
 #, no-wrap
 msgid "ssh-key"
-msgstr "ssh 키"
+msgstr "ssh-avain"
 
 #. type: table
 #: guix-git/doc/guix.texi:35619
@@ -63396,7 +63222,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:35622
 #, no-wrap
 msgid "region"
-msgstr "지역"
+msgstr "alue"
 
 #. type: table
 #: guix-git/doc/guix.texi:35624
@@ -63444,7 +63270,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:35651
 #, no-wrap
 msgid "QEMU"
-msgstr ""
+msgstr "QEMU"
 
 #. type: Plain text
 #: guix-git/doc/guix.texi:35658
@@ -63616,7 +63442,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:35784
 #, no-wrap
 msgid "daemons"
-msgstr "데몬"
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/guix.texi:35797
@@ -63648,7 +63474,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:35817
 #, no-wrap
 msgid "system service"
-msgstr "시스템 서비스"
+msgstr "järjestelmäpalvelu"
 
 #. type: Plain text
 #: guix-git/doc/guix.texi:35825
@@ -64058,7 +63884,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:36090
 #, no-wrap
 msgid "service type"
-msgstr "서비스 유형"
+msgstr ""
 
 #. type: deftp
 #: guix-git/doc/guix.texi:36093
@@ -64074,7 +63900,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:36098
 #, no-wrap
 msgid "extensions"
-msgstr "확장"
+msgstr "laajennukset"
 
 #. type: table
 #: guix-git/doc/guix.texi:36100
@@ -64496,7 +64322,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:36345
 #, no-wrap
 msgid "start"
-msgstr "시작"
+msgstr "käynnistä"
 
 #. type: itemx
 #: guix-git/doc/guix.texi:36346
@@ -64752,10 +64578,9 @@ msgstr ""
 
 #. type: cindex
 #: guix-git/doc/guix.texi:36513
-#, fuzzy, no-wrap
-#| msgid "home configuration"
+#, no-wrap
 msgid "complex configurations"
-msgstr "홈 구성"
+msgstr "moniosaiset asetukset"
 
 #. type: Plain text
 #: guix-git/doc/guix.texi:36518
@@ -65330,7 +65155,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:36883
 #, no-wrap
 msgid "home configuration"
-msgstr "홈 구성"
+msgstr "kotiasetukset"
 
 #. type: Plain text
 #: guix-git/doc/guix.texi:36895
@@ -65396,7 +65221,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:36947
 #, no-wrap
 msgid "Declaring the Home Environment"
-msgstr "홈 환경을 선언"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:36944
@@ -65408,33 +65233,29 @@ msgstr ""
 #: guix-git/doc/guix.texi:37015
 #, no-wrap
 msgid "Configuring the Shell"
-msgstr "쉘 구성하기"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:36944
-#, fuzzy
-#| msgid "Building development environments with Guix."
 msgid "Enabling home environment."
-msgstr "guix로 개발 환경 구성하기."
+msgstr ""
 
 #. type: section
 #: guix-git/doc/guix.texi:36944 guix-git/doc/guix.texi:37061
 #: guix-git/doc/guix.texi:37062
 #, no-wrap
 msgid "Home Services"
-msgstr "홈 서비스"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:36944
 msgid "Specifying home services."
-msgstr "홈 서비스 지정하기."
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:36944
-#, fuzzy
-#| msgid "Manage the operating system configuration."
 msgid "Instantiating a home configuration."
-msgstr "운영체제 설정 관리."
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/guix.texi:36953
@@ -65464,10 +65285,9 @@ msgstr ""
 
 #. type: findex
 #: guix-git/doc/guix.texi:36978
-#, fuzzy, no-wrap
-#| msgid "environment"
+#, no-wrap
 msgid "home-environment"
-msgstr "환경"
+msgstr ""
 
 #. type: include
 #: guix-git/doc/guix.texi:36980
@@ -65554,7 +65374,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:37063
 #, no-wrap
 msgid "home services"
-msgstr "홈 서비스"
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/guix.texi:37072
@@ -65574,10 +65394,9 @@ msgstr ""
 #. type: subsection
 #: guix-git/doc/guix.texi:37097 guix-git/doc/guix.texi:37100
 #: guix-git/doc/guix.texi:37101
-#, fuzzy, no-wrap
-#| msgid "Cgit Service"
+#, no-wrap
 msgid "Essential Home Services"
-msgstr "Cgit 서비스"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:37097
@@ -65586,10 +65405,8 @@ msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:37097
-#, fuzzy
-#| msgid "System Services"
 msgid "Shells: Shells Home Services"
-msgstr "시스템 서비스"
+msgstr ""
 
 #. type: menuentry
 #: guix-git/doc/guix.texi:37097
@@ -65625,7 +65442,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:37107
 #, no-wrap
 msgid "environment variables"
-msgstr "환경 변수"
+msgstr "ympäristömuuttujat"
 
 #. type: defvr
 #: guix-git/doc/guix.texi:37109
@@ -65759,35 +65576,33 @@ msgstr ""
 
 #. type: node
 #: guix-git/doc/guix.texi:37216
-#, fuzzy, no-wrap
-#| msgid "System Services"
+#, no-wrap
 msgid "Shells Home Services"
-msgstr "시스템 서비스"
+msgstr ""
 
 #. type: subsection
 #: guix-git/doc/guix.texi:37217
 #, no-wrap
 msgid "Shells"
-msgstr "쉘"
+msgstr "Komentotulkit"
 
 #. type: cindex
 #: guix-git/doc/guix.texi:37219 guix-git/doc/guix.texi:37500
 #, no-wrap
 msgid "shell"
-msgstr "쉘"
+msgstr "komentotulkki"
 
 #. type: cindex
 #: guix-git/doc/guix.texi:37220
 #, no-wrap
 msgid "login shell"
-msgstr "로그인 쉘"
+msgstr ""
 
 #. type: cindex
 #: guix-git/doc/guix.texi:37221
-#, fuzzy, no-wrap
-#| msgid "interface"
+#, no-wrap
 msgid "interactive shell"
-msgstr "연결장치"
+msgstr ""
 
 #. type: cindex
 #: guix-git/doc/guix.texi:37222 guix-git/doc/guix.texi:37502
@@ -65797,10 +65612,9 @@ msgstr "bash"
 
 #. type: cindex
 #: guix-git/doc/guix.texi:37223 guix-git/doc/guix.texi:37503
-#, fuzzy, no-wrap
-#| msgid "ssh"
+#, no-wrap
 msgid "zsh"
-msgstr "ssh"
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/guix.texi:37229
@@ -65814,16 +65628,15 @@ msgstr ""
 
 #. type: subsubheading
 #: guix-git/doc/guix.texi:37240
-#, fuzzy, no-wrap
-#| msgid "Cgit Service"
+#, no-wrap
 msgid "Shell Profile Service"
-msgstr "Cgit 서비스"
+msgstr ""
 
 #. type: deftp
 #: guix-git/doc/guix.texi:37242
-#, fuzzy, no-wrap
+#, no-wrap
 msgid "{Data Type} home-shell-profile-configuration"
-msgstr "설정"
+msgstr ""
 
 #. type: deftp
 #: guix-git/doc/guix.texi:37244
@@ -65843,23 +65656,20 @@ msgstr ""
 
 #. type: subsubheading
 #: guix-git/doc/guix.texi:37261
-#, fuzzy, no-wrap
-#| msgid "System Services"
+#, no-wrap
 msgid "Bash Home Service"
-msgstr "시스템 서비스"
+msgstr ""
 
 #. type: anchor{#1}
 #: guix-git/doc/guix.texi:37264
-#, fuzzy
-#| msgid "home configuration"
 msgid "home-bash-configuration"
-msgstr "홈 구성"
+msgstr ""
 
 #. type: deftp
 #: guix-git/doc/guix.texi:37264
-#, fuzzy, no-wrap
+#, no-wrap
 msgid "{Data Type} home-bash-configuration"
-msgstr "설정"
+msgstr ""
 
 #. type: deftp
 #: guix-git/doc/guix.texi:37266
@@ -65874,9 +65684,8 @@ msgstr ""
 
 #. type: table
 #: guix-git/doc/guix.texi:37270
-#, fuzzy
 msgid "The Bash package to use."
-msgstr "꾸러미와 도구."
+msgstr ""
 
 #. type: item
 #: guix-git/doc/guix.texi:37271
@@ -65969,9 +65778,9 @@ msgstr ""
 
 #. type: deftp
 #: guix-git/doc/guix.texi:37325
-#, fuzzy, no-wrap
+#, no-wrap
 msgid "{Data Type} home-bash-extension"
-msgstr "설정"
+msgstr ""
 
 #. type: deftp
 #: guix-git/doc/guix.texi:37327
@@ -66005,16 +65814,15 @@ msgstr ""
 
 #. type: subsubheading
 #: guix-git/doc/guix.texi:37353
-#, fuzzy, no-wrap
-#| msgid "System Services"
+#, no-wrap
 msgid "Zsh Home Service"
-msgstr "시스템 서비스"
+msgstr ""
 
 #. type: deftp
 #: guix-git/doc/guix.texi:37355
-#, fuzzy, no-wrap
+#, no-wrap
 msgid "{Data Type} home-zsh-configuration"
-msgstr "설정"
+msgstr ""
 
 #. type: deftp
 #: guix-git/doc/guix.texi:37357
@@ -66029,9 +65837,8 @@ msgstr ""
 
 #. type: table
 #: guix-git/doc/guix.texi:37361
-#, fuzzy
 msgid "The Zsh package to use."
-msgstr "꾸러미와 도구."
+msgstr ""
 
 #. type: item
 #: guix-git/doc/guix.texi:37362
@@ -66106,10 +65913,9 @@ msgstr ""
 
 #. type: node
 #: guix-git/doc/guix.texi:37404
-#, fuzzy, no-wrap
-#| msgid "Exim Service"
+#, no-wrap
 msgid "Mcron Home Service"
-msgstr "수출입 서비스"
+msgstr ""
 
 #. type: subsection
 #: guix-git/doc/guix.texi:37405
@@ -66135,16 +65941,15 @@ msgstr ""
 
 #. type: deftp
 #: guix-git/doc/guix.texi:37430
-#, fuzzy, no-wrap
+#, no-wrap
 msgid "{Data Type} home-mcron-configuration"
-msgstr "설정"
+msgstr ""
 
 #. type: node
 #: guix-git/doc/guix.texi:37444
-#, fuzzy, no-wrap
-#| msgid "Telephony Services"
+#, no-wrap
 msgid "Shepherd Home Service"
-msgstr "전화(전화또는 voip와 같은), 서비스"
+msgstr ""
 
 #. type: subsection
 #: guix-git/doc/guix.texi:37445
@@ -66170,9 +65975,9 @@ msgstr ""
 
 #. type: deftp
 #: guix-git/doc/guix.texi:37461
-#, fuzzy, no-wrap
+#, no-wrap
 msgid "{Data Type} home-shepherd-configuration"
-msgstr "설정"
+msgstr ""
 
 #. type: item
 #: guix-git/doc/guix.texi:37468
@@ -66187,10 +65992,9 @@ msgstr ""
 
 #. type: section
 #: guix-git/doc/guix.texi:37479
-#, fuzzy, no-wrap
-#| msgid "Invoking guix-daemon"
+#, no-wrap
 msgid "Invoking @code{guix home}"
-msgstr "guix-데몬 호출하기"
+msgstr ""
 
 #. type: Plain text
 #: guix-git/doc/guix.texi:37484
@@ -66215,10 +66019,9 @@ msgstr ""
 
 #. type: cindex
 #: guix-git/doc/guix.texi:37501
-#, fuzzy, no-wrap
-#| msgid "profile"
+#, no-wrap
 msgid "shell-profile"
-msgstr "프로파일"
+msgstr ""
 
 #. type: example
 #: guix-git/doc/guix.texi:37513
@@ -66359,10 +66162,9 @@ msgstr ""
 
 #. type: cindex
 #: guix-git/doc/guix.texi:37615
-#, fuzzy, no-wrap
-#| msgid "Documentation"
+#, no-wrap
 msgid "home generations"
-msgstr "문서"
+msgstr ""
 
 #. type: table
 #: guix-git/doc/guix.texi:37618
@@ -66449,7 +66251,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:37692
 #, no-wrap
 msgid "import"
-msgstr "import"
+msgstr "tuo"
 
 #. type: table
 #: guix-git/doc/guix.texi:37699
@@ -66724,7 +66526,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:37945
 #, no-wrap
 msgid "security updates"
-msgstr "보안 최신화"
+msgstr "tietoturvapäivitykset"
 
 #. type: Plain text
 #: guix-git/doc/guix.texi:37954
@@ -67170,7 +66972,7 @@ msgstr ""
 #: guix-git/doc/guix.texi:38394
 #, no-wrap
 msgid "contributing.texi"
-msgstr "contributing.ko.texi"
+msgstr "contributing.fi.texi"
 
 #. type: Plain text
 #: guix-git/doc/guix.texi:38407
@@ -67198,14 +67000,3 @@ msgstr ""
 #, no-wrap
 msgid "fdl-1.3.texi"
 msgstr ""
-
-#~ msgid "git-send-email"
-#~ msgstr "깃 전송-전자우편"
-
-#, fuzzy
-#~| msgid "contents"
-#~ msgid "contentdb"
-#~ msgstr "내용"
-
-#~ msgid "Using Debbugs."
-#~ msgstr "디버그 사용하기."
