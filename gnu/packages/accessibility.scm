@@ -95,14 +95,14 @@ terminals.")
 (define-public brltty
   (package
     (name "brltty")
-    (version "6.2")
+    (version "6.4")
     (source
      (origin
        (method url-fetch)
        (uri
         (string-append "https://brltty.app/archive/brltty-" version ".tar.gz"))
        (sha256
-        (base32 "0m0cq3p1cwp52n81si621gij82w3mdqwgr39m6bs652pmk5na72l"))))
+        (base32 "0zybi9i9izv25g0wphl0snddrhb6xl5879y4pkpjpnxq61wm9gry"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:tests? #f                      ; No target
@@ -113,9 +113,6 @@ terminals.")
 
        #:configure-flags
        (list
-        (string-append "--with-tcl-config="
-                       (assoc-ref %build-inputs "tcl")
-                       "/lib/tclConfig.sh")
         (string-append "--with-libbraille="
                        (assoc-ref %build-inputs "libbraille"))
         (string-append "--with-espeak_ng="
@@ -157,8 +154,7 @@ terminals.")
                 (string-append "extra_link_args = ['-Wl,-rpath="
                                (assoc-ref outputs "out")
                                "/lib'], "
-                               "extra_compile_args = ")))
-             #t)))))
+                               "extra_compile_args = "))))))))
     (native-inputs
      `(("clisp" ,clisp)
        ("cython" ,python-cython)
