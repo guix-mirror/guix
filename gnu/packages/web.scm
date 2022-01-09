@@ -4662,8 +4662,8 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
                    license:freebsd-doc)))) ; documentation
 
 (define-public guix-data-service
-  (let ((commit "df2a0a73f1f35ea53ba6c07a6ad4c5347ba12b8f")
-        (revision "27"))
+  (let ((commit "f1d8d76c4d685bc5e938f495c762984fe2564371")
+        (revision "28"))
     (package
       (name "guix-data-service")
       (version (string-append "0.0.1-" revision "." (string-take commit 7)))
@@ -4675,7 +4675,7 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1ss1prr98zdjkm97w24rd04lfnnvcw6xs0gwxqgd40briqisaa5g"))))
+                  "16ys402pvrzxm8kvhss4fhgfzbcxh70jndi50cpgz80qb510x3iq"))))
       (build-system gnu-build-system)
       (arguments
        '(#:modules ((guix build utils)
@@ -4745,12 +4745,12 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
              postgresql-13
              sqitch))
       (native-inputs
-       `(("guile" ,@(assoc-ref (package-native-inputs guix) "guile"))
-         ("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("emacs-minimal" ,emacs-minimal)
-         ("emacs-htmlize" ,emacs-htmlize)
-         ("pkg-config" ,pkg-config)))
+       (list (car (assoc-ref (package-native-inputs guix) "guile"))
+             autoconf
+             automake
+             emacs-minimal
+             emacs-htmlize
+             pkg-config))
       (synopsis "Store and provide data about GNU Guix")
       (description
        "The Guix Data Service stores data about GNU Guix, and provides this
