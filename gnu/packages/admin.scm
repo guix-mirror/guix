@@ -2401,7 +2401,6 @@ recover lost partitions and/or make non-booting disks bootable again.")
               (uri (string-append
                     "http://mama.indstate.edu/users/ice/tree/src/tree-"
                     version ".tgz"))
-              (patches (search-patches "tree-disable-stddata.patch"))
               (sha256
                (base32 "0f92vx6gpz7v29wi9clklzah57v7lgx5kv0m1w4b9xjc35d9qcz3"))))
     (build-system gnu-build-system)
