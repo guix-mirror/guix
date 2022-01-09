@@ -10869,24 +10869,24 @@ dependencies that allows you to parse INI and ini-style syntax.  You can use
 this to write Rust programs which can be customized by end users easily.")
     (license (list license:expat license:lgpl3+))))
 
-(define-public rust-console-0.14
+(define-public rust-console-0.15
   (package
     (name "rust-console")
-    (version "0.14.1")
+    (version "0.15.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "console" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0i8z1bdbv8is1lamd81jdsf4pa1ww2jl3h0yjdshc5mabd2fd4rr"))))
+        (base32 "0c9wif28i3q231gvjprqdq1glmgmmcdxpmxcwk1p0jx45k9k52x2"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-encode-unicode" ,rust-encode-unicode-0.3)
-        ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-libc" ,rust-libc-0.2)
+        ("rust-once-cell" ,rust-once-cell-1)
         ("rust-regex" ,rust-regex-1)
         ("rust-terminal-size" ,rust-terminal-size-0.1)
         ("rust-unicode-width" ,rust-unicode-width-0.1)
@@ -10897,6 +10897,30 @@ this to write Rust programs which can be customized by end users easily.")
     (description
      "This package provides a terminal and console abstraction for Rust.")
     (license license:expat)))
+
+(define-public rust-console-0.14
+  (package
+    (inherit rust-console-0.15)
+    (name "rust-console")
+    (version "0.14.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "console" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0i8z1bdbv8is1lamd81jdsf4pa1ww2jl3h0yjdshc5mabd2fd4rr"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-encode-unicode" ,rust-encode-unicode-0.3)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-regex" ,rust-regex-1)
+        ("rust-terminal-size" ,rust-terminal-size-0.1)
+        ("rust-unicode-width" ,rust-unicode-width-0.1)
+        ("rust-winapi" ,rust-winapi-0.3)
+        ("rust-winapi-util" ,rust-winapi-util-0.1))))))
 
 (define-public rust-console-0.13
   (package
