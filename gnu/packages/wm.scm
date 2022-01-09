@@ -2602,7 +2602,7 @@ program and unhides it after quitting.")
     (synopsis "Minimal GTK based system tray")
     (description
      "@command{trayer} is small program designed to provide systray
-functionality present in GNOME/KDE desktop enviroments for window managers
+functionality present in GNOME/KDE desktop environments for window managers
 which do not support it.")
     (license license:expat)))
 
