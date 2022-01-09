@@ -11,7 +11,7 @@
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2020, 2021 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Prafulla Giri <pratheblackdiamond@gmail.com>
-;;; Copyright © 2020, 2021 Zheng Junjie <873216071@qq.com>
+;;; Copyright © 2020, 2021, 2022 Zheng Junjie <873216071@qq.com>
 ;;; Copyright © 2021 Alexandros Theodotou <alex@zrythm.org>
 ;;; Copyright © 2021 la snesne <lasnesne@lagunposprasihopre.org>
 ;;; Copyright © 2021 Vinicius Monego <monego@posteo.net>
@@ -474,7 +474,7 @@ expression library, that is used in Krita.")
 (define-public krita
   (package
     (name "krita")
-    (version "5.0.0")
+    (version "5.0.2")
     (source
      (origin
        (method url-fetch)
@@ -482,7 +482,7 @@ expression library, that is used in Krita.")
              "mirror://kde/stable/krita/" version "/krita-" version
              ".tar.gz"))
        (sha256
-        (base32 "0mycxrqp944kp5bhlv8c1x1ikn9av1q7dhzl32jd6gxbphyq7mc4"))))
+        (base32 "1gww95fyd5r3x2260j2ls7d8fp4rsfxnwdqai2j7fjahxg3iyxg6"))))
     (build-system qt-build-system)
     (arguments
      `(#:tests? #f
