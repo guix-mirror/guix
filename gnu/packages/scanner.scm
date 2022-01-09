@@ -2,7 +2,7 @@
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
-;;; Copyright © 2017, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2019, 2020, 2022 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -23,6 +23,7 @@
 (define-module (gnu packages scanner)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages avahi)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
@@ -35,14 +36,69 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages textutils)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages xml)
   #:use-module (guix build-system gnu)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix gexp)
   #:use-module ((guix licenses)
                 #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils))
+
+(define-public sane-airscan
+  (package
+    (name "sane-airscan")
+    (version "0.99.27")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/alexpevzner/sane-airscan")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1syxsih1kdnz9slsg5a92bqnllagm4cybqk4n2y6mbkqn6h0zlnv"))))
+    (build-system gnu-build-system)
+    (arguments
+     (list #:make-flags
+           #~(list (string-append "prefix=" #$output)
+                   (string-append "libdir=$(prefix)/lib"))
+           #:phases
+           #~(modify-phases %standard-phases
+               (delete 'configure ))))  ; no configure script
+    (native-inputs
+     (list pkg-config))
+    (inputs
+     (list avahi
+           gnutls
+           libjpeg-turbo
+           libpng
+           libxml2
+           sane-backends))
+    (home-page "https://github.com/alexpevzner/sane-airscan")
+    (synopsis "SANE backend for eSCL (AirScan) and WSD document scanners")
+    (description ; no @acronym{eSCL} because the meaning isn't officially known
+     "This SANE backend lets you scan documents and images from scanners and
+multi-function printers that speak eSCL (marketed as ``AirScan'') or
+@acronym{WSD, Web Services for Devices} (or ``WS-Scan'').
+
+Both are vendor-neutral protocols that allow ``driverless'' scanning over IPv4
+and IPv6 networks without the vendor-specific drivers that make up most of the
+sane-backends collection.  This is similar to how most contemporary printers
+speak the universal @acronym{IPP, Internet Printing Protocol}.
+
+Only scanners that support eSCL will also work over USB.  This requires a
+suitable IPP-over-USB daemon like ipp-usb to be installed and configured.
+
+Any eSCL or WSD-capable scanner should just work.  sane-airscan automatically
+discovers and configures devices, including which protocol to use.  It was
+successfully tested with many devices from Brother, Canon, Dell, Kyocera,
+Lexmark, Epson, HP, OKI, Panasonic, Pantum, Ricoh, Samsung, and Xerox, with both
+WSD and eSCL.")
+    (license (list license:gpl2+        ; the combined work
+                   license:expat))))    ; http_parser.[ch]
 
 (define-public sane-backends-minimal
   (package
