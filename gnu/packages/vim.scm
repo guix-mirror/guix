@@ -31,6 +31,7 @@
 (define-module (gnu packages vim)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
+  #:use-module (guix gexp)
   #:use-module (guix utils)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -176,20 +177,19 @@ configuration files.")
   (package (inherit vim)
     (name "xxd")
     (arguments
-     `(#:make-flags (list ,(string-append "CC=" (cc-for-target)))
+     (list
+       #:make-flags #~(list (string-append "CC=" #$(cc-for-target)))
        #:tests? #f ; there are none
        #:phases
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (add-after 'unpack 'chdir
-           (lambda _
-             (chdir "src/xxd")
-             #t))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
-               (install-file "xxd" bin)
-               #t))))))
+       #~(modify-phases %standard-phases
+           (delete 'configure)
+           (add-after 'unpack 'chdir
+             (lambda _
+               (chdir "src/xxd")))
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
+                 (install-file "xxd" bin)))))))
     (inputs `())
     (native-inputs `())
     (synopsis "Hexdump utility from vim")
