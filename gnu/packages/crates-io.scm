@@ -39610,24 +39610,26 @@ dependency to expose a precomputed hash.")
 (define-public rust-predicates-2
   (package
     (name "rust-predicates")
-    (version "2.0.0")
+    (version "2.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "predicates" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0xma6v1qnfjxr4hmby5b6a9vc2i5f4638c24q4p1xqmlksknrr66"))))
+        (base32 "05d749i3z8cbsr0899fzr2ksn8drbci4harcq82vjsj5krlagrcm"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-difflib" ,rust-difflib-0.4)
-        ("rust-float-cmp" ,rust-float-cmp-0.8)
+       (("rust-concolor-control" ,rust-concolor-control-0.0.7)
+        ("rust-difflib" ,rust-difflib-0.4)
+        ("rust-float-cmp" ,rust-float-cmp-0.9)
         ("rust-itertools" ,rust-itertools-0.10)
         ("rust-normalize-line-endings" ,rust-normalize-line-endings-0.3)
         ("rust-predicates-core" ,rust-predicates-core-1)
-        ("rust-regex" ,rust-regex-1))
+        ("rust-regex" ,rust-regex-1)
+        ("rust-yansi" ,rust-yansi-0.5))
        #:cargo-development-inputs
        (("rust-predicates-tree" ,rust-predicates-tree-1))))
     (home-page "https://github.com/assert-rs/predicates-rs")
