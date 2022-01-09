@@ -508,7 +508,7 @@ ar = \"" binutils "/bin/ar" "\"
            (search-path-specification
             (variable "LIBRARY_PATH")
             (files '("lib" "lib64")))))
-    (synopsis "Compiler for the Rust progamming language")
+    (synopsis "Compiler for the Rust programming language")
     (description "Rust is a systems programming language that provides memory
 safety and thread safety guarantees.")
     (home-page "https://www.rust-lang.org")
