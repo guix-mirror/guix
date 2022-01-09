@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021, 2022 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
@@ -75,7 +75,7 @@
 (define-public vim
   (package
     (name "vim")
-    (version "8.2.3487")
+    (version "8.2.3995")
     (source (origin
              (method git-fetch)
              (uri (git-reference
@@ -84,7 +84,7 @@
              (file-name (git-file-name name version))
              (sha256
               (base32
-               "1s09jvr1vv9zjk352vbfidfy5fidbf83kz2vk0kk6zv24j1yck24"))))
+               "1aqrywyry4vxf1x7mk5g1k5k6md38bnjb6f778hmk8ahx26mpqpb"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -106,8 +106,7 @@
                             "src/testdir/test_terminal2.vim")
                (("/bin/sh") (which "sh")))
              (substitute* "src/testdir/test_autocmd.vim"
-               (("/bin/kill") (which "kill")))
-             #t))
+               (("/bin/kill") (which "kill")))))
          (add-before 'check 'set-environment-variables
            (lambda* (#:key inputs #:allow-other-keys)
              ;; One of the tests tests timezone-dependent functions.
@@ -115,8 +114,7 @@
                      (search-input-directory inputs "share/zoneinfo"))
 
              ;; Make sure the TERM environment variable is set for the tests
-             (setenv "TERM" "xterm")
-             #t))
+             (setenv "TERM" "xterm")))
          (add-before 'check 'skip-or-fix-failing-tests
            (lambda _
              ;; This test assumes that PID 1 is run as root and that the user
@@ -141,8 +139,7 @@
                 (string-append line "return\n")))
              (substitute* "src/testdir/test_popupwin.vim"
                ((".*Test_popup_drag_termwin.*" line)
-                (string-append line "return\n")))
-             #t))
+                (string-append line "return\n")))))
          (add-before 'install 'fix-installman.sh
            (lambda _
              (substitute* "src/installman.sh"
@@ -153,8 +150,7 @@
              (let ((vimdir (string-append (assoc-ref outputs "out") "/share/vim")))
                (mkdir-p vimdir)
                (copy-file (assoc-ref inputs "guix.vim")
-                          (string-append vimdir "/vimrc"))
-               #t))))))
+                          (string-append vimdir "/vimrc"))))))))
     (inputs
      (list gawk ncurses perl tcsh))                 ; For runtime/tools/vim32
     (native-inputs
@@ -204,9 +200,6 @@ with the editor vim.")))
 
 (define-public vim-full
   (package
-    ;; This package should share its source with Vim, but it doesn't
-    ;; build reliably, and we want to keep Vim up to date due to the
-    ;; frequency of important bug fixes.
     (inherit vim)
     (name "vim-full")
     (arguments
