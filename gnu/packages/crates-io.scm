@@ -18527,8 +18527,36 @@ provides implementations for @code{HashMap} and @code{HashSet}.")
     (description "Fallible streaming iteration")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-fancy-regex-0.7
+  (package
+    (name "rust-fancy-regex")
+    (version "0.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "fancy-regex" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1krwc8mbj8zv4ahvh3lqkmfxf38cg79ya02by19fn4jil1h8aswx"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bit-set" ,rust-bit-set-0.5)
+        ("rust-regex" ,rust-regex-1))))
+    (home-page "https://github.com/fancy-regex/fancy-regex")
+    (synopsis "Implementation of regexes with a rich set of features")
+    (description
+     "This package is a Rust library for compiling and matching regular
+expressions.  It uses a hybrid regex implementation designed to support
+a relatively rich set of features.  In particular, it uses backtracking to
+implement features such as look-around and backtracking, which are not
+supported in purely NFA-based implementations.")
+    (license license:expat)))
+
 (define-public rust-fancy-regex-0.3
   (package
+    (inherit rust-fancy-regex-0.7)
     (name "rust-fancy-regex")
     (version "0.3.5")
     (source
@@ -18538,7 +18566,6 @@ provides implementations for @code{HashMap} and @code{HashSet}.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "051bnj890xrvhslppdzw6n956xfjg0wr2ixvhy336d2japvap4df"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-bit-set" ,rust-bit-set-0.5)
@@ -18558,16 +18585,7 @@ provides implementations for @code{HashMap} and @code{HashSet}.")
          (add-after 'unpack 'remove-oniguruma-tests
            (lambda _
              (delete-file-recursively "tests/oniguruma")
-             (delete-file "tests/oniguruma.rs"))))))
-    (home-page "https://github.com/fancy-regex/fancy-regex")
-    (synopsis "Implementation of regexes with a rich set of features")
-    (description
-     "This package is a Rust library for compiling and matching regular
-expressions.  It uses a hybrid regex implementation designed to support
-a relatively rich set of features.  In particular, it uses backtracking to
-implement features such as look-around and backtracking, which are not
-supported in purely NFA-based implementations.")
-    (license license:expat)))
+             (delete-file "tests/oniguruma.rs"))))))))
 
 (define-public rust-fast-chemail-0.9
   (package
