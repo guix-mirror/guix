@@ -690,16 +690,6 @@
                        "environment variable `CPLUS_INCLUDE_PATH' changed to ~a~%"
                        (getenv "CPLUS_INCLUDE_PATH")))
 
-             (setenv "CXXFLAGS"
-                     (string-join
-                      '(;; Do not optimize away null pointer safety checks.
-                        "-fno-delete-null-pointer-checks"
-                        ;; Disable warnings about unknown warnings that require
-                        ;; Clang plugins or newer versions.
-                        "-Wno-unknown-warning-option")))
-
-             (setenv "CFLAGS" "-Wno-unknown-warning-option")
-
              ;; TODO: pre-compile instead. Avoids a race condition.
              (setenv "PYTHONDONTWRITEBYTECODE" "1")
 
