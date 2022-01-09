@@ -5810,23 +5810,24 @@ tools like SSH (Secure Shell) to reach the outside world.")
      ("python" ,python)))
   (inputs (list openssl))
   (arguments
-   `(#:configure-flags
-     (list (string-append "--with-ssl=" (assoc-ref %build-inputs "openssl")))
-     #:phases
-     (modify-phases %standard-phases
-       (add-after 'unpack 'patch-output-directories
-         (lambda _
-           ;; Some (not all) Makefiles have a hard-coded incorrect docdir.
-           (substitute* (list "Makefile.in"
-                              "doc/Makefile.in"
-                              "tools/Makefile.in")
-             (("/doc/stunnel")
-              (string-append "/doc/" ,name "-" ,version)))))
-       (add-after 'install 'prune-documentation
-         (lambda* (#:key outputs #:allow-other-keys)
-           (let* ((out (assoc-ref outputs "out"))
-                  (doc (string-append out "/share/doc/" ,name "-" ,version)))
-             (for-each delete-file (find-files doc "^INSTALL"))))))))
+   (list #:configure-flags
+         #~(list (string-append "--with-ssl="
+                                #$(this-package-input "openssl")))
+         #:phases
+         #~(modify-phases %standard-phases
+             (add-after 'unpack 'patch-output-directories
+               (lambda _
+                 ;; Some (not all) Makefiles have a hard-coded incorrect docdir.
+                 (substitute* (list "Makefile.in"
+                                    "doc/Makefile.in"
+                                    "tools/Makefile.in")
+                   (("/doc/stunnel")
+                    (string-append "/doc/" #$name "-" #$version)))))
+             (add-after 'install 'prune-documentation
+               (lambda _
+                 (let* ((doc (string-append #$output "/share/doc/"
+                                            #$name "-" #$version)))
+                   (for-each delete-file (find-files doc "^INSTALL"))))))))
   (home-page "https://www.stunnel.org")
   (synopsis "TLS proxy for clients or servers")
   (description "Stunnel is a proxy designed to add TLS encryption
