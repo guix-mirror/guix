@@ -706,6 +706,50 @@ much of the core functionality and some common tools needed for performing
 astronomy and astrophysics.")
     (license license:bsd-3)))
 
+(define-public python-astroquery
+  (package
+    (name "python-astroquery")
+    (version "0.4.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "astroquery" version))
+       (sha256
+        (base32 "06xy0qzqmps6z5vwfkh5fkhr151p7g94r2j0mvp1rc8zns22y010"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'writable-home
+           (lambda _                    ; some tests need a writable home
+             (setenv "HOME" (getcwd))))
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "python" "-m" "pytest" "--pyargs" "astroquery"
+                       ;; Skip tests that require online data.
+                       "-m" "not remote_data")))))))
+    (propagated-inputs
+     (list python-astropy
+           python-beautifulsoup4
+           python-html5lib
+           python-keyring
+           python-numpy
+           python-pyvo
+           python-requests))
+    (native-inputs
+     (list python-flask
+           python-jinja2
+           python-matplotlib
+           python-pytest-astropy
+           python-pytest-dependency))
+    (home-page "https://www.astropy.org/astroquery/")
+    (synopsis "Access online astronomical data resources")
+    (description "Astroquery is a package that contains a collection of tools
+to access online Astronomical data.  Each web service has its own sub-package.")
+    (license license:bsd-3)))
+
 (define-public python-pyvo
   (package
     (name "python-pyvo")
