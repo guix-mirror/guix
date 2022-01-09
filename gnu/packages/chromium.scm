@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2019, 2020, 2021 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2019, 2020, 2021, 2022 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -543,8 +543,9 @@
              "use_system_libpng=true"
              "use_system_wayland_scanner=true"
              (string-append "system_wayland_scanner_path=\""
-                            (assoc-ref %build-inputs "wayland-scanner")
-                            "/bin/wayland-scanner\"")
+                            (search-input-file %build-inputs
+                                               "/bin/wayland-scanner")
+                            "\"")
 
              "use_system_zlib=true"
              "use_gnome_keyring=false"  ;deprecated by libsecret
@@ -586,11 +587,11 @@
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-stuff
            (lambda* (#:key inputs #:allow-other-keys)
-             (let ((openjpeg (assoc-ref inputs "openjpeg")))
+             (let ((openjpeg (search-input-directory
+                              inputs "include/openjpeg-2.4")))
                (substitute* "third_party/pdfium/BUILD.gn"
                  ;; This include path is added by Debians openjpeg patch.
-                 (("/usr/include/openjpeg")
-                  (string-append openjpeg "/include/openjpeg"))))
+                 (("/usr/include/openjpeg-2.4") openjpeg)))
 
              (substitute*
                  '("base/process/launch_posix.cc"
@@ -651,36 +652,31 @@
                (("include/third_party/vulkan/") ""))))
          (add-after 'patch-stuff 'add-absolute-references
            (lambda* (#:key inputs #:allow-other-keys)
-             (let ((cups (assoc-ref inputs "cups"))
-                   (nss (assoc-ref inputs "nss"))
-                   (mesa (assoc-ref inputs "mesa"))
-                   (udev (assoc-ref inputs "udev")))
+             (let ((cups-config (search-input-file inputs "/bin/cups-config"))
+                   (libnssckbi.so (search-input-file inputs "/lib/nss/libnssckbi.so"))
+                   (libudev.so.1 (search-input-file inputs "/lib/libudev.so.1"))
+                   (libvulkan.so.1 (search-input-file inputs "/lib/libvulkan.so.1"))
+                   (mesa-lib (dirname (search-input-file inputs "/lib/libGL.so.1"))))
                (substitute* "printing/cups_config_helper.py"
                  (("cups_config =.*")
-                  (string-append "cups_config = '" cups
-                                 "/bin/cups-config'\n")))
+                  (string-append "cups_config = '" cups-config "'\n")))
                (substitute* "crypto/nss_util.cc"
-                 (("libnssckbi\\.so")
-                  (string-append nss "/lib/nss/libnssckbi.so")))
+                 (("libnssckbi\\.so") libnssckbi.so))
                (substitute* "device/udev_linux/udev1_loader.cc"
-                 (("libudev\\.so\\.1")
-                  (string-append udev "/lib/libudev.so.1")))
-
+                 (("libudev\\.so\\.1") libudev.so.1))
                (substitute* "third_party/dawn/src/dawn_native/vulkan/BackendVk.cpp"
-                 (("libvulkan\\.so\\.1")
-                  (search-input-file inputs "/lib/libvulkan.so.1")))
-
+                 (("libvulkan\\.so\\.1") libvulkan.so.1))
                (substitute*
                    '("ui/ozone/platform/x11/gl_ozone_glx.cc"
                      "ui/ozone/common/egl_util.cc"
                      "ui/gl/init/gl_initializer_linux_x11.cc"
                      "third_party/angle/src/libANGLE/renderer/gl/glx/FunctionsGLX.cpp")
                  (("libGL\\.so\\.1")
-                  (string-append mesa "/lib/libGL.so.1"))
+                  (string-append mesa-lib "/libGL.so.1"))
                  (("libEGL\\.so\\.1")
-                  (string-append mesa "/lib/libEGL.so.1"))
+                  (string-append mesa-lib "/libEGL.so.1"))
                  (("libGLESv2\\.so\\.2")
-                  (string-append mesa "/lib/libGLESv2.so.2"))))))
+                  (string-append mesa-lib "/libGLESv2.so.2"))))))
          (add-before 'configure 'prepare-build-environment
            (lambda* (#:key inputs #:allow-other-keys)
 
@@ -716,7 +712,7 @@
 
              ;; XXX: How portable is this.
              (mkdir-p "third_party/node/linux/node-linux-x64")
-             (symlink (string-append (assoc-ref inputs "node") "/bin")
+             (symlink (dirname (search-input-file inputs "/bin/node"))
                       "third_party/node/linux/node-linux-x64/bin")))
          (replace 'configure
            (lambda* (#:key configure-flags #:allow-other-keys)
@@ -778,8 +774,7 @@
                     (resources      (string-append lib "/resources"))
                     (preferences    (assoc-ref inputs "master-preferences"))
                     (gtk+           (assoc-ref inputs "gtk+"))
-                    (xdg-utils      (assoc-ref inputs "xdg-utils"))
-                    (sh             (which "sh")))
+                    (xdg-utils      (assoc-ref inputs "xdg-utils")))
 
                (substitute* '("chrome/app/resources/manpage.1.in"
                               "chrome/installer/linux/common/desktop.template")
@@ -846,62 +841,62 @@
        ("python" ,python-wrapper)
        ("wayland-scanner" ,wayland)))
     (inputs
-     `(("alsa-lib" ,alsa-lib)
-       ("atk" ,atk)
-       ("cups" ,cups)
-       ("curl" ,curl)
-       ("dbus" ,dbus)
-       ("expat" ,expat)
-       ("flac" ,flac)
-       ("ffmpeg" ,ffmpeg)
-       ("fontconfig" ,fontconfig)
-       ("freetype" ,freetype)
-       ("gdk-pixbuf" ,gdk-pixbuf)
-       ("glib" ,glib)
-       ("gtk+" ,gtk+)
-       ("harfbuzz" ,harfbuzz-3.0)
-       ("icu4c" ,icu4c)
-       ("lcms" ,lcms)
-       ("libevent" ,libevent)
-       ("libffi" ,libffi)
-       ("libjpeg-turbo" ,libjpeg-turbo)
-       ("libpng" ,libpng)
-       ("libva" ,libva)
-       ("libvpx" ,libvpx)
-       ("libwebp" ,libwebp)
-       ("libx11" ,libx11)
-       ("libxcb" ,libxcb)
-       ("libxcomposite" ,libxcomposite)
-       ("libxcursor" ,libxcursor)
-       ("libxdamage" ,libxdamage)
-       ("libxext" ,libxext)
-       ("libxfixes" ,libxfixes)
-       ("libxi" ,libxi)
-       ("libxml2" ,libxml2)
-       ("libxrandr" ,libxrandr)
-       ("libxrender" ,libxrender)
-       ("libxscrnsaver" ,libxscrnsaver)
-       ("libxslt" ,libxslt)
-       ("libxtst" ,libxtst)
-       ("mesa" ,mesa)
-       ("minizip" ,minizip)
-       ("mit-krb5" ,mit-krb5)
-       ("nss" ,nss)
-       ("openh264" ,openh264)
-       ("openjpeg" ,openjpeg)                          ;PDFium only
-       ("opus" ,opus+custom)
-       ("pango" ,pango)
-       ("pciutils" ,pciutils)
-       ("pipewire" ,pipewire-0.3)
-       ("pulseaudio" ,pulseaudio)
-       ("snappy" ,snappy)
-       ("speech-dispatcher" ,speech-dispatcher)
-       ("udev" ,eudev)
-       ("valgrind" ,valgrind)
-       ("vulkan-headers" ,vulkan-headers)
-       ("vulkan-loader" ,vulkan-loader)
-       ("wayland" ,wayland)
-       ("xdg-utils" ,xdg-utils)))
+     (list alsa-lib
+           atk
+           cups
+           curl
+           dbus
+           expat
+           flac
+           ffmpeg
+           fontconfig
+           freetype
+           gdk-pixbuf
+           glib
+           gtk+
+           harfbuzz-3.0
+           icu4c
+           lcms
+           libevent
+           libffi
+           libjpeg-turbo
+           libpng
+           libva
+           libvpx
+           libwebp
+           libx11
+           libxcb
+           libxcomposite
+           libxcursor
+           libxdamage
+           libxext
+           libxfixes
+           libxi
+           libxml2
+           libxrandr
+           libxrender
+           libxscrnsaver
+           libxslt
+           libxtst
+           mesa
+           minizip
+           mit-krb5
+           nss
+           openh264
+           openjpeg ;PDFium only
+           opus+custom
+           pango
+           pciutils
+           pipewire-0.3
+           pulseaudio
+           snappy
+           speech-dispatcher
+           eudev
+           valgrind
+           vulkan-headers
+           vulkan-loader
+           wayland
+           xdg-utils))
     (native-search-paths
      (list (search-path-specification
             (variable "CHROMIUM_EXTENSION_DIRECTORY")
