@@ -706,6 +706,45 @@ much of the core functionality and some common tools needed for performing
 astronomy and astrophysics.")
     (license license:bsd-3)))
 
+(define-public python-astropy-healpix
+  (package
+    (name "python-astropy-healpix")
+    (version "0.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "astropy-healpix" version))
+       (sha256
+        (base32 "1436ml03xkmvx4afzbhfj67ab91418sz1w3lq1b18r43qchnd6j0"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; This file is opened in both install and check phases.
+         (add-before 'install 'writable-compiler
+           (lambda _ (make-file-writable "astropy_healpix/_compiler.c")))
+         (add-before 'check 'writable-compiler
+           (lambda _ (make-file-writable "astropy_healpix/_compiler.c")))
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               ;; Extensions have to be rebuilt before running the tests.
+               (invoke "python" "setup.py" "build_ext" "--inplace")
+               (invoke "python" "-m" "pytest"
+                       "--pyargs" "astropy_healpix")))))))
+    (native-inputs
+     (list python-extension-helpers
+           python-hypothesis
+           python-pytest-astropy
+           python-setuptools-scm))
+    (propagated-inputs
+     (list python-astropy python-numpy))
+    (home-page "https://github.com/astropy/astropy-healpix")
+    (synopsis "HEALPix for Astropy")
+    (description "This package provides HEALPix to the Astropy project.")
+    (license license:bsd-3)))
+
 (define-public python-astroquery
   (package
     (name "python-astroquery")
