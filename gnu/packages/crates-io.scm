@@ -35327,7 +35327,7 @@ other crates to create safe wrappers around Oniguruma.")
 (define-public rust-once-cell-1
   (package
     (name "rust-once-cell")
-    (version "1.8.0")
+    (version "1.9.0")
     (source
      (origin
        (method url-fetch)
@@ -35335,11 +35335,12 @@ other crates to create safe wrappers around Oniguruma.")
        (file-name
         (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0mkbbxg6416z11r2yzsq91cqrkj9w1iyx5hakq15h5sbnriwnbv9"))))
+        (base32 "1mfqhrsgi368x92bwnq3vi3p5nv0n1qlrn69gfflhvkfkxfm2cns"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-parking-lot" ,rust-parking-lot-0.11))
+       (("rust-atomic-polyfill" ,rust-atomic-polyfill-0.1)
+        ("rust-parking-lot" ,rust-parking-lot-0.11))
        #:cargo-development-inputs
        (("rust-crossbeam-utils" ,rust-crossbeam-utils-0.7)
         ("rust-lazy-static" ,rust-lazy-static-1)
