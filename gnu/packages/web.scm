@@ -5802,13 +5802,6 @@ tools like SSH (Secure Shell) to reach the outside world.")
       (sha256
        (base32 "0yjx07r5wc987s4z0wm37381fa3az2s4mrhyjxypx3rd92k0rsli"))))
   (build-system gnu-build-system)
-  (native-inputs
-   ;; For tests.
-   `(("iproute" ,iproute)
-     ("netcat" ,netcat)
-     ("procps" ,procps)
-     ("python" ,python)))
-  (inputs (list openssl))
   (arguments
    (list #:configure-flags
          #~(list (string-append "--with-ssl="
@@ -5828,6 +5821,13 @@ tools like SSH (Secure Shell) to reach the outside world.")
                  (let* ((doc (string-append #$output "/share/doc/"
                                             #$name "-" #$version)))
                    (for-each delete-file (find-files doc "^INSTALL"))))))))
+  (native-inputs
+   ;; For tests.
+   (list iproute
+         netcat
+         procps
+         python))
+  (inputs (list openssl))
   (home-page "https://www.stunnel.org")
   (synopsis "TLS proxy for clients or servers")
   (description "Stunnel is a proxy designed to add TLS encryption
