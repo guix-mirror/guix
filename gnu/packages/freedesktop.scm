@@ -2236,13 +2236,13 @@ fallback to generic Systray support if none of those are available.")
        (list "-Dbackends=gtk4,qt5"
              "-Ddocs=false")))          ; requires unpackaged gi-docgen
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("docbook-xsl" ,docbook-xsl)
-       ("docbook-xml" ,docbook-xml)
-       ("glib:bin" ,glib "bin")
-       ("gobject-introspection" ,gobject-introspection)
-       ("libxml2" ,libxml2)
-       ("vala" ,vala)))
+     (list pkg-config
+           docbook-xsl
+           docbook-xml
+           `(,glib "bin")
+           gobject-introspection
+           libxml2
+           vala))
     (inputs
      (list gtk
            gtk+
