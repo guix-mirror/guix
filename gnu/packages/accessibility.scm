@@ -106,6 +106,11 @@ terminals.")
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:tests? #f                      ; No target
+
+       ;; High parallelism may cause errors such as:
+       ;;  ranlib: ./libbrlapi_stubs.a: error reading brlapi_stubs.o: file truncated
+       #:parallel-build? #f
+
        #:configure-flags
        (list
         (string-append "--with-tcl-config="
