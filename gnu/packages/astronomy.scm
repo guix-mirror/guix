@@ -6,7 +6,7 @@
 ;;; Copyright © 2020 R Veera Kumar <vkor@vkten.in>
 ;;; Copyright © 2020, 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.com>
-;;; Copyright © 2021 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2021, 2022 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2021 Greg Hogan <code@greghogan.com>
 ;;; Copyright © 2021 Foo Chuan Wei <chuanwei.foo@hotmail.com>
 ;;;
@@ -55,6 +55,7 @@
   #:use-module (gnu packages python-check)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-science)
+  #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages time)
@@ -703,6 +704,40 @@ accurately in real time at any rate desired.")
      "Astropy is a single core package for Astronomy in Python.  It contains
 much of the core functionality and some common tools needed for performing
 astronomy and astrophysics.")
+    (license license:bsd-3)))
+
+(define-public python-pyvo
+  (package
+    (name "python-pyvo")
+    (version "1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pyvo" version))
+       (sha256
+        (base32 "1lap703wxbyxqlbk85myirp4pkdnc6cg10xhfajfsvz5k0hm5ffw"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "python" "-m" "pytest" "--pyargs" "pyvo" "-k"
+                       (string-append   ; these tests use the network
+                        "not test_access_with_string"
+                        " and not test_access_with_list"
+                        " and not test_access_with_expansion"))))))))
+    (native-inputs
+     (list python-pytest-astropy python-requests-mock))
+    (propagated-inputs
+     (list python-astropy python-mimeparse python-pillow python-requests))
+    (home-page "https://github.com/astropy/pyvo")
+    (synopsis "Access Virtual Observatory data and services")
+    (description
+     "PyVO is a package providing access to remote data and services of the
+Virtual observatory (VO) using Python.")
     (license license:bsd-3)))
 
 (define-public python-astral
