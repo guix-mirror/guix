@@ -465,7 +465,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
   (package
     (inherit go-1.14)
     (name "go")
-    (version "1.16.12")
+    (version "1.16.13")
     (source
      (origin
        (method git-fetch)
@@ -475,7 +475,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "06c8dcmni38za638ma069izd9kbxr6ii6ccflbibgc6k54lpc3fb"))))
+         "03f37dspn4h5kqf0nqwmnl858wx6hngnlvbnrjl1ll6ihc5j66jz"))))
     (arguments
      (substitute-keyword-arguments (package-arguments go-1.14)
        ((#:tests? _) #t)
