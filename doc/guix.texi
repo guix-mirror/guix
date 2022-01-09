@@ -11810,7 +11810,7 @@ following options:
 Compute a hash using the specified @var{algorithm}, @code{sha256} by
 default.
 
-@var{algorithm} must the name of a cryptographic hash algorithm
+@var{algorithm} must be the name of a cryptographic hash algorithm
 supported by Libgcrypt @i{via} Guile-Gcrypt---e.g., @code{sha512} or
 @code{sha3-256} (@pxref{Hash Functions,,, guile-gcrypt, Guile-Gcrypt
 Reference Manual}).
@@ -11829,7 +11829,7 @@ in the definitions of packages.
 @item --recursive
 @itemx -r
 This option is deprecated in favor of @option{--serializer}.  It is a
-legacy alias for @var{type} sets to @code{nar}.
+legacy alias for that with @var{type} set to @code{nar}.
 
 @item --serializer=@var{type}
 @itemx -S
@@ -11846,14 +11846,14 @@ Compute the hash of a ``normalized archive'' (or ``nar'') containing
 @var{file}, including its children if it is a directory.  Some of the
 metadata of @var{file} is part of the archive; for instance, when
 @var{file} is a regular file, the hash is different depending on whether
-@var{file} is executable or not.  Metadata such as time stamps has no
+@var{file} is executable or not.  Metadata such as time stamps have no
 impact on the hash (@pxref{Invoking guix archive}, for more info on the
 nar format).
 @c FIXME: Replace xref above with xref to an ``Archive'' section when
 @c it exists.
 
 @item git
-Compute the has of the file or directory as a Git ``tree'', following
+Compute the hash of the file or directory as a Git ``tree'', following
 the same method as the Git version control system.
 @end table
 
@@ -11870,7 +11870,7 @@ Reference}):
 @example
 $ git clone http://example.org/foo.git
 $ cd foo
-$ guix hash -rx .
+$ guix hash -x --serializer=nar .
 @end example
 @end table
 
