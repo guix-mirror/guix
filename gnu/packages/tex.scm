@@ -2057,7 +2057,7 @@ L7X and UTF-8 encodings.")
               (base32
                "1fv6y8gpic5ciw8cclfxc8h3wr5xir1j0a7shixja1pmdyz7db2b")))
     (synopsis "Macedonian hyphenation patterns")
-    (description "This package provides hypenation patterns for Macedonian.")
+    (description "This package provides hyphenation patterns for Macedonian.")
     ;; XXX: License just says 'GPL'.  Assume GPL2 since the file predates GPL3.
     (license license:gpl2+)))
 
