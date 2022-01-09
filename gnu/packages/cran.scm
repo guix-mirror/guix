@@ -9550,7 +9550,7 @@ through permutation testing.")
     (home-page "http://mbojan.github.io/intergraph")
     (synopsis "Coercion routines for network data objects")
     (description
-     "Functions implemented in this package allow to coerce (i.e. convert)
+     "Functions implemented in this package allow coercing (i.e. convert)
 network data between classes provided by other R packages.  Currently
 supported classes are those defined in packages @code{network} and
 @code{igraph}.")
