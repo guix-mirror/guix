@@ -26,7 +26,7 @@
 ;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Marius Bakke <marius@gnu.org>
+;;; Copyright © 2016-2022 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2016, 2017, 2021 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2016, 2017, 2019 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2016, 2017, 2018, 2021 Arun Isaac <arunisaac@systemreboot.net>
@@ -25561,34 +25561,35 @@ intended for validating data coming into Python as JSON, YAML, etc.")
 (define-public python-cmd2
   (package
     (name "python-cmd2")
-    (version "1.0.2")
+    (version "2.3.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cmd2" version))
        (sha256
         (base32
-         "1f18plbc9yyvhn0js3d2bii9yld8zfl775gxsaw9jza5pmlg9ss2"))))
+         "0h1naik558qh48gx2iyy0a0khvw5fz0in69y84mbrhsm9nq7w3bm"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (if tests?
+                 (invoke "pytest" "-vv" "-k"
+                         ;; These tests fail because no EDITOR is in PATH.
+                         "not test_find_editor_not_specified \
+and not test_transcript")
+                 (format #t "test suite not run~%")))))))
     (propagated-inputs
      (list python-attrs python-colorama python-pyperclip python-wcwidth))
     (native-inputs
-     (list python-codecov
-           python-coverage
-           python-doc8
-           python-flake8
-           python-invoke
+     (list python-invoke
            python-mock
            python-pytest
            python-pytest-cov
            python-pytest-mock
-           python-setuptools-scm
-           python-sphinx
-           python-sphinx-autobuild
-           python-sphinx-rtd-theme
-           python-tox
-           python-twine
-           which))
+           python-setuptools-scm))
     (home-page "https://github.com/python-cmd2/cmd2")
     (synopsis "Tool for building interactive command line applications")
     (description
