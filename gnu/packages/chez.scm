@@ -71,7 +71,7 @@
 (define-public chez-scheme
   (package
     (name "chez-scheme")
-    (version "9.5.4")
+    (version "9.5.6")
     (source
      (origin
        (method git-fetch)
@@ -79,14 +79,10 @@
              (url "https://github.com/cisco/ChezScheme")
              (commit (string-append "v" version))))
        (sha256
-        (base32 "0prgn2z9l888j93ydxaf04ph424g0fi3a8w7f8m0b2r7fr1v7388"))
+        (base32 "07s433hn1z2slfc026sidrpzxv3a8narcd40qqr1xrpb9012xdky"))
        (file-name (git-file-name name version))
-       (patches
-        (search-patches
-         ;; backported from upstream: remove on next release
-         "chez-scheme-build-util-paths-backport.patch"))
        (snippet
-        ;; remove bundled libraries
+        ;; Remove bundled libraries.
         (with-imported-modules '((guix build utils))
           #~(begin
               (use-modules (guix build utils))
@@ -144,8 +140,7 @@
                            (assoc-ref (or native-inputs inputs) dep))
                          (copy-recursively src dep
                                            #:keep-mtime? #t))
-                       '("nanopass" "stex"))
-               #t))
+                       '("nanopass" "stex"))))
          ;; NOTE: the custom Chez 'configure' script doesn't allow
          ;; unrecognized flags, such as those automatically added
          ;; by `gnu-build-system`.
@@ -172,8 +167,7 @@
                (setenv "HOME" "/tmp")
                (apply invoke
                       "./configure"
-                      flags)
-               #t)))
+                      flags))))
          ;; The binary file name is called "scheme" as is the one from MIT/GNU
          ;; Scheme.  We add a symlink to use in case both are installed.
          (add-after 'install 'install-symlink
@@ -187,8 +181,7 @@
                (map (lambda (file)
                       (symlink file (string-append (dirname file)
                                                    "/" name ".boot")))
-                    (find-files lib "scheme.boot"))
-               #t)))
+                    (find-files lib "scheme.boot")))))
          ;; Building explicitly lets us avoid using substitute*
          ;; to re-write makefiles.
          (add-after 'install-symlink 'prepare-stex
@@ -217,8 +210,7 @@
                            '("ReadMe" ; includes the license
                              "doc/stex.html"
                              "doc/stex.css"
-                             "doc/stex.pdf"))
-                 #t))))
+                             "doc/stex.pdf"))))))
          ;; Building the documentation requires stex and a running scheme.
          ;; FIXME: this is probably wrong for cross-compilation
          (add-after 'prepare-stex 'install-doc
@@ -251,8 +243,7 @@
                  (symlink "release_notes/release_notes.pdf"
                           "release_notes.pdf")
                  (symlink "csug/csug9_5.pdf"
-                          "csug.pdf"))
-               #t))))))
+                          "csug.pdf"))))))))
     ;; Chez Scheme does not have a  MIPS backend.
     ;; FIXME: Debian backports patches to get armhf working.
     ;; We should too. It is the Chez machine type arm32le
