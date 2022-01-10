@@ -43,7 +43,7 @@ previously it was equivalent to @samp{--styling=inputs}.
 
 Run @code{info \"(guix) Invoking guix style\"}, for more info.")
          (fr "La commande @command{guix style}, récemment introduite, peut
-désormais être utiliser pour mettre en forme des définitions de paquets
+désormais être utilisée pour mettre en forme des définitions de paquets
 suivant les règles de style du projet Guix.  Si vous contribuez des paquets à
 Guix ou à un canal tiers, cela peut vous être utile.
 
@@ -138,7 +138,7 @@ gebeurd.  Voer @command{info \"(guix) Upgrading Guix\"} uit voor meer uitleg."))
         (title
          (en "Improved static networking support on Guix System")
          (de "Bessere Unterstützung für statische Netzwerkanbindungen auf Guix System")
-         (fr "Meilleure prise en charge de réseaux statiques sur Guix System"))
+         (fr "Meilleure prise en charge des réseaux statiques sur Guix System"))
         (body
          (en "Support for declarative static networking setup on Guix System
 has been improved.  It now allows you to list IPv4 and IPv6 addresses in
