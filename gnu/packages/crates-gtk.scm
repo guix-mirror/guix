@@ -1226,8 +1226,49 @@
        (("rust-shell-words" ,rust-shell-words-0.1)
         ("rust-tempfile" ,rust-tempfile-3))))))
 
+(define-public rust-gtk-0.14
+  (package
+    (name "rust-gtk")
+    (version "0.14.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "gtk" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0367kb9d9x5cry6zpn2ccsahvynia6hzmr61gqrfj5rkvli13d9f"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f                      ;requires running server
+       #:cargo-inputs
+       (("rust-atk" ,rust-atk-0.14)
+        ("rust-bitflags" ,rust-bitflags-1)
+        ("rust-cairo-rs" ,rust-cairo-rs-0.14)
+        ("rust-field-offset" ,rust-field-offset-0.3)
+        ("rust-futures-channel" ,rust-futures-channel-0.3)
+        ("rust-gdk" ,rust-gdk-0.14)
+        ("rust-gdk-pixbuf" ,rust-gdk-pixbuf-0.14)
+        ("rust-gio" ,rust-gio-0.14)
+        ("rust-glib" ,rust-glib-0.14)
+        ("rust-gtk-sys" ,rust-gtk-sys-0.14)
+        ("rust-gtk3-macros" ,rust-gtk3-macros-0.14)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-once-cell" ,rust-once-cell-1)
+        ("rust-pango" ,rust-pango-0.14)
+        ("rust-pkg-config" ,rust-pkg-config-0.3))
+       #:cargo-development-inputs
+       (("rust-gir-format-check" ,rust-gir-format-check-0.1))))
+    (native-inputs (list pkg-config))
+    (inputs
+     (list atk cairo glib gtk+ pango))
+    (home-page "https://gtk-rs.org/")
+    (synopsis "Rust bindings for the GTK+ 3 library")
+    (description "This package provides Rust bindings for the GTK+ 3 library.")
+    (license license:expat)))
+
 (define-public rust-gtk-0.8
   (package
+    (inherit rust-gtk-0.14)
     (name "rust-gtk")
     (version "0.8.1")
     (source
@@ -1262,13 +1303,7 @@
         ("rust-pango" ,rust-pango-0.8)
         ("rust-pango-sys" ,rust-pango-sys-0.9))
        #:cargo-development-inputs
-       (("rust-gir-format-check" ,rust-gir-format-check-0.1))))
-    (inputs
-     (list atk cairo glib gtk+ pango))
-    (home-page "https://gtk-rs.org/")
-    (synopsis "Rust bindings for the GTK+ 3 library")
-    (description "This package provides Rust bindings for the GTK+ 3 library.")
-    (license license:expat)))
+       (("rust-gir-format-check" ,rust-gir-format-check-0.1))))))
 
 (define-public rust-gtk-rs-lgpl-docs-0.1
   (package
