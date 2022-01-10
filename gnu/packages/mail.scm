@@ -924,7 +924,7 @@ mailpack.  What can alterMIME do?
        ("protobuf" ,protobuf)
        ("python" ,python-wrapper)
        ("python-pygobject" ,python-pygobject)
-       ("webkitgtk" ,webkitgtk)))
+       ("webkitgtk-with-libsoup2" ,webkitgtk-with-libsoup2)))
     (propagated-inputs
      (list adwaita-icon-theme)) ; Required for the thread view
     (home-page "https://astroidmail.github.io/")
