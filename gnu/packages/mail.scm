@@ -912,7 +912,7 @@ mailpack.  What can alterMIME do?
            pkg-config
            ronn
            w3m
-           xorg-server))
+           xorg-server-for-tests))
     (inputs
      (list boost
            gmime
