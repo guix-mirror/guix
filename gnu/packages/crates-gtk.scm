@@ -1191,8 +1191,36 @@ library.")
        #:cargo-development-inputs
        (("rust-gir-format-check" ,rust-gir-format-check-0.1))))))
 
+(define-public rust-pango-sys-0.14
+  (package
+    (name "rust-pango-sys")
+    (version "0.14.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "pango-sys" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1zj236n9kjldf47wwlxvhshwm5zhg589a0fml5mm8qg7lnf0jrr3"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build?
+       #t
+       #:cargo-inputs
+       (("rust-glib-sys" ,rust-glib-sys-0.14)
+        ("rust-gobject-sys" ,rust-gobject-sys-0.14)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-system-deps" ,rust-system-deps-3))))
+    (inputs
+     (list pango))
+    (home-page "https://gtk-rs.org/")
+    (synopsis "FFI bindings to libpango-1.0")
+    (description "This package provides FFI bindings to @code{libpango-1.0}.")
+    (license license:expat)))
+
 (define-public rust-pango-sys-0.10
   (package
+    (inherit rust-pango-sys-0.14)
     (name "rust-pango-sys")
     (version "0.10.0")
     (source
@@ -1202,20 +1230,13 @@ library.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "1468xzyk2wanxb2b32fsmwk6bnafdaicxl5b4301dlb2ic66bli4"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-glib-sys" ,rust-glib-sys-0.10)
         ("rust-gobject-sys" ,rust-gobject-sys-0.10)
         ("rust-libc" ,rust-libc-0.2)
-        ("rust-system-deps" ,rust-system-deps-1))))
-    (inputs
-     (list pango))
-    (home-page "https://gtk-rs.org/")
-    (synopsis "FFI bindings to libpango-1.0")
-    (description "This package provides FFI bindings to @code{libpango-1.0}.")
-    (license license:expat)))
+        ("rust-system-deps" ,rust-system-deps-1))))))
 
 (define-public rust-pango-sys-0.9
   (package
