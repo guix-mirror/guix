@@ -22,7 +22,7 @@
 @set SUBSTITUTE-URLS https://@value{SUBSTITUTE-SERVER-1} https://@value{SUBSTITUTE-SERVER-2}
 
 @copying
-Copyright @copyright{} 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès@*
+Copyright @copyright{} 2012-2022 Ludovic Courtès@*
 Copyright @copyright{} 2013, 2014, 2016 Andreas Enge@*
 Copyright @copyright{} 2013 Nikita Karetnikov@*
 Copyright @copyright{} 2014, 2015, 2016 Alex Kost@*
@@ -12785,7 +12785,7 @@ otherwise.
 
 The @command{guix style} command helps packagers style their package
 definitions according to the latest fashionable trends.  The command
-currently provides the providing styling rules:
+currently provides the following styling rules:
 
 @itemize
 @item
