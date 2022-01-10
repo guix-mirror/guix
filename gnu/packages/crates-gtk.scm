@@ -27,14 +27,45 @@
   #:use-module (gnu packages crates-io)
   #:use-module (gnu packages crates-graphics)
   #:use-module (gnu packages glib)
-  #:use-module (gnu packages gtk))
+  #:use-module (gnu packages gtk)
+  #:use-module (gnu packages pkg-config))
 
 ;;;
 ;;; Please: Try to add new module packages in alphabetic order.
 ;;;
+(define-public rust-atk-sys-0.14
+  (package
+    (name "rust-atk-sys")
+    (version "0.14.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "atk-sys" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1sl3pqfb2jaf9kcfxj9k43d7iv8gcl5zgdgn3j5vp13w2mqgdp5s"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f                      ; missing files
+       #:cargo-inputs
+       (("rust-glib-sys" ,rust-glib-sys-0.14)
+        ("rust-gobject-sys" ,rust-gobject-sys-0.14)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-system-deps" ,rust-system-deps-3))
+       #:cargo-development-inputs
+       (("rust-shell-words" ,rust-shell-words-1)
+        ("rust-tempfile" ,rust-tempfile-3))))
+    (native-inputs (list pkg-config))
+    (inputs
+     (list atk glib))
+    (home-page "https://gtk-rs.org/")
+    (synopsis "FFI bindings to libatk-1")
+    (description "FFI bindings to libatk-1")
+    (license license:expat)))
 
 (define-public rust-atk-sys-0.9
   (package
+    (inherit rust-atk-sys-0.14)
     (name "rust-atk-sys")
     (version "0.9.1")
     (source
@@ -44,7 +75,6 @@
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "0vzcm1inhax78bcsbapr6mrp4z7lk783csyh200wi91pcxvw2lp5"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:tests? #f                      ;missing files
        #:cargo-inputs
@@ -54,13 +84,7 @@
         ("rust-pkg-config" ,rust-pkg-config-0.3))
        #:cargo-development-inputs
        (("rust-shell-words" ,rust-shell-words-0.1)
-        ("rust-tempfile" ,rust-tempfile-3))))
-    (inputs
-     (list atk glib))
-    (home-page "https://gtk-rs.org/")
-    (synopsis "FFI bindings to libatk-1")
-    (description "FFI bindings to libatk-1")
-    (license license:expat)))
+        ("rust-tempfile" ,rust-tempfile-3))))))
 
 (define-public rust-atk-0.8
   (package
