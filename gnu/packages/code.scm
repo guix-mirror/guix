@@ -139,15 +139,6 @@ highlighting your own code that seemed comprehensible when you wrote it.")
               (base32
                "1kaphc3gml89p8dpdgh2is8hj46wj05689kxj0bmh5q759rxk4vg"))))
     (build-system gnu-build-system)
-    (inputs
-      `(("bash" ,bash-minimal)                    ; for wrap-program
-        ("coreutils" ,coreutils)
-        ("ctags" ,universal-ctags)
-        ("libltdl" ,libltdl)
-        ("ncurses" ,ncurses)
-        ("python-pygments" ,python-pygments)
-        ("python-wrapper" ,python-wrapper)
-        ("sqlite" ,sqlite)))
     (arguments
      `(#:configure-flags
        (list (string-append "--with-ncurses="
@@ -155,7 +146,7 @@ highlighting your own code that seemed comprehensible when you wrote it.")
              (string-append "--with-sqlite3="
                             (assoc-ref %build-inputs "sqlite"))
              (string-append "--with-universal-ctags="
-                            (assoc-ref %build-inputs "ctags") "/bin/ctags")
+                            (assoc-ref %build-inputs "universal-ctags") "/bin/ctags")
              (string-append "--sysconfdir="
                             (assoc-ref %outputs "out") "/share/gtags")
              "--localstatedir=/var"         ; This needs to be a writable location.
@@ -200,6 +191,15 @@ highlighting your own code that seemed comprehensible when you wrote it.")
                            (string-append vim "/gtags.vim"))
               (rename-file (string-append data "/gtags-cscope.vim")
                            (string-append vim "/gtags-cscope.vim"))))))))
+    (inputs
+      (list bash-minimal                ; for wrap-program
+            coreutils
+            universal-ctags
+            libltdl
+            ncurses
+            python-pygments
+            python-wrapper
+            sqlite))
     (home-page "https://www.gnu.org/software/global/")
     (synopsis "Cross-environment source code tag system")
     (description
