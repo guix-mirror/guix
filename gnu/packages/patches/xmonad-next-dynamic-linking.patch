@@ -1,0 +1,16 @@
+This patch is required for xmonad to make use of shared libraries.
+Without it, xmonad will not work since we do not (by default) use
+statically linked Haskell libraries.
+
+index 46a0939..5ad4f8f 100644
+--- a/src/XMonad/Core.hs
++++ b/src/XMonad/Core.hs
+@@ -664,6 +664,8 @@ compile dirs method =
+   where
+     ghcArgs = [ "--make"
+               , "xmonad.hs"
++              , "-dynamic"
++              , "-fPIC"
+               , "-i" -- only look in @lib@
+               , "-ilib"
+               , "-fforce-recomp"

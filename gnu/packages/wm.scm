@@ -48,6 +48,7 @@
 ;;; Copyright © 2021 Petr Hodina <phodina@protonmail.com>
 ;;; Copyright © 2021 jgart <jgart@dismail.de>
 ;;; Copyright © 2021 Disseminate Dissent <disseminatedissent@protonmail.com>
+;;; Copyright © 2022 John Kehayias <john.kehayias@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -736,10 +737,10 @@ This screen locker can be used with any window manager or
 desktop environment.")
     (license license:expat)))
 
-(define-public xmonad
+(define-public xmonad-next
   (package
-    (name "xmonad")
-    (version "0.15")
+    (name "xmonad-next")
+    (version "0.17.0")
     (synopsis "Tiling window manager")
     (source (origin
               (method url-fetch)
@@ -747,21 +748,13 @@ desktop environment.")
                                   "xmonad-" version ".tar.gz"))
               (sha256
                (base32
-                "0a7rh21k9y6g8fwkggxdxjns2grvvsd5hi2ls4klmqz5xvk4hyaa"))
-              (patches (search-patches "xmonad-dynamic-linking.patch"))))
+                "04qspdz9w6xpw1npcmx2zx0595wc68q985pv4i0hvp32zillvdqy"))
+              (patches (search-patches "xmonad-next-dynamic-linking.patch"))))
     (build-system haskell-build-system)
-    (inputs
-     (list ghc-extensible-exceptions
-           ghc-data-default
-           ghc-quickcheck
-           ghc-semigroups
-           ghc-setlocale
-           ghc-utf8-string
-           ghc-x11))
+    (inputs (list ghc-data-default-class ghc-setlocale ghc-x11))
+    (native-inputs (list ghc-quickcheck ghc-quickcheck-classes))
     (arguments
-     `(#:cabal-revision
-       ("1" "0yqh96qqphllr0zyz5j93cij5w2qvf39xxnrb52pz0qz3pywz9wd")
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-after
           'install 'install-xsession
@@ -788,6 +781,33 @@ config files.  Layouts are applied dynamically, and different layouts may be
 used on each workspace.  Xinerama is fully supported, allowing windows to be
 tiled on several screens.")
     (license license:bsd-3)))
+
+(define-public xmonad
+  (package
+    (inherit xmonad-next)
+    (name "xmonad")
+    (version "0.15")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://hackage/package/xmonad/"
+                                  "xmonad-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0a7rh21k9y6g8fwkggxdxjns2grvvsd5hi2ls4klmqz5xvk4hyaa"))
+              (patches (search-patches "xmonad-dynamic-linking.patch"))))
+    (inputs
+     (list ghc-extensible-exceptions
+           ghc-data-default
+           ghc-quickcheck
+           ghc-semigroups
+           ghc-setlocale
+           ghc-utf8-string
+           ghc-x11))
+    (native-inputs '())
+    (arguments
+     `(#:cabal-revision
+       ("1" "0yqh96qqphllr0zyz5j93cij5w2qvf39xxnrb52pz0qz3pywz9wd")
+       ,@(package-arguments xmonad-next)))))
 
 (define-public xmobar
   (package
@@ -862,8 +882,30 @@ Unlike dmenu, it mangles the input before it presents its choices.  In
 particular, it displays commonly-chosen options before uncommon ones.")
     (license license:bsd-3)))
 
+(define-public ghc-xmonad-contrib-next
+  (package
+    (name "ghc-xmonad-contrib-next")
+    (version "0.17.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://hackage/package/xmonad-contrib/"
+                           "xmonad-contrib-" version ".tar.gz"))
+       (sha256
+        (base32 "11g1cyfgfvcmz35qhgi9wzxrk3br8m8b7qy3jvph4nnf6aj13wvy"))))
+    (build-system haskell-build-system)
+    (propagated-inputs (list ghc-random ghc-x11 ghc-utf8-string ghc-x11-xft xmonad-next))
+    (native-inputs (list ghc-quickcheck ghc-hspec))
+    (home-page "https://xmonad.org")
+    (synopsis "Third party extensions for xmonad")
+    (description
+     "Third party tiling algorithms, configurations, and scripts to Xmonad, a
+tiling window manager for X.")
+    (license license:bsd-3)))
+
 (define-public ghc-xmonad-contrib
   (package
+    (inherit ghc-xmonad-contrib-next)
     (name "ghc-xmonad-contrib")
     (version "0.16")
     (source
@@ -873,10 +915,11 @@ particular, it displays commonly-chosen options before uncommon ones.")
                            "xmonad-contrib-" version ".tar.gz"))
        (sha256
         (base32 "1pddgkvnbww28wykncc7j0yb0lv15bk7xnnhdcbrwkxzw66w6wmd"))))
-    (build-system haskell-build-system)
     (arguments
      `(#:cabal-revision
-       ("1" "0vimkby2gq6sgzxzbvz67caba609xqlv2ii2gi8a1cjrnn6ib011")))
+       ("1" "0vimkby2gq6sgzxzbvz67caba609xqlv2ii2gi8a1cjrnn6ib011")
+       ,@(package-arguments ghc-xmonad-contrib-next)))
+    (native-inputs '())
     (propagated-inputs
      (list ghc-old-time
            ghc-random
@@ -885,13 +928,7 @@ particular, it displays commonly-chosen options before uncommon ones.")
            ghc-semigroups
            ghc-x11
            ghc-x11-xft
-           xmonad))
-    (home-page "https://xmonad.org")
-    (synopsis "Third party extensions for xmonad")
-    (description
-     "Third party tiling algorithms, configurations, and scripts to Xmonad, a
-tiling window manager for X.")
-    (license license:bsd-3)))
+           xmonad))))
 
 (define-public evilwm
   (package
