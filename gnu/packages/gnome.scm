@@ -34,7 +34,7 @@
 ;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2018, 2019 Timothy Sample <samplet@ngyro.com>
 ;;; Copyright © 2019 Danny Milosavljevic <dannym@scratchpost.org>
-;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2019, 2020, 2022 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2019 Florian Pelz <pelzflorian@pelzflorian.de>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2019 Jelle Licht <jlicht@fsfe.org>
@@ -9596,7 +9596,8 @@ specified duration and save it as a GIF encoded animated image file.")
         (base32 "1c4r9rnrz5gazrfg0z2rcwax4nscs7z391bcjcl74k6ln3blwzpr"))))
     (build-system meson-build-system)
     (arguments
-     `(#:glib-or-gtk? #t
+     `(#:meson ,meson-0.59
+       #:glib-or-gtk? #t
        #:phases
        (modify-phases %standard-phases
          (add-after 'glib-or-gtk-wrap 'python-and-gi-wrap
