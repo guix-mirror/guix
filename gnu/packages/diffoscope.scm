@@ -74,7 +74,7 @@
 (define-public diffoscope
   (package
     (name "diffoscope")
-    (version "198")
+    (version "199")
     (source
      (origin
        (method git-fetch)
@@ -83,7 +83,7 @@
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0c4n7xl28cx5i42i8v04pv2jx2yn0n4sh14qpjx6j3z77rwxam2i"))
+        (base32 "0wy1nd52a4rzqhhdcdi3pfgrixz3w3q7qfc9mpc9zraq5cj94l7n"))
        (patches
         (search-patches "diffoscope-fix-llvm-test.patch"))))
     (build-system python-build-system)
