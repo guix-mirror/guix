@@ -569,7 +569,7 @@ your existing infrastructure.")
 (define-public python-fido2
   (package
     (name "python-fido2")
-    (version "0.5.0")
+    (version "0.9.3")
     (source (origin
               (method url-fetch)
               (uri
@@ -578,13 +578,17 @@ your existing infrastructure.")
                 version "/fido2-" version ".tar.gz"))
               (sha256
                (base32
-                "1pl8d2pr6jzqj4y9qiaddhjgnl92kikjxy0bgzm2jshkzzic8mp3"))
+                "1v366h449f8q74jkmy1291ffj2345nm7cdsipgqvgz4w22k8jpml"))
               (snippet
                ;; Remove bundled dependency.
-               #~(delete-file "fido2/public_suffix_list.dat"))))
+               '(delete-file "fido2/public_suffix_list.dat"))))
     (build-system python-build-system)
     (arguments
-     `(#:phases
+     `(;; This attempts to access
+       ;; /System/Library/Frameworks/IOKit.framework/IOKit
+       ;; The recommendation is to use tox for testing.
+       #:tests? #false
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'install-public-suffix-list
            (lambda* (#:key inputs #:allow-other-keys)
@@ -594,8 +598,7 @@ your existing infrastructure.")
                                   "/share/public-suffix-list-"
                                   ,(package-version public-suffix-list)
                                   "/public_suffix_list.dat"))
-              "fido2/public_suffix_list.dat")
-             #t)))))
+              "fido2/public_suffix_list.dat"))))))
     (propagated-inputs
      (list python-cryptography python-six))
     (native-inputs
