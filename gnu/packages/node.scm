@@ -68,7 +68,7 @@
                 "032801kg24j04xmf09m0vxzlcz86sv21s24lv9l4cfv08k1c4byp"))
               (modules '((guix build utils)))
               (snippet
-               `(begin
+               '(begin
                   ;; Patch for compatibility with ICU 68 and newer, which
                   ;; removed the public TRUE and FALSE macros.
                   (substitute* '("deps/v8/src/objects/intl-objects.cc"
@@ -90,8 +90,7 @@
                     (("deps/http_parser/http_parser.gyp") "")
                     (("deps/uv/include/\\*.h") "")
                     (("deps/uv/uv.gyp") "")
-                    (("deps/zlib/zlib.gyp") ""))
-                  #t))))
+                    (("deps/zlib/zlib.gyp") ""))))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--shared-cares"
@@ -284,20 +283,20 @@
                    ;; download them from the internet:
                    (format #t "nodedir=~a\n" out)))))))))
     (native-inputs
-     `(;; Runtime dependencies for binaries used as a bootstrap.
-       ("c-ares" ,c-ares)
-       ("http-parser" ,http-parser)
-       ("icu4c" ,icu4c)
-       ("libuv" ,libuv)
-       ("nghttp2" ,nghttp2 "lib")
-       ("openssl" ,openssl)
-       ("zlib" ,zlib)
-       ;; Regular build-time dependencies.
-       ("perl" ,perl)
-       ("pkg-config" ,pkg-config)
-       ("procps" ,procps)
-       ("python" ,python-2)
-       ("util-linux" ,util-linux)))
+     ;; Runtime dependencies for binaries used as a bootstrap.
+     (list c-ares
+           http-parser
+           icu4c
+           libuv
+           `(,nghttp2 "lib")
+           openssl
+           zlib
+           ;; Regular build-time dependencies.
+           perl
+           pkg-config
+           procps
+           python-2
+           util-linux))
     (native-search-paths
      (list (search-path-specification
             (variable "NODE_PATH")
@@ -311,10 +310,11 @@
            libuv
            `(,nghttp2 "lib")
            openssl
-           python-wrapper ;; for node-gyp (supports python3)
+           python-wrapper               ;for node-gyp (supports python3)
            zlib))
     (synopsis "Evented I/O for V8 JavaScript")
-    (description "Node.js is a platform built on Chrome's JavaScript runtime
+    (description
+     "Node.js is a platform built on Chrome's JavaScript runtime
 for easily building fast, scalable network applications.  Node.js uses an
 event-driven, non-blocking I/O model that makes it lightweight and efficient,
 perfect for data-intensive real-time applications that run across distributed
