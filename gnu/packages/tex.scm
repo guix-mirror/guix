@@ -3680,41 +3680,29 @@ releases.  The bundle consists of a Lua script to run the tasks and a
 @code{.tex} file which provides the testing environment.")
       (license license:lppl1.3c+))))
 
-;; The SVN directory contains little more than a dtx file that generates three
-;; of the many lua files that should be installed as part of this package.
-;; This is why we take the release from GitHub instead.
-(define-public texlive-luatex-lualibs
+(define-public texlive-lualibs
   (package
-    (name "texlive-luatex-lualibs")
-    (version "2.5")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/lualatex/lualibs/"
-                                  "releases/download/v"
-                                  version "/lualibs.zip"))
-              (file-name (string-append name "-" version ".zip"))
-              (sha256
-               (base32
-                "1xx9blvrmx9hyhrl345lpai9m6xxnw997261a1ahn1bm5r2j5fqy"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:make-flags
-       (list (string-append "DESTDIR="
-                            (assoc-ref %outputs "out")
-                            "/share/texmf-dist"))
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure))))
-    (native-inputs
-     (list texlive-bin unzip zip))
-    (home-page "https://github.com/lualatex/lualibs")
-    (synopsis "Lua modules for general programming (in the (La)TeX world)")
+    (inherit
+     (simple-texlive-package
+      "texlive-lualibs"
+      (list "doc/luatex/lualibs/"
+            "source/luatex/lualibs/"
+            "tex/luatex/lualibs/")
+      (base32 "0gf60vj9y75a7dlrmpbyqgsa00s1717r6if3lm5ldm41i9fm8ywz")
+      ;; The source dtx file only unpacks three files.  This is why we
+      ;; install all the files as they are, because there is no clear
+      ;; way to generate them all.
+      #:trivial? #true))
+    (home-page "https://ctan.org/macros/luatex/generic/lualibs")
+    (synopsis "Additional Lua functions for LuaTeX macro programmers")
     (description
      "Lualibs is a collection of Lua modules useful for general programming.
 The bundle is based on Lua modules shipped with ConTeXt, and made available in
 this bundle for use independent of ConTeXt.")
     ;; GPL version 2 only
     (license license:gpl2)))
+
+(define-deprecated-package texlive-luatex-lualibs texlive-lualibs)
 
 (define-public texlive-lua-alt-getopt
   (package
