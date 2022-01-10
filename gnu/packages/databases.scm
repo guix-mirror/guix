@@ -666,7 +666,13 @@ auto-completion and syntax highlighting.")
           (base32 "0rij9nw20zhqr7cqnkm8daw8b1wdc9zb6ny1ji9qz5557nz9i3bl"))))
     (build-system python-build-system)
     (arguments
-     `(#:tests? #f))                    ; tests expect a running MySQL
+     '(#:tests? #f                      ; tests expect a running MySQL
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'loosen-requirements
+                    (lambda _
+                      ;; Permit newer versions of sqlparse.
+                      (substitute* "setup.py"
+                        (("<0\\.4\\.0") "<0.5.0")))))))
     (propagated-inputs
       (list python-cli-helpers
             python-click
