@@ -34123,21 +34123,23 @@ Configuration System}).  For instance, the @command{mount.nfs} program,
 which is part of the nfs-utils package, with a setuid root can be
 designated like this:
 
-@example
+@lisp
 (setuid-program
   (program (file-append nfs-utils "/sbin/mount.nfs")))
-@end example
+@end lisp
 
 And then, to make @command{mount.nfs} setuid on your system, add the
 previous example to your operating system declaration by appending it to
 @code{%setuid-programs} like this:
 
-@example
-(setuid-programs
-  (append (list (setuid-program
-                  (program (file-append nfs-utils "/sbin/mount.nfs"))))
-                %setuid-programs))
-@end example
+@lisp
+(operating-systems
+  ;; Some fields omitted...
+  (setuid-programs
+    (append (list (setuid-program
+                    (program (file-append nfs-utils "/sbin/mount.nfs")))
+                  %setuid-programs))))
+@end lisp
 
 @deftp {Data Type} setuid-program
 This data type represents a program with a setuid or setgid bit set.
