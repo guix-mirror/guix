@@ -28,6 +28,7 @@
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;; Copyright © 2021 John Kehayias <john.kehayias@protonmail.com>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2022 Daniel Meißner <daniel.meissner-i4k@ruhr-uni-bochum.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2233,7 +2234,7 @@ fallback to generic Systray support if none of those are available.")
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
-       (list "-Dbackends=gtk4,qt5"
+       (list "-Dbackends=gtk4,gtk3,qt5"
              "-Ddocs=false")))          ; requires unpackaged gi-docgen
     (native-inputs
      (list pkg-config
