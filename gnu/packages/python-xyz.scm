@@ -25451,13 +25451,13 @@ cryptographically signed ones).")
 (define-public python-dictdiffer
   (package
     (name "python-dictdiffer")
-    (version "0.8.1")
+    (version "0.9.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "dictdiffer" version))
               (sha256
                (base32
-                "1lk3qmy1hkaphk4n7ayfk0wl6m2yvd6r7qkam6yncqfzgkbc1phs"))))
+                "0y3mk74qm2q9hsm37892i1wzn8bbdrvbs4nmnvqwq4z6pxgwzfhp"))))
     (build-system python-build-system)
     (arguments
      ;; XXX: The PyPI tarball lacks tests and the git repository
