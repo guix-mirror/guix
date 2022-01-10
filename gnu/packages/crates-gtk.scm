@@ -873,24 +873,25 @@
        (("rust-shell-words" ,rust-shell-words-0.1)
         ("rust-tempfile" ,rust-tempfile-3))))))
 
-(define-public rust-gobject-sys-0.10
+(define-public rust-gobject-sys-0.14
   (package
     (name "rust-gobject-sys")
-    (version "0.10.0")
+    (version "0.14.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "gobject-sys" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1311d3zbdhl1g7ibj1iy1650513yrhxbjxgfhazn52ii1jv368cm"))))
+        (base32 "1xf3jiwzrjingq8jr15bjkbv6m5dypzp67cjnm5f7njrjzicm4ma"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
+     `(#:skip-build?
+       #t
        #:cargo-inputs
-       (("rust-glib-sys" ,rust-glib-sys-0.10)
+       (("rust-glib-sys" ,rust-glib-sys-0.14)
         ("rust-libc" ,rust-libc-0.2)
-        ("rust-system-deps" ,rust-system-deps-1))
+        ("rust-system-deps" ,rust-system-deps-3))
        #:cargo-development-inputs
        (("rust-shell-words" ,rust-shell-words-0.1)
         ("rust-tempfile" ,rust-tempfile-3))))
@@ -900,6 +901,28 @@
     (synopsis "FFI bindings to libgobject-2.0")
     (description "This package provides FFI bindings to libgobject-2.0.")
     (license license:expat)))
+
+(define-public rust-gobject-sys-0.10
+  (package
+    (inherit rust-gobject-sys-0.14)
+    (name "rust-gobject-sys")
+    (version "0.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "gobject-sys" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1311d3zbdhl1g7ibj1iy1650513yrhxbjxgfhazn52ii1jv368cm"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-glib-sys" ,rust-glib-sys-0.10)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-system-deps" ,rust-system-deps-1))
+       #:cargo-development-inputs
+       (("rust-shell-words" ,rust-shell-words-0.1)
+        ("rust-tempfile" ,rust-tempfile-3))))))
 
 (define-public rust-gobject-sys-0.9
   (package
