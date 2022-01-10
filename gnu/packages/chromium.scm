@@ -485,344 +485,349 @@
               (snippet (force ungoogled-chromium-snippet))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f
-       #:modules ((guix build gnu-build-system)
+     (list
+      #:tests? #f
+      #:modules '((guix build gnu-build-system)
                   (guix build utils)
                   (srfi srfi-26))
-       #:configure-flags
-       ;; See tools/gn/docs/cookbook.md and
-       ;; https://www.chromium.org/developers/gn-build-configuration
-       ;; for usage.  Run "gn args . --list" in the Release
-       ;; directory for an exhaustive list of supported flags.
-       ;; (Note: The 'configure' phase will do that for you.)
-       (list "is_debug=false"
-             ;; Use the "official" release optimizations, as opposed to
-             ;; a developer build.
-             "is_official_build=true"
-             "clang_use_chrome_plugins=false"
-             "is_cfi=false"             ;requires ThinLTO
-             "use_thin_lto=false"       ;XXX lld segfaults
-             "chrome_pgo_phase=0"
-             "use_sysroot=false"
-             "goma_dir=\"\""
-             "enable_nacl=false"
-             "enable_nacl_nonsfi=false"
-             "use_unofficial_version_number=false"
-             "treat_warnings_as_errors=false"
-             "use_official_google_api_keys=false"
-             "disable_fieldtrial_testing_config=true"
-             "safe_browsing_mode=0"
-             "enable_mdns=false"
-             "enable_one_click_signin=false"
-             "enable_reading_list=false"
-             "enable_remoting=false"
-             "enable_reporting=false"
-             "enable_service_discovery=false"
-             "enable_vr=false"
-             "enable_widevine=false"
-             ;; Disable type-checking for the Web UI to avoid a Java dependency.
-             "enable_js_type_check=false"
-             ;; Disable code using TensorFlow until it has been scrutinized
-             ;; by the ungoogled project.
-             "build_with_tflite_lib=false"
-             ;; Avoid dependency on code formatting tools.
-             "blink_enable_generated_code_formatting=false"
+      #:configure-flags
+      ;; See tools/gn/docs/cookbook.md and
+      ;; https://www.chromium.org/developers/gn-build-configuration
+      ;; for usage.  Run "gn args . --list" in the Release
+      ;; directory for an exhaustive list of supported flags.
+      ;; (Note: The 'configure' phase will do that for you.)
+      #~(list "is_debug=false"
+              ;; Use the "official" release optimizations, as opposed to
+              ;; a developer build.
+              "is_official_build=true"
+              "clang_use_chrome_plugins=false"
+              "is_cfi=false"            ;requires ThinLTO
+              "use_thin_lto=false"      ;XXX lld segfaults
+              "chrome_pgo_phase=0"
+              "use_sysroot=false"
+              "goma_dir=\"\""
+              "enable_nacl=false"
+              "enable_nacl_nonsfi=false"
+              "use_unofficial_version_number=false"
+              "treat_warnings_as_errors=false"
+              "use_official_google_api_keys=false"
+              "disable_fieldtrial_testing_config=true"
+              "safe_browsing_mode=0"
+              "enable_mdns=false"
+              "enable_one_click_signin=false"
+              "enable_reading_list=false"
+              "enable_remoting=false"
+              "enable_reporting=false"
+              "enable_service_discovery=false"
+              "enable_vr=false"
+              "enable_widevine=false"
+              ;; Disable type-checking for the Web UI to avoid a Java dependency.
+              "enable_js_type_check=false"
+              ;; Disable code using TensorFlow until it has been scrutinized
+              ;; by the ungoogled project.
+              "build_with_tflite_lib=false"
+              ;; Avoid dependency on code formatting tools.
+              "blink_enable_generated_code_formatting=false"
 
-             ;; Define a custom toolchain that simply looks up CC, AR and
-             ;; friends from the environment.
-             "custom_toolchain=\"//build/toolchain/linux/unbundle:default\""
-             "host_toolchain=\"//build/toolchain/linux/unbundle:default\""
+              ;; Define a custom toolchain that simply looks up CC, AR and
+              ;; friends from the environment.
+              "custom_toolchain=\"//build/toolchain/linux/unbundle:default\""
+              "host_toolchain=\"//build/toolchain/linux/unbundle:default\""
 
-             ;; Prefer system libraries.
-             "use_system_freetype=true"
-             "use_system_harfbuzz=true"
-             "use_system_lcms2=true"
-             "use_system_libdrm=true"
-             "use_system_libjpeg=true"
-             "use_system_libopenjpeg2=true"
-             "use_system_libpng=true"
-             "use_system_wayland_scanner=true"
-             (string-append "system_wayland_scanner_path=\""
-                            (search-input-file %build-inputs
-                                               "/bin/wayland-scanner")
-                            "\"")
+              ;; Prefer system libraries.
+              "use_system_freetype=true"
+              "use_system_harfbuzz=true"
+              "use_system_lcms2=true"
+              "use_system_libdrm=true"
+              "use_system_libjpeg=true"
+              "use_system_libopenjpeg2=true"
+              "use_system_libpng=true"
+              "use_system_wayland_scanner=true"
+              (string-append "system_wayland_scanner_path=\""
+                             (search-input-file %build-inputs
+                                                "/bin/wayland-scanner")
+                             "\"")
 
-             "use_system_zlib=true"
-             "use_gnome_keyring=false"  ;deprecated by libsecret
-             "use_pulseaudio=true"
-             "link_pulseaudio=true"
-             "icu_use_data_file=false"
+              "use_system_zlib=true"
+              "use_gnome_keyring=false" ;deprecated by libsecret
+              "use_pulseaudio=true"
+              "link_pulseaudio=true"
+              "icu_use_data_file=false"
 
-             ;; FIXME: Using system protobuf with "is_official_build" causes an
-             ;; invalid opcode and "protoc-gen-plugin: Plugin killed by signal 4".
-             ;;"perfetto_use_system_protobuf=true"
+              ;; FIXME: Using system protobuf with "is_official_build" causes an
+              ;; invalid opcode and "protoc-gen-plugin: Plugin killed by signal 4".
+              ;;"perfetto_use_system_protobuf=true"
 
-             ;; VA-API acceleration is currently only supported on x86_64-linux.
-             ,@(if (string-prefix? "x86_64" (or (%current-target-system)
-                                                (%current-system)))
-                   '("use_vaapi=true")
-                   '())
+              ;; VA-API acceleration is currently only supported on x86_64-linux.
+              #$@(if (string-prefix? "x86_64" (or (%current-target-system)
+                                                  (%current-system)))
+                     '("use_vaapi=true")
+                     '())
 
-             "media_use_ffmpeg=true"
-             "media_use_libvpx=true"
-             "media_use_openh264=true"
+              "media_use_ffmpeg=true"
+              "media_use_libvpx=true"
+              "media_use_openh264=true"
 
-             ;; Do not artifically restrict formats supported by system ffmpeg.
-             "proprietary_codecs=true"
-             "ffmpeg_branding=\"Chrome\""
+              ;; Do not artifically restrict formats supported by system ffmpeg.
+              "proprietary_codecs=true"
+              "ffmpeg_branding=\"Chrome\""
 
-             ;; WebRTC stuff.
-             "rtc_use_h264=true"
-             "rtc_use_pipewire=true"
-             "rtc_link_pipewire=true"
-             ;; Don't use bundled sources.
-             "rtc_build_json=true"      ;FIXME: libc++ std::string ABI difference
-             "rtc_build_libevent=false"
-             "rtc_build_libvpx=false"
-             "rtc_build_opus=false"
-             "rtc_build_libsrtp=true"   ;FIXME: fails to find headers
-             "rtc_build_usrsctp=true"   ;TODO: package this
-             "rtc_build_ssl=true")      ;XXX: the bundled BoringSSL is required?
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'patch-stuff
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((openjpeg (search-input-directory
-                              inputs "include/openjpeg-2.4")))
-               (substitute* "third_party/pdfium/BUILD.gn"
-                 ;; This include path is added by Debians openjpeg patch.
-                 (("/usr/include/openjpeg-2.4") openjpeg)))
+              ;; WebRTC stuff.
+              "rtc_use_h264=true"
+              "rtc_use_pipewire=true"
+              "rtc_link_pipewire=true"
+              ;; Don't use bundled sources.
+              "rtc_build_json=true"  ;FIXME: libc++ std::string ABI difference
+              "rtc_build_libevent=false"
+              "rtc_build_libvpx=false"
+              "rtc_build_opus=false"
+              "rtc_build_libsrtp=true"  ;FIXME: fails to find headers
+              "rtc_build_usrsctp=true"  ;TODO: package this
+              "rtc_build_ssl=true")     ;XXX: requires BoringSSL
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'patch-stuff
+            (lambda* (#:key inputs #:allow-other-keys)
+              (let ((openjpeg (search-input-directory
+                               inputs "include/openjpeg-2.4")))
+                (substitute* "third_party/pdfium/BUILD.gn"
+                  ;; This include path is added by Debians openjpeg patch.
+                  (("/usr/include/openjpeg-2.4") openjpeg))
 
-             (substitute*
-                 '("base/process/launch_posix.cc"
-                   "base/third_party/dynamic_annotations/dynamic_annotations.c"
-                   "sandbox/linux/seccomp-bpf/sandbox_bpf.cc"
-                   "sandbox/linux/services/credentials.cc"
-                   "sandbox/linux/services/namespace_utils.cc"
-                   "sandbox/linux/services/syscall_wrappers.cc"
-                   "sandbox/linux/syscall_broker/broker_host.cc")
-               (("include \"base/third_party/valgrind/") "include \"valgrind/"))
+                (substitute*
+                    '("base/process/launch_posix.cc"
+                      "base/third_party/dynamic_annotations/dynamic_annotations.c"
+                      "sandbox/linux/seccomp-bpf/sandbox_bpf.cc"
+                      "sandbox/linux/services/credentials.cc"
+                      "sandbox/linux/services/namespace_utils.cc"
+                      "sandbox/linux/services/syscall_wrappers.cc"
+                      "sandbox/linux/syscall_broker/broker_host.cc")
+                  (("include \"base/third_party/valgrind/") "include \"valgrind/"))
 
-             (for-each (lambda (file)
-                         (substitute* file
-                           ;; Fix opus include path.
-                           ;; Do not substitute opus_private.h.
-                           (("#include \"opus\\.h\"")
-                            "#include \"opus/opus.h\"")
-                           (("#include \"opus_custom\\.h\"")
-                            "#include \"opus/opus_custom.h\"")
-                           (("#include \"opus_defines\\.h\"")
-                            "#include \"opus/opus_defines.h\"")
-                           (("#include \"opus_multistream\\.h\"")
-                            "#include \"opus/opus_multistream.h\"")
-                           (("#include \"opus_types\\.h\"")
-                            "#include \"opus/opus_types.h\"")))
-                       (find-files (string-append "third_party/webrtc/modules"
-                                                  "/audio_coding/codecs/opus")))
+                (for-each (lambda (file)
+                            (substitute* file
+                              ;; Fix opus include path.
+                              ;; Do not substitute opus_private.h.
+                              (("#include \"opus\\.h\"")
+                               "#include \"opus/opus.h\"")
+                              (("#include \"opus_custom\\.h\"")
+                               "#include \"opus/opus_custom.h\"")
+                              (("#include \"opus_defines\\.h\"")
+                               "#include \"opus/opus_defines.h\"")
+                              (("#include \"opus_multistream\\.h\"")
+                               "#include \"opus/opus_multistream.h\"")
+                              (("#include \"opus_types\\.h\"")
+                               "#include \"opus/opus_types.h\"")))
+                          (find-files (string-append "third_party/webrtc/modules"
+                                                     "/audio_coding/codecs/opus")))
 
-             ;; Many files try to include ICU headers from "third_party/icu/...".
-             ;; Remove the "third_party/" prefix to use system headers instead.
-             (substitute* (find-files "chrome" "\\.cc$")
-               (("third_party/icu/source/(common|i18n)/")
-                ""))
+                ;; Many files try to include ICU headers from "third_party/icu/...".
+                ;; Remove the "third_party/" prefix to use system headers instead.
+                (substitute* (find-files "chrome" "\\.cc$")
+                  (("third_party/icu/source/(common|i18n)/")
+                   ""))
 
-             ;; XXX: Should be unnecessary when use_system_lcms2=true.
-             (substitute* "third_party/pdfium/core/fxcodec/icc/icc_transform.h"
-               (("include \"third_party/lcms/include/lcms2\\.h\"")
-                "include \"lcms2.h\""))
+                ;; XXX: Should be unnecessary when use_system_lcms2=true.
+                (substitute* "third_party/pdfium/core/fxcodec/icc/icc_transform.h"
+                  (("include \"third_party/lcms/include/lcms2\\.h\"")
+                   "include \"lcms2.h\""))
 
-             (substitute*
-                 "third_party/breakpad/breakpad/src/common/linux/libcurl_wrapper.h"
-               (("include \"third_party/curl")
-                "include \"curl"))
+                (substitute*
+                    "third_party/breakpad/breakpad/src/common/linux/libcurl_wrapper.h"
+                  (("include \"third_party/curl")
+                   "include \"curl"))
 
-             (substitute* '("components/viz/common/gpu/vulkan_context_provider.h"
-                            "components/viz/common/resources/resource_format_utils.h"
-                            "gpu/config/gpu_util.cc")
-               (("third_party/vulkan_headers/include/") ""))
+                (substitute* '("components/viz/common/gpu/vulkan_context_provider.h"
+                               "components/viz/common/resources/resource_format_utils.h"
+                               "gpu/config/gpu_util.cc")
+                  (("third_party/vulkan_headers/include/") ""))
 
-             (substitute* "third_party/skia/include/gpu/vk/GrVkVulkan.h"
-               (("include/third_party/vulkan/") ""))))
-         (add-after 'patch-stuff 'add-absolute-references
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((cups-config (search-input-file inputs "/bin/cups-config"))
-                   (libnssckbi.so (search-input-file inputs "/lib/nss/libnssckbi.so"))
-                   (libudev.so.1 (search-input-file inputs "/lib/libudev.so.1"))
-                   (libvulkan.so.1 (search-input-file inputs "/lib/libvulkan.so.1"))
-                   (mesa-lib (dirname (search-input-file inputs "/lib/libGL.so.1"))))
-               (substitute* "printing/cups_config_helper.py"
-                 (("cups_config =.*")
-                  (string-append "cups_config = '" cups-config "'\n")))
-               (substitute* "crypto/nss_util.cc"
-                 (("libnssckbi\\.so") libnssckbi.so))
-               (substitute* "device/udev_linux/udev1_loader.cc"
-                 (("libudev\\.so\\.1") libudev.so.1))
-               (substitute* "third_party/dawn/src/dawn_native/vulkan/BackendVk.cpp"
-                 (("libvulkan\\.so\\.1") libvulkan.so.1))
-               (substitute*
-                   '("ui/ozone/platform/x11/gl_ozone_glx.cc"
-                     "ui/ozone/common/egl_util.cc"
-                     "ui/gl/init/gl_initializer_linux_x11.cc"
-                     "third_party/angle/src/libANGLE/renderer/gl/glx/FunctionsGLX.cpp")
-                 (("libGL\\.so\\.1")
-                  (string-append mesa-lib "/libGL.so.1"))
-                 (("libEGL\\.so\\.1")
-                  (string-append mesa-lib "/libEGL.so.1"))
-                 (("libGLESv2\\.so\\.2")
-                  (string-append mesa-lib "/libGLESv2.so.2"))))))
-         (add-before 'configure 'prepare-build-environment
-           (lambda* (#:key inputs #:allow-other-keys)
+                (substitute* "third_party/skia/include/gpu/vk/GrVkVulkan.h"
+                  (("include/third_party/vulkan/") "")))))
+          (add-after 'patch-stuff 'add-absolute-references
+            (lambda* (#:key inputs #:allow-other-keys)
+              (let ((cups-config (search-input-file inputs "/bin/cups-config"))
+                    (libnssckbi.so (search-input-file inputs
+                                                      "/lib/nss/libnssckbi.so"))
+                    (libudev.so.1 (search-input-file inputs "/lib/libudev.so.1"))
+                    (libvulkan.so.1 (search-input-file inputs
+                                                       "/lib/libvulkan.so.1"))
+                    (mesa-lib (dirname (search-input-file inputs
+                                                          "/lib/libGL.so.1"))))
+                (substitute* "printing/cups_config_helper.py"
+                  (("cups_config =.*")
+                   (string-append "cups_config = '" cups-config "'\n")))
+                (substitute* "crypto/nss_util.cc"
+                  (("libnssckbi\\.so") libnssckbi.so))
+                (substitute* "device/udev_linux/udev1_loader.cc"
+                  (("libudev\\.so\\.1") libudev.so.1))
+                (substitute* "third_party/dawn/src/dawn_native/vulkan/BackendVk.cpp"
+                  (("libvulkan\\.so\\.1") libvulkan.so.1))
+                (substitute*
+                    '("ui/ozone/platform/x11/gl_ozone_glx.cc"
+                      "ui/ozone/common/egl_util.cc"
+                      "ui/gl/init/gl_initializer_linux_x11.cc"
+                      "third_party/angle/src/libANGLE/renderer/gl/glx\
+/FunctionsGLX.cpp")
+                  (("libGL\\.so\\.1")
+                   (string-append mesa-lib "/libGL.so.1"))
+                  (("libEGL\\.so\\.1")
+                   (string-append mesa-lib "/libEGL.so.1"))
+                  (("libGLESv2\\.so\\.2")
+                   (string-append mesa-lib "/libGLESv2.so.2"))))))
+          (add-before 'configure 'prepare-build-environment
+            (lambda* (#:key native-inputs inputs #:allow-other-keys)
+              (let ((c++ (search-input-directory (or native-inputs inputs)
+                                                 "include/c++"))
+                    (node (search-input-file (or native-inputs inputs)
+                                             "/bin/node")))
+                ;; Remove the default compiler from CPLUS_INCLUDE_PATH to
+                ;; prevent header conflict with the bundled libcxx.
+                (setenv "CPLUS_INCLUDE_PATH"
+                        (string-join
+                         (delete c++
+                                 (string-split (getenv "CPLUS_INCLUDE_PATH")
+                                               #\:))
+                         ":"))
+                (format #t
+                        "environment variable `CPLUS_INCLUDE_PATH' changed to ~a~%"
+                        (getenv "CPLUS_INCLUDE_PATH"))
 
-             ;; Define the GN toolchain.
-             (setenv "AR" "llvm-ar") (setenv "NM" "llvm-nm")
-             (setenv "CC" "clang") (setenv "CXX" "clang++")
+                ;; Define the GN toolchain.
+                (setenv "AR" "llvm-ar") (setenv "NM" "llvm-nm")
+                (setenv "CC" "clang") (setenv "CXX" "clang++")
 
-             (let ((gcc (assoc-ref inputs  "gcc")))
-               ;; Remove the default compiler from CPLUS_INCLUDE_PATH to
-               ;; prevent header conflict with the bundled libcxx.
-               (setenv "CPLUS_INCLUDE_PATH"
-                       (string-join
-                        (delete (string-append gcc "/include/c++")
-                                (string-split (getenv "CPLUS_INCLUDE_PATH")
-                                              #\:))
-                        ":"))
-               (format #t
-                       "environment variable `CPLUS_INCLUDE_PATH' changed to ~a~%"
-                       (getenv "CPLUS_INCLUDE_PATH")))
+                ;; TODO: pre-compile instead. Avoids a race condition.
+                (setenv "PYTHONDONTWRITEBYTECODE" "1")
 
-             ;; TODO: pre-compile instead. Avoids a race condition.
-             (setenv "PYTHONDONTWRITEBYTECODE" "1")
+                ;; XXX: How portable is this.
+                (mkdir-p "third_party/node/linux/node-linux-x64")
+                (symlink (dirname node)
+                         "third_party/node/linux/node-linux-x64/bin"))))
+          (replace 'configure
+            (lambda* (#:key configure-flags #:allow-other-keys)
+              (let ((args (string-join configure-flags " ")))
+                ;; Generate ninja build files.
+                (invoke "gn" "gen" "out/Release"
+                        (string-append "--args=" args))
 
-             ;; XXX: How portable is this.
-             (mkdir-p "third_party/node/linux/node-linux-x64")
-             (symlink (dirname (search-input-file inputs "/bin/node"))
-                      "third_party/node/linux/node-linux-x64/bin")))
-         (replace 'configure
-           (lambda* (#:key configure-flags #:allow-other-keys)
-             (let ((args (string-join configure-flags " ")))
-               ;; Generate ninja build files.
-               (invoke "gn" "gen" "out/Release"
-                       (string-append "--args=" args))
+                ;; Print the full list of supported arguments as well as
+                ;; their current status for convenience.
+                (format #t "Dumping configure flags...\n")
+                (invoke "gn" "args" "out/Release" "--list"))))
+          (add-before 'build 'increase-resource-limits
+            (lambda _
+              ;; XXX: Chromiums linking step requires a lot of simultaneous file
+              ;; accesses.  Having a too low ulimit will result in bogus linker
+              ;; errors such as "foo.a: error adding symbols: malformed archive".
 
-               ;; Print the full list of supported arguments as well as
-               ;; their current status for convenience.
-               (format #t "Dumping configure flags...\n")
-               (invoke "gn" "args" "out/Release" "--list"))))
-         (add-before 'build 'increase-resource-limits
-           (lambda _
-             ;; XXX: Chromiums linking step requires a lot of simultaneous file
-             ;; accesses.  Having a too low ulimit will result in bogus linker
-             ;; errors such as "foo.a: error adding symbols: malformed archive".
+              ;; Try increasing the soft resource limit of max open files to 2048,
+              ;; or equal to the hard limit, whichever is lower.
+              (call-with-values (lambda () (getrlimit 'nofile))
+                (lambda (soft hard)
+                  (when (and soft (< soft 2048))
+                    (if hard
+                        (setrlimit 'nofile (min hard 2048) hard)
+                        (setrlimit 'nofile 2048 #f))
+                    (format #t
+                            "increased maximum number of open files from ~d to ~d~%"
+                            soft (if hard (min hard 2048) 2048)))))))
+          (replace 'build
+            (lambda* (#:key (parallel-build? #t) #:allow-other-keys)
+              (invoke "ninja" "-C" "out/Release"
+                      "-j" (if parallel-build?
+                               (number->string (parallel-job-count))
+                               "1")
+                      "chrome"
+                      "chromedriver")))
+          (replace 'install
+            (lambda* (#:key inputs outputs #:allow-other-keys)
+              (let* ((out            (assoc-ref outputs "out"))
+                     (bin            (string-append out "/bin"))
+                     (exe            (string-append bin "/chromium"))
+                     (lib            (string-append out "/lib"))
+                     (man            (string-append out "/share/man/man1"))
+                     (applications   (string-append out "/share/applications"))
+                     (libs           '("chrome_100_percent.pak"
+                                       "chrome_200_percent.pak"
+                                       "resources.pak"
+                                       "v8_context_snapshot.bin"
 
-             ;; Try increasing the soft resource limit of max open files to 2048,
-             ;; or equal to the hard limit, whichever is lower.
-             (call-with-values (lambda () (getrlimit 'nofile))
-               (lambda (soft hard)
-                 (when (and soft (< soft 2048))
-                   (if hard
-                       (setrlimit 'nofile (min hard 2048) hard)
-                       (setrlimit 'nofile 2048 #f))
-                   (format #t
-                           "increased maximum number of open files from ~d to ~d~%"
-                           soft (if hard (min hard 2048) 2048)))))))
-         (replace 'build
-           (lambda* (#:key (parallel-build? #t) #:allow-other-keys)
-             (invoke "ninja" "-C" "out/Release"
-                     "-j" (if parallel-build?
-                              (number->string (parallel-job-count))
-                              "1")
-                     "chrome"
-                     "chromedriver")))
-         (replace 'install
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((out            (assoc-ref outputs "out"))
-                    (bin            (string-append out "/bin"))
-                    (exe            (string-append bin "/chromium"))
-                    (lib            (string-append out "/lib"))
-                    (man            (string-append out "/share/man/man1"))
-                    (applications   (string-append out "/share/applications"))
-                    (libs           '("chrome_100_percent.pak"
-                                      "chrome_200_percent.pak"
-                                      "resources.pak"
-                                      "v8_context_snapshot.bin"
+                                       ;; Swiftshader ICD.
+                                       "libvk_swiftshader.so"
+                                       "vk_swiftshader_icd.json"
 
-                                      ;; Swiftshader ICD.
-                                      "libvk_swiftshader.so"
-                                      "vk_swiftshader_icd.json"
+                                       ;; Chromium ships its own libGL
+                                       ;; implementation called ANGLE.
+                                       "libEGL.so" "libGLESv2.so"))
+                     (locales        (string-append lib "/locales"))
+                     (resources      (string-append lib "/resources"))
+                     (preferences
+                      ;; This file contains defaults for new user profiles.
+                      #$(local-file "aux-files/chromium/master-preferences.json"))
+                     (gtk+           (assoc-ref inputs "gtk+"))
+                     (xdg-utils      (assoc-ref inputs "xdg-utils")))
 
-                                      ;; Chromium ships its own libGL
-                                      ;; implementation called ANGLE.
-                                      "libEGL.so" "libGLESv2.so"))
-                    (locales        (string-append lib "/locales"))
-                    (resources      (string-append lib "/resources"))
-                    (preferences    (assoc-ref inputs "master-preferences"))
-                    (gtk+           (assoc-ref inputs "gtk+"))
-                    (xdg-utils      (assoc-ref inputs "xdg-utils")))
+                (substitute* '("chrome/app/resources/manpage.1.in"
+                               "chrome/installer/linux/common/desktop.template")
+                  (("@@MENUNAME@@") "Chromium")
+                  (("@@PACKAGE@@") "chromium")
+                  (("/usr/bin/@@USR_BIN_SYMLINK_NAME@@") exe))
 
-               (substitute* '("chrome/app/resources/manpage.1.in"
-                              "chrome/installer/linux/common/desktop.template")
-                 (("@@MENUNAME@@") "Chromium")
-                 (("@@PACKAGE@@") "chromium")
-                 (("/usr/bin/@@USR_BIN_SYMLINK_NAME@@") exe))
+                (mkdir-p man)
+                (copy-file "chrome/app/resources/manpage.1.in"
+                           (string-append man "/chromium.1"))
 
-               (mkdir-p man)
-               (copy-file "chrome/app/resources/manpage.1.in"
-                          (string-append man "/chromium.1"))
+                (mkdir-p applications)
+                (copy-file "chrome/installer/linux/common/desktop.template"
+                           (string-append applications "/chromium.desktop"))
 
-               (mkdir-p applications)
-               (copy-file "chrome/installer/linux/common/desktop.template"
-                          (string-append applications "/chromium.desktop"))
+                (mkdir-p lib)
+                (copy-file preferences (string-append lib "/master_preferences"))
 
-               (mkdir-p lib)
-               (copy-file preferences (string-append lib "/master_preferences"))
+                (with-directory-excursion "out/Release"
+                  (for-each (cut install-file <> lib) libs)
+                  (copy-file "chrome" (string-append lib "/chromium"))
 
-               (with-directory-excursion "out/Release"
-                 (for-each (cut install-file <> lib) libs)
-                 (copy-file "chrome" (string-append lib "/chromium"))
+                  (copy-recursively "locales" locales)
+                  (copy-recursively "resources" resources)
 
-                 (copy-recursively "locales" locales)
-                 (copy-recursively "resources" resources)
+                  (mkdir-p bin)
+                  (symlink "../lib/chromium" exe)
+                  (install-file "chromedriver" bin)
 
-                 (mkdir-p bin)
-                 (symlink "../lib/chromium" exe)
-                 (install-file "chromedriver" bin)
+                  (for-each (lambda (so)
+                              (install-file so (string-append lib "/swiftshader")))
+                            (find-files "swiftshader" "\\.so$"))
 
-                 (for-each (lambda (so)
-                             (install-file so (string-append lib "/swiftshader")))
-                           (find-files "swiftshader" "\\.so$"))
+                  (wrap-program exe
+                    ;; Avoid file manager crash.  See <https://bugs.gnu.org/26593>.
+                    `("XDG_DATA_DIRS" ":" prefix (,(string-append gtk+ "/share")))
+                    `("PATH" ":" prefix (,(string-append xdg-utils "/bin")))))
 
-                 (wrap-program exe
-                   ;; Avoid file manager crash.  See <https://bugs.gnu.org/26593>.
-                   `("XDG_DATA_DIRS" ":" prefix (,(string-append gtk+ "/share")))
-                   `("PATH" ":" prefix (,(string-append xdg-utils "/bin")))))
-
-               (with-directory-excursion "chrome/app/theme/chromium"
-                 (for-each
-                  (lambda (size)
-                    (let ((icons (string-append out "/share/icons/hicolor/"
-                                                size "x" size "/apps")))
-                      (mkdir-p icons)
-                      (copy-file (string-append "product_logo_" size ".png")
-                                 (string-append icons "/chromium.png"))))
-                  '("24" "48" "64" "128" "256")))))))))
+                (with-directory-excursion "chrome/app/theme/chromium"
+                  (for-each
+                   (lambda (size)
+                     (let ((icons (string-append out "/share/icons/hicolor/"
+                                                 size "x" size "/apps")))
+                       (mkdir-p icons)
+                       (copy-file (string-append "product_logo_" size ".png")
+                                  (string-append icons "/chromium.png"))))
+                   '("24" "48" "64" "128" "256")))))))))
     (native-inputs
-     `(("bison" ,bison)
-       ("clang" ,clang-13)
-       ("gn" ,gn)
-       ("gperf" ,gperf)
-       ("ld-wrapper" ,lld-as-ld-wrapper)
-       ("ninja" ,ninja)
-       ("node" ,node-lts)
-       ("pkg-config" ,pkg-config)
-       ("which" ,which)
-
-       ;; This file contains defaults for new user profiles.
-       ("master-preferences" ,(local-file "aux-files/chromium/master-preferences.json"))
-
-       ("python-beautifulsoup4" ,python-beautifulsoup4)
-       ("python-html5lib" ,python-html5lib)
-       ("python" ,python-wrapper)
-       ("wayland-scanner" ,wayland)))
+     (list bison
+           clang-13
+           gn
+           gperf
+           lld-as-ld-wrapper
+           ninja
+           node-lts
+           pkg-config
+           which
+           python-beautifulsoup4
+           python-html5lib
+           python-wrapper
+           wayland))
     (inputs
      (list alsa-lib
            atk
@@ -866,7 +871,7 @@
            mit-krb5
            nss
            openh264
-           openjpeg ;PDFium only
+           openjpeg                     ;PDFium only
            opus+custom
            pango
            pciutils
