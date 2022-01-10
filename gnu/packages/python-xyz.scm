@@ -24884,14 +24884,14 @@ logging in Python.  It also provides some custom formatters and handlers.")
 (define-public python-pifpaf
   (package
     (name "python-pifpaf")
-    (version "2.5.0")
+    (version "3.1.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pifpaf" version))
        (sha256
         (base32
-         "1gy9p4nqf70fh38wn4icyfm7i9wrvx22wnjpg71g89wxbz27igaa"))))
+         "19bdmxldc2m570isl7hbqgbb20si4sin7pi5fw8sv9py8dyv2s4n"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -24907,7 +24907,6 @@ logging in Python.  It also provides some custom formatters and handlers.")
            python-jinja2
            python-pbr
            python-psutil
-           python-six
            python-xattr))
     (native-inputs
      (list python-mock python-os-testr python-requests
