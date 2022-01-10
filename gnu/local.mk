@@ -47,6 +47,7 @@
 # Copyright © 2021 Dmitry Polyakov <polyakov@liltechdude.xyz>
 # Copyright © 2021 Andrew Tropin <andrew@trop.in>
 # Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
+# Copyright © 2022 Daniel Meißner <daniel.meissner-i4k@ruhr-uni-bochum.de>
 #
 # This file is part of GNU Guix.
 #
@@ -1028,6 +1029,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/emacs-wordnut-require-adaptive-wrap.patch	\
   %D%/packages/patches/enjarify-setup-py.patch			\
   %D%/packages/patches/enlightenment-fix-setuid-path.patch	\
+  %D%/packages/patches/eog-update-libportal-usage.patch		\
   %D%/packages/patches/erlang-man-path.patch			\
   %D%/packages/patches/esmtp-add-lesmtp.patch		\
   %D%/packages/patches/eudev-rules-directory.patch		\

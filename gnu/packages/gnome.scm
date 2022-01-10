@@ -65,6 +65,7 @@
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;; Copyright © 2021 Josselin Poiret <josselin.poiret@protonmail.ch>
 ;;; Copyright © 2021 Mathieu Othacehe <othacehe@gnu.org>
+;;; Copyright © 2022 Daniel Meißner <daniel.meissner-i4k@ruhr-uni-bochum.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -6427,7 +6428,9 @@ supports playlists, song ratings, and any codecs installed through gstreamer.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "0ddjwcd77nw0rxb5x5bz5hd671m8gya9827p8rsnb58x103kpai8"))))
+              "0ddjwcd77nw0rxb5x5bz5hd671m8gya9827p8rsnb58x103kpai8"))
+            ;; XXX: Remove when upgrading to 42.0
+            (patches (search-patches "eog-update-libportal-usage.patch"))))
    (build-system meson-build-system)
    (arguments
     `(#:meson ,meson-0.59         ;positional arguments error with meson 0.60

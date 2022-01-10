@@ -1,0 +1,40 @@
+Fix eog to work with libportal-0.5
+
+This patch is extracted from upstream, see here
+https://gitlab.gnome.org/GNOME/eog/-/commit/a06e6325907e136678b0bbe7058c25d688034afd
+
+diff --git a/meson.build b/meson.build
+index 9a32e4bb..9d49aa45 100644
+--- a/meson.build
++++ b/meson.build
+@@ -165,10 +165,14 @@ config_h.set('HAVE_EXEMPI', enable_xmp)
+ # xdg-desktop-portal support with libportal (optional)
+ enable_libportal = get_option('libportal')
+ if enable_libportal
+-  libportal_dep = dependency('libportal', version: '>= 0.3', required: false)
++  libportal_dep = dependency('libportal', version: '>= 0.5', required: false)
+   assert(libportal_dep.found() and cc.has_header('libportal/portal.h', dependencies: libportal_dep),
+          'xdg-desktop-portal support requested but library not found. Please use -Dlibportal=false')
+ 
+-  common_deps += libportal_dep
++  libportal_gtk3_dep = dependency('libportal-gtk3', version: '>= 0.5', required: false)
++  assert(libportal_gtk3_dep.found() and cc.has_header('libportal-gtk3/portal-gtk3.h', dependencies: libportal_gtk3_dep),
++         'xdg-desktop-portal support requested but library not found. Please use -Dlibportal=false')
++
++  common_deps += [libportal_dep, libportal_gtk3_dep]
+ endif
+ config_h.set('HAVE_LIBPORTAL', enable_libportal)
+
+diff --git a/src/eog-util.c b/src/eog-util.c
+index 90b9768e..56d23472 100644
+--- a/src/eog-util.c
++++ b/src/eog-util.c
+@@ -45,7 +45,7 @@
+ #include <glib/gi18n.h>
+ #ifdef HAVE_LIBPORTAL
+ #include <libportal/portal.h>
+-#include <libportal/portal-gtk3.h>
++#include <libportal-gtk3/portal-gtk3.h>
+ #endif
+ 
+ void
