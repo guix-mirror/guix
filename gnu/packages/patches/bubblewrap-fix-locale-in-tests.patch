@@ -1,0 +1,34 @@
+From 9282223de4b511aeda3b7d2caf3810a56a865710 Mon Sep 17 00:00:00 2001
+From: kiasoc5 <kiasoc5@tutanota.com>
+Date: Mon, 10 Jan 2022 14:16:32 -0500
+Subject: [PATCH] Use C locale unconditionally for tests.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+The ‘en_US.utf8’ locale is available. However, the ‘locale -a’ command won’t list it.
+---
+ tests/libtest-core.sh | 7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
+
+diff --git a/tests/libtest-core.sh b/tests/libtest-core.sh
+index 9632e90..82951dd 100644
+--- a/tests/libtest-core.sh
++++ b/tests/libtest-core.sh
+@@ -41,12 +41,7 @@ assert_not_reached () {
+ #
+ # If we can't find the locale command assume we have support for C.UTF-8
+ # (e.g. musl based systems)
+-if type -p locale >/dev/null; then
+-    export LC_ALL=$(locale -a | grep -iEe '^(C|en_US)\.(UTF-8|utf8)$' | head -n1 || true)
+-    if [ -z "${LC_ALL}" ]; then fatal "Can't find suitable UTF-8 locale"; fi
+-else
+-    export LC_ALL=C.UTF-8
+-fi
++export LC_ALL=en_US.utf8
+ # A GNU extension, used whenever LC_ALL is not C
+ unset LANGUAGE
+ 
+-- 
+2.34.1
+

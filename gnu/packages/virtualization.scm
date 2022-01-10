@@ -1926,7 +1926,7 @@ virtual machines.")
 (define-public bubblewrap
   (package
     (name "bubblewrap")
-    (version "0.4.1")
+    (version "0.5.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/containers/bubblewrap/"
@@ -1934,7 +1934,8 @@ virtual machines.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "00ycgi6q2yngh06bnz50wkvar6r2jnjf3j158grhi9k13jdrpimr"))))
+                "0608l2sjwhnb1c0mslah1h6yjvqr17wk60by6i710qwxg4rszz8n"))
+               (patches (search-patches "bubblewrap-fix-locale-in-tests.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -1950,7 +1951,9 @@ virtual machines.")
                (substitute* "tests/test-run.sh"
                  (("/var/tmp") tmp-dir)
                  ;; Tests create a temporary python script, so fix its shebang.
-                 (("/usr/bin/env python") (which "python"))
+                 (("/usr/bin/env python3") (which "python3"))
+                 ;; Tests call /usr/bin/env, so fix its path.
+                 (("/usr/bin/env") (which "env"))
                  ;; Some tests try to access /usr, but that doesn't exist.
                  ;; Give them /gnu instead.
                  (("/usr") "/gnu")
@@ -1959,18 +1962,21 @@ virtual machines.")
                  (("--ro-bind /lib /lib") "--ro-bind /gnu /lib")
                  (("  */bin/bash") (which "bash"))
                  (("/bin/sh") (which "sh"))
-                 (("findmnt") (which "findmnt"))))
+                 (("findmnt") (which "findmnt")))
+               (substitute* "tests/libtest.sh"
+                 (("/var/tmp") tmp-dir)
+                 (("/usr") "/gnu")
+                 (("--ro-bind /bin /bin") "--ro-bind /gnu /bin")
+                 (("--ro-bind /sbin /sbin") "--ro-bind /gnu /sbin")
+                 (("--ro-bind /lib /lib") "--ro-bind /gnu /lib")))
              #t))
          ;; Remove the directory we gave to tests to have a clean package.
          (add-after 'check 'remove-tmp-dir
            (lambda* (#:key outputs #:allow-other-keys)
              (delete-file-recursively (string-append (assoc-ref outputs "out") "/tmp"))
              #t)))))
-    (inputs
-     (list libcap))
-    (native-inputs
-     `(("python" ,python-wrapper)
-       ("util-linux" ,util-linux)))
+    (inputs (list libcap))
+    (native-inputs (list python-wrapper util-linux))
     (home-page "https://github.com/containers/bubblewrap")
     (synopsis "Unprivileged sandboxing tool")
     (description "Bubblewrap is aimed at running applications in a sandbox,
