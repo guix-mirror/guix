@@ -9607,24 +9607,25 @@ specified duration and save it as a GIF encoded animated image file.")
                    (pylib (string-append (assoc-ref outputs "out")
                                          "/lib/python"
                                          ,(version-major+minor
-                                           (package-version python))
+                                           (package-version
+                                            (this-package-input "python")))
                                          "/site-packages")))
                (wrap-program prog
                  `("GUIX_PYTHONPATH" = (,(getenv "GUIX_PYTHONPATH") ,pylib))
-                 `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH"))))
-               #t))))))
+                 `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH"))))))))))
     (native-inputs
-     `(("desktop-file-utils" ,desktop-file-utils)
-       ("gettext" ,gettext-minimal)
-       ("glib:bin" ,glib "bin")
-       ("gobject-introspection" ,gobject-introspection)
-       ("gtk+:bin" ,gtk+ "bin")
-       ("pkg-config" ,pkg-config)))
+     (list desktop-file-utils
+           gettext-minimal
+           `(,glib "bin")
+           gobject-introspection
+           `(,gtk+ "bin")
+           pkg-config))
     (inputs
      (list gsettings-desktop-schemas
            gtk+
            libhandy-0.0
            libsecret
+           python
            python-beautifulsoup4
            python-pillow
            python-pyfavicon
