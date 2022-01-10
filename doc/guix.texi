@@ -11827,11 +11827,12 @@ in the definitions of packages.
 
 @item --recursive
 @itemx -r
-This option is deprecated in favor of @option{--serializer}.  It is a
-legacy alias for that with @var{type} set to @code{nar}.
+The @option{--recursive} option is deprecated in favor of
+@option{--serializer=nar} (see below); @option{-r} remains accepted as a
+convenient shorthand.
 
 @item --serializer=@var{type}
-@itemx -S
+@itemx -S @var{type}
 Compute the hash on @var{file} using @var{type} serialization.
 
 @var{type} may be one of the following:

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2016, 2017, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012-2014, 2016-2017, 2020-2022 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2018 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
@@ -134,8 +134,9 @@ and 'base16' ('hex' and 'hexadecimal' can be used as well).\n"))
                               (alist-delete 'format result))))
         (option '(#\r "recursive") #f #f
                 (lambda (opt name arg result)
-                  (warning (G_ "'--recursive' is deprecated, \
-use '--serializer' instead~%"))
+                  (unless (eqv? name #\r)
+                    (warning (G_ "'--recursive' is deprecated, \
+use '--serializer=nar' instead~%")))
                   (alist-cons 'serializer nar-hash
                               (alist-delete 'serializer result))))
         (option '(#\S "serializer") #t #f
