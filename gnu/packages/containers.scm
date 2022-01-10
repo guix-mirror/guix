@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2021 Timmy Douglas <mail@timmydouglas.com>
+;;; Copyright © 2022 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -17,6 +18,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages containers)
+  #:use-module (guix gexp)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
   #:use-module (guix packages)
@@ -117,20 +119,22 @@ Container Runtime fully written in C.")
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
-     `(#:make-flags (list ,(string-append "CC=" (cc-for-target))
-                          (string-append "PREFIX=" %output))
-       ;; XXX: uses `go get` to download 50 packages, runs a ginkgo test suite
-       ;; then tries to download busybox and use a systemd logging library
-       ;; see also https://github.com/containers/conmon/blob/main/nix/derivation.nix
-       #:tests? #f
-       #:test-target "test"
-       #:phases (modify-phases %standard-phases
-                  (delete 'configure)
-                  (add-after 'unpack 'set-env
-                    (lambda* (#:key inputs #:allow-other-keys)
-                      ;; when running go, things fail because
-                      ;; HOME=/homeless-shelter.
-                      (setenv "HOME" "/tmp"))))))
+     (list #:make-flags
+           #~(list (string-append "CC=" #$(cc-for-target))
+                   (string-append "PREFIX=" #$output))
+           ;; XXX: uses `go get` to download 50 packages, runs a ginkgo test suite
+           ;; then tries to download busybox and use a systemd logging library
+           ;; see also https://github.com/containers/conmon/blob/main/nix/derivation.nix
+           #:tests? #f
+           #:test-target "test"
+           #:phases
+           #~(modify-phases %standard-phases
+               (delete 'configure)
+               (add-after 'unpack 'set-env
+                 (lambda _
+                   ;; when running go, things fail because
+                   ;; HOME=/homeless-shelter.
+                   (setenv "HOME" "/tmp"))))))
     (inputs
      (list crun
            glib
