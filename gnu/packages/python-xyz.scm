@@ -19616,26 +19616,24 @@ multitouch applications.")
           "1b28j265kvibgxrgxx0gwfm6cmv252c8ph1j2vb0cpms8ph5if5v"))))
     (build-system python-build-system)
     (arguments
-     `(#:phases
+     '(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-ssh
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "libcloud/compute/ssh.py"
-               (("'ssh'") (string-append "'" (assoc-ref inputs "openssh")
-                                         "/bin/ssh" "'")))
-             #t))
+               (("'ssh'")
+                (string-append "'" (search-input-file inputs "/bin/ssh")
+                               "'")))))
          (add-after 'unpack 'patch-tests
            (lambda _
              (substitute* "libcloud/test/compute/test_ssh_client.py"
-               (("class ShellOutSSHClientTests")
+               (("^class ShellOutSSHClientTests")
                 "@unittest.skip(\"Guix container doesn't have ssh service\")
-     class ShellOutSSHClientTests"))
-             #t))
+class ShellOutSSHClientTests"))))
          (add-before 'check 'copy-secret
            (lambda _
              (copy-file "libcloud/test/secrets.py-dist"
-                        "libcloud/test/secrets.py")
-             #t)))))
+                        "libcloud/test/secrets.py"))))))
     (inputs
      (list openssh))
     (propagated-inputs
