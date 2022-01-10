@@ -25,6 +25,38 @@
 (channel-news
  (version 0)
 
+ (entry (commit "c4fe13c294cc1e31dd8a49ce3981f603fb169e0a")
+        (title
+         (en "@command{guix style} can format package definitions")
+         (fr "@command{guix style} peut mettre en forme les définitions de paquets"))
+        (body
+         (en "The recently-introduced @command{guix style} command can now be
+used to automatically format package definitions according to the Guix
+project's formatting guidelines.  If you contribute packages to Guix or to a
+third-party channel, you may find it useful.
+
+The new @option{--styling} option can currently be passed one of the following
+@dfn{styling rules}: @code{format}, to format package definitions, or
+@code{inputs}, to remove labels from package inputs.  Omitting
+@option{--styling} is equivalent to passing @samp{--styling=format};
+previously it was equivalent to @samp{--styling=inputs}.
+
+Run @code{info \"(guix) Invoking guix style\"}, for more info.")
+         (fr "La commande @command{guix style}, récemment introduite, peut
+désormais être utiliser pour mettre en forme des définitions de paquets
+suivant les règles de style du projet Guix.  Si vous contribuez des paquets à
+Guix ou à un canal tiers, cela peut vous être utile.
+
+La nouvelle option @option{--style} peut pour le moment recevoir une des deux
+@dfn{règles de style} suivantes : @code{format}, pour mettre en forme les
+définitions de paquet, ou @code{inputs}, pour retirer les étiquettes des
+champs @code{inputs} des paquets.  Omettre @option{--styling} revient à passer
+@samp{--styling=format} ; auparavant c'était équivalent à
+@samp{--styling=inputs}.
+
+Lancer @command{info \"(guix.fr) Invoquer guix style\"}, pour plus
+d'informations.")))
+
  (entry (commit "d090e9c37d693f5a0f381482c17fb03462cb6a48")
         (title
          (en "New @option{--tune} option for CPU micro-architecture tuning")
