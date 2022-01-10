@@ -660,8 +660,44 @@
     (description "File format checker in Rust.")
     (license license:expat)))
 
+(define-public rust-glib-0.14
+  (package
+    (name "rust-glib")
+    (version "0.14.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "glib" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "194n6w5yy869lls3pr46x5nm049cn02qsljzcgv1w5dzc8g5ylbw"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build?
+       #t
+       #:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-futures-channel" ,rust-futures-channel-0.3)
+        ("rust-futures-core" ,rust-futures-core-0.3)
+        ("rust-futures-executor" ,rust-futures-executor-0.3)
+        ("rust-futures-task" ,rust-futures-task-0.3)
+        ("rust-glib-macros" ,rust-glib-macros-0.14)
+        ("rust-glib-sys" ,rust-glib-sys-0.14)
+        ("rust-gobject-sys" ,rust-gobject-sys-0.14)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-once-cell" ,rust-once-cell-1)
+        ("rust-smallvec" ,rust-smallvec-1))))
+    (inputs
+     (list glib))
+    (home-page "https://gtk-rs.org/")
+    (synopsis "Rust bindings for the GLib library")
+    (description "Rust bindings for the GLib library")
+    (license license:expat)))
+
 (define-public rust-glib-0.10
   (package
+    (inherit rust-glib-0.14)
     (name "rust-glib")
     (version "0.10.3")
     (source
@@ -671,7 +707,6 @@
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "1ifh56nhvhcrssxqkad876qqrlnl16q6b8ap3f7ncpjinw9m0s0c"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -686,13 +721,7 @@
         ("rust-glib-sys" ,rust-glib-sys-0.10)
         ("rust-gobject-sys" ,rust-gobject-sys-0.10)
         ("rust-libc" ,rust-libc-0.2)
-        ("rust-once-cell" ,rust-once-cell-1))))
-    (inputs
-     (list glib))
-    (home-page "https://gtk-rs.org/")
-    (synopsis "Rust bindings for the GLib library")
-    (description "Rust bindings for the GLib library")
-    (license license:expat)))
+        ("rust-once-cell" ,rust-once-cell-1))))))
 
 (define-public rust-glib-0.9
   (package
