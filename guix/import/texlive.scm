@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017, 2021 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017, 2021, 2022 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -197,11 +197,14 @@
                      (loop all current #false))))))))))))
 
 (define (files->directories files)
+  (define name->parts (cut string-split <> #\/))
   (map (cut string-join <> "/" 'suffix)
        (delete-duplicates (map (lambda (file)
-                                 (drop-right (string-split file #\/) 1))
-                               files)
-                          equal?)))
+                                 (drop-right (name->parts file) 1))
+                               (sort files string<))
+                          ;; Remove sub-directories, i.e. more specific
+                          ;; entries with the same prefix.
+                          (lambda (x y) (every equal? x y)))))
 
 (define (tlpdb->package name package-database)
   (and-let* ((data (assoc-ref package-database name))
