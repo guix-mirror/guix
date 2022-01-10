@@ -384,8 +384,38 @@
        #:cargo-development-inputs
        (("rust-gir-format-check" ,rust-gir-format-check-0.1))))))
 
+(define-public rust-gdk-pixbuf-0.14
+  (package
+    (name "rust-gdk-pixbuf")
+    (version "0.14.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "gdk-pixbuf" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "03xi6pi0h9jwkxvja18k75x5pblsiym4p39cmf7ypnh1iz5r4hak"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build?
+       #t
+       #:cargo-inputs
+       (("rust-gdk-pixbuf-sys" ,rust-gdk-pixbuf-sys-0.14)
+        ("rust-gio" ,rust-gio-0.14)
+        ("rust-glib" ,rust-glib-0.14)
+        ("rust-libc" ,rust-libc-0.2))
+       #:cargo-development-inputs
+       (("rust-gir-format-check" ,rust-gir-format-check-0.1))))
+    (inputs
+     (list gdk-pixbuf))
+    (home-page "https://gtk-rs.org/")
+    (synopsis "Rust bindings for the GdkPixbuf library")
+    (description "Rust bindings for the GdkPixbuf library")
+    (license license:expat)))
+
 (define-public rust-gdk-pixbuf-0.9
   (package
+    (inherit rust-gdk-pixbuf-0.14)
     (name "rust-gdk-pixbuf")
     (version "0.9.0")
     (source
@@ -395,7 +425,6 @@
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "12lrk7zwshid8dgx9vg87bk0h4a0ilpi7w48idsrpm4xp4yawvcg"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -408,13 +437,7 @@
         ("rust-gtk-rs-lgpl-docs" ,rust-gtk-rs-lgpl-docs-0.1)
         ("rust-libc" ,rust-libc-0.2))
        #:cargo-development-inputs
-       (("rust-gir-format-check" ,rust-gir-format-check-0.1))))
-    (inputs
-     (list gdk-pixbuf))
-    (home-page "https://gtk-rs.org/")
-    (synopsis "Rust bindings for the GdkPixbuf library")
-    (description "Rust bindings for the GdkPixbuf library")
-    (license license:expat)))
+       (("rust-gir-format-check" ,rust-gir-format-check-0.1))))))
 
 (define-public rust-gdk-pixbuf-0.8
   (package
