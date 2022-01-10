@@ -914,17 +914,17 @@ mailpack.  What can alterMIME do?
            w3m
            xorg-server))
     (inputs
-     `(("boost" ,boost)
-       ("gmime" ,gmime)
-       ("gobject-introspection" ,gobject-introspection) ; it is referenced
-       ("gtkmm" ,gtkmm-3)
-       ("libpeas" ,libpeas)
-       ("libsass" ,libsass)
-       ("notmuch" ,notmuch)
-       ("protobuf" ,protobuf)
-       ("python" ,python-wrapper)
-       ("python-pygobject" ,python-pygobject)
-       ("webkitgtk-with-libsoup2" ,webkitgtk-with-libsoup2)))
+     (list boost
+           gmime
+           gobject-introspection        ; it is referenced
+           gtkmm-3
+           libpeas
+           libsass
+           notmuch
+           protobuf
+           python-wrapper
+           python-pygobject
+           webkitgtk-with-libsoup2))
     (propagated-inputs
      (list adwaita-icon-theme)) ; Required for the thread view
     (home-page "https://astroidmail.github.io/")
