@@ -562,7 +562,7 @@ results and determine build stability.")
 (define-public kcov
   (package
     (name "kcov")
-    (version "39")
+    (version "40")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -571,7 +571,7 @@ results and determine build stability.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "09wf1k4dlpdhqjjgq2bibmgy8i3z32wf0zxhd2px2dvg92m4zwqr"))))
+                "0zayhmx6s377bxmkmvl9d9vjzfbpvh1k9ba6np4zdjvjjq327xag"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; no test target
