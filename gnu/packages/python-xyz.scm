@@ -25459,19 +25459,12 @@ cryptographically signed ones).")
                (base32
                 "1lk3qmy1hkaphk4n7ayfk0wl6m2yvd6r7qkam6yncqfzgkbc1phs"))))
     (build-system python-build-system)
+    (arguments
+     ;; XXX: The PyPI tarball lacks tests and the git repository
+     ;; fails to determine version.
+     '(#:tests? #f))
     (native-inputs
-     (list python-check-manifest
-           python-coverage
-           python-isort
-           python-mock
-           python-pydocstyle
-           python-pytest-cache
-           python-pytest-cov
-           python-pytest-pep8
-           python-pytest-runner
-           python-pytest
-           python-setuptools-scm
-           python-tox))
+     (list python-pytest-runner python-setuptools-scm))
     (home-page "https://github.com/inveniosoftware/dictdiffer")
     (synopsis "Diff and patch Python dictionary objects")
     (description
