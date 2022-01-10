@@ -3537,6 +3537,43 @@ in order to be able to find it.
 @end enumerate")
     (license license:gpl2+)))
 
+(define-public xfel
+  (package
+    (name "xfel")
+    (version "1.2.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/xboot/xfel.git")
+              (commit (string-append "v" version))))
+       (sha256
+         (base32 "0r4j63vh6279fj1yh71h08d1av3nc0majlad5yh6admsxiig101m"))
+       (file-name (git-file-name name version))))
+    (native-inputs
+     (list pkg-config))
+    (inputs
+     (list libusb))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; No tests exist
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-installation-target
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "Makefile"
+                (("/usr/local") out)
+                (("/usr") out)
+                (("/etc/udev/rules.d")
+                 (string-append out "/lib/udev/rules.d"))))))
+         (delete 'configure))))
+    (home-page "https://github.com/xboot/xfel")
+    (synopsis "Remote debugging tool for Allwinner D1 computers")
+    (description "This package contains a debugging tool for Allwinner D1
+devices (connects via USB OTG).")
+    (license license:expat)))
+
 (define-public sedsed
   (package
     (name "sedsed")
