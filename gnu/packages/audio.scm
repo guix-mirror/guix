@@ -5119,7 +5119,7 @@ edited, converted, compressed and saved.")
 (define-public lsp-dsp-lib
   (package
     (name "lsp-dsp-lib")
-    (version "0.5.11")
+    (version "0.5.14")
     (source
       (origin
         (method url-fetch)
@@ -5127,7 +5127,7 @@ edited, converted, compressed and saved.")
                             "releases/download/" version
                             "/lsp-dsp-lib-" version "-src.tar.gz"))
         (sha256
-         (base32 "0lkar6r9jfrrqswi8nnndlm5a9kfwqjn92d81gp2yhc3p46xsswz"))))
+         (base32 "1gcznkyybywbgdi2fhx27i8sckhy6ahvxax72b213g1lr5aaw7bq"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no tests
@@ -5138,8 +5138,8 @@ edited, converted, compressed and saved.")
          (add-after 'unpack 'omit-static-library
            (lambda _
              (substitute* "src/Makefile"
-               ((".*@.*ARTIFACT_SLIB.*") "")       ; don't install it
-               ((" \\$\\(ARTIFACT_SLIB\\)") "")))) ; don't build it
+               ((".*cp \\$\\(ARTIFACT_SLIB\\).*") "") ; don't install it
+               ((" \\$\\(ARTIFACT_SLIB\\)") ""))))    ; don't build it
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
              (invoke "make" "config"
