@@ -16030,7 +16030,7 @@ database, file, dict stores.  Cachy supports python versions 2.7+ and 3.2+.")
            python-clikit
            python-html5lib
            python-keyring
-           python-msgpack-transitional
+           python-msgpack
            python-packaging
            python-pexpect
            python-pip
