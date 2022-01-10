@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018, 2019, 2020, 2021 Christopher Baines <mail@cbaines.net>
-;;; Copyright © 2021 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2021, 2022 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -84,6 +84,8 @@
                                         #$home-directory)
                         ,(string-append "LAMINAR_BIND_HTTP="
                                         #$bind-http)
+                        ,(string-append "LAMINAR_BIND_RPC="
+                                        #$bind-rpc)
                         ,(string-append "LAMINAR_TITLE="
                                         #$title)
                         ,(string-append "LAMINAR_KEEP_RUNDIRS="
