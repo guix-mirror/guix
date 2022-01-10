@@ -34133,7 +34133,7 @@ previous example to your operating system declaration by appending it to
 @code{%setuid-programs} like this:
 
 @lisp
-(operating-systems
+(operating-system
   ;; Some fields omitted...
   (setuid-programs
     (append (list (setuid-program
