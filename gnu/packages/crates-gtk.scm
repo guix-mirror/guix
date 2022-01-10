@@ -317,8 +317,42 @@
         ("rust-x11" ,rust-x11-2)
         ("rust-pkg-config" ,rust-pkg-config-0.3))))))
 
+(define-public rust-gdk-0.14
+  (package
+    (name "rust-gdk")
+    (version "0.14.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "gdk" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0fwkm4glh7cici6yd96qlddyp4s2l029wa1sgh6xxn00zkf4kmxr"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build?
+       #t
+       #:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-cairo-rs" ,rust-cairo-rs-0.14)
+        ("rust-gdk-pixbuf" ,rust-gdk-pixbuf-0.14)
+        ("rust-gdk-sys" ,rust-gdk-sys-0.14)
+        ("rust-gio" ,rust-gio-0.14)
+        ("rust-glib" ,rust-glib-0.14)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-pango" ,rust-pango-0.14))
+       #:cargo-development-inputs
+       (("rust-gir-format-check" ,rust-gir-format-check-0.1))))
+    (inputs
+     (list cairo gdk-pixbuf glib gtk+ pango))
+    (home-page "https://gtk-rs.org/")
+    (synopsis "Rust bindings for the GDK 3 library")
+    (description "This package provides Rust bindings for the GDK 3 library.")
+    (license license:expat)))
+
 (define-public rust-gdk-0.13
   (package
+    (inherit rust-gdk-0.14)
     (name "rust-gdk")
     (version "0.13.2")
     (source
@@ -328,7 +362,6 @@
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "0zbb9bwg2z9vlcjj9b59qch3mfmszsrxya7syc5a39v85adq606v"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -346,13 +379,7 @@
         ("rust-libc" ,rust-libc-0.2)
         ("rust-pango" ,rust-pango-0.9))
        #:cargo-development-inputs
-       (("rust-gir-format-check" ,rust-gir-format-check-0.1))))
-    (inputs
-     (list cairo gdk-pixbuf glib gtk+ pango))
-    (home-page "https://gtk-rs.org/")
-    (synopsis "Rust bindings for the GDK 3 library")
-    (description "This package provides Rust bindings for the GDK 3 library.")
-    (license license:expat)))
+       (("rust-gir-format-check" ,rust-gir-format-check-0.1))))))
 
 (define-public rust-gdk-0.12
   (package
