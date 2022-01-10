@@ -254,7 +254,10 @@ fledged batteries-included asyncio layer using aiohttp.")
            (lambda* (#:key tests? inputs outputs #:allow-other-keys)
              (when tests?
                (add-installed-pythonpath inputs outputs)
-               (invoke "pytest" "-vv" "tests")))))))
+               (invoke "pytest" "-vv" "tests"))))
+         ;; XXX: The sanity check trips on optional GUI libraries for the
+         ;; panctl command.
+         (delete 'sanity-check))))
     (native-inputs
      (list python-pytest python-faker python-pytest-aiohttp
            python-aioresponses))
