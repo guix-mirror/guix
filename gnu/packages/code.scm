@@ -589,9 +589,9 @@ results and determine build stability.")
      (list python))
     (home-page "https://github.com/SimonKagstrom/kcov")
     (synopsis "Code coverage tester for compiled languages, Python and Bash")
-    (description "Kcov is a FreeBSD/Linux/OSX code coverage tester for compiled
-languages, Python and Bash.  Kcov was originally a fork of Bcov, but has since
-evolved to support a large feature set in addition to that of Bcov.
+    (description "Kcov is a code coverage tester for compiled languages,
+Python and Bash.  It was originally a fork of Bcov, but has since evolved to
+support a large feature set in addition to that of Bcov.
 
 Kcov uses DWARF debugging information for compiled programs to make it
 possible to collect coverage information without special compiler switches.")
