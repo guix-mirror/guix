@@ -2699,8 +2699,7 @@ formats.")
              (add-after 'unpack 'fix-lua-sources
                (lambda _
                  (substitute* "source/latex/base/ltluatex.dtx"
-                   (("	") "  "))
-                 #t))
+                   (("	") "  "))))
              (replace 'build
                (lambda* (#:key inputs #:allow-other-keys)
                  ;; Find required fonts
@@ -2772,8 +2771,7 @@ formats.")
                          "--fmtdir=web2c"
                          (string-append "--cnffile=web2c/fmtutil.cnf"))
                  ;; We don't actually want to install it.
-                 (delete-file "web2c/fmtutil.cnf")
-                 #t))
+                 (delete-file "web2c/fmtutil.cnf")))
              (add-after 'install 'install-more
                (lambda* (#:key inputs outputs #:allow-other-keys)
                  (let* ((out (assoc-ref outputs "out"))
@@ -2794,8 +2792,7 @@ formats.")
                    (for-each (cut install-file <> target)
                              (find-files "build" ".*"))
                    (for-each (cut install-file <> web2c)
-                             (find-files "web2c" ".*"))
-                   #t)))))))
+                             (find-files "web2c" ".*")))))))))
       (native-inputs
        `(("texlive-bin" ,texlive-bin)
          ("texlive-tex-ini-files" ,texlive-tex-ini-files)
