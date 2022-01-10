@@ -223,8 +223,37 @@
        #:cargo-development-inputs
        (("rust-tempfile" ,rust-tempfile-3))))))
 
+(define-public rust-cairo-sys-rs-0.14
+  (package
+    (name "rust-cairo-sys-rs")
+    (version "0.14.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "cairo-sys-rs" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0w3md4xk87ign30wb3rqfmmj0q6pvg5arbm35flgsd08jxvbhj5l"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build?
+       #t
+       #:cargo-inputs
+       (("rust-glib-sys" ,rust-glib-sys-0.14)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-system-deps" ,rust-system-deps-3)
+        ("rust-winapi" ,rust-winapi-0.3)
+        ("rust-x11" ,rust-x11-2))))
+    (inputs
+     (list cairo))
+    (home-page "https://gtk-rs.org/")
+    (synopsis "FFI bindings to libcairo")
+    (description "This package provides FFI bindings to libcairo.")
+    (license license:expat)))
+
 (define-public rust-cairo-sys-rs-0.10
   (package
+    (inherit rust-cairo-sys-rs-0.14)
     (name "rust-cairo-sys-rs")
     (version "0.10.0")
     (source
@@ -234,7 +263,6 @@
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "19wch8zc11hbi724mn16hhqyff8kw5c5bsbdlzpxdwfmkadn7lif"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -242,13 +270,7 @@
         ("rust-libc" ,rust-libc-0.2)
         ("rust-system-deps" ,rust-system-deps-1)
         ("rust-winapi" ,rust-winapi-0.3)
-        ("rust-x11" ,rust-x11-2))))
-    (inputs
-     (list cairo))
-    (home-page "https://gtk-rs.org/")
-    (synopsis "FFI bindings to libcairo")
-    (description "This package provides FFI bindings to libcairo.")
-    (license license:expat)))
+        ("rust-x11" ,rust-x11-2))))))
 
 (define-public rust-cairo-sys-rs-0.9
   (package
