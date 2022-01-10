@@ -24818,14 +24818,14 @@ content models.")
 (define-public python-xattr
   (package
     (name "python-xattr")
-    (version "0.9.7")
+    (version "0.9.9")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "xattr" version))
        (sha256
         (base32
-         "0i4xyiqbhjz2g16zbim17zjdbjkw79xsw8k59942vvq4is1cmfxh"))))
+         "0ipkfblyvp5hylahjkw9zss1ii9xnwjypr3b3ncv989szcg7xjq9"))))
     (build-system python-build-system)
     (propagated-inputs
      (list python-cffi))
