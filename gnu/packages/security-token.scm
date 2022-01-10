@@ -624,7 +624,7 @@ implementing a Relying Party.")
 (define-public python-yubikey-manager
   (package
     (name "python-yubikey-manager")
-    (version "2.1.0")
+    (version "4.0.7")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -632,25 +632,13 @@ implementing a Relying Party.")
                     "/yubikey-manager-" version ".tar.gz"))
               (sha256
                (base32
-                "11rsmcaj60k3y5m5gdhr2nbbz0w5dm3m04klyxz0fh5hnpcmr7fm"))))
+                "0kzwal7i4kyywm4f5zh8b823mh0ih2nsh5c0c4dfn4vw3j5dnwlr"))))
     (build-system python-build-system)
     (arguments
-     '(#:modules ((srfi srfi-1)
-                  (guix build utils)
-                  (guix build python-build-system))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-libykpers-reference
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "ykman/driver_otp.py"
-               (("Ykpers\\('ykpers-1', '1'\\)")
-                (string-append
-                 "Ykpers('"
-                 (find (negate symbolic-link?)
-                       (find-files (assoc-ref inputs "yubikey-personalization")
-                                   "^libykpers-.*\\.so\\..*"))
-                 "')")))
-             #t)))))
+     '(;; This attempts to access
+       ;; /System/Library/Frameworks/IOKit.framework/IOKit
+       ;; The recommendation is to use tox for testing.
+       #:tests? #false))
     (propagated-inputs
      (list python-six
            python-pyscard
@@ -660,7 +648,7 @@ implementing a Relying Party.")
            python-pyopenssl
            python-fido2))
     (inputs
-     (list yubikey-personalization pcsc-lite libusb))
+     (list pcsc-lite))
     (native-inputs
      (list swig python-mock))
     (home-page "https://developers.yubico.com/yubikey-manager/")
