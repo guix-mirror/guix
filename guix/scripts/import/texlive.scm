@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017, 2021 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017, 2021, 2022 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -81,7 +81,7 @@ Import and convert the Texlive package for PACKAGE-NAME.\n"))
       ((name)
        (let ((sexp (texlive->guix-package name)))
          (unless sexp
-           (leave (G_ "failed to download description for package '~a'~%")
+           (leave (G_ "failed to import package '~a'~%")
                   name))
          sexp))
       (()
