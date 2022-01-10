@@ -481,11 +481,12 @@ files from LOCATIONS with expected checksum HASH.  CODE is not currently in use.
                     (config.guess (search-input-file inputs
                                                      "/bin/config.guess")))
 
-               ;; Create symbolic links for the latex variants and their
-               ;; man pages.
+               ;; Create symbolic links for the latex variants and their man
+               ;; pages.  We link lualatex to luahbtex; see issue #51252 for
+               ;; details.
                (with-directory-excursion (string-append out "/bin/")
                  (for-each symlink
-                           '("pdftex" "pdftex"   "xetex"   "luatex")
+                           '("pdftex" "pdftex"   "xetex"   "luahbtex")
                            '("latex"  "pdflatex" "xelatex" "lualatex")))
                (with-directory-excursion (string-append share "/man/man1/")
                  (symlink "luatex.1" "lualatex.1"))
@@ -3751,71 +3752,6 @@ loading fonts by their proper names instead of file names.")
       (license license:gpl2))))
 
 (define-deprecated-package texlive-luatex-luaotfload texlive-luaotfload)
-
-;; FIXME: This package is a temporary workaround to provide ‘lualatex.fmt’ for
-;; the LuaTeX engine. It is needed because it was discovered too late in the
-;; core-updates-frozen cycle that texlive-latex-base only provides it for
-;; LuaHBTeX. See https://issues.guix.gnu.org/51252.
-(define-public texlive-latex-luatex
-  (package
-    (name "texlive-latex-luatex")
-    (version (number->string %texlive-revision))
-    (source #f)
-    (build-system gnu-build-system)
-    (arguments
-     `(#:modules ((guix build gnu-build-system)
-                  (guix build utils)
-                  (ice-9 rdelim)
-                  (ice-9 string-fun))
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'unpack)
-         (delete 'bootstrap)
-         (delete 'configure)
-         (delete 'check)
-         (replace 'build
-           (lambda* (#:key inputs #:allow-other-keys)
-             (mkdir "web2c")
-             (let ((fmtutil.cnf-in (open-file
-                                    (string-append
-                                     (assoc-ref inputs "texlive-kpathsea")
-                                     "/share/texmf-dist/web2c/fmtutil.cnf")
-                                    "r"))
-                   (fmtutil.cnf-out (open-file "web2c/fmtutil.cnf" "w")))
-
-               ;; Copy ‘lualatex’ format lines to the new fmtutil.cnf, changing
-               ;; the engine from ‘luahbtex’ to ‘luatex’.
-               (do ((line "" (read-line fmtutil.cnf-in 'concat)))
-                   ((eof-object? line))
-                 (when (string-prefix? "lualatex" line)
-                   (display (string-replace-substring line "luahbtex" "luatex")
-                            fmtutil.cnf-out)))
-               (close-port fmtutil.cnf-out)
-               (close-port fmtutil.cnf-in)
-
-               (invoke "fmtutil" "--sys" "--all" "--fmtdir=web2c"
-                       "--cnffile=web2c/fmtutil.cnf")
-
-               ;; Don't risk this file interfering with anything else.
-               (delete-file "web2c/fmtutil.cnf"))))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((web2c (string-append %output "/share/texmf-dist/web2c")))
-               (mkdir-p web2c)
-               (copy-recursively "web2c" web2c)))))))
-    (native-inputs
-     (list texlive-bin
-           texlive-babel
-           texlive-cm
-           texlive-fonts-latex
-           texlive-kpathsea
-           texlive-latex-base
-           texlive-lm
-           texlive-tex-ini-files))
-    (home-page (package-home-page texlive-latex-base))
-    (synopsis "LuaLaTeX format files for LuaTeX")
-    (description "This package is necessary to use LaTeX with the LuaTeX engine.")
-    (license (package-license texlive-latex-base))))
 
 (define-public texlive-latex-amsmath
   (package
