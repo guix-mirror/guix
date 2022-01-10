@@ -67190,6 +67190,29 @@ file into an in-memory tree structure.")
       "This package provides a CMSIS-SVD file parser")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-svgtypes-0.5
+  (package
+    (name "rust-svgtypes")
+    (version "0.5.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "svgtypes" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "1zv0yb4nfyz78y8k7fmyjqgdh9vf7xc44c9pzry8640szym6ylww"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:skip-build?
+        #t
+        #:cargo-inputs
+        (("rust-float-cmp" ,rust-float-cmp-0.5)
+         ("rust-siphasher" ,rust-siphasher-0.2))))
+    (home-page "https://github.com/RazrFalcon/svgtypes")
+    (synopsis "SVG types parser")
+    (description "This package provides SVG types parser.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-sxd-document-0.3
   (package
     (name "rust-sxd-document")
