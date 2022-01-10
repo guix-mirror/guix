@@ -3,7 +3,7 @@
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017, 2019, 2021 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018, 2022 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
@@ -253,14 +253,14 @@ to docs.openstack.org and developer.openstack.org.")
 (define-public python-os-testr
   (package
     (name "python-os-testr")
-    (version "0.8.0")
+    (version "2.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "os-testr" version))
        (sha256
         (base32
-         "0mknd9hlmxmihr755gjkxyjp180380jajq5i3zm34q7y7bi62lss"))))
+         "10xaqg3wxly13652hdvh9c69y4s12ird0ircffya3kvpl5pky0pz"))))
     (build-system python-build-system)
     (arguments
      ;; os-testr uses itself to run the tests. It seems like pbr writes the
@@ -268,7 +268,7 @@ to docs.openstack.org and developer.openstack.org.")
      ;; when building the package. Skip the tests for now.
      `(#:tests? #f))
     (propagated-inputs
-     (list python-subunit))
+     (list python-stestr))
     (native-inputs
      (list python-pbr python-testtools python-babel))
     (home-page "https://www.openstack.org/")
