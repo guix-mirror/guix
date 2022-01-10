@@ -2089,14 +2089,14 @@ before the system goes to sleep.")
 (define-public python-pyperclip
   (package
     (name "python-pyperclip")
-    (version "1.6.4")
+    (version "1.8.2")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "pyperclip" version))
         (sha256
          (base32
-          "1p505c23ji06r28k1y67siihsbdzdf1brhlqpyv9ams4gk9863pp"))))
+          "0mxzm43z2anr55gyz7awagvam4d5c2rlxhp9hjyg0d29n2l58lhh"))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f)) ; Not clear how to make tests pass.
