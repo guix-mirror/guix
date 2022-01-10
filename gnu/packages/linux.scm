@@ -4463,8 +4463,9 @@ create a firmware image suitable for the Linux kernel, and more.")
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no 'check' target
-       #:make-flags (list (string-append "prefix=" %output)
-                          ,(string-append "CC=" (cc-for-target)))
+       #:make-flags
+       ,#~(list (string-append "prefix=" #$output)
+                (string-append "CC=" #$(cc-for-target)))
        ;; No configure script.
        #:phases (modify-phases %standard-phases (delete 'configure))))
     (inputs
