@@ -5,7 +5,7 @@
 ;;; Copyright © 2016, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Mike Gerwitz <mtg@gnu.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2018, 2019, 2020, 2021 Marius Bakke <marius@gnu.org>
+;;; Copyright © 2018-2022 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2020, 2021 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
@@ -152,6 +152,10 @@
 
              ;; This requires a DNS resolver.
              (delete-file "test/parallel/test-dns.js")
+
+             ;; This test is timing-sensitive, and fails sporadically on
+             ;; slow, busy, or even very fast machines.
+             (delete-file "test/parallel/test-fs-utimes.js")
 
              ;; FIXME: This test fails randomly:
              ;; https://github.com/nodejs/node/issues/31213
@@ -811,6 +815,10 @@ source files.")
 
                ;; These tests require networking.
                (delete-file "test/parallel/test-https-agent-unref-socket.js")
+
+               ;; This test is timing-sensitive, and fails sporadically on
+               ;; slow, busy, or even very fast machines.
+               (delete-file "test/parallel/test-fs-utimes.js")
 
                ;; FIXME: This test fails randomly:
                ;; https://github.com/nodejs/node/issues/31213
