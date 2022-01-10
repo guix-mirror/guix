@@ -33,6 +33,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages code)
+  #:use-module (guix gexp)
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (guix download)
@@ -140,57 +141,59 @@ highlighting your own code that seemed comprehensible when you wrote it.")
                "1kaphc3gml89p8dpdgh2is8hj46wj05689kxj0bmh5q759rxk4vg"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags
-       (list (string-append "--with-ncurses="
-                            (assoc-ref %build-inputs "ncurses"))
-             (string-append "--with-sqlite3="
-                            (assoc-ref %build-inputs "sqlite"))
-             (string-append "--with-universal-ctags="
-                            (assoc-ref %build-inputs "universal-ctags") "/bin/ctags")
-             (string-append "--sysconfdir="
-                            (assoc-ref %outputs "out") "/share/gtags")
-             "--localstatedir=/var"         ; This needs to be a writable location.
-             "--disable-static")
+     (list #:configure-flags
+           #~(list (string-append "--with-ncurses="
+                                  #$(this-package-input "ncurses"))
+                   (string-append "--with-sqlite3="
+                                  #$(this-package-input "sqlite"))
+                   (string-append "--with-universal-ctags="
+                                  #$(this-package-input "universal-ctags")
+                                  "/bin/ctags")
+                   (string-append "--sysconfdir="
+                                  #$output "/share/gtags")
+                   "--localstatedir=/var" ; This needs to be a writable location.
+                   "--disable-static")
 
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-globash
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let* ((echo (string-append
-                           (assoc-ref inputs "coreutils") "/bin/echo")))
-               (substitute* "globash/globash.in"
-                 (("/bin/echo") echo)))))
-         (add-after 'post-install 'install-plugins
-           (lambda _
-             (with-directory-excursion "plugin-factory"
-               (invoke "make" "install"))))
-         (add-before 'install 'dont-install-to-/var
-           (lambda _
-             (substitute* "gozilla/Makefile"
-               (("DESTDIR\\)\\$\\{localstatedir\\}") "TMPDIR)"))))
-         (add-after 'install-plugins 'wrap-program
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (wrap-program
-               (string-append (assoc-ref outputs "out")
-                              "/share/gtags/script/pygments_parser.py")
-               `("GUIX_PYTHONPATH" ":" prefix (,(getenv "GUIX_PYTHONPATH"))))))
-        (add-after 'install 'post-install
-          (lambda* (#:key outputs #:allow-other-keys)
-            ;; Install the plugin files in the right place.
-            (let* ((out  (assoc-ref outputs "out"))
-                   (data (string-append out "/share/gtags"))
-                   (vim  (string-append out "/share/vim/vimfiles/plugin"))
-                   (lisp (string-append out "/share/emacs/site-lisp/"
-                                        ,(package-name this-package) "-"
-                                        ,(package-version this-package))))
-              (mkdir-p lisp)
-              (mkdir-p vim)
-              (rename-file (string-append data "/gtags.el")
-                           (string-append lisp "/gtags.el"))
-              (rename-file (string-append data "/gtags.vim")
-                           (string-append vim "/gtags.vim"))
-              (rename-file (string-append data "/gtags-cscope.vim")
-                           (string-append vim "/gtags-cscope.vim"))))))))
+           #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'unpack 'fix-globash
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   (substitute* "globash/globash.in"
+                     (("/bin/echo")
+                      (search-input-file inputs "bin/echo")))))
+               (add-after 'post-install 'install-plugins
+                 (lambda _
+                   (with-directory-excursion "plugin-factory"
+                     (invoke "make" "install"))))
+               (add-before 'install 'dont-install-to-/var
+                 (lambda _
+                   (substitute* "gozilla/Makefile"
+                     (("DESTDIR\\)\\$\\{localstatedir\\}")
+                      "TMPDIR)"))))
+               (add-after 'install-plugins 'wrap-program
+                 (lambda _
+                   (wrap-program
+                       (string-append #$output
+                                      "/share/gtags/script/pygments_parser.py")
+                     `("GUIX_PYTHONPATH" ":" prefix
+                       (,(getenv "GUIX_PYTHONPATH"))))))
+               (add-after 'install 'post-install
+                 (lambda _
+                   ;; Install the plugin files in the right place.
+                   (let* ((data (string-append #$output "/share/gtags"))
+                          (vim  (string-append #$output
+                                               "/share/vim/vimfiles/plugin"))
+                          (lisp (string-append #$output "/share/emacs/site-lisp/"
+                                               #$(package-name this-package) "-"
+                                               #$(package-version this-package))))
+                     (mkdir-p lisp)
+                     (mkdir-p vim)
+                     (rename-file (string-append data "/gtags.el")
+                                  (string-append lisp "/gtags.el"))
+                     (rename-file (string-append data "/gtags.vim")
+                                  (string-append vim  "/gtags.vim"))
+                     (rename-file (string-append data "/gtags-cscope.vim")
+                                  (string-append vim  "/gtags-cscope.vim"))))))))
     (inputs
       (list bash-minimal                ; for wrap-program
             coreutils
