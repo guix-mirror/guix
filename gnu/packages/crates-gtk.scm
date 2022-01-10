@@ -801,23 +801,24 @@
         ("rust-quote" ,rust-quote-1)
         ("rust-syn" ,rust-syn-1))))))
 
-(define-public rust-glib-sys-0.10
+(define-public rust-glib-sys-0.14
   (package
     (name "rust-glib-sys")
-    (version "0.10.1")
+    (version "0.14.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "glib-sys" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1hfdwilf3dnrv3pnfbwmp3h2afgwvfsapcgjfg8276kflsbvksf7"))))
+        (base32 "1bjlymn3fw4g8slij6iiggaipknf9072mr2qm3i4a91199an078w"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
+     `(#:skip-build?
+       #t
        #:cargo-inputs
        (("rust-libc" ,rust-libc-0.2)
-        ("rust-system-deps" ,rust-system-deps-1))
+        ("rust-system-deps" ,rust-system-deps-3))
        #:cargo-development-inputs
        (("rust-shell-words" ,rust-shell-words-0.1)
         ("rust-tempfile" ,rust-tempfile-3))))
@@ -827,6 +828,27 @@
     (synopsis "FFI bindings to libglib-2.0")
     (description "This package provides FFI bindings to libglib-2.0.")
     (license license:expat)))
+
+(define-public rust-glib-sys-0.10
+  (package
+    (inherit rust-glib-sys-0.14)
+    (name "rust-glib-sys")
+    (version "0.10.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "glib-sys" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1hfdwilf3dnrv3pnfbwmp3h2afgwvfsapcgjfg8276kflsbvksf7"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-system-deps" ,rust-system-deps-1))
+       #:cargo-development-inputs
+       (("rust-shell-words" ,rust-shell-words-0.1)
+        ("rust-tempfile" ,rust-tempfile-3))))))
 
 (define-public rust-glib-sys-0.9
   (package
