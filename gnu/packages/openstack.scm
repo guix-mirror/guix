@@ -449,15 +449,12 @@ pipeline and used by various modules such as logging.")
         (base32
          "0kjcdw4bk3mi4vqmqwhhq053kxbbbj05si6nwxd1pzx33z067ky3"))))
     (build-system python-build-system)
+    (arguments
+     '(#:tests? #f))                 ;avoid circular dependency on oslo.config
     (propagated-inputs
      (list python-babel python-six))
     (native-inputs
-     (list python-pbr
-           ;; Tests
-           python-mock
-           python-mox3
-           python-oslotest
-           python-testscenarios))
+     (list python-pbr))
     (home-page "https://launchpad.net/oslo")
     (synopsis "Oslo internationalization (i18n) library")
     (description
