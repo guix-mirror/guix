@@ -19,7 +19,7 @@
 ;;; Copyright © 2016–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Bake Timmons <b3timmons@speedymail.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
-;;; Copyright © 2017, 2018, 2020, 2021 Marius Bakke <marius@gnu.org>
+;;; Copyright © 2017, 2018, 2020, 2021, 2022 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;; Copyright © 2017, 2021 Pierre Langlois <pierre.langlois@gmx.com>
@@ -5859,17 +5859,16 @@ deployments.")
                                (string-append "CC=" ,(cc-for-target))
                                ;; Use absolute path of GCC so it's found at runtime.
                                (string-append "PTHREAD_CC="
-                                              (assoc-ref %build-inputs "gcc")
-                                              "/bin/gcc")
+                                              (search-input-file %build-inputs
+                                                                 "/bin/gcc"))
                                "--localstatedir=/var")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'use-absolute-file-names
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let* ((bash (assoc-ref inputs "bash-minimal"))
-                    (sh (string-append bash "/bin/sh"))
-                    (coreutils (assoc-ref inputs "coreutils"))
-                    (rm (string-append coreutils "/bin/rm")))
+           (lambda* (#:key native-inputs inputs #:allow-other-keys)
+             (let* ((inpts (or native-inputs inputs))
+                    (sh (search-input-file inpts "/bin/sh"))
+                    (rm (search-input-file inpts "/bin/rm")))
                (substitute* '("bin/varnishtest/vtc_varnish.c"
                               "bin/varnishtest/vtc_process.c"
                               "bin/varnishtest/vtc_haproxy.c"
@@ -5899,9 +5898,7 @@ deployments.")
                  ;; Make sure 'crti.o' et.al is found.
                  `("LIBRARY_PATH" ":" prefix (,LIBRARY_PATH)))))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("python-sphinx" ,python-sphinx)
-       ("rst2man" ,python-docutils)))
+     (list pkg-config python-sphinx python-docutils))
     (inputs
      (list bash-minimal
            coreutils
