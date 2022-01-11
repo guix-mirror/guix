@@ -246,26 +246,29 @@ GNOME Shell.")
 (define-public gnome-shell-extension-clipboard-indicator
   (package
     (name "gnome-shell-extension-clipboard-indicator")
-    (version "34")
+    (version "39")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url (string-append "https://github.com/Tudmotu/"
-                                        "gnome-shell-extension-clipboard-indicator.git"))
+                    (url
+                     (string-append
+                      "https://github.com/Tudmotu/"
+                      "gnome-shell-extension-clipboard-indicator"))
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0i00psc1ky70zljd14jzr627y7nd8xwnwrh4xpajl1f6djabh12s"))
+                "1kq6bzxki7lwmw690f4qml8pvfwafpqpsfnq2kyjhrp8nh39axwi"))
               (modules '((guix build utils)))
               (snippet
                ;; Remove pre-compiled settings schemas and translations from
                ;; source, as they are generated as part of build. Upstream
                ;; includes them for people who want to run the software
                ;; directly from source tree.
-               '(begin (delete-file "schemas/gschemas.compiled")
-                       (for-each delete-file (find-files "locale" "\\.mo$"))
-                       #t))))
+               '(begin
+                  (delete-file "schemas/gschemas.compiled")
+                  (for-each delete-file
+                            (find-files "locale" "\\.mo$"))))))
     (build-system copy-build-system)
     (arguments
      '(#:install-plan
@@ -276,14 +279,9 @@ GNOME Shell.")
          (add-before 'install 'compile-schemas
            (lambda _
              (with-directory-excursion "schemas"
-               (invoke "glib-compile-schemas" "."))
-             #t))
-         (add-before 'install 'compile-locales
-           (lambda _ (invoke "./compile-locales.sh")
-                   #t)))))
+               (invoke "glib-compile-schemas" ".")))))))
     (native-inputs
-     `(("gettext" ,gettext-minimal)
-       ("glib:bin" ,glib "bin")))       ; for glib-compile-schemas
+     (list `(,glib "bin") gettext-minimal))
     (home-page "https://github.com/Tudmotu/gnome-shell-extension-clipboard-indicator")
     (synopsis "Clipboard manager extension for GNOME Shell")
     (description "Clipboard Indicator is a clipboard manager for GNOME Shell
