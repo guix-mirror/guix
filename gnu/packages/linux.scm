@@ -1722,7 +1722,7 @@ GnuPG-based password manager like @code{pass}.")
 (define-public powercap
   (package
     (name "powercap")
-    (version "0.4.0")
+    (version "0.5.0")
     (source
      (origin
        (method git-fetch)
@@ -1731,7 +1731,7 @@ GnuPG-based password manager like @code{pass}.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1hp2i1d195v0n4jgvgaymkxlpgyhn07ic273gkda95lz65cdfcgm"))))
+        (base32 "1vs84fmhdc3w1541vp0f5ydvdsbg0amjdv2g2f8xdvaw01nakxsn"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
