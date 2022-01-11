@@ -22,7 +22,7 @@
 ;;; Copyright © 2016, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Kyle Meyer <kyle@kyleam.com>
-;;; Copyright © 2017–2021 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017–2022 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2018, 2020 Rene Saavedra <pacoon@protonmail.com>
 ;;; Copyright © 2018, 2019, 2020, 2021 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
@@ -274,76 +274,76 @@ example, modify the message headers or body, or encrypt or sign the message.")
               (search-patches "mailutils-variable-lookup.patch"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'check 'prepare-test-suite
-           (lambda _
-             ;; Use the right file name for `cat'.
-             (substitute* "testsuite/lib/mailutils.exp"
-               (("/bin/cat")
-                (which "cat")))
+     (list #:phases
+           #~(modify-phases %standard-phases
+               (add-before 'check 'prepare-test-suite
+                 (lambda _
+                   ;; Use the right file name for `cat'.
+                   (substitute* "testsuite/lib/mailutils.exp"
+                     (("/bin/cat")
+                      (which "cat")))
 
-             ;; Tests try to invoke 'mda' such that it looks up the
-             ;; 'root' user, which does not exist in the build
-             ;; environment.
-             (substitute* '("mda/mda/tests/testsuite"
-                            "mda/lmtpd/tests/testsuite")
-               (("root <")         "nobody <")
-               (("spool/root")     "spool/nobody")
-               (("root@localhost") "nobody@localhost"))
+                   ;; Tests try to invoke 'mda' such that it looks up the
+                   ;; 'root' user, which does not exist in the build
+                   ;; environment.
+                   (substitute* '("mda/mda/tests/testsuite"
+                                  "mda/lmtpd/tests/testsuite")
+                     (("root <")         "nobody <")
+                     (("spool/root")     "spool/nobody")
+                     (("root@localhost") "nobody@localhost"))
 
-             ;; The 'pipeact.at' tests generate a shell script; make
-             ;; sure it uses the right shell.
-             (substitute* '("sieve/tests/testsuite"
-                            "mh/tests/testsuite"
-                            "libmailutils/tests/lock.at")
-               (("#! ?/bin/sh")
-                (string-append "#!" (which "sh"))))
+                   ;; The 'pipeact.at' tests generate a shell script; make
+                   ;; sure it uses the right shell.
+                   (substitute* '("sieve/tests/testsuite"
+                                  "mh/tests/testsuite"
+                                  "libmailutils/tests/lock.at")
+                     (("#! ?/bin/sh")
+                      (string-append "#!" (which "sh"))))
 
-             (substitute* "mh/tests/testsuite"
-               (("moreproc: /bin/cat")
-                (string-append "moreproc: " (which "cat"))))
+                   (substitute* "mh/tests/testsuite"
+                     (("moreproc: /bin/cat")
+                      (string-append "moreproc: " (which "cat"))))
 
-             ;; XXX: The comsatd tests rely on being able to open
-             ;; /dev/tty, but that gives ENODEV in the build
-             ;; environment.  Thus, ignore test failures here.
-             (substitute* "comsat/tests/Makefile.in"
-               (("\\$\\(SHELL\\) \\$\\(TESTSUITE\\)" all)
-                (string-append "-" all)))
+                   ;; XXX: The comsatd tests rely on being able to open
+                   ;; /dev/tty, but that gives ENODEV in the build
+                   ;; environment.  Thus, ignore test failures here.
+                   (substitute* "comsat/tests/Makefile.in"
+                     (("\\$\\(SHELL\\) \\$\\(TESTSUITE\\)" all)
+                      (string-append "-" all)))
 
-             ;; XXX: The ‘moderator: program discard’ test does not specify
-             ;; an explicit From: but does expect an exact match.  But why are
-             ;; all other tests unaffected?
-             (substitute* "sieve/tests/testsuite"
-               (("gray@")
-                "nixbld@"))
+                   ;; XXX: The ‘moderator: program discard’ test does not
+                   ;; specify an explicit From: but does expect an exact
+                   ;; match.  But why are all other tests unaffected?
+                   (substitute* "sieve/tests/testsuite"
+                     (("gray@")
+                      "nixbld@"))
 
-             ;; 'frm' tests expect write access to $HOME.
-             (setenv "HOME" (getcwd))
+                   ;; 'frm' tests expect write access to $HOME.
+                   (setenv "HOME" (getcwd))
 
-             ;; Avoid the message "I'm going to create the standard MH path
-             ;; for you", which would lead to one test failure (when diffing
-             ;; stdout of 'fmtcheck'.)
-             (call-with-output-file ".mh_profile"
-               (lambda (port)
-                 (format port "Path: ~a/Mail-for-tests~%"
-                         (getcwd))))
+                   ;; Avoid the message "I'm going to create the standard MH
+                   ;; path for you", which would lead to one test failure
+                   ;; (when diffing stdout of 'fmtcheck'.)
+                   (call-with-output-file ".mh_profile"
+                     (lambda (port)
+                       (format port "Path: ~a/Mail-for-tests~%"
+                               (getcwd))))
 
-             (substitute* "imap4d/tests/testclient.c"
-               (("\"/bin/sh\"")
-                (string-append "\"" (which "sh") "\""))))))
-       #:configure-flags
-       (list "--sysconfdir=/etc"
+                   (substitute* "imap4d/tests/testclient.c"
+                     (("\"/bin/sh\"")
+                      (string-append "\"" (which "sh") "\""))))))
+           #:configure-flags
+           #~(list "--sysconfdir=/etc"
 
-             ;; Add "/X.Y" to the installation directory.
-             (string-append "--with-guile-site-dir="
-                            (assoc-ref %outputs "out")
-                            "/share/guile/site/"
-                            ,(match (assoc "guile"
-                                           (package-inputs this-package))
-                               (("guile" guile)
-                                (version-major+minor
-                                 (package-version guile))))))))
+                   ;; Add "/X.Y" to the installation directory.
+                   (string-append "--with-guile-site-dir="
+                                  (assoc-ref %outputs "out")
+                                  "/share/guile/site/"
+                                  #$(match (assoc "guile"
+                                                  (package-inputs this-package))
+                                      (("guile" guile)
+                                       (version-major+minor
+                                        (package-version guile))))))))
     (native-inputs
      ;; Regeneration of the build system is triggered by touching the
      ;; 'libmailutils/tests/lock.at' file.
