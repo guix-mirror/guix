@@ -395,7 +395,7 @@ older games.")
   ;; This is not a patch staging area for DOSBox, but an unaffiliated fork.
   (package
     (name "dosbox-staging")
-    (version "0.78.0")
+    (version "0.78.1")
     (source
      (origin
        (method git-fetch)
@@ -404,7 +404,7 @@ older games.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1zwrfc0mdqh3f2xj91iny8awcghdh6ql445ic70g5yzr1i303pgg"))))
+        (base32 "16byip1j9ckq0ik7ilrj0fc9dal3495s48xd21drpbb8q9jwb342"))))
     (build-system meson-build-system)
     (arguments
      (list #:configure-flags
