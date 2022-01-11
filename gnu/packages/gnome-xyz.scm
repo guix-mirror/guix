@@ -15,6 +15,7 @@
 ;;; Copyright © 2021 Songlin Jiang <hollowman@hollowman.ml>
 ;;; Copyright © 2021 Justin Veilleux <terramorpha@cock.li>
 ;;; Copyright © 2021 Attila Lendvai <attila@lendvai.name>
+;;; Copyright © 2021 Charles Jackson <charles.b.jackson@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -741,6 +742,45 @@ functions you might want to use, for example.  The clipboard manager will
 store an history of everything you do, so that you can get back to older
 copies you now want to paste.")
     (license license:bsd-2)))
+
+(define-public gnome-shell-extension-vertical-overview
+  (package
+    (name "gnome-shell-extension-vertical-overview")
+    (version "8")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/RensAlthuis/vertical-overview")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32
+         "01vz48p3bh7p3ybdyw0s0ahs18lk2kzk9x4ad46s0dnwmmsyhww9"))
+       (file-name (git-file-name name version))
+       (snippet
+        '(begin (delete-file "schemas/gschemas.compiled")))))
+    (build-system copy-build-system)
+    (arguments
+     `(#:install-plan
+       '(("." ,(string-append
+                "share/gnome-shell/extensions/"
+                "vertical-overview@RensAlthuis.github.com")
+          #:include-regexp ("\\.js(on)?$" "\\.css$" "\\.ui$" "\\.png$"
+                            "\\.xml$" "\\.compiled$")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'compile-schemas
+           (lambda _
+             (with-directory-excursion "schemas"
+               (invoke "glib-compile-schemas" ".")))))))
+    (native-inputs
+     (list `(,glib "bin")))  ; for glib-compile-resources
+    (home-page "https://github.com/RensAlthuis/vertical-overview")
+    (synopsis "Provides a vertical overview in Gnome 40 and upper")
+    (description "This Gnome extension replaces the new horizontally oriented
+Gnome overview with something that resembles the old vertically oriented
+style.")
+    (license license:gpl3)))
 
 (define-public arc-theme
   (package
