@@ -152,7 +152,7 @@
 (define-public qemu
   (package
     (name "qemu")
-    (version "6.1.0")
+    (version "6.2.0")
     (source
      (origin
        (method url-fetch)
@@ -160,9 +160,8 @@
                            version ".tar.xz"))
        (sha256
         (base32
-         "15iw7982g6vc4jy1l9kk1z9sl5bm1bdbwr74y7nvwjs1nffhig7f"))
-       (patches (search-patches "qemu-CVE-2021-20203.patch"
-                                "qemu-build-info-manual.patch"
+         "0iavlsy9hin8k38230j8lfmyipx3965zljls1dp34mmc8n75vqb8"))
+       (patches (search-patches "qemu-build-info-manual.patch"
                                 "qemu-fix-agent-paths.patch"))
        (modules '((guix build utils)))
        (snippet
