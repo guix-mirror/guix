@@ -5514,6 +5514,24 @@ imported Python files in sys.modules as well as custom paths.  When files are
 changed the process is restarted.")
     (license license:expat)))
 
+(define-public python-pyowm
+  (package
+    (name "python-pyowm")
+    (version "3.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pyowm" version))
+       (sha256
+        (base32 "1pm8w6phr4m3xayndfndid366vhf1fpvdgjsp2zicxarmgc0pm53"))))
+    (build-system python-build-system)
+    (propagated-inputs (list python-geojson python-pysocks python-requests))
+    (home-page "https://github.com/csparpa/pyowm")
+    (synopsis "Python wrapper around OpenWeatherMap web APIs")
+    (description
+     "This package provides a Python wrapper around OpenWeatherMap web APIs.")
+    (license license:expat)))
+
 (define-public python-pyramid
   (package
     (name "python-pyramid")
