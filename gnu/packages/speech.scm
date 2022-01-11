@@ -235,7 +235,7 @@ efficiency through the use of a compact vector representation of n-grams.")
 (define-public speech-dispatcher
   (package
     (name "speech-dispatcher")
-    (version "0.10.2")
+    (version "0.11.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/brailcom/speechd/releases"
@@ -243,7 +243,7 @@ efficiency through the use of a compact vector representation of n-grams.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1p72x9vsqvmhz1ym2bcpiqscn063rxdsylv65735cpp107r1jqxh"))))
+                "1inxqabbml2vhp0lvx4khhda4g1dp8wyr8mnk4vz315c7pni5nni"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--disable-static"
