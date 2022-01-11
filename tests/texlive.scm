@@ -177,9 +177,9 @@ completely compatible with Plain TeX.")
             (('package
                ('inherit ('simple-texlive-package
                           "texlive-texsis"
-                          ('list "doc/man/man1/"
+                          ('list "bibtex/bst/texsis/"
+                                 "doc/man/man1/"
                                  "doc/otherformats/texsis/base/"
-                                 "bibtex/bst/texsis/"
                                  "tex/texsis/base/"
                                  "tex/texsis/config/")
                           ('base32 (? string? hash))
