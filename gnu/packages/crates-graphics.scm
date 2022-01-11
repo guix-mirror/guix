@@ -1488,6 +1488,29 @@ graphics and video games.")
      "Types and utilities to store, build and iterate over 2D paths.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-lyon-svg-0.17
+  (package
+    (name "rust-lyon-svg")
+    (version "0.17.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "lyon_svg" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "0fin6h9vwgz7gi2a1b0j9bp8a1aval2lvha1kzy7iijm4kgdcj3d"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:skip-build?
+        #t
+        #:cargo-inputs
+        (("rust-lyon-path" ,rust-lyon-path-0.17)
+         ("rust-svgtypes" ,rust-svgtypes-0.5))))
+    (home-page "https://github.com/nical/lyon")
+    (synopsis "SVG helpers for the lyon crates")
+    (description "This package provides SVG helpers for the lyon crates.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-osmesa-sys-0.1
   (package
     (name "rust-osmesa-sys")
