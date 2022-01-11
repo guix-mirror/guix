@@ -29,6 +29,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix gexp)
   #:use-module (guix packages)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
@@ -121,34 +122,39 @@ convert it to structurally valid XHTML (or HTML).")
                                    "See License.text in the distribution."))))
 
 (define-public lowdown
-  (package
-    (name "lowdown")
-    (version "0.10.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://kristaps.bsd.lv/lowdown/snapshots/lowdown-"
-                           version ".tar.gz"))
-       (sha256
-        (base32 "15v2kk4ffqw3n6y6n9plch4qcib3ynnhw0ih8wn2v9qgn4jssp5p"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:test-target "regress"
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (invoke "./configure"
-                       (string-append "PREFIX=" out)
-                       (string-append "MANDIR=" out "/share/man"))))))))
-    (native-inputs
-     (list which))
-    (home-page "https://kristaps.bsd.lv/lowdown/")
-    (synopsis "Simple Markdown translator")
-    (description "Lowdown is a Markdown translator producing HTML5,
+  (let ((commit "1de10c1d71bfb4348ae0beaec8b1547d5e114969")
+        (revision "1"))
+    (package
+      (name "lowdown")
+      (version (git-version "0.10.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/kristapsdz/lowdown")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1wh07nkiihvp1m79sj4qlnqklnn0rfp3hwls8sqcp0bfd96wpa1h"))))
+      (build-system gnu-build-system)
+      (arguments
+       (list
+        #:test-target "regress"
+        #:phases
+        #~(modify-phases %standard-phases
+            (replace 'configure
+              (lambda _
+                (invoke "./configure"
+                        (string-append "PREFIX=" #$output)
+                        (string-append "MANDIR=" #$output "/share/man")))))
+        #:make-flags #~(list "CFLAGS=-fPIC")))
+      (native-inputs
+       (list which))
+      (home-page "https://kristaps.bsd.lv/lowdown/")
+      (synopsis "Simple Markdown translator")
+      (description "Lowdown is a Markdown translator producing HTML5,
 roff documents in the ms and man formats, LaTeX, gemini, and terminal output.")
-    (license license:isc)))
+      (license license:isc))))
 
 (define-public discount
   (package
