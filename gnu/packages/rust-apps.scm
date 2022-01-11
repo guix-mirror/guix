@@ -14,6 +14,7 @@
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Petr Hodina <phodina@protonmail.com>
 ;;; Copyright © 2021 jgart <jgart@dismail.de>
+;;; Copyright © 2021 Nicolas Graves <ngraves@ngraves.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1327,6 +1328,31 @@ support for Rust.")
 library and a dynamic library, and a C header to be used by any C (and
 C-compatible) software.")
     (license license:expat)))
+
+(define-public swayhide
+  (package
+    (name "swayhide")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "swayhide" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0x172ffj0lfmbv5nix708l1mfsizxzy74gpxp5amvx0bbaq0p78s"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-exitcode" ,rust-exitcode-1)
+        ("rust-swayipc" ,rust-swayipc-2))))
+    (home-page "https://github.com/NomisIV/swayhide/")
+    (synopsis "Swallow windows on swaywm")
+    (description "swayhide hides the currently active terminal (by moving it
+to the scratchpad), then it executes the supplied command.  When the child
+process has finished, the terminal is moved back.  This is useful if your
+workflow includes opening graphical programs from the terminal, as the locked
+terminal won't have to take up any space.")
+    (license license:gpl3+)))
 
 (define-public tealdeer
   (package
