@@ -3520,8 +3520,8 @@ some configuration.")
                  #t))))
        #:tests? #f)) ; Tests try to run a mailman instance to test against.
     (inputs
-     (list python-django python-django-mailman3 python-mailmanclient
-           python-readme-renderer))
+     (list python-readme-renderer python-mailmanclient
+           python-django-2.2 python-django-mailman3))
     (native-inputs
      (list python-beautifulsoup4 python-isort python-mock python-vcrpy))
     (home-page "https://gitlab.com/mailman/postorius")
