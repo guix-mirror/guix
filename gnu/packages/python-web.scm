@@ -47,6 +47,7 @@
 ;;; Copyright © 2021 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2021 jgart <jgart@dismail.de>
 ;;; Copyright © 2021 Alice Brenon <alice.brenon@ens-lyon.fr>
+;;; Copyright © 2022 John Kehayias <john.kehayias@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4263,6 +4264,30 @@ name resolutions asynchronously.")
     (description "@code{yarl} module provides handy @code{URL} class
 for URL parsing and changing.")
     (license license:asl2.0)))
+
+(define-public python-canvasapi
+  (package
+    (name "python-canvasapi")
+    (version "2.2.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/ucfopen/canvasapi")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0i13wrq2czcaz3h98pvnsl237104v611y9636jf32b1nn76sbp0p"))))
+    (build-system python-build-system)
+    (propagated-inputs (list python-pytz python-requests))
+    (native-inputs (list python-requests-mock))
+    (home-page "https://github.com/ucfopen/canvasapi")
+    (synopsis "API wrapper for the Canvas LMS")
+    (description
+     "CanvasAPI is a Python library for accessing Instructure’s Canvas LMS API.
+The library enables developers to programmatically manage Canvas courses,
+users, gradebooks, and more.")
+    (license license:expat)))
 
 (define-public python-google
   (package
