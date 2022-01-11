@@ -23,7 +23,7 @@
 ;;; Copyright © 2020, 2021 Morgan Smith <Morgan.J.Smith@outlook.com>
 ;;; Copyright © 2021 qblade <qblade@protonmail.com>
 ;;; Copyright © 2021 Gerd Heber <gerd.heber@gmail.com>
-;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2021, 2022 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2021 Ivan Gankevich <i.gankevich@spbu.ru>
 ;;; Copyright © 2021 Petr Hodina <phodina@protonmail.com>
 ;;; Copyright © 2021 Foo Chuan Wei <chuanwei.foo@hotmail.com>
@@ -1137,7 +1137,7 @@ libraries.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0gyqxryda273hjn2rv8dha461j9bjh054y5dlpiw1wiha65lrf9i"))))
+                "0qpii55dgv2gxqg1qq0dngdnbb9din790qi5qv0l6qqrzx843h5s"))))
     (synopsis "Official KiCad footprint libraries")
     (description "This package contains the official KiCad footprint libraries.")))
 
@@ -1154,7 +1154,7 @@ libraries.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1szcin52fcsyb55bj7xq7lz6ig187dpz3lk7blwab7b9c4dn3c3y"))))
+                "12w7m5nbk9kcnlnlg4sk1sd7xgb9i2kxfi0jcbd0phs89qyl7wjr"))))
     (synopsis "Official KiCad 3D model libraries")
     (description "This package contains the official KiCad 3D model libraries.")))
 
@@ -1171,7 +1171,7 @@ libraries.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1a8xfcbdbb4ylrb5m7n2jjk9kwvgmlx1pmnn2cwj327a2b3m4jjs"))))
+                "1fbhn1l3j2rwc29aida9b408wif55i23bp9ddcs7dvf83smjm05g"))))
     (synopsis "Official KiCad project and worksheet templates")
     (description "This package contains the official KiCad project and
 worksheet templates.")))
