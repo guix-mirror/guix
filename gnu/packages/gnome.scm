@@ -7841,6 +7841,13 @@ users.")
           (string-append "-Ddhclient=" dhclient)))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-dlopen-call-to-libjansson.so
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "src/libnm-glib-aux/nm-json-aux.c"
+               (("(handle = dlopen\\()soname" _ head)
+                (string-append
+                 head "\"" (search-input-file inputs
+                                              "lib/libjansson.so") "\"")))))
          (add-before 'configure 'pre-configure
            (lambda _
              ;; These tests try to test aspects of network-manager's
@@ -7859,12 +7866,7 @@ users.")
                ((".*test-link-linux.*") "")
                ((".*test-lldp.*") "")
                ((".*test-route-linux.*") "")
-               ((".*test-tc-linux.*") ""))
-             ;; FIXME: The jansson check fails (see:
-             ;; https://gitlab.freedesktop.org/NetworkManager/NetworkManager/-/issues/837
-             (substitute* "src/libnm-core-impl/tests/test-setting.c"
-               (("g_assert\\(nm_json_vt\\(\\)\\);")
-                "return TRUE;"))))
+               ((".*test-tc-linux.*") ""))))
          (add-after 'unpack 'patch-docbook-xml
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((xmldoc (string-append (assoc-ref inputs "docbook-xml")
