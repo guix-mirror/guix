@@ -20010,6 +20010,28 @@ traits.")
     (arguments
      `(#:cargo-inputs (("rust-num" ,rust-num-0.1))))))
 
+(define-public rust-float-next-after-0.1
+  (package
+    (name "rust-float-next-after")
+    (version "0.1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "float_next_after" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0cnn60pslh0gilpy2jr7qpqk22a6lmsdz847988bg1krhg2i5ijg"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-num-traits" ,rust-num-traits-0.2))))
+    (home-page "https://gitlab.com/bronsonbdevost/next_afterf")
+    (synopsis "Trait for native Rust f64/f32 nextafter")
+    (description
+     "This package provides a trait for native Rust f64/f32 nextafter.")
+    (license license:expat)))
+
 (define-public rust-float-ord-0.3
   (package
     (name "rust-float-ord")
