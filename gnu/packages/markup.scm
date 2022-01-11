@@ -317,7 +317,7 @@ convert HTML to Markdown.")
 (define-public cmark
   (package
     (name "cmark")
-    (version "0.29.0")
+    (version "0.30.2")
     (source (origin
              (method git-fetch)
              (uri (git-reference
@@ -326,16 +326,7 @@ convert HTML to Markdown.")
              (file-name (git-file-name name version))
              (sha256
               (base32
-               "0r7jpqhgnssq444i8pwji2g36058vfzwkl70wbiwj13h4w5rfc8f"))
-             (modules '((guix build utils)))
-             (snippet
-              '(begin
-                 ;; Mimic upstream commit 68c3a91166347 to fix a test failure
-                 ;; when using Python 3.8.  Remove for versions > 0.29.
-                 ;; See <https://github.com/commonmark/cmark/issues/313>.
-                 (substitute* "test/normalize.py"
-                   (("cgi") "html"))
-                 #t))))
+               "1426snw3mq8qmpdxznkhsyy75xd9v9nwlc7sph08qpdz8xnp4hr2"))))
     (build-system cmake-build-system)
     (arguments
      '(#:test-target "test"))
