@@ -1,0 +1,26 @@
+"--enable-doc-gen" configure flag will enable HTML document generation that requires mdbook.
+We can't simply disable it because we need manpages.
+
+Author: Zhu Zihao <all_but_last@163.com>
+
+diff --git a/doc/manual/local.mk b/doc/manual/local.mk
+index e43d9f2fb..c323d1847 100644
+--- a/doc/manual/local.mk
++++ b/doc/manual/local.mk
+@@ -69,8 +69,6 @@ $(d)/builtins.json: $(bindir)/nix
+ 	$(trace-gen) $(dummy-env) NIX_PATH=nix/corepkgs=corepkgs $(bindir)/nix __dump-builtins > $@.tmp
+ 	@mv $@.tmp $@
+ 
+-# Generate the HTML manual.
+-install: $(docdir)/manual/index.html
+ 
+ # Generate 'nix' manpages.
+ install: $(mandir)/man1/nix3-manpages
+@@ -94,7 +92,5 @@ doc/manual/generated/man1/nix3-manpages: $(d)/src/command-ref/new-cli
+ 	done
+ 	@touch $@
+ 
+-$(docdir)/manual/index.html: $(MANUAL_SRCS) $(d)/book.toml $(d)/custom.css $(d)/src/SUMMARY.md $(d)/src/command-ref/new-cli $(d)/src/command-ref/conf-file.md $(d)/src/expressions/builtins.md $(call rwildcard, $(d)/src, *.md)
+-	$(trace-gen) RUST_LOG=warn mdbook build doc/manual -d $(DESTDIR)$(docdir)/manual
+ 
+ endif

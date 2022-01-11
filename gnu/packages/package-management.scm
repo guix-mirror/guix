@@ -20,6 +20,7 @@
 ;;; Copyright © 2021 Ivan Gankevich <i.gankevich@spbu.ru>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 John Kehayias <john.kehayias@protonmail.com>
+;;; Copyright © 2022 Zhu Zihao <all_but_last@163.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -62,6 +63,8 @@
   #:use-module (gnu packages dbm)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages file)
+  #:use-module (gnu packages flex)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
@@ -70,6 +73,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages guile-xyz)
+  #:use-module (gnu packages hardware)
   #:use-module (gnu packages hurd)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages less)
@@ -77,6 +81,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lisp)
   #:use-module (gnu packages man)
+  #:use-module (gnu packages markup)
   #:use-module (gnu packages nettle)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages ninja)
@@ -657,14 +662,18 @@ GTK icon cache for instance.")))
 (define-public nix
   (package
     (name "nix")
-    (version "2.3.16")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append "https://releases.nixos.org/nix/nix-"
-                                 version "/nix-" version ".tar.xz"))
-             (sha256
-              (base32
-               "1g5aqavr6i3c1xln53w1pdh1kvlxrpnknb105m4jbd85kyv83rky"))))
+    (version "2.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "http://github.com/NixOS/nix")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1abgfw5ndqklm0x533li32l4azifz3f6lhaxm6s74b704043r7m2"))
+       (patches
+        (search-patches "nix-dont-build-html-doc.diff"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--sysconfdir=/etc" "--enable-gc")
@@ -680,18 +689,35 @@ GTK icon cache for instance.")))
                       (string-append "sysconfdir=" etc)
                       (string-append "profiledir=" etc "/profile.d")
                       make-flags)))))))
-    (native-inputs (list pkg-config))
-    (inputs (list boost
-                  brotli
-                  bzip2
-                  curl
-                  editline
-                  libgc
-                  libseccomp
-                  libsodium
-                  openssl
-                  sqlite
-                  xz))
+    (native-inputs
+     (list autoconf
+           autoconf-archive
+           automake
+           bison
+           flex
+           googletest
+           jq
+           libtool
+           pkg-config))
+    (inputs
+     (append (list boost
+                   brotli
+                   bzip2
+                   curl
+                   editline
+                   libarchive
+                   libgc
+                   libseccomp
+                   libsodium
+                   lowdown
+                   openssl
+                   sqlite
+                   xz
+                   zlib)
+             (if (or (target-x86-64?)
+                     (target-x86-32?))
+                 (list libcpuid)
+                 '())))
     (home-page "https://nixos.org/nix/")
     (synopsis "The Nix package manager")
     (description

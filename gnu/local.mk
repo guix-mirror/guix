@@ -1526,6 +1526,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/nettle-3.5-check-_pkcs1_sec_decrypt-msg-len.patch \
   %D%/packages/patches/nettle-3.5-CVE-2021-3580-pt1.patch	\
   %D%/packages/patches/nettle-3.5-CVE-2021-3580-pt2.patch	\
+  %D%/packages/patches/nix-dont-build-html-doc.diff		\
   %D%/packages/patches/nfs4-acl-tools-0.3.7-fixpaths.patch	\
   %D%/packages/patches/ngircd-handle-zombies.patch		\
   %D%/packages/patches/ngless-unliftio.patch		\
