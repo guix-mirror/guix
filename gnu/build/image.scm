@@ -3,7 +3,7 @@
 ;;; Copyright © 2016 Christine Lemmer-Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020, 2022 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -62,8 +62,10 @@
 
 (define (estimate-partition-size root)
   "Given the ROOT directory, evaluate and return its size.  As this doesn't
-take the partition metadata size into account, take a 25% margin."
-  (* 1.25 (file-size root)))
+take the partition metadata size into account, take a 25% margin.  As this in
+turn doesn't take any constant overhead into account, force a 1-MiB minimum."
+  (max (ash 1 20)
+       (* 1.25 (file-size root))))
 
 (define* (make-ext-image partition target root
                          #:key
