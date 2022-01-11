@@ -1534,6 +1534,31 @@ graphics and video games.")
     (description "This package provides SVG helpers for the lyon crates.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-lyon-tessellation-0.17
+  (package
+    (name "rust-lyon-tessellation")
+    (version "0.17.10")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "lyon-tessellation" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "0q2pccjszda26asylnvhwsil8wvsprfjazrqdzj4i033s26y0c3j"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:cargo-inputs
+        (("rust-float-next-after" ,rust-float-next-after-0.1)
+         ("rust-lyon-path" ,rust-lyon-path-0.17)
+         ("rust-serde" ,rust-serde-1))
+        #:cargo-development-inputs
+        (("rust-lyon-extra" ,rust-lyon-extra-0.17))))
+    (home-page "https://github.com/nical/lyon")
+    (synopsis "Low level path tessellation library")
+    (description
+      "This package provides a low level path tessellation library.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-osmesa-sys-0.1
   (package
     (name "rust-osmesa-sys")
