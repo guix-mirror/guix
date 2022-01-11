@@ -3739,7 +3739,7 @@ in the same way as BSD/GNU @code{getopt_long(3)} functions do.")
       (inherit template)
       (propagated-inputs
        (list texlive-lua-alt-getopt ;for luaotfload-tool
-             texlive-luatex-lualibs))
+             texlive-lualibs))
       (home-page "https://github.com/lualatex/luaotfload")
       (synopsis "OpenType font loader for LuaTeX")
       (description
