@@ -6174,7 +6174,7 @@ programs that cannot use the window system directly.")
 (define-public perl-x11-xcb
   (package
     (name "perl-x11-xcb")
-    (version "0.18")
+    (version "0.19")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -6182,7 +6182,7 @@ programs that cannot use the window system directly.")
                     "X11-XCB-" version ".tar.gz"))
               (sha256
                (base32
-                "1cjpghw7cnackw20lbd7yzm222kz5bnrwz52f8ay24d1f4pwrnxf"))))
+                "1rn8g0yy82v5zp12rhxic332dvqs63l7mykg028ngvccs7rllipp"))))
     (build-system perl-build-system)
     (arguments
      '(;; Disable parallel build to prevent a race condition.
@@ -6193,8 +6193,7 @@ programs that cannot use the window system directly.")
            (lambda _
              (setenv "PERL5LIB"
                      (string-append (getcwd) ":"
-                                    (getenv "PERL5LIB")))
-             #t))
+                                    (getenv "PERL5LIB")))))
          (add-before 'build 'patch-Makefile
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "Makefile"
@@ -6202,8 +6201,7 @@ programs that cannot use the window system directly.")
                ;; an error such as "XCB.so: undefined symbol: xcb_xinerama_id"
                (("^LDDLFLAGS = ")
                 (string-append "LDDLFLAGS = "
-                               "-lxcb -lxcb-util -lxcb-xinerama -lxcb-icccm ")))
-             #t)))
+                               "-lxcb -lxcb-util -lxcb-xinerama -lxcb-icccm "))))))
        ;; Tests require a running X11 server.
        #:tests? #f))
     (native-inputs
