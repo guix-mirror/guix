@@ -1436,6 +1436,29 @@ pixel buffers with width, height and stride.")
 graphics and video games.")
     (license license:expat)))
 
+(define-public rust-lyon-extra-0.17
+  (package
+    (name "rust-lyon-extra")
+    (version "0.17.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "lyon_extra" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32 "10n8h48a363qa66byqfkg164542p97v5rrnb33gqhggah739nwm0"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:skip-build?
+        #t
+        #:cargo-inputs
+        (("rust-lyon-path" ,rust-lyon-path-0.17)
+         ("rust-lyon-svg" ,rust-lyon-svg-0.17))))
+    (home-page "https://github.com/nical/lyon")
+    (synopsis "Optional utilities for the lyon crate")
+    (description "This package provides optional utilities for the lyon crate.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-lyon-geom-0.17
   (package
     (name "rust-lyon-geom")
