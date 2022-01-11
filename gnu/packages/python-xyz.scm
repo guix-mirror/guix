@@ -11664,6 +11664,51 @@ Python code formatter \"black\".")
 structures.")
     (license license:bsd-3)))
 
+(define-public wfetch
+  (let ((commit "e1cfa37814aebc9eb56ce994ebe877b6a6f9a715")
+        (revision "1"))
+    (package
+      (name "wfetch")
+      (version (git-version "0.1-pre" revision commit))
+      (home-page "https://github.com/Gcat101/Wfetch")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference (url home-page)
+                             (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1dmr85plx8zr6s14ym3r32g6crwxghkval5a24ah90ijx4dbn5q5"))))
+      (build-system python-build-system)
+      (arguments
+       `(#:use-setuptools? #f           ; no setup.py
+         #:tests? #f                    ; no test suite
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'build)
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin (string-append out "/bin"))
+                      (share (string-append out "/share")))
+                 (mkdir-p share)
+                 (substitute* "wfetch/wfetch.py"
+                   (("os.sep, 'opt', 'wfetch'") (string-append "'" share "'")))
+                 (install-file "wfetch/wfetch.py" bin)
+                 (copy-recursively "wfetch/icons" share)))))))
+      (inputs (list python-pyowm python-fire python-termcolor python-requests))
+      (synopsis "Command-line tool to display weather info")
+      (description
+       "This package provides a tool similar to Neofetch/pfetch, but for
+weather: it can display the weather condition, temperature, humidity, etc.
+
+To use it, you must first run:
+
+@example
+export WEATHER_CLI_API=@var{your OpenWeatherMap API key}
+@end example\n")
+      (license license:gpl3+))))
+
 (define-public python-get-version
   (package
     (name "python-get-version")
