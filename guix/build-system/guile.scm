@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018, 2019, 2021 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018-2019, 2021-2022 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -162,6 +162,7 @@
                        #:native-search-paths '#$(map
                                                  search-path-specification->sexp
                                                  native-search-paths)
+                       #:make-dynamic-linker-cache? #f ;cross-compiling
                        #:phases #$phases))))
 
   (mlet %store-monad ((guile (package->derivation (or guile (default-guile))

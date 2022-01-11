@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013-2015, 2020-2022 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
@@ -240,6 +240,7 @@ build system."
                        #:parallel-tests? #$parallel-tests?
                        #:validate-runpath? #$validate-runpath?
                        #:patch-shebangs? #$patch-shebangs?
+                       #:make-dynamic-linker-cache? #f ;cross-compiling
                        #:strip-binaries? #$strip-binaries?
                        #:strip-flags #$strip-flags
                        #:strip-directories #$strip-directories))))

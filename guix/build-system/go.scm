@@ -2,7 +2,7 @@
 ;;; Copyright © 2016 Petter <petter@mykolab.ch>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
-;;; Copyright © 2021 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2021-2022 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
 ;;;
@@ -276,6 +276,7 @@ commit hash and its date rather than a proper release tag."
                   #:unpack-path #$unpack-path
                   #:build-flags #$build-flags
                   #:tests? #$tests?
+                  #:make-dynamic-linker-cache? #f ;cross-compiling
                   #:allow-go-reference? #$allow-go-reference?
                   #:inputs %build-inputs)))
 
