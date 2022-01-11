@@ -7405,14 +7405,14 @@ formulas and hyperlinks to multiple worksheets in an Excel 2007+ XLSX file.")
 (define-public python-pywavelets
   (package
     (name "python-pywavelets")
-    (version "1.1.1")
+    (version "1.2.0")
     (home-page "https://github.com/PyWavelets/pywt")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "PyWavelets" version))
               (sha256
                (base32
-                "1j88c0r4j1d4mb3f8qhz6nalyx21qrzmsm70rjngnkybd87v8r0s"))))
+                "13csbr6ls9q9ww53z2xwwsj0hpsz88rj2iwp623h0kmv8yq6kgbc"))))
     (build-system python-build-system)
     (arguments
      '(#:modules ((ice-9 ftw)
