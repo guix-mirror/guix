@@ -14,7 +14,7 @@
 ;;; Copyright © 2016, 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2016, 2019 Alex Griffin <a@ajgrf.com>
-;;; Copyright © 2016–2022 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2016-2022 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016, 2017, 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
@@ -5057,7 +5057,7 @@ displays the priority part of a heading as your preferred string value.")
 (define-public emacs-org-fragtog
   (package
     (name "emacs-org-fragtog")
-    (version "0.4.0")
+    (version "0.4.1")
     (source
      (origin
        (method git-fetch)
@@ -5066,7 +5066,7 @@ displays the priority part of a heading as your preferred string value.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0ra4sfy48p8pm1c7h8wlmbl68r4s0f4qc49xapvs550pm4mf3hiq"))))
+        (base32 "1912nlnk5v20szlmxr6y7chvms294z0p0hzdfgi8i3c7yrz7lmsj"))))
     (build-system emacs-build-system)
     (propagated-inputs
      (list emacs-org))
