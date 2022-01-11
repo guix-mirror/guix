@@ -1370,20 +1370,19 @@ invoking @command{notifymuch} from the post-new hook.")
                       (substitute* (find-files "test" "\\.sh$")
                         (("/bin/sh") (which "sh"))))))))
     (native-inputs
-     `(("bash-completion" ,bash-completion)
-       ("pkg-config" ,pkg-config)
-       ("python" ,python)
-       ("python-docutils" ,python-docutils)
-       ("sphinx" ,python-sphinx)
-       ("texinfo" ,texinfo)
-
-       ;; The following are required for tests only.
-       ("emacs" ,emacs-no-x)    ; -minimal lacks libxml, needed for some tests
-       ("which" ,which)
-       ("dtach" ,dtach)
-       ("gnupg" ,gnupg)
-       ("man" ,man-db)
-       ("perl" ,perl)))
+     (list bash-completion
+           pkg-config
+           python
+           python-docutils
+           python-sphinx
+           texinfo
+           ;; The following are required for tests only.
+           emacs-no-x ; -minimal lacks libxml, needed for some tests
+           which
+           dtach
+           gnupg
+           man-db
+           perl))
     (inputs
      (list glib gmime talloc xapian zlib))
     (home-page "https://notmuchmail.org/")
