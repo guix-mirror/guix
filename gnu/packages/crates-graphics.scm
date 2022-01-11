@@ -615,10 +615,10 @@ and iOS.")
 conversion.")
     (license license:expat)))
 
-(define-public rust-euclid-0.20
+(define-public rust-euclid-0.22
   (package
     (name "rust-euclid")
-    (version "0.20.10")
+    (version "0.22.6")
     (source
      (origin
        (method url-fetch)
@@ -627,11 +627,12 @@ conversion.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0c3hbl0kvc53k6nws0v9d46hi0giza1j079sqx2bgl4wfw65nshc"))))
+         "102blw7ljphi7i2xg435z0bb0a4npmwwbgyfinqxg1m0af2q55ns"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-mint" ,rust-mint-0.5)
+       (("rust-arbitrary" ,rust-arbitrary-1)
+        ("rust-mint" ,rust-mint-0.5)
         ("rust-num-traits" ,rust-num-traits-0.2)
         ("rust-serde" ,rust-serde-1))
        #:cargo-development-inputs
