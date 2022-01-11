@@ -3685,7 +3685,8 @@ is designed to have a low barrier to entry.")
     (synopsis "Non-validating SQL parser")
     (description "Sqlparse is a non-validating SQL parser for Python.  It
 provides support for parsing, splitting and formatting SQL statements.")
-    (license license:bsd-3)))
+    (license license:bsd-3)
+    (properties '((cpe-name . "sqlparse")))))
 
 (define-public python-sql
   (package
