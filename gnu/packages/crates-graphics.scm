@@ -1436,10 +1436,10 @@ pixel buffers with width, height and stride.")
 graphics and video games.")
     (license license:expat)))
 
-(define-public rust-lyon-geom-0.14
+(define-public rust-lyon-geom-0.17
   (package
     (name "rust-lyon-geom")
-    (version "0.14.1")
+    (version "0.17.6")
     (source
       (origin
         (method url-fetch)
@@ -1448,15 +1448,15 @@ graphics and video games.")
          (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "178z4cqqmyw0rsabbgx9phkjxjzcnq0604062lqjlq87k063216a"))))
+          "12al92qsh0f8ci3qf3533r4y5hxzzyfp972vm4wqzz9bq9vwx6ff"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-num-traits" ,rust-num-traits-0.2)
-        ("rust-euclid" ,rust-euclid-0.20)
-        ("rust-arrayvec" ,rust-arrayvec-0.4)
-        ("rust-serde" ,rust-serde-1))))
+        (("rust-arrayvec" ,rust-arrayvec-0.5)
+         ("rust-euclid" ,rust-euclid-0.22)
+         ("rust-num-traits" ,rust-num-traits-0.2)
+         ("rust-serde" ,rust-serde-1))))
     (home-page "https://github.com/nical/lyon")
     (synopsis "2D graphics rendering on the GPU using tessellation")
     (description
