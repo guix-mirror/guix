@@ -1463,10 +1463,10 @@ graphics and video games.")
      "This package provides 2D graphics rendering on the GPU using tessellation.")
     (license (list license:expat license:asl2.0))))
 
-(define-public rust-lyon-path-0.14
+(define-public rust-lyon-path-0.17
   (package
     (name "rust-lyon-path")
-    (version "0.14.0")
+    (version "0.17.7")
     (source
       (origin
         (method url-fetch)
@@ -1475,12 +1475,12 @@ graphics and video games.")
          (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "0qk8x46w0sf6j04l6gvhgn9kr4ymcqkmkh67w8wqahm54jn5gjqb"))))
+          "1h7vbfaanf3x7xch6md4q4ja3xmvsi41n7d6ga40vjk7yzymj2jv"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-lyon-geom" ,rust-lyon-geom-0.14)
+       (("rust-lyon-geom" ,rust-lyon-geom-0.17)
         ("rust-serde" ,rust-serde-1))))
     (home-page "https://github.com/nical/lyon")
     (synopsis "Types and utilities to store, build and iterate over 2D paths")
