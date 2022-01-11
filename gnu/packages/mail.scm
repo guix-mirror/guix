@@ -8,7 +8,7 @@
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2015, 2016, 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Christine Lemmer-Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021 Leo Famulari <leo@famulari.name>
@@ -1672,7 +1672,6 @@ compresses it.")
        ("enchant" ,enchant)
        ("expat" ,expat)
        ("fontconfig" ,fontconfig)
-       ("librsvg" ,librsvg)
        ("ghostscript" ,ghostscript)
        ("glib" ,glib)
        ("gnupg" ,gnupg)
@@ -1689,7 +1688,7 @@ compresses it.")
        ("libical" ,libical)
        ("libindicator" ,libindicator)
        ("libnotify" ,libnotify)
-       ("librsvg" ,librsvg)
+       ("librsvg" ,(librsvg-for-system))
        ("libsm" ,libsm)
        ("libsoup" ,libsoup)
        ("libxml2" ,libxml2)
