@@ -70,9 +70,11 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix gexp)
   #:use-module (guix git-download)
   #:use-module (guix build-system asdf)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system copy)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system haskell)
   #:use-module (guix build-system meson)
@@ -2354,6 +2356,47 @@ support, for easier unicode usage.")))))
     (description "@code{xclickroot} runs a command every time a given mouse
 button is pressed on the root window.")
     (license license:public-domain)))
+
+(define-public xinitrc-xsession
+  (let ((commit "cbfc77a1ccaf07b7d8a35f4d8007c7102f365374")
+        (revision "0"))
+    (package
+      (name "xinitrc-xsession")
+      (version (git-version "1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://aur.archlinux.org/xinit-xsession.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "12nv3qyjhy2l9mcb547f414d8bj79mhdhsra0g8x7x71b1xxl15b"))))
+      (build-system copy-build-system)
+      (arguments
+       (list
+        #:phases
+        #~(modify-phases %standard-phases
+            (add-after 'install 'patch-xsession-file
+              (lambda _
+                (let* ((xinitrc-desktop
+                        (string-append #$output "/share/xsessions/xinitrc.desktop"))
+                       (xinitrc-helper
+                        (string-append #$output "/bin/xinitrcsession-helper")))
+                  (substitute* xinitrc-desktop
+                    (("Exec=xinitrcsession-helper")
+                     (string-append "Exec=" xinitrc-helper)))))))
+        #:install-plan
+        #~(list '("xinitrcsession-helper" "bin/")
+                '("xinitrc.desktop" "share/xsessions/"))))
+      (home-page "https://aur.archlinux.org/packages/xinit-xsession/")
+      (synopsis "Use ~/.xinitrc as an xsession from your display manager")
+      (description
+       "Xinitrc-xsession allows @code{~/.xinitrc} to be run as a session from
+your display manager.  Make @code{~/.xinitrc} executable and use this package
+in your system configuration have this xsession available to your display
+manager.")
+      (license license:gpl3))))
 
 (define-public xmenu
   (package
