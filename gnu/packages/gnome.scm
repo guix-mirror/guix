@@ -66,6 +66,7 @@
 ;;; Copyright © 2021 Josselin Poiret <josselin.poiret@protonmail.ch>
 ;;; Copyright © 2021 Mathieu Othacehe <othacehe@gnu.org>
 ;;; Copyright © 2022 Daniel Meißner <daniel.meissner-i4k@ruhr-uni-bochum.de>
+;;; Copyright © 2022 Pierre Langlois <pierre.langlois@gmx.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -9095,7 +9096,11 @@ shared object databases, search tools and indexing.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1rd1a0wjh2sc7mzw6m61rryvgxpi2lin4xj0x9khqw04q6nl3fgr"))))
+                "1rd1a0wjh2sc7mzw6m61rryvgxpi2lin4xj0x9khqw04q6nl3fgr"))
+              (patches
+               ;; This patch is already upstream and can be removed next
+               ;; release.
+               (search-patches "nautilus-add-libportal-gtk3.patch"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t

@@ -1,0 +1,61 @@
+From 55cfd66ccca391fc144f5863ff6bfc1f3b137e2d Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Ant=C3=B3nio=20Fernandes?= <antoniojpfernandes@gmail.com>
+Date: Tue, 21 Dec 2021 17:42:27 +0000
+Subject: [PATCH] general: Add libportal-gtk3 dependency
+
+The portal-gtk3.h header has been moved into a separate library which
+binds gtk3 explicitly.
+
+https://github.com/flatpak/libportal/pull/53
+---
+ build-aux/flatpak/org.gnome.Nautilus.json | 5 +++--  ;; Changes removed in Guix
+ build-aux/flatpak/org.gnome.Nautilus.yml  | 3 ++-    ;; Changes removed in Guix
+ meson.build                               | 4 +++-
+ src/meson.build                           | 1 +
+ src/nautilus-files-view.c                 | 2 +-
+ 5 files changed, 10 insertions(+), 5 deletions(-)
+
+diff --git a/meson.build b/meson.build
+index 927216636..4626fa0bb 100644
+--- a/meson.build
++++ b/meson.build
+@@ -122,8 +122,10 @@ gnome_desktop = dependency('gnome-desktop-3.0', version: '>= 3.0.0')
+ gtk = dependency('gtk+-3.0', version: '>= 3.22.27')
+ libhandy = dependency('libhandy-1', version: '>= 1.1.90')
+ libportal = []
++libportal_gtk3 = []
+ if get_option('libportal')
+-  libportal = dependency('libportal', version: '>= 0.3')
++  libportal = dependency('libportal', version: '>= 0.5')
++  libportal_gtk3 = dependency('libportal-gtk3', version: '>= 0.5')
+ endif
+ selinux = []
+ if get_option('selinux')
+diff --git a/src/meson.build b/src/meson.build
+index 682d6f3a3..d7fb76d53 100644
+--- a/src/meson.build
++++ b/src/meson.build
+@@ -285,6 +285,7 @@ nautilus_deps = [
+   libgd_dep,
+   libhandy,
+   libportal,
++  libportal_gtk3,
+   nautilus_extension,
+   selinux,
+   tracker_sparql,
+diff --git a/src/nautilus-files-view.c b/src/nautilus-files-view.c
+index dfb7fb26c..a24005a11 100644
+--- a/src/nautilus-files-view.c
++++ b/src/nautilus-files-view.c
+@@ -93,7 +93,7 @@
+ 
+ #ifdef HAVE_LIBPORTAL
+ #include <libportal/portal.h>
+-#include <libportal/portal-gtk3.h>
++#include <libportal-gtk3/portal-gtk3.h>
+ #endif
+ 
+ /* Minimum starting update inverval */
+-- 
+GitLab
+
