@@ -7380,22 +7380,25 @@ against local background noises.")
 (define-public stringtie
   (package
     (name "stringtie")
-    (version "1.2.1")
+    (version "2.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://ccb.jhu.edu/software/stringtie/dl/"
                                   "stringtie-" version ".tar.gz"))
               (sha256
                (base32
-                "1cqllsc1maq4kh92isi8yadgzbmnf042hlnalpk3y59aph1z3bfz"))
+                "08w3ish4y9kf9acp7k38iwi8ixa6j51m6qyf0vvfj7yz78a3ai3x"))
+              ;; This package bundles an annoying amount of third party source
+              ;; code.
               (modules '((guix build utils)))
               (snippet
-               '(begin
-                  (delete-file-recursively "samtools-0.1.18")
-                  #t))))
+               '(delete-file-recursively "htslib"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ;no test suite
+       #:make-flags '("LIBDEFLATE=-ldeflate"
+                      "LIBBZ2=-lbz2"
+                      "LIBLZMA=-llzma")
        #:phases
        (modify-phases %standard-phases
          ;; no configure script
@@ -7403,27 +7406,14 @@ against local background noises.")
          (add-before 'build 'use-system-samtools
            (lambda _
              (substitute* "Makefile"
-               (("stringtie: \\$\\{BAM\\}/libbam\\.a")
-                "stringtie: "))
-             (substitute* '("gclib/GBam.h"
-                            "gclib/GBam.cpp")
-               (("#include \"(bam|sam|kstring).h\"" _ header)
-                (string-append "#include <samtools/" header ".h>")))
-             #t))
-         (add-after 'unpack 'remove-duplicate-typedef
-           (lambda _
-             ;; This typedef conflicts with the typedef in
-             ;; glibc-2.25/include/bits/types.h
-             (substitute* "gclib/GThreads.h"
-               (("typedef long long __intmax_t;") ""))
-             #t))
+               ((" -lm") " -lm -lhts")
+               ((" \\$\\{HTSLIB\\}/libhts\\.a") " "))))
          (replace 'install
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let ((bin (string-append (assoc-ref outputs "out") "/bin/")))
-              (install-file "stringtie" bin)
-              #t))))))
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((bin (string-append (assoc-ref outputs "out") "/bin/")))
+               (install-file "stringtie" bin)))))))
     (inputs
-     (list samtools-0.1 zlib))
+     (list bzip2 htslib-for-stringtie libdeflate zlib))
     (home-page "http://ccb.jhu.edu/software/stringtie/")
     (synopsis "Transcript assembly and quantification for RNA-Seq data")
     (description
@@ -7436,7 +7426,7 @@ other transcript assemblers, but also alignments of longer sequences that have
 been assembled from those reads.  To identify differentially expressed genes
 between experiments, StringTie's output can be processed either by the
 Cuffdiff or Ballgown programs.")
-    (license license:artistic2.0)))
+    (license license:expat)))
 
 (define-public taxtastic
   (package
