@@ -2,6 +2,7 @@
 ;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2021 Hugo Lecomte <hugo.lecomte@inria.fr>
+;;; Copyright © 2022 Marius Bakke <marius@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -370,16 +371,16 @@ nbconvert's @code{ExecutePreprocessor.}")
 (define-public repo2docker
   (package
     (name "repo2docker")
-    (version "2021.03.0")
+    (version "2021.08.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/jupyterhub/repo2docker/")
-                    (commit "2021.03.0")))
+                    (commit version)))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "18w8rgf7fpf79kx36y2c3xi3d52i41z112l3sz719d8kg0bir16m"))))
+                "111irpghzys0s5ixs8paskz7465cls1sm9d5bg45a15jklcw84a9"))))
     (outputs '("out" "doc"))
     (build-system python-build-system)
     (arguments
@@ -399,10 +400,14 @@ nix-shell-wrapper|repo2docker-entrypoint)")
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let* ((out (assoc-ref outputs "doc"))
                              (doc (string-append out "/share/doc/"
-                                                 ,name)))
-                        (setenv "GUIX_PYTHONPATH"
+                                                 ,(package-name this-package))))
+                        (setenv "PYTHONPATH"
                                 (string-append (getcwd) ":"
                                                (getenv "GUIX_PYTHONPATH")))
+                        ;; Don't treat warnings as errors.
+                        (substitute* "docs/Makefile"
+                          (("(SPHINXOPTS[[:blank:]]+= )-W" _ group)
+                           group))
                         (with-directory-excursion "docs"
                           (invoke  "make" "html")
                           (copy-recursively "build/html"
@@ -418,7 +423,7 @@ nix-shell-wrapper|repo2docker-entrypoint)")
            python-escapism
            python-docker))
     (native-inputs
-     (list python-sphinx python-recommonmark
+     (list python-sphinx python-entrypoints python-recommonmark
            python-sphinxcontrib-autoprogram python-pydata-sphinx-theme))
     (home-page "https://repo2docker.readthedocs.io/en/latest/index.html#")
     (synopsis "Generate docker images from repositories")
