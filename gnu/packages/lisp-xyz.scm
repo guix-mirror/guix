@@ -19994,6 +19994,38 @@ available for use in Lisp programs.")
 (define-public cl-https-everywhere
   (sbcl-package->cl-source-package sbcl-cl-https-everywhere))
 
+(define-public sbcl-magic-ed
+  (let ((commit "30bb27832d4e3e362578e7320934638f9889a8c4")
+        (revision "1"))
+    (package
+      (name "sbcl-magic-ed")
+      (version (git-version "0.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/sanel/magic-ed")
+               (commit commit)))
+         (file-name (git-file-name "cl-magic-ed" version))
+         (sha256
+          (base32 "1j6il4lif0dy6hqiz6n91yl8dvii9pk1i9vz0faq5mnr42mr7i5f"))))
+      (build-system asdf-build-system/sbcl)
+      (home-page "https://github.com/sanel/magic-ed")
+      (synopsis "Editing facility for Common Lisp REPL")
+      (description
+       "Magic (ed) is a tiny editing facility for Common Lisp, where you can
+directly load, edit, manipulate and evaluate file or file content from REPL.
+This package also can be a starting point for people who are not accustomed to
+Emacs or SLIME and would like to continue using their default terminal/console
+editor with Common Lisp.")
+      (license license:expat))))
+
+(define-public cl-magic-ed
+  (sbcl-package->cl-source-package sbcl-magic-ed))
+
+(define-public ecl-magic-ed
+  (sbcl-package->ecl-package sbcl-magic-ed))
+
 (define-public sbcl-maxpc
   (let ((commit "e5e58d053039517d30fd59ab2d128256b87790d5")
         (revision "1"))
