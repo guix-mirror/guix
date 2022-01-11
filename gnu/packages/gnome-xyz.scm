@@ -824,6 +824,45 @@ style.")
 position when the mouse is moved rapidly.")
     (license license:gpl2)))
 
+(define-public gnome-shell-extension-burn-my-windows
+  (package
+    (name "gnome-shell-extension-burn-my-windows")
+    (version "7")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Schneegans/Burn-My-Windows/")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32
+         "1513kh6dfvnaj5jq2mm7rv1k54v91hjckgim1dpqlxwnv4gi9krd"))
+       (file-name (git-file-name name version))))
+    (build-system copy-build-system)
+    (arguments
+     `(#:install-plan
+       '(("." ,(string-append
+                "share/gnome-shell/extensions/"
+                "burn-my-windows@schneegans.github.com")
+          #:include-regexp ("\\.js(on)?$" "\\.css$" "\\.ui$" "\\.png$"
+                            "\\.xml$" "\\.compiled$" "\\.gresource$")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'compile-resources
+           (lambda _
+             (invoke "make" "resources/burn-my-windows.gresource")))
+         (add-before 'install 'compile-schemas
+           (lambda _
+             (with-directory-excursion "schemas"
+               (invoke "glib-compile-schemas" ".")))))))
+    (native-inputs
+     (list `(,glib "bin")))  ; for glib-compile-resources
+    (home-page "https://github.com/Schneegans/Burn-My-Windows")
+    (synopsis "Application closing effects extension")
+    (description "Burn My Windows is a shell extension that stylizes the
+animation of closing windowed applications.")
+    (license license:gpl3)))
+
 (define-public arc-theme
   (package
     (name "arc-theme")
