@@ -72,7 +72,10 @@
     (build-system python-build-system)
     (arguments
      ;; tests require synapse, creating a circular dependency.
-     '(#:tests? #f))
+     '(#:tests? #f
+       #:phases (modify-phases %standard-phases
+                  ;; Also, auth_provider.py attempts to import synapse.
+                  (delete 'sanity-check))))
     (propagated-inputs
      (list python-twisted python-ldap3 python-service-identity))
     (home-page "https://github.com/matrix-org/matrix-synapse-ldap3")
