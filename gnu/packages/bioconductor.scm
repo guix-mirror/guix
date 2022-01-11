@@ -4472,6 +4472,56 @@ this package.  It also provides functionalities for visualizing, summarizing
 and comparing the clusterings.")
     (license license:expat)))
 
+(define-public r-transcriptr
+  (package
+    (name "r-transcriptr")
+    (version "1.22.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "transcriptR" version))
+       (sha256
+        (base32 "1p5l2z3szx3qh02x7r81ajl7yc5wqsri6q6pzw83livmalcli5yy"))))
+    (properties `((upstream-name . "transcriptR")))
+    (build-system r-build-system)
+    (propagated-inputs
+     (list r-biocgenerics
+           r-caret
+           r-chipseq
+           r-e1071
+           r-genomeinfodb
+           r-genomicalignments
+           r-genomicfeatures
+           r-genomicranges
+           r-ggplot2
+           r-iranges
+           r-proc
+           r-reshape2
+           r-rsamtools
+           r-rtracklayer
+           r-s4vectors))
+    (native-inputs (list r-knitr))
+    (home-page "https://bioconductor.org/packages/transcriptR")
+    (synopsis "Primary transcripts detection and quantification")
+    (description
+     "The differences in the RNA types being sequenced have an impact on the
+resulting sequencing profiles.  mRNA-seq data is enriched with reads derived
+from exons, while GRO-, nucRNA- and chrRNA-seq demonstrate a substantial
+broader coverage of both exonic and intronic regions.  The presence of
+intronic reads in GRO-seq type of data makes it possible to use it to
+computationally identify and quantify all de novo continuous regions of
+transcription distributed across the genome.  This type of data, however, is
+more challenging to interpret and less common practice compared to mRNA-seq.
+One of the challenges for primary transcript detection concerns the
+simultaneous transcription of closely spaced genes, which needs to be properly
+divided into individually transcribed units.  The R package transcriptR
+combines RNA-seq data with ChIP-seq data of histone modifications that mark
+active Transcription Start Sites (TSSs), such as, H3K4me3 or H3K9/14Ac to
+overcome this challenge.  The advantage of this approach over the use of, for
+example, gene annotations is that this approach is data driven and therefore
+able to deal also with novel and case specific events.")
+    (license license:gpl3)))
+
 (define-public r-trajectoryutils
   (package
     (name "r-trajectoryutils")
