@@ -9136,35 +9136,35 @@ if (extension_path)
        ;;   Settings schema 'org.gnome.nautilus.preferences' is not installed
        #:tests? #f))
     (native-inputs
-     `(("desktop-file-utils" ,desktop-file-utils) ; for update-desktop-database
-       ("glib:bin" ,glib "bin")         ; for glib-mkenums, etc.
-       ("gobject-introspection" ,gobject-introspection)
-       ("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+     (list desktop-file-utils     ; for update-desktop-database
+           `(,glib "bin")         ; for glib-mkenums, etc.
+           gobject-introspection
+           intltool
+           pkg-config))
     (inputs
-     `(("dconf" ,dconf)
-       ("gexiv2" ,gexiv2)
-       ("gvfs" ,gvfs)
-       ("exempi" ,exempi)
-       ("gnome-desktop" ,gnome-desktop)
-       ("gnome-autoar" ,gnome-autoar)
-       ("gst-plugins-base" ,gst-plugins-base)
-       ("json-glib" ,json-glib)
-       ("libhandy" ,libhandy)
-       ("libportal" ,libportal)
-       ("libseccomp" ,libseccomp)
-       ("libselinux" ,libselinux)
-       ("libsoup" ,libsoup-minimal-2) ; to satisfy tracker dependencies
-       ("tracker" ,tracker)
-       ("tracker-miners" ,tracker-miners)
-       ;; XXX: gtk+ is required by libnautilus-extension.pc
-       ;;
-       ;; Don't propagate it to reduces "profile pollution" of the 'gnome' meta
-       ;; package.  See:
-       ;; <http://lists.gnu.org/archive/html/guix-devel/2016-03/msg00283.html>.
-       ("gtk+" ,gtk+)
-       ("libexif" ,libexif)
-       ("libxml2" ,libxml2)))
+     (list dconf
+           gexiv2
+           gvfs
+           exempi
+           gnome-desktop
+           gnome-autoar
+           gst-plugins-base
+           json-glib
+           libhandy
+           libportal
+           libseccomp
+           libselinux
+           libsoup-minimal-2 ; to satisfy tracker dependencies
+           tracker
+           tracker-miners
+           ;; XXX: gtk+ is required by libnautilus-extension.pc
+           ;;
+           ;; Don't propagate it to reduces "profile pollution" of the 'gnome' meta
+           ;; package.  See:
+           ;; <http://lists.gnu.org/archive/html/guix-devel/2016-03/msg00283.html>.
+           gtk+
+           libexif
+           libxml2))
     (native-search-paths
      (list (search-path-specification
             (variable "NAUTILUS_EXTENSION_PATH")
