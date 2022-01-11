@@ -4025,6 +4025,33 @@ logic-free templating system Mustache.")
              (lambda _
                (invoke "python" "test_pystache.py")))))))))
 
+(define-public python-pystitcher
+  (package
+    (name "python-pystitcher")
+    (version "1.0.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/captn3m0/pystitcher")
+         (commit
+          (string-append "v" version))))
+       (file-name
+        (git-file-name name version))
+       (sha256
+        (base32 "03yrzqhcsjdj5zprrk3bh5bbyqfy3vfhxra9974vmkir3m121394"))))
+    (build-system python-build-system)
+    (inputs
+     (list python-html5lib python-importlib-metadata python-markdown
+           python-pypdf3 python-validators))
+    (home-page "https://github.com/captn3m0/pystitcher")
+    (synopsis "Declaratively stitch together a PDF file from multiple sources")
+    (description
+     "This package stitches your PDF files together, generating customizable
+bookmarks using a declarative input in the form of a markdown file.")
+    (license license:expat)))
+
 (define-public python-joblib
   (package
     (name "python-joblib")
