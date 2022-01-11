@@ -676,19 +676,19 @@ GTK icon cache for instance.")))
         (search-patches "nix-dont-build-html-doc.diff"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags '("--sysconfdir=/etc" "--enable-gc")
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'install
-           ;; Don't try & fail to create subdirectories in /etc, but keep them
-           ;; in the output as examples.
-           (lambda* (#:key (make-flags '()) outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (etc (string-append out "/etc")))
-               (apply invoke "make" "install"
-                      (string-append "sysconfdir=" etc)
-                      (string-append "profiledir=" etc "/profile.d")
-                      make-flags)))))))
+     (list
+      #:configure-flags #~(list "--sysconfdir=/etc" "--enable-gc")
+      #:phases
+      #~(modify-phases %standard-phases
+          (replace 'install
+            ;; Don't try & fail to create subdirectories in /etc, but keep them
+            ;; in the output as examples.
+            (lambda* (#:key (make-flags '()) outputs #:allow-other-keys)
+              (let ((etc (string-append #$output "/etc")))
+                (apply invoke "make" "install"
+                       (string-append "sysconfdir=" etc)
+                       (string-append "profiledir=" etc "/profile.d")
+                       make-flags)))))))
     (native-inputs
      (list autoconf
            autoconf-archive
