@@ -4884,6 +4884,18 @@ data.  It also provides the @command{bgzip}, @command{htsfile}, and
     (native-inputs
      `(("perl" ,perl)))))
 
+(define htslib-for-stringtie
+  (package
+    (inherit htslib)
+    (source (origin
+              (inherit (package-source htslib))
+              (patches
+               (search-patches "htslib-for-stringtie.patch"))))
+    (arguments
+     `(#:configure-flags '("--with-libdeflate")))
+    (inputs
+     (list bzip2 libdeflate openssl))))
+
 (define-public idr
   (package
     (name "idr")

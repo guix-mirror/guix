@@ -1,0 +1,26 @@
+These changes are commits d7e357946ead219b81cc1becbe0de8a99d96ca84 and
+8ed0daa39bc662defa99507f926815431056543a in
+https://github.com/samtools/htscodecs.  The stringtie package expects these
+changes to have been applied.
+
+diff -ru htslib-1.12/htscodecs/htscodecs/tokenise_name3.c stringtie-2.2.0/htslib/htscodecs/htscodecs/tokenise_name3.c
+--- a/htscodecs/htscodecs/tokenise_name3.c	2021-02-22 13:07:06.000000000 +0100
++++ b/htscodecs/htscodecs/tokenise_name3.c	2021-12-04 19:27:39.000000000 +0100
+@@ -211,7 +211,7 @@
+ 	if (!ctx) return NULL;
+ 	ctx->max_names = max_names;
+ 	pthread_setspecific(tok_key, ctx);
+-    } else if (ctx->max_names < max_names) {
++    } else if (ctx->max_names < max_names+1) {
+ 	ctx = realloc(ctx, sizeof(*ctx) + ++max_names*sizeof(*ctx->lc));
+ 	if (!ctx) return NULL;
+ 	ctx->max_names = max_names;
+@@ -1058,6 +1058,8 @@
+ 	tok = decode_token_type(ctx, ntok);
+ 	//fprintf(stderr, "Tok %d = %d\n", ntok, tok);
+ 
++	ctx->lc[cnum].last_ntok = 0;
++
+ 	switch (tok) {
+ 	case N_CHAR:
+ 	    if (len+1 >= name_len) return -1;
