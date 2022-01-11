@@ -1537,14 +1537,14 @@ pairs have previously synchronized.")
 (define-public getmail
   (package
     (name "getmail")
-    (version "5.15")
+    (version "5.16")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://pyropus.ca/software/getmail/old-versions/"
                            "getmail-" version ".tar.gz"))
        (sha256
-        (base32 "0ahn2jyj4ka996qzs99id59pwxv6sqxp61g7drcf53rzzigq0lyl"))))
+        (base32 "1yk7lrndbfsrbdxikwzdqvadryqsldalxdn3a184dg4sxzmgis3a"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
