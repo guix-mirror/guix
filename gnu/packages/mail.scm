@@ -1642,13 +1642,11 @@ compresses it.")
          (add-after 'unpack 'patch-source
            (lambda* (#:key inputs #:allow-other-keys)
              ;; Use absolute paths to referenced programs.
-             (let* ((mailutils (assoc-ref inputs "mailutils"))
-                    (inc (string-append mailutils "/bin/mu-mh/inc"))
-                    (send-mail (assoc-ref inputs "sendmail"))
-                    (sendmail (string-append send-mail "/sbin/sendmail")))
-               (substitute* "src/common/defs.h"
-                 (("/usr/bin/mh/inc") inc)
-                 (("/usr/sbin/sendmail") sendmail)))))
+             (substitute* "src/common/defs.h"
+               (("/usr/bin/mh/inc")
+                (search-input-file inputs "/bin/mu-mh/inc"))
+               (("/usr/sbin/sendmail")
+                (search-input-file inputs "/sbin/sendmail")))))
          (add-before 'build 'patch-mime
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "src/procmime.c"
@@ -1663,48 +1661,48 @@ compresses it.")
            intltool
            pkg-config))
     (inputs
-     `(("bogofilter" ,bogofilter)
-       ("cairo" ,cairo)
-       ("compface" ,compface)
-       ("curl" ,curl)
-       ("dbus" ,dbus)
-       ("dbus-glib" ,dbus-glib)
-       ("enchant" ,enchant)
-       ("expat" ,expat)
-       ("fontconfig" ,fontconfig)
-       ("ghostscript" ,ghostscript)
-       ("glib" ,glib)
-       ("gnupg" ,gnupg)
-       ("gnutls" ,gnutls)
-       ("gpgme" ,gpgme)
-       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("gtk+" ,gtk+)
-       ("gumbo-parser" ,gumbo-parser)
-       ;;("j-pilot" ,j-pilot)
-       ("libarchive" ,libarchive)
-       ("libcanberra" ,libcanberra)
-       ("libetpan" ,libetpan)
-       ("libgdata" ,libgdata)
-       ("libical" ,libical)
-       ("libindicator" ,libindicator)
-       ("libnotify" ,libnotify)
-       ("librsvg" ,(librsvg-for-system))
-       ("libsm" ,libsm)
-       ("libsoup" ,libsoup)
-       ("libxml2" ,libxml2)
-       ("mailutils" ,mailutils)
-       ("nettle" ,nettle)
-       ("network-manager" ,network-manager)
-       ("openldap" ,openldap)
-       ("perl" ,perl)
-       ("poppler" ,poppler)
-       ("python" ,python)
-       ("python-pygobject" ,python-pygobject)
-       ("sendmail" ,sendmail)
-       ("shared-mime-info" ,shared-mime-info)
-       ("startup-notification" ,startup-notification)
-       ;;("webkitgtk" ,webkitgtk)
-       ("ytnef" ,ytnef)))
+      (list bogofilter
+            cairo
+            compface
+            curl
+            dbus
+            dbus-glib
+            enchant
+            expat
+            fontconfig
+            ghostscript
+            glib
+            gnupg
+            gnutls
+            gpgme
+            gsettings-desktop-schemas
+            gtk+
+            gumbo-parser
+            ;;j-pilot
+            libarchive
+            libcanberra
+            libetpan
+            libgdata
+            libical
+            libindicator
+            libnotify
+            (librsvg-for-system)
+            libsm
+            libsoup
+            libxml2
+            mailutils
+            nettle
+            network-manager
+            openldap
+            perl
+            poppler
+            python
+            python-pygobject
+            sendmail
+            shared-mime-info
+            startup-notification
+            ;;webkitgtk
+            ytnef))
     (propagated-inputs
      (list dconf))
     (synopsis "GTK-based Email client")
