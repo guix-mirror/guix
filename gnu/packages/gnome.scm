@@ -60,7 +60,7 @@
 ;;; Copyright © 2020, 2021 Sébastien Lerique <sl@eauchat.org>
 ;;; Copyright © 2021 Trevor Hass <thass@okstate.edu>
 ;;; Copyright © 2021 Solene Rapenne <solene@perso.pw>
-;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2021, 2022 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;; Copyright © 2021 Josselin Poiret <josselin.poiret@protonmail.ch>
@@ -6793,8 +6793,9 @@ a secret password store, an adblocker, and a modern UI.")
                                   "epiphany-" version ".tar.xz"))
               (sha256
                (base32
-                "0r7m34xzz3shdfxf2abxb069izak3yv3ijlg29qy4pfmyawkilfs"))))
-
+                "0r7m34xzz3shdfxf2abxb069izak3yv3ijlg29qy4pfmyawkilfs"))
+              (patches
+               (search-patches "epiphany-update-libportal-usage.patch"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t

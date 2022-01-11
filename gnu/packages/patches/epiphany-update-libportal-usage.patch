@@ -1,0 +1,53 @@
+Fix for epiphany with libportal-0.5.
+
+This patch was adapted from upstream
+https://gitlab.gnome.org/GNOME/epiphany/-/commit/e4d259f614f75c26ad0d2094f4f569ffd1bc06d1
+
+diff --git a/lib/ephy-flatpak-utils.c b/lib/ephy-flatpak-utils.c
+index 6fc9a5dec17a63c0660cbc1d95103c8f77231d30..0fd90b3f178392930e812a8391fd81bf1371b8bf 100644
+--- a/lib/ephy-flatpak-utils.c
++++ b/lib/ephy-flatpak-utils.c
+@@ -29,7 +29,7 @@
+ #include <gio/gio.h>
+ #include <gio/gunixfdlist.h>
+ #if USE_LIBPORTAL
+-#include <libportal/portal-gtk3.h>
++#include <libportal-gtk3/portal-gtk3.h>
+ #endif
+ #include <string.h>
+ #include <sys/stat.h>
+diff --git a/lib/meson.build b/lib/meson.build
+index 264f9c5fb66268fc248f780b8d1c06c8291f856d..db0a0557f0ae634d7fb95e57aba0cd901ca4d6c1 100644
+--- a/lib/meson.build
++++ b/lib/meson.build
+@@ -66,6 +66,7 @@ libephymisc_deps = [
+   libxml_dep,
+   m_dep,
+   portal_dep,
++  portal_gtk_dep,
+   sqlite3_dep,
+   webkit2gtk_dep
+ ]
+diff --git a/meson.build b/meson.build
+index 0b9f862b22a23619289342ec39fa0a0274558c25..4285a975004e48366789a4e66f8b23f3af05a636 100644
+--- a/meson.build
++++ b/meson.build
+@@ -95,7 +95,8 @@ libhandy_dep = dependency('libhandy-1', version: '>= 1.5.0')
+ libsecret_dep = dependency('libsecret-1', version: '>= 0.19.0')
+ libxml_dep = dependency('libxml-2.0', version: '>= 2.6.12')
+ nettle_dep = dependency('nettle', version: nettle_requirement)
+-portal_dep = dependency('libportal', version: '>= 0.0.2', required: get_option('libportal'))
++portal_dep = dependency('libportal', version: '>= 0.5', required: get_option('libportal'))
++portal_gtk_dep = dependency('libportal-gtk3', version: '>= 0.5', required: get_option('libportal'))
+ sqlite3_dep = dependency('sqlite3', version: '>= 3.22')
+ 
+ if get_option('soup2').enabled()
+@@ -108,7 +109,7 @@ else
+   webkit2gtk_web_extension_dep = dependency('webkit2gtk-web-extension-4.1', version: webkitgtk_requirement)
+ endif
+ 
+-conf.set10('USE_LIBPORTAL', portal_dep.found())
++conf.set10('USE_LIBPORTAL', portal_dep.found() and portal_gtk_dep.found())
+ 
+ webkit_revision = webkit2gtk_dep.get_variable(pkgconfig : 'revision', default_value : '')
+ if webkit_revision == 'tarball'
