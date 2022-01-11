@@ -1276,17 +1276,15 @@ visualizing high-dimensional data sets.")
 (define-public python-scikit-rebate
   (package
     (name "python-scikit-rebate")
-    (version "0.6")
+    (version "0.62")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "skrebate" version))
               (sha256
                (base32
-                "1h7qs9gjxpzqabzhb8rmpv3jpmi5iq41kqdibg48299h94iikiw7"))))
+                "0n55ghvnv7rxqa5agq6a4892ad0ghha165b0g4ghwr9gqm6ss3dj"))))
     (build-system python-build-system)
-    ;; Pandas is only needed to run the tests.
-    (native-inputs
-     (list python-pandas))
+    (arguments '(#:tests? #f))          ;no tests on PyPI and no tags in repo
     (propagated-inputs
      (list python-numpy python-scipy python-scikit-learn python-joblib))
     (home-page "https://epistasislab.github.io/scikit-rebate/")
