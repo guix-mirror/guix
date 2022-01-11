@@ -1541,7 +1541,7 @@ pairs have previously synchronized.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://pyropus.ca/software/getmail/old-versions/"
+       (uri (string-append "https://pyropus.ca/software/getmail/old-versions/"
                            "getmail-" version ".tar.gz"))
        (sha256
         (base32 "1yk7lrndbfsrbdxikwzdqvadryqsldalxdn3a184dg4sxzmgis3a"))))
@@ -1549,7 +1549,7 @@ pairs have previously synchronized.")
     (arguments
      `(#:tests? #f                      ; no tests
        #:python ,python-2))
-    (home-page "http://pyropus.ca/software/getmail/")
+    (home-page "https://pyropus.ca/software/getmail/")
     (synopsis "Mail retriever")
     (description
      "A flexible, extensible mail retrieval system with support for
