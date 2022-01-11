@@ -23,6 +23,7 @@
 ;;; Copyright © 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2021 Jacob Hrbek <kreyren@rixotstudio.cz>
 ;;; Copyright © 2021 Zheng Junjie <873216071@qq.com>
+;;; Copyright © 2021 Nicolas Graves <ngraves@ngraves.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18237,6 +18238,24 @@ decoding.")
 You can use this crate to turn non-blocking data structures into async or
 blocking data structures.")
     (license (list license:asl2.0 license:expat))))
+
+(define-public rust-exitcode-1
+  (package
+    (name "rust-exitcode")
+    (version "1.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "exitcode" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "14x1pgwx86x1gfc5zqgj04akr9pzg14w75d9cblc49vhnij3g1fy"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/benwilber/exitcode")
+    (synopsis "Preferred system exit codes as defined by @file{sysexits.h}")
+    (description "This package provides preferred system exit codes as defined
+by @file{sysexits.h}.")
+    (license license:asl2.0)))
 
 (define-public rust-exitfailure-0.5
   (package
