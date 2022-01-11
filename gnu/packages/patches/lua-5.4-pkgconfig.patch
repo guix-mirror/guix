@@ -1,0 +1,110 @@
+Enables generating Lua's pkg-config file.
+
+http://lua-users.org/lists/lua-l/2015-03/msg00338.html
+
+--- a/Makefile	2022-01-03 12:06:37.760402709 +0000
++++ b/Makefile	2022-01-03 12:06:49.568402167 +0000
+@@ -14,6 +14,7 @@
+ INSTALL_BIN= $(INSTALL_TOP)/bin
+ INSTALL_INC= $(INSTALL_TOP)/include
+ INSTALL_LIB= $(INSTALL_TOP)/lib
++INSTALL_PC= $(INSTALL_LIB)/pkgconfig
+ INSTALL_MAN= $(INSTALL_TOP)/man/man1
+ INSTALL_LMOD= $(INSTALL_TOP)/share/lua/$V
+ INSTALL_CMOD= $(INSTALL_TOP)/lib/lua/$V
+@@ -39,9 +40,12 @@
+ PLATS= guess aix bsd c89 freebsd generic linux linux-readline macosx mingw posix solaris
+ 
+ # What to install.
+-TO_BIN= lua luac
++INTERPRETER= lua
++COMPILER= luac
++TO_BIN= $(INTERPRETER) $(COMPILER)
+ TO_INC= lua.h luaconf.h lualib.h lauxlib.h lua.hpp
+-TO_LIB= liblua.a
++TO_LIB= liblua.a liblua.so liblua.so.${V}
++TO_PC=  lua-$(V).pc
+ TO_MAN= lua.1 luac.1
+ 
+ # Lua version and release.
+@@ -51,20 +55,26 @@
+ # Targets start here.
+ all:	$(PLAT)
+ 
+-$(PLATS) help test clean:
+-	@cd src && $(MAKE) $@
++$(PLATS):
++	@cd src && $(MAKE) $@ V=$(V) R=$(R)
+ 
+-install: dummy
+-	cd src && $(MKDIR) $(INSTALL_BIN) $(INSTALL_INC) $(INSTALL_LIB) $(INSTALL_MAN) $(INSTALL_LMOD) $(INSTALL_CMOD)
++clean:
++	cd src && $(MAKE) $@
++	$(RM) $(TO_PC)
++	
++install: dummy $(TO_PC)
++	cd src && $(MKDIR) $(INSTALL_BIN) $(INSTALL_INC) $(INSTALL_LIB) $(INSTALL_PC) $(INSTALL_MAN) $(INSTALL_LMOD) $(INSTALL_CMOD)
+ 	cd src && $(INSTALL_EXEC) $(TO_BIN) $(INSTALL_BIN)
+ 	cd src && $(INSTALL_DATA) $(TO_INC) $(INSTALL_INC)
+-	cd src && $(INSTALL_DATA) $(TO_LIB) $(INSTALL_LIB)
++	cd src && $(INSTALL_EXEC) $(TO_LIB) $(INSTALL_LIB)
++	cd src && $(INSTALL_DATA) ../$(TO_PC) $(INSTALL_PC)
+ 	cd doc && $(INSTALL_DATA) $(TO_MAN) $(INSTALL_MAN)
+ 
+ uninstall:
+ 	cd src && cd $(INSTALL_BIN) && $(RM) $(TO_BIN)
+ 	cd src && cd $(INSTALL_INC) && $(RM) $(TO_INC)
+ 	cd src && cd $(INSTALL_LIB) && $(RM) $(TO_LIB)
++	cd src && cd $(INSTALL_PC)  && $(RM) $(TO_PC)
+ 	cd doc && cd $(INSTALL_MAN) && $(RM) $(TO_MAN)
+ 
+ local:
+@@ -82,11 +92,13 @@
+ 	@echo "TO_BIN= $(TO_BIN)"
+ 	@echo "TO_INC= $(TO_INC)"
+ 	@echo "TO_LIB= $(TO_LIB)"
++	@echo "TO_PC= $(TO_PC)"
+ 	@echo "TO_MAN= $(TO_MAN)"
+ 	@echo "INSTALL_TOP= $(INSTALL_TOP)"
+ 	@echo "INSTALL_BIN= $(INSTALL_BIN)"
+ 	@echo "INSTALL_INC= $(INSTALL_INC)"
+ 	@echo "INSTALL_LIB= $(INSTALL_LIB)"
++	@echo "INSTALL_PC= $(INSTALL_PC)"
+ 	@echo "INSTALL_MAN= $(INSTALL_MAN)"
+ 	@echo "INSTALL_LMOD= $(INSTALL_LMOD)"
+ 	@echo "INSTALL_CMOD= $(INSTALL_CMOD)"
+@@ -95,12 +107,29 @@
+ 
+ # Echo pkg-config data.
+ pc:
+-	@echo "version=$R"
+-	@echo "prefix=$(INSTALL_TOP)"
+-	@echo "libdir=$(INSTALL_LIB)"
+-	@echo "includedir=$(INSTALL_INC)"
++	@echo 'prefix=$(INSTALL_TOP)'
++	@echo 'libdir=$(INSTALL_LIB)'
++	@echo 'includedir=$(INSTALL_INC)'
++	@echo 'bindir=$(INSTALL_BIN)'
++	@echo
++	@echo 'INSTALL_LMOD=$(INSTALL_LMOD)'
++	@echo 'INSTALL_CMOD=$(INSTALL_CMOD)'
++	@echo 'INTERPRETER=$${bindir}/$(INTERPRETER)'
++	@echo 'COMPILER=$${bindir}/$(COMPILER)'
++	@echo
++	@echo 'Name: Lua'
++	@echo 'Description: A powerful, fast, lightweight, embeddable scripting language'
++	@echo 'Version: $(R)'
++	@echo
++	@echo 'Libs: -L$${libdir} -llua -lm'
++	@echo 'Cflags: -I$${includedir}'
++
++pkg-config: $(TO_PC)
++$(TO_PC):
++	@$(MAKE) -s pc > $@
++	
+ 
+ # Targets that do not create files (not all makes understand .PHONY).
+-.PHONY: all $(PLATS) help test clean install uninstall local dummy echo pc
++.PHONY: all $(PLATS) help test clean install uninstall local dummy echo pc pkg-config
+ 
+ # (end of Makefile)

@@ -1450,6 +1450,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/lua51-liblua-so.patch                    \
   %D%/packages/patches/lua51-pkgconfig.patch                    \
   %D%/packages/patches/lua-liblua-so.patch                      \
+  %D%/packages/patches/lua-5.4-pkgconfig.patch			\
+  %D%/packages/patches/lua-5.4-liblua-so.patch			\
   %D%/packages/patches/luajit-no_ldconfig.patch			\
   %D%/packages/patches/luit-posix.patch				\
   %D%/packages/patches/lvm2-static-link.patch			\
