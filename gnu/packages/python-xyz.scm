@@ -25809,11 +25809,20 @@ positioning, and keyboard input.")
     (build-system python-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'loosen-cmarkgfm-dependency
+                    (lambda _
+                      ;; Permit newer versions of cmarkgfm.
+                      (substitute* "setup.py"
+                        (("cmarkgfm>=0\\.5\\.0,<0\\.7\\.0")
+                         "cmarkgfm>=0.5.0"))))
                   (replace 'check
                     (lambda* (#:key tests? #:allow-other-keys)
                       (when tests? (invoke "pytest" "-vv")))))))
     (propagated-inputs
-     (list python-bleach python-docutils python-pygments))
+     (list python-bleach python-docutils python-pygments
+
+           ;; Optional dependencies.
+           python-cmarkgfm))           ;required by postorius
     (native-inputs
      (list python-mock python-pytest))
     (home-page "https://github.com/pypa/readme_renderer")
