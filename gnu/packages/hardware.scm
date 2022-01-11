@@ -9,6 +9,8 @@
 ;;; Copyright © 2021 Raghav Gururajan <rg@raghavgururajan.name>
 ;;; Copyright © 2021 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2021, 2022 John Kehayias <john.kehayias@protonmail.com>
+;;; Copyright © 2022 Zhu Zihao <all_but_last@163.com>
+;;; Copyright © 2022 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -70,7 +72,8 @@
   #:use-module (guix svn-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
-  #:use-module (guix utils))
+  #:use-module (guix utils)
+  #:use-module (srfi srfi-1))
 
 ;; This is a module for packages related to physical hardware that don't (yet)
 ;; have a more specific home like gps.scm, security-token.scm, &c.
@@ -953,3 +956,54 @@ of your CRT/LCD monitor.")
 libtss2-esys, libtss2-sys, libtss2-mu, libtss2-tcti-device, libtss2-tcti-swtpm
 and libtss2-tcti-mssim.")
     (license license:bsd-2)))
+
+(define-public libcpuid
+  ;; We need to remove blobs from the source, first we have to isolate the blob
+  ;; source in build system.
+  ;; See https://github.com/anrieff/libcpuid/pull/159.
+  (let ((commit "2e61160983f32ba840b2246d3c3850c44626ab0d")
+        (revision "1"))
+    (package
+      (name "libcpuid")
+      (version (git-version "0.5.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/anrieff/libcpuid")
+               (commit commit)))
+         (sha256
+          (base32 "1mphvkiqq6z33sq6i490fq27sbyylacwrf8bg7ccvpcjms208sww"))
+         (modules '((guix build utils)))
+         (snippet
+          ;; Now remove blobs.
+          #~(begin
+              (delete-file "libcpuid/msrdriver.c")
+              (delete-file-recursively "contrib/MSR Driver")))
+         (file-name (git-file-name name version))))
+      (build-system cmake-build-system)
+      (arguments
+       (list
+        #:configure-flags #~(list "-DLIBCPUID_TESTS=ON")
+        #:phases
+        #~(modify-phases %standard-phases
+            (add-after 'unpack 'absolutize
+              (lambda* (#:key inputs #:allow-other-keys)
+                ;; Linux specific
+                (when #$(target-linux?)
+                  (substitute* "libcpuid/rdmsr.c"
+                    (("modprobe") (which "modprobe")))))))))
+      (inputs
+       (if (target-linux?)
+           (list kmod)
+           '()))
+      (native-inputs (list python-3))   ;required by tests
+      (supported-systems
+       (filter (lambda (t) (or (target-x86-64? t) (target-x86-32? t)))
+               %supported-systems))
+      (home-page "https://libcpuid.sourceforge.net/")
+      (synopsis "Small library for x86 CPU detection and feature extraction")
+      (description "Libcpuid is a small C library to get vendor, model, branding
+string, code name and other information from x86 CPU. This library is not to be
+confused with the @code{cpuid} command line utility from package @code{cpuid}.")
+      (license license:bsd-2))))
