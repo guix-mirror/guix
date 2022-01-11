@@ -4695,17 +4695,16 @@ isolation or root privileges.")
                 "14cni5r116k07zqj0565byjhv6gf3ns6hd8jkjl7fn5sxgm5sy3h"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:make-flags
-       (let ((out (assoc-ref %outputs "out")))
-         (list (string-append "binprefix=" out)
-               (string-append "manprefix=" out)
-               ,(string-append "CC=" (cc-for-target))
-               ;; Let Guix strip the binaries and not break cross-compilation.
-               "STRIP=true"))
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure))           ; no configure script
-       #:tests? #f))                    ; no test suite
+     (list #:make-flags
+           #~(list (string-append "binprefix=" #$output)
+                   (string-append "manprefix=" #$output)
+                   (string-append "CC=" #$(cc-for-target))
+                   ;; Let Guix strip binaries and not break cross-compilation.
+                   "STRIP=true")
+           #:phases
+           #~(modify-phases %standard-phases
+               (delete 'configure))     ; no configure script
+           #:tests? #f))                ; no test suite
     (home-page "https://sourceforge.net/projects/hdparm/")
     (synopsis "View and tune ATA disk drive parameters")
     (description
