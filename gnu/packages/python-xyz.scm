@@ -7166,8 +7166,10 @@ def customize_build(EXTENSIONS, OPTIONS):
     del EXTENSIONS['zfp']
     del EXTENSIONS['zopfli']
     OPTIONS['cythonize']
-")))
-             #t)))))
+")))))
+         ;; XXX: The installed scripts import packages that depend on
+         ;; this package; disable import check to avoid the cycle.
+         (delete 'sanity-check))))
     (inputs
       (list c-blosc
             giflib
@@ -7182,6 +7184,7 @@ def customize_build(EXTENSIONS, OPTIONS):
             zlib
             `(,zstd "lib")))
     (propagated-inputs
+      ;; For the Python library.
       (list python-numpy))
     (native-inputs
       ;; For building.
