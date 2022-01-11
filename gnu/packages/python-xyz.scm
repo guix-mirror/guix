@@ -20047,9 +20047,6 @@ distributions.  It authenticates the user over HTTPS, allows them to pre-sign
 their files and supports any packaging format (including wheels).")
     (license license:asl2.0)))
 
-(define-public python2-twine
-  (package-with-python2 python-twine))
-
 (define-public python-linecache2
   (package
     (name "python-linecache2")
