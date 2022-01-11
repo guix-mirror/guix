@@ -1734,8 +1734,8 @@ GnuPG-based password manager like @code{pass}.")
         (base32 "1vs84fmhdc3w1541vp0f5ydvdsbg0amjdv2g2f8xdvaw01nakxsn"))))
     (build-system cmake-build-system)
     (arguments
-     '(#:configure-flags
-       '("-DBUILD_SHARED_LIBS=ON")))
+     (list #:configure-flags
+           #~(list "-DBUILD_SHARED_LIBS=ON")))
     (home-page "https://github.com/powercap/powercap")
     (synopsis "Utilities for accessing the powercap Linux kernel feature")
     (description "This package contains utilities for accessing the powercap
