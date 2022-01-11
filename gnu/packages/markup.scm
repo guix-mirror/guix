@@ -4,7 +4,7 @@
 ;;; Copyright © 2016, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2017–2021 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2020, 2022 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2020 EuAndreh <eu@euandre.org>
 ;;; Copyright © 2021 Noisytoot <noisytoot@disroot.org>
 ;;; Copyright © 2021 Zhu Zihao <all_but_last@163.com>
@@ -301,6 +301,33 @@ for parsing and rendering CommonMark.")
     ;; licensed. The CommonMark specification is Creative Commons CC-BY-SA 4.0
     ;; licensed. See 'COPYING' in the source distribution for more information.
     (license (list license:bsd-2 license:expat license:cc-by-sa4.0))))
+
+(define-public cmark-gfm
+  (package
+    (inherit cmark)
+    (name "cmark-gfm")
+    (version "0.29.0.gfm.2")
+    (home-page "https://github.com/github/cmark-gfm")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference (url home-page) (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0vz6zs3m22k7jzfj4782lahciwfjlbi4m3qz5crsmssip3rwdy7h"))))
+    (arguments
+     '(#:test-target "test"
+       #:phases (modify-phases %standard-phases
+                  (add-after 'install 'install-config
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out")))
+                        ;; XXX: cmark-gfm-core-extensions.h includes this file.
+                        (install-file "src/config.h"
+                                      (string-append out "/include"))))))))
+    (synopsis "GitHub flavored CommonMark")
+    (description
+     "This package is a fork of @code{cmark}, with GitHub-specific Markdown
+additions.")))
 
 (define-public smu
   (package
