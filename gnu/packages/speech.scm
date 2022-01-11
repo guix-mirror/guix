@@ -252,17 +252,15 @@ efficiency through the use of a compact vector representation of n-grams.")
                            "--with-voxin=no" "--with-ibmtts=no"
                            "--with-kali=no" "--with-baratinoo=no")))
     (native-inputs
-     `(("gettext" ,gettext-minimal)
-       ("pkg-config" ,pkg-config)
-       ("texinfo" ,texinfo)))
+     (list gettext-minimal pkg-config texinfo))
     (inputs
-     `(("dotconf" ,dotconf)
-       ("espeak" ,espeak-ng)
-       ("glib" ,glib)
-       ("libltdl" ,libltdl)
-       ("libsndfile" ,libsndfile)
-       ("pulseaudio" ,pulseaudio)
-       ("python" ,python)))
+     (list dotconf
+           espeak-ng
+           glib
+           libltdl
+           libsndfile
+           pulseaudio
+           python))
     (synopsis "Common interface to speech synthesizers")
     (description "The Speech Dispatcher project provides a high-level
 device independent layer for access to speech synthesis through a simple,
