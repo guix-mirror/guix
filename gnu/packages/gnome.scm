@@ -9088,7 +9088,7 @@ shared object databases, search tools and indexing.")
 (define-public nautilus
   (package
     (name "nautilus")
-    (version "41.0")
+    (version "41.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -9096,7 +9096,7 @@ shared object databases, search tools and indexing.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1rd1a0wjh2sc7mzw6m61rryvgxpi2lin4xj0x9khqw04q6nl3fgr"))
+                "0bsqh241m43x3qb3z0mjakjic610ncl95zhjdgls649phnc30qry"))
               (patches
                ;; This patch is already upstream and can be removed next
                ;; release.
@@ -9104,7 +9104,6 @@ shared object databases, search tools and indexing.")
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
-       #:meson ,meson-0.59
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'make-extensible
