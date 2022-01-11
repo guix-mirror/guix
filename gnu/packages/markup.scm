@@ -36,10 +36,12 @@
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
   #:use-module (guix utils)
+  #:use-module (guix gexp)
+  #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
-  #:use-module (gnu packages)
+  #:use-module (gnu packages libffi)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -238,6 +240,56 @@ implementation.
   my $html = markdown($text)
 @end example")
     (license license:perl-license)))
+
+(define-public python-cmarkgfm
+  (package
+    (name "python-cmarkgfm")
+    (version "0.7.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "cmarkgfm" version))
+              (sha256
+               (base32
+                "06cw49bzxl3k7m8993cyi5zqxvk817z8ghhr9xqq5gx8klpiap56"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Delete bundled cmark and generated headers.
+                  (for-each delete-file-recursively
+                            '("third_party/cmark" "generated"))))))
+    (build-system python-build-system)
+    (arguments
+     (list #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'unpack 'copy-cmark-gfm
+                 (lambda _
+                   ;; This package needs the cmark-gfm source files
+                   ;; to generate FFI bindings.
+                   (copy-recursively #+(package-source (this-package-input
+                                                        "cmark-gfm"))
+                                     "third_party/cmark")))
+               (add-after 'unpack 'install-cmark-headers
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   ;; XXX: Loosely based on 'regenerate' from noxfile.py.
+                   (let ((version.h (search-input-file
+                                     inputs "/include/cmark-gfm_version.h")))
+                     (for-each (lambda (file)
+                                 (install-file file "generated/unix/"))
+                               (cons version.h
+                                     (find-files (dirname version.h)
+                                                 "_export\\.h$"))))))
+               (replace 'check
+                 (lambda* (#:key tests? #:allow-other-keys)
+                   (when tests? (invoke "pytest" "-vv" "tests")))))))
+    (native-inputs (list python-pytest))
+    (inputs (list cmark-gfm))
+    (propagated-inputs (list python-cffi-1.15))
+    (home-page "https://github.com/theacodes/cmarkgfm")
+    (synopsis "Python bindings for GitHub's fork of cmark")
+    (description
+     "This package provides a minimal set of Python bindings for the
+GitHub cmark fork (@code{cmark-gfm}).")
+    (license license:expat)))
 
 (define-public python-markdownify
   (package
