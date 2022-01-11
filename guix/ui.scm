@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012-2022 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014 Cyril Roelandt <tipecaml@gmail.com>
@@ -1514,13 +1514,15 @@ HYPERLINKS? is true, emit hyperlink escape sequences when appropriate."
     ;; the initial "+ " prefix.
     (if (> width 2) (- width 2) width))
 
+  (define (split-lines str indent)
+    (string->recutils
+     (fill-paragraph str width* indent)))
+
   (define (dependencies->recutils packages)
     (let ((list (string-join (delete-duplicates
                               (map package-full-name
                                    (sort packages package<?))) " ")))
-      (string->recutils
-       (fill-paragraph list width*
-                       (string-length "dependencies: ")))))
+      (split-lines list (string-length "dependencies: "))))
 
   (define (package<? p1 p2)
     (string<? (package-full-name p1) (package-full-name p2)))
@@ -1530,7 +1532,8 @@ HYPERLINKS? is true, emit hyperlink escape sequences when appropriate."
   (format port "version: ~a~%" (package-version p))
   (format port "outputs: ~a~%" (string-join (package-outputs p)))
   (format port "systems: ~a~%"
-          (string-join (package-transitive-supported-systems p)))
+          (split-lines (string-join (package-transitive-supported-systems p))
+                       (string-length "systems: ")))
   (format port "dependencies: ~a~%"
           (match (package-direct-inputs p)
             (((labels inputs . _) ...)
