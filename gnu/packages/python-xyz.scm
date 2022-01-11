@@ -25798,17 +25798,22 @@ positioning, and keyboard input.")
 (define-public python-readme-renderer
   (package
     (name "python-readme-renderer")
-    (version "26.0")
+    (version "32.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "readme_renderer" version))
         (sha256
          (base32
-          "13fnrv7z3y0yfafzcjbl55cqxncvbxadr72ql4l29pgyvrqxpsfb"))))
+          "11av194kgq6mvp2afpapkb6vyn3y14gingmgsp3n10krlspvw4mm"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (when tests? (invoke "pytest" "-vv")))))))
     (propagated-inputs
-     (list python-bleach python-docutils python-pygments python-six))
+     (list python-bleach python-docutils python-pygments))
     (native-inputs
      (list python-mock python-pytest))
     (home-page "https://github.com/pypa/readme_renderer")
