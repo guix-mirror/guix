@@ -27,7 +27,7 @@
 ;;; Copyright © 2021 Cage <cage-dev@twistfold.it>
 ;;; Copyright © 2021 Cameron Chaparro <cameron@cameronchaparro.com>
 ;;; Copyright © 2021 Charles Jackson <charles.b.jackson@protonmail.com>
-;;; Copyright © 2021 Foo Chuan Wei <chuanwei.foo@hotmail.com>
+;;; Copyright © 2021, 2022 Foo Chuan Wei <chuanwei.foo@hotmail.com>
 ;;; Copyright © 2021 jgart <jgart@dismail.de>
 ;;; Copyright © 2021 Aleksandr Vityazev <avityazev@posteo.org>
 ;;; Copyright © 2021 Jacob MacDonald <jaccarmac@gmail.com>
@@ -20181,6 +20181,39 @@ APL.")
 
 (define-public ecl-april
   (sbcl-package->ecl-package sbcl-april))
+
+(define-public sbcl-cl-sxml
+  (let ((commit "e5542b1d9bd6cee03ae27547d00660ccfbb60109")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-sxml")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/eadmund/cl-sxml")
+               (commit commit)))
+         (file-name (git-file-name "cl-sxml" version))
+         (sha256
+          (base32 "1105s9whidq1lf0lli2wdhcfcs5gwzxa0h1x3izx4mp2p7psvciz"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs (list sbcl-cxml))
+      (native-inputs
+       (list sbcl-fiveam
+             sbcl-flexi-streams))
+      (home-page "https://github.com/eadmund/cl-sxml")
+      (synopsis "SXML parsing for Common Lisp")
+      (description
+       "@code{CL-SXML} implements Oleg Kiselyov’s SXML, an S-expression-based
+rendering of the XML Infoset.")
+      (license license:gpl3+))))
+
+(define-public cl-sxml
+  (sbcl-package->cl-source-package sbcl-cl-sxml))
+
+(define-public ecl-cl-sxml
+  (sbcl-package->ecl-package sbcl-cl-sxml))
 
 (define-public sbcl-cl-gopher
   (let ((commit "29fbe52e3f377e24e8bde77b00789a1e32a75b90")
