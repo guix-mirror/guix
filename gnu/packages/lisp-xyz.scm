@@ -3785,8 +3785,8 @@ RFC 1321 by R. Rivest, published April 1992.")
      (list ecl-flexi-streams))))
 
 (define-public sbcl-cl+ssl
-  (let ((commit "701e645081e6533a3f0f0b3ac86389d6f506c4b5")
-        (revision "1"))
+  (let ((commit "09e896b04c112e7eb0f9d443a5801d557fbcd3ea")
+        (revision "2"))
     (package
       (name "sbcl-cl+ssl")
       (version (git-version "0.0.0" revision commit))
@@ -3798,7 +3798,7 @@ RFC 1321 by R. Rivest, published April 1992.")
                (commit commit)))
          (file-name (git-file-name "cl+ssl" version))
          (sha256
-          (base32 "0nfl275nwhff3m25872y388cydz14kqb6zbwywa6nj85r9k8bgs0"))))
+          (base32 "1ynvk8rbd5zvbdrl8mr49jwmg9fh94clzkagkza9jmpj0p1qvynd"))))
       (build-system asdf-build-system/sbcl)
       (arguments
        '(#:phases
@@ -3807,6 +3807,9 @@ RFC 1321 by R. Rivest, published April 1992.")
              (lambda* (#:key inputs #:allow-other-keys)
                (substitute* "src/reload.lisp"
                  (("libssl.so" all)
+                  (string-append
+                   (assoc-ref inputs "openssl") "/lib/" all))
+                 (("libcrypto.so" all)
                   (string-append
                    (assoc-ref inputs "openssl") "/lib/" all))))))))
       (inputs
@@ -3817,7 +3820,8 @@ RFC 1321 by R. Rivest, published April 1992.")
              sbcl-bordeaux-threads
              sbcl-trivial-garbage
              sbcl-alexandria
-             sbcl-trivial-features))
+             sbcl-trivial-features
+             sbcl-usocket))
       (home-page "https://common-lisp.net/project/cl-plus-ssl/")
       (synopsis "Common Lisp bindings to OpenSSL")
       (description
