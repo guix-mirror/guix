@@ -18695,7 +18695,7 @@ by @file{sysexits.h}.")
 (define-public rust-expect-test-1
   (package
     (name "rust-expect-test")
-    (version "1.1.0")
+    (version "1.2.2")
     (source
      (origin
        (method url-fetch)
@@ -18704,7 +18704,7 @@ by @file{sysexits.h}.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0cq651b3dcrw94bl03krxnvllr8kqx6vskqal0n8ydrsmdx4f013"))))
+         "05nv365xd5fqydmzbsvzqz0148a1vbxp2p0r8a3ivafdvhl6ngky"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build?
