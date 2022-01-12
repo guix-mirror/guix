@@ -838,14 +838,14 @@ documenting acceptable argument types and return value types of functions.")
 (define-public python-nbsphinx
   (package
     (name "python-nbsphinx")
-    (version "0.7.1")
+    (version "0.8.8")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "nbsphinx" version))
         (sha256
           (base32
-            "0j56bxdj08vn3q1804qwb1ywhga1mdg1awgm7i64wfpfwi8df2zm"))))
+            "1v1lzkfx2lslhslqb110zxmm4dmdg6hs2rahf713c2rk9f10q2dm"))))
     (build-system python-build-system)
     (propagated-inputs
       (list python-docutils
