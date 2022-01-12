@@ -12737,3 +12737,48 @@ successor of @code{libhandy} for GTK4.")
     (description "@code{gnome-power-manager} is a tool for viewing present and
 historical battery usage and related statistics.")
     (license license:gpl2)))
+
+(define-public xffm+
+  (package
+    (name "xffm+")
+    (version "0.94")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/xffm/xffm+/xffm+-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "0gwbgmjzlgv9ba95cgaigjnc9njzi7qznhvzp0qrnnlq3nbcm1k1"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f ; No tests exist
+       #:configure-flags
+       (let ((shared-mime-info (assoc-ref %build-inputs "shared-mime-info"))
+             (out (assoc-ref %outputs "out")))
+         (list (string-append "-DFREEDESKTOP_GLOBS=" shared-mime-info
+                              "/share/mime/globs")
+               (string-append "-DFREEDESKTOP_ALIAS=" shared-mime-info
+                              "/share/mime/aliases")
+               (string-append "-DFREEDESKTOP_ICONS=" shared-mime-info
+                              "/share/mime/generic-icons")
+               (string-append "-DCMAKE_INSTALL_PREFIX=" out)
+               (string-append "-DPREFIX_BIN=" out "/bin")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-installation-destination
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "CMakeLists.txt"
+              ;; This is done so we can override.
+              (("^set.CMAKE_INSTALL_PREFIX") "set(QCMAKE_INSTALL_PREFIX")
+              ;; This is done so we can override.
+              (("`set.PREFIX_BIN") "set(QPREFIX_BIN")))))))
+    (native-inputs
+     (list cmake pkg-config intltool gnu-gettext))
+    (inputs
+     (list glib gtk+ libx11 libsm libxv libxaw libxcb libxkbfile
+           shared-mime-info))
+    (synopsis "File manager")
+    (description "This package provides a graphical file manager.")
+    (home-page "http://xffm.org/")
+    (license license:gpl3+)
+    (properties '((upstream-name . "xffm")))))
