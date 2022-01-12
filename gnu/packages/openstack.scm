@@ -607,35 +607,37 @@ for debugging, and better support for mocking results.")
 (define-public python-oslo.utils
   (package
     (name "python-oslo.utils")
-    (version "3.36.2")
+    (version "4.12.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "oslo.utils" version))
         (sha256
           (base32
-           "1ipjcgg9z697wmibhcbg5lqpk5gafakdx4qkff3w255zr0mvw04r"))))
+           "0kfgr6lr3r34nzmkvnyywr0x3lkwpwy35m1dj4rkk3ydqvi1xaip"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (when tests? (invoke "stestr" "run")))))))
     (propagated-inputs
       (list python-debtcollector
             python-oslo.i18n
             python-iso8601
-            python-monotonic
             python-netaddr
             python-netifaces
+            python-pbr
+            python-packaging-next
             python-pyparsing
-            python-pytz
-            python-six))
+            python-pytz))
     (native-inputs
-      (list python-pbr
-            ;; Tests.
-            python-bandit
-            python-ddt
+     ;; For tests.
+      (list python-ddt
+            python-eventlet
             python-fixtures
-            python-oslo.config
             python-oslotest
-            python-mock
-            python-testrepository
+            python-stestr
             python-testscenarios
             python-testtools))
     (home-page "https://launchpad.net/oslo")
