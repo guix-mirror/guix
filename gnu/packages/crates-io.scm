@@ -9358,8 +9358,43 @@ clauses.")
      "Recursive solver for the Chalk project")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-chalk-solve-0.75
+  (package
+    (name "rust-chalk-solve")
+    (version "0.75.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "chalk-solve" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "07gaf59zr7pgpr01l3si7a8iici2qh5dh2w2b05agaq5cvds3lm5"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-chalk-derive" ,rust-chalk-derive-0.75)
+        ("rust-chalk-ir" ,rust-chalk-ir-0.75)
+        ("rust-ena" ,rust-ena-0.14)
+        ("rust-itertools" ,rust-itertools-0.10)
+        ("rust-petgraph" ,rust-petgraph-0.5)
+        ("rust-rustc-hash" ,rust-rustc-hash-1)
+        ("rust-tracing" ,rust-tracing-0.1)
+        ("rust-tracing-subscriber"
+         ,rust-tracing-subscriber-0.3)
+        ("rust-tracing-tree" ,rust-tracing-tree-0.2))))
+    (home-page "https://github.com/rust-lang/chalk")
+    (synopsis
+     "Combines the chalk-engine with chalk-ir")
+    (description
+     "This package provides a combines the chalk-engine with chalk-ir.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-chalk-solve-0.68
   (package
+    (inherit rust-chalk-solve-0.75)
     (name "rust-chalk-solve")
     (version "0.68.0")
     (source
@@ -9384,13 +9419,7 @@ clauses.")
         ("rust-tracing" ,rust-tracing-0.1)
         ("rust-tracing-subscriber"
          ,rust-tracing-subscriber-0.2)
-        ("rust-tracing-tree" ,rust-tracing-tree-0.1))))
-    (home-page "https://github.com/rust-lang/chalk")
-    (synopsis
-     "Combines the chalk-engine with chalk-ir")
-    (description
-     "This package provides a combines the chalk-engine with chalk-ir.")
-    (license (list license:asl2.0 license:expat))))
+        ("rust-tracing-tree" ,rust-tracing-tree-0.1))))))
 
 (define-public rust-charset-0.1
   (package
