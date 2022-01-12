@@ -26,7 +26,7 @@
 ;;; Copyright © 2018, 2020, 2021 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2018, 2020, 2021 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
-;;; Copyright © 2019, 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2019, 2020, 2021, 2022 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2019 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2019 Timotej Lazar <timotej.lazar@araneo.si>
@@ -3361,11 +3361,14 @@ and targeted primarily for asynchronous processing of HTTP-requests.")
     (license license:bsd-3)))
 
 (define-public opendht
-  (let ((commit "6c58d4f2e9b7f1de15db8d3a736c8cf1ea5f2886")
-        (revision "1"))
+  ;; The version/commit is kept in sync with what Jami uses in its daemon
+  ;; contrib build system (see:
+  ;; https://review.jami.net/plugins/gitiles/jami-daemon/+/refs/heads/master/contrib/src/opendht/rules.mak).
+  (let ((commit "dbbfdaab0f4119abf79646313e0dbc52881dcd56")
+        (revision "0"))
     (package
       (name "opendht")
-      (version (git-version "2.3.0" revision commit))
+      (version (git-version "2.3.1" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -3374,21 +3377,21 @@ and targeted primarily for asynchronous processing of HTTP-requests.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "06l0z1dmxyjh8gdrmxyq4vnfnv3x400bhx0lxm7l90f8zc5r2bim"))))
+                  "07x8vw999qpfl6qwj5k5l2mcjy1vp32sd567f6imbsnh9vlx2bdv"))))
       ;; Since 2.0, the gnu-build-system does not seem to work anymore, upstream bug?
       (outputs '("out" "tools" "debug"))
       (build-system cmake-build-system)
-      (inputs
-       (list argon2
-             nettle
-             readline
-             jsoncpp
-             openssl ;required for the DHT proxy
-             fmt))
+      (inputs (list bash-minimal fmt readline))
       (propagated-inputs
-       (list gnutls ;included in opendht/crypto.h
-             msgpack ;included in several installed headers
-             restinio))         ;included in opendht/http.h
+       (list msgpack                    ;included in several installed headers
+             restinio                   ;included in opendht/http.h
+             ;; The following are listed in the 'Requires.private' field of
+             ;; opendht.pc:
+             argon2
+             gnutls
+             jsoncpp
+             nettle
+             openssl))                  ;required for the DHT proxy
       (native-inputs
        (list autoconf
              automake
@@ -3403,7 +3406,7 @@ and targeted primarily for asynchronous processing of HTTP-requests.")
          #:modules (((guix build python-build-system) #:prefix python:)
                     (guix build cmake-build-system)
                     (guix build utils))
-         #:tests? #f                      ; Tests require network connection.
+         #:tests? #f                      ;tests require networking
          #:configure-flags
          '( ;;"-DOPENDHT_TESTS=on"
            "-DOPENDHT_STATIC=off"
