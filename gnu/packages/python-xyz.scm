@@ -18506,16 +18506,16 @@ multitouch applications.")
                        "-k" "not test_gitignore" ;requires git
                        "--ignore=tests/unit/test_deprecated_finders.py")))))))
     (native-inputs
-     `(("python-black" ,python-black)
-       ("python-colorama" ,python-colorama)
-       ("python-hypothesmith" ,python-hypothesmith)
-       ("python-libcst" ,python-libcst-minimal)
-       ("python-natsort" ,python-natsort)
-       ("python-poetry-core" ,python-poetry-core)
-       ("python-pylama" ,python-pylama)
-       ("python-pypa-build" ,python-pypa-build)
-       ("python-pytest-mock" ,python-pytest-mock)
-       ("python-pytest" ,python-pytest)))
+     (list python-black
+           python-colorama
+           python-hypothesmith
+           python-libcst-minimal
+           python-natsort
+           python-poetry-core
+           python-pylama
+           python-pypa-build
+           python-pytest-mock
+           python-pytest))
     (home-page "https://github.com/PyCQA/isort")
     (synopsis "Python utility/library to sort python imports")
     (description "@code{python-isort} is a python utility/library to sort
