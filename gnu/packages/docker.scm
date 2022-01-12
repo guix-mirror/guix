@@ -126,7 +126,7 @@ client.")
            python-requests
            python-six
            python-texttable
-           python-websocket-client))
+           python-websocket-client-0.59))
     (home-page "https://www.docker.com/")
     (synopsis "Multi-container orchestration for Docker")
     (description "Docker Compose is a tool for defining and running

@@ -2414,13 +2414,13 @@ verification of the SSL peer.")
 (define-public python-websocket-client
   (package
     (name "python-websocket-client")
-    (version "0.59.0")                  ; tests hang on newer versions
+    (version "1.2.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "websocket-client" version))
        (sha256
-        (base32 "0p0cz2mdissq7iw1n7jrmsfir0jfmgs1dvnpnrx477ffx9hbsxnk"))))
+        (base32 "1xba9z6b211pandrlk2l5p8wj6gn7yfkpq1sxfbqjl6c19n8258k"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -2429,26 +2429,29 @@ verification of the SSL peer.")
            (lambda _
              ;; This test requires networking.
              (substitute* "websocket/tests/test_http.py"
-               (("def testConnect") "def _testConnect")))))))
+               (("def testConnect") "def _testConnect"))))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest" "-vv" "websocket/tests")))))))
     (native-inputs
-     (list python-pysocks))
-    (propagated-inputs
-     (list python-six))
+     (list python-pysocks python-pytest python-websockets))
     (home-page "https://github.com/websocket-client/websocket-client")
     (synopsis "WebSocket client for Python")
     (description "The Websocket-client module provides the low level APIs for
 WebSocket usage in Python programs.")
-    (properties `((python2-variant . ,(delay python2-websocket-client))))
     (license license:lgpl2.1+)))
 
-(define-public python2-websocket-client
-  (let ((base (package-with-python2
-                (strip-python2-variant python-websocket-client))))
-    (package/inherit base
-      (native-inputs
-       `(("python2-backport-ssl-match-hostname"
-          ,python2-backport-ssl-match-hostname)
-         ,@(package-native-inputs base))))))
+(define-public python-websocket-client-0.59
+  (package
+    (inherit python-websocket-client)
+    (version "0.59.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "websocket-client" version))
+       (sha256
+        (base32 "0p0cz2mdissq7iw1n7jrmsfir0jfmgs1dvnpnrx477ffx9hbsxnk"))))))
 
 (define-public python-purl
   (package
