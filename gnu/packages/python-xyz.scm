@@ -27810,17 +27810,22 @@ compatible with a wide range of versions of the Stripe API.")
 (define-public python-platformdirs
   (package
     (name "python-platformdirs")
-    (version "2.2.0")
+    (version "2.4.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "platformdirs" version))
        (sha256
-        (base32 "07hq5qrp7pqj63iczg01wbf5ii6f0ncd0dq5mzkdhsslmg9slbb3"))))
+        (base32 "1njz0h4iky8iglrb85cd07hpa3lp1a2dfr934dj65hxwzvfk61j4"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (when tests? (invoke "pytest" "-vv")))))))
     (native-inputs
-     (list python-appdirs python-pytest python-pytest-cov
-           python-pytest-mock))
+     (list python-appdirs python-pytest python-pytest-mock
+           python-setuptools-scm))
     (home-page "https://github.com/platformdirs/platformdirs")
     (synopsis "Determine the appropriate platform-specific directories")
     (description "When writing applications, finding the right location to
