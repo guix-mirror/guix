@@ -34637,7 +34637,7 @@ with all line endings.")
 (define-public rust-notify-5
   (package
     (name "rust-notify")
-    (version "5.0.0-pre.8")
+    (version "5.0.0-pre.13")
     (source
       (origin
         (method url-fetch)
@@ -34646,7 +34646,7 @@ with all line endings.")
           (string-append name "-" version ".tar.gz"))
         (sha256
           (base32
-            "0jq1ixzi7rgq233dxbxkn129n8lidswp1glsgbdhvw7ig38brfs6"))))
+            "0za8mpacxkr62fii5h7ny4h396y0m8myd3hf08njqdg2h21kap94"))))
     (build-system cargo-build-system)
     (arguments
       `(#:skip-build? #t
@@ -34656,7 +34656,8 @@ with all line endings.")
           ,rust-crossbeam-channel-0.5)
          ("rust-filetime" ,rust-filetime-0.2)
          ("rust-fsevent" ,rust-fsevent-2)
-         ("rust-fsevent-sys" ,rust-fsevent-sys-3)
+         ("rust-fsevent-sys" ,rust-fsevent-sys-4)
+         ("rust-kqueue" ,rust-kqueue-1)
          ("rust-inotify" ,rust-inotify-0.9)
          ("rust-libc" ,rust-libc-0.2)
          ("rust-mio" ,rust-mio-0.7)
@@ -34664,14 +34665,9 @@ with all line endings.")
          ("rust-walkdir" ,rust-walkdir-2)
          ("rust-winapi" ,rust-winapi-0.3))
         #:cargo-development-inputs
-        (("rust-serde-json" ,rust-serde-json-1))
-        #:phases
-        (modify-phases %standard-phases
-          (add-after 'unpack 'fix-version-requirements
-           (lambda _
-             (substitute* "Cargo.toml"
-               (("0.7.7") ,(package-version rust-mio-0.7)))
-             #t)))))
+        (("rust-serde-json" ,rust-serde-json-1)
+         ("rust-futures" ,rust-futures-0.3)
+         ("rust-tempfile" ,rust-tempfile-3))))
     (home-page "https://github.com/notify-rs/notify")
     (synopsis
       "Cross-platform filesystem notification library")
