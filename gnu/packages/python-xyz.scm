@@ -10344,6 +10344,14 @@ These should be used in preference to using a backslash for line continuation.
        (sha256
         (base32 "1v0y29xlmbr2q12a4nnpm1dm9aw1mjiys1x8jif4z8c90d63cqm6"))))
     (build-system python-build-system)
+    (arguments
+     '(#:tests? #f         ;no tests
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'loosen-requirements
+                    (lambda _
+                      ;; Permit newer versions of attrs.  Remove for >0.2.
+                      (substitute* "setup.py"
+                        ((", <21") "")))))))
     (propagated-inputs
      (list python-attrs python-more-itertools))
     (home-page "https://github.com/keisheiled/flake8-implicit-str-concat")
