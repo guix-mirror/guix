@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018, 2020, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2019, 2020, 2022 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -89,33 +89,31 @@ data.")
                    license:gpl3+))))    ; the tools (everything else)
 
 (define-public yubico-pam
-  (let ((commit "b5bd00db81e0e0e0ecced65c684080bb56ddc35b")
-        (revision "0"))
-    (package
-      (name "yubico-pam")
-      (version (git-version "2.26" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/Yubico/yubico-pam")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "10dq8dqi3jldllj6p8r9hldx9sank9n82c44w8akxrs1vli6nj3m"))))
-      (build-system gnu-build-system)
-      (arguments
-       ;; The pam_test fails because ykclient fails to build a Curl handle.
-       '(#:make-flags '("TESTS=util_test")))
-      (inputs
-       (list linux-pam libyubikey ykclient yubikey-personalization))
-      (native-inputs
-       (list autoconf automake libtool asciidoc pkg-config))
-      (home-page "https://developers.yubico.com/yubico-pam")
-      (synopsis "Yubico pluggable authentication module")
-      (description "The Yubico PAM module provides an easy way to integrate the
+  (package
+    (name "yubico-pam")
+    (version "2.27")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/Yubico/yubico-pam")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0hb773zlf11xz4bwmsqv2mq5d4aq2g0crdr5cp9xwc4ivi5gd4kg"))))
+    (build-system gnu-build-system)
+    (arguments
+     ;; The pam_test fails because ykclient fails to build a Curl handle.
+     '(#:make-flags '("TESTS=util_test")))
+    (inputs
+     (list linux-pam libyubikey ykclient yubikey-personalization))
+    (native-inputs
+     (list autoconf automake libtool asciidoc pkg-config))
+    (home-page "https://developers.yubico.com/yubico-pam")
+    (synopsis "Yubico pluggable authentication module")
+    (description "The Yubico PAM module provides an easy way to integrate the
 YubiKey into your existing user authentication infrastructure.")
-      (license license:bsd-2))))
+    (license license:bsd-2)))
 
 (define-public pamtester
   (package
