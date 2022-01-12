@@ -12993,20 +12993,21 @@ the standard library.")
 (define-public python-texttable
   (package
     (name "python-texttable")
-    (version "1.6.2")
+    (version "1.6.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "texttable" version))
        (sha256
         (base32
-         "1x5l77akfc20x52jma9573qp8l8r07q103pm4l0pbizvh4vp1wzg"))))
+         "1sbn821394rix6xgj3zqk743pj6nqm1qz81zgis2bcpp2ng7pvj2"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _ (invoke "pytest" "tests.py"))))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests? (invoke "pytest" "-vv" "tests.py")))))))
     (native-inputs
      (list python-pytest))
     (home-page "https://github.com/foutaise/texttable/")
