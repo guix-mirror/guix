@@ -456,19 +456,23 @@ in an application or library.")
 (define-public python-oslo.log
   (package
   (name "python-oslo.log")
-  (version "3.36.0")
+  (version "4.6.1")
   (source
     (origin
       (method url-fetch)
       (uri (pypi-uri "oslo.log" version))
       (sha256
         (base32
-          "0h7hplf1h8k24v75m3mq1jlrl74x5ynyr4hwgffsg5campxnza4x"))))
+          "0dlnxjci9mpwhgfv19fy1z7xrdp8m95skrj5dr60all3pr7n22f6"))))
   (build-system python-build-system)
+  (arguments
+   '(#:phases (modify-phases %standard-phases
+                (replace 'check
+                  (lambda* (#:key tests? #:allow-other-keys)
+                    (when tests? (invoke "stestr" "run")))))))
   (propagated-inputs
    (list python-dateutil
          python-debtcollector
-         python-monotonic
          python-oslo.config
          python-oslo.context
          python-oslo.i18n
@@ -478,8 +482,7 @@ in an application or library.")
          python-pyinotify
          python-six))
   (native-inputs
-    (list python-mock python-oslotest python-subunit
-          python-testrepository python-testtools))
+    (list python-fixtures python-oslotest python-stestr python-testtools))
   (home-page "https://launchpad.net/oslo")
   (synopsis "Python logging library of the Oslo project")
   (description
