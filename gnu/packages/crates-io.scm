@@ -20675,8 +20675,33 @@ for file changes notifications")
         (("rust-tempdir" ,rust-tempdir-0.3)
          ("rust-time" ,rust-time-0.1))))))
 
+(define-public rust-fsevent-sys-4
+  (package
+    (name "rust-fsevent-sys")
+    (version "4.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "fsevent-sys" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1liz67v8b0gcs8r31vxkvm2jzgl9p14i78yfqx81c8sdv817mvkn"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2))))
+    (home-page "https://github.com/octplane/fsevent-rust/tree/master/fsevent-sys")
+    (synopsis "Rust bindings to the fsevent macOS API")
+    (description "This package provides Rust bindings to the @code{fsevent}
+macOS API for file changes notifications")
+    (license license:expat)))
+
 (define-public rust-fsevent-sys-3
   (package
+    (inherit rust-fsevent-sys-4)
     (name "rust-fsevent-sys")
     (version "3.1.0")
     (source
@@ -20692,12 +20717,7 @@ for file changes notifications")
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-libc" ,rust-libc-0.2))))
-    (home-page "https://github.com/octplane/fsevent-rust/tree/master/fsevent-sys")
-    (synopsis "Rust bindings to the fsevent macOS API")
-    (description "This package provides Rust bindings to the @code{fsevent}
-macOS API for file changes notifications")
-    (license license:expat)))
+       (("rust-libc" ,rust-libc-0.2))))))
 
 (define-public rust-fsevent-sys-2
   (package
