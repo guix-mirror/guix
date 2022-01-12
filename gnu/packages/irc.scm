@@ -614,7 +614,7 @@ but can also be used independently as a logging bot.")
 (define-public inspircd
   (package
     (name "inspircd")
-    (version "3.8.1")
+    (version "3.12.0")
     (source
      (origin
        (method git-fetch)
@@ -623,7 +623,7 @@ but can also be used independently as a logging bot.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1i30649dw84iscxa5as81g96f393mn1i883aq4za5ypdinr5x65g"))))
+        (base32 "0xlfs269iaw7dfryzl6vjzqsn2g4nqh6kpf5xfgk3zbjhqaczknx"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (map (lambda (module)
@@ -649,8 +649,7 @@ but can also be used independently as a logging bot.")
          (add-before 'configure 'module-configure
            (lambda* (#:key configure-flags #:allow-other-keys)
              (apply invoke "./configure"
-                    configure-flags)
-             #t))
+                    configure-flags)))
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -662,8 +661,7 @@ but can also be used independently as a logging bot.")
                        (string-append "--prefix=" out-lib name)
                        (string-append "--binary-dir=" out-bin)
                        (string-append "--module-dir=" out-lib name "/modules/")
-                       (string-append "--config-dir=" out-etc name)))
-             #t)))))
+                       (string-append "--config-dir=" out-etc name))))))))
     (native-inputs
      (list pkg-config))
     (inputs
