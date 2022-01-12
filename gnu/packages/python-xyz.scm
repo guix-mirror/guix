@@ -19554,7 +19554,7 @@ multitouch applications.")
         (base32 "1d9pxcgmln4gls99vwj1h24qv0lz7fb2jqmqrsiv1pid1snc125x"))))
     (build-system python-build-system)
     (propagated-inputs
-     (list python-marshmallow-3.2))
+     (list python-marshmallow))
     (native-inputs
      (list python-faker
            python-flake8
