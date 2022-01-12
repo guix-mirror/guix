@@ -1405,7 +1405,7 @@ approximate nearest neighbor search with Python bindings.")
 (define-public python-pyls-black
   (package
     (name "python-pyls-black")
-    (version "0.4.6")
+    (version "0.4.7")
     (source
      (origin
        ;; There are no tests in the PyPI tarball.
@@ -1415,12 +1415,27 @@ approximate nearest neighbor search with Python bindings.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0cjf0mjn156qp0x6md6mncs31hdpzfim769c2lixaczhyzwywqnj"))))
+        (base32 "0bkhfnlik89j3yamr20br4wm8975f20v33wabi2nyxvj10whr5dj"))
+       ;; Patch to work with python-lsp-server.  Taken from
+       ;; <https://github.com/rupert/pyls-black/pull/37>.
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (substitute* "setup.cfg"
+             (("python-language-server")
+              "python-lsp-server"))
+           (substitute* '("pyls_black/plugin.py" "tests/test_plugin.py")
+             (("pyls_format_document")
+              "pylsp_format_document")
+             (("pyls_format_range")
+              "pylsp_format_range")
+             (("from pyls([ \\.])" _ char)
+              (string-append "from pylsp" char)))))))
     (build-system python-build-system)
     (arguments
      `(#:test-target "pytest"))
     (propagated-inputs
-     (list python-black python-language-server python-toml))
+     (list python-black python-lsp-server python-tomli))
     (native-inputs
      (list python-flake8 python-isort python-mypy python-pytest
            python-pytest-runner))
