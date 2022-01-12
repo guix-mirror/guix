@@ -30,7 +30,7 @@
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2020, 2022 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Tanguy Le Carrour <tanguy@bioneland.org>
-;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
+;;; Copyright © 2020, 2022 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2019 Riku Viitanen <riku.viitanen0@gmail.com>
 ;;; Copyright © 2020 Ryan Prior <rprior@protonmail.com>
 ;;; Copyright © 2021 Liliana Marie Prikler <liliana.prikler@gmail.com>
@@ -1564,26 +1564,35 @@ listeners answer questions about music quickly and simply.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'loosen-requirements
+           (lambda _
+             (substitute* "setup.py"
+               ;; Permit newer versions of uqbar.  Remove for >3.4.
+               ((", <0\\.5\\.0")
+                ""))))
          (replace 'check
            (lambda* (#:key tests? #:allow-other-keys)
              (when tests?
                ;; See: https://stackoverflow.com/a/34140498
-               (invoke "python" "-m" "pytest" "tests")
-               #t))))))
-    (native-inputs
-     (list python-black
+               (invoke "python" "-m" "pytest" "tests")))))))
+    (inputs
+     (list lilypond))
+    (propagated-inputs
+     (list python-ply
+           python-quicktions
+           python-roman
+           python-six
+           python-uqbar
+           ;; XXX: These test dependencies(?) are listed as install_requires
+           ;; in setup.py.  Propagate accordingly.
+           python-black
            python-flake8
-           python-iniconfig
            python-isort
            python-mypy
            python-pytest
            python-pytest-cov
+           python-pytest-helpers-namespace
            python-sphinx-autodoc-typehints))
-    (inputs
-     (list lilypond))
-    (propagated-inputs
-     (list python-ply python-quicktions python-roman python-six
-           python-uqbar))
     (home-page "https://abjad.github.io")
     (synopsis "Python API for building LilyPond files")
     (description
