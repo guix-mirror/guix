@@ -21140,14 +21140,14 @@ and other tools.")
 (define-public python-typing-extensions
   (package
     (name "python-typing-extensions")
-    (version "3.7.4.3")
+    (version "3.10.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "typing_extensions" version))
        (sha256
         (base32
-         "0356ljrrplm917dqgpn8wjkw6j3mpp916gwxas7jhc3xc4xhgm4r"))))
+         "0zk7kbcms828by6avmqp09bsag1az37qr60viqjwvw8izwb5vxs9"))))
     (build-system python-build-system)
     (home-page
      "https://github.com/python/typing/blob/master/typing_extensions/README.rst")
