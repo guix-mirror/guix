@@ -157,7 +157,6 @@
              binwalk
              python-pytest
              python-chardet
-             python-black
              python-h5py
              python-pypdf2
              python-progressbar33
