@@ -1547,8 +1547,8 @@ pairs have previously synchronized.")
         (base32 "1yk7lrndbfsrbdxikwzdqvadryqsldalxdn3a184dg4sxzmgis3a"))))
     (build-system python-build-system)
     (arguments
-     `(#:tests? #f                      ; no tests
-       #:python ,python-2))
+     (list #:tests? #f                  ; no tests
+           #:python python-2))
     (home-page "https://pyropus.ca/software/getmail/")
     (synopsis "Mail retriever")
     (description
