@@ -1258,17 +1258,17 @@ Luhn and family of ISO/IEC 7064 check digit algorithms.")
                         (("mnemonic>=0\\.19,<0.20")
                          "mnemonic>=0.19")))))))
     (propagated-inputs
-     `(("aiohttp" ,python-aiohttp)
-       ("attrs" ,python-attrs)
-       ("base58" ,python-base58)
-       ("jsonschema" ,python-jsonschema)
-       ("libnacl" ,python-libnacl)
-       ("pyaes" ,python-pyaes)
-       ("pylibscrypt" ,python-pylibscrypt)
-       ("python-graphql-core" ,python-graphql-core)
-       ("python-mnemonic" ,python-mnemonic)
-       ("python-websocket-client" ,python-websocket-client)
-       ("pypeg2" ,python-pypeg2)))
+     (list python-aiohttp
+           python-attrs
+           python-base58
+           python-jsonschema
+           python-libnacl
+           python-pyaes
+           python-pylibscrypt
+           python-graphql-core
+           python-mnemonic
+           python-websocket-client
+           python-pypeg2))
     (home-page "https://git.duniter.org/clients/python/duniterpy")
     (synopsis "Python implementation of Duniter API")
     (description "@code{duniterpy} is an implementation of
