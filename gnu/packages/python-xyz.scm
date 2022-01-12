@@ -5211,74 +5211,68 @@ matching of file paths.")
 (define-public python-black
   (package
     (name "python-black")
-    (version "20.8b1")
+    (version "21.12b0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "black" version))
        (sha256
         (base32
-         "1spv6sldp3mcxr740dh3ywp25lly9s8qlvs946fin44rl1x5a0hw"))))
+         "1czjwr1bx9ax5l64xfi54sxb1ycdy4s9ciaqg592x7jn79lhzf3p"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'patch-source-shebangs 'patch-extra-shebangs
-           (lambda _
-             (let ((python3 (which "python3")))
-               (substitute* '("tests/data/fmtonoff.py"
-                              "tests/data/string_prefixes.py"
-                              "tests/data/function.py"
-                              "tests/data/python37.py")
+         (add-after 'patch-source-shebangs 'use-absolute-file-names
+           (lambda* (#:key native-inputs inputs #:allow-other-keys)
+             (let* ((inpts (or native-inputs inputs))
+                    (python3 (search-input-file inpts "/bin/python3"))
+                    (/bin/false (search-input-file inpts "/bin/false"))
+                    (/bin/sleep (search-input-file inpts "/bin/sleep")))
+               (substitute* (find-files "tests" "\\.py$")
                  (("#!/usr/bin/env python3(\\.[0-9]+)?" _ minor-version)
                   (string-append "#!" python3 (if (string? minor-version)
                                                   minor-version
-                                                  "")))))
-             #t))
+                                                  ""))))
+               (substitute* "tests/test_primer.py"
+                 (("/bin/false") /bin/false)
+                 (("/bin/sleep") /bin/sleep)))))
          (add-after 'unpack 'disable-broken-tests
            (lambda* (#:key outputs inputs #:allow-other-keys)
              ;; Make installed package available for running the tests
              (setenv "PATH" (string-append (assoc-ref outputs "out") "/bin"
                                            ":" (getenv "PATH")))
 
-             ;; These tests are supposed to be skipped when the blackd
-             ;; dependencies are missing, but this doesn't quite work.
-             (substitute* "tests/test_black.py"
-               (("( *)class BlackDTestCase.*" match indent)
-                (string-append indent "@unittest.skip(\"no blackd deps\")\n"
-                               indent "class BlackDTestCase(unittest.TestCase):\n"))
-               (("web.Application") "False")
-               (("@unittest_run_loop") ""))
-
-             ;; Patching the above file breaks the self test
-             (substitute* "tests/test_black.py"
-               (("( *)def test_self" match indent)
-                (string-append indent "@unittest.skip(\"guix\")\n" match)))
-
-             (substitute* "tests/test_black.py"
-               (("( *)def test_python38" match indent)
-                (string-append indent "@unittest.skip(\"guix\")\n" match)))
-             #t))
+             ;; The source formatting test fails because we patch various
+             ;; files; just disable it.
+             (substitute* "tests/test_format.py"
+               (("def test_source_is_formatted" all)
+                (format #f "@pytest.mark.skip(\"Disabled by Guix.\")\n~a"
+                        all)))))
          ;; Remove blackd, because it depends on python-aiohttp and
          ;; python-aiohttp-cors.
          (add-after 'unpack 'remove-entrypoint
            (lambda _
              (substitute* "setup.py"
                (("\\s*\"blackd=blackd:patched_main \\[d\\]\",\n") "")
-                (("\"blackd\", ") "")))))))
+               (("\"blackd\", ") ""))))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests? (invoke "pytest" "-vv")))))))
     (propagated-inputs
      (list python-click
            python-attrs
            python-appdirs
            python-pathspec
            python-mypy-extensions
+           python-platformdirs
            python-regex
-           python-toml
+           python-tomli
            python-typed-ast
            python-typing-extensions))
     (native-inputs
-     (list python-setuptools-scm))
-    (home-page "https://github.com/ambv/black")
+     (list python-pytest python-pytest-aiohttp python-setuptools-scm))
+    (home-page "https://github.com/psf/black")
     (synopsis "The uncompromising code formatter")
     (description "Black is the uncompromising Python code formatter.")
     (license license:expat)))
