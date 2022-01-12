@@ -491,22 +491,25 @@ handlers and support for context specific logging (like resource id’s etc).")
 (define-public python-oslo.serialization
   (package
     (name "python-oslo.serialization")
-    (version "2.24.0")
+    (version "4.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "oslo.serialization" version))
        (sha256
         (base32
-         "08bxkp98c617y58x630xq44iiffm7f0f3cwh6zbnlkgq0zgh7jk1"))))
+         "10sdgvyb0d3lcmb8b4l5gs40bkfbai08kvsdwp658dxd2yqf21rh"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (when tests? (invoke "stestr" "run")))))))
     (propagated-inputs
-      (list python-msgpack python-netaddr python-oslo.utils python-six
-            python-pytz))
+      (list python-msgpack python-oslo.utils python-pbr python-pytz))
     (native-inputs
-      (list python-pbr
-            ;; Tests.
-            python-mock python-oslo.i18n python-oslotest))
+     ;; For tests.
+      (list python-netaddr python-oslo.i18n python-oslotest python-stestr))
     (home-page "https://launchpad.net/oslo")
     (synopsis "Oslo serialization library")
     (description
