@@ -8762,8 +8762,39 @@ capabilities.")
 the library crate of Cargo.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-cargo-metadata-0.14
+  (package
+    (name "rust-cargo-metadata")
+    (version "0.14.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "cargo-metadata" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "04kfzvmh80pq0bw1cwzlz71wfrign2k7792mc4gi8hs1jkgfcams"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-camino" ,rust-camino-1)
+        ("rust-cargo-platform" ,rust-cargo-platform-0.1)
+        ("rust-derive-builder" ,rust-derive-builder-0.9)
+        ("rust-semver" ,rust-semver-1)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-json" ,rust-serde-json-1))))
+    (home-page "https://github.com/oli-obk/cargo_metadata")
+    (synopsis "Structured access to the output of `cargo metadata`")
+    (description
+     "This package provides structured access to the output of @code{cargo
+metadata}.")
+    (license license:expat)))
+
 (define-public rust-cargo-metadata-0.13
   (package
+    (inherit rust-cargo-metadata-0.14)
     (name "rust-cargo-metadata")
     (version "0.13.0")
     (source
@@ -8785,13 +8816,7 @@ the library crate of Cargo.")
         ("rust-semver" ,rust-semver-0.11)
         ("rust-semver-parser" ,rust-semver-parser-0.10)
         ("rust-serde" ,rust-serde-1)
-        ("rust-serde-json" ,rust-serde-json-1))))
-    (home-page "https://github.com/oli-obk/cargo_metadata")
-    (synopsis "Structured access to the output of `cargo metadata`")
-    (description
-     "This package provides structured access to the output of @code{cargo
-metadata}.")
-    (license license:expat)))
+        ("rust-serde-json" ,rust-serde-json-1))))))
 
 (define-public rust-cargo-metadata-0.9
   (package
