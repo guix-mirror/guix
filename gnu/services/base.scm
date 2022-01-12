@@ -1566,7 +1566,7 @@ archive' public keys, with GUIX."
   (timeout          guix-configuration-timeout    ;integer
                     (default 0))
   (log-compression  guix-configuration-log-compression
-                    (default 'bzip2))
+                    (default 'gzip))
   (discover?        guix-configuration-discover?
                     (default #f))
   (extra-options    guix-configuration-extra-options ;list of strings

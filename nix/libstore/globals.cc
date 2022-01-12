@@ -45,11 +45,7 @@ Settings::Settings()
     useChroot = false;
     impersonateLinux26 = false;
     keepLog = true;
-#if HAVE_BZLIB_H
-    logCompression = COMPRESSION_BZIP2;
-#else
     logCompression = COMPRESSION_GZIP;
-#endif
     maxLogSize = 0;
     cacheFailure = false;
     pollInterval = 5;

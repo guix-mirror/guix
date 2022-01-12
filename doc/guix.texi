@@ -1705,7 +1705,7 @@ Compress build logs according to @var{type}, one of @code{gzip},
 
 Unless @option{--lose-logs} is used, all the build logs are kept in the
 @var{localstatedir}.  To save space, the daemon automatically compresses
-them with Bzip2 by default.
+them with gzip by default.
 
 @item --discover[=yes|no]
 Whether to discover substitute servers on the local network using mDNS
@@ -16623,7 +16623,7 @@ The number of seconds of silence and the number of seconds of activity,
 respectively, after which a build process times out.  A value of zero
 disables the timeout.
 
-@item @code{log-compression} (default: @code{'bzip2})
+@item @code{log-compression} (default: @code{'gzip})
 The type of compression used for build logs---one of @code{gzip},
 @code{bzip2}, or @code{none}.
 
