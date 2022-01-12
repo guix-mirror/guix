@@ -67,6 +67,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix gexp)
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system glib-or-gtk)
@@ -3378,9 +3379,53 @@ and targeted primarily for asynchronous processing of HTTP-requests.")
                 (sha256
                  (base32
                   "07x8vw999qpfl6qwj5k5l2mcjy1vp32sd567f6imbsnh9vlx2bdv"))))
-      ;; Since 2.0, the gnu-build-system does not seem to work anymore, upstream bug?
       (outputs '("out" "tools" "debug"))
-      (build-system cmake-build-system)
+      (build-system gnu-build-system)
+      (arguments
+       (list
+        #:imported-modules `((guix build python-build-system) ;for site-packages
+                             ,@%gnu-build-system-modules)
+        #:modules '(((guix build python-build-system) #:prefix python:)
+                    (guix build gnu-build-system)
+                    (guix build utils))
+        #:tests? #f                     ;tests require networking
+        #:configure-flags
+        #~(list "--enable-tests"
+                "--enable-proxy-server"
+                "--enable-push-notifications"
+                "--enable-proxy-server-identity"
+                "--enable-proxy-client")
+        #:phases
+        #~(modify-phases %standard-phases
+            (add-after 'unpack 'fix-python-installation-prefix
+              ;; Specify the installation prefix for the compiled Python module
+              ;; that would otherwise attempt to installs itself to Python's own
+              ;; site-packages directory.
+              (lambda _
+                (substitute* "python/Makefile.am"
+                  (("--root=\\$\\(DESTDIR)/")
+                   (string-append "--root=/ --single-version-externally-managed "
+                                  "--prefix=" #$output)))))
+            (add-after 'unpack 'specify-runpath-for-python-module
+              (lambda _
+                (substitute* "python/setup.py.in"
+                  (("extra_link_args=\\[(.*)\\]" _ args)
+                   (string-append "extra_link_args=[" args
+                                  ", '-Wl,-rpath=" #$output "/lib']")))))
+            (add-after 'install 'move-and-wrap-tools
+              (lambda* (#:key inputs outputs #:allow-other-keys)
+                (let* ((tools (assoc-ref outputs "tools"))
+                       (dhtcluster (string-append tools "/bin/dhtcluster"))
+                       (site-packages (python:site-packages inputs outputs)))
+                  (mkdir tools)
+                  (rename-file (string-append #$output "/bin")
+                               (string-append tools "/bin"))
+                  ;; TODO: Contribute a patch to python/Makefile.am to
+                  ;; automate this.
+                  (copy-file "python/tools/dhtcluster.py" dhtcluster)
+                  (chmod dhtcluster #o555)
+                  (wrap-program dhtcluster
+                    `("GUIX_PYTHONPATH" prefix (,site-packages)))))))))
       (inputs (list bash-minimal fmt readline))
       (propagated-inputs
        (list msgpack                    ;included in several installed headers
@@ -3400,50 +3445,6 @@ and targeted primarily for asynchronous processing of HTTP-requests.")
              python-cython
              libtool
              cppunit))
-      (arguments
-       `(#:imported-modules ((guix build python-build-system) ;for site-packages
-                             ,@%cmake-build-system-modules)
-         #:modules (((guix build python-build-system) #:prefix python:)
-                    (guix build cmake-build-system)
-                    (guix build utils))
-         #:tests? #f                      ;tests require networking
-         #:configure-flags
-         '( ;;"-DOPENDHT_TESTS=on"
-           "-DOPENDHT_STATIC=off"
-           "-DOPENDHT_TOOLS=on"
-           "-DOPENDHT_PYTHON=on"
-           "-DOPENDHT_PROXY_SERVER=on"
-           "-DOPENDHT_PUSH_NOTIFICATIONS=on"
-           "-DOPENDHT_PROXY_SERVER_IDENTITY=on"
-           "-DOPENDHT_PROXY_CLIENT=on")
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'fix-python-installation-prefix
-             ;; Specify the installation prefix for the compiled Python module
-             ;; that would otherwise attempt to installs itself to Python's own
-             ;; site-packages directory.
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (substitute* "python/CMakeLists.txt"
-                 (("--root=\\\\\\$ENV\\{DESTDIR\\}")
-                  (string-append "--root=/ --single-version-externally-managed "
-                                 "--prefix=${CMAKE_INSTALL_PREFIX}")))))
-           (add-after 'unpack 'specify-runpath-for-python-module
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let ((out (assoc-ref outputs "out")))
-                 (substitute* "python/setup.py.in"
-                   (("extra_link_args=\\[(.*)\\]" _ args)
-                    (string-append "extra_link_args=[" args
-                                   ", '-Wl,-rpath=" out "/lib']"))))))
-           (add-after 'install 'move-and-wrap-tools
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (let ((out (assoc-ref outputs "out"))
-                     (tools (assoc-ref outputs "tools"))
-                     (site-packages (python:site-packages inputs outputs)))
-                 (mkdir tools)
-                 (rename-file (string-append out "/bin")
-                              (string-append tools "/bin"))
-                 (wrap-program (string-append tools "/bin/dhtcluster")
-                   `("GUIX_PYTHONPATH" prefix (,site-packages)))))))))
       (home-page "https://github.com/savoirfairelinux/opendht/")
       (synopsis "Lightweight Distributed Hash Table (DHT) library")
       (description "OpenDHT provides an easy to use distributed in-memory data
