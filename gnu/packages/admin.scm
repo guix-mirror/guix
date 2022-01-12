@@ -2405,10 +2405,11 @@ recover lost partitions and/or make non-booting disks bootable again.")
                (base32 "0f92vx6gpz7v29wi9clklzah57v7lgx5kv0m1w4b9xjc35d9qcz3"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (modify-phases %standard-phases (delete 'configure))
+     `(#:phases (modify-phases %standard-phases (delete 'configure))
        #:tests? #f                      ; no check target
        #:make-flags (let ((out (assoc-ref %outputs "out")))
-                               (list (string-append "PREFIX=" out)))))
+                               (list (string-append "PREFIX=" out)
+                                     (string-append "CC=" ,(cc-for-target))))))
     (synopsis "Recursively list the contents of a directory")
     (description
      "Tree is a recursive directory listing command that produces a depth
