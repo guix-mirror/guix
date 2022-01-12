@@ -48047,7 +48047,7 @@ in pure Rust.")
 (define-public rust-salsa-0.17
   (package
     (name "rust-salsa")
-    (version "0.17.0-pre.1")
+    (version "0.17.0-pre.2")
     (source
      (origin
        (method url-fetch)
@@ -48056,7 +48056,7 @@ in pure Rust.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "10jm7s8abw0m7iffa2983kmwgmv342i9g32d1irsgmccx9hq40sq"))))
+         "0ypiig0p9969nkb7k0ydxm5bnc3jva815dfh8hqpackcnk63s8lv"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build?
