@@ -52464,7 +52464,7 @@ control on the fields.")
 (define-public rust-smol-str-0.1
   (package
     (name "rust-smol-str")
-    (version "0.1.17")
+    (version "0.1.21")
     (source
      (origin
        (method url-fetch)
@@ -52473,7 +52473,7 @@ control on the fields.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1srj7gd14cllfwh55jwmid425rz2idpvbw7ly08448r97b7gg83c"))))
+         "1gb14a85k6mzpn6s78flwvfl5vy1czsrzlwcgidy7k00wf1mrlb1"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
