@@ -66672,6 +66672,34 @@ crate.")
 crate.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-windows-sys-0.28
+  (package
+    (name "rust-windows-sys")
+    (version "0.28.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "windows-sys" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1xkghf343nll9i1yvha1a4spf53mnb5knzmnqj9adgsw5mh3kjl2"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-windows-aarch64-msvc" ,rust-windows-aarch64-msvc-0.28)
+        ("rust-windows-i686-gnu" ,rust-windows-i686-gnu-0.28)
+        ("rust-windows-i686-msvc" ,rust-windows-i686-msvc-0.28)
+        ("rust-windows-x86-64-gnu" ,rust-windows-x86-64-gnu-0.28)
+        ("rust-windows-x86-64-msvc" ,rust-windows-x86-64-msvc-0.28))))
+    (home-page "https://github.com/microsoft/windows-rs")
+    (synopsis "Rust for Windows")
+    (description "The windows crate lets you call any Windows API past,
+present, and future using code generated on the fly directly from the metadata
+describing the API and right into your Rust package where you can call them as
+if they were just another Rust module.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-windows-gen-0.9
   (package
     (name "rust-windows-gen")
