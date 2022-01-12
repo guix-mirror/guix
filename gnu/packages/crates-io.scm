@@ -62392,7 +62392,7 @@ panic-free alternative to @code{core::fmt}.")
 (define-public rust-ungrammar-1
   (package
     (name "rust-ungrammar")
-    (version "1.13.0")
+    (version "1.14.9")
     (source
       (origin
         (method url-fetch)
@@ -62401,7 +62401,7 @@ panic-free alternative to @code{core::fmt}.")
           (string-append name "-" version ".tar.gz"))
         (sha256
           (base32
-            "17wm4b5r3z5hqail6p609nii37y3j8dr4bxg8x0bkhkc2wa06xkn"))))
+            "1agx2hpp3sirknnx8j17mzcg222024s6vkx6s5v3s3l8zp15kgk6"))))
     (build-system cargo-build-system)
     (arguments `(#:skip-build? #t))
     (home-page
