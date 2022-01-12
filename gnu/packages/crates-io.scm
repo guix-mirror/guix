@@ -60424,7 +60424,7 @@ data.  Moved to the tracing-subscriber crate.")
 (define-public rust-tracing-log-0.1
   (package
     (name "rust-tracing-log")
-    (version "0.1.1")
+    (version "0.1.2")
     (source
      (origin
        (method url-fetch)
@@ -60433,7 +60433,7 @@ data.  Moved to the tracing-subscriber crate.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1fdr0az98q9m5kiybvdvsb2m9mg86fdidgb5czzq2d71g1qqq3sy"))))
+         "1qv1cwvdqrgvizkszbff4fvkw0m3nn5yz68r3yaw2hcflivk94m6"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
