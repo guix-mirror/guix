@@ -795,11 +795,6 @@ your calls and messages.")
                             "/lib"))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'make-source-files-writable
-           ;; Make all the files writable to prevent the following error:
-           ;; "autom4te: cannot open aconfigure: Permission denied".
-           (lambda _
-             (for-each make-file-writable (find-files "."))))
          (add-before 'build 'build-dep
            (lambda _ (invoke "make" "dep")))
          ;; The check phases is moved after the install phase so to
