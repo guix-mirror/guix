@@ -9227,8 +9227,38 @@ chain, the first matching branch is the item that gets emitted.")
        (("rust-compiler-builtins" ,rust-compiler-builtins-0.1)
         ("rust-rustc-std-workspace-core" ,rust-rustc-std-workspace-core-1))))))
 
+(define-public rust-chalk-derive-0.75
+  (package
+    (name "rust-chalk-derive")
+    (version "0.75.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "chalk-derive" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0v1i5sb1w2skqg5sjy3gimdglsq0in6mc1zz36qyc99lkrgknknm"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1)
+        ("rust-quote" ,rust-quote-1)
+        ("rust-syn" ,rust-syn-1)
+        ("rust-synstructure" ,rust-synstructure-0.12))))
+    (home-page "https://github.com/rust-lang/chalk")
+    (synopsis
+     "Helper crate for use by chalk crates for `derive` macros")
+    (description
+     "This package provides a helper crate for use by chalk crates for `derive`
+macros.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-chalk-derive-0.68
   (package
+    (inherit rust-chalk-derive-0.75)
     (name "rust-chalk-derive")
     (version "0.68.0")
     (source
@@ -9247,15 +9277,7 @@ chain, the first matching branch is the item that gets emitted.")
        (("rust-proc-macro2" ,rust-proc-macro2-1)
         ("rust-quote" ,rust-quote-1)
         ("rust-syn" ,rust-syn-1)
-        ("rust-synstructure" ,rust-synstructure-0.12))))
-    (home-page "https://github.com/rust-lang/chalk")
-    (synopsis
-     "Helper crate for use by chalk crates for `derive` macros")
-    (description
-     "This package provides a helper crate for use by chalk crates for `derive`
-macros.")
-    (license (list license:asl2.0 license:expat))))
-
+        ("rust-synstructure" ,rust-synstructure-0.12))))))
 (define-public rust-chalk-ir-0.68
   (package
     (name "rust-chalk-ir")
