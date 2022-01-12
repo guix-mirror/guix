@@ -60609,8 +60609,43 @@ application authors using tracing to instrument their applications.")
         ("rust-tracing" ,rust-tracing-0.1)
         ("rust-tracing-log" ,rust-tracing-log-0.1))))))
 
+(define-public rust-tracing-tree-0.2
+  (package
+    (name "rust-tracing-tree")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tracing-tree" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1rrlw6kc61q0g5y4d4i3zjfn9167xqqa5m2d13z62zrcjv4qks9w"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-ansi-term" ,rust-ansi-term-0.12)
+        ("rust-atty" ,rust-atty-0.2)
+        ("rust-tracing-core" ,rust-tracing-core-0.1)
+        ("rust-tracing-log" ,rust-tracing-log-0.1)
+        ("rust-tracing-subscriber" ,rust-tracing-subscriber-0.3))
+       #:cargo-development-inputs
+       (("rust-tracing" ,rust-tracing-0.1)
+        ("rust-glob" ,rust-glob-0.3)
+        ("rust-assert-cmd" ,rust-assert-cmd-1)
+        ("rust-log" ,rust-log-0.4))))
+    (home-page
+     "https://github.com/davidbarsky/tracing-tree")
+    (synopsis
+     "Tracing Layer which prints a tree of spans and events")
+    (description
+     "This package provides a Tracing Layer which prints a tree of spans and
+events.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-tracing-tree-0.1
   (package
+    (inherit rust-tracing-tree-0.2)
     (name "rust-tracing-tree")
     (version "0.1.9")
     (source
@@ -60636,15 +60671,7 @@ application authors using tracing to instrument their applications.")
        #:cargo-development-inputs
         (("rust-assert-cmd" ,rust-assert-cmd-1)
          ("rust-glob" ,rust-glob-0.3)
-         ("rust-log" ,rust-log-0.4))))
-    (home-page
-     "https://github.com/davidbarsky/tracing-tree")
-    (synopsis
-     "Tracing Layer which prints a tree of spans and events")
-    (description
-     "This package provides a Tracing Layer which prints a tree of spans and
-events.")
-    (license (list license:expat license:asl2.0))))
+         ("rust-log" ,rust-log-0.4))))))
 
 (define-public rust-trackable-1
   (package
