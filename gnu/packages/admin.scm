@@ -2395,20 +2395,20 @@ recover lost partitions and/or make non-booting disks bootable again.")
 (define-public tree
   (package
     (name "tree")
-    (version "1.8.0")
+    (version "2.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "http://mama.indstate.edu/users/ice/tree/src/tree-"
                     version ".tgz"))
               (sha256
-               (base32 "1hmpz6k0mr6salv0nprvm1g0rdjva1kx03bdf1scw8a38d5mspbi"))))
+               (base32 "0f92vx6gpz7v29wi9clklzah57v7lgx5kv0m1w4b9xjc35d9qcz3"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases (delete 'configure))
        #:tests? #f                      ; no check target
        #:make-flags (let ((out (assoc-ref %outputs "out")))
-                               (list (string-append "prefix=" out)))))
+                               (list (string-append "PREFIX=" out)))))
     (synopsis "Recursively list the contents of a directory")
     (description
      "Tree is a recursive directory listing command that produces a depth
