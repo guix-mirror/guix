@@ -156,6 +156,32 @@ sources.")
              python2-six
              python2-sphinxcontrib-websupport)))))
 
+(define-public python-sphinxcontrib-apidoc
+  (package
+    (name "python-sphinxcontrib-apidoc")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "sphinxcontrib-apidoc" version))
+       (sha256
+        (base32
+         "1f9zfzggs8a596jw51fpfmr149n05mrlyy859iydazbvry9gb6vj"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))                    ;requires python-pytest<4.0
+    (native-inputs
+     (list python-pbr
+           python-pre-commit
+           python-pytest
+           python-sphinx
+           python-testrepository))
+    (home-page "https://github.com/sphinx-contrib/apidoc")
+    (synopsis "Sphinx extension for running @code{sphinx-apidoc}")
+    (description "This package provides Sphinx extension for running
+@code{sphinx-apidoc} on each build.")
+    (license license:bsd-2)))
+
 (define-public python-sphinxcontrib-applehelp
   (package
     (name "python-sphinxcontrib-applehelp")
