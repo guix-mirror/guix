@@ -462,13 +462,13 @@ integrate Sphinx documents in web templates and to handle searches.")
 (define-public python-sphinx-gallery
   (package
     (name "python-sphinx-gallery")
-    (version "0.9.0")
+    (version "0.10.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "sphinx-gallery" version))
        (sha256
-        (base32 "14zyhr7m92nafhhnzfvnbgkf5m91krd9mjyi24zn59bjq6zyr8hl"))))
+        (base32 "1r07sa34511fbnwi2s32q00qdyv5d23d05imyfgnh2ivhfq34gwm"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
