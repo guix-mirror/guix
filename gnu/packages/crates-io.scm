@@ -27652,6 +27652,29 @@ kernel32.")
     (description "This package provides a low-level kqueue interface for BSDs.")
     (license license:expat)))
 
+(define-public rust-kqueue-1
+  (package
+    (name "rust-kqueue")
+    (version "1.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "kqueue" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1ad4vifr0kmla8a5pgig7plx5kmc9w7k1h9mgm6fk2sgg1x112h5"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-kqueue-sys" ,rust-kqueue-sys-1) ("rust-libc" ,rust-libc-0.2))
+       #:cargo-development-inputs
+       (("rust-tempfile" ,rust-tempfile-3))))
+    (home-page "https://gitlab.com/worr/rust-kqueue")
+    (synopsis "kqueue interface for BSDs")
+    (description "This package provides a kqueue interface for BSDs.")
+    (license license:expat)))
+
 (define-public rust-kv-log-macro-1
   (package
     (name "rust-kv-log-macro")
