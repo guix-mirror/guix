@@ -46489,8 +46489,37 @@ It is automatically published using the compiler repository at
 @url{https://www.github.com/rust-lang/rust}")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-rustc-ap-rustc-lexer-725
+  (package
+    (name "rust-rustc-ap-rustc-lexer")
+    (version "725.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rustc-ap-rustc_lexer" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "13pnbln1mnv51p1kgf6ljmzypp9q0j4aplxac5val0x2z0p78l7r"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-unicode-xid" ,rust-unicode-xid-0.2))
+       #:cargo-development-inputs
+       (("rust-expect-test" ,rust-expect-test-1))))
+    (home-page "https://github.com/alexcrichton/rustc-auto-publish")
+    (synopsis "Automatically published versions of rustc macros")
+    (description
+     "Use the lexer used in the Rust compiler with this crate.
+It is automatically published using the compiler repository at
+@url{https://www.github.com/rust-lang/rust}.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-rustc-ap-rustc-lexer-721
   (package
+    (inherit rust-rustc-ap-rustc-lexer-725)
     (name "rust-rustc-ap-rustc-lexer")
     (version "721.0.0")
     (source
@@ -46507,14 +46536,7 @@ It is automatically published using the compiler repository at
      `(#:cargo-inputs
        (("rust-unicode-xid" ,rust-unicode-xid-0.2))
        #:cargo-development-inputs
-       (("rust-expect-test" ,rust-expect-test-1))))
-    (home-page "https://github.com/alexcrichton/rustc-auto-publish")
-    (synopsis "Automatically published versions of rustc macros")
-    (description
-     "Use the lexer used in the Rust compiler with this crate.
-It is automatically published using the compiler repository at
-@url{https://www.github.com/rust-lang/rust}.")
-    (license (list license:expat license:asl2.0))))
+       (("rust-expect-test" ,rust-expect-test-1))))))
 
 (define-public rust-rustc-ap-rustc-lexer-654
   (package
