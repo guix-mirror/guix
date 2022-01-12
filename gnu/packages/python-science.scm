@@ -4,7 +4,7 @@
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016-2020, 2022 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
@@ -993,6 +993,12 @@ computing in Python.  It extends both the @code{concurrent.futures} and
          (add-after 'unpack 'make-files-writable
            (lambda _
              (for-each make-file-writable (find-files "."))))
+         (add-after 'unpack 'loosen-requirements
+           (lambda _
+             (substitute* "setup.py"
+               ;; Don't depend on a specific version of Pandas.
+               (("pandas==")
+                "pandas>="))))
          (replace 'check
            (lambda* (#:key tests? #:allow-other-keys)
              (when tests?
