@@ -10846,9 +10846,6 @@ reading and writing MessagePack data.")
     (home-page "https://pypi.org/project/msgpack/")
     (license license:asl2.0)))
 
-(define-public python2-msgpack
-  (package-with-python2 python-msgpack))
-
 (define-public python-netaddr
   (package
     (name "python-netaddr")
