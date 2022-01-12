@@ -4,7 +4,7 @@
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2016, 2017 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2013, 2014, 2015, 2016, 2020 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2016, 2017, 2019, 2020, 2021 Marius Bakke <marius@gnu.org>
+;;; Copyright © 2016, 2017, 2019-2022 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017, 2021 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016, 2017, 2020 Julien Lepiller <julien@lepiller.eu>
@@ -6306,12 +6306,24 @@ provides well-defined APIs to talk to websites lacking one.")
        (sha256
         (base32 "07fhcjiyif80z1vyh35za29sqx1mmqh568jrbrrs675j4a797sj1"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'loosen-requirements
+                    (lambda _
+                      ;; Don't pin specific versions of dependencies.
+                      (substitute* "requirements.txt"
+                        (("^sqlalchemy[=<>].*") "sqlalchemy\n")
+                        (("^marshmallow[=<>].*") "marshmallow\n")
+                        (("^Flask[=<>].*") "Flask\n"))))
+                  (replace 'check
+                    (lambda _
+                      (invoke "pytest" "-vv"))))))
     (propagated-inputs
      (list python-flask
-           python-marshmallow-3.2
+           python-marshmallow
            python-marshmallow-jsonapi
            python-simplejson
-           python-sqlalchemy-1.3
+           python-sqlalchemy
            python-apispec
            python-simplejson
            python-six))
