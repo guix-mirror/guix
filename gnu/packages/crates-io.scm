@@ -11907,8 +11907,35 @@ intrinsics.")
     (description "This package provides a Manual coverage marks.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-countme-3
+  (package
+    (name "rust-countme")
+    (version "3.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "countme" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "10z4r1xx77sr8axp3lsgc0azidazwgnhpzig2gcx5dfrdl66wx03"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-dashmap" ,rust-dashmap-4)
+        ("rust-once-cell" ,rust-once-cell-1)
+        ("rust-rustc-hash" ,rust-rustc-hash-1))))
+    (home-page "https://github.com/matklad/countme")
+    (synopsis
+     "Counts the number of live instances of types")
+    (description
+     "This package provides a counts the number of live instances of types.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-countme-2
   (package
+    (inherit rust-countme-3)
     (name "rust-countme")
     (version "2.0.4")
     (source
@@ -11925,13 +11952,7 @@ intrinsics.")
      `(#:cargo-inputs
        (("rust-dashmap" ,rust-dashmap-4)
         ("rust-once-cell" ,rust-once-cell-1)
-        ("rust-rustc-hash" ,rust-rustc-hash-1))))
-    (home-page "https://github.com/matklad/countme")
-    (synopsis
-     "Counts the number of live instances of types")
-    (description
-     "This package provides a counts the number of live instances of types.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-rustc-hash" ,rust-rustc-hash-1))))))
 
 (define-public rust-cpp-demangle-0.3
   (package
