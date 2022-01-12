@@ -114,6 +114,7 @@
 ;;; Copyright © 2021 ZmnSCPxj <ZmnSCPxj@protonmail.com>
 ;;; Copyright © 2021 Filip Lajszczak <filip@lajszczak.dev>
 ;;; Copyright © 2021 Greg Hogan <code@greghogan.com>
+;;; Copyright © 2022 John Kehayias <john.kehayias@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4179,6 +4180,67 @@ important tasks for becoming a daemon process:
      "@code{anytree} is a simple, lightweight, and extensible tree data
 structure for Python.")
     (license license:asl2.0)))
+
+(define-public autokey
+  (package
+    (name "autokey")
+    (version "0.95.10")
+    (source (origin
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/autokey/autokey")
+                   (commit (string-append "v" version))))
+             (file-name (git-file-name name version))
+             (sha256
+              (base32
+               "0f0cqfnb49wwdy7zl2f2ypcnd5pc8r8n7z7ssxkq20d4xfxlgamr"))))
+    (build-system python-build-system)
+    (arguments
+     (list
+      #:tests? #f ; Tests are deprecated/broken until next version.
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'fix-paths
+            (lambda* (#:key inputs #:allow-other-keys)
+              (substitute* "lib/autokey/scripting.py"
+                (("\"wmctrl\"")
+                 (string-append "\"" (search-input-file inputs "bin/wmctrl") "\""))
+                (("\"zenity\"")
+                 (string-append "\"" (search-input-file inputs "bin/zenity") "\"")))))
+          (add-after 'install 'wrap-autokey
+            (lambda _
+              (let ((gi-typelib-path (getenv "GI_TYPELIB_PATH")))
+                (for-each
+                 (lambda (program)
+                   (wrap-program program
+                     `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))))
+                 (map (lambda (name)
+                        (string-append #$output "/bin/" name))
+                      '("autokey-gtk"
+                        "autokey-shell")))))))))
+    (inputs
+     (list bash-minimal ; for wrap-program
+           gtksourceview-3
+           libappindicator
+           libnotify
+           wmctrl
+           zenity))
+    (propagated-inputs
+     (list python-dbus
+           python-pygobject
+           python-pyinotify
+           python-pyqt+qscintilla
+           python-xlib))
+    (home-page "https://github.com/autokey/autokey")
+    (synopsis
+      "Keyboard and GUI automation utility")
+    (description
+      "AutoKey is a desktop automation utility for X11.  It allows the automation of
+virtually any task by responding to typed abbreviations and hotkeys.  It
+offers a full-featured GUI (GTK and QT versions) that makes it highly
+accessible for novices, as well as a scripting interface offering the full
+flexibility and power of the Python language.")
+    (license license:gpl3+)))
 
 (define-public python-docutils
   (package
