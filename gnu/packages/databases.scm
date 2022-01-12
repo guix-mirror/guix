@@ -3058,18 +3058,6 @@ designed for efficient and high-performing database access, adapted into a
 simple and Pythonic domain language.")
     (license license:x11)))
 
-(define-public python-sqlalchemy-1.3
-  (package
-    (inherit python-sqlalchemy)
-    (version "1.3.20")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "SQLAlchemy" version))
-       (sha256
-        (base32 "18b9am7bsqc4nj3d2h5r93i002apczxfvpfpcqbd6f0385zmrwnj"))))
-    (propagated-inputs '())))
-
 (define-public python2-sqlalchemy
   (package-with-python2 python-sqlalchemy))
 
