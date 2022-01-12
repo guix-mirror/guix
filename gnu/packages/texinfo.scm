@@ -8,6 +8,7 @@
 ;;; Copyright © 2019, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -156,6 +157,17 @@ is on expressing the content semantically, avoiding physical markup commands.")
      `(,@(substitute-keyword-arguments (package-arguments texinfo)
            ((#:phases phases)
             `(modify-phases ,phases
+               ;; Make sure 'info-reader' can read compressed info files
+               ;; in a pure environment.  There are also a few other
+               ;; uncompressors listed in this file (lzip, unxz, bunzip2, ...)
+               ;; but let's not include them because info manuals in Guix
+               ;; are always compressed with 'gzip'.
+               ;; TODO(core-updates): maybe move to the 'texinfo' package.
+               (add-after 'unpack 'absolute-binary-path
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   (substitute* "info/filesys.c"
+                     (("gunzip") (search-input-file inputs "/bin/gunzip"))
+                     (("gzip") (search-input-file inputs "/bin/gzip")))))
                (add-after 'install 'keep-only-info-reader
                  (lambda* (#:key outputs #:allow-other-keys)
                    ;; Remove everything but 'bin/info' and associated
@@ -179,7 +191,9 @@ is on expressing the content semantically, avoiding physical markup commands.")
                                            "perl")
        #:modules ((ice-9 ftw) (srfi srfi-1)
                   ,@%gnu-build-system-modules)))
-    (synopsis "Standalone Info documentation reader")))
+    (synopsis "Standalone Info documentation reader")
+    (inputs (modify-inputs (package-inputs texinfo)
+              (prepend gzip)))))
 
 (define-public texi2html
   (package
