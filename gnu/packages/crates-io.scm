@@ -47995,7 +47995,7 @@ quickly convert floating point numbers to decimal strings.")
 (define-public rust-salsa-macros-0.17
   (package
     (name "rust-salsa-macros")
-    (version "0.17.0-pre.1")
+    (version "0.17.0-pre.2")
     (source
      (origin
        (method url-fetch)
@@ -48004,7 +48004,7 @@ quickly convert floating point numbers to decimal strings.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1yrjiriw5bb0gxl2dk7c5ng7g5wlkc4gd65czx5x99bzc9hc0brf"))))
+         "1xrgb38l5fhv3lqx2lwnqc3s2zrgxmj63cd7kl0vyl7m5lsjwv5c"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build?
