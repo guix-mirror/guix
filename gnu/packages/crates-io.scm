@@ -11887,8 +11887,29 @@ intrinsics.")
         ("rust-foreign-types" ,rust-foreign-types-0.3)
         ("rust-libc" ,rust-libc-0.2))))))
 
+(define-public rust-cov-mark-2
+  (package
+    (name "rust-cov-mark")
+    (version "2.0.0-pre.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "cov-mark" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0jj4yz70k31ax1n3s7iyjv1k5yzrm4hkibrazqciycyrdgvxhj0d"))))
+    (arguments `(#:skip-build? #t))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/matklad/cov-mark")
+    (synopsis "Manual coverage marks")
+    (description "This package provides a Manual coverage marks.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-cov-mark-1
   (package
+    (inherit rust-cov-mark-2)
     (name "rust-cov-mark")
     (version "1.1.0")
     (source
@@ -11900,12 +11921,7 @@ intrinsics.")
        (sha256
         (base32
          "1wv75ylrai556m388a40d50fxiyacmvm6qqz6va6qf1q04z3vylz"))))
-    (arguments `(#:skip-build? #t))
-    (build-system cargo-build-system)
-    (home-page "https://github.com/matklad/cov-mark")
-    (synopsis "Manual coverage marks")
-    (description "This package provides a Manual coverage marks.")
-    (license (list license:expat license:asl2.0))))
+    (arguments `(#:skip-build? #t))))
 
 (define-public rust-countme-3
   (package
