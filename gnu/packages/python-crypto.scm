@@ -96,17 +96,22 @@ Python.  It does not bind to libotr.")
 (define-public python-base58
   (package
     (name "python-base58")
-    (version "2.0.1")
+    (version "2.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "base58" version))
        (sha256
         (base32
-         "0yfaqp76kbdb62hikr5n4jkkfjfmii89grwfy6sw3fmsv5hrap1n"))))
+         "1317ly0db7nnjg5k58f6nqa0svfcvn446xd5bpiyi0bfbczwpl65"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (when tests? (invoke "pytest" "-vv")))))))
     (native-inputs
-     (list python-pyhamcrest))
+     (list python-pyhamcrest python-pytest python-pytest-benchmark))
     (home-page "https://github.com/keis/base58")
     (synopsis "Base58 and Base58Check implementation")
     (description "Base58 and Base58Check implementation compatible
