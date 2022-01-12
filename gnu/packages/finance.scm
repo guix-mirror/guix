@@ -1250,7 +1250,13 @@ Luhn and family of ISO/IEC 7064 check digit algorithms.")
     (arguments
      ;; FIXME: Tests fail with: "TypeError: block_uid() missing 1 required
      ;; positional argument: 'value'".
-     `(#:tests? #f))
+     `(#:tests? #f
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'loosen-requirements
+                    (lambda _
+                      (substitute* "setup.py"
+                        (("mnemonic>=0\\.19,<0.20")
+                         "mnemonic>=0.19")))))))
     (propagated-inputs
      `(("aiohttp" ,python-aiohttp)
        ("attrs" ,python-attrs)
@@ -1259,6 +1265,9 @@ Luhn and family of ISO/IEC 7064 check digit algorithms.")
        ("libnacl" ,python-libnacl)
        ("pyaes" ,python-pyaes)
        ("pylibscrypt" ,python-pylibscrypt)
+       ("python-graphql-core" ,python-graphql-core)
+       ("python-mnemonic" ,python-mnemonic)
+       ("python-websocket-client" ,python-websocket-client)
        ("pypeg2" ,python-pypeg2)))
     (home-page "https://git.duniter.org/clients/python/duniterpy")
     (synopsis "Python implementation of Duniter API")
