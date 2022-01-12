@@ -19531,17 +19531,6 @@ multitouch applications.")
      complex datatypes to and from native Python datatypes.")
     (license license:expat)))
 
-(define-public python-marshmallow-3.2
-  (package
-    (inherit python-marshmallow)
-    (version "3.2.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "marshmallow" version))
-       (sha256
-        (base32 "1w18klwj0z9bqxj252qpj1hz8l46nl27sbc89rkajc7mln73wbws"))))))
-
 (define-public python-marshmallow-jsonapi
   (package
     (name "python-marshmallow-jsonapi")
