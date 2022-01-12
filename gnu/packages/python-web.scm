@@ -5639,7 +5639,7 @@ based on filters.")
 (define-public python-flask-restx
   (package
     (name "python-flask-restx")
-    (version "0.2.0")
+    (version "0.5.1")
     (source
      ;; We fetch from the Git repo because there are no tests in the PyPI
      ;; archive.
@@ -5650,7 +5650,7 @@ based on filters.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0xf2vkmdngp9cv9klznizai4byxjcf0iqh1pr4b83nann0jxqwy7"))))
+        (base32 "18vrmknyxw6adn62pz3kr9kvazfgjgl4pgimdf8527fyyiwcqy15"))))
     (build-system python-build-system)
     (propagated-inputs
      (list python-aniso8601 python-flask python-jsonschema python-pytz))
@@ -5668,7 +5668,8 @@ based on filters.")
            (lambda _
              (invoke "pytest" "--benchmark-skip" "-k"
                      ;; Those tests need internet access
-                     "not test_check and not test_valid_value_check"))))))
+                     "not test_check and not test_valid_value_check \
+and not test_override_app_level"))))))
     (home-page "https://github.com/python-restx/flask-restx")
     (synopsis
      "Framework for fast, easy and documented API development with Flask")
