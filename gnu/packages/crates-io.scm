@@ -30315,8 +30315,33 @@ statement, the first matching branch is the item that gets emitted.")
 whether an expression matches a pattern.")
     (license license:expat)))
 
+(define-public rust-matchers-0.1
+  (package
+    (name "rust-matchers")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "matchers" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0n2mbk7lg2vf962c8xwzdq96yrc9i0p8dbmm4wa1nnkcp1dhfqw2"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-regex-automata" ,rust-regex-automata-0.1))))
+    (home-page "https://github.com/hawkw/matchers")
+    (synopsis "Regex matching on character and byte streams")
+    (description
+     "Use this crate to match on character and byte streams using regular
+grammars.  It provides the subset of the regex crate that only deals with
+matching, not parsing substrings.")
+    (license license:expat)))
+
 (define-public rust-matchers-0.0
   (package
+    (inherit rust-matchers-0.1)
     (name "rust-matchers")
     (version "0.0.1")
     (source
@@ -30331,14 +30356,7 @@ whether an expression matches a pattern.")
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-regex-automata" ,rust-regex-automata-0.1))))
-    (home-page "https://github.com/hawkw/matchers")
-    (synopsis "Regex matching on character and byte streams")
-    (description
-     "Use this crate to match on character and byte streams using regular
-grammars.  It provides the subset of the regex crate that only deals with
-matching, not parsing substrings.")
-    (license license:expat)))
+       (("rust-regex-automata" ,rust-regex-automata-0.1))))))
 
 (define-public rust-matrixcompare-core-0.1
   (package
