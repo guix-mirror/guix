@@ -18437,7 +18437,7 @@ multitouch applications.")
 (define-public python-isort
   (package
     (name "python-isort")
-    (version "5.7.0")
+    (version "5.10.1")
     (source
      (origin
        (method git-fetch)
@@ -18450,11 +18450,17 @@ multitouch applications.")
        (snippet '(for-each delete-file (find-files "." "\\.whl$")))
        (sha256
         (base32
-         "0phq4s911mjjdyr5h5siz93jnpkqb2qgphgcfk6axncgxr8i7vi1"))))
+         "09spgl2k9xrprr5gbpfc91a8p7mx7a0c64ydgc91b3jhrmnd9jg1"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'loosen-requirements
+           (lambda _
+             ;; Permit newer versions of black.
+             (substitute* "example_isort_formatting_plugin/pyproject.toml"
+               (("\\^20\\.08b1")
+                ">= 20.08b1"))))
          ;; A foretaste of what our future python-build-system will need to
          ;; do.
          (replace 'build
@@ -18471,6 +18477,7 @@ multitouch applications.")
              (let ((out (assoc-ref outputs "out")))
                ;; Patch to use the core poetry API.
                (substitute* '("example_isort_formatting_plugin/pyproject.toml"
+                              "example_isort_sorting_plugin/pyproject.toml"
                               "example_shared_isort_profile/pyproject.toml")
                  (("poetry>=0.12")
                   "poetry-core>=1.0.0")
@@ -18482,6 +18489,7 @@ multitouch applications.")
                                    "--no-isolation" "--outdir=dist"
                                    source-directory))
                          '("example_isort_formatting_plugin"
+                           "example_isort_sorting_plugin"
                            "example_shared_isort_profile"))
                ;; Install them to temporary storage, for the test.
                (setenv "HOME" (getcwd))
@@ -18502,6 +18510,7 @@ multitouch applications.")
        ("python-colorama" ,python-colorama)
        ("python-hypothesmith" ,python-hypothesmith)
        ("python-libcst" ,python-libcst-minimal)
+       ("python-natsort" ,python-natsort)
        ("python-poetry-core" ,python-poetry-core)
        ("python-pylama" ,python-pylama)
        ("python-pypa-build" ,python-pypa-build)
