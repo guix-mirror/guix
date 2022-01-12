@@ -31907,8 +31907,35 @@ possible over the OS abstractions.")
      "Unix domain socket bindings for mio.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-miow-0.4
+  (package
+    (name "rust-miow")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "miow" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "03p0dgbahlysgxk0sihhf09k5h13r9aam3d6rfivdbxkj9vpydx7"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-windows-sys" ,rust-windows-sys-0.28))
+       #:cargo-development-inputs
+       (("rust-rand" ,rust-rand-0.8)
+        ("rust-socket2" ,rust-socket2-0.4))))
+    (home-page "https://github.com/alexcrichton/miow")
+    (synopsis "Rust I/O library for Windows")
+    (description
+     "This package provides a zero overhead I/O library for Windows, focusing on
+IOCP and Async I/O abstractions.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-miow-0.3
   (package
+    (inherit rust-miow-0.4)
     (name "rust-miow")
     (version "0.3.6")
     (source
@@ -31918,20 +31945,12 @@ possible over the OS abstractions.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "15sqdhh29dqgw5xh59clwv6scbsbvdkbmdc16hbfvyq7b2sw2css"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-socket2" ,rust-socket2-0.3)
         ("rust-winapi" ,rust-winapi-0.3))
        #:cargo-development-inputs
-       (("rust-rand" ,rust-rand-0.4))))
-    (home-page "https://github.com/alexcrichton/miow")
-    (synopsis "Rust I/O library for Windows")
-    (description
-     "This package provides a zero overhead I/O library for Windows, focusing on
-IOCP and Async I/O abstractions.")
-    (license (list license:asl2.0
-                   license:expat))))
+       (("rust-rand" ,rust-rand-0.4))))))
 
 (define-public rust-miow-0.2
   (package
