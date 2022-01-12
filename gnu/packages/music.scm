@@ -1711,6 +1711,12 @@ music theorist Paul Nauert's quantization grids or Q-Grids, for short.")
      `(#:tests? #f
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'loosen-requirements
+           (lambda _
+             (substitute* "setup.py"
+               ;; Don't require a specific version of abjad.
+               (("abjad==")
+                "abjad>="))))
          (replace 'check
            (lambda* (#:key tests? inputs outputs #:allow-other-keys)
              (when tests?
