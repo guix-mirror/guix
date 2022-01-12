@@ -51,7 +51,7 @@ supported content to the Kodi media center.")
 (define ublock-origin
   (package
     (name "ublock-origin")
-    (version "1.40.6")
+    (version "1.40.8")
     (home-page "https://github.com/gorhill/uBlock")
     (source (origin
               (method git-fetch)
@@ -60,7 +60,7 @@ supported content to the Kodi media center.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0qxzllll78wm8rw0g22fvg23y00mq8rbd3l9bhrylnqhv6lbs6xi"))))
+                "17pywblp87npj5z3zyvy9rmllnxhm916fnfyyfbvfbczswkbp78s"))))
     (build-system gnu-build-system)
     (outputs '("xpi" "firefox" "chromium"))
     (arguments
