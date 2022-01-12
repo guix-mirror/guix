@@ -364,35 +364,24 @@ common features used in Tempest.")
 (define-public python-oslo.config
   (package
     (name "python-oslo.config")
-    (version "5.2.0")
+    (version "8.7.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "oslo.config" version))
        (sha256
         (base32
-         "0ymf7jxbq29fifyvkwhfiys1qvljqfxdw8ajwzwaf3yiqidgpxqd"))))
+         "0q3v4yicqls9zsfxkmh5mrgz9dailaz3ir25p458gj6dg3bldhx0"))))
     (build-system python-build-system)
+    (arguments '(#:tests? #f))          ;XXX circular dependency on oslo.log
     (propagated-inputs
      (list python-debtcollector
            python-netaddr
            python-oslo.i18n
-           python-pbr
            python-rfc3986
-           python-six
+           python-requests
            python-stevedore
            python-pyyaml))
-    (native-inputs
-     (list python-bandit
-           python-coverage
-           python-mock
-           python-openstackdocstheme
-           python-oslotest
-           python-reno
-           python-sphinx
-           python-testrepository
-           python-testscenarios
-           python-testtools))
     (home-page "https://launchpad.net/oslo")
     (synopsis "Oslo Configuration API")
     (description
