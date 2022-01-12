@@ -18503,10 +18503,10 @@ multitouch applications.")
                  (setenv "PATH" (string-append (getenv "PATH") ":" bin)))
                (add-installed-pythonpath inputs outputs)
                (invoke "pytest" "-vv" "tests/unit/"
+                       "-k" "not test_gitignore" ;requires git
                        "--ignore=tests/unit/test_deprecated_finders.py")))))))
     (native-inputs
-     `(("git" ,git-minimal)
-       ("python-black" ,python-black)
+     `(("python-black" ,python-black)
        ("python-colorama" ,python-colorama)
        ("python-hypothesmith" ,python-hypothesmith)
        ("python-libcst" ,python-libcst-minimal)
