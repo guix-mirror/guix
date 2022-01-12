@@ -55249,16 +55249,16 @@ a syntax tree of Rust source code.")
 (define-public rust-synstructure-0.12
   (package
     (name "rust-synstructure")
-    (version "0.12.3")
+    (version "0.12.6")
     (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "synstructure" version))
-        (file-name
-         (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "0igmc5fzpk6fg7kgff914j05lbpc6ai2wmji312v2h8vvjhnwrb7"))))
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "synstructure" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "03r1lydbf3japnlpc4wka7y90pmz1i0danaj3f9a7b431akdlszk"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -55266,7 +55266,16 @@ a syntax tree of Rust source code.")
        (("rust-unicode-xid" ,rust-unicode-xid-0.2)
         ("rust-proc-macro2" ,rust-proc-macro2-1)
         ("rust-syn" ,rust-syn-1)
-        ("rust-quote" ,rust-quote-1))))
+        ("rust-quote" ,rust-quote-1))
+       #:cargo-development-inputs
+       (("rust-synstructure-test-traits" ,rust-synstructure-test-traits-0.1))
+       #:phases
+       (modify-phases %standard-phases
+         ;; https://github.com/mystor/synstructure/issues/51
+         (add-after 'unpack 'fix-test
+           (lambda _
+             (substitute* "src/lib.rs"
+               (("non_upper_case_globals )") "non_upper_case_globals)")))))))
     (home-page "https://github.com/mystor/synstructure")
     (synopsis "Helper methods and macros for custom derives")
     (description
