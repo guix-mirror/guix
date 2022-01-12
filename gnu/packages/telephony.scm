@@ -761,7 +761,8 @@ your calls and messages.")
            (substitute* "aconfigure.ac"
              (("third_party/build/os-auto.mak") ""))
            (substitute* "Makefile"
-             (("third_party/build") ""))))))
+             (("third_party/build") ""))))
+       (patches (search-patches "pjproject-install-libpjsua2.patch"))))
     (build-system gnu-build-system)
     (outputs '("out" "debug" "static"))
     (arguments

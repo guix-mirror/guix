@@ -1,0 +1,19 @@
+# Retrieved from upstream:
+# https://github.com/pjsip/pjproject/commit/742f7dc252ded778a8b677937791c02e2fbc0dde
+diff --git a/Makefile b/Makefile
+index 31a6d39d4..74e246a44 100644
+--- a/Makefile
++++ b/Makefile
+@@ -121,9 +121,10 @@ cmp_wav:
+ 
+ install:
+ 	mkdir -p $(DESTDIR)$(libdir)/
+-	cp -af $(APP_LIB_FILES) $(DESTDIR)$(libdir)/
+ 	if [ "$(PJ_EXCLUDE_PJSUA2)x" = "x" ] ; then \
+-	    cp -af $(PJ_DIR)/pjsip/lib/libpjsua2-$(LIB_SUFFIX) $(DESTDIR)$(libdir)/; \
++	    cp -af $(APP_LIBXX_FILES) $(DESTDIR)$(libdir)/; \
++	else \
++	    cp -af $(APP_LIB_FILES) $(DESTDIR)$(libdir)/; \
+ 	fi
+ 	mkdir -p $(DESTDIR)$(includedir)/
+ 	for d in pjlib pjlib-util pjnath pjmedia pjsip; do \
