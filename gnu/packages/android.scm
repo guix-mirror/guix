@@ -55,7 +55,9 @@
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages selinux)
   #:use-module (gnu packages serialization)
+  #:use-module (gnu packages sphinx)
   #:use-module (gnu packages ssh)
+  #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages virtualization)
@@ -923,6 +925,54 @@ useful for reverse engineering, analysis of Android applications and more.")
     (description "This package allows you to unpack and repack Android
 backups.  It supports encrypted archives.")
     (license license:asl2.0)))
+
+(define-public python-miio
+  (package
+    (name "python-miio")
+    (version "0.5.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "python-miio" version))
+       (sha256
+        (base32
+         "0a4f5ybjvibawwxcjm3r9nnrzf1yff6wwgy05yzyk0bb3rmc99fp"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest" "miio")))))))
+    (native-inputs
+     (list python-pytest
+           python-pytest-mock
+           python-sphinx
+           python-sphinx-click
+           python-sphinx-rtd-theme
+           python-sphinxcontrib-apidoc))
+    (propagated-inputs
+     (list python-android-backup
+           python-appdirs
+           python-attrs
+           python-click
+           python-construct
+           python-croniter
+           python-cryptography
+           python-defusedxml
+           python-importlib-metadata
+           python-netifaces
+           python-pytz
+           python-pyyaml
+           python-tqdm
+           python-zeroconf))
+    (home-page "https://github.com/rytilahti/python-miio")
+    (synopsis "Control Xiaomi smart appliances")
+    (description "This package provides library and command line interface
+for communicating with Xiaomi smart appliances over miIO and MIoT protocols.")
+    (license license:gpl3+)))
 
 (define-public fdroidserver
   (package
