@@ -5177,14 +5177,14 @@ and integrated feature-set for programming Python effectively.")
 (define-public python-pathspec
   (package
     (name "python-pathspec")
-    (version "0.7.0")
+    (version "0.9.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pathspec" version))
        (sha256
         (base32
-         "15lvs4awlg8xzl0l4gk9y53xx4yqmqvsv44pglv39m70y85afajn"))))
+         "1cdbdb3s6ldnjpwbi0bgl0xlmw4mbfxk08bbdxc3srx26na4jr75"))))
     (build-system python-build-system)
     (home-page "https://github.com/cpburnz/python-path-specification")
     (synopsis "Utility library for gitignore style pattern matching of file paths")
