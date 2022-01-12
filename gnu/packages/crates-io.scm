@@ -27630,6 +27630,28 @@ kernel32.")
      "The Khronos XML API Registry, exposed as byte string constants.")
     (license license:asl2.0)))
 
+(define-public rust-kqueue-sys-1
+  (package
+    (name "rust-kqueue-sys")
+    (version "1.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "kqueue-sys" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "11z5labbms9vn9m6csi5383dmrlmdgsxq13ls9fwa6zhi5a5hrw3"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build?
+       #t
+       #:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1) ("rust-libc" ,rust-libc-0.2))))
+    (home-page "https://gitlab.com/worr/rust-kqueue-sys")
+    (synopsis "Low-level kqueue interface for BSDs")
+    (description "This package provides a low-level kqueue interface for BSDs.")
+    (license license:expat)))
+
 (define-public rust-kv-log-macro-1
   (package
     (name "rust-kv-log-macro")
