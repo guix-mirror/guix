@@ -35162,6 +35162,11 @@ $ $(guix system vm my-config.scm) -m 1024 -smp 2 -nic user,model=virtio-net-pci
 
 The VM shares its store with the host system.
 
+By default, the root file system of the VM is mounted volatile; the
+@option{--persistent} option can be provided to make it persistent
+instead.  In that case, the VM disk-image file will be copied from the
+store to the @env{TMPDIR} directory to make it writable.
+
 Additional file systems can be shared between the host and the VM using
 the @option{--share} and @option{--expose} command-line options: the former
 specifies a directory to be shared with write access, while the latter
@@ -35199,8 +35204,8 @@ QEMU monitor and the VM.
 @cindex Creating system images in various formats
 @item image
 @cindex image, creating disk images
-The @code{image} command can produce various image types.  The
-image type can be selected using the @option{--image-type} option.  It
+The @code{image} command can produce various image types.  The image
+type can be selected using the @option{--image-type} option.  It
 defaults to @code{efi-raw}.  When its value is @code{iso9660}, the
 @option{--label} option can be used to specify a volume ID with
 @code{image}.  By default, the root file system of a disk image is

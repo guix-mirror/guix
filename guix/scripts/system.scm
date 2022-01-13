@@ -772,7 +772,7 @@ and TARGET arguments."
                          dry-run? derivations-only?
                          use-substitutes? target
                          full-boot?
-                         volatile?
+                         volatile-vm-root?
                          (graphic? #t)
                          container-shared-network?
                          (mappings '())
@@ -827,7 +827,8 @@ static checks."
   (mlet* %store-monad
       ((sys       (system-derivation-for-action image action
                                                 #:full-boot? full-boot?
-                                                #:volatile? volatile?
+                                                #:volatile?
+                                                volatile-vm-root?
                                                 #:graphic? graphic?
                                                 #:container-shared-network? container-shared-network?
                                                 #:mappings mappings))
@@ -999,6 +1000,8 @@ Some ACTIONS support additional ARGS.\n"))
   (display (G_ "
       --volatile         for 'image', make the root file system volatile"))
   (display (G_ "
+      --persistent       for 'vm', make the root file system persistent"))
+  (display (G_ "
       --label=LABEL      for 'image', label disk image with LABEL"))
   (display (G_ "
       --save-provenance  save provenance information"))
@@ -1080,7 +1083,10 @@ Some ACTIONS support additional ARGS.\n"))
                    (alist-cons 'install-bootloader? #f result)))
          (option '("volatile") #f #f
                  (lambda (opt name arg result)
-                   (alist-cons 'volatile-root? #t result)))
+                   (alist-cons 'volatile-image-root? #t result)))
+         (option '("persistent") #f #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'volatile-vm-root? #f result)))
          (option '("label") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'label arg result)))
@@ -1149,7 +1155,8 @@ Some ACTIONS support additional ARGS.\n"))
     (image-size . guess)
     (install-bootloader? . #t)
     (label . #f)
-    (volatile-root? . #f)
+    (volatile-image-root? . #f)
+    (volatile-vm-root? . #t)
     (graph-backend . "graphviz")))
 
 (define (verbosity-level opts)
@@ -1219,7 +1226,8 @@ resulting from command-line parsing."
                                            ((docker-image) docker-image-type)
                                            (else image-type)))
                             (image-size (assoc-ref opts 'image-size))
-                            (volatile?  (assoc-ref opts 'volatile-root?))
+                            (volatile?
+                             (assoc-ref opts 'volatile-image-root?))
                             (shared-network?
                                (assoc-ref opts 'container-shared-network?))
                             (base-image (if (operating-system? obj)
@@ -1279,7 +1287,8 @@ resulting from command-line parsing."
                                #:validate-reconfigure
                                (assoc-ref opts 'validate-reconfigure)
                                #:full-boot? (assoc-ref opts 'full-boot?)
-                               #:volatile? (assoc-ref opts 'volatile-root?)
+                               #:volatile-vm-root?
+                               (assoc-ref opts 'volatile-vm-root?)
                                #:graphic? (not (assoc-ref opts 'no-graphic?))
                                #:container-shared-network?
                                (assoc-ref opts 'container-shared-network?)
