@@ -2,7 +2,7 @@
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2019, 2020 Jan Wielkiewicz <tona_kosmicznego_smiecia@interia.pl>
-;;; Copyright © 2020, 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020, 2021, 2022 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,6 +26,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages freedesktop)
@@ -34,6 +35,7 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages guile)
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages networking)
@@ -57,11 +59,12 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system qt)
   #:use-module (guix download)
+  #:use-module (guix gexp)
   #:use-module (guix git-download)
   #:use-module (guix packages)
   #:use-module (guix utils))
 
-(define %jami-version "20210606.1.e2f9490")
+(define %jami-version "20211223.2.37be4c3")
 
 (define %jami-sources
   ;; Return an origin object of the tarball release sources archive of the
@@ -80,94 +83,73 @@
         (delete-file-recursively "daemon/contrib/tarballs")
         ;; Remove the git submodule directories of unused Jami clients.
         (for-each delete-file-recursively '("client-android"
-                                            "client-electron"
                                             "client-ios"
                                             "client-macosx"
                                             "client-uwp"))))
     (sha256
      (base32
-      "1vpxv2dk3l9cahv6mxd2754pxs9mzrid5bgwvl6k1byzpq8y4smr"))))
+      "12h4a0nj3gh05w64gkywrrb64agrhn6y3q4b9cqnhvr1vdkzlj0h"))))
 
 ;; Jami maintains a set of patches for some key dependencies (currently
 ;; pjproject and ffmpeg) of Jami that haven't yet been integrated upstream.
 ;; This procedure simplifies the process of applying them.
 (define jami-apply-custom-patches
-  '(lambda* (#:key inputs dep-name patches)
-     (let ((patches-directory "patches"))
-       (mkdir-p patches-directory)
-       (invoke "tar" "-xvf" (assoc-ref inputs "jami-sources")
-               "-C" patches-directory
-               "--strip-components=5"
-               (string-append "ring-project/daemon/contrib/src/"
-                              dep-name))
-       (for-each
-        (lambda (file)
-          (invoke "patch" "--force" "--ignore-whitespace" "-p1" "-i"
-                  (string-append patches-directory "/"
-                                 file ".patch")))
-        patches))))
+  #~(lambda* (#:key dep-name patches)
+      (let ((patches-directory "patches"))
+        (mkdir-p patches-directory)
+        (invoke "tar" "-xvf" #$%jami-sources
+                "-C" patches-directory
+                "--strip-components=5"
+                (string-append "ring-project/daemon/contrib/src/"
+                               dep-name))
+        (for-each
+         (lambda (file)
+           (invoke "patch" "--force" "--ignore-whitespace" "-p1" "-i"
+                   (string-append patches-directory "/"
+                                  file ".patch")))
+         patches))))
 
-;;; Jami maintains pjproject patches that add the ability to do ICE over TCP,
-;;; among other things.  The patches are currently based on pjproject 2.10.
 (define-public pjproject-jami
-  (package
-    (inherit pjproject)
-    (name "pjproject-jami")
-    (version "2.10")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/pjsip/pjproject")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1aklicpgwc88578k03i5d5cm5h8mfm7hmx8vfprchbmaa2p8f4z0"))
-              (patches (search-patches
-                        "pjproject-correct-the-cflags-field.patch"
-                        "pjproject-fix-pkg-config-ldflags.patch"))))
-    (native-inputs
-     `(("jami-sources" ,%jami-sources)
-       ,@(package-native-inputs pjproject)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments pjproject)
-       ((#:phases phases '%standard-phases)
-        `(modify-phases ,phases
-           (add-after 'make-source-files-writable 'apply-patches
-             (lambda* (#:key inputs #:allow-other-keys)
-               (,jami-apply-custom-patches
-                #:inputs inputs
-                #:dep-name "pjproject"
-                #:patches
-                '("0001-rfc6544"
-                  "0002-rfc2466"
-                  "0003-add-tcp-keep-alive"
-                  "0004-multiple_listeners"
-                  "0005-fix_ebusy_turn"
-                  "0006-ignore_ipv6_on_transport_check"
-                  "0007-upnp-srflx-nat-assisted-cand"
-                  "0008-fix_ioqueue_ipv6_sendto"
-                  "0009-add-config-site"
-                  ;; Already taken care of via the origin patches.
-                  ;;"0010-fix-pkgconfig"
-                  "0011-fix-tcp-death-detection"
-                  "0012-fix-turn-shutdown-crash"
-                  "0013-Assign-unique-local-preferences-for-candidates-with-"
-                  "0014-Add-new-compile-time-setting-PJ_ICE_ST_USE_TURN_PERM"
-                  "0015-update-local-preference-for-peer-reflexive-candidate"
-                  "0016-use-addrinfo-instead-CFHOST"
-                  "0017-CVE-2020-15260"
-                  "0018-CVE-2021-21375"
-                  "0019-ignore-down-interfaces"))))))))))
+  (let ((commit "e1f389d0b905011e0cb62cbdf7a8b37fc1bcde1a")
+        (revision "0"))
+    (package
+      (inherit pjproject)
+      (name "pjproject-jami")
+      (version (git-version "2.11" revision commit))
+      (source (origin
+                (inherit (package-source pjproject))
+                ;; The Jami development team regularly issues patches to
+                ;; pjproject to extend the its functionality and fix bugs;
+                ;; they are submitted for inclusion upstream but larger
+                ;; patches take time to be reviewed and merged, hence this
+                ;; forked repository.
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/savoirfairelinux/pjproject")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0inpmyb6mhrzr0g309d6clkc99lddqdvyf9xajz0igvgp9pvgpza"))))
+      (arguments
+       (substitute-keyword-arguments (package-arguments pjproject)
+         ((#:phases phases '%standard-phases)
+          #~(modify-phases #$phases
+              (add-after 'unpack 'apply-patches
+                (lambda _
+                  (#$jami-apply-custom-patches
+                   #:dep-name "pjproject"
+                   #:patches
+                   ;; This adds a config_site.h configuration file that sets
+                   ;; constants such as PJ_ICE_MAX_CAND that cannot be
+                   ;; configured at build time.
+                   '("0009-add-config-site")))))))))))
 
 ;; The following variables are configure flags used by ffmpeg-jami.  They're
-;; from the ring-project/daemon/contrib/src/ffmpeg/rules.mak file. We try to
+;; from the jami-project/daemon/contrib/src/ffmpeg/rules.mak file.  We try to
 ;; keep it as close to the official Jami package as possible, to provide all
-;; the codecs and extra features that are expected.
-;;
-;; See:
-;; https://review.jami.net/plugins/gitiles/ring-daemon/+/refs/heads/master/contrib/src/ffmpeg/rules.mak
-
+;; the codecs and extra features that are expected (see:
+;; https://review.jami.net/plugins/gitiles/ring-daemon/+/refs/heads/master/contrib/src/ffmpeg/rules.mak)
 (define %ffmpeg-default-configure-flags
   '("--disable-everything"
     "--enable-zlib"
@@ -187,7 +169,7 @@
     "--enable-protocol=unix"
     "--enable-protocol=pipe"
 
-    ;; enable muxers/demuxers
+    ;; Enable muxers/demuxers.
     "--disable-demuxers"
     "--disable-muxers"
     "--enable-muxer=rtp"
@@ -195,6 +177,7 @@
     "--enable-muxer=h263"
     "--enable-muxer=h264"
     "--enable-muxer=hevc"
+;    "--enable-muxer=matroska"
     "--enable-muxer=webm"
     "--enable-muxer=ogg"
     "--enable-muxer=pcm_s16be"
@@ -223,7 +206,7 @@
     "--enable-demuxer=h264"
     "--enable-demuxer=hevc"
 
-    ;; enable parsers
+    ;; Enable parsers.
     "--enable-parser=h263"
     "--enable-parser=h264"
     "--enable-parser=hevc"
@@ -232,7 +215,7 @@
     "--enable-parser=vp9"
     "--enable-parser=opus"
 
-    ;; encoders/decoders
+    ;; Encoders/decoders.
     "--enable-encoder=adpcm_g722"
     "--enable-decoder=adpcm_g722"
     "--enable-encoder=rawvideo"
@@ -263,7 +246,7 @@
     "--enable-encoder=libopus"
     "--enable-decoder=libopus"
 
-    ;; decoders for ringtones and audio streaming
+    ;; Decoders for ringtones and audio streaming.
     "--enable-decoder=flac"
     "--enable-decoder=vorbis"
     "--enable-decoder=aac"
@@ -298,7 +281,7 @@
     "--enable-decoder=pcm_u16be"
     "--enable-decoder=pcm_u16le"
 
-    ;; encoders/decoders for images
+    ;; Encoders/decoders for images.
     "--enable-encoder=gif"
     "--enable-decoder=gif"
     "--enable-encoder=jpegls"
@@ -312,7 +295,7 @@
     "--enable-encoder=tiff"
     "--enable-decoder=tiff"
 
-    ;; filters
+    ;; Filters.
     "--enable-filter=scale"
     "--enable-filter=overlay"
     "--enable-filter=amix"
@@ -346,8 +329,8 @@
     "--enable-encoder=mjpeg_vaapi"
     "--enable-encoder=hevc_vaapi"))
 
-;; ffnvcodec is not supported on ARM then we enable it here for i386 and
-;; x86_64 architectures.
+;; ffnvcodec is not supported on ARM; enable it only for the i386 and x86_64
+;; architectures.
 (define %ffmpeg-linux-x86-configure-flags
   '("--arch=x86"
     "--enable-cuvid"
@@ -378,81 +361,89 @@
 (define-public ffmpeg-jami
   (package/inherit ffmpeg
     (name "ffmpeg-jami")
-    (native-inputs
-     `(("jami-sources" ,%jami-sources)
-       ("libiconv" ,libiconv)
-       ,@(package-native-inputs ffmpeg)))
-    (supported-systems '("x86_64-linux" "i686-linux"
-                         "aarch64-linux" "armhf-linux"))
     (arguments
-     (append
-      '(#:tests? #f)
-      (substitute-keyword-arguments (package-arguments ffmpeg)
-        ((#:configure-flags '())
-         (ffmpeg-compose-configure-flags))
-        ((#:phases phases)
-         `(modify-phases ,phases
-            (add-after 'unpack 'make-git-checkout-writable
-              (lambda _
-                (for-each make-file-writable (find-files "."))))
+     (substitute-keyword-arguments (package-arguments ffmpeg)
+       ((#:tests? _ #f)
+        ;; The "rtp_ext_abs_send_time" patch causes the 'lavf-mov_rtphint'
+        ;; test to fail (see:
+        ;; https://git.jami.net/savoirfairelinux/jami-daemon/-/issues/685).
+        ;; TODO: Try to disable just this test.
+        #f)
+       ((#:configure-flags '())
+        (ffmpeg-compose-configure-flags))
+       ((#:phases phases)
+        #~(modify-phases #$phases
             (add-after 'unpack 'apply-patches
-              (lambda* (#:key inputs #:allow-other-keys)
+              (lambda _
                 ;; These patches come from:
-                ;; "ring-project/daemon/contrib/src/ffmpeg/rules.mak".
-                (,jami-apply-custom-patches
-                 #:inputs inputs #:dep-name "ffmpeg"
+                ;; "jami-project/daemon/contrib/src/ffmpeg/rules.mak".
+                (#$jami-apply-custom-patches
+                 #:dep-name "ffmpeg"
                  #:patches '("remove-mjpeg-log"
                              "change-RTCP-ratio"
                              "rtp_ext_abs_send_time"
                              "libopusdec-enable-FEC"
-                             "libopusenc-enable-FEC")))))))))))
+                             "libopusenc-enable-FEC"
+                             "screen-sharing-x11-fix"))))))))))
 
-(define-public libring
+(define-public libjami
   (package
-    (name "libring")
+    (name "libjami")
     (version %jami-version)
     (source %jami-sources)
-    (build-system gnu-build-system)
     (outputs '("out" "debug"))
+    (build-system gnu-build-system)
+    (arguments
+     (list
+      ;; The test suite fails to link when building libjami as a shared library:
+      ;; "testAccount_factory.cpp:(.text+0xc52): undefined reference to
+      ;; `jami::AccountFactory::AccountFactory()'.
+      #:tests? #f
+      ;; The agent links the daemon binary with libguile, which enables the
+      ;; execution of test plans described in Scheme.  It may be useful in
+      ;; user scripts too, until more generalized Scheme bindings are made
+      ;; (see: test/agent/README.md).
+      ;; FIXME: Fails to link when building libjami as a shared library:
+      ;; bindings.cpp:(.text+0x24): undefined reference to `jami::Logger::log
+      ;; [...].
+      #:configure-flags #~(list "--disable-agent")
+      #:make-flags #~(list "V=1")       ;build verbosely
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'change-directory/maybe
+            (lambda _
+              ;; Allow building from the tarball or a git checkout.
+              (false-if-exception (chdir "daemon")))))))
     (inputs
-     `(("alsa-lib" ,alsa-lib)
-       ("asio" ,asio)
-       ("dbus-c++" ,dbus-c++)
-       ("eudev" ,eudev)
-       ("ffmpeg" ,ffmpeg-jami)
-       ("jack" ,jack-1)
-       ("jsoncpp" ,jsoncpp)
-       ("libarchive" ,libarchive)
-       ("libgit2" ,libgit2)
-       ("libnatpmp" ,libnatpmp)
-       ("libsecp256k1" ,libsecp256k1)
-       ("libupnp" ,libupnp)
-       ("opendht" ,opendht)
-       ("openssl" ,openssl)
-       ("pjproject" ,pjproject-jami)
-       ("pulseaudio" ,pulseaudio)
-       ("speex" ,speex)
-       ("speexdsp" ,speexdsp)
-       ("webrtc-audio-processing" ,webrtc-audio-processing)
-       ("yaml-cpp" ,yaml-cpp)))
+     (list alsa-lib
+           asio
+           dbus-c++
+           eudev
+           ffmpeg-jami
+           guile-3.0
+           jack-1
+           jsoncpp
+           libarchive
+           libgit2
+           libnatpmp
+           libsecp256k1
+           libupnp
+           opendht
+           openssl
+           pjproject-jami
+           pulseaudio
+           speex
+           speexdsp
+           webrtc-audio-processing
+           yaml-cpp))
     (native-inputs
      (list autoconf
            automake
+           cppunit
            libtool
-           perl ;to generate manpages with pod2man
+           perl                         ;to generate manpages with pod2man
            pkg-config
            which))
-    (arguments
-     `(#:tests? #f         ; The tests fail to compile due to missing headers.
-       #:make-flags '("V=1")            ;build verbosely
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'change-directory
-           (lambda _
-             (chdir "daemon")))
-         (add-before 'build 'add-lib-dir
-           (lambda _
-             (mkdir-p "src/lib"))))))
     (synopsis "Jami core library and daemon")
     (description "This package provides a library and daemon implementing the
 Jami core functionality.  Jami is a secure and distributed voice, video and
@@ -462,39 +453,42 @@ protocols, as well as decentralized calling using P2P-DHT.")
     (home-page "https://jami.net/")
     (license license:gpl3+)))
 
-(define-public libringclient
+;;; Remove when 2023 comes.
+(define-public libring
+  (deprecated-package "libring" libjami))
+
+;;; Note: this package will eventually be absorbed into jami itself (the Qt
+;;; client).
+(define-public jami-libclient
   (package
-    (name "libringclient")
+    (name "jami-libclient")
     (version %jami-version)
     (source %jami-sources)
     (build-system cmake-build-system)
     (outputs '("out" "debug"))
-    (inputs
-     (list libring network-manager))
-    (propagated-inputs
-     (list qtbase-5))     ; Qt is included in several installed headers.
     (arguments
-     `(#:tests? #f                      ; There is no testsuite.
-       #:configure-flags
-       (let ((libring (assoc-ref %build-inputs "libring")))
-         (list (string-append "-DRING_XML_INTERFACES_DIR="
-                              libring "/share/dbus-1/interfaces")
-               (string-append "-DRING_BUILD_DIR=" libring "/include")
-               ;; Use LIBWRAP, which removes the requirement on DBus.  Qt
-               ;; links with the dbus library in Guix, which expects to find
-               ;; its configuration under /etc rather than /usr/share/dbus-1,
-               ;; which is perhaps the reason the auto-launching of dring
-               ;; doesn't work on foreign distributions.
-
-               ;; FIXME: Disabled for now, as it causes a segfault when
-               ;; attempting video calls (see:
-               ;; https://git.jami.net/savoirfairelinux/ring-lrc/-/issues/466).
-               "-DENABLE_LIBWRAP=false"))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'change-directory
-           (lambda _
-             (chdir "lrc"))))))
+     (list
+      #:tests? #f                       ;no test suite
+      #:configure-flags
+      #~(list (string-append "-DRING_XML_INTERFACES_DIR="
+                             #$(this-package-input "libjami")
+                             "/share/dbus-1/interfaces")
+              (string-append "-DRING_BUILD_DIR="
+                             #$(this-package-input "libjami")
+                             "/include")
+              ;; Call to the libraries directly instead of going through DBus
+              ;; to avoid issues (see: https://issues.guix.gnu.org/48538).
+              "-DENABLE_LIBWRAP=true")
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'change-directory/maybe
+            (lambda _
+              ;; Allow building from the tarball or a git checkout.
+              (false-if-exception (chdir "lrc")))))))
+    (inputs
+     (list libjami network-manager))
+    (propagated-inputs
+     (list qtbase-5))             ;Qt is included in several installed headers
     (synopsis "Jami client library")
     (description "This package provides a library common to all Jami clients.
 Jami is a secure and distributed voice, video and chat communication platform
@@ -504,33 +498,17 @@ decentralized calling using P2P-DHT.")
     (home-page "https://jami.net")
     (license license:gpl3+)))
 
+;;; Remove when 2023 comes.
+(define-public libringclient
+  (deprecated-package "libringclient" jami-libclient))
+
 (define-public jami-gnome
   (package
     (name "jami-gnome")
     (version %jami-version)
     (source %jami-sources)
-    (build-system cmake-build-system)
     (outputs '("out" "debug"))
-    (inputs
-     (list clutter
-           clutter-gtk
-           gtk+
-           libcanberra
-           libappindicator
-           libnotify
-           libringclient
-           network-manager
-           qrencode
-           sqlite
-           webkitgtk))
-    (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("gettext" ,gettext-minimal)
-       ("glib:bin" ,glib "bin")))       ;for glib-compile-resources
-    (propagated-inputs
-     (list libring ; Contains 'dring', the daemon, which is
-           ; automatically started by DBus.
-           adwaita-icon-theme))
+    (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ;no test suite
        #:imported-modules (,@%cmake-build-system-modules
@@ -540,10 +518,11 @@ decentralized calling using P2P-DHT.")
                   (guix build utils))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'change-directory
+         (add-after 'unpack 'change-directory/maybe
            (lambda _
-             (chdir "client-gnome")))
-         (add-after 'change-directory 'fix-webkit-detection
+             ;; Allow building from the tarball or a git checkout.
+             (false-if-exception (chdir "client-gnome"))))
+         (add-after 'change-directory/maybe 'fix-webkit-detection
            (lambda _
              (substitute* "CMakeLists.txt"
                (("WEBKIT webkit2gtk-4.0")
@@ -552,6 +531,22 @@ decentralized calling using P2P-DHT.")
            (assoc-ref gtk:%standard-phases 'glib-or-gtk-compile-schemas))
          (add-after 'glib-or-gtk-compile-schemas 'glib-or-gtk-wrap
            (assoc-ref gtk:%standard-phases 'glib-or-gtk-wrap)))))
+    (inputs
+     (list clutter
+           clutter-gtk
+           gtk+
+           jami-libclient
+           libcanberra
+           libappindicator
+           libnotify
+           network-manager
+           qrencode
+           sqlite
+           webkitgtk))
+    (native-inputs
+     (list pkg-config
+           gettext-minimal
+           `(,glib "bin")))             ;for glib-compile-resources
     (synopsis "Jami client for GNOME")
     (description "This package provides a Jami client for the GNOME desktop.
 Jami is a secure and distributed voice, video and chat communication platform
@@ -561,14 +556,9 @@ decentralized calling using P2P-DHT.")
     (home-page "https://jami.net")
     (license license:gpl3+)))
 
-;;; Keep this until the Qt client matures enough to become the
-;;; main 'jami' client.
 (define-public jami
-  (deprecated-package "jami" jami-gnome))
-
-(define-public jami-qt
   (package
-    (name "jami-qt")                    ;to be renamed 'jami' at some point
+    (name "jami")
     (version %jami-version)
     (source %jami-sources)
     (build-system qt-build-system)
@@ -577,14 +567,15 @@ decentralized calling using P2P-DHT.")
      `(#:tests? #f                      ;no test suite
        #:phases
        (modify-phases %standard-phases
-           (add-after 'unpack 'change-directory
-             (lambda _
-               (chdir "client-qt"))))))
+         (add-after 'unpack 'change-directory/maybe
+           (lambda _
+             ;; Allow building from the tarball or a git checkout.
+             (false-if-exception (chdir "client-qt")))))))
     (native-inputs
-     (list pkg-config qttools doxygen graphviz))
+     (list pkg-config python qttools doxygen graphviz))
     (inputs
-     (list libnotify
-           libringclient
+     (list jami-libclient
+           libnotify
            network-manager
            qrencode
            qtsvg
@@ -595,8 +586,6 @@ decentralized calling using P2P-DHT.")
            qtgraphicaleffects
            qtquickcontrols
            qtquickcontrols2))
-    (propagated-inputs
-     (list libring))           ;for dring
     (home-page "https://jami.net")
     (synopsis "Qt Jami client")
     (description "This package provides the Jami Qt client.  Jami is a secure
@@ -605,3 +594,7 @@ centralized server and leaves the power of privacy in the hands of the user.
 It supports the SIP and IAX protocols, as well as decentralized calling using
 P2P-DHT.")
     (license license:gpl3+)))
+
+;;; Remove when 2023 comes.
+(define-public jami-qt
+  (deprecated-package "jami-qt" jami))
