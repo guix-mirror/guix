@@ -2424,3 +2424,43 @@ In addition to Bravura itself, which is for use with music notation
 software (such as MuseScore), the family includes a Bravura Text variant
 optimized for using musical symbols inline with regular text.")
     (license license:silofl1.1)))
+
+(define-public font-charter
+  (let ((butterick-version "210112")) ;; yymmdd
+    (package
+      (name "font-charter")
+      (version (string-append "2.0.0-" butterick-version))
+      (source
+       (origin
+         (method url-fetch)
+         (uri (string-append "https://practicaltypography.com/fonts/Charter%20"
+                             butterick-version ".zip"))
+         (file-name (string-append name "-" version ".zip"))
+         (sha256
+          (base32 "1j8iv2dl695zrabs2knb7jsky8mjis29a2ddpna4by8mlvqrf0ml"))))
+      (outputs '("out" "woff2"))
+      (build-system font-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'install 'install-woff2
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((dest (string-append (assoc-ref outputs "woff2")
+                                          "/share/fonts/woff2")))
+                 (for-each (lambda (file)
+                             (install-file file dest))
+                           (find-files "." "\\.woff2$"))))))))
+      (home-page "https://practicaltypography.com/charter.html")
+      (synopsis "Charter fonts in OpenType and TrueType formats")
+      (description "Charter was designed by Matthew Carter in 1987 and was
+contributed by Bitstream to the X Consortium in 1992.  This package provides
+OpenType, TrueType, and @acronym{WOFF2, Web Open Font Format 2} versions
+converted from the Type 1 originals by Matthew Butterick.")
+      (license
+       (license:non-copyleft
+        "file://Charter license.txt"
+        (string-append
+         "Bitstream contributed the Charter family "
+         "to the X Consortium in 1992.  "
+         "The license is also embedded in the font metadata."))))))
+/
