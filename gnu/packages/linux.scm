@@ -3756,12 +3756,15 @@ from the module-init-tools project.")
                "GO111MODULE=off")
        #:test-target "test"))
     (native-inputs
-      (list
-        ;; For the test suite.
-        cppcheck
-        go
+      (append
         ;; To generate the manpage.
-        pandoc))
+        (if (or (target-x86-64?) (target-x86-32?))
+          (list pandoc)
+          '())
+        (list
+          ;; For the test suite.
+          cppcheck
+          go)))
     (home-page "https://github.com/rfjakob/earlyoom")
     (synopsis "Simple out of memory (OOM) daemon for the Linux kernel")
     (description "Early OOM is a minimalist out of memory (OOM) daemon that
