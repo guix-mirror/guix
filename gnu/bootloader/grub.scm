@@ -264,36 +264,38 @@ is a string that can be inserted in grub.cfg."
                          at_keyboard usb_keyboard))
 
          (io (string-append
-               "terminal_output "
-               (symbols->string
-                 (map
-                   (lambda (output)
-                     (if (memq output valid-outputs) output #f)) outputs)) "\n"
-               (if (null? inputs)
-                 ""
-                 (string-append
-                   "terminal_input "
-                   (symbols->string
-                     (map
-                       (lambda (input)
-                         (if (memq input valid-inputs) input #f)) inputs)) "\n"))
-               ;; UNIT and SPEED are arguments to the same GRUB command
-               ;; ("serial"), so we process them together.
-               (if (or unit speed)
-                 (string-append
+              ;; UNIT and SPEED are arguments to the same GRUB command
+              ;; ("serial"), so we process them together.
+              (if (or unit speed)
+                  (string-append
                    "serial"
                    (if unit
-                     ;; COM ports 1 through 4
-                     (if (and (exact-integer? unit) (<= unit 3) (>= unit 0))
-                       (string-append " --unit=" (number->string unit))
-                       #f)
-                     "")
+                       ;; COM ports 1 through 4
+                       (if (and (exact-integer? unit) (<= unit 3) (>= unit 0))
+                           (string-append " --unit=" (number->string unit))
+                           #f)
+                       "")
                    (if speed
-                     (if (exact-integer? speed)
-                       (string-append " --speed=" (number->string speed))
-                       #f)
-                     ""))
-                 ""))))
+                       (if (exact-integer? speed)
+                           (string-append " --speed=" (number->string speed))
+                           #f)
+                       "")
+                   "\n")
+                  "")
+              (if (null? inputs)
+                  ""
+                  (string-append
+                   "terminal_input "
+                   (symbols->string
+                    (map
+                     (lambda (input)
+                       (if (memq input valid-inputs) input #f)) inputs))
+                   "\n"))
+              "terminal_output "
+              (symbols->string
+               (map
+                (lambda (output)
+                  (if (memq output valid-outputs) output #f)) outputs)))))
     (format #f "~a" io)))
 
 (define (grub-root-search device file)
