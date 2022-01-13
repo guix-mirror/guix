@@ -127,18 +127,18 @@
     (native-inputs
      (list extra-cmake-modules pkg-config qttools))
     (inputs
-     `(("boost" ,boost)
-       ("inxi" ,inxi-minimal)
-       ("libdbusmenu-qt" ,libdbusmenu-qt)
-       ("perl" ,perl)
-       ("qca" ,qca)
-       ("qtbase" ,qtbase-5)
-       ("qtmultimedia" ,qtmultimedia)
-       ("qtscript" ,qtscript)
-       ("qtsvg" ,qtsvg)
-       ("snorenotify" ,snorenotify)
-       ("sonnet" ,sonnet)
-       ("zlib" ,zlib)))
+     (list boost
+           inxi-minimal
+           libdbusmenu-qt
+           perl
+           qca
+           qtbase-5
+           qtmultimedia
+           qtscript
+           qtsvg
+           snorenotify
+           sonnet
+           zlib))
     (home-page "https://quassel-irc.org/")
     (synopsis "Distributed IRC client")
     (description "Quassel is a distributed IRC client, meaning that one or more
