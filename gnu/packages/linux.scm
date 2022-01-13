@@ -3732,14 +3732,7 @@ from the module-init-tools project.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "16iyn51xlrsbshc7p5xl2338yyfzknaqc538sa7mamgccqwgyvvq"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  (substitute* "Makefile"
-                    (("go test -v")
-                     "GO111MODULE=off go test -v"))
-                  #t))))
+                "16iyn51xlrsbshc7p5xl2338yyfzknaqc538sa7mamgccqwgyvvq"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -3760,7 +3753,8 @@ from the module-init-tools project.")
                       (list ,(string-append "CC=" (cc-for-target))
                             (string-append "VERSION=v" ,version)
                             (string-append "PREFIX=" prefix)
-                            (string-append "SYSCONFDIR=" prefix "/etc")))
+                            (string-append "SYSCONFDIR=" prefix "/etc")
+                            "GO111MODULE=off"))
        #:test-target "test"))
     (native-inputs
       (list
