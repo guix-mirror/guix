@@ -742,7 +742,7 @@ your calls and messages.")
 (define-public pjproject
   (package
     (name "pjproject")
-    (version "2.11")
+    (version "2.11.1")
     (source
      (origin
        (method git-fetch)
@@ -752,7 +752,7 @@ your calls and messages.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1kn9g1x1vmh4130ghph8mldz5m89gsjs4vpdzlzm98m3808gk5an"))
+         "04s4bgr2d22ym2ajjk6q507hyqss1p59yp8avyyyf5f8032nbaws"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -766,8 +766,7 @@ your calls and messages.")
     (build-system gnu-build-system)
     (outputs '("out" "debug" "static"))
     (arguments
-     `(#:tests? #t
-       #:test-target "selftest"
+     `(#:test-target "selftest"
        #:configure-flags
        (list "--enable-shared"
              "--with-external-speex"
