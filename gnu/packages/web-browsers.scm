@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2014, 2019 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015, 2016, 2019, 2021 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2019, 2021, 2022 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -691,7 +691,7 @@ is fully configurable and extensible in Common Lisp.")
 (define-public lagrange
   (package
     (name "lagrange")
-    (version "1.9.2")
+    (version "1.9.5")
     (source
      (origin
        (method url-fetch)
@@ -699,7 +699,7 @@ is fully configurable and extensible in Common Lisp.")
         (string-append "https://git.skyjake.fi/skyjake/lagrange/releases/"
                        "download/v" version "/lagrange-" version ".tar.gz"))
        (sha256
-        (base32 "1j4r2c6f9fqc22f14fjh28s324kfbb9ahf08nv0xlazy1y5g7f6d"))
+        (base32 "184wyhr6raqr0sk21ap98hf85cmilv5rrfsyhvcc4dfjy61m5mqh"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -709,23 +709,7 @@ is fully configurable and extensible in Common Lisp.")
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #false                  ;no tests
-       #:configure-flags (list "-DTFDN_ENABLE_SSE41=OFF")
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-build-error
-           (lambda _
-             ;; XXX: Remove in next release.  Applied upstream.  See
-             ;; <https://git.skyjake.fi/gemini/lagrange/commit/b710eee5a92166ceb87932fe53b226be64b4d259>.
-             (substitute* "src/ui/text.c"
-               (("width <= 1") "width && width <= 1")
-               (("colorId") "fgColorId"))
-             (substitute* "src/ui/text_simple.c"
-               (("colorId") "fgColorId")
-               (("const iColor clr =") "iColor clr;")
-               (("ansiForeground_Color\\((.+)\\);" _ params)
-                (string-append "ansiColors_Color("
-                               params
-                               ", none_ColorId, &clr, NULL);"))))))))
+       #:configure-flags (list "-DTFDN_ENABLE_SSE41=OFF")))
     (native-inputs
      (list pkg-config zip))
     (inputs
