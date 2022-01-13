@@ -23849,9 +23849,9 @@ service found under @file{/var/lib/jami} are recreated every time the
 service starts.
 
 Jami accounts and their corresponding backup archives can be generated
-using either the @code{jami-qt} or @code{jami-gnome} Jami clients.  The
-accounts should not be password-protected, but it is wise to ensure
-their files are only readable by @samp{root}.
+using the @code{jami} or @code{jami-gnome} Jami clients.  The accounts
+should not be password-protected, but it is wise to ensure their files
+are only readable by @samp{root}.
 
 The next example shows how to declare that only some contacts should be
 allowed to communicate with a given account:
@@ -23966,7 +23966,7 @@ The complete set of available configuration options is detailed below.
 Available @code{jami-configuration} fields are:
 
 @table @asis
-@item @code{jamid} (default: @code{libring}) (type: package)
+@item @code{jamid} (default: @code{libjami}) (type: package)
 The Jami daemon package to use.
 
 @item @code{dbus} (default: @code{dbus}) (type: package)

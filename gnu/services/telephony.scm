@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 nee  <nee-git@hidamari.blue>
-;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021, 2022 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -227,7 +227,7 @@ SET-ACCOUNT-DETAILS."
 
 (define-configuration/no-serialization jami-configuration
   (jamid
-   (file-like libring)
+   (file-like libjami)
    "The Jami daemon package to use.")
   (dbus
    (file-like dbus)
@@ -265,7 +265,7 @@ consistent state."))
 CONFIG, a <jami-configuration> object."
   (match-record config <jami-configuration>
     (jamid dbus enable-logging? debug? auto-answer?)
-    `(,(file-append jamid "/lib/ring/dring")
+    `(,(file-append jamid "/libexec/jamid")
       "--persistent"                    ;stay alive after client quits
       ,@(if enable-logging?
             '()                         ;logs go to syslog by default
@@ -739,7 +739,7 @@ argument, either a registered username or the fingerprint of the account.")
                              (const %jami-accounts))
           (service-extension activation-service-type
                              jami-dbus-session-activation)))
-   (description "Run the Jami daemon (@command{dring}).  This service is
+   (description "Run the Jami daemon (@command{jamid}).  This service is
 geared toward the use case of hosting Jami rendezvous points over a headless
 server.  If you use Jami on your local machine, you may prefer to setup a user
 Shepherd service for it instead; this way, the daemon will be shared via your

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gnu.org>.
+;;; Copyright © 2021, 2022 Maxim Cournoyer <maxim.cournoyer@gmail.com>.
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -174,7 +174,7 @@ accounts provisioning feature of the service."
                   ;; in the service; use retries.
                   (with-retries 20 1
                     (not (zero? (status:exit-val
-                                 (system* "pgrep" "dring")))))))
+                                 (system* "pgrep" "jamid")))))))
              marionette))
 
           (test-assert "service can be restarted"
