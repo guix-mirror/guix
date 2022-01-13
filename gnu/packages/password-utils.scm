@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Steve Sprang <scs@stevesprang.com>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Aljosha Papsch <misc@rpapsch.de>
 ;;; Copyright © 2016 Christine Lemmer-Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Jessica Tallon <tsyesika@tsyesika.se>
@@ -177,6 +177,8 @@ manage your passwords in a secure way.  You can put all your passwords in one
 database, which is locked with one master key or a key-file which can be stored
 on an external storage device.  The databases are encrypted using the
 algorithms AES or Twofish.")
+    (properties
+     '((release-monitoring-url . "https://github.com/keepassxreboot/keepassxc/releases")))
     ;; While various parts of the software are licensed under different licenses,
     ;; the combined work falls under the GPLv3.
     (license license:gpl3)))
