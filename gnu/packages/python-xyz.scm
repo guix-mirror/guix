@@ -16119,7 +16119,9 @@ database, file, dict stores.  Cachy supports python versions 2.7+ and 3.2+.")
            python-entrypoints
            python-html5lib
            python-keyring
-           python-msgpack
+           ; Use of deprecated version of msgpack reported upstream:
+           ; https://github.com/python-poetry/poetry/issues/3607
+           python-msgpack-transitional
            python-packaging
            python-pexpect
            python-pip
