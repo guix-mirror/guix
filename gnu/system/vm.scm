@@ -283,7 +283,7 @@ useful when FULL-BOOT?  is true."
               #+@(operating-system-kernel-arguments os "/dev/vda1")))
 
     (define rw-image
-      #~(format #f "/tmp/.~a-rw" (basename #$base-image)))
+      #~(format #f "/tmp/guix-image-~a" (basename #$base-image)))
 
     (define qemu-exec
       #~(list #+(file-append qemu "/bin/"
