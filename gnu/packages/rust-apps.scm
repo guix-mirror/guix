@@ -1463,6 +1463,7 @@ Full featured offline client with caching support.")
              (substitute* "Cargo.toml"
                (("2.5") "2")
                (("~2.3\"") "2\"")
+               (("~2.33\"") "2\"")      ; clap
                (("3.1") "3"))))
          (add-after 'install 'install-manual-page
            (lambda* (#:key outputs #:allow-other-keys)
