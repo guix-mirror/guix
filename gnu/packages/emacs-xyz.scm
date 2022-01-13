@@ -78,7 +78,7 @@
 ;;; Copyright © 2020 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2020, 2021 Morgan Smith <Morgan.J.Smith@outlook.com>
 ;;; Copyright © 2020 Peng Mei Yu <i@pengmeiyu.com>
-;;; Copyright © 2020, 2021 Niklas Eklund <niklas.eklund@posteo.net>
+;;; Copyright © 2020, 2021, 2022 Niklas Eklund <niklas.eklund@posteo.net>
 ;;; Copyright © 2020 Marco Grassi <marco.au.grassi98@protonmail.com>
 ;;; Copyright © 2020 Tomás Ortín Fernández <tomasortin@mailbox.org>
 ;;; Copyright © 2020, 2021 Zhu Zihao <all_but_last@163.com>
@@ -215,6 +215,7 @@
   #:use-module (gnu packages password-utils)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages sphinx)
+  #:use-module (gnu packages screen)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages shells)
   #:use-module (gnu packages shellutils)
@@ -23357,6 +23358,54 @@ indentation and a command to plot the file.")
       (synopsis "Advanced type-aware syntax-highlighting for CMake")
       (description "This package highlights function arguments in CMake
 according to their use.")
+      (license license:gpl3+))))
+
+(define-public emacs-dtache
+  ;; XXX: The following commit includes a fix for a test.
+  (let ((commit "9e0acd552db62fb696bafb6b9ba9a78522309dd8")
+        (revision "0"))
+    (package
+      (name "emacs-dtache")
+      (version (git-version "0.3" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://gitlab.com/niklaseklund/dtache")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1jb48x33mhb4awnjrqi268wigp07j08xi02s9yhg8b04l6mnms0d"))))
+      (arguments
+       (list
+        #:tests? #t
+        #:test-command #~(list "ert-runner")
+        #:phases
+        #~(modify-phases %standard-phases
+            (add-before 'install 'install-dtache-env
+              (lambda _
+                (install-file "dtache-env" (string-append #$output "/bin"))))
+            (add-after 'unpack 'configure
+              (lambda* (#:key inputs #:allow-other-keys)
+                (make-file-writable "dtache.el")
+                (emacs-substitute-variables "dtache.el"
+                  ("dtache-env" (string-append #$output
+                                               "/bin/dtache-env"))
+                  ("dtache-dtach-program" (search-input-file
+                                           inputs
+                                           "/bin/dtach"))
+                  ("dtache-shell-program" (search-input-file
+                                           inputs
+                                           "/bin/bash"))))))))
+      (build-system emacs-build-system)
+      (native-inputs (list emacs-ert-runner))
+      (inputs (list dtach))
+      (home-page "https://gitlab.com/niklaseklund/dtache")
+      (synopsis "Run and interact with detached shell commands")
+      (description
+       "The dtache package allows users to run shell commands
+detached from Emacs.  These commands are launched in sessions, using the
+program dtach.")
       (license license:gpl3+))))
 
 (define-public emacs-dtrt-indent
