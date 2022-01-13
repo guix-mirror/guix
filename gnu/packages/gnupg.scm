@@ -1170,6 +1170,7 @@ makes it hard to locate an individual based on an identifying subset of her
 keyring content.  Parcimonie is a daemon that fetches one key at a time using
 the Tor network, waits a bit, changes the Tor circuit being used, and starts
 over.")
+    (properties '((upstream-name . "App-Parcimonie")))
     (license license:gpl1+)))
 
 (define-public jetring
