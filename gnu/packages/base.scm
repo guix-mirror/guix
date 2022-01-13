@@ -1112,7 +1112,8 @@ to the @code{share/locale} sub-directory of this package.")
                                         (assoc-ref %outputs "out")
                                         "/lib/locale/"
                                         ,(version-major+minor
-                                          (package-version glibc)))))))))))
+                                          (package-version glibc)))))))))
+    (properties `((upstream-name . "glibc")))))
 
 (define %default-utf8-locales
   ;; These are the locales commonly used for tests---e.g., in Guile's i18n
