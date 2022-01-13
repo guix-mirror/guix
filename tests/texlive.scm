@@ -185,11 +185,11 @@ completely compatible with Plain TeX.")
                           ('base32 (? string? hash))
                           #:trivial? #t))
                ('propagated-inputs
-                (("texlive-cm" ',texlive-cm)
-                 ("texlive-hyphen-base" ',texlive-hyphen-base)
-                 ("texlive-knuth-lib" ',texlive-knuth-lib)
-                 ("texlive-plain" ',texlive-plain)
-                 ("texlive-tex" ',texlive-tex)))
+                ('list 'texlive-cm
+                       'texlive-hyphen-base
+                       'texlive-knuth-lib
+                       'texlive-plain
+                       'texlive-tex))
                ('home-page "https://www.tug.org/texlive/")
                ('synopsis "Plain TeX macros for Physicists")
                ('description (? string? description))
