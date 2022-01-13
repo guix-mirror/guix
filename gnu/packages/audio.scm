@@ -2870,14 +2870,14 @@ different audio devices such as ALSA or PulseAudio.")
 (define-public qjackctl
   (package
     (name "qjackctl")
-    (version "0.9.5")
+    (version "0.9.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/qjackctl/qjackctl/"
                                   version "/qjackctl-" version ".tar.gz"))
               (sha256
                (base32
-                "1g61xwsxsndwlnh4547vl7jfcf4kqlbb4394jq2m8qbbzk51b6rv"))))
+                "0sqni9ppwadc01fnyqj6lkwy30ql1vccqglv9imd3zdchffjpjir"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f))                    ; no check target
