@@ -38,6 +38,7 @@
   #:use-module (guix build-system python)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module ((guix licenses) #:prefix l:)
+  #:use-module (guix gexp)
   #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages adns)
@@ -308,19 +309,21 @@ maintained upstream.")
                 "1987x4ywnnrhhfs9hi2h820c200d7nas9nd35414yh0jiihfglaq"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags (list "--enable-libaria2"
-                               (string-append "--with-bashcompletiondir="
-                                              %output "/etc/bash_completion.d/"))
+     (list
+       #:configure-flags
+       #~(list "--enable-libaria2"
+               (string-append "--with-bashcompletiondir="
+                              #$output "/etc/bash_completion.d/"))
        #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'delete-socket-tests
-           (lambda _
-             (substitute* "test/LpdMessageDispatcherTest.cc"
-               (("CPPUNIT_TEST_SUITE_REGISTRATION\\(LpdMessageDispatcherTest\\);" text)
-                (string-append "// " text)))
-             (substitute* "test/LpdMessageReceiverTest.cc"
-               (("CPPUNIT_TEST_SUITE_REGISTRATION\\(LpdMessageReceiverTest\\);" text)
-                (string-append "// " text))))))))
+       #~(modify-phases %standard-phases
+           (add-after 'unpack 'delete-socket-tests
+             (lambda _
+               (substitute* "test/LpdMessageDispatcherTest.cc"
+                 (("CPPUNIT_TEST_SUITE_REGISTRATION\\(LpdMessageDispatcherTest\\);" text)
+                  (string-append "// " text)))
+               (substitute* "test/LpdMessageReceiverTest.cc"
+                 (("CPPUNIT_TEST_SUITE_REGISTRATION\\(LpdMessageReceiverTest\\);" text)
+                  (string-append "// " text))))))))
     (native-inputs
      (list cppunit ; for the tests
            pkg-config))
