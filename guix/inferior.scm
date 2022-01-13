@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018-2022 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -815,7 +815,7 @@ determines whether CHANNELS are authenticated."
                   (add-indirect-root* cached)
                   (return cached))
                 (mbegin %store-monad
-                  (add-temp-root* profile)
+                  (add-temp-root* (derivation->output-path profile))
                   (return profile))))))))
 
 (define* (inferior-for-channels channels
