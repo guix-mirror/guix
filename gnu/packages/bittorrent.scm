@@ -2,7 +2,7 @@
 ;;; Copyright © 2014 Taylan Ulrich Bayirli/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2022 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Tomáš Čech <sleep_walker@gnu.org>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Jelle Licht <jlicht@fsfe.org>
@@ -340,6 +340,8 @@ maintained upstream.")
       "Aria2 is a lightweight, multi-protocol & multi-source command-line
 download utility.  It supports HTTP/HTTPS, FTP, SFTP, BitTorrent and Metalink.
 Aria2 can be manipulated via built-in JSON-RPC and XML-RPC interfaces.")
+    (properties
+     '((release-monitoring-url . "https://github.com/aria2/aria2/releases")))
     (license l:gpl2+)))
 
 (define-public uget
