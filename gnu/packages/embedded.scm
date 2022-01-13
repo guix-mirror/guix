@@ -618,19 +618,17 @@ language.")
                (("-DPKGBLDDATE=") "-DDISABLED_PKGBLDDATE="))
              (patch-shebang "bootstrap")
              (invoke "./bootstrap" "nosubmodule")))
-         (add-after 'autoreconf 'change-udev-group
+         (add-after 'unpack 'change-udev-group
            (lambda _
              (substitute* "contrib/60-openocd.rules"
-               (("plugdev") "dialout"))
-             #t))
+               (("plugdev") "dialout"))))
          (add-after 'install 'install-udev-rules
            (lambda* (#:key outputs #:allow-other-keys)
              (install-file "contrib/60-openocd.rules"
                            (string-append
                             (assoc-ref outputs "out")
-                            "/lib/udev/rules.d/"))
-             #t)))))
-    (home-page "http://openocd.org")
+                            "/lib/udev/rules.d/")))))))
+    (home-page "https://openocd.org/")
     (synopsis "On-Chip Debugger")
     (description "OpenOCD provides on-chip programming and debugging support
 with a layered architecture of JTAG interface and TAP support.")
