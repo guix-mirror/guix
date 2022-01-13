@@ -3735,26 +3735,25 @@ from the module-init-tools project.")
                 "16iyn51xlrsbshc7p5xl2338yyfzknaqc538sa7mamgccqwgyvvq"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (delete 'configure)            ; no configure script
-         (add-before 'check 'set-go-HOME
-           (lambda _
-             (setenv "HOME" (getcwd))
-             #t))
-         (add-before 'check 'disable-failing-test
-           (lambda _
-             ;; This test relies on writing to /proc/%d/oom_score_adj.
-             (substitute* "testsuite_cli_test.go"
-               (("TestI" match)
-                (string-append "skipped" match)))
-             #t)))
-       #:make-flags (let* ((prefix (assoc-ref %outputs "out")))
-                      (list ,(string-append "CC=" (cc-for-target))
-                            (string-append "VERSION=v" ,version)
-                            (string-append "PREFIX=" prefix)
-                            (string-append "SYSCONFDIR=" prefix "/etc")
-                            "GO111MODULE=off"))
+     (list
+       #:phases
+       #~(modify-phases %standard-phases
+           (delete 'configure)            ; no configure script
+           (add-before 'check 'set-go-HOME
+             (lambda _
+               (setenv "HOME" (getcwd))))
+           (add-before 'check 'disable-failing-test
+             (lambda _
+               ;; This test relies on writing to /proc/%d/oom_score_adj.
+               (substitute* "testsuite_cli_test.go"
+                 (("TestI" match)
+                  (string-append "skipped" match))))))
+       #:make-flags
+       #~(list (string-append "CC=" #$(cc-for-target))
+               (string-append "VERSION=v" #$version)
+               (string-append "PREFIX=" #$output)
+               (string-append "SYSCONFDIR=" #$output "/etc")
+               "GO111MODULE=off")
        #:test-target "test"))
     (native-inputs
       (list
