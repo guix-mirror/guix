@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
-;;; Copyright © 2016, 2017, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2019, 2020, 2022 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Christopher Andersson <christopher@8bits.nu>
 ;;; Copyright © 2016 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2016, 2017, 2019, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -136,6 +136,11 @@ dictionaries, including personal ones.")
     (description
      "This package provides a dictionary for the GNU Aspell spell checker.")
     (license gpl2+)
+    (properties
+      ;; Unfortunately any versions with a trailing 'dash and digit' (eg.: '-0')
+      ;; will fail to register as a version.
+      `((upstream-name . ,(string-append prefix dict-name))
+        (ftp-directory . ,(string-append "/aspell/dict/" dict-name))))
     (home-page "http://aspell.net/")))
 
 
