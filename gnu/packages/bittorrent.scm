@@ -297,7 +297,7 @@ maintained upstream.")
 (define-public aria2
   (package
     (name "aria2")
-    (version "1.35.0")
+    (version "1.36.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/aria2/aria2/releases/"
@@ -305,7 +305,7 @@ maintained upstream.")
                                   "/aria2-" version ".tar.xz"))
               (sha256
                (base32
-                "1zbxc517d97lb96f15xcy4l7b66grxrp3h2ids2jiwkaip87yaqy"))))
+                "1987x4ywnnrhhfs9hi2h820c200d7nas9nd35414yh0jiihfglaq"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list "--enable-libaria2"
@@ -320,8 +320,7 @@ maintained upstream.")
                 (string-append "// " text)))
              (substitute* "test/LpdMessageReceiverTest.cc"
                (("CPPUNIT_TEST_SUITE_REGISTRATION\\(LpdMessageReceiverTest\\);" text)
-                (string-append "// " text)))
-             #t)))))
+                (string-append "// " text))))))))
     (native-inputs
      (list cppunit ; for the tests
            pkg-config))
