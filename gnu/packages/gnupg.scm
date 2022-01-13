@@ -1102,30 +1102,30 @@ files, to verify signatures, and to manage the private and public keys.")
                 "10gal2h8ihg7nnzy3adw942axd2ia1rcn1fw3a3v07n5mm8kqrx9"))))
     (build-system perl-build-system)
     (inputs
-     `(("gnupg" ,gnupg)
-       ("perl-clone" ,perl-clone)
-       ("perl-config-general" ,perl-config-general)
-       ("perl-file-homedir" ,perl-file-homedir)
-       ("perl-file-sharedir" ,perl-file-sharedir)
-       ("perl-file-which" ,perl-file-which)
-       ("perl-gnupg-interface" ,perl-gnupg-interface)
-       ("perl-ipc-system-simple" ,perl-ipc-system-simple)
-       ("perl-json" ,perl-json)
-       ("perl-list-moreutils" ,perl-list-moreutils)
-       ("perl-moo" ,perl-moo)
-       ("perl-moox-late" ,perl-moox-late)
-       ("perl-moox-options" ,perl-moox-options)
-       ("perl-moox-strictconstructor" ,perl-moox-strictconstructor)
-       ("perl-namespace-clean" ,perl-namespace-clean)
-       ("perl-net-dbus" ,perl-net-dbus)
-       ("perl-pango" ,perl-pango)
-       ("perl-path-tiny" ,perl-path-tiny)
-       ("perl-time-duration" ,perl-time-duration)
-       ("perl-time-duration-parse" ,perl-time-duration-parse)
-       ("perl-try-tiny" ,perl-try-tiny)
-       ("perl-type-tiny" ,perl-type-tiny)
-       ("perl-types-path-tiny" ,perl-types-path-tiny)
-       ("torsocks" ,torsocks)))
+     (list gnupg
+           perl-clone
+           perl-config-general
+           perl-file-homedir
+           perl-file-sharedir
+           perl-file-which
+           perl-gnupg-interface
+           perl-ipc-system-simple
+           perl-json
+           perl-list-moreutils
+           perl-moo
+           perl-moox-late
+           perl-moox-options
+           perl-moox-strictconstructor
+           perl-namespace-clean
+           perl-net-dbus
+           perl-pango
+           perl-path-tiny
+           perl-time-duration
+           perl-time-duration-parse
+           perl-try-tiny
+           perl-type-tiny
+           perl-types-path-tiny
+           torsocks))
     (native-inputs
      (list perl-file-which
            perl-gnupg-interface
@@ -1142,8 +1142,8 @@ files, to verify signatures, and to manage the private and public keys.")
          ;; Needed for using gpg-connect-agent during tests.
          (add-before 'check 'prepare-for-tests
            (lambda* (#:key inputs #:allow-other-keys)
-             (let ((xorg-server (assoc-ref inputs "xorg-server")))
-               (system (string-append xorg-server "/bin/Xvfb :1 &"))
+             (let ((Xvfb (search-input-file inputs "/bin/Xvfb")))
+               (system (string-append Xvfb " :1 &"))
                (setenv "DISPLAY" ":1")
                (setenv "HOME" "/tmp")
                ;; These tests expect usable gnupg configurations.
