@@ -2,7 +2,7 @@
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014 Kevin Lemonnier <lemonnierk@ulrar.net>
 ;;; Copyright © 2015, 2017 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Nikita <nikita@n0.is>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017–2022 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -47,6 +47,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages backup)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages code)
   #:use-module (gnu packages compression)
@@ -90,52 +91,53 @@
 (define-public quassel
   (package
     (name "quassel")
-    (version "0.13.1")
+    (version "0.14.0")
     (source
       (origin
         (method url-fetch)
         (uri (string-append "https://quassel-irc.org/pub/quassel-"
-                            version ".tar.bz2"))
+                            version ".tar.xz"))
         (sha256
          (base32
-          "0mg8jydc70vlylppzich26q4s40kr78r3ysfyjwisfvlg2byxvs8"))
-        (patches (search-patches "quassel-qt-514-compat.patch"))
+          "042fzssydvv35jjknziph8iyyjsyrsb2hp3d0ix0bqbagbrpf1q9"))
         (modules '((guix build utils)))
         ;; We don't want to install the bundled inxi script.
         (snippet
          '(begin
-            (delete-file "data/scripts/inxi")
-            #t))))
+            (delete-file "data/scripts/inxi")))))
     (build-system qt-build-system)
     (arguments
       ;; The three binaries are not mutually exlusive, and are all built
       ;; by default.
-     '(#:configure-flags '(;;"-DWANT_QTCLIENT=OFF" ; 6.1 MiB
-                           ;;"-DWANT_CORE=OFF" ; 3.0 MiB
-                           ;;"-DWANT_MONO=OFF" ; 7.6 MiB
-                           "-DWITH_KDE=OFF" ; no to kde integration ...
-                           "-DWITH_BUNDLED_ICONS=ON" ; so we install bundled icons
-                           "-DWITH_OXYGEN_ICONS=ON" ; also the oxygen ones
-                           "-DWITH_WEBENGINE=OFF") ; we don't depend on qtwebengine
+     '(#:configure-flags '(;;"-DWANT_QTCLIENT=OFF"
+                           ;;"-DWANT_CORE=OFF"
+                           ;;"-DWANT_MONO=OFF"
+                           "-DWITH_KDE=OFF"
+                           "-DWITH_BUNDLED_ICONS=ON"
+                           "-DWITH_OXYGEN_ICONS=ON"
+                           ;; This disables link previews.
+                           "-DWITH_WEBENGINE=OFF")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-inxi-reference
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((inxi (search-input-file inputs "/bin/inxi")))
-               (symlink inxi "data/scripts/inxi")
-               #t))))
+               (symlink inxi "data/scripts/inxi")))))
        #:tests? #f)) ; no test target
     (native-inputs
      (list extra-cmake-modules pkg-config qttools))
     (inputs
-     `(("inxi" ,inxi-minimal)
+     `(("boost" ,boost)
+       ("inxi" ,inxi-minimal)
        ("libdbusmenu-qt" ,libdbusmenu-qt)
+       ("perl" ,perl)
        ("qca" ,qca)
        ("qtbase" ,qtbase-5)
        ("qtmultimedia" ,qtmultimedia)
        ("qtscript" ,qtscript)
        ("qtsvg" ,qtsvg)
        ("snorenotify" ,snorenotify)
+       ("sonnet" ,sonnet)
        ("zlib" ,zlib)))
     (home-page "https://quassel-irc.org/")
     (synopsis "Distributed IRC client")

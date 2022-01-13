@@ -1727,7 +1727,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/qtbase-use-TZDIR.patch			\
   %D%/packages/patches/qtscript-disable-tests.patch		\
   %D%/packages/patches/quagga-reproducible-build.patch          \
-  %D%/packages/patches/quassel-qt-514-compat.patch		\
   %D%/packages/patches/quickswitch-fix-dmenu-check.patch	\
   %D%/packages/patches/qtwebkit-pbutils-include.patch		\
   %D%/packages/patches/qtwebkit-fix-building-with-bison-3.7.patch \
