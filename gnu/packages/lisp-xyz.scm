@@ -20252,8 +20252,8 @@ rendering of the XML Infoset.")
   (sbcl-package->ecl-package sbcl-cl-sxml))
 
 (define-public sbcl-cl-gopher
-  (let ((commit "29fbe52e3f377e24e8bde77b00789a1e32a75b90")
-        (revision "1"))
+  (let ((commit "62cfd180378f56e7e8b57e4302b183810c86e337")
+        (revision "2"))
     (package
       (name "sbcl-cl-gopher")
       (version (git-version "0.0.0" revision commit))
@@ -20265,7 +20265,7 @@ rendering of the XML Infoset.")
                (commit commit)))
          (file-name (git-file-name "cl-gopher" version))
          (sha256
-          (base32 "1dilgbnbgbrn7wglv8n03kpgc94l43mgv9y0akg7h5mwn8ii5p6m"))))
+          (base32 "0szz29d83fk2cxn5j1zlf4v0154qnf9cy1ix5p4jjpsql1a8xiwg"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        (list sbcl-bordeaux-threads
