@@ -1091,7 +1091,7 @@ files, to verify signatures, and to manage the private and public keys.")
 (define-public parcimonie
   (package
     (name "parcimonie")
-    (version "0.11.0")
+    (version "0.12.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gaffer.boum.org/intrigeri/files/"
@@ -1099,48 +1099,43 @@ files, to verify signatures, and to manage the private and public keys.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "14pvapvzrxh1yh8zgcj1llmc2dd8g1fgzskxlja21gmw8c88aqdk"))))
+                "10gal2h8ihg7nnzy3adw942axd2ia1rcn1fw3a3v07n5mm8kqrx9"))))
     (build-system perl-build-system)
     (inputs
      `(("gnupg" ,gnupg)
-       ("perl-config-general" ,perl-config-general)
        ("perl-clone" ,perl-clone)
-       ("perl-data" ,perl-data)
-       ("perl-exporter-tiny" ,perl-exporter-tiny)
+       ("perl-config-general" ,perl-config-general)
        ("perl-file-homedir" ,perl-file-homedir)
        ("perl-file-sharedir" ,perl-file-sharedir)
        ("perl-file-which" ,perl-file-which)
-       ("perl-getopt-long-descriptive" ,perl-getopt-long-descriptive)
        ("perl-gnupg-interface" ,perl-gnupg-interface)
        ("perl-ipc-system-simple" ,perl-ipc-system-simple)
+       ("perl-json" ,perl-json)
        ("perl-list-moreutils" ,perl-list-moreutils)
-       ("perl-libintl-perl" ,perl-libintl-perl) ; Locale::TextDomain
-       ("perl-lwp-online" ,perl-lwp-online)
-       ("perl-module-build" ,perl-module-build)
-       ("perl-module-pluggable-object" ,perl-module-pluggable)
        ("perl-moo" ,perl-moo)
-       ("perl-moox-handlesvia" ,perl-moox-handlesvia)
        ("perl-moox-late" ,perl-moox-late)
        ("perl-moox-options" ,perl-moox-options)
        ("perl-moox-strictconstructor" ,perl-moox-strictconstructor)
        ("perl-namespace-clean" ,perl-namespace-clean)
        ("perl-net-dbus" ,perl-net-dbus)
-       ("perl-net-dbus-glib" ,perl-net-dbus-glib)
+       ("perl-pango" ,perl-pango)
        ("perl-path-tiny" ,perl-path-tiny)
-       ("perl-strictures" ,perl-strictures-2)
-       ("perl-test-most" ,perl-test-most)
-       ("perl-test-trap" ,perl-test-trap)
        ("perl-time-duration" ,perl-time-duration)
        ("perl-time-duration-parse" ,perl-time-duration-parse)
        ("perl-try-tiny" ,perl-try-tiny)
        ("perl-type-tiny" ,perl-type-tiny)
        ("perl-types-path-tiny" ,perl-types-path-tiny)
-       ("perl-unicode-linebreak" ,perl-unicode-linebreak)
-       ("perl-xml-parser" ,perl-xml-parser)
-       ("perl-xml-twig" ,perl-xml-twig)
        ("torsocks" ,torsocks)))
     (native-inputs
-     (list xorg-server-for-tests))
+     (list perl-file-which
+           perl-gnupg-interface
+           perl-list-moreutils
+           perl-lwp-online
+           perl-module-build
+           perl-strictures-2
+           perl-test-most
+           perl-test-trap
+           xorg-server-for-tests))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -1151,18 +1146,14 @@ files, to verify signatures, and to manage the private and public keys.")
                (system (string-append xorg-server "/bin/Xvfb :1 &"))
                (setenv "DISPLAY" ":1")
                (setenv "HOME" "/tmp")
-               ;; These tests are known to fail
+               ;; These tests expect usable gnupg configurations.
                (delete-file "t/32-keyserver_defined_on_command_line.t")
-               (delete-file "t/33-checkGpgHasDefinedKeyserver.t")
-               ;; The applet is deprecated upstream.
-               (delete-file "t/00-load_all.t")
-               #t)))
+               (delete-file "t/33-checkGpgHasDefinedKeyserver.t"))))
          (add-before 'install 'fix-references
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (substitute* "lib/App/Parcimonie/GnuPG/Interface.pm"
                ;; Skip check whether dependencies are in the PATH
-               (("defined which.*") ""))
-             #t))
+               (("defined which.*") ""))))
          (add-after 'install 'wrap-program
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -1170,9 +1161,8 @@ files, to verify signatures, and to manage the private and public keys.")
                                             ,(package-version perl))))
                (wrap-program (string-append out "/bin/parcimonie")
                  `("PERL5LIB" ":"
-                   prefix (,(string-append perllib ":" (getenv "PERL5LIB")))))
-               #t))))))
-    (home-page "https://gaffer.boum.org/intrigeri/code/parcimonie/")
+                   prefix (,(string-append perllib ":" (getenv "PERL5LIB")))))))))))
+    (home-page "https://salsa.debian.org/intrigeri/parcimonie")
     (synopsis "Incrementally refreshes a GnuPG keyring")
     (description "Parcimonie incrementaly refreshes a GnuPG keyring in a way
 that makes it hard to correlate the keyring content to an individual, and
