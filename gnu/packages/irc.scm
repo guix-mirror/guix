@@ -109,7 +109,8 @@
     (arguments
       ;; The three binaries are not mutually exlusive, and are all built
       ;; by default.
-     '(#:configure-flags '(;;"-DWANT_QTCLIENT=OFF"
+     '(#:configure-flags '("-DBUILD_TESTING=ON"
+                           ;;"-DWANT_QTCLIENT=OFF"
                            ;;"-DWANT_CORE=OFF"
                            ;;"-DWANT_MONO=OFF"
                            "-DWITH_KDE=OFF"
@@ -122,8 +123,7 @@
          (add-after 'unpack 'patch-inxi-reference
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((inxi (search-input-file inputs "/bin/inxi")))
-               (symlink inxi "data/scripts/inxi")))))
-       #:tests? #f)) ; no test target
+               (symlink inxi "data/scripts/inxi")))))))
     (native-inputs
      (list extra-cmake-modules pkg-config qttools))
     (inputs
